@@ -15,111 +15,111 @@
   <table_data name="#__menu_types">
    <row>
     <field name="id">1</field>
-    <field name="asset_id">0</field>
+    <field name="asset_id">54</field>
     <field name="menutype">mainmenu</field>
     <field name="title">Main Menu</field>
     <field name="description">The main menu for the site</field>
     <field name="client_id">0</field>
-    <field name="ordering">1</field>
+    <field name="ordering">6</field>
    </row>
    <row>
     <field name="id">2</field>
-    <field name="asset_id">104</field>
+    <field name="asset_id">181</field>
     <field name="menutype">usermenu</field>
     <field name="title">User Menu</field>
     <field name="description">Profile menu</field>
     <field name="client_id">0</field>
-    <field name="ordering">2</field>
+    <field name="ordering">10</field>
    </row>
    <row>
     <field name="id">3</field>
-    <field name="asset_id">109</field>
+    <field name="asset_id">182</field>
     <field name="menutype">coordinatormenu</field>
     <field name="title">Coordinator</field>
     <field name="description">Menu for Coordinators users</field>
     <field name="client_id">0</field>
-    <field name="ordering">3</field>
+    <field name="ordering">14</field>
    </row>
    <row>
     <field name="id">4</field>
-    <field name="asset_id">111</field>
+    <field name="asset_id">183</field>
     <field name="menutype">applicantmenu</field>
     <field name="title">Applicant</field>
     <field name="description">Menu for applicants</field>
     <field name="client_id">0</field>
-    <field name="ordering">4</field>
+    <field name="ordering">3</field>
    </row>
    <row>
     <field name="id">5</field>
-    <field name="asset_id">113</field>
+    <field name="asset_id">184</field>
     <field name="menutype">actions</field>
     <field name="title">Actions</field>
     <field name="description">This menu defines all actions accessible with access rights written in not of each menu item</field>
     <field name="client_id">0</field>
-    <field name="ordering">5</field>
+    <field name="ordering">-3</field>
    </row>
    <row>
     <field name="id">6</field>
-    <field name="asset_id">114</field>
+    <field name="asset_id">185</field>
     <field name="menutype">actions-shared-files</field>
     <field name="title">Actions - Shared files</field>
     <field name="description"></field>
     <field name="client_id">0</field>
-    <field name="ordering">6</field>
+    <field name="ordering">1</field>
    </row>
    <row>
     <field name="id">7</field>
-    <field name="asset_id">115</field>
+    <field name="asset_id">186</field>
     <field name="menutype">actions-users</field>
     <field name="title">Actions - Utilisateurs</field>
     <field name="description"></field>
     <field name="client_id">0</field>
-    <field name="ordering">7</field>
+    <field name="ordering">2</field>
    </row>
    <row>
     <field name="id">8</field>
-    <field name="asset_id">116</field>
+    <field name="asset_id">187</field>
     <field name="menutype">application</field>
     <field name="title">Application</field>
     <field name="description">Items availables when we open an application file</field>
     <field name="client_id">0</field>
-    <field name="ordering">8</field>
+    <field name="ordering">4</field>
    </row>
    <row>
     <field name="id">9</field>
-    <field name="asset_id">117</field>
+    <field name="asset_id">188</field>
     <field name="menutype">adminmenu</field>
     <field name="title">Administrator</field>
     <field name="description">Menu for Administrator (sysadmin) users</field>
     <field name="client_id">0</field>
-    <field name="ordering">9</field>
+    <field name="ordering">13</field>
    </row>
    <row>
     <field name="id">10</field>
-    <field name="asset_id">118</field>
+    <field name="asset_id">189</field>
     <field name="menutype">evaluatormenu</field>
     <field name="title">Evaluator</field>
     <field name="description">Menu for evaluators users</field>
     <field name="client_id">0</field>
-    <field name="ordering">10</field>
+    <field name="ordering">16</field>
    </row>
    <row>
     <field name="id">11</field>
-    <field name="asset_id">119</field>
+    <field name="asset_id">190</field>
     <field name="menutype">onboardingmenu</field>
     <field name="title">Tchooz</field>
     <field name="description">Menu Tchooz with campaigns, emails, formbuilder and global settings</field>
     <field name="client_id">0</field>
-    <field name="ordering">11</field>
+    <field name="ordering">9</field>
    </row>
    <row>
     <field name="id">12</field>
-    <field name="asset_id">120</field>
+    <field name="asset_id">191</field>
     <field name="menutype">program-manager-menu</field>
     <field name="title">Program Manager</field>
     <field name="description">Menu for program manager users</field>
     <field name="client_id">0</field>
-    <field name="ordering">12</field>
+    <field name="ordering">15</field>
    </row>
    <row>
     <field name="id">13</field>
@@ -128,7 +128,7 @@
     <field name="title">Top Menu</field>
     <field name="description"></field>
     <field name="client_id">0</field>
-    <field name="ordering">13</field>
+    <field name="ordering">8</field>
    </row>
    <row>
     <field name="id">15</field>
@@ -137,16 +137,16 @@
     <field name="title">Dropfiles menu</field>
     <field name="description">Dropfiles menu</field>
     <field name="client_id">0</field>
-    <field name="ordering">15</field>
+    <field name="ordering">12</field>
    </row>
    <row>
     <field name="id">16</field>
-    <field name="asset_id">0</field>
+    <field name="asset_id">130</field>
     <field name="menutype">hikashop_default</field>
     <field name="title">HikaShop default menus</field>
     <field name="description">This menu is used by HikaShop to store menus configurations</field>
     <field name="client_id">0</field>
-    <field name="ordering">0</field>
+    <field name="ordering">11</field>
    </row>
    <row>
     <field name="id">17</field>
@@ -155,16 +155,16 @@
     <field name="title">Formulaire de base</field>
     <field name="description"></field>
     <field name="client_id">0</field>
-    <field name="ordering">0</field>
+    <field name="ordering">17</field>
    </row>
    <row>
     <field name="id">18</field>
-    <field name="asset_id">0</field>
+    <field name="asset_id">132</field>
     <field name="menutype">campaigns</field>
-    <field name="title">Détails des campagnes</field>
-    <field name="description">Liste des liens de menus pour accéder aux détails des campagnes</field>
+    <field name="title">Campaigns details</field>
+    <field name="description">List of menu links to campaign details</field>
     <field name="client_id">0</field>
-    <field name="ordering">0</field>
+    <field name="ordering">5</field>
    </row>
    <row>
     <field name="id">19</field>
@@ -173,7 +173,7 @@
     <field name="title">Project management</field>
     <field name="description">Accès à la partie gestion de projet</field>
     <field name="client_id">0</field>
-    <field name="ordering">0</field>
+    <field name="ordering">7</field>
    </row>
   </table_data>
  </database>

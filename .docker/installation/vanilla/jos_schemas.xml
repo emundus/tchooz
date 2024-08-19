@@ -14,7 +14,7 @@
    </row>
    <row>
     <field name="extension_id">332</field>
-    <field name="version_id">4.0-2023-05-27</field>
+    <field name="version_id">4.2-2024-05-25</field>
    </row>
    <row>
     <field name="extension_id">346</field>
@@ -22,7 +22,7 @@
    </row>
    <row>
     <field name="extension_id">458</field>
-    <field name="version_id">2.0.0</field>
+    <field name="version_id">2.0.0-alpha</field>
    </row>
    <row>
     <field name="extension_id">601</field>

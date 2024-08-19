@@ -1210,7 +1210,7 @@
    </row>
    <row>
     <field name="id">153</field>
-    <field name="asset_id">0</field>
+    <field name="asset_id">192</field>
     <field name="title">Ressources et Notes</field>
     <field name="note"></field>
     <field name="content" value_is_null="true"></field>
@@ -1224,7 +1224,7 @@
     <field name="module">mod_emundus_notes</field>
     <field name="access">1</field>
     <field name="showtitle">1</field>
-    <field name="params">{&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="params">{&quot;ressources&quot;:[],&quot;note&quot;:&quot;&quot;,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
     <field name="client_id">1</field>
     <field name="language">*</field>
    </row>

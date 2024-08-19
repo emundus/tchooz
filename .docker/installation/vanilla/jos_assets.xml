@@ -21,7 +21,7 @@
     <field name="id">1</field>
     <field name="parent_id">0</field>
     <field name="lft">0</field>
-    <field name="rgt">327</field>
+    <field name="rgt">353</field>
     <field name="level">0</field>
     <field name="name">root.1</field>
     <field name="title">Root Asset</field>
@@ -161,7 +161,7 @@
     <field name="id">16</field>
     <field name="parent_id">1</field>
     <field name="lft">89</field>
-    <field name="rgt">108</field>
+    <field name="rgt">130</field>
     <field name="level">1</field>
     <field name="name">com_menus</field>
     <field name="title">com_menus</field>
@@ -170,8 +170,8 @@
    <row>
     <field name="id">17</field>
     <field name="parent_id">1</field>
-    <field name="lft">109</field>
-    <field name="rgt">110</field>
+    <field name="lft">131</field>
+    <field name="rgt">132</field>
     <field name="level">1</field>
     <field name="name">com_messages</field>
     <field name="title">com_messages</field>
@@ -180,8 +180,8 @@
    <row>
     <field name="id">18</field>
     <field name="parent_id">1</field>
-    <field name="lft">111</field>
-    <field name="rgt">218</field>
+    <field name="lft">133</field>
+    <field name="rgt">242</field>
     <field name="level">1</field>
     <field name="name">com_modules</field>
     <field name="title">com_modules</field>
@@ -190,8 +190,8 @@
    <row>
     <field name="id">19</field>
     <field name="parent_id">1</field>
-    <field name="lft">219</field>
-    <field name="rgt">222</field>
+    <field name="lft">243</field>
+    <field name="rgt">246</field>
     <field name="level">1</field>
     <field name="name">com_newsfeeds</field>
     <field name="title">com_newsfeeds</field>
@@ -200,8 +200,8 @@
    <row>
     <field name="id">20</field>
     <field name="parent_id">1</field>
-    <field name="lft">223</field>
-    <field name="rgt">224</field>
+    <field name="lft">247</field>
+    <field name="rgt">248</field>
     <field name="level">1</field>
     <field name="name">com_plugins</field>
     <field name="title">com_plugins</field>
@@ -210,8 +210,8 @@
    <row>
     <field name="id">21</field>
     <field name="parent_id">1</field>
-    <field name="lft">225</field>
-    <field name="rgt">226</field>
+    <field name="lft">249</field>
+    <field name="rgt">250</field>
     <field name="level">1</field>
     <field name="name">com_redirect</field>
     <field name="title">com_redirect</field>
@@ -220,8 +220,8 @@
    <row>
     <field name="id">23</field>
     <field name="parent_id">1</field>
-    <field name="lft">227</field>
-    <field name="rgt">228</field>
+    <field name="lft">251</field>
+    <field name="rgt">252</field>
     <field name="level">1</field>
     <field name="name">com_templates</field>
     <field name="title">com_templates</field>
@@ -230,8 +230,8 @@
    <row>
     <field name="id">24</field>
     <field name="parent_id">1</field>
-    <field name="lft">233</field>
-    <field name="rgt">236</field>
+    <field name="lft">257</field>
+    <field name="rgt">260</field>
     <field name="level">1</field>
     <field name="name">com_users</field>
     <field name="title">com_users</field>
@@ -240,8 +240,8 @@
    <row>
     <field name="id">26</field>
     <field name="parent_id">1</field>
-    <field name="lft">237</field>
-    <field name="rgt">238</field>
+    <field name="lft">261</field>
+    <field name="rgt">262</field>
     <field name="level">1</field>
     <field name="name">com_wrapper</field>
     <field name="title">com_wrapper</field>
@@ -280,8 +280,8 @@
    <row>
     <field name="id">30</field>
     <field name="parent_id">19</field>
-    <field name="lft">220</field>
-    <field name="rgt">221</field>
+    <field name="lft">244</field>
+    <field name="rgt">245</field>
     <field name="level">2</field>
     <field name="name">com_newsfeeds.category.5</field>
     <field name="title">Uncategorised</field>
@@ -290,8 +290,8 @@
    <row>
     <field name="id">32</field>
     <field name="parent_id">24</field>
-    <field name="lft">234</field>
-    <field name="rgt">235</field>
+    <field name="lft">258</field>
+    <field name="rgt">259</field>
     <field name="level">2</field>
     <field name="name">com_users.category.7</field>
     <field name="title">Uncategorised</field>
@@ -300,8 +300,8 @@
    <row>
     <field name="id">33</field>
     <field name="parent_id">1</field>
-    <field name="lft">239</field>
-    <field name="rgt">240</field>
+    <field name="lft">263</field>
+    <field name="rgt">264</field>
     <field name="level">1</field>
     <field name="name">com_finder</field>
     <field name="title">com_finder</field>
@@ -310,8 +310,8 @@
    <row>
     <field name="id">34</field>
     <field name="parent_id">1</field>
-    <field name="lft">241</field>
-    <field name="rgt">242</field>
+    <field name="lft">265</field>
+    <field name="rgt">266</field>
     <field name="level">1</field>
     <field name="name">com_joomlaupdate</field>
     <field name="title">com_joomlaupdate</field>
@@ -320,8 +320,8 @@
    <row>
     <field name="id">35</field>
     <field name="parent_id">1</field>
-    <field name="lft">243</field>
-    <field name="rgt">244</field>
+    <field name="lft">267</field>
+    <field name="rgt">268</field>
     <field name="level">1</field>
     <field name="name">com_tags</field>
     <field name="title">com_tags</field>
@@ -330,8 +330,8 @@
    <row>
     <field name="id">36</field>
     <field name="parent_id">1</field>
-    <field name="lft">245</field>
-    <field name="rgt">246</field>
+    <field name="lft">269</field>
+    <field name="rgt">270</field>
     <field name="level">1</field>
     <field name="name">com_contenthistory</field>
     <field name="title">com_contenthistory</field>
@@ -340,8 +340,8 @@
    <row>
     <field name="id">37</field>
     <field name="parent_id">1</field>
-    <field name="lft">247</field>
-    <field name="rgt">248</field>
+    <field name="lft">271</field>
+    <field name="rgt">272</field>
     <field name="level">1</field>
     <field name="name">com_ajax</field>
     <field name="title">com_ajax</field>
@@ -350,8 +350,8 @@
    <row>
     <field name="id">38</field>
     <field name="parent_id">1</field>
-    <field name="lft">249</field>
-    <field name="rgt">250</field>
+    <field name="lft">273</field>
+    <field name="rgt">274</field>
     <field name="level">1</field>
     <field name="name">com_postinstall</field>
     <field name="title">com_postinstall</field>
@@ -360,8 +360,8 @@
    <row>
     <field name="id">40</field>
     <field name="parent_id">18</field>
-    <field name="lft">112</field>
-    <field name="rgt">113</field>
+    <field name="lft">134</field>
+    <field name="rgt">135</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.2</field>
     <field name="title">Login</field>
@@ -370,8 +370,8 @@
    <row>
     <field name="id">43</field>
     <field name="parent_id">18</field>
-    <field name="lft">114</field>
-    <field name="rgt">115</field>
+    <field name="lft">136</field>
+    <field name="rgt">137</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.8</field>
     <field name="title">Toolbar</field>
@@ -380,8 +380,8 @@
    <row>
     <field name="id">44</field>
     <field name="parent_id">18</field>
-    <field name="lft">116</field>
-    <field name="rgt">117</field>
+    <field name="lft">138</field>
+    <field name="rgt">139</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.9</field>
     <field name="title">Notifications</field>
@@ -390,8 +390,8 @@
    <row>
     <field name="id">46</field>
     <field name="parent_id">18</field>
-    <field name="lft">118</field>
-    <field name="rgt">119</field>
+    <field name="lft">140</field>
+    <field name="rgt">141</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.12</field>
     <field name="title">Admin Menu</field>
@@ -400,8 +400,8 @@
    <row>
     <field name="id">48</field>
     <field name="parent_id">18</field>
-    <field name="lft">120</field>
-    <field name="rgt">121</field>
+    <field name="lft">142</field>
+    <field name="rgt">143</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.14</field>
     <field name="title">User Status</field>
@@ -410,8 +410,8 @@
    <row>
     <field name="id">49</field>
     <field name="parent_id">18</field>
-    <field name="lft">122</field>
-    <field name="rgt">123</field>
+    <field name="lft">144</field>
+    <field name="rgt">145</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.15</field>
     <field name="title">Title</field>
@@ -420,8 +420,8 @@
    <row>
     <field name="id">52</field>
     <field name="parent_id">18</field>
-    <field name="lft">124</field>
-    <field name="rgt">125</field>
+    <field name="lft">146</field>
+    <field name="rgt">147</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.79</field>
     <field name="title">Multilanguage status</field>
@@ -430,8 +430,8 @@
    <row>
     <field name="id">53</field>
     <field name="parent_id">18</field>
-    <field name="lft">128</field>
-    <field name="rgt">129</field>
+    <field name="lft">150</field>
+    <field name="rgt">151</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.86</field>
     <field name="title">Joomla Version</field>
@@ -450,8 +450,8 @@
    <row>
     <field name="id">55</field>
     <field name="parent_id">18</field>
-    <field name="lft">132</field>
-    <field name="rgt">133</field>
+    <field name="lft">154</field>
+    <field name="rgt">155</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.87</field>
     <field name="title">Sample Data</field>
@@ -550,8 +550,8 @@
    <row>
     <field name="id">65</field>
     <field name="parent_id">1</field>
-    <field name="lft">229</field>
-    <field name="rgt">230</field>
+    <field name="lft">253</field>
+    <field name="rgt">254</field>
     <field name="level">1</field>
     <field name="name">com_privacy</field>
     <field name="title">com_privacy</field>
@@ -560,8 +560,8 @@
    <row>
     <field name="id">66</field>
     <field name="parent_id">1</field>
-    <field name="lft">231</field>
-    <field name="rgt">232</field>
+    <field name="lft">255</field>
+    <field name="rgt">256</field>
     <field name="level">1</field>
     <field name="name">com_actionlogs</field>
     <field name="title">com_actionlogs</field>
@@ -570,8 +570,8 @@
    <row>
     <field name="id">70</field>
     <field name="parent_id">18</field>
-    <field name="lft">126</field>
-    <field name="rgt">127</field>
+    <field name="lft">148</field>
+    <field name="rgt">149</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.103</field>
     <field name="title">Site</field>
@@ -580,8 +580,8 @@
    <row>
     <field name="id">71</field>
     <field name="parent_id">18</field>
-    <field name="lft">130</field>
-    <field name="rgt">131</field>
+    <field name="lft">152</field>
+    <field name="rgt">153</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.104</field>
     <field name="title">Système</field>
@@ -590,8 +590,8 @@
    <row>
     <field name="id">72</field>
     <field name="parent_id">18</field>
-    <field name="lft">134</field>
-    <field name="rgt">135</field>
+    <field name="lft">156</field>
+    <field name="rgt">157</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.91</field>
     <field name="title">System Dashboard</field>
@@ -600,8 +600,8 @@
    <row>
     <field name="id">73</field>
     <field name="parent_id">18</field>
-    <field name="lft">136</field>
-    <field name="rgt">137</field>
+    <field name="lft">158</field>
+    <field name="rgt">159</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.92</field>
     <field name="title">Content Dashboard</field>
@@ -610,8 +610,8 @@
    <row>
     <field name="id">74</field>
     <field name="parent_id">18</field>
-    <field name="lft">138</field>
-    <field name="rgt">139</field>
+    <field name="lft">160</field>
+    <field name="rgt">161</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.93</field>
     <field name="title">Menus Dashboard</field>
@@ -620,8 +620,8 @@
    <row>
     <field name="id">75</field>
     <field name="parent_id">18</field>
-    <field name="lft">140</field>
-    <field name="rgt">141</field>
+    <field name="lft">162</field>
+    <field name="rgt">163</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.94</field>
     <field name="title">Components Dashboard</field>
@@ -630,8 +630,8 @@
    <row>
     <field name="id">76</field>
     <field name="parent_id">18</field>
-    <field name="lft">142</field>
-    <field name="rgt">143</field>
+    <field name="lft">164</field>
+    <field name="rgt">165</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.95</field>
     <field name="title">Users Dashboard</field>
@@ -640,8 +640,8 @@
    <row>
     <field name="id">77</field>
     <field name="parent_id">18</field>
-    <field name="lft">144</field>
-    <field name="rgt">145</field>
+    <field name="lft">166</field>
+    <field name="rgt">167</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.99</field>
     <field name="title">Frontend Link</field>
@@ -650,8 +650,8 @@
    <row>
     <field name="id">78</field>
     <field name="parent_id">18</field>
-    <field name="lft">146</field>
-    <field name="rgt">147</field>
+    <field name="lft">168</field>
+    <field name="rgt">169</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.100</field>
     <field name="title">Messages</field>
@@ -660,8 +660,8 @@
    <row>
     <field name="id">79</field>
     <field name="parent_id">18</field>
-    <field name="lft">148</field>
-    <field name="rgt">149</field>
+    <field name="lft">170</field>
+    <field name="rgt">171</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.101</field>
     <field name="title">Post Install Messages</field>
@@ -670,8 +670,8 @@
    <row>
     <field name="id">80</field>
     <field name="parent_id">18</field>
-    <field name="lft">150</field>
-    <field name="rgt">151</field>
+    <field name="lft">172</field>
+    <field name="rgt">173</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.102</field>
     <field name="title">User Status</field>
@@ -680,8 +680,8 @@
    <row>
     <field name="id">82</field>
     <field name="parent_id">18</field>
-    <field name="lft">152</field>
-    <field name="rgt">153</field>
+    <field name="lft">174</field>
+    <field name="rgt">175</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.105</field>
     <field name="title">3rd Party</field>
@@ -690,8 +690,8 @@
    <row>
     <field name="id">83</field>
     <field name="parent_id">18</field>
-    <field name="lft">154</field>
-    <field name="rgt">155</field>
+    <field name="lft">176</field>
+    <field name="rgt">177</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.106</field>
     <field name="title">Help Dashboard</field>
@@ -700,8 +700,8 @@
    <row>
     <field name="id">84</field>
     <field name="parent_id">18</field>
-    <field name="lft">156</field>
-    <field name="rgt">157</field>
+    <field name="lft">178</field>
+    <field name="rgt">179</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.107</field>
     <field name="title">Privacy Requests</field>
@@ -710,8 +710,8 @@
    <row>
     <field name="id">85</field>
     <field name="parent_id">18</field>
-    <field name="lft">158</field>
-    <field name="rgt">159</field>
+    <field name="lft">180</field>
+    <field name="rgt">181</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.108</field>
     <field name="title">Privacy Status</field>
@@ -720,8 +720,8 @@
    <row>
     <field name="id">86</field>
     <field name="parent_id">18</field>
-    <field name="lft">160</field>
-    <field name="rgt">161</field>
+    <field name="lft">182</field>
+    <field name="rgt">183</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.96</field>
     <field name="title">Popular Articles</field>
@@ -730,8 +730,8 @@
    <row>
     <field name="id">87</field>
     <field name="parent_id">18</field>
-    <field name="lft">162</field>
-    <field name="rgt">163</field>
+    <field name="lft">184</field>
+    <field name="rgt">185</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.97</field>
     <field name="title">Recently Added Articles</field>
@@ -740,8 +740,8 @@
    <row>
     <field name="id">88</field>
     <field name="parent_id">18</field>
-    <field name="lft">164</field>
-    <field name="rgt">165</field>
+    <field name="lft">186</field>
+    <field name="rgt">187</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.98</field>
     <field name="title">Logged-in Users</field>
@@ -750,8 +750,8 @@
    <row>
     <field name="id">89</field>
     <field name="parent_id">18</field>
-    <field name="lft">166</field>
-    <field name="rgt">167</field>
+    <field name="lft">188</field>
+    <field name="rgt">189</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.90</field>
     <field name="title">Login Support</field>
@@ -760,8 +760,8 @@
    <row>
     <field name="id">90</field>
     <field name="parent_id">1</field>
-    <field name="lft">251</field>
-    <field name="rgt">252</field>
+    <field name="lft">275</field>
+    <field name="rgt">276</field>
     <field name="level">1</field>
     <field name="name">com_scheduler</field>
     <field name="title">com_scheduler</field>
@@ -780,8 +780,8 @@
    <row>
     <field name="id">92</field>
     <field name="parent_id">1</field>
-    <field name="lft">253</field>
-    <field name="rgt">254</field>
+    <field name="lft">277</field>
+    <field name="rgt">278</field>
     <field name="level">1</field>
     <field name="name">com_emundus</field>
     <field name="title">com_emundus</field>
@@ -790,8 +790,8 @@
    <row>
     <field name="id">93</field>
     <field name="parent_id">1</field>
-    <field name="lft">255</field>
-    <field name="rgt">256</field>
+    <field name="lft">279</field>
+    <field name="rgt">280</field>
     <field name="level">1</field>
     <field name="name">com_fabrik</field>
     <field name="title">com_fabrik</field>
@@ -800,8 +800,8 @@
    <row>
     <field name="id">94</field>
     <field name="parent_id">1</field>
-    <field name="lft">257</field>
-    <field name="rgt">258</field>
+    <field name="lft">281</field>
+    <field name="rgt">282</field>
     <field name="level">1</field>
     <field name="name">com_falang</field>
     <field name="title">com_falang</field>
@@ -810,8 +810,8 @@
    <row>
     <field name="id">95</field>
     <field name="parent_id">1</field>
-    <field name="lft">259</field>
-    <field name="rgt">260</field>
+    <field name="lft">283</field>
+    <field name="rgt">284</field>
     <field name="level">1</field>
     <field name="name">com_gantry5</field>
     <field name="title">com_gantry5</field>
@@ -820,8 +820,8 @@
    <row>
     <field name="id">96</field>
     <field name="parent_id">1</field>
-    <field name="lft">261</field>
-    <field name="rgt">262</field>
+    <field name="lft">285</field>
+    <field name="rgt">286</field>
     <field name="level">1</field>
     <field name="name">com_securitycheckpro</field>
     <field name="title">Securitycheck Pro</field>
@@ -840,8 +840,8 @@
    <row>
     <field name="id">98</field>
     <field name="parent_id">18</field>
-    <field name="lft">168</field>
-    <field name="rgt">169</field>
+    <field name="lft">190</field>
+    <field name="rgt">191</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.112</field>
     <field name="title">[CAMPAIGNS] Guest</field>
@@ -920,8 +920,8 @@
    <row>
     <field name="id">107</field>
     <field name="parent_id">18</field>
-    <field name="lft">170</field>
-    <field name="rgt">171</field>
+    <field name="lft">192</field>
+    <field name="rgt">193</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.120</field>
     <field name="title">Footer</field>
@@ -930,8 +930,8 @@
    <row>
     <field name="id">108</field>
     <field name="parent_id">18</field>
-    <field name="lft">172</field>
-    <field name="rgt">173</field>
+    <field name="lft">194</field>
+    <field name="rgt">195</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.119</field>
     <field name="title">[CAMPAIGNS] Logged</field>
@@ -940,8 +940,8 @@
    <row>
     <field name="id">109</field>
     <field name="parent_id">18</field>
-    <field name="lft">174</field>
-    <field name="rgt">175</field>
+    <field name="lft">196</field>
+    <field name="rgt">197</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.111</field>
     <field name="title">[DASHBOARD] Coordinators &amp; Administrator</field>
@@ -950,8 +950,8 @@
    <row>
     <field name="id">110</field>
     <field name="parent_id">18</field>
-    <field name="lft">176</field>
-    <field name="rgt">177</field>
+    <field name="lft">198</field>
+    <field name="rgt">199</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.114</field>
     <field name="title">[APPLICATION] My application files</field>
@@ -960,8 +960,8 @@
    <row>
     <field name="id">111</field>
     <field name="parent_id">18</field>
-    <field name="lft">178</field>
-    <field name="rgt">179</field>
+    <field name="lft">200</field>
+    <field name="rgt">201</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.113</field>
     <field name="title">[CAMPAIGNS] Details guest</field>
@@ -970,8 +970,8 @@
    <row>
     <field name="id">112</field>
     <field name="parent_id">18</field>
-    <field name="lft">180</field>
-    <field name="rgt">181</field>
+    <field name="lft">202</field>
+    <field name="rgt">203</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.109</field>
     <field name="title">[FALANG] Language Switcher</field>
@@ -980,8 +980,8 @@
    <row>
     <field name="id">113</field>
     <field name="parent_id">18</field>
-    <field name="lft">182</field>
-    <field name="rgt">183</field>
+    <field name="lft">204</field>
+    <field name="rgt">205</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.115</field>
     <field name="title">User menu</field>
@@ -990,8 +990,8 @@
    <row>
     <field name="id">114</field>
     <field name="parent_id">18</field>
-    <field name="lft">184</field>
-    <field name="rgt">185</field>
+    <field name="lft">206</field>
+    <field name="rgt">207</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.121</field>
     <field name="title">[PROFILE] Edit my profile</field>
@@ -1000,8 +1000,8 @@
    <row>
     <field name="id">115</field>
     <field name="parent_id">18</field>
-    <field name="lft">186</field>
-    <field name="rgt">187</field>
+    <field name="lft">208</field>
+    <field name="rgt">209</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.122</field>
     <field name="title">[CAMPAIGNS] Details logged</field>
@@ -1010,8 +1010,8 @@
    <row>
     <field name="id">116</field>
     <field name="parent_id">18</field>
-    <field name="lft">188</field>
-    <field name="rgt">189</field>
+    <field name="lft">210</field>
+    <field name="rgt">211</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.123</field>
     <field name="title">[APPLICANT FORM] Flow</field>
@@ -1020,8 +1020,8 @@
    <row>
     <field name="id">117</field>
     <field name="parent_id">18</field>
-    <field name="lft">190</field>
-    <field name="rgt">191</field>
+    <field name="lft">212</field>
+    <field name="rgt">213</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.124</field>
     <field name="title">[APPLICANT_FORM] Forms</field>
@@ -1030,8 +1030,8 @@
    <row>
     <field name="id">121</field>
     <field name="parent_id">1</field>
-    <field name="lft">269</field>
-    <field name="rgt">314</field>
+    <field name="lft">293</field>
+    <field name="rgt">340</field>
     <field name="level">1</field>
     <field name="name">com_dropfiles</field>
     <field name="title">Dropfiles</field>
@@ -1050,8 +1050,8 @@
    <row>
     <field name="id">126</field>
     <field name="parent_id">18</field>
-    <field name="lft">192</field>
-    <field name="rgt">193</field>
+    <field name="lft">214</field>
+    <field name="rgt">215</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.117</field>
     <field name="title">[GUEST] Back button</field>
@@ -1060,8 +1060,8 @@
    <row>
     <field name="id">127</field>
     <field name="parent_id">18</field>
-    <field name="lft">194</field>
-    <field name="rgt">195</field>
+    <field name="lft">216</field>
+    <field name="rgt">217</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.118</field>
     <field name="title">Menu</field>
@@ -1070,8 +1070,8 @@
    <row>
     <field name="id">129</field>
     <field name="parent_id">1</field>
-    <field name="lft">315</field>
-    <field name="rgt">316</field>
+    <field name="lft">341</field>
+    <field name="rgt">342</field>
     <field name="level">1</field>
     <field name="name">com_hikashop</field>
     <field name="title">HikaShop</field>
@@ -1084,7 +1084,7 @@
     <field name="rgt">97</field>
     <field name="level">2</field>
     <field name="name">com_menus.menu.16</field>
-    <field name="title">Nouveau formulaire</field>
+    <field name="title">HikaShop default menus</field>
     <field name="rules">{}</field>
    </row>
    <row>
@@ -1094,7 +1094,7 @@
     <field name="rgt">99</field>
     <field name="level">2</field>
     <field name="name">com_menus.menu.17</field>
-    <field name="title">Nouveau formulaire</field>
+    <field name="title">Formulaire de base</field>
     <field name="rules">{}</field>
    </row>
    <row>
@@ -1104,7 +1104,7 @@
     <field name="rgt">101</field>
     <field name="level">2</field>
     <field name="name">com_menus.menu.18</field>
-    <field name="title">Nouveau formulaire</field>
+    <field name="title">Campaigns details</field>
     <field name="rules">{}</field>
    </row>
    <row>
@@ -1150,8 +1150,8 @@
    <row>
     <field name="id">137</field>
     <field name="parent_id">1</field>
-    <field name="lft">317</field>
-    <field name="rgt">318</field>
+    <field name="lft">343</field>
+    <field name="rgt">344</field>
     <field name="level">1</field>
     <field name="name">com_scheduler.task.1</field>
     <field name="title">com_scheduler.task.1</field>
@@ -1160,8 +1160,8 @@
    <row>
     <field name="id">138</field>
     <field name="parent_id">1</field>
-    <field name="lft">319</field>
-    <field name="rgt">320</field>
+    <field name="lft">345</field>
+    <field name="rgt">346</field>
     <field name="level">1</field>
     <field name="name">com_scheduler.task.2</field>
     <field name="title">com_scheduler.task.2</field>
@@ -1170,8 +1170,8 @@
    <row>
     <field name="id">139</field>
     <field name="parent_id">18</field>
-    <field name="lft">196</field>
-    <field name="rgt">197</field>
+    <field name="lft">218</field>
+    <field name="rgt">219</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.127</field>
     <field name="title">[STATS] Query Builder</field>
@@ -1180,8 +1180,8 @@
    <row>
     <field name="id">140</field>
     <field name="parent_id">18</field>
-    <field name="lft">198</field>
-    <field name="rgt">199</field>
+    <field name="lft">220</field>
+    <field name="rgt">221</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.128</field>
     <field name="title">[STATS] - Files created</field>
@@ -1220,8 +1220,8 @@
    <row>
     <field name="id">144</field>
     <field name="parent_id">18</field>
-    <field name="lft">200</field>
-    <field name="rgt">201</field>
+    <field name="lft">222</field>
+    <field name="rgt">223</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.129</field>
     <field name="title">[STATS] Filter</field>
@@ -1230,8 +1230,8 @@
    <row>
     <field name="id">160</field>
     <field name="parent_id">18</field>
-    <field name="lft">202</field>
-    <field name="rgt">203</field>
+    <field name="lft">224</field>
+    <field name="rgt">225</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.130</field>
     <field name="title">[FILES] Filters</field>
@@ -1240,8 +1240,8 @@
    <row>
     <field name="id">161</field>
     <field name="parent_id">1</field>
-    <field name="lft">321</field>
-    <field name="rgt">322</field>
+    <field name="lft">347</field>
+    <field name="rgt">348</field>
     <field name="level">1</field>
     <field name="name">com_guidedtours</field>
     <field name="title">com_guidedtours</field>
@@ -1250,8 +1250,8 @@
    <row>
     <field name="id">162</field>
     <field name="parent_id">1</field>
-    <field name="lft">323</field>
-    <field name="rgt">324</field>
+    <field name="lft">349</field>
+    <field name="rgt">350</field>
     <field name="level">1</field>
     <field name="name">com_mails</field>
     <field name="title">com_mails</field>
@@ -1260,8 +1260,8 @@
    <row>
     <field name="id">163</field>
     <field name="parent_id">1</field>
-    <field name="lft">325</field>
-    <field name="rgt">326</field>
+    <field name="lft">351</field>
+    <field name="rgt">352</field>
     <field name="level">1</field>
     <field name="name">com_workflow</field>
     <field name="title">com_workflow</field>
@@ -1270,8 +1270,8 @@
    <row>
     <field name="id">164</field>
     <field name="parent_id">18</field>
-    <field name="lft">204</field>
-    <field name="rgt">205</field>
+    <field name="lft">226</field>
+    <field name="rgt">227</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.110</field>
     <field name="title">[HELP] Coordinators</field>
@@ -1280,8 +1280,8 @@
    <row>
     <field name="id">165</field>
     <field name="parent_id">18</field>
-    <field name="lft">206</field>
-    <field name="rgt">219</field>
+    <field name="lft">228</field>
+    <field name="rgt">243</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.149</field>
     <field name="title">Filtres avancés - évaluations</field>
@@ -1360,8 +1360,8 @@
    <row>
     <field name="id">174</field>
     <field name="parent_id">18</field>
-    <field name="lft">206</field>
-    <field name="rgt">207</field>
+    <field name="lft">228</field>
+    <field name="rgt">229</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.172</field>
     <field name="title">[PROJECT] Contact</field>
@@ -1370,8 +1370,8 @@
    <row>
     <field name="id">175</field>
     <field name="parent_id">18</field>
-    <field name="lft">208</field>
-    <field name="rgt">209</field>
+    <field name="lft">230</field>
+    <field name="rgt">231</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.173</field>
     <field name="title">[PROJECT] Progress</field>
@@ -1380,8 +1380,8 @@
    <row>
     <field name="id">176</field>
     <field name="parent_id">18</field>
-    <field name="lft">210</field>
-    <field name="rgt">211</field>
+    <field name="lft">232</field>
+    <field name="rgt">233</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.174</field>
     <field name="title">[PROJECT] 3 buttons</field>
@@ -1390,8 +1390,8 @@
    <row>
     <field name="id">177</field>
     <field name="parent_id">18</field>
-    <field name="lft">212</field>
-    <field name="rgt">213</field>
+    <field name="lft">234</field>
+    <field name="rgt">235</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.175</field>
     <field name="title">Bandeau annonce</field>
@@ -1400,8 +1400,8 @@
    <row>
     <field name="id">178</field>
     <field name="parent_id">18</field>
-    <field name="lft">214</field>
-    <field name="rgt">215</field>
+    <field name="lft">236</field>
+    <field name="rgt">237</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.176</field>
     <field name="title">[PROJECT] Back to project area</field>
@@ -1410,11 +1410,131 @@
    <row>
     <field name="id">179</field>
     <field name="parent_id">18</field>
-    <field name="lft">216</field>
-    <field name="rgt">217</field>
+    <field name="lft">238</field>
+    <field name="rgt">239</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.177</field>
     <field name="title">[PROJECT] Back resources</field>
+    <field name="rules">{}</field>
+   </row>
+   <row>
+    <field name="id">181</field>
+    <field name="parent_id">16</field>
+    <field name="lft">108</field>
+    <field name="rgt">109</field>
+    <field name="level">2</field>
+    <field name="name">com_menus.menu.2</field>
+    <field name="title">User Menu</field>
+    <field name="rules">{}</field>
+   </row>
+   <row>
+    <field name="id">182</field>
+    <field name="parent_id">16</field>
+    <field name="lft">110</field>
+    <field name="rgt">111</field>
+    <field name="level">2</field>
+    <field name="name">com_menus.menu.3</field>
+    <field name="title">Coordinator</field>
+    <field name="rules">{}</field>
+   </row>
+   <row>
+    <field name="id">183</field>
+    <field name="parent_id">16</field>
+    <field name="lft">112</field>
+    <field name="rgt">113</field>
+    <field name="level">2</field>
+    <field name="name">com_menus.menu.4</field>
+    <field name="title">Applicant</field>
+    <field name="rules">{}</field>
+   </row>
+   <row>
+    <field name="id">184</field>
+    <field name="parent_id">16</field>
+    <field name="lft">114</field>
+    <field name="rgt">115</field>
+    <field name="level">2</field>
+    <field name="name">com_menus.menu.5</field>
+    <field name="title">Actions</field>
+    <field name="rules">{}</field>
+   </row>
+   <row>
+    <field name="id">185</field>
+    <field name="parent_id">16</field>
+    <field name="lft">116</field>
+    <field name="rgt">117</field>
+    <field name="level">2</field>
+    <field name="name">com_menus.menu.6</field>
+    <field name="title">Actions - Shared files</field>
+    <field name="rules">{}</field>
+   </row>
+   <row>
+    <field name="id">186</field>
+    <field name="parent_id">16</field>
+    <field name="lft">118</field>
+    <field name="rgt">119</field>
+    <field name="level">2</field>
+    <field name="name">com_menus.menu.7</field>
+    <field name="title">Actions - Utilisateurs</field>
+    <field name="rules">{}</field>
+   </row>
+   <row>
+    <field name="id">187</field>
+    <field name="parent_id">16</field>
+    <field name="lft">120</field>
+    <field name="rgt">121</field>
+    <field name="level">2</field>
+    <field name="name">com_menus.menu.8</field>
+    <field name="title">Application</field>
+    <field name="rules">{}</field>
+   </row>
+   <row>
+    <field name="id">188</field>
+    <field name="parent_id">16</field>
+    <field name="lft">122</field>
+    <field name="rgt">123</field>
+    <field name="level">2</field>
+    <field name="name">com_menus.menu.9</field>
+    <field name="title">Administrator</field>
+    <field name="rules">{}</field>
+   </row>
+   <row>
+    <field name="id">189</field>
+    <field name="parent_id">16</field>
+    <field name="lft">124</field>
+    <field name="rgt">125</field>
+    <field name="level">2</field>
+    <field name="name">com_menus.menu.10</field>
+    <field name="title">Evaluator</field>
+    <field name="rules">{}</field>
+   </row>
+   <row>
+    <field name="id">190</field>
+    <field name="parent_id">16</field>
+    <field name="lft">126</field>
+    <field name="rgt">127</field>
+    <field name="level">2</field>
+    <field name="name">com_menus.menu.11</field>
+    <field name="title">Tchooz</field>
+    <field name="rules">{}</field>
+   </row>
+   <row>
+    <field name="id">191</field>
+    <field name="parent_id">16</field>
+    <field name="lft">128</field>
+    <field name="rgt">129</field>
+    <field name="level">2</field>
+    <field name="name">com_menus.menu.12</field>
+    <field name="title">Program Manager</field>
+    <field name="rules">{}</field>
+   </row>
+   <row>
+    <field name="id">192</field>
+    <field name="parent_id">18</field>
+    <field name="lft">240</field>
+    <field name="rgt">241</field>
+    <field name="level">2</field>
+    <field name="name">com_modules.module.153</field>
+    <field name="title">Ressources et Notes</field>
     <field name="rules">{}</field>
    </row>
   </table_data>

@@ -24,9 +24,6 @@
     <row constraint_name="jos_emundus_9_00_ibfk_1" column_name="user" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
     <row constraint_name="jos_emundus_9_00_ibfk_2" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
   </table>
-  <table name="jos_emundus_acl">
-    <row constraint_name="jos_emundus_acl_jos_emundus_setup_groups_id_fk" column_name="group_id" referenced_table_name="jos_emundus_setup_groups" referenced_column_name="id"/>
-  </table>
   <table name="jos_emundus_admission">
     <row constraint_name="jos_emundus_admission_user_id_fk" column_name="user" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
     <row constraint_name="jos_emundus_admission___fk" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
