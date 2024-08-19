@@ -260,8 +260,10 @@ class EmundusHelperEvents
 			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
 			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
 			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'date.php');
+			require_once(JPATH_SITE . '/components/com_emundus/models/workflow.php');
 
 			$m_campaign = new EmundusModelCampaign;
+			$m_workflow = new EmundusModelWorkflow;
 			$m_users    = new EmundusModelUsers;
 
 			$formModel = $params['formModel'];
@@ -348,7 +350,7 @@ class EmundusHelperEvents
 				$formModel->data[$db_table_name . '___fnum'] = $fnum;
 			}
 
-			$current_phase = $m_campaign->getCurrentCampaignWorkflow($fnum);
+			$current_phase = $m_workflow->getCurrentWorkflowStepFromFile($fnum);
 			if (!empty($current_phase) && !empty($current_phase->end_date))
 			{
 				$current_end_date   = $current_phase->end_date;
@@ -1214,10 +1216,12 @@ class EmundusHelperEvents
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'export.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
+		require_once(JPATH_SITE . '/components/com_emundus/models/workflow.php');
 		$mApplication = new EmundusModelApplication;
 		$mFiles       = new EmundusModelFiles;
 		$mEmails      = new EmundusModelEmails;
 		$mCampaign    = new EmundusModelCampaign;
+		$m_workflow    = new EmundusModelWorkflow();
 
 		$applicant_id = ($mFiles->getFnumInfos($student->fnum))['applicant_id'];
 
@@ -1239,8 +1243,7 @@ class EmundusHelperEvents
 		$dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
 		$now      = $dateTime->format('Y-m-d H:i:s');
 
-
-		$current_phase = $mCampaign->getCurrentCampaignWorkflow($student->fnum);
+		$current_phase = $m_workflow->getCurrentWorkflowStepFromFile($student->fnum);
 		if (!empty($current_phase) && !empty($current_phase->id))
 		{
 			if (!is_null($current_phase->output_status))
@@ -1471,7 +1474,7 @@ class EmundusHelperEvents
 			if (intval($params['plugin_options']->get('trigger_confirmpost_redirect_to_next_step_first_page_url')) === 1)
 			{
 
-				$current_phase = $mCampaign->getCurrentCampaignWorkflow($student->fnum);
+				$current_phase = $m_workflow->getCurrentWorkflowStepFromFile($student->fnum);
 
 				if (!empty($current_phase->id))
 				{

@@ -356,7 +356,7 @@ class EmundusModelWorkflow extends JModelList
 	 *
 	 * @return null|object if a step is found, it returns a workflow step object, otherwise null
 	 */
-	public function getCurrentWorkflowStepFromFile($fnum) {
+	public function getCurrentWorkflowStepFromFile($fnum, $type = 'applicant') {
 		$step = null;
 
 		if (!empty($fnum)) {
@@ -390,22 +390,27 @@ class EmundusModelWorkflow extends JModelList
 						->from($this->db->quoteName('#__emundus_setup_workflows_steps', 'esws'))
 						->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_entry_status', 'eswses') . ' ON ' . $this->db->quoteName('eswses.step_id') . ' = ' . $this->db->quoteName('esws.id'))
 						->where('esws.workflow_id IN (' . implode(',', $workflow_ids) . ')')
-						->andWhere('eswses.status = ' . $file_infos['status']);
+						->andWhere('eswses.status = ' . $file_infos['status'])
+						->andWhere('esws.type = ' . $this->db->quote($type));
 
 					$this->db->setQuery($query);
 					$step = $this->db->loadObject();
 
-					$step->profile = $step->profile_id;
-					$step->display_preliminary_documents = false;
-					$step->specific_documents = [];
+					if (!empty($step->id)) {
+						$step->profile = $step->profile_id;
+						$step->display_preliminary_documents = false;
+						$step->specific_documents = [];
 
-					$query->clear()
-						->select('status')
-						->from('#__emundus_setup_workflows_steps_entry_status')
-						->where('step_id = ' . $step->id);
+						$query->clear()
+							->select('status')
+							->from('#__emundus_setup_workflows_steps_entry_status')
+							->where('step_id = ' . $step->id);
 
-					$this->db->setQuery($query);
-					$step->entry_status = $this->db->loadColumn();
+						$this->db->setQuery($query);
+						$step->entry_status = $this->db->loadColumn();
+					} else {
+						$step = null;
+					}
 				}
 			}
 		}

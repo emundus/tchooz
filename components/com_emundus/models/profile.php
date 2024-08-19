@@ -232,9 +232,9 @@ class EmundusModelProfile extends JModelList
 			$query = $this->_db->getQuery(true);
 
 			// check if a default workflow exists
-			require_once(JPATH_ROOT . '/components/com_emundus/models/campaign.php');
-			$m_campaign        = new EmundusModelCampaign();
-			$campaign_workflow = $m_campaign->getCurrentCampaignWorkflow($fnum);
+			require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+			$m_workflow        = new EmundusModelWorkflow();
+			$campaign_workflow = $m_workflow->getCurrentWorkflowStepFromFile($fnum);
 
 			if (!empty($campaign_workflow)) {
 				$profile = $campaign_workflow->profile;
@@ -533,9 +533,9 @@ class EmundusModelProfile extends JModelList
 		{
 			try
 			{
-				require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
-				$m_campaign = new EmundusModelCampaign();
-				$workflow   = $m_campaign->getCurrentCampaignWorkflow($fnum);
+				require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+				$m_workflow = new EmundusModelWorkflow();
+				$workflow   = $m_workflow->getCurrentWorkflowStepFromFile($fnum);
 
 				if (!empty($workflow))
 				{

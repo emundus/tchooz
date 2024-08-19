@@ -2620,6 +2620,8 @@ class EmundusModelCampaign extends JModelList
 	}
 
 	/**
+	 * @deprecated Use getCurrentWorkflowStepFromFile of model workflow instead
+	 *
 	 * @param $emundusUser
 	 *
 	 * @return false|object False if error, object containing emundus_campaign_workflow id, start date and end_date if success
@@ -2667,7 +2669,7 @@ class EmundusModelCampaign extends JModelList
 				}
 			}
 			catch (Exception $e) {
-				Log::add('[getCurrentCampaignWorkflow] Error getting current campaign workflow in component/com_emundus/models/campaign: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+				Log::add('[getAllCampaignWorkflows] Error getting current campaign workflow in component/com_emundus/models/campaign: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 
 			$campaign_workflows_by_campaign_program = [];
@@ -2698,7 +2700,7 @@ class EmundusModelCampaign extends JModelList
 				}
 			}
 			catch (Exception $e) {
-				Log::add('[getCurrentCampaignWorkflow] Error getting current campaign workflow in component/com_emundus/models/campaign: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+				Log::add('[getAllCampaignWorkflows] Error getting current campaign workflow in component/com_emundus/models/campaign: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 
 			$default_campaign_workflows = [];
@@ -2728,7 +2730,7 @@ class EmundusModelCampaign extends JModelList
 				}
 			}
 			catch (Exception $e) {
-				Log::add('[getCurrentCampaignWorkflow] Error getting current campaign workflow in component/com_emundus/models/campaign: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+				Log::add('[getAllCampaignWorkflows] Error getting current campaign workflow in component/com_emundus/models/campaign: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 
 			$workflows = array_merge($campaign_workflows_by_campaign, $campaign_workflows_by_campaign_program, $default_campaign_workflows);
