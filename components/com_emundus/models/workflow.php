@@ -86,6 +86,7 @@ class EmundusModelWorkflow extends JModelList
 	public function updateWorkflow($workflow, $steps, $programs)
 	{
 		$updated = false;
+		$error_occurred = false;
 
 		if (!empty($workflow['id'])) {
 			$query = $this->db->getQuery(true);
@@ -101,6 +102,7 @@ class EmundusModelWorkflow extends JModelList
 				$updated = true;
 			} catch (Exception $e) {
 				Log::add('Error while updating workflow: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+				$error_occurred = true;
 			}
 
 			$query->clear()
@@ -112,6 +114,7 @@ class EmundusModelWorkflow extends JModelList
 				$this->db->execute();
 			} catch (Exception $e) {
 				Log::add('Error while deleting workflow steps: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+				$error_occurred = true;
 			}
 
 			if (!empty($steps)) {
@@ -143,11 +146,10 @@ class EmundusModelWorkflow extends JModelList
 							}
 						}
 					} catch (Exception $e) {
-						var_dump($e->getMessage());exit;
 						Log::add('Error while adding workflow step: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+						$error_occurred = true;
 					}
 				}
-
 			}
 
 			// select programs from the workflow
@@ -161,6 +163,7 @@ class EmundusModelWorkflow extends JModelList
 				$workflow_programs = $this->db->loadAssocList('program_id');
 			} catch (Exception $e) {
 				Log::add('Error while fetching workflow programs: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+				$error_occurred = true;
 			}
 
 			// delete the programs that are not in the workflow
@@ -179,6 +182,7 @@ class EmundusModelWorkflow extends JModelList
 						$this->db->execute();
 					} catch (Exception $e) {
 						Log::add('Error while deleting workflow programs: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+						$error_occurred = true;
 					}
 				}
 			}
@@ -194,9 +198,14 @@ class EmundusModelWorkflow extends JModelList
 						$this->db->insertObject('#__emundus_setup_workflows_programs', $programData);
 					} catch (Exception $e) {
 						Log::add('Error while adding workflow program: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+						$error_occurred = true;
 					}
 				}
 			}
+		}
+
+		if ($error_occurred) {
+			$updated = false;
 		}
 
 		return $updated;
@@ -227,13 +236,16 @@ class EmundusModelWorkflow extends JModelList
 
 		$query = $this->db->getQuery(true);
 
-		$query->select('*')
-			->from($this->db->quoteName('#__emundus_setup_workflows'))
-			->where($this->db->quoteName('published') . ' = 1');
+		$query->select('esw.*, GROUP_CONCAT(eswp.program_id) as programme_ids')
+			->from($this->db->quoteName('#__emundus_setup_workflows', 'esw'))
+			->leftJoin($this->db->quoteName('#__emundus_setup_workflows_programs', 'eswp') . ' ON eswp.workflow_id = esw.id')
+			->where($this->db->quoteName('esw.published') . ' = 1');
 
 		if (!empty($ids)) {
 			$query->where($this->db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
 		}
+
+		$query->group('esw.id');
 
 		if ($limit > 0) {
 			$query->setLimit($limit, $page * $limit);
@@ -242,6 +254,10 @@ class EmundusModelWorkflow extends JModelList
 		try {
 			$this->db->setQuery($query);
 			$workflows = $this->db->loadObjectList();
+
+			foreach ($workflows as $key => $workflow) {
+				$workflows[$key]->programme_ids = !empty($workflow->programme_ids) ? explode(',', $workflow->programme_ids) : [];
+			}
 		} catch (Exception $e) {
 			Log::add('Error while fetching workflows: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
 		}

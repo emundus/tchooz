@@ -189,7 +189,7 @@ import fileService from '@/services/file.js';
 import Popover from '@/components/Popover.vue';
 import { DatePicker } from 'v-calendar';
 import Multiselect from "vue-multiselect";
-import errors from '@/mixins/mixin.js'
+import errors from '@/mixins/errors.js';
 
 export default {
   name: 'WorkflowEdit',
@@ -388,13 +388,14 @@ export default {
               showConfirmButton: false,
               timer: 1500
             })
-            this.getWorkflow();
           } else {
             this.displayError('COM_EMUNDUS_WORKFLOW_SAVE_FAILED', response.message);
           }
+          this.getWorkflow();
         })
-        .catch(e => {
+        .catch((e) => {
           console.log(e);
+          this.displayError('COM_EMUNDUS_WORKFLOW_SAVE_FAILED', '');
         });
     },
     formatDate(date, format = 'YYYY-MM-DD HH:mm:ss') {

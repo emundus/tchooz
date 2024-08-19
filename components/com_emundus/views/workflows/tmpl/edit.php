@@ -13,6 +13,7 @@ Text::script('CANCEL');
 Text::script('COM_EMUNDUS_ACTIONS_DELETE');
 Text::script('COM_EMUNDUS_GLOBAL_PARAMS_MENUS_WORKFLOWS');
 Text::script('COM_EMUNDUS_GLOBAL_PARAMS_WORKFLOWS');
+Text::script('COM_EMUNDUS_WORKFLOW_NEW');
 Text::script('COM_EMUNDUS_WORKFLOW_STEP_LABEL');
 Text::script('COM_EMUNDUS_WORKFLOW_STEP_TYPE');
 Text::script('COM_EMUNDUS_WORKFLOW_STEP_START_DATE');
@@ -55,7 +56,7 @@ $sysadmin_access    = EmundusHelperAccess::isAdministrator($this->user->id);
 ?>
 
 <div id="em-component-vue" component="WorkflowEdit"
-     workflowid="<?= $this->current_workflow->id; ?>"
+     workflowid="<?= $this->current_workflow_id; ?>"
      shortLang="<?= $short_lang ?>"
      currentLanguage="<?= $current_lang ?>"
      defaultLang="<?= $default_lang ?>"

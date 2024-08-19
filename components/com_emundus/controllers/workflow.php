@@ -60,18 +60,44 @@ class EmundusControllerWorkflow extends JControllerLegacy
 
 			$workflows = $this->model->getWorkflows($ids);
 
-			foreach ($workflows as $key => $workflow) {
-				$workflows[$key]->label = [
-					'fr' => $workflow->label,
-					'en' => $workflow->label
-				];
+			if (!empty($workflows)) {
+				$db = Factory::getContainer()->get('DatabaseDriver');
+				$query = $db->createQuery();
+
+				foreach ($workflows as $key => $workflow) {
+					$workflow->label = ['fr' => $workflow->label, 'en' => $workflow->label];
+
+					$associated_programmes_html = '<span class="label label-red-2">' . Text::_('COM_EMUNDUS_WORKFLOW_ZERO_ASSOCIATED_PROGRAMS') . '</span>';
+					if (!empty($workflow->programme_ids)) {
+						$query->clear()
+							->select('id, label')
+							->from('#__emundus_setup_programmes')
+							->where('id IN (' . implode(',', $workflow->programme_ids) . ')');
+
+						$db->setQuery($query);
+						$associated_programmes = $db->loadObjectList();
+
+						if (!empty($associated_programmes)) {
+							$associated_programmes_html = '';
+							foreach ($associated_programmes as $program) {
+								$associated_programmes_html .= '<a class="tw-flex tw-flex-row tw-underline em-main-500-color tw-transition-all" href="/campaigns/modifier-un-programme?rowid=' . $program->id . '" target="_blank">' . $program->label . '</a>';
+							}
+						}
+					}
+
+					$workflow->additional_columns = [
+						[
+							'key'     => Text::_('COM_EMUNDUS_WORKFLOW_ASSOCIATED_PROGRAMS'),
+							'value'   => $associated_programmes_html,
+							'classes' => '',
+							'display' => 'all'
+						]
+					];
+					$workflows[$key] = $workflow;
+				}
 			}
 
-			$data = [
-				'datas' => array_values($workflows)
-			];
-
-			$response['data'] = $data;
+			$response['data'] = ['datas' => array_values($workflows)];
 			$response['code'] = 200;
 			$response['status'] = true;
 		}
