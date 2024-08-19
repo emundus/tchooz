@@ -53,6 +53,36 @@ class EmundusModelWorkflow extends JModelList
 		return $new_workflow_id;
 	}
 
+	/**
+	 * Delete workflow based on id.
+	 * @param $wid
+	 * @return bool true if deleted, false otherwise
+	 */
+	public function delete($wid, $user_id)
+	{
+		$deleted = false;
+
+		if (!empty($wid)) {
+			$query = $this->db->createQuery();
+
+			$query->delete('#__emundus_setup_workflows')
+				->where('id = ' . $wid);
+
+			try {
+				$this->db->setQuery($query);
+				$deleted = $this->db->execute();
+			} catch (Exception $e) {
+				Log::add('Error while deleting workflow [' . $wid . '] : ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+			}
+
+			if ($deleted) {
+				// TODO: log the action, and who did it
+			}
+		}
+
+		return $deleted;
+	}
+
 	public function updateWorkflow($workflow, $steps, $programs)
 	{
 		$updated = false;

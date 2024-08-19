@@ -11,6 +11,8 @@ Text::script('COM_EMUNDUS_ONBOARD_SEARCH');
 Text::script('COM_EMUNDUS_ONBOARD_LABEL');
 Text::script('COM_EMUNDUS_ONBOARD_WORKFLOWS');
 Text::script('COM_EMUNDUS_ONBOARD_MODIFY');
+Text::script('COM_EMUNDUS_ACTIONS_DELETE');
+Text::script('COM_EMUNDUS_WORKFLOW_DELETE_WORKFLOW_CONFIRMATION');
 
 $app          = Factory::getApplication();
 $lang         = $app->getLanguage();

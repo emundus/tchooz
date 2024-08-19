@@ -41,6 +41,14 @@ export default {
                   "type": "redirect",
                   "name": "edit"
                 },
+                {
+                  "action": "delete",
+                  "label": "COM_EMUNDUS_ACTIONS_DELETE",
+                  "controller": "workflow",
+                  "parameters": "&id=%id%",
+                  "name": "delete",
+                  "confirm": "COM_EMUNDUS_WORKFLOW_DELETE_WORKFLOW_CONFIRMATION"
+                },
               ]
             }
           ]

@@ -519,8 +519,8 @@ export default {
         if (Object.prototype.hasOwnProperty.call(action, 'confirm')) {
           Swal.fire({
             icon: 'warning',
-            title: action.label,
-            text: action.confirm,
+            title: this.translate(action.label),
+            text: this.translate(action.confirm),
             showCancelButton: true,
             confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_OK'),
             cancelButtonText: this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),

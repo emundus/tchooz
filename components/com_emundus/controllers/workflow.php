@@ -149,4 +149,26 @@ class EmundusControllerWorkflow extends JControllerLegacy
 
 		$this->sendJsonResponse($response);
 	}
+
+	public function delete()
+	{
+		$response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
+			$id = $this->app->input->getInt('id', 0);
+			$response['code'] = 500;
+			$response['message'] = Text::_('ERROR_WHILE_DELETING_WORKFLOW_STEP');
+
+			if (!empty($id)) {
+				$deleted = $this->model->delete($id, $this->user->id);
+
+				if ($deleted) {
+					$response['code'] = 200;
+					$response['status'] = true;
+				}
+			}
+		}
+
+		$this->sendJsonResponse($response);
+	}
 }
