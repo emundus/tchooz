@@ -1159,7 +1159,7 @@ label[for='clear-search']{
 }
 
 .table-hover tbody tr > td, .table-hover tbody tr > th {
-    background: #eceff3 !important;
+    background : linear-gradient(0deg, hsl(from var(--em-profile-color) h s l / 5%) 0%, hsl(from var(--em-profile-color) h s l / 5%) 100%), #FFF !important;
 }
 
 .table-hover tbody tr:nth-child(2n) > td, .table-hover tbody tr:nth-child(2n) > th {
