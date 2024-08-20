@@ -37,7 +37,7 @@ defined('_JEXEC') or die;
                             <p><?= JText::_('MOD_EMUNDUS_HELP_ARTICLES'); ?></p>
                         </a>
 					<?php endif; ?>
-                    <a href='https://emundus.atlassian.net/servicedesk/customer/portals' target='_blank'
+                    <a href='https://support.client.emundus.fr/' target='_blank'
                        class="tw-flex tw-items-center tw-gap-2 tw-py-2 tw-px-3 hover:tw-bg-neutral-300">
                         <img
                                 class='icone-aide-tchoozy'

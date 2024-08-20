@@ -7,7 +7,17 @@ requirejs(['fab/fabrik'], function () {
     var elt_to_not_clear = ['panel','calc'];
 
     var operators = {
-        '=': function(a, b, plugin) { if(!Array.isArray(a)) { return a == b; } else { return a.includes(b); } },
+        '=': function(a, b, plugin) {
+                if(!Array.isArray(a)) {
+                    if(typeof a === 'string' && typeof b === 'string') {
+                        a = a.toLowerCase();
+                        b = b.toLowerCase();
+                    }
+                    return a == b;
+                } else {
+                    return a.includes(b);
+                }
+            },
         '!=': function(a, b, plugin) { if(!Array.isArray(a)) { return a != b; } else { return !a.includes(b); } },
         // ...
     };
