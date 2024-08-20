@@ -73,6 +73,7 @@ public __construct(array $config = [], ?\Joomla\CMS\MVC\Factory\MVCFactoryInterf
 
 
 
+
 ***
 
 ### checkin
@@ -100,6 +101,7 @@ public checkin(int $pk = null): bool
 **Return Value:**
 
 False on failure or error, true otherwise.
+
 
 
 
@@ -135,6 +137,7 @@ False on failure or error, true otherwise.
 
 
 
+
 ***
 
 ### validate
@@ -164,6 +167,7 @@ public validate(\Joomla\CMS\Form\Form $form, array $data, string $group = null):
 **Return Value:**
 
 Array of filtered data if valid, false otherwise.
+
 
 
 
@@ -210,6 +214,7 @@ The filename
 
 
 
+
 ***
 
 ### getInstance
@@ -245,6 +250,7 @@ A \JModelLegacy instance or false on failure
 
 
 
+
 ***
 
 ### addTablePath
@@ -269,6 +275,7 @@ public static addTablePath(mixed $path): void
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$path` | **mixed** | The directory as a string or directories as an array to add. |
+
 
 
 
@@ -309,6 +316,7 @@ A ModelInterface instance or null on failure
 
 
 
+
 ***
 
 ### getState
@@ -337,6 +345,7 @@ public getState(string $property = null, mixed $default = null): mixed
 **Return Value:**
 
 The property where specified, the state object where omitted
+
 
 
 
@@ -373,6 +382,7 @@ The previous value of the property or null if not set
 
 
 
+
 ***
 
 ### populateState
@@ -386,6 +396,7 @@ protected populateState(): void
 This method should only be called once per instantiation and is designed
 to be called on the first call to the getState() method unless the
 configuration flag to ignore the request is set.
+
 
 
 
@@ -429,6 +440,7 @@ public __construct(array $config = [], ?\Joomla\CMS\MVC\Factory\MVCFactoryInterf
 
 
 
+
 ***
 
 ### addIncludePath
@@ -460,6 +472,7 @@ public static addIncludePath(mixed $path = &#039;&#039;, string $prefix = &#039;
 **Return Value:**
 
 An array with directory elements. If prefix is equal to '', all directories are returned.
+
 
 
 
@@ -499,6 +512,7 @@ The name of the model
 
 
 
+
 ***
 
 ### getMVCFactory
@@ -525,6 +539,7 @@ protected getMVCFactory(): \Joomla\CMS\MVC\Factory\MVCFactoryInterface
 
 
 
+
 ***
 
 ### setMVCFactory
@@ -547,6 +562,7 @@ public setMVCFactory(\Joomla\CMS\MVC\Factory\MVCFactoryInterface $mvcFactory): v
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$mvcFactory` | **\Joomla\CMS\MVC\Factory\MVCFactoryInterface** | The MVC factory |
+
 
 
 
@@ -590,6 +606,7 @@ An array of results.
 
 
 
+
 ***
 
 ### _getListCount
@@ -624,6 +641,7 @@ Number of rows for query.
 
 
 
+
 ***
 
 ### _createTable
@@ -653,6 +671,7 @@ protected _createTable(string $name, string $prefix = &#039;Table&#039;, array $
 **Return Value:**
 
 Table object or boolean false if failed
+
 
 
 
@@ -699,6 +718,7 @@ A Table object
 
 
 
+
 ***
 
 ### isCheckedOut
@@ -726,6 +746,7 @@ public isCheckedOut(\stdClass $item): bool
 
 
 
+
 ***
 
 ### cleanCache
@@ -748,6 +769,7 @@ protected cleanCache(string $group = null): void
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$group` | **string** | The cache group |
+
 
 
 
@@ -784,6 +806,7 @@ The service container
 
 
 
+
 ***
 
 ### getDispatcher
@@ -812,6 +835,7 @@ TODO: Remove the override in 6.0
 
 
 
+
 ***
 
 ### dispatchEvent
@@ -836,6 +860,7 @@ protected dispatchEvent(\Joomla\Event\EventInterface $event): void
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$event` | **\Joomla\Event\EventInterface** | The event |
+
 
 
 
@@ -873,6 +898,7 @@ The database driver.
 
 
 
+
 ***
 
 ### setDbo
@@ -897,6 +923,7 @@ public setDbo(?\Joomla\Database\DatabaseInterface $db = null): void
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$db` | **?\Joomla\Database\DatabaseInterface** | The database driver. |
+
 
 
 
@@ -931,6 +958,7 @@ public __get(string $name): mixed
 **Return Value:**
 
 The value of the element if set, null otherwise
+
 
 
 
@@ -971,6 +999,7 @@ protected loadForm(string $name, string $source = null, array $options = [], boo
 
 
 
+
 **See Also:**
 
 * \Joomla\CMS\Form\Form - 
@@ -1000,6 +1029,7 @@ The default data is an empty array.
 
 
 
+
 ***
 
 ### preprocessData
@@ -1024,6 +1054,7 @@ protected preprocessData(string $context, mixed& $data, string $group = &#039;co
 | `$context` | **string** | The context identifier. |
 | `$data` | **mixed** | The data to be processed. It gets altered directly. |
 | `$group` | **string** | The name of the plugin group to import (defaults to &quot;content&quot;). |
+
 
 
 
@@ -1064,6 +1095,7 @@ protected preprocessForm(\Joomla\CMS\Form\Form $form, mixed $data, string $group
 
 
 
+
 **See Also:**
 
 * \Joomla\CMS\Form\FormField - 
@@ -1092,6 +1124,7 @@ public getFormFactory(): \Joomla\CMS\Form\FormFactoryInterface
 <p>May be thrown if the FormFactory has not been set.</p>
 
 - [`UnexpectedValueException`](../../../../UnexpectedValueException.md)
+
 
 
 

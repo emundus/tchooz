@@ -87,6 +87,7 @@ public __construct(array $config = array()): mixed
 
 
 
+
 **See Also:**
 
 * \JController - 
@@ -100,6 +101,7 @@ public __construct(array $config = array()): mixed
 ```php
 public updateOrder(): mixed
 ```
+
 
 
 
@@ -133,6 +135,7 @@ public updateelementorder(): mixed
 
 
 
+
 ***
 
 ### updategroupparams
@@ -142,6 +145,7 @@ public updateelementorder(): mixed
 ```php
 public updategroupparams(): mixed
 ```
+
 
 
 
@@ -175,6 +179,7 @@ public changerequire(): mixed
 
 
 
+
 ***
 
 ### publishunpublishelement
@@ -184,6 +189,7 @@ public changerequire(): mixed
 ```php
 public publishunpublishelement(): mixed
 ```
+
 
 
 
@@ -217,6 +223,7 @@ public hiddenunhiddenelement(): mixed
 
 
 
+
 ***
 
 ### updateparams
@@ -238,6 +245,7 @@ public updateparams(): mixed
 
 
 
+
 ***
 
 ### duplicateelement
@@ -247,6 +255,7 @@ public updateparams(): mixed
 ```php
 public duplicateelement(): mixed
 ```
+
 
 
 
@@ -285,6 +294,7 @@ public formsTrad(): mixed
 
 
 
+
 ***
 
 ### updateelementlabelwithouttranslation
@@ -294,6 +304,7 @@ public formsTrad(): mixed
 ```php
 public updateelementlabelwithouttranslation(): mixed
 ```
+
 
 
 
@@ -327,6 +338,7 @@ public updategrouplabelwithouttranslation(): mixed
 
 
 
+
 ***
 
 ### updatepagelabelwithouttranslation
@@ -336,6 +348,7 @@ public updategrouplabelwithouttranslation(): mixed
 ```php
 public updatepagelabelwithouttranslation(): mixed
 ```
+
 
 
 
@@ -369,6 +382,7 @@ public updatepageintrowithouttranslation(): mixed
 
 
 
+
 ***
 
 ### getJTEXTA
@@ -378,6 +392,7 @@ public updatepageintrowithouttranslation(): mixed
 ```php
 public getJTEXTA(): mixed
 ```
+
 
 
 
@@ -411,6 +426,7 @@ public getJTEXT(): mixed
 
 
 
+
 ***
 
 ### getalltranslations
@@ -420,6 +436,7 @@ public getJTEXT(): mixed
 ```php
 public getalltranslations(): mixed
 ```
+
 
 
 
@@ -453,6 +470,7 @@ public createMenu(): mixed
 
 
 
+
 ***
 
 ### checkifmodeltableisusedinform
@@ -462,6 +480,7 @@ public createMenu(): mixed
 ```php
 public checkifmodeltableisusedinform(): mixed
 ```
+
 
 
 
@@ -495,6 +514,7 @@ public deletemenu(): mixed
 
 
 
+
 ***
 
 ### savemenuastemplate
@@ -504,6 +524,7 @@ public deletemenu(): mixed
 ```php
 public savemenuastemplate(): mixed
 ```
+
 
 
 
@@ -537,6 +558,7 @@ public createsimplegroup(): mixed
 
 
 
+
 ***
 
 ### deleteGroup
@@ -546,6 +568,7 @@ public createsimplegroup(): mixed
 ```php
 public deleteGroup(): mixed
 ```
+
 
 
 
@@ -579,6 +602,7 @@ public getElement(): mixed
 
 
 
+
 ***
 
 ### retriveElementFormAssociatedDoc
@@ -588,6 +612,7 @@ public getElement(): mixed
 ```php
 public retriveElementFormAssociatedDoc(): mixed
 ```
+
 
 
 
@@ -621,6 +646,7 @@ public createsimpleelement(): mixed
 
 
 
+
 ***
 
 ### createsectionsimpleelements
@@ -630,6 +656,7 @@ public createsimpleelement(): mixed
 ```php
 public createsectionsimpleelements(): mixed
 ```
+
 
 
 
@@ -663,6 +690,7 @@ public createcriteria(): mixed
 
 
 
+
 ***
 
 ### deleteElement
@@ -672,6 +700,7 @@ public createcriteria(): mixed
 ```php
 public deleteElement(): mixed
 ```
+
 
 
 
@@ -705,6 +734,7 @@ public reordermenu(): mixed
 
 
 
+
 ***
 
 ### getGroupOrdering
@@ -714,6 +744,7 @@ public reordermenu(): mixed
 ```php
 public getGroupOrdering(): mixed
 ```
+
 
 
 
@@ -747,6 +778,7 @@ public reordergroups(): mixed
 
 
 
+
 ***
 
 ### getPagesModel
@@ -756,6 +788,7 @@ public reordergroups(): mixed
 ```php
 public getPagesModel(): mixed
 ```
+
 
 
 
@@ -789,6 +822,7 @@ public checkconstraintgroup(): mixed
 
 
 
+
 ***
 
 ### checkvisibility
@@ -798,6 +832,7 @@ public checkconstraintgroup(): mixed
 ```php
 public checkvisibility(): mixed
 ```
+
 
 
 
@@ -831,6 +866,7 @@ public getdatabasesjoin(): mixed
 
 
 
+
 ***
 
 ### getDatabaseJoinOrderColumns
@@ -840,6 +876,7 @@ public getdatabasesjoin(): mixed
 ```php
 public getDatabaseJoinOrderColumns(): mixed
 ```
+
 
 
 
@@ -873,6 +910,7 @@ public enablegrouprepeat(): mixed
 
 
 
+
 ***
 
 ### disablegrouprepeat
@@ -882,6 +920,7 @@ public enablegrouprepeat(): mixed
 ```php
 public disablegrouprepeat(): mixed
 ```
+
 
 
 
@@ -915,6 +954,7 @@ public displayhidegroup(): mixed
 
 
 
+
 ***
 
 ### updatemenulabel
@@ -924,6 +964,7 @@ public displayhidegroup(): mixed
 ```php
 public updatemenulabel(): mixed
 ```
+
 
 
 
@@ -957,6 +998,7 @@ public gettestingparams(): mixed
 
 
 
+
 ***
 
 ### createtestingfile
@@ -966,6 +1008,7 @@ public gettestingparams(): mixed
 ```php
 public createtestingfile(): mixed
 ```
+
 
 
 
@@ -999,6 +1042,7 @@ public deletetestingfile(): mixed
 
 
 
+
 ***
 
 ### updatedocument
@@ -1008,6 +1052,7 @@ public deletetestingfile(): mixed
 ```php
 public updatedocument(): mixed
 ```
+
 
 
 
@@ -1041,6 +1086,7 @@ public updatedefaultvalue(): mixed
 
 
 
+
 ***
 
 ### getalldatabases
@@ -1050,6 +1096,7 @@ public updatedefaultvalue(): mixed
 ```php
 public getalldatabases(): mixed
 ```
+
 
 
 
@@ -1083,6 +1130,7 @@ public getsection(): mixed
 
 
 
+
 ***
 
 ### updateElementOption
@@ -1092,6 +1140,7 @@ public getsection(): mixed
 ```php
 public updateElementOption(): mixed
 ```
+
 
 
 
@@ -1125,6 +1174,7 @@ public getelementsuboptions(): mixed
 
 
 
+
 ***
 
 ### addElementSubOption
@@ -1134,6 +1184,7 @@ public getelementsuboptions(): mixed
 ```php
 public addElementSubOption(): mixed
 ```
+
 
 
 
@@ -1167,6 +1218,7 @@ public deleteElementSubOption(): mixed
 
 
 
+
 ***
 
 ### updateElementSubOptionsOrder
@@ -1176,6 +1228,7 @@ public deleteElementSubOption(): mixed
 ```php
 public updateElementSubOptionsOrder(): mixed
 ```
+
 
 
 
@@ -1209,6 +1262,7 @@ public getpagemodels(): mixed
 
 
 
+
 ***
 
 ### getallmodels
@@ -1218,6 +1272,7 @@ public getpagemodels(): mixed
 ```php
 public getallmodels(): mixed
 ```
+
 
 
 
@@ -1251,6 +1306,7 @@ public addformmodel(): mixed
 
 
 
+
 ***
 
 ### deleteformmodel
@@ -1260,6 +1316,7 @@ public addformmodel(): mixed
 ```php
 public deleteformmodel(): mixed
 ```
+
 
 
 
@@ -1293,6 +1350,7 @@ public deleteformmodelfromids(): mixed
 
 
 
+
 ***
 
 ### getdocumentsample
@@ -1314,6 +1372,7 @@ public getdocumentsample(): mixed
 
 
 
+
 ***
 
 ### getsqldropdownoptions
@@ -1323,6 +1382,7 @@ public getdocumentsample(): mixed
 ```php
 public getsqldropdownoptions(): mixed
 ```
+
 
 
 

@@ -41,6 +41,7 @@ public static buildMenuQuery(mixed $profile, mixed $formids = null, mixed $check
 
 
 
+
 ***
 
 ### getUserApplicationMenu
@@ -64,6 +65,7 @@ public static getUserApplicationMenu(mixed $profile, mixed $formids = null): mix
 |-----------|------|-------------|
 | `$profile` | **mixed** |  |
 | `$formids` | **mixed** |  |
+
 
 
 
@@ -96,6 +98,7 @@ public buildMenuListQuery(mixed $profile): mixed
 
 
 
+
 ***
 
 ### getHomepageLink
@@ -118,6 +121,7 @@ public static getHomepageLink(mixed $default_link = null): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$default_link` | **mixed** |  |
+
 
 
 
@@ -150,6 +154,7 @@ public static getSefAliasByLink(mixed $link): mixed
 
 
 
+
 ***
 
 ### getNonce
@@ -163,6 +168,7 @@ public static getNonce(): mixed
 
 
 * This method is **static**.
+
 
 
 
@@ -193,6 +199,7 @@ private static hexToDec(mixed $hex): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$hex` | **mixed** |  |
+
 
 
 

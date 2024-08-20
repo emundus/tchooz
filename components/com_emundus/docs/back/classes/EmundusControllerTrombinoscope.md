@@ -57,6 +57,7 @@ public __construct(array $config = array()): mixed
 
 
 
+
 **See Also:**
 
 * \JController - 
@@ -88,6 +89,7 @@ public fnums_json_decode(mixed $string_fnums): array
 
 
 
+
 ***
 
 ### generate_preview
@@ -111,6 +113,7 @@ public generate_preview(): mixed
 **Throws:**
 
 - [`Exception`](./Exception.md)
+
 
 
 
@@ -157,6 +160,7 @@ public generate_data_for_pdf(mixed $fnums, mixed $gridL, mixed $gridH, mixed $ma
 
 
 
+
 ***
 
 ### generate_pdf
@@ -180,6 +184,7 @@ public generate_pdf(): mixed
 **Throws:**
 
 - [`Exception`](./Exception.md)
+
 
 
 

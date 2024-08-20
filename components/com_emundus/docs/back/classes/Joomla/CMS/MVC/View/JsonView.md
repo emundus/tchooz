@@ -87,6 +87,7 @@ public __construct(array $config = []): mixed
 
 
 
+
 ***
 
 ### display
@@ -109,6 +110,7 @@ public display(string $tpl = null): void
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$tpl` | **string** | The name of the template file to parse; automatically searches through the template paths. |
+
 
 
 
@@ -145,6 +147,7 @@ public __construct(array $config = []): mixed
 
 
 
+
 ***
 
 ### display
@@ -167,6 +170,7 @@ public display(string $tpl = null): void
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$tpl` | **string** | The name of the template file to parse; automatically searches through the template paths. |
+
 
 
 
@@ -204,6 +208,7 @@ The return value of the method
 
 
 
+
 ***
 
 ### getModel
@@ -231,6 +236,7 @@ public getModel(string $name = null): \Joomla\CMS\MVC\Model\BaseDatabaseModel
 **Return Value:**
 
 The model object
+
 
 
 
@@ -271,6 +277,7 @@ The added model.
 
 
 
+
 ***
 
 ### getName
@@ -302,6 +309,7 @@ The name of the model
 
 
 
+
 ***
 
 ### getDocument
@@ -329,6 +337,7 @@ protected getDocument(): \Joomla\CMS\Document\Document
 
 
 
+
 ***
 
 ### setDocument
@@ -351,6 +360,7 @@ public setDocument(\Joomla\CMS\Document\Document $document): void
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$document` | **\Joomla\CMS\Document\Document** | The document to use |
+
 
 
 
@@ -384,6 +394,7 @@ TODO: Remove the override in 6.0
 
 
 
+
 ***
 
 ### dispatchEvent
@@ -408,6 +419,7 @@ protected dispatchEvent(\Joomla\Event\EventInterface $event): void
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$event` | **\Joomla\Event\EventInterface** | The event |
+
 
 
 

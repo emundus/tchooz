@@ -40,6 +40,7 @@ public __construct(mixed $model = &#039;qcm&#039;): mixed
 
 
 
+
 ***
 
 ### getQcm
@@ -62,6 +63,7 @@ public getQcm(mixed $formid): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$formid` | **mixed** |  |
+
 
 
 
@@ -95,6 +97,7 @@ public getQcmApplicant(mixed $fnum, mixed $qcm): mixed
 
 
 
+
 ***
 
 ### initQcmApplicant
@@ -123,6 +126,7 @@ public initQcmApplicant(mixed $fnum, mixed $idqcm): mixed
 
 
 
+
 ***
 
 ### getQuestions
@@ -146,6 +150,7 @@ public getQuestions(mixed $question_ids, mixed $with_answers = false): mixed
 |-----------|------|-------------|
 | `$question_ids` | **mixed** |  |
 | `$with_answers` | **mixed** |  |
+
 
 
 
@@ -182,6 +187,7 @@ public saveAnswer(mixed $question, mixed $answers, mixed $current_user, mixed $f
 
 
 
+
 ***
 
 ### checkPoints
@@ -206,6 +212,7 @@ public checkPoints(mixed $answers, mixed $module, mixed $good_answers): mixed
 | `$answers` | **mixed** |  |
 | `$module` | **mixed** |  |
 | `$good_answers` | **mixed** |  |
+
 
 
 
@@ -240,6 +247,7 @@ public updatePending(mixed $pending, mixed $current_user, mixed $formid): mixed
 
 
 
+
 ***
 
 ### getIntro
@@ -262,6 +270,7 @@ public getIntro(mixed $module): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$module` | **mixed** |  |
+
 
 
 

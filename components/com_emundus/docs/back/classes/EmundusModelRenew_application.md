@@ -57,6 +57,7 @@ public __construct(mixed $model = &#039;renew_application&#039;): mixed
 
 
 
+
 ***
 
 ### getSchoolyear
@@ -84,6 +85,7 @@ public getSchoolyear(mixed $profile): mixed
 
 
 
+
 ***
 
 ### isCompleteApplication
@@ -106,6 +108,7 @@ public isCompleteApplication(mixed $user): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$user` | **mixed** |  |
+
 
 
 
@@ -139,6 +142,7 @@ public getLinkAttachments(mixed $attachment_id, mixed $user): mixed
 
 
 
+
 ***
 
 ### deleteAttachment
@@ -161,6 +165,7 @@ public deleteAttachment(mixed $filename): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$filename` | **mixed** |  |
+
 
 
 
@@ -193,6 +198,7 @@ public deleteFileRequest(mixed $user): mixed
 
 
 
+
 ***
 
 ### deleteReferences
@@ -215,6 +221,7 @@ public deleteReferences(mixed $user): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$user` | **mixed** |  |
+
 
 
 
@@ -247,6 +254,7 @@ public deleteEvaluations(mixed $user): mixed
 
 
 
+
 ***
 
 ### deleteFinal_grade
@@ -269,6 +277,7 @@ public deleteFinal_grade(mixed $user): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$user` | **mixed** |  |
+
 
 
 
@@ -301,6 +310,7 @@ public deleteDeclaration(mixed $user): mixed
 
 
 
+
 ***
 
 ### deleteGroups_eval
@@ -328,6 +338,7 @@ public deleteGroups_eval(mixed $user): mixed
 
 
 
+
 ***
 
 ### deleteTraining
@@ -350,6 +361,7 @@ public deleteTraining(mixed $user): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$user` | **mixed** |  |
+
 
 
 
@@ -383,6 +395,7 @@ public updateUser(mixed $user, mixed $profile): mixed
 
 
 
+
 ***
 
 ### updateAttachments
@@ -405,6 +418,7 @@ public updateAttachments(mixed $user): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$user` | **mixed** |  |
+
 
 
 

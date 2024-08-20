@@ -171,6 +171,7 @@ public __construct(): mixed
 
 
 
+
 ***
 
 ### getElementsVar
@@ -180,6 +181,7 @@ public __construct(): mixed
 ```php
 public getElementsVar(): mixed
 ```
+
 
 
 
@@ -231,6 +233,7 @@ list of Fabrik element ID used in admission form
 
 
 
+
 ***
 
 ### getApplicantAdmissionElementsName
@@ -262,6 +265,7 @@ public getApplicantAdmissionElementsName(mixed $show_in_list_summary = 1, mixed 
 
 list of Fabrik element ID used in admission form
 *@throws Exception
+
 
 
 
@@ -298,6 +302,7 @@ list of Fabrik element ID used in admission form
 
 
 
+
 ***
 
 ### getAllApplicantAdmissionElements
@@ -330,6 +335,7 @@ list of Fabrik element ID used in admission form
 
 
 
+
 ***
 
 ### _buildContentOrderBy
@@ -339,6 +345,7 @@ list of Fabrik element ID used in admission form
 ```php
 public _buildContentOrderBy(): mixed
 ```
+
 
 
 
@@ -380,6 +387,7 @@ public multi_array_sort(mixed $multi_array, mixed $sort_key, mixed $sort = SORT_
 
 
 
+
 ***
 
 ### getCampaign
@@ -389,6 +397,7 @@ public multi_array_sort(mixed $multi_array, mixed $sort_key, mixed $sort = SORT_
 ```php
 public getCampaign(): mixed
 ```
+
 
 
 
@@ -422,6 +431,7 @@ public getCurrentCampaign(): mixed
 
 
 
+
 ***
 
 ### getCurrentCampaignsID
@@ -431,6 +441,7 @@ public getCurrentCampaign(): mixed
 ```php
 public getCurrentCampaignsID(): mixed
 ```
+
 
 
 
@@ -470,6 +481,7 @@ public getProfileAcces(mixed $user): mixed
 
 
 
+
 ***
 
 ### setSubQuery
@@ -493,6 +505,7 @@ public setSubQuery(mixed $tab, mixed $elem): mixed
 |-----------|------|-------------|
 | `$tab` | **mixed** |  |
 | `$elem` | **mixed** |  |
+
 
 
 
@@ -525,6 +538,7 @@ public setSelect(mixed $search): mixed
 
 
 
+
 ***
 
 ### isJoined
@@ -548,6 +562,7 @@ public isJoined(mixed $tab, mixed $joined): mixed
 |-----------|------|-------------|
 | `$tab` | **mixed** |  |
 | `$joined` | **mixed** |  |
+
 
 
 
@@ -582,6 +597,7 @@ public setJoins(mixed $search, mixed $query, mixed $joined): mixed
 
 
 
+
 ***
 
 ### _buildSelect
@@ -606,6 +622,7 @@ public _buildSelect(mixed& $tables_list, mixed& $tables_list_other, mixed& $tabl
 | `$tables_list` | **mixed** |  |
 | `$tables_list_other` | **mixed** |  |
 | `$tables_list_default` | **mixed** |  |
+
 
 
 
@@ -641,6 +658,7 @@ public setEvalList(array $search, array& $eval_list, array $head_val, object $ap
 
 
 
+
 ***
 
 ### _buildWhere
@@ -668,6 +686,7 @@ private _buildWhere(mixed $tableAlias = array()): mixed
 
 
 
+
 ***
 
 ### getUsers
@@ -690,6 +709,7 @@ public getUsers(mixed $current_fnum = null): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$current_fnum` | **mixed** |  |
+
 
 
 
@@ -724,6 +744,7 @@ public getElementsByGroups(mixed $groups, mixed $show_in_list_summary = 1, mixed
 
 
 
+
 ***
 
 ### getAllElementsByGroups
@@ -753,6 +774,7 @@ public getAllElementsByGroups(mixed $groups, mixed $show_in_list_summary = null,
 
 
 
+
 ***
 
 ### getDefaultElements
@@ -762,6 +784,7 @@ public getAllElementsByGroups(mixed $groups, mixed $show_in_list_summary = null,
 ```php
 public getDefaultElements(): mixed
 ```
+
 
 
 
@@ -795,6 +818,7 @@ public getSelectList(): mixed
 
 
 
+
 ***
 
 ### getProfiles
@@ -804,6 +828,7 @@ public getSelectList(): mixed
 ```php
 public getProfiles(): mixed
 ```
+
 
 
 
@@ -843,6 +868,7 @@ public getProfileByID(mixed $id): mixed
 
 
 
+
 ***
 
 ### getProfilesByIDs
@@ -870,6 +896,7 @@ public getProfilesByIDs(mixed $ids): mixed
 
 
 
+
 ***
 
 ### getAuthorProfiles
@@ -891,6 +918,7 @@ public getAuthorProfiles(): mixed
 
 
 
+
 ***
 
 ### getApplicantsProfiles
@@ -900,6 +928,7 @@ public getAuthorProfiles(): mixed
 ```php
 public getApplicantsProfiles(): mixed
 ```
+
 
 
 
@@ -939,6 +968,7 @@ public getApplicantsByProfile(mixed $profile): mixed
 
 
 
+
 ***
 
 ### getAuthorUsers
@@ -948,6 +978,7 @@ public getApplicantsByProfile(mixed $profile): mixed
 ```php
 public getAuthorUsers(): mixed
 ```
+
 
 
 
@@ -981,6 +1012,7 @@ public getMobility(): mixed
 
 
 
+
 ***
 
 ### getElements
@@ -990,6 +1022,7 @@ public getMobility(): mixed
 ```php
 public getElements(): mixed
 ```
+
 
 
 
@@ -1023,6 +1056,7 @@ public getElementsName(): mixed
 
 
 
+
 ***
 
 ### getTotal
@@ -1032,6 +1066,7 @@ public getElementsName(): mixed
 ```php
 public getTotal(): mixed
 ```
+
 
 
 
@@ -1065,6 +1100,7 @@ public getPagination(): mixed
 
 
 
+
 ***
 
 ### getPageNavigation
@@ -1086,6 +1122,7 @@ public getPageNavigation(): string
 
 
 
+
 ***
 
 ### getApplicantColumns
@@ -1095,6 +1132,7 @@ public getPageNavigation(): string
 ```php
 public getApplicantColumns(): mixed
 ```
+
 
 
 
@@ -1134,6 +1172,7 @@ public getGroupsAdmissionByProgramme(mixed $code): mixed
 
 
 
+
 ***
 
 ### getGroupsApplicantAdmissionByProgramme
@@ -1161,6 +1200,7 @@ public getGroupsApplicantAdmissionByProgramme(mixed $code): mixed
 
 
 
+
 ***
 
 ### getSchoolyears
@@ -1170,6 +1210,7 @@ public getGroupsApplicantAdmissionByProgramme(mixed $code): mixed
 ```php
 public getSchoolyears(): mixed
 ```
+
 
 
 
@@ -1203,6 +1244,7 @@ public getAllActions(): mixed
 
 
 
+
 ***
 
 ### getEvalGroups
@@ -1212,6 +1254,7 @@ public getAllActions(): mixed
 ```php
 public getEvalGroups(): mixed
 ```
+
 
 
 
@@ -1253,6 +1296,7 @@ public shareGroups(mixed $groups, mixed $actions, mixed $fnums): mixed
 
 
 
+
 ***
 
 ### shareUsers
@@ -1282,6 +1326,7 @@ public shareUsers(mixed $users, mixed $actions, mixed $fnums): mixed
 
 
 
+
 ***
 
 ### getAllTags
@@ -1303,6 +1348,7 @@ public getAllTags(): mixed
 
 
 
+
 ***
 
 ### getAllStatus
@@ -1312,6 +1358,7 @@ public getAllTags(): mixed
 ```php
 public getAllStatus(): mixed
 ```
+
 
 
 
@@ -1352,6 +1399,7 @@ public tagFile(mixed $fnums, mixed $tag): mixed
 
 
 
+
 ***
 
 ### getTaggedFile
@@ -1374,6 +1422,7 @@ public getTaggedFile(mixed $tag = null): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$tag` | **mixed** |  |
+
 
 
 
@@ -1407,6 +1456,7 @@ public updateState(mixed $fnums, mixed $state): mixed
 
 
 
+
 ***
 
 ### getPhotos
@@ -1416,6 +1466,7 @@ public updateState(mixed $fnums, mixed $state): mixed
 ```php
 public getPhotos(): mixed
 ```
+
 
 
 
@@ -1449,6 +1500,7 @@ public getEvaluatorsFromGroup(): mixed
 
 
 
+
 ***
 
 ### getEvaluators
@@ -1458,6 +1510,7 @@ public getEvaluatorsFromGroup(): mixed
 ```php
 public getEvaluators(): mixed
 ```
+
 
 
 
@@ -1499,6 +1552,7 @@ public unlinkEvaluators(mixed $fnum, mixed $id, mixed $isGroup): mixed
 
 
 
+
 ***
 
 ### getFnumInfos
@@ -1521,6 +1575,7 @@ public getFnumInfos(mixed $fnum): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$fnum` | **mixed** |  |
+
 
 
 
@@ -1554,6 +1609,7 @@ public changePublished(mixed $fnum, mixed $published = -1): mixed
 
 
 
+
 ***
 
 ### getAllFnums
@@ -1563,6 +1619,7 @@ public changePublished(mixed $fnum, mixed $published = -1): mixed
 ```php
 public getAllFnums(): mixed
 ```
+
 
 
 
@@ -1603,6 +1660,7 @@ public getFnumArray(mixed $fnums, mixed $elements): mixed
 
 
 
+
 ***
 
 ### getEvalsByFnum
@@ -1625,6 +1683,7 @@ public getEvalsByFnum(mixed $fnums): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$fnums` | **mixed** |  |
+
 
 
 
@@ -1657,6 +1716,7 @@ public getCommentsByFnum(mixed $fnums): mixed
 
 
 
+
 ***
 
 ### getFilesByFnums
@@ -1679,6 +1739,7 @@ public getFilesByFnums(mixed $fnums): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$fnums` | **mixed** |  |
+
 
 
 
@@ -1711,6 +1772,7 @@ public getAdmissionFnum(mixed $fnum): mixed
 
 
 
+
 ***
 
 ### getAdmissionFormByProgramme
@@ -1733,6 +1795,7 @@ public getAdmissionFormByProgramme(mixed $code = null): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$code` | **mixed** |  |
+
 
 
 
@@ -1761,6 +1824,7 @@ public getAdmissionId(mixed $form_table, mixed $fnum): mixed
 |-----------|------|-------------|
 | `$form_table` | **mixed** |  |
 | `$fnum` | **mixed** |  |
+
 
 
 
@@ -1795,6 +1859,7 @@ public setAdmissionByFabrikElementsId(mixed $fnum, mixed $element_id, mixed $val
 
 
 
+
 ***
 
 ### updateAdmissionByFabrikElementsId
@@ -1824,6 +1889,7 @@ public updateAdmissionByFabrikElementsId(mixed $fnum, mixed $element_id, mixed $
 
 
 
+
 ***
 
 ### getAdmissionInfo
@@ -1846,6 +1912,7 @@ public getAdmissionInfo(mixed $sid): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$sid` | **mixed** |  |
+
 
 
 

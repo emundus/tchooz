@@ -62,6 +62,7 @@ This object to support chaining.
 
 
 
+
 ***
 
 ### __construct
@@ -84,6 +85,7 @@ public __construct(array $config = array()): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$config` | **array** | An optional associative array of configuration settings. |
+
 
 
 
@@ -114,6 +116,7 @@ public getformtags(): mixed
 
 
 
+
 ***
 
 ### getalltags
@@ -123,6 +126,7 @@ Gets all eMundus Tags from tags_table
 ```php
 public getalltags(): mixed
 ```
+
 
 
 

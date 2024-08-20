@@ -72,6 +72,7 @@ public __construct(array $config = array()): mixed
 
 
 
+
 **See Also:**
 
 * \JController - 
@@ -85,6 +86,7 @@ public __construct(array $config = array()): mixed
 ```php
 public getQuestions(): mixed
 ```
+
 
 
 
@@ -118,6 +120,7 @@ public saveanwser(): mixed
 
 
 
+
 ***
 
 ### updatepending
@@ -139,6 +142,7 @@ public updatepending(): mixed
 
 
 
+
 ***
 
 ### getintro
@@ -148,6 +152,7 @@ public updatepending(): mixed
 ```php
 public getintro(): mixed
 ```
+
 
 
 

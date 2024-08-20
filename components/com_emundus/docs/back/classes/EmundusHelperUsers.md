@@ -41,6 +41,7 @@ public static generateStrongPassword(mixed $length = 8, mixed $add_dashes = fals
 
 
 
+
 ***
 
 ### generateToken
@@ -68,6 +69,7 @@ public static generateToken(mixed $length = 16): mixed
 
 
 
+
 ***
 
 ### getEmundusUser
@@ -81,6 +83,7 @@ public static getEmundusUser(): mixed
 
 
 * This method is **static**.
+
 
 
 

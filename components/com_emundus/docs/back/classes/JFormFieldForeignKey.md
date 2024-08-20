@@ -115,6 +115,7 @@ The field input markup.
 
 
 
+
 ***
 
 ### getAttribute
@@ -143,6 +144,7 @@ public getAttribute(string $attr_name, mixed $default = null): mixed
 **Return Value:**
 
 The value of the attribute if it exists, null otherwise
+
 
 
 

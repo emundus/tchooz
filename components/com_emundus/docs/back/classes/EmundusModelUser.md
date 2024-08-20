@@ -34,6 +34,7 @@ public __construct(): mixed
 
 
 
+
 ***
 
 ### sendActivationEmail
@@ -58,6 +59,7 @@ public sendActivationEmail(mixed $data, mixed $token, mixed $email): mixed
 | `$data` | **mixed** |  |
 | `$token` | **mixed** |  |
 | `$email` | **mixed** |  |
+
 
 
 
@@ -91,6 +93,7 @@ public updateEmailUser(mixed $user_id, mixed $email): mixed
 
 
 
+
 ***
 
 ### getUsernameByEmail
@@ -113,6 +116,7 @@ public getUsernameByEmail(mixed $email): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$email` | **mixed** |  |
+
 
 
 

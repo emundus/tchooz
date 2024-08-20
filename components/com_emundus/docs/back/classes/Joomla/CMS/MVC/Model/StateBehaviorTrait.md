@@ -76,6 +76,7 @@ The property where specified, the state object where omitted
 
 
 
+
 ***
 
 ### setState
@@ -108,6 +109,7 @@ The previous value of the property or null if not set
 
 
 
+
 ***
 
 ### populateState
@@ -121,6 +123,7 @@ protected populateState(): void
 This method should only be called once per instantiation and is designed
 to be called on the first call to the getState() method unless the
 configuration flag to ignore the request is set.
+
 
 
 

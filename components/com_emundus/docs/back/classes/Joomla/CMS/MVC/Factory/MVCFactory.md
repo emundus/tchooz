@@ -75,6 +75,7 @@ public __construct(string $namespace, \Psr\Log\LoggerInterface|null $logger = nu
 
 
 
+
 ***
 
 ### createController
@@ -108,6 +109,7 @@ public createController(string $name, string $prefix, array $config, \Joomla\CMS
 **Throws:**
 
 - [`Exception`](../../../../Exception.md)
+
 
 
 
@@ -146,6 +148,7 @@ The model object
 **Throws:**
 
 - [`Exception`](../../../../Exception.md)
+
 
 
 
@@ -188,6 +191,7 @@ The view object
 
 
 
+
 ***
 
 ### createTable
@@ -226,6 +230,7 @@ The table object
 
 
 
+
 ***
 
 ### getClassName
@@ -258,6 +263,7 @@ The class name
 
 
 
+
 ***
 
 ### setFormFactoryOnObject
@@ -280,6 +286,7 @@ private setFormFactoryOnObject(object $object): void
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$object` | **object** | The object |
+
 
 
 
@@ -312,6 +319,7 @@ private setDispatcherOnObject(object $object): void
 
 
 
+
 ***
 
 ### setRouterOnObject
@@ -334,6 +342,7 @@ private setRouterOnObject(object $object): void
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$object` | **object** | The object |
+
 
 
 
@@ -366,6 +375,7 @@ private setCacheControllerOnObject(object $object): void
 
 
 
+
 ***
 
 ### setUserFactoryOnObject
@@ -393,6 +403,7 @@ private setUserFactoryOnObject(object $object): void
 
 
 
+
 ***
 
 ### setMailerFactoryOnObject
@@ -415,6 +426,7 @@ private setMailerFactoryOnObject(object $object): void
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$object` | **object** | The object |
+
 
 
 

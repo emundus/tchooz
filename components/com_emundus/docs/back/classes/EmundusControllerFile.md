@@ -102,6 +102,7 @@ public __construct(array $config = array()): mixed
 
 
 
+
 **See Also:**
 
 * \JController - 
@@ -115,6 +116,7 @@ public __construct(array $config = array()): mixed
 ```php
 public getfiles(): mixed
 ```
+
 
 
 
@@ -148,6 +150,7 @@ public getcolumns(): mixed
 
 
 
+
 ***
 
 ### getlimit
@@ -157,6 +160,7 @@ public getcolumns(): mixed
 ```php
 public getlimit(): mixed
 ```
+
 
 
 
@@ -190,6 +194,7 @@ public getpage(): mixed
 
 
 
+
 ***
 
 ### getevaluationformbyfnum
@@ -199,6 +204,7 @@ public getpage(): mixed
 ```php
 public getevaluationformbyfnum(): mixed
 ```
+
 
 
 
@@ -232,6 +238,7 @@ public getmyevaluation(): mixed
 
 
 
+
 ***
 
 ### checkaccess
@@ -241,6 +248,7 @@ public getmyevaluation(): mixed
 ```php
 public checkaccess(): mixed
 ```
+
 
 
 
@@ -274,6 +282,7 @@ public getfile(): mixed
 
 
 
+
 ***
 
 ### updatelimit
@@ -283,6 +292,7 @@ public getfile(): mixed
 ```php
 public updatelimit(): mixed
 ```
+
 
 
 
@@ -316,6 +326,7 @@ public updatepage(): mixed
 
 
 
+
 ***
 
 ### getselectedtab
@@ -325,6 +336,7 @@ public updatepage(): mixed
 ```php
 public getselectedtab(): mixed
 ```
+
 
 
 
@@ -358,6 +370,7 @@ public setselectedtab(): mixed
 
 
 
+
 ***
 
 ### getcomments
@@ -367,6 +380,7 @@ public setselectedtab(): mixed
 ```php
 public getcomments(): mixed
 ```
+
 
 
 
@@ -400,6 +414,7 @@ public savecomment(): mixed
 
 
 
+
 ***
 
 ### deletecomment
@@ -409,6 +424,7 @@ public savecomment(): mixed
 ```php
 public deletecomment(): mixed
 ```
+
 
 
 
@@ -442,6 +458,7 @@ public getfilters(): mixed
 
 
 
+
 ***
 
 ### applyfilters
@@ -451,6 +468,7 @@ public getfilters(): mixed
 ```php
 public applyfilters(): mixed
 ```
+
 
 
 

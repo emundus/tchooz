@@ -72,6 +72,7 @@ public __construct(array $config = array()): mixed
 
 
 
+
 **See Also:**
 
 * \JController - 
@@ -85,6 +86,7 @@ public __construct(array $config = array()): mixed
 ```php
 public getList(): mixed
 ```
+
 
 
 
@@ -118,6 +120,7 @@ public getListActions(): mixed
 
 
 
+
 ***
 
 ### actionSetColumnValueAs
@@ -139,6 +142,7 @@ public actionSetColumnValueAs(): mixed
 
 
 
+
 ***
 
 ### updateActionState
@@ -148,6 +152,7 @@ public actionSetColumnValueAs(): mixed
 ```php
 public updateActionState(): mixed
 ```
+
 
 
 

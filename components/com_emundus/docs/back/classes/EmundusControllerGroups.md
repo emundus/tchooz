@@ -72,6 +72,7 @@ public __construct(array $config = array()): mixed
 
 
 
+
 **See Also:**
 
 * \JController - 
@@ -108,6 +109,7 @@ This object to support chaining.
 
 
 
+
 ***
 
 ### clear
@@ -117,6 +119,7 @@ This object to support chaining.
 ```php
 public clear(): mixed
 ```
+
 
 
 
@@ -156,6 +159,7 @@ public setAssessor(mixed $reqids = null): mixed
 
 
 
+
 ***
 
 ### unsetAssessor
@@ -183,6 +187,7 @@ public unsetAssessor(mixed $reqids = null): mixed
 
 
 
+
 ***
 
 ### delassessor
@@ -192,6 +197,7 @@ public unsetAssessor(mixed $reqids = null): mixed
 ```php
 public delassessor(): mixed
 ```
+
 
 
 
@@ -231,6 +237,7 @@ public defaultEmail(mixed $reqids = null): mixed
 
 
 
+
 ***
 
 ### customEmail
@@ -252,6 +259,7 @@ public customEmail(): mixed
 
 
 
+
 ***
 
 ### addgroups
@@ -261,6 +269,7 @@ public customEmail(): mixed
 ```php
 public addgroups(): mixed
 ```
+
 
 
 

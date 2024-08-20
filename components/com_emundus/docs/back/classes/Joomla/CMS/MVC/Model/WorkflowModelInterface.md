@@ -38,6 +38,7 @@ public setUpWorkflow(string $extension): void
 
 
 
+
 ***
 
 ### workflowPreprocessForm
@@ -72,6 +73,7 @@ public workflowPreprocessForm(\Joomla\CMS\Form\Form $form, mixed $data): void
 
 
 
+
 **See Also:**
 
 * \Joomla\CMS\MVC\Model\FormField - 
@@ -97,6 +99,7 @@ public workflowBeforeStageChange(): void
 
 
 
+
 ***
 
 ### workflowBeforeSave
@@ -106,6 +109,7 @@ Preparation of workflow data/plugins
 ```php
 public workflowBeforeSave(): void
 ```
+
 
 
 
@@ -145,6 +149,7 @@ public workflowAfterSave(mixed $data): void
 
 
 
+
 ***
 
 ### workflowCleanupBatchMove
@@ -173,6 +178,7 @@ public workflowCleanupBatchMove(int $oldId, int $newId): null
 
 
 
+
 ***
 
 ### executeTransition
@@ -196,6 +202,7 @@ public executeTransition(array $pks, int $transitionId): bool
 |-----------|------|-------------|
 | `$pks` | **array** | Id of items to execute the transition |
 | `$transitionId` | **int** | Id of transition |
+
 
 
 
@@ -233,6 +240,7 @@ The property where specified, the state object where omitted
 
 
 
+
 ***
 
 ### getName
@@ -261,6 +269,7 @@ The name of the model
 **Throws:**
 
 - [`Exception`](../../../../Exception.md)
+
 
 
 
@@ -299,6 +308,7 @@ A Table object
 **Throws:**
 
 - [`Exception`](../../../../Exception.md)
+
 
 
 

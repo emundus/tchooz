@@ -96,6 +96,7 @@ public __construct(): mixed
 
 
 
+
 ***
 
 ### getEmail
@@ -123,6 +124,7 @@ public getEmail(mixed $lbl): object|bool
 **Return Value:**
 
 The email template object
+
 
 
 
@@ -158,6 +160,7 @@ The email template object
 
 
 
+
 ***
 
 ### getEmailTrigger
@@ -189,6 +192,7 @@ public getEmailTrigger(mixed $step, mixed $code, mixed $to_applicant, mixed $to_
 **Return Value:**
 
 Emails templates and recipient to trigger
+
 
 
 
@@ -233,6 +237,7 @@ Emails templates and recipient to trigger
 
 
 
+
 ***
 
 ### setBody
@@ -266,6 +271,7 @@ $strval         String      str with tags replace by value
 
 
 
+
 ***
 
 ### replace
@@ -289,6 +295,7 @@ public replace(mixed $replacement, mixed $str): mixed
 |-----------|------|-------------|
 | `$replacement` | **mixed** |  |
 | `$str` | **mixed** |  |
+
 
 
 
@@ -325,6 +332,7 @@ String with accents stripped
 
 
 
+
 ***
 
 ### getFabrikElementIDs
@@ -352,6 +360,7 @@ public getFabrikElementIDs(mixed $body): array
 **Return Value:**
 
 array of application file elements IDs
+
 
 
 
@@ -388,6 +397,7 @@ array of application file elements values
 
 
 
+
 ***
 
 ### setElementValues
@@ -416,6 +426,7 @@ public setElementValues(mixed $body, mixed $element_values): string
 **Return Value:**
 
 String with values
+
 
 
 
@@ -455,6 +466,7 @@ public setConstants(mixed $user_id, mixed $post = null, mixed $passwd = &#039;&#
 
 
 
+
 ***
 
 ### setTags
@@ -482,6 +494,7 @@ public setTags(int $user_id, array $post = null, string $fnum = null, string $pa
 | `$passwd` | **string** | used set password if needed |
 | `$content` | **string** | string containing tags to replace, ATTENTION : if empty all tags are computing |
 | `$base64` | **mixed** |  |
+
 
 
 
@@ -522,6 +535,7 @@ public setTagsWord(mixed $user_id, mixed $post = null, mixed $fnum = null, mixed
 
 
 
+
 ***
 
 ### setTagsFabrik
@@ -556,6 +570,7 @@ public setTagsFabrik(mixed $str, mixed $fnums = array(), mixed $raw = false): ar
 
 
 
+
 ***
 
 ### getCddLabel
@@ -584,6 +599,7 @@ public getCddLabel(mixed $elt, mixed $val): mixed|string
 
 
 
+
 ***
 
 ### getVariables
@@ -606,6 +622,7 @@ private getVariables(string $str): string[]
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$str` | **string** |  |
+
 
 
 
@@ -644,6 +661,7 @@ public sendMail(mixed $type = null, mixed $fnum = null): array|bool
 
 
 
+
 ***
 
 ### sendExpertMail
@@ -677,6 +695,7 @@ public sendExpertMail(mixed $fnums, mixed $sender_id = null): array
 
 
 
+
 ***
 
 ### logEmail
@@ -705,6 +724,7 @@ public logEmail(mixed $row, mixed $fnum = null): mixed
 
 
 
+
 ***
 
 ### rand_string
@@ -728,6 +748,7 @@ public rand_string(mixed $len, mixed $chars = &#039;abcdefghijklmnopqrstuvwxyz01
 |-----------|------|-------------|
 | `$len` | **mixed** |  |
 | `$chars` | **mixed** |  |
+
 
 
 
@@ -764,6 +785,7 @@ Array
 
 
 
+
 ***
 
 ### sendEmailToGroup
@@ -793,6 +815,7 @@ public sendEmailToGroup(int $email, array $groups, array $attachments = []): boo
 
 
 
+
 ***
 
 ### sendEmailFromPlatform
@@ -817,6 +840,7 @@ public sendEmailFromPlatform(int $user, object $template, array $attachments): v
 | `$user` | **int** |  |
 | `$template` | **object** |  |
 | `$attachments` | **array** |  |
+
 
 
 
@@ -854,6 +878,7 @@ public getAllEmails(mixed $lim, mixed $page, mixed $filter, mixed $sort, mixed $
 
 
 
+
 ***
 
 ### deleteEmail
@@ -876,6 +901,7 @@ public deleteEmail(mixed $ids): false
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$ids` | **mixed** |  |
+
 
 
 
@@ -908,6 +934,7 @@ public unpublishEmail(mixed $data): false
 
 
 
+
 ***
 
 ### publishEmail
@@ -930,6 +957,7 @@ public publishEmail(mixed $data): false|string
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$data` | **mixed** |  |
+
 
 
 
@@ -962,6 +990,7 @@ public duplicateEmail(mixed $data): false
 
 
 
+
 ***
 
 ### getAdvancedEmailById
@@ -984,6 +1013,7 @@ public getAdvancedEmailById(mixed $id): array|false
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$id` | **mixed** |  |
+
 
 
 
@@ -1016,6 +1046,7 @@ public createEmail(mixed $data, mixed $receiver_cc = null, mixed $receiver_bcc =
 | `$letters` | **mixed** |  |
 | `$documents` | **mixed** |  |
 | `$tags` | **mixed** |  |
+
 
 
 
@@ -1054,6 +1085,7 @@ public updateEmail(mixed $id, mixed $data, mixed $receiver_cc = null, mixed $rec
 
 
 
+
 ***
 
 ### getEmailTypes
@@ -1063,6 +1095,7 @@ public updateEmail(mixed $id, mixed $data, mixed $receiver_cc = null, mixed $rec
 ```php
 public getEmailTypes(): false
 ```
+
 
 
 
@@ -1096,6 +1129,7 @@ public getEmailCategories(): false
 
 
 
+
 ***
 
 ### getStatus
@@ -1105,6 +1139,7 @@ public getEmailCategories(): false
 ```php
 public getStatus(): false
 ```
+
 
 
 
@@ -1144,6 +1179,7 @@ public getTriggersByProgramId(mixed $pid): false
 
 
 
+
 ***
 
 ### getTriggerById
@@ -1166,6 +1202,7 @@ public getTriggerById(mixed $tid): object|null
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$tid` | **mixed** |  |
+
 
 
 
@@ -1199,6 +1236,7 @@ public createTrigger(mixed $trigger, mixed $user): bool
 
 
 
+
 ***
 
 ### updateTrigger
@@ -1227,6 +1265,7 @@ public updateTrigger(mixed $tid, mixed $trigger): false|void
 
 
 
+
 ***
 
 ### removeTrigger
@@ -1249,6 +1288,7 @@ public removeTrigger(mixed $tid): false
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$tid` | **mixed** |  |
+
 
 
 
@@ -1287,6 +1327,7 @@ public getEmailsFromFabrikIds(mixed $ids, mixed $fnum = null): array
 
 
 
+
 ***
 
 ### checkUnpublishedTags
@@ -1309,6 +1350,7 @@ public checkUnpublishedTags(mixed $content): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$content` | **mixed** |  |
+
 
 
 
@@ -1347,6 +1389,7 @@ public sendEmailNoFnum(mixed $email_address, mixed $email, mixed $post = null, m
 
 
 
+
 ***
 
 ### sendEmail
@@ -1375,6 +1418,7 @@ public sendEmail(mixed $fnum, mixed $email_id, mixed $post = null, mixed $attach
 | `$bcc` | **mixed** |  |
 | `$sender_id` | **mixed** |  |
 | `$user` | **mixed** |  |
+
 
 
 

@@ -40,6 +40,7 @@ public static insertValuesInQueryResult(mixed $results, mixed $options): mixed
 
 
 
+
 ***
 
 ### getCurrentCampaign
@@ -53,6 +54,7 @@ public static getCurrentCampaign(): mixed
 
 
 * This method is **static**.
+
 
 
 
@@ -82,6 +84,7 @@ public static getCurrentCampaignsID(): mixed
 
 
 
+
 ***
 
 ### getCampaigns
@@ -91,6 +94,7 @@ public static getCurrentCampaignsID(): mixed
 ```php
 public getCampaigns(): mixed
 ```
+
 
 
 
@@ -124,6 +128,7 @@ public getProgrammes(): mixed
 
 
 
+
 ***
 
 ### getCampaign
@@ -133,6 +138,7 @@ public getProgrammes(): mixed
 ```php
 public getCampaign(): mixed
 ```
+
 
 
 
@@ -172,6 +178,7 @@ public static getCampaignByID(mixed $id): mixed
 
 
 
+
 ***
 
 ### getApplicants
@@ -181,6 +188,7 @@ public static getCampaignByID(mixed $id): mixed
 ```php
 public getApplicants(): mixed
 ```
+
 
 
 
@@ -214,6 +222,7 @@ public getProfiles(): mixed
 
 
 
+
 ***
 
 ### getEvaluators
@@ -223,6 +232,7 @@ public getProfiles(): mixed
 ```php
 public getEvaluators(): mixed
 ```
+
 
 
 
@@ -256,6 +266,7 @@ public getGroupsEval(): mixed
 
 
 
+
 ***
 
 ### getGroups
@@ -277,6 +288,7 @@ public static getGroups(): mixed
 
 
 
+
 ***
 
 ### getSchoolyears
@@ -286,6 +298,7 @@ public static getGroups(): mixed
 ```php
 public getSchoolyears(): mixed
 ```
+
 
 
 
@@ -319,6 +332,7 @@ public static getFinal_grade(): mixed
 
 
 
+
 ***
 
 ### getMissing_doc
@@ -328,6 +342,7 @@ public static getFinal_grade(): mixed
 ```php
 public getMissing_doc(): mixed
 ```
+
 
 
 
@@ -367,6 +382,7 @@ public static getEvaluation_doc(mixed $status): mixed
 
 
 
+
 ***
 
 ### setEvaluationList
@@ -394,6 +410,7 @@ public setEvaluationList(mixed $status): mixed
 
 
 
+
 ***
 
 ### getElements
@@ -407,6 +424,7 @@ public static getElements(): mixed
 
 
 * This method is **static**.
+
 
 
 
@@ -448,6 +466,7 @@ list of Fabrik element ID used in evaluation form
 
 
 
+
 ***
 
 ### getAllElementsByGroups
@@ -481,6 +500,7 @@ list of Fabrik element ID used in evaluation form
 
 
 
+
 ***
 
 ### getElementsOther
@@ -503,6 +523,7 @@ public static getElementsOther(mixed $tables): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$tables` | **mixed** |  |
+
 
 
 
@@ -535,6 +556,7 @@ public getElementsValuesOther(mixed $element_id): mixed
 
 
 
+
 ***
 
 ### getElementsName
@@ -557,6 +579,7 @@ public getElementsName(mixed $elements_id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$elements_id` | **mixed** |  |
+
 
 
 
@@ -585,6 +608,7 @@ public buildOptions(mixed $element_name, mixed $params): mixed
 |-----------|------|-------------|
 | `$element_name` | **mixed** |  |
 | `$params` | **mixed** |  |
+
 
 
 
@@ -619,6 +643,7 @@ public setWhere(mixed $search, mixed $search_values, mixed& $query): mixed
 
 
 
+
 ***
 
 ### setSearchBox
@@ -648,6 +673,7 @@ public setSearchBox(mixed $selected, mixed $search_value, mixed $elements_values
 
 
 
+
 ***
 
 ### getEmundusFilters
@@ -657,6 +683,7 @@ public setSearchBox(mixed $selected, mixed $search_value, mixed $elements_values
 ```php
 public getEmundusFilters(): mixed
 ```
+
 
 
 

@@ -88,6 +88,7 @@ fields       fields          The list of fields that will be rendered in the API
 
 
 
+
 ***
 
 ### setType
@@ -118,6 +119,7 @@ protected setType(int $value): mixed
 <p>if the argument is not of the expected type</p>
 
 - [`BadMethodCallException`](../../../../../BadMethodCallException.md)
+
 
 
 
@@ -154,6 +156,7 @@ protected setFields(mixed $value): array
 
 
 
+
 ***
 
 ### setRelations
@@ -187,6 +190,7 @@ protected setRelations(mixed $value): array
 
 
 
+
 ***
 
 ### addFields
@@ -212,6 +216,7 @@ public addFields(string[] $fields): void
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$fields` | **string[]** | The array of additional fields to add to the data of the attribute |
+
 
 
 
@@ -247,6 +252,7 @@ public addRelations(string[] $fields): void
 
 
 
+
 ***
 
 ### getAllPropertiesToRender
@@ -268,6 +274,7 @@ public getAllPropertiesToRender(): array
 
 
 
+
 ***
 
 ### getAllRelationsToRender
@@ -277,6 +284,7 @@ Get properties to render.
 ```php
 public getAllRelationsToRender(): array
 ```
+
 
 
 

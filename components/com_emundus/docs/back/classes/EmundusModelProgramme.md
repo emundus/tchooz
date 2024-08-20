@@ -111,6 +111,7 @@ public __construct(): mixed
 
 
 
+
 ***
 
 ### getCampaign
@@ -142,6 +143,7 @@ Menu item data object on success, false on failure.
 
 
 
+
 ***
 
 ### getParams
@@ -164,6 +166,7 @@ public getParams(mixed $id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$id` | **mixed** |  |
+
 
 
 
@@ -201,6 +204,7 @@ get list of programmes for associated files
 
 
 
+
 ***
 
 ### getProgrammes
@@ -224,6 +228,7 @@ public getProgrammes(mixed $published = null, mixed $codeList = array()): array
 |-----------|------|-------------|
 | `$published` | **mixed** | int     get published or unpublished programme |
 | `$codeList` | **mixed** | array   array of IN and NOT IN programme code to get |
+
 
 
 
@@ -261,6 +266,7 @@ get list of declared programmes
 
 
 
+
 ***
 
 ### addProgrammes
@@ -289,6 +295,7 @@ public addProgrammes(array $data): bool
 
 
 Add new programme in DB
+
 
 
 
@@ -325,6 +332,7 @@ Edit programme in DB
 
 
 
+
 ***
 
 ### getLatestProgramme
@@ -346,6 +354,7 @@ public getLatestProgramme(): string
 **Return Value:**
 
 The most recently added programme in the DB.
+
 
 
 
@@ -382,6 +391,7 @@ True if favorited.
 
 
 
+
 ***
 
 ### favorite
@@ -405,6 +415,7 @@ public favorite(mixed $programme_id, null $user_id = null): bool
 |-----------|------|-------------|
 | `$programme_id` | **mixed** | Int The ID of the programme to be favorited. |
 | `$user_id` | **null** | Int The user ID, if null: the current user ID. |
+
 
 
 
@@ -438,6 +449,7 @@ public unfavorite(mixed $programme_id, null $user_id = null): bool
 
 
 
+
 ***
 
 ### getUpcomingFavorites
@@ -465,6 +477,7 @@ public getUpcomingFavorites(null $user_id = null): mixed
 
 
 
+
 ***
 
 ### getFavorites
@@ -487,6 +500,7 @@ public getFavorites(null $user_id = null): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$user_id` | **null** |  |
+
 
 
 
@@ -524,6 +538,7 @@ public getAllPrograms(mixed $lim = &#039;all&#039;, mixed $page, mixed $filter =
 
 
 
+
 ***
 
 ### getProgramCount
@@ -547,6 +562,7 @@ public getProgramCount(mixed $filter, mixed $recherche): int|mixed|null
 |-----------|------|-------------|
 | `$filter` | **mixed** |  |
 | `$recherche` | **mixed** |  |
+
 
 
 
@@ -579,6 +595,7 @@ public getProgramById(mixed $id): false|mixed|null
 
 
 
+
 ***
 
 ### addProgram
@@ -602,6 +619,7 @@ public addProgram(mixed $data, mixed $user = null): false|mixed|string
 |-----------|------|-------------|
 | `$data` | **mixed** |  |
 | `$user` | **mixed** |  |
+
 
 
 
@@ -640,6 +658,7 @@ Update program in DB
 
 
 
+
 ***
 
 ### deleteProgram
@@ -668,6 +687,7 @@ public deleteProgram(array $data): bool
 
 
 Delete program(s) in DB
+
 
 
 
@@ -704,6 +724,7 @@ Unpublish program(s) in DB
 
 
 
+
 ***
 
 ### publishProgram
@@ -736,6 +757,7 @@ Publish program(s) in DB
 
 
 
+
 ***
 
 ### getProgramCategories
@@ -762,6 +784,7 @@ get list of declared programmes
 
 
 
+
 ***
 
 ### getYearsByProgram
@@ -784,6 +807,7 @@ public getYearsByProgram(mixed $code): object
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$code` | **mixed** |  |
+
 
 
 
@@ -816,6 +840,7 @@ public getManagers(mixed $group): array|mixed
 
 
 
+
 ***
 
 ### getEvaluators
@@ -838,6 +863,7 @@ public getEvaluators(mixed $group): array|mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$group` | **mixed** |  |
+
 
 
 
@@ -872,6 +898,7 @@ public affectusertogroups(mixed $group, mixed $email, mixed $prog_group): false|
 
 
 
+
 ***
 
 ### affectuserstogroup
@@ -896,6 +923,7 @@ public affectuserstogroup(mixed $group, mixed $users, mixed $prog_group): bool
 | `$group` | **mixed** |  |
 | `$users` | **mixed** |  |
 | `$prog_group` | **mixed** |  |
+
 
 
 
@@ -930,6 +958,7 @@ public removefromgroup(mixed $userid, mixed $group, mixed $prog_group): false|mi
 
 
 
+
 ***
 
 ### getusers
@@ -953,6 +982,7 @@ public getusers(mixed $filters, mixed $page = null): array
 |-----------|------|-------------|
 | `$filters` | **mixed** |  |
 | `$page` | **mixed** |  |
+
 
 
 
@@ -987,6 +1017,7 @@ public updateVisibility(mixed $cid, mixed $gid, mixed $visibility): bool
 
 
 
+
 ***
 
 ### clonegroup
@@ -1014,6 +1045,7 @@ public clonegroup(mixed $gid): mixed|void
 
 
 
+
 ***
 
 ### getEvaluationGrid
@@ -1036,6 +1068,7 @@ public getEvaluationGrid(mixed $pid): false|mixed|null
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$pid` | **mixed** |  |
+
 
 
 
@@ -1069,6 +1102,7 @@ public affectGroupToProgram(mixed $group, mixed $pid): false|mixed
 
 
 
+
 ***
 
 ### deleteGroupFromProgram
@@ -1092,6 +1126,7 @@ public deleteGroupFromProgram(mixed $group, mixed $pid): false|mixed
 |-----------|------|-------------|
 | `$group` | **mixed** |  |
 | `$pid` | **mixed** |  |
+
 
 
 
@@ -1127,6 +1162,7 @@ public createGridFromModel(mixed $label, mixed $intro, mixed $model, mixed $pid)
 
 
 
+
 ***
 
 ### getGridsModel
@@ -1136,6 +1172,7 @@ public createGridFromModel(mixed $label, mixed $intro, mixed $model, mixed $pid)
 ```php
 public getGridsModel(): array|false|mixed
 ```
+
 
 
 
@@ -1178,6 +1215,7 @@ public createGrid(mixed $label, mixed $intro, mixed $pid, mixed $template): bool
 
 
 
+
 ***
 
 ### deleteGrid
@@ -1201,6 +1239,7 @@ public deleteGrid(mixed $grid, mixed $pid): false|mixed
 |-----------|------|-------------|
 | `$grid` | **mixed** |  |
 | `$pid` | **mixed** |  |
+
 
 
 
@@ -1233,6 +1272,7 @@ public getUserPrograms(mixed $user_id): array|false
 
 
 
+
 ***
 
 ### getGroupsByPrograms
@@ -1255,6 +1295,7 @@ public getGroupsByPrograms(mixed $programs): array|false
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$programs` | **mixed** |  |
+
 
 
 
@@ -1289,6 +1330,7 @@ public addGroupToProgram(mixed $label, mixed $code, mixed $parent): bool
 
 
 
+
 ***
 
 ### getGroupByParent
@@ -1312,6 +1354,7 @@ public getGroupByParent(mixed $code, mixed $parent): false|mixed|null
 |-----------|------|-------------|
 | `$code` | **mixed** |  |
 | `$parent` | **mixed** |  |
+
 
 
 
@@ -1344,6 +1387,7 @@ public getCampaignsByProgram(mixed $program): array|false|mixed
 
 
 
+
 ***
 
 ### getAllSessions
@@ -1353,6 +1397,7 @@ public getCampaignsByProgram(mixed $program): array|false|mixed
 ```php
 public getAllSessions(): mixed
 ```
+
 
 
 
@@ -1403,6 +1448,7 @@ The filename
 
 
 
+
 ***
 
 ### getInstance
@@ -1438,6 +1484,7 @@ A \JModelLegacy instance or false on failure
 
 
 
+
 ***
 
 ### addTablePath
@@ -1462,6 +1509,7 @@ public static addTablePath(mixed $path): void
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$path` | **mixed** | The directory as a string or directories as an array to add. |
+
 
 
 
@@ -1502,6 +1550,7 @@ A ModelInterface instance or null on failure
 
 
 
+
 ***
 
 ### getState
@@ -1530,6 +1579,7 @@ public getState(string $property = null, mixed $default = null): mixed
 **Return Value:**
 
 The property where specified, the state object where omitted
+
 
 
 
@@ -1566,6 +1616,7 @@ The previous value of the property or null if not set
 
 
 
+
 ***
 
 ### populateState
@@ -1593,6 +1644,7 @@ Note. Calling getState in this method will result in recursion.
 |-----------|------|-------------|
 | `$ordering` | **string** | An optional ordering field. |
 | `$direction` | **string** | An optional direction (asc&amp;#124;desc). |
+
 
 
 
@@ -1631,6 +1683,7 @@ public __construct(array $config = [], ?\Joomla\CMS\MVC\Factory\MVCFactoryInterf
 
 
 
+
 ***
 
 ### addIncludePath
@@ -1662,6 +1715,7 @@ public static addIncludePath(mixed $path = &#039;&#039;, string $prefix = &#039;
 **Return Value:**
 
 An array with directory elements. If prefix is equal to '', all directories are returned.
+
 
 
 
@@ -1701,6 +1755,7 @@ The name of the model
 
 
 
+
 ***
 
 ### getMVCFactory
@@ -1727,6 +1782,7 @@ protected getMVCFactory(): \Joomla\CMS\MVC\Factory\MVCFactoryInterface
 
 
 
+
 ***
 
 ### setMVCFactory
@@ -1749,6 +1805,7 @@ public setMVCFactory(\Joomla\CMS\MVC\Factory\MVCFactoryInterface $mvcFactory): v
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$mvcFactory` | **\Joomla\CMS\MVC\Factory\MVCFactoryInterface** | The MVC factory |
+
 
 
 
@@ -1792,6 +1849,7 @@ An array of results.
 
 
 
+
 ***
 
 ### _getListCount
@@ -1826,6 +1884,7 @@ Number of rows for query.
 
 
 
+
 ***
 
 ### _createTable
@@ -1855,6 +1914,7 @@ protected _createTable(string $name, string $prefix = &#039;Table&#039;, array $
 **Return Value:**
 
 Table object or boolean false if failed
+
 
 
 
@@ -1901,6 +1961,7 @@ A Table object
 
 
 
+
 ***
 
 ### isCheckedOut
@@ -1928,6 +1989,7 @@ public isCheckedOut(\stdClass $item): bool
 
 
 
+
 ***
 
 ### cleanCache
@@ -1950,6 +2012,7 @@ protected cleanCache(string $group = null): void
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$group` | **string** | The cache group |
+
 
 
 
@@ -1986,6 +2049,7 @@ The service container
 
 
 
+
 ***
 
 ### getDispatcher
@@ -2014,6 +2078,7 @@ TODO: Remove the override in 6.0
 
 
 
+
 ***
 
 ### dispatchEvent
@@ -2038,6 +2103,7 @@ protected dispatchEvent(\Joomla\Event\EventInterface $event): void
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$event` | **\Joomla\Event\EventInterface** | The event |
+
 
 
 
@@ -2075,6 +2141,7 @@ The database driver.
 
 
 
+
 ***
 
 ### setDbo
@@ -2099,6 +2166,7 @@ public setDbo(?\Joomla\Database\DatabaseInterface $db = null): void
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$db` | **?\Joomla\Database\DatabaseInterface** | The database driver. |
+
 
 
 
@@ -2133,6 +2201,7 @@ public __get(string $name): mixed
 **Return Value:**
 
 The value of the element if set, null otherwise
+
 
 
 
@@ -2173,6 +2242,7 @@ protected loadForm(string $name, string $source = null, array $options = [], boo
 
 
 
+
 **See Also:**
 
 * \Joomla\CMS\Form\Form - 
@@ -2202,6 +2272,7 @@ The data for the form.
 
 
 
+
 ***
 
 ### preprocessData
@@ -2226,6 +2297,7 @@ protected preprocessData(string $context, mixed& $data, string $group = &#039;co
 | `$context` | **string** | The context identifier. |
 | `$data` | **mixed** | The data to be processed. It gets altered directly. |
 | `$group` | **string** | The name of the plugin group to import (defaults to &quot;content&quot;). |
+
 
 
 
@@ -2266,6 +2338,7 @@ protected preprocessForm(\Joomla\CMS\Form\Form $form, mixed $data, string $group
 
 
 
+
 **See Also:**
 
 * \Joomla\CMS\Form\FormField - 
@@ -2297,6 +2370,7 @@ public getFormFactory(): \Joomla\CMS\Form\FormFactoryInterface
 
 
 
+
 ***
 
 ### getEmptyStateQuery
@@ -2306,6 +2380,7 @@ Provide a query to be used to evaluate if this is an Empty State, can be overrid
 ```php
 protected getEmptyStateQuery(): \Joomla\Database\DatabaseQuery
 ```
+
 
 
 
@@ -2344,6 +2419,7 @@ public getIsEmptyState(): bool
 
 
 
+
 ***
 
 ### _getListQuery
@@ -2365,6 +2441,7 @@ This method ensures that the query is constructed only once for a given state of
 **Return Value:**
 
 A DatabaseQuery object
+
 
 
 
@@ -2394,6 +2471,7 @@ Associative array in the format: array('filter_published' => 0)
 
 
 
+
 ***
 
 ### getItems
@@ -2415,6 +2493,7 @@ public getItems(): mixed
 **Return Value:**
 
 An array of data items on success, false on failure.
+
 
 
 
@@ -2444,6 +2523,7 @@ A DatabaseQuery object to retrieve the data set.
 
 
 
+
 ***
 
 ### getPagination
@@ -2465,6 +2545,7 @@ public getPagination(): \Joomla\CMS\Pagination\Pagination
 **Return Value:**
 
 A Pagination object for the data set.
+
 
 
 
@@ -2502,6 +2583,7 @@ A store id.
 
 
 
+
 ***
 
 ### getTotal
@@ -2527,6 +2609,7 @@ The total number of items available in the data set.
 
 
 
+
 ***
 
 ### getStart
@@ -2548,6 +2631,7 @@ public getStart(): int
 **Return Value:**
 
 The starting number of items available in the data set.
+
 
 
 
@@ -2580,6 +2664,7 @@ public getFilterForm(array $data = [], bool $loadData = true): \Joomla\CMS\Form\
 **Return Value:**
 
 The \JForm object or null if the form can't be found
+
 
 
 
@@ -2620,6 +2705,7 @@ The request user state.
 
 
 
+
 ***
 
 ### refineSearchStringToRegex
@@ -2648,6 +2734,7 @@ protected refineSearchStringToRegex(string $search, string $regexDelimiter = &#0
 **Return Value:**
 
 Search string escaped for regex
+
 
 
 

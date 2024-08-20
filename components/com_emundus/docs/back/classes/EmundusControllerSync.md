@@ -87,6 +87,7 @@ public __construct(array $config = array()): mixed
 
 
 
+
 **See Also:**
 
 * \JController - 
@@ -100,6 +101,7 @@ public __construct(array $config = array()): mixed
 ```php
 public getconfig(): mixed
 ```
+
 
 
 
@@ -133,6 +135,7 @@ public saveconfig(): mixed
 
 
 
+
 ***
 
 ### getaspects
@@ -142,6 +145,7 @@ public saveconfig(): mixed
 ```php
 public getaspects(): mixed
 ```
+
 
 
 
@@ -175,6 +179,7 @@ public uploadaspectfile(): mixed
 
 
 
+
 ***
 
 ### updateaspectlistfromfile
@@ -184,6 +189,7 @@ public uploadaspectfile(): mixed
 ```php
 public updateaspectlistfromfile(): mixed
 ```
+
 
 
 
@@ -217,6 +223,7 @@ public getdocuments(): mixed
 
 
 
+
 ***
 
 ### getemundustags
@@ -226,6 +233,7 @@ public getdocuments(): mixed
 ```php
 public getemundustags(): mixed
 ```
+
 
 
 
@@ -259,6 +267,7 @@ public getsetuptags(): mixed
 
 
 
+
 ***
 
 ### updatedocumentsync
@@ -268,6 +277,7 @@ public getsetuptags(): mixed
 ```php
 public updatedocumentsync(): mixed
 ```
+
 
 
 
@@ -301,6 +311,7 @@ public updatedocumentsyncmethod(): mixed
 
 
 
+
 ***
 
 ### issyncmoduleactive
@@ -310,6 +321,7 @@ public updatedocumentsyncmethod(): mixed
 ```php
 public issyncmoduleactive(): mixed
 ```
+
 
 
 
@@ -343,6 +355,7 @@ public getsynctype(): string
 
 
 
+
 ***
 
 ### getsynchronizestate
@@ -352,6 +365,7 @@ public getsynctype(): string
 ```php
 public getsynchronizestate(): mixed
 ```
+
 
 
 
@@ -385,6 +399,7 @@ public synchronizeattachments(): mixed
 
 
 
+
 ***
 
 ### deleteattachments
@@ -394,6 +409,7 @@ public synchronizeattachments(): mixed
 ```php
 public deleteattachments(): mixed
 ```
+
 
 
 
@@ -427,6 +443,7 @@ public checkattachmentsexists(): mixed
 
 
 
+
 ***
 
 ### getattachmentaspectsconfig
@@ -436,6 +453,7 @@ public checkattachmentsexists(): mixed
 ```php
 public getattachmentaspectsconfig(): mixed
 ```
+
 
 
 
@@ -469,6 +487,7 @@ public saveattachmentaspectsconfig(): mixed
 
 
 
+
 ***
 
 ### getnodeid
@@ -478,6 +497,7 @@ public saveattachmentaspectsconfig(): mixed
 ```php
 public getnodeid(): mixed
 ```
+
 
 
 

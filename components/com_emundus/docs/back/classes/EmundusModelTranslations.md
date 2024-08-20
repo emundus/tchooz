@@ -51,6 +51,7 @@ public __construct(): mixed
 
 
 
+
 ***
 
 ### checkSetup
@@ -60,6 +61,7 @@ Check if translation tool is ready to use
 ```php
 public checkSetup(): false|mixed|null
 ```
+
 
 
 
@@ -93,6 +95,7 @@ public configureSetup(): false|mixed|void
 
 
 
+
 ***
 
 ### getTranslationsObject
@@ -102,6 +105,7 @@ Get our translations definitions
 ```php
 public getTranslationsObject(): array
 ```
+
 
 
 
@@ -144,6 +148,7 @@ public getDatas(mixed $table, mixed $reference_id, mixed $label, mixed $filters)
 
 
 
+
 ***
 
 ### getChildrens
@@ -168,6 +173,7 @@ public getChildrens(mixed $table, mixed $reference_id, mixed $label): array|fals
 | `$table` | **mixed** |  |
 | `$reference_id` | **mixed** |  |
 | `$label` | **mixed** |  |
+
 
 
 
@@ -207,6 +213,7 @@ public getTranslations(mixed $type = &#039;override&#039;, mixed $lang_code = &#
 
 
 
+
 ***
 
 ### insertTranslation
@@ -236,6 +243,7 @@ public insertTranslation(mixed $tag, mixed $override, mixed $lang_code, mixed $l
 | `$reference_table` | **mixed** |  |
 | `$reference_id` | **mixed** |  |
 | `$reference_field` | **mixed** |  |
+
 
 
 
@@ -279,6 +287,7 @@ false if error, tag if success
 
 
 
+
 ***
 
 ### deleteTranslation
@@ -309,6 +318,7 @@ public deleteTranslation(mixed $tag = &#039;&#039;, mixed $lang_code = &#039;*&#
 
 
 
+
 ***
 
 ### getDefaultLanguage
@@ -318,6 +328,7 @@ Get default language of the platform
 ```php
 public getDefaultLanguage(): false|mixed|null
 ```
+
 
 
 
@@ -351,6 +362,7 @@ public getPlatformLanguages(): array
 
 
 
+
 ***
 
 ### getAllLanguages
@@ -360,6 +372,7 @@ Get all languages available on our platform
 ```php
 public getAllLanguages(): array|false|mixed
 ```
+
 
 
 
@@ -401,6 +414,7 @@ public updateLanguage(mixed $lang_code, mixed $published, mixed $default): false
 
 
 
+
 ***
 
 ### updateFalangModule
@@ -423,6 +437,7 @@ public updateFalangModule(mixed $published): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$published` | **mixed** |  |
+
 
 
 
@@ -454,6 +469,7 @@ public getTranslationsFalang(mixed $default_lang, mixed $lang_to, mixed $referen
 | `$reference_id` | **mixed** |  |
 | `$fields` | **mixed** |  |
 | `$reference_table` | **mixed** |  |
+
 
 
 
@@ -491,6 +507,7 @@ public updateFalangTranslation(mixed $value, mixed $lang_to, mixed $reference_ta
 
 
 
+
 ***
 
 ### getJoinReferenceId
@@ -517,6 +534,7 @@ public getJoinReferenceId(mixed $reference_table, mixed $reference_column, mixed
 | `$join_table` | **mixed** |  |
 | `$join_column` | **mixed** |  |
 | `$reference_id` | **mixed** |  |
+
 
 
 
@@ -551,6 +569,7 @@ public getOrphelins(mixed $default_lang, mixed $lang_code, mixed $type = &#039;o
 
 
 
+
 ***
 
 ### sendPurposeNewLanguage
@@ -574,6 +593,7 @@ public sendPurposeNewLanguage(mixed $language, mixed $comment): mixed
 |-----------|------|-------------|
 | `$language` | **mixed** |  |
 | `$comment` | **mixed** |  |
+
 
 
 
@@ -609,6 +629,7 @@ public checkTagIsCorrect(mixed $tag, mixed $override, mixed $action, mixed $lang
 
 
 
+
 ***
 
 ### checkTagExists
@@ -638,6 +659,7 @@ public checkTagExists(mixed $tag, mixed $reference_table, mixed $reference_id): 
 
 
 
+
 ***
 
 ### checkTagExistsInOverrideFiles
@@ -661,6 +683,7 @@ public checkTagExistsInOverrideFiles(mixed $tag, mixed $languages = null): mixed
 |-----------|------|-------------|
 | `$tag` | **mixed** |  |
 | `$languages` | **mixed** |  |
+
 
 
 
@@ -695,6 +718,7 @@ public generateNewTag(mixed $tag, mixed $reference_table = &#039;&#039;, mixed $
 
 
 
+
 ***
 
 ### updateElementLabel
@@ -719,6 +743,7 @@ public updateElementLabel(mixed $tag, mixed $reference_table, mixed $reference_i
 | `$tag` | **mixed** |  |
 | `$reference_table` | **mixed** |  |
 | `$reference_id` | **mixed** |  |
+
 
 
 

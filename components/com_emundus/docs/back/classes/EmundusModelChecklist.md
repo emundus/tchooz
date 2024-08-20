@@ -132,6 +132,7 @@ public __construct(mixed $student_id = null): mixed
 
 
 
+
 ***
 
 ### getGreeting
@@ -141,6 +142,7 @@ public __construct(mixed $student_id = null): mixed
 ```php
 public getGreeting(): mixed
 ```
+
 
 
 
@@ -174,6 +176,7 @@ public getInstructions(): mixed
 
 
 
+
 ***
 
 ### getFormsList
@@ -195,6 +198,7 @@ public getFormsList(): mixed
 
 
 
+
 ***
 
 ### getAttachmentsList
@@ -204,6 +208,7 @@ public getFormsList(): mixed
 ```php
 public getAttachmentsList(): mixed
 ```
+
 
 
 
@@ -243,6 +248,7 @@ public getAttachmentsForCampaignId(mixed $campaign_id): mixed
 
 
 
+
 ***
 
 ### getAttachmentsForProfile
@@ -273,6 +279,7 @@ public getAttachmentsForProfile(mixed $profile_id, mixed $campaign_id = null): a
 
 
 
+
 ***
 
 ### getNeed
@@ -282,6 +289,7 @@ public getAttachmentsForProfile(mixed $profile_id, mixed $campaign_id = null): a
 ```php
 public getNeed(): mixed
 ```
+
 
 
 
@@ -315,6 +323,7 @@ public getSent(): mixed
 
 
 
+
 ***
 
 ### getResult
@@ -324,6 +333,7 @@ public getSent(): mixed
 ```php
 public getResult(): mixed
 ```
+
 
 
 
@@ -357,6 +367,7 @@ public getApplicant(): mixed
 
 
 
+
 ***
 
 ### getIsOtherActiveCampaign
@@ -366,6 +377,7 @@ public getApplicant(): mixed
 ```php
 public getIsOtherActiveCampaign(): mixed
 ```
+
 
 
 
@@ -405,6 +417,7 @@ public getConfirmUrl(mixed $profile = null): mixed
 
 
 
+
 ***
 
 ### setDelete
@@ -428,6 +441,7 @@ public setDelete(mixed $can_be_deleted, mixed $student = null): mixed
 |-----------|------|-------------|
 | `$can_be_deleted` | **mixed** |  |
 | `$student` | **mixed** |  |
+
 
 
 
@@ -457,6 +471,7 @@ public formatFileName(string $file, string $fnum, array $post = []): string
 | `$file` | **string** |  |
 | `$fnum` | **string** |  |
 | `$post` | **array** |  |
+
 
 
 

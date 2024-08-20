@@ -87,6 +87,7 @@ public __construct(array $config = array()): mixed
 
 
 
+
 **See Also:**
 
 * \JController - 
@@ -123,6 +124,7 @@ This object to support chaining.
 
 
 
+
 ***
 
 ### adduser
@@ -132,6 +134,7 @@ This object to support chaining.
 ```php
 public adduser(): mixed
 ```
+
 
 
 
@@ -165,6 +168,7 @@ public delincomplete(): mixed
 
 
 
+
 ***
 
 ### delrefused
@@ -174,6 +178,7 @@ public delincomplete(): mixed
 ```php
 public delrefused(): mixed
 ```
+
 
 
 
@@ -207,6 +212,7 @@ public delnonevaluated(): mixed
 
 
 
+
 ***
 
 ### archive
@@ -216,6 +222,7 @@ public delnonevaluated(): mixed
 ```php
 public archive(): mixed
 ```
+
 
 
 
@@ -249,6 +256,7 @@ public lastSavedFilter(): mixed
 
 
 
+
 ***
 
 ### getConstraintsFilter
@@ -270,6 +278,7 @@ public getConstraintsFilter(): mixed
 
 
 
+
 ***
 
 ### export_selected_xls
@@ -279,6 +288,7 @@ public getConstraintsFilter(): mixed
 ```php
 public export_selected_xls(): mixed
 ```
+
 
 
 
@@ -319,6 +329,7 @@ public export_account_to_xls(mixed $reqids = array(), mixed $el = array()): mixe
 
 
 
+
 ***
 
 ### export_zip
@@ -328,6 +339,7 @@ public export_account_to_xls(mixed $reqids = array(), mixed $el = array()): mixe
 ```php
 public export_zip(): mixed
 ```
+
 
 
 
@@ -361,6 +373,7 @@ public addsession(): mixed
 
 
 
+
 ***
 
 ### clear
@@ -370,6 +383,7 @@ public addsession(): mixed
 ```php
 public clear(): mixed
 ```
+
 
 
 
@@ -403,6 +417,7 @@ public setfilters(): mixed
 
 
 
+
 ***
 
 ### loadfilters
@@ -412,6 +427,7 @@ public setfilters(): mixed
 ```php
 public loadfilters(): mixed
 ```
+
 
 
 
@@ -445,6 +461,7 @@ public order(): mixed
 
 
 
+
 ***
 
 ### setlimit
@@ -454,6 +471,7 @@ public order(): mixed
 ```php
 public setlimit(): mixed
 ```
+
 
 
 
@@ -487,6 +505,7 @@ public savefilters(): mixed
 
 
 
+
 ***
 
 ### deletefilters
@@ -496,6 +515,7 @@ public savefilters(): mixed
 ```php
 public deletefilters(): mixed
 ```
+
 
 
 
@@ -529,6 +549,7 @@ public setlimitstart(): mixed
 
 
 
+
 ***
 
 ### addgroup
@@ -538,6 +559,7 @@ public setlimitstart(): mixed
 ```php
 public addgroup(): mixed
 ```
+
 
 
 
@@ -571,6 +593,7 @@ public changeblock(): mixed
 
 
 
+
 ***
 
 ### changeactivation
@@ -580,6 +603,7 @@ public changeblock(): mixed
 ```php
 public changeactivation(): mixed
 ```
+
 
 
 
@@ -613,6 +637,7 @@ public affectgroups(): mixed
 
 
 
+
 ***
 
 ### edituser
@@ -622,6 +647,7 @@ public affectgroups(): mixed
 ```php
 public edituser(): mixed
 ```
+
 
 
 
@@ -655,6 +681,7 @@ public deleteusers(): mixed
 
 
 
+
 ***
 
 ### setgrouprights
@@ -676,6 +703,7 @@ public setgrouprights(): mixed
 
 
 
+
 ***
 
 ### ldapsearch
@@ -685,6 +713,7 @@ Search the LDAP for a user to add.
 ```php
 public ldapsearch(): mixed
 ```
+
 
 
 
@@ -723,6 +752,7 @@ public passrequest(): bool
 
 
 
+
 ***
 
 ### getuserbyid
@@ -732,6 +762,7 @@ public passrequest(): bool
 ```php
 public getuserbyid(): mixed
 ```
+
 
 
 
@@ -765,6 +796,7 @@ public getUserNameById(): mixed
 
 
 
+
 ***
 
 ### getattachmentaccessrights
@@ -774,6 +806,7 @@ public getUserNameById(): mixed
 ```php
 public getattachmentaccessrights(): mixed
 ```
+
 
 
 
@@ -807,6 +840,7 @@ public getprofileform(): mixed
 
 
 
+
 ***
 
 ### getprofilegroups
@@ -816,6 +850,7 @@ public getprofileform(): mixed
 ```php
 public getprofilegroups(): mixed
 ```
+
 
 
 
@@ -849,6 +884,7 @@ public getprofileelements(): mixed
 
 
 
+
 ***
 
 ### getprofileattachments
@@ -858,6 +894,7 @@ public getprofileelements(): mixed
 ```php
 public getprofileattachments(): mixed
 ```
+
 
 
 
@@ -891,6 +928,7 @@ public getprofileattachmentsallowed(): mixed
 
 
 
+
 ***
 
 ### uploaddefaultattachment
@@ -900,6 +938,7 @@ public getprofileattachmentsallowed(): mixed
 ```php
 public uploaddefaultattachment(): mixed
 ```
+
 
 
 
@@ -933,6 +972,7 @@ public deleteprofileattachment(): mixed
 
 
 
+
 ***
 
 ### uploadprofileattachmenttofile
@@ -942,6 +982,7 @@ public deleteprofileattachment(): mixed
 ```php
 public uploadprofileattachmenttofile(): mixed
 ```
+
 
 
 
@@ -975,6 +1016,7 @@ public uploadfileattachmenttoprofile(): mixed
 
 
 
+
 ***
 
 ### updateprofilepicture
@@ -984,6 +1026,7 @@ public uploadfileattachmenttoprofile(): mixed
 ```php
 public updateprofilepicture(): mixed
 ```
+
 
 
 
@@ -1017,6 +1060,7 @@ public activation(): mixed
 
 
 
+
 ***
 
 ### updateemundussession
@@ -1026,6 +1070,7 @@ public activation(): mixed
 ```php
 public updateemundussession(): mixed
 ```
+
 
 
 
@@ -1059,6 +1104,7 @@ public addapplicantprofile(): mixed
 
 
 
+
 ***
 
 ### affectjoomlagroups
@@ -1068,6 +1114,7 @@ public addapplicantprofile(): mixed
 ```php
 public affectjoomlagroups(): mixed
 ```
+
 
 
 
@@ -1101,6 +1148,7 @@ public activation_anonym_user(): mixed
 
 
 
+
 ***
 
 ### getCurrentUser
@@ -1122,6 +1170,7 @@ public getCurrentUser(): mixed
 
 
 
+
 ***
 
 ### getcurrentprofile
@@ -1131,6 +1180,7 @@ public getCurrentUser(): mixed
 ```php
 public getcurrentprofile(): mixed
 ```
+
 
 
 
@@ -1166,6 +1216,7 @@ public exportusers(): void
 **Throws:**
 
 - [`Exception`](./Exception.md)
+
 
 
 

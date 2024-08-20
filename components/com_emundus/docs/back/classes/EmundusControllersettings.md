@@ -87,6 +87,7 @@ public __construct(array $config = array()): mixed
 
 
 
+
 **See Also:**
 
 * \JController - 
@@ -100,6 +101,7 @@ public __construct(array $config = array()): mixed
 ```php
 public getstatus(): mixed
 ```
+
 
 
 
@@ -133,6 +135,7 @@ public gettags(): mixed
 
 
 
+
 ***
 
 ### createtag
@@ -142,6 +145,7 @@ public gettags(): mixed
 ```php
 public createtag(): mixed
 ```
+
 
 
 
@@ -175,6 +179,7 @@ public createstatus(): mixed
 
 
 
+
 ***
 
 ### deletetag
@@ -184,6 +189,7 @@ public createstatus(): mixed
 ```php
 public deletetag(): mixed
 ```
+
 
 
 
@@ -217,6 +223,7 @@ public deletestatus(): mixed
 
 
 
+
 ***
 
 ### updatestatus
@@ -226,6 +233,7 @@ public deletestatus(): mixed
 ```php
 public updatestatus(): mixed
 ```
+
 
 
 
@@ -259,6 +267,7 @@ public updatestatusorder(): mixed
 
 
 
+
 ***
 
 ### updatetags
@@ -268,6 +277,7 @@ public updatestatusorder(): mixed
 ```php
 public updatetags(): mixed
 ```
+
 
 
 
@@ -301,6 +311,7 @@ public getarticle(): mixed
 
 
 
+
 ***
 
 ### updatearticle
@@ -310,6 +321,7 @@ public getarticle(): mixed
 ```php
 public updatearticle(): mixed
 ```
+
 
 
 
@@ -343,6 +355,7 @@ public getAllArticleNeedToModify(): mixed
 
 
 
+
 ***
 
 ### publisharticle
@@ -352,6 +365,7 @@ public getAllArticleNeedToModify(): mixed
 ```php
 public publisharticle(): mixed
 ```
+
 
 
 
@@ -385,6 +399,7 @@ public getfooterarticles(): mixed
 
 
 
+
 ***
 
 ### updatefooter
@@ -394,6 +409,7 @@ public getfooterarticles(): mixed
 ```php
 public updatefooter(): mixed
 ```
+
 
 
 
@@ -427,6 +443,7 @@ public getlogo(): mixed
 
 
 
+
 ***
 
 ### getfavicon
@@ -436,6 +453,7 @@ public getlogo(): mixed
 ```php
 public getfavicon(): mixed
 ```
+
 
 
 
@@ -469,6 +487,7 @@ public updatelogo(): mixed
 
 
 
+
 ***
 
 ### updateicon
@@ -478,6 +497,7 @@ public updatelogo(): mixed
 ```php
 public updateicon(): mixed
 ```
+
 
 
 
@@ -511,6 +531,7 @@ public removeicon(): mixed
 
 
 
+
 ***
 
 ### updatehomebackground
@@ -520,6 +541,7 @@ public removeicon(): mixed
 ```php
 public updatehomebackground(): mixed
 ```
+
 
 
 
@@ -553,6 +575,7 @@ public getbackgroundoption(): mixed
 
 
 
+
 ***
 
 ### updatebackgroundmodule
@@ -562,6 +585,7 @@ public getbackgroundoption(): mixed
 ```php
 public updatebackgroundmodule(): mixed
 ```
+
 
 
 
@@ -595,6 +619,7 @@ public getappcolors(): mixed
 
 
 
+
 ***
 
 ### updatecolor
@@ -604,6 +629,7 @@ public getappcolors(): mixed
 ```php
 public updatecolor(): mixed
 ```
+
 
 
 
@@ -637,6 +663,7 @@ public getdatasfromtable(): mixed
 
 
 
+
 ***
 
 ### savedatas
@@ -646,6 +673,7 @@ public getdatasfromtable(): mixed
 ```php
 public savedatas(): mixed
 ```
+
 
 
 
@@ -679,6 +707,7 @@ public saveimporteddatas(): mixed
 
 
 
+
 ***
 
 ### unlockuser
@@ -688,6 +717,7 @@ public saveimporteddatas(): mixed
 ```php
 public unlockuser(): mixed
 ```
+
 
 
 
@@ -721,6 +751,7 @@ public lockuser(): mixed
 
 
 
+
 ***
 
 ### checkfirstdatabasejoin
@@ -730,6 +761,7 @@ public lockuser(): mixed
 ```php
 public checkfirstdatabasejoin(): mixed
 ```
+
 
 
 
@@ -763,6 +795,7 @@ public removeparam(): mixed
 
 
 
+
 ***
 
 ### redirectjroute
@@ -772,6 +805,7 @@ public removeparam(): mixed
 ```php
 public redirectjroute(): mixed
 ```
+
 
 
 
@@ -805,6 +839,7 @@ public geteditorvariables(): mixed
 
 
 
+
 ***
 
 ### getactivelanguages
@@ -814,6 +849,7 @@ public geteditorvariables(): mixed
 ```php
 public getactivelanguages(): mixed
 ```
+
 
 
 
@@ -847,6 +883,7 @@ public uploadimages(): mixed
 
 
 
+
 ***
 
 ### gettasks
@@ -856,6 +893,7 @@ public uploadimages(): mixed
 ```php
 public gettasks(): mixed
 ```
+
 
 
 
@@ -889,6 +927,7 @@ public uploaddropfiledoc(): mixed
 
 
 
+
 ***
 
 ### getemundusparams
@@ -898,6 +937,7 @@ public uploaddropfiledoc(): mixed
 ```php
 public getemundusparams(): mixed
 ```
+
 
 
 
@@ -931,6 +971,7 @@ public updateArticleNeedToModify(): mixed
 
 
 
+
 ***
 
 ### updateemundusparam
@@ -940,6 +981,7 @@ public updateArticleNeedToModify(): mixed
 ```php
 public updateemundusparam(): mixed
 ```
+
 
 
 
@@ -973,6 +1015,7 @@ public updateemundusparams(): mixed
 
 
 
+
 ***
 
 ### sendTestMail
@@ -982,6 +1025,7 @@ public updateemundusparams(): mixed
 ```php
 public sendTestMail(): mixed
 ```
+
 
 
 
@@ -1015,6 +1059,7 @@ public getallusers(): mixed
 
 
 
+
 ***
 
 ### isexpiresdatedisplayed
@@ -1024,6 +1069,7 @@ public getallusers(): mixed
 ```php
 public isexpiresdatedisplayed(): mixed
 ```
+
 
 
 
@@ -1057,6 +1103,7 @@ public uploadimagetocustomfolder(): mixed
 
 
 
+
 ***
 
 ### getbanner
@@ -1066,6 +1113,7 @@ public uploadimagetocustomfolder(): mixed
 ```php
 public getbanner(): mixed
 ```
+
 
 
 
@@ -1099,6 +1147,7 @@ public updatebanner(): mixed
 
 
 
+
 ***
 
 ### getonboardinglists
@@ -1108,6 +1157,7 @@ public updatebanner(): mixed
 ```php
 public getonboardinglists(): mixed
 ```
+
 
 
 
@@ -1141,6 +1191,7 @@ public getOffset(): mixed
 
 
 
+
 ***
 
 ### getemailsender
@@ -1150,6 +1201,7 @@ public getOffset(): mixed
 ```php
 public getemailsender(): mixed
 ```
+
 
 
 
@@ -1183,6 +1235,7 @@ public gethomearticle(): mixed
 
 
 
+
 ***
 
 ### getrgpdarticles
@@ -1192,6 +1245,7 @@ public gethomearticle(): mixed
 ```php
 public getrgpdarticles(): mixed
 ```
+
 
 
 
@@ -1225,6 +1279,7 @@ public gettimezonelist(): mixed
 
 
 
+
 ***
 
 ### uploadmedia
@@ -1234,6 +1289,7 @@ public gettimezonelist(): mixed
 ```php
 public uploadmedia(): mixed
 ```
+
 
 
 
@@ -1267,6 +1323,7 @@ public getmedia(): mixed
 
 
 
+
 ***
 
 ### deletemedia
@@ -1276,6 +1333,7 @@ public getmedia(): mixed
 ```php
 public deletemedia(): mixed
 ```
+
 
 
 

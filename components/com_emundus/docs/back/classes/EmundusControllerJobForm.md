@@ -34,6 +34,7 @@ public edit(): mixed
 
 
 
+
 ***
 
 ### save
@@ -55,6 +56,7 @@ public save(): void|mixed
 
 
 
+
 ***
 
 ### cancel
@@ -64,6 +66,7 @@ public save(): void|mixed
 ```php
 public cancel(): mixed
 ```
+
 
 
 
@@ -99,6 +102,7 @@ public remove(): false|void
 **Throws:**
 
 - [`Exception`](./Exception.md)
+
 
 
 

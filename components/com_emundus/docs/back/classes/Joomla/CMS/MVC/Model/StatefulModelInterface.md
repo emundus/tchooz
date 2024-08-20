@@ -43,6 +43,7 @@ The property where specified, the state object where omitted
 
 
 
+
 ***
 
 ### setState
@@ -71,6 +72,7 @@ public setState(string $property, mixed $value = null): mixed
 **Return Value:**
 
 The previous value of the property or null if not set.
+
 
 
 

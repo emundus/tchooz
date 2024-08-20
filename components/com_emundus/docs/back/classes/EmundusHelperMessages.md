@@ -43,6 +43,7 @@ An object containing the email matching the label.
 
 
 
+
 ***
 
 ### sendApplicantEmail
@@ -54,6 +55,7 @@ public sendApplicantEmail(): mixed
 ```
 
 Uses data that is sent via POST in a form.
+
 
 
 

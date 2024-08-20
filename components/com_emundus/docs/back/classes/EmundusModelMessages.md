@@ -72,6 +72,7 @@ public __construct(array $config = array()): mixed
 
 
 
+
 ***
 
 ### getAllMessages
@@ -99,6 +100,7 @@ public getAllMessages(int $type = 2): mixed
 **Return Value:**
 
 False if the query fails and nothing can be loaded. An array of objects describing the messages. (sender, subject, body, etc..)
+
 
 
 
@@ -134,6 +136,7 @@ False if the query fails and nothing can be loaded. An array of the categories.
 
 
 
+
 ***
 
 ### getAttachments
@@ -159,6 +162,7 @@ False if the query fails and nothing can be loaded. or An array of objects descr
 
 
 
+
 ***
 
 ### getLetters
@@ -180,6 +184,7 @@ public getLetters(): bool
 **Return Value:**
 
 False if the query fails and nothing can be loaded.
+
 
 
 
@@ -215,6 +220,7 @@ The email we seek, false if none is found.
 
 
 
+
 ***
 
 ### getEmailsByCategory
@@ -242,6 +248,7 @@ public getEmailsByCategory(string $category): object|false
 **Return Value:**
 
 The list of templates corresponding.
+
 
 
 
@@ -274,6 +281,7 @@ public get_upload(string $fnum, int $attachment_id): bool|mixed
 
 
 
+
 ***
 
 ### get_filename
@@ -296,6 +304,7 @@ public get_filename(int $attachment_id): bool|mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$attachment_id` | **int** | the ID of the attachment used in setup_attachment |
+
 
 
 
@@ -332,6 +341,7 @@ The letter object as found in the DB, also contains the status and training.
 
 
 
+
 ***
 
 ### getCandidateFileNames
@@ -363,6 +373,7 @@ A list of objects containing the names and ids of the candidate files.
 
 
 
+
 ***
 
 ### getLetterFileNames
@@ -390,6 +401,7 @@ public getLetterFileNames(mixed $ids): array|false
 **Return Value:**
 
 A list of objects containing the names and ids of the candidate files.
+
 
 
 
@@ -435,6 +447,7 @@ The path to the saved file.
 
 
 
+
 ***
 
 ### getContacts
@@ -457,6 +470,7 @@ public getContacts(null $user = null): bool|mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$user` | **null** |  |
+
 
 
 
@@ -491,6 +505,7 @@ public updateMessages(mixed $lastId, null $user = null, null $other_user = null)
 
 
 
+
 ***
 
 ### getUnread
@@ -519,6 +534,7 @@ public getUnread(mixed $sender, null $receiver = null): bool|mixed
 
 
 
+
 ***
 
 ### loadMessages
@@ -542,6 +558,7 @@ public loadMessages(mixed $user1, null $user2 = null): bool|mixed
 |-----------|------|-------------|
 | `$user1` | **mixed** |  |
 | `$user2` | **null** |  |
+
 
 
 
@@ -577,6 +594,7 @@ public sendMessage(mixed $receiver, mixed $message, null $user = null, bool $sys
 
 
 
+
 ***
 
 ### deleteSystemMessages
@@ -600,6 +618,7 @@ public deleteSystemMessages(mixed $user1, mixed $user2): mixed
 |-----------|------|-------------|
 | `$user1` | **mixed** |  |
 | `$user2` | **mixed** |  |
+
 
 
 
@@ -633,6 +652,7 @@ public createChatroom(null $fnum = null, null $id = null): bool|mixed
 
 
 
+
 ***
 
 ### joinChatroom
@@ -656,6 +676,7 @@ public joinChatroom(int $chatroom, mixed $users): bool
 |-----------|------|-------------|
 | `$chatroom` | **int** | Chatroom id, if the room doesn&#039;t exist, it will be created. |
 | `$users` | **mixed** | Function is called as such : joinChatroom(4, $user1, $user2, $user3); |
+
 
 
 
@@ -689,6 +710,7 @@ public sendChatroomMessage(int $chatroom, string $message): bool
 
 
 
+
 ***
 
 ### getChatroomMessages
@@ -711,6 +733,7 @@ public getChatroomMessages(int $chatroom): array|bool|mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$chatroom` | **int** |  |
+
 
 
 
@@ -744,6 +767,7 @@ public updateChatroomMessages(mixed $lastId, int $chatroom): bool|mixed
 
 
 
+
 ***
 
 ### getChatroom
@@ -766,6 +790,7 @@ public getChatroom(mixed $id): bool|mixed|null
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$id` | **mixed** |  |
+
 
 
 
@@ -798,6 +823,7 @@ public getChatroomUsersId(int $chatroom_id): bool|mixed|null
 
 
 
+
 ***
 
 ### getChatroomByUsers
@@ -820,6 +846,7 @@ public getChatroomByUsers(mixed $users): bool|int
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$users` | **mixed** |  |
+
 
 
 
@@ -852,6 +879,7 @@ private chatRoomExists(mixed $chatroom): mixed
 
 
 
+
 ***
 
 ### getMessageRecapByFnum
@@ -879,6 +907,7 @@ public getMessageRecapByFnum(mixed $fnum): mixed
 
 
 
+
 ***
 
 ### getTagsByEmail
@@ -901,6 +930,7 @@ public getTagsByEmail(mixed $eid): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$eid` | **mixed** |  |
+
 
 
 
@@ -934,6 +964,7 @@ public addTagsByFnum(mixed $fnum, mixed $tmpl): mixed
 
 
 
+
 ***
 
 ### getActionByFnum
@@ -961,6 +992,7 @@ public getActionByFnum(mixed $fnum): mixed
 
 
 
+
 ***
 
 ### getAllDocumentsLetters
@@ -970,6 +1002,7 @@ public getActionByFnum(mixed $fnum): mixed
 ```php
 public getAllDocumentsLetters(): mixed
 ```
+
 
 
 
@@ -1009,6 +1042,7 @@ public getAttachmentsByProfiles(mixed $fnums = []): mixed
 
 
 
+
 ***
 
 ### getAllAttachments
@@ -1018,6 +1052,7 @@ public getAttachmentsByProfiles(mixed $fnums = []): mixed
 ```php
 public getAllAttachments(): mixed
 ```
+
 
 
 
@@ -1058,6 +1093,7 @@ public addTagsByFnums(mixed $fnums, mixed $tmpl): mixed
 
 
 
+
 ***
 
 ### deleteMessagesBeforeADate
@@ -1085,6 +1121,7 @@ public deleteMessagesBeforeADate(mixed $date): int
 
 
 
+
 ***
 
 ### exportMessagesBeforeADate
@@ -1107,6 +1144,7 @@ public exportMessagesBeforeADate(mixed $date): string
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$date` | **mixed** | DateTime  Date to export messages before |
+
 
 
 
@@ -1150,6 +1188,7 @@ The filename
 
 
 
+
 ***
 
 ### getInstance
@@ -1185,6 +1224,7 @@ A \JModelLegacy instance or false on failure
 
 
 
+
 ***
 
 ### addTablePath
@@ -1209,6 +1249,7 @@ public static addTablePath(mixed $path): void
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$path` | **mixed** | The directory as a string or directories as an array to add. |
+
 
 
 
@@ -1249,6 +1290,7 @@ A ModelInterface instance or null on failure
 
 
 
+
 ***
 
 ### getState
@@ -1277,6 +1319,7 @@ public getState(string $property = null, mixed $default = null): mixed
 **Return Value:**
 
 The property where specified, the state object where omitted
+
 
 
 
@@ -1313,6 +1356,7 @@ The previous value of the property or null if not set
 
 
 
+
 ***
 
 ### populateState
@@ -1340,6 +1384,7 @@ Note. Calling getState in this method will result in recursion.
 |-----------|------|-------------|
 | `$ordering` | **string** | An optional ordering field. |
 | `$direction` | **string** | An optional direction (asc&amp;#124;desc). |
+
 
 
 
@@ -1378,6 +1423,7 @@ public __construct(array $config = [], ?\Joomla\CMS\MVC\Factory\MVCFactoryInterf
 
 
 
+
 ***
 
 ### addIncludePath
@@ -1409,6 +1455,7 @@ public static addIncludePath(mixed $path = &#039;&#039;, string $prefix = &#039;
 **Return Value:**
 
 An array with directory elements. If prefix is equal to '', all directories are returned.
+
 
 
 
@@ -1448,6 +1495,7 @@ The name of the model
 
 
 
+
 ***
 
 ### getMVCFactory
@@ -1474,6 +1522,7 @@ protected getMVCFactory(): \Joomla\CMS\MVC\Factory\MVCFactoryInterface
 
 
 
+
 ***
 
 ### setMVCFactory
@@ -1496,6 +1545,7 @@ public setMVCFactory(\Joomla\CMS\MVC\Factory\MVCFactoryInterface $mvcFactory): v
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$mvcFactory` | **\Joomla\CMS\MVC\Factory\MVCFactoryInterface** | The MVC factory |
+
 
 
 
@@ -1539,6 +1589,7 @@ An array of results.
 
 
 
+
 ***
 
 ### _getListCount
@@ -1573,6 +1624,7 @@ Number of rows for query.
 
 
 
+
 ***
 
 ### _createTable
@@ -1602,6 +1654,7 @@ protected _createTable(string $name, string $prefix = &#039;Table&#039;, array $
 **Return Value:**
 
 Table object or boolean false if failed
+
 
 
 
@@ -1648,6 +1701,7 @@ A Table object
 
 
 
+
 ***
 
 ### isCheckedOut
@@ -1675,6 +1729,7 @@ public isCheckedOut(\stdClass $item): bool
 
 
 
+
 ***
 
 ### cleanCache
@@ -1697,6 +1752,7 @@ protected cleanCache(string $group = null): void
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$group` | **string** | The cache group |
+
 
 
 
@@ -1733,6 +1789,7 @@ The service container
 
 
 
+
 ***
 
 ### getDispatcher
@@ -1761,6 +1818,7 @@ TODO: Remove the override in 6.0
 
 
 
+
 ***
 
 ### dispatchEvent
@@ -1785,6 +1843,7 @@ protected dispatchEvent(\Joomla\Event\EventInterface $event): void
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$event` | **\Joomla\Event\EventInterface** | The event |
+
 
 
 
@@ -1822,6 +1881,7 @@ The database driver.
 
 
 
+
 ***
 
 ### setDbo
@@ -1846,6 +1906,7 @@ public setDbo(?\Joomla\Database\DatabaseInterface $db = null): void
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$db` | **?\Joomla\Database\DatabaseInterface** | The database driver. |
+
 
 
 
@@ -1880,6 +1941,7 @@ public __get(string $name): mixed
 **Return Value:**
 
 The value of the element if set, null otherwise
+
 
 
 
@@ -1920,6 +1982,7 @@ protected loadForm(string $name, string $source = null, array $options = [], boo
 
 
 
+
 **See Also:**
 
 * \Joomla\CMS\Form\Form - 
@@ -1949,6 +2012,7 @@ The data for the form.
 
 
 
+
 ***
 
 ### preprocessData
@@ -1973,6 +2037,7 @@ protected preprocessData(string $context, mixed& $data, string $group = &#039;co
 | `$context` | **string** | The context identifier. |
 | `$data` | **mixed** | The data to be processed. It gets altered directly. |
 | `$group` | **string** | The name of the plugin group to import (defaults to &quot;content&quot;). |
+
 
 
 
@@ -2013,6 +2078,7 @@ protected preprocessForm(\Joomla\CMS\Form\Form $form, mixed $data, string $group
 
 
 
+
 **See Also:**
 
 * \Joomla\CMS\Form\FormField - 
@@ -2044,6 +2110,7 @@ public getFormFactory(): \Joomla\CMS\Form\FormFactoryInterface
 
 
 
+
 ***
 
 ### getEmptyStateQuery
@@ -2053,6 +2120,7 @@ Provide a query to be used to evaluate if this is an Empty State, can be overrid
 ```php
 protected getEmptyStateQuery(): \Joomla\Database\DatabaseQuery
 ```
+
 
 
 
@@ -2091,6 +2159,7 @@ public getIsEmptyState(): bool
 
 
 
+
 ***
 
 ### _getListQuery
@@ -2112,6 +2181,7 @@ This method ensures that the query is constructed only once for a given state of
 **Return Value:**
 
 A DatabaseQuery object
+
 
 
 
@@ -2141,6 +2211,7 @@ Associative array in the format: array('filter_published' => 0)
 
 
 
+
 ***
 
 ### getItems
@@ -2162,6 +2233,7 @@ public getItems(): mixed
 **Return Value:**
 
 An array of data items on success, false on failure.
+
 
 
 
@@ -2191,6 +2263,7 @@ A DatabaseQuery object to retrieve the data set.
 
 
 
+
 ***
 
 ### getPagination
@@ -2212,6 +2285,7 @@ public getPagination(): \Joomla\CMS\Pagination\Pagination
 **Return Value:**
 
 A Pagination object for the data set.
+
 
 
 
@@ -2249,6 +2323,7 @@ A store id.
 
 
 
+
 ***
 
 ### getTotal
@@ -2274,6 +2349,7 @@ The total number of items available in the data set.
 
 
 
+
 ***
 
 ### getStart
@@ -2295,6 +2371,7 @@ public getStart(): int
 **Return Value:**
 
 The starting number of items available in the data set.
+
 
 
 
@@ -2327,6 +2404,7 @@ public getFilterForm(array $data = [], bool $loadData = true): \Joomla\CMS\Form\
 **Return Value:**
 
 The \JForm object or null if the form can't be found
+
 
 
 
@@ -2367,6 +2445,7 @@ The request user state.
 
 
 
+
 ***
 
 ### refineSearchStringToRegex
@@ -2395,6 +2474,7 @@ protected refineSearchStringToRegex(string $search, string $regexDelimiter = &#0
 **Return Value:**
 
 Search string escaped for regex
+
 
 
 

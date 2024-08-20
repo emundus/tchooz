@@ -541,9 +541,9 @@ class EmundusControllerCampaign extends BaseController
 
 	/**
 	 * Get teaching_unity available
-	 * TODO: Throw in the years controller
 	 *
 	 * @since version 1.0.0
+	 * @todo Throw in the years controller
 	 */
 	public function getyears()
 	{

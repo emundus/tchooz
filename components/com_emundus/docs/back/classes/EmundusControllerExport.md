@@ -72,6 +72,7 @@ public __construct(array $config = array()): mixed
 
 
 
+
 **See Also:**
 
 * \JController - 
@@ -108,6 +109,7 @@ This object to support chaining.
 
 
 
+
 ***
 
 ### to_pdf
@@ -129,6 +131,7 @@ public to_pdf(): mixed
 
 
 
+
 ***
 
 ### getprofiles
@@ -138,6 +141,7 @@ public to_pdf(): mixed
 ```php
 public getprofiles(): mixed
 ```
+
 
 
 

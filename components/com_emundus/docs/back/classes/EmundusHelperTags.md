@@ -40,6 +40,7 @@ public getVariables(string $str, int $type = &#039;CURLY&#039;): string[]
 
 
 
+
 ***
 
 ### getTags
@@ -63,6 +64,7 @@ public getTags(mixed $tags = [], mixed $published = 1): mixed
 |-----------|------|-------------|
 | `$tags` | **mixed** |  |
 | `$published` | **mixed** |  |
+
 
 
 

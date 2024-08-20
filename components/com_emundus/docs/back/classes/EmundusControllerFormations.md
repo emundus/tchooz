@@ -72,6 +72,7 @@ public __construct(array $config = array()): mixed
 
 
 
+
 **See Also:**
 
 * \JController - 
@@ -97,6 +98,7 @@ public deletecompany(): mixed
 
 
 
+
 ***
 
 ### deleteassociate
@@ -106,6 +108,7 @@ public deletecompany(): mixed
 ```php
 public deleteassociate(): mixed
 ```
+
 
 
 

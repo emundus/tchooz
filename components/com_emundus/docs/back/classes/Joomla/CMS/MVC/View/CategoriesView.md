@@ -122,6 +122,7 @@ public display(string $tpl = null): void|bool
 
 
 
+
 ***
 
 ### prepareDocument
@@ -131,6 +132,7 @@ Prepares the document
 ```php
 protected prepareDocument(): void
 ```
+
 
 
 
@@ -174,6 +176,7 @@ public __construct(array $config = []): mixed
 
 
 
+
 ***
 
 ### display
@@ -203,6 +206,7 @@ public display(string $tpl = null): void
 **Throws:**
 
 - [`Exception`](../../../../Exception.md)
+
 
 
 
@@ -242,6 +246,7 @@ The return value of the method
 
 
 
+
 ***
 
 ### getModel
@@ -269,6 +274,7 @@ public getModel(string $name = null): \Joomla\CMS\MVC\Model\BaseDatabaseModel
 **Return Value:**
 
 The model object
+
 
 
 
@@ -309,6 +315,7 @@ The added model.
 
 
 
+
 ***
 
 ### getName
@@ -340,6 +347,7 @@ The name of the model
 
 
 
+
 ***
 
 ### getDocument
@@ -367,6 +375,7 @@ protected getDocument(): \Joomla\CMS\Document\Document
 
 
 
+
 ***
 
 ### setDocument
@@ -389,6 +398,7 @@ public setDocument(\Joomla\CMS\Document\Document $document): void
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$document` | **\Joomla\CMS\Document\Document** | The document to use |
+
 
 
 
@@ -422,6 +432,7 @@ TODO: Remove the override in 6.0
 
 
 
+
 ***
 
 ### dispatchEvent
@@ -446,6 +457,7 @@ protected dispatchEvent(\Joomla\Event\EventInterface $event): void
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$event` | **\Joomla\Event\EventInterface** | The event |
+
 
 
 
@@ -483,6 +495,7 @@ The escaped value.
 
 
 
+
 ***
 
 ### getLayout
@@ -508,6 +521,7 @@ The layout name
 
 
 
+
 ***
 
 ### getLayoutTemplate
@@ -529,6 +543,7 @@ public getLayoutTemplate(): string
 **Return Value:**
 
 The layout template name
+
 
 
 
@@ -564,6 +579,7 @@ Previous value.
 
 
 
+
 ***
 
 ### setLayoutExt
@@ -595,6 +611,7 @@ Previous value
 
 
 
+
 ***
 
 ### addTemplatePath
@@ -622,6 +639,7 @@ public addTemplatePath(mixed $path): void
 
 
 
+
 ***
 
 ### addHelperPath
@@ -644,6 +662,7 @@ public addHelperPath(mixed $path): void
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$path` | **mixed** | A directory path or an array of paths. |
+
 
 
 
@@ -685,6 +704,7 @@ The output of the template script.
 
 
 
+
 ***
 
 ### loadHelper
@@ -707,6 +727,7 @@ public loadHelper(string $hlp = null): void
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$hlp` | **string** | The name of the helper source file automatically searches the helper paths and compiles as needed. |
+
 
 
 
@@ -740,6 +761,7 @@ protected _setPath(string $type, mixed $path): void
 
 
 
+
 ***
 
 ### _addPath
@@ -763,6 +785,7 @@ protected _addPath(string $type, mixed $path): void
 |-----------|------|-------------|
 | `$type` | **string** | The type of path to add. |
 | `$path` | **mixed** | The directory or stream, or an array of either, to search. |
+
 
 
 
@@ -800,6 +823,7 @@ The filename
 
 
 
+
 ***
 
 ### getForm
@@ -821,6 +845,7 @@ public getForm(): mixed
 **Return Value:**
 
 A \JForm object on success, false on failure
+
 
 
 
@@ -847,6 +872,7 @@ public setDocumentTitle(string $title): void
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$title` | **string** | The page title |
+
 
 
 

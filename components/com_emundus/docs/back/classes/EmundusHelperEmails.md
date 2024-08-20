@@ -40,6 +40,7 @@ public createEmailBlock(mixed $params, mixed $users = null): mixed
 
 
 
+
 ***
 
 ### getEmail
@@ -62,6 +63,7 @@ public static getEmail(mixed $lbl): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$lbl` | **mixed** |  |
+
 
 
 
@@ -94,6 +96,7 @@ public getAllEmail(mixed $type = 2): mixed
 
 
 
+
 ***
 
 ### getTemplate
@@ -107,6 +110,7 @@ public static getTemplate(): mixed
 
 
 * This method is **static**.
+
 
 
 
@@ -136,6 +140,7 @@ public sendGroupEmail(): mixed
 
 
 
+
 ***
 
 ### sendApplicantEmail
@@ -149,6 +154,7 @@ public static sendApplicantEmail(): mixed
 
 
 * This method is **static**.
+
 
 
 
@@ -185,6 +191,7 @@ public assertCanSendMailToUser(mixed $user_id = null, mixed $fnum = null): bool
 
 
 
+
 ***
 
 ### correctEmail
@@ -207,6 +214,7 @@ public correctEmail(mixed $email): bool
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$email` | **mixed** |  |
+
 
 
 
@@ -240,6 +248,7 @@ public static getLogo(mixed $only_filename = false, mixed $training = null): str
 
 
 
+
 ***
 
 ### getCustomHeader
@@ -253,6 +262,7 @@ public static getCustomHeader(): string
 
 
 * This method is **static**.
+
 
 
 

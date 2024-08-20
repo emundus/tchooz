@@ -87,6 +87,7 @@ public __construct(array $config = array()): mixed
 
 
 
+
 **See Also:**
 
 * \JController - 
@@ -123,6 +124,7 @@ This object to support chaining.
 
 
 
+
 ***
 
 ### getprogrammes
@@ -132,6 +134,7 @@ This object to support chaining.
 ```php
 public getprogrammes(): mixed
 ```
+
 
 
 
@@ -165,6 +168,7 @@ public addprogrammes(): mixed
 
 
 
+
 ***
 
 ### editprogrammes
@@ -174,6 +178,7 @@ public addprogrammes(): mixed
 ```php
 public editprogrammes(): mixed
 ```
+
 
 
 
@@ -207,6 +212,7 @@ public favorite(): mixed
 
 
 
+
 ***
 
 ### unfavorite
@@ -216,6 +222,7 @@ public favorite(): mixed
 ```php
 public unfavorite(): mixed
 ```
+
 
 
 
@@ -249,6 +256,7 @@ public getallprogramforfilter(): mixed
 
 
 
+
 ***
 
 ### getallprogram
@@ -258,6 +266,7 @@ public getallprogramforfilter(): mixed
 ```php
 public getallprogram(): mixed
 ```
+
 
 
 
@@ -291,6 +300,7 @@ public getallsessions(): mixed
 
 
 
+
 ***
 
 ### getprogramcount
@@ -300,6 +310,7 @@ public getallsessions(): mixed
 ```php
 public getprogramcount(): mixed
 ```
+
 
 
 
@@ -333,6 +344,7 @@ public getprogrambyid(): mixed
 
 
 
+
 ***
 
 ### createprogram
@@ -342,6 +354,7 @@ public getprogrambyid(): mixed
 ```php
 public createprogram(): mixed
 ```
+
 
 
 
@@ -375,6 +388,7 @@ public updateprogram(): mixed
 
 
 
+
 ***
 
 ### deleteprogram
@@ -384,6 +398,7 @@ public updateprogram(): mixed
 ```php
 public deleteprogram(): mixed
 ```
+
 
 
 
@@ -417,6 +432,7 @@ public unpublishprogram(): mixed
 
 
 
+
 ***
 
 ### publishprogram
@@ -426,6 +442,7 @@ public unpublishprogram(): mixed
 ```php
 public publishprogram(): mixed
 ```
+
 
 
 
@@ -459,6 +476,7 @@ public getprogramcategories(): mixed
 
 
 
+
 ***
 
 ### getmanagers
@@ -468,6 +486,7 @@ public getprogramcategories(): mixed
 ```php
 public getmanagers(): mixed
 ```
+
 
 
 
@@ -501,6 +520,7 @@ public getevaluators(): mixed
 
 
 
+
 ***
 
 ### affectusertogroup
@@ -510,6 +530,7 @@ public getevaluators(): mixed
 ```php
 public affectusertogroup(): mixed
 ```
+
 
 
 
@@ -543,6 +564,7 @@ public affectuserstogroup(): mixed
 
 
 
+
 ***
 
 ### removefromgroup
@@ -552,6 +574,7 @@ public affectuserstogroup(): mixed
 ```php
 public removefromgroup(): mixed
 ```
+
 
 
 
@@ -585,6 +608,7 @@ public getusers(): mixed
 
 
 
+
 ***
 
 ### updatevisibility
@@ -594,6 +618,7 @@ public getusers(): mixed
 ```php
 public updatevisibility(): mixed
 ```
+
 
 
 
@@ -627,6 +652,7 @@ public getevaluationgrid(): mixed
 
 
 
+
 ***
 
 ### getgridsmodel
@@ -636,6 +662,7 @@ public getevaluationgrid(): mixed
 ```php
 public getgridsmodel(): mixed
 ```
+
 
 
 
@@ -669,6 +696,7 @@ public creategrid(): mixed
 
 
 
+
 ***
 
 ### deletegrid
@@ -678,6 +706,7 @@ public creategrid(): mixed
 ```php
 public deletegrid(): mixed
 ```
+
 
 
 
@@ -711,6 +740,7 @@ public affectgrouptoprogram(): mixed
 
 
 
+
 ***
 
 ### deletegroupfromprogram
@@ -720,6 +750,7 @@ public affectgrouptoprogram(): mixed
 ```php
 public deletegroupfromprogram(): mixed
 ```
+
 
 
 
@@ -753,6 +784,7 @@ public getgroupsbyprograms(): mixed
 
 
 
+
 ***
 
 ### getcampaignsbyprogram
@@ -762,6 +794,7 @@ public getgroupsbyprograms(): mixed
 ```php
 public getcampaignsbyprogram(): mixed
 ```
+
 
 
 

@@ -101,6 +101,7 @@ public setUpWorkflow(string $extension): void
 
 
 
+
 ***
 
 ### enableWorkflowBatch
@@ -110,6 +111,7 @@ Add the workflow batch to the command list. Can be overwritten by the child clas
 ```php
 protected enableWorkflowBatch(): void
 ```
+
 
 
 
@@ -150,6 +152,7 @@ public workflowPreprocessForm(\Joomla\CMS\Form\Form $form, mixed $data): void
 
 
 
+
 **See Also:**
 
 * \Joomla\CMS\MVC\Model\FormField - 
@@ -175,6 +178,7 @@ public workflowBeforeStageChange(): void
 
 
 
+
 ***
 
 ### workflowBeforeSave
@@ -184,6 +188,7 @@ Preparation of workflow data/plugins
 ```php
 public workflowBeforeSave(): void
 ```
+
 
 
 
@@ -223,6 +228,7 @@ public workflowAfterSave(mixed $data): void
 
 
 
+
 ***
 
 ### batchWorkflowStage
@@ -256,6 +262,7 @@ An array of new IDs on success, boolean false on failure.
 
 
 
+
 ***
 
 ### workflowCleanupBatchMove
@@ -279,6 +286,7 @@ public workflowCleanupBatchMove(int $oldId, int $newId): null
 |-----------|------|-------------|
 | `$oldId` | **int** | The ID of the item copied from |
 | `$newId` | **int** | The ID of the new item |
+
 
 
 
@@ -312,6 +320,7 @@ public executeTransition(array $pks, int $transitionId): bool
 
 
 
+
 ***
 
 ### importWorkflowPlugins
@@ -321,6 +330,7 @@ Import the Workflow plugins.
 ```php
 protected importWorkflowPlugins(): void
 ```
+
 
 
 
@@ -361,6 +371,7 @@ protected addTransitionField(\Joomla\CMS\Form\Form $form, mixed $data): void
 
 
 
+
 ***
 
 ### getStageForNewItem
@@ -391,6 +402,7 @@ protected getStageForNewItem(\Joomla\CMS\Form\Form $form, mixed $data): bool|int
 **Return Value:**
 
 An integer, holding the stage ID or false
+
 
 
 

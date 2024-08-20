@@ -302,6 +302,7 @@ public static addModelPath(mixed $path, string $prefix = &#039;&#039;): void
 
 
 
+
 ***
 
 ### createFileName
@@ -330,6 +331,7 @@ public static createFileName(string $type, array $parts = []): string
 **Return Value:**
 
 The filename.
+
 
 
 
@@ -370,6 +372,7 @@ public static getInstance(string $prefix, array $config = []): static
 
 
 
+
 ***
 
 ### __construct
@@ -395,6 +398,7 @@ public __construct(array $config = [], ?\Joomla\CMS\MVC\Factory\MVCFactoryInterf
 | `$factory` | **?\Joomla\CMS\MVC\Factory\MVCFactoryInterface** | The factory. |
 | `$app` | **?\Joomla\CMS\Application\CMSApplicationInterface** | The Application for the dispatcher |
 | `$input` | **?\Joomla\Input\Input** | Input |
+
 
 
 
@@ -432,6 +436,7 @@ A BaseController object to support chaining.
 
 
 
+
 ***
 
 ### addViewPath
@@ -459,6 +464,7 @@ public addViewPath(mixed $path): static
 **Return Value:**
 
 This object to support chaining.
+
 
 
 
@@ -495,6 +501,7 @@ True if the ID is in the edit list.
 
 
 
+
 ***
 
 ### createModel
@@ -524,6 +531,7 @@ protected createModel(string $name, string $prefix = &#039;&#039;, array $config
 **Return Value:**
 
 Model object on success; otherwise false on failure.
+
 
 
 
@@ -570,6 +578,7 @@ View object on success; null or error result on failure.
 
 
 
+
 ***
 
 ### display
@@ -605,6 +614,7 @@ A \JControllerLegacy object to support chaining.
 **Throws:**
 
 - [`Exception`](../../../../Exception.md)
+
 
 
 
@@ -644,6 +654,7 @@ The value returned by the called method.
 
 
 
+
 ***
 
 ### getModel
@@ -673,6 +684,7 @@ public getModel(string $name = &#039;&#039;, string $prefix = &#039;&#039;, arra
 **Return Value:**
 
 Model object on success; otherwise false on failure.
+
 
 
 
@@ -708,6 +720,7 @@ The name of the dispatcher
 
 
 
+
 ***
 
 ### getTask
@@ -733,6 +746,7 @@ The task that is being performed or was most recently performed.
 
 
 
+
 ***
 
 ### getTasks
@@ -754,6 +768,7 @@ public getTasks(): array
 **Return Value:**
 
 Array[i] of task names.
+
 
 
 
@@ -797,6 +812,7 @@ Reference to the view or an error.
 
 
 
+
 ***
 
 ### holdEditId
@@ -830,6 +846,7 @@ protected holdEditId(string $context, int $id): void
 
 
 
+
 ***
 
 ### redirect
@@ -860,6 +877,7 @@ False if no redirect exists.
 
 
 
+
 ***
 
 ### registerDefaultTask
@@ -887,6 +905,7 @@ public registerDefaultTask(string $method): static
 **Return Value:**
 
 A \JControllerLegacy object to support chaining.
+
 
 
 
@@ -923,6 +942,7 @@ A \JControllerLegacy object to support chaining.
 
 
 
+
 ***
 
 ### unregisterTask
@@ -950,6 +970,7 @@ public unregisterTask(string $task): static
 **Return Value:**
 
 This object to support chaining.
+
 
 
 
@@ -987,6 +1008,7 @@ protected releaseEditId(string $context, int $id): void
 
 
 
+
 ***
 
 ### getLogger
@@ -996,6 +1018,7 @@ Get the logger.
 ```php
 protected getLogger(): \Psr\Log\LoggerInterface
 ```
+
 
 
 
@@ -1040,6 +1063,7 @@ Previous message
 
 
 
+
 ***
 
 ### setPath
@@ -1063,6 +1087,7 @@ protected setPath(string $type, string $path): void
 |-----------|------|-------------|
 | `$type` | **string** | The type of path to set, typically &#039;view&#039; or &#039;model&#039;. |
 | `$path` | **string** | The new set of search paths. If null or false, resets to the current directory only. |
+
 
 
 
@@ -1105,6 +1130,7 @@ True if found and valid, otherwise return false or redirect to referrer page.
 
 
 
+
 **See Also:**
 
 * \Joomla\CMS\Session\Session::checkToken() - 
@@ -1142,6 +1168,7 @@ This object to support chaining.
 
 
 
+
 ***
 
 ### prepareViewModel
@@ -1172,6 +1199,7 @@ you will need to override it in your DisplayController controller.
 
 
 
+
 ***
 
 ### getDispatcher
@@ -1197,6 +1225,7 @@ TODO: Remove the override in 6.0
 <p>May be thrown if the dispatcher has not been set.</p>
 
 - [`UnexpectedValueException`](../../../../UnexpectedValueException.md)
+
 
 
 

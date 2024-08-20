@@ -38,6 +38,7 @@ public display(string $tpl = null): void
 
 
 
+
 ***
 
 ### getModel
@@ -69,6 +70,7 @@ The model object
 
 
 
+
 ***
 
 ### getName
@@ -90,6 +92,7 @@ public getName(): string
 **Return Value:**
 
 The name of the view
+
 
 
 

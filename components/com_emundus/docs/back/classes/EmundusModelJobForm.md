@@ -51,6 +51,7 @@ Note. Calling getState in this method will result in recursion.
 
 
 
+
 ***
 
 ### getData
@@ -82,6 +83,7 @@ Object on success, false on failure.
 
 
 
+
 ***
 
 ### getTable
@@ -106,6 +108,7 @@ public getTable(mixed $type = &#039;Job&#039;, mixed $prefix = &#039;EmundusTabl
 | `$type` | **mixed** |  |
 | `$prefix` | **mixed** |  |
 | `$config` | **mixed** |  |
+
 
 
 
@@ -142,6 +145,7 @@ True on success, false on failure.
 
 
 
+
 ***
 
 ### checkout
@@ -169,6 +173,7 @@ public checkout(mixed $id = null): bool
 **Return Value:**
 
 True on success, false on failure.
+
 
 
 
@@ -205,6 +210,7 @@ A JForm object on success, false on failure
 
 
 
+
 ***
 
 ### loadFormData
@@ -226,6 +232,7 @@ protected loadFormData(): mixed
 **Return Value:**
 
 The data for the form.
+
 
 
 
@@ -261,6 +268,7 @@ The user id on success, false on failure.
 
 
 
+
 ***
 
 ### delete
@@ -283,6 +291,7 @@ public delete(mixed $data): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$data` | **mixed** |  |
+
 
 
 

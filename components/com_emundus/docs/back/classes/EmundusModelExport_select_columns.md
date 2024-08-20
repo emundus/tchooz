@@ -51,6 +51,7 @@ public __construct(): mixed
 
 
 
+
 ***
 
 ### getAllTags
@@ -60,6 +61,7 @@ public __construct(): mixed
 ```php
 public getAllTags(): mixed
 ```
+
 
 
 

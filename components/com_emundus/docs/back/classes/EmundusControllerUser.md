@@ -87,6 +87,7 @@ public __construct(array $config = array()): mixed
 
 
 
+
 **See Also:**
 
 * \JController - 
@@ -123,6 +124,7 @@ This object to support chaining.
 
 
 
+
 ***
 
 ### redirectMeWithMessage
@@ -144,6 +146,7 @@ public redirectMeWithMessage(): mixed
 
 
 
+
 ***
 
 ### getpasswordsecurity
@@ -153,6 +156,7 @@ public redirectMeWithMessage(): mixed
 ```php
 public getpasswordsecurity(): mixed
 ```
+
 
 
 

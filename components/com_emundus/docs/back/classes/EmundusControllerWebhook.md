@@ -72,6 +72,7 @@ public __construct(array $config = array()): mixed
 
 
 
+
 **See Also:**
 
 * \JController - 
@@ -97,6 +98,7 @@ public callback(): mixed
 
 
 
+
 ***
 
 ### yousign
@@ -106,6 +108,7 @@ Downloads the file associated to the YouSign procedure that was pushed.
 ```php
 public yousign(): mixed
 ```
+
 
 
 
@@ -144,6 +147,7 @@ public addpipe(): bool|string
 
 
 
+
 ***
 
 ### FileSizeConvert
@@ -175,6 +179,7 @@ human readable file size (2,87 Мб)
 
 
 
+
 ***
 
 ### is_file_uploaded
@@ -198,6 +203,7 @@ public is_file_uploaded(): void
 **Throws:**
 
 - [`Exception`](./Exception.md)
+
 
 
 
@@ -230,6 +236,7 @@ private setUserParam(string $user_email, mixed $param, string $value): bool
 
 
 
+
 ***
 
 ### export_siscole
@@ -256,6 +263,7 @@ public export_siscole(): false|void
 
 
 
+
 ***
 
 ### export_banner
@@ -265,6 +273,7 @@ public export_siscole(): false|void
 ```php
 public export_banner(): mixed
 ```
+
 
 
 
@@ -303,6 +312,7 @@ public process_banner(): mixed
 
 
 
+
 ***
 
 ### update_banner
@@ -331,6 +341,7 @@ public update_banner(mixed $id, mixed $fnum): mixed
 
 
 
+
 ***
 
 ### getzoomsession
@@ -340,6 +351,7 @@ public update_banner(mixed $id, mixed $fnum): mixed
 ```php
 public getzoomsession(): mixed
 ```
+
 
 
 
@@ -382,6 +394,7 @@ json_encoded
 
 
 
+
 ***
 
 ### updateAxeptaPaymentInfos
@@ -403,6 +416,7 @@ public updateAxeptaPaymentInfos(): mixed
 
 
 
+
 ***
 
 ### getwidgets
@@ -412,6 +426,7 @@ public updateAxeptaPaymentInfos(): mixed
 ```php
 public getwidgets(): mixed
 ```
+
 
 
 

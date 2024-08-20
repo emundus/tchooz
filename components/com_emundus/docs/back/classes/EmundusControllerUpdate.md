@@ -57,6 +57,7 @@ public __construct(array $config = array()): mixed
 
 
 
+
 **See Also:**
 
 * \JController - 
@@ -70,6 +71,7 @@ public __construct(array $config = array()): mixed
 ```php
 public accept(): mixed
 ```
+
 
 
 
@@ -103,6 +105,7 @@ public ignore(): mixed
 
 
 
+
 ***
 
 ### choose
@@ -112,6 +115,7 @@ public ignore(): mixed
 ```php
 public choose(): mixed
 ```
+
 
 
 

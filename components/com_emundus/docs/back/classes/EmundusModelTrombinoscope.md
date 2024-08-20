@@ -141,6 +141,7 @@ public __construct(): mixed
 
 
 
+
 ***
 
 ### fnums_json_decode
@@ -163,6 +164,7 @@ public fnums_json_decode(mixed $string_fnums): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$string_fnums` | **mixed** |  |
+
 
 
 
@@ -196,6 +198,7 @@ public set_template(mixed $programme_code, mixed $format = &#039;trombi&#039;): 
 
 
 
+
 ***
 
 ### getProgByFnum
@@ -218,6 +221,7 @@ public getProgByFnum(mixed $fnum): \Exception|mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$fnum` | **mixed** |  |
+
 
 
 
@@ -251,6 +255,7 @@ public generate_pdf(mixed $html_value, mixed $format): mixed
 
 
 
+
 ***
 
 ### selectHTMLLetters
@@ -260,6 +265,7 @@ public generate_pdf(mixed $html_value, mixed $format): mixed
 ```php
 public selectHTMLLetters(): mixed
 ```
+
 
 
 
@@ -294,6 +300,7 @@ public selectLabelSetupAttachments(mixed $attachment_id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$attachment_id` | **mixed** |  |
+
 
 
 

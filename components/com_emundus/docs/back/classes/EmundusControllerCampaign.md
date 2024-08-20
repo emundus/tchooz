@@ -72,6 +72,7 @@ public __construct(array $config = array()): mixed
 
 
 
+
 **See Also:**
 
 * \JController - 
@@ -108,6 +109,7 @@ This object to support chaining.
 
 
 
+
 ***
 
 ### clear
@@ -117,6 +119,7 @@ Clear session and reinit values by default
 ```php
 public clear(): mixed
 ```
+
 
 
 
@@ -152,6 +155,7 @@ public setCampaign(): true
 
 
 
+
 ***
 
 ### addcampaigns
@@ -161,6 +165,7 @@ Add campaign for Ametys sync
 ```php
 public addcampaigns(): mixed
 ```
+
 
 
 
@@ -194,6 +199,7 @@ public getcampaignsbyprogram(): mixed
 
 
 
+
 ***
 
 ### getcampaignsbyprogramme
@@ -215,6 +221,7 @@ public getcampaignsbyprogramme(): mixed
 
 
 
+
 ***
 
 ### getallcampaign
@@ -224,6 +231,7 @@ Get the campaigns's list filtered
 ```php
 public getallcampaign(): mixed
 ```
+
 
 
 
@@ -262,6 +270,7 @@ public goToCampaign(): mixed
 
 
 
+
 ***
 
 ### deletecampaign
@@ -271,6 +280,7 @@ Delete one or multiple campaigns
 ```php
 public deletecampaign(): mixed
 ```
+
 
 
 
@@ -304,6 +314,7 @@ public unpublishcampaign(): mixed
 
 
 
+
 ***
 
 ### publishcampaign
@@ -313,6 +324,7 @@ Publish one or multiple campaigns
 ```php
 public publishcampaign(): mixed
 ```
+
 
 
 
@@ -346,12 +358,12 @@ public duplicatecampaign(): mixed
 
 
 
+
 ***
 
 ### getyears
 
 Get teaching_unity available
-TODO: Throw in the years controller
 
 ```php
 public getyears(): mixed
@@ -368,6 +380,12 @@ public getyears(): mixed
 
 
 
+**TODO:**
+
+* Throw in the years controller
+
+
+
 ***
 
 ### createcampaign
@@ -377,6 +395,7 @@ Create a campaign
 ```php
 public createcampaign(): mixed
 ```
+
 
 
 
@@ -410,6 +429,7 @@ public updatecampaign(): mixed
 
 
 
+
 ***
 
 ### getcampaignbyid
@@ -419,6 +439,7 @@ Get a campaign by id
 ```php
 public getcampaignbyid(): mixed
 ```
+
 
 
 
@@ -452,6 +473,7 @@ public updateprofile(): mixed
 
 
 
+
 ***
 
 ### getcampaignstoaffect
@@ -473,6 +495,7 @@ public getcampaignstoaffect(): mixed
 
 
 
+
 ***
 
 ### getcampaignstoaffectbyterm
@@ -482,6 +505,7 @@ Get campaigns with term filter in name and description
 ```php
 public getcampaignstoaffectbyterm(): mixed
 ```
+
 
 
 
@@ -520,6 +544,7 @@ public createdocument(): mixed
 
 
 
+
 ***
 
 ### updatedocument
@@ -546,6 +571,7 @@ public updatedocument(): mixed
 
 
 
+
 ***
 
 ### updatedocumentmandatory
@@ -555,6 +581,7 @@ Update document mandatory
 ```php
 public updatedocumentmandatory(): mixed
 ```
+
 
 
 
@@ -593,6 +620,7 @@ public updateDocumentFalang(): mixed
 
 
 
+
 ***
 
 ### getDocumentFalang
@@ -616,6 +644,7 @@ public getDocumentFalang(): mixed
 **Throws:**
 
 - [`Exception`](./Exception.md)
+
 
 
 
@@ -645,6 +674,7 @@ public getdocumentsdropfiles(): mixed
 
 
 
+
 ***
 
 ### deletedocumentdropfile
@@ -668,6 +698,7 @@ public deletedocumentdropfile(): mixed
 **Throws:**
 
 - [`Exception`](./Exception.md)
+
 
 
 
@@ -697,6 +728,7 @@ public editdocumentdropfile(): mixed
 
 
 
+
 ***
 
 ### updateorderdropfiledocuments
@@ -720,6 +752,7 @@ public updateorderdropfiledocuments(): mixed
 **Throws:**
 
 - [`Exception`](./Exception.md)
+
 
 
 
@@ -749,6 +782,7 @@ public getdocumentsform(): mixed
 
 
 
+
 ***
 
 ### editdocumentform
@@ -772,6 +806,7 @@ public editdocumentform(): mixed
 **Throws:**
 
 - [`Exception`](./Exception.md)
+
 
 
 
@@ -801,6 +836,7 @@ public deletedocumentform(): mixed
 
 
 
+
 ***
 
 ### pincampaign
@@ -810,6 +846,7 @@ Pin a campaign to homepage
 ```php
 public pincampaign(): mixed
 ```
+
 
 
 
@@ -843,6 +880,7 @@ public unpincampaign(): mixed
 
 
 
+
 ***
 
 ### getallitemsalias
@@ -852,6 +890,7 @@ Get alias of a campaign
 ```php
 public getallitemsalias(): mixed
 ```
+
 
 
 
@@ -885,6 +924,7 @@ public getProgrammeByCampaignID(): mixed
 
 
 
+
 ***
 
 ### getcampaignmoreformurl
@@ -894,6 +934,7 @@ Get url of the form that extend the campaign
 ```php
 public getcampaignmoreformurl(): mixed
 ```
+
 
 
 
@@ -940,6 +981,7 @@ public static addModelPath(mixed $path, string $prefix = &#039;&#039;): void
 
 
 
+
 ***
 
 ### createFileName
@@ -968,6 +1010,7 @@ public static createFileName(string $type, array $parts = []): string
 **Return Value:**
 
 The filename.
+
 
 
 
@@ -1008,6 +1051,7 @@ public static getInstance(string $prefix, array $config = []): static
 
 
 
+
 ***
 
 ### __construct
@@ -1033,6 +1077,7 @@ public __construct(array $config = [], ?\Joomla\CMS\MVC\Factory\MVCFactoryInterf
 | `$factory` | **?\Joomla\CMS\MVC\Factory\MVCFactoryInterface** | The factory. |
 | `$app` | **?\Joomla\CMS\Application\CMSApplicationInterface** | The Application for the dispatcher |
 | `$input` | **?\Joomla\Input\Input** | Input |
+
 
 
 
@@ -1070,6 +1115,7 @@ A BaseController object to support chaining.
 
 
 
+
 ***
 
 ### addViewPath
@@ -1097,6 +1143,7 @@ public addViewPath(mixed $path): static
 **Return Value:**
 
 This object to support chaining.
+
 
 
 
@@ -1133,6 +1180,7 @@ True if the ID is in the edit list.
 
 
 
+
 ***
 
 ### createModel
@@ -1162,6 +1210,7 @@ protected createModel(string $name, string $prefix = &#039;&#039;, array $config
 **Return Value:**
 
 Model object on success; otherwise false on failure.
+
 
 
 
@@ -1208,6 +1257,7 @@ View object on success; null or error result on failure.
 
 
 
+
 ***
 
 ### display
@@ -1243,6 +1293,7 @@ A \JControllerLegacy object to support chaining.
 **Throws:**
 
 - [`Exception`](./Exception.md)
+
 
 
 
@@ -1282,6 +1333,7 @@ The value returned by the called method.
 
 
 
+
 ***
 
 ### getModel
@@ -1311,6 +1363,7 @@ public getModel(string $name = &#039;&#039;, string $prefix = &#039;&#039;, arra
 **Return Value:**
 
 Model object on success; otherwise false on failure.
+
 
 
 
@@ -1346,6 +1399,7 @@ The name of the dispatcher
 
 
 
+
 ***
 
 ### getTask
@@ -1371,6 +1425,7 @@ The task that is being performed or was most recently performed.
 
 
 
+
 ***
 
 ### getTasks
@@ -1392,6 +1447,7 @@ public getTasks(): array
 **Return Value:**
 
 Array[i] of task names.
+
 
 
 
@@ -1435,6 +1491,7 @@ Reference to the view or an error.
 
 
 
+
 ***
 
 ### holdEditId
@@ -1468,6 +1525,7 @@ protected holdEditId(string $context, int $id): void
 
 
 
+
 ***
 
 ### redirect
@@ -1498,6 +1556,7 @@ False if no redirect exists.
 
 
 
+
 ***
 
 ### registerDefaultTask
@@ -1525,6 +1584,7 @@ public registerDefaultTask(string $method): static
 **Return Value:**
 
 A \JControllerLegacy object to support chaining.
+
 
 
 
@@ -1561,6 +1621,7 @@ A \JControllerLegacy object to support chaining.
 
 
 
+
 ***
 
 ### unregisterTask
@@ -1588,6 +1649,7 @@ public unregisterTask(string $task): static
 **Return Value:**
 
 This object to support chaining.
+
 
 
 
@@ -1625,6 +1687,7 @@ protected releaseEditId(string $context, int $id): void
 
 
 
+
 ***
 
 ### getLogger
@@ -1634,6 +1697,7 @@ Get the logger.
 ```php
 protected getLogger(): \Psr\Log\LoggerInterface
 ```
+
 
 
 
@@ -1678,6 +1742,7 @@ Previous message
 
 
 
+
 ***
 
 ### setPath
@@ -1701,6 +1766,7 @@ protected setPath(string $type, string $path): void
 |-----------|------|-------------|
 | `$type` | **string** | The type of path to set, typically &#039;view&#039; or &#039;model&#039;. |
 | `$path` | **string** | The new set of search paths. If null or false, resets to the current directory only. |
+
 
 
 
@@ -1743,6 +1809,7 @@ True if found and valid, otherwise return false or redirect to referrer page.
 
 
 
+
 **See Also:**
 
 * \Joomla\CMS\Session\Session::checkToken() - 
@@ -1780,6 +1847,7 @@ This object to support chaining.
 
 
 
+
 ***
 
 ### prepareViewModel
@@ -1810,6 +1878,7 @@ you will need to override it in your DisplayController controller.
 
 
 
+
 ***
 
 ### getDispatcher
@@ -1835,6 +1904,7 @@ TODO: Remove the override in 6.0
 <p>May be thrown if the dispatcher has not been set.</p>
 
 - [`UnexpectedValueException`](./UnexpectedValueException.md)
+
 
 
 

@@ -72,6 +72,7 @@ public __construct(mixed $config = array()): mixed
 
 
 
+
 ***
 
 ### getDashboard
@@ -94,6 +95,7 @@ public getDashboard(mixed $user_id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$user_id` | **mixed** |  |
+
 
 
 
@@ -126,6 +128,7 @@ public createDashboard(mixed $user_id): mixed
 
 
 
+
 ***
 
 ### deleteDashboard
@@ -148,6 +151,7 @@ public deleteDashboard(mixed $user_id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$user_id` | **mixed** |  |
+
 
 
 
@@ -176,6 +180,7 @@ public getallwidgetsbysize(mixed $size, mixed $user_id): mixed
 |-----------|------|-------------|
 | `$size` | **mixed** |  |
 | `$user_id` | **mixed** |  |
+
 
 
 
@@ -210,6 +215,7 @@ public getwidgets(mixed $user_id, mixed $profile = null, mixed $all = false): mi
 
 
 
+
 ***
 
 ### updatemydashboard
@@ -239,6 +245,7 @@ public updatemydashboard(mixed $widget, mixed $position, mixed $user_id): mixed
 
 
 
+
 ***
 
 ### renderchartbytag
@@ -261,6 +268,7 @@ public renderchartbytag(mixed $id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$id` | **mixed** |  |
+
 
 
 
@@ -294,6 +302,7 @@ public getarticle(mixed $id, mixed $article): mixed
 
 
 
+
 ***
 
 ### getfilescountbystatus
@@ -303,6 +312,7 @@ Sciences PO
 ```php
 public getfilescountbystatus(): mixed
 ```
+
 
 
 
@@ -342,6 +352,7 @@ public getfilesbycampaign(mixed $cid): mixed
 
 
 
+
 ***
 
 ### getusersbyday
@@ -351,6 +362,7 @@ public getfilesbycampaign(mixed $cid): mixed
 ```php
 public getusersbyday(): mixed
 ```
+
 
 
 
@@ -390,6 +402,7 @@ public getfilescountbystatusgroupbydate(mixed $program): mixed
 
 
 
+
 ***
 
 ### getfilescountbystatusandsession
@@ -412,6 +425,7 @@ public getfilescountbystatusandsession(mixed $program): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$program` | **mixed** |  |
+
 
 
 
@@ -445,6 +459,7 @@ public getfilescountbystatusandcourses(mixed $program, mixed $session): mixed
 
 
 
+
 ***
 
 ### getfilescountbystatusandcoursesprecollege
@@ -472,6 +487,7 @@ public getfilescountbystatusandcoursesprecollege(mixed $session): mixed
 
 
 
+
 ***
 
 ### getfilescountbynationalities
@@ -494,6 +510,7 @@ public getfilescountbynationalities(mixed $program): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$program` | **mixed** |  |
+
 
 
 

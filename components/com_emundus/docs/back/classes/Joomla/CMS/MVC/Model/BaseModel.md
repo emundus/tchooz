@@ -79,6 +79,7 @@ public __construct(array $config = []): mixed
 
 
 
+
 ***
 
 ### addIncludePath
@@ -110,6 +111,7 @@ public static addIncludePath(mixed $path = &#039;&#039;, string $prefix = &#039;
 **Return Value:**
 
 An array with directory elements. If prefix is equal to '', all directories are returned.
+
 
 
 
@@ -146,6 +148,7 @@ The name of the model
 **Throws:**
 
 - [`Exception`](../../../../Exception.md)
+
 
 
 
@@ -187,6 +190,7 @@ The filename
 
 
 
+
 ***
 
 ### getInstance
@@ -222,6 +226,7 @@ A \JModelLegacy instance or false on failure
 
 
 
+
 ***
 
 ### addTablePath
@@ -246,6 +251,7 @@ public static addTablePath(mixed $path): void
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$path` | **mixed** | The directory as a string or directories as an array to add. |
+
 
 
 
@@ -286,6 +292,7 @@ A ModelInterface instance or null on failure
 
 
 
+
 ***
 
 ### getState
@@ -314,6 +321,7 @@ public getState(string $property = null, mixed $default = null): mixed
 **Return Value:**
 
 The property where specified, the state object where omitted
+
 
 
 
@@ -350,6 +358,7 @@ The previous value of the property or null if not set
 
 
 
+
 ***
 
 ### populateState
@@ -363,6 +372,7 @@ protected populateState(): void
 This method should only be called once per instantiation and is designed
 to be called on the first call to the getState() method unless the
 configuration flag to ignore the request is set.
+
 
 
 

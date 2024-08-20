@@ -56,6 +56,16 @@
 
 {% endif %}
 
+{% if method.tags.todo is not empty %}
+
+**TODO:**
+
+{% for todo in method.tags.todo %}
+* {{ todo | raw }}
+{% endfor %}
+
+{% endif %}
+
 {% if method.tags.see is not empty or method.tags.link is not empty %}
 
 **See Also:**

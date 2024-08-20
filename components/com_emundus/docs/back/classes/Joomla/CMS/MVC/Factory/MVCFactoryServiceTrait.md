@@ -56,6 +56,7 @@ public getMVCFactory(): \Joomla\CMS\MVC\Factory\MVCFactoryInterface
 
 
 
+
 ***
 
 ### setMVCFactory
@@ -78,6 +79,7 @@ public setMVCFactory(\Joomla\CMS\MVC\Factory\MVCFactoryInterface $mvcFactory): v
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$mvcFactory` | **\Joomla\CMS\MVC\Factory\MVCFactoryInterface** | The factory |
+
 
 
 

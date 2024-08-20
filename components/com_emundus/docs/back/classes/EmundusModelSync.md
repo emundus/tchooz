@@ -40,6 +40,7 @@ public __construct(mixed $config = array()): mixed
 
 
 
+
 ***
 
 ### getConfig
@@ -62,6 +63,7 @@ public getConfig(mixed $type): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$type` | **mixed** |  |
+
 
 
 
@@ -90,6 +92,7 @@ public saveConfig(mixed $config, mixed $type): mixed
 |-----------|------|-------------|
 | `$config` | **mixed** |  |
 | `$type` | **mixed** |  |
+
 
 
 
@@ -124,6 +127,7 @@ public saveParams(mixed $key, mixed $value, mixed $type): mixed
 
 
 
+
 ***
 
 ### getAspects
@@ -133,6 +137,7 @@ public saveParams(mixed $key, mixed $value, mixed $type): mixed
 ```php
 public getAspects(): mixed
 ```
+
 
 
 
@@ -172,6 +177,7 @@ public uploadAspectFile(mixed $file): mixed
 
 
 
+
 ***
 
 ### updateAspectListFromFile
@@ -199,6 +205,7 @@ public updateAspectListFromFile(mixed $file): mixed
 
 
 
+
 ***
 
 ### getDocuments
@@ -220,6 +227,7 @@ public getDocuments(): mixed
 
 
 
+
 ***
 
 ### getEmundusTags
@@ -229,6 +237,7 @@ public getDocuments(): mixed
 ```php
 public getEmundusTags(): mixed
 ```
+
 
 
 
@@ -269,6 +278,7 @@ public updateDocumentSync(mixed $did, mixed $sync): mixed
 
 
 
+
 ***
 
 ### updateDocumentSyncMethod
@@ -297,6 +307,7 @@ public updateDocumentSyncMethod(mixed $did, mixed $sync_method): mixed
 
 
 
+
 ***
 
 ### isSyncModuleActive
@@ -306,6 +317,7 @@ public updateDocumentSyncMethod(mixed $did, mixed $sync_method): mixed
 ```php
 public isSyncModuleActive(): mixed
 ```
+
 
 
 
@@ -345,6 +357,7 @@ public getSyncType(mixed $upload_id): mixed
 
 
 
+
 ***
 
 ### checkIfTypeIsActive
@@ -367,6 +380,7 @@ public checkIfTypeIsActive(mixed $type): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$type` | **mixed** |  |
+
 
 
 
@@ -399,6 +413,7 @@ public getUploadSyncState(mixed $upload_id): mixed
 
 
 
+
 ***
 
 ### synchronizeAttachments
@@ -421,6 +436,7 @@ public synchronizeAttachments(mixed $upload_ids): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$upload_ids` | **mixed** |  |
+
 
 
 
@@ -453,6 +469,7 @@ public deleteAttachments(mixed $upload_ids): mixed
 
 
 
+
 ***
 
 ### checkAttachmentsExists
@@ -480,6 +497,7 @@ public checkAttachmentsExists(mixed $upload_ids): mixed
 
 
 
+
 ***
 
 ### getUploadIdsByType
@@ -502,6 +520,7 @@ private getUploadIdsByType(mixed $upload_ids): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$upload_ids` | **mixed** |  |
+
 
 
 
@@ -535,6 +554,7 @@ private synchronizeAttachmentsByType(mixed $type, mixed $upload_ids): mixed
 
 
 
+
 ***
 
 ### deleteAttachmentsByType
@@ -558,6 +578,7 @@ private deleteAttachmentsByType(mixed $type, mixed $upload_ids): mixed
 |-----------|------|-------------|
 | `$type` | **mixed** |  |
 | `$upload_ids` | **mixed** |  |
+
 
 
 
@@ -591,6 +612,7 @@ private checkAttachmentsExistsByType(mixed $type, mixed $upload_ids): mixed
 
 
 
+
 ***
 
 ### getAttachmentAspectsConfig
@@ -613,6 +635,7 @@ public getAttachmentAspectsConfig(mixed $attachment_id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$attachment_id` | **mixed** |  |
+
 
 
 
@@ -646,6 +669,7 @@ public saveAttachmentAspectsConfig(mixed $attachment_id, mixed $aspectsConfig): 
 
 
 
+
 ***
 
 ### getNodeId
@@ -668,6 +692,7 @@ public getNodeId(mixed $upload_id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$upload_id` | **mixed** |  |
+
 
 
 

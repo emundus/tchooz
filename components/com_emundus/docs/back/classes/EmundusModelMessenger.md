@@ -40,6 +40,7 @@ public __construct(mixed $config = array()): mixed
 
 
 
+
 ***
 
 ### getFilesByUser
@@ -49,6 +50,7 @@ public __construct(mixed $config = array()): mixed
 ```php
 public getFilesByUser(): mixed
 ```
+
 
 
 
@@ -89,6 +91,7 @@ public getMessagesByFnum(mixed $fnum, mixed $offset): mixed
 
 
 
+
 ***
 
 ### sendMessage
@@ -112,6 +115,7 @@ public sendMessage(mixed $message, mixed $fnum): mixed
 |-----------|------|-------------|
 | `$message` | **mixed** |  |
 | `$fnum` | **mixed** |  |
+
 
 
 
@@ -144,6 +148,7 @@ public getMessageById(mixed $id): mixed
 
 
 
+
 ***
 
 ### getNotifications
@@ -166,6 +171,7 @@ public getNotifications(mixed $user): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$user` | **mixed** |  |
+
 
 
 
@@ -198,6 +204,7 @@ public getNotificationsByFnum(mixed $fnum): mixed
 
 
 
+
 ***
 
 ### markAsRead
@@ -220,6 +227,7 @@ public markAsRead(mixed $fnum): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$fnum` | **mixed** |  |
+
 
 
 
@@ -253,6 +261,7 @@ public getDocumentsByCampaign(mixed $fnum, mixed $applicant): mixed
 
 
 
+
 ***
 
 ### askAttachment
@@ -277,6 +286,7 @@ public askAttachment(mixed $fnum, mixed $attachment, mixed $message): mixed
 | `$fnum` | **mixed** |  |
 | `$attachment` | **mixed** |  |
 | `$message` | **mixed** |  |
+
 
 
 
@@ -312,6 +322,7 @@ public moveToUploadedFile(mixed $fnumInfos, mixed $attachment, mixed $filesrc, m
 
 
 
+
 ***
 
 ### notifyByMail
@@ -335,6 +346,7 @@ public notifyByMail(mixed $applicant_fnum, mixed $notify_applicant): mixed
 |-----------|------|-------------|
 | `$applicant_fnum` | **mixed** |  |
 | `$notify_applicant` | **mixed** |  |
+
 
 
 

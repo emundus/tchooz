@@ -72,6 +72,7 @@ public __construct(array $config = array()): mixed
 
 
 
+
 **See Also:**
 
 * \JController - 
@@ -85,6 +86,7 @@ Get campaigns by fnums of current user
 ```php
 public getfilesbyuser(): mixed
 ```
+
 
 
 
@@ -118,6 +120,7 @@ public getmessagesbyfnum(): mixed
 
 
 
+
 ***
 
 ### sendmessage
@@ -127,6 +130,7 @@ public getmessagesbyfnum(): mixed
 ```php
 public sendmessage(): mixed
 ```
+
 
 
 
@@ -160,6 +164,7 @@ public getnotifications(): mixed
 
 
 
+
 ***
 
 ### getnotificationsbyfnum
@@ -169,6 +174,7 @@ public getnotifications(): mixed
 ```php
 public getnotificationsbyfnum(): mixed
 ```
+
 
 
 
@@ -202,6 +208,7 @@ public markasread(): mixed
 
 
 
+
 ***
 
 ### uploaddocument
@@ -211,6 +218,7 @@ public markasread(): mixed
 ```php
 public uploaddocument(): mixed
 ```
+
 
 
 
@@ -244,6 +252,7 @@ public getdocumentsbycampaign(): mixed
 
 
 
+
 ***
 
 ### askattachment
@@ -253,6 +262,7 @@ public getdocumentsbycampaign(): mixed
 ```php
 public askattachment(): mixed
 ```
+
 
 
 

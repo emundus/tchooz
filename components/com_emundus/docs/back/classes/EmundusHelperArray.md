@@ -40,6 +40,7 @@ public static removeDuplicateObjectsByProperty(mixed $array, mixed $property): m
 
 
 
+
 ***
 
 ### mergeAndSumPropertyOfSameObjects
@@ -64,6 +65,7 @@ public static mergeAndSumPropertyOfSameObjects(mixed $array, mixed $property_uni
 | `$array` | **mixed** |  |
 | `$property_unique` | **mixed** |  |
 | `$property_to_sum` | **mixed** |  |
+
 
 
 

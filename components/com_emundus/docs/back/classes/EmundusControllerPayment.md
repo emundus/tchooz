@@ -57,6 +57,7 @@ public __construct(array $config = array()): mixed
 
 
 
+
 **See Also:**
 
 * \JController - 
@@ -70,6 +71,7 @@ called from post method
 ```php
 public getFlywireConfig(): mixed
 ```
+
 
 
 
@@ -103,6 +105,7 @@ public updateFlywirePaymentInfos(): mixed
 
 
 
+
 ***
 
 ### updateFileTransferPayment
@@ -112,6 +115,7 @@ public updateFlywirePaymentInfos(): mixed
 ```php
 public updateFileTransferPayment(): mixed
 ```
+
 
 
 
@@ -145,6 +149,7 @@ public resetpaymentsession(): mixed
 
 
 
+
 ***
 
 ### checkpaymentsession
@@ -154,6 +159,7 @@ public resetpaymentsession(): mixed
 ```php
 public checkpaymentsession(): mixed
 ```
+
 
 
 

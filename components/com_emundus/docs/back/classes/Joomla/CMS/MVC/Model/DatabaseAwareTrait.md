@@ -64,6 +64,7 @@ The database driver.
 
 
 
+
 ***
 
 ### setDbo
@@ -88,6 +89,7 @@ public setDbo(?\Joomla\Database\DatabaseInterface $db = null): void
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$db` | **?\Joomla\Database\DatabaseInterface** | The database driver. |
+
 
 
 

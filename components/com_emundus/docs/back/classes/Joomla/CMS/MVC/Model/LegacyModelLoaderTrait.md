@@ -47,6 +47,7 @@ The filename
 
 
 
+
 ***
 
 ### getInstance
@@ -82,6 +83,7 @@ A \JModelLegacy instance or false on failure
 
 
 
+
 ***
 
 ### addTablePath
@@ -106,6 +108,7 @@ public static addTablePath(mixed $path): void
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$path` | **mixed** | The directory as a string or directories as an array to add. |
+
 
 
 
@@ -142,6 +145,7 @@ private static createModelFromComponent(string $type, string $prefix = &#039;&#0
 **Return Value:**
 
 A ModelInterface instance or null on failure
+
 
 
 

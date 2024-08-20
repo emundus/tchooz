@@ -44,6 +44,7 @@ public static getNow(mixed $timezone = &#039;UTC&#039;): string
 
 
 
+
 ***
 
 ### displayDate
@@ -78,6 +79,7 @@ public static displayDate(mixed $date, mixed $format = &#039;DATE_FORMAT_LC2&#03
 
 
 
+
 ***
 
 ### isNull
@@ -100,6 +102,7 @@ public static isNull(mixed $date): bool
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$date` | **mixed** |  |
+
 
 
 

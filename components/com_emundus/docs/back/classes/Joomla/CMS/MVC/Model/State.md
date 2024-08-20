@@ -42,6 +42,7 @@ public __construct(mixed $data = null): mixed
 
 
 
+
 ***
 
 ### get
@@ -74,6 +75,7 @@ Value of entry or null
 
 
 
+
 ***
 
 ### getProperties
@@ -97,6 +99,7 @@ public getProperties(): array
 **Return Value:**
 
 The data array
+
 
 
 
@@ -134,6 +137,7 @@ The value of the element if set, null otherwise
 
 
 
+
 ***
 
 ### __set
@@ -159,6 +163,7 @@ public __set(string $name, string $value): void
 |-----------|------|-------------|
 | `$name` | **string** | The name of the element |
 | `$value` | **string** | The value |
+
 
 
 
@@ -193,6 +198,7 @@ public __isset(string $name): bool
 **Return Value:**
 
 Returns if the internal data storage contains a key with the given
+
 
 
 

@@ -87,6 +87,7 @@ public __construct(array $config = array()): mixed
 
 
 
+
 **See Also:**
 
 * \JController - 
@@ -123,6 +124,7 @@ This object to support chaining.
 
 
 
+
 ***
 
 ### pdf
@@ -132,6 +134,7 @@ This object to support chaining.
 ```php
 public pdf(): mixed
 ```
+
 
 
 

@@ -51,6 +51,7 @@ public __construct(): mixed
 
 
 
+
 ***
 
 ### getProfile
@@ -82,6 +83,7 @@ The greeting to be displayed to the user
 
 
 
+
 ***
 
 ### getApplicantsProfiles
@@ -91,6 +93,7 @@ The greeting to be displayed to the user
 ```php
 public getApplicantsProfiles(): mixed
 ```
+
 
 
 
@@ -128,6 +131,7 @@ of profile_id for all applicant profiles
 
 
 
+
 ***
 
 ### getUserProfiles
@@ -150,6 +154,7 @@ public getUserProfiles(mixed $uid): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$uid` | **mixed** |  |
+
 
 
 
@@ -182,6 +187,7 @@ public getProfileByApplicant(mixed $aid): mixed
 
 
 
+
 ***
 
 ### affectNoProfile
@@ -204,6 +210,7 @@ public affectNoProfile(mixed $aid): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$aid` | **mixed** |  |
+
 
 
 
@@ -236,6 +243,7 @@ public getFullProfileByFnum(mixed $fnum): array
 
 
 
+
 ***
 
 ### getProfileById
@@ -258,6 +266,7 @@ public getProfileById(mixed $id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$id` | **mixed** |  |
+
 
 
 
@@ -290,6 +299,7 @@ public getProfileByFnum(mixed $fnum): int
 
 
 
+
 ***
 
 ### getCurrentProfile
@@ -312,6 +322,7 @@ public getCurrentProfile(mixed $aid): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$aid` | **mixed** |  |
+
 
 
 
@@ -345,6 +356,7 @@ public getAttachments(mixed $p, mixed $mandatory = false): mixed
 
 
 
+
 ***
 
 ### getForms
@@ -372,6 +384,7 @@ public getForms(mixed $p): mixed
 
 
 
+
 ***
 
 ### isProfileUserSet
@@ -394,6 +407,7 @@ public isProfileUserSet(mixed $uid): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$uid` | **mixed** |  |
+
 
 
 
@@ -427,6 +441,7 @@ public updateProfile(mixed $uid, mixed $campaign): mixed
 
 
 
+
 ***
 
 ### getCurrentCampaignByApplicant
@@ -449,6 +464,7 @@ public getCurrentCampaignByApplicant(mixed $uid): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$uid` | **mixed** |  |
+
 
 
 
@@ -481,6 +497,7 @@ public getCurrentIncompleteCampaignByApplicant(mixed $uid): mixed
 
 
 
+
 ***
 
 ### getCurrentCompleteCampaignByApplicant
@@ -503,6 +520,7 @@ public getCurrentCompleteCampaignByApplicant(mixed $uid): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$uid` | **mixed** |  |
+
 
 
 
@@ -535,6 +553,7 @@ public getCurrentCampaignInfoByApplicant(mixed $uid): mixed
 
 
 
+
 ***
 
 ### getCampaignInfoByFnum
@@ -557,6 +576,7 @@ public getCampaignInfoByFnum(mixed $fnum): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$fnum` | **mixed** |  |
+
 
 
 
@@ -589,6 +609,7 @@ public getCampaignById(mixed $id): mixed
 
 
 
+
 ***
 
 ### getProfileByCampaign
@@ -611,6 +632,7 @@ public getProfileByCampaign(mixed $id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$id` | **mixed** |  |
+
 
 
 
@@ -643,6 +665,7 @@ public getWorkflowProfilesByCampaign(mixed $campaign_id): array
 
 
 
+
 ***
 
 ### getProfileByStatus
@@ -665,6 +688,7 @@ public getProfileByStatus(mixed $fnum): array
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$fnum` | **mixed** | string |
+
 
 
 
@@ -697,6 +721,7 @@ public getProfileByStep(mixed $step): mixed
 
 
 
+
 ***
 
 ### getProfileByMenu
@@ -719,6 +744,7 @@ public getProfileByMenu(mixed $menu): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$menu` | **mixed** |  |
+
 
 
 
@@ -751,6 +777,7 @@ public getFabrikListByIds(mixed $flist): mixed
 
 
 
+
 ***
 
 ### getFabrikFormByList
@@ -773,6 +800,7 @@ public getFabrikFormByList(mixed $list): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$list` | **mixed** |  |
+
 
 
 
@@ -805,6 +833,7 @@ public getFabrikGroupByList(mixed $glist): mixed
 
 
 
+
 ***
 
 ### getFabrikElementById
@@ -827,6 +856,7 @@ public getFabrikElementById(mixed $eid): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$eid` | **mixed** |  |
+
 
 
 
@@ -856,6 +886,7 @@ public getDataFromElementName(mixed $element, mixed $fnum, mixed $user): mixed
 | `$element` | **mixed** |  |
 | `$fnum` | **mixed** |  |
 | `$user` | **mixed** |  |
+
 
 
 
@@ -893,6 +924,7 @@ The profile IDs found
 
 
 
+
 ***
 
 ### getProfileIDByCampaign
@@ -920,6 +952,7 @@ public getProfileIDByCampaign(array $campaign_id): array
 **Return Value:**
 
 The profile list for the campaigns
+
 
 
 
@@ -956,6 +989,7 @@ The profile list for the campaigns
 
 
 
+
 ***
 
 ### getProfileIDByCampaigns
@@ -979,6 +1013,7 @@ public getProfileIDByCampaigns(mixed $campaigns, mixed $codes): mixed
 |-----------|------|-------------|
 | `$campaigns` | **mixed** |  |
 | `$codes` | **mixed** |  |
+
 
 
 
@@ -1011,6 +1046,7 @@ public getFnumDetails(mixed $fnum): mixed
 
 
 
+
 ***
 
 ### getCandidatureByFnum
@@ -1038,6 +1074,7 @@ public getCandidatureByFnum(mixed $fnum): mixed
 
 
 
+
 ***
 
 ### isApplicationDeclared
@@ -1060,6 +1097,7 @@ public isApplicationDeclared(mixed $aid): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$aid` | **mixed** |  |
+
 
 
 
@@ -1100,6 +1138,7 @@ public getApplicantFnums(int $aid, int $submitted = null, \datetime $start_date 
 
 
 
+
 ***
 
 ### initEmundusSession
@@ -1122,6 +1161,7 @@ public initEmundusSession(null $fnum = null): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$fnum` | **null** |  |
+
 
 
 
@@ -1159,6 +1199,7 @@ public getEmundusUser(mixed $user_id): \stdClass
 
 
 
+
 ***
 
 ### getHikashopMenu
@@ -1181,6 +1222,7 @@ public getHikashopMenu(mixed $profile): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$profile` | **mixed** |  |
+
 
 
 
@@ -1213,6 +1255,7 @@ public getFilesMenuPathByProfile(mixed $profile_id): string
 
 
 
+
 ***
 
 ### checkIsAnonymUser
@@ -1240,6 +1283,7 @@ private checkIsAnonymUser(mixed $user_id): mixed
 
 
 
+
 ***
 
 ### getAnonymSessionToken
@@ -1262,6 +1306,7 @@ private getAnonymSessionToken(mixed $user_id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$user_id` | **mixed** |  |
+
 
 
 

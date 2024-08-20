@@ -18,9 +18,6 @@
                 <path>components/com_emundus/models</path>
                 <path>libraries/src/MVC</path>
             </source>
-            <markers>
-                <marker>TODO</marker>
-            </markers>
         </api>
     </version>
 

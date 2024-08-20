@@ -34,6 +34,7 @@ public apply(): void
 
 
 
+
 ***
 
 ### display
@@ -66,6 +67,7 @@ This object to support chaining.
 
 
 
+
 ***
 
 ### cancel
@@ -75,6 +77,7 @@ Method to cancel application on a Job.
 ```php
 public cancel(): void
 ```
+
 
 
 
@@ -108,6 +111,7 @@ public edit(): mixed
 
 
 
+
 ***
 
 ### publish
@@ -129,6 +133,7 @@ public publish(): void
 
 
 
+
 ***
 
 ### remove
@@ -138,6 +143,7 @@ public publish(): void
 ```php
 public remove(): mixed
 ```
+
 
 
 

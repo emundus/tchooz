@@ -57,6 +57,7 @@ public __construct(array $config = array()): mixed
 
 
 
+
 **See Also:**
 
 * \JController - 
@@ -70,6 +71,7 @@ public __construct(array $config = array()): mixed
 ```php
 public getprofiletype(): mixed
 ```
+
 
 
 
@@ -103,6 +105,7 @@ public getoffres(): mixed
 
 
 
+
 ***
 
 ### getcandidatures
@@ -112,6 +115,7 @@ public getoffres(): mixed
 ```php
 public getcandidatures(): mixed
 ```
+
 
 
 
@@ -145,6 +149,7 @@ public getconnections(): mixed
 
 
 
+
 ***
 
 ### getrelations
@@ -154,6 +159,7 @@ public getconnections(): mixed
 ```php
 public getrelations(): mixed
 ```
+
 
 
 
@@ -187,6 +193,7 @@ public getgender(): mixed
 
 
 
+
 ***
 
 ### getnationality
@@ -196,6 +203,7 @@ public getgender(): mixed
 ```php
 public getnationality(): mixed
 ```
+
 
 
 
@@ -229,6 +237,7 @@ public getage(): mixed
 
 
 
+
 ***
 
 ### getfiles
@@ -238,6 +247,7 @@ public getage(): mixed
 ```php
 public getfiles(): mixed
 ```
+
 
 
 
@@ -271,6 +281,7 @@ public addview(): mixed
 
 
 
+
 ***
 
 ### linkfabrik
@@ -280,6 +291,7 @@ public addview(): mixed
 ```php
 public linkfabrik(): mixed
 ```
+
 
 
 

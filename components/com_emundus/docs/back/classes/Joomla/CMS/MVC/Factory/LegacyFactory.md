@@ -51,6 +51,7 @@ public createController(string $name, string $prefix, array $config, \Joomla\CMS
 
 
 
+
 ***
 
 ### createModel
@@ -86,6 +87,7 @@ The model object
 **Throws:**
 
 - [`Exception`](../../../../Exception.md)
+
 
 
 
@@ -128,6 +130,7 @@ The view object
 
 
 
+
 ***
 
 ### createTable
@@ -163,6 +166,7 @@ The table object
 **Throws:**
 
 - [`Exception`](../../../../Exception.md)
+
 
 
 

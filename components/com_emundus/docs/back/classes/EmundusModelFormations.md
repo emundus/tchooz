@@ -40,6 +40,7 @@ public __construct(array $config = array()): mixed
 
 
 
+
 ***
 
 ### checkHR
@@ -69,6 +70,7 @@ public checkHR(mixed $cid, null $user = null, int $profile = 1002): mixed
 
 
 
+
 ***
 
 ### deleteCompany
@@ -91,6 +93,7 @@ public deleteCompany(mixed $id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$id` | **mixed** |  |
+
 
 
 
@@ -125,6 +128,7 @@ public deleteAssociate(mixed $user_id, mixed $cid, mixed $hr_user): bool
 
 
 
+
 ***
 
 ### checkHRUser
@@ -149,6 +153,7 @@ public checkHRUser(mixed $user_hr, null $user_intern = null, int $profile = 1002
 | `$user_hr` | **mixed** | Int The user who is supposedly a DRH |
 | `$user_intern` | **null** | Int The user who is supposedly an intern._ |
 | `$profile` | **int** | Int The profile which determines if a user is DRH. |
+
 
 
 
@@ -182,6 +187,7 @@ public checkCompanyUser(mixed $user, mixed $company): bool
 
 
 
+
 ***
 
 ### getApplicantsInSessionForDRH
@@ -205,6 +211,7 @@ public getApplicantsInSessionForDRH(mixed $campaign, null $user = null): bool|mi
 |-----------|------|-------------|
 | `$campaign` | **mixed** |  |
 | `$user` | **null** |  |
+
 
 
 
@@ -237,6 +244,7 @@ public getCompaniesDRH(null $user_id = null): bool
 
 
 
+
 ***
 
 ### getUserFormationByRH
@@ -260,6 +268,7 @@ public getUserFormationByRH(null $user_id = null, mixed $user_rh = null): mixed
 |-----------|------|-------------|
 | `$user_id` | **null** |  |
 | `$user_rh` | **mixed** |  |
+
 
 
 

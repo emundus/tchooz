@@ -45,6 +45,7 @@ This object to support chaining.
 
 
 
+
 ***
 
 ### export_zip
@@ -54,6 +55,7 @@ export ZIP
 ```php
 public export_zip(): mixed
 ```
+
 
 
 
@@ -87,6 +89,7 @@ public cancel_renew(): mixed
 
 
 
+
 ***
 
 ### new_application
@@ -96,6 +99,7 @@ File new application. Define what to do
 ```php
 public new_application(): mixed
 ```
+
 
 
 
@@ -129,6 +133,7 @@ public edit_user(): mixed
 
 
 
+
 ***
 
 ### deleteReferents
@@ -138,6 +143,7 @@ public edit_user(): mixed
 ```php
 public deleteReferents(): mixed
 ```
+
 
 
 
@@ -171,6 +177,7 @@ public deleteApplication(): mixed
 
 
 
+
 ***
 
 ### deleteInformations
@@ -180,6 +187,7 @@ public deleteApplication(): mixed
 ```php
 public deleteInformations(): mixed
 ```
+
 
 
 
