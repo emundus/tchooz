@@ -68,7 +68,7 @@ public __construct(array $config = array()): mixed
 Method to display a view.
 
 ```php
-public display(bool $cachable = false, bool $urlparams = false): \DisplayController
+public display(bool $cachable = false, bool $urlparams = false): \EmundusControllerApplication
 ```
 
 
@@ -118,7 +118,7 @@ public delete_attachments(): mixed
 
 ### delete_attachment
 
-Delete an applicant attachment (one by one)
+Delete an applicant attachment by id (one by one)
 
 ```php
 public delete_attachment(): mixed
@@ -181,7 +181,7 @@ public editcomment(): mixed
 
 ### deletecomment
 
-
+Delete a comment
 
 ```php
 public deletecomment(): mixed
@@ -202,7 +202,7 @@ public deletecomment(): mixed
 
 ### deletetag
 
-
+Delete an application tag
 
 ```php
 public deletetag(): mixed
@@ -223,7 +223,7 @@ public deletetag(): mixed
 
 ### deletetraining
 
-
+Delete training
 
 ```php
 public deletetraining(): mixed
@@ -244,7 +244,7 @@ public deletetraining(): mixed
 
 ### getapplicationmenu
 
-
+Get menus availables for an application file
 
 ```php
 public getapplicationmenu(): mixed
@@ -265,7 +265,7 @@ public getapplicationmenu(): mixed
 
 ### deleteattachement
 
-
+Delete attachments by their ids and for a specific fnum
 
 ```php
 public deleteattachement(): mixed
@@ -286,7 +286,7 @@ public deleteattachement(): mixed
 
 ### exportpdf
 
-
+Export an application file to PDF
 
 ```php
 public exportpdf(): mixed
@@ -307,7 +307,7 @@ public exportpdf(): mixed
 
 ### updateaccess
 
-
+Update access for an application file
 
 ```php
 public updateaccess(): mixed
@@ -328,7 +328,7 @@ public updateaccess(): mixed
 
 ### deleteaccess
 
-
+Remove access for an application file
 
 ```php
 public deleteaccess(): mixed
@@ -349,7 +349,7 @@ public deleteaccess(): mixed
 
 ### attachment_validation
 
-
+Update validation state of an attachment for an application file
 
 ```php
 public attachment_validation(): mixed
@@ -370,7 +370,7 @@ public attachment_validation(): mixed
 
 ### getuserattachments
 
-
+Get attachments for a specific user
 
 ```php
 public getuserattachments(): mixed
@@ -391,7 +391,7 @@ public getuserattachments(): mixed
 
 ### getattachmentsbyfnum
 
-
+Get attachments for a specific fnum
 
 ```php
 public getattachmentsbyfnum(): mixed
@@ -412,7 +412,7 @@ public getattachmentsbyfnum(): mixed
 
 ### updateattachment
 
-
+Update file of an attachment for a specific fnum
 
 ```php
 public updateattachment(): mixed
@@ -433,7 +433,7 @@ public updateattachment(): mixed
 
 ### getform
 
-
+Get datas of an application for a specific fnum, can be filtered by form (profile_id)
 
 ```php
 public getform(): mixed
@@ -454,7 +454,7 @@ public getform(): mixed
 
 ### getattachmentpreview
 
-
+Load a preview of an attachment
 
 ```php
 public getattachmentpreview(): mixed
@@ -475,7 +475,7 @@ public getattachmentpreview(): mixed
 
 ### reorderapplications
 
-
+Reorder applications of a user
 
 ```php
 public reorderapplications(): mixed
@@ -496,7 +496,7 @@ public reorderapplications(): mixed
 
 ### createtab
 
-
+Create a tab to group applications for the logged user
 
 ```php
 public createtab(): mixed
@@ -517,7 +517,7 @@ public createtab(): mixed
 
 ### gettabs
 
-
+Get tabs of the logged user
 
 ```php
 public gettabs(): mixed
@@ -538,7 +538,7 @@ public gettabs(): mixed
 
 ### updatetabs
 
-
+Update tabs of the logged user
 
 ```php
 public updatetabs(): mixed
@@ -559,7 +559,7 @@ public updatetabs(): mixed
 
 ### deletetab
 
-
+Delete a tab of the logged user
 
 ```php
 public deletetab(): mixed
@@ -580,7 +580,7 @@ public deletetab(): mixed
 
 ### copyfile
 
-
+Copy a file of the logged user to another campaign
 
 ```php
 public copyfile(): mixed
@@ -601,7 +601,7 @@ public copyfile(): mixed
 
 ### movetotab
 
-
+Move an application file of the logged user to another tab
 
 ```php
 public movetotab(): mixed
@@ -622,7 +622,7 @@ public movetotab(): mixed
 
 ### renamefile
 
-
+Rename an application file of the logged user
 
 ```php
 public renamefile(): mixed
@@ -643,7 +643,7 @@ public renamefile(): mixed
 
 ### getcampaignsavailableforcopy
 
-
+Get campaigns available for copy for an application file of the logged user
 
 ```php
 public getcampaignsavailableforcopy(): mixed
@@ -664,7 +664,7 @@ public getcampaignsavailableforcopy(): mixed
 
 ### filterapplications
 
-
+Filter applications by order by and filter by
 
 ```php
 public filterapplications(): mixed
@@ -685,7 +685,7 @@ public filterapplications(): mixed
 
 ### applicantcustomaction
 
-
+Execute a custom action on an application file of the logged user
 
 ```php
 public applicantcustomaction(): mixed
@@ -706,4 +706,4 @@ public applicantcustomaction(): mixed
 
 
 ***
-> Automatically generated on 2024-08-19
+> Automatically generated on 2024-08-20

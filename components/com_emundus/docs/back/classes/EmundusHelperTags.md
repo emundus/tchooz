@@ -72,4 +72,4 @@ public getTags(mixed $tags = [], mixed $published = 1): mixed
 
 
 ***
-> Automatically generated on 2024-08-19
+> Automatically generated on 2024-08-20

@@ -182,7 +182,7 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
     echo >&2 "Create coordinator user..."
 
     #php cli/joomla.php tchooz:user:add --username="coord@emundus.fr" --lastname="DEV" --firstname="Coordinator" --password="password" --email="coord@emundus.fr" --usergroup="Registered,Administrator" --userprofiles="Administrateur de plateforme,Formulaire de base" --useremundusgroups="Administrateur de plateforme" -n
-    php cli/joomla.php tchooz:user:add --username="$TCHOOZ_COORD_USERNAME" --lastname="$TCHOOZ_COORD_LAST_NAME" --firstname="$TCHOOZ_COORD_FIRST_NAME" --password="$TCHOOZ_COORD_PASSWORD" --email="$TCHOOZ_COORD_MAIL" --usergroup="Registered,Administrator" --userprofiles="Administrateur de plateforme,Formulaire de base" --useremundusgroups="Administrateur de plateforme" -n
+    php cli/joomla.php tchooz:user:add --username="$TCHOOZ_COORD_USERNAME" --lastname="$TCHOOZ_COORD_LAST_NAME" --firstname="$TCHOOZ_COORD_FIRST_NAME" --password="$TCHOOZ_COORD_PASSWORD" --email="$TCHOOZ_COORD_MAIL" --usergroup="Registered,Administrator" --userprofiles="Administrateur de plateforme" --useremundusgroups="Administrateur de plateforme" -n
 
     echo >&2 "Set Fabrik connection..."
 

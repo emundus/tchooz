@@ -12,7 +12,9 @@
 // phpcs:enable PSR1.Files.SideEffects
 
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Controller\BaseController;
+use Joomla\CMS\Uri\Uri;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\CMS\Factory;
 
@@ -55,7 +57,7 @@ class EmundusControllerApplication extends BaseController
 	 * @param   boolean  $urlparams  An array of safe URL parameters and their variable types.
 	 *                   @see        \Joomla\CMS\Filter\InputFilter::clean() for valid values.
 	 *
-	 * @return  DisplayController  This object to support chaining.
+	 * @return  EmundusControllerApplication  This object to support chaining.
 	 *
 	 * @since   1.0.0
 	 */
@@ -68,6 +70,8 @@ class EmundusControllerApplication extends BaseController
 		}
 
 		parent::display();
+
+		return $this;
 	}
 
 	/**
@@ -77,7 +81,6 @@ class EmundusControllerApplication extends BaseController
 	 */
 	public function delete_attachments()
 	{
-
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			die(Text::_("ACCESS_DENIED"));
 		}
@@ -131,7 +134,7 @@ class EmundusControllerApplication extends BaseController
 	}
 
 	/**
-	 * Delete an applicant attachment (one by one)
+	 * Delete an applicant attachment by id (one by one)
 	 *
 	 * @since version 1.0.0
 	 */
@@ -177,7 +180,6 @@ class EmundusControllerApplication extends BaseController
 	 */
 	public function upload_attachment()
 	{
-
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			die(Text::_("ACCESS_DENIED"));
 		}
@@ -332,6 +334,11 @@ class EmundusControllerApplication extends BaseController
 	}
 
 
+	/**
+	 * Delete a comment
+	 *
+	 * @since version 1.0.0
+	 */
 	public function deletecomment()
 	{
 		$comment_id = $this->input->get('comment_id', null, 'GET');
@@ -363,10 +370,14 @@ class EmundusControllerApplication extends BaseController
 		exit;
 	}
 
+	/**
+	 * Delete an application tag
+	 *
+	 * @since version 1.0.0
+	 */
 	public function deletetag()
 	{
 		$response = array('status' => 0, 'msg' => Text::_('TAG_DELETE_ERROR'));
-
 
 		if (empty($this->_user->id)) {
 			$response['msg'] = Text::_('ACCESS_DENIED');
@@ -406,9 +417,13 @@ class EmundusControllerApplication extends BaseController
 		exit;
 	}
 
+	/**
+	 * Delete training
+	 *
+	 * @since version 1.0.0
+	 */
 	public function deletetraining()
 	{
-
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			die(Text::_("ACCESS_DENIED"));
 		}
@@ -429,9 +444,13 @@ class EmundusControllerApplication extends BaseController
 		echo $result;
 	}
 
+	/**
+	 * Get menus availables for an application file
+	 *
+	 * @since version 1.0.0
+	 */
 	public function getapplicationmenu()
 	{
-
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			die(Text::_("ACCESS_DENIED"));
 		}
@@ -498,6 +517,11 @@ class EmundusControllerApplication extends BaseController
 		exit;
 	}
 
+	/**
+	 * Delete attachments by their ids and for a specific fnum
+	 *
+	 * @since version 1.0.0
+	 */
 	public function deleteattachement()
 	{
 
@@ -506,7 +530,7 @@ class EmundusControllerApplication extends BaseController
 		$ids  = json_decode(stripslashes($ids));
 		$res  = new stdClass();
 
-		if (EmundusHelperAccess::asAccessAction(4, 'd', JFactory::getUser()->id, $fnum)) {
+		if (EmundusHelperAccess::asAccessAction(4, 'd', $this->_user->id, $fnum)) {
 			$m_application = $this->getModel('Application');
 			foreach ($ids as $id) {
 				$m_application->deleteAttachment($id);
@@ -517,7 +541,6 @@ class EmundusControllerApplication extends BaseController
 
 			require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
 			$mFile        = new EmundusModelFiles();
-			$applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
 
 			$res->status = true;
 		}
@@ -529,12 +552,17 @@ class EmundusControllerApplication extends BaseController
 		exit();
 	}
 
+	/**
+	 * Export an application file to PDF
+	 *
+	 * @since version 1.0.0
+	 */
 	public function exportpdf()
 	{
 
 		$fnum = $this->input->post->getString('fnum', null);
 
-		if (!empty($fnum) && EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $fnum)) {
+		if (!empty($fnum) && EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum)) {
 			$ids              = $this->input->post->getString('ids', null);
 			$sid              = $this->input->post->getInt('student_id', null);
 			$form_post        = $this->input->post->getVar('forms', null);
@@ -599,6 +627,7 @@ class EmundusControllerApplication extends BaseController
 				$res->msg    = Text::_('COM_EMUNDUS_EXPORTS_CANNOT_EXPORT_FILETYPE');
 			}
 			elseif (!empty($exports)) {
+				// TODO: Replace FPDI by Gotenberg
 				require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
 				require_once(JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 				$pdf = new ConcatPdf();
@@ -610,7 +639,7 @@ class EmundusControllerApplication extends BaseController
 				$pdf->Output(EMUNDUS_PATH_ABS . $sid . DS . $fnum . '_attachments.pdf', 'F');
 				$res         = new stdClass();
 				$res->status = true;
-				$res->link   = JURI::base() . EMUNDUS_PATH_REL . $sid . '/' . $fnum . '_attachments.pdf';
+				$res->link   = Uri::base() . EMUNDUS_PATH_REL . $sid . '/' . $fnum . '_attachments.pdf';
 
 			}
 			else {
@@ -624,13 +653,18 @@ class EmundusControllerApplication extends BaseController
 			$res->status = false;
 			$res->msg    = Text::_('ACCESS_DENIED');
 		}
+
 		echo json_encode($res);
 		exit();
 	}
 
+	/**
+	 * Update access for an application file
+	 *
+	 * @since version 1.0.0
+	 */
 	public function updateaccess()
 	{
-
 		$fnum = $this->input->getString('fnum', null);
 
 		if (EmundusHelperAccess::asAccessAction(11, 'u', $this->_user->id, $fnum)) {
@@ -657,9 +691,13 @@ class EmundusControllerApplication extends BaseController
 		}
 	}
 
+	/**
+	 * Remove access for an application file
+	 *
+	 * @since version 1.0.0
+	 */
 	public function deleteaccess()
 	{
-
 		$fnum = $this->input->getString('fnum', null);
 
 		if (EmundusHelperAccess::asAccessAction(11, 'd', $this->_user->id, $fnum)) {
@@ -685,15 +723,20 @@ class EmundusControllerApplication extends BaseController
 		}
 	}
 
+	/**
+	 * Update validation state of an attachment for an application file
+	 *
+	 * @since version 1.0.0
+	 */
 	public function attachment_validation()
 	{
 		$fnum          = $this->input->getString('fnum', null);
-		$att_id        = $this->input->getVar('att_id', null);
+		$att_id        = $this->input->getInt('att_id', null);
 		$state         = $this->input->getVar('state', null);
 		$m_application = $this->getModel('Application');
 		$res           = new stdClass();
 
-		if (EmundusHelperAccess::asAccessAction(4, 'c', JFactory::getUser()->id, $fnum)) {
+		if (EmundusHelperAccess::asAccessAction(4, 'c', $this->_user->id, $fnum)) {
 			$res->status = $m_application->attachment_validation($att_id, $state);
 			echo json_encode($res);
 			exit();
@@ -705,20 +748,32 @@ class EmundusControllerApplication extends BaseController
 	}
 
 	/////////////////////////////////////////////////////////////
-	// used by VueJS com_emundus Attachments component
+	/* used by VueJS com_emundus Attachments component */
 
+	/**
+	 * Get attachments for a specific user
+	 *
+	 * @since version 1.0.0
+	 */
 	public function getuserattachments()
 	{
-		$m_application = $this->getModel('Application');
+		$attachments = array();
+		$user_id = $this->input->getInt('user_id', 0);
 
-		$user_id = $this->input->getInt('user_id', null);
-
-		$attachments = $m_application->getUserAttachments($user_id);
+		if(!empty($user)) {
+			$m_application = $this->getModel('Application');
+			$attachments   = $m_application->getUserAttachments($user_id);
+		}
 
 		echo json_encode($attachments);
 		exit;
 	}
 
+	/**
+	 * Get attachments for a specific fnum
+	 *
+	 * @since version 1.0.0
+	 */
 	public function getattachmentsbyfnum()
 	{
 		$response = ['msg' => Text::_('ACCESS_DENIED'), 'status' => false, 'code' => 403];
@@ -739,6 +794,11 @@ class EmundusControllerApplication extends BaseController
 		exit;
 	}
 
+	/**
+	 * Update file of an attachment for a specific fnum
+	 *
+	 * @since version 1.0.0
+	 */
 	public function updateattachment()
 	{
 		$update = false;
@@ -767,10 +827,15 @@ class EmundusControllerApplication extends BaseController
 		exit;
 	}
 
+	/**
+	 * Get datas of an application for a specific fnum, can be filtered by form (profile_id)
+	 *
+	 * @since version 1.0.0
+	 */
 	public function getform()
 	{
-		$profile = $this->input->getInt('profile', null);
-		$user    = $this->input->getInt('user', null);
+		$profile = $this->input->getInt('profile', 0);
+		$user    = $this->input->getInt('user', 0);
 		$fnum    = $this->input->getString('fnum', null);
 
 		if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)) {
@@ -792,7 +857,11 @@ class EmundusControllerApplication extends BaseController
 		exit;
 	}
 
-
+	/**
+	 * Load a preview of an attachment
+	 *
+	 * @since version 1.0.0
+	 */
 	public function getattachmentpreview()
 	{
 		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
@@ -812,11 +881,16 @@ class EmundusControllerApplication extends BaseController
 		exit;
 	}
 
+	/**
+	 * Reorder applications of a user
+	 *
+	 * @since version 1.0.0
+	 */
 	public function reorderapplications()
 	{
 		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
 
-		$emundusUser      = JFactory::getSession()->get('emundusUser');
+		$emundusUser      = $this->app->getSession()->get('emundusUser');
 		$emundusUserFnums = array_keys($emundusUser->fnums);
 
 		$fnum_from    = $this->input->getString('fnum_from', '');
@@ -835,6 +909,11 @@ class EmundusControllerApplication extends BaseController
 		exit;
 	}
 
+	/**
+	 * Create a tab to group applications for the logged user
+	 *
+	 * @since version 1.0.0
+	 */
 	public function createtab()
 	{
 		$response = array('tab' => 0, 'msg' => Text::_('FAILED'));
@@ -855,6 +934,11 @@ class EmundusControllerApplication extends BaseController
 		exit;
 	}
 
+	/**
+	 * Get tabs of the logged user
+	 *
+	 * @since version 1.0.0
+	 */
 	public function gettabs()
 	{
 		$response = array('tabs' => array());
@@ -868,6 +952,11 @@ class EmundusControllerApplication extends BaseController
 		exit;
 	}
 
+	/**
+	 * Update tabs of the logged user
+	 *
+	 * @since version 1.0.0
+	 */
 	public function updatetabs()
 	{
 		$response = array('msg' => Text::_('FAILED'));
@@ -888,6 +977,11 @@ class EmundusControllerApplication extends BaseController
 		exit;
 	}
 
+	/**
+	 * Delete a tab of the logged user
+	 *
+	 * @since version 1.0.0
+	 */
 	public function deletetab()
 	{
 		$response = array('msg' => Text::_('FAILED'));
@@ -907,6 +1001,11 @@ class EmundusControllerApplication extends BaseController
 		exit;
 	}
 
+	/**
+	 * Copy a file of the logged user to another campaign
+	 *
+	 * @since version 1.0.0
+	 */
 	public function copyfile()
 	{
 		$response = array('status' => 0, 'msg' => '');
@@ -937,6 +1036,11 @@ class EmundusControllerApplication extends BaseController
 		exit;
 	}
 
+	/**
+	 * Move an application file of the logged user to another tab
+	 *
+	 * @since version 1.0.0
+	 */
 	public function movetotab()
 	{
 		$response = array('status' => 0, 'msg' => '');
@@ -963,6 +1067,11 @@ class EmundusControllerApplication extends BaseController
 		exit;
 	}
 
+	/**
+	 * Rename an application file of the logged user
+	 *
+	 * @since version 1.0.0
+	 */
 	public function renamefile()
 	{
 		$response = array('status' => 0, 'msg' => '');
@@ -993,6 +1102,11 @@ class EmundusControllerApplication extends BaseController
 		exit;
 	}
 
+	/**
+	 * Get campaigns available for copy for an application file of the logged user
+	 *
+	 * @since version 1.0.0
+	 */
 	public function getcampaignsavailableforcopy()
 	{
 		$response = array('status' => 0, 'msg' => '');
@@ -1018,6 +1132,11 @@ class EmundusControllerApplication extends BaseController
 		exit;
 	}
 
+	/**
+	 * Filter applications by order by and filter by
+	 *
+	 * @since version 1.0.0
+	 */
 	public function filterapplications()
 	{
 		$response = array('status' => 1, 'msg' => Text::_('SUCCESS'));
@@ -1026,10 +1145,10 @@ class EmundusControllerApplication extends BaseController
 		$value = $this->input->getString('value');
 
 		if (!empty($type) && !empty($value) && in_array($type, ['applications_order_by', 'applications_filter_by'])) {
-			JFactory::getSession()->set($type, $value);
+			$this->app->getSession()->set($type, $value);
 		}
 		elseif (empty($value)) {
-			JFactory::getSession()->clear($type);
+			$this->app->getSession()->clear($type);
 		}
 		else {
 			$response = array('status' => 0, 'msg' => Text::_('FAILED'));
@@ -1039,6 +1158,11 @@ class EmundusControllerApplication extends BaseController
 		exit;
 	}
 
+	/**
+	 * Execute a custom action on an application file of the logged user
+	 *
+	 * @since version 1.0.0
+	 */
 	public function applicantcustomaction()
 	{
 		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403];
@@ -1077,7 +1201,7 @@ class EmundusControllerApplication extends BaseController
 			else {
 				// Log invalid fnum and ip address, to prevent brute force attacks
 				$ip = $_SERVER['REMOTE_ADDR'];
-				JLog::add('Call to custom action on Invalid fnum: ' . $fnum . ' from ip: ' . $ip, JLog::WARNING, 'com_emundus');
+				Log::add('Call to custom action on Invalid fnum: ' . $fnum . ' from ip: ' . $ip, Log::WARNING, 'com_emundus');
 			}
 		}
 

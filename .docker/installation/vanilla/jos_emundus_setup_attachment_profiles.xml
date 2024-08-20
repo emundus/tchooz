@@ -22,49 +22,5 @@
    <key Table="#__emundus_setup_attachment_profiles" Non_unique="1" Key_name="displayed" Seq_in_index="1" Column_name="displayed" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_setup_attachment_profiles" Non_unique="1" Key_name="mandatory" Seq_in_index="1" Column_name="mandatory" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
   </table_structure>
-  <table_data name="#__emundus_setup_attachment_profiles">
-   <row>
-    <field name="id">4</field>
-    <field name="profile_id">1001</field>
-    <field name="campaign_id" value_is_null="true"></field>
-    <field name="attachment_id">12</field>
-    <field name="displayed">1</field>
-    <field name="mandatory">1</field>
-    <field name="ordering">1</field>
-    <field name="published">1</field>
-    <field name="bank_needed" value_is_null="true"></field>
-    <field name="duplicate">1</field>
-    <field name="has_sample">1</field>
-    <field name="sample_filepath" value_is_null="true"></field>
-   </row>
-   <row>
-    <field name="id">5</field>
-    <field name="profile_id">1001</field>
-    <field name="campaign_id" value_is_null="true"></field>
-    <field name="attachment_id">10</field>
-    <field name="displayed">1</field>
-    <field name="mandatory">1</field>
-    <field name="ordering">0</field>
-    <field name="published">1</field>
-    <field name="bank_needed" value_is_null="true"></field>
-    <field name="duplicate">1</field>
-    <field name="has_sample">1</field>
-    <field name="sample_filepath" value_is_null="true"></field>
-   </row>
-   <row>
-    <field name="id">6</field>
-    <field name="profile_id">1001</field>
-    <field name="campaign_id" value_is_null="true"></field>
-    <field name="attachment_id">27</field>
-    <field name="displayed">1</field>
-    <field name="mandatory">1</field>
-    <field name="ordering">2</field>
-    <field name="published">1</field>
-    <field name="bank_needed" value_is_null="true"></field>
-    <field name="duplicate">1</field>
-    <field name="has_sample">1</field>
-    <field name="sample_filepath" value_is_null="true"></field>
-   </row>
-  </table_data>
  </database>
 </mysqldump>

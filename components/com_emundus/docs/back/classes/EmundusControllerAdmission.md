@@ -8,6 +8,7 @@ Emundus Admission Class
 
 * Full name: `\EmundusControllerAdmission`
 * Parent class: [`BaseController`](./Joomla/CMS/MVC/Controller/BaseController.md)
+* **Warning:** this class is **deprecated**. This means that this class will likely be removed in a future version.
 
 
 
@@ -587,89 +588,6 @@ public pdf_admission(): mixed
 
 ***
 
-### return_bytes
-
-Return size in bytes
-
-```php
-public return_bytes(mixed $val): int|string
-```
-
-
-
-
-
-
-
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$val` | **mixed** |  |
-
-
-
-
-
-***
-
-### sortArrayByArray
-
-Sort an array by another array
-
-```php
-public sortArrayByArray(mixed $array, mixed $orderArray): array
-```
-
-
-
-
-
-
-
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$array` | **mixed** |  |
-| `$orderArray` | **mixed** |  |
-
-
-
-
-
-***
-
-### sortObjectByArray
-
-Sort an object by another array
-
-```php
-public sortObjectByArray(mixed $object, mixed $orderArray): array
-```
-
-
-
-
-
-
-
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$object` | **mixed** |  |
-| `$orderArray` | **mixed** |  |
-
-
-
-
-
-***
-
 ### create_file_csv
 
 Export applications in CSV format
@@ -843,4 +761,4 @@ public export_zip(mixed $fnums): string|void
 
 
 ***
-> Automatically generated on 2024-08-19
+> Automatically generated on 2024-08-20

@@ -14,11 +14,14 @@
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
+use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\User\UserHelper;
 
 /**
  * Emundus Admission Class
  *
  * @since 1.0.0
+ * @deprecated 2.0.0 Use EmundusControllerFiles instead
  */
 class EmundusControllerAdmission extends BaseController
 {
@@ -845,80 +848,16 @@ class EmundusControllerAdmission extends BaseController
 	}
 
 	/**
-	 * Return size in bytes
-	 * @param $val
-	 *
-	 * @return int|string
-	 *
-	 * @since version 1.0.0
-	 */
-	public function return_bytes($val)
-	{
-		$val  = trim($val);
-		$last = strtolower($val[strlen($val) - 1]);
-		switch ($last) {
-			// Le modifieur 'G' est disponible depuis PHP 5.1.0
-			case 'g':
-				$val *= 1024;
-			case 'm':
-				$val *= 1024;
-			case 'k':
-				$val *= 1024;
-		}
-
-		return $val;
-	}
-
-	/**
-	 * Sort an array by another array
-	 *
-	 * @param $array
-	 * @param $orderArray
-	 *
-	 * @return array
-	 *
-	 * @since version 1.0.0
-	 */
-	public function sortArrayByArray($array, $orderArray)
-	{
-
-		$ordered = array();
-		foreach ($orderArray as $key) {
-			if (array_key_exists($key, $array)) {
-				$ordered[$key] = $array[$key];
-				unset($array[$key]);
-			}
-		}
-
-		return $ordered + $array;
-	}
-
-	/**
-	 * Sort an object by another array
-	 *
-	 * @param $object
-	 * @param $orderArray
-	 *
-	 * @return array
-	 *
-	 * @since version 1.0.0
-	 */
-	public function sortObjectByArray($object, $orderArray)
-	{
-		$ordered    = array();
-		$properties = get_object_vars($object);
-
-		return $this->sortArrayByArray($properties, $orderArray);
-	}
-
-	/**
 	 * Export applications in CSV format
 	 *
 	 * @since version 1.0.0
-	 * TODO: Add access control
 	 */
 	public function create_file_csv()
 	{
+		if(!EmundusHelperAccess::asPartnerAccessLevel($this->user->id)) {
+			die(Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
+		}
+
 		$today  = date_default_timezone_get();
 		$name   = md5($today . rand(0, 10));
 		$name   = $name . '.csv';
@@ -1013,11 +952,11 @@ class EmundusControllerAdmission extends BaseController
 		}
 
 
-		$file      = $this->input->getVar('file', null, 'STRING');
-		$totalfile = $this->input->getVar('totalfile', null);
+		$file      = $this->input->getString('file', null);
+		$totalfile = $this->input->getInt('totalfile', null);
 		$start     = $this->input->getInt('start', 0);
 		$limit     = $this->input->getInt('limit', 0);
-		$nbcol     = $this->input->getVar('nbcol', 0);
+		$nbcol     = $this->input->getInt('nbcol', 0);
 		$elts      = $this->input->getString('elts', null);
 		$objs      = $this->input->getString('objs', null);
 
@@ -1055,7 +994,7 @@ class EmundusControllerAdmission extends BaseController
 						$pictures = array();
 						foreach ($photos as $photo) {
 
-							$folder = JURI::base() . EMUNDUS_PATH_REL . $photo['user_id'];
+							$folder = Uri::base() . EMUNDUS_PATH_REL . $photo['user_id'];
 
 							$link                     = '=HYPERLINK("' . $folder . '/tn_' . $photo['filename'] . '","' . $photo['filename'] . '")';
 							$pictures[$photo['fnum']] = $link;
@@ -1093,7 +1032,7 @@ class EmundusControllerAdmission extends BaseController
 			$line  = Text::_('COM_EMUNDUS_FILE_F_NUM') . "\t" . Text::_('COM_EMUNDUS_STATUS') . "\t" . Text::_('COM_EMUNDUS_FORM_LAST_NAME') . "\t" . Text::_('COM_EMUNDUS_FORM_FIRST_NAME') . "\t" . Text::_('COM_EMUNDUS_EMAIL') . "\t" . Text::_('COM_EMUNDUS_CAMPAIGN') . "\t";
 			$nbcol = 6;
 
-			foreach ($ordered_elements as $fKey => $fLine) {
+			foreach ($ordered_elements as $fLine) {
 				if ($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_name != 'campaign_id') {
 					$line .= $fLine->element_label . "\t";
 					$nbcol++;
@@ -1125,13 +1064,13 @@ class EmundusControllerAdmission extends BaseController
 						$line       .= $v . "\t";
 						$line       .= $status[$v]['value'] . "\t";
 						$uid        = intval(substr($v, 21, 7));
-						$userProfil = JUserHelper::getProfile($uid)->emundus_profile;
+						$userProfil = UserHelper::getProfile($uid)->emundus_profile;
 						$line       .= strtoupper($userProfil['lastname']) . "\t";
 						$line       .= $userProfil['firstname'] . "\t";
 
 					}
 					elseif ($k === 'jos_emundus_evaluations___user' || $k === "user")
-						$line .= strip_tags(JFactory::getUser($v)->name) . "\t";
+						$line .= strip_tags(Factory::getUser($v)->name) . "\t";
 					else
 						$line .= strip_tags($v) . "\t";
 				}
@@ -1157,15 +1096,6 @@ class EmundusControllerAdmission extends BaseController
 						break;
 
 					case "forms":
-						if (array_key_exists($fnum['fnum'], $vOpt)) {
-							$val  = $vOpt[$fnum['fnum']];
-							$line .= $val . "\t";
-						}
-						else {
-							$line .= "\t";
-						}
-						break;
-
 					case "attachment":
 						if (array_key_exists($fnum['fnum'], $vOpt)) {
 							$val  = $vOpt[$fnum['fnum']];
@@ -1216,11 +1146,13 @@ class EmundusControllerAdmission extends BaseController
 						break;
 				}
 			}
+
 			// On met les données du fnum dans le CSV
 			$element_csv[] = $line;
 			$line          = "";
 			$i++;
 		}
+
 		// On remplit le fichier CSV
 		foreach ($element_csv as $data) {
 			$res = fputcsv($csv, explode("\t", $data), "\t");
@@ -1282,10 +1214,13 @@ class EmundusControllerAdmission extends BaseController
 	 * Download tmp file (from exports)
 	 *
 	 * @since version 1.0.0
-	 * TODO: Add access control
 	 */
 	public function download()
 	{
+		if($this->user->guest) {
+			die(Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
+		}
+
 		$name = $this->input->getString('name', null);
 
 		$file = JPATH_SITE . DS . 'tmp' . DS . $name;
@@ -1346,12 +1281,12 @@ class EmundusControllerAdmission extends BaseController
 		$users = array();
 		foreach ($fnums as $fnum) {
 			$sid          = intval(substr($fnum, -7));
-			$users[$fnum] = JFactory::getUser($sid);
+			$users[$fnum] = Factory::getUser($sid);
 
 			if (!is_numeric($sid) || empty($sid))
 				continue;
 
-			if ($zip->open($path, ZipArchive::CREATE) == true) {
+			if ($zip->open($path, ZipArchive::CREATE)) {
 				$dossier = EMUNDUS_PATH_ABS . $users[$fnum]->id . DS;
 
 				application_form_pdf($users[$fnum]->id, $fnum, false);
@@ -1366,26 +1301,27 @@ class EmundusControllerAdmission extends BaseController
 
 				$zip->close();
 			}
-			else die ("ERROR");
+			else {
+				die ("ERROR");
+			}
 		}
 
-		if ($zip->open($path, ZipArchive::CREATE) == true) {
-			$todel = array();
-			$i     = 0;
-			$error = 0;
-			foreach ($files as $key => $file) {
+		if ($zip->open($path, ZipArchive::CREATE)) {
+			foreach ($files as $file) {
 				$filename = $file['fnum'] . '_' . $users[$file['fnum']]->name . DS . $file['filename'];
 
 				$dossier = EMUNDUS_PATH_ABS . $users[$file['fnum']]->id . DS;
 
 				if (!$zip->addFile($dossier . $file['filename'], $filename)) {
 					echo "-" . $dossier . $file['filename'];
-					continue;
 				}
 			}
+
 			$zip->close();
 		}
-		else die ("ERROR");
+		else {
+			die ("ERROR");
+		}
 
 		return $nom;
 	}

@@ -414,20 +414,6 @@ spanShowPassword.addEventListener(&amp;#039;click&amp;#039;, function () {
     <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group760&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
    </row>
    <row>
-    <field name="id">4444</field>
-    <field name="element_id">7995</field>
-    <field name="action">keyup</field>
-    <field name="code">this.set(this.get('value').toUpperCase());</field>
-    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">4445</field>
-    <field name="element_id">7996</field>
-    <field name="action">keyup</field>
-    <field name="code">const mySentence = this.get(&amp;#039;value&amp;#039;);const words = mySentence.split(&amp;quot; &amp;quot;);for (let i = 0; i &amp;lt; words.length; i++) {words[i] = words[i][0].toUpperCase() + words[i].substr(1);};this.set(words.join(&amp;quot; &amp;quot;));</field>
-    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
-   </row>
-   <row>
     <field name="id">4448</field>
     <field name="element_id">8087</field>
     <field name="action">load</field>
@@ -728,8 +714,22 @@ if (value != &amp;#039;0&amp;#039;) {
     <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group760&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
    </row>
    <row>
-    <field name="id">4528</field>
-    <field name="element_id">8028</field>
+    <field name="id">4542</field>
+    <field name="element_id">8144</field>
+    <field name="action">keyup</field>
+    <field name="code">this.set(this.get('value').toUpperCase());</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4543</field>
+    <field name="element_id">8145</field>
+    <field name="action">keyup</field>
+    <field name="code">const mySentence = this.get(&amp;#039;value&amp;#039;);const words = mySentence.split(&amp;quot; &amp;quot;);for (let i = 0; i &amp;lt; words.length; i++) {words[i] = words[i][0].toUpperCase() + words[i].substr(1);};this.set(words.join(&amp;quot; &amp;quot;));</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4544</field>
+    <field name="element_id">8160</field>
     <field name="action">load</field>
     <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
 const fab = this.form.elements;
@@ -742,8 +742,8 @@ if(value == 1) {
     <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group806&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
    </row>
    <row>
-    <field name="id">4529</field>
-    <field name="element_id">8028</field>
+    <field name="id">4545</field>
+    <field name="element_id">8160</field>
     <field name="action">change</field>
     <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
 const fab = this.form.elements;
@@ -756,8 +756,8 @@ if(value == 1) {
     <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group806&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
    </row>
    <row>
-    <field name="id">4530</field>
-    <field name="element_id">8039</field>
+    <field name="id">4546</field>
+    <field name="element_id">8169</field>
     <field name="action">load</field>
     <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
 const fab = this.form.elements;
@@ -770,8 +770,8 @@ if(value == 1) {
     <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group806&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
    </row>
    <row>
-    <field name="id">4531</field>
-    <field name="element_id">8039</field>
+    <field name="id">4547</field>
+    <field name="element_id">8169</field>
     <field name="action">change</field>
     <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
 const fab = this.form.elements;
@@ -784,8 +784,8 @@ if(value == 1) {
     <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group806&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
    </row>
    <row>
-    <field name="id">4532</field>
-    <field name="element_id">8052</field>
+    <field name="id">4548</field>
+    <field name="element_id">8180</field>
     <field name="action">load</field>
     <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
 const fab = this.form.elements;
@@ -798,8 +798,8 @@ if(value == 1) {
     <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group815&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
    </row>
    <row>
-    <field name="id">4533</field>
-    <field name="element_id">8052</field>
+    <field name="id">4549</field>
+    <field name="element_id">8180</field>
     <field name="action">change</field>
     <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
 const fab = this.form.elements;
@@ -812,8 +812,8 @@ if(value == 1) {
     <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group815&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
    </row>
    <row>
-    <field name="id">4534</field>
-    <field name="element_id">8068</field>
+    <field name="id">4550</field>
+    <field name="element_id">8195</field>
     <field name="action">load</field>
     <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
 const fab = this.form.elements;
@@ -829,8 +829,8 @@ if(value == 7) {
     <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group818&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
    </row>
    <row>
-    <field name="id">4535</field>
-    <field name="element_id">8068</field>
+    <field name="id">4551</field>
+    <field name="element_id">8195</field>
     <field name="action">change</field>
     <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
 const fab = this.form.elements;
@@ -846,8 +846,8 @@ if(value == 7) {
     <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group818&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
    </row>
    <row>
-    <field name="id">4536</field>
-    <field name="element_id">8070</field>
+    <field name="id">4552</field>
+    <field name="element_id">8197</field>
     <field name="action">load</field>
     <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
 const fab = this.form.elements;
@@ -860,8 +860,8 @@ if(value == 1) {
     <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group818&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
    </row>
    <row>
-    <field name="id">4537</field>
-    <field name="element_id">8070</field>
+    <field name="id">4553</field>
+    <field name="element_id">8197</field>
     <field name="action">change</field>
     <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
 const fab = this.form.elements;
@@ -874,8 +874,8 @@ if(value == 1) {
     <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group818&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
    </row>
    <row>
-    <field name="id">4539</field>
-    <field name="element_id">8079</field>
+    <field name="id">4554</field>
+    <field name="element_id">8206</field>
     <field name="action">load</field>
     <field name="code">const value = this.get(&amp;#039;value&amp;#039;);
 const fab = this.form.elements;
@@ -891,8 +891,8 @@ if (value.includes(&amp;#039;4&amp;#039;)) {
     <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group822&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
    </row>
    <row>
-    <field name="id">4541</field>
-    <field name="element_id">8079</field>
+    <field name="id">4555</field>
+    <field name="element_id">8206</field>
     <field name="action">change</field>
     <field name="code">const value = this.get(&amp;#039;value&amp;#039;);
 const fab = this.form.elements;

@@ -415,4 +415,4 @@ public exportLogsBeforeADate(mixed $date): string
 
 
 ***
-> Automatically generated on 2024-08-19
+> Automatically generated on 2024-08-20
