@@ -13,7 +13,7 @@
       />
     </td>
     <td v-if="columns.includes('name')" class="td-document" @click="openModal">
-      <span v-if="!attachment.existsOnServer" class="material-icons-outlined warning file-not-found tw-mr-4"
+      <span v-if="!attachment.existsOnServer" class="material-symbols-outlined warning file-not-found tw-mr-4"
             :title="translate('COM_EMUNDUS_ATTACHMENTS_FILE_NOT_FOUND')">warning</span>
       <span :title="attachment.value">{{ attachment.value }}</span>
     </td>
@@ -43,12 +43,12 @@
     <td class="date" v-if="columns.includes('modified')">{{ formattedDate(attachment.modified) }}</td>
     <td v-if="columns.includes('permissions')" class="permissions">
 			<span v-if="attachment.profiles.length > 0"
-            class="material-icons-outlined visibility-permission tw-cursor-pointer"
+            class="material-symbols-outlined visibility-permission tw-cursor-pointer"
             :class="{ active: attachment.can_be_viewed == '1' }"
             @click="changePermission('can_be_viewed', attachment)"
             :title="translate('COM_EMUNDUS_ATTACHMENTS_PERMISSION_VIEW')">visibility</span>
       <span v-if="attachment.profiles.length > 0"
-            class="material-icons-outlined delete-permission tw-cursor-pointer"
+            class="material-symbols-outlined delete-permission tw-cursor-pointer"
             :class="{ active: attachment.can_be_deleted == '1' }"
             @click="changePermission('can_be_deleted', attachment)"
             :title="translate('COM_EMUNDUS_ATTACHMENTS_PERMISSION_DELETE')">delete_outlined</span>
@@ -263,7 +263,7 @@ export default {
   }
 
   .permissions {
-    .material-icons, .material-icons-outlined {
+    .material-icons, .material-symbols-outlined {
       margin: 0 10px;
       opacity: 0.3;
 

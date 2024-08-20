@@ -353,7 +353,7 @@ if ($user != null)
 			<?php if ($show_update == '1' && !$is_anonym_user) : ?>
                 <li><a class="edit-button-user em-flex-row em-flex-important em-flex-center"
                        href="<?= $link_edit_profile ?>" style="margin-top: 0"><span
-                                class="material-icons-outlined tw-mr-2">person_outline</span><?= JText::_('COM_EMUNDUS_USER_MENU_PROFILE_LABEL') ?>
+                                class="material-symbols-outlined tw-mr-2">person_outline</span><?= JText::_('COM_EMUNDUS_USER_MENU_PROFILE_LABEL') ?>
                     </a></li>
 			<?php endif; ?>
 			<?php if (!empty($custom_actions))
@@ -385,7 +385,7 @@ if ($user != null)
             <hr style="width: 100%">
 
 			<?php if ($show_logout == '1') : ?>
-				<?= '<li><a class="logout-button-user em-flex-important em-flex-row em-flex-center" href="' . JURI::base() . 'index.php?option=com_users&task=user.logout&' . JSession::getFormToken() . '=1"><span class="material-icons-outlined mr-2">logout</span>' . JText::_('COM_EMUNDUS_USER_MENU_LOGOUT_ACTION') . '</a></li>'; ?>
+				<?= '<li><a class="logout-button-user em-flex-important em-flex-row em-flex-center" href="' . JURI::base() . 'index.php?option=com_users&task=user.logout&' . JSession::getFormToken() . '=1"><span class="material-symbols-outlined mr-2">logout</span>' . JText::_('COM_EMUNDUS_USER_MENU_LOGOUT_ACTION') . '</a></li>'; ?>
 			<?php endif; ?>
 
         </ul>

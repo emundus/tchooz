@@ -219,7 +219,7 @@ $uids       = array();
                 <div class="email-list-modal hidden" id="email-list-modal">
                     <div class="tw-flex tw-justify-between mb-3">
                         <h3><?= Text::_('COM_EMUNDUS_EMAILS_TO_LIST') ?></h3>
-                        <span class="material-icons-outlined pointer" onclick="showEmailList()">close</span>
+                        <span class="material-symbols-outlined pointer" onclick="showEmailList()">close</span>
                     </div>
 
                     <div class="tw-flex tw-items-center tw-gap-2 tw-flex-wrap" style="max-height: 150px; overflow-y: auto;">
@@ -468,7 +468,7 @@ $uids       = array();
             .then(data => {
                 if (data.status) {
                     document.querySelector('#error_message').innerText = '';
-                    $('#em-attachment-list').append('<li class="list-group-item upload tw-flex tw-items-center tw-justify-between tw-gap-2"><div class="value hidden">' + data.file_path + '</div>' + data.file_name + '<span class="material-icons-outlined tw-cursor-pointer tw-text-red-600" onClick="removeAttachment(this);">clear</span></li>');
+                    $('#em-attachment-list').append('<li class="list-group-item upload tw-flex tw-items-center tw-justify-between tw-gap-2"><div class="value hidden">' + data.file_path + '</div>' + data.file_name + '<span class="material-symbols-outlined tw-cursor-pointer tw-text-red-600" onClick="removeAttachment(this);">clear</span></li>');
                 } else {
                     document.querySelector('#error_message').innerText = data.msg;
                 }

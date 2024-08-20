@@ -24,7 +24,7 @@ if (!in_array($iconParts[0],['icon-question-sign','icon-sort']) && !in_array($ic
 {
 	$class = '';
 	$style = '';
-	$material_icon_class = 'material-icons-outlined';
+	$material_icon_class = 'material-symbols-outlined';
 
     $icon = explode('-',$iconParts[0]);
     if(in_array(trim($icon[1]),['eye','star','envelope'])) {

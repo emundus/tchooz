@@ -77,19 +77,19 @@
                         class="tw-flex tw-items-center tw-font-semibold tw-cursor-pointer"
                     >
                         {{ translate('COM_EMUNDUS_SETTINGS_ACCESSIBILITY_DETAILS') }}
-                        <span class="material-icons-outlined tw-font-sm" :class="showDetails ? 'tw-rotate-90' : ''">navigate_next</span>
+                        <span class="material-symbols-outlined tw-font-sm" :class="showDetails ? 'tw-rotate-90' : ''">navigate_next</span>
                     </h4>
                     <div v-if="showDetails" class="tw-mt-2 tw-border-s-4 tw-border-neutral-400 tw-pl-2">
                         <div>
                             <h5>{{ translate('COM_EMUNDUS_SETTINGS_ACCESSIBILITY_DETAILS_NORMAL_TEXT') }}</h5>
                             <div class="tw-flex tw-gap-2 tw-items-center tw-mt-1">
                                 <span
-                                    class="material-icons-outlined tw-text-green-500"
+                                    class="material-symbols-outlined tw-text-green-500"
                                     v-if="contrastPrimary.AA === 'pass'"
                                     >check_circle</span
                                 >
                                 <span
-                                    class="material-icons-outlined tw-text-red-600"
+                                    class="material-symbols-outlined tw-text-red-600"
                                     v-if="contrastPrimary.AA === 'fail'"
                                     >highlight_off</span
                                 >
@@ -103,12 +103,12 @@
                             </div>
                             <div class="tw-flex tw-gap-2 tw-items-center tw-mt-1">
                                 <span
-                                    class="material-icons-outlined tw-text-green-500"
+                                    class="material-symbols-outlined tw-text-green-500"
                                     v-if="contrastSecondary.AA === 'pass'"
                                     >check_circle</span
                                 >
                                 <span
-                                    class="material-icons-outlined tw-text-red-600"
+                                    class="material-symbols-outlined tw-text-red-600"
                                     v-if="contrastSecondary.AA === 'fail'"
                                     >highlight_off</span
                                 >
@@ -125,12 +125,12 @@
                             <h5>{{ translate('COM_EMUNDUS_SETTINGS_ACCESSIBILITY_DETAILS_LARGE_TEXT') }}</h5>
                             <div class="tw-flex tw-gap-2 tw-items-center tw-mt-1">
                                 <span
-                                    class="material-icons-outlined tw-text-green-500"
+                                    class="material-symbols-outlined tw-text-green-500"
                                     v-if="contrastPrimary.AALarge === 'pass'"
                                     >check_circle</span
                                 >
                                 <span
-                                    class="material-icons-outlined tw-text-red-600"
+                                    class="material-symbols-outlined tw-text-red-600"
                                     v-if="contrastPrimary.AALarge === 'fail'"
                                     >highlight_off</span
                                 >
@@ -144,12 +144,12 @@
                             </div>
                             <div class="tw-flex tw-gap-2 tw-items-center tw-mt-1">
                                 <span
-                                    class="material-icons-outlined tw-text-green-500"
+                                    class="material-symbols-outlined tw-text-green-500"
                                     v-if="contrastSecondary.AALarge === 'pass'"
                                     >check_circle</span
                                 >
                                 <span
-                                    class="material-icons-outlined tw-text-red-600"
+                                    class="material-symbols-outlined tw-text-red-600"
                                     v-if="contrastSecondary.AALarge === 'fail'"
                                     >highlight_off</span
                                 >

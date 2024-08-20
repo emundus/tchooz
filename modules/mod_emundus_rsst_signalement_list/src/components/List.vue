@@ -8,7 +8,7 @@
           v-model="searchTerm"
           @keyup="searchInAllListColumn"
       />
-      <span class="material-icons reload-icons" @click="reloadData">loop</span>
+      <span class="material-symbols-outlined reload-icons" @click="reloadData">loop</span>
     </div>
     <div class="em-flex-row em-w-auto em-mb-32">
       <filter-item :filterType="'groupBy'" :filterDatas="listColumns" @groupByCriteriaValue="groupByColumn"/>
@@ -34,7 +34,7 @@
           {{ translate(data.label) }}
         </th>
         <th>
-          <span v-if="checkedRows.length > 0" class="material-icons em-pointer"
+          <span v-if="checkedRows.length > 0" class="material-symbols-outlined em-pointer"
                 @click="moreOptionsOpened = !moreOptionsOpened">more_horiz</span>
           <more-options v-if="checkedRows.length > 0 && moreOptionsOpened" :options="moreOptionsData"
                         @select-option="onSelectOption" @focusout="moreOptionsOpened = false"></more-options>
@@ -539,7 +539,7 @@ table {
         border-bottom: 1px solid #e0e0e0;
         color: black;
 
-        .material-icons {
+        .material-symbols-outlined{
           transform: translateY(3px);
         }
       }

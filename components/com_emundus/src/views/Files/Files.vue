@@ -53,7 +53,7 @@
             <div class="em-tabs tw-cursor-pointer tw-flex tw-items-center md:tw-justify-center"
                  @click="openedFilters = !openedFilters">
               <span>{{ translate('COM_EMUNDUS_FILES_FILTER') }}</span>
-              <span class="material-icons-outlined tw-ml-3">filter_list</span>
+              <span class="material-symbols-outlined tw-ml-3">filter_list</span>
             </div>
             <ul :class="{'tw-hidden': !openedFilters, 'em-input': true}">
               <li v-for="filter in defaultFilters" :key="filter.id" @click="addFilter(filter)" class="tw-cursor-pointer">
@@ -100,12 +100,12 @@
               >
                 <span slot="noResult">{{translate('COM_EMUNDUS_FILES_FILTER_NO_ELEMENTS_FOUND')}}</span>
               </multiselect>
-              <span class="material-icons-outlined tw-cursor-pointer tw-text-red-600 tw-ml-3" @click="removeFilter(filter)">close</span>
+              <span class="material-symbols-outlined tw-cursor-pointer tw-text-red-600 tw-ml-3" @click="removeFilter(filter)">close</span>
             </div>
           </div>
         </div>
         <div v-if="defaultFilters.length > 0" class="tw-flex tw-items-center">
-          <span class="material-icons-outlined tw-mr-4 tw-text-red-600"
+          <span class="material-symbols-outlined tw-mr-4 tw-text-red-600"
                 :class="{'tw-cursor-pointer': filters.length > 0, 'tw-cursor-pointer-disbabled': filters.length < 1 }"
                 :alt="translate('COM_EMUNDUS_FILES_RESET_FILTERS')" @click="resetFilters">filter_alt_off</span>
           <button class="tw-btn-primary tw-cusor-pointer" @click="applyFilters">
@@ -122,7 +122,7 @@
     <div class="tw-flex tw-items-center tw-items-start" v-if="files && columns && files.length > 0" :key="reloadFiles">
       <div id="table_columns_move_right" :class="moveRight ? '' : 'em-disabled-state'"
            class="table-columns-move tw-flex tw-flex-col tw-mr-1" @click="scrollToRight">
-        <span class="material-icons-outlined tw-cursor-pointer" style="font-size: 16px">arrow_back</span>
+        <span class="material-symbols-outlined tw-cursor-pointer" style="font-size: 16px">arrow_back</span>
       </div>
 
       <el-table
@@ -216,7 +216,7 @@
 
       <div id="table_columns_move_left" v-if="moveLeft" class="table-columns-move tw-flex tw-flex-col tw-ml-1"
            @click="scrollToLeft">
-        <span class="material-icons-outlined tw-cursor-pointer" style="font-size: 16px">arrow_forward</span>
+        <span class="material-symbols-outlined tw-cursor-pointer" style="font-size: 16px">arrow_forward</span>
       </div>
     </div>
 

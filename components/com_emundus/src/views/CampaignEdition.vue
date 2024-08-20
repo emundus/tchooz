@@ -4,7 +4,7 @@
     <div>
       <div>
         <div class="tw-flex tw-items-center tw-cursor-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
-          <span class="material-icons-outlined tw-text-neutral-600">navigate_before</span>
+          <span class="material-symbols-outlined tw-text-neutral-600">navigate_before</span>
           <span class="tw-ml-2 tw-text-neutral-900">{{ translate('BACK') }}</span>
         </div>
         <div class="tw-flex tw-items-center tw-mt-4">
@@ -31,7 +31,7 @@
 
         <br>
         <div v-if="selectedMenu === 'addEmail'" class="warning-message-program mb-1">
-          <p class="tw-text-red-600 flex flex-row"><span class="material-icons-outlined tw-mr-2 tw-text-red-600">warning_amber</span>{{ translate('COM_EMUNDUS_ONBOARD_PROGRAM_WARNING') }}
+          <p class="tw-text-red-600 flex flex-row"><span class="material-symbols-outlined tw-mr-2 tw-text-red-600">warning_amber</span>{{ translate('COM_EMUNDUS_ONBOARD_PROGRAM_WARNING') }}
           </p>
           <ul v-if="campaignsByProgram.length > 0" class="tw-mt-2 tw-mb-8 em-pl-16">
             <li v-for="campaign in campaignsByProgram" :key="'camp_progs_' + campaign.id">{{ campaign.label }}</li>

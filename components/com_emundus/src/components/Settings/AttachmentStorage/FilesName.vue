@@ -44,7 +44,7 @@
 
       <div v-for="(tag,index) in selectedTags" :key="index" class="em-ml-16 tw-flex tw-items-center em-tag-preview">
         <span>{{ tag.label }}</span>
-        <span class="material-icons tw-cursor-pointer tw-ml-2" @click="removeTag(tag.value)">close</span>
+        <span class="material-symbols-outlined tw-cursor-pointer tw-ml-2" @click="removeTag(tag.value)">close</span>
       </div>
     </div>
 

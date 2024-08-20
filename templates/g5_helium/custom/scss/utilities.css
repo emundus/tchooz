@@ -219,7 +219,7 @@
         color: var(--neutral-0) !important;
     }
 
-    .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs .material-icons {
+    .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs .material-symbols-outlined{
         color: var(--neutral-0);
     }
 
@@ -232,9 +232,9 @@
         color: var(--red-500) !important;
     }
 
-    .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs:active .material-icons,
-    .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs:focus .material-icons,
-    .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs:hover .material-icons {
+    .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs:active .material-symbols-outlined,
+    .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs:focus .material-symbols-outlined,
+    .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs:hover .material-symbols-outlined{
         color: var(--red-500);
     }
 

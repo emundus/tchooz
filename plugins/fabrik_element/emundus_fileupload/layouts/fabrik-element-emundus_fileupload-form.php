@@ -48,7 +48,7 @@
     <div class="btn-upload em-pointer">
         <p class="em-flex-row"><?php echo JText::_('PLG_ELEMENT_FILEUPLOAD_DROP') ?>
 			<u class="em-ml-4"><?php echo JText::_('PLG_ELEMENT_FILEUPLOAD_DROP_CLICK') ?></u>
-			<span class="material-icons-outlined em-ml-12">cloud_upload</span>
+			<span class="material-symbols-outlined em-ml-12">cloud_upload</span>
         </p>
     </div>
     <input class="fabrikinput" type="file" id="file_<?= $d->attributes['id']; ?>" name="file_<?= $d->attributes['name']; ?>"

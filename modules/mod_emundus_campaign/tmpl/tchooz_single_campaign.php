@@ -113,7 +113,7 @@ if(!empty($mod_em_campaign_go_back_campaigns_link)) {
                 onclick="window.location.href='<?php echo $mod_em_campaign_go_back_external_url; ?>'"
 		    <?php endif; ?>
         >
-            <span class="material-icons tw-text-neutral-600">navigate_before</span><span
+            <span class="material-symbols-outlined tw-text-neutral-600">navigate_before</span><span
                     class="em-ml-8 em-text-neutral-900"><?php echo JText::_('MOD_EM_CAMPAIGN_BACK'); ?></span>
         </div>
 		<?php if ($mod_em_campaign_details_show_programme == 1) : ?>
@@ -148,7 +148,7 @@ if(!empty($mod_em_campaign_go_back_campaigns_link)) {
 			<?php if ($mod_em_campaign_show_camp_start_date && $currentCampaign->start_date != '0000-00-00 00:00:00') : ?>
                 <div class="em-flex-row" style="white-space: nowrap;">
                     <p class="em-text-neutral-600 em-flex-row em-applicant-default-font "><span
-                                class="material-icons em-mr-8">alarm</span> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_START_DATE'); ?>
+                                class="material-symbols-outlined em-mr-8">alarm</span> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_START_DATE'); ?>
                     </p>
                     <span class="em-text-neutral-600 em-ml-4 em-camp-start em-applicant-default-font "><?php echo JFactory::getDate(new JDate($currentCampaign->start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                 </div>
@@ -157,7 +157,7 @@ if(!empty($mod_em_campaign_go_back_campaigns_link)) {
 			<?php if ($mod_em_campaign_show_camp_end_date && $currentCampaign->end_date != '0000-00-00 00:00:00') : ?>
                 <div class="em-flex-row" style="white-space: nowrap;">
                     <p class="em-text-neutral-600 em-flex-row em-applicant-default-font "><span
-                                class="material-icons em-mr-8">schedule</span> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_END_DATE'); ?>
+                                class="material-symbols-outlined em-mr-8">schedule</span> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_END_DATE'); ?>
                     </p>
                     <span class="em-text-neutral-600 em-ml-4 em-camp-end em-applicant-default-font "><?php echo JFactory::getDate(new JDate($currentCampaign->end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                 </div>
@@ -166,7 +166,7 @@ if(!empty($mod_em_campaign_go_back_campaigns_link)) {
 			<?php if ($mod_em_campaign_show_formation_start_date && $currentCampaign->formation_start !== '0000-00-00 00:00:00') : ?>
                 <div class="em-flex-row" style="white-space: nowrap;">
                     <p class="em-text-neutral-600 em-flex-row em-applicant-default-font"><span
-                                class="material-icons em-mr-8">alarm</span> <?php echo JText::_('MOD_EM_CAMPAIGN_FORMATION_START_DATE'); ?>
+                                class="material-symbols-outlined em-mr-8">alarm</span> <?php echo JText::_('MOD_EM_CAMPAIGN_FORMATION_START_DATE'); ?>
                         :</p>
                     <span class="em-text-neutral-600 em-ml-4 em-formation-start em-applicant-default-font "><?php echo JFactory::getDate(new JDate($currentCampaign->formation_start, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                 </div>
@@ -175,7 +175,7 @@ if(!empty($mod_em_campaign_go_back_campaigns_link)) {
 			<?php if ($mod_em_campaign_show_formation_end_date && $currentCampaign->formation_end !== '0000-00-00 00:00:00') : ?>
                 <div class="em-flex-row" style="white-space: nowrap;">
                     <p class="em-applicant-text-color em-flex-row"><span
-                                class="material-icons em-mr-8">schedule</span> <?php echo JText::_('MOD_EM_CAMPAIGN_FORMATION_END_DATE'); ?>
+                                class="material-symbols-outlined em-mr-8">schedule</span> <?php echo JText::_('MOD_EM_CAMPAIGN_FORMATION_END_DATE'); ?>
                         :</p>
                     <span class="em-ml-4 em-formation-end"><?php echo JFactory::getDate(new JDate($currentCampaign->formation_end, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                 </div>
@@ -184,7 +184,7 @@ if(!empty($mod_em_campaign_go_back_campaigns_link)) {
 			<?php if ($mod_em_campaign_show_admission_start_date && !empty($currentCampaign->admission_start_date) && $currentCampaign->admission_start_date !== '0000-00-00 00:00:00') : ?>
                 <div class="em-flex-row" style="white-space: nowrap;">
                     <p class="em-text-neutral-600 em-flex-row"><span
-                                class="material-icons em-mr-8">alarm</span> <?php echo JText::_('MOD_EM_CAMPAIGN_ADMISSION_START_DATE'); ?>
+                                class="material-symbols-outlined em-mr-8">alarm</span> <?php echo JText::_('MOD_EM_CAMPAIGN_ADMISSION_START_DATE'); ?>
                         :</p>
                     <span class="em-text-neutral-600 em-ml-4 em-formation-start"><?php echo JFactory::getDate(new JDate($currentCampaign->admission_start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                 </div>
@@ -193,7 +193,7 @@ if(!empty($mod_em_campaign_go_back_campaigns_link)) {
 			<?php if ($mod_em_campaign_show_admission_end_date && !empty($currentCampaign->admission_end_date) && $currentCampaign->admission_end_date !== '0000-00-00 00:00:00') : ?>
                 <div class="em-flex-row" style="white-space: nowrap;">
                     <p class="em-text-neutral-600 em-flex-row"><span
-                                class="material-icons em-mr-8">schedule</span> <?php echo JText::_('MOD_EM_CAMPAIGN_ADMISSION_END_DATE'); ?>
+                                class="material-symbols-outlined em-mr-8">schedule</span> <?php echo JText::_('MOD_EM_CAMPAIGN_ADMISSION_END_DATE'); ?>
                         :</p>
                     <span class="em-text-neutral-600 em-ml-4 em-formation-end"><?php echo JFactory::getDate(new JDate($currentCampaign->admission_end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                 </div>
@@ -201,7 +201,7 @@ if(!empty($mod_em_campaign_go_back_campaigns_link)) {
         </div>
 		<?php if (!empty($mod_em_campaign_show_timezone)) : ?>
             <div class="em-mt-4 em-text-neutral-600 em-flex-row em-camp-time-zone">
-                <p class="em-flex-row"><span class="material-icons-outlined em-mr-8">public</span></p>
+                <p class="em-flex-row"><span class="material-symbols-outlined em-mr-8">public</span></p>
                 <span class="em-text-neutral-600 em-applicant-default-font"><?php echo JText::_('MOD_EM_CAMPAIGN_TIMEZONE') . $offset ?></span>
             </div>
 		<?php endif; ?>
@@ -316,7 +316,7 @@ if(!empty($mod_em_campaign_go_back_campaigns_link)) {
                 <div class="em-mt-24">
 					<?php foreach ($files as $file) : ?>
                         <div class="em-flex-row em-mb-16 mod_emundus_campaign__details_file">
-                            <span class="material-icons-outlined mod_emundus_campaign__details_file_icon">insert_drive_file</span>
+                            <span class="material-symbols-outlined mod_emundus_campaign__details_file_icon">insert_drive_file</span>
                             <a href="files/<?php echo $file->catid . "/" . $file->title_category . "/" . $file->id . "/" . $file->title_file . "." . $file->ext; ?>"
                                target="_blank" rel="noopener noreferrer">
 								<?php echo $file->title_file . "." . $file->ext; ?>

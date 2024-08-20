@@ -504,11 +504,11 @@ a.btn.btn-success:not(.btn-xs) {
     transition: transform .3s;
 }
 
-.mod_emundus_applications___content_app:hover .material-icons {
+.mod_emundus_applications___content_app:hover .material-symbols-outlined{
     color: var(--neutral-0);
 }
 
-.mod_emundus_applications__container .material-icons {
+.mod_emundus_applications__container .material-symbols-outlined{
     color: var(--em-profile-color);
 }
 
@@ -660,7 +660,7 @@ a.btn.btn-success:not(.btn-xs) {
     border-bottom: 1px solid var(--neutral-300);
 }
 
-#applications_list_view table tbody tr:hover .mod_emundus_applications__container .material-icons {
+#applications_list_view table tbody tr:hover .mod_emundus_applications__container .material-symbols-outlined{
     background: var(--em-profile-color);
     border-radius: var(--em-default-br);
     color: var(--neutral-0);

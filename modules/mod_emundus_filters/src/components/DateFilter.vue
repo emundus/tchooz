@@ -3,8 +3,8 @@
 		<div class="em-flex-row em-flex-space-between">
 			<p class="recap-label" :title="filter.label">{{ filter.label }}</p>
 			<div>
-				<span @mouseenter="resetHover = true" @mouseleave="resetHover = false" class="material-icons-outlined em-pointer reset-filter-btn" :class="{'em-blue-400-color': resetHover}" @click="resetFilter" :alt="translate('MOD_EMUNDUS_FILTERS_RESET')">refresh</span>
-				<span v-if="!filter.default" class="material-icons-outlined em-red-600-color em-pointer remove-filter-btn" @click="$.emit('remove-filter')">close</span>
+				<span @mouseenter="resetHover = true" @mouseleave="resetHover = false" class="material-symbols-outlined em-pointer reset-filter-btn" :class="{'em-blue-400-color': resetHover}" @click="resetFilter" :alt="translate('MOD_EMUNDUS_FILTERS_RESET')">refresh</span>
+				<span v-if="!filter.default" class="material-symbols-outlined em-red-600-color em-pointer remove-filter-btn" @click="$.emit('remove-filter')">close</span>
 			</div>
 		</div>
 		<div class="date-filter-card em-border-radius-8 em-border-neutral-400 em-box-shadow em-white-bg em-p-8">
@@ -36,7 +36,7 @@
 					<input class="em-mt-8" type="date" :id="filter.uid + '-end_date'" v-model="filter.value[1]"/>
 				</div>
 			</section>
-			<span class="material-icons-outlined em-pointer toggle-open-close">{{opened ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}}</span>
+			<span class="material-symbols-outlined em-pointer toggle-open-close">{{opened ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}}</span>
 		</div>
 	</div>
 </template>

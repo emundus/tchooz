@@ -49,7 +49,7 @@ $user       = $this->userid;
                                 data-placement="right"
                                 title="<?= JText::_('COM_EMUNDUS_APPLICATION_DOWNLOAD_APPLICATION_FORM'); ?>"
                         >
-                            <span class="material-icons-outlined" data-fnum="<?= $this->fnum ?>">download_2</span>
+                            <span class="material-symbols-outlined" data-fnum="<?= $this->fnum ?>">download_2</span>
                         </button>
 					<?php endif; ?>
                 </h3>

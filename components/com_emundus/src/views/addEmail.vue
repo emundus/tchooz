@@ -89,7 +89,7 @@
                             @click="displayAdvanced"
                             v-show="!displayAdvancedParameters"
                         >
-                            <span class="material-icons-outlined em-main-500-color">add_circle_outline</span>
+                            <span class="material-symbols-outlined em-main-500-color">add_circle_outline</span>
                         </button>
                         <button
                             :title="translate('COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING')"
@@ -98,7 +98,7 @@
                             class="tw-bg-transparent tw-flex tw-flex-col"
                             v-show="displayAdvancedParameters"
                         >
-                            <span class="material-icons-outlined em-main-500-color">remove_circle_outline</span>
+                            <span class="material-symbols-outlined em-main-500-color">remove_circle_outline</span>
                         </button>
                     </div>
                     <div id="email-advanced-parameters" class="tw-mt-4" v-if="displayAdvancedParameters">

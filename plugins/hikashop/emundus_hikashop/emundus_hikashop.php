@@ -408,7 +408,7 @@ class PlgHikashopEmundus_hikashop extends CMSPlugin {
             return;
 
         $user = $app->getSession()->get('emundusUser');
-        $layout = '<div><a id="go-back-button" data-fnum="'. $user->fnum . '" class="tw-btn-primary em-mt-16" style="width:fit-content;" href="' . Uri::base() . 'component/emundus/?task=openfile&fnum=' . $user->fnum . '"><span class="material-icons-outlined">arrow_back</span><span class="em-ml-8">Retour</span></a></div>';
+        $layout = '<div><a id="go-back-button" data-fnum="'. $user->fnum . '" class="tw-btn-primary em-mt-16" style="width:fit-content;" href="' . Uri::base() . 'component/emundus/?task=openfile&fnum=' . $user->fnum . '"><span class="material-symbols-outlined">arrow_back</span><span class="em-ml-8">Retour</span></a></div>';
 
         if ($options['reset_session'] == 1) {
             $layout .= "<script>

@@ -12,7 +12,7 @@
       <div class="tw-flex tw-items-center tw-cursor-pointer tw-justify-between tw-w-full" id="evaluation-modal-close">
         <div class="tw-flex tw-items-center tw-gap-2">
           <div  @click="onClose" class="tw-w-max tw-flex tw-items-center">
-               <span class="material-icons-outlined tw-text-base" style="color: white">navigate_before</span>
+               <span class="material-symbols-outlined tw-text-base" style="color: white">navigate_before</span>
               <span class="tw-ml-2 tw-text-neutral-900 tw-text-white tw-text-sm">{{ translate('BACK') }}</span>
           </div>
           <span class="tw-text-white">|</span>
@@ -24,8 +24,8 @@
           </p>
         </div>
         <div v-if="fnums.length > 1" class="tw-flex tw-items-center">
-          <span class="material-icons-outlined tw-text-base" style="color:white;" @click="openPreviousFnum">navigate_before</span>
-          <span class="material-icons-outlined tw-text-base" style="color:white;" @click="openNextFnum">navigate_next</span>
+          <span class="material-symbols-outlined tw-text-base" style="color:white;" @click="openPreviousFnum">navigate_before</span>
+          <span class="material-symbols-outlined tw-text-base" style="color:white;" @click="openNextFnum">navigate_next</span>
         </div>
       </div>
     </div>
@@ -65,7 +65,7 @@
         <div class="tw-flex tw-flex-col" v-if="!loading && url" style="width: 40px;height: 40px;margin: 24px 0 12px 24px;">
           <div class="tw-bg-profile-light tw-rounded-full tw-flex tw-justify-center tw-items-center" style="width: 40px; height: 40px;">
             <div class="tw-bg-profile-medium tw-rounded-full  tw-flex tw-justify-center tw-items-center" style="width: 24px; height: 24px">
-              <span class="material-icons-outlined tw-rounded-full tw-text-profile-full" style="font-size: 14px">troubleshoot</span>
+              <span class="material-symbols-outlined tw-rounded-full tw-text-profile-full" style="font-size: 14px">troubleshoot</span>
             </div>
           </div>
         </div>

@@ -248,7 +248,7 @@
 .attachment-row .permissions .material-icons.active, .attachment-row .permissions .material-icons-outlined.active {
   opacity: 1;
 }
-.attachment-row .material-icons {
+.attachment-row .material-symbols-outlined{
   cursor: pointer;
 }
 .attachment-row .material-icons.success {

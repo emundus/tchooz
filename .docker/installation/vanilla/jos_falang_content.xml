@@ -7914,7 +7914,7 @@
     <field name="reference_id">176</field>
     <field name="reference_table">modules</field>
     <field name="reference_field">content</field>
-    <field name="value">&lt;p&gt;&lt;a class=&quot;em-back-button tw-cursor-pointer&quot; style=&quot;width: fit-content; padding: 8px 0;&quot; href=&quot;en/gestion-de-projet&quot;&gt; &lt;span class=&quot;material-icons tw-mr-1&quot;&gt;navigate_before&lt;/span&gt;Back to project area&lt;/a&gt;&lt;/p&gt;</field>
+    <field name="value">&lt;p&gt;&lt;a class=&quot;em-back-button tw-cursor-pointer&quot; style=&quot;width: fit-content; padding: 8px 0;&quot; href=&quot;en/gestion-de-projet&quot;&gt; &lt;span class=&quot;material-symbols-outlined tw-mr-1&quot;&gt;navigate_before&lt;/span&gt;Back to project area&lt;/a&gt;&lt;/p&gt;</field>
     <field name="original_value">197ce68da280648c29d2bf2d7001502d</field>
     <field name="original_text">&lt;p&gt;&lt;a class=&quot;em-back-button tw-cursor-pointer&quot; style=&quot;width: fit-content; padding: 8px 0;&quot; href=&quot;gestion-de-projet&quot;&gt; &lt;span class=&quot;material-icons tw-mr-1&quot;&gt;navigate_before&lt;/span&gt;Retour à la zone projet&lt;/a&gt;&lt;/p&gt;</field>
     <field name="modified">2024-08-19 13:58:39</field>

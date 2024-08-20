@@ -589,12 +589,12 @@
                         }
 
                         &:hover {
-                            .material-icons-outlined, .material-icons {
+                            .material-icons-outlined, .material-icons, .material-symbols-outlined {
                                 color: var(--em-form-bc-hover) !important;
                             }
                         }
 
-                        .material-icons-outlined, .material-icons {
+                        .material-icons-outlined, .material-icons, .material-symbols-outlined {
                             font-size: 16px;
                             color: var(--neutral-600);
                         }

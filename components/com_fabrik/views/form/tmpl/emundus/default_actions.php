@@ -42,7 +42,7 @@ if ($this->hasActions) : ?>
                 <?php
                 if($form->gobackButton)
                 {
-                    echo '<div class="em-goback-btn tw-flex tw-items-center"><span class="material-icons-outlined tw-text-neutral-600">navigate_before</span>';
+                    echo '<div class="em-goback-btn tw-flex tw-items-center"><span class="material-symbols-outlined tw-text-neutral-600">navigate_before</span>';
 	                echo $form->gobackButton;
                     echo '</div>';
                 }

@@ -1039,6 +1039,9 @@ video {
 .fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.day.selected {
                                 border-radius: 99px;
                             }
+.fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.day.\!selected {
+                                border-radius: 99px !important;
+                            }
 .fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.today:after {
                                 content: unset;
                             }
@@ -1475,10 +1478,10 @@ form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calen
 form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton:active, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton:active {
                             box-shadow: unset;
                         }
-form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton:hover .material-icons-outlined, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton:hover .material-icons, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton:hover .material-icons-outlined, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton:hover .material-icons {
+form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton:hover .material-icons-outlined, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton:hover .material-icons, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton:hover .material-symbols-outlined, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton:hover .material-icons-outlined, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton:hover .material-icons, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton:hover .material-symbols-outlined {
                                 color: var(--em-form-bc-hover) !important;
                             }
-form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton .material-icons-outlined, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton .material-icons, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton .material-icons-outlined, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton .material-icons {
+form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton .material-icons-outlined, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton .material-icons, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton .material-symbols-outlined, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton .material-icons-outlined, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton .material-icons, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton .material-symbols-outlined {
                             font-size: 16px;
                             color: var(--neutral-600);
                         }
@@ -5635,7 +5638,7 @@ legend {
         border: 1px solid var(--red-500) !important;
         color: var(--neutral-0) !important;
     }
-.modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs .material-icons {
+.modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs .material-symbols-outlined{
         color: var(--neutral-0);
     }
 .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs:active,
@@ -5646,9 +5649,9 @@ legend {
         border: 1px solid var(--red-500) !important;
         color: var(--red-500) !important;
     }
-.modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs:active .material-icons,
-    .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs:focus .material-icons,
-    .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs:hover .material-icons {
+.modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs:active .material-symbols-outlined,
+    .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs:focus .material-symbols-outlined,
+    .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs:hover .material-symbols-outlined{
         color: var(--red-500);
     }
 /* SWEET ALERT */
@@ -6194,6 +6197,9 @@ button.swal2-cancel.goback-btn:hover,
 .label-border-black {
         border-color: var(--em-black);
     }
+.\[-a-zA-Z\:0-9_\.\] {
+    -a-z-a--z: 0-9 .;
+}
 @font-face {
     font-family: 'Material Icons';
     font-style: normal;
@@ -6271,7 +6277,7 @@ button.swal2-cancel.goback-btn:hover,
 }
 .material-symbols-outlined {
     font-family: 'Material Symbols Outlined';
-    font-size: 18px;
+    font-size: 20px;
     font-weight: normal;
     font-style: normal;
     display: inline-block;

@@ -20,7 +20,7 @@
               </div>
             </h2>
             <!-- The expand icon of the section which rotates -->
-            <span class="material-icons-outlined tw-scale-150 tw-user-select-none hidden" :id="'SubtitleArrow' + indexSection"
+            <span class="material-symbols-outlined tw-scale-150 tw-user-select-none hidden" :id="'SubtitleArrow' + indexSection"
                   name="SubtitleArrows"
                   :class="activeSection === indexSection ? 'tw-rotate-180' : ''">expand_more</span>
           </div>

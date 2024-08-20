@@ -57,7 +57,7 @@ endif;
     <div class="tw-mb-0 fabrikMainError alert alert-error fabrikError<?php echo $active ?>">
         <span class="material-icons">cancel</span>
 		<?php echo $form->error; ?>
-        <span class="material-icons-outlined tw-absolute tw-top-[3px] tw-right-[1px] !tw-text-base tw-cursor-pointer" onclick="closeAlert()">close</span>
+        <span class="material-symbols-outlined tw-absolute tw-top-[3px] tw-right-[1px] !tw-text-base tw-cursor-pointer" onclick="closeAlert()">close</span>
     </div>
     <div class="tw-mb-8">
         <div>

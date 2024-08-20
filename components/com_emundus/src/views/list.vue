@@ -52,7 +52,7 @@
                    style="margin: 0;"
                    :disabled="items[this.selectedListTab].length < 1 && searches[selectedListTab].search === ''"
                    @change="searchItems" @keyup="searchItems">
-            <span class="material-icons-outlined tw-mr-2 tw-cursor-pointer" style="margin-left: -32px"
+            <span class="material-symbols-outlined tw-mr-2 tw-cursor-pointer" style="margin-left: -32px"
                   @click="searchItems">
 							search
 						</span>
@@ -60,7 +60,7 @@
           <div class="view-type tw-flex tw-items-center">
 					<span v-for="viewTypeOption in viewTypeOptions" :key="viewTypeOption.value"
                 style="padding: 4px;border-radius: calc(var(--em-default-br)/2);display: flex;height: 38px;width: 38px;align-items: center;justify-content: center;background: var(--neutral-0);"
-                class="material-icons-outlined tw-ml-2 tw-cursor-pointer"
+                class="material-symbols-outlined tw-ml-2 tw-cursor-pointer"
                 :class="{
 								'active em-main-500-color em-border-main-500': viewTypeOption.value === viewType,
 								'em-neutral-600-color em-border-neutral-600': viewTypeOption.value !== viewType
@@ -84,7 +84,7 @@
             id="pagination" class="tw-text-center">
           <ul class="tw-flex tw-list-none tw-gap-1">
 						<span :class="{'tw-text-neutral-600 em-disabled-events': currentTab.pagination.current === 1}"
-                  class="material-icons-outlined tw-cursor-pointer tw-mr-2 tw-items-center"
+                  class="material-symbols-outlined tw-cursor-pointer tw-mr-2 tw-items-center"
                   style="display: flex"
                   @click="getListItems(currentTab.pagination.current - 1, selectedListTab)">
 							chevron_left
@@ -97,7 +97,7 @@
             </li>
             <span
                 :class="{'tw-text-neutral-600 em-disabled-events': currentTab.pagination.current === currentTab.pagination.total}"
-                class="material-icons-outlined tw-cursor-pointer tw-ml-2 tw-items-center"
+                class="material-symbols-outlined tw-cursor-pointer tw-ml-2 tw-items-center"
                 style="display: flex"
                 @click="getListItems(currentTab.pagination.current + 1, selectedListTab)">
 							chevron_right
@@ -158,11 +158,11 @@
                     {{ translate(editAction.label) }}
                   </a>
                   <div class="tw-flex tw-items-center tw-gap-2">
-                    <span v-if="previewAction" class="material-icons-outlined tw-cursor-pointer"
+                    <span v-if="previewAction" class="material-symbols-outlined tw-cursor-pointer"
                           @click="onClickPreview(item)">visibility</span>
                     <span v-for="action in iconActions" :key="action.name" class="tw-cursor-pointer"
                           :class="{
-															'material-icons-outlined': action.iconOutlined,
+															'material-symbols-outlined': action.iconOutlined,
 															'material-icons': !action.iconOutlined,
 															'tw-hidden': !(typeof action.showon === 'undefined' || evaluateShowOn(item, action.showon))
 														}"

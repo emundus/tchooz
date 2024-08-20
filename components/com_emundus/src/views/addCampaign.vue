@@ -3,7 +3,7 @@
     <div v-if="typeof campaignId == 'undefined' || campaignId == 0">
       <div class="tw-flex tw-items-center tw-cursor-pointer"
            @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
-        <span class="material-icons-outlined tw-text-neutral-600">navigate_before</span>
+        <span class="material-symbols-outlined tw-text-neutral-600">navigate_before</span>
         <span class="tw-ml-2 tw-text-neutral-900">{{ translate('BACK') }}</span>
       </div>
 
@@ -54,7 +54,7 @@
                   <span>{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_LINK') }}</span>
                 </span>
               </div>
-              <span class="material-icons-outlined tw-cursor-pointer" @click="copyAliasToClipboard();">content_copy</span>
+              <span class="material-symbols-outlined tw-cursor-pointer" @click="copyAliasToClipboard();">content_copy</span>
             </div>
           </div>
 
@@ -170,7 +170,7 @@
               <strong class="b em-toggle-track"></strong>
             </div>
             <span for="pinned" class="tw-ml-2 tw-flex tw-items-center">{{ translate('COM_EMUNDUS_CAMPAIGNS_PIN') }}
-              <span class="material-icons-outlined tw-ml-1 tw-text-base tw-cursor-pointer" @click="displayPinnedCampaignTip">help_outline</span>
+              <span class="material-symbols-outlined tw-ml-1 tw-text-base tw-cursor-pointer" @click="displayPinnedCampaignTip">help_outline</span>
             </span>
           </div>
         </div>
@@ -247,7 +247,7 @@
               </select>
               <button v-if="coordinatorAccess != 0" :title="translate('COM_EMUNDUS_ONBOARD_ADDPROGRAM')" type="button"
                       id="add-program" class="tw-ml-2 tw-bg-transparent" @click="displayProgram">
-                <span class="material-icons-outlined em-main-500-color">add_circle_outline</span>
+                <span class="material-symbols-outlined em-main-500-color">add_circle_outline</span>
               </button>
             </div>
             <span v-if="errors.progCode" class="tw-text-red-600 tw-mb-2">
@@ -283,7 +283,7 @@
                            :class="index !== 0 ? 'ml-2' : ''"
                            :style="selectedColor === color.text ? 'background-color:' + color.text + ';border: 2px solid ' + color.background : 'background-color:' + color.text"
                            @click="programForm.color = color.text;selectedColor = color.text">
-                        <span v-if="selectedColor === color.text" class="material-icons-outlined" style="font-weight: bold;color: black;filter: invert(1)">done</span>
+                        <span v-if="selectedColor === color.text" class="material-symbols-outlined" style="font-weight: bold;color: black;filter: invert(1)">done</span>
                       </div>
                     </div>
                   </div>

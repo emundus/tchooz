@@ -751,7 +751,7 @@ footer#g-footer > .g-container {
     margin-bottom: var(--m-8);
   }
 
-  .fabrikElementContainer[class*="password"] .material-icons-outlined {
+  .fabrikElementContainer[class*="password"] .material-symbols-outlined {
     top: 9px !important;
   }
 }
@@ -812,11 +812,11 @@ footer#g-footer > .g-container {
 
     .em-added-files a.btn.btn-danger {
 
-      &:hover span.material-icons {
+      &:hover span.material-symbols-outlined{
         color: var(--em-primary-color);
       }
 
-      span.material-icons {
+      span.material-symbols-outlined{
         color: var(--neutral-0);
       }
     }
@@ -989,7 +989,7 @@ footer#g-footer > .g-container {
             }
           }
 
-          i.material-icons {
+          i.material-symbols-outlined{
             margin-right: 8px;
           }
         }
@@ -1944,7 +1944,7 @@ div.fabrikFilterContainer {
           border: 1px solid var(--main-500);
           text-decoration: none;
 
-          .material-icons {
+          .material-symbols-outlined{
             color: var(--main-500) !important;
           }
         }
@@ -3285,12 +3285,12 @@ ul.unstyled.em-linkForgot li a {
 
 /************************ GESTIONNAIRE - COORDINATOR *********************/
 
-.com_emundus_vue .fabrikElementContainer.control-group span.material-icons {
+.com_emundus_vue .fabrikElementContainer.control-group span.material-symbols-outlined{
   font-family: 'Material Icons', sans-serif !important;
   font-size: 24px !important;
 }
 
-.com_emundus_vue .fabrikElementContainer.control-group span.material-icons-outlined {
+.com_emundus_vue .fabrikElementContainer.control-group span.material-symbols-outlined {
   font-family: 'Material Icons Outlined', sans-serif !important;
   font-size: 24px !important;
 }
@@ -3902,7 +3902,7 @@ div#em-appli-block {
       border: none;
       color: var(--red-500);
 
-      .material-icons {
+      .material-symbols-outlined{
         color: var(--red-500);
       }
 
@@ -3910,7 +3910,7 @@ div#em-appli-block {
         background: transparent;
         border: none;
 
-        .material-icons {
+        .material-symbols-outlined{
           color: var(--red-600);
         }
       }
@@ -3921,7 +3921,7 @@ div#em-appli-block {
       border: none;
       color: var(--main-500);
 
-      .material-icons {
+      .material-symbols-outlined{
         color: var(--main-500);
       }
 
@@ -3929,7 +3929,7 @@ div#em-appli-block {
         background: transparent;
         border: none;
 
-        .material-icons {
+        .material-symbols-outlined{
           color: var(--main-600);
         }
       }
@@ -3942,7 +3942,7 @@ div#em-appli-block {
     div#em-appli-block .list-group-item .em-tags-action .btn-danger {
       border: none;
 
-      .material-icons {
+      .material-symbols-outlined{
         color: var(--red-500);
       }
 
@@ -3950,7 +3950,7 @@ div#em-appli-block {
         border: none;
         background: transparent;
 
-        .material-icons {
+        .material-symbols-outlined{
           color: var(--red-600);
         }
       }

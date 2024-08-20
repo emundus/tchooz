@@ -13,7 +13,7 @@
     <div class="em-modal-header tw-w-full tw-h-2/4 tw-px-3 tw-py-4 tw-bg-main-900 tw-flex tw-items-center">
       <div class="tw-flex tw-items-center tw-cursor-pointer tw-gap-2" id="evaluation-modal-close">
         <div class="tw-w-max tw-flex tw-items-center" @click="showModal = false">
-          <span class="material-icons-outlined tw-text-base" style="color: white">arrow_back</span>
+          <span class="material-symbols-outlined tw-text-base" style="color: white">arrow_back</span>
         </div>
         <span class="tw-text-neutral-500">|</span>
         <p class="tw-text-sm" style="color: white" v-if="file.applicant_name != ''">
@@ -56,7 +56,7 @@
         <div class="tw-flex tw-flex-col" v-if="!loading" style="width: 40px;height: 40px;margin: 24px 0 12px 24px;">
           <div class="em-circle-main-100 tw-flex tw-flex-col" style="width: 40px">
             <div class="em-circle-main-200 tw-flex tw-flex-col" style="width: 24px">
-              <span class="material-icons-outlined tw-text-main-400" style="font-size: 14px">troubleshoot</span>
+              <span class="material-symbols-outlined tw-text-main-400" style="font-size: 14px">troubleshoot</span>
             </div>
           </div>
         </div>

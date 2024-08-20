@@ -29,14 +29,14 @@
               @mouseover="elementHovered = element.value" @mouseleave="elementHovered = 0"
               class="form-builder-element tw-flex tw-justify-between tw-items-start tw-gap-3 tw-p-3 tw-cursor-move"
           >
-            <span class="material-icons-outlined" style="font-size: 18px">{{ element.icon }}</span>
+            <span class="material-symbols-outlined" style="font-size: 18px">{{ element.icon }}</span>
             <p class="tw-w-full tw-flex tw-flex-col">
               {{ translate(element.name) }}
               <span class="tw-text-neutral-600 tw-text-xs">{{ translate(element.description) }}</span>
             </p>
             <div class="tw-flex tw-items-center tw-h-[18px] tw-w-[18px]">
-<!--              <span class="material-icons-outlined" style="font-size: 18px">drag_indicator</span>-->
-              <span v-show="elementHovered == element.value" class="material-icons-outlined tw-cursor-copy" style="font-size: 18px" @click="clickCreateElement(element)">add_circle_outline</span>
+<!--              <span class="material-symbols-outlined" style="font-size: 18px">drag_indicator</span>-->
+              <span v-show="elementHovered == element.value" class="material-symbols-outlined tw-cursor-copy" style="font-size: 18px" @click="clickCreateElement(element)">add_circle_outline</span>
             </div>
           </div>
         </transition-group>
@@ -59,9 +59,9 @@
         <div
             class="form-builder-element tw-flex tw-items-center tw-justify-between tw-cursor-pointer tw-gap-3 tw-p-3"
         >
-          <span class="material-icons-outlined">{{ group.icon }}</span>
+          <span class="material-symbols-outlined">{{ group.icon }}</span>
           <p class="tw-w-full tw-flex tw-flex-col">{{ translate(group.name) }}</p>
-          <span class="material-icons-outlined">add_circle_outline</span>
+          <span class="material-symbols-outlined">add_circle_outline</span>
         </div>
       </div>
     </div>

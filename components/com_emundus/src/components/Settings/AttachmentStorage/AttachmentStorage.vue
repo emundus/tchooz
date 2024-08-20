@@ -12,7 +12,7 @@
       <div class="em-modal-header">
         <div class="tw-justify-between tw-flex tw-items-center tw-cursor-pointer" @click.prevent="$modal.hide('attachmentStorage')">
           <div class="tw-w-max tw-flex tw-items-center">
-            <span class="material-icons-outlined">arrow_back</span>
+            <span class="material-symbols-outlined">arrow_back</span>
             <span class="tw-ml-2">{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
           </div>
           <div v-if="saving" class="tw-flex tw-items-center tw-justify-start">

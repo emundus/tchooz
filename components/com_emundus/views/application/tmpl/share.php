@@ -39,11 +39,11 @@
 										<?php if ($groups['isAssoc'] && EmundusHelperAccess::asAccessAction(11, 'd', $this->_user->id, $this->fnum)) :?>
 											<?php if($groups['isACL']):?>
                                                 <a class="em-flex-row em-del-access" href="index.php?option=com_emundus&controller=application&task=deleteaccess&fnum=<?= $this->fnum ?>&id=<?= $gid ?>&type=groups">
-                                                    <span class="material-icons-outlined">autorenew</span>
+                                                    <span class="material-symbols-outlined">autorenew</span>
                                                 </a>
 											<?php else :?>
                                                 <a class="em-flex-row em-del-access" href="index.php?option=com_emundus&controller=application&task=deleteaccess&fnum=<?= $this->fnum ?>&id=<?= $gid ?>&type=groups">
-                                                    <span class="material-icons-outlined">close</span>
+                                                    <span class="material-symbols-outlined">close</span>
                                                 </a>
 											<?php endif; ?>
 										<?php endif; ?>
@@ -94,11 +94,11 @@
 													}
 
 													if ($groups['actions'][$def_action_id][$crud] > 0) {
-														$td .= '<span class="material-icons-outlined em-green-500-color" title="' . JText::_('COM_EMUNDUS_ACTIONS_ACTIVE') . '">check_box</span>';
+														$td .= '<span class="material-symbols-outlined em-green-500-color" title="' . JText::_('COM_EMUNDUS_ACTIONS_ACTIVE') . '">check_box</span>';
 													} else if ($groups['actions'][$def_action_id][$crud] < 0) {
-														$td .= '<span class="material-icons-outlined em-red-600-color" title="' . JText::_('BLOCKED') . '">block</span>';
+														$td .= '<span class="material-symbols-outlined em-red-600-color" title="' . JText::_('BLOCKED') . '">block</span>';
 													} else {
-														$td .= '<span class="material-icons-outlined" title="' . JText::_('UNDEFINED') . '">check_box_outline_blank</span>';
+														$td .= '<span class="material-symbols-outlined" title="' . JText::_('UNDEFINED') . '">check_box_outline_blank</span>';
 													}
 													$td .= '</td>';
 
@@ -141,7 +141,7 @@
                             <span><?= ucfirst($groups['uname']) ?></span>
 							<?php if(EmundusHelperAccess::asAccessAction(11, 'd', $this->_user->id, $this->fnum)):?>
                                 <a class="em-flex-row em-del-access" href = "/index.php?option=com_emundus&controller=application&task=deleteaccess&fnum=<?= $this->fnum ?>&id=<?= $gid ?>&type=users">
-                                    <span class="material-icons-outlined">close</span>
+                                    <span class="material-symbols-outlined">close</span>
                                 </a>
 							<?php endif;?>
                         </td>
@@ -191,11 +191,11 @@
 										}
 
 										if ($groups['actions'][$def_action_id][$crud] > 0) {
-											$td .= '<span class="material-icons-outlined em-green-600-color" title="' . JText::_('COM_EMUNDUS_ACTIONS_ACTIVE') . '">check_box</span>';
+											$td .= '<span class="material-symbols-outlined em-green-600-color" title="' . JText::_('COM_EMUNDUS_ACTIONS_ACTIVE') . '">check_box</span>';
 										} else if ($groups['actions'][$def_action_id][$crud] < 0) {
-											$td .= '<span class="material-icons-outlined em-red-600-color" title="' . JText::_('BLOCKED') . '">block</span>';
+											$td .= '<span class="material-symbols-outlined em-red-600-color" title="' . JText::_('BLOCKED') . '">block</span>';
 										} else {
-											$td .= '<span class="material-icons-outlined" title="' . JText::_('UNDEFINED') . '">check_box_outline_blank</span>';
+											$td .= '<span class="material-symbols-outlined" title="' . JText::_('UNDEFINED') . '">check_box_outline_blank</span>';
 										}
 										$td .= '</td>';
 
@@ -261,9 +261,9 @@
                     const element = document.getElementById(accessId)
                     const span = element.querySelector('span');
 
-                    // remove all classes that are not material-icons-outlined
+                    // remove all classes that are not material-symbols-outlined
                     span.classList.forEach((className) => {
-                        if (className !== 'material-icons-outlined') {
+                        if (className !== 'material-symbols-outlined') {
                             span.classList.remove(className);
                         }
                     });

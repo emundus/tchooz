@@ -12,7 +12,7 @@
         </h1>
       </div>
       <!-- The expand icon of the section wich rotate-->
-      <span class="material-icons-outlined scale-150 user-select-none" :id="'SubtitleArrow'"
+      <span class="material-symbols-outlined scale-150 user-select-none" :id="'SubtitleArrow'"
             name="SubtitleArrows"
       >expand_more</span>
     </div>

@@ -3,7 +3,7 @@
     <div class="tw-w-full">
       <div class="tw-flex tw-items-center tw-justify-between tw-p-4">
         <p>{{ translate('COM_EMUNDUS_FORM_BUILDER_MODEL_PROPERTIES') }}</p>
-        <span class="material-icons-outlined tw-cursor-pointer" @click="$emit('close')">close</span>
+        <span class="material-symbols-outlined tw-cursor-pointer" @click="$emit('close')">close</span>
       </div>
 
       <div v-if="!loading" id="model-properties" class="tw-flex tw-flex-col tw-justify-start tw-p-4 tw-text-end">

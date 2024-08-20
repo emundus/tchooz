@@ -32,7 +32,7 @@ export default {
     },
     iconType: {
       type: String,
-      default: 'material-icons-outlined'
+      default: 'material-symbols-outlined'
     },
     textColor: {
       type: String,

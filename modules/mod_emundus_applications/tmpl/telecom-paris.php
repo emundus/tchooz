@@ -250,10 +250,10 @@ $uniqid = uniqid();
 
                                 <div class="change-wish-number" data-fnum="<?= $application->fnum; ?>" data-wish="<?= $application->wish_number; ?>">
 									<?php if ($a_index > 0 && $application->status == 0 && $files_this_year[$a_index-1]->status == 0): ?>
-                                        <a href="#"><span class="material-icons-outlined em-pointer up">keyboard_double_arrow_up</span></a>
+                                        <a href="#"><span class="material-symbols-outlined em-pointer up">keyboard_double_arrow_up</span></a>
 									<?php endif; ?>
 									<?php if (($a_index + 1) < sizeof($files_this_year) && $application->status == 0 && $files_this_year[$a_index+1]->status == 0): ?>
-                                        <a href="#"><span class="material-icons-outlined em-pointer down">keyboard_double_arrow_down</span></a>
+                                        <a href="#"><span class="material-symbols-outlined em-pointer down">keyboard_double_arrow_down</span></a>
 									<?php endif; ?>
                                 </div>
                             </div>

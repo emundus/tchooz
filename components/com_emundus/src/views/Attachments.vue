@@ -13,8 +13,8 @@
                             @input="onSearch"
                             @keyup.enter="onSearchKeyup"
                         />
-                        <span class="material-icons-outlined search">search</span>
-                        <span class="material-icons-outlined clear tw-cursor-pointer" @click="search = ''">clear</span>
+                        <span class="material-symbols-outlined search">search</span>
+                        <span class="material-symbols-outlined clear tw-cursor-pointer" @click="search = ''">clear</span>
                     </div>
                     <select
                         v-if="columns.includes('category') && Object.entries(displayedAttachmentCategories).length > 0"
@@ -35,7 +35,7 @@
                         @click="exportAttachments"
                         :class="{ disabled: checkedAttachments.length < 1 }"
                     >
-                        <span class="material-icons-outlined export tw-mr-2">file_upload</span>
+                        <span class="material-symbols-outlined export tw-mr-2">file_upload</span>
                         <span>{{ translate('COM_EMUNDUS_EXPORTS_EXPORT') }}</span>
                     </div>
                     <div
@@ -45,7 +45,7 @@
                         :class="{ disabled: checkedAttachments.length < 1 }"
                     >
                         <span
-                            class="material-icons cloud_sync"
+                            class="material-symbols-outlined cloud_sync"
                             :title="translate('COM_EMUNDUS_ATTACHMENTS_SYNC_TITLE')"
                         >
                             cloud_sync
@@ -53,7 +53,7 @@
                         <span>{{ translate('COM_EMUNDUS_ATTACHMENTS_SYNC_TITLE') }}</span>
                     </div>
                     <span
-                        class="material-icons-outlined refresh tw-cursor-pointer"
+                        class="material-symbols-outlined refresh tw-cursor-pointer"
                         @click="refreshAttachments(true)"
                         :title="translate('COM_EMUNDUS_ATTACHMENTS_REFRESH_TITLE')"
                     >
@@ -61,7 +61,7 @@
                     </span>
                     <span
                         v-if="canDelete"
-                        class="material-icons-outlined delete"
+                        class="material-symbols-outlined delete"
                         :class="{ disabled: checkedAttachments.length < 1 }"
                         @click="confirmDeleteAttachments"
                         :title="translate('COM_EMUNDUS_ATTACHMENTS_DELETE_TITLE')"
@@ -86,12 +86,12 @@
                                 <span>{{ translate('COM_EMUNDUS_ATTACHMENTS_NAME') }}</span>
                                 <span
                                     v-if="sort.orderBy === 'value' && sort.order === 'asc'"
-                                    class="material-icons-outlined tw-text-base"
+                                    class="material-symbols-outlined tw-text-base"
                                     >arrow_upward</span
                                 >
                                 <span
                                     v-if="sort.orderBy === 'value' && sort.order === 'desc'"
-                                    class="material-icons-outlined tw-text-base"
+                                    class="material-symbols-outlined tw-text-base"
                                     >arrow_downward</span
                                 >
                             </th>
@@ -99,12 +99,12 @@
                                 <span>{{ translate('COM_EMUNDUS_ATTACHMENTS_SEND_DATE') }}</span>
                                 <span
                                     v-if="sort.orderBy === 'timedate' && sort.order === 'asc'"
-                                    class="material-icons-outlined tw-text-base"
+                                    class="material-symbols-outlined tw-text-base"
                                     >arrow_upward</span
                                 >
                                 <span
                                     v-if="sort.orderBy === 'timedate' && sort.order === 'desc'"
-                                    class="material-icons-outlined tw-text-base"
+                                    class="material-symbols-outlined tw-text-base"
                                     >arrow_downward</span
                                 >
                             </th>
@@ -117,12 +117,12 @@
                                 <span>{{ translate('COM_EMUNDUS_ATTACHMENTS_DESCRIPTION') }}</span>
                                 <span
                                     v-if="sort.orderBy === 'upload_description' && sort.order === 'asc'"
-                                    class="material-icons-outlined tw-text-base"
+                                    class="material-symbols-outlined tw-text-base"
                                     >arrow_upward</span
                                 >
                                 <span
                                     v-if="sort.orderBy === 'upload_description' && sort.order === 'desc'"
-                                    class="material-icons-outlined tw-text-base"
+                                    class="material-symbols-outlined tw-text-base"
                                     >arrow_downward</span
                                 >
                             </th>
@@ -135,12 +135,12 @@
                                 <span>{{ translate('COM_EMUNDUS_ATTACHMENTS_CATEGORY') }}</span>
                                 <span
                                     v-if="sort.orderBy === 'category' && sort.order === 'asc'"
-                                    class="material-icons-outlined tw-text-base"
+                                    class="material-symbols-outlined tw-text-base"
                                     >arrow_upward</span
                                 >
                                 <span
                                     v-if="sort.orderBy === 'category' && sort.order === 'desc'"
-                                    class="material-icons-outlined tw-text-base"
+                                    class="material-symbols-outlined tw-text-base"
                                     >arrow_downward</span
                                 >
                             </th>
@@ -153,12 +153,12 @@
                                 <span>{{ translate('COM_EMUNDUS_ATTACHMENTS_CHECK') }}</span>
                                 <span
                                     v-if="sort.orderBy === 'is_validated' && sort.order === 'asc'"
-                                    class="material-icons-outlined tw-text-base"
+                                    class="material-symbols-outlined tw-text-base"
                                     >arrow_upward</span
                                 >
                                 <span
                                     v-if="sort.orderBy === 'is_validated' && sort.order === 'desc'"
-                                    class="material-icons-outlined tw-text-base"
+                                    class="material-symbols-outlined tw-text-base"
                                     >arrow_downward</span
                                 >
                             </th>
@@ -166,12 +166,12 @@
                                 <span>{{ translate('COM_EMUNDUS_ATTACHMENTS_UPLOADED_BY') }}</span>
                                 <span
                                     v-if="sort.orderBy === 'user_id' && sort.order === 'asc'"
-                                    class="material-icons-outlined tw-text-base"
+                                    class="material-symbols-outlined tw-text-base"
                                     >arrow_upward</span
                                 >
                                 <span
                                     v-if="sort.orderBy === 'user_id' && sort.order === 'desc'"
-                                    class="material-icons-outlined tw-text-base"
+                                    class="material-symbols-outlined tw-text-base"
                                     >arrow_downward</span
                                 >
                             </th>
@@ -183,12 +183,12 @@
                                 <span>{{ translate('COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY') }}</span>
                                 <span
                                     v-if="sort.orderBy === 'modified_by' && sort.order === 'asc'"
-                                    class="material-icons-outlined tw-text-base"
+                                    class="material-symbols-outlined tw-text-base"
                                     >arrow_upward</span
                                 >
                                 <span
                                     v-if="sort.orderBy === 'modified_by' && sort.order === 'desc'"
-                                    class="material-icons-outlined tw-text-base"
+                                    class="material-symbols-outlined tw-text-base"
                                     >arrow_downward</span
                                 >
                             </th>
@@ -201,12 +201,12 @@
                                 <span>{{ translate('COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE') }}</span>
                                 <span
                                     v-if="sort.orderBy === 'modified' && sort.order === 'asc'"
-                                    class="material-icons-outlined tw-text-base"
+                                    class="material-symbols-outlined tw-text-base"
                                     >arrow_upward</span
                                 >
                                 <span
                                     v-if="sort.orderBy === 'modified' && sort.order === 'desc'"
-                                    class="material-icons-outlined tw-text-base"
+                                    class="material-symbols-outlined tw-text-base"
                                     >arrow_downward</span
                                 >
                             </th>
@@ -260,7 +260,7 @@
                             :href="syncSelectedPreview"
                             target="_blank"
                         >
-                            <span class="material-icons-outlined">open_in_new</span>
+                            <span class="material-symbols-outlined">open_in_new</span>
                             <span>{{ translate('COM_EMUNDUS_ATTACHMENTS_OPEN_IN_GED') }}</span>
                         </a>
                         <a download v-if="canDownload" :href="attachmentPath" class="download btn-icon-text tw-mr-6">
@@ -286,7 +286,7 @@
                                 <span class="material-icons"> navigate_next </span>
                             </div>
                         </div>
-                        <span class="material-icons tw-cursor-pointer" @click="closeModal">close</span>
+                        <span class="material-symbols-outlined tw-cursor-pointer" @click="closeModal">close</span>
                     </div>
                 </div>
                 <transition :name="slideTransition" @before-leave="beforeLeaveSlide">
@@ -1033,12 +1033,12 @@ export default {
         .searchbar-wrapper {
             position: relative;
 
-            .material-icons-outlined.search {
+            .material-symbols-outlined.search {
                 position: absolute;
                 left: 8px;
             }
 
-            .material-icons-outlined.clear {
+            .material-symbols-outlined.clear {
                 position: absolute;
                 right: 8px;
             }
@@ -1068,7 +1068,7 @@ export default {
                     pointer-events: none;
 
                     .material-icons,
-                    .material-icons-outlined {
+                    .material-symbols-outlined {
                         color: var(--disabled-color);
                     }
                 }
@@ -1098,7 +1098,7 @@ export default {
             min-height: 50vh;
         }
 
-        .material-icons-outlined.delete {
+        .material-symbols-outlined.delete {
             transition: all 0.3s;
             width: 30px;
              color: var(--red-500);
@@ -1168,7 +1168,7 @@ export default {
                     white-space: nowrap;
 
                     .material-icons,
-                    .material-icons-outlined {
+                    .material-symbols-outlined {
                         transform: translateY(3px);
                     }
                 }
@@ -1201,7 +1201,7 @@ export default {
                 color: black;
 
                 .material-icons,
-                .material-icons-outlined {
+                .material-symbols-outlined {
                     font-size: 18px;
                 }
 

@@ -6,7 +6,7 @@
       <section id="new-page">
         <div class="tw-mt-4 tw-mb-4 card-wrapper" :class="{selected: -1 === selected}" @click="selected = -1;">
           <div class="card em-shadow-cards tw-cursor-pointer tw-flex tw-items-center" @dblclick="createPage">
-            <span class="add_circle material-icons-outlined tw-text-profile-full">add_circle</span>
+            <span class="add_circle material-symbols-outlined tw-text-profile-full">add_circle</span>
           </div>
           <input
               type="text"

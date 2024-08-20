@@ -3,7 +3,7 @@
     <div id="form-builder-title" class="tw-cursor-pointer tw-flex tw-items-center tw-justify-between tw-p-4"
          @click="$emit('show-documents')">
       <span>{{ translate('COM_EMUNDUS_FORM_BUILDER_EVERY_DOCUMENTS') }}</span>
-      <span id="add-document" class="material-icons-outlined tw-cursor-pointer" @click="createDocument">add</span>
+      <span id="add-document" class="material-symbols-outlined tw-cursor-pointer" @click="createDocument">add</span>
     </div>
     <div
         v-for="document in documents"

@@ -128,15 +128,15 @@ if (!empty($this->custom_title)) :?>
 		<?php if ($this->show_info_legend) : ?>
             <div id="legend" class="em-mt-4">
                 <div class="em-flex-row em-mb-4">
-                    <span class="material-icons-outlined em-red-600-color em-mr-4">highlight_off</span>
+                    <span class="material-symbols-outlined em-red-600-color em-mr-4">highlight_off</span>
                     <p><?= Text::_('COM_EMUNDUS_ATTACHMENTS_MISSING_DOC'); ?></p>
                 </div>
                 <div class="em-flex-row em-mb-4">
-                    <span class="material-icons-outlined em-green-500-color em-mr-4">check_circle</span>
+                    <span class="material-symbols-outlined em-green-500-color em-mr-4">check_circle</span>
                     <p><?= Text::_('COM_EMUNDUS_ATTACHMENTS_SENT_DOC'); ?></p>
                 </div>
                 <div class="em-flex-row em-mb-4">
-                    <span class="material-icons-outlined em-yellow-600-color em-mr-4">error_outline</span>
+                    <span class="material-symbols-outlined em-yellow-600-color em-mr-4">error_outline</span>
                     <p><?= Text::_('COM_EMUNDUS_ATTACHMENTS_MISSING_DOC_FAC'); ?></p>
                 </div>
             </div>
@@ -158,11 +158,11 @@ if (!empty($this->custom_title)) :?>
                 <div id="l' . $attachment->id . '" class="tw-flex tw-items-center em-ml-8 em-mt-8">';
 			if ($attachment->nb == 0) {
 				if ($this->show_info_legend) {
-					$div .= $attachment->mandatory ? '<span class="material-icons-outlined em-red-600-color em-mr-4">highlight_off</span>' : '<span class="material-icons-outlined em-yellow-600-color em-mr-4">error_outline</span>';
+					$div .= $attachment->mandatory ? '<span class="material-symbols-outlined em-red-600-color em-mr-4">highlight_off</span>' : '<span class="material-symbols-outlined em-yellow-600-color em-mr-4">error_outline</span>';
 				}
 			}
 			else {
-				$div .= '<span class="material-icons-outlined em-green-500-color em-mr-4">check_circle</span>';
+				$div .= '<span class="material-symbols-outlined em-green-500-color em-mr-4">check_circle</span>';
 			}
 			$div .= '<h4 class="em-mt-0-important">' . $attachment->value . '</h4>';
 
@@ -176,7 +176,7 @@ if (!empty($this->custom_title)) :?>
 
 			if ($attachment->has_sample && !empty($attachment->sample_filepath)) {
 				$div .= '<div class="tw-ml-2 tw-mb-2 tw-flex tw-items-center tw-gap-1 attachment_model">
-                            <span>'.Text::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE') . '</span><a class="tw-flex tw-items-center" href="'.Uri::root() . $attachment->sample_filepath.'" target="_blank"> <span> ' . Text::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE_FILE').'</span><span class="material-icons-outlined tw-ml-2 tw-text-neutral-900">cloud_download</span></a>
+                            <span>'.Text::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE') . '</span><a class="tw-flex tw-items-center" href="'.Uri::root() . $attachment->sample_filepath.'" target="_blank"> <span> ' . Text::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE_FILE').'</span><span class="material-symbols-outlined tw-ml-2 tw-text-neutral-900">cloud_download</span></a>
                          </div>';
 			}
 
@@ -200,13 +200,13 @@ if (!empty($this->custom_title)) :?>
 					$div .= '<tr class="em-added-files">
                     <td class="em-flex-row">';
 					if ($item->can_be_viewed == 1) {
-						$div .= '<a class="em-flex-row em-mr-16 tw-btn-tertiary" href="' . $chemin . $this->_user->id . '/' . $item->filename . '" target="_blank"><span class="material-icons-outlined em-mr-4">visibility</span>' . Text::_('COM_EMUNDUS_ATTACHMENTS_VIEW') . '</a>';
+						$div .= '<a class="em-flex-row em-mr-16 tw-btn-tertiary" href="' . $chemin . $this->_user->id . '/' . $item->filename . '" target="_blank"><span class="material-symbols-outlined em-mr-4">visibility</span>' . Text::_('COM_EMUNDUS_ATTACHMENTS_VIEW') . '</a>';
 					}
 					else {
 						$div .= Text::_('COM_EMUNDUS_ATTACHMENTS_CANT_VIEW') . '</br>';
 					}
 					if (($item->can_be_deleted == 1 || $item->is_validated == "0") && !$block_upload) {
-						$div .= '<a class="em-flex-row em-error-button" href="' . JRoute::_('index.php?option=com_emundus&task=delete&uid=' . $item->id . '&aid=' . $item->attachment_id . '&duplicate=' . $attachment->duplicate . '&nb=' . $attachment->nb . '&Itemid=' . $itemid . '#a' . $attachment->id) . '"><span class="material-icons-outlined em-mr-4">delete_outline</span> ' . Text::_('COM_EMUNDUS_ACTIONS_DELETE') . '</a>';
+						$div .= '<a class="em-flex-row em-error-button" href="' . JRoute::_('index.php?option=com_emundus&task=delete&uid=' . $item->id . '&aid=' . $item->attachment_id . '&duplicate=' . $attachment->duplicate . '&nb=' . $attachment->nb . '&Itemid=' . $itemid . '#a' . $attachment->id) . '"><span class="material-symbols-outlined em-mr-4">delete_outline</span> ' . Text::_('COM_EMUNDUS_ACTIONS_DELETE') . '</a>';
 					}
 					else {
 						$div .= Text::_('COM_EMUNDUS_ATTACHMENTS_CANT_DELETE') . '</br>';
@@ -656,7 +656,7 @@ if (!empty($this->custom_title)) :?>
                 <div class="tw-flex tw-justify-between">
                     <div>
                         <div class="btn-group">
-                            <div class="em-goback-btn tw-flex tw-items-center"><span class="material-icons-outlined tw-text-neutral-600">navigate_before</span>
+                            <div class="em-goback-btn tw-flex tw-items-center"><span class="material-symbols-outlined tw-text-neutral-600">navigate_before</span>
                                 <button type="button" class="btn goback-btn button" onclick="window.history.go(-1)"
                                         name="Goback"><?php echo Text::_('GO_BACK') ?></button>
                             </div>

@@ -232,7 +232,7 @@ if ($allowed_attachments !== true) {
                 <div class="email-list-modal hidden" id="email-list-modal">
                     <div class="tw-flex tw-justify-between mb-3">
                         <h3><?= Text::_('COM_EMUNDUS_EMAILS_TO_LIST') ?></h3>
-                        <span class="material-icons-outlined pointer" onclick="showEmailList()">close</span>
+                        <span class="material-symbols-outlined pointer" onclick="showEmailList()">close</span>
                     </div>
 
                     <div class="tw-flex tw-items-center tw-gap-2 tw-flex-wrap"

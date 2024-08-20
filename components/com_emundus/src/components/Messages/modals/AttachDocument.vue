@@ -14,7 +14,7 @@
           @opened="getTypesByCampaign"
       >
         <div class="messages__attach_header tw-p-4 tw-w-full tw-flex tw-items-center-justify-end">
-          <span class="material-icons-outlined tw-cursor-pointer" @click="$emit('close')">close</span>
+          <span class="material-symbols-outlined tw-cursor-pointer" @click="$emit('close')">close</span>
         </div>
         <div class="messages__attach_content">
           <ul class="messages__attach_actions_tabs" v-if="!applicant">

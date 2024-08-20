@@ -66,7 +66,7 @@ foreach ($this->headings as $heading => $label) {
 	            <?php if(!$this->showFilters) : ?>
                 <div class="all-actions-container">
                     <span onclick="toggleActions('<?= $this->_row->id; ?>')"
-                          class="material-icons-outlined toggle-actions-btn">more_vert</span>
+                          class="material-symbols-outlined toggle-actions-btn">more_vert</span>
                 </div>
 	            <?php endif; ?>
             </div>
@@ -93,7 +93,7 @@ foreach ($this->headings as $heading => $label) {
                         ?>
                         <div class="<?php echo $this->cellClass[$heading]['class'] ?> flex em-flex-align-start" <?php echo $style ?>>
                             <?php if (!empty($icon)) : ?>
-                                <span class="material-icons-outlined mr-2"><?php echo $icon ?></span>
+                                <span class="material-symbols-outlined mr-2"><?php echo $icon ?></span>
                             <?php endif; ?>
 
                             <p title="<?php echo isset($this->_row->data) ? $this->_row->data->$heading : ''; ?>" class="em-neutral-700-color"><?php if($this->showFilters && !empty($label)): ?><?php echo $label ?> <?php endif; ?><?php echo isset($this->_row->data) ? $this->_row->data->$heading : ''; ?></p>
@@ -125,14 +125,14 @@ foreach ($this->headings as $heading => $label) {
         <?php if ($show_edit_btn) : ?>
             <a href="<?= $this->_row->data->fabrik_edit_url; ?>"
                class="em-text-neutral-600 em-w-100 em-flex-row em-p-8">
-                <span class="material-icons-outlined">edit</span>
+                <span class="material-symbols-outlined">edit</span>
                 <span class="em-ml-8"><?php echo $edit_label; ?></span>
             </a>
         <?php endif; ?>
         <?php if ($show_details_btn) : ?>
             <a href="<?= $this->_row->data->fabrik_view_url; ?>"
                class="em-text-neutral-600 em-w-100 em-flex-row em-p-8">
-                <span class="material-icons-outlined">visibility</span>
+                <span class="material-symbols-outlined">visibility</span>
                 <span class="em-ml-8"><?php echo $detail_label; ?></span>
             </a>
         <?php endif; ?>
@@ -144,7 +144,7 @@ foreach ($this->headings as $heading => $label) {
                role="button"
                onclick="onClickDelete('<?= $this->_row->id; ?>')"
             >
-                <span class="material-icons-outlined">delete</span>
+                <span class="material-symbols-outlined">delete</span>
                 <span class="em-ml-8"><?php echo JText::_('COM_FABRIK_DELETE'); ?></span>
             </a>
         <?php endif; ?>

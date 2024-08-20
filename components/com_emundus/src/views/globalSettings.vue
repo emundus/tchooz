@@ -4,7 +4,7 @@
 
     <div class="tw-w-full tw-pt-6 tw-pr-8 tw-pb-3 tw-pl-0" v-if="activeMenuItem">
       <h1 class="tw-text-2xl tw-pl-1 tw-font-semibold tw-text-profile-full tw-mb-3">
-        <span class="material-icons-outlined tw-scale-150 tw-text-profile-full tw-me-2">
+        <span class="material-symbols-outlined tw-scale-150 tw-text-profile-full tw-me-2">
           {{ activeMenuItem.icon }}
         </span>
         {{ translate(activeMenuItem.label) }}

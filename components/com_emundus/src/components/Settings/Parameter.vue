@@ -9,7 +9,7 @@
         }}</span>
       <span v-else-if="parameter.optional===0" class="tw-text-red-600">*</span>
       <span v-if="parameter.helptext"
-            class="material-icons-outlined tw-cursor-pointer tw-scale-75 tw-text-profile-full"
+            class="material-symbols-outlined tw-cursor-pointer tw-scale-75 tw-text-profile-full"
             @click="displayHelp(parameter.helptext)">help_outline</span>
     </label>
 

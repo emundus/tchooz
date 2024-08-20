@@ -94,7 +94,7 @@ if ($just_logged && !$only_applicant) {
             color: var(--neutral-0);
         }
 
-        .em-switch-profile-card .material-icons-outlined {
+        .em-switch-profile-card .material-symbols-outlined {
             font-size: 64px;
         }
 

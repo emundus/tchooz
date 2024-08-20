@@ -65,11 +65,11 @@ else {
                 <div class="view-type tw-flex tw-items-center tw-justify-end tw-mr-4 ">
                     <span style="padding: 4px;border-radius: calc(var(--em-default-br)/2);display: flex;height: 38px;width: 38px;align-items: center;justify-content: center; background: var(--neutral-0);"
                           id="table_view_button"
-                          class="material-icons-outlined tw-ml-2 tw-cursor-pointer active em-main-500-color em-border-main-500"
+                          class="material-symbols-outlined tw-ml-2 tw-cursor-pointer active em-main-500-color em-border-main-500"
                     >dehaze</span>
                     <span style="padding: 4px;border-radius: calc(var(--em-default-br)/2);display: flex;height: 38px;width: 38px;align-items: center;justify-content: center; background: var(--neutral-0);"
                           id="grid_view_button"
-                          class="material-icons-outlined tw-ml-2 tw-cursor-pointer em-neutral-600-color em-border-neutral-600"
+                          class="material-symbols-outlined tw-ml-2 tw-cursor-pointer em-neutral-600-color em-border-neutral-600"
                     >grid_view</span>
                 </div>
             <?php endif; ?>
@@ -118,7 +118,7 @@ else {
                         <button id="log-export-btn"
                                 class="em-w-auto tw-btn-cancel em-mt-8 em-mb-8 em-ml-8 em-mr-16"
                                 onclick="exportLogs(<?= "'" . $this->fnum . "'" ?>)">
-                            <span class="material-icons-outlined em-mr-8">file_upload</span>
+                            <span class="material-symbols-outlined em-mr-8">file_upload</span>
 							<?= JText::_('COM_EMUNDUS_LOGS_EXPORT') ?>
                         </button>
                     </div>
@@ -129,7 +129,7 @@ else {
                         <?php foreach ($this->fileLogs as $log) : ?>
                             <div class="tw-border-1 tw-border-neutral-300 tw-shadow-sm tw-py-4 tw-px-6 tw-bg-white tw-rounded-lg">
                                 <div class="tw-flex tw-items-center">
-                                    <span class="material-icons-outlined"
+                                    <span class="material-symbols-outlined"
                                           style="font-size: 48px"
                                           alt="<?php echo JText::_('PROFILE_ICON_ALT') ?>">
                                         account_circle
@@ -315,7 +315,7 @@ else {
                             // Grid
                             grid = '<div class="tw-border-1 tw-border-neutral-300 tw-shadow-sm tw-py-4 tw-px-6 tw-bg-white tw-rounded-lg"> ' +
                                 '<div class="tw-flex tw-items-center"> ' +
-                                '<span class="material-icons-outlined" style="font-size: 48px" alt="'+Joomla.Text._('PROFILE_ICON_ALT')+'">account_circle</span>' +
+                                '<span class="material-symbols-outlined" style="font-size: 48px" alt="'+Joomla.Text._('PROFILE_ICON_ALT')+'">account_circle</span>' +
                                 '<div class="tw-ml-3"> ' +
                                 '<span class="tw-text-sm tw-text-neutral-600">'+results.res[i].date+'</span> ' +
                                 '<p>'+ results.res[i].firstname + ' ' + results.res[i].lastname +'</p> ' +

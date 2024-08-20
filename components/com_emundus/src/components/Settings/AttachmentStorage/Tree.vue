@@ -2,7 +2,7 @@
   <div>
     <div class="tw-flex tw-items-center tw-mb-4" :class="'em-level-' + node.level">
       <span class="material-icons" v-if="node.type !== 0">folder</span>
-      <span class="material-icons-outlined" v-else>folder</span>
+      <span class="material-symbols-outlined" v-else>folder</span>
 
       <select v-if="(other_tags.includes(node.type) || node.type === 0) && node.type !== ''"
               class="tw-ml-2 tw-mr-2 em-clear-dropdown tree-branch" v-model="node.type">
