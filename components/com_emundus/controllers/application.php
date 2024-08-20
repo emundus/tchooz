@@ -42,12 +42,12 @@ class EmundusControllerApplication extends BaseController
 	 */
 	public function __construct($config = array())
 	{
+		parent::__construct($config);
+
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'export.php');
 
 		$this->_user = $this->app->getIdentity();
-
-		parent::__construct($config);
 	}
 
 	/**

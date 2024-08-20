@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\MVC\Controller\BaseController;
 
 
 /**
@@ -22,7 +23,7 @@ use Joomla\CMS\Factory;
  * @package    Joomla.Tutorials
  * @subpackage Components
  */
-class EmundusControllerGroups extends JControllerLegacy
+class EmundusControllerGroups extends BaseController
 {
 
 	protected $app;
@@ -39,11 +40,10 @@ class EmundusControllerGroups extends JControllerLegacy
 	 */
 	public function __construct($config = array())
 	{
+		parent::__construct($config);
 
 		$this->app   = Factory::getApplication();
 		$this->_user = $this->app->getIdentity();
-
-		parent::__construct($config);
 	}
 
 	/**

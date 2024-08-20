@@ -16,6 +16,7 @@ jimport('joomla.application.component.controller');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\User\User;
 
 
@@ -27,7 +28,7 @@ use Joomla\CMS\User\User;
  * @subpackage eMundus
  * @since      2.0.0
  */
-class EmundusControllerUsers extends JControllerLegacy
+class EmundusControllerUsers extends BaseController
 {
 
 	protected $app;
@@ -44,6 +45,8 @@ class EmundusControllerUsers extends JControllerLegacy
 	 */
 	public function __construct($config = array())
 	{
+		parent::__construct($config);
+
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . '/helpers/filters.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . '/helpers/files.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . '/helpers/access.php');
@@ -57,8 +60,6 @@ class EmundusControllerUsers extends JControllerLegacy
 		$session    = $this->app->getSession();
 
 		$this->euser = $session->get('emundusUser');
-
-		parent::__construct($config);
 	}
 
 	/**

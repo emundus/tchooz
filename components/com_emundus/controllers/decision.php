@@ -46,6 +46,8 @@ class EmundusControllerDecision extends BaseController
 	 */
 	public function __construct($config = array())
 	{
+		parent::__construct($config);
+
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'filters.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'list.php');
@@ -56,8 +58,6 @@ class EmundusControllerDecision extends BaseController
 
 		$this->_db   = Factory::getContainer()->get('DatabaseDriver');
 		$this->_user = $this->app->getIdentity();
-
-		parent::__construct($config);
 	}
 
 	/**

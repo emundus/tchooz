@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\MVC\Controller\BaseController;
 
 
 /**
@@ -23,7 +24,7 @@ use Joomla\CMS\Factory;
  * @subpackage Components
  */
 //error_reporting(E_ALL);
-class EmundusControllerInterview extends JControllerLegacy
+class EmundusControllerInterview extends BaseController
 {
 	protected $app;
 
@@ -40,6 +41,8 @@ class EmundusControllerInterview extends JControllerLegacy
 	 */
 	public function __construct($config = array())
 	{
+		parent::__construct($config);
+
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'filters.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'list.php');
@@ -52,8 +55,6 @@ class EmundusControllerInterview extends JControllerLegacy
 		$this->app   = Factory::getApplication();
 		$this->_user = $this->app->getSession()->get('emundusUser');
 		$this->_db   = Factory::getDBO();
-
-		parent::__construct($config);
 	}
 
 	/**

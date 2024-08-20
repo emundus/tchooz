@@ -15,6 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\MVC\Controller\BaseController;
 
 /**
  * eMundus Component Controller
@@ -22,7 +23,7 @@ use Joomla\CMS\Factory;
  * @package    Joomla.eMundus
  * @subpackage Components
  */
-class EmundusControllerQcm extends JControllerLegacy
+class EmundusControllerQcm extends BaseController
 {
 
 	protected $app;
@@ -39,8 +40,9 @@ class EmundusControllerQcm extends JControllerLegacy
 	 */
 	function __construct($config = array())
 	{
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'qcm.php');
 		parent::__construct($config);
+
+		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'qcm.php');
 
 		$this->app   = Factory::getApplication();
 		$this->model = $this->getModel('qcm');

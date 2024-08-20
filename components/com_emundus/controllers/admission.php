@@ -59,6 +59,8 @@ class EmundusControllerAdmission extends BaseController
 	 */
 	public function __construct($config = array())
 	{
+		parent::__construct($config);
+
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'filters.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'list.php');
@@ -70,8 +72,6 @@ class EmundusControllerAdmission extends BaseController
 		$this->user    = $this->app->getIdentity();
 		$this->session = $this->app->getSession();
 		$this->_db     = Factory::getContainer()->get('DatabaseDriver');
-
-		parent::__construct($config);
 	}
 
 	/**

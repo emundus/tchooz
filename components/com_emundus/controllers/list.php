@@ -16,6 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\MVC\Controller\BaseController;
 
 /**
  * List Controller
@@ -23,7 +24,7 @@ use Joomla\CMS\Factory;
  * @package    Joomla
  * @subpackage eMundus
  */
-class EmundusControllerList extends JControllerLegacy
+class EmundusControllerList extends BaseController
 {
 
 	protected $app;
