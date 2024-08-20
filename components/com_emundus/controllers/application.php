@@ -19,7 +19,7 @@ use Joomla\Utilities\ArrayHelper;
 use Joomla\CMS\Factory;
 
 /**
- * Emundus Application Class
+ * Emundus Application Controller
  * @package     Emundus
  */
 class EmundusControllerApplication extends BaseController

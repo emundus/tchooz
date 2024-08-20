@@ -2,39 +2,24 @@
 
 # EmundusControllerEmail
 
-eMundus Component Controller
+Emundus Email Controller
 
 
 
 * Full name: `\EmundusControllerEmail`
-* Parent class: [`JControllerLegacy`](./JControllerLegacy.md)
+* Parent class: [`BaseController`](./Joomla/CMS/MVC/Controller/BaseController.md)
 
 
 
 ## Properties
 
 
-### app
-
-
-
-```php
-protected $app
-```
-
-
-
-
-
-
-***
-
 ### _em_user
 
 
 
 ```php
-private $_em_user
+private object|mixed $_em_user
 ```
 
 
@@ -49,7 +34,7 @@ private $_em_user
 
 
 ```php
-private $_user
+private \Joomla\CMS\User\User|\JUser|mixed|null $_user
 ```
 
 
@@ -64,7 +49,7 @@ private $_user
 
 
 ```php
-private $m_emails
+private \EmundusModelEmails $m_emails
 ```
 
 
@@ -113,7 +98,7 @@ public __construct(array $config = array()): mixed
 Method to display a view.
 
 ```php
-public display(bool $cachable = false, bool $urlparams = false): \DisplayController
+public display(bool $cachable = false, bool $urlparams = false): \EmundusControllerEmail
 ```
 
 
@@ -562,4 +547,4 @@ public removetrigger(): mixed
 
 
 ***
-> Automatically generated on 2024-08-20
+> Last updated on 20/08/2024

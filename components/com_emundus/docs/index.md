@@ -8,8 +8,8 @@ hero:
   tagline: "Documentation pour les développeurs"
   actions:
     - theme: brand
-      text: Découvrir Tchooz
-      link: /documentation
+      text: Documentation Back-end
+      link: /back/Home
       
 features:
   - title: Créer une vue

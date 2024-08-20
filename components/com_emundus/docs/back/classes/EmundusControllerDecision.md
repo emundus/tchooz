@@ -2,39 +2,24 @@
 
 # EmundusControllerDecision
 
-eMundus Component Controller
+Emundus Decision Controller
 
 
 
 * Full name: `\EmundusControllerDecision`
-* Parent class: [`JControllerLegacy`](./JControllerLegacy.md)
+* Parent class: [`BaseController`](./Joomla/CMS/MVC/Controller/BaseController.md)
 
 
 
 ## Properties
 
 
-### app
-
-
-
-```php
-protected $app
-```
-
-
-
-
-
-
-***
-
 ### _user
 
 
 
 ```php
-private $_user
+private \Joomla\CMS\User\User|\JUser|mixed|null $_user
 ```
 
 
@@ -49,7 +34,7 @@ private $_user
 
 
 ```php
-private $_db
+private \JDatabaseDriver|\Joomla\Database\DatabaseDriver|null $_db
 ```
 
 
@@ -98,7 +83,7 @@ public __construct(array $config = array()): mixed
 Method to display a view.
 
 ```php
-public display(bool $cachable = false, bool $urlparams = false): \DisplayController
+public display(bool $cachable = false, bool $urlparams = false): \EmundusControllerDecision
 ```
 
 
@@ -127,7 +112,7 @@ This object to support chaining.
 
 ### applicantEmail
 
-
+Send an email to applicant
 
 ```php
 public applicantEmail(): mixed
@@ -137,6 +122,8 @@ public applicantEmail(): mixed
 
 
 
+
+* **Warning:** this method is **deprecated**. This means that this method will likely be removed in a future version.
 
 
 
@@ -148,7 +135,7 @@ public applicantEmail(): mixed
 
 ### clear
 
-
+Clear session and reinit values by default
 
 ```php
 public clear(): mixed
@@ -169,7 +156,7 @@ public clear(): mixed
 
 ### setfilters
 
-
+Set filters of decision view
 
 ```php
 public setfilters(): mixed
@@ -190,7 +177,7 @@ public setfilters(): mixed
 
 ### loadfilters
 
-
+Load filters of decision view
 
 ```php
 public loadfilters(): mixed
@@ -211,7 +198,7 @@ public loadfilters(): mixed
 
 ### order
 
-
+Reorder the list of applications in decision view
 
 ```php
 public order(): mixed
@@ -232,7 +219,7 @@ public order(): mixed
 
 ### setlimit
 
-
+Set the limit of applications in decision view
 
 ```php
 public setlimit(): mixed
@@ -253,7 +240,7 @@ public setlimit(): mixed
 
 ### savefilters
 
-
+Save a custom filter
 
 ```php
 public savefilters(): mixed
@@ -274,7 +261,7 @@ public savefilters(): mixed
 
 ### deletefilters
 
-
+Delete a saved filter
 
 ```php
 public deletefilters(): mixed
@@ -295,7 +282,7 @@ public deletefilters(): mixed
 
 ### setlimitstart
 
-
+Set the start of the list of applications in decision view
 
 ```php
 public setlimitstart(): mixed
@@ -316,7 +303,7 @@ public setlimitstart(): mixed
 
 ### getadvfilters
 
-
+Get the list of advanced filters
 
 ```php
 public getadvfilters(): mixed
@@ -337,7 +324,7 @@ public getadvfilters(): mixed
 
 ### addcomment
 
-
+Add a comment
 
 ```php
 public addcomment(): mixed
@@ -358,7 +345,7 @@ public addcomment(): mixed
 
 ### getevsandgroups
 
-
+Get list of evaluation groups and users
 
 ```php
 public getevsandgroups(): mixed
@@ -379,7 +366,7 @@ public getevsandgroups(): mixed
 
 ### gettags
 
-
+Get list of tags for applications
 
 ```php
 public gettags(): mixed
@@ -400,7 +387,7 @@ public gettags(): mixed
 
 ### tagfile
 
-Add a tag to an application
+Add a tag to applications
 
 ```php
 public tagfile(): mixed
@@ -421,7 +408,7 @@ public tagfile(): mixed
 
 ### deletetags
 
-
+Delete a tag from applications
 
 ```php
 public deletetags(): mixed
@@ -442,7 +429,7 @@ public deletetags(): mixed
 
 ### share
 
-
+Share files with groups or/and users
 
 ```php
 public share(): mixed
@@ -463,7 +450,7 @@ public share(): mixed
 
 ### getstate
 
-
+Get list of status available for applications
 
 ```php
 public getstate(): mixed
@@ -484,7 +471,7 @@ public getstate(): mixed
 
 ### updatestate
 
-
+Update the status of applications
 
 ```php
 public updatestate(): mixed
@@ -505,7 +492,7 @@ public updatestate(): mixed
 
 ### unlinkevaluators
 
-
+Unlink evaluators from a single application file
 
 ```php
 public unlinkevaluators(): mixed
@@ -526,7 +513,7 @@ public unlinkevaluators(): mixed
 
 ### getfnuminfos
 
-
+Get details of a single application file
 
 ```php
 public getfnuminfos(): mixed
@@ -547,7 +534,7 @@ public getfnuminfos(): mixed
 
 ### deletefile
 
-
+Move an application file to trash
 
 ```php
 public deletefile(): mixed
@@ -568,7 +555,7 @@ public deletefile(): mixed
 
 ### getformelem
 
-
+Get elements from a program
 
 ```php
 public getformelem(): mixed
@@ -589,7 +576,7 @@ public getformelem(): mixed
 
 ### pdf
 
-
+Export a single application in PDF format
 
 ```php
 public pdf(): mixed
@@ -610,7 +597,7 @@ public pdf(): mixed
 
 ### pdf_decision
 
-
+Export a single application in PDF format
 
 ```php
 public pdf_decision(): mixed
@@ -629,92 +616,9 @@ public pdf_decision(): mixed
 
 ***
 
-### return_bytes
-
-
-
-```php
-public return_bytes(mixed $val): mixed
-```
-
-
-
-
-
-
-
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$val` | **mixed** |  |
-
-
-
-
-
-***
-
-### sortArrayByArray
-
-
-
-```php
-public sortArrayByArray(mixed $array, mixed $orderArray): mixed
-```
-
-
-
-
-
-
-
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$array` | **mixed** |  |
-| `$orderArray` | **mixed** |  |
-
-
-
-
-
-***
-
-### sortObjectByArray
-
-
-
-```php
-public sortObjectByArray(mixed $object, mixed $orderArray): mixed
-```
-
-
-
-
-
-
-
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$object` | **mixed** |  |
-| `$orderArray` | **mixed** |  |
-
-
-
-
-
-***
-
 ### create_file_csv
 
-
+Export applications in CSV format
 
 ```php
 public create_file_csv(): mixed
@@ -735,7 +639,7 @@ public create_file_csv(): mixed
 
 ### getfnums_csv
 
-
+Prepare the list of applications to export in CSV format
 
 ```php
 public getfnums_csv(): mixed
@@ -756,10 +660,10 @@ public getfnums_csv(): mixed
 
 ### getcolumn
 
-
+Get column from elements for CSV export
 
 ```php
-public getcolumn(mixed $elts): mixed
+public getcolumn(mixed $elts): array
 ```
 
 
@@ -783,7 +687,7 @@ public getcolumn(mixed $elts): mixed
 
 ### generate_array
 
-
+Generate array to export in CSV format
 
 ```php
 public generate_array(): mixed
@@ -804,10 +708,10 @@ public generate_array(): mixed
 
 ### get_mime_type
 
-
+Get mime type of a file
 
 ```php
-public get_mime_type(mixed $filename, mixed $mimePath = &#039;../etc&#039;): mixed
+public get_mime_type(mixed $filename, mixed $mimePath = &#039;../etc&#039;): false|string
 ```
 
 
@@ -832,7 +736,7 @@ public get_mime_type(mixed $filename, mixed $mimePath = &#039;../etc&#039;): mix
 
 ### download
 
-
+Download tmp file (from exports)
 
 ```php
 public download(): mixed
@@ -853,10 +757,10 @@ public download(): mixed
 
 ### export_zip
 
-
+Export applications in ZIP format
 
 ```php
-public export_zip(mixed $fnums): mixed
+public export_zip(mixed $fnums): string|void
 ```
 
 
@@ -875,9 +779,14 @@ public export_zip(mixed $fnums): mixed
 
 
 
+**Throws:**
+
+- [`Exception`](./Exception.md)
+
+
 
 ***
 
 
 ***
-> Automatically generated on 2024-08-20
+> Last updated on 20/08/2024

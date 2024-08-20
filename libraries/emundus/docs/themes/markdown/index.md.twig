@@ -7,36 +7,52 @@
 
 # {{ project.name|raw }}
 
-{{ project.description|raw }}
-
-This is an automatically generated documentation for **{{project.name}}**.
-
 {# Gitlab supports automatic table of contents generation #}
 {% if md_flavour == 'gitlab' %}
 # Table of contents
 [[_TOC_]]
 {% endif %}
 
-## Namespaces
-
 {% for namespace in project.indexes.namespaces|sort((a,b) => a.FullyQualifiedStructuralElementName <=> b.FullyQualifiedStructuralElementName) %}
 {% if namespace.classes|length > 0 or namespace.traits|length > 0 or namespace.interfaces|length > 0 %}
 
-### {{ namespace.FullyQualifiedStructuralElementName }}
+{#### {{ namespace.FullyQualifiedStructuralElementName }}#}
 
 {% if namespace.classes|length > 0 %}
-#### Classes
+## Controllers
+| Class | Description |
+|-------|-------------|
+{% for class in namespace.classes|sort((a,b) => a.FullyQualifiedStructuralElementName <=> b.FullyQualifiedStructuralElementName) %}
+{% if 'Controller' in macros.mdClassLink(class) %}
+| {{ macros.mdClassLink(class) }} | {{ class.summary|replace({'|': '&#124;'})|nl2br|replace({"\n": "", "\r": "", "\t": ""})|raw }}|
+{% endif %}
+{% endfor %}{# for class #}
+
+## Models
 
 | Class | Description |
 |-------|-------------|
 {% for class in namespace.classes|sort((a,b) => a.FullyQualifiedStructuralElementName <=> b.FullyQualifiedStructuralElementName) %}
+{% if 'Model' in macros.mdClassLink(class) %}
 | {{ macros.mdClassLink(class) }} | {{ class.summary|replace({'|': '&#124;'})|nl2br|replace({"\n": "", "\r": "", "\t": ""})|raw }}|
+{% endif %}
 {% endfor %}{# for class #}
+
+## Helpers
+
+| Class | Description |
+|-------|-------------|
+{% for class in namespace.classes|sort((a,b) => a.FullyQualifiedStructuralElementName <=> b.FullyQualifiedStructuralElementName) %}
+{% if 'Helper' in macros.mdClassLink(class) %}
+| {{ macros.mdClassLink(class) }} | {{ class.summary|replace({'|': '&#124;'})|nl2br|replace({"\n": "", "\r": "", "\t": ""})|raw }}|
+{% endif %}
+{% endfor %}{# for class #}
+
 {% endif %}{# if classes.length #}
 
 {% if namespace.traits|length > 0 %}
 
-#### Traits
+## Traits
 
 | Trait | Description |
 |-------|-------------|
@@ -48,7 +64,7 @@ This is an automatically generated documentation for **{{project.name}}**.
 
 {% if namespace.interfaces|length > 0 %}
 
-#### Interfaces
+## Interfaces
 
 | Interface | Description |
 |-----------|-------------|

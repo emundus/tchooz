@@ -46,4 +46,4 @@ public getModel(mixed $name = &#039;Jobs&#039;, mixed $prefix = &#039;EmundusMod
 
 
 ***
-> Automatically generated on 2024-08-20
+> Last updated on 20/08/2024

@@ -2,39 +2,24 @@
 
 # EmundusControllerDashboard
 
-Campaign Controller
+Emundus Dashboard Controller
 
 
 
 * Full name: `\EmundusControllerDashboard`
-* Parent class: [`JControllerLegacy`](./JControllerLegacy.md)
+* Parent class: [`BaseController`](./Joomla/CMS/MVC/Controller/BaseController.md)
 
 
 
 ## Properties
 
 
-### app
-
-
-
-```php
-protected $app
-```
-
-
-
-
-
-
-***
-
 ### _user
 
 
 
 ```php
-private $_user
+private \Joomla\CMS\User\User|\JUser|mixed|null $_user
 ```
 
 
@@ -49,7 +34,7 @@ private $_user
 
 
 ```php
-private $m_dashboard
+private \EmundusModelDashboard $m_dashboard
 ```
 
 
@@ -95,7 +80,7 @@ public __construct(array $config = array()): mixed
 
 ### getallwidgetsbysize
 
-
+Get all widgets by size
 
 ```php
 public getallwidgetsbysize(): mixed
@@ -105,6 +90,8 @@ public getallwidgetsbysize(): mixed
 
 
 
+
+* **Warning:** this method is **deprecated**. This means that this method will likely be removed in a future version.
 
 
 
@@ -116,7 +103,7 @@ public getallwidgetsbysize(): mixed
 
 ### getpalettecolors
 
-
+Get colors to apply on widgets
 
 ```php
 public getpalettecolors(): mixed
@@ -126,6 +113,8 @@ public getpalettecolors(): mixed
 
 
 
+
+* **Warning:** this method is **deprecated**. This means that this method will likely be removed in a future version.
 
 
 
@@ -137,7 +126,7 @@ public getpalettecolors(): mixed
 
 ### getwidgets
 
-
+Get widgets to display for logged user for current profile
 
 ```php
 public getwidgets(): mixed
@@ -158,7 +147,7 @@ public getwidgets(): mixed
 
 ### updatemydashboard
 
-
+Update widgets to display for logged user for current profile
 
 ```php
 public updatemydashboard(): mixed
@@ -177,30 +166,9 @@ public updatemydashboard(): mixed
 
 ***
 
-### getfirstcoordinatorconnection
-
-
-
-```php
-public getfirstcoordinatorconnection(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
 ### getfilters
 
-
+Get filters for a widget
 
 ```php
 public getfilters(): mixed
@@ -221,7 +189,7 @@ public getfilters(): mixed
 
 ### renderchartbytag
 
-
+Render chart
 
 ```php
 public renderchartbytag(): mixed
@@ -242,7 +210,7 @@ public renderchartbytag(): mixed
 
 ### getarticle
 
-
+Get article to display in widget
 
 ```php
 public getarticle(): mixed
@@ -263,7 +231,7 @@ public getarticle(): mixed
 
 ### geteval
 
-
+Render widget via PHP Code (cannot be applied for applicant users)
 
 ```php
 public geteval(): mixed
@@ -284,4 +252,4 @@ public geteval(): mixed
 
 
 ***
-> Automatically generated on 2024-08-20
+> Last updated on 20/08/2024

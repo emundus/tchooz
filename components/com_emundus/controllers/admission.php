@@ -18,7 +18,7 @@ use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserHelper;
 
 /**
- * Emundus Admission Class
+ * Emundus Admission Controller
  *
  * @since 1.0.0
  * @deprecated 2.0.0 Use EmundusControllerFiles instead

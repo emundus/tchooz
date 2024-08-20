@@ -2,39 +2,24 @@
 
 # EmundusControllerCampaign
 
-Campaign Controller
+Emundus Campaign Controller
 
 
 
 * Full name: `\EmundusControllerCampaign`
-* Parent class: [`JControllerLegacy`](./JControllerLegacy.md)
+* Parent class: [`BaseController`](./Joomla/CMS/MVC/Controller/BaseController.md)
 
 
 
 ## Properties
 
 
-### app
-
-
-
-```php
-protected $app
-```
-
-
-
-
-
-
-***
-
 ### _user
 
-
+User object.
 
 ```php
-private $_user
+private \Joomla\CMS\User\User|\JUser|mixed|null $_user
 ```
 
 
@@ -49,7 +34,7 @@ private $_user
 
 
 ```php
-private $m_campaign
+private \EmundusModelCampaign $m_campaign
 ```
 
 
@@ -98,7 +83,7 @@ public __construct(array $config = array()): mixed
 Method to display a view.
 
 ```php
-public display(bool $cachable = false, bool $urlparams = false): \DisplayController
+public display(bool $cachable = false, bool $urlparams = false): \EmundusControllerCampaign
 ```
 
 
@@ -127,7 +112,7 @@ This object to support chaining.
 
 ### clear
 
-
+Clear session and reinit values by default
 
 ```php
 public clear(): mixed
@@ -148,16 +133,18 @@ public clear(): mixed
 
 ### setCampaign
 
-
+Set campaign
 
 ```php
-public setCampaign(): mixed
+public setCampaign(): true
 ```
 
 
 
 
 
+
+* **Warning:** this method is **deprecated**. This means that this method will likely be removed in a future version.
 
 
 
@@ -253,7 +240,7 @@ public getallcampaign(): mixed
 
 ### goToCampaign
 
-
+Go to files menu with campaign filter
 
 ```php
 public goToCampaign(): mixed
@@ -267,6 +254,11 @@ public goToCampaign(): mixed
 
 
 
+
+
+**Throws:**
+
+- [`Exception`](./Exception.md)
 
 
 
@@ -359,6 +351,7 @@ public duplicatecampaign(): mixed
 ### getyears
 
 Get teaching_unity available
+TODO: Throw in the years controller
 
 ```php
 public getyears(): mixed
@@ -425,27 +418,6 @@ Get a campaign by id
 
 ```php
 public getcampaignbyid(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### getcreatedcampaign
-
-Return the created campaign
-
-```php
-public getcreatedcampaign(): mixed
 ```
 
 
@@ -578,7 +550,7 @@ public updatedocument(): mixed
 
 ### updatedocumentmandatory
 
-
+Update document mandatory
 
 ```php
 public updatedocumentmandatory(): mixed
@@ -833,7 +805,7 @@ public deletedocumentform(): mixed
 
 ### pincampaign
 
-
+Pin a campaign to homepage
 
 ```php
 public pincampaign(): mixed
@@ -854,7 +826,7 @@ public pincampaign(): mixed
 
 ### unpincampaign
 
-
+Unpin campaign of the homepage
 
 ```php
 public unpincampaign(): mixed
@@ -875,7 +847,7 @@ public unpincampaign(): mixed
 
 ### getallitemsalias
 
-
+Get alias of a campaign
 
 ```php
 public getallitemsalias(): mixed
@@ -896,7 +868,7 @@ public getallitemsalias(): mixed
 
 ### getProgrammeByCampaignID
 
-
+Get programme by campaign id
 
 ```php
 public getProgrammeByCampaignID(): mixed
@@ -917,7 +889,7 @@ public getProgrammeByCampaignID(): mixed
 
 ### getcampaignmoreformurl
 
-
+Get url of the form that extend the campaign
 
 ```php
 public getcampaignmoreformurl(): mixed
@@ -938,4 +910,4 @@ public getcampaignmoreformurl(): mixed
 
 
 ***
-> Automatically generated on 2024-08-20
+> Last updated on 20/08/2024

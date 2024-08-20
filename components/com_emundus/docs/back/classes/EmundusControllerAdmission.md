@@ -2,7 +2,7 @@
 
 # EmundusControllerAdmission
 
-Emundus Admission Class
+Emundus Admission Controller
 
 
 
@@ -761,4 +761,4 @@ public export_zip(mixed $fnums): string|void
 
 
 ***
-> Automatically generated on 2024-08-20
+> Last updated on 20/08/2024

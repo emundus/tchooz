@@ -4,14 +4,14 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns="https://www.phpdoc.org"
 >
-    <title>phpDocumentor</title>
+    <title>eMundus Back-end documentation</title>
 
     <paths>
         <output>./components/com_emundus/docs/back</output>
     </paths>
 
     <version number="3.0.0">
-        <api>
+        <api format="php">
             <source dsn="./components/com_emundus">
                 <path>controllers</path>
                 <path>helpers</path>
@@ -20,7 +20,8 @@
         </api>
     </version>
 
+
     <!-- Specify template element inside phpdocumentor -->
-    <template name="./libraries/emundus/vendor/saggre/phpdocumentor-markdown/themes/markdown"/>
+    <template name="./libraries/emundus/docs/themes/markdown" />
 
 </phpdocumentor>

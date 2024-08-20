@@ -46,7 +46,7 @@ export default defineConfig({
         },
         nav: [
           { text: 'Accueil', link: '/' },
-          { text: 'Documentation', link: '/documentation' }
+          { text: 'Back-end', link: '/back/Home' }
         ],
 
         sidebar: [
@@ -87,7 +87,7 @@ export default defineConfig({
             text: 'Back-end',
             items: [
               {
-                text: 'Sommaire',
+                text: 'Références',
                 link: '/back/Home'
               }
             ]
