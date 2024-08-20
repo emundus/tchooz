@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\MVC\Controller\BaseController;
 
 
 /**
@@ -23,7 +24,7 @@ use Joomla\CMS\Factory;
  * @subpackage eMundus
  * @since      2.0.0
  */
-class EmundusControllerUser extends JControllerLegacy
+class EmundusControllerUser extends BaseController
 {
 	protected $app;
 
@@ -40,13 +41,13 @@ class EmundusControllerUser extends JControllerLegacy
 	 */
 	public function __construct($config = array())
 	{
+		parent::__construct($config);
+
 		require_once(JPATH_COMPONENT . DS . 'models' . DS . 'user.php');
 
 		$this->app    = Factory::getApplication();
 		$this->_user  = $this->app->getSession()->get('emundusUser');
 		$this->m_user = $this->getModel('User');
-
-		parent::__construct($config);
 	}
 
 	/**

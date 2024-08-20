@@ -13,6 +13,7 @@ require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers
 
 //client api for file conversion
 
+use Joomla\CMS\MVC\Controller\BaseController;
 use TheCodingMachine\Gotenberg\Client;
 use TheCodingMachine\Gotenberg\ClientException;
 use TheCodingMachine\Gotenberg\DocumentFactory;
@@ -28,7 +29,7 @@ use Joomla\CMS\Factory;
  * Custom report controller
  * @package     Emundus
  */
-class EmundusControllerExport extends JControllerLegacy
+class EmundusControllerExport extends BaseController
 {
 	protected $app;
 
@@ -44,11 +45,10 @@ class EmundusControllerExport extends JControllerLegacy
 	 */
 	public function __construct($config = array())
 	{
+		parent::__construct($config);
 
 		$this->app   = Factory::getApplication();
 		$this->_user = $this->app->getIdentity();
-
-		parent::__construct($config);
 	}
 
 	/**

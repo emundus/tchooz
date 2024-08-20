@@ -18,6 +18,7 @@ use Joomla\CMS\Component\Config\Controller\ApplicationController;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Response\JsonResponse;
 use Joomla\CMS\Session\Session;
 use Joomla\CMS\Uri\Uri;
@@ -30,7 +31,7 @@ use Joomla\CMS\Uri\Uri;
  * @subpackage eMundus
  * @since      5.0.0
  */
-class EmundusControllersettings extends JControllerLegacy
+class EmundusControllersettings extends BaseController
 {
 
 	protected $app;
@@ -48,7 +49,6 @@ class EmundusControllersettings extends JControllerLegacy
 	 */
 	public function __construct($config = array())
 	{
-
 		parent::__construct($config);
 
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');

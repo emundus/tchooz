@@ -12,6 +12,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Language\Text;
 
+use Joomla\CMS\MVC\Controller\BaseController;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -33,7 +34,7 @@ jimport('joomla.user.helper');
 /**
  * Class EmundusControllerFiles
  */
-class EmundusControllerFiles extends JControllerLegacy
+class EmundusControllerFiles extends BaseController
 {
 	protected $app;
 
@@ -50,6 +51,8 @@ class EmundusControllerFiles extends JControllerLegacy
 	 */
 	public function __construct($config = array())
 	{
+		parent::__construct($config);
+
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'filters.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'list.php');
@@ -64,8 +67,6 @@ class EmundusControllerFiles extends JControllerLegacy
 		$this->app   = Factory::getApplication();
 		$this->_user = $this->app->getSession()->get('emundusUser');
 		$this->_db = Factory::getContainer()->get('DatabaseDriver');
-
-		parent::__construct($config);
 	}
 
 	/**

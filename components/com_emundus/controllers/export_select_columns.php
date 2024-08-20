@@ -3,6 +3,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\MVC\Controller\BaseController;
 
 
 /**
@@ -11,7 +12,7 @@ use Joomla\CMS\Factory;
  * @package    Joomla.Tutorials
  * @subpackage Components
  */
-class EmundusControllerExport_select_columns extends JControllerLegacy
+class EmundusControllerExport_select_columns extends BaseController
 {
 	protected $app;
 
@@ -46,11 +47,11 @@ class EmundusControllerExport_select_columns extends JControllerLegacy
 	 */
 	function __construct($config = array())
 	{
+		parent::__construct($config);
+
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'programme.php');
-
-		parent::__construct($config);
 
 		$this->app = Factory::getApplication();
 	}

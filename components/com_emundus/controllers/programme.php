@@ -16,6 +16,7 @@ jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\MVC\Controller\BaseController;
 
 
 /**
@@ -25,7 +26,7 @@ use Joomla\CMS\Language\Text;
  * @subpackage eMundus
  * @since      5.0.0
  */
-class EmundusControllerProgramme extends JControllerLegacy
+class EmundusControllerProgramme extends BaseController
 {
 	protected $app;
 

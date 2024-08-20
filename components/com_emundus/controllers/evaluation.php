@@ -15,6 +15,7 @@ jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\Component\Emundus\Site\Helper\EmundusHelperAccess;
 use Joomla\Component\Emundus\Site\Helper\EmundusHelperFiles;
 
@@ -24,7 +25,7 @@ use Joomla\Component\Emundus\Site\Helper\EmundusHelperFiles;
  * @package    Joomla.emundus
  * @subpackage Components
  */
-class EmundusControllerEvaluation extends JControllerLegacy
+class EmundusControllerEvaluation extends BaseController
 {
 	protected $app;
 
@@ -42,6 +43,8 @@ class EmundusControllerEvaluation extends JControllerLegacy
 	 */
 	public function __construct($config = array())
 	{
+		parent::__construct($config);
+
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'filters.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'list.php');
@@ -54,8 +57,6 @@ class EmundusControllerEvaluation extends JControllerLegacy
 		$this->_db      = Factory::getDbo();
 		$this->_user    = $this->app->getIdentity();
 		$this->_session = $this->app->getSession();
-
-		parent::__construct($config);
 	}
 
 	/**
