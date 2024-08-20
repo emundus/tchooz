@@ -14,9 +14,9 @@
 {% endif %}
 
 {% for namespace in project.indexes.namespaces|sort((a,b) => a.FullyQualifiedStructuralElementName <=> b.FullyQualifiedStructuralElementName) %}
-{% if namespace.classes|length > 0 or namespace.traits|length > 0 or namespace.interfaces|length > 0 %}
+{% if (namespace.classes|length > 0 or namespace.traits|length > 0 or namespace.interfaces|length > 0) and namespace.FullyQualifiedStructuralElementName == '\\' %}
 
-{#### {{ namespace.FullyQualifiedStructuralElementName }}#}
+## {{ namespace.FullyQualifiedStructuralElementName }}
 
 {% if namespace.classes|length > 0 %}
 ## Controllers

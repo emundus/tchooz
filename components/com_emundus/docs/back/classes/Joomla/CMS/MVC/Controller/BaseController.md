@@ -1,25 +1,27 @@
 ***
 
-# EmundusControllerCampaign
+# BaseController
 
-Emundus Campaign Controller
+Base class for a Joomla Controller
 
+Controller (Controllers are where you put all the actual code.) Provides basic
+functionality, such as rendering views (aka displaying templates).
 
-
-* Full name: `\EmundusControllerCampaign`
-* Parent class: [`\Joomla\CMS\MVC\Controller\BaseController`](./Joomla/CMS/MVC/Controller/BaseController.md)
+* Full name: `\Joomla\CMS\MVC\Controller\BaseController`
+* This class implements:
+[`\Joomla\CMS\MVC\Controller\ControllerInterface`](./ControllerInterface.md), [`\Joomla\Event\DispatcherAwareInterface`](../../../Event/DispatcherAwareInterface.md), [`\Psr\Log\LoggerAwareInterface`](../../../../Psr/Log/LoggerAwareInterface.md)
 
 
 
 ## Properties
 
 
-### _user
+### basePath
 
-User object.
+The base path of the controller
 
 ```php
-private \Joomla\CMS\User\User|\JUser|mixed|null $_user
+protected string $basePath
 ```
 
 
@@ -29,12 +31,237 @@ private \Joomla\CMS\User\User|\JUser|mixed|null $_user
 
 ***
 
-### m_campaign
+### default_view
 
-
+The default view for the display method.
 
 ```php
-private \EmundusModelCampaign $m_campaign
+protected string $default_view
+```
+
+
+
+
+
+
+***
+
+### doTask
+
+The mapped task that was performed.
+
+```php
+protected string $doTask
+```
+
+
+
+
+
+
+***
+
+### message
+
+Redirect message.
+
+```php
+protected string $message
+```
+
+
+
+
+
+
+***
+
+### messageType
+
+Redirect message type.
+
+```php
+protected string $messageType
+```
+
+
+
+
+
+
+***
+
+### methods
+
+Array of class methods
+
+```php
+protected array $methods
+```
+
+
+
+
+
+
+***
+
+### name
+
+The name of the controller
+
+```php
+protected string $name
+```
+
+
+
+
+
+
+***
+
+### model_prefix
+
+The prefix of the models
+
+```php
+protected string $model_prefix
+```
+
+
+
+
+
+
+***
+
+### paths
+
+The set of search directories for resources (views).
+
+```php
+protected array $paths
+```
+
+
+
+
+
+
+***
+
+### redirect
+
+URL for redirection.
+
+```php
+protected string $redirect
+```
+
+
+
+
+
+
+***
+
+### task
+
+Current or most recently performed task.
+
+```php
+protected string $task
+```
+
+
+
+
+
+
+***
+
+### taskMap
+
+Array of class methods to call for a given task.
+
+```php
+protected array $taskMap
+```
+
+
+
+
+
+
+***
+
+### input
+
+Hold a JInput object for easier access to the input variables.
+
+```php
+protected \Joomla\Input\Input $input
+```
+
+
+
+
+
+
+***
+
+### factory
+
+The factory.
+
+```php
+protected \Joomla\CMS\MVC\Factory\MVCFactoryInterface $factory
+```
+
+
+
+
+
+
+***
+
+### instance
+
+Instance container.
+
+```php
+protected static static $instance
+```
+
+
+
+* This property is **static**.
+
+
+***
+
+### views
+
+Instance container containing the views.
+
+```php
+protected static \Joomla\CMS\MVC\View\ViewInterface[] $views
+```
+
+
+
+* This property is **static**.
+
+
+***
+
+### app
+
+The Application
+
+```php
+protected \Joomla\CMS\Application\CMSApplicationInterface $app
 ```
 
 
@@ -45,871 +272,6 @@ private \EmundusModelCampaign $m_campaign
 ***
 
 ## Methods
-
-
-### __construct
-
-Constructor.
-
-```php
-public __construct(array $config = array()): mixed
-```
-
-
-
-
-
-
-
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$config` | **array** | An optional associative array of configuration settings. |
-
-
-
-
-
-**See Also:**
-
-* \JController - 
-
-***
-
-### display
-
-Method to display a view.
-
-```php
-public display(bool $cachable = false, bool $urlparams = false): \EmundusControllerCampaign
-```
-
-
-
-
-
-
-
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$cachable` | **bool** | If true, the view output will be cached. |
-| `$urlparams` | **bool** | An array of safe URL parameters and their variable types.<br />@see        \Joomla\CMS\Filter\InputFilter::clean() for valid values. |
-
-
-**Return Value:**
-
-This object to support chaining.
-
-
-
-
-***
-
-### clear
-
-Clear session and reinit values by default
-
-```php
-public clear(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### setCampaign
-
-Set campaign
-
-```php
-public setCampaign(): true
-```
-
-
-
-
-
-
-* **Warning:** this method is **deprecated**. This means that this method will likely be removed in a future version.
-
-
-
-
-
-
-
-***
-
-### addcampaigns
-
-Add campaign for Ametys sync
-
-```php
-public addcampaigns(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### getcampaignsbyprogram
-
-Gets all campaigns linked to a program code
-
-```php
-public getcampaignsbyprogram(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### getcampaignsbyprogramme
-
-Get the number of campaigns by program
-
-```php
-public getcampaignsbyprogramme(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### getallcampaign
-
-Get the campaigns's list filtered
-
-```php
-public getallcampaign(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### goToCampaign
-
-Go to files menu with campaign filter
-
-```php
-public goToCampaign(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-**Throws:**
-
-- [`Exception`](./Exception.md)
-
-
-
-***
-
-### deletecampaign
-
-Delete one or multiple campaigns
-
-```php
-public deletecampaign(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### unpublishcampaign
-
-Unpublish one or multiple campaigns
-
-```php
-public unpublishcampaign(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### publishcampaign
-
-Publish one or multiple campaigns
-
-```php
-public publishcampaign(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### duplicatecampaign
-
-Duplicate one or multiple campaigns
-
-```php
-public duplicatecampaign(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### getyears
-
-Get teaching_unity available
-TODO: Throw in the years controller
-
-```php
-public getyears(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### createcampaign
-
-Create a campaign
-
-```php
-public createcampaign(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### updatecampaign
-
-Update a campaign
-
-```php
-public updatecampaign(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### getcampaignbyid
-
-Get a campaign by id
-
-```php
-public getcampaignbyid(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### updateprofile
-
-Affect a profile(form) to a campaign
-
-```php
-public updateprofile(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### getcampaignstoaffect
-
-Get campaigns without profile affected and not finished
-
-```php
-public getcampaignstoaffect(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### getcampaignstoaffectbyterm
-
-Get campaigns with term filter in name and description
-
-```php
-public getcampaignstoaffectbyterm(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### createdocument
-
-Add a new document to form
-
-```php
-public createdocument(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-**Throws:**
-
-- [`Exception`](./Exception.md)
-
-
-
-***
-
-### updatedocument
-
-Update form document
-
-```php
-public updatedocument(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-**Throws:**
-
-- [`Exception`](./Exception.md)
-
-
-
-***
-
-### updatedocumentmandatory
-
-Update document mandatory
-
-```php
-public updatedocumentmandatory(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### updateDocumentFalang
-
-Update translations of documents
-
-```php
-public updateDocumentFalang(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-**Throws:**
-
-- [`Exception`](./Exception.md)
-
-
-
-***
-
-### getDocumentFalang
-
-Get translations of documents
-
-```php
-public getDocumentFalang(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-**Throws:**
-
-- [`Exception`](./Exception.md)
-
-
-
-***
-
-### getdocumentsdropfiles
-
-Get Dropfiles documents linked to a campaign
-
-```php
-public getdocumentsdropfiles(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-**Throws:**
-
-- [`Exception`](./Exception.md)
-
-
-
-***
-
-### deletedocumentdropfile
-
-Delete Dropfile document
-
-```php
-public deletedocumentdropfile(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-**Throws:**
-
-- [`Exception`](./Exception.md)
-
-
-
-***
-
-### editdocumentdropfile
-
-Edit a Dropfile document
-
-```php
-public editdocumentdropfile(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-**Throws:**
-
-- [`Exception`](./Exception.md)
-
-
-
-***
-
-### updateorderdropfiledocuments
-
-Update the order of Dropfiles documents
-
-```php
-public updateorderdropfiledocuments(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-**Throws:**
-
-- [`Exception`](./Exception.md)
-
-
-
-***
-
-### getdocumentsform
-
-Get documents link to form by campaign (by the module)
-
-```php
-public getdocumentsform(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-**Throws:**
-
-- [`Exception`](./Exception.md)
-
-
-
-***
-
-### editdocumentform
-
-Update a document available in form view
-
-```php
-public editdocumentform(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-**Throws:**
-
-- [`Exception`](./Exception.md)
-
-
-
-***
-
-### deletedocumentform
-
-Delete a document from form view
-
-```php
-public deletedocumentform(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-**Throws:**
-
-- [`Exception`](./Exception.md)
-
-
-
-***
-
-### pincampaign
-
-Pin a campaign to homepage
-
-```php
-public pincampaign(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### unpincampaign
-
-Unpin campaign of the homepage
-
-```php
-public unpincampaign(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### getallitemsalias
-
-Get alias of a campaign
-
-```php
-public getallitemsalias(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### getProgrammeByCampaignID
-
-Get programme by campaign id
-
-```php
-public getProgrammeByCampaignID(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### getcampaignmoreformurl
-
-Get url of the form that extend the campaign
-
-```php
-public getcampaignmoreformurl(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-
-## Inherited methods
 
 
 ### addModelPath
@@ -1004,7 +366,7 @@ public static getInstance(string $prefix, array $config = []): static
 **Throws:**
 <p>if the controller cannot be loaded.</p>
 
-- [`Exception`](./Exception.md)
+- [`Exception`](../../../../Exception.md)
 
 
 
@@ -1204,7 +566,7 @@ View object on success; null or error result on failure.
 
 **Throws:**
 
-- [`Exception`](./Exception.md)
+- [`Exception`](../../../../Exception.md)
 
 
 
@@ -1242,7 +604,7 @@ A \JControllerLegacy object to support chaining.
 
 **Throws:**
 
-- [`Exception`](./Exception.md)
+- [`Exception`](../../../../Exception.md)
 
 
 
@@ -1278,7 +640,7 @@ The value returned by the called method.
 
 **Throws:**
 
-- [`Exception`](./Exception.md)
+- [`Exception`](../../../../Exception.md)
 
 
 
@@ -1342,7 +704,7 @@ The name of the dispatcher
 
 **Throws:**
 
-- [`Exception`](./Exception.md)
+- [`Exception`](../../../../Exception.md)
 
 
 
@@ -1431,7 +793,7 @@ Reference to the view or an error.
 
 **Throws:**
 
-- [`Exception`](./Exception.md)
+- [`Exception`](../../../../Exception.md)
 
 
 
@@ -1464,7 +826,7 @@ protected holdEditId(string $context, int $id): void
 
 **Throws:**
 
-- [`Exception`](./Exception.md)
+- [`Exception`](../../../../Exception.md)
 
 
 
@@ -1494,7 +856,7 @@ False if no redirect exists.
 
 **Throws:**
 
-- [`Exception`](./Exception.md)
+- [`Exception`](../../../../Exception.md)
 
 
 
@@ -1621,7 +983,7 @@ protected releaseEditId(string $context, int $id): void
 
 **Throws:**
 
-- [`Exception`](./Exception.md)
+- [`Exception`](../../../../Exception.md)
 
 
 
@@ -1739,7 +1101,7 @@ True if found and valid, otherwise return false or redirect to referrer page.
 
 **Throws:**
 
-- [`Exception`](./Exception.md)
+- [`Exception`](../../../../Exception.md)
 
 
 
@@ -1834,7 +1196,7 @@ TODO: Remove the override in 6.0
 **Throws:**
 <p>May be thrown if the dispatcher has not been set.</p>
 
-- [`UnexpectedValueException`](./UnexpectedValueException.md)
+- [`UnexpectedValueException`](../../../../UnexpectedValueException.md)
 
 
 

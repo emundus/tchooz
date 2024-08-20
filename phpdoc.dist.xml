@@ -12,11 +12,15 @@
 
     <version number="3.0.0">
         <api format="php">
-            <source dsn="./components/com_emundus">
-                <path>controllers</path>
-                <path>helpers</path>
-                <path>models</path>
+            <source dsn=".">
+                <path>components/com_emundus/controllers</path>
+                <path>components/com_emundus/helpers</path>
+                <path>components/com_emundus/models</path>
+                <path>libraries/src/MVC</path>
             </source>
+            <markers>
+                <marker>TODO</marker>
+            </markers>
         </api>
     </version>
 

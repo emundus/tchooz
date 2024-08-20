@@ -13,7 +13,7 @@ export default defineConfig({
       lang: 'fr',
       themeConfig: {
         // https://vitepress.dev/reference/default-theme-config
-        siteTitle: 'Tchooz',
+        siteTitle: 'Tchooz - v2',
         search: {
           provider: 'local',
           options: {
@@ -68,18 +68,27 @@ export default defineConfig({
               {
                 text: 'Base de données',
                 link: 'general/database'
+              },
+              {
+                text: 'Mettre à jour Vanilla',
+                link: 'general/update-vanilla'
               }
             ]
           },
           {
-            text: 'Vue components',
+            text: 'Front',
             items: [
               {
-                text: 'Campaigns',
-                items: [
-                  { text: 'AddCampaign', link: '/front/addCampaign' },
-                  { text: 'CampaignEdition', link: '/front/CampaignEdition' },
-                ]
+                text: 'Tailwind',
+                link: 'front/tailwind'
+              },
+              {
+                text: 'Créer un composant VueJS',
+                link: 'front/create-component'
+              },
+              {
+                text: 'Wysiwyg',
+                link: 'front/wysiwyg'
               }
             ]
           },

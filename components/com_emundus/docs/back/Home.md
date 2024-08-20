@@ -5,6 +5,7 @@
 
 
 
+## \
 
 ## Controllers
 | Class | Description |
@@ -71,11 +72,11 @@
 | [`EmundusModelJobs`](./classes/EmundusModelJobs.md) | Methods supporting a list of Emundus records.|
 | [`EmundusModelList`](./classes/EmundusModelList.md) | |
 | [`EmundusModelLogs`](./classes/EmundusModelLogs.md) | |
-| [`EmundusModelMessages`](./classes/EmundusModelMessages.md) | |
+| [`EmundusModelMessages`](./classes/EmundusModelMessages.md) | Model class for handling lists of items.|
 | [`EmundusModelMessenger`](./classes/EmundusModelMessenger.md) | |
 | [`EmundusModelPayment`](./classes/EmundusModelPayment.md) | |
 | [`EmundusModelProfile`](./classes/EmundusModelProfile.md) | |
-| [`EmundusModelProgramme`](./classes/EmundusModelProgramme.md) | |
+| [`EmundusModelProgramme`](./classes/EmundusModelProgramme.md) | Model class for handling lists of items.|
 | [`EmundusModelQcm`](./classes/EmundusModelQcm.md) | |
 | [`EmundusModelRenew_application`](./classes/EmundusModelRenew_application.md) | |
 | [`EmundusModelStats`](./classes/EmundusModelStats.md) | |

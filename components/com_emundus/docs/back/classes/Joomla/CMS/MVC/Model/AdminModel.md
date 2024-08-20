@@ -1,25 +1,26 @@
 ***
 
-# EmundusModelProgramme
+# AdminModel
 
-Model class for handling lists of items.
+Prototype admin model.
 
 
 
-* Full name: `\EmundusModelProgramme`
-* Parent class: [`\Joomla\CMS\MVC\Model\ListModel`](./Joomla/CMS/MVC/Model/ListModel.md)
+* Full name: `\Joomla\CMS\MVC\Model\AdminModel`
+* Parent class: [`\Joomla\CMS\MVC\Model\FormModel`](./FormModel.md)
+* This class is an **Abstract class**
 
 
 
 ## Properties
 
 
-### app
+### typeAlias
 
-
+The type alias for this content type (for example, 'com_content.article').
 
 ```php
-private $app
+public string $typeAlias
 ```
 
 
@@ -29,12 +30,12 @@ private $app
 
 ***
 
-### _em_user
+### text_prefix
 
-
+The prefix to use with controller messages.
 
 ```php
-private $_em_user
+protected string $text_prefix
 ```
 
 
@@ -44,12 +45,12 @@ private $_em_user
 
 ***
 
-### _user
+### event_after_delete
 
-
+The event to trigger after deleting the data.
 
 ```php
-private $_user
+protected string $event_after_delete
 ```
 
 
@@ -59,12 +60,12 @@ private $_user
 
 ***
 
-### _db
+### event_after_save
 
-
+The event to trigger after saving the data.
 
 ```php
-protected $_db
+protected string $event_after_save
 ```
 
 
@@ -74,12 +75,208 @@ protected $_db
 
 ***
 
-### config
+### event_before_delete
 
-
+The event to trigger before deleting the data.
 
 ```php
-private $config
+protected string $event_before_delete
+```
+
+
+
+
+
+
+***
+
+### event_before_save
+
+The event to trigger before saving the data.
+
+```php
+protected string $event_before_save
+```
+
+
+
+
+
+
+***
+
+### event_before_change_state
+
+The event to trigger before changing the published state of the data.
+
+```php
+protected string $event_before_change_state
+```
+
+
+
+
+
+
+***
+
+### event_change_state
+
+The event to trigger after changing the published state of the data.
+
+```php
+protected string $event_change_state
+```
+
+
+
+
+
+
+***
+
+### event_before_batch
+
+The event to trigger before batch.
+
+```php
+protected string $event_before_batch
+```
+
+
+
+
+
+
+***
+
+### batch_copymove
+
+Batch copy/move command. If set to false,
+the batch copy/move command is not supported
+
+```php
+protected string $batch_copymove
+```
+
+
+
+
+
+
+***
+
+### batch_commands
+
+Allowed batch commands
+
+```php
+protected array $batch_commands
+```
+
+
+
+
+
+
+***
+
+### associationsContext
+
+The context used for the associations table
+
+```php
+protected string $associationsContext
+```
+
+
+
+
+
+
+***
+
+### batchSet
+
+A flag to indicate if member variables for batch actions (and saveorder) have been initialized
+
+```php
+protected ?bool $batchSet
+```
+
+
+
+
+
+
+***
+
+### user
+
+The user performing the actions (re-usable in batch methods & saveorder(), initialized via initBatch())
+
+```php
+protected object $user
+```
+
+
+
+
+
+
+***
+
+### table
+
+A \Joomla\CMS\Table\Table instance (of appropriate type) to manage the DB records (re-usable in batch methods & saveorder(), initialized via initBatch())
+
+```php
+protected \Joomla\CMS\Table\Table $table
+```
+
+
+
+
+
+
+***
+
+### tableClassName
+
+The class name of the \Joomla\CMS\Table\Table instance managing the DB records (re-usable in batch methods & saveorder(), initialized via initBatch())
+
+```php
+protected string $tableClassName
+```
+
+
+
+
+
+
+***
+
+### contentType
+
+UCM Type corresponding to the current model class (re-usable in batch action methods, initialized via initBatch())
+
+```php
+protected object $contentType
+```
+
+
+
+
+
+
+***
+
+### type
+
+DB data of UCM Type corresponding to the current model class (re-usable in batch action methods, initialized via initBatch())
+
+```php
+protected object $type
 ```
 
 
@@ -94,31 +291,10 @@ private $config
 
 ### __construct
 
-Constructor
+Constructor.
 
 ```php
-public __construct(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### getCampaign
-
-Method to get article data.
-
-```php
-public getCampaign(mixed $id): mixed
+public __construct(array $config = [], ?\Joomla\CMS\MVC\Factory\MVCFactoryInterface $factory = null, ?\Joomla\CMS\Form\FormFactoryInterface $formFactory = null): mixed
 ```
 
 
@@ -132,24 +308,60 @@ public getCampaign(mixed $id): mixed
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$id` | **mixed** |  |
+| `$config` | **array** | An array of configuration options (name, state, dbo, table_path, ignore_request). |
+| `$factory` | **?\Joomla\CMS\MVC\Factory\MVCFactoryInterface** | The factory. |
+| `$formFactory` | **?\Joomla\CMS\Form\FormFactoryInterface** | The form factory. |
+
+
+
+
+**Throws:**
+
+- [`Exception`](../../../../Exception.md)
+
+
+
+***
+
+### batch
+
+Method to perform batch operations on an item or a set of items.
+
+```php
+public batch(array $commands, array $pks, array $contexts): bool
+```
+
+
+
+
+
+
+
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `$commands` | **array** | An array of commands to perform. |
+| `$pks` | **array** | An array of item ids. |
+| `$contexts` | **array** | An array of item contexts. |
 
 
 **Return Value:**
 
-Menu item data object on success, false on failure.
+Returns true on success, false on failure.
 
 
 
 
 ***
 
-### getParams
+### batchAccess
 
-
+Batch access level changes for a group of rows.
 
 ```php
-public getParams(mixed $id): mixed
+protected batchAccess(int $value, array $pks, array $contexts): bool
 ```
 
 
@@ -163,52 +375,26 @@ public getParams(mixed $id): mixed
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$id` | **mixed** |  |
-
-
-
-
-
-***
-
-### getAssociatedProgrammes
-
-
-
-```php
-public getAssociatedProgrammes(mixed $user): array
-```
-
-
-
-
-
-
-
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$user` | **mixed** |  |
+| `$value` | **int** | The new value matching an Asset Group ID. |
+| `$pks` | **array** | An array of row IDs. |
+| `$contexts` | **array** | An array of item contexts. |
 
 
 **Return Value:**
 
-
-get list of programmes for associated files
+True if successful, false otherwise and internal error is set.
 
 
 
 
 ***
 
-### getProgrammes
+### batchCopy
 
-
+Batch copy items to a new category or current.
 
 ```php
-public getProgrammes(mixed $published = null, mixed $codeList = array()): array
+protected batchCopy(int $value, array $pks, array $contexts): array|bool
 ```
 
 
@@ -222,53 +408,26 @@ public getProgrammes(mixed $published = null, mixed $codeList = array()): array
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$published` | **mixed** | int     get published or unpublished programme |
-| `$codeList` | **mixed** | array   array of IN and NOT IN programme code to get |
-
-
-
-
-
-***
-
-### getProgramme
-
-
-
-```php
-public getProgramme(mixed $code): mixed
-```
-
-
-
-
-
-
-
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$code` | **mixed** |  |
+| `$value` | **int** | The new category. |
+| `$pks` | **array** | An array of row IDs. |
+| `$contexts` | **array** | An array of item contexts. |
 
 
 **Return Value:**
 
-
-get list of declared programmes
+An array of new IDs on success, boolean false on failure.
 
 
 
 
 ***
 
-### addProgrammes
+### cleanupPostBatchCopy
 
-
+Function that can be overridden to do any data cleanup after batch copying data
 
 ```php
-public addProgrammes(array $data): bool
+protected cleanupPostBatchCopy(\Joomla\CMS\Table\TableInterface $table, int $newId, int $oldId): void
 ```
 
 
@@ -282,25 +441,55 @@ public addProgrammes(array $data): bool
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$data` | **array** | the row to add in table. |
+| `$table` | **\Joomla\CMS\Table\TableInterface** | The table object containing the newly created item |
+| `$newId` | **int** | The id of the new item |
+| `$oldId` | **int** | The original item id |
+
+
+
+
+
+***
+
+### batchLanguage
+
+Batch language changes for a group of rows.
+
+```php
+protected batchLanguage(string $value, array $pks, array $contexts): bool
+```
+
+
+
+
+
+
+
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `$value` | **string** | The new value matching a language. |
+| `$pks` | **array** | An array of row IDs. |
+| `$contexts` | **array** | An array of item contexts. |
 
 
 **Return Value:**
 
-
-Add new programme in DB
+True if successful, false otherwise and internal error is set.
 
 
 
 
 ***
 
-### editProgrammes
+### batchMove
 
-
+Batch move items to a new category
 
 ```php
-public editProgrammes(array $data): bool
+protected batchMove(int $value, array $pks, array $contexts): bool
 ```
 
 
@@ -314,25 +503,26 @@ public editProgrammes(array $data): bool
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$data` | **array** | the row to add in table. |
+| `$value` | **int** | The new category ID. |
+| `$pks` | **array** | An array of row IDs. |
+| `$contexts` | **array** | An array of item contexts. |
 
 
 **Return Value:**
 
-
-Edit programme in DB
+True if successful, false otherwise and internal error is set.
 
 
 
 
 ***
 
-### getLatestProgramme
+### batchTag
 
-Gets the most recent programme code.
+Batch tag a list of item.
 
 ```php
-public getLatestProgramme(): string
+protected batchTag(int $value, array $pks, array $contexts): bool
 ```
 
 
@@ -341,23 +531,31 @@ public getLatestProgramme(): string
 
 
 
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `$value` | **int** | The value of the new tag. |
+| `$pks` | **array** | An array of row IDs. |
+| `$contexts` | **array** | An array of item contexts. |
 
 
 **Return Value:**
 
-The most recently added programme in the DB.
+True if successful, false otherwise and internal error is set.
 
 
 
 
 ***
 
-### isFavorite
+### canDelete
 
-Checks if the user has this programme in his favorites.
+Method to test whether a record can be deleted.
 
 ```php
-public isFavorite(mixed $programme_id, null $user_id = null): bool
+protected canDelete(object $record): bool
 ```
 
 
@@ -371,25 +569,24 @@ public isFavorite(mixed $programme_id, null $user_id = null): bool
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$programme_id` | **mixed** | Int The ID of the programme to be favorited. |
-| `$user_id` | **null** | Int The user ID, if null: the current user ID. |
+| `$record` | **object** | A record object. |
 
 
 **Return Value:**
 
-True if favorited.
+True if allowed to delete the record. Defaults to the permission for the component.
 
 
 
 
 ***
 
-### favorite
+### canEditState
 
-Adds a programme to the user's list of favorites.
+Method to test whether a record can have its state changed.
 
 ```php
-public favorite(mixed $programme_id, null $user_id = null): bool
+protected canEditState(object $record): bool
 ```
 
 
@@ -403,251 +600,24 @@ public favorite(mixed $programme_id, null $user_id = null): bool
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$programme_id` | **mixed** | Int The ID of the programme to be favorited. |
-| `$user_id` | **null** | Int The user ID, if null: the current user ID. |
-
-
-
-
-
-***
-
-### unfavorite
-
-Removes a programme from the user's list of favorites.
-
-```php
-public unfavorite(mixed $programme_id, null $user_id = null): bool
-```
-
-
-
-
-
-
-
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$programme_id` | **mixed** | Int The ID of the programme to be unfavorited. |
-| `$user_id` | **null** | Int The user ID, if null: the current user ID. |
-
-
-
-
-
-***
-
-### getUpcomingFavorites
-
-Get's the upcoming sessions of the user's favorite programs.
-
-```php
-public getUpcomingFavorites(null $user_id = null): mixed
-```
-
-
-
-
-
-
-
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$user_id` | **null** |  |
-
-
-
-
-
-***
-
-### getFavorites
-
-Get's the user's favorite programs.
-
-```php
-public getFavorites(null $user_id = null): mixed
-```
-
-
-
-
-
-
-
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$user_id` | **null** |  |
-
-
-
-
-
-***
-
-### getAllPrograms
-
-
-
-```php
-public getAllPrograms(mixed $lim = &#039;all&#039;, mixed $page, mixed $filter = null, mixed $sort = &#039;DESC&#039;, mixed $recherche = null, mixed $user = null): array
-```
-
-
-
-
-
-
-
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$lim` | **mixed** |  |
-| `$page` | **mixed** |  |
-| `$filter` | **mixed** |  |
-| `$sort` | **mixed** |  |
-| `$recherche` | **mixed** |  |
-| `$user` | **mixed** |  |
-
-
-
-
-
-***
-
-### getProgramCount
-
-
-
-```php
-public getProgramCount(mixed $filter, mixed $recherche): int|mixed|null
-```
-
-
-
-
-
-
-
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$filter` | **mixed** |  |
-| `$recherche` | **mixed** |  |
-
-
-
-
-
-***
-
-### getProgramById
-
-
-
-```php
-public getProgramById(mixed $id): false|mixed|null
-```
-
-
-
-
-
-
-
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$id` | **mixed** |  |
-
-
-
-
-
-***
-
-### addProgram
-
-
-
-```php
-public addProgram(mixed $data, mixed $user = null): false|mixed|string
-```
-
-
-
-
-
-
-
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$data` | **mixed** |  |
-| `$user` | **mixed** |  |
-
-
-
-
-
-***
-
-### updateProgram
-
-
-
-```php
-public updateProgram(int $id, array $data): bool
-```
-
-
-
-
-
-
-
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$id` | **int** | the program to update |
-| `$data` | **array** | the row to add in table. |
+| `$record` | **object** | A record object. |
 
 
 **Return Value:**
 
-
-Update program in DB
+True if allowed to change the state of the record. Defaults to the permission for the component.
 
 
 
 
 ***
 
-### deleteProgram
+### checkin
 
-
+Method override to check-in a record or an array of record
 
 ```php
-public deleteProgram(array $data): bool
+public checkin(mixed $pks = []): int|bool
 ```
 
 
@@ -661,25 +631,24 @@ public deleteProgram(array $data): bool
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$data` | **array** | the row to delete in table. |
+| `$pks` | **mixed** | The ID of the primary key or an array of IDs |
 
 
 **Return Value:**
 
-
-Delete program(s) in DB
+Boolean false if there is an error, otherwise the count of records checked in.
 
 
 
 
 ***
 
-### unpublishProgram
+### checkout
 
-
+Method override to check-out a record.
 
 ```php
-public unpublishProgram(array $data): bool
+public checkout(int $pk = null): bool
 ```
 
 
@@ -693,25 +662,24 @@ public unpublishProgram(array $data): bool
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$data` | **array** | the row to unpublish in table. |
+| `$pk` | **int** | The ID of the primary key. |
 
 
 **Return Value:**
 
-
-Unpublish program(s) in DB
+True if successful, false if an error occurs.
 
 
 
 
 ***
 
-### publishProgram
+### delete
 
-
+Method to delete one or more records.
 
 ```php
-public publishProgram(array $data): bool
+public delete(array& $pks): bool
 ```
 
 
@@ -725,25 +693,24 @@ public publishProgram(array $data): bool
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$data` | **array** | the row to publish in table. |
+| `$pks` | **array** | An array of record primary keys. |
 
 
 **Return Value:**
 
-
-Publish program(s) in DB
+True if successful, false if an error occurs.
 
 
 
 
 ***
 
-### getProgramCategories
+### generateNewTitle
 
-
+Method to change the title & alias.
 
 ```php
-public getProgramCategories(): array
+protected generateNewTitle(int $categoryId, string $alias, string $title): array
 ```
 
 
@@ -752,24 +719,31 @@ public getProgramCategories(): array
 
 
 
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `$categoryId` | **int** | The id of the category. |
+| `$alias` | **string** | The alias. |
+| `$title` | **string** | The title. |
 
 
 **Return Value:**
 
-
-get list of declared programmes
+Contains the modified title and alias.
 
 
 
 
 ***
 
-### getYearsByProgram
+### getItem
 
-get list of all campaigns associated to the user
+Method to get a single record.
 
 ```php
-public getYearsByProgram(mixed $code): object
+public getItem(int $pk = null): \stdClass|false
 ```
 
 
@@ -783,20 +757,24 @@ public getYearsByProgram(mixed $code): object
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$code` | **mixed** |  |
+| `$pk` | **int** | The id of the primary key. |
 
+
+**Return Value:**
+
+Object on success, false on failure.
 
 
 
 
 ***
 
-### getManagers
+### getReorderConditions
 
-
+A protected method to get a set of ordering conditions.
 
 ```php
-public getManagers(mixed $group): array|mixed
+protected getReorderConditions(\Joomla\CMS\Table\Table $table): string[]
 ```
 
 
@@ -810,7 +788,32 @@ public getManagers(mixed $group): array|mixed
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$group` | **mixed** |  |
+| `$table` | **\Joomla\CMS\Table\Table** | A Table object. |
+
+
+**Return Value:**
+
+An array of conditions to add to ordering queries.
+
+
+
+
+***
+
+### populateState
+
+Stock method to auto-populate the model state.
+
+```php
+protected populateState(): void
+```
+
+
+
+
+
+
+
 
 
 
@@ -818,12 +821,12 @@ public getManagers(mixed $group): array|mixed
 
 ***
 
-### getEvaluators
+### prepareTable
 
-
+Prepare and sanitise the table data prior to saving.
 
 ```php
-public getEvaluators(mixed $group): array|mixed
+protected prepareTable(\Joomla\CMS\Table\Table $table): void
 ```
 
 
@@ -837,7 +840,7 @@ public getEvaluators(mixed $group): array|mixed
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$group` | **mixed** |  |
+| `$table` | **\Joomla\CMS\Table\Table** | A reference to a Table object. |
 
 
 
@@ -845,12 +848,12 @@ public getEvaluators(mixed $group): array|mixed
 
 ***
 
-### affectusertogroups
+### publish
 
-
+Method to change the published state of one or more records.
 
 ```php
-public affectusertogroups(mixed $group, mixed $email, mixed $prog_group): false|mixed|null
+public publish(array& $pks, int $value = 1): bool
 ```
 
 
@@ -864,22 +867,58 @@ public affectusertogroups(mixed $group, mixed $email, mixed $prog_group): false|
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$group` | **mixed** |  |
-| `$email` | **mixed** |  |
-| `$prog_group` | **mixed** |  |
+| `$pks` | **array** | A list of the primary keys to change. |
+| `$value` | **int** | The value of the published state. |
 
+
+**Return Value:**
+
+True on success.
 
 
 
 
 ***
 
-### affectuserstogroup
+### reorder
 
-
+Method to adjust the ordering of a row.
 
 ```php
-public affectuserstogroup(mixed $group, mixed $users, mixed $prog_group): bool
+public reorder(int $pks, int $delta): bool|null
+```
+
+Returns NULL if the user did not have edit
+privileges for any of the selected primary keys.
+
+
+
+
+
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `$pks` | **int** | The ID of the primary key to move. |
+| `$delta` | **int** | Increment, usually +1 or -1 |
+
+
+**Return Value:**
+
+False on failure or error, true on success, null if the $pk is empty (no items selected).
+
+
+
+
+***
+
+### save
+
+Method to save the form data.
+
+```php
+public save(array $data): bool
 ```
 
 
@@ -893,22 +932,24 @@ public affectuserstogroup(mixed $group, mixed $users, mixed $prog_group): bool
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$group` | **mixed** |  |
-| `$users` | **mixed** |  |
-| `$prog_group` | **mixed** |  |
+| `$data` | **array** | The form data. |
 
+
+**Return Value:**
+
+True on success, False on error.
 
 
 
 
 ***
 
-### removefromgroup
+### saveorder
 
-
+Saves the manually set order of records.
 
 ```php
-public removefromgroup(mixed $userid, mixed $group, mixed $prog_group): false|mixed
+public saveorder(array $pks = [], int $order = null): bool
 ```
 
 
@@ -922,22 +963,25 @@ public removefromgroup(mixed $userid, mixed $group, mixed $prog_group): false|mi
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$userid` | **mixed** |  |
-| `$group` | **mixed** |  |
-| `$prog_group` | **mixed** |  |
+| `$pks` | **array** | An array of primary key ids. |
+| `$order` | **int** | +1 or -1 |
 
+
+**Return Value:**
+
+Boolean true on success, false on failure
 
 
 
 
 ***
 
-### getusers
+### checkCategoryId
 
-
+Method to check the validity of the category ID for batch copy and move
 
 ```php
-public getusers(mixed $filters, mixed $page = null): array
+protected checkCategoryId(int $categoryId): bool
 ```
 
 
@@ -951,8 +995,7 @@ public getusers(mixed $filters, mixed $page = null): array
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$filters` | **mixed** |  |
-| `$page` | **mixed** |  |
+| `$categoryId` | **int** | The category ID to check |
 
 
 
@@ -960,12 +1003,13 @@ public getusers(mixed $filters, mixed $page = null): array
 
 ***
 
-### updateVisibility
+### generateTitle
 
-
+A method to preprocess generating a new title in order to allow tables with alternative names
+for alias and title to use the batch move and copy methods
 
 ```php
-public updateVisibility(mixed $cid, mixed $gid, mixed $visibility): bool
+public generateTitle(int $categoryId, \Joomla\CMS\Table\Table $table): void
 ```
 
 
@@ -979,9 +1023,8 @@ public updateVisibility(mixed $cid, mixed $gid, mixed $visibility): bool
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$cid` | **mixed** |  |
-| `$gid` | **mixed** |  |
-| `$visibility` | **mixed** |  |
+| `$categoryId` | **int** | The target category id |
+| `$table` | **\Joomla\CMS\Table\Table** | The Table within which move or copy is taking place |
 
 
 
@@ -989,12 +1032,66 @@ public updateVisibility(mixed $cid, mixed $gid, mixed $visibility): bool
 
 ***
 
-### clonegroup
+### initBatch
 
-
+Method to initialize member variables used by batch methods and other methods like saveorder()
 
 ```php
-public clonegroup(mixed $gid): mixed|void
+public initBatch(): void
+```
+
+
+
+
+
+
+
+
+
+
+
+
+***
+
+### editAssociations
+
+Method to load an item in com_associations.
+
+```php
+public editAssociations(array $data): bool
+```
+
+
+
+
+
+
+* **Warning:** this method is **deprecated**. This means that this method will likely be removed in a future version.
+
+
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `$data` | **array** | The form data. |
+
+
+**Return Value:**
+
+True if successful, false otherwise.
+
+
+
+
+***
+
+### redirectToAssociations
+
+Method to load an item in com_associations.
+
+```php
+protected redirectToAssociations(array $data): bool
 ```
 
 
@@ -1008,360 +1105,18 @@ public clonegroup(mixed $gid): mixed|void
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$gid` | **mixed** |  |
+| `$data` | **array** | The form data. |
 
 
+**Return Value:**
 
+True if successful, false otherwise.
 
 
-***
 
-### getEvaluationGrid
+**Throws:**
 
-
-
-```php
-public getEvaluationGrid(mixed $pid): false|mixed|null
-```
-
-
-
-
-
-
-
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$pid` | **mixed** |  |
-
-
-
-
-
-***
-
-### affectGroupToProgram
-
-
-
-```php
-public affectGroupToProgram(mixed $group, mixed $pid): false|mixed
-```
-
-
-
-
-
-
-
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$group` | **mixed** |  |
-| `$pid` | **mixed** |  |
-
-
-
-
-
-***
-
-### deleteGroupFromProgram
-
-
-
-```php
-public deleteGroupFromProgram(mixed $group, mixed $pid): false|mixed
-```
-
-
-
-
-
-
-
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$group` | **mixed** |  |
-| `$pid` | **mixed** |  |
-
-
-
-
-
-***
-
-### createGridFromModel
-
-
-
-```php
-public createGridFromModel(mixed $label, mixed $intro, mixed $model, mixed $pid): false|mixed
-```
-
-
-
-
-
-
-
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$label` | **mixed** |  |
-| `$intro` | **mixed** |  |
-| `$model` | **mixed** |  |
-| `$pid` | **mixed** |  |
-
-
-
-
-
-***
-
-### getGridsModel
-
-
-
-```php
-public getGridsModel(): array|false|mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### createGrid
-
-
-
-```php
-public createGrid(mixed $label, mixed $intro, mixed $pid, mixed $template): bool
-```
-
-
-
-
-
-
-
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$label` | **mixed** |  |
-| `$intro` | **mixed** |  |
-| `$pid` | **mixed** |  |
-| `$template` | **mixed** |  |
-
-
-
-
-
-***
-
-### deleteGrid
-
-
-
-```php
-public deleteGrid(mixed $grid, mixed $pid): false|mixed
-```
-
-
-
-
-
-
-
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$grid` | **mixed** |  |
-| `$pid` | **mixed** |  |
-
-
-
-
-
-***
-
-### getUserPrograms
-
-
-
-```php
-public getUserPrograms(mixed $user_id): array|false
-```
-
-
-
-
-
-
-
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$user_id` | **mixed** |  |
-
-
-
-
-
-***
-
-### getGroupsByPrograms
-
-
-
-```php
-public getGroupsByPrograms(mixed $programs): array|false
-```
-
-
-
-
-
-
-
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$programs` | **mixed** |  |
-
-
-
-
-
-***
-
-### addGroupToProgram
-
-
-
-```php
-public addGroupToProgram(mixed $label, mixed $code, mixed $parent): bool
-```
-
-
-
-
-
-
-
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$label` | **mixed** |  |
-| `$code` | **mixed** |  |
-| `$parent` | **mixed** |  |
-
-
-
-
-
-***
-
-### getGroupByParent
-
-
-
-```php
-public getGroupByParent(mixed $code, mixed $parent): false|mixed|null
-```
-
-
-
-
-
-
-
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$code` | **mixed** |  |
-| `$parent` | **mixed** |  |
-
-
-
-
-
-***
-
-### getCampaignsByProgram
-
-
-
-```php
-public getCampaignsByProgram(mixed $program): array|false|mixed
-```
-
-
-
-
-
-
-
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$program` | **mixed** |  |
-
-
-
-
-
-***
-
-### getAllSessions
-
-
-
-```php
-public getAllSessions(): mixed
-```
-
-
-
-
-
-
-
-
-
+- [`Exception`](../../../../Exception.md)
 
 
 
@@ -1570,29 +1325,20 @@ The previous value of the property or null if not set
 
 ### populateState
 
-Method to auto-populate the model state.
+Method to auto-populate the state.
 
 ```php
-protected populateState(string $ordering = null, string $direction = null): void
+protected populateState(): void
 ```
 
 This method should only be called once per instantiation and is designed
-to be called on the first call to the getState() method unless the model
+to be called on the first call to the getState() method unless the
 configuration flag to ignore the request is set.
 
-Note. Calling getState in this method will result in recursion.
 
 
 
 
-
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$ordering` | **string** | An optional ordering field. |
-| `$direction` | **string** | An optional direction (asc&amp;#124;desc). |
 
 
 
@@ -1605,7 +1351,7 @@ Note. Calling getState in this method will result in recursion.
 Constructor
 
 ```php
-public __construct(array $config = [], ?\Joomla\CMS\MVC\Factory\MVCFactoryInterface $factory = null): mixed
+public __construct(array $config = [], ?\Joomla\CMS\MVC\Factory\MVCFactoryInterface $factory = null, ?\Joomla\CMS\Form\FormFactoryInterface $formFactory = null): mixed
 ```
 
 
@@ -1621,13 +1367,14 @@ public __construct(array $config = [], ?\Joomla\CMS\MVC\Factory\MVCFactoryInterf
 |-----------|------|-------------|
 | `$config` | **array** | An array of configuration options (name, state, dbo, table_path, ignore_request). |
 | `$factory` | **?\Joomla\CMS\MVC\Factory\MVCFactoryInterface** | The factory. |
+| `$formFactory` | **?\Joomla\CMS\Form\FormFactoryInterface** | The form factory. |
 
 
 
 
 **Throws:**
 
-- [`Exception`](./Exception.md)
+- [`Exception`](../../../../Exception.md)
 
 
 
@@ -1697,7 +1444,7 @@ The name of the model
 
 **Throws:**
 
-- [`Exception`](./Exception.md)
+- [`Exception`](../../../../Exception.md)
 
 
 
@@ -1723,7 +1470,7 @@ protected getMVCFactory(): \Joomla\CMS\MVC\Factory\MVCFactoryInterface
 
 **Throws:**
 
-- [`UnexpectedValueException`](./UnexpectedValueException.md)
+- [`UnexpectedValueException`](../../../../UnexpectedValueException.md)
 
 
 
@@ -1788,7 +1535,7 @@ An array of results.
 
 **Throws:**
 
-- [`RuntimeException`](./RuntimeException.md)
+- [`RuntimeException`](../../../../RuntimeException.md)
 
 
 
@@ -1897,7 +1644,7 @@ A Table object
 
 **Throws:**
 
-- [`Exception`](./Exception.md)
+- [`Exception`](../../../../Exception.md)
 
 
 
@@ -2010,7 +1757,7 @@ TODO: Remove the override in 6.0
 **Throws:**
 <p>May be thrown if the dispatcher has not been set.</p>
 
-- [`UnexpectedValueException`](./UnexpectedValueException.md)
+- [`UnexpectedValueException`](../../../../UnexpectedValueException.md)
 
 
 
@@ -2071,7 +1818,7 @@ The database driver.
 
 **Throws:**
 
-- [`UnexpectedValueException`](./UnexpectedValueException.md)
+- [`UnexpectedValueException`](../../../../UnexpectedValueException.md)
 
 
 
@@ -2169,7 +1916,7 @@ protected loadForm(string $name, string $source = null, array $options = [], boo
 
 **Throws:**
 
-- [`Exception`](./Exception.md)
+- [`Exception`](../../../../Exception.md)
 
 
 
@@ -2184,7 +1931,7 @@ protected loadForm(string $name, string $source = null, array $options = [], boo
 Method to get the data that should be injected in the form.
 
 ```php
-protected loadFormData(): mixed
+protected loadFormData(): array
 ```
 
 
@@ -2197,7 +1944,7 @@ protected loadFormData(): mixed
 
 **Return Value:**
 
-The data for the form.
+The default data is an empty array.
 
 
 
@@ -2262,7 +2009,7 @@ protected preprocessForm(\Joomla\CMS\Form\Form $form, mixed $data, string $group
 **Throws:**
 <p>if there is an error in the form event.</p>
 
-- [`Exception`](./Exception.md)
+- [`Exception`](../../../../Exception.md)
 
 
 
@@ -2293,273 +2040,18 @@ public getFormFactory(): \Joomla\CMS\Form\FormFactoryInterface
 **Throws:**
 <p>May be thrown if the FormFactory has not been set.</p>
 
-- [`UnexpectedValueException`](./UnexpectedValueException.md)
+- [`UnexpectedValueException`](../../../../UnexpectedValueException.md)
 
 
 
 ***
 
-### getEmptyStateQuery
+### checkin
 
-Provide a query to be used to evaluate if this is an Empty State, can be overridden in the model to provide granular control.
-
-```php
-protected getEmptyStateQuery(): \Joomla\Database\DatabaseQuery
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### getIsEmptyState
-
-Is this an empty state, I.e: no items of this type regardless of the searched for states.
+Method to checkin a row.
 
 ```php
-public getIsEmptyState(): bool
-```
-
-
-
-
-
-
-
-
-
-
-
-**Throws:**
-
-- [`Exception`](./Exception.md)
-
-
-
-***
-
-### _getListQuery
-
-Method to cache the last query constructed.
-
-```php
-protected _getListQuery(): \Joomla\Database\DatabaseQuery
-```
-
-This method ensures that the query is constructed only once for a given state of the model.
-
-
-
-
-
-
-
-**Return Value:**
-
-A DatabaseQuery object
-
-
-
-
-***
-
-### getActiveFilters
-
-Function to get the active filters
-
-```php
-public getActiveFilters(): array
-```
-
-
-
-
-
-
-
-
-
-**Return Value:**
-
-Associative array in the format: array('filter_published' => 0)
-
-
-
-
-***
-
-### getItems
-
-Method to get an array of data items.
-
-```php
-public getItems(): mixed
-```
-
-
-
-
-
-
-
-
-
-**Return Value:**
-
-An array of data items on success, false on failure.
-
-
-
-
-***
-
-### getListQuery
-
-Method to get a DatabaseQuery object for retrieving the data set from a database.
-
-```php
-protected getListQuery(): \Joomla\Database\DatabaseQuery|string
-```
-
-
-
-
-
-
-
-
-
-**Return Value:**
-
-A DatabaseQuery object to retrieve the data set.
-
-
-
-
-***
-
-### getPagination
-
-Method to get a \JPagination object for the data set.
-
-```php
-public getPagination(): \Joomla\CMS\Pagination\Pagination
-```
-
-
-
-
-
-
-
-
-
-**Return Value:**
-
-A Pagination object for the data set.
-
-
-
-
-***
-
-### getStoreId
-
-Method to get a store id based on the model configuration state.
-
-```php
-protected getStoreId(string $id = &#039;&#039;): string
-```
-
-This is necessary because the model is used by the component and
-different modules that might need different sets of data or different
-ordering requirements.
-
-
-
-
-
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$id` | **string** | An identifier string to generate the store id. |
-
-
-**Return Value:**
-
-A store id.
-
-
-
-
-***
-
-### getTotal
-
-Method to get the total number of items for the data set.
-
-```php
-public getTotal(): int
-```
-
-
-
-
-
-
-
-
-
-**Return Value:**
-
-The total number of items available in the data set.
-
-
-
-
-***
-
-### getStart
-
-Method to get the starting number of items for the data set.
-
-```php
-public getStart(): int
-```
-
-
-
-
-
-
-
-
-
-**Return Value:**
-
-The starting number of items available in the data set.
-
-
-
-
-***
-
-### getFilterForm
-
-Get the filter form
-
-```php
-public getFilterForm(array $data = [], bool $loadData = true): \Joomla\CMS\Form\Form|null
+public checkin(int $pk = null): bool
 ```
 
 
@@ -2573,61 +2065,24 @@ public getFilterForm(array $data = [], bool $loadData = true): \Joomla\CMS\Form\
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$data` | **array** | data |
-| `$loadData` | **bool** | load current data |
+| `$pk` | **int** | The numeric id of the primary key. |
 
 
 **Return Value:**
 
-The \JForm object or null if the form can't be found
+False on failure or error, true otherwise.
 
 
 
 
 ***
 
-### getUserStateFromRequest
+### checkout
 
-Gets the value of a user state variable and sets it in the session
-
-```php
-public getUserStateFromRequest(string $key, string $request, string $default = null, string $type = &#039;none&#039;, bool $resetPage = true): mixed
-```
-
-This is the same as the method in Application except that this also can optionally
-force you back to the first page when a filter has changed
-
-
-
-
-
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$key` | **string** | The key of the user state variable. |
-| `$request` | **string** | The name of the variable passed in a request. |
-| `$default` | **string** | The default value for the variable if not found. Optional. |
-| `$type` | **string** | Filter for the variable. Optional.<br />@see        \Joomla\CMS\Filter\InputFilter::clean() for valid values. |
-| `$resetPage` | **bool** | If true, the limitstart in request is set to zero |
-
-
-**Return Value:**
-
-The request user state.
-
-
-
-
-***
-
-### refineSearchStringToRegex
-
-Parse and transform the search string into a string fit for regex-ing arbitrary strings against
+Method to check-out a row for editing.
 
 ```php
-protected refineSearchStringToRegex(string $search, string $regexDelimiter = &#039;/&#039;): string
+public checkout(int $pk = null): bool
 ```
 
 
@@ -2641,16 +2096,52 @@ protected refineSearchStringToRegex(string $search, string $regexDelimiter = &#0
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$search` | **string** | The search string |
-| `$regexDelimiter` | **string** | The regex delimiter to use for the quoting |
+| `$pk` | **int** | The numeric id of the primary key. |
 
 
 **Return Value:**
 
-Search string escaped for regex
+False on failure or error, true otherwise.
 
 
 
+
+***
+
+### validate
+
+Method to validate the form data.
+
+```php
+public validate(\Joomla\CMS\Form\Form $form, array $data, string $group = null): array|bool
+```
+
+
+
+
+
+
+
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `$form` | **\Joomla\CMS\Form\Form** | The form to validate against. |
+| `$data` | **array** | The data to validate. |
+| `$group` | **string** | The name of the field group to validate. |
+
+
+**Return Value:**
+
+Array of filtered data if valid, false otherwise.
+
+
+
+
+**See Also:**
+
+* \Joomla\CMS\Form\FormRule - * \Joomla\CMS\Filter\InputFilter - 
 
 ***
 

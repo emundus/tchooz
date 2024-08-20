@@ -1,25 +1,27 @@
 ***
 
-# EmundusControllerCampaign
+# FormController
 
-Emundus Campaign Controller
+Controller tailored to suit most form-based admin operations.
 
 
 
-* Full name: `\EmundusControllerCampaign`
-* Parent class: [`\Joomla\CMS\MVC\Controller\BaseController`](./Joomla/CMS/MVC/Controller/BaseController.md)
+* Full name: `\Joomla\CMS\MVC\Controller\FormController`
+* Parent class: [`\Joomla\CMS\MVC\Controller\BaseController`](./BaseController.md)
+* This class implements:
+[`\Joomla\CMS\Form\FormFactoryAwareInterface`](../../Form/FormFactoryAwareInterface.md)
 
 
 
 ## Properties
 
 
-### _user
+### app
 
-User object.
+The Application. Redeclared to show this class requires a web application.
 
 ```php
-private \Joomla\CMS\User\User|\JUser|mixed|null $_user
+protected \Joomla\CMS\Application\CMSWebApplicationInterface $app
 ```
 
 
@@ -29,12 +31,72 @@ private \Joomla\CMS\User\User|\JUser|mixed|null $_user
 
 ***
 
-### m_campaign
+### context
 
-
+The context for storing internal data, e.g. record.
 
 ```php
-private \EmundusModelCampaign $m_campaign
+protected string $context
+```
+
+
+
+
+
+
+***
+
+### option
+
+The URL option for the component.
+
+```php
+protected string $option
+```
+
+
+
+
+
+
+***
+
+### view_item
+
+The URL view item variable.
+
+```php
+protected string $view_item
+```
+
+
+
+
+
+
+***
+
+### view_list
+
+The URL view list variable.
+
+```php
+protected string $view_list
+```
+
+
+
+
+
+
+***
+
+### text_prefix
+
+The prefix to use with controller messages.
+
+```php
+protected string $text_prefix
 ```
 
 
@@ -52,7 +114,7 @@ private \EmundusModelCampaign $m_campaign
 Constructor.
 
 ```php
-public __construct(array $config = array()): mixed
+public __construct(array $config = [], ?\Joomla\CMS\MVC\Factory\MVCFactoryInterface $factory = null, ?\Joomla\CMS\Application\CMSWebApplicationInterface $app = null, ?\Joomla\Input\Input $input = null, ?\Joomla\CMS\Form\FormFactoryInterface $formFactory = null): mixed
 ```
 
 
@@ -66,24 +128,24 @@ public __construct(array $config = array()): mixed
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$config` | **array** | An optional associative array of configuration settings. |
+| `$config` | **array** | An optional associative array of configuration settings.<br />Recognized key values include &#039;name&#039;, &#039;default_task&#039;,<br />&#039;model_path&#039;, and &#039;view_path&#039; (this list is not meant to be<br />comprehensive). |
+| `$factory` | **?\Joomla\CMS\MVC\Factory\MVCFactoryInterface** | The factory. |
+| `$app` | **?\Joomla\CMS\Application\CMSWebApplicationInterface** | The Application for the dispatcher |
+| `$input` | **?\Joomla\Input\Input** | Input |
+| `$formFactory` | **?\Joomla\CMS\Form\FormFactoryInterface** | The form factory. |
 
 
 
 
-
-**See Also:**
-
-* \JController - 
 
 ***
 
-### display
+### add
 
-Method to display a view.
+Method to add a new record.
 
 ```php
-public display(bool $cachable = false, bool $urlparams = false): \EmundusControllerCampaign
+public add(): bool
 ```
 
 
@@ -92,30 +154,265 @@ public display(bool $cachable = false, bool $urlparams = false): \EmundusControl
 
 
 
-
-**Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$cachable` | **bool** | If true, the view output will be cached. |
-| `$urlparams` | **bool** | An array of safe URL parameters and their variable types.<br />@see        \Joomla\CMS\Filter\InputFilter::clean() for valid values. |
 
 
 **Return Value:**
 
-This object to support chaining.
+True if the record can be added, false if not.
 
 
 
 
 ***
 
-### clear
+### allowAdd
 
-Clear session and reinit values by default
+Method to check if you can add a new record.
 
 ```php
-public clear(): mixed
+protected allowAdd(array $data = []): bool
+```
+
+Extended classes can override this if necessary.
+
+
+
+
+
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `$data` | **array** | An array of input data. |
+
+
+
+
+
+***
+
+### allowEdit
+
+Method to check if you can edit an existing record.
+
+```php
+protected allowEdit(array $data = [], string $key = &#039;id&#039;): bool
+```
+
+Extended classes can override this if necessary.
+
+
+
+
+
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `$data` | **array** | An array of input data. |
+| `$key` | **string** | The name of the key for the primary key; default is id. |
+
+
+
+
+
+***
+
+### allowSave
+
+Method to check if you can save a new or existing record.
+
+```php
+protected allowSave(array $data, string $key = &#039;id&#039;): bool
+```
+
+Extended classes can override this if necessary.
+
+
+
+
+
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `$data` | **array** | An array of input data. |
+| `$key` | **string** | The name of the key for the primary key. |
+
+
+
+
+
+***
+
+### batch
+
+Method to run batch operations.
+
+```php
+public batch(\Joomla\CMS\MVC\Model\BaseDatabaseModel $model): bool
+```
+
+
+
+
+
+
+
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `$model` | **\Joomla\CMS\MVC\Model\BaseDatabaseModel** | The model of the component being processed. |
+
+
+**Return Value:**
+
+True if successful, false otherwise and internal error is set.
+
+
+
+
+***
+
+### cancel
+
+Method to cancel an edit.
+
+```php
+public cancel(string $key = null): bool
+```
+
+
+
+
+
+
+
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `$key` | **string** | The name of the primary key of the URL variable. |
+
+
+**Return Value:**
+
+True if access level checks pass, false otherwise.
+
+
+
+
+***
+
+### edit
+
+Method to edit an existing record.
+
+```php
+public edit(string $key = null, string $urlVar = null): bool
+```
+
+
+
+
+
+
+
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `$key` | **string** | The name of the primary key of the URL variable. |
+| `$urlVar` | **string** | The name of the URL variable if different from the primary key<br />(sometimes required to avoid router collisions). |
+
+
+**Return Value:**
+
+True if access level check and checkout passes, false otherwise.
+
+
+
+
+***
+
+### getModel
+
+Method to get a model object, loading it if required.
+
+```php
+public getModel(string $name = &#039;&#039;, string $prefix = &#039;&#039;, array $config = [&#039;ignore_request&#039; =&gt; true]): \Joomla\CMS\MVC\Model\BaseDatabaseModel
+```
+
+
+
+
+
+
+
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `$name` | **string** | The model name. Optional. |
+| `$prefix` | **string** | The class prefix. Optional. |
+| `$config` | **array** | Configuration array for model. Optional. |
+
+
+**Return Value:**
+
+The model.
+
+
+
+
+***
+
+### getRedirectToItemAppend
+
+Gets the URL arguments to append to an item redirect.
+
+```php
+protected getRedirectToItemAppend(int $recordId = null, string $urlVar = &#039;id&#039;): string
+```
+
+
+
+
+
+
+
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `$recordId` | **int** | The primary key id for the item. |
+| `$urlVar` | **string** | The name of the URL variable for the id. |
+
+
+**Return Value:**
+
+The arguments to append to the redirect URL.
+
+
+
+
+***
+
+### getRedirectToListAppend
+
+Gets the URL arguments to append to a list redirect.
+
+```php
+protected getRedirectToListAppend(): string
 ```
 
 
@@ -126,17 +423,110 @@ public clear(): mixed
 
 
 
+**Return Value:**
+
+The arguments to append to the redirect URL.
+
 
 
 
 ***
 
-### setCampaign
+### postSaveHook
 
-Set campaign
+Function that allows child controller access to model data
+after the data has been saved.
 
 ```php
-public setCampaign(): true
+protected postSaveHook(\Joomla\CMS\MVC\Model\BaseDatabaseModel $model, array $validData = []): void
+```
+
+
+
+
+
+
+
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `$model` | **\Joomla\CMS\MVC\Model\BaseDatabaseModel** | The data model object. |
+| `$validData` | **array** | The validated data. |
+
+
+
+
+
+***
+
+### save
+
+Method to save a record.
+
+```php
+public save(string $key = null, string $urlVar = null): bool
+```
+
+
+
+
+
+
+
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `$key` | **string** | The name of the primary key of the URL variable. |
+| `$urlVar` | **string** | The name of the URL variable if different from the primary key (sometimes required to avoid router collisions). |
+
+
+**Return Value:**
+
+True if successful, false otherwise.
+
+
+
+
+***
+
+### reload
+
+Method to reload a record.
+
+```php
+public reload(string $key = null, string $urlVar = null): void
+```
+
+
+
+
+
+
+
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `$key` | **string** | The name of the primary key of the URL variable. |
+| `$urlVar` | **string** | The name of the URL variable if different from the primary key (sometimes required to avoid router collisions). |
+
+
+
+
+
+***
+
+### editAssociations
+
+Load item to edit associations in com_associations
+
+```php
+public editAssociations(): void
 ```
 
 
@@ -145,760 +535,6 @@ public setCampaign(): true
 
 
 * **Warning:** this method is **deprecated**. This means that this method will likely be removed in a future version.
-
-
-
-
-
-
-
-***
-
-### addcampaigns
-
-Add campaign for Ametys sync
-
-```php
-public addcampaigns(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### getcampaignsbyprogram
-
-Gets all campaigns linked to a program code
-
-```php
-public getcampaignsbyprogram(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### getcampaignsbyprogramme
-
-Get the number of campaigns by program
-
-```php
-public getcampaignsbyprogramme(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### getallcampaign
-
-Get the campaigns's list filtered
-
-```php
-public getallcampaign(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### goToCampaign
-
-Go to files menu with campaign filter
-
-```php
-public goToCampaign(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-**Throws:**
-
-- [`Exception`](./Exception.md)
-
-
-
-***
-
-### deletecampaign
-
-Delete one or multiple campaigns
-
-```php
-public deletecampaign(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### unpublishcampaign
-
-Unpublish one or multiple campaigns
-
-```php
-public unpublishcampaign(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### publishcampaign
-
-Publish one or multiple campaigns
-
-```php
-public publishcampaign(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### duplicatecampaign
-
-Duplicate one or multiple campaigns
-
-```php
-public duplicatecampaign(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### getyears
-
-Get teaching_unity available
-TODO: Throw in the years controller
-
-```php
-public getyears(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### createcampaign
-
-Create a campaign
-
-```php
-public createcampaign(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### updatecampaign
-
-Update a campaign
-
-```php
-public updatecampaign(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### getcampaignbyid
-
-Get a campaign by id
-
-```php
-public getcampaignbyid(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### updateprofile
-
-Affect a profile(form) to a campaign
-
-```php
-public updateprofile(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### getcampaignstoaffect
-
-Get campaigns without profile affected and not finished
-
-```php
-public getcampaignstoaffect(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### getcampaignstoaffectbyterm
-
-Get campaigns with term filter in name and description
-
-```php
-public getcampaignstoaffectbyterm(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### createdocument
-
-Add a new document to form
-
-```php
-public createdocument(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-**Throws:**
-
-- [`Exception`](./Exception.md)
-
-
-
-***
-
-### updatedocument
-
-Update form document
-
-```php
-public updatedocument(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-**Throws:**
-
-- [`Exception`](./Exception.md)
-
-
-
-***
-
-### updatedocumentmandatory
-
-Update document mandatory
-
-```php
-public updatedocumentmandatory(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### updateDocumentFalang
-
-Update translations of documents
-
-```php
-public updateDocumentFalang(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-**Throws:**
-
-- [`Exception`](./Exception.md)
-
-
-
-***
-
-### getDocumentFalang
-
-Get translations of documents
-
-```php
-public getDocumentFalang(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-**Throws:**
-
-- [`Exception`](./Exception.md)
-
-
-
-***
-
-### getdocumentsdropfiles
-
-Get Dropfiles documents linked to a campaign
-
-```php
-public getdocumentsdropfiles(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-**Throws:**
-
-- [`Exception`](./Exception.md)
-
-
-
-***
-
-### deletedocumentdropfile
-
-Delete Dropfile document
-
-```php
-public deletedocumentdropfile(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-**Throws:**
-
-- [`Exception`](./Exception.md)
-
-
-
-***
-
-### editdocumentdropfile
-
-Edit a Dropfile document
-
-```php
-public editdocumentdropfile(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-**Throws:**
-
-- [`Exception`](./Exception.md)
-
-
-
-***
-
-### updateorderdropfiledocuments
-
-Update the order of Dropfiles documents
-
-```php
-public updateorderdropfiledocuments(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-**Throws:**
-
-- [`Exception`](./Exception.md)
-
-
-
-***
-
-### getdocumentsform
-
-Get documents link to form by campaign (by the module)
-
-```php
-public getdocumentsform(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-**Throws:**
-
-- [`Exception`](./Exception.md)
-
-
-
-***
-
-### editdocumentform
-
-Update a document available in form view
-
-```php
-public editdocumentform(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-**Throws:**
-
-- [`Exception`](./Exception.md)
-
-
-
-***
-
-### deletedocumentform
-
-Delete a document from form view
-
-```php
-public deletedocumentform(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-**Throws:**
-
-- [`Exception`](./Exception.md)
-
-
-
-***
-
-### pincampaign
-
-Pin a campaign to homepage
-
-```php
-public pincampaign(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### unpincampaign
-
-Unpin campaign of the homepage
-
-```php
-public unpincampaign(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### getallitemsalias
-
-Get alias of a campaign
-
-```php
-public getallitemsalias(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### getProgrammeByCampaignID
-
-Get programme by campaign id
-
-```php
-public getProgrammeByCampaignID(): mixed
-```
-
-
-
-
-
-
-
-
-
-
-
-
-***
-
-### getcampaignmoreformurl
-
-Get url of the form that extend the campaign
-
-```php
-public getcampaignmoreformurl(): mixed
-```
-
-
-
-
-
 
 
 
@@ -1004,7 +640,7 @@ public static getInstance(string $prefix, array $config = []): static
 **Throws:**
 <p>if the controller cannot be loaded.</p>
 
-- [`Exception`](./Exception.md)
+- [`Exception`](../../../../Exception.md)
 
 
 
@@ -1204,7 +840,7 @@ View object on success; null or error result on failure.
 
 **Throws:**
 
-- [`Exception`](./Exception.md)
+- [`Exception`](../../../../Exception.md)
 
 
 
@@ -1242,7 +878,7 @@ A \JControllerLegacy object to support chaining.
 
 **Throws:**
 
-- [`Exception`](./Exception.md)
+- [`Exception`](../../../../Exception.md)
 
 
 
@@ -1278,7 +914,7 @@ The value returned by the called method.
 
 **Throws:**
 
-- [`Exception`](./Exception.md)
+- [`Exception`](../../../../Exception.md)
 
 
 
@@ -1342,7 +978,7 @@ The name of the dispatcher
 
 **Throws:**
 
-- [`Exception`](./Exception.md)
+- [`Exception`](../../../../Exception.md)
 
 
 
@@ -1431,7 +1067,7 @@ Reference to the view or an error.
 
 **Throws:**
 
-- [`Exception`](./Exception.md)
+- [`Exception`](../../../../Exception.md)
 
 
 
@@ -1464,7 +1100,7 @@ protected holdEditId(string $context, int $id): void
 
 **Throws:**
 
-- [`Exception`](./Exception.md)
+- [`Exception`](../../../../Exception.md)
 
 
 
@@ -1494,7 +1130,7 @@ False if no redirect exists.
 
 **Throws:**
 
-- [`Exception`](./Exception.md)
+- [`Exception`](../../../../Exception.md)
 
 
 
@@ -1621,7 +1257,7 @@ protected releaseEditId(string $context, int $id): void
 
 **Throws:**
 
-- [`Exception`](./Exception.md)
+- [`Exception`](../../../../Exception.md)
 
 
 
@@ -1739,7 +1375,7 @@ True if found and valid, otherwise return false or redirect to referrer page.
 
 **Throws:**
 
-- [`Exception`](./Exception.md)
+- [`Exception`](../../../../Exception.md)
 
 
 
@@ -1834,7 +1470,7 @@ TODO: Remove the override in 6.0
 **Throws:**
 <p>May be thrown if the dispatcher has not been set.</p>
 
-- [`UnexpectedValueException`](./UnexpectedValueException.md)
+- [`UnexpectedValueException`](../../../../UnexpectedValueException.md)
 
 
 
