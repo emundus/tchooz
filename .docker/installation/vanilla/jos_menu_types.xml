@@ -149,6 +149,15 @@
     <field name="ordering">11</field>
    </row>
    <row>
+    <field name="id">17</field>
+    <field name="asset_id">131</field>
+    <field name="menutype">menu-profile1001</field>
+    <field name="title">Formulaire de base</field>
+    <field name="description"></field>
+    <field name="client_id">0</field>
+    <field name="ordering">17</field>
+   </row>
+   <row>
     <field name="id">18</field>
     <field name="asset_id">132</field>
     <field name="menutype">campaigns</field>
