@@ -19,13 +19,13 @@
           <div class="tw-text-red-600 tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE') }}</div>
 
           <div class="tw-mb-4" id="campaign-label-wrapper">
-            <label for="campLabel">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_CAMPNAME') }} <span class="tw-text-red-600">*</span></label>
+            <label for="campLabel" class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_CAMPNAME') }} <span class="tw-text-red-600">*</span></label>
             <input
                 id="campLabel"
                 type="text"
                 v-model="form.label[actualLanguage]"
                 required
-                :class="{ 'is-invalid': errors.label }"
+                :class="{ 'is-invalid !tw-border-red-600': errors.label }"
                 class="tw-mt-2 form-control fabrikinput tw-w-full"
                 @focusout="onFormChange()"
                 @keyup="updateAlias()"
@@ -36,29 +36,31 @@
           </div>
 
           <div class="tw-mb-4">
-            <label for="alias">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_ALIAS') }} <span class="em-red-600-color">*</span></label>
+            <label for="alias" class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_ALIAS') }} <span class="tw-text-red-600">*</span></label>
             <div class="tw-flex tw-items-center tw-gap-2">
               <span>{{ baseUrl }}/</span>
-              <input
-                  id="alias"
-                  type="text"
-                  v-model="form.alias"
-                  required
-                  :class="{ 'is-invalid': errors.alias }"
-                  class="form-control fabrikinput tw-w-full"
-                  @focusout="onFormChange()"
-                  @keyup="form.alias !== '' ? aliasUpdated = true : aliasUpdated = false"
-              />
+              <div class="tw-w-full">
+                <input
+                    id="alias"
+                    type="text"
+                    v-model="form.alias"
+                    required
+                    :class="{ 'is-invalid !tw-border-red-600': errors.alias }"
+                    class="form-control fabrikinput tw-w-full"
+                    @focusout="onFormChange()"
+                    @keyup="form.alias !== '' ? aliasUpdated = true : aliasUpdated = false"
+                />
+                <span v-if="errors.alias" class="tw-text-red-600 tw-mb-2 tw-absolute">
+                  <span>{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_LINK') }}</span>
+                </span>
+              </div>
               <span class="material-icons-outlined tw-cursor-pointer" @click="copyAliasToClipboard();">content_copy</span>
             </div>
-            <span v-if="errors.alias" class="em-red-600-color tw-mb-2">
-              <span class="em-red-600-color">{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_LINK') }}</span>
-            </span>
           </div>
 
           <div class="tw-grid tw-grid-cols-2 tw-mb-4 tw-gap-1.5">
             <div>
-                <label for="startDate">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE') }} <span
+                <label for="startDate" class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE') }} <span
                     class="tw-text-red-600">*</span></label>
               <DatePicker
                   id="campaign_start_date"
@@ -77,14 +79,18 @@
                         :value="inputValue"
                         v-on="inputEvents"
                         class="tw-mt-2 form-control fabrikinput tw-w-full"
+                        :class="{ 'is-invalid !tw-border-red-600': errors.start_date }"
                         id="start_date_input"
                     />
+                  <span v-if="errors.start_date" class="tw-text-red-600 tw-mb-2 tw-absolute">
+                      <span>{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_START_DATE') }}</span>
+                    </span>
                 </template>
               </DatePicker>
             </div>
             <div>
               <div>
-                <label for="endDate">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_ENDDATE') }} <span
+                <label for="endDate" class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_ENDDATE') }} <span
                     class="tw-text-red-600">*</span></label>
                 <DatePicker
                     id="campaign_end_date"
@@ -105,8 +111,12 @@
                           :value="inputValue"
                           v-on="inputEvents"
                           class="tw-mt-2 form-control fabrikinput tw-w-full"
+                          :class="{ 'is-invalid !tw-border-red-600': errors.end_date }"
                           id="end_date_input"
                       />
+                    <span v-if="errors.end_date" class="tw-text-red-600 tw-mb-2 tw-absolute">
+                      <span>{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_END_DATE') }}</span>
+                    </span>
                   </template>
                 </DatePicker>
               </div>
@@ -114,7 +124,7 @@
           </div>
 
           <div class="tw-mb-4">
-            <label for="year">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_PICKYEAR') }} <span
+            <label for="year" class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_PICKYEAR') }} <span
                 class="tw-text-red-600">*</span></label>
             <autocomplete
                 :id="'year'"
@@ -123,6 +133,9 @@
                 :year="form.year"
                 :name="sessionPlaceholder"
             />
+            <span v-if="errors.year" class="tw-text-red-600 tw-mb-2">
+              <span>{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_YEAR') }}</span>
+            </span>
           </div>
 
           <div class="tw-mb-4 tw-flex tw-items-center">
@@ -170,8 +183,7 @@
           </div>
 
           <div id="campResume" class="tw-mb-4">
-            <label style="top: 5em">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME') }} <span
-                class="tw-text-red-600">*</span></label>
+            <label style="top: 5em" class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME') }}</label>
             <tip-tap-editor
                 v-model="form.short_description"
                 :editor-content-height="'5em'"
@@ -185,7 +197,7 @@
           </div>
 
           <div class="tw-mb-4">
-            <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION') }}</label>
+            <label class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION') }}</label>
             <div id="campDescription" class="tw-mb-4" v-if="typeof form.description != 'undefined'">
               <tip-tap-editor
                   v-model="form.description"
@@ -212,36 +224,43 @@
           <div class="tw-mb-4">{{ translate('COM_EMUNDUS_ONBOARD_PROGRAM_INTRO_DESC') }}<span
               class="tw-text-red-600">*</span></div>
 
-          <div class="tw-flex tw-items-center tw-mb-4">
-            <select
-                id="select_prog"
-                class="tw-mt-2 form-control fabrikinput tw-w-full"
-                v-model="form.training"
-                v-on:change="setCategory"
-                :disabled="this.programs.length <= 0"
-            >
-              <option value="">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_CHOOSEPROG') }}</option>
-              <option
-                  v-for="(item, index) in programs"
-                  v-bind:value="item.code"
-                  v-bind:data-category="item.programmes"
-                  :key="index">
-                {{
-                  item.label && item.label[actualLanguage] !== null && typeof item.label[actualLanguage] != 'undefined' ? item.label[actualLanguage] : item.label
-                }}
-              </option>
-            </select>
-            <button v-if="coordinatorAccess != 0" :title="translate('COM_EMUNDUS_ONBOARD_ADDPROGRAM')" type="button"
-                    id="add-program" class="tw-ml-2 tw-bg-transparent" @click="displayProgram">
-              <span class="material-icons-outlined em-main-500-color">add_circle_outline</span>
-            </button>
+          <div class="tw-mb-4">
+            <div class="tw-flex tw-items-center">
+              <select
+                  id="select_prog"
+                  class="tw-mt-2 form-control fabrikinput tw-w-full"
+                  :class="{ 'is-invalid !tw-border-red-600': errors.progCode }"
+                  v-model="form.training"
+                  v-on:change="setCategory"
+                  :disabled="this.programs.length <= 0"
+              >
+                <option value="">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_CHOOSEPROG') }}</option>
+                <option
+                    v-for="(item, index) in programs"
+                    v-bind:value="item.code"
+                    v-bind:data-category="item.programmes"
+                    :key="index">
+                  {{
+                    item.label && item.label[actualLanguage] !== null && typeof item.label[actualLanguage] != 'undefined' ? item.label[actualLanguage] : item.label
+                  }}
+                </option>
+              </select>
+              <button v-if="coordinatorAccess != 0" :title="translate('COM_EMUNDUS_ONBOARD_ADDPROGRAM')" type="button"
+                      id="add-program" class="tw-ml-2 tw-bg-transparent" @click="displayProgram">
+                <span class="material-icons-outlined em-main-500-color">add_circle_outline</span>
+              </button>
+            </div>
+            <span v-if="errors.progCode" class="tw-text-red-600 tw-mb-2">
+              <span>{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_PROGRAM') }}</span>
+            </span>
           </div>
+
 
           <transition name="slide-fade">
             <div v-if="isHiddenProgram">
-              <div>
-                <div class="tw-mb-4">
-                  <label for="prog_label">{{ translate('COM_EMUNDUS_ONBOARD_PROGNAME') }} <span
+              <div class="tw-mb-4">
+                <div>
+                  <label for="prog_label" class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_PROGNAME') }} <span
                       class="tw-text-red-600">*</span></label>
                   <input
                       type="text"
@@ -249,7 +268,7 @@
                       class="tw-mt-2 form-control fabrikinput tw-w-full"
                       placeholder=" "
                       v-model="programForm.label"
-                      :class="{ 'is-invalid': errors.progLabel }"
+                      :class="{ 'is-invalid !tw-border-red-600': errors.progLabel }"
                   />
                 </div>
                 <p v-if="errors.progLabel" class="tw-text-red-600 tw-mb-2">
@@ -257,7 +276,7 @@
                 </p>
 
                 <div class="tw-mb-4" style="display: none">
-                  <label for="prog_color">{{ translate('COM_EMUNDUS_ONBOARD_PROGCOLOR') }}</label>
+                  <label for="prog_color" class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_PROGCOLOR') }}</label>
                   <div class="tw-flex">
                     <div v-for="(color,index) in colors" :key="index">
                       <div class="em-color-round tw-cursor-pointer tw-flex tw-justify-center"
@@ -605,6 +624,10 @@ export default {
       // Checking errors
       this.errors = {
         label: false,
+        alias: false,
+        start_date: false,
+        end_date: false,
+        year: false,
         progCode: false,
         progLabel: false,
         short_description: false,
@@ -614,34 +637,28 @@ export default {
       if (this.form.label[this.actualLanguage] === '' || this.form.label[this.actualLanguage] == null || typeof this.form.label[this.actualLanguage] === 'undefined') {
         window.scrollTo({top: 0, behavior: 'smooth'});
         this.errors.label = true;
-        return 0;
+      }
+
+      if(this.form.alias === '' || this.form.alias == null || typeof this.form.alias === 'undefined') {
+        window.scrollTo({top: 0, behavior: 'smooth'});
+        this.errors.alias = true;
       }
 
       if (this.form.end_date === '' || this.form.end_date === '0000-00-00 00:00:00') {
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        const endDate = document.getElementById('end_date');
-        if (endDate) {
-          endDate.focus();
-        }
-        return 0;
+        this.errors.end_date = true;
       }
 
       if (this.form.start_date === '' || this.form.start_date === '0000-00-00 00:00:00') {
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        const startDate = document.getElementById('start_date');
-        if (startDate) {
-          startDate.focus();
-        }
-        return 0;
+        this.errors.start_date = true;
       }
 
       if (this.form.year === '') {
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        const year = document.getElementById('year');
-        if (year) {
-          year.focus();
-        }
-        return 0;
+        this.errors.year = true;
+        document.getElementById('year').classList.add('is-invalid');
+        document.getElementById('year').classList.add('!tw-border-red-600');
       }
 
       if (this.form.is_limited == 1) {
@@ -651,12 +668,10 @@ export default {
         if(this.form.limit === ''){
           window.scrollTo({ top: 0, behavior: 'smooth' });
           this.errors.limit_files_number = true;
-          return 0;
         }
         if (this.form.limit_status.length == 0 || least_one_status) {
           window.scrollTo({top: 0, behavior: 'smooth'});
           this.errors.limit_status = true;
-          return 0;
         }
       }
 
@@ -664,8 +679,6 @@ export default {
         if (this.isHiddenProgram) {
           if (this.programForm.label === '') {
             this.errors.progLabel = true;
-            document.getElementById('prog_label').focus();
-            return 0;
           } else {
             // does this label already exists
             const similarProgram = this.programs.find((program) => {
@@ -674,14 +687,15 @@ export default {
 
             if (similarProgram !== undefined) {
               this.errors.progLabel = true;
-              document.getElementById('prog_label').focus();
-              return 0;
             }
           }
         } else {
-          document.getElementById('select_prog').focus();
-          return 0;
+          this.errors.progCode = true;
         }
+      }
+
+      if(this.errors.label || this.errors.start_date || this.errors.end_date || this.errors.year || this.errors.limit_files_number || this.errors.limit_status || this.errors.progLabel || this.errors.progCode || this.errors.alias) {
+        return 0;
       }
 
       // Set year object values

@@ -478,7 +478,7 @@ public checkifmodeltableisusedinform(): mixed
 
 ### deletemenu
 
-
+Delete a page of a form
 
 ```php
 public deletemenu(): mixed
