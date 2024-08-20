@@ -145,7 +145,7 @@
 
         <div v-if="previewForm" class="tw-w-full tw-h-full" style="background: #fafafb">
           <h2 style="padding: 1.5rem">{{ translate('COM_EMUNDUS_ONBOARD_PREVIEW') }}</h2>
-          <iframe width="100%" height="100%" frameborder="0" style="min-height: 100vh;" id="preview_iframe" name="preview_iframe" :src="'/index.php?option=com_fabrik&view=form&formid='+selectedPage+'&tmpl=component&preview=1'" @load="loading = false" v-show="!loading"></iframe>
+          <iframe width="100%" height="100%" frameborder="0" style="padding-bottom: 36px;" id="preview_iframe" name="preview_iframe" :src="'/index.php?option=com_fabrik&view=form&formid='+selectedPage+'&tmpl=component&preview=1'" @load="loading = false" v-show="!loading"></iframe>
         </div>
 
         <transition name="slide-fade" mode="out-in">
