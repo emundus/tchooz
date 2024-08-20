@@ -6212,6 +6212,15 @@ button.swal2-cancel.goback-btn:hover,
     local('MaterialIconsOutlined-Regular'),
     url(/media/com_emundus/css/fonts/google/MaterialIconsOutlined-Regular.otf) format('truetype');
 }
+@font-face {
+    font-family: 'Material Symbols Outlined';
+    font-style: normal;
+    font-weight: 400;
+    src: url(/media/com_emundus/css/fonts/google/MaterialSymbolsOutlined[FILL,GRAD,opsz,wght].ttf); /* For IE6-8 */
+    src: local('Material Symbols Outlined'),
+    local('MaterialSymbolsOutlined[FILL,GRAD,opsz,wght]'),
+    url(/media/com_emundus/css/fonts/google/MaterialSymbolsOutlined[FILL,GRAD,opsz,wght].ttf) format('truetype');
+}
 .material-icons {
     font-family: 'Material Icons';
     font-size: 18px;
@@ -6238,6 +6247,30 @@ button.swal2-cancel.goback-btn:hover,
 }
 .material-icons-outlined {
     font-family: 'Material Icons Outlined';
+    font-size: 18px;
+    font-weight: normal;
+    font-style: normal;
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+
+    /* Support for all WebKit browsers. */
+    -webkit-font-smoothing: antialiased;
+    /* Support for Safari and Chrome. */
+    text-rendering: optimizeLegibility;
+
+    /* Support for Firefox. */
+    -moz-osx-font-smoothing: grayscale;
+
+    /* Support for IE. */
+    font-feature-settings: 'liga';
+}
+.material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
     font-size: 18px;
     font-weight: normal;
     font-style: normal;
