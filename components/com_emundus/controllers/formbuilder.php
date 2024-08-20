@@ -454,23 +454,25 @@ class EmundusControllerFormbuilder extends JControllerLegacy
 		exit;
 	}
 
+	/**
+	 * Delete a page of a form
+	 *
+	 * @since version 1.0.0
+	 */
 	public function deletemenu()
 	{
-		$user = JFactory::getUser();
+		$response = array('status' => false, 'msg' => '');
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-			$result         = 0;
-			$changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
+			$response['msg'] = Text::_('ACCESS_DENIED');
 		}
 		else {
-
-
 			$mid = $this->input->getInt('mid');
 
-			$changeresponse = $this->m_formbuilder->deleteMenu($mid);
+			$response['status'] = $this->m_formbuilder->deleteMenu($mid);
 		}
 
-		echo json_encode((object) $changeresponse);
+		echo json_encode((object) $response);
 		exit;
 	}
 

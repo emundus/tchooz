@@ -170,7 +170,7 @@
                       :profile_id="parseInt(profile_id)"
                       @select-page="selectPage($event)"
                       @add-page="getPages(currentPage.id)"
-                      @delete-page="selectedPage = pages[0].id;"
+                      @delete-page="afterDeletedPage($event)"
                       @open-page-create="principalContainer = 'create-page';"
                       @reorder-pages="onReorderedPages"
                       @open-create-model="onOpenCreateModel"
@@ -628,6 +628,11 @@ export default {
         this.minimizedRight = !this.minimizedRight;
       }
     },
+    afterDeletedPage(page_id) {
+      if(this.selectedPage == page_id) {
+        this.selectedPage = this.pages[0].id;
+      }
+    }
   },
   computed: {
     currentPage() {
