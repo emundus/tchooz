@@ -585,6 +585,28 @@ class Com_EmundusInstallerScript
 				$converted = $this->db->execute();
 			}
 
+			$query->clear()
+				->select('id,params')
+				->from($this->db->quoteName('#__fabrik_elements'))
+				->where($this->db->quoteName('plugin') . ' LIKE ' . $this->db->quote('jdate'))
+				->where('json_valid(`params`)');
+			$this->db->setQuery($query);
+			$jdate_elements = $this->db->loadObjectList();
+
+			// Check format slashes for jdate elements
+			foreach ($jdate_elements as $jdate_element) {
+				$params = json_decode($jdate_element->params, true);
+
+				$params['jdate_table_format'] = str_replace('\\','',$params['jdate_table_format']);
+				$params['jdate_form_format'] = str_replace('\\','',$params['jdate_form_format']);
+
+				$query->clear()
+					->update($this->db->quoteName('#__fabrik_elements'))
+					->set($this->db->quoteName('params') . ' = ' . $this->db->quote(json_encode($params)))
+					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($jdate_element->id));
+				$this->db->setQuery($query);
+				$this->db->execute();
+			}
 		}
 		catch (Exception $e) {
 			$converted = false;
