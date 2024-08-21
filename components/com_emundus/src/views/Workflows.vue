@@ -28,14 +28,14 @@ export default {
               "getter": "getworkflows",
               "actions": [
                 {
-                  "action": "/workflows/add",
+                  "action": "workflows/add",
                   "label": "COM_EMUNDUS_ONBOARD_ADD_WORKFLOW",
                   "controller": "workflow",
                   "name": "add",
                   "type": "redirect"
                 },
                 {
-                  "action": "/workflows/edit?wid=%id%",
+                  "action": "workflows/edit?wid=%id%",
                   "label": "COM_EMUNDUS_ONBOARD_MODIFY",
                   "controller": "workflow",
                   "type": "redirect",
