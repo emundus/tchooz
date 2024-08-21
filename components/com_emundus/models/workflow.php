@@ -144,6 +144,16 @@ class EmundusModelWorkflow extends JModelList
 									$this->db->insertObject('#__emundus_setup_workflows_steps_entry_status', $entry_status);
 								}
 							}
+
+							if (!empty($step['roles'])) {
+								foreach($step['roles'] as $role) {
+									$row = new stdClass();
+									$row->step_id = $step['id'];
+									$row->profile_id = $role['id'];
+
+									$this->db->insertObject('#__emundus_setup_workflows_steps_roles', $row);
+								}
+							}
 						}
 					} catch (Exception $e) {
 						Log::add('Error while adding workflow step: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
@@ -315,9 +325,10 @@ class EmundusModelWorkflow extends JModelList
 				];
 
 				$query->clear()
-					->select('esws.*, GROUP_CONCAT(eswses.status) AS entry_status')
+					->select('esws.*, GROUP_CONCAT(eswses.status) AS entry_status, GROUP_CONCAT(eswsr.profile_id) AS roles')
 					->from($this->db->quoteName('#__emundus_setup_workflows_steps', 'esws'))
 					->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_entry_status', 'eswses') . ' ON ' . $this->db->quoteName('eswses.step_id') . ' = ' . $this->db->quoteName('esws.id'))
+					->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_roles', 'eswsr') . ' ON ' . $this->db->quoteName('eswsr.step_id') . ' = ' . $this->db->quoteName('esws.id'))
 					->where($this->db->quoteName('esws.workflow_id') . ' = ' . $id)
 					->group($this->db->quoteName('esws.id'))
 					->order($this->db->quoteName('esws.start_date') . ' ASC');
@@ -328,7 +339,8 @@ class EmundusModelWorkflow extends JModelList
 					$workflowData['steps'] = array_values($workflowData['steps']);
 
 					foreach ($workflowData['steps'] as $key => $step) {
-						$workflowData['steps'][$key]->entry_status = explode(',', $step->entry_status);
+						$workflowData['steps'][$key]->entry_status = array_unique(explode(',', $step->entry_status));
+						$workflowData['steps'][$key]->roles = !empty($step->roles) ? array_unique(explode(',', $step->roles)) : [];
 					}
 				} catch (Exception $e) {
 					Log::add('Error while fetching workflow steps: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');

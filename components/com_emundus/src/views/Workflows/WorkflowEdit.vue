@@ -238,10 +238,11 @@ export default {
   mounted() {
     this.getStatuses().then(() => {
       this.getPrograms().then(() => {
-        this.getWorkflow();
+        this.getProfiles().then(() => {
+          this.getWorkflow();
+        });
       });
     });
-    this.getProfiles();
     this.getEvaluationForms();
   },
   methods: {
@@ -255,6 +256,7 @@ export default {
             step.end_date = new Date(step.end_date);
 
             step.entry_status = this.statuses.filter(status => step.entry_status.includes(status.id.toString()));
+            step.roles = this.nonApplicantProfiles.filter(profile => step.roles.includes(profile.id.toString()));
           });
           this.steps = tmpSteps;
 
@@ -293,18 +295,19 @@ export default {
           console.log(e);
         });
     },
-    getProfiles() {
-      fileService.getProfiles()
+    async getProfiles() {
+      return await fileService.getProfiles()
         .then(response => {
-          this.profiles = response.data.map(profile => {
-            if (profile.label !== 'noprofile') {
-              return {
-                id: profile.id,
-                label: profile.label,
-                applicantProfile: profile.published
-              }
-            }
-            return false;
+          const filteredProfiles = response.data.filter((profile) => {
+            return profile.label !== 'noprofile';
+          });
+
+          this.profiles = filteredProfiles.map(profile => {
+            return {
+              id: profile.id,
+              label: profile.label,
+              applicantProfile: profile.published
+            };
           });
         })
         .catch(e => {
