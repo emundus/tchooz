@@ -368,6 +368,39 @@ class EmundusModelWorkflow extends JModelList
 	}
 
 	/**
+	 * @param $id
+	 *
+	 * @return void
+	 */
+	public function getStepData($id)
+	{
+		$data = new stdClass();
+
+		if (!empty($id)) {
+			$query = $this->db->createQuery();
+			$query->clear()
+				->select('esws.*, GROUP_CONCAT(eswses.status) AS entry_status, GROUP_CONCAT(eswsr.profile_id) AS roles')
+				->from($this->db->quoteName('#__emundus_setup_workflows_steps', 'esws'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_entry_status', 'eswses') . ' ON ' . $this->db->quoteName('eswses.step_id') . ' = ' . $this->db->quoteName('esws.id'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_roles', 'eswsr') . ' ON ' . $this->db->quoteName('eswsr.step_id') . ' = ' . $this->db->quoteName('esws.id'))
+				->where('esws.id = ' . $id)
+				->group($this->db->quoteName('esws.id'));
+			
+			try {
+				$this->db->setQuery($query);
+				$data = $this->db->loadObject();
+
+				$data->entry_status = array_unique(explode(',', $data->entry_status));
+				$data->roles = !empty($data->roles) ? array_unique(explode(',', $data->roles)) : [];
+			} catch (Exception $e) {
+				Log::add('Error while fetching workflow steps: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+			}
+		}
+
+		return $data;
+	}
+
+	/**
 	 * @param $fnum
 	 *
 	 * @return null|object if a step is found, it returns a workflow step object, otherwise null

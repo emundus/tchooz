@@ -3641,16 +3641,14 @@ class EmundusModelApplication extends JModelList
 		return $results;
 	}
 
-	public function getApplicationMenu($user_id = 0)
+	public function getApplicationMenu($user_id = 0, $fnum = '')
 	{
-		$user_id = $user_id ?: JFactory::getUser()->id;
+		$user_id = $user_id ?: Factory::getApplication()->getIdentity()->id;
 		$juser   = JFactory::getUser($user_id);
 
 		$menus = [];
-
 		try {
-
-			$query = $this->_db->getQuery(true);
+			$query = $this->_db->createQuery();
 
 			$grUser = $juser->getAuthorisedViewLevels();
 
@@ -3663,8 +3661,44 @@ class EmundusModelApplication extends JModelList
 			$this->_db->setQuery($query);
 			$menus = $this->_db->loadAssocList();
 
-		}
-		catch (Exception $e) {
+			if (!empty($fnum)) {
+				// get menu related to workflow steps of type evaluator
+				$query->clear()
+					->select('esp.id')
+					->from($this->_db->quoteName('#__emundus_setup_programmes', 'esp'))
+					->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.training = esp.code')
+					->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.campaign_id = esc.id')
+					->where('ecc.fnum LIKE ' . $this->_db->quote($fnum));
+
+				$this->_db->setQuery($query);
+				$program_id = $this->_db->loadResult();
+
+				if (!empty($program_id)) {
+					require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+					$m_workflow = new EmundusModelWorkflow();
+					$workflows = $m_workflow->getWorkflows([], 0, 0, [$program_id]);
+
+					foreach($workflows as $workflow) {
+						$workflow_data = $m_workflow->getWorkflow($workflow->id);
+
+						foreach($workflow_data['steps'] as $step) {
+							if ($step->type === 'evaluator') {
+
+								$menus[] = [
+									'id' => $workflow->id . $step->id,
+									'title' => $step->label,
+									'link' => 'index.php?option=com_emundus&view=workflows&layout=evaluator_step&format=raw&step_id=' . $step->id,
+									'lft' => 9998,
+									'rgt' => 9999,
+									'note' => '1|r',
+									'hasSons' => false
+								];
+							}
+						}
+					}
+				}
+			}
+		} catch (Exception $e) {
 			Log::add('line ' . __LINE__ . ' - Error in model/application at query: ' . $query->__toString(), Log::ERROR, 'com_emundus');
 		}
 

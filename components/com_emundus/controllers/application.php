@@ -451,17 +451,19 @@ class EmundusControllerApplication extends BaseController
 	 */
 	public function getapplicationmenu()
 	{
+		$response = ['status' => false];
+
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
-			die(Text::_("ACCESS_DENIED"));
+			die(Text::_('ACCESS_DENIED'));
 		}
 
 		$fnum = $this->input->get('fnum', null, 'STRING');
-
-		$m_application = $this->getModel('Application');
-		$menus         = $m_application->getApplicationMenu();
 		$res           = false;
 
 		if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)) {
+			$m_application = $this->getModel('Application');
+			$menus         = $m_application->getApplicationMenu($this->_user->id, $fnum);
+
 			if ($menus !== false) {
 				$res              = true;
 				$menu_application = array();
@@ -507,13 +509,13 @@ class EmundusControllerApplication extends BaseController
 
 				}
 			}
-			$tab = array('status' => $res, 'menus' => $menu_application);
+			$response = array('status' => $res, 'menus' => $menu_application);
 		}
 		else {
-			$tab = array('status' => false, 'msg' => Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
+			$response['msg'] = Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS');
 		}
 
-		echo json_encode((object) $tab);
+		echo json_encode((object) $response);
 		exit;
 	}
 
