@@ -177,7 +177,7 @@ class EmundusModelForm extends JModelList
 				->select([$this->db->quoteName('ff.id'), $this->db->quoteName('ff.label'), '"grilleEval" AS type'])
 				->from($this->db->quoteName('#__fabrik_forms', 'ff'))
 				->leftJoin($this->db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $this->db->quoteName('fl.form_id') . ' = ' . $this->db->quoteName('ff.id'))
-				->where($this->db->quoteName('fl.db_table_name') . ' = ' . $this->db->quote('jos_emundus_evaluations'));
+				->where($this->db->quoteName('fl.db_table_name') . ' LIKE ' . $this->db->quote('jos_emundus_evaluations_%'));
 			$this->db->setQuery($query);
 
 			$evaluation_forms = $this->db->loadObjectList();
@@ -1186,54 +1186,47 @@ class EmundusModelForm extends JModelList
 		}
 	}
 
+	/**
+	 * @param $user
+	 *
+	 * @return int
+	 * @throws Exception
+	 */
 	public function createFormEval($user = null)
 	{
+		$new_form_id = 0;
 		require_once(JPATH_ROOT . '/components/com_emundus/models/formbuilder.php');
 		$m_formbuilder = new EmundusModelFormbuilder();
-		$form_id       = $m_formbuilder->createFabrikForm('EVALUATION', ['fr' => 'Nouvelle Évaluation', 'en' => 'New Evaluation'], ['fr' => 'Introduction de l\'évaluation', 'en' => 'Evaluation introduction'], 'eval',$user);
 
-		if (!empty($form_id)) {
+		$form_id = $m_formbuilder->createFabrikForm('EVALUATION', ['fr' => 'Nouvelle Évaluation', 'en' => 'New Evaluation'], ['fr' => 'Introduction de l\'évaluation', 'en' => 'Evaluation introduction'], 'eval', $user);
+		if (!empty($form_id))
+		{
+			$new_form_id = $form_id;
 			$group = $m_formbuilder->createGroup(array('fr' => 'Hidden group', 'en' => 'Hidden group'), $form_id, -1);
-			if (!empty($group)) {
+			if (!empty($group))
+			{
 				// Create hidden group
-				$m_formbuilder->createElement('id', $group['group_id'], 'internalid', 'id', '', 1, 0);
-				$m_formbuilder->createElement('time_date', $group['group_id'], 'jdate', 'time date', '', 1, 0);
-				$m_formbuilder->createElement('fnum', $group['group_id'], 'field', 'fnum', '{jos_emundus_evaluations___fnum}', 1, 0, 1, 1, 0, 44);
-				$m_formbuilder->createElement('user', $group['group_id'], 'databasejoin', 'user', '{$my->id}', 1, 0);
-				$m_formbuilder->createElement('student_id', $group['group_id'], 'field', 'student_id', '{jos_emundus_evaluations___student_id}', 1, 0);
+				$m_formbuilder->createElement('id', $group['group_id'], 'internalid', 'id', '', 1);
+				$m_formbuilder->createElement('date_time', $group['group_id'], 'jdate', 'time date', '', 1);
+				$m_formbuilder->createElement('ccid', $group['group_id'], 'databasejoin', 'Identifiant du dossier', '', 1, 1, 1, 1, 0, 44);
+				$m_formbuilder->createElement('evaluator', $group['group_id'], 'databasejoin', 'user', '{$my->id}', 1);
+				$m_formbuilder->createElement('updated_by', $group['group_id'], 'databasejoin', 'user', '{$my->id}}', 1);
+			} else {
+				Log::add('component/com_emundus/models/form | Error when create hidden group for evaluation form', Log::WARNING, 'com_emundus.error');
+				throw new Exception('Error when create hidden group for evaluation form');
 			}
 
-
-			$query = $this->db->getQuery(true);
-
-			$query->clear()
-				->select('*')
-				->from($this->db->quoteName('#__fabrik_lists'))
-				->where($this->db->quoteName('db_table_name') . ' LIKE ' . $this->db->quote('jos_emundus_evaluations'));
-
-			$this->db->setQuery($query);
-			$list = $this->db->loadAssoc();
-
-			if (!empty($list)) {
-				$list_id = $m_formbuilder->copyList($list, $form_id);
-
-				if (empty($list_id)) {
-					Log::add('component/com_emundus/models/form | Error when create a list for evaluation form, could not copy list based on jos_emundus_evaluations', Log::WARNING, 'com_emundus.error');
-
-					throw new Exception('Error when create a list for evaluation form, could not copy list based on jos_emundus_evaluations');
-				}
+			$list = $m_formbuilder->createFabrikList('evaluations', $form_id, 6, 'eval');
+			if (empty($list)) {
+				Log::add('component/com_emundus/models/form | Error when create a list for evaluation form', Log::WARNING, 'com_emundus.error');
+				throw new Exception('Error when create a list for evaluation form');
 			}
-			else {
-				Log::add('component/com_emundus/models/form | Error when create a list for evaluation form, could not find list with jos_emundus_evaluations', Log::WARNING, 'com_emundus.error');
-				throw new Exception('Error when create a list for evaluation form, could not find list with jos_emundus_evaluations');
-			}
-		}
-		else {
+		} else {
 			Log::add('component/com_emundus/models/form | Error when create a form for evaluation form', Log::WARNING, 'com_emundus.error');
 			throw new Exception('Error when create a form for evaluation form');
 		}
 
-		return $form_id;
+		return $new_form_id;
 	}
 
 	public function createMenuType($menutype, $title)

@@ -607,10 +607,13 @@ class EmundusModelFormbuilder extends JModelList
 		return $form_id;
 	}
 
-	function createFabrikList($prid, $formid)
+	function createFabrikList($prid, $formid, $access = null, $type = 'default')
 	{
 		$response = [];
 
+		if (empty($access)) {
+			$access = $prid;
+		}
 
 		$query = $this->db->getQuery(true);
 
@@ -625,37 +628,50 @@ class EmundusModelFormbuilder extends JModelList
 			$result    = $this->db->loadResult();
 			$increment = str_pad(strval($result), 2, '0', STR_PAD_LEFT);
 
-			$query = "CREATE TABLE IF NOT EXISTS jos_emundus_" . $prid . "_" . $increment . " (
-            id int(11) NOT NULL AUTO_INCREMENT,
-            time_date datetime NULL DEFAULT current_timestamp(),
-            fnum varchar(28) CHARSET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-            user int(11) NULL,
-            PRIMARY KEY (id),
-            UNIQUE KEY fnum (fnum)
-            ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4";
+			if ($type === 'eval') {
+				$query = "CREATE TABLE IF NOT EXISTS jos_emundus_" . $prid . "_" . $increment . " (
+		            id int(11) NOT NULL AUTO_INCREMENT,
+		            date_time datetime NULL DEFAULT current_timestamp(),
+		            ccid int(28) NOT NULL,
+		            evaluator int(11) NOT NULL,
+		            step_id int(11) NOT NULL,
+		            PRIMARY KEY (id)
+		            ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4";
+			} else {
+				$query = "CREATE TABLE IF NOT EXISTS jos_emundus_" . $prid . "_" . $increment . " (
+		            id int(11) NOT NULL AUTO_INCREMENT,
+		            time_date datetime NULL DEFAULT current_timestamp(),
+		            fnum varchar(28) CHARSET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+		            user int(11) NULL,
+		            PRIMARY KEY (id),
+		            UNIQUE KEY fnum (fnum)
+		            ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4";
+			}
 			$this->db->setQuery($query);
 			$table_created = $this->db->execute();
-			//
 
 			if ($table_created) {
 				// Add constraints
-				$query = "ALTER TABLE jos_emundus_" . $prid . "_" . $increment . "
+
+				if ($type === 'default') {
+					$query = "ALTER TABLE jos_emundus_" . $prid . "_" . $increment . "
 		            ADD CONSTRAINT jos_emundus_" . $prid . "_" . $increment . "_ibfk_1
 		            FOREIGN KEY (user) REFERENCES jos_emundus_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE;";
-				$this->db->setQuery($query);
-				$this->db->execute();
+					$this->db->setQuery($query);
+					$this->db->execute();
 
-				$query = "ALTER TABLE jos_emundus_" . $prid . "_" . $increment . "
+					$query = "ALTER TABLE jos_emundus_" . $prid . "_" . $increment . "
 		            ADD CONSTRAINT jos_emundus_" . $prid . "_" . $increment . "_ibfk_2
 		            FOREIGN KEY (fnum) REFERENCES jos_emundus_campaign_candidature (fnum) ON DELETE CASCADE ON UPDATE CASCADE;";
-				$this->db->setQuery($query);
-				$this->db->execute();
+					$this->db->setQuery($query);
+					$this->db->execute();
 
-				$query = "CREATE INDEX user
+					$query = "CREATE INDEX user
             ON jos_emundus_" . $prid . "_" . $increment . " (user);";
-				$this->db->setQuery($query);
-				$this->db->execute();
-				//
+					$this->db->setQuery($query);
+					$this->db->execute();
+					//
+				}
 
 				// INSERT FABRIK LIST
 				$params = $this->h_fabrik->prepareListParams();
@@ -700,8 +716,8 @@ class EmundusModelFormbuilder extends JModelList
 
 					$query->clear();
 					$query->update($this->db->quoteName('#__fabrik_lists'))
-						->set('label = ' . $this->db->quote('FORM_' . $prid . '_' . $formid))
-						->set('access = ' . $this->db->quote($prid));
+						->set('label = ' . $this->db->quote('FORM_' . strtoupper($prid) . '_' . $formid))
+						->set('access = ' . $this->db->quote($access));
 					$query->where($this->db->quoteName('id') . ' = ' . $this->db->quote($list_id));
 					$this->db->setQuery($query);
 					$this->db->execute();
@@ -716,6 +732,7 @@ class EmundusModelFormbuilder extends JModelList
 		}
 		catch (Exception $e) {
 			$query_str = is_string($query) ? $query : $query->__toString();
+			var_dump($query_str);exit;
 			Log::add('component/com_emundus/models/formbuilder | Error when create a list ' . $prid . ' : ' . preg_replace("/[\r\n]/", " ", $query_str . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 		}
 
