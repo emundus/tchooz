@@ -131,10 +131,17 @@
                 </Multiselect>
               </div>
 
-              <div class="tw-mb-4 tw-flex tw-flex-col">
+              <div v-if="step.type === 'applicant'" class="tw-mb-4 tw-flex tw-flex-col">
                 <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_PROFILE') }}</label>
                 <select v-model="step.profile_id">
                   <option v-for="profile in applicantProfiles" :key="profile.id" :value="profile.id">{{ profile.label }}</option>
+                </select>
+              </div>
+
+              <div v-else class="tw-mb-4 tw-flex tw-flex-col">
+                <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_PROFILE') }}</label>
+                <select v-model="step.form_id">
+                  <option v-for="form in evaluationForms" :key="form.id" :value="form.id">{{ form.label }}</option>
                 </select>
               </div>
 
@@ -185,11 +192,14 @@ import workflowService from '@/services/workflow.js';
 import settingsService from '@/services/settings.js';
 import programmeService from '@/services/programme.js';
 import fileService from '@/services/file.js';
+import formService from '@/services/form.js';
 
 import Popover from '@/components/Popover.vue';
 import { DatePicker } from 'v-calendar';
 import Multiselect from "vue-multiselect";
 import errors from '@/mixins/errors.js';
+
+import { useGlobalStore } from '@/stores/global.js';
 
 export default {
   name: 'WorkflowEdit',
@@ -221,6 +231,7 @@ export default {
       sortByOptions: [],
       statuses : [],
       profiles: [],
+      evaluationForms: [],
       programsOptions: []
     }
   },
@@ -231,6 +242,7 @@ export default {
       });
     });
     this.getProfiles();
+    this.getEvaluationForms();
   },
   methods: {
     getWorkflow() {
@@ -298,6 +310,15 @@ export default {
         .catch(e => {
           console.log(e);
         });
+    },
+    getEvaluationForms() {
+      formService.getEvaluationForms().then((response) => {
+        if (response.status) {
+          this.evaluationForms = response.data.datas.map((form) => {
+            return { id: form.id, label: form.label[useGlobalStore().shortLang] };
+          });
+        }
+      });
     },
     addStep() {
       const newStep = {

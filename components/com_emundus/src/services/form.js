@@ -84,6 +84,16 @@ export default {
       };
     }
   },
+  async getEvaluationForms() {
+    try {
+      return await fetchClient.get( 'getallgrilleEval');
+    } catch (error) {
+      return {
+        status: false,
+        error: error
+      };
+    }
+  },
   async createForm(params) {
     try {
       return await fetchClient.post('createform', params);
