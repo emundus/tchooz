@@ -126,6 +126,11 @@ class EmundusModelWorkflow extends JModelList
 					if ($step['id'] < 1) {
 						unset($step['id']);
 					}
+					if ($step['type'] === 'evaluator') {
+						$step['profile_id'] = null;
+					} else {
+						$step['form_id'] = null;
+					}
 					$step_object = (object)$step;
 
 					try {
@@ -156,6 +161,7 @@ class EmundusModelWorkflow extends JModelList
 							}
 						}
 					} catch (Exception $e) {
+						var_dump($e->getMessage());exit;
 						Log::add('Error while adding workflow step: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
 						$error_occurred = true;
 					}
@@ -385,7 +391,7 @@ class EmundusModelWorkflow extends JModelList
 				->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_roles', 'eswsr') . ' ON ' . $this->db->quoteName('eswsr.step_id') . ' = ' . $this->db->quoteName('esws.id'))
 				->where('esws.id = ' . $id)
 				->group($this->db->quoteName('esws.id'));
-			
+
 			try {
 				$this->db->setQuery($query);
 				$data = $this->db->loadObject();
