@@ -1,10 +1,5 @@
-import { FetchClient } from './fetchClient.js'
-
-const client = new FetchClient('files')
-
 import {FetchClient} from './fetchClient.js';
 const fetchClient = new FetchClient('files');
-
 export default {
   async getFnums() {
     try {
