@@ -264,7 +264,7 @@ class EmundusModelWorkflow extends JModelList
 		return $nb_workflows;
 	}
 
-	public function getWorkflows($ids = [], $limit = 0, $page = 0) {
+	public function getWorkflows($ids = [], $limit = 0, $page = 0, $programs = []) {
 		$workflows = [];
 
 		$query = $this->db->getQuery(true);
@@ -276,6 +276,10 @@ class EmundusModelWorkflow extends JModelList
 
 		if (!empty($ids)) {
 			$query->where($this->db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
+		}
+
+		if (!empty($programs)) {
+			$query->where($this->db->quoteName('eswp.program_id') . ' IN (' . implode(',', $programs) . ')');
 		}
 
 		$query->group('esw.id');

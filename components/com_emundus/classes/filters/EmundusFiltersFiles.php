@@ -180,14 +180,33 @@ class EmundusFiltersFiles extends EmundusFilters
 				}
 			}
 
-			// profiles from workflows
-			require_once(JPATH_SITE . '/components/com_emundus/models/campaign.php');
-			$m_campaign = new EmundusModelCampaign();
-			$workflows = $m_campaign->getWorkflows($campaign_ids);
+			$query->clear()
+				->select('esp.id')
+				->from($db->quoteName('#__emundus_setup_programmes', 'esp'))
+				->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.training = esp.code')
+				->where('esc.id IN (' . implode(',', $campaign_ids) . ')');
 
-			foreach ($workflows as $workflow) {
-				if (!in_array($workflow->profile_id, $profile_ids)) {
-					$profile_ids[] = $workflow->profile_id;
+			try {
+				$db->setQuery($query);
+				$programs = $db->loadColumn();
+			} catch (Exception $e) {
+				Log::add('Failed to get programmes associated to campaign ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
+			}
+
+			if (!empty($programs)) {
+				// profiles from workflows
+				require_once(JPATH_SITE . '/components/com_emundus/models/workflow.php');
+				$m_workflow = new EmundusModelWorkflow();
+				$workflows = $m_workflow->getWorkflows([], 0, 0, $programs);
+
+				foreach ($workflows as $workflow) {
+					$data = $m_workflow->getWorkflow($workflow->id);
+
+					foreach($data['steps'] as $step) {
+						if (!empty($step->profile_id) && !in_array($step->profile_id, $profile_ids)) {
+							$profile_ids[] = $step->profile_id;
+						}
+					}
 				}
 			}
 		}
