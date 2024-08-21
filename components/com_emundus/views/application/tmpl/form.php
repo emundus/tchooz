@@ -73,7 +73,7 @@ $user       = $this->userid;
                     >
                     </div>
                 </div>
-                <div class="em-ml-24 ">
+                <div class="tw-ml-4">
                     <p class="em-font-weight-500">
 						<?php echo $this->applicant->lastname . ' ' . $this->applicant->firstname; ?>
                     </p>

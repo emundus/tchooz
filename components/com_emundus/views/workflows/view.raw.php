@@ -31,7 +31,11 @@ class EmundusViewWorkflows extends JViewLegacy
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($this->user->id)) {
 			require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+			require_once(JPATH_ROOT . '/components/com_emundus/models/users.php');
 			$this->model = new EmundusModelWorkflow();
+			$m_user     = new EmundusModelUsers();
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
 
 			$jinput = $app->input;
 			$layout = $jinput->getString('layout', null);
@@ -40,6 +44,18 @@ class EmundusViewWorkflows extends JViewLegacy
 			} else {
 				$step_id = $jinput->getInt('step_id', 0);
 				$this->fnum = $jinput->getString('fnum', '');
+
+				$query->clear()
+					->select('applicant_id')
+					->from('#__emundus_campaign_candidature')
+					->where('fnum LIKE ' . $db->quote($this->fnum));
+				$db->setQuery($query);
+				$applicant_id = $db->loadResult();
+
+				$this->applicant  = $m_user->getUserById($applicant_id)[0];
+				if (!isset($this->applicant->profile_picture) || empty($this->applicant->profile_picture)) {
+					$this->applicant->profile_picture = $m_user->getIdentityPhoto($this->fnum, $applicant_id);
+				}
 
 				if (!empty($step_id)) {
 					$this->step = $this->model->getStepData($step_id);
