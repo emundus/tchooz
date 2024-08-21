@@ -2641,100 +2641,33 @@ class EmundusModelCampaign extends JModelList
 	 */
 	public function getAllCampaignWorkflows($campaign_id)
 	{
-		$workflows = [];
+		$steps = [];
 
 		if (!empty($campaign_id)) {
-			$excluded_entry_statuses        = [];
-			$campaign_workflows_by_campaign = [];
-			$query                          = $this->_db->getQuery(true);
-			$query->select('DISTINCT ecw.*, GROUP_CONCAT(ecw_status.entry_status separator ",") as entry_status')
-				->from('#__emundus_campaign_workflow as ecw')
-				->leftJoin('#__emundus_campaign_workflow_repeat_campaign AS ecw_camp ON ecw_camp.parent_id = ecw.id')
-				->leftJoin('#__emundus_campaign_workflow_repeat_entry_status AS ecw_status ON ecw_status.parent_id = ecw.id')
-				->where('ecw_camp.campaign = ' . $this->_db->quote($campaign_id))
-				->group('ecw.profile');
-			$this->_db->setQuery($query);
+			$program = $this->getProgrammeByCampaignID($campaign_id);
 
-			try {
-				$campaign_workflows_by_campaign = $this->_db->loadObjectList();
-				foreach ($campaign_workflows_by_campaign as $key => $wf) {
-					if (empty($wf->id)) {
-						unset($campaign_workflows_by_campaign[$key]);
-					}
-					else {
-						$excluded_entry_statuses = array_merge(explode(',', $wf->entry_status), $excluded_entry_statuses);
-					}
-				}
-			}
-			catch (Exception $e) {
-				Log::add('[getAllCampaignWorkflows] Error getting current campaign workflow in component/com_emundus/models/campaign: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
-			}
+			if (!empty($program['id'])) {
+				require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+				$m_workflow = new EmundusModelWorkflow();
 
-			$campaign_workflows_by_campaign_program = [];
-			$query->clear()
-				->select('DISTINCT ecw.*, GROUP_CONCAT(ecw_status.entry_status separator ",") as entry_status')
-				->from($this->_db->quoteName('#__emundus_campaign_workflow', 'ecw'))
-				->leftJoin($this->_db->quoteName('#__emundus_campaign_workflow_repeat_entry_status', 'ecw_status') . ' ON ' . $this->_db->quoteName('ecw_status.parent_id') . ' = ' . $this->_db->quoteName('ecw.id'))
-				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->quoteName('esc.id') . ' = ' . $this->_db->quote($campaign_id))
-				->leftJoin($this->_db->quoteName('#__emundus_campaign_workflow_repeat_programs', 'ecwrp') . ' ON ' . $this->_db->quoteName('ecwrp.parent_id') . ' = ' . $this->_db->quoteName('ecw.id'))
-				->where($this->_db->quoteName('ecwrp.programs') . ' = ' . $this->_db->quoteName('esc.training'));
+				$workflows = $m_workflow->getWorkflows([], 0, 0, [$program['id']]);
 
-			if (!empty($excluded_entry_statuses)) {
-				$query->andWhere('ecw_status.entry_status NOT IN (' . implode(',', $excluded_entry_statuses) . ')');
-			}
+				if (!empty($workflows)) {
+					foreach($workflows as $workflow) {
+						$wf_data = $m_workflow->getWorkflow($workflow->id);
 
-			$query->group(['ecwrp.programs', 'ecw.profile']);
-			$this->_db->setQuery($query);
-
-			try {
-				$campaign_workflows_by_campaign_program = $this->_db->loadObjectList();
-				foreach ($campaign_workflows_by_campaign_program as $key => $wf) {
-					if (empty($wf->id)) {
-						unset($campaign_workflows_by_campaign_program[$key]);
-					}
-					else {
-						$excluded_entry_statuses = array_merge(explode(',', $wf->entry_status), $excluded_entry_statuses);
+						foreach ($wf_data['steps'] as $step) {
+							if ($step->type === 'applicant') {
+								$step->profile = $step->profile_id;
+								$steps[] = $step;
+							}
+						}
 					}
 				}
 			}
-			catch (Exception $e) {
-				Log::add('[getAllCampaignWorkflows] Error getting current campaign workflow in component/com_emundus/models/campaign: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
-			}
-
-			$default_campaign_workflows = [];
-			$query->clear()
-				->select('DISTINCT ecw.*, GROUP_CONCAT(ecw_status.entry_status separator ",") as entry_status')
-				->from('#__emundus_campaign_workflow as ecw')
-				->leftJoin('#__emundus_campaign_workflow_repeat_entry_status AS ecw_status ON ecw_status.parent_id = ecw.id')
-				->where('ecw.id NOT IN (SELECT parent_id
-                            FROM jos_emundus_campaign_workflow_repeat_programs
-                            UNION
-                            SELECT parent_id
-                            FROM jos_emundus_campaign_workflow_repeat_campaign)');
-
-			if (!empty($excluded_entry_statuses)) {
-				$query->andWhere('ecw_status.entry_status NOT IN (' . implode(',', $excluded_entry_statuses) . ')');
-			}
-
-			$query->group('ecw.profile');
-			$this->_db->setQuery($query);
-
-			try {
-				$default_campaign_workflows = $this->_db->loadObjectList();
-				foreach ($default_campaign_workflows as $key => $wf) {
-					if (empty($wf->id)) {
-						unset($default_campaign_workflows[$key]);
-					}
-				}
-			}
-			catch (Exception $e) {
-				Log::add('[getAllCampaignWorkflows] Error getting current campaign workflow in component/com_emundus/models/campaign: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
-			}
-
-			$workflows = array_merge($campaign_workflows_by_campaign, $campaign_workflows_by_campaign_program, $default_campaign_workflows);
 		}
 
-		return $workflows;
+		return $steps;
 	}
 
 	public function pinCampaign($cid): bool
