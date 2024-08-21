@@ -631,9 +631,10 @@ class EmundusModelFormbuilder extends JModelList
 			if ($type === 'eval') {
 				$query = "CREATE TABLE IF NOT EXISTS jos_emundus_" . $prid . "_" . $increment . " (
 		            id int(11) NOT NULL AUTO_INCREMENT,
-		            date_time datetime NULL DEFAULT current_timestamp(),
+		            time_date datetime NULL DEFAULT current_timestamp(),
 		            ccid int(28) NOT NULL,
 		            evaluator int(11) NOT NULL,
+		            updated_by int(11) NOT NULL,
 		            step_id int(11) NOT NULL,
 		            PRIMARY KEY (id)
 		            ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4";

@@ -161,7 +161,6 @@ class EmundusModelWorkflow extends JModelList
 							}
 						}
 					} catch (Exception $e) {
-						var_dump($e->getMessage());exit;
 						Log::add('Error while adding workflow step: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
 						$error_occurred = true;
 					}

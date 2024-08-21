@@ -46,19 +46,29 @@ class EmundusViewWorkflows extends JViewLegacy
 				$this->fnum = $jinput->getString('fnum', '');
 
 				$query->clear()
-					->select('applicant_id')
+					->select('applicant_id, id')
 					->from('#__emundus_campaign_candidature')
 					->where('fnum LIKE ' . $db->quote($this->fnum));
 				$db->setQuery($query);
-				$applicant_id = $db->loadResult();
+				$data = $db->loadAssoc();
 
-				$this->applicant  = $m_user->getUserById($applicant_id)[0];
+				$this->ccid = $data['id'];
+				$this->applicant  = $m_user->getUserById($data['applicant_id'])[0];
 				if (!isset($this->applicant->profile_picture) || empty($this->applicant->profile_picture)) {
-					$this->applicant->profile_picture = $m_user->getIdentityPhoto($this->fnum, $applicant_id);
+					$this->applicant->profile_picture = $m_user->getIdentityPhoto($this->fnum, $data['applicant_id']);
 				}
 
 				if (!empty($step_id)) {
 					$this->step = $this->model->getStepData($step_id);
+
+					$query->clear()
+						->select('jfl.db_table_name')
+						->from($db->quoteName('#__fabrik_lists', 'jfl'))
+						->leftJoin($db->quoteName('#__emundus_setup_workflows_steps', 'esws') . 'ON esws.form_id = jfl.form_id')
+						->where('esws.id = ' . $step_id);
+					
+					$db->setQuery($query);
+					$this->step->db_table_name = $db->loadResult();
 				} else {
 					$this->step = null;
 				}

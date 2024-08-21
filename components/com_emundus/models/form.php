@@ -1207,10 +1207,11 @@ class EmundusModelForm extends JModelList
 			{
 				// Create hidden group
 				$m_formbuilder->createElement('id', $group['group_id'], 'internalid', 'id', '', 1);
-				$m_formbuilder->createElement('date_time', $group['group_id'], 'jdate', 'time date', '', 1);
-				$m_formbuilder->createElement('ccid', $group['group_id'], 'databasejoin', 'Identifiant du dossier', '', 1, 1, 1, 1, 0, 44);
-				$m_formbuilder->createElement('evaluator', $group['group_id'], 'databasejoin', 'user', '{$my->id}', 1);
-				$m_formbuilder->createElement('updated_by', $group['group_id'], 'databasejoin', 'user', '{$my->id}}', 1);
+				$m_formbuilder->createElement('time_date', $group['group_id'], 'jdate', 'time date', '', 1);
+				$m_formbuilder->createElement('ccid', $group['group_id'], 'field', 'Identifiant du dossier', '', 1, 1, 1, 1, 0, 44);
+				$m_formbuilder->createElement('step_id', $group['group_id'], 'field', 'Phase', '', 1, 1, 1, 1, 0, 44);
+				$m_formbuilder->createElement('evaluator', $group['group_id'], 'user', 'user', '{$my->id}', 1);
+				$m_formbuilder->createElement('updated_by', $group['group_id'], 'user', 'user', '{$my->id}}', 1);
 			} else {
 				Log::add('component/com_emundus/models/form | Error when create hidden group for evaluation form', Log::WARNING, 'com_emundus.error');
 				throw new Exception('Error when create hidden group for evaluation form');
