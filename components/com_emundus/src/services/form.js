@@ -19,9 +19,9 @@ export default {
   },
   async getFilesByForm(id) {
     try {
-      const response = await client().get(baseUrl + '&task=getfilesbyform&pid=' + id);
-
-      return response;
+      return await fetchClient.get('getfilesbyform',{
+        pid: id
+      });
     } catch (error) {
       return {
         status: false,
@@ -31,14 +31,9 @@ export default {
   },
   async getSubmissionPage(id) {
     try {
-      const response = await client().get(
-        baseUrl + '&task=getsubmittionpage',
-        {
-          params: {
-            prid: id
-          }
-        }
-      );
+      return await fetchClient.get('getsubmittionpage', {
+        prid: id
+      });
 
       return response;
     } catch (error) {

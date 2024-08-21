@@ -1039,9 +1039,6 @@ video {
 .fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.day.selected {
                                 border-radius: 99px;
                             }
-.fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.day.\!selected {
-                                border-radius: 99px !important;
-                            }
 .fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.today:after {
                                 content: unset;
                             }
@@ -2344,6 +2341,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .em-attachmentList .em-fieldset-attachment-table .em-attachment-dropzone .dz-default.dz-message {
                     margin-top: var(--em-spacing-3);
                 }
+.tw-fixed {
+    position: fixed;
+}
 .tw-absolute {
     position: absolute;
 }
@@ -2352,6 +2352,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-sticky {
     position: sticky;
+}
+.tw--left-\[24px\] {
+    left: -24px;
 }
 .tw-bottom-0 {
     bottom: 0px;
@@ -2365,6 +2368,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-left-\[-12px\] {
     left: -12px;
 }
+.tw-right-0 {
+    right: 0px;
+}
 .tw-right-3 {
     right: var(--em-spacing-3);
 }
@@ -2377,8 +2383,17 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-top-0 {
     top: 0px;
 }
+.tw-top-1 {
+    top: var(--em-spacing-1);
+}
 .tw-top-1\/2 {
     top: 50%;
+}
+.tw-top-28 {
+    top: 7rem;
+}
+.tw-top-8 {
+    top: var(--em-spacing-8);
 }
 .tw-top-\[14px\] {
     top: 14px;
@@ -2971,6 +2986,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .\!tw-mb-1 {
     margin-bottom: var(--em-spacing-1) !important;
+}
+.\!tw-mb-3 {
+    margin-bottom: var(--em-spacing-3) !important;
 }
 .\!tw-ml-0 {
     margin-left: 0px !important;
@@ -3876,6 +3894,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-h-64 {
     height: 16rem;
 }
+.tw-h-8 {
+    height: var(--em-spacing-8);
+}
 .tw-h-\[16px\] {
     height: 16px;
 }
@@ -3887,6 +3908,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-h-\[24px\] {
     height: 24px;
+}
+.tw-h-fit {
+    height: -moz-fit-content;
+    height: fit-content;
 }
 .tw-h-form {
     height: var(--em-form-height);
@@ -4209,6 +4234,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-transform {
     transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
+.\!tw-cursor-not-allowed {
+    cursor: not-allowed !important;
+}
 .tw-cursor-copy {
     cursor: copy;
 }
@@ -4269,6 +4297,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-grid-cols-none {
     grid-template-columns: none;
 }
+.\!tw-flex-row {
+    flex-direction: row !important;
+}
 .tw-flex-row {
     flex-direction: row;
 }
@@ -4313,6 +4344,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-justify-around {
     justify-content: space-around;
+}
+.tw-justify-items-start {
+    justify-items: start;
 }
 .tw-gap-1 {
     gap: var(--em-spacing-1);
@@ -4390,6 +4424,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-rounded-md {
     border-radius: 0.375rem;
 }
+.tw-rounded-l-lg {
+    border-top-left-radius: 0.5rem;
+    border-bottom-left-radius: 0.5rem;
+}
 .tw-rounded-t-lg {
     border-top-left-radius: 0.5rem;
     border-top-right-radius: 0.5rem;
@@ -4397,8 +4435,14 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-border {
     border-width: 1px;
 }
+.tw-border-2 {
+    border-width: 2px;
+}
 .tw-border-b {
     border-bottom-width: 1px;
+}
+.tw-border-l-4 {
+    border-left-width: 4px;
 }
 .tw-border-r {
     border-right-width: 1px;
@@ -4422,6 +4466,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-border-gray-300 {
     --tw-border-opacity: 1;
     border-color: rgb(209 213 219 / var(--tw-border-opacity));
+}
+.tw-border-main-500 {
+    border-color: var(--main-500);
 }
 .tw-border-neutral-300 {
     border-color: var(--neutral-300);
@@ -4449,6 +4496,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
     --tw-bg-opacity: 1;
     background-color: rgb(254 246 238 / var(--tw-bg-opacity));
 }
+.tw-bg-\[\#f8f8f8\] {
+    --tw-bg-opacity: 1;
+    background-color: rgb(248 248 248 / var(--tw-bg-opacity));
+}
 .tw-bg-blue-100 {
     background-color: var(--blue-100);
 }
@@ -4468,6 +4519,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-bg-main-50 {
     background-color: var(--main-50);
+}
+.tw-bg-main-500 {
+    background-color: var(--main-500);
 }
 .tw-bg-main-900 {
     background-color: var(--main-900);
@@ -5355,6 +5409,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-text-main-400 {
     color: var(--main-400);
 }
+.tw-text-neutral-300 {
+    color: var(--neutral-300);
+}
 .tw-text-neutral-500 {
     color: var(--neutral-500);
 }
@@ -5398,9 +5455,17 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-opacity-100 {
     opacity: 1;
 }
+.tw-opacity-50 {
+    opacity: 0.5;
+}
 .tw-shadow {
     --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
     --tw-shadow-colored: 0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+.tw-shadow-\[0_4px_3px_0px_rgba\(0\,0\,0\,0\.1\)\] {
+    --tw-shadow: 0 4px 3px 0px rgba(0,0,0,0.1);
+    --tw-shadow-colored: 0 4px 3px 0px var(--tw-shadow-color);
     box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 .tw-shadow-md {
@@ -5425,6 +5490,12 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-duration-300 {
     transition-duration: 300ms;
+}
+.tw-ease-in-out {
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+.tw-ease-out {
+    transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
 }
 h1 {
     color: var(--em-default-title-color-1);
@@ -6197,9 +6268,6 @@ button.swal2-cancel.goback-btn:hover,
 .label-border-black {
         border-color: var(--em-black);
     }
-.\[-a-zA-Z\:0-9_\.\] {
-    -a-z-a--z: 0-9 .;
-}
 @font-face {
     font-family: 'Material Icons';
     font-style: normal;
@@ -6584,6 +6652,9 @@ small {
 .hover\:tw-text-white:hover {
     --tw-text-opacity: 1;
     color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+.tw-group:hover .group-hover\:tw-opacity-100 {
+    opacity: 1;
 }
 :is([dir="rtl"] .rtl\:tw-text-right) {
     text-align: right;

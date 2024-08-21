@@ -1,7 +1,5 @@
 <?php
 /**
- * eMundus Campaign model
- *
  * @package        Joomla
  * @subpackage     eMundus
  * @link           http://www.emundus.fr
@@ -10,26 +8,54 @@
  * @author         Benjamin Rivalland
  */
 
-// No direct access
-
-defined('_JEXEC') or die('Restricted access');
-
-jimport('joomla.application.component.model');
+// phpcs:disable PSR1.Files.SideEffects
+\defined('_JEXEC') or die;
+// phpcs:enable PSR1.Files.SideEffects
 
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Plugin\PluginHelper;
 
 require_once(JPATH_SITE. '/components/com_emundus/helpers/menu.php');
 
-class EmundusModelCampaign extends JModelList
+/**
+ * Emundus Component Campaign Model
+ *
+ * @since  1.0.0
+ */
+class EmundusModelCampaign extends ListModel
 {
+	/**
+	 * @var \Joomla\CMS\Application\CMSApplication|\Joomla\CMS\Application\CMSApplicationInterface|null
+	 * @since version 2.0.0
+	 */
 	private $app;
+
+	/**
+	 * @var mixed
+	 * @since version 1.0.0
+	 */
 	private $_em_user;
+
+	/**
+	 * @var \Joomla\CMS\User\User|JUser|mixed|null
+	 * @since version 1.0.0
+	 */
 	private $_user;
+
+	/**
+	 * @var JDatabaseDriver|\Joomla\Database\DatabaseDriver|null
+	 * @since version 1.0.0
+	 */
 	protected $_db;
+
+	/**
+	 * @var \Joomla\Registry\Registry
+	 * @since version 2.0.0
+	 */
 	private $config;
 
 	function __construct()
@@ -47,7 +73,7 @@ class EmundusModelCampaign extends JModelList
 
 		$this->app = Factory::getApplication();
 
-		$this->_db      = Factory::getDbo();
+		$this->_db      = $this->getDatabase();
 		$this->_em_user = $this->app->getSession()->get('emundusUser');
 		$this->_user    = $this->app->getIdentity();
 		$this->config   = $this->app->getConfig();
@@ -3468,5 +3494,60 @@ class EmundusModelCampaign extends JModelList
 		}
 
 		return $details_menu;
+	}
+
+	/**
+	 * Get profiles ids from campaign ids
+	 *
+	 * @param $campaign_ids
+	 *
+	 * @return array
+	 *
+	 * @since version 1.40.0
+	 */
+	function getProfilesFromCampaignId($campaign_ids) {
+		$profile_ids = [];
+
+		if (!empty($campaign_ids)) {
+			$query = $this->_db->getQuery(true);
+
+			$query->select('DISTINCT profile_id')
+				->from($this->_db->quoteName('#__emundus_setup_campaigns'))
+				->where($this->_db->quoteName('id') . ' IN (' . implode(',', $this->_db->quote($campaign_ids)) . ')');
+
+			$this->_db->setQuery($query);
+			$profiles = $this->_db->loadColumn();
+			foreach ($profiles as $profile)
+			{
+				if (!in_array($profile, $profile_ids))
+				{
+					$profile_ids[] = $profile;
+				}
+			}
+
+			// profiles from workflows
+			$workflows  = $this->getWorkflows();
+
+			if (!empty($workflows)) {
+				$programme_codes = [];
+				foreach ($campaign_ids as $cid) {
+					$programme = $this->getProgrammeByCampaignID($cid);
+
+					if (!in_array($programme['code'], $programme_codes)) {
+						$programme_codes[] = $programme->code;
+					}
+				}
+
+				foreach ($workflows as $workflow)
+				{
+					if (!in_array($workflow->profile, $profile_ids) && (!empty(array_intersect($workflow->campaigns, $campaign_ids)) || !empty(array_intersect($workflow->programs, $programme_codes))))
+					{
+						$profile_ids[] = $workflow->profile;
+					}
+				}
+			}
+		}
+
+		return $profile_ids;
 	}
 }

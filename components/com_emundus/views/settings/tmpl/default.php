@@ -475,7 +475,6 @@ $hash = EmundusHelperCache::getCurrentGitHash();
 ?>
 
 <style link="media/com_emundus_vue/app_emundus.css?<?php echo $hash ?>"></style>
-<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
 
 <div id="em-component-vue"
      component="settings"
@@ -487,4 +486,4 @@ $hash = EmundusHelperCache::getCurrentGitHash();
 ></div>
 
 <script src="media/com_emundus/js/settings.js?<?php echo $hash ?>"></script>
-<script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
+<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>

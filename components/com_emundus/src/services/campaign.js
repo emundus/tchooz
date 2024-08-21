@@ -17,9 +17,7 @@ export default {
     const task = create ? 'createdocument' : 'updatedocument';
 
     try {
-      const response = await client.post(task, params);
-
-      return response.data;
+      return await client.post(task, params);
     } catch (e) {
       return {
         status: false, msg: e.message
@@ -133,9 +131,7 @@ export default {
     }
 
     try {
-      const response = await client.get(`getcampaignmoreformurl&cid=${cid}`);
-
-      return response.data;
+      return await client.get(`getcampaignmoreformurl&cid=${cid}`);
     } catch (e) {
       return {
         status: false, msg: e.message
@@ -145,8 +141,7 @@ export default {
 
   async getAllItemsAlias(campaignId) {
     try {
-      const response = await client.get('getallitemsalias&campaign_id=' + campaignId);
-      return response.data;
+      return await client.get('getallitemsalias&campaign_id=' + campaignId);
     } catch (e) {
       return {
         status: false,
@@ -204,9 +199,9 @@ export default {
       };
     }
   },
-  reorderDropfileDocuments(orderedDocuments) {
+  async reorderDropfileDocuments(orderedDocuments) {
     try {
-      return client.post('updateorderdropfiledocuments', {documents: JSON.stringify(orderedDocuments)});
+      return await client.post('updateorderdropfiledocuments', {documents: JSON.stringify(orderedDocuments)});
     } catch (e) {
       return {
         status: false,

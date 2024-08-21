@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\CMS\Language\Text;
 
 use Joomla\CMS\MVC\Controller\BaseController;
+use Joomla\CMS\Plugin\PluginHelper;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -137,7 +138,7 @@ class EmundusControllerFiles extends BaseController
 
 	public function applyfilters()
 	{
-		$response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
 
 		if (EmundusHelperAccess::asAccessAction(1, 'r', JFactory::getUser()->id)) {
 
@@ -160,10 +161,10 @@ class EmundusControllerFiles extends BaseController
 				}
 				$session->set('adv_cols', $filter_fabrik_element_ids);
 				$session->set('last-filters-use-advanced', true);
-				$response = ['status' => true, 'msg' => JText::_('FILTERS_APPLIED')];
+				$response = ['status' => true, 'msg' => Text::_('FILTERS_APPLIED')];
 			}
 			else {
-				$response['msg'] = JText::_('MISSING_PARAMS');
+				$response['msg'] = Text::_('MISSING_PARAMS');
 			}
 		}
 
@@ -387,7 +388,7 @@ class EmundusControllerFiles extends BaseController
 
 	public function getsavedfilters()
 	{
-		$response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
 		$user     = JFactory::getUser();
 
 		if (!empty($user->id)) {
@@ -405,7 +406,7 @@ class EmundusControllerFiles extends BaseController
 
 	public function updatefilter()
 	{
-		$response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
 		$user     = JFactory::getUser();
 
 		if (!empty($user->id)) {
@@ -420,7 +421,7 @@ class EmundusControllerFiles extends BaseController
 				$response = ['status' => $updated, 'msg' => 'FILTER_UPDATED'];
 			}
 			else {
-				$response['msg'] = JText::_('MISSING_PARAMS');
+				$response['msg'] = Text::_('MISSING_PARAMS');
 			}
 		}
 
@@ -472,7 +473,7 @@ class EmundusControllerFiles extends BaseController
 	{
 		try {
 			$elements = @EmundusHelperFiles::getElements();
-			echo json_encode((object) (array('status' => true, 'default' => JText::_('COM_EMUNDUS_PLEASE_SELECT'), 'defaulttrash' => JText::_('REMOVE_SEARCH_ELEMENT'), 'options' => $elements)));
+			echo json_encode((object) (array('status' => true, 'default' => Text::_('COM_EMUNDUS_PLEASE_SELECT'), 'defaulttrash' => Text::_('REMOVE_SEARCH_ELEMENT'), 'options' => $elements)));
 			exit;
 		}
 		catch (Exception $e) {
@@ -526,7 +527,7 @@ class EmundusControllerFiles extends BaseController
 
 			$html = $h_files->setSearchBox($element[$id], '', $tab_name . '.' . $element[$id]->element_name, $index);
 
-			echo json_encode((object) (array('status' => true, 'default' => JText::_('COM_EMUNDUS_PLEASE_SELECT'), 'defaulttrash' => JText::_('REMOVE_SEARCH_ELEMENT'), 'html' => $html)));
+			echo json_encode((object) (array('status' => true, 'default' => Text::_('COM_EMUNDUS_PLEASE_SELECT'), 'defaulttrash' => Text::_('REMOVE_SEARCH_ELEMENT'), 'html' => $html)));
 			exit;
 		}
 		catch (Exception $e) {
@@ -556,58 +557,72 @@ class EmundusControllerFiles extends BaseController
 
 	/**
 	 * Add a comment on a file.
-	 * @since 6.0
+	 *
+	 * @since version 1.0.0
 	 */
-	public function addcomment()
-	{
+	public function addcomment() {
+		$response = ['status' => false, 'code' => 403, 'msg' => Text::_('ACCESS_DENIED')];
 
-		$user    = JFactory::getUser()->id;
-		$fnums   = $this->input->getString('fnums', null);
-		$title   = $this->input->getString('title', '');
-		$comment = $this->input->getString('comment', null);
+		if (EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id)) {
+			$fnums  = $this->input->getString('fnums', null);
+			$title  = $this->input->getString('title', '');
+			$comment = $this->input->getString('comment', null);
 
-		$fnums         = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
-		$fnumErrorList = [];
-		$m_application = $this->getModel('Application');
+			if (!empty($comment) && !empty($fnums)) {
+				$fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
+				$fnumErrorList = [];
 
-		foreach ($fnums as $fnum) {
-			if (EmundusHelperAccess::asAccessAction(10, 'c', $user, $fnum)) {
-				$aid             = intval(substr($fnum, 21, 7));
-				$comment_content = array(
-					'applicant_id' => $aid,
-					'user_id'      => $user,
-					'reason'       => $title,
-					'comment_body' => $comment,
-					'fnum'         => $fnum,
-					'status_from'  => -1,
-					'status_to'    => -1
-				);
-
-				JPluginHelper::importPlugin('emundus', 'custom_event_handler');
-
-				$this->app->triggerEvent('onBeforeCommentAdd', [$comment_content]);
-				$this->app->triggerEvent('onCallEventHandler', ['onBeforeCommentAdd', ['comment' => $comment_content]]);
-
-				$res = $m_application->addComment((array('applicant_id' => $aid, 'user_id' => $user, 'reason' => $title, 'comment_body' => $comment, 'fnum' => $fnum, 'status_from' => -1, 'status_to' => -1,)));
-				if (empty($res)) {
-					$fnumErrorList[] = $fnum;
+				if (!class_exists('EmundusModelComments')) {
+					require_once (JPATH_ROOT . '/components/com_emundus/models/comments.php');
 				}
-				else {
-					$this->app->triggerEvent('onAfterCommentAdd', [$comment_content]);
-					$this->app->triggerEvent('onCallEventHandler', ['onAfterCommentAdd', ['comment' => $comment_content]]);
+				$m_comments = new EmundusModelComments();
+
+				foreach ($fnums as $fnum) {
+					if (EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $fnum)) {
+						$aid = intval(substr($fnum, 21, 7));
+						$comment_content = array(
+							'applicant_id' => $aid,
+							'user_id' => $this->_user->id,
+							'reason' => $title,
+							'comment_body' => $comment,
+							'fnum' => $fnum,
+							'status_from' => -1,
+							'status_to' => -1
+						);
+
+						PluginHelper::importPlugin('emundus', 'custom_event_handler');
+						$this->app->triggerEvent('onBeforeCommentAdd', [$comment_content]);
+						$this->app->triggerEvent('onCallEventHandler', ['onBeforeCommentAdd', ['comment' => $comment_content]]);
+
+						$ccid = EmundusHelperFiles::getIdFromFnum($fnum);
+						$new_comment_id = $m_comments->addComment($ccid, $comment_content, [], 0, 0, $this->_user->id);
+						if (empty($new_comment_id)) {
+							$fnumErrorList[] = $fnum;
+						}
+					} else {
+						$fnumErrorList[] = $fnum;
+					}
+				}
+
+				if (empty($fnumErrorList)) {
+					$response['status'] = true;
+					$response['code'] = 200;
+					$response['msg'] = Text::_('COM_EMUNDUS_COMMENTS_SUCCESS');
+					$response['id'] = $new_comment_id;
+				} else {
+					$response['code'] = 500;
+					$response['msg'] = Text::_('COM_EMUNDUS_ERROR') . implode(', ', $fnumErrorList);
 				}
 			}
-			else {
-				$fnumErrorList[] = $fnum;
-			}
 		}
 
-		if (empty($fnumErrorList)) {
-			echo json_encode((object) (array('status' => true, 'msg' => JText::_('COM_EMUNDUS_COMMENTS_SUCCESS'), 'id' => $res)));
+		if ($response['code'] === 403) {
+			header('HTTP/1.1 403 Forbidden');
+			echo $response['msg'];
+			exit;
 		}
-		else {
-			echo json_encode((object) (array('status' => false, 'msg' => JText::_('COM_EMUNDUS_ERROR') . implode(', ', $fnumErrorList))));
-		}
+
+		echo json_encode($response);
 		exit;
 	}
 
@@ -617,7 +632,7 @@ class EmundusControllerFiles extends BaseController
      */
 	public function gettags()
 	{
-		$response = ['status' => false, 'code' => 403, 'msg' => JText::_('ACCESS_DENIED'), 'tags' => null];
+		$response = ['status' => false, 'code' => 403, 'msg' => Text::_('ACCESS_DENIED'), 'tags' => null];
 		$user     = JFactory::getUser();
 
 		if (EmundusHelperAccess::asAccessAction(14, 'c', $user->id)) {
@@ -627,16 +642,16 @@ class EmundusControllerFiles extends BaseController
 			if (!empty($response['tags'])) {
 				$response['code']       = 200;
 				$response['status']     = true;
-				$response['msg']        = JText::_('SUCCESS');
-				$response['tag']        = JText::_('COM_EMUNDUS_TAGS');
-				$response['select_tag'] = JText::_('COM_EMUNDUS_FILES_PLEASE_SELECT_TAG');
+				$response['msg']        = Text::_('SUCCESS');
+				$response['tag']        = Text::_('COM_EMUNDUS_TAGS');
+				$response['select_tag'] = Text::_('COM_EMUNDUS_FILES_PLEASE_SELECT_TAG');
 
 				$params                         = JComponentHelper::getParams('com_emundus');
 				$response['show_tags_category'] = $params->get('com_emundus_show_tags_category', 0);
 			}
 			else {
 				$response['code'] = 500;
-				$response['msg']  = JText::_('FAIL');
+				$response['msg']  = Text::_('FAIL');
 			}
 		}
 
@@ -650,7 +665,7 @@ class EmundusControllerFiles extends BaseController
 	 */
 	public function tagfile()
 	{
-		$response = ['status' => false, 'code' => 403, 'msg' => JText::_('BAD_REQUEST')];
+		$response = ['status' => false, 'code' => 403, 'msg' => Text::_('BAD_REQUEST')];
 
 		$fnums = $this->input->getString('fnums', null);
 		$tag   = $this->input->get('tag', null);
@@ -671,12 +686,12 @@ class EmundusControllerFiles extends BaseController
 
 				if ($response['status']) {
 					$response['code']   = 200;
-					$response['msg']    = JText::_('COM_EMUNDUS_TAGS_SUCCESS');
+					$response['msg']    = Text::_('COM_EMUNDUS_TAGS_SUCCESS');
 					$response['tagged'] = $validFnums;
 				}
 				else {
 					$response['code'] = 500;
-					$response['msg']  = JText::_('FAIL');
+					$response['msg']  = Text::_('FAIL');
 				}
 			}
 		}
@@ -726,7 +741,7 @@ class EmundusControllerFiles extends BaseController
 		unset($fnums);
 		unset($tags);
 
-		echo json_encode((object) (array('status' => true, 'msg' => JText::_('COM_EMUNDUS_TAGS_DELETE_SUCCESS'))));
+		echo json_encode((object) (array('status' => true, 'msg' => Text::_('COM_EMUNDUS_TAGS_DELETE_SUCCESS'))));
 		exit;
 	}
 
@@ -769,10 +784,10 @@ class EmundusControllerFiles extends BaseController
 			}
 
 			if ($res !== false) {
-				$msg = JText::_('COM_EMUNDUS_ACCESS_SHARE_SUCCESS');
+				$msg = Text::_('COM_EMUNDUS_ACCESS_SHARE_SUCCESS');
 			}
 			else {
-				$msg = JText::_('COM_EMUNDUS_ACCESS_SHARE_ERROR');
+				$msg = Text::_('COM_EMUNDUS_ACCESS_SHARE_ERROR');
 			}
 		}
 		elseif ($fnums_post == 'all') {
@@ -788,14 +803,14 @@ class EmundusControllerFiles extends BaseController
 			}
 
 			if ($res !== false) {
-				$msg = JText::_('COM_EMUNDUS_ACCESS_SHARE_SUCCESS');
+				$msg = Text::_('COM_EMUNDUS_ACCESS_SHARE_SUCCESS');
 			}
 			else {
-				$msg = JText::_('COM_EMUNDUS_ACCESS_SHARE_ERROR');
+				$msg = Text::_('COM_EMUNDUS_ACCESS_SHARE_ERROR');
 			}
 		}
 		else {
-			$msg = JText::_('COM_EMUNDUS_ACCESS_SHARE_ERROR');
+			$msg = Text::_('COM_EMUNDUS_ACCESS_SHARE_ERROR');
 			echo json_encode((object) (array('status' => '0', 'msg' => $msg)));
 			exit;
 		}
@@ -914,29 +929,29 @@ class EmundusControllerFiles extends BaseController
 				array(
 					'id'       => '1',
 					'step'     => '1',
-					'value'    => JText::_('COM_EMUNDUS_APPLICATION_PUBLISHED'),
+					'value'    => Text::_('COM_EMUNDUS_APPLICATION_PUBLISHED'),
 					'ordering' => '1'
 				),
 			1 =>
 				array(
 					'id'       => '0',
 					'step'     => '0',
-					'value'    => JText::_('COM_EMUNDUS_APPLICATION_ARCHIVED'),
+					'value'    => Text::_('COM_EMUNDUS_APPLICATION_ARCHIVED'),
 					'ordering' => '2'
 				),
 			3 =>
 				array(
 					'id'       => '3',
 					'step'     => '-1',
-					'value'    => JText::_('COM_EMUNDUS_APPLICATION_TRASHED'),
+					'value'    => Text::_('COM_EMUNDUS_APPLICATION_TRASHED'),
 					'ordering' => '3'
 				)
 		);
 
 		echo json_encode((object) (array('status'         => true,
 		                                 'states'         => $publish,
-		                                 'state'          => JText::_('COM_EMUNDUS_APPLICATION_PUBLISH'),
-		                                 'select_publish' => JText::_('PLEASE_SELECT_PUBLISH'))));
+		                                 'state'          => Text::_('COM_EMUNDUS_APPLICATION_PUBLISH'),
+		                                 'select_publish' => Text::_('PLEASE_SELECT_PUBLISH'))));
 		exit;
 	}
 
@@ -964,7 +979,7 @@ class EmundusControllerFiles extends BaseController
 
 		if (count($fnums) == 0 || !is_array($fnums)) {
 			$res = false;
-			$msg = JText::_('STATE_ERROR');
+			$msg = Text::_('STATE_ERROR');
 
 			echo json_encode((object) (array('status' => $res, 'msg' => $msg)));
 			exit;
@@ -1012,7 +1027,7 @@ class EmundusControllerFiles extends BaseController
 
 		if (count($fnums) == 0 || !is_array($fnums)) {
 			$res = false;
-			$msg = JText::_('STATE_ERROR');
+			$msg = Text::_('STATE_ERROR');
 
 			echo json_encode((object) (array('status' => $res, 'msg' => $msg)));
 			exit;
@@ -1035,10 +1050,10 @@ class EmundusControllerFiles extends BaseController
 		}
 
 		if ($res !== false) {
-			$msg .= JText::_('COM_EMUNDUS_APPLICATION_STATE_SUCCESS');
+			$msg .= Text::_('COM_EMUNDUS_APPLICATION_STATE_SUCCESS');
 		}
 		else {
-			$msg = empty($msg) ? JText::_('STATE_ERROR') : $msg;
+			$msg = empty($msg) ? Text::_('STATE_ERROR') : $msg;
 		}
 
 		echo json_encode(array('status' => $res, 'msg' => $msg));
@@ -1074,9 +1089,9 @@ class EmundusControllerFiles extends BaseController
 		$res = $m_files->updatePublish($validFnums, $publish);
 
 		if ($res !== false) {
-			$msg = JText::_('COM_EMUNDUS_APPLICATION_PUBLISHED_STATE_SUCCESS');
+			$msg = Text::_('COM_EMUNDUS_APPLICATION_PUBLISHED_STATE_SUCCESS');
 		}
-		else $msg = JText::_('STATE_ERROR');
+		else $msg = Text::_('STATE_ERROR');
 
 		echo json_encode((object) (array('status' => $res, 'msg' => $msg)));
 		exit;
@@ -1099,9 +1114,9 @@ class EmundusControllerFiles extends BaseController
 			$res = $m_files->unlinkEvaluators($fnum, $id, false);
 
 		if ($res)
-			$msg = JText::_('SUCCESS_SUPPR_EVAL');
+			$msg = Text::_('SUCCESS_SUPPR_EVAL');
 		else
-			$msg = JText::_('ERROR_SUPPR_EVAL');
+			$msg = Text::_('ERROR_SUPPR_EVAL');
 
 		echo json_encode((object) (array('status' => $res, 'msg' => $msg)));
 		exit;
@@ -1111,7 +1126,7 @@ class EmundusControllerFiles extends BaseController
 	 *
 	 */
 	public function getfnuminfos() {
-		$response = ['status' => false, 'fnumInfos' => '', 'code' => 403, 'msg' => JText::_('ACCESS_DENIED')];
+		$response = ['status' => false, 'fnumInfos' => '', 'code' => 403, 'msg' => Text::_('ACCESS_DENIED')];
 		$user_id = JFactory::getUser()->id;
 
 		if (!empty($user_id)) {
@@ -1131,7 +1146,7 @@ class EmundusControllerFiles extends BaseController
 
 		if ($response['code'] == 403) {
 			header('HTTP/1.1 403 Forbidden');
-			echo JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS');
+			echo Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS');
 			exit;
 		}
 
@@ -1197,7 +1212,7 @@ class EmundusControllerFiles extends BaseController
 		$defaultElements = $m_files->getDefaultElements();
 		if (!empty($defaultElements)) {
 			$defaultElements = array_map(function ($value) {
-				$value->element_label = JText::_($value->element_label);
+				$value->element_label = Text::_($value->element_label);
 
 				return $value;
 			}, $defaultElements);
@@ -1216,7 +1231,7 @@ class EmundusControllerFiles extends BaseController
 	 */
 	public function zip()
 	{
-		$response = ['status' => false, 'msg' => JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS')];
+		$response = ['status' => false, 'msg' => Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS')];
 
 		require_once(JPATH_SITE . '/components/com_emundus/helpers/access.php');
 		$current_user = JFactory::getUser();
@@ -1331,7 +1346,7 @@ class EmundusControllerFiles extends BaseController
 	 * @return String json
 	 */
 	public function create_file_csv() {
-		$response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED'), 'code' => 403];
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403];
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$response['code'] = 500;
@@ -1341,11 +1356,11 @@ class EmundusControllerFiles extends BaseController
 			$chemin = JPATH_SITE.DS.'tmp'.DS.$name;
 
 			if (!$fichier_csv = fopen($chemin, 'w+')) {
-				$response['msg'] = JText::_('ERROR_CANNOT_OPEN_FILE').' : '.$chemin;
+				$response['msg'] = Text::_('ERROR_CANNOT_OPEN_FILE').' : '.$chemin;
 			} else {
 				fprintf($fichier_csv, chr(0xEF).chr(0xBB).chr(0xBF));
 				if (!fclose($fichier_csv)) {
-					$response['msg'] = JText::_('COM_EMUNDUS_EXPORTS_ERROR_CANNOT_CLOSE_CSV_FILE');
+					$response['msg'] = Text::_('COM_EMUNDUS_EXPORTS_ERROR_CANNOT_CLOSE_CSV_FILE');
 				} else {
 					$response['code'] = 200;
 					$response = array('status' => true, 'file' => $name);
@@ -1355,7 +1370,7 @@ class EmundusControllerFiles extends BaseController
 
 		if ($response['code'] == 403) {
 			header('HTTP/1.1 403 Forbidden');
-			echo JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS');
+			echo Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS');
 			exit;
 		}
 
@@ -1481,7 +1496,7 @@ class EmundusControllerFiles extends BaseController
 		$current_user = JFactory::getUser();
 
 		if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
-			die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
+			die(Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 		}
 
 		$eMConfig          = JComponentHelper::getParams('com_emundus');
@@ -1520,7 +1535,7 @@ class EmundusControllerFiles extends BaseController
 		$colOpt = array();
 
 		if (!$csv = fopen(JPATH_SITE . DS . 'tmp' . DS . $file, 'a')) {
-			$result = array('status' => false, 'msg' => JText::_('ERROR_CANNOT_OPEN_FILE') . ' : ' . $file);
+			$result = array('status' => false, 'msg' => Text::_('ERROR_CANNOT_OPEN_FILE') . ' : ' . $file);
 			echo json_encode((object) $result);
 			exit();
 		}
@@ -1651,10 +1666,10 @@ class EmundusControllerFiles extends BaseController
 			if ($start == 0) {
 
 				if ($anonymize_data) {
-					$line = JText::_('COM_EMUNDUS_FILE_F_NUM') . "\t" . JText::_('COM_EMUNDUS_STATUS') . "\t" . JText::_('COM_EMUNDUS_PROGRAMME') . "\t";
+					$line = Text::_('COM_EMUNDUS_FILE_F_NUM') . "\t" . Text::_('COM_EMUNDUS_STATUS') . "\t" . Text::_('COM_EMUNDUS_PROGRAMME') . "\t";
 				}
 				else {
-					$line = JText::_('COM_EMUNDUS_FILE_F_NUM') . "\t" . JText::_('COM_EMUNDUS_STATUS') . "\t" . JText::_('COM_EMUNDUS_FORM_LAST_NAME') . "\t" . JText::_('COM_EMUNDUS_FORM_FIRST_NAME') . "\t" . JText::_('COM_EMUNDUS_EMAIL') . "\t" . JText::_('COM_EMUNDUS_PROGRAMME') . "\t";
+					$line = Text::_('COM_EMUNDUS_FILE_F_NUM') . "\t" . Text::_('COM_EMUNDUS_STATUS') . "\t" . Text::_('COM_EMUNDUS_FORM_LAST_NAME') . "\t" . Text::_('COM_EMUNDUS_FORM_FIRST_NAME') . "\t" . Text::_('COM_EMUNDUS_EMAIL') . "\t" . Text::_('COM_EMUNDUS_PROGRAMME') . "\t";
 				}
 
 				$nbcol         = 6;
@@ -1664,16 +1679,16 @@ class EmundusControllerFiles extends BaseController
 					if ($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_label != 'Programme' && $fLine->element_name != 'campaign_id') {
 						if (count($opts) > 0 && $fLine->element_name != "date_time" && $fLine->element_name != "date_submitted") {
 							if (in_array("form-title", $opts) && in_array("form-group", $opts)) {
-								$line .= JText::_($fLine->form_label) . " > " . JText::_($fLine->group_label) . " > " . preg_replace('#<[^>]+>#', ' ', JText::_($fLine->element_label)) . "\t";
+								$line .= Text::_($fLine->form_label) . " > " . Text::_($fLine->group_label) . " > " . preg_replace('#<[^>]+>#', ' ', Text::_($fLine->element_label)) . "\t";
 								$nbcol++;
 							}
 							elseif (count($opts) == 1) {
 								if (in_array("form-title", $opts)) {
-									$line .= JText::_($fLine->form_label) . " > " . preg_replace('#<[^>]+>#', ' ', JText::_($fLine->element_label)) . "\t";
+									$line .= Text::_($fLine->form_label) . " > " . preg_replace('#<[^>]+>#', ' ', Text::_($fLine->element_label)) . "\t";
 									$nbcol++;
 								}
 								elseif (in_array("form-group", $opts)) {
-									$line .= JText::_($fLine->group_label) . " > " . preg_replace('#<[^>]+>#', ' ', JText::_($fLine->element_label)) . "\t";
+									$line .= Text::_($fLine->group_label) . " > " . preg_replace('#<[^>]+>#', ' ', Text::_($fLine->element_label)) . "\t";
 									$nbcol++;
 								}
 							}
@@ -1703,7 +1718,7 @@ class EmundusControllerFiles extends BaseController
 								$iban_elements[$elt_name] = $params->encrypt_datas;
 							}
 
-							$line .= preg_replace('#<[^>]+>#', ' ', JText::_($fLine->element_label)) . "\t";
+							$line .= preg_replace('#<[^>]+>#', ' ', Text::_($fLine->element_label)) . "\t";
 							$nbcol++;
 						}
 					}
@@ -1714,21 +1729,21 @@ class EmundusControllerFiles extends BaseController
 						$line .= Text::_('COM_EMUNDUS_'.strtoupper($vOpt))." (%)\t";
 					}
 					elseif ($vOpt == "overall") {
-						$line .= JText::_('COM_EMUNDUS_EVALUATIONS_OVERALL') . "\t";
+						$line .= Text::_('COM_EMUNDUS_EVALUATIONS_OVERALL') . "\t";
 					}
 					else {
 						switch ($vOpt) {
 							case 'comment':
-								$line .= JText::_('COM_EMUNDUS_COMMENT') . "\t";
+								$line .= Text::_('COM_EMUNDUS_COMMENT') . "\t";
 								break;
 							case 'tags':
-								$line .= JText::_('COM_EMUNDUS_ONBOARD_SETTINGS_MENU_TAGS') . "\t";
+								$line .= Text::_('COM_EMUNDUS_ONBOARD_SETTINGS_MENU_TAGS') . "\t";
 								break;
 							case 'group-assoc':
-								$line .= JText::_('COM_EMUNDUS_ASSOCIATED_GROUPS') . "\t";
+								$line .= Text::_('COM_EMUNDUS_ASSOCIATED_GROUPS') . "\t";
 								break;
 							case 'user-assoc':
-								$line .= JText::_('COM_EMUNDUS_ASSOCIATED_USERS') . "\t";
+								$line .= Text::_('COM_EMUNDUS_ASSOCIATED_USERS') . "\t";
 								break;
 							default:
 								$line .= '"' . preg_replace("/\r|\n|\t/", "", $vOpt) . '"' . "\t";
@@ -1772,7 +1787,7 @@ class EmundusControllerFiles extends BaseController
 							if ($k === 'jos_emundus_evaluations___user' && strcasecmp($v, $evaluator) != 0) {
 								foreach ($fnumsArray[$idx] as $key => $value) {
 									if (substr($key, 0, 26) === "jos_emundus_evaluations___") {
-										$fnumsArray[$idx][$key] = JText::_('COM_EMUNDUS_ACCESS_NO_RIGHT');
+										$fnumsArray[$idx][$key] = Text::_('COM_EMUNDUS_ACCESS_NO_RIGHT');
 									}
 								}
 							}
@@ -1879,10 +1894,10 @@ class EmundusControllerFiles extends BaseController
 											$line .= preg_replace("/\r|\n|\t/", "", $v)."\t";
 										}
 										elseif (count($opts) > 0 && in_array("upper-case", $opts)) {
-											$line .= JText::_(preg_replace("/\r|\n|\t/", "", mb_strtoupper($v))) . "\t";
+											$line .= Text::_(preg_replace("/\r|\n|\t/", "", mb_strtoupper($v))) . "\t";
 										}
 										else {
-											$line .= JText::_(preg_replace("/\r|\n|\t/", "", $v)) . "\t";
+											$line .= Text::_(preg_replace("/\r|\n|\t/", "", $v)) . "\t";
 										}
 									}
 								}
@@ -1962,13 +1977,13 @@ class EmundusControllerFiles extends BaseController
 			foreach ($element_csv as $data) {
 				$res = fputcsv($csv, explode("\t", $data), "\t");
 				if (!$res) {
-					$result = array('status' => false, 'msg' => JText::_('ERROR_CANNOT_WRITE_TO_FILE' . ' : ' . $csv));
+					$result = array('status' => false, 'msg' => Text::_('ERROR_CANNOT_WRITE_TO_FILE' . ' : ' . $csv));
 					echo json_encode((object) $result);
 					exit();
 				}
 			}
 			if (!fclose($csv)) {
-				$result = array('status' => false, 'msg' => JText::_('COM_EMUNDUS_EXPORTS_ERROR_CANNOT_CLOSE_CSV_FILE'));
+				$result = array('status' => false, 'msg' => Text::_('COM_EMUNDUS_EXPORTS_ERROR_CANNOT_CLOSE_CSV_FILE'));
 				echo json_encode((object) $result);
 				exit();
 			}
@@ -1979,7 +1994,7 @@ class EmundusControllerFiles extends BaseController
 			$result     = array('status' => true, 'json' => $dataresult);
 		}
 		else {
-			$result = array('status' => false, 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FAILED'));
+			$result = array('status' => false, 'msg' => Text::_('COM_EMUNDUS_EXPORTS_FAILED'));
 		}
 
 		echo json_encode((object) $result);
@@ -2016,19 +2031,19 @@ class EmundusControllerFiles extends BaseController
 
 			foreach ($pages as $i => $page) {
 				$title = explode('-', $page->label);
-				$title = !empty($title[1]) ? JText::_(trim($title[1])) : JText::_(trim($title[0]));
+				$title = !empty($title[1]) ? Text::_(trim($title[1])) : Text::_(trim($title[0]));
 
 				if ($i < count($pages) / 2) {
-					$html1 .= '<div class="em-flex-row"><input class="em-ex-check" type="checkbox" value="' . $page->form_id . '|' . $code[0] . '|' . $camp[0] . '" name="' . $page->label . '" id="' . $page->form_id . '|' . $code[0] . '|' . $camp[0] . '|' . $profile . '" /><label class="em-mb-0-important" for="' . $page->form_id . '|' . $code[0] . '|' . $camp[0] . '|' . $profile . '">' . JText::_($title) . '</label></div>';
+					$html1 .= '<div class="em-flex-row"><input class="em-ex-check" type="checkbox" value="' . $page->form_id . '|' . $code[0] . '|' . $camp[0] . '" name="' . $page->label . '" id="' . $page->form_id . '|' . $code[0] . '|' . $camp[0] . '|' . $profile . '" /><label class="em-mb-0-important" for="' . $page->form_id . '|' . $code[0] . '|' . $camp[0] . '|' . $profile . '">' . Text::_($title) . '</label></div>';
 				}
 				else {
-					$html2 .= '<div class="em-flex-row"><input class="em-ex-check" type="checkbox" value="' . $page->form_id . '|' . $code[0] . '|' . $camp[0] . '" name="' . $page->label . '" id="' . $page->form_id . '|' . $code[0] . '|' . $camp[0] . '|' . $profile . '" /><label class="em-mb-0-important" for="' . $page->form_id . '|' . $code[0] . '|' . $camp[0] . '|' . $profile . '">' . JText::_($title) . '</label></div>';
+					$html2 .= '<div class="em-flex-row"><input class="em-ex-check" type="checkbox" value="' . $page->form_id . '|' . $code[0] . '|' . $camp[0] . '" name="' . $page->label . '" id="' . $page->form_id . '|' . $code[0] . '|' . $camp[0] . '|' . $profile . '" /><label class="em-mb-0-important" for="' . $page->form_id . '|' . $code[0] . '|' . $camp[0] . '|' . $profile . '">' . Text::_($title) . '</label></div>';
 				}
 			}
 
 			$html .= '<div class="em-mt-12">
                     <div class="em-flex-row em-pointer em-mb-4" onclick="showelts(this, ' . "'felts-" . $code[0] . $camp[0] . "-" . $profile . "'" . ')">
-                       <span title="' . JText::_('COM_EMUNDUS_SHOW_ELEMENTS') . '" id="felts-' . $code[0] . $camp[0] . '-' . $profile . '-icon" class="material-icons em-mr-4" style="transform: rotate(-90deg)">expand_more</span>
+                       <span title="' . Text::_('COM_EMUNDUS_SHOW_ELEMENTS') . '" id="felts-' . $code[0] . $camp[0] . '-' . $profile . '-icon" class="material-icons em-mr-4" style="transform: rotate(-90deg)">expand_more</span>
                        <p>' . $campaign['label'] . ' (' . $campaign['year'] . ' | ' . $profile_data->label . ')</p>
                     </div>
                     <div id="felts-' . $code[0] . $camp[0] . '-' . $profile . '" style="display:none;">
@@ -2089,16 +2104,16 @@ class EmundusControllerFiles extends BaseController
 		$html2 = '';
 		for ($i = 0; $i < count($docs); $i++) {
 			if ($i < count($docs) / 2) {
-				$html1 .= '<div class="em-flex-row"><input class="em-ex-check" type="checkbox" value="' . $docs[$i]->id . "|" . $code[0] . "|" . $camp[0] . '" name="' . $docs[$i]->value . '" id="' . $docs[$i]->id . "|" . $code[0] . "|" . $camp[0] . '" /><label class="em-mb-0-important" for="' . $docs[$i]->id . "|" . $code[0] . "|" . $camp[0] . '">' . JText::_($docs[$i]->value) . '</label></div>';
+				$html1 .= '<div class="em-flex-row"><input class="em-ex-check" type="checkbox" value="' . $docs[$i]->id . "|" . $code[0] . "|" . $camp[0] . '" name="' . $docs[$i]->value . '" id="' . $docs[$i]->id . "|" . $code[0] . "|" . $camp[0] . '" /><label class="em-mb-0-important" for="' . $docs[$i]->id . "|" . $code[0] . "|" . $camp[0] . '">' . Text::_($docs[$i]->value) . '</label></div>';
 			}
 			else {
-				$html2 .= '<div class="em-flex-row"><input class="em-ex-check" type="checkbox" value="' . $docs[$i]->id . "|" . $code[0] . "|" . $camp[0] . '" name="' . $docs[$i]->value . '" id="' . $docs[$i]->id . "|" . $code[0] . "|" . $camp[0] . '" /><label class="em-mb-0-important" for="' . $docs[$i]->id . "|" . $code[0] . "|" . $camp[0] . '">' . JText::_($docs[$i]->value) . '</label></div>';
+				$html2 .= '<div class="em-flex-row"><input class="em-ex-check" type="checkbox" value="' . $docs[$i]->id . "|" . $code[0] . "|" . $camp[0] . '" name="' . $docs[$i]->value . '" id="' . $docs[$i]->id . "|" . $code[0] . "|" . $camp[0] . '" /><label class="em-mb-0-important" for="' . $docs[$i]->id . "|" . $code[0] . "|" . $camp[0] . '">' . Text::_($docs[$i]->value) . '</label></div>';
 			}
 		}
 
 		$html = '<div class="em-mt-12">
                     <div class="em-flex-row em-pointer em-mb-4" onclick="showelts(this, ' . "'aelts-" . $code[0] . $camp[0] . "'" . ')">
-                    <span title="' . JText::_('COM_EMUNDUS_SHOW_ELEMENTS') . '" id="aelts-' . $code[0] . $camp[0] . '-icon" class="material-icons em-mr-4" style="transform: rotate(-90deg)">expand_more</span>
+                    <span title="' . Text::_('COM_EMUNDUS_SHOW_ELEMENTS') . '" id="aelts-' . $code[0] . $camp[0] . '-icon" class="material-icons em-mr-4" style="transform: rotate(-90deg)">expand_more</span>
                         <p>' . $campaign['label'] . ' (' . $campaign['year'] . ')</p>
                     </div>
                     <div id="aelts-' . $code[0] . $camp[0] . '" style="display:none;">
@@ -2120,7 +2135,7 @@ class EmundusControllerFiles extends BaseController
 		$current_user = $this->app->getIdentity();
 
 		if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
-			die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
+			die(Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 		}
 
 		$m_files  = $this->getModel('Files');
@@ -2294,7 +2309,7 @@ class EmundusControllerFiles extends BaseController
 			$dataresult      = [
 				'start'     => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachids,
 				'options'   => $options, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
-				'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path' => JURI::base(), 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILES_ADDED')//.' : '.$fnum
+				'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path' => JURI::base(), 'msg' => Text::_('COM_EMUNDUS_EXPORTS_FILES_ADDED')//.' : '.$fnum
 			];
 			$response_status = true;
 		}
@@ -2350,7 +2365,7 @@ class EmundusControllerFiles extends BaseController
 			$dataresult      = [
 				'start'     => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachids,
 				'options'   => $options, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
-				'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path' => JURI::base(), 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILES_ADDED')//.' : '.$fnum
+				'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path' => JURI::base(), 'msg' => Text::_('COM_EMUNDUS_EXPORTS_FILES_ADDED')//.' : '.$fnum
 			];
 			$response_status = true;
 		}
@@ -2359,7 +2374,7 @@ class EmundusControllerFiles extends BaseController
 			$dataresult      = [
 				'start'     => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachids,
 				'options'   => $options, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
-				'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path' => JURI::base(), 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND')
+				'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path' => JURI::base(), 'msg' => Text::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND')
 			];
 		}
 
@@ -2375,7 +2390,7 @@ class EmundusControllerFiles extends BaseController
 		$current_user = JFactory::getUser();
 
 		if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
-			die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
+			die(Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 		}
 
 		$m_files = $this->getModel('Files');
@@ -2527,7 +2542,7 @@ class EmundusControllerFiles extends BaseController
 			$dataresult = [
 				'start'     => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachid,
 				'options'   => $option, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
-				'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path' => JURI::base(), 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILES_ADDED')//.' : '.$fnum
+				'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path' => JURI::base(), 'msg' => Text::_('COM_EMUNDUS_EXPORTS_FILES_ADDED')//.' : '.$fnum
 			];
 			$result     = array('status' => true, 'json' => $dataresult);
 
@@ -2537,7 +2552,7 @@ class EmundusControllerFiles extends BaseController
 			$dataresult = [
 				'start'     => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachid,
 				'options'   => $option, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
-				'admission' => $admission, 'file' => $file, 'ids' => $ids, 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND')
+				'admission' => $admission, 'file' => $file, 'ids' => $ids, 'msg' => Text::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND')
 			];
 
 			$result = array('status' => false, 'json' => $dataresult);
@@ -2756,7 +2771,7 @@ class EmundusControllerFiles extends BaseController
 		$current_user = JFactory::getUser();
 
 		if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
-			die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
+			die(Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 		}
 
 		@set_time_limit(10800);
@@ -2853,22 +2868,22 @@ class EmundusControllerFiles extends BaseController
 		$objPHPSpreadsheet->getActiveSheet()->freezePane('A2');
 
 		$i = 0;
-		$objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('COM_EMUNDUS_FILE_F_NUM'));
+		$objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($i, 1, Text::_('COM_EMUNDUS_FILE_F_NUM'));
 		$objPHPSpreadsheet->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('40');
 		$i++;
-		$objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('COM_EMUNDUS_STATUS'));
+		$objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($i, 1, Text::_('COM_EMUNDUS_STATUS'));
 		$objPHPSpreadsheet->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('40');
 		$i++;
-		$objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('COM_EMUNDUS_FORM_LAST_NAME'));
+		$objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($i, 1, Text::_('COM_EMUNDUS_FORM_LAST_NAME'));
 		$objPHPSpreadsheet->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
 		$i++;
-		$objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('COM_EMUNDUS_FORM_FIRST_NAME'));
+		$objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($i, 1, Text::_('COM_EMUNDUS_FORM_FIRST_NAME'));
 		$objPHPSpreadsheet->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
 		$i++;
-		$objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('COM_EMUNDUS_EMAIL'));
+		$objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($i, 1, Text::_('COM_EMUNDUS_EMAIL'));
 		$objPHPSpreadsheet->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
 		$i++;
-		$objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_('COM_EMUNDUS_CAMPAIGN'));
+		$objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($i, 1, Text::_('COM_EMUNDUS_CAMPAIGN'));
 		$objPHPSpreadsheet->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
 		$i++;
 
@@ -2881,7 +2896,7 @@ class EmundusControllerFiles extends BaseController
 		}
 
 		foreach ($colOpt as $kOpt => $vOpt) {
-			$objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($i, 1, JText::_(strtoupper($kOpt)));
+			$objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($i, 1, Text::_(strtoupper($kOpt)));
 			$objPHPSpreadsheet->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
 			$i++;
 		}
@@ -2914,7 +2929,7 @@ class EmundusControllerFiles extends BaseController
 			foreach ($colOpt as $kOpt => $vOpt) {
 				switch ($kOpt) {
 					case "photo":
-						$objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($col, $line, JText::_('COM_EMUNDUS_PHOTO'));
+						$objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($col, $line, Text::_('COM_EMUNDUS_PHOTO'));
 						break;
 					case "attachment":
 					case "forms":
@@ -2965,13 +2980,13 @@ class EmundusControllerFiles extends BaseController
 						$objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($col, $line, $vOpt[$fnunLine['fnum']]);
 						break;
 					case 'group-assoc':
-						$objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($col, $line, JText::_('COM_EMUNDUS_ASSOCIATED_GROUPS'));
+						$objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($col, $line, Text::_('COM_EMUNDUS_ASSOCIATED_GROUPS'));
 						break;
 					case 'user-assoc':
-						$objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($col, $line, JText::_('COM_EMUNDUS_ASSOCIATED_USERS'));
+						$objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($col, $line, Text::_('COM_EMUNDUS_ASSOCIATED_USERS'));
 						break;
 					case 'overall':
-						$objPHPSpreadsheet->getActiveSheet()->setCellValue([$col, $line], JText::_('COM_EMUNDUS_EVALUATIONS_OVERALL'));
+						$objPHPSpreadsheet->getActiveSheet()->setCellValue([$col, $line], Text::_('COM_EMUNDUS_EVALUATIONS_OVERALL'));
 						break;
 				}
 				$col++;
@@ -3045,7 +3060,7 @@ class EmundusControllerFiles extends BaseController
 			exit;
 		}
 		else {
-			echo JText::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND') . ' : ' . $file;
+			echo Text::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND') . ' : ' . $file;
 		}
 	}
 
@@ -3081,7 +3096,7 @@ class EmundusControllerFiles extends BaseController
 		$current_user = JFactory::getUser();
 
 		if ((!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) && $view != 'renew_application')
-			die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
+			die(Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
 		require_once(JPATH_SITE . DS . 'libraries' . DS . 'emundus' . DS . 'pdf.php');
@@ -3136,7 +3151,7 @@ class EmundusControllerFiles extends BaseController
 		$current_user = JFactory::getUser();
 
 		if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
-			die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
+			die(Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 
 		$fnum = $this->input->getString('fnum', null);
 
@@ -3160,7 +3175,7 @@ class EmundusControllerFiles extends BaseController
 		$current_user = JFactory::getUser();
 
 		if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
-			die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
+			die(Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 
 		$fnum = $this->input->getString('fnum', null);
 
@@ -3697,7 +3712,7 @@ class EmundusControllerFiles extends BaseController
 			'/{EFFECTIFS}/'             => 'Mini : ' . $product[0]['min_o'] . ' - Maxi : ' . $product[0]['max_o'],
 			'/{INTERVENANT}/'           => (!empty($product[0]['intervenant'])) ? $product[0]['intervenant'] : 'Formateur consultant sélectionné par la CCI pour son expertise dans ce domaine',
 			'/{PEDAGOGIE}/'             => $product[0]['pedagogie'],
-			'/{CPF}/'                   => (!empty($product[0]['cpf'])) ? '<h2 style="padding-left: 30px;">' . JText::_('CODE') . '</h2><p style="padding-left: 30px;">' . $product[0]['cpf'] . ' </p>' : '',
+			'/{CPF}/'                   => (!empty($product[0]['cpf'])) ? '<h2 style="padding-left: 30px;">' . Text::_('CODE') . '</h2><p style="padding-left: 30px;">' . $product[0]['cpf'] . ' </p>' : '',
 			'/{EVALUATION}/'            => $product[0]['evaluation'],
 			'/{TEMOINAGE}/'             => $product[0]['temoignagesclients'],
 			'/{ACCROCHECOM}/'           => ucfirst(mb_strtolower(strip_tags($product[0]['accrochecom']))),
@@ -3809,7 +3824,7 @@ class EmundusControllerFiles extends BaseController
 		$type  = $this->input->post->getString('type');
 
 		if (empty($fnums)) {
-			echo json_encode((object) (array('status' => false, 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILES_EXPORTED_TO_EXTERNAL_ERROR'))));
+			echo json_encode((object) (array('status' => false, 'msg' => Text::_('COM_EMUNDUS_EXPORTS_FILES_EXPORTED_TO_EXTERNAL_ERROR'))));
 			exit;
 		}
 
@@ -3822,11 +3837,11 @@ class EmundusControllerFiles extends BaseController
 		$this->app->triggerEvent('onCallEventHandler', ['onExportFiles', ['fnums' => $fnums, 'type' => $type]]);
 
 		if (is_array($status) && !in_array(false, $status)) {
-			$msg    = JText::_('COM_EMUNDUS_EXPORTS_FILES_EXPORTED_TO_EXTERNAL');
+			$msg    = Text::_('COM_EMUNDUS_EXPORTS_FILES_EXPORTED_TO_EXTERNAL');
 			$result = true;
 		}
 		else {
-			$msg    = JText::_('COM_EMUNDUS_EXPORTS_FILES_EXPORTED_TO_EXTERNAL_ERROR');
+			$msg    = Text::_('COM_EMUNDUS_EXPORTS_FILES_EXPORTED_TO_EXTERNAL_ERROR');
 			$result = false;
 		}
 
@@ -3951,7 +3966,7 @@ class EmundusControllerFiles extends BaseController
 			echo json_encode((object) (array('status' => true, 'res' => $res, 'details' => $details)));
 		}
 		else {
-			echo json_encode((object) (array('status' => false, 'msg' => JText::_('ERROR') . implode(', ', $fnumErrorList))));
+			echo json_encode((object) (array('status' => false, 'msg' => Text::_('ERROR') . implode(', ', $fnumErrorList))));
 		}
 		exit;
 	}
@@ -4022,7 +4037,7 @@ class EmundusControllerFiles extends BaseController
 			}
 		}
 		else {
-			$res = array('status' => false, 'msg' => JText::_('INVALID_PARAMETERS'));
+			$res = array('status' => false, 'msg' => Text::_('INVALID_PARAMETERS'));
 		}
 
 		echo json_encode($res);
@@ -4058,7 +4073,7 @@ class EmundusControllerFiles extends BaseController
 
 	public function getalllogactions()
 	{
-		$response = ['status' => false, 'code' => 403, 'msg' => JText::_('ACCESS_DENIED')];
+		$response = ['status' => false, 'code' => 403, 'msg' => Text::_('ACCESS_DENIED')];
 
 		if (EmundusHelperAccess::asAccessAction(37, 'r', JFactory::getUser()->id)) {
 			require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
@@ -4066,7 +4081,7 @@ class EmundusControllerFiles extends BaseController
 			$response['data']   = $m_files->getAllLogActions();
 			$response['status'] = true;
 			$response['code']   = 200;
-			$response['msg']    = JText::_('SUCCESS');
+			$response['msg']    = Text::_('SUCCESS');
 		}
 
 		echo json_encode($response);
@@ -4095,14 +4110,14 @@ class EmundusControllerFiles extends BaseController
 			}
 		}
 		else {
-			echo json_encode((['status' => false, 'data' => [], 'msg' => JText::_('ACCESS_DENIED')]));
+			echo json_encode((['status' => false, 'data' => [], 'msg' => Text::_('ACCESS_DENIED')]));
 		}
 		exit;
 	}
 
 	public function checkmenufilterparams()
 	{
-		$response = ['status' => false, 'code' => 403, 'msg' => JText::_('ACCESS_DENIED')];
+		$response = ['status' => false, 'code' => 403, 'msg' => Text::_('ACCESS_DENIED')];
 		$user_id  = JFactory::getUser()->id;
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($user_id)) {
@@ -4113,7 +4128,7 @@ class EmundusControllerFiles extends BaseController
 			$response['use_module_filters'] = boolval($menu_params->get('em_use_module_for_filters', false));
 			$response['status']             = true;
 			$response['code']               = 200;
-			$response['msg']                = JText::_('SUCCESS');
+			$response['msg']                = Text::_('SUCCESS');
 		}
 
 		echo json_encode($response);
@@ -4122,16 +4137,16 @@ class EmundusControllerFiles extends BaseController
 
 	public function getFiltersAvailable()
 	{
-		$response = ['status' => false, 'code' => 403, 'msg' => JText::_('ACCESS_DENIED')];
+		$response = ['status' => false, 'code' => 403, 'msg' => Text::_('ACCESS_DENIED')];
 		$app = Factory::getApplication();
 		$user = $app->getIdentity();
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-			$response['msg'] = JText::_('MISSING_PARAMS');
+			$response['msg'] = Text::_('MISSING_PARAMS');
 			$module_id = $app->input->getInt('module_id', 0);
 
 			if (!empty($module_id)) {
-				$response['msg'] = JText::_('NO_CALCULATION_FOR_THIS_MODULE');
+				$response['msg'] = Text::_('NO_CALCULATION_FOR_THIS_MODULE');
 
 				$db = Factory::getContainer()->get('DatabaseDriver');
 				$query = $db->getQuery(true);
@@ -4166,16 +4181,16 @@ class EmundusControllerFiles extends BaseController
 
 	public function setFiltersValuesAvailability()
 	{
-		$response = ['status' => false, 'code' => 403, 'msg' => JText::_('ACCESS_DENIED')];
+		$response = ['status' => false, 'code' => 403, 'msg' => Text::_('ACCESS_DENIED')];
 		$app = Factory::getApplication();
 		$user = $app->getIdentity();
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-			$response['msg'] = JText::_('MISSING_PARAMS');
+			$response['msg'] = Text::_('MISSING_PARAMS');
 			$module_id = $app->input->getInt('module_id', 0);
 
 			if (!empty($module_id)) {
-				$response['msg'] = JText::_('NO_CALCULATION_FOR_THIS_MODULE');
+				$response['msg'] = Text::_('NO_CALCULATION_FOR_THIS_MODULE');
 
 				$db = Factory::getContainer()->get('DatabaseDriver');
 				$query = $db->getQuery(true);
@@ -4204,7 +4219,7 @@ class EmundusControllerFiles extends BaseController
 						$h_files = new EmundusHelperFiles();
 						$data = $h_files->setFiltersValuesAvailability($applied_filters, $user->id);
 
-						$response = ['status' => true, 'code' => 200, 'msg' => JText::_('SUCCESS'), 'data' => $data];
+						$response = ['status' => true, 'code' => 200, 'msg' => Text::_('SUCCESS'), 'data' => $data];
 					}
 				}
 			}
@@ -4216,7 +4231,7 @@ class EmundusControllerFiles extends BaseController
 
 	public function getfiltervalues()
 	{
-		$response = ['status' => false, 'code' => 403, 'msg' => JText::_('ACCESS_DENIED')];
+		$response = ['status' => false, 'code' => 403, 'msg' => Text::_('ACCESS_DENIED')];
 		$user     = $this->app->getIdentity();
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
@@ -4231,10 +4246,10 @@ class EmundusControllerFiles extends BaseController
 				$response['all']    = $session->get('em-filters-all-values');
 				$response['status'] = true;
 				$response['code']   = 200;
-				$response['msg']    = JText::_('SUCCESS');
+				$response['msg']    = Text::_('SUCCESS');
 			}
 			else {
-				$response['msg']  = JText::_('MISSING_PARAMS');
+				$response['msg']  = Text::_('MISSING_PARAMS');
 				$response['code'] = 400;
 			}
 		}

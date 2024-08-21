@@ -6404,5 +6404,66 @@ class EmundusHelperFiles
 
 		return $linked;
 	}
+
+	/**
+	 * Get the fnum from the id
+	 *
+	 * @param $id
+	 *
+	 * @return string
+	 *
+	 * @since version 1.40.0
+	 */
+	public static function getFnumFromId($id) {
+		$fnum = '';
+
+		if (!empty($id)) {
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true);
+			$query->select('fnum')
+				->from('#__emundus_campaign_candidature')
+				->where('id = ' . $id);
+
+			try {
+				$db->setQuery($query);
+				$fnum = $db->loadResult();
+			} catch (Exception $e) {
+				Log::add('Failed to get fnum from id ' . $id . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $fnum;
+	}
+
+	/**
+	 * Get id from fnum
+	 *
+	 * @param $fnum
+	 *
+	 * @return int
+	 *
+	 * @since version 1.40.0
+	 */
+	public static function getIdFromFnum($fnum) {
+		$id = 0;
+
+		if (!empty($fnum)) {
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true);
+
+			$query->select('id')
+				->from('#__emundus_campaign_candidature')
+				->where('fnum = ' . $db->quote($fnum));
+
+			try {
+				$db->setQuery($query);
+				$id = $db->loadResult();
+			} catch (Exception $e) {
+				Log::add('Failed to get id from fnum ' . $fnum . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $id;
+	}
 }
 

@@ -795,14 +795,6 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 			EmundusHelperUpdate::updateYamlVariable('button','COM_EMUNDUS_ERROR_404_BUTTON',JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/error.yaml');
 			//
 
-			// Fix 404 styles
-			EmundusHelperUpdate::addYamlVariable('location', 'modules/mod_emundusmenu/style/mod_emundusmenu.css', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css', true, true);
-			EmundusHelperUpdate::addYamlVariable('inline', '', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
-			EmundusHelperUpdate::addYamlVariable('extra', '{  }', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
-			EmundusHelperUpdate::addYamlVariable('priority', '0', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
-			EmundusHelperUpdate::addYamlVariable('name', 'Menu', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
-			//
-
 			// Status restriction in groups
 			EmundusHelperUpdate::addColumn('jos_emundus_setup_groups', 'filter_status', 'INT', 1, 1, '0');
 			EmundusHelperUpdate::addColumn('jos_emundus_setup_groups', 'status', 'INT', 11, 1);
@@ -1444,6 +1436,20 @@ if(value == 1) {
 				->where($this->db->quoteName('folder') . ' = ' . $this->db->quote('editors-xtd'));
 			$this->db->setQuery($query);
 			$this->db->execute();
+
+			if (!class_exists('EmundusAdministratorModelComments')) {
+				require_once(JPATH_ROOT . '/administrator/components/com_emundus/models/comments.php');
+			}
+			$m_comments = new \EmundusAdministratorModelComments();
+			$comments_installed = $m_comments->install();
+			if ($comments_installed)
+			{
+				EmundusHelperUpdate::displayMessage('Le nouveau composant pour les commentaires a été installé avec succès', 'success');
+			}
+			else
+			{
+				throw new \Exception('Erreur lors de l\'installation du nouveau module commentaire');
+			}
 
 			$result['status'] = true;
 		}

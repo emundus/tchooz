@@ -412,6 +412,9 @@ if ($user != null)
             var messageDropdown = document.getElementById('messageDropdown');
             var messageIcon = document.getElementById('messageDropdownIcon');
 
+            // get comments aside
+            var commentsAside = document.getElementById('aside-comment-section');
+
             if (dropdown.classList.contains('open')) {
                 document.querySelector('#userDropdownMenu').style.transform = 'translate(300px)';
                 setTimeout(() => {
@@ -427,6 +430,11 @@ if ($user != null)
                     messageDropdown.classList.remove('open');
                     messageIcon.classList.remove('active');
                     messageIcon.classList.remove('open');
+                }
+
+                // remove comments aside if it is on page
+                if(commentsAside && !commentsAside.classList.contains('closed')) {
+                    commentsAside.classList.add('closed');
                 }
                 dropdown.classList.add('open');
                 if (icon !== null) {

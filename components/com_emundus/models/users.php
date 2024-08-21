@@ -12,9 +12,10 @@
  * @author         Benjamin Rivalland
  */
 
-// No direct access
-defined('_JEXEC') or die('Restricted access');
-jimport('joomla.application.component.model');
+// phpcs:disable PSR1.Files.SideEffects
+\defined('_JEXEC') or die;
+// phpcs:enable PSR1.Files.SideEffects
+
 require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'fabrik.php');
 require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'filters.php');
 require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php');
@@ -25,6 +26,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Mail\MailerFactoryInterface;
+use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\Uri\Uri;
@@ -33,38 +35,62 @@ use Joomla\Component\Users\Site\Model\ResetModel;
 use Joomla\CMS\Log\Log;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 
-
-class EmundusModelUsers extends JModelList
+/**
+ * Emundus Component Users Model
+ *
+ * @since  1.0.0
+ */
+class EmundusModelUsers extends ListModel
 {
-	var $_total = null;
-	var $_pagination = null;
+	/**
+	 * @var   int  The total number of items
+	 * @since version 1.0.0
+	 */
+	private $_total;
 
+	/**
+	 * @var  object  The pagination object
+	 * @since version 1.0.0
+	 */
+	private $_pagination;
+
+	/**
+	 * @var object  The data
+	 * @since version 1.0.0
+	 */
 	protected $data;
 
+	/**
+	 * @var JDatabaseDriver|\Joomla\Database\DatabaseDriver|mixed|null
+	 * @since version 1.0.0
+	 */
 	private $db;
+
+	/**
+	 * @var \Joomla\CMS\Application\CMSApplication|\Joomla\CMS\Application\CMSApplicationInterface|null
+	 * @since version 1.0.0
+	 */
 	private $app;
+
+	/**
+	 * @var \Joomla\CMS\User\User|JUser|mixed|null
+	 * @since version 1.0.0
+	 */
 	private $user;
 
 	/**
 	 * Constructor
 	 *
-	 * @since 1.5
+	 * @since 1.0.0
 	 */
 	public function __construct()
 	{
 		parent::__construct();
 
 		$this->app = Factory::getApplication();
-		if (version_compare(JVERSION, '4.0', '>')) {
-			$this->db   = Factory::getContainer()->get('DatabaseDriver');
-			$this->user = $this->app->getIdentity();
-			$session    = $this->app->getSession();
-		}
-		else {
-			$this->db   = Factory::getDBO();
-			$this->user = Factory::getUser();
-			$session    = Factory::getSession();
-		}
+		$this->db   = $this->getDatabase();
+		$this->user = $this->app->getIdentity();
+		$session    = $this->app->getSession();
 
 		if (!$session->has('filter_order')) {
 			$session->set('filter_order', 'id');
@@ -91,10 +117,10 @@ class EmundusModelUsers extends JModelList
 
 	public function _buildContentOrderBy()
 	{
-		$session          = JFactory::getSession();
+		$session          = $this->app->getSession();
 		$params           = $session->get('filt_params');
-		$filter_order     = @$params['filter_order'];
-		$filter_order_Dir = @$params['filter_order_Dir'];
+		$filter_order     = $params['filter_order'];
+		$filter_order_Dir = $params['filter_order_Dir'];
 
 		$can_be_ordering = array('user', 'id', 'lastname', 'firstname', 'username', 'email', 'profile', 'block', 'lastvisitDate', 'registerDate', 'newsletter', 'groupe', 'university');
 
@@ -1829,31 +1855,40 @@ class EmundusModelUsers extends JModelList
 
 	}
 
-	// Get groups of user
+	/**
+	 * Returns user's groups. If AssocList then associative array with id and label, if column, only an array of ids
+	 *
+	 * @param $uid int
+	 * @param $return string (AssocList|Column)
+	 * @return array
+	 *
+	 * @since version 1.40.0
+	 */
 	public function getUserGroups($uid, $return = 'AssocList')
 	{
-		$user_id = empty($uid) ? $this->user->id : $uid;
+		$user_groups = [];
 
-		$query = $this->db->getQuery(true);
+		if (!empty($uid)) {
+			try {
+				$query = $this->db->getQuery(true);
 
-		try {
-			$query->select('esg.id, esg.label')
-				->from($this->db->quoteName('#__emundus_groups', 'g'))
-				->leftJoin($this->db->quoteName('#__emundus_setup_groups', 'esg') . ' ON ' . $this->db->quoteName('g.group_id') . ' = ' . $this->db->quoteName('esg.id'))
-				->where($this->db->quoteName('g.user_id') . ' = ' . $user_id);
-			$this->db->setQuery($query);
+				$query->select('esg.id, esg.label')
+					->from($this->db->quoteName('#__emundus_groups', 'g'))
+					->leftJoin($this->db->quoteName('#__emundus_setup_groups', 'esg').' ON '.$this->db->quoteName('g.group_id').' = '.$this->db->quoteName('esg.id'))
+					->where($this->db->quoteName('g.user_id') . ' = ' . $uid);
+				$this->db->setQuery($query);
 
-			if ($return == 'Column') {
-				return $this->db->loadColumn();
+				if ($return == 'Column') {
+					$user_groups = $this->db->loadColumn();
+				} else {
+					$user_groups = $this->db->loadAssocList('id', 'label');
+				}
+			} catch(Exception $e) {
+				Log::add('Failed to get user groups ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
-			else {
-				return $this->db->loadAssocList('id', 'label');
-			}
+		}
 
-		}
-		catch (Exception $e) {
-			return false;
-		}
+		return $user_groups;
 	}
 
 	/**

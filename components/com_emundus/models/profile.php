@@ -6,19 +6,27 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-// No direct access
-
-defined('_JEXEC') or die('Restricted access');
-
-jimport('joomla.application.component.model');
+// phpcs:disable PSR1.Files.SideEffects
+\defined('_JEXEC') or die;
+// phpcs:enable PSR1.Files.SideEffects
 
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Uri\Uri;
 
-class EmundusModelProfile extends JModelList
+/**
+ * Emundus Component Profile Model
+ *
+ * @since  1.0.0
+ */
+class EmundusModelProfile extends ListModel
 {
+	/**
+	 * @var mixed
+	 * @since version 1.0.0
+	 */
 	protected $_db;
 
 	/**
@@ -29,7 +37,7 @@ class EmundusModelProfile extends JModelList
 	function __construct()
 	{
 		parent::__construct();
-		$this->_db = Factory::getContainer()->get('DatabaseDriver');
+		$this->_db = $this->getDatabase();
 	
 	}
 
@@ -280,6 +288,38 @@ class EmundusModelProfile extends JModelList
 		}
 
 		return $profile;
+	}
+
+	/**
+	 * Get the menu item id for a form
+	 *
+	 * @param $form_id
+	 * @param $fnum
+	 * @return int
+	 */
+	public function getMenuItemForFormId($form_id, $fnum) {
+		$menu_id = 0;
+
+		if (!empty($form_id) && !empty($fnum)) {
+			$profile = $this->getProfileByFnum($fnum);
+
+			if (!empty($profile)) {
+				$query = $this->_db->getQuery(true);
+
+				$query->select('id')
+					->from($this->_db->quoteName('#__menu'))
+					->where($this->_db->quoteName('menutype') . ' LIKE ' . $this->_db->quote('menu-profile' .  $profile))
+					->andwhere($this->_db->quoteName('link') . ' LIKE "%view=form&formid=' . $form_id .  '%"');
+				try {
+					$this->_db->setQuery($query);
+					$menu_id = $this->_db->loadResult();
+				} catch (Exception $e) {
+					Log::add('Error on query profile Model function getMenuItemForFormId => ' . $query, Log::ERROR, 'com_emundus.error');
+				}
+			}
+		}
+
+		return $menu_id;
 	}
 
 	function getCurrentProfile($aid)
@@ -1095,7 +1135,7 @@ class EmundusModelProfile extends JModelList
 		$res   = [];
 		$query = $this->_db->getQuery(true);
 
-		$query->select('ecc.*, esc.*, ess.*, epd.profile as profile_id_form')
+		$query->select('ecc.id as ccid, ecc.*, esc.*, ess.*, epd.profile as profile_id_form')
 			->from($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc'))
 			->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->quoteName('esc.id') . '=' . $this->_db->quoteName('ecc.campaign_id'))
 			->leftJoin($this->_db->quoteName('#__emundus_setup_status', 'ess') . ' ON ' . $this->_db->quoteName('ess.step') . '=' . $this->_db->quoteName('ecc.status'))
@@ -1106,7 +1146,7 @@ class EmundusModelProfile extends JModelList
 			$res = $this->_db->loadAssoc();
 		}
 		catch (Exception $e) {
-			$query->select('ecc.*, esc.*, ess.*')
+			$query->select('ecc.id as ccid, ecc.*, esc.*, ess.*')
 				->from($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc'))
 				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->quoteName('esc.id') . '=' . $this->_db->quoteName('ecc.campaign_id'))
 				->leftJoin($this->_db->quoteName('#__emundus_setup_status', 'ess') . ' ON ' . $this->_db->quoteName('ess.step') . '=' . $this->_db->quoteName('ecc.status'))

@@ -44,6 +44,7 @@ class modemundusApplicationsHelper
 		}
 
 		$select = [
+			'ecc.id as ccid',
 			'ecc.date_time AS campDateTime',
 			'ecc.id as application_id',
 			'ecc.*',
@@ -544,5 +545,37 @@ class modemundusApplicationsHelper
 		}
 
 		echo $html;
+	}
+
+	static function getNbComments($ccid, $current_user) {
+		$nb_comments = 0;
+
+		if (!empty($ccid)) {
+			if (!class_exists('EmundusModelComments')) {
+				require_once(JPATH_ROOT . '/components/com_emundus/models/comments.php');
+			}
+			$m_comments = new EmundusModelComments();
+			$comments = $m_comments->getComments($ccid, $current_user, true);
+
+			$nb_comments = count($comments);
+		}
+
+		return $nb_comments;
+	}
+
+	static function getCommentsPageBaseUrl()
+	{
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+
+		$query->select('alias')
+			->from($db->quoteName('#__menu'))
+			->where($db->quoteName('published') . ' = 1')
+			->where($db->quoteName('link') . ' LIKE "%view=application&layout=history%"');
+
+		$db->setQuery($query);
+		$alias = $db->loadResult();
+
+		return $alias;
 	}
 }

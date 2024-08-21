@@ -412,8 +412,8 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 													<?php endif; ?>
                                                     <div class="em-w-100">
                                                         <div class="em-flex-row em-flex-space-between em-mb-12">
-                                                            <div>
-																<?php
+                                                            <div class="tw-flex tw-flex-row tw-items-center">
+                                                            <?php
 																if (empty($application->class)) {
 																	$application->class = 'default';
 																}
@@ -439,6 +439,18 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                                                                     <br>
                                                                     <p><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_ORDER_STATUS') ?> <span style="color: <?= $application->order_color; ?>"><?= Text::_(strtoupper($application->order_status)); ?></span></p>
 																<?php endif; ?>
+
+	                                                            <?php if ($show_nb_comments) {
+		                                                            $nb_comments = modemundusApplicationsHelper::getNbComments($application->ccid, $user->id);
+		                                                            if ($nb_comments > 0) {
+			                                                            ?>
+                                                                        <a href="<?= !empty($comments_page_alias) ? '/' . $comments_page_alias . '?tab=comments&ccid=' . $application->ccid . '&fnum=' . $application->fnum : '#'  ?>"  id="actions_button_comment" class="tw-flex tw-flex-row comments-icon-wrapper tw-relative tw-ml-2">
+                                                                            <span id="actions_button_comment_icon" class="material-icons tw-text-neutral-300 tw-bg-main-500 tw-p-2 tw-rounded-full">comment</span>
+                                                                            <span id="actions_button_comment_nb" class="nb-comments em-border-main-500 em-font-size-12 em-main-500-color em-white-bg tw-border-2 tw-absolute tw-rounded-full tw-p-1"><?= $nb_comments; ?></span>
+                                                                        </a>
+			                                                            <?php
+		                                                            }
+	                                                            }  ?>
                                                             </div>
                                                             <div class="mod_emundus_applications__container">
                                                                 <span class="material-symbols-outlined em-text-neutral-600 em-font-weight-600"
