@@ -16,8 +16,9 @@ jimport('joomla.application.component.controller');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
-use Joomla\Component\Emundus\Site\Helper\EmundusHelperAccess;
-use Joomla\Component\Emundus\Site\Helper\EmundusHelperFiles;
+
+require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
+require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
 
 /**
  * eMundus Component Controller
