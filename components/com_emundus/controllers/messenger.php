@@ -15,6 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\MVC\Controller\BaseController;
 
 /**
  * Campaign Controller
@@ -23,15 +24,24 @@ use Joomla\CMS\Factory;
  * @subpackage eMundus
  * @since      5.0.0
  */
-class EmundusControllerMessenger extends JControllerLegacy
+class EmundusControllerMessenger extends BaseController
 {
 	protected $app;
 
 	private $m_messenger;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     \JController
+	 * @since   1.0.0
+	 */
 	public function __construct($config = array())
 	{
 		parent::__construct($config);
+
 		$this->m_messenger = $this->getModel('messenger');
 		$this->app         = Factory::getApplication();
 	}

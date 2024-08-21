@@ -51,6 +51,7 @@ public __construct(): mixed
 
 
 
+
 ***
 
 ### getListActions
@@ -74,6 +75,7 @@ public getListActions(mixed $listId, mixed $elementId): mixed
 |-----------|------|-------------|
 | `$listId` | **mixed** |  |
 | `$elementId` | **mixed** |  |
+
 
 
 
@@ -108,6 +110,7 @@ public getList(mixed $listId, mixed $listParticularConditionalColumn, mixed $lis
 
 
 
+
 ***
 
 ### retrieveDataBasePluginElementJoinKeyColumnAndTable
@@ -130,6 +133,7 @@ public retrieveDataBasePluginElementJoinKeyColumnAndTable(mixed $elementId): mix
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$elementId` | **mixed** |  |
+
 
 
 
@@ -158,6 +162,7 @@ public removeForeignKeyValueFormDataLoadedIfExistingDatabaseJoinElementInList(mi
 |-----------|------|-------------|
 | `$databasejoinColumnsList` | **mixed** |  |
 | `$listData` | **mixed** |  |
+
 
 
 
@@ -193,6 +198,7 @@ public actionSetColumnValueAs(mixed $rowId, mixed $value, mixed $dbTablename, mi
 
 
 
+
 ***
 
 ### updateActionState
@@ -221,8 +227,9 @@ public updateActionState(mixed $newValue, mixed $rows): mixed
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

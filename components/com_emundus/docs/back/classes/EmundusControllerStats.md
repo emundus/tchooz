@@ -34,10 +34,10 @@ protected $app
 
 ### __construct
 
-
+Constructor.
 
 ```php
-public __construct(mixed $config = array()): mixed
+public __construct(array $config = array()): mixed
 ```
 
 
@@ -51,11 +51,16 @@ public __construct(mixed $config = array()): mixed
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$config` | **mixed** |  |
+| `$config` | **array** | An optional associative array of configuration settings. |
 
 
 
 
+
+
+**See Also:**
+
+* \JController - 
 
 ***
 
@@ -66,6 +71,7 @@ public __construct(mixed $config = array()): mixed
 ```php
 public getprofiletype(): mixed
 ```
+
 
 
 
@@ -99,6 +105,7 @@ public getoffres(): mixed
 
 
 
+
 ***
 
 ### getcandidatures
@@ -108,6 +115,7 @@ public getoffres(): mixed
 ```php
 public getcandidatures(): mixed
 ```
+
 
 
 
@@ -141,6 +149,7 @@ public getconnections(): mixed
 
 
 
+
 ***
 
 ### getrelations
@@ -150,6 +159,7 @@ public getconnections(): mixed
 ```php
 public getrelations(): mixed
 ```
+
 
 
 
@@ -183,6 +193,7 @@ public getgender(): mixed
 
 
 
+
 ***
 
 ### getnationality
@@ -192,6 +203,7 @@ public getgender(): mixed
 ```php
 public getnationality(): mixed
 ```
+
 
 
 
@@ -225,6 +237,7 @@ public getage(): mixed
 
 
 
+
 ***
 
 ### getfiles
@@ -234,6 +247,7 @@ public getage(): mixed
 ```php
 public getfiles(): mixed
 ```
+
 
 
 
@@ -267,6 +281,7 @@ public addview(): mixed
 
 
 
+
 ***
 
 ### linkfabrik
@@ -288,8 +303,9 @@ public linkfabrik(): mixed
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

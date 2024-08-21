@@ -34,10 +34,10 @@ protected $app
 
 ### __construct
 
-Constructor
+Constructor.
 
 ```php
-public __construct(mixed $config = array()): mixed
+public __construct(array $config = array()): mixed
 ```
 
 
@@ -51,11 +51,16 @@ public __construct(mixed $config = array()): mixed
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$config` | **mixed** |  |
+| `$config` | **array** | An optional associative array of configuration settings. |
 
 
 
 
+
+
+**See Also:**
+
+* \JController - 
 
 ***
 
@@ -66,6 +71,7 @@ Get all of the information for an email template.
 ```php
 public gettemplate(): mixed
 ```
+
 
 
 
@@ -99,6 +105,7 @@ public setcategory(): mixed
 
 
 
+
 ***
 
 ### uploadfiletosend
@@ -108,6 +115,7 @@ Upload a file from computer to be attached to the emails sent.
 ```php
 public uploadfiletosend(): mixed
 ```
+
 
 
 
@@ -141,6 +149,7 @@ public getcandidatefilenames(): mixed
 
 
 
+
 ***
 
 ### getletterfilenames
@@ -150,6 +159,7 @@ Gets the names of the letter files.
 ```php
 public getletterfilenames(): mixed
 ```
+
 
 
 
@@ -183,6 +193,7 @@ public previewemail(): mixed
 
 
 
+
 ***
 
 ### applicantemail
@@ -204,6 +215,7 @@ public applicantemail(): mixed
 
 
 
+
 ***
 
 ### useremail
@@ -213,6 +225,7 @@ Send an email to a user, regardless of fnum.
 ```php
 public useremail(): mixed
 ```
+
 
 
 
@@ -257,6 +270,7 @@ public sendEmail(mixed $fnum, mixed $email_id, null $post = null, array $attachm
 
 
 
+
 ***
 
 ### sendEmailNoFnum
@@ -290,6 +304,7 @@ public sendEmailNoFnum(string $email_address, mixed $email, null $post = null, n
 
 
 
+
 ***
 
 ### sendMessage
@@ -299,6 +314,7 @@ send message in chat
 ```php
 public sendMessage(): mixed
 ```
+
 
 
 
@@ -332,6 +348,7 @@ public sendChatroomMessage(): mixed
 
 
 
+
 ***
 
 ### updatemessages
@@ -341,6 +358,7 @@ update message list
 ```php
 public updatemessages(): mixed
 ```
+
 
 
 
@@ -380,6 +398,7 @@ public getTypeAttachment(mixed $id): mixed
 
 
 
+
 ***
 
 ### getTypeLetters
@@ -407,6 +426,7 @@ public getTypeLetters(mixed $id): mixed
 
 
 
+
 ***
 
 ### getrecapbyfnum
@@ -416,6 +436,7 @@ public getTypeLetters(mixed $id): mixed
 ```php
 public getrecapbyfnum(): mixed
 ```
+
 
 
 
@@ -449,6 +470,7 @@ public getmessagerecapbyfnum(): mixed
 
 
 
+
 ***
 
 ### sendemailtocandidat
@@ -458,6 +480,7 @@ public getmessagerecapbyfnum(): mixed
 ```php
 public sendemailtocandidat(): mixed
 ```
+
 
 
 
@@ -491,6 +514,7 @@ public addtagsbyfnum(): mixed
 
 
 
+
 ***
 
 ### getalldocumentsletters
@@ -500,6 +524,7 @@ public addtagsbyfnum(): mixed
 ```php
 public getalldocumentsletters(): mixed
 ```
+
 
 
 
@@ -533,6 +558,7 @@ public getattachmentsbyprofiles(): mixed
 
 
 
+
 ***
 
 ### getallattachments
@@ -542,6 +568,7 @@ public getattachmentsbyprofiles(): mixed
 ```php
 public getallattachments(): mixed
 ```
+
 
 
 
@@ -575,6 +602,7 @@ public addtagsbyfnums(): mixed
 
 
 
+
 ***
 
 ### getAllCategories
@@ -584,6 +612,7 @@ public addtagsbyfnums(): mixed
 ```php
 public getAllCategories(): mixed
 ```
+
 
 
 
@@ -617,8 +646,9 @@ public getAllMessages(): mixed
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

@@ -29,10 +29,10 @@
                   :class="{ 'is-invalid': errors.model}">
             <option v-for="(model, index) in models" :key="index" :value="model.id">{{ model.subject }}</option>
           </select>
-          <p v-else class="tw-text-red-500">{{ translate('COM_EMUNDUS_ADD_TRIGGER_MISSING_EMAIL_MODELS') }}</p>
+          <p v-else class="tw-text-red-600">{{ translate('COM_EMUNDUS_ADD_TRIGGER_MISSING_EMAIL_MODELS') }}</p>
         </div>
-        <span v-if="errors.model" class="tw-text-red-500 tw-mb-2">
-            <span class="tw-text-red-500">{{ translate("COM_EMUNDUS_ONBOARD_TRIGGERMODEL_REQUIRED") }}</span>
+        <span v-if="errors.model" class="tw-text-red-600 tw-mb-2">
+            <span class="tw-text-red-600">{{ translate("COM_EMUNDUS_ONBOARD_TRIGGERMODEL_REQUIRED") }}</span>
           </span>
       </div>
 
@@ -41,8 +41,8 @@
         <select :id="'modal-status-trigger'" v-model="form.status" class="tw-w-full" :class="{ 'is-invalid': errors.status}">
           <option v-for="(statu,index) in status" :key="index" :value="statu.step">{{ statu.value }}</option>
         </select>
-        <span v-if="errors.status" class="tw-text-red-500 tw-mb-2">
-            <span class="tw-text-red-500">{{ translate("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED") }}</span>
+        <span v-if="errors.status" class="tw-text-red-600 tw-mb-2">
+            <span class="tw-text-red-600">{{ translate("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED") }}</span>
           </span>
       </div>
 
@@ -53,8 +53,8 @@
           <option value="6">{{ translate("COM_EMUNDUS_ONBOARD_PROGRAM_EVALUATORS") }}</option>
           <option value="1000">{{ translate("COM_EMUNDUS_ONBOARD_PROGRAM_CANDIDATES") }}</option>
         </select>
-        <span v-if="errors.target" class="tw-text-red-500 tw-mb-2">
-            <span class="tw-text-red-500">{{ translate("COM_EMUNDUS_ONBOARD_TRIGGERTARGET_REQUIRED") }}</span>
+        <span v-if="errors.target" class="tw-text-red-600 tw-mb-2">
+            <span class="tw-text-red-600">{{ translate("COM_EMUNDUS_ONBOARD_TRIGGERTARGET_REQUIRED") }}</span>
           </span>
       </div>
     </div>

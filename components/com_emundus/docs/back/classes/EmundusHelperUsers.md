@@ -41,6 +41,7 @@ public static generateStrongPassword(mixed $length = 8, mixed $add_dashes = fals
 
 
 
+
 ***
 
 ### generateToken
@@ -68,6 +69,7 @@ public static generateToken(mixed $length = 16): mixed
 
 
 
+
 ***
 
 ### getEmundusUser
@@ -89,8 +91,9 @@ public static getEmundusUser(): mixed
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

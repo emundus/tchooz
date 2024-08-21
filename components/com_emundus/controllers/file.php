@@ -7,8 +7,9 @@ jimport('joomla.user.helper');
 
 use \classes\files\files;
 use Joomla\CMS\Factory;
+use Joomla\CMS\MVC\Controller\BaseController;
 
-class EmundusControllerFile extends JControllerLegacy
+class EmundusControllerFile extends BaseController
 {
 	protected $app;
 
@@ -16,8 +17,18 @@ class EmundusControllerFile extends JControllerLegacy
 	private $type;
 	private $files;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     \JController
+	 * @since   1.0.0
+	 */
 	public function __construct($config = array())
 	{
+		parent::__construct($config);
+
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'classes' . DS . 'files' . DS . 'Files.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'classes' . DS . 'files' . DS . 'Evaluations.php');
 		$this->app   = Factory::getApplication();
@@ -64,8 +75,6 @@ class EmundusControllerFile extends JControllerLegacy
 		}
 
 		$this->app->getSession()->set('files', serialize($this->files));
-
-		parent::__construct($config);
 	}
 
 	public function getfiles()

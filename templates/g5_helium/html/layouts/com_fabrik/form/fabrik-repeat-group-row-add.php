@@ -11,6 +11,6 @@ $d = $displayData;
 ?>
 
 <a class="addGroup em-flex-row em-pointer"  href="#">
-    <span class="material-icons-outlined em-mr-8">add</span>
+    <span class="material-symbols-outlined em-mr-8">add</span>
     <p><?php echo Text::_('COM_FABRIK_ADD_GROUP');?></p>
 </a>

@@ -96,10 +96,10 @@
 
     <div class="tw-w-full tw-flex tw-items-center tw-justify-between">
       <div id="toggle-display">
-			  <span v-if="displayed" class="material-icons-outlined displayed tw-cursor-pointer" @click="toggleDisplay(false)">
+			  <span v-if="displayed" class="material-symbols-outlined displayed tw-cursor-pointer" @click="toggleDisplay(false)">
 				  chevron_right
 			  </span>
-        <span v-else class="material-icons-outlined not-displayed tw-cursor-pointer" @click="toggleDisplay(true)">
+        <span v-else class="material-symbols-outlined not-displayed tw-cursor-pointer" @click="toggleDisplay(true)">
 				  menu_open
 			  </span>
       </div>

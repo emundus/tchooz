@@ -17,6 +17,7 @@ jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\MVC\Controller\BaseController;
 
 /**
  * Form Controller
@@ -25,13 +26,21 @@ use Joomla\CMS\Language\Text;
  * @subpackage eMundus
  * @since      5.0.0
  */
-class EmundusControllerForm extends JControllerLegacy
+class EmundusControllerForm extends BaseController
 {
 	protected $app;
 
 	private $_user;
 	private $m_form;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     \JController
+	 * @since   1.0.0
+	 */
 	public function __construct($config = array())
 	{
 		parent::__construct($config);

@@ -1,28 +1,21 @@
 
 ***
 
-# phpDocumentor
+# eMundus Back-end documentation
 
 
 
-This is an automatically generated documentation for **phpDocumentor**.
+## \
 
-
-## Namespaces
-
-
-### \
-
-#### Classes
-
+## Controllers
 | Class | Description |
 |-------|-------------|
-| [`EmundusControllerAdmission`](./classes/EmundusControllerAdmission.md) | eMundus Component Controller|
-| [`EmundusControllerApplication`](./classes/EmundusControllerApplication.md) | Custom report controller|
-| [`EmundusControllerCampaign`](./classes/EmundusControllerCampaign.md) | Campaign Controller|
-| [`EmundusControllerDashboard`](./classes/EmundusControllerDashboard.md) | Campaign Controller|
-| [`EmundusControllerDecision`](./classes/EmundusControllerDecision.md) | eMundus Component Controller|
-| [`EmundusControllerEmail`](./classes/EmundusControllerEmail.md) | eMundus Component Controller|
+| [`EmundusControllerAdmission`](./classes/EmundusControllerAdmission.md) | Emundus Admission Controller|
+| [`EmundusControllerApplication`](./classes/EmundusControllerApplication.md) | Emundus Application Controller|
+| [`EmundusControllerCampaign`](./classes/EmundusControllerCampaign.md) | Emundus Campaign Controller|
+| [`EmundusControllerDashboard`](./classes/EmundusControllerDashboard.md) | Emundus Dashboard Controller|
+| [`EmundusControllerDecision`](./classes/EmundusControllerDecision.md) | Emundus Decision Controller|
+| [`EmundusControllerEmail`](./classes/EmundusControllerEmail.md) | Emundus Email Controller|
 | [`EmundusControllerEvaluation`](./classes/EmundusControllerEvaluation.md) | eMundus Component Controller|
 | [`EmundusControllerExport`](./classes/EmundusControllerExport.md) | Custom report controller|
 | [`EmundusControllerExport_select_columns`](./classes/EmundusControllerExport_select_columns.md) | eMundus Component Controller|
@@ -52,24 +45,11 @@ This is an automatically generated documentation for **phpDocumentor**.
 | [`EmundusControllerUsers`](./classes/EmundusControllerUsers.md) | users Controller|
 | [`EmundusControllerWebhook`](./classes/EmundusControllerWebhook.md) | eMundus Component Controller|
 | [`EmundusControllersettings`](./classes/EmundusControllersettings.md) | Settings Controller|
-| [`EmundusHelperAccess`](./classes/EmundusHelperAccess.md) | Content Component Query Helper|
-| [`EmundusHelperArray`](./classes/EmundusHelperArray.md) | Content Component Query Helper|
-| [`EmundusHelperCache`](./classes/EmundusHelperCache.md) | Content Component Cache Helper|
-| [`EmundusHelperChecklist`](./classes/EmundusHelperChecklist.md) | Content Component Checklist Helper|
-| [`EmundusHelperDate`](./classes/EmundusHelperDate.md) | Content Component Query Helper|
-| [`EmundusHelperEmails`](./classes/EmundusHelperEmails.md) | Content Component Query Helper|
-| [`EmundusHelperEvents`](./classes/EmundusHelperEvents.md) | Emundus Component Events Helper|
-| [`EmundusHelperExport`](./classes/EmundusHelperExport.md) | Content Component Query Helper|
-| [`EmundusHelperFabrik`](./classes/EmundusHelperFabrik.md) | Content Component Query Helper|
-| [`EmundusHelperFiles`](./classes/EmundusHelperFiles.md) | eMundus Component Query Helper|
-| [`EmundusHelperFilters`](./classes/EmundusHelperFilters.md) | Content Component Query Helper|
-| [`EmundusHelperJavascript`](./classes/EmundusHelperJavascript.md) | Content Component Query Helper|
-| [`EmundusHelperList`](./classes/EmundusHelperList.md) | Content Component Query Helper|
-| [`EmundusHelperMenu`](./classes/EmundusHelperMenu.md) | |
-| [`EmundusHelperMessages`](./classes/EmundusHelperMessages.md) | Content Component Query Helper|
-| [`EmundusHelperModule`](./classes/EmundusHelperModule.md) | Content Component Query Helper|
-| [`EmundusHelperTags`](./classes/EmundusHelperTags.md) | Content Component Query Helper|
-| [`EmundusHelperUsers`](./classes/EmundusHelperUsers.md) | Content Component Query Helper|
+
+## Models
+
+| Class | Description |
+|-------|-------------|
 | [`EmundusModelAdmission`](./classes/EmundusModelAdmission.md) | |
 | [`EmundusModelApplication`](./classes/EmundusModelApplication.md) | |
 | [`EmundusModelCampaign`](./classes/EmundusModelCampaign.md) | |
@@ -92,11 +72,11 @@ This is an automatically generated documentation for **phpDocumentor**.
 | [`EmundusModelJobs`](./classes/EmundusModelJobs.md) | Methods supporting a list of Emundus records.|
 | [`EmundusModelList`](./classes/EmundusModelList.md) | |
 | [`EmundusModelLogs`](./classes/EmundusModelLogs.md) | |
-| [`EmundusModelMessages`](./classes/EmundusModelMessages.md) | |
+| [`EmundusModelMessages`](./classes/EmundusModelMessages.md) | Model class for handling lists of items.|
 | [`EmundusModelMessenger`](./classes/EmundusModelMessenger.md) | |
 | [`EmundusModelPayment`](./classes/EmundusModelPayment.md) | |
 | [`EmundusModelProfile`](./classes/EmundusModelProfile.md) | |
-| [`EmundusModelProgramme`](./classes/EmundusModelProgramme.md) | |
+| [`EmundusModelProgramme`](./classes/EmundusModelProgramme.md) | Model class for handling lists of items.|
 | [`EmundusModelQcm`](./classes/EmundusModelQcm.md) | |
 | [`EmundusModelRenew_application`](./classes/EmundusModelRenew_application.md) | |
 | [`EmundusModelStats`](./classes/EmundusModelStats.md) | |
@@ -107,18 +87,33 @@ This is an automatically generated documentation for **phpDocumentor**.
 | [`EmundusModelUser`](./classes/EmundusModelUser.md) | |
 | [`EmundusModelUsers`](./classes/EmundusModelUsers.md) | |
 | [`EmundusModelsettings`](./classes/EmundusModelsettings.md) | |
-| [`JFormFieldCity`](./classes/JFormFieldCity.md) | |
-| [`JFormFieldCreatedby`](./classes/JFormFieldCreatedby.md) | Supports an HTML select list of categories|
-| [`JFormFieldForeignKey`](./classes/JFormFieldForeignKey.md) | Supports a value from an external table|
-| [`JFormFieldGroup`](./classes/JFormFieldGroup.md) | Renders a list of elements|
-| [`JFormFieldOrganisation`](./classes/JFormFieldOrganisation.md) | Renders a list of elements|
-| [`JFormFieldStatus`](./classes/JFormFieldStatus.md) | Renders a list of elements|
-| [`JFormFieldSubmit`](./classes/JFormFieldSubmit.md) | |
-| [`JFormFieldTimecreated`](./classes/JFormFieldTimecreated.md) | Supports an HTML select list of categories|
-| [`JFormFieldTimeupdated`](./classes/JFormFieldTimeupdated.md) | Supports an HTML select list of categories|
+
+## Helpers
+
+| Class | Description |
+|-------|-------------|
+| [`EmundusHelperAccess`](./classes/EmundusHelperAccess.md) | Content Component Query Helper|
+| [`EmundusHelperArray`](./classes/EmundusHelperArray.md) | Content Component Query Helper|
+| [`EmundusHelperCache`](./classes/EmundusHelperCache.md) | Content Component Cache Helper|
+| [`EmundusHelperChecklist`](./classes/EmundusHelperChecklist.md) | Content Component Checklist Helper|
+| [`EmundusHelperDate`](./classes/EmundusHelperDate.md) | Content Component Query Helper|
+| [`EmundusHelperEmails`](./classes/EmundusHelperEmails.md) | Content Component Query Helper|
+| [`EmundusHelperEvents`](./classes/EmundusHelperEvents.md) | Emundus Component Events Helper|
+| [`EmundusHelperExport`](./classes/EmundusHelperExport.md) | Content Component Query Helper|
+| [`EmundusHelperFabrik`](./classes/EmundusHelperFabrik.md) | Content Component Query Helper|
+| [`EmundusHelperFiles`](./classes/EmundusHelperFiles.md) | eMundus Component Query Helper|
+| [`EmundusHelperFilters`](./classes/EmundusHelperFilters.md) | Content Component Query Helper|
+| [`EmundusHelperJavascript`](./classes/EmundusHelperJavascript.md) | Content Component Query Helper|
+| [`EmundusHelperList`](./classes/EmundusHelperList.md) | Content Component Query Helper|
+| [`EmundusHelperMenu`](./classes/EmundusHelperMenu.md) | |
+| [`EmundusHelperMessages`](./classes/EmundusHelperMessages.md) | Content Component Query Helper|
+| [`EmundusHelperModule`](./classes/EmundusHelperModule.md) | Content Component Query Helper|
+| [`EmundusHelperTags`](./classes/EmundusHelperTags.md) | Content Component Query Helper|
+| [`EmundusHelperUsers`](./classes/EmundusHelperUsers.md) | Content Component Query Helper|
+
 
 
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

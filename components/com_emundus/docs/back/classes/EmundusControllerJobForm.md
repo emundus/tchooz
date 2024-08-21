@@ -34,6 +34,7 @@ public edit(): mixed
 
 
 
+
 ***
 
 ### save
@@ -55,6 +56,7 @@ public save(): void|mixed
 
 
 
+
 ***
 
 ### cancel
@@ -64,6 +66,7 @@ public save(): void|mixed
 ```php
 public cancel(): mixed
 ```
+
 
 
 
@@ -102,8 +105,9 @@ public remove(): false|void
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

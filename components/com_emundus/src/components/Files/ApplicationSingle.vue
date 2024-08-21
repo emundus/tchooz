@@ -1,6 +1,7 @@
 <template>
   <modal
       v-show="showModal"
+      :click-to-close="false"
       id="application-modal"
       name="application-modal"
       ref="modal"
@@ -11,7 +12,7 @@
       <div class="tw-flex tw-items-center tw-cursor-pointer tw-justify-between tw-w-full" id="evaluation-modal-close">
         <div class="tw-flex tw-items-center tw-gap-2">
           <div  @click="onClose" class="tw-w-max tw-flex tw-items-center">
-               <span class="material-icons-outlined tw-text-base" style="color: white">navigate_before</span>
+               <span class="material-symbols-outlined tw-text-base" style="color: white">navigate_before</span>
               <span class="tw-ml-2 tw-text-neutral-900 tw-text-white tw-text-sm">{{ translate('BACK') }}</span>
           </div>
           <span class="tw-text-white">|</span>
@@ -23,8 +24,8 @@
           </p>
         </div>
         <div v-if="fnums.length > 1" class="tw-flex tw-items-center">
-          <span class="material-icons-outlined tw-text-base" style="color:white;" @click="openPreviousFnum">navigate_before</span>
-          <span class="material-icons-outlined tw-text-base" style="color:white;" @click="openNextFnum">navigate_next</span>
+          <span class="material-symbols-outlined tw-text-base" style="color:white;" @click="openPreviousFnum">navigate_before</span>
+          <span class="material-symbols-outlined tw-text-base" style="color:white;" @click="openNextFnum">navigate_next</span>
         </div>
       </div>
     </div>
@@ -61,15 +62,18 @@
       </div>
 
       <div id="modal-evaluationgrid">
-        <div class="tw-flex tw-flex-col" v-if="!loading" style="width: 40px;height: 40px;margin: 24px 0 12px 24px;">
+        <div class="tw-flex tw-flex-col" v-if="!loading && url" style="width: 40px;height: 40px;margin: 24px 0 12px 24px;">
           <div class="tw-bg-profile-light tw-rounded-full tw-flex tw-justify-center tw-items-center" style="width: 40px; height: 40px;">
             <div class="tw-bg-profile-medium tw-rounded-full  tw-flex tw-justify-center tw-items-center" style="width: 24px; height: 24px">
-              <span class="material-icons-outlined tw-rounded-full tw-text-profile-full" style="font-size: 14px">troubleshoot</span>
+              <span class="material-symbols-outlined tw-rounded-full tw-text-profile-full" style="font-size: 14px">troubleshoot</span>
             </div>
           </div>
         </div>
         <iframe v-if="url" :src="url" class="iframe-evaluation" id="iframe-evaluation" @load="iframeLoaded($event);"
                 title="Evaluation form"/>
+        <div v-else>
+          {{ translate('COM_EMUNDUS_EVALUATION_NO_FORM_FOUND') }}
+        </div>
         <div class="em-page-loader" v-if="loading"></div>
       </div>
     </div>
@@ -270,7 +274,7 @@ export default {
       let view = 'form';
 
       filesService.getEvaluationFormByFnum(this.selectedFile.fnum, this.$props.type).then((response) => {
-        if (response.data !== 0) {
+        if (response.data !== 0 && response.data !== null) {
           if (typeof this.selectedFile.id === 'undefined') {
             filesService.getMyEvaluation(this.selectedFile.fnum).then((data) => {
               this.rowid = data.data;

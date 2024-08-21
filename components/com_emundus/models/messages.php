@@ -513,7 +513,7 @@ class EmundusModelMessages extends ListModel
 
 				$params         = json_decode($elt['params']);
 				$groupParams    = json_decode($elt['group_params']);
-				$isDate         = ($elt['plugin'] == 'date');
+				$isDate         = (in_array($elt['plugin'], ['date','jdate']));
 				$isDatabaseJoin = ($elt['plugin'] === 'databasejoin');
 
 				if ($groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
@@ -521,7 +521,11 @@ class EmundusModelMessages extends ListModel
 				}
 				else {
 					if ($isDate)
-						$fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnum, $elt['db_table_name'], $elt['name'], $params->date_form_format);
+						if($elt['plugin'] == 'jdate') {
+							$fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnum, $elt['db_table_name'], $elt['name'], $params->jdate_form_format);
+						} else {
+							$fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnum, $elt['db_table_name'], $elt['name'], $params->date_form_format);
+						}
 					else
 						$fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnum, $elt['db_table_name'], $elt['name']);
 				}

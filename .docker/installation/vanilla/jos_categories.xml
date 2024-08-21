@@ -47,7 +47,7 @@
     <field name="asset_id">0</field>
     <field name="parent_id">0</field>
     <field name="lft">0</field>
-    <field name="rgt">75</field>
+    <field name="rgt">77</field>
     <field name="level">0</field>
     <field name="path"></field>
     <field name="extension">system</field>

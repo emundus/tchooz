@@ -111,6 +111,7 @@ public __construct(): mixed
 
 
 
+
 ***
 
 ### getActiveCampaign
@@ -120,6 +121,7 @@ Get active campaign
 ```php
 public getActiveCampaign(): mixed
 ```
+
 
 
 
@@ -153,6 +155,7 @@ public _buildQuery(): string
 
 
 
+
 ***
 
 ### _buildContentOrderBy
@@ -162,6 +165,7 @@ Build Content with order by
 ```php
 public _buildContentOrderBy(): string
 ```
+
 
 
 
@@ -201,6 +205,7 @@ public getAllowedCampaign(mixed $uid = null): array|void
 
 
 
+
 ***
 
 ### getMyCampaign
@@ -210,6 +215,7 @@ Get campaigns by my applicant_id
 ```php
 public getMyCampaign(): mixed
 ```
+
 
 
 
@@ -249,6 +255,7 @@ public getCampaignByID(mixed $campaign_id): mixed
 
 
 
+
 ***
 
 ### getAllCampaigns
@@ -271,6 +278,7 @@ public getAllCampaigns(bool $published = true): array|mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$published` | **bool** |  |
+
 
 
 
@@ -303,6 +311,7 @@ public getProgrammeByCampaignID(mixed $campaign_id): mixed
 
 
 
+
 ***
 
 ### getProgrammeByTraining
@@ -325,6 +334,7 @@ public getProgrammeByTraining(mixed $training): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$training` | **mixed** |  |
+
 
 
 
@@ -357,6 +367,7 @@ public getCampaignsByCourse(mixed $course): mixed
 
 
 
+
 ***
 
 ### getCampaignsByProgram
@@ -379,6 +390,7 @@ public getCampaignsByProgram(mixed $code): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$code` | **mixed** |  |
+
 
 
 
@@ -412,6 +424,7 @@ public getCampaignsByCourseCampaign(mixed $course, mixed $camp): mixed
 
 
 
+
 ***
 
 ### getLastCampaignByCourse
@@ -439,6 +452,7 @@ public static getLastCampaignByCourse(mixed $course): mixed
 
 
 
+
 ***
 
 ### getMySubmittedCampaign
@@ -448,6 +462,7 @@ public static getLastCampaignByCourse(mixed $course): mixed
 ```php
 public getMySubmittedCampaign(): mixed
 ```
+
 
 
 
@@ -487,6 +502,7 @@ public getCampaignByApplicant(mixed $aid): mixed
 
 
 
+
 ***
 
 ### getCampaignByFnum
@@ -514,6 +530,7 @@ public getCampaignByFnum(mixed $fnum): mixed
 
 
 
+
 ***
 
 ### getCampaignSubmittedByApplicant
@@ -536,6 +553,7 @@ public getCampaignSubmittedByApplicant(mixed $aid): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$aid` | **mixed** |  |
+
 
 
 
@@ -569,6 +587,7 @@ public setSelectedCampaign(mixed $cid, mixed $aid): mixed
 
 
 
+
 ***
 
 ### setResultLetterSent
@@ -592,6 +611,7 @@ public setResultLetterSent(mixed $aid, mixed $campaign_id): mixed
 |-----------|------|-------------|
 | `$aid` | **mixed** |  |
 | `$campaign_id` | **mixed** |  |
+
 
 
 
@@ -624,6 +644,7 @@ public isOtherActiveCampaign(mixed $aid): bool
 
 
 
+
 ***
 
 ### getPagination
@@ -633,6 +654,7 @@ public isOtherActiveCampaign(mixed $aid): bool
 ```php
 public getPagination(): \JPagination
 ```
+
 
 
 
@@ -666,6 +688,7 @@ public getTotal(): false|int
 
 
 
+
 ***
 
 ### getCampaignsXLS
@@ -675,6 +698,7 @@ public getTotal(): false|int
 ```php
 public getCampaignsXLS(): array|mixed
 ```
+
 
 
 
@@ -719,6 +743,7 @@ Does it work.
 
 
 
+
 ***
 
 ### getLatestCampaign
@@ -744,6 +769,7 @@ The most recent campaign programme in the DB.
 
 
 
+
 ***
 
 ### getCCITU
@@ -753,6 +779,7 @@ Gets all elements in teaching unity table
 ```php
 public getCCITU(): array
 ```
+
 
 
 
@@ -792,6 +819,7 @@ public getTeachingUnity(null $id = null): array|mixed
 
 
 
+
 ***
 
 ### getLimit
@@ -819,6 +847,7 @@ public getLimit(mixed $id): object|mixed
 
 
 
+
 ***
 
 ### isLimitObtained
@@ -841,6 +870,7 @@ public isLimitObtained(mixed $id): object|mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$id` | **mixed** |  |
+
 
 
 
@@ -879,6 +909,7 @@ public getAssociatedCampaigns(mixed $filter = &#039;&#039;, mixed $sort = &#039;
 
 
 
+
 ***
 
 ### getCampaignsByProgramId
@@ -901,6 +932,7 @@ public getCampaignsByProgramId(mixed $program): array|mixed|\stdClass
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$program` | **mixed** |  |
+
 
 
 
@@ -934,6 +966,7 @@ public deleteCampaign(mixed $data, bool $force_delete = false): bool
 
 
 
+
 ***
 
 ### unpublishCampaign
@@ -956,6 +989,7 @@ public unpublishCampaign(mixed $data): false
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$data` | **mixed** |  |
+
 
 
 
@@ -988,6 +1022,7 @@ public publishCampaign(mixed $data): false
 
 
 
+
 ***
 
 ### duplicateCampaign
@@ -1015,6 +1050,7 @@ public duplicateCampaign(mixed $id): false|mixed|string
 
 
 
+
 ***
 
 ### getYears
@@ -1024,6 +1060,7 @@ public duplicateCampaign(mixed $id): false|mixed|string
 ```php
 public getYears(): array|mixed
 ```
+
 
 
 
@@ -1067,6 +1104,7 @@ campaign_id, 0 if failed
 
 
 
+
 ***
 
 ### updateCampaign
@@ -1090,6 +1128,7 @@ public updateCampaign(mixed $data, mixed $cid): bool|string
 |-----------|------|-------------|
 | `$data` | **mixed** |  |
 | `$cid` | **mixed** |  |
+
 
 
 
@@ -1123,6 +1162,7 @@ public createYear(mixed $data, mixed $profile = null): bool|string
 
 
 
+
 ***
 
 ### getCampaignDetailsById
@@ -1150,6 +1190,7 @@ public getCampaignDetailsById(mixed $id): false|\stdClass
 
 
 
+
 ***
 
 ### getCreatedCampaign
@@ -1159,6 +1200,7 @@ public getCampaignDetailsById(mixed $id): false|\stdClass
 ```php
 public getCreatedCampaign(): false|mixed|null
 ```
+
 
 
 
@@ -1199,6 +1241,7 @@ public updateProfile(mixed $profile, mixed $campaign): bool
 
 
 
+
 ***
 
 ### getCampaignsToAffect
@@ -1208,6 +1251,7 @@ Get campaigns without applicant files
 ```php
 public getCampaignsToAffect(): array|mixed
 ```
+
 
 
 
@@ -1247,6 +1291,7 @@ public getCampaignsToAffectByTerm(mixed $term): false
 
 
 
+
 ***
 
 ### createDocument
@@ -1271,6 +1316,7 @@ public createDocument(mixed $document, mixed $types, mixed $pid): array
 | `$document` | **mixed** |  |
 | `$types` | **mixed** |  |
 | `$pid` | **mixed** |  |
+
 
 
 
@@ -1307,6 +1353,7 @@ public updateDocument(mixed $document, mixed $types, mixed $did, mixed $pid, mix
 
 
 
+
 ***
 
 ### updatedDocumentMandatory
@@ -1331,6 +1378,7 @@ public updatedDocumentMandatory(mixed $did, mixed $pid, mixed $mandatory = 1): m
 | `$did` | **mixed** |  |
 | `$pid` | **mixed** |  |
 | `$mandatory` | **mixed** |  |
+
 
 
 
@@ -1363,6 +1411,7 @@ public getCampaignCategory(mixed $cid): false
 
 
 
+
 ***
 
 ### getCampaignDropfilesDocuments
@@ -1385,6 +1434,7 @@ public getCampaignDropfilesDocuments(mixed $campaign_cat): false
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$campaign_cat` | **mixed** |  |
+
 
 
 
@@ -1417,6 +1467,7 @@ public getDropfileDocument(mixed $did): false
 
 
 
+
 ***
 
 ### deleteDocumentDropfile
@@ -1439,6 +1490,7 @@ public deleteDocumentDropfile(mixed $did): false
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$did` | **mixed** |  |
+
 
 
 
@@ -1472,6 +1524,7 @@ public editDocumentDropfile(mixed $did, mixed $name): false
 
 
 
+
 ***
 
 ### updateOrderDropfileDocuments
@@ -1499,6 +1552,7 @@ public updateOrderDropfileDocuments(mixed $documents): bool
 
 
 
+
 ***
 
 ### getFormDocuments
@@ -1521,6 +1575,7 @@ public getFormDocuments(mixed $pid): array|false
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$pid` | **mixed** |  |
+
 
 
 
@@ -1555,6 +1610,7 @@ public editDocumentForm(mixed $did, mixed $name, mixed $pid): bool
 
 
 
+
 ***
 
 ### deleteDocumentForm
@@ -1578,6 +1634,7 @@ public deleteDocumentForm(mixed $did, mixed $pid): false
 |-----------|------|-------------|
 | `$did` | **mixed** |  |
 | `$pid` | **mixed** |  |
+
 
 
 
@@ -1614,6 +1671,7 @@ False if error, object containing emundus_campaign_workflow id, start date and e
 
 
 
+
 ***
 
 ### getAllCampaignWorkflows
@@ -1636,6 +1694,7 @@ public getAllCampaignWorkflows(mixed $campaign_id): array
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$campaign_id` | **mixed** | int |
+
 
 
 
@@ -1668,6 +1727,7 @@ public pinCampaign(mixed $cid): bool
 
 
 
+
 ***
 
 ### unpinCampaign
@@ -1690,6 +1750,7 @@ public unpinCampaign(mixed $campaign_id): bool
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$campaign_id` | **mixed** |  |
+
 
 
 
@@ -1726,6 +1787,7 @@ public createWorkflow(mixed $profile, mixed $entry_status, mixed $output_status,
 
 
 
+
 ***
 
 ### canCreateWorkflow
@@ -1750,6 +1812,7 @@ public canCreateWorkflow(mixed $profile, mixed $entry_status, mixed $params): bo
 | `$profile` | **mixed** |  |
 | `$entry_status` | **mixed** |  |
 | `$params` | **mixed** |  |
+
 
 
 
@@ -1782,6 +1845,7 @@ public deleteWorkflows(mixed $ids = null): mixed
 
 
 
+
 ***
 
 ### getWorkflows
@@ -1809,6 +1873,7 @@ public getWorkflows(mixed $ids = null): mixed
 
 
 
+
 ***
 
 ### findWorkflowIncoherences
@@ -1818,6 +1883,7 @@ public getWorkflows(mixed $ids = null): mixed
 ```php
 public findWorkflowIncoherences(): array
 ```
+
 
 
 
@@ -1857,6 +1923,7 @@ public getCampaignMoreFormUrl(mixed $campaign_id): string
 
 
 
+
 ***
 
 ### getAllItemsAlias
@@ -1879,6 +1946,7 @@ public getAllItemsAlias(mixed $cid): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$cid` | **mixed** |  |
+
 
 
 
@@ -1913,6 +1981,7 @@ public createCampaignAlias(mixed $cid, mixed $alias, mixed $label): mixed
 
 
 
+
 ***
 
 ### getCampaignDetailsMenu
@@ -1940,8 +2009,9 @@ public getCampaignDetailsMenu(mixed $cid): mixed
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

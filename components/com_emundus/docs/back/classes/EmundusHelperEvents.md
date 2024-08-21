@@ -44,6 +44,7 @@ public onBeforeLoad(mixed $params): bool
 
 
 
+
 ***
 
 ### onBeforeStore
@@ -66,6 +67,7 @@ public onBeforeStore(mixed $params): bool
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$params` | **mixed** | <br />Parameters available : $params[&#039;formModel&#039;] |
+
 
 
 
@@ -98,6 +100,7 @@ public onAfterProcess(mixed $params): bool
 
 
 
+
 ***
 
 ### getFormsIdFromTableNames
@@ -120,6 +123,7 @@ private getFormsIdFromTableNames(mixed $table_names): array
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$table_names` | **mixed** |  |
+
 
 
 
@@ -152,6 +156,7 @@ public isApplicationSent(mixed $params): bool
 
 
 
+
 ***
 
 ### isApplicationCompleted
@@ -174,6 +179,7 @@ public isApplicationCompleted(mixed $params): bool
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$params` | **mixed** |  |
+
 
 
 
@@ -206,6 +212,7 @@ public redirect(mixed $params): bool
 
 
 
+
 ***
 
 ### confirmpost
@@ -233,6 +240,7 @@ public confirmpost(mixed $params): bool
 
 
 
+
 ***
 
 ### onAfterProgramCreate
@@ -255,6 +263,7 @@ public onAfterProgramCreate(mixed $params): bool
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$params` | **mixed** |  |
+
 
 
 
@@ -288,6 +297,7 @@ private logUpdateForms(mixed $params, mixed $forms_to_log = []): bool
 
 
 
+
 ***
 
 ### getFormElements
@@ -310,6 +320,7 @@ private getFormElements(mixed $form_id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$form_id` | **mixed** |  |
+
 
 
 
@@ -346,6 +357,7 @@ private logUpdateState(mixed $old_status, mixed $new_status, mixed $user_id, mix
 
 
 
+
 ***
 
 ### applicationUpdating
@@ -368,6 +380,7 @@ private applicationUpdating(mixed $fnum): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$fnum` | **mixed** |  |
+
 
 
 
@@ -402,8 +415,9 @@ private checkQcmCompleted(mixed $fnum, mixed $forms_ids, mixed $items_ids): mixe
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

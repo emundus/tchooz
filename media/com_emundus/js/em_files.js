@@ -238,7 +238,7 @@ function addElement() {
                 var newId = 'em-adv-father-' + num;
                 ni.append('<fieldset id="' + newId + '" class="em-nopadding">' +
                     '<a id="suppr-filt" class="em-mb-4 em-flex-start">' +
-                    '<span class="em-font-size-14 em-red-500-color em-pointer">' + Joomla.Text._('COM_EMUNDUS_DELETE_ADVANCED_FILTERS') + '</span>' +
+                    '<span class="em-font-size-14 em-red-600-color em-pointer">' + Joomla.Text._('COM_EMUNDUS_DELETE_ADVANCED_FILTERS') + '</span>' +
                     '</a>' +
                     '<select class="chzn-select em-filt-select em-mb-4" name="elements" id="elements-'+num+'">' +
                     '<option value="">' + result.default +'</option>' +
@@ -1945,7 +1945,7 @@ $(document).ready(function() {
                                 '<div class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16">' +
 
                                 '<div>' +
-                                '<h5>'+Joomla.Text._('COM_EMUNDUS_CHOOSE_PRG')+'<span class="material-icons text-xxs text-red-500 mr-0" style="top: -5px;position: relative">emergency</span></h5>' +
+                                '<h5>'+Joomla.Text._('COM_EMUNDUS_CHOOSE_PRG')+'<span class="material-symbols-outlined text-xxs text-red-500 mr-0" style="top: -5px;position: relative">emergency</span></h5>' +
                                 '</div>' +
 
                                 '<div class="em-mt-8">' +
@@ -1970,22 +1970,22 @@ $(document).ready(function() {
                                 '<div>'+
                                 '<table style="width:100%;"><tr>'+
                                 '<th class="em-bg-transparent"><div class="em-flex-row em-pointer" id="showelements">' +
-                                '<span title="'+Joomla.Text._('COM_EMUNDUS_SHOW_ELEMENTS')+'" id="showelements_icon" class="material-icons em-mr-4" style="transform: rotate(-90deg)">expand_more</span>' +
+                                '<span title="'+Joomla.Text._('COM_EMUNDUS_SHOW_ELEMENTS')+'" id="showelements_icon" class="material-symbols-outlined em-mr-4" style="transform: rotate(-90deg)">expand_more</span>' +
                                 '<p>'+Joomla.Text._('COM_EMUNDUS_CHOOSE_FORM_ELEM')+'</p>'+
                                 '</div></th>' +
 
                                 '<th class="em-bg-transparent" id="th-eval"><div class="em-flex-row em-pointer" id="showevalelements">' +
-                                '<span title="'+Joomla.Text._('COM_EMUNDUS_SHOW_ELEMENTS')+'" class="material-icons em-mr-4" id="showevalelements_icon" style="transform: rotate(-90deg)">expand_more</span>' +
+                                '<span title="'+Joomla.Text._('COM_EMUNDUS_SHOW_ELEMENTS')+'" class="material-symbols-outlined em-mr-4" id="showevalelements_icon" style="transform: rotate(-90deg)">expand_more</span>' +
                                 '<p>'+Joomla.Text._('COM_EMUNDUS_CHOOSE_EVAL_FORM_ELEM')+'</p>'+
                                 '</div></th>' +
 
                                 '<th class="em-bg-transparent" id="th-dec" style="display: none;"><div class="em-flex-row em-pointer" id="showdecisionelements">' +
-                                '<span title="'+Joomla.Text._('COM_EMUNDUS_SHOW_ELEMENTS')+'" class="material-icons em-mr-4" id="showdecisionelements_icon" style="transform: rotate(-90deg)">expand_more</span>' +
+                                '<span title="'+Joomla.Text._('COM_EMUNDUS_SHOW_ELEMENTS')+'" class="material-symbols-outlined em-mr-4" id="showdecisionelements_icon" style="transform: rotate(-90deg)">expand_more</span>' +
                                 '<p>'+Joomla.Text._('COM_EMUNDUS_CHOOSE_DECISION_FORM_ELEM')+'</p>'+
                                 '</div></th>' +
 
                                 '<th class="em-bg-transparent" id="th-adm" style="display: none;"><div class="em-flex-row em-pointer" id="showadmissionelements">' +
-                                '<span title="'+Joomla.Text._('COM_EMUNDUS_SHOW_ELEMENTS')+'" class="material-icons em-mr-4" id="showadmissionelements_icon" style="transform: rotate(-90deg)">expand_more</span>' +
+                                '<span title="'+Joomla.Text._('COM_EMUNDUS_SHOW_ELEMENTS')+'" class="material-symbols-outlined em-mr-4" id="showadmissionelements_icon" style="transform: rotate(-90deg)">expand_more</span>' +
                                 '<p>'+Joomla.Text._('COM_EMUNDUS_CHOOSE_ADMISSION_FORM_ELEM')+'</p>'+
                                 '</div></th>' +
 
@@ -2194,7 +2194,7 @@ $(document).ready(function() {
                                                                             break;
 
                                                                         if ($('#em-export #'+result.defaults[d].id+'-item').length == 0)
-                                                                            item += '<li class="em-export-item" id="' + result.defaults[d].id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + result.defaults[d].id + '-itembtn" class="em-pointer fabrik-elt-delete material-icons em-red-500-color em-mr-4">delete_outline</span><p>' + result.defaults[d].element_label + '</p></span></li>';
+                                                                            item += '<li class="em-export-item" id="' + result.defaults[d].id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + result.defaults[d].id + '-itembtn" class="em-pointer fabrik-elt-delete material-symbols-outlined em-red-600-color em-mr-4">delete_outline</span><p>' + result.defaults[d].element_label + '</p></span></li>';
                                                                     }
                                                                     $('#em-export').append(item);
                                                                 }
@@ -2222,7 +2222,7 @@ $(document).ready(function() {
                                                                                     for (var d in result.defaults) {
                                                                                         if (isNaN(parseInt(d)))
                                                                                             break;
-                                                                                        item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + result.defaults[d].element_id + '-itembtn" class="em-pointer fabrik-elt-delete material-icons em-red-500-color em-mr-4">delete_outline</span><p>' + result.defaults[d].element_label + '</p></span></li>';
+                                                                                        item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + result.defaults[d].element_id + '-itembtn" class="em-pointer fabrik-elt-delete material-symbols-outlined em-red-600-color em-mr-4">delete_outline</span><p>' + result.defaults[d].element_label + '</p></span></li>';
                                                                                         $('#emundus_elm_'+ result.defaults[d].element_id).prop("checked", true);
                                                                                     }
                                                                                     $('#em-export').append(item);
@@ -2269,7 +2269,7 @@ $(document).ready(function() {
                                                                                                                     for (var d in result.defaults) {
                                                                                                                         if (isNaN(parseInt(d)))
                                                                                                                             break;
-                                                                                                                        item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + result.defaults[d].element_id + '-itembtn" class="em-pointer fabrik-elt-delete material-icons em-red-500-color em-mr-4">delete_outline</span><p>' + result.defaults[d].element_label + '</p></span></li>';
+                                                                                                                        item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + result.defaults[d].element_id + '-itembtn" class="em-pointer fabrik-elt-delete material-symbols-outlined em-red-600-color em-mr-4">delete_outline</span><p>' + result.defaults[d].element_label + '</p></span></li>';
                                                                                                                         $('#emundus_elm_'+ result.defaults[d].element_id).prop("checked", true);
                                                                                                                     }
                                                                                                                     $('#em-export').append(item);
@@ -2445,7 +2445,7 @@ $(document).ready(function() {
                                                                         var selectedElts = selectedElements.elements.selected_elements;
 
                                                                         selectedElts.forEach(elts => {
-                                                                            $('#em-export').append('<li class="em-export-item" id="' + elts.id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + elts.id + '-itembtn" class="em-pointer fabrik-elt-delete material-icons em-red-500-color em-mr-4">delete_outline</span><p>' + elts.label + '</p></span></li>');
+                                                                            $('#em-export').append('<li class="em-export-item" id="' + elts.id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + elts.id + '-itembtn" class="em-pointer fabrik-elt-delete material-symbols-outlined em-red-600-color em-mr-4">delete_outline</span><p>' + elts.label + '</p></span></li>');
                                                                         });
                                                                         $('#em-export').trigger("chosen:updated");
                                                                     }
@@ -3423,7 +3423,7 @@ $(document).ready(function() {
                                     if (selectedProgram == 0) {
                                         removeLoader();
                                         // select id="filt_save_pdf" and add sibling saying to select a program
-                                        programSelector.after('<span id="model-err-pdf" class="error em-red-500-color">Please select a program</span>');
+                                        programSelector.after('<span id="model-err-pdf" class="error em-red-600-color">Please select a program</span>');
                                         filtSavePdf.val(0);
                                         filtSavePdf.trigger('chosen:updated');
                                         filtSavePdf.trigger('liszt:updated');
@@ -3712,7 +3712,7 @@ $(document).ready(function() {
                                                                 $('#form-element').show();
                                                                 $('#form-element').append(
                                                                     '<div class="em-flex-row em-pointer"  id="showelements_'+id+'">' +
-                                                                    '<span title="'+Joomla.Text._('COM_EMUNDUS_SHOW_ELEMENTS')+'" id="showelements_'+id+'_icon" class="material-icons em-mr-4" style="transform: rotate(-90deg)">expand_more</span>' +
+                                                                    '<span title="'+Joomla.Text._('COM_EMUNDUS_SHOW_ELEMENTS')+'" id="showelements_'+id+'_icon" class="material-symbols-outlined em-mr-4" style="transform: rotate(-90deg)">expand_more</span>' +
                                                                     '<p>'+labels+'</p>'+
                                                                     '</div>' +
                                                                     '<div id="felts' + id + '" class="em-p-16" style="overflow:auto; display: none"/>' +
@@ -5751,7 +5751,7 @@ $(document).ready(function() {
             var id = $(this).val();
             var text = $('#em-modal-actions #em-export-form option:selected').attr('data-value');
             $('#emundus_elm_'+id).prop("checked", true);
-            $('#em-export').append('<li class="em-export-item" id="' + id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + id + '-itembtn" class="em-pointer fabrik-elt-delete material-icons em-red-500-color em-mr-4">delete_outline</span><p>' + text + '</p></span></li>');
+            $('#em-export').append('<li class="em-export-item" id="' + id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + id + '-itembtn" class="em-pointer fabrik-elt-delete material-symbols-outlined em-red-600-color em-mr-4">delete_outline</span><p>' + text + '</p></span></li>');
         }
     });
 
@@ -5761,7 +5761,7 @@ $(document).ready(function() {
             var id = $(this).val();
             var text = $('#em-admission-export-form option:selected').attr('data-value');
             $('#emundus_elm_'+id).prop("checked", true);
-            $('#em-export').append('<li class="em-export-item" id="' + id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + id + '-itembtn" class="em-pointer fabrik-elt-delete material-icons em-red-500-color em-mr-4">delete_outline</span><p>' + text + '</p></span></li>');
+            $('#em-export').append('<li class="em-export-item" id="' + id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + id + '-itembtn" class="em-pointer fabrik-elt-delete material-symbols-outlined em-red-600-color em-mr-4">delete_outline</span><p>' + text + '</p></span></li>');
         }
     });
 
@@ -5771,7 +5771,7 @@ $(document).ready(function() {
             var id = $(this).val();
             var text = $('#em-decision-export-form option:selected').attr('data-value');
             $('#emundus_elm_'+id).prop("checked", true);
-            $('#em-export').append('<li class="em-export-item" id="' + id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + id + '-itembtn" class="em-pointer fabrik-elt-delete material-icons em-red-500-color em-mr-4">delete_outline</span><p>' + text + '</p></span></li>');
+            $('#em-export').append('<li class="em-export-item" id="' + id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + id + '-itembtn" class="em-pointer fabrik-elt-delete material-symbols-outlined em-red-600-color em-mr-4">delete_outline</span><p>' + text + '</p></span></li>');
         }
     });
 
@@ -5782,7 +5782,7 @@ $(document).ready(function() {
             var id = $(this).val();
             if ($(this).is(':checked')) {
                 var text = $("label[for='" + $(this).attr('id') + "']").text();
-                $('#em-export').append('<li class="em-export-item" id="' + id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + id + '-itembtn" class="em-pointer fabrik-elt-delete material-icons em-red-500-color em-mr-4">delete_outline</span><p>' + text + '</p></span></li>');
+                $('#em-export').append('<li class="em-export-item" id="' + id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + id + '-itembtn" class="em-pointer fabrik-elt-delete material-symbols-outlined em-red-600-color em-mr-4">delete_outline</span><p>' + text + '</p></span></li>');
             } else {
                 $('#'+id+'-item').remove();
             }
@@ -6026,7 +6026,7 @@ $(document).ready(function() {
         if($(this).is(":checked")) {
             if(eclass == 'emundusitem') {
                 if($('#' + eid + '-item').length == 0) {
-                    $('#em-export').append('<li class="em-export-item" id="' + eid + '-item"><span class="em-excel_elts em-flex-row"><span id="' + eid + '-itembtn" class="em-pointer fabrik-elt-delete material-icons em-red-500-color em-mr-4">delete_outline</span><p>' + elabel + '</p></span></li>');
+                    $('#em-export').append('<li class="em-export-item" id="' + eid + '-item"><span class="em-excel_elts em-flex-row"><span id="' + eid + '-itembtn" class="em-pointer fabrik-elt-delete material-symbols-outlined em-red-600-color em-mr-4">delete_outline</span><p>' + elabel + '</p></span></li>');
                 }
             }
         } else {
@@ -6053,7 +6053,7 @@ $(document).ready(function() {
 
                             // check exist
                             if($('#' + eid + '-item').length == 0) {
-                                $('#em-export').append('<li class="em-export-item" id="' + eid + '-item"><span class="em-excel_elts em-flex-row"><span id="' + eid + '-itembtn" class="em-pointer fabrik-elt-delete material-icons em-red-500-color em-mr-4">delete_outline</span><p>' + elabel + '</p></span></li>');
+                                $('#em-export').append('<li class="em-export-item" id="' + eid + '-item"><span class="em-excel_elts em-flex-row"><span id="' + eid + '-itembtn" class="em-pointer fabrik-elt-delete material-symbols-outlined em-red-600-color em-mr-4">delete_outline</span><p>' + elabel + '</p></span></li>');
                             }
                         }
                     })
@@ -6114,7 +6114,7 @@ $(document).ready(function() {
 
                 if($('#emundus_checkall_tbl_' + id).is(":checked")){
                     if($('#' + eid + '-item').length === 0) {
-                        $('#em-export').append('<li class="em-export-item" id="' + eid + '-item"><span class="em-excel_elts em-flex-row"><span id="' + eid + '-itembtn" class="em-pointer fabrik-elt-delete material-icons em-red-500-color em-mr-4">delete_outline</span><p>' + elabel + '</p></span></li>');
+                        $('#em-export').append('<li class="em-export-item" id="' + eid + '-item"><span class="em-excel_elts em-flex-row"><span id="' + eid + '-itembtn" class="em-pointer fabrik-elt-delete material-symbols-outlined em-red-600-color em-mr-4">delete_outline</span><p>' + elabel + '</p></span></li>');
                     }
                 } else {
                     $('#' + eid + '-item').remove();
@@ -6139,7 +6139,7 @@ $(document).ready(function() {
 
                     // check exist
                     if($('#' + eid + '-item').length == 0) {
-                        $('#em-export').append('<li class="em-export-item" id="' + eid + '-item"><span class="em-excel_elts em-flex-row"><span id="' + eid + '-itembtn" class="em-pointer fabrik-elt-delete material-icons em-red-500-color em-mr-4">delete_outline</span><p>' + elabel + '</p></span></li>');
+                        $('#em-export').append('<li class="em-export-item" id="' + eid + '-item"><span class="em-excel_elts em-flex-row"><span id="' + eid + '-itembtn" class="em-pointer fabrik-elt-delete material-symbols-outlined em-red-600-color em-mr-4">delete_outline</span><p>' + elabel + '</p></span></li>');
                     }
                 }
             })

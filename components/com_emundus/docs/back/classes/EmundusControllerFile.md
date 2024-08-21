@@ -79,10 +79,10 @@ private $files
 
 ### __construct
 
-
+Constructor.
 
 ```php
-public __construct(mixed $config = array()): mixed
+public __construct(array $config = array()): mixed
 ```
 
 
@@ -96,11 +96,16 @@ public __construct(mixed $config = array()): mixed
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$config` | **mixed** |  |
+| `$config` | **array** | An optional associative array of configuration settings. |
 
 
 
 
+
+
+**See Also:**
+
+* \JController - 
 
 ***
 
@@ -111,6 +116,7 @@ public __construct(mixed $config = array()): mixed
 ```php
 public getfiles(): mixed
 ```
+
 
 
 
@@ -144,6 +150,7 @@ public getcolumns(): mixed
 
 
 
+
 ***
 
 ### getlimit
@@ -153,6 +160,7 @@ public getcolumns(): mixed
 ```php
 public getlimit(): mixed
 ```
+
 
 
 
@@ -186,6 +194,7 @@ public getpage(): mixed
 
 
 
+
 ***
 
 ### getevaluationformbyfnum
@@ -195,6 +204,7 @@ public getpage(): mixed
 ```php
 public getevaluationformbyfnum(): mixed
 ```
+
 
 
 
@@ -228,6 +238,7 @@ public getmyevaluation(): mixed
 
 
 
+
 ***
 
 ### checkaccess
@@ -237,6 +248,7 @@ public getmyevaluation(): mixed
 ```php
 public checkaccess(): mixed
 ```
+
 
 
 
@@ -270,6 +282,7 @@ public getfile(): mixed
 
 
 
+
 ***
 
 ### updatelimit
@@ -279,6 +292,7 @@ public getfile(): mixed
 ```php
 public updatelimit(): mixed
 ```
+
 
 
 
@@ -312,6 +326,7 @@ public updatepage(): mixed
 
 
 
+
 ***
 
 ### getselectedtab
@@ -321,6 +336,7 @@ public updatepage(): mixed
 ```php
 public getselectedtab(): mixed
 ```
+
 
 
 
@@ -354,6 +370,7 @@ public setselectedtab(): mixed
 
 
 
+
 ***
 
 ### getcomments
@@ -363,6 +380,7 @@ public setselectedtab(): mixed
 ```php
 public getcomments(): mixed
 ```
+
 
 
 
@@ -396,6 +414,7 @@ public savecomment(): mixed
 
 
 
+
 ***
 
 ### deletecomment
@@ -405,6 +424,7 @@ public savecomment(): mixed
 ```php
 public deletecomment(): mixed
 ```
+
 
 
 
@@ -438,6 +458,7 @@ public getfilters(): mixed
 
 
 
+
 ***
 
 ### applyfilters
@@ -459,8 +480,9 @@ public applyfilters(): mixed
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

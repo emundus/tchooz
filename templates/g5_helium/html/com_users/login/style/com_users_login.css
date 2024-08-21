@@ -230,7 +230,7 @@ form.form-validate.form-horizontal.well .control-group .controls input:focus {
 }
 
 form.form-validate.form-horizontal.well .control-group .controls input.invalid {
-    border: 1px solid #e5283B;
+    border: 1px solid var(--red-600);
     box-shadow: none;
 }
 

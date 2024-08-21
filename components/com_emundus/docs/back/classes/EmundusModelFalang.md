@@ -43,6 +43,7 @@ public insertFalang(mixed $values, mixed $reference_id, mixed $reference_table, 
 
 
 
+
 ***
 
 ### insertFalangOnce
@@ -69,6 +70,7 @@ public insertFalangOnce(mixed $text, mixed $reference_id, mixed $reference_table
 | `$reference_table` | **mixed** |  |
 | `$reference_field` | **mixed** |  |
 | `$language` | **mixed** |  |
+
 
 
 
@@ -105,6 +107,7 @@ public updateFalangOnce(mixed $values, mixed $reference_id, mixed $reference_tab
 
 
 
+
 ***
 
 ### deleteFalang
@@ -129,6 +132,7 @@ public deleteFalang(mixed $reference_id, mixed $reference_table, mixed $referenc
 | `$reference_id` | **mixed** |  |
 | `$reference_table` | **mixed** |  |
 | `$reference_field` | **mixed** |  |
+
 
 
 
@@ -164,6 +168,7 @@ public updateFalang(mixed $values, mixed $reference_id, mixed $reference_table, 
 
 
 
+
 ***
 
 ### getFalang
@@ -194,8 +199,9 @@ public getFalang(mixed $reference_id, mixed $reference_table, mixed $reference_f
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

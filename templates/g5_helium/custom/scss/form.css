@@ -42,6 +42,76 @@
         color: #000 !important;
         background: inherit;
     }
+    .fabrikElement {
+        .field-calendar {
+            .input-group {
+                button.btn.btn-primary {
+                    background: transparent;
+                    color: black;
+                    border-top-left-radius: 0 !important;
+                    border-bottom-left-radius: 0 !important;
+                    border-color: var(--em-form-bc);
+                }
+            }
+            .js-calendar {
+                margin-top: 6px !important;
+                margin-bottom: 6px !important;
+
+                .calendar-container {
+                    table {
+                        border: unset;
+                        margin-top: 8px;
+
+                        thead.calendar-header {
+                            td.nav {
+                                a {
+                                    color: var(--em-primary-color);
+                                }
+                            }
+                        }
+
+                        tbody {
+                            td.day:hover {
+                                border-radius: 99px;
+                            }
+
+                            td.day.selected {
+                                border-radius: 99px;
+                            }
+
+                            td.today:after {
+                                content: unset;
+                            }
+
+                            tr.time {
+                                td.time.time-title {
+                                    margin-top: 12px;
+                                    height: 40px;
+                                    padding: 0;
+                                }
+
+                                td.time.hours-select, td.time.minutes-select {
+                                    border-top: solid 1px black;
+                                    height: 40px;
+                                    padding-top: 12px;
+                                }
+                            }
+                        }
+                    }
+
+                    .buttons-wrapper {
+                        gap: 8px;
+
+                        button {
+                            background: transparent;
+                            border: solid 1px black;
+                            box-shadow: unset;
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     /** REGISTRATION FORM **/
     .view-registration.em-formRegistrationCenter {
@@ -453,7 +523,7 @@
         }
 
         .fabrikGroup table th:last-of-type,
-        .fabrikGroup table td:last-of-type {
+        .fabrikGroup table td:last-of-type:not(.nav) {
             width: 64px;
         }
 
@@ -519,12 +589,12 @@
                         }
 
                         &:hover {
-                            .material-icons-outlined, .material-icons {
+                            .material-icons-outlined, .material-icons, .material-symbols-outlined {
                                 color: var(--em-form-bc-hover) !important;
                             }
                         }
 
-                        .material-icons-outlined, .material-icons {
+                        .material-icons-outlined, .material-icons, .material-symbols-outlined {
                             font-size: 16px;
                             color: var(--neutral-600);
                         }

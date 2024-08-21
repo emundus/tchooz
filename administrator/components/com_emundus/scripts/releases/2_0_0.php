@@ -1438,6 +1438,13 @@ if(value == 1) {
 			$this->db->setQuery($query);
 			$this->db->execute();
 
+			$query->clear()
+				->update($this->db->quoteName('#__extensions'))
+				->set($this->db->quoteName('enabled') . ' = 0')
+				->where($this->db->quoteName('folder') . ' = ' . $this->db->quote('editors-xtd'));
+			$this->db->setQuery($query);
+			$this->db->execute();
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

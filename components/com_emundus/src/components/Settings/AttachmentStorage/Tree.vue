@@ -2,7 +2,7 @@
   <div>
     <div class="tw-flex tw-items-center tw-mb-4" :class="'em-level-' + node.level">
       <span class="material-icons" v-if="node.type !== 0">folder</span>
-      <span class="material-icons-outlined" v-else>folder</span>
+      <span class="material-symbols-outlined" v-else>folder</span>
 
       <select v-if="(other_tags.includes(node.type) || node.type === 0) && node.type !== ''"
               class="tw-ml-2 tw-mr-2 em-clear-dropdown tree-branch" v-model="node.type">
@@ -29,7 +29,7 @@
                v-if="node.level < level_max" @click="$emit('addNode',node)">
             {{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_ADD_MENU') }}
           </div>
-          <div class="tw-text-sm tw-cursor-pointer tw-px-2 tw-py-3 em-hover-background-neutral-300 tw-text-red-500"
+          <div class="tw-text-sm tw-cursor-pointer tw-px-2 tw-py-3 em-hover-background-neutral-300 tw-text-red-600"
                @click="$emit('deleteNode', node);">
             {{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_DELETE') }}
           </div>

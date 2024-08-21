@@ -40,6 +40,7 @@ public __construct(mixed $config = array()): mixed
 
 
 
+
 **See Also:**
 
 * \JController - 
@@ -72,6 +73,7 @@ Note. Calling getState in this method will result in recursion.
 
 
 
+
 ***
 
 ### getListQuery
@@ -81,6 +83,7 @@ Build an SQL query to load the list data.
 ```php
 protected getListQuery(): \JDatabaseQuery
 ```
+
 
 
 
@@ -114,6 +117,7 @@ public getItems(): mixed
 
 
 
+
 ***
 
 ### loadFormData
@@ -124,6 +128,7 @@ Overrides the default function to check Date fields format, identified by
 ```php
 protected loadFormData(): mixed
 ```
+
 
 
 
@@ -163,6 +168,7 @@ private isValidDate(mixed $date): mixed
 
 
 
+
 ***
 
 ### getFilterForm
@@ -191,6 +197,7 @@ public getFilterForm(mixed $data = array(), mixed $loadData = true): mixed
 
 
 
+
 ***
 
 ### getActiveFilters
@@ -200,6 +207,7 @@ Function to get the active filters
 ```php
 public getActiveFilters(): mixed
 ```
+
 
 
 
@@ -241,8 +249,9 @@ private getParameterFromRequest(mixed $paramName, mixed $default = null, mixed $
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

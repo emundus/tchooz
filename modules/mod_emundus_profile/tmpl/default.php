@@ -21,7 +21,7 @@ $document->addStyleSheet("modules/mod_emundus_profile/style/mod_emundus_profile.
                      class="em-profile-picture-big em-pointer"
                      style="background-image:url('<?php echo $profile_picture ?>')">
                     <span class="em-flex-row" style="display: none" id="pp_edit_icon">
-                        <span class="material-icons-outlined em-mr-8">edit</span>
+                        <span class="material-symbols-outlined em-mr-8">edit</span>
                         <?php echo JText::_('MOD_EMUNDUS_PROFILE_EDIT') ?>
                     </span>
                 </div>
@@ -38,7 +38,7 @@ $document->addStyleSheet("modules/mod_emundus_profile/style/mod_emundus_profile.
                     <a class="em-w-auto btn manage-account-icon"
                        href="<?php echo JRoute::_('index.php?option=com_users&view=profile&layout=edit') ?>"
                        title="<?php echo JText::_('MOD_EMUNDUS_PROFILE_EDIT_PROFILE_PASSWORD_TITLE') ?>">
-                        <span class="material-icons-outlined">manage_accounts</span>
+                        <span class="material-symbols-outlined">manage_accounts</span>
 	                    <?php echo JText::_('MOD_EMUNDUS_PROFILE_EDIT_PROFILE_PASSWORD_TITLE'); ?>
                     </a>
 				<?php endif; ?>

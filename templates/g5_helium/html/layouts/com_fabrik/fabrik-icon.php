@@ -24,12 +24,12 @@ if (!in_array($iconParts[0],['icon-question-sign','icon-sort']) && !in_array($ic
 {
 	$class = '';
 	$style = '';
-	$material_icon_class = 'material-icons-outlined';
+	$material_icon_class = 'material-symbols-outlined';
 
     $icon = explode('-',$iconParts[0]);
     if(in_array(trim($icon[1]),['eye','star','envelope'])) {
         $icon[1] = 'emergency';
-        $class = '!tw-text-xs tw-text-red-500 tw-mr-0';
+        $class = '!tw-text-xs tw-text-red-600 tw-mr-0';
         $style = 'style="top: -5px;position: relative"';
 
         $material_icon_class = 'material-icons';

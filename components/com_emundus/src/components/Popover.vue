@@ -1,6 +1,6 @@
 <template>
   <div :id="id" class="popover-container" @focusout="onFocusOut">
-    <span class="material-icons-outlined popover-toggle-btn tw-cursor-pointer" @click="onClickToggle"> {{ icon }} </span>
+    <span class="material-symbols-outlined popover-toggle-btn tw-cursor-pointer" @click="onClickToggle"> {{ icon }} </span>
     <transition name="fade">
       <div v-show="isOpen" class="popover-content tw-shadow tw-rounded" ref="popoverContent" :id="'popover-content-'+id" :style="popoverContentStyle">
         <slot></slot>

@@ -11,11 +11,11 @@
         <li class="tw-w-10 tw-flex tw-items-center tw-justify-between">
               <span class="tw-flex tw-items-center tw-rounded-lg tw-group tw-cursor-pointer" @click="clickReturn()">
                 <!-- The back button icon -->
-                <span class="material-icons-outlined tw-text-neutral-600 tw-user-select-none">navigate_before</span>
+                <span class="material-symbols-outlined tw-text-neutral-600 tw-user-select-none">navigate_before</span>
                 <!-- The back button label -->
                 <span class="tw-pl-1 tw-text-neutral-900" v-if="minimized === false">{{ translate('BACK') }}</span>
               </span>
-          <span class="material-icons-outlined tw-absolute tw-right-[-12px] !tw-text-xl/5 tw-bg-neutral-400 tw-rounded-full tw-cursor-pointer"
+          <span class="material-symbols-outlined tw-absolute tw-right-[-12px] !tw-text-xl/5 tw-bg-neutral-400 tw-rounded-full tw-cursor-pointer"
                 :class="minimized ? 'tw-rotate-180' : ''"
                 v-show="showMinimized === true"
                 @click="handleSidebarSize">chevron_left</span>
@@ -26,7 +26,7 @@
             <div :id="'Menu-'+indexMenu" @click="activeMenu = indexMenu;"
                  class="tw-flex tw-items-start tw-w-full tw-p-2 tw-cursor-pointer tw-rounded-lg tw-group tw-user-select-none"
                  :class="activeMenu === indexMenu ? 'tw-font-bold tw-text-profile-full tw-bg-profile-light'  : 'hover:tw-bg-gray-200'">
-                <span class="material-icons-outlined tw-font-bold tw-mr-2.5" :class="activeMenu === indexMenu ? 'tw-text-profile-full' : ''"
+                <span class="material-symbols-outlined tw-font-bold tw-mr-2.5" :class="activeMenu === indexMenu ? 'tw-text-profile-full' : ''"
                       name="icon-Menu"
                       :title="translate(menu.label)"
                       :id="'icon-'+indexMenu">{{ menu.icon }}</span>

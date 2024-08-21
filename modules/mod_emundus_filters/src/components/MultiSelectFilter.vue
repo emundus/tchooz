@@ -5,9 +5,9 @@
       <p class="recap-label" :title="translate(filter.label)">{{ translate(filter.label) }}</p>
       <div class="em-flex-row">
         <span @mouseenter="resetHover = true" @mouseleave="resetHover = false"
-              class="material-icons-outlined em-pointer reset-filter-btn" :class="{'em-blue-400-color': resetHover}"
+              class="material-symbols-outlined em-pointer reset-filter-btn" :class="{'em-blue-400-color': resetHover}"
               @click="resetFilter" :alt="translate('MOD_EMUNDUS_FILTERS_RESET')">refresh</span>
-        <span v-if="!filter.default" class="material-icons-outlined em-red-500-color em-pointer remove-filter-btn"
+        <span v-if="!filter.default" class="material-symbols-outlined em-red-600-color em-pointer remove-filter-btn"
               @click="$.emit('remove-filter')">close</span>
       </div>
     </div>
@@ -89,7 +89,7 @@
         </div>
       </section>
       <span
-          class="material-icons-outlined em-pointer toggle-open-close">{{ opened ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</span>
+          class="material-symbols-outlined em-pointer toggle-open-close">{{ opened ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</span>
     </div>
   </div>
 </template>

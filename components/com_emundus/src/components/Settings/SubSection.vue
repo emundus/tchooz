@@ -4,7 +4,7 @@
       <div v-if="$props.props.published">
         <div class="tw-flex tw-items-center tw-pb-8 tw-cursor-pointer" @click="handleToogleContent">
           <span class="tw-text-xl tw-font-bold">{{ translate(name) }}</span>
-          <i class="material-icons-outlined scale-150" :id="'SubSectionArrow'+$props.name" name="SubSectionArrows"
+          <i class="material-symbols-outlined scale-150" :id="'SubSectionArrow'+$props.name" name="SubSectionArrows"
              style="transform-origin: unset">expand_more</i>
           <div :key="keyNotif" v-if="subSectionNotif === true"
                class="tw-inline-flex tw-items-center tw-justify-center tw-w-6 tw-h-6 tw-bg-red-500 tw-box-border-2 tw-border-white tw-rounded-full -top-2 -end-2 ">

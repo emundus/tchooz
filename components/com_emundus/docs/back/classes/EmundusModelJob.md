@@ -34,6 +34,7 @@ Note. Calling getState in this method will result in recursion.
 
 
 
+
 ***
 
 ### getData
@@ -65,6 +66,7 @@ Object on success, false on failure.
 
 
 
+
 ***
 
 ### getTable
@@ -89,6 +91,7 @@ public getTable(mixed $type = &#039;Job&#039;, mixed $prefix = &#039;EmundusTabl
 | `$type` | **mixed** |  |
 | `$prefix` | **mixed** |  |
 | `$config` | **mixed** |  |
+
 
 
 
@@ -125,6 +128,7 @@ True on success, false on failure.
 
 
 
+
 ***
 
 ### checkout
@@ -156,6 +160,7 @@ True on success, false on failure.
 
 
 
+
 ***
 
 ### getCategoryName
@@ -178,6 +183,7 @@ public getCategoryName(mixed $id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$id` | **mixed** |  |
+
 
 
 
@@ -211,6 +217,7 @@ public publish(mixed $id, mixed $state): mixed
 
 
 
+
 ***
 
 ### delete
@@ -233,6 +240,7 @@ public delete(mixed $id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$id` | **mixed** |  |
+
 
 
 
@@ -270,6 +278,7 @@ True on success, false on failure.
 
 
 
+
 ***
 
 ### apply
@@ -302,8 +311,9 @@ True on success, false on failure.
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

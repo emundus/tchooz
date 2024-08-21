@@ -40,6 +40,7 @@ public viewExist(mixed $view): mixed
 
 
 
+
 ***
 
 ### addView
@@ -63,6 +64,7 @@ public addView(mixed $view, mixed $boolean = false): mixed
 |-----------|------|-------------|
 | `$view` | **mixed** |  |
 | `$boolean` | **mixed** |  |
+
 
 
 
@@ -97,6 +99,7 @@ public createFabrik(mixed $view, mixed $columnNames, mixed $label): mixed
 
 
 
+
 ***
 
 ### linkToFabrik
@@ -120,6 +123,7 @@ public linkToFabrik(mixed $view, mixed $id): mixed
 |-----------|------|-------------|
 | `$view` | **mixed** |  |
 | `$id` | **mixed** |  |
+
 
 
 
@@ -152,6 +156,7 @@ public getPeriodeData(mixed $periode): mixed
 
 
 
+
 ***
 
 ### countUser
@@ -174,6 +179,7 @@ public countUser(mixed $val): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$val` | **mixed** |  |
+
 
 
 
@@ -207,6 +213,7 @@ public getAccountType(mixed $value, mixed $periode): mixed
 
 
 
+
 ***
 
 ### getOffres
@@ -229,6 +236,7 @@ public getOffres(mixed $periode): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$periode` | **mixed** |  |
+
 
 
 
@@ -261,6 +269,7 @@ public candidatureOffres(mixed $periode): mixed
 
 
 
+
 ***
 
 ### getConnections
@@ -283,6 +292,7 @@ public getConnections(mixed $periode): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$periode` | **mixed** |  |
+
 
 
 
@@ -315,6 +325,7 @@ public getNbRelations(mixed $periode): mixed
 
 
 
+
 ***
 
 ### getMale
@@ -324,6 +335,7 @@ public getNbRelations(mixed $periode): mixed
 ```php
 public getMale(): mixed
 ```
+
 
 
 
@@ -357,6 +369,7 @@ public getFemale(): mixed
 
 
 
+
 ***
 
 ### getNationality
@@ -366,6 +379,7 @@ public getFemale(): mixed
 ```php
 public getNationality(): mixed
 ```
+
 
 
 
@@ -399,6 +413,7 @@ public getAge(): mixed
 
 
 
+
 ***
 
 ### getFiles
@@ -420,8 +435,9 @@ public getFiles(): mixed
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

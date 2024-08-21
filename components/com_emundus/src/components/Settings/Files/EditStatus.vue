@@ -20,7 +20,7 @@
         <div v-for="(statu, index) in status" class="tw-mb-6" :title="'step_' + statu.step"  :key="statu.step" :id="'step_' + statu.step" @mouseover="enableGrab(index)" @mouseleave="disableGrab()">
           <div class="tw-flex tw-items-center tw-justify-start tw-w-full">
             <span class="handle tw-cursor-grab" :style="grab && indexGrab == index ? 'opacity: 1' : 'opacity: 0'">
-              <span class="material-icons-outlined">drag_indicator</span>
+              <span class="material-symbols-outlined">drag_indicator</span>
             </span>
             <div class="status-field">
               <div>
@@ -36,10 +36,10 @@
                   :id="'status_swatches_'+statu.step"
               />
               <a type="button" v-if="statu.edit == 1 && statu.step != 0 && statu.step != 1" :title="translate('COM_EMUNDUS_ONBOARD_DELETE_STATUS')" @click="removeStatus(statu,index)" class="tw-flex tw-items-center tw-ml-2 tw-cursor-pointer">
-                <span class="material-icons-outlined tw-text-red-500">delete_outline</span>
+                <span class="material-symbols-outlined tw-text-red-600">delete_outline</span>
               </a>
               <a type="button" v-else :title="translate('COM_EMUNDUS_ONBOARD_CANNOT_DELETE_STATUS')" class="tw-flex tw-items-center tw-ml-2 tw-cursor-pointer">
-                <span class="material-icons-outlined tw-text-neutral-600">delete_outline</span>
+                <span class="material-symbols-outlined tw-text-neutral-600">delete_outline</span>
               </a>
             </div>
           </div>

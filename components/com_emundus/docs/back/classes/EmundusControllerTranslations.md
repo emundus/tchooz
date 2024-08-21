@@ -49,10 +49,10 @@ private $model
 
 ### __construct
 
-
+Constructor.
 
 ```php
-public __construct(mixed $config = array()): mixed
+public __construct(array $config = array()): mixed
 ```
 
 
@@ -66,11 +66,16 @@ public __construct(mixed $config = array()): mixed
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$config` | **mixed** |  |
+| `$config` | **array** | An optional associative array of configuration settings. |
 
 
 
 
+
+
+**See Also:**
+
+* \JController - 
 
 ***
 
@@ -81,6 +86,7 @@ public __construct(mixed $config = array()): mixed
 ```php
 public checksetup(): mixed
 ```
+
 
 
 
@@ -114,6 +120,7 @@ public configuresetup(): mixed
 
 
 
+
 ***
 
 ### getdefaultlanguage
@@ -123,6 +130,7 @@ public configuresetup(): mixed
 ```php
 public getdefaultlanguage(): mixed
 ```
+
 
 
 
@@ -156,6 +164,7 @@ public getlanguages(): mixed
 
 
 
+
 ***
 
 ### updatelanguage
@@ -165,6 +174,7 @@ public getlanguages(): mixed
 ```php
 public updatelanguage(): mixed
 ```
+
 
 
 
@@ -198,6 +208,7 @@ public gettranslationsobjects(): mixed
 
 
 
+
 ***
 
 ### getdatas
@@ -207,6 +218,7 @@ public gettranslationsobjects(): mixed
 ```php
 public getdatas(): mixed
 ```
+
 
 
 
@@ -240,6 +252,7 @@ public getchildrens(): mixed
 
 
 
+
 ***
 
 ### gettranslations
@@ -249,6 +262,7 @@ public getchildrens(): mixed
 ```php
 public gettranslations(): mixed
 ```
+
 
 
 
@@ -282,6 +296,7 @@ public inserttranslation(): mixed
 
 
 
+
 ***
 
 ### updatetranslation
@@ -291,6 +306,7 @@ public inserttranslation(): mixed
 ```php
 public updatetranslation(): mixed
 ```
+
 
 
 
@@ -324,6 +340,7 @@ public getfalangtranslations(): mixed
 
 
 
+
 ***
 
 ### updatefalangtranslation
@@ -333,6 +350,7 @@ public getfalangtranslations(): mixed
 ```php
 public updatefalangtranslation(): mixed
 ```
+
 
 
 
@@ -366,6 +384,7 @@ public getorphelins(): mixed
 
 
 
+
 ***
 
 ### sendpurposenewlanguage
@@ -375,6 +394,7 @@ public getorphelins(): mixed
 ```php
 public sendpurposenewlanguage(): mixed
 ```
+
 
 
 
@@ -408,8 +428,9 @@ public export(): mixed
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

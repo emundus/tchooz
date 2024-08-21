@@ -18,4 +18,4 @@ $d = $displayData;
 ?>
 <a href="#" class="<?php echo $d->btnClass;?>delete" data-listRef="list_<?php echo $d->renderContext;?>"
 	title="<?php echo Text::_('COM_FABRIK_DELETE'); ?>">
-	<span class="material-icons-outlined">delete</span> <?php echo $d->text;?></a>
+	<span class="material-symbols-outlined">delete</span> <?php echo $d->text;?></a>

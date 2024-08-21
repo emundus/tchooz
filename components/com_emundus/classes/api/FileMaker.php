@@ -1217,6 +1217,7 @@ class FileMaker
 							break;
 						case 'birthday':
 						case 'date':
+						case 'jdate':
 							$date_string = str_replace('/', '-', $field_data[$val->name]);
 							$date = DateTime::createFromFormat('m-d-Y', $date_string);
 							$date !== false ? $date_value = $date->format('Y-m-d') : $date_value = $date_string;
@@ -1346,6 +1347,7 @@ class FileMaker
 														break;
 													case 'birthday':
 													case 'date':
+													case 'jdate':
 														$date_string = str_replace('/', '-', $field_data[$key . "::" . $row_key]);
 														$date = DateTime::createFromFormat('m-d-Y', $date_string);
 														$date !== false ? $date_value = $date->format('Y-m-d') : $date_value = $date_string;

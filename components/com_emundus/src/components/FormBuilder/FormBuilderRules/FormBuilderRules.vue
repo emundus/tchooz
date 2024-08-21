@@ -47,7 +47,7 @@
                     <!--                          <li @click="cloneRule(rule)" class="py-3 px-4 w-full">
                                                 {{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_DUPLICATE') }}
                                               </li>-->
-                    <li @click="deleteRule(rule)" class="tw-py-3 tw-px-4 tw-w-full tw-text-red-500 hover:tw-bg-neutral-300">
+                    <li @click="deleteRule(rule)" class="tw-py-3 tw-px-4 tw-w-full tw-text-red-600 hover:tw-bg-neutral-300">
                       {{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_DELETE') }}
                     </li>
                   </ul>

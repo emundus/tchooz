@@ -201,6 +201,7 @@ public __construct(): mixed
 
 
 
+
 ***
 
 ### getElementsVar
@@ -210,6 +211,7 @@ public __construct(): mixed
 ```php
 public getElementsVar(): mixed
 ```
+
 
 
 
@@ -257,6 +259,7 @@ list of Fabrik element ID used in decision form
 
 
 
+
 ***
 
 ### getAllDecisionElements
@@ -294,6 +297,7 @@ list of Fabrik element ID used in evaluation form
 
 
 
+
 ***
 
 ### _buildContentOrderBy
@@ -317,6 +321,7 @@ public _buildContentOrderBy(): string
 **Throws:**
 
 - [`Exception`](./Exception.md)
+
 
 
 
@@ -349,6 +354,7 @@ public multi_array_sort(array $multi_array = array(), mixed $sort_key, int $sort
 
 
 
+
 ***
 
 ### getCampaign
@@ -358,6 +364,7 @@ public multi_array_sort(array $multi_array = array(), mixed $sort_key, int $sort
 ```php
 public getCampaign(): mixed
 ```
+
 
 
 
@@ -391,6 +398,7 @@ public getCurrentCampaign(): mixed
 
 
 
+
 ***
 
 ### getCurrentCampaignsID
@@ -400,6 +408,7 @@ public getCurrentCampaign(): mixed
 ```php
 public getCurrentCampaignsID(): mixed
 ```
+
 
 
 
@@ -439,6 +448,7 @@ public getProfileAcces(mixed $user): mixed
 
 
 
+
 ***
 
 ### setSubQuery
@@ -467,6 +477,7 @@ public setSubQuery(mixed $tab, mixed $elem): array
 
 
 
+
 ***
 
 ### setSelect
@@ -489,6 +500,7 @@ public setSelect(mixed $search): array|string
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$search` | **mixed** |  |
+
 
 
 
@@ -522,6 +534,7 @@ public isJoined(mixed $tab, mixed $joined): bool
 
 
 
+
 ***
 
 ### setJoins
@@ -546,6 +559,7 @@ public setJoins(mixed $search, mixed $query, mixed $joined): array
 | `$search` | **mixed** |  |
 | `$query` | **mixed** |  |
 | `$joined` | **mixed** |  |
+
 
 
 
@@ -585,6 +599,7 @@ public _buildSelect(mixed& $tables_list, mixed& $tables_list_other, mixed& $tabl
 
 
 
+
 ***
 
 ### setEvalList
@@ -615,6 +630,7 @@ public setEvalList(array $search, array& $eval_list, array $head_val, object $ap
 
 
 
+
 ***
 
 ### _buildWhere
@@ -637,6 +653,7 @@ private _buildWhere(array $tableAlias = array()): array
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$tableAlias` | **array** |  |
+
 
 
 
@@ -674,6 +691,7 @@ public getUsers(null $current_fnum = null): mixed
 
 
 
+
 ***
 
 ### getElementsByGroups
@@ -698,6 +716,7 @@ public getElementsByGroups(mixed $groups, mixed $show_in_list_summary = 1, mixed
 | `$groups` | **mixed** |  |
 | `$show_in_list_summary` | **mixed** |  |
 | `$hidden` | **mixed** |  |
+
 
 
 
@@ -730,6 +749,7 @@ public getAllElementsByGroups(mixed $groups): mixed
 
 
 
+
 ***
 
 ### getActionsACL
@@ -739,6 +759,7 @@ public getAllElementsByGroups(mixed $groups): mixed
 ```php
 public getActionsACL(): mixed
 ```
+
 
 
 
@@ -772,6 +793,7 @@ public getDefaultElements(): mixed
 
 
 
+
 ***
 
 ### getSelectList
@@ -793,6 +815,7 @@ public getSelectList(): mixed
 
 
 
+
 ***
 
 ### getProfiles
@@ -802,6 +825,7 @@ public getSelectList(): mixed
 ```php
 public getProfiles(): mixed
 ```
+
 
 
 
@@ -841,6 +865,7 @@ public getProfileByID(mixed $id): mixed
 
 
 
+
 ***
 
 ### getProfilesByIDs
@@ -868,6 +893,7 @@ public getProfilesByIDs(mixed $ids): mixed
 
 
 
+
 ***
 
 ### getAuthorProfiles
@@ -889,6 +915,7 @@ public getAuthorProfiles(): mixed
 
 
 
+
 ***
 
 ### getApplicantsProfiles
@@ -898,6 +925,7 @@ public getAuthorProfiles(): mixed
 ```php
 public getApplicantsProfiles(): mixed
 ```
+
 
 
 
@@ -937,6 +965,7 @@ public getApplicantsByProfile(mixed $profile): mixed
 
 
 
+
 ***
 
 ### getAuthorUsers
@@ -946,6 +975,7 @@ public getApplicantsByProfile(mixed $profile): mixed
 ```php
 public getAuthorUsers(): mixed
 ```
+
 
 
 
@@ -979,6 +1009,7 @@ public getMobility(): mixed
 
 
 
+
 ***
 
 ### getElements
@@ -988,6 +1019,7 @@ public getMobility(): mixed
 ```php
 public getElements(): mixed
 ```
+
 
 
 
@@ -1021,6 +1053,7 @@ public getElementsName(): mixed
 
 
 
+
 ***
 
 ### getTotal
@@ -1030,6 +1063,7 @@ public getElementsName(): mixed
 ```php
 public getTotal(): mixed
 ```
+
 
 
 
@@ -1063,6 +1097,7 @@ public getPagination(): mixed
 
 
 
+
 ***
 
 ### getPageNavigation
@@ -1084,6 +1119,7 @@ public getPageNavigation(): string
 
 
 
+
 ***
 
 ### getApplicantColumns
@@ -1093,6 +1129,7 @@ public getPageNavigation(): string
 ```php
 public getApplicantColumns(): mixed
 ```
+
 
 
 
@@ -1132,6 +1169,7 @@ public getGroupsEvalByProgramme(mixed $code): mixed
 
 
 
+
 ***
 
 ### getGroupsDecisionByProgramme
@@ -1159,6 +1197,7 @@ public getGroupsDecisionByProgramme(mixed $code): mixed
 
 
 
+
 ***
 
 ### getSchoolyears
@@ -1168,6 +1207,7 @@ public getGroupsDecisionByProgramme(mixed $code): mixed
 ```php
 public getSchoolyears(): mixed
 ```
+
 
 
 
@@ -1201,6 +1241,7 @@ public getAllActions(): mixed
 
 
 
+
 ***
 
 ### getEvalGroups
@@ -1210,6 +1251,7 @@ public getAllActions(): mixed
 ```php
 public getEvalGroups(): mixed
 ```
+
 
 
 
@@ -1251,6 +1293,7 @@ public shareGroups(mixed $groups, mixed $actions, mixed $fnums): mixed
 
 
 
+
 ***
 
 ### shareUsers
@@ -1280,6 +1323,7 @@ public shareUsers(mixed $users, mixed $actions, mixed $fnums): mixed
 
 
 
+
 ***
 
 ### getAllTags
@@ -1301,6 +1345,7 @@ public getAllTags(): mixed
 
 
 
+
 ***
 
 ### getAllStatus
@@ -1310,6 +1355,7 @@ public getAllTags(): mixed
 ```php
 public getAllStatus(): mixed
 ```
+
 
 
 
@@ -1350,6 +1396,7 @@ public tagFile(mixed $fnums, mixed $tag): mixed
 
 
 
+
 ***
 
 ### getTaggedFile
@@ -1372,6 +1419,7 @@ public getTaggedFile(mixed $tag = null): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$tag` | **mixed** |  |
+
 
 
 
@@ -1405,6 +1453,7 @@ public updateState(mixed $fnums, mixed $state): mixed
 
 
 
+
 ***
 
 ### getPhotos
@@ -1414,6 +1463,7 @@ public updateState(mixed $fnums, mixed $state): mixed
 ```php
 public getPhotos(): mixed
 ```
+
 
 
 
@@ -1447,6 +1497,7 @@ public getEvaluatorsFromGroup(): mixed
 
 
 
+
 ***
 
 ### getEvaluators
@@ -1456,6 +1507,7 @@ public getEvaluatorsFromGroup(): mixed
 ```php
 public getEvaluators(): mixed
 ```
+
 
 
 
@@ -1497,6 +1549,7 @@ public unlinkEvaluators(mixed $fnum, mixed $id, mixed $isGroup): mixed
 
 
 
+
 ***
 
 ### getFnumInfos
@@ -1519,6 +1572,7 @@ public getFnumInfos(mixed $fnum): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$fnum` | **mixed** |  |
+
 
 
 
@@ -1552,6 +1606,7 @@ public changePublished(mixed $fnum, mixed $published = -1): mixed
 
 
 
+
 ***
 
 ### getAllFnums
@@ -1561,6 +1616,7 @@ public changePublished(mixed $fnum, mixed $published = -1): mixed
 ```php
 public getAllFnums(): mixed
 ```
+
 
 
 
@@ -1601,6 +1657,7 @@ public getFnumArray(mixed $fnums, mixed $elements): mixed
 
 
 
+
 ***
 
 ### getEvalsByFnum
@@ -1623,6 +1680,7 @@ public getEvalsByFnum(mixed $fnums): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$fnums` | **mixed** |  |
+
 
 
 
@@ -1655,6 +1713,7 @@ public getCommentsByFnum(mixed $fnums): mixed
 
 
 
+
 ***
 
 ### getFilesByFnums
@@ -1677,6 +1736,7 @@ public getFilesByFnums(mixed $fnums): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$fnums` | **mixed** |  |
+
 
 
 
@@ -1711,6 +1771,7 @@ public getExperts(mixed $fnum, mixed $select, mixed $table): mixed
 
 
 
+
 ***
 
 ### getEvaluationsFnum
@@ -1733,6 +1794,7 @@ public getEvaluationsFnum(mixed $fnum): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$fnum` | **mixed** |  |
+
 
 
 
@@ -1766,6 +1828,7 @@ public getEvaluationsFnumUser(mixed $fnum, mixed $user): mixed
 
 
 
+
 ***
 
 ### getDecisionFnum
@@ -1788,6 +1851,7 @@ public getDecisionFnum(mixed $fnum): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$fnum` | **mixed** |  |
+
 
 
 
@@ -1821,6 +1885,7 @@ public getLettersTemplate(mixed $eligibility, mixed $training): mixed
 
 
 
+
 ***
 
 ### getLettersTemplateByID
@@ -1843,6 +1908,7 @@ public getLettersTemplateByID(mixed $id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$id` | **mixed** |  |
+
 
 
 
@@ -1875,6 +1941,7 @@ public getEvaluationFormByProgramme(mixed $code = null): mixed
 
 
 
+
 ***
 
 ### getDecisionFormByProgramme
@@ -1897,6 +1964,7 @@ public getDecisionFormByProgramme(mixed $code = null): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$code` | **mixed** |  |
+
 
 
 
@@ -1934,8 +2002,9 @@ public getDecisionUrl(mixed $fnum, mixed $formid, mixed $rowid, mixed $student_i
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

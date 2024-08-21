@@ -42,6 +42,7 @@ public aggregation(mixed $array1, mixed $array2, mixed $array3 = array(), mixed 
 
 
 
+
 ***
 
 ### multi_array_sort
@@ -66,6 +67,7 @@ public multi_array_sort(mixed $multi_array, mixed $sort_key, mixed $sort = SORT_
 | `$multi_array` | **mixed** |  |
 | `$sort_key` | **mixed** |  |
 | `$sort` | **mixed** |  |
+
 
 
 
@@ -100,6 +102,7 @@ public getEvaluation(mixed $user_id, mixed $campaign_id, mixed $eval_id): mixed
 
 
 
+
 ***
 
 ### isEvaluatedBy
@@ -124,6 +127,7 @@ public isEvaluatedBy(mixed $user_id, mixed $campaign_id, mixed $eval_id): mixed
 | `$user_id` | **mixed** |  |
 | `$campaign_id` | **mixed** |  |
 | `$eval_id` | **mixed** |  |
+
 
 
 
@@ -158,6 +162,7 @@ public isAffectedToMe(mixed $user_id, mixed $campaign_id, mixed $user_eval): mix
 
 
 
+
 ***
 
 ### assessorsList
@@ -181,6 +186,7 @@ public assessorsList(mixed $user_id, mixed $campaign_id): mixed
 |-----------|------|-------------|
 | `$user_id` | **mixed** |  |
 | `$campaign_id` | **mixed** |  |
+
 
 
 
@@ -215,6 +221,7 @@ public getComment(mixed $user_id, mixed $eval_id, mixed $campaign_id): mixed
 
 
 
+
 ***
 
 ### getFilesRequest
@@ -243,6 +250,7 @@ public getFilesRequest(mixed $user_id, mixed $campaign_id): mixed
 
 
 
+
 ***
 
 ### getUsersGroups
@@ -252,6 +260,7 @@ public getFilesRequest(mixed $user_id, mixed $campaign_id): mixed
 ```php
 public getUsersGroups(): mixed
 ```
+
 
 
 
@@ -291,6 +300,7 @@ public getUserInfo(mixed $user_id): mixed
 
 
 
+
 ***
 
 ### getAvatar
@@ -313,6 +323,7 @@ public getAvatar(mixed $user_id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$user_id` | **mixed** |  |
+
 
 
 
@@ -345,6 +356,7 @@ public getProfile(mixed $user_id): mixed
 
 
 
+
 ***
 
 ### getProfileDetails
@@ -372,6 +384,7 @@ public getProfileDetails(mixed $pid): mixed
 
 
 
+
 ***
 
 ### getUploadList
@@ -394,6 +407,7 @@ public getUploadList(mixed $user): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$user` | **mixed** |  |
+
 
 
 
@@ -429,6 +443,7 @@ public getFormsList(mixed $user_id, mixed $fnum = &#039;0&#039;, mixed $formids 
 
 
 
+
 ***
 
 ### getFormsListByProfileID
@@ -457,6 +472,7 @@ public static getFormsListByProfileID(mixed $profile_id, mixed $checklevel = tru
 
 
 
+
 ***
 
 ### getApplicants
@@ -480,6 +496,7 @@ public getApplicants(mixed $submitted, mixed $year): mixed
 |-----------|------|-------------|
 | `$submitted` | **mixed** |  |
 | `$year` | **mixed** |  |
+
 
 
 
@@ -514,6 +531,7 @@ public getCampaignsByApplicantID(mixed $user, mixed $submitted, mixed $year): mi
 
 
 
+
 ***
 
 ### createApplicantsCampaignsBlock
@@ -537,6 +555,7 @@ public createApplicantsCampaignsBlock(mixed $users, mixed $params): mixed
 |-----------|------|-------------|
 | `$users` | **mixed** |  |
 | `$params` | **mixed** |  |
+
 
 
 
@@ -570,6 +589,7 @@ public createActionsBlock(mixed $users, mixed $params): mixed
 
 
 
+
 ***
 
 ### createValidateBlock
@@ -598,6 +618,7 @@ public createValidateBlock(mixed $users, mixed $params): mixed
 
 
 
+
 ***
 
 ### createSelectionBlock
@@ -620,6 +641,7 @@ public createSelectionBlock(mixed $users): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$users` | **mixed** |  |
+
 
 
 
@@ -653,6 +675,7 @@ public createEvaluationBlock(mixed $users, mixed $params): mixed
 
 
 
+
 ***
 
 ### createEvaluatorBlock
@@ -676,6 +699,7 @@ public createEvaluatorBlock(mixed $users, mixed $params): mixed
 |-----------|------|-------------|
 | `$users` | **mixed** |  |
 | `$params` | **mixed** |  |
+
 
 
 
@@ -708,6 +732,7 @@ public createFilesRequestBlock(mixed $users): mixed
 
 
 
+
 ***
 
 ### createCommentBlock
@@ -730,6 +755,7 @@ public createCommentBlock(mixed $users): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$users` | **mixed** |  |
+
 
 
 
@@ -763,6 +789,7 @@ public array_uniquecolumn(mixed $arr, mixed $key): mixed
 
 
 
+
 ***
 
 ### getEngaged
@@ -790,6 +817,7 @@ public getEngaged(mixed $users): mixed
 
 
 
+
 ***
 
 ### getProfiles
@@ -799,6 +827,7 @@ public getEngaged(mixed $users): mixed
 ```php
 public getProfiles(): mixed
 ```
+
 
 
 
@@ -839,6 +868,7 @@ public createProfileBlock(mixed $users, mixed $key): mixed
 
 
 
+
 ***
 
 ### getApplicationComments
@@ -861,6 +891,7 @@ public getApplicationComments(mixed $user_id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$user_id` | **mixed** |  |
+
 
 
 
@@ -894,6 +925,7 @@ public createApplicationCommentBlock(mixed $users, mixed $params): mixed
 
 
 
+
 ***
 
 ### createShowCommentBlock
@@ -915,6 +947,7 @@ public createShowCommentBlock(): mixed
 
 
 
+
 ***
 
 ### createBatchBlock
@@ -924,6 +957,7 @@ public createShowCommentBlock(): mixed
 ```php
 public createBatchBlock(): mixed
 ```
+
 
 
 
@@ -963,6 +997,7 @@ public createApplicationStatutblock(mixed $params): mixed
 
 
 
+
 ***
 
 ### getElementsDetailsByID
@@ -985,6 +1020,7 @@ public static getElementsDetailsByID(mixed $elements): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$elements` | **mixed** |  |
+
 
 
 
@@ -1017,6 +1053,7 @@ public static getElementsDetails(mixed $elements): mixed
 
 
 
+
 ***
 
 ### getElementsDetailsByName
@@ -1044,6 +1081,7 @@ public static getElementsDetailsByName(mixed $elements): mixed
 
 
 
+
 ***
 
 ### getElementsDetailsByFullName
@@ -1066,6 +1104,7 @@ public getElementsDetailsByFullName(mixed $fullname): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$fullname` | **mixed** |  |
+
 
 
 
@@ -1100,6 +1139,7 @@ public static getBoxValue(mixed $details, mixed $default, mixed $name): mixed
 
 
 
+
 ***
 
 ### createHtmlList
@@ -1127,8 +1167,9 @@ public static createHtmlList(mixed $tab): mixed
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

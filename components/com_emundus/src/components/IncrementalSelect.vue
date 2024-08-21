@@ -10,7 +10,7 @@
         <div class="tw-w-full tw-flex tw-items-center tw-justify-between">
           <input type="text" class="tw-w-full !tw-mb-0 em-border-main-500 important" v-model="newExistingLabel"
                  @keyup="emitValueChanges"/>
-          <span v-if="!locked" @click="unselectExistingValue" class="material-icons-outlined tw-cursor-pointer"
+          <span v-if="!locked" @click="unselectExistingValue" class="material-symbols-outlined tw-cursor-pointer"
                 @mouseenter="hoverUnselect = true" @mouseleave="hoverUnselect = false">close</span>
         </div>
         <i class="em-main-500-color">({{ translate('COM_EMUNDUS_FORM_BUILDER_EXISTING_VALUE') }})</i>

@@ -37,7 +37,7 @@ defined('_JEXEC') or die;
                             <p><?= JText::_('MOD_EMUNDUS_HELP_ARTICLES'); ?></p>
                         </a>
 					<?php endif; ?>
-                    <a href='https://emundus.atlassian.net/servicedesk/customer/portals' target='_blank'
+                    <a href='https://support.client.emundus.fr/' target='_blank'
                        class="tw-flex tw-items-center tw-gap-2 tw-py-2 tw-px-3 hover:tw-bg-neutral-300">
                         <img
                                 class='icone-aide-tchoozy'
@@ -57,7 +57,7 @@ defined('_JEXEC') or die;
 					<?php else : ?>
                         <a href='https://emundus.atlassian.net/wiki/x/FoDMn' target='_blank'
                            class="tw-flex tw-items-center tw-gap-2 tw-py-2 tw-px-3 hover:tw-bg-neutral-300">
-                            <span class='material-icons tw-text-black'>smart_display</span>
+                            <span class='material-symbols-outlined tw-text-black'>smart_display</span>
                             <p><?= JText::_('MOD_EMUNDUS_HELP_VIDEOS'); ?></p>
                         </a>
 					<?php endif; ?>-->
@@ -65,13 +65,13 @@ defined('_JEXEC') or die;
 					<?php if ($current_lang == 'fr') : ?>
                         <a href='https://emundus.atlassian.net/wiki/x/EIBskg' target='_blank'
                            class="tw-flex tw-items-center tw-gap-2 tw-py-2 tw-px-3 hover:tw-bg-neutral-300">
-                            <span class='material-icons tw-text-black'>new_releases</span>
+                            <span class='material-symbols-outlined tw-text-black'>new_releases</span>
                             <p><?= JText::_('MOD_EMUNDUS_HELP_LAST_RELEASE'); ?></p>
                         </a>
 					<?php else : ?>
                         <a href='https://emundus.atlassian.net/wiki/x/AYBdkw' target='_blank'
                            class="tw-flex tw-items-center tw-gap-2 tw-py-2 tw-px-3 hover:tw-bg-neutral-300">
-                            <span class='material-icons tw-text-black'>new_releases</span>
+                            <span class='material-symbols-outlined tw-text-black'>new_releases</span>
                             <p><?= JText::_('MOD_EMUNDUS_HELP_LAST_RELEASE'); ?></p>
                         </a>
 					<?php endif; ?>

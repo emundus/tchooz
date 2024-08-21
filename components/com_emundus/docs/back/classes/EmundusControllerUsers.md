@@ -64,10 +64,10 @@ private ?\Joomla\CMS\User\User $user
 
 ### __construct
 
-
+Constructor.
 
 ```php
-public __construct(mixed $config = array()): mixed
+public __construct(array $config = array()): mixed
 ```
 
 
@@ -81,20 +81,25 @@ public __construct(mixed $config = array()): mixed
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$config` | **mixed** |  |
+| `$config` | **array** | An optional associative array of configuration settings. |
 
 
 
 
+
+
+**See Also:**
+
+* \JController - 
 
 ***
 
 ### display
 
-
+Method to display a view.
 
 ```php
-public display(mixed $cachable = false, mixed $urlparams = false): mixed
+public display(bool $cachable = false, bool $urlparams = false): \DisplayController
 ```
 
 
@@ -108,8 +113,13 @@ public display(mixed $cachable = false, mixed $urlparams = false): mixed
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$cachable` | **mixed** |  |
-| `$urlparams` | **mixed** |  |
+| `$cachable` | **bool** | If true, the view output will be cached. |
+| `$urlparams` | **bool** | An array of safe URL parameters and their variable types.<br />@see        \Joomla\CMS\Filter\InputFilter::clean() for valid values. |
+
+
+**Return Value:**
+
+This object to support chaining.
 
 
 
@@ -124,6 +134,7 @@ public display(mixed $cachable = false, mixed $urlparams = false): mixed
 ```php
 public adduser(): mixed
 ```
+
 
 
 
@@ -157,6 +168,7 @@ public delincomplete(): mixed
 
 
 
+
 ***
 
 ### delrefused
@@ -166,6 +178,7 @@ public delincomplete(): mixed
 ```php
 public delrefused(): mixed
 ```
+
 
 
 
@@ -199,6 +212,7 @@ public delnonevaluated(): mixed
 
 
 
+
 ***
 
 ### archive
@@ -208,6 +222,7 @@ public delnonevaluated(): mixed
 ```php
 public archive(): mixed
 ```
+
 
 
 
@@ -241,6 +256,7 @@ public lastSavedFilter(): mixed
 
 
 
+
 ***
 
 ### getConstraintsFilter
@@ -262,6 +278,7 @@ public getConstraintsFilter(): mixed
 
 
 
+
 ***
 
 ### export_selected_xls
@@ -271,6 +288,7 @@ public getConstraintsFilter(): mixed
 ```php
 public export_selected_xls(): mixed
 ```
+
 
 
 
@@ -311,6 +329,7 @@ public export_account_to_xls(mixed $reqids = array(), mixed $el = array()): mixe
 
 
 
+
 ***
 
 ### export_zip
@@ -320,6 +339,7 @@ public export_account_to_xls(mixed $reqids = array(), mixed $el = array()): mixe
 ```php
 public export_zip(): mixed
 ```
+
 
 
 
@@ -353,6 +373,7 @@ public addsession(): mixed
 
 
 
+
 ***
 
 ### clear
@@ -362,6 +383,7 @@ public addsession(): mixed
 ```php
 public clear(): mixed
 ```
+
 
 
 
@@ -395,6 +417,7 @@ public setfilters(): mixed
 
 
 
+
 ***
 
 ### loadfilters
@@ -404,6 +427,7 @@ public setfilters(): mixed
 ```php
 public loadfilters(): mixed
 ```
+
 
 
 
@@ -437,6 +461,7 @@ public order(): mixed
 
 
 
+
 ***
 
 ### setlimit
@@ -446,6 +471,7 @@ public order(): mixed
 ```php
 public setlimit(): mixed
 ```
+
 
 
 
@@ -479,6 +505,7 @@ public savefilters(): mixed
 
 
 
+
 ***
 
 ### deletefilters
@@ -488,6 +515,7 @@ public savefilters(): mixed
 ```php
 public deletefilters(): mixed
 ```
+
 
 
 
@@ -521,6 +549,7 @@ public setlimitstart(): mixed
 
 
 
+
 ***
 
 ### addgroup
@@ -530,6 +559,7 @@ public setlimitstart(): mixed
 ```php
 public addgroup(): mixed
 ```
+
 
 
 
@@ -563,6 +593,7 @@ public changeblock(): mixed
 
 
 
+
 ***
 
 ### changeactivation
@@ -572,6 +603,7 @@ public changeblock(): mixed
 ```php
 public changeactivation(): mixed
 ```
+
 
 
 
@@ -605,6 +637,7 @@ public affectgroups(): mixed
 
 
 
+
 ***
 
 ### edituser
@@ -614,6 +647,7 @@ public affectgroups(): mixed
 ```php
 public edituser(): mixed
 ```
+
 
 
 
@@ -647,6 +681,7 @@ public deleteusers(): mixed
 
 
 
+
 ***
 
 ### setgrouprights
@@ -668,6 +703,7 @@ public setgrouprights(): mixed
 
 
 
+
 ***
 
 ### ldapsearch
@@ -677,6 +713,7 @@ Search the LDAP for a user to add.
 ```php
 public ldapsearch(): mixed
 ```
+
 
 
 
@@ -715,6 +752,7 @@ public passrequest(): bool
 
 
 
+
 ***
 
 ### getuserbyid
@@ -724,6 +762,7 @@ public passrequest(): bool
 ```php
 public getuserbyid(): mixed
 ```
+
 
 
 
@@ -757,6 +796,7 @@ public getUserNameById(): mixed
 
 
 
+
 ***
 
 ### getattachmentaccessrights
@@ -766,6 +806,7 @@ public getUserNameById(): mixed
 ```php
 public getattachmentaccessrights(): mixed
 ```
+
 
 
 
@@ -799,6 +840,7 @@ public getprofileform(): mixed
 
 
 
+
 ***
 
 ### getprofilegroups
@@ -808,6 +850,7 @@ public getprofileform(): mixed
 ```php
 public getprofilegroups(): mixed
 ```
+
 
 
 
@@ -841,6 +884,7 @@ public getprofileelements(): mixed
 
 
 
+
 ***
 
 ### getprofileattachments
@@ -850,6 +894,7 @@ public getprofileelements(): mixed
 ```php
 public getprofileattachments(): mixed
 ```
+
 
 
 
@@ -883,6 +928,7 @@ public getprofileattachmentsallowed(): mixed
 
 
 
+
 ***
 
 ### uploaddefaultattachment
@@ -892,6 +938,7 @@ public getprofileattachmentsallowed(): mixed
 ```php
 public uploaddefaultattachment(): mixed
 ```
+
 
 
 
@@ -925,6 +972,7 @@ public deleteprofileattachment(): mixed
 
 
 
+
 ***
 
 ### uploadprofileattachmenttofile
@@ -934,6 +982,7 @@ public deleteprofileattachment(): mixed
 ```php
 public uploadprofileattachmenttofile(): mixed
 ```
+
 
 
 
@@ -967,6 +1016,7 @@ public uploadfileattachmenttoprofile(): mixed
 
 
 
+
 ***
 
 ### updateprofilepicture
@@ -976,6 +1026,7 @@ public uploadfileattachmenttoprofile(): mixed
 ```php
 public updateprofilepicture(): mixed
 ```
+
 
 
 
@@ -1009,6 +1060,7 @@ public activation(): mixed
 
 
 
+
 ***
 
 ### updateemundussession
@@ -1018,6 +1070,7 @@ public activation(): mixed
 ```php
 public updateemundussession(): mixed
 ```
+
 
 
 
@@ -1051,6 +1104,7 @@ public addapplicantprofile(): mixed
 
 
 
+
 ***
 
 ### affectjoomlagroups
@@ -1060,6 +1114,7 @@ public addapplicantprofile(): mixed
 ```php
 public affectjoomlagroups(): mixed
 ```
+
 
 
 
@@ -1093,6 +1148,7 @@ public activation_anonym_user(): mixed
 
 
 
+
 ***
 
 ### getCurrentUser
@@ -1114,6 +1170,7 @@ public getCurrentUser(): mixed
 
 
 
+
 ***
 
 ### getcurrentprofile
@@ -1123,6 +1180,7 @@ public getCurrentUser(): mixed
 ```php
 public getcurrentprofile(): mixed
 ```
+
 
 
 
@@ -1161,8 +1219,9 @@ public exportusers(): void
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

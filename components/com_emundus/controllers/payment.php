@@ -15,12 +15,21 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\MVC\Controller\BaseController;
 
-class EmundusControllerPayment extends JControllerLegacy
+class EmundusControllerPayment extends BaseController
 {
 	protected $app;
 
-	public function __construct()
+	/**
+	 * Constructor.
+	 *
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     \JController
+	 * @since   1.0.0
+	 */
+	public function __construct($config = array())
 	{
 		parent::__construct();
 

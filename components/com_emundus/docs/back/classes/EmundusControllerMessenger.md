@@ -49,10 +49,10 @@ private $m_messenger
 
 ### __construct
 
-
+Constructor.
 
 ```php
-public __construct(mixed $config = array()): mixed
+public __construct(array $config = array()): mixed
 ```
 
 
@@ -66,11 +66,16 @@ public __construct(mixed $config = array()): mixed
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$config` | **mixed** |  |
+| `$config` | **array** | An optional associative array of configuration settings. |
 
 
 
 
+
+
+**See Also:**
+
+* \JController - 
 
 ***
 
@@ -81,6 +86,7 @@ Get campaigns by fnums of current user
 ```php
 public getfilesbyuser(): mixed
 ```
+
 
 
 
@@ -114,6 +120,7 @@ public getmessagesbyfnum(): mixed
 
 
 
+
 ***
 
 ### sendmessage
@@ -123,6 +130,7 @@ public getmessagesbyfnum(): mixed
 ```php
 public sendmessage(): mixed
 ```
+
 
 
 
@@ -156,6 +164,7 @@ public getnotifications(): mixed
 
 
 
+
 ***
 
 ### getnotificationsbyfnum
@@ -165,6 +174,7 @@ public getnotifications(): mixed
 ```php
 public getnotificationsbyfnum(): mixed
 ```
+
 
 
 
@@ -198,6 +208,7 @@ public markasread(): mixed
 
 
 
+
 ***
 
 ### uploaddocument
@@ -207,6 +218,7 @@ public markasread(): mixed
 ```php
 public uploaddocument(): mixed
 ```
+
 
 
 
@@ -240,6 +252,7 @@ public getdocumentsbycampaign(): mixed
 
 
 
+
 ***
 
 ### askattachment
@@ -261,8 +274,9 @@ public askattachment(): mixed
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

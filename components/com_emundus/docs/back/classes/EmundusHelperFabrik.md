@@ -41,6 +41,7 @@ public static updateParam(mixed $params, mixed $attribute, mixed $value): mixed
 
 
 
+
 ***
 
 ### prepareListParams
@@ -54,6 +55,7 @@ public static prepareListParams(): mixed
 
 
 * This method is **static**.
+
 
 
 
@@ -90,6 +92,7 @@ public static prepareFormParams(mixed $init_plugins = true, mixed $type = &#039;
 
 
 
+
 ***
 
 ### prepareSubmittionPlugin
@@ -117,6 +120,7 @@ public prepareSubmittionPlugin(mixed $params): mixed
 
 
 
+
 ***
 
 ### prepareGroupParams
@@ -130,6 +134,7 @@ public static prepareGroupParams(): mixed
 
 
 * This method is **static**.
+
 
 
 
@@ -167,6 +172,7 @@ public static prepareElementParameters(mixed $plugin, mixed $notempty = true, mi
 
 
 
+
 ***
 
 ### getDBType
@@ -189,6 +195,7 @@ public static getDBType(mixed $plugin): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$plugin` | **mixed** |  |
+
 
 
 
@@ -221,6 +228,7 @@ public static initLabel(mixed $plugin): mixed
 
 
 
+
 ***
 
 ### prepareFabrikMenuParams
@@ -234,6 +242,7 @@ public static prepareFabrikMenuParams(): mixed
 
 
 * This method is **static**.
+
 
 
 
@@ -271,6 +280,7 @@ public static addOption(mixed $eid, mixed $label, mixed $value): mixed
 
 
 
+
 ***
 
 ### addNotEmptyValidation
@@ -295,6 +305,7 @@ public static addNotEmptyValidation(mixed $eid, mixed $message = &#039;&#039;, m
 | `$eid` | **mixed** |  |
 | `$message` | **mixed** |  |
 | `$condition` | **mixed** |  |
+
 
 
 
@@ -330,6 +341,7 @@ public static checkFabrikJoins(mixed $eid, mixed $name, mixed $plugin, mixed $gr
 
 
 
+
 ***
 
 ### addJsAction
@@ -358,6 +370,7 @@ public static addJsAction(mixed $eid, mixed $action): mixed
 
 
 
+
 ***
 
 ### getTableFromFabrik
@@ -381,6 +394,7 @@ public static getTableFromFabrik(mixed $id, mixed $object = &#039;list&#039;): m
 |-----------|------|-------------|
 | `$id` | **mixed** |  |
 | `$object` | **mixed** |  |
+
 
 
 
@@ -419,6 +433,7 @@ public static createFilterList(mixed& $filters, mixed $eid, mixed $value, mixed 
 
 
 
+
 ***
 
 ### getFormattedPhoneNumberValue
@@ -451,6 +466,7 @@ The formatted phone number, if the phone number is not valid, empty string is re
 
 
 
+
 ***
 
 ### getDbTableName
@@ -473,6 +489,7 @@ public static getDbTableName(mixed $formid): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$formid` | **mixed** |  |
+
 
 
 
@@ -514,6 +531,7 @@ public static formatElementValue(mixed $elt_name, mixed $raw_value, mixed $group
 
 
 
+
 ***
 
 ### encryptDatas
@@ -539,6 +557,7 @@ public static encryptDatas(mixed $value, mixed $encryption_key = null, mixed $ci
 | `$encryption_key` | **mixed** |  |
 | `$cipher` | **mixed** |  |
 | `$iv` | **mixed** |  |
+
 
 
 
@@ -573,6 +592,7 @@ public static decryptDatas(mixed $value, mixed $encryption_key = null, mixed $ci
 
 
 
+
 ***
 
 ### oldDecryptDatas
@@ -596,6 +616,7 @@ public static oldDecryptDatas(mixed $value, mixed $encryption_key = null): mixed
 |-----------|------|-------------|
 | `$value` | **mixed** |  |
 | `$encryption_key` | **mixed** |  |
+
 
 
 
@@ -633,8 +654,38 @@ public static migrateEncryptDatas(mixed $old_cipher, mixed $new_cipher, mixed $o
 
 
 
+
+***
+
+### getFabrikDateParam
+
+
+
+```php
+public static getFabrikDateParam(mixed $elt, mixed $param): mixed
+```
+
+
+
+* This method is **static**.
+
+
+
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `$elt` | **mixed** |  |
+| `$param` | **mixed** |  |
+
+
+
+
+
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

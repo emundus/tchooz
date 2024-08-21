@@ -12,7 +12,7 @@ $d = $displayData;
                 <h3>
                     <?php echo $d->title ?>
                 </h3>
-                <span class="material-icons-outlined tw-transition-transform tw-duration-300" id="<?php echo $d->id; ?>-icon">expand_more</span>
+                <span class="material-symbols-outlined tw-transition-transform tw-duration-300" id="<?php echo $d->id; ?>-icon">expand_more</span>
             </div>
 	    <?php endif; ?>
 

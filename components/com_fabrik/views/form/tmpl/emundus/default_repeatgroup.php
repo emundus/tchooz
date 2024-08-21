@@ -25,10 +25,12 @@ foreach ($group->subgroups as $key => $subgroup) :
 	?>
     <span class="fabrik-anchor" id="<?php echo 'fabrikSubGroup_'.$index; ?>"></span>
 	<div class="fabrikSubGroup">
-		<div data-role="group-repeat-intro">
-			<?php echo $w->parseMessageForPlaceHolder($group->repeatIntro, $introData);?>
-		</div>
-		<div class="fabrikSubGroupElements em-repeat-card tw-mb-4 tw-mt-7">
+        <?php if(!empty($group->repeatIntro)) : ?>
+            <div data-role="group-repeat-intro">
+                <?php echo $w->parseMessageForPlaceHolder($group->repeatIntro, $introData);?>
+            </div>
+        <?php endif; ?>
+		<div class="fabrikSubGroupElements em-repeat-card tw-mb-4 <?php if(!$group->showLegend || empty($group->title)) : ?>tw-mt-7<?php endif; ?>">
             <?php if ($group->canDeleteRepeat) : ?>
                 <div class="fabrikGroupRepeater">
                     <?php echo $this->removeRepeatGroupButton; ?>

@@ -1,6 +1,4 @@
 /* jshint esversion: 8 */
-import client from './axiosClient';
-
 import {FetchClient} from './fetchClient.js';
 
 const fetchClient = new FetchClient('settings');
@@ -17,14 +15,12 @@ export default {
     }
   },
   async removeParameter(param) {
-    try {
-      const response = await client().post(
-        'index.php?option=com_emundus&controller=settings&task=removeparam',
-        {
-          param: param
-        });
+    const data = {
+        param: param
+    }
 
-      return response;
+    try {
+      return await fetchClient.post('removeparam', data);
     } catch (e) {
       return {
         status: false,
@@ -34,9 +30,7 @@ export default {
   },
   async checkFirstDatabaseJoin() {
     try {
-      const response = await client().get('index.php?option=com_emundus&controller=settings&task=checkfirstdatabasejoin');
-
-      return response;
+      return await fetchClient.get('checkfirstdatabasejoin');
     } catch (e) {
       return {
         status: false,
@@ -46,7 +40,7 @@ export default {
   },
   async getEmundusParams() {
     try {
-      return await client().get('index.php?option=com_emundus&controller=settings&task=getemundusparams');
+      return await fetchClient.get('getemundusparams');
     } catch (e) {
       return false;
     }
@@ -70,7 +64,7 @@ export default {
 
   async getOffset() {
     try {
-      return await client().get('index.php?option=com_emundus&controller=settings&task=getOffset');
+      return await fetchClient.get('getOffset');
     } catch (e) {
       return false;
     }
@@ -99,7 +93,7 @@ export default {
 
   async getTimezoneList() {
     try {
-      return await client().get('index.php?option=com_emundus&controller=settings&task=gettimezonelist');
+      return await fetchClient.get('gettimezonelist');
     } catch (e) {
       return false;
     }
@@ -154,7 +148,7 @@ export default {
   },
   async getTags() {
     try {
-      return await client.get('gettags');
+      return await fetchClient.get('gettags');
     } catch (e) {
       return {
         status: false,
@@ -164,7 +158,7 @@ export default {
   },
   async getEmailSender() {
     try {
-      return await client.get('getemailsender');
+      return await fetchClient.get('getemailsender');
     } catch (e) {
       return {
         status: false,
@@ -174,7 +168,7 @@ export default {
   },
   async getLogo() {
     try {
-      return await client.get('getlogo');
+      return await fetchClient.get('getlogo');
     } catch (e) {
       return {
         status: false,

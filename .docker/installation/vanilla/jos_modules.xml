@@ -1210,7 +1210,7 @@
    </row>
    <row>
     <field name="id">153</field>
-    <field name="asset_id">0</field>
+    <field name="asset_id">192</field>
     <field name="title">Ressources et Notes</field>
     <field name="note"></field>
     <field name="content" value_is_null="true"></field>
@@ -1224,7 +1224,7 @@
     <field name="module">mod_emundus_notes</field>
     <field name="access">1</field>
     <field name="showtitle">1</field>
-    <field name="params">{&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="params">{&quot;ressources&quot;:[],&quot;note&quot;:&quot;&quot;,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
     <field name="client_id">1</field>
     <field name="language">*</field>
    </row>
@@ -1746,7 +1746,7 @@
     <field name="asset_id">178</field>
     <field name="title">[PROJECT] Back to project area</field>
     <field name="note"></field>
-    <field name="content">&lt;p&gt;&lt;a class=&quot;em-back-button tw-cursor-pointer&quot; style=&quot;width: fit-content; padding: 8px 0;&quot; href=&quot;gestion-de-projet&quot;&gt; &lt;span class=&quot;material-icons tw-mr-1&quot;&gt;navigate_before&lt;/span&gt;Retour à la zone projet&lt;/a&gt;&lt;/p&gt;</field>
+    <field name="content">&lt;p&gt;&lt;a class=&quot;em-back-button tw-cursor-pointer&quot; style=&quot;width: fit-content; padding: 8px 0;&quot; href=&quot;gestion-de-projet&quot;&gt; &lt;span class=&quot;material-symbols-outlined tw-mr-1&quot;&gt;navigate_before&lt;/span&gt;Retour à la zone projet&lt;/a&gt;&lt;/p&gt;</field>
     <field name="ordering">1</field>
     <field name="position">content-top-a</field>
     <field name="checked_out" value_is_null="true"></field>
@@ -1766,7 +1766,7 @@
     <field name="asset_id">179</field>
     <field name="title">[PROJECT] Back resources</field>
     <field name="note"></field>
-    <field name="content">&lt;p&gt;&lt;a class=&quot;em-back-button tw-cursor-pointer&quot; style=&quot;width: fit-content; padding: 8px 0;&quot; href=&quot;ressources&quot;&gt; &lt;span class=&quot;material-icons tw-mr-1&quot;&gt;navigate_before&lt;/span&gt;Retour aux ressources&lt;/a&gt;&lt;/p&gt;</field>
+    <field name="content">&lt;p&gt;&lt;a class=&quot;em-back-button tw-cursor-pointer&quot; style=&quot;width: fit-content; padding: 8px 0;&quot; href=&quot;ressources&quot;&gt; &lt;span class=&quot;material-symbols-outlined tw-mr-1&quot;&gt;navigate_before&lt;/span&gt;Retour aux ressources&lt;/a&gt;&lt;/p&gt;</field>
     <field name="ordering">1</field>
     <field name="position">content-top-a</field>
     <field name="checked_out" value_is_null="true"></field>

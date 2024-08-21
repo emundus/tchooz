@@ -22,7 +22,7 @@
         <div v-if="(index + 1) !== selectedTags.length">{{ selectedSeparator }}</div>
       </div>
     </div>
-    <div class="tw-text-red-500 tw-mb-4" v-if="selectedTags.length === 0">
+    <div class="tw-text-red-600 tw-mb-4" v-if="selectedTags.length === 0">
       {{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_NAME_SELECT_A_TAG') }}
     </div>
 
@@ -44,7 +44,7 @@
 
       <div v-for="(tag,index) in selectedTags" :key="index" class="em-ml-16 tw-flex tw-items-center em-tag-preview">
         <span>{{ tag.label }}</span>
-        <span class="material-icons tw-cursor-pointer tw-ml-2" @click="removeTag(tag.value)">close</span>
+        <span class="material-symbols-outlined tw-cursor-pointer tw-ml-2" @click="removeTag(tag.value)">close</span>
       </div>
     </div>
 

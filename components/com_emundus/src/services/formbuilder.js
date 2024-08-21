@@ -1,4 +1,3 @@
-import client from './axiosClient';
 
 export default {
   async createSimpleElement(params) {
@@ -842,19 +841,13 @@ export default {
 
     if (table && key && value) {
       try {
-        const result = await client().get(
-          'index.php?option=com_emundus&controller=formbuilder&task=getsqldropdownoptions',
-          {
-            params: {
-              table: table,
-              key: key,
-              value: value,
-              translate: translate
-            }
-          }
-        );
-
-        response = result.data;
+        return fetch('/index.php?option=com_emundus&controller=formbuilder&task=getsqldropdownoptions&table='+table+'&key='+key+'&value='+value+'&translate='+translate, {
+          method: 'GET'
+        }).then(response => response.json()).then(response => {
+          return response;
+        }).catch(error => {
+          throw error;
+        });
       } catch (e) {
         response.msg = e.message;
       }

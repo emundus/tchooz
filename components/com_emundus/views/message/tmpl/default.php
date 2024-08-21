@@ -232,7 +232,7 @@ if ($allowed_attachments !== true) {
                 <div class="email-list-modal hidden" id="email-list-modal">
                     <div class="tw-flex tw-justify-between mb-3">
                         <h3><?= Text::_('COM_EMUNDUS_EMAILS_TO_LIST') ?></h3>
-                        <span class="material-icons-outlined pointer" onclick="showEmailList()">close</span>
+                        <span class="material-symbols-outlined pointer" onclick="showEmailList()">close</span>
                     </div>
 
                     <div class="tw-flex tw-items-center tw-gap-2 tw-flex-wrap"
@@ -380,7 +380,7 @@ if ($allowed_attachments !== true) {
                                    id="em-file_to_upload" onChange="addFile();">
                         </label>
                         <p><?php echo Text::_('COM_EMUNDUS_ATTACHMENTS_PLEASE_ONLY'); ?>.xls,.docx,.pdf,.png,.jpg,.jpeg,.gif,.odf,.pptx,.svg,.csv</p>
-                        <p id="error_message" class="tw-text-red-500 tw-font-semibold"></p>
+                        <p id="error_message" class="tw-text-red-600 tw-font-semibold"></p>
                     </div>
                 </div>
 
@@ -1068,7 +1068,7 @@ if ($allowed_attachments !== true) {
             .then(data => {
                 if (data.status) {
                     document.querySelector('#error_message').innerText = '';
-                    $('#em-attachment-list').append('<li class="list-group-item upload tw-flex tw-items-center tw-justify-between tw-gap-2"><div class="value hidden">' + data.file_path + '</div>' + data.file_name + '<span class="material-icons-outlined tw-cursor-pointer tw-text-red-500" onClick="removeAttachment(this);">clear</span></li>');
+                    $('#em-attachment-list').append('<li class="list-group-item upload tw-flex tw-items-center tw-justify-between tw-gap-2"><div class="value hidden">' + data.file_path + '</div>' + data.file_name + '<span class="material-icons-outlined tw-cursor-pointer tw-text-red-600" onClick="removeAttachment(this);">clear</span></li>');
                 } else {
                     document.querySelector('#error_message').innerText = data.msg;
                 }

@@ -66,6 +66,7 @@ public __construct(): mixed
 
 
 
+
 ***
 
 ### toPdf
@@ -96,8 +97,9 @@ public toPdf(mixed $file_src, mixed $file_dest, mixed $file_src_format = null, m
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

@@ -252,7 +252,7 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 							foreach ($elements as &$element) {
 								if (!empty($element->label) && $element->label != ' ') {
 
-									if (($element->plugin == 'date' || $element->plugin == 'birthday') && $element->content > 0) {
+									if (($element->plugin == 'date' || $element->plugin == 'birthday' || $element->plugin == 'jdate') && $element->content > 0) {
 										$elt = date('Y-m-d H:i:s', strtotime($element->content));
 									}
 
@@ -312,7 +312,7 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 
 										if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
 
-											if ($elements[$j]->plugin == 'date' || ($elements[$j]->plugin == 'birthday' && $r_elt > 0)) {
+											if ($elements[$j]->plugin == 'date' || ($elements[$j]->plugin == 'birthday' && $r_elt > 0) || $elements[$j]->plugin == 'jdate') {
 												$elt = date('Y-m-d H:i:s', strtotime($r_elt));
 											}
 
@@ -348,7 +348,7 @@ class PlgFabrik_FormEmunduspushfiletoapi extends plgFabrik_Form {
 									$element->content = @$res[1];
 									$element->content_id = @$res[0];
 
-									if (($element->plugin == 'date' || $element->plugin == 'birthday') && $element->content > 0) {
+									if (($element->plugin == 'date' || $element->plugin == 'birthday' || $element->plugin == 'jdate') && $element->content > 0) {
 										$elt = date('Y-m-d H:i:s', strtotime($element->content));
 									}
 

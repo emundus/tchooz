@@ -49,7 +49,7 @@ private $m_files
 
 ### __construct
 
-
+Constructor.
 
 ```php
 public __construct(array $config = array()): mixed
@@ -66,11 +66,16 @@ public __construct(array $config = array()): mixed
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$config` | **array** |  |
+| `$config` | **array** | An optional associative array of configuration settings. |
 
 
 
 
+
+
+**See Also:**
+
+* \JController - 
 
 ***
 
@@ -93,6 +98,7 @@ public callback(): mixed
 
 
 
+
 ***
 
 ### yousign
@@ -102,6 +108,7 @@ Downloads the file associated to the YouSign procedure that was pushed.
 ```php
 public yousign(): mixed
 ```
+
 
 
 
@@ -140,6 +147,7 @@ public addpipe(): bool|string
 
 
 
+
 ***
 
 ### FileSizeConvert
@@ -171,6 +179,7 @@ human readable file size (2,87 Мб)
 
 
 
+
 ***
 
 ### is_file_uploaded
@@ -194,6 +203,7 @@ public is_file_uploaded(): void
 **Throws:**
 
 - [`Exception`](./Exception.md)
+
 
 
 
@@ -226,6 +236,7 @@ private setUserParam(string $user_email, mixed $param, string $value): bool
 
 
 
+
 ***
 
 ### export_siscole
@@ -252,6 +263,7 @@ public export_siscole(): false|void
 
 
 
+
 ***
 
 ### export_banner
@@ -261,6 +273,7 @@ public export_siscole(): false|void
 ```php
 public export_banner(): mixed
 ```
+
 
 
 
@@ -299,6 +312,7 @@ public process_banner(): mixed
 
 
 
+
 ***
 
 ### update_banner
@@ -327,6 +341,7 @@ public update_banner(mixed $id, mixed $fnum): mixed
 
 
 
+
 ***
 
 ### getzoomsession
@@ -336,6 +351,7 @@ public update_banner(mixed $id, mixed $fnum): mixed
 ```php
 public getzoomsession(): mixed
 ```
+
 
 
 
@@ -378,6 +394,7 @@ json_encoded
 
 
 
+
 ***
 
 ### updateAxeptaPaymentInfos
@@ -387,6 +404,7 @@ json_encoded
 ```php
 public updateAxeptaPaymentInfos(): mixed
 ```
+
 
 
 
@@ -420,8 +438,9 @@ public getwidgets(): mixed
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

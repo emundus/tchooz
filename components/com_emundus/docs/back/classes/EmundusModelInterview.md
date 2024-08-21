@@ -34,6 +34,7 @@ public __construct(): mixed
 
 
 
+
 ***
 
 ### getInterviewFormByProgramme
@@ -61,6 +62,7 @@ public getInterviewFormByProgramme(mixed $code = null): mixed
 
 
 
+
 ***
 
 ### getGroupsInterviewByProgramme
@@ -83,6 +85,7 @@ public getGroupsInterviewByProgramme(mixed $code): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$code` | **mixed** |  |
+
 
 
 
@@ -116,6 +119,7 @@ public getEvaluationsFnumUser(mixed $fnum, mixed $user): mixed
 
 
 
+
 ***
 
 ### getEvaluationsByFnum
@@ -143,6 +147,7 @@ public getEvaluationsByFnum(mixed $fnum): mixed
 
 
 
+
 ***
 
 ### getAllElementsByGroups
@@ -165,6 +170,7 @@ public getAllElementsByGroups(mixed $groups): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$groups` | **mixed** |  |
+
 
 
 
@@ -207,8 +213,9 @@ list of Fabrik element ID used in evaluation form
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

@@ -19,6 +19,7 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Mail;
+use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Uri\Uri;
 
 /**
@@ -27,24 +28,28 @@ use Joomla\CMS\Uri\Uri;
  * @package    Joomla.eMundus
  * @subpackage Components
  */
-class EmundusControllerMessages extends JControllerLegacy
+class EmundusControllerMessages extends BaseController
 {
 
 	protected $app;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 *
-	 * @since 3.8.6
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     \JController
+	 * @since   1.0.0
 	 */
 	function __construct($config = array())
 	{
+		parent::__construct($config);
+
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'emails.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'messages.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
-		parent::__construct($config);
 
 		$this->app = Factory::getApplication();
 	}

@@ -14,12 +14,6 @@ css:
     priority: '0'
     name: Global
   -
-    location: 'https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined'
-    inline: ''
-    extra: '{  }'
-    priority: '0'
-    name: 'Material Icons'
-  -
     location: 'gantry-assets://custom/scss/editor.scss'
     inline: ''
     extra: '{  }'

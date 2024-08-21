@@ -27,7 +27,7 @@
                 :id="'tag_swatches_'+tag.id"
             />
             <a type="button" :title="translate('COM_EMUNDUS_ONBOARD_DELETE_TAGS')" @click="removeTag(tag,index)" class="tw-flex tw-items-center tw-ml-2 tw-cursor-pointer">
-              <span class="material-icons-outlined tw-text-red-500">delete_outline</span>
+              <span class="material-symbols-outlined tw-text-red-600">delete_outline</span>
             </a>
           </div>
         </div>

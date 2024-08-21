@@ -72,6 +72,7 @@ public __construct(mixed $config = array()): mixed
 
 
 
+
 ***
 
 ### getAllForms
@@ -98,6 +99,7 @@ public getAllForms(string $filter = &#039;&#039;, string $sort = &#039;&#039;, s
 | `$recherche` | **string** |  |
 | `$lim` | **int** |  |
 | `$page` | **int** |  |
+
 
 
 
@@ -134,6 +136,7 @@ public getAllGrilleEval(mixed $filter, mixed $sort, mixed $recherche, mixed $lim
 
 
 
+
 ***
 
 ### getAllFormsPublished
@@ -143,6 +146,7 @@ public getAllGrilleEval(mixed $filter, mixed $sort, mixed $recherche, mixed $lim
 ```php
 public getAllFormsPublished(): mixed
 ```
+
 
 
 
@@ -182,6 +186,7 @@ public deleteForm(mixed $data): mixed
 
 
 
+
 ***
 
 ### unpublishForm
@@ -209,6 +214,7 @@ public unpublishForm(mixed $data): mixed
 
 
 
+
 ***
 
 ### publishForm
@@ -231,6 +237,7 @@ public publishForm(mixed $data): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$data` | **mixed** |  |
+
 
 
 
@@ -264,6 +271,7 @@ public duplicateForm(mixed $data, mixed $duplicate_condition = true): mixed
 
 
 
+
 ***
 
 ### copyAttachmentsToNewProfile
@@ -287,6 +295,7 @@ public copyAttachmentsToNewProfile(mixed $oldprofile, mixed $newprofile): mixed
 |-----------|------|-------------|
 | `$oldprofile` | **mixed** |  |
 | `$newprofile` | **mixed** |  |
+
 
 
 
@@ -319,6 +328,7 @@ public getFormById(mixed $id): mixed
 
 
 
+
 ***
 
 ### getFormByFabrikId
@@ -341,6 +351,7 @@ public getFormByFabrikId(mixed $id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$id` | **mixed** |  |
+
 
 
 
@@ -373,6 +384,7 @@ public createApplicantProfile(mixed $first_page = true): mixed
 
 
 
+
 ***
 
 ### createFormEval
@@ -395,6 +407,7 @@ public createFormEval(mixed $user = null): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$user` | **mixed** |  |
+
 
 
 
@@ -428,6 +441,7 @@ public createMenuType(mixed $menutype, mixed $title): mixed
 
 
 
+
 ***
 
 ### createMenu
@@ -451,6 +465,7 @@ public createMenu(mixed $menu, mixed $menutype): mixed
 |-----------|------|-------------|
 | `$menu` | **mixed** |  |
 | `$menutype` | **mixed** |  |
+
 
 
 
@@ -484,6 +499,7 @@ public updateForm(mixed $id, mixed $data): mixed
 
 
 
+
 ***
 
 ### updateFormLabel
@@ -507,6 +523,7 @@ public updateFormLabel(mixed $prid, mixed $label): mixed
 |-----------|------|-------------|
 | `$prid` | **mixed** |  |
 | `$label` | **mixed** |  |
+
 
 
 
@@ -540,6 +557,7 @@ public getAllDocuments(mixed $prid, mixed $cid): mixed
 
 
 
+
 ***
 
 ### getUnDocuments
@@ -561,6 +579,7 @@ public getUnDocuments(): mixed
 
 
 
+
 ***
 
 ### getAttachments
@@ -570,6 +589,7 @@ public getUnDocuments(): mixed
 ```php
 public getAttachments(): mixed
 ```
+
 
 
 
@@ -609,6 +629,7 @@ public getDocumentsUsage(mixed $documentIds): array
 
 
 
+
 ***
 
 ### deleteRemainingDocuments
@@ -632,6 +653,7 @@ public deleteRemainingDocuments(mixed $prid, mixed $allDocumentsIds): mixed
 |-----------|------|-------------|
 | `$prid` | **mixed** |  |
 | `$allDocumentsIds` | **mixed** |  |
+
 
 
 
@@ -666,6 +688,7 @@ public removeDocument(mixed $did, mixed $prid, mixed $cid): mixed
 
 
 
+
 ***
 
 ### updateMandatory
@@ -690,6 +713,7 @@ public updateMandatory(mixed $did, mixed $prid, mixed $cid): mixed
 | `$did` | **mixed** |  |
 | `$prid` | **mixed** |  |
 | `$cid` | **mixed** |  |
+
 
 
 
@@ -724,6 +748,7 @@ public addDocument(mixed $did, mixed $profile, mixed $campaign): mixed
 
 
 
+
 ***
 
 ### deleteDocument
@@ -746,6 +771,7 @@ public deleteDocument(mixed $did): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$did` | **mixed** |  |
+
 
 
 
@@ -778,6 +804,7 @@ public addChecklistMenu(mixed $prid): mixed
 
 
 
+
 ***
 
 ### removeChecklistMenu
@@ -800,6 +827,7 @@ public removeChecklistMenu(mixed $prid): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$prid` | **mixed** |  |
+
 
 
 
@@ -832,6 +860,7 @@ public getFormsByProfileId(mixed $profile_id): mixed
 
 
 
+
 ***
 
 ### getCampaignsByProfile
@@ -854,6 +883,7 @@ public getCampaignsByProfile(mixed $profile_id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$profile_id` | **mixed** |  |
+
 
 
 
@@ -886,6 +916,7 @@ public getGroupsByForm(mixed $form_id): mixed
 
 
 
+
 ***
 
 ### getSubmittionPage
@@ -908,6 +939,7 @@ public getSubmittionPage(mixed $prid): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$prid` | **mixed** |  |
+
 
 
 
@@ -940,6 +972,7 @@ public getProfileLabelByProfileId(mixed $profile_id): mixed
 
 
 
+
 ***
 
 ### getFilesByProfileId
@@ -962,6 +995,7 @@ public getFilesByProfileId(mixed $profile_id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$profile_id` | **mixed** |  |
+
 
 
 
@@ -994,6 +1028,7 @@ public getAssociatedCampaign(mixed $profile_id): mixed
 
 
 
+
 ***
 
 ### getAssociatedProgram
@@ -1016,6 +1051,7 @@ public getAssociatedProgram(mixed $form_id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$form_id` | **mixed** |  |
+
 
 
 
@@ -1049,6 +1085,7 @@ public affectCampaignsToForm(mixed $prid, mixed $campaigns): mixed
 
 
 
+
 ***
 
 ### getDocumentsByProfile
@@ -1071,6 +1108,7 @@ public getDocumentsByProfile(mixed $prid): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$prid` | **mixed** |  |
+
 
 
 
@@ -1103,6 +1141,7 @@ public reorderDocuments(mixed $documents): mixed
 
 
 
+
 ***
 
 ### removeDocumentFromProfile
@@ -1130,6 +1169,7 @@ public removeDocumentFromProfile(mixed $did): mixed
 
 
 
+
 ***
 
 ### deleteModelDocument
@@ -1152,6 +1192,7 @@ public deleteModelDocument(mixed $did): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$did` | **mixed** |  |
+
 
 
 
@@ -1188,6 +1229,7 @@ public getDatabaseJoinOptions(mixed $table, mixed $column, mixed $value, mixed $
 
 
 
+
 ***
 
 ### checkIfDocCanBeRemovedFromCampaign
@@ -1216,6 +1258,7 @@ public checkIfDocCanBeRemovedFromCampaign(mixed $document_id, mixed $profile_id)
 
 
 
+
 ***
 
 ### getProgramsByForm
@@ -1239,6 +1282,7 @@ public getProgramsByForm(mixed $form_id, mixed $mode = &#039;eval&#039;): mixed
 |-----------|------|-------------|
 | `$form_id` | **mixed** |  |
 | `$mode` | **mixed** |  |
+
 
 
 
@@ -1273,6 +1317,7 @@ public associateFabrikGroupsToProgram(mixed $form_id, mixed $programs, mixed $mo
 
 
 
+
 ***
 
 ### getJSConditionsByForm
@@ -1296,6 +1341,7 @@ public getJSConditionsByForm(mixed $form_id, mixed $format = &#039;raw&#039;): m
 |-----------|------|-------------|
 | `$form_id` | **mixed** |  |
 | `$format` | **mixed** |  |
+
 
 
 
@@ -1334,6 +1380,7 @@ public addRule(mixed $form_id, mixed $grouped_conditions, mixed $actions, mixed 
 
 
 
+
 ***
 
 ### editRule
@@ -1366,6 +1413,7 @@ public editRule(mixed $rule_id, mixed $grouped_conditions, mixed $actions, mixed
 
 
 
+
 ***
 
 ### deleteRule
@@ -1388,6 +1436,7 @@ public deleteRule(mixed $rule_id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$rule_id` | **mixed** |  |
+
 
 
 
@@ -1422,6 +1471,7 @@ public publishRule(mixed $rule_id, mixed $state, mixed $user = null): mixed
 
 
 
+
 ***
 
 ### addCondition
@@ -1450,6 +1500,7 @@ private addCondition(mixed $rule_id, mixed $condition): mixed
 
 
 
+
 ***
 
 ### createConditionGroup
@@ -1472,6 +1523,7 @@ private createConditionGroup(mixed $group_type): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$group_type` | **mixed** |  |
+
 
 
 
@@ -1505,8 +1557,9 @@ private addAction(mixed $rule_id, mixed $action): mixed
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

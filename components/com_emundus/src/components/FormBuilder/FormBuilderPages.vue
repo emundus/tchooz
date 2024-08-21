@@ -22,7 +22,7 @@
                 <transition :name="'slide-down'" type="transition">
                   <div>
                     <nav aria-label="action" class="em-flex-col-start">
-                      <p @click="deletePage(page)" class="tw-cursor-pointer tw-p-2 tw-text-base tw-text-red-500">
+                      <p @click="deletePage(page)" class="tw-cursor-pointer tw-p-2 tw-text-base tw-text-red-600">
                         {{ translate('COM_EMUNDUS_FORM_BUILDER_DELETE_PAGE') }}
                       </p>
                       <p @click="createModelFrom(page)" class="tw-cursor-pointer tw-p-2 tw-text-base">
@@ -110,9 +110,7 @@ export default {
 							if (response.status) {
 								let deletedPage = this.pages.findIndex(p => p.id === page.id);
 								this.pages.splice(deletedPage, 1);
-								if (this.selected === page.id) {
-									this.$emit('delete-page');
-								}
+                this.$emit('delete-page', page.id);
 								this.updateLastSave();
 							}
             });
@@ -144,7 +142,7 @@ export default {
       });
 
       formBuilderService.reorderMenu(newOrder, this.$props.profile_id).then((response) => {
-        if (response.status == 200 && response.data.status) {
+        if (response.status) {
           this.$emit('reorder-pages', this.pages);
         } else {
           Swal.fire({

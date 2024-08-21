@@ -5,7 +5,7 @@
            :key="addon.id">
         <div class="tw-cursor-pointer tw-flex tw-flex-col tw-bg-white tw-justify-center tw-items-center tw-rounded tw-border tw-border-neutral-300 tw-p-6" name="tilebutton">
             <div class="tw-mb-10 tw-rounded tw-flex tw-justify-center tw-items-center" :style="{ 'background-color': addon.color, 'width': '16em', 'height':'10em' }">
-              <span class="material-icons-outlined !tw-text-white"
+              <span class="material-symbols-outlined !tw-text-white"
                  :style="{'transform': 'scale(7)'}">{{ addon.icon }}</span>
             </div>
           <span class="tw-font-medium">{{ translate(addon.label) }}</span>

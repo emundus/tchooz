@@ -14,6 +14,8 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\MVC\Controller\BaseController;
+
 
 /**
  * eMundus Component Controller
@@ -22,15 +24,25 @@ use Joomla\CMS\Factory;
  * @subpackage Components
  */
 //error_reporting(E_ALL);
-class EmundusControllerInterview extends JControllerLegacy
+class EmundusControllerInterview extends BaseController
 {
 	protected $app;
 
 	private $_user;
 	private $_db;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     \JController
+	 * @since   1.0.0
+	 */
 	public function __construct($config = array())
 	{
+		parent::__construct($config);
+
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'filters.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'list.php');
@@ -43,10 +55,19 @@ class EmundusControllerInterview extends JControllerLegacy
 		$this->app   = Factory::getApplication();
 		$this->_user = $this->app->getSession()->get('emundusUser');
 		$this->_db   = Factory::getDBO();
-
-		parent::__construct($config);
 	}
 
+	/**
+	 * Method to display a view.
+	 *
+	 * @param   boolean  $cachable   If true, the view output will be cached.
+	 * @param   boolean  $urlparams  An array of safe URL parameters and their variable types.
+	 *                   @see        \Joomla\CMS\Filter\InputFilter::clean() for valid values.
+	 *
+	 * @return  DisplayController  This object to support chaining.
+	 *
+	 * @since   1.0.0
+	 */
 	public function display($cachable = false, $urlparams = false)
 	{
 		// Set a default view if none exists

@@ -1384,7 +1384,7 @@ class EmundusModelCampaign extends JModelList
 			$actualLanguage = !empty($lang->getTag()) ? substr($lang->getTag(), 0, 2) : 'fr';
 
 			$i            = 0;
-			$labels       = new stdClass;
+			$labels       = new stdClass();
 			$limit_status = [];
 
 			$query = "SELECT DISTINCT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'jos_emundus_setup_campaigns'";

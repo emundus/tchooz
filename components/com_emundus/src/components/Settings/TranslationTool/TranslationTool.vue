@@ -13,7 +13,7 @@
       <div class="em-modal-header">
         <div class="tw-justify-between tw-flex tw-items-center tw-cursor-pointer" @click.prevent="beforeClose">
           <div class="tw-w-max tw-flex tw-items-center">
-            <span class="material-icons-outlined tw-text-neutral-600">navigate_before</span>
+            <span class="material-symbols-outlined tw-text-neutral-600">navigate_before</span>
             <span class="tw-ml-2 tw-text-neutral-900">{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
           </div>
           <div v-if="saving" class="tw-flex tw-items-center tw-justify-start">

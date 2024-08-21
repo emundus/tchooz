@@ -126,6 +126,7 @@ public __construct(): mixed
 
 
 
+
 ***
 
 ### _buildContentOrderBy
@@ -147,6 +148,7 @@ public _buildContentOrderBy(): mixed
 
 
 
+
 ***
 
 ### _buildQuery
@@ -156,6 +158,7 @@ public _buildContentOrderBy(): mixed
 ```php
 public _buildQuery(): mixed
 ```
+
 
 
 
@@ -196,6 +199,7 @@ public getUsers(mixed $limit_start = null, mixed $limit = null): mixed
 
 
 
+
 ***
 
 ### getProfiles
@@ -205,6 +209,7 @@ public getUsers(mixed $limit_start = null, mixed $limit = null): mixed
 ```php
 public getProfiles(): mixed
 ```
+
 
 
 
@@ -244,6 +249,7 @@ public getProfilesByIDs(mixed $ids): mixed
 
 
 
+
 ***
 
 ### getEditProfiles
@@ -253,6 +259,7 @@ public getProfilesByIDs(mixed $ids): mixed
 ```php
 public getEditProfiles(): mixed
 ```
+
 
 
 
@@ -286,6 +293,7 @@ public getApplicantProfiles(): mixed
 
 
 
+
 ***
 
 ### getUsersProfiles
@@ -295,6 +303,7 @@ public getApplicantProfiles(): mixed
 ```php
 public getUsersProfiles(): mixed
 ```
+
 
 
 
@@ -334,6 +343,7 @@ public getUserByEmail(mixed $email): mixed
 
 
 
+
 ***
 
 ### getEmundusUserByEmail
@@ -356,6 +366,7 @@ public getEmundusUserByEmail(mixed $email): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$email` | **mixed** |  |
+
 
 
 
@@ -388,6 +399,7 @@ public getProfileIDByCampaignID(mixed $cid): mixed
 
 
 
+
 ***
 
 ### getCurrentUserProfile
@@ -415,6 +427,7 @@ public getCurrentUserProfile(mixed $uid): mixed
 
 
 
+
 ***
 
 ### getProfileDetails
@@ -437,6 +450,7 @@ public getProfileDetails(mixed $profile_id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$profile_id` | **mixed** |  |
+
 
 
 
@@ -470,6 +484,7 @@ public changeCurrentUserProfile(mixed $uid, mixed $pid): mixed
 
 
 
+
 ***
 
 ### getUniversities
@@ -491,6 +506,7 @@ public getUniversities(): mixed
 
 
 
+
 ***
 
 ### getGroups
@@ -500,6 +516,7 @@ public getUniversities(): mixed
 ```php
 public getGroups(): mixed
 ```
+
 
 
 
@@ -540,6 +557,7 @@ public getUsersIntranetGroups(mixed $uid, mixed $return = &#039;AssocList&#039;)
 
 
 
+
 ***
 
 ### getLascalaIntranetGroups
@@ -567,6 +585,7 @@ public getLascalaIntranetGroups(mixed $uid = null): mixed
 
 
 
+
 ***
 
 ### getCampaigns
@@ -576,6 +595,7 @@ public getLascalaIntranetGroups(mixed $uid = null): mixed
 ```php
 public getCampaigns(): mixed
 ```
+
 
 
 
@@ -609,6 +629,7 @@ public getCampaignsPublished(): mixed
 
 
 
+
 ***
 
 ### getAllCampaigns
@@ -618,6 +639,7 @@ public getCampaignsPublished(): mixed
 ```php
 public getAllCampaigns(): mixed
 ```
+
 
 
 
@@ -657,6 +679,7 @@ public getCampaignsCandidature(mixed $aid): mixed
 
 
 
+
 ***
 
 ### getUserListWithSchoolyear
@@ -684,6 +707,7 @@ public getUserListWithSchoolyear(mixed $schoolyears): mixed
 
 
 
+
 ***
 
 ### getUserListWithCampaign
@@ -706,6 +730,7 @@ public getUserListWithCampaign(mixed $campaign): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$campaign` | **mixed** |  |
+
 
 
 
@@ -739,6 +764,7 @@ public compareCampaignANDSchoolyear(mixed $campaign, mixed $schoolyear): mixed
 
 
 
+
 ***
 
 ### getCurrentCampaign
@@ -748,6 +774,7 @@ public compareCampaignANDSchoolyear(mixed $campaign, mixed $schoolyear): mixed
 ```php
 public getCurrentCampaign(): mixed
 ```
+
 
 
 
@@ -781,6 +808,7 @@ public getCurrentCampaignsID(): mixed
 
 
 
+
 ***
 
 ### getCurrentCampaigns
@@ -790,6 +818,7 @@ public getCurrentCampaignsID(): mixed
 ```php
 public getCurrentCampaigns(): mixed
 ```
+
 
 
 
@@ -823,6 +852,7 @@ public getProgramme(): mixed
 
 
 
+
 ***
 
 ### getNewsletter
@@ -832,6 +862,7 @@ public getProgramme(): mixed
 ```php
 public getNewsletter(): mixed
 ```
+
 
 
 
@@ -865,6 +896,7 @@ public getGroupEval(): mixed
 
 
 
+
 ***
 
 ### getGroupsEval
@@ -874,6 +906,7 @@ public getGroupEval(): mixed
 ```php
 public getGroupsEval(): mixed
 ```
+
 
 
 
@@ -913,6 +946,7 @@ public getUserListWithGroupsEval(mixed $groups): mixed
 
 
 
+
 ***
 
 ### getUsersGroups
@@ -922,6 +956,7 @@ public getUserListWithGroupsEval(mixed $groups): mixed
 ```php
 public getUsersGroups(): mixed
 ```
+
 
 
 
@@ -955,6 +990,7 @@ public getSchoolyears(): mixed
 
 
 
+
 ***
 
 ### getTotal
@@ -964,6 +1000,7 @@ public getSchoolyears(): mixed
 ```php
 public getTotal(): mixed
 ```
+
 
 
 
@@ -997,6 +1034,7 @@ public getPagination(): mixed
 
 
 
+
 ***
 
 ### getPageNavigation
@@ -1006,6 +1044,7 @@ public getPagination(): mixed
 ```php
 public getPageNavigation(): string
 ```
+
 
 
 
@@ -1051,6 +1090,7 @@ A JForm object on success, false on failure
 
 
 
+
 ***
 
 ### loadFormData
@@ -1072,6 +1112,7 @@ protected loadFormData(): mixed
 **Return Value:**
 
 The data for the form.
+
 
 
 
@@ -1098,6 +1139,7 @@ for users plugins to extend the data.
 **Return Value:**
 
 Data object on success, false on failure.
+
 
 
 
@@ -1134,6 +1176,7 @@ user_id, 0 if failed
 
 
 
+
 ***
 
 ### addEmundusUser
@@ -1157,6 +1200,7 @@ public addEmundusUser(mixed $user_id, mixed $params): mixed
 |-----------|------|-------------|
 | `$user_id` | **mixed** |  |
 | `$params` | **mixed** |  |
+
 
 
 
@@ -1189,6 +1233,7 @@ public found_usertype(mixed $acl_aro_groups): mixed
 
 
 
+
 ***
 
 ### getDefaultGroup
@@ -1216,6 +1261,7 @@ public getDefaultGroup(mixed $pid): mixed
 
 
 
+
 ***
 
 ### login
@@ -1238,6 +1284,7 @@ public login(mixed $uid): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$uid` | **mixed** |  |
+
 
 
 
@@ -1276,6 +1323,7 @@ public plainLogin(mixed $credentials, int $redirect = 1): bool|\JException
 
 
 
+
 ***
 
 ### encryptLogin
@@ -1309,6 +1357,7 @@ public encryptLogin(mixed $credentials, int $redirect = 1): mixed
 
 
 
+
 ***
 
 ### getFnumsAssoc
@@ -1332,6 +1381,7 @@ public getFnumsAssoc(mixed $action_id, mixed $crud = array()): mixed
 |-----------|------|-------------|
 | `$action_id` | **mixed** |  |
 | `$crud` | **mixed** |  |
+
 
 
 
@@ -1366,6 +1416,7 @@ public getFnumsGroupAssoc(mixed $group_id, mixed $action_id, mixed $crud = array
 
 
 
+
 ***
 
 ### getFnumsUserAssoc
@@ -1389,6 +1440,7 @@ public getFnumsUserAssoc(mixed $action_id, mixed $crud = array()): mixed
 |-----------|------|-------------|
 | `$action_id` | **mixed** |  |
 | `$crud` | **mixed** |  |
+
 
 
 
@@ -1421,6 +1473,7 @@ public getEvalutorByFnums(mixed $fnums): mixed
 
 
 
+
 ***
 
 ### getActions
@@ -1443,6 +1496,7 @@ public getActions(mixed $actions = &#039;&#039;): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$actions` | **mixed** |  |
+
 
 
 
@@ -1472,6 +1526,7 @@ public setGroupRight(mixed $id, mixed $action, mixed $value): mixed
 | `$id` | **mixed** |  |
 | `$action` | **mixed** |  |
 | `$value` | **mixed** |  |
+
 
 
 
@@ -1508,6 +1563,7 @@ public addGroup(mixed $gname, mixed $gdesc, mixed $actions, mixed $progs, mixed 
 
 
 
+
 ***
 
 ### changeBlock
@@ -1531,6 +1587,7 @@ public changeBlock(mixed $users, mixed $state): mixed
 |-----------|------|-------------|
 | `$users` | **mixed** |  |
 | `$state` | **mixed** |  |
+
 
 
 
@@ -1564,6 +1621,7 @@ public changeActivation(mixed $users, mixed $state): mixed
 
 
 
+
 ***
 
 ### createParam
@@ -1592,6 +1650,7 @@ public createParam(mixed $param, null $user_id): bool
 
 
 
+
 ***
 
 ### getNonApplicantId
@@ -1614,6 +1673,7 @@ public getNonApplicantId(mixed $users): array
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$users` | **mixed** |  |
+
 
 
 
@@ -1647,6 +1707,7 @@ public affectToGroups(mixed $users, mixed $groups): mixed
 
 
 
+
 ***
 
 ### affectToJoomlaGroups
@@ -1670,6 +1731,7 @@ public affectToJoomlaGroups(mixed $users, mixed $groups): mixed
 |-----------|------|-------------|
 | `$users` | **mixed** |  |
 | `$groups` | **mixed** |  |
+
 
 
 
@@ -1702,6 +1764,7 @@ public getUserInfos(mixed $uid): mixed
 
 
 
+
 ***
 
 ### getOnlineUsers
@@ -1711,6 +1774,7 @@ public getUserInfos(mixed $uid): mixed
 ```php
 public getOnlineUsers(): mixed
 ```
+
 
 
 
@@ -1751,6 +1815,7 @@ public getUserGroups(mixed $uid, mixed $return = &#039;AssocList&#039;): mixed
 
 
 
+
 ***
 
 ### getUserGroupsProgramme
@@ -1773,6 +1838,7 @@ public getUserGroupsProgramme(mixed $uid): array
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$uid` | **mixed** |  |
+
 
 
 
@@ -1806,6 +1872,7 @@ public getUserACL(mixed $uid = null, mixed $fnum = null): mixed
 
 
 
+
 ***
 
 ### getUserGroupsProgrammeAssoc
@@ -1829,6 +1896,7 @@ public getUserGroupsProgrammeAssoc(mixed $uid, mixed $select = &#039;jesgrc.cour
 |-----------|------|-------------|
 | `$uid` | **mixed** |  |
 | `$select` | **mixed** |  |
+
 
 
 
@@ -1861,6 +1929,7 @@ public getAllCampaignsAssociatedToUser(mixed $user_id): mixed
 
 
 
+
 ***
 
 ### getApplicationsAssocToGroups
@@ -1883,6 +1952,7 @@ public getApplicationsAssocToGroups(mixed $gid): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$gid` | **mixed** |  |
+
 
 
 
@@ -1915,6 +1985,7 @@ public getApplicantsAssoc(mixed $uid): mixed
 
 
 
+
 ***
 
 ### getUserCampaigns
@@ -1937,6 +2008,7 @@ public getUserCampaigns(mixed $uid): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$uid` | **mixed** |  |
+
 
 
 
@@ -1969,6 +2041,7 @@ public getUserOprofiles(mixed $uid): mixed
 
 
 
+
 ***
 
 ### countUserEvaluations
@@ -1996,6 +2069,7 @@ public countUserEvaluations(mixed $uid): mixed
 
 
 
+
 ***
 
 ### countUserDecisions
@@ -2018,6 +2092,7 @@ public countUserDecisions(mixed $uid): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$uid` | **mixed** |  |
+
 
 
 
@@ -2051,6 +2126,7 @@ public addProfileToUser(mixed $uid, mixed $pid): bool
 
 
 
+
 ***
 
 ### editUser
@@ -2073,6 +2149,7 @@ public editUser(mixed $user): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$user` | **mixed** |  |
+
 
 
 
@@ -2105,6 +2182,7 @@ public getGroupDetails(mixed $gid): mixed
 
 
 
+
 ***
 
 ### getGroupProgs
@@ -2132,6 +2210,7 @@ public getGroupProgs(mixed $gid): bool|mixed
 
 
 
+
 ***
 
 ### getGroupsAcl
@@ -2154,6 +2233,7 @@ public getGroupsAcl(mixed $gids): array|bool|mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$gids` | **mixed** |  |
+
 
 
 
@@ -2188,6 +2268,7 @@ public getEffectiveGroupsForFnum(mixed $group_ids, mixed $fnum, mixed $strict = 
 
 
 
+
 ***
 
 ### getGroupUsers
@@ -2215,6 +2296,7 @@ public getGroupUsers(mixed $gid): bool|mixed
 
 
 
+
 ***
 
 ### getMenuList
@@ -2237,6 +2319,7 @@ public getMenuList(mixed $params): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$params` | **mixed** |  |
+
 
 
 
@@ -2272,6 +2355,7 @@ public getUserActionByFnum(mixed $aid, mixed $fnum, mixed $uid, mixed $crud): mi
 
 
 
+
 ***
 
 ### getGroupActions
@@ -2297,6 +2381,7 @@ public getGroupActions(mixed $gids, mixed $fnum, mixed $aid, mixed $crud): mixed
 | `$fnum` | **mixed** |  |
 | `$aid` | **mixed** |  |
 | `$crud` | **mixed** |  |
+
 
 
 
@@ -2330,6 +2415,7 @@ public setNewPasswd(mixed $uid, mixed $passwd): mixed
 
 
 
+
 ***
 
 ### searchLDAP
@@ -2352,6 +2438,7 @@ public searchLDAP(mixed $search): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$search` | **mixed** |  |
+
 
 
 
@@ -2384,6 +2471,7 @@ public getUserById(mixed $uid): mixed
 
 
 
+
 ***
 
 ### getUserNameById
@@ -2406,6 +2494,7 @@ public getUserNameById(mixed $id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$id` | **mixed** |  |
+
 
 
 
@@ -2438,6 +2527,7 @@ public getUsersById(mixed $id): mixed
 
 
 
+
 ***
 
 ### getUsersByIds
@@ -2460,6 +2550,7 @@ public getUsersByIds(mixed $ids): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$ids` | **mixed** |  |
+
 
 
 
@@ -2499,6 +2590,7 @@ public passwordReset(array $data, mixed $subject = &#039;COM_USERS_EMAIL_PASSWOR
 
 
 
+
 ***
 
 ### getProfileForm
@@ -2508,6 +2600,7 @@ public passwordReset(array $data, mixed $subject = &#039;COM_USERS_EMAIL_PASSWOR
 ```php
 public getProfileForm(): mixed
 ```
+
 
 
 
@@ -2547,6 +2640,7 @@ public getProfileGroups(mixed $formid): mixed
 
 
 
+
 ***
 
 ### getProfileElements
@@ -2569,6 +2663,7 @@ public getProfileElements(mixed $group): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$group` | **mixed** |  |
+
 
 
 
@@ -2602,6 +2697,7 @@ public saveUser(mixed $user, mixed $uid): mixed
 
 
 
+
 ***
 
 ### getProfileAttachments
@@ -2630,6 +2726,7 @@ public getProfileAttachments(mixed $user_id, mixed $fnum = null): mixed
 
 
 
+
 ***
 
 ### getProfileAttachmentsAllowed
@@ -2639,6 +2736,7 @@ public getProfileAttachments(mixed $user_id, mixed $fnum = null): mixed
 ```php
 public getProfileAttachmentsAllowed(): mixed
 ```
+
 
 
 
@@ -2680,6 +2778,7 @@ public addDefaultAttachment(mixed $user_id, mixed $attachment_id, mixed $filenam
 
 
 
+
 ***
 
 ### deleteProfileAttachment
@@ -2703,6 +2802,7 @@ public deleteProfileAttachment(mixed $id, mixed $user_id): mixed
 |-----------|------|-------------|
 | `$id` | **mixed** |  |
 | `$user_id` | **mixed** |  |
+
 
 
 
@@ -2737,6 +2837,7 @@ public uploadProfileAttachmentToFile(mixed $fnum, mixed $aids, mixed $uid): mixe
 
 
 
+
 ***
 
 ### uploadFileAttachmentToProfile
@@ -2761,6 +2862,7 @@ public uploadFileAttachmentToProfile(mixed $fnum, mixed $aid, mixed $uid): mixed
 | `$fnum` | **mixed** |  |
 | `$aid` | **mixed** |  |
 | `$uid` | **mixed** |  |
+
 
 
 
@@ -2794,6 +2896,7 @@ public updateProfilePicture(mixed $user_id, mixed $target_file): mixed
 
 
 
+
 ***
 
 ### addApplicantProfile
@@ -2816,6 +2919,7 @@ public addApplicantProfile(mixed $user_id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$user_id` | **mixed** |  |
+
 
 
 
@@ -2855,6 +2959,7 @@ public onAfterAnonymUserMapping(mixed $data, mixed $campaign_id, mixed $program_
 
 
 
+
 ***
 
 ### connectUserFromToken
@@ -2888,6 +2993,7 @@ public connectUserFromToken(mixed $token): bool
 
 
 
+
 ***
 
 ### connectUserFromId
@@ -2910,6 +3016,7 @@ private connectUserFromId(mixed $user_id): bool
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$user_id` | **mixed** |  |
+
 
 
 
@@ -2938,6 +3045,7 @@ public checkTokenCorrespondToUser(mixed $token, mixed $user_id): bool
 |-----------|------|-------------|
 | `$token` | **mixed** |  |
 | `$user_id` | **mixed** |  |
+
 
 
 
@@ -2978,6 +3086,7 @@ updated
 
 
 
+
 ***
 
 ### getUserToken
@@ -3006,6 +3115,7 @@ private getUserToken(mixed $user_id): string
 
 
 
+
 ***
 
 ### assertNotMaliciousAttemptsUsingConnectViaToken
@@ -3017,6 +3127,7 @@ If so, block adress IP
 ```php
 private assertNotMaliciousAttemptsUsingConnectViaToken(): void
 ```
+
 
 
 
@@ -3054,6 +3165,7 @@ the new token generated, or empty string if failed
 
 
 
+
 ***
 
 ### isSamlUser
@@ -3076,6 +3188,7 @@ public isSamlUser(mixed $user_id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$user_id` | **mixed** |  |
+
 
 
 
@@ -3109,6 +3222,7 @@ public getIdentityPhoto(mixed $fnum, mixed $applicant_id): mixed
 
 
 
+
 ***
 
 ### randomPassword
@@ -3131,6 +3245,7 @@ public randomPassword(mixed $len = 8): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$len` | **mixed** |  |
+
 
 
 
@@ -3163,6 +3278,7 @@ public getUserGroupsLabelById(mixed $uid): array|mixed
 
 
 
+
 ***
 
 ### getColumnsFromProfileForm
@@ -3184,6 +3300,7 @@ public getColumnsFromProfileForm(): array|mixed|null
 
 
 
+
 ***
 
 ### getJoomlaUserColumns
@@ -3193,6 +3310,7 @@ public getColumnsFromProfileForm(): array|mixed|null
 ```php
 public getJoomlaUserColumns(): object[]
 ```
+
 
 
 
@@ -3237,6 +3355,7 @@ public getAllInformationsToExport(mixed $uid): array
 
 
 
+
 ***
 
 ### getUserDetails
@@ -3259,6 +3378,7 @@ public getUserDetails(mixed $uid): array
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$uid` | **mixed** |  |
+
 
 
 
@@ -3295,6 +3415,7 @@ true if user is already registered or if we are able to create it, false otherwi
 
 
 
+
 ***
 
 ### convertCsvToXls
@@ -3326,8 +3447,9 @@ public convertCsvToXls(mixed $csv, mixed $nb_cols, mixed $nb_rows, mixed $excel_
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

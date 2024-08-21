@@ -66,6 +66,7 @@ public __construct(): mixed
 
 
 
+
 ***
 
 ### log
@@ -99,6 +100,7 @@ public static log(int $user_from, int $user_to, string $fnum, int $action, strin
 
 
 
+
 ***
 
 ### logs
@@ -126,6 +128,7 @@ public static logs(mixed $user_from, mixed $fnums, mixed $action, mixed $crud = 
 | `$crud` | **mixed** |  |
 | `$message` | **mixed** |  |
 | `$params` | **mixed** |  |
+
 
 
 
@@ -164,6 +167,7 @@ Returns false on error and an array of objects on success.
 
 
 
+
 ***
 
 ### getActionsOnUser
@@ -193,6 +197,7 @@ If no user_id is sent: use the currently signed in user.
 **Return Value:**
 
 Returns false on error and an array of objects on success.
+
 
 
 
@@ -233,6 +238,7 @@ Returns false on error and an array of objects on success.
 
 
 
+
 ***
 
 ### getActionsBetweenUsers
@@ -263,6 +269,7 @@ public getActionsBetweenUsers(int $user1, int $user2 = null, int $action = null,
 **Return Value:**
 
 Returns false on error and an array of objects on success.
+
 
 
 
@@ -300,6 +307,7 @@ Returns false on error and an array of strings on success.
 
 
 
+
 ***
 
 ### exportLogs
@@ -325,6 +333,7 @@ public exportLogs(mixed $fnum, mixed $users, mixed $actions, mixed $crud): mixed
 | `$users` | **mixed** |  |
 | `$actions` | **mixed** |  |
 | `$crud` | **mixed** |  |
+
 
 
 
@@ -357,6 +366,7 @@ public getUsersLogsByFnum(mixed $fnum): mixed
 
 
 
+
 ***
 
 ### deleteLogsBeforeADate
@@ -379,6 +389,7 @@ public deleteLogsBeforeADate(mixed $date): int
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$date` | **mixed** | DateTime  Date to delete logs before |
+
 
 
 
@@ -411,8 +422,9 @@ public exportLogsBeforeADate(mixed $date): string
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

@@ -64,10 +64,10 @@ private $m_programme
 
 ### __construct
 
-
+Constructor.
 
 ```php
-public __construct(mixed $config = array()): mixed
+public __construct(array $config = array()): mixed
 ```
 
 
@@ -81,20 +81,25 @@ public __construct(mixed $config = array()): mixed
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$config` | **mixed** |  |
+| `$config` | **array** | An optional associative array of configuration settings. |
 
 
 
 
+
+
+**See Also:**
+
+* \JController - 
 
 ***
 
 ### display
 
-
+Method to display a view.
 
 ```php
-public display(mixed $cachable = false, mixed $urlparams = false): mixed
+public display(bool $cachable = false, bool $urlparams = false): \DisplayController
 ```
 
 
@@ -108,8 +113,13 @@ public display(mixed $cachable = false, mixed $urlparams = false): mixed
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$cachable` | **mixed** |  |
-| `$urlparams` | **mixed** |  |
+| `$cachable` | **bool** | If true, the view output will be cached. |
+| `$urlparams` | **bool** | An array of safe URL parameters and their variable types.<br />@see        \Joomla\CMS\Filter\InputFilter::clean() for valid values. |
+
+
+**Return Value:**
+
+This object to support chaining.
 
 
 
@@ -124,6 +134,7 @@ public display(mixed $cachable = false, mixed $urlparams = false): mixed
 ```php
 public getprogrammes(): mixed
 ```
+
 
 
 
@@ -157,6 +168,7 @@ public addprogrammes(): mixed
 
 
 
+
 ***
 
 ### editprogrammes
@@ -166,6 +178,7 @@ public addprogrammes(): mixed
 ```php
 public editprogrammes(): mixed
 ```
+
 
 
 
@@ -199,6 +212,7 @@ public favorite(): mixed
 
 
 
+
 ***
 
 ### unfavorite
@@ -208,6 +222,7 @@ public favorite(): mixed
 ```php
 public unfavorite(): mixed
 ```
+
 
 
 
@@ -241,6 +256,7 @@ public getallprogramforfilter(): mixed
 
 
 
+
 ***
 
 ### getallprogram
@@ -250,6 +266,7 @@ public getallprogramforfilter(): mixed
 ```php
 public getallprogram(): mixed
 ```
+
 
 
 
@@ -283,6 +300,7 @@ public getallsessions(): mixed
 
 
 
+
 ***
 
 ### getprogramcount
@@ -292,6 +310,7 @@ public getallsessions(): mixed
 ```php
 public getprogramcount(): mixed
 ```
+
 
 
 
@@ -325,6 +344,7 @@ public getprogrambyid(): mixed
 
 
 
+
 ***
 
 ### createprogram
@@ -334,6 +354,7 @@ public getprogrambyid(): mixed
 ```php
 public createprogram(): mixed
 ```
+
 
 
 
@@ -367,6 +388,7 @@ public updateprogram(): mixed
 
 
 
+
 ***
 
 ### deleteprogram
@@ -376,6 +398,7 @@ public updateprogram(): mixed
 ```php
 public deleteprogram(): mixed
 ```
+
 
 
 
@@ -409,6 +432,7 @@ public unpublishprogram(): mixed
 
 
 
+
 ***
 
 ### publishprogram
@@ -418,6 +442,7 @@ public unpublishprogram(): mixed
 ```php
 public publishprogram(): mixed
 ```
+
 
 
 
@@ -451,6 +476,7 @@ public getprogramcategories(): mixed
 
 
 
+
 ***
 
 ### getmanagers
@@ -460,6 +486,7 @@ public getprogramcategories(): mixed
 ```php
 public getmanagers(): mixed
 ```
+
 
 
 
@@ -493,6 +520,7 @@ public getevaluators(): mixed
 
 
 
+
 ***
 
 ### affectusertogroup
@@ -502,6 +530,7 @@ public getevaluators(): mixed
 ```php
 public affectusertogroup(): mixed
 ```
+
 
 
 
@@ -535,6 +564,7 @@ public affectuserstogroup(): mixed
 
 
 
+
 ***
 
 ### removefromgroup
@@ -544,6 +574,7 @@ public affectuserstogroup(): mixed
 ```php
 public removefromgroup(): mixed
 ```
+
 
 
 
@@ -577,6 +608,7 @@ public getusers(): mixed
 
 
 
+
 ***
 
 ### updatevisibility
@@ -586,6 +618,7 @@ public getusers(): mixed
 ```php
 public updatevisibility(): mixed
 ```
+
 
 
 
@@ -619,6 +652,7 @@ public getevaluationgrid(): mixed
 
 
 
+
 ***
 
 ### getgridsmodel
@@ -628,6 +662,7 @@ public getevaluationgrid(): mixed
 ```php
 public getgridsmodel(): mixed
 ```
+
 
 
 
@@ -661,6 +696,7 @@ public creategrid(): mixed
 
 
 
+
 ***
 
 ### deletegrid
@@ -670,6 +706,7 @@ public creategrid(): mixed
 ```php
 public deletegrid(): mixed
 ```
+
 
 
 
@@ -703,6 +740,7 @@ public affectgrouptoprogram(): mixed
 
 
 
+
 ***
 
 ### deletegroupfromprogram
@@ -712,6 +750,7 @@ public affectgrouptoprogram(): mixed
 ```php
 public deletegroupfromprogram(): mixed
 ```
+
 
 
 
@@ -745,6 +784,7 @@ public getgroupsbyprograms(): mixed
 
 
 
+
 ***
 
 ### getcampaignsbyprogram
@@ -766,8 +806,9 @@ public getcampaignsbyprogram(): mixed
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

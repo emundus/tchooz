@@ -64,7 +64,7 @@ private $_db
 
 ### __construct
 
-
+Constructor.
 
 ```php
 public __construct(array $config = array()): mixed
@@ -81,20 +81,25 @@ public __construct(array $config = array()): mixed
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$config` | **array** |  |
+| `$config` | **array** | An optional associative array of configuration settings. |
 
 
 
 
+
+
+**See Also:**
+
+* \JController - 
 
 ***
 
 ### display
 
-
+Method to display a view.
 
 ```php
-public display(bool $cachable = false, bool $urlparams = false): mixed
+public display(bool $cachable = false, bool $urlparams = false): \DisplayController
 ```
 
 
@@ -108,8 +113,13 @@ public display(bool $cachable = false, bool $urlparams = false): mixed
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$cachable` | **bool** |  |
-| `$urlparams` | **bool** |  |
+| `$cachable` | **bool** | If true, the view output will be cached. |
+| `$urlparams` | **bool** | An array of safe URL parameters and their variable types.<br />@see        \Joomla\CMS\Filter\InputFilter::clean() for valid values. |
+
+
+**Return Value:**
+
+This object to support chaining.
 
 
 
@@ -142,6 +152,7 @@ public data_to_img(mixed $match): mixed
 
 
 
+
 ***
 
 ### applicantemail
@@ -151,6 +162,7 @@ public data_to_img(mixed $match): mixed
 ```php
 public applicantemail(): mixed
 ```
+
 
 
 
@@ -184,6 +196,7 @@ public groupmail(): mixed
 
 
 
+
 ***
 
 ### clear
@@ -193,6 +206,7 @@ public groupmail(): mixed
 ```php
 public clear(): mixed
 ```
+
 
 
 
@@ -226,6 +240,7 @@ public applyfilters(): mixed
 
 
 
+
 ***
 
 ### setfilters
@@ -235,6 +250,7 @@ public applyfilters(): mixed
 ```php
 public setfilters(): mixed
 ```
+
 
 
 
@@ -273,6 +289,7 @@ public loadfilters(): mixed
 
 
 
+
 ***
 
 ### order
@@ -282,6 +299,7 @@ public loadfilters(): mixed
 ```php
 public order(): mixed
 ```
+
 
 
 
@@ -315,6 +333,7 @@ public setlimit(): mixed
 
 
 
+
 ***
 
 ### savefilters
@@ -324,6 +343,7 @@ public setlimit(): mixed
 ```php
 public savefilters(): mixed
 ```
+
 
 
 
@@ -357,6 +377,7 @@ public newsavefilters(): mixed
 
 
 
+
 ***
 
 ### getsavedfilters
@@ -366,6 +387,7 @@ public newsavefilters(): mixed
 ```php
 public getsavedfilters(): mixed
 ```
+
 
 
 
@@ -399,6 +421,7 @@ public updatefilter(): mixed
 
 
 
+
 ***
 
 ### deletefilters
@@ -420,6 +443,7 @@ public deletefilters(): mixed
 
 
 
+
 ***
 
 ### setlimitstart
@@ -429,6 +453,7 @@ public deletefilters(): mixed
 ```php
 public setlimitstart(): mixed
 ```
+
 
 
 
@@ -467,6 +492,7 @@ public getadvfilters(): mixed
 
 
 
+
 ***
 
 ### getbox
@@ -493,6 +519,7 @@ public getbox(): mixed
 
 
 
+
 ***
 
 ### deladvfilter
@@ -502,6 +529,7 @@ public getbox(): mixed
 ```php
 public deladvfilter(): mixed
 ```
+
 
 
 
@@ -535,6 +563,7 @@ public addcomment(): mixed
 
 
 
+
 ***
 
 ### gettags
@@ -544,6 +573,7 @@ public addcomment(): mixed
 ```php
 public gettags(): mixed
 ```
+
 
 
 
@@ -577,6 +607,7 @@ public tagfile(): mixed
 
 
 
+
 ***
 
 ### deletetags
@@ -586,6 +617,7 @@ public tagfile(): mixed
 ```php
 public deletetags(): mixed
 ```
+
 
 
 
@@ -619,6 +651,7 @@ public share(): mixed
 
 
 
+
 ***
 
 ### getstate
@@ -628,6 +661,7 @@ public share(): mixed
 ```php
 public getstate(): mixed
 ```
+
 
 
 
@@ -661,6 +695,7 @@ public getpublish(): mixed
 
 
 
+
 ***
 
 ### getExistEmailTrigger
@@ -670,6 +705,7 @@ public getpublish(): mixed
 ```php
 public getExistEmailTrigger(): mixed
 ```
+
 
 
 
@@ -703,6 +739,7 @@ public updatestate(): mixed
 
 
 
+
 ***
 
 ### updatepublish
@@ -712,6 +749,7 @@ public updatestate(): mixed
 ```php
 public updatepublish(): mixed
 ```
+
 
 
 
@@ -745,6 +783,7 @@ public unlinkevaluators(): mixed
 
 
 
+
 ***
 
 ### getfnuminfos
@@ -754,6 +793,7 @@ public unlinkevaluators(): mixed
 ```php
 public getfnuminfos(): mixed
 ```
+
 
 
 
@@ -787,6 +827,7 @@ public deletefile(): mixed
 
 
 
+
 ***
 
 ### removefile
@@ -796,6 +837,7 @@ public deletefile(): mixed
 ```php
 public removefile(): mixed
 ```
+
 
 
 
@@ -829,6 +871,7 @@ public getformelem(): mixed
 
 
 
+
 ***
 
 ### zip
@@ -838,6 +881,7 @@ public getformelem(): mixed
 ```php
 public zip(): mixed
 ```
+
 
 
 
@@ -877,6 +921,7 @@ public return_bytes(mixed $val): int|string
 
 
 
+
 ***
 
 ### sortArrayByArray
@@ -900,6 +945,7 @@ public sortArrayByArray(mixed $array, mixed $orderArray): array
 |-----------|------|-------------|
 | `$array` | **mixed** |  |
 | `$orderArray` | **mixed** |  |
+
 
 
 
@@ -933,6 +979,7 @@ public sortObjectByArray(mixed $object, mixed $orderArray): array
 
 
 
+
 ***
 
 ### create_file_csv
@@ -954,6 +1001,7 @@ public create_file_csv(): string
 **Return Value:**
 
 json
+
 
 
 
@@ -983,6 +1031,7 @@ json
 
 
 
+
 ***
 
 ### getfnums_csv
@@ -992,6 +1041,7 @@ json
 ```php
 public getfnums_csv(): mixed
 ```
+
 
 
 
@@ -1025,6 +1075,7 @@ public getfnums(): mixed
 
 
 
+
 ***
 
 ### getallfnums
@@ -1034,6 +1085,7 @@ public getfnums(): mixed
 ```php
 public getallfnums(): mixed
 ```
+
 
 
 
@@ -1073,6 +1125,7 @@ public getcolumn(mixed $elts): mixed
 
 
 
+
 ***
 
 ### generate_array
@@ -1103,6 +1156,7 @@ json
 
 
 
+
 ***
 
 ### getformslist
@@ -1124,6 +1178,7 @@ public getformslist(): mixed
 
 
 
+
 ***
 
 ### getdoctype
@@ -1133,6 +1188,7 @@ public getformslist(): mixed
 ```php
 public getdoctype(): mixed
 ```
+
 
 
 
@@ -1175,6 +1231,7 @@ json
 
 
 
+
 ***
 
 ### generate_customized_pdf
@@ -1184,6 +1241,7 @@ json
 ```php
 public generate_customized_pdf(): mixed
 ```
+
 
 
 
@@ -1217,6 +1275,7 @@ public export_letter(): mixed
 
 
 
+
 ***
 
 ### export_xls_from_csv
@@ -1226,6 +1285,7 @@ public export_letter(): mixed
 ```php
 public export_xls_from_csv(): mixed
 ```
+
 
 
 
@@ -1275,6 +1335,7 @@ public export_xls(mixed $fnums, mixed $objs, mixed $element_id, int $methode): s
 
 
 
+
 ***
 
 ### get_mime_type
@@ -1303,6 +1364,7 @@ public get_mime_type(mixed $filename, string $mimePath = &#039;../etc&#039;): bo
 
 
 
+
 ***
 
 ### download
@@ -1312,6 +1374,7 @@ public get_mime_type(mixed $filename, string $mimePath = &#039;../etc&#039;): bo
 ```php
 public download(): mixed
 ```
+
 
 
 
@@ -1360,6 +1423,7 @@ public export_zip(array $fnums, mixed $form_post = 1, mixed $attachment = 1, mix
 
 
 
+
 ***
 
 ### export_zip_pcl
@@ -1387,6 +1451,7 @@ public export_zip_pcl(mixed $fnums): string
 
 
 
+
 ***
 
 ### getformid
@@ -1396,6 +1461,7 @@ public export_zip_pcl(mixed $fnums): string
 ```php
 public getformid(): mixed
 ```
+
 
 
 
@@ -1429,6 +1495,7 @@ public getdecisionformid(): mixed
 
 
 
+
 ***
 
 ### exportzipdoc
@@ -1438,6 +1505,7 @@ public getdecisionformid(): mixed
 ```php
 public exportzipdoc(): mixed
 ```
+
 
 
 
@@ -1471,6 +1539,7 @@ public getPDFProgrammes(): mixed
 
 
 
+
 ***
 
 ### getPDFCampaigns
@@ -1480,6 +1549,7 @@ public getPDFProgrammes(): mixed
 ```php
 public getPDFCampaigns(): mixed
 ```
+
 
 
 
@@ -1513,6 +1583,7 @@ public getProgrammes(): mixed
 
 
 
+
 ***
 
 ### getProgramCampaigns
@@ -1522,6 +1593,7 @@ public getProgrammes(): mixed
 ```php
 public getProgramCampaigns(): mixed
 ```
+
 
 
 
@@ -1555,6 +1627,7 @@ public saveExcelFilter(): mixed
 
 
 
+
 ***
 
 ### savePdfFilter
@@ -1564,6 +1637,7 @@ public saveExcelFilter(): mixed
 ```php
 public savePdfFilter(): mixed
 ```
+
 
 
 
@@ -1597,6 +1671,7 @@ public deletePdfFilter(): mixed
 
 
 
+
 ***
 
 ### getExportExcelFilter
@@ -1606,6 +1681,7 @@ public deletePdfFilter(): mixed
 ```php
 public getExportExcelFilter(): mixed
 ```
+
 
 
 
@@ -1639,6 +1715,7 @@ public getAllExportPdfFilter(): mixed
 
 
 
+
 ***
 
 ### getExportPdfFilterById
@@ -1648,6 +1725,7 @@ public getAllExportPdfFilter(): mixed
 ```php
 public getExportPdfFilterById(): mixed
 ```
+
 
 
 
@@ -1681,6 +1759,7 @@ public getExportExcelFilterById(): mixed
 
 
 
+
 ***
 
 ### getAllLetters
@@ -1690,6 +1769,7 @@ public getExportExcelFilterById(): mixed
 ```php
 public getAllLetters(): mixed
 ```
+
 
 
 
@@ -1723,6 +1803,7 @@ public getexcelletter(): mixed
 
 
 
+
 ***
 
 ### checkforms
@@ -1744,6 +1825,7 @@ public checkforms(): mixed
 
 
 
+
 ***
 
 ### getproductpdf
@@ -1753,6 +1835,7 @@ Generates or (if it exists already) loads the PDF for a certain GesCOF product.
 ```php
 public getproductpdf(): mixed
 ```
+
 
 
 
@@ -1793,6 +1876,7 @@ public getValueByFabrikElts(mixed $fabrikElts, mixed $fnumsArray): mixed
 
 
 
+
 ***
 
 ### exportfile
@@ -1802,6 +1886,7 @@ public getValueByFabrikElts(mixed $fabrikElts, mixed $fnumsArray): mixed
 ```php
 public exportfile(): mixed
 ```
+
 
 
 
@@ -1835,6 +1920,7 @@ public getfabrikdatabyelements(): mixed
 
 
 
+
 ***
 
 ### getselectedelements
@@ -1844,6 +1930,7 @@ public getfabrikdatabyelements(): mixed
 ```php
 public getselectedelements(): mixed
 ```
+
 
 
 
@@ -1877,6 +1964,7 @@ public generateletter(): mixed
 
 
 
+
 ***
 
 ### getfabrikvaluebyid
@@ -1886,6 +1974,7 @@ public generateletter(): mixed
 ```php
 public getfabrikvaluebyid(): mixed
 ```
+
 
 
 
@@ -1919,6 +2008,7 @@ public getactionsonfnum(): mixed
 
 
 
+
 ***
 
 ### getattachmentcategories
@@ -1928,6 +2018,7 @@ public getactionsonfnum(): mixed
 ```php
 public getattachmentcategories(): mixed
 ```
+
 
 
 
@@ -1961,6 +2052,7 @@ public getattachmentprogress(): mixed
 
 
 
+
 ***
 
 ### isdataanonymized
@@ -1970,6 +2062,7 @@ public getattachmentprogress(): mixed
 ```php
 public isdataanonymized(): mixed
 ```
+
 
 
 
@@ -2003,6 +2096,7 @@ public exportLogs(): mixed
 
 
 
+
 ***
 
 ### checkIfSomeoneElseIsEditing
@@ -2012,6 +2106,7 @@ public exportLogs(): mixed
 ```php
 public checkIfSomeoneElseIsEditing(): mixed
 ```
+
 
 
 
@@ -2045,6 +2140,7 @@ public getalllogactions(): mixed
 
 
 
+
 ***
 
 ### getuserslogbyfnum
@@ -2054,6 +2150,7 @@ public getalllogactions(): mixed
 ```php
 public getuserslogbyfnum(): mixed
 ```
+
 
 
 
@@ -2087,6 +2184,7 @@ public checkmenufilterparams(): mixed
 
 
 
+
 ***
 
 ### getFiltersAvailable
@@ -2096,6 +2194,7 @@ public checkmenufilterparams(): mixed
 ```php
 public getFiltersAvailable(): mixed
 ```
+
 
 
 
@@ -2129,6 +2228,7 @@ public setFiltersValuesAvailability(): mixed
 
 
 
+
 ***
 
 ### getfiltervalues
@@ -2138,6 +2238,7 @@ public setFiltersValuesAvailability(): mixed
 ```php
 public getfiltervalues(): mixed
 ```
+
 
 
 
@@ -2171,8 +2272,9 @@ public countfilesbeforeaction(): mixed
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

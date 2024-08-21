@@ -79,10 +79,10 @@ private $_session
 
 ### __construct
 
-
+Constructor.
 
 ```php
-public __construct(mixed $config = array()): mixed
+public __construct(array $config = array()): mixed
 ```
 
 
@@ -96,20 +96,25 @@ public __construct(mixed $config = array()): mixed
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$config` | **mixed** |  |
+| `$config` | **array** | An optional associative array of configuration settings. |
 
 
 
 
+
+
+**See Also:**
+
+* \JController - 
 
 ***
 
 ### display
 
-
+Method to display a view.
 
 ```php
-public display(mixed $cachable = false, mixed $urlparams = false): mixed
+public display(bool $cachable = false, bool $urlparams = false): \DisplayController
 ```
 
 
@@ -123,8 +128,13 @@ public display(mixed $cachable = false, mixed $urlparams = false): mixed
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$cachable` | **mixed** |  |
-| `$urlparams` | **mixed** |  |
+| `$cachable` | **bool** | If true, the view output will be cached. |
+| `$urlparams` | **bool** | An array of safe URL parameters and their variable types.<br />@see        \Joomla\CMS\Filter\InputFilter::clean() for valid values. |
+
+
+**Return Value:**
+
+This object to support chaining.
 
 
 
@@ -139,6 +149,7 @@ public display(mixed $cachable = false, mixed $urlparams = false): mixed
 ```php
 public applicantEmail(): mixed
 ```
+
 
 
 
@@ -172,6 +183,7 @@ public clear(): mixed
 
 
 
+
 ***
 
 ### setfilters
@@ -181,6 +193,7 @@ public clear(): mixed
 ```php
 public setfilters(): mixed
 ```
+
 
 
 
@@ -214,6 +227,7 @@ public loadfilters(): mixed
 
 
 
+
 ***
 
 ### order
@@ -223,6 +237,7 @@ public loadfilters(): mixed
 ```php
 public order(): mixed
 ```
+
 
 
 
@@ -256,6 +271,7 @@ public setlimit(): mixed
 
 
 
+
 ***
 
 ### savefilters
@@ -265,6 +281,7 @@ public setlimit(): mixed
 ```php
 public savefilters(): mixed
 ```
+
 
 
 
@@ -298,6 +315,7 @@ public deletefilters(): mixed
 
 
 
+
 ***
 
 ### setlimitstart
@@ -307,6 +325,7 @@ public deletefilters(): mixed
 ```php
 public setlimitstart(): mixed
 ```
+
 
 
 
@@ -340,6 +359,7 @@ public getadvfilters(): mixed
 
 
 
+
 ***
 
 ### addcomment
@@ -349,6 +369,7 @@ public getadvfilters(): mixed
 ```php
 public addcomment(): mixed
 ```
+
 
 
 
@@ -382,6 +403,7 @@ public getevsandgroups(): mixed
 
 
 
+
 ***
 
 ### gettags
@@ -391,6 +413,7 @@ public getevsandgroups(): mixed
 ```php
 public gettags(): mixed
 ```
+
 
 
 
@@ -424,6 +447,7 @@ public tagfile(): mixed
 
 
 
+
 ***
 
 ### deletetags
@@ -433,6 +457,7 @@ public tagfile(): mixed
 ```php
 public deletetags(): mixed
 ```
+
 
 
 
@@ -466,6 +491,7 @@ public share(): mixed
 
 
 
+
 ***
 
 ### getstate
@@ -475,6 +501,7 @@ public share(): mixed
 ```php
 public getstate(): mixed
 ```
+
 
 
 
@@ -508,6 +535,7 @@ public updatestate(): mixed
 
 
 
+
 ***
 
 ### unlinkevaluators
@@ -517,6 +545,7 @@ public updatestate(): mixed
 ```php
 public unlinkevaluators(): mixed
 ```
+
 
 
 
@@ -550,6 +579,7 @@ public getfnuminfos(): mixed
 
 
 
+
 ***
 
 ### deletefile
@@ -559,6 +589,7 @@ public getfnuminfos(): mixed
 ```php
 public deletefile(): mixed
 ```
+
 
 
 
@@ -592,6 +623,7 @@ public getformelem(): mixed
 
 
 
+
 ***
 
 ### getevalcopy
@@ -601,6 +633,7 @@ public getformelem(): mixed
 ```php
 public getevalcopy(): mixed
 ```
+
 
 
 
@@ -634,6 +667,7 @@ public copyeval(): mixed
 
 
 
+
 ***
 
 ### pdf
@@ -643,6 +677,7 @@ public copyeval(): mixed
 ```php
 public pdf(): mixed
 ```
+
 
 
 
@@ -676,6 +711,7 @@ public delevaluation(): mixed
 
 
 
+
 ***
 
 ### pdf_decision
@@ -685,6 +721,7 @@ public delevaluation(): mixed
 ```php
 public pdf_decision(): mixed
 ```
+
 
 
 
@@ -724,6 +761,7 @@ public return_bytes(mixed $val): mixed
 
 
 
+
 ***
 
 ### sortArrayByArray
@@ -747,6 +785,7 @@ public sortArrayByArray(mixed $array, mixed $orderArray): mixed
 |-----------|------|-------------|
 | `$array` | **mixed** |  |
 | `$orderArray` | **mixed** |  |
+
 
 
 
@@ -780,6 +819,7 @@ public sortObjectByArray(mixed $object, mixed $orderArray): mixed
 
 
 
+
 ***
 
 ### create_file_csv
@@ -801,6 +841,7 @@ public create_file_csv(): mixed
 
 
 
+
 ***
 
 ### getfnums_csv
@@ -810,6 +851,7 @@ public create_file_csv(): mixed
 ```php
 public getfnums_csv(): mixed
 ```
+
 
 
 
@@ -849,6 +891,7 @@ public getcolumn(mixed $elts): mixed
 
 
 
+
 ***
 
 ### generate_array
@@ -858,6 +901,7 @@ public getcolumn(mixed $elts): mixed
 ```php
 public generate_array(): mixed
 ```
+
 
 
 
@@ -898,6 +942,7 @@ public get_mime_type(mixed $filename, mixed $mimePath = &#039;../etc&#039;): mix
 
 
 
+
 ***
 
 ### download
@@ -907,6 +952,7 @@ public get_mime_type(mixed $filename, mixed $mimePath = &#039;../etc&#039;): mix
 ```php
 public download(): mixed
 ```
+
 
 
 
@@ -946,6 +992,7 @@ public export_zip(mixed $fnums): mixed
 
 
 
+
 ***
 
 ### getattachmentletters
@@ -955,6 +1002,7 @@ public export_zip(mixed $fnums): mixed
 ```php
 public getattachmentletters(): mixed
 ```
+
 
 
 
@@ -988,6 +1036,7 @@ public getmyevaluations(): mixed
 
 
 
+
 ***
 
 ### getcampaignstoevaluate
@@ -1009,8 +1058,9 @@ public getcampaignstoevaluate(): mixed
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

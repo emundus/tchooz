@@ -96,6 +96,7 @@ public __construct(): mixed
 
 
 
+
 ***
 
 ### getApplicantInfos
@@ -124,6 +125,7 @@ public getApplicantInfos(mixed $aid, mixed $param): mixed
 
 
 
+
 ***
 
 ### getApplicantDetails
@@ -147,6 +149,7 @@ public getApplicantDetails(mixed $aid, mixed $ids): mixed
 |-----------|------|-------------|
 | `$aid` | **mixed** |  |
 | `$ids` | **mixed** |  |
+
 
 
 
@@ -181,6 +184,7 @@ public getUserCampaigns(mixed $id, mixed $cid = null, mixed $published_only = tr
 
 
 
+
 ***
 
 ### getCampaignByFnum
@@ -208,6 +212,7 @@ public getCampaignByFnum(mixed $fnum): mixed
 
 
 
+
 ***
 
 ### getUserAttachments
@@ -230,6 +235,7 @@ public getUserAttachments(mixed $id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$id` | **mixed** |  |
+
 
 
 
@@ -266,6 +272,7 @@ public getUserAttachmentsByFnum(mixed $fnum, mixed $search = &#039;&#039;, mixed
 
 
 
+
 ***
 
 ### getUsersComments
@@ -288,6 +295,7 @@ public getUsersComments(mixed $id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$id` | **mixed** |  |
+
 
 
 
@@ -320,6 +328,7 @@ public getComment(mixed $id): mixed
 
 
 
+
 ***
 
 ### getTag
@@ -342,6 +351,7 @@ public getTag(mixed $id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$id` | **mixed** |  |
+
 
 
 
@@ -374,6 +384,7 @@ public getFileComments(mixed $fnum): mixed
 
 
 
+
 ***
 
 ### getFileOwnComments
@@ -397,6 +408,7 @@ public getFileOwnComments(mixed $fnum, mixed $user_id): mixed
 |-----------|------|-------------|
 | `$fnum` | **mixed** |  |
 | `$user_id` | **mixed** |  |
+
 
 
 
@@ -431,6 +443,7 @@ public editComment(mixed $id, mixed $title, mixed $text): mixed
 
 
 
+
 ***
 
 ### deleteComment
@@ -454,6 +467,7 @@ public deleteComment(mixed $id, mixed $fnum = null): mixed
 |-----------|------|-------------|
 | `$id` | **mixed** |  |
 | `$fnum` | **mixed** |  |
+
 
 
 
@@ -488,6 +502,7 @@ public deleteTag(mixed $id_tag, mixed $fnum, mixed $user_id = null): mixed
 
 
 
+
 ***
 
 ### addComment
@@ -510,6 +525,7 @@ public addComment(mixed $row): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$row` | **mixed** |  |
+
 
 
 
@@ -543,6 +559,7 @@ public deleteData(mixed $id, mixed $table): mixed
 
 
 
+
 ***
 
 ### deleteAttachment
@@ -565,6 +582,7 @@ public deleteAttachment(mixed $id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$id` | **mixed** |  |
+
 
 
 
@@ -597,6 +615,7 @@ public uploadAttachment(mixed $data): mixed
 
 
 
+
 ***
 
 ### getAttachmentByID
@@ -619,6 +638,7 @@ public getAttachmentByID(mixed $id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$id` | **mixed** |  |
+
 
 
 
@@ -651,6 +671,7 @@ public getAttachmentByLbl(mixed $label): mixed
 
 
 
+
 ***
 
 ### getUploadByID
@@ -673,6 +694,7 @@ public getUploadByID(mixed $id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$id` | **mixed** |  |
+
 
 
 
@@ -706,6 +728,7 @@ public isFormFilled(mixed $profile_id, mixed $fnum): false
 
 
 
+
 ***
 
 ### getFormsProgress
@@ -729,6 +752,7 @@ public getFormsProgress(string $fnum = &quot;0&quot;, mixed $euser = null): arra
 |-----------|------|-------------|
 | `$fnum` | **string** |  |
 | `$euser` | **mixed** |  |
+
 
 
 
@@ -762,6 +786,7 @@ public getFormsProgressWithProfile(mixed $fnum, mixed $profile_id): mixed
 
 
 
+
 ***
 
 ### updateFormProgressByFnum
@@ -790,6 +815,7 @@ public updateFormProgressByFnum(mixed $result, mixed $fnum): mixed
 
 
 
+
 ***
 
 ### getFilesProgress
@@ -812,6 +838,7 @@ public getFilesProgress(mixed $fnum = null): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$fnum` | **mixed** |  |
+
 
 
 
@@ -845,6 +872,7 @@ public getAttachmentsProgress(mixed $fnums = null, mixed $euser = null): array|b
 
 
 
+
 ***
 
 ### getAttachmentsProgressWithProfile
@@ -873,6 +901,7 @@ public getAttachmentsProgressWithProfile(mixed $fnum, mixed $profile_id): array|
 
 
 
+
 ***
 
 ### updateAttachmentProgressByFnum
@@ -896,6 +925,7 @@ public updateAttachmentProgressByFnum(mixed $result, mixed $fnum): mixed
 |-----------|------|-------------|
 | `$result` | **mixed** |  |
 | `$fnum` | **mixed** |  |
+
 
 
 
@@ -930,6 +960,7 @@ public checkFabrikValidations(mixed $fnum, mixed $redirect = false, mixed $itemI
 
 
 
+
 ***
 
 ### getLogged
@@ -953,6 +984,7 @@ public getLogged(mixed $aid, mixed $user = null): bool|mixed
 |-----------|------|-------------|
 | `$aid` | **mixed** |  |
 | `$user` | **mixed** |  |
+
 
 
 
@@ -987,6 +1019,7 @@ public getFormByFabrikFormID(mixed $formID, mixed $aid, int $fnum): string|null
 
 
 
+
 ***
 
 ### getForms
@@ -1011,6 +1044,7 @@ public getForms(mixed $aid, mixed $fnum, mixed $pid = 9): mixed
 | `$aid` | **mixed** |  |
 | `$fnum` | **mixed** |  |
 | `$pid` | **mixed** |  |
+
 
 
 
@@ -1049,6 +1083,7 @@ public getFormsPDF(mixed $aid, mixed $fnum, mixed $fids = null, mixed $gids, mix
 
 
 
+
 ***
 
 ### getFormsPDFElts
@@ -1074,6 +1109,7 @@ public getFormsPDFElts(mixed $aid, mixed $elts, mixed $options, mixed $checkleve
 | `$elts` | **mixed** |  |
 | `$options` | **mixed** |  |
 | `$checklevel` | **mixed** |  |
+
 
 
 
@@ -1106,6 +1142,7 @@ public getEmail(mixed $user_id): mixed
 
 
 
+
 ***
 
 ### getApplicationMenu
@@ -1128,6 +1165,7 @@ public getApplicationMenu(mixed $user_id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$user_id` | **mixed** |  |
+
 
 
 
@@ -1160,6 +1198,7 @@ public getProgramSynthesis(mixed $cid): mixed
 
 
 
+
 ***
 
 ### getAttachments
@@ -1182,6 +1221,7 @@ public getAttachments(mixed $ids): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$ids` | **mixed** |  |
+
 
 
 
@@ -1217,6 +1257,7 @@ public getAttachmentsByFnum(mixed $fnum, mixed $ids = null, mixed $attachment_id
 
 
 
+
 ***
 
 ### getAccessFnum
@@ -1244,6 +1285,7 @@ public getAccessFnum(mixed $fnum): mixed
 
 
 
+
 ***
 
 ### getActions
@@ -1253,6 +1295,7 @@ public getAccessFnum(mixed $fnum): mixed
 ```php
 public getActions(): mixed
 ```
+
 
 
 
@@ -1294,6 +1337,7 @@ public checkGroupAssoc(mixed $fnum, mixed $gid, mixed $aid = null): mixed
 
 
 
+
 ***
 
 ### updateGroupAccess
@@ -1320,6 +1364,7 @@ public updateGroupAccess(mixed $fnum, mixed $gid, mixed $actionId, mixed $crud, 
 | `$actionId` | **mixed** |  |
 | `$crud` | **mixed** |  |
 | `$value` | **mixed** |  |
+
 
 
 
@@ -1356,6 +1401,7 @@ private _addGroupAssoc(mixed $fnum, mixed $crud, mixed $aid, mixed $gid, mixed $
 
 
 
+
 ***
 
 ### checkUserAssoc
@@ -1380,6 +1426,7 @@ public checkUserAssoc(mixed $fnum, mixed $uid, mixed $aid = null): mixed
 | `$fnum` | **mixed** |  |
 | `$uid` | **mixed** |  |
 | `$aid` | **mixed** |  |
+
 
 
 
@@ -1416,6 +1463,7 @@ private _addUserAssoc(mixed $fnum, mixed $crud, mixed $aid, mixed $uid, mixed $v
 
 
 
+
 ***
 
 ### updateUserAccess
@@ -1442,6 +1490,7 @@ public updateUserAccess(mixed $fnum, mixed $uid, mixed $actionId, mixed $crud, m
 | `$actionId` | **mixed** |  |
 | `$crud` | **mixed** |  |
 | `$value` | **mixed** |  |
+
 
 
 
@@ -1476,6 +1525,7 @@ public deleteGroupAccess(mixed $fnum, mixed $gid, mixed $current_user = null): f
 
 
 
+
 ***
 
 ### deleteUserAccess
@@ -1500,6 +1550,7 @@ public deleteUserAccess(mixed $fnum, mixed $uid, mixed $current_user = null): fa
 | `$fnum` | **mixed** | string |
 | `$uid` | **mixed** | int |
 | `$current_user` | **mixed** | int if null, the current user will be used |
+
 
 
 
@@ -1532,6 +1583,7 @@ public getApplications(mixed $uid): mixed
 
 
 
+
 ***
 
 ### getApplication
@@ -1554,6 +1606,7 @@ public getApplication(mixed $fnum): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$fnum` | **mixed** |  |
+
 
 
 
@@ -1589,6 +1642,7 @@ public getHikashopOrder(mixed $fnumInfos, bool $cancelled = false, mixed $confir
 
 
 
+
 ***
 
 ### getHikashopCartOrder
@@ -1613,6 +1667,7 @@ public getHikashopCartOrder(mixed $fnumInfos, mixed $cancelled = false, mixed $c
 | `$fnumInfos` | **mixed** |  |
 | `$cancelled` | **mixed** |  |
 | `$confirmed` | **mixed** |  |
+
 
 
 
@@ -1645,6 +1700,7 @@ public getHikashopCart(mixed $fnumInfos): mixed
 
 
 
+
 ***
 
 ### getHikashopCheckoutUrl
@@ -1667,6 +1723,7 @@ public getHikashopCheckoutUrl(mixed $pid): bool|string
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$pid` | **mixed** | string&amp;#124;int   the applicant&#039;s profile_id |
+
 
 
 
@@ -1699,6 +1756,7 @@ public getHikashopCartUrl(mixed $pid): bool|string
 
 
 
+
 ***
 
 ### moveApplication
@@ -1725,6 +1783,7 @@ public moveApplication(mixed $fnum_from, mixed $fnum_to, mixed $campaign, null $
 | `$campaign` | **mixed** | String the programme id to move the file to |
 | `$status` | **null** |  |
 | `$params` | **mixed** |  |
+
 
 
 
@@ -1767,6 +1826,7 @@ public copyApplication(mixed $fnum_from, mixed $fnum_to, mixed $pid = null, mixe
 
 
 
+
 ***
 
 ### copyDocuments
@@ -1792,6 +1852,7 @@ public copyDocuments(mixed $fnum_from, mixed $fnum_to, mixed $pid = null, mixed 
 | `$fnum_to` | **mixed** | String the fnum of the duplicated application |
 | `$pid` | **mixed** | Int the profile_id to get list of forms |
 | `$can_delete` | **mixed** |  |
+
 
 
 
@@ -1825,6 +1886,7 @@ public copyUsersAssoc(mixed $fnum_from, mixed $fnum_to): mixed
 
 
 
+
 ***
 
 ### copyGroupsAssoc
@@ -1848,6 +1910,7 @@ public copyGroupsAssoc(mixed $fnum_from, mixed $fnum_to): mixed
 |-----------|------|-------------|
 | `$fnum_from` | **mixed** |  |
 | `$fnum_to` | **mixed** |  |
+
 
 
 
@@ -1883,6 +1946,7 @@ public sendApplication(mixed $fnum, mixed $applicant, array $param = array(), in
 
 
 
+
 ***
 
 ### allowEmbed
@@ -1905,6 +1969,7 @@ public allowEmbed(mixed $url): bool
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$url` | **mixed** | String url to check |
+
 
 
 
@@ -1942,6 +2007,7 @@ The URL to the form.
 
 
 
+
 ***
 
 ### attachment_validation
@@ -1965,6 +2031,7 @@ public attachment_validation(mixed $attachment_id, mixed $state): mixed
 |-----------|------|-------------|
 | `$attachment_id` | **mixed** |  |
 | `$state` | **mixed** |  |
+
 
 
 
@@ -1997,6 +2064,7 @@ public getConfirmUrl(mixed $fnums = null): mixed
 
 
 
+
 ***
 
 ### searchFilesByKeywords
@@ -2019,6 +2087,7 @@ public searchFilesByKeywords(mixed $fnum): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$fnum` | **mixed** |  |
+
 
 
 
@@ -2054,6 +2123,7 @@ public checkEmptyRepeatGroups(mixed $elements, mixed $table, mixed $parent_table
 
 
 
+
 ***
 
 ### checkEmptyGroups
@@ -2078,6 +2148,7 @@ public checkEmptyGroups(mixed $elements, mixed $parent_table, mixed $fnum): bool
 | `$elements` | **mixed** |  |
 | `$parent_table` | **mixed** |  |
 | `$fnum` | **mixed** |  |
+
 
 
 
@@ -2112,6 +2183,7 @@ public getCountUploadedFile(mixed $fnum, mixed $user_id, mixed $profile = null):
 
 
 
+
 ***
 
 ### getListUploadedFile
@@ -2136,6 +2208,7 @@ public getListUploadedFile(mixed $fnum, mixed $user_id, mixed $profile = null): 
 | `$fnum` | **mixed** |  |
 | `$user_id` | **mixed** |  |
 | `$profile` | **mixed** |  |
+
 
 
 
@@ -2172,6 +2245,7 @@ containing status of update and file content update
 
 
 
+
 ***
 
 ### getAttachmentPreview
@@ -2200,6 +2274,7 @@ public getAttachmentPreview(mixed $user, mixed $fileName): string
 **Return Value:**
 
 preview html tags
+
 
 
 
@@ -2235,6 +2310,7 @@ private convertPowerPointToHTML(mixed $filePath): string
 
 
 
+
 ***
 
 ### getValuesByElementAndFnum
@@ -2264,6 +2340,7 @@ public getValuesByElementAndFnum(mixed $fnum, mixed $eid, mixed $fid, mixed $raw
 | `$uid` | **mixed** |  |
 | `$format` | **mixed** |  |
 | `$repeate_sperator` | **mixed** |  |
+
 
 
 
@@ -2306,6 +2383,7 @@ public formatElementValue(mixed $element, mixed $value, mixed $table, mixed $app
 
 
 
+
 ***
 
 ### invertFnumsOrderByColumn
@@ -2335,6 +2413,7 @@ public invertFnumsOrderByColumn(mixed $fnum_from, mixed $target_fnum, mixed $ord
 
 
 
+
 ***
 
 ### getSelectFromDBJoinElementParams
@@ -2357,6 +2436,7 @@ private getSelectFromDBJoinElementParams(mixed $params): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$params` | **mixed** |  |
+
 
 
 
@@ -2390,6 +2470,7 @@ public createTab(mixed $name, mixed $user_id): mixed
 
 
 
+
 ***
 
 ### getTabs
@@ -2412,6 +2493,7 @@ public getTabs(mixed $user_id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$user_id` | **mixed** |  |
+
 
 
 
@@ -2445,6 +2527,7 @@ public updateTabs(mixed $tabs, mixed $user_id): mixed
 
 
 
+
 ***
 
 ### deleteTab
@@ -2468,6 +2551,7 @@ public deleteTab(int $tab_id, int $user_id): mixed
 |-----------|------|-------------|
 | `$tab_id` | **int** |  |
 | `$user_id` | **int** |  |
+
 
 
 
@@ -2501,6 +2585,7 @@ public moveToTab(mixed $fnum, mixed $tab): mixed
 
 
 
+
 ***
 
 ### copyFile
@@ -2524,6 +2609,7 @@ public copyFile(mixed $fnum, mixed $fnum_to): mixed
 |-----------|------|-------------|
 | `$fnum` | **mixed** |  |
 | `$fnum_to` | **mixed** |  |
+
 
 
 
@@ -2557,6 +2643,7 @@ public renameFile(mixed $fnum, mixed $new_name): mixed
 
 
 
+
 ***
 
 ### getCampaignsAvailableForCopy
@@ -2579,6 +2666,7 @@ public getCampaignsAvailableForCopy(mixed $fnum): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$fnum` | **mixed** |  |
+
 
 
 
@@ -2608,6 +2696,7 @@ public isTabOwnedByUser(mixed $tab_id, mixed $user_id, mixed $fnum = &#039;&#039
 | `$tab_id` | **mixed** |  |
 | `$user_id` | **mixed** | - if empty, check for fnum |
 | `$fnum` | **mixed** | - if empty, check for user_id |
+
 
 
 
@@ -2648,8 +2737,9 @@ true if the action was done successfully
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

@@ -49,10 +49,10 @@ private $_user
 
 ### __construct
 
-
+Constructor.
 
 ```php
-public __construct(mixed $config = array()): mixed
+public __construct(array $config = array()): mixed
 ```
 
 
@@ -66,20 +66,25 @@ public __construct(mixed $config = array()): mixed
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$config` | **mixed** |  |
+| `$config` | **array** | An optional associative array of configuration settings. |
 
 
 
 
+
+
+**See Also:**
+
+* \JController - 
 
 ***
 
 ### display
 
-
+Method to display a view.
 
 ```php
-public display(mixed $cachable = false, mixed $urlparams = false): mixed
+public display(bool $cachable = false, bool $urlparams = false): \DisplayController
 ```
 
 
@@ -93,8 +98,13 @@ public display(mixed $cachable = false, mixed $urlparams = false): mixed
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$cachable` | **mixed** |  |
-| `$urlparams` | **mixed** |  |
+| `$cachable` | **bool** | If true, the view output will be cached. |
+| `$urlparams` | **bool** | An array of safe URL parameters and their variable types.<br />@see        \Joomla\CMS\Filter\InputFilter::clean() for valid values. |
+
+
+**Return Value:**
+
+This object to support chaining.
 
 
 
@@ -109,6 +119,7 @@ public display(mixed $cachable = false, mixed $urlparams = false): mixed
 ```php
 public to_pdf(): mixed
 ```
+
 
 
 
@@ -142,8 +153,9 @@ public getprofiles(): mixed
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

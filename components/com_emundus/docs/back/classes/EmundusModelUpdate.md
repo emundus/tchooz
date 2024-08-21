@@ -51,6 +51,7 @@ public __construct(): mixed
 
 
 
+
 ***
 
 ### setIgnoreVal
@@ -73,6 +74,7 @@ public setIgnoreVal(mixed $version): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$version` | **mixed** |  |
+
 
 
 
@@ -107,8 +109,9 @@ public setUpdateDate(mixed $date, mixed $userName, mixed $version): mixed
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

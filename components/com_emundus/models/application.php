@@ -1324,10 +1324,9 @@ class EmundusModelApplication extends JModelList
 						foreach ($elements as &$element) {
 							if (!empty($element->label) && $element->label != ' ') {
 
-								if ($element->plugin == 'date' && $element->content > 0) {
+								if (in_array($element->plugin,['date','jdate']) && $element->content > 0) {
 									if (!empty($element->content) && $element->content != '0000-00-00 00:00:00') {
-										$date_params = json_decode($element->params);
-										$elt         = date($date_params->date_form_format, strtotime($element->content));
+										$elt = date(EmundusHelperFabrik::getFabrikDateParam($element, 'date_form_format'), strtotime($element->content));
 									}
 									else {
 										$elt = '';
@@ -1468,10 +1467,9 @@ class EmundusModelApplication extends JModelList
 								foreach ($r_element as $key => $r_elt) {
 									if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
 
-										if ($elements[$j]->plugin == 'date') {
+										if (in_array($elements[$j]->plugin,['date','jdate'])) {
 											if (!empty($r_elt) && $r_elt != '0000-00-00 00:00:00') {
-												$date_params = json_decode($elements[$j]->params);
-												$elt         = date($date_params->date_form_format, strtotime($r_elt));
+												$elt = date(EmundusHelperFabrik::getFabrikDateParam($elements[$j], 'date_form_format'), strtotime($r_elt));
 											}
 											else {
 												$elt = '';
@@ -1596,10 +1594,9 @@ class EmundusModelApplication extends JModelList
 								if ($show_empty_fields == 0 && trim($element->content) == '') {
 									continue;
 								}
-								if ($element->plugin == 'date' && $element->content > 0) {
+								if (in_array($element->plugin,['date','jdate']) && $element->content > 0) {
 									if (!empty($element->content) && $element->content != '0000-00-00 00:00:00') {
-										$date_params = json_decode($element->params);
-										$elt         = date($date_params->date_form_format, strtotime($element->content));
+										$elt = date(EmundusHelperFabrik::getFabrikDateParam($element, 'date_form_format'), strtotime($element->content));
 									}
 									else {
 										$elt = '';
@@ -1923,9 +1920,9 @@ class EmundusModelApplication extends JModelList
 
 												if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
 
-													if ($elements[$j]->plugin == 'date') {
+													if (in_array($elements[$j]->plugin,['date','jdate'])) {
 														if (!empty($r_elt) && $r_elt != '0000-00-00 00:00:00') {
-															$elt = date($params->date_form_format, strtotime($r_elt));
+															$elt = date(EmundusHelperFabrik::getFabrikDateParam($elements[$j], 'date_form_format'), strtotime($r_elt));
 														}
 														else {
 															$elt = '';
@@ -2199,10 +2196,9 @@ class EmundusModelApplication extends JModelList
 											}
 											//
 
-											if ($element->plugin == 'date' && !empty($element->content)) {
+											if (in_array($element->plugin,['date','jdate']) && !empty($element->content)) {
 												if ($element->content != '0000-00-00 00:00:00') {
-													$date_params = json_decode($element->params);
-													$elt         = date($date_params->date_form_format, strtotime($element->content));
+													$elt = date(EmundusHelperFabrik::getFabrikDateParam($element, 'date_form_format'), strtotime($element->content));
 												}
 												else {
 													$elt = '';
@@ -2410,10 +2406,10 @@ class EmundusModelApplication extends JModelList
 
 											// modulo for strips css //
 											if ($modulo % 2) {
-												$forms .= '<tr class="table-strip-1">' . (!empty(JText::_($element->label)) ? '<td style="padding-right:50px;"><b>' . JText::_($element->label) . '</b></td>' : '') . '<td> ' . ((!in_array($element->plugin, ['field', 'textarea'])) ? JText::_($elt) : $elt) . '</td></tr>';
+												$forms .= '<tr class="table-strip-1">' . '<td style="padding-right:50px;"><b>' . JText::_($element->label) . '</b></td>' . '<td> ' . ((!in_array($element->plugin, ['field', 'textarea'])) ? JText::_($elt) : $elt) . '</td></tr>';
 											}
 											else {
-												$forms .= '<tr class="table-strip-2">' . (!empty(JText::_($element->label)) ? '<td style="padding-right:50px;"><b>' . JText::_($element->label) . '</b></td>' : '') . '<td> ' . ((!in_array($element->plugin, ['field', 'textarea'])) ? JText::_($elt) : $elt) . '</td></tr>';
+												$forms .= '<tr class="table-strip-2">' . '<td style="padding-right:50px;"><b>' . JText::_($element->label) . '</b></td>' . '<td> ' . ((!in_array($element->plugin, ['field', 'textarea'])) ? JText::_($elt) : $elt) . '</td></tr>';
 											}
 											$modulo++;
 											unset($params);
@@ -2631,8 +2627,8 @@ class EmundusModelApplication extends JModelList
 
 												$params = json_decode($elements[$j]->params);
 
-												if ($elements[$j]->plugin == 'date' && (!empty($r_elt) && $r_elt != '0000-00-00 00:00:00')) {
-													$elt = EmundusHelperDate::displayDate($r_elt, $params->date_table_format, (int) $params->date_store_as_local);
+												if (in_array($elements[$j]->plugin,['date','jdate']) && (!empty($r_elt) && $r_elt != '0000-00-00 00:00:00')) {
+													$elt = EmundusHelperDate::displayDate($r_elt, EmundusHelperFabrik::getFabrikDateParam($elements[$j],'date_table_format'), (int) EmundusHelperFabrik::getFabrikDateParam($elements[$j],'date_store_as_local'));
 												}
 												elseif (($elements[$j]->plugin == 'birthday' || $elements[$j]->plugin == 'birthday_remove_slashes') && $r_elt > 0) {
 													$elt = EmundusHelperDate::displayDate($r_elt, $params->list_date_format);
@@ -2841,8 +2837,8 @@ class EmundusModelApplication extends JModelList
 
 											if ((!empty($r_elt) || $r_elt == 0) && $key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
 
-												if ($elements[$j]->plugin == 'date' && (!empty($r_elt) && $r_elt != '0000-00-00 00:00:00')) {
-													$elt = EmundusHelperDate::displayDate($r_elt, $params->date_table_format, (int) $params->date_store_as_local);
+												if (in_array($elements[$j]->plugin,['date','jdate']) && (!empty($r_elt) && $r_elt != '0000-00-00 00:00:00')) {
+													$elt = EmundusHelperDate::displayDate($r_elt, EmundusHelperFabrik::getFabrikDateParam($elements[$j],'date_table_format'), (int) EmundusHelperFabrik::getFabrikDateParam($elements[$j],'date_store_as_local'));
 												}
 												elseif (($elements[$j]->plugin == 'birthday' || $elements[$j]->plugin == 'birthday_remove_slashes') && $r_elt > 0) {
 													$elt = EmundusHelperDate::displayDate($r_elt, $params->list_date_format);
@@ -3067,14 +3063,14 @@ class EmundusModelApplication extends JModelList
 
 										if (!empty($element->label) && $element->label != ' ' || $element->plugin === 'display') {
 
-											if ($element->plugin == 'date') {
+											if (in_array($element->plugin,['date','jdate'])) {
 
 												// Empty date elements are set to 0000-00-00 00:00:00 in DB.
 												if ($show_empty_fields == 0 && ($element->content == '0000-00-00 00:00:00' || empty($element->content))) {
 													continue;
 												}
 												elseif (!empty($element->content) && $element->content != '0000-00-00 00:00:00') {
-													$elt = EmundusHelperDate::displayDate($element->content, $params->date_table_format, (int) $params->date_store_as_local);
+													$elt = EmundusHelperDate::displayDate($element->content, EmundusHelperFabrik::getFabrikDateParam($element,'date_table_format'), (int) EmundusHelperFabrik::getFabrikDateParam($element,'date_store_as_local'));
 												}
 												else {
 													$elt = '';
@@ -3351,9 +3347,8 @@ class EmundusModelApplication extends JModelList
 
 							foreach ($elements as $element) {
 								if (!empty($element->label) && $element->label != ' ') {
-									if ($element->plugin == 'date' && $element->content > 0) {
-										$date_params = json_decode($element->params);
-										$elt         = date($date_params->date_form_format, strtotime($element->content));
+									if (in_array($element->plugin,['date','jdate']) && $element->content > 0) {
+										$elt = date(EmundusHelperFabrik::getFabrikDateParam($element,'date_form_format'), strtotime($element->content));
 									}
 									else {
 										$elt = $element->content;
@@ -3400,15 +3395,13 @@ class EmundusModelApplication extends JModelList
 								foreach ($r_element as $key => $r_elt) {
 									if ($key != 'id' && $key != 'parent_id' && isset($elements[$j]) && $elements[$j]->plugin != 'display') {
 
-										if ($elements[$j]->plugin == 'date') {
+										if (in_array($elements[$j]->plugin,['date','jdate'])) {
 											if (!empty($elements[$j]->content) && $r_elt != '0000-00-00 00:00:00') {
-												$date_params = json_decode($elements[$j]->params);
-												$elt         = date($date_params->date_form_format, strtotime($r_elt));
+												$elt = date(EmundusHelperFabrik::getFabrikDateParam($elements[$j],'date_form_format'), strtotime($r_elt));
 											}
 											else {
 												$elt = '';
 											}
-
 										}
 										elseif (($elements[$j]->plugin == 'birthday' || $elements[$j]->plugin == 'birthday_remove_slashes') && $r_elt > 0) {
 											preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $r_elt, $matches);
@@ -3503,10 +3496,9 @@ class EmundusModelApplication extends JModelList
 							foreach ($elements as $element) {
 								if (!empty($element->label) && $element->label != ' ' && $element->plugin != 'display') {
 
-									if ($element->plugin == 'date' && $element->content > 0) {
+									if (in_array($element->plugin,['date','jdate']) && $element->content > 0) {
 										if (!empty($element->content) && $element->content != '0000-00-00 00:00:00') {
-											$date_params = json_decode($element->params);
-											$elt         = date($date_params->date_form_format, strtotime($element->content));
+											$elt = date(EmundusHelperFabrik::getFabrikDateParam($element,'date_form_format'), strtotime($element->content));
 										}
 										else {
 											$elt = '';

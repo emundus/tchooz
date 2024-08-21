@@ -6,9 +6,10 @@ export default
     "label": "COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SITENAME",
     "param": "sitename",
     "type": "text",
+    "helptext": "COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SITENAME_HELPTEXT",
     "maxlength": 50,
     "placeholder": "",
-    "optional": 1
+    "optional": null
   },
   {
     "displayed": true,

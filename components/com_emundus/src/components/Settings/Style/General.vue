@@ -7,9 +7,9 @@
           <div>
             <h4 class="em-text-neutral-800 tw-flex tw-items-center tw-mb-2">
               Logo
-              <span class="material-icons-outlined tw-ml-1 tw-text-base tw-cursor-pointer" @click="displayLogoTip">help_outline</span>
+              <span class="material-symbols-outlined tw-ml-1 tw-text-base tw-cursor-pointer" @click="displayLogoTip">help_outline</span>
             </h4>
-            <p class="tw-text-neutral-700"><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }} : jpeg, jpg, png, gif, svg</em></p>
+            <p class="tw-text-neutral-700"><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }}: jpeg, jpg, png, gif, svg</em></p>
             <p class="tw-text-neutral-700"><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_LOGO_RECOMMENDED') }}</em></p>
           </div>
         </div>
@@ -49,9 +49,9 @@
           <div>
             <h4 class="em-text-neutral-800 tw-flex tw-items-center tw-mb-2">
               {{ translate("COM_EMUNDUS_ONBOARD_ICON") }}
-              <span class="material-icons-outlined tw-ml-1 tw-text-base tw-cursor-pointer" @click="displayFaviconTip">help_outline</span>
+              <span class="material-symbols-outlined tw-ml-1 tw-text-base tw-cursor-pointer" @click="displayFaviconTip">help_outline</span>
             </h4>
-            <p class="tw-text-neutral-700"><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }} : jpeg, jpg, png, ico</em></p>
+            <p class="tw-text-neutral-700"><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }}: jpeg, jpg, png, ico</em></p>
             <p class="tw-text-neutral-700"><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ICON_RECOMMENDED') }}</em></p>
           </div>
         </div>
@@ -90,10 +90,10 @@
           <div>
             <h4 class="em-text-neutral-800 tw-mb-2 tw-flex tw-items-center">
               {{ translate("COM_EMUNDUS_ONBOARD_BANNER") }}
-              <span class="material-icons-outlined tw-ml-1 tw-text-base tw-cursor-pointer" @click="displayBannerTip">help_outline</span>
+              <span class="material-symbols-outlined tw-ml-1 tw-text-base tw-cursor-pointer" @click="displayBannerTip">help_outline</span>
             </h4>
-            <span><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }} : jpeg, png</em></span><br/>
-            <span><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_RECOMMENDED_SIZE') }} : 1440x200px</em></span>
+            <span><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }}: jpeg, png</em></span><br/>
+            <span><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_RECOMMENDED_SIZE') }}: 1440x200px</em></span>
           </div>
         </div>
 
@@ -187,7 +187,7 @@ export default {
         dictCancelUploadConfirmation: this.translate("COM_EMUNDUS_ONBOARD_CANCEL_UPLOAD_CONFIRMATION"),
         dictRemoveFile: this.translate("COM_EMUNDUS_ONBOARD_REMOVE_FILE"),
         dictInvalidFileType: this.translate("COM_EMUNDUS_ONBOARD_INVALID_FILE_TYPE"),
-        dictFileTooBig: this.translate("COM_EMUNDUS_ONBOARD_FILE_TOO_BIG") + ' (10Mo).',
+        dictFileTooBig: this.translate("COM_EMUNDUS_ONBOARD_FILE_TOO_BIG") + ' : 10Mo',
         dictMaxFilesExceeded: this.translate("COM_EMUNDUS_ONBOARD_MAX_FILES_EXCEEDED"),
       },
       faviconDropzoneOptions: {

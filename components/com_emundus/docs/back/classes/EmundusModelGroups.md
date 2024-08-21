@@ -96,6 +96,7 @@ public __construct(): mixed
 
 
 
+
 ***
 
 ### _buildContentOrderBy
@@ -117,6 +118,7 @@ public _buildContentOrderBy(): mixed
 
 
 
+
 ***
 
 ### getCampaign
@@ -126,6 +128,7 @@ public _buildContentOrderBy(): mixed
 ```php
 public getCampaign(): mixed
 ```
+
 
 
 
@@ -165,6 +168,7 @@ public getProfileAcces(mixed $user): mixed
 
 
 
+
 ***
 
 ### _buildQuery
@@ -174,6 +178,7 @@ public getProfileAcces(mixed $user): mixed
 ```php
 public _buildQuery(): mixed
 ```
+
 
 
 
@@ -207,6 +212,7 @@ public getUsers(): mixed
 
 
 
+
 ***
 
 ### getProfiles
@@ -216,6 +222,7 @@ public getUsers(): mixed
 ```php
 public getProfiles(): mixed
 ```
+
 
 
 
@@ -255,6 +262,7 @@ public getProfilesByIDs(mixed $ids): mixed
 
 
 
+
 ***
 
 ### getAuthorProfiles
@@ -264,6 +272,7 @@ public getProfilesByIDs(mixed $ids): mixed
 ```php
 public getAuthorProfiles(): mixed
 ```
+
 
 
 
@@ -297,6 +306,7 @@ public getEvaluators(): mixed
 
 
 
+
 ***
 
 ### getApplicantsProfiles
@@ -306,6 +316,7 @@ public getEvaluators(): mixed
 ```php
 public getApplicantsProfiles(): mixed
 ```
+
 
 
 
@@ -345,6 +356,7 @@ public getApplicantsByProfile(mixed $profile): mixed
 
 
 
+
 ***
 
 ### getGroups
@@ -354,6 +366,7 @@ public getApplicantsByProfile(mixed $profile): mixed
 ```php
 public getGroups(): mixed
 ```
+
 
 
 
@@ -393,6 +406,7 @@ public getGroupsByCourse(mixed $course): mixed
 
 
 
+
 ***
 
 ### getGroupsIdByCourse
@@ -420,6 +434,7 @@ public getGroupsIdByCourse(mixed $course): mixed
 
 
 
+
 ***
 
 ### getGroupsEval
@@ -441,6 +456,7 @@ public getGroupsEval(): mixed
 
 
 
+
 ***
 
 ### getUsersGroups
@@ -450,6 +466,7 @@ public getGroupsEval(): mixed
 ```php
 public getUsersGroups(): mixed
 ```
+
 
 
 
@@ -489,6 +506,7 @@ public getUsersByGroup(mixed $gid): mixed
 
 
 
+
 ***
 
 ### getUsersByGroups
@@ -511,6 +529,7 @@ public getUsersByGroups(mixed $gids): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$gids` | **mixed** |  |
+
 
 
 
@@ -544,6 +563,7 @@ public affectEvaluatorsGroups(mixed $groups, mixed $aid): mixed
 
 
 
+
 ***
 
 ### getAuthorUsers
@@ -553,6 +573,7 @@ public affectEvaluatorsGroups(mixed $groups, mixed $aid): mixed
 ```php
 public getAuthorUsers(): mixed
 ```
+
 
 
 
@@ -586,6 +607,7 @@ public getMobility(): mixed
 
 
 
+
 ***
 
 ### getElements
@@ -595,6 +617,7 @@ public getMobility(): mixed
 ```php
 public getElements(): mixed
 ```
+
 
 
 
@@ -628,6 +651,7 @@ public getTotal(): mixed
 
 
 
+
 ***
 
 ### getPagination
@@ -649,6 +673,7 @@ public getPagination(): mixed
 
 
 
+
 ***
 
 ### getSchoolyears
@@ -658,6 +683,7 @@ public getPagination(): mixed
 ```php
 public getSchoolyears(): mixed
 ```
+
 
 
 
@@ -702,6 +728,7 @@ Add new groups
 
 
 
+
 ***
 
 ### getFabrikGroupsAssignedToEmundusGroups
@@ -729,8 +756,9 @@ public getFabrikGroupsAssignedToEmundusGroups(mixed $group_ids): array|bool
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

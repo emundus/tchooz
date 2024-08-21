@@ -164,7 +164,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
 form#user-registration.form-validate.form-horizontal.well .control-group .controls input.invalid,
 .reset-confirm .form-validate.form-horizontal.well .control-group .controls input.invalid,
 .reset-complete .form-validate.form-horizontal.well .control-group .controls input.invalid {
-    border: 1px solid #e5283B;
+    border: 1px solid var(--red-600);
     box-shadow: none;
 }
 

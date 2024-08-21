@@ -231,7 +231,7 @@
     z-index: 10;
 }
 
-.mod_emundus_campaign__header_filter span:not(.material-icons-outlined) {
+.mod_emundus_campaign__header_filter span:not(.material-symbols-outlined) {
     font-family: var(--em-profile-font), Inter, sans-serif;
 }
 
@@ -319,7 +319,7 @@ a.em-blue-400-color:hover {
 }
 
 .mod_emundus_campaign__date p,
-.mod_emundus_campaign__date span:not(.material-icons) {
+.mod_emundus_campaign__date span:not(.material-icons):not(.material-symbols-outlined) {
     font-family: var(--em-profile-font), Inter, sans-serif;
 }
 

@@ -3,6 +3,8 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\MVC\Controller\BaseController;
+
 
 /**
  * eMundus Component Controller
@@ -10,10 +12,21 @@ use Joomla\CMS\Factory;
  * @package    Joomla.Tutorials
  * @subpackage Components
  */
-class EmundusControllerExport_select_columns extends JControllerLegacy
+class EmundusControllerExport_select_columns extends BaseController
 {
 	protected $app;
 
+	/**
+	 * Method to display a view.
+	 *
+	 * @param   boolean  $cachable   If true, the view output will be cached.
+	 * @param   boolean  $urlparams  An array of safe URL parameters and their variable types.
+	 *                   @see        \Joomla\CMS\Filter\InputFilter::clean() for valid values.
+	 *
+	 * @return  DisplayController  This object to support chaining.
+	 *
+	 * @since   1.0.0
+	 */
 	function display($cachable = false, $urlparams = false)
 	{
 		// Set a default view if none exists
@@ -24,13 +37,21 @@ class EmundusControllerExport_select_columns extends JControllerLegacy
 		parent::display();
 	}
 
+	/**
+	 * Constructor.
+	 *
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     \JController
+	 * @since   1.0.0
+	 */
 	function __construct($config = array())
 	{
+		parent::__construct($config);
+
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'programme.php');
-
-		parent::__construct($config);
 
 		$this->app = Factory::getApplication();
 	}

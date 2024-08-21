@@ -34,6 +34,7 @@ public static onSubmitForm(): mixed
 
 
 
+
 ***
 
 ### addElement
@@ -47,6 +48,7 @@ public static addElement(): mixed
 
 
 * This method is **static**.
+
 
 
 
@@ -82,6 +84,7 @@ public static addElementOther(mixed $tables): mixed
 
 
 
+
 ***
 
 ### delayAct
@@ -95,6 +98,7 @@ public static delayAct(): mixed
 
 
 * This method is **static**.
+
 
 
 
@@ -124,6 +128,7 @@ public static getPreferenceFilters(): mixed
 
 
 
+
 ***
 
 ### clearAdvanceFilter
@@ -137,6 +142,7 @@ public static clearAdvanceFilter(): mixed
 
 
 * This method is **static**.
+
 
 
 
@@ -166,8 +172,9 @@ public static getTemplate(): mixed
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

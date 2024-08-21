@@ -5287,8 +5287,8 @@ return $db-&gt;loadResult()+1;</field>
     <field name="group_id">569</field>
     <field name="plugin">dropdown</field>
     <field name="label">ORDER_STATUS</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out">1</field>
+    <field name="checked_out_time">2024-08-01 13:23:36</field>
     <field name="created">2017-11-22 15:56:26</field>
     <field name="created_by">62</field>
     <field name="created_by_alias">admin</field>

@@ -40,6 +40,7 @@ public static isAllowed(mixed $usertype, mixed $allowed): mixed
 
 
 
+
 ***
 
 ### isAllowedAccessLevel
@@ -63,6 +64,7 @@ public static isAllowedAccessLevel(mixed $user_id, mixed $current_menu_access): 
 |-----------|------|-------------|
 | `$user_id` | **mixed** |  |
 | `$current_menu_access` | **mixed** |  |
+
 
 
 
@@ -95,6 +97,7 @@ public static asAdministratorAccessLevel(mixed $user_id): mixed
 
 
 
+
 ***
 
 ### asCoordinatorAccessLevel
@@ -117,6 +120,7 @@ public static asCoordinatorAccessLevel(mixed $user_id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$user_id` | **mixed** |  |
+
 
 
 
@@ -149,6 +153,7 @@ public static asManagerAccessLevel(mixed $user_id): mixed
 
 
 
+
 ***
 
 ### asPartnerAccessLevel
@@ -171,6 +176,7 @@ public static asPartnerAccessLevel(mixed $user_id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$user_id` | **mixed** |  |
+
 
 
 
@@ -203,6 +209,7 @@ public static asEvaluatorAccessLevel(mixed $user_id): mixed
 
 
 
+
 ***
 
 ### asApplicantAccessLevel
@@ -230,6 +237,7 @@ public static asApplicantAccessLevel(mixed $user_id): mixed
 
 
 
+
 ***
 
 ### asPublicAccessLevel
@@ -252,6 +260,7 @@ public static asPublicAccessLevel(mixed $user_id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$user_id` | **mixed** |  |
+
 
 
 
@@ -286,6 +295,7 @@ public static check_group(mixed $user_id, mixed $group, mixed $inherited): mixed
 
 
 
+
 ***
 
 ### isAdministrator
@@ -308,6 +318,7 @@ public static isAdministrator(mixed $user_id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$user_id` | **mixed** |  |
+
 
 
 
@@ -340,6 +351,7 @@ public static isCoordinator(mixed $user_id): mixed
 
 
 
+
 ***
 
 ### isPartner
@@ -362,6 +374,7 @@ public static isPartner(mixed $user_id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$user_id` | **mixed** |  |
+
 
 
 
@@ -394,6 +407,7 @@ public static isExpert(mixed $user_id): mixed
 
 
 
+
 ***
 
 ### isEvaluator
@@ -416,6 +430,7 @@ public static isEvaluator(mixed $user_id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$user_id` | **mixed** |  |
+
 
 
 
@@ -448,6 +463,7 @@ public static isApplicant(mixed $user_id): mixed
 
 
 
+
 ***
 
 ### isPublic
@@ -470,6 +486,7 @@ public static isPublic(mixed $user_id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$user_id` | **mixed** |  |
+
 
 
 
@@ -502,6 +519,7 @@ public static getProfileAccess(int $user): array
 **Return Value:**
 
 The array of groups for user.
+
 
 
 
@@ -540,6 +558,7 @@ Has access or not
 
 
 
+
 ***
 
 ### canAccessGroup
@@ -565,6 +584,7 @@ public static canAccessGroup(mixed $gids, mixed $action_id, mixed $crud, null $f
 | `$action_id` | **mixed** |  |
 | `$crud` | **mixed** |  |
 | `$fnum` | **null** |  |
+
 
 
 
@@ -597,6 +617,7 @@ public static getUserFabrikGroups(mixed $user_id): array|bool
 
 
 
+
 ***
 
 ### getUserAllowedAttachmentIDs
@@ -624,6 +645,7 @@ public static getUserAllowedAttachmentIDs(mixed $user_id): array|bool
 
 
 
+
 ***
 
 ### isDataAnonymized
@@ -646,6 +668,7 @@ public static isDataAnonymized(mixed $user_id): bool
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$user_id` | **mixed** |  |
+
 
 
 
@@ -679,6 +702,7 @@ public static isUserAllowedToAccessFnum(mixed $user_id, mixed $fnum): bool
 
 
 
+
 ***
 
 ### getCrypt
@@ -692,6 +716,7 @@ public static getCrypt(): \JCrypt
 
 
 * This method is **static**.
+
 
 
 
@@ -728,6 +753,7 @@ public static buildFormUrl(mixed $link, mixed $fnum): string
 
 
 
+
 ***
 
 ### getRowIdByFnum
@@ -756,8 +782,9 @@ public static getRowIdByFnum(mixed $db_table_name, mixed $fnum): int
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

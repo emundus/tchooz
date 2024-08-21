@@ -61,8 +61,8 @@
           <label for="name">{{ translations.Name }}* :</label>
           <input type="text" class="tw-w-full" maxlength="100" v-model="form.name[langue]" id="name"
                  :class="{ 'is-invalid': errors.name}"/>
-          <p v-if="errors.name" class="tw-text-red-500">
-            <span class="tw-text-red-500">{{ translations.NameRequired }}</span>
+          <p v-if="errors.name" class="tw-text-red-600">
+            <span class="tw-text-red-600">{{ translations.NameRequired }}</span>
           </p>
         </div>
 
@@ -75,8 +75,8 @@
           <label for="nbmax">{{ translations.MaxPerUser }}* :</label>
           <input type="number" class="tw-w-full" min="1" v-model="form.nbmax" id="nbmax"
                  :class="{ 'is-invalid': errors.nbmax}"/>
-          <p v-if="errors.nbmax" class="tw-text-red-500">
-            <span class="tw-text-red-500">{{ translations.MaxRequired }}</span>
+          <p v-if="errors.nbmax" class="tw-text-red-600">
+            <span class="tw-text-red-600">{{ translations.MaxRequired }}</span>
           </p>
         </div>
 
@@ -90,8 +90,8 @@
               </div>
             </div>
           </div>
-          <p v-if="errors.selectedTypes" class="tw-text-red-500">
-            <span class="tw-text-red-500">{{ translations.TypeRequired }}</span>
+          <p v-if="errors.selectedTypes" class="tw-text-red-600">
+            <span class="tw-text-red-600">{{ translations.TypeRequired }}</span>
           </p>
         </div>
       </div>

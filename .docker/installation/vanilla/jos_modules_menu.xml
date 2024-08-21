@@ -189,6 +189,10 @@
     <field name="menuid">497</field>
    </row>
    <row>
+    <field name="moduleid">113</field>
+    <field name="menuid">501</field>
+   </row>
+   <row>
     <field name="moduleid">114</field>
     <field name="menuid">243</field>
    </row>
@@ -227,6 +231,10 @@
    <row>
     <field name="moduleid">122</field>
     <field name="menuid">497</field>
+   </row>
+   <row>
+    <field name="moduleid">122</field>
+    <field name="menuid">501</field>
    </row>
    <row>
     <field name="moduleid">123</field>
@@ -563,6 +571,42 @@
    <row>
     <field name="moduleid">177</field>
     <field name="menuid">492</field>
+   </row>
+   <row>
+    <field name="moduleid">178</field>
+    <field name="menuid">0</field>
+   </row>
+   <row>
+    <field name="moduleid">179</field>
+    <field name="menuid">0</field>
+   </row>
+   <row>
+    <field name="moduleid">180</field>
+    <field name="menuid">0</field>
+   </row>
+   <row>
+    <field name="moduleid">181</field>
+    <field name="menuid">0</field>
+   </row>
+   <row>
+    <field name="moduleid">182</field>
+    <field name="menuid">0</field>
+   </row>
+   <row>
+    <field name="moduleid">183</field>
+    <field name="menuid">0</field>
+   </row>
+   <row>
+    <field name="moduleid">184</field>
+    <field name="menuid">0</field>
+   </row>
+   <row>
+    <field name="moduleid">185</field>
+    <field name="menuid">0</field>
+   </row>
+   <row>
+    <field name="moduleid">186</field>
+    <field name="menuid">0</field>
    </row>
   </table_data>
  </database>

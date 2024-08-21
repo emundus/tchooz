@@ -28,7 +28,7 @@ defined('_JEXEC') or die('Restricted access');
 							if ($this->use_module_for_filters) {
 								?>
                                 <label for="save-filter" class="em-mr-8 em-flex-row" style="margin-bottom: 0;">
-                                    <span class="material-icons-outlined em-pointer em-color-white"
+                                    <span class="material-symbols-outlined em-pointer em-color-white"
                                           title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_SAVE_BTN'); ?>">save</span>
                                 </label>
                                 <input type="button" style="display: none" id="save-filter"
@@ -37,7 +37,7 @@ defined('_JEXEC') or die('Restricted access');
 							}
 							?>
                             <label for="clear-search" class="em-flex-row">
-                                <span class="material-icons-outlined em-pointer em-color-white"
+                                <span class="material-symbols-outlined em-pointer em-color-white"
                                       title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_CLEAR_BTN'); ?>">filter_alt_off</span>
                             </label>
                             <input type="button" style="display: none" id="clear-search"

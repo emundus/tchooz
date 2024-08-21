@@ -1197,7 +1197,7 @@ class EmundusModelForm extends JModelList
 			if (!empty($group)) {
 				// Create hidden group
 				$m_formbuilder->createElement('id', $group['group_id'], 'internalid', 'id', '', 1, 0);
-				$m_formbuilder->createElement('time_date', $group['group_id'], 'date', 'time date', '', 1, 0);
+				$m_formbuilder->createElement('time_date', $group['group_id'], 'jdate', 'time date', '', 1, 0);
 				$m_formbuilder->createElement('fnum', $group['group_id'], 'field', 'fnum', '{jos_emundus_evaluations___fnum}', 1, 0, 1, 1, 0, 44);
 				$m_formbuilder->createElement('user', $group['group_id'], 'databasejoin', 'user', '{$my->id}', 1, 0);
 				$m_formbuilder->createElement('student_id', $group['group_id'], 'field', 'student_id', '{jos_emundus_evaluations___student_id}', 1, 0);

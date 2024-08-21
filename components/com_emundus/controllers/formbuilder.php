@@ -16,6 +16,7 @@ jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\MVC\Controller\BaseController;
 
 /**
  * FormBuilder Controller
@@ -24,7 +25,7 @@ use Joomla\CMS\Language\Text;
  * @subpackage eMundus
  * @since      5.0.0
  */
-class EmundusControllerFormbuilder extends JControllerLegacy
+class EmundusControllerFormbuilder extends BaseController
 {
 
 	protected $app;
@@ -32,6 +33,14 @@ class EmundusControllerFormbuilder extends JControllerLegacy
 	private $user;
 	private $m_formbuilder;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     \JController
+	 * @since   1.0.0
+	 */
 	public function __construct($config = array())
 	{
 		parent::__construct($config);
@@ -446,23 +455,25 @@ class EmundusControllerFormbuilder extends JControllerLegacy
 		exit;
 	}
 
+	/**
+	 * Delete a page of a form
+	 *
+	 * @since version 1.0.0
+	 */
 	public function deletemenu()
 	{
-		$user = JFactory::getUser();
+		$response = array('status' => false, 'msg' => '');
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-			$result         = 0;
-			$changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
+			$response['msg'] = Text::_('ACCESS_DENIED');
 		}
 		else {
-
-
 			$mid = $this->input->getInt('mid');
 
-			$changeresponse = $this->m_formbuilder->deleteMenu($mid);
+			$response['status'] = $this->m_formbuilder->deleteMenu($mid);
 		}
 
-		echo json_encode((object) $changeresponse);
+		echo json_encode((object) $response);
 		exit;
 	}
 

@@ -34,6 +34,7 @@ public __construct(): mixed
 
 
 
+
 ***
 
 ### getPrice
@@ -56,6 +57,7 @@ public getPrice(mixed $fnum): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$fnum` | **mixed** |  |
+
 
 
 
@@ -88,6 +90,7 @@ public isScholarshipStudent(mixed $fnum): bool
 
 
 
+
 ***
 
 ### doesScholarshipHoldersNeedToPay
@@ -97,6 +100,7 @@ public isScholarshipStudent(mixed $fnum): bool
 ```php
 public doesScholarshipHoldersNeedToPay(): bool
 ```
+
 
 
 
@@ -136,6 +140,7 @@ public setPaymentUniqid(mixed $fnum): mixed
 
 
 
+
 ***
 
 ### createPaymentOrder
@@ -160,6 +165,7 @@ public createPaymentOrder(mixed $fnum, mixed $type, mixed $order_number = null):
 | `$fnum` | **mixed** |  |
 | `$type` | **mixed** |  |
 | `$order_number` | **mixed** |  |
+
 
 
 
@@ -192,6 +198,7 @@ private getUserIdFromFnum(mixed $fnum): mixed
 
 
 
+
 ***
 
 ### getHikashopUserId
@@ -219,6 +226,7 @@ private getHikashopUserId(mixed $user_id): mixed
 
 
 
+
 ***
 
 ### createHikashopUser
@@ -241,6 +249,7 @@ private createHikashopUser(mixed $user_id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$user_id` | **mixed** |  |
+
 
 
 
@@ -274,6 +283,7 @@ private updateEmundusHikashopOrderId(mixed $fnum, mixed $order_id): bool
 
 
 
+
 ***
 
 ### insertEmundusHikashopOrderId
@@ -297,6 +307,7 @@ private insertEmundusHikashopOrderId(mixed $fnum, mixed $order_id): bool
 |-----------|------|-------------|
 | `$fnum` | **mixed** |  |
 | `$order_id` | **mixed** |  |
+
 
 
 
@@ -329,6 +340,7 @@ public getPaymentInfos(mixed $fnum): mixed
 
 
 
+
 ***
 
 ### getProduct
@@ -356,6 +368,7 @@ public getProduct(mixed $product_id): mixed
 
 
 
+
 ***
 
 ### getProductByFnum
@@ -378,6 +391,7 @@ public getProductByFnum(mixed $fnum): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$fnum` | **mixed** |  |
+
 
 
 
@@ -411,6 +425,7 @@ public updateFlywirePaymentInfos(string $callback_id, array $data): bool
 
 
 
+
 ***
 
 ### getFnumFromCallbackId
@@ -433,6 +448,7 @@ private getFnumFromCallbackId(string $callback_id): string|false
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$callback_id` | **string** |  |
+
 
 
 
@@ -465,6 +481,7 @@ private getFnumFromOrderId(mixed $order): string|false
 
 
 
+
 ***
 
 ### checkAmountCoherence
@@ -488,6 +505,7 @@ private checkAmountCoherence(mixed $fnum, mixed $amount): mixed
 |-----------|------|-------------|
 | `$fnum` | **mixed** |  |
 | `$amount` | **mixed** |  |
+
 
 
 
@@ -524,6 +542,7 @@ private updateHikashopPayment(mixed $fnum, mixed $hikashop_status, mixed $data, 
 
 
 
+
 ***
 
 ### updateFnumStateFromFlywire
@@ -546,6 +565,7 @@ private updateFnumStateFromFlywire(mixed $fnum): bool
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$fnum` | **mixed** |  |
+
 
 
 
@@ -578,6 +598,7 @@ public getFlywireExtendedConfig(mixed $config): mixed
 
 
 
+
 ***
 
 ### getConfig
@@ -600,6 +621,7 @@ public getConfig(mixed $fnum): array
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$fnum` | **mixed** |  |
+
 
 
 
@@ -633,6 +655,7 @@ public saveConfig(mixed $fnum, mixed $new_config): bool
 
 
 
+
 ***
 
 ### updateFileTransferPayment
@@ -655,6 +678,7 @@ public updateFileTransferPayment(mixed $user): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$user` | **mixed** |  |
+
 
 
 
@@ -689,6 +713,7 @@ private updateHikashopOrderType(mixed $order_id, mixed $type, mixed $order_numbe
 
 
 
+
 ***
 
 ### updateAxeptaPaymentInfos
@@ -718,6 +743,7 @@ public updateAxeptaPaymentInfos(mixed $order, mixed $status, mixed $id): mixed
 
 
 
+
 ***
 
 ### resetPaymentSession
@@ -727,6 +753,7 @@ public updateAxeptaPaymentInfos(mixed $order, mixed $status, mixed $id): mixed
 ```php
 public resetPaymentSession(): mixed
 ```
+
 
 
 
@@ -767,6 +794,7 @@ public checkPaymentSession(mixed $fnum = null, mixed $caller = &#039;&#039;): bo
 
 
 
+
 ***
 
 ### getHikashopUser
@@ -789,6 +817,7 @@ private getHikashopUser(mixed $fnum): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$fnum` | **mixed** |  |
+
 
 
 
@@ -818,6 +847,7 @@ public getGeneratedCoupon(mixed $fnum, mixed $hikashop_product_category, mixed $
 | `$fnum` | **mixed** |  |
 | `$hikashop_product_category` | **mixed** |  |
 | `$code_like` | **mixed** |  |
+
 
 
 
@@ -859,6 +889,7 @@ public generateCoupon(mixed $fnum, mixed $discount_amount, mixed $discount_amoun
 
 
 
+
 ***
 
 ### didUserPay
@@ -888,8 +919,9 @@ public didUserPay(mixed $user, mixed $fnum, mixed $product_id): mixed
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

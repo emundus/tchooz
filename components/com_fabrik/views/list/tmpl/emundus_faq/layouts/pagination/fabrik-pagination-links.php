@@ -31,7 +31,7 @@ foreach ($nav_mapping as $position => $nav) {
 	foreach ($nodes as $node) {
 		$node->textContent = '';
 		$icon              = $dom->createElement('span', $nav);
-		$icon->setAttribute('class', 'material-icons-outlined');
+		$icon->setAttribute('class', 'material-symbols-outlined');
 		$node->appendChild($icon);
 	}
 	$list[$position]['data'] = $dom->saveHTML();

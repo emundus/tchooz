@@ -484,6 +484,22 @@ die("<script>
 			$params['date_observe']               = '';
 		}
 
+		if ($plugin == 'jdate') {
+			$params['bootstrap_class']            = 'col-sm-8';
+			$params['jdate_showtime']              = '0';
+			$params['jdate_time_format']           = 'H:i';
+			$params['jdate_time_24']                = '1';
+			$params['jdate_show_week_numbers']                = '0';
+			$params['placeholder']                = 'dd/mm/yyyy';
+			$params['jdate_store_as_local']        = '1';
+			$params['jdate_table_format']          = 'd\/m\/Y';
+			$params['jdate_form_format']           = 'd/m/Y';
+			$params['jdate_defaulttotoday']        = '1';
+			$params['jdate_alwaystoday']           = '0';
+			$params['jdate_allow_typing_in_field'] = '1';
+			$params['jdate_csv_offset_tz']         = '0';
+		}
+
 		if ($plugin == 'databasejoin') {
 			$params['bootstrap_class']                    = 'span12';
 			$params['database_join_display_type']         = 'dropdown';
@@ -724,7 +740,7 @@ die("<script>
 		if ($plugin == 'birthday') {
 			$dbtype = 'DATE';
 		}
-		if ($plugin == 'date') {
+		if (in_array($plugin,['date','jdate'])) {
 			$dbtype = 'DATETIME';
 		}
 
@@ -949,7 +965,7 @@ die("<script>
 						}
 						if ($action == 'prenom')
 						{
-							$js    = "const mySentence = this.get(&#039;value&#039;);const words = mySentence.split(&quot; &quot;);for (let i = 0; i &lt; words.length; i++) {words[i] = words[i][0].toUpperCase() + words[i].substr(1);};this.set(words.join(&quot; &quot;));";
+							$js    = "const mySentence = this.get(&#039;value&#039;);if(mySentence !== '') {const words = mySentence.split(&quot; &quot;);for (let i = 0; i &lt; words.length; i++) {words[i] = words[i][0].toUpperCase() + words[i].substr(1);};this.set(words.join(&quot; &quot;));}";
 							$event = 'keyup';
 						}
 					}
@@ -1160,8 +1176,9 @@ die("<script>
 				switch ($element->plugin)
 				{
 					case 'date':
-						$date_format = $params['date_form_format'];
-						$local       = $params['date_store_as_local'] ? 1 : 0;
+					case 'jdate':
+						$date_format = self::getFabrikDateParam($element, 'date_form_format');
+						$local = self::getFabrikDateParam($element, 'date_store_as_local') ? 1 : 0;
 
 						$formatted_value = EmundusHelperDate::displayDate($raw_value, $date_format, $local);
 						break;
@@ -1512,5 +1529,23 @@ die("<script>
 		}
 
 		return $datas;
+	}
+
+	public static function getFabrikDateParam($elt, $param)
+	{
+		$result = '';
+
+		if (!empty($elt) && !empty($param))
+		{
+			$params = json_decode($elt->params, true);
+			if($elt->plugin == 'jdate' && isset($params['j'.$param]))
+			{
+				$result = $params['j'.$param];
+			} else {
+				$result = $params[$param];
+			}
+		}
+
+		return $result;
 	}
 }

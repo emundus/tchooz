@@ -40,13 +40,13 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
             <div class="em-flex-row">
                 <h4><?php echo JText::_($preliminary_documents_title) ?></h4>
             </div>
-            <span id="mod_emundus_checklist___expand_icon" class="material-icons-outlined"
+            <span id="mod_emundus_checklist___expand_icon" class="material-symbols-outlined"
                   style="transform: rotate(-90deg);">expand_more</span>
         </div>
         <div id="mod_emundus_checklist___content" class="em-mt-24">
 			<?php foreach ($preliminary_documents as $document): ?>
                 <div class="em-flex-row em-mb-16 mod_emundus_campaign__details_file">
-                    <span class="material-icons-outlined mod_emundus_campaign__details_file_icon">insert_drive_file</span>
+                    <span class="material-symbols-outlined mod_emundus_campaign__details_file_icon">insert_drive_file</span>
                     <a href="<?php echo $document->href ?>" target="_blank" rel="noopener noreferrer">
 						<?php echo $document->title_file . "." . $document->ext; ?>
                     </a>
@@ -60,7 +60,7 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
         <div class="em-flex-row">
             <h4> <?php echo JText::_($forms_title) . ' ' . $index_form . '/' . $pages_no ?></h4>
         </div>
-        <span id="mod_emundus_checklist___expand_icon" class="material-icons-outlined">expand_more</span>
+        <span id="mod_emundus_checklist___expand_icon" class="material-symbols-outlined">expand_more</span>
     </div>
 
     <div id="mod_emundus_checklist___content" class="em-mt-24 tw-pt-1 tw-pl-1">
@@ -79,7 +79,7 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
                     <div id="mlf<?php echo $form->id; ?>"
                          class="<?php if ($form->id == $menuid) echo 'active' ?> mod_emundus_checklist_<?php echo $class; ?> mod_emundus_checklist___form_item tw-relative">
 	                    <?php if ($class == 'need_ok' && $form->id != $menuid) : ?>
-                            <span class="material-icons mod_emundus_checklist___check_circle">check_circle</span>
+                            <span class="material-symbols-outlined mod_emundus_checklist___check_circle">check_circle</span>
 	                    <?php endif; ?>
                         <div class="mod_emundus_checklist___grid">
                             <div class="mod_emundus_checklist___step_count">
@@ -126,7 +126,7 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
 			?>
             <div class="<?php if ($itemid['id'] == $menuid) echo 'active' ?> mod_emundus_checklist_<?php echo $attachment_class; ?> mod_emundus_checklist___form_item tw-relative">
 	            <?php if ($attachment_class == 'need_ok' && $itemid['id'] != $menuid) : ?>
-                    <span class="material-icons mod_emundus_checklist___check_circle">check_circle</span>
+                    <span class="material-symbols-outlined mod_emundus_checklist___check_circle">check_circle</span>
 	            <?php endif; ?>
                 <div class="mod_emundus_checklist___grid">
                     <div class="mod_emundus_checklist___step_count">
@@ -182,7 +182,7 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
 		<?php if ($show_optional_documents == 1 && count($optional_documents) > 0) : ?>
             <div class="<?php if ($itemid['id'] == $menuid) echo 'active' ?> mod_emundus_checklist_<?php echo $attachment_class; ?> mod_emundus_checklist___form_item tw-relative">
 	            <?php if ($attachment_class == 'need_ok' && $itemid['id'] != $menuid) : ?>
-                    <span class="material-icons mod_emundus_checklist___check_circle">check_circle</span>
+                    <span class="material-symbols-outlined mod_emundus_checklist___check_circle">check_circle</span>
 	            <?php endif; ?>
                 <div class="mod_emundus_checklist___grid">
                     <div class="mod_emundus_checklist___step_count">
@@ -236,9 +236,9 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
                 <div class="mod_emundus_checklist___grid">
                     <div class="mod_emundus_checklist___step_count">
 						<?php if ($paid_class == 'need_missing') : ?>
-                            <span class="material-icons-outlined">close</span>
+                            <span class="material-symbols-outlined">close</span>
 						<?php elseif ($paid_class == 'need_ok') : ?>
-                            <span class="material-icons-outlined tw-text-white">done</span>
+                            <span class="material-symbols-outlined tw-text-white">done</span>
 						<?php endif; ?>
                     </div>
                     <a href="<?php echo $confirm_form_url; ?>"><?php echo JText::_('MOD_EMUNDUS_CHECKLIST_PAYMENT') ?></a>

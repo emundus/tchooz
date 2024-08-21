@@ -11,6 +11,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Language\Text;
+
+use Joomla\CMS\MVC\Controller\BaseController;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -32,7 +34,7 @@ jimport('joomla.user.helper');
 /**
  * Class EmundusControllerFiles
  */
-class EmundusControllerFiles extends JControllerLegacy
+class EmundusControllerFiles extends BaseController
 {
 	protected $app;
 
@@ -40,10 +42,17 @@ class EmundusControllerFiles extends JControllerLegacy
 	private $_db;
 
 	/**
-	 * @param   array  $config
+	 * Constructor.
+	 *
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     \JController
+	 * @since   1.0.0
 	 */
 	public function __construct($config = array())
 	{
+		parent::__construct($config);
+
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'filters.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'list.php');
@@ -58,13 +67,18 @@ class EmundusControllerFiles extends JControllerLegacy
 		$this->app   = Factory::getApplication();
 		$this->_user = $this->app->getSession()->get('emundusUser');
 		$this->_db = Factory::getContainer()->get('DatabaseDriver');
-
-		parent::__construct($config);
 	}
 
 	/**
-	 * @param   bool  $cachable
-	 * @param   bool  $urlparams
+	 * Method to display a view.
+	 *
+	 * @param   boolean  $cachable   If true, the view output will be cached.
+	 * @param   boolean  $urlparams  An array of safe URL parameters and their variable types.
+	 *                   @see        \Joomla\CMS\Filter\InputFilter::clean() for valid values.
+	 *
+	 * @return  DisplayController  This object to support chaining.
+	 *
+	 * @since   1.0.0
 	 */
 	public function display($cachable = false, $urlparams = false)
 	{
@@ -1666,9 +1680,13 @@ class EmundusControllerFiles extends JControllerLegacy
 						}
 						else {
 
-							if ($fLine->element_plugin == 'date') {
+							if (in_array($fLine->element_plugin,['date','jdate'])) {
 								$params                                                         = json_decode($fLine->element_attribs);
-								$date_elements[$fLine->tab_name . '___' . $fLine->element_name] = $params->date_form_format;
+								if($fLine->element_plugin == 'jdate') {
+									$date_elements[$fLine->tab_name . '___' . $fLine->element_name] = $params->jdate_form_format;
+								} else {
+									$date_elements[$fLine->tab_name . '___' . $fLine->element_name] = $params->date_form_format;
+								}
 							}
 
 							if ($fLine->element_plugin == 'textarea') {
@@ -1727,9 +1745,13 @@ class EmundusControllerFiles extends JControllerLegacy
 				// On définit les bons formats
 				$date_elements = [];
 				foreach ($ordered_elements as $fLine) {
-					if ($fLine->element_plugin == 'date') {
+					if (in_array($fLine->element_plugin,['date','jdate'])) {
 						$params = json_decode($fLine->element_attribs);
-						$date_elements[$fLine->tab_name.'___'.$fLine->element_name] = $params->date_form_format;
+						if($fLine->element_plugin == 'jdate') {
+							$date_elements[$fLine->tab_name.'___'.$fLine->element_name] = $params->jdate_form_format;
+						} else {
+							$date_elements[$fLine->tab_name . '___' . $fLine->element_name] = $params->date_form_format;
+						}
 					}
 
 					if ($fLine->element_plugin == 'textarea') {
@@ -3712,7 +3734,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
 			$params         = json_decode($elt['params']);
 			$groupParams    = json_decode($elt['group_params']);
-			$isDate         = ($elt['plugin'] == 'date');
+			$isDate         = (in_array($elt['plugin'], ['date','jdate']));
 			$isDatabaseJoin = ($elt['plugin'] === 'databasejoin');
 
 			if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
@@ -3720,7 +3742,11 @@ class EmundusControllerFiles extends JControllerLegacy
 			}
 			else {
 				if ($isDate) {
-					$fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name'], $params->date_form_format);
+					if($elt['plugin'] == 'jdate') {
+						$fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name'], $params->jdate_form_format);
+					} else {
+						$fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name'], $params->date_form_format);
+					}
 				}
 				else {
 					$fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);

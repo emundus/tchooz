@@ -34,10 +34,10 @@ protected $app
 
 ### __construct
 
-
+Constructor.
 
 ```php
-public __construct(): mixed
+public __construct(array $config = array()): mixed
 ```
 
 
@@ -47,9 +47,20 @@ public __construct(): mixed
 
 
 
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `$config` | **array** | An optional associative array of configuration settings. |
 
 
 
+
+
+
+**See Also:**
+
+* \JController - 
 
 ***
 
@@ -60,6 +71,7 @@ called from post method
 ```php
 public getFlywireConfig(): mixed
 ```
+
 
 
 
@@ -93,6 +105,7 @@ public updateFlywirePaymentInfos(): mixed
 
 
 
+
 ***
 
 ### updateFileTransferPayment
@@ -102,6 +115,7 @@ public updateFlywirePaymentInfos(): mixed
 ```php
 public updateFileTransferPayment(): mixed
 ```
+
 
 
 
@@ -135,6 +149,7 @@ public resetpaymentsession(): mixed
 
 
 
+
 ***
 
 ### checkpaymentsession
@@ -156,8 +171,9 @@ public checkpaymentsession(): mixed
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

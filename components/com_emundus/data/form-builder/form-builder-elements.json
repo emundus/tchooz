@@ -55,7 +55,7 @@
     "published": true
   },
   {
-    "value": "date",
+    "value": "jdate",
     "icon": "calendar_month",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_CALENDAR",
     "published": true

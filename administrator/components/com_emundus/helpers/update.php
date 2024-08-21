@@ -4065,7 +4065,7 @@ class EmundusHelperUpdate
 				'border-color-hover'                      => '#2E404F',
 				'border-color-error'                      => '#f04437',
 				'label-color-error'                       => '#000000',
-				'element-color-error'                     => '#f04437',
+				'element-color-error'                     => '#D92C20',
 				'after-border-height'                     => '0px',
 				'radio-padding'                           => '8px 12px 8px 8px',
 				'radio-border-width'                      => '1px',

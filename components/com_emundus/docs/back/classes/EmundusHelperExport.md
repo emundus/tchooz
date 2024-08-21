@@ -47,6 +47,7 @@ public static buildFormPDF(mixed $fnumInfos, mixed $sid, mixed $fnum, int $form_
 
 
 
+
 ***
 
 ### buildCustomizedPDF
@@ -73,6 +74,7 @@ public buildCustomizedPDF(mixed $fnumInfos, mixed $forms, mixed $elements, mixed
 | `$elements` | **mixed** |  |
 | `$options` | **mixed** |  |
 | `$application_form_order` | **mixed** |  |
+
 
 
 
@@ -115,6 +117,7 @@ public static buildHeaderPDF(mixed $fnumInfos, mixed $sid, mixed $fnum, mixed $o
 
 
 
+
 ***
 
 ### pdftest_is_encrypted
@@ -137,6 +140,7 @@ public static pdftest_is_encrypted(string $file): bool
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$file` | **string** |  |
+
 
 
 
@@ -169,6 +173,7 @@ public static get_pdf_prop(mixed $file): mixed
 
 
 
+
 ***
 
 ### isEncrypted
@@ -191,6 +196,7 @@ public static isEncrypted(mixed $file): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$file` | **mixed** |  |
+
 
 
 
@@ -226,6 +232,7 @@ public static getAttachmentPDF(mixed& $exports, mixed& $tmpArray, mixed $files, 
 
 
 
+
 ***
 
 ### getEvalPDF
@@ -249,6 +256,7 @@ public static getEvalPDF(mixed $fnum, mixed $options = null): mixed
 |-----------|------|-------------|
 | `$fnum` | **mixed** |  |
 | `$options` | **mixed** |  |
+
 
 
 
@@ -282,6 +290,7 @@ public static getDecisionPDF(mixed $fnum, mixed $options = null): mixed
 
 
 
+
 ***
 
 ### getAdmissionPDF
@@ -305,6 +314,7 @@ public static getAdmissionPDF(mixed $fnum, mixed $options = null): mixed
 |-----------|------|-------------|
 | `$fnum` | **mixed** |  |
 | `$options` | **mixed** |  |
+
 
 
 
@@ -340,6 +350,7 @@ public static makePDF(mixed $fileName, mixed $ext, mixed $aid, mixed $i): mixed
 
 
 
+
 ***
 
 ### getArticle
@@ -367,8 +378,9 @@ Used for defining articles as PDF templates.
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

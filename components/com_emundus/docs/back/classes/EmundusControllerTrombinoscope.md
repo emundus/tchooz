@@ -34,7 +34,7 @@ protected $app
 
 ### __construct
 
-
+Constructor.
 
 ```php
 public __construct(array $config = array()): mixed
@@ -51,11 +51,16 @@ public __construct(array $config = array()): mixed
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$config` | **array** |  |
+| `$config` | **array** | An optional associative array of configuration settings. |
 
 
 
 
+
+
+**See Also:**
+
+* \JController - 
 
 ***
 
@@ -84,6 +89,7 @@ public fnums_json_decode(mixed $string_fnums): array
 
 
 
+
 ***
 
 ### generate_preview
@@ -107,6 +113,7 @@ public generate_preview(): mixed
 **Throws:**
 
 - [`Exception`](./Exception.md)
+
 
 
 
@@ -153,6 +160,7 @@ public generate_data_for_pdf(mixed $fnums, mixed $gridL, mixed $gridH, mixed $ma
 
 
 
+
 ***
 
 ### generate_pdf
@@ -179,8 +187,9 @@ public generate_pdf(): mixed
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

@@ -1,5 +1,6 @@
-/* jshint esversion: 8 */
-import client from './axiosClient';
+import { FetchClient } from './fetchClient.js'
+
+const client = new FetchClient('files')
 
 import {FetchClient} from './fetchClient.js';
 const fetchClient = new FetchClient('files');
@@ -7,31 +8,23 @@ const fetchClient = new FetchClient('files');
 export default {
   async getFnums() {
     try {
-      const response = await client().get('index.php?option=com_emundus&controller=files&task=getallfnums');
-
-      return response.data;
+      return await client.get('getallfnums');
     } catch (e) {
       return false;
     }
   },
   async getFnumInfos(fnum) {
     try {
-      const response = await client().get('index.php?option=com_emundus&controller=files&task=getfnuminfos', {
-        params: {
-          fnum
-        }
+      return await client.get('getfnuminfos', {
+        fnum: fnum
       });
-
-      return response.data;
     } catch (e) {
       return false;
     }
   },
   async isDataAnonymized() {
     try {
-      const response = await client().get('index.php?option=com_emundus&controller=files&task=isdataanonymized');
-
-      return response.data;
+      return await client.get('isdataanonymized');
     } catch (e) {
       return {
         status: false,

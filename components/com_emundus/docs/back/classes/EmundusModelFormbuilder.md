@@ -102,6 +102,7 @@ public __construct(mixed $config = array()): mixed
 
 
 
+
 ***
 
 ### replaceAccents
@@ -124,6 +125,7 @@ public replaceAccents(mixed $value): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$value` | **mixed** |  |
+
 
 
 
@@ -160,6 +162,7 @@ public translate(mixed $key, mixed $values, mixed $reference_table = &#039;&#039
 
 
 
+
 ***
 
 ### updateTranslation
@@ -186,6 +189,7 @@ public updateTranslation(mixed $key, mixed $values, mixed $reference_table = &#0
 | `$reference_table` | **mixed** |  |
 | `$reference_id` | **mixed** |  |
 | `$reference_field` | **mixed** |  |
+
 
 
 
@@ -218,6 +222,7 @@ public deleteTranslation(mixed $text): mixed
 
 
 
+
 ***
 
 ### copyFileToAdministration
@@ -240,6 +245,7 @@ public copyFileToAdministration(mixed $langtag): bool
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$langtag` | **mixed** |  |
+
 
 
 
@@ -273,6 +279,7 @@ public getTranslation(mixed $text, mixed $code_lang): string|string[]
 
 
 
+
 ***
 
 ### getJTEXTA
@@ -300,6 +307,7 @@ public getJTEXTA(mixed $toJTEXT): array
 
 
 
+
 ***
 
 ### getJTEXT
@@ -322,6 +330,7 @@ public getJTEXT(mixed $toJTEXT): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$toJTEXT` | **mixed** |  |
+
 
 
 
@@ -358,6 +367,7 @@ public formsTrad(mixed $labelTofind, mixed $NewSubLabel, mixed $element = null, 
 
 
 
+
 ***
 
 ### getSpecialCharacters
@@ -367,6 +377,7 @@ END TRANSLATION SYSTEM
 ```php
 public getSpecialCharacters(): mixed
 ```
+
 
 
 
@@ -406,6 +417,7 @@ public htmlspecial_array(mixed& $variable): mixed
 
 
 
+
 ***
 
 ### updateElementWithoutTranslation
@@ -429,6 +441,7 @@ public updateElementWithoutTranslation(mixed $eid, mixed $label): mixed
 |-----------|------|-------------|
 | `$eid` | **mixed** |  |
 | `$label` | **mixed** |  |
+
 
 
 
@@ -462,6 +475,7 @@ public updateGroupWithoutTranslation(mixed $gid, mixed $label): mixed
 
 
 
+
 ***
 
 ### updatePageWithoutTranslation
@@ -485,6 +499,7 @@ public updatePageWithoutTranslation(mixed $pid, mixed $label): mixed
 |-----------|------|-------------|
 | `$pid` | **mixed** |  |
 | `$label` | **mixed** |  |
+
 
 
 
@@ -518,6 +533,7 @@ public updatePageIntroWithoutTranslation(mixed $pid, mixed $intro): mixed
 
 
 
+
 ***
 
 ### createApplicantMenu
@@ -543,6 +559,7 @@ public createApplicantMenu(mixed $label, mixed $intro, mixed $prid, mixed $templ
 | `$intro` | **mixed** |  |
 | `$prid` | **mixed** |  |
 | `$template` | **mixed** |  |
+
 
 
 
@@ -579,6 +596,7 @@ public createFabrikForm(mixed $prid, mixed $label, mixed $intro, mixed $type = &
 
 
 
+
 ***
 
 ### createFabrikList
@@ -607,6 +625,7 @@ public createFabrikList(mixed $prid, mixed $formid): mixed
 
 
 
+
 ***
 
 ### joinFabrikListToProfile
@@ -630,6 +649,7 @@ public joinFabrikListToProfile(mixed $listid, mixed $prid): mixed
 |-----------|------|-------------|
 | `$listid` | **mixed** |  |
 | `$prid` | **mixed** |  |
+
 
 
 
@@ -664,6 +684,7 @@ public createSubmittionPage(mixed $label, mixed $intro, mixed $prid): mixed
 
 
 
+
 ***
 
 ### deleteMenu
@@ -686,6 +707,7 @@ public deleteMenu(mixed $menu): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$menu` | **mixed** |  |
+
 
 
 
@@ -714,6 +736,7 @@ public saveAsTemplate(mixed $menu, mixed $template): mixed
 |-----------|------|-------------|
 | `$menu` | **mixed** |  |
 | `$template` | **mixed** |  |
+
 
 
 
@@ -749,6 +772,7 @@ public createGroup(mixed $label, mixed $fid, mixed $repeat_group_show_first = 1,
 
 
 
+
 ***
 
 ### deleteGroup
@@ -771,6 +795,7 @@ public deleteGroup(mixed $group): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$group` | **mixed** |  |
+
 
 
 
@@ -800,6 +825,7 @@ public createSectionSimpleElements(mixed $gid, mixed $plugins, mixed $mode = &#0
 | `$gid` | **mixed** |  |
 | `$plugins` | **mixed** |  |
 | `$mode` | **mixed** |  |
+
 
 
 
@@ -842,6 +868,7 @@ public createElement(mixed $name, mixed $group_id, mixed $plugin, mixed $label, 
 
 
 
+
 ***
 
 ### createSimpleElement
@@ -875,6 +902,7 @@ public createSimpleElement(mixed $gid, mixed $plugin, mixed $attachementId = nul
 
 
 
+
 ***
 
 ### updateGroupElementsOrder
@@ -898,6 +926,7 @@ public updateGroupElementsOrder(mixed $elements, mixed $group_id): mixed
 |-----------|------|-------------|
 | `$elements` | **mixed** |  |
 | `$group_id` | **mixed** |  |
+
 
 
 
@@ -933,6 +962,7 @@ public updateOrder(mixed $elements, mixed $group_id, mixed $user, mixed $moved_e
 
 
 
+
 ***
 
 ### updateElementOrder
@@ -957,6 +987,7 @@ public updateElementOrder(mixed $group_id, mixed $element_id, mixed $new_index):
 | `$group_id` | **mixed** |  |
 | `$element_id` | **mixed** |  |
 | `$new_index` | **mixed** |  |
+
 
 
 
@@ -990,6 +1021,7 @@ public ChangeRequire(mixed $element, mixed $user): mixed
 
 
 
+
 ***
 
 ### UpdateParams
@@ -1013,6 +1045,7 @@ public UpdateParams(mixed $element, mixed $user): mixed
 |-----------|------|-------------|
 | `$element` | **mixed** |  |
 | `$user` | **mixed** |  |
+
 
 
 
@@ -1042,6 +1075,7 @@ public updateGroupParams(mixed $group_id, mixed $params, mixed $lang = null): mi
 | `$group_id` | **mixed** |  |
 | `$params` | **mixed** |  |
 | `$lang` | **mixed** |  |
+
 
 
 
@@ -1077,6 +1111,7 @@ public duplicateElement(mixed $eid, mixed $group, mixed $old_group, mixed $form_
 
 
 
+
 ***
 
 ### getElement
@@ -1100,6 +1135,7 @@ public getElement(mixed $element, mixed $gid): mixed
 |-----------|------|-------------|
 | `$element` | **mixed** |  |
 | `$gid` | **mixed** |  |
+
 
 
 
@@ -1132,6 +1168,7 @@ public getSimpleElement(mixed $eid): mixed
 
 
 
+
 ***
 
 ### deleteElement
@@ -1154,6 +1191,7 @@ public deleteElement(mixed $elt): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$elt` | **mixed** |  |
+
 
 
 
@@ -1187,6 +1225,7 @@ public reorderMenu(mixed $menus, mixed $profile): mixed
 
 
 
+
 ***
 
 ### getGroupOrdering
@@ -1210,6 +1249,7 @@ public getGroupOrdering(mixed $gid, mixed $fid): mixed
 |-----------|------|-------------|
 | `$gid` | **mixed** |  |
 | `$fid` | **mixed** |  |
+
 
 
 
@@ -1244,6 +1284,7 @@ public reorderGroup(mixed $gid, mixed $fid, mixed $order): mixed
 
 
 
+
 ***
 
 ### getPagesModel
@@ -1267,6 +1308,7 @@ public getPagesModel(mixed $form_ids = [], mixed $model_ids = []): array|mixed|v
 |-----------|------|-------------|
 | `$form_ids` | **mixed** |  |
 | `$model_ids` | **mixed** |  |
+
 
 
 
@@ -1303,6 +1345,7 @@ public createMenuFromTemplate(mixed $label, mixed $intro, mixed $formid, mixed $
 
 
 
+
 ***
 
 ### checkIfModelTableIsUsedInForm
@@ -1326,6 +1369,7 @@ public checkIfModelTableIsUsedInForm(mixed $model_id, mixed $profile_id): mixed
 |-----------|------|-------------|
 | `$model_id` | **mixed** |  |
 | `$profile_id` | **mixed** |  |
+
 
 
 
@@ -1361,6 +1405,7 @@ public createDatabaseTableFromTemplate(string $template_table_name, int $profile
 
 
 
+
 ***
 
 ### checkConstraintGroup
@@ -1383,6 +1428,7 @@ public checkConstraintGroup(mixed $cid): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$cid` | **mixed** |  |
+
 
 
 
@@ -1416,6 +1462,7 @@ public checkVisibility(mixed $group, mixed $cid): mixed
 
 
 
+
 ***
 
 ### publishUnpublishElement
@@ -1438,6 +1485,7 @@ public publishUnpublishElement(mixed $element): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$element` | **mixed** |  |
+
 
 
 
@@ -1470,6 +1518,7 @@ public hiddenUnhiddenElement(mixed $element): mixed
 
 
 
+
 ***
 
 ### getDatabasesJoin
@@ -1479,6 +1528,7 @@ public hiddenUnhiddenElement(mixed $element): mixed
 ```php
 public getDatabasesJoin(): mixed
 ```
+
 
 
 
@@ -1518,6 +1568,7 @@ public getDatabaseJoinOrderColumns(mixed $database_name): mixed
 
 
 
+
 ***
 
 ### getAllDatabases
@@ -1527,6 +1578,7 @@ public getDatabaseJoinOrderColumns(mixed $database_name): mixed
 ```php
 public getAllDatabases(): mixed
 ```
+
 
 
 
@@ -1566,6 +1618,7 @@ public enableRepeatGroup(mixed $gid): mixed
 
 
 
+
 ***
 
 ### getFabrikGroup
@@ -1588,6 +1641,7 @@ private getFabrikGroup(mixed $gid): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$gid` | **mixed** |  |
+
 
 
 
@@ -1620,6 +1674,7 @@ public disableRepeatGroup(mixed $gid): mixed
 
 
 
+
 ***
 
 ### displayHideGroup
@@ -1642,6 +1697,7 @@ public displayHideGroup(mixed $gid): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$gid` | **mixed** |  |
+
 
 
 
@@ -1675,6 +1731,7 @@ public updateMenuLabel(mixed $label, mixed $pid): mixed
 
 
 
+
 ***
 
 ### getFormTesting
@@ -1698,6 +1755,7 @@ public getFormTesting(mixed $prid, mixed $uid): mixed
 |-----------|------|-------------|
 | `$prid` | **mixed** |  |
 | `$uid` | **mixed** |  |
+
 
 
 
@@ -1731,6 +1789,7 @@ public createTestingFile(mixed $cid, mixed $uid): mixed
 
 
 
+
 ***
 
 ### deleteFormTesting
@@ -1754,6 +1813,7 @@ public deleteFormTesting(mixed $fnum, mixed $uid): mixed
 |-----------|------|-------------|
 | `$fnum` | **mixed** |  |
 | `$uid` | **mixed** |  |
+
 
 
 
@@ -1787,6 +1847,7 @@ public retriveElementFormAssociatedDoc(mixed $gid, mixed $docid): mixed
 
 
 
+
 ***
 
 ### updateDefaultValue
@@ -1815,6 +1876,7 @@ public updateDefaultValue(mixed $eid, mixed $value): mixed
 
 
 
+
 ***
 
 ### getSection
@@ -1837,6 +1899,7 @@ public getSection(mixed $section): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$section` | **mixed** |  |
+
 
 
 
@@ -1873,6 +1936,7 @@ public updateElementOption(mixed $element, mixed $oldOptions, mixed $index, mixe
 
 
 
+
 ***
 
 ### getGroupId
@@ -1900,6 +1964,7 @@ private getGroupId(mixed $element): mixed
 
 
 
+
 ***
 
 ### getFabrikElementParams
@@ -1922,6 +1987,7 @@ private getFabrikElementParams(mixed $element): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$element` | **mixed** |  |
+
 
 
 
@@ -1955,6 +2021,7 @@ private updateFabrikElementParams(mixed $element, mixed $params): mixed
 
 
 
+
 ***
 
 ### getElementSubOption
@@ -1977,6 +2044,7 @@ public getElementSubOption(mixed $element): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$element` | **mixed** |  |
+
 
 
 
@@ -2011,6 +2079,7 @@ public addElementSubOption(mixed $element, mixed $newOption, mixed $lang): mixed
 
 
 
+
 ***
 
 ### deleteElementSubOption
@@ -2034,6 +2103,7 @@ public deleteElementSubOption(mixed $element, mixed $index): bool
 |-----------|------|-------------|
 | `$element` | **mixed** |  |
 | `$index` | **mixed** |  |
+
 
 
 
@@ -2068,6 +2138,7 @@ public updateElementSubOptionsOrder(mixed $element, mixed $old_order, mixed $new
 
 
 
+
 ***
 
 ### getFormId
@@ -2090,6 +2161,7 @@ private getFormId(mixed $group_id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$group_id` | **mixed** |  |
+
 
 
 
@@ -2123,6 +2195,7 @@ public addFormModel(mixed $form_id_to_copy, mixed $label): mixed
 
 
 
+
 ***
 
 ### deleteFormModel
@@ -2150,6 +2223,7 @@ public deleteFormModel(mixed $form_id): mixed
 
 
 
+
 ***
 
 ### deleteFormModelFromIds
@@ -2172,6 +2246,7 @@ public deleteFormModelFromIds(mixed $model_ids): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$model_ids` | **mixed** |  |
+
 
 
 
@@ -2205,6 +2280,7 @@ public copyForm(mixed $form_id_to_copy, mixed $label_prefix = &#039;&#039;): int
 
 
 
+
 ***
 
 ### copyList
@@ -2233,6 +2309,7 @@ public copyList(mixed $list_model, mixed $form_id): mixed
 
 
 
+
 ***
 
 ### getList
@@ -2256,6 +2333,7 @@ public getList(mixed $form_id, mixed $columns = &#039;*&#039;): mixed
 |-----------|------|-------------|
 | `$form_id` | **mixed** |  |
 | `$columns` | **mixed** |  |
+
 
 
 
@@ -2293,6 +2371,7 @@ public copyGroups(mixed $form_id_to_copy, mixed $new_form_id, mixed $new_list_id
 
 
 
+
 ***
 
 ### getDocumentSample
@@ -2316,6 +2395,7 @@ public getDocumentSample(mixed $attachment_id, mixed $profile_id): mixed
 |-----------|------|-------------|
 | `$attachment_id` | **mixed** |  |
 | `$profile_id` | **mixed** |  |
+
 
 
 
@@ -2351,8 +2431,9 @@ public getSqlDropdownOptions(mixed $table, mixed $key, mixed $value, mixed $tran
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

@@ -1012,6 +1012,57 @@ video {
         color: #000 !important;
         background: inherit;
     }
+.fabrikElement .field-calendar .input-group button.btn.btn-primary {
+                    background: transparent;
+                    color: black;
+                    border-top-left-radius: 0 !important;
+                    border-bottom-left-radius: 0 !important;
+                    border-color: var(--em-form-bc);
+                }
+.fabrikElement .field-calendar .js-calendar {
+                margin-top: 6px !important;
+                margin-bottom: 6px !important;
+            }
+.fabrikElement .field-calendar .js-calendar .calendar-container table {
+                        border: unset;
+                        margin-top: 8px;
+                    }
+.fabrikElement .field-calendar .js-calendar .calendar-container table thead.calendar-header td.nav a {
+                                    color: var(--em-primary-color);
+                                }
+.fabrikElement .field-calendar .js-calendar .calendar-container table thead.calendar-header td.\!nav a {
+                                    color: var(--em-primary-color) !important;
+                                }
+.fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.day:hover {
+                                border-radius: 99px;
+                            }
+.fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.day.selected {
+                                border-radius: 99px;
+                            }
+.fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.day.\!selected {
+                                border-radius: 99px !important;
+                            }
+.fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.today:after {
+                                content: unset;
+                            }
+.fabrikElement .field-calendar .js-calendar .calendar-container table tbody tr.time td.time.time-title {
+                                    margin-top: 12px;
+                                    height: 40px;
+                                    padding: 0;
+                                }
+.fabrikElement .field-calendar .js-calendar .calendar-container table tbody tr.time td.time.hours-select, .fabrikElement .field-calendar .js-calendar .calendar-container table tbody tr.time td.time.minutes-select {
+                                    border-top: solid 1px black;
+                                    height: 40px;
+                                    padding-top: 12px;
+                                }
+.fabrikElement .field-calendar .js-calendar .calendar-container .buttons-wrapper {
+                        gap: 8px;
+                    }
+.fabrikElement .field-calendar .js-calendar .calendar-container .buttons-wrapper button {
+                            background: transparent;
+                            border: solid 1px black;
+                            box-shadow: unset;
+                        }
 /** REGISTRATION FORM **/
 @media all and (min-width: 768px) {
 
@@ -1374,7 +1425,7 @@ form.fabrikForm .fabrikGroup table .fabrikSubGroup td {
             margin-top: 0 !important;
         }
 form.fabrikForm .fabrikGroup table th:last-of-type,
-        form.fabrikForm .fabrikGroup table td:last-of-type {
+        form.fabrikForm .fabrikGroup table td:last-of-type:not(.nav) {
             width: 64px;
         }
 form.fabrikForm .fabrikGroup table .fabrikSubGroup .fabrikGroupRepeater .pull-right {
@@ -1427,10 +1478,10 @@ form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calen
 form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton:active, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton:active {
                             box-shadow: unset;
                         }
-form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton:hover .material-icons-outlined, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton:hover .material-icons, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton:hover .material-icons-outlined, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton:hover .material-icons {
+form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton:hover .material-icons-outlined, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton:hover .material-icons, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton:hover .material-symbols-outlined, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton:hover .material-icons-outlined, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton:hover .material-icons, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton:hover .material-symbols-outlined {
                                 color: var(--em-form-bc-hover) !important;
                             }
-form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton .material-icons-outlined, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton .material-icons, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton .material-icons-outlined, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton .material-icons {
+form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton .material-icons-outlined, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton .material-icons, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton .material-symbols-outlined, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton .material-icons-outlined, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton .material-icons, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton .material-symbols-outlined {
                             font-size: 16px;
                             color: var(--neutral-600);
                         }
@@ -4374,6 +4425,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .\!tw-border-red-500 {
     border-color: var(--red-500) !important;
 }
+.\!tw-border-red-600 {
+    border-color: var(--red-600) !important;
+}
 .tw-border-gray-200 {
     --tw-border-opacity: 1;
     border-color: rgb(229 231 235 / var(--tw-border-opacity));
@@ -5341,8 +5395,8 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-text-profile-full {
     color: var(--em-profile-color);
 }
-.tw-text-red-500 {
-    color: var(--red-500);
+.tw-text-red-600 {
+    color: var(--red-600);
 }
 .tw-text-red-700 {
     color: var(--red-700);
@@ -5600,7 +5654,7 @@ legend {
         border: 1px solid var(--red-500) !important;
         color: var(--neutral-0) !important;
     }
-.modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs .material-icons {
+.modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs .material-symbols-outlined{
         color: var(--neutral-0);
     }
 .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs:active,
@@ -5611,9 +5665,9 @@ legend {
         border: 1px solid var(--red-500) !important;
         color: var(--red-500) !important;
     }
-.modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs:active .material-icons,
-    .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs:focus .material-icons,
-    .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs:hover .material-icons {
+.modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs:active .material-symbols-outlined,
+    .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs:focus .material-symbols-outlined,
+    .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs:hover .material-symbols-outlined{
         color: var(--red-500);
     }
 /* SWEET ALERT */
@@ -6180,6 +6234,15 @@ button.swal2-cancel.goback-btn:hover,
     local('MaterialIconsOutlined-Regular'),
     url(/media/com_emundus/css/fonts/google/MaterialIconsOutlined-Regular.otf) format('truetype');
 }
+@font-face {
+    font-family: 'Material Symbols Outlined';
+    font-style: normal;
+    font-weight: 400;
+    src: url(/media/com_emundus/css/fonts/google/MaterialSymbolsOutlined[FILL,GRAD,opsz,wght].ttf); /* For IE6-8 */
+    src: local('Material Symbols Outlined'),
+    local('MaterialSymbolsOutlined[FILL,GRAD,opsz,wght]'),
+    url(/media/com_emundus/css/fonts/google/MaterialSymbolsOutlined[FILL,GRAD,opsz,wght].ttf) format('truetype');
+}
 .material-icons {
     font-family: 'Material Icons';
     font-size: 18px;
@@ -6207,6 +6270,30 @@ button.swal2-cancel.goback-btn:hover,
 .material-icons-outlined {
     font-family: 'Material Icons Outlined';
     font-size: 18px;
+    font-weight: normal;
+    font-style: normal;
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+
+    /* Support for all WebKit browsers. */
+    -webkit-font-smoothing: antialiased;
+    /* Support for Safari and Chrome. */
+    text-rendering: optimizeLegibility;
+
+    /* Support for Firefox. */
+    -moz-osx-font-smoothing: grayscale;
+
+    /* Support for IE. */
+    font-feature-settings: 'liga';
+}
+.material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-size: 20px;
     font-weight: normal;
     font-style: normal;
     display: inline-block;

@@ -33,6 +33,7 @@ public static clear(): mixed
 
 
 
+
 ***
 
 ### clearfilter
@@ -46,6 +47,7 @@ public static clearfilter(): mixed
 
 
 * This method is **static**.
+
 
 
 
@@ -75,6 +77,7 @@ public setMenuFilter(): mixed
 
 
 
+
 ***
 
 ### resetFilter
@@ -88,6 +91,7 @@ public static resetFilter(): mixed
 
 
 * This method is **static**.
+
 
 
 
@@ -124,6 +128,7 @@ public static insertValuesInQueryResult(mixed $results, mixed $options): mixed
 
 
 
+
 ***
 
 ### getCurrentCampaign
@@ -137,6 +142,7 @@ public static getCurrentCampaign(): mixed
 
 
 * This method is **static**.
+
 
 
 
@@ -166,6 +172,7 @@ public static getCurrentCampaignsID(): mixed
 
 
 
+
 ***
 
 ### getCampaigns
@@ -175,6 +182,7 @@ public static getCurrentCampaignsID(): mixed
 ```php
 public getCampaigns(): mixed
 ```
+
 
 
 
@@ -214,6 +222,7 @@ public getProgramCampaigns(mixed $code): mixed
 
 
 
+
 ***
 
 ### getProgrammes
@@ -241,6 +250,7 @@ public getProgrammes(mixed $code = array()): mixed
 
 
 
+
 ***
 
 ### getStatus
@@ -262,6 +272,7 @@ public static getStatus(): mixed
 
 
 
+
 ***
 
 ### getCampaign
@@ -275,6 +286,7 @@ public static getCampaign(): mixed
 
 
 * This method is **static**.
+
 
 
 
@@ -310,6 +322,7 @@ public static getCampaignByID(mixed $id): mixed
 
 
 
+
 ***
 
 ### getApplicants
@@ -331,6 +344,7 @@ public static getApplicants(): mixed
 
 
 
+
 ***
 
 ### getProfiles
@@ -340,6 +354,7 @@ public static getApplicants(): mixed
 ```php
 public getProfiles(): mixed
 ```
+
 
 
 
@@ -373,6 +388,7 @@ public getEvaluators(): mixed
 
 
 
+
 ***
 
 ### getGroupsEval
@@ -382,6 +398,7 @@ public getEvaluators(): mixed
 ```php
 public getGroupsEval(): mixed
 ```
+
 
 
 
@@ -415,6 +432,7 @@ public getGroups(): mixed
 
 
 
+
 ***
 
 ### getSchoolyears
@@ -424,6 +442,7 @@ public getGroups(): mixed
 ```php
 public getSchoolyears(): mixed
 ```
+
 
 
 
@@ -457,6 +476,7 @@ public getFinal_grade(): mixed
 
 
 
+
 ***
 
 ### getMissing_doc
@@ -466,6 +486,7 @@ public getFinal_grade(): mixed
 ```php
 public getMissing_doc(): mixed
 ```
+
 
 
 
@@ -505,6 +526,7 @@ public getAttachmentsTypesByProfileID(mixed $pid): mixed
 
 
 
+
 ***
 
 ### getEvaluation_doc
@@ -527,6 +549,7 @@ public getEvaluation_doc(mixed $status): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$status` | **mixed** |  |
+
 
 
 
@@ -559,6 +582,7 @@ public setEvaluationList(mixed $status): mixed
 
 
 
+
 ***
 
 ### getElements
@@ -584,6 +608,7 @@ public static getElements(array $code = array(), array $camps = array(), array $
 | `$camps` | **array** |  |
 | `$fabrik_elements` | **array** |  |
 | `$profile` | **int** | --&gt; to get all form elems of a profile |
+
 
 
 
@@ -620,6 +645,7 @@ Fabrik element
 
 
 
+
 ***
 
 ### getPhotos
@@ -642,6 +668,7 @@ public getPhotos(mixed $fnum = null): array|false|string|void
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$fnum` | **mixed** |  |
+
 
 
 
@@ -680,6 +707,7 @@ list of Fabrik element ID used in evaluation form
 
 
 
+
 ***
 
 ### getElementsOther
@@ -702,6 +730,7 @@ public getElementsOther(mixed $tables): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$tables` | **mixed** |  |
+
 
 
 
@@ -734,6 +763,7 @@ public getElementsValuesOther(mixed $element_id): mixed
 
 
 
+
 ***
 
 ### getElementsName
@@ -756,6 +786,7 @@ public static getElementsName(mixed $elements_id): array|false
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$elements_id` | **mixed** | string of elements id separated by comma |
+
 
 
 
@@ -789,6 +820,7 @@ public getFabrikElementValue(mixed $fnum, mixed $element_id): mixed
 
 
 
+
 ***
 
 ### getFabrikElementValues
@@ -817,6 +849,7 @@ public getFabrikElementValues(mixed $fnum, mixed $element_ids): mixed
 
 
 
+
 ***
 
 ### getElementsDetailsByID
@@ -839,6 +872,7 @@ public getElementsDetailsByID(mixed $elements): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$elements` | **mixed** |  |
+
 
 
 
@@ -872,6 +906,7 @@ public buildOptions(mixed $element_name, mixed $params): mixed
 
 
 
+
 ***
 
 ### setWhere
@@ -896,6 +931,7 @@ public static setWhere(mixed $search, mixed $search_values, mixed& $query): mixe
 | `$search` | **mixed** |  |
 | `$search_values` | **mixed** |  |
 | `$query` | **mixed** |  |
+
 
 
 
@@ -931,6 +967,7 @@ public setSearchBox(mixed $selected, mixed $search_value, mixed $elements_values
 
 
 
+
 ***
 
 ### createFilterBlock
@@ -955,6 +992,7 @@ public createFilterBlock(mixed $params, mixed $types, mixed $tables): mixed
 | `$params` | **mixed** |  |
 | `$types` | **mixed** |  |
 | `$tables` | **mixed** |  |
+
 
 
 
@@ -987,6 +1025,7 @@ public static getEmundusFilters(mixed $id = null): mixed
 
 
 
+
 ***
 
 ### createTagsList
@@ -1009,6 +1048,7 @@ public static createTagsList(mixed $tags): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$tags` | **mixed** |  |
+
 
 
 
@@ -1041,6 +1081,7 @@ public createFormProgressList(mixed $formsprogress): mixed
 
 
 
+
 ***
 
 ### createAttachmentProgressList
@@ -1068,6 +1109,7 @@ public createAttachmentProgressList(mixed $attachmentsprogress): mixed
 
 
 
+
 ***
 
 ### createUnreadMessageList
@@ -1090,6 +1132,7 @@ public createUnreadMessageList(mixed $unread_messages): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$unread_messages` | **mixed** |  |
+
 
 
 
@@ -1123,6 +1166,7 @@ This function replaces the tags found in an HTML block with information from the
 
 
 
+
 ***
 
 ### createEvaluatorList
@@ -1146,6 +1190,7 @@ public static createEvaluatorList(mixed $join, mixed $model): mixed
 |-----------|------|-------------|
 | `$join` | **mixed** |  |
 | `$model` | **mixed** |  |
+
 
 
 
@@ -1179,6 +1224,7 @@ public static getMenuList(mixed $params, mixed $fnum = null): mixed
 
 
 
+
 ***
 
 ### getUserGroups
@@ -1201,6 +1247,7 @@ public getUserGroups(mixed $uid): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$uid` | **mixed** |  |
+
 
 
 
@@ -1234,6 +1281,7 @@ public static getEvaluation(mixed $format = &#039;html&#039;, mixed $fnums = [])
 
 
 
+
 ***
 
 ### getDecision
@@ -1257,6 +1305,7 @@ public static getDecision(mixed $format = &#039;html&#039;, mixed $fnums = []): 
 |-----------|------|-------------|
 | `$format` | **mixed** |  |
 | `$fnums` | **mixed** |  |
+
 
 
 
@@ -1291,6 +1340,7 @@ public getAdmission(mixed $format = &#039;html&#039;, mixed $fnums = [], mixed $
 
 
 
+
 ***
 
 ### getInterview
@@ -1314,6 +1364,7 @@ public getInterview(mixed $format = &#039;html&#039;, mixed $fnums = []): mixed
 |-----------|------|-------------|
 | `$format` | **mixed** |  |
 | `$fnums` | **mixed** |  |
+
 
 
 
@@ -1352,6 +1403,7 @@ FNUM for application.
 
 
 
+
 ***
 
 ### tableExists
@@ -1379,6 +1431,7 @@ public tableExists(mixed $table_name): bool
 **Return Value:**
 
 True if table found, else false.
+
 
 
 
@@ -1414,6 +1467,7 @@ public saveExcelFilter(mixed $user_id, mixed $name, mixed $constraints, mixed $t
 
 
 
+
 ***
 
 ### savePdfFilter
@@ -1441,6 +1495,7 @@ public savePdfFilter(mixed $params): mixed
 
 
 
+
 ***
 
 ### deletePdfFilter
@@ -1463,6 +1518,7 @@ public deletePdfFilter(mixed $fid): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$fid` | **mixed** |  |
+
 
 
 
@@ -1496,6 +1552,7 @@ public getExportExcelFilter(mixed $user_id): array|false|mixed
 
 
 
+
 ***
 
 ### getAllExportPdfFilter
@@ -1518,6 +1575,7 @@ public getAllExportPdfFilter(mixed $user_id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$user_id` | **mixed** |  |
+
 
 
 
@@ -1550,6 +1608,7 @@ public getExportPdfFilterById(mixed $model_id): mixed
 
 
 
+
 ***
 
 ### getFabrikDataByListElements
@@ -1572,6 +1631,7 @@ public getFabrikDataByListElements(mixed $elements): array|false|void
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$elements` | **mixed** |  |
+
 
 
 
@@ -1604,6 +1664,7 @@ public getExportExcelFilterById(mixed $fid): mixed
 
 
 
+
 ***
 
 ### getAllLetters
@@ -1613,6 +1674,7 @@ public getExportExcelFilterById(mixed $fid): mixed
 ```php
 public getAllLetters(): mixed
 ```
+
 
 
 
@@ -1652,6 +1714,7 @@ public getExcelLetterById(mixed $lid): mixed
 
 
 
+
 ***
 
 ### checkadmission
@@ -1661,6 +1724,7 @@ public getExcelLetterById(mixed $lid): mixed
 ```php
 public checkadmission(): mixed
 ```
+
 
 
 
@@ -1700,6 +1764,7 @@ public getSelectedElements(mixed $selectedElts): mixed
 
 
 
+
 ***
 
 ### _buildWhere
@@ -1724,6 +1789,7 @@ public _buildWhere(array $tableAlias = array(), mixed $caller = &#039;files&#039
 | `$tableAlias` | **array** |  |
 | `$caller` | **mixed** |  |
 | `$caller_params` | **mixed** |  |
+
 
 
 
@@ -1765,6 +1831,7 @@ containing 'q' the where clause and 'join' the join clause
 
 
 
+
 ***
 
 ### getFabrikElementData
@@ -1787,6 +1854,7 @@ public getFabrikElementData(int $element_id): array
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$element_id` | **int** |  |
+
 
 
 
@@ -1821,6 +1889,7 @@ public getJoinInformations(mixed $element_id, mixed $group_id, mixed $list_id): 
 
 
 
+
 ***
 
 ### findJoinsBetweenTablesRecursively
@@ -1850,6 +1919,7 @@ public findJoinsBetweenTablesRecursively(string $searched_table, string $base_ta
 
 
 
+
 ***
 
 ### writeJoins
@@ -1874,6 +1944,7 @@ public writeJoins(mixed $found_joins, mixed& $already_joined_tables, mixed $crea
 | `$found_joins` | **mixed** | array the joins found by findJoinsBetweenTablesRecursively, ordered from the searched table to the base table |
 | `$already_joined_tables` | **mixed** | array referenced array |
 | `$create_alias` | **mixed** |  |
+
 
 
 
@@ -1911,6 +1982,7 @@ public writeQueryWithOperator(mixed $element, mixed $values, mixed $operator, mi
 
 
 
+
 ***
 
 ### notInQuery
@@ -1935,6 +2007,7 @@ private notInQuery(mixed $element, mixed $values, mixed $fabrik_element_data): m
 | `$element` | **mixed** |  |
 | `$values` | **mixed** |  |
 | `$fabrik_element_data` | **mixed** |  |
+
 
 
 
@@ -1969,6 +2042,7 @@ public setFiltersValuesAvailability(mixed $applied_filters, mixed $user_id = nul
 
 
 
+
 ***
 
 ### _buildSearch
@@ -1998,6 +2072,7 @@ private _buildSearch(mixed $str_array, array $tableAlias = array(), mixed $calle
 
 
 
+
 ***
 
 ### getEncryptedTables
@@ -2007,6 +2082,7 @@ private _buildSearch(mixed $str_array, array $tableAlias = array(), mixed $calle
 ```php
 public getEncryptedTables(): mixed
 ```
+
 
 
 
@@ -2049,6 +2125,7 @@ public getApplicantFnums(int $aid, mixed $submitted = null, mixed $start_date = 
 
 
 
+
 ***
 
 ### isTableLinkedToCampaignCandidature
@@ -2076,8 +2153,9 @@ public isTableLinkedToCampaignCandidature(mixed $table_name): mixed
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

@@ -64,10 +64,10 @@ private $m_form
 
 ### __construct
 
-
+Constructor.
 
 ```php
-public __construct(mixed $config = array()): mixed
+public __construct(array $config = array()): mixed
 ```
 
 
@@ -81,11 +81,16 @@ public __construct(mixed $config = array()): mixed
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$config` | **mixed** |  |
+| `$config` | **array** | An optional associative array of configuration settings. |
 
 
 
 
+
+
+**See Also:**
+
+* \JController - 
 
 ***
 
@@ -96,6 +101,7 @@ public __construct(mixed $config = array()): mixed
 ```php
 public getallform(): mixed
 ```
+
 
 
 
@@ -129,6 +135,7 @@ public getallgrilleEval(): mixed
 
 
 
+
 ***
 
 ### getallformpublished
@@ -138,6 +145,7 @@ public getallgrilleEval(): mixed
 ```php
 public getallformpublished(): mixed
 ```
+
 
 
 
@@ -171,6 +179,7 @@ public deleteform(): mixed
 
 
 
+
 ***
 
 ### unpublishform
@@ -180,6 +189,7 @@ public deleteform(): mixed
 ```php
 public unpublishform(): mixed
 ```
+
 
 
 
@@ -213,6 +223,7 @@ public publishform(): mixed
 
 
 
+
 ***
 
 ### duplicateform
@@ -222,6 +233,7 @@ public publishform(): mixed
 ```php
 public duplicateform(): mixed
 ```
+
 
 
 
@@ -255,6 +267,7 @@ public createform(): mixed
 
 
 
+
 ***
 
 ### createformeval
@@ -264,6 +277,7 @@ public createform(): mixed
 ```php
 public createformeval(): mixed
 ```
+
 
 
 
@@ -297,6 +311,7 @@ public updateform(): mixed
 
 
 
+
 ***
 
 ### updateformlabel
@@ -306,6 +321,7 @@ public updateform(): mixed
 ```php
 public updateformlabel(): mixed
 ```
+
 
 
 
@@ -339,6 +355,7 @@ public getformbyid(): mixed
 
 
 
+
 ***
 
 ### getFormByFabrikId
@@ -348,6 +365,7 @@ public getformbyid(): mixed
 ```php
 public getFormByFabrikId(): mixed
 ```
+
 
 
 
@@ -381,6 +399,7 @@ public getalldocuments(): mixed
 
 
 
+
 ***
 
 ### getundocuments
@@ -390,6 +409,7 @@ public getalldocuments(): mixed
 ```php
 public getundocuments(): mixed
 ```
+
 
 
 
@@ -423,6 +443,7 @@ public getAttachments(): mixed
 
 
 
+
 ***
 
 ### getdocumentsusage
@@ -432,6 +453,7 @@ public getAttachments(): mixed
 ```php
 public getdocumentsusage(): mixed
 ```
+
 
 
 
@@ -465,6 +487,7 @@ public updatemandatory(): mixed
 
 
 
+
 ***
 
 ### adddocument
@@ -474,6 +497,7 @@ public updatemandatory(): mixed
 ```php
 public adddocument(): mixed
 ```
+
 
 
 
@@ -507,6 +531,7 @@ public removedocument(): mixed
 
 
 
+
 ***
 
 ### deletedocument
@@ -516,6 +541,7 @@ public removedocument(): mixed
 ```php
 public deletedocument(): mixed
 ```
+
 
 
 
@@ -549,6 +575,7 @@ public getFormsByProfileId(): mixed
 
 
 
+
 ***
 
 ### getDocuments
@@ -558,6 +585,7 @@ public getFormsByProfileId(): mixed
 ```php
 public getDocuments(): mixed
 ```
+
 
 
 
@@ -591,6 +619,7 @@ public reorderDocuments(): mixed
 
 
 
+
 ***
 
 ### removeDocumentFromProfile
@@ -600,6 +629,7 @@ public reorderDocuments(): mixed
 ```php
 public removeDocumentFromProfile(): mixed
 ```
+
 
 
 
@@ -633,6 +663,7 @@ public getgroupsbyform(): mixed
 
 
 
+
 ***
 
 ### getProfileLabelByProfileId
@@ -642,6 +673,7 @@ public getgroupsbyform(): mixed
 ```php
 public getProfileLabelByProfileId(): mixed
 ```
+
 
 
 
@@ -675,6 +707,7 @@ public getfilesbyform(): mixed
 
 
 
+
 ***
 
 ### getassociatedcampaign
@@ -684,6 +717,7 @@ public getfilesbyform(): mixed
 ```php
 public getassociatedcampaign(): mixed
 ```
+
 
 
 
@@ -717,6 +751,7 @@ public getassociatedprogram(): mixed
 
 
 
+
 ***
 
 ### affectcampaignstoform
@@ -726,6 +761,7 @@ public getassociatedprogram(): mixed
 ```php
 public affectcampaignstoform(): mixed
 ```
+
 
 
 
@@ -759,6 +795,7 @@ public getsubmittionpage(): mixed
 
 
 
+
 ***
 
 ### getAccess
@@ -768,6 +805,7 @@ public getsubmittionpage(): mixed
 ```php
 public getAccess(): mixed
 ```
+
 
 
 
@@ -801,6 +839,7 @@ public getActualLanguage(): mixed
 
 
 
+
 ***
 
 ### deletemodeldocument
@@ -810,6 +849,7 @@ public getActualLanguage(): mixed
 ```php
 public deletemodeldocument(): mixed
 ```
+
 
 
 
@@ -843,6 +883,7 @@ public getdatabasejoinoptions(): mixed
 
 
 
+
 ***
 
 ### checkcandocbedeleted
@@ -852,6 +893,7 @@ public getdatabasejoinoptions(): mixed
 ```php
 public checkcandocbedeleted(): mixed
 ```
+
 
 
 
@@ -885,6 +927,7 @@ public getpagegroups(): mixed
 
 
 
+
 ***
 
 ### getjsconditions
@@ -894,6 +937,7 @@ public getpagegroups(): mixed
 ```php
 public getjsconditions(): mixed
 ```
+
 
 
 
@@ -927,6 +971,7 @@ public addRule(): mixed
 
 
 
+
 ***
 
 ### editRule
@@ -936,6 +981,7 @@ public addRule(): mixed
 ```php
 public editRule(): mixed
 ```
+
 
 
 
@@ -969,6 +1015,7 @@ public deleteRule(): mixed
 
 
 
+
 ***
 
 ### publishRule
@@ -990,8 +1037,9 @@ public publishRule(): mixed
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

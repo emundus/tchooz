@@ -81,6 +81,7 @@ public __construct(): mixed
 
 
 
+
 ***
 
 ### getColorClasses
@@ -90,6 +91,7 @@ Get all colors available for status and tags
 ```php
 public getColorClasses(): string[]
 ```
+
 
 
 
@@ -129,6 +131,7 @@ public clean(mixed $string): array|string|string[]|null
 
 
 
+
 ***
 
 ### getStatus
@@ -150,6 +153,7 @@ public getStatus(): array|false|mixed
 
 
 
+
 ***
 
 ### getTags
@@ -159,6 +163,7 @@ Get all emundus tags available
 ```php
 public getTags(): array|false|mixed
 ```
+
 
 
 
@@ -198,6 +203,7 @@ public deleteTag(mixed $id): false|mixed
 
 
 
+
 ***
 
 ### createTag
@@ -219,6 +225,7 @@ public createTag(): false|mixed|null
 
 
 
+
 ***
 
 ### createStatus
@@ -228,6 +235,7 @@ Create a new status
 ```php
 public createStatus(): false|mixed|null
 ```
+
 
 
 
@@ -269,6 +277,7 @@ public updateStatus(mixed $status, mixed $label, mixed $color): array|false
 
 
 
+
 ***
 
 ### updateStatusOrder
@@ -291,6 +300,7 @@ public updateStatusOrder(mixed $status): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$status` | **mixed** |  |
+
 
 
 
@@ -319,6 +329,7 @@ public deleteStatus(mixed $id, mixed $step): false|mixed
 |-----------|------|-------------|
 | `$id` | **mixed** |  |
 | `$step` | **mixed** |  |
+
 
 
 
@@ -353,6 +364,7 @@ public updateTags(mixed $tag, mixed $label, mixed $color): array|false
 
 
 
+
 ***
 
 ### getFooterArticles
@@ -362,6 +374,7 @@ Get footer articles from the module mod_emundus_footer
 ```php
 public getFooterArticles(): false|\stdClass
 ```
+
 
 
 
@@ -384,6 +397,7 @@ Get footer content from custom module in footer-a position
 ```php
 private getOldFooterArticles(): mixed
 ```
+
 
 
 
@@ -426,6 +440,7 @@ public getArticle(mixed $lang_code, mixed $article_id, mixed $article_alias = &#
 
 
 
+
 ***
 
 ### updateArticle
@@ -453,6 +468,7 @@ public updateArticle(mixed $content, mixed $lang_code, mixed $article_id, mixed 
 | `$article_alias` | **mixed** |  |
 | `$reference_field` | **mixed** |  |
 | `$note` | **mixed** |  |
+
 
 
 
@@ -486,6 +502,7 @@ public updateFooter(mixed $col1, mixed $col2): bool|mixed
 
 
 
+
 ***
 
 ### updateOldFooter
@@ -514,6 +531,7 @@ private updateOldFooter(mixed $col1, mixed $col2): bool
 
 
 
+
 ***
 
 ### getEditorVariables
@@ -523,6 +541,7 @@ Get emundus tags published for wysiwig editor (emails, settings, formbuilder)
 ```php
 public getEditorVariables(): array|false|mixed
 ```
+
 
 
 
@@ -564,6 +583,7 @@ public updateLogo(mixed $target_file, mixed $new_logo, mixed $ext): false|mixed
 
 
 
+
 ***
 
 ### onAfterCreateCampaign
@@ -591,6 +611,7 @@ public onAfterCreateCampaign(mixed $user_id = null): mixed
 
 
 
+
 ***
 
 ### onAfterCreateForm
@@ -613,6 +634,7 @@ public onAfterCreateForm(mixed $user_id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$user_id` | **mixed** |  |
+
 
 
 
@@ -646,6 +668,7 @@ public createParam(mixed $param, null $user_id): bool
 
 
 
+
 ***
 
 ### removeParam
@@ -669,6 +692,7 @@ public removeParam(mixed $param, mixed $user_id): mixed
 |-----------|------|-------------|
 | `$param` | **mixed** |  |
 | `$user_id` | **mixed** |  |
+
 
 
 
@@ -701,6 +725,7 @@ public getDatasFromTable(mixed $table): mixed
 
 
 
+
 ***
 
 ### saveDatas
@@ -723,6 +748,7 @@ public saveDatas(mixed $form): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$form` | **mixed** |  |
+
 
 
 
@@ -756,6 +782,7 @@ public saveImportedDatas(mixed $form, mixed $datas): mixed
 
 
 
+
 ***
 
 ### checkFirstDatabaseJoin
@@ -778,6 +805,7 @@ public checkFirstDatabaseJoin(mixed $user_id): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$user_id` | **mixed** |  |
+
 
 
 
@@ -814,6 +842,7 @@ public moveUploadedFileToDropbox(mixed $file, mixed $name, mixed $extension, mix
 
 
 
+
 ***
 
 ### getBannerModule
@@ -823,6 +852,7 @@ public moveUploadedFileToDropbox(mixed $file, mixed $name, mixed $extension, mix
 ```php
 public getBannerModule(): mixed
 ```
+
 
 
 
@@ -856,6 +886,7 @@ public updateBannerImage(): mixed
 
 
 
+
 ***
 
 ### getOnboardingLists
@@ -865,6 +896,7 @@ public updateBannerImage(): mixed
 ```php
 public getOnboardingLists(): mixed
 ```
+
 
 
 
@@ -898,6 +930,7 @@ public getHomeArticle(): mixed
 
 
 
+
 ***
 
 ### getRgpdArticles
@@ -907,6 +940,7 @@ public getHomeArticle(): mixed
 ```php
 public getRgpdArticles(): mixed
 ```
+
 
 
 
@@ -948,6 +982,7 @@ public publishArticle(mixed $publish, mixed $article_id, mixed $article_alias = 
 
 
 
+
 ***
 
 ### getArticlePublishedState
@@ -971,6 +1006,7 @@ public getArticlePublishedState(mixed $article_id, mixed $article_alias = &#039;
 |-----------|------|-------------|
 | `$article_id` | **mixed** |  |
 | `$article_alias` | **mixed** |  |
+
 
 
 
@@ -1004,6 +1040,7 @@ public getMenuId(mixed $link = &#039;&#039;, mixed $alias = &#039;&#039;): mixed
 
 
 
+
 ***
 
 ### getEmundusParams
@@ -1014,6 +1051,7 @@ This function is used to avoid exposing all parameters to the front-end
 ```php
 public getEmundusParams(): array
 ```
+
 
 
 
@@ -1056,6 +1094,7 @@ public updateEmundusParam(mixed $component, mixed $param, mixed $value, mixed $c
 
 
 
+
 ***
 
 ### setArticleNeedToBeModify
@@ -1065,6 +1104,7 @@ public updateEmundusParam(mixed $component, mixed $param, mixed $value, mixed $c
 ```php
 public setArticleNeedToBeModify(): mixed
 ```
+
 
 
 
@@ -1098,6 +1138,7 @@ public getArticleNeedToBeModify(): mixed
 
 
 
+
 ***
 
 ### getFavicon
@@ -1107,6 +1148,7 @@ public getArticleNeedToBeModify(): mixed
 ```php
 public getFavicon(): mixed
 ```
+
 
 
 
@@ -1146,6 +1188,7 @@ public getEmailTemplate(mixed $subject): mixed
 
 
 
+
 ***
 
 ### sendTestMailSettings
@@ -1168,6 +1211,7 @@ public sendTestMailSettings(mixed $params): mixed
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `$params` | **mixed** |  |
+
 
 
 
@@ -1200,8 +1244,9 @@ public convertTextException(mixed $textException): mixed
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

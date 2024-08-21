@@ -416,7 +416,7 @@ class EmundusModelLogs extends JModelList
 							$action_details .= '<span style="margin-bottom: 0.5rem"><b>' . $value->element . '</b></span>';
 						}
 						if (!empty($value->details)) {
-							$action_details .= '<div class="tw-flew tw-items-center"><span class="em-red-500-color">' . $value->details . '</span></div>';
+							$action_details .= '<div class="tw-flew tw-items-center"><span class="em-red-600-color">' . $value->details . '</span></div>';
 						}
 					}
 					else {
@@ -449,7 +449,7 @@ class EmundusModelLogs extends JModelList
 								$action_details .= '<span class="em-blue-500-color">' . Text::_('COM_EMUNDUS_EMPTY_OR_NULL_MODIF') . '</span>&nbsp';
 							}
 							else {
-								$action_details .= '<span class="em-red-500-color" style="text-decoration: line-through">' . $_old . '</span>&nbsp';
+								$action_details .= '<span class="em-red-600-color" style="text-decoration: line-through">' . $_old . '</span>&nbsp';
 							}
 						}
 
@@ -477,7 +477,7 @@ class EmundusModelLogs extends JModelList
 							$action_details .= '<span style="margin-bottom: 0.5rem"><b>' . $value->element . '</b></span>';
 						}
 						if (!empty($value->details)) {
-							$action_details .= '<div class="em-flex-row"><span class="em-red-500-color">' . $value->details . '</span></div>';
+							$action_details .= '<div class="em-flex-row"><span class="em-red-600-color">' . $value->details . '</span></div>';
 						}
 					}
 					else {

@@ -21,7 +21,7 @@
         >
           <span id="format-name" class="tw-full tw-p-4"
                 :title="format.name[shortDefaultLang]">{{ format.name[shortDefaultLang] }}</span>
-          <span class="material-icons-outlined"> drag_indicator </span>
+          <span class="material-symbols-outlined"> drag_indicator </span>
         </div>
       </transition-group>
     </draggable>

@@ -84,7 +84,7 @@ if(!empty($cart->usable_methods->payment)) {
 ?>
 	<label for="<?php echo $input_id; ?>" class="em-flex-row" style="cursor:pointer;margin-bottom: 0">
         <?php if ($payment->payment_type === 'banktransfer') : ?>
-            <span class="material-icons-outlined em-mr-12">account_balance</span>
+            <span class="material-symbols-outlined em-mr-12">account_balance</span>
         <?php else : ?>
             <span class="material-icons-outlined em-mr-12">credit_card</span>
         <?php endif; ?>

@@ -10,14 +10,14 @@
         ref="modal"
     >
       <div v-if="this.globalStore.currentLanguage !== this.globalStore.defaultLang" class="tw-justify-center tw-bg-[#FEF6EE] tw-flex tw-items-center tw-gap-3 tw-p-2">
-        <span class="material-icons-outlined text-[#EF681F]">warning_amber</span>
+        <span class="material-symbols-outlined text-[#EF681F]">warning_amber</span>
         <span>{{ translate('COM_EMUNDUS_ONBOARD_FORMBUILDER_EDIT_DEFAULT_LANG') }}{{ defaultLangLabel }}</span>
       </div>
       <header class="tw-grid tw-grid-cols-3 tw-items-center">
         <div class="right-actions tw-flex tw-items-center tw-justify-start tw-gap-2">
           <p class="tw-flex tw-items-center tw-cursor-pointer" @click="clickGoBack">
             <span id="go-back"
-                  class="material-icons-outlined tw-text-neutral-600 tw-py-3 tw-pl-5 tw-pr-1 em-pointer">
+                  class="material-symbols-outlined tw-text-neutral-600 tw-py-3 tw-pl-5 tw-pr-1 em-pointer">
               navigate_before
             </span>
             {{ translate('COM_EMUNDUS_ACTIONS_BACK') }}
@@ -38,13 +38,13 @@
           </span>
         <div class="tw-flex tw-flex-col tw-items-end">
         <button class="tw-btn-primary tw-px-6 tw-py-3 tw-gap-3 em-w-auto" v-if="!previewForm && ['page','rules'].includes(showInSection)" @click="previewForm = true">
-          <span class="tw-text-white material-icons-outlined">
+          <span class="tw-text-white material-symbols-outlined">
             remove_red_eye
           </span>
           <label class="tw-mb-0" for="previewform">{{ translate('COM_EMUNDUS_FORMBUILDER_GO_TO_PREVIEW') }}</label>
         </button>
           <button class="tw-btn-primary tw-px-6 tw-py-3 tw-gap-3 em-w-auto" v-if="previewForm" @click="previewForm = false">
-          <span class="tw-text-white material-icons-outlined">
+          <span class="tw-text-white material-symbols-outlined">
             handyman
           </span>
             <label class="tw-mb-0" for="previewform">{{ translate('COM_EMUNDUS_FORMBUILDER_GO_BACK_FORMBUILDER') }}</label>
@@ -60,7 +60,7 @@
                  :class="tab.active ? 'tw-font-bold tw-text-profile-full tw-bg-profile-light'  : 'hover:tw-bg-gray-200'"
                  :title="tab.title">
               <span
-                  class="material-icons-outlined tw-font-bold"
+                  class="material-symbols-outlined tw-font-bold"
                   :class="tab.active ? 'tw-text-profile-full' : ''"
                   @click="setSectionShown(tab.code)"
               >
@@ -93,7 +93,7 @@
           <div v-if="activeTab==='' || activeTab==='Elements'" class="tw-w-[16px]"
                @mouseover="showMinimizedLeft = true"
                @mouseleave="showMinimizedLeft = false">
-            <span class="material-icons-outlined tw-absolute tw-right-[-12px] tw-top-[14px] !tw-text-xl/5 tw-bg-neutral-400 tw-rounded-full tw-cursor-pointer"
+            <span class="material-symbols-outlined tw-absolute tw-right-[-12px] tw-top-[14px] !tw-text-xl/5 tw-bg-neutral-400 tw-rounded-full tw-cursor-pointer"
                   :class="minimizedLeft ? 'tw-rotate-180' : ''"
                   v-show="showMinimizedLeft === true || minimizedLeft"
                   @click="handleSidebarSize('left')">chevron_left</span>
@@ -145,7 +145,7 @@
 
         <div v-if="previewForm" class="tw-w-full tw-h-full" style="background: #fafafb">
           <h2 style="padding: 1.5rem">{{ translate('COM_EMUNDUS_ONBOARD_PREVIEW') }}</h2>
-          <iframe width="100%" height="100%" frameborder="0" style="min-height: 100vh;" id="preview_iframe" name="preview_iframe" :src="'/index.php?option=com_fabrik&view=form&formid='+selectedPage+'&tmpl=component&preview=1'" @load="loading = false" v-show="!loading"></iframe>
+          <iframe width="100%" height="100%" frameborder="0" style="padding-bottom: 36px;" id="preview_iframe" name="preview_iframe" :src="'/index.php?option=com_fabrik&view=form&formid='+selectedPage+'&tmpl=component&preview=1'" @load="loading = false" v-show="!loading"></iframe>
         </div>
 
         <transition name="slide-fade" mode="out-in">
@@ -156,7 +156,7 @@
             <div class="tw-w-[16px] !tw-h-0"
                  @mouseover="showMinimizedRight = true"
                  @mouseleave="showMinimizedRight = false">
-            <span class="material-icons-outlined tw-absolute tw-left-[-12px] tw-top-[14px] !tw-text-xl/5 tw-bg-neutral-400 tw-rounded-full tw-cursor-pointer"
+            <span class="material-symbols-outlined tw-absolute tw-left-[-12px] tw-top-[14px] !tw-text-xl/5 tw-bg-neutral-400 tw-rounded-full tw-cursor-pointer"
                   :class="minimizedRight ? 'tw-rotate-180' : ''"
                   v-show="showMinimizedRight === true || minimizedRight"
                   @click="handleSidebarSize('right')">chevron_right</span>
@@ -170,7 +170,7 @@
                       :profile_id="parseInt(profile_id)"
                       @select-page="selectPage($event)"
                       @add-page="getPages(currentPage.id)"
-                      @delete-page="selectedPage = pages[0].id;"
+                      @delete-page="afterDeletedPage($event)"
                       @open-page-create="principalContainer = 'create-page';"
                       @reorder-pages="onReorderedPages"
                       @open-create-model="onOpenCreateModel"
@@ -628,6 +628,11 @@ export default {
         this.minimizedRight = !this.minimizedRight;
       }
     },
+    afterDeletedPage(page_id) {
+      if(this.selectedPage == page_id) {
+        this.selectedPage = this.pages[0].id;
+      }
+    }
   },
   computed: {
     currentPage() {
@@ -763,7 +768,7 @@ export default {
             }
           }
 
-          .material-icons, .material-icons-outlined {
+          .material-icons, .material-symbols-outlined , .material-icons-outlined {
             font-size: 22px !important;
           }
         }

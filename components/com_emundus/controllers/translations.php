@@ -16,6 +16,7 @@ jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\MVC\Controller\BaseController;
 
 /**
  * campaign Controller
@@ -24,18 +25,27 @@ use Joomla\CMS\Language\Text;
  * @subpackage eMundus
  * @since      5.0.0
  */
-class EmundusControllerTranslations extends JControllerLegacy
+class EmundusControllerTranslations extends BaseController
 {
 
 	protected $app;
 
 	private $model;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     \JController
+	 * @since   1.0.0
+	 */
 	public function __construct($config = array())
 	{
+		parent::__construct($config);
+
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'translations.php');
-		parent::__construct($config);
 
 		$this->app   = Factory::getApplication();
 		$this->model = $this->getModel('Translations');

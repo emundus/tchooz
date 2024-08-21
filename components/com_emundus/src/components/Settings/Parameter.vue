@@ -7,9 +7,9 @@
             :class="'tw-italic tw-text-[#727272] tw-text-xs tw-ml-1'">{{
           translate('COM_EMUNDUS_OPTIONAL')
         }}</span>
-      <span v-else-if="parameter.optional===0" class="tw-text-red-500">*</span>
+      <span v-else-if="parameter.optional===0" class="tw-text-red-600">*</span>
       <span v-if="parameter.helptext"
-            class="material-icons-outlined tw-cursor-pointer tw-scale-75 tw-text-profile-full"
+            class="material-symbols-outlined tw-cursor-pointer tw-scale-75 tw-text-profile-full"
             @click="displayHelp(parameter.helptext)">help_outline</span>
     </label>
 
@@ -133,7 +133,7 @@
               :class="errors[parameter.param+'-semi-0'] && parameter.optional===0 ?'tw-rounded-lg !tw-border-red-500':''"
               :placeholder="translate(senderEmailPlaceholder)" v-model="senderEmail">
           <div v-if="errors[parameter.param+'-semi-0']"
-               class="tw-mt-1 tw-mb-4 tw-text-red-500 tw-absolute"
+               class="tw-mt-1 tw-mb-4 tw-text-red-600 tw-absolute"
                :id="'emailCheck-'+parameter.param">
             {{ translate(errors[parameter.param + '-semi-0']) }}
           </div>
@@ -144,7 +144,7 @@
                  :class="errors[parameter.param+'-semi-1'] && parameter.optional===0 ?'tw-rounded-lg !tw-border-red-500':''">
           <span v-else :class="'tw-w-full'">{{ senderEmailDomain }}</span>
           <div v-if="errors[parameter.param+'-semi-1']"
-               class="tw-mt-1 tw-mb-4 tw-text-red-500 tw-absolute"
+               class="tw-mt-1 tw-mb-4 tw-text-red-600 tw-absolute"
                :id="'emailCheck-'+parameter.param">
             {{ translate(errors[parameter.param + '-semi-1']) }}
           </div>
@@ -156,7 +156,7 @@
          @click="SwalWarningPort" class="tw-cursor-pointer tw-text-orange-400"></div>
 
     <div v-if="(!parameter.warning || (parameter.warning && checkPort && value!=='') || value === '') && !['yesno','toggle'].includes(parameter.type) && parameter.displayed"
-         class="tw-mt-1 tw-text-red-500 tw-min-h-[24px]"
+         class="tw-mt-1 tw-text-red-600 tw-min-h-[24px]"
          :class="errors[parameter.param] ?'tw-opacity-100 ':'tw-opacity-0'"
          :id="'error-message-'+parameter.param">
       {{ translate(errors[parameter.param]) }}

@@ -34,14 +34,15 @@ public apply(): void
 
 
 
+
 ***
 
 ### display
 
-Method to display application on a Job.
+Method to display a view.
 
 ```php
-public display(mixed $cachable = false, mixed $urlparams = false): void
+public display(bool $cachable = false, bool $urlparams = false): \DisplayController
 ```
 
 
@@ -55,8 +56,13 @@ public display(mixed $cachable = false, mixed $urlparams = false): void
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$cachable` | **mixed** |  |
-| `$urlparams` | **mixed** |  |
+| `$cachable` | **bool** | If true, the view output will be cached. |
+| `$urlparams` | **bool** | An array of safe URL parameters and their variable types.<br />@see        \Joomla\CMS\Filter\InputFilter::clean() for valid values. |
+
+
+**Return Value:**
+
+This object to support chaining.
 
 
 
@@ -71,6 +77,7 @@ Method to cancel application on a Job.
 ```php
 public cancel(): void
 ```
+
 
 
 
@@ -104,6 +111,7 @@ public edit(): mixed
 
 
 
+
 ***
 
 ### publish
@@ -113,6 +121,7 @@ Method to save a user's profile data.
 ```php
 public publish(): void
 ```
+
 
 
 
@@ -146,8 +155,9 @@ public remove(): mixed
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

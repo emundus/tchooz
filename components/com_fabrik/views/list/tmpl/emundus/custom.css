@@ -80,10 +80,10 @@ font-size: 16px;
 .view-list .table .fabrik___heading th.fabrik_actions span div.btn-group {
 	gap: 6px;
 }
-.view-list .table .fabrik___heading th.fabrik_actions span div.btn-group a span.material-icons {
+.view-list .table .fabrik___heading th.fabrik_actions span div.btn-group a span.material-symbols-outlined{
 	width: 24px;
 }
-.view-list .table .fabrik_row td.fabrik_actions div.btn-group a span.material-icons {
+.view-list .table .fabrik_row td.fabrik_actions div.btn-group a span.material-symbols-outlined{
 	width: 24px;
 }
 .view-list .table .fabrik_row td.fabrik_actions.fabrik_element{

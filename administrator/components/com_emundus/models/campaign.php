@@ -96,7 +96,7 @@ class EmundusModelAdministratorCampaign extends JModelList
                 $datas = [
                     'name'                 => 'date_time',
                     'group_id'             => $group['id'],
-                    'plugin'               => 'date',
+                    'plugin'               => 'jdate',
                     'label'                => 'Date de création',
                     'show_in_list_summary' => 0,
                     'hidden'               => 1

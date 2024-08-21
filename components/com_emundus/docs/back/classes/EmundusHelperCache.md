@@ -89,6 +89,7 @@ public __construct(mixed $group = &#039;com_emundus&#039;, mixed $handler = &#03
 
 
 
+
 ***
 
 ### isEnabled
@@ -98,6 +99,7 @@ public __construct(mixed $group = &#039;com_emundus&#039;, mixed $handler = &#03
 ```php
 public isEnabled(): mixed
 ```
+
 
 
 
@@ -137,6 +139,7 @@ public get(mixed $id): mixed
 
 
 
+
 ***
 
 ### set
@@ -160,6 +163,7 @@ public set(mixed $id, mixed $data): mixed
 |-----------|------|-------------|
 | `$id` | **mixed** |  |
 | `$data` | **mixed** |  |
+
 
 
 
@@ -193,6 +197,7 @@ public clean(mixed $admin = false, mixed $group = &#039;&#039;): mixed
 
 
 
+
 ***
 
 ### getCurrentGitHash
@@ -206,6 +211,7 @@ public static getCurrentGitHash(): mixed
 
 
 * This method is **static**.
+
 
 
 
@@ -241,8 +247,9 @@ private deleteDir(mixed $group): mixed
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

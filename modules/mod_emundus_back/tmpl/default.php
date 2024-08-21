@@ -17,7 +17,7 @@ defined('_JEXEC') or die;
 
 <p>
     <a class="em-back-button tw-cursor-pointer" href="<?php echo Uri::base() ?>">
-        <span class="material-icons tw-text-neutral-600 tw-mr-1">navigate_before</span>
+        <span class="material-symbols-outlined tw-text-neutral-600 tw-mr-1">navigate_before</span>
         <?php echo Text::_('MOD_EMUNDUS_BACK_BUTTON_LABEL') ?>
     </a>
 </p>

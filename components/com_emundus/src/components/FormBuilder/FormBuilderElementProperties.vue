@@ -5,7 +5,7 @@
         <p>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES") }}</p>
         <span class="tw-text-sm tw-text-neutral-700">{{ element.label[shortDefaultLang] }}</span>
       </div>
-      <span class="material-icons-outlined tw-cursor-pointer" @click="$emit('close')">close</span>
+      <span class="material-symbols-outlined tw-cursor-pointer" @click="$emit('close')">close</span>
     </div>
     <ul id="properties-tabs" class="tw-flex tw-items-center tw-justify-between tw-p-4 tw-w-11/12">
       <li

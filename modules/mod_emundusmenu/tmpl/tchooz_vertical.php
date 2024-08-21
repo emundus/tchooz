@@ -103,7 +103,7 @@ defined('_JEXEC') or die;
         color: var(--em-profile-color);
     }
 
-    .item:hover .material-icons-outlined {
+    .item:hover .material-symbols-outlined {
         background-color: var(--neutral-300);
         border-radius: var(--em-default-br);
     }

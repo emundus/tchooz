@@ -34,6 +34,7 @@ public __construct(): mixed
 
 
 
+
 ***
 
 ### sendActivationEmail
@@ -58,6 +59,7 @@ public sendActivationEmail(mixed $data, mixed $token, mixed $email): mixed
 | `$data` | **mixed** |  |
 | `$token` | **mixed** |  |
 | `$email` | **mixed** |  |
+
 
 
 
@@ -91,6 +93,7 @@ public updateEmailUser(mixed $user_id, mixed $email): mixed
 
 
 
+
 ***
 
 ### getUsernameByEmail
@@ -118,8 +121,9 @@ public getUsernameByEmail(mixed $email): mixed
 
 
 
+
 ***
 
 
 ***
-> Automatically generated on 2024-08-02
+> Last updated on 20/08/2024

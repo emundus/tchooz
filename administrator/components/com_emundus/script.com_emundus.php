@@ -270,7 +270,7 @@ class com_emundusInstallerScript
 					$datas    = [
 						'title'    => 'eMundus - Back button',
 						'note'     => 'Back button available on login and register views',
-						'content'  => '<p><a class="em-back-button em-pointer" href="/"><span class="material-icons tw-text-neutral-600 em-mr-4">navigate_before</span>Retour à la page d\'accueil</a></p>',
+						'content'  => '<p><a class="em-back-button em-pointer" href="/"><span class="material-symbols-outlined tw-text-neutral-600 em-mr-4">navigate_before</span>Retour à la page d\'accueil</a></p>',
 						'position' => 'header-a',
 						'module'   => 'mod_custom',
 						'access'   => 9,
@@ -2928,7 +2928,7 @@ return $tip_text;';
 						$js_showicon = 'var passwordInput = document.querySelector(&#039;#jos_emundus_users___password&#039;);
 
 var spanShowPassword = document.createElement(&#039;span&#039;);
-spanShowPassword.classList.add(&#039;material-icons-outlined&#039;);
+spanShowPassword.classList.add(&#039;material-symbols-outlined&#039;);
 spanShowPassword.classList.add(&#039;em-pointer&#039;);
 spanShowPassword.innerText = &quot;visibility_off&quot;;
 spanShowPassword.style.position = &quot;absolute&quot;;

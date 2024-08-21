@@ -16,14 +16,20 @@ use Joomla\CMS\Router\Route;
 
     #em-modal-action-table thead tr th {
         text-align: center;
+        padding-top: 20px;
+        padding-bottom: 20px;
     }
 
     #em-modal-action-table thead tr th:first-child {
-        border-top-left-radius: 8px;
+        border-top-left-radius: 16px;
     }
 
     #em-modal-action-table thead tr th:last-child {
-        border-top-right-radius: 8px;
+        border-top-right-radius: 16px;
+    }
+
+    #em-modal-action-table thead tr th label {
+        font-weight: 600;
     }
 
     #em-modal-action-table .em-actions-table-line td {
@@ -35,10 +41,25 @@ use Joomla\CMS\Router\Route;
         width: 10vw;
     }
     tr.em-actions-table-line td:nth-child(2) {
-        border-right: solid 2px var(--neutral-800);
+        border-right: 1px solid var(--neutral-400);
     }
     thead tr th:nth-child(2) {
-        border-right: solid 2px var(--neutral-800);
+        border-right: 1px solid var(--neutral-400);
+    }
+    .table-hover tbody tr:hover td,
+    .table-hover tbody tr:nth-child(2n):hover > td{
+        background: linear-gradient(0deg, hsl(from var(--em-profile-color) h s l / 15%) 0%, hsl(from var(--em-profile-color) h s l / 15%) 100%), #FFF !important;
+    }
+    .table-hover tbody tr:nth-child(2n) > td,
+    .table-hover tbody tr:nth-child(2n) > th {
+        background: #FFFFFF !important;
+    }
+    #em-div-modal-action-table {
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid #EDEDED;
+        box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
+        margin-top: 16px;
     }
 </style>
 
@@ -52,7 +73,8 @@ use Joomla\CMS\Router\Route;
         </h2>
 
 		<?php if (!empty($g['acl'])) : ?>
-            <table id="em-modal-action-table" class="tw-mt-2 table table-hover em-showgroupright-table"
+        <div id="em-div-modal-action-table">
+            <table id="em-modal-action-table" class="tw-mb-0 table table-hover em-showgroupright-table"
                    style="color:black !important;">
                 <thead>
                 <tr>
@@ -79,7 +101,7 @@ use Joomla\CMS\Router\Route;
                         <td id="<?= $action['id']; ?>">
                             <span><?= Text::_(strtoupper($action['label'])); ?></span>
                             <?php if (!empty(Text::_($action['action_description']))) : ?>
-                                <span class="material-icons-outlined !tw-text-lg" style="vertical-align: middle" onclick="displayHelpText('<?php echo Text::_($action['action_description']); ?>')">help_outline</span>
+                                <span class="material-symbols-outlined !tw-text-lg" style="vertical-align: middle" onclick="displayHelpText('<?php echo Text::_($action['action_description']); ?>')">help_outline</span>
                             <?php endif; ?>
                         </td>
 						<?php if ($action['is_c'] == 1) : ?>
@@ -134,6 +156,7 @@ use Joomla\CMS\Router\Route;
 				<?php endforeach; ?>
                 </tbody>
             </table>
+        </div>
 		<?php endif; ?>
 	    <?php if (!empty($g['progs'])) : ?>
         <hr>

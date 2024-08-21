@@ -8,7 +8,7 @@
             <span class="tw-text-neutral-500">{{ formattedDate(comment.date, 'LLLL', '+0200') }}</span>
           </div>
           <div v-click-outside="hideOptions">
-            <span class="material-icons-outlined tw-cursor-pointer" @click="show_options = comment.id">more_vert</span>
+            <span class="material-symbols-outlined tw-cursor-pointer" @click="show_options = comment.id">more_vert</span>
             <div v-if="show_options === comment.id" class="em-comment-option">
               <span class="tw-cursor-pointer comment-delete"
                     v-if="$props.access.d || ($props.access.c && comment.user_id == $props.user)"
@@ -28,7 +28,7 @@
     <div class="tw-flex tw-items-center tw-justify-center tw-mt-6" v-if="adding_comment">
       <div class="em-input-card tw-w-2/4">
         <div>
-          <span class="material-icons-outlined tw-cursor-pointer tw-float-right tw-mb-1"
+          <span class="material-symbols-outlined tw-cursor-pointer tw-float-right tw-mb-1"
                 @click="adding_comment = false">close</span>
         </div>
 

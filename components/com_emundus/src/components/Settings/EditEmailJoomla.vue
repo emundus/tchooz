@@ -86,7 +86,7 @@
             @mouseover="hover =true"
             @mouseout="hover = false"
             @click="CheckSendMail">
-          <span id="iconSend" class="material-icons-outlined" :class="iconClasses">send</span>
+          <span id="iconSend" class="material-symbols-outlined" :class="iconClasses">send</span>
           {{ translate("COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_BT") }}
         </button>
         <div v-if="loadingMail" class="em-page-loader"></div>
@@ -387,7 +387,7 @@ export default {
         <p class="tw-flex tw-items-center tw-justify-center tw-text-center">${this.translate(response.data.data[1])} ${this.translate(response.data.data[2])}</p>            <hr class="tw-self-stretch">
         <button type="button" class="tw-flex tw-items-center tw-font-bold" id="hideDivButton" ${colorBT === "red" ? 'style="color:red;"' : 'style="display: none;"'}>
             ${this.translate('COM_EMUNDUS_CLICK_HERE_INFO')}
-            <i class="material-icons-outlined scale-150" ${colorBT === "red" ? 'style="color:red;"' : 'style="display: none;"'}>expand_more</i>
+            <i class="material-symbols-outlined scale-150" ${colorBT === "red" ? 'style="color:red;"' : 'style="display: none;"'}>expand_more</i>
         </button>
         <div id="accordion-panel" class="tw-mt-2 " ${this.isAccordionPanelVisible && colorBT === "red" ? 'style="color:red; display:block;"' : 'style="display: none;"'}>
             ${this.translate(response.data.data[4])}
@@ -479,7 +479,7 @@ export default {
     iconClasses() {
       return [
         'tw-mr-2',
-        'material-icons-outlined',
+        'material-symbols-outlined',
         this.noSendTestClick ? 'tw-text-gray-400' : (this.hover ? 'tw-text-white' : 'tw-text-profile-full')
 
       ];
