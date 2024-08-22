@@ -1451,6 +1451,8 @@ if(value == 1) {
 				throw new \Exception('Erreur lors de l\'installation du nouveau module commentaire');
 			}
 
+			EmundusHelperUpdate::installExtension('plg_fabrik_element_emundus_geolocalisation','emundus_geolocalisation',null,'plugin',1,'fabrik_element');
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

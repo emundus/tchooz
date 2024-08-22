@@ -484,10 +484,10 @@
       "sysadmin_only": false
     }
   ],
-  "date": [
+  "jdate": [
     {
       "label": "COM_EMUNDUS_ONBOARD_BUILDER_CALENDAR_DEFAULT_TODAY",
-      "name": "date_defaulttotoday",
+      "name": "jdate_defaulttotoday",
       "type": "dropdown",
       "options" : [
         {
@@ -497,25 +497,6 @@
         {
           "value": 1,
           "label": "JYES"
-        }
-      ],
-      "helptext": "",
-      "placeholder": "",
-      "published": true,
-      "sysadmin_only": false
-    },
-    {
-      "label": "COM_EMUNDUS_ONBOARD_BUILDER_CALENDAR_FIRST_DAY",
-      "name": "date_firstday",
-      "type": "dropdown",
-      "options" : [
-        {
-          "value": 0,
-          "label": "COM_EMUNDUS_ONBOARD_BUILDER_CALENDAR_SUNDAY"
-        },
-        {
-          "value": 1,
-          "label": "COM_EMUNDUS_ONBOARD_BUILDER_CALENDAR_MONDAY"
         }
       ],
       "helptext": "",
