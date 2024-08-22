@@ -6655,6 +6655,9 @@ small {
 .hover\:tw-bg-profile-full:hover {
     background-color: var(--em-profile-color);
 }
+.hover\:tw-text-profile-dark:hover {
+    color: color-mix(in srgb,var(--em-profile-color),#000 15%);
+}
 .hover\:tw-text-white:hover {
     --tw-text-opacity: 1;
     color: rgb(255 255 255 / var(--tw-text-opacity));
