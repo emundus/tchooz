@@ -7399,3 +7399,8 @@ tbody .el-table__row:nth-child(odd){
 .popover.fade.top.in {
   display: none !important;
 }
+
+/* RADIOBUTTONS WIDTH */
+.fabrikSubElementContainer div.tw-grid-cols-1[class*="tw-grid-cols-"]:not([class*="lg:tw-grid-cols-1"]):not([class*="md:tw-grid-cols-1"]) .form-check {
+  width: 100% !important;
+}
