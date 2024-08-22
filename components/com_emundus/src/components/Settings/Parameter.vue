@@ -326,12 +326,11 @@ export default {
     SwalWarningPort: function () {
       Swal.fire({
         html: `
-    <div class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-text-center">
-      <h2 class="tw-font-bold tw-pb-2">
+    <div class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-text-center tw--mt-5">
+      <h2 class="tw-font-bold">
         ${this.translate('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_PORT_WARNING_HELPTEXT_TITLE')}
       </h2>
-      <hr class="tw-w-full tw-my-2">
-      <p class="tw-text-center">
+      <p class="tw-text-center tw-mt-5">
         ${this.translate('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_PORT_WARNING_HELPTEXT_BODY')}
       </p>
     </div>
