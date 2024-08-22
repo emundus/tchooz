@@ -841,6 +841,7 @@ select.em-select-no-border[data-v-6a1f127f] {
 #list-table.blocs tbody tr td ul li {
   list-style: none;
   cursor: pointer;
+  width: 100%;
 }
 .skeleton-grid {
   display: grid;

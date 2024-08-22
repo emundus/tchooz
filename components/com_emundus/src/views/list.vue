@@ -815,6 +815,7 @@ export default {
             li {
               list-style: none;
               cursor: pointer;
+              width: 100%;
             }
           }
         }
