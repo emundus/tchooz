@@ -43,6 +43,7 @@ if ($d->display_comments) {
     <div class="<?php echo implode(' ', $class);?>">
         <?php echo $d->row;?>
     </div>
-    <?php
+	<?php
+	if ($d->column && $d->endRow) echo "</div>";
 }
 ?>
