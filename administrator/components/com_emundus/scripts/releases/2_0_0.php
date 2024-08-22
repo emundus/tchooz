@@ -1455,6 +1455,8 @@ if(value == 1) {
 
 			EmundusHelperUpdate::addColumn('jos_emundus_setup_action_tag', 'ordering', 'INT', null, 1, 0);
 
+			EmundusHelperUpdate::addColumn('jos_emundus_chatroom','status','INT');
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)
