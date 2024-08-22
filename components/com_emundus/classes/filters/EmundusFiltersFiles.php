@@ -219,14 +219,24 @@ class EmundusFiltersFiles extends EmundusFilters
 
         $form_ids = array_merge($profile_form_ids, $config_form_ids);
 
-		return $this->getElementsFromFabrikForms($form_ids);
+		$unsorted_elements = $this->getElementsFromFabrikForms($form_ids);
+
+		foreach ($form_ids as $form_id) {
+			foreach ($unsorted_elements as $element) {
+				if ($element['element_form_id'] == $form_id) {
+					$elements[] = $element;
+				}
+			}
+		}
+
+		return $elements;
 	}
 
     private function getElementsFromFabrikForms($form_ids)
     {
 	    require_once(JPATH_ROOT . '/components/com_emundus/helpers/fabrik.php');
 	    $h_fabrik = new EmundusHelperFabrik();
-	    return $h_fabrik->getElementsFromFabrikForms($form_ids);
+	    return $h_fabrik->getElementsFromFabrikForms($form_ids, ['panel', 'display']);
     }
 
 	private function setDefaultFilters($config)

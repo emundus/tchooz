@@ -3,7 +3,7 @@
 		<input type="text" v-model="search" class="em-w-100" :placeholder="translate('MOD_EMUNDUS_FILTERS_GLOBAL_SEARCH_PLACEHOLDER')" @focusin="opened = true">
 
 		<ul :class=" {
-			'em-border-radius-8 em-border-neutral-400 em-w-100 em-box-shadow em-white-bg em-mt-4': true,
+			'em-border-radius-8 em-border-neutral-400 em-w-100 em-box-shadow em-white-bg em-mt-4 !tw-pl-0': true,
 			'hidden': opened === false,
 		}">
 			<div v-for="group in groupedFilters" :key="group.id">
