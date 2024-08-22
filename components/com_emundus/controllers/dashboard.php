@@ -173,7 +173,7 @@ class EmundusControllerDashboard extends BaseController
 		try {
 			$widget = $this->input->getInt('widget');
 
-			$tab = array('msg' => 'success', 'filters' => json_encode($this->app->getSession()->get('widget_filters_' . $widget)));
+			$tab = array('msg' => 'success', 'filters' => json_encode($this->app->getSession()->get('widget_filters_' . $widget,[])));
 		}
 		catch (Exception $e) {
 			$tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
