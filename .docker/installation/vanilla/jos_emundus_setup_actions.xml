@@ -408,19 +408,6 @@
     <field name="description">COM_EMUNDUS_EXTENAL_EXPORT_DESC</field>
    </row>
    <row>
-    <field name="id">34</field>
-    <field name="name">interview</field>
-    <field name="label">COM_EMUNDUS_INTERVIEW</field>
-    <field name="multi">0</field>
-    <field name="c">1</field>
-    <field name="r">1</field>
-    <field name="u">1</field>
-    <field name="d">1</field>
-    <field name="ordering">0</field>
-    <field name="status">1</field>
-    <field name="description">COM_EMUNDUS_INTERVIEW_DESC</field>
-   </row>
-   <row>
     <field name="id">35</field>
     <field name="name">export fiche de synthese</field>
     <field name="label">COM_EMUNDUS_FICHE_DE_SYNTHESE</field>
