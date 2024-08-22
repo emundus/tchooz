@@ -570,6 +570,20 @@ class FabrikAdminModelElement extends FabModelAdmin
 			$data['label'] = htmlspecialchars($data['label']);
 		}
 
+		if(!empty($data['name']) && empty($data['params']['alias']))
+		{
+			$data['params']['alias'] = $data['name'];
+		}
+		$data['params']['alias'] = str_replace(' ', '_', $data['params']['alias']);
+		$data['params']['alias'] = htmlentities($data['params']['alias'], ENT_COMPAT, "UTF-8");
+		$data['params']['alias'] = preg_replace('/&([a-zA-Z])(uml|acute|grave|circ|tilde|cedil);/', '$1', $data['params']['alias']);
+		$data['params']['alias'] = html_entity_decode($data['params']['alias']);
+		$data['params']['alias'] = preg_replace('/[^\x20-\x7E]/','', $data['params']['alias']);
+		$data['params']['alias'] = preg_replace('/[^a-zA-Z0-9_]/', '', $data['params']['alias']);
+		$data['params']['alias'] = strtolower($data['params']['alias']);
+
+		$data['params']['alias'] = $data['params']['alias'] === "" ? (!empty($data['name']) ? strtolower($data['name']) . "_alias" : "alias") : $data['params']['alias'];
+
 		jimport('joomla.utilities.date');
 		$input                 = $this->app->input;
 		$new                   = $data['id'] == 0 ? true : false;

@@ -8,27 +8,31 @@
  * @author      James Dean
  */
 
-// No direct access
+// phpcs:disable PSR1.Files.SideEffects
+\defined('_JEXEC') or die;
+// phpcs:enable PSR1.Files.SideEffects
 
-defined('_JEXEC') or die('Restricted access');
-
-jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Controller\BaseController;
 
 /**
- * Campaign Controller
- *
- * @package    Joomla
- * @subpackage eMundus
- * @since      5.0.0
+ * Emundus Messenger Controller
+ * @package     Emundus
  */
 class EmundusControllerMessenger extends BaseController
 {
-	protected $app;
-
+	/**
+	 * @var EmundusModelMessenger
+	 * @since version 1.0.0
+	 */
 	private $m_messenger;
+
+	/**
+	 * @var \Joomla\CMS\User\User
+	 * @since version 1.40.0
+	 */
+	private $user;
 
 	/**
 	 * Constructor.
@@ -43,7 +47,7 @@ class EmundusControllerMessenger extends BaseController
 		parent::__construct($config);
 
 		$this->m_messenger = $this->getModel('messenger');
-		$this->app         = Factory::getApplication();
+		$this->user		= $this->app->getIdentity();
 	}
 
 	/**
@@ -175,8 +179,6 @@ class EmundusControllerMessenger extends BaseController
 
 	public function markasread()
 	{
-
-
 		$fnum = $this->input->getString('fnum');
 
 		$messages_readed = $this->m_messenger->markAsRead($fnum);
@@ -190,7 +192,6 @@ class EmundusControllerMessenger extends BaseController
 	public function uploaddocument()
 	{
 		$response = ['status' => false, 'code' => 403, 'msg' => JText::_('BAD_REQUEST'), 'data' => null];
-
 
 		$file = $this->input->files->get('file');
 
@@ -271,8 +272,6 @@ class EmundusControllerMessenger extends BaseController
 
 	public function getdocumentsbycampaign()
 	{
-
-
 		$fnum      = $this->input->getString('fnum');
 		$applicant = $this->input->getVar('applicant');
 
@@ -286,8 +285,6 @@ class EmundusControllerMessenger extends BaseController
 
 	public function askattachment()
 	{
-
-
 		$fnum       = $this->input->getString('fnum');
 		$attachment = $this->input->getString('attachment');
 		$message    = $this->input->getString('message');
@@ -298,5 +295,21 @@ class EmundusControllerMessenger extends BaseController
 
 		echo json_encode((object) $data);
 		exit;
+	}
+
+	/**
+	 * Allow to close a chatroom
+	 *
+	 * @since version 1.40.0
+	 */
+	public function closeMessenger(){
+		require_once (JPATH_ROOT . '/components/com_emundus/models/messages.php');
+		$m_message = new EmundusModelMessages();
+
+		$fnum = $this->input->getString('fnum');
+
+		if(!empty($fnum) && (EmundusHelperAccess::isFnumMine($this->user->id, $fnum) || EmundusHelperAccess::asAccessAction(36, 'r', $this->user->id, $fnum))) {
+			$m_message->closeMessenger($fnum);
+		}
 	}
 }

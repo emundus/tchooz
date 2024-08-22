@@ -1,5 +1,6 @@
 <template>
   <div class="em-settings-menu">
+
     <div class="tw-w-full tw-mb-4">
       <div class="tw-w-5/6">
         <div class="tw-grid tw-grid-cols-3 tw-gap-6 tw-mb-4">
@@ -52,15 +53,13 @@
               @input="updated = true"
           />
         </div>
-      </div>
-
       <button class="btn btn-primary tw-float-right tw-mt-3" v-if="updated" @click="saveContent">
         {{ translate("COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SAVE") }}
       </button>
-    </div>
-
+      </div>
     <div class="em-page-loader" v-if="loading"></div>
   </div>
+</div>
 </template>
 
 <script>

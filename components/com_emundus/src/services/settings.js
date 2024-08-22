@@ -207,5 +207,19 @@ export default {
         msg: e.message
       };
     }
+  },
+  async updateTagOrdering(orderedTags) {
+    if (orderedTags.length > 0) {
+      const data = {
+        tags: orderedTags.join(',')
+      };
+
+      return fetchClient.post('updatetagsorder', data);
+    } else {
+      return {
+        status: false,
+        message: 'WRONG_PARAMETERS'
+      };
+    }
   }
 };

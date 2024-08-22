@@ -70,12 +70,32 @@
           />
         </div>
 
-        <div class="tw-flex tw-items-center tw-justify-between tw-w-full tw-pt-4 tw-pb-4" v-if="sysadmin">
-          <span>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_HIDDEN") }}</span>
-          <div class="em-toggle">
-            <input type="checkbox" class="em-toggle-check" v-model="isHidden" @click="toggleHidden">
-            <strong class="b em-toggle-switch"></strong>
-            <strong class="b em-toggle-track"></strong>
+        <div class="tw-flex tw-items-center tw-gap-2 tw-cursor-pointer tw-mt-4 tw-mb-3" @click="advancedSettings = !advancedSettings">
+          <span class="tw-font-medium">
+            {{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_ADVANCED_SETTINGS') }}
+          </span>
+          <span class="material-symbols-outlined tw-font-medium" :class="[advancedSettings ? 'tw-rotate-90' : '']">chevron_right</span>
+        </div>
+
+        <div v-show="advancedSettings" class="tw-flex tw-flex-col tw-gap-3">
+          <div class="tw-flex tw-justify-between tw-w-full" v-if="sysadmin">
+            <span>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_HIDDEN") }}</span>
+            <div class="em-toggle">
+              <input type="checkbox" class="em-toggle-check" v-model="isHidden" @click="toggleHidden">
+              <strong class="b em-toggle-switch"></strong>
+              <strong class="b em-toggle-track"></strong>
+            </div>
+          </div>
+
+          <div v-if="element.params">
+            <label for="element-alias">{{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_ALIAS') }}</label>
+            <input id="element-alias" name="element-alias" type="text" v-model="element.params.alias" @keyup="formatAlias" />
+            <!--            <span class="mt-2" style="font-size: small;">{{translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_ALIAS_HELPTEXT')}}</span>-->
+          </div>
+
+          <div v-if="element.params">
+            <label for="element-rollover">{{ translate('COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT') }}</label>
+            <input id="element-rollover" name="element-alias" type="text" v-model="element.params.rollover" />
           </div>
         </div>
 
@@ -151,6 +171,8 @@ export default {
 
       loading: false,
       editorPlugins: ['history', 'link', 'image', 'bold', 'italic', 'underline','left','center','right','h1', 'h2', 'ul'],
+
+      advancedSettings: false,
     };
   },
   setup() {
@@ -238,6 +260,11 @@ export default {
         this.tabs[0].active = true;
         this.tabs[1].published = false;
       }
+    },
+    formatAlias(){
+      this.element.params.alias = this.element.params.alias.toLowerCase().replace(/ /g, '_');
+      this.element.params.alias = this.element.params.alias.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      this.element.params.alias = this.element.params.alias.replace(/[^a-z0-9_]/g, '');
     }
   },
   computed: {

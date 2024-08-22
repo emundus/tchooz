@@ -22,40 +22,43 @@ $model     = $this->getModel();
 $groupTmpl = $model->editable ? 'group' : 'group_details';
 $active    = ($form->error != '') ? '' : ' fabrikHide';
 
-$eMConfig = ComponentHelper::getParams('com_emundus');
+$eMConfig              = ComponentHelper::getParams('com_emundus');
 $display_required_icon = $eMConfig->get('display_required_icon', 1);
 
 $pageClass = $this->params->get('pageclass_sfx', '');
 
 
-require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
-$m_users = new EmundusModelUsers();
+require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
+$m_users      = new EmundusModelUsers();
 $profile_form = $m_users->getProfileForm();
 
 $this->display_comments = false;
-$is_applicant = 1;
-$allow_to_comment = $eMConfig->get('allow_applicant_to_comment', 0);
-if ($allow_to_comment) {
+$is_applicant           = 1;
+$allow_to_comment       = $eMConfig->get('allow_applicant_to_comment', 0);
+if ($allow_to_comment)
+{
 	// check if form is an applicant form, there should be a column fnum in the table
-	$db = Factory::getContainer()->get('DatabaseDriver');
-	$query = 'SHOW COLUMNS FROM `'. $form->db_table_name . '` LIKE "fnum"';
+	$db    = Factory::getContainer()->get('DatabaseDriver');
+	$query = 'SHOW COLUMNS FROM `' . $form->db_table_name . '` LIKE "fnum"';
 
 	$db->setQuery($query);
 	$result = $db->loadObject();
 
-	if (!empty($result)) {
+	if (!empty($result))
+	{
 		$this->display_comments = true;
 	}
 
-	$session = Factory::getApplication()->getSession();
-	$emundus_user = $session->get('emundusUser');
-	$current_user_profile = $emundus_user->profile;
-	$applicant_profiles = $m_users->getApplicantProfiles();
-	$applicant_profiles_ids = array_map(function($profile) {
+	$session                = Factory::getApplication()->getSession();
+	$emundus_user           = $session->get('emundusUser');
+	$current_user_profile   = $emundus_user->profile;
+	$applicant_profiles     = $m_users->getApplicantProfiles();
+	$applicant_profiles_ids = array_map(function ($profile) {
 		return $profile->id;
 	}, $applicant_profiles);
 
-	if (!in_array($current_user_profile, $applicant_profiles_ids)) {
+	if (!in_array($current_user_profile, $applicant_profiles_ids))
+	{
 		$is_applicant = 0;
 	}
 }
@@ -85,71 +88,75 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 endif;
 ?>
 <div class="emundus-form tw-py-6 tw-px-8 <?php echo $pageClass; ?>">
-	<?php  if($form->id == $profile_form) : ?>
+	<?php if ($form->id == $profile_form) : ?>
         <iframe id="background-shapes-profile" alt="<?= Text::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
 	<?php endif; ?>
     <div class="tw-mb-0 fabrikMainError alert alert-error fabrikError<?php echo $active ?>">
         <span class="material-icons">cancel</span>
 		<?php echo $form->error; ?>
-        <span class="material-symbols-outlined tw-absolute tw-top-[3px] tw-right-[1px] !tw-text-base tw-cursor-pointer" onclick="closeAlert()">close</span>
+        <span class="material-symbols-outlined tw-absolute tw-top-[3px] tw-right-[1px] !tw-text-base tw-cursor-pointer"
+              onclick="closeAlert()">close</span>
     </div>
     <div class="tw-mb-8">
         <div>
-	        <?php if ($this->params->get('show-title', 1)) : ?>
+			<?php if ($this->params->get('show-title', 1)) : ?>
                 <div class="tw-flex tw-flex-row tw-relative fabrik-page-header">
-		        <?php if($this->display_comments) {
-			        ?>
-                    <div class="fabrik-element-emundus-container tw-absolute tw--left-[24px] tw-top-1 tw-flex tw-flex-row tw-justify-items-start tw-items-start tw-mr-5">
-                        <span class="material-symbols-outlined tw-cursor-pointer comment-icon" id="'forms-'<?= $form->id ?>" data-target-type="forms" data-target-id="<?= $form->id ?>">comment</span>
+					<?php if ($this->display_comments)
+					{
+						?>
+                        <div class="fabrik-element-emundus-container tw-absolute tw--left-[24px] tw-top-1 tw-flex tw-flex-row tw-justify-items-start tw-items-start tw-mr-5">
+                            <span class="material-symbols-outlined tw-cursor-pointer comment-icon"
+                                  id="'forms-'<?= $form->id ?>" data-target-type="forms"
+                                  data-target-id="<?= $form->id ?>">comment</span>
+                        </div>
+						<?php
+					}
+					?>
+                    <div>
+						<?php if ($display_required_icon == 0) : ?>
+                            <p class="tw-mb-5 tw-text-neutral-600"><?= Text::_('COM_FABRIK_REQUIRED_ICON_NOT_DISPLAYED') ?></p>
+						<?php endif; ?>
+                        <div class="page-header">
+                            <h2 class="after-em-border after:tw-bg-red-800"><?= Text::_($form->label) ?></h2>
+                        </div>
                     </div>
-			        <?php
-		        }
-		        ?>
-                <div>
-                <?php if($display_required_icon == 0) : ?>
-                    <p class="tw-mb-5 tw-text-neutral-600"><?= Text::_('COM_FABRIK_REQUIRED_ICON_NOT_DISPLAYED') ?></p>
-                <?php endif; ?>
-                <div class="page-header">
-                    <h2 class="after-em-border after:tw-bg-red-800"><?= Text::_($form->label) ?></h2>
                 </div>
-                </div>
-                </div>
-	        <?php endif; ?>
+			<?php endif; ?>
         </div>
 
 
-	    <?php if(!empty(strip_tags($form->intro))) : ?>
-        <div class="em-form-intro tw-mt-4">
-            <?php
-            echo trim($form->intro);
-            ?>
-        </div>
-        <?php endif; ?>
+		<?php if (!empty(strip_tags($form->intro))) : ?>
+            <div class="em-form-intro tw-mt-4">
+				<?php
+				echo trim($form->intro);
+				?>
+            </div>
+		<?php endif; ?>
     </div>
     <form method="post" <?php echo $form->attribs ?>>
 		<?php
 		echo $this->plugintop;
 		?>
-        
-        <?php
-        $buttons_tmpl = $this->loadTemplate('buttons');
-        $related_datas_tmpl = $this->loadTemplate('relateddata');
-        ?>
 
-        <?php if (!empty($buttons_tmpl) || !empty($related_datas_tmpl)) : ?>
+		<?php
+		$buttons_tmpl       = $this->loadTemplate('buttons');
+		$related_datas_tmpl = $this->loadTemplate('relateddata');
+		?>
+
+		<?php if (!empty($buttons_tmpl) || !empty($related_datas_tmpl)) : ?>
             <div class="row-fluid nav">
                 <div class="<?php echo FabrikHelperHTML::getGridSpan(6); ?> pull-right">
-                    <?php
-                    echo $this->loadTemplate('buttons');
-                    ?>
+					<?php
+					echo $this->loadTemplate('buttons');
+					?>
                 </div>
                 <div class="<?php echo FabrikHelperHTML::getGridSpan(6); ?>">
-                    <?php
-                    echo $this->loadTemplate('relateddata');
-                    ?>
+					<?php
+					echo $this->loadTemplate('relateddata');
+					?>
                 </div>
             </div>
-        <?php endif; ?>
+		<?php endif; ?>
 
 		<?php
 		$this->index_element_id = 0;
@@ -157,39 +164,43 @@ endif;
 			$this->group = $group;
 			?>
 
-            <div class="tw-mt-0 tw-mb-8 <?php echo $group->class; ?> <?php if ($group->columns > 1) {
+            <div class="tw-mt-0 tw-mb-8 <?php echo $group->class; ?> <?php if ($group->columns > 1)
+			{
 				echo 'fabrikGroupColumns-' . $group->columns . ' fabrikGroupColumns';
 			} ?>" id="group<?php echo $group->id; ?>" style="<?php echo $group->css; ?>">
-                <?php if(($group->showLegend && !empty($group->title)) || !empty($group->intro)) : ?>
-                <div class="tw-flex tw-flex-row tw-mb-7 fabrik-group-header tw-relative">
-		            <?php
-		            if($this->display_comments) {
-			            ?>
-                        <div class="fabrik-element-emundus-container tw-absolute tw--left-[24px] tw-top-1 tw-flex tw-flex-row tw-justify-items-start tw-items-start tw-mr-5">
-                            <span class="material-symbols-outlined tw-cursor-pointer comment-icon" id="groups-<?= $group->id ?>" data-target-type="groups" data-target-id="<?= $group->id ?>">comment</span>
+				<?php if (($group->showLegend && !empty($group->title)) || !empty($group->intro)) : ?>
+                    <div class="tw-flex tw-flex-row tw-mb-7 fabrik-group-header tw-relative">
+						<?php
+						if ($this->display_comments)
+						{
+							?>
+                            <div class="fabrik-element-emundus-container tw-absolute tw--left-[24px] tw-top-1 tw-flex tw-flex-row tw-justify-items-start tw-items-start tw-mr-5">
+                                <span class="material-symbols-outlined tw-cursor-pointer comment-icon"
+                                      id="groups-<?= $group->id ?>" data-target-type="groups"
+                                      data-target-id="<?= $group->id ?>">comment</span>
+                            </div>
+							<?php
+						}
+						?>
+
+                        <div>
+							<?php
+							if ($group->showLegend) :?>
+                                <h3 class="after-em-border after:tw-bg-neutral-500"><?php echo $group->title; ?></h3>
+							<?php
+							endif;
+
+							if (!empty($group->intro)) : ?>
+                                <div class="groupintro tw-mt-4"><?php echo $group->intro ?></div>
+							<?php endif; ?>
+
+							<?php if (!empty($group->maxRepeat) && $group->maxRepeat > 1) : ?>
+                                <p class="em-text-neutral-600 tw-mt-2"><?php echo Text::sprintf('COM_FABRIK_REPEAT_GROUP_MAX', $group->maxRepeat) ?></p>
+							<?php endif; ?>
                         </div>
-			            <?php
-		            }
-		            ?>
-
-                    <div>
-                    <?php
-                    if ($group->showLegend) :?>
-                        <h3 class="after-em-border after:tw-bg-neutral-500"><?php echo $group->title; ?></h3>
-                    <?php
-                    endif;
-
-                    if (!empty($group->intro)) : ?>
-                        <div class="groupintro tw-mt-4"><?php echo $group->intro ?></div>
-                    <?php endif; ?>
-
-	                <?php if(!empty($group->maxRepeat) && $group->maxRepeat > 1) : ?>
-                        <p class="em-text-neutral-600 tw-mt-2"><?php echo Text::sprintf('COM_FABRIK_REPEAT_GROUP_MAX',$group->maxRepeat) ?></p>
-	                <?php endif; ?>
-                </div>
-                </div>
-                <?php endif; ?>
-                <?php
+                    </div>
+				<?php endif; ?>
+				<?php
 
 				/* Load the group template - this can be :
 				 *  * default_group.php - standard group non-repeating rendered as an unordered list
@@ -229,14 +240,16 @@ endif;
 </div>
 
 <?php
-$app = Factory::getApplication();
+$app  = Factory::getApplication();
 $user = $app->getIdentity();
 $fnum = $app->input->getString('rowid', '');
-if (empty($fnum)) {
+if (empty($fnum))
+{
 	$fnum = $app->getSession()->get('emundusUser')->fnum;
 }
 
-if ($this->display_comments) {
+if ($this->display_comments)
+{
 	Text::script('COM_EMUNDUS_COMMENTS_ADD_COMMENT');
 	Text::script('COM_EMUNDUS_COMMENTS_ERROR_PLEASE_COMPLETE');
 	Text::script('COM_EMUNDUS_COMMENTS_ENTER_COMMENT');
@@ -268,20 +281,23 @@ if ($this->display_comments) {
 	Text::script('COM_EMUNDUS_COMMENTS_VISIBLE_ALL_OPT');
 
 	require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
-	$ccid = EmundusHelperFiles::getIdFromFnum($fnum);
+	$ccid               = EmundusHelperFiles::getIdFromFnum($fnum);
 	$coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
-	$sysadmin_access = EmundusHelperAccess::isAdministrator($user->id);
-	$current_lang = $app->getLanguage();
-	$short_lang = substr($current_lang->getTag(), 0 , 2);
-	$languages = LanguageHelper::getLanguages();
-	if (count($languages) > 1) {
+	$sysadmin_access    = EmundusHelperAccess::isAdministrator($user->id);
+	$current_lang       = $app->getLanguage();
+	$short_lang         = substr($current_lang->getTag(), 0, 2);
+	$languages          = LanguageHelper::getLanguages();
+	if (count($languages) > 1)
+	{
 		$many_languages = '1';
 		require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
 		$m_translations = new EmundusModelTranslations();
-		$default_lang = $m_translations->getDefaultLanguage()->lang_code;
-	} else {
+		$default_lang   = $m_translations->getDefaultLanguage()->lang_code;
+	}
+	else
+	{
 		$many_languages = '0';
-		$default_lang = $current_lang;
+		$default_lang   = $current_lang;
 	}
 
 	require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
@@ -295,13 +311,16 @@ if ($this->display_comments) {
 	];
 
 	?>
-    <aside id="aside-comment-section" class="tw-fixed tw-right-0 em-white-bg tw-shadow-[0_4px_3px_0px_rgba(0,0,0,0.1)] tw-ease-out closed">
+    <aside id="aside-comment-section"
+           class="tw-fixed tw-right-0 em-white-bg tw-shadow-[0_4px_3px_0px_rgba(0,0,0,0.1)] tw-ease-out closed">
         <!-- Comments -->
         <div class="tw-flex tw-flex-row tw-relative">
-            <span class="open-comment material-symbols-outlined tw-cursor-pointer tw-absolute tw-top-8 tw-bg-main-500 tw-rounded-l-lg tw-text-neutral-300" onclick="openCommentAside()">
+            <span class="open-comment material-symbols-outlined tw-cursor-pointer tw-absolute tw-top-8 tw-bg-main-500 tw-rounded-l-lg tw-text-neutral-300"
+                  onclick="openCommentAside()">
                 comment
             </span>
-            <span class="close-comment material-symbols-outlined tw-cursor-pointer tw-absolute tw-top-8 tw-bg-main-500 tw-rounded-l-lg tw-text-neutral-300" onclick="openCommentAside()">
+            <span class="close-comment material-symbols-outlined tw-cursor-pointer tw-absolute tw-top-8 tw-bg-main-500 tw-rounded-l-lg tw-text-neutral-300"
+                  onclick="openCommentAside()">
                 close
             </span>
             <div id="em-component-vue"
@@ -368,7 +387,7 @@ if ($this->display_comments) {
             title.style.opacity = 0;
         }
         grouptitle = document.querySelectorAll('.fabrikGroup h2, .fabrikGroup h3');
-        for (title of grouptitle){
+        for (title of grouptitle) {
             title.style.opacity = 0;
         }
         let groupintros = document.querySelectorAll('.groupintro');
@@ -392,7 +411,7 @@ if ($this->display_comments) {
         }
 
         var errorMessage = document.querySelector('.fabrikMainError');
-        if(errorMessage) {
+        if (errorMessage) {
             setTimeout(() => {
                 errorMessage.style.opacity = 1;
                 errorMessage.style.bottom = '10px'
@@ -405,10 +424,10 @@ if ($this->display_comments) {
         }
     });
 
-    closeAlert = function(type) {
+    closeAlert = function (type) {
         var errorMessage = document.querySelector('.fabrikMainError');
 
-        if(errorMessage) {
+        if (errorMessage) {
             errorMessage.style.opacity = 0;
             errorMessage.style.bottom = '-100px'
             setTimeout(() => {
