@@ -1582,6 +1582,16 @@ class EmundusModelFormbuilder extends JModelList
 						}
 						//
 
+						$params['alias'] = !empty($label['fr']) ? $label['fr'] : "";
+						$params['alias'] = str_replace(' ', '_', $params['alias']);
+						$params['alias'] = htmlentities($params['alias'], ENT_COMPAT, "UTF-8");
+						$params['alias'] = preg_replace('/&([a-zA-Z])(uml|acute|grave|circ|tilde|cedil);/', '$1', $params['alias']);
+						$params['alias'] = html_entity_decode($params['alias']);
+						$params['alias'] = preg_replace('/[^a-zA-Z0-9_]/', '', $params['alias']);
+						$params['alias'] = strtolower($params['alias']);
+
+						$params['alias'] = $params['alias'] === "" ? strtolower($name) . "_alias" : $params['alias'];
+
 						// Init a default subvalue for checkboxes
 						if ($plugin === 'checkbox' || $plugin === 'radiobutton' || $plugin === 'dropdown') {
 							$sub_values = [];
@@ -2179,6 +2189,19 @@ class EmundusModelFormbuilder extends JModelList
 					}
 				}
 			}
+
+			if(($element['params']['alias'] === "" || $element['params']['alias'] === "element_sans_titre") && isset($element['label']['fr'])){
+				$element['params']['alias'] =  $element['label']['fr'];
+			}
+			$element['params']['alias'] = str_replace(' ', '_', $element['params']['alias']);
+			$element['params']['alias'] = htmlentities($element['params']['alias'], ENT_COMPAT, "UTF-8");
+			$element['params']['alias'] = preg_replace('/&([a-zA-Z])(uml|acute|grave|circ|tilde|cedil);/', '$1', $element['params']['alias']);
+			$element['params']['alias'] = html_entity_decode($element['params']['alias']);
+			$element['params']['alias'] = preg_replace('/[^\x20-\x7E]/','', $element['params']['alias']);
+			$element['params']['alias'] = preg_replace('/[^a-zA-Z0-9_]/', '', $element['params']['alias']);
+			$element['params']['alias'] = strtolower($element['params']['alias']);
+
+			$element['params']['alias'] = $element['params']['alias'] === "" ? (!empty($element['name']) ? strtolower($element['name']) . "_alias" : "alias") :  $element['params']['alias'];
 
 			// Update the element
 			$fields = array(

@@ -33,15 +33,6 @@
       "sysadmin_only": false
     },
     {
-      "label": "COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT",
-      "name": "rollover",
-      "type": "text",
-      "helptext": "",
-      "placeholder": "",
-      "published": true,
-      "sysadmin_only": false
-    },
-    {
       "label": "COM_EMUNDUS_ONBOARD_BUILDER_MAXLENGTH",
       "name": "maxlength",
       "type": "number",
@@ -154,28 +145,9 @@
       "placeholder": "",
       "published": true,
       "sysadmin_only": false
-    },
-    {
-      "label": "COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT",
-      "name": "rollover",
-      "type": "text",
-      "helptext": "",
-      "placeholder": "",
-      "published": true,
-      "sysadmin_only": false
     }
   ],
-  "dropdown": [
-    {
-      "label": "COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT",
-      "name": "rollover",
-      "type": "text",
-      "helptext": "",
-      "placeholder": "",
-      "published": true,
-      "sysadmin_only": false
-    }
-  ],
+  "dropdown": [],
   "checkbox": [
     {
       "label": "COM_EMUNDUS_ONBOARD_BUILDER_CHECKBOX_OPTIONS_PER_ROW",
@@ -185,15 +157,6 @@
       "placeholder": "",
       "published": true,
       "sysadmin_only": true
-    },
-    {
-      "label": "COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT",
-      "name": "rollover",
-      "type": "text",
-      "helptext": "",
-      "placeholder": "",
-      "published": true,
-      "sysadmin_only": false
     }
   ],
   "radiobutton": [
@@ -205,15 +168,6 @@
       "placeholder": "",
       "published": true,
       "sysadmin_only": true
-    },
-    {
-      "label": "COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT",
-      "name": "rollover",
-      "type": "text",
-      "helptext": "",
-      "placeholder": "",
-      "published": true,
-      "sysadmin_only": false
     }
   ],
   "birthday": [
@@ -299,15 +253,6 @@
       "placeholder": "",
       "published": true,
       "sysadmin_only": false
-    },
-    {
-      "label": "COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT",
-      "name": "rollover",
-      "type": "text",
-      "helptext": "",
-      "placeholder": "",
-      "published": true,
-      "sysadmin_only": false
     }
   ],
   "yesno": [
@@ -325,15 +270,6 @@
           "label": "JYES"
         }
       ],
-      "helptext": "",
-      "placeholder": "",
-      "published": true,
-      "sysadmin_only": false
-    },
-    {
-      "label": "COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT",
-      "name": "rollover",
-      "type": "text",
       "helptext": "",
       "placeholder": "",
       "published": true,
@@ -473,15 +409,6 @@
       "placeholder": "",
       "published": true,
       "sysadmin_only": true
-    },
-    {
-      "label": "COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT",
-      "name": "rollover",
-      "type": "text",
-      "helptext": "",
-      "placeholder": "",
-      "published": true,
-      "sysadmin_only": false
     }
   ],
   "jdate": [
@@ -499,15 +426,6 @@
           "label": "JYES"
         }
       ],
-      "helptext": "",
-      "placeholder": "",
-      "published": true,
-      "sysadmin_only": false
-    },
-    {
-      "label": "COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT",
-      "name": "rollover",
-      "type": "text",
       "helptext": "",
       "placeholder": "",
       "published": true,
@@ -565,15 +483,6 @@
     }
   ],
   "emundus_phonenumber": [
-    {
-      "label": "COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT",
-      "name": "rollover",
-      "type": "text",
-      "helptext": "",
-      "placeholder": "",
-      "published": true,
-      "sysadmin_only": false
-    },
     {
       "label": "COM_EMUNDUS_ONBOARD_BUILDER_PHONENUMBER_DEFAULT_COUNTRY",
       "name": "default_country",
