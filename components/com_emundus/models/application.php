@@ -1252,8 +1252,7 @@ class EmundusModelApplication extends ListModel
 		for ($i = 0; $i < sizeof($table); $i++) {
 			$form .= '<br><hr><div class="TitleAdmission"><h2>';
 
-			$title = explode('-', $table[$i]->label);
-			$form  .= !empty($title[1]) ? Text::_(trim($title[1])) : Text::_(trim($title[0]));
+			$form  .= Text::_($table[$i]->label);
 
 			$form .= '</h2>';
 			if ($h_access->asAccessAction(1, 'u', $this->_user->id, $fnum) && $table[$i]->db_table_name != "#__emundus_training") {
@@ -2581,24 +2580,10 @@ class EmundusModelApplication extends ListModel
 					throw $e;
 				}
 
+				$forms .= '<h2 ' . $breaker . '>';
 				if (count($groupes) > 0) {
-					$forms .= '<h2 ' . $breaker . '>';
-					$title = explode('-', Text::_($itemt->label));
-
-					if (empty($title[1])) {
-						$form_label = preg_replace('/\s+/', ' ', Text::_(trim($itemt->label)));
-						if (!empty($form_label)) {
-							$forms .= '<b><h2 class="pdf-page-title">' . $form_label . '</h2></b>';
-						}
-					}
-					else {
-						$form_label = preg_replace('/\s+/', ' ', Text::_(trim($title[1])));
-						if (!empty($form_label)) {
-							$forms .= '<b><h2 class="pdf-page-title">' . $form_label . '</h2></b>';
-						}
-					}
+					$forms .= '<b><h2 class="pdf-page-title">' . preg_replace('/\s+/', ' ', Text::_(trim($itemt->label))) . '</h2></b>';
 				}
-
 				$forms .= '</h2>';
 
 				/*-- Liste des groupes -- */
