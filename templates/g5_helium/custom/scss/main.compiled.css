@@ -4470,9 +4470,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
     --tw-border-opacity: 1;
     border-color: rgb(209 213 219 / var(--tw-border-opacity));
 }
-.tw-border-main-500 {
-    border-color: var(--main-500);
-}
 .tw-border-neutral-300 {
     border-color: var(--neutral-300);
 }
@@ -6657,6 +6654,9 @@ small {
 }
 .hover\:tw-text-profile-dark:hover {
     color: color-mix(in srgb,var(--em-profile-color),#000 15%);
+}
+.hover\:tw-text-profile-full:hover {
+    color: var(--em-profile-color);
 }
 .hover\:tw-text-white:hover {
     --tw-text-opacity: 1;

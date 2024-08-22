@@ -1,5 +1,5 @@
 <template>
-  <div id="comments" class="tw-p-4 tw-w-full tw-bg-[#f8f8f8] tw-border-l-4 tw-border-main-500">
+  <div id="comments" class="tw-p-4 tw-w-full tw-bg-[#f8f8f8] tw-border-l-4 tw-border-profile-full">
     <div v-if="comments.length > 0" id="filter-comments" class="tw-flex tw-flex-row tw-flex-wrap tw-gap-2">
       <input type="text" class="em-input tw-mr-2" :placeholder="translate('COM_EMUNDUS_COMMENTS_SEARCH')" v-model="search" @keyup="onSearchChange">
       <select v-model="filterOpenedState" class="tw-mr-2 tw-rounded-applicant">
@@ -19,7 +19,7 @@
            class="tw-group tw-shadow tw-rounded-lg tw-py-2 tw-px-4 tw-my-4 tw-border tw-bg-white"
            :class="{
             'tw-border-transparent': comment.id != openedCommentId,
-            'tw-focus tw-border-main-500': comment.id == openedCommentId,
+            'tw-focus tw-border-profile-full': comment.id == openedCommentId,
             'tw-lightgray-bg tw-border-left-600': comment.opened == 0,
             'tw-white-bg': comment.opened == 1,
          }"
@@ -43,7 +43,7 @@
                 </div>
               </div>
               <div>
-                      <span v-if="childrenComments[comment.id].length > 0" class="label tw-bg-main-500">
+                      <span v-if="childrenComments[comment.id].length > 0" class="label tw-bg-profile-full">
                         {{ childrenComments[comment.id].length }}
                         {{
                           childrenComments[comment.id].length > 1 ? translate('COM_EMUNDUS_COMMENTS_ANSWERS') : translate('COM_EMUNDUS_COMMENTS_ANSWER')
@@ -119,7 +119,7 @@
                     :placeholder="translate('COM_EMUNDUS_COMMENTS_ADD_COMMENT_PLACEHOLDER')"></textarea>
             <div class="tw-w-full tw-flex tw-flex-row tw-justify-end">
               <button id="add-comment-btn"
-                      class="tw-btn-primary tw-bg-main-500 tw-text-neutral-300 tw-w-fit tw-mt-2"
+                      class="tw-btn-primary tw-bg-profile-full tw-text-neutral-300 tw-w-fit tw-mt-2"
                       :class="{'tw-cursor-not-allowed tw-opacity-50': newChildCommentText.length === 0}"
                       :disabled="newChildCommentText.length === 0"
                       @click="addComment(comment.id)">
@@ -164,7 +164,7 @@
       </div>
       <div class="tw-flex tw-flex-row tw-justify-end tw-mt-4">
         <button id="add-comment-btn"
-                class="tw-btn-primary tw-bg-main-500 tw-text-neutral-300 tw-w-fit"
+                class="tw-btn-primary tw-bg-profile-full tw-text-neutral-300 tw-w-fit"
                 :class="{'!tw-cursor-not-allowed tw-opacity-50': newCommentText.length === 0}"
                 :disabled="newCommentText.length === 0"
                 @click="addComment(0)"
@@ -206,7 +206,7 @@
         <div class="tw-flex tw-flex-row tw-justify-between">
           <button @click="hideModal()" class="tw-btn-cancel"> {{ translate('COM_EMUNDUS_COMMENTS_CANCEL') }}</button>
           <button id="add-comment-btn"
-                  class="tw-btn-primary tw-bg-main-500 tw-text-neutral-300 tw-w-fit"
+                  class="tw-btn-primary tw-bg-profile-full tw-text-neutral-300 tw-w-fit"
                   :class="{'tw-cursor-not-allowed tw-opacity-50': newCommentText.length === 0}"
                   :disabled="newCommentText.length === 0"
                   @click="addComment(0)"
