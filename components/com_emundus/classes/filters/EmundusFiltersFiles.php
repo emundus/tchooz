@@ -219,7 +219,17 @@ class EmundusFiltersFiles extends EmundusFilters
 
         $form_ids = array_merge($profile_form_ids, $config_form_ids);
 
-		return $this->getElementsFromFabrikForms($form_ids);
+		$unsorted_elements = $this->getElementsFromFabrikForms($form_ids);
+
+		foreach ($form_ids as $form_id) {
+			foreach ($unsorted_elements as $element) {
+				if ($element['element_form_id'] == $form_id) {
+					$elements[] = $element;
+				}
+			}
+		}
+
+		return $elements;
 	}
 
     private function getElementsFromFabrikForms($form_ids)
