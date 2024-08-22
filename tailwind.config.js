@@ -59,6 +59,7 @@ module.exports = {
                     full: 'var(--em-profile-color)',
                     light: 'hsl(from var(--em-profile-color) h s l / 15%)',
                     medium: 'hsl(from var(--em-profile-color) h s l / 30%)',
+                    dark: 'color-mix(in srgb,var(--em-profile-color),#000 15%)',
                 },
 
                 red: {

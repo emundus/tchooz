@@ -10,7 +10,7 @@ defined('_JEXEC') or die;
 ?>
 
 <div id="mod_emundus_help">
-    <p id="trigger" data-toggle="popover" class="mod_emundus_help__popover"><span class="material-icons">help</span></p>
+    <p id="trigger" data-toggle="popover" class="mod_emundus_help__popover"><span class="material-icons tw-text-profile-full hover:tw-text-profile-dark">help</span></p>
 
     <template data-popover="popover">
         <div class="popover help-popover" id="help_popover" style="margin-top:-65px;">
