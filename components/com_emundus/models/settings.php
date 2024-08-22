@@ -19,16 +19,15 @@ use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Mail\MailerFactoryInterface;
+use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Registry\Registry;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Mail\Exception\MailDisabledException;
-use Joomla\CMS\Mail\MailTemplate;
 use PHPMailer\PHPMailer\Exception as phpMailerException;
 use Symfony\Component\Yaml\Yaml;
-use function PHPUnit\Framework\isNan;
 
-class EmundusModelsettings extends JModelList
+class EmundusModelsettings extends ListModel
 {
 
 	private $db;
@@ -40,15 +39,8 @@ class EmundusModelsettings extends JModelList
 		parent::__construct();
 
 		$this->app = Factory::getApplication();
-
-		if (version_compare(JVERSION, '4.0', '>')) {
-			$this->db   = Factory::getContainer()->get('DatabaseDriver');
-			$this->user = $this->app->getIdentity();
-		}
-		else {
-			$this->db   = Factory::getDBO();
-			$this->user = Factory::getUser();
-		}
+		$this->db = $this->getDatabase();
+		$this->user = $this->app->getIdentity();
 
 		Log::addLogger(['text_file' => 'com_emundus.error.php'], Log::ERROR, array('com_emundus'));
 		Log::addLogger(['text_file' => 'com_emundus.updated_settings.php'], Log::ALL, array('com_emundus.settings'));
@@ -166,7 +158,7 @@ class EmundusModelsettings extends JModelList
 
 		$query->select('*')
 			->from($this->db->quoteName('#__emundus_setup_action_tag'))
-			->order($this->db->quoteName('label'));
+			->order($this->db->quoteName('ordering') . ',' . $this->db->quoteName('label'));
 
 		try {
 			$this->db->setQuery($query);
@@ -247,6 +239,39 @@ class EmundusModelsettings extends JModelList
 
 			return false;
 		}
+	}
+
+	/**
+	 * Update the order of the tags
+	 *
+	 * @param $orderedTags
+	 *
+	 * @return boolean
+	 *
+	 * @since version 1.40.0
+	 */
+	function updateTagsOrder($orderedTags) {
+		$updated = false;
+
+		if (!empty($orderedTags)) {
+			$query = $this->db->getQuery(true);
+
+			try {
+				foreach ($orderedTags as $order => $tag_id) {
+					$query->clear()
+						->update('#__emundus_setup_action_tag')
+						->set($this->db->quoteName('ordering') . ' = ' . $this->db->quote($order))
+						->where($this->db->quoteName('id') . ' = ' . $this->db->quote($tag_id));
+
+					$this->db->setQuery($query);
+					$updated = $this->db->execute();
+				}
+			} catch (Exception $e) {
+				Log::add('component/com_emundus/models/settings | Cannot update tags order : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $updated;
 	}
 
 	/**

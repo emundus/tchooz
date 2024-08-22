@@ -1453,6 +1453,8 @@ if(value == 1) {
 
 			EmundusHelperUpdate::installExtension('plg_fabrik_element_emundus_geolocalisation','emundus_geolocalisation',null,'plugin',1,'fabrik_element');
 
+			EmundusHelperUpdate::addColumn('jos_emundus_setup_action_tag', 'ordering', 'INT', null, 1, 0);
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

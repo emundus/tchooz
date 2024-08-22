@@ -1447,5 +1447,31 @@ public function sendTestMail()
 		echo json_encode((object) $result);
 		exit;
 	}
+
+	/**
+	 * Update the order of the tags
+	 *
+	 * @since version 1.40.0
+	 */
+	public function updatetagsorder() {
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
+			$response['code'] = 500;
+			$response['message'] = Text::_('MISSING_PARAMS');
+
+			$ordered_tags_string = $this->input->getString('tags', '');
+
+			if (!empty($ordered_tags_string)) {
+				$ordered_tags = explode(',', $ordered_tags_string);
+
+				$response['status'] = $this->m_settings->updateTagsOrder($ordered_tags);
+				$response['code'] = 200;
+			}
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
 }
 

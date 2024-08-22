@@ -1377,8 +1377,11 @@ class EmundusModelFiles extends JModelLegacy
 	}
 
 	/**
-	 * @return mixed
-	 * @throws Exception
+	 * Get all action tags
+	 *
+	 * @return array
+	 *
+	 * @since version 1.0.0
 	 */
 	public function getAllTags()
 	{
@@ -1388,7 +1391,7 @@ class EmundusModelFiles extends JModelLegacy
 
 		$query->select('*')
 			->from($this->_db->quoteName('#__emundus_setup_action_tag'))
-			->order('label');
+			->order('ordering, label');
 
 		try {
 			$this->_db->setQuery($query);
