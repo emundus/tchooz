@@ -1808,7 +1808,7 @@ die("<script>
 	 * @param $form_ids
 	 * @return array
 	 */
-	static function getElementsFromFabrikForms($form_ids)
+	static function getElementsFromFabrikForms($form_ids, $excluded_plugins = [])
 	{
 		$elements = [];
 		$form_ids = array_unique($form_ids);
@@ -1846,6 +1846,10 @@ die("<script>
 					->where('jffg.form_id IN (' . implode(',', $form_ids) . ')')
 					->andWhere('jfe.published = 1')
 					->andWhere('jfe.hidden = 0');
+
+				if (!empty($excluded_plugins)) {
+					$query->andWhere('jfe.plugin NOT IN (' . implode(',', $db->quote($excluded_plugins)) . ')');
+				}
 
 				try
 				{

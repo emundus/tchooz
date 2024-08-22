@@ -226,7 +226,7 @@ class EmundusFiltersFiles extends EmundusFilters
     {
 	    require_once(JPATH_ROOT . '/components/com_emundus/helpers/fabrik.php');
 	    $h_fabrik = new EmundusHelperFabrik();
-	    return $h_fabrik->getElementsFromFabrikForms($form_ids);
+	    return $h_fabrik->getElementsFromFabrikForms($form_ids, ['panel', 'display']);
     }
 
 	private function setDefaultFilters($config)
