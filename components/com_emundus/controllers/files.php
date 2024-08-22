@@ -2030,8 +2030,8 @@ class EmundusControllerFiles extends BaseController
 			$campaign = $camp[0] != 0 ? $m_campaign->getCampaignsByCourseCampaign($code[0], $camp[0]) : $m_campaign->getCampaignsByCourse($code[0]);
 
 			foreach ($pages as $i => $page) {
-				$title = explode('-', $page->label);
-				$title = !empty($title[1]) ? Text::_(trim($title[1])) : Text::_(trim($title[0]));
+				$title = Text::_($page->label);
+				//$title = !empty($title[1]) ? Text::_(trim($title[1])) : Text::_(trim($title[0]));
 
 				if ($i < count($pages) / 2) {
 					$html1 .= '<div class="em-flex-row"><input class="em-ex-check" type="checkbox" value="' . $page->form_id . '|' . $code[0] . '|' . $camp[0] . '" name="' . $page->label . '" id="' . $page->form_id . '|' . $code[0] . '|' . $camp[0] . '|' . $profile . '" /><label class="em-mb-0-important" for="' . $page->form_id . '|' . $code[0] . '|' . $camp[0] . '|' . $profile . '">' . Text::_($title) . '</label></div>';

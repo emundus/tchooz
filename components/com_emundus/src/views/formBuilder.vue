@@ -435,7 +435,7 @@ export default {
           this.principalContainer = 'default';
 
           formService.getSubmissionPage(this.profile_id).then(response => {
-            const formId = response.data.link.match(/formid=(\d+)/)[1];
+            const formId = response.link.match(/formid=(\d+)/)[1];
             if (formId) {
               // check if the form is already in the pages
               const page = this.pages.find(page => page.id === formId);
