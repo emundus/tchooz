@@ -662,9 +662,11 @@ footer#g-footer > .g-container {
 
   a {
     color: var(--link-regular);
+    text-decoration: underline;
 
     &:hover {
       color: var(--link-hover);
+      text-decoration: none;
     }
   }
 }
