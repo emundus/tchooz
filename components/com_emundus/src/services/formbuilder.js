@@ -1,3 +1,6 @@
+import {FetchClient} from './fetchClient.js';
+
+const client = new FetchClient('formbuilder');
 
 export default {
   async createSimpleElement(params) {
@@ -818,10 +821,11 @@ export default {
     if (modelId > 0 && profileId > 0) {
 
       try {
-        return fetch('/index.php?option=com_emundus&controller=formbuilder&task=checkifmodeltableisusedinform&model_id=' + modelId + '&profile_id=' + profileId, {
-          method: 'GET'
-        }).then(response => response.json()).then(response => {
-          return response.data;
+        return client.get('checkifmodeltableisusedinform', {
+          model_id: modelId,
+          profile_id: profileId
+        }).then(response => {
+          return response;
         }).catch(error => {
           throw error;
         });
