@@ -6,6 +6,7 @@
    <field Field="label" Type="varchar(255)" Null="NO" Key="" Extra="" />
    <field Field="class" Type="text" Null="YES" Key="" Extra="" />
    <field Field="category" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="ordering" Type="int" Null="YES" Key="" Default="0" Extra="" />
    <key Table="#__emundus_setup_action_tag" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
   </table_structure>
   <table_data name="#__emundus_setup_action_tag">
@@ -14,18 +15,21 @@
     <field name="label">Justificatif d'identité non conforme</field>
     <field name="class">label-blue-2</field>
     <field name="category">Cat 1</field>
+    <field name="ordering">0</field>
    </row>
    <row>
     <field name="id">2</field>
     <field name="label">Dossier évalué</field>
     <field name="class">label-green-1</field>
     <field name="category"></field>
+    <field name="ordering">0</field>
    </row>
    <row>
     <field name="id">3</field>
     <field name="label">Documents manquants</field>
     <field name="class">label-orange-1</field>
     <field name="category"></field>
+    <field name="ordering">0</field>
    </row>
   </table_data>
  </database>

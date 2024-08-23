@@ -11,6 +11,14 @@
    <field Field="comment_body" Type="text" Null="YES" Key="" Extra="" />
    <field Field="status_from" Type="int" Null="YES" Key="" Extra="" />
    <field Field="status_to" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="ccid" Type="int" Null="NO" Key="" Extra="" />
+   <field Field="parent_id" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="opened" Type="tinyint(1)" Null="NO" Key="" Default="1" Extra="" />
+   <field Field="updated" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="updated_by" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="target_type" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="target_id" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="visible_to_applicant" Type="tinyint(1)" Null="NO" Key="" Default="1" Extra="" />
    <key Table="#__emundus_comments" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_comments" Non_unique="1" Key_name="fb_tableorder_date_INDEX" Seq_in_index="1" Column_name="date" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_comments" Non_unique="1" Key_name="applicant_id" Seq_in_index="1" Column_name="applicant_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
