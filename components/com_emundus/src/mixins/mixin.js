@@ -43,9 +43,9 @@ var mixin = {
           let second = date.substring(17, 19);
           const stringDate = year + '-' + month + '-' + day + 'T' + hour + ':' + minute + ':' + second + '+00:00';
 
-          formattedDate = moment(stringDate).utcOffset(utc).format(format);
+          formattedDate = utc != null && typeof utc != 'undefined' ? moment(stringDate).utcOffset(utc).format(format) : moment(stringDate).format(format);
         } else {
-          formattedDate = moment().utcOffset(utc).format(format);
+          formattedDate = utc != null && typeof utc != 'undefined' ? moment().utcOffset(utc).format(format) :  moment().format(format);
         }
       }
 

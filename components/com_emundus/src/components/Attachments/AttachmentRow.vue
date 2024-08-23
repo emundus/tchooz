@@ -51,7 +51,7 @@
             class="material-symbols-outlined delete-permission tw-cursor-pointer"
             :class="{ active: attachment.can_be_deleted == '1' }"
             @click="changePermission('can_be_deleted', attachment)"
-            :title="translate('COM_EMUNDUS_ATTACHMENTS_PERMISSION_DELETE')">delete_outlined</span>
+            :title="translate('COM_EMUNDUS_ATTACHMENTS_PERMISSION_DELETE')">delete</span>
     </td>
     <td v-if="sync && columns.includes('sync')">
       <div v-if="attachment.sync > 0">
