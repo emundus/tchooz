@@ -82,6 +82,15 @@ export default
     "value": 1
   },
   {
+    "displayed": true,
+    "component": "emundus",
+    "label": "COM_EMUNDUS_ONBOARD_SETTINGS_ALLOW_APPLICANT_TO_COMMENT",
+    "param": "allow_applicant_to_comment",
+    "type": "yesno",
+    "options": [{"label": "JNO", "value": 0}, {"label": "JYES", "value": 1}],
+    "value": 0
+  },
+  {
     "displayed": false,
     "component": "emundus",
     "label": "COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANT_CAN_SUBMIT_ANONYM_FILE",
