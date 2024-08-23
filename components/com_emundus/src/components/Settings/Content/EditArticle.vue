@@ -185,7 +185,6 @@ export default {
       formData.append('field', 'introtext');
       if (this.clearNotif) {
         formData.append('note', '');
-        this.$emit('needNotify',false);
       }
       await client().post(`index.php?option=com_emundus&controller=settings&task=updatearticle`,
         formData,
@@ -195,8 +194,6 @@ export default {
           }
         }
       ).then(async () => {
-        this.$emit('updateSaving', false);
-        this.$emit('updateLastSaving', this.formattedDate('', 'LT'));
         this.updated = false;
         Swal.fire({
           title: this.translate("COM_EMUNDUS_ONBOARD_SUCCESS"),
@@ -208,9 +205,6 @@ export default {
           },
           timer: 1500,
         });
-        setTimeout(() => {
-          if (this.clearNotif){ this.$emit('needNotify', false);}else{this.$emit('needNotify', true);}
-        }, 500);
       });
     },
 

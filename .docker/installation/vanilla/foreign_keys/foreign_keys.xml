@@ -55,6 +55,10 @@
     <row constraint_name="jos_emundus_comments_ibfk_2" column_name="applicant_id" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
     <row constraint_name="jos_emundus_comments_ibfk_3" column_name="user_id" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
   </table>
+  <table name="jos_emundus_comments_read_by">
+    <row constraint_name="jos_emundus_comments_read_by_jos_emundus_comments_id_fk" column_name="comment_id" referenced_table_name="jos_emundus_comments" referenced_column_name="id"/>
+    <row constraint_name="jos_emundus_comments_read_by_jos_users_id_fk" column_name="reader_id" referenced_table_name="jos_users" referenced_column_name="id"/>
+  </table>
   <table name="jos_emundus_cv">
     <row constraint_name="jos_emundus_cv_jos_emundus_campaign_candidature_fnum_fk" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
   </table>

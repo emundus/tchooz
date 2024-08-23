@@ -82,23 +82,15 @@ class EmundusControllersettings extends BaseController
 
 	public function gettags()
 	{
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
 		$user = $this->user;
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			$tags = $this->m_settings->getTags();
+			$response = ['status' => true, 'msg' => Text::_('TAGS_RETRIEVED'), 'data' => $tags];
 		}
-		else {
-			$status = $this->m_settings->getTags();
 
-			if (!empty($status)) {
-				$tab = array('status' => 1, 'msg' => JText::_('STATUS_RETRIEVED'), 'data' => $status);
-			}
-			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_STATUS'), 'data' => $status);
-			}
-		}
-		echo json_encode((object) $tab);
+		echo json_encode($response);
 		exit;
 	}
 

@@ -59,7 +59,9 @@ import axios from "axios";
 
 /* SERVICES */
 import client from "@/services/axiosClient";
-import mixin from "@/mixins/mixin";
+import mixin from "@/mixins/mixin.js";
+import errors from '@/mixins/errors.js';
+import settingsService from '@/services/settings.js';
 
 import { useGlobalStore } from '@/stores/global';
 import ColorPicker from "@/components/ColorPicker.vue";
@@ -75,7 +77,7 @@ export default {
 
   props: {},
 
-  mixins: [mixin],
+  mixins: [mixin, errors],
 
   data() {
     return {
@@ -114,37 +116,53 @@ export default {
 
   methods: {
     getStatus() {
-      axios.get("index.php?option=com_emundus&controller=settings&task=getstatus")
-          .then(response => {
-            this.status = response.data.data;
-            setTimeout(() => {
-              this.status.forEach(element => {
-                this.getHexColors(element);
-              });
-            }, 100);
-          });
+      settingsService.getStatus().then(response => {
+        if (response.status) {
+          this.status = response.data;
+          setTimeout(() => {
+            this.status.forEach(element => {
+              this.getHexColors(element);
+            });
+          }, 100);
+        } else {
+          this.displayError(response.msg);
+        }
+      });
     },
 
     async updateStatus(status) {
-      this.$emit('updateSaving',true);
+      const newLabel = document.getElementById(('status_label_' + status.step)).textContent;
 
-      let index = this.colors.findIndex(item => item.value === status.class);
-      const formData = new FormData();
-      formData.append('status', status.step);
-      formData.append('label', document.getElementById(('status_label_' + status.step)).textContent);
-      formData.append('color', this.colors[index].name);
+      if (newLabel.length > 0) {
+        this.$emit('updateSaving',true);
 
-      await client().post('index.php?option=com_emundus&controller=settings&task=updatestatus',
+        let index = this.colors.findIndex(item => item.value === status.class);
+        const formData = new FormData();
+        formData.append('status', status.step);
+        formData.append('label', newLabel);
+        formData.append('color', this.colors[index].name);
+
+        await client().post('index.php?option=com_emundus&controller=settings&task=updatestatus',
           formData,
           {
             headers: {
               'Content-Type': 'multipart/form-data'
             }
           }
-      ).then(() => {
-        this.$emit('updateSaving',false);
-        this.$emit('updateLastSaving',this.formattedDate('','LT'));
-      });
+        ).then((response) => {
+          this.$emit('updateSaving',false);
+
+          if (response.status) {
+            status.label[this.actualLanguage] = newLabel;
+            this.$emit('updateLastSaving',this.formattedDate('','LT'));
+          } else {
+            this.displayError('COM_EMUNDUS_SETTINGS_FAILED_TO_UPDATE_STATUS', response.msg);
+          }
+        });
+      } else {
+        document.getElementById(('status_label_' + status.step)).textContent = status.label[this.actualLanguage];
+        this.displayError('COM_EMUNDUS_SETTINGS_FAILED_TO_UPDATE_STATUS', 'COM_EMUNDUS_SETTINGS_FORBIDDEN_EMPTY_STATUS');
+      }
     },
 
     async updateStatusOrder() {
@@ -159,12 +177,12 @@ export default {
       formData.append('status', status_steps.join(','));
 
       await client().post('index.php?option=com_emundus&controller=settings&task=updatestatusorder',
-          formData,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            }
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data'
           }
+        }
       ).then(() => {
         this.$emit('updateSaving',false);
         this.$emit('updateLastSaving',this.formattedDate('','LT'));

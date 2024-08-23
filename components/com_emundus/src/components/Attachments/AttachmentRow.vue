@@ -51,17 +51,14 @@
             class="material-symbols-outlined delete-permission tw-cursor-pointer"
             :class="{ active: attachment.can_be_deleted == '1' }"
             @click="changePermission('can_be_deleted', attachment)"
-            :title="translate('COM_EMUNDUS_ATTACHMENTS_PERMISSION_DELETE')">delete_outlined</span>
+            :title="translate('COM_EMUNDUS_ATTACHMENTS_PERMISSION_DELETE')">delete</span>
     </td>
     <td v-if="sync && columns.includes('sync')">
       <div v-if="attachment.sync > 0">
         <span
             v-if="attachment.sync_method == 'write' && !syncLoading"
             class="material-icons sync tw-cursor-pointer"
-            :class="{
-              success: synchronizeState == 1,
-              error: synchronizeState != 1,
-            }"
+            :class="{success: synchronizeState == 1, error: synchronizeState != 1}"
             :title="translate('COM_EMUNDUS_ATTACHMENTS_SYNC_WRITE')"
             @click="synchronizeAttachments(attachment.aid)"
         >

@@ -154,6 +154,8 @@ class EmundusModelsettings extends ListModel
 	 */
 	function getTags()
 	{
+		$tags = [];
+
 		$query = $this->db->getQuery(true);
 
 		$query->select('*')
@@ -162,14 +164,12 @@ class EmundusModelsettings extends ListModel
 
 		try {
 			$this->db->setQuery($query);
-
-			return $this->db->loadObjectList();
-		}
-		catch (Exception $e) {
+			$tags = $this->db->loadObjectList();
+		} catch (Exception $e) {
 			Log::add('component/com_emundus/models/settings | Error at getting action tags : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
-
-			return false;
 		}
+
+		return $tags;
 	}
 
 	/**
@@ -1533,7 +1533,7 @@ class EmundusModelsettings extends ListModel
 					$cookies->id = $this->db->loadResult();
 				}
 				else {
-					$cookies->alias = 'gestion-des-cookies';
+					$cookies->alias = 'politique-des-cookies';
 				}
 				$cookies->title     = JText::_('COM_EMUNDUS_ONBOARD_CONTENT_TOOL_COOKIES');
 				$cookies->published = $params->mod_emundus_footer_cookies;
@@ -1590,6 +1590,7 @@ class EmundusModelsettings extends ListModel
 						case 'gestion-des-droits':
 							$params['mod_emundus_footer_rights'] = $publish;
 							break;
+						case 'politique-de-cookies':
 						case 'gestion-des-cookies':
 							$params['mod_emundus_footer_cookies'] = $publish;
 							break;
@@ -1693,6 +1694,7 @@ class EmundusModelsettings extends ListModel
 							$published = $params['mod_emundus_footer_rights'];
 							break;
 						case 'gestion-des-cookies':
+						case 'politique-de-cookies':
 							$published = $params['mod_emundus_footer_cookies'];
 							break;
 						case 'accessibilite':
@@ -1710,7 +1712,6 @@ class EmundusModelsettings extends ListModel
 					if (!empty($article_alias)) {
 						$section = array_search($article_alias, $params, true);
 						$section_to_edit = str_replace('_alias', '', $section);
-
 						$published = $params[$section_to_edit];
 					}
 				}

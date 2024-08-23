@@ -66,7 +66,7 @@
     <field name="template_style_id">0</field>
     <field name="params"></field>
     <field name="lft">0</field>
-    <field name="rgt">475</field>
+    <field name="rgt">485</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>

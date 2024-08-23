@@ -7058,7 +7058,7 @@ fieldset[disabled] .multiselect {
   }
 
   .em-actions-none {
-    display: none;
+    display: none !important;
   }
 
   .swal2-progress-steps {
