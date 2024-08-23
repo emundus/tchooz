@@ -150,9 +150,10 @@ export default {
             }
           }
         ).then((response) => {
+          this.$emit('updateSaving',false);
+
           if (response.status) {
             status.label[this.actualLanguage] = newLabel;
-            this.$emit('updateSaving',false);
             this.$emit('updateLastSaving',this.formattedDate('','LT'));
           } else {
             this.displayError('COM_EMUNDUS_SETTINGS_FAILED_TO_UPDATE_STATUS', response.msg);
