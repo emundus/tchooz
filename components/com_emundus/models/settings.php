@@ -154,6 +154,8 @@ class EmundusModelsettings extends ListModel
 	 */
 	function getTags()
 	{
+		$tags = [];
+
 		$query = $this->db->getQuery(true);
 
 		$query->select('*')
@@ -162,14 +164,12 @@ class EmundusModelsettings extends ListModel
 
 		try {
 			$this->db->setQuery($query);
-
-			return $this->db->loadObjectList();
-		}
-		catch (Exception $e) {
+			$tags = $this->db->loadObjectList();
+		} catch (Exception $e) {
 			Log::add('component/com_emundus/models/settings | Error at getting action tags : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
-
-			return false;
 		}
+
+		return $tags;
 	}
 
 	/**

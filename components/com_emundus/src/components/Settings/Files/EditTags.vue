@@ -54,6 +54,7 @@ import axios from "axios";
 /* SERVICES */
 import client from "@/services/axiosClient";
 import mixin from "@/mixins/mixin";
+import errors from '@/mixins/errors.js';
 import settingsService from "@/services/settings.js";
 
 import basicPreset from "@/assets/data/colorpicker/presets/basic";
@@ -71,7 +72,7 @@ export default {
 
   props: {},
 
-  mixins: [mixin],
+  mixins: [mixin, errors],
 
   data() {
     return {
@@ -110,15 +111,18 @@ export default {
 
   methods: {
     getTags() {
-      axios.get("index.php?option=com_emundus&controller=settings&task=gettags")
-          .then(response => {
-            this.tags = response.data.data;
-            setTimeout(() => {
-              this.tags.forEach(element => {
-                this.getHexColors(element);
-              });
-            }, 100);
-          });
+      settingsService.getTags().then(response => {
+        if (response.status) {
+          this.tags = response.data;
+          setTimeout(() => {
+            this.tags.forEach(element => {
+              this.getHexColors(element);
+            });
+          }, 100);
+        } else {
+          this.displayError(response.msg, '');
+        }
+      });
     },
 
     async updateTag(tag) {
@@ -131,12 +135,12 @@ export default {
       formData.append('color', this.colors[index].name);
 
       await client().post('index.php?option=com_emundus&controller=settings&task=updatetags',
-          formData,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            }
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data'
           }
+        }
       ).then(() => {
         this.$emit('updateSaving',false);
         this.$emit('updateLastSaving',this.formattedDate('','LT'));
