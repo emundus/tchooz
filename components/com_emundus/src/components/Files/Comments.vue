@@ -43,7 +43,7 @@
                 </div>
               </div>
               <div>
-                      <span v-if="childrenComments[comment.id].length > 0" class="label tw-bg-profile-full">
+                      <span v-if="childrenComments[comment.id].length > 0" class="label tw-bg-profile-medium !tw-text-neutral-900">
                         {{ childrenComments[comment.id].length }}
                         {{
                           childrenComments[comment.id].length > 1 ? translate('COM_EMUNDUS_COMMENTS_ANSWERS') : translate('COM_EMUNDUS_COMMENTS_ANSWER')
@@ -51,7 +51,7 @@
                       </span>
               </div>
             </div>
-            <div class="file-comment-header-right tw-ease-in-out tw-duration-300 tw-opacity-0 group-hover:tw-opacity-100">
+            <div class="file-comment-header-right tw-ease-in-out tw-duration-300 tw-opacity-0 group-hover:tw-opacity-100 tw-flex tw-flex-row">
               <span class="material-symbols-outlined tw-cursor-pointer" @click="replyToComment(comment.id)">reply</span>
               <span v-if="access.d || comment.user_id == user" class="material-symbols-outlined tw-cursor-pointer" @click="deleteComment(comment.id)">delete</span>
               <span v-if="access.u || (access.c && comment.user_id == user)" class="material-symbols-outlined tw-cursor-pointer" @click="makeCommentEditable(comment.id)">edit</span>
@@ -129,14 +129,12 @@
             </div>
           </div>
           <hr/>
-          <div class="tw-flex tw-flex-row tw-justify-center tw-items-center tw-mt-2">
-            <button class="tw-btn-primary tw-w-fit" v-if="comment.opened == 1" @click="updateCommentOpenedState(comment.id, 0)">
-              <span class="material-symbols-outlined tw-text-neutral-300">lock</span>
-              <span>{{ translate('COM_EMUNDUS_COMMENTS_CLOSE_COMMENT_THREAD') }}</span>
+          <div class="tw-flex tw-flex-row tw-justify-end tw-items-center tw-mt-2">
+            <button class="tw-btn-secondary tw-w-fit" v-if="comment.opened == 1" @click="updateCommentOpenedState(comment.id, 0)">
+              <span :title="translate('COM_EMUNDUS_COMMENTS_CLOSE_COMMENT_THREAD')" class="material-symbols-outlined tw-text-neutral-300">lock</span>
             </button>
-            <button class="tw-btn-primary tw-w-fit" v-else @click="updateCommentOpenedState(comment.id, 1)">
-              <span class="material-symbols-outlined tw-text-neutral-300">lock_open</span>
-              <span>{{ translate('COM_EMUNDUS_COMMENTS_REOPEN_COMMENT_THREAD') }}</span>
+            <button class="tw-btn-secondary tw-w-fit" v-else @click="updateCommentOpenedState(comment.id, 1)">
+              <span :title="translate('COM_EMUNDUS_COMMENTS_REOPEN_COMMENT_THREAD')" class="material-symbols-outlined tw-text-neutral-300">lock_open</span>
             </button>
           </div>
         </div>
