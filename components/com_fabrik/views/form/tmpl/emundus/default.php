@@ -242,7 +242,7 @@ endif;
 <?php
 $app  = Factory::getApplication();
 $user = $app->getIdentity();
-$fnum = $app->input->getString('rowid', '');
+$fnum = $app->input->getString('fnum', '');
 if (empty($fnum))
 {
 	$fnum = $app->getSession()->get('emundusUser')->fnum;
@@ -340,7 +340,7 @@ if ($this->display_comments)
         </div>
     </aside>
     <script type="module" src="/media/com_emundus_vue/app_emundus.js?<?php echo uniqid(); ?>"></script>
-    <script src="media/com_emundus/js/comment.js?<?php echo $hash ?>"></script>
+    <script src="/media/com_emundus/js/comment.js?<?php echo $hash ?>"></script>
 	<?php
 }
 ?>
