@@ -58,10 +58,7 @@
         <span
             v-if="attachment.sync_method == 'write' && !syncLoading"
             class="material-icons sync tw-cursor-pointer"
-            :class="{
-              success: synchronizeState == 1,
-              error: synchronizeState != 1,
-            }"
+            :class="{success: synchronizeState == 1, error: synchronizeState != 1}"
             :title="translate('COM_EMUNDUS_ATTACHMENTS_SYNC_WRITE')"
             @click="synchronizeAttachments(attachment.aid)"
         >
