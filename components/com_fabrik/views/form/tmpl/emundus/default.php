@@ -329,6 +329,7 @@ if ($this->display_comments)
                  ccid="<?= $ccid ?>"
                  access='<?= json_encode($user_comment_access); ?>'
                  is_applicant="<?= $is_applicant ?>"
+                 applicants_allowed_to_comment="1"
                  current_form="<?= $form->id ?>"
                  currentLanguage="<?= $current_lang->getTag() ?>"
                  shortLang="<?= $short_lang ?>"

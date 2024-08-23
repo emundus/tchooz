@@ -150,7 +150,7 @@
       <label for="new-comment" class="tw-font-medium">{{ translate('COM_EMUNDUS_COMMENTS_ADD_GLOBAL_COMMENT') }}</label>
       <textarea id="new-comment" @keyup.enter="addComment" v-model="newCommentText" class="tw-p-2 tw-mt-1"
                 :placeholder="translate('COM_EMUNDUS_COMMENTS_ADD_COMMENT_PLACEHOLDER')"></textarea>
-      <div v-if="!isApplicant" class="tw-flex tw-flex-row tw-items-center tw-mt-3">
+      <div v-if="!isApplicant && applicantsAllowedToComment" class="tw-flex tw-flex-row tw-items-center tw-mt-3">
         <div class="tw-flex tw-flex-row tw-items-center tw-mr-2">
           <input type="radio" name="visible_to_applicant" v-model="visible_to_applicant" :value="false"
                  id="visible-to-coords">
@@ -187,10 +187,9 @@
           <h2 class="tw-mb-3">{{ translate('COM_EMUNDUS_COMMENTS_ADD_COMMENT_ON') }} {{ targetLabel }}</h2>
           <textarea v-model="newCommentText" class="tw-p-2 tw-h-full"
                     :placeholder="translate('COM_EMUNDUS_COMMENTS_ADD_COMMENT_PLACEHOLDER')"></textarea>
-          <div v-if="!isApplicant" class="tw-flex tw-flex-row tw-items-center">
+          <div v-if="!isApplicant && applicantsAllowedToComment" class="tw-flex tw-flex-row tw-items-center">
             <div class="tw-flex tw-flex-row tw-items-center">
-              <input type="radio" name="visible_to_applicant" v-model="visible_to_applicant" :value="false"
-                     id="visible-to-coords">
+              <input type="radio" name="visible_to_applicant" v-model="visible_to_applicant" :value="false" id="visible-to-coords">
               <label for="visible-to-coords" class="tw-m-0">{{
                   translate('COM_EMUNDUS_COMMENTS_VISIBLE_PARTNERS')
                 }}</label>
@@ -259,6 +258,10 @@ export default {
     currentForm: {
       type: Number,
       default: 0
+    },
+    applicantsAllowedToComment: {
+      type: Boolean,
+      default: false
     }
   },
   mixins: [mixins, alerts],
@@ -398,6 +401,10 @@ export default {
       if (this.access.c) {
         if (this.isApplicant) {
           this.visible_to_applicant = true;
+        }
+
+        if (!this.applicantsAllowedToComment) {
+          this.visible_to_applicant = false;
         }
 
         let commentContent = this.newCommentText;
