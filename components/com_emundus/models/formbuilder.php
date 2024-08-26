@@ -4363,6 +4363,10 @@ class EmundusModelFormbuilder extends JModelList
 				}
 			}
 
+			if (empty($list_model->created)) {
+				$query->set('created = ' . $this->db->quote(date('Y-m-d H:i:s')));
+			}
+
 			try {
 				$this->db->setQuery($query);
 				$inserted = $this->db->execute();

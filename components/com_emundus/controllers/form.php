@@ -308,7 +308,7 @@ class EmundusControllerForm extends BaseController
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			try {
-				$form_id = $this->m_form->createFormEval();
+				$form_id = $this->m_form->createFormEval($this->_user);
 
 				if ($form_id > 0) {
 					$response = array('status' => true, 'msg' => Text::_('FORM_ADDED'), 'data' => $form_id, 'redirect' => 'index.php?option=com_emundus&view=form&layout=formbuilder&prid=' . $form_id . '&mode=eval');
