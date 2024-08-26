@@ -1,5 +1,5 @@
 <template>
-  <div id="comments" class="tw-p-4 tw-w-full tw-bg-[#f8f8f8] tw-border-l-4 tw-border-profile-full">
+  <div id="comments" class="tw-p-4 tw-w-full tw-bg-[#f8f8f8] tw-border-l-4 tw-border-profile-full tw-flex tw-flex-col">
     <div v-if="comments.length > 0" id="filter-comments" class="tw-flex tw-flex-row tw-flex-wrap tw-gap-2">
       <input type="text" class="em-input tw-mr-2" :placeholder="translate('COM_EMUNDUS_COMMENTS_SEARCH')" v-model="search" @keyup="onSearchChange">
       <select v-model="filterOpenedState" class="tw-mr-2 tw-rounded-applicant">
@@ -220,9 +220,10 @@
 
 <script>
 import commentsService from '@/services/comments.js';
-import mixins from '../../mixins/mixin';
-import alerts from '../../mixins/alerts';
-import Modal from "@/components/Modal.vue";
+import mixins from '@/mixins/mixin.js';
+import alerts from '@/mixins/alerts.js';
+import Modal from '@/components/Modal.vue';
+import fileService from '@/services/file.js';
 
 export default {
   name: 'Comments',
@@ -230,15 +231,15 @@ export default {
   props: {
     user: {
       type: String,
-      required: true,
+      required: true
     },
     fnum: {
       type: String,
       default: '', // soon deprecated
     },
-    ccid: {
+    defaultCcid: {
       type: Number,
-      required: true,
+      default: 0
     },
     access: {
       type: Object,
@@ -264,6 +265,7 @@ export default {
   },
   mixins: [mixins, alerts],
   data: () => ({
+    ccid: this.defaultCcid,
     comments: [],
     newCommentText: '',
     newChildCommentText: '',
@@ -289,16 +291,30 @@ export default {
     openedModal: false
   }),
   created() {
-    this.getTargetableELements().then(() => {
-      this.getComments();
-    });
-    this.addListeners();
+    if (this.defaultCcid == 0) {
+      fileService.getFileIdFromFnum(this.fnum).then((response) =>  {
+        if (response.status) {
+          this.ccid = response.data;
+
+          this.init();
+        }
+      });
+    } else {
+      this.ccid = this.defaultCcid;
+      this.init();
+    }
   },
   beforeDestroy() {
     document.removeEventListener('openModalAddComment');
     document.removeEventListener('focusOnCommentElement');
   },
   methods: {
+    init() {
+      this.getTargetableElements().then(() => {
+        this.getComments();
+      });
+      this.addListeners();
+    },
     addListeners() {
       document.addEventListener('openModalAddComment', (event) => {
         this.target.id = event.detail.targetId;
@@ -351,7 +367,7 @@ export default {
         this.dispatchCommentsLoaded();
       });
     },
-    async getTargetableELements() {
+    async getTargetableElements() {
       return await commentsService.getTargetableElements(this.ccid).then((response) => {
         if (response.status) {
           this.targetableElements = response.data;

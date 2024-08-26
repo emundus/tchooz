@@ -26,7 +26,7 @@
 
     <Comments
         v-else-if="component === 'comments'"
-        :ccid="datas.ccid.value"
+        :defaultCcid="datas.ccid.value"
         :fnum="datas.fnum && datas.fnum.value ? datas.fnum.value : ''"
         :user="datas.user.value"
         :is-applicant="datas.is_applicant && datas.is_applicant.value == 1"
