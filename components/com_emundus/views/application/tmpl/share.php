@@ -223,13 +223,10 @@
         {icon: "check_box_outline_blank", class: ""},
         {icon: "check_box", class: "em-green-500-color"},
     ];
-    console.log('here');
 
     $(document).off('click', '.table-right td.can-update');
     $(document).on('click', '.table-right td.can-update', function(e)
     {
-        console.log(e);
-
         if(e.handle !== true)
         {
             e.handle = true;
