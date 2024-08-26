@@ -613,6 +613,7 @@ function export_zip(fnums){
     var form_checked = [];
     var attach_checked = [];
     var options = [];
+    let params = {};
 
     $('#felts input:checked').each(function() {
         form_checked.push($(this).val());
@@ -641,6 +642,12 @@ function export_zip(fnums){
         });
     } else {
         options.push("0");
+    }
+
+    if ($('#concat_attachments_with_form').is(":checked")) {
+        params.concat_attachments_with_form = 1;
+    } else {
+        params.concat_attachments_with_form = 0;
     }
 
     $('#data').hide();
