@@ -114,9 +114,11 @@
 <script>
 import client from "@/services/axiosClient.js";
 import translationsService from "@/services/translations.js";
-import mixin from "@/mixins/mixin.js";
 import Multiselect from 'vue-multiselect';
 import TranslationRow from "./TranslationRow.vue";
+
+import mixin from "@/mixins/mixin.js";
+import errors from "@/mixins/errors.js";
 
 export default {
   name: 'Translations',
@@ -138,7 +140,7 @@ export default {
       required: false,
     }
   },
-  mixins: [mixin],
+  mixins: [mixin, errors],
   data() {
     return {
       defaultLang: null,
@@ -238,8 +240,6 @@ export default {
       ).then(async (response) => {
         this.datas = response.data;
 
-
-
         if (value.table.load_all === 'true') {
           let fields = [];
           await this.asyncForEach(this.object.fields.Fields, async (field) => {
@@ -256,11 +256,17 @@ export default {
                 fields,
                 this.object.table.name
               ).then(async (rep) => {
-                for (const translation of Object.values(rep.data)) {
-                  this.translations[data.id] = {};
-                  this.object.fields.Fields.forEach((field) => {
-                    this.translations[data.id][field.Name] = translation[field.Name];
-                  })
+                console.log(rep);
+
+                if (rep.status) {
+                  for (const translation of Object.values(rep.data)) {
+                    this.translations[data.id] = {};
+                    this.object.fields.Fields.forEach((field) => {
+                      this.translations[data.id][field.Name] = translation[field.Name];
+                    });
+                  }
+                } else {
+                  this.displayError(rep.message, '');
                 }
               })
             }
