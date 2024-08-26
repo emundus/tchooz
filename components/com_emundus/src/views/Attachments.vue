@@ -896,21 +896,20 @@ export default {
       return displayedCategories
     },
     displayedAttachments() {
-      const currentSearch = this.search.toLowerCase()
+      let displayedAttachments = [];
 
-      return typeof this.attachments !== 'undefined' && this.attachments !== null
-        ? this.attachments.filter((attachment) => {
+      if (typeof this.attachments !== 'undefined' && this.attachments !== null) {
+        const currentSearch = this.search.toLowerCase()
+        displayedAttachments = this.attachments.filter((attachment) => {
           if (attachment.upload_description === null) {
-            attachment.upload_description = ''
+            attachment.upload_description = '';
           }
 
-          return (
-            (attachment.upload_description.toLowerCase().includes(currentSearch) ||
-                              attachment.value.toLowerCase().includes(currentSearch)) &&
-                          (this.category === 'all' || attachment.category === this.category)
-          )
-        })
-        : []
+          return ((attachment.upload_description.toLowerCase().includes(currentSearch) || attachment.value.toLowerCase().includes(currentSearch)) && (this.category === 'all' || attachment.category === this.category))}
+        );
+      }
+
+      return displayedAttachments;
     },
   },
   watch: {
