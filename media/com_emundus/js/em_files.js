@@ -6402,18 +6402,17 @@ function sendMail(data)
 
             if (result.status) {
                 if (result.sent.length > 0) {
-                    if(result.sent.length < 3) {
-                        var sent_to = '<p>' + Joomla.JText._('SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
+                    let sent_to = '<p>' + Joomla.Text._('COM_EMUNDUS_MAILS_SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
+                    if (result.sent.length < 3) {
                         result.sent.forEach(function (element) {
                             sent_to += '<li class="list-group-item alert-success">' + element + '</li>';
                         });
                     } else {
-                        var sent_to = '<p>' + Joomla.JText._('SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
                         sent_to += '<li class="list-group-item alert-success">' + result.sent[0] + '</li>';
                         result.sent.shift();
                         sent_to += '<li class="list-group-item alert-success" sended="'+result.sent.join(', ')+'">+' + (result.sent.length) + '</li>';
                     }
-
+                    sent_to += '</ul>';
                     addLoader();
 
                     reloadData($('#view').val());
@@ -6422,7 +6421,7 @@ function sendMail(data)
                     Swal.fire({
                         icon: 'success',
                         title: Joomla.Text._('COM_EMUNDUS_EMAILS_EMAILS_SENT') + result.sent.length,
-                        html: sent_to + '</ul>',
+                        html: sent_to,
                         customClass: {
                             title: 'em-swal-title',
                             confirmButton: 'em-swal-confirm-button',

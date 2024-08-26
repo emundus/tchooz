@@ -1539,7 +1539,7 @@ $(document).ready(function () {
 					if(result.status) {
 						if (result.sent.length > 0) {
 
-							var sent_to = '<p>' + Joomla.JText._('SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
+							var sent_to = '<p>' + Joomla.Text._('COM_EMUNDUS_MAILS_SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
 							result.sent.forEach(element => {
 								sent_to += '<li class="list-group-item alert-success">' + element + '</li>';
 							});
@@ -1547,7 +1547,7 @@ $(document).ready(function () {
 							Swal.fire({
 								position: 'center',
 								icon: 'success',
-								title: Joomla.JText._('COM_EMUNDUS_EMAILS_EMAILS_SENT') + result.sent.length,
+								title: Joomla.Text._('COM_EMUNDUS_EMAILS_EMAILS_SENT') + result.sent.length,
 								html: sent_to + '</ul>',
 								customClass: {
 									title: 'w-full justify-center',
@@ -1559,7 +1559,7 @@ $(document).ready(function () {
 						} else {
 							Swal.fire({
 								icon: 'error',
-								title: Joomla.JText._('COM_EMUNDUS_EMAILS_NO_EMAILS_SENT'),
+								title: Joomla.Text._('COM_EMUNDUS_EMAILS_NO_EMAILS_SENT'),
 								customClass: {
 									title: 'em-swal-title',
 									confirmButton: 'em-swal-confirm-button',
