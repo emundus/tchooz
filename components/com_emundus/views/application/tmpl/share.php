@@ -22,7 +22,7 @@
             <div class="panel-body em-container-share-body">
                 <div class="active content em-container-share-table em-flex-row">
                     <div class="table-left em-container-share-table-left">
-                        <table id="groups-table" class="table table-bordered">
+                        <table id="groups-table" class="table table-bordered !tw-mb-0">
                             <thead>
                             <tr>
                                 <th></th>
@@ -82,12 +82,12 @@
                                 <tr>
 									<?php
 									$cruds = ['c', 'r', 'u', 'd'];
-									foreach($this->defaultActions as $def_action_id => $default_action) {
+                                    foreach($this->defaultActions as $def_action_id => $default_action) {
 										if ($default_action['status'] == 1) {
 											foreach($cruds as $crud) {
 												$td = '';
 												if ($default_action[$crud] == 1) {
-													if ($this->canUpdate) {
+													if ($this->canUpdateAccess) {
 														$td .= '<td class="can-update" id="' . $gid . '-' . $def_action_id . '-' . $crud . '" state="' . $groups['actions'][$def_action_id][$crud] . '">';
 													} else {
 														$td .= '<td id="' . $gid . '-' . $def_action_id . '-' . $crud . '" state="' . $groups['actions'][$def_action_id][$crud] . '">';
@@ -184,7 +184,7 @@
 								$td = '';
 								if ($default_action['status'] == 1) {
 									if ($default_action[$crud] == 1) {
-										if ($this->canUpdate) {
+										if ($this->canUpdateAccess) {
 											$td .= '<td class="can-update" id="' . $gid . '-' . $def_action_id . '-' . $crud . '" state="' . $groups['actions'][$def_action_id][$crud] . '">';
 										} else {
 											$td .= '<td id="' . $gid . '-' . $def_action_id . '-' . $crud . '" state="' . $groups['actions'][$def_action_id][$crud] . '">';
@@ -223,6 +223,7 @@
         {icon: "check_box_outline_blank", class: ""},
         {icon: "check_box", class: "em-green-500-color"},
     ];
+
     $(document).off('click', '.table-right td.can-update');
     $(document).on('click', '.table-right td.can-update', function(e)
     {
@@ -305,6 +306,7 @@
             })
         }
     });
+
 
     $(document).off('click', '.em-del-access');
     $(document).on('click', '.em-del-access', function(e)

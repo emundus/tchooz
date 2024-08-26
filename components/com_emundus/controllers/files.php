@@ -1271,8 +1271,8 @@ class EmundusControllerFiles extends BaseController
 			$formids    = $this->input->getVar('formids', null);
 			$attachids  = $this->input->getVar('attachids', null);
 			$options    = $this->input->getVar('options', null);
-			$params = $jinput->getString('params', null);
-			$params = !empty($params) ? json_decode($params, true) : [];
+			$params     = $this->input->getString('params', null);
+			$params     = !empty($params) ? json_decode($params, true) : [];
 
 			$m_files = $this->getModel('Files');
 
