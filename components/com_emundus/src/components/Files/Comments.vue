@@ -220,9 +220,10 @@
 
 <script>
 import commentsService from '@/services/comments.js';
-import mixins from '../../mixins/mixin';
-import alerts from '../../mixins/alerts';
-import Modal from "@/components/Modal.vue";
+import mixins from '@/mixins/mixin.js';
+import alerts from '@/mixins/alerts.js';
+import Modal from '@/components/Modal.vue';
+import fileService from '@/services/file.js';
 
 export default {
   name: 'Comments',
@@ -230,15 +231,15 @@ export default {
   props: {
     user: {
       type: String,
-      required: true,
+      required: true
     },
     fnum: {
       type: String,
       default: '', // soon deprecated
     },
-    ccid: {
+    defaultCcid: {
       type: Number,
-      required: true,
+      default: 0
     },
     access: {
       type: Object,
@@ -264,6 +265,7 @@ export default {
   },
   mixins: [mixins, alerts],
   data: () => ({
+    ccid: this.defaultCcid,
     comments: [],
     newCommentText: '',
     newChildCommentText: '',
@@ -289,16 +291,30 @@ export default {
     openedModal: false
   }),
   created() {
-    this.getTargetableELements().then(() => {
-      this.getComments();
-    });
-    this.addListeners();
+    if (this.defaultCcid == 0) {
+      fileService.getFileIdFromFnum(this.fnum).then((response) =>  {
+        if (response.status) {
+          this.ccid = response.data;
+
+          this.init();
+        }
+      });
+    } else {
+      this.ccid = this.defaultCcid;
+      this.init();
+    }
   },
   beforeDestroy() {
     document.removeEventListener('openModalAddComment');
     document.removeEventListener('focusOnCommentElement');
   },
   methods: {
+    init() {
+      this.getTargetableElements().then(() => {
+        this.getComments();
+      });
+      this.addListeners();
+    },
     addListeners() {
       document.addEventListener('openModalAddComment', (event) => {
         this.target.id = event.detail.targetId;
@@ -351,7 +367,7 @@ export default {
         this.dispatchCommentsLoaded();
       });
     },
-    async getTargetableELements() {
+    async getTargetableElements() {
       return await commentsService.getTargetableElements(this.ccid).then((response) => {
         if (response.status) {
           this.targetableElements = response.data;
