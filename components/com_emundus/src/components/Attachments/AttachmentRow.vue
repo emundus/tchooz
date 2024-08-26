@@ -270,7 +270,7 @@ export default {
     }
   }
 
-  .material-icons {
+  .material-icons, .material-symbols-outlined  {
     cursor: pointer;
 
     &.success {

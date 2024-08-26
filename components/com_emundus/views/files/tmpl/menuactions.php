@@ -79,7 +79,7 @@ if (!empty($this->items)) :
     </div>
     <div class="em-close-minimise">
         <div class="btn-group pull-right">
-            <button id="em-close-file" class="btn btn-danger btn-xxl"><span class="material-icons">close</span></button>
+            <button id="em-close-file" class="btn btn-danger btn-xxl"><span class="material-symbols-outlined">close</span></button>
         </div>
     </div>
 

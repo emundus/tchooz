@@ -277,12 +277,12 @@ if ($allowed_attachments !== true) {
                     <div class="tw-flex tw-items-center">
                         <div id="cc-box-label" class="em-flex-row em-pointer" onclick="openCC()">
                             <label class="em-mb-0-important"><?= Text::_('COM_EMUNDUS_EMAILS_CC_LABEL'); ?></label>
-                            <span id="cc-icon" class="material-icons-outlined">chevron_right</span>
+                            <span id="cc-icon" class="material-symbols-outlined">chevron_right</span>
                         </div>
 
                         <div id="bcc-box-label" class="em-flex-row em-pointer" onclick="openBCC()">
                             <label class="em-mb-0-important"><?= Text::_('COM_EMUNDUS_EMAILS_BCC_LABEL'); ?></label>
-                            <span id="bcc-icon" class="material-icons-outlined">chevron_right</span>
+                            <span id="bcc-icon" class="material-symbols-outlined">chevron_right</span>
                         </div>
                     </div>
                 </div>

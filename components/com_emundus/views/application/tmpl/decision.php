@@ -32,21 +32,21 @@ Factory::getApplication()->getSession()->set('application_layout', 'comment');
                                 data-title="<?php echo Text::_('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF'); ?>"
                                 data-toggle="tooltip" data-placement="bottom"
                                 title="<?= Text::_('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF'); ?>"><span
-                                    class="material-icons">file_download</span></button>
+                                    class="material-symbols-outlined">file_download</span></button>
                     </a>
 				<?php endif; ?>
                 <div class="em-flex-row">
 					<?php if (!empty($this->url_form)): ?>
                         <a href="<?php echo $this->url_form; ?>" target="_blank" class="em-flex-row"
                            title="<?php echo Text::_('COM_EMUNDUS_DECISION_OPEN_DECISION_FORM_IN_NEW_TAB_DESC'); ?>"><span
-                                    class="material-icons">open_in_new</span></a>
+                                    class="material-symbols-outlined">open_in_new</span></a>
 					<?php endif; ?>
                 </div>
             </h3>
             <div class="btn-group pull-right">
-                <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_back</span>
+                <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-symbols-outlined">arrow_back</span>
                 </button>
-                <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_forward</span>
+                <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-symbols-outlined">arrow_forward</span>
                 </button>
             </div>
         </div>

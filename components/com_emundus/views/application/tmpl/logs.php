@@ -51,9 +51,9 @@ else {
 
                     <div class="btn-group pull-right">
                         <button id="em-prev-file" class="btn btn-info btn-xxl"><span
-                                    class="material-icons">arrow_back</span></button>
+                                    class="material-symbols-outlined">arrow_back</span></button>
                         <button id="em-next-file" class="btn btn-info btn-xxl"><span
-                                    class="material-icons">arrow_forward</span></button>
+                                    class="material-symbols-outlined">arrow_forward</span></button>
                     </div>
 
                 </div>

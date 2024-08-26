@@ -17,9 +17,9 @@
           <div
               class="form-builder-element tw-flex tw-items-center tw-justify-between tw-cursor-pointer tw-gap-3 tw-p-3"
           >
-            <span class="material-icons-outlined">{{ rule.icon }}</span>
+            <span class="material-symbols-outlined">{{ rule.icon }}</span>
             <span class="tw-w-full">{{ translate(rule.name) }}</span>
-            <span class="material-icons-outlined">add_circle_outline</span>
+            <span class="material-symbols-outlined">add_circle_outline</span>
           </div>
       </div>
     </div>

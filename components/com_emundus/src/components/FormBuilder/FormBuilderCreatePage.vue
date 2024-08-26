@@ -28,7 +28,7 @@
         <div v-if="!loading" class="tw-w-full">
           <div id="search-model-wrapper">
             <input id="search-model" class="tw-mt-4" type="text" v-model="search" placeholder="Rechercher"/>
-            <span class="reset-search material-icons-outlined tw-cursor-pointer" @click="search = ''">close</span>
+            <span class="reset-search material-symbols-outlined tw-cursor-pointer" @click="search = ''">close</span>
           </div>
           <section id="structure-options">
             <div class="tw-flex tw-items-center">
@@ -68,7 +68,7 @@
             </div>
 
             <div v-if="displayedModels.length < 1" class="empty-model-message tw-w-full tw-text-center">
-              <span class="material-icons-outlined">manage_search</span>
+              <span class="material-symbols-outlined">manage_search</span>
               <p class="tw-w-full"> {{ translate('COM_EMUNDUS_FORM_BUILDER_EMPTY_PAGE_MODELS') }}</p>
             </div>
           </div>
@@ -324,7 +324,7 @@ export default {
   }
 
   #new-page {
-    .material-icons-outlined {
+    .material-symbols-outlined {
       margin: auto;
     }
   }
@@ -352,7 +352,7 @@ export default {
   .empty-model-message {
     margin: 120px;
 
-    .material-icons-outlined {
+    .material-symbols-outlined {
       font-size: 42px;
     }
   }

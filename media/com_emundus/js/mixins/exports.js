@@ -887,7 +887,7 @@ function generate_letter() {
                             table += '<tr id="' + file.upload + '">' +
                                 '<td>' + file.filename +
                                 '<a id="em_download_doc_' + file.upload + '" target="_blank" class="em-p-8" href="' + getfile_url + file.filename + '">' +
-                                '<span class="material-icons">file_download</span>' +
+                                '<span class="material-symbols-outlined">file_download</span>' +
                                 '</a>' +
                                 '</td>' +
                                 '</tr>';

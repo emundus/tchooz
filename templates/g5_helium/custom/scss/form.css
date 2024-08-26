@@ -179,7 +179,7 @@
                     padding-bottom: 0 !important;
                 }
 
-                span.material-icons:first-child {
+                span.material-symbols-outlined:first-child {
                     display: none;
                 }
 

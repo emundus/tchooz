@@ -55,12 +55,12 @@ $user_comment_access = [
     <div class="panel panel-default widget em-container-comments em-container-form">
         <div class="panel-heading em-container-form-heading">
             <h3 class="panel-title">
-                <span class="material-icons-outlined">comment</span>
+                <span class="material-symbols-outlined">comment</span>
 				<?= JText::_('COM_EMUNDUS_COMMENTS') ?>
             </h3>
             <div class="btn-group pull-right">
-                <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_back</span></button>
-                <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_forward</span></button>
+                <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-symbols-outlined">arrow_back</span></button>
+                <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-symbols-outlined">arrow_forward</span></button>
             </div>
         </div>
     </div>

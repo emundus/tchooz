@@ -49,7 +49,7 @@ $user = $this->userid;
 		<?php if ($this->header == 1) : ?>
             <div class="panel-heading em-container-form-heading">
                 <h3 class="panel-title">
-                    <span class="material-icons">list_alt</span>
+                    <span class="material-symbols-outlined">list_alt</span>
 					<?php echo Text::_('COM_EMUNDUS_APPLICATION_APPLICATION_FORM').' - '.$this->formsProgress." % ".Text::_("COM_EMUNDUS_APPLICATION_COMPLETED"); ?>
 					<?php if (EmundusHelperAccess::asAccessAction(8, 'c', $app->getIdentity()->id, $this->fnum)):?>
                         <button id="download-all-phase-pdf"
@@ -59,13 +59,13 @@ $user = $this->userid;
                                 data-placement="right"
                                 title="<?= Text::_('COM_EMUNDUS_APPLICATION_DOWNLOAD_APPLICATION_FORM'); ?>"
                         >
-                            <span class="material-icons-outlined" data-fnum="<?= $this->fnum ?>">download_2</span>
+                            <span class="material-symbols-outlined" data-fnum="<?= $this->fnum ?>">download_2</span>
                         </button>
 					<?php endif;?>
                 </h3>
                 <div class="btn-group pull-right">
-                    <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_back</span></button>
-                    <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_forward</span></button>
+                    <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-symbols-outlined">arrow_back</span></button>
+                    <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-symbols-outlined">arrow_forward</span></button>
                 </div>
             </div>
 		<?php endif; ?>

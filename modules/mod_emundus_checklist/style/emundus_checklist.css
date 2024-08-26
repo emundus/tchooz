@@ -130,7 +130,7 @@
     outline-offset: 2px;
 }
 
-.mod_emundus_checklist .active .mod_emundus_checklist___step_count .material-icons-outlined {
+.mod_emundus_checklist .active .mod_emundus_checklist___step_count .material-symbols-outlined {
     color: var(--blue-500);
 }
 
@@ -142,7 +142,7 @@
     background: var(--neutral-300);
 }
 
-.mod_emundus_checklist .mod_emundus_checklist_need_missing:not(.active) .mod_emundus_checklist___step_count .material-icons-outlined {
+.mod_emundus_checklist .mod_emundus_checklist_need_missing:not(.active) .mod_emundus_checklist___step_count .material-symbols-outlined {
     color: var(--red-500);
 }
 
@@ -151,15 +151,15 @@
     border: none;
 }
 
-.mod_emundus_checklist .mod_emundus_checklist_need_ok:not(.active) .mod_emundus_checklist___step_count .material-icons-outlined {
+.mod_emundus_checklist .mod_emundus_checklist_need_ok:not(.active) .mod_emundus_checklist___step_count .material-symbols-outlined {
     color: var(--main-500);
 }
 
-.mod_emundus_checklist .mod_emundus_checklist_need_ok:not(.active) .mod_emundus_checklist___step_count .material-icons-outlined.tw-text-white {
+.mod_emundus_checklist .mod_emundus_checklist_need_ok:not(.active) .mod_emundus_checklist___step_count .material-symbols-outlined.tw-text-white {
     color: var(--neutral-0);
 }
 
-.mod_emundus_checklist___step_count .material-icons-outlined {
+.mod_emundus_checklist___step_count .material-symbols-outlined {
     font-size: 14px;
 }
 

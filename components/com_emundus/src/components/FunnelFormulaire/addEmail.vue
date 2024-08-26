@@ -59,10 +59,10 @@
 
             <div class="tw-flex tw-items-center em-flex-end">
               <a class="tw-mr-2 tw-cursor-pointer" @click="editTrigger(trigger)">
-                <span class="material-icons-outlined">edit</span>
+                <span class="material-symbols-outlined">edit</span>
               </a>
               <a class="tw-cursor-pointer" @click="removeTrigger(trigger.trigger_id)" :title="removeTrig">
-                <span class="material-icons-outlined tw-text-red-600">close</span>
+                <span class="material-symbols-outlined tw-text-red-600">close</span>
               </a>
             </div>
           </div>
@@ -105,10 +105,10 @@
 
             <div class="tw-flex tw-items-center em-flex-end">
               <a class="tw-cursor-pointer tw-mr-2" @click="editTrigger(trigger)">
-                <span class="material-icons-outlined">edit</span>
+                <span class="material-symbols-outlined">edit</span>
               </a>
               <a class="tw-cursor-pointer" @click="removeTrigger(trigger.trigger_id)">
-                <span class="material-icons-outlined tw-text-red-600">close</span>
+                <span class="material-symbols-outlined tw-text-red-600">close</span>
               </a>
             </div>
           </div>

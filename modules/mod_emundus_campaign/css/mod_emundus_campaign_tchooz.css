@@ -413,7 +413,7 @@ p[id*="mod_emundus_campaign__tchoozy_tab_desc"] {
     text-align: left;
 }
 
-[id*="mod_emundus_campaign__tchoozy_tabs_"] .material-icons-outlined {
+[id*="mod_emundus_campaign__tchoozy_tabs_"] .material-symbols-outlined {
     font-size: 24px;
     color: var(--em-profile-color);
 }

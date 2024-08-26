@@ -1137,7 +1137,7 @@ video {
 .view-registration.em-formRegistrationCenter .emundus-form .fb_el_jos_emundus_users___terms_and_conditions .\!row {
                     padding-bottom: 0 !important;
                 }
-.view-registration.em-formRegistrationCenter .emundus-form .fb_el_jos_emundus_users___terms_and_conditions span.material-icons:first-child {
+.view-registration.em-formRegistrationCenter .emundus-form .fb_el_jos_emundus_users___terms_and_conditions span.material-symbols-outlined:first-child {
                     display: none;
                 }
 .view-registration.em-formRegistrationCenter .emundus-form .fb_el_jos_emundus_users___terms_and_conditions .fabrikgrid_checkbox span {
@@ -5887,7 +5887,7 @@ button.swal2-cancel.goback-btn:hover,
         color: var(--em-alert-error-color);
         margin-bottom: var(--em-spacing-2);
     }
-.fabrikMainError .material-icons,.fabrikMainError .material-icons-outlined,.alert.alert-error .material-icons,.alert.alert-error .material-icons-outlined {
+.fabrikMainError .material-icons,.fabrikMainError .material-icons-outlined,.fabrikMainError .material-symbols-outlined,.alert.alert-error .material-icons,.alert.alert-error .material-icons-outlined,.alert.alert-error .material-symbols-outlined {
             color: var(--em-alert-error-icon-color);
             margin-right: var(--em-spacing-3);
         }
@@ -5896,7 +5896,7 @@ button.swal2-cancel.goback-btn:hover,
         background-color: var(--em-alert-warning-bgc);
         color: var(--em-alert-warning-color);
     }
-.alert.alert-warning .material-icons,.alert.alert-warning .material-icons-outlined,.alert.alert-notice .material-icons,.alert.alert-notice .material-icons-outlined {
+.alert.alert-warning .material-icons,.alert.alert-warning .material-icons-outlined,.alert.alert-warning .material-symbols-outlined,.alert.alert-notice .material-icons,.alert.alert-notice .material-icons-outlined,.alert.alert-notice .material-symbols-outlined  {
             color: var(--em-alert-warning-icon-color);
         }
 .alert.alert-info {
@@ -5904,7 +5904,7 @@ button.swal2-cancel.goback-btn:hover,
         background-color: var(--em-alert-info-bgc);
         color: var(--em-alert-info-color);
     }
-.alert.alert-info .material-icons,.alert.alert-info .material-icons-outlined {
+.alert.alert-info .material-icons,.alert.alert-info .material-icons-outlined,.alert.alert-info .material-symbols-outlined {
             color: var(--em-alert-info-icon-color);
         }
 .alert.alert-success {
@@ -5912,7 +5912,7 @@ button.swal2-cancel.goback-btn:hover,
         background-color: var(--em-alert-success-bgc);
         color: var(--em-alert-success-color);
     }
-.alert.alert-success .material-icons,.alert.alert-success .material-icons-outlined {
+.alert.alert-success .material-icons,.alert.alert-success .material-icons-outlined,.alert.alert-success .material-symbols-outlined {
             color: var(--em-alert-success-icon-color);
         }
 .alert.alert-danger ul, .alert.alert-error ul {

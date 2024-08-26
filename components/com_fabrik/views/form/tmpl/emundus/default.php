@@ -92,7 +92,7 @@ endif;
         <iframe id="background-shapes-profile" alt="<?= Text::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
 	<?php endif; ?>
     <div class="tw-mb-0 fabrikMainError alert alert-error fabrikError<?php echo $active ?>">
-        <span class="material-icons">cancel</span>
+        <span class="material-symbols-outlined">cancel</span>
 		<?php echo $form->error; ?>
         <span class="material-symbols-outlined tw-absolute tw-top-[3px] tw-right-[1px] !tw-text-base tw-cursor-pointer"
               onclick="closeAlert()">close</span>

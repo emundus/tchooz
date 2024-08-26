@@ -11,12 +11,12 @@
         <div class="panel panel-default widget em-container-share">
             <div class="panel-heading em-container-share-heading">
                 <h3 class="panel-title">
-                    <span class="material-icons">visibility</span>
+                    <span class="material-symbols-outlined">visibility</span>
 					<?= JText::_('COM_EMUNDUS_ACCESS_CHECK_ACL'); ?>
                 </h3>
                 <div class="btn-group pull-right">
-                    <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_back</span></button>
-                    <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_forward</span></button>
+                    <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-symbols-outlined">arrow_back</span></button>
+                    <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-symbols-outlined">arrow_forward</span></button>
                 </div>
             </div>
             <div class="panel-body em-container-share-body">

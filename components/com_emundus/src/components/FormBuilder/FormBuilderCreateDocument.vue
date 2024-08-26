@@ -2,7 +2,7 @@
   <div id="form-builder-create-document">
     <div class="tw-flex tw-items-center tw-justify-between tw-p-4">
       <p class="tw-font-medium">{{ translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_PROPERTIES") }}</p>
-      <span class="material-icons-outlined tw-cursor-pointer" @click="$emit('close')">close</span>
+      <span class="material-symbols-outlined tw-cursor-pointer" @click="$emit('close')">close</span>
     </div>
     <ul id="properties-tabs" class="tw-flex tw-items-center tw-justify-between tw-p-4 tw-w-11/12">
       <li
@@ -135,7 +135,7 @@
             <label for="sample" id="formbuilder_attachments_sample_upload">
               <span v-if="!currentSample">{{ translate('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_MODEL_ADD') }}</span>
               <span v-else>{{ translate('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_MODEL_EDIT') }}</span>
-              <span class="material-icons-outlined tw-ml-1 tw-text-neutral-900">backup</span>
+              <span class="material-symbols-outlined tw-ml-1 tw-text-neutral-900">backup</span>
             </label>
             <input id="sample" style="display: none" name="sample" type="file" ref="sampleFileInput"
                    @change="onSampleFileInputChange" accept=".pdf,.doc,.docx,.png,.jpg,.xls,.xlsx"/>

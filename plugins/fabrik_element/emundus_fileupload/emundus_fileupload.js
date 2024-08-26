@@ -407,7 +407,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                         deleteButton.setAttribute('value', files[i].filename);
 
                         var deleteIcon = document.createElement('span');
-                        deleteIcon.setAttribute("class", 'material-icons-outlined');
+                        deleteIcon.setAttribute("class", 'material-symbols-outlined');
                         deleteIcon.setAttribute("style", 'font-size: 16px');
                         deleteIcon.appendChild(document.createTextNode('clear'));
                         deleteButton.appendChild(deleteIcon);
