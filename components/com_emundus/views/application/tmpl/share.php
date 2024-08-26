@@ -22,7 +22,7 @@
             <div class="panel-body em-container-share-body">
                 <div class="active content em-container-share-table em-flex-row">
                     <div class="table-left em-container-share-table-left">
-                        <table id="groups-table" class="table table-bordered">
+                        <table id="groups-table" class="table table-bordered !tw-mb-0">
                             <thead>
                             <tr>
                                 <th></th>
