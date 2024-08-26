@@ -1,5 +1,5 @@
 <template>
-  <div id="comments" class="tw-p-4 tw-w-full tw-bg-[#f8f8f8] tw-border-l-4 tw-border-profile-full">
+  <div id="comments" class="tw-p-4 tw-w-full tw-bg-[#f8f8f8] tw-border-l-4 tw-border-profile-full tw-flex tw-flex-col">
     <div v-if="comments.length > 0" id="filter-comments" class="tw-flex tw-flex-row tw-flex-wrap tw-gap-2">
       <input type="text" class="em-input tw-mr-2" :placeholder="translate('COM_EMUNDUS_COMMENTS_SEARCH')" v-model="search" @keyup="onSearchChange">
       <select v-model="filterOpenedState" class="tw-mr-2 tw-rounded-applicant">

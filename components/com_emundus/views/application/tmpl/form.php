@@ -229,7 +229,7 @@ $user = $this->userid;
     }
 
     #aside-comment-section #comments-list-container {
-        max-height: 50vh;
+        max-height: 80%;
         overflow-y: auto;
     }
 
