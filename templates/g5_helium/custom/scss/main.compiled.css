@@ -2216,7 +2216,7 @@ input[type="text"],
             border-radius: var(--em-form-br);
         }
 .chzn-container.chzn-with-drop .chzn-single, .chzn-container.chzn-with-drop .chzn-choices, .chzn-container.chosen-with-drop .chosen-single, .chzn-container.chosen-with-drop .chosen-choices, .chzn-container.chzn-container-multi.chzn-with-drop .chzn-single, .chzn-container.chzn-container-multi.chzn-with-drop .chzn-choices, .chzn-container.chzn-container-multi.chosen-with-drop .chosen-single, .chzn-container.chzn-container-multi.chosen-with-drop .chosen-choices, .chzn-container.chzn-container-multi.chzn-container-active.chzn-with-drop .chzn-single, .chzn-container.chzn-container-multi.chzn-container-active.chzn-with-drop .chzn-choices, .chzn-container.chzn-container-multi.chzn-container-active.chosen-with-drop .chosen-single, .chzn-container.chzn-container-multi.chzn-container-active.chosen-with-drop .chosen-choices, .chosen-container.chzn-with-drop .chzn-single, .chosen-container.chzn-with-drop .chzn-choices, .chosen-container.chosen-with-drop .chosen-single, .chosen-container.chosen-with-drop .chosen-choices, .chosen-container.chosen-container-multi.chzn-with-drop .chzn-single, .chosen-container.chosen-container-multi.chzn-with-drop .chzn-choices, .chosen-container.chosen-container-multi.chosen-with-drop .chosen-single, .chosen-container.chosen-container-multi.chosen-with-drop .chosen-choices, .chosen-container.chosen-container-multi.chosen-container-active.chzn-with-drop .chzn-single, .chosen-container.chosen-container-multi.chosen-container-active.chzn-with-drop .chzn-choices, .chosen-container.chosen-container-multi.chosen-container-active.chosen-with-drop .chosen-single, .chosen-container.chosen-container-multi.chosen-container-active.chosen-with-drop .chosen-choices {
-            background-position-x: 96% !important;
+            background-position-x: 98% !important;
             background-position-y: 54% !important;
             -webkit-appearance: none;
             -moz-appearance: none;
@@ -2236,7 +2236,7 @@ input[type="text"],
             min-height: var(--em-form-height);
         }
 .chzn-container .chzn-single, .chzn-container .chzn-choices, .chzn-container .chosen-single, .chzn-container .chosen-choices, .chzn-container.chzn-container-multi .chzn-single, .chzn-container.chzn-container-multi .chzn-choices, .chzn-container.chzn-container-multi .chosen-single, .chzn-container.chzn-container-multi .chosen-choices, .chzn-container.chzn-container-multi.chzn-container-active .chzn-single, .chzn-container.chzn-container-multi.chzn-container-active .chzn-choices, .chzn-container.chzn-container-multi.chzn-container-active .chosen-single, .chzn-container.chzn-container-multi.chzn-container-active .chosen-choices, .chosen-container .chzn-single, .chosen-container .chzn-choices, .chosen-container .chosen-single, .chosen-container .chosen-choices, .chosen-container.chosen-container-multi .chzn-single, .chosen-container.chosen-container-multi .chzn-choices, .chosen-container.chosen-container-multi .chosen-single, .chosen-container.chosen-container-multi .chosen-choices, .chosen-container.chosen-container-multi.chosen-container-active .chzn-single, .chosen-container.chosen-container-multi.chosen-container-active .chzn-choices, .chosen-container.chosen-container-multi.chosen-container-active .chosen-single, .chosen-container.chosen-container-multi.chosen-container-active .chosen-choices {
-            background-position-x: 96% !important;
+            background-position-x: 98% !important;
             background-position-y: 54% !important;
             -webkit-appearance: none;
             -moz-appearance: none;
@@ -5778,6 +5778,16 @@ div:where(.swal2-container) div:where(.swal2-popup) .swal2-html-container {
                 margin: var(--em-spacing-5) 0 0 0;
                 padding: 0;
 }
+div:where(.swal2-container) div:where(.swal2-popup) .swal2-html-container label:not([for]), div:where(.swal2-container) div:where(.swal2-popup) .swal2-html-container .em-addUser label, div:where(.swal2-container) div:where(.swal2-popup) .swal2-html-container .em-addGroup label, div:where(.swal2-container) div:where(.swal2-popup) .swal2-html-container .em-affect-groups label{
+                        font-weight: var(--em-form-label-weight);
+                        margin-bottom: 0;
+                    }
+div:where(.swal2-container) div:where(.swal2-popup) .swal2-html-container .chzn-container, div:where(.swal2-container) div:where(.swal2-popup) .swal2-html-container input {
+                        margin-top: var(--em-form-label-margin-bottom);
+                    }
+div:where(.swal2-container) div:where(.swal2-popup) .swal2-html-container input {
+                       border-radius: var(--em-form-br) !important;
+                    }
 div:where(.swal2-container) div:where(.swal2-popup) .swal2-content {
     font-size: 1rem;
     line-height: 1.5rem;

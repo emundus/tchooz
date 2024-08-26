@@ -1430,7 +1430,7 @@
         }
 
         &.chzn-with-drop .chzn-single, &.chzn-with-drop .chzn-choices, &.chosen-with-drop .chosen-single, &.chosen-with-drop .chosen-choices {
-            background-position-x: 96% !important;
+            background-position-x: 98% !important;
             background-position-y: 54% !important;
             -webkit-appearance: none;
             appearance: none;
@@ -1450,7 +1450,7 @@
         }
 
         .chzn-single, .chzn-choices, .chosen-single, .chosen-choices {
-            background-position-x: 96% !important;
+            background-position-x: 98% !important;
             background-position-y: 54% !important;
             -webkit-appearance: none;
             appearance: none;
