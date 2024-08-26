@@ -284,7 +284,7 @@
                 margin: var(--em-spacing-5) 0 0 0;
                 padding: 0;
 
-                    label:not([for]), .em-addUser label, .em-addGroup label, .em-affect-groups label{
+                    label:not([for]), .em-addUser label:not([for*="same_login_email"]), .em-addGroup label, .em-affect-groups label{
                         font-weight: var(--em-form-label-weight);
                         margin-bottom: 0;
                     }

@@ -5778,7 +5778,7 @@ div:where(.swal2-container) div:where(.swal2-popup) .swal2-html-container {
                 margin: var(--em-spacing-5) 0 0 0;
                 padding: 0;
 }
-div:where(.swal2-container) div:where(.swal2-popup) .swal2-html-container label:not([for]), div:where(.swal2-container) div:where(.swal2-popup) .swal2-html-container .em-addUser label, div:where(.swal2-container) div:where(.swal2-popup) .swal2-html-container .em-addGroup label, div:where(.swal2-container) div:where(.swal2-popup) .swal2-html-container .em-affect-groups label{
+div:where(.swal2-container) div:where(.swal2-popup) .swal2-html-container label:not([for]), div:where(.swal2-container) div:where(.swal2-popup) .swal2-html-container .em-addUser label:not([for*="same_login_email"]), div:where(.swal2-container) div:where(.swal2-popup) .swal2-html-container .em-addGroup label, div:where(.swal2-container) div:where(.swal2-popup) .swal2-html-container .em-affect-groups label{
                         font-weight: var(--em-form-label-weight);
                         margin-bottom: 0;
                     }
