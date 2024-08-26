@@ -30,7 +30,7 @@
           </p>
 
           <div class="tw-flex tw-flex-row tw-justify-between tw-items-center">
-            <div class="file-comment-header-left tw-flex tw-flex-row tw-cursor-pointer tw-items-center"
+            <div class="file-comment-header-left tw-flex tw-flex-row tw-cursor-pointer tw-items-center tw-justify-between tw-w-full"
                  @click="replyToComment(comment.id)">
               <div class="tw-flex tw-flex-row tw-items-center">
                 <div class="profile-picture tw-h-8 tw-w-8 tw-rounded-full tw-border-2 tw-mr-2 tw-flex tw-flex-row tw-justify-center tw-items-center" :class="{'tw-bg-neutral-300' : !comment.profile_picture}">
@@ -39,39 +39,43 @@
                 </div>
                 <div class="tw-flex tw-flex-col tw-mr-3">
                   <span class="tw-text-neutral-500 tw-text-xs">{{ comment.updated ? comment.updated : comment.date }}</span>
-                  <span>{{ comment.username }}</span>
+                  <span class="tw-text-xs">{{ comment.username }}</span>
                 </div>
               </div>
               <div>
-                      <span v-if="childrenComments[comment.id].length > 0" class="label tw-bg-profile-medium !tw-text-neutral-900">
-                        {{ childrenComments[comment.id].length }}
-                        {{
-                          childrenComments[comment.id].length > 1 ? translate('COM_EMUNDUS_COMMENTS_ANSWERS') : translate('COM_EMUNDUS_COMMENTS_ANSWER')
-                        }}
-                      </span>
+                <span v-if="childrenComments[comment.id].length > 0" class="label tw-bg-profile-medium !tw-text-neutral-900">
+                  {{ childrenComments[comment.id].length }}
+                  {{
+                    childrenComments[comment.id].length > 1 ? translate('COM_EMUNDUS_COMMENTS_ANSWERS') : translate('COM_EMUNDUS_COMMENTS_ANSWER')
+                  }}
+                </span>
               </div>
-            </div>
-            <div class="file-comment-header-right tw-ease-in-out tw-duration-300 tw-opacity-0 group-hover:tw-opacity-100 tw-flex tw-flex-row">
-              <span class="material-symbols-outlined tw-cursor-pointer" @click="replyToComment(comment.id)">reply</span>
-              <span v-if="access.d || comment.user_id == user" class="material-symbols-outlined tw-cursor-pointer" @click="deleteComment(comment.id)">delete</span>
-              <span v-if="access.u || (access.c && comment.user_id == user)" class="material-symbols-outlined tw-cursor-pointer" @click="makeCommentEditable(comment.id)">edit</span>
             </div>
           </div>
         </div>
 
-        <div v-if="editable == comment.id">
-          <textarea :id="'editable-comment-' + comment.id" class="comment-body" v-model="comment.comment_body" @keyup.enter="updateComment(comment.id)"></textarea>
-          <div class="tw-flex tw-flex-row tw-justify-end tw-mt-2">
-            <button id="add-comment-btn" class="tw-btn-primary tw-w-fit" @click="updateComment(comment.id)">
-              <span>{{ translate('COM_EMUNDUS_COMMENTS_UPDATE_COMMENT') }}</span>
-              <span class="material-symbols-outlined tw-ml-1 tw-text-neutral-300">send</span>
-            </button>
-            <button id="abort-update" class="tw-btn-secondary tw-w-fit tw-ml-2" @click="abortUpdateComment">
-              <span>{{ translate('COM_EMUNDUS_COMMENTS_CANCEL') }}</span>
-            </button>
+        <div class="tw-flex tw-flex-row tw-items-start tw-justify-between">
+          <div>
+            <div v-if="editable == comment.id">
+              <textarea :id="'editable-comment-' + comment.id" class="comment-body" v-model="comment.comment_body" @keyup.enter="updateComment(comment.id)"></textarea>
+              <div class="tw-flex tw-flex-row tw-justify-end tw-mt-2">
+                <button id="add-comment-btn" class="tw-btn-primary tw-w-fit" @click="updateComment(comment.id)">
+                  <span>{{ translate('COM_EMUNDUS_COMMENTS_UPDATE_COMMENT') }}</span>
+                  <span class="material-symbols-outlined tw-ml-1 tw-text-neutral-300">send</span>
+                </button>
+                <button id="abort-update" class="tw-btn-secondary tw-w-fit tw-ml-2" @click="abortUpdateComment">
+                  <span>{{ translate('COM_EMUNDUS_COMMENTS_CANCEL') }}</span>
+                </button>
+              </div>
+            </div>
+            <p class="comment-body" v-else>{{ comment.comment_body }}</p>
+          </div>
+          <div v-if="editable != comment.id" class="file-comment-header-right tw-ease-in-out tw-duration-300 tw-opacity-0 group-hover:tw-opacity-100 tw-flex tw-flex-row">
+            <span class="material-symbols-outlined tw-cursor-pointer" @click="replyToComment(comment.id)">reply</span>
+            <span v-if="access.d || comment.user_id == user" class="material-symbols-outlined tw-cursor-pointer em-red-500-color" @click="deleteComment(comment.id)">delete</span>
+            <span v-if="access.u || (access.c && comment.user_id == user)" class="material-symbols-outlined tw-cursor-pointer" @click="makeCommentEditable(comment.id)">edit</span>
           </div>
         </div>
-        <p class="comment-body" v-else>{{ comment.comment_body }}</p>
         <i v-if="comment.updated_by > 0" class="tw-text-xs em-gray-color tw-mt-3">{{ translate('COM_EMUNDUS_COMMENTS_EDITED') }}</i>
 
         <div class="comment-children"
@@ -88,12 +92,12 @@
                     </div>
                     <div class="tw-flex tw-flex-col tw-mr-3">
                       <span class="tw-text-neutral-500 tw-text-xs">{{ child.updated ? child.updated : child.date }}</span>
-                      <span>{{ child.username }}</span>
+                      <span class="tw-text-xs">{{ child.username }}</span>
                     </div>
                   </div>
                 </div>
                 <div class="file-comment-header-left">
-                  <span v-if="access.d || child.user_id == user" class="material-symbols-outlined tw-cursor-pointer" @click="deleteComment(child.id)">delete</span>
+                  <span v-if="access.d || child.user_id == user" class="material-symbols-outlined tw-cursor-pointer em-red-500-color" @click="deleteComment(child.id)">delete</span>
                   <span v-if="access.u || (access.c && child.user_id == user)" class="material-symbols-outlined tw-cursor-pointer" @click="makeCommentEditable(child.id)">edit</span>
                 </div>
               </div>
@@ -507,7 +511,7 @@ export default {
     deleteComment(commentId) {
       const comment = this.comments.find((comment) => comment.id === commentId);
       if (commentId > 0 && (this.access.d || comment.user_id == this.user)) {
-        this.alertConfirm('COM_EMUNDUS_COMMENTS_CONFIRM_DELETE').then((response) => {
+        this.alertConfirm('COM_EMUNDUS_COMMENTS_CONFIRM_DELETE', '"' + comment.comment_body + '"', false, 'COM_EMUNDUS_ACTIONS_DELETE').then((response) => {
           if (response.value) {
             this.comments = this.comments.filter((comment) => comment.id !== commentId);
 
