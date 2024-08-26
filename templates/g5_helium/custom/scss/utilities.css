@@ -283,6 +283,17 @@
                 overflow: visible;
                 margin: var(--em-spacing-5) 0 0 0;
                 padding: 0;
+
+                    label:not([for]), .em-addUser label, .em-addGroup label, .em-affect-groups label{
+                        font-weight: var(--em-form-label-weight);
+                        margin-bottom: 0;
+                    }
+                    .chzn-container, input {
+                        margin-top: var(--em-form-label-margin-bottom);
+                    }
+                    input {
+                       border-radius: var(--em-form-br) !important;
+                    }
             }
 
             .swal2-content {
