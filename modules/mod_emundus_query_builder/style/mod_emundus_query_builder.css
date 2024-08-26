@@ -35,6 +35,10 @@
     border-radius: 0 !important;
 }
 
+.informationStatistique {
+    color: var(--neutral-700);
+}
+
 .queryBuilder {
     text-align: left;
     padding: 12px;
