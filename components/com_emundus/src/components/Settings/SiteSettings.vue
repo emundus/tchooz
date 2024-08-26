@@ -24,7 +24,7 @@
 import Parameter from "@/components/Settings/Parameter.vue";
 import axios from "axios";
 import Swal from "sweetalert2";
-import Global from "@/components/Settings/Translation/Global.vue";
+import Global from "@/components/Settings/TranslationTool/Global.vue";
 import settingsService from "../../services/settings";
 
 const assetsPath = '/components/com_emundus/src/assets/data/';

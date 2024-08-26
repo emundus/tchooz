@@ -63,7 +63,7 @@ import settings from "@/views/globalSettings.vue";
 import messagescoordinator from "@/components/Messages/MessagesCoordinator.vue";
 import messages from "@/components/Messages/Messages.vue";
 import ApplicationSingle from "@/components/Files/ApplicationSingle.vue";
-import TranslationTool from "@/components/Settings/Translation/TranslationTool.vue";
+import TranslationTool from "@/components/Settings/TranslationTool/TranslationTool.vue";
 
 import settingsService from "@/services/settings.js";
 import { useGlobalStore } from '@/stores/global.js';
