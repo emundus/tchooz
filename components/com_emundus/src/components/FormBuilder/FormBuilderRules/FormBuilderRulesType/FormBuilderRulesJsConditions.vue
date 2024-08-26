@@ -12,7 +12,7 @@
           </span>
         </div>
         <button v-if="index !== 0" type="button" @click="$emit('remove-condition', index)" class="tw-w-auto">
-          <span class="material-icons-outlined tw-text-red-600">close</span>
+          <span class="material-symbols-outlined tw-text-red-600">close</span>
         </button>
       </div>
 

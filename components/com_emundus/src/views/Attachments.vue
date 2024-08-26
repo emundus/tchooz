@@ -264,7 +264,7 @@
                             <span>{{ translate('COM_EMUNDUS_ATTACHMENTS_OPEN_IN_GED') }}</span>
                         </a>
                         <a download v-if="canDownload" :href="attachmentPath" class="download btn-icon-text tw-mr-6">
-                            <span class="material-icons"> file_download </span>
+                            <span class="material-symbols-outlined"> file_download </span>
                             <span>{{ translate('COM_EMUNDUS_ATTACHMENTS_LINK_TO_DOWNLOAD') }}</span>
                         </a>
                         <div class="prev-next-attachments tw-flex tw-items-center tw-justify-between tw-mr-2">
@@ -273,7 +273,7 @@
                                 :class="{ active: selectedAttachmentPosition > 0 }"
                                 @click="changeAttachment(selectedAttachmentPosition - 1, true)"
                             >
-                                <span class="material-icons"> navigate_before </span>
+                                <span class="material-symbols-outlined"> navigate_before </span>
                             </div>
                             <span class="lvl"
                                 >{{ selectedAttachmentPosition + 1 }} /{{ displayedAttachments.length }}</span
@@ -283,7 +283,7 @@
                                 :class="{ active: selectedAttachmentPosition < displayedAttachments.length - 1 }"
                                 @click="changeAttachment(selectedAttachmentPosition + 1)"
                             >
-                                <span class="material-icons"> navigate_next </span>
+                                <span class="material-symbols-outlined"> navigate_next </span>
                             </div>
                         </div>
                         <span class="material-symbols-outlined tw-cursor-pointer" @click="closeModal">close</span>

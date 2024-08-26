@@ -3,7 +3,7 @@
     <div class="tw-p-8">
       <div class="tw-flex tw-flex-col tw-gap-3">
         <div class="tw-flex tw-items-center tw-gap-1 tw-cursor-pointer tw-mb-2" :title="translate('COM_EMUNDUS_FORM_BUILDER_RULE_GO_BACK')" @click="$emit('close-rule-add')">
-          <span class="material-icons-outlined">chevron_left</span>
+          <span class="material-symbols-outlined">chevron_left</span>
           <p>{{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_GO_BACK') }}</p>
         </div>
 

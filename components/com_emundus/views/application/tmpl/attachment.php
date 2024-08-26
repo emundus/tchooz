@@ -39,13 +39,13 @@ $hash = EmundusHelperCache::getCurrentGitHash() . rand(0, 99999);
     <div class="panel panel-default widget em-container-attachment em-container-form">
         <div class="panel-heading em-container-form-heading">
             <h3 class="panel-title">
-                <span class="material-icons">file_present</span>
+                <span class="material-symbols-outlined">file_present</span>
 				<?= JText::_('COM_EMUNDUS_ONBOARD_DOCUMENTS') . ' - ' . $this->attachmentsProgress . ' % ' . JText::_('COM_EMUNDUS_APPLICATION_SENT'); ?>
             </h3>
             <div class="btn-group pull-right">
-                <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_back</span>
+                <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-symbols-outlined">arrow_back</span>
                 </button>
-                <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_forward</span>
+                <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-symbols-outlined">arrow_forward</span>
                 </button>
             </div>
         </div>

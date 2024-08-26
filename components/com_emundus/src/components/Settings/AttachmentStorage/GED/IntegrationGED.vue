@@ -7,7 +7,7 @@
     </div>
 
     <div class="tw-flex tw-items-center tw-mb-4">
-      <span class="material-icons">folder</span>
+      <span class="material-symbols-outlined">folder</span>
       <span class="tw-ml-2 tw-mr-2">/{{ site }}</span>
 
       <v-popover :popoverArrowClass="'custom-popover-arrow'">

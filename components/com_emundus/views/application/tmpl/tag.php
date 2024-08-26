@@ -43,9 +43,9 @@ else {
 
                 <div class="btn-group pull-right">
                     <button id="em-prev-file" class="btn btn-info btn-xxl"><span
-                                class="material-icons">arrow_back</span></button>
+                                class="material-symbols-outlined">arrow_back</span></button>
                     <button id="em-next-file" class="btn btn-info btn-xxl"><span
-                                class="material-icons">arrow_forward</span></button>
+                                class="material-symbols-outlined">arrow_forward</span></button>
                 </div>
             </div>
             <div class="panel-body em-container-tag-body">
@@ -69,7 +69,7 @@ else {
                                                     <button type="button" class="btn btn-danger btn-xs"
                                                             onclick="deleteTag('<?php echo $tag['id_tag'] ?>', '<?php echo $this->fnum; ?>' )"
                                                             title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_DELETE'); ?>">
-                                                        <span class="material-icons">delete_outline</span>
+                                                        <span class="material-symbols-outlined">delete_outline</span>
                                                     </button>
 												<?php endif; ?>
                                             </div>

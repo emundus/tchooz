@@ -1610,7 +1610,7 @@ $(document).ready(function () {
 			e.handle = true;
 			var id = $(this).val();
 			var text = $('#em-modal-actions #em-export-form option:selected').attr('data-value');
-			$('#em-export').append('<li class="em-export-item" id="' + id + '-item"><strong>' + text + '</strong><button class="btn btn-danger btn-xs pull-right"><span class="material-icons">delete_outline</span></button></li>');
+			$('#em-export').append('<li class="em-export-item" id="' + id + '-item"><strong>' + text + '</strong><button class="btn btn-danger btn-xs pull-right"><span class="material-symbols-outlined">delete_outline</span></button></li>');
 		}
 	});
 

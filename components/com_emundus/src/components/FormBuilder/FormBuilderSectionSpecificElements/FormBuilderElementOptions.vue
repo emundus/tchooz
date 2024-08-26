@@ -12,7 +12,7 @@
           <div class="tw-flex tw-items-center tw-w-full">
             <div class="tw-flex tw-items-center">
               <span class="icon-handle" :style="optionHighlight === index ? 'opacity: 1' : 'opacity: 0'">
-                <span class="material-icons-outlined handle-options tw-cursor-grab" style="font-size: 18px">drag_indicator</span>
+                <span class="material-symbols-outlined handle-options tw-cursor-grab" style="font-size: 18px">drag_indicator</span>
               </span>
             </div>
             <input v-if="type !== 'dropdown'" :type="type" :name="'element-id-' + element.id"
@@ -29,14 +29,14 @@
                 :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_OPTION')">
           </div>
           <div class="tw-flex tw-items-center">
-            <span class="material-icons-outlined tw-cursor-pointer" @click="removeOption(index)"
+            <span class="material-symbols-outlined tw-cursor-pointer" @click="removeOption(index)"
                   :style="optionHighlight === index ? 'opacity: 1' : 'opacity: 0'">close</span>
           </div>
         </div>
       </draggable>
       <div id="add-option" class="tw-flex tw-items-center lg:tw-justify-start md:tw-justify-center">
         <span class="icon-handle" style="opacity: 0">
-          <span class="material-icons-outlined handle-options" style="font-size: 18px">drag_indicator</span>
+          <span class="material-symbols-outlined handle-options" style="font-size: 18px">drag_indicator</span>
         </span>
         <input v-if="type !== 'dropdown'" :type="type" :name="'element-id-' + element.id">
         <div v-else>{{ element.params.sub_options.sub_labels.length + 1 }}.</div>

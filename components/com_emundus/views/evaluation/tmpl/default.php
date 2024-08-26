@@ -78,7 +78,7 @@ if ($this->open_file_in_modal) {
 							}
 							?>
                             <label for="clear-search" class="em-flex-row">
-                                <span class="material-icons-outlined em-pointer em-color-white"
+                                <span class="material-symbols-outlined em-pointer em-color-white"
                                       title="<?php echo Text::_('COM_EMUNDUS_ACTIONS_CLEAR_BTN'); ?>">filter_alt_off</span>
                             </label>
                             <input type="button" style="display: none" id="clear-search"

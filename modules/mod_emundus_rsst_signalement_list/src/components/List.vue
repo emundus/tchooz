@@ -29,8 +29,8 @@
         <th v-for="data in showingListColumns" :id="data.column_name" :key="data.id" @click="orderBy(data.column_name)"
             class="em-pointer" style="user-select: none;">
           <span v-if="sort.orderBy == data.column_name && sort.order == 'asc'"
-                class="material-icons">arrow_upward</span>
-          <span v-else-if="sort.orderBy == data.column_name && sort.order == 'desc'" class="material-icons">arrow_downward</span>
+                class="material-symbols-outlined">arrow_upward</span>
+          <span v-else-if="sort.orderBy == data.column_name && sort.order == 'desc'" class="material-symbols-outlined">arrow_downward</span>
           {{ translate(data.label) }}
         </th>
         <th>
@@ -53,8 +53,8 @@
             </td>
             <td style="border-left: none;text-align: end">
               <div>
-                <span v-if="opened.includes(rowGroupByRowKeyName(group))" class="material-icons">arrow_drop_down</span>
-                <span v-else class="material-icons">arrow_drop_up</span>
+                <span v-if="opened.includes(rowGroupByRowKeyName(group))" class="material-symbols-outlined">arrow_drop_down</span>
+                <span v-else class="material-symbols-outlined">arrow_drop_up</span>
               </div>
             </td>
           </tr>

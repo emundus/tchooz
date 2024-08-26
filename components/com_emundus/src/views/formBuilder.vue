@@ -768,7 +768,7 @@ export default {
             }
           }
 
-          .material-icons, .material-symbols-outlined , .material-icons-outlined {
+          .material-icons, .material-symbols-outlined , .material-symbols-outlined {
             font-size: 22px !important;
           }
         }
