@@ -315,11 +315,11 @@ if ($this->display_comments)
            class="tw-fixed tw-right-0 em-white-bg tw-shadow-[0_4px_3px_0px_rgba(0,0,0,0.1)] tw-ease-out closed">
         <!-- Comments -->
         <div class="tw-flex tw-flex-row tw-relative">
-            <span class="open-comment material-symbols-outlined tw-cursor-pointer tw-absolute tw-top-8 tw-bg-main-500 tw-rounded-l-lg tw-text-neutral-300"
+            <span class="open-comment material-symbols-outlined tw-cursor-pointer tw-absolute tw-top-8 tw-bg-profile-full tw-rounded-l-lg tw-text-neutral-300"
                   onclick="openCommentAside()">
                 comment
             </span>
-            <span class="close-comment material-symbols-outlined tw-cursor-pointer tw-absolute tw-top-8 tw-bg-main-500 tw-rounded-l-lg tw-text-neutral-300"
+            <span class="close-comment material-symbols-outlined tw-cursor-pointer tw-absolute tw-top-8 tw-bg-profile-full tw-rounded-l-lg tw-text-neutral-300"
                   onclick="openCommentAside()">
                 close
             </span>

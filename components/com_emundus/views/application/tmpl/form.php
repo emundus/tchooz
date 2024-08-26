@@ -169,7 +169,7 @@ $user = $this->userid;
                 <aside id="aside-comment-section" class="tw-fixed tw-right-0 tw-bg-[#f8f8f8] tw-shadow tw-ease-out closed">
                     <!-- Comments -->
                     <div class="flex flex-row relative">
-                        <span class="open-comment material-symbols-outlined tw-cursor-pointer tw-absolute tw-top-28 tw-bg-profile-full  tw-rounded-l-lg tw-text-neutral-300" onclick="openCommentAside()">
+                        <span class="open-comment material-symbols-outlined tw-cursor-pointer tw-absolute tw-top-28 tw-bg-profile-full tw-rounded-l-lg tw-text-neutral-300" onclick="openCommentAside()">
                             comment
                         </span>
                         <span class="close-comment material-symbols-outlined tw-cursor-pointer tw-absolute tw-top-28 tw-bg-profile-full tw-rounded-l-lg tw-text-neutral-300" onclick="openCommentAside()">

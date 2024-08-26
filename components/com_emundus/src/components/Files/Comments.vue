@@ -25,10 +25,6 @@
          }"
       >
         <div class="file-comment-header tw-flex tw-flex-col tw-mb-3">
-          <p v-if="comment.target_id > 0" class="comment-target-label tw-text-sm em-gray-color tw-cursor-pointer !tw-mb-3" @click="goToCommentTarget(comment)">
-            {{ getCommentTargetLabel(comment.target_id, comment.target_type) }}
-          </p>
-
           <div class="tw-flex tw-flex-row tw-justify-between tw-items-center">
             <div class="file-comment-header-left tw-flex tw-flex-row tw-cursor-pointer tw-items-center tw-justify-between tw-w-full"
                  @click="replyToComment(comment.id)">
@@ -78,8 +74,7 @@
         </div>
         <i v-if="comment.updated_by > 0" class="tw-text-xs em-gray-color tw-mt-3">{{ translate('COM_EMUNDUS_COMMENTS_EDITED') }}</i>
 
-        <div class="comment-children"
-             :class="{'opened': openedCommentId == comment.id, 'hidden': openedCommentId !== comment.id}">
+        <div class="comment-children" :class="{'opened': openedCommentId == comment.id, 'hidden': openedCommentId !== comment.id}">
           <hr>
           <div :id="'file-comment-' + child.id" v-for="child in childrenComments[comment.id]" :key="child.id" dir="ltr">
             <div class="child-comment tw-flex tw-flex-col tw-border-s-4 tw-my-3 tw-px-3">
@@ -144,6 +139,10 @@
             </div>
           </div>
         </div>
+
+        <p v-if="comment.target_id > 0" class="comment-target-label tw-text-sm em-gray-color tw-cursor-pointer tw-mt-4" @click="goToCommentTarget(comment)">
+          {{ getCommentTargetLabel(comment.target_id, comment.target_type) }}
+        </p>
       </div>
     </div>
     <p v-else id="empty-comments" class="tw-text-center tw-my-4">{{ translate('COM_EMUNDUS_COMMENTS_NO_COMMENTS') }}</p>

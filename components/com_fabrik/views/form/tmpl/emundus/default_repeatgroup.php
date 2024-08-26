@@ -30,7 +30,7 @@ foreach ($group->subgroups as $key => $subgroup) :
                 <?php echo $w->parseMessageForPlaceHolder($group->repeatIntro, $introData);?>
             </div>
         <?php endif; ?>
-		<div class="fabrikSubGroupElements em-repeat-card tw-mb-4 <?php if(!$group->showLegend || empty($group->title)) : ?>tw-mt-7<?php endif; ?>">
+		<div class="fabrikSubGroupElements <?= $this->display_comments ? 'has-comments' : '' ?> em-repeat-card tw-mb-4 <?php if(!$group->showLegend || empty($group->title)) : ?>tw-mt-7<?php endif; ?>">
             <?php if ($group->canDeleteRepeat) : ?>
                 <div class="fabrikGroupRepeater">
                     <?php echo $this->removeRepeatGroupButton; ?>

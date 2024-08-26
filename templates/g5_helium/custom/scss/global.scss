@@ -4551,6 +4551,10 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
               margin-top: 12px;
             }
 
+          &.has-comments {
+            padding: 24px 30px;
+          }
+
             /* TABLEAU */
           /*
             td,
