@@ -828,7 +828,7 @@
         /** SELECT **/
 
         select {
-            background-position-x: 97%;
+            background-position-x: 99%;
             background-position-y: 54%;
             -webkit-appearance: none;
             appearance: none;
@@ -840,6 +840,10 @@
 
             &.input-small {
                 background-position-x: 92%;
+            }
+
+            @media all and (max-width: 767px) {
+              background-position-x: 97%;
             }
         }
 

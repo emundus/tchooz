@@ -1691,7 +1691,7 @@ form.fabrikForm .plg-radiobutton .btn-group label.btn-outline-secondary.btn:not(
         }
 /** SELECT **/
 form.fabrikForm select {
-            background-position-x: 97%;
+            background-position-x: 99%;
             background-position-y: 54%;
             -webkit-appearance: none;
             -moz-appearance: none;
@@ -1704,6 +1704,12 @@ form.fabrikForm select {
         }
 form.fabrikForm select.input-small {
                 background-position-x: 92%;
+            }
+@media all and (max-width: 767px) {
+
+        form.fabrikForm select {
+              background-position-x: 97%
+        }
             }
 form.fabrikForm select.form-select + .chosen-container .chosen-single {
             background-position-x: 98% !important;
@@ -2989,9 +2995,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .\!tw-mb-1 {
     margin-bottom: var(--em-spacing-1) !important;
-}
-.\!tw-mb-3 {
-    margin-bottom: var(--em-spacing-3) !important;
 }
 .\!tw-ml-0 {
     margin-left: 0px !important;
