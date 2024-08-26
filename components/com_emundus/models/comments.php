@@ -375,8 +375,8 @@ class EmundusModelComments extends BaseDatabaseModel
                     $comments[$key]['firstname'] = $users[$comment['user_id']]['firstname'];
                     $comments[$key]['lastname'] = $users[$comment['user_id']]['lastname'];
                     $comments[$key]['date_time'] = strtotime($comment['date']);
-                    $comments[$key]['date'] = EmundusHelperDate::displayDate($comment['date']);
-                    $comments[$key]['updated'] = EmundusHelperDate::displayDate($comment['updated']);
+                    $comments[$key]['date'] = EmundusHelperDate::displayDate($comment['date'], 'DATE_FORMAT_LC2', 0);
+                    $comments[$key]['updated'] = EmundusHelperDate::displayDate($comment['updated'], 'DATE_FORMAT_LC2', 0);
                 }
             }
         }
