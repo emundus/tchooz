@@ -15,9 +15,9 @@ $current_user = JFactory::getUser();
     <section class="info">
         <div class="infoContainer">
             <div class="em-flex-column">
-                <div class="em-circle-main-100 em-flex-column">
-                    <div class="em-circle-main-200 em-flex-column">
-                        <span class="material-symbols-outlined em-font-size-48 em-main-400-color">mail</span>
+                <div class="tw-bg-profile-light em-flex-column tw-rounded-full tw-p-3">
+                    <div class="tw-bg-profile-medium em-flex-column tw-rounded-full tw-p-3">
+                        <span class="material-symbols-outlined em-font-size-32 tw-text-profile-full">mail</span>
                     </div>
                 </div>
             </div>

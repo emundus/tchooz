@@ -62,10 +62,10 @@
       </div>
 
       <div id="modal-evaluationgrid">
-        <div class="tw-flex tw-flex-col" v-if="!loading && url" style="width: 40px;height: 40px;margin: 24px 0 12px 24px;">
-          <div class="tw-bg-profile-light tw-rounded-full tw-flex tw-justify-center tw-items-center" style="width: 40px; height: 40px;">
-            <div class="tw-bg-profile-medium tw-rounded-full  tw-flex tw-justify-center tw-items-center" style="width: 24px; height: 24px">
-              <span class="material-symbols-outlined tw-rounded-full tw-text-profile-full" style="font-size: 14px">troubleshoot</span>
+        <div class="tw-w-fit tw-mb-8" v-if="!loading && url">
+          <div class="tw-bg-profile-light tw-rounded-full tw-p-3" >
+            <div class="tw-bg-profile-medium tw-rounded-full tw-p-3 em-flex-column" >
+              <span class="material-symbols-outlined em-font-size-32 tw-text-profile-full" >troubleshoot</span>
             </div>
           </div>
         </div>
