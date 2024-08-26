@@ -462,6 +462,8 @@ class EmundusControllerApplication extends BaseController
 		$res           = false;
 
 		if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)) {
+			$ccid = EmundusHelperFiles::getIdFromFnum($fnum);
+
 			if ($menus !== false) {
 				$res              = true;
 				$menu_application = array();
@@ -491,8 +493,8 @@ class EmundusControllerApplication extends BaseController
 							}
 						}
 						if ($action_id == 10) {
-							$m_files                = $this->getModel('Files');
-							$notifications_comments = sizeof($m_files->getCommentsByFnum([$fnum]));
+							$m_comments                = $this->getModel('Comments');
+							$notifications_comments = sizeof($m_comments->getComments($ccid, $this->_user->id, false, [], null, 1));
 							$menu['notifications']  = $notifications_comments;
 						}
 
