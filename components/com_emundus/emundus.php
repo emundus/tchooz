@@ -9,6 +9,7 @@
 // No direct access
 defined('_JEXEC') or die('ACCESS_DENIED');
 
+use Joomla\CMS\Access\Exception\NotAllowed;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
@@ -794,7 +795,7 @@ elseif ($user->guest && $name != 'emailalert' && $name != 'programme' && $name !
 	PluginHelper::importPlugin('emundus', 'custom_event_handler');
 	$app->triggerEvent('onCallEventHandler', ['onAccessDenied', []]);
 
-	$controller->setRedirect('index.php', Text::_("ACCESS_DENIED"), 'error');
+	throw new NotAllowed(Text::_('JERROR_ALERTNOAUTHOR'), 403);
 }
 else {
 	if ($name != 'search_engine') {
