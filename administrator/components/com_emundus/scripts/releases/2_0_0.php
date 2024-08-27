@@ -1504,6 +1504,24 @@ if(value == 1) {
 			}
 			//
 
+			EmundusHelperUpdate::updateExtensionParam('log_forms_update',0);
+
+			$query->clear()
+				->select('id,params')
+				->from($this->db->quoteName('#__fabrik_lists'));
+			$this->db->setQuery($query);
+			$fabrik_lists = $this->db->loadObjectList();
+
+			foreach ($fabrik_lists as $fabrik_list) {
+				$params = json_decode($fabrik_list->params,true);
+
+				if(!empty($params['list_copy_image_name'])) {
+					$params['list_copy_image_name'] = str_replace('copy','content_copy',$params['list_copy_image_name']);
+					$fabrik_list->params = json_encode($params);
+					$this->db->updateObject('#__fabrik_lists', $fabrik_list, 'id');
+				}
+			}
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)
