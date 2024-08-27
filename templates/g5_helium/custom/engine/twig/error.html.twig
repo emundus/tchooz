@@ -1,0 +1,20 @@
+{% extends "partials/page.html.twig" %}
+
+{% block page_head -%}
+    {% include 'partials/error_head.html.twig' %}
+{%- endblock %}
+
+{% block content %}
+    <div class="left-side-404 container-404" >
+        <h2 class="gradient-404">Oups !</h2>
+        <p>{{ error|default('Unknown Error') }}</p>
+        {% if(errorcode == 404) %}
+            <img src="{{ url('media/com_emundus/images/tchoozy/complex-illustrations/page-not-found.svg') }}" alt="Erreur 404" />
+        {% elseif(errorcode == 403) %}
+            <img src="{{ url('media/com_emundus/images/tchoozy/complex-illustrations/403-error.svg') }}" alt="Erreur 403" />
+        {% else %}
+            <img src="{{ url('media/com_emundus/images/tchoozy/complex-illustrations/building.svg') }}" alt="Erreur 403" />
+        {% endif %}
+        <p><a href="/">{{ 'COM_EMUNDUS_ERROR_404_BUTTON'|trans }}</a></p>
+    </div>
+{% endblock %}

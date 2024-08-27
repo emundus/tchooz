@@ -1468,6 +1468,42 @@ if(value == 1) {
 				EmundusHelperUpdate::displayMessage($sharing_files_installed['message'], 'error');
 			}
 
+			// Fix error layout
+			EmundusHelperUpdate::insertTranslationsTag('JERROR_PAGE_NOT_FOUND','La page que vous cherchez semble introuvable...');
+			EmundusHelperUpdate::insertTranslationsTag('JERROR_PAGE_NOT_FOUND','The page you are looking for cannot be found...', 'override', 0, null, null, 'en-GB');
+
+			$error_directory = JPATH_ROOT . '/templates/g5_helium/custom/config/_error';
+			$error_page_directory = JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page';
+
+			$error_files = glob($error_directory . '/*');
+			foreach ($error_files as $file) {
+				if (is_file($file)) {
+					unlink($file);
+				}
+			}
+
+			$error_page_files = glob($error_page_directory . '/*');
+			foreach ($error_page_files as $file) {
+				if (is_file($file)) {
+					unlink($file);
+				}
+			}
+
+			$new_error_files = glob(JPATH_ROOT . '/.docker/installation/templates/g5_helium/custom/config/_error/*');
+			foreach ($new_error_files as $file) {
+				if (is_file($file)) {
+					copy($file, $error_directory . '/' . basename($file));
+				}
+			}
+
+			$new_error_page_files = glob(JPATH_ROOT . '/.docker/installation/templates/g5_helium/custom/config/_error/page/*');
+			foreach ($new_error_page_files as $file) {
+				if (is_file($file)) {
+					copy($file, $error_page_directory . '/' . basename($file));
+				}
+			}
+			//
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)
