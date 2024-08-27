@@ -589,7 +589,7 @@ class modemundusApplicationsHelper
 				require_once(JPATH_ROOT . '/components/com_emundus/models/comments.php');
 			}
 			$m_comments = new EmundusModelComments();
-			$comments = $m_comments->getComments($ccid, $current_user, true, [], null, 1);
+			$comments = $m_comments->getComments($ccid, $current_user, true, [], 0, 1);
 
 			$nb_comments = count($comments);
 		}
