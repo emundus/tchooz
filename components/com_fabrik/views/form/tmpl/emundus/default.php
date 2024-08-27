@@ -27,8 +27,31 @@ $display_required_icon = $eMConfig->get('display_required_icon', 1);
 
 $pageClass = $this->params->get('pageclass_sfx', '');
 
+$app = Factory::getApplication();
+$session                = $app->getSession();
+$emundus_user           = $session->get('emundusUser');
+$user = $app->getIdentity();
 
-require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
+$fnum = $app->input->getString('fnum', '');
+if (empty($fnum)) {
+	$fnum = $emundus_user->fnum;
+}
+
+if (!empty($fnum)) {
+	require_once(JPATH_SITE . '/components/com_emundus/models/application.php');
+	$m_application = new EmundusModelApplication();
+	$this->locked_elements = $m_application->getLockedElements($this->form->id, $fnum);
+	$this->collaborators = $m_application->getSharedFileUsers(null, $fnum);
+
+	$this->collaborator = false;
+	$e_user = $session->get('emundusUser', null);
+	if(!empty($e_user->fnums)) {
+		$fnumInfos = $e_user->fnums[$fnum];
+		$this->collaborator = $fnumInfos->applicant_id != $e_user->id;
+	}
+}
+
+require_once(JPATH_SITE .'/components/com_emundus/models/users.php');
 $m_users      = new EmundusModelUsers();
 $profile_form = $m_users->getProfileForm();
 
@@ -44,13 +67,11 @@ if ($allow_to_comment)
 	$db->setQuery($query);
 	$result = $db->loadObject();
 
-	if (!empty($result))
+	if (!empty($result) && Factory::getApplication()->input->get('fnum', '') == $fnum && $e_user->applicant == 1)
 	{
 		$this->display_comments = true;
 	}
 
-	$session                = Factory::getApplication()->getSession();
-	$emundus_user           = $session->get('emundusUser');
 	$current_user_profile   = $emundus_user->profile;
 	$applicant_profiles     = $m_users->getApplicantProfiles();
 	$applicant_profiles_ids = array_map(function ($profile) {

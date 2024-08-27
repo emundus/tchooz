@@ -66,7 +66,7 @@ export default {
     async getPreview() {
       let data;
       if (!useAttachmentStore().previews[this.attachment.aid]) {
-        data = await attachmentService.getPreview(this.user, this.attachment.filename);
+        data = await attachmentService.getPreview(this.user, this.attachment.filename, this.attachment.aid);
         if (data.status) {
           useAttachmentStore().setPreview({preview: data, id: this.attachment.aid,});
         }

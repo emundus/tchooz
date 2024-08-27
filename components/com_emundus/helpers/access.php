@@ -372,7 +372,8 @@ class EmundusHelperAccess
 	 *
 	 * @return bool
 	 *
-	 * @since version
+	 * @throws Exception
+	 * @since version 1.0.0
 	 */
 	public static function isUserAllowedToAccessFnum($user_id, $fnum)
 	{
@@ -380,24 +381,15 @@ class EmundusHelperAccess
 
 		if (empty($user_id))
 		{
-			$user_id = JFactory::getUser()->id;
+			$user_id = Factory::getApplication()->getIdentity()->id;
 		}
 
 		if (!empty($user_id) && !empty($fnum))
 		{
-			$db    = JFactory::getDbo();
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
-			// is the fnum mine ?
-			$query->select('id')
-				->from($db->quoteName('#__emundus_campaign_candidature'))
-				->where('applicant_id = ' . $db->quote($user_id))
-				->andWhere('fnum LIKE ' . $db->quote($fnum));
-			$db->setQuery($query);
-			$ccid = $db->loadResult();
-
-			if (!empty($ccid))
-			{
+			if (self::isFnumMine($user_id, $fnum)) {
 				$allowed = true;
 			}
 			else

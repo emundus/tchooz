@@ -1457,6 +1457,17 @@ if(value == 1) {
 
 			EmundusHelperUpdate::addColumn('jos_emundus_chatroom','status','INT');
 
+			// Sharing files feature
+			require_once JPATH_ADMINISTRATOR . '/components/com_emundus/scripts/src/SharingFilesInstall.php';
+			$sharing_files_install   = new \scripts\src\SharingFilesInstall();
+			$sharing_files_installed = $sharing_files_install->install();
+			if ($sharing_files_installed['status']) {
+				EmundusHelperUpdate::displayMessage('La fonctionnalité de partage de dossier a été installée avec succès', 'success');
+			}
+			else {
+				EmundusHelperUpdate::displayMessage($sharing_files_installed['message'], 'error');
+			}
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

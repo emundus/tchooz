@@ -1,4 +1,6 @@
 <?php // no direct access
+use Joomla\CMS\Factory;
+
 defined('_JEXEC') or die('Restricted access');
 
 $config      = JFactory::getConfig();
@@ -119,7 +121,7 @@ $now      = $dateTime->format('Y-m-d H:i:s');
     }
 </style>
 
-<div class="mod_emundus_flow___container" style="padding: 0 20px">
+<div class="mod_emundus_flow___container tw-mt-4" style="padding: 0 20px">
     <div class="tw-flex tw-justify-between mod_emundus_flow___intro">
         <div class="tw-flex tw-items-center">
             <h1 class="em-mb-0-important"><?php echo $campaign_name; ?></h1>
@@ -184,6 +186,13 @@ $now      = $dateTime->format('Y-m-d H:i:s');
                     </div>
                 </div>
 			<?php endif; ?>
+
+	        <?php if($fnumInfos['applicant_id'] !== Factory::getApplication()->getIdentity()->id) : ?>
+                <div class="tw-flex tw-items-center">
+                    <p class="tw-text-neutral-600 tw-mr-2"><?= JText::_('MOD_EMUNDUS_FLOW_APPLICANT'); ?></p>
+                    <p><?= $fnumInfos['name']; ?></p>
+                </div>
+	        <?php endif; ?>
         </div>
 	<?php endif; ?>
 

@@ -18,7 +18,7 @@ defined('_JEXEC') or die;
 class modemundusApplicationsHelper
 {
 
-	static function getApplications($layout, $order_by, $params = null)
+	static function getApplications($layout, $order_by, $params = null, $collaborate = false)
 	{
 		$applications = [];
 		$app = Factory::getApplication();
@@ -44,7 +44,6 @@ class modemundusApplicationsHelper
 		}
 
 		$select = [
-			'ecc.id as ccid',
 			'ecc.date_time AS campDateTime',
 			'ecc.id as application_id',
 			'ecc.*',
@@ -82,7 +81,6 @@ class modemundusApplicationsHelper
 		}
 
 		$query->clear()
-			->select(implode(',',$select))
 			->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
 			->leftJoin($db->quoteName('#__emundus_campaign_candidature_tabs', 'ecct') . ' ON ecct.id=ecc.tab')
 			->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.id=ecc.campaign_id')
@@ -98,6 +96,22 @@ class modemundusApplicationsHelper
 		}
 
 		$query->where('ecc.applicant_id =' . $user->id);
+
+		// Files request
+		if ($collaborate) {
+			$select_collab = [
+				'efr.r',
+				'efr.u',
+				'efr.show_history',
+				'efr.show_shared_users',
+			];
+			$select = array_merge($select,$select_collab);
+
+			$query->leftJoin($db->quoteName('#__emundus_files_request', 'efr') . ' ON efr.ccid = ecc.id');
+			$query->orWhere($db->quoteName('efr.user_id') . ' = ' . $user->id . ' AND ' . $db->quoteName('efr.uploaded') . ' = 1');
+		}
+
+		$query->select(implode(',',$select));
 
 		if (!empty($params)) {
 			$selected_campaigns = $params->get('selected_campaigns', []);
@@ -145,6 +159,26 @@ class modemundusApplicationsHelper
 		}
 
 		return $applications;
+	}
+
+	static function getCollaborators(&$applications)
+	{
+		foreach ($applications as $fnum => $application) {
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true);
+
+			$query->select('efr.email, efr.user_id')
+				->from($db->quoteName('#__emundus_files_request', 'efr'))
+				->where($db->quoteName('efr.ccid') . ' = ' . $application->application_id)
+				->andWhere($db->quoteName('efr.show_shared_users') . ' = 1');
+
+			try {
+				$db->setQuery($query);
+				$application->collaborators = $db->loadObjectList();
+			} catch (Exception $e) {
+				Log::add('Module emundus applications failed to get collaborators for application ' . $application->application_id . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			}
+		}
 	}
 
 	static function getStatusFiles()

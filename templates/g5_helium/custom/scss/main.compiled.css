@@ -1039,9 +1039,6 @@ video {
 .fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.day.selected {
                                 border-radius: 99px;
                             }
-.fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.day.\!selected {
-                                border-radius: 99px !important;
-                            }
 .fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.today:after {
                                 content: unset;
                             }
@@ -2388,6 +2385,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-right-\[1px\] {
     right: 1px;
+}
+.tw-right-\[5px\] {
+    right: 5px;
 }
 .tw-top-0 {
     top: 0px;
@@ -4240,6 +4240,14 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-transform {
     transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
+@keyframes tw-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+.tw-animate-spin {
+    animation: tw-spin 1s linear infinite;
+}
 .\!tw-cursor-not-allowed {
     cursor: not-allowed !important;
 }
@@ -4472,6 +4480,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-border-gray-300 {
     --tw-border-opacity: 1;
     border-color: rgb(209 213 219 / var(--tw-border-opacity));
+}
+.tw-border-main-500 {
+    border-color: var(--main-500);
 }
 .tw-border-neutral-300 {
     border-color: var(--neutral-300);
@@ -5299,6 +5310,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-pt-px {
     padding-top: 1px;
 }
+.\!tw-text-center {
+    text-align: center !important;
+}
 .tw-text-center {
     text-align: center;
 }
@@ -5441,6 +5455,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-text-profile-full {
     color: var(--em-profile-color);
+}
+.tw-text-red-500 {
+    color: var(--red-500);
 }
 .tw-text-red-600 {
     color: var(--red-600);
@@ -5902,7 +5919,6 @@ button.swal2-cancel.goback-btn:hover,
     }
 .fabrikMainError .material-icons,.fabrikMainError .material-icons-outlined,.fabrikMainError .material-symbols-outlined,.alert.alert-error .material-icons,.alert.alert-error .material-icons-outlined,.alert.alert-error .material-symbols-outlined {
             color: var(--em-alert-error-icon-color);
-            margin-right: var(--em-spacing-3);
         }
 .alert.alert-warning, .alert.alert-notice {
         border: solid var(--em-alert-warning-border-width) var(--em-alert-warning-border-color);
@@ -6284,9 +6300,6 @@ button.swal2-cancel.goback-btn:hover,
 .label-border-black {
         border-color: var(--em-black);
     }
-.\[-a-zA-Z\:0-9_\.\] {
-    -a-z-a--z: 0-9 .;
-}
 @font-face {
     font-family: 'Material Icons';
     font-style: normal;

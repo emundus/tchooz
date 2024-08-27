@@ -232,6 +232,7 @@
                             @update-status="updateStatus"
                             @change-permission="changePermission"
                             :columns="$props.columns"
+                            :is_applicant="$props.is_applicant"
                         >
                         </AttachmentRow>
                     </tbody>
@@ -248,7 +249,7 @@
         </div>
 
         <div v-show="openedModal">
-            <modal id="edit-modal" name="edit" :resizable="true" :draggable="true" @closed="closeModal">
+            <modal id="edit-modal" name="edit" :resizable="true" :draggable="true" @closed="closeModal" :click-to-close="false">
                 <div class="modal-head tw-w-full tw-flex tw-items-center tw-justify-between">
                     <div id="actions-left" class="tw-flex tw-items-center tw-justify-start">
                         <span>{{ selectedAttachment.filename }}</span>
@@ -296,13 +297,16 @@
                         :class="{ 'only-preview': onlyPreview }"
                     >
                         <AttachmentPreview
+                            v-if="openedModal"
                             @fileNotFound="canDownload = false"
                             @canDownload="canDownload = true"
                             :user="displayedUser.user_id"
                         ></AttachmentPreview>
                         <AttachmentEdit
-                            v-if="displayEdit"
+                            v-if="displayEdit && openedModal"
                             :fnum="displayedFnum"
+                            :columns="$props.columns"
+                            :is_applicant="$props.is_applicant"
                             :is-displayed="!onlyPreview"
                             @closeModal="closeModal"
                             @saveChanges="updateAttachment"
@@ -376,6 +380,10 @@ export default {
           'sync',
         ]
       },
+    },
+    is_applicant: {
+      type: String,
+      default: null
     },
     displayEdit: {
       type: Boolean,

@@ -182,4 +182,6 @@ TRUNCATE TABLE `jos_emundus_users_profiles`;
 
 DELETE FROM jos_menu WHERE menutype LIKE 'campaigns';
 
+DELETE FROM jos_modules_menu WHERE menuid NOT IN (SELECT id FROM jos_menu) AND menuid != 0
+
 SET FOREIGN_KEY_CHECKS=1;

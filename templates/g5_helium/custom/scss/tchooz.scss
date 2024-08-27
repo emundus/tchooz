@@ -1762,6 +1762,7 @@ button.em-swal-delete-button:hover{
 
   .swal2-icon-content {
     width: 100%;
+    justify-content: center;
   }
 }
 
@@ -1773,6 +1774,18 @@ button.em-swal-delete-button:hover{
     align-items: center;
     height: 100%;
   }
+}
+
+.swal2-content .swal2-validation-message {
+  margin-top: 24px;
+  color: var(--neutral-800);
+  gap: 6px;
+  align-items: flex-start;
+  padding: 8px 18px;
+}
+
+.swal2-validation-message::before {
+  display: none !important;
 }
 
 /** Vue Modal - Translation tool **/

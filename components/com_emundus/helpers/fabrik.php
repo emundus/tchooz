@@ -1221,6 +1221,10 @@ die("<script>
 		$formattedValue = '';
 
 		if (!empty($phone_number)) {
+			if(is_array($phone_number)) {
+				$phone_number = $phone_number['country_code'] . $phone_number['num_tel'];
+			}
+
 			$phone_number = trim($phone_number);
 			$phone_number = str_replace(' ', '', $phone_number);
 

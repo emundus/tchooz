@@ -1243,13 +1243,10 @@ public function sendTestMail()
 
 	public function getOffset()
 	{
-		$user    = $this->user;
-		$results = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
-
 		// get input format, second, minutes or hours
 		$format = $this->input->getString('format', 'hours');
 
-		$config = JFactory::getConfig();
+		$config = $this->app->getConfig();
 		$offset = $config->get('offset');
 
 		$dateTZ = new DateTimeZone($offset);

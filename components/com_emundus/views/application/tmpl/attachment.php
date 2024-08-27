@@ -16,16 +16,9 @@ use Joomla\CMS\Uri\Uri;
 
 $app = Factory::getApplication();
 
-if (version_compare(JVERSION, '4.0', '>')) {
-	$offset = $app->getConfig()->get('offset');
-	Factory::getApplication()->getSession()->set('application_layout', 'attachment');
-	$lang = $app->getLanguage();
-}
-else {
-	$offset = Factory::getConfig()->get('offset');
-	Factory::getSession()->set('application_layout', 'attachment');
-	$lang = JFactory::getLanguage();
-}
+$offset = $app->getConfig()->get('offset');
+$app->getSession()->set('application_layout', 'attachment');
+$lang = $app->getLanguage();
 
 $can_export          = EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $this->fnum);
 $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_user->id);
@@ -60,6 +53,7 @@ $hash = EmundusHelperCache::getCurrentGitHash() . rand(0, 99999);
      attachments="<?= base64_encode(json_encode($this->userAttachments)) ?>"
      rights="<?= base64_encode(json_encode(['can_export' => $can_export, 'can_see' => $can_see_attachments])) ?>"
      columns="<?= base64_encode(json_encode($this->columns)) ?>"
+     is_applicant="<?php echo $this->is_applicant ?>"
 >
 </div>
 
