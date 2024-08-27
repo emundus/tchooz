@@ -21,8 +21,7 @@ if (!empty($this->items)) :
     </style>
     <div class="container-nav em-container-menuaction">
 
-        <span class="navbar-brand" href="#"><?php echo JText::_('COM_EMUNDUS_ACTIONS'); ?></span>
-        <div class="navbar-collapse collapse navbar-inverse-collapse">
+        <div class="navbar-collapse collapse navbar-inverse-collapse tw-px-0">
 
             <ul class="nav navbar-nav em-container-menuaction-nav" style="display:<?php echo $this->display; ?>">
 				<?php

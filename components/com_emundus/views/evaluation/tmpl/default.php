@@ -151,7 +151,6 @@ if ($this->open_file_in_modal) {
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <span class="navbar-brand" href="#"><?php echo Text::_('COM_EMUNDUS_ACTIONS'); ?></span>
             </div>
 
         </div>

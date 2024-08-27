@@ -92,7 +92,6 @@ defined('_JEXEC') or die('Restricted access');
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <span class="navbar-brand" href="#"><?php echo JText::_('COM_EMUNDUS_ACTIONS') ?></span>
             </div>
 
         </div>
