@@ -216,7 +216,7 @@ export default {
           this.loading = false;
 
           this.enableEmail = this.getEmundusparamsEmailValue('mailonline', 'boolean')
-          this.AuthSMTP = this.config["joomla"]['smtpauth'];
+          this.AuthSMTP = this.config["joomla"]['smtpauth'] == 1 ? 1 : 0;
           this.customConfigurationToggle = this.config['emundus']['custom_email_conf'];
           this.customConfigurationToggle = this.customConfigurationToggle == 1 ? true : false;
           this.putValueIntoInputs(this.customConfigurationToggle);
