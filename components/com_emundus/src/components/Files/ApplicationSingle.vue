@@ -4,6 +4,7 @@
       :click-to-close="false"
       id="application-modal"
       name="application-modal"
+      :height="'100vh'"
       ref="modal"
       v-if="selectedFile !== null && selectedFile !== undefined"
       :class="{ 'context-files': context === 'files', 'hidden': hidden }"
@@ -33,7 +34,7 @@
     <div class="modal-grid" :style="'grid-template-columns:' + this.ratioStyle" v-if="access">
       <div id="modal-applicationform">
         <div class="scrollable">
-          <div class="tw-flex tw-items-center tw-justify-center tw-gap-4 tw-border-b tw-border-neutral-300 sticky-tab">
+          <div class="tw-flex tw-items-center tw-justify-center tw-gap-4 tw-border-b tw-border-neutral-300 sticky-tab em-bg-neutral-100" style="z-index:2;">
             <div v-for="tab in tabsICanAccessTo" :key="tab.name" class="em-light-tabs tw-cursor-pointer"
                  @click="selected = tab.name" :class="selected === tab.name ? 'em-light-selected-tab' : ''">
               <span class="tw-text-sm">{{ translate(tab.label) }}</span>
