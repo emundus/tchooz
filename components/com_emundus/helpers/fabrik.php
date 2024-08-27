@@ -268,7 +268,7 @@ class EmundusHelperFabrik
 				$plugins = [
 					'curl_code'             => [
 						1 => 'use Joomla\CMS\Factory;
-
+use Joomla\CMS\HTML\HTMLHelper;
 $app = Factory::getApplication();
 $input = $app->getInput();
 
@@ -279,13 +279,17 @@ $student = isset($student_id) ? JUser::getInstance($student_id) : JUser::getInst
 echo "<h2>".$student->name."</h2>";
 HTMLHelper::styleSheet(JURI::base() . "media/jui/css/chosen.css");
 HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");',
-						2 => 'echo \'<script>window.parent.ScrollToTop();</script>\';
+						2 => 'use Joomla\CMS\Language\Text;
+
+echo \'<script>window.parent.ScrollToTop();</script>\';
 echo \'<style>.em-swal-title{
   margin: 8px 8px 32px 8px !important;
   font-family: "Maven Pro", sans-serif;
 }
 </style>\';
 die("<script>
+	
+
       $(document).ready(function () {
           Swal.fire({
   	         position: \'top\',
