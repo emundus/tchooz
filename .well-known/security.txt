@@ -1,0 +1,5 @@
+Contact: mailto:security@emundus.fr
+Contact: https://www.emundus.fr/contact
+Expires: 2030-09-30T21:59:00.000Z
+Preferred-Languages: fr, en
+Hiring: https://www.carriere.emundus.fr/espace-candidatures
