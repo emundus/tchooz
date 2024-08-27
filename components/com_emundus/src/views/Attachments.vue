@@ -66,7 +66,7 @@
                         @click="confirmDeleteAttachments"
                         :title="translate('COM_EMUNDUS_ATTACHMENTS_DELETE_TITLE')"
                     >
-                        delete_outlined
+                        delete
                     </span>
                 </div>
             </section>
