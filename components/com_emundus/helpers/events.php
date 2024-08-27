@@ -1827,11 +1827,17 @@ class EmundusHelperEvents
 										break;
 									case 'dropdown':
 										$new_value = array_key_exists($raw_element_key, $form_data) ? $form_data[$raw_element_key] : $form_data[$element_key];
-										$params    = json_decode($params, true);
-
-										if (!$params['multiple'])
+										if(!empty($new_value))
 										{
-											$new_value = current($new_value);
+											if (is_string($params))
+											{
+												$params = json_decode($params, true);
+											}
+
+											if (!$params['multiple'] && is_array($new_value))
+											{
+												$new_value = current($new_value);
+											}
 										}
 										break;
 									case 'cascadingdropdown':
