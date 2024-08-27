@@ -85,7 +85,6 @@ $wa->registerAndUseScript('com_emundus/jquery', 'jquery/jquery.min.js');
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <span class="navbar-brand" href="#"><?php echo JText::_('COM_EMUNDUS_ACTIONS') ?></span>
             </div>
         </div>
         <div class="panel panel-default">
