@@ -504,7 +504,7 @@ a.btn.btn-success:not(.btn-xs) {
     transition: transform .3s;
 }
 
-.mod_emundus_applications___content_app:hover .material-symbols-outlined{
+.mod_emundus_applications___content_app:hover .mod_emundus_applications__container .material-symbols-outlined{
     color: var(--neutral-0);
 }
 
@@ -890,6 +890,36 @@ circle.circle {
     font-style: normal;
     font-weight: 700;
     line-height: 90%;
+}
+
+/* Collaboration */
+
+.collaborators-icon-wrapper {
+    border-radius: 50%;
+    position: relative;
+    padding: 6px;
+
+    .material-icons-outlined {
+        width: 22px;
+        height: 22px;
+        font-size: 22px;
+        text-align: center;
+    }
+
+    .nb-collaborators {
+        position: absolute;
+        top: -8px;
+        right: -15px;
+        padding: 5px;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        border-width: 2px;
+        text-align: center;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 90%;
+    }
 }
 
 /*******************

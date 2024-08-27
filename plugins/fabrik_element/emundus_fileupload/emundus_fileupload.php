@@ -345,7 +345,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 
 			$attachmentResult = $this->getAttachment($attachment_id);
 			$nbMaxFile        = (int) $attachmentResult->nbmax;
-			$result           = array('limitObtained' => $nbMaxFile <= sizeof($uploadResult));
+			$result           = array('status' => true,'files' => [],'limitObtained' => $nbMaxFile <= sizeof($uploadResult));
 
 			foreach ($uploadResult as $key => $upload) {
 				if (is_array($upload)) {

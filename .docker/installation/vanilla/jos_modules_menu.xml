@@ -182,14 +182,6 @@
    </row>
    <row>
     <field name="moduleid">113</field>
-    <field name="menuid">496</field>
-   </row>
-   <row>
-    <field name="moduleid">113</field>
-    <field name="menuid">497</field>
-   </row>
-   <row>
-    <field name="moduleid">113</field>
     <field name="menuid">501</field>
    </row>
    <row>
@@ -223,14 +215,6 @@
    <row>
     <field name="moduleid">122</field>
     <field name="menuid">133</field>
-   </row>
-   <row>
-    <field name="moduleid">122</field>
-    <field name="menuid">496</field>
-   </row>
-   <row>
-    <field name="moduleid">122</field>
-    <field name="menuid">497</field>
    </row>
    <row>
     <field name="moduleid">122</field>

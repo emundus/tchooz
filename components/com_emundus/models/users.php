@@ -1281,7 +1281,7 @@ class EmundusModelUsers extends ListModel
 
 		$response['username'] = $instance->get('username');
 		$app->triggerEvent('onUserLogin', array($response, $options));
-		$app->triggerEvent('callEventHandler', ['onUserLogin', ['user_id' => $uid]]);
+		$app->triggerEvent('onCallEventHandler', ['onUserLogin', ['user_id' => $uid]]);
 
 		return $instance;
 	}

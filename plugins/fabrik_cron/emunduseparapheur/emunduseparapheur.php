@@ -137,7 +137,7 @@ class PlgFabrik_Cronemunduseparapheur extends PlgFabrik_Cron {
 									$app->triggerEvent('onAfterUploadFile', [['upload_id' => $upload_id]]);
 
 									PluginHelper::importPlugin('emundus', 'custom_event_handler');
-									$app->triggerEvent('callEventHandler', ['onAfterFileSignedEparapheur', ['fnum' => $file_request->fnum, 'attachment_id' => $file_request->attachment_id, 'upload_id' => $upload_id, 'email' => $file_request->email, 'signer_id' => $file_request->signer_id]]);
+									$app->triggerEvent('onCallEventHandler', ['onAfterFileSignedEparapheur', ['fnum' => $file_request->fnum, 'attachment_id' => $file_request->attachment_id, 'upload_id' => $upload_id, 'email' => $file_request->email, 'signer_id' => $file_request->signer_id]]);
 
 									$query->clear()
 										->update($db->quoteName('#__emundus_files_request'))

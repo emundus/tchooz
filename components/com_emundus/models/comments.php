@@ -455,6 +455,6 @@ class EmundusModelComments extends BaseDatabaseModel
 
 		$app = Factory::getApplication();
 		$app->triggerEvent($event, $args);
-		$app->triggerEvent('callEventHandler', [$event, $args]);
+		$app->triggerEvent('onCallEventHandler', [$event, $args]);
     }
 }

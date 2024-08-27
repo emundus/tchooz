@@ -2797,7 +2797,8 @@ class EmundusModelCampaign extends ListModel
 				->leftJoin('#__emundus_campaign_workflow_repeat_campaign AS ecw_camp ON ecw_camp.parent_id = ecw.id')
 				->leftJoin('#__emundus_campaign_workflow_repeat_entry_status AS ecw_status ON ecw_status.parent_id = ecw.id')
 				->where('ecw_camp.campaign = ' . $this->_db->quote($campaign_id))
-				->group('ecw.profile');
+				->group('ecw.profile')
+				->order('ecw.step');
 			$this->_db->setQuery($query);
 
 			try {
@@ -2828,7 +2829,8 @@ class EmundusModelCampaign extends ListModel
 				$query->andWhere('ecw_status.entry_status NOT IN (' . implode(',', $excluded_entry_statuses) . ')');
 			}
 
-			$query->group(['ecwrp.programs', 'ecw.profile']);
+			$query->group(['ecwrp.programs', 'ecw.profile'])
+				->order('ecw.step');
 			$this->_db->setQuery($query);
 
 			try {
@@ -2861,7 +2863,8 @@ class EmundusModelCampaign extends ListModel
 				$query->andWhere('ecw_status.entry_status NOT IN (' . implode(',', $excluded_entry_statuses) . ')');
 			}
 
-			$query->group('ecw.profile');
+			$query->group('ecw.profile')
+				->order('ecw.step');
 			$this->_db->setQuery($query);
 
 			try {
