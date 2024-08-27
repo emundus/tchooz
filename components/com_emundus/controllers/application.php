@@ -496,7 +496,7 @@ class EmundusControllerApplication extends BaseController
 						}
 						if ($action_id == 10) {
 							$m_comments                = $this->getModel('Comments');
-							$notifications_comments = sizeof($m_comments->getComments($ccid, $this->_user->id, false, [], null, 1));
+							$notifications_comments = sizeof($m_comments->getComments($ccid, $this->_user->id, false, [], 0, 1));
 							$menu['notifications']  = $notifications_comments;
 						}
 
