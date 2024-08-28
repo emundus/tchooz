@@ -1594,7 +1594,7 @@ input:focus + .em-slider {
   border: 1px solid var(--neutral-200);
 }
 
-.em-input-card{
+.em-input-card:not(.hika_address_element){
   border-radius: var(--em-coordinator-br);
   padding: 12px 16px;
   height: auto;
