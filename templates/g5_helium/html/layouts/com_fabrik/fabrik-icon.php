@@ -38,6 +38,10 @@ if (!in_array($iconParts[0],['icon-question-sign','icon-sort']) && !in_array($ic
     if ($icon[1] == 'plus') {
         $icon[1] = 'add';
     }
+
+	if ($icon[1] == 'checkmark') {
+		$icon[1] = 'check';
+	}
 	?>
     <span class="<?php echo $material_icon_class ?> <?php echo $class ?>" <?php echo $style ?>>
 	    <?php echo trim($icon[1]) ?>
