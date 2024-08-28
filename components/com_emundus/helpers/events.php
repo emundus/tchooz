@@ -21,6 +21,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Component\Emundus\Site\Exception\EmundusException;
 
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
@@ -431,8 +432,7 @@ class EmundusHelperEvents
 
 				if ($fnum_associated != $fnum && !EmundusHelperAccess::asAccessAction(1, 'r', $user->id, $fnum))
 				{
-					$mainframe->enqueueMessage('Vous n\'avez pas les droits');
-					$mainframe->redirect('index.php');
+					throw new EmundusException('ACCESS_DENIED',403);
 				}
 			}
 			else
@@ -580,7 +580,7 @@ class EmundusHelperEvents
 				// FNUM sent not like user fnum (partner or bad FNUM)
 				else
 				{
-					$document = JFactory::getDocument();
+					$document = $mainframe->getDocument();
 					$document->addStyleSheet("media/com_fabrik/css/fabrik.css");
 
 					if ($view == 'form')
@@ -699,8 +699,7 @@ class EmundusHelperEvents
 					}
 					else
 					{
-						$mainframe->enqueueMessage(Text::_('ACCESS_DENIED'), 'error');
-						$mainframe->redirect("index.php");
+						throw new EmundusException('ACCESS_DENIED',403);
 					}
 				}
 			}
@@ -1736,9 +1735,12 @@ class EmundusHelperEvents
 		return true;
 	}
 
-	private function checkLockedElements($params): bool {
-		if(!empty($this->locked_elements)) {
-			if(in_array($params['elementModel']->getFullName(),$this->locked_elements)) {
+	private function checkLockedElements($params): bool
+	{
+		if (!empty($this->locked_elements))
+		{
+			if (in_array($params['elementModel']->getFullName(), $this->locked_elements))
+			{
 				return false;
 			}
 		}
@@ -1830,7 +1832,7 @@ class EmundusHelperEvents
 										break;
 									case 'dropdown':
 										$new_value = array_key_exists($raw_element_key, $form_data) ? $form_data[$raw_element_key] : $form_data[$element_key];
-										if(!empty($new_value))
+										if (!empty($new_value))
 										{
 											if (is_string($params))
 											{
@@ -2085,10 +2087,11 @@ class EmundusHelperEvents
 	{
 		$session = false;
 
-		$db = Factory::getContainer()->get('DatabaseDriver');
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
-		try {
+		try
+		{
 			$query->select('*')
 				->from($db->quoteName('#__fabrik_form_sessions'))
 				->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum))
@@ -2096,7 +2099,8 @@ class EmundusHelperEvents
 			$db->setQuery($query);
 			$session = $db->loadObject();
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			Log::add('Error when try to get form session: ' . __LINE__ . ' in file: ' . __FILE__ . ' with message: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 
@@ -2112,19 +2116,22 @@ class EmundusHelperEvents
 		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
-		if (empty($user)) {
+		if (empty($user))
+		{
 			$user = Factory::getApplication()->getIdentity();
 		}
 
-		if(empty($existing_session->id)) {
-			try {
+		if (empty($existing_session->id))
+		{
+			try
+			{
 				$insert = [
-					'hash'      => $db->quote(md5($fnum . $form_id . $user->id . date('Y-m-d H:i:s'))),
-					'user_id'   => $user->id,
-					'form_id'   => $form_id,
-					'row_id'    => 0,
-					'time_date' => $db->quote(date('Y-m-d H:i:s')),
-					'fnum'      => $db->quote($fnum),
+					'hash'        => $db->quote(md5($fnum . $form_id . $user->id . date('Y-m-d H:i:s'))),
+					'user_id'     => $user->id,
+					'form_id'     => $form_id,
+					'row_id'      => 0,
+					'time_date'   => $db->quote(date('Y-m-d H:i:s')),
+					'fnum'        => $db->quote($fnum),
 					'last_update' => $db->quote(time())
 				];
 
@@ -2138,17 +2145,24 @@ class EmundusHelperEvents
 				$db->setQuery($query);
 				$session_insert = $db->execute();
 			}
-			catch (Exception $e) {
+			catch (Exception $e)
+			{
 				Log::add('Error when try to init form session: ' . __LINE__ . ' in file: ' . __FILE__ . ' with message: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 			}
-		} else {
-			try {
-				if ($existing_session->last_update < (time() - 900)) {
+		}
+		else
+		{
+			try
+			{
+				if ($existing_session->last_update < (time() - 900))
+				{
 					$query->update($db->quoteName('#__fabrik_form_sessions'))
 						->set($db->quoteName('last_update') . ' = ' . $db->quote(time()))
 						->set($db->quoteName('user_id') . ' = ' . $db->quote($user->id))
 						->where($db->quoteName('id') . ' = ' . $existing_session->id);
-				} else {
+				}
+				else
+				{
 					$query->update($db->quoteName('#__fabrik_form_sessions'))
 						->set($db->quoteName('last_update') . ' = ' . $db->quote(time()))
 						->where($db->quoteName('id') . ' = ' . $existing_session->id)
@@ -2158,7 +2172,8 @@ class EmundusHelperEvents
 				$db->setQuery($query);
 				$session_insert = $db->execute();
 			}
-			catch (Exception $e) {
+			catch (Exception $e)
+			{
 				Log::add('Error when try to update form session: ' . __LINE__ . ' in file: ' . __FILE__ . ' with message: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 			}
 		}
@@ -2170,17 +2185,19 @@ class EmundusHelperEvents
 	{
 		$session_delete = false;
 
-		$db = Factory::getContainer()->get('DatabaseDriver');
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
-		try {
+		try
+		{
 			$query->delete($db->quoteName('#__fabrik_form_sessions'))
 				->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum))
 				->where($db->quoteName('form_id') . ' = ' . $form_id);
 			$db->setQuery($query);
 			$session_delete = $db->execute();
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			Log::add('Error when try to clear form session: ' . __LINE__ . ' in file: ' . __FILE__ . ' with message: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 

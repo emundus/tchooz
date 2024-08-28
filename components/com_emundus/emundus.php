@@ -15,6 +15,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\Component\Emundus\Site\Exception\EmundusException;
 
 $app = Factory::getApplication();
 
@@ -795,7 +796,7 @@ elseif ($user->guest && $name != 'emailalert' && $name != 'programme' && $name !
 	PluginHelper::importPlugin('emundus', 'custom_event_handler');
 	$app->triggerEvent('onCallEventHandler', ['onAccessDenied', []]);
 
-	throw new NotAllowed(Text::_('JERROR_ALERTNOAUTHOR'), 403);
+	throw new EmundusException(Text::_('JERROR_ALERTNOAUTHOR'), 403, null, false, false);
 }
 else {
 	if ($name != 'search_engine') {

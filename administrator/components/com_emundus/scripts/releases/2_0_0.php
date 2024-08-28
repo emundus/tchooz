@@ -1471,6 +1471,8 @@ if(value == 1) {
 			// Fix error layout
 			EmundusHelperUpdate::insertTranslationsTag('JERROR_PAGE_NOT_FOUND','La page que vous cherchez semble introuvable...');
 			EmundusHelperUpdate::insertTranslationsTag('JERROR_PAGE_NOT_FOUND','The page you are looking for cannot be found...', 'override', 0, null, null, 'en-GB');
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_ERROR_TITLE','Oups !');
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_ERROR_TITLE','Oops!', 'override', 0, null, null, 'en-GB');
 
 			$error_directory = JPATH_ROOT . '/templates/g5_helium/custom/config/_error';
 			$error_page_directory = JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page';
@@ -1539,6 +1541,20 @@ if(value == 1) {
 				->where($this->db->quoteName('group_id') . ' = ' . $this->db->quote('254'));
 			$this->db->setQuery($query);
 			$this->db->execute();
+
+			$datas       = [
+				'menutype'     => 'mainmenu',
+				'title'        => 'Error',
+				'alias'        => 'error',
+				'link'         => 'index.php?option=com_emundus&view=error',
+				'type'         => 'component',
+				'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+				'params' => [
+					'menu_show'    => 0,
+					'pageclass_sfx' => 'error-page'
+				]
+			];
+			$error_menu = EmundusHelperUpdate::addJoomlaMenu($datas);
 
 			$result['status'] = true;
 		}

@@ -6,8 +6,11 @@
 
 {% block content %}
     <div class="left-side-404 container-404" >
-        <h2 class="gradient-404">Oups !</h2>
-        <p>{{ error|default('Unknown Error') }}</p>
+        <h2 class="gradient-404">{{ 'COM_EMUNDUS_ERROR_TITLE'|trans }}</h2>
+        {% if debug %}
+            <p>{{ error|default('Unknown Error') }}</p>
+        {% endif %}
+
         {% if(errorcode == 404) %}
             <img src="{{ url('media/com_emundus/images/tchoozy/complex-illustrations/page-not-found.svg') }}" alt="Erreur 404" />
         {% elseif(errorcode == 403) %}
