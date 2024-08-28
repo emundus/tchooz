@@ -351,6 +351,17 @@ export default {
       });
       document.dispatchEvent(event);
     },
+    dispatchThreadsNumber() { // a thread is a parent comment
+      const parentComments = this.comments.filter((comment) => comment.parent_id == 0 && comment.opened == 1);
+
+      const event = new CustomEvent('commentsThreadsNumberUdated', {
+        detail: {
+          number: parentComments.length
+        }
+      });
+
+      document.dispatchEvent(event);
+    },
     showModal() {
       this.openedModal = true;
     },
@@ -434,6 +445,8 @@ export default {
             this.comments.push(response.data);
             this.resetAddComment();
             this.getComments();
+
+            this.dispatchThreadsNumber();
           }
         }).catch((error) => {
           this.handleError(error);
@@ -516,7 +529,11 @@ export default {
             commentsService.deleteComment(commentId).then((response) => {
               if (!response.status) {
                 // TODO: handle error
+                this.alertError('COM_EMUNDUS_COMMENTS_DELETE_ERROR');
+                this.getComments();
               }
+
+              this.dispatchThreadsNumber();
             }).catch((error) => {
               this.handleError(error);
             });

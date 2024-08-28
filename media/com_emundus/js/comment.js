@@ -47,3 +47,11 @@ document.addEventListener('commentsLoaded', (e) => {
         });
     }
 });
+
+document.addEventListener('commentsThreadsNumberUdated', (e) => {
+    const counter = document.querySelector('.list-item-notifications .notifications-counter');
+
+    if (counter) {
+        counter.innerText = e.detail.number;
+    }
+});
