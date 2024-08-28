@@ -39,6 +39,7 @@
           'd': false
         }"
         :applicantsAllowedToComment="datas.applicants_allowed_to_comment && datas.applicants_allowed_to_comment.value == 1"
+        :border="datas.border ? datas.border.value == 1 : true"
     >
     </Comments>
 

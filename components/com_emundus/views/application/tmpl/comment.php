@@ -80,6 +80,7 @@ $user_comment_access = [
      coordinatorAccess="<?= $coordinator_access ?>"
      sysadminAccess="<?= $sysadmin_access ?>"
      manyLanguages="<?= $many_languages ?>"
+     border="0"
 >
 </div>
 

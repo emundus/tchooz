@@ -1,5 +1,5 @@
 <template>
-  <div id="comments" class="tw-p-4 tw-w-full tw-bg-[#f8f8f8] tw-border-l-4 tw-border-profile-full tw-flex tw-flex-col">
+  <div id="comments" class="tw-p-4 tw-w-full tw-bg-[#f8f8f8] tw-flex tw-flex-col" :class="{'tw-border-l-4 tw-border-profile-full': border}">
     <div v-if="comments.length > 0" id="filter-comments" class="tw-flex tw-flex-row tw-flex-wrap tw-gap-2">
       <input type="text" class="em-input tw-mr-2" :placeholder="translate('COM_EMUNDUS_COMMENTS_SEARCH')" v-model="search" @keyup="onSearchChange">
       <select v-model="filterOpenedState" class="tw-mr-2 tw-rounded-applicant">
@@ -264,6 +264,10 @@ export default {
     applicantsAllowedToComment: {
       type: Boolean,
       default: false
+    },
+    border: {
+      type: Boolean,
+      default: true
     }
   },
   mixins: [mixins, alerts],
@@ -511,7 +515,7 @@ export default {
             } else {
               commentsService.getMenuItemForFormId(this.ccid, form_id).then((response) => {
                 if (response.status) {
-                  window.open('/' + response.data + '?rowid=' + this.ccid + '&fnum=' + this.fnum + '#' + comment.target_type + '-' + comment.target_id, '_blank');
+                  window.open('/' + response.data + '?fnum=' + this.fnum + '#' + comment.target_type + '-' + comment.target_id, '_blank');
                 }
               });
             }
