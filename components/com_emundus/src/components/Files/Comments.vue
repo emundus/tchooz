@@ -155,12 +155,12 @@
                 :placeholder="translate('COM_EMUNDUS_COMMENTS_ADD_COMMENT_PLACEHOLDER')"></textarea>
       <div v-if="!isApplicant && applicantsAllowedToComment" class="tw-flex tw-flex-row tw-items-center tw-mt-3">
         <div class="tw-flex tw-flex-row tw-items-center tw-mr-2">
-          <input type="radio" name="visible_to_applicant" v-model="visible_to_applicant" :value="false"
+          <input type="radio" name="visible_to_applicant" v-model="visibleToApplicant" :value="false"
                  id="visible-to-coords">
           <label for="visible-to-coords" class="tw-m-0">{{ translate('COM_EMUNDUS_COMMENTS_VISIBLE_PARTNERS') }}</label>
         </div>
         <div class="tw-flex tw-flex-row tw-items-center">
-          <input type="radio" name="visible_to_applicant" v-model="visible_to_applicant" :value="true"
+          <input type="radio" name="visible_to_applicant" v-model="visibleToApplicant" :value="true"
                  id="visible-to-applicant">
           <label for="visible-to-applicant" class="tw-m-0">{{ translate('COM_EMUNDUS_COMMENTS_VISIBLE_ALL') }}</label>
         </div>
@@ -192,11 +192,11 @@
                     :placeholder="translate('COM_EMUNDUS_COMMENTS_ADD_COMMENT_PLACEHOLDER')"></textarea>
           <div v-if="!isApplicant && applicantsAllowedToComment" class="tw-flex tw-flex-row tw-items-center">
             <div class="tw-flex tw-flex-row tw-items-center">
-              <input type="radio" name="visible_to_applicant" v-model="visible_to_applicant" :value="false" id="visible-to-coords">
+              <input type="radio" name="visible_to_applicant" v-model="visibleToApplicant" :value="false" id="visible-to-coords">
               <label for="visible-to-coords" class="tw-m-0">{{ translate('COM_EMUNDUS_COMMENTS_VISIBLE_PARTNERS') }}</label>
             </div>
             <div class="tw-flex tw-flex-row tw-items-center tw-ml-2">
-              <input type="radio" name="visible_to_applicant" v-model="visible_to_applicant" :value="true"
+              <input type="radio" name="visible_to_applicant" v-model="visibleToApplicant" :value="true"
                      id="visible-to-applicant">
               <label for="visible-to-applicant" class="tw-m-0">{{ translate('COM_EMUNDUS_COMMENTS_VISIBLE_ALL') }}</label>
             </div>
@@ -276,7 +276,7 @@ export default {
       type: 'elements',
       id: 0,
     },
-    visible_to_applicant: false,
+    visibleToApplicant: false,
     openedCommentId: 0,
     loading: false,
     targetableElements: {
@@ -417,11 +417,11 @@ export default {
 
       if (this.access.c) {
         if (this.isApplicant) {
-          this.visible_to_applicant = true;
+          this.visibleToApplicant = true;
         }
 
         if (!this.applicantsAllowedToComment) {
-          this.visible_to_applicant = false;
+          this.visibleToApplicant = false;
         }
 
         let commentContent = this.newCommentText;
@@ -429,7 +429,7 @@ export default {
           commentContent = this.newChildCommentText;
         }
 
-        commentsService.addComment(this.ccid, commentContent, this.target, this.visible_to_applicant, parent_id).then((response) => {
+        commentsService.addComment(this.ccid, commentContent, this.target, this.visibleToApplicant, parent_id).then((response) => {
           if (response.status) {
             this.comments.push(response.data);
             this.resetAddComment();
@@ -447,14 +447,14 @@ export default {
     resetAddComment() {
       this.newCommentText = '';
       this.newChildCommentText = '';
-      this.visible_to_applicant = false;
+      this.visibleToApplicant = false;
       this.target.id = 0;
       this.target.type = 'element';
       this.hideModal();
 
       if (this.openedCommentId > 0) {
         const openedComment = this.comments.find((comment) => comment.id == this.openedCommentId);
-        this.visible_to_applicant = openedComment.visible_to_applicant == 1;
+        this.visibleToApplicant = openedComment.visible_to_applicant == 1;
       }
     },
     replyToComment(commentId) {
@@ -463,7 +463,7 @@ export default {
         this.openedCommentId = this.openedCommentId == commentId ? 0 : commentId;
 
         const openedComment = this.comments.find((comment) => comment.id == commentId);
-        this.visible_to_applicant = openedComment.visible_to_applicant == 1;
+        this.visibleToApplicant = openedComment.visible_to_applicant == 1;
 
         setTimeout(() => {
           if(document.querySelector('.comment-children.opened')) {
@@ -492,17 +492,12 @@ export default {
               break;
           }
 
-          if (form_id > 0 && this.fnum) {
-            // open a new tab with the target element
-            if (!this.isApplicant) {
-              window.location.assign(`/index.php?option=com_fabrik&view=form&formid=` + form_id + `&fnum=` + this.fnum + '&r=2#' + comment.target_type + '-' + comment.target_id, '_blank');
-            } else {
-              commentsService.getMenuItemForFormId(this.ccid, form_id).then((response) => {
-                if (response.status) {
-                  window.location.assign(`/index.php?option=com_fabrik&view=form&formid=` + form_id + `&Itemid=` + response.data, '_blank');
-                }
-              });
-            }
+          if (form_id > 0 && this.ccid) {
+            commentsService.getMenuItemForFormId(this.ccid, form_id).then((response) => {
+              if (response.status) {
+                window.open(response.data + '?rowid=' + this.ccid + ' &fnum=' + this.fnum + '#' + comment.target_type + '-' + comment.target_id, '_blank');
+              }
+            });
           }
         }
       }

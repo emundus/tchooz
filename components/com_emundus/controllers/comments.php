@@ -263,7 +263,21 @@ class EmundusControllerComments extends BaseController
                 $response['status'] = true;
                 $response['code'] = 200;
                 $response['message'] = '';
-                $response['data'] = $m_profile->getMenuItemForFormId($form_id, $fnum);
+                $menu_id = $m_profile->getMenuItemForFormId($form_id, $fnum);
+
+				if (!empty($menu_id)) {
+					$db = Factory::getContainer()->get('DatabaseDriver');
+					$query = $db->createQuery();
+
+					$query->select('path')
+						->from('#__menu')
+						->where('id = ' . $menu_id);
+
+					$db->setQuery($query);
+					$response['data'] = $db->loadResult();
+				} else {
+					$response['message'] = Text::_('COM_EMUNDUS_GET_MENU_ITEM_FOR_FORM_ID_FAILED');
+				}
             }
         }
 
