@@ -493,11 +493,15 @@ export default {
           }
 
           if (form_id > 0 && this.ccid) {
-            commentsService.getMenuItemForFormId(this.ccid, form_id).then((response) => {
-              if (response.status) {
-                window.open('/' + response.data + '?rowid=' + this.ccid + '&fnum=' + this.fnum + '#' + comment.target_type + '-' + comment.target_id, '_blank');
-              }
-            });
+            if (this.isApplicant) {
+              window.location.assign('#' + comment.target_type + '-' + comment.target_id);
+            } else {
+              commentsService.getMenuItemForFormId(this.ccid, form_id).then((response) => {
+                if (response.status) {
+                  window.open('/' + response.data + '?rowid=' + this.ccid + '&fnum=' + this.fnum + '#' + comment.target_type + '-' + comment.target_id, '_blank');
+                }
+              });
+            }
           }
         }
       }
