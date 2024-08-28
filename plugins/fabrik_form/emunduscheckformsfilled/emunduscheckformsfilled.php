@@ -161,6 +161,7 @@ class PlgFabrik_FormEmunduscheckformsfilled extends plgFabrik_Form {
                                 $path = $this->_db->loadResult();
 
                                 if (!empty($path)) {
+	                                $path = '/'.$path.'/form/'.$form_to_check.'?fnum='.$fnum;
                                     $this->app->enqueueMessage(Text::_('PLG_FABRIK_FORM_EMUNDUS_CHECKFORMSFILLED_REDIRECT_MESSAGE'));
                                     $this->app->redirect($path);
                                 } else {
