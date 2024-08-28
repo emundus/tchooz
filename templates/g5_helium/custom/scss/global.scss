@@ -570,6 +570,19 @@ div#frame.outline {
   padding: 16px 12px !important;
 }
 
+/* GDPR */
+
+#g-footer a[target="_blank"]::after,
+.view-article .item-page a[target="_blank"]::after {
+  content: 'open_in_new';
+  display: inline-block;
+  font-family: "Material Icons";
+  margin-left: 4px;
+  text-decoration: none;
+  position: relative;
+  top: 4px;
+}
+
 /* FOOTER */
 
 footer#g-footer {

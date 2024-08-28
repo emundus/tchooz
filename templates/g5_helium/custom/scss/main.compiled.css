@@ -5919,6 +5919,7 @@ button.swal2-cancel.goback-btn:hover,
     }
 .fabrikMainError .material-icons,.fabrikMainError .material-icons-outlined,.fabrikMainError .material-symbols-outlined,.alert.alert-error .material-icons,.alert.alert-error .material-icons-outlined,.alert.alert-error .material-symbols-outlined {
             color: var(--em-alert-error-icon-color);
+            margin-right: var(--em-spacing-3);
         }
 .alert.alert-warning, .alert.alert-notice {
         border: solid var(--em-alert-warning-border-width) var(--em-alert-warning-border-color);

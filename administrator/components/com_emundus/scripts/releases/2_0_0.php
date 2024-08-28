@@ -1504,6 +1504,42 @@ if(value == 1) {
 			}
 			//
 
+			EmundusHelperUpdate::updateExtensionParam('log_forms_update',0);
+
+			$query->clear()
+				->select('id,params')
+				->from($this->db->quoteName('#__fabrik_lists'));
+			$this->db->setQuery($query);
+			$fabrik_lists = $this->db->loadObjectList();
+
+			foreach ($fabrik_lists as $fabrik_list) {
+				$params = json_decode($fabrik_list->params,true);
+
+				if(!empty($params['list_copy_image_name'])) {
+					$params['list_copy_image_name'] = str_replace('copy','content_copy',$params['list_copy_image_name']);
+					$fabrik_list->params = json_encode($params);
+					$this->db->updateObject('#__fabrik_lists', $fabrik_list, 'id');
+				}
+			}
+
+			$old_values = [
+				'fr-FR' => 'Copier ou déplacer le dossier',
+				'en-GB' => 'Copy or move file',
+			];
+			$new_values = [
+				'fr-FR' => 'Modifier la campagne',
+				'en-GB' => 'Edit campaign',
+			];
+			EmundusHelperUpdate::updateOverrideTag('COPY_MOVE_FILE',$old_values,$new_values);
+
+			$query->clear()
+				->update($this->db->quoteName('#__fabrik_elements'))
+				->set($this->db->quoteName('label') . ' = ' . $this->db->quote('ACTION'))
+				->where($this->db->quoteName('name') . ' = ' . $this->db->quote('copied'))
+				->where($this->db->quoteName('group_id') . ' = ' . $this->db->quote('254'));
+			$this->db->setQuery($query);
+			$this->db->execute();
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

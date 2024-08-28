@@ -101,6 +101,7 @@
       <div v-else-if="isToggle" class="tw-flex tw-items-center">
         <div class="em-toggle">
           <input type="checkbox"
+                 true-value="1" false-value="0"
                  class="em-toggle-check"
                  :id="paramId+ '_input'"
                  v-model="value"
@@ -330,7 +331,7 @@ export default {
       <h2 class="tw-font-bold">
         ${this.translate('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_PORT_WARNING_HELPTEXT_TITLE')}
       </h2>
-      <p class="tw-text-center tw-mt-5">
+      <p class="tw-text-center tw-mt-5 tw-text-neutral-700">
         ${this.translate('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_PORT_WARNING_HELPTEXT_BODY')}
       </p>
     </div>

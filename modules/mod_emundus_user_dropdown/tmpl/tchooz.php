@@ -259,7 +259,7 @@ if ($user != null)
                 <div class="em-flex-row em-flex-end em-profile-container" onclick="manageHeight()">
                     <div class="tw-mr-4">
 						<?php if (!empty($user)) : ?>
-                            <p class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . $user->lastname[0] . '.'; ?></p>
+                            <p id="current_user_fullname" class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . $user->lastname[0] . '.'; ?></p>
 						<?php endif; ?>
 						<?php if (!empty($profile_label)) : ?>
                             <p class="em-profile-color em-text-italic"
