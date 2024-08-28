@@ -368,6 +368,7 @@ if ($this->display_comments)
                  component="comments"
                  user="<?= $user->id ?>"
                  ccid="<?= $ccid ?>"
+                 fnum="<?= $fnum ?>"
                  access='<?= json_encode($user_comment_access); ?>'
                  is_applicant="<?= $is_applicant ?>"
                  applicants_allowed_to_comment="1"
