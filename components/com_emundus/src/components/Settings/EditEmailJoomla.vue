@@ -8,7 +8,7 @@
 
       <!-- GLOBAL CONFIGURATION -->
       <div class="tw-flex tw-items-center tw-justify-between tw-mt-6">
-        <div class="tw-flex tw-items-center tw-mb-3">
+        <div class="tw-flex tw-items-center tw-mb-4">
           <div class="em-toggle">
             <input type="checkbox"
                    class="em-toggle-check"
