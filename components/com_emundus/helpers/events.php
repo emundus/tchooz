@@ -743,19 +743,22 @@ class EmundusHelperEvents
 				// Check if data stored in session
 				$session_datas = json_decode($session->data, true);
 
-				// Check if we can fill a value with our profile
-				$session_elements = array_keys($session_datas);
-				foreach ($elements as $element)
-				{
-					$elt_name = explode('.', $element)[1];
-					$fullName = str_replace('.', '___', $element);
+				if (!empty($session_datas)) {
+					// Check if we can fill a value with our profile
+					$session_elements = array_keys($session_datas);
 
-					if (in_array($fullName, $session_elements))
+					foreach ($elements as $element)
 					{
-						if (!empty($session_datas[$fullName]))
+						$elt_name = explode('.', $element)[1];
+						$fullName = str_replace('.', '___', $element);
+
+						if (in_array($fullName, $session_elements))
 						{
-							$formModel->data[$table->db_table_name . '___' . $elt_name]          = $session_datas[$fullName];
-							$formModel->data[$table->db_table_name . '___' . $elt_name . '_raw'] = $session_datas[$fullName];
+							if (!empty($session_datas[$fullName]))
+							{
+								$formModel->data[$table->db_table_name . '___' . $elt_name]          = $session_datas[$fullName];
+								$formModel->data[$table->db_table_name . '___' . $elt_name . '_raw'] = $session_datas[$fullName];
+							}
 						}
 					}
 				}
