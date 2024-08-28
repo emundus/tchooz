@@ -63,17 +63,37 @@ if ($allow_to_comment)
 	// check if form is an applicant form, there should be a column fnum in the table
 	$db    = Factory::getContainer()->get('DatabaseDriver');
 	$query = 'SHOW COLUMNS FROM `' . $form->db_table_name . '` LIKE "fnum"';
-
 	$db->setQuery($query);
 	$result = $db->loadObject();
 
-	if (!empty($result) && Factory::getApplication()->input->get('fnum', '') == $fnum && $e_user->applicant == 1)
+
+    $applicant_profiles     = $m_users->getApplicantProfiles();
+	if (!empty($result) && Factory::getApplication()->input->get('fnum', '') == $fnum)
 	{
-		$this->display_comments = true;
-	}
+        $applicant_profiles_menus = array_map(function ($profile) {
+            return $profile->menutype;
+        }, $applicant_profiles);
+
+        $query = $db->createQuery();
+        $query->select('id')
+            ->from('#__menu')
+            ->where('menutype IN (' . implode(',', $db->quote($applicant_profiles_menus)) . ')')
+            ->andWhere('published = 1')
+            ->andWhere('link LIKE "%com_fabrik&view=form&formid=' . $form->id . '%"');
+
+        try {
+            $db->setQuery($query);
+            $menu_id = $db->loadResult();
+        } catch (Exception $e) {
+            $menu_id = null;
+        }
+
+        if (!empty($menu_id)) {
+	        $this->display_comments = true;
+        }
+    }
 
 	$current_user_profile   = $emundus_user->profile;
-	$applicant_profiles     = $m_users->getApplicantProfiles();
 	$applicant_profiles_ids = array_map(function ($profile) {
 		return $profile->id;
 	}, $applicant_profiles);
