@@ -383,8 +383,8 @@ export default {
       Swal.fire({
         html: `
       <div class="tw-flex tw-flex-col tw-items-center tw-justify-center">
-        <h2 class="tw-flex tw-items-center tw-pb-2 tw-font-bold ">${this.translate(response.data.data[0])}</h2>
-        <p class="tw-flex tw-items-center tw-justify-center tw-text-center">${this.translate(response.data.data[1])} ${this.translate(response.data.data[2])}</p>            <hr class="tw-self-stretch">
+        <h2 class="tw-flex tw-items-center tw-pb-2 tw-font-bold ">${this.translate(response.data.data[0])}</h2>   <hr class="tw-self-stretch">
+        <p class="tw-flex tw-items-center tw-justify-center tw-text-center">${this.translate(response.data.data[1])} ${this.translate(response.data.data[2])}</p>
         <button type="button" class="tw-flex tw-items-center tw-font-bold" id="hideDivButton" ${colorBT === "red" ? 'style="color:red;"' : 'style="display: none;"'}>
             ${this.translate('COM_EMUNDUS_CLICK_HERE_INFO')}
             <i class="material-symbols-outlined scale-150" ${colorBT === "red" ? 'style="color:red;"' : 'style="display: none;"'}>expand_more</i>
