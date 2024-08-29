@@ -1097,8 +1097,8 @@ class EmundusModelUsers extends ListModel
 
 			$query = $this->db->getQuery(true);
 
-			$columns = array('user_id', 'registerDate', 'firstname', 'lastname', 'profile', 'schoolyear', 'disabled', 'disabled_date', 'cancellation_date', 'cancellation_received');
-			$values  = array($user_id, $this->db->quote($now), $this->db->quote($firstname), $this->db->quote($lastname), $profile, $this->db->quote(''), 0, $this->db->quote('0000-00-00 00:00:00'), $this->db->quote('0000-00-00 00:00:00'), $this->db->quote('0000-00-00 00:00:00'));
+			$columns = array('user_id', 'registerDate', 'firstname', 'lastname', 'profile', 'schoolyear', 'disabled', 'disabled_date');
+			$values  = array($user_id, $this->db->quote($now), $this->db->quote($firstname), $this->db->quote($lastname), $profile, $this->db->quote(''), 0, $this->db->quote('0000-00-00 00:00:00'));
 
 			if (!empty($id_ehesp)) {
 				$columns[] = 'id_ehesp';
@@ -2198,7 +2198,7 @@ class EmundusModelUsers extends ListModel
 	 */
 	public function addProfileToUser($uid, $pid)
 	{
-		$config = Factory::getConfig();
+		$config = $this->app->getConfig();
 
 		$timezone = new DateTimeZone($config->get('offset'));
 		$now      = Factory::getDate()->setTimezone($timezone);

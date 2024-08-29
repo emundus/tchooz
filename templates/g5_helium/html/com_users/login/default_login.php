@@ -76,7 +76,7 @@ if($user_module->id) {
     </div>
 <?php endif; ?>
 
-    <?php if(!empty($this->oauth2Config)) : ?>
+    <?php if(!empty($this->oauth2Config->configurations)) : ?>
         <div class="tw-mt-8 tw-w-full tw-flex tw-flex-col tw-items-center">
             <div class="tw-w-full tw-flex tw-flex-col tw-items-center tw-gap-4">
                 <?php foreach($this->oauth2Config->configurations as $configuration) : ?>
