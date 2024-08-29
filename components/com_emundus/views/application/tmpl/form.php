@@ -179,6 +179,7 @@ $user = $this->userid;
                              component="comments"
                              user="<?= $this->_user->id ?>"
                              ccid="<?= $this->ccid ?>"
+                             fnum="<?= $this->fnum ?>"
                              access='<?= json_encode($user_comment_access) ?>'
                              is_applicant="<?= 0 ?>"
                              current_form="<?= 0 ?>"
