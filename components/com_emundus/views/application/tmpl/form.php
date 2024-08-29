@@ -9,6 +9,7 @@
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Component\ComponentHelper;
 
 $app = Factory::getApplication();
 $app->getSession()->set('application_layout', 'form');
@@ -142,7 +143,7 @@ $user = $this->userid;
 				<?php
 				$coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id);
 				$sysadmin_access = EmundusHelperAccess::isAdministrator($this->_user->id);
-
+				$emundus_config = ComponentHelper::getParams('com_emundus');
 				require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
 				$hash = EmundusHelperCache::getCurrentGitHash();
 
@@ -183,6 +184,7 @@ $user = $this->userid;
                              access='<?= json_encode($user_comment_access) ?>'
                              is_applicant="<?= 0 ?>"
                              current_form="<?= 0 ?>"
+                             applicants_allowed_to_comment="<?= $emundus_config->get('allow_applicant_to_comment', false) ? 1 : 0 ?>"
                              currentLanguage="<?= $current_lang->getTag() ?>"
                              shortLang="<?= $short_lang ?>"
                              coordinatorAccess="<?= $coordinator_access ?>"
