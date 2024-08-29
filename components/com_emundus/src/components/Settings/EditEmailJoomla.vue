@@ -383,8 +383,10 @@ export default {
       Swal.fire({
         html: `
       <div class="tw-flex tw-flex-col tw-items-center tw-justify-center">
-        <h2 class="tw-flex tw-items-center tw-pb-2 tw-font-bold ">${this.translate(response.data.data[0])}</h2>   <hr class="tw-self-stretch">
+        <h2 class="tw-flex tw-items-center tw-pb-2 tw-font-bold ">${this.translate(response.data.data[0])}</h2>
+        <hr class="tw-self-stretch">
         <p class="tw-flex tw-items-center tw-justify-center tw-text-center">${this.translate(response.data.data[1])} ${this.translate(response.data.data[2])}</p>
+        <br/>
         <button type="button" class="tw-flex tw-items-center tw-font-bold" id="hideDivButton" ${colorBT === "red" ? 'style="color:red;"' : 'style="display: none;"'}>
             ${this.translate('COM_EMUNDUS_CLICK_HERE_INFO')}
             <i class="material-symbols-outlined scale-150" ${colorBT === "red" ? 'style="color:red;"' : 'style="display: none;"'}>expand_more</i>
@@ -395,17 +397,16 @@ export default {
       </div>
     `,
         width: 'auto',
+        showConfirmButton: true,
+        confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_DOSSIERS_CLOSE'),
         showCancelButton: true,
         cancelButtonText: this.translate('COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_SAVE_ANYWAY'),
         cancelButtonColor: colorBT,
-        showConfirmButton: true,
-        confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_DOSSIERS_CLOSE'),
-        confirmButtonColor: 'black',
         allowOutsideClick: false,
         customClass: {
           title: 'em-swal-title',
-          confirmButton: 'my-button-class',
-          cancelButton: 'my-button-class',
+          confirmButton: 'em-swal-cancel-button',
+          cancelButton: 'em-swal-confirm-button',
         },
         didOpen: () => {
           const hideDivButton = document.getElementById('hideDivButton');
