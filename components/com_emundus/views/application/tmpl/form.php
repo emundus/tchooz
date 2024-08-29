@@ -59,7 +59,7 @@ $user = $this->userid;
                                 data-placement="right"
                                 title="<?= Text::_('COM_EMUNDUS_APPLICATION_DOWNLOAD_APPLICATION_FORM'); ?>"
                         >
-                            <span class="material-symbols-outlined" data-fnum="<?= $this->fnum ?>">download_2</span>
+                            <span class="material-symbols-outlined" data-fnum="<?= $this->fnum ?>">file_download</span>
                         </button>
 					<?php endif;?>
                 </h3>
@@ -211,14 +211,10 @@ $user = $this->userid;
     });
 
     document.getElementById('download-all-phase-pdf').addEventListener('click', function (e) {
-        var fnum = e.target.getAttribute('data-fnum');
-        if (fnum) {
-            // check if function  exists
-            if (typeof export_pdf === 'function') {
-                export_pdf(JSON.stringify({0: fnum}), null, true);
-            } else {
-                console.error('Function export_pdf does not exist');
-            }
+        if (typeof export_pdf === 'function') {
+            export_pdf(JSON.stringify({0: <?= $this->fnum ?>}), null, 'forms');
+        } else {
+            console.error('Function export_pdf does not exist');
         }
     });
 </script>

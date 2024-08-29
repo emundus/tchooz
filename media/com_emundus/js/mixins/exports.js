@@ -289,7 +289,7 @@ function generate_csv(json, eltJson, objJson, options, objclass, letter) {
     }
 }
 
-function export_pdf(fnums, ids, default_export = false) {
+function export_pdf(fnums, ids, default_export = '') {
     var start = 0;
     var limit = 2;
     var forms = 0;
@@ -312,7 +312,7 @@ function export_pdf(fnums, ids, default_export = false) {
         elements: []
     };
 
-    if (default_export === false) {
+    if (default_export === '') {
         /// if at least one is checked --> forms = 1
         forms = $('[id^=felts] input:checked').length > 0 ?  1 : 0;
 
@@ -383,7 +383,7 @@ function export_pdf(fnums, ids, default_export = false) {
         $('#data').hide();
 
         $('div').remove('#chargement');
-    } else {
+    } else if (default_export === 'forms') {
         forms = 1;
         options = [
             "aid",
@@ -394,6 +394,20 @@ function export_pdf(fnums, ids, default_export = false) {
             "tags",
             "status",
             "upload"
+        ];
+    } else if (default_export === 'evaluation') {
+        forms = 0
+        assessment = 1;
+        options = [
+            "aid",
+            "afnum",
+            "aemail",
+            "aapp-sent",
+            "adoc-print",
+            "tags",
+            "status",
+            "upload",
+            "evaluation"
         ];
     }
 

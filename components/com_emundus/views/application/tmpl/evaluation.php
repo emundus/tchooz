@@ -31,13 +31,15 @@ Factory::getApplication()->getSession()->set('application_layout', 'evaluation')
                 <span class="glyphicon glyphicon-check"></span>
 				<?= Text::_('COM_EMUNDUS_ASSESSMENT'); ?>
 				<?php if (EmundusHelperAccess::asAccessAction(8, 'c', Factory::getApplication()->getIdentity()->id, $this->fnum) && !empty($this->url_form)) : ?>
-                    <a class="  clean" target="_blank"
-                       href="<?= Uri::base(); ?>index.php?option=com_emundus&controller=evaluation&task=pdf&user=<?= $this->student->id; ?>&fnum=<?= $this->fnum; ?>">
-                        <button class="btn btn-default"
-                                data-title="<?= Text::_('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF'); ?>" data-toggle="tooltip"
-                                data-placement="bottom" title="<?= Text::_('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF'); ?>">
-                            <span class="material-symbols-outlined">file_download</span></button>
-                    </a>
+                    <button id="download-evaluation-pdf"
+                            class="em-mt-8 em-ml-8"
+                            data-fnum="<?= $this->fnum ?>"
+                            data-toggle="tooltip"
+                            data-placement="right"
+                            title="<?= Text::_('COM_EMUNDUS_APPLICATION_DOWNLOAD_EVALUATION_FORM'); ?>"
+                    >
+                        <span class="material-symbols-outlined" data-fnum="<?= $this->fnum ?>">file_download</span>
+                    </button>
 				<?php endif; ?>
                 <div class="em-flex-row">
 					<?php if (!empty($this->url_form)) : ?>
@@ -298,6 +300,14 @@ Factory::getApplication()->getSession()->set('application_layout', 'evaluation')
                     actions: 'em-swal-single-action'
                 }
             });
+        }
+    });
+
+    document.getElementById('download-evaluation-pdf').addEventListener('click', function (e) {
+        if (typeof export_pdf === 'function') {
+            export_pdf(JSON.stringify({0: <?= $this->fnum ?>}), null, 'evaluation');
+        } else {
+            console.error('Function export_pdf does not exist');
         }
     });
 </script>
