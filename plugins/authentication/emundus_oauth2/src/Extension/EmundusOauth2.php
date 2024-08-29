@@ -79,6 +79,13 @@ class EmundusOauth2 extends CMSPlugin implements SubscriberInterface
 	protected $attributes;
 
 	/**
+	 * @var object  Mapping attributes.
+	 *
+	 * @since version 2.0.0
+	 */
+	protected $mapping;
+
+	/**
 	 * Returns an array of events this subscriber will listen to.
 	 *
 	 * @return  array
@@ -117,7 +124,7 @@ class EmundusOauth2 extends CMSPlugin implements SubscriberInterface
 					}
 				}
 			} else {
-				$parameters = ['client_id', 'client_secret', 'scopes', 'auth_url', 'token_url', 'redirect_url', 'sso_account_url', 'emundus_profile', 'email_id', 'logout_url', 'platform_redirect_url', 'attributes', 'debug_mode'];
+				$parameters = ['client_id', 'client_secret', 'scopes', 'auth_url', 'token_url', 'redirect_url', 'sso_account_url', 'emundus_profile', 'email_id', 'logout_url', 'platform_redirect_url', 'attributes', 'debug_mode', 'attribute_mapping','mapping'];
 
 				foreach ($parameters as $parameter) {
 					$this->params->set($parameter, $configurations['configurations0']->{$parameter});
@@ -243,6 +250,33 @@ class EmundusOauth2 extends CMSPlugin implements SubscriberInterface
 						$response->isnew = empty(UserHelper::getUserId($response->username));
 						$response->error_message = '';
 						$user = new User(UserHelper::getUserId($response->username));
+
+						// Mapping
+						$response->emundus_profiles = [];
+						$response->openid_profiles = [];
+						$attribute_mapping = $this->params->get('attribute_mapping');
+						if(!empty($attribute_mapping)) {
+							if(is_string($this->params->get('mapping'))) {
+								$this->mapping = json_decode($this->params->get('mapping'));
+							}
+							elseif (is_object($this->params->get('mapping'))) {
+								$this->mapping = (array) $this->params->get('mapping');
+							}
+							else {
+								$this->mapping = $this->params->get('mapping');
+							}
+
+							if(!empty($this->mapping)) {
+								$openid_groups = !empty($body->attributes) && isset($body->attributes->{$attribute_mapping}) ? $body->attributes->{$attribute_mapping} : $body->{$attribute_mapping};
+
+								foreach ($this->mapping as $map) {
+									$response->openid_profiles[] = $map->emundus_profile;
+									if (in_array($map->attribute_value, $openid_groups)) {
+										$response->emundus_profiles[] = $map->emundus_profile;
+									}
+								}
+							}
+						}
 
 						if ($user->get('block')) {
 							$response->status = Authentication::STATUS_FAILURE;
