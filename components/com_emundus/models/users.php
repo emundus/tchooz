@@ -33,6 +33,7 @@ use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Component\Users\Site\Model\ResetModel;
 use Joomla\CMS\Log\Log;
+use Joomla\Database\ParameterType;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 
 /**
@@ -2198,59 +2199,186 @@ class EmundusModelUsers extends ListModel
 	 */
 	public function addProfileToUser($uid, $pid)
 	{
-		$config = $this->app->getConfig();
+		$result = true;
+		$config = Factory::getConfig();
 
 		$timezone = new DateTimeZone($config->get('offset'));
 		$now      = Factory::getDate()->setTimezone($timezone);
 
-		$query = $this->db->getQuery(true);
+		try
+		{
+			$query = $this->db->getQuery(true);
 
-		$query->select($this->db->quoteName('id'))
-			->from($this->db->quoteName('#__emundus_users_profiles'))
-			->where($this->db->quoteName('user_id') . ' = ' . $uid . ' AND ' . $this->db->quoteName('profile_id') . ' = ' . $pid);
-		$this->db->setQuery($query);
-		try {
-			if (!empty($this->db->loadResult())) {
-				return true;
+			$query->select($this->db->quoteName('id'))
+				->from($this->db->quoteName('#__emundus_users_profiles'))
+				->where($this->db->quoteName('user_id') . ' = ' . $uid . ' AND ' . $this->db->quoteName('profile_id') . ' = ' . $pid);
+			$this->db->setQuery($query);
+
+			if(empty($this->db->loadResult()))
+			{
+				$columns = array('date_time', 'user_id', 'profile_id');
+				$values  = array($now, $uid, $pid);
+				$query->clear()
+					->insert($this->db->quoteName('#__emundus_users_profiles'))
+					->columns($this->db->quoteName($columns))
+					->values(implode(',', $this->db->quote($values)));
+				$this->db->setQuery($query);
+				$result = $this->db->execute();
+
+				// Associate Joomla group
+				$query->clear()
+					->select($this->db->quoteName('acl_aro_groups'))
+					->from($this->db->quoteName('#__emundus_setup_profiles'))
+					->where($this->db->quoteName('id') . ' = ' . $pid);
+				$this->db->setQuery($query);
+				$joomla_group = $this->db->loadResult();
+
+				$query = $this->db->getQuery(true)
+					->select($this->db->quoteName('id'))
+					->from($this->db->quoteName('#__usergroups'))
+					->where($this->db->quoteName('id') . ' = :groupId')
+					->bind(':groupId', $joomla_group, ParameterType::INTEGER);
+				$this->db->setQuery($query);
+				$exist = $this->db->loadResult();
+
+				if ($exist)
+				{
+					$query = $this->db->getQuery(true)
+						->select($this->db->quoteName('user_id'))
+						->from($this->db->quoteName('#__user_usergroup_map'))
+						->where($this->db->quoteName('group_id') . ' = :groupId')
+						->where($this->db->quoteName('user_id') . ' = :uid')
+						->bind(':groupId', $joomla_group, ParameterType::INTEGER)
+						->bind(':uid', $uid, ParameterType::INTEGER);
+					$this->db->setQuery($query);
+					$mapping_exist = $this->db->loadResult();
+
+					if (empty($mapping_exist))
+					{
+						$inserted = [
+							'user_id'  => $uid,
+							'group_id' => $joomla_group
+						];
+						$inserted = (object) $inserted;
+						$result   = $this->db->insertObject('#__user_usergroup_map', $inserted);
+					}
+				}
 			}
 		}
-		catch (Exception $e) {
-			error_log($e->getMessage(), 0);
-
-			return false;
+		catch (Exception $e)
+		{
+			Log::add('Error on adding profile to user: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			$result = false;
 		}
 
-		$columns = array('date_time', 'user_id', 'profile_id');
-		$values = array($now, $uid, $pid);
-		$query->clear()
-			->insert($this->db->quoteName('#__emundus_users_profiles'))
-			->columns($this->db->quoteName($columns))
-			->values(implode(',', $this->db->quote($values)));
-		$this->db->setQuery($query);
-		try {
-			$this->db->execute();
-		}
-		catch (Exception $e) {
-			error_log($e->getMessage(), 0);
 
-			return false;
+		return $result;
+	}
+
+	/**
+	 * Remove emundus profile from a user
+	 *
+	 * @param $uid
+	 * @param $pid
+	 *
+	 * @return bool|mixed
+	 *
+	 * @since version 2.0.0
+	 */
+	public function removeProfileToUser($uid,$pid)
+	{
+		$removed = false;
+
+		try
+		{
+			$query = $this->db->getQuery(true);
+
+			// First we delete the profile from the user
+			$query->delete($this->db->quoteName('#__emundus_users_profiles'))
+				->where($this->db->quoteName('profile_id') . ' = :profileId')
+				->where($this->db->quoteName('user_id') . ' = :uid')
+				->bind(':profileId', $pid, ParameterType::INTEGER)
+				->bind(':uid', $uid, ParameterType::INTEGER);
+			$this->db->setQuery($query);
+
+			if($removed = $this->db->execute()) {
+				$query->clear()
+					->select('profile_id')
+					->from($this->db->quoteName('#__emundus_users_profiles'))
+					->where($this->db->quoteName('user_id') . ' = :uid')
+					->bind(':uid', $uid, ParameterType::INTEGER);
+				$this->db->setQuery($query);
+				$users_profiles = $this->db->loadColumn();
+
+				// If we remove the default profile, we set the first profile as default
+				$query->clear()
+					->select('profile')
+					->from($this->db->quoteName('#__emundus_users'))
+					->where($this->db->quoteName('user_id') . ' = :uid')
+					->bind(':uid', $uid, ParameterType::INTEGER);
+				$this->db->setQuery($query);
+				$default_profile = $this->db->loadResult();
+
+				if($default_profile == $pid) {
+					if(!empty($users_profiles)) {
+						$new_default_profile = $users_profiles[0];
+					}
+					else {
+						// If user does not have other profiles we set an applicant profile by default
+						$query->clear()
+							->select('id')
+							->from($this->db->quoteName('#__emundus_setup_profiles'))
+							->where($this->db->quoteName('published') . ' = 1');
+						$this->db->setQuery($query);
+						$new_default_profile = $this->db->loadResult();
+
+						$this->addProfileToUser($uid,$new_default_profile);
+					}
+
+					$query->clear()
+						->update($this->db->quoteName('#__emundus_users'))
+						->set('profile = ' . $this->db->quote($new_default_profile))
+						->where($this->db->quoteName('user_id') . ' = :uid')
+						->bind(':uid', $uid, ParameterType::INTEGER);
+					$this->db->setQuery($query);
+					$this->db->execute();
+				}
+
+				// Remove ACL groups if the profile is associated to a group and other profiles from user does not need this ACL
+				$query->clear()
+					->select('acl_aro_groups')
+					->from($this->db->quoteName('#__emundus_setup_profiles'))
+					->where($this->db->quoteName('id') . ' = :profileId')
+					->bind(':profileId', $pid, ParameterType::INTEGER);
+				$this->db->setQuery($query);
+				$acl_group_to_remove = $this->db->loadResult();
+
+				$query->clear()
+					->select('acl_aro_groups')
+					->from($this->db->quoteName('#__emundus_setup_profiles'))
+					->where($this->db->quoteName('id') . ' IN (' . implode(',', $users_profiles) . ')');
+				$this->db->setQuery($query);
+				$acl_groups = $this->db->loadColumn();
+
+				if(!in_array($acl_group_to_remove, $acl_groups)) {
+					$query->clear()
+						->delete($this->db->quoteName('#__user_usergroup_map'))
+						->where($this->db->quoteName('user_id') . ' = :uid')
+						->where($this->db->quoteName('group_id') . ' = :group_id')
+						->bind(':uid', $uid, ParameterType::INTEGER)
+						->bind(':group_id', $acl_group_to_remove, ParameterType::INTEGER);
+					$this->db->setQuery($query);
+					$this->db->execute();
+				}
+
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Failed to remove profile to user ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
 
-		$query->clear()
-			->select($this->db->quoteName('acl_aro_groups'))
-			->from($this->db->quoteName('#__emundus_setup_profiles'))
-			->where($this->db->quoteName('id') . ' = ' . $pid);
-		$this->db->setQuery($query);
-		try {
-			$group = $this->db->loadResult();
-		}
-		catch (Exception $e) {
-			error_log($e->getMessage(), 0);
-
-			return false;
-		}
-
-		return UserHelper::addUserToGroup($uid, $group);
+		return $removed;
 	}
 
 

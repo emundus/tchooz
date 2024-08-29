@@ -23,6 +23,7 @@
 
 .com_emundus_vue input, .com_emundus_vue select {
   height: var(--em-form-height);
+  border-radius: var(--em-form-br);
 }
 
 /* Gestion des curseurs dans le menu des paramètres globaux */

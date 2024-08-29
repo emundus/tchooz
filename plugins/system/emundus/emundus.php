@@ -153,6 +153,16 @@ class PlgSystemEmundus extends CMSPlugin
 				}
 			}
 
+			/*preg_match_all(\chr(1) . '(<section.*\s+id="g-navigation".*>)' . \chr(1) . 'i', $body, $matches);
+			foreach ($matches[0] as $match)
+			{
+				if (!strpos($match, 'class='))
+				{
+					$replace = '<header id="g-navigation" role="banner">';
+					$body    = str_replace($match, $replace, $body);
+				}
+			}*/
+
 			$app->setBody($body);
 		}
 	}
