@@ -47,7 +47,7 @@ $user = $this->userid;
 <div class="row">
     <div class="panel panel-default widget em-container-form">
 		<?php if ($this->header == 1) : ?>
-            <div class="panel-heading em-container-form-heading">
+            <div class="panel-heading em-container-form-heading !tw-bg-profile-full">
                 <h3 class="panel-title">
                     <span class="material-symbols-outlined">list_alt</span>
 					<?php echo Text::_('COM_EMUNDUS_APPLICATION_APPLICATION_FORM').' - '.$this->formsProgress." % ".Text::_("COM_EMUNDUS_APPLICATION_COMPLETED"); ?>

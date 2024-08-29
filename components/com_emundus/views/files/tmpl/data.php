@@ -356,10 +356,20 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
         }
     });
 
+    /* Options de sélection de tous les dossiers */
     function checkAllFiles() {
         $('#em-check-all-all').prop('checked', true);
 
         selectAllFiles();
+    }
+
+    /* Option de désélection de tous les dossiers */
+    function uncheckAllFiles() {
+        hideCount();
+
+        $('.em-check').prop('checked', false);
+        $('.em-check-all-all').prop('checked', false);
+        reloadActions('files', undefined, false);
     }
 
     function displayCount() {
@@ -383,7 +393,7 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
             $('.em-check').prop('checked', true);
 
             displayCount();
-            countFiles.innerHTML = '<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + Joomla.JText._('COM_EMUNDUS_FILTERS_SELECT_ALL') + Joomla.JText._('COM_EMUNDUS_FILES_FILES') + '</p>';
+            countFiles.innerHTML = '<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + Joomla.JText._('COM_EMUNDUS_FILTERS_SELECT_ALL') + Joomla.JText._('COM_EMUNDUS_FILES_FILES') + '. <a class="em-pointer em-text-underline" style="color: var(--red-500);" onclick="uncheckAllFiles()">' + Joomla.JText._('COM_EMUNDUS_FILES_UNSELECT_ALL_FILES_2') + '</a></p>';
 
             document.querySelector('.selectContainer').style.backgroundColor = '#F3F3F3';
 
@@ -485,7 +495,7 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
 
         if (countCheckedCheckbox !== 0) {
             displayCount();
-            countFiles.innerHTML = '<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + countCheckedCheckbox + ' ' + files + '. <a class="em-pointer em-text-underline em-profile-color" onclick="checkAllFiles()">' + Joomla.JText._('COM_EMUNDUS_FILES_SELECT_ALL_FILES') + '</a></p>';
+            countFiles.innerHTML = '<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + countCheckedCheckbox + ' ' + files + '. <a class="em-pointer em-text-underline em-profile-color" onclick="checkAllFiles()">' + Joomla.JText._('COM_EMUNDUS_FILES_SELECT_ALL_FILES') + '</a> ' + Joomla.JText._('COM_EMUNDUS_FILES_OR_CONNECTOR') + ' <a class="em-pointer em-text-underline em-profile-color" style="color: var(--red-500);" onclick="uncheckAllFiles()">' + Joomla.JText._('COM_EMUNDUS_FILES_UNSELECT_ALL_FILES') + '</a>' + '</p>';
         } else {
             hideCount();
             countFiles.innerHTML = '';
