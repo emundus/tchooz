@@ -98,7 +98,7 @@
         </fieldset>
       </div>
 
-      <div v-else-if="isToggle" class="tw-flex tw-items-center">
+      <div v-else-if="isToggle" class="tw-flex tw-items-center tw-mb-4">
         <div class="em-toggle">
           <input type="checkbox"
                  true-value="1" false-value="0"

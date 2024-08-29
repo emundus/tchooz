@@ -1575,6 +1575,9 @@ if(value == 1) {
 				$this->db->execute();
 			}
 
+			EmundusHelperUpdate::installExtension('System - OAuth 2 routing','oauth2',null,'plugin',1,'system');
+			EmundusHelperUpdate::enableEmundusPlugins('emundus_oauth2', 'authentication');
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)
