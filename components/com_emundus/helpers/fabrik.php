@@ -278,51 +278,23 @@ $student = isset($student_id) ? JUser::getInstance($student_id) : JUser::getInst
 
 echo "<h2>".$student->name."</h2>";
 HTMLHelper::styleSheet(JURI::base() . "media/jui/css/chosen.css");
-HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");',
-						2 => 'use Joomla\CMS\Language\Text;
-
-echo \'<script>window.parent.ScrollToTop();</script>\';
-echo \'<style>.em-swal-title{
-  margin: 8px 8px 32px 8px !important;
-  font-family: "Maven Pro", sans-serif;
-}
-</style>\';
-die("<script>
-	
-
-      $(document).ready(function () {
-          Swal.fire({
-  	         position: \'top\',
-             type: \'success\',
-             title: \'".Text::_(\'COM_EMUNDUS_EVALUATION_SAVED\')."\',
-          	 showConfirmButton: false,
-             timer: 2000,
-             customClass: {
-                   title: \'em-swal-title\'
-             },
-             onClose: () => { history.go(-1);}
-      	})
-	});
-</script>");'
+HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 					],
 					'only_process_curl'     => [
-						1 => 'onLoad',
-						2 => 'onAfterProcess'
+						1 => 'onLoad'
 					],
 					'form_php_file'         => [
-						1 => '-1',
-						2 => '-1'
+						1 => '-1'
 					],
 					'form_php_require_once' => [
-						1 => '0',
-						2 => '0'
+						1 => '0'
 					],
 					'process-jplugins'      => '2',
-					'plugins'               => array('emundusisevaluatedbyme', 'php', 'php'),
-					'plugin_state'          => array('1', '1', '1'),
-					'plugin_locations'      => array('both', 'both', 'both'),
-					'plugin_events'         => array('both', 'both', 'both'),
-					'plugin_description'    => array('Is evaluated by me', 'css', 'sweet'),
+					'plugins'               => array('emundusisevaluatedbyme', 'php'),
+					'plugin_state'          => array('1', '1'),
+					'plugin_locations'      => array('both', 'both'),
+					'plugin_events'         => array('both', 'both'),
+					'plugin_description'    => array('Is evaluated by me', 'css'),
 				];
 			}
 			else {
