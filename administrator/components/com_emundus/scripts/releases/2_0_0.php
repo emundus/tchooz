@@ -1560,7 +1560,7 @@ if(value == 1) {
 				->select('ff.id,ff.params')
 				->from($this->db->quoteName('#__fabrik_forms','ff'))
 				->leftJoin($this->db->quoteName('#__fabrik_lists','fl').' ON '.$this->db->quoteName('fl.form_id').' = '.$this->db->quoteName('ff.id'))
-				->where($this->db->quoteName('fl.db_table_name') . ' LIKE ' . $this->db->quote('jos_emundus_setup_programs'));
+				->where($this->db->quoteName('fl.db_table_name') . ' LIKE ' . $this->db->quote('jos_emundus_setup_programmes'));
 			$this->db->setQuery($query);
 			$form_program = $this->db->loadObject();
 
