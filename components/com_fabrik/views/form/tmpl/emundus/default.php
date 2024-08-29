@@ -56,9 +56,17 @@ $m_users      = new EmundusModelUsers();
 $profile_form = $m_users->getProfileForm();
 
 $this->display_comments = false;
-$is_applicant           = 1;
 $allow_to_comment       = $eMConfig->get('allow_applicant_to_comment', 0);
-if ($allow_to_comment)
+
+$applicant_profiles     = $m_users->getApplicantProfiles();
+$current_user_profile   = $emundus_user->profile;
+$applicant_profiles_ids = array_map(function ($profile) {
+	return $profile->id;
+}, $applicant_profiles);
+
+$is_applicant = in_array($current_user_profile, $applicant_profiles_ids) ? 1 : 0;
+
+if ($allow_to_comment || $is_applicant === 0)
 {
 	// check if form is an applicant form, there should be a column fnum in the table
 	$db    = Factory::getContainer()->get('DatabaseDriver');
@@ -66,8 +74,6 @@ if ($allow_to_comment)
 	$db->setQuery($query);
 	$result = $db->loadObject();
 
-
-    $applicant_profiles     = $m_users->getApplicantProfiles();
 	if (!empty($result) && Factory::getApplication()->input->get('fnum', '') == $fnum)
 	{
         $applicant_profiles_menus = array_map(function ($profile) {
@@ -92,16 +98,6 @@ if ($allow_to_comment)
 	        $this->display_comments = true;
         }
     }
-
-	$current_user_profile   = $emundus_user->profile;
-	$applicant_profiles_ids = array_map(function ($profile) {
-		return $profile->id;
-	}, $applicant_profiles);
-
-	if (!in_array($current_user_profile, $applicant_profiles_ids))
-	{
-		$is_applicant = 0;
-	}
 }
 
 Text::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TITLE');
