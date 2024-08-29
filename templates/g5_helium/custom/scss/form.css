@@ -1273,7 +1273,8 @@
         /** INPUT **/
 
         input:not([type='radio']):not([type='checkbox']):not([type='file']), select {
-            height: var(--em-coordinator-form-height);
+            height: var(--em-form-height);
+            border-radius: var(--em-form-br);
         }
 
         input:not([type='file']), select, textarea {
