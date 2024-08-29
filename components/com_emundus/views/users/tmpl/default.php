@@ -30,7 +30,7 @@ $wa->registerAndUseScript('com_emundus/jquery', 'jquery/jquery.min.js');
                                  style="width: 25px;filter: invert(1);"/>
                         </label>
 
-                        <input type="button" style="display: none" id="clear-search"
+                        <input type="button" style="display: none" id="clear-search" name="clear-search"
                                title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_CLEAR_BTN'); ?>"/>
                     </div>
                 </div>

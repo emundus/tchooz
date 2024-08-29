@@ -263,38 +263,6 @@ $(document).ready(function () {
 		}
 	});
 
-	$(document).on('click', 'input:button', function (e) {
-
-		if (e.event !== true) {
-			e.handle = true;
-			var name = $(this).attr('name');
-			switch (name) {
-				case 'clear-search':
-					lastVal = new Object();
-
-					let url = window.location.origin+'/index.php?option=com_emundus&controller=users&task=clear';
-					fetch(url, {
-						method: 'GET',
-					}).then((response) => {
-						if (response.ok) {
-							return response.json();
-						}
-						throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
-					}).then((result) => {
-						if (result.status) {
-							refreshFilter();
-						}
-					});
-
-					break;
-				case 'search':
-					search();
-					break;
-				default:
-					break;
-			}
-		}
-	});
 	$(document).on('click', '.pagination.pagination-sm li a', function (e) {
 		if (e.handle !== true) {
 			e.handle = true;
@@ -621,6 +589,7 @@ $(document).ready(function () {
 	});
 
 	/* Button Form actions*/
+
 	$(document).on('click', '.em-actions-form', function (e) {
 		var id = parseInt($(this).attr('id'));
 		var url = $(this).attr('url');

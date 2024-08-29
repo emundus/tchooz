@@ -4643,7 +4643,7 @@ $(document).ready(function() {
                         addLoader();
                         $.ajax({
                             type: 'POST',
-                            url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=clear',
+                            url: '/index.php?option=com_emundus&controller='+$('#view').val()+'&task=clear',
                             dataType: 'json',
                             success: function(result) {
                                 if (result.status) {
