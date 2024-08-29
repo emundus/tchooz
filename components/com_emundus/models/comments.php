@@ -112,8 +112,8 @@ class EmundusModelComments extends BaseDatabaseModel
                     $this->db->quote($target_type) . ', ' .
                     $this->db->quote($target_id) . ', ' .
                     $this->db->quote($visible_to_applicant) . ', ' .
-                    $this->db->quote($user) . ', 
-                    NOW(), ' .
+                    $this->db->quote($user) . ', ' .
+                    $this->db->quote(date('Y-m-d H:i:s')) . ', ' .
                     $this->db->quote($parent_id)
                 );
 
