@@ -1199,7 +1199,31 @@ class EmundusModelForm extends JModelList
 				$m_formbuilder->createElement('id', $group['group_id'], 'internalid', 'id', '', 1, 0);
 				$m_formbuilder->createElement('time_date', $group['group_id'], 'jdate', 'time date', '', 1, 0);
 				$m_formbuilder->createElement('fnum', $group['group_id'], 'field', 'fnum', '{jos_emundus_evaluations___fnum}', 1, 0, 1, 1, 0, 44);
-				$m_formbuilder->createElement('user', $group['group_id'], 'databasejoin', 'user', '{$my->id}', 1, 0);
+				$dbjoin_element_id = $m_formbuilder->createElement('user', $group['group_id'], 'databasejoin', 'user', '{$my->id}', 1, 0);
+
+				if (!empty($dbjoin_element_id)) {
+					$query = $this->db->createQuery(true);
+					$query->select('params')
+						->from('#__fabrik_elements')
+						->where('id = ' . $dbjoin_element_id);
+
+					$this->db->setQuery($query);
+					$params = $this->db->loadResult();
+
+					$params = json_decode($params, true);
+
+					$params['join_db_name'] = 'jos_users';
+					$params['join_key_column'] = 'id';
+					$params['join_val_column'] = 'name';
+
+					$query->clear()
+						->update('#__fabrik_elements')
+						->set('params = ' . $this->db->quote(json_encode($params)))
+						->where('id = ' . $dbjoin_element_id);
+					$this->db->setQuery($query);
+					$this->db->execute();
+				}
+
 				$m_formbuilder->createElement('student_id', $group['group_id'], 'field', 'student_id', '{jos_emundus_evaluations___student_id}', 1, 0);
 			}
 
