@@ -1601,8 +1601,9 @@ class EmundusModelCampaign extends ListModel
 					case 'admission_start_date':
 					case 'admission_end_date':
 						if (empty($val)) {
-							$data[$key] = '0000-00-00 00:00:00';
+							$val = '0000-00-00 00:00:00';
 						}
+						$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
 						break;
 					case 'limit':
 					case 'profileLabel':
@@ -1613,8 +1614,9 @@ class EmundusModelCampaign extends ListModel
 					case 'pinned':
 					case 'is_limited':
 						if (!isset($val) || $val == '') {
-							$data[$key] = 0;
+							$val = 0;
 						}
+						$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
 						break;
 					case 'alias':
 						$details_menu = $this->getCampaignDetailsMenu($cid);
@@ -1633,8 +1635,7 @@ class EmundusModelCampaign extends ListModel
 						$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
 						break;
 					default:
-						$insert   = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
-						$fields[] = $insert;
+						$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
 						break;
 				}
 			}
