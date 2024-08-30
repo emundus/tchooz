@@ -238,57 +238,65 @@ export default {
         value.table.label,
         value.table.filters
       ).then(async (response) => {
-        this.datas = response.data;
+        if (response.status) {
+          if (response.data.length > 0) {
+            this.datas = response.data;
 
-        if (value.table.load_all === 'true') {
-          let fields = [];
-          await this.asyncForEach(this.object.fields.Fields, async (field) => {
-            fields.push(field.Name);
-          })
-          fields = fields.join(',');
-          const build = async () => {
-            for (const data of this.datas) {
-              await translationsService.getTranslations(
-                this.object.table.type,
-                this.defaultLang.lang_code,
-                this.lang.lang_code,
-                data.id,
-                fields,
-                this.object.table.name
-              ).then(async (rep) => {
-                console.log(rep);
-
-                if (rep.status) {
-                  for (const translation of Object.values(rep.data)) {
-                    this.translations[data.id] = {};
-                    this.object.fields.Fields.forEach((field) => {
-                      this.translations[data.id][field.Name] = translation[field.Name];
-                    });
-                  }
-                } else {
-                  this.displayError(rep.message, '');
-                }
+            if (value.table.load_all === 'true') {
+              let fields = [];
+              await this.asyncForEach(this.object.fields.Fields, async (field) => {
+                fields.push(field.Name);
               })
-            }
-            this.init_translations = true;
-            this.loading = false;
-          }
-          await build();
-        } else if (value.table.load_first_data === 'true') {
-          if (this.firstLoadDatas) {
-            // get url parameter data
-            const urlParams = new URLSearchParams(window.location.search);
+              fields = fields.join(',');
+              const build = async () => {
+                for (const data of this.datas) {
+                  await translationsService.getTranslations(
+                    this.object.table.type,
+                    this.defaultLang.lang_code,
+                    this.lang.lang_code,
+                    data.id,
+                    fields,
+                    this.object.table.name
+                  ).then(async (rep) => {
+                    console.log(rep);
 
-            const dataParam = urlParams.get('data');
-            if (dataParam) {
-              this.data = this.datas.find(d => parseInt(d.id) === parseInt(dataParam));
+                    if (rep.status) {
+                      for (const translation of Object.values(rep.data)) {
+                        this.translations[data.id] = {};
+                        this.object.fields.Fields.forEach((field) => {
+                          this.translations[data.id][field.Name] = translation[field.Name];
+                        });
+                      }
+                    } else {
+                      this.displayError(rep.message, '');
+                    }
+                  })
+                }
+                this.init_translations = true;
+                this.loading = false;
+              }
+              await build();
+            } else if (value.table.load_first_data === 'true') {
+              if (this.firstLoadDatas) {
+                // get url parameter data
+                const urlParams = new URLSearchParams(window.location.search);
+
+                const dataParam = urlParams.get('data');
+                if (dataParam) {
+                  this.data = this.datas.find(d => parseInt(d.id) === parseInt(dataParam));
+                } else {
+                  this.data = this.datas[0];
+                }
+
+                this.firstLoadDatas = false;
+              } else {
+                this.data = this.datas[0];
+              }
             } else {
-              this.data = this.datas[0];
-            }
-
-            this.firstLoadDatas = false;
+              this.loading = false;
+            } 
           } else {
-            this.data = this.datas[0];
+            this.loading = false;
           }
         } else {
           this.loading = false;
