@@ -526,18 +526,18 @@ requirejs(['fab/fabrik'], function () {
     }
 
     function addOption(field,params) {
-        var params = JSON.parse(params);
-        var options = field.element.options;
+        params = JSON.parse(params);
+        const options = field.element.options;
 
         params.forEach((p) => {
             // Check if option already exists
             var exists = false;
             [...options].map((o) => {
-                if(o.value == p.primary_key){
+                if(o.value == p.primary_key) {
                     exists = true;
                 }
             });
-            if(!exists) {
+            if (!exists) {
                 var option = document.createElement("option");
                 option.text = p.value;
                 option.value = p.primary_key;
@@ -547,17 +547,15 @@ requirejs(['fab/fabrik'], function () {
     }
 
     function removeOption(field,params) {
-        var options = field.element.options;
-        var params = JSON.parse(params);
-        var values = [];
-
-        params.forEach((p) => {
-            values.push(p.primary_key);
+        params = JSON.parse(params);
+        const options = field.element.options;
+        const values = params.map((param) => {
+            return param.primary_key.toString();
         });
 
-        [...options].map((p) => {
-            if(values.includes(p.value)){
-                options.remove(p.index);
+        [...options].map((option, i) => {
+            if (values.includes(option.value)) {
+                field.element.remove(i);
             }
         });
     }

@@ -90,7 +90,7 @@
 
             <hr class="m-0"/>
             <div :id="'action_'+rule.id" class="tw-flex tw-flex-col tw-gap-2">
-              <div v-for="(action,action_index) in rule.actions" class="tw-flex tw-items-center">
+              <div v-for="(action) in rule.actions" :key="action.id" class="tw-flex tw-items-center">
                 <span class="material-symbols-outlined !tw-text-2xl !tw-font-medium tw-mr-3 tw-text-black"
                       v-if="['show','show_options'].includes(action.action)">visibility</span>
                 <span class="material-symbols-outlined !tw-text-2xl !tw-font-medium tw-mr-3 tw-text-black"
@@ -108,7 +108,7 @@
                       elementOptions(action)
                     }}</span>
                   <span v-if="['show_options','hide_options'].includes(action.action)"
-                        class="tw-font-medium"> {{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_OF_FIELD') }}</span>
+                        class="tw-mx-1 tw-font-medium"> {{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_OF_FIELD') }}</span>
 
                   <span v-if="['define_repeat_group'].includes(action.action)">{{
                       translate('COM_EMUNDUS_FORMBUILDER_RULE_ACTION_DEFINE_REPEAT_BETWEEN') + ' ' + elementOptions(action) + ' ' + translate('COM_EMUNDUS_FORMBUILDER_RULE_ACTION_DEFINE_REPEAT_REPETITIONS')
