@@ -43,7 +43,7 @@ else {
         <div class="panel panel-default widget em-container-logs <?php if ($this->euser->applicant == 1) : ?>tw-bg-transparent<?php else : ?>tw-bg-neutral-100<?php endif; ?>">
 
 			<?php if ($this->euser->applicant == 0) : ?>
-                <div class="panel-heading em-container-logs-heading">
+                <div class="panel-heading em-container-logs-heading !tw-bg-profile-full">
 
                     <h3 class="panel-title">
                         <span class="glyphicon glyphicon-list"></span>

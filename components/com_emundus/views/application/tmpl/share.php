@@ -9,7 +9,7 @@
 <?php if (!empty($this->access['groups'])): ?>
     <div class="row">
         <div class="panel panel-default widget em-container-share">
-            <div class="panel-heading em-container-share-heading">
+            <div class="panel-heading em-container-share-heading !tw-bg-profile-full">
                 <h3 class="panel-title">
                     <span class="material-symbols-outlined">visibility</span>
 					<?= JText::_('COM_EMUNDUS_ACCESS_CHECK_ACL'); ?>

@@ -66,7 +66,6 @@ if ($allowed_attachments !== true) {
         padding: 0 var(--p-12);
         border: solid 1px var(--em-coordinator-bc);
         border-radius: var(--em-coordinator-form-br);
-        background: var(--neutral-0);
         margin-top: 6px;
     }
 

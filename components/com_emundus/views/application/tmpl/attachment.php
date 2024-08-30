@@ -30,7 +30,7 @@ $hash = EmundusHelperCache::getCurrentGitHash() . rand(0, 99999);
 
 <div class="row">
     <div class="panel panel-default widget em-container-attachment em-container-form">
-        <div class="panel-heading em-container-form-heading">
+        <div class="panel-heading em-container-form-heading !tw-bg-profile-full">
             <h3 class="panel-title">
                 <span class="material-symbols-outlined">file_present</span>
 				<?= JText::_('COM_EMUNDUS_ONBOARD_DOCUMENTS') . ' - ' . $this->attachmentsProgress . ' % ' . JText::_('COM_EMUNDUS_APPLICATION_SENT'); ?>

@@ -828,14 +828,15 @@
         /** SELECT **/
 
         select {
-            background-position-x: 99%;
-            background-position-y: 54%;
+            background-position-x: calc(100% - 8px);
+            background-position-y: 50%;
             -webkit-appearance: none;
+            -moz-appearance: none;
             appearance: none;
             background-image: url(/images/emundus/arrow.svg);
             background-size: 8px;
             background-repeat: no-repeat;
-            @apply tw-pr-4;
+            @apply tw-pr-6;
             @apply tw-cursor-pointer;
 
             &.input-small {
@@ -1431,15 +1432,15 @@
         }
 
         &.chzn-with-drop .chzn-single, &.chzn-with-drop .chzn-choices, &.chosen-with-drop .chosen-single, &.chosen-with-drop .chosen-choices {
-            background-position-x: 98% !important;
-            background-position-y: 54% !important;
+            background-position-x: calc(100% - 8px) !important;
+            background-position-y: 50%;
             -webkit-appearance: none;
             appearance: none;
             background-image: url(/images/emundus/arrow.svg);
             background: var(--em-form-bgc);
             background-size: 8px;
             background-repeat: no-repeat;
-            padding-right: 1.5rem !important;
+            padding-right: 24px !important;
             box-shadow: unset;
             border-color: var(--em-form-bc);
             border-radius: var(--em-form-br);
@@ -1448,18 +1449,19 @@
             justify-content: flex-start;
             flex-wrap: wrap;
             min-height: var(--em-form-height);
+            -moz-appearance: none;
         }
 
         .chzn-single, .chzn-choices, .chosen-single, .chosen-choices {
-            background-position-x: 98% !important;
-            background-position-y: 54% !important;
+            background-position-x: calc(100% - 8px) !important;
+            background-position-y: 50% !important;
             -webkit-appearance: none;
             appearance: none;
             background-image: url(/images/emundus/arrow.svg) !important;
             background: var(--em-form-bgc);
             background-size: 8px;
             background-repeat: no-repeat;
-            padding-right: 1.5rem !important;
+            padding-right: 24px !important;
             box-shadow: unset;
             border-color: var(--em-form-bc);
             border-radius: var(--em-form-br);
@@ -1469,6 +1471,7 @@
             width: auto !important;
             flex-wrap: wrap;
             min-height: var(--em-form-height);
+            -moz-appearance: none;
 
             &:hover {
                 border-color: var(--em-form-bc-hover) !important;

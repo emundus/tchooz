@@ -21,7 +21,7 @@ Factory::getApplication()->getSession()->set('application_layout', 'comment');
 ?>
 <div class="row">
     <div class="panel panel-default widget em-container-decision">
-        <div class="panel-heading em-container-decision-heading">
+        <div class="panel-heading em-container-decision-heading !tw-bg-profile-full">
             <h3 class="panel-title">
                 <span class="glyphicon glyphicon-check"></span>
 				<?php echo Text::_('COM_EMUNDUS_DECISION'); ?>

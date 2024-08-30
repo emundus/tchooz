@@ -49,7 +49,7 @@ $fnum = JFactory::getApplication()->input->getString('fnum', 0);
 <div class='mail'>
     <div class="row">
         <div class="panel panel-default widget em-container-mail">
-            <div class="panel-heading em-container-mail-heading">
+            <div class="panel-heading em-container-mail-heading !tw-bg-profile-full">
 
                 <h3 class="panel-title">
                     <span class="material-symbols-outlined">mode_comment</span>

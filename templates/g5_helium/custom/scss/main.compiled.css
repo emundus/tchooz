@@ -1691,15 +1691,15 @@ form.fabrikForm .plg-radiobutton .btn-group label.btn-outline-secondary.btn:not(
         }
 /** SELECT **/
 form.fabrikForm select {
-            background-position-x: 99%;
-            background-position-y: 54%;
+            background-position-x: calc(100% - 8px);
+            background-position-y: 50%;
             -webkit-appearance: none;
             -moz-appearance: none;
-                 appearance: none;
+            appearance: none;
             background-image: url(/images/emundus/arrow.svg);
             background-size: 8px;
             background-repeat: no-repeat;
-            padding-right: var(--em-spacing-4);
+            padding-right: var(--em-spacing-6);
             cursor: pointer;
         }
 form.fabrikForm select.input-small {
@@ -2217,16 +2217,15 @@ input[type="text"],
             border-radius: var(--em-form-br);
         }
 .chzn-container.chzn-with-drop .chzn-single, .chzn-container.chzn-with-drop .chzn-choices, .chzn-container.chosen-with-drop .chosen-single, .chzn-container.chosen-with-drop .chosen-choices, .chzn-container.chzn-container-multi.chzn-with-drop .chzn-single, .chzn-container.chzn-container-multi.chzn-with-drop .chzn-choices, .chzn-container.chzn-container-multi.chosen-with-drop .chosen-single, .chzn-container.chzn-container-multi.chosen-with-drop .chosen-choices, .chzn-container.chzn-container-multi.chzn-container-active.chzn-with-drop .chzn-single, .chzn-container.chzn-container-multi.chzn-container-active.chzn-with-drop .chzn-choices, .chzn-container.chzn-container-multi.chzn-container-active.chosen-with-drop .chosen-single, .chzn-container.chzn-container-multi.chzn-container-active.chosen-with-drop .chosen-choices, .chosen-container.chzn-with-drop .chzn-single, .chosen-container.chzn-with-drop .chzn-choices, .chosen-container.chosen-with-drop .chosen-single, .chosen-container.chosen-with-drop .chosen-choices, .chosen-container.chosen-container-multi.chzn-with-drop .chzn-single, .chosen-container.chosen-container-multi.chzn-with-drop .chzn-choices, .chosen-container.chosen-container-multi.chosen-with-drop .chosen-single, .chosen-container.chosen-container-multi.chosen-with-drop .chosen-choices, .chosen-container.chosen-container-multi.chosen-container-active.chzn-with-drop .chzn-single, .chosen-container.chosen-container-multi.chosen-container-active.chzn-with-drop .chzn-choices, .chosen-container.chosen-container-multi.chosen-container-active.chosen-with-drop .chosen-single, .chosen-container.chosen-container-multi.chosen-container-active.chosen-with-drop .chosen-choices {
-            background-position-x: 98% !important;
-            background-position-y: 54% !important;
+            background-position-x: calc(100% - 8px) !important;
+            background-position-y: 50%;
             -webkit-appearance: none;
-            -moz-appearance: none;
-                 appearance: none;
+            appearance: none;
             background-image: url(/images/emundus/arrow.svg);
             background: var(--em-form-bgc);
             background-size: 8px;
             background-repeat: no-repeat;
-            padding-right: 1.5rem !important;
+            padding-right: 24px !important;
             box-shadow: unset;
             border-color: var(--em-form-bc);
             border-radius: var(--em-form-br);
@@ -2235,18 +2234,18 @@ input[type="text"],
             justify-content: flex-start;
             flex-wrap: wrap;
             min-height: var(--em-form-height);
+            -moz-appearance: none;
         }
 .chzn-container .chzn-single, .chzn-container .chzn-choices, .chzn-container .chosen-single, .chzn-container .chosen-choices, .chzn-container.chzn-container-multi .chzn-single, .chzn-container.chzn-container-multi .chzn-choices, .chzn-container.chzn-container-multi .chosen-single, .chzn-container.chzn-container-multi .chosen-choices, .chzn-container.chzn-container-multi.chzn-container-active .chzn-single, .chzn-container.chzn-container-multi.chzn-container-active .chzn-choices, .chzn-container.chzn-container-multi.chzn-container-active .chosen-single, .chzn-container.chzn-container-multi.chzn-container-active .chosen-choices, .chosen-container .chzn-single, .chosen-container .chzn-choices, .chosen-container .chosen-single, .chosen-container .chosen-choices, .chosen-container.chosen-container-multi .chzn-single, .chosen-container.chosen-container-multi .chzn-choices, .chosen-container.chosen-container-multi .chosen-single, .chosen-container.chosen-container-multi .chosen-choices, .chosen-container.chosen-container-multi.chosen-container-active .chzn-single, .chosen-container.chosen-container-multi.chosen-container-active .chzn-choices, .chosen-container.chosen-container-multi.chosen-container-active .chosen-single, .chosen-container.chosen-container-multi.chosen-container-active .chosen-choices {
-            background-position-x: 98% !important;
-            background-position-y: 54% !important;
+            background-position-x: calc(100% - 8px) !important;
+            background-position-y: 50% !important;
             -webkit-appearance: none;
-            -moz-appearance: none;
-                 appearance: none;
+            appearance: none;
             background-image: url(/images/emundus/arrow.svg) !important;
             background: var(--em-form-bgc);
             background-size: 8px;
             background-repeat: no-repeat;
-            padding-right: 1.5rem !important;
+            padding-right: 24px !important;
             box-shadow: unset;
             border-color: var(--em-form-bc);
             border-radius: var(--em-form-br);
@@ -2256,6 +2255,7 @@ input[type="text"],
             width: auto !important;
             flex-wrap: wrap;
             min-height: var(--em-form-height);
+            -moz-appearance: none;
         }
 .chzn-container .chzn-single:hover, .chzn-container .chzn-choices:hover, .chzn-container .chosen-single:hover, .chzn-container .chosen-choices:hover, .chzn-container.chzn-container-multi .chzn-single:hover, .chzn-container.chzn-container-multi .chzn-choices:hover, .chzn-container.chzn-container-multi .chosen-single:hover, .chzn-container.chzn-container-multi .chosen-choices:hover, .chzn-container.chzn-container-multi.chzn-container-active .chzn-single:hover, .chzn-container.chzn-container-multi.chzn-container-active .chzn-choices:hover, .chzn-container.chzn-container-multi.chzn-container-active .chosen-single:hover, .chzn-container.chzn-container-multi.chzn-container-active .chosen-choices:hover, .chosen-container .chzn-single:hover, .chosen-container .chzn-choices:hover, .chosen-container .chosen-single:hover, .chosen-container .chosen-choices:hover, .chosen-container.chosen-container-multi .chzn-single:hover, .chosen-container.chosen-container-multi .chzn-choices:hover, .chosen-container.chosen-container-multi .chosen-single:hover, .chosen-container.chosen-container-multi .chosen-choices:hover, .chosen-container.chosen-container-multi.chosen-container-active .chzn-single:hover, .chosen-container.chosen-container-multi.chosen-container-active .chzn-choices:hover, .chosen-container.chosen-container-multi.chosen-container-active .chosen-single:hover, .chosen-container.chosen-container-multi.chosen-container-active .chosen-choices:hover {
                 border-color: var(--em-form-bc-hover) !important;
