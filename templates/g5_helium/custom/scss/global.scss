@@ -21,9 +21,16 @@
   background: var(--em-applicant-bg);
 }
 
-.com_emundus_vue input, .com_emundus_vue select {
+.com_emundus_vue select {
   height: var(--em-form-height);
   border-radius: var(--em-form-br);
+  -webkit-appearance : none;
+  -moz-appearance: none;
+  background-repeat: no-repeat;
+  background-position-x: calc(100% - 8px);
+  background-position-y: 50%;
+  background-image: url(/images/emundus/arrow.svg);
+  padding-right: 24px;
 }
 
 /* Gestion des curseurs dans le menu des paramètres globaux */
@@ -3798,7 +3805,7 @@ fieldset.em_filters_adv_filter .em_save_filter input#save-filter,
 /* SUPPRIMER EVAL */
 .g-back-office-emundus-tableau .panel-heading.em-container-evaluation-heading #em_delete_evals.btn.btn-danger.btn-xs.btn-attach {
   background: transparent !important;
-  color: var(--red-500) !important;
+  color: var(--neutral-0) !important;
   border: none;
   margin: unset !important;
   display: flex !important;
@@ -3806,12 +3813,12 @@ fieldset.em_filters_adv_filter .em_save_filter input#save-filter,
   padding: unset !important;
 
   span {
-    color: var(--red-500) !important;
+    color: var(--neutral-0) !important;
 
     &:hover,
     &:active,
     &:focus {
-      color: var(--red-600) !important;
+      color: var(--neutral-500) !important;
     }
   }
 
@@ -3819,7 +3826,7 @@ fieldset.em_filters_adv_filter .em_save_filter input#save-filter,
   &:active,
   &:focus {
     background: transparent !important;
-    color: var(--red-600) !important;
+    color: var(--neutral-500) !important;
   }
 }
 

@@ -26,7 +26,7 @@ Factory::getApplication()->getSession()->set('application_layout', 'evaluation')
 
 <div class="row">
     <div class="panel panel-default widget em-container-evaluation">
-        <div class="panel-heading em-container-evaluation-heading">
+        <div class="panel-heading em-container-evaluation-heading !tw-bg-profile-full">
             <h3 class="panel-title">
                 <span class="glyphicon glyphicon-check"></span>
 				<?= Text::_('COM_EMUNDUS_ASSESSMENT'); ?>

@@ -53,7 +53,7 @@ $user_comment_access = [
 
 <div class="row">
     <div class="panel panel-default widget em-container-comments em-container-form">
-        <div class="panel-heading em-container-form-heading">
+        <div class="panel-heading em-container-form-heading !tw-bg-profile-full">
             <h3 class="panel-title">
                 <span class="material-symbols-outlined">comment</span>
 				<?= JText::_('COM_EMUNDUS_COMMENTS') ?>

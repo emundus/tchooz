@@ -15,7 +15,7 @@ else {
 <div class="tags">
     <div class="row">
         <div class="panel panel-default widget em-container-tag">
-            <div class="panel-heading em-container-tag-heading">
+            <div class="panel-heading em-container-tag-heading !tw-bg-profile-full">
                 <h3 class="panel-title">
                     <span class="glyphicon glyphicon-tags"></span>
 					<?php echo JText::_('COM_EMUNDUS_TAGS'); ?>
