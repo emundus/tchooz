@@ -59,14 +59,23 @@ if (!empty($cookieLogin) || $this->user->get('guest')) {
 
 	$this->favicon = $m_settings->getFavicon();
 
-	$this->oauth2Config = null;
+	$this->oauth2Directories = [];
 	$this->state = null;
 	$this->nonce = null;
 	$emundusOauth2 = PluginHelper::getPlugin('authentication','emundus_oauth2');
 	if(!empty($emundusOauth2)) {
-		$this->oauth2Config = json_decode($emundusOauth2->params);
-		$this->state = bin2hex(random_bytes(128/8));
-		$this->nonce = EmundusHelperMenu::getNonce();
+		$oauth2Config = json_decode($emundusOauth2->params);
+
+		if(!empty($oauth2Config->configurations)) {
+			$this->state = bin2hex(random_bytes(128/8));
+			$this->nonce = EmundusHelperMenu::getNonce();
+
+			foreach ($oauth2Config->configurations as $config) {
+				if(in_array($config->display_on_login,[1,3])) {
+					$this->oauth2Directories[] = $config;
+				}
+			}
+		}
 	}
 
 	echo $this->loadTemplate('login');

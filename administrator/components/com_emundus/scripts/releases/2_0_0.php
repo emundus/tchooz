@@ -1578,6 +1578,9 @@ if(value == 1) {
 			EmundusHelperUpdate::installExtension('System - OAuth 2 routing','oauth2',null,'plugin',1,'system');
 			EmundusHelperUpdate::enableEmundusPlugins('emundus_oauth2', 'authentication');
 
+			EmundusHelperUpdate::installExtension('mod_emundus_oauth2','mod_emundus_oauth2',null,'module',1,'','[]',true);
+			EmundusHelperUpdate::createModule('External login','login','mod_emundus_oauth2','{"layout":"_:default","moduleclass_sfx":"","module_tag":"div","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0"}',1,1,1,0,1);
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

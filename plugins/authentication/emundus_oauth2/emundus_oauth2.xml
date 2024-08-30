@@ -42,8 +42,10 @@
                                type="radio"
                                default="1"
                                label="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_DISPLAY_ON_LOGIN">
-                            <option value="0">JNO</option>
-                            <option value="1">JYES</option>
+                            <option value="0">PLG_AUTHENTICATION_EMUNDUS_OAUTH2_DISPLAY_ON_LOGIN_NEVER</option>
+                            <option value="1">PLG_AUTHENTICATION_EMUNDUS_OAUTH2_DISPLAY_ON_LOGIN_CLIENT_LOGIN</option>
+                            <option value="2">PLG_AUTHENTICATION_EMUNDUS_OAUTH2_DISPLAY_ON_LOGIN_ADMIN_LOGIN</option>
+                            <option value="3">PLG_AUTHENTICATION_EMUNDUS_OAUTH2_DISPLAY_ON_LOGIN_BOTH</option>
                         </field>
                         <field name="button_label" type="text" label="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_BUTTON_LABEL"/>
                         <field name="button_type" type="list" label="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_BUTTON_TYPE"
