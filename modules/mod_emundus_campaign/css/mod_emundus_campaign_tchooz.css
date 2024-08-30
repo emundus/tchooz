@@ -63,9 +63,12 @@
     color: var(--em-default-text-color-1);
 }
 
-.mod_emundus_campaign__intro a:hover {
-    color: var(--neutral-800);
+.mod_emundus_campaign__intro a {
     text-decoration: underline;
+}
+
+.mod_emundus_campaign__intro a:hover {
+    text-decoration: none;
 }
 
 .mod_emundus_campaign__content {

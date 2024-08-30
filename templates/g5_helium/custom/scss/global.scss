@@ -21,7 +21,12 @@
   background: var(--em-applicant-bg);
 }
 
-.com_emundus_vue select {
+.com_emundus_vue input , .com_emundus_vue textarea{
+  height: var(--em-form-height);
+  border-radius: var(--em-form-br);
+}
+
+.com_emundus_vue div:not(.editor-toolbar) select, .tchooz-widget__selects select, .swal2-html-container div:not(.editor-toolbar) select   {
   height: var(--em-form-height);
   border-radius: var(--em-form-br);
   -webkit-appearance : none;
@@ -32,6 +37,12 @@
   background-image: url(/images/emundus/arrow.svg);
   padding-right: 24px;
 }
+
+.tchooz-widget__selects .multiselect__tags, .com_emundus_vue .multiselect__tags  {
+  height: var(--em-form-height);
+  border-radius: var(--em-form-br);
+}
+
 
 /* Gestion des curseurs dans le menu des paramètres globaux */
 
@@ -6261,7 +6272,7 @@ fieldset[disabled] .multiselect {
   position: absolute;
   box-sizing: border-box;
   right: 8px;
-  top: -1px;
+  top: 1px;
   padding: 4px 8px;
   margin: 0;
   text-decoration: none;
