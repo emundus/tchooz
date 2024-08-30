@@ -1014,7 +1014,7 @@ class EmundusController extends JControllerLegacy
 						if ($cpt >= $attachment['nbmax']) {
 							$error = JText::_('COM_EMUNDUS_ATTACHMENTS_MAX_ALLOWED') . $attachment['nbmax'];
 							if ($format == "raw") {
-								echo '{"aid":"0","status":false,"message":"' . $error . '" }';
+								JLog::add($error, JLog::ERROR, 'com_emundus.errors');
 							}
 							else {
 								$this->app->enqueueMessage($error, 'error');
