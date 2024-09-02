@@ -422,6 +422,24 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                                                         <div id="background-shapes" alt="<?= Text::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
 													<?php endif; ?>
                                                     <div class="em-w-100">
+	                                                    <?php if ($mod_emundus_applications_show_programme == 1) : ?>
+                                                        <div class="tw-flex tw-justify-between tw-items-center tw-mb-3">
+		                                                    <?php
+		                                                    $color = '#0A53CC';
+		                                                    if(!empty($application->tag_color)){
+			                                                    $color = $application->tag_color;
+		                                                    }
+		                                                    ?>
+                                                            <p class="em-programme-tag" style="color: <?php echo $color ?>;margin-bottom: 0">
+			                                                    <?php  echo $application->programme; ?>
+                                                            </p>
+                                                            <div class="mod_emundus_applications__container">
+                                                                <span class="material-symbols-outlined em-text-neutral-600 em-font-weight-600"
+                                                                      id="actions_button_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>"
+                                                                >more_vert</span>
+                                                            </div>
+                                                        </div>
+                                                        <?php endif; ?>
                                                         <div class="em-flex-row em-flex-space-between em-mb-12">
                                                             <div class="tw-flex tw-flex-row tw-items-center tw-gap-2 tw-justify-center">
                                                             <?php
@@ -470,11 +488,13 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                                                                     </div>
 	                                                            <?php endif; ?>
                                                             </div>
+											                <?php if ($mod_emundus_applications_show_programme != 1) : ?>
                                                             <div class="mod_emundus_applications__container">
                                                                 <span class="material-symbols-outlined em-text-neutral-600"
                                                                       id="actions_button_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>"
                                                                 >more_vert</span>
                                                             </div>
+                                                            <?php endif; ?>
                                                         </div>
 														<?php if (empty($application->name)) : ?>
                                                             <a href="<?= JRoute::_($first_page_url); ?>"

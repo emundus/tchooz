@@ -360,10 +360,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 									$text     = '';
 									$textprog = '';
 									$textcamp = '';
-									if ($showcampaign)
-									{
-										$textcamp = $campaign_pinned->short_description;
-									}
+                                    $textcamp = $campaign_pinned->short_description;
 									?>
 
                                     <div title="<?php echo strip_tags($textcamp); ?>"
@@ -970,11 +967,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 										<?php
 										$text     = '';
 										$textprog = '';
-										$textcamp = '';
-										if ($showcampaign)
-										{
-											$textcamp = $result->short_description;
-										}
+                                        $textcamp = $result->short_description;
 										?>
 
                                         <div title="<?php echo strip_tags($textcamp); ?>"
