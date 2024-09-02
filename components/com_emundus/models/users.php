@@ -2231,85 +2231,11 @@ class EmundusModelUsers extends ListModel
 				$result = $this->db->execute();
 
 				// Associate Joomla group
-				$query->clear()
-					->select($this->db->quoteName('acl_aro_groups'))
-					->from($this->db->quoteName('#__emundus_setup_profiles'))
-					->where($this->db->quoteName('id') . ' = ' . $pid);
-				$this->db->setQuery($query);
-				$joomla_group = $this->db->loadResult();
-
-				$query = $this->db->getQuery(true)
-					->select($this->db->quoteName('id'))
-					->from($this->db->quoteName('#__usergroups'))
-					->where($this->db->quoteName('id') . ' = :groupId')
-					->bind(':groupId', $joomla_group, ParameterType::INTEGER);
-				$this->db->setQuery($query);
-				$exist = $this->db->loadResult();
-
-				if ($exist)
-				{
-					$query = $this->db->getQuery(true)
-						->select($this->db->quoteName('user_id'))
-						->from($this->db->quoteName('#__user_usergroup_map'))
-						->where($this->db->quoteName('group_id') . ' = :groupId')
-						->where($this->db->quoteName('user_id') . ' = :uid')
-						->bind(':groupId', $joomla_group, ParameterType::INTEGER)
-						->bind(':uid', $uid, ParameterType::INTEGER);
-					$this->db->setQuery($query);
-					$mapping_exist = $this->db->loadResult();
-
-					if (empty($mapping_exist))
-					{
-						$inserted = [
-							'user_id'  => $uid,
-							'group_id' => $joomla_group
-						];
-						$inserted = (object) $inserted;
-						$result   = $this->db->insertObject('#__user_usergroup_map', $inserted);
-					}
-				}
+				$this->addProfileAclToUser($uid, $pid);
 				//
 
 				// Associate Emundus default groups
-				$query->clear()
-					->select($this->db->quoteName('emundus_groups'))
-					->from($this->db->quoteName('#__emundus_setup_profiles_repeat_emundus_groups'))
-					->where($this->db->quoteName('parent_id') . ' = ' . $pid);
-				$this->db->setQuery($query);
-				$emundus_groups = $this->db->loadColumn();
-
-				foreach ($emundus_groups as $emundusGroup) {
-					$query->clear()
-						->select($this->db->quoteName('id'))
-						->from($this->db->quoteName('#__emundus_setup_groups'))
-						->where($this->db->quoteName('id') . ' = :groupId')
-						->bind(':groupId', $emundusGroup, ParameterType::INTEGER);
-					$this->db->setQuery($query);
-					$exist = $this->db->loadResult();
-
-					if ($exist)
-					{
-						$query->clear()
-							->select($this->db->quoteName('user_id'))
-							->from($this->db->quoteName('#__emundus_groups'))
-							->where($this->db->quoteName('group_id') . ' = :groupId')
-							->where($this->db->quoteName('user_id') . ' = :uid')
-							->bind(':groupId', $emundusGroup, ParameterType::INTEGER)
-							->bind(':uid', $uid, ParameterType::INTEGER);
-						$this->db->setQuery($query);
-						$mapping_exist = $this->db->loadResult();
-
-						if (empty($mapping_exist))
-						{
-							$inserted = [
-								'user_id'  => $uid,
-								'group_id' => $emundusGroup
-							];
-							$inserted = (object) $inserted;
-							$result   = $this->db->insertObject('#__emundus_groups', $inserted);
-						}
-					}
-				}
+				$this->addProfileGroupsToUser($uid, $pid);
 				//
 
 			}
@@ -2455,6 +2381,161 @@ class EmundusModelUsers extends ListModel
 		}
 
 		return $removed;
+	}
+
+	public function checkProfilesUser($uid)
+	{
+		$checked = true;
+		$query = $this->db->getQuery(true);
+
+		try
+		{
+			$query->select('eu.profile')
+				->from($this->db->quoteName('#__emundus_users', 'eu'))
+				->where($this->db->quoteName('eu.user_id') . ' = ' . $uid);
+			$this->db->setQuery($query);
+			$default_profile = $this->db->loadResult();
+
+			$query->clear()
+				->select('eup.profile_id')
+				->from($this->db->quoteName('#__emundus_users_profiles', 'eup'))
+				->where($this->db->quoteName('eup.user_id') . ' = ' . $uid);
+			$this->db->setQuery($query);
+			$profiles = $this->db->loadColumn();
+
+			$profiles = array_merge([$default_profile], $profiles);
+			$profiles = array_unique($profiles);
+
+			foreach ($profiles as $profile) {
+				// Check Joomla ACL
+				$acl_added = $this->addProfileAclToUser($uid, $profile);
+
+				// Check emundus groups
+				$groups_added = $this->addProfileGroupsToUser($uid, $profile);
+
+				$checked = $acl_added && $groups_added;
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error on checking ACL of user: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			$checked = false;
+		}
+
+		return $checked;
+	}
+
+	public function addProfileAclToUser($uid, $pid)
+	{
+		$added = true;
+		$query = $this->db->getQuery(true);
+
+		try
+		{
+			// Add ACL to user
+			$query->clear()
+				->select($this->db->quoteName('acl_aro_groups'))
+				->from($this->db->quoteName('#__emundus_setup_profiles'))
+				->where($this->db->quoteName('id') . ' = ' . $pid);
+			$this->db->setQuery($query);
+			$joomla_group = $this->db->loadResult();
+
+			$query = $this->db->getQuery(true)
+				->select($this->db->quoteName('id'))
+				->from($this->db->quoteName('#__usergroups'))
+				->where($this->db->quoteName('id') . ' = :groupId')
+				->bind(':groupId', $joomla_group, ParameterType::INTEGER);
+			$this->db->setQuery($query);
+			$exist = $this->db->loadResult();
+
+			if ($exist)
+			{
+				$query = $this->db->getQuery(true)
+					->select($this->db->quoteName('user_id'))
+					->from($this->db->quoteName('#__user_usergroup_map'))
+					->where($this->db->quoteName('group_id') . ' = :groupId')
+					->where($this->db->quoteName('user_id') . ' = :uid')
+					->bind(':groupId', $joomla_group, ParameterType::INTEGER)
+					->bind(':uid', $uid, ParameterType::INTEGER);
+				$this->db->setQuery($query);
+				$mapping_exist = $this->db->loadResult();
+
+				if (empty($mapping_exist))
+				{
+					$inserted = [
+						'user_id'  => $uid,
+						'group_id' => $joomla_group
+					];
+					$inserted = (object) $inserted;
+					$added   = $this->db->insertObject('#__user_usergroup_map', $inserted);
+				}
+			}
+			//
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error on adding profile to user: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			$added = false;
+		}
+
+
+		return $added;
+	}
+
+	public function addProfileGroupsToUser($uid, $pid)
+	{
+		$added = true;
+		$query = $this->db->getQuery(true);
+
+		try
+		{
+			$query->clear()
+				->select($this->db->quoteName('emundus_groups'))
+				->from($this->db->quoteName('#__emundus_setup_profiles_repeat_emundus_groups'))
+				->where($this->db->quoteName('parent_id') . ' = ' . $pid);
+			$this->db->setQuery($query);
+			$emundus_groups = $this->db->loadColumn();
+
+			foreach ($emundus_groups as $emundusGroup) {
+				$query->clear()
+					->select($this->db->quoteName('id'))
+					->from($this->db->quoteName('#__emundus_setup_groups'))
+					->where($this->db->quoteName('id') . ' = :groupId')
+					->bind(':groupId', $emundusGroup, ParameterType::INTEGER);
+				$this->db->setQuery($query);
+				$exist = $this->db->loadResult();
+
+				if ($exist)
+				{
+					$query->clear()
+						->select($this->db->quoteName('user_id'))
+						->from($this->db->quoteName('#__emundus_groups'))
+						->where($this->db->quoteName('group_id') . ' = :groupId')
+						->where($this->db->quoteName('user_id') . ' = :uid')
+						->bind(':groupId', $emundusGroup, ParameterType::INTEGER)
+						->bind(':uid', $uid, ParameterType::INTEGER);
+					$this->db->setQuery($query);
+					$mapping_exist = $this->db->loadResult();
+
+					if (empty($mapping_exist))
+					{
+						$inserted = [
+							'user_id'  => $uid,
+							'group_id' => $emundusGroup
+						];
+						$inserted = (object) $inserted;
+						$added   = $this->db->insertObject('#__emundus_groups', $inserted);
+					}
+				}
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error on adding profile to user: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			$added = false;
+		}
+
+		return $added;
 	}
 
 

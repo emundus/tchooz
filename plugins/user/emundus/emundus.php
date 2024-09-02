@@ -689,6 +689,8 @@ class plgUserEmundus extends CMSPlugin
 				}
 			}
 
+			$m_users->checkProfilesUser($user->id);
+
 			if(!empty($openid_profiles) || !empty($mapping_emundus_profiles)) {
 				$m_profile->initEmundusSession();
 				$user = $session->get('emundusUser');
