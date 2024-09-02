@@ -208,10 +208,6 @@ $user = $this->userid;
         $('#em-switch-profiles').remove();
     }
 
-    $(function () {
-        $('[data-toggle="tooltip"]').tooltip()
-    });
-
     document.getElementById('download-all-phase-pdf').addEventListener('click', function (e) {
         if (typeof export_pdf === 'function') {
             export_pdf(JSON.stringify({0: <?= $this->fnum ?>}), null, 'forms');

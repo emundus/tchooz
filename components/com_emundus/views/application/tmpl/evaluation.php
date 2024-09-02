@@ -41,7 +41,6 @@ Factory::getApplication()->getSession()->set('application_layout', 'evaluation')
                         <span class="material-symbols-outlined" data-fnum="<?= $this->fnum ?>">file_download</span>
                     </button>
 				<?php endif; ?>
-                <div class="em-flex-row">
 					<?php if (!empty($this->url_form)) : ?>
                         <a href="<?= $this->url_form; ?>" target="_blank" class="em-flex-row"
                            title="<?= Text::_('COM_EMUNDUS_EVALUATIONS_OPEN_EVALUATION_FORM_IN_NEW_TAB_DESC'); ?>"><span
@@ -49,15 +48,12 @@ Factory::getApplication()->getSession()->set('application_layout', 'evaluation')
 					<?php endif; ?>
 					<?php
 					if (EmundusHelperAccess::asAccessAction(5, 'd', $this->_user->id, $this->fnum)) :?>
-                        <div>
                             <button class="btn btn-danger btn-xs btn-attach"
                                     title="<?= Text::_('COM_EMUNDUS_EVALUATIONS_DELETE_SELECTED_EVALUATIONS'); ?>"
                                     id="em_delete_evals" name="em_delete_evals"
                                     link="index.php?option=com_emundus&controller=evaluation&task=delevaluation&applicant=<?= $this->student->id; ?>&fnum=<?= $this->fnum; ?>">
                                 <span class="material-symbols-outlined">delete_outline</span></button>
-                        </div>
 					<?php endif; ?>
-                </div>
             </h3>
             <div class="btn-group pull-right">
                 <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-symbols-outlined">arrow_back</span>
@@ -310,9 +306,4 @@ Factory::getApplication()->getSession()->set('application_layout', 'evaluation')
             console.error('Function export_pdf does not exist');
         }
     });
-</script>
-<script>
-    $(function () {
-        $('[data-toggle="tooltip"]').tooltip()
-    })
 </script>

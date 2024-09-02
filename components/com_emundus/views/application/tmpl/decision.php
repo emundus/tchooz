@@ -26,14 +26,17 @@ Factory::getApplication()->getSession()->set('application_layout', 'comment');
                 <span class="glyphicon glyphicon-check"></span>
 				<?php echo Text::_('COM_EMUNDUS_DECISION'); ?>
 				<?php if (EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $this->fnum)): ?>
-                    <a class="  clean" target="_blank"
-                       href="<?php echo Uri::base(); ?>index.php?option=com_emundus&controller=evaluation&task=pdf_decision&user=<?php echo $this->student->id; ?>&fnum=<?php echo $this->fnum; ?>">
-                        <button class="btn btn-default"
+                    <!--<a class="  clean" target="_blank"
+                       href="<?php echo Uri::base(); ?>index.php?option=com_emundus&controller=evaluation&task=pdf_decision&user=<?php echo $this->student->id; ?>&fnum=<?php echo $this->fnum; ?>">-->
+                        <button id="download-decision-pdf"
+                                class="btn btn-default"
                                 data-title="<?php echo Text::_('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF'); ?>"
                                 data-toggle="tooltip" data-placement="bottom"
-                                title="<?= Text::_('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF'); ?>"><span
-                                    class="material-symbols-outlined">file_download</span></button>
-                    </a>
+                                title="<?= Text::_('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF'); ?>"
+                        >
+                            <span class="material-symbols-outlined">file_download</span>
+                        </button>
+                    <!--</a>-->
 				<?php endif; ?>
                 <div class="em-flex-row">
 					<?php if (!empty($this->url_form)): ?>
@@ -125,7 +128,11 @@ Factory::getApplication()->getSession()->set('application_layout', 'comment');
 
 </script>
 <script>
-    $(function () {
-        $('[data-toggle="tooltip"]').tooltip()
-    })
+    document.getElementById('download-decision-pdf').addEventListener('click', function (e) {
+        if (typeof export_pdf === 'function') {
+            export_pdf(JSON.stringify({0: <?= $this->fnum ?>}), null, 'decision');
+        } else {
+            console.error('Function export_pdf does not exist');
+        }
+    });
 </script>

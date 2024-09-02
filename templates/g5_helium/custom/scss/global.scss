@@ -3079,26 +3079,103 @@ label[for='clear-search'] img:hover:focus {
 {
   padding: 6px !important;
 
-  #em-prev-file.btn.btn-info.btn-xxl,
-  #em-next-file.btn.btn-info.btn-xxl {
-    background-color: transparent;
-    color: var(--neutral-0);
-    border-color: transparent;
-    display: flex !important;
-    align-items: center !important;
-
+  h3.panel-title {
     span {
-      color: var(--neutral-0);
-      font-weight: bold;
+
+      &:hover {
+        color: var(--neutral-0);
+        cursor: default;
+      }
     }
 
-    &:hover,
-    &:active,
-    &:focus {
-      background: transparent;
+    #download-all-phase-pdf,
+    #download-evaluation-pdf,
+    #download-decision-pdf,
+    a.em-flex-row {
+      margin: 0 0 0 6px !important;
+      height: 40px;
+      width: 40px;
+      border-radius: var(--em-applicant-br) !important;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 12px;
+      background: #ffffff30 !important;
+
+      &:hover {
+        background: #ffffff50 !important;
+        color: var(--neutral-0) !important;
+
+        span {
+          color: var(--neutral-0);
+        }
+      }
 
       span {
-        color: var(--neutral-500);
+        font-size: 24px;
+        margin: 0;
+        cursor: pointer;
+      }
+    }
+
+    #em_delete_evals[name=em_delete_evals] {
+      margin: 0 0 0 6px !important;
+      height: 40px;
+      width: 40px;
+      border-radius: var(--em-applicant-br) !important;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 12px;
+      background: var(--red-500) !important;
+
+      &:hover {
+        background: var(--red-400) !important;
+        color: var(--neutral-0) !important;
+      }
+
+      span {
+        font-size: 24px;
+        margin: 0;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .btn-group.pull-right {
+    gap: 8px;
+
+    #em-prev-file.btn.btn-info.btn-xxl,
+    #em-next-file.btn.btn-info.btn-xxl {
+      color: var(--neutral-0);
+      border-color: transparent;
+      display: flex !important;
+      align-items: center !important;
+      height: 40px;
+      width: 40px;
+      justify-content: center;
+      padding: 12px;
+      background: #ffffff30 !important;
+
+      span {
+        color: var(--neutral-0);
+        font-weight: bold;
+      }
+
+      &:hover,
+      &:active,
+      &:focus {
+        background: #ffffff50 !important;
+        transition: .1s;
+
+        span {
+          color: var(--neutral-500);
+        }
+      }
+
+      div.btn-group.pull-right {
+        background: magenta;
+        gap: 4px;
       }
     }
   }
@@ -3815,13 +3892,13 @@ fieldset.em_filters_adv_filter .em_save_filter input#save-filter,
 
 /* SUPPRIMER EVAL */
 .g-back-office-emundus-tableau .panel-heading.em-container-evaluation-heading #em_delete_evals.btn.btn-danger.btn-xs.btn-attach {
-  background: transparent !important;
+  background: transparent;
   color: var(--neutral-0) !important;
   border: none;
-  margin: unset !important;
+  margin: unset;
   display: flex !important;
   align-items: center !important;
-  padding: unset !important;
+  padding: unset;
 
   span {
     color: var(--neutral-0) !important;
@@ -3829,15 +3906,15 @@ fieldset.em_filters_adv_filter .em_save_filter input#save-filter,
     &:hover,
     &:active,
     &:focus {
-      color: var(--neutral-500) !important;
+      color: var(--neutral-500);
     }
   }
 
   &:hover,
   &:active,
   &:focus {
-    background: transparent !important;
-    color: var(--neutral-500) !important;
+    background: transparent;
+    color: var(--neutral-500);
   }
 }
 
@@ -4067,17 +4144,15 @@ div#em-appli-block {
   }
 
   #add-tags {
-    background: var(--em-coordinator-interface);
-    border: 1.5px solid var(--neutral-100);
-    color: var(--neutral-100);
+    background: var(--neutral-0) !important;
+    border: 1px solid var(--neutral-0) !important;
+    color: var(--em-profile-color);
     padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal) !important;
-    border-radius: var(--em-coordinator-br) !important;
+    border-radius: var(--em-applicant-br) !important;
 
     &:hover, &:active, &:focus {
-      background: var(--neutral-100) !important;
-      border: 1px solid var(--em-coordinator-interface) !important;
-      border-radius: 5px;
-      color: var(--em-coordinator-interface);
+      background: var(--em-profile-color) !important;
+      color: var(--neutral-0);
     }
   }
 
