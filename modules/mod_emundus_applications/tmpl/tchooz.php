@@ -471,7 +471,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 	                                                            <?php endif; ?>
                                                             </div>
                                                             <div class="mod_emundus_applications__container">
-                                                                <span class="material-symbols-outlined em-text-neutral-600 em-font-weight-600"
+                                                                <span class="material-symbols-outlined em-text-neutral-600"
                                                                       id="actions_button_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>"
                                                                 >more_vert</span>
                                                             </div>
@@ -854,7 +854,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                                                 </td>
                                                 <td style="width: 5%;">
                                                     <div class="mod_emundus_applications__container">
-                                                            <span class="material-symbols-outlined em-text-neutral-600 em-font-weight-600"
+                                                            <span class="material-symbols-outlined em-text-neutral-600"
                                                                   id="actions_button_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>"
                                                             >more_vert</span>
 
