@@ -246,7 +246,7 @@ function search() {
 }
 
 $(document).ready(function () {
-	reloadData();
+	//reloadData();
 	refreshFilter();
 	var lastVal = new Object();
 	$(document).on('click', function () {

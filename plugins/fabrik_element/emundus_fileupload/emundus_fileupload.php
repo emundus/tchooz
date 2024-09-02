@@ -631,12 +631,10 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 
 		}
 
-		if (version_compare(phpversion(), '5.2.3', '<')) {
-			$bits['value'] = htmlspecialchars($value, ENT_COMPAT, 'UTF-8');
+		if(is_array($value)) {
+			$value = $value['filename'];
 		}
-		else {
-			$bits['value'] = htmlspecialchars($value, ENT_COMPAT, 'UTF-8', false);
-		}
+		$bits['value'] = htmlspecialchars($value, ENT_COMPAT, 'UTF-8', false);
 
 		$bits['class']             .= ' ' . $params->get('text_format');
 		$bits['attachmentId']      = $params->get('attachmentId');

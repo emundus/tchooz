@@ -17,6 +17,8 @@ use Symfony\Component\Yaml\Yaml;
 
 /** @var \Joomla\Component\Users\Site\View\Login\HtmlView $this */
 
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
+
 $cookieLogin = $this->user->get('cookieLogin');
 
 $app      = Factory::getApplication();
@@ -81,5 +83,13 @@ if (!empty($cookieLogin) || $this->user->get('guest')) {
 	echo $this->loadTemplate('login');
 }
 else {
-	echo $this->loadTemplate('logout');
+	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+
+	$app = Factory::getApplication();
+	if(!EmundusHelperAccess::asAdministratorAccessLevel($this->user->id))
+	{
+		$app->redirect(EmundusHelperMenu::getHomepageLink());
+	} else {
+		$app->redirect(EmundusHelperMenu::getAdminLink());
+	}
 }

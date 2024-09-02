@@ -634,21 +634,14 @@ class plgUserEmundus extends CMSPlugin
 			}
 			// END DEPRECATED
 
+			// Check if the user is in the emundus_users table
+			$user_repaired = $m_users->repairEmundusUser($this->app->getIdentity()->id);
+			if (!$user_repaired) {
+				return false;
+			}
+
 			$m_profile->initEmundusSession();
 			$user = $session->get('emundusUser');
-
-			// Check if the user is in the emundus_users table
-			if (empty($user) || empty($user->id)) {
-				$user_repaired = $m_users->repairEmundusUser($this->app->getIdentity()->id);
-				if (!$user_repaired) {
-					return false;
-				}
-
-				$m_profile->initEmundusSession();
-				$user = $session->get('emundusUser');
-
-				$user->just_logged = true;
-			}
 
 			$user_profiles_id = array_map(function($profile) {
 				return $profile->id;
@@ -709,6 +702,8 @@ class plgUserEmundus extends CMSPlugin
 			if ($user->id) {
 				EmundusModelLogs::log($user->id, $user->id, null, -2, '', 'COM_EMUNDUS_LOGS_USER_LOGIN');
 			}
+
+			$user->just_logged = true;
 
 			if (empty($user->lastvisitDate)) {
 				$user->first_logged = true;

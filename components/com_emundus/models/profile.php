@@ -102,15 +102,15 @@ class EmundusModelProfile extends ListModel
 
 	function getUserProfiles($uid)
 	{
-
-		$query = 'SELECT DISTINCT esp.id , esp.label, esp.published, esp.status
-		FROM #__emundus_setup_profiles esp
-		LEFT JOIN #__emundus_users_profiles eup on eup.profile_id = esp.id
-		WHERE eup.user_id = ' . $uid;
+		$query = $this->_db->getQuery(true);
+		$query->select('esp.id, esp.label, esp.published, esp.status')
+			->from($this->_db->quoteName('#__emundus_setup_profiles', 'esp'))
+			->leftJoin($this->_db->quoteName('#__emundus_users_profiles', 'eup') . ' ON ' . $this->_db->quoteName('eup.profile_id') . ' = ' . $this->_db->quoteName('esp.id'))
+			->where($this->_db->quoteName('eup.user_id') . ' = ' . $uid)
+			->group($this->_db->quoteName('esp.id'));
 		try
 		{
 			$this->_db->setQuery($query);
-
 			return $this->_db->loadObjectList();
 		}
 		catch (Exception $e)

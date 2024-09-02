@@ -23,7 +23,7 @@ use Joomla\CMS\Factory;
 class EmundusException extends \RuntimeException
 {
 	// Redefine the exception so message isn't optional
-	public function __construct($message, $code = 0, \Throwable $previous = null, $redirect = true, $display_notice = false) {
+	public function __construct($message, $code = 0, \Throwable $previous = null, $redirect = true, $display_notice = false, $format = 'html') {
 		// some code
 
 		// make sure everything is assigned properly
@@ -39,9 +39,17 @@ class EmundusException extends \RuntimeException
 			{
 				$app->enqueueMessage($message, 'error');
 			}
-			//TODO: Get alias via link
+
 			//TODO: Allow custom redirect link, keep /error by default
-			$app->redirect('/error', $code);
+			$link = 'index.php?option=com_emundus&view=error';
+			$error_menu = $app->getMenu()->getItems('link', $link, true);
+			$error_alias = $error_menu ? $error_menu->alias : 'error';
+			if($format === 'raw') {
+				$error_alias .= '?format=raw';
+				$error_alias .= '&code='.$code;
+			}
+
+			$app->redirect('/'.$error_alias, $code);
 		}
 	}
 }

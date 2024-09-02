@@ -22,6 +22,7 @@ Usage: codyhouse.co/license
     grid-gap: var(--color-swatches-gap);
     grid-template-columns: repeat(auto-fit, var(--color-swatch-size));
     list-style-type: none;
+    padding-left: 0;
 }
 
 .color-swatches__swatch {

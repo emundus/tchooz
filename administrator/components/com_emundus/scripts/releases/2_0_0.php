@@ -1581,6 +1581,33 @@ if(value == 1) {
 			EmundusHelperUpdate::installExtension('mod_emundus_oauth2','mod_emundus_oauth2',null,'module',1,'','[]',true);
 			EmundusHelperUpdate::createModule('External login','login','mod_emundus_oauth2','{"layout":"_:default","moduleclass_sfx":"","module_tag":"div","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0"}',1,1,1,0,1);
 
+			EmundusHelperUpdate::insertTranslationsTag('EMUNDUS_GROUPS','Groupe(s) de droits par défaut');
+			EmundusHelperUpdate::insertTranslationsTag('EMUNDUS_GROUPS','Default rights group(s)', 'override', 0, null, null, 'en-GB');
+
+			EmundusHelperUpdate::addColumn('jos_emundus_setup_profiles','emundus_groups','INT');
+
+			$columns       = [
+				[
+					'name'   => 'parent_id',
+					'type'   => 'int',
+					'length' => 11,
+					'null'   => 0,
+				],
+				[
+					'name'   => 'emundus_groups',
+					'type'   => 'int',
+					'length' => 11,
+					'null'   => 0,
+				],
+				[
+					'name'   => 'params',
+					'type'   => 'varchar',
+					'length' => 255,
+					'null'   => 1,
+				]
+			];
+			EmundusHelperUpdate::createTable('jos_emundus_setup_profiles_repeat_emundus_groups', $columns);
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

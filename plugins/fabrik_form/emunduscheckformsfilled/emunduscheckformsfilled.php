@@ -91,7 +91,7 @@ class PlgFabrik_FormEmunduscheckformsfilled extends plgFabrik_Form {
             $fnum_tag = '{'.$current_table_name.'___fnum}';
             // get fnum using multiple options otherwise it could be empty
             if (empty($fnum_tag) || strpos($fnum_tag, '{') === 0) {
-                $fnum = $this->app->input->get('rowid');
+                $fnum = $this->app->input->get('fnum');
             } else {
                 $fnum = $fnum_tag;
             }

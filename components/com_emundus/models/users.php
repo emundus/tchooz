@@ -30,6 +30,7 @@ use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Component\Users\Site\Model\ResetModel;
 use Joomla\CMS\Log\Log;
@@ -135,22 +136,22 @@ class EmundusModelUsers extends ListModel
 
 	public function _buildQuery()
 	{
-		$session = JFactory::getSession();
+		$session = $this->app->getSession();
 		$params  = $session->get('filt_params');
 		
 
-		$final_grade  = @$params['finalgrade'];
-		$search       = @$params['s'];
-		$programme    = @$params['programme'];
-		$campaigns    = @$params['campaign'];
-		$schoolyears  = @$params['schoolyears'];
-		$groupEval    = @$params['evaluator_group'];
-		$spam_suspect = @$params['spam_suspect'];
-		$profile      = @$params['profile'];
-		$oprofiles    = @$params['o_profiles'];
-		$newsletter   = @$params['newsletter'];
-		$group        = @$params['group'];
-		$institution  = @$params['institution'];
+		$final_grade  = $params['finalgrade'];
+		$search       = $params['s'];
+		$programme    = $params['programme'];
+		$campaigns    = $params['campaign'];
+		$schoolyears  = $params['schoolyears'];
+		$groupEval    = $params['evaluator_group'];
+		$spam_suspect = $params['spam_suspect'];
+		$profile      = $params['profile'];
+		$oprofiles    = $params['o_profiles'];
+		$newsletter   = $params['newsletter'];
+		$group        = $params['group'];
+		$institution  = $params['institution'];
 
 		$uid       = $this->app->input->get('rowid', null, 'GET', 'none', 0);
 		$edit      = $this->app->input->get('edit', 0, 'GET', 'none', 0);
@@ -192,15 +193,12 @@ class EmundusModelUsers extends ListModel
 			}
 		}
 		elseif (!empty($campaigns) && $campaigns[0] != '%' && !empty($schoolyears) && $schoolyears[0] != '%') {
-			//$applicant_schoolyears = $this->getUserListWithSchoolyear($schoolyears);
-			$i         = 0;
 			$list_user = '';
 			foreach ($schoolyears as $schoolyear) {
 				foreach ($campaigns as $campaign) {
 					$compare = $this->compareCampaignANDSchoolyear($campaign, $schoolyear);
 					if ($compare != 0) {
 						$applicant_campaigns = $this->getUserListWithCampaign($campaign);
-						//$nb_element = count($applicant_campaigns);
 						foreach ($applicant_campaigns as $applicant) {
 							$list_user .= $applicant . ", ";
 						}
@@ -234,7 +232,7 @@ class EmundusModelUsers extends ListModel
 			}
 		}
 
-		$eMConfig         = JComponentHelper::getParams('com_emundus');
+		$eMConfig         = ComponentHelper::getParams('com_emundus');
 		$showUniversities = $eMConfig->get('showUniversities');
 		$showJoomlagroups = $eMConfig->get('showJoomlagroups', 0);
 		$showNewsletter   = $eMConfig->get('showNewsletter');
@@ -268,22 +266,38 @@ class EmundusModelUsers extends ListModel
                     LEFT JOIN jos_usergroups AS usg ON ( um.group_id = usg.id)';
 		}
 
-		if (isset($programme) && !empty($programme) && $programme[0] != '%') {
+		if (!empty($programme) && $programme[0] != '%') {
 			$query .= ' LEFT JOIN #__emundus_campaign_candidature AS ecc ON u.id = ecc.applicant_id
                         LEFT JOIN #__emundus_setup_campaigns as esc ON ecc.campaign_id=esc.id ';
 		}
 
-		if (isset($final_grade) && !empty($final_grade)) {
+		if (!empty($final_grade)) {
 			$query .= 'LEFT JOIN #__emundus_final_grade AS efg ON u.id = efg.student_id ';
 		}
 
-		$exclude_users = [1,62];
-		if (!empty($automated_task_user)) {
-			$exclude_users[] = $automated_task_user;
-		}
-		$query .= ' where 1=1 AND u.id NOT IN ('.implode(',',$exclude_users).') ';
+		// Exclude sysadmin users
+		$automated_task_user = $eMConfig->get('automated_task_user',0);
+		$display_sysadmin_users = $eMConfig->get('display_sysadmin_users',0);
 
-		if (isset($programme) && !empty($programme) && $programme[0] != '%') {
+		if(!$display_sysadmin_users)
+		{
+			$exclude_users_query = $this->db->getQuery(true);
+			$exclude_users_query->select('eu.user_id')
+				->from($this->db->quoteName('#__emundus_users', 'eu'))
+				->leftJoin($this->db->quoteName('#__emundus_users_profiles', 'eup') . ' ON ' . $this->db->quoteName('eup.user_id') . ' = ' . $this->db->quoteName('eu.user_id'))
+				->where('eup.profile_id = 1')
+				->orWhere('eu.profile = 1');
+			$this->db->setQuery($exclude_users_query);
+			$exclude_users = $this->db->loadColumn();
+			if (!empty($automated_task_user))
+			{
+				$exclude_users[] = $automated_task_user;
+			}
+			$query .= ' where 1=1 AND u.id NOT IN (' . implode(',', $exclude_users) . ') ';
+		}
+		//
+
+		if (!empty($programme) && $programme[0] != '%') {
 			$query .= ' AND ( esc.training IN ("' . implode('","', $programme) . '")
                             OR u.id IN (
                                 select _eg.user_id
@@ -294,10 +308,10 @@ class EmundusModelUsers extends ListModel
                             )';
 		}
 
-		if (isset($group) && !empty($group) && $group[0] != '%')
+		if (!empty($group) && $group[0] != '%')
 			$query .= ' AND u.id IN( SELECT jeg.user_id FROM #__emundus_groups as jeg WHERE jeg.group_id IN (' . implode(',', $group) . ')) ';
 
-		if (isset($institution) && !empty($institution) && $institution[0] != '%')
+		if (!empty($institution) && $institution[0] != '%')
 			$query .= ' AND u.id IN( SELECT jeu.user_id FROM #__emundus_users as jeu WHERE jeu.university_id IN (' . implode(',', $institution) . ')) ';
 
 		if ($edit == 1) {
@@ -305,20 +319,15 @@ class EmundusModelUsers extends ListModel
 		}
 		else {
 			$and = true;
-			/*var_dump($this->filts_details['profile']);
-            if(isset($this->filts_details['profile']) && !empty($this->filts_details['profile'])){
-                $query.= ' AND e.profile IN ('.implode(',', $this->filts_details['profile']).') ';
-                $and = true;
-            }*/
-			if (isset($profile) && !empty($profile) && is_numeric($profile)) {
+			if (!empty($profile) && is_numeric($profile)) {
 				$query .= ' AND e.profile = ' . $profile;
 				$and   = true;
 			}
-			if (isset($oprofiles) && !empty($oprofiles)) {
+			if (!empty($oprofiles)) {
 				$query .= ' AND eup.profile_id IN ("' . implode('","', $oprofiles) . '")';
 				$and   = true;
 			}
-			if (isset($final_grade) && !empty($final_grade)) {
+			if (!empty($final_grade)) {
 				if ($and) $query .= ' AND ';
 				else {
 					$and   = true;
@@ -328,7 +337,7 @@ class EmundusModelUsers extends ListModel
 				$query .= 'efg.Final_grade = "' . $final_grade . '"';
 				$and   = true;
 			}
-			if (isset($search) && !empty($search)) {
+			if (!empty($search)) {
 
 				if ($and) {
 					$query .= ' AND ';
@@ -371,12 +380,7 @@ class EmundusModelUsers extends ListModel
 				$q     = substr($q, 3);
 				$query .= '(' . $q . ')';
 			}
-			/*if(isset($schoolyears) &&  !empty($schoolyears)) {
-                if($and) $query .= ' AND ';
-                else { $and = true; $query .='WHERE '; }
-                $query.= 'e.schoolyear="'.$schoolyears.'"';
-            }*/
-			if (isset($spam_suspect) && !empty($spam_suspect) && $spam_suspect == 1) {
+			if (!empty($spam_suspect) && $spam_suspect == 1) {
 				if ($and) {
 					$query .= ' AND ';
 				}
@@ -403,7 +407,7 @@ class EmundusModelUsers extends ListModel
 					$query .= 'u.id IN ( ' . $list_user . ' )';
 			}
 
-			if (isset($newsletter) && !empty($newsletter)) {
+			if (!empty($newsletter)) {
 				if ($and) {
 					$query .= ' AND ';
 				}
@@ -422,7 +426,7 @@ class EmundusModelUsers extends ListModel
 
 	public function getUsers($limit_start = null, $limit = null)
 	{
-		$session = JFactory::getSession();
+		$session = $this->app->getSession();
 
 		if ($limit_start === null) {
 			$limit_start = $session->get('limitstart');
@@ -2195,12 +2199,13 @@ class EmundusModelUsers extends ListModel
 	 *
 	 * @return bool
 	 *
-	 * @since version
+	 * @throws Exception
+	 * @since version 1.0.0
 	 */
 	public function addProfileToUser($uid, $pid)
 	{
 		$result = true;
-		$config = Factory::getConfig();
+		$config = $this->app->getConfig();
 
 		$timezone = new DateTimeZone($config->get('offset'));
 		$now      = Factory::getDate()->setTimezone($timezone);
@@ -2263,6 +2268,50 @@ class EmundusModelUsers extends ListModel
 						$result   = $this->db->insertObject('#__user_usergroup_map', $inserted);
 					}
 				}
+				//
+
+				// Associate Emundus default groups
+				$query->clear()
+					->select($this->db->quoteName('emundus_groups'))
+					->from($this->db->quoteName('#__emundus_setup_profiles_repeat_emundus_groups'))
+					->where($this->db->quoteName('parent_id') . ' = ' . $pid);
+				$this->db->setQuery($query);
+				$emundus_groups = $this->db->loadColumn();
+
+				foreach ($emundus_groups as $emundusGroup) {
+					$query->clear()
+						->select($this->db->quoteName('id'))
+						->from($this->db->quoteName('#__emundus_setup_groups'))
+						->where($this->db->quoteName('id') . ' = :groupId')
+						->bind(':groupId', $emundusGroup, ParameterType::INTEGER);
+					$this->db->setQuery($query);
+					$exist = $this->db->loadResult();
+
+					if ($exist)
+					{
+						$query->clear()
+							->select($this->db->quoteName('user_id'))
+							->from($this->db->quoteName('#__emundus_groups'))
+							->where($this->db->quoteName('group_id') . ' = :groupId')
+							->where($this->db->quoteName('user_id') . ' = :uid')
+							->bind(':groupId', $emundusGroup, ParameterType::INTEGER)
+							->bind(':uid', $uid, ParameterType::INTEGER);
+						$this->db->setQuery($query);
+						$mapping_exist = $this->db->loadResult();
+
+						if (empty($mapping_exist))
+						{
+							$inserted = [
+								'user_id'  => $uid,
+								'group_id' => $emundusGroup
+							];
+							$inserted = (object) $inserted;
+							$result   = $this->db->insertObject('#__emundus_groups', $inserted);
+						}
+					}
+				}
+				//
+
 			}
 		}
 		catch (Exception $e)
@@ -2370,7 +2419,34 @@ class EmundusModelUsers extends ListModel
 					$this->db->setQuery($query);
 					$this->db->execute();
 				}
+				//
 
+				// Remove eMundus groups if the profile is associated to a group and other profiles from user does not need this group
+				$query->clear()
+					->select($this->db->quoteName('emundus_groups'))
+					->from($this->db->quoteName('#__emundus_setup_profiles_repeat_emundus_groups'))
+					->where($this->db->quoteName('parent_id') . ' = ' . $pid);
+				$this->db->setQuery($query);
+				$emundus_groups_to_remove = $this->db->loadColumn();
+
+				$query->clear()
+					->select($this->db->quoteName('emundus_groups'))
+					->from($this->db->quoteName('#__emundus_setup_profiles_repeat_emundus_groups'))
+					->where($this->db->quoteName('parent_id') . ' IN (' . implode(',', $users_profiles) . ')');
+				$this->db->setQuery($query);
+				$emundus_groups = $this->db->loadColumn();
+
+				if(!in_array($emundus_groups_to_remove, $emundus_groups)) {
+					$query->clear()
+						->delete($this->db->quoteName('#__emundus_groups'))
+						->where($this->db->quoteName('user_id') . ' = :uid')
+						->where($this->db->quoteName('group_id') . ' = :group_id')
+						->bind(':uid', $uid, ParameterType::INTEGER)
+						->bind(':group_id', $emundus_groups_to_remove, ParameterType::INTEGER);
+					$this->db->setQuery($query);
+					$this->db->execute();
+				}
+				//
 			}
 		}
 		catch (Exception $e)
@@ -2385,11 +2461,11 @@ class EmundusModelUsers extends ListModel
 	public function editUser($user)
 	{
 		$eMConfig = ComponentHelper::getParams('com_emundus');
-		$u        = Factory::getUser($user['id']);
+		$u        = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user['id']);
 
 		if (isset($user['same_login_email']) && $user['same_login_email'] === 1) {
 			$user['username'] = $user['email'];
-			$properties_set   = $u->setProperties(['username' => $user['username']]);
+			$u->setProperties(['username' => $user['username']]);
 			unset($user['same_login_email']);
 		}
 		
@@ -2592,6 +2668,7 @@ class EmundusModelUsers extends ListModel
 				->where('user_id = ' . $user['id']);
 			$this->db->setQuery($query);
 			$profiles_id = $this->db->loadColumn();
+
 			foreach ($oprofiles as $profile) {
 				if (!in_array($profile, $profiles_id)) {
 					$this->addProfileToUser($user['id'], $profile);

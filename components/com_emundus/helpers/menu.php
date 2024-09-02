@@ -224,6 +224,23 @@ class EmundusHelperMenu
 		return $menu;
 	}
 
+	static function getAdminLink() {
+		$menu = 'administrator/index.php';
+
+		$htaccess = JPATH_BASE . '/.htaccess';
+		if (file_exists($htaccess)) {
+			$htaccess = file_get_contents($htaccess);
+			if (strpos($htaccess, 'RewriteCond %{HTTP_REFERER} !.*administrator/') !== false) {
+				preg_match('/RewriteCond %{QUERY_STRING} !\^([a-zA-Z0-9]+)\$/', $htaccess, $matches);
+				if(!empty($matches) && isset($matches[1])) {
+					$menu = 'administrator/index.php?'.$matches[1];
+				}
+			}
+		}
+
+		return $menu;
+	}
+
 	static function getSefAliasByLink($link) {
 		$alias = '';
 
