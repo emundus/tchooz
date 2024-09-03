@@ -3207,6 +3207,18 @@ class EmundusModelUsers extends ListModel
 			return $return;
 		}
 
+		if(!empty($user->params))
+		{
+			$user_params = json_decode($user->params);
+
+			if(!empty($user_params->OAuth2) && $user_params->OAuth2 == 'openid') {
+				$return->message = Text::_('COM_USERS_INVALID_EMAIL');
+				$return->status  = false;
+
+				return $return;
+			}
+		}
+
 		// Make sure the user isn't a Super Admin.
 		if ($user->authorise('core.admin')) {
 			$return->message = Text::_('COM_USERS_REMIND_SUPERADMIN_ERROR');
