@@ -1909,33 +1909,58 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 	}
 
 	/**
-	 * @param $alias  string The alias to search the element's value for
-	 * @param $fnum   int    The form number to search the element's value for
-	 * @param $raw    bool   True to get raw value, false to get formatted value
-	 *
-	 * @description Return the value of an element according to its alias in a form
+	 * @param         $alias  string The alias to search the element's value for
+	 * @param   null  $fnum   int    The form number to search the element's value for
+	 * @param   int   $user_id
 	 *
 	 * @return mixed|string|null
+	 * @description Return the value of an element according to its alias in a form
+	 *
 	 */
-	static function getValueByAlias($alias,$fnum,$raw = 0)
+	static function getValueByAlias($alias,$fnum = null,$user_id = 0)
 	{
-		$value = null;
-		if(!empty($alias) && !empty($fnum)){
+		$value = ['value' => '', 'raw' => ''];
 
+		if(!empty($alias) && (!empty($fnum) || !empty($user_id))){
 			$element = self::getElementByAlias($alias);
+
 			if(!empty($element))
 			{
 				$db = Factory::getContainer()->get('DatabaseDriver');
 				$query = $db->getQuery(true);
 
 				try {
-					$query->select($db->quoteName($element->name))
-						->from($db->quoteName($element->db_table_name))
-						->where("fnum = " . $db->quote($fnum));
-					$db->setQuery($query);
-					$raw_value = $db->loadResult();
-					if(!empty($raw_value)){
-						$value = $raw ? $raw_value : EmundusHelperFabrik::formatElementValue($element->name,$raw_value);
+					$columns = array_keys($db->getTableColumns($element->db_table_name));
+
+					if(in_array('fnum',$columns) || in_array('user',$columns) || in_array('user_id',$columns))
+					{
+						$query->select($db->quoteName($element->name))
+							->from($db->quoteName($element->db_table_name));
+
+						if (!empty($fnum) && in_array('fnum',$columns))
+						{
+							$query->where("fnum = " . $db->quote($fnum));
+						}
+
+						if (!empty($user_id) && (in_array('user',$columns) || in_array('user_id',$columns)))
+						{
+							if(in_array('user',$columns)){
+								$query->where("user = " . $db->quote($user_id));
+							}
+							elseif(in_array('user_id',$columns))
+							{
+								$query->where("user_id = " . $db->quote($user_id));
+							}
+						}
+
+						$db->setQuery($query);
+						$raw_value = $db->loadResult();
+
+						if (!empty($raw_value))
+						{
+							$value['raw'] = $raw_value;
+							$value['value'] = EmundusHelperFabrik::formatElementValue($element->name, $raw_value);
+						}
 					}
 				}
 				catch (Exception $e) {
@@ -1943,6 +1968,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 				}
 			}
 		}
+
 		return $value;
 	}
 }

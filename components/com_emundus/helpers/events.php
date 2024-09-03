@@ -719,7 +719,6 @@ class EmundusHelperEvents
 				$check_forms = in_array($formModel->getId(), $copy_include_forms);
 			}
 
-
 			if (
 				($copy_application_form == 1 && isset($user->fnum) && ($check_forms || !empty($fnum_linked)))
 				||
@@ -728,16 +727,18 @@ class EmundusHelperEvents
 			{
 
 				$table          = $listModel->getTable();
-				$table_elements = $formModel->getElementOptions(false, 'name', false, false, array(), '', true);
 
 				$elements = array();
-				foreach ($table_elements as $element)
+				$groups = $formModel->getGroupsHiarachy();
+				foreach ($groups as $group)
 				{
-					if ($element->value !== $table->db_table_name . '.parent_id')
-					{
-						$elements[] = $element->value;
-					}
+					$elements = array_merge($group->getPublishedElements(),$elements);
 				}
+
+				// Remove parent_id element
+				$elements = array_filter($elements, function($element) use ($table){
+					return $element->getElement()->name !== 'parent_id';
+				});
 
 				// Check if data stored in session
 				$session_datas = json_decode($session->data, true);
@@ -748,15 +749,14 @@ class EmundusHelperEvents
 
 					foreach ($elements as $element)
 					{
-						$elt_name = explode('.', $element)[1];
-						$fullName = str_replace('.', '___', $element);
+						$fullName = $element->getFullName();
 
 						if (in_array($fullName, $session_elements))
 						{
 							if (!empty($session_datas[$fullName]))
 							{
-								$formModel->data[$table->db_table_name . '___' . $elt_name]          = $session_datas[$fullName];
-								$formModel->data[$table->db_table_name . '___' . $elt_name . '_raw'] = $session_datas[$fullName];
+								$formModel->data[$fullName]          = $session_datas[$fullName];
+								$formModel->data[$fullName . '_raw'] = $session_datas[$fullName];
 							}
 						}
 					}
@@ -764,6 +764,21 @@ class EmundusHelperEvents
 
 				if (empty($formModel->getRowId()))
 				{
+					// Check if we fill an other alias element
+					foreach ($elements as $elt)
+					{
+						if (!empty($elt->getParams()) && !empty($elt->getParams()->get('alias')))
+						{
+							$alias_value = EmundusHelperFabrik::getValueByAlias($elt->getParams()->get('alias'), null, $user->id);
+
+							if (!empty($alias_value['raw']))
+							{
+								$formModel->data[$elt->getFullName()]          = $alias_value['value'];
+								$formModel->data[$elt->getFullName() . '_raw'] = $alias_value['raw'];
+							}
+						}
+					}
+
 					// check if data stored for current user
 					try
 					{
@@ -777,11 +792,17 @@ class EmundusHelperEvents
 
 						if ($already_cloned == 0)
 						{
+							$elements_select = array();
+							foreach ($elements as $element)
+							{
+								$elements_select[] = $db->quoteName($element->getElement()->name);
+							}
+
 							$data_mode = $params['plugin_options']->get('trigger_confirmpost_data_mode', 2);
 							if (!empty($fnum_linked))
 							{
 								$query->clear()
-									->select(implode(',', $db->quoteName($elements)))
+									->select(implode(',', $elements_select))
 									->from($db->quoteName($table->db_table_name))
 									->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum_linked));
 								$db->setQuery($query);
@@ -790,7 +811,7 @@ class EmundusHelperEvents
 							elseif ($data_mode == 0 || $data_mode == 2)
 							{
 								$query->clear()
-									->select(implode(',', $db->quoteName($elements)))
+									->select(implode(',', $elements_select))
 									->from($db->quoteName($table->db_table_name))
 									->where($db->quoteName('user') . ' = ' . $user->id);
 								$query->order('id DESC');
@@ -886,13 +907,13 @@ class EmundusHelperEvents
 								$profile_elements = array_keys(get_object_vars($profile_details));
 								foreach ($elements as $element)
 								{
-									$elt_name = explode('.', $element)[1];
+									$elt_name = $element->getElement()->name;
 									if (in_array($elt_name, $profile_elements))
 									{
-										if (!empty($profile_details->{$elt_name}) && empty($formModel->data[$table->db_table_name . '___' . $elt_name]) || empty($formModel->data[$table->db_table_name . '___' . $elt_name . '_raw']))
+										if (!empty($profile_details->{$elt_name}) && empty($formModel->data[$element->getFullName()]) || empty($formModel->data[$element->getFullName() . '_raw']))
 										{
-											$formModel->data[$table->db_table_name . '___' . $elt_name]          = $profile_details->{$elt_name};
-											$formModel->data[$table->db_table_name . '___' . $elt_name . '_raw'] = $profile_details->{$elt_name};
+											$formModel->data[$element->getFullName()]          = $profile_details->{$elt_name};
+											$formModel->data[$element->getFullName() . '_raw'] = $profile_details->{$elt_name};
 										}
 									}
 								}
