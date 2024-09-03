@@ -22,8 +22,8 @@ $d = $displayData;
 		    <?php if (!empty($d->title) && $d->accordion == 0) : ?>
                 <h3><?php echo $d->title ?></h3>
 		    <?php endif; ?>
-            <p class="<?php if (!empty($d->title)) : ?>tw-mt-2<?php else : ?>!tw-mt-0<?php endif; ?>">
-                <span class="tw-whitespace-pre-line" id="<?php echo $d->id; ?>-value" style="color: <?php echo $d->textColor; ?>"><?php echo $d->value;?></span>
+            <div class="<?php if (!empty($d->title)) : ?>tw-mt-2<?php else : ?>!tw-mt-0<?php endif; ?>">
+                <div class="tw-whitespace-pre-line" id="<?php echo $d->id; ?>-value" style="color: <?php echo $d->textColor; ?>"><?php echo $d->value;?></div>
             </p>
         </div>
     </div>

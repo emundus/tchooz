@@ -554,6 +554,11 @@ export default {
     .fabrikElementContent {
       margin-left: var(--em-spacing-3);
       line-height: 24px;
+      p:after {
+        content: "";
+        display: inline-block;
+        width: 0px;
+      }
     }
   }
 }

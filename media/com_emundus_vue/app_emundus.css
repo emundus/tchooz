@@ -1957,6 +1957,11 @@ a.tw-cursor-pointer:nth-child(2):hover .material-icons[data-v-678498f0] {
 .form-builder-page-section-element .fabrikElementpanel .fabrikElement .fabrikinput .fabrikElementContent {
   margin-left: var(--em-spacing-3);
   line-height: 24px;
+}
+.form-builder-page-section-element .fabrikElementpanel .fabrikElement .fabrikinput .fabrikElementContent p:after {
+  content: "";
+  display: inline-block;
+  width: 0px;
 }.form-builder-page-section .section-actions-wrapper {
   min-width: -moz-fit-content;
   min-width: fit-content;
