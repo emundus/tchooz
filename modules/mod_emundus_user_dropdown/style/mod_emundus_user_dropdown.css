@@ -50,6 +50,9 @@
     animation-fill-mode: forwards;
     animation-delay: 0.2s;
     transition: all 0.3s ease-in-out;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 #userDropdownMenu h5 {

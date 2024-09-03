@@ -238,7 +238,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 									?>
 
 									<?php if ($mod_em_campaign_list_show_programme == '1' && $mod_em_campaign_show_programme_logo == '1') : ?>
-                                        <div class="mod_emundus_campaign__programme_properties">
+                                        <div class="mod_emundus_campaign__programme_properties tw-min-h-[38px]">
                                             <p class="em-programme-tag"
                                                title="<?php echo $campaign_pinned->programme ?>"
                                                style="color: <?php echo $color ?>;">
@@ -255,10 +255,12 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                                 title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></h3>
                                         </a>
 									<?php elseif ($mod_em_campaign_list_show_programme == '1' && $mod_em_campaign_show_programme_logo == '0') : ?>
-                                        <p class="em-programme-tag" title="<?php echo $campaign_pinned->programme ?>"
-                                           style="color: <?php echo $color ?>;">
-											<?php echo $campaign_pinned->programme; ?>
-                                        </p>
+                                        <div class="tw-min-h-[38px]">
+                                            <p class="em-programme-tag" title="<?php echo $campaign_pinned->programme ?>"
+                                               style="color: <?php echo $color ?>;">
+                                                <?php echo $campaign_pinned->programme; ?>
+                                            </p>
+                                        </div>
                                         <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
                                             <h3 class="mod_emundus_campaign__campaign_title"
                                                 title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></h3>
@@ -360,10 +362,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 									$text     = '';
 									$textprog = '';
 									$textcamp = '';
-									if ($showcampaign)
-									{
-										$textcamp = $campaign_pinned->short_description;
-									}
+                                    $textcamp = $campaign_pinned->short_description;
 									?>
 
                                     <div title="<?php echo strip_tags($textcamp); ?>"
@@ -817,7 +816,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 										?>
 
 										<?php if ($mod_em_campaign_list_show_programme == '1' && $mod_em_campaign_show_programme_logo == '1') : ?>
-                                            <div class="mod_emundus_campaign__programme_properties">
+                                            <div class="mod_emundus_campaign__programme_properties tw-min-h-[38px]">
                                                 <p class="em-programme-tag" title="<?php echo $result->programme ?>"
                                                    style="color: <?php echo $color ?>;">
 													<?php echo $result->programme; ?>
@@ -832,10 +831,12 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                                 <h3 class="mod_emundus_campaign__campaign_title"><?php echo $result->label; ?></h3>
                                             </a>
 										<?php elseif ($mod_em_campaign_list_show_programme == '1' && $mod_em_campaign_show_programme_logo == '0') : ?>
-                                            <p class="em-programme-tag" title="<?php echo $result->programme ?>"
-                                               style="color: <?php echo $color ?>;">
-												<?php echo $result->programme; ?>
-                                            </p>
+                                            <div class="tw-min-h-[38px]">
+                                                <p class="em-programme-tag" title="<?php echo $result->programme ?>"
+                                                   style="color: <?php echo $color ?>;">
+                                                    <?php echo $result->programme; ?>
+                                                </p>
+                                            </div>
 
                                             <a href="<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
                                                 <h3 class="mod_emundus_campaign__campaign_title"
@@ -970,11 +971,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 										<?php
 										$text     = '';
 										$textprog = '';
-										$textcamp = '';
-										if ($showcampaign)
-										{
-											$textcamp = $result->short_description;
-										}
+                                        $textcamp = $result->short_description;
 										?>
 
                                         <div title="<?php echo strip_tags($textcamp); ?>"

@@ -1944,7 +1944,7 @@ $(document).ready(function() {
                                 '<option value="0">'+Joomla.Text._('COM_EMUNDUS_FILTERS_PLEASE_SELECT_FILTER')+'</option>' +
                                 '</select>'+
                                 '<div class="em-flex-row em-flex-row-justify-end em-mt-8">' +
-                                '<button class="tw-btn-tertiary em-w-auto" id="delfilter" style="border-radius: 4px;" title="'+Joomla.Text._('COM_EMUNDUS_ACTIONS_DELETE')+'">'+Joomla.Text._('COM_EMUNDUS_ACTIONS_DELETE')+'</button>' +
+                                '<button class="tw-btn-tertiary em-w-auto" id="delfilter" style="margin-right: 8px;" title="'+Joomla.Text._('COM_EMUNDUS_ACTIONS_DELETE')+'">'+Joomla.Text._('COM_EMUNDUS_ACTIONS_DELETE')+'</button>' +
                                 '<button class="tw-btn-primary em-w-auto" id="savefilter" title="'+Joomla.Text._('COM_EMUNDUS_FILES_SAVE_FILTER')+'">'+Joomla.Text._('COM_EMUNDUS_FILES_SAVE_FILTER')+'</button>'+
                                 '</div>' +
                                 '</div>' +
@@ -3274,7 +3274,7 @@ $(document).ready(function() {
                     '<option value="0">'+Joomla.Text._('COM_EMUNDUS_FILTERS_PLEASE_SELECT_FILTER')+'</option>' +
                     '</select>'+
                     '<div class="em-flex-row em-flex-row-justify-end em-mt-8">' +
-                    '<button class="tw-btn-tertiary em-w-auto" id="delPDFfilter" style="border-radius: 4px;" title="'+Joomla.Text._('COM_EMUNDUS_ACTIONS_DELETE')+'">'+Joomla.Text._('COM_EMUNDUS_ACTIONS_DELETE')+'</button>'+
+                    '<button class="tw-btn-tertiary em-w-auto" id="delPDFfilter" style="margin-right:8px;" title="'+Joomla.Text._('COM_EMUNDUS_ACTIONS_DELETE')+'">'+Joomla.Text._('COM_EMUNDUS_ACTIONS_DELETE')+'</button>'+
                     '<button class="tw-btn-primary em-w-auto" id="savePDFfilter" title="'+Joomla.Text._('COM_EMUNDUS_FILES_SAVE_FILTER')+'">'+Joomla.Text._('COM_EMUNDUS_FILES_SAVE_FILTER')+'</button>'+
                     '</div>' +
                     '</div>' +
