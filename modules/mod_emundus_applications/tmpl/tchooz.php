@@ -423,7 +423,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 													<?php endif; ?>
                                                     <div class="em-w-100">
 	                                                    <?php if ($mod_emundus_applications_show_programme == 1) : ?>
-                                                        <div class="tw-flex tw-justify-between tw-items-center tw-mb-3">
+                                                        <div class="tw-flex tw-justify-between tw-items-start tw-mb-3 tw-min-h-[38px]">
 		                                                    <?php
 		                                                    $color = '#0A53CC';
 		                                                    if(!empty($application->tag_color)){
