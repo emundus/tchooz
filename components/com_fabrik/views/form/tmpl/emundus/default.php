@@ -32,6 +32,7 @@ $session                = $app->getSession();
 $emundus_user           = $session->get('emundusUser');
 $user = $app->getIdentity();
 
+$is_preview = $app->input->getInt('preview', 0);
 $fnum = $app->input->getString('fnum', '');
 if (empty($fnum)) {
 	$fnum = $emundus_user->fnum;
@@ -66,7 +67,7 @@ $applicant_profiles_ids = array_map(function ($profile) {
 
 $is_applicant = in_array($current_user_profile, $applicant_profiles_ids) ? 1 : 0;
 
-if ($allow_to_comment || $is_applicant === 0)
+if (($allow_to_comment || $is_applicant === 0) && !$is_preview)
 {
 	// check if form is an applicant form, there should be a column fnum in the table
 	$db    = Factory::getContainer()->get('DatabaseDriver');
