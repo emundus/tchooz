@@ -409,6 +409,21 @@ function export_pdf(fnums, ids, default_export = '') {
             "upload",
             "evaluation"
         ];
+    } else if (default_export === 'decision') {
+        forms = 0;
+        assessment = 0;
+        decision = 1;
+        options = [
+            "aid",
+            "afnum",
+            "aemail",
+            "aapp-sent",
+            "adoc-print",
+            "tags",
+            "status",
+            "upload",
+            "decision"
+        ];
     }
 
 

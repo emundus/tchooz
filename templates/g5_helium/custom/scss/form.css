@@ -978,17 +978,21 @@
 
         /** PANEL **/
 
-        .plg-panel {
+        .plg-panel,.fabrikElementpanel {
             .fabrikElement {
                 .fabrikinput {
                     @apply tw-flex;
-                    @apply tw-items-center;
                     @apply tw-p-5;
                     @apply tw-rounded;
 
                     .fabrikElementContent {
                         @apply tw-ml-3;
                         line-height: 24px;
+                        p:after {
+                            content: "";
+                            display: inline-block;
+                            width: 0px;
+                        }
                     }
                 }
             }

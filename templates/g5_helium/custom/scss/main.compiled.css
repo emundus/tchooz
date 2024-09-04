@@ -1863,16 +1863,20 @@ form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .\!row .
                                     padding-left: var(--em-form-checkbox-input-margin) !important;
                                 }
 /** PANEL **/
-form.fabrikForm .plg-panel .fabrikElement .fabrikinput {
+form.fabrikForm .plg-panel .fabrikElement .fabrikinput, form.fabrikForm .fabrikElementpanel .fabrikElement .fabrikinput {
     display: flex;
-    align-items: center;
     padding: var(--em-spacing-5);
     border-radius: 0.25rem;
 }
-form.fabrikForm .plg-panel .fabrikElement .fabrikinput .fabrikElementContent {
+form.fabrikForm .plg-panel .fabrikElement .fabrikinput .fabrikElementContent, form.fabrikForm .fabrikElementpanel .fabrikElement .fabrikinput .fabrikElementContent {
     margin-left: var(--em-spacing-3);
                         line-height: 24px;
 }
+form.fabrikForm .plg-panel .fabrikElement .fabrikinput .fabrikElementContent p:after, form.fabrikForm .fabrikElementpanel .fabrikElement .fabrikinput .fabrikElementContent p:after {
+                            content: "";
+                            display: inline-block;
+                            width: 0px;
+                        }
 /** CAPTCHA **/
 form.fabrikForm .plg-captcha .fabrikElement {
     display: flex;
