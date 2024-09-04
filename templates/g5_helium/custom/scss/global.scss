@@ -697,15 +697,17 @@ footer#g-footer > .g-container {
     text-decoration: underline;
 
     &:hover {
-      color: var(--link-hover);
       text-decoration: none;
+    }
+    &:visited {
+      color: var(--link-hover);
     }
   }
 }
 
 .em-container-footer-cand .em-col-3-footer a {
   color: var(--link-regular);
-  &:hover, &:focus, &:active {
+  &:visited {
     color: var(--link-hover);
   }
 }
@@ -4760,7 +4762,7 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
     font-family: var(--em-profile-font), Inter, sans-serif;
   }
 
-  ul {
+  #g-container-main ul {
     padding-left: 20px;
   }
 

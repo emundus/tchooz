@@ -780,7 +780,7 @@ video {
 }
 .tw-btn-primary {
     background-color: var(--em-profile-color);
-    color: var(--neutral-0);
+    color: var(--neutral-0) !important;
     border: 1px solid var(--em-profile-color);
     text-shadow: none;
     text-transform: math-auto;
@@ -796,13 +796,13 @@ video {
 }
 .tw-btn-primary:hover {
     background-color: var(--neutral-0);
-    color: var(--em-profile-color);
+    color: var(--em-profile-color) !important;
     border: 1px solid var(--em-profile-color);
     text-decoration: none;
 }
 .tw-btn-secondary {
     background-color: var(--neutral-0);
-    color: var(--em-secondary-color);
+    color: var(--em-secondary-color) !important;
     border: 1px solid var(--em-secondary-color);
     text-shadow: none;
     text-transform: math-auto;
@@ -818,7 +818,7 @@ video {
 }
 .tw-btn-secondary:hover {
     background-color: var(--em-secondary-color);
-    color: var(--neutral-0);
+    color: var(--neutral-0) !important;
     border: 1px solid var(--em-secondary-color);
     text-decoration: none;
 }
@@ -846,7 +846,7 @@ video {
 }
 .tw-btn-cancel {
     background-color: var(--neutral-0);
-    color: var(--em-coordinator-secondary-color);
+    color: var(--em-coordinator-secondary-color) !important;
     border: 1px solid var(--em-coordinator-secondary-color);
     text-shadow: none;
     text-transform: math-auto;
@@ -862,7 +862,7 @@ video {
 }
 .tw-btn-cancel:hover {
     background-color: var(--em-coordinator-secondary-color);
-    color: var(--neutral-0);
+    color: var(--neutral-0) !important;
     border: 1px solid var(--em-coordinator-secondary-color);
     text-decoration: none;
 }
@@ -5369,6 +5369,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
     font-size: 1.5rem;
     line-height: 2rem;
 }
+.tw-text-\[20px\] {
+    font-size: 20px;
+}
 .tw-text-base {
     font-size: 1rem;
     line-height: 1.5rem;
@@ -5591,8 +5594,14 @@ h6 {
 a {
         color: var(--link-regular);
     }
-a:hover {
+a:visited {
         color: var(--link-hover);
+    }
+a:visited:hover {
+        color: var(--link-hover);
+    }
+a:hover {
+        color: var(--link-regular);
     }
 a,
     p,
@@ -6705,6 +6714,9 @@ small {
 .hover\:tw-bg-profile-full:hover {
     background-color: var(--em-profile-color);
 }
+.hover\:tw-font-semibold:hover {
+    font-weight: 600;
+}
 .hover\:tw-text-profile-dark:hover {
     color: color-mix(in srgb,var(--em-profile-color),#000 15%);
 }
@@ -6714,6 +6726,9 @@ small {
 .hover\:tw-text-white:hover {
     --tw-text-opacity: 1;
     color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+.hover\:tw-no-underline:hover {
+    text-decoration-line: none;
 }
 .tw-group:hover .group-hover\:tw-opacity-100 {
     opacity: 1;

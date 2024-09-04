@@ -173,7 +173,7 @@
                         :position="'left'"
                         v-if="tabActionsPopover && tabActionsPopover.length > 0 && filterShowOnActions(tabActionsPopover, item).length"
                         class="custom-popover-arrow">
-                      <ul style="list-style-type: none; margin: 0;" class="em-flex-col-center">
+                      <ul style="list-style-type: none; margin: 0; padding-left:0px;" class="em-flex-col-center">
                         <li v-for="action in tabActionsPopover"
                             :key="action.name"
                             :class="{'tw-hidden': !(typeof action.showon === 'undefined' || evaluateShowOn(item, action.showon))}"

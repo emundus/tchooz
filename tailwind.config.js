@@ -184,7 +184,7 @@ module.exports = {
 
                 '.btn-primary': {
                     backgroundColor: 'var(--em-profile-color)',
-                    color: 'var(--neutral-0)',
+                    color: 'var(--neutral-0) !important',
                     border: '1px solid var(--em-profile-color)',
                     textShadow: 'none',
                     textTransform: 'math-auto',
@@ -200,7 +200,7 @@ module.exports = {
 
                     '&:hover': {
                         backgroundColor: 'var(--neutral-0)',
-                        color: 'var(--em-profile-color)',
+                        color: 'var(--em-profile-color) !important',
                         border: '1px solid var(--em-profile-color)',
                         textDecoration: 'none',
                     },
@@ -208,7 +208,7 @@ module.exports = {
 
                 '.btn-secondary': {
                     backgroundColor: 'var(--neutral-0)',
-                    color: 'var(--em-secondary-color)',
+                    color: 'var(--em-secondary-color) !important',
                     border: '1px solid var(--em-secondary-color)',
                     textShadow: 'none',
                     textTransform: 'math-auto',
@@ -224,7 +224,7 @@ module.exports = {
 
                     '&:hover': {
                         backgroundColor: 'var(--em-secondary-color)',
-                        color: 'var(--neutral-0)',
+                        color: 'var(--neutral-0) !important',
                         border: '1px solid var(--em-secondary-color)',
                         textDecoration: 'none',
                     },
@@ -257,7 +257,7 @@ module.exports = {
 
                 '.btn-cancel': {
                     backgroundColor: 'var(--neutral-0)',
-                    color: 'var(--em-coordinator-secondary-color)',
+                    color: 'var(--em-coordinator-secondary-color) !important',
                     border: '1px solid var(--em-coordinator-secondary-color)',
                     textShadow: 'none',
                     textTransform: 'math-auto',
@@ -273,7 +273,7 @@ module.exports = {
 
                     '&:hover': {
                         backgroundColor: 'var(--em-coordinator-secondary-color)',
-                        color: 'var(--neutral-0)',
+                        color: 'var(--neutral-0) !important',
                         border: '1px solid var(--em-coordinator-secondary-color)',
                         textDecoration: 'none',
                     },
