@@ -145,7 +145,6 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
 <form action="<?php echo $CurPageURL ?>" method="post" id="search_program">
 	<?php if (sizeof($campaigns) == 0 && empty($codes_filters) && empty($categories_filters) && empty($reseaux_filters) && empty($searchword)) : ?>
-        <hr>
         <div class="mod_emundus_campaign__list_content--default">
 			<?php if ($mod_em_campaign_display_svg == 1) : ?>
                 <div id="background-shapes" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></div>
