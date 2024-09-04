@@ -48,7 +48,6 @@ $d = $displayData;
                 content.classList.toggle('show');
             }
         }
-        console.log(target);
     }
 </script>
 <?php endif; ?>
