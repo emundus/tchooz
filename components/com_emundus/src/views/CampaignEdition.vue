@@ -23,7 +23,7 @@
           </p>
         </div>
 
-        <ul class="tw-flex tw-items-center tw-gap-2 tw-list-none tw-mb-4 tw-pl-0 tw-border-b tw-border-neutral-400">
+        <ul v-show="profileId" class="tw-flex tw-items-center tw-gap-2 tw-list-none tw-mb-4 tw-pl-0 tw-border-b tw-border-neutral-400">
           <li v-for="menu in displayedMenus" :key="menu.component" @click="selectMenu(menu)" class="tw-border tw-border-transparent tw-flex tw-flex-col tw-rounded-t-lg hover:tw-border-neutral-300" :class="{'tw-border tw-border-neutral-300 tw-bg-neutral-300': selectedMenu === menu.component}">
             <span :id="menu.component" class="tw-cursor-pointer tw-p-2 tw-text-neutral-700">{{ translate(menu.label) }}</span>
           </li>

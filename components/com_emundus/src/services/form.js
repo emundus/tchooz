@@ -109,6 +109,7 @@ export default {
       } catch (error) {
         return {
           status: false,
+          data: [],
           msg: error
         };
       }

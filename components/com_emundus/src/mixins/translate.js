@@ -21,7 +21,7 @@ export default {
     /* eslint-disable no-undef */
     translate(key) {
       if (typeof key !== "undefined" && key != null && Joomla !== null && typeof Joomla !== 'undefined') {
-        return Joomla.JText._(key) ? Joomla.JText._(key) : key;
+        return Joomla.Text._(key) ? Joomla.Text._(key) : key;
       } else {
         return '';
       }
