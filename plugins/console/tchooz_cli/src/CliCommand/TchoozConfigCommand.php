@@ -49,7 +49,7 @@ class TchoozConfigCommand extends AbstractCommand
      *
      * @since  4.0.0
      */
-    private $key;
+    private $keys;
 
     /**
      * The value
@@ -58,7 +58,7 @@ class TchoozConfigCommand extends AbstractCommand
      *
      * @since  4.0.0
      */
-    private $value;
+    private $values;
 
 	/**
 	 * The old value
@@ -67,7 +67,7 @@ class TchoozConfigCommand extends AbstractCommand
 	 *
 	 * @since  4.0.0
 	 */
-	private $old_value;
+	private $old_values;
 
 	/**
 	 * The component to update
@@ -107,16 +107,29 @@ class TchoozConfigCommand extends AbstractCommand
         $this->configureIO($input, $output);
         $this->ioStyle->title('Update Tchooz configuration');
 
-	    $this->key       = $this->getStringFromOption('key', 'Please enter a key');
-		$this->value = $this->getStringFromOption('value', 'Please enter a value');
-		$this->old_value = $this->getStringFromOption('old_value', '[Optional] Please enter a old value to check before update',false);
-		$this->component = $this->getStringFromOption('old_value', '[Optional] Please enter the component to update',false);
+	    $this->keys       = $this->getStringFromOption('keys', 'Please enter a key (separate multiple keys with a comma)');
+		$this->values = $this->getStringFromOption('values', 'Please enter a value (separate multiple values with a comma)');
+		$this->old_values = $this->getStringFromOption('old_values', '[Optional] Please enter a old value to check before update',false);
+		$this->component = $this->getStringFromOption('component', '[Optional] Please enter the component to update',false);
 
-		if(!empty($this->key) && !empty($this->value)) {
+		if(!empty($this->keys) && !empty($this->values)) {
 			if(empty($this->component)) {
 				$this->component = 'com_emundus';
 			}
-			$this->updateExtensionParam($this->key, $this->value, $this->old_value, $this->component);
+			
+			$this->keys = explode(',', $this->keys);
+			$this->values = explode(',', $this->values);
+			if(!empty($this->old_values)) {
+				$this->old_values = explode(',', $this->old_values);
+			} else {
+				$this->old_values = [];
+			}
+
+			foreach ($this->keys as $index => $key) {
+				$old_value = !empty($this->old_values) ? $this->old_values[$index] : null;
+
+				$this->updateExtensionParam($key, $this->values[$index], $old_value, $this->component);
+			}
 		}
 
         $this->ioStyle->success("Configuration updated!");
@@ -219,9 +232,9 @@ class TchoozConfigCommand extends AbstractCommand
         $help = "<info>%command.name%</info> will update configuration for Tchooz
 		\nUsage: <info>php %command.full_name%</info>";
 
-        $this->addOption('key', null, InputOption::VALUE_REQUIRED, 'name of parameter to update');
-        $this->addOption('value', null, InputOption::VALUE_REQUIRED, 'value');
-        $this->addOption('old_value', null, InputOption::VALUE_OPTIONAL, 'Fill a old value to check before update');
+        $this->addOption('keys', null, InputOption::VALUE_REQUIRED, 'Name of parameter to update (separate multiple values by comma)');
+        $this->addOption('values', null, InputOption::VALUE_REQUIRED, 'Value to update (separate multiple values by comma)');
+        $this->addOption('old_values', null, InputOption::VALUE_OPTIONAL, 'Fill a old value to check before update (separate multiple values by comma)');
         $this->addOption('component', null, InputOption::VALUE_OPTIONAL, 'The component to update (com_emundus by default)');
         $this->setDescription('Update Tchooz configuration');
         $this->setHelp($help);

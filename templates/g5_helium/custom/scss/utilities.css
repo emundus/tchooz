@@ -42,8 +42,16 @@
         color: var(--link-regular);
     }
 
-    a:hover {
+    a:visited {
         color: var(--link-hover);
+    }
+
+    a:visited:hover {
+        color: var(--link-hover);
+    }
+
+    a:hover {
+        color: var(--link-regular);
     }
 
     a,

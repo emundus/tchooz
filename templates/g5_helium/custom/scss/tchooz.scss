@@ -97,9 +97,10 @@
   background: transparent;
   border: 1px solid transparent;
   border-radius: var(--em-coordinator-br);
-  padding: 6px 20px;
-  color: var(--neutral-900);
+  padding: 6px 0 12px 0;
+  color: var(--neutral-900) !important;
   font-family: var(--em-profile-font), Inter, sans-serif;
+  width: fit-content;
 }
 
 .em-back-button:focus{
@@ -816,7 +817,7 @@ input:focus + .em-slider {
 
 .em-profile-color{
   color: var(--em-profile-color);
-  &:hover {
+  &:visited {
     color: var(--em-profile-color);
     filter: brightness(0.8);
   }
@@ -1651,9 +1652,14 @@ input:focus + .em-slider {
   padding: 32px;
 }
 
-.go-to-campaign-link a:hover {
-  filter: brightness(0.8);
+.go-to-campaign-link,.em-campaign-tag,
+.go-to-campaign-link:hover,.em-campaign-tag:hover {
   color: var(--em-profile-color);
+}
+
+.go-to-campaign-link:visited,.em-campaign-tag:visited,
+.go-to-campaign-link:visited:hover,.em-campaign-tag:visited:hover {
+  color: color-mix(in srgb,var(--em-profile-color),#000 30%);
 }
 
 /** LIST **/

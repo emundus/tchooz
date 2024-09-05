@@ -120,13 +120,13 @@ hr.footer-separation {
     color: var(--neutral-900);
 }
 
-.em-container-footer-gest .em-block-footer a {
-    color: var(--em-profile-color) !important;
+.em-container-footer-gest .em-block-footer a,
+.em-container-footer-gest .em-block-footer a:hover {
     font-weight: 500;
 }
 
-.em-container-footer-gest .em-block-footer a:hover {
-    font-weight: 500;
+.em-container-footer-gest .em-block-footer a:visited {
+  color: color-mix(in srgb,var(--em-profile-color),#000 30%) !important;
 }
 
 .footer-rgpd {
