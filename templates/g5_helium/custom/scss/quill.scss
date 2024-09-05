@@ -441,7 +441,7 @@ $selectors: "div[itemprop="articleBody"], div[itemprop="blogPost"], .ql-editor, 
   a:hover {
     text-decoration: none;
     font-weight: normal;
-    color: var(--link-hover) !important;
+    color: var(--link-visited) !important;
   }
 
   blockquote {

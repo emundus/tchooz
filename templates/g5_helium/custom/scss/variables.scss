@@ -321,8 +321,8 @@
 
   /** UTILITIES **/
   --link-xxs-size: #{$font-xxs-size};
-  --link-regular: #{$link-regular};
-  --link-hover: #{$link-hover};
+  --link-regular: #{$base-primary-color};
+  --link-visited: color-mix(in srgb,var(--link-regular),#000 30%);
 
   /** STATUS,TAGS **/
   --em-default: #{$accent-grey-1};

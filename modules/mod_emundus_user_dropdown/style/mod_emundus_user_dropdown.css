@@ -198,7 +198,7 @@ a.forgotten_password_header {
 }
 
 a.forgotten_password_header:hover {
-    color: var(--link-hover);
+    color: var(--link-visited);
 }
 
 

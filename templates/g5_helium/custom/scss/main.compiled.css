@@ -5595,10 +5595,10 @@ a {
         color: var(--link-regular);
     }
 a:visited {
-        color: var(--link-hover);
+        color: var(--link-visited);
     }
 a:visited:hover {
-        color: var(--link-hover);
+        color: var(--link-visited);
     }
 a:hover {
         color: var(--link-regular);

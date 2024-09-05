@@ -700,7 +700,7 @@ footer#g-footer > .g-container {
       text-decoration: none;
     }
     &:visited {
-      color: var(--link-hover);
+      color: var(--link-visited);
     }
   }
 }
@@ -708,7 +708,7 @@ footer#g-footer > .g-container {
 .em-container-footer-cand .em-col-3-footer a {
   color: var(--link-regular);
   &:visited {
-    color: var(--link-hover);
+    color: var(--link-visited);
   }
 }
 

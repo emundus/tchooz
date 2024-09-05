@@ -561,7 +561,7 @@ p[id*="mod_emundus_campaign__tchoozy_tab_desc"] {
 }
 
 .mod_emundus_campaign__details_file a:hover {
-    color: var(--link-hover);
+    color: var(--link-visited);
 }
 
 
