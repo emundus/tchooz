@@ -21,7 +21,7 @@ if (!empty($this->items)) :
     </style>
     <div class="container-nav em-container-menuaction">
 
-        <div class="container-menuaction-title"><?php echo JText::_($this->menu_title) ?></div>
+        <h1 class="container-menuaction-title"><?php echo JText::_($this->menu_title) ?></h1>
 
         <div class="navbar-collapse collapse navbar-inverse-collapse menuaction-actions-container tw-px-0">
 
