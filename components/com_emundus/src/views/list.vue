@@ -129,7 +129,9 @@
             </tr>
             </thead>
             <tbody>
-            <tr v-for="item in displayedItems" :key="item.id"
+            <tr v-for="item in displayedItems"
+                :key="item.id"
+                :id="'item-' + currentTab.key + '-' + item.id"
                 class="em-border-cards table-row"
                 :class="{'em-card-neutral-100 em-card-shadow em-p-24' : viewType === 'blocs'}"
             >
