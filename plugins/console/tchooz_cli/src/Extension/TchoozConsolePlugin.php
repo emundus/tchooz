@@ -4,6 +4,7 @@ namespace Emundus\Plugin\Console\Tchooz\Extension;
 \defined('_JEXEC') or die;
 
 use Emundus\Plugin\Console\Tchooz\CliCommand\TchoozConfigCommand;
+use Emundus\Plugin\Console\Tchooz\CliCommand\TchoozKeycloakCommand;
 use Emundus\Plugin\Console\Tchooz\CliCommand\TchoozMigrateCommand;
 use Emundus\Plugin\Console\Tchooz\CliCommand\TchoozResetFabrikConnectionCommand;
 use Emundus\Plugin\Console\Tchooz\CliCommand\TchoozUpdateCommand;
@@ -34,5 +35,6 @@ class TchoozConsolePlugin extends CMSPlugin implements SubscriberInterface
 		$app->addCommand(new TchoozResetFabrikConnectionCommand($db));
 		$app->addCommand(new TchoozVanillaCommand($db));
 		$app->addCommand(new TchoozConfigCommand($db));
+		$app->addCommand(new TchoozKeycloakCommand($db));
     }
 }
