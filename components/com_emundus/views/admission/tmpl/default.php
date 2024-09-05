@@ -41,7 +41,7 @@ defined('_JEXEC') or die('Restricted access');
 
             <div class="panel panel-info em-hide" id="em-appli-menu">
                 <div class="panel-heading em-hide-heading !tw-bg-profile-full">
-                    <h3 class="panel-title"><?php echo JText::_('COM_EMUNDUS_APPLICATION_ACTIONS') ?></h3>
+                    <h1 class="panel-title"><?php echo JText::_('COM_EMUNDUS_APPLICATION_ACTIONS') ?></h1>
                 </div>
                 <div class="panel-body em-hide-body">
                     <div class="list-group">

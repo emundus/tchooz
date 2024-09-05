@@ -2852,13 +2852,14 @@ div#em-modal-actions .panel-heading h5 {
 }
 
 /* MENU ACTIONS */
-.container-nav .container-menuaction-title {
+.container-nav h1.container-menuaction-title {
     color: var(--neutral-0);
     white-space: nowrap;
     height: 100%;
     display: flex;
     align-items: center;
     padding-inline: 15px;
+    font-size: var(--em-applicant-font-size);
 }
 
 .container-nav .menuaction-actions-container {
