@@ -28,7 +28,9 @@ endif;
 if ($this->params->get('show_page_heading')) :
 	echo '<h1>' . $this->params->get('page_heading') . '</h1>';
 endif;
-
+?>
+<div class="page-header-container">
+<?php
 if ($this->params->get('show-title')) : ?>
 	<div class="page-header em-flex-row em-flex-space-between emundus-list-page-header">
 		<h1><?php echo $this->table->label;?></h1>
@@ -48,7 +50,7 @@ endif;
 <div class="page-intro <?php if ($this->showTitle != 1) : ?>em-mt-32<?php endif; ?>">
     <?php echo $this->table->intro; ?>
 </div>
-
+</div>
 <form class="fabrikForm form-search" action="<?php echo $this->table->action;?>" method="post" id="<?php echo $this->formid;?>" name="fabrikList">
 
 <?php
@@ -159,3 +161,13 @@ if ($pageClass !== '') :
 	echo '</div>';
 endif;
 ?>
+
+<script>
+    let hauteurIntro = document.querySelector('.page-header-container');
+    let blocIntro = hauteurIntro.offsetHeight;
+
+    let blocFormulaire = document.querySelector('.fabrikForm');
+    blocFormulaire.style.marginTop = blocIntro + 'px';
+
+
+</script>
