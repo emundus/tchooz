@@ -1417,7 +1417,7 @@ class EmundusModelCampaign extends ListModel
 			$this->_db->setQuery($query);
 			$campaign_columns = $this->_db->loadColumn();
 
-			$data['label'] = json_decode($data['label'], true);
+			$data['label'] = is_string($data['label']) ? json_decode($data['label'], true) : $data['label'];
 
 			$this->app->triggerEvent('onBeforeCampaignCreate', $data);
 			$this->app->triggerEvent('onCallEventHandler', ['onBeforeCampaignCreate', ['campaign' => $data]]);

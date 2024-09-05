@@ -76,7 +76,9 @@ export default {
         pinned: form.pinned
       };
 
-      return await client.post(`createcampaign`, data);
+      return await client.post(`createcampaign`, {
+        body: JSON.stringify(form),
+      });
     } catch (e) {
       return {
         status: false, msg: e.message

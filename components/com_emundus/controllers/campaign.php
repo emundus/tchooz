@@ -581,7 +581,8 @@ class EmundusControllerCampaign extends BaseController
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
 		{
-			$data         = $this->input->getArray();
+			$data = $this->input->getRaw('body');
+			$data = json_decode($data, true);
 			$data['user'] = $this->_user->id;
 
 			$result = $this->m_campaign->createCampaign($data);
