@@ -163,11 +163,29 @@ endif;
 ?>
 
 <script>
-    let hauteurIntro = document.querySelector('.page-header-container');
-    let blocIntro = hauteurIntro.offsetHeight;
 
-    let blocFormulaire = document.querySelector('.fabrikForm');
-    blocFormulaire.style.marginTop = blocIntro + 'px';
+    /* descendre le titre en fonction de la hauteur de l'intro intro */
+    let blocIntro = document.querySelector('.page-header-container');
+    let blocBody = document.querySelector('.fabrikForm');
 
+    let hauteurIntro = blocIntro.offsetHeight;
+    blocBody.style.marginTop = hauteurIntro + 'px';
+
+    /* descendre le titre en fonction de la hauteur de la bannière alerte */
+    let blocBanniere = document.querySelector('.alerte-message-container');
+    let hauteurBanniere = blocBanniere.offsetHeight;
+
+    if (blocBanniere) {
+        blocIntro.style.marginTop = hauteurBanniere + 'px';
+    }
+
+    let croixBanniere = document.querySelector('#close-preprod-alerte-container');
+
+    croixBanniere.addEventListener('click', function () {
+        let hauteurBanniereSansPx = parseInt(blocIntro.style.marginTop, 10);
+        let hauteurSansBanniere = hauteurBanniereSansPx - hauteurBanniere;
+        blocIntro.style.marginTop = hauteurSansBanniere + 'px';
+       }
+    );
 
 </script>
