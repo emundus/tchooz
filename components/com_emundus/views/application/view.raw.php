@@ -15,20 +15,24 @@ jimport('joomla.application.component.view');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\User\UserFactoryInterface;
+use Joomla\CMS\MVC\View\HtmlView;
 
 /**
  * HTML View class for the Emundus Component
  *
  * @package    Emundus
  */
-class EmundusViewApplication extends JViewLegacy
+class EmundusViewApplication extends HtmlView
 {
 	private $app;
 	private $user;
 	protected $euser;
 
 	protected $student;
+	protected $ccid;
+	protected $fnum;
 	protected $synthesis;
 	protected $assoc_files;
 	protected $columns;
@@ -39,7 +43,6 @@ class EmundusViewApplication extends JViewLegacy
 	protected $expert_document_id;
 	protected $campaign_id;
 	protected $evaluation_select;
-	protected $fnum;
 	protected $message;
 	protected $messages;
 	protected $url_form;
@@ -58,9 +61,13 @@ class EmundusViewApplication extends JViewLegacy
 	protected $html_form;
 	protected $_user;
 	protected $sid;
+	protected $collaborators;
+	protected $is_applicant;
 
 	function __construct($config = array())
 	{
+		parent::__construct($config);
+
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
@@ -78,29 +85,18 @@ class EmundusViewApplication extends JViewLegacy
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
 
 		$this->app = Factory::getApplication();
-		if (version_compare(JVERSION, '4.0', '>')) {
-			$session    = $this->app->getSession();
-			$this->user = $this->app->getIdentity();
-		}
-		else {
-			$session    = JFactory::getSession();
-			$this->user = JFactory::getUser();
-		}
+		$session    = $this->app->getSession();
+		$this->user = $this->app->getIdentity();
+
 		$this->euser = $session->get('emundusUser');
+		$this->_user = $session->get('emundusUser');
 		if(empty($this->euser->fnums)) {
 			$this->euser->fnums = array();
 		}
-
-		parent::__construct($config);
 	}
 
 	function display($tpl = null)
 	{
-
-		if (!EmundusHelperAccess::asPartnerAccessLevel($this->user->id)) {
-			die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
-		}
-
 		$params = ComponentHelper::getParams('com_emundus');
 
 		$jinput = $this->app->input;
@@ -111,27 +107,30 @@ class EmundusViewApplication extends JViewLegacy
 
 		$m_profiles = new EmundusModelProfile();
 		$fnumInfos  = $m_profiles->getFnumDetails($fnum);
-
-		if (version_compare(JVERSION, '4.0', '>')) {
-			$this->student = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(intval($fnumInfos['applicant_id']));
-		}
-		else {
-			$this->student = Factory::getUser($fnumInfos['applicant_id']);
-		}
+		$this->ccid = $fnumInfos['ccid'];
+		$this->fnum = $fnum;
+		$this->student = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(intval($fnumInfos['applicant_id']));
+		$this->sid   = $fnumInfos['applicant_id'];
 
 		$m_application = $this->getModel('Application');
 
 		$expire = time() + 60 * 60 * 24 * 30;
 		setcookie("application_itemid", $jinput->getString('id', 0), $expire);
-		
-		if (EmundusHelperAccess::asAccessAction(1, 'r', $this->user->id, $fnum)) {
+
+		if ((EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)
+				&& EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
+			|| (!empty($ccid) && !empty($fnum) && in_array($fnum, array_keys($this->_user->fnums)))
+		) {
 
 			switch ($layout) {
 				case 'synthesis':
+					if(EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
+					{
 						$this->synthesis = new stdClass();
 						$program         = $m_application->getProgramSynthesis($fnumInfos['campaign_id']);
 
-						if (!empty($program->synthesis)) {
+						if (!empty($program->synthesis))
+						{
 							$campaignInfo = $m_application->getUserCampaigns($fnumInfos['applicant_id'], $fnumInfos['campaign_id']);
 
 							$m_email = new EmundusModelEmails();
@@ -153,12 +152,16 @@ class EmundusViewApplication extends JViewLegacy
 							$this->synthesis->block   = preg_replace($tags['patterns'], $tags['replacements'], $program->synthesis);
 							$this->synthesis->block   = $m_email->setTagsFabrik($this->synthesis->block, array($fnum));
 						}
+					}
 					break;
 
 				case 'assoc_files':
+					if(EmundusHelperAccess::asPartnerAccessLevel($this->user->id))
+					{
 						$show_related_files = $params->get('show_related_files', 0);
 
-						if ($show_related_files || EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id) || EmundusHelperAccess::asManagerAccessLevel($this->user->id)) {
+						if ($show_related_files || EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id) || EmundusHelperAccess::asManagerAccessLevel($this->user->id))
+						{
 							$campaignInfo = $m_application->getUserCampaigns($fnumInfos['applicant_id'], null, false);
 
 							$published_campaigns   = array_filter($campaignInfo, function ($campaign) {
@@ -168,14 +171,17 @@ class EmundusViewApplication extends JViewLegacy
 								return $campaign->published != 1;
 							});
 
-							foreach ($campaignInfo as $key => $campaign) {
-								if (!EmundusHelperAccess::isUserAllowedToAccessFnum($this->_user->id, $campaign->fnum)) {
+							foreach ($campaignInfo as $key => $campaign)
+							{
+								if (!EmundusHelperAccess::isUserAllowedToAccessFnum($this->_user->id, $campaign->fnum))
+								{
 									unset($campaignInfo[$key]);
 								}
 							}
 
 						}
-						else {
+						else
+						{
 							$published_campaigns   = $m_application->getCampaignByFnum($fnum);
 							$unpublished_campaigns = [];
 						}
@@ -185,11 +191,11 @@ class EmundusViewApplication extends JViewLegacy
 						$this->assoc_files->unpublished_campaigns = $unpublished_campaigns;
 						$this->assoc_files->fnumInfos             = $fnumInfos;
 						$this->assoc_files->fnum                  = $fnum;
-
+					}
 					break;
 
 				case 'attachment':
-					if (EmundusHelperAccess::asAccessAction(4, 'r', $this->user->id, $fnum)) {
+					if (EmundusHelperAccess::asAccessAction(4, 'r', $this->_user->id, $fnum) || (!empty($ccid) && !empty($fnum) && in_array($fnum, array_keys($this->_user->fnums)))) {
 						EmundusModelLogs::log($this->user->id, (int) substr($fnum, -7), $fnum, 4, 'r', 'COM_EMUNDUS_ACCESS_ATTACHMENT_READ');
 						$this->expert_document_id = $params->get('expert_document_id', '36');
 
@@ -197,14 +203,19 @@ class EmundusViewApplication extends JViewLegacy
 
 						$m_files = new EmundusModelFiles;
 
-						$this->userAttachments     = $m_application->getUserAttachmentsByFnum($fnum, $search);
+						$this->userAttachments     = $m_application->getUserAttachmentsByFnum($fnum, $search, null, (bool)$this->_user->applicant);
 						$this->attachmentsProgress = $m_application->getAttachmentsProgress($fnum);
 						$this->nameCategory        = $m_files->getAttachmentCategories();
 						$this->student_id          = $fnumInfos['applicant_id'];
+						$this->is_applicant = $this->_user->applicant;
 						$this->columns = ['check','name', 'date', 'desc', 'category', 'status', 'user', 'modified_by', 'modified', 'permissions', 'sync'];
+						if($this->_user->applicant) {
+							//TODO: Add menu parameters
+							$this->columns = ['name', 'date', 'desc', 'status', 'modified'];
+						}
 					}
 					else {
-						echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
+						echo Text::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
 						exit();
 					}
 					break;
@@ -214,7 +225,7 @@ class EmundusViewApplication extends JViewLegacy
 						$this->campaign_id = $fnumInfos['campaign_id'];
 					}
 					else {
-						echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
+						echo Text::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
 						exit();
 					}
 					break;
@@ -268,7 +279,7 @@ class EmundusViewApplication extends JViewLegacy
 								}
 							}
 							else {
-								echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
+								echo Text::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
 								exit();
 							}
 						}
@@ -284,7 +295,7 @@ class EmundusViewApplication extends JViewLegacy
 						EmundusModelLogs::log($this->user->id, $applicant_id, $fnum, 5, 'r', 'COM_EMUNDUS_ACCESS_EVALUATION_READ');
 					}
 					else {
-						echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
+						echo Text::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
 						exit();
 					}
 
@@ -339,7 +350,7 @@ class EmundusViewApplication extends JViewLegacy
 						EmundusModelLogs::log($this->user->id, $applicant_id, $fnum, 29, 'r', 'COM_EMUNDUS_DECISION_READ');
 					}
 					else {
-						echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
+						echo Text::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
 						exit();
 					}
 
@@ -356,7 +367,7 @@ class EmundusViewApplication extends JViewLegacy
 							$comment->date = EmundusHelperDate::displayDate($comment->date, 'DATE_FORMAT_LC2',0);
 						}
 					}
-					elseif (EmundusHelperAccess::asAccessAction(10, 'c', $this->user->id, $fnum)) {
+					elseif (EmundusHelperAccess::asAccessAction(10, 'c', $this->user->id, $fnum) || (!empty($ccid) && !empty($fnum) && in_array($fnum, array_keys($this->_user->fnums)))) {
 
 						EmundusModelLogs::log($this->user->id, (int) substr($fnum, -7), $fnum, 10, 'c', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_CREATE');
 
@@ -365,26 +376,33 @@ class EmundusViewApplication extends JViewLegacy
 						foreach ($this->userComments as $comment) {
 							$comment->date = EmundusHelperDate::displayDate($comment->date, 'DATE_FORMAT_LC2',0);
 						}
-
-						$this->fnum = $fnum;
 					}
 					else {
-						echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
+						echo Text::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
 						exit();
 					}
 
 					break;
 
 				case 'logs':
-					if (EmundusHelperAccess::asAccessAction(37, 'r', $this->user->id, $fnum)) {
+					if (EmundusHelperAccess::asAccessAction(37, 'r', $this->_user->id, $fnum) || (!empty($ccid) && !empty($fnum) && in_array($fnum, array_keys($this->_user->fnums)))) {
 						EmundusModelLogs::log($this->user->id, (int) substr($fnum, -7), $fnum, 37, 'r', 'COM_EMUNDUS_ACCESS_LOGS_READ');
 						$m_logs = new EmundusModelLogs();
 
-						$this->fileLogs = $m_logs->getActionsOnFnum($fnum, null, null, ["c", "r", "u", "d"]);
-						if(!empty($fnum) && in_array($fnum, array_keys($this->euser->fnums))) {
-							$this->euser->fnum = $fnum;
-							$this->app->getSession()->set('emundusUser', $this->euser);
+						if(!empty($fnum) && in_array($fnum, array_keys($this->_user->fnums))) {
+							$this->_user->fnum = $fnum;
+							$this->app->getSession()->set('emundusUser', $this->_user);
 						}
+
+						$actions = [];
+						$crud = ["c","r","u","d"];
+						if(in_array($fnum, array_keys($this->_user->fnums))) {
+							//TODO: Add parameter to menu
+							$actions = [1,4,13,28];
+							$crud = ["c","u","d"];
+						}
+
+						$this->fileLogs = $m_logs->getActionsOnFnum($fnum, null, $actions, $crud);
 
 						foreach ($this->fileLogs as $log) {
 							$log->timestamp = EmundusHelperDate::displayDate($log->timestamp);
@@ -392,7 +410,7 @@ class EmundusViewApplication extends JViewLegacy
 						}
 					}
 					else {
-						echo JText::_("RESTRICTED_ACCESS");
+						echo Text::_("RESTRICTED_ACCESS");
 						exit();
 					}
 
@@ -413,14 +431,14 @@ class EmundusViewApplication extends JViewLegacy
 						}
 					}
 					else {
-						echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
+						echo Text::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
 						exit();
 					}
 
 					break;
 
 				case 'form':
-					if (EmundusHelperAccess::asAccessAction(1, 'r', $this->user->id, $fnum)) {
+					if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum) || (!empty($ccid) && !empty($fnum) && in_array($fnum, array_keys($this->_user->fnums)))) {
 						$emundus_config = ComponentHelper::getParams('com_emundus');
 						$see_only_filled_workflows = $emundus_config->get('see_only_filled_workflows', 0);
 						$this->header = $jinput->getString('header', 1);
@@ -470,7 +488,7 @@ class EmundusViewApplication extends JViewLegacy
 
 							if ($pidRaw->phase === null) {
 								if ($pidRaw->pid !== $pid) {
-									$noPhasePids['no_step']['lbl']    = JText::_('COM_EMUNDUS_VIEW_FORM_OTHER_PROFILES');
+									$noPhasePids['no_step']['lbl']    = Text::_('COM_EMUNDUS_VIEW_FORM_OTHER_PROFILES');
 									$noPhasePids['no_step']['data'][] = $pidRaw;
 								}
 							}
@@ -496,7 +514,7 @@ class EmundusViewApplication extends JViewLegacy
 						$this->applicant     = $applicant[0];
 					}
 					else {
-						echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
+						echo Text::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
 						exit();
 					}
 
@@ -509,7 +527,7 @@ class EmundusViewApplication extends JViewLegacy
 						$this->canUpdateAccess = EmundusHelperAccess::asAccessAction(11, 'u', $this->user->id, $fnum);
 					}
 					else {
-						echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
+						echo Text::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
 						exit();
 					}
 
@@ -526,7 +544,7 @@ class EmundusViewApplication extends JViewLegacy
 
 					}
 					else {
-						echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
+						echo Text::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
 						exit();
 					}
 
@@ -547,7 +565,7 @@ class EmundusViewApplication extends JViewLegacy
 						}
 
 						if (empty($myAdmission_form_id)) {
-							$this->html_form = '<p>' . JText::_('COM_EMUNDUS_NO_USER_ADMISSION_FORM') . '</p>';
+							$this->html_form = '<p>' . Text::_('COM_EMUNDUS_NO_USER_ADMISSION_FORM') . '</p>';
 						}
 						else {
 							$this->html_form = $m_application->getFormByFabrikFormID($myAdmission_form_id, $this->student->id, $fnum);
@@ -581,7 +599,7 @@ class EmundusViewApplication extends JViewLegacy
 
 					}
 					else {
-						echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
+						echo Text::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
 						exit();
 					}
 
@@ -644,22 +662,20 @@ class EmundusViewApplication extends JViewLegacy
 						$this->campaign_id = $fnumInfos['campaign_id'];
 					}
 					else {
-						echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
+						echo Text::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
 						exit();
 					}
 
 					break;
+				case 'collaborate':
+					$this->collaborators = $m_application->getSharedFileUsers($ccid, $fnum);
 			}
-
-			$this->_user = $this->user;
-			$this->fnum  = $fnum;
-			$this->sid   = $fnumInfos['applicant_id'];
 
 			parent::display($tpl);
 
 		}
 		else {
-			echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
+			echo Text::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
 		}
 	}
 }

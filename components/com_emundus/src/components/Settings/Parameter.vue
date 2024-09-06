@@ -98,9 +98,10 @@
         </fieldset>
       </div>
 
-      <div v-else-if="isToggle" class="tw-flex tw-items-center">
+      <div v-else-if="isToggle" class="tw-flex tw-items-center tw-mb-4">
         <div class="em-toggle">
           <input type="checkbox"
+                 true-value="1" false-value="0"
                  class="em-toggle-check"
                  :id="paramId+ '_input'"
                  v-model="value"
@@ -326,12 +327,11 @@ export default {
     SwalWarningPort: function () {
       Swal.fire({
         html: `
-    <div class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-text-center">
-      <h2 class="tw-font-bold tw-pb-2">
+    <div class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-text-center tw--mt-5">
+      <h2 class="tw-font-bold">
         ${this.translate('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_PORT_WARNING_HELPTEXT_TITLE')}
       </h2>
-      <hr class="tw-w-full tw-my-2">
-      <p class="tw-text-center">
+      <p class="tw-text-center tw-mt-5 tw-text-neutral-700">
         ${this.translate('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_PORT_WARNING_HELPTEXT_BODY')}
       </p>
     </div>

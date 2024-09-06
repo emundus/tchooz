@@ -108,6 +108,7 @@ class PlgFabrik_FormEmundusisevaluatedbyme extends plgFabrik_Form
 		}
 
 		$this->app->enqueueMessage($evaluation['message']);
+
 		if ($r != 1)
 		{
 			$this->app->redirect($evaluation['url']);
@@ -154,9 +155,9 @@ class PlgFabrik_FormEmundusisevaluatedbyme extends plgFabrik_Form
             title: 'em-swal-title',
           }
         }).then((result) => {
-		  history.go(-1);
+            window.location.href = window.location.href.replace('r=1', 'r=0');
 		});
-      });
-      </script>");
+     });
+     </script>");
 	}
 }

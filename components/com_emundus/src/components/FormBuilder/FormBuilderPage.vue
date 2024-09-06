@@ -12,7 +12,7 @@
           :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_TITLE_ADD')"
           v-html="translate(title)"></span>
       <button id="add-page-modele" class="tw-btn-cancel !tw-w-auto"  @click="$emit('open-create-model', page.id)">
-        <span class="material-icons-outlined tw-cursor-pointer"
+        <span class="material-symbols-outlined tw-cursor-pointer"
               v-if="mode === 'forms'"
               :title="translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_TITLE')"
         >post_add</span>

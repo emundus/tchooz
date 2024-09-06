@@ -120,7 +120,7 @@ if (!empty($this->custom_title)) :?>
                 alt="<?= Text::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
         <h2 class="after-em-border after:tw-bg-red-800 tw-mb-4"><?php echo Text::_('COM_EMUNDUS_ATTACHMENTS_TITLE') ?></h2>
         <div class="alert alert-info tw-flex tw-items-center tw-gap-1 tw-mt-1">
-            <span class="material-icons">info</span>
+            <span class="material-symbols-outlined">info</span>
             <div>
                 <p><?= Text::_('COM_EMUNDUS_ATTACHMENTS_INFO_UPLOAD_MAX_FILESIZE') . ' ' . ini_get("upload_max_filesize") . ' ' . Text::_('COM_EMUNDUS_ATTACHMENTS_BYTES'); ?> </p>
             </div>

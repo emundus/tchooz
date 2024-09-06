@@ -23,6 +23,17 @@ requirejs(['fab/fabrik'], function () {
     };
 
     Fabrik.addEvent('fabrik.form.loaded', function (form) {
+        /*setCookie('fabrik_form_session', 'true', 15);
+
+        setInterval(() => {
+            let active_form_session = getCookie('fabrik_form_session');
+            if(!active_form_session) {
+                setTimeout(() => {
+                    window.location.href = window.location.origin + '/';
+                }, 2000);
+            }
+        }, 10000);*/
+
         table_name = form.options.primaryKey.split('___')[0];
 
         manageRepeatGroup(form);
@@ -67,6 +78,8 @@ requirejs(['fab/fabrik'], function () {
                     }).then((result) => {
                         if(result.value)
                         {
+                            clearFormSession(form.id);
+
                             if(e.srcElement.classList.contains('goback-btn')) {
                                 window.history.back();
                             }
@@ -95,6 +108,7 @@ requirejs(['fab/fabrik'], function () {
                         }
                     });
                 } else {
+                    clearFormSession(form.id);
                     if(e.srcElement.classList.contains('goback-btn')) {
                         if(window.history.length > 1) {
                             window.history.back();
@@ -512,18 +526,18 @@ requirejs(['fab/fabrik'], function () {
     }
 
     function addOption(field,params) {
-        var params = JSON.parse(params);
-        var options = field.element.options;
+        params = JSON.parse(params);
+        const options = field.element.options;
 
         params.forEach((p) => {
             // Check if option already exists
             var exists = false;
             [...options].map((o) => {
-                if(o.value == p.primary_key){
+                if(o.value == p.primary_key) {
                     exists = true;
                 }
             });
-            if(!exists) {
+            if (!exists) {
                 var option = document.createElement("option");
                 option.text = p.value;
                 option.value = p.primary_key;
@@ -533,17 +547,15 @@ requirejs(['fab/fabrik'], function () {
     }
 
     function removeOption(field,params) {
-        var options = field.element.options;
-        var params = JSON.parse(params);
-        var values = [];
-
-        params.forEach((p) => {
-            values.push(p.primary_key);
+        params = JSON.parse(params);
+        const options = field.element.options;
+        const values = params.map((param) => {
+            return param.primary_key.toString();
         });
 
-        [...options].map((p) => {
-            if(values.includes(p.value)){
-                options.remove(p.index);
+        [...options].map((option, i) => {
+            if (values.includes(option.value)) {
+                field.element.remove(i);
             }
         });
     }
@@ -567,5 +579,71 @@ requirejs(['fab/fabrik'], function () {
             selElem.options[i] = op;
         }
         return;
+    }
+
+    function saveDatas(element, event) {
+        let name = element.baseElementId;
+        let value = element.get('value');
+
+        let formData = new FormData();
+        formData.append('element', name);
+        formData.append('value', value);
+        formData.append('form_id', element.form.id);
+
+        fetch('/index.php?option=com_emundus&controller=application&task=saveformsession', {
+            method: 'POST',
+            credentials: 'same-origin',
+            body: formData,
+        }).then((response) => {
+            return response.json();
+        }).then((data) => {
+            if (data.success) {
+                setCookie('fabrik_form_session', 'true', 15);
+            }
+        }).catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+
+    function clearFormSession(form_id) {
+        let formData = new FormData();
+        formData.append('form_id', form_id);
+
+        fetch('/index.php?option=com_emundus&controller=application&task=clearformsession', {
+            method: 'POST',
+            credentials: 'same-origin',
+            body: formData,
+        }).then((response) => {
+            return response.json();
+        }).then((data) => {
+            if (data.success) {
+                document.cookie = "fabrik_form_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            }
+        }).catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+
+    function setCookie(cname, cvalue, minutes) {
+        const d = new Date();
+        d.setTime(d.getTime() + (minutes*60*1000));
+        let expires = "expires="+ d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+
+    function getCookie(cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i <ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
     }
 });

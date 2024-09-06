@@ -63,9 +63,12 @@
     color: var(--em-default-text-color-1);
 }
 
-.mod_emundus_campaign__intro a:hover {
-    color: var(--neutral-800);
+.mod_emundus_campaign__intro a {
     text-decoration: underline;
+}
+
+.mod_emundus_campaign__intro a:hover {
+    text-decoration: none;
 }
 
 .mod_emundus_campaign__content {
@@ -177,7 +180,6 @@
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
-    max-height: 100px;
     min-height: 53px;
     line-height: 160%;
     font-family: var(--em-profile-font), Inter, sans-serif;
@@ -414,7 +416,7 @@ p[id*="mod_emundus_campaign__tchoozy_tab_desc"] {
     text-align: left;
 }
 
-[id*="mod_emundus_campaign__tchoozy_tabs_"] .material-icons-outlined {
+[id*="mod_emundus_campaign__tchoozy_tabs_"] .material-symbols-outlined {
     font-size: 24px;
     color: var(--em-profile-color);
 }
@@ -559,7 +561,7 @@ p[id*="mod_emundus_campaign__tchoozy_tab_desc"] {
 }
 
 .mod_emundus_campaign__details_file a:hover {
-    color: var(--link-hover);
+    color: var(--link-visited);
 }
 
 

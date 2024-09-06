@@ -109,6 +109,8 @@ if (isset($user->fnum) && !empty($user->fnum))
 
 	$campaign_name = $current_application->label;
 
+	$fnumInfos = $m_files->getFnumInfos($user->fnum);
+
 	if (!empty($title_override) && !empty(str_replace(array(' ', "\t", "\n", "\r", "&nbsp;"), '', htmlentities(strip_tags($title_override))))) {
 		$m_email = new EmundusModelEmails();
 		$emundusUser = $app->getSession()->get('emundusUser');
@@ -140,7 +142,6 @@ if (isset($user->fnum) && !empty($user->fnum))
 
 		if ($application_fee)
 		{
-			$fnumInfos = $m_files->getFnumInfos($user->fnum);
 			$order     = $m_application->getHikashopOrder($fnumInfos);
 			$paid      = !empty($order);
 			$cart      = $m_application->getHikashopCartUrl($user->profile);

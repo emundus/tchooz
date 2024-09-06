@@ -26,7 +26,7 @@
         class="status valid-state"
         :class="{success: attachment.is_validated == 1,warning: attachment.is_validated == 2,error: attachment.is_validated == 0}"
     >
-      <select @change="(e) => updateStatus(e)" :disabled="canUpdate === false ? true : false">
+      <select @change="(e) => updateStatus(e)" :disabled="(canUpdate === false || is_applicant == 1) ? true : false">
         <option value="1" :selected="attachment.is_validated == 1">{{ translate("VALID") }}</option>
         <option value="0" :selected="attachment.is_validated == 0">{{ translate("INVALID") }}</option>
         <option value="2" :selected="attachment.is_validated == 2">{{
@@ -51,17 +51,14 @@
             class="material-symbols-outlined delete-permission tw-cursor-pointer"
             :class="{ active: attachment.can_be_deleted == '1' }"
             @click="changePermission('can_be_deleted', attachment)"
-            :title="translate('COM_EMUNDUS_ATTACHMENTS_PERMISSION_DELETE')">delete_outlined</span>
+            :title="translate('COM_EMUNDUS_ATTACHMENTS_PERMISSION_DELETE')">delete</span>
     </td>
     <td v-if="sync && columns.includes('sync')">
       <div v-if="attachment.sync > 0">
         <span
             v-if="attachment.sync_method == 'write' && !syncLoading"
             class="material-icons sync tw-cursor-pointer"
-            :class="{
-              success: synchronizeState == 1,
-              error: synchronizeState != 1,
-            }"
+            :class="{success: synchronizeState == 1, error: synchronizeState != 1}"
             :title="translate('COM_EMUNDUS_ATTACHMENTS_SYNC_WRITE')"
             @click="synchronizeAttachments(attachment.aid)"
         >
@@ -119,9 +116,13 @@ export default {
     columns: {
       type: Array,
       default() {
-        return ['name', 'date', 'desc', 'category', 'status', 'user', 'modified_by', 'modified', 'permissions', 'sync'];
+        return ['check','name', 'date', 'desc', 'category', 'status', 'user', 'modified_by', 'modified', 'permissions', 'sync'];
       }
-    }
+    },
+    is_applicant: {
+      type: String,
+      default: null
+    },
   },
   mixins: [mixin],
   data() {
@@ -273,7 +274,7 @@ export default {
     }
   }
 
-  .material-icons {
+  .material-icons, .material-symbols-outlined  {
     cursor: pointer;
 
     &.success {

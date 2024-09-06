@@ -1615,4 +1615,121 @@ class EmundusModelMessages extends ListModel
 
 		return $csv_filename;
 	}
+
+	/**
+	 * Get status of chatroom
+	 *
+	 * @param $fnum
+	 *
+	 * @return mixed|null
+	 *
+	 * @since version 1.40.0
+	 */
+	public function getStatusChatroom($fnum)
+	{
+		$status = null;
+
+		$query = $this->db->getQuery(true);
+
+		$query->clear()
+			->select( $this->db->quoteName('status'))
+			->from( $this->db->quoteName('#__emundus_chatroom'))
+			->where( $this->db->quoteName('fnum').' LIKE '.  $this->db->quote($fnum));
+
+		try
+		{
+			$this->db->setQuery($query);
+			$status =  $this->db->loadResult();
+		}
+		catch (Exception $e)
+		{
+			Log::add('Could not retrieve chatroom for fnum: ' . $fnum. preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+		}
+
+		return $status;
+	}
+
+	/**
+	 * Open chatroom
+	 *
+	 * @param $fnum
+	 *
+	 *
+	 * @return boolean
+	 * @since version 1.40.0
+	 */
+	public function openChatroom($fnum)
+	{
+		$opened = false;
+
+		$query = $this->db->getQuery(true);
+
+		$fields = array(
+			$this->db->quoteName('status') . ' = 1'
+		);
+
+		// Conditions for which records should be updated.
+		$conditions = array(
+			$this->db->quoteName('fnum') . ' LIKE ' .  $this->db->quote($fnum)
+		);
+
+		$query->update($this->db->quoteName('#__emundus_chatroom'))->set($fields)->where($conditions);
+
+		try
+		{
+			$this->db->setQuery($query);
+			$opened = $this->db->execute();
+		}
+		catch (Exception $e)
+		{
+			Log::add('Could not update chatroom for fnum: ' . $fnum. preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+		}
+
+		return $opened;
+	}
+
+	/**
+	 * Close chatroom
+	 *
+	 * @param         $fnum
+	 * @param   bool  $redirect
+	 *
+	 * @return boolean|void
+	 *
+	 * @since version 1.40.0
+	 */
+	public function closeMessenger($fnum,$redirect = true)
+	{
+		$closed = false;
+
+		try{
+			$query = $this->db->getQuery(true);
+
+			$fields = array(
+				$this->db->quoteName('status') . ' = 0'
+			);
+
+			// Conditions for which records should be updated.
+			$conditions = array(
+				$this->db->quoteName('fnum') . ' LIKE ' .  $this->db->quote($fnum)
+			);
+
+			$query->update($this->db->quoteName('#__emundus_chatroom'))->set($fields)->where($conditions);
+
+			$this->db->setQuery($query);
+
+			$closed = $this->db->execute();
+
+			if($closed && $redirect)
+			{
+				$this->app->redirect('index.php');
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Could not update chatroom for fnum: ' . $fnum. preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+		}
+
+		return $closed;
+	}
 }

@@ -6,7 +6,6 @@
       <a v-if="addAction" id="add-action-btn" class="tw-btn-primary tw-w-auto tw-cursor-pointer"
          @click="onClickAction(addAction)">{{ translate(addAction.label) }}</a>
     </div>
-    <hr class="tw-w-full tw-mt-1.5 tw-mb-4">
 
     <div v-if="loading.tabs" id="tabs-loading">
       <div class="tw-flex tw-justify-between">
@@ -35,7 +34,7 @@
       </nav>
       <section id="actions" class="tw-flex tw-justify-between tw-mt-4 tw-mb-4">
         <section id="tab-actions">
-          <select v-for="filter in filters[selectedListTab]" :key="selectedListTab + '-' + filter.key"
+          <select v-for="filter in displayedFilters" :key="selectedListTab + '-' + filter.key"
                   v-model="filter.value" @change="onChangeFilter(filter)" class="tw-mr-2">
             <option v-for="option in filter.options" :key="option.value" :value="option.value">
               {{ translate(option.label) }}
@@ -130,7 +129,9 @@
             </tr>
             </thead>
             <tbody>
-            <tr v-for="item in displayedItems" :key="item.id"
+            <tr v-for="item in displayedItems"
+                :key="item.id"
+                :id="'item-' + currentTab.key + '-' + item.id"
                 class="em-border-cards table-row"
                 :class="{'em-card-neutral-100 em-card-shadow em-p-24' : viewType === 'blocs'}"
             >
@@ -174,7 +175,7 @@
                         :position="'left'"
                         v-if="tabActionsPopover && tabActionsPopover.length > 0 && filterShowOnActions(tabActionsPopover, item).length"
                         class="custom-popover-arrow">
-                      <ul style="list-style-type: none; margin: 0;" class="em-flex-col-center">
+                      <ul style="list-style-type: none; margin: 0; padding-left:0px;" class="em-flex-col-center">
                         <li v-for="action in tabActionsPopover"
                             :key="action.name"
                             :class="{'tw-hidden': !(typeof action.showon === 'undefined' || evaluateShowOn(item, action.showon))}"
@@ -359,7 +360,6 @@ export default {
           }
 
           this.setTabFilters(tab);
-
           if (typeof tab.getter !== 'undefined') {
             let url = 'index.php?option=com_emundus&controller=' + tab.controller + '&task=' + tab.getter + '&lim=' + this.numberOfItemsToDisplay + '&page=' + page;
             if (this.searches[tab.key].search !== '') {
@@ -410,7 +410,7 @@ export default {
         this.loading.items = false;
       }
     },
-    setTabFilters(tab) {
+    async setTabFilters(tab) {
       if (typeof tab.filters !== 'undefined' && tab.filters.length > 0) {
         if (typeof this.filters[tab.key] === 'undefined') {
           this.filters[tab.key] = [];
@@ -424,27 +424,13 @@ export default {
 
             if (filter.values === null) {
               if (filter.getter) {
-                const controller = typeof filter.controller !== 'undefined' ? filter.controller : tab.controller;
-                fetch('index.php?option=com_emundus&controller=' + controller + '&task=' + filter.getter)
-                  .then(response => response.json())
-                  .then(response => {
-                    if (response.status === true) {
-                      let options = response.data;
+                this.filters[tab.key].push({
+                  key: filter.key,
+                  value: filterValue,
+                  options: []
+                });
 
-                      // if options is an array of strings, convert it to an array of objects
-                      if (typeof options[0] === 'string') {
-                        options = options.map(option => ({value: option, label: option}));
-                      }
-
-                      options.unshift({value: 'all', label: this.translate(filter.label)});
-
-                      this.filters[tab.key].push({
-                        key: filter.key,
-                        value: filterValue,
-                        options: options
-                      });
-                    }
-                  });
+                this.setFilterOptions((typeof filter.controller !== 'undefined' ? filter.controller : tab.controller), filter, tab.key);
               }
             } else {
               this.filters[tab.key].push({
@@ -456,6 +442,26 @@ export default {
           });
         }
       }
+    },
+    async setFilterOptions(controller, filter, tab) {
+      return await fetch('index.php?option=com_emundus&controller=' + controller + '&task=' + filter.getter)
+        .then(response => response.json())
+        .then(response => {
+          if (response.status === true) {
+            let options = response.data;
+
+            // if options is an array of strings, convert it to an array of objects
+            if (typeof options[0] === 'string') {
+              options = options.map(option => ({value: option, label: option}));
+            }
+
+            options.unshift({value: 'all', label: this.translate(filter.label)});
+
+            this.filters[tab].find(f => f.key === filter.key).options = options;
+          } else {
+            return [];
+          }
+        });
     },
     searchItems() {
       if (this.searches[this.selectedListTab].searchDebounce !== null) {
@@ -746,6 +752,9 @@ export default {
 
       return translation;
     },
+    displayedFilters() {
+      return this.filters[this.selectedListTab].filter(filter => filter.options.length > 0);
+    },
   },
   watch: {
     numberOfItemsToDisplay() {
@@ -761,7 +770,22 @@ export default {
 }
 
 #onboarding_list .head {
-  min-height: 38px;
+  position: fixed;
+  display: flex;
+  justify-content: space-between;
+  width: -webkit-fill-available;
+  width: -moz-available;
+  width: fill-available;
+  background: var(--em-coordinator-bg);
+  top: 72px;
+  box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
+  left: 75px;
+  padding: 24px 33px 24px 33px;
+  min-height: 86px;
+}
+
+#onboarding_list .list {
+  margin-top: 77px;
 }
 
 #list-nav {
@@ -820,6 +844,7 @@ export default {
             li {
               list-style: none;
               cursor: pointer;
+              width: 100%;
             }
           }
         }

@@ -246,7 +246,7 @@ function search() {
 }
 
 $(document).ready(function () {
-	reloadData();
+	//reloadData();
 	refreshFilter();
 	var lastVal = new Object();
 	$(document).on('click', function () {
@@ -263,38 +263,6 @@ $(document).ready(function () {
 		}
 	});
 
-	$(document).on('click', 'input:button', function (e) {
-
-		if (e.event !== true) {
-			e.handle = true;
-			var name = $(this).attr('name');
-			switch (name) {
-				case 'clear-search':
-					lastVal = new Object();
-
-					let url = window.location.origin+'/index.php?option=com_emundus&controller=users&task=clear';
-					fetch(url, {
-						method: 'GET',
-					}).then((response) => {
-						if (response.ok) {
-							return response.json();
-						}
-						throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
-					}).then((result) => {
-						if (result.status) {
-							refreshFilter();
-						}
-					});
-
-					break;
-				case 'search':
-					search();
-					break;
-				default:
-					break;
-			}
-		}
-	});
 	$(document).on('click', '.pagination.pagination-sm li a', function (e) {
 		if (e.handle !== true) {
 			e.handle = true;
@@ -621,6 +589,7 @@ $(document).ready(function () {
 	});
 
 	/* Button Form actions*/
+
 	$(document).on('click', '.em-actions-form', function (e) {
 		var id = parseInt($(this).attr('id'));
 		var url = $(this).attr('url');
@@ -1539,7 +1508,7 @@ $(document).ready(function () {
 					if(result.status) {
 						if (result.sent.length > 0) {
 
-							var sent_to = '<p>' + Joomla.JText._('SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
+							var sent_to = '<p>' + Joomla.Text._('COM_EMUNDUS_MAILS_SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
 							result.sent.forEach(element => {
 								sent_to += '<li class="list-group-item alert-success">' + element + '</li>';
 							});
@@ -1547,7 +1516,7 @@ $(document).ready(function () {
 							Swal.fire({
 								position: 'center',
 								icon: 'success',
-								title: Joomla.JText._('COM_EMUNDUS_EMAILS_EMAILS_SENT') + result.sent.length,
+								title: Joomla.Text._('COM_EMUNDUS_EMAILS_EMAILS_SENT') + result.sent.length,
 								html: sent_to + '</ul>',
 								customClass: {
 									title: 'w-full justify-center',
@@ -1559,7 +1528,7 @@ $(document).ready(function () {
 						} else {
 							Swal.fire({
 								icon: 'error',
-								title: Joomla.JText._('COM_EMUNDUS_EMAILS_NO_EMAILS_SENT'),
+								title: Joomla.Text._('COM_EMUNDUS_EMAILS_NO_EMAILS_SENT'),
 								customClass: {
 									title: 'em-swal-title',
 									confirmButton: 'em-swal-confirm-button',
@@ -1610,7 +1579,7 @@ $(document).ready(function () {
 			e.handle = true;
 			var id = $(this).val();
 			var text = $('#em-modal-actions #em-export-form option:selected').attr('data-value');
-			$('#em-export').append('<li class="em-export-item" id="' + id + '-item"><strong>' + text + '</strong><button class="btn btn-danger btn-xs pull-right"><span class="material-icons">delete_outline</span></button></li>');
+			$('#em-export').append('<li class="em-export-item" id="' + id + '-item"><strong>' + text + '</strong><button class="btn btn-danger btn-xs pull-right"><span class="material-symbols-outlined">delete_outline</span></button></li>');
 		}
 	});
 

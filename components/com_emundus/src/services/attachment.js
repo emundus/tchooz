@@ -170,8 +170,8 @@ export default {
     });
   },
 
-  async getPreview(user, filename) {
-    return fetch('index.php?option=com_emundus&controller=application&task=getattachmentpreview&user=' + user + '&filename=' + filename).then(response => {
+  async getPreview(user, filename, upload_id) {
+    return fetch('index.php?option=com_emundus&controller=application&task=getattachmentpreview&user=' + user + '&filename=' + filename + '&upload_id=' + upload_id).then(response => {
       if (response.ok) {
         return response.json();
       } else {

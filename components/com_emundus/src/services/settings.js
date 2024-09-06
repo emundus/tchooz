@@ -83,11 +83,13 @@ export default {
         return response.json();
       }
       // eslint-disable-next-line no-undef
-      throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+      throw new Error(Joomla.Text._('COM_EMUNDUS_ERROR_OCCURED'));
     }).then((result) => {
       if (result.status) {
         window.location.href = window.location.origin + '/' + result.data;
       }
+    }).catch((error) => {
+      window.location.reload();
     });
   },
 
@@ -205,6 +207,20 @@ export default {
       return {
         status: false,
         msg: e.message
+      };
+    }
+  },
+  async updateTagOrdering(orderedTags) {
+    if (orderedTags.length > 0) {
+      const data = {
+        tags: orderedTags.join(',')
+      };
+
+      return fetchClient.post('updatetagsorder', data);
+    } else {
+      return {
+        status: false,
+        message: 'WRONG_PARAMETERS'
       };
     }
   }

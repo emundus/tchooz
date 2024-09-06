@@ -241,11 +241,11 @@
   color: var(--error-color) !important;
   background-color: var(--error-bg-color) !important;
 }
-.attachment-row .permissions .material-icons, .attachment-row .permissions .material-icons-outlined {
+.attachment-row .permissions .material-icons, .attachment-row .permissions .material-symbols-outlined {
   margin: 0 10px;
   opacity: 0.3;
 }
-.attachment-row .permissions .material-icons.active, .attachment-row .permissions .material-icons-outlined.active {
+.attachment-row .permissions .material-icons.active, .attachment-row .permissions .material-symbols-outlined.active {
   opacity: 1;
 }
 .attachment-row .material-symbols-outlined{
@@ -363,11 +363,11 @@
 #em-attachments #filters .searchbar-wrapper {
   position: relative;
 }
-#em-attachments #filters .searchbar-wrapper .material-icons-outlined.search {
+#em-attachments #filters .searchbar-wrapper .material-symbols-outlined.search {
   position: absolute;
   left: 8px;
 }
-#em-attachments #filters .searchbar-wrapper .material-icons-outlined.clear {
+#em-attachments #filters .searchbar-wrapper .material-symbols-outlined.clear {
   position: absolute;
   right: 8px;
 }
@@ -397,9 +397,9 @@
   color: var(--disabled-color);
   pointer-events: none;
 }
-#em-attachments #filters .actions > div.disabled .material-icons, #em-attachments #filters .actions > div.disabled .material-icons-outlined,
+#em-attachments #filters .actions > div.disabled .material-icons, #em-attachments #filters .actions > div.disabled .material-symbols-outlined,
 #em-attachments #filters .actions > select.disabled .material-icons,
-#em-attachments #filters .actions > select.disabled .material-icons-outlined {
+#em-attachments #filters .actions > select.disabled .material-symbols-outlined {
   color: var(--disabled-color);
 }
 #em-attachments #filters .refresh {
@@ -425,17 +425,17 @@
 #em-attachments .wrapper.loading {
   min-height: 50vh;
 }
-#em-attachments .wrapper .material-icons-outlined.delete {
+#em-attachments .wrapper .material-symbols-outlined.delete {
   -webkit-transition: all 0.3s;
   transition: all 0.3s;
   width: 30px;
   color: var(--red-500);
 }
-#em-attachments .wrapper .material-icons-outlined.delete.disabled {
+#em-attachments .wrapper .material-symbols-outlined.delete.disabled {
   color: var(--disabled-color);
   pointer-events: none;
 }
-#em-attachments .wrapper .material-icons-outlined.delete:hover {
+#em-attachments .wrapper .material-symbols-outlined.delete:hover {
   cursor: pointer;
   color: var(--red-500);
 }
@@ -480,7 +480,7 @@
   border-bottom: 1px solid #e0e0e0;
   white-space: nowrap;
 }
-#em-attachments table thead tr th .material-icons, #em-attachments table thead tr th .material-icons-outlined {
+#em-attachments table thead tr th .material-icons, #em-attachments table thead tr th .material-symbols-outlined {
   -webkit-transform: translateY(3px);
           transform: translateY(3px);
 }
@@ -505,7 +505,7 @@
   height: 32px;
   color: black;
 }
-#em-attachments .modal-head #actions-right .download .material-icons, #em-attachments .modal-head #actions-right .download .material-icons-outlined {
+#em-attachments .modal-head #actions-right .download .material-icons, #em-attachments .modal-head #actions-right .download .material-symbols-outlined {
   font-size: 18px;
 }
 #em-attachments .modal-head #actions-right .download span:last-child {
@@ -788,7 +788,7 @@ table .attachment-check[data-v-264bddce] {
   --text-light-color: #f2f2f3;
   --disabled-color: #c4c4c4;
 }
-.material-icons, .material-icons-outlined {
+.material-icons, .material-icons-outlined, .material-symbols-outlined {
   -webkit-transition: all 0.3s;
   transition: all 0.3s;
   font-size: 18px;

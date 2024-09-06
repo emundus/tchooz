@@ -289,7 +289,7 @@ function generate_csv(json, eltJson, objJson, options, objclass, letter) {
     }
 }
 
-function export_pdf(fnums, ids, default_export = false) {
+function export_pdf(fnums, ids, default_export = '') {
     var start = 0;
     var limit = 2;
     var forms = 0;
@@ -312,7 +312,7 @@ function export_pdf(fnums, ids, default_export = false) {
         elements: []
     };
 
-    if (default_export === false) {
+    if (default_export === '') {
         /// if at least one is checked --> forms = 1
         forms = $('[id^=felts] input:checked').length > 0 ?  1 : 0;
 
@@ -383,7 +383,7 @@ function export_pdf(fnums, ids, default_export = false) {
         $('#data').hide();
 
         $('div').remove('#chargement');
-    } else {
+    } else if (default_export === 'forms') {
         forms = 1;
         options = [
             "aid",
@@ -394,6 +394,35 @@ function export_pdf(fnums, ids, default_export = false) {
             "tags",
             "status",
             "upload"
+        ];
+    } else if (default_export === 'evaluation') {
+        forms = 0
+        assessment = 1;
+        options = [
+            "aid",
+            "afnum",
+            "aemail",
+            "aapp-sent",
+            "adoc-print",
+            "tags",
+            "status",
+            "upload",
+            "evaluation"
+        ];
+    } else if (default_export === 'decision') {
+        forms = 0;
+        assessment = 0;
+        decision = 1;
+        options = [
+            "aid",
+            "afnum",
+            "aemail",
+            "aapp-sent",
+            "adoc-print",
+            "tags",
+            "status",
+            "upload",
+            "decision"
         ];
     }
 
@@ -613,6 +642,7 @@ function export_zip(fnums){
     var form_checked = [];
     var attach_checked = [];
     var options = [];
+    let params = {};
 
     $('#felts input:checked').each(function() {
         form_checked.push($(this).val());
@@ -641,6 +671,12 @@ function export_zip(fnums){
         });
     } else {
         options.push("0");
+    }
+
+    if ($('#concat_attachments_with_form').is(":checked")) {
+        params.concat_attachments_with_form = 1;
+    } else {
+        params.concat_attachments_with_form = 0;
     }
 
     $('#data').hide();
@@ -887,7 +923,7 @@ function generate_letter() {
                             table += '<tr id="' + file.upload + '">' +
                                 '<td>' + file.filename +
                                 '<a id="em_download_doc_' + file.upload + '" target="_blank" class="em-p-8" href="' + getfile_url + file.filename + '">' +
-                                '<span class="material-icons">file_download</span>' +
+                                '<span class="material-symbols-outlined">file_download</span>' +
                                 '</a>' +
                                 '</td>' +
                                 '</tr>';

@@ -261,70 +261,24 @@ class EmundusFiltersFiles extends EmundusFilters
 
         $form_ids = array_merge($profile_form_ids, $config_form_ids);
 
-		return $this->getElementsFromFabrikForms($form_ids);
+		$unsorted_elements = $this->getElementsFromFabrikForms($form_ids);
+
+		foreach ($form_ids as $form_id) {
+			foreach ($unsorted_elements as $element) {
+				if ($element['element_form_id'] == $form_id) {
+					$elements[] = $element;
+				}
+			}
+		}
+
+		return $elements;
 	}
 
     private function getElementsFromFabrikForms($form_ids)
     {
-        $elements = [];
-        $form_ids = array_unique($form_ids);
-
-        if (!empty($form_ids)) {
-	        if ($this->h_cache->isEnabled()) {
-		        foreach($form_ids as $key => $form_id) {
-					$cache_key = 'elements_from_form_' . $form_id;
-			        $cache_elements = $this->h_cache->get($cache_key);
-
-					if (!empty($cache_elements)) {
-						$elements = array_merge($elements, $cache_elements);
-						unset($form_ids[$key]);
-					}
-		        }
-			}
-
-			if (!empty($form_ids)) {
-				$db    = Factory::getContainer()->get('DatabaseDriver');
-				$query = $db->getQuery(true);
-
-				$query->clear()
-					->select('jfe.id, jfe.plugin, jfe.label, jfe.params, jffg.form_id as element_form_id, jff.label as element_form_label')
-					->from('jos_fabrik_elements as jfe')
-					->join('inner', 'jos_fabrik_formgroup as jffg ON jfe.group_id = jffg.group_id')
-					->join('inner', 'jos_fabrik_forms as jff ON jffg.form_id = jff.id')
-					->where('jffg.form_id IN (' . implode(',', $form_ids) . ')')
-					->andWhere('jfe.published = 1')
-					->andWhere('jfe.hidden = 0');
-
-				try {
-					$db->setQuery($query);
-					$query_elements = $db->loadAssocList();
-					$elements = array_merge($elements, $query_elements);
-
-					foreach ($elements as $key => $element) {
-						$elements[$key]['label'] = Text::_($element['label']);
-						$elements[$key]['element_form_label'] = Text::_($element['element_form_label']);
-					}
-
-					if ($this->h_cache->isEnabled()) {
-						$elements_by_form = [];
-						foreach ($elements as $element) {
-							if (!isset($elements_by_form[$element['element_form_id']])) {
-								$elements_by_form[$element['element_form_id']] = [];
-							}
-							$elements_by_form[$element['element_form_id']][] = $element;
-						}
-
-						foreach ($elements_by_form as $form_id => $element_by_form) {
-							$this->h_cache->set('elements_from_form_' . $form_id, $element_by_form);
-						}
-					}
-				} catch (Exception $e) {
-					Log::add('Failed to get elements associated to profiles that current user can access : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
-				}
-			}
-        }
-
-        return $elements;
+	    require_once(JPATH_ROOT . '/components/com_emundus/helpers/fabrik.php');
+	    $h_fabrik = new EmundusHelperFabrik();
+	    return $h_fabrik->getElementsFromFabrikForms($form_ids, ['panel', 'display']);
     }
 
 	private function setDefaultFilters($config)

@@ -4379,6 +4379,8 @@ class EmundusHelperUpdate
 			$storage_value['second_level_words']       = base64_encode('drop,update,set,admin,select,password,concat,login,load_file,ascii,char,union,group by,order by,insert,values,where,substring,benchmark,md5,sha1,schema,row_count,compress,encode,information_schema,script,javascript,img,src,body,iframe,frame,$_POST,eval,$_REQUEST,base64_decode,gzinflate,gzuncompress,gzinflate,strtrexec,passthru,shell_exec,createElement');
 
 			$storage_value['email_active'] = 0;
+			$storage_value['email_from_domain'] = 'security@emundus.fr';
+			$storage_value['email_from_name'] = 'eMundus Security';
 
 			// Exceptions
 			$storage_value['exclude_exceptions_if_vulnerable'] = 1;

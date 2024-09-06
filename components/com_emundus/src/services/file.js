@@ -36,5 +36,17 @@ export default {
         message: e.message
       };
     }
+  },
+  async getFileIdFromFnum(fnum) {
+    try {
+      return await client.get('getFileIdFromFnum', {
+        fnum: fnum
+      });
+    } catch (e) {
+      return {
+        status: false,
+        message: e.message
+      };
+    }
   }
 }

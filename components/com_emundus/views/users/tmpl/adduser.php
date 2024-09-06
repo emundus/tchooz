@@ -500,6 +500,7 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
                 if (other_profiles_no_published === false) {
                     $('#groups_chosen .search-choice-close').click();
                     $('.em-hidden-nonapli-fields').hide();
+                    $('.em-hidden-nonapli-fields select').val('').trigger("liszt:updated");
                 } else {
                     $('.em-hidden-nonapli-fields').show();
                 }

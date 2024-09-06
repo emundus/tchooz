@@ -26,41 +26,39 @@ Factory::getApplication()->getSession()->set('application_layout', 'evaluation')
 
 <div class="row">
     <div class="panel panel-default widget em-container-evaluation">
-        <div class="panel-heading em-container-evaluation-heading">
+        <div class="panel-heading em-container-evaluation-heading !tw-bg-profile-full">
             <h3 class="panel-title">
                 <span class="glyphicon glyphicon-check"></span>
 				<?= Text::_('COM_EMUNDUS_ASSESSMENT'); ?>
 				<?php if (EmundusHelperAccess::asAccessAction(8, 'c', Factory::getApplication()->getIdentity()->id, $this->fnum) && !empty($this->url_form)) : ?>
-                    <a class="  clean" target="_blank"
-                       href="<?= Uri::base(); ?>index.php?option=com_emundus&controller=evaluation&task=pdf&user=<?= $this->student->id; ?>&fnum=<?= $this->fnum; ?>">
-                        <button class="btn btn-default"
-                                data-title="<?= Text::_('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF'); ?>" data-toggle="tooltip"
-                                data-placement="bottom" title="<?= Text::_('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF'); ?>">
-                            <span class="material-icons">file_download</span></button>
-                    </a>
+                    <button id="download-evaluation-pdf"
+                            class="em-mt-8 em-ml-8"
+                            data-fnum="<?= $this->fnum ?>"
+                            data-toggle="tooltip"
+                            data-placement="right"
+                            title="<?= Text::_('COM_EMUNDUS_APPLICATION_DOWNLOAD_EVALUATION_FORM'); ?>"
+                    >
+                        <span class="material-symbols-outlined" data-fnum="<?= $this->fnum ?>">file_download</span>
+                    </button>
 				<?php endif; ?>
-                <div class="em-flex-row">
 					<?php if (!empty($this->url_form)) : ?>
                         <a href="<?= $this->url_form; ?>" target="_blank" class="em-flex-row"
                            title="<?= Text::_('COM_EMUNDUS_EVALUATIONS_OPEN_EVALUATION_FORM_IN_NEW_TAB_DESC'); ?>"><span
-                                    class="material-icons">open_in_new</span></a>
+                                    class="material-symbols-outlined">open_in_new</span></a>
 					<?php endif; ?>
 					<?php
 					if (EmundusHelperAccess::asAccessAction(5, 'd', $this->_user->id, $this->fnum)) :?>
-                        <div>
                             <button class="btn btn-danger btn-xs btn-attach"
                                     title="<?= Text::_('COM_EMUNDUS_EVALUATIONS_DELETE_SELECTED_EVALUATIONS'); ?>"
                                     id="em_delete_evals" name="em_delete_evals"
                                     link="index.php?option=com_emundus&controller=evaluation&task=delevaluation&applicant=<?= $this->student->id; ?>&fnum=<?= $this->fnum; ?>">
-                                <span class="material-icons">delete_outline</span></button>
-                        </div>
+                                <span class="material-symbols-outlined">delete_outline</span></button>
 					<?php endif; ?>
-                </div>
             </h3>
             <div class="btn-group pull-right">
-                <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_back</span>
+                <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-symbols-outlined">arrow_back</span>
                 </button>
-                <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_forward</span>
+                <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-symbols-outlined">arrow_forward</span>
                 </button>
             </div>
         </div>
@@ -300,9 +298,12 @@ Factory::getApplication()->getSession()->set('application_layout', 'evaluation')
             });
         }
     });
-</script>
-<script>
-    $(function () {
-        $('[data-toggle="tooltip"]').tooltip()
-    })
+
+    document.getElementById('download-evaluation-pdf').addEventListener('click', function (e) {
+        if (typeof export_pdf === 'function') {
+            export_pdf(JSON.stringify({0: <?= $this->fnum ?>}), null, 'evaluation');
+        } else {
+            console.error('Function export_pdf does not exist');
+        }
+    });
 </script>

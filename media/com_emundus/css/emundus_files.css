@@ -457,14 +457,15 @@ fieldset.em_filters_filedset > label, fieldset#em_select_filter > label, .panel-
 }
 
 .g-back-office-emundus-tableau .navbar .nav > li > a {
-    padding: 0 15px 0;
+    padding: 4px 15px;
+    border-radius: 6px;
     margin: 0;
     display: flex;
     align-items: center;
     color: var(--neutral-0);
 }
 .g-back-office-emundus-tableau .navbar .nav > li > a:hover{
-    background: transparent;
+    background: #ffffff30;
 }
 
 .navbar.navbar-inverse {
@@ -489,6 +490,11 @@ button#em-close-file {
     margin-top: -3px;
     height: 36px;
 }
+
+.back-button-menuactions:hover {
+    background: #ffffff30 !important;
+}
+
 .navbar.navbar-inverse > span {
     font-size: 1rem;
     padding: 0 10px;
@@ -990,7 +996,7 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 
 .g-back-office-emundus-tableau div#em-files-filters .panel-heading h3, .view-users #em-user-filters .panel-heading h3 {
     font-size: 1rem;
-    font-weight: bold;
+    font-weight: normal;
 }
 
 #filters #quick .selectize-control  {
@@ -1387,11 +1393,11 @@ div#em-assoc-files .pull-right.btn-group {
     display: block;
 }
 
-div#em-assoc-files .pull-right.btn-group .material-icons-outlined{
+div#em-assoc-files .pull-right.btn-group .material-symbols-outlined{
     font-size: 24px;
 }
 
-div#em-assoc-files .panel-title .material-icons-outlined {
+div#em-assoc-files .panel-title .material-symbols-outlined {
     font-size: 27px;
 }
 
@@ -2846,9 +2852,23 @@ div#em-modal-actions .panel-heading h5 {
 }
 
 /* MENU ACTIONS */
+.container-nav h1.container-menuaction-title {
+    color: var(--neutral-0);
+    white-space: nowrap;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding-inline: 15px;
+    font-size: var(--em-applicant-font-size);
+}
+
+.container-nav .menuaction-actions-container {
+    border-left: 1px solid var(--neutral-0);
+}
+
 .navbar.navbar-inverse {
     border-radius: 0;
-    padding: 8px 7px;
+    padding: 0px 7px;
     height: 40px !important;
     min-height: auto !important;
 }
@@ -3046,11 +3066,6 @@ a.copy-0:focus {
         text-shadow: none;
         color: var(--neutral-0);
         padding: 0.3rem 0.5rem !important;
-    }
-
-    .g-back-office-emundus-tableau div#em-files-filters .panel-heading h3, .view-users #em-user-filters .panel-heading h3 {
-        font-size: 1.3rem;
-        margin-top: 11px;
     }
 
     div#em_filters fieldset select {

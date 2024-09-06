@@ -110,7 +110,11 @@ export default {
 
     getDocuments(profile_id) {
       formService.getDocuments(profile_id).then(response => {
-        this.documentsList = response.data;
+        if (response.status && response.data) {
+          this.documentsList = response.data;
+        } else {
+          this.documentsList = [];
+        }
       });
     },
 

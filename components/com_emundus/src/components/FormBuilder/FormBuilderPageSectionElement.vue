@@ -23,9 +23,9 @@
         <span class="fabrikElementTip fabrikElementTipAbove">{{ element.params.rollover.replace(/(<([^>]+)>)/gi, "") }}</span>
       </div>
       <div id="element-action-icons" class="tw-flex tw-items-end tw-mt-2">
-        <span class="material-icons-outlined handle tw-cursor-grab">drag_indicator</span>
-        <span id="delete-element" class="material-icons-outlined tw-text-red-600 tw-cursor-pointer" @click="deleteElement">delete</span>
-        <span v-if="sysadmin" class="material-icons-outlined tw-cursor-pointer tw-ml-2" @click="openAdmin">content_copy</span>
+        <span class="material-symbols-outlined handle tw-cursor-grab">drag_indicator</span>
+        <span id="delete-element" class="material-symbols-outlined tw-text-red-600 tw-cursor-pointer" @click="deleteElement">delete</span>
+        <span v-if="sysadmin" class="material-symbols-outlined tw-cursor-pointer tw-ml-2" @click="openAdmin">content_copy</span>
       </div>
     </div>
     <div :class="'element-field fabrikElement' + element.plugin" @click="triggerElementProperties">
@@ -554,6 +554,11 @@ export default {
     .fabrikElementContent {
       margin-left: var(--em-spacing-3);
       line-height: 24px;
+      p:after {
+        content: "";
+        display: inline-block;
+        width: 0px;
+      }
     }
   }
 }

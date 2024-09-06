@@ -119,7 +119,7 @@ button#back:hover, button#back:active, button#back:focus,
     border: 1px solid var(--em-primary-color) !important;
 }
 
-#tab_adding_link a span.material-icons-outlined {
+#tab_adding_link a span.material-symbols-outlined {
     color: var(--em-primary-color);
 }
 
@@ -504,7 +504,7 @@ a.btn.btn-success:not(.btn-xs) {
     transition: transform .3s;
 }
 
-.mod_emundus_applications___content_app:hover .material-symbols-outlined{
+.mod_emundus_applications___content_app:hover .mod_emundus_applications__container .material-symbols-outlined{
     color: var(--neutral-0);
 }
 
@@ -878,6 +878,50 @@ circle.circle {
     margin-bottom: 12px;
 }
 
+/* Nombre de commentaires */
+.comments-icon-wrapper .nb-comments {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: -10px;
+    right: -12px;
+    width: 24px;
+    height: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 90%;
+}
+
+/* Collaboration */
+
+.collaborators-icon-wrapper {
+    border-radius: 50%;
+    position: relative;
+    padding: 6px;
+
+    .material-icons-outlined {
+        width: 22px;
+        height: 22px;
+        font-size: 22px;
+        text-align: center;
+    }
+
+    .nb-collaborators {
+        position: absolute;
+        top: -8px;
+        right: -15px;
+        padding: 5px;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        border-width: 2px;
+        text-align: center;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 90%;
+    }
+}
+
 /*******************
  * Fin peps tuiles
  *******************/
@@ -957,7 +1001,7 @@ circle.circle {
     }
 
 
-    span.material-icons-outlined {
+    span.material-symbols-outlined {
         flex-basis: auto !important;
     }
 

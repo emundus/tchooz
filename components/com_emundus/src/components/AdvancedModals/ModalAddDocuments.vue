@@ -22,7 +22,7 @@
           {{ translations.createDocument }}
         </h4>
         <button class="tw-cursor-pointer tw-bg-transparent" @click.prevent="$modal.hide('modalAddDocuments')">
-          <span class="material-icons-outlined">close</span>
+          <span class="material-symbols-outlined">close</span>
         </button>
       </div>
 

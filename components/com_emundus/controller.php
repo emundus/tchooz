@@ -710,18 +710,23 @@ class EmundusController extends JControllerLegacy
 
 		$aid = $session->get('emundusUser');
 
+		$m_application = $this->getModel('Application');
 		$m_profile = $this->getModel('Profile');
 
 		$infos     = $m_profile->getFnumDetails($fnum);
 
-		if ($aid->id != $infos['applicant_id']) {
+		$my_shared_files = $m_application->getMyFilesRequests($aid->id);
+		$fnums_shared = array_map(function($item) {
+			return $item->fnum;
+		}, $my_shared_files);
+
+		if ($aid->id != $infos['applicant_id'] && !in_array($fnum, $fnums_shared)) {
 			return;
 		}
 
 		$m_profile->initEmundusSession($fnum);
 
 		if (empty($redirect)) {
-			$m_application = $this->getModel('Application');
 			if (empty($confirm)) {
 				$redirect = $m_application->getFirstPage();
 			}
@@ -1010,7 +1015,7 @@ class EmundusController extends JControllerLegacy
 						if ($cpt >= $attachment['nbmax']) {
 							$error = JText::_('COM_EMUNDUS_ATTACHMENTS_MAX_ALLOWED') . $attachment['nbmax'];
 							if ($format == "raw") {
-								echo '{"aid":"0","status":false,"message":"' . $error . '" }';
+								JLog::add($error, JLog::ERROR, 'com_emundus.errors');
 							}
 							else {
 								$this->app->enqueueMessage($error, 'error');
@@ -1790,7 +1795,7 @@ class EmundusController extends JControllerLegacy
 		}
 
 		// Check if the user is an applicant and it is his file.
-		if (EmundusHelperAccess::isApplicant($current_user->id) && $current_user->id == $uid && !EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id)) {
+		if (!EmundusHelperAccess::isFnumMine($fnum, $current_user->id) && !EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id)) {
 			if ($fileInfo->can_be_viewed != 1 && !empty($fileInfo)) {
 				die (JText::_('ACCESS_DENIED'));
 			}

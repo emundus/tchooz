@@ -83,7 +83,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 			if ($this->checkPath($fnumInfos['applicant_id'])) {
 				$session = $this->getFormSession($fnum, $formId);
 				$data    = !empty($session->data) ? $session->data : [];
-				if (!empty($data)) {
+				if (!empty($data) && !empty($data[$fullName])) {
 					$nbAttachment += count($data[$fullName]);
 				}
 
@@ -345,7 +345,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 
 			$attachmentResult = $this->getAttachment($attachment_id);
 			$nbMaxFile        = (int) $attachmentResult->nbmax;
-			$result           = array('limitObtained' => $nbMaxFile <= sizeof($uploadResult));
+			$result           = array('status' => true,'files' => [],'limitObtained' => $nbMaxFile <= sizeof($uploadResult));
 
 			foreach ($uploadResult as $key => $upload) {
 				if (is_array($upload)) {
@@ -631,12 +631,10 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 
 		}
 
-		if (version_compare(phpversion(), '5.2.3', '<')) {
-			$bits['value'] = htmlspecialchars($value, ENT_COMPAT, 'UTF-8');
+		if(is_array($value)) {
+			$value = $value['filename'];
 		}
-		else {
-			$bits['value'] = htmlspecialchars($value, ENT_COMPAT, 'UTF-8', false);
-		}
+		$bits['value'] = htmlspecialchars($value, ENT_COMPAT, 'UTF-8', false);
 
 		$bits['class']             .= ' ' . $params->get('text_format');
 		$bits['attachmentId']      = $params->get('attachmentId');

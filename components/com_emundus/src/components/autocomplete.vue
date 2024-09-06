@@ -52,12 +52,7 @@ export default {
   },
 
   created() {
-    const sleep = milliseconds => {
-      return new Promise(resolve => setTimeout(resolve, milliseconds));
-    };
-    sleep(2000).then(() => {
-      this.search = this.year;
-    });
+    this.search = this.year;
   },
 
   methods: {

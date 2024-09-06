@@ -172,7 +172,7 @@ $timezone      = new DateTimeZone($offset);
                             <?php if ($value == 0 && $user->active != -1) : ?>
                                 <td>
                                     <div class="em-cell">
-                                        <span class="material-icons" style="color:var(--main-500);"
+                                        <span class="material-symbols-outlined" style="color:var(--main-500);"
                                               title="<?php echo JText::_('COM_EMUNDUS_USERS_ACTIVATE_ACCOUNT_SINGLE') ?>">verified</span>
                                     </div>
                                 </td>
@@ -243,9 +243,8 @@ $timezone      = new DateTimeZone($offset);
     </div>
 
 <?php else: ?>
-    <div class="text-center tw-mt-6">
-        <h1 class="tw-mb-8 !tw-text-neutral-600"><?= $this->datas ?></h1>
-        <div class="no-result tw-bg-no-repeat tw-w-64 tw-h-64 tw-my-0 tw-mx-auto"></div>
+    <div class="text-center">
+        <div class="no-result tw-bg-no-repeat tw-w-64 tw-h-64 tw-my-0 tw-mx-auto tw-mt-6"></div>
     </div>
 <?php endif; ?>
 <script>

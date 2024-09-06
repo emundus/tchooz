@@ -192,7 +192,7 @@ class PlgFabrik_FormEmundusconfirmpostehesp extends plgFabrik_Form
 			JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
 		}
         $dispatcher->trigger('onAfterSubmitFile', [$student->id, $student->fnum]);
-        $dispatcher->trigger('callEventHandler', ['onAfterSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
+        $dispatcher->trigger('onCallEventHandler', ['onAfterSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
 
 		$student->candidature_posted = 1;
 

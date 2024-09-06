@@ -19,10 +19,22 @@
       </li>
     </ul>
     <div id="properties">
+
+      <!-- General properties -->
       <div v-if="tabs[0].active" id="element-parameters" class="tw-p-4">
+
+        <!-- Element label -->
         <label for="element-label">{{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_LABEL') }}</label>
         <input id="element-label" name="element-label" class="tw-w-full" type="text"
                v-model="element.label[shortDefaultLang]"/>
+
+        <!-- Help text -->
+        <div v-if="element.params" class="tw-mt-4">
+          <label for="element-rollover">{{ translate('COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT') }}</label>
+          <input id="element-rollover" name="element-alias" type="text" v-model="element.params.rollover" />
+        </div>
+
+        <!-- Publish/Unpublish -->
         <div class="tw-flex tw-items-center tw-justify-between tw-w-full tw-pt-4 tw-pb-4">
           <span>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_UNPUBLISH") }}</span>
           <div class="em-toggle">
@@ -32,6 +44,7 @@
           </div>
         </div>
 
+        <!-- Mandatory/Optional -->
         <div class="tw-flex tw-items-center tw-justify-between tw-w-full tw-pt-4 tw-pb-4" v-show="!['display','panel'].includes(this.element.plugin)">
           <span>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_REQUIRED") }}</span>
           <div class="em-toggle">
@@ -42,6 +55,7 @@
           </div>
         </div>
 
+        <!-- Advanced formatting for panel only -->
         <div class="tw-flex tw-items-center tw-justify-between tw-w-full tw-pt-4 tw-pb-4" v-show="this.element.plugin == 'panel'">
           <span>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_ADVANCED_FORMAT") }}</span>
           <div class="em-toggle">
@@ -51,6 +65,7 @@
           </div>
         </div>
 
+        <!-- Content for panel only -->
         <div class="tw-w-full tw-pt-4 tw-pb-4" v-show="this.element.plugin == 'panel'">
           <label for="element-default">{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_CONTENT") }}</label>
 
@@ -69,8 +84,17 @@
               :editor-content-classes="['tw-bg-white']"
           />
         </div>
+      </div>
 
-        <div class="tw-flex tw-items-center tw-justify-between tw-w-full tw-pt-4 tw-pb-4" v-if="sysadmin">
+      <!-- Advanced settings -->
+      <div v-if="tabs[1].active" class="tw-p-4 tw-flex tw-flex-col tw-gap-3">
+        <div v-if="element.params">
+          <label for="element-alias">{{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_ALIAS') }}</label>
+          <input id="element-alias" name="element-alias" type="text" v-model="element.params.alias" @keyup="formatAlias" />
+          <!--            <span class="mt-2" style="font-size: small;">{{translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_ALIAS_HELPTEXT')}}</span>-->
+        </div>
+
+        <div class="tw-flex tw-justify-between tw-w-full" v-if="sysadmin">
           <span>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_HIDDEN") }}</span>
           <div class="em-toggle">
             <input type="checkbox" class="em-toggle-check" v-model="isHidden" @click="toggleHidden">
@@ -79,11 +103,10 @@
           </div>
         </div>
 
-      </div>
-      <div v-if="tabs[1].active" class="tw-p-4">
         <FormBuilderElementParams :element="element" :params="params" :key="element.id" :databases="databases"/>
       </div>
     </div>
+
     <div class="tw-flex tw-items-center tw-justify-between actions tw-m-4">
       <button class="tw-btn-primary" @click="saveProperties()">
         {{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_SAVE") }}
@@ -151,6 +174,8 @@ export default {
 
       loading: false,
       editorPlugins: ['history', 'link', 'image', 'bold', 'italic', 'underline','left','center','right','h1', 'h2', 'ul'],
+
+      advancedSettings: false,
     };
   },
   setup() {
@@ -238,6 +263,11 @@ export default {
         this.tabs[0].active = true;
         this.tabs[1].published = false;
       }
+    },
+    formatAlias(){
+      this.element.params.alias = this.element.params.alias.toLowerCase().replace(/ /g, '_');
+      this.element.params.alias = this.element.params.alias.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      this.element.params.alias = this.element.params.alias.replace(/[^a-z0-9_]/g, '');
     }
   },
   computed: {

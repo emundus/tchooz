@@ -173,7 +173,7 @@ class PlgFabrik_FormEmundusRsaauthentication extends plgFabrik_Form
 					{
 						PluginHelper::importPlugin('emundus');
 						$dispatcher = JEventDispatcher::getInstance();
-						$results    = $dispatcher->trigger('callEventHandler', ['onGetUsername', ['datas' => $decrypted, 'attributes' => $attributes]]);
+						$results    = $dispatcher->trigger('onCallEventHandler', ['onGetUsername', ['datas' => $decrypted, 'attributes' => $attributes]]);
 
 						if (is_array($results) && !empty($results[0]['onGetUsername']))
 						{

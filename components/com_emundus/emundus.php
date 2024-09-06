@@ -9,11 +9,13 @@
 // No direct access
 defined('_JEXEC') or die('ACCESS_DENIED');
 
+use Joomla\CMS\Access\Exception\NotAllowed;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\Component\Emundus\Site\Exception\EmundusException;
 
 $app = Factory::getApplication();
 
@@ -195,6 +197,34 @@ Text::script('COM_EMUNDUS_COMMENTS_ADD_COMMENT');
 Text::script('COM_EMUNDUS_COMMENTS_ERROR_PLEASE_COMPLETE');
 Text::script('COM_EMUNDUS_COMMENTS_ENTER_COMMENT');
 Text::script('COM_EMUNDUS_COMMENTS_SENT');
+Text::script('COM_EMUNDUS_FILES_ADD_COMMENT');
+Text::script('COM_EMUNDUS_FILES_CANNOT_ACCESS_COMMENTS');
+Text::script('COM_EMUNDUS_FILES_CANNOT_ACCESS_COMMENTS_DESC');
+Text::script('COM_EMUNDUS_FILES_COMMENT_TITLE');
+Text::script('COM_EMUNDUS_FILES_COMMENT_BODY');
+Text::script('COM_EMUNDUS_FILES_VALIDATE_COMMENT');
+Text::script('COM_EMUNDUS_FILES_COMMENT_DELETE');
+Text::script('COM_EMUNDUS_COMMENTS_VISIBLE_PARTNERS');
+Text::script('COM_EMUNDUS_COMMENTS_VISIBLE_ALL');
+Text::script('COM_EMUNDUS_COMMENTS_ANSWERS');
+Text::script('COM_EMUNDUS_COMMENTS_ANSWER');
+Text::script('COM_EMUNDUS_COMMENTS_ADD_COMMENT_ON');
+Text::script('COM_EMUNDUS_COMMENTS_CANCEL');
+Text::script('COM_EMUNDUS_COMMENTS_UPDATE_COMMENT');
+Text::script('COM_EMUNDUS_COMMENTS_ADD_COMMENT_PLACEHOLDER');
+Text::script('COM_EMUNDUS_COMMENTS_CLOSE_COMMENT_THREAD');
+Text::script('COM_EMUNDUS_COMMENTS_REOPEN_COMMENT_THREAD');
+Text::script('COM_EMUNDUS_COMMENTS_SEARCH');
+Text::script('COM_EMUNDUS_COMMENTS_ALL_THREAD');
+Text::script('COM_EMUNDUS_COMMENTS_OPENED_THREAD');
+Text::script('COM_EMUNDUS_COMMENTS_CLOSED_THREAD');
+Text::script('COM_EMUNDUS_COMMENTS_EDITED');
+Text::script('COM_EMUNDUS_COMMENTS_NO_COMMENTS');
+Text::script('COM_EMUNDUS_COMMENTS_VISIBLE_ALL_OPT');
+Text::script('COM_EMUNDUS_COMMENTS_CONFIRM_DELETE');
+Text::script('COM_EMUNDUS_COMMENTS_CONFIRM_DELETE_TEXT');
+Text::script('COM_EMUNDUS_COMMENTS_ADD_GLOBAL_COMMENT');
+
 Text::script('COM_EMUNDUS_ACCESS_SHARE_PROGRESS');
 Text::script('COM_EMUNDUS_ACCESS_SHARE_SUCCESS');
 Text::script('COM_EMUNDUS_ACCESS_ERROR_REQUIRED');
@@ -239,6 +269,9 @@ Text::script('COM_EMUNDUS_FILTERS_SELECT_ALL');
 Text::script('COM_EMUNDUS_FILES_FILE');
 Text::script('COM_EMUNDUS_FILES_FILES');
 Text::script('COM_EMUNDUS_FILES_SELECT_ALL_FILES');
+Text::script('COM_EMUNDUS_FILES_OR_CONNECTOR');
+Text::script('COM_EMUNDUS_FILES_UNSELECT_ALL_FILES');
+Text::script('COM_EMUNDUS_FILES_UNSELECT_ALL_FILES_2');
 Text::script('COM_EMUNDUS_USERS_SELECT_USER');
 Text::script('COM_EMUNDUS_USERS_SELECT_USERS');
 Text::script('COM_EMUNDUS_APPLICATION_WARNING_CHANGE_STATUS');
@@ -766,7 +799,7 @@ elseif ($user->guest && $name != 'emailalert' && $name != 'programme' && $name !
 	PluginHelper::importPlugin('emundus', 'custom_event_handler');
 	$app->triggerEvent('onCallEventHandler', ['onAccessDenied', []]);
 
-	$controller->setRedirect('index.php', Text::_("ACCESS_DENIED"), 'error');
+	throw new EmundusException(Text::_('JERROR_ALERTNOAUTHOR'), 403, null, false, false);
 }
 else {
 	if ($name != 'search_engine') {

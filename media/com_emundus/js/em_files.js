@@ -474,18 +474,42 @@ function openFiles(fnum, page = 0, vue = false) {
     var cid = parseInt(fnum.fnum.substr(14, 7));
     var sid = parseInt(fnum.fnum.substr(21, 7));
 
-    $('#em-assoc-files .panel-body').empty();
+    if (document.getElementById('em-assoc-files')) {
+        $('#em-assoc-files .panel-body').empty();
+
+        $.ajax({
+            type: 'get',
+            url: 'index.php?option=com_emundus&view=application&fnum=' + fnum.fnum + '&Itemid=' + itemId + '&format=raw&layout=assoc_files',
+            dataType: 'html',
+            success: function (result) {
+                if (result) {
+                    $('#em-assoc-files .panel-body').append(result);
+                    document.getElementById('em-assoc-files').style.display = 'block';
+                } else {
+                    document.getElementById('em-assoc-files').style.display = 'none';
+                }
+
+            },
+            error: function (jqXHR) {
+                console.log(jqXHR.responseText);
+            }
+        });
+    }
 
     $.ajax({
         type: 'get',
-        url: 'index.php?option=com_emundus&view=application&fnum=' + fnum.fnum + '&Itemid=' + itemId + '&format=raw&layout=assoc_files',
+        url: 'index.php?option=com_emundus&view=application&fnum=' + fnum.fnum + '&Itemid=' + itemId + '&format=raw&layout=collaborate',
         dataType: 'html',
         success: function (result) {
             if (result) {
-                $('#em-assoc-files .panel-body').append(result);
-                document.getElementById('em-assoc-files').style.display = 'block';
+                var tag = document.createElement("script");
+                tag.src = "media/com_emundus/js/collaborate.js";
+                document.getElementsByTagName("head")[0].appendChild(tag);
+
+                $('#em-collaborators .panel-body').append(result);
+                document.getElementById('em-collaborators').style.display = 'block';
             } else {
-                document.getElementById('em-assoc-files').style.display = 'none';
+                document.getElementById('em-collaborators').style.display = 'none';
             }
 
         },
@@ -1920,7 +1944,7 @@ $(document).ready(function() {
                                 '<option value="0">'+Joomla.Text._('COM_EMUNDUS_FILTERS_PLEASE_SELECT_FILTER')+'</option>' +
                                 '</select>'+
                                 '<div class="em-flex-row em-flex-row-justify-end em-mt-8">' +
-                                '<button class="tw-btn-tertiary em-w-auto" id="delfilter" style="border-radius: 4px;" title="'+Joomla.Text._('COM_EMUNDUS_ACTIONS_DELETE')+'">'+Joomla.Text._('COM_EMUNDUS_ACTIONS_DELETE')+'</button>' +
+                                '<button class="tw-btn-tertiary em-w-auto" id="delfilter" style="margin-right: 8px;" title="'+Joomla.Text._('COM_EMUNDUS_ACTIONS_DELETE')+'">'+Joomla.Text._('COM_EMUNDUS_ACTIONS_DELETE')+'</button>' +
                                 '<button class="tw-btn-primary em-w-auto" id="savefilter" title="'+Joomla.Text._('COM_EMUNDUS_FILES_SAVE_FILTER')+'">'+Joomla.Text._('COM_EMUNDUS_FILES_SAVE_FILTER')+'</button>'+
                                 '</div>' +
                                 '</div>' +
@@ -3250,7 +3274,7 @@ $(document).ready(function() {
                     '<option value="0">'+Joomla.Text._('COM_EMUNDUS_FILTERS_PLEASE_SELECT_FILTER')+'</option>' +
                     '</select>'+
                     '<div class="em-flex-row em-flex-row-justify-end em-mt-8">' +
-                    '<button class="tw-btn-tertiary em-w-auto" id="delPDFfilter" style="border-radius: 4px;" title="'+Joomla.Text._('COM_EMUNDUS_ACTIONS_DELETE')+'">'+Joomla.Text._('COM_EMUNDUS_ACTIONS_DELETE')+'</button>'+
+                    '<button class="tw-btn-tertiary em-w-auto" id="delPDFfilter" style="margin-right:8px;" title="'+Joomla.Text._('COM_EMUNDUS_ACTIONS_DELETE')+'">'+Joomla.Text._('COM_EMUNDUS_ACTIONS_DELETE')+'</button>'+
                     '<button class="tw-btn-primary em-w-auto" id="savePDFfilter" title="'+Joomla.Text._('COM_EMUNDUS_FILES_SAVE_FILTER')+'">'+Joomla.Text._('COM_EMUNDUS_FILES_SAVE_FILTER')+'</button>'+
                     '</div>' +
                     '</div>' +
@@ -4619,7 +4643,7 @@ $(document).ready(function() {
                         addLoader();
                         $.ajax({
                             type: 'POST',
-                            url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=clear',
+                            url: '/index.php?option=com_emundus&controller='+$('#view').val()+'&task=clear',
                             dataType: 'json',
                             success: function(result) {
                                 if (result.status) {
@@ -6402,18 +6426,17 @@ function sendMail(data)
 
             if (result.status) {
                 if (result.sent.length > 0) {
-                    if(result.sent.length < 3) {
-                        var sent_to = '<p>' + Joomla.JText._('SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
+                    let sent_to = '<p>' + Joomla.Text._('COM_EMUNDUS_MAILS_SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
+                    if (result.sent.length < 3) {
                         result.sent.forEach(function (element) {
                             sent_to += '<li class="list-group-item alert-success">' + element + '</li>';
                         });
                     } else {
-                        var sent_to = '<p>' + Joomla.JText._('SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
                         sent_to += '<li class="list-group-item alert-success">' + result.sent[0] + '</li>';
                         result.sent.shift();
                         sent_to += '<li class="list-group-item alert-success" sended="'+result.sent.join(', ')+'">+' + (result.sent.length) + '</li>';
                     }
-
+                    sent_to += '</ul>';
                     addLoader();
 
                     reloadData($('#view').val());
@@ -6422,7 +6445,7 @@ function sendMail(data)
                     Swal.fire({
                         icon: 'success',
                         title: Joomla.Text._('COM_EMUNDUS_EMAILS_EMAILS_SENT') + result.sent.length,
-                        html: sent_to + '</ul>',
+                        html: sent_to,
                         customClass: {
                             title: 'em-swal-title',
                             confirmButton: 'em-swal-confirm-button',

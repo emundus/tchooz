@@ -35,7 +35,7 @@
                :key="document.id"
                class="em-document-dropzone-card tw-cursor-grab handle tw-mr-2">
             <button type="button" class="tw-float-right tw-bg-transparent" @click="deleteDoc(indexDoc,document.id)">
-              <span class="material-icons-outlined">close</span>
+              <span class="material-symbols-outlined">close</span>
             </button>
             <div class="tw-flex tw-items-center tw-w-full tw-justify-center">
               <div class="tw-flex tw-flex-col tw-items-center em-edit-cursor" @click="editName(document)">

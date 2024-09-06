@@ -97,9 +97,10 @@
   background: transparent;
   border: 1px solid transparent;
   border-radius: var(--em-coordinator-br);
-  padding: 6px 20px;
-  color: var(--neutral-900);
+  padding: 6px 0 12px 0;
+  color: var(--neutral-900) !important;
   font-family: var(--em-profile-font), Inter, sans-serif;
+  width: fit-content;
 }
 
 .em-back-button:focus{
@@ -816,7 +817,7 @@ input:focus + .em-slider {
 
 .em-profile-color{
   color: var(--em-profile-color);
-  &:hover {
+  &:visited {
     color: var(--em-profile-color);
     filter: brightness(0.8);
   }
@@ -1594,7 +1595,7 @@ input:focus + .em-slider {
   border: 1px solid var(--neutral-200);
 }
 
-.em-input-card{
+.em-input-card:not(.hika_address_element){
   border-radius: var(--em-coordinator-br);
   padding: 12px 16px;
   height: auto;
@@ -1651,9 +1652,14 @@ input:focus + .em-slider {
   padding: 32px;
 }
 
-.go-to-campaign-link a:hover {
-  filter: brightness(0.8);
+.go-to-campaign-link,.em-campaign-tag,
+.go-to-campaign-link:hover,.em-campaign-tag:hover {
   color: var(--em-profile-color);
+}
+
+.go-to-campaign-link:visited,.em-campaign-tag:visited,
+.go-to-campaign-link:visited:hover,.em-campaign-tag:visited:hover {
+  color: color-mix(in srgb,var(--em-profile-color),#000 30%);
 }
 
 /** LIST **/
@@ -1762,7 +1768,30 @@ button.em-swal-delete-button:hover{
 
   .swal2-icon-content {
     width: 100%;
+    justify-content: center;
   }
+}
+
+.swal2-container.swal2-center.swal2-shown{
+  .em-flex-column{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+}
+
+.swal2-content .swal2-validation-message {
+  margin-top: 24px;
+  color: var(--neutral-800);
+  gap: 6px;
+  align-items: flex-start;
+  padding: 8px 18px;
+}
+
+.swal2-validation-message::before {
+  display: none !important;
 }
 
 /** Vue Modal - Translation tool **/
@@ -1915,17 +1944,47 @@ button.em-swal-delete-button:hover{
   }
 }
 
+.em-no-profile-picture-big {
+  color: var(--em-profile-color);
+  border: solid 3px var(--transparent);
+}
+
+.em-no-profile-picture-big:before{
+  background-color: var(--em-profile-color);
+  color: white;
+  opacity: 1;
+  content: attr(data-initials);
+  display: inline-block;
+  font-weight: bold;
+  border-radius: 50%;
+  vertical-align: middle;
+  width: 100px;
+  height: 100px;
+  line-height: 100px;
+  text-align: center;
+  transition: all 0.3s ease-in-out;
+  font-size: 28px;
+}
+
+@supports (background-color: hsl(from white h s 90%)) {
+  .em-no-profile-picture-big:before {
+    background-color: hsl(from var(--em-profile-color) h s 90%);
+    color: var(--em-profile-color);
+  }
+}
+
 /** PROGRAMME **/
 .em-programme-tag{
-  width: fit-content;
   font-size: 12px;
   font-weight: 600;
-  margin-bottom: 12px;
   font-family: var(--em-profile-font), Inter, sans-serif;
-  height: fit-content;
-  text-overflow: ellipsis;
+  margin-bottom: 0;
+  -webkit-line-clamp: 2;
   overflow: hidden;
-  white-space: nowrap;
+  -webkit-box-orient: vertical;
+  max-height: 48px;
+  display: -webkit-box;
+  line-height: 140%;
 }
 
 .mod_emundus_campaign__list .em-programme-tag{

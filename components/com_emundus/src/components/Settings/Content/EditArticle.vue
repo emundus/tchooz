@@ -1,5 +1,6 @@
 <template>
   <div class="em-settings-menu">
+
     <div class="tw-w-full tw-mb-4">
       <div class="tw-w-5/6">
         <div class="tw-grid tw-grid-cols-3 tw-gap-6 tw-mb-4">
@@ -52,15 +53,13 @@
               @input="updated = true"
           />
         </div>
-      </div>
-
       <button class="btn btn-primary tw-float-right tw-mt-3" v-if="updated" @click="saveContent">
         {{ translate("COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SAVE") }}
       </button>
-    </div>
-
+      </div>
     <div class="em-page-loader" v-if="loading"></div>
   </div>
+</div>
 </template>
 
 <script>
@@ -186,7 +185,6 @@ export default {
       formData.append('field', 'introtext');
       if (this.clearNotif) {
         formData.append('note', '');
-        this.$emit('needNotify',false);
       }
       await client().post(`index.php?option=com_emundus&controller=settings&task=updatearticle`,
         formData,
@@ -196,8 +194,6 @@ export default {
           }
         }
       ).then(async () => {
-        this.$emit('updateSaving', false);
-        this.$emit('updateLastSaving', this.formattedDate('', 'LT'));
         this.updated = false;
         Swal.fire({
           title: this.translate("COM_EMUNDUS_ONBOARD_SUCCESS"),
@@ -209,9 +205,6 @@ export default {
           },
           timer: 1500,
         });
-        setTimeout(() => {
-          if (this.clearNotif){ this.$emit('needNotify', false);}else{this.$emit('needNotify', true);}
-        }, 500);
       });
     },
 

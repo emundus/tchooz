@@ -22,7 +22,7 @@ use Joomla\CMS\User\User;
 
 
 /**
- * users Controller
+ * Emundus Component Users Controller
  *
  * @package    Joomla
  * @subpackage eMundus
@@ -30,9 +30,20 @@ use Joomla\CMS\User\User;
  */
 class EmundusControllerUsers extends BaseController
 {
-
-	protected $app;
+	/**
+	 * Emundus user session
+	 *
+	 * @var mixed
+	 * @since version 1.0.0
+	 */
 	private $euser;
+
+	/**
+	 * Joomla user
+	 *
+	 * @var User|JUser|mixed|null
+	 * @since version 1.0.0
+	 */
 	private ?User $user;
 
 	/**
@@ -55,7 +66,6 @@ class EmundusControllerUsers extends BaseController
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . '/models/logs.php');
 		require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
 
-		$this->app  = Factory::getApplication();
 		$this->user = $this->app->getIdentity();
 		$session    = $this->app->getSession();
 
@@ -69,7 +79,7 @@ class EmundusControllerUsers extends BaseController
 	 * @param   boolean  $urlparams  An array of safe URL parameters and their variable types.
 	 *                   @see        \Joomla\CMS\Filter\InputFilter::clean() for valid values.
 	 *
-	 * @return  DisplayController  This object to support chaining.
+	 * @return  EmundusControllerUsers  This object to support chaining.
 	 *
 	 * @since   1.0.0
 	 */
@@ -86,6 +96,8 @@ class EmundusControllerUsers extends BaseController
 		else {
 			echo JText::_('ACCESS_DENIED');
 		}
+
+		return $this;
 	}
 
 
@@ -815,6 +827,7 @@ class EmundusControllerUsers extends BaseController
 			if ($e_user->id == $newuser['id']) {
 				$e_user->firstname = $newuser['firstname'];
 				$e_user->lastname  = $newuser['lastname'];
+				$e_user->name 	= $newuser['name'];
 				$e_user->email     = $newuser['email'];
 				JFactory::getSession()->set('emundusUser', $e_user);
 			}
@@ -1090,14 +1103,13 @@ class EmundusControllerUsers extends BaseController
 	public function getUserNameById()
 	{
 		$response     = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
-		$current_user = JFactory::getUser()->id;
 
-		$id = $this->input->getInt('id', $current_user);
+		$id = $this->input->getInt('id', $this->user->id);
 
 		if (!empty($id)) {
-			if($id !== $current_user) {
-				if(!EmundusHelperAccess::asPartnerAccessLevel($current_user)) {
-					$id = $current_user;
+			if($id !== $this->user->id) {
+				if(!EmundusHelperAccess::asPartnerAccessLevel($this->user->id)) {
+					$id = $this->user->id;
 				}
 			}
 

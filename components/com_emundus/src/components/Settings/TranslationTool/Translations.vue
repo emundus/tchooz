@@ -114,9 +114,11 @@
 <script>
 import client from "@/services/axiosClient.js";
 import translationsService from "@/services/translations.js";
-import mixin from "@/mixins/mixin.js";
 import Multiselect from 'vue-multiselect';
 import TranslationRow from "./TranslationRow.vue";
+
+import mixin from "@/mixins/mixin.js";
+import errors from "@/mixins/errors.js";
 
 export default {
   name: 'Translations',
@@ -138,7 +140,7 @@ export default {
       required: false,
     }
   },
-  mixins: [mixin],
+  mixins: [mixin, errors],
   data() {
     return {
       defaultLang: null,
@@ -236,53 +238,65 @@ export default {
         value.table.label,
         value.table.filters
       ).then(async (response) => {
-        this.datas = response.data;
+        if (response.status) {
+          if (response.data.length > 0) {
+            this.datas = response.data;
 
+            if (value.table.load_all === 'true') {
+              let fields = [];
+              await this.asyncForEach(this.object.fields.Fields, async (field) => {
+                fields.push(field.Name);
+              })
+              fields = fields.join(',');
+              const build = async () => {
+                for (const data of this.datas) {
+                  await translationsService.getTranslations(
+                    this.object.table.type,
+                    this.defaultLang.lang_code,
+                    this.lang.lang_code,
+                    data.id,
+                    fields,
+                    this.object.table.name
+                  ).then(async (rep) => {
+                    console.log(rep);
 
-
-        if (value.table.load_all === 'true') {
-          let fields = [];
-          await this.asyncForEach(this.object.fields.Fields, async (field) => {
-            fields.push(field.Name);
-          })
-          fields = fields.join(',');
-          const build = async () => {
-            for (const data of this.datas) {
-              await translationsService.getTranslations(
-                this.object.table.type,
-                this.defaultLang.lang_code,
-                this.lang.lang_code,
-                data.id,
-                fields,
-                this.object.table.name
-              ).then(async (rep) => {
-                for (const translation of Object.values(rep.data)) {
-                  this.translations[data.id] = {};
-                  this.object.fields.Fields.forEach((field) => {
-                    this.translations[data.id][field.Name] = translation[field.Name];
+                    if (rep.status) {
+                      for (const translation of Object.values(rep.data)) {
+                        this.translations[data.id] = {};
+                        this.object.fields.Fields.forEach((field) => {
+                          this.translations[data.id][field.Name] = translation[field.Name];
+                        });
+                      }
+                    } else {
+                      this.displayError(rep.message, '');
+                    }
                   })
                 }
-              })
-            }
-            this.init_translations = true;
-            this.loading = false;
-          }
-          await build();
-        } else if (value.table.load_first_data === 'true') {
-          if (this.firstLoadDatas) {
-            // get url parameter data
-            const urlParams = new URLSearchParams(window.location.search);
+                this.init_translations = true;
+                this.loading = false;
+              }
+              await build();
+            } else if (value.table.load_first_data === 'true') {
+              if (this.firstLoadDatas) {
+                // get url parameter data
+                const urlParams = new URLSearchParams(window.location.search);
 
-            const dataParam = urlParams.get('data');
-            if (dataParam) {
-              this.data = this.datas.find(d => parseInt(d.id) === parseInt(dataParam));
+                const dataParam = urlParams.get('data');
+                if (dataParam) {
+                  this.data = this.datas.find(d => parseInt(d.id) === parseInt(dataParam));
+                } else {
+                  this.data = this.datas[0];
+                }
+
+                this.firstLoadDatas = false;
+              } else {
+                this.data = this.datas[0];
+              }
             } else {
-              this.data = this.datas[0];
-            }
-
-            this.firstLoadDatas = false;
+              this.loading = false;
+            } 
           } else {
-            this.data = this.datas[0];
+            this.loading = false;
           }
         } else {
           this.loading = false;

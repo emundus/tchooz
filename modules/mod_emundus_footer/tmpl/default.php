@@ -105,7 +105,7 @@ if ($applicant = !EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             </div>
 			<?php if (empty($mod_emundus_footer_texte_col_1) && empty($mod_emundus_footer_texte_col_2) && $mod_emundus_footer_display_powered_by == 1) : ?>
                 <div class="footer-emundus centered-links">
-                    <p><?= JText::_('MOD_EM_FOOTER_COPYRIGHT') ?><a href="<?= JText::_('MOD_EM_FOOTER_LINK') ?>" class="em-text-underline"><span
+                    <p><?= JText::_('MOD_EM_FOOTER_COPYRIGHT') ?><a target="_blank" href="<?= JText::_('MOD_EM_FOOTER_LINK') ?>" class="em-text-underline"><span
                                     class="emundus-link">eMundus</span></a></span></p>
                 </div>
 			<?php endif; ?>
@@ -121,7 +121,7 @@ else {
 
     <div class="em-container-footer-gest">
         <div class="em-block-footer">
-            <p><?= JText::_('MOD_EM_FOOTER_COPYRIGHT') ?><a href="<?= JText::_('MOD_EM_FOOTER_LINK') ?>" class="em-text-underline"><span
+            <p><?= JText::_('MOD_EM_FOOTER_COPYRIGHT') ?><a target="_blank" href="<?= JText::_('MOD_EM_FOOTER_LINK') ?>" class="em-text-underline"><span
                             class="emundus-link">eMundus</span></a><span
                         class="platform-version"><?php if (!empty($file_version)): ?> - <?= $file_version ?><?php endif ?></span>
             </p>

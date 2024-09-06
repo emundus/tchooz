@@ -35,6 +35,10 @@
     border-radius: 0 !important;
 }
 
+.informationStatistique {
+    color: var(--neutral-700);
+}
+
 .queryBuilder {
     text-align: left;
     padding: 12px;
@@ -276,14 +280,18 @@
 }
 
 .etiquette .filter .inputFilter select {
-    -webkit-appearance: none !important;
-    -moz-appearance: none !important;
+    -webkit-appearance: none;
+    -moz-appearance: none;
     width: 100%;
+    height: var(--em-form-height);
+    border-radius: var(--em-form-br) !important;
     background-image: url('/images/emundus/arrow.svg');
-    background-position: 95%;
+    background-position-x: calc(100% - 8px);
+    background-position-y: 50%;
     background-repeat: no-repeat;
-    padding: 0.5rem;
+    padding-right: 24px;
 }
+
 
 
 .closeButtonWelcomeStat {

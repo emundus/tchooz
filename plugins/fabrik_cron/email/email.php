@@ -235,7 +235,7 @@ class PlgFabrik_Cronemail extends PlgFabrik_Cron
 			if (!$testMode)
 			{
 				FabrikWorker::clearEval();
-				Php::Eval(['code' => $field, 'vars'=>['listModel'=>$listModel]]);
+				Php::Eval(['code' => $field, 'vars'=>['listModel'=>$listModel,'sentIds'=>$sentIds,'failedIds'=>$failedIds]]);
 				FabrikWorker::logEval($field, 'Caught exception on eval of cron email update code : %s');
 			}
 			else

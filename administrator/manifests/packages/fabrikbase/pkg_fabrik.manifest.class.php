@@ -16,8 +16,8 @@ use Joomla\CMS\Installer\InstallerAdapter;
 use Joomla\CMS\Installer\InstallerScriptInterface;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
-use Joomla\Filesystem\Folder;
-use Joomla\Filesystem\File;
+use Joomla\CMS\Filesystem\Folder;
+use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Version;
 use Joomla\CMS\Factory;
 

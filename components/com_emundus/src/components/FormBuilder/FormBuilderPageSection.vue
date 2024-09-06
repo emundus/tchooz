@@ -20,13 +20,13 @@
               maxlength="100"
           />
           <div class="section-actions-wrapper">
-            <span class="material-icons-outlined tw-cursor-pointer hover-opacity" @click="moveSection('up')"
+            <span class="material-symbols-outlined tw-cursor-pointer hover-opacity" @click="moveSection('up')"
                   title="Move section upwards">keyboard_double_arrow_up</span>
-            <span class="material-icons-outlined tw-cursor-pointer hover-opacity" @click="moveSection('down')"
+            <span class="material-symbols-outlined tw-cursor-pointer hover-opacity" @click="moveSection('down')"
                   title="Move section downwards">keyboard_double_arrow_down</span>
-            <span class="material-icons-outlined tw-text-red-600 tw-cursor-pointer delete hover-opacity"
+            <span class="material-symbols-outlined tw-text-red-600 tw-cursor-pointer delete hover-opacity"
                   @click="deleteSection">delete</span>
-            <span class="material-icons-outlined tw-cursor-pointer hover-opacity" @click="$emit('open-section-properties')">settings</span>
+            <span class="material-symbols-outlined tw-cursor-pointer hover-opacity" @click="$emit('open-section-properties')">settings</span>
           </div>
         </div>
         <transition name="slide-down">

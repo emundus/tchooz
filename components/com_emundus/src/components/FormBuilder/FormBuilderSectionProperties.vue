@@ -2,7 +2,7 @@
   <div id="form-builder-element-properties">
     <div class="tw-flex tw-items-center tw-justify-between tw-p-4">
       <p>{{ translate("COM_EMUNDUS_FORM_BUILDER_SECTION_PROPERTIES") }}</p>
-      <span class="material-icons-outlined tw-cursor-pointer" @click="$emit('close')">close</span>
+      <span class="material-symbols-outlined tw-cursor-pointer" @click="$emit('close')">close</span>
     </div>
     <ul id="properties-tabs" class="tw-flex tw-items-center tw-justify-between tw-p-4 tw-w-11/12">
       <li

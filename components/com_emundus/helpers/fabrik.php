@@ -1,41 +1,45 @@
 <?php
 /**
- * @version        $Id: query.php 14401 2010-01-26 14:10:00Z guillossou $
- * @package        Joomla
- * @subpackage     Emundus
- * @copyright      Copyright (C) 2005 - 2010 Open Source Matters. All rights reserved.
- * @license        GNU/GPL, see LICENSE.php
- * Joomla! is free software. This version may have been modified pursuant to the
- * GNU General Public License, and as distributed it includes or is derivative
- * of works licensed under the GNU General Public License or other free or open
- * source software licenses. See COPYRIGHT.php for copyright notices and
- * details.
+ * @package    eMundus
+ * @subpackage Components
+ * @link       http://www.emundus.fr
+ * @license    GNU/GPL
+ * @author     Benjamin Rivalland
  */
 
-// no direct access
-defined('_JEXEC') or die('Restricted access');
-jimport('joomla.application.component.helper');
+// phpcs:disable PSR1.Files.SideEffects
+\defined('_JEXEC') or die;
+// phpcs:enable PSR1.Files.SideEffects
 
 require_once(JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 include_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
+require_once(JPATH_SITE . '/components/com_emundus/helpers/cache.php');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Log\Log;
 use libphonenumber\PhoneNumberUtil;
 use libphonenumber\PhoneNumberFormat;
 use Joomla\CMS\Language\Text;
 
 /**
- * Content Component Query Helper
- *
- * @static
- * @package        Joomla
- * @subpackage     Content
- * @since          1.5
+ * Emundus Fabrik Helper
+ * @package     Emundus
  */
 class EmundusHelperFabrik
 {
 
+	/**
+	 * Update a parameter in the params array
+	 * 
+	 * @param $params
+	 * @param $attribute
+	 * @param $value
+	 *
+	 * @return mixed
+	 *
+	 * @since version 1.0.0
+	 */
 	static function updateParam($params, $attribute, $value)
 	{
 		$params[$attribute] = strval($value);
@@ -43,6 +47,13 @@ class EmundusHelperFabrik
 		return $params;
 	}
 
+	/**
+	 * Prepare Fabrik list parameters when create a new page from formbuilder
+	 * 
+	 * @return array
+	 *
+	 * @since version 1.0.0
+	 */
 	static function prepareListParams()
 	{
 		return array(
@@ -182,6 +193,16 @@ class EmundusHelperFabrik
 		);
 	}
 
+	/**
+	 * Prepare Fabrik form parameters when create a new page from formbuilder
+	 * 
+	 * @param $init_plugins
+	 * @param $type
+	 *
+	 * @return array|string[]
+	 *
+	 * @since version 1.0.0
+	 */
 	static function prepareFormParams($init_plugins = true, $type = '')
 	{
 		$params = array(
@@ -247,7 +268,7 @@ class EmundusHelperFabrik
 				$plugins = [
 					'curl_code'             => [
 						1 => 'use Joomla\CMS\Factory;
-
+use Joomla\CMS\HTML\HTMLHelper;
 $app = Factory::getApplication();
 $input = $app->getInput();
 
@@ -256,48 +277,24 @@ $student = isset($student_id) ? JUser::getInstance($student_id) : JUser::getInst
 
 
 echo "<h2>".$student->name."</h2>";
-JHtml::styleSheet(JURI::base() . "media/jui/css/chosen.css");
-JHTML::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");',
-						2 => 'echo \'<script>window.parent.ScrollToTop();</script>\';
-echo \'<style>.em-swal-title{
-  margin: 8px 8px 32px 8px !important;
-  font-family: "Maven Pro", sans-serif;
-}
-</style>\';
-die("<script>
-      $(document).ready(function () {
-          Swal.fire({
-  	         position: \'top\',
-             type: \'success\',
-             title: \'".JText::_(\'COM_EMUNDUS_EVALUATION_SAVED\')."\',
-          	 showConfirmButton: false,
-             timer: 2000,
-             customClass: {
-                   title: \'em-swal-title\'
-             },
-             onClose: () => { history.go(-1);}
-      	})
-	});
-</script>");'
+HTMLHelper::styleSheet(JURI::base() . "media/jui/css/chosen.css");
+HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 					],
 					'only_process_curl'     => [
-						1 => 'onLoad',
-						2 => 'onAfterProcess'
+						1 => 'onLoad'
 					],
 					'form_php_file'         => [
-						1 => '-1',
-						2 => '-1'
+						1 => '-1'
 					],
 					'form_php_require_once' => [
-						1 => '0',
-						2 => '0'
+						1 => '0'
 					],
 					'process-jplugins'      => '2',
-					'plugins'               => array('emundusisevaluatedbyme', 'php', 'php'),
-					'plugin_state'          => array('1', '1', '1'),
-					'plugin_locations'      => array('both', 'both', 'both'),
-					'plugin_events'         => array('both', 'both', 'both'),
-					'plugin_description'    => array('Is evaluated by me', 'css', 'sweet'),
+					'plugins'               => array('emundusisevaluatedbyme', 'php'),
+					'plugin_state'          => array('1', '1'),
+					'plugin_locations'      => array('both', 'both'),
+					'plugin_events'         => array('both', 'both'),
+					'plugin_description'    => array('Is evaluated by me', 'css'),
 				];
 			}
 			else {
@@ -315,6 +312,15 @@ die("<script>
 		return array_merge($params, $plugins);
 	}
 
+	/**
+	 * Prepare Submittion plugin parameters when create a new form
+	 * 
+	 * @param $params
+	 *
+	 * @return mixed
+	 *
+	 * @since version 1.0.0
+	 */
 	function prepareSubmittionPlugin($params)
 	{
 		$params['submit_button_label'] = 'SUBMIT';
@@ -323,6 +329,13 @@ die("<script>
 		return $params;
 	}
 
+	/**
+	 * Prepare Group parameters when add a new section in a form from formbuilder
+	 * 
+	 * @return string[]
+	 *
+	 * @since version 1.0.0
+	 */
 	static function prepareGroupParams()
 	{
 		return array(
@@ -352,6 +365,17 @@ die("<script>
 		);
 	}
 
+	/**
+	 * Prepare Element parameters via plugin when add a new element in a group from formbuilder
+	 * 
+	 * @param $plugin
+	 * @param $notempty
+	 * @param $attachementId
+	 *
+	 * @return array
+	 *
+	 * @since version 1.0.0
+	 */
 	static function prepareElementParameters($plugin, $notempty = true, $attachementId = 0)
 	{
 
@@ -431,6 +455,7 @@ die("<script>
 			'custom_calc_split'       => '',
 			'custom_calc_php'         => '',
 			'validations'             => array(),
+			'alias' => '',
 		);
 
         if($notempty && !in_array($plugin, $plugin_no_required)){
@@ -535,7 +560,7 @@ die("<script>
 
 			$ref_tables = ['data_nationality', 'data_country', 'data_departements'];
 			foreach ($ref_tables as $table) {
-				$db = JFactory::getDbo();
+				$db = Factory::getContainer()->get('DatabaseDriver');
 				$db->setQuery("SHOW TABLES LIKE " . $db->quote('data_nationality'));
 				$tableExists = $db->loadResult();
 
@@ -733,6 +758,15 @@ die("<script>
 		return $params;
 	}
 
+	/**
+	 * Get the database type for a specific plugin
+	 * 
+	 * @param $plugin
+	 *
+	 * @return string
+	 *
+	 * @since version 1.0.0
+	 */
 	static function getDBType($plugin)
 	{
 		$dbtype = 'TEXT';
@@ -747,6 +781,15 @@ die("<script>
 		return $dbtype;
 	}
 
+	/**
+	 * Initialize the label for a specific plugin
+	 * 
+	 * @param $plugin
+	 *
+	 * @return string[]
+	 *
+	 * @since version 1.0.0
+	 */
 	static function initLabel($plugin)
 	{
 		$label = array();
@@ -786,6 +829,13 @@ die("<script>
 		return $label;
 	}
 
+	/**
+	 * Prepare Fabrik menu parameters when create a new page from formbuilder
+	 * 
+	 * @return string[]
+	 *
+	 * @since version 1.0.0
+	 */
 	static function prepareFabrikMenuParams()
 	{
 		return [
@@ -811,6 +861,16 @@ die("<script>
 		];
 	}
 
+	/**
+	 * Add a new option to a specific element (dropdown, checkbox, radiobutton)
+	 * @param $eid
+	 * @param $label
+	 * @param $value
+	 *
+	 * @return boolean
+	 *
+	 * @since version 1.0.0
+	 */
 	static function addOption($eid, $label, $value)
 	{
 		$db    = Factory::getContainer()->get('DatabaseDriver');
@@ -841,6 +901,16 @@ die("<script>
 		}
 	}
 
+	/**
+	 * Add a notempty validation to a specific element
+	 * @param $eid
+	 * @param $message
+	 * @param $condition
+	 *
+	 * @return boolean
+	 *
+	 * @since version 1.0.0
+	 */
 	static function addNotEmptyValidation($eid, $message = '', $condition = '')
 	{
 		$db    = Factory::getContainer()->get('DatabaseDriver');
@@ -889,6 +959,18 @@ die("<script>
 		}
 	}
 
+	/**
+	 * Create Fabrik join if element is a user plugin
+	 * 
+	 * @param $eid
+	 * @param $name
+	 * @param $plugin
+	 * @param $group_id
+	 *
+	 * @return bool
+	 *
+	 * @since version 1.0.0
+	 */
 	static function checkFabrikJoins($eid, $name, $plugin, $group_id)
 	{
 		$db    = Factory::getContainer()->get('DatabaseDriver');
@@ -930,6 +1012,16 @@ die("<script>
 		}
 	}
 
+	/**
+	 * Add JS Action to a specific element
+	 * 
+	 * @param $eid
+	 * @param $action
+	 *
+	 * @return false
+	 *
+	 * @since version 1.0.0
+	 */
 	static function addJsAction($eid, $action)
 	{
 		$added = false;
@@ -994,6 +1086,16 @@ die("<script>
 		return $added;
 	}
 
+	/**
+	 * Get database table name for a specific Fabrik form or list
+	 * 
+	 * @param $id
+	 * @param $object
+	 *
+	 * @return boolean
+	 *
+	 * @since version 1.0.0
+	 */
 	static function getTableFromFabrik($id, $object = 'list')
 	{
 		$db    = Factory::getContainer()->get('DatabaseDriver');
@@ -1021,6 +1123,21 @@ die("<script>
 		}
 	}
 
+	/**
+	 * Create a new filter for current Fabrik list
+	 * 
+	 * @param $filters
+	 * @param $eid
+	 * @param $value
+	 * @param $condition
+	 * @param $join
+	 * @param $hidden
+	 * @param $raw
+	 *
+	 * @return array
+	 *
+	 * @since version 1.0.0
+	 */
 	static function createFilterList(&$filters, $eid, $value, $condition = '=', $join = 'AND', $hidden = 0, $raw = 0)
 	{
 		if (!in_array($eid, $filters['elementid'])) {
@@ -1060,7 +1177,8 @@ die("<script>
 	}
 
 	/**
-	 *
+	 * Format a phone number according to the given format
+	 * 
 	 * @param $phone_number string The phone number to format
 	 * @param $format       int The format to use
 	 *                      0 => E164
@@ -1075,6 +1193,10 @@ die("<script>
 		$formattedValue = '';
 
 		if (!empty($phone_number)) {
+			if(is_array($phone_number)) {
+				$phone_number = $phone_number['country_code'] . $phone_number['num_tel'];
+			}
+
 			$phone_number = trim($phone_number);
 			$phone_number = str_replace(' ', '', $phone_number);
 
@@ -1104,7 +1226,15 @@ die("<script>
 		return $formattedValue;
 	}
 
-
+	/**
+	 * Get database table name for a specific Fabrik form
+	 * 
+	 * @param $formid
+	 *
+	 * @return string
+	 *
+	 * @since version 1.0.0
+	 */
 	public static function getDbTableName($formid)
 	{
 		$db_table_name = '';
@@ -1142,10 +1272,11 @@ die("<script>
 	static function formatElementValue($elt_name, $raw_value, $groupId = null, $uid = null, $html = false)
 	{
 		$formatted_value = $raw_value;
+		$app = Factory::getApplication();
 
 		if(!empty($elt_name))
 		{
-			$db    = Factory::getDbo();
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
 			$element = null;
@@ -1192,11 +1323,11 @@ die("<script>
 							$d = DateTime::createFromFormat($format, $raw_value);
 							if ($d && $d->format($format) == $raw_value)
 							{
-								$formatted_value = $html ? JHtml::_('date', $raw_value, JText::_('DATE_FORMAT_LC')) : EmundusHelperDate::displayDate($raw_value);
+								$formatted_value = $html ? HTMLHelper::_('date', $raw_value, Text::_('DATE_FORMAT_LC')) : EmundusHelperDate::displayDate($raw_value);
 							}
 							else
 							{
-								$formatted_value = $html ? JHtml::_('date', $raw_value, $format) : EmundusHelperDate::displayDate($raw_value, $format);
+								$formatted_value = $html ? HTMLHelper::_('date', $raw_value, $format) : EmundusHelperDate::displayDate($raw_value, $format);
 							}
 						}
 						break;
@@ -1211,7 +1342,7 @@ die("<script>
 						{
 							$select = 'CONCAT(' . $params['join_val_column_concat'] . ')';
 							$select = preg_replace('#{thistable}#', 'jd', $select);
-							$select = preg_replace('#{shortlang}#', substr(Factory::getLanguage()->getTag(), 0, 2), $select);
+							$select = preg_replace('#{shortlang}#', substr($app->getLanguage()->getTag(), 0, 2), $select);
 							if (!empty($uid))
 							{
 								$select = preg_replace('#{my->id}#', $uid, $select);
@@ -1251,7 +1382,7 @@ die("<script>
 						$where  = $r1[1] . '=' . $db->Quote($raw_value);
 						$query  = "SELECT " . $select . " FROM " . $from . " WHERE " . $where;
 						$query  = preg_replace('#{thistable}#', $from, $query);
-						$query  = preg_replace('#{shortlang}#', substr(Factory::getLanguage()->getTag(), 0, 2), $query);
+						$query  = preg_replace('#{shortlang}#', substr($app->getLanguage()->getTag(), 0, 2), $query);
 						if (!empty($uid))
 						{
 							$query = preg_replace('#{my->id}#', $uid, $query);
@@ -1356,13 +1487,26 @@ die("<script>
 		return $formatted_value;
 	}
 
+	/**
+	 * Encrypt datas
+	 * 
+	 * @param $value
+	 * @param $encryption_key
+	 * @param $cipher
+	 * @param $iv
+	 *
+	 * @return false|mixed|string
+	 *
+	 * @since version 1.0.0
+	 */
 	static function encryptDatas($value, $encryption_key = null, $cipher = 'aes-128-cbc', $iv = null) {
 		$result = $value;
+		$app = Factory::getApplication();
 
 		//Generate a 256-bit encryption key
 		if(empty($encryption_key))
 		{
-			$encryption_key = Factory::getConfig()->get('secret', '');
+			$encryption_key = $app->getConfig()->get('secret', '');
 		}
 
 		if(!empty($encryption_key))
@@ -1400,6 +1544,18 @@ die("<script>
 		return $result;
 	}
 
+	/**
+	 * Decrypt datas
+	 * 
+	 * @param $value
+	 * @param $encryption_key
+	 * @param $cipher
+	 *
+	 * @return false|mixed|string
+	 *
+	 * @throws Exception
+	 * @since version 1.0.0
+	 */
 	static function decryptDatas($value, $encryption_key = null, $cipher = 'aes-128-cbc') {
 		$result = $value;
 
@@ -1464,6 +1620,18 @@ die("<script>
 		return $result;
 	}
 
+	/**
+	 * Keep a old decrypt function for compatibility
+	 * 
+	 * @param $value
+	 * @param $encryption_key
+	 *
+	 * @return false|mixed|string
+	 *
+	 * @throws Exception
+	 * @since version 1.0.0
+	 * @deprecated Use decryptDatas instead
+	 */
 	public static function oldDecryptDatas($value,$encryption_key = null)
 	{
 		$cipher = 'aes-128-cbc';
@@ -1502,6 +1670,20 @@ die("<script>
 		return $result;
 	}
 
+	/**
+	 * Migrate encrypted datas from an old cipher to a new one
+	 * 
+	 * @param $old_cipher
+	 * @param $new_cipher
+	 * @param $old_key
+	 * @param $new_key
+	 * @param $datas
+	 * @param $iv
+	 *
+	 * @return array
+	 *
+	 * @since version 1.0.0
+	 */
 	public static function migrateEncryptDatas($old_cipher, $new_cipher, $old_key, $new_key, $datas, $iv = null) {
 		foreach ($datas as $key => $data) {
 			if(is_array(json_decode($data['value'])))
@@ -1531,6 +1713,16 @@ die("<script>
 		return $datas;
 	}
 
+	/**
+	 * Get a parameter from a Fabrik element of type date or jdate
+	 * 
+	 * @param $elt
+	 * @param $param
+	 *
+	 * @return mixed|string
+	 *
+	 * @since version 1.0.0
+	 */
 	public static function getFabrikDateParam($elt, $param)
 	{
 		$result = '';
@@ -1547,5 +1739,236 @@ die("<script>
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Get groups from Fabrik forms
+	 * 
+	 * @param $form_ids
+	 *
+	 * @return array
+	 *
+	 * @since version 1.40.0
+	 */
+	static function getGroupsFromFabrikForms($form_ids)
+	{
+		$groups = [];
+		$form_ids = array_unique($form_ids);
+
+		if (!empty($form_ids)) {
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true);
+
+			$query->clear()
+				->select('jfg.id, jfg.label, jffg.form_id')
+				->from('jos_fabrik_groups as jfg')
+				->join('inner', 'jos_fabrik_formgroup as jffg ON jfg.id = jffg.group_id')
+				->join('inner', 'jos_fabrik_forms as jff ON jffg.form_id = jff.id')
+				->where('jffg.form_id IN (' . implode(',', $form_ids) . ')')
+				->andWhere('jfg.published = 1');
+
+			try {
+				$db->setQuery($query);
+				$groups = $db->loadAssocList();
+
+				foreach ($groups as $key => $group)
+				{
+					$groups[$key]['label'] = Text::_($group['label']);
+				}
+			} catch (Exception $e) {
+				Log::add('Failed to get groups associated to profiles that current user can access : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
+			}
+		}
+
+		return $groups;
+	}
+
+	/**
+	 * Get elements from Fabrik forms
+	 *
+	 * @param $form_ids
+	 * @return array
+	 */
+	static function getElementsFromFabrikForms($form_ids, $excluded_plugins = [])
+	{
+		$elements = [];
+		$form_ids = array_unique($form_ids);
+
+		if (!empty($form_ids))
+		{
+			$helper_cache = new EmundusHelperCache();
+
+			if ($helper_cache->isEnabled())
+			{
+				foreach ($form_ids as $key => $form_id)
+				{
+					$cache_key      = 'elements_from_form_' . $form_id;
+					$cache_elements = $helper_cache->get($cache_key);
+
+					if (!empty($cache_elements))
+					{
+						$elements = array_merge($elements, $cache_elements);
+						unset($form_ids[$key]);
+					}
+				}
+			}
+
+			if (!empty($form_ids))
+			{
+				$db    = Factory::getContainer()->get('DatabaseDriver');
+				$query = $db->getQuery(true);
+
+				$query->clear()
+					->select('jfe.id, jfe.plugin, jfe.label, jfe.params, jffg.form_id as element_form_id, jff.label as element_form_label, jfg.label as element_group_label, jfg.id as element_group_id')
+					->from('jos_fabrik_elements as jfe')
+					->join('inner', 'jos_fabrik_groups as jfg ON jfe.group_id = jfg.id')
+					->join('inner', 'jos_fabrik_formgroup as jffg ON jfg.id = jffg.group_id')
+					->join('inner', 'jos_fabrik_forms as jff ON jffg.form_id = jff.id')
+					->where('jffg.form_id IN (' . implode(',', $form_ids) . ')')
+					->andWhere('jfe.published = 1')
+					->andWhere('jfe.hidden = 0');
+
+				if (!empty($excluded_plugins)) {
+					$query->andWhere('jfe.plugin NOT IN (' . implode(',', $db->quote($excluded_plugins)) . ')');
+				}
+
+				try
+				{
+					$db->setQuery($query);
+					$query_elements = $db->loadAssocList();
+					$elements       = array_merge($elements, $query_elements);
+
+					foreach ($elements as $key => $element)
+					{
+						$elements[$key]['label']              = Text::_($element['label']);
+						$elements[$key]['element_form_label'] = Text::_($element['element_form_label']);
+						$elements[$key]['element_group_label'] = Text::_($element['element_group_label']);
+					}
+
+					if ($helper_cache->isEnabled())
+					{
+						$elements_by_form = [];
+						foreach ($elements as $element)
+						{
+							if (!isset($elements_by_form[$element['element_form_id']]))
+							{
+								$elements_by_form[$element['element_form_id']] = [];
+							}
+							$elements_by_form[$element['element_form_id']][] = $element;
+						}
+
+						foreach ($elements_by_form as $form_id => $element_by_form)
+						{
+							$helper_cache->set('elements_from_form_' . $form_id, $element_by_form);
+						}
+					}
+				}
+				catch (Exception $e)
+				{
+					Log::add('Failed to get elements associated to profiles that current user can access : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
+				}
+			}
+		}
+
+		return $elements;
+	}
+
+	/**
+	 * @param $alias     string The alias to search the element for
+	 * @param $form_id   int    The form id to search the element for
+	 *
+	 * @description Return element name and storage table according to alias
+	 *
+	 * @return object|null
+	 */
+	static function getElementByAlias($alias,$form_id = null){
+
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+
+		$element = null;
+
+		if(!empty($alias)){
+			try {
+				$query->select('fl.db_table_name,fe.name')
+					->from($db->quoteName('#__fabrik_elements','fe'))
+					->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.group_id').' = '.$db->quoteName('fe.group_id'))
+					->leftJoin($db->quoteName('#__fabrik_lists','fl').' ON '.$db->quoteName('fl.form_id').' = '.$db->quoteName('ffg.form_id'))
+					->where("JSON_EXTRACT(fe.params, '$.alias') = " . $db->quote($alias));
+				if(!empty($form_id)){
+					$query->where($db->quoteName('fl.form_id') . ' = ' . $db->quote($form_id));
+				}
+				$db->setQuery($query);
+				$element =  $db->loadObject();
+			}
+			catch (Exception $e) {
+				Log::add('component/com_emundus/helpers/fabrik | Cannot retrive element by alias : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), Log::ERROR, 'com_emundus');
+			}
+		}
+		return $element;
+	}
+
+	/**
+	 * @param         $alias  string The alias to search the element's value for
+	 * @param   null  $fnum   int    The form number to search the element's value for
+	 * @param   int   $user_id
+	 *
+	 * @return mixed|string|null
+	 * @description Return the value of an element according to its alias in a form
+	 *
+	 */
+	static function getValueByAlias($alias,$fnum = null,$user_id = 0)
+	{
+		$value = ['value' => '', 'raw' => ''];
+
+		if(!empty($alias) && (!empty($fnum) || !empty($user_id))){
+			$element = self::getElementByAlias($alias);
+
+			if(!empty($element))
+			{
+				$db = Factory::getContainer()->get('DatabaseDriver');
+				$query = $db->getQuery(true);
+
+				try {
+					$columns = array_keys($db->getTableColumns($element->db_table_name));
+
+					if(in_array('fnum',$columns) || in_array('user',$columns) || in_array('user_id',$columns))
+					{
+						$query->select($db->quoteName($element->name))
+							->from($db->quoteName($element->db_table_name));
+
+						if (!empty($fnum) && in_array('fnum',$columns))
+						{
+							$query->where("fnum = " . $db->quote($fnum));
+						}
+
+						if (!empty($user_id) && (in_array('user',$columns) || in_array('user_id',$columns)))
+						{
+							if(in_array('user',$columns)){
+								$query->where("user = " . $db->quote($user_id));
+							}
+							elseif(in_array('user_id',$columns))
+							{
+								$query->where("user_id = " . $db->quote($user_id));
+							}
+						}
+
+						$db->setQuery($query);
+						$raw_value = $db->loadResult();
+
+						if (!empty($raw_value))
+						{
+							$value['raw'] = $raw_value;
+							$value['value'] = EmundusHelperFabrik::formatElementValue($element->name, $raw_value);
+						}
+					}
+				}
+				catch (Exception $e) {
+					Log::add('component/com_emundus/helpers/fabrik | Cannot retrive value by alias : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), Log::ERROR, 'com_emundus');
+				}
+			}
+		}
+
+		return $value;
 	}
 }

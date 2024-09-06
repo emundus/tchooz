@@ -15,8 +15,8 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\CMS\Language\Text;
 
 ?>
-<div class="fabrikButtonsContainer row-fluid">
-<div class="pull-left em-mt-16">
+<div class="fabrikButtonsContainer !tw-mt-0 row-fluid">
+<div class="pull-left">
 
 <?php if ($this->showAdd && $this->showTitle != 1) :?>
 
@@ -25,7 +25,7 @@ use Joomla\CMS\Language\Text;
 	</a></div>
 <?php
 endif; ?>
-    <div class="em-mt-8 em-action-buttons">
+    <div class="em-action-buttons">
     <?php
 if ($this->showToggleCols) :
 	echo $this->loadTemplate('togglecols');

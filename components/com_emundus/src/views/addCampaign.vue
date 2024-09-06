@@ -183,7 +183,10 @@
           </div>
 
           <div id="campResume" class="tw-mb-4">
-            <label style="top: 5em" class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME') }}</label>
+            <div class="tw-flex tw-items-center">
+              <label class="tw-font-medium tw-mb-0">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME') }}</label>
+              <span class="material-symbols-outlined tw-ml-1 tw-text-base tw-cursor-pointer" @click="displayCampaignResumeTip">help_outline</span>
+            </div>
             <tip-tap-editor
                 v-model="form.short_description"
                 :editor-content-height="'5em'"
@@ -197,7 +200,10 @@
           </div>
 
           <div class="tw-mb-4">
-            <label class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION') }}</label>
+            <div class="tw-flex tw-items-center">
+              <label class="tw-font-medium tw-mb-0">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION') }}</label>
+              <span class="material-symbols-outlined tw-ml-1 tw-text-base tw-cursor-pointer" @click="displayCampaignDescriptionTip">help_outline</span>
+            </div>
             <div id="campDescription" class="tw-mb-4" v-if="typeof form.description != 'undefined'">
               <tip-tap-editor
                   v-model="form.description"
@@ -476,6 +482,36 @@ export default {
       Swal.fire({
         title: this.translate("COM_EMUNDUS_ONBOARD_PINNED_CAMPAIGN_TIP"),
         text: this.translate("COM_EMUNDUS_ONBOARD_PINNED_CAMPAIGN_TIP_TEXT"),
+        showCancelButton: false,
+        confirmButtonText: this.translate("COM_EMUNDUS_SWAL_OK_BUTTON"),
+        reverseButtons: true,
+        customClass: {
+          title: 'em-swal-title',
+          confirmButton: 'em-swal-confirm-button',
+          actions: "em-swal-single-action",
+        },
+      });
+    },
+
+    displayCampaignResumeTip() {
+      Swal.fire({
+        title: this.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME_TIP"),
+        text: this.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME_TIP_TEXT"),
+        showCancelButton: false,
+        confirmButtonText: this.translate("COM_EMUNDUS_SWAL_OK_BUTTON"),
+        reverseButtons: true,
+        customClass: {
+          title: 'em-swal-title',
+          confirmButton: 'em-swal-confirm-button',
+          actions: "em-swal-single-action",
+        },
+      });
+    },
+
+    displayCampaignDescriptionTip() {
+      Swal.fire({
+        title: this.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION_TIP"),
+        text: this.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION_TIP_TEXT"),
         showCancelButton: false,
         confirmButtonText: this.translate("COM_EMUNDUS_SWAL_OK_BUTTON"),
         reverseButtons: true,

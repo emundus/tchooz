@@ -1206,15 +1206,38 @@ class EmundusModelForm extends JModelList
 			if (!empty($group))
 			{
 				// Create hidden group
-				$m_formbuilder->createElement('id', $group['group_id'], 'internalid', 'id', '', 1);
-				$m_formbuilder->createElement('time_date', $group['group_id'], 'jdate', 'time date', '', 1);
+				$m_formbuilder->createElement('id', $group['group_id'], 'internalid', 'id', '', 1, 0);
+				$m_formbuilder->createElement('time_date', $group['group_id'], 'jdate', 'time date', '', 1, 0);
+				$m_formbuilder->createElement('fnum', $group['group_id'], 'field', 'fnum', '{jos_emundus_evaluations___fnum}', 1, 0, 1, 1, 0, 44);
 				$m_formbuilder->createElement('ccid', $group['group_id'], 'field', 'Identifiant du dossier', '', 1, 1, 1, 1, 0, 44);
 				$m_formbuilder->createElement('step_id', $group['group_id'], 'field', 'Phase', '', 1, 1, 1, 1, 0, 44);
 				$m_formbuilder->createElement('evaluator', $group['group_id'], 'user', 'user', '{$my->id}', 1);
 				$m_formbuilder->createElement('updated_by', $group['group_id'], 'user', 'user', '{$my->id}}', 1);
-			} else {
-				Log::add('component/com_emundus/models/form | Error when create hidden group for evaluation form', Log::WARNING, 'com_emundus.error');
-				throw new Exception('Error when create hidden group for evaluation form');
+
+				if (!empty($dbjoin_element_id)) {
+					$query = $this->db->createQuery(true);
+					$query->select('params')
+						->from('#__fabrik_elements')
+						->where('id = ' . $dbjoin_element_id);
+
+					$this->db->setQuery($query);
+					$params = $this->db->loadResult();
+
+					$params = json_decode($params, true);
+
+					$params['join_db_name'] = 'jos_users';
+					$params['join_key_column'] = 'id';
+					$params['join_val_column'] = 'name';
+
+					$query->clear()
+						->update('#__fabrik_elements')
+						->set('params = ' . $this->db->quote(json_encode($params)))
+						->where('id = ' . $dbjoin_element_id);
+					$this->db->setQuery($query);
+					$this->db->execute();
+				}
+
+				$m_formbuilder->createElement('student_id', $group['group_id'], 'field', 'student_id', '{jos_emundus_evaluations___student_id}', 1, 0);
 			}
 
 			$list = $m_formbuilder->createFabrikList('evaluations', $form_id, 6, 'eval');
@@ -2614,7 +2637,7 @@ class EmundusModelForm extends JModelList
 	public function getJSConditionsByForm($form_id, $format = 'raw')
 	{
 		$js_conditions = [];
-		
+
 		$query = $this->db->getQuery(true);
 
 		try
@@ -2746,7 +2769,7 @@ class EmundusModelForm extends JModelList
 		$grouped_conditions = json_decode($grouped_conditions);
 		$actions = json_decode($actions);
 
-		
+
 
 		try
 		{
@@ -2811,7 +2834,7 @@ class EmundusModelForm extends JModelList
 		$grouped_conditions = json_decode($grouped_conditions);
 		$actions = json_decode($actions);
 
-		
+
 		$query = $this->db->getQuery(true);
 
 		try
@@ -2894,7 +2917,7 @@ class EmundusModelForm extends JModelList
 	{
 		$rule_deleted = false;
 
-		
+
 		$query = $this->db->getQuery(true);
 
 		try
@@ -2937,7 +2960,7 @@ class EmundusModelForm extends JModelList
 			$user = Factory::getApplication()->getIdentity();
 		}
 
-		
+
 
 		try
 		{
@@ -2965,7 +2988,7 @@ class EmundusModelForm extends JModelList
 
 	private function addCondition($rule_id, $condition)
 	{
-		
+
 
 		try
 		{
@@ -2988,7 +3011,7 @@ class EmundusModelForm extends JModelList
 	private function createConditionGroup($group_type)
 	{
 		$group_id = 0;
-		
+
 
 		try
 		{
@@ -3010,7 +3033,7 @@ class EmundusModelForm extends JModelList
 
 	private function addAction($rule_id, $action)
 	{
-		
+
 
 		try
 		{

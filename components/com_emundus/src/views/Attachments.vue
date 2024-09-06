@@ -66,7 +66,7 @@
                         @click="confirmDeleteAttachments"
                         :title="translate('COM_EMUNDUS_ATTACHMENTS_DELETE_TITLE')"
                     >
-                        delete_outlined
+                        delete
                     </span>
                 </div>
             </section>
@@ -232,6 +232,7 @@
                             @update-status="updateStatus"
                             @change-permission="changePermission"
                             :columns="$props.columns"
+                            :is_applicant="$props.is_applicant"
                         >
                         </AttachmentRow>
                     </tbody>
@@ -248,7 +249,7 @@
         </div>
 
         <div v-show="openedModal">
-            <modal id="edit-modal" name="edit" :resizable="true" :draggable="true" @closed="closeModal">
+            <modal id="edit-modal" name="edit" :resizable="true" :draggable="true" @closed="closeModal" :click-to-close="false">
                 <div class="modal-head tw-w-full tw-flex tw-items-center tw-justify-between">
                     <div id="actions-left" class="tw-flex tw-items-center tw-justify-start">
                         <span>{{ selectedAttachment.filename }}</span>
@@ -264,7 +265,7 @@
                             <span>{{ translate('COM_EMUNDUS_ATTACHMENTS_OPEN_IN_GED') }}</span>
                         </a>
                         <a download v-if="canDownload" :href="attachmentPath" class="download btn-icon-text tw-mr-6">
-                            <span class="material-icons"> file_download </span>
+                            <span class="material-symbols-outlined"> file_download </span>
                             <span>{{ translate('COM_EMUNDUS_ATTACHMENTS_LINK_TO_DOWNLOAD') }}</span>
                         </a>
                         <div class="prev-next-attachments tw-flex tw-items-center tw-justify-between tw-mr-2">
@@ -273,7 +274,7 @@
                                 :class="{ active: selectedAttachmentPosition > 0 }"
                                 @click="changeAttachment(selectedAttachmentPosition - 1, true)"
                             >
-                                <span class="material-icons"> navigate_before </span>
+                                <span class="material-symbols-outlined"> navigate_before </span>
                             </div>
                             <span class="lvl"
                                 >{{ selectedAttachmentPosition + 1 }} /{{ displayedAttachments.length }}</span
@@ -283,7 +284,7 @@
                                 :class="{ active: selectedAttachmentPosition < displayedAttachments.length - 1 }"
                                 @click="changeAttachment(selectedAttachmentPosition + 1)"
                             >
-                                <span class="material-icons"> navigate_next </span>
+                                <span class="material-symbols-outlined"> navigate_next </span>
                             </div>
                         </div>
                         <span class="material-symbols-outlined tw-cursor-pointer" @click="closeModal">close</span>
@@ -296,13 +297,16 @@
                         :class="{ 'only-preview': onlyPreview }"
                     >
                         <AttachmentPreview
+                            v-if="openedModal"
                             @fileNotFound="canDownload = false"
                             @canDownload="canDownload = true"
                             :user="displayedUser.user_id"
                         ></AttachmentPreview>
                         <AttachmentEdit
-                            v-if="displayEdit"
+                            v-if="displayEdit && openedModal"
                             :fnum="displayedFnum"
+                            :columns="$props.columns"
+                            :is_applicant="$props.is_applicant"
                             :is-displayed="!onlyPreview"
                             @closeModal="closeModal"
                             @saveChanges="updateAttachment"
@@ -376,6 +380,10 @@ export default {
           'sync',
         ]
       },
+    },
+    is_applicant: {
+      type: String,
+      default: null
     },
     displayEdit: {
       type: Boolean,
@@ -896,21 +904,20 @@ export default {
       return displayedCategories
     },
     displayedAttachments() {
-      const currentSearch = this.search.toLowerCase()
+      let displayedAttachments = [];
 
-      return typeof this.attachments !== 'undefined' && this.attachments !== null
-        ? this.attachments.filter((attachment) => {
+      if (typeof this.attachments !== 'undefined' && this.attachments !== null) {
+        const currentSearch = this.search.toLowerCase()
+        displayedAttachments = this.attachments.filter((attachment) => {
           if (attachment.upload_description === null) {
-            attachment.upload_description = ''
+            attachment.upload_description = '';
           }
 
-          return (
-            (attachment.upload_description.toLowerCase().includes(currentSearch) ||
-                              attachment.value.toLowerCase().includes(currentSearch)) &&
-                          (this.category === 'all' || attachment.category === this.category)
-          )
-        })
-        : []
+          return ((attachment.upload_description.toLowerCase().includes(currentSearch) || attachment.value.toLowerCase().includes(currentSearch)) && (this.category === 'all' || attachment.category === this.category))}
+        );
+      }
+
+      return displayedAttachments;
     },
   },
   watch: {

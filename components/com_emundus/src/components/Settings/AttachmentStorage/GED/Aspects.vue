@@ -12,7 +12,7 @@
       <div v-for="aspect in aspects" :key="aspect.name" class="tw-mb-4">
         <div class="tw-flex tw-items-center tw-justify-between">
           <input type="text" v-model="aspect.label" disabled>
-          <span class="material-icons">sync_alt</span>
+          <span class="material-symbols-outlined">sync_alt</span>
           <select v-model="aspect.mapping" @change="updateAspectMapping">
             <option v-for="tag in tags" :key="tag.id" :value="tag.id">{{ tag.tag }}</option>
           </select>

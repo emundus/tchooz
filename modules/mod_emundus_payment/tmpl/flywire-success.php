@@ -25,7 +25,7 @@ $contact = $params['contact_support'];
     <div class="em-flex-row em-flex-space-between">
         <p><?= JText::_('MOD_EMUNDUS_PAYMENT_FLYWIRE_STEPS') ?></p>
         <a href="<?= JFactory::getUri() ?>">
-            <span class="material-icons"
+            <span class="material-symbols-outlined"
                   title="<?= JText::_('MOD_EMUNDUS_PAYMENT_FLYWIRE_REFRESH_STEPS') ?>">refresh</span>
         </a>
     </div>

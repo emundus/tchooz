@@ -42,13 +42,25 @@
         }
 
         .container-404 a {
-            background-color: #a60e15;
-            color: white;
-            border: 1px solid #a60e15;
+            background-color: #5b5a72;
+            color: #ffffff;
+            border: 1px solid #5b5a72;
             padding: 8px 12px;
             border-radius: 8px;
-            font-size: var(--em-applicant-font-size);
+            font-size: 16px;
             font-weight: 400;
+        }
+
+        .container-404 a:hover {
+            text-decoration: none;
+            background-color: #ffffff;
+            color: #5b5a72;
+        }
+
+        .container-404 p {
+            color: black;
+            font-size: 20px;
+            font-weight: 600;
         }
 
         .container-404 .secondary-button {
@@ -59,6 +71,12 @@
             border-radius: 8px;
             font-size: var(--em-applicant-font-size);
             font-weight: 400;
+        }
+
+        .gradient-404 {
+            background: linear-gradient(95deg, #353544 7.64%, #5B5A72 52.08%, #B0B0BF 98.42%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         h2, p {
@@ -97,7 +115,7 @@
         #login-background-shapes-left {
             mask-image: url("/media/com_emundus/images/tchoozy/backgrounds/corner-bottom-left-background.svg");
             -webkit-mask-image: url("/media/com_emundus/images/tchoozy/backgrounds/corner-bottom-left-background.svg");
-            background: #a60e15;
+            background: #5b5a72;
             mask-repeat: no-repeat;
             -webkit-mask-repeat: no-repeat;
             mask-position: left bottom;
@@ -114,7 +132,7 @@
         #login-background-shapes-right {
             mask-image: url("/media/com_emundus/images/tchoozy/backgrounds/corner-top-right-background.svg");
             -webkit-mask-image: url("/media/com_emundus/images/tchoozy/backgrounds/corner-top-right-background.svg");
-            background: #a60e15;
+            background: #5b5a72;
             mask-repeat: no-repeat;
             -webkit-mask-repeat: no-repeat;
             mask-position: right top;
@@ -552,22 +570,22 @@
             <div id="login-background-shapes-right"></div>
             <div class="left-side-404 container-404">
                 <h2 class="gradient-404">Oups !</h2>
-                <p id="error_message_header"></p>
-                <p id="error_message"></p>
-                <img src="/media/com_emundus/images/tchoozy/complex-illustrations/building-error.svg" alt="Erreur 500">
+                <p id="error_message_header">Une erreur inattendue est survenue, veuillez nous en excuser...</p>
+                <img src="/media/com_emundus/images/tchoozy/complex-illustrations/500-error.svg" alt="Erreur 500">
+                <p id="error_message">Si le problème persiste, vous pouvez contacter notre support à l'adresse suivante :</p>
                 <div style="display: flex;flex-wrap: wrap;align-items: center;gap: 8px;justify-content: center">
-                    <p><a href="/" id="error_homepage_button">Go back to homepage</a></p>
-                    <p><a href="https://emundus.atlassian.net/servicedesk/customer/portals" target="_blank" class="secondary-button" id="error_support_button"></a></p>
+                    <p><a href="mailto:support@emundus.fr" id="error_homepage_button">support@emundus.fr</a></p>
+                    <!--<p><a href="https://emundus.atlassian.net/servicedesk/customer/portals" target="_blank" class="secondary-button" id="error_support_button"></a></p>-->
                 </div>
             </div>
         </div>
     </div>
 </div>
 </body>
-<script>
+<!--<script>
     document.querySelector('#error_message_header').innerText = errorLocale[navigator.language]?.header || 'Sorry, there was a problem we could not recover from.';
     document.querySelector('#error_message').innerText = errorLocale[navigator.language]?.text1 || 'The server returned a "{{statusCode_statusText}}"';
     document.querySelector('#error_support_button').innerText = errorLocale[navigator.language]?.helpUrlText || 'Help me resolve this';
     document.querySelector('#error_homepage_button').innerText = errorLocale[navigator.language]?.homepage || 'Back to homepage';
-</script>
+</script>-->
 </html>

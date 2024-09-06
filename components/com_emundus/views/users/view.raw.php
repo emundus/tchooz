@@ -2,70 +2,75 @@
 /**
  * @package    eMundus
  * @subpackage Components
- *             components/com_emundus/emundus.php
  * @link       http://www.emundus.fr
  * @license    GNU/GPL
  * @author     Benjamin Rivalland
  */
 
-// no direct access
+// phpcs:disable PSR1.Files.SideEffects
+\defined('_JEXEC') or die;
+// phpcs:enable PSR1.Files.SideEffects
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
-
-defined('_JEXEC') or die('Restricted access');
-//error_reporting(E_ALL);
-jimport('joomla.application.component.view');
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\MVC\View\HtmlView;
+use Joomla\Component\Emundus\Site\Exception\EmundusException;
 
 /**
- * HTML View class for the Emundus Component
- *
+ * HTML Users View class for the Emundus Component
  * @package    Emundus
  */
-class EmundusViewUsers extends JViewLegacy
+class EmundusViewUsers extends HtmlView
 {
-	var $_user = null;
-	var $_db = null;
-	var $filts_details = null;
-	var $user = null;
-	var $users = [];
-	var $pagination = [];
-	var $lists = [];
-	var $code = null;
-	var $fnum_assoc = null;
-	var $filters = null;
-	var $uGroups = null;
-	var $juGroups = null;
-	var $uCamps = null;
-	var $uOprofiles = null;
-	var $app_prof = null;
-	var $edit = null;
-	var $profiles = null;
-	var $groups = null;
-	var $jgroups = null;
-	var $campaigns = null;
-	var $universities = null;
-	var $ldapElements = null;
-	var $actions = null;
-	var $progs = null;
-	var $items = null;
-	var $display = null;
+	protected $_user;
+	protected $_db;
+
+	protected $filts_details = null;
+	protected $user = null;
+	protected $users = [];
+	protected $pagination = [];
+	protected $lists = [];
+	protected $code = null;
+	protected $fnum_assoc = null;
+	protected $filters = null;
+	protected $uGroups = null;
+	protected $juGroups = null;
+	protected $uCamps = null;
+	protected $uOprofiles = null;
+	protected $app_prof = null;
+	protected $edit = null;
+	protected $profiles = null;
+	protected $groups = null;
+	protected $jgroups = null;
+	protected $campaigns = null;
+	protected $universities = null;
+	protected $ldapElements = null;
+	protected $actions = null;
+	protected $progs = null;
+	protected $items = null;
+	protected $display = null;
 
 	function __construct($config = array())
 	{
+		parent::__construct($config);
+
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'javascript.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'export.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
 
-		$this->_user = JFactory::getUser();
-		$this->_db   = JFactory::getDBO();
+		$app = Factory::getApplication();
 
-		$menu         = @JFactory::getApplication()->getMenu();
+		$this->_user = $app->getIdentity();
+		$this->_db   = Factory::getContainer()->get('DatabaseDriver');
+
+		$menu         = $app->getMenu();
 		$current_menu = $menu->getActive();
-		$menu_params  = $menu->getParams(@$current_menu->id);
+		$menu_params  = $menu->getParams($current_menu->id);
 
-		//Pre-filters
+		// Pre-filters
 		$filts_names  = explode(',', $menu_params->get('em_filters_names'));
 		$filts_values = explode(',', $menu_params->get('em_filters_values'));
 
@@ -77,12 +82,11 @@ class EmundusViewUsers extends JViewLegacy
 				$this->filts_details[$filt_name] = null;
 			}
 		}
-
-		parent::__construct($config);
 	}
 
 	private function _loadData()
 	{
+		$app = Factory::getApplication();
 		$m_users                = new EmundusModelUsers();
 		$m_users->filts_details = $this->filts_details;
 		$users                  = $m_users->getUsers();
@@ -96,7 +100,7 @@ class EmundusViewUsers extends JViewLegacy
 				$profile_details  = $m_users->getProfilesByIDs($o_profiles);
 				$user->o_profiles = array_map((function ($a) use ($applicant_profiles, $profile_details) {
 					if (in_array($a, $applicant_profiles)) {
-						return JText::_('COM_EMUNDUS_APPLICANT');
+						return Text::_('COM_EMUNDUS_APPLICANT');
 					}
 					else {
 						return $profile_details[$a]->label;
@@ -111,8 +115,8 @@ class EmundusViewUsers extends JViewLegacy
 		$pagination       = $m_users->getPagination();
 		$this->pagination = $pagination;
 
-		$lists['order_dir'] = JFactory::getSession()->get('filter_order_Dir');
-		$lists['order']     = JFactory::getSession()->get('filter_order');
+		$lists['order_dir'] = $app->getSession()->get('filter_order_Dir');
+		$lists['order']     = $app->getSession()->get('filter_order');
 		$this->lists        = $lists;
 	}
 
@@ -126,22 +130,24 @@ class EmundusViewUsers extends JViewLegacy
 		$this->code        = $model->code;
 		$this->fnum_assoc  = $model->fnum_assoc;
 
-		$this->filters = @EmundusHelperFiles::resetFilter();
+		$this->filters = EmundusHelperFiles::resetFilter();
 	}
 
 	private function _loadUserForm()
 	{
+		$app = Factory::getApplication();
 		$m_users = new EmundusModelUsers();
-		$edit    = JFactory::getApplication()->input->getInt('edit', null);
+		$input = $app->getInput();
+		$edit    = $input->getInt('edit', null);
 
 		include_once(JPATH_BASE . '/components/com_emundus/models/profile.php');
 		$m_profiles = new EmundusModelProfile;
 		$app_prof   = $m_profiles->getApplicantsProfilesArray();
 
-		$eMConfig = JComponentHelper::getParams('com_emundus');
+		$eMConfig = ComponentHelper::getParams('com_emundus');
 
 		if ($edit == 1) {
-			$uid  = JFactory::getApplication()->input->getInt('user', null);
+			$uid  = $input->getInt('user', null);
 			$user = $m_users->getUserInfos($uid);
 
 			$uGroups = $m_users->getUserGroups($uid);
@@ -180,7 +186,7 @@ class EmundusViewUsers extends JViewLegacy
 		$this->universities = $m_users->getUniversities();
 
 		// Get the LDAP elements.
-		$params             = JComponentHelper::getParams('com_emundus');
+		$params             = ComponentHelper::getParams('com_emundus');
 		$this->ldapElements = $params->get('ldapElements');
 	}
 
@@ -206,7 +212,7 @@ class EmundusViewUsers extends JViewLegacy
 	private function _loadRightsForm()
 	{
 		$m_users = new EmundusModelUsers();
-		$uid     = Factory::getApplication()->input->getInt('user', null);
+		$uid     = Factory::getApplication()->getInput()->getInt('user', null);
 		$groups  = $m_users->getUserGroups($uid);
 
 		$g = array();
@@ -221,17 +227,18 @@ class EmundusViewUsers extends JViewLegacy
 
 	function display($tpl = null)
 	{
-
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
-			die(JText::_("ACCESS_DENIED"));
+			throw new EmundusException(Text::_('JERROR_ALERTNOAUTHOR'), 403, null, false, false);
 		}
 
-		$layout  = JFactory::getApplication()->input->getString('layout', null);
+		$app = Factory::getApplication();
+		$layout  = $app->getInput()->getString('layout', null);
 		$m_files = new EmundusModelFiles();
+
 		switch ($layout) {
 			case 'user':
 				if (!EmundusHelperAccess::asAccessAction(12,'r',$this->_user->id)) {
-					die(JText::_("ACCESS_DENIED"));
+					throw new EmundusException(Text::_('JERROR_ALERTNOAUTHOR'), 403, null, true, false, 'raw');
 				}
 
 				$this->_loadData();
@@ -243,14 +250,14 @@ class EmundusViewUsers extends JViewLegacy
 				break;
 			case 'adduser':
 				if (!EmundusHelperAccess::asAccessAction(12,'c',$this->_user->id)) {
-					die(JText::_("ACCESS_DENIED"));
+					throw new EmundusException(Text::_('JERROR_ALERTNOAUTHOR'), 403, null, true, false, 'raw');
 				}
 
 				$this->_loadUserForm();
 				break;
 			case 'addgroup':
 				if (!EmundusHelperAccess::asAccessAction(19,'c',$this->_user->id)) {
-					die(JText::_("ACCESS_DENIED"));
+					throw new EmundusException(Text::_('JERROR_ALERTNOAUTHOR'), 403, null, false, false, 'raw');
 				}
 
 				$this->_loadGroupForm();
@@ -260,21 +267,21 @@ class EmundusViewUsers extends JViewLegacy
 				break;
 			case 'affectgroup':
 				if (!EmundusHelperAccess::asAccessAction(12,'u',$this->_user->id)) {
-					die(JText::_("ACCESS_DENIED"));
+					throw new EmundusException(Text::_('JERROR_ALERTNOAUTHOR'), 403, null, true, false, 'raw');
 				}
 
 				$this->_loadAffectForm();
 				break;
 			case 'showrights':
 				if (!EmundusHelperAccess::asAccessAction(12,'r',$this->_user->id)) {
-					die(JText::_("ACCESS_DENIED"));
+					throw new EmundusException(Text::_('JERROR_ALERTNOAUTHOR'), 403, null, true, false, 'raw');
 				}
 
 				$this->_loadRightsForm();
 				break;
 			case 'menuactions':
-				$display      = JFactory::getApplication()->input->getString('display', 'none');
-				$menu         = JFactory::getApplication()->getMenu();
+				$display      = $app->getInput()->getString('display', 'none');
+				$menu         = $app->getMenu();
 				$current_menu = $menu->getActive();
 				$params       = $menu->getParams($current_menu->id);
 
@@ -282,7 +289,7 @@ class EmundusViewUsers extends JViewLegacy
 				$actions = $m_files->getAllActions();
 
 				$menuActions = array();
-				foreach ($items as $key => $item) {
+				foreach ($items as $item) {
 					if (!empty($item->note)) {
 						$note = explode('|', $item->note);
 						if ($actions[$note[0]][$note[1]] == 1) {
@@ -303,7 +310,7 @@ class EmundusViewUsers extends JViewLegacy
 		}
 
 		$this->onSubmitForm = EmundusHelperJavascript::onSubmitForm();
-		$this->itemId       = Factory::getApplication()->input->getInt('Itemid', null);
+		$this->itemId       = $app->getInput()->getInt('Itemid', null);
 
 		parent::display($tpl);
 	}

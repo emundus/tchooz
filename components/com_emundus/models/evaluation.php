@@ -2668,7 +2668,6 @@ class EmundusModelEvaluation extends JModelList
 									}
 									else if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton")
 									{
-
 										foreach ($fabrikValues[$elt['id']] as $fnum => $val)
 										{
 											if ($elt['plugin'] == "checkbox" || (!empty($params->multiple) && $params->multiple == 1))
@@ -2698,7 +2697,6 @@ class EmundusModelEvaluation extends JModelList
 									}
 									elseif ($elt['plugin'] == "birthday")
 									{
-
 										foreach ($fabrikValues[$elt['id']] as $fnum => $val)
 										{
 											$val = explode(',', $val['val']);

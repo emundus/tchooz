@@ -21,32 +21,35 @@ Factory::getApplication()->getSession()->set('application_layout', 'comment');
 ?>
 <div class="row">
     <div class="panel panel-default widget em-container-decision">
-        <div class="panel-heading em-container-decision-heading">
+        <div class="panel-heading em-container-decision-heading !tw-bg-profile-full">
             <h3 class="panel-title">
                 <span class="glyphicon glyphicon-check"></span>
 				<?php echo Text::_('COM_EMUNDUS_DECISION'); ?>
 				<?php if (EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $this->fnum)): ?>
-                    <a class="  clean" target="_blank"
-                       href="<?php echo Uri::base(); ?>index.php?option=com_emundus&controller=evaluation&task=pdf_decision&user=<?php echo $this->student->id; ?>&fnum=<?php echo $this->fnum; ?>">
-                        <button class="btn btn-default"
+                    <!--<a class="  clean" target="_blank"
+                       href="<?php echo Uri::base(); ?>index.php?option=com_emundus&controller=evaluation&task=pdf_decision&user=<?php echo $this->student->id; ?>&fnum=<?php echo $this->fnum; ?>">-->
+                        <button id="download-decision-pdf"
+                                class="btn btn-default"
                                 data-title="<?php echo Text::_('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF'); ?>"
                                 data-toggle="tooltip" data-placement="bottom"
-                                title="<?= Text::_('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF'); ?>"><span
-                                    class="material-icons">file_download</span></button>
-                    </a>
+                                title="<?= Text::_('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF'); ?>"
+                        >
+                            <span class="material-symbols-outlined">file_download</span>
+                        </button>
+                    <!--</a>-->
 				<?php endif; ?>
                 <div class="em-flex-row">
 					<?php if (!empty($this->url_form)): ?>
                         <a href="<?php echo $this->url_form; ?>" target="_blank" class="em-flex-row"
                            title="<?php echo Text::_('COM_EMUNDUS_DECISION_OPEN_DECISION_FORM_IN_NEW_TAB_DESC'); ?>"><span
-                                    class="material-icons">open_in_new</span></a>
+                                    class="material-symbols-outlined">open_in_new</span></a>
 					<?php endif; ?>
                 </div>
             </h3>
             <div class="btn-group pull-right">
-                <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_back</span>
+                <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-symbols-outlined">arrow_back</span>
                 </button>
-                <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_forward</span>
+                <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-symbols-outlined">arrow_forward</span>
                 </button>
             </div>
         </div>
@@ -125,7 +128,11 @@ Factory::getApplication()->getSession()->set('application_layout', 'comment');
 
 </script>
 <script>
-    $(function () {
-        $('[data-toggle="tooltip"]').tooltip()
-    })
+    document.getElementById('download-decision-pdf').addEventListener('click', function (e) {
+        if (typeof export_pdf === 'function') {
+            export_pdf(JSON.stringify({0: <?= $this->fnum ?>}), null, 'decision');
+        } else {
+            console.error('Function export_pdf does not exist');
+        }
+    });
 </script>

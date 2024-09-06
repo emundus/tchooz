@@ -14,6 +14,8 @@ use Joomla\CMS\Factory;
 use Joomla\String\Inflector;
 use Joomla\String\Normalise;
 
+
+
 /**'
  * Autoloader Class
  *
@@ -26,6 +28,7 @@ class FabrikAutoloader
 	{
 		spl_autoload_register(array($this, 'controller'));
 		spl_autoload_register(array($this, 'helper'));
+		spl_autoload_register(array($this, 'enums'));
 		spl_autoload_register(array($this, 'document'));
 		spl_autoload_register(array($this, 'view'));
 
@@ -281,6 +284,28 @@ class FabrikAutoloader
 			{
 				$class::__initStatic();
 			}
+		}
+	}
+
+	/**
+	 * Load enums files
+	 **/
+	private function enums($class)
+	{
+		if (!strstr($class, 'Fabrik\Enums'))
+		{
+			return;
+		}
+
+		$className = str_replace('\\', '/', $class);
+		//$file  = explode('/', $class);
+		//$file  = strtolower(array_pop($file));
+		$path = preg_replace('#Fabrik\/Enums\/#', '/libraries/fabrik/fabrik/fabrik/Enums/', $className);
+		$path  = JPATH_SITE . $path . '.php';
+
+		if (file_exists($path))
+		{
+			require_once $path;
 		}
 	}
 

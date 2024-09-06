@@ -82,23 +82,15 @@ class EmundusControllersettings extends BaseController
 
 	public function gettags()
 	{
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
 		$user = $this->user;
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			$tags = $this->m_settings->getTags();
+			$response = ['status' => true, 'msg' => Text::_('TAGS_RETRIEVED'), 'data' => $tags];
 		}
-		else {
-			$status = $this->m_settings->getTags();
 
-			if (!empty($status)) {
-				$tab = array('status' => 1, 'msg' => JText::_('STATUS_RETRIEVED'), 'data' => $status);
-			}
-			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_STATUS'), 'data' => $status);
-			}
-		}
-		echo json_encode((object) $tab);
+		echo json_encode($response);
 		exit;
 	}
 
@@ -1251,13 +1243,10 @@ public function sendTestMail()
 
 	public function getOffset()
 	{
-		$user    = $this->user;
-		$results = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
-
 		// get input format, second, minutes or hours
 		$format = $this->input->getString('format', 'hours');
 
-		$config = JFactory::getConfig();
+		$config = $this->app->getConfig();
 		$offset = $config->get('offset');
 
 		$dateTZ = new DateTimeZone($offset);
@@ -1445,6 +1434,32 @@ public function sendTestMail()
 		}
 
 		echo json_encode((object) $result);
+		exit;
+	}
+
+	/**
+	 * Update the order of the tags
+	 *
+	 * @since version 1.40.0
+	 */
+	public function updatetagsorder() {
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
+			$response['code'] = 500;
+			$response['message'] = Text::_('MISSING_PARAMS');
+
+			$ordered_tags_string = $this->input->getString('tags', '');
+
+			if (!empty($ordered_tags_string)) {
+				$ordered_tags = explode(',', $ordered_tags_string);
+
+				$response['status'] = $this->m_settings->updateTagsOrder($ordered_tags);
+				$response['code'] = 200;
+			}
+		}
+
+		echo json_encode((object)$response);
 		exit;
 	}
 }

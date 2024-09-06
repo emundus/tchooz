@@ -1,11 +1,15 @@
 import moment from 'moment';
+import fr from "moment/dist/locale/fr";
 import Swal from 'sweetalert2';
 import { useFormBuilderStore } from '@/stores/formbuilder.js';
+import { useGlobalStore } from '@/stores/global.js';
 
 export default {
   methods: {
     updateLastSave() {
-      moment.locale('fr');
+      if(useGlobalStore().shortLang === 'fr') {
+        moment.locale('fr', fr);
+      }
       const formBuilderStore = useFormBuilderStore();
       formBuilderStore.updateLastSave(moment().format('LT'));
     },

@@ -37,6 +37,7 @@ use Joomla\Utilities\ArrayHelper;
 use Joomla\String\StringHelper;
 use Joomla\CMS\Factory;
 use Fabrik\Helpers\Php;
+use Joomla\CMS\Uri\Uri;
 
 require_once COM_FABRIK_FRONTEND . '/models/list-advanced-search.php';
 
@@ -9363,7 +9364,7 @@ class FabrikFEModelList extends FormModel
 
 		if ($this->getParams()->get('rss') == '1')
 		{
-			$base = JURI::getInstance()->toString(array('scheme', 'user', 'pass', 'host', 'port', 'path'));
+			$base = Uri::getInstance()->toString(array('scheme', 'user', 'pass', 'host', 'port', 'path'));
 
 			// $$$ rob test fabrik's own feed renderer
 			$link = $base . '?option=com_' . $package . '&view=list&listid=' . $this->getId();
@@ -11723,7 +11724,7 @@ class FabrikFEModelList extends FormModel
 	{
 		$formModel = $this->getFormModel();
 		$input = $this->app->getInput();
-		$base = JURI::getInstance();
+		$base = Uri::getInstance();
 		$base = $base->toString(array('scheme', 'user', 'pass', 'host', 'port', 'path'));
 		$qs = $input->server->get('QUERY_STRING', '', 'string');
 
@@ -12315,7 +12316,7 @@ class FabrikFEModelList extends FormModel
 		}
 
 		/* get the various current uri parts */
-		$uri = JURI::getInstance();
+		$uri = Uri::getInstance();
 		$uriActiveTab = $uri->getVar($tabsField, null);
 		/* If the tabsField is an array then we are showing merged tabs, we need the merged tabs names for the activeTabName */
 		if (is_array($uriActiveTab)) {

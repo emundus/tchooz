@@ -151,6 +151,10 @@ Text::script('COM_EMUNDUS_SETTINGS_ACCESSIBILITY_DETAILS_NORMAL_TEXT');
 Text::script('COM_EMUNDUS_SETTINGS_ACCESSIBILITY_DETAILS_LARGE_TEXT');
 Text::script('COM_EMUNDUS_SETTINGS_ACCESSIBILITY_DETAILS_ICONS');
 Text::script('COM_EMUNDUS_SETTINGS_ACCESSIBILITY_DETAILS_LOGIN_TEXT');
+Text::script('COM_EMUNDUS_SETTINGS_FAILED_TO_UPDATE_STATUS');
+Text::script('COM_EMUNDUS_SETTINGS_FAILED_TO_UPDATE_TAG');
+Text::script('COM_EMUNDUS_SETTINGS_FORBIDDEN_EMPTY_STATUS');
+Text::script('COM_EMUNDUS_SETTINGS_FORBIDDEN_EMPTY_TAG');
 Text::script('COM_EMUNDUS_ONBOARD_RGAA_OK');
 
 ## TUTORIAL ##
@@ -190,6 +194,8 @@ Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANTS');
 Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANT_COPY_APPLICATION_FORM');
 Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANT_CAN_SUBMIT_ENCRYPTED');
 Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANT_CAN_SUBMIT_ANONYM_FILE');
+Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_ALLOW_APPLICANT_TO_COMMENT');
+Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_ALLOW_APPLICANT_TO_COMMENT_DESC');
 Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_LIST_LIMIT');
 Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_OTHER_USER_EDITING_SAME_FILE');
 Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_OTHER_USER_EDITING_SAME_FILE_HELPTEXT');
@@ -484,7 +490,6 @@ $hash = EmundusHelperCache::getCurrentGitHash();
 ?>
 
 <style link="media/com_emundus_vue/app_emundus.css?<?php echo $hash ?>"></style>
-<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
 
 <div id="em-component-vue"
      component="settings"
@@ -496,4 +501,4 @@ $hash = EmundusHelperCache::getCurrentGitHash();
 ></div>
 
 <script src="media/com_emundus/js/settings.js?<?php echo $hash ?>"></script>
-<script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
+<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>

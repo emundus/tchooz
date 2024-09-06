@@ -71,7 +71,7 @@
           <div class="tw-flex tw-justify-between tw-items-center">
             <label>-- {{ (key+1) }} --</label>
             <button v-if="key != 0 && (key+1) == Object.entries(element.params[param.name]).length" type="button" @click="removeRepeatableField(param.name,key)" class="mt-2 w-auto">
-              <span class="material-icons-outlined tw-text-red-600">close</span>
+              <span class="material-symbols-outlined tw-text-red-600">close</span>
             </button>
           </div>
 
@@ -210,7 +210,7 @@ export default {
       formBuilderService.getSqlDropdownOptions(table, key, value, param.translate).then((response) => {
         param.options = response.data;
 
-        if(this.element.params[param.name] && this.element.params[param.name].length > 0){
+        if(this.element.params[param.name] && typeof this.element.params[param.name] === 'string' && this.element.params[param.name].length > 0){
           let ids_to_exclude = this.element.params[param.name].split(',');
           const regex = /\'|"/ig;
 
@@ -224,6 +224,8 @@ export default {
               this.element.params[param.name].push(option);
             }
           });
+        } else {
+          this.element.params[param.name] = [];
         }
 
         this.loading = false;

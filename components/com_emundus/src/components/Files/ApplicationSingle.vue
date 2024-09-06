@@ -4,6 +4,7 @@
       :click-to-close="false"
       id="application-modal"
       name="application-modal"
+      :height="'100vh'"
       ref="modal"
       v-if="selectedFile !== null && selectedFile !== undefined"
       :class="{ 'context-files': context === 'files', 'hidden': hidden }"
@@ -33,7 +34,7 @@
     <div class="modal-grid" :style="'grid-template-columns:' + this.ratioStyle" v-if="access">
       <div id="modal-applicationform">
         <div class="scrollable">
-          <div class="tw-flex tw-items-center tw-justify-center tw-gap-4 tw-border-b tw-border-neutral-300 sticky-tab">
+          <div class="tw-flex tw-items-center tw-justify-center tw-gap-4 tw-border-b tw-border-neutral-300 sticky-tab em-bg-neutral-100" style="z-index:2;">
             <div v-for="tab in tabsICanAccessTo" :key="tab.name" class="em-light-tabs tw-cursor-pointer"
                  @click="selected = tab.name" :class="selected === tab.name ? 'em-light-selected-tab' : ''">
               <span class="tw-text-sm">{{ translate(tab.label) }}</span>
@@ -62,10 +63,10 @@
       </div>
 
       <div id="modal-evaluationgrid">
-        <div class="tw-flex tw-flex-col" v-if="!loading && url" style="width: 40px;height: 40px;margin: 24px 0 12px 24px;">
-          <div class="tw-bg-profile-light tw-rounded-full tw-flex tw-justify-center tw-items-center" style="width: 40px; height: 40px;">
-            <div class="tw-bg-profile-medium tw-rounded-full  tw-flex tw-justify-center tw-items-center" style="width: 24px; height: 24px">
-              <span class="material-symbols-outlined tw-rounded-full tw-text-profile-full" style="font-size: 14px">troubleshoot</span>
+        <div class="tw-w-fit tw-mb-8" v-if="!loading && url">
+          <div class="tw-bg-profile-light tw-rounded-full tw-p-3" >
+            <div class="tw-bg-profile-medium tw-rounded-full tw-p-3 em-flex-column" >
+              <span class="material-symbols-outlined em-font-size-32 tw-text-profile-full" >troubleshoot</span>
             </div>
           </div>
         </div>

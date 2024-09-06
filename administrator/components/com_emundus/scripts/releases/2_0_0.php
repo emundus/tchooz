@@ -795,14 +795,6 @@ button: COM_EMUNDUS_ERROR_404_BUTTON";
 			EmundusHelperUpdate::updateYamlVariable('button','COM_EMUNDUS_ERROR_404_BUTTON',JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/error.yaml');
 			//
 
-			// Fix 404 styles
-			EmundusHelperUpdate::addYamlVariable('location', 'modules/mod_emundusmenu/style/mod_emundusmenu.css', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css', true, true);
-			EmundusHelperUpdate::addYamlVariable('inline', '', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
-			EmundusHelperUpdate::addYamlVariable('extra', '{  }', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
-			EmundusHelperUpdate::addYamlVariable('priority', '0', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
-			EmundusHelperUpdate::addYamlVariable('name', 'Menu', JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', 'css');
-			//
-
 			// Status restriction in groups
 			EmundusHelperUpdate::addColumn('jos_emundus_setup_groups', 'filter_status', 'INT', 1, 1, '0');
 			EmundusHelperUpdate::addColumn('jos_emundus_setup_groups', 'status', 'INT', 11, 1);
@@ -1444,6 +1436,177 @@ if(value == 1) {
 				->where($this->db->quoteName('folder') . ' = ' . $this->db->quote('editors-xtd'));
 			$this->db->setQuery($query);
 			$this->db->execute();
+
+			if (!class_exists('EmundusAdministratorModelComments')) {
+				require_once(JPATH_ROOT . '/administrator/components/com_emundus/models/comments.php');
+			}
+			$m_comments = new \EmundusAdministratorModelComments();
+			$comments_installed = $m_comments->install();
+			if ($comments_installed)
+			{
+				EmundusHelperUpdate::displayMessage('Le nouveau composant pour les commentaires a été installé avec succès', 'success');
+			}
+			else
+			{
+				throw new \Exception('Erreur lors de l\'installation du nouveau module commentaire');
+			}
+
+			EmundusHelperUpdate::installExtension('plg_fabrik_element_emundus_geolocalisation','emundus_geolocalisation',null,'plugin',1,'fabrik_element');
+
+			EmundusHelperUpdate::addColumn('jos_emundus_setup_action_tag', 'ordering', 'INT', null, 1, 0);
+
+			EmundusHelperUpdate::addColumn('jos_emundus_chatroom','status','INT');
+
+			// Sharing files feature
+			require_once JPATH_ADMINISTRATOR . '/components/com_emundus/scripts/src/SharingFilesInstall.php';
+			$sharing_files_install   = new \scripts\src\SharingFilesInstall();
+			$sharing_files_installed = $sharing_files_install->install();
+			if ($sharing_files_installed['status']) {
+				EmundusHelperUpdate::displayMessage('La fonctionnalité de partage de dossier a été installée avec succès', 'success');
+			}
+			else {
+				EmundusHelperUpdate::displayMessage($sharing_files_installed['message'], 'error');
+			}
+
+			// Fix error layout
+			EmundusHelperUpdate::insertTranslationsTag('JERROR_PAGE_NOT_FOUND','La page que vous cherchez semble introuvable...');
+			EmundusHelperUpdate::insertTranslationsTag('JERROR_PAGE_NOT_FOUND','The page you are looking for cannot be found...', 'override', 0, null, null, 'en-GB');
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_ERROR_TITLE','Oups !');
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_ERROR_TITLE','Oops!', 'override', 0, null, null, 'en-GB');
+
+			$error_directory = JPATH_ROOT . '/templates/g5_helium/custom/config/_error';
+			$error_page_directory = JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page';
+
+			$error_files = glob($error_directory . '/*');
+			foreach ($error_files as $file) {
+				if (is_file($file)) {
+					unlink($file);
+				}
+			}
+
+			$error_page_files = glob($error_page_directory . '/*');
+			foreach ($error_page_files as $file) {
+				if (is_file($file)) {
+					unlink($file);
+				}
+			}
+
+			$new_error_files = glob(JPATH_ROOT . '/.docker/installation/templates/g5_helium/custom/config/_error/*');
+			foreach ($new_error_files as $file) {
+				if (is_file($file)) {
+					copy($file, $error_directory . '/' . basename($file));
+				}
+			}
+
+			$new_error_page_files = glob(JPATH_ROOT . '/.docker/installation/templates/g5_helium/custom/config/_error/page/*');
+			foreach ($new_error_page_files as $file) {
+				if (is_file($file)) {
+					copy($file, $error_page_directory . '/' . basename($file));
+				}
+			}
+			//
+
+			EmundusHelperUpdate::updateExtensionParam('log_forms_update',0);
+
+			$query->clear()
+				->select('id,params')
+				->from($this->db->quoteName('#__fabrik_lists'));
+			$this->db->setQuery($query);
+			$fabrik_lists = $this->db->loadObjectList();
+
+			foreach ($fabrik_lists as $fabrik_list) {
+				$params = json_decode($fabrik_list->params,true);
+
+				if(!empty($params['list_copy_image_name'])) {
+					$params['list_copy_image_name'] = str_replace('copy','content_copy',$params['list_copy_image_name']);
+					$fabrik_list->params = json_encode($params);
+					$this->db->updateObject('#__fabrik_lists', $fabrik_list, 'id');
+				}
+			}
+
+			$old_values = [
+				'fr-FR' => 'Copier ou déplacer le dossier',
+				'en-GB' => 'Copy or move file',
+			];
+			$new_values = [
+				'fr-FR' => 'Modifier la campagne',
+				'en-GB' => 'Edit campaign',
+			];
+			EmundusHelperUpdate::updateOverrideTag('COPY_MOVE_FILE',$old_values,$new_values);
+
+			$query->clear()
+				->update($this->db->quoteName('#__fabrik_elements'))
+				->set($this->db->quoteName('label') . ' = ' . $this->db->quote('ACTION'))
+				->where($this->db->quoteName('name') . ' = ' . $this->db->quote('copied'))
+				->where($this->db->quoteName('group_id') . ' = ' . $this->db->quote('254'));
+			$this->db->setQuery($query);
+			$this->db->execute();
+
+			$datas       = [
+				'menutype'     => 'mainmenu',
+				'title'        => 'Error',
+				'alias'        => 'error',
+				'link'         => 'index.php?option=com_emundus&view=error',
+				'type'         => 'component',
+				'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+				'params' => [
+					'menu_show'    => 0,
+					'pageclass_sfx' => 'error-page'
+				]
+			];
+			$error_menu = EmundusHelperUpdate::addJoomlaMenu($datas);
+
+			$query->clear()
+				->select('ff.id,ff.params')
+				->from($this->db->quoteName('#__fabrik_forms','ff'))
+				->leftJoin($this->db->quoteName('#__fabrik_lists','fl').' ON '.$this->db->quoteName('fl.form_id').' = '.$this->db->quoteName('ff.id'))
+				->where($this->db->quoteName('fl.db_table_name') . ' LIKE ' . $this->db->quote('jos_emundus_setup_programmes'));
+			$this->db->setQuery($query);
+			$form_program = $this->db->loadObject();
+
+			if(!empty($form_program->id)) {
+				$params = json_decode($form_program->params, true);
+				$params['plugin_events'] = ['both'];
+				$query->clear()
+					->update($this->db->quoteName('#__fabrik_forms'))
+					->set($this->db->quoteName('params') . ' = ' . $this->db->quote(json_encode($params)))
+					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($form_program->id));
+				$this->db->setQuery($query);
+				$this->db->execute();
+			}
+
+			EmundusHelperUpdate::installExtension('System - OAuth 2 routing','oauth2',null,'plugin',1,'system');
+			EmundusHelperUpdate::enableEmundusPlugins('emundus_oauth2', 'authentication');
+
+			EmundusHelperUpdate::installExtension('mod_emundus_oauth2','mod_emundus_oauth2',null,'module',1,'','[]',true);
+			EmundusHelperUpdate::createModule('External login','login','mod_emundus_oauth2','{"layout":"_:default","moduleclass_sfx":"","module_tag":"div","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0"}',1,1,1,0,1);
+
+			EmundusHelperUpdate::insertTranslationsTag('EMUNDUS_GROUPS','Groupe(s) de droits par défaut');
+			EmundusHelperUpdate::insertTranslationsTag('EMUNDUS_GROUPS','Default rights group(s)', 'override', 0, null, null, 'en-GB');
+
+			EmundusHelperUpdate::addColumn('jos_emundus_setup_profiles','emundus_groups','INT');
+
+			$columns       = [
+				[
+					'name'   => 'parent_id',
+					'type'   => 'int',
+					'length' => 11,
+					'null'   => 0,
+				],
+				[
+					'name'   => 'emundus_groups',
+					'type'   => 'int',
+					'length' => 11,
+					'null'   => 0,
+				],
+				[
+					'name'   => 'params',
+					'type'   => 'varchar',
+					'length' => 255,
+					'null'   => 1,
+				]
+			];
+			EmundusHelperUpdate::createTable('jos_emundus_setup_profiles_repeat_emundus_groups', $columns);
 
 			$result['status'] = true;
 		}

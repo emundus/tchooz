@@ -22,6 +22,8 @@ use Joomla\String\StringHelper;
  * @subpackage  Fabrik
  * @since       3.0
  */
+
+#[AllowDynamicProperties]
 abstract class FabrikStorageAdaptor
 {
 	/**

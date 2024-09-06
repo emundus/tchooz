@@ -21,10 +21,11 @@ if (!empty($this->items)) :
     </style>
     <div class="container-nav em-container-menuaction">
 
-        <span class="navbar-brand" href="#"><?php echo JText::_('COM_EMUNDUS_ACTIONS'); ?></span>
-        <div class="navbar-collapse collapse navbar-inverse-collapse">
+        <h1 class="container-menuaction-title"><?php echo JText::_($this->menu_title) ?></h1>
 
-            <ul class="nav navbar-nav em-container-menuaction-nav" style="display:<?php echo $this->display; ?>">
+        <div class="navbar-collapse collapse navbar-inverse-collapse menuaction-actions-container tw-px-0">
+
+            <ul class="nav navbar-nav em-container-menuaction-nav !tw-ml-1" style="display:<?php echo $this->display; ?>;">
 				<?php
 
 				$multiple = JFactory::getApplication()->input->get('multi', '0', 'get', 'INT'); //nb of ckecked ckeckbox
@@ -75,11 +76,6 @@ if (!empty($this->items)) :
 				endforeach;
 				?>
             </ul>
-        </div>
-    </div>
-    <div class="em-close-minimise">
-        <div class="btn-group pull-right">
-            <button id="em-close-file" class="btn btn-danger btn-xxl"><span class="material-icons">close</span></button>
         </div>
     </div>
 
@@ -138,15 +134,6 @@ endif;
     </div>
 </div>
 <script>
-    //$('#countCheckedCheckbox').html('');
-
-    $('#em-close-file').click(function () {
-        hideCount();
-
-        $('.em-check').prop('checked', false);
-        $('.em-check-all-all').prop('checked', false);
-        reloadActions('files', undefined, false);
-    })
 </script>
 
 

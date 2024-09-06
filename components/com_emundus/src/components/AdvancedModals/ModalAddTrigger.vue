@@ -17,7 +17,7 @@
         {{ translate("COM_EMUNDUS_ONBOARD_EMAIL_ADDTRIGGER") }}
       </h4>
       <button class="tw-cursor-pointer tw-bg-transparent" @click.prevent="$emit('close')">
-        <span class="material-icons-outlined">close</span>
+        <span class="material-symbols-outlined">close</span>
       </button>
     </div>
 

@@ -333,7 +333,7 @@ class EmundusHelperAccess
 	public static function isDataAnonymized($user_id)
 	{
 		$is_data_anonymized = false;
-		JLog::addLogger(['text_file' => 'com_emundus.access.error.php'], JLog::ERROR, 'com_emundus');
+		Log::addLogger(['text_file' => 'com_emundus.access.error.php'], Log::ERROR, 'com_emundus');
 
 		if (!empty($user_id))
 		{
@@ -356,7 +356,7 @@ class EmundusHelperAccess
 				}
 				catch (Exception $e)
 				{
-					JLog::add('Error seeing if user can access non anonymous data. -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+					Log::add('Error seeing if user can access non anonymous data. -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
 					$is_data_anonymized = false;
 				}
@@ -372,7 +372,8 @@ class EmundusHelperAccess
 	 *
 	 * @return bool
 	 *
-	 * @since version
+	 * @throws Exception
+	 * @since version 1.0.0
 	 */
 	public static function isUserAllowedToAccessFnum($user_id, $fnum)
 	{
@@ -380,24 +381,15 @@ class EmundusHelperAccess
 
 		if (empty($user_id))
 		{
-			$user_id = JFactory::getUser()->id;
+			$user_id = Factory::getApplication()->getIdentity()->id;
 		}
 
 		if (!empty($user_id) && !empty($fnum))
 		{
-			$db    = JFactory::getDbo();
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
-			// is the fnum mine ?
-			$query->select('id')
-				->from($db->quoteName('#__emundus_campaign_candidature'))
-				->where('applicant_id = ' . $db->quote($user_id))
-				->andWhere('fnum LIKE ' . $db->quote($fnum));
-			$db->setQuery($query);
-			$ccid = $db->loadResult();
-
-			if (!empty($ccid))
-			{
+			if (self::isFnumMine($user_id, $fnum)) {
 				$allowed = true;
 			}
 			else
@@ -544,5 +536,64 @@ class EmundusHelperAccess
 		}
 
 		return $rowid;
+	}
+
+	/**
+	 * Check if the application file is mine
+	 * 
+	 * @param $user_id
+	 * @param $fnum
+	 *
+	 * @return bool
+	 *
+	 * @since version 1.40.0
+	 */
+	public static function isFnumMine($user_id, $fnum) {
+		$mine = false;
+
+		if (!empty($user_id) && !empty($fnum)) {
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true);
+
+			$query->select('id')
+				->from($db->quoteName('#__emundus_campaign_candidature'))
+				->where('applicant_id = ' . $db->quote($user_id))
+				->andWhere('fnum LIKE ' . $db->quote($fnum));
+			try {
+				$db->setQuery($query);
+				$ccid = $db->loadResult();
+
+				if (!empty($ccid)) {
+					$mine = true;
+				}
+
+			} catch (Exception $e) {
+				Log::add('Error seeing if fnum is mine. -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			}
+
+			if (!$mine) {
+				// maybe filed has been shared to me (collaboration)
+				$query->clear()
+					->select('efr.id')
+					->from($db->quoteName('#__emundus_files_request', 'efr'))
+					->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.id = efr.ccid')
+					->where('ecc.fnum LIKE ' . $db->quote($fnum))
+					->andWhere('efr.user_id = ' . $db->quote($user_id))
+					->andWhere('efr.uploaded = 1');
+
+				try {
+					$db->setQuery($query);
+					$collaboration_id = $db->loadResult();
+
+					if (!empty($collaboration_id)) {
+						$mine = true;
+					}
+				} catch (Exception $e) {
+					Log::add('Error seeing if fnum is mine. -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+				}
+			}
+		}
+
+		return $mine;
 	}
 }

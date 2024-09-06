@@ -57,6 +57,7 @@ export default {
         if (response.status) {
           this.documents = response.data;
         } else {
+          this.documents = [];
           this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_GET_DOCUMENTS_FAILED'), response.msg);
         }
       });

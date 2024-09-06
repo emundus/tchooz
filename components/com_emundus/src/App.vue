@@ -6,6 +6,7 @@
         :user="data.user"
         :defaultAttachments="data.attachments ? data.attachments : null"
         :columns="data.columns"
+        :is_applicant="data.is_applicant"
     ></Attachments>
 
     <Files
@@ -27,6 +28,24 @@
     <WorkflowEdit v-else-if="component === 'WorkflowEdit'" :workflow-id="datas.workflowid.value">
     </WorkflowEdit>
 
+    <Comments
+        v-else-if="component === 'comments'"
+        :defaultCcid="datas.ccid.value"
+        :fnum="datas.fnum && datas.fnum.value ? datas.fnum.value : ''"
+        :user="datas.user.value"
+        :is-applicant="datas.is_applicant && datas.is_applicant.value == 1"
+        :current-form="datas.current_form && datas.current_form.value"
+        :access="datas.access && datas.access.value ? JSON.parse(datas.access.value) : {
+          'c': false,
+          'r': true,
+          'u': false,
+          'd': false
+        }"
+        :applicantsAllowedToComment="datas.applicants_allowed_to_comment && datas.applicants_allowed_to_comment.value == 1"
+        :border="datas.border ? datas.border.value == 1 : true"
+    >
+    </Comments>
+
     <transition v-else name="slide-right">
       <component v-bind:is="$props.component"/>
     </transition>
@@ -38,6 +57,7 @@ import moment from "moment";
 
 import Attachments from "@/views/Attachments.vue";
 import Files from '@/views/Files/Files.vue';
+import Comments from '@/components/Files/Comments.vue';
 import fileService from "@/services/file.js";
 import list_v2 from "@/views/list.vue";
 import addcampaign from "@/views/addCampaign.vue";
@@ -48,9 +68,9 @@ import settings from "@/views/globalSettings.vue";
 import messagescoordinator from "@/components/Messages/MessagesCoordinator.vue";
 import messages from "@/components/Messages/Messages.vue";
 import ApplicationSingle from "@/components/Files/ApplicationSingle.vue";
-import TranslationTool from "@/components/Settings/Translation/TranslationTool.vue";
 import WorkflowEdit from "@/views/Workflows/WorkflowEdit.vue";
 import Workflows  from "@/views/Workflows.vue";
+import TranslationTool from "@/components/Settings/TranslationTool/TranslationTool.vue";
 
 import settingsService from "@/services/settings.js";
 import { useGlobalStore } from '@/stores/global.js';
@@ -90,7 +110,8 @@ export default {
     list_v2,
     TranslationTool,
     WorkflowEdit,
-    Workflows
+    Workflows,
+    Comments
   },
 
   created() {

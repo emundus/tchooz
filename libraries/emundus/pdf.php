@@ -818,7 +818,7 @@ function data_to_img($match) {
  * @throws Exception
  */
 function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = [], $application_form_order = null, $profile_id = null, $file_lbl = null, $elements = null, $attachments = true) {
-    jimport('joomla.html.parameter');
+	jimport('joomla.html.parameter');
     set_time_limit(0);
     require_once (JPATH_SITE.'/components/com_emundus/helpers/date.php');
     require_once (JPATH_SITE.'/components/com_emundus/helpers/emails.php');
@@ -992,8 +992,8 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
         } catch (Exception $e) {
             Log::add('SQL error in emundus pdf library at query : ' . $query, Log::ERROR, 'com_emundus');
         }
-		
-		if ($form_post == 1 && (empty($form_ids) || is_null($form_ids)) && !empty($elements) && !is_null($elements)) {
+
+	    if ($form_post == 1 && (empty($form_ids) || is_null($form_ids)) && !empty($elements) && !is_null($elements)) {
             $profile_menu = array_keys($elements);
 
             // Get form HTML

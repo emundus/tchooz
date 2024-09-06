@@ -341,6 +341,26 @@
                key_field="link"
                value_field="label"
 		/>
+        <field
+                name="allow_applicant_to_comment"
+                type="radio"
+                default="0"
+                label="COM_EMUNDUS_ALLOW_APPLICANT_TO_COMMENT"
+                description="COM_EMUNDUS_ALLOW_APPLICANT_TO_COMMENT_DESC"
+        >
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+
+        <field name="collaborate_link"
+               type="sql"
+               default=""
+               label="COM_EMUNDUS_COLLABORATION_LINK"
+               description=""
+               query="SELECT id, title as label FROM jos_menu WHERE published = 1"
+               key_field="id"
+               value_field="label"
+        />
     </fieldset>
     <fieldset label="COM_EMUNDUS_FORM_BUILDER" name="form_builder" description="COM_EMUNDUS_FORM_BUILDER_DESC">
         <field
@@ -530,6 +550,10 @@
                label="COM_EMUNDUS_CANDIDACY_FILE_NAME" description="COM_EMUNDUS_CANDIDACY_FILE_NAME_DESC"/>
         <field name="applicant_file_name" type="text" default="" size="6" label="COM_EMUNDUS_APPLICANT_FILE_NAME"
                description="COM_EMUNDUS_APPLICANT_FILE_NAME_DESC"/>
+        <field name="keep_original_file_name" type="radio" default="0" size="6" label="COM_EMUNDUS_KEEP_ORIGINAL_FILENAME" description="COM_EMUNDUS_KEEP_ORIGINAL_FILENAME_DESC">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
         <field name="generated_doc_name" type="text" default="" label="COM_EMUNDUS_GENERATED_DOC_NAME"
                description="COM_EMUNDUS_GENERATED_DOC_NAME_DESC"/>
         <field name="application_admission_name" type="text" default="" size="6"
@@ -716,6 +740,10 @@
                description="COM_EMUNDUS_PROGRAM_MANAGER_GROUP_DESC"/>
         <field name="create_program_groups" type="list" menu="hide" default="1"
                label="COM_EMUNDUS_CREATE_PROGRAM_GROUPS" description="COM_EMUNDUS_CREATE_PROGRAM_GROUPS_DESC">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+        <field name="display_sysadmin_users" type="list" menu="hide" default="0" label="COM_EMUNDUS_DISPLAY_SYSADMIN_USERS">
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>

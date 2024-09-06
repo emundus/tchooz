@@ -259,6 +259,7 @@
 
 	# Redirect exclusion list
 	RewriteCond %{REQUEST_URI} !^/.well-known/acme-challenge/
+	RewriteCond %{REQUEST_URI} !^/.well-known/security.txt
 	RewriteCond %{REQUEST_URI} !^/.manifest.json
 
 	# Redirect to home page all requests to hidden files or directories

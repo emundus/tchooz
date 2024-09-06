@@ -11,28 +11,38 @@
         </button>
       </div>
 
-      <div v-for="(tag, index) in tags" class="tw-mb-6" :id="'tag_' + tag.id" :key="'tag_' + tag.id" @mouseover="enableGrab(index)" @mouseleave="disableGrab()">
-        <div class="tw-flex tw-items-center tw-justify-start tw-w-full">
-          <div class="status-field">
-            <div style="width: 100%">
-              <p class="tw-px-2 tw-py-3 em-editable-content" contenteditable="true" :id="'tag_label_' + tag.id" @focusout="updateTag(tag)" @keyup.enter="manageKeyup(tag)" @keydown="checkMaxlength">{{tag.label}}</p>
+      <draggable
+          handle=".handle"
+          v-model="tags"
+          :class="'draggables-list'"
+          @end="updateTagOrdering"
+      >
+        <div v-for="(tag, index) in tags" class="tw-mb-6" :id="'tag_' + tag.id" :key="'tag_' + tag.id" @mouseover="enableGrab(index)" @mouseleave="disableGrab()">
+          <div class="tw-flex tw-items-center tw-justify-start tw-w-full">
+            <span class="handle tw-cursor-grab" :style="grab && indexGrab === index ? 'opacity: 1' : 'opacity: 0'">
+              <span class="material-symbols-outlined">drag_indicator</span>
+            </span>
+            <div class="status-field">
+              <div style="width: 100%">
+                <p class="tw-px-2 tw-py-3 em-editable-content" contenteditable="true" :id="'tag_label_' + tag.id" @focusout="updateTag(tag)" @keyup.enter="manageKeyup(tag)" @keydown="checkMaxlength">{{tag.label}}</p>
+              </div>
+              <input type="hidden" :class="tag.class">
             </div>
-            <input type="hidden" :class="tag.class">
+            <div class="tw-flex tw-items-center">
+              <color-picker
+                  v-model="tag.class"
+                  @input="updateTag(tag)"
+                  :row-length="8"
+                  :id="'tag_swatches_'+tag.id"
+              />
+              <a type="button" :title="translate('COM_EMUNDUS_ONBOARD_DELETE_TAGS')" @click="removeTag(tag,index)" class="tw-flex tw-items-center tw-ml-2 tw-cursor-pointer">
+                <span class="material-symbols-outlined tw-text-red-600">delete_outline</span>
+              </a>
+            </div>
           </div>
-          <div class="tw-flex tw-items-center">
-            <color-picker
-                v-model="tag.class"
-                @input="updateTag(tag)"
-                :row-length="8"
-                :id="'tag_swatches_'+tag.id"
-            />
-            <a type="button" :title="translate('COM_EMUNDUS_ONBOARD_DELETE_TAGS')" @click="removeTag(tag,index)" class="tw-flex tw-items-center tw-ml-2 tw-cursor-pointer">
-              <span class="material-symbols-outlined tw-text-red-600">delete_outline</span>
-            </a>
-          </div>
+          <hr/>
         </div>
-        <hr/>
-      </div>
+      </draggable>
     </div>
   </div>
 </template>
@@ -44,19 +54,25 @@ import axios from "axios";
 /* SERVICES */
 import client from "@/services/axiosClient";
 import mixin from "@/mixins/mixin";
+import errors from '@/mixins/errors.js';
+import settingsService from "@/services/settings.js";
 
 import basicPreset from "@/assets/data/colorpicker/presets/basic";
 import { useGlobalStore } from '@/stores/global';
 import ColorPicker from "@/components/ColorPicker.vue";
+import { VueDraggableNext } from 'vue-draggable-next';
 
 export default {
   name: "editTags",
 
-  components: {ColorPicker},
+  components: {
+    ColorPicker,
+    draggable: VueDraggableNext
+  },
 
   props: {},
 
-  mixins: [mixin],
+  mixins: [mixin, errors],
 
   data() {
     return {
@@ -95,37 +111,68 @@ export default {
 
   methods: {
     getTags() {
-      axios.get("index.php?option=com_emundus&controller=settings&task=gettags")
-          .then(response => {
-            this.tags = response.data.data;
-            setTimeout(() => {
-              this.tags.forEach(element => {
-                this.getHexColors(element);
-              });
-            }, 100);
-          });
+      settingsService.getTags().then(response => {
+        if (response.status) {
+          this.tags = response.data;
+          setTimeout(() => {
+            this.tags.forEach(element => {
+              this.getHexColors(element);
+            });
+          }, 100);
+        } else {
+          this.displayError(response.msg, '');
+        }
+      });
     },
 
     async updateTag(tag) {
-      this.$emit('updateSaving',true);
+      const newLabel = document.getElementById(('tag_label_' + tag.id)).textContent;
 
-      let index = this.colors.findIndex(item => item.value === tag.class);
-      const formData = new FormData();
-      formData.append('tag', tag.id);
-      formData.append('label', document.getElementById(('tag_label_' + tag.id)).textContent);
-      formData.append('color', this.colors[index].name);
+      if (newLabel.length > 0) {
+        this.$emit('updateSaving',true);
 
-      await client().post('index.php?option=com_emundus&controller=settings&task=updatetags',
+        let index = this.colors.findIndex(item => item.value === tag.class);
+        const formData = new FormData();
+        formData.append('tag', tag.id);
+        formData.append('label', newLabel);
+        formData.append('color', this.colors[index].name);
+
+        await client().post('index.php?option=com_emundus&controller=settings&task=updatetags',
           formData,
           {
             headers: {
               'Content-Type': 'multipart/form-data'
             }
           }
-      ).then(() => {
+        ).then((response) => {
+          this.$emit('updateSaving',false);
+
+          if (response.status) {
+            tag.label = newLabel;
+            this.$emit('updateLastSaving',this.formattedDate('','LT'));
+          } else {
+            this.displayError('COM_EMUNDUS_SETTINGS_FAILED_TO_UPDATE_TAG', response.msg);
+          }
+
+        });
+      } else {
+        document.getElementById(('tag_label_' + tag.id)).textContent = tag.label;
+        this.displayError('COM_EMUNDUS_SETTINGS_FAILED_TO_UPDATE_TAG', 'COM_EMUNDUS_SETTINGS_FORBIDDEN_EMPTY_TAG');
+      }
+    },
+
+    async updateTagOrdering() {
+      let orderedTags = [];
+      this.tags.forEach((tag) => {
+        orderedTags.push(tag.id);
+      })
+
+      this.$emit('updateSaving',true);
+
+      settingsService.updateTagOrdering(orderedTags).then(() => {
         this.$emit('updateSaving',false);
         this.$emit('updateLastSaving',this.formattedDate('','LT'));
-      });
+      })
     },
 
     pushTag() {

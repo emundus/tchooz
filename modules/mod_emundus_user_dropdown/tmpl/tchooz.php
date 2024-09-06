@@ -259,7 +259,7 @@ if ($user != null)
                 <div class="em-flex-row em-flex-end em-profile-container" onclick="manageHeight()">
                     <div class="tw-mr-4">
 						<?php if (!empty($user)) : ?>
-                            <p class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . $user->lastname[0] . '.'; ?></p>
+                            <p id="current_user_fullname" class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . $user->lastname[0] . '.'; ?></p>
 						<?php endif; ?>
 						<?php if (!empty($profile_label)) : ?>
                             <p class="em-profile-color em-text-italic"
@@ -346,7 +346,7 @@ if ($user != null)
 						echo '<option  value="' . $profile->id . "." . '"' . (($user->profile == $profile->id) ? 'selected="selected"' : "") . '>' . trim($profile->label) . '</option>';
 					}
 				}
-				echo '</select></div><br/>';
+				echo '</select></div>';
 			}
 			?>
 
@@ -382,10 +382,8 @@ if ($user != null)
 				}
 			} ?>
 
-            <hr style="width: 100%">
-
 			<?php if ($show_logout == '1') : ?>
-				<?= '<li><a class="logout-button-user em-flex-important em-flex-row em-flex-center" href="' . JURI::base() . 'index.php?option=com_users&task=user.logout&' . JSession::getFormToken() . '=1"><span class="material-symbols-outlined mr-2">logout</span>' . JText::_('COM_EMUNDUS_USER_MENU_LOGOUT_ACTION') . '</a></li>'; ?>
+				<?= '<hr style="width: 100%"><li><a class="logout-button-user em-flex-important em-flex-row em-flex-center" href="' . JURI::base() . 'index.php?option=com_users&task=user.logout&' . JSession::getFormToken() . '=1"><span class="material-symbols-outlined tw-mr-2">logout</span>' . JText::_('COM_EMUNDUS_USER_MENU_LOGOUT_ACTION') . '</a></li>'; ?>
 			<?php endif; ?>
 
         </ul>
@@ -414,6 +412,9 @@ if ($user != null)
             var messageDropdown = document.getElementById('messageDropdown');
             var messageIcon = document.getElementById('messageDropdownIcon');
 
+            // get comments aside
+            var commentsAside = document.getElementById('aside-comment-section');
+
             if (dropdown.classList.contains('open')) {
                 document.querySelector('#userDropdownMenu').style.transform = 'translate(300px)';
                 setTimeout(() => {
@@ -429,6 +430,11 @@ if ($user != null)
                     messageDropdown.classList.remove('open');
                     messageIcon.classList.remove('active');
                     messageIcon.classList.remove('open');
+                }
+
+                // remove comments aside if it is on page
+                if(commentsAside && !commentsAside.classList.contains('closed')) {
+                    commentsAside.classList.add('closed');
                 }
                 dropdown.classList.add('open');
                 if (icon !== null) {
