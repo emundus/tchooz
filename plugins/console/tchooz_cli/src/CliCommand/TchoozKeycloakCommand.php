@@ -203,6 +203,7 @@ class TchoozKeycloakCommand extends AbstractCommand
 		$this->well_known_url                 = $this->getStringFromOption('well_known_url', '[Optional] Please enter a well known url', false);
 		$this->tchooz_additional_redirect_uri = $this->getStringFromOption('tchooz_additional_redirect_uri', '[Optional] You can add other redirect uris', false);
 		$this->scopes                         = $this->getStringFromOption('scopes', '[Optional] You can override default scopes', false);
+		$this->destroy                        = $input->getOption('destroy');
 
 		if (!empty($this->keycloak_url) && !empty($this->keycloak_client_id) && !empty($this->keycloak_client_secret))
 		{
@@ -236,7 +237,7 @@ class TchoozKeycloakCommand extends AbstractCommand
 			if ($this->getAccessToken())
 			{
 				// Si option destroy, je récupére l'annuaire de source emundus et je le destroy
-				$old_client_id   = $this->getEmundusDirectory();
+				$old_client_id = $this->getEmundusDirectory();
 				//
 
 				$keycloak_client = $this->getKeycloakClient();
@@ -253,7 +254,8 @@ class TchoozKeycloakCommand extends AbstractCommand
 						}
 					}
 				}
-				else {
+				else
+				{
 					$this->updateKeycloakClient($keycloak_client);
 				}
 
@@ -319,7 +321,7 @@ class TchoozKeycloakCommand extends AbstractCommand
 				'https://' . $this->tchooz_client_id,
 				'https://' . $this->tchooz_client_id . '/*'
 			],
-			'webOrigins' => [
+			'webOrigins'                   => [
 				'https://' . $this->tchooz_client_id
 			],
 			'standardFlowEnabled'          => true,
@@ -346,9 +348,12 @@ class TchoozKeycloakCommand extends AbstractCommand
 		}
 		catch (\Exception $e)
 		{
-			if($e->getCode() == 409) {
+			if ($e->getCode() == 409)
+			{
 				$created = true;
-			} else {
+			}
+			else
+			{
 				$this->ioStyle->error("Error while creating keycloak client");
 			}
 		}
@@ -370,7 +375,7 @@ class TchoozKeycloakCommand extends AbstractCommand
 				'https://' . $this->tchooz_client_id,
 				'https://' . $this->tchooz_client_id . '/*'
 			],
-			'webOrigins' => [
+			'webOrigins'                   => [
 				'https://' . $this->tchooz_client_id
 			],
 			'standardFlowEnabled'          => true,
@@ -480,9 +485,12 @@ class TchoozKeycloakCommand extends AbstractCommand
 			}
 			catch (\Exception $e)
 			{
-				if($e->getCode() == 409) {
+				if ($e->getCode() == 409)
+				{
 					$created = true;
-				} else {
+				}
+				else
+				{
 					$this->ioStyle->error("Error while creating role");
 				}
 			}
@@ -739,6 +747,8 @@ class TchoozKeycloakCommand extends AbstractCommand
 	 */
 	protected function configure(): void
 	{
+		//php cli/joomla.php tchooz:keycloak -n --keycloak_url="" --keycloak_client_id="" --keycloak_client_secret=""
+
 		$help = "<info>%command.name%</info> will update configuration for Tchooz
 		\nUsage: <info>php %command.full_name%</info>";
 
@@ -751,6 +761,7 @@ class TchoozKeycloakCommand extends AbstractCommand
 		$this->addOption('well_known_url', null, InputOption::VALUE_OPTIONAL, 'Keycloak Well known url');
 		$this->addOption('tchooz_additional_redirect_uri', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Tchooz redirect uris');
 		$this->addOption('scopes', null, InputOption::VALUE_OPTIONAL, 'Tchooz redirect uris');
+		$this->addOption('destroy', null, InputOption::VALUE_NONE, 'Destroy keycloak client');
 		$this->setDescription('Setup keycloak configuration');
 		$this->setHelp($help);
 	}
