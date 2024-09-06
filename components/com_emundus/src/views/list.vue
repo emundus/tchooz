@@ -1,5 +1,5 @@
 <template>
-  <div id="onboarding_list" class="tw-w-full">
+  <div id="onboarding_list" class="tw-w-full" :class="{'alert-banner-displayed': alertBannerDisplayed}">
     <skeleton v-if="loading.lists" height="40px" width="100%" class="tw-mb-4 tw-mt-4 tw-rounded-lg"></skeleton>
     <div v-else class="head tw-flex tw-items-center tw-justify-between">
       <h2>{{ translate(currentList.title) }}</h2>
@@ -245,10 +245,18 @@ export default {
       viewType: 'table',
       viewTypeOptions: [{value: 'table', icon: 'dehaze'}, {value: 'blocs', icon: 'grid_view'}],
       searches: {},
-      filters: {}
+      filters: {},
+      alertBannerDisplayed: false
     }
   },
   created() {
+    const alertMessageContainer = document.querySelector('.alerte-message-container');
+    console.log(alertMessageContainer);
+
+    if (alertMessageContainer) {
+      this.alertBannerDisplayed = true;
+    }
+
     this.loading.lists = true;
     this.loading.tabs = true;
 
@@ -781,6 +789,10 @@ export default {
 
 #onboarding_list .list {
   margin-top: 77px;
+}
+
+#onboarding_list.alert-banner-displayed .head{
+  top: 134px;
 }
 
 #list-nav {
