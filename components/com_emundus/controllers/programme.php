@@ -478,18 +478,18 @@ class EmundusControllerProgramme extends BaseController
 
 	public function getprogramcategories()
 	{
-		$response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$categories = $this->m_programme->getProgramCategories();
 
 			if (!empty($categories)) {
-				$response = array('status' => true, 'msg' => JText::_('PROGRAMS_RETRIEVED'), 'data' => $categories);
-			}
-			else {
-				$response = array('status' => false, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_PROGRAMS'));
+				$response = array('status' => true, 'msg' => Text::_('PROGRAMS_RETRIEVED'), 'data' => $categories);
+			} else {
+				$response['data'] = [];
 			}
 		}
+
 		echo json_encode((object) $response);
 		exit;
 	}

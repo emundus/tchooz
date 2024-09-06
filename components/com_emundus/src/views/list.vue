@@ -423,13 +423,13 @@ export default {
 
             if (filter.values === null) {
               if (filter.getter) {
-                this.setFilterOptions((typeof filter.controller !== 'undefined' ? filter.controller : tab.controller), filter, tab.key);
-
-                return this.filters[tab.key].push({
+                this.filters[tab.key].push({
                   key: filter.key,
                   value: filterValue,
                   options: []
                 });
+
+                this.setFilterOptions((typeof filter.controller !== 'undefined' ? filter.controller : tab.controller), filter, tab.key);
               }
             } else {
               this.filters[tab.key].push({
@@ -748,7 +748,7 @@ export default {
       return translation;
     },
     displayedFilters() {
-      return this.filters[this.selectedListTab];
+      return this.filters[this.selectedListTab].filter(filter => filter.options.length > 0);
     },
   },
   watch: {
