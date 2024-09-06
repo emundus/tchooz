@@ -34,7 +34,7 @@
       </nav>
       <section id="actions" class="tw-flex tw-justify-between tw-mt-4 tw-mb-4">
         <section id="tab-actions">
-          <select v-for="filter in filters[selectedListTab]" :key="selectedListTab + '-' + filter.key"
+          <select v-for="filter in displayedFilters" :key="selectedListTab + '-' + filter.key"
                   v-model="filter.value" @change="onChangeFilter(filter)" class="tw-mr-2">
             <option v-for="option in filter.options" :key="option.value" :value="option.value">
               {{ translate(option.label) }}
@@ -359,7 +359,6 @@ export default {
           }
 
           this.setTabFilters(tab);
-
           if (typeof tab.getter !== 'undefined') {
             let url = 'index.php?option=com_emundus&controller=' + tab.controller + '&task=' + tab.getter + '&lim=' + this.numberOfItemsToDisplay + '&page=' + page;
             if (this.searches[tab.key].search !== '') {
@@ -410,7 +409,7 @@ export default {
         this.loading.items = false;
       }
     },
-    setTabFilters(tab) {
+    async setTabFilters(tab) {
       if (typeof tab.filters !== 'undefined' && tab.filters.length > 0) {
         if (typeof this.filters[tab.key] === 'undefined') {
           this.filters[tab.key] = [];
@@ -424,27 +423,13 @@ export default {
 
             if (filter.values === null) {
               if (filter.getter) {
-                const controller = typeof filter.controller !== 'undefined' ? filter.controller : tab.controller;
-                fetch('index.php?option=com_emundus&controller=' + controller + '&task=' + filter.getter)
-                  .then(response => response.json())
-                  .then(response => {
-                    if (response.status === true) {
-                      let options = response.data;
+                this.setFilterOptions((typeof filter.controller !== 'undefined' ? filter.controller : tab.controller), filter, tab.key);
 
-                      // if options is an array of strings, convert it to an array of objects
-                      if (typeof options[0] === 'string') {
-                        options = options.map(option => ({value: option, label: option}));
-                      }
-
-                      options.unshift({value: 'all', label: this.translate(filter.label)});
-
-                      this.filters[tab.key].push({
-                        key: filter.key,
-                        value: filterValue,
-                        options: options
-                      });
-                    }
-                  });
+                return this.filters[tab.key].push({
+                  key: filter.key,
+                  value: filterValue,
+                  options: []
+                });
               }
             } else {
               this.filters[tab.key].push({
@@ -456,6 +441,26 @@ export default {
           });
         }
       }
+    },
+    async setFilterOptions(controller, filter, tab) {
+      return await fetch('index.php?option=com_emundus&controller=' + controller + '&task=' + filter.getter)
+        .then(response => response.json())
+        .then(response => {
+          if (response.status === true) {
+            let options = response.data;
+
+            // if options is an array of strings, convert it to an array of objects
+            if (typeof options[0] === 'string') {
+              options = options.map(option => ({value: option, label: option}));
+            }
+
+            options.unshift({value: 'all', label: this.translate(filter.label)});
+
+            this.filters[tab].find(f => f.key === filter.key).options = options;
+          } else {
+            return [];
+          }
+        });
     },
     searchItems() {
       if (this.searches[this.selectedListTab].searchDebounce !== null) {
@@ -741,6 +746,9 @@ export default {
       }
 
       return translation;
+    },
+    displayedFilters() {
+      return this.filters[this.selectedListTab];
     },
   },
   watch: {
