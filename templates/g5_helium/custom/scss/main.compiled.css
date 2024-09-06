@@ -4316,8 +4316,14 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-self-stretch {
     align-self: stretch;
 }
+.tw-overflow-auto {
+    overflow: auto;
+}
 .tw-overflow-hidden {
     overflow: hidden;
+}
+.tw-overflow-visible {
+    overflow: visible;
 }
 .tw-overflow-y-auto {
     overflow-y: auto;

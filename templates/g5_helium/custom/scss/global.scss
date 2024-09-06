@@ -7529,3 +7529,48 @@ tbody .el-table__row:nth-child(odd){
 .fabrikSubElementContainer div.tw-grid-cols-1[class*="tw-grid-cols-"]:not([class*="lg:tw-grid-cols-1"]):not([class*="md:tw-grid-cols-1"]) .form-check {
   width: 100% !important;
 }
+
+/* PROGRAM SETTING FIELD (ADD PROGRAM BUTTON) */
+form.fabrikForm[name=form_108] .fabrikGroup .plg-dropdown .fabrikElement {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+
+  #jos_emundus_setup_programmes___programmes {
+    display: inline;
+    width: calc(100% - 50px);
+  }
+
+  #jos_emundus_setup_programmes___programmes_ddLabel {
+    width: calc(100% - 84px);
+    height: 40px;
+    border-radius: var(--em-form-br);
+    margin-left: 3px;
+  }
+
+  div > div {
+    height: auto;
+  }
+
+  .addoption {
+    padding-bottom: 3px;
+
+
+    div:first-child,
+    #jos_emundus_setup_programmes___programmes_dd_add_entry {
+      font-weight: var(--em-form-label-weight);
+    }
+  }
+
+  #jos_emundus_setup_programmes___programmes_dd_add_entry {
+    background: var(--em-primary-color);
+    border-radius: var(--em-applicant-br);
+    border: 1px solid var(--em-primary-color);
+
+    &:hover {
+      background: var(--neutral-0);
+      color: var(--em-primary-color);
+    }
+  }
+}
