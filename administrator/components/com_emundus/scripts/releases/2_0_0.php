@@ -12,6 +12,7 @@ namespace scripts;
 use EmundusHelperUpdate;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\User\UserHelper;
 
 class Release2_0_0Installer extends ReleaseInstaller
 {
@@ -1607,6 +1608,20 @@ if(value == 1) {
 				]
 			];
 			EmundusHelperUpdate::createTable('jos_emundus_setup_profiles_repeat_emundus_groups', $columns);
+
+			$app = Factory::getApplication();
+			if(!$app->get('shared_session') || $app->get('session_name') == 'site')
+			{
+				$config = new \JConfig();
+				EmundusHelperUpdate::updateConfigurationFile($config, 'shared_session', true);
+				$config = new \JConfig();
+				EmundusHelperUpdate::updateConfigurationFile($config, 'session_name', UserHelper::genRandomPassword(16));
+
+				$query->clear()
+					->delete($this->db->quoteName('#__session'));
+				$this->db->setQuery($query);
+				$this->db->execute();
+			}
 
 			$result['status'] = true;
 		}
