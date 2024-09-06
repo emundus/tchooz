@@ -1608,6 +1608,9 @@ if(value == 1) {
 			];
 			EmundusHelperUpdate::createTable('jos_emundus_setup_profiles_repeat_emundus_groups', $columns);
 
+			$config = new \JConfig();
+		    EmundusHelperUpdate::updateConfigurationFile($config, 'shared_session', true);
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

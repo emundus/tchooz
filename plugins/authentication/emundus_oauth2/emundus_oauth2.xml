@@ -69,9 +69,6 @@
                         <field name="client_id" type="text" label="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CLIENTID_LABEL"
                                description="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CLIENTID_DESC"/>
                         <field name="client_secret" type="password"
-                               filter="raw"
-                               autocomplete="off"
-                               lock="true"
                                label="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CLIENTSECRET_LABEL"
                                description="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CLIENTSECRET_DESC"/>
                         <field name="scopes" type="text" label="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_SCOPES_LABEL"

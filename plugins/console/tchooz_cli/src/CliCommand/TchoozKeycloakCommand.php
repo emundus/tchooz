@@ -146,7 +146,7 @@ class TchoozKeycloakCommand extends AbstractCommand
 
 	private $keycloak_attributes = [
 		'email'     => 'email',
-		'username'  => 'username',
+		'username'  => 'email',
 		'name'      => 'name',
 		'lastname'  => 'lastName',
 		'firstname' => 'firstName'
@@ -235,8 +235,11 @@ class TchoozKeycloakCommand extends AbstractCommand
 
 			if ($this->getAccessToken())
 			{
+				// Si option destroy, je récupére l'annuaire de source emundus et je le destroy
 				$old_client_id   = $this->getEmundusDirectory();
-				$keycloak_client = $this->getKeycloakClient($old_client_id);
+				//
+
+				$keycloak_client = $this->getKeycloakClient();
 
 				if (empty($keycloak_client))
 				{
