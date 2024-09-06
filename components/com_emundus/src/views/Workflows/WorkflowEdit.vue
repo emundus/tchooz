@@ -43,7 +43,7 @@
       <div v-show="currentView === 'steps'" id="workflow-steps-wrapper" class="tw-my-4 tw-flex tw-flex-col tw-p-2 tw-border tw-rounded">
         <a class="tw-btn-primary tw-h-fit tw-w-fit tw-mb-4" href="#" @click="addStep"> {{ translate('COM_EMUNDUS_WORKFLOW_ADD_STEP') }} </a>
 
-        <div id="workflow-steps" class="tw-flex tw-flex-row tw-gap-3 tw-overflow-auto">
+        <div id="workflow-steps" class="tw-grid tw-grid-cols-4 tw-gap-3 tw-overflow-auto">
           <div v-for="step in steps" :key="step.id" class="workflow-step tw-rounded tw-border tw-shadow-sm tw-p-4 em-white-bg">
             <div class="workflow-step-head tw-flex tw-flex-row tw-justify-between">
               <h4>{{ step.label }}</h4>
@@ -411,11 +411,12 @@ export default {
               title: this.translate('COM_EMUNDUS_WORKFLOW_SAVE_SUCCESS'),
               showConfirmButton: false,
               timer: 1500
-            })
+            });
+
+            this.getWorkflow();
           } else {
             this.displayError('COM_EMUNDUS_WORKFLOW_SAVE_FAILED', response.message);
           }
-          this.getWorkflow();
         })
         .catch((e) => {
           console.log(e);
