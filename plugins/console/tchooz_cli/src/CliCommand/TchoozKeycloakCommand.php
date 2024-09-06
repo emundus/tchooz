@@ -235,7 +235,8 @@ class TchoozKeycloakCommand extends AbstractCommand
 
 			if ($this->getAccessToken())
 			{
-				$keycloak_client = $this->getKeycloakClient();
+				$old_client_id   = $this->getEmundusDirectory();
+				$keycloak_client = $this->getKeycloakClient($old_client_id);
 
 				if (empty($keycloak_client))
 				{
@@ -248,6 +249,9 @@ class TchoozKeycloakCommand extends AbstractCommand
 							$this->createRole($role, $keycloak_client);
 						}
 					}
+				}
+				else {
+					$this->updateKeycloakClient($keycloak_client);
 				}
 
 				if (empty($this->tchooz_client_secret))
@@ -312,6 +316,9 @@ class TchoozKeycloakCommand extends AbstractCommand
 				'https://' . $this->tchooz_client_id,
 				'https://' . $this->tchooz_client_id . '/*'
 			],
+			'webOrigins' => [
+				'https://' . $this->tchooz_client_id
+			],
 			'standardFlowEnabled'          => true,
 			'directAccessGrantsEnabled'    => true,
 			'serviceAccountsEnabled'       => true,
@@ -319,29 +326,81 @@ class TchoozKeycloakCommand extends AbstractCommand
 		];
 		$body = json_encode($body);
 
-		$request = $this->guzzleClient->request('POST', $this->keycloak_url . '/' . $url, ['body' => $body, 'headers' => $this->headers]);
-
-		$status = $request->getStatusCode();
-
-		if ($status == 201)
+		try
 		{
-			$created = true;
+			$request = $this->guzzleClient->request('POST', $this->keycloak_url . '/' . $url, ['body' => $body, 'headers' => $this->headers]);
+
+			$status = $request->getStatusCode();
+
+			if ($status == 201)
+			{
+				$created = true;
+			}
+			else
+			{
+				$this->ioStyle->error("Error while creating keycloak client");
+			}
 		}
-		else
+		catch (\Exception $e)
 		{
-			$this->ioStyle->error("Error while creating keycloak client");
+			if($e->getCode() == 409) {
+				$created = true;
+			} else {
+				$this->ioStyle->error("Error while creating keycloak client");
+			}
 		}
 
 		return $created;
 	}
 
-	private function getKeycloakClient()
+	private function updateKeycloakClient($keycloak_client)
+	{
+		$created = false;
+
+		$url                           = '/admin/realms/' . $this->realm . '/clients/' . $keycloak_client->id;
+		$this->headers['Content-Type'] = 'application/json';
+
+		$body = [
+			'clientId'                     => $this->tchooz_client_id,
+			'name'                         => Factory::getApplication()->get('sitename'),
+			'redirectUris'                 => [
+				'https://' . $this->tchooz_client_id,
+				'https://' . $this->tchooz_client_id . '/*'
+			],
+			'webOrigins' => [
+				'https://' . $this->tchooz_client_id
+			],
+			'standardFlowEnabled'          => true,
+			'directAccessGrantsEnabled'    => true,
+			'serviceAccountsEnabled'       => true,
+			'authorizationServicesEnabled' => true,
+		];
+		$body = json_encode($body);
+
+		$request = $this->guzzleClient->request('PUT', $this->keycloak_url . '/' . $url, ['body' => $body, 'headers' => $this->headers]);
+
+		$status = $request->getStatusCode();
+
+		if ($status == 204)
+		{
+			$created = true;
+		}
+		else
+		{
+			$this->ioStyle->error("Error while updating keycloak client");
+		}
+
+		return $created;
+	}
+
+	private function getKeycloakClient($old_client_id = null)
 	{
 		$keycloak_client = null;
 
-		$url = '/admin/realms/' . $this->realm . '/clients';
+		$url       = '/admin/realms/' . $this->realm . '/clients';
+		$client_id = !empty($old_client_id) ? $old_client_id : $this->tchooz_client_id;
 
-		$request = $this->guzzleClient->request('GET', $this->keycloak_url . '/' . $url . '?clientId=' . $this->tchooz_client_id, ['headers' => $this->headers]);
+		$request = $this->guzzleClient->request('GET', $this->keycloak_url . '/' . $url . '?clientId=' . $client_id, ['headers' => $this->headers]);
 
 		$status = $request->getStatusCode();
 
@@ -401,17 +460,28 @@ class TchoozKeycloakCommand extends AbstractCommand
 			];
 			$body = json_encode($body);
 
-			$request = $this->guzzleClient->request('POST', $this->keycloak_url . '/' . $url, ['body' => $body, 'headers' => $this->headers]);
-
-			$status = $request->getStatusCode();
-
-			if ($status == 201)
+			try
 			{
-				$created = true;
+				$request = $this->guzzleClient->request('POST', $this->keycloak_url . '/' . $url, ['body' => $body, 'headers' => $this->headers]);
+
+				$status = $request->getStatusCode();
+
+				if ($status == 201)
+				{
+					$created = true;
+				}
+				else
+				{
+					$this->ioStyle->error("Error while creating role");
+				}
 			}
-			else
+			catch (\Exception $e)
 			{
-				$this->ioStyle->error("Error while creating role");
+				if($e->getCode() == 409) {
+					$created = true;
+				} else {
+					$this->ioStyle->error("Error while creating role");
+				}
 			}
 		}
 
@@ -442,6 +512,32 @@ class TchoozKeycloakCommand extends AbstractCommand
 		return $well_known_config;
 	}
 
+	private function getEmundusDirectory()
+	{
+		$old_client_id = null;
+
+		$plugin = PluginHelper::getPlugin('authentication', 'emundus_oauth2');
+		if (!empty($plugin))
+		{
+			$params                 = json_decode($plugin->params);
+			$params->configurations = (array) $params->configurations;
+
+			if (!empty($params->configurations))
+			{
+				foreach ($params->configurations as $key => $configuration)
+				{
+					if ($configuration->source == 0)
+					{
+						$old_client_id = $configuration->client_id;
+						break;
+					}
+				}
+			}
+		}
+
+		return $old_client_id;
+	}
+
 	private function updateOAuth2Plugin()
 	{
 		$updated           = false;
@@ -457,7 +553,7 @@ class TchoozKeycloakCommand extends AbstractCommand
 			{
 				foreach ($params->configurations as $key => $configuration)
 				{
-					if ($configuration->client_id == $this->tchooz_client_id || empty($configuration->client_id))
+					if ($configuration->client_id == $this->tchooz_client_id || empty($configuration->client_id) || $configuration->source == 0)
 					{
 						$params->configurations[$key] = $this->setupConfig($configuration, $well_known_config);
 
@@ -502,6 +598,7 @@ class TchoozKeycloakCommand extends AbstractCommand
 	private function setupConfig($configuration, $well_known_config)
 	{
 		$configuration->type             = 'microsoft';
+		$configuration->source           = 0;
 		$configuration->display_on_login = 2;
 		$configuration->button_label     = 'Se connecter avec eMundus';
 		$configuration->button_type      = 'emundus';
@@ -521,6 +618,10 @@ class TchoozKeycloakCommand extends AbstractCommand
 		if (empty($configuration->attributes))
 		{
 			$configuration->attributes = [];
+		}
+		else
+		{
+			$configuration->attributes = (array) $configuration->attributes;
 		}
 
 		foreach ($configuration->attributes as $attribute)

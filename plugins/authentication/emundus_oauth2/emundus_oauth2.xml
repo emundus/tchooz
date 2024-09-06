@@ -38,6 +38,11 @@
                     <form>
                         <field name="type" type="text" label="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_TYPE_LABEL"
                                description="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_TYPE_DESC"/>
+                        <field name="source" type="list" default="1" label="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_SOURCE_LABEL"
+                               description="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_SOURCE_DESC">
+                            <option value="0">PLG_AUTHENTICATION_EMUNDUS_OAUTH2_SOURCE_EMUNDUS</option>
+                            <option value="1">PLG_AUTHENTICATION_EMUNDUS_OAUTH2_SOURCE_EXTERNAL</option>
+                        </field>
                         <field name="display_on_login"
                                type="radio"
                                default="1"
