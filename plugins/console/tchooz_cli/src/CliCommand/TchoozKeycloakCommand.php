@@ -7,6 +7,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Console\Command\AbstractCommand;
 use Joomla\Database\DatabaseAwareTrait;
@@ -143,6 +144,27 @@ class TchoozKeycloakCommand extends AbstractCommand
 	 */
 	private $access_token;
 
+	private $keycloak_attributes = [
+		'email'     => 'email',
+		'username'  => 'username',
+		'name'      => 'name',
+		'lastname'  => 'lastName',
+		'firstname' => 'firstName'
+	];
+
+	private $table_attributes = [
+		'email'     => 'jos_users',
+		'username'  => 'jos_users',
+		'name'      => 'jos_users',
+		'lastname'  => 'jos_emundus_users',
+		'firstname' => 'jos_emundus_users'
+	];
+
+	private $column_join_user_id = [
+		'lastname'  => 'user_id',
+		'firstname' => 'user_id'
+	];
+
 	/**
 	 * Command constructor.
 	 *
@@ -191,22 +213,31 @@ class TchoozKeycloakCommand extends AbstractCommand
 				$this->realm = 'emundus';
 			}
 
-			if(empty($this->tchooz_client_id)) {
-				$this->tchooz_client_id = str_replace(['http://','https://'],'',Uri::base());
+			if (empty($this->tchooz_client_id))
+			{
+				$this->tchooz_client_id = str_replace(['http://', 'https://'], '', Uri::base());
 				// remove last character if it is a slash
-				if(substr($this->tchooz_client_id, -1) == '/') {
+				if (substr($this->tchooz_client_id, -1) == '/')
+				{
 					$this->tchooz_client_id = substr($this->tchooz_client_id, 0, -1);
 				}
 			}
 
-			if(empty($this->well_known_url)) {
+			if (empty($this->well_known_url))
+			{
 				$this->well_known_url = $this->keycloak_url . '/realms/' . $this->realm . '/.well-known/openid-configuration';
 			}
 
-			if($this->getAccessToken()) {
+			if (empty($this->scopes))
+			{
+				$this->scopes = 'openid,roles,basic,email,phone,microprofile-jwt';
+			}
+
+			if ($this->getAccessToken())
+			{
 				$keycloak_client = $this->getKeycloakClient();
 
-				if(empty($keycloak_client))
+				if (empty($keycloak_client))
 				{
 					if ($this->createKeycloakClient())
 					{
@@ -219,7 +250,12 @@ class TchoozKeycloakCommand extends AbstractCommand
 					}
 				}
 
-				// TODO : Update OAuth config with client created and well known url, if exist override
+				if (empty($this->tchooz_client_secret))
+				{
+					$this->tchooz_client_secret = $this->getKeycloakClientSecret($keycloak_client);
+				}
+
+				$this->updateOAuth2Plugin();
 			}
 		}
 
@@ -242,17 +278,20 @@ class TchoozKeycloakCommand extends AbstractCommand
 			'client_secret' => $this->keycloak_client_secret
 		];
 
-		$request = $this->guzzleClient->request('POST',$this->keycloak_url . '/' . $url, ['form_params' => $body, 'headers' => $headers]);
+		$request = $this->guzzleClient->request('POST', $this->keycloak_url . '/' . $url, ['form_params' => $body, 'headers' => $headers]);
 
 		$status = $request->getStatusCode();
 
-		if($status == 200) {
+		if ($status == 200)
+		{
 			$authenticated = true;
-			$data = json_decode($request->getBody());
+			$data          = json_decode($request->getBody());
 			$this->headers = [
 				'Authorization' => 'Bearer ' . $data->access_token
 			];
-		} else {
+		}
+		else
+		{
 			$this->ioStyle->error("Error while getting access token");
 		}
 
@@ -263,30 +302,33 @@ class TchoozKeycloakCommand extends AbstractCommand
 	{
 		$created = false;
 
-		$url     = '/admin/realms/' . $this->realm . '/clients';
+		$url                           = '/admin/realms/' . $this->realm . '/clients';
 		$this->headers['Content-Type'] = 'application/json';
 
-		$body    = [
-			'clientId'     => $this->tchooz_client_id,
-			'name' => Factory::getApplication()->get('sitename'),
-			'redirectUris'    => [
-				'https://'.$this->tchooz_client_id,
-				'https://'.$this->tchooz_client_id . '/*'
+		$body = [
+			'clientId'                     => $this->tchooz_client_id,
+			'name'                         => Factory::getApplication()->get('sitename'),
+			'redirectUris'                 => [
+				'https://' . $this->tchooz_client_id,
+				'https://' . $this->tchooz_client_id . '/*'
 			],
-			'standardFlowEnabled' => true,
-			'directAccessGrantsEnabled' => true,
-			'serviceAccountsEnabled' => true,
+			'standardFlowEnabled'          => true,
+			'directAccessGrantsEnabled'    => true,
+			'serviceAccountsEnabled'       => true,
 			'authorizationServicesEnabled' => true,
 		];
 		$body = json_encode($body);
-		
-		$request = $this->guzzleClient->request('POST',$this->keycloak_url . '/' . $url, ['body' => $body, 'headers' => $this->headers]);
+
+		$request = $this->guzzleClient->request('POST', $this->keycloak_url . '/' . $url, ['body' => $body, 'headers' => $this->headers]);
 
 		$status = $request->getStatusCode();
 
-		if($status == 201) {
+		if ($status == 201)
+		{
 			$created = true;
-		} else {
+		}
+		else
+		{
 			$this->ioStyle->error("Error while creating keycloak client");
 		}
 
@@ -297,36 +339,65 @@ class TchoozKeycloakCommand extends AbstractCommand
 	{
 		$keycloak_client = null;
 
-		$url     = '/admin/realms/' . $this->realm . '/clients';
+		$url = '/admin/realms/' . $this->realm . '/clients';
 
-		$request = $this->guzzleClient->request('GET',$this->keycloak_url . '/' . $url . '?clientId='.$this->tchooz_client_id, ['headers' => $this->headers]);
+		$request = $this->guzzleClient->request('GET', $this->keycloak_url . '/' . $url . '?clientId=' . $this->tchooz_client_id, ['headers' => $this->headers]);
 
 		$status = $request->getStatusCode();
 
-		if($status == 200) {
+		if ($status == 200)
+		{
 			$data = json_decode($request->getBody());
-			if(!empty($data))
+			if (!empty($data))
 			{
 				$keycloak_client = $data[0];
 			}
-		} else {
+		}
+		else
+		{
 			$this->ioStyle->error("Error while getting keycloak client");
 		}
 
 		return $keycloak_client;
 	}
 
-	private function createRole($role,$keycloak_client)
+	private function getKeycloakClientSecret($keycloak_client)
+	{
+		$keycloak_client_secret = null;
+
+		$url = '/admin/realms/' . $this->realm . '/clients/' . $keycloak_client->id . '/client-secret';
+
+		$request = $this->guzzleClient->request('GET', $this->keycloak_url . '/' . $url, ['headers' => $this->headers]);
+
+		$status = $request->getStatusCode();
+
+		if ($status == 200)
+		{
+			$data = json_decode($request->getBody());
+			if (!empty($data))
+			{
+				$keycloak_client_secret = $data->value;
+			}
+		}
+		else
+		{
+			$this->ioStyle->error("Error while getting keycloak client secret");
+		}
+
+		return $keycloak_client_secret;
+	}
+
+	private function createRole($role, $keycloak_client)
 	{
 		$created = false;
 
-		if(!empty($keycloak_client) && !empty($role))
+		if (!empty($keycloak_client) && !empty($role))
 		{
 			$url                           = '/admin/realms/' . $this->realm . '/clients/' . $keycloak_client->id . '/roles';
 			$this->headers['Content-Type'] = 'application/json';
 
 			$body = [
-				'name'                         => $role
+				'name' => $role
 			];
 			$body = json_encode($body);
 
@@ -345,6 +416,155 @@ class TchoozKeycloakCommand extends AbstractCommand
 		}
 
 		return $created;
+	}
+
+	private function getWellKnownConfig()
+	{
+		$well_known_config = null;
+
+		$request = $this->guzzleClient->request('GET', $this->well_known_url);
+
+		$status = $request->getStatusCode();
+
+		if ($status == 200)
+		{
+			$data = json_decode($request->getBody());
+			if (!empty($data))
+			{
+				$well_known_config = $data;
+			}
+		}
+		else
+		{
+			$this->ioStyle->error("Error while getting well known configuration");
+		}
+
+		return $well_known_config;
+	}
+
+	private function updateOAuth2Plugin()
+	{
+		$updated           = false;
+		$plugin            = PluginHelper::getPlugin('authentication', 'emundus_oauth2');
+		$well_known_config = $this->getWellKnownConfig();
+
+		if (!empty($plugin) && !empty($well_known_config))
+		{
+			$params                 = json_decode($plugin->params);
+			$params->configurations = (array) $params->configurations;
+
+			if (!empty($params->configurations))
+			{
+				foreach ($params->configurations as $key => $configuration)
+				{
+					if ($configuration->client_id == $this->tchooz_client_id || empty($configuration->client_id))
+					{
+						$params->configurations[$key] = $this->setupConfig($configuration, $well_known_config);
+
+						$updated = true;
+					}
+				}
+			}
+
+			if (!$updated)
+			{
+				$configuration = new \stdClass();
+				$this->setupConfig($configuration, $well_known_config);
+
+				if (!empty($params->configurations))
+				{
+					$last_configuration       = array_key_last($params->configurations);
+					$last_configuration_index = substr($last_configuration, -1);
+					$new_configuration_index  = 'configurations' . ((int) $last_configuration_index + 1);
+				}
+				else
+				{
+					$new_configuration_index = 'configurations0';
+				}
+
+				$params->configurations[$new_configuration_index] = $configuration;
+			}
+
+			$plugin->params = json_encode($params);
+
+			$db    = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true)
+				->update($db->quoteName('#__extensions'))
+				->set($db->quoteName('params') . ' = ' . $db->quote($plugin->params))
+				->where($db->quoteName('extension_id') . ' = ' . $db->quote($plugin->id));
+			$db->setQuery($query);
+			$updated = $db->execute();
+		}
+
+		return $updated;
+	}
+
+	private function setupConfig($configuration, $well_known_config)
+	{
+		$configuration->type             = 'microsoft';
+		$configuration->display_on_login = 2;
+		$configuration->button_label     = 'Se connecter avec eMundus';
+		$configuration->button_type      = 'emundus';
+		$configuration->well_known_url   = $this->well_known_url;
+		$configuration->client_id        = $this->tchooz_client_id;
+		$configuration->client_secret    = $this->tchooz_client_secret;
+		$configuration->scopes           = $this->scopes;
+		$configuration->auth_url         = $well_known_config->authorization_endpoint;
+		$configuration->token_url        = $well_known_config->token_endpoint;
+		$configuration->redirect_url     = 'https://' . $this->tchooz_client_id;
+		$configuration->sso_account_url  = $well_known_config->userinfo_endpoint;
+		$configuration->emundus_profile  = 1000;
+
+		$attributes_needed   = ['email', 'username', 'name', 'lastname', 'firstname'];
+		$attributes_affected = [];
+
+		if (empty($configuration->attributes))
+		{
+			$configuration->attributes = [];
+		}
+
+		foreach ($configuration->attributes as $attribute)
+		{
+			$attributes_affected[]   = $attribute->column_name;
+			$keycloak_attribute_name = !empty($this->keycloak_attributes[$attribute->column_name]) ? $this->keycloak_attributes[$attribute->column_name] : '';
+			if (!empty($keycloak_attribute_name) && $keycloak_attribute_name != $attribute->attribute_name)
+			{
+				$attribute->attribute_name = $keycloak_attribute_name;
+			}
+		}
+
+
+		$attributes_missing = array_diff($attributes_needed, $attributes_affected);
+		foreach ($attributes_missing as $attribute_missing)
+		{
+			$attribute                      = new \stdClass();
+			$attribute->table_name          = !empty($this->table_attributes[$attribute_missing]) ? $this->table_attributes[$attribute_missing] : 'jos_users';
+			$attribute->column_name         = $attribute_missing;
+			$attribute->column_join_user_id = !empty($this->column_join_user_id[$attribute_missing]) ? $this->column_join_user_id[$attribute_missing] : '';
+			$attribute->attribute_name      = !empty($this->keycloak_attributes[$attribute->column_name]) ? $this->keycloak_attributes[$attribute->column_name] : '';
+			$configuration->attributes[]    = $attribute;
+		}
+
+		$configuration->attribute_mapping = 'groups';
+
+		if (empty($configuration->mapping))
+		{
+			$configuration->mapping            = [];
+			$sysadmin_mapping                  = new \stdClass();
+			$sysadmin_mapping->emundus_profile = 1;
+			$sysadmin_mapping->attribute_value = 'tchooz-admin';
+
+			$coordinator_mapping                  = new \stdClass();
+			$coordinator_mapping->emundus_profile = 2;
+			$coordinator_mapping->attribute_value = 'tchooz-coordinator';
+
+			$configuration->mapping[] = $sysadmin_mapping;
+			$configuration->mapping[] = $coordinator_mapping;
+		}
+
+		$configuration->debug_mode = 0;
+
+		return $configuration;
 	}
 
 	private function setClient(): void
@@ -415,8 +635,6 @@ class TchoozKeycloakCommand extends AbstractCommand
 	 */
 	protected function configure(): void
 	{
-		// docker exec -it joomla5 php cli/joomla.php tchooz:keycloak -n --keycloak_url="https://staging-login.emundus.fr" --keycloak_client_id="tchooz-deployment" --keycloak_client_secret="ZCmi091LBpiQSZdkidjxqPoLQBntGlWs"
-
 		$help = "<info>%command.name%</info> will update configuration for Tchooz
 		\nUsage: <info>php %command.full_name%</info>";
 

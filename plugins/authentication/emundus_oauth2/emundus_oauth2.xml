@@ -51,6 +51,8 @@
                         <field name="button_type" type="list" label="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_BUTTON_TYPE"
                                default="custom">
                             <option value="google">Google</option>
+                            <option value="microsoft">Microsoft</option>
+                            <option value="emundus">eMundus</option>
                             <option value="custom">PLG_AUTHENTICATION_EMUNDUS_OAUTH2_BUTTON_TYPE_CUSTOM</option>
                         </field>
                         <field showon="button_type:custom" name="button_icon" type="media"
