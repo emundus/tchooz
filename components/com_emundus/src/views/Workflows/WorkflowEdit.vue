@@ -58,6 +58,9 @@
               <div class="tw-mb-4 tw-flex tw-flex-col">
                 <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_LABEL') }}</label>
                 <input type="text" v-model="step.label" />
+                <span v-if="displayError && fieldsInError[step.id] && fieldsInError[step.id].includes('label')">
+                  {{ translate('COM_EMUNDUS_WORKFLOW_STEP_LABEL_REQUIRED') }}
+                </span>
               </div>
 
               <div class="tw-mb-4 tw-flex tw-flex-col">
@@ -232,7 +235,14 @@ export default {
       statuses : [],
       profiles: [],
       evaluationForms: [],
-      programsOptions: []
+      programsOptions: [],
+      stepMandatoryFields: [
+        'label',
+        'type',
+        'entry_status',
+      ],
+      fieldsInError: {},
+      displayErrors: false,
     }
   },
   mounted() {
@@ -388,40 +398,86 @@ export default {
 
       return deleted;
     },
-    save() {
-      this.steps.forEach((step) => {
-        if (step.start_date !== '') {
-          step.start_date = this.formatDate(step.start_date);
-        } else {
-          step.start_date = '0000-00-00 00:00:00';
-        }
+    onBeforeSave() {
+      let check = false;
 
-        if (step.end_date !== '') {
-          step.end_date = this.formatDate(step.end_date);
-        } else {
-          step.end_date = '0000-00-00 00:00:00';
-        }
+      let stepsCheck = [];
+
+      this.fieldsInError = {};
+      this.steps.forEach((step) => {
+        this.fieldsInError[step.id] = [];
+
+        stepsCheck.push(this.stepMandatoryFields.every((field) => {
+          let emptyField = true;
+          switch (typeof step[field]) {
+          case 'string':
+            emptyField = step[field].trim() === '';
+            break;
+          case 'object':
+            emptyField = step[field].length < 1;
+            break;
+          default:
+            emptyField = step[field] === '';
+          }
+
+          if (emptyField) {
+            this.fieldsInError[step.id].push(field);
+          }
+
+          return !emptyField;
+        }));
       });
 
-      workflowService.saveWorkflow(this.workflow, this.steps, this.programs)
-        .then(response => {
-          if (response.status) {
-            Swal.fire({
-              icon: 'success',
-              title: this.translate('COM_EMUNDUS_WORKFLOW_SAVE_SUCCESS'),
-              showConfirmButton: false,
-              timer: 1500
-            });
+      check = stepsCheck.every((stepCheck) => {
+        return stepCheck;
+      });
 
-            this.getWorkflow();
+      return check;
+    },
+    save() {
+      const checked = this.onBeforeSave();
+
+      if (checked) {
+        this.steps.forEach((step) => {
+          if (step.start_date !== '') {
+            step.start_date = this.formatDate(step.start_date);
           } else {
-            this.displayError('COM_EMUNDUS_WORKFLOW_SAVE_FAILED', response.message);
+            step.start_date = '0000-00-00 00:00:00';
           }
-        })
-        .catch((e) => {
-          console.log(e);
-          this.displayError('COM_EMUNDUS_WORKFLOW_SAVE_FAILED', '');
+
+          if (step.end_date !== '') {
+            step.end_date = this.formatDate(step.end_date);
+          } else {
+            step.end_date = '0000-00-00 00:00:00';
+          }
         });
+
+        workflowService.saveWorkflow(this.workflow, this.steps, this.programs)
+          .then(response => {
+            if (response.status) {
+              Swal.fire({
+                icon: 'success',
+                title: this.translate('COM_EMUNDUS_WORKFLOW_SAVE_SUCCESS'),
+                showConfirmButton: false,
+                timer: 1500
+              });
+
+              this.getWorkflow();
+            } else {
+              this.displayError('COM_EMUNDUS_WORKFLOW_SAVE_FAILED', response.message);
+            }
+          })
+          .catch((e) => {
+            console.log(e);
+            this.displayError('COM_EMUNDUS_WORKFLOW_SAVE_FAILED', '');
+          });
+      } else {
+        this.displayErrors = true;
+
+        setTimeout(() => {
+          this.displayErrors = false;
+        }, 15000);
+      }
     },
     formatDate(date, format = 'YYYY-MM-DD HH:mm:ss') {
       let year = date.getFullYear();
