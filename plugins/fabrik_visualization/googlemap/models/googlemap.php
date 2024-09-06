@@ -18,6 +18,7 @@ use Fabrik\Helpers\Googlemap;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\CMS\Language\Text;
 use Fabrik\Helpers\Php;
+use Joomla\CMS\Uri\Uri;
 
 jimport('joomla.application.component.model');
 
@@ -349,7 +350,7 @@ class FabrikModelGooglemap extends FabrikFEModelVisualization
 		$input = $this->app->input;
 		$icons = array();
 		$w = new FabrikWorker;
-		$uri = JURI::getInstance();
+		$uri = Uri::getInstance();
 		$params = $this->getParams();
 		$templates = (array) $params->get('fb_gm_detailtemplate');
 		$templates_nl2br = (array) $params->get('fb_gm_detailtemplate_nl2br');
@@ -853,7 +854,7 @@ class FabrikModelGooglemap extends FabrikFEModelVisualization
 			$h = 640;
 		}
 
-		$uri = JURI::getInstance();
+		$uri = Uri::getInstance();
 		$src = $uri->getScheme() . "://maps.google.com/staticmap?center=$lat,$lon&zoom={$z}&size={$w}x{$h}&maptype=mobile$iconStr";
 
 		$config = ComponentHelper::getParams('com_fabrik');

@@ -92,7 +92,19 @@ class PlgFabrik_FormLog extends PlgFabrik_Form
 			    `parent_id` INT( 11 ) NOT NULL DEFAULT 0);",
 			"CREATE TABLE IF NOT EXISTS `#__fabrik_change_log_types` (
 			     `id` INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-			    `type` VARCHAR( 32 ) NOT NULL DEFAULT '');"
+			    `type` VARCHAR( 32 ) NOT NULL DEFAULT '');",
+			"INSERT IGNORE INTO `#__fabrik_change_log_types` (id, type) VALUES 
+				   (1, 'Add Row'),
+				   (2, 'Edit Row'),
+				   (3, 'Delete Row'),
+				   (4, 'Submit Form'),
+				   (5, 'Load Form'),
+				   (6, 'Delete Row'),
+				   (7, 'Add Joined Row'),
+				   (8, 'Delete Joined Row'),
+				   (9, 'Field Value Change'),
+				   (10, 'Edit Joined Row'),
+				   (11, 'Load Details');"
 		];
 
 		/* Update existing tables */

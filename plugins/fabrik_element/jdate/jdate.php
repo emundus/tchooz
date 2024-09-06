@@ -1715,7 +1715,7 @@ class PlgFabrik_ElementJdate extends PlgFabrik_ElementList
 		$displayData          = new stdClass;
 		$displayData->rows    = $ddData;
 		$displayData->name    = $v;
-		$displayData->class   = "form-select " .$this->filterClass();
+		$displayData->class   = "form-select-sm " .$this->filterClass();
 		$displayData->size    = $size;
 		$displayData->default = $default;
 		$displayData->htmlId  = $this->getHTMLId();

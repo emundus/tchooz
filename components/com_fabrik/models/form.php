@@ -28,6 +28,7 @@ use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\String\StringHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Uri\Uri;
 
 jimport('joomla.application.component.model');
 require_once 'fabrikmodelform.php';
@@ -4590,7 +4591,7 @@ class FabrikFEModelForm extends FabModelForm
 			$page = 'index.php?';
 
 			// Get array of all querystring vars
-			$uri = JURI::getInstance();
+			$uri = Uri::getInstance();
 
 			/**
 			 * Was $router->parse($uri);

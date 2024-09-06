@@ -52,8 +52,8 @@ class PlgFabrik_FormAutofill extends PlgFabrik_Form
 		$input         = $this->app->input;
 		$rowId         = $input->get('rowid', '', 'string');
 		$opts          = new stdClass;
-		$opts->observe = str_replace('.', '___', $params->get('autofill_field_name'));
-		$opts->trigger = str_replace('.', '___', $params->get('autofill_trigger'));
+		$opts->observe = str_replace('.', '___', $params->get('autofill_field_name',''));
+		$opts->trigger = str_replace('.', '___', $params->get('autofill_trigger',''));
 		$opts->formid  = $formModel->getId();
 		$opts->map     = $params->get('autofill_map');
 		$opts->cnn     = $params->get('autofill_cnn');

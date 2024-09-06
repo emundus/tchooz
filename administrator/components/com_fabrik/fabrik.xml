@@ -2,11 +2,11 @@
 <extension client="site" method="upgrade" type="component" version="4">
   <name>com_fabrik</name>
   <author>Fabrikar</author>
-  <creationDate>2024-06-26</creationDate>
+  <creationDate>2024-08-26</creationDate>
   <copyright>Copyright (C) 2005-2024 Fabrikar - All rights reserved.</copyright>
   <license>GNU General Public License version 3 or later; see software_license.txt</license>
-  <version>4.2</version>
-  <gitdate>2024-06-26</gitdate>
+  <version>4.3.1</version>
+  <gitdate>2024-08-26</gitdate>
   <description>COM_FABRIK_XML_DESCRIPTION</description>
   <scriptfile>com_fabrik.manifest.class.php</scriptfile>
   <files folder="site">
@@ -50,7 +50,6 @@
       <file>index.html</file>
       <folder>sql</folder>
       <folder>classes</folder>
-      <folder>contentelements</folder>
       <folder>controllers</folder>
       <folder>helpers</folder>
       <folder>forms</folder>

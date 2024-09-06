@@ -2434,7 +2434,7 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 		$elementName    = FabrikString::safeColName($this->getFullName(false, false));
 		$preFilterWhere = str_replace($elementName, $joinKey, $preFilterWhere);
 
-		if (trim($where) == '')
+		if (trim($where??'') == '')
 		{
 			/* $$$ hugh - Sanity check - won't this screw things up if we have a complex preFilter with multiple filters using AND grouping? */
 			$preFilterWhere = str_replace('AND', 'WHERE', $preFilterWhere);

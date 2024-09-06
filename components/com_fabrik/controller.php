@@ -18,6 +18,7 @@ use Joomla\CMS\Filter\InputFilter;
 use Joomla\CMS\Factory;
 use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Worker;
+use Joomla\CMS\Uri\Uri;
 
 /**
  * Fabrik Component Controller
@@ -109,7 +110,7 @@ class FabrikController extends BaseController
 		if (Worker::useCache() && !$this->isMambot)
 		{
 			$user = Factory::getUser();
-			$uri = JURI::getInstance();
+			$uri = Uri::getInstance();
 			$uri = $uri->toString(array('path', 'query'));
 			$cacheid = serialize(array($uri, $input->post, $user->get('id'), get_class($view), 'display', $this->cacheId));
 			$cache = Factory::getCache('com_' . $package, 'view');

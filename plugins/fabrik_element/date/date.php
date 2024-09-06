@@ -971,7 +971,7 @@ class PlgFabrik_ElementDate extends PlgFabrik_ElementList
 	 *
 	 * @return multitype:|array
 	 */
-	protected function getAllowedPHPDates()
+	public function getAllowedPHPDates()
 	{
 		$params = $this->getParams();
 		$data   = $this->getFormModel()->data;
@@ -1145,7 +1145,7 @@ class PlgFabrik_ElementDate extends PlgFabrik_ElementList
 			// OK for : Default to current  = no Local time = yes
 			if (!$defaultToday && !$formModel->failedValidation())
 			{
-				$date = new Date($date, $timeZone);
+				$date = new DateTime($date, $timeZone);
 				return $date->format('Y-m-d H:i:s');
 			}
 

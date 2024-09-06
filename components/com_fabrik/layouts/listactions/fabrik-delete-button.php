@@ -14,8 +14,11 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Language\Text;
 $d = $displayData;
-
+$icon = '<span class="fa fa-trash"></span>';
+if ($d->list_delete_icon !== 'delete') {
+	$icon = FabrikHelperHTML::image($d->list_delete_icon, 'list', '', array('alt' => $d->label));
+}
 ?>
 <a href="#" class="<?php echo $d->btnClass;?>delete" data-listRef="list_<?php echo $d->renderContext;?>"
-	title="<?php echo Text::_('COM_FABRIK_DELETE'); ?>">
-	<span class="fa fa-trash"></span> <?php echo $d->text;?></a>
+	title="<?php echo $d->label; ?>">
+	<?php echo $icon.$d->text;?></a>

@@ -21,6 +21,7 @@ use Joomla\CMS\Factory;
 use \Joomla\Utilities\ArrayHelper;
 use \Fabrik\Helpers\Html;
 use \Fabrik\Helpers\Worker;
+use Joomla\CMS\Uri\Uri;
 
 jimport('joomla.application.component.controller');
 
@@ -115,7 +116,7 @@ class FabrikControllerDetails extends BaseController
 		else
 		{
 			$user = Factory::getUser();
-			$uri = JURI::getInstance();
+			$uri = Uri::getInstance();
 			$uri = $uri->toString(array('path', 'query'));
 			$cacheId = serialize(array($uri, $input->post, $user->get('id'), get_class($view), 'display', $this->cacheId));
 			$cache = Factory::getCache('com_' . $package, 'view');
