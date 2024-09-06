@@ -83,7 +83,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 			if ($this->checkPath($fnumInfos['applicant_id'])) {
 				$session = $this->getFormSession($fnum, $formId);
 				$data    = !empty($session->data) ? $session->data : [];
-				if (!empty($data)) {
+				if (!empty($data) && !empty($data[$fullName])) {
 					$nbAttachment += count($data[$fullName]);
 				}
 
