@@ -748,7 +748,7 @@ export default {
       return translation;
     },
     displayedFilters() {
-      return this.filters[this.selectedListTab].filter(filter => filter.options.length > 0);
+      return this.filters && this.filters[this.selectedListTab] ? this.filters[this.selectedListTab].filter(filter => filter.options.length > 0) : [];
     },
   },
   watch: {
