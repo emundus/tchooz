@@ -1,5 +1,6 @@
 <?php
 /**
+ * @deprecated  since version 2.0.0
  * @package    eMundus
  * @subpackage Components
  * @link       http://www.emundus.fr
@@ -48,13 +49,14 @@ class EmundusControllerDecision extends BaseController
 	{
 		parent::__construct($config);
 
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php');
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'filters.php');
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'list.php');
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'emails.php');
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'export.php');
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
+		require_once(JPATH_ROOT . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php');
+		require_once(JPATH_ROOT . DS . 'components' . DS . 'com_emundus' . DS . 'controller' . DS . 'files.php');
+		require_once(JPATH_ROOT . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'filters.php');
+		require_once(JPATH_ROOT . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'list.php');
+		require_once(JPATH_ROOT . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
+		require_once(JPATH_ROOT . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'emails.php');
+		require_once(JPATH_ROOT . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'export.php');
+		require_once(JPATH_ROOT . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
 
 		$this->_db   = Factory::getContainer()->get('DatabaseDriver');
 		$this->_user = $this->app->getIdentity();
@@ -91,8 +93,13 @@ class EmundusControllerDecision extends BaseController
 	 */
 	public function applicantEmail()
 	{
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'emails.php');
-		EmundusHelperEmails::sendApplicantEmail();
+		if (EmundusHelperAccess::asAccessAction(9, 'c', $this->_user->id)) {
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/emails.php');
+			EmundusHelperEmails::sendApplicantEmail();
+		} else {
+			$this->app->enqueueMessage(Text::_('ACCESS_DENIED'), 'error');
+			$this->app->redirect('/', );
+		}
 	}
 
 	/**
@@ -287,26 +294,16 @@ class EmundusControllerDecision extends BaseController
 	}
 
 	/**
+	 * @deprecated , please use it from files controller instead
+	 *
 	 * Delete a saved filter
 	 *
 	 * @since version 1.0.0
 	 */
 	public function deletefilters()
 	{
-		$filter_id = $this->input->getInt('id', null);
-
-		$query = "DELETE FROM #__emundus_filters WHERE id=" . $filter_id;
-		$this->_db->setQuery($query);
-		$result = $this->_db->Query();
-
-		if ($result != 1) {
-			echo json_encode((object) (array('status' => false)));
-			exit;
-		}
-		else {
-			echo json_encode((object) (array('status' => true)));
-			exit;
-		}
+		$c_files = new EmundusControllerFiles();
+		$c_files->deletefilters();
 	}
 
 	/**
@@ -333,59 +330,32 @@ class EmundusControllerDecision extends BaseController
 	 */
 	public function getadvfilters()
 	{
-		try {
-			$elements = EmundusHelperFiles::getElements();
+		$response = ['status' => false, 'code' => 403, 'msg' => Text::_('ACCESS_DENIED'), 'filters' => null];
 
-			echo json_encode((object) (array('status' => true, 'default' => Text::_('COM_EMUNDUS_PLEASE_SELECT'), 'defaulttrash' => Text::_('REMOVE_SEARCH_ELEMENT'), 'options' => $elements)));
-			exit;
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			try {
+				$elements = EmundusHelperFiles::getElements();
+				$response = ['status' => true, 'default' => Text::_('COM_EMUNDUS_PLEASE_SELECT'), 'defaulttrash' => Text::_('REMOVE_SEARCH_ELEMENT'), 'options' => $elements];
+			}
+			catch (Exception $e) {
+				$response = ['status' => false, 'code' => 500, 'msg' => Text::_('FAIL')];
+			}
 		}
-		catch (Exception $e) {
-			throw $e;
-		}
+
+		echo json_encode((object) $response);
+		exit;
 	}
 
 	/**
+	 * @deprecated , please use it from comments controller instead, or even files controller
 	 * Add a comment
 	 *
 	 * @since version 1.0.0
 	 */
 	public function addcomment()
 	{
-		$user          = $this->_user->id;
-		$fnums         = $this->input->getString('fnums', null);
-		$title         = $this->input->getString('title', '');
-		$comment       = $this->input->getString('comment', null);
-		$fnums         = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
-		$m_application = $this->getModel('Application');
-
-
-		if (is_array($fnums)) {
-			foreach ($fnums as $fnum) {
-				if (EmundusHelperAccess::asAccessAction(10, 'c', $user, $fnum)) {
-					$aid = intval(substr($fnum, 21, 7));
-					$res = $m_application->addComment((array('applicant_id' => $aid, 'user_id' => $user, 'reason' => $title, 'comment_body' => $comment, 'fnum' => $fnum)));
-					if ($res !== true && !is_numeric($res)) {
-						echo json_encode((array('status' => false, 'msg' => Text::_('COM_EMUNDUS_ERROR'))));
-						exit;
-					}
-				}
-			}
-
-			echo json_encode((array('status' => true, 'msg' => Text::_('COM_EMUNDUS_COMMENTS_SUCCESS'))));
-			exit;
-
-		}
-		else {
-			//all result find by the request
-			$model = $this->getmodel('Files');
-			$fnums = $model->getAllFnums();
-			foreach ($fnums as $fnum) {
-				if (EmundusHelperAccess::asAccessAction(10, 'c', $user, $fnum)) {
-					$aid = intval(substr($fnum, 14, count($fnum)));
-					$m_application->addComment((array('applicant_id' => $aid, 'user_id' => $user, 'reason' => $title, 'comment_body' => $comment, 'fnum' => $fnum)));
-				}
-			}
-		}
+		$c_files = new EmundusControllerFiles();
+		$c_files->addcomment();
 	}
 
 	/**
@@ -400,7 +370,7 @@ class EmundusControllerDecision extends BaseController
 		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$m_files    = $this->getModel('Files');
 			$evalGroups = $m_files->getEvalGroups();
-			$actions    = $m_files->getAllActions('1,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18');
+			$actions    = $m_files->getAllActions();
 			$response   = [
 				'status'       => true,
 				'code'         => 200,
@@ -430,27 +400,8 @@ class EmundusControllerDecision extends BaseController
 	 */
 	public function gettags()
 	{
-		$response = ['status' => false, 'code' => 403, 'msg' => Text::_('ACCESS_DENIED'), 'tags' => null];
-
-		if (EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id)) {
-			$m_files          = $this->getModel('Files');
-			$response['tags'] = $m_files->getAllTags();
-
-			if (!empty($response['tags'])) {
-				$response['code']       = 200;
-				$response['status']     = true;
-				$response['msg']        = Text::_('SUCCESS');
-				$response['tag']        = Text::_('COM_EMUNDUS_TAGS');
-				$response['select_tag'] = Text::_('COM_EMUNDUS_FILES_PLEASE_SELECT_TAG');
-			}
-			else {
-				$response['code'] = 500;
-				$response['msg']  = Text::_('FAIL');
-			}
-		}
-
-		echo json_encode((object) $response);
-		exit;
+		$c_files = new EmundusControllerFiles();
+		$c_files->gettags();
 	}
 
 	/**
@@ -460,40 +411,8 @@ class EmundusControllerDecision extends BaseController
 	 */
 	public function tagfile()
 	{
-		$response = ['status' => false, 'code' => 403, 'msg' => Text::_('BAD_REQUEST')];
-
-
-		$fnums = $this->input->getString('fnums', null);
-		$tag   = $this->input->get('tag', null);
-
-		if (!empty($fnums) && !empty($tag)) {
-			$m_files = $this->getModel('Files');
-			$fnums   = ($fnums == 'all') ? $m_files->getAllFnums() : (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
-
-			if (!empty($fnums)) {
-				$validFnums = [];
-				foreach ($fnums as $fnum) {
-					if ($fnum != 'em-check-all' && EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum)) {
-						$validFnums[] = $fnum;
-					}
-				}
-				unset($fnums);
-				$response['status'] = $m_files->tagFile($validFnums, $tag);
-
-				if ($response['status']) {
-					$response['code']   = 200;
-					$response['msg']    = Text::_('COM_EMUNDUS_TAGS_SUCCESS');
-					$response['tagged'] = $validFnums;
-				}
-				else {
-					$response['code'] = 500;
-					$response['msg']  = Text::_('FAIL');
-				}
-			}
-		}
-
-		echo json_encode((object) ($response));
-		exit;
+		$c_files = new EmundusControllerFiles();
+		$c_files->tagfile();
 	}
 
 	/**
@@ -503,36 +422,8 @@ class EmundusControllerDecision extends BaseController
 	 */
 	public function deletetags()
 	{
-		$fnums = $this->input->getString('fnums', null);
-		$tags  = $this->input->getVar('tag', null);
-
-		$fnums = ($fnums == 'all') ? 'all' : (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
-
-		$m_files       = $this->getModel('Files');
-		$m_application = $this->getModel('Application');
-
-		if ($fnums == "all") {
-			$fnums = $m_files->getAllFnums();
-		}
-
-		foreach ($fnums as $fnum) {
-			foreach ($tags as $tag) {
-				$hastags = $m_files->getTagsByIdFnumUser($tag, $fnum, $this->_user->id);
-				if ($hastags) {
-					$result = $m_application->deleteTag($tag, $fnum);
-				}
-				else {
-					if (EmundusHelperAccess::asAccessAction(14, 'd', $this->_user->id, $fnum)) {
-						$result = $m_application->deleteTag($tag, $fnum);
-					}
-				}
-			}
-		}
-		unset($fnums);
-		unset($tags);
-
-		echo json_encode((object) (array('status' => true, 'msg' => Text::_('COM_EMUNDUS_TAGS_DELETE_SUCCESS'))));
-		exit;
+		$c_files = new EmundusControllerFiles();
+		$c_files->deletetags();
 	}
 
 	/**
@@ -542,68 +433,8 @@ class EmundusControllerDecision extends BaseController
 	 */
 	public function share()
 	{
-		$fnums   = $this->input->getString('fnums', null);
-		$actions = $this->input->getString('actions', null);
-		$groups  = $this->input->getString('groups', null);
-		$evals   = $this->input->getString('evals', null);
-
-		$actions = (array) json_decode(stripslashes($actions));
-		$fnums   = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
-		$model   = $this->getModel('Files');
-		if (is_array($fnums)) {
-			$validFnums = array();
-			foreach ($fnums as $fnum) {
-				if (EmundusHelperAccess::asAccessAction(11, 'c', $this->_user->id, $fnum)) {
-					$validFnums[] = $fnum;
-				}
-			}
-			unset($fnums);
-			if (!empty($groups)) {
-				$groups = (array) json_decode(stripslashes($groups));
-				$res    = $model->shareGroups($groups, $actions, $validFnums);
-			}
-
-			if (!empty($evals)) {
-				$evals = (array) json_decode(stripslashes($evals));
-				$res   = $model->shareUsers($evals, $actions, $validFnums);
-			}
-
-			if ($res !== false) {
-				$msg = Text::_('COM_EMUNDUS_ACCESS_SHARE_SUCCESS');
-			}
-			else {
-				$msg = Text::_('COM_EMUNDUS_ACCESS_SHARE_ERROR');
-			}
-		}
-		else {
-			$fnums      = $model->getAllFnums();
-			$validFnums = array();
-			foreach ($fnums as $fnum) {
-				if (EmundusHelperAccess::asAccessAction(11, 'c', $this->_user->id, $fnum)) {
-					$validFnums[] = $fnum;
-				}
-			}
-			unset($fnums);
-			if ($groups !== null) {
-				$groups = (array) json_decode(stripslashes($groups));
-				$res    = $model->shareGroups($groups, $actions, $validFnums);
-			}
-
-			if ($evals !== null) {
-				$evals = (array) json_decode(stripslashes($evals));
-				$res   = $model->shareUsers($evals, $actions, $validFnums);
-			}
-
-			if ($res !== false) {
-				$msg = Text::_('COM_EMUNDUS_ACCESS_SHARE_SUCCESS');
-			}
-			else {
-				$msg = Text::_('COM_EMUNDUS_ACCESS_SHARE_ERROR');
-
-			}
-		}
-		echo json_encode((object) (array('status' => $res, 'msg' => $msg)));
-		exit;
+		$c_files = new EmundusControllerFiles();
+		$c_files->share();
 	}
 
 	/**
@@ -631,43 +462,8 @@ class EmundusControllerDecision extends BaseController
 	 */
 	public function updatestate()
 	{
-		$fnums = $this->input->getString('fnums', null);
-		$state = $this->input->getInt('state', null);
-
-		$fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
-		$model = $this->getModel('Files');
-		if (is_array($fnums)) {
-			$validFnums = array();
-
-			foreach ($fnums as $fnum) {
-				if (EmundusHelperAccess::asAccessAction(13, 'u', $this->_user->id, $fnum)) {
-					$validFnums[] = $fnum;
-				}
-			}
-			$res = $model->updateState($validFnums, $state);
-		}
-		else {
-			$fnums      = $model->getAllFnums();
-			$validFnums = array();
-
-			foreach ($fnums as $fnum) {
-				if (EmundusHelperAccess::asAccessAction(13, 'u', $this->_user->id, $fnum)) {
-					$validFnums[] = $fnum;
-				}
-			}
-			$res = $model->updateState($validFnums, $state);
-
-		}
-
-		if ($res !== false) {
-			$msg = Text::_('COM_EMUNDUS_APPLICATION_STATE_SUCCESS');
-		}
-		else {
-			$msg = Text::_('STATE_ERROR');
-
-		}
-		echo json_encode((object) (array('status' => $res, 'msg' => $msg)));
-		exit;
+		$c_files = new EmundusControllerFiles();
+		$c_files->updatestate();
 	}
 
 	/**
@@ -677,27 +473,8 @@ class EmundusControllerDecision extends BaseController
 	 */
 	public function unlinkevaluators()
 	{
-		$fnum  = $this->input->getString('fnum', null);
-		$id    = $this->input->getint('id', null);
-		$group = $this->input->getString('group', null);
-
-		$model = $this->getModel('Files');
-		if ($group == "true") {
-			$res = $model->unlinkEvaluators($fnum, $id, true);
-		}
-		else {
-			$res = $model->unlinkEvaluators($fnum, $id, false);
-		}
-
-		if ($res) {
-			$msg = Text::_('SUCCESS_SUPPR_EVAL');
-		}
-		else {
-			$msg = Text::_('ERROR_SUPPR_EVAL');
-		}
-
-		echo json_encode((object) (array('status' => $res, 'msg' => $msg)));
-		exit;
+		$c_files = new EmundusControllerFiles();
+		$c_files->unlinkevaluators();
 	}
 
 	/**
@@ -710,10 +487,7 @@ class EmundusControllerDecision extends BaseController
 			require_once(JPATH_ROOT.'/components/com_emundus/controllers/files.php');
 
 		$c_files = new EmundusControllerFiles();
-		$response = $c_files->getfnuminfos();
-
-		echo json_encode((object)$response);
-		exit;
+		$c_files->getfnuminfos();
 	}
 
 	/**
@@ -744,13 +518,18 @@ class EmundusControllerDecision extends BaseController
 	 */
 	public function getformelem()
 	{
-		$m_decision = $this->getModel('Decision');
+		$response = ['status' => false, 'code' => 403, 'msg' => Text::_('ACCESS_DENIED')];
 
-		$defaultElements = $m_decision->getDecisionElementsName(0, 1);
-		$elements        = EmundusHelperFilters::getElements();
-		$res             = array('status' => true, 'elts' => $elements, 'defaults' => $defaultElements);
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$m_decision = $this->getModel('Decision');
 
-		echo json_encode((object) $res);
+			$defaultElements = $m_decision->getDecisionElementsName(0, 1);
+			$elements = EmundusHelperFilters::getElements();
+			$response = array('status' => true, 'elts' => $elements, 'defaults' => $defaultElements);
+		}
+
+
+		echo json_encode((object) $response);
 		exit;
 	}
 
@@ -843,26 +622,8 @@ class EmundusControllerDecision extends BaseController
 	 */
 	public function create_file_csv()
 	{
-		$today  = date_default_timezone_get();
-		$name   = md5($today . rand(0, 10));
-		$name   = $name . '.csv';
-		$chemin = JPATH_SITE . DS . 'tmp' . DS . $name;
-
-		if (!$fichier_csv = fopen($chemin, 'w+')) {
-			$result = array('status' => false, 'msg' => Text::_('ERROR_CANNOT_OPEN_FILE') . ' : ' . $chemin);
-			echo json_encode((object) $result);
-			exit();
-		}
-
-		fprintf($fichier_csv, chr(0xEF) . chr(0xBB) . chr(0xBF));
-		if (!fclose($fichier_csv)) {
-			$result = array('status' => false, 'msg' => Text::_('COM_EMUNDUS_EXPORTS_ERROR_CANNOT_CLOSE_CSV_FILE'));
-			echo json_encode((object) $result);
-			exit();
-		}
-		$result = array('status' => true, 'file' => $name);
-		echo json_encode((object) $result);
-		exit();
+		$c_files = new EmundusControllerFiles();
+		$c_files->create_file_csv();
 	}
 
 	/**
@@ -1164,7 +925,7 @@ class EmundusControllerDecision extends BaseController
 	 */
 	public function download()
 	{
-		if($this->_user->guest) {
+		if(!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			die(Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 		}
 
@@ -1206,12 +967,11 @@ class EmundusControllerDecision extends BaseController
 	function export_zip($fnums)
 	{
 		$view         = $this->input->get('view');
-		if ((!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) &&
-			$view != 'renew_application'
-		)
+		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id) && $view != 'renew_application') {
 			die(Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
+		}
 
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
+		require_once(JPATH_ROOT . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
 		require_once(JPATH_SITE . DS . 'libraries' . DS . 'emundus' . DS . 'pdf.php');
 
 		$zip = new ZipArchive();

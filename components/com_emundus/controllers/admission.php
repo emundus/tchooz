@@ -714,34 +714,8 @@ class EmundusControllerAdmission extends BaseController
 	 */
 	public function unlinkevaluators()
 	{
-		if (!EmundusHelperAccess::asPartnerAccessLevel($this->user->id)) {
-			die(Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
-		}
-
-		$fnum  = $this->input->getString('fnum', null);
-		$id    = $this->input->getint('id', null);
-		$group = $this->input->getString('group', null);
-
-		$m_files = $this->getModel('Files');
-
-		if ($group == "true")
-		{
-			$res = $m_files->unlinkEvaluators($fnum, $id, true);
-		} else
-		{
-			$res = $m_files->unlinkEvaluators($fnum, $id, false);
-		}
-
-		if ($res)
-		{
-			$msg = Text::_('SUCCESS_SUPPR_EVAL');
-		} else
-		{
-			$msg = Text::_('ERROR_SUPPR_EVAL');
-		}
-
-		echo json_encode((object) (array('status' => $res, 'msg' => $msg)));
-		exit;
+		$c_files = new EmundusControllerFiles();
+		$c_files->unlinkevaluators();
 	}
 
 	/**
@@ -756,10 +730,7 @@ class EmundusControllerAdmission extends BaseController
 		}
 
 		$c_files = new EmundusControllerFiles();
-		$response = $c_files->getfnuminfos();
-
-		echo json_encode((object)$response);
-		exit;
+		$c_files->getfnuminfos();
 	}
 
 	/**

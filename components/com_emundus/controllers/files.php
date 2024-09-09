@@ -1145,23 +1145,35 @@ class EmundusControllerFiles extends BaseController
 	 */
 	public function unlinkevaluators()
 	{
-		$fnum  = $this->input->getString('fnum', null);
-		$id    = $this->input->getint('id', null);
-		$group = $this->input->getString('group', null);
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
 
-		$m_files = $this->getModel('Files');
+		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$fnum  = $this->input->getString('fnum', null);
+			$id    = $this->input->getint('id', null);
+			$group = $this->input->getString('group', null);
 
-		if ($group == "true")
-			$res = $m_files->unlinkEvaluators($fnum, $id, true);
-		else
-			$res = $m_files->unlinkEvaluators($fnum, $id, false);
+			$m_files = $this->getModel('Files');
 
-		if ($res)
-			$msg = Text::_('SUCCESS_SUPPR_EVAL');
-		else
-			$msg = Text::_('ERROR_SUPPR_EVAL');
+			if ($group == "true")
+			{
+				$res = $m_files->unlinkEvaluators($fnum, $id, true);
+			} else
+			{
+				$res = $m_files->unlinkEvaluators($fnum, $id, false);
+			}
 
-		echo json_encode((object) (array('status' => $res, 'msg' => $msg)));
+			if ($res)
+			{
+				$msg = Text::_('SUCCESS_SUPPR_EVAL');
+			} else
+			{
+				$msg = Text::_('ERROR_SUPPR_EVAL');
+			}
+
+			$response = ['status' => $res, 'msg' => $msg];
+		}
+
+		echo json_encode((object) $response);
 		exit;
 	}
 
@@ -2880,6 +2892,9 @@ class EmundusControllerFiles extends BaseController
 	 */
 	public function download()
 	{
+		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			die(Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
+		}
 
 		$name = $this->input->getString('name', null);
 
