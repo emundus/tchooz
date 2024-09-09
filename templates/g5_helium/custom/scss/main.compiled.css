@@ -910,6 +910,11 @@ video {
                         color: transparent;
                         background-size: contain;
                     }
+.dropfiles-page .dropfiles-container .dropfiles_list .file .filecontent > div.\!ext.pdf {
+                        background-image: url(media/com_emundus/images/icones/filetype/pdf.png) !important;
+                        color: transparent !important;
+                        background-size: contain !important;
+                    }
 .dropfiles-page .dropfiles-container .dropfiles_list .\!file .file-size {
                         display: none !important;
                     }
@@ -1025,11 +1030,17 @@ video {
 .fabrikElement .field-calendar .js-calendar .calendar-container table thead.calendar-header td.nav a {
                                     color: var(--em-primary-color);
                                 }
+.fabrikElement .field-calendar .js-calendar .calendar-container table thead.calendar-header td.\!nav a {
+                                    color: var(--em-primary-color) !important;
+                                }
 .fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.day:hover {
                                 border-radius: 99px;
                             }
 .fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.day.selected {
                                 border-radius: 99px;
+                            }
+.fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.day.\!selected {
+                                border-radius: 99px !important;
                             }
 .fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.today:after {
                                 content: unset;
@@ -1088,9 +1099,28 @@ video {
                         .view-registration.em-formRegistrationCenter .emundus-form .fabrikGroupColumns.fabrikGroup .row .col-sm-6:first-child {
                             padding-right: 8px;
                         }
+                    .view-registration.em-formRegistrationCenter .emundus-form .fabrikGroupColumns.fabrikGroup .\!row {
+                        -moz-column-gap: 0 !important;
+                             column-gap: 0 !important;
+                    }
+
+                        .view-registration.em-formRegistrationCenter .emundus-form .fabrikGroupColumns.fabrikGroup .\!row .col-sm-6:first-child {
+                            padding-right: 8px !important;
+                        }
+                    .view-registration.em-formRegistrationCenter .emundus-form .fabrikGroupColumns.fabrikGroup .\!row {
+                        -moz-column-gap: 0 !important;
+                             column-gap: 0 !important;
+                    }
+
+                        .view-registration.em-formRegistrationCenter .emundus-form .fabrikGroupColumns.fabrikGroup .\!row .col-sm-6:first-child {
+                            padding-right: 8px !important;
+                        }
             }
 .view-registration.em-formRegistrationCenter .emundus-form .row:before, .view-registration.em-formRegistrationCenter .emundus-form .row:after {
                     display: none;
+                }
+.view-registration.em-formRegistrationCenter .emundus-form .\!row:before, .view-registration.em-formRegistrationCenter .emundus-form .\!row:after {
+                    display: none !important;
                 }
 .view-registration.em-formRegistrationCenter .emundus-form .fabrikGroup {
                 margin-bottom: 0;
@@ -1102,6 +1132,9 @@ video {
     margin-top: var(--em-spacing-1);
 }
 .view-registration.em-formRegistrationCenter .emundus-form .fb_el_jos_emundus_users___terms_and_conditions .row {
+                    padding-bottom: 0 !important;
+                }
+.view-registration.em-formRegistrationCenter .emundus-form .fb_el_jos_emundus_users___terms_and_conditions .\!row {
                     padding-bottom: 0 !important;
                 }
 .view-registration.em-formRegistrationCenter .emundus-form .fb_el_jos_emundus_users___terms_and_conditions span.material-symbols-outlined:first-child {
@@ -1202,6 +1235,9 @@ form.fabrikForm {
 /** GLOBAL **/
 form.fabrikForm .row {
             width: auto;
+        }
+form.fabrikForm .\!row {
+            width: auto !important;
         }
 form.fabrikForm .fabrikElement {
             margin-top: var(--em-form-label-margin-bottom);
@@ -1455,15 +1491,24 @@ form.fabrikForm .row .plg-yesno.span12,
         form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .btn-group {
             width: 48.93617021276595%;
         }
+form.fabrikForm .\!row .plg-yesno.span12 {
+            width: 48.93617021276595% !important;
+        }
 @media only all and (min-width: 48rem) and (max-width: 59.99rem) {
             form.fabrikForm .row .plg-yesno.span12,
             form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .btn-group {
+                width: 48.6187845304% !important;
+            }
+            form.fabrikForm .\!row .plg-yesno.span12 {
                 width: 48.6187845304% !important;
             }
         }
 @media only all and (max-width: 48rem) {
             form.fabrikForm .row .plg-yesno.span12,
             form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .btn-group {
+                width: 100% !important;
+            }
+            form.fabrikForm .\!row .plg-yesno.span12 {
                 width: 100% !important;
             }
         }
@@ -1680,8 +1725,16 @@ form.fabrikForm select[size] {
                 }
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .row {
                     padding: 4px 0;
-                    gap: var(--em-spacing-4);
                 }
+form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .\!row {
+                    padding: 4px 0 !important;
+                }
+form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .row {
+    gap: var(--em-spacing-4);
+}
+form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .\!row {
+    gap: var(--em-spacing-4);
+}
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio {
     padding-top: var(--em-spacing-1);
     padding-bottom: var(--em-spacing-1);
@@ -1746,29 +1799,71 @@ form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row {
                         border-bottom: solid var(--em-form-checkbox-bw) var(--em-form-checkbox-bc);
                         padding: 0 0 var(--em-form-checkbox-padding) var(--em-form-checkbox-padding);
                     }
+form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .\!row {
+                        margin-top: 0 !important;
+                        margin-bottom: var(--em-form-checkbox-padding) !important;
+                        border-bottom: solid var(--em-form-checkbox-bw) var(--em-form-checkbox-bc) !important;
+                        padding: 0 0 var(--em-form-checkbox-padding) var(--em-form-checkbox-padding) !important;
+                    }
 form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row:last-of-type {
                             margin-bottom: 0;
                             padding-bottom: 0;
                         }
+form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .\!row:last-of-type {
+                            margin-bottom: 0 !important;
+                            padding-bottom: 0 !important;
+                        }
 form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row .fabrikgrid_checkbox {
     display: flex;
+}
+form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .\!row .fabrikgrid_checkbox {
+    display: flex;
+}
+form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row .fabrikgrid_checkbox {
+    align-items: flex-start;
+}
+form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .\!row .fabrikgrid_checkbox {
     align-items: flex-start;
 }
 form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row .fabrikgrid_checkbox input {
     cursor: pointer;
+}
+form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .\!row .fabrikgrid_checkbox input {
+    cursor: pointer;
+}
+form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row .fabrikgrid_checkbox input {
                                 accent-color: var(--em-form-checkbox-color-checked);
                                 transform: scale(var(--em-form-checkbox-scale));
                                 margin: 0;
-}
+                            }
+form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .\!row .fabrikgrid_checkbox input {
+                                accent-color: var(--em-form-checkbox-color-checked) !important;
+                                transform: scale(var(--em-form-checkbox-scale)) !important;
+                                margin: 0 !important;
+                            }
 form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row .fabrikgrid_checkbox label {
     cursor: pointer;
+}
+form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .\!row .fabrikgrid_checkbox label {
+    cursor: pointer;
+}
+form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row .fabrikgrid_checkbox label {
                                 margin-bottom: 0;
                                 margin-top: -2px;
-}
+                            }
+form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .\!row .fabrikgrid_checkbox label {
+                                margin-bottom: 0 !important;
+                                margin-top: -2px !important;
+                            }
 form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row .fabrikgrid_checkbox label span {
                                     box-decoration-break: clone;
                                     -webkit-box-decoration-break: clone;
                                     padding-left: var(--em-form-checkbox-input-margin);
+                                }
+form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .\!row .fabrikgrid_checkbox label span {
+                                    box-decoration-break: clone !important;
+                                    -webkit-box-decoration-break: clone !important;
+                                    padding-left: var(--em-form-checkbox-input-margin) !important;
                                 }
 /** PANEL **/
 form.fabrikForm .plg-panel .fabrikElement .fabrikinput, form.fabrikForm .fabrikElementpanel .fabrikElement .fabrikinput {
@@ -1933,6 +2028,9 @@ form.fabrikForm .fabrikError.plg-checkbox .fabrikElement .fabrikSubElementContai
                 }
 form.fabrikForm .fabrikError.plg-checkbox .fabrikElement .fabrikSubElementContainer .row {
                         border-color: var(--em-form-checkbox-bc-error);
+                    }
+form.fabrikForm .fabrikError.plg-checkbox .fabrikElement .fabrikSubElementContainer .\!row {
+                        border-color: var(--em-form-checkbox-bc-error) !important;
                     }
 form.fabrikForm .fabrikErrorMessage {
     margin-top: var(--em-spacing-1);
@@ -2250,6 +2348,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
         }
 .em-attachmentList .em-fieldset-attachment-table .em-attachment-dropzone .row > * {
                     padding: 0;
+                }
+.em-attachmentList .em-fieldset-attachment-table .em-attachment-dropzone .\!row > * {
+                    padding: 0 !important;
                 }
 .em-attachmentList .em-fieldset-attachment-table .em-attachment-dropzone .dz-default.dz-message {
                     margin-top: var(--em-spacing-3);
@@ -4316,14 +4417,8 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-self-stretch {
     align-self: stretch;
 }
-.tw-overflow-auto {
-    overflow: auto;
-}
 .tw-overflow-hidden {
     overflow: hidden;
-}
-.tw-overflow-visible {
-    overflow: visible;
 }
 .tw-overflow-y-auto {
     overflow-y: auto;
@@ -5525,6 +5620,9 @@ a,
 ul, ol {
         padding-left: 20px;
     }
+.\!hidden {
+        display: none !important;
+    }
 .hidden {
         display: none;
     }
@@ -5585,6 +5683,9 @@ ul, ol {
         min-height: 0;
         padding-left: 0;
         padding-right: 0;
+    }
+.\!row {
+        margin: 0 !important;
     }
 .row {
         margin: 0;
@@ -5954,6 +6055,15 @@ button.swal2-cancel.goback-btn:hover,
         width: auto;
     }
 /* STATUTS ET ETIQUETTES */
+.\!label {
+        display: inline-block !important;
+        border-radius: 100px !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        box-shadow: 0 1px 4px rgba(32, 35, 44, 0.05) !important;
+        padding: 5px 12px !important;
+        color: var(--neutral-0) !important;
+    }
 .label {
         display: inline-block;
         border-radius: 100px;
@@ -6220,6 +6330,9 @@ button.swal2-cancel.goback-btn:hover,
 .label-border-black {
         border-color: var(--em-black);
     }
+.\[-a-zA-Z\:0-9_\.\] {
+    -a-z-a--z: 0-9 .;
+}
 @font-face {
     font-family: 'Material Icons';
     font-style: normal;

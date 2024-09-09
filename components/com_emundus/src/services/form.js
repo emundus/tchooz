@@ -34,8 +34,6 @@ export default {
       return await fetchClient.get('getsubmittionpage', {
         prid: id
       });
-
-      return response;
     } catch (error) {
       return {
         status: false,
