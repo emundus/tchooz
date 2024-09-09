@@ -253,6 +253,10 @@ export default {
     const alertMessageContainer = document.querySelector('.alerte-message-container');
     if (alertMessageContainer) {
       this.alertBannerDisplayed = true;
+
+      alertMessageContainer.querySelector('#close-preprod-alerte-container').addEventListener('click', () => {
+        this.alertBannerDisplayed = false;
+      });
     }
 
     this.loading.lists = true;
