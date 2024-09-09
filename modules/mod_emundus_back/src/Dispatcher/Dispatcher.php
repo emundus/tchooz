@@ -11,6 +11,8 @@
 namespace Emundus\Module\BackButton\Site\Dispatcher;
 
 use Joomla\CMS\Dispatcher\AbstractModuleDispatcher;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Uri\Uri;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -35,6 +37,16 @@ class Dispatcher extends AbstractModuleDispatcher
     {
         $data   = parent::getLayoutData();
         $params = $data['params'];
+
+		$data['back_link'] = Uri::base();
+		if($params->get('back_type') == 'previous') {
+			$data['back_link'] = "history.go(-1)";
+		} else if ($params->get('back_type') == 'link') {
+			$menu_id = $params->get('link', 0);
+			if(!empty($menu_id)) {
+				$data['back_link'] = Factory::getApplication()->getMenu()->getItem($menu_id)->alias;
+			}
+		}
 
         return $data;
     }

@@ -24,6 +24,33 @@
 	<config>
 		<fields name="params">
 			<fieldset name="basic">
+				<field
+						name="back_type"
+						type="list"
+						default="homepage"
+						label="MOD_EMUNDUS_BACK_TYPE"
+						description="">
+					<option value="homepage">MOD_EMUNDUS_BACK_TYPE_HOMEPAGE</option>
+					<option value="previous">MOD_EMUNDUS_BACK_TYPE_PREVIOUS_PAGE</option>
+					<option value="link">MOD_EMUNDUS_BACK_TYPE_LINK</option>
+				</field>
+				<field
+						showon="back_type:link"
+						name="link"
+						type="sql"
+						default=""
+						label="MOD_EMUNDUS_BACK_LINK"
+						query="SELECT id, title FROM #__menu"
+						key_field="id"
+						value_field="title"
+				/>
+				<field
+						name="button_text"
+						type="text"
+						default="MOD_EMUNDUS_BACK_BUTTON_LABEL"
+						label="MOD_EMUNDUS_BACK_BUTTON_TEXT"
+						description="Mettre de préférence une balise de traduction Joomla"
+				/>
 			</fieldset>
 		</fields>
 	</config>
