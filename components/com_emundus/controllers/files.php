@@ -1539,7 +1539,7 @@ class EmundusControllerFiles extends BaseController
 	{
 		$current_user = JFactory::getUser();
 
-		if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
+		if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
 			die(Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 		}
 
