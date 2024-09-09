@@ -33,6 +33,8 @@ class EmundusControllerMessages extends BaseController
 
 	protected $app;
 
+	private $_user;
+
 	/**
 	 * Constructor.
 	 *
@@ -52,6 +54,7 @@ class EmundusControllerMessages extends BaseController
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
 
 		$this->app = Factory::getApplication();
+		$this->_user = $this->app->getIdentity();
 	}
 
 	/**
@@ -61,22 +64,22 @@ class EmundusControllerMessages extends BaseController
 	 */
 	function gettemplate()
 	{
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
 
-		$template_id = $this->input->post->getInt('select', null);
 
-		$m_messages = $this->getModel('Messages');
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$response['msg'] = Text::_('NO_EMAIL_FOUND');
 
-		$template = $m_messages->getEmail($template_id);
+			$template_id = $this->input->post->getInt('select', null);
+			$m_messages = $this->getModel('Messages');
+			$template = $m_messages->getEmail($template_id);
 
-		if (!$template) {
-			echo json_encode((object) (['status' => false]));
-			exit;
+			if ($template) {
+				$response = ['status' => true, 'msg' => Text::_('EMAIL_FOUND'), 'tmpl' => $template];
+			}
 		}
 
-		echo json_encode((object) ([
-			'status' => true,
-			'tmpl'   => $template
-		]));
+		echo json_encode((object) $response);
 		exit;
 
 	}
@@ -88,23 +91,21 @@ class EmundusControllerMessages extends BaseController
 	 */
 	public function setcategory()
 	{
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
 
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$response['msg'] = Text::_('NO_EMAIL_FOUND');
+			$category = $this->input->get->getString('category', 'all');
 
-		$category = $this->input->get->getString('category', 'all');
+			$m_messages = $this->getModel('Messages');
+			$templates = $m_messages->getEmailsByCategory($category);
 
-		$m_messages = $this->getModel('Messages');
-
-		$templates = $m_messages->getEmailsByCategory($category);
-
-		if (!$templates) {
-			echo json_encode((object) (['status' => false]));
-			exit;
+			if ($templates) {
+				$response = (['status'    => true, 'templates' => $templates]);
+			}
 		}
 
-		echo json_encode((object) ([
-			'status'    => true,
-			'templates' => $templates
-		]));
+		echo json_encode((object) $response);
 		exit;
 
 	}
@@ -1486,41 +1487,47 @@ class EmundusControllerMessages extends BaseController
 	// get attachments by profiles
 	public function getattachmentsbyprofiles()
 	{
+		$response = ['status' => false, 'attachments' => null];
 
-
-		$fnums = explode(',', $this->input->post->getRaw('fnums'));
-
-		$_mMessages = $this->getModel('Messages');
-		$_results   = $_mMessages->getAttachmentsByProfiles($fnums);
-
-		if ($_results) {
-			echo json_encode(['status' => true, 'attachments' => $_results]);
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$fnums = explode(',', $this->input->post->getRaw('fnums'));
+			$_mMessages = $this->getModel('Messages');
+			$_results   = $_mMessages->getAttachmentsByProfiles($fnums);
+			if ($_results) {
+				$response = ['status' => true, 'attachments' => $_results];
+			}
 		}
-		else {
-			echo json_encode(['status' => false, 'attachments' => null]);
-		}
+
+		echo json_encode($response);
 		exit;
 	}
 
 	// get all attachments
 	public function getallattachments()
 	{
-		$_mMessages = $this->getModel('Messages');
-		$_documents = $_mMessages->getAllAttachments();
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
 
-		if ($_documents) {
-			echo json_encode(['status' => true, 'attachments' => $_documents]);
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$m_messages = $this->getModel('Messages');
+			$_documents = $m_messages->getAllAttachments();
+
+			if ($_documents) {
+				$response = ['status' => true, 'attachments' => $_documents];
+			} else {
+				$response = ['status' => false, 'attachments' => null];
+			}
 		}
-		else {
-			echo json_encode(['status' => false, 'attachments' => null]);
-		}
+
+		echo json_encode($response);
 		exit;
 	}
 
 	/// set tags to fnums --> params : [fnums]
 	public function addtagsbyfnums()
 	{
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
 
+		$valid_fnums = [];
 
 		/// get data from jinput
 		$data = $this->input->post->getRaw('data');
@@ -1529,16 +1536,24 @@ class EmundusControllerMessages extends BaseController
 		$fnums      = explode(',', $data['recipients']);
 		$email_tmpl = $data['template'];
 
-		$_mMessages = $this->getModel('Messages');
-
-		$_tags = $_mMessages->addTagsByFnums($fnums, $email_tmpl);
-
-		if ($_tags) {
-			echo json_encode(['status' => true]);
+		foreach ($fnums as $fnum) {
+			if (EmundusHelperAccess::asAccessAction(14, 'c', $fnum)) {
+				$valid_fnums[] = $fnum;
+			}
 		}
-		else {
-			echo json_encode(['status' => false]);
+
+		if (!empty($valid_fnums)) {
+			$response['msg'] = Text::_('FAILED');
+
+			$_mMessages = $this->getModel('Messages');
+			$tagged = $_mMessages->addTagsByFnums($fnums, $email_tmpl);
+
+			if ($tagged) {
+				$response = ['status' => true, 'msg' => Text::_('SUCCESS')];
+			}
 		}
+
+		echo json_encode($response);
 		exit;
 	}
 
