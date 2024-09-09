@@ -755,25 +755,6 @@ class EmundusControllerApplication extends BaseController
 	/* used by VueJS com_emundus Attachments component */
 
 	/**
-	 * Get attachments for a specific user
-	 *
-	 * @since version 1.0.0
-	 */
-	public function getuserattachments()
-	{
-		$attachments = array();
-		$user_id = $this->input->getInt('user_id', 0);
-
-		if(!empty($user)) {
-			$m_application = $this->getModel('Application');
-			$attachments   = $m_application->getUserAttachments($user_id);
-		}
-
-		echo json_encode($attachments);
-		exit;
-	}
-
-	/**
 	 * Get attachments for a specific fnum
 	 *
 	 * @since version 1.0.0
@@ -839,6 +820,8 @@ class EmundusControllerApplication extends BaseController
 	 */
 	public function getform()
 	{
+		$result = array('status' => false, 'msg' => '', 'data' => null);
+
 		$profile = $this->input->getInt('profile', 0);
 		$user    = $this->input->getInt('user', 0);
 		$fnum    = $this->input->getString('fnum', null);
@@ -848,17 +831,19 @@ class EmundusControllerApplication extends BaseController
 
 			$form = $m_application->getForms($user, $fnum, $profile);
 			if (!empty($form)) {
-				$tab = array('status' => true, 'msg' => Text::_('FORM_RETRIEVED'), 'data' => $form);
+				$result['status'] = true;
+				$result['msg']    = Text::_('FORM_RETRIEVED');
+				$result['data']   = $form;
 			}
 			else {
-				$tab = array('status' => false, 'msg' => Text::_('FORM_NOT_RETRIEVED'), 'data' => null);
+				$result['msg'] = Text::_('FORM_NOT_RETRIEVED');
 			}
 		}
 		else {
-			$tab = array('status' => false, 'msg' => Text::_('RESTRICTED_ACCESS'));
+			$result['msg'] = Text::_('RESTRICTED_ACCESS');
 		}
 
-		echo json_encode($tab);
+		echo json_encode($result);
 		exit;
 	}
 
@@ -1443,16 +1428,20 @@ class EmundusControllerApplication extends BaseController
 	{
 		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403];
 
-		$element = $this->input->getString('element','');
-		$fid = $this->input->getInt('form_id',0);
-		$value = $this->input->getString('value','');
+		if(!$this->_user->guest)
+		{
+			$element = $this->input->getString('element', '');
+			$fid     = $this->input->getInt('form_id', 0);
+			$value   = $this->input->getString('value', '');
 
-		$e_user = $this->app->getSession()->get('emundusUser');
-		$fnum = $e_user->fnum;
+			$e_user = $this->app->getSession()->get('emundusUser');
+			$fnum   = $e_user->fnum;
 
-		if(!empty($fnum) && !empty($element) && !empty($fid)) {
-			$m_application      = $this->getModel('Application');
-			$response['status'] = $m_application->saveFormSession($element, $fid, $value, $fnum);
+			if (!empty($fnum) && !empty($element) && !empty($fid))
+			{
+				$m_application      = $this->getModel('Application');
+				$response['status'] = $m_application->saveFormSession($element, $fid, $value, $fnum);
+			}
 		}
 
 		echo json_encode($response);
@@ -1469,14 +1458,18 @@ class EmundusControllerApplication extends BaseController
 	{
 		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403];
 
-		$fid = $this->input->getInt('form_id',0);
+		if(!$this->_user->guest)
+		{
+			$fid = $this->input->getInt('form_id', 0);
 
-		$e_user = $this->app->getSession()->get('emundusUser');
-		$fnum = $e_user->fnum;
+			$e_user = $this->app->getSession()->get('emundusUser');
+			$fnum   = $e_user->fnum;
 
-		if(!empty($fnum) && !empty($fid)) {
-			$m_application      = $this->getModel('Application');
-			$response['status'] = $m_application->clearFormSession($fid, $fnum);
+			if (!empty($fnum) && !empty($fid))
+			{
+				$m_application      = $this->getModel('Application');
+				$response['status'] = $m_application->clearFormSession($fid, $fnum);
+			}
 		}
 
 		echo json_encode($response);
