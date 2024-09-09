@@ -1384,19 +1384,6 @@ class EmundusControllerFiles extends BaseController
 	}
 
 	/**
-	 * @param $object
-	 * @param $orderArray
-	 *
-	 * @return array
-	 */
-	public function sortObjectByArray($object, $orderArray)
-	{
-		$properties = get_object_vars($object);
-
-		return $this->sortArrayByArray($properties, $orderArray);
-	}
-
-	/**
 	 * Create temp CSV file for XLS extraction
 	 * @return String json
 	 */
