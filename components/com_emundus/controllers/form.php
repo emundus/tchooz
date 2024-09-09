@@ -1021,17 +1021,19 @@ class EmundusControllerForm extends BaseController
 	{
 		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'data' => []);
 
-		$formId = $this->input->getInt('form_id');
-		$format = $this->input->getString('format', 'raw');
+		if (!$this->_user->guest) {
+			$formId = $this->input->getInt('form_id');
+			$format = $this->input->getString('format', 'raw');
 
-		if (!empty($formId)) {
-			$conditions = $this->m_form->getJSConditionsByForm($formId, $format);
+			if (!empty($formId)) {
+				$conditions = $this->m_form->getJSConditionsByForm($formId, $format);
 
-			$response['msg'] = Text::_('SUCCESS');
-			$response['status'] = true;
-			$response['data'] = ['conditions' => $conditions];
-		} else {
-			$response['msg'] = Text::_('MISSING_PARAMS');
+				$response['msg'] = Text::_('SUCCESS');
+				$response['status'] = true;
+				$response['data'] = ['conditions' => $conditions];
+			} else {
+				$response['msg'] = Text::_('MISSING_PARAMS');
+			}
 		}
 
 		echo json_encode((object)$response);
