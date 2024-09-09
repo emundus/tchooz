@@ -378,13 +378,25 @@ class EmundusModelCampaign extends ListModel
 	 */
 	function getCampaignsByProgram($code)
 	{
-		$query = 'SELECT esc.*
-					FROM #__emundus_setup_campaigns AS esc
-					LEFT JOIN #__emundus_setup_programmes AS esp on esp.code = esc.training
-					WHERE esp.code like ' . $this->_db->Quote($code);
-		$this->_db->setQuery($query);
+		$campaigns = [];
 
-		return $this->_db->loadObjectList();
+		if (!empty($code)) {
+			$query = $this->_db->createQuery();
+
+			$query->select('esc.*')
+				->from('#__emundus_setup_campaigns AS esc')
+				->where('esc.training = ' . $this->_db->quote($code))
+				->order('esc.end_date DESC');
+
+			try {
+				$this->_db->setQuery($query);
+				$campaigns = $this->_db->loadObjectList();
+			} catch (Exception $e) {
+				Log::add('Error getting campaigns by program at model/campaign at query :' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus.campaign.error');
+			}
+		}
+
+		return $campaigns;
 	}
 
 	/**
@@ -1899,6 +1911,8 @@ class EmundusModelCampaign extends ListModel
 	 */
 	public function getCampaignsToAffect()
 	{
+		$campaigns = [];
+
 		// Get campaigns that don't have applicant files
 		$query = 'select sc.id,sc.label 
                   from jos_emundus_setup_campaigns as sc
@@ -1909,18 +1923,16 @@ class EmundusModelCampaign extends ListModel
                     where cc.campaign_id = sc.id
                     and u.profile NOT IN (2,4,5,6)
                   ) = 0';
-		//
+
 
 		try {
 			$this->_db->setQuery($query);
-
-			return $this->_db->loadObjectList();
-		}
-		catch (Exception $e) {
+			$campaigns = $this->_db->loadObjectList();
+		} catch (Exception $e) {
 			Log::add('component/com_emundus/models/campaign | Error getting campaigns without setup_profiles associated: ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
-
-			return [];
 		}
+
+		return $campaigns;
 	}
 
 	/**

@@ -93,19 +93,6 @@ class EmundusControllerCampaign extends BaseController
 	}
 
 	/**
-	 * Set campaign
-	 * @deprecated since version 2.0.0
-	 * 
-	 * @return true
-	 *
-	 * @since version 1.0.0.0
-	 */
-	function setCampaign()
-	{
-		return true;
-	}
-
-	/**
 	 * Add campaign for Ametys sync
 	 *
 	 * @since version 1.0.0
@@ -155,49 +142,33 @@ class EmundusControllerCampaign extends BaseController
 	 */
 	public function getcampaignsbyprogram()
 	{
-		$tab = array('status' => 0, 'msg' => Text::_("ACCESS_DENIED"), 'campaigns' => []);
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
 		{
-
-			$course = $this->input->get('course');
-
-			$campaigns = $this->m_campaign->getCampaignsByProgram($course);
-			$tab       = array('status' => true, 'msg' => 'CAMPAIGNS RETRIEVED', 'campaigns' => $campaigns);
+			$response['msg'] = Text::_('NO_CAMPAIGNS');
+			$response['campaigns'] = [];
+			$course = $this->input->get('course', '');
+			
+			if (!empty($course)) {
+				$campaigns = $this->m_campaign->getCampaignsByProgram($course);
+				$response = array('status' => true, 'msg' => 'CAMPAIGNS RETRIEVED', 'campaigns' => $campaigns);
+			}
 		}
 
-		echo json_encode((object) $tab);
+		echo json_encode((object) $response);
 		exit;
 	}
 
 	/**
+	 * @deprecated
 	 * Get the number of campaigns by program
 	 *
 	 * @since version 1.0.0
 	 */
 	public function getcampaignsbyprogramme()
 	{
-		$tab = array('status' => 0, 'msg' => Text::_('ACCESS_DENIED'));
-
-		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
-		{
-
-			$program = $this->input->get->getInt('pid');
-
-			$campaigns = $this->m_campaign->getCampaignsByProgramme($program);
-
-			if (count($campaigns) > 0)
-			{
-				$tab = array('status' => 1, 'msg' => Text::_('CAMPAIGNS_RETRIEVED'), 'data' => $campaigns);
-			}
-			else
-			{
-				$tab = array('status' => 0, 'msg' => Text::_('NO_CAMPAIGNS'), 'data' => $campaigns);
-			}
-		}
-		
-		echo json_encode((object) $tab);
-		exit;
+		$this->getcampaignsbyprogram();
 	}
 
 	/**
@@ -449,29 +420,24 @@ class EmundusControllerCampaign extends BaseController
 	 */
 	public function unpublishcampaign()
 	{
+		$response    = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
 
-		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
 		{
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
-		}
-		else
-		{
+			$response = array('status' => false, 'msg' => Text::_('ERROR_CANNOT_UNPUBLISH_CAMPAIGN'), 'data' => false);
+
 			$data = $this->input->getInt('id');
 
-			$result = $this->m_campaign->unpublishCampaign($data);
+			if (!empty($data)) {
+				$unpublished = $this->m_campaign->unpublishCampaign($data);
 
-			if ($result)
-			{
-				$tab = array('status' => 1, 'msg' => Text::_('CAMPAIGN_UNPUBLISHED'), 'data' => $result);
-			}
-			else
-			{
-				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_UNPUBLISH_CAMPAIGN'), 'data' => $result);
+				if ($unpublished) {
+					$response = array('status' => 1, 'msg' => Text::_('CAMPAIGN_UNPUBLISHED'), 'data' => $unpublished);
+				}
 			}
 		}
 		
-		echo json_encode((object) $tab);
+		echo json_encode((object) $response);
 		exit;
 	}
 
@@ -689,21 +655,23 @@ class EmundusControllerCampaign extends BaseController
 	 */
 	public function updateprofile()
 	{
-		$profile  = $this->input->getInt('profile');
-		$campaign = $this->input->getInt('campaign');
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
 
-		$result = $this->m_campaign->updateProfile($profile, $campaign);
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$response['msg'] = Text::_('ERROR_CANNOT_UPDATE_CAMPAIGN');
+			$profile  = $this->input->getInt('profile', 0);
+			$campaign = $this->input->getInt('campaign', 0);
 
-		if ($result)
-		{
-			$tab = array('status' => 1, 'msg' => Text::_('CAMPAIGN_UPDATED'), 'data' => $result);
+			if (!empty($profile) && !empty($campaign)) {
+				$updated = $this->m_campaign->updateProfile($profile, $campaign);
+
+				if ($updated) {
+					$response = ['status' => 1, 'msg' => Text::_('CAMPAIGN_UPDATED'), 'data' => $updated];
+				}
+			}
 		}
-		else
-		{
-			$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_UPDATE_CAMPAIGN'), 'data' => $result);
-		}
 
-		echo json_encode((object) $tab);
+		echo json_encode((object) $response);
 		exit;
 	}
 
@@ -714,21 +682,15 @@ class EmundusControllerCampaign extends BaseController
 	 */
 	public function getcampaignstoaffect()
 	{
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
-		{
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
-		}
-		else
+		$tab    = array('status' => false, 'msg' => Text::_("ACCESS_DENIED"));
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
 		{
 			$campaigns = $this->m_campaign->getCampaignsToAffect();
 
-			if (!empty($campaigns))
-			{
+			if (!empty($campaigns)) {
 				$tab = array('status' => 1, 'msg' => Text::_('USERS_RETRIEVED'), 'data' => $campaigns);
-			}
-			else
-			{
+			} else {
 				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_RETRIEVE_USERS'), 'data' => $campaigns);
 			}
 		}
@@ -888,24 +850,26 @@ class EmundusControllerCampaign extends BaseController
 	 */
 	public function updateDocumentFalang()
 	{
-		$text         = new stdClass;
-		$text->fr     = $this->input->getString('text_fr');
-		$text->en     = $this->input->getString('text_en');
-		$reference_id = $this->input->getInt('did');
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'data' => false);
 
-		$m_falang = $this->getModel('Falang');
-		$result   = $m_falang->updateFalang($text, $reference_id, 'emundus_setup_attachments', 'value');
-
-		if ($result)
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
 		{
-			$tab = array('status' => 1, 'msg' => Text::_('DOCUMENT_UPDATED'), 'data' => $result);
-		}
-		else
-		{
-			$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_UPDATE_DOCUMENT'), 'data' => $result);
+			$response['msg'] = Text::_('ERROR_CANNOT_UPDATE_DOCUMENT');
+
+			$text         = new stdClass;
+			$text->fr     = $this->input->getString('text_fr');
+			$text->en     = $this->input->getString('text_en');
+			$reference_id = $this->input->getInt('did');
+
+			$m_falang = $this->getModel('Falang');
+			$result   = $m_falang->updateFalang($text, $reference_id, 'emundus_setup_attachments', 'value');
+
+			if ($result) {
+				$response = array('status' => 1, 'msg' => Text::_('DOCUMENT_UPDATED'), 'data' => $result);
+			}
 		}
 
-		echo json_encode((object) $tab);
+		echo json_encode((object) $response);
 		exit;
 	}
 
@@ -919,17 +883,20 @@ class EmundusControllerCampaign extends BaseController
 	{
 		$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_UPDATE_DOCUMENT'), 'data' => 0);
 
-		$reference_id = $this->input->getInt('docid');
-
-		if (!empty($reference_id))
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
 		{
-			$m_falang = $this->getModel('Falang');
+			$reference_id = $this->input->getInt('docid');
 
-			$result = $m_falang->getFalang($reference_id, 'emundus_setup_attachments', 'value');
-
-			if ($result)
+			if (!empty($reference_id))
 			{
-				$tab = array('status' => 1, 'msg' => Text::_('DOCUMENT_UPDATE'), 'data' => $result);
+				$m_falang = $this->getModel('Falang');
+
+				$result = $m_falang->getFalang($reference_id, 'emundus_setup_attachments', 'value');
+
+				if ($result)
+				{
+					$tab = array('status' => 1, 'msg' => Text::_('DOCUMENT_UPDATE'), 'data' => $result);
+				}
 			}
 		}
 
@@ -1231,20 +1198,22 @@ class EmundusControllerCampaign extends BaseController
 	 */
 	public function getallitemsalias()
 	{
-		$cid = $this->input->getInt('campaign_id', 0);
+		$response = array('status' => 0, 'msg' => Text::_('ACCESS_DENIED'));
 
-		$result = $this->m_campaign->getAllItemsAlias($cid);
-
-		if ($result)
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
 		{
-			$tab = array('status' => 1, 'msg' => Text::_('CAMPAIGN_UNPINNED'), 'data' => $result);
-		}
-		else
-		{
-			$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_UNPIN_CAMPAIGN'), 'data' => $result);
+			$response['msg'] = Text::_('ERROR_CANNOT_UNPIN_CAMPAIGN');
+
+			$cid = $this->input->getInt('campaign_id', 0);
+
+			$result = $this->m_campaign->getAllItemsAlias($cid);
+
+			if ($result) {
+				$response = array('status' => 1, 'msg' => Text::_('CAMPAIGN_UNPINNED'), 'data' => $result);
+			}
 		}
 
-		echo json_encode((object) $tab);
+		echo json_encode((object) $response);
 		exit;
 	}
 
