@@ -251,8 +251,6 @@ export default {
   },
   created() {
     const alertMessageContainer = document.querySelector('.alerte-message-container');
-    console.log(alertMessageContainer);
-
     if (alertMessageContainer) {
       this.alertBannerDisplayed = true;
     }
@@ -792,7 +790,7 @@ export default {
 }
 
 #onboarding_list.alert-banner-displayed .head{
-  top: 134px;
+  top: 114px;
 }
 
 #list-nav {
