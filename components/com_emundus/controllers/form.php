@@ -941,7 +941,7 @@ class EmundusControllerForm extends BaseController
 
 	public function getdatabasejoinoptions()
 	{
-		$response = array('status' => 0, 'msg' => Text::_('ACCESS_DENIED'));
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$table_name   = $this->input->getString('table_name');
@@ -950,8 +950,13 @@ class EmundusControllerForm extends BaseController
 			$concat_value = $this->input->getString('concat_value');
 			$where_clause = $this->input->getString('where_clause');
 
-			$options = $this->m_form->getDatabaseJoinOptions($table_name, $column_name, $value, $concat_value, $where_clause);
-			$response = ['status' => 1, 'msg' => 'worked', 'options' => $options];
+			try {
+				$options = $this->m_form->getDatabaseJoinOptions($table_name, $column_name, $value, $concat_value, $where_clause);
+				$response = ['status' => true, 'msg' => 'worked', 'options' => $options];
+			} catch (Exception $e) {
+				$response['status'] = false;
+				$response['msg'] = $e->getMessage();
+			}
 		}
 
 		echo json_encode((object) $response);
