@@ -3424,6 +3424,10 @@ class EmundusModelFormbuilder extends JModelList
 		}
 	}
 
+	/**
+	 * TODO: limit returned tables
+	 * @return array|false|mixed
+	 */
 	function getAllDatabases()
 	{
 
