@@ -326,27 +326,9 @@ class EmundusControllerUsers extends BaseController
 		$this->delusers($this->_db->loadResultArray());
 	}
 
-	public function archive()
-	{
-		$itemid = $this->app->getMenu()->getActive()->id;
-
-		$limitstart       = $this->input->get('limitstart', null, 'POST');
-		$filter_order     = $this->input->get('filter_order', null, 'POST', null, 0);
-		$filter_order_Dir = $this->input->get('filter_order_Dir', null, 'POST', null, 0);
-		$ids              = $this->input->get('ud', null, 'POST', 'array', 0);
-		if (!empty($ids)) {
-			foreach ($ids as $id) {
-				$query = 'UPDATE #__emundus_users SET profile=999 WHERE user_id=' . $id;
-				$this->_db->setQuery($query);
-				$this->_db->Query() or die($this->_db->getErrorMsg());
-
-				$this->blockuser($id);
-			}
-		}
-
-		$this->setRedirect('index.php?option=com_emundus&view=users&limitstart=' . $limitstart . '&filter_order=' . $filter_order . '&filter_order_Dir=' . $filter_order_Dir . '&Itemid=' . $itemid);
-	}
-
+	/*
+	 * todo: why here ?
+	 */
 	public function lastSavedFilter()
 	{
 		$query = "SELECT MAX(id) FROM #__emundus_filters";
@@ -362,45 +344,6 @@ class EmundusControllerUsers extends BaseController
 		$query = "SELECT constraints FROM #__emundus_filters WHERE id=" . $filter_id;
 		$this->_db->setQuery($query);
 		echo $this->_db->loadResult();
-	}
-
-	////// EXPORT SELECTED XLS ///////////////////
-	public function export_selected_xls()
-	{
-		$cids = $this->input->get('ud', null, 'POST', 'array', 0);
-		$page = $this->input->get('limitstart', 0, 'get');
-		if (!empty($cids)) {
-			$this->export_to_xls($cids);
-		}
-		else {
-			$this->setRedirect("index.php?option=com_emundus&view=users&limitstart=" . $page, JText::_("NO_ITEM_SELECTED"), 'error');
-		}
-	}
-
-	////// EXPORT ALL XLS ///////////////////
-	public function export_account_to_xls($reqids = array(), $el = array())
-	{
-		$cid = $this->input->get('ud', null, 'POST', 'array', 0);
-		require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'export_xls' . DS . 'xls_users.php');
-		export_xls($cid, array());
-	}
-
-	public function export_zip()
-	{
-		require_once('libraries/emundus/zip.php');
-		$cid              = $this->input->get('ud', null, 'POST', 'array', 0);
-		$limitstart       = $this->input->get('limitstart', null, 'POST');
-		$filter_order     = $this->input->get('filter_order', null, 'POST', null, 0);
-		$filter_order_Dir = $this->input->get('filter_order_Dir', null, 'POST', null, 0);
-		JArrayHelper::toInteger($cid, 0);
-
-		if (count($cid) == 0) {
-			JError::raiseWarning(500, JText::_('COM_EMUNDUS_ERROR_NO_ITEMS_SELECTED'));
-			$this->setRedirect('index.php?option=com_emundus&view=' . $this->input->get('view') . '&limitstart=' . $limitstart . '&filter_order=' . $filter_order . '&filter_order_Dir=' . $filter_order_Dir . '&Itemid=' . $this->input->get('Itemid'));
-			exit;
-		}
-		zip_file($cid);
-		exit;
 	}
 
 	public function addsession()
