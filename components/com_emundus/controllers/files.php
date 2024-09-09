@@ -2404,6 +2404,7 @@ class EmundusControllerFiles extends BaseController
 		exit();
 	}
 
+	//TODO: Comprendre la méthode
 	public function export_letter()
 	{
 		/// the main idea of this function is to use Stream of Buffer to pass data from CSV to Excel
