@@ -13,6 +13,7 @@
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserHelper;
@@ -87,7 +88,6 @@ class EmundusControllerAdmission extends BaseController
 	 */
 	public function display($cachable = false, $urlparams = false)
 	{
-
 		if (!$this->input->get('view')) {
 			$default = 'files';
 			$this->input->set('view', $default);
@@ -156,6 +156,7 @@ class EmundusControllerAdmission extends BaseController
 
 		$this->session->set('filt_params', $params);
 		$this->session->set('limitstart', 0);
+
 		echo json_encode((object) (array('status' => true)));
 		exit();
 	}
@@ -253,36 +254,48 @@ class EmundusControllerAdmission extends BaseController
 	 */
 	public function savefilters()
 	{
-		$name        = $this->input->get('name', null, 'POST');
-		$user_id     = $this->user->id;
-		$itemid      = $this->input->get('Itemid', null, 'GET');
-		$filt_params = $this->session->get('filt_params');
-		$adv_params  = $this->session->get('adv_cols');
-		$constraints = array('filter' => $filt_params, 'col' => $adv_params);
+		$result = ['status' => false, 'msg' => '', 'filter' => null];
 
-		$constraints = json_encode($constraints);
+		if(!empty($this->user->id))
+		{
+			$name        = $this->input->get('name', null, 'POST');
+			$user_id     = $this->user->id;
+			$itemid      = $this->input->get('Itemid', null, 'GET');
+			$filt_params = $this->session->get('filt_params');
+			$adv_params  = $this->session->get('adv_cols');
+			$constraints = array('filter' => $filt_params, 'col' => $adv_params);
 
-		if (empty($itemid))
-			$itemid = $this->input->get('Itemid', null, 'POST');
+			$constraints = json_encode($constraints);
 
-		$time_date = (date('Y-m-d H:i:s'));
+			if (empty($itemid))
+			{
+				$itemid = $this->input->get('Itemid', null, 'POST');
+			}
 
-		$query = "INSERT INTO #__emundus_filters (time_date,user,name,constraints,item_id) values('" . $time_date . "'," . $user_id . ",'" . $name . "'," . $this->_db->quote($constraints) . "," . $itemid . ")";
+			$time_date = (date('Y-m-d H:i:s'));
 
-		try {
-			$this->_db->setQuery($query);
-			$this->_db->execute();
+			$query = "INSERT INTO #__emundus_filters (time_date,user,name,constraints,item_id) values('" . $time_date . "'," . $user_id . ",'" . $name . "'," . $this->_db->quote($constraints) . "," . $itemid . ")";
 
-			$query = 'select f.id, f.name from #__emundus_filters as f where f.time_date = "' . $time_date . '" and user = ' . $user_id . ' and name="' . $name . '" and item_id="' . $itemid . '"';
-			$this->_db->setQuery($query);
-			$result = $this->_db->loadObject();
-			echo json_encode((object) (array('status' => true, 'filter' => $result)));
-			exit;
+			try
+			{
+				$this->_db->setQuery($query);
+				$this->_db->execute();
+
+				$query = 'select f.id, f.name from #__emundus_filters as f where f.time_date = "' . $time_date . '" and user = ' . $user_id . ' and name="' . $name . '" and item_id="' . $itemid . '"';
+				$this->_db->setQuery($query);
+				$result = $this->_db->loadObject();
+
+				$result['status'] = true;
+				$result['filter'] = $result;
+			}
+			catch (Exception $e)
+			{
+				Log::add(Text::_('COM_EMUNDUS_ERROR') . ' : ' . $e->getMessage(), Log::ERROR, 'emundus');
+			}
 		}
-		catch (Exception $e) {
-			echo json_encode((object) (array('status' => false)));
-			exit;
-		}
+
+		echo json_encode((object) ($result));
+		exit;
 	}
 
 	/**
@@ -292,20 +305,16 @@ class EmundusControllerAdmission extends BaseController
 	 */
 	public function deletefilters()
 	{
-		$filter_id = $this->input->getInt('id', null);
+		$deleted   = false;
+		$filter_id = $this->input->getInt('id', 0);
 
-		$query = "DELETE FROM #__emundus_filters WHERE id=" . $filter_id;
-		$this->_db->setQuery($query);
-		$result = $this->_db->execute();
+		if (!empty($filter_id) && !empty($this->user->id)) {
+			$m_files = $this->getModel('Files');
+			$deleted = $m_files->deleteFilter($filter_id,$this->user->id);
+		}
 
-		if ($result != 1) {
-			echo json_encode((object) (array('status' => false)));
-			exit;
-		}
-		else {
-			echo json_encode((object) (array('status' => true)));
-			exit;
-		}
+		echo json_encode((object) (array('status' => $deleted)));
+		exit;
 	}
 
 	/**
@@ -333,22 +342,31 @@ class EmundusControllerAdmission extends BaseController
 	 */
 	public function getadvfilters()
 	{
-		$h_files = new EmundusHelperFiles;
-		try {
+		$result = [
+			'status' => false,
+			'default' => Text::_('COM_EMUNDUS_PLEASE_SELECT'),
+			'defaulttrash' => Text::_('REMOVE_SEARCH_ELEMENT'),
+			'options' => []
+		];
 
-			$elements = $h_files->getElements();
-			echo json_encode((object) ([
-				'status'       => true,
-				'default'      => Text::_('COM_EMUNDUS_PLEASE_SELECT'),
-				'defaulttrash' => Text::_('REMOVE_SEARCH_ELEMENT'),
-				'options'      => $elements
-			]));
-			exit;
+		if(!$this->user->guest)
+		{
+			$h_files = new EmundusHelperFiles;
 
+			try
+			{
+				$result['options'] = $h_files->getElements();
+				$result['status']  = true;
+
+			}
+			catch (Exception $e)
+			{
+				Log::add(Text::_('COM_EMUNDUS_ERROR') . ' : ' . $e->getMessage(), Log::ERROR, 'emundus');
+			}
 		}
-		catch (Exception $e) {
-			throw $e;
-		}
+
+		echo json_encode((object) $result);
+		exit;
 	}
 
 	/**
@@ -358,6 +376,8 @@ class EmundusControllerAdmission extends BaseController
 	 */
 	public function addcomment()
 	{
+		$result = ['status' => false, 'msg' => Text::_('COM_EMUNDUS_ERROR')];
+
 		$user    = $this->user->id;
 		$fnums   = $this->input->getString('fnums', null);
 		$title   = $this->input->getString('title', '');
@@ -368,33 +388,21 @@ class EmundusControllerAdmission extends BaseController
 		$m_application = $this->getModel('Application');
 
 		if (is_array($fnums)) {
-
 			foreach ($fnums as $fnum) {
 				if (EmundusHelperAccess::asAccessAction(10, 'c', $user, $fnum)) {
-
 					$aid = intval(substr($fnum, 21, 7));
 					$res = $m_application->addComment((array('applicant_id' => $aid, 'user_id' => $user, 'reason' => $title, 'comment_body' => $comment, 'fnum' => $fnum)));
 
 					if ($res !== true && !is_numeric($res)) {
-						echo json_encode(([
-							'status' => false,
-							'msg'    => Text::_('COM_EMUNDUS_ERROR')
-						]));
 						exit;
 					}
-
 				}
 			}
 
-			echo json_encode(([
-				'status' => true,
-				'msg'    => Text::_('COM_EMUNDUS_COMMENTS_SUCCESS')
-			]));
-			exit;
-
+			$result['status'] = true;
+			$result['msg']    = Text::_('COM_EMUNDUS_COMMENTS_SUCCESS');
 		}
 		elseif ($fnums == 'all') {
-			//all result find by the request
 			$m_files = $this->getModel('Files');
 
 			$fnums = $m_files->getAllFnums();
@@ -405,6 +413,9 @@ class EmundusControllerAdmission extends BaseController
 				}
 			}
 		}
+
+		echo json_encode((object) $result);
+		exit;
 	}
 
 	/**
@@ -480,7 +491,6 @@ class EmundusControllerAdmission extends BaseController
 	public function tagfile()
 	{
 		$response = ['status' => false, 'code' => 403, 'msg' => Text::_('BAD_REQUEST')];
-
 
 		$fnums = $this->input->getString('fnums', null);
 		$tag   = $this->input->get('tag', null);
@@ -637,7 +647,7 @@ class EmundusControllerAdmission extends BaseController
 	public function getstate()
 	{
 		$m_files = $this->getModel('Files');
-		$states  = $m_files->getAllStatus();
+		$states  = $m_files->getAllStatus($this->user->id);
 
 		echo json_encode((object) ([
 			'status'       => true,
@@ -670,6 +680,7 @@ class EmundusControllerAdmission extends BaseController
 				if (EmundusHelperAccess::asAccessAction(13, 'u', $this->user->id, $fnum))
 					$validFnums[] = $fnum;
 			}
+
 			$res = $m_files->updateState($validFnums, $state);
 
 		}
@@ -682,6 +693,7 @@ class EmundusControllerAdmission extends BaseController
 				if (EmundusHelperAccess::asAccessAction(13, 'u', $this->user->id, $fnum))
 					$validFnums[] = $fnum;
 			}
+
 			$res = $m_files->updateState($validFnums, $state);
 		}
 
@@ -698,9 +710,13 @@ class EmundusControllerAdmission extends BaseController
 	 * Unlink evaluators from a single application file
 	 *
 	 * @since version 1.0.0
+	 * TODO: Manage access
 	 */
 	public function unlinkevaluators()
 	{
+		if (!EmundusHelperAccess::asPartnerAccessLevel($this->user->id)) {
+			die(Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
+		}
 
 		$fnum  = $this->input->getString('fnum', null);
 		$id    = $this->input->getint('id', null);
@@ -709,14 +725,20 @@ class EmundusControllerAdmission extends BaseController
 		$m_files = $this->getModel('Files');
 
 		if ($group == "true")
+		{
 			$res = $m_files->unlinkEvaluators($fnum, $id, true);
-		else
+		} else
+		{
 			$res = $m_files->unlinkEvaluators($fnum, $id, false);
+		}
 
 		if ($res)
+		{
 			$msg = Text::_('SUCCESS_SUPPR_EVAL');
-		else
+		} else
+		{
 			$msg = Text::_('ERROR_SUPPR_EVAL');
+		}
 
 		echo json_encode((object) (array('status' => $res, 'msg' => $msg)));
 		exit;
@@ -729,7 +751,9 @@ class EmundusControllerAdmission extends BaseController
 	 */
 	public function getfnuminfos() {
 		if (!class_exists('EmundusControllerFiles'))
-			require_once(JPATH_ROOT.'/components/com_emundus/controllers/files.php');
+		{
+			require_once(JPATH_ROOT . '/components/com_emundus/controllers/files.php');
+		}
 
 		$c_files = new EmundusControllerFiles();
 		$response = $c_files->getfnuminfos();
@@ -745,7 +769,6 @@ class EmundusControllerAdmission extends BaseController
 	 */
 	public function deletefile()
 	{
-
 		$fnum = $this->input->getString('fnum', null);
 
 		$m_files = $this->getModel('Files');

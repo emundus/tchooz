@@ -12,8 +12,10 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Language\Text;
 
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\Database\ParameterType;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -435,16 +437,11 @@ class EmundusControllerFiles extends BaseController
 	public function deletefilters()
 	{
 		$deleted   = false;
-		$filter_id = $this->input->getInt('id', null);
+		$filter_id = $this->input->getInt('id', 0);
 
-		if (!empty($filter_id)) {
-			$query = $this->_db->getQuery(true);
-			$query->delete('#__emundus_filters')
-				->where('id = ' . $filter_id);
-
-			$this->_db->setQuery($query);
-			$result  = $this->_db->execute();
-			$deleted = $result == 1;
+		if (!empty($filter_id) && !empty($this->_user->id)) {
+			$m_files = $this->getModel('Files');
+			$deleted = $m_files->deleteFilter($filter_id,$this->_user->id);
 		}
 
 		echo json_encode((object) (array('status' => $deleted)));
@@ -456,10 +453,13 @@ class EmundusControllerFiles extends BaseController
 	 */
 	public function setlimitstart()
 	{
-		$limistart  = $this->input->getInt('limitstart', null);
 		$session    = $this->app->getSession();
+
+		$limistart  = $this->input->getInt('limitstart', null);
+
 		$limit      = intval($session->get('limit'));
 		$limitstart = ($limit != 0 ? ($limistart > 1 ? (($limistart - 1) * $limit) : 0) : 0);
+
 		$session->set('limitstart', $limitstart);
 
 		echo json_encode((object) (array('status' => true)));
@@ -471,14 +471,31 @@ class EmundusControllerFiles extends BaseController
 	 */
 	public function getadvfilters()
 	{
-		try {
-			$elements = @EmundusHelperFiles::getElements();
-			echo json_encode((object) (array('status' => true, 'default' => Text::_('COM_EMUNDUS_PLEASE_SELECT'), 'defaulttrash' => Text::_('REMOVE_SEARCH_ELEMENT'), 'options' => $elements)));
-			exit;
+		$result = [
+			'status' => false,
+			'default' => Text::_('COM_EMUNDUS_PLEASE_SELECT'),
+			'defaulttrash' => Text::_('REMOVE_SEARCH_ELEMENT'),
+			'options' => []
+		];
+
+		if(!$this->_user->guest)
+		{
+			$h_files = new EmundusHelperFiles;
+
+			try
+			{
+				$result['options'] = $h_files->getElements();
+				$result['status']  = true;
+
+			}
+			catch (Exception $e)
+			{
+				Log::add(Text::_('COM_EMUNDUS_ERROR') . ' : ' . $e->getMessage(), Log::ERROR, 'emundus');
+			}
 		}
-		catch (Exception $e) {
-			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
-		}
+
+		echo json_encode((object) $result);
+		exit;
 	}
 
 	/**
@@ -1153,19 +1170,19 @@ class EmundusControllerFiles extends BaseController
 	 */
 	public function getfnuminfos() {
 		$response = ['status' => false, 'fnumInfos' => '', 'code' => 403, 'msg' => Text::_('ACCESS_DENIED')];
-		$user_id = JFactory::getUser()->id;
+		$user_id = $this->_user->id;
 
 		if (!empty($user_id)) {
-			$jinput = JFactory::getApplication()->input;
-			$fnum = $jinput->getString('fnum', '');
+			$fnum = $this->input->getString('fnum', '');
 
 			if (!empty($fnum) && EmundusHelperAccess::isUserAllowedToAccessFnum($user_id, $fnum)) {
 				$m_files = new EmundusModelFiles();
 				$response['fnumInfos'] = $m_files->getFnumInfos($fnum);
 				$response['code'] = 200;
+
 				if (!empty($response['fnumInfos'])) {
 					$response['status'] = true;
-					JFactory::getSession()->set('application_fnum', $fnum);
+					$this->app->getSession()->set('application_fnum', $fnum);
 				}
 			}
 		}

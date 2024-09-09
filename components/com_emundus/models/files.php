@@ -29,6 +29,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Mail\MailerFactoryInterface;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Database\ParameterType;
 
 /**
  * Class EmundusModelFiles
@@ -5854,5 +5855,36 @@ class EmundusModelFiles extends JModelLegacy
 		}
 
 		return $updated;
+	}
+
+	public function deleteFilter($filter_id,$user_id = 0)
+	{
+		$deleted   = false;
+
+		try
+		{
+			if(empty($user_id)) {
+				$user_id = Factory::getApplication()->getIdentity()->id;
+			}
+
+			if (!empty($filter_id) && !empty($this->_user->id)) {
+				$query = $this->_db->getQuery(true);
+				$query->delete('#__emundus_filters')
+					->bind(':filterId', $filter_id, ParameterType::INTEGER)
+					->bind(':userId', $user_id, ParameterType::INTEGER)
+					->where('id = :filterId')
+					->where('user = :userId');
+				$this->_db->setQuery($query);
+				$result  = $this->_db->execute();
+
+				$deleted = $result == 1;
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error deleting filter: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+		}
+
+		return $deleted;
 	}
 }

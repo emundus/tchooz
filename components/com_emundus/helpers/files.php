@@ -649,11 +649,11 @@ class EmundusHelperFiles
 		$m_profile  = new EmundusModelProfile;
 		$m_campaign = new EmundusModelCampaign;
 
-		$db = JFactory::getDBO();
+		$db = Factory::getContainer()->get('DatabaseDriver');
 
 		if (empty($code))
 		{
-			$params    = JFactory::getSession()->get('filt_params');
+			$params    = Factory::getApplication()->getSession()->get('filt_params');
 			$programme = $params['programme'];
 			$campaigns = $params['campaign'];
 

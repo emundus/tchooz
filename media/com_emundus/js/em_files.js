@@ -5838,15 +5838,15 @@ $(document).ready(function() {
                 $(this).prop('checked', false);
                 $('.'+id).prop('checked', false);
             }
-
         }
     });
 
     $(document).on('click', '.em-list-evaluator-item .btn-danger', function() {
         $.ajaxQ.abortAll();
         var gr = false;
-        if ($(this).hasClass('group'))
+        if ($(this).hasClass('group')) {
             gr = true;
+        }
 
         var id = $(this).attr('id').split('-');
         $.ajax({
@@ -5861,7 +5861,7 @@ $(document).ready(function() {
             error: function (jqXHR) {
                 console.log(jqXHR.responseText);
             }
-        })
+        });
     });
 
     $(document).on('click', '#em-hide-filters', function() {
