@@ -437,8 +437,27 @@ class EmundusHelperEvents
 			}
 			else
 			{
+				$query->clear()
+					->select('id')
+					->from($db->quoteName($db_table_name))
+					->where($db->quoteName('fnum') . ' = ' . $fnum);
+				$db->setQuery($query);
+				$rowid = $db->loadResult();
+				if(!empty($rowid)) {
+					$form_url    = Route::_("index.php?option=com_fabrik&view=form&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&rowid=" . $rowid . "&r=" . $reload) . "&fnum=" . $fnum;
+					$mainframe->redirect($form_url);
+				}
+
 				$formModel->data[$db_table_name . '___fnum'] = $fnum;
 			}
+
+			// Get current status
+			$query->clear()
+				->select('status')
+				->from($db->quoteName('#__emundus_campaign_candidature'))
+				->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
+			$db->setQuery($query);
+			$current_status = $db->loadResult();
 
 			$current_phase = $m_campaign->getCurrentCampaignWorkflow($fnum);
 			if (!empty($current_phase) && !empty($current_phase->end_date))
@@ -472,7 +491,7 @@ class EmundusHelperEvents
 				$edit_status     = array_unique(array_merge(['0'], $status_for_send));
 			}
 
-			$is_app_sent = !in_array($user->status, $edit_status);
+			$is_app_sent = !in_array($current_status, $edit_status);
 			$can_edit    = EmundusHelperAccess::asAccessAction(1, 'u', $user->id, $fnum);
 			$can_read    = EmundusHelperAccess::asAccessAction(1, 'r', $user->id, $fnum);
 
