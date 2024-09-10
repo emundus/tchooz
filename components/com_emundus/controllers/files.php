@@ -4134,12 +4134,17 @@ class EmundusControllerFiles extends BaseController
 				}
 
 				$validFnums = [];
-				foreach ($fnums as $fnum)
+				if(!empty($action) && !empty($verb))
 				{
-					if (EmundusHelperAccess::asAccessAction($action, $verb, $this->_user->id, $fnum))
+					foreach ($fnums as $fnum)
 					{
-						$validFnums[] = $fnum;
+						if (EmundusHelperAccess::asAccessAction($action, $verb, $this->_user->id, $fnum))
+						{
+							$validFnums[] = $fnum;
+						}
 					}
+				} else {
+					$validFnums = $fnums;
 				}
 
 				$response['status'] = true;
