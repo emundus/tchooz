@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
 
+use enshrined\svgSanitize\Sanitizer;
 use Joomla\CMS\Component\Config\Controller\ApplicationController;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageHelper;
@@ -1359,6 +1360,27 @@ public function sendTestMail()
 			$target_file = $target_dir . basename($file['name']);
 
 			// Check if extension is allowed (images onyl)
+			$finfo = finfo_open(FILEINFO_MIME_TYPE);
+			$mtype = finfo_file($finfo, $file['tmp_name']);
+			finfo_close($finfo);
+
+			// If svg we have to sanitize it
+			if($mtype == 'image/svg+xml') {
+				$sanitizer = new Sanitizer();
+
+				$svg_file = file_get_contents($file['tmp_name']);
+				$cleaned_svg = $sanitizer->sanitize($svg_file);
+
+				file_put_contents($file['tmp_name'], $cleaned_svg);
+			}
+
+			// Remove exif data from jpeg files
+			if($mtype == 'image/jpeg') {
+				$img = imagecreatefromjpeg($file['tmp_name']);
+				imagejpeg($img, $file['tmp_name'], 100);
+				imagedestroy($img);
+			}
+
 			$allowed = ['jpg', 'jpeg', 'png', 'gif', 'svg'];
 			$ext = pathinfo($target_file, PATHINFO_EXTENSION);
 			if (in_array($ext, $allowed)) {
