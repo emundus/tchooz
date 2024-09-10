@@ -16,6 +16,7 @@ jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Controller\BaseController;
+use Joomla\CMS\Language\Text;
 
 class EmundusControllerSync extends BaseController
 {
@@ -230,101 +231,106 @@ class EmundusControllerSync extends BaseController
 
 	public function getsynctype(): string
 	{
-		$upload_id = $this->input->getInt('upload_id', null);
-		$tab       = array(
-			'status' => 1,
-			'msg'    => JText::_('SYNC_TYPE_FOUND'),
-		);
+		$response = array('status' => 0, 'msg' => Text::_('ACCESS_DENIED'));
 
-		if (!empty($upload_id)) {
-			$sync_type = $this->m_sync->getSyncType($upload_id);
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$response['msg']    = Text::_('MISSING_UPLOAD_ID');
+			$upload_id = $this->input->getInt('upload_id', null);
 
-			if (!empty($sync_type)) {
-				$tab['data'] = $sync_type;
-			}
-			else {
-				$tab['status'] = 0;
-				$tab['msg']    = JText::_('SYNC_TYPE_NOT_FOUND');
+			if (!empty($upload_id)) {
+				$response['msg']    = Text::_('SYNC_TYPE_NOT_FOUND');
+				$sync_type = $this->m_sync->getSyncType($upload_id);
+
+				if (!empty($sync_type)) {
+					$response['status'] = 1;
+					$response['data'] = $sync_type;
+					$response['msg'] = Text::_('SYNC_TYPE_FOUND');
+				}
 			}
 		}
-		else {
-			$tab['status'] = 0;
-			$tab['msg']    = JText::_('MISSING_UPLOAD_ID');
-		}
 
-		echo json_encode((object) $tab);
+		echo json_encode((object) $response);
 		exit;
 	}
 
 	public function getsynchronizestate()
 	{
-		$upload_id = $this->input->getInt('upload_id', null);
-		$tab       = array(
-			'status' => 0,
-			'msg'    => JText::_('SYNC_STATE_NOT_FOUND'),
-		);
+		$response = array('status' => 0, 'msg' => Text::_('ACCESS_DENIED'));
 
-		if (!empty($upload_id)) {
-			$sync_state = $this->m_sync->getUploadSyncState($upload_id);
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$response['msg'] = Text::_('SYNC_STATE_NOT_FOUND');
+			$upload_id = $this->input->getInt('upload_id', null);
 
-			$tab['status'] = 1;
-			$tab['msg']    = JText::_('SYNC_STATE_FOUND');
-			$tab['data']   = $sync_state;
+			if (!empty($upload_id)) {
+				$sync_state = $this->m_sync->getUploadSyncState($upload_id);
+
+				$response['status'] = 1;
+				$response['msg']    = Text::_('SYNC_STATE_FOUND');
+				$response['data']   = $sync_state;
+			}
 		}
 
-		echo json_encode((object) $tab);
+		echo json_encode((object) $response);
 		exit;
 	}
 
 	public function synchronizeattachments()
 	{
-		$updated    = array();
-		$upload_ids = $this->input->get('upload_ids', array(), 'array');
-		$upload_ids = json_decode($upload_ids[0]);
+		$response = ['status' => 0, 'msg' => Text::_('ACCESS_DENIED')];
 
-		if (!empty($upload_ids) && is_array($upload_ids)) {
-			$updated = $this->m_sync->synchronizeAttachments($upload_ids);
-			$tab     = array('status' => 1, 'msg' => JText::_('CONFIG_SAVED'), 'data' => $updated);
-		}
-		else {
-			$tab = array('status' => 0, 'msg' => JText::_('MISSING_UPLOAD_IDS'));
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$response['msg'] = Text::_('MISSING_UPLOAD_IDS');
+			$upload_ids = $this->input->get('upload_ids', array(), 'array');
+			$upload_ids = json_decode($upload_ids[0]);
+
+			if (!empty($upload_ids) && is_array($upload_ids)) {
+				$updated = $this->m_sync->synchronizeAttachments($upload_ids);
+				$response     = array('status' => 1, 'msg' => Text::_('CONFIG_SAVED'), 'data' => $updated);
+			}
 		}
 
-		echo json_encode((object) $tab);
+		echo json_encode((object) $response);
 		exit;
 	}
 
 	public function deleteattachments()
 	{
-		$upload_ids = $this->input->get('upload_ids', array(), 'array');
-		$upload_ids = json_decode($upload_ids[0]);
+		$response = array('status' => 0, 'msg' => Text::_('ACCESS_DENIED'));
 
-		if (!empty($upload_ids) && is_array($upload_ids)) {
-			$updated = $this->m_sync->deleteAttachments($upload_ids);
-			$tab     = array('status' => 1, 'msg' => JText::_('ATTACHMENTS_SYNC_DELETED'), 'data' => $updated);
-		}
-		else {
-			$tab = array('status' => 0, 'msg' => JText::_('MISSING_UPLOAD_IDS'));
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$response['msg'] = Text::_('MISSING_UPLOAD_IDS');
+
+			$upload_ids = $this->input->get('upload_ids', array(), 'array');
+			$upload_ids = json_decode($upload_ids[0]);
+
+			if (!empty($upload_ids) && is_array($upload_ids)) {
+				$updated = $this->m_sync->deleteAttachments($upload_ids);
+				$response = array('status' => 1, 'msg' => Text::_('ATTACHMENTS_SYNC_DELETED'), 'data' => $updated);
+			}
 		}
 
-		echo json_encode((object) $tab);
+		echo json_encode((object) $response);
 		exit;
 	}
 
 	public function checkattachmentsexists()
 	{
-		$upload_ids = $this->input->get('upload_ids', array(), 'array');
-		$upload_ids = json_decode($upload_ids[0]);
+		$response = array('status' => 0, 'msg' => Text::_('ACCESS_DENIED'));
 
-		if (!empty($upload_ids)) {
-			$attachments_exists = $this->m_sync->checkAttachmentsExists($upload_ids);
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$upload_ids = $this->input->get('upload_ids', array(), 'array');
+			$upload_ids = json_decode($upload_ids[0]);
 
-			$tab['status'] = 1;
-			$tab['msg']    = JText::_('ATTACHMENT_FOUND');
-			$tab['data']   = $attachments_exists;
+			if (!empty($upload_ids)) {
+				$attachments_exists = $this->m_sync->checkAttachmentsExists($upload_ids);
+
+				$response['status'] = 1;
+				$response['msg'] = Text::_('ATTACHMENT_FOUND');
+				$response['data'] = $attachments_exists;
+			}
 		}
 
-		echo json_encode((object) $tab);
+		echo json_encode((object) $response);
 		exit;
 	}
 
