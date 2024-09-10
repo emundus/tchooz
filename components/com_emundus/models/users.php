@@ -319,18 +319,27 @@ class EmundusModelUsers extends ListModel
 		}
 		else {
 			$and = true;
-			if (!empty($profile) && is_numeric($profile)) {
-				$query .= ' AND e.profile = ' . $profile;
-				$and   = true;
+
+			if (!empty($profile)) {
+				if (is_numeric($profile)) {
+					$query.= ' AND e.profile = '.$profile;
+				} else if ($profile === 'applicant') {
+					$query.= ' AND espr.published = 1';
+				}
 			}
 			if (!empty($oprofiles)) {
-				$query .= ' AND eup.profile_id IN ("' . implode('","', $oprofiles) . '")';
+				if (in_array('applicant', $oprofiles)) {
+					$query.= 'AND (eup.profile_id IN ("'.implode('","', $oprofiles).'") OR espr.published = 1)';
+
+				} else {
+					$query.= ' AND eup.profile_id IN ("'.implode('","', $oprofiles).'")';
+				}
+
 				$and   = true;
 			}
 			if (!empty($final_grade)) {
 				if ($and) $query .= ' AND ';
 				else {
-					$and   = true;
 					$query .= 'WHERE ';
 				}
 
