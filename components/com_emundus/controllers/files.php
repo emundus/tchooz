@@ -1539,7 +1539,7 @@ class EmundusControllerFiles extends BaseController
 	{
 		$current_user = JFactory::getUser();
 
-		if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
+		if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
 			die(Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 		}
 
@@ -2404,6 +2404,7 @@ class EmundusControllerFiles extends BaseController
 		exit();
 	}
 
+	//TODO: Comprendre la méthode
 	public function export_letter()
 	{
 		/// the main idea of this function is to use Stream of Buffer to pass data from CSV to Excel
