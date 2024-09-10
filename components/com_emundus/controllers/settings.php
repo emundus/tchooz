@@ -976,14 +976,6 @@ class EmundusControllersettings extends BaseController
 		exit;
 	}
 
-	public function updateArticleNeedToModify() {
-		$article_alias = $this->input->getString('article_alias');
-		$state = $this->m_settings->updateArticleNeedToBeModify($article_alias);
-		$response = array('status' => $state, 'msg' => 'SUCCESS');
-		echo json_encode($response);
-		exit;
-	}
-
 	public function updateemundusparam()
 	{
 		$user     = Factory::getApplication()->getIdentity();
@@ -1052,35 +1044,39 @@ class EmundusControllersettings extends BaseController
 
 public function sendTestMail()
 {
-	$input = file_get_contents('php://input');
+	if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
+		$input = file_get_contents('php://input');
 
-	// Decode the JSON payload
-	$data = json_decode($input, true);
+		// Decode the JSON payload
+		$data = json_decode($input, true);
 
-	$customInformations = $data;
+		$customInformations = $data;
 
-	// Get the model
-	$model = $this->getModel('settings', 'EmundusModel');
+		// Get the model
+		$model = $this->getModel('settings', 'EmundusModel');
 
-	// Call the sendTestMail function from the model
-	$result = $model->sendTestMailSettings($customInformations);
-	if ($result === true) {
-		$values['mailfrom'] = 'empty/vide';
-		for ($i = 0; $i < count($customInformations); $i++){
-			if($customInformations[$i]["param"] == 'mailfrom'){
-				$values['mailfrom'] = $customInformations[$i]["value"];
+		// Call the sendTestMail function from the model
+		$result = $model->sendTestMailSettings($customInformations);
+		if ($result === true) {
+			$values['mailfrom'] = 'empty/vide';
+			for ($i = 0; $i < count($customInformations); $i++){
+				if($customInformations[$i]["param"] == 'mailfrom'){
+					$values['mailfrom'] = $customInformations[$i]["value"];
+				}
 			}
+			$ValueOfReturn = ['COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_MAIL_SUCCESS','COM_CONFIG_SENDMAIL_SUCCESS',$values['mailfrom'], 'success',''];
+		}else if ($result === null)
+		{
+			$ValueOfReturn = ['a verifier','COM_CONFIG_SENDMAIL_SUCCESS_FALLBACK','warning'];
+		}else{
+			$ValueOfReturn = $result;
 		}
-		$ValueOfReturn = ['COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_MAIL_SUCCESS','COM_CONFIG_SENDMAIL_SUCCESS',$values['mailfrom'], 'success',''];
-	}else if ($result === null)
-	{
-		$ValueOfReturn = ['a verifier','COM_CONFIG_SENDMAIL_SUCCESS_FALLBACK','warning'];
-	}else{
-		$ValueOfReturn = $result;
+		echo new JsonResponse($ValueOfReturn);
+		$this->app->close();
 	}
-    echo new JsonResponse($ValueOfReturn);
 
-    $this->app->close();
+	echo json_encode(array('status' => false, 'msg' => JText::_('ACCESS_DENIED')));
+	exit;
 }
 
 	/// get all users
