@@ -507,7 +507,9 @@ function openFiles(fnum, page = 0, vue = false) {
                 document.getElementsByTagName("head")[0].appendChild(tag);
 
                 $('#em-collaborators .panel-body').append(result);
-                document.getElementById('em-collaborators').style.display = 'block';
+                if(document.querySelector('#collaborators_block').innerHtml) {
+                    document.getElementById('em-collaborators').style.display = 'block';
+                }
             } else {
                 document.getElementById('em-collaborators').style.display = 'none';
             }
@@ -4711,7 +4713,7 @@ $(document).ready(function() {
         }
     });
 
-    $(document).on('click', '.pagination.pagination-sm li a', function(e) {
+    $(document).on('click', 'body:not(".view-users") .pagination.pagination-sm li a', function(e) {
         $.ajaxQ.abortAll();
         if (e.handle !== true) {
             e.handle = true;
