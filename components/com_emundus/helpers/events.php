@@ -498,7 +498,7 @@ class EmundusHelperEvents
 			$fnumInfos = $user->fnums[$fnum];
 			if ($fnumInfos->applicant_id == $user->id)
 			{
-				$can_edit = !$is_app_sent;
+				$can_edit = !$is_app_sent && !$is_dead_line_passed || (!$is_app_sent && $is_dead_line_passed && $can_edit_after_deadline);
 				$can_read = true;
 			}
 
@@ -653,7 +653,7 @@ class EmundusHelperEvents
 				{
 					if (($is_dead_line_passed && $can_edit_after_deadline == 0) || $isLimitObtained === true)
 					{
-						if ($reload_url)
+						if ($reload_url && $view !== 'details')
 						{
 							if ($isLimitObtained === true)
 							{
