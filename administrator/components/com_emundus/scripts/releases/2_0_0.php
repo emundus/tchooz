@@ -1638,7 +1638,7 @@ if(value == 1) {
 			$this->db->setQuery($query);
 			$rgpd_ids = $this->db->loadColumn();
 
-			EmundusHelperUpdate::createModule('[GUEST] Back button - RGPD','content-top-a','mod_emundus_back','{"layout":"_:default","moduleclass_sfx":"","module_tag":"div","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0", "back_type":"previous", "button_text":"GO_BACK"}',1, $rgpd_ids);
+			EmundusHelperUpdate::createModule('[GUEST] Back button - RGPD','content-top-a','mod_emundus_back','{"layout":"_:default","moduleclass_sfx":"","module_tag":"div","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0", "back_type":"homepage", "button_text":""}',1, $rgpd_ids);
 
 			$result['status'] = true;
 		}
