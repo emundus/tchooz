@@ -112,8 +112,8 @@ class EmundusViewUsers extends HtmlView
 		}
 
 		$this->users      = $users;
-		$pagination       = $m_users->getPagination();
-		$this->pagination = $pagination;
+		$this->pagination       = $m_users->getPagination();
+		$this->pageNavigation = $m_users->getPageNavigation();
 
 		$lists['order_dir'] = $app->getSession()->get('filter_order_Dir');
 		$lists['order']     = $app->getSession()->get('filter_order');

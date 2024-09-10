@@ -263,28 +263,30 @@ $(document).ready(function () {
 		}
 	});
 
-	$(document).on('click', '.pagination.pagination-sm li a', function (e) {
+	$(document).on('click', 'body.view-users .pagination.pagination-sm li a', function (e) {
 		if (e.handle !== true) {
 			e.handle = true;
 			var id = $(this).attr('id');
 
-			let url = window.location.origin+'/index.php?option=com_emundus&controller=users&task=setlimitstart';
-			let formData = new FormData();
-			formData.append('limitstart', id);
+			if(id) {
+				let url = window.location.origin + '/index.php?option=com_emundus&controller=users&task=setlimitstart';
+				let formData = new FormData();
+				formData.append('limitstart', id);
 
-			fetch(url, {
-				method: 'POST',
-				body: formData,
-			}).then((response) => {
-				if (response.ok) {
-					return response.json();
-				}
-				throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
-			}).then((result) => {
-				if (result.status) {
-					reloadData();
-				}
-			})
+				fetch(url, {
+					method: 'POST',
+					body: formData,
+				}).then((response) => {
+					if (response.ok) {
+						return response.json();
+					}
+					throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+				}).then((result) => {
+					if (result.status) {
+						reloadData();
+					}
+				})
+			}
 		}
 	});
 	$(document).on('click', '#em-last-open .list-group-item', function (e) {

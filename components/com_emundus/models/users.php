@@ -890,7 +890,13 @@ class EmundusModelUsers extends ListModel
 
 		$pageNavigation = "<div class='em-container-pagination-selectPage'>";
 		$pageNavigation .= "<ul class='pagination pagination-sm'>";
-		$pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent - 1) . "'><span class='material-icons'>navigate_before</span></a></li>";
+		if($this->getPagination()->pagesCurrent == $this->getPagination()->pagesStart) {
+			$pageNavigation .= "<li><a class='disabled tw-cursor-pointer'><span class='material-symbols-outlined'>navigate_before</span></a></li>";
+		} else
+		{
+			$pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent - 1) . "'><span class='material-symbols-outlined'>navigate_before</span></a></li>";
+		}
+
 		if ($this->getPagination()->pagesTotal > 15) {
 			for ($i = 1; $i <= 5; $i++) {
 				$pageNavigation .= "<li ";
@@ -938,7 +944,12 @@ class EmundusModelUsers extends ListModel
 				$pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
 			}
 		}
-		$pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent + 1) . "'><span class='material-icons'>navigate_next</span></a></li></ul></div>";
+
+		if($this->getPagination()->pagesCurrent == $this->getPagination()->pagesStop) {
+			$pageNavigation .= "<li><a class='disabled tw-cursor-pointer'><span class='material-symbols-outlined'>navigate_next</span></a></li></ul></div>";
+		} else {
+			$pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent + 1) . "'><span class='material-symbols-outlined'>navigate_next</span></a></li></ul></div>";
+		}
 
 		return $pageNavigation;
 	}
