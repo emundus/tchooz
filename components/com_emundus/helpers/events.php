@@ -408,7 +408,7 @@ class EmundusHelperEvents
 
 			if (empty($fnum))
 			{
-				$mainframe->enqueueMessage('Vous n\'avez pas les droits');
+				$mainframe->enqueueMessage(Text::_('ACCESS_DENIED'), 'error');
 				$mainframe->redirect('index.php');
 			}
 
@@ -569,18 +569,21 @@ class EmundusHelperEvents
 					{
 						if (!$can_edit && $is_app_sent)
 						{
+							$reload_url = false;
 							$mainframe->enqueueMessage(Text::_('COM_EMUNDUS_EVENTS_APPLICATION_READ_ONLY'), 'warning');
 						}
 						else
 						{
 							if ($fnumDetail['published'] == -1)
 							{
+								$reload_url = false;
 								$mainframe->enqueueMessage(Text::_('COM_EMUNDUS_EVENTS_APPLICATION_DELETED_FILE'), 'warning');
 							}
 							else
 							{
 								if ($is_dead_line_passed)
 								{
+									$reload_url = false;
 									$mainframe->enqueueMessage(Text::_('COM_EMUNDUS_EVENTS_APPLICATION_PERIOD_PASSED'), 'warning');
 								}
 								elseif ($can_edit)
@@ -665,7 +668,6 @@ class EmundusHelperEvents
 							}
 							$mainframe->redirect($details_url);
 						}
-
 					}
 					else
 					{
