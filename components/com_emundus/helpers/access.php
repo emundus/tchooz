@@ -601,12 +601,13 @@ class EmundusHelperAccess
 	 * @param $ccid int campaign candidature id
 	 * @param $step_data object step data, use getStepData from EmundusModelWorkflow
 	 * @param $user_id int if not given, current user will be taken
-	 * @param $profile_id int if not given, it will be taken from session
+	 * @param $profile_ids array if not given, only current session profile will be taken
 	 *
 	 * @return bool[] (can_see, can_edit)
 	 * @throws Exception
 	 */
-	public static function getUserEvaluationStepAccess($ccid, $step_data, $user_id, $profile_id = null) {
+	public static function getUserEvaluationStepAccess($ccid, $step_data, $user_id, $profile_ids = null): array
+	{
 		$can_see = false;
 		$can_edit = false;
 
@@ -641,12 +642,12 @@ class EmundusHelperAccess
 
 					if (!empty($programme_id) && in_array($programme_id, $step_data->programs)) {
 						// get profiles who can access to this step and verify if user is in one of these profiles
-						if ($profile_id === null) {
+						if ($profile_ids === null) {
 							$emundus_user_session = $app->getSession()->get('emundusUser');
-							$profile_id = $emundus_user_session->profile;
+							$profile_ids = [$emundus_user_session->profile];
 						}
 
-						if (in_array($profile_id, $step_data->roles)) {
+						if (!empty(array_intersect($profile_ids, $step_data->roles))) {
 							$can_see = true;
 							if (EmundusHelperAccess::asAccessAction(5, 'c', $user_id, $fnum)) {
 								// verify step is not closed

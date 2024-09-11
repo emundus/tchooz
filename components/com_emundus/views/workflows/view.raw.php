@@ -70,11 +70,7 @@ class EmundusViewWorkflows extends JViewLegacy
 					$db->setQuery($query);
 					$this->step->db_table_name = $db->loadResult();
 
-					$access = EmundusHelperAccess::getUserEvaluationStepAccess($this->ccid, $this->step, $this->user->id);
-					if (!$access['can_see']) {
-						$app->enqueueMessage(Text::_('ACCESS_DENIED'), 'error');
-						$app->redirect('/');
-					}
+					$this->access = EmundusHelperAccess::getUserEvaluationStepAccess($this->ccid, $this->step, $this->user->id);
 				} else {
 					$this->step = null;
 				}

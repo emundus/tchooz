@@ -9,7 +9,7 @@ use Joomla\CMS\Language\Text;
 
 <div class="panel panel-default widget em-container-evaluator-step">
 	<?php
-	if (!empty($this->step) && $this->step->type === 'evaluator' && !empty($this->step->form_id))
+	if (!empty($this->step) && $this->step->type === 'evaluator' && !empty($this->step->form_id) && $this->access['can_see'])
 	{
 		?>
 		<?php if (1) : ?>
@@ -53,6 +53,11 @@ use Joomla\CMS\Language\Text;
         </div>
 		<?php
 	}
+    else if (!$this->access['can_see']) {
+        ?>
+        <p><?= Text::_('ACCESS_DENIED') ?></p>
+        <?php
+    }
 	else
 	{
 		?>
