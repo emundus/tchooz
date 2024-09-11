@@ -839,7 +839,7 @@ circle.circle {
     background: var(--em-profile-color);
     mask-repeat: no-repeat;
     -webkit-mask-repeat: no-repeat;
-    mask-position: 102px -29px;
+    mask-position: 102px -32px;
     -webkit-mask-position: 102px -32px;
     mask-size: contain;
     -webkit-mask-size: contain;

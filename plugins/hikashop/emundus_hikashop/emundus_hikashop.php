@@ -254,7 +254,7 @@ class PlgHikashopEmundus_hikashop extends CMSPlugin {
 
 			if(!empty($fnum)) {
 				$m_files->updateState($fnum, $status_after_payment[$key]);
-				Log::add('Application file status updated to -> ' . $status_after_payment[$key], Log::INFO, 'com_emundus');
+				Log::add('Application file status updated to -> ' . $status_after_payment[$key]. ' after order confirmed', Log::INFO, 'com_emundus');
 			}
 
             $query = $db->getQuery(true);
