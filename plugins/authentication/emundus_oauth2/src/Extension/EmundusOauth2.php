@@ -269,9 +269,24 @@ class EmundusOauth2 extends CMSPlugin implements SubscriberInterface
 							if(!empty($this->mapping)) {
 								$openid_groups = !empty($body->attributes) && isset($body->attributes->{$attribute_mapping}) ? $body->attributes->{$attribute_mapping} : $body->{$attribute_mapping};
 
+								// Get specific access defined for this client_id only
+								$openid_resources_access = new \stdClass();
+								if(!empty($body->attributes) && isset($body->attributes->resource_access)) {
+									$openid_resources_access = $body->attributes->resource_access;
+								} elseif(!empty($body->resource_access)) {
+									$openid_resources_access = $body->resource_access;
+								}
+
+								if(!empty($openid_resources_access->{$this->params->get('client_id')}) && !empty($openid_resources_access->{$this->params->get('client_id')}->roles)) {
+									$openid_resources_access = $openid_resources_access->{$this->params->get('client_id')}->roles;
+								} else {
+									$openid_resources_access = [];
+								}
+								//
+
 								foreach ($this->mapping as $map) {
 									$response->openid_profiles[] = $map->emundus_profile;
-									if (in_array($map->attribute_value, $openid_groups)) {
+									if (in_array($map->attribute_value, $openid_groups) || in_array($map->attribute_value, $openid_resources_access)) {
 										$response->emundus_profiles[] = $map->emundus_profile;
 									}
 								}
