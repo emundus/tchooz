@@ -170,7 +170,7 @@
               <strong class="b em-toggle-track"></strong>
             </div>
             <span for="pinned" class="tw-ml-2 tw-flex tw-items-center">{{ translate('COM_EMUNDUS_CAMPAIGNS_PIN') }}
-              <span class="material-symbols-outlined tw-ml-1 tw-text-base tw-cursor-pointer" @click="displayPinnedCampaignTip">help_outline</span>
+              <span class="material-symbols-outlined tw-ml-1 tw-text-base tw-cursor-pointer tw-text-neutral-600" @click="displayPinnedCampaignTip">help_outline</span>
             </span>
           </div>
         </div>
@@ -185,7 +185,7 @@
           <div id="campResume" class="tw-mb-4">
             <div class="tw-flex tw-items-center">
               <label class="tw-font-medium tw-mb-0">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME') }}</label>
-              <span class="material-symbols-outlined tw-ml-1 tw-text-base tw-cursor-pointer" @click="displayCampaignResumeTip">help_outline</span>
+              <span class="material-symbols-outlined tw-ml-1 tw-text-base tw-cursor-pointer tw-text-neutral-600" @click="displayCampaignResumeTip">help_outline</span>
             </div>
             <tip-tap-editor
                 v-model="form.short_description"
@@ -202,7 +202,7 @@
           <div class="tw-mb-4">
             <div class="tw-flex tw-items-center">
               <label class="tw-font-medium tw-mb-0">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION') }}</label>
-              <span class="material-symbols-outlined tw-ml-1 tw-text-base tw-cursor-pointer" @click="displayCampaignDescriptionTip">help_outline</span>
+              <span class="material-symbols-outlined tw-ml-1 tw-text-base tw-cursor-pointer tw-text-neutral-600" @click="displayCampaignDescriptionTip">help_outline</span>
             </div>
             <div id="campDescription" class="tw-mb-4" v-if="typeof form.description != 'undefined'">
               <tip-tap-editor

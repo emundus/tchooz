@@ -410,7 +410,7 @@ class EmundusHelperEvents
 
 			if (empty($fnum))
 			{
-				$mainframe->enqueueMessage('Vous n\'avez pas les droits');
+				$mainframe->enqueueMessage(Text::_('ACCESS_DENIED'), 'error');
 				$mainframe->redirect('index.php');
 			}
 
@@ -439,8 +439,27 @@ class EmundusHelperEvents
 			}
 			else
 			{
+				$query->clear()
+					->select('id')
+					->from($db->quoteName($db_table_name))
+					->where($db->quoteName('fnum') . ' = ' . $fnum);
+				$db->setQuery($query);
+				$rowid = $db->loadResult();
+				if(!empty($rowid)) {
+					$form_url    = Route::_("index.php?option=com_fabrik&view=form&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&rowid=" . $rowid . "&r=" . $reload) . "&fnum=" . $fnum;
+					$mainframe->redirect($form_url);
+				}
+
 				$formModel->data[$db_table_name . '___fnum'] = $fnum;
 			}
+
+			// Get current status
+			$query->clear()
+				->select('status')
+				->from($db->quoteName('#__emundus_campaign_candidature'))
+				->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
+			$db->setQuery($query);
+			$current_status = $db->loadResult();
 
 			$current_phase = $m_workflow->getCurrentWorkflowStepFromFile($fnum);
 			if (!empty($current_phase) && !empty($current_phase->end_date))
@@ -474,14 +493,14 @@ class EmundusHelperEvents
 				$edit_status     = array_unique(array_merge(['0'], $status_for_send));
 			}
 
-			$is_app_sent = !in_array($user->status, $edit_status);
+			$is_app_sent = !in_array($current_status, $edit_status);
 			$can_edit    = EmundusHelperAccess::asAccessAction(1, 'u', $user->id, $fnum);
 			$can_read    = EmundusHelperAccess::asAccessAction(1, 'r', $user->id, $fnum);
 
 			$fnumInfos = $user->fnums[$fnum];
 			if ($fnumInfos->applicant_id == $user->id)
 			{
-				$can_edit = !$is_app_sent;
+				$can_edit = !$is_app_sent && !$is_dead_line_passed || (!$is_app_sent && $is_dead_line_passed && $can_edit_after_deadline);
 				$can_read = true;
 			}
 
@@ -552,18 +571,21 @@ class EmundusHelperEvents
 					{
 						if (!$can_edit && $is_app_sent)
 						{
+							$reload_url = false;
 							$mainframe->enqueueMessage(Text::_('COM_EMUNDUS_EVENTS_APPLICATION_READ_ONLY'), 'warning');
 						}
 						else
 						{
 							if ($fnumDetail['published'] == -1)
 							{
+								$reload_url = false;
 								$mainframe->enqueueMessage(Text::_('COM_EMUNDUS_EVENTS_APPLICATION_DELETED_FILE'), 'warning');
 							}
 							else
 							{
 								if ($is_dead_line_passed)
 								{
+									$reload_url = false;
 									$mainframe->enqueueMessage(Text::_('COM_EMUNDUS_EVENTS_APPLICATION_PERIOD_PASSED'), 'warning');
 								}
 								elseif ($can_edit)
@@ -636,7 +658,7 @@ class EmundusHelperEvents
 				{
 					if (($is_dead_line_passed && $can_edit_after_deadline == 0) || $isLimitObtained === true)
 					{
-						if ($reload_url)
+						if ($reload_url && $view !== 'details')
 						{
 							if ($isLimitObtained === true)
 							{
@@ -648,7 +670,6 @@ class EmundusHelperEvents
 							}
 							$mainframe->redirect($details_url);
 						}
-
 					}
 					else
 					{

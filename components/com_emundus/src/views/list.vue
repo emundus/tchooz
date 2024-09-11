@@ -1,5 +1,5 @@
 <template>
-  <div id="onboarding_list" class="tw-w-full">
+  <div id="onboarding_list" class="tw-w-full" :class="{'alert-banner-displayed': alertBannerDisplayed}">
     <skeleton v-if="loading.lists" height="40px" width="100%" class="tw-mb-4 tw-mt-4 tw-rounded-lg"></skeleton>
     <div v-else class="head tw-flex tw-items-center tw-justify-between">
       <h2>{{ translate(currentList.title) }}</h2>
@@ -245,10 +245,20 @@ export default {
       viewType: 'table',
       viewTypeOptions: [{value: 'table', icon: 'dehaze'}, {value: 'blocs', icon: 'grid_view'}],
       searches: {},
-      filters: {}
+      filters: {},
+      alertBannerDisplayed: false
     }
   },
   created() {
+    const alertMessageContainer = document.querySelector('.alerte-message-container');
+    if (alertMessageContainer) {
+      this.alertBannerDisplayed = true;
+
+      alertMessageContainer.querySelector('#close-preprod-alerte-container').addEventListener('click', () => {
+        this.alertBannerDisplayed = false;
+      });
+    }
+
     this.loading.lists = true;
     this.loading.tabs = true;
 
@@ -775,7 +785,7 @@ export default {
   justify-content: space-between;
   width: -webkit-fill-available;
   width: -moz-available;
-  width: fill-available;
+  width: stretch;
   background: var(--em-coordinator-bg);
   top: 72px;
   box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
@@ -786,6 +796,10 @@ export default {
 
 #onboarding_list .list {
   margin-top: 77px;
+}
+
+#onboarding_list.alert-banner-displayed .head{
+  top: 114px;
 }
 
 #list-nav {

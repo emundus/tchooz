@@ -26,34 +26,6 @@ export default {
       };
     }
   },
-  async getAttachmentsByUser(user) {
-    user = parseInt(user);
-
-    if (isNaN(user)) {
-      return {
-        status: false,
-        msg: 'user is not a number'
-      };
-    }
-
-    return fetch('index.php?option=com_emundus&controller=application&task=getuserattachments&user_id=' + user).then(response => {
-      if (response.ok) {
-        return response.json();
-      } else {
-        return {
-          status: false,
-          msg: 'response not ok'
-        };
-      }
-    }).then(data => {
-      return data;
-    }).catch(error => {
-      return {
-        status: false,
-        msg: error.message
-      };
-    });
-  },
 
   async getAttachmentsByFnum(fnum) {
     return fetch('index.php?option=com_emundus&controller=application&task=getattachmentsbyfnum&fnum=' + fnum).then(response => {

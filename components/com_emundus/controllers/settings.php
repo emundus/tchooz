@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
 
+use enshrined\svgSanitize\Sanitizer;
 use Joomla\CMS\Component\Config\Controller\ApplicationController;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageHelper;
@@ -975,14 +976,6 @@ class EmundusControllersettings extends BaseController
 		exit;
 	}
 
-	public function updateArticleNeedToModify() {
-		$article_alias = $this->input->getString('article_alias');
-		$state = $this->m_settings->updateArticleNeedToBeModify($article_alias);
-		$response = array('status' => $state, 'msg' => 'SUCCESS');
-		echo json_encode($response);
-		exit;
-	}
-
 	public function updateemundusparam()
 	{
 		$user     = Factory::getApplication()->getIdentity();
@@ -1051,35 +1044,39 @@ class EmundusControllersettings extends BaseController
 
 public function sendTestMail()
 {
-	$input = file_get_contents('php://input');
+	if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
+		$input = file_get_contents('php://input');
 
-	// Decode the JSON payload
-	$data = json_decode($input, true);
+		// Decode the JSON payload
+		$data = json_decode($input, true);
 
-	$customInformations = $data;
+		$customInformations = $data;
 
-	// Get the model
-	$model = $this->getModel('settings', 'EmundusModel');
+		// Get the model
+		$model = $this->getModel('settings', 'EmundusModel');
 
-	// Call the sendTestMail function from the model
-	$result = $model->sendTestMailSettings($customInformations);
-	if ($result === true) {
-		$values['mailfrom'] = 'empty/vide';
-		for ($i = 0; $i < count($customInformations); $i++){
-			if($customInformations[$i]["param"] == 'mailfrom'){
-				$values['mailfrom'] = $customInformations[$i]["value"];
+		// Call the sendTestMail function from the model
+		$result = $model->sendTestMailSettings($customInformations);
+		if ($result === true) {
+			$values['mailfrom'] = 'empty/vide';
+			for ($i = 0; $i < count($customInformations); $i++){
+				if($customInformations[$i]["param"] == 'mailfrom'){
+					$values['mailfrom'] = $customInformations[$i]["value"];
+				}
 			}
+			$ValueOfReturn = ['COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_MAIL_SUCCESS','COM_CONFIG_SENDMAIL_SUCCESS',$values['mailfrom'], 'success',''];
+		}else if ($result === null)
+		{
+			$ValueOfReturn = ['a verifier','COM_CONFIG_SENDMAIL_SUCCESS_FALLBACK','warning'];
+		}else{
+			$ValueOfReturn = $result;
 		}
-		$ValueOfReturn = ['COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_MAIL_SUCCESS','COM_CONFIG_SENDMAIL_SUCCESS',$values['mailfrom'], 'success',''];
-	}else if ($result === null)
-	{
-		$ValueOfReturn = ['a verifier','COM_CONFIG_SENDMAIL_SUCCESS_FALLBACK','warning'];
-	}else{
-		$ValueOfReturn = $result;
+		echo new JsonResponse($ValueOfReturn);
+		$this->app->close();
 	}
-    echo new JsonResponse($ValueOfReturn);
 
-    $this->app->close();
+	echo json_encode(array('status' => false, 'msg' => JText::_('ACCESS_DENIED')));
+	exit;
 }
 
 	/// get all users
@@ -1359,6 +1356,27 @@ public function sendTestMail()
 			$target_file = $target_dir . basename($file['name']);
 
 			// Check if extension is allowed (images onyl)
+			$finfo = finfo_open(FILEINFO_MIME_TYPE);
+			$mtype = finfo_file($finfo, $file['tmp_name']);
+			finfo_close($finfo);
+
+			// If svg we have to sanitize it
+			if($mtype == 'image/svg+xml') {
+				$sanitizer = new Sanitizer();
+
+				$svg_file = file_get_contents($file['tmp_name']);
+				$cleaned_svg = $sanitizer->sanitize($svg_file);
+
+				file_put_contents($file['tmp_name'], $cleaned_svg);
+			}
+
+			// Remove exif data from jpeg files
+			if($mtype == 'image/jpeg') {
+				$img = imagecreatefromjpeg($file['tmp_name']);
+				imagejpeg($img, $file['tmp_name'], 100);
+				imagedestroy($img);
+			}
+
 			$allowed = ['jpg', 'jpeg', 'png', 'gif', 'svg'];
 			$ext = pathinfo($target_file, PATHINFO_EXTENSION);
 			if (in_array($ext, $allowed)) {

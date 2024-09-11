@@ -161,50 +161,40 @@ class EmundusControllerForm extends BaseController
 
 	public function getallformpublished()
 	{
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'data' => []];
 
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
-		}
-		else {
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$forms = $this->m_form->getAllFormsPublished();
 
-			if (count($forms) > 0) {
-				$tab = array('status' => 1, 'msg' => Text::_('FORM_RETRIEVED'), 'data' => $forms);
+			if (!empty($forms)) {
+				$response = array('status' => 1, 'msg' => Text::_('FORM_RETRIEVED'), 'data' => $forms);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_RETRIEVE_FORM'), 'data' => $forms);
+				$response['msg'] = Text::_('ERROR_CANNOT_RETRIEVE_FORM');
 			}
 		}
-		echo json_encode((object) $tab);
+
+		echo json_encode((object) $response);
 		exit;
 	}
 
 
 	public function deleteform()
 	{
+		$response = ['status' => 0, 'msg' => Text::_('ACCESS_DENIED')];
 
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
-		}
-		else {
-
-
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$data = $this->input->getInt('id');
-
 			$forms = $this->m_form->deleteForm($data);
 
 			if ($forms) {
-				$tab = array('status' => 1, 'msg' => Text::_('FORM_DELETED'), 'data' => $forms);
+				$response = array('status' => 1, 'msg' => Text::_('FORM_DELETED'), 'data' => $forms);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_DELETE_FORM'), 'data' => $forms);
+				$response = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_DELETE_FORM'), 'data' => $forms);
 			}
 		}
-		echo json_encode((object) $tab);
+		echo json_encode((object) $response);
 		exit;
 	}
 
@@ -234,25 +224,20 @@ class EmundusControllerForm extends BaseController
 
 	public function publishform()
 	{
+		$response = ['status' => 0, 'msg' => Text::_('ACCESS_DENIED'), 'data' => []];
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
-		}
-		else {
-
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$id = $this->input->getInt('id');
-
 			$forms = $this->m_form->publishForm([$id]);
 
 			if ($forms) {
-				$tab = array('status' => 1, 'msg' => Text::_('FORM_PUBLISHED'), 'data' => $forms);
+				$response = array('status' => 1, 'msg' => Text::_('FORM_PUBLISHED'), 'data' => $forms);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_PUBLISH_FORM'), 'data' => $forms);
+				$response['msg'] = Text::_('ERROR_CANNOT_PUBLISH_FORM');
 			}
 		}
-		echo json_encode((object) $tab);
+		echo json_encode((object) $response);
 		exit;
 	}
 
@@ -956,17 +941,25 @@ class EmundusControllerForm extends BaseController
 
 	public function getdatabasejoinoptions()
 	{
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
 
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+			$table_name   = $this->input->getString('table_name');
+			$column_name  = $this->input->getString('column_name');
+			$value        = $this->input->getString('value');
+			$concat_value = $this->input->getString('concat_value');
+			$where_clause = $this->input->getString('where_clause');
 
-		$table_name   = $this->input->getString('table_name');
-		$column_name  = $this->input->getString('column_name');
-		$value        = $this->input->getString('value');
-		$concat_value = $this->input->getString('concat_value');
-		$where_clause = $this->input->getString('where_clause');
+			try {
+				$options = $this->m_form->getDatabaseJoinOptions($table_name, $column_name, $value, $concat_value, $where_clause);
+				$response = ['status' => true, 'msg' => 'worked', 'options' => $options];
+			} catch (Exception $e) {
+				$response['status'] = false;
+				$response['msg'] = $e->getMessage();
+			}
+		}
 
-		$options = $this->m_form->getDatabaseJoinOptions($table_name, $column_name, $value, $concat_value, $where_clause);
-
-		echo json_encode((object) array('status' => 1, 'msg' => 'worked', 'options' => $options));
+		echo json_encode((object) $response);
 		exit;
 	}
 
@@ -1028,17 +1021,19 @@ class EmundusControllerForm extends BaseController
 	{
 		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'data' => []);
 
-		$formId = $this->input->getInt('form_id');
-		$format = $this->input->getString('format', 'raw');
+		if (!$this->_user->guest) {
+			$formId = $this->input->getInt('form_id');
+			$format = $this->input->getString('format', 'raw');
 
-		if (!empty($formId)) {
-			$conditions = $this->m_form->getJSConditionsByForm($formId, $format);
+			if (!empty($formId)) {
+				$conditions = $this->m_form->getJSConditionsByForm($formId, $format);
 
-			$response['msg'] = Text::_('SUCCESS');
-			$response['status'] = true;
-			$response['data'] = ['conditions' => $conditions];
-		} else {
-			$response['msg'] = Text::_('MISSING_PARAMS');
+				$response['msg'] = Text::_('SUCCESS');
+				$response['status'] = true;
+				$response['data'] = ['conditions' => $conditions];
+			} else {
+				$response['msg'] = Text::_('MISSING_PARAMS');
+			}
 		}
 
 		echo json_encode((object)$response);

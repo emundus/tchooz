@@ -29,6 +29,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Mail\MailerFactoryInterface;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Database\ParameterType;
 
 /**
  * Class EmundusModelFiles
@@ -1140,7 +1141,13 @@ class EmundusModelFiles extends JModelLegacy
 
 		$pageNavigation = "<div class='em-container-pagination-selectPage'>";
 		$pageNavigation .= "<ul class='pagination pagination-sm'>";
-		$pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent - 1) . "'><span class='material-icons'>navigate_before</span></a></li>";
+		if($this->getPagination()->pagesCurrent == $this->getPagination()->pagesStart) {
+			$pageNavigation .= "<li><a class='disabled tw-cursor-pointer'><span class='material-symbols-outlined'>navigate_before</span></a></li>";
+		} else
+		{
+			$pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent - 1) . "'><span class='material-symbols-outlined'>navigate_before</span></a></li>";
+		}
+
 		if ($this->getPagination()->pagesTotal > 15) {
 			for ($i = 1; $i <= 5; $i++) {
 				$pageNavigation .= "<li ";
@@ -1188,7 +1195,13 @@ class EmundusModelFiles extends JModelLegacy
 				$pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
 			}
 		}
-		$pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent + 1) . "'><span class='material-icons'>navigate_next</span></a></li></ul></div>";
+
+		if($this->getPagination()->pagesCurrent == $this->getPagination()->pagesStop) {
+			$pageNavigation .= "<li><a class='disabled tw-cursor-pointer'><span class='material-symbols-outlined'>navigate_next</span></a></li></ul></div>";
+		} else {
+			$pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent + 1) . "'><span class='material-symbols-outlined'>navigate_next</span></a></li></ul></div>";
+		}
+
 
 		return $pageNavigation;
 	}
@@ -5868,5 +5881,36 @@ class EmundusModelFiles extends JModelLegacy
 		}
 
 		return $updated;
+	}
+
+	public function deleteFilter($filter_id,$user_id = 0)
+	{
+		$deleted   = false;
+
+		try
+		{
+			if(empty($user_id)) {
+				$user_id = Factory::getApplication()->getIdentity()->id;
+			}
+
+			if (!empty($filter_id) && !empty($this->_user->id)) {
+				$query = $this->_db->getQuery(true);
+				$query->delete('#__emundus_filters')
+					->bind(':filterId', $filter_id, ParameterType::INTEGER)
+					->bind(':userId', $user_id, ParameterType::INTEGER)
+					->where('id = :filterId')
+					->where('user = :userId');
+				$this->_db->setQuery($query);
+				$result  = $this->_db->execute();
+
+				$deleted = $result == 1;
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error deleting filter: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+		}
+
+		return $deleted;
 	}
 }

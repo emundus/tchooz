@@ -94,7 +94,7 @@ class EmundusControllerUsers extends BaseController
 			parent::display();
 		}
 		else {
-			echo JText::_('ACCESS_DENIED');
+			echo Text::_('ACCESS_DENIED');
 		}
 
 		return $this;
@@ -127,14 +127,14 @@ class EmundusControllerUsers extends BaseController
 		$user = clone(Factory::getContainer()->get(\Joomla\CMS\User\UserFactoryInterface::class)->loadUserById(0));
 
 		if (preg_match('/^[0-9a-zA-Z\_\@\+\-\.]+$/', $username) !== 1) {
-			echo json_encode((object) array('status' => false, 'msg' => JText::_('COM_EMUNDUS_USERS_ERROR_USERNAME_NOT_GOOD')));
+			echo json_encode((object) array('status' => false, 'msg' => Text::_('COM_EMUNDUS_USERS_ERROR_USERNAME_NOT_GOOD')));
 			exit;
 		}
 
 		require_once JPATH_BASE . '/components/com_emundus/helpers/emails.php';
 		$h_emails = new EmundusHelperEmails();
 		if (!$h_emails->correctEmail($email)) {
-			echo json_encode((object) array('status' => false, 'msg' => JText::_('COM_EMUNDUS_USERS_ERROR_NOT_A_VALID_EMAIL')));
+			echo json_encode((object) array('status' => false, 'msg' => Text::_('COM_EMUNDUS_USERS_ERROR_NOT_A_VALID_EMAIL')));
 			exit;
 		}
 
@@ -192,7 +192,7 @@ class EmundusControllerUsers extends BaseController
 		}
 
 		if (!mkdir(EMUNDUS_PATH_ABS . $uid, 0755) || !copy(EMUNDUS_PATH_ABS . 'index.html', EMUNDUS_PATH_ABS . $uid . DS . 'index.html')) {
-			echo json_encode((object) array('status' => false, 'uid' => $uid, 'msg' => JText::_('COM_EMUNDUS_USERS_CANT_CREATE_USER_FOLDER_CONTACT_ADMIN')));
+			echo json_encode((object) array('status' => false, 'uid' => $uid, 'msg' => Text::_('COM_EMUNDUS_USERS_CANT_CREATE_USER_FOLDER_CONTACT_ADMIN')));
 			exit;
 		}
 
@@ -280,19 +280,19 @@ class EmundusControllerUsers extends BaseController
 			}
 		}
 		catch (Exception $e) {
-			echo json_encode((object) array('status' => false, 'msg' => JText::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT')));
+			echo json_encode((object) array('status' => false, 'msg' => Text::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT')));
 			JLog::add($e->__toString(), JLog::ERROR, 'com_emundus.email');
 			exit();
 		}
 
-		echo json_encode((object) array('status' => true, 'msg' => JText::_('COM_EMUNDUS_USERS_USER_CREATED')));
+		echo json_encode((object) array('status' => true, 'msg' => Text::_('COM_EMUNDUS_USERS_USER_CREATED')));
 		exit;
 	}
 
 	public function delincomplete()
 	{
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
-			$this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
+			$this->setRedirect('index.php', Text::_('ACCESS_DENIED'), 'error');
 
 			return;
 		}
@@ -305,7 +305,7 @@ class EmundusControllerUsers extends BaseController
 	public function delrefused()
 	{
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
-			$this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
+			$this->setRedirect('index.php', Text::_('ACCESS_DENIED'), 'error');
 
 			return;
 		}
@@ -317,7 +317,7 @@ class EmundusControllerUsers extends BaseController
 	public function delnonevaluated()
 	{
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
-			$this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
+			$this->setRedirect('index.php', Text::_('ACCESS_DENIED'), 'error');
 
 			return;
 		}
@@ -326,27 +326,9 @@ class EmundusControllerUsers extends BaseController
 		$this->delusers($this->_db->loadResultArray());
 	}
 
-	public function archive()
-	{
-		$itemid = $this->app->getMenu()->getActive()->id;
-
-		$limitstart       = $this->input->get('limitstart', null, 'POST');
-		$filter_order     = $this->input->get('filter_order', null, 'POST', null, 0);
-		$filter_order_Dir = $this->input->get('filter_order_Dir', null, 'POST', null, 0);
-		$ids              = $this->input->get('ud', null, 'POST', 'array', 0);
-		if (!empty($ids)) {
-			foreach ($ids as $id) {
-				$query = 'UPDATE #__emundus_users SET profile=999 WHERE user_id=' . $id;
-				$this->_db->setQuery($query);
-				$this->_db->Query() or die($this->_db->getErrorMsg());
-
-				$this->blockuser($id);
-			}
-		}
-
-		$this->setRedirect('index.php?option=com_emundus&view=users&limitstart=' . $limitstart . '&filter_order=' . $filter_order . '&filter_order_Dir=' . $filter_order_Dir . '&Itemid=' . $itemid);
-	}
-
+	/*
+	 * todo: why here ?
+	 */
 	public function lastSavedFilter()
 	{
 		$query = "SELECT MAX(id) FROM #__emundus_filters";
@@ -362,45 +344,6 @@ class EmundusControllerUsers extends BaseController
 		$query = "SELECT constraints FROM #__emundus_filters WHERE id=" . $filter_id;
 		$this->_db->setQuery($query);
 		echo $this->_db->loadResult();
-	}
-
-	////// EXPORT SELECTED XLS ///////////////////
-	public function export_selected_xls()
-	{
-		$cids = $this->input->get('ud', null, 'POST', 'array', 0);
-		$page = $this->input->get('limitstart', 0, 'get');
-		if (!empty($cids)) {
-			$this->export_to_xls($cids);
-		}
-		else {
-			$this->setRedirect("index.php?option=com_emundus&view=users&limitstart=" . $page, JText::_("NO_ITEM_SELECTED"), 'error');
-		}
-	}
-
-	////// EXPORT ALL XLS ///////////////////
-	public function export_account_to_xls($reqids = array(), $el = array())
-	{
-		$cid = $this->input->get('ud', null, 'POST', 'array', 0);
-		require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'export_xls' . DS . 'xls_users.php');
-		export_xls($cid, array());
-	}
-
-	public function export_zip()
-	{
-		require_once('libraries/emundus/zip.php');
-		$cid              = $this->input->get('ud', null, 'POST', 'array', 0);
-		$limitstart       = $this->input->get('limitstart', null, 'POST');
-		$filter_order     = $this->input->get('filter_order', null, 'POST', null, 0);
-		$filter_order_Dir = $this->input->get('filter_order_Dir', null, 'POST', null, 0);
-		JArrayHelper::toInteger($cid, 0);
-
-		if (count($cid) == 0) {
-			JError::raiseWarning(500, JText::_('COM_EMUNDUS_ERROR_NO_ITEMS_SELECTED'));
-			$this->setRedirect('index.php?option=com_emundus&view=' . $this->input->get('view') . '&limitstart=' . $limitstart . '&filter_order=' . $filter_order . '&filter_order_Dir=' . $filter_order_Dir . '&Itemid=' . $this->input->get('Itemid'));
-			exit;
-		}
-		zip_file($cid);
-		exit;
 	}
 
 	public function addsession()
@@ -540,7 +483,7 @@ class EmundusControllerUsers extends BaseController
 
 	public function savefilters()
 	{
-		$current_user = JFactory::getUser();
+		$current_user = $this->user;
 		$user_id      = $current_user->id;
 
 		$itemid = $this->input->get('Itemid', null, 'GET');
@@ -578,21 +521,12 @@ class EmundusControllerUsers extends BaseController
 
 	public function deletefilters()
 	{
-
-		$filter_id = $this->input->getInt('id', null);
-
-		$query = "DELETE FROM #__emundus_filters WHERE id=" . $filter_id;
-		$this->_db->setQuery($query);
-		$result = $this->_db->Query();
-
-		if ($result != 1) {
-			echo json_encode((object) (array('status' => false)));
-			exit;
+		if (!class_exists('EmundusControllerFiles')) {
+			require_once(JPATH_ROOT . '/components/com_emundus/controllers/files.php');
 		}
-		else {
-			echo json_encode((object) (array('status' => true)));
-			exit;
-		}
+
+		$c_files = new EmundusControllerFiles();
+		$c_files->deletefilters();
 	}
 
 	public function setlimitstart()
@@ -631,10 +565,10 @@ class EmundusControllerUsers extends BaseController
 
 	public function changeblock()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 		if (!EmundusHelperAccess::asAdministratorAccessLevel($user->id) && !EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-			$this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
+			$this->setRedirect('index.php', Text::_('ACCESS_DENIED'), 'error');
 
 			return;
 		}
@@ -666,22 +600,22 @@ class EmundusControllerUsers extends BaseController
 			$res = true;
 			if (count($users) > 1) {
 				if ($state === 1) {
-					$msg = JText::_('COM_EMUNDUS_USERS_BLOCK_ACCOUNT_MULTI');
+					$msg = Text::_('COM_EMUNDUS_USERS_BLOCK_ACCOUNT_MULTI');
 				}
 				else {
-					$msg = JText::_('COM_EMUNDUS_USERS_UNBLOCK_ACCOUNT_MULTI');
+					$msg = Text::_('COM_EMUNDUS_USERS_UNBLOCK_ACCOUNT_MULTI');
 				}
 			}
 			else {
 				if ($state === 1) {
-					$msg = JText::_('COM_EMUNDUS_USERS_BLOCK_ACCOUNT_SINGLE');
+					$msg = Text::_('COM_EMUNDUS_USERS_BLOCK_ACCOUNT_SINGLE');
 				}
 				else {
-					$msg = JText::_('COM_EMUNDUS_USERS_UNBLOCK_ACCOUNT_SINGLE');
+					$msg = Text::_('COM_EMUNDUS_USERS_UNBLOCK_ACCOUNT_SINGLE');
 				}
 			}
 		}
-		else $msg = JText::_('COM_EMUNDUS_ERROR_OCCURED');
+		else $msg = Text::_('COM_EMUNDUS_ERROR_OCCURED');
 
 		echo json_encode((object) (array('status' => $res, 'msg' => $msg)));
 		exit;
@@ -689,10 +623,10 @@ class EmundusControllerUsers extends BaseController
 
 	public function changeactivation()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 		if (!EmundusHelperAccess::asAdministratorAccessLevel($user->id) && !EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-			$this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
+			$this->setRedirect('index.php', Text::_('ACCESS_DENIED'), 'error');
 
 			return;
 		}
@@ -730,13 +664,13 @@ class EmundusControllerUsers extends BaseController
 		if ($res !== false) {
 			$res = true;
 			if (count($users) > 1) {
-				$msg = JText::_('COM_EMUNDUS_USERS_ACTIVATE_ACCOUNT_MULTI');
+				$msg = Text::_('COM_EMUNDUS_USERS_ACTIVATE_ACCOUNT_MULTI');
 			}
 			else {
-				$msg = JText::_('COM_EMUNDUS_USERS_ACTIVATE_ACCOUNT_SINGLE');
+				$msg = Text::_('COM_EMUNDUS_USERS_ACTIVATE_ACCOUNT_SINGLE');
 			}
 		}
-		else $msg = JText::_('COM_EMUNDUS_ERROR_OCCURED');
+		else $msg = Text::_('COM_EMUNDUS_ERROR_OCCURED');
 
 		echo json_encode((object) (array('status' => $res, 'msg' => $msg)));
 		exit;
@@ -770,13 +704,13 @@ class EmundusControllerUsers extends BaseController
 
 		if ($res === true) {
 			$res = true;
-			$msg = JText::_('COM_EMUNDUS_GROUPS_USERS_AFFECTED_SUCCESS');
+			$msg = Text::_('COM_EMUNDUS_GROUPS_USERS_AFFECTED_SUCCESS');
 		}
 		elseif ($res === 0) {
-			$msg = JText::_('COM_EMUNDUS_GROUPS_NO_GROUP_AFFECTED');
+			$msg = Text::_('COM_EMUNDUS_GROUPS_NO_GROUP_AFFECTED');
 		}
 		else {
-			$msg = JText::_('COM_EMUNDUS_ERROR_OCCURED');
+			$msg = Text::_('COM_EMUNDUS_ERROR_OCCURED');
 		}
 
 		echo json_encode((object) (array('status' => $res, 'msg' => $msg)));
@@ -787,7 +721,7 @@ class EmundusControllerUsers extends BaseController
 	{
 		$current_user = $this->app->getIdentity();
 		if (!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::asAccessAction(12, 'u') && !EmundusHelperAccess::asAccessAction(20, 'u')) {
-			$this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
+			$this->setRedirect('index.php', Text::_('ACCESS_DENIED'), 'error');
 
 			return;
 		}
@@ -812,7 +746,7 @@ class EmundusControllerUsers extends BaseController
 			exit;
 		}
 		if (!filter_var($newuser['email'], FILTER_VALIDATE_EMAIL)) {
-			echo json_encode((object) array('status' => false, 'msg' => JText::_('COM_EMUNDUS_USERS_ERROR_NOT_A_VALID_EMAIL')));
+			echo json_encode((object) array('status' => false, 'msg' => Text::_('COM_EMUNDUS_USERS_ERROR_NOT_A_VALID_EMAIL')));
 			exit;
 		}
 
@@ -821,7 +755,7 @@ class EmundusControllerUsers extends BaseController
 
 		if ($res === true || !is_array($res)) {
 			$res = true;
-			$msg = JText::_('COM_EMUNDUS_USERS_EDITED');
+			$msg = Text::_('COM_EMUNDUS_USERS_EDITED');
 
 			$e_user = JFactory::getSession()->get('emundusUser');
 			if ($e_user->id == $newuser['id']) {
@@ -838,7 +772,7 @@ class EmundusControllerUsers extends BaseController
 				echo json_encode((object) ($res));
 				exit;
 			}
-			else $msg = JText::_('COM_EMUNDUS_ERROR_OCCURED');
+			else $msg = Text::_('COM_EMUNDUS_ERROR_OCCURED');
 		}
 		echo json_encode((object) (array('status' => $res, 'msg' => $msg)));
 		exit;
@@ -903,11 +837,11 @@ class EmundusControllerUsers extends BaseController
 	// Edit actions rights for group
 	public function setgrouprights()
 	{
-		$current_user = JFactory::getUser();
+		$current_user = $this->user;
 		$msg          = '';
 
 		if (!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::isPartner($current_user->id)) {
-			$msg = JText::_('ACCESS_DENIED');
+			$msg = Text::_('ACCESS_DENIED');
 			echo json_encode((object) array('status' => false, 'msg' => $msg));
 			exit;
 		}
@@ -1006,7 +940,7 @@ class EmundusControllerUsers extends BaseController
 		$response = array('status' => true, 'msg' => '');
 
 		// Check the request token.
-		if (Factory::getUser()->guest) {
+		if ($this->app->getIdentity()->guest) {
 			$this->checkToken('post');
 
 			$data = $this->input->post->get('jform', array(), 'array');
@@ -1061,7 +995,7 @@ class EmundusControllerUsers extends BaseController
 		}
 		else {
 			$response['status'] = false;
-			$response['msg']    = JText::_('ACCESS_DENIED');
+			$response['msg']    = Text::_('ACCESS_DENIED');
 		}
 
 		if (!JFactory::getUser()->guest) {
@@ -1072,8 +1006,8 @@ class EmundusControllerUsers extends BaseController
 
 	public function getuserbyid()
 	{
-		$response     = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
-		$current_user = JFactory::getUser()->id;
+		$response     = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
+		$current_user = $this->app->getIdentity()->id;
 
 		$id = $this->input->getInt('id', $current_user);
 		if (!empty($id)) {
@@ -1091,7 +1025,7 @@ class EmundusControllerUsers extends BaseController
 
 					$response['user']   = $users;
 					$response['status'] = true;
-					$response['msg']    = JText::_('SUCCESS');
+					$response['msg']    = Text::_('SUCCESS');
 				}
 			}
 		}
@@ -1102,7 +1036,7 @@ class EmundusControllerUsers extends BaseController
 
 	public function getUserNameById()
 	{
-		$response     = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+		$response     = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
 
 		$id = $this->input->getInt('id', $this->user->id);
 
@@ -1119,7 +1053,7 @@ class EmundusControllerUsers extends BaseController
 			if (!empty($username)) {
 				$response['user']   = $username;
 				$response['status'] = true;
-				$response['msg']    = JText::_('SUCCESS');
+				$response['msg']    = Text::_('SUCCESS');
 			}
 		}
 
@@ -1133,7 +1067,7 @@ class EmundusControllerUsers extends BaseController
 
 		$fnum = $this->input->getString('fnum', null);
 
-		$rights['canCreate'] = EmundusHelperAccess::asAccessAction(4, 'c', $this->_user->id, $fnum);
+		$rights['canCreate'] = EmundusHelperAccess::asAccessAction(4, 'c', $this->user->id, $fnum);
 		$rights['canDelete'] = EmundusHelperAccess::asAccessAction(4, 'd', $this->user->id, $fnum);
 		$rights['canUpdate'] = EmundusHelperAccess::asAccessAction(4, 'u', $this->user->id, $fnum);
 		$rights['canExport'] = EmundusHelperAccess::asAccessAction(8, 'c', $this->user->id, $fnum);
@@ -1184,7 +1118,7 @@ class EmundusControllerUsers extends BaseController
 	public function getprofileattachments()
 	{
 		$m_users     = $this->getModel('Users');
-		$attachments = $m_users->getProfileAttachments(JFactory::getUser()->id);
+		$attachments = $m_users->getProfileAttachments($this->app->getIdentity()->id);
 
 		echo json_encode(array('status' => true, 'attachments' => $attachments));
 		exit;
@@ -1201,7 +1135,7 @@ class EmundusControllerUsers extends BaseController
 
 	public function uploaddefaultattachment()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 
 		$file             = $this->input->files->get('file');
@@ -1239,7 +1173,7 @@ class EmundusControllerUsers extends BaseController
 
 	public function deleteprofileattachment()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 
 		$id       = $this->input->getInt('id', null);
@@ -1266,7 +1200,7 @@ class EmundusControllerUsers extends BaseController
 
 		$aids = $this->input->getString('aids');
 
-		$current_user = JFactory::getUser();
+		$current_user = $this->user;
 
 		if (!empty($aids)) {
 			$m_users = $this->getModel('Users');
@@ -1285,7 +1219,7 @@ class EmundusControllerUsers extends BaseController
 
 		$aid = $this->input->getInt('aid');
 
-		$current_user = JFactory::getUser();
+		$current_user = $this->user;
 
 		if (!empty($aid)) {
 			$m_users = $this->getModel('Users');
@@ -1301,7 +1235,7 @@ class EmundusControllerUsers extends BaseController
 
 	public function updateprofilepicture()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 
 		$file = $this->input->files->get('file');
@@ -1345,7 +1279,7 @@ class EmundusControllerUsers extends BaseController
 		$email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
 
 		if (!empty($email)) {
-			$user = Factory::getUser();
+			$user = $this->app->getIdentity();
 			$uid  = $user->id;
 
 			if (!empty($uid)) {
@@ -1363,7 +1297,7 @@ class EmundusControllerUsers extends BaseController
 				}
 				catch (Exception $e) {
 					JLog::add('Error checking if user is already activated or not : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
-					echo json_encode((object) (array('status' => false, 'msg' => JText::_('COM_EMUNDUS_FAILED_TO_CHECK_ACTIVATION'))));
+					echo json_encode((object) (array('status' => false, 'msg' => Text::_('COM_EMUNDUS_FAILED_TO_CHECK_ACTIVATION'))));
 					exit();
 				}
 
@@ -1380,7 +1314,7 @@ class EmundusControllerUsers extends BaseController
 					}
 					catch (Exception $e) {
 						JLog::add('Error getting email already use: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
-						echo json_encode((object) (array('status' => false, 'msg' => JText::_('COM_EMUNDUS_MAIL_ERROR_TRYING_TO_GET_EMAIL_ALREADY_USE'))));
+						echo json_encode((object) (array('status' => false, 'msg' => Text::_('COM_EMUNDUS_MAIL_ERROR_TRYING_TO_GET_EMAIL_ALREADY_USE'))));
 						exit();
 					}
 
@@ -1401,31 +1335,31 @@ class EmundusControllerUsers extends BaseController
 							$m_user->updateEmailUser($user->id, $email);
 						}
 						if ($emailSent) {
-							echo json_encode((object) (array('status' => true, 'msg' => JText::_('COM_EMUNDUS_MAIL_SUCCESSFULLY_SENT'))));
+							echo json_encode((object) (array('status' => true, 'msg' => Text::_('COM_EMUNDUS_MAIL_SUCCESSFULLY_SENT'))));
 							exit();
 						}
 						else {
-							echo json_encode((object) (array('status' => false, 'msg' => JText::_('COM_EMUNDUS_MAIL_ERROR_AT_SEND'))));
+							echo json_encode((object) (array('status' => false, 'msg' => Text::_('COM_EMUNDUS_MAIL_ERROR_AT_SEND'))));
 							exit();
 						}
 					}
 					else {
-						echo json_encode((object) (array('status' => false, 'msg' => JText::_('COM_EMUNDUS_MAIL_ALREADY_USE'))));
+						echo json_encode((object) (array('status' => false, 'msg' => Text::_('COM_EMUNDUS_MAIL_ALREADY_USE'))));
 						exit();
 					}
 				}
 				else {
-					echo json_encode((object) (array('status' => false, 'msg' => JText::_('COM_EMUNDUS_ALREADY_ACTIVATED_USER'))));
+					echo json_encode((object) (array('status' => false, 'msg' => Text::_('COM_EMUNDUS_ALREADY_ACTIVATED_USER'))));
 					exit();
 				}
 			}
 			else {
-				echo json_encode((object) (array('status' => false, 'msg' => JText::_('EMPTY_CURRENT_USER'))));
+				echo json_encode((object) (array('status' => false, 'msg' => Text::_('EMPTY_CURRENT_USER'))));
 				exit();
 			}
 		}
 		else {
-			echo json_encode((object) (array('status' => false, 'msg' => JText::_('INVALID_EMAIL'))));
+			echo json_encode((object) (array('status' => false, 'msg' => Text::_('INVALID_EMAIL'))));
 			exit();
 		}
 	}
@@ -1448,7 +1382,7 @@ class EmundusControllerUsers extends BaseController
 
 	public function addapplicantprofile()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 		$session   = JFactory::getSession();
 		$e_session = $session->get('emundusUser');
@@ -1484,6 +1418,9 @@ class EmundusControllerUsers extends BaseController
 
 	public function affectjoomlagroups()
 	{
+		$response = array('status' => false, 'msg' => Text::_("ACCESS_DENIED"));
+
+
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
 
 
@@ -1499,13 +1436,10 @@ class EmundusControllerUsers extends BaseController
 				$affected = false;
 			}
 
-			$tab = array('status' => $affected, 'msg' => JText::_("GROUPS_AFFECTED"));
-		}
-		else {
-			$tab = array('status' => false, 'msg' => JText::_("ACCESS_DENIED"));
+			$response = array('status' => $affected, 'msg' => Text::_("GROUPS_AFFECTED"));
 		}
 
-		echo json_encode($tab);
+		echo json_encode($response);
 		exit;
 	}
 
@@ -1525,10 +1459,10 @@ class EmundusControllerUsers extends BaseController
 				$updated = $m_users->updateAnonymUserAccount($token, $user_id);
 
 				if ($updated) {
-					$app->enqueueMessage(JText::_('COM_EMUNDUS_USERS_ANONYM_USER_ACTIVATION_SUCCESS'), 'success');
+					$app->enqueueMessage(Text::_('COM_EMUNDUS_USERS_ANONYM_USER_ACTIVATION_SUCCESS'), 'success');
 				}
 				else {
-					$app->enqueueMessage(JText::_('COM_EMUNDUS_USERS_FAILED_TO_ACTIVATE_USER'), 'warning');
+					$app->enqueueMessage(Text::_('COM_EMUNDUS_USERS_FAILED_TO_ACTIVATE_USER'), 'warning');
 				}
 				$app->redirect('/');
 			}
@@ -1543,7 +1477,7 @@ class EmundusControllerUsers extends BaseController
 
 	public function getCurrentUser()
 	{
-		$currentUser = JFactory::getUser();
+		$currentUser = $this->user;
 
 		if (!EmundusHelperAccess::asPartnerAccessLevel($currentUser->id)) {
 			return false;
@@ -1555,7 +1489,7 @@ class EmundusControllerUsers extends BaseController
 
 	function getcurrentprofile()
 	{
-		$response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
 		$user = $this->app->getIdentity();
 
 		if (!$user->guest) {
@@ -1565,7 +1499,7 @@ class EmundusControllerUsers extends BaseController
 			if (!empty($em_users->profile)) {
 				$response['data'] = $m_users->getProfileDetails($em_users->profile);
 				$response['status'] = true;
-				$response['msg'] = JText::_('COM_EMUNDUS_SUCCESS');
+				$response['msg'] = Text::_('COM_EMUNDUS_SUCCESS');
 			} else {
 				$response['msg'] = 'No profile found';
 			}
@@ -1586,7 +1520,7 @@ class EmundusControllerUsers extends BaseController
 	{
 		$current_user = Factory::getApplication()->getIdentity();
 		if (!EmundusHelperAccess::asAccessAction(12, 'r',$current_user->id)) {
-			$this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
+			$this->setRedirect('index.php', Text::_('ACCESS_DENIED'), 'error');
 			return;
 		}
 

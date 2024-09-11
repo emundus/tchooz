@@ -393,7 +393,12 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
             $('.em-check').prop('checked', true);
 
             displayCount();
-            countFiles.innerHTML = '<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + Joomla.JText._('COM_EMUNDUS_FILTERS_SELECT_ALL') + Joomla.JText._('COM_EMUNDUS_FILES_FILES') + '. <a class="em-pointer em-text-underline" style="color: var(--red-500);" onclick="uncheckAllFiles()">' + Joomla.JText._('COM_EMUNDUS_FILES_UNSELECT_ALL_FILES_2') + '</a></p>';
+            countFiles.innerHTML = '<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + Joomla.JText._('COM_EMUNDUS_FILTERS_SELECT_ALL') + Joomla.JText._('COM_EMUNDUS_FILES_FILES') + '<span id="count-all-files" class="tw-hidden"></span>. <a class="em-pointer em-text-underline" style="color: var(--red-500);" onclick="uncheckAllFiles()">' + Joomla.JText._('COM_EMUNDUS_FILES_UNSELECT_ALL_FILES_2') + '</a></p>';
+
+            countFilesBeforeAction('all').then((result) => {
+                document.querySelector('#count-all-files').innerHTML = ' (' + result + ')';
+                document.querySelector('#count-all-files').classList.remove('tw-hidden');
+            })
 
             document.querySelector('.selectContainer').style.backgroundColor = '#F3F3F3';
 

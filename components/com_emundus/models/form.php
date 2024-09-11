@@ -2454,33 +2454,50 @@ class EmundusModelForm extends JModelList
 
 	function getDatabaseJoinOptions($table, $column, $value, $concat_value = null, $where = null)
 	{
+		$options = [];
 
-		$query = $this->db->getQuery(true);
+		if (!empty($table) && !empty($column) && !empty($value)) {
+			$query = $this->db->getQuery(true);
 
-		$current_shortlang = explode('-', JFactory::getLanguage()->getTag())[0];
+			$query->clear()
+				->select('database_name')
+				->from('jos_emundus_datas_library');
 
-		try {
-			$value_select = $value . ' as value';
-			if (!empty($concat_value)) {
-				$concat_value = str_replace('{thistable}', $table, $concat_value);
-				$concat_value = str_replace('{shortlang}', $current_shortlang, $concat_value);
-
-				$value_select = 'CONCAT(' . $concat_value . ') as value';
-			}
-			$query->select(array($this->db->quoteName($column, 'primary_key'), $value_select))
-				->from($this->db->quoteName($table));
-			if (!empty($where)) {
-				$query->where(str_replace('WHERE', '', $where));
-			}
 			$this->db->setQuery($query);
+			$allowed_tables = $this->db->loadColumn();
 
-			return $this->db->loadObjectList();
-		}
-		catch (Exception $e) {
-			Log::add('component/com_emundus/models/form | Error at getDatabaseJoinOptions : ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), Log::ERROR, 'com_emundus');
+			if (!in_array($table, $allowed_tables)) {
+				throw new Exception(Text::_('ACCESS_DENIED'));
+			}
 
-			return false;
+			$current_shortlang = explode('-', JFactory::getLanguage()->getTag())[0];
+
+			try {
+				$value_select = $value . ' as value';
+				if (!empty($concat_value)) {
+					$concat_value = str_replace('{thistable}', $table, $concat_value);
+					$concat_value = str_replace('{shortlang}', $current_shortlang, $concat_value);
+
+					$value_select = 'CONCAT(' . $concat_value . ') as value';
+				}
+				$query->clear()
+					->select(array($this->db->quoteName($column, 'primary_key'), $value_select))
+					->from($this->db->quoteName($table));
+				if (!empty($where)) {
+					$query->where(str_replace('WHERE', '', $where));
+				}
+				$this->db->setQuery($query);
+
+				$options = $this->db->loadObjectList();
+			}
+			catch (Exception $e) {
+				Log::add('component/com_emundus/models/form | Error at getDatabaseJoinOptions : ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), Log::ERROR, 'com_emundus');
+
+				return false;
+			}	
 		}
+		
+		return $options;
 	}
 
 	public function checkIfDocCanBeRemovedFromCampaign($document_id, $profile_id): array

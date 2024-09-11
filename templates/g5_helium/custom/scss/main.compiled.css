@@ -4250,11 +4250,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
     --tw-scale-y: 1.5;
     transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
-.tw-scale-75 {
-    --tw-scale-x: .75;
-    --tw-scale-y: .75;
-    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
 .tw-scale-\[4\] {
     --tw-scale-x: 4;
     --tw-scale-y: 4;
@@ -4428,9 +4423,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-self-stretch {
     align-self: stretch;
-}
-.tw-overflow-auto {
-    overflow: auto;
 }
 .tw-overflow-hidden {
     overflow: hidden;
@@ -5371,10 +5363,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
     font-size: 1rem !important;
     line-height: 1.5rem !important;
 }
-.\!tw-text-lg {
-    font-size: 1.125rem !important;
-    line-height: 1.75rem !important;
-}
 .\!tw-text-xl\/5 {
     font-size: 1.25rem !important;
     line-height: 1.25rem !important;
@@ -5535,6 +5523,11 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-shadow-md {
     --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
     --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+.tw-shadow-modal {
+    --tw-shadow: 0 0 0 50vmax rgba(0,0,0,.5);
+    --tw-shadow-colored: 0 0 0 50vmax var(--tw-shadow-color);
     box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 .tw-shadow-sm {

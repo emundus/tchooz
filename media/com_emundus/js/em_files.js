@@ -507,7 +507,9 @@ function openFiles(fnum, page = 0, vue = false) {
                 document.getElementsByTagName("head")[0].appendChild(tag);
 
                 $('#em-collaborators .panel-body').append(result);
-                document.getElementById('em-collaborators').style.display = 'block';
+                if(document.querySelector('#collaborators_block').innerHtml) {
+                    document.getElementById('em-collaborators').style.display = 'block';
+                }
             } else {
                 document.getElementById('em-collaborators').style.display = 'none';
             }
@@ -4711,24 +4713,26 @@ $(document).ready(function() {
         }
     });
 
-    $(document).on('click', '.pagination.pagination-sm li a', function(e) {
+    $(document).on('click', 'body:not(".view-users") .pagination.pagination-sm li a', function(e) {
         $.ajaxQ.abortAll();
         if (e.handle !== true) {
             e.handle = true;
             var id = $(this).attr('id');
-            $.ajax({
-                type: 'POST',
-                url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=setlimitstart',
-                dataType: 'json',
-                data: ({
-                    limitstart: id
-                }),
-                success: function(result) {
-                    if (result.status) {
-                        reloadData($('#view').val());
+            if(id) {
+                $.ajax({
+                    type: 'POST',
+                    url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=setlimitstart',
+                    dataType: 'json',
+                    data: ({
+                        limitstart: id
+                    }),
+                    success: function (result) {
+                        if (result.status) {
+                            reloadData($('#view').val());
+                        }
                     }
-                }
-            });
+                });
+            }
         }
     });
 
@@ -5838,15 +5842,15 @@ $(document).ready(function() {
                 $(this).prop('checked', false);
                 $('.'+id).prop('checked', false);
             }
-
         }
     });
 
     $(document).on('click', '.em-list-evaluator-item .btn-danger', function() {
         $.ajaxQ.abortAll();
         var gr = false;
-        if ($(this).hasClass('group'))
+        if ($(this).hasClass('group')) {
             gr = true;
+        }
 
         var id = $(this).attr('id').split('-');
         $.ajax({
@@ -5861,7 +5865,7 @@ $(document).ready(function() {
             error: function (jqXHR) {
                 console.log(jqXHR.responseText);
             }
-        })
+        });
     });
 
     $(document).on('click', '#em-hide-filters', function() {

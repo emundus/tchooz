@@ -4,6 +4,7 @@ jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Controller\BaseController;
+use Joomla\CMS\Language\Text;
 
 
 /**
@@ -49,9 +50,9 @@ class EmundusControllerExport_select_columns extends BaseController
 	{
 		parent::__construct($config);
 
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php');
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'programme.php');
+		require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
+		require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
+		require_once(JPATH_ROOT . '/components/com_emundus/models/programme.php');
 
 		$this->app = Factory::getApplication();
 	}
@@ -97,21 +98,17 @@ class EmundusControllerExport_select_columns extends BaseController
 	 */
 	public function getalltags()
 	{
+		$response = ['status' => false, 'msg' => Text::_("ACCESS_DENIED")];
+
 		$user = $this->app->getIdentity();
 
-		$model = $this->getModel('export_select_columns');
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-		}
-		else {
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			$model = $this->getModel('export_select_columns');
 			$tags = $model->getAllTags();
+			$response = ['status' => true, 'tags' => $tags];
 		}
-		echo json_encode((object) [
-			'status' => true,
-			'tags'   => $tags
-		]);
+
+		echo json_encode((object) $response);
 		exit;
 	}
 

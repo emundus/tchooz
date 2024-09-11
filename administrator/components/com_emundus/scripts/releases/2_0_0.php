@@ -12,6 +12,7 @@ namespace scripts;
 use EmundusHelperUpdate;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\User\UserHelper;
 
 class Release2_0_0Installer extends ReleaseInstaller
 {
@@ -1607,6 +1608,37 @@ if(value == 1) {
 				]
 			];
 			EmundusHelperUpdate::createTable('jos_emundus_setup_profiles_repeat_emundus_groups', $columns);
+
+			$app = Factory::getApplication();
+			if(!$app->get('shared_session') || $app->get('session_name') == 'site')
+			{
+				$config = new \JConfig();
+				EmundusHelperUpdate::updateConfigurationFile($config, 'shared_session', true);
+				$config = new \JConfig();
+				EmundusHelperUpdate::updateConfigurationFile($config, 'session_name', UserHelper::genRandomPassword(16));
+
+				$query->clear()
+					->delete($this->db->quoteName('#__session'));
+				$this->db->setQuery($query);
+				$this->db->execute();
+			}
+
+			$aliases = [
+				'mentions-legales',
+				'politique-de-confidentialite-des-donnees',
+				'gestion-des-cookies',
+				'gestion-des-droits',
+				'accessibilite'
+			];
+
+			$query->clear()
+				->select('id')
+				->from($this->db->quoteName('#__menu'))
+				->where($this->db->quoteName('alias').' in ('.implode(',', $this->db->quote($aliases)).')');
+			$this->db->setQuery($query);
+			$rgpd_ids = $this->db->loadColumn();
+
+			EmundusHelperUpdate::createModule('[GUEST] Back button - RGPD','content-top-a','mod_emundus_back','{"layout":"_:default","moduleclass_sfx":"","module_tag":"div","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0", "back_type":"homepage", "button_text":""}',1, $rgpd_ids);
 
 			$result['status'] = true;
 		}

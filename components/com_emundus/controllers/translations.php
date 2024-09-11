@@ -53,7 +53,7 @@ class EmundusControllerTranslations extends BaseController
 
 	public function checksetup()
 	{
-		$user = JFactory::getApplication()->getIdentity();
+		$user = $this->app->getIdentity();
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			die(Text::_('ACCESS_DENIED'));
@@ -67,7 +67,7 @@ class EmundusControllerTranslations extends BaseController
 
 	public function configuresetup()
 	{
-		$user = JFactory::getApplication()->getIdentity();
+		$user = $this->app->getIdentity();
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			die(Text::_('ACCESS_DENIED'));
@@ -81,7 +81,7 @@ class EmundusControllerTranslations extends BaseController
 
 	public function getdefaultlanguage()
 	{
-		$user = JFactory::getApplication()->getIdentity();
+		$user = $this->app->getIdentity();
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			die(Text::_('ACCESS_DENIED'));
@@ -95,7 +95,7 @@ class EmundusControllerTranslations extends BaseController
 
 	public function getlanguages()
 	{
-		$user = JFactory::getApplication()->getIdentity();
+		$user = $this->app->getIdentity();
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			die(Text::_('ACCESS_DENIED'));
@@ -109,7 +109,7 @@ class EmundusControllerTranslations extends BaseController
 
 	public function updatelanguage()
 	{
-		$user = JFactory::getApplication()->getIdentity();
+		$user = $this->app->getIdentity();
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			die(Text::_('ACCESS_DENIED'));
@@ -141,7 +141,7 @@ class EmundusControllerTranslations extends BaseController
 
 	public function gettranslationsobjects()
 	{
-		$user = JFactory::getApplication()->getIdentity();
+		$user = $this->app->getIdentity();
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			die(Text::_('ACCESS_DENIED'));
@@ -155,7 +155,7 @@ class EmundusControllerTranslations extends BaseController
 
 	public function getdatas()
 	{
-		$user = JFactory::getApplication()->getIdentity();
+		$user = $this->app->getIdentity();
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			die(Text::_('ACCESS_DENIED'));
@@ -175,7 +175,7 @@ class EmundusControllerTranslations extends BaseController
 
 	public function getchildrens()
 	{
-		$user = JFactory::getApplication()->getIdentity();
+		$user = $this->app->getIdentity();
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			die(Text::_('ACCESS_DENIED'));
@@ -194,7 +194,7 @@ class EmundusControllerTranslations extends BaseController
 
 	public function gettranslations()
 	{
-		$user = JFactory::getApplication()->getIdentity();
+		$user = $this->app->getIdentity();
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			die(Text::_('ACCESS_DENIED'));
@@ -246,7 +246,7 @@ class EmundusControllerTranslations extends BaseController
 
 	public function inserttranslation()
 	{
-		$user = JFactory::getApplication()->getIdentity();
+		$user = $this->app->getIdentity();
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			die(Text::_('ACCESS_DENIED'));
@@ -267,7 +267,7 @@ class EmundusControllerTranslations extends BaseController
 
 	public function updatetranslation()
 	{
-		$user = JFactory::getApplication()->getIdentity();
+		$user = $this->app->getIdentity();
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			die(Text::_('ACCESS_DENIED'));
@@ -340,7 +340,7 @@ class EmundusControllerTranslations extends BaseController
 
 	public function getorphelins()
 	{
-		$user = JFactory::getApplication()->getIdentity();
+		$user = $this->app->getIdentity();
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			die(Text::_('ACCESS_DENIED'));
@@ -358,7 +358,7 @@ class EmundusControllerTranslations extends BaseController
 
 	public function sendpurposenewlanguage()
 	{
-		$user = JFactory::getApplication()->getIdentity();
+		$user = $this->app->getIdentity();
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			die(Text::_('ACCESS_DENIED'));

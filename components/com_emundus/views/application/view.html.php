@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.view');
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\HtmlView;
@@ -172,6 +173,11 @@ class EmundusViewApplication extends HtmlView
 						$params = $menu->getParams($Itemid);
 
 						$this->tabs = $params->get('tabs', array());
+
+						$display_comments = ComponentHelper::getComponent('com_emundus')->getParams()->get('allow_applicant_to_comment', 0);
+						if($display_comments) {
+							$this->tabs[] = 'comments';
+						}
 					}
 					else {
 						$this->app->enqueueMessage(Text::_('COM_EMUNDUS_APPLICATION_SHARE_VIEW_HISTORY_ERROR'), 'error');

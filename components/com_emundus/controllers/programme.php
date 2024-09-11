@@ -136,57 +136,6 @@ class EmundusControllerProgramme extends BaseController
 		exit;
 	}
 
-
-	public function favorite()
-	{
-
-
-		$pid = $this->input->post->getInt('programme_id');
-		$uid = $this->input->post->getInt('user_id');
-
-		if (empty($uid)) {
-			$uid = $this->_user->id;
-		}
-
-		$result         = new stdClass();
-		$result->status = false;
-
-		if (empty($uid) || empty($pid)) {
-			echo json_encode($result);
-			exit;
-		}
-
-		$result->status = $this->m_programme->favorite($pid, $uid);
-
-		echo json_encode($result);
-		exit;
-	}
-
-
-	public function unfavorite()
-	{
-
-		$pid = $this->input->post->getInt('programme_id');
-		$uid = $this->input->post->getInt('user_id');
-
-		if (empty($uid)) {
-			$uid = $this->_user->id;
-		}
-
-		$result         = new stdClass();
-		$result->status = false;
-
-		if (empty($uid) || empty($pid)) {
-			echo json_encode($result);
-			exit;
-		}
-
-		$result->status = $this->m_programme->unfavorite($pid, $uid);
-
-		echo json_encode($result);
-		exit;
-	}
-
 	public function getallprogramforfilter()
 	{
 		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));

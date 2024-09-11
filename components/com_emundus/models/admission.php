@@ -1247,9 +1247,9 @@ class EmundusModelAdmission extends JModelList
 		return $this->_files->getAllTags();
 	}
 
-	public function getAllStatus()
+	public function getAllStatus($uid = null)
 	{
-		return $this->_files->getAllStatus();
+		return $this->_files->getAllStatus($uid);
 	}
 
 	public function tagFile($fnums, $tag)

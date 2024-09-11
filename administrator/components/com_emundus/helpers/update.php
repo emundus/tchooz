@@ -3100,7 +3100,7 @@ class EmundusHelperUpdate
 
 	public static function createModule($title, $position, $module, $params, $published = 0, $page = 0, $access = 1, $showtitle = 0, $client_id = 0)
 	{
-		$created = false;
+		$created = ['status' => false, 'module_id' => 0];
 
 		$db    = Factory::getDbo();
 		$query = $db->getQuery(true);
@@ -3138,29 +3138,41 @@ class EmundusHelperUpdate
 					->set($db->quoteName('language') . ' = ' . $db->quote('*'));
 				$db->setQuery($query);
 				$db->execute();
-				$module_id = $db->insertid();
+				$created['module_id'] = $db->insertid();
 
-				if (!empty($module_id) && !empty($page))
-				{
-					$query->clear()
-						->insert($db->quoteName('#__modules_menu'))
-						->set($db->quoteName('moduleid') . ' = ' . $db->quote($module_id));
-					if ($page == 1)
+				if(!empty($created['module_id'])) {
+					$created['status'] = true;
+
+					if (!empty($page))
 					{
-						$query->set($db->quoteName('menuid') . ' = ' . $db->quote(0));
+						if(!is_array($page)) {
+							$page = [$page];
+						}
+
+						foreach ($page as $p)
+						{
+							$query->clear()
+								->insert($db->quoteName('#__modules_menu'))
+								->set($db->quoteName('moduleid') . ' = ' . $db->quote($created['module_id']));
+							if ($p == 1)
+							{
+								$query->set($db->quoteName('menuid') . ' = ' . $db->quote(0));
+							}
+							else
+							{
+								$query->set($db->quoteName('menuid') . ' = ' . $db->quote($p));
+							}
+							$db->setQuery($query);
+							$db->execute();
+						}
 					}
-					else
-					{
-						$query->set($db->quoteName('menuid') . ' = ' . $db->quote($page));
-					}
-					$db->setQuery($query);
-					$created = $db->execute();
 				}
 			}
 			else
 			{
 				EmundusHelperUpdate::displayMessage($title . ' module already exists.');
-				$created = true;
+				$created['module_id'] = $is_existing;
+				$created['status']    = true;
 			}
 		}
 		catch (Exception $e)

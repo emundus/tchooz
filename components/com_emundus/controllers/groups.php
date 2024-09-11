@@ -84,6 +84,10 @@ class EmundusControllerGroups extends BaseController
 	}
 
 	////// AFFECT ASSESSOR ///////////////////
+
+	/**
+	 * @deprecated
+	 */
 	function setAssessor($reqids = null)
 	{
 		//$allowed = array("Super Users", "Administrator", "Editor");
@@ -143,6 +147,10 @@ class EmundusControllerGroups extends BaseController
 	}
 
 	////// UNAFFECT ASSESSOR ///////////////////
+
+	/**
+	 * @deprecated
+	 */
 	function unsetAssessor($reqids = null)
 	{
 		//$allowed = array("Super Users", "Administrator", "Editor");
@@ -185,6 +193,9 @@ class EmundusControllerGroups extends BaseController
 			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart=' . $limitstart . '&filter_order=' . $filter_order . '&filter_order_Dir=' . $filter_order_Dir);
 	}
 
+	/**
+	 * @deprecated
+	 */
 	function delassessor()
 	{
 		$user = JFactory::getUser();
@@ -347,157 +358,22 @@ class EmundusControllerGroups extends BaseController
 			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart=' . $limitstart . '&filter_order=' . $filter_order . '&filter_order_Dir=' . $filter_order_Dir, JText::_('COM_EMUNDUS_ACTIONS_ACTION_DONE'), 'message');
 	}
 
-	////// EMAIL GROUP OF ASSESSORS O AN ASSESSOR WITH CUSTOM MESSAGE///////////////////
-	function customEmail()
-	{
-		//$allowed = array("Super Users", "Administrator", "Editor");
-		$user   = JFactory::getUser();
-		$menu   = $this->app->getMenu()->getActive();
-		$access = !empty($menu) ? $menu->access : 0;
-		if (!EmundusHelperAccess::isAllowedAccessLevel($user->id, $access))
-			die("You are not allowed to access to this page.");
-		$mainframe        = $this->app;
-		$db               = JFactory::getDBO();
-		$ag_id            = $this->input->get('mail_group', null, 'POST', 'none', 0);
-		$ae_id            = $this->input->get('mail_user', null, 'POST', 'none', 0);
-		$subject          = $this->input->get('mail_subject', null, 'POST', 'none', 0);
-		$message          = $this->input->get('mail_body', null, 'POST', 'none', 0);
-		$limitstart       = $this->input->get('limitstart', null, 'POST', 'none', 0);
-		$filter_order     = $this->input->get('filter_order', null, 'POST', null, 0);
-		$filter_order_Dir = $this->input->get('filter_order_Dir', null, 'POST', null, 0);
-
-		if ($subject == '') {
-			JError::raiseWarning(500, JText::_('COM_EMUNDUS_ERROR_EMAILS_YOU_MUST_PROVIDE_SUBJECT'));
-			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart=' . $limitstart . '&filter_order=' . $filter_order . '&filter_order_Dir=' . $filter_order_Dir);
-
-			return;
-		}
-		if ($message == '') {
-			JError::raiseWarning(500, JText::_('COM_EMUNDUS_ERROR_EMAILS_YOU_MUST_PROVIDE_A_MESSAGE'));
-			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart=' . $limitstart . '&filter_order=' . $filter_order . '&filter_order_Dir=' . $filter_order_Dir);
-
-			return;
-		}
-
-		// List of evaluators
-		if (isset($ag_id) && $ag_id > 0) {
-			$query = 'SELECT eg.user_id
-						FROM `#__emundus_groups` as eg
-						WHERE eg.group_id=' . $ag_id;
-			$db->setQuery($query);
-			$users = $db->loadResultArray();
-		}
-		elseif (isset($ae_id) && $ae_id > 0)
-			$users[] = $ae_id;
-		else {
-			JError::raiseWarning(500, JText::_('COM_EMUNDUS_ERROR'));
-			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart=' . $limitstart . '&filter_order=' . $filter_order . '&filter_order_Dir=' . $filter_order_Dir);
-
-			return;
-		}
-
-		// setup mail
-		if (isset($current_user->email)) {
-			$from     = $current_user->email;
-			$from_id  = $current_user->id;
-			$fromname = $current_user->name;
-		}
-		elseif ($mainframe->getCfg('mailfrom') != '' && $mainframe->getCfg('fromname') != '') {
-			$from     = $mainframe->getCfg('mailfrom');
-			$fromname = $mainframe->getCfg('fromname');
-			$from_id  = 62;
-		}
-		else {
-			$query = 'SELECT id, name, email' .
-				' FROM #__users' .
-				// administrator
-				' WHERE gid = 25 LIMIT 1';
-			$db->setQuery($query);
-			$admin    = $db->loadObject();
-			$from     = $admin->email;
-			$from_id  = $admin->id;
-			$fromname = $admin->name;
-		}
-
-		// Evaluations criterias
-		$query = 'SELECT id, label, sub_labels
-		FROM #__fabrik_elements
-		WHERE group_id=41 AND (plugin like "fabrikradiobutton" OR plugin like "fabrikdropdown")';
-		$db->setQuery($query);
-		$db->query();
-		$eval_criteria = $db->loadObjectList();
-
-		$eval = '<ul>';
-		foreach ($eval_criteria as $e) {
-			$eval .= '<li>' . $e->label . ' (' . $e->sub_labels . ')</li>';
-		}
-		$eval .= '</ul>';
-
-		// template replacements
-		$patterns = array('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[APPLICANTS_LIST\]/', '/\[SITE_URL\]/', '/\[EVAL_CRITERIAS\]/', '/\[EVAL_PERIOD\]/', '/\n/');
-
-		foreach ($users as $uid) {
-			$user = JFactory::getUser($uid);
-
-			$query = 'SELECT applicant_id
-					  FROM #__emundus_groups_eval
-					  WHERE user_id=' . $user->id . ' OR group_id IN (select group_id from #__emundus_groups where user_id=' . $user->id . ')';
-			$db->setQuery($query);
-			$db->query();
-			$applicants = $db->loadResultArray();
-			$list       = '<ul>';
-
-			foreach ($applicants as $ap) {
-				$app  = JFactory::getUser($ap);
-				$list .= '<li>' . $app->name . ' [' . $app->id . ']</li>';
-			}
-			$list .= '</ul>';
-
-			$query = 'SELECT esp.evaluation_start, esp.evaluation_end
-						FROM #__emundus_setup_profiles AS esp
-						LEFT JOIN #__emundus_users AS eu ON eu.profile=esp.id
-						WHERE user_id=' . $user->id;
-			$db->setQuery($query);
-			$db->query();
-			$period = $db->loadRow();
-
-			$period_str = strftime(JText::_('DATE_FORMAT_LC2'), strtotime($period[0])) . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . strftime(JText::_('DATE_FORMAT_LC2'), strtotime($period[1]));
-
-			$replacements = array($user->id, $user->name, $user->email, $list, JURI::base(), $eval, $period_str, '<br />');
-			// template replacements
-			$body = preg_replace($patterns, $replacements, $message);
-
-			// mail function
-			JUtility::sendMail($from, $fromname, $user->email, $subject, $body, 1);
-
-			$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
-				VALUES ('" . $from_id . "', '" . $user->id . "', '" . $subject . "', '" . $body . "', NOW())";
-			$db->setQuery($sql);
-			$db->execute();
-
-			unset($replacements);
-		}
-
-		$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart=' . $limitstart . '&filter_order=' . $filter_order . '&filter_order_Dir=' . $filter_order_Dir, JText::_('COM_EMUNDUS_ACTIONS_ACTION_DONE'), 'message');
-	}
 
 	public function addgroups()
 	{
 		$tab = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
 
-		$user = JFactory::getUser();
-		$data = $this->input->get('data', null, 'POST', 'none', 0);
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+			$data = $this->input->get('data', null, 'POST', 'none', 0);
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-			require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . '/models/groups.php');
+			require_once(JPATH_ROOT . '/components/com_emundus/models/groups.php');
 			$m_groups = $this->getModel('Groups');
 			$result   = $m_groups->addGroupsByProgrammes($data);
 
 			if ($result === true) {
 				$tab = array('status' => 1, 'msg' => JText::_('GROUPS_ADDED'), 'data' => $result);
-			}
-			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_ADD_GROUPS'), 'data' => $result);
+			} else {
+				$tab['msg'] = JText::_('ERROR_CANNOT_ADD_GROUPS');
 			}
 		}
 		echo json_encode((object) $tab);
