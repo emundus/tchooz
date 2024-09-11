@@ -596,4 +596,68 @@ class EmundusHelperAccess
 
 		return $mine;
 	}
+
+	public static function getUserEvaluationStepAccess($ccid, $step_data, $user_id) {
+		$can_see = false;
+		$can_edit = false;
+
+		if (!empty($ccid) && !empty($step_data)) {
+			$app = Factory::getApplication();
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
+
+			// verify if user can access to this evaluation form
+			if (EmundusHelperAccess::asCoordinatorAccessLevel($user_id) || EmundusHelperAccess::asAdministratorAccessLevel($user_id)) {
+				$can_see = true;
+				$can_edit = true;
+			} else {
+				$fnum = EmundusHelperFiles::getFnumFromId($ccid);
+
+				// it's the bare minimum to potentially see the evaluation form
+				if (EmundusHelperAccess::asAccessAction(5, 'r', $user_id, $fnum)) {
+					// Verify if this step and this ccid are linked together by workflow
+					$query->clear()
+						->select('esp.id')
+						->from($db->quoteName('#__emundus_setup_programmes', 'esp'))
+						->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.training = esp.code')
+						->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.campaign_id = esc.id')
+						->where('ecc.id = ' . $ccid);
+
+					$db->setQuery($query);
+					$programme_id = $db->loadResult();
+
+					if (!empty($programme_id) && in_array($programme_id, $step_data->programs)) {
+						// get profiles who can access to this step and verify if user is in one of these profiles
+						$emundus_user_session = $app->getSession()->get('emundusUser');
+
+						if (in_array($emundus_user_session->profile, $step_data->roles)) {
+							$can_see = true;
+							if (EmundusHelperAccess::asAccessAction(5, 'c', $user_id, $fnum)) {
+								// verify step is not closed
+								// file must be in one of the entry statuses and current date must be between start and end date of step
+								$query->clear()
+									->select('status')
+									->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+									->where('ecc.id = ' . $ccid);
+
+								$db->setQuery($query);
+								$status = $db->loadResult();
+
+								if (in_array($status, $step_data->entry_status) && $step_data->start_date <= date('Y-m-d') && $step_data->end_date >= date('Y-m-d')) {
+									$can_edit = true;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+
+		return [
+			'can_see' => $can_see,
+			'can_edit' => $can_edit
+		];
+
+	}
 }
