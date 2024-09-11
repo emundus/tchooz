@@ -1830,6 +1830,7 @@ class EmundusControllerFiles extends BaseController
 			} else {
 				// On définit les bons formats
 				$date_elements = [];
+				$iban_elements = [];
 				foreach ($ordered_elements as $fLine) {
 					if (in_array($fLine->element_plugin,['date','jdate'])) {
 						$params = json_decode($fLine->element_attribs);
@@ -1843,6 +1844,15 @@ class EmundusControllerFiles extends BaseController
 					if ($fLine->element_plugin == 'textarea') {
 						$params = json_decode($fLine->element_attribs);
 						$textarea_elements[$fLine->tab_name.'___'.$fLine->element_name] = $params->use_wysiwyg;
+					}
+
+					if ($fLine->element_plugin == 'iban') {
+						$params = json_decode($fLine->element_attribs);
+						$elt_name = $fLine->tab_name.'___'.$fLine->element_name;
+						if(!empty($fLine->table_join) && $fLine->table_join_key == 'parent_id') {
+							$elt_name = $fLine->table_join.'___'.$fLine->element_name;
+						}
+						$iban_elements[$elt_name] = $params->encrypt_datas;
 					}
 				}
 			}

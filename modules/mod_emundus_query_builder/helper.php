@@ -710,71 +710,31 @@ class ModEmundusQueryBuilderHelper
 	/**
 	 * Create pdf with images of selected graphs
 	 */
-	public static function convertPdfAjax()
-	{
-		$eMConfig             = ComponentHelper::getParams('com_emundus');
-		$gotenberg_activation = $eMConfig->get('gotenberg_activation', 1);
-		$gotenberg_url        = $eMConfig->get('gotenberg_url', 'http://localhost:3000');
-		$res                  = new stdClass();
-
-		if ($gotenberg_activation !== '1') {
-			$res->status = false;
-			$res->msg    = 'Please activate Gotenberg in eMundus config.';
-
-			return json_encode($res);
-		}
-
-		$fichier = JPATH_BASE;
+	public static function convertPdfAjax() {
+		$response = ['status' => false, 'msg' => 'Error'];
 
 		$jinput = Factory::getApplication()->input;
-		$src    = $jinput->get('src', '', 'RAW');
+		$dom = $jinput->get('src', '','RAW');
 
-		$doc = new DOMDocument();
-		$doc->loadHTML($src);
-		$imgList = $doc->getElementsBytagName('div');
-		for ($i = 0; $i < count($imgList); $i++) {
-			file_put_contents($fichier . DS . "tmp" . DS . 'image' . $i . ".svg", utf8_decode((new modEmundusQueryBuilderHelper)->getInnerHtml($imgList->item($i))));
-			$oldNode = $imgList->item($i)->firstChild;
-			$imgList->item($i)->removeChild($oldNode);
-			$newNode = $doc->createElement("img");
-			$newNode->setAttribute('src', $fichier . DS . "tmp" . DS . 'image' . $i . ".svg");
-			$imgList->item($i)->appendChild($newNode);
+		try {
+			$doc = new DOMDocument();
+			$doc->loadHTML($dom);
+			$doc->saveHTMLFile(JPATH_ROOT . '/tmp/tmp_export_graph.html');
+			$src = JPATH_ROOT . '/tmp/tmp_export_graph.html';
+		} catch (Exception $e) {
+			$src = '';
 		}
 
-		$client = null;
-		$config = Factory::getApplication()->getConfig();
-		$proxy_enable = $config->get('proxy_enable', 0);
-
-		// If proxy enabled we have to define a guzzle client with proxy
-		if($proxy_enable == 1) {
-			$proxy_host = $config->get('proxy_host', '');
-			$proxy_port = $config->get('proxy_port', '');
-			$proxies = [
-				'http'  => 'http://'.$proxy_host.':'.$proxy_port,
-				'https' => 'http://'.$proxy_host.':'.$proxy_port
-			];
-
-			$client = new Client([
-				RequestOptions::PROXY => $proxies,
-				RequestOptions::VERIFY => false, # disable SSL certificate validation
-				RequestOptions::TIMEOUT => 30, # timeout of 30 seconds
-			]);
+		if (!empty($src)) {
+			if (!class_exists('EmundusModelExport')) {
+				require_once(JPATH_ROOT . '/components/com_emundus/models/export.php');
+			}
+			$m_export = new EmundusModelExport();
+			$response = $m_export->toPdf($src, JPATH_ROOT . '/tmp/Graph.pdf', 'html');
+			unlink(JPATH_ROOT . '/tmp/tmp_export_graph.html');
 		}
 
-		$request = Gotenberg::chromium($gotenberg_url)
-			->html(Stream::string('index.html', '<html><body style="width:10%;">' . $src . '</body></html>'));
-
-		$dest_path = $fichier . DS . "tmp" . DS . 'Graph.pdf';
-		Gotenberg::save($request, $dest_path .'/', $client);
-
-		for ($i = 0; $i < count($imgList); $i++) {
-			unlink($fichier . DS . "tmp" . DS . 'image' . $i . ".svg");
-		}
-
-		$res->status = true;
-		$res->msg    = 'It\'s ok';
-
-		return json_encode($res);
+		return json_encode($response);
 	}
 
 	/**
