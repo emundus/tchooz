@@ -114,9 +114,11 @@ class EmundusControllerFiles extends BaseController
 	 */
 	public function applicantemail()
 	{
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'emails.php');
-		$h_emails = new EmundusHelperEmails;
-		$h_emails->sendApplicantEmail();
+		if (EmundusHelperAccess::asAccessAction(9, 'c')) {
+			require_once(JPATH_SITE . '/components/com_emundus/helpers/emails.php');
+			$h_emails = new EmundusHelperEmails;
+			$h_emails->sendApplicantEmail();
+		}
 	}
 
 	/**
@@ -124,9 +126,12 @@ class EmundusControllerFiles extends BaseController
 	 */
 	public function groupmail()
 	{
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'emails.php');
-		$h_emails = new EmundusHelperEmails;
-		$h_emails->sendGroupEmail();
+		if (EmundusHelperAccess::asAccessAction(16, 'c'))
+		{
+			require_once(JPATH_SITE . '/components/com_emundus/helpers/emails.php');
+			$h_emails = new EmundusHelperEmails;
+			$h_emails->sendGroupEmail();
+		}
 	}
 
 	/**
@@ -228,36 +233,42 @@ class EmundusControllerFiles extends BaseController
 	 */
 	public function loadfilters()
 	{
-		try {
-			$id = $this->input->getInt('id', null);
+		$status = false;
 
-			$session = $this->app->getSession();
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)){
+			try {
+				$id = $this->input->getInt('id', null);
 
-			$h_files                 = new EmundusHelperFiles;
-			$filter                  = $h_files->getEmundusFilters($id);
-			$params                  = (array) json_decode($filter->constraints);
-			$params['select_filter'] = $id;
-			$params                  = json_decode($filter->constraints, true);
+				$session = $this->app->getSession();
 
-			$session->set('select_filter', $id);
+				$h_files                 = new EmundusHelperFiles;
+				$filter                  = $h_files->getEmundusFilters($id);
+				$params                  = (array) json_decode($filter->constraints);
+				$params['select_filter'] = $id;
+				$params                  = json_decode($filter->constraints, true);
 
-			if (isset($params['filter_order'])) {
-				$session->set('filter_order', $params['filter_order']);
-				$session->set('filter_order_Dir', $params['filter_order_Dir']);
+				$session->set('select_filter', $id);
+
+				if (isset($params['filter_order'])) {
+					$session->set('filter_order', $params['filter_order']);
+					$session->set('filter_order_Dir', $params['filter_order_Dir']);
+				}
+
+				$session->set('filt_params', $params['filter']);
+
+				if (!empty($params['col']))
+					$session->set('adv_cols', $params['col']);
+
+				$status = true;
 			}
-
-			$session->set('filt_params', $params['filter']);
-
-			if (!empty($params['col']))
-				$session->set('adv_cols', $params['col']);
-
-			echo json_encode((object) (array('status' => true)));
-			exit();
-
+			catch (Exception $e) {
+				throw new Exception;
+			}
 		}
-		catch (Exception $e) {
-			throw new Exception;
-		}
+
+
+		echo json_encode((object) (array('status' => $status)));
+		exit();
 	}
 
 	/**
@@ -475,19 +486,20 @@ class EmundusControllerFiles extends BaseController
 			'options' => []
 		];
 
-		if(!$this->_user->guest)
-		{
-			$h_files = new EmundusHelperFiles;
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			if (!$this->_user->guest) {
+				$h_files = new EmundusHelperFiles;
 
-			try
-			{
-				$result['options'] = $h_files->getElements();
-				$result['status']  = true;
+				try
+				{
+					$result['options'] = $h_files->getElements();
+					$result['status']  = true;
 
-			}
-			catch (Exception $e)
-			{
-				Log::add(Text::_('COM_EMUNDUS_ERROR') . ' : ' . $e->getMessage(), Log::ERROR, 'emundus');
+				}
+				catch (Exception $e)
+				{
+					Log::add(Text::_('COM_EMUNDUS_ERROR') . ' : ' . $e->getMessage(), Log::ERROR, 'emundus');
+				}
 			}
 		}
 
@@ -500,53 +512,59 @@ class EmundusControllerFiles extends BaseController
 	 */
 	public function getbox()
 	{
-		try {
-			$id    = $this->input->getInt('id', null);
-			$index = $this->input->getInt('index', null);
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
 
-			$session = JFactory::getSession();
-			$params  = $session->get('filt_params');
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			try {
+				$id    = $this->input->getInt('id', null);
+				$index = $this->input->getInt('index', null);
 
-			$h_files = new EmundusHelperFiles;
-			$element = $h_files->getElementsName($id);
+				$session = JFactory::getSession();
+				$params  = $session->get('filt_params');
 
-			$tab_name                 = (isset($element[$id]->table_join) ? $element[$id]->table_join : $element[$id]->tab_name);
-			$key                      = $tab_name . '.' . $element[$id]->element_name;
-			$params['elements'][$key] = '';
+				$h_files = new EmundusHelperFiles;
+				$element = $h_files->getElementsName($id);
 
-			$advCols = $session->get('adv_cols');
+				$tab_name                 = (isset($element[$id]->table_join) ? $element[$id]->table_join : $element[$id]->tab_name);
+				$key                      = $tab_name . '.' . $element[$id]->element_name;
+				$params['elements'][$key] = '';
 
-			if (!$session->has('adv_cols') || count($advCols) == 0) {
-				$advCols = array($index => $id);
-			}
-			else {
 				$advCols = $session->get('adv_cols');
-				if (isset($advCols[$index])) {
-					$lastId = @$advCols[$index];
-					if (!in_array($id, $advCols)) {
-						$advCols[$index] = $id;
-					}
-					if (array_key_exists($index, $advCols)) {
-						$lastElt  = $h_files->getElementsName($lastId);
-						$tab_name = (isset($lastElt[$lastId]->table_join) ? $lastElt[$lastId]->table_join : $lastElt[$lastId]->tab_name);
-						unset($params['elements'][$tab_name . '.' . $lastElt[$lastId]->element_name]);
-					}
+
+				if (!$session->has('adv_cols') || count($advCols) == 0) {
+					$advCols = array($index => $id);
 				}
 				else {
-					$advCols[$index] = $id;
+					$advCols = $session->get('adv_cols');
+					if (isset($advCols[$index])) {
+						$lastId = @$advCols[$index];
+						if (!in_array($id, $advCols)) {
+							$advCols[$index] = $id;
+						}
+						if (array_key_exists($index, $advCols)) {
+							$lastElt  = $h_files->getElementsName($lastId);
+							$tab_name = (isset($lastElt[$lastId]->table_join) ? $lastElt[$lastId]->table_join : $lastElt[$lastId]->tab_name);
+							unset($params['elements'][$tab_name . '.' . $lastElt[$lastId]->element_name]);
+						}
+					}
+					else {
+						$advCols[$index] = $id;
+					}
 				}
+				$session->set('filt_params', $params);
+				$session->set('adv_cols', $advCols);
+
+				$html = $h_files->setSearchBox($element[$id], '', $tab_name . '.' . $element[$id]->element_name, $index);
+
+				$response = array('status' => true, 'default' => Text::_('COM_EMUNDUS_PLEASE_SELECT'), 'defaulttrash' => Text::_('REMOVE_SEARCH_ELEMENT'), 'html' => $html);
 			}
-			$session->set('filt_params', $params);
-			$session->set('adv_cols', $advCols);
-
-			$html = $h_files->setSearchBox($element[$id], '', $tab_name . '.' . $element[$id]->element_name, $index);
-
-			echo json_encode((object) (array('status' => true, 'default' => Text::_('COM_EMUNDUS_PLEASE_SELECT'), 'defaulttrash' => Text::_('REMOVE_SEARCH_ELEMENT'), 'html' => $html)));
-			exit;
+			catch (Exception $e) {
+				Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
+			}
 		}
-		catch (Exception $e) {
-			Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
-		}
+
+		echo json_encode((object) $response);
+		exit;
 	}
 
 	/**
