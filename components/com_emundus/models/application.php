@@ -3770,18 +3770,22 @@ class EmundusModelApplication extends ListModel
 					foreach($workflows as $workflow) {
 						$workflow_data = $m_workflow->getWorkflow($workflow->id);
 
+						$ccid = EmundusHelperFiles::getIdFromFnum($fnum);
 						foreach($workflow_data['steps'] as $step) {
 							if ($step->type === 'evaluator') {
-
-								$menus[] = [
-									'id' => $workflow->id . $step->id,
-									'title' => $step->label,
-									'link' => 'index.php?option=com_emundus&view=workflows&layout=evaluator_step&format=raw&step_id=' . $step->id,
-									'lft' => 9998,
-									'rgt' => 9999,
-									'note' => '1|r',
-									'hasSons' => false
-								];
+								$step_data = $m_workflow->getStepData($step->id);
+								$step_access = EmundusHelperAccess::getUserEvaluationStepAccess($ccid, $step_data, $user_id);
+								if ($step_access['can_see']) {
+									$menus[] = [
+										'id' => $workflow->id . $step->id,
+										'title' => $step->label,
+										'link' => 'index.php?option=com_emundus&view=workflows&layout=evaluator_step&format=raw&step_id=' . $step->id,
+										'lft' => 9998,
+										'rgt' => 9999,
+										'note' => '1|r',
+										'hasSons' => false
+									];
+								}
 							}
 						}
 					}
