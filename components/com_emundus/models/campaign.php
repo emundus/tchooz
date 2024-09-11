@@ -3002,7 +3002,11 @@ class EmundusModelCampaign extends ListModel
 			}
 
 			// profiles from workflows
-			$workflows  = $this->getWorkflows();
+			if (!class_exists('EmundusModelWorkflow')) {
+				require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+			}
+			$m_worfklow = new EmundusModelWorkflow();
+			$workflows  = $m_worfklow->getWorkflows();
 
 			if (!empty($workflows)) {
 				$programme_codes = [];
@@ -3016,7 +3020,7 @@ class EmundusModelCampaign extends ListModel
 
 				foreach ($workflows as $workflow)
 				{
-					if (!in_array($workflow->profile, $profile_ids) && (!empty(array_intersect($workflow->campaigns, $campaign_ids)) || !empty(array_intersect($workflow->programs, $programme_codes))))
+					if (!in_array($workflow->profile, $profile_ids) && (!empty(array_intersect($workflow->programme_ids, $programme_codes))))
 					{
 						$profile_ids[] = $workflow->profile;
 					}
