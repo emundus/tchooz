@@ -30,6 +30,11 @@ if(!empty($e_user->fnums)) {
 	$this->collaborator = $fnumInfos->applicant_id != $e_user->id;
 }
 
+$user_profile_form = false;
+if ($form->db_table_name == 'jos_emundus_users' && !empty($model->data['jos_emundus_users___user_id_raw']) && !EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)) {
+	$user_profile_form = true;
+}
+
 if ($this->params->get('show_page_heading', 1)) : ?>
     <div class="componentheading<?php echo $this->params->get('pageclass_sfx') ?>">
 		<?php echo $this->escape($this->params->get('page_heading')); ?>
@@ -41,7 +46,7 @@ endif;
 
 <div id="fabrikDetailsContainer_<?php echo $form->id ?>">
 
-    <?php if ($form->db_table_name == 'jos_emundus_users' && !empty($model->data['jos_emundus_users___user_id_raw']) && !EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)) : ?>
+    <?php if ($user_profile_form) : ?>
         <?php
 	    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
 	    $m_user = new EmundusModelUsers;
