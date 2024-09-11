@@ -2020,7 +2020,7 @@ class EmundusModelApplication extends ListModel
 														$select = !empty($params->join_val_column_concat) ? "CONCAT(" . $params->join_val_column_concat . ")" : $params->join_val_column;
 
 														if ($params->database_join_display_type == 'checkbox' || $params->database_join_display_type == 'multilist') {
-															$select = $this->getSelectFromDBJoinElementParams($params);
+															$select = $this->getSelectFromDBJoinElementParams($params,'t');
 															$query->select($select)
 																->from($this->_db->quoteName($params->join_db_name, 't'))
 																->leftJoin($this->_db->quoteName($itemt->db_table_name . '_' . $itemg->id . '_repeat_repeat_' . $elements[$j]->name, 'checkbox_repeat') . ' ON ' . $this->_db->quoteName('checkbox_repeat.' . $elements[$j]->name) . ' = ' . $this->_db->quoteName('t.id'))
@@ -2730,7 +2730,7 @@ class EmundusModelApplication extends ListModel
 														$query = $this->_db->getQuery(true);
 
 														$parent_id = strlen($elements[$j]->content_id) > 0 ? $elements[$j]->content_id : 0;
-														$select    = $this->getSelectFromDBJoinElementParams($params);
+														$select    = $this->getSelectFromDBJoinElementParams($params,'t');
 
 														$query->select($select)
 															->from($this->_db->quoteName($params->join_db_name, 't'))
@@ -2941,7 +2941,7 @@ class EmundusModelApplication extends ListModel
 														$query = $this->_db->getQuery(true);
 
 														$parent_id = strlen($elements[$j]->content_id) > 0 ? $elements[$j]->content_id : 0;
-														$select    = $this->getSelectFromDBJoinElementParams($params);
+														$select    = $this->getSelectFromDBJoinElementParams($params,'t');
 
 														$query->select($select)
 															->from($this->_db->quoteName($params->join_db_name, 't'))
@@ -6075,15 +6075,19 @@ class EmundusModelApplication extends ListModel
 		return $reordered;
 	}
 
-	private function getSelectFromDBJoinElementParams($params)
+	private function getSelectFromDBJoinElementParams($params, $alias = 'jd')
 	{
+		$select = '';
 
-
-		$select = $this->_db->quoteName($params->join_val_column);
-		if (!empty($params->join_val_column_concat)) {
-			$select = 'CONCAT(' . $params->join_val_column_concat . ')';
-			$select = preg_replace('#{thistable}#', 'jd', $select);
-			$select = preg_replace('#{shortlang}#', $this->locales, $select);
+		if (!empty($params))
+		{
+			$select = $this->_db->quoteName($params->join_val_column);
+			if (!empty($params->join_val_column_concat))
+			{
+				$select = 'CONCAT(' . $params->join_val_column_concat . ')';
+				$select = preg_replace('#{thistable}#', $alias, $select);
+				$select = preg_replace('#{shortlang}#', $this->locales, $select);
+			}
 		}
 
 		return $select;

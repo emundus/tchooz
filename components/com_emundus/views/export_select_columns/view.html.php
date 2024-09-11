@@ -91,7 +91,9 @@ class EmundusViewExport_select_columns extends JViewLegacy
 			$this->elements = EmundusHelperFiles::getElements($code, $camps, [], $profile);
 		}
 
-		$this->program = $program->label;
+		if (!empty($program)) {
+			$this->program = $program->label;
+		}
 
 		parent::display($tpl);
 	}

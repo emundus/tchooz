@@ -1085,7 +1085,13 @@ class EmundusController extends JControllerLegacy
 				finfo_close($finfo);
 
 				if (!empty($mtype)) {
-					if ($file['type'] !== $mtype) {
+					if($mtype == 'application/zip') {
+						// Check if the file is a zip file, check if the file type is application/x-zip-compressed for windows users
+						if($file['type'] !== $mtype && $file['type'] !== 'application/x-zip-compressed') {
+							$pos = false;
+						}
+					}
+					elseif($file['type'] !== $mtype) {
 						$pos = false;
 					}
 				}
