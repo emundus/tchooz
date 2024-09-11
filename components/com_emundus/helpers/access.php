@@ -612,7 +612,7 @@ class EmundusHelperAccess
 		$can_see = false;
 		$can_edit = false;
 
-		if (!empty($ccid) && !empty($step_data)) {
+		if (!empty($ccid) && !empty($step_data->id)) {
 			$app = Factory::getApplication();
 			$db = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->createQuery();

@@ -632,7 +632,8 @@ class EmundusModelFormbuilder extends JModelList
 				$query = "CREATE TABLE IF NOT EXISTS jos_emundus_" . $prid . "_" . $increment . " (
 		            id int(11) NOT NULL AUTO_INCREMENT,
 		            time_date datetime NULL DEFAULT current_timestamp(),
-		            ccid int(28) NOT NULL,
+		            ccid int(11) NOT NULL,
+		            fnum VARCHAR(28) NOT NULL,
 		            evaluator int(11) NOT NULL,
 		            updated_by int(11) NOT NULL,
 		            step_id int(11) NOT NULL,

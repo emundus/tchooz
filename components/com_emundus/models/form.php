@@ -1209,6 +1209,7 @@ class EmundusModelForm extends JModelList
 				$m_formbuilder->createElement('id', $group['group_id'], 'internalid', 'id', '', 1, 0);
 				$m_formbuilder->createElement('time_date', $group['group_id'], 'jdate', 'time date', '', 1, 0);
 				$m_formbuilder->createElement('ccid', $group['group_id'], 'field', 'Identifiant du dossier', '', 1, 1, 1, 1, 0, 44);
+				$m_formbuilder->createElement('fnum', $group['group_id'], 'field', 'fnum', '', 1, 0, 1, 1, 0, 44);
 				$m_formbuilder->createElement('step_id', $group['group_id'], 'field', 'Phase', '', 1, 1, 1, 1, 0, 44);
 				$m_formbuilder->createElement('evaluator', $group['group_id'], 'user', 'user', '{$my->id}', 1);
 				$m_formbuilder->createElement('updated_by', $group['group_id'], 'user', 'user', '{$my->id}}', 1);
