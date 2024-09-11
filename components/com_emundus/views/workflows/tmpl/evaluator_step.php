@@ -49,7 +49,7 @@ use Joomla\CMS\Language\Text;
                 </div>
 			<?php endif; ?>
             <iframe class="tw-mt-4" height="600" width="100%"
-                    src="index.php?option=com_fabrik&view=form&formid=<?= $this->step->form_id ?>&<?= $this->step->db_table_name ?>___ccid[value]=<?= $this->ccid ?>&<?= $this->step->db_table_name ?>___step_id[value]=<?= $this->step->id ?>&tmpl=component&iframe=1"></iframe>
+                    src="index.php?option=com_fabrik&view=form&formid=<?= $this->step->form_id ?>&<?= $this->step->db_table_name ?>___ccid=<?= $this->ccid ?>&<?= $this->step->db_table_name ?>___step_id=<?= $this->step->id ?>&tmpl=component&iframe=1"></iframe>
         </div>
 		<?php
 	}

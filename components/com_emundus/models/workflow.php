@@ -395,8 +395,18 @@ class EmundusModelWorkflow extends JModelList
 				$this->db->setQuery($query);
 				$data = $this->db->loadObject();
 
-				$data->entry_status = array_unique(explode(',', $data->entry_status));
-				$data->roles = !empty($data->roles) ? array_unique(explode(',', $data->roles)) : [];
+				if (!empty($data->id)) {
+					$data->entry_status = array_unique(explode(',', $data->entry_status));
+					$data->roles = !empty($data->roles) ? array_unique(explode(',', $data->roles)) : [];
+
+					$query->clear()
+						->select('program_id')
+						->from($this->db->quoteName('#__emundus_setup_workflows_programs'))
+						->where($this->db->quoteName('workflow_id') . ' = ' . $data->workflow_id);
+
+					$this->db->setQuery($query);
+					$data->programs = $this->db->loadColumn();
+				}
 			} catch (Exception $e) {
 				Log::add('Error while fetching workflow steps: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
 			}
@@ -410,17 +420,17 @@ class EmundusModelWorkflow extends JModelList
 	 *
 	 * @return null|object if a step is found, it returns a workflow step object, otherwise null
 	 */
-	public function getCurrentWorkflowStepFromFile($fnum, $type = 'applicant') {
+	public function getCurrentWorkflowStepFromFile($file_identifier, $type = 'applicant', $column = 'fnum') {
 		$step = null;
 
-		if (!empty($fnum)) {
+		if (!empty($file_identifier) && in_array($column, ['fnum', 'id'])) {
 			$query = $this->db->createQuery();
 
 			$query->select('ecc.status, esp.id as program_id, ecc.published')
 				->from($this->db->quoteName('#__emundus_campaign_candidature', 'ecc'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('esc.id') . ' = ' . $this->db->quoteName('ecc.campaign_id'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON ' . $this->db->quoteName('esp.code') . ' = ' . $this->db->quoteName('esc.training'))
-				->where('ecc.fnum LIKE ' . $this->db->quote($fnum));
+				->where('ecc.' . $column . ' LIKE ' . $this->db->quote($file_identifier));
 
 			$this->db->setQuery($query);
 			$file_infos = $this->db->loadAssoc();
