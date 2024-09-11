@@ -34,21 +34,23 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 	public function onBeforeLoad(): void
 	{
 		$user = $this->app->getIdentity();
-
 		$form_model = $this->getModel();
 		$db_table_name = $form_model->getTableName();
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->createQuery();
 
 		$input = $this->app->input;
 		$ccid = $input->getInt($db_table_name . '___ccid', 0);
 		$step_id = $input->getInt($db_table_name . '___step_id', 0);
 		$view = $input->getString('view', 'form');
+		$current_row_id = $input->getInt('rowid', 0);
 
 		$can_see = false;
 		$can_edit = false;
 
 		if (!empty($ccid) && !empty($step_id)) {
-			$db = Factory::getContainer()->get('DatabaseDriver');
-			$query = $db->createQuery();
+			$m_workflow = new EmundusModelWorkflow();
+			$step_data = $m_workflow->getStepData($step_id);
 
 			// verify if user can access to this evaluation form
 			if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id) || EmundusHelperAccess::asAdministratorAccessLevel($user->id)) {
@@ -60,9 +62,6 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 				// it's the bare minimum to potentially see the evaluation form
 				if (EmundusHelperAccess::asAccessAction(5, 'r', $user->id, $fnum)) {
 					// Verify if this step and this ccid are linked together by workflow
-					$m_workflow = new EmundusModelWorkflow();
-					$step_data = $m_workflow->getStepData($step_id);
-
 					if (!empty($step_data)) {
 						$query->clear()
 							->select('esp.id')
@@ -102,17 +101,56 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 			}
 		}
 
-
 		if (!$can_see) {
 			$this->app->enqueueMessage(Text::_('ACCESS_DENIED'), 'error');
 			$this->app->redirect('/');
 		}
 
+		$current_url = '/index.php?option=com_fabrik&view=' . $view . '&formid=' . $form_model->getId() . '&tmpl=component&iframe=1&' . $db_table_name . '___ccid=' . $ccid . '&' . $db_table_name . '___step_id=' . $step_id . '&rowid=' . $current_row_id;
+		$final_url = $current_url;
+
+		if (!empty($step_data) && $can_edit && $view === 'form') {
+			if ($step_data->multiple == 0) {
+				// if step_data is not multiple, we need to redirect to the unique row for this ccid
+				$query->clear()
+					->select('id')
+					->from($db_table_name)
+					->where($db->quoteName('ccid') . ' = ' . $ccid);
+
+				$db->setQuery($query);
+				$row_id = $db->loadResult();
+			} else {
+				// if multiple, we need to redirect to the row of the current user if it exists
+				$query->clear()
+					->select('id')
+					->from($db_table_name)
+					->where($db->quoteName('ccid') . ' = ' . $ccid)
+					->where($db->quoteName('evaluator') . ' = ' . $user->id);
+
+				$db->setQuery($query);
+				$row_id = $db->loadResult();
+			}
+
+			if (!empty($row_id)) {
+				// if coord or admin, he is allowed to edit all rows, so if rowid is not 0, keep it
+				// if not, replace it with the rowid
+
+				if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id) || $current_row_id == 0) {
+					$final_url = preg_replace('/&rowid=\d+/', '&rowid=' . $row_id, $final_url);
+					if (strpos($final_url, 'rowid') === false) {
+						$final_url .= '&rowid=' . $row_id;
+					}
+				}
+			}
+		}
+
 		if (!$can_edit && $view !== 'details') {
 			$this->app->enqueueMessage(Text::_('READONLY_ACCESS'), 'error');
-			$current_url = $this->app->input->server->get('REQUEST_URI');
-			$details_url = str_replace('view=form', 'view=details', $current_url);
-			$this->app->redirect($details_url);
+			$final_url = str_replace('view=form', 'view=details', $final_url);
+		}
+
+		if ($current_url !== $final_url) {
+			$this->app->redirect($final_url);
 		}
 	}
 
