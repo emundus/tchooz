@@ -415,6 +415,30 @@ class EmundusModelWorkflow extends JModelList
 		return $data;
 	}
 
+	public function getEvaluatorStepsByProgram($program_id)
+	{
+		$steps = [];
+
+		if (!empty($program_id)) {
+			$workflows = $this->getWorkflows([], 0, 0, [$program_id]);
+
+			foreach ($workflows as $workflow)
+			{
+				$workflow_data = $this->getWorkflow($workflow->id);
+
+				foreach ($workflow_data['steps'] as $step)
+				{
+					if ($step->type === 'evaluator')
+					{
+						$steps[] = $step;
+					}
+				}
+			}
+		}
+
+		return $steps;
+	}
+
 	/**
 	 * @param $fnum
 	 *

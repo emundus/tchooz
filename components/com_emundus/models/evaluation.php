@@ -509,6 +509,59 @@ class EmundusModelEvaluation extends JModelList
 		return $elements_id;
 	}
 
+	public function getEvaluationStepsElementsName($show_in_list_summary = 1, $hidden = 0, $codes = array()) {
+		$elements = [];
+
+		if (!empty($codes)) {
+			$h_list  = new EmundusHelperList;
+			$codes = array_unique($codes);
+			$query = $this->db->getQuery(true);
+
+			if (!class_exists('EmundusModelWorkflow')) {
+				require_once(JPATH_SITE . '/components/com_emundus/models/workflow.php');
+			}
+			$m_workflow = new EmundusModelWorkflow();
+
+			foreach($codes as $code) {
+				$query->clear()
+					->select('id')
+					->from('#__emundus_setup_programmes')
+					->where('code = ' . $this->db->quote($code));
+
+				$this->db->setQuery($query);
+				$programme_id = $this->db->loadResult();
+
+				if (!empty($programme_id)) {
+					$steps = $m_workflow->getEvaluatorStepsByProgram($programme_id);
+
+					foreach($steps as $step) {
+						$query->clear()
+							->select('group_id')
+							->from('#__fabrik_formgroup')
+							->where('form_id = ' . $step->form_id);
+
+						$this->db->setQuery($query);
+						$group_ids = $this->db->loadColumn();
+
+						if (!empty($group_ids)) {
+							$group_elements = $this->getElementsByGroups(implode(',', $group_ids), $show_in_list_summary, $hidden);
+
+							foreach ($group_elements as $group_element)
+							{
+								if (isset($group_element->element_id) && !empty($group_element->element_id))
+								{
+									$elements[] = $h_list->getElementsDetailsByID($group_element->element_id)[0];
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return $elements;
+	}
+
 	/**
 	 * Get list of evaluation elements
 	 *

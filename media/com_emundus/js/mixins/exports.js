@@ -1016,3 +1016,19 @@ function generate_trombinoscope(fnums, data)
         }
     });
 }
+
+
+async function getEvaluationStepsElements(code)
+{
+    let elements = '';
+
+    if (code) {
+        return await fetch('index.php?option=com_emundus&view=export_select_columns&format=raw&form=evaluation_steps&code='+code).then((response) => {
+            return response.text();
+        }).then((data) => {
+            return data;
+        });
+    } else {
+        return elements;
+    }
+}

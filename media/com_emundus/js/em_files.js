@@ -2825,6 +2825,16 @@ $(document).ready(function() {
                         '<div id="aelts" style="overflow:auto;display:none;"></div>'+
                         '</div>'+
 
+                        '<div id="eval-steps-exists" class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16">'+
+                        '<div>'+
+                        '<div class="em-flex-row">' +
+                        '<input class="em-ex-check" type="checkbox"  value="evaluation-steps" name="evaluation-steps" id="em-evaluation-steps"/>' +
+                        '<label for="evaluation-steps" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_EXPORTS_EVAL_STEPS_PDF')+'</label>'+
+                        '</div>' +
+                        '</div>'+
+                        '<div id="evaluation-steps-elts" style="overflow:auto;display:none;"></div>'+
+                        '</div>'+
+
                         '<div class="em-mt-8 em-p-12-16 em-bg-neutral-200 em-border-radius-8" id="eval-exists" style="display:none;">'+
                         '<div>'+
                         '<div class="em-flex-row">' +
@@ -3338,6 +3348,16 @@ $(document).ready(function() {
                     '<div id="aelts" style="overflow:auto;display:none;"></div>'+
                     '</div>'+
 
+                    '<div id="eval-steps-exists" class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16">'+
+                    '<div>'+
+                    '<div class="em-flex-row">' +
+                    '<input class="em-ex-check" type="checkbox"  value="evaluation-steps" name="evaluation-steps" id="em-evaluation-steps"/>' +
+                    '<label for="evaluation-steps" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_EXPORTS_EVAL_STEPS_PDF')+'</label>'+
+                    '</div>' +
+                    '</div>'+
+                    '<div id="evaluation-steps-elts" style="overflow:auto;display:none;"></div>'+
+                    '</div>'+
+
                     '<div class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16" id="eval-exists" style="display:none;">'+
                     '<div>'+
                     '<div class="em-flex-row">' +
@@ -3820,6 +3840,16 @@ $(document).ready(function() {
                                             });
                                         }
                                     })
+
+                                    getEvaluationStepsElements(code).then((evaluationStepsElements) => {
+                                        if (evaluationStepsElements.length > 0) {
+                                            // append to #evaluation-steps-elts
+                                            $('#evaluation-steps-elts').append(evaluationStepsElements);
+                                            $('#evaluation-steps-elts').show();
+                                            $('#eval-steps-exists').show();
+
+                                        }
+                                    });
                                 } else {
                                     /// if one of two conditions as above is not correct --> hide the div "felts"
                                     $('[id^=form-element]').hide();

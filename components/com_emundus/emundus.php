@@ -232,6 +232,7 @@ Text::script('ERROR');
 Text::script('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF');
 Text::script('COM_EMUNDUS_EXPORTS_FORMS_PDF');
 Text::script('COM_EMUNDUS_EXPORTS_ATTACHMENT_PDF');
+Text::script('COM_EMUNDUS_EXPORTS_EVAL_STEPS_PDF');
 Text::script('COM_EMUNDUS_EXPORTS_ASSESSMENT_PDF');
 Text::script('JYES');
 Text::script('JNO');
