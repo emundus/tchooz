@@ -597,7 +597,16 @@ class EmundusHelperAccess
 		return $mine;
 	}
 
-	public static function getUserEvaluationStepAccess($ccid, $step_data, $user_id) {
+	/**
+	 * @param $ccid int campaign candidature id
+	 * @param $step_data object step data, use getStepData from EmundusModelWorkflow
+	 * @param $user_id int if not given, current user will be taken
+	 * @param $profile_id int if not given, it will be taken from session
+	 *
+	 * @return bool[] (can_see, can_edit)
+	 * @throws Exception
+	 */
+	public static function getUserEvaluationStepAccess($ccid, $step_data, $user_id, $profile_id = null) {
 		$can_see = false;
 		$can_edit = false;
 
@@ -605,6 +614,10 @@ class EmundusHelperAccess
 			$app = Factory::getApplication();
 			$db = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->createQuery();
+
+			if (empty($user_id)) {
+				$user_id = $app->getIdentity()->id;
+			}
 
 			// verify if user can access to this evaluation form
 			if (EmundusHelperAccess::asCoordinatorAccessLevel($user_id) || EmundusHelperAccess::asAdministratorAccessLevel($user_id)) {
@@ -628,9 +641,12 @@ class EmundusHelperAccess
 
 					if (!empty($programme_id) && in_array($programme_id, $step_data->programs)) {
 						// get profiles who can access to this step and verify if user is in one of these profiles
-						$emundus_user_session = $app->getSession()->get('emundusUser');
+						if ($profile_id === null) {
+							$emundus_user_session = $app->getSession()->get('emundusUser');
+							$profile_id = $emundus_user_session->profile;
+						}
 
-						if (in_array($emundus_user_session->profile, $step_data->roles)) {
+						if (in_array($profile_id, $step_data->roles)) {
 							$can_see = true;
 							if (EmundusHelperAccess::asAccessAction(5, 'c', $user_id, $fnum)) {
 								// verify step is not closed
@@ -653,11 +669,9 @@ class EmundusHelperAccess
 			}
 		}
 
-
 		return [
 			'can_see' => $can_see,
 			'can_edit' => $can_edit
 		];
-
 	}
 }
