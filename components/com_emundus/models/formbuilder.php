@@ -1641,7 +1641,7 @@ class EmundusModelFormbuilder extends JModelList
 
 						// Add element to table
 						if ($evaluation) {
-							$query = "ALTER TABLE jos_emundus_evaluations" . " ADD criteria_" . $gid . "_" . $elementId . " " . $dbtype . " " . $dbnull;
+							$query = "ALTER TABLE " . $formlist->dbtable . " ADD criteria_" . $gid . "_" . $elementId . " " . $dbtype . " " . $dbnull;
 							$this->db->setQuery($query);
 							$this->db->execute();
 

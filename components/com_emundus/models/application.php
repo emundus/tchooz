@@ -3774,17 +3774,23 @@ class EmundusModelApplication extends ListModel
 						foreach($workflow_data['steps'] as $step) {
 							if ($step->type === 'evaluator') {
 								$step_data = $m_workflow->getStepData($step->id);
-								$step_access = EmundusHelperAccess::getUserEvaluationStepAccess($ccid, $step_data, $user_id);
-								if ($step_access['can_see']) {
-									$menus[] = [
-										'id' => $workflow->id . $step->id,
-										'title' => $step->label,
-										'link' => 'index.php?option=com_emundus&view=workflows&layout=evaluator_step&format=raw&step_id=' . $step->id,
-										'lft' => 9998,
-										'rgt' => 9999,
-										'note' => '1|r',
-										'hasSons' => false
-									];
+
+								try {
+									$step_access = EmundusHelperAccess::getUserEvaluationStepAccess($ccid, $step_data, $user_id);
+									if ($step_access['can_see']) {
+										$menus[] = [
+											'id' => $workflow->id . $step->id,
+											'title' => $step->label,
+											'link' => 'index.php?option=com_emundus&view=workflows&layout=evaluator_step&format=raw&step_id=' . $step->id,
+											'lft' => 9998,
+											'rgt' => 9999,
+											'note' => '1|r',
+											'hasSons' => false
+										];
+									}
+								} catch (Exception $e) {
+									Log::add('line ' . __LINE__ . ' - Error in model/application at query: ' . $query->__toString(), Log::ERROR, 'com_emundus');
+									continue;
 								}
 							}
 						}

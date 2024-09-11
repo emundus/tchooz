@@ -15,6 +15,7 @@
 // no direct access
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\Language\Text;
 
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
@@ -620,27 +621,27 @@ class EmundusHelperAccess
 				$user_id = $app->getIdentity()->id;
 			}
 
-			// verify if user can access to this evaluation form
-			if (EmundusHelperAccess::asCoordinatorAccessLevel($user_id) || EmundusHelperAccess::asAdministratorAccessLevel($user_id)) {
-				$can_see = true;
-				$can_edit = true;
-			} else {
-				$fnum = EmundusHelperFiles::getFnumFromId($ccid);
+			// Verify if this step and this ccid are linked together by workflow
+			$query->clear()
+				->select('esp.id')
+				->from($db->quoteName('#__emundus_setup_programmes', 'esp'))
+				->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.training = esp.code')
+				->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.campaign_id = esc.id')
+				->where('ecc.id = ' . $ccid);
 
-				// it's the bare minimum to potentially see the evaluation form
-				if (EmundusHelperAccess::asAccessAction(5, 'r', $user_id, $fnum)) {
-					// Verify if this step and this ccid are linked together by workflow
-					$query->clear()
-						->select('esp.id')
-						->from($db->quoteName('#__emundus_setup_programmes', 'esp'))
-						->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.training = esp.code')
-						->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.campaign_id = esc.id')
-						->where('ecc.id = ' . $ccid);
+			$db->setQuery($query);
+			$programme_id = $db->loadResult();
 
-					$db->setQuery($query);
-					$programme_id = $db->loadResult();
+			if (!empty($programme_id) && in_array($programme_id, $step_data->programs)) {
+				// verify if user can access to this evaluation form
+				if (EmundusHelperAccess::asCoordinatorAccessLevel($user_id) || EmundusHelperAccess::asAdministratorAccessLevel($user_id)) {
+					$can_see = true;
+					$can_edit = true;
+				} else {
+					$fnum = EmundusHelperFiles::getFnumFromId($ccid);
 
-					if (!empty($programme_id) && in_array($programme_id, $step_data->programs)) {
+					// it's the bare minimum to potentially see the evaluation form
+					if (EmundusHelperAccess::asAccessAction(5, 'r', $user_id, $fnum)) {
 						// get profiles who can access to this step and verify if user is in one of these profiles
 						if ($profile_ids === null) {
 							$emundus_user_session = $app->getSession()->get('emundusUser');
@@ -667,6 +668,8 @@ class EmundusHelperAccess
 						}
 					}
 				}
+			} else {
+				throw new Exception(Text::_('ERROR_INCOHERENT_STEP_FOR_CCID'));
 			}
 		}
 

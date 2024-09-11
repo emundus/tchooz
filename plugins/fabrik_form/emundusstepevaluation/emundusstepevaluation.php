@@ -47,7 +47,12 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 
 		$m_workflow = new EmundusModelWorkflow();
 		$step_data = $m_workflow->getStepData($step_id);
-		$access = EmundusHelperAccess::getUserEvaluationStepAccess($ccid, $step_data, $user->id);
+		try {
+			$access = EmundusHelperAccess::getUserEvaluationStepAccess($ccid, $step_data, $user->id);
+		} catch (Exception $e) {
+			$this->app->enqueueMessage($e->getMessage(), 'error');
+			$this->app->redirect('/');
+		}
 
 		$can_see = $access['can_see'];
 		$can_edit = $access['can_edit'];
@@ -66,7 +71,8 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 				$query->clear()
 					->select('id')
 					->from($db_table_name)
-					->where($db->quoteName('ccid') . ' = ' . $ccid);
+					->where($db->quoteName('ccid') . ' = ' . $ccid)
+					->andWhere($db->quoteName('step_id') . ' = ' . $step_id);
 
 				$db->setQuery($query);
 				$row_id = $db->loadResult();
@@ -76,6 +82,7 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 					->select('id')
 					->from($db_table_name)
 					->where($db->quoteName('ccid') . ' = ' . $ccid)
+					->andWhere($db->quoteName('step_id') . ' = ' . $step_id)
 					->where($db->quoteName('evaluator') . ' = ' . $user->id);
 
 				$db->setQuery($query);
