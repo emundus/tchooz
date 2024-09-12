@@ -794,6 +794,10 @@ export default {
   min-height: 86px;
 }
 
+.view-settings #onboarding_list .head {
+  position: inherit;
+}
+
 #onboarding_list .list {
   margin-top: 77px;
 }

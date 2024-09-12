@@ -43,7 +43,7 @@
       <div v-show="currentView === 'steps'" id="workflow-steps-wrapper" class="tw-my-4 tw-flex tw-flex-col tw-p-2 tw-border tw-rounded">
         <a class="tw-btn-primary tw-h-fit tw-w-fit tw-mb-4" href="#" @click="addStep"> {{ translate('COM_EMUNDUS_WORKFLOW_ADD_STEP') }} </a>
 
-        <div id="workflow-steps" class="tw-grid tw-grid-cols-4 tw-gap-3 tw-overflow-auto">
+        <div id="workflow-steps" class="tw-grid tw-grid-cols-3 tw-gap-3 tw-overflow-auto">
           <div v-for="step in steps" :key="step.id" class="workflow-step tw-rounded tw-border tw-shadow-sm tw-p-4 em-white-bg">
             <div class="workflow-step-head tw-flex tw-flex-row tw-justify-between">
               <h4>{{ step.label }}</h4>
@@ -525,7 +525,7 @@ export default {
         const stepDate = step.start_date instanceof Date ? step.start_date : new Date(step.start_date);
         const stepYear = stepDate.getFullYear();
 
-        if (stepYear > acc) {
+        if (stepYear < acc || acc === 0) {
           acc = stepYear;
         }
 
