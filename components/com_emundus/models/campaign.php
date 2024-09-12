@@ -1430,6 +1430,9 @@ class EmundusModelCampaign extends ListModel
 
 			$actualLanguage = !empty($lang->getTag()) ? substr($lang->getTag(), 0, 2) : 'fr';
 
+			$eMConfig = ComponentHelper::getParams('com_emundus');
+			$create_default_program_trigger = $eMConfig->get('create_default_program_trigger', 1);
+
 			$i            = 0;
 			$labels       = new stdClass();
 			$limit_status = [];
@@ -1515,7 +1518,7 @@ class EmundusModelCampaign extends ListModel
 							$m_settings->onAfterCreateCampaign();
 
 							// Create a default trigger
-							if (!empty($data['training'])) {
+							if (!empty($data['training']) && !empty($create_default_program_trigger)) {
 								$query->clear()
 									->select('id')
 									->from($this->_db->quoteName('#__emundus_setup_programmes'))
