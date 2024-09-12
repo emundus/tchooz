@@ -9,7 +9,7 @@ use Joomla\CMS\Language\Text;
 
 <div class="panel panel-default widget em-container-evaluator-step">
 	<?php
-	if (!empty($this->step) && $this->step->type === 'evaluator' && !empty($this->step->form_id) && $this->access['can_see'])
+	if (!empty($this->step) && $this->step->type == 2 && !empty($this->step->form_id) && $this->access['can_see'])
 	{
 		?>
 		<?php if (1) : ?>
@@ -61,7 +61,7 @@ use Joomla\CMS\Language\Text;
 	else
 	{
 		?>
-        <p><?= Text::_('COM_EMUNDU_WORKFLOW_NO_DATA') ?></p>
+        <p style="text-align: center" class="tw-p-4"><?= Text::_('COM_EMUNDU_WORKFLOW_NO_DATA') ?></p>
 		<?php
 	}
 	?>

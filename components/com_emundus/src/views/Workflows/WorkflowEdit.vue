@@ -64,9 +64,9 @@
               </div>
 
               <div class="tw-mb-4 tw-flex tw-flex-col">
-                <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_TYPE') }}</label>
+                <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_TYPE_PARENT') }}</label>
                 <select v-model="step.type">
-                  <option v-for="type in stepTypes" :key="type.id" :value="type.id">{{ type.label }}</option>
+                  <option v-for="type in parentStepTypes" :key="type.id" :value="type.id">{{ translate(type.label) }}</option>
                 </select>
               </div>
 
@@ -122,7 +122,7 @@
                 </DatePicker>
               </div>
 
-              <div v-if="step.type !== 'applicant'" class="tw-mb-4 tw-flex tw-flex-col">
+              <div v-if="step.type != 1" class="tw-mb-4 tw-flex tw-flex-col">
                 <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_ROLES') }}</label>
                 <Multiselect
                     :options="nonApplicantProfiles"
@@ -134,7 +134,7 @@
                 </Multiselect>
               </div>
 
-              <div v-if="step.type === 'applicant'" class="tw-mb-4 tw-flex tw-flex-col">
+              <div v-if="step.type == 1" class="tw-mb-4 tw-flex tw-flex-col">
                 <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_PROFILE') }}</label>
                 <select v-model="step.profile_id">
                   <option v-for="profile in applicantProfiles" :key="profile.id" :value="profile.id">{{ profile.label }}</option>
@@ -160,7 +160,7 @@
                 </Multiselect>
               </div>
 
-              <div class="tw-mb-4 tw-flex tw-flex-col">
+              <div v-if="step.type == 1" class="tw-mb-4 tw-flex tw-flex-col">
                 <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_OUTPUT_STATUS') }}</label>
                 <select v-model="step.output_status">
                   <option value="-1">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_OUTPUT_STATUS_SELECT') }}</option>
@@ -227,10 +227,7 @@ export default {
       steps: [],
       programs: [],
       currentView: 'steps', // steps, gantt
-      stepTypes: [
-        { id: 'applicant', label: this.translate('COM_EMUNDUS_WORKFLOW_STEP_TYPE_APPLICANT') },
-        { id: 'evaluator', label: this.translate('COM_EMUNDUS_WORKFLOW_STEP_TYPE_EVALUATOR') },
-      ],
+      stepTypes: [],
       sortByOptions: [],
       statuses : [],
       profiles: [],
@@ -246,6 +243,7 @@ export default {
     }
   },
   mounted() {
+    this.getStepTypes();
     this.getStatuses().then(() => {
       this.getPrograms().then(() => {
         this.getProfiles().then(() => {
@@ -272,6 +270,15 @@ export default {
 
           let program_ids = response.data.programs;
           this.programs = this.programsOptions.filter(program => program_ids.includes(program.id));
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    },
+    async getStepTypes() {
+      return await workflowService.getStepTypes()
+        .then(response => {
+          this.stepTypes = response.data
         })
         .catch(e => {
           console.log(e);
@@ -504,6 +511,9 @@ export default {
     },
     applicantProfiles() {
       return this.profiles.filter(profile => profile.applicantProfile);
+    },
+    parentStepTypes() {
+      return this.stepTypes.filter(type => type.parent_id === 0);
     },
     stepsGantBars() {
       return this.steps.map(step => {

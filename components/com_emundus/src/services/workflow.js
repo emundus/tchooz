@@ -35,5 +35,14 @@ export default {
         status: false, msg: 'Invalid step id.'
       };
     }
+  },
+  async getStepTypes() {
+    try {
+      return await client.get('getsteptypes');
+    } catch (e) {
+      return {
+        status: false, msg: e.message
+      };
+    }
   }
 };

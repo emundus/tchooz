@@ -2696,7 +2696,7 @@ class EmundusModelCampaign extends ListModel
 						$wf_data = $m_workflow->getWorkflow($workflow->id);
 
 						foreach ($wf_data['steps'] as $step) {
-							if ($step->type === 'applicant') {
+							if ($step->type == 1) {
 								$step->profile = $step->profile_id;
 								$steps[] = $step;
 							}

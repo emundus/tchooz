@@ -35,7 +35,7 @@ class EmundusModelWorkflow extends JModelList
 	}
 
 
-	public function add()
+	public function add(): int
 	{
 		$new_workflow_id = 0;
 
@@ -58,7 +58,7 @@ class EmundusModelWorkflow extends JModelList
 	 * @param $wid
 	 * @return bool true if deleted, false otherwise
 	 */
-	public function delete($wid, $user_id)
+	public function delete($wid, $user_id): bool
 	{
 		$deleted = false;
 
@@ -83,7 +83,7 @@ class EmundusModelWorkflow extends JModelList
 		return $deleted;
 	}
 
-	public function updateWorkflow($workflow, $steps, $programs)
+	public function updateWorkflow($workflow, $steps, $programs): bool
 	{
 		$updated = false;
 		$error_occurred = false;
@@ -126,7 +126,7 @@ class EmundusModelWorkflow extends JModelList
 					if ($step['id'] < 1) {
 						unset($step['id']);
 					}
-					if ($step['type'] === 'evaluator') {
+					if ($step['type'] == 2) {
 						$step['profile_id'] = null;
 					} else {
 						$step['form_id'] = null;
@@ -226,7 +226,8 @@ class EmundusModelWorkflow extends JModelList
 		return $updated;
 	}
 
-	public function deleteWorkflowStep($stepId) {
+	public function deleteWorkflowStep($stepId): bool
+	{
 		$deleted = false;
 
 		if (!empty($stepId)) {
@@ -246,7 +247,8 @@ class EmundusModelWorkflow extends JModelList
 		return $deleted;
 	}
 
-	public function countWorkflows($ids = []) {
+	public function countWorkflows($ids = []): int
+	{
 		$nb_workflows = 0;
 
 		$query = $this->db->createQuery();
@@ -269,7 +271,8 @@ class EmundusModelWorkflow extends JModelList
 		return $nb_workflows;
 	}
 
-	public function getWorkflows($ids = [], $limit = 0, $page = 0, $programs = []) {
+	public function getWorkflows($ids = [], $limit = 0, $page = 0, $programs = []): array
+	{
 		$workflows = [];
 
 		$query = $this->db->getQuery(true);
@@ -308,7 +311,7 @@ class EmundusModelWorkflow extends JModelList
 		return $workflows;
 	}
 
-	public function getWorkflow($id)
+	public function getWorkflow($id): array
 	{
 		$workflowData = [];
 
@@ -375,9 +378,9 @@ class EmundusModelWorkflow extends JModelList
 	/**
 	 * @param $id
 	 *
-	 * @return void
+	 * @return object with step data
 	 */
-	public function getStepData($id)
+	public function getStepData($id): object
 	{
 		$data = new stdClass();
 
@@ -415,7 +418,7 @@ class EmundusModelWorkflow extends JModelList
 		return $data;
 	}
 
-	public function getEvaluatorStepsByProgram($program_id)
+	public function getEvaluatorStepsByProgram($program_id): array
 	{
 		$steps = [];
 
@@ -428,7 +431,7 @@ class EmundusModelWorkflow extends JModelList
 
 				foreach ($workflow_data['steps'] as $step)
 				{
-					if ($step->type === 'evaluator')
+					if ($step->type == 2)
 					{
 						$steps[] = $step;
 					}
@@ -444,7 +447,8 @@ class EmundusModelWorkflow extends JModelList
 	 *
 	 * @return null|object if a step is found, it returns a workflow step object, otherwise null
 	 */
-	public function getCurrentWorkflowStepFromFile($file_identifier, $type = 'applicant', $column = 'fnum') {
+	public function getCurrentWorkflowStepFromFile($file_identifier, $type = 1, $column = 'fnum'): ?object
+	{
 		$step = null;
 
 		if (!empty($file_identifier) && in_array($column, ['fnum', 'id'])) {
@@ -504,5 +508,26 @@ class EmundusModelWorkflow extends JModelList
 		}
 
 		return $step;
+	}
+
+	/**
+	 * @return array of step types
+	 */
+	public function getStepTypes(): array
+	{
+		$types = [];
+
+		try {
+			$query = $this->db->getQuery(true);
+			$query->select('*')
+				->from('#__emundus_setup_workflow_step_types');
+
+			$this->db->setQuery($query);
+			$types = $this->db->loadObjectList();
+		} catch (Exception $e) {
+			Log::add('Error while fetching step types: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+		}
+
+		return $types;
 	}
 }

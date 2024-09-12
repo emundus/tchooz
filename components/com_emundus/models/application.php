@@ -3772,7 +3772,7 @@ class EmundusModelApplication extends ListModel
 
 						$ccid = EmundusHelperFiles::getIdFromFnum($fnum);
 						foreach($workflow_data['steps'] as $step) {
-							if ($step->type === 'evaluator') {
+							if ($step->type == 2) {
 								$step_data = $m_workflow->getStepData($step->id);
 
 								try {
