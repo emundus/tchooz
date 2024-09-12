@@ -7,10 +7,10 @@
     <div id="header">
       <div class="tw-flex tw-flex-row tw-justify-between">
         <input id="workflow-label" name="workflow-label" class="!tw-w-[350px]" type="text" v-model="workflow.label" />
-        <a class="tw-btn-primary tw-flex tw-items-center tw-gap-1" href="#" @click="save">
+        <button class="tw-btn-primary tw-flex tw-items-center tw-gap-1" href="#" @click="save">
           <span class="material-icons-outlined">check</span>
           <span>{{ translate('SAVE') }}</span>
-        </a>
+        </button>
       </div>
 
       <div class="tw-mt-4 tw-w-full tw-flex tw-flex-row tw-justify-between tw-items-center">
@@ -67,6 +67,13 @@
                 <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_TYPE_PARENT') }}</label>
                 <select v-model="step.type">
                   <option v-for="type in parentStepTypes" :key="type.id" :value="type.id">{{ translate(type.label) }}</option>
+                </select>
+              </div>
+
+              <div v-if="getStepSubTypes(step.type).length > 0" class="tw-mb-4 tw-flex tw-flex-col">
+                <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_TYPE_CHILDREN') }}</label>
+                <select v-model="step.sub_type">
+                  <option v-for="type in getStepSubTypes(step.type)" :key="type.id" :value="type.id">{{ translate(type.label) }}</option>
                 </select>
               </div>
 
@@ -356,6 +363,9 @@ export default {
           });
         }
       });
+    },
+    getStepSubTypes(stepType) {
+      return this.stepTypes.filter(type => type.parent_id == stepType);
     },
     addStep() {
       const newStep = {

@@ -637,7 +637,7 @@ class EmundusHelperAccess
 				if (EmundusHelperAccess::asCoordinatorAccessLevel($user_id) || EmundusHelperAccess::asAdministratorAccessLevel($user_id)) {
 					$can_see = true;
 					$can_edit = true;
-				} else {
+				} else if (EmundusHelperAccess::asPartnerAccessLevel($user_id)) {
 					$fnum = EmundusHelperFiles::getFnumFromId($ccid);
 
 					// it's the bare minimum to potentially see the evaluation form
