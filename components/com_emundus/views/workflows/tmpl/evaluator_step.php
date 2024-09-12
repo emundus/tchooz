@@ -13,7 +13,7 @@ use Joomla\CMS\Language\Text;
 	{
 		?>
 		<?php if (1) : ?>
-        <div class="panel-heading em-container-form-heading">
+        <div class="panel-heading em-container-form-heading  !tw-bg-profile-full">
             <h3 class="panel-title tw-flex tw-flex-row tw-items-center tw-justify-start">
                 <span class="material-symbols-outlined em-color-white tw-mr-2">edit_note</span>
                 <span> <?= $this->step->label ?></span>

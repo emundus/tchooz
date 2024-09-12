@@ -68,14 +68,15 @@ class EmundusModelAdministratorWorkflow extends JModelList
 			$columns = [
 				['name' => 'workflow_id', 'type' => 'INT', 'null' => 0],
 				['name' => 'label', 'type' => 'VARCHAR', 'length' => 255, 'null' => 0],
-				['name' => 'type', 'type' => 'VARCHAR', 'length' => 255, 'null' => 0], // 'applicant' or 'evaluator'
+				['name' => 'type', 'type' => 'INT', 'length' => 11, 'null' => 0], // 1 is 'applicant' 2 is 'evaluator'
+				['name' => 'sub_type', 'type' => 'INT', 'length' => 11, 'null' => 0],
 				['name' => 'profile_id', 'type' => 'INT', 'null' => 1],
 				['name' => 'form_id', 'type' => 'INT', 'null' => 1],
 				['name' => 'multiple', 'type' => 'TINYINT', 'null' => 1],
 				['name' => 'start_date', 'type' => 'DATETIME', 'null' => 0],
 				['name' => 'end_date', 'type' => 'DATETIME', 'null' => 0],
 				['name' => 'output_status', 'type' => 'INT', 'null' => 0],
-				['name' => 'output_status', 'state' => 'INT', 'null' => 0], // 1: published, 0: archived, -1: deleted
+				['name' => 'state', 'type' => 'INT', 'null' => 0], // 1: published, 0: archived, -1: deleted
 			];
 			$foreign_keys = [
 				[
@@ -163,6 +164,37 @@ class EmundusModelAdministratorWorkflow extends JModelList
 			];
 			$created = EmundusHelperUpdate::createTable('jos_emundus_setup_workflows_steps_roles', $columns, $foreign_keys);
 			$tasks[] = $created['status'];
+
+
+			$columns = [
+				['name' => 'parent_id', 'type' => 'INT', 'null' => 0, 'default' => 0],
+				['name' => 'label', 'type' => 'VARCHAR(255)', 'null' => 0],
+				['name' => 'action_id', 'type' => 'INT', 'null' => 1],
+				['name' => 'published', 'type' => 'TINYINT', 'null' => 1]
+			];
+			$created = EmundusHelperUpdate::createTable('jos_emundus_setup_workflow_step_types', $columns);
+			if ($created) {
+				// add first rows to the table
+				$rows = [
+					[1, 0, 'COM_EMUNDUS_WORKFLOW_STEP_TYPE_APPLICANT', 0, 1],
+					[2, 0, 'COM_EMUNDUS_WORKFLOW_STEP_TYPE_EVALUATOR', 0, 1],
+				];
+
+				foreach ($rows as $row) {
+					$db = Factory::getContainer()->get('DatabaseDriver');
+					$query = $db->getQuery(true);
+
+					$query->insert('#__emundus_setup_workflow_step_types');
+					$query->columns(['id', 'parent_id', 'label', 'action_id', 'published']);
+					$query->values($db->quote(implode(',', $row)));
+
+					$db->setQuery($query);
+					$db->execute();
+				}
+			}
+
+			$tasks[] = $created['status'];
+
 
 			if (!in_array(false, $tasks)) {
 				$installed = true;
