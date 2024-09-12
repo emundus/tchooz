@@ -303,7 +303,12 @@ defined('_JEXEC') or die;
 
 		if ($display_tchooz) :
 			foreach ($tchooz_list as $i => &$item) :
-				$item->anchor_css = "item";
+
+                if (!$item->getParams()->get('menu_show', 1)) {
+                    continue;
+                }
+
+                $item->anchor_css = "item";
 				$class            = 'item-' . $item->id . ' g-standard';
 				if ($item->id == $active_id) {
 					$class .= ' current';
