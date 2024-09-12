@@ -134,6 +134,18 @@
                 </Multiselect>
               </div>
 
+              <div v-if="step.type != 1" class="tw-mb-4 tw-flex tw-flex-col">
+                <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_GROUPS') }}</label>
+                <Multiselect
+                    :options="groups"
+                    v-model="step.groups"
+                    label="label"
+                    track-by="id"
+                    placeholder="Select a group"
+                    :multiple="true">
+                </Multiselect>
+              </div>
+
               <div v-if="step.type == 1" class="tw-mb-4 tw-flex tw-flex-col">
                 <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_PROFILE') }}</label>
                 <select v-model="step.profile_id">
@@ -196,6 +208,7 @@ import settingsService from '@/services/settings.js';
 import programmeService from '@/services/programme.js';
 import fileService from '@/services/file.js';
 import formService from '@/services/form.js';
+import groupsService from '@/services/groups.js';
 
 import Popover from '@/components/Popover.vue';
 import { DatePicker } from 'v-calendar';
@@ -226,6 +239,7 @@ export default {
       },
       steps: [],
       programs: [],
+      groups: [],
       currentView: 'steps', // steps, gantt
       stepTypes: [],
       sortByOptions: [],
@@ -244,6 +258,7 @@ export default {
   },
   mounted() {
     this.getStepTypes();
+    this.getGroups();
     this.getStatuses().then(() => {
       this.getPrograms().then(() => {
         this.getProfiles().then(() => {
@@ -279,6 +294,20 @@ export default {
       return await workflowService.getStepTypes()
         .then(response => {
           this.stepTypes = response.data
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    },
+    async getGroups() {
+      return await groupsService.getGroups()
+        .then(response => {
+          this.groups = response.data.map(group => {
+            return {
+              id: group.id,
+              label: group.label
+            }
+          });
         })
         .catch(e => {
           console.log(e);
