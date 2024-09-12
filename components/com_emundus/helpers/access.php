@@ -607,7 +607,7 @@ class EmundusHelperAccess
 	 * @return bool[] (can_see, can_edit)
 	 * @throws Exception
 	 */
-	public static function getUserEvaluationStepAccess($ccid, $step_data, $user_id, $profile_ids = null): array
+	public static function getUserEvaluationStepAccess($ccid, $step_data, $user_id): array
 	{
 		$can_see = false;
 		$can_edit = false;
@@ -641,16 +641,14 @@ class EmundusHelperAccess
 					$fnum = EmundusHelperFiles::getFnumFromId($ccid);
 
 					// it's the bare minimum to potentially see the evaluation form
-					if (EmundusHelperAccess::asAccessAction(5, 'r', $user_id, $fnum)) {
-						// get profiles who can access to this step and verify if user is in one of these profiles
-						if ($profile_ids === null) {
-							$emundus_user_session = $app->getSession()->get('emundusUser');
-							$profile_ids = [$emundus_user_session->profile];
-						}
+					if (EmundusHelperAccess::asAccessAction($step_data->action_id, 'r', $user_id, $fnum)) {
+						// get groups who can access to this step and verify if user is in one of these groups
+						$m_users = new EmundusModelUsers();
+						$user_groups = $m_users->getUserGroups($user_id, 'Column');
 
-						if (!empty(array_intersect($profile_ids, $step_data->roles))) {
+						if (!empty(array_intersect($user_groups, $step_data->groups))) {
 							$can_see = true;
-							if (EmundusHelperAccess::asAccessAction(5, 'c', $user_id, $fnum)) {
+							if (EmundusHelperAccess::asAccessAction($step_data->action_id, 'c', $user_id, $fnum)) {
 								// verify step is not closed
 								// file must be in one of the entry statuses and current date must be between start and end date of step
 								$query->clear()

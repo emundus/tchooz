@@ -123,22 +123,10 @@
               </div>
 
               <div v-if="step.type != 1" class="tw-mb-4 tw-flex tw-flex-col">
-                <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_ROLES') }}</label>
-                <Multiselect
-                    :options="nonApplicantProfiles"
-                    v-model="step.roles"
-                    label="label"
-                    track-by="id"
-                    placeholder="Select a role"
-                    :multiple="true">
-                </Multiselect>
-              </div>
-
-              <div v-if="step.type != 1" class="tw-mb-4 tw-flex tw-flex-col">
                 <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_GROUPS') }}</label>
                 <Multiselect
                     :options="groups"
-                    v-model="step.groups"
+                    v-model="step.group_ids"
                     label="label"
                     track-by="id"
                     placeholder="Select a group"
@@ -279,7 +267,7 @@ export default {
             step.end_date = new Date(step.end_date);
 
             step.entry_status = this.statuses.filter(status => step.entry_status.includes(status.id.toString()));
-            step.roles = this.nonApplicantProfiles.filter(profile => step.roles.includes(profile.id.toString()));
+            step.group_ids = this.groups.filter(group => step.group_ids.includes(group.id.toString()));
           });
           this.steps = tmpSteps;
 

@@ -34,7 +34,6 @@ class EmundusModelWorkflow extends JModelList
 		Log::addLogger(['text_file' => 'com_emundus.formbuilder.php'], Log::ALL, array('com_emundus.workflow'));
 	}
 
-
 	public function add(): int
 	{
 		$new_workflow_id = 0;
@@ -150,13 +149,13 @@ class EmundusModelWorkflow extends JModelList
 								}
 							}
 
-							if (!empty($step['roles'])) {
-								foreach($step['roles'] as $role) {
+							if (!empty($step['group_ids'])) {
+								foreach($step['group_ids'] as $group) {
 									$row = new stdClass();
 									$row->step_id = $step['id'];
-									$row->profile_id = $role['id'];
+									$row->group_id = $group['id'];
 
-									$this->db->insertObject('#__emundus_setup_workflows_steps_roles', $row);
+									$this->db->insertObject('#__emundus_setup_workflows_steps_groups', $row);
 								}
 							}
 						}
@@ -337,10 +336,10 @@ class EmundusModelWorkflow extends JModelList
 				];
 
 				$query->clear()
-					->select('esws.*, GROUP_CONCAT(eswses.status) AS entry_status, GROUP_CONCAT(eswsr.profile_id) AS roles')
+					->select('esws.*, GROUP_CONCAT(eswses.status) AS entry_status, GROUP_CONCAT(DISTINCT eswsg.group_id) AS group_ids')
 					->from($this->db->quoteName('#__emundus_setup_workflows_steps', 'esws'))
 					->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_entry_status', 'eswses') . ' ON ' . $this->db->quoteName('eswses.step_id') . ' = ' . $this->db->quoteName('esws.id'))
-					->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_roles', 'eswsr') . ' ON ' . $this->db->quoteName('eswsr.step_id') . ' = ' . $this->db->quoteName('esws.id'))
+					->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_groups', 'eswsg') . ' ON ' . $this->db->quoteName('eswsg.step_id') . ' = ' . $this->db->quoteName('esws.id'))
 					->where($this->db->quoteName('esws.workflow_id') . ' = ' . $id)
 					->group($this->db->quoteName('esws.id'))
 					->order($this->db->quoteName('esws.start_date') . ' ASC');
@@ -352,9 +351,10 @@ class EmundusModelWorkflow extends JModelList
 
 					foreach ($workflowData['steps'] as $key => $step) {
 						$workflowData['steps'][$key]->entry_status = array_unique(explode(',', $step->entry_status));
-						$workflowData['steps'][$key]->roles = !empty($step->roles) ? array_unique(explode(',', $step->roles)) : [];
+						$workflowData['steps'][$key]->group_ids = !empty($step->group_ids) ? array_unique(explode(',', $step->group_ids)) : [];
 					}
 				} catch (Exception $e) {
+					var_dump($query->__toString());exit;
 					Log::add('Error while fetching workflow steps: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
 				}
 
@@ -387,10 +387,10 @@ class EmundusModelWorkflow extends JModelList
 		if (!empty($id)) {
 			$query = $this->db->createQuery();
 			$query->clear()
-				->select('esws.*, GROUP_CONCAT(eswses.status) AS entry_status, GROUP_CONCAT(eswsr.profile_id) AS roles')
+				->select('esws.*, GROUP_CONCAT(DISTINCT eswses.status) AS entry_status, GROUP_CONCAT(DISTINCT eswsg.group_id) AS group_ids')
 				->from($this->db->quoteName('#__emundus_setup_workflows_steps', 'esws'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_entry_status', 'eswses') . ' ON ' . $this->db->quoteName('eswses.step_id') . ' = ' . $this->db->quoteName('esws.id'))
-				->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_roles', 'eswsr') . ' ON ' . $this->db->quoteName('eswsr.step_id') . ' = ' . $this->db->quoteName('esws.id'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_groups', 'eswsg') . ' ON ' . $this->db->quoteName('eswsg.step_id') . ' = ' . $this->db->quoteName('esws.id'))
 				->where('esws.id = ' . $id)
 				->group($this->db->quoteName('esws.id'));
 
@@ -400,7 +400,18 @@ class EmundusModelWorkflow extends JModelList
 
 				if (!empty($data->id)) {
 					$data->entry_status = array_unique(explode(',', $data->entry_status));
-					$data->roles = !empty($data->roles) ? array_unique(explode(',', $data->roles)) : [];
+					$data->group_ids = !empty($data->group_ids) ? array_unique(explode(',', $data->group_ids)) : [];
+					$data->action_id = 1;
+
+					if (!empty($data->sub_type)) {
+						$query->clear()
+							->select('action_id')
+							->from($this->db->quoteName('#__emundus_setup_workflow_step_types'))
+							->where('id = ' . $data->sub_type);
+
+						$this->db->setQuery($query);
+						$data->action_id = $this->db->loadResult();
+					}
 
 					$query->clear()
 						->select('program_id')
