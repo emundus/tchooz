@@ -3,7 +3,7 @@
     <div v-for="step in steps" :key="step.id" :id="'campaign-step-' + id + '-wrapper'" class="tw-my-4">
       <h3>{{ step.label }}</h3>
 
-      <div class="tw-mb-4 tw-flex tw-items-center">
+      <div class="tw-my-2 tw-flex tw-items-center">
         <div class="em-toggle">
           <input type="checkbox"
                  true-value="1"
@@ -76,7 +76,7 @@
     </div>
 
     <div class="tw-flex tw-flex-row tw-justify-end">
-      <button class="tw-btn tw-btn-primary tw-mt-4" @click="saveCampaignSteps">{{ translate('COM_EMUNDUS_SAVE') }}</button>
+      <button class="tw-btn tw-btn-primary tw-mt-4" @click="saveCampaignSteps">{{ translate('COM_EMUNDUS_ONBOARD_ADD_CONTINUER') }}</button>
     </div>
   </div>
 </template>
@@ -126,7 +126,9 @@ export default {
 
       workflowService.saveCampaignSteps(this.campaignId, this.steps)
         .then(response => {
-          console.log(response);
+          if (response.status) {
+            this.$emit('next');
+          }
         })
         .catch(error => {
           console.log(error);
