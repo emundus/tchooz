@@ -453,12 +453,13 @@ export default {
       return 'param_' + this.parameter.param + '[]';
     },
     checkPort() {
-      // Refactor this to use the goodPort array
+      if(!this.parameter.value || this.parameter.value === '') {
+        return true;
+      }
+
       let goodPort = [25, 587, 465]
-      for (let i = 0; i < goodPort.length; i++) {
-        if (this.parameter.value === goodPort[i]) {
-          return true;
-        }
+      if(goodPort.includes(this.parameter.value)) {
+        return true;
       }
 
       return false;

@@ -596,12 +596,12 @@
 
         <field showon="custom_email_conf:1" name="custom_mail_conf_note" label="COM_EMUNDUS_EMAILS_CUSTOM_CONFIG" type="note" description="" />
 
-        <field showon="custom_email_conf:1" name="custom_email_mailfrom" label="COM_EMUNDUS_EMAILS_FROM_ADDRESS" type="email" default="jojo@gmail.com" description="" />
-        <field showon="custom_email_conf:1" name="custom_email_fromname" label="COM_EMUNDUS_EMAILS_FROM_NAME" type="text" default="Jojo" description="" />
+        <field showon="custom_email_conf:1" name="custom_email_mailfrom" label="COM_EMUNDUS_EMAILS_FROM_ADDRESS" type="email" default="" description="" />
+        <field showon="custom_email_conf:1" name="custom_email_fromname" label="COM_EMUNDUS_EMAILS_FROM_NAME" type="text" default="" description="" />
         <field showon="custom_email_conf:1" name="custom_email_replyto" label="COM_EMUNDUS_EMAILS_REPLY_TO" type="email" default="" description="" />
         <field showon="custom_email_conf:1" name="custom_email_replytoname" label="COM_EMUNDUS_EMAILS_REPLY_TO_NAME" type="text" default="" description="" />
-        <field showon="custom_email_conf:1" name="custom_email_smtphost" label="COM_EMUNDUS_EMAILS_HOSTNAME" type="text" default="localhost" description="" />
-        <field showon="custom_email_conf:1" name="custom_email_smtpport" label="COM_EMUNDUS_EMAILS_PORT" type="number" default="25" description="" />
+        <field showon="custom_email_conf:1" name="custom_email_smtphost" label="COM_EMUNDUS_EMAILS_HOSTNAME" type="text" default="" description="" />
+        <field showon="custom_email_conf:1" name="custom_email_smtpport" label="COM_EMUNDUS_EMAILS_PORT" type="number" default="465" description="" />
         <field showon="custom_email_conf:1" name="custom_email_smtpsecure" label="COM_EMUNDUS_EMAILS_SECURE" type="list" default="none" description="">
             <option value="none">None</option>
             <option value="ssl">SSL</option>
@@ -611,7 +611,7 @@
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
-        <field showon="custom_email_conf:1" name="custom_email_smtpuser" label="COM_EMUNDUS_EMAILS_USERNAME" type="text" default="customadmin" description="" />
+        <field showon="custom_email_conf:1" name="custom_email_smtpuser" label="COM_EMUNDUS_EMAILS_USERNAME" type="text" default="" description="" />
         <field showon="custom_email_conf:1" name="custom_email_smtppass" label="COM_EMUNDUS_EMAILS_PASSWORD" type="password" default="" description="" />
 
         <field
