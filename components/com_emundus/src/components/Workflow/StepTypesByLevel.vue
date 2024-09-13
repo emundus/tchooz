@@ -12,20 +12,12 @@
         <StepTypesByLevel @updateTypes="onUpdateTypes" v-if="stepTypesOfParentId(type.id).length > 0" :defaultTypes="types" :parentId="type.id" :level="level + 1"></StepTypesByLevel>
       </div>
       <div class="tw-w-full tw-flex tw-flex-row tw-items-center">
-        <span v-for="i in level" :key="i" class="material-symbols-outlined">horizontal_rule</span>
+        <span v-for="i in (level+1)" :key="i" class="material-symbols-outlined">horizontal_rule</span>
         <button @click="addChildrenStepType(type)">
           {{ translate('COM_EMUNDUS_WORKFLOW_ADD_CHILDREN_STEP_TYPE') }}
         </button>
       </div>
     </div>
-    <div class="tw-w-full tw-flex tw-flex-row tw-items-center">
-      <span v-for="i in level" :key="i" class="material-symbols-outlined">horizontal_rule</span>
-      <button @click="addStepType">
-        {{ translate('COM_EMUNDUS_WORKFLOW_ADD_STEP_TYPE') }}
-      </button>
-    </div>
-
-
     <div v-if="level === 0" class="tw-flex tw-flex-row tw-justify-end">
       <button @click="saveStepTypes" class="tw-btn-primary">
         {{ translate('COM_EMUNDUS_SAVE') }}
