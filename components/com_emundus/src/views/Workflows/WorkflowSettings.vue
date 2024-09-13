@@ -3,7 +3,7 @@
     <div id="step-types">
       <h2> {{ translate('COM_EMUNDUS_WORKFLOW_STEP_TYPES') }}</h2>
 
-      <StepTypesByLevel v-if="stepTypes.length > 0" :defaultTypes="stepTypes" :parentId="0"></StepTypesByLevel>
+      <StepTypesByLevel @updateTypes="onUpdateTypes" v-if="stepTypes.length > 0" :defaultTypes="stepTypes" :parentId="0"></StepTypesByLevel>
     </div>
   </div>
 </template>
@@ -34,6 +34,9 @@ export default {
         .catch(error => {
           console.log(error)
         });
+    },
+    onUpdateTypes(types) {
+      this.stepTypes = types;
     }
   },
 }

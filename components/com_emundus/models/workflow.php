@@ -586,13 +586,14 @@ class EmundusModelWorkflow extends JModelList
 					$action_id = $this->db->loadResult();
 
 					// update the action label
-					$query->clear()
-						->update('#__emundus_setup_actions')
-						->set('label = ' . $this->db->quote($type['label']))
-						->where('id = ' . $action_id);
-					$this->db->setQuery($query);
-					$updates[] = $this->db->execute();
-
+					if (!empty($action_id)) {
+						$query->clear()
+							->update('#__emundus_setup_actions')
+							->set('label = ' . $this->db->quote($type['label']))
+							->where('id = ' . $action_id);
+						$this->db->setQuery($query);
+						$updates[] = $this->db->execute();
+					}
 
 					$query->clear()
 						->update('#__emundus_setup_step_types')
@@ -666,9 +667,9 @@ class EmundusModelWorkflow extends JModelList
 				}, $removed_types);
 
 				$query->clear()
-					->delete('#__emundus_setup_step_types')
-					->where('id IN (' . implode(',', $removed_types_ids) . ')')
-					->andWhere('default = 0');
+					->delete($this->db->quoteName('#__emundus_setup_step_types'))
+					->where($this->db->quoteName('id') .' IN (' . implode(',', $removed_types_ids) . ')')
+					->andWhere($this->db->quoteName('system') . ' = 0');
 
 				try
 				{

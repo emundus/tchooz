@@ -4,7 +4,7 @@
       <div class="tw-w-full tw-flex tw-flex-row tw-items-center">
         <span v-for="i in level" :key="i" class="material-symbols-outlined">horizontal_rule</span>
         <input :id="'type-' + type.id + '-label'" :name="'type-' + type.id + '-label'"  v-model="type.label" />
-        <span v-if="!type.default" class="material-symbols-outlined tw-cursor-pointer" @click="deleteType(type.id)">
+        <span v-if="!type.system" class="material-symbols-outlined tw-cursor-pointer" @click="deleteType(type.id)">
           delete
         </span>
       </div>
