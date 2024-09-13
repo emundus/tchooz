@@ -285,10 +285,16 @@
         <div id="campaign-form-container">
           <h2 class="tw-mt-2 tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_FORM') }} <i>{{ translate('COM_EMUNDUS_OPTIONAL') }}</i></h2>
           <p class="tw-mt-2 tw-mb-2"> {{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_FORM_DESC') }} </p>
-          <select class="tw-w-full">
-            <option value="0">{{ translate('COM_EMUNDUS_ONBOARD_CHOOSE_FORM') }}</option>
-            <option v-for="form in forms" :key="form.id"> {{ form.label }} </option>
-          </select>
+          <div class="tw-flex tw-flex-row tw-items-center">
+            <select class="tw-w-full" v-model="form.profile_id">
+              <option value="0">{{ translate('COM_EMUNDUS_ONBOARD_CHOOSE_FORM') }}</option>
+              <option v-for="applicantForm in applicantForms" :key="applicantForm.id" :value="applicantForm.id" > {{ applicantForm.label }} </option>
+            </select>
+            <span class="material-symbols-outlined tw-cursor-pointer" @click="getAllForms">refresh</span>
+          </div>
+          <a href="/forms" target="_blank" class="tw-my-2 tw-underline">
+            {{ translate('COM_EMUNDUS_ONBOARD_ACCESS_TO_FORMS_LIST') }}
+          </a>
         </div>
 
         <div class="tw-flex tw-justify-end tw-mt-4">
@@ -312,7 +318,7 @@ import Swal from "sweetalert2";
 import Autocomplete from "@/components/autocomplete.vue";
 
 /** VCalendar **/
-import { Calendar, DatePicker } from 'v-calendar';
+import { DatePicker } from 'v-calendar';
 import 'v-calendar/dist/style.css';
 
 /** TipTap Editor **/
@@ -324,7 +330,6 @@ import '../../../../templates/g5_helium/css/editor.css'
 import campaignService from '@/services/campaign.js'
 import settingsService from '@/services/settings.js';
 import programmeService from '@/services/programme.js';
-import formService from '@/services/form.js';
 
 import { useGlobalStore } from "@/stores/global.js";
 import { useCampaignStore } from "@/stores/campaign.js";
@@ -336,8 +341,7 @@ export default {
   components: {
     TipTapEditor,
     Autocomplete,
-    DatePicker,
-    Calendar
+    DatePicker
   },
 
   directives: {
@@ -366,7 +370,7 @@ export default {
     //
 
     programs: [],
-    forms: [],
+    applicantForms: [],
     years: [],
     languages: [],
     aliases: [],
@@ -427,6 +431,7 @@ export default {
 
   created() {
     const globalStore = useGlobalStore();
+    this.getAllForms();
 
     if (this.campaign === '') {
       this.campaignId = globalStore.getDatas.campaign ? globalStore.getDatas.campaign.value : 0;
@@ -536,15 +541,13 @@ export default {
         this.form.start_date = new Date();
         this.ready = true;
       }
-
-      this.getAllForms();
       this.getAllPrograms();
     },
 
     getAllForms() {
       fileService.getProfiles().then(response => {
         if (response.status) {
-          this.forms = response.data.filter(form => form.published == 1);
+          this.applicantForms = response.data.filter(form => form.published == 1);
         }
       }).catch(e => {
         console.log(e);
