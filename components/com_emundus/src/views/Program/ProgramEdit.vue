@@ -11,8 +11,16 @@
     </nav>
 
     <div class="tw-w-full" v-show="selectedTab === 'general'">
-      <iframe class="tw-w-full" style="height: 65vh;" :src="'/campaigns/modifier-un-programme?rowid=' + this.programId + '&tmpl=component&iframe=1'">
+      <iframe class="tw-w-full hide-titles" style="height: 150vh;" :src="'/campaigns/modifier-un-programme?rowid=' + this.programId + '&tmpl=component&iframe=1'">
       </iframe>
+    </div>
+
+    <div class="tw-w-full" v-show="selectedTab === 'campaigns'">
+      <p>Display list of campaigns</p>
+    </div>
+
+    <div class="tw-w-full" v-show="selectedTab === 'workflows'">
+      <p>Display list of workflows</p>
     </div>
   </div>
 </template>
@@ -51,6 +59,6 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 
 </style>

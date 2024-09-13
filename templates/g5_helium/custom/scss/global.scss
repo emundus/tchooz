@@ -498,6 +498,11 @@ div#frame.outline {
   }
 }
 
+.hide-titles {
+  .page-header, .fabrik-group-header {
+    display: none !important;
+  }
+}
 
 /* Branding */
 .g-branding {
@@ -7627,3 +7632,4 @@ form.fabrikForm[name=form_108] .fabrikGroup .plg-dropdown .fabrikElement {
     }
   }
 }
+
