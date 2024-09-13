@@ -418,6 +418,20 @@ class EmundusModelWorkflow extends JModelList
 
 					$this->db->setQuery($query);
 					$data->programs = $this->db->loadColumn();
+
+					if (!empty($cid)) {
+						$query->clear()
+							->select('start_date, end_date')
+							->from('#__emundus_setup_campaigns_step_dates')
+							->where('campaign_id = ' . $cid)
+							->where('step_id = ' . $id);
+
+						$this->db->setQuery($query);
+						$dates = $this->db->loadAssoc();
+
+						$data->start_date = $dates['start_date'];
+						$data->end_date = $dates['end_date'];
+					}
 				}
 			} catch (Exception $e) {
 				Log::add('Error while fetching workflow steps: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
@@ -509,6 +523,19 @@ class EmundusModelWorkflow extends JModelList
 
 						$this->db->setQuery($query);
 						$step->entry_status = $this->db->loadColumn();
+
+
+						$query->clear()
+							->select('start_date, end_date')
+							->from('#__emundus_setup_campaigns_step_dates')
+							->where('campaign_id = ' . $file_infos['campaign_id'])
+							->where('step_id = ' . $step->id);
+
+						$this->db->setQuery($query);
+						$dates = $this->db->loadAssoc();
+
+						$step->start_date = $dates['start_date'];
+						$step->end_date = $dates['end_date'];
 					} else {
 						$step = null;
 					}
