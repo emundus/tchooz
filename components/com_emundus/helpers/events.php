@@ -434,7 +434,7 @@ class EmundusHelperEvents
 
 				if ($fnum_associated != $fnum && !EmundusHelperAccess::asAccessAction(1, 'r', $user->id, $fnum))
 				{
-					throw new EmundusException('ACCESS_DENIED',403);
+					throw new EmundusException('ACCESS_DENIED', 403);
 				}
 			}
 			else
@@ -445,8 +445,9 @@ class EmundusHelperEvents
 					->where($db->quoteName('fnum') . ' = ' . $fnum);
 				$db->setQuery($query);
 				$rowid = $db->loadResult();
-				if(!empty($rowid)) {
-					$form_url    = Route::_("index.php?option=com_fabrik&view=form&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&rowid=" . $rowid . "&r=" . $reload) . "&fnum=" . $fnum;
+				if (!empty($rowid))
+				{
+					$form_url = Route::_("index.php?option=com_fabrik&view=form&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&rowid=" . $rowid . "&r=" . $reload) . "&fnum=" . $fnum;
 					$mainframe->redirect($form_url);
 				}
 
@@ -722,7 +723,7 @@ class EmundusHelperEvents
 					}
 					else
 					{
-						throw new EmundusException('ACCESS_DENIED',403);
+						throw new EmundusException('ACCESS_DENIED', 403);
 					}
 				}
 			}
@@ -749,24 +750,25 @@ class EmundusHelperEvents
 			)
 			{
 
-				$table          = $listModel->getTable();
+				$table = $listModel->getTable();
 
 				$elements = array();
-				$groups = $formModel->getGroupsHiarachy();
+				$groups   = $formModel->getGroupsHiarachy();
 				foreach ($groups as $group)
 				{
-					$elements = array_merge($group->getPublishedElements(),$elements);
+					$elements = array_merge($group->getPublishedElements(), $elements);
 				}
 
 				// Remove parent_id element
-				$elements = array_filter($elements, function($element) use ($table){
+				$elements = array_filter($elements, function ($element) use ($table) {
 					return $element->getElement()->name !== 'parent_id';
 				});
 
 				// Check if data stored in session
 				$session_datas = json_decode($session->data, true);
 
-				if (!empty($session_datas)) {
+				if (!empty($session_datas))
+				{
 					// Check if we can fill a value with our profile
 					$session_elements = array_keys($session_datas);
 
@@ -1084,30 +1086,45 @@ class EmundusHelperEvents
 			$application_fee = (!empty($application_fee) && !empty($mProfile->getHikashopMenu($user->profile)));
 
 			//$validations = $mApplication->checkFabrikValidations($user->fnum, true, $itemid);
-			$attachments = $mApplication->getAttachmentsProgress($user->fnum);
-			$forms       = $mApplication->getFormsProgress($user->fnum);
+			$attachments_progress = $mApplication->getAttachmentsProgress($user->fnum);
+			$forms_progress       = $mApplication->getFormsProgress($user->fnum);
 
-			if ($attachments < 100 || $forms < 100)
+			$profile_by_status = $mProfile->getProfileByStatus($user->fnum);
+
+			if (empty($profile_by_status['profile']))
 			{
-				$mainframe->enqueueMessage(Text::_('INCOMPLETE_APPLICATION'), 'error');
+				$query->select('esc.profile_id AS profile_id, ecc.campaign_id AS campaign_id')
+					->from($db->quoteName('#__emundus_setup_campaigns', 'esc'))
+					->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('ecc.campaign_id') . ' = ' . $db->quoteName('esc.id'))
+					->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($user->fnum));
+				$db->setQuery($query);
+				$profile_by_status = $db->loadAssoc();
+			}
 
-				$profile_by_status = $mProfile->getProfileByStatus($user->fnum);
+			$profile    = !empty($profile_by_status["profile_id"]) ? $profile_by_status["profile_id"] : $profile_by_status["profile"];
+			$profile_id = (!empty($user->fnums[$user->fnum]) && $user->profile != $profile && $user->applicant === 1) ? $user->profile : $profile;
 
-				if (empty($profile_by_status['profile']))
+			$forms = EmundusHelperMenu::getUserApplicationMenu($profile_id);
+
+			// Check if we have qcm forms
+			$forms_ids = array_column($forms, 'form_id');
+			$items_ids = [];
+			foreach ($forms as $form)
+			{
+				$items_ids[$form->form_id] = $form->id;
+			}
+			if (!empty($forms_ids) && !empty($items_ids))
+			{
+				$qcm_complete = $this->checkQcmCompleted($user->fnum, $forms_ids, $items_ids);
+				if ($qcm_complete['status'] === false)
 				{
-					$query->select('esc.profile_id AS profile_id, ecc.campaign_id AS campaign_id')
-						->from($db->quoteName('#__emundus_setup_campaigns', 'esc'))
-						->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('ecc.campaign_id') . ' = ' . $db->quoteName('esc.id'))
-						->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($user->fnum));
-					$db->setQuery($query);
-					$profile_by_status = $db->loadAssoc();
+					$mainframe->enqueueMessage(JText::sprintf($qcm_complete['msg']));
+					$mainframe->redirect($qcm_complete['link']);
 				}
+			}
 
-				$profile    = !empty($profile_by_status["profile_id"]) ? $profile_by_status["profile_id"] : $profile_by_status["profile"];
-				$profile_id = (!empty($user->fnums[$user->fnum]) && $user->profile != $profile && $user->applicant === 1) ? $user->profile : $profile;
-
-				$forms = EmundusHelperMenu::getUserApplicationMenu($profile_id);
-
+			if ($attachments_progress < 100 || $forms_progress < 100)
+			{
 				foreach ($forms as $form)
 				{
 					$query->clear()
@@ -1231,7 +1248,7 @@ class EmundusHelperEvents
 							$checkout_url = $mEmails->setTagsFabrik($checkout_url, [$user->fnum], true);
 						}
 						// If $accept_other_payments is 2 : that means we do not redirect to the payment page.
-						if ($accept_other_payments != 2 && empty($mApplication->getHikashopOrder($fnumInfos)) && $attachments >= 100 && $forms >= 100)
+						if ($accept_other_payments != 2 && empty($mApplication->getHikashopOrder($fnumInfos)) && $attachments_progress >= 100 && $forms_progress >= 100)
 						{
 							if ($params->get('hikashop_session', 0))
 							{

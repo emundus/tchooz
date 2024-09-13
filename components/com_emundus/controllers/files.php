@@ -114,9 +114,11 @@ class EmundusControllerFiles extends BaseController
 	 */
 	public function applicantemail()
 	{
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'emails.php');
-		$h_emails = new EmundusHelperEmails;
-		$h_emails->sendApplicantEmail();
+		if (EmundusHelperAccess::asAccessAction(9, 'c')) {
+			require_once(JPATH_SITE . '/components/com_emundus/helpers/emails.php');
+			$h_emails = new EmundusHelperEmails;
+			$h_emails->sendApplicantEmail();
+		}
 	}
 
 	/**
@@ -124,9 +126,12 @@ class EmundusControllerFiles extends BaseController
 	 */
 	public function groupmail()
 	{
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'emails.php');
-		$h_emails = new EmundusHelperEmails;
-		$h_emails->sendGroupEmail();
+		if (EmundusHelperAccess::asAccessAction(16, 'c'))
+		{
+			require_once(JPATH_SITE . '/components/com_emundus/helpers/emails.php');
+			$h_emails = new EmundusHelperEmails;
+			$h_emails->sendGroupEmail();
+		}
 	}
 
 	/**
@@ -228,36 +233,42 @@ class EmundusControllerFiles extends BaseController
 	 */
 	public function loadfilters()
 	{
-		try {
-			$id = $this->input->getInt('id', null);
+		$status = false;
 
-			$session = $this->app->getSession();
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)){
+			try {
+				$id = $this->input->getInt('id', null);
 
-			$h_files                 = new EmundusHelperFiles;
-			$filter                  = $h_files->getEmundusFilters($id);
-			$params                  = (array) json_decode($filter->constraints);
-			$params['select_filter'] = $id;
-			$params                  = json_decode($filter->constraints, true);
+				$session = $this->app->getSession();
 
-			$session->set('select_filter', $id);
+				$h_files                 = new EmundusHelperFiles;
+				$filter                  = $h_files->getEmundusFilters($id);
+				$params                  = (array) json_decode($filter->constraints);
+				$params['select_filter'] = $id;
+				$params                  = json_decode($filter->constraints, true);
 
-			if (isset($params['filter_order'])) {
-				$session->set('filter_order', $params['filter_order']);
-				$session->set('filter_order_Dir', $params['filter_order_Dir']);
+				$session->set('select_filter', $id);
+
+				if (isset($params['filter_order'])) {
+					$session->set('filter_order', $params['filter_order']);
+					$session->set('filter_order_Dir', $params['filter_order_Dir']);
+				}
+
+				$session->set('filt_params', $params['filter']);
+
+				if (!empty($params['col']))
+					$session->set('adv_cols', $params['col']);
+
+				$status = true;
 			}
-
-			$session->set('filt_params', $params['filter']);
-
-			if (!empty($params['col']))
-				$session->set('adv_cols', $params['col']);
-
-			echo json_encode((object) (array('status' => true)));
-			exit();
-
+			catch (Exception $e) {
+				throw new Exception;
+			}
 		}
-		catch (Exception $e) {
-			throw new Exception;
-		}
+
+
+		echo json_encode((object) (array('status' => $status)));
+		exit();
 	}
 
 	/**
@@ -475,19 +486,20 @@ class EmundusControllerFiles extends BaseController
 			'options' => []
 		];
 
-		if(!$this->_user->guest)
-		{
-			$h_files = new EmundusHelperFiles;
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			if (!$this->_user->guest) {
+				$h_files = new EmundusHelperFiles;
 
-			try
-			{
-				$result['options'] = $h_files->getElements();
-				$result['status']  = true;
+				try
+				{
+					$result['options'] = $h_files->getElements();
+					$result['status']  = true;
 
-			}
-			catch (Exception $e)
-			{
-				Log::add(Text::_('COM_EMUNDUS_ERROR') . ' : ' . $e->getMessage(), Log::ERROR, 'emundus');
+				}
+				catch (Exception $e)
+				{
+					Log::add(Text::_('COM_EMUNDUS_ERROR') . ' : ' . $e->getMessage(), Log::ERROR, 'emundus');
+				}
 			}
 		}
 
@@ -500,53 +512,59 @@ class EmundusControllerFiles extends BaseController
 	 */
 	public function getbox()
 	{
-		try {
-			$id    = $this->input->getInt('id', null);
-			$index = $this->input->getInt('index', null);
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
 
-			$session = JFactory::getSession();
-			$params  = $session->get('filt_params');
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			try {
+				$id    = $this->input->getInt('id', null);
+				$index = $this->input->getInt('index', null);
 
-			$h_files = new EmundusHelperFiles;
-			$element = $h_files->getElementsName($id);
+				$session = JFactory::getSession();
+				$params  = $session->get('filt_params');
 
-			$tab_name                 = (isset($element[$id]->table_join) ? $element[$id]->table_join : $element[$id]->tab_name);
-			$key                      = $tab_name . '.' . $element[$id]->element_name;
-			$params['elements'][$key] = '';
+				$h_files = new EmundusHelperFiles;
+				$element = $h_files->getElementsName($id);
 
-			$advCols = $session->get('adv_cols');
+				$tab_name                 = (isset($element[$id]->table_join) ? $element[$id]->table_join : $element[$id]->tab_name);
+				$key                      = $tab_name . '.' . $element[$id]->element_name;
+				$params['elements'][$key] = '';
 
-			if (!$session->has('adv_cols') || count($advCols) == 0) {
-				$advCols = array($index => $id);
-			}
-			else {
 				$advCols = $session->get('adv_cols');
-				if (isset($advCols[$index])) {
-					$lastId = @$advCols[$index];
-					if (!in_array($id, $advCols)) {
-						$advCols[$index] = $id;
-					}
-					if (array_key_exists($index, $advCols)) {
-						$lastElt  = $h_files->getElementsName($lastId);
-						$tab_name = (isset($lastElt[$lastId]->table_join) ? $lastElt[$lastId]->table_join : $lastElt[$lastId]->tab_name);
-						unset($params['elements'][$tab_name . '.' . $lastElt[$lastId]->element_name]);
-					}
+
+				if (!$session->has('adv_cols') || count($advCols) == 0) {
+					$advCols = array($index => $id);
 				}
 				else {
-					$advCols[$index] = $id;
+					$advCols = $session->get('adv_cols');
+					if (isset($advCols[$index])) {
+						$lastId = @$advCols[$index];
+						if (!in_array($id, $advCols)) {
+							$advCols[$index] = $id;
+						}
+						if (array_key_exists($index, $advCols)) {
+							$lastElt  = $h_files->getElementsName($lastId);
+							$tab_name = (isset($lastElt[$lastId]->table_join) ? $lastElt[$lastId]->table_join : $lastElt[$lastId]->tab_name);
+							unset($params['elements'][$tab_name . '.' . $lastElt[$lastId]->element_name]);
+						}
+					}
+					else {
+						$advCols[$index] = $id;
+					}
 				}
+				$session->set('filt_params', $params);
+				$session->set('adv_cols', $advCols);
+
+				$html = $h_files->setSearchBox($element[$id], '', $tab_name . '.' . $element[$id]->element_name, $index);
+
+				$response = array('status' => true, 'default' => Text::_('COM_EMUNDUS_PLEASE_SELECT'), 'defaulttrash' => Text::_('REMOVE_SEARCH_ELEMENT'), 'html' => $html);
 			}
-			$session->set('filt_params', $params);
-			$session->set('adv_cols', $advCols);
-
-			$html = $h_files->setSearchBox($element[$id], '', $tab_name . '.' . $element[$id]->element_name, $index);
-
-			echo json_encode((object) (array('status' => true, 'default' => Text::_('COM_EMUNDUS_PLEASE_SELECT'), 'defaulttrash' => Text::_('REMOVE_SEARCH_ELEMENT'), 'html' => $html)));
-			exit;
+			catch (Exception $e) {
+				Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
+			}
 		}
-		catch (Exception $e) {
-			Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
-		}
+
+		echo json_encode((object) $response);
+		exit;
 	}
 
 	/**
@@ -1000,47 +1018,51 @@ class EmundusControllerFiles extends BaseController
 	 */
 	public function getExistEmailTrigger()
 	{
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
+		$trigger_emails = [];
 
-		$state        = $this->input->getInt('state', null);
-		$fnums        = $this->input->getString('fnums', null);
-		$to_applicant = $this->input->getString('to_applicant', '0,1');
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			require_once(JPATH_SITE . '/components/com_emundus/models/emails.php');
 
-		$m_email = $this->getModel('Emails');
-		$m_files = $this->getModel('Files');
+			$state        = $this->input->getInt('state', null);
+			$fnums        = $this->input->getString('fnums', null);
+			$to_applicant = $this->input->getString('to_applicant', '0,1');
 
-		if ($fnums == "all") {
-			$fnums = $m_files->getAllFnums();
-		}
+			$m_email = $this->getModel('Emails');
+			$m_files = $this->getModel('Files');
 
-		if (!is_array($fnums)) {
-			$fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
-		}
-
-		if (count($fnums) == 0 || !is_array($fnums)) {
-			$res = false;
-			$msg = Text::_('STATE_ERROR');
-
-			echo json_encode((object) (array('status' => $res, 'msg' => $msg)));
-			exit;
-		}
-
-		$validFnums = array();
-
-		foreach ($fnums as $fnum) {
-			if (EmundusHelperAccess::asAccessAction(13, 'u', $this->_user->id, $fnum)) {
-				$validFnums[] = $fnum;
+			if ($fnums == "all") {
+				$fnums = $m_files->getAllFnums();
 			}
+
+			if (!is_array($fnums)) {
+				$fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
+			}
+
+			if (count($fnums) == 0 || !is_array($fnums)) {
+				$res = false;
+				$msg = Text::_('STATE_ERROR');
+
+				echo json_encode((object) (array('status' => $res, 'msg' => $msg)));
+				exit;
+			}
+
+			$validFnums = array();
+
+			foreach ($fnums as $fnum) {
+				if (EmundusHelperAccess::asAccessAction(13, 'u', $this->_user->id, $fnum)) {
+					$validFnums[] = $fnum;
+				}
+			}
+
+			$fnumsInfos = $m_files->getFnumsInfos($validFnums);
+
+			$code = array();
+			foreach ($fnumsInfos as $fnum) {
+				$code[] = $fnum['training'];
+			}
+
+			$trigger_emails = $m_email->getEmailTrigger($state, $code, $to_applicant);
 		}
-
-		$fnumsInfos = $m_files->getFnumsInfos($validFnums);
-
-		$code = array();
-		foreach ($fnumsInfos as $fnum) {
-			$code[] = $fnum['training'];
-		}
-
-		$trigger_emails = $m_email->getEmailTrigger($state, $code, $to_applicant);
 
 		echo json_encode((object)(array('status' => !empty($trigger_emails), 'msg' => Text::sprintf('COM_EMUNDUS_APPLICATION_MAIL_CHANGE_STATUT_INFO', sizeof($validFnums)))));
 		exit;
@@ -1428,11 +1450,16 @@ class EmundusControllerFiles extends BaseController
 	 */
 	public function create_file_pdf()
 	{
-		$today = date("MdYHis");
-		$name  = md5($today . rand(0, 10));
-		$name  = $name . '-applications.pdf';
+		$result = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403];
 
-		$result = array('status' => true, 'file' => $name);
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))  {
+			$today = date("MdYHis");
+			$name  = md5($today . rand(0, 10));
+			$name  = $name . '-applications.pdf';
+
+			$result = array('status' => true, 'file' => $name);
+		}
+
 		echo json_encode((object) $result);
 		exit();
 	}
@@ -1803,6 +1830,7 @@ class EmundusControllerFiles extends BaseController
 			} else {
 				// On définit les bons formats
 				$date_elements = [];
+				$iban_elements = [];
 				foreach ($ordered_elements as $fLine) {
 					if (in_array($fLine->element_plugin,['date','jdate'])) {
 						$params = json_decode($fLine->element_attribs);
@@ -1816,6 +1844,15 @@ class EmundusControllerFiles extends BaseController
 					if ($fLine->element_plugin == 'textarea') {
 						$params = json_decode($fLine->element_attribs);
 						$textarea_elements[$fLine->tab_name.'___'.$fLine->element_name] = $params->use_wysiwyg;
+					}
+
+					if ($fLine->element_plugin == 'iban') {
+						$params = json_decode($fLine->element_attribs);
+						$elt_name = $fLine->tab_name.'___'.$fLine->element_name;
+						if(!empty($fLine->table_join) && $fLine->table_join_key == 'parent_id') {
+							$elt_name = $fLine->table_join.'___'.$fLine->element_name;
+						}
+						$iban_elements[$elt_name] = $params->encrypt_datas;
 					}
 				}
 			}
@@ -2047,45 +2084,48 @@ class EmundusControllerFiles extends BaseController
 
 	public function getformslist()
 	{
-		$html = '';
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403);
 
-		$m_profile  = $this->getModel('Profile');
-		$m_campaign = $this->getModel('Campaign');
-		$h_menu     = new EmundusHelperMenu();
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$html = '';
+			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
+			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
+
+			$m_profile  = $this->getModel('Profile');
+			$m_campaign = $this->getModel('Campaign');
+			$h_menu     = new EmundusHelperMenu();
 
 
-		$code = $this->input->getVar('code', null);
-		$camp = $this->input->getVar('camp', null);
+			$code = $this->input->getVar('code', null);
+			$camp = $this->input->getVar('camp', null);
 
 
-		$code = explode(',', $code);
-		$camp = explode(',', $camp);
+			$code = explode(',', $code);
+			$camp = explode(',', $camp);
 
-		$profiles = $m_profile->getProfileIDByCourse($code, $camp);
+			$profiles = $m_profile->getProfileIDByCourse($code, $camp);
 
-		foreach ($profiles as $profile) {
-			$profile_data = $m_profile->getProfile($profile);
+			foreach ($profiles as $profile) {
+				$profile_data = $m_profile->getProfile($profile);
 
-			$html1    = '';
-			$html2    = '';
-			$pages    = $h_menu->buildMenuQuery((int) $profile);
-			$campaign = $camp[0] != 0 ? $m_campaign->getCampaignsByCourseCampaign($code[0], $camp[0]) : $m_campaign->getCampaignsByCourse($code[0]);
+				$html1    = '';
+				$html2    = '';
+				$pages    = $h_menu->buildMenuQuery((int) $profile);
+				$campaign = $camp[0] != 0 ? $m_campaign->getCampaignsByCourseCampaign($code[0], $camp[0]) : $m_campaign->getCampaignsByCourse($code[0]);
 
-			foreach ($pages as $i => $page) {
-				$title = Text::_($page->label);
-				//$title = !empty($title[1]) ? Text::_(trim($title[1])) : Text::_(trim($title[0]));
+				foreach ($pages as $i => $page) {
+					$title = Text::_($page->label);
+					//$title = !empty($title[1]) ? Text::_(trim($title[1])) : Text::_(trim($title[0]));
 
-				if ($i < count($pages) / 2) {
-					$html1 .= '<div class="em-flex-row"><input class="em-ex-check" type="checkbox" value="' . $page->form_id . '|' . $code[0] . '|' . $camp[0] . '" name="' . $page->label . '" id="' . $page->form_id . '|' . $code[0] . '|' . $camp[0] . '|' . $profile . '" /><label class="em-mb-0-important" for="' . $page->form_id . '|' . $code[0] . '|' . $camp[0] . '|' . $profile . '">' . Text::_($title) . '</label></div>';
+					if ($i < count($pages) / 2) {
+						$html1 .= '<div class="em-flex-row"><input class="em-ex-check" type="checkbox" value="' . $page->form_id . '|' . $code[0] . '|' . $camp[0] . '" name="' . $page->label . '" id="' . $page->form_id . '|' . $code[0] . '|' . $camp[0] . '|' . $profile . '" /><label class="em-mb-0-important" for="' . $page->form_id . '|' . $code[0] . '|' . $camp[0] . '|' . $profile . '">' . Text::_($title) . '</label></div>';
+					}
+					else {
+						$html2 .= '<div class="em-flex-row"><input class="em-ex-check" type="checkbox" value="' . $page->form_id . '|' . $code[0] . '|' . $camp[0] . '" name="' . $page->label . '" id="' . $page->form_id . '|' . $code[0] . '|' . $camp[0] . '|' . $profile . '" /><label class="em-mb-0-important" for="' . $page->form_id . '|' . $code[0] . '|' . $camp[0] . '|' . $profile . '">' . Text::_($title) . '</label></div>';
+					}
 				}
-				else {
-					$html2 .= '<div class="em-flex-row"><input class="em-ex-check" type="checkbox" value="' . $page->form_id . '|' . $code[0] . '|' . $camp[0] . '" name="' . $page->label . '" id="' . $page->form_id . '|' . $code[0] . '|' . $camp[0] . '|' . $profile . '" /><label class="em-mb-0-important" for="' . $page->form_id . '|' . $code[0] . '|' . $camp[0] . '|' . $profile . '">' . Text::_($title) . '</label></div>';
-				}
-			}
 
-			$html .= '<div class="em-mt-12">
+				$html .= '<div class="em-mt-12">
                     <div class="em-flex-row em-pointer em-mb-4" onclick="showelts(this, ' . "'felts-" . $code[0] . $camp[0] . "-" . $profile . "'" . ')">
                        <span title="' . Text::_('COM_EMUNDUS_SHOW_ELEMENTS') . '" id="felts-' . $code[0] . $camp[0] . '-' . $profile . '-icon" class="material-icons em-mr-4" style="transform: rotate(-90deg)">expand_more</span>
                        <p>' . $campaign['label'] . ' (' . $campaign['year'] . ' | ' . $profile_data->label . ')</p>
@@ -2094,15 +2134,17 @@ class EmundusControllerFiles extends BaseController
                         <table><tr><td>' . $html1 . '</td><td style="padding-left:80px;">' . $html2 . '</td></tr></table>
                     </div>
                 </div>';
+			}
+
+			$response = array('status' => true, 'html' => $html);
 		}
 
-		echo json_encode((object) (array('status' => true, 'html' => $html)));
+		echo json_encode((object) ($response));
 		exit;
 	}
 
 	public function getdoctype()
 	{
-
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
@@ -2125,7 +2167,7 @@ class EmundusControllerFiles extends BaseController
 		$docs = $h_files->getAttachmentsTypesByProfileID($profiles);
 
 		// Sort the docs out that are not allowed to be exported by the user.
-		$allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
+		$allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_user->id);
 		if ($allowed_attachments !== true) {
 			foreach ($docs as $key => $doc) {
 				if (!in_array($doc->id, $allowed_attachments)) {
@@ -2407,192 +2449,200 @@ class EmundusControllerFiles extends BaseController
 	//TODO: Comprendre la méthode
 	public function export_letter()
 	{
+		$result = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403);
 		/// the main idea of this function is to use Stream of Buffer to pass data from CSV to Excel
 		/// params --> 1st: csv, 2nd: excel
-		require_once(JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
-		// get source, letter name
-		$source = $this->input->getVar('source', null);
-		$letter = $this->input->getVar('letter', null);
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			require_once(JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
-		/// copy excel to excel
-		$_start = JPATH_SITE . DS . "tmp" . DS . $source;
-		$_end   = JPATH_SITE . $letter;
+			// get source, letter name
+			$source = $this->input->getVar('source', null);
+			$letter = $this->input->getVar('letter', null);
 
-		/// copy letter from /images/emundus/letters --> /tmp
-		$tmp_route    = JPATH_SITE . DS . "tmp" . DS;
-		$randomString = JUserHelper::genRandomPassword(20);
+			/// copy excel to excel
+			$_start = JPATH_SITE . DS . "tmp" . DS . $source;
+			$_end   = JPATH_SITE . $letter;
 
-		$array              = explode('/', $letter);
-		$letter_file        = end($array);
-		$letter_file_random = explode('.xlsx', $letter_file)[0] . '_' . $randomString;
+			/// copy letter from /images/emundus/letters --> /tmp
+			$tmp_route    = JPATH_SITE . DS . "tmp" . DS;
+			$randomString = JUserHelper::genRandomPassword(20);
 
-		$_newLetter = JPATH_SITE . DS . "tmp" . DS . $letter_file_random . '.xlsx';
-		copy($_end, JPATH_SITE . DS . "tmp" . DS . $letter_file_random . '.xlsx');
+			$array              = explode('/', $letter);
+			$letter_file        = end($array);
+			$letter_file_random = explode('.xlsx', $letter_file)[0] . '_' . $randomString;
 
-		$reader             = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
-		$_readerSpreadSheet = $reader->load($_start);
+			$_newLetter = JPATH_SITE . DS . "tmp" . DS . $letter_file_random . '.xlsx';
+			copy($_end, JPATH_SITE . DS . "tmp" . DS . $letter_file_random . '.xlsx');
 
-		$_readerData = $_readerSpreadSheet->getActiveSheet()->toArray();
+			$reader             = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+			$_readerSpreadSheet = $reader->load($_start);
 
-		try {
-			$dataTable = new Svrnm\ExcelDataTables\ExcelDataTable();
+			$_readerData = $_readerSpreadSheet->getActiveSheet()->toArray();
 
-			$data    = array();
-			$columns = array();
-			foreach ($_readerData[0] as $column) {
-				$columns[] = $column;
-			}
-			foreach ($_readerData as $key => $reader) {
-				if ($key !== 0) {
-					$row = new stdClass();
-					foreach ($columns as $index => $column) {
-						$row->{$column} = $reader[$index];
-					}
-					$data[] = $row;
+			try {
+				$dataTable = new Svrnm\ExcelDataTables\ExcelDataTable();
+
+				$data    = array();
+				$columns = array();
+				foreach ($_readerData[0] as $column) {
+					$columns[] = $column;
 				}
+				foreach ($_readerData as $key => $reader) {
+					if ($key !== 0) {
+						$row = new stdClass();
+						foreach ($columns as $index => $column) {
+							$row->{$column} = $reader[$index];
+						}
+						$data[] = $row;
+					}
+				}
+
+				$xlsx = $dataTable->showHeaders()->addRows($data)->attachToFile($_end, $_newLetter);
+
+				$_raw_output_file   = explode('#', $_newLetter)[0] . '.xlsx';
+				$_output_file       = explode('.xlsx', $_raw_output_file)[0];
+				$_clean_output_file = explode(JPATH_SITE . DS . "tmp" . DS, $_output_file)[1] . '.xlsx';
+			}
+			catch (Exception $e) {
+				$_destination = \PhpOffice\PhpSpreadsheet\IOFactory::load($_newLetter);
+				$_destination->setActiveSheetIndex(0);
+				$_destination->getActiveSheet()->fromArray($_readerData, null, 'A1');
+
+				$writer = new Xlsx($_destination);
+
+				$_raw_output_file   = explode('#', $_newLetter)[0] . '.xlsx';
+				$_output_file       = explode('.xlsx', $_raw_output_file)[0];
+				$_clean_output_file = explode(JPATH_SITE . DS . "tmp" . DS, $_output_file)[1] . '.xlsx';
+
+				$writer->save($_raw_output_file);
 			}
 
-			$xlsx = $dataTable->showHeaders()->addRows($data)->attachToFile($_end, $_newLetter);
+			copy($_raw_output_file, JPATH_SITE . DS . "tmp" . DS . $_clean_output_file);
+			unlink($_raw_output_file);
 
-			$_raw_output_file   = explode('#', $_newLetter)[0] . '.xlsx';
-			$_output_file       = explode('.xlsx', $_raw_output_file)[0];
-			$_clean_output_file = explode(JPATH_SITE . DS . "tmp" . DS, $_output_file)[1] . '.xlsx';
+			$result = array('status' => true, 'link' => $_clean_output_file);
 		}
-		catch (Exception $e) {
-			$_destination = \PhpOffice\PhpSpreadsheet\IOFactory::load($_newLetter);
-			$_destination->setActiveSheetIndex(0);
-			$_destination->getActiveSheet()->fromArray($_readerData, null, 'A1');
-
-			$writer = new Xlsx($_destination);
-
-			$_raw_output_file   = explode('#', $_newLetter)[0] . '.xlsx';
-			$_output_file       = explode('.xlsx', $_raw_output_file)[0];
-			$_clean_output_file = explode(JPATH_SITE . DS . "tmp" . DS, $_output_file)[1] . '.xlsx';
-
-			$writer->save($_raw_output_file);
-		}
-
-		copy($_raw_output_file, JPATH_SITE . DS . "tmp" . DS . $_clean_output_file);
-
-		$result = array('status' => true, 'link' => $_clean_output_file);
 
 		echo json_encode((object) $result);
-
-		unlink($_raw_output_file);
 		exit();
 	}
 
 	public function export_xls_from_csv()
 	{
-		/** PHPExcel */
-		require_once(JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
+		$result = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403);
 
-		$csv             = $this->input->get('csv', null);
-		$nbcol           = $this->input->get('nbcol', 0);
-		$nbrow           = $this->input->get('start', 0);
-		$excel_file_name = $this->input->get('excelfilename', null);
-		$objReader       = \PhpOffice\PhpSpreadsheet\IOFactory::createReader("Csv");
-		$objReader->setDelimiter("\t");
-		$objPHPExcel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			/** PHPExcel */
+			require_once(JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
-		// Excel colonne
-		$colonne_by_id = array();
-		for ($i = ord("A"); $i <= ord("Z"); $i++) {
-			$colonne_by_id[] = chr($i);
-		}
+			$csv             = $this->input->get('csv', null);
+			$nbcol           = $this->input->get('nbcol', 0);
+			$nbrow           = $this->input->get('start', 0);
+			$excel_file_name = $this->input->get('excelfilename', null);
+			$objReader       = \PhpOffice\PhpSpreadsheet\IOFactory::createReader("Csv");
+			$objReader->setDelimiter("\t");
+			$objPHPExcel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 
-		for ($i = ord("A"); $i <= ord("Z"); $i++) {
-			for ($j = ord("A"); $j <= ord("Z"); $j++) {
-				$colonne_by_id[] = chr($i) . chr($j);
-				if (count($colonne_by_id) == $nbrow) break;
+			// Excel colonne
+			$colonne_by_id = array();
+			for ($i = ord("A"); $i <= ord("Z"); $i++) {
+				$colonne_by_id[] = chr($i);
 			}
-		}
 
-		// Set properties
-		$objPHPExcel->getProperties()->setCreator("eMundus SAS : https://www.emundus.fr/");
-		$objPHPExcel->getProperties()->setLastModifiedBy("eMundus SAS");
-		$objPHPExcel->getProperties()->setTitle("eMmundus Report");
-		$objPHPExcel->getProperties()->setSubject("eMmundus Report");
-		$objPHPExcel->getProperties()->setDescription("Report from open source eMundus plateform : https://www.emundus.fr/");
-		$objPHPExcel->setActiveSheetIndex(0);
-		$objPHPExcel->getActiveSheet()->setTitle('Extraction');
-		$objPHPExcel->getDefaultStyle()->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-		$objPHPExcel->getDefaultStyle()->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
-
-		$objPHPExcel->getActiveSheet()->freezePane('A2');
-
-		$objReader->loadIntoExisting(JPATH_SITE . DS . "tmp" . DS . $csv, $objPHPExcel);
-
-		$objConditional1 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
-		$objConditional1->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS)
-			->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL)
-			->addCondition('0');
-		$objConditional1->getStyle()->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFF0000');
-
-		$objConditional2 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
-		$objConditional2->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS)
-			->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL)
-			->addCondition('100');
-		$objConditional2->getStyle()->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FF00FF00');
-
-		$objConditional3 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
-		$objConditional3->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS)
-			->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL)
-			->addCondition('50');
-		$objConditional3->getStyle()->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-
-		$i = 0;
-		//FNUM
-		$objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
-		$objPHPExcel->getActiveSheet()->getStyle('A2:A' . ($nbrow + 1))->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
-		$i++;
-		//STATUS
-		$objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('20');
-		$i++;
-		//LASTNAME
-		$objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('20');
-		$i++;
-		//FIRSTNAME
-		$objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('20');
-		$i++;
-		//EMAIL
-		$objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('40');
-		//$objPHPExcel->getActiveSheet()->getStyle('E2:E'.($nbrow+ 1))->getNumberFormat()->setFormatCode( PHPExcel_Style_Font::UNDERLINE_SINGLE );
-		$i++;
-		//CAMPAIGN
-		$objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('40');
-		$i++;
-
-		for ($i; $i < $nbcol; $i++) {
-			$value = $objPHPExcel->getActiveSheet()->getCell(Coordinate::stringFromColumnIndex($i) . '1')->getValue();
-
-			if (strpos($value,'(%)')) {
-				$conditionalStyles = $objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$i] . '1')->getConditionalStyles();
-				array_push($conditionalStyles, $objConditional1);
-				array_push($conditionalStyles, $objConditional2);
-				array_push($conditionalStyles, $objConditional3);
-				$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$i] . '1')->setConditionalStyles($conditionalStyles);
-				$objPHPExcel->getActiveSheet()->duplicateConditionalStyle($conditionalStyles, $colonne_by_id[$i] . '1:' . $colonne_by_id[$i] . ($nbrow + 1));
+			for ($i = ord("A"); $i <= ord("Z"); $i++) {
+				for ($j = ord("A"); $j <= ord("Z"); $j++) {
+					$colonne_by_id[] = chr($i) . chr($j);
+					if (count($colonne_by_id) == $nbrow) break;
+				}
 			}
+
+			// Set properties
+			$objPHPExcel->getProperties()->setCreator("eMundus SAS : https://www.emundus.fr/");
+			$objPHPExcel->getProperties()->setLastModifiedBy("eMundus SAS");
+			$objPHPExcel->getProperties()->setTitle("eMmundus Report");
+			$objPHPExcel->getProperties()->setSubject("eMmundus Report");
+			$objPHPExcel->getProperties()->setDescription("Report from open source eMundus plateform : https://www.emundus.fr/");
+			$objPHPExcel->setActiveSheetIndex(0);
+			$objPHPExcel->getActiveSheet()->setTitle('Extraction');
+			$objPHPExcel->getDefaultStyle()->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+			$objPHPExcel->getDefaultStyle()->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+
+			$objPHPExcel->getActiveSheet()->freezePane('A2');
+
+			$objReader->loadIntoExisting(JPATH_SITE . DS . "tmp" . DS . $csv, $objPHPExcel);
+
+			$objConditional1 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+			$objConditional1->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS)
+				->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL)
+				->addCondition('0');
+			$objConditional1->getStyle()->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFF0000');
+
+			$objConditional2 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+			$objConditional2->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS)
+				->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL)
+				->addCondition('100');
+			$objConditional2->getStyle()->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FF00FF00');
+
+			$objConditional3 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+			$objConditional3->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS)
+				->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL)
+				->addCondition('50');
+			$objConditional3->getStyle()->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+
+			$i = 0;
+			//FNUM
 			$objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
+			$objPHPExcel->getActiveSheet()->getStyle('A2:A' . ($nbrow + 1))->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+			$i++;
+			//STATUS
+			$objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('20');
+			$i++;
+			//LASTNAME
+			$objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('20');
+			$i++;
+			//FIRSTNAME
+			$objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('20');
+			$i++;
+			//EMAIL
+			$objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('40');
+			//$objPHPExcel->getActiveSheet()->getStyle('E2:E'.($nbrow+ 1))->getNumberFormat()->setFormatCode( PHPExcel_Style_Font::UNDERLINE_SINGLE );
+			$i++;
+			//CAMPAIGN
+			$objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('40');
+			$i++;
+
+			for ($i; $i < $nbcol; $i++) {
+				$value = $objPHPExcel->getActiveSheet()->getCell(Coordinate::stringFromColumnIndex($i) . '1')->getValue();
+
+				if (strpos($value,'(%)')) {
+					$conditionalStyles = $objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$i] . '1')->getConditionalStyles();
+					array_push($conditionalStyles, $objConditional1);
+					array_push($conditionalStyles, $objConditional2);
+					array_push($conditionalStyles, $objConditional3);
+					$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$i] . '1')->setConditionalStyles($conditionalStyles);
+					$objPHPExcel->getActiveSheet()->duplicateConditionalStyle($conditionalStyles, $colonne_by_id[$i] . '1:' . $colonne_by_id[$i] . ($nbrow + 1));
+				}
+				$objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
+			}
+
+			$randomString = JUserHelper::genRandomPassword(20);
+			$objWriter    = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($objPHPExcel, "Xlsx");
+			$objWriter->save(JPATH_SITE . DS . 'tmp' . DS . $excel_file_name . '_' . $nbrow . 'rows_' . $randomString . '.xlsx');
+			$objPHPExcel->disconnectWorksheets();
+			unset($objPHPExcel);
+			$link = $excel_file_name . '_' . $nbrow . 'rows_' . $randomString . '.xlsx';
+			if (!unlink(JPATH_SITE . DS . "tmp" . DS . $csv)) {
+				$result = array('status' => false, 'msg' => 'ERROR_DELETE_CSV');
+				echo json_encode((object) $result);
+				exit();
+			}
+
+			$session = $this->app->getSession();
+			$session->clear('fnums_export');
+			$result = array('status' => true, 'link' => $link);
 		}
 
-		$randomString = JUserHelper::genRandomPassword(20);
-		$objWriter    = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($objPHPExcel, "Xlsx");
-		$objWriter->save(JPATH_SITE . DS . 'tmp' . DS . $excel_file_name . '_' . $nbrow . 'rows_' . $randomString . '.xlsx');
-		$objPHPExcel->disconnectWorksheets();
-		unset($objPHPExcel);
-		$link = $excel_file_name . '_' . $nbrow . 'rows_' . $randomString . '.xlsx';
-		if (!unlink(JPATH_SITE . DS . "tmp" . DS . $csv)) {
-			$result = array('status' => false, 'msg' => 'ERROR_DELETE_CSV');
-			echo json_encode((object) $result);
-			exit();
-		}
-
-		$session = $this->app->getSession();
-		$session->clear('fnums_export');
-		$result = array('status' => true, 'link' => $link);
 		echo json_encode((object) $result);
 		exit();
 
@@ -3035,6 +3085,8 @@ class EmundusControllerFiles extends BaseController
 		echo json_encode((object) $result);
 		exit();
 	}
+
+	//todo: jeremy stopped here
 
 	public function exportzipdoc()
 	{

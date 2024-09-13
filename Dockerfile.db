@@ -1,4 +1,4 @@
-FROM mysql:8.0 as builder
+FROM mysql:8.1 as builder
 LABEL maintainer="Wilfried MAILLET <wilfried.maillet@emundus.fr>, EMUNDUS Development Team <support@emundus.fr>"
 
 # That file does the DB initialization but also runs mysql daemon, by removing the last line it will only init
@@ -24,7 +24,7 @@ RUN chmod 664 /etc/mysql/conf.d/my.cnf
 RUN ["/usr/local/bin/docker-entrypoint.sh", "mysqld", "--datadir", "/initialized-db"]
 
 
-FROM mysql:8.0
+FROM mysql:8.1
 LABEL maintainer="Wilfried MAILLET <wilfried.maillet@emundus.fr>, EMUNDUS Development Team <support@emundus.fr>"
 
 # Preloading of the database

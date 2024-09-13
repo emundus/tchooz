@@ -73,7 +73,6 @@ var shareModalClick = function(event) {
 
 window.addEventListener('message', function (e) {
     if (e.data === 'reloadData') {
-        console.log('event');
         this.reloadData($('#view').val());
     }
 }.bind(this));
@@ -896,8 +895,6 @@ function setFiltersSumo(event, id){
             search();
         } else {
             var father = my_element.parent('fieldset').attr('id');
-            console.log(my_element);
-            console.log(father);
             getSearchBox(my_element.val(), father);
         }
     }

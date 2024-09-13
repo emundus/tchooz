@@ -298,7 +298,7 @@ footer {
 				$body .= '<div style="page-break-after: always;"></div>';
 			}
 		}
-		if ($generate == 1) {
+
 			$header_tags = preg_replace($tags['patterns'], $tags['replacements'], $templHeader);
 			$header_tmp  = $emails->setTagsFabrik($header_tags, array($fnum["fnum"]));
 			$header      = preg_replace_callback('/< *img[^>]*src *= *["\']?([^"\']*)/i', function ($match) {
@@ -317,7 +317,6 @@ footer {
 
 				return '<img src="' . JURI::base() . $src;
 			}, $templFooter);
-		}
 		if ($checkHeader == 1) {
 			return $head . '<body class="em-body"><header>' . $header . '</header><footer>' . $footer . '</footer><main>' . $body . '</main></body></html>';
 		}

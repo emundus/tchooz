@@ -3,13 +3,13 @@
     <div class="tw-w-full tw-flex tw-items-center tw-mb-4">
       <div v-if="isNewVal" id="new-value" class="tw-w-full">
         <input type="text" class="tw-w-full !tw-mb-0" v-model="newValue.label" @focusin="showOptions = true"
-               @keyup="emitValueChanges"/>
+               @focusout="emitValueChanges"/>
         <i class="em-main-500-color">({{ translate('COM_EMUNDUS_FORM_BUILDER_NEW_VALUE') }})</i>
       </div>
       <div v-if="!isNewVal" id="existing-value" class="tw-w-full">
         <div class="tw-w-full tw-flex tw-items-center tw-justify-between">
           <input type="text" class="tw-w-full !tw-mb-0 em-border-main-500 important" v-model="newExistingLabel"
-                 @keyup="emitValueChanges"/>
+                 @focusout="emitValueChanges"/>
           <span v-if="!locked" @click="unselectExistingValue" class="material-symbols-outlined tw-cursor-pointer"
                 @mouseenter="hoverUnselect = true" @mouseleave="hoverUnselect = false">close</span>
         </div>
@@ -113,7 +113,7 @@ export default {
       this.hoverUnselect = false;
       this.emitValueChanges();
     },
-    emitValueChanges() {
+    emitValueChanges(event = null) {
       if (this.hoverUnselect) {
         return;
       }
@@ -125,14 +125,20 @@ export default {
       if (this.isNewVal) {
         this.$emit('update-value', this.newValue);
       } else {
-        const newValue = this.existingValues.find((value) => {
-          return value.id === this.selectedExistingValue;
-        });
+        this.existingValues.forEach((value) => {
+          if (value.id == this.selectedExistingValue) {
+            if (this.newExistingLabel !== value.label) {
+              value.label = this.newExistingLabel;
+              this.originalOptions = JSON.parse(JSON.stringify(this.existingValues));
 
-        if (newValue.label !== this.newExistingLabel) {
-          newValue.label = this.newExistingLabel;
-        }
-        this.$emit('update-value', newValue);
+              this.$emit('update-existing-values', this.existingValues);
+              this.$emit('update-value', value);
+            } else {
+              this.$emit('update-existing-values', this.existingValues);
+              this.$emit('update-value', value);
+            }
+          }
+        });
       }
     }
   },
@@ -145,7 +151,7 @@ export default {
   },
   watch: {
     defaultValue: {
-      handler() {
+      handler(newValue) {
         this.updateDefaultValue();
       }
     }
