@@ -215,4 +215,30 @@ class EmundusControllerWorkflow extends JControllerLegacy
 
 		$this->sendJsonResponse($response);
 	}
+
+	public function saveStepTypes()
+	{
+		$response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
+			$types = $this->app->input->getString('types');
+			$types = json_decode($types, true);
+
+			// verify if the types are valid
+			if (empty($types))
+			{
+				$response['code']    = 500;
+				$response['message'] = Text::_('INVALID_STEP_TYPES');
+			} else {
+				$saved = $this->model->saveStepTypes($types);
+
+				if ($saved) {
+					$response['code'] = 200;
+					$response['status'] = true;
+				}
+			}
+		}
+
+		$this->sendJsonResponse($response);
+	}
 }

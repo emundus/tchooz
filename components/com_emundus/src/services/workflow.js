@@ -44,5 +44,14 @@ export default {
         status: false, msg: e.message
       };
     }
+  },
+  async saveTypes(types) {
+    try {
+      return await client.post('savesteptypes', {types: JSON.stringify(types)});
+    } catch (e) {
+      return {
+        status: false, msg: e.message
+      };
+    }
   }
 };

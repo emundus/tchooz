@@ -34,12 +34,12 @@
 
 <script>
 import EditEmailJoomla from "@/components/Settings/EditEmailJoomla.vue";
-import Workflows from '@/views/Workflows.vue';
 import SidebarMenu from "@/components/Menus/SidebarMenu.vue";
 import SettingsContent from "@/components/Settings/SettingsContent.vue";
 import Addons from "@/components/Settings/Addons.vue";
 import Info from "@/components/info.vue";
 import SectionComponent from "@/components/Settings/SectionComponent.vue";
+import WorkflowSettings  from "@/views/Workflows/WorkflowSettings.vue";
 
 import Multiselect from 'vue-multiselect';
 import Swal from "sweetalert2";
@@ -57,7 +57,7 @@ export default {
     Multiselect,
     Addons,
     Info,
-    Workflows
+    WorkflowSettings
   },
   props: {
     actualLanguage: {

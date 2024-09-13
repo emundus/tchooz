@@ -71,7 +71,7 @@ export default
     "name": "workflows",
     "icon": "schema",
     "type": "component",
-    "component": "Workflows",
+    "component": "WorkflowSettings",
     "published": true,
     "props": {}
   }

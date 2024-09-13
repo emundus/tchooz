@@ -539,4 +539,151 @@ class EmundusModelWorkflow extends JModelList
 
 		return $types;
 	}
+
+	/**
+	 * @param $types
+	 *
+	 * @return bool true if saved, false otherwise
+	 */
+	public function saveStepTypes($types): bool
+	{
+		$saved = false;
+
+		if (!empty($types))
+		{
+			$existing_types    = $this->getStepTypes();
+			$existing_type_ids = array_map(function ($type) {
+				return $type->id;
+			}, $existing_types);
+
+			$types_ids = array_map(function ($type) {
+				return $type['id'];
+			}, $types);
+
+			$new_types              = array_filter($types, function ($type) use ($existing_type_ids) {
+				return !in_array($type['id'], $existing_type_ids);
+			});
+			$already_existing_types = array_filter($types, function ($type) use ($existing_type_ids) {
+				return in_array($type['id'], $existing_type_ids);
+			});
+			$removed_types          = array_filter($existing_types, function ($type) use ($types_ids) {
+				return !in_array($type->id, $types_ids);
+			});
+
+			$query = $this->db->getQuery(true);
+
+			// update the existing types
+			$updates = [];
+			foreach ($already_existing_types as $type)
+			{
+				$query->clear()
+					->select('action_id')
+					->from('#__emundus_setup_step_types')
+					->where('id = ' . $type['id']);
+				try
+				{
+
+					$this->db->setQuery($query);
+					$action_id = $this->db->loadResult();
+
+					// update the action label
+					$query->clear()
+						->update('#__emundus_setup_actions')
+						->set('label = ' . $this->db->quote($type['label']))
+						->where('id = ' . $action_id);
+					$this->db->setQuery($query);
+					$updates[] = $this->db->execute();
+
+
+					$query->clear()
+						->update('#__emundus_setup_step_types')
+						->set('label = ' . $this->db->quote($type['label']))
+						->where('id = ' . $type['id']);
+					$this->db->setQuery($query);
+					$updates[] = $this->db->execute();
+				}
+				catch (Exception $e)
+				{
+					Log::add('Error while updating step type: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+				}
+			}
+
+			// insert the new types
+			$inserts = [];
+			foreach ($new_types as $type)
+			{
+				// new types need a new line in the setup_actions table
+				$action         = new stdClass();
+				$action->name   = strtolower(str_replace(' ', '_', $type['label']));
+				$action->name   = preg_replace('/[^A-Za-z0-9_]/', '', $action->name);
+				$action->name   .= uniqid();
+				$action->label  = $type['label'];
+				$action->multi  = 0;
+				$action->c      = 1;
+				$action->r      = 1;
+				$action->u      = 1;
+				$action->d      = 1;
+				$action->status = 1;
+
+				$query->clear()
+					->insert('#__emundus_setup_actions')
+					->columns('name, label, multi, c, r, u, d, status')
+					->values($this->db->quote($action->name) . ', ' . $this->db->quote($action->label) . ', ' . $action->multi . ', ' . $action->c . ', ' . $action->r . ', ' . $action->u . ', ' . $action->d . ', ' . $action->status);
+
+				try
+				{
+					$this->db->setQuery($query);
+					$this->db->execute();
+					$action_id = $this->db->insertid();
+				}
+				catch (Exception $e)
+				{
+					Log::add('Error while adding action: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+				}
+
+				$query->clear()
+					->insert('#__emundus_setup_step_types')
+					->columns('label, action_id, parent_id')
+					->values($this->db->quote($type['label']) . ', ' . $action_id . ', ' . $type['parent_id']);
+
+				try
+				{
+					$this->db->setQuery($query);
+					$inserts[] = $this->db->execute();
+				}
+				catch (Exception $e)
+				{
+					Log::add('Error while adding step type: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+				}
+			}
+
+			$statuses = array_merge($updates, $inserts);
+
+			// delete the removed types
+			if (!empty($removed_types))
+			{
+				$removed_types_ids = array_map(function ($type) {
+					return $type->id;
+				}, $removed_types);
+
+				$query->clear()
+					->delete('#__emundus_setup_step_types')
+					->where('id IN (' . implode(',', $removed_types_ids) . ')');
+
+				try
+				{
+					$this->db->setQuery($query);
+					$statuses[] = $this->db->execute();
+				}
+				catch (Exception $e)
+				{
+					Log::add('Error while deleting step types: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+				}
+			}
+
+			$saved = !empty($statuses) && !in_array(false, $statuses);
+		}
+
+		return $saved;
+	}
 }
