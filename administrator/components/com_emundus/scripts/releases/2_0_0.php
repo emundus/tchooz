@@ -1519,7 +1519,7 @@ if(value == 1) {
 				$params = json_decode($fabrik_list->params,true);
 
 				if(!empty($params['list_copy_image_name'])) {
-					$params['list_copy_image_name'] = str_replace('copy','content_copy',$params['list_copy_image_name']);
+					$params['list_copy_image_name'] = 'content_copy';
 					$fabrik_list->params = json_encode($params);
 					$this->db->updateObject('#__fabrik_lists', $fabrik_list, 'id');
 				}
