@@ -167,14 +167,15 @@ class EmundusModelAdministratorWorkflow extends JModelList
 				['name' => 'parent_id', 'type' => 'INT', 'null' => 0, 'default' => 0],
 				['name' => 'label', 'type' => 'VARCHAR(255)', 'null' => 0],
 				['name' => 'action_id', 'type' => 'INT', 'null' => 1],
-				['name' => 'published', 'type' => 'TINYINT', 'null' => 1]
+				['name' => 'published', 'type' => 'TINYINT', 'null' => 1],
+				['name' => 'system', 'type' => 'TINYINT', 'null' => 1, 'default' => 0],
 			];
 			$created = EmundusHelperUpdate::createTable('jos_emundus_setup_step_types', $columns);
 			if ($created) {
 				// add first rows to the table
 				$rows = [
-					[1, 0, 'COM_EMUNDUS_WORKFLOW_STEP_TYPE_APPLICANT', 0, 1],
-					[2, 0, 'COM_EMUNDUS_WORKFLOW_STEP_TYPE_EVALUATOR', 0, 1],
+					[1, 0, 'COM_EMUNDUS_WORKFLOW_STEP_TYPE_APPLICANT', 0, 1, 1],
+					[2, 0, 'COM_EMUNDUS_WORKFLOW_STEP_TYPE_EVALUATOR', 0, 1, 1],
 				];
 
 				foreach ($rows as $row) {
@@ -182,16 +183,42 @@ class EmundusModelAdministratorWorkflow extends JModelList
 					$query = $db->getQuery(true);
 
 					$query->insert('#__emundus_setup_step_types');
-					$query->columns(['id', 'parent_id', 'label', 'action_id', 'published']);
+					$query->columns(['id', 'parent_id', 'label', 'action_id', 'published', $db->quoteName('system')]);
 					$query->values($db->quote(implode(',', $row)));
 
 					$db->setQuery($query);
 					$db->execute();
 				}
 			}
-
 			$tasks[] = $created['status'];
 
+			$columns = [
+				['name' => 'campaign_id', 'type' => 'INT', 'null' => 0],
+				['name' => 'step_id', 'type' => 'INT', 'null' => 0],
+				['name' => 'start_date', 'type' => 'DATE_TIME', 'null' => 1],
+				['name' => 'end_date', 'type' => 'DATE_TIME', 'null' => 1],
+				['name' => 'infinite', 'type' => 'TINYINT', 'null' => 1, 'default' => 0],
+			];
+			$foreign_keys = [
+				[
+					'name' => 'jos_emundus_setup_campaigns_step_dates_jesc__fk',
+					'from_column' => 'campaign_id',
+					'ref_table' => 'jos_emundus_setup_campaigns',
+					'ref_column' => 'id',
+					'update_cascade' => true,
+					'delete_cascade' => true
+				],
+				[
+					'name' => 'jos_emundus_setup_campaigns_step_dates_step_id_fk',
+					'from_column' => 'step_id',
+					'ref_table' => 'jos_emundus_setup_workflows_steps',
+					'ref_column' => 'id',
+					'update_cascade' => true,
+					'delete_cascade' => true
+				],
+			];
+			$created = EmundusHelperUpdate::createTable('jos_emundus_setup_campaigns_step_dates', $columns, $foreign_keys);
+			$tasks[] = $created['status'];
 
 			if (!in_array(false, $tasks)) {
 				$installed = true;
