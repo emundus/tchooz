@@ -28,6 +28,9 @@
     <WorkflowEdit v-else-if="component === 'WorkflowEdit'" :workflow-id="datas.workflowid.value">
     </WorkflowEdit>
 
+    <ProgramEdit v-else-if="component === 'ProgramEdit'" :program-id="datas.program_id.value">
+    </ProgramEdit>
+
     <Comments
         v-else-if="component === 'comments'"
         :defaultCcid="datas.ccid.value"
@@ -70,6 +73,7 @@ import messages from "@/components/Messages/Messages.vue";
 import ApplicationSingle from "@/components/Files/ApplicationSingle.vue";
 import WorkflowEdit from "@/views/Workflows/WorkflowEdit.vue";
 import Workflows  from "@/views/Workflows.vue";
+import ProgramEdit from "@/views/Program/ProgramEdit.vue";
 import TranslationTool from "@/components/Settings/TranslationTool/TranslationTool.vue";
 
 import settingsService from "@/services/settings.js";
@@ -111,7 +115,8 @@ export default {
     TranslationTool,
     WorkflowEdit,
     Workflows,
-    Comments
+    Comments,
+    ProgramEdit
   },
 
   created() {

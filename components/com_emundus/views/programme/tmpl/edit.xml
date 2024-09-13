@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<metadata>
+    <layout title="Édition du programme">
+        <message>
+            <![CDATA[Édition du programme]]>
+        </message>
+    </layout>
+
+    <fields name="params">
+    </fields>
+</metadata>

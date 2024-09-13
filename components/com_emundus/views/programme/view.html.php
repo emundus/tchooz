@@ -13,6 +13,7 @@ defined('_JEXEC') or die;
 jimport('joomla.application.component.view');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 
 /**
  * View class for a list of Emundus.
@@ -32,34 +33,46 @@ class EmundusViewProgramme extends JViewLegacy
 		$menu         = $app->getMenu();
 		$current_menu = $menu->getActive();
 		$menu_params  = $menu->getParams(@$current_menu->id);
+		$layout = $jinput->getString('layout', null);
+		$this->user = $app->getIdentity();
 
-		$this->com_emundus_programme_progdesc_class = '';
-		$this->com_emundus_programme_campdesc_class = '';
-		$this->com_emundus_programme_showcampaign   = '0';
-		$this->com_emundus_programme_showprogramme  = '1';
-		$this->com_emundus_programme_showlink       = '0';
-		$this->com_emundus_programme_campaign_id = $menu_params->get('com_emundus_programme_campaign_id',0);
-		$this->com_emundus_programme_showprogramme  = $menu_params->get('com_emundus_programme_showprogramme');
-		$this->com_emundus_programme_showcampaign   = $menu_params->get('com_emundus_programme_showcampaign');
-		$this->com_emundus_programme_progdesc_class = $menu_params->get('com_emundus_programme_progdesc_class');
-		$this->com_emundus_programme_campdesc_class = $menu_params->get('com_emundus_programme_campdesc_class');
-		$this->com_emundus_programme_showlink       = $menu_params->get('com_emundus_programme_showlink');
-		$this->com_emundus_programme_showlink_class = $menu_params->get('com_emundus_programme_showlink_class');
-		$this->com_emundus_programme_candidate_link = $menu_params->get('com_emundus_programme_candidate_link', 'index.php?option=com_fabrik&amp;view=form&amp;formid=307&amp;Itemid=2700');
+		if ($layout === 'edit') {
+			if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
+				$app->enqueueMessage(Text::_('ACCESS_DENIED'), 'error');
+				$app->redirect('/');
+			}
+
+			$this->program_id = $jinput->getInt('id', 0);
+		} else {
+			$this->com_emundus_programme_progdesc_class = '';
+			$this->com_emundus_programme_campdesc_class = '';
+			$this->com_emundus_programme_showcampaign   = '0';
+			$this->com_emundus_programme_showprogramme  = '1';
+			$this->com_emundus_programme_showlink       = '0';
+			$this->com_emundus_programme_campaign_id = $menu_params->get('com_emundus_programme_campaign_id',0);
+			$this->com_emundus_programme_showprogramme  = $menu_params->get('com_emundus_programme_showprogramme');
+			$this->com_emundus_programme_showcampaign   = $menu_params->get('com_emundus_programme_showcampaign');
+			$this->com_emundus_programme_progdesc_class = $menu_params->get('com_emundus_programme_progdesc_class');
+			$this->com_emundus_programme_campdesc_class = $menu_params->get('com_emundus_programme_campdesc_class');
+			$this->com_emundus_programme_showlink       = $menu_params->get('com_emundus_programme_showlink');
+			$this->com_emundus_programme_showlink_class = $menu_params->get('com_emundus_programme_showlink_class');
+			$this->com_emundus_programme_candidate_link = $menu_params->get('com_emundus_programme_candidate_link', 'index.php?option=com_fabrik&amp;view=form&amp;formid=307&amp;Itemid=2700');
 
 
-		$idcampaign = $jinput->get('id') ? $jinput->get('id', 0, 'int') : $jinput->get('cid', 0, 'int');
-		if(empty($idcampaign)){
-			$idcampaign = $this->com_emundus_programme_campaign_id;
+			$idcampaign = $jinput->get('id') ? $jinput->get('id', 0, 'int') : $jinput->get('cid', 0, 'int');
+			if(empty($idcampaign)){
+				$idcampaign = $this->com_emundus_programme_campaign_id;
+			}
+			$campaign   = $model->getCampaign($idcampaign);
+
+			// Check for errors.
+			if (count($errors = $this->get('Errors'))) {
+				return false;
+			}
+			// Assign data to the view
+			$this->campaign    = $campaign;
 		}
-		$campaign   = $model->getCampaign($idcampaign);
 
-		// Check for errors.
-		if (count($errors = $this->get('Errors'))) {
-			return false;
-		}
-		// Assign data to the view
-		$this->campaign    = $campaign;
 		$this->menu_params = $menu_params;
 
 		// Display the template
