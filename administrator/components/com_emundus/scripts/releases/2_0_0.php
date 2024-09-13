@@ -1085,15 +1085,20 @@ if(value == 1) {
 			}
 			//
 
-			EmundusHelperUpdate::updateExtensionParam('custom_email_conf', '1');
-			EmundusHelperUpdate::updateExtensionParam('custom_email_mailfrom', $this->app->get('mailfrom'));
-			EmundusHelperUpdate::updateExtensionParam('custom_email_fromname', $this->app->get('fromname'));
-			EmundusHelperUpdate::updateExtensionParam('custom_email_smtphost', $this->app->get('smtphost'));
-			EmundusHelperUpdate::updateExtensionParam('custom_email_smtpport', $this->app->get('smtpport'));
-			EmundusHelperUpdate::updateExtensionParam('custom_email_smtpsecure', $this->app->get('smtpsecure'));
-			EmundusHelperUpdate::updateExtensionParam('custom_email_smtpauth', $this->app->get('smtpauth'));
-			EmundusHelperUpdate::updateExtensionParam('custom_email_smtpuser', $this->app->get('smtpuser'));
-			EmundusHelperUpdate::updateExtensionParam('custom_email_smtppass', $this->app->get('smtppass'));
+			$emConfig = ComponentHelper::getComponent('com_emundus')->getParams();
+
+			if(empty($emConfig->get('default_email_smtphost','')))
+			{
+				EmundusHelperUpdate::updateExtensionParam('custom_email_conf', '1');
+				EmundusHelperUpdate::updateExtensionParam('custom_email_mailfrom', $this->app->get('mailfrom'));
+				EmundusHelperUpdate::updateExtensionParam('custom_email_fromname', $this->app->get('fromname'));
+				EmundusHelperUpdate::updateExtensionParam('custom_email_smtphost', $this->app->get('smtphost'));
+				EmundusHelperUpdate::updateExtensionParam('custom_email_smtpport', $this->app->get('smtpport'));
+				EmundusHelperUpdate::updateExtensionParam('custom_email_smtpsecure', $this->app->get('smtpsecure'));
+				EmundusHelperUpdate::updateExtensionParam('custom_email_smtpauth', $this->app->get('smtpauth'));
+				EmundusHelperUpdate::updateExtensionParam('custom_email_smtpuser', $this->app->get('smtpuser'));
+				EmundusHelperUpdate::updateExtensionParam('custom_email_smtppass', $this->app->get('smtppass'));
+			}
 
 			if ($this->app->get('replyto') === null || $this->app->get('replyto') === '')
 			{

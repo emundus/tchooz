@@ -2,7 +2,6 @@
   <div class="em-settings-menu">
     <div class="tw-w-full" v-if="!loading">
 
-
       <Info :text="'COM_EMUNDUS_GLOBAL_PARAMS_SECTION_EMAIL_HELPTEXT'" :icon-type="'material-icons'"
             :class="'tw-mt-2'"></Info>
 

@@ -68,14 +68,6 @@ export default
     "displayed": false,
     "component": "emundus",
     "label": "",
-    "param": "default_email_smtppass",
-    "type": null,
-    "value": ""
-  },
-  {
-    "displayed": false,
-    "component": "emundus",
-    "label": "",
     "param": "custom_email_conf",
     "type": null,
     "value": ""
