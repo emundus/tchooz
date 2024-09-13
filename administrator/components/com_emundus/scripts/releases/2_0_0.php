@@ -1085,15 +1085,20 @@ if(value == 1) {
 			}
 			//
 
-			EmundusHelperUpdate::updateExtensionParam('custom_email_conf', '1');
-			EmundusHelperUpdate::updateExtensionParam('custom_email_mailfrom', $this->app->get('mailfrom'));
-			EmundusHelperUpdate::updateExtensionParam('custom_email_fromname', $this->app->get('fromname'));
-			EmundusHelperUpdate::updateExtensionParam('custom_email_smtphost', $this->app->get('smtphost'));
-			EmundusHelperUpdate::updateExtensionParam('custom_email_smtpport', $this->app->get('smtpport'));
-			EmundusHelperUpdate::updateExtensionParam('custom_email_smtpsecure', $this->app->get('smtpsecure'));
-			EmundusHelperUpdate::updateExtensionParam('custom_email_smtpauth', $this->app->get('smtpauth'));
-			EmundusHelperUpdate::updateExtensionParam('custom_email_smtpuser', $this->app->get('smtpuser'));
-			EmundusHelperUpdate::updateExtensionParam('custom_email_smtppass', $this->app->get('smtppass'));
+			$emConfig = ComponentHelper::getComponent('com_emundus')->getParams();
+
+			if(empty($emConfig->get('default_email_smtphost','')))
+			{
+				EmundusHelperUpdate::updateExtensionParam('custom_email_conf', '1');
+				EmundusHelperUpdate::updateExtensionParam('custom_email_mailfrom', $this->app->get('mailfrom'));
+				EmundusHelperUpdate::updateExtensionParam('custom_email_fromname', $this->app->get('fromname'));
+				EmundusHelperUpdate::updateExtensionParam('custom_email_smtphost', $this->app->get('smtphost'));
+				EmundusHelperUpdate::updateExtensionParam('custom_email_smtpport', $this->app->get('smtpport'));
+				EmundusHelperUpdate::updateExtensionParam('custom_email_smtpsecure', $this->app->get('smtpsecure'));
+				EmundusHelperUpdate::updateExtensionParam('custom_email_smtpauth', $this->app->get('smtpauth'));
+				EmundusHelperUpdate::updateExtensionParam('custom_email_smtpuser', $this->app->get('smtpuser'));
+				EmundusHelperUpdate::updateExtensionParam('custom_email_smtppass', $this->app->get('smtppass'));
+			}
 
 			if ($this->app->get('replyto') === null || $this->app->get('replyto') === '')
 			{
@@ -1639,6 +1644,33 @@ if(value == 1) {
 			$rgpd_ids = $this->db->loadColumn();
 
 			EmundusHelperUpdate::createModule('[GUEST] Back button - RGPD','content-top-a','mod_emundus_back','{"layout":"_:default","moduleclass_sfx":"","module_tag":"div","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0", "back_type":"homepage", "button_text":""}',1, $rgpd_ids);
+
+			$datas       = [
+				'menutype'     => 'mainmenu',
+				'title'        => 'Création de compte',
+				'alias'        => 'finalisation-creation-compte',
+				'link'         => 'index.php?option=com_users&view=reset',
+				'type'         => 'component',
+				'component_id' => ComponentHelper::getComponent('com_users')->id,
+				'params' => [
+					'menu_show'    => 0
+				]
+			];
+			$account_creation_menu = EmundusHelperUpdate::addJoomlaMenu($datas);
+			if($account_creation_menu['status']) {
+				EmundusHelperUpdate::insertFalangTranslation(2,$account_creation_menu['id'],'menu','title','Account creation');
+
+				EmundusHelperUpdate::updateExtensionParam('account_creation_link',$account_creation_menu['id']);
+			}
+
+			EmundusHelperUpdate::insertTranslationsTag('COM_USERS_ACCOUNT_CREATION_PASSWORD', 'Création d\'un mot de passe');
+			EmundusHelperUpdate::insertTranslationsTag('COM_USERS_ACCOUNT_CREATION_PASSWORD', 'Password creation', 'override', 0, null, null, 'en-GB');
+
+			EmundusHelperUpdate::insertTranslationsTag('COM_USERS_RESET_COMPLETE_SUCCESS', 'Nouveau mot de passe défini avec succès. Vous pouvez maintenant vous connecter au site.');
+			EmundusHelperUpdate::insertTranslationsTag('COM_USERS_RESET_COMPLETE_SUCCESS', 'New password set successfully. You can now connect to the site.', 'override', 0, null, null, 'en-GB');
+
+			EmundusHelperUpdate::insertTranslationsTag('COM_USERS_RESET_CONFIRM_FAILED', 'La réinitialisation de votre mot de passe est impossible car le code de vérification n\'est pas valide.');
+			EmundusHelperUpdate::insertTranslationsTag('COM_USERS_RESET_CONFIRM_FAILED', 'Your password reset confirmation failed because the verification code was invalid.', 'override', 0, null, null, 'en-GB');
 
 			$result['status'] = true;
 		}

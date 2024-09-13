@@ -3159,7 +3159,7 @@ class EmundusModelUsers extends ListModel
 	 * @throws Exception
 	 * @since  3.9.11
 	 */
-	public function passwordReset($data, $subject = 'COM_USERS_EMAIL_PASSWORD_RESET_SUBJECT', $body = 'COM_USERS_EMAIL_PASSWORD_RESET_BODY')
+	public function passwordReset($data, $subject = 'COM_USERS_EMAIL_PASSWORD_RESET_SUBJECT', $body = 'COM_USERS_EMAIL_PASSWORD_RESET_BODY', $new_account = false)
 	{
 
 		$config = Factory::getApplication()->getConfig();
@@ -3271,13 +3271,24 @@ class EmundusModelUsers extends ListModel
 
 		// Assemble the password reset confirmation link.
 		$mode = $config->get('force_ssl', 0) == 2 ? 1 : (-1);
+
 		$menu_item = Factory::getApplication()->getMenu()->getItems('link', 'index.php?option=com_users&view=reset', true);
+		if($new_account)
+		{
+			$account_menu_id = ComponentHelper::getComponent('com_emundus')->getParams()->get('account_creation_link',0);
+			if(!empty($account_menu_id)) {
+				$menu_item = Factory::getApplication()->getMenu()->getItem($account_menu_id);
+			}
+		}
 
 		if(!empty($menu_item)) {
 			$link = $menu_item->alias.'?layout=confirm&token=' . $token . '&username=' . $user->get('username');
 		}
 		else {
 			$link = 'index.php?option=com_users&view=reset&layout=confirm&token=' . $token . '&username=' . $user->get('username');
+		}
+		if($new_account) {
+			$link .= '&new_account=1';
 		}
 		$link = str_replace('+', '%2B', $link);
 

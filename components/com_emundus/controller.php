@@ -1092,6 +1092,12 @@ class EmundusController extends JControllerLegacy
 							$pos = false;
 						}
 					}
+					elseif($file['type'] == 'application/msword' || $file['type'] == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+						// Check if the file is a zip file, check if the file type is application/x-zip-compressed for windows users
+						if($file['type'] !== $mtype && !in_array($file['type'],['application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document'])) {
+							$pos = false;
+						}
+					}
 					elseif($file['type'] !== $mtype) {
 						$pos = false;
 					}
