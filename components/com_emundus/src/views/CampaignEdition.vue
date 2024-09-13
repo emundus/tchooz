@@ -54,6 +54,12 @@
               :defaultFormUrl="campaignMoreFormUrl"
           >
           </campaign-more>
+          <campaign-steps
+              v-else-if="selectedMenu === 'campaignSteps' && campaignId !== ''"
+              :campaignId="campaignId"
+              @nextSection="next"
+          >
+          </campaign-steps>
           <add-documents-dropfiles
               v-else-if="selectedMenu === 'addDocumentsDropfiles'"
               :funnelCategorie="selectedMenuItem.label"
@@ -71,7 +77,7 @@
       </div>
 
       <div class="tw-flex tw-items-center tw-justify-end tw-mt-4"
-           v-if="['addDocumentsDropfiles', 'addFormulaire'].includes(selectedMenu)">
+           v-if="['addDocumentsDropfiles'].includes(selectedMenu)">
         <button type="button" class="tw-btn-primary tw-w-auto mb-4" @click="next">
           {{ translate('COM_EMUNDUS_ONBOARD_ADD_CONTINUER') }}
         </button>
@@ -92,8 +98,8 @@ import settingsService from "@/services/settings.js";
 import addCampaign from "@/views/addCampaign.vue";
 import AddDocumentsDropfiles from "@/components/FunnelFormulaire/addDocumentsDropfiles.vue";
 import addEmail from "@/components/FunnelFormulaire/addEmail.vue";
-import addFormulaire from "@/components/FunnelFormulaire/addFormulaire.vue";
 import campaignMore from "@/components/FunnelFormulaire/CampaignMore.vue";
+import campaignSteps from "@/components/FunnelFormulaire/CampaignSteps.vue";
 
 import { useGlobalStore } from '@/stores/global.js';
 
@@ -105,7 +111,8 @@ export default {
     AddDocumentsDropfiles,
     addCampaign,
     addEmail,
-    campaignMore
+    campaignMore,
+    campaignSteps
   },
 
   props: {
@@ -132,6 +139,13 @@ export default {
         icon: "description",
         component: "campaignMore",
         displayed: false
+      },
+      {
+        label: "COM_EMUNDUS_CAMPAIGN_STEPS",
+        description: "COM_EMUNDUS_CAMPAIGN_STEPS_DESC",
+        icon: "description",
+        component: "campaignSteps",
+        displayed: true
       },
       {
         label: "COM_EMUNDUS_DOCUMENTS_CAMPAIGNS",

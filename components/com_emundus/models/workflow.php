@@ -714,4 +714,102 @@ class EmundusModelWorkflow extends JModelList
 
 		return $saved;
 	}
+
+	/**
+	 * @param int $campaign_id
+	 *
+	 * @return array
+	 */
+	public function getCampaignSteps($campaign_id): array
+	{
+		$steps = [];
+
+		if (!empty($campaign_id)) {
+			$query = $this->db->createQuery();
+			$query->select('esp.id')
+				->from($this->db->quoteName('#__emundus_setup_programmes', 'esp'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esp.code = esc.training')
+				->where('esc.id = ' . $campaign_id);
+
+			$this->db->setQuery($query);
+			$program_id = $this->db->loadResult();
+
+			if (!empty($program_id)) {
+				$workflows = $this->getWorkflows([], 0, 0, [$program_id]);
+
+				foreach ($workflows as $workflow)
+				{
+					$workflow_data = $this->getWorkflow($workflow->id);
+
+					foreach ($workflow_data['steps'] as $step)
+					{
+						$query->clear()
+							->select('id, start_date, end_date, infinite')
+							->from('#__emundus_setup_campaigns_step_dates')
+							->where('campaign_id = ' . $campaign_id)
+							->where('step_id = ' . $step->id);
+
+						$this->db->setQuery($query);
+						$dates = $this->db->loadAssoc();
+
+						if (empty($dates['id'])) {
+							// create the dates
+							$row = new stdClass();
+							$row->campaign_id = $campaign_id;
+							$row->step_id = $step->id;
+							$row->start_date = null;
+							$row->end_date = null;
+							$this->db->insertObject('#__emundus_setup_campaigns_step_dates', $row);
+
+							$this->db->setQuery($query);
+							$dates = $this->db->loadAssoc();
+						}
+
+						$step->start_date = $dates['start_date'];
+						$step->end_date = $dates['end_date'];
+						$step->infinite = $dates['infinite'];
+
+						$steps[] = $step;
+					}
+				}
+			}
+		}
+
+		return $steps;
+	}
+
+	public function saveCampaignStepsDates($campaign_id, $steps): bool
+	{
+		$saved = false;
+
+		if (!empty($campaign_id) && !empty($steps)) {
+			$query = $this->db->createQuery();
+
+			$saves = [];
+			foreach ($steps as $step) {
+				if (!empty($step['id'])) {
+					$query->clear()
+						->update('#__emundus_setup_campaigns_step_dates')
+						->set('start_date = ' . $this->db->quote($step['start_date']))
+						->set('end_date = ' . $this->db->quote($step['end_date']))
+						->set('infinite = ' . $this->db->quote($step['infinite']))
+						->where('step_id = ' . $step['id'])
+						->andwhere('campaign_id = ' . $campaign_id);
+
+					try {
+						$this->db->setQuery($query);
+						$saves[] = $this->db->execute();
+					} catch (Exception $e) {
+
+						var_dump($e->getMessage());exit;
+						Log::add('Error while updating campaign step dates: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+					}
+				}
+			}
+
+			$saved = !empty($saves) && !in_array(false, $saves);
+		}
+
+		return $saved;
+	}
 }

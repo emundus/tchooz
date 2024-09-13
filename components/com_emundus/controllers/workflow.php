@@ -241,4 +241,49 @@ class EmundusControllerWorkflow extends JControllerLegacy
 
 		$this->sendJsonResponse($response);
 	}
+
+	public function getcampaignsteps()
+	{
+		$response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$campaign_id = $this->app->input->getInt('campaign_id', 0);
+
+			if (!empty($campaign_id)) {
+				$steps = $this->model->getCampaignSteps($campaign_id);
+
+				if (!empty($steps)) {
+					$response['data'] = $steps;
+					$response['code'] = 200;
+					$response['status'] = true;
+				}
+			}
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function savecampaignstepsdates()
+	{
+		$response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$campaign_id = $this->app->input->getInt('campaign_id', 0);
+			$steps = $this->app->input->getString('steps', '[]');
+			$steps = json_decode($steps, true);
+
+			if (!empty($campaign_id) && !empty($steps)) {
+				$saved = $this->model->saveCampaignStepsDates($campaign_id, $steps);
+
+				if ($saved) {
+					$response['code'] = 200;
+					$response['status'] = true;
+				}
+			}
+		}
+
+		$this->sendJsonResponse($response);
+	}
 }

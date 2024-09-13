@@ -53,5 +53,23 @@ export default {
         status: false, msg: e.message
       };
     }
-  }
+  },
+  async getCampaignSteps(campaignId) {
+    try {
+      return await client.get('getcampaignsteps', {campaign_id: campaignId});
+    } catch (e) {
+      return {
+        status: false, msg: e.message
+      };
+    }
+  },
+  async saveCampaignSteps(campaignId, steps) {
+    try {
+      return await client.post('savecampaignstepsdates', {campaign_id: campaignId, steps: JSON.stringify(steps)});
+    } catch (e) {
+      return {
+        status: false, msg: e.message
+      };
+    }
+  },
 };
