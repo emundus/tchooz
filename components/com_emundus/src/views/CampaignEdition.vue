@@ -1,7 +1,7 @@
 <template>
   <div id="edit-campaign">
     <div class="em-w-custom"></div>
-    <div>
+    <div class="em-border-cards em-card-shadow tw-rounded em-white-bg em-p-24">
       <div>
         <div class="tw-flex tw-items-center tw-cursor-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
           <span class="material-symbols-outlined tw-text-neutral-600">navigate_before</span>
@@ -54,16 +54,6 @@
               :defaultFormUrl="campaignMoreFormUrl"
           >
           </campaign-more>
-          <addFormulaire
-              v-else-if="selectedMenu === 'addFormulaire'"
-              :profileId="profileId"
-              :campaignId="campaignId"
-              :profiles="profiles"
-              :key="formReload"
-              @profileId="setProfileId"
-              :visibility="null"
-          ></addFormulaire>
-
           <add-documents-dropfiles
               v-else-if="selectedMenu === 'addDocumentsDropfiles'"
               :funnelCategorie="selectedMenuItem.label"
@@ -80,12 +70,9 @@
         </transition>
       </div>
 
-      <div class="tw-flex tw-items-center tw-justify-between tw-float-right"
+      <div class="tw-flex tw-items-center tw-justify-end tw-mt-4"
            v-if="['addDocumentsDropfiles', 'addFormulaire'].includes(selectedMenu)">
-        <button
-            type="button"
-            class="tw-btn-primary tw-w-auto mb-4"
-            @click="next">
+        <button type="button" class="tw-btn-primary tw-w-auto mb-4" @click="next">
           {{ translate('COM_EMUNDUS_ONBOARD_ADD_CONTINUER') }}
         </button>
       </div>
@@ -117,7 +104,6 @@ export default {
   components: {
     AddDocumentsDropfiles,
     addCampaign,
-    addFormulaire,
     addEmail,
     campaignMore
   },
@@ -152,13 +138,6 @@ export default {
         description: "COM_EMUNDUS_DOCUMENTS_CAMPAIGNS_DESC",
         icon: "description",
         component: "addDocumentsDropfiles",
-        displayed: true
-      },
-      {
-        label: "COM_EMUNDUS_FORM_CAMPAIGN",
-        description: "COM_EMUNDUS_FORM_CAMPAIGN_DESC",
-        icon: "description",
-        component: "addFormulaire",
         displayed: true
       },
       {

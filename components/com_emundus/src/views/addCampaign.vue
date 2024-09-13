@@ -221,8 +221,6 @@
           </div>
         </div>
 
-        <hr class="tw-mt-16"/>
-
         <div class="tw-mt-8">
           <div class="tw-mb-4">
             <h2>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM') }}</h2>
@@ -234,7 +232,7 @@
             <div class="tw-flex tw-items-center">
               <select
                   id="select_prog"
-                  class="tw-mt-2 form-control fabrikinput tw-w-full"
+                  class="form-control fabrikinput tw-w-full"
                   :class="{ 'is-invalid !tw-border-red-600': errors.progCode }"
                   v-model="form.training"
                   v-on:change="setCategory"
@@ -299,9 +297,8 @@
           </transition>
         </div>
 
-        <hr class="tw-mt-1.5 tw-mb-1.5"/>
 
-        <div class="tw-flex tw-justify-between tw-float-right tw-mb-4">
+        <div class="tw-flex tw-justify-end tw-mt-4">
           <button
               id="save-btn"
               type="button"
