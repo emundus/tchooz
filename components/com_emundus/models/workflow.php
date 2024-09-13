@@ -341,8 +341,7 @@ class EmundusModelWorkflow extends JModelList
 					->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_entry_status', 'eswses') . ' ON ' . $this->db->quoteName('eswses.step_id') . ' = ' . $this->db->quoteName('esws.id'))
 					->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_groups', 'eswsg') . ' ON ' . $this->db->quoteName('eswsg.step_id') . ' = ' . $this->db->quoteName('esws.id'))
 					->where($this->db->quoteName('esws.workflow_id') . ' = ' . $id)
-					->group($this->db->quoteName('esws.id'))
-					->order($this->db->quoteName('esws.start_date') . ' ASC');
+					->group($this->db->quoteName('esws.id'));
 
 				try {
 					$this->db->setQuery($query);
@@ -354,7 +353,6 @@ class EmundusModelWorkflow extends JModelList
 						$workflowData['steps'][$key]->group_ids = !empty($step->group_ids) ? array_unique(explode(',', $step->group_ids)) : [];
 					}
 				} catch (Exception $e) {
-					var_dump($query->__toString());exit;
 					Log::add('Error while fetching workflow steps: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
 				}
 
@@ -376,11 +374,11 @@ class EmundusModelWorkflow extends JModelList
 	}
 
 	/**
-	 * @param $id
-	 *
+	 * @param int $id
+	 * @param int $cid campaign id, if set, it will return the dates for the campaign and this step
 	 * @return object with step data
 	 */
-	public function getStepData($id): object
+	public function getStepData($id, $cid = null): object
 	{
 		$data = new stdClass();
 
@@ -406,7 +404,7 @@ class EmundusModelWorkflow extends JModelList
 					if (!empty($data->sub_type)) {
 						$query->clear()
 							->select('action_id')
-							->from($this->db->quoteName('#__emundus_setup_workflow_step_types'))
+							->from($this->db->quoteName('#__emundus_setup_step_types'))
 							->where('id = ' . $data->sub_type);
 
 						$this->db->setQuery($query);
@@ -531,7 +529,7 @@ class EmundusModelWorkflow extends JModelList
 		try {
 			$query = $this->db->getQuery(true);
 			$query->select('*')
-				->from('#__emundus_setup_workflow_step_types');
+				->from('#__emundus_setup_step_types');
 
 			$this->db->setQuery($query);
 			$types = $this->db->loadObjectList();

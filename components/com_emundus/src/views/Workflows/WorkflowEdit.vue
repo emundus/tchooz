@@ -32,168 +32,96 @@
             >
             </Multiselect>
           </div>
-          <div class="tw-flex tw-flex-row tw-items-center tw-gap-1 tw-ml-4">
-            <span class="material-icons-outlined tw-cursor-pointer tw-p-2 tw-rounded tw-border" @click="currentView = 'steps'">label</span>
-            <span class="material-icons-outlined tw-cursor-pointer tw-p-2 tw-rounded tw-border" @click="currentView = 'gantt'">account_tree</span>
-          </div>
         </div>
       </div>
     </div>
-    <transition>
-      <div v-show="currentView === 'steps'" id="workflow-steps-wrapper" class="tw-my-4 tw-flex tw-flex-col tw-p-2 tw-border tw-rounded">
-        <a class="tw-btn-primary tw-h-fit tw-w-fit tw-mb-4" href="#" @click="addStep"> {{ translate('COM_EMUNDUS_WORKFLOW_ADD_STEP') }} </a>
+    <div id="workflow-steps-wrapper" class="tw-my-4 tw-flex tw-flex-col tw-p-2 tw-border tw-rounded">
+      <a class="tw-btn-primary tw-h-fit tw-w-fit tw-mb-4" href="#" @click="addStep"> {{ translate('COM_EMUNDUS_WORKFLOW_ADD_STEP') }} </a>
 
-        <div id="workflow-steps" class="tw-grid tw-grid-cols-3 tw-gap-3 tw-overflow-auto">
-          <div v-for="step in steps" :key="step.id" class="workflow-step tw-rounded tw-border tw-shadow-sm tw-p-4 em-white-bg">
-            <div class="workflow-step-head tw-flex tw-flex-row tw-justify-between">
-              <h4>{{ step.label }}</h4>
-              <popover>
-                <ul class="tw-list-none !tw-p-0">
-                  <li class="delete-workflow-step tw-cursor-pointer tw-p-2" @click="beforeDeleteStep(step.id)">{{ translate('COM_EMUNDUS_ACTIONS_DELETE') }}</li>
-                </ul>
-              </popover>
-            </div>
+      <div id="workflow-steps" class="tw-grid tw-grid-cols-3 tw-gap-3 tw-overflow-auto">
+        <div v-for="step in steps" :key="step.id" class="workflow-step tw-rounded tw-border tw-shadow-sm tw-p-4 em-white-bg">
+          <div class="workflow-step-head tw-flex tw-flex-row tw-justify-between">
+            <h4>{{ step.label }}</h4>
+            <popover>
+              <ul class="tw-list-none !tw-p-0">
+                <li class="delete-workflow-step tw-cursor-pointer tw-p-2" @click="beforeDeleteStep(step.id)">{{ translate('COM_EMUNDUS_ACTIONS_DELETE') }}</li>
+              </ul>
+            </popover>
+          </div>
 
-            <div class="workflow-step-content">
-              <div class="tw-mb-4 tw-flex tw-flex-col">
-                <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_LABEL') }}</label>
-                <input type="text" v-model="step.label" />
-                <span v-if="displayError && fieldsInError[step.id] && fieldsInError[step.id].includes('label')">
+          <div class="workflow-step-content">
+            <div class="tw-mb-4 tw-flex tw-flex-col">
+              <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_LABEL') }}</label>
+              <input type="text" v-model="step.label" />
+              <span v-if="displayError && fieldsInError[step.id] && fieldsInError[step.id].includes('label')">
                   {{ translate('COM_EMUNDUS_WORKFLOW_STEP_LABEL_REQUIRED') }}
                 </span>
-              </div>
+            </div>
 
-              <div class="tw-mb-4 tw-flex tw-flex-col">
-                <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_TYPE_PARENT') }}</label>
-                <select v-model="step.type">
-                  <option v-for="type in parentStepTypes" :key="type.id" :value="type.id">{{ translate(type.label) }}</option>
-                </select>
-              </div>
+            <div class="tw-mb-4 tw-flex tw-flex-col">
+              <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_TYPE_PARENT') }}</label>
+              <select v-model="step.type">
+                <option v-for="type in parentStepTypes" :key="type.id" :value="type.id">{{ translate(type.label) }}</option>
+              </select>
+            </div>
 
-              <div v-if="getStepSubTypes(step.type).length > 0" class="tw-mb-4 tw-flex tw-flex-col">
-                <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_TYPE_CHILDREN') }}</label>
-                <select v-model="step.sub_type">
-                  <option v-for="type in getStepSubTypes(step.type)" :key="type.id" :value="type.id">{{ translate(type.label) }}</option>
-                </select>
-              </div>
+            <div v-if="getStepSubTypes(step.type).length > 0" class="tw-mb-4 tw-flex tw-flex-col">
+              <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_TYPE_CHILDREN') }}</label>
+              <select v-model="step.sub_type">
+                <option v-for="type in getStepSubTypes(step.type)" :key="type.id" :value="type.id">{{ translate(type.label) }}</option>
+              </select>
+            </div>
 
-              <div class="tw-mb-4 tw-flex tw-flex-col">
-                <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_START_DATE') }}</label>
-                <DatePicker
-                    :id="'step_' + step.id + '_start_date'"
-                    v-model="step.start_date"
-                    :keepVisibleOnInput="true"
-                    :time-accuracy="2"
-                    mode="dateTime"
-                    is24hr
-                    hide-time-header
-                    title-position="left"
-                    :input-debounce="500"
-                    :popover="{visibility: 'focus'}"
-                    :locale="{data: 'YYYY-MM-DD HH:mm'}"
-                >
-                  <template #default="{ inputValue, inputEvents }">
-                    <input
-                        :value="inputValue"
-                        v-on="inputEvents"
-                        class="form-control fabrikinput tw-w-full"
-                        :id="'step_' + step.id + '_start_date'"
-                    />
-                  </template>
-                </DatePicker>
-              </div>
+            <div v-if="step.type != 1" class="tw-mb-4 tw-flex tw-flex-col">
+              <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_GROUPS') }}</label>
+              <Multiselect
+                  :options="groups"
+                  v-model="step.group_ids"
+                  label="label"
+                  track-by="id"
+                  placeholder="Select a group"
+                  :multiple="true">
+              </Multiselect>
+            </div>
 
-              <div class="tw-mb-4 tw-flex tw-flex-col">
-                <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_END_DATE') }}</label>
-                <DatePicker
-                    :id="'step_' + step.id + '_end_date'"
-                    v-model="step.end_date"
-                    :keepVisibleOnInput="true"
-                    :time-accuracy="2"
-                    mode="dateTime"
-                    is24hr
-                    hide-time-header
-                    title-position="left"
-                    :input-debounce="500"
-                    :popover="{visibility: 'focus'}"
-                    :locale="{data: 'YYYY-MM-DD HH:mm'}"
-                >
-                  <template #default="{ inputValue, inputEvents }">
-                    <input
-                        :value="inputValue"
-                        v-on="inputEvents"
-                        class="form-control fabrikinput tw-w-full"
-                        :id="'step_' + step.id + '_end_date'"
-                    />
-                  </template>
-                </DatePicker>
-              </div>
+            <div v-if="step.type == 1" class="tw-mb-4 tw-flex tw-flex-col">
+              <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_PROFILE') }}</label>
+              <select v-model="step.profile_id">
+                <option v-for="profile in applicantProfiles" :key="profile.id" :value="profile.id">{{ profile.label }}</option>
+              </select>
+            </div>
 
-              <div v-if="step.type != 1" class="tw-mb-4 tw-flex tw-flex-col">
-                <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_GROUPS') }}</label>
-                <Multiselect
-                    :options="groups"
-                    v-model="step.group_ids"
-                    label="label"
-                    track-by="id"
-                    placeholder="Select a group"
-                    :multiple="true">
-                </Multiselect>
-              </div>
+            <div v-else class="tw-mb-4 tw-flex tw-flex-col">
+              <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_PROFILE') }}</label>
+              <select v-model="step.form_id">
+                <option v-for="form in evaluationForms" :key="form.id" :value="form.id">{{ form.label }}</option>
+              </select>
+            </div>
 
-              <div v-if="step.type == 1" class="tw-mb-4 tw-flex tw-flex-col">
-                <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_PROFILE') }}</label>
-                <select v-model="step.profile_id">
-                  <option v-for="profile in applicantProfiles" :key="profile.id" :value="profile.id">{{ profile.label }}</option>
-                </select>
-              </div>
+            <div class="tw-mb-4 tw-flex tw-flex-col">
+              <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS') }}</label>
+              <Multiselect
+                  :options="statuses"
+                  v-model="step.entry_status"
+                  label="label"
+                  track-by="id"
+                  placeholder="Select a status"
+                  :multiple="true">
+              </Multiselect>
+            </div>
 
-              <div v-else class="tw-mb-4 tw-flex tw-flex-col">
-                <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_PROFILE') }}</label>
-                <select v-model="step.form_id">
-                  <option v-for="form in evaluationForms" :key="form.id" :value="form.id">{{ form.label }}</option>
-                </select>
-              </div>
-
-              <div class="tw-mb-4 tw-flex tw-flex-col">
-                <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS') }}</label>
-                <Multiselect
-                    :options="statuses"
-                    v-model="step.entry_status"
-                    label="label"
-                    track-by="id"
-                    placeholder="Select a status"
-                    :multiple="true">
-                </Multiselect>
-              </div>
-
-              <div v-if="step.type == 1" class="tw-mb-4 tw-flex tw-flex-col">
-                <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_OUTPUT_STATUS') }}</label>
-                <select v-model="step.output_status">
-                  <option value="-1">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_OUTPUT_STATUS_SELECT') }}</option>
-                  <option v-for="status in statuses" :key="status.id" :value="status.id">{{ status.label }}</option>
-                </select>
-              </div>
+            <div v-if="step.type == 1" class="tw-mb-4 tw-flex tw-flex-col">
+              <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_OUTPUT_STATUS') }}</label>
+              <select v-model="step.output_status">
+                <option value="-1">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_OUTPUT_STATUS_SELECT') }}</option>
+                <option v-for="status in statuses" :key="status.id" :value="status.id">{{ status.label }}</option>
+              </select>
             </div>
           </div>
-          <p v-if="steps.length < 1" class="tw-w-full tw-text-center"> {{ translate('COM_EMUNDUS_WORKFLOW_NO_STEPS') }} </p>
         </div>
+        <p v-if="steps.length < 1" class="tw-w-full tw-text-center"> {{ translate('COM_EMUNDUS_WORKFLOW_NO_STEPS') }} </p>
       </div>
-    </transition>
-    <transition>
-      <div v-show="currentView === 'gantt'" class="tw-my-4">
-        <g-gantt-chart
-            :currentTimeLabel="'fr'"
-            :chart-start="furthestPastStepFirstDayOfYear"
-            :chart-end="furthestFutureStepLastDayOfYear"
-            precision="month"
-            bar-start="start_date"
-            bar-end="end_date"
-        >
-          <g-gantt-row v-for="row in stepsGantBars" :key="'row-' + row.key" :bars="row" :label="row.label" />
-        </g-gantt-chart>
-      </div>
-    </transition>
+    </div>
   </div>
 </template>
 
@@ -206,7 +134,6 @@ import formService from '@/services/form.js';
 import groupsService from '@/services/groups.js';
 
 import Popover from '@/components/Popover.vue';
-import { DatePicker } from 'v-calendar';
 import Multiselect from "vue-multiselect";
 import errors from '@/mixins/errors.js';
 
@@ -221,7 +148,6 @@ export default {
     }
   },
   components: {
-    DatePicker,
     Multiselect,
     Popover
   },
@@ -235,7 +161,6 @@ export default {
       steps: [],
       programs: [],
       groups: [],
-      currentView: 'steps', // steps, gantt
       stepTypes: [],
       sortByOptions: [],
       statuses : [],
@@ -270,9 +195,6 @@ export default {
           this.workflow = response.data.workflow;
           let tmpSteps = response.data.steps;
           tmpSteps.forEach((step) => {
-            step.start_date = new Date(step.start_date);
-            step.end_date = new Date(step.end_date);
-
             step.entry_status = this.statuses.filter(status => step.entry_status.includes(status.id.toString()));
             step.group_ids = this.groups.filter(group => step.group_ids.includes(group.id.toString()));
           });
@@ -372,8 +294,6 @@ export default {
         id: 0,
         label: this.translate('COM_EMUNDUS_WORKFLOW_NEW_STEP_LABEL'),
         type: 'applicant',
-        start_date: '',
-        end_date: '',
         roles: [],
         profile_id: 9,
         entry_status: [],
@@ -472,20 +392,6 @@ export default {
       const checked = this.onBeforeSave();
 
       if (checked) {
-        this.steps.forEach((step) => {
-          if (step.start_date !== '') {
-            step.start_date = this.formatDate(step.start_date);
-          } else {
-            step.start_date = '0000-00-00 00:00:00';
-          }
-
-          if (step.end_date !== '') {
-            step.end_date = this.formatDate(step.end_date);
-          } else {
-            step.end_date = '0000-00-00 00:00:00';
-          }
-        });
-
         workflowService.saveWorkflow(this.workflow, this.steps, this.programs)
           .then(response => {
             if (response.status) {
@@ -513,21 +419,6 @@ export default {
         }, 15000);
       }
     },
-    formatDate(date, format = 'YYYY-MM-DD HH:mm:ss') {
-      let year = date.getFullYear();
-      let month = (1 + date.getMonth()).toString().padStart(2, '0');
-      let day = date.getDate().toString().padStart(2, '0');
-      let hours = date.getHours().toString().padStart(2, '0');
-      let minutes = date.getMinutes().toString().padStart(2, '0');
-      let seconds = date.getSeconds().toString().padStart(2, '0');
-
-      return format.replace('YYYY', year)
-        .replace('MM', month)
-        .replace('DD', day)
-        .replace('HH', hours)
-        .replace('mm', minutes)
-        .replace('ss', seconds);
-    },
     goBack() {
       window.history.go(-1);
     }
@@ -541,49 +432,6 @@ export default {
     },
     parentStepTypes() {
       return this.stepTypes.filter(type => type.parent_id === 0);
-    },
-    stepsGantBars() {
-      return this.steps.map(step => {
-        return [{
-          key: step.id,
-          label: step.label,
-          start_date: step.start_date,
-          end_date: step.end_date,
-          ganttBarConfig: {
-            id: step.id,
-            label: step.label,
-            class: 'em-bg-main-500 em-text-neutral-300 tw-rounded'
-          }
-        }]
-      });
-    },
-    furthestPastStepFirstDayOfYear() {
-      const year = this.steps.reduce((acc, step) => {
-        const stepDate = step.start_date instanceof Date ? step.start_date : new Date(step.start_date);
-        const stepYear = stepDate.getFullYear();
-
-        if (stepYear < acc || acc === 0) {
-          acc = stepYear;
-        }
-
-        return acc;
-      }, 0);
-
-      return year + '-01-01 00:00';
-    },
-
-    furthestFutureStepLastDayOfYear() {
-      const year = this.steps.reduce((acc, step) => {
-        const stepDate = step.end_date instanceof Date ? step.end_date : new Date(step.end_date);
-        const stepYear = stepDate.getFullYear();
-        if (stepYear > acc) {
-          acc = stepYear;
-        }
-
-        return acc;
-      }, 0);
-
-      return year + '-12-31 23:59';
     }
   }
 }

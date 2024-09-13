@@ -73,8 +73,6 @@ class EmundusModelAdministratorWorkflow extends JModelList
 				['name' => 'profile_id', 'type' => 'INT', 'null' => 1],
 				['name' => 'form_id', 'type' => 'INT', 'null' => 1],
 				['name' => 'multiple', 'type' => 'TINYINT', 'null' => 1],
-				['name' => 'start_date', 'type' => 'DATETIME', 'null' => 0],
-				['name' => 'end_date', 'type' => 'DATETIME', 'null' => 0],
 				['name' => 'output_status', 'type' => 'INT', 'null' => 0],
 				['name' => 'state', 'type' => 'INT', 'null' => 0], // 1: published, 0: archived, -1: deleted
 			];
@@ -171,7 +169,7 @@ class EmundusModelAdministratorWorkflow extends JModelList
 				['name' => 'action_id', 'type' => 'INT', 'null' => 1],
 				['name' => 'published', 'type' => 'TINYINT', 'null' => 1]
 			];
-			$created = EmundusHelperUpdate::createTable('jos_emundus_setup_workflow_step_types', $columns);
+			$created = EmundusHelperUpdate::createTable('jos_emundus_setup_step_types', $columns);
 			if ($created) {
 				// add first rows to the table
 				$rows = [
@@ -183,7 +181,7 @@ class EmundusModelAdministratorWorkflow extends JModelList
 					$db = Factory::getContainer()->get('DatabaseDriver');
 					$query = $db->getQuery(true);
 
-					$query->insert('#__emundus_setup_workflow_step_types');
+					$query->insert('#__emundus_setup_step_types');
 					$query->columns(['id', 'parent_id', 'label', 'action_id', 'published']);
 					$query->values($db->quote(implode(',', $row)));
 
