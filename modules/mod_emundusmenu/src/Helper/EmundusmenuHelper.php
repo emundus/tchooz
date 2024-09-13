@@ -72,6 +72,11 @@ class EmundusmenuHelper
 				foreach ($items as $i => $item) {
 					$params = $item->getParams();
 
+					if ($params->get('menu_show', 1) == 0) {
+						unset($items[$i]);
+						continue;
+					}
+
 					if (($start && $start > $item->level)
 						|| ($end && $item->level > $end)
 						|| (!$showAll && $item->level > 1 && !in_array($item->parent_id, $path))
