@@ -582,7 +582,6 @@ class EmundusModelWorkflow extends JModelList
 					->where('id = ' . $type['id']);
 				try
 				{
-
 					$this->db->setQuery($query);
 					$action_id = $this->db->loadResult();
 
@@ -668,7 +667,8 @@ class EmundusModelWorkflow extends JModelList
 
 				$query->clear()
 					->delete('#__emundus_setup_step_types')
-					->where('id IN (' . implode(',', $removed_types_ids) . ')');
+					->where('id IN (' . implode(',', $removed_types_ids) . ')')
+					->andWhere('default = 0');
 
 				try
 				{
