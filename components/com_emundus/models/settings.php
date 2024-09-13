@@ -1801,6 +1801,12 @@ class EmundusModelsettings extends ListModel
 
 		foreach ($settings_mail_server_custom as $setting_mail_server_custom) {
 			if ($setting_mail_server_custom['component'] === 'emundus') {
+				if($setting_mail_server_custom['type'] == 'password') {
+					$params['emundus'][$setting_mail_server_custom['param']] = '************';
+				}
+				else {
+					$params['emundus'][$setting_mail_server_custom['param']] = $emundus_parameters->get($setting_mail_server_custom['param']);
+				}
 				$params['emundus'][$setting_mail_server_custom['param']] = $emundus_parameters->get($setting_mail_server_custom['param']);
 			}
 			else {
@@ -1810,7 +1816,12 @@ class EmundusModelsettings extends ListModel
 
 		foreach ($settings_mail_value as $setting_mail_value) {
 			if ($setting_mail_value['component'] === 'emundus') {
-				$params['emundus'][$setting_mail_value['param']] = $emundus_parameters->get($setting_mail_value['param']);
+				if($setting_mail_value['param'] == 'custom_email_smtppass') {
+					$params['emundus'][$setting_mail_value['param']] = '************';
+				}
+				else {
+					$params['emundus'][$setting_mail_value['param']] = $emundus_parameters->get($setting_mail_value['param']);
+				}
 			}
 			else {
 				$params['joomla'][$setting_mail_value['param']] = $this->app->getConfig()->get($setting_mail_value['param']);

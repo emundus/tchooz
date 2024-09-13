@@ -751,6 +751,15 @@
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
+        <field name="account_creation_link" type="sql"
+               label="COM_EMUNDUS_USERS_CONFIG_ACCOUNT_CREATION_LINK"
+               desc="COM_EMUNDUS_USERS_CONFIG_ACCOUNT_CREATION_LINK_DESC"
+               query="SELECT id, title as label FROM jos_menu WHERE published = 1"
+               key_field="id"
+               value_field="label"
+               multiple="false"
+               default=""
+        />
     </fieldset>
 
     <fieldset label="COM_EMUNDUS_INTEGRATION" name="integration" description="COM_EMUNDUS_INTEGRATION_DESC">
