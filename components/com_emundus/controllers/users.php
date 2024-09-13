@@ -18,7 +18,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\User\User;
-
+use Joomla\CMS\User\UserFactoryInterface;
 
 
 /**
@@ -103,12 +103,10 @@ class EmundusControllerUsers extends BaseController
 
 	public function adduser()
 	{
-
 		if (!EmundusHelperAccess::asAccessAction(12, 'c')) {
 			echo json_encode((object) array('status' => false, 'uid' => $this->user->id, 'msg' => Text::_('ACCESS_DENIED')));
 			exit;
 		}
-
 
 		$firstname = $this->input->getString('firstname');
 		$lastname  = $this->input->getString('lastname');
@@ -124,7 +122,7 @@ class EmundusControllerUsers extends BaseController
 		$news      = $this->input->getInt('newsletter', 0);
 		$ldap      = $this->input->getInt('ldap', 0);
 
-		$user = clone(Factory::getContainer()->get(\Joomla\CMS\User\UserFactoryInterface::class)->loadUserById(0));
+		$user = clone(Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(0));
 
 		if (preg_match('/^[0-9a-zA-Z\_\@\+\-\.]+$/', $username) !== 1) {
 			echo json_encode((object) array('status' => false, 'msg' => Text::_('COM_EMUNDUS_USERS_ERROR_USERNAME_NOT_GOOD')));
@@ -183,6 +181,10 @@ class EmundusControllerUsers extends BaseController
 			exit;
 		}
 
+		$data          = array();
+		$data['email'] = $user->email;
+		$m_users->passwordReset($data,'COM_USERS_EMAIL_CREATE_ACCOUNT_SUBJECT','COM_USERS_EMAIL_CREATE_ACCOUNT_BODY',true);
+
 		// If index.html does not exist, create the file otherwise the process will stop with the next step
 		if (!file_exists(EMUNDUS_PATH_ABS . 'index.html')) {
 			$filename = EMUNDUS_PATH_ABS . 'index.html';
@@ -194,95 +196,6 @@ class EmundusControllerUsers extends BaseController
 		if (!mkdir(EMUNDUS_PATH_ABS . $uid, 0755) || !copy(EMUNDUS_PATH_ABS . 'index.html', EMUNDUS_PATH_ABS . $uid . DS . 'index.html')) {
 			echo json_encode((object) array('status' => false, 'uid' => $uid, 'msg' => Text::_('COM_EMUNDUS_USERS_CANT_CREATE_USER_FOLDER_CONTACT_ADMIN')));
 			exit;
-		}
-
-		// Envoi de la confirmation de création de compte par email
-		$m_emails = $this->getModel('emails');
-
-		// If we are creating an ldap account, we need to send a different email.
-		if ($ldap == 1) {
-			$email = $m_emails->getEmail('new_ldap_account');
-		}
-		else {
-			$email = $m_emails->getEmail('new_account');
-		}
-
-		$mailer = Factory::getMailer();
-		$pswd   = $ldap == 0 ? $password : null;
-		$post   = $ldap == 0 ? array('PASSWORD' => $pswd) : array();
-		$tags   = $m_emails->setTags($user->id, $post, null, $password, $email->emailfrom . $email->name . $email->subject . $email->message);
-
-		$subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
-		$body    = $email->message;
-
-		if (!empty($email->Template)) {
-			$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $email->Template);
-		}
-		$body = preg_replace($tags['patterns'], $tags['replacements'], $body);
-		$body = $m_emails->setTagsFabrik($body);
-
-		$config = $this->app->getConfig();
-
-		$mail_from_sys      = $config->get('mailfrom');
-		$mail_from_sys_name = $config->get('fromname');
-
-		// If no mail sender info is provided, we use the system global config.
-		if (!empty($email->emailfrom)) {
-			$mail_from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
-		}
-		else {
-			$mail_from        = $mail_from_sys;
-			$email->emailfrom = $mail_from_sys;
-		}
-
-		if (!empty($email->name)) {
-			$mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $email->name);
-		}
-		else {
-			$mail_from_name = $mail_from_sys_name;
-			$email->name    = $mail_from_sys_name;
-		}
-
-		$sender = [
-			$mail_from,
-			$mail_from_name
-		];
-
-		$mailer->setSender($sender);
-		$mailer->addReplyTo($email->emailfrom, $email->name);
-		$mailer->addRecipient($user->email);
-		$mailer->setSubject($subject);
-		$mailer->isHTML(true);
-		$mailer->Encoding = 'base64';
-		$mailer->setBody($body);
-
-		$custom_email_tag = EmundusHelperEmails::getCustomHeader();
-		if (!empty($custom_email_tag)) {
-			$mailer->addCustomHeader($custom_email_tag);
-		}
-
-		try {
-			$send = $mailer->Send();
-
-			if ($send === false) {
-				JLog::add('No email configuration!', JLog::ERROR, 'com_emundus.email');
-			}
-			else {
-				if (ComponentHelper::getParams('com_emundus')->get('logUserEmail', '0') == '1') {
-					$message = array(
-						'user_id_from' => $this->user->id,
-						'user_id_to'   => $uid,
-						'subject'      => $email->subject,
-						'message'      => $body
-					);
-					$m_emails->logEmail($message);
-				}
-			}
-		}
-		catch (Exception $e) {
-			echo json_encode((object) array('status' => false, 'msg' => Text::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT')));
-			JLog::add($e->__toString(), JLog::ERROR, 'com_emundus.email');
-			exit();
 		}
 
 		echo json_encode((object) array('status' => true, 'msg' => Text::_('COM_EMUNDUS_USERS_USER_CREATED')));
