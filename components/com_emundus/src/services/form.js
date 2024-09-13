@@ -41,6 +41,9 @@ export default {
       };
     }
   },
+  async getApplicantForms() {
+
+  },
   async getFormsByProfileId(id) {
     try {
       const response = await client().get(

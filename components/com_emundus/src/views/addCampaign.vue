@@ -259,7 +259,6 @@
             </span>
           </div>
 
-
           <transition name="slide-fade">
             <div v-if="isHiddenProgram">
               <div class="tw-mb-4">
@@ -278,25 +277,19 @@
                 <p v-if="errors.progLabel" class="tw-text-red-600 tw-mb-2">
                   <span class="tw-text-red-600">{{ translate('COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL') }}</span>
                 </p>
-
-                <div class="tw-mb-4" style="display: none">
-                  <label for="prog_color" class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_PROGCOLOR') }}</label>
-                  <div class="tw-flex">
-                    <div v-for="(color,index) in colors" :key="index">
-                      <div class="em-color-round tw-cursor-pointer tw-flex tw-justify-center"
-                           :class="index !== 0 ? 'ml-2' : ''"
-                           :style="selectedColor === color.text ? 'background-color:' + color.text + ';border: 2px solid ' + color.background : 'background-color:' + color.text"
-                           @click="programForm.color = color.text;selectedColor = color.text">
-                        <span v-if="selectedColor === color.text" class="material-symbols-outlined" style="font-weight: bold;color: black;filter: invert(1)">done</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </transition>
         </div>
 
+        <div id="campaign-form-container">
+          <h2 class="tw-mt-2 tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_FORM') }} <i>{{ translate('COM_EMUNDUS_OPTIONAL') }}</i></h2>
+          <p class="tw-mt-2 tw-mb-2"> {{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_FORM_DESC') }} </p>
+          <select class="tw-w-full">
+            <option value="0">{{ translate('COM_EMUNDUS_ONBOARD_CHOOSE_FORM') }}</option>
+            <option v-for="form in forms" :key="form.id"> {{ form.label }} </option>
+          </select>
+        </div>
 
         <div class="tw-flex tw-justify-end tw-mt-4">
           <button
@@ -331,9 +324,11 @@ import '../../../../templates/g5_helium/css/editor.css'
 import campaignService from '@/services/campaign.js'
 import settingsService from '@/services/settings.js';
 import programmeService from '@/services/programme.js';
+import formService from '@/services/form.js';
 
 import { useGlobalStore } from "@/stores/global.js";
 import { useCampaignStore } from "@/stores/campaign.js";
+import fileService from "@/services/file.js";
 
 export default {
   name: "addCampaign",
@@ -371,6 +366,7 @@ export default {
     //
 
     programs: [],
+    forms: [],
     years: [],
     languages: [],
     aliases: [],
@@ -424,26 +420,6 @@ export default {
       limit_files_number: false,
       limit_status: false
     },
-
-    colors: [
-      {
-        text: '#1C6EF2',
-        background: '#79B6FB',
-      },
-      {
-        text: '#20835F',
-        background: '#87D4B8',
-      },
-      {
-        text: '#DB333E',
-        background: '#FBABAB',
-      },
-      {
-        text: '#FFC633',
-        background: '#FEEBA1',
-      },
-    ],
-    selectedColor: '#1C6EF2',
 
     submitted: false,
     ready: false,
@@ -561,7 +537,18 @@ export default {
         this.ready = true;
       }
 
+      this.getAllForms();
       this.getAllPrograms();
+    },
+
+    getAllForms() {
+      fileService.getProfiles().then(response => {
+        if (response.status) {
+          this.forms = response.data.filter(form => form.published == 1);
+        }
+      }).catch(e => {
+        console.log(e);
+      });
     },
 
     getAllPrograms() {
