@@ -12,6 +12,15 @@ export default {
       };
     }
   },
+  async getWorkflows() {
+    try {
+      return await client.get('getworkflows');
+    } catch (e) {
+      return {
+        status: false, msg: e.message
+      };
+    }
+  },
   async saveWorkflow(workflow, steps, programs) {
     try {
       const data = {
@@ -21,6 +30,15 @@ export default {
       };
 
       return await client.post('updateworkflow', data);
+    } catch (e) {
+      return {
+        status: false, msg: e.message
+      };
+    }
+  },
+  async updateProgramWorkflows(programId, workflows) {
+    try {
+      return await client.post('updateprogramworkflows', {program_id: programId, workflows: JSON.stringify(workflows.map(w => w.id))});
     } catch (e) {
       return {
         status: false, msg: e.message

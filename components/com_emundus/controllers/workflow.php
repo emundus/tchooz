@@ -308,4 +308,27 @@ class EmundusControllerWorkflow extends JControllerLegacy
 
 		$this->sendJsonResponse($response);
 	}
+
+	public function updateprogramworkflows()
+	{
+		$response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$program_id = $this->app->input->getInt('program_id', 0);
+			$workflows = $this->app->input->getString('workflows', '');
+			$workflows = json_decode($workflows, true);
+
+			if (!empty($program_id)) {
+				$updated = $this->model->updateProgramWorkflows($program_id, $workflows);
+
+				if ($updated) {
+					$response['code'] = 200;
+					$response['status'] = true;
+				}
+			}
+		}
+
+		$this->sendJsonResponse($response);
+	}
 }

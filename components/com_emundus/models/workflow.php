@@ -812,4 +812,46 @@ class EmundusModelWorkflow extends JModelList
 
 		return $saved;
 	}
+
+	public function updateProgramWorkflows($program_id, $workflows)
+	{
+		$updated = false;
+
+		if (!empty($program_id)) {
+			$deleted = false;
+			$query = $this->db->createQuery();
+
+			$query->delete('#__emundus_setup_workflows_programs')
+				->where('program_id = ' . $program_id);
+
+			try {
+				$this->db->setQuery($query);
+				$deleted = $this->db->execute();
+			} catch (Exception $e) {
+				Log::add('Error while deleting program workflows: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+			}
+
+
+			if (!empty($workflows)) {
+				$updates = [];
+				foreach ($workflows as $workflow_id) {
+					$workflowData = new stdClass();
+					$workflowData->workflow_id = $workflow_id;
+					$workflowData->program_id = $program_id;
+
+					try {
+						$updates[] = $this->db->insertObject('#__emundus_setup_workflows_programs', $workflowData);
+					} catch (Exception $e) {
+						Log::add('Error while adding program workflow: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+					}
+				}
+
+				$updated = !empty($updates) && !in_array(false, $updates);
+			} else {
+				$updated = $deleted;
+			}
+		}
+
+		return $updated;
+	}
 }
