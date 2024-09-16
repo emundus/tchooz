@@ -23,7 +23,7 @@
 
     <div class="tw-w-full tw-p-4" v-show="selectedTab === 'campaigns'">
       <p class="tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_TITLE') }}</p>
-      <ul class="tw-my-4"><li v-for="campaign in campaigns" :key="campaign.id"> {{ campaign.label }} </li></ul>
+      <ul class="tw-my-4"><li v-for="campaign in campaigns" :key="campaign.id"><a :href="'/campaigns/edit?cid=' + campaign.id" target="_blank">{{ campaign.label }}</a> </li></ul>
       <a href="/campaigns" class="tw-underline" target="_blank"> {{ translate('COM_EMUNDUS_PROGRAMS_ACCESS_TO_CAMPAIGNS') }} </a>
     </div>
 
