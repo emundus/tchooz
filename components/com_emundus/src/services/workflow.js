@@ -72,4 +72,13 @@ export default {
       };
     }
   },
+  async getWorkflowsByProgramId(programId) {
+    try {
+      return await client.get('getworkflowsbyprogramid', {program_id: programId});
+    } catch (e) {
+      return {
+        status: false, msg: e.message
+      };
+    }
+  }
 };

@@ -1,12 +1,18 @@
 <template>
   <div id="program-edition-container" class="em-border-cards em-card-shadow tw-rounded em-white-bg em-p-24 tw-m-4">
-    <h1>{{ translate('COM_EMUNDUS_PROGRAMS_EDITION_TITLE') }}</h1>
-    <h2>{{ translate('COM_EMUNDUS_PROGRAMS_EDITION_SUBTITLE') }}</h2>
+    <h1 class="tw-mb-4">{{ translate('COM_EMUNDUS_PROGRAMS_EDITION_TITLE') }}</h1>
+    <h2 class="tw-mb-2">{{ translate('COM_EMUNDUS_PROGRAMS_EDITION_SUBTITLE') }}</h2>
     <p>{{ translate('COM_EMUNDUS_PROGRAMS_EDITION_INTRO') }}</p>
 
-    <nav>
+    <nav class="tw-mt-4">
       <ul class="tw-flex tw-flex-row tw-list-none">
-        <li class="tw-cursor-pointer" v-for="tab in tabs" :key="tab.name" @click="selectedTab = tab.name"> {{ translate(tab.label) }}</li>
+        <li class="tw-cursor-pointer tw-shadow tw-rounded-t-lg tw-px-2.5 tw-py-3"
+            :class="{'em-bg-main-500 em-text-neutral-300': selectedTab === tab.name}"
+            v-for="tab in tabs" :key="tab.name"
+            @click="selectedTab = tab.name"
+        >
+          {{ translate(tab.label) }}
+        </li>
       </ul>
     </nav>
 
@@ -15,19 +21,26 @@
       </iframe>
     </div>
 
-    <div class="tw-w-full" v-show="selectedTab === 'campaigns'">
-      <p>Display list of campaigns</p>
+    <div class="tw-w-full tw-p-4" v-show="selectedTab === 'campaigns'">
+      <p class="tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_TITLE') }}</p>
+      <ul class="tw-my-4"><li v-for="campaign in campaigns" :key="campaign.id"> {{ campaign.label }} </li></ul>
+      <a href="/campaigns" class="tw-underline" target="_blank"> {{ translate('COM_EMUNDUS_PROGRAMS_ACCESS_TO_CAMPAIGNS') }} </a>
     </div>
 
-    <div class="tw-w-full" v-show="selectedTab === 'workflows'">
-      <p>Display list of workflows</p>
+    <div class="tw-w-full tw-p-4" v-show="selectedTab === 'workflows'">
+      <p class="tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_WORKFLOWS_ASSOCIATED_TITLE') }}</p>
+      <ul class="tw-my-4"><li v-for="workflow in workflows" :key="workflow.id"> {{ workflow.label }} </li></ul>
+      <a href="/workflows" class="tw-underline" target="_blank"> {{ translate('COM_EMUNDUS_PROGRAMS_ACCESS_TO_WORKFLOWS') }} </a>
     </div>
   </div>
 </template>
 
 <script>
+import campaignService from '@/services/campaign';
+import workflowService from '@/services/workflow';
+
 export default {
-  name: "ProgramEdit",
+  name: 'ProgramEdit',
   props: {
     programId: {
       type: Number,
@@ -56,6 +69,22 @@ export default {
       selectedTab: 'general',
     };
   },
+  created() {
+    this.getAssociatedCampaigns();
+    this.getAssociatedWorkflows();
+  },
+  methods: {
+    getAssociatedCampaigns() {
+      campaignService.getCampaignsByProgramId(this.programId).then((response) => {
+        this.campaigns = response.data;
+      });
+    },
+    getAssociatedWorkflows() {
+      workflowService.getWorkflowsByProgramId(this.programId).then((response) => {
+        this.workflows = response.data;
+      });
+    },
+  }
 }
 </script>
 

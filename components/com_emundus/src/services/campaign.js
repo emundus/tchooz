@@ -220,5 +220,15 @@ export default {
         msg: e.message
       };
     }
+  },
+  async getCampaignsByProgramId(programId) {
+    try {
+      return await client.get('getCampaignsByProgramId&program_id=' + programId);
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
   }
 };

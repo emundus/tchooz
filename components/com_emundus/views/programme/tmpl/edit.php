@@ -9,6 +9,16 @@ use Joomla\CMS\Language\LanguageHelper;
 Text::script('SAVE');
 Text::script('BACK');
 Text::script('CANCEL');
+Text::script('COM_EMUNDUS_PROGRAMS_EDITION_TITLE');
+Text::script('COM_EMUNDUS_PROGRAMS_EDITION_SUBTITLE');
+Text::script('COM_EMUNDUS_PROGRAMS_EDITION_INTRO');
+Text::script('COM_EMUNDUS_PROGRAMS_EDITION_TAB_GENERAL');
+Text::script('COM_EMUNDUS_PROGRAMS_EDITION_TAB_CAMPAIGNS');
+Text::script('COM_EMUNDUS_PROGRAMS_EDITION_TAB_WORKFLOWS');
+Text::script('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_TITLE');
+Text::script('COM_EMUNDUS_ONBOARD_WORKFLOWS_ASSOCIATED_TITLE');
+Text::script('COM_EMUNDUS_PROGRAMS_ACCESS_TO_WORKFLOWS');
+Text::script('COM_EMUNDUS_PROGRAMS_ACCESS_TO_CAMPAIGNS');
 
 $app          = Factory::getApplication();
 $lang         = $app->getLanguage();
