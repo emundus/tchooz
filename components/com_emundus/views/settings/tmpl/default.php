@@ -467,7 +467,7 @@ Text::script('COM_EMUNDUS_WORKFLOW_DELETE_WORKFLOW_CONFIRMATION');
 Text::script('COM_EMUNDUS_WORKFLOW_STEP_TYPES');
 Text::script('COM_EMUNDUS_WORKFLOW_ADD_CHILDREN_STEP_TYPE');
 Text::script('SAVE');
-
+Text::script('COM_EMUNDUS_WORKFLOW_SAVE_STEP_TYPES_SUCCESS');
 ## END ##
 
 $lang         = Factory::getApplication()->getLanguage();

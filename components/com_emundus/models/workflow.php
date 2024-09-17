@@ -477,7 +477,7 @@ class EmundusModelWorkflow extends JModelList
 		if (!empty($file_identifier) && in_array($column, ['fnum', 'id'])) {
 			$query = $this->db->createQuery();
 
-			$query->select('ecc.status, esp.id as program_id, ecc.published')
+			$query->select('ecc.status, esp.id as program_id, ecc.published, ecc.campaign_id')
 				->from($this->db->quoteName('#__emundus_campaign_candidature', 'ecc'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('esc.id') . ' = ' . $this->db->quoteName('ecc.campaign_id'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON ' . $this->db->quoteName('esp.code') . ' = ' . $this->db->quoteName('esc.training'))
@@ -523,7 +523,6 @@ class EmundusModelWorkflow extends JModelList
 
 						$this->db->setQuery($query);
 						$step->entry_status = $this->db->loadColumn();
-
 
 						$query->clear()
 							->select('start_date, end_date')

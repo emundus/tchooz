@@ -872,8 +872,10 @@ class EmundusModelApplication extends ListModel
 
 	public function getFilesProgress($fnum = null)
 	{
+		$result = ['attachments' => [], 'forms' => []];
+
 		if (empty($fnum) || (!is_array($fnum) && !is_numeric($fnum))) {
-			return false;
+			return $result;
 		}
 
 		$m_profile = new EmundusModelProfile();
@@ -884,9 +886,7 @@ class EmundusModelApplication extends ListModel
 			$fnum = [$fnum];
 		}
 
-		$result = array();
 		foreach ($fnum as $f) {
-
 			$current_profile = $m_profile->getProfileByFnum($f);
 			$this->getFormsProgressWithProfile($f, $current_profile);
 
@@ -894,12 +894,16 @@ class EmundusModelApplication extends ListModel
 				->select('attachment_progress, form_progress')
 				->from($this->_db->quoteName('#__emundus_campaign_candidature'))
 				->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($f));
-			$this->_db->setQuery($query);
 
-			$progress = $this->_db->loadObject();
+			try {
+				$this->_db->setQuery($query);
+				$progress = $this->_db->loadObject();
 
-			$result['attachments'][$f] = $progress->attachment_progress;
-			$result['forms'][$f]       = $progress->form_progress;
+				$result['attachments'][$f] = $progress->attachment_progress;
+				$result['forms'][$f]       = $progress->form_progress;
+			} catch (Exception $e) {
+				Log::add('Error trying to get progress for fnum ' . $f . ' in model/application.', Log::ERROR, 'com_emundus.error');
+			}
 		}
 
 		return $result;

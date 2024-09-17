@@ -80,7 +80,14 @@ export default {
     },
     saveStepTypes() {
       workflowService.saveTypes(this.types).then(response => {
-        console.log(response);
+        if (response.status) {
+          Swal.fire({
+            icon: 'success',
+            title: this.translate('COM_EMUNDUS_WORKFLOW_SAVE_STEP_TYPES_SUCCESS'),
+            showConfirmButton: false,
+            timer: 1500
+          });
+        }
       }).catch(error => {
         console.log(error);
       });
