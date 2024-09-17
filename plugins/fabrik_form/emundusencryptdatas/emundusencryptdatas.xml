@@ -8,10 +8,11 @@
 	<authorEmail>brice.hubinet@emundus.fr</authorEmail>
 	<authorUrl>www.emundus.fr</authorUrl>
 	<version>1.28.0</version>
-	<help url="PLG_FORM_EMUNDUSENCRYPTDATAS_HELP_SERVER"/>
 	<files>
+		<filename>emundusencryptdatas.php</filename>
 		<filename plugin="emundusencryptdatas">emundusencryptdatas.php</filename>
 		<filename>index.html</filename>
+		<folder>forms</folder>
 		<folder>language</folder>
 	</files>
 </extension>

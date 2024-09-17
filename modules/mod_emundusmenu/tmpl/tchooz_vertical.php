@@ -525,8 +525,8 @@ defined('_JEXEC') or die;
                     tooltipMenu.style.display = 'block';
                 }
             } else {
-                tooltipMenu.style.marginLeft = '0';
                 tooltipMenu.style.display = 'block';
+                tooltipMenu.style.marginLeft = '0';
 
                 //Reposition tooltip if out of viewport or scroll happened
                 let tooltipRect = tooltipMenu.getBoundingClientRect();
@@ -543,7 +543,8 @@ defined('_JEXEC') or die;
 
                 // reposition out of viewport
                 if (tooltipRect.bottom > viewportHeight) {
-                    tooltipMenu.style.marginTop = -(tooltipRect.bottom - viewportHeight - parseInt(tooltipMenu.style.marginTop, 10)) + 'px';
+                    let tooltipMarginTop = tooltipMenu.style.marginTop ? parseInt(tooltipMenu.style.marginTop, 10) : -10;
+                    tooltipMenu.style.marginTop = -(tooltipRect.bottom - viewportHeight - tooltipMarginTop) + 'px';
                 }
             }
 

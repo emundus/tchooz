@@ -609,6 +609,7 @@ class EmundusModelLogs extends JModelList
 	}
 
 	/**
+	 * TODO: Split with pagination in case of first run in order to avoid memory issues
 	 * @param $date   DateTime  Date to export logs before
 	 * @description             Exports logs before a given date.
 	 * @return string
