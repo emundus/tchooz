@@ -20,7 +20,7 @@
     </div>
     <div v-if="level === 0" class="tw-flex tw-flex-row tw-justify-end">
       <button @click="saveStepTypes" class="tw-btn-primary">
-        {{ translate('COM_EMUNDUS_SAVE') }}
+        {{ translate('SAVE') }}
       </button>
     </div>
   </div>

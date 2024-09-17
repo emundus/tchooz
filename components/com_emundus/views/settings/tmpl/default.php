@@ -464,6 +464,10 @@ Text::script('COM_EMUNDUS_ONBOARD_ADD_WORKFLOW');
 Text::script('COM_EMUNDUS_ONBOARD_RESULTS');
 Text::script('COM_EMUNDUS_ONBOARD_LABEL');
 Text::script('COM_EMUNDUS_WORKFLOW_DELETE_WORKFLOW_CONFIRMATION');
+Text::script('COM_EMUNDUS_WORKFLOW_STEP_TYPES');
+Text::script('COM_EMUNDUS_WORKFLOW_ADD_CHILDREN_STEP_TYPE');
+Text::script('SAVE');
+
 ## END ##
 
 $lang         = Factory::getApplication()->getLanguage();
