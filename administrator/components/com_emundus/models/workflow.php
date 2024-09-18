@@ -60,6 +60,14 @@ class EmundusModelAdministratorWorkflow extends JModelList
 					'ref_column'     => 'id',
 					'update_cascade' => true,
 					'delete_cascade' => true
+				],
+				[
+					'name'           => 'jos_emundus_setup_worflows_programs_prg_id_fk',
+					'from_column'    => 'program_id',
+					'ref_table'      => 'jos_emundus_setup_programmes',
+					'ref_column'     => 'id',
+					'update_cascade' => true,
+					'delete_cascade' => true
 				]
 			];
 			$created = EmundusHelperUpdate::createTable('jos_emundus_setup_workflows_programs', $columns, $foreign_keys);
