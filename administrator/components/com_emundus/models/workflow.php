@@ -228,6 +228,55 @@ class EmundusModelAdministratorWorkflow extends JModelList
 			$created = EmundusHelperUpdate::createTable('jos_emundus_setup_campaigns_step_dates', $columns, $foreign_keys);
 			$tasks[] = $created['status'];
 
+			$result = EmundusHelperUpdate::addJoomlaMenu([
+				'menutype' => 'onboardingmenu',
+				'title' => 'WORKFLOWS',
+				'link' => 'index.php?option=com_emundus&view=workflows',
+				'path' => 'workflows',
+				'type' => 'component',
+				'access' => 7
+			]);
+
+			if ($result['status']) {
+				EmundusHelperUpdate::addJoomlaMenu([
+					'menutype' => 'onboardingmenu',
+					'title' => 'Modifier un workflow',
+					'link' => 'index.php?option=com_emundus&view=workflows&layout=edit',
+					'alias' => 'edit',
+					'path' => 'workflows/edit',
+					'type' => 'component',
+					'access' => 7
+				], $result['id']);
+
+				EmundusHelperUpdate::addJoomlaMenu([
+					'menutype' => 'onboardingmenu',
+					'title' => 'Ajouter workflow',
+					'link' => 'index.php?option=com_emundus&view=workflows&layout=add',
+					'alias' => 'add',
+					'path' => 'workflows/add',
+					'type' => 'component',
+					'access' => 7
+				], $result['id']);
+			}
+
+			$query = $this->db->getQuery(true);
+			$query->clear()
+				->select('id')
+				->from('#__menu')
+				->where('alias = ' . $this->db->quote('campaigns'))
+				->andWhere('menutype = ' . $this->db->quote('onboardingmenu'));
+			$this->db->setQuery($query);
+			$parent_id = $this->db->loadResult();
+			EmundusHelperUpdate::addJoomlaMenu([
+				'menutype' => 'onboardingmenu',
+				'title' => 'Éditer un programme',
+				'link' => 'index.php?option=com_emundus&view=programme&layout=edit',
+				'alias' => 'edit-program',
+				'path' => 'campaigns/edit-program',
+				'type' => 'component',
+				'access' => 7
+			], $parent_id);
+
 			if (!in_array(false, $tasks)) {
 				$installed = true;
 			}
