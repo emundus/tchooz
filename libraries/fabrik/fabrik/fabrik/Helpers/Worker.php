@@ -840,11 +840,6 @@ class Worker
 				{
 					$msg = preg_replace("/{[^}\s]+}/i", '', $msg);
 				}
-
-				$dangerousFunctions = array('system', 'exec', 'shell_exec', 'passthru', 'proc_open', 'popen', 'curl_exec', 'curl_multi_exec', 'parse_ini_file', 'show_source');
-				$dangerousFunctions = implode('|', $dangerousFunctions);
-				$pattern            = "/\b($dangerousFunctions)\b/i";
-				$msg           = preg_replace($pattern, '', $msg);
 			}
 		}
 
@@ -1344,6 +1339,13 @@ class Worker
 		{
 			$match = htmlspecialchars($match, ENT_QUOTES, 'UTF-8');
 		}
+
+		// Check if value return by user is a function, if so return original string
+		$search_function = preg_replace('/\$\{|\}/', '', $match);
+		preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*\s*(?=\()/', $search_function, $matches);
+		$function_name = $matches[0];
+		if(is_callable($function_name)) return $orig;
+		//
 		
 		return $found ? $match : $orig;
 	}
