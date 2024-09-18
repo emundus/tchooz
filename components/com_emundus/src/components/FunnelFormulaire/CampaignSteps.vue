@@ -127,7 +127,7 @@ export default {
       workflowService.saveCampaignSteps(this.campaignId, this.steps)
         .then(response => {
           if (response.status) {
-            this.$emit('next');
+            this.$emit('nextSection');
           }
         })
         .catch(error => {

@@ -241,15 +241,20 @@ if (isset($user->fnum) && !empty($user->fnum))
 			$is_dead_line_passed = (strtotime(date($now)) > strtotime($user->end_date)) ? true : false;
 		}
 	}
+	$deadline = !empty($admission) ? new JDate($user->fnums[$user->fnum]->admission_end_date) : new JDate($user->end_date);
 
 	$current_phase = $m_workflow->getCurrentWorkflowStepFromFile($user->fnum);
-	if (!empty($current_phase) && !empty($current_phase->end_date))
+	if (!empty($current_phase) && !empty($current_phase->id))
 	{
-		$deadline = new JDate($current_phase->end_date);
-	}
-	else
-	{
-		$deadline = !empty($admission) ? new JDate($user->fnums[$user->fnum]->admission_end_date) : new JDate($user->end_date);
+		if ($current_phase->infinite)
+		{
+			$show_deadline = false;
+		}
+
+		if (!empty($current_phase->end_date))
+		{
+			$deadline = new JDate($current_phase->end_date);
+		}
 	}
 
 	require(ModuleHelper::getLayoutPath('mod_emundusflow', $layout));

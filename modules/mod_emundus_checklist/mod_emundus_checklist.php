@@ -238,8 +238,12 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	if (!empty($user->end_date)) {
 		$is_dead_line_passed = strtotime(date($now)) > strtotime($user->end_date);
 
-		if (!empty($current_phase) && !empty($current_phase->end_date)) {
-			$is_dead_line_passed = strtotime(date($now)) > strtotime($current_phase->end_date);
+		if (!empty($current_phase) && !empty($current_phase->id)) {
+			if ($current_phase->infinite) {
+				$is_dead_line_passed = false;
+			} else if (!empty($current_phase->end_date)) {
+				$is_dead_line_passed = strtotime(date($now)) > strtotime($current_phase->end_date);
+			}
 		}
 		elseif ($admission) {
 			$is_dead_line_passed = strtotime(date($now)) > strtotime($user->admission_end_date);

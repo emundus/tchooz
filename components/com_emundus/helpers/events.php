@@ -463,10 +463,15 @@ class EmundusHelperEvents
 			$current_status = $db->loadResult();
 
 			$current_phase = $m_workflow->getCurrentWorkflowStepFromFile($fnum);
-			if (!empty($current_phase) && !empty($current_phase->end_date))
+			$infinite_step = false;
+			if (!empty($current_phase) && !empty($current_phase->id))
 			{
-				$current_end_date   = $current_phase->end_date;
-				$current_start_date = $current_phase->start_date;
+				if ($current_phase->infinite) {
+					$infinite_step = true;
+				}
+
+				$current_end_date = !empty($current_phase->end_date) ? $current_phase->end_date : (!empty($user->fnums[$fnum]->end_date) ? $user->fnums[$fnum]->end_date : $user->end_date);
+				$current_start_date =  !empty($current_phase->start_date) ? $current_phase->start_date : $user->fnums[$fnum]->start_date;
 			}
 			else
 			{
@@ -482,8 +487,7 @@ class EmundusHelperEvents
 				$mainframe->redirect('/');
 			}
 
-			$is_dead_line_passed = strtotime(date($now)) > strtotime($current_end_date);
-
+			$is_dead_line_passed = $infinite_step ? false : strtotime(date($now)) > strtotime($current_end_date);
 			if (!empty($current_phase) && !empty($current_phase->entry_status))
 			{
 				$edit_status = $current_phase->entry_status;
@@ -1498,7 +1502,10 @@ class EmundusHelperEvents
 				$new_status = $current_phase->output_status;
 			}
 
-			if (!empty($current_phase->end_date))
+			if ($current_phase->infinite) {
+				$is_dead_line_passed = false;
+			}
+			else if (!empty($current_phase->end_date))
 			{
 				$is_dead_line_passed = strtotime(date($now)) > strtotime($current_phase->end_date) || strtotime(date($now)) < strtotime($current_phase->start_date);
 			}
