@@ -162,7 +162,6 @@ class EmundusModelEvaluation extends JModelList
 					'u'    => 'jos_users',
 					'eu'   => 'jos_emundus_users',
 					'eta'  => 'jos_emundus_tag_assoc',
-					'ee'   => 'jos_emundus_evaluation'
 				];
 				foreach ($already_joined_tables as $alias => $table)
 				{
@@ -379,10 +378,10 @@ class EmundusModelEvaluation extends JModelList
 				}
 			}
 		}
-		if (isset($em_other_columns) && in_array('overall', $em_other_columns))
+		/**if (isset($em_other_columns) && in_array('overall', $em_other_columns))
 		{
 			$this->_elements_default[] = ' AVG(ee.overall) as overall ';
-		}
+		}*/
 		if (empty($col_elt))
 		{
 			$col_elt = array();
@@ -784,7 +783,6 @@ class EmundusModelEvaluation extends JModelList
 		$can_be_ordering[] = 'jecc.id';
 		$can_be_ordering[] = 'jecc.fnum';
 		$can_be_ordering[] = 'jecc.status';
-		$can_be_ordering[] = 'jos_emundus_evaluations.user';
 		$can_be_ordering[] = 'fnum';
 		$can_be_ordering[] = 'status';
 		$can_be_ordering[] = 'jecc.status';
@@ -1131,11 +1129,11 @@ class EmundusModelEvaluation extends JModelList
 	{
 		require_once(JPATH_SITE . DS . 'components/com_emundus/models/users.php');
 
-		$session = JFactory::getSession();
+		$session = $this->app->getSession();
 
 		$eMConfig                      = JComponentHelper::getParams('com_emundus');
 		$evaluators_can_see_other_eval = $eMConfig->get('evaluators_can_see_other_eval', '0');
-		$current_user                  = JFactory::getUser();
+		$current_user                  = $this->app->getIdentity();
 
 		$query = 'select jecc.fnum, ss.step, ss.value as status, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name, ss.class as status_class, sp.code ';
 
@@ -1149,7 +1147,6 @@ class EmundusModelEvaluation extends JModelList
 			'u'                       => 'jos_users',
 			'eu'                      => 'jos_emundus_users',
 			'eta'                     => 'jos_emundus_tag_assoc',
-			'jos_emundus_evaluations' => 'jos_emundus_evaluations'
 		];
 
 		$leftJoin = '';
@@ -1210,9 +1207,6 @@ class EmundusModelEvaluation extends JModelList
 			}
 		}
 
-		$query    .= ', jos_emundus_evaluations.id AS evaluation_id, CONCAT(eue.lastname," ",eue.firstname) AS evaluator';
-		$group_by .= ', evaluation_id';
-
 		if (!empty($this->_elements_default))
 		{
 			$query .= ', ' . implode(',', $this->_elements_default);
@@ -1226,22 +1220,11 @@ class EmundusModelEvaluation extends JModelList
                     LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum = jecc.fnum ';
 		$q     = $this->_buildWhere($already_joined_tables);
 
-		if (EmundusHelperAccess::isCoordinator($current_user->id)
-			|| (EmundusHelperAccess::asEvaluatorAccessLevel($current_user->id) && $evaluators_can_see_other_eval == 1)
-			|| EmundusHelperAccess::asAccessAction(5, 'r', $current_user->id))
-		{
-			$query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = jecc.fnum ';
-		}
-		else
-		{
-			$query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = jecc.fnum AND (jos_emundus_evaluations.user=' . $current_user->id . ' OR jos_emundus_evaluations.user IS NULL)';
-		}
 
 		if (!empty($leftJoin))
 		{
 			$query .= $leftJoin;
 		}
-		$query .= ' LEFT JOIN #__emundus_users as eue on eue.user_id = jos_emundus_evaluations.user ';
 		$query .= $q['join'];
 
 		if (empty($current_fnum))
@@ -1284,7 +1267,7 @@ class EmundusModelEvaluation extends JModelList
 		catch (Exception $e)
 		{
 			echo $query . ' ' . $e->getMessage();
-			Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . str_replace('#_', 'jos', $query), Log::ERROR, 'com_emundus');
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . $current_user->id . ' -> ' . str_replace('#_', 'jos', $query), Log::ERROR, 'com_emundus');
 		}
 	}
 
@@ -4237,27 +4220,6 @@ class EmundusModelEvaluation extends JModelList
 		}
 
 		return ['url' => $url, 'message' => $message];
-	}
-
-	public function getRowByFnum($fnum, $table_name)
-	{
-		$query = $this->db->getQuery(true);
-
-		try
-		{
-			$query->select('id')
-				->from($this->db->quoteName($table_name))
-				->where($this->db->quoteName('fnum') . ' LIKE ' . $this->db->quote($fnum));
-			$this->db->setQuery($query);
-
-			return $this->db->loadResult();
-		}
-		catch (Exception $e)
-		{
-			Log::add('Problem to get row by fnum ' . $fnum . ' in table ' . $table_name . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
-
-			return 0;
-		}
 	}
 
 	public function getEvaluationReasons($eid)
