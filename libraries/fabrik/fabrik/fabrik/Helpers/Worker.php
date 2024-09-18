@@ -840,6 +840,11 @@ class Worker
 				{
 					$msg = preg_replace("/{[^}\s]+}/i", '', $msg);
 				}
+
+				$dangerousFunctions = array('system', 'exec', 'shell_exec', 'passthru', 'proc_open', 'popen', 'curl_exec', 'curl_multi_exec', 'parse_ini_file', 'show_source');
+				$dangerousFunctions = implode('|', $dangerousFunctions);
+				$pattern            = "/\b($dangerousFunctions)\b/i";
+				$msg           = preg_replace($pattern, '', $msg);
 			}
 		}
 
@@ -1339,7 +1344,7 @@ class Worker
 		{
 			$match = htmlspecialchars($match, ENT_QUOTES, 'UTF-8');
 		}
-
+		
 		return $found ? $match : $orig;
 	}
 
