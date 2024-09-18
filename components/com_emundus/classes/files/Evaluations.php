@@ -274,40 +274,37 @@ class Evaluations extends Files
 		}
 	}
 
+
+	// TODO: there is no 1 evaluation form per fnum, there are multiple evaluation forms per fnum
 	public function getEvaluationFormByFnum($fnum)
 	{
-		$form_id = 0;
+		$form_ids = [];
 
 		if (!empty($fnum)) {
-			try {
-				$db    = Factory::getContainer()->get('DatabaseDriver');
-				$query = $db->getQuery(true);
+			require_once(JPATH_SITE . '/components/com_emundus/models/workflow.php');
+			$m_workflow = new EmundusModelWorkflow();
 
-				$query->clear()
-					->select('distinct esp.fabrik_group_id')
-					->from($db->quoteName('#__emundus_setup_programmes', 'esp'))
-					->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esp.code') . ' = ' . $db->quoteName('esc.training'))
-					->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'))
-					->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($fnum));
-				$db->setQuery($query);
-				$eval_groups = $db->loadColumn();
-				$eval_groups = array_filter($eval_groups, function ($value) {
-					return !empty($value);
-				});
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true);
 
-				$query->clear()
-					->select('form_id')
-					->from($db->quoteName('#__fabrik_formgroup'))
-					->where($db->quoteName('group_id') . ' IN (' . implode(',', $eval_groups) . ')');
-				$db->setQuery($query);
-				$form_id = $db->loadResult();
-			}
-			catch (Exception $e) {
-				JLog::add('Problem when get evaluation form of fnum ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
+			$query->select('esp.id, ecc.status')
+				->from($db->quoteName('#__emundus_setup_programmes', 'esp'))
+				->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esp.code') . ' = ' . $db->quoteName('esc.training'))
+				->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'))
+				->where($db->quoteName('ecc.fnum') . ' = ' . $db->quote($fnum));
+
+			$db->setQuery($query);
+			$file_infos = $db->loadAssoc();
+
+			if (!empty($file_infos['id']) && !empty($file_infos['status'])) {
+				$steps = $m_workflow->getEvaluatorStepsByProgram($file_infos['id']);
+				foreach ($steps as $step) {
+					$form_ids[] = $step->form_id;
+				}
 			}
 		}
 
-		return $form_id;
+		return $form_ids;
 	}
 
 	public function getMyEvaluation($fnum)
