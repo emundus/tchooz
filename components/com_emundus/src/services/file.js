@@ -39,7 +39,7 @@ export default {
   },
   async getFileIdFromFnum(fnum) {
     try {
-      return await client.get('getFileIdFromFnum', {
+      return await fetchClient.get('getFileIdFromFnum', {
         fnum: fnum
       });
     } catch (e) {

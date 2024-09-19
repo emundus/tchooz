@@ -1127,4 +1127,47 @@ class EmundusControllerEvaluation extends BaseController
 		echo json_encode((object) $result);
 		exit;
 	}
+
+	public function getevaluationsforms()
+	{
+		$response = ['status' => false, 'code' => 403, 'msg' => Text::_('ACCESS_DENIED')];
+
+		$fnum = $this->input->getString('fnum', null);
+
+		if (!empty($fnum) && EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
+
+			$query->select('campaign_id')
+				->from('#__emundus_campaign_candidature')
+				->where('fnum = ' . $db->quote($fnum));
+			$db->setQuery($query);
+			$campaign_id = $db->loadResult();
+
+			require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+			$m_workflow = new EmundusModelWorkflow();
+			$steps = $m_workflow->getCampaignSteps($campaign_id);
+
+			if (!empty($steps)) {
+				$ccid = EmundusHelperFiles::getIdFromFnum($fnum);
+				$response['data'] = [];
+
+				foreach ($steps as $step) {
+					$step_data = $m_workflow->getStepData($step->id, $campaign_id);
+
+					if ($step_data->type == 2 && EmundusHelperAccess::getUserEvaluationStepAccess($ccid, $step_data, $this->_user->id)['can_see']) {
+						$response['status'] = true;
+						$response['code'] = 200;
+						$response['data'][] = $step_data;
+					}
+				}
+			} else {
+				$response['msg'] = Text::_('COM_EMUNDUS_EVALUATION_NO_STEPS');
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
 }

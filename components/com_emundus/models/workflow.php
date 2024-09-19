@@ -400,6 +400,22 @@ class EmundusModelWorkflow extends JModelList
 					$data->entry_status = array_unique(explode(',', $data->entry_status));
 					$data->group_ids = !empty($data->group_ids) ? array_unique(explode(',', $data->group_ids)) : [];
 					$data->action_id = 1;
+					$data->table = '';
+
+					if ($data->type == 2) {
+						$query->clear()
+							->select('db_table_name')
+							->from('#__fabrik_lists')
+							->where('form_id = ' . $data->form_id);
+
+						try {
+							$this->db->setQuery($query);
+							$data->table = $this->db->loadResult();
+						} catch (Exception $e) {
+							var_dump($e->getMessage());
+							Log::add('Error while fetching form table name: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+						}
+					}
 
 					if (!empty($data->sub_type)) {
 						$query->clear()

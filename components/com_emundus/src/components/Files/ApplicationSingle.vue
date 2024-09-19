@@ -62,21 +62,12 @@
         </div>
       </div>
 
-      <div id="modal-evaluationgrid">
-        <div class="tw-w-fit tw-mb-8" v-if="!loading && url">
-          <div class="tw-bg-profile-light tw-rounded-full tw-p-3" >
-            <div class="tw-bg-profile-medium tw-rounded-full tw-p-3 em-flex-column" >
-              <span class="material-symbols-outlined em-font-size-32 tw-text-profile-full" >troubleshoot</span>
-            </div>
-          </div>
-        </div>
-        <iframe v-if="url" :src="url" class="iframe-evaluation" id="iframe-evaluation" @load="iframeLoaded($event);"
-                title="Evaluation form"/>
-        <div v-else>
-          {{ translate('COM_EMUNDUS_EVALUATION_NO_FORM_FOUND') }}
-        </div>
-        <div class="em-page-loader" v-if="loading"></div>
-      </div>
+      <Evaluations
+          v-if="selectedFile"
+          :fnum="typeof selectedFile === 'string' ? selectedFile : selectedFile.fnum"
+      >
+      </Evaluations>
+
     </div>
   </modal>
 </template>
@@ -84,6 +75,7 @@
 <script>
 import axios from "axios";
 import Attachments from "@/views/Attachments.vue";
+import Evaluations from "@/components/Files/Evaluations.vue";
 import filesService from '@/services/files.js';
 import errors from "@/mixins/errors.js";
 import Comments from "@/components/Files/Comments.vue";
@@ -92,7 +84,7 @@ import Modal from "@/components/Modal.vue";
 
 export default {
   name: "ApplicationSingle",
-  components: {Comments, Attachments, Modal},
+  components: {Comments, Attachments, Modal, Evaluations},
   props: {
     file: Object | String,
     type: String,
