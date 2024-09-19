@@ -986,6 +986,11 @@ video {
             background: var(--neutral-0);
         }
 /** APPLICANT **/
+@media all and (max-width: 767px) {
+    .emundus-form {
+           padding:  24px 16px !important
+    }
+        }
 .emundus-form .page-header h1 {
     color: var(--em-default-title-color-1);
     font-family: var(--em-profile-font-title);
@@ -1319,6 +1324,9 @@ form.fabrikForm .fabrik_characters_left.muted {
             gap: 4px;
             margin-top: 4px;
         }
+form.fabrikForm .plg-textarea .badge{
+            line-height: normal;
+        }
 /* PHONE NUMBER */
 form.fabrikForm #renderCountryCode {
             height: var(--em-form-height);
@@ -1527,6 +1535,12 @@ form.fabrikForm .plg-yesno .switcher {
             height: -moz-fit-content;
             height: fit-content;
         }
+@media all and (max-width: 767px) {
+
+        form.fabrikForm .plg-yesno .switcher {
+                flex-direction: column
+        }
+            }
 form.fabrikForm .switcher .toggle-outside,
         form.fabrikForm .plg-yesno .switcher input {
             display: none;

@@ -16,6 +16,10 @@
 
     /** APPLICANT **/
     .emundus-form {
+        @media all and (max-width: 767px) {
+           padding:  24px 16px !important;
+        }
+
         .page-header h1 {
             @apply tw-em-default-title-1;
         }
@@ -397,6 +401,10 @@
             margin-top: 4px;
         }
 
+        .plg-textarea .badge {
+            line-height: normal;
+        }
+
         /* PHONE NUMBER */
 
         #renderCountryCode {
@@ -638,6 +646,10 @@
             gap: 8px;
             width: fit-content;
             height: fit-content;
+
+            @media all and (max-width: 767px) {
+                flex-direction: column;
+            }
         }
 
         .switcher .toggle-outside,
