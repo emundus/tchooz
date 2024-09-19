@@ -2005,6 +2005,13 @@ form.fabrikForm .plg-birthday .fabrikElement .fabrikSubElementContainer table {
                         border: unset;
                         width: auto;
                     }
+@media all and (max-width: 767px) {
+                            form.fabrikForm .plg-birthday .fabrikElement .fabrikSubElementContainer table tr {
+                                flex-direction: column;
+                                display: flex;
+                                width: 100%;
+                            }
+                        }
 form.fabrikForm .plg-birthday .fabrikElement .fabrikSubElementContainer table tbody td {
                             width: auto;
                             padding: 0;
