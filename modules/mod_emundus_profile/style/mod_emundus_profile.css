@@ -29,3 +29,11 @@
         align-items: flex-start;
     }
 }
+
+@media screen and (max-width: 767px) {
+    .em-container-profile-view-pict .em-flex-space-between {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+}

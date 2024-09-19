@@ -802,3 +802,12 @@ p[id*="mod_emundus_campaign__tchoozy_tab_desc"] {
         height: 100%;
     }
 }
+
+@media screen and (max-width: 959px) {
+    .mod_emundus_campaign__list_content--default .em-flex-row-justify-end {
+        flex-direction: column;
+        gap: 8px;
+    }
+}
+
+
