@@ -15,6 +15,7 @@ class EmundusFiltersFiles extends EmundusFilters
 	private $user_campaigns = [];
 	private $user_programs = [];
 	private $user_fnum_assocs = [];
+	private $user_groups = [];
     private $config = [];
 	private $m_users = null;
 	private $menu_params = null;
@@ -147,14 +148,14 @@ class EmundusFiltersFiles extends EmundusFilters
 			->andWhere('acl.r = 1');
 
 		$db->setQuery($query);
-		$user_groups = $db->loadColumn();
+		$this->user_groups = $db->loadColumn();
 
-		if (!empty($user_groups)) {
+		if (!empty($this->user_groups)) {
 			$query->clear()
 				->select('DISTINCT ecc.campaign_id')
 				->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
 				->leftJoin($db->quoteName('#__emundus_group_assoc', 'ega') . ' ON ' . $db->quoteName('ega.fnum') . ' = ' . $db->quoteName('ecc.fnum') . ' AND action_id = 1 AND r = 1')
-				->where('ega.group_id IN (' . implode(',', $db->quote($user_groups)) . ')');
+				->where('ega.group_id IN (' . implode(',', $db->quote($this->user_groups)) . ')');
 
 			$db->setQuery($query);
 			$campaigns = $db->loadColumn();
@@ -628,6 +629,38 @@ class EmundusFiltersFiles extends EmundusFilters
 			];
 		}
 
+		if ($config['filter_steps']) {
+			require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+			$m_workflow = new EmundusModelWorkflow();
+
+			$workflows = $m_workflow->getWorkflows([], 0, 0, $this->user_programs);
+			$steps = [];
+			foreach($workflows as $workflow) {
+				$workflow_data = $m_workflow->getWorkflow($workflow->id);
+
+				if (!empty($workflow_data['steps'])) {
+					foreach($workflow_data['steps'] as $step) {
+						if ($step->type == 2 && (array_intersect($this->user_groups, $step->group_ids) || EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))) {
+							$steps[] = ['value' => $step->id, 'label' => $workflow->label . ' - ' . $step->label];
+						}
+					}
+				}
+			}
+
+			$this->applied_filters[] = [
+				'uid'            => 'workflow_steps',
+				'id'             => 'workflow_steps',
+				'label'          => Text::_('MOD_EMUNDUS_FILTERS_WORKFLOW_STEPS'),
+				'type'           => 'select',
+				'values'         => $steps,
+				'value'          => ['all'],
+				'default'        => true,
+				'available'      => true,
+				'order'          => 0,
+				'andorOperator'  => 'OR',
+				'andorOperators' => ['OR', 'AND']
+			];
+		}
 
 		$session = $this->app->getSession();
 

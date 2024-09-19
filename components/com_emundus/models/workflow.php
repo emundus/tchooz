@@ -310,6 +310,11 @@ class EmundusModelWorkflow extends JModelList
 		return $workflows;
 	}
 
+	/**
+	 * @param int $id
+	 *
+	 * @return array with workflow, steps and programs
+	 */
 	public function getWorkflow($id): array
 	{
 		$workflowData = [];
