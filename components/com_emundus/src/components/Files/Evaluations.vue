@@ -1,9 +1,10 @@
 <template>
   <div id="evaluations-container">
-    <nav>
+    <nav class="tw-mt-1">
       <ul class="tw-list-none tw-flex tw-flex-row">
         <li v-for="evaluation in evaluations" :key="evaluation.id"
-          class="tw-flex tw-flex-col tw-rounded-t-lg tw-cursor-pointer tw-border tw-border-neutral-300 tw-bg-neutral-300 tw-p-2"
+            class="tw-cursor-pointer tw-shadow tw-rounded-t-lg tw-px-2.5 tw-py-3"
+            :class="{'em-bg-main-500 em-text-neutral-300': selectedTab === evaluation.id}"
             @click="selectedTab = evaluation.id"
         >
           {{ evaluation.label }}
