@@ -3463,7 +3463,7 @@ class EmundusHelperUpdate
 		}
 		catch (Exception $e)
 		{
-			$result['message'] = 'ADDING TABLE : Error : ' . $e->getMessage();
+			$result['message'] = 'ADDING TABLE : Error : ' . $e->getMessage() . $query;
 		}
 
 		return $result;

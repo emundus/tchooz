@@ -31,6 +31,9 @@ class EmundusModelAdministratorWorkflow extends JModelList
 
 		require_once (JPATH_ROOT . '/administrator/components/com_emundus/helpers/update.php');
 
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->createQuery();
+
 		/**
 		 * Tables that must exists
 		 * jos_emundus_setup_workflows
@@ -187,12 +190,10 @@ class EmundusModelAdministratorWorkflow extends JModelList
 				];
 
 				foreach ($rows as $row) {
-					$db = Factory::getContainer()->get('DatabaseDriver');
-					$query = $db->getQuery(true);
-
-					$query->insert('#__emundus_setup_step_types');
+					$query->clear()
+						->insert('#__emundus_setup_step_types');
 					$query->columns(['id', 'parent_id', 'label', 'action_id', 'published', $db->quoteName('system')]);
-					$query->values($db->quote(implode(',', $row)));
+					$query->values(implode(',', $db->quote($row)));
 
 					$db->setQuery($query);
 					$db->execute();
@@ -203,8 +204,8 @@ class EmundusModelAdministratorWorkflow extends JModelList
 			$columns = [
 				['name' => 'campaign_id', 'type' => 'INT', 'null' => 0],
 				['name' => 'step_id', 'type' => 'INT', 'null' => 0],
-				['name' => 'start_date', 'type' => 'DATE_TIME', 'null' => 1],
-				['name' => 'end_date', 'type' => 'DATE_TIME', 'null' => 1],
+				['name' => 'start_date', 'type' => 'DATETIME', 'null' => 1],
+				['name' => 'end_date', 'type' => 'DATETIME', 'null' => 1],
 				['name' => 'infinite', 'type' => 'TINYINT', 'null' => 1, 'default' => 0],
 			];
 			$foreign_keys = [
@@ -228,16 +229,29 @@ class EmundusModelAdministratorWorkflow extends JModelList
 			$created = EmundusHelperUpdate::createTable('jos_emundus_setup_campaigns_step_dates', $columns, $foreign_keys);
 			$tasks[] = $created['status'];
 
+
+			$query->clear()
+				->select('extension_id')
+				->from('#__extensions')
+				->where('type = ' . $db->quote('component'))
+				->where('element = ' . $db->quote('com_emundus'))
+				->where('name = ' . $db->quote('com_emundus'));
+
+			$db->setQuery($query);
+			$component_id = $db->loadResult();
+
 			$result = EmundusHelperUpdate::addJoomlaMenu([
 				'menutype' => 'onboardingmenu',
 				'title' => 'WORKFLOWS',
 				'link' => 'index.php?option=com_emundus&view=workflows',
 				'path' => 'workflows',
+				'alias' => 'workflows',
 				'type' => 'component',
+				'component_id' => $component_id,
 				'access' => 7
 			]);
 
-			if ($result['status']) {
+			if ($result['id']) {
 				EmundusHelperUpdate::addJoomlaMenu([
 					'menutype' => 'onboardingmenu',
 					'title' => 'Modifier un workflow',
@@ -245,6 +259,7 @@ class EmundusModelAdministratorWorkflow extends JModelList
 					'alias' => 'edit',
 					'path' => 'workflows/edit',
 					'type' => 'component',
+					'component_id' => $component_id,
 					'access' => 7
 				], $result['id']);
 
@@ -255,6 +270,7 @@ class EmundusModelAdministratorWorkflow extends JModelList
 					'alias' => 'add',
 					'path' => 'workflows/add',
 					'type' => 'component',
+					'component_id' => $component_id,
 					'access' => 7
 				], $result['id']);
 			}
@@ -274,6 +290,7 @@ class EmundusModelAdministratorWorkflow extends JModelList
 				'alias' => 'edit-program',
 				'path' => 'campaigns/edit-program',
 				'type' => 'component',
+				'component_id' => $component_id,
 				'access' => 7
 			], $parent_id);
 
