@@ -4947,6 +4947,32 @@ class EmundusHelperFiles
 										}
 									}
 									break;
+								case 'workflow_steps':
+									require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+									$m_workflow = new EmundusModelWorkflow();
+
+									$step_id = is_array($filter['value']) ? $filter['value'][0] : $filter['value'];
+									$step_data = $m_workflow->getStepData($step_id);
+
+									$step_table_alias = array_search($step_data->table, $already_joined);
+									if (!in_array($step_data->table, $already_joined)) {
+										// table is name jos_emundus_evaluations_<index>
+										$table_index = substr($step_data->table, strlen('jos_emundus_evaluations_'));
+										$step_table_alias = 'jee_' . $table_index;
+										$already_join[$step_table_alias] = $step_data->table;
+
+										$where['join'] .= ' LEFT JOIN ' . $db->quoteName($step_data->table) . ' ON ' . $db->quoteName($step_data->table . '.fnum') . ' = ' . $db->quoteName('jecc.fnum') . ' AND ' . $db->quoteName($step_data->table . '.step_id') . ' = ' . $db->quote($filter['value']);
+										// todo: maybe treat multiple steps differently
+										if ($step_data->multiple) {}
+									}
+
+									$jesp_alias = array_search('jos_emundus_setup_programmes', $already_joined);
+
+									// we want the fnums that are related to the step through the programs they are linked to
+									// todo: should i see only files that are in the status of the step?
+									$where['q'] .= ' AND ' . $this->writeQueryWithOperator($jesp_alias . '.id', $step_data->programs, $filter['operator']);
+
+									break;
 								default:
 									break;
 							}
