@@ -4963,7 +4963,9 @@ class EmundusHelperFiles
 
 										$where['join'] .= ' LEFT JOIN ' . $db->quoteName($step_data->table) . ' ON ' . $db->quoteName($step_data->table . '.fnum') . ' = ' . $db->quoteName('jecc.fnum') . ' AND ' . $db->quoteName($step_data->table . '.step_id') . ' = ' . $db->quote($filter['value']);
 										// todo: maybe treat multiple steps differently
-										if ($step_data->multiple) {}
+										if ($step_data->multiple) {
+
+										}
 									}
 
 									$jesp_alias = array_search('jos_emundus_setup_programmes', $already_joined);

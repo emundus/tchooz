@@ -505,6 +505,39 @@ class EmundusModelEvaluation extends JModelList
 			}
 		}
 
+		$applied_filters = $session->get('em-applied-filters', []);
+		if (!empty($applied_filters)) {
+			// check if filter workflow_steps has a value
+			foreach ($applied_filters as $filter) {
+				if ($filter['uid'] == 'workflow_steps') {
+					if (!empty($filter['value'])) {
+						$step_id = is_array($filter['value']) ? $filter['value'][0] : $filter['value'];
+
+						require_once JPATH_SITE . '/components/com_emundus/models/workflow.php';
+						$m_workflow = new EmundusModelWorkflow();
+						$step_data = $m_workflow->getStepData($step_id);
+
+						foreach ($step_data->programs as $program_id) {
+							$groups   = $this->getGroupsEvalByProgramme($program_id, 'id');
+							if (!empty($groups)) {
+								$eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
+								if (is_array($eval_elt_list) && count($eval_elt_list) > 0)
+								{
+									foreach ($eval_elt_list as $eel)
+									{
+										if (isset($eel->element_id) && !empty($eel->element_id))
+										{
+											$elements_id[] = $eel->element_id;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
 		return $elements_id;
 	}
 
@@ -1475,23 +1508,46 @@ class EmundusModelEvaluation extends JModelList
 	}
 
 	// get string of fabrik group ID use for evaluation form
-	public function getGroupsEvalByProgramme($code)
+	public function getGroupsEvalByProgramme($code, $column = 'code')
 	{
-		$query = 'select fabrik_group_id from #__emundus_setup_programmes where code like ' . $this->db->Quote($code);
-		try
-		{
-			if (!empty($code))
-			{
-				$this->db->setQuery($query);
+		$group_ids = [];
 
-				return $this->db->loadResult();
+		if (!empty($code)) {
+			$query = $this->db->createQuery();
+
+			$query->select('id')
+				->from('#__emundus_setup_programmes')
+				->where($this->db->quoteName($column) . ' = ' . $this->db->quote($code));
+
+			$this->db->setQuery($query);
+			$program_id = $this->db->loadResult();
+
+			require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+			$m_workflow = new EmundusModelWorkflow();
+			$m_workflow->getEvaluatorStepsByProgram($program_id);
+			$eval_steps = $m_workflow->getEvaluatorStepsByProgram($program_id);
+
+			if (!empty($eval_steps))
+			{
+				$form_ids = array_map(function ($step) {
+					return $step->form_id;
+				}, $eval_steps);
+
+				if (!empty($form_ids)) {
+					$query->select('fg.group_id')
+						->from('#__fabrik_groups AS fg')
+						->leftJoin('#__fabrik_formgroup AS ffg ON fg.id = ffg.group_id')
+						->where('ffg.form_id IN (' . implode(',', $form_ids) . ')')
+						->andWhere('fg.published = 1');
+
+					$this->db->setQuery($query);
+					$group_ids = $this->db->loadColumn();
+				}
 			}
-			else return null;
 		}
-		catch (Exception $e)
-		{
-			throw $e;
-		}
+		var_dump($group_ids);
+
+		return implode(',', $group_ids);
 	}
 
 
