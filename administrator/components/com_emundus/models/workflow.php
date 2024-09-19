@@ -80,12 +80,12 @@ class EmundusModelAdministratorWorkflow extends JModelList
 				['name' => 'workflow_id', 'type' => 'INT', 'null' => 0],
 				['name' => 'label', 'type' => 'VARCHAR', 'length' => 255, 'null' => 0],
 				['name' => 'type', 'type' => 'INT', 'length' => 11, 'null' => 0], // 1 is 'applicant' 2 is 'evaluator'
-				['name' => 'sub_type', 'type' => 'INT', 'length' => 11, 'null' => 0],
+				['name' => 'sub_type', 'type' => 'INT', 'length' => 11, 'null' => 1, 'default' => 0],
 				['name' => 'profile_id', 'type' => 'INT', 'null' => 1],
 				['name' => 'form_id', 'type' => 'INT', 'null' => 1],
 				['name' => 'multiple', 'type' => 'TINYINT', 'null' => 1],
 				['name' => 'output_status', 'type' => 'INT', 'null' => 0],
-				['name' => 'state', 'type' => 'INT', 'null' => 0], // 1: published, 0: archived, -1: deleted
+				['name' => 'state', 'type' => 'INT', 'null' => 0, 'default' => 1], // 1: published, 0: archived, -1: deleted
 			];
 			$foreign_keys = [
 				[

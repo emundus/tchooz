@@ -800,8 +800,6 @@ class EmundusModelWorkflow extends JModelList
 						$this->db->setQuery($query);
 						$saves[] = $this->db->execute();
 					} catch (Exception $e) {
-
-						var_dump($e->getMessage());exit;
 						Log::add('Error while updating campaign step dates: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
 					}
 				}
