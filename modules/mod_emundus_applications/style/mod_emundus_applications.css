@@ -972,7 +972,7 @@ circle.circle {
 /* Téléphone */
 @media screen and (max-width: 767px) {
 
-    #applications_card_view.em-mt-32 {
+    #applications_card_view.em-mt-12 {
         margin-top: 0;
     }
 

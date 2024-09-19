@@ -5839,14 +5839,14 @@ screen and (max-height: 769px) {
   }
 
   #g-navigation .g-container #header-c {
-    justify-content: right;
+    justify-content: center;
   }
 
   #g-navigation .g-container {
     padding: 16px 16px 16px 16px !important;
   }
 
-  .gantry #g-navigation .g-grid {
+  .gantry .em-guest #g-navigation .g-grid {
     row-gap: 8px;
     justify-content: end;
   }
@@ -5917,7 +5917,7 @@ screen and (max-height: 769px) {
     }
 
     #header-a {
-      left: 82px;
+      left: 20px;
       position: absolute;
     }
 

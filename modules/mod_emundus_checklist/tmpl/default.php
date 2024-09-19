@@ -63,14 +63,14 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
         <span id="mod_emundus_checklist___expand_icon" class="material-symbols-outlined">expand_more</span>
     </div>
 
-    <div id="mod_emundus_checklist___content" class="em-mt-24 tw-pt-1 tw-pl-1">
+    <div id="mod_emundus_checklist___content" class="em-mt-24 tw-pl-1">
 		<?php if ($show_forms == 1 && count($forms) > 0) : ?>
 			<?php
 			$index_doc     = !empty($mandatory_documents) && $show_mandatory_documents ? count($forms) + 1 : count($forms);
 			$index_opt_doc = !empty($optional_documents) && $show_optional_documents ? $index_doc + 1 : $index_doc;
 			$index_payment = !empty($checkout_url) ? $index_opt_doc + 1 : $index_opt_doc;
 			?>
-            <div>
+            <div class="tw-pt-1">
 				<?php foreach ($forms as $index => $form) : ?>
 					<?php
 					$class      = $form->rowid == 0 ? 'need_missing' : 'need_ok';

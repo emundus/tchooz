@@ -1711,6 +1711,11 @@ form.fabrikForm select.input-small {
               background-position-x: 97%
         }
             }
+@media all and (min-width: 768px) and (max-width: 959px) {
+               form.fabrikForm select.form-select {
+                   margin-left: 0 !important;
+               }
+            }
 form.fabrikForm select.form-select + .chosen-container .chosen-single {
             background-position-x: 98% !important;
         }

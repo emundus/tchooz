@@ -36,6 +36,7 @@
     display: -webkit-box;
     color: black;
     font-family: var(--em-profile-font), Inter, sans-serif;
+    word-break: break-word;
 }
 
 .mod_emundus_checklist___attachment_links {

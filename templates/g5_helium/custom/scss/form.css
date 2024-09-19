@@ -846,6 +846,12 @@
             @media all and (max-width: 767px) {
               background-position-x: 97%;
             }
+
+            @media all and (min-width: 768px) and (max-width: 959px) {
+               &.form-select {
+                   margin-left: 0 !important;
+               }
+            }
         }
 
         select.form-select + .chosen-container .chosen-single {
