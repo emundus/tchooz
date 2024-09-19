@@ -14,7 +14,6 @@
     "docs:preview": "vitepress preview docs"
   },
   "dependencies": {
-    "@infectoone/vue-ganttastic": "^2.3.2",
     "autoprefixer": "^10.4.15",
     "axios": "^1.5.0",
     "element-plus": "^2.3.12",

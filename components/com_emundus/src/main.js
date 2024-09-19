@@ -3,7 +3,6 @@ import 'vue2-dropzone-vue3';
 import {createApp} from 'vue';
 import clickOutside from './directives/clickOutside';
 import App from './App.vue';
-import ganttastic from '@infectoone/vue-ganttastic'
 
 /** STORE **/
 import {createPinia} from 'pinia';
@@ -69,7 +68,6 @@ if (app !== null) {
   app.directive('click-outside', clickOutside);
 
   app.use(createPinia());
-  app.use(ganttastic);
   app.mixin(translate);
 
   const devmode = import.meta.env.MODE === 'development';

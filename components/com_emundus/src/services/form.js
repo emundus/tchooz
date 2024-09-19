@@ -274,7 +274,7 @@ export default {
   async getPageObject(formId) {
     try {
       const response = await client().get(
-        'index.php?option=com_emundus&view=form&formid=' + formId + '&format=vue_jsonclean'
+        '/index.php?option=com_emundus&view=form&formid=' + formId + '&format=vue_jsonclean'
       );
 
       if (typeof response.data !== 'object') {
