@@ -1340,6 +1340,13 @@ class Worker
 			$match = htmlspecialchars($match, ENT_QUOTES, 'UTF-8');
 		}
 
+		// Check if value return by user is a function, if so return original string
+		$search_function = preg_replace('/\$\{|\}/', '', $match);
+		preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*\s*(?=\()/', $search_function, $matches);
+		$function_name = $matches[0];
+		if(is_callable($function_name)) return $orig;
+		//
+		
 		return $found ? $match : $orig;
 	}
 
