@@ -5747,6 +5747,12 @@ screen and (max-height: 769px) {
 
 @media all and (max-width: 767px) {
 
+  .view-form .fabrikActions.form-actions .tw-justify-between,
+  .view-checklist .col-md-12 .tw-justify-between {
+    flex-direction: column;
+    align-items: center;
+  }
+
   .view-registration.em-formRegistrationCenter {
      margin-right: 0 !important;
      margin-left: 0 !important;
