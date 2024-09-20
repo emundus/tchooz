@@ -49,10 +49,16 @@ form#member-profile .control-group {
     margin: 0;
 }
 
-form#member-profile .control-group:nth-child(5),
-form#member-profile .control-group:nth-child(6),
-form#member-profile .control-group:nth-child(7){
+form#member-profile .control-group {
     margin: 24px 0 0 0;
+}
+
+form#member-profile .control-group .switcher {
+    margin: 6px 0 6px 0;
+}
+
+form#member-profile .control-group #token-copy {
+    margin: 10px 0 6px 0;
 }
 
 form#member-profile .control-group .controls {
