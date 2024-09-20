@@ -4381,7 +4381,7 @@ class EmundusModelFormbuilder extends JModelList
 				if ($key == 'form_id') {
 					$query->set($key . ' = ' . $this->db->quote($form_id));
 				}
-				elseif (!in_array($key, ['id', 'checked_out_time', 'publish_up', 'publish_down'])) {
+				elseif (!in_array($key, ['id', 'checked_out_time', 'publish_up', 'publish_down', 'modified'])) {
 					$query->set($key . ' = ' . $this->db->quote($val));
 				}
 			}

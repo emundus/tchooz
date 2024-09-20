@@ -440,6 +440,10 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     -webkit-mask-size: contain;
 }
 
+iframe#background-shapes {
+    display: none;
+}
+
 div#userDropdown {
     float: initial !important;
 }

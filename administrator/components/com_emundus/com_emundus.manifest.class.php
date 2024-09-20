@@ -228,8 +228,8 @@ class Com_EmundusInstallerScript
 		$db->setQuery($query);
 		$db->execute();
 
-	    $config = new \JConfig();
-	    EmundusHelperUpdate::updateConfigurationFile($config, 'frontediting', 0);
+	    $options['frontediting'] = 0;
+	    EmundusHelperUpdate::updateConfigurationFile($options);
 
 	    EmundusHelperUpdate::generateCampaignsAlias();
 

@@ -1009,6 +1009,12 @@ video {
     .emundus-form {
             margin-top: unset !important
     }
+
+            .emundus-form .js-tiny-toggler-button {
+                white-space: normal;
+                align-items: flex-start;
+                margin-bottom: 8px;
+            }
         }
 /* DATE ELEMENT - CALENDAR */
 .calendar thead .button {
@@ -1324,7 +1330,7 @@ form.fabrikForm .fabrik_characters_left.muted {
             gap: 4px;
             margin-top: 4px;
         }
-form.fabrikForm .plg-textarea .badge{
+form.fabrikForm .plg-textarea .badge {
             line-height: normal;
         }
 /* PHONE NUMBER */
@@ -1770,17 +1776,19 @@ form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio {
 }
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio input {
                         accent-color: var(--em-form-radio-color-checked);
-                        width: var(--em-form-radio-width);
+                        width: 24px;
                         min-width: var(--em-form-radio-width);
                         height: var(--em-form-radio-height);
                         margin-right: var(--em-form-radio-margin-right);
-                        margin-left: 0;
                         margin-top: 2px;
+                        position: relative;
+                        left: 25px;
                     }
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label {
                         cursor: pointer;
                         margin-bottom: 0px;
                         width: 100%;
+                        margin-left: 24px;
                     }
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label span {
                             word-wrap: break-word;

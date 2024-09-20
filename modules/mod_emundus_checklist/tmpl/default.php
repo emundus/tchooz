@@ -311,4 +311,20 @@ if (is_array($url)) {
         }
 
     }
+
+    let button = document.querySelector(".mod_emundus_checklist___buttons");
+
+    if (button) {
+        let button_prime = button.cloneNode(true);
+
+        if (window.innerWidth < 767) {
+            let container = document.querySelector("#g-main-mainbody .g-content .container .row .col > div");
+            if (container) {
+                container.appendChild(button_prime);
+            }
+
+            let form = document.querySelector(".emundus-form.applicant-form");
+            form.style.marginBottom = "0px";
+        }
+    }
 </script>

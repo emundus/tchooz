@@ -39,7 +39,7 @@ class PlgFabrik_FormEmundusisevaluatedbyme extends plgFabrik_Form
 		if (!empty($student_id))
 		{
 			$student = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($student_id);
-			echo '<div class="tw-bg-white tw-pb-4"><h2 class="tw-bg-white tw-pb-3 tw-border-b">' . $student->name . '</h2></div>';
+			echo '<div class="tw-px-8 tw-pt-8"><h2 class="tw-pb-3">' . $student->name . '</h2></div>';
 		}
 	}
 

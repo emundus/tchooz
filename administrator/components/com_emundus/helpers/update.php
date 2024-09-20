@@ -18,6 +18,7 @@ use Joomla\CMS\Table\Table;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Component\Cache\Administrator\Model\CacheModel;
 use Joomla\CMS\Language\LanguageHelper;
+use Joomla\Registry\Registry;
 
 /**
  * Emundus helper.
@@ -561,13 +562,49 @@ class EmundusHelperUpdate
 	/**
 	 * Update a variable in the Joomla configuration file
 	 *
+	 * @param $options (key => value)
+	 *
+	 * @return false
+	 * @since version 1.33.0
+	 */
+	public static function updateConfigurationFile($options)
+	{
+		$updated = false;
+
+		$initialOptions = (new Registry(new \JConfig()))->toArray();
+		
+		// Sanitize options
+		foreach ($options as $key => $value) {
+			$value = $value === 'false' ? false : $value;
+			$value = $value === 'true' ? true : $value;
+
+			$options[$key] = $value;
+		}
+		//
+
+		$combinedOptions = array_merge($initialOptions, $options);
+
+		$app = Factory::getApplication();
+		$model = $app->bootComponent('com_config')->getMVCFactory($app)->createModel('Application', 'Administrator');
+
+		if ($model->save($combinedOptions)) {
+			$updated = true;
+		}
+
+		return $updated;
+	}
+
+	/**
+	 * @param $config
 	 * @param $param
 	 * @param $value
 	 *
+	 * @return bool
 	 *
 	 * @since version 1.33.0
+	 * @depecated since version 2.0.0
 	 */
-	public static function updateConfigurationFile($config,$param, $value)
+	public static function updateConfigurationFileOld($config,$param, $value)
 	{
 		$updated = false;
 		if (!in_array($param, ['host', 'user', 'password', 'db', 'secret']))
@@ -591,6 +628,7 @@ class EmundusHelperUpdate
 
 		return $updated;
 	}
+
 	public static function getConfigurationFile()
 	{
 		$config_file    = JPATH_CONFIGURATION . '/configuration.php';
