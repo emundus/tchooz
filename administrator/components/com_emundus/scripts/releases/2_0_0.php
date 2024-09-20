@@ -1689,6 +1689,38 @@ if(value == 1) {
 				$this->db->updateObject('#__fabrik_elements', $profile_calc, 'id');
 			}
 
+			$query->clear()
+				->select('id,rules')
+				->from($this->db->quoteName('#__assets'))
+				->where($this->db->quoteName('id') . ' = 1');
+			$this->db->setQuery($query);
+			$assets_rules = $this->db->loadObject();
+
+			if(!empty($assets_rules->id)) {
+				$rules = json_decode($assets_rules->rules, true);
+				
+				$query->clear()
+					->select('id')
+					->from($this->db->quoteName('#__usergroups'));
+				$this->db->setQuery($query);
+				$usergroups = $this->db->loadColumn();
+
+				// All usersgroups except public and guest can login on site
+				foreach ($usergroups as $usergroup) {
+					if(!in_array($usergroup,array_keys($rules['core.login.site'])) && !in_array($usergroup,[1,9])) {
+						$rules['core.login.site'][$usergroup] = 1;
+					} elseif (in_array($usergroup,array_keys($rules['core.login.site'])) && in_array($usergroup,[1,9])) {
+						unset($rules['core.login.site'][$usergroup]);
+					}
+				}
+
+				// Nobody (except sysadmin) can login on admin
+				unset($rules['core.login.admin']);
+
+				$assets_rules->rules = json_encode($rules);
+				$this->db->updateObject('#__assets', $assets_rules, 'id');
+			}
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)
