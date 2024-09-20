@@ -1672,6 +1672,24 @@ if(value == 1) {
 			EmundusHelperUpdate::insertTranslationsTag('COM_USERS_RESET_CONFIRM_FAILED', 'La réinitialisation de votre mot de passe est impossible car le code de vérification n\'est pas valide.');
 			EmundusHelperUpdate::insertTranslationsTag('COM_USERS_RESET_CONFIRM_FAILED', 'Your password reset confirmation failed because the verification code was invalid.', 'override', 0, null, null, 'en-GB');
 
+			$query->clear()
+				->select('id,plugin,params')
+				->from($this->db->quoteName('#__fabrik_elements'))
+				->where($this->db->quoteName('name') . ' LIKE ' . $this->db->quote('profile'))
+				->where($this->db->quoteName('plugin') . ' LIKE ' . $this->db->quote('calc'))
+				->where($this->db->quoteName('group_id') . ' = 640');
+			$this->db->setQuery($query);
+			$profile_calc = $this->db->loadObject();
+
+			if(!empty($profile_calc)) {
+				$params = json_decode($profile_calc->params, true);
+				$params['calc_calculation'] = '';
+				$profile_calc->params = json_encode($params);
+				$profile_calc->plugin = 'field';
+
+				$this->db->updateObject('#__fabrik_elements', $profile_calc, 'id');
+			}
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)
