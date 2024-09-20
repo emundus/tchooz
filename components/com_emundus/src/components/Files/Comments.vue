@@ -430,7 +430,7 @@ export default {
     addComment(parent_id = 0) {
       this.loading = true;
 
-      if (this.access.c) {
+      if (this.access.c || this.isApplicant) {
         if (this.isApplicant) {
           this.visibleToApplicant = true;
         }
