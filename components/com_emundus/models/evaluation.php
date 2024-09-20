@@ -1183,7 +1183,7 @@ class EmundusModelEvaluation extends JModelList
 		$step_ids = [];
 		foreach ($applied_filters as $filter) {
 			if ($filter['uid'] == 'workflow_steps') {
-				if (!empty($filter['value'])) {
+				if (!empty($filter['value']) && !in_array('all', $filter['value'])) {
 					$step_ids = !is_array($filter['value']) ? [$filter['value']] : $filter['value'];
 				}
 			}
@@ -1201,33 +1201,35 @@ class EmundusModelEvaluation extends JModelList
 		return $list;
 	}
 
-		function getEvaluationsList($step_id = 0) {
+	function getEvaluationsList($step_id = 0)
+	{
 		$evaluations_list = [];
 
-		$session = $this->app->getSession();
+		$session                       = $this->app->getSession();
 		$eMConfig                      = JComponentHelper::getParams('com_emundus');
 		$evaluators_can_see_other_eval = $eMConfig->get('evaluators_can_see_other_eval', '0');
 
-		$query = 'select jecc.fnum, ss.step, ss.value as status, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name, ss.class as status_class, sp.code ';
+		$query    = 'select jecc.fnum, ss.step, ss.value as status, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name, ss.class as status_class, sp.code ';
 		$group_by = 'GROUP BY jecc.fnum ';
 
 		$already_joined_tables = [
-			'jecc'                    => 'jos_emundus_campaign_candidature',
-			'ss'                      => 'jos_emundus_setup_status',
-			'esc'                     => 'jos_emundus_setup_campaigns',
-			'sp'                      => 'jos_emundus_setup_programmes',
-			'u'                       => 'jos_users',
-			'eu'                      => 'jos_emundus_users',
-			'eta'                     => 'jos_emundus_tag_assoc',
+			'jecc' => 'jos_emundus_campaign_candidature',
+			'ss'   => 'jos_emundus_setup_status',
+			'esc'  => 'jos_emundus_setup_campaigns',
+			'sp'   => 'jos_emundus_setup_programmes',
+			'u'    => 'jos_users',
+			'eu'   => 'jos_emundus_users',
+			'eta'  => 'jos_emundus_tag_assoc',
 		];
 
-		if (!empty($step_id)) {
+		if (!empty($step_id))
+		{
 			$m_worfklow = new EmundusModelWorkflow();
-			$step_data = $m_worfklow->getStepData($step_id);
+			$step_data  = $m_worfklow->getStepData($step_id);
 
 			$already_joined_tables[$step_data->table] = $step_data->table;
 
-			$query .= ', ' . $step_data->table .'.id as evaluation_id,  CONCAT(eue.lastname," ",eue.firstname) AS evaluator ' ;
+			$query    .= ', ' . $step_data->table . '.id as evaluation_id,  CONCAT(eue.lastname," ",eue.firstname) AS evaluator ';
 			$group_by = 'GROUP BY evaluation_id';
 		}
 
@@ -1307,11 +1309,12 @@ class EmundusModelEvaluation extends JModelList
 					LEFT JOIN #__users as u on u.id = jecc.applicant_id
                     LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum = jecc.fnum ';
 
-		if (!empty($step_id)) {
+		if (!empty($step_id))
+		{
 			$query .= ' LEFT JOIN ' . $step_data->table . ' ON ' . $step_data->table . '.fnum = jecc.fnum AND ' . $step_data->table . '.step_id = ' . $step_id . ' ';
 			$query .= ' LEFT JOIN #__emundus_users as eue on eue.user_id = ' . $step_data->table . '.evaluator ';
 		}
-		$q     = $this->_buildWhere($already_joined_tables);
+		$q = $this->_buildWhere($already_joined_tables);
 
 		if (!empty($leftJoin))
 		{
