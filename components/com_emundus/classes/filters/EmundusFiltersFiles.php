@@ -668,7 +668,9 @@ class EmundusFiltersFiles extends EmundusFilters
 				'available'      => true,
 				'order'          => 0,
 				'andorOperator'  => 'OR',
-				'andorOperators' => ['OR', 'AND']
+				'andorOperators' => ['OR', 'AND'],
+				'operator'       => 'IN',
+				'operators'      => ['IN']
 			];
 		}
 
