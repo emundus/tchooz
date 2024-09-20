@@ -1617,10 +1617,9 @@ if(value == 1) {
 			$app = Factory::getApplication();
 			if(!$app->get('shared_session') || $app->get('session_name') == 'site')
 			{
-				$config = new \JConfig();
-				EmundusHelperUpdate::updateConfigurationFile($config, 'shared_session', true);
-				$config = new \JConfig();
-				EmundusHelperUpdate::updateConfigurationFile($config, 'session_name', UserHelper::genRandomPassword(16));
+				$options['shared_session'] = true;
+				$options['session_name'] = UserHelper::genRandomPassword(16);
+				EmundusHelperUpdate::updateConfigurationFile($options);
 
 				$query->clear()
 					->delete($this->db->quoteName('#__session'));
