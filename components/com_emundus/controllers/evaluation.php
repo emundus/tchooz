@@ -1080,7 +1080,7 @@ class EmundusControllerEvaluation extends BaseController
 	{
 		$result = ['status' => false, 'attachment_letters' => null];
 
-		if(EmundusHelperAccess::asAccessAction(27,'r',$this->_user->id))
+		if(EmundusHelperAccess::asAccessAction(27,'c',$this->_user->id))
 		{
 			$fnums = $this->input->getRaw('fnums', null);
 
