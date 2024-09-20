@@ -1175,16 +1175,40 @@ class EmundusModelEvaluation extends JModelList
 
 	public function getUsers($current_fnum = null)
 	{
-		require_once(JPATH_SITE . DS . 'components/com_emundus/models/users.php');
+		$list = [];
 
 		$session = $this->app->getSession();
+		$applied_filters = $session->get('em-applied-filters', []);
 
+		$step_ids = [];
+		foreach ($applied_filters as $filter) {
+			if ($filter['uid'] == 'workflow_steps') {
+				if (!empty($filter['value'])) {
+					$step_ids = !is_array($filter['value']) ? [$filter['value']] : $filter['value'];
+				}
+			}
+		}
+
+		$this->_applicants = [];
+		if (!empty($step_ids))  {
+			foreach ($step_ids as $step_id) {
+				$list = array_merge($list, $this->getEvaluationsList($step_id));
+			}
+		} else {
+			$list = $this->getEvaluationsList();
+		}
+
+		return $list;
+	}
+
+		function getEvaluationsList($step_id = 0) {
+		$evaluations_list = [];
+
+		$session = $this->app->getSession();
 		$eMConfig                      = JComponentHelper::getParams('com_emundus');
 		$evaluators_can_see_other_eval = $eMConfig->get('evaluators_can_see_other_eval', '0');
-		$current_user                  = $this->app->getIdentity();
 
 		$query = 'select jecc.fnum, ss.step, ss.value as status, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name, ss.class as status_class, sp.code ';
-
 		$group_by = 'GROUP BY jecc.fnum ';
 
 		$already_joined_tables = [
@@ -1196,6 +1220,16 @@ class EmundusModelEvaluation extends JModelList
 			'eu'                      => 'jos_emundus_users',
 			'eta'                     => 'jos_emundus_tag_assoc',
 		];
+
+		if (!empty($step_id)) {
+			$m_worfklow = new EmundusModelWorkflow();
+			$step_data = $m_worfklow->getStepData($step_id);
+
+			$already_joined_tables[$step_data->table] = $step_data->table;
+
+			$query .= ', ' . $step_data->table .'.id as evaluation_id,  CONCAT(eue.lastname," ",eue.firstname) AS evaluator ' ;
+			$group_by = 'GROUP BY evaluation_id';
+		}
 
 		$leftJoin = '';
 		if (!empty($this->_elements))
@@ -1211,7 +1245,13 @@ class EmundusModelEvaluation extends JModelList
 				{
 					if ($h_files->isTableLinkedToCampaignCandidature($table_to_join))
 					{
-						$leftJoin                .= 'LEFT JOIN ' . $table_to_join . ' ON ' . $table_to_join . '.fnum = jecc.fnum ';
+						$leftJoin .= 'LEFT JOIN ' . $table_to_join . ' ON ' . $table_to_join . '.fnum = jecc.fnum ';
+
+						if (!empty($step_id) && str_starts_with($table_to_join, 'jos_emundus_evaluations_'))
+						{
+							$leftJoin .= ' AND ' . $table_to_join . '.step_id = ' . $step_id;
+						}
+
 						$already_joined_tables[] = $table_to_join;
 					}
 					else
@@ -1266,8 +1306,12 @@ class EmundusModelEvaluation extends JModelList
 					LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
 					LEFT JOIN #__users as u on u.id = jecc.applicant_id
                     LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum = jecc.fnum ';
-		$q     = $this->_buildWhere($already_joined_tables);
 
+		if (!empty($step_id)) {
+			$query .= ' LEFT JOIN ' . $step_data->table . ' ON ' . $step_data->table . '.fnum = jecc.fnum AND ' . $step_data->table . '.step_id = ' . $step_id . ' ';
+			$query .= ' LEFT JOIN #__emundus_users as eue on eue.user_id = ' . $step_data->table . '.evaluator ';
+		}
+		$q     = $this->_buildWhere($already_joined_tables);
 
 		if (!empty($leftJoin))
 		{
@@ -1295,8 +1339,7 @@ class EmundusModelEvaluation extends JModelList
 		try
 		{
 			$res               = $this->db->loadAssocList();
-			$this->_applicants = $res;
-
+			$this->_applicants = array_merge($this->_applicants, $res);
 			if (empty($current_fnum))
 			{
 				$limit = $session->get('limit');
@@ -1310,13 +1353,14 @@ class EmundusModelEvaluation extends JModelList
 
 			$this->db->setQuery($query);
 
-			return $this->db->loadAssocList();
+			$evaluations_list = $this->db->loadAssocList();
 		}
 		catch (Exception $e)
 		{
-			echo $query . ' ' . $e->getMessage();
-			Log::add(JUri::getInstance() . ' :: USER ID : ' . $current_user->id . ' -> ' . str_replace('#_', 'jos', $query), Log::ERROR, 'com_emundus');
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . str_replace('#_', 'jos', $query), Log::ERROR, 'com_emundus');
 		}
+
+		return $evaluations_list;
 	}
 
 	// get elements by groups
