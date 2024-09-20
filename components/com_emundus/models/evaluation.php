@@ -125,7 +125,8 @@ class EmundusModelEvaluation extends JModelList
 		// get evaluation element
 		$show_in_list_summary = 1;
 		$hidden               = 0;
-		$elements_eval        = $this->getEvaluationElements($show_in_list_summary, $hidden);
+		$fnums   = $this->app->input->getString('cfnums', null);
+		$elements_eval = $this->getEvaluationElements($show_in_list_summary, $hidden, $fnums);
 		if (is_array($elements_eval) && count($elements_eval))
 		{
 			$this->elements_id .= ',' . implode(',', $elements_eval);
@@ -434,12 +435,11 @@ class EmundusModelEvaluation extends JModelList
 	 * @return    string list of Fabrik element ID used in evaluation form
 	 **@throws Exception
 	 */
-	public function getEvaluationElements($show_in_list_summary = 1, $hidden = 0)
+	public function getEvaluationElements($show_in_list_summary = 1, $hidden = 0, $fnums = null)
 	{
+		$elements_id = [];
 		$session = JFactory::getSession();
 		$h_files = new EmundusHelperFiles;
-		$jinput  = JFactory::getApplication()->input;
-		$fnums   = $jinput->getString('cfnums', null);
 
 		if ($session->has('filt_params'))
 		{
@@ -511,23 +511,38 @@ class EmundusModelEvaluation extends JModelList
 			foreach ($applied_filters as $filter) {
 				if ($filter['uid'] == 'workflow_steps') {
 					if (!empty($filter['value'])) {
-						$step_id = is_array($filter['value']) ? $filter['value'][0] : $filter['value'];
+						$step_ids = !is_array($filter['value']) ? [$filter['value']] : $filter['value'];
 
 						require_once JPATH_SITE . '/components/com_emundus/models/workflow.php';
 						$m_workflow = new EmundusModelWorkflow();
-						$step_data = $m_workflow->getStepData($step_id);
 
-						foreach ($step_data->programs as $program_id) {
-							$groups   = $this->getGroupsEvalByProgramme($program_id, 'id');
-							if (!empty($groups)) {
-								$eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
-								if (is_array($eval_elt_list) && count($eval_elt_list) > 0)
+						foreach($step_ids as $step_id) {
+							$step_data = $m_workflow->getStepData($step_id);
+
+							if (!empty($step_data->form_id))
+							{
+								$query = $this->db->createQuery();
+								$query->clear()
+									->select('group_id')
+									->from($this->db->quoteName('#__fabrik_formgroup', 'ffg'))
+									->leftJoin($this->db->quoteName('#__fabrik_groups', 'fg') . ' ON ffg.group_id = fg.id')
+									->where('form_id = ' . $step_data->form_id);
+
+								$this->db->setQuery($query);
+								$groups = $this->db->loadColumn();
+
+								if (!empty($groups))
 								{
-									foreach ($eval_elt_list as $eel)
+									$groups = implode(',', $groups);
+									$eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
+									if (is_array($eval_elt_list) && count($eval_elt_list) > 0)
 									{
-										if (isset($eel->element_id) && !empty($eel->element_id))
+										foreach ($eval_elt_list as $eel)
 										{
-											$elements_id[] = $eel->element_id;
+											if (!empty($eel->element_id))
+											{
+												$elements_id[] = $eel->element_id;
+											}
 										}
 									}
 								}
@@ -1534,7 +1549,8 @@ class EmundusModelEvaluation extends JModelList
 				}, $eval_steps);
 
 				if (!empty($form_ids)) {
-					$query->select('fg.group_id')
+					$query->clear()
+						->select('fg.id')
 						->from('#__fabrik_groups AS fg')
 						->leftJoin('#__fabrik_formgroup AS ffg ON fg.id = ffg.group_id')
 						->where('ffg.form_id IN (' . implode(',', $form_ids) . ')')
@@ -1545,7 +1561,6 @@ class EmundusModelEvaluation extends JModelList
 				}
 			}
 		}
-		var_dump($group_ids);
 
 		return implode(',', $group_ids);
 	}
