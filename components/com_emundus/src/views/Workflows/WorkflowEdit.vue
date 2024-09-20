@@ -117,6 +117,11 @@
                 <option v-for="status in statuses" :key="status.id" :value="status.id">{{ status.label }}</option>
               </select>
             </div>
+
+            <div v-if="step.type == 2" class="tw-flex tw-flex-row tw-items-center tw-cursor-pointer">
+              <input v-model="step.multiple" true-value="1" false-value="0" type="checkbox" :name="'step-' + step.id + '-multiple'" :id="'step-' + step.id + '-multiple'" class="tw-cursor-pointer"/>
+              <label :for="'step-' + step.id + '-multiple'" class="tw-cursor-pointer">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_IS_MULTIPLE') }}</label>
+            </div>
           </div>
         </div>
         <p v-if="steps.length < 1" class="tw-w-full tw-text-center"> {{ translate('COM_EMUNDUS_WORKFLOW_NO_STEPS') }} </p>
