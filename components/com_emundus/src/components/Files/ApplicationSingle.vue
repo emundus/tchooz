@@ -65,6 +65,7 @@
       <Evaluations
           v-if="selectedFile"
           :fnum="typeof selectedFile === 'string' ? selectedFile : selectedFile.fnum"
+          :key="typeof selectedFile === 'string' ? selectedFile : selectedFile.fnum"
       >
       </Evaluations>
 
@@ -193,9 +194,6 @@ export default {
             this.selected = 'application';
             this.updateURL(this.selectedFile.fnum)
             this.getApplicationForm();
-            if (this.$props.type === 'evaluation') {
-              this.getEvaluationForm();
-            }
 
             this.showModal = true;
             this.hidden = false;
@@ -224,9 +222,6 @@ export default {
                 this.selected = 'comments';
               }
             }
-            if (this.$props.type === 'evaluation') {
-              this.getEvaluationForm();
-            }
             this.showModal = true;
             this.hidden = false;
           } else {
@@ -254,37 +249,6 @@ export default {
           this.loading = false;
         }
       });
-    },
-    getEvaluationForm() {
-      if (this.selectedFile.id != null) {
-        this.rowid = this.selectedFile.id;
-      }
-      if (typeof this.selectedFile.applicant_id != 'undefined') {
-        this.student_id = this.selectedFile.applicant_id;
-      } else {
-        this.student_id = this.selectedFile.student_id;
-      }
-      let view = 'form';
-
-      filesService.getEvaluationFormByFnum(this.selectedFile.fnum, this.$props.type).then((response) => {
-        if (response.data !== 0 && response.data !== null) {
-          if (typeof this.selectedFile.id === 'undefined') {
-            filesService.getMyEvaluation(this.selectedFile.fnum).then((data) => {
-              this.rowid = data.data;
-              if (this.rowid == null) {
-                this.rowid = "";
-              }
-
-              this.url = 'index.php?option=com_fabrik&c=form&view=' + view + '&formid=' + response.data + '&rowid=' + this.rowid + '&jos_emundus_evaluations___student_id[value]=' + this.student_id + '&jos_emundus_evaluations___campaign_id[value]=' + this.selectedFile.campaign + '&jos_emundus_evaluations___fnum[value]=' + this.selectedFile.fnum + '&student_id=' + this.student_id + '&tmpl=component&iframe=1'
-            });
-          } else {
-            this.url = 'index.php?option=com_fabrik&c=form&view=' + view + '&formid=' + response.data + '&rowid=' + this.rowid + '&jos_emundus_evaluations___student_id[value]=' + this.student_id + '&jos_emundus_evaluations___campaign_id[value]=' + this.selectedFile.campaign + '&jos_emundus_evaluations___fnum[value]=' + this.selectedFile.fnum + '&student_id=' + this.student_id + '&tmpl=component&iframe=1'
-          }
-        }
-      });
-    },
-    iframeLoaded() {
-      this.loading = false;
     },
     updateURL(fnum = '') {
       let url = window.location.href;
