@@ -14,6 +14,7 @@
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
+use Joomla\CMS\Component\ComponentHelper;
 
 require_once JPATH_ROOT . '/components/com_emundus/helpers/files.php';
 
@@ -29,6 +30,8 @@ class EmundusControllerComments extends BaseController
 	 */
     private $user;
 
+	private $allow_applicant_to_comment = 0;
+
 	/**
 	 * Constructor.
 	 *
@@ -42,6 +45,9 @@ class EmundusControllerComments extends BaseController
         parent::__construct($config);
 
         $this->user = $this->app->getIdentity();
+	    $emundus_config = ComponentHelper::getParams('com_emundus');
+
+		$this->allow_applicant_to_comment = $emundus_config->get('allow_applicant_to_comment', 0);
     }
 
 	/**
@@ -231,7 +237,7 @@ class EmundusControllerComments extends BaseController
         if (!empty($ccid)) {
             $fnum = EmundusHelperFiles::getFnumFromId($ccid);
 
-            if (EmundusHelperAccess::asAccessAction(10, 'r', $this->user->id, $fnum)) {
+            if (($this->allow_applicant_to_comment && EmundusHelperAccess::isFnumMine($this->user->id, $fnum)) || EmundusHelperAccess::asAccessAction(10, 'r', $this->user->id, $fnum)) {
                 $response['code'] = 200;
                 $model = $this->getModel('comments');
                 $response['data'] = $model->getTargetableElements($ccid);
