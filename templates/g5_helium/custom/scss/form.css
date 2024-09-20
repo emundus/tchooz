@@ -36,6 +36,12 @@
 
         @media all and (max-width: 480px) {
             margin-top: unset !important;
+
+            .js-tiny-toggler-button {
+                white-space: normal;
+                align-items: flex-start;
+                margin-bottom: 8px;
+            }
         }
     }
 
