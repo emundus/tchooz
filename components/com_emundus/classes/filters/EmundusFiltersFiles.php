@@ -66,6 +66,14 @@ class EmundusFiltersFiles extends EmundusFilters
 		}
     }
 
+	public function getUserProgrammes() {
+		return $this->user_programs;
+	}
+
+	public function getUserGroups() {
+		return $this->user_groups;
+	}
+
 	private function setMenuParams() {
 		$menu = $this->app->getMenu();
         $active = $menu->getActive();
@@ -491,7 +499,6 @@ class EmundusFiltersFiles extends EmundusFilters
 			];
 		}
 
-
 		if ($config['filter_years'])
 		{
 			$years = [];
@@ -640,8 +647,11 @@ class EmundusFiltersFiles extends EmundusFilters
 
 				if (!empty($workflow_data['steps'])) {
 					foreach($workflow_data['steps'] as $step) {
-						if ($step->type == 2 && (array_intersect($this->user_groups, $step->group_ids) || EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))) {
-							$steps[] = ['value' => $step->id, 'label' => $workflow->label . ' - ' . $step->label];
+						if ($step->type == 2) {
+							$action_id = $m_workflow->getStepAssocActionId($step->id);
+							if ((array_intersect($this->user_groups, $step->group_ids) || EmundusHelperAccess::asAccessAction($action_id, 'r', $this->user->id))) {
+								$steps[] = ['value' => $step->id, 'label' => $workflow->label . ' - ' . $step->label];
+							}
 						}
 					}
 				}

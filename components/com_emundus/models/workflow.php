@@ -736,6 +736,31 @@ class EmundusModelWorkflow extends JModelList
 		return $saved;
 	}
 
+	public function getStepAssocActionId($step_id)
+	{
+		$action_id = 0;
+
+		if (!empty($step_id)) {
+			$query = $this->db->createQuery();
+			$query->select('type, sub_type')
+				->from($this->db->quoteName('#__emundus_setup_workflows_steps'))
+				->where('id = ' . $step_id);
+
+			$this->db->setQuery($query);
+			$step_types = $this->db->loadAssoc();
+
+			$query->clear()
+				->select('action_id')
+				->from($this->db->quoteName('#__emundus_setup_step_types'))
+				->where('id = ' . (!empty($step_types['sub_type']) ? $step_types['sub_type'] : $step_types['type']));
+
+			$this->db->setQuery($query);
+			$action_id = $this->db->loadResult();
+		}
+
+		return $action_id;
+	}
+
 	/**
 	 * @param int $campaign_id
 	 *

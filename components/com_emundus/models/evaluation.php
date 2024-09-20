@@ -1189,6 +1189,36 @@ class EmundusModelEvaluation extends JModelList
 			}
 		}
 
+		if (empty($step_ids)) {
+			// get all steps user has access to
+			if (!class_exists('EmundusFiltersFiles')) {
+				require_once JPATH_SITE . '/components/com_emundus/classes/filters/EmundusFiltersFiles.php';
+			}
+			$c_filter_files = new EmundusFiltersFiles([], true);
+			$user_programs = $c_filter_files->getUserProgrammes();
+			$user_groups = $c_filter_files->getUserGroups();
+
+			if (!empty($user_programs)) {
+				if (!class_exists('EmundusModelWorkflow')) {
+					require_once JPATH_SITE . '/components/com_emundus/models/workflow.php';
+				}
+				$m_workflow = new EmundusModelWorkflow();
+				$workflows = $m_workflow->getWorkflows([], 0, 0, $user_programs);
+				foreach($workflows as $workflow) {
+					$workflow_data = $m_workflow->getWorkflow($workflow->id);
+
+					if (!empty($workflow_data['steps'])) {
+						foreach($workflow_data['steps'] as $step) {
+							$action_id = $m_workflow->getStepAssocActionId($step->id);
+							if ($step->type == 2 && (array_intersect($user_groups, $step->group_ids) || EmundusHelperAccess::asAccessAction($action_id, 'r', $this->app->getIdentity()->id))) {
+								$step_ids[] = $step->id;
+							}
+						}
+					}
+				}
+			}
+		}
+
 		$this->_applicants = [];
 		if (!empty($step_ids))  {
 			foreach ($step_ids as $step_id) {
