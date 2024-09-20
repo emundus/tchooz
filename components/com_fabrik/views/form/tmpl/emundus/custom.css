@@ -133,7 +133,6 @@ form .fabrikGroupColumns.fabrikGroup .row .fabrikElementContainer {
 
     .comment-icon, .comment-icon:not(.has-comments) {
         opacity: 1 !important;
-        margin-right: var(--em-spacing-2);
     }
 }
 
