@@ -47,7 +47,6 @@ export default {
   methods: {
     getFileId() {
       fileService.getFileIdFromFnum(this.fnum).then((response) =>  {
-        console.log(response);
         if (response.status) {
           this.ccid = response.data;
         }

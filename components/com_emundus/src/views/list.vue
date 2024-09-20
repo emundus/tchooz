@@ -116,7 +116,7 @@
 
       <div v-else>
         <div v-if="displayedItems.length > 0" id="list-items">
-          <table id="list-table" :class="{'blocs': viewType === 'blocs'}">
+          <table v-if="viewType != 'gantt'"  id="list-table" :class="{'blocs': viewType === 'blocs'}">
             <thead>
             <tr>
               <th>{{ translate('COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase()) == ('COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase()) ?
@@ -192,6 +192,11 @@
             </tr>
             </tbody>
           </table>
+          <Gantt v-else
+            :language="params.shortlang"
+            :periods="displayedItems"
+          ></Gantt>
+
         </div>
         <div v-else id="empty-list" class="noneDiscover tw-text-center" v-html="noneDiscoverTranslation"></div>
       </div>
@@ -205,6 +210,7 @@ import {ref} from 'vue';
 // Components
 import Skeleton from '@/components/Skeleton.vue';
 import Popover from '@/components/Popover.vue';
+import Gantt from '@/components/Gantt/Gantt.vue';
 
 // Services
 import settingsService from '@/services/settings.js';
@@ -215,7 +221,8 @@ export default {
   name: 'list_v2',
   components: {
     Skeleton,
-    Popover
+    Popover,
+    Gantt
   },
   props: {
     defaultLists: {
@@ -243,7 +250,11 @@ export default {
       items: {},
       title: '',
       viewType: 'table',
-      viewTypeOptions: [{value: 'table', icon: 'dehaze'}, {value: 'blocs', icon: 'grid_view'}],
+      viewTypeOptions: [
+        {value: 'table', icon: 'dehaze'},
+        {value: 'blocs', icon: 'grid_view'},
+        {value: 'gantt', icon: 'view_timeline'}
+      ],
       searches: {},
       filters: {},
       alertBannerDisplayed: false
