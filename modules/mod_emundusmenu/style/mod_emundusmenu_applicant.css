@@ -3,6 +3,7 @@
     margin: unset;
     display: flex;
     align-items: center;
+    padding-left: 0 !important;
 }
 
 #em_user_menu li {

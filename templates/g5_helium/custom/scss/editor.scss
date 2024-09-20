@@ -64,3 +64,9 @@
     }
   }
 }
+
+@media all and (max-width: 479px) {
+  a span {
+    word-break: break-word;
+  }
+}

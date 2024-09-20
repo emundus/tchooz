@@ -972,6 +972,10 @@ circle.circle {
 /* Téléphone */
 @media screen and (max-width: 767px) {
 
+    #applications_card_view.em-mt-12 {
+        margin-top: 0;
+    }
+
     #applications_list_view table tbody tr td {
         position: inherit !important;
     }

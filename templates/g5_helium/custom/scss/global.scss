@@ -4473,7 +4473,6 @@ div#em-appli-block {
 
 .applicant-form .emundus-form {
   position: relative;
-  overflow: hidden;
 
   #background-shapes {
     position: absolute;
@@ -4901,11 +4900,6 @@ screen and (max-height: 769px) {
     max-height: 100%;
     height: auto;
   }
-
-  .gantry #g-navigation .g-grid {
-    row-gap: 8px;
-  }
-
 }
 
 @media all and (min-width: 434px) and (max-width: 479px) {
@@ -4956,10 +4950,6 @@ screen and (max-height: 769px) {
   #g-navigation .g-container #header-c .moduletable .header-right {
     flex-direction: column;
     display: flex;
-
-    a.btn.btn-danger:not(.btn-creer-compte) {
-      margin-bottom: 8px !important;
-    }
   }
 
 
@@ -5761,6 +5751,12 @@ screen and (max-height: 769px) {
 
 @media all and (max-width: 767px) {
 
+  .view-form .fabrikActions.form-actions .tw-justify-between,
+  .view-checklist .col-md-12 .tw-justify-between {
+    flex-direction: column;
+    align-items: center;
+  }
+
   .view-registration.em-formRegistrationCenter {
      margin-right: 0 !important;
      margin-left: 0 !important;
@@ -5853,15 +5849,16 @@ screen and (max-height: 769px) {
   }
 
   #g-navigation .g-container #header-c {
-    justify-content: right;
+    justify-content: center;
   }
 
   #g-navigation .g-container {
     padding: 16px 16px 16px 16px !important;
   }
 
-  .gantry #g-navigation .g-grid {
+  .gantry .em-guest #g-navigation .g-grid {
     row-gap: 8px;
+    justify-content: end;
   }
 
   .gantry #g-navigation.em_emundus_menu_active .g-container #header-b {
@@ -5930,7 +5927,7 @@ screen and (max-height: 769px) {
     }
 
     #header-a {
-      left: 82px;
+      left: 20px;
       position: absolute;
     }
 
@@ -6058,8 +6055,32 @@ screen and (max-height: 769px) {
 }
 
 @media all and (max-width: 1024px) {
-  .gantry:not(.mon-profil) #g-container-main {
+  .gantry:not(.mon-profil):not(.view-registration) #g-container-main {
     padding: 20px 20px 20px 20px;
+  }
+
+  .gantry.view-registration:not(.applicant-form):not(.files-board):not(.view-contacts):not(.com_dropfiles):not(.view-profile) #g-container-main,
+  .gantry.view-login:not(.applicant-form):not(.files-board):not(.view-contacts):not(.com_dropfiles):not(.view-profile) #g-container-main,
+  .gantry.view-reset:not(.applicant-form):not(.files-board):not(.view-contacts):not(.com_dropfiles):not(.view-profile) #g-container-main {
+    padding: 0 20px 20px 20px !important;
+  }
+
+  .gantry.view-reset form#user-registration.form-validate.form-horizontal.well,
+  .gantry.view-reset .form-validate.form-horizontal.well,
+  .gantry.view-reset .reset-complete .form-validate.form-horizontal.well {
+   padding: 0 24px 80px 24px !important;
+  }
+
+  .gantry.view-registration .em-back-button {
+    padding: 6px 0;
+  }
+
+  .gantry.view-login #g-main-mainbody .em-profile-picture.tw-mb-8 {
+    margin-bottom: 12px;
+  }
+
+  .gantry.view-registration #g-main-mainbody .emundus-form .tw-mb-8 {
+    margin-bottom: 12px;
   }
 }
 

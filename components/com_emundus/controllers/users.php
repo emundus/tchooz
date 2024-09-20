@@ -193,8 +193,20 @@ class EmundusControllerUsers extends BaseController
 			fclose($file);
 		}
 
-		if (!mkdir(EMUNDUS_PATH_ABS . $uid, 0755) || !copy(EMUNDUS_PATH_ABS . 'index.html', EMUNDUS_PATH_ABS . $uid . DS . 'index.html')) {
-			echo json_encode((object) array('status' => false, 'uid' => $uid, 'msg' => Text::_('COM_EMUNDUS_USERS_CANT_CREATE_USER_FOLDER_CONTACT_ADMIN')));
+		$create_repo = mkdir(EMUNDUS_PATH_ABS . $uid, 0755);
+		$copy_index  = copy(EMUNDUS_PATH_ABS . 'index.html', EMUNDUS_PATH_ABS . $uid . DS . 'index.html');
+		if (!$create_repo || !$copy_index) {
+			$msg = Text::_('COM_EMUNDUS_USERS_CANT_CREATE_USER_FOLDER_CONTACT_ADMIN');
+
+			if (!$create_repo) {
+				$msg .= ' ' . Text::_('COM_EMUNDUS_USERS_CANT_CREATE_USER_FOLDER');
+			}
+
+			if (!$copy_index) {
+				$msg .= ' ' . Text::_('COM_EMUNDUS_USERS_CANT_COPY_INDEX');
+			}
+
+			echo json_encode((object) array('status' => false, 'uid' => $uid, 'msg' => $msg));
 			exit;
 		}
 

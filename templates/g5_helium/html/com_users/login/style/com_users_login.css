@@ -448,10 +448,6 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
         width: 75% !important;
     }
 
-    .login form.form-validate.form-horizontal.well {
-        width: 70%;
-    }
-
 }
 
 @media all and (max-width: 1150px) {

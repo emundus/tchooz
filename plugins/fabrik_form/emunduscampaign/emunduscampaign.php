@@ -297,6 +297,8 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 	 */
 	public function onBeforeProcess()
 	{
+		$pid = 1000;
+
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
 		$m_campaign = new EmundusModelCampaign;
 
@@ -322,7 +324,20 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 
 				return false;
 			}
+
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true)
+				->select('profile_id')
+				->from($db->quoteName('#__emundus_setup_campaigns'))
+				->where($db->quoteName('id') . " = " . $db->quote($campaign_id));
+
+			$db->setQuery($query);
+			$pid = $db->loadResult();
+
+			$pid = ($pid > 0) ? $pid : 1000;
 		}
+
+		$this->getModel()->updateFormData('jos_emundus_users___profile', $pid, true);
 
 		return true;
 	}

@@ -202,7 +202,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 </div>
 
 <?php if ($show_tabs == 1 && sizeof($applications) > 0) : ?>
-    <div class="em-mt-32 em-flex-row em-border-bottom-neutral-400"
+    <div class="em-mt-12 em-flex-row em-border-bottom-neutral-400"
          style="height: 50px; overflow:hidden; overflow-x: auto;">
 		<?php foreach ($tabs as $tab) : ?>
             <div id="tab_link_<?php echo $tab['id'] ?>" onclick="updateTab(<?php echo $tab['id'] ?>)"

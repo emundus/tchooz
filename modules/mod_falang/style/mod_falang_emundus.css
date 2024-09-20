@@ -123,6 +123,6 @@ div a[title^="Faboba"] {
 
 @media screen and (max-width: 767px) {
     div.mod-languages form[name="lang"]{
-        margin: 10px 0 !important;
+        margin: 4px 0 !important;
     }
 }
