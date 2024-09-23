@@ -579,7 +579,7 @@
     /* STATUTS ET ETIQUETTES */
     .label {
         display: inline-block;
-        border-radius: 100px;
+        border-radius: var(--em-status-br);
         font-size: 14px;
         font-weight: 600;
         box-shadow: 0 1px 4px rgba(32, 35, 44, 0.05);
