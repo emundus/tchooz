@@ -1889,7 +1889,7 @@ class EmundusModelUsers extends ListModel
 	 *
 	 * @since version 1.40.0
 	 */
-	public function getUserGroups($uid, $return = 'AssocList')
+	public function getUserGroups($uid, $return = 'AssocList', $current_profile = null)
 	{
 		$user_groups = [];
 
@@ -1905,6 +1905,22 @@ class EmundusModelUsers extends ListModel
 
 				if ($return == 'Column') {
 					$user_groups = $this->db->loadColumn();
+					
+					if(!empty($current_profile)) {
+						$groups_mapping = $this->getGroupsMapping();
+						if(!empty($groups_mapping)) {
+							foreach ($user_groups as $user_group) {
+								if(in_array($user_group,array_keys($groups_mapping))) {
+									$profiles_group = explode(',', $groups_mapping[$user_group]['profile_id']);
+									if(!in_array($current_profile, $profiles_group)) {
+										unset($user_groups[array_search($user_group, $user_groups)]);
+									}
+								}
+							}
+						}
+
+						$user_groups = array_values($user_groups);
+					}
 				} else {
 					$user_groups = $this->db->loadAssocList('id', 'label');
 				}
@@ -2025,7 +2041,7 @@ class EmundusModelUsers extends ListModel
 		}
 	}
 
-	public function getUserGroupsProgrammeAssoc($uid, $select = 'jesgrc.course')
+	public function getUserGroupsProgrammeAssoc($uid, $select = 'jesgrc.course', $groups = [])
 	{
 		$program_ids = [];
 
@@ -2037,8 +2053,14 @@ class EmundusModelUsers extends ListModel
 			$query->select('DISTINCT ' . $this->db->quoteName($select))
 				->from($this->db->quoteName('#__emundus_setup_programmes', 'jesp'))
 				->innerJoin($this->db->quoteName('#__emundus_setup_groups_repeat_course', 'jesgrc') . ' ON ' . $this->db->quoteName('jesp.code') . ' = ' . $this->db->quoteName('jesgrc.course'))
-				->innerJoin($this->db->quoteName('#__emundus_groups', 'jeg') . ' ON ' . $this->db->quoteName('jeg.group_id') . ' = ' . $this->db->quoteName('jesgrc.parent_id'))
-				->where($this->db->quoteName('jeg.user_id') . ' = ' . $user_id . ' AND ' . $this->db->quoteName('jesp.published') . ' = 1');
+				->innerJoin($this->db->quoteName('#__emundus_groups', 'jeg') . ' ON ' . $this->db->quoteName('jeg.group_id') . ' = ' . $this->db->quoteName('jesgrc.parent_id'));
+			if(!empty($groups)) {
+				$query->where($this->db->quoteName('jeg.group_id') . ' IN (' . implode(',', $groups) . ')');
+			} else
+			{
+				$query->where($this->db->quoteName('jeg.user_id') . ' = ' . $user_id);
+			}
+			$query->where($this->db->quoteName('jesp.published') . ' = 1');
 
 			$this->db->setQuery($query);
 
@@ -4953,6 +4975,29 @@ class EmundusModelUsers extends ListModel
 		unset($objPHPExcel);
 
 		return $excel_file_name.'_'.$nb_rows.'rows_'.$randomString.'.xlsx';
+	}
+
+	public function getGroupsMapping()
+	{
+		$groups_mapping = [];
+
+		try
+		{
+			$query = $this->db->getQuery(true);
+
+			$query->clear()
+				->select('emundus_groups as id,group_concat(parent_id) as profile_id')
+				->from($this->db->quoteName('#__emundus_setup_profiles_repeat_emundus_groups'))
+				->group('emundus_groups');
+			$this->db->setQuery($query);
+			$groups_mapping = $this->db->loadAssocList('id');
+		}
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/users | Error when try to get group(s) label : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $groups_mapping;
 	}
 
 }
