@@ -1614,19 +1614,6 @@ if(value == 1) {
 			];
 			EmundusHelperUpdate::createTable('jos_emundus_setup_profiles_repeat_emundus_groups', $columns);
 
-			$app = Factory::getApplication();
-			if(!$app->get('shared_session') || $app->get('session_name') == 'site')
-			{
-				$options['shared_session'] = true;
-				$options['session_name'] = UserHelper::genRandomPassword(16);
-				EmundusHelperUpdate::updateConfigurationFile($options);
-
-				$query->clear()
-					->delete($this->db->quoteName('#__session'));
-				$this->db->setQuery($query);
-				$this->db->execute();
-			}
-
 			$aliases = [
 				'mentions-legales',
 				'politique-de-confidentialite-des-donnees',

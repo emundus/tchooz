@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Helper\ModuleHelper;
+use Joomla\CMS\User\UserHelper;
 use scripts\Release2_0_0Installer;
 
 class Com_EmundusInstallerScript
@@ -229,6 +230,17 @@ class Com_EmundusInstallerScript
 		$db->execute();
 
 	    $options['frontediting'] = 0;
+	    $app = Factory::getApplication();
+	    if(!$app->get('shared_session') || $app->get('session_name') == 'site')
+	    {
+		    $options['shared_session'] = true;
+		    $options['session_name'] = UserHelper::genRandomPassword(16);
+
+		    $query->clear()
+			    ->delete($this->db->quoteName('#__session'));
+		    $this->db->setQuery($query);
+		    $this->db->execute();
+	    }
 	    EmundusHelperUpdate::updateConfigurationFile($options);
 
 	    EmundusHelperUpdate::generateCampaignsAlias();
