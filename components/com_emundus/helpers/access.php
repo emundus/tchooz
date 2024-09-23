@@ -13,6 +13,7 @@
  */
 
 // no direct access
+use Joomla\CMS\Access\Access;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 
@@ -37,7 +38,7 @@ class EmundusHelperAccess
 
 	static function isAllowedAccessLevel($user_id, $current_menu_access)
 	{
-		$user_access_level = JAccess::getAuthorisedViewLevels($user_id);
+		$user_access_level = Access::getAuthorisedViewLevels($user_id);
 
 		return in_array($current_menu_access, $user_access_level);
 	}
