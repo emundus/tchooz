@@ -805,6 +805,7 @@ class EmundusModelWorkflow extends JModelList
 							$row->step_id = $step->id;
 							$row->start_date = null;
 							$row->end_date = null;
+							$row->infinite = 0;
 							$this->db->insertObject('#__emundus_setup_campaigns_step_dates', $row);
 
 							$this->db->setQuery($query);

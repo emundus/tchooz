@@ -206,7 +206,7 @@ class EmundusModelAdministratorWorkflow extends JModelList
 				['name' => 'step_id', 'type' => 'INT', 'null' => 0],
 				['name' => 'start_date', 'type' => 'DATETIME', 'null' => 1],
 				['name' => 'end_date', 'type' => 'DATETIME', 'null' => 1],
-				['name' => 'infinite', 'type' => 'TINYINT', 'null' => 1, 'default' => 0],
+				['name' => 'infinite', 'type' => 'TINYINT', 'null' => 0, 'default' => 0],
 			];
 			$foreign_keys = [
 				[
