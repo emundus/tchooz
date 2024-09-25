@@ -19,7 +19,7 @@ else {
                 <h3 class="panel-title">
                     <span class="glyphicon glyphicon-tags"></span>
 					<?php echo JText::_('COM_EMUNDUS_TAGS'); ?>
-                    <span class="label label-info" style="float:unset"><?php echo count($this->tags); ?></span>
+                    <span class="label label-info" style="float:unset; border-radius: 999px;"><?php echo count($this->tags); ?></span>
                     <div class="em-flex-row em-w-40-vw">
 						<?php if (EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $this->fnum)) : ?>
                             <select class="chzn-select" multiple id="mytags">

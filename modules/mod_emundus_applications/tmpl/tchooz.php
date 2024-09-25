@@ -433,8 +433,8 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                                                             <p class="em-programme-tag" style="color: <?php echo $color ?>;margin-bottom: 0">
 			                                                    <?php  echo $application->programme; ?>
                                                             </p>
-                                                            <div class="mod_emundus_applications__container">
-                                                                <span class="material-symbols-outlined em-text-neutral-600 em-font-weight-600"
+                                                            <div class="mod_emundus_applications__container text-xl!">
+                                                                <span class="material-symbols-outlined em-text-neutral-600" style="font-size: 24px;"
                                                                       id="actions_button_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>"
                                                                 >more_vert</span>
                                                             </div>
@@ -490,7 +490,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                                                             </div>
 											                <?php if ($mod_emundus_applications_show_programme != 1) : ?>
                                                             <div class="mod_emundus_applications__container">
-                                                                <span class="material-symbols-outlined em-text-neutral-600"
+                                                                <span class="material-symbols-outlined em-text-neutral-600" style="font-size: 24px;"
                                                                       id="actions_button_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>"
                                                                 >more_vert</span>
                                                             </div>
@@ -874,7 +874,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                                                 </td>
                                                 <td style="width: 5%;">
                                                     <div class="mod_emundus_applications__container">
-                                                            <span class="material-symbols-outlined em-text-neutral-600"
+                                                            <span class="material-symbols-outlined em-text-neutral-600" style="font-size: 24px;"
                                                                   id="actions_button_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>"
                                                             >more_vert</span>
 

@@ -1614,19 +1614,6 @@ if(value == 1) {
 			];
 			EmundusHelperUpdate::createTable('jos_emundus_setup_profiles_repeat_emundus_groups', $columns);
 
-			$app = Factory::getApplication();
-			if(!$app->get('shared_session') || $app->get('session_name') == 'site')
-			{
-				$options['shared_session'] = true;
-				$options['session_name'] = UserHelper::genRandomPassword(16);
-				EmundusHelperUpdate::updateConfigurationFile($options);
-
-				$query->clear()
-					->delete($this->db->quoteName('#__session'));
-				$this->db->setQuery($query);
-				$this->db->execute();
-			}
-
 			$aliases = [
 				'mentions-legales',
 				'politique-de-confidentialite-des-donnees',
@@ -1698,7 +1685,7 @@ if(value == 1) {
 
 			if(!empty($assets_rules->id)) {
 				$rules = json_decode($assets_rules->rules, true);
-				
+
 				$query->clear()
 					->select('id')
 					->from($this->db->quoteName('#__usergroups'));
@@ -1720,6 +1707,66 @@ if(value == 1) {
 				$assets_rules->rules = json_encode($rules);
 				$this->db->updateObject('#__assets', $assets_rules, 'id');
 			}
+
+			// Create emundus_group element-
+			$datas = [
+				'name' => 'emundus_groups',
+				'group_id' => $group_setup_profile,
+				'plugin' => 'databasejoin',
+				'label' => 'EMUNDUS_GROUPS',
+				'show_in_list_summary' => 1
+			];
+			$params = [
+				'database_join_display_type' => 'multilist',
+				'join_db_name' => 'jos_emundus_setup_groups',
+				'join_key_column' => 'id',
+				'join_val_column' => "label",
+				'join_val_column_concat' => "{thistable}.label",
+				'advanced_behavior' => 1
+			];
+			$eid = EmundusHelperUpdate::addFabrikElement($datas,$params,false)['id'];
+			if(!empty($eid)) {
+				$query->clear()
+					->select('id')
+					->from($this->db->quoteName('#__fabrik_joins'))
+					->where($this->db->quoteName('element_id') . ' = ' . $this->db->quote($eid));
+				$this->db->setQuery($query);
+				$join_id = $this->db->loadResult();
+
+				if(empty($join_id))
+				{
+					$join_params = [
+						'type' => 'repeatElement',
+						'pk'   => $this->db->quoteName('jos_emundus_setup_profiles_repeat_emundus_groups') . '.' . $this->db->quoteName('id')
+					];
+					$insert      = [
+						'element_id'      => $eid,
+						'join_from_table' => 'jos_emundus_setup_profiles',
+						'table_join'      => 'jos_emundus_setup_profiles_repeat_emundus_groups',
+						'table_key'       => 'emundus_groups',
+						'table_join_key'  => 'parent_id',
+						'join_type'       => 'left',
+						'group_id'        => 0,
+						'params'          => json_encode($join_params)
+					];
+					$insert      = (object) $insert;
+					$this->db->insertObject('#__fabrik_joins', $insert);
+				}
+			}
+
+			$insert = [
+				'parent_id' => 1,
+				'emundus_groups' => 1
+			];
+			$insert = (object) $insert;
+			$this->db->insertObject('#__emundus_setup_profiles_repeat_emundus_groups', $insert);
+
+			$insert = [
+				'parent_id' => 2,
+				'emundus_groups' => 1
+			];
+			$insert = (object) $insert;
+			$this->db->insertObject('#__emundus_setup_profiles_repeat_emundus_groups', $insert);
 
 			$result['status'] = true;
 		}

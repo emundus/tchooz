@@ -256,6 +256,7 @@ class EmundusViewFiles extends JViewLegacy
 
 			// Get list of application files
 			default:
+				$e_user = $this->app->getSession()->get('emundusUser');
 				$menu         = $this->app->getMenu();
 				$current_menu = $menu->getActive();
 
@@ -266,13 +267,18 @@ class EmundusViewFiles extends JViewLegacy
 
 				$m_user = new EmundusModelUsers();
 
-				$m_files->code = $m_user->getUserGroupsProgrammeAssoc($this->user->id);
+				$groups               = $m_user->getUserGroups($this->user->id, 'Column',$e_user->profile);
 
 				// get all fnums manually associated to user
-				$groups               = $m_user->getUserGroups($this->user->id, 'Column');
 				$fnum_assoc_to_groups = $m_user->getApplicationsAssocToGroups($groups);
 				$fnum_assoc           = $m_user->getApplicantsAssoc($this->user->id);
+
 				$m_files->fnum_assoc  = array_merge($fnum_assoc_to_groups, $fnum_assoc);
+				$m_files->code = [];
+				if(!empty($groups))
+				{
+					$m_files->code = $m_user->getUserGroupsProgrammeAssoc($this->user->id, 'jesgrc.course', $groups);
+				}
 
 				$this->code       = $m_files->code;
 				$this->fnum_assoc = $m_files->fnum_assoc;

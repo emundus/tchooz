@@ -180,7 +180,7 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
         $query = $db->getQuery(true);
         $query->select('DISTINCT iso2,label_fr,label_en,flag,flag_img')
 	        ->from($db->quoteName('data_country'))
-	        ->order('label_'.$shortlang);
+	        ->where($db->quoteName('iso2') . ' NOT IN (' . $db->quote('AN') . ', ' . $db->quote('XE') . ', ' . $db->quote('PN') . ', ' . $db->quote('TF') . ', ' . $db->quote('AQ') . ', ' . $db->quote('GS') . ', ' . $db->quote('BV') . ', ' . $db->quote('HM') . ', ' . $db->quote('UM') . ', ' . $db->quote('XS') . ', ' . $db->quote('XX') . ', ' . $db->quote('XD') . ')')	        ->order('label_'.$shortlang);
         $db->setQuery($query);
 
         $db->execute();
