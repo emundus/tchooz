@@ -4679,4 +4679,27 @@ class EmundusModelFormbuilder extends JModelList
 
 		return $datas;
 	}
+
+	public function updateElementParam($element_id, $param, $value)
+	{
+		$updated = false;
+
+		if (!empty($element_id) && !empty($param) && isset($value)) {
+			$query = $this->db->getQuery(true);
+
+			$query->update($this->db->quoteName('#__fabrik_elements'))
+				->set($this->db->quoteName($param) . ' = ' . $this->db->quote($value))
+				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($element_id));
+
+			try {
+				$this->db->setQuery($query);
+				$updated = $this->db->execute();
+			}
+			catch (Exception $e) {
+				Log::add('component/com_emundus/models/formbuilder | Error at updating element param : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $updated;
+	}
 }

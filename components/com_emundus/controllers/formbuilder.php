@@ -1470,6 +1470,32 @@ class EmundusControllerFormbuilder extends BaseController
 		echo json_encode((object) $response);
 		exit;
 	}
+
+	public function updateelementparam() {
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403);
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$element_id = $this->input->getInt('element_id', 0);
+			$param = $this->input->getString('param', '');
+			$value = $this->input->getString('value', '');
+
+			if (!empty($element_id) && !empty($param) && isset($value)) {
+				$allowed_params = ['show_in_list_summary', 'label', 'hidden', 'default', 'ordering'];
+
+				if (in_array($param, $allowed_params)) {
+					$udpated = $this->m_formbuilder->updateElementParam($element_id, $param, $value);
+
+					$response['status'] = $udpated;
+					$response['msg'] = $udpated ? Text::_('SUCCESS') : Text::_('FAILED');
+					$response['code'] = 200;
+				}
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
 }
 
 

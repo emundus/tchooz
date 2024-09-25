@@ -858,5 +858,12 @@ export default {
     }
 
     return response;
+  },
+  async updateElementParam(elementId, param, value) {
+    return client.post('updateelementparam', {
+      element_id: elementId,
+      param: param,
+      value: value
+    });
   }
 };
