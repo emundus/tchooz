@@ -1150,7 +1150,7 @@ class EmundusModelEvaluation extends JModelList
 	}
 
 
-	private function _buildWhere($already_joined_tables = array())
+	private function _buildWhere($already_joined_tables = array(), $step_id = 0)
 	{
 		$h_files = new EmundusHelperFiles();
 
@@ -1161,6 +1161,11 @@ class EmundusModelEvaluation extends JModelList
 				'code'       => $this->code,
 				'eval'       => true,
 			);
+
+			if (!empty($step_id))
+			{
+				$caller_params['step_id'] = $step_id;
+			}
 
 			return $h_files->_moduleBuildWhere($already_joined_tables, 'files', $caller_params);
 		}
@@ -1233,6 +1238,7 @@ class EmundusModelEvaluation extends JModelList
 
 	function getEvaluationsList($step_id = 0)
 	{
+
 		$evaluations_list = [];
 
 		$session                       = $this->app->getSession();
@@ -1345,8 +1351,10 @@ class EmundusModelEvaluation extends JModelList
 		{
 			$query .= ' LEFT JOIN ' . $step_data->table . ' ON ' . $step_data->table . '.fnum = jecc.fnum AND ' . $step_data->table . '.step_id = ' . $step_id . ' ';
 			$query .= ' LEFT JOIN #__emundus_users as eue on eue.user_id = ' . $step_data->table . '.evaluator ';
+
+			$already_joined_tables[$step_data->table] = $step_data->table;
 		}
-		$q = $this->_buildWhere($already_joined_tables);
+		$q = $this->_buildWhere($already_joined_tables, $step_id);
 
 		if (!empty($leftJoin))
 		{
@@ -1370,9 +1378,9 @@ class EmundusModelEvaluation extends JModelList
 
 		$query .= $this->_buildContentOrderBy();
 
-		$this->db->setQuery($query);
 		try
 		{
+			$this->db->setQuery($query);
 			$res               = $this->db->loadAssocList();
 			$this->_applicants = array_merge($this->_applicants, $res);
 			if (empty($current_fnum))

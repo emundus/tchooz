@@ -4950,29 +4950,46 @@ class EmundusHelperFiles
 								case 'workflow_steps':
 									require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
 									$m_workflow = new EmundusModelWorkflow();
+									$program_ids = [];
 
-									$step_id = is_array($filter['value']) ? $filter['value'][0] : $filter['value'];
-									$step_data = $m_workflow->getStepData($step_id);
+									$step_ids = is_array($filter['value']) ? $filter['value'] : [$filter['value']];
 
-									$step_table_alias = array_search($step_data->table, $already_joined);
-									if (!in_array($step_data->table, $already_joined)) {
-										// table is name jos_emundus_evaluations_<index>
-										$table_index = substr($step_data->table, strlen('jos_emundus_evaluations_'));
-										$step_table_alias = 'jee_' . $table_index;
-										$already_join[$step_table_alias] = $step_data->table;
+									foreach ($step_ids as $step_id) {
+										$step_data = $m_workflow->getStepData($step_id);
 
-										$where['join'] .= ' LEFT JOIN ' . $db->quoteName($step_data->table) . ' ON ' . $db->quoteName($step_data->table . '.fnum') . ' = ' . $db->quoteName('jecc.fnum') . ' AND ' . $db->quoteName($step_data->table . '.step_id') . ' = ' . $db->quote($filter['value']);
-										// todo: maybe treat multiple steps differently
-										if ($step_data->multiple) {
+										$step_table_alias = array_search($step_data->table, $already_joined);
+										if (!in_array($step_data->table, $already_joined)) {
+											// table is name jos_emundus_evaluations_<index>
+											$table_index = substr($step_data->table, strlen('jos_emundus_evaluations_'));
+											$step_table_alias = 'jee_' . $table_index;
+											$already_join[$step_table_alias] = $step_data->table;
 
+											if (!empty($caller_params['step_id'])) {
+												$where['join'] .= ' LEFT JOIN ' . $db->quoteName($step_data->table) . ' ON ' . $db->quoteName($step_data->table . '.fnum') . ' = ' . $db->quoteName('jecc.fnum') . ' AND ' . $db->quoteName($step_data->table . '.step_id') . ' = ' . $db->quote($caller_params['step_id']);
+											} else {
+												$where['join'] .= ' LEFT JOIN ' . $db->quoteName($step_data->table) . ' ON ' . $db->quoteName($step_data->table . '.fnum') . ' = ' . $db->quoteName('jecc.fnum') . ' AND ' . $db->quoteName($step_data->table . '.step_id') . ' = ' . $db->quote($step_id);
+											}
+
+											if ($step_data->multiple) {
+												// todo: maybe treat multiple steps differently
+											}
+										}
+
+										if (!empty($caller_params['step_id'])) {
+											if ($caller_params['step_id'] == $step_id) {
+												$program_ids = array_merge($program_ids, $step_data->programs);
+											}
+										} else {
+											$program_ids = array_merge($program_ids, $step_data->programs);
 										}
 									}
 
-									$jesp_alias = array_search('jos_emundus_setup_programmes', $already_joined);
+									if (!empty($program_ids)) {
+										$jesp_alias = array_search('jos_emundus_setup_programmes', $already_joined);
 
-									// we want the fnums that are related to the step through the programs they are linked to
-									// todo: should i see only files that are in the status of the step?
-									$where['q'] .= ' AND ' . $this->writeQueryWithOperator($jesp_alias . '.id', $step_data->programs, $filter['operator']);
+										// we want the fnums that are related to the step through the programs they are linked to
+										$where['q'] .= ' AND ' . $this->writeQueryWithOperator($jesp_alias . '.id', array_unique($program_ids), $filter['operator']);
+									}
 
 									break;
 								default:
