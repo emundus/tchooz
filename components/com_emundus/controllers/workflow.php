@@ -248,16 +248,16 @@ class EmundusControllerWorkflow extends JControllerLegacy
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
+			$response['code'] = 500;
+			$response['message'] = Text::_('MISSING_PARAMS');
 			$campaign_id = $this->app->input->getInt('campaign_id', 0);
 
 			if (!empty($campaign_id)) {
 				$steps = $this->model->getCampaignSteps($campaign_id);
 
-				if (!empty($steps)) {
-					$response['data'] = $steps;
-					$response['code'] = 200;
-					$response['status'] = true;
-				}
+				$response['data'] = $steps;
+				$response['code'] = 200;
+				$response['status'] = true;
 			}
 		}
 

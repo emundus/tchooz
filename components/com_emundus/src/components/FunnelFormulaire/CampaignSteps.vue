@@ -75,8 +75,13 @@
       </div>
     </div>
 
+    <div v-if="steps.length < 1">
+      <p>{{ translate('COM_EMUNDUS_CAMPAIGN_NO_STEPS_FOUND') }}</p>
+    </div>
+
     <div class="tw-flex tw-flex-row tw-justify-end">
-      <button class="tw-btn tw-btn-primary tw-mt-4" @click="saveCampaignSteps">{{ translate('COM_EMUNDUS_ONBOARD_ADD_CONTINUER') }}</button>
+      <button v-if="steps.length > 0" class="tw-btn tw-btn-primary tw-mt-4" @click="saveCampaignSteps">{{ translate('COM_EMUNDUS_ONBOARD_ADD_CONTINUER') }}</button>
+      <button v-else class="tw-btn tw-btn-primary tw-mt-4" @click="goNext">{{ translate('COM_EMUNDUS_ONBOARD_CONTINUE') }}</button>
     </div>
   </div>
 </template>
@@ -127,12 +132,15 @@ export default {
       workflowService.saveCampaignSteps(this.campaignId, this.steps)
         .then(response => {
           if (response.status) {
-            this.$emit('nextSection');
+            this.goNext();
           }
         })
         .catch(error => {
           console.log(error);
         });
+    },
+    goNext() {
+      this.$emit('nextSection');
     },
     formatDate(date, format = 'YYYY-MM-DD HH:mm:ss') {
       if (date == '' || date == null || date == '0000-00-00 00:00:00') {
