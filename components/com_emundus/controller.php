@@ -734,6 +734,10 @@ class EmundusController extends JControllerLegacy
 		if (empty($redirect)) {
 			if (empty($confirm)) {
 				$redirect = $m_application->getFirstPage();
+
+				if ($redirect == '/index.php') {
+					$this->app->enqueueMessage(Text::_('COM_EMUNDUS_APPLICATION_CANNOT_OPEN_FILE'), 'error');
+				}
 			}
 			else {
 				$redirect = $m_application->getConfirmUrl();

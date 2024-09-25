@@ -5263,7 +5263,7 @@ class EmundusModelApplication extends ListModel
 	 * @return String The URL to the form.
 	 * @since 3.8.8
 	 */
-	function getFirstPage($redirect = 'index.php', $fnums = null)
+	function getFirstPage($redirect = '/index.php', $fnums = null)
 	{
 		$user = $this->_mainframe->getSession()->get('emundusUser');
 		$query = $this->_db->getQuery(true);
@@ -5335,6 +5335,7 @@ class EmundusModelApplication extends ListModel
 	 */
 	function getConfirmUrl($fnums = null)
 	{
+		$return = false;
 
 		$user = JFactory::getSession()->get('emundusUser');
 
@@ -5351,38 +5352,32 @@ class EmundusModelApplication extends ListModel
 
 			$this->_db->setQuery($query);
 			try {
-				return $this->_db->loadAssocList('fnum');
+				$return = $this->_db->loadAssocList('fnum');
 			}
 			catch (Exception $e) {
 				Log::add('Error getting confirm URLs in model/application at query -> ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
-
-				return false;
 			}
 		}
 		else {
 
-			if (empty($user->menutype)) {
-				return false;
-			}
+			if (!empty($user->menutype)) {
+				$query->select(['id', 'link'])
+					->from($this->_db->quoteName('#__menu'))
+					->where($this->_db->quoteName('published') . '=1 AND ' . $this->_db->quoteName('menutype') . ' LIKE ' . $this->_db->quote($user->menutype) . ' AND ' . $this->_db->quoteName('link') . ' <> "" AND ' . $this->_db->quoteName('link') . ' <> "#"')
+					->order($this->_db->quoteName('lft') . ' DESC');
+				try {
+					$this->_db->setQuery($query);
+					$res = $this->_db->loadObject();
 
-			$query->select(['id', 'link'])
-				->from($this->_db->quoteName('#__menu'))
-				->where($this->_db->quoteName('published') . '=1 AND ' . $this->_db->quoteName('menutype') . ' LIKE ' . $this->_db->quote($user->menutype) . ' AND ' . $this->_db->quoteName('link') . ' <> "" AND ' . $this->_db->quoteName('link') . ' <> "#"')
-				->order($this->_db->quoteName('lft') . ' DESC');
-			try {
-				$this->_db->setQuery($query);
-
-				$res = $this->_db->loadObject();
-
-				return $res->link . '&Itemid=' . $res->id;
-			}
-			catch (Exception $e) {
-				Log::add('Error getting first page of application at model/application in query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
-
-				return false;
+					$return = $res->link . '&Itemid=' . $res->id;
+				}
+				catch (Exception $e) {
+					Log::add('Error getting first page of application at model/application in query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
+				}
 			}
 		}
 
+		return $return;
 	}
 
 
