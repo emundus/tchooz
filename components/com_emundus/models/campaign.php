@@ -1660,6 +1660,14 @@ class EmundusModelCampaign extends ListModel
 
 						$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
 						break;
+					case 'profile_id':
+						if (!empty($val)) {
+							$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
+						} else {
+							// set null
+							$fields[] = $this->_db->quoteName($key) . ' = NULL';
+						}
+						break;
 					default:
 						$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
 						break;
@@ -1708,6 +1716,7 @@ class EmundusModelCampaign extends ListModel
 				}
 			}
 			catch (Exception $e) {
+				var_dump($query->__toString());
 				Log::add('component/com_emundus/models/campaign | Error when update the campaign : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 			}
 		}
