@@ -253,7 +253,7 @@ export default {
       viewTypeOptions: [
         {value: 'table', icon: 'dehaze'},
         {value: 'blocs', icon: 'grid_view'},
-        {value: 'gantt', icon: 'view_timeline'}
+        /*{value: 'gantt', icon: 'view_timeline'}*/
       ],
       searches: {},
       filters: {},
