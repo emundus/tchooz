@@ -242,7 +242,7 @@ class EmundusModelAdministratorWorkflow extends JModelList
 
 			$result = EmundusHelperUpdate::addJoomlaMenu([
 				'menutype' => 'onboardingmenu',
-				'title' => 'WORKFLOWS',
+				'title' => 'Workflows',
 				'link' => 'index.php?option=com_emundus&view=workflows',
 				'path' => 'workflows',
 				'alias' => 'workflows',
