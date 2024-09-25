@@ -81,7 +81,7 @@ class EmundusControllerWorkflow extends JControllerLegacy
 						if (!empty($associated_programmes)) {
 							$associated_programmes_html = '';
 							foreach ($associated_programmes as $program) {
-								$associated_programmes_html .= '<a class="tw-flex tw-flex-row tw-underline em-main-500-color tw-transition-all" href="/campaigns/modifier-un-programme?rowid=' . $program->id . '" target="_blank">' . $program->label . '</a>';
+								$associated_programmes_html .= '<a class="tw-flex tw-flex-row tw-underline em-main-500-color tw-transition-all" href="/campaigns/edit-program?id=' . $program->id . '" target="_blank">' . $program->label . '</a>';
 							}
 						}
 					}

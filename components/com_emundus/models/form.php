@@ -2541,55 +2541,27 @@ class EmundusModelForm extends JModelList
 		return $data;
 	}
 
-	public function getProgramsByForm($form_id,$mode = 'eval')
+	public function getProgramsByForm($form_id)
 	{
 		$programs = [];
 
-		$query = $this->db->getQuery(true);
+		if (!empty($form_id)) {
+			$query = $this->db->getQuery(true);
+			$query->select('DISTINCT eswp.program_id')
+				->from($this->db->quoteName('#__emundus_setup_workflows_programs', 'eswp'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps', 'esws') . ' ON ' . $this->db->quoteName('esws.workflow_id') . ' = ' . $this->db->quoteName('eswp.workflow_id'))
+				->where($this->db->quoteName('esws.form_id') . ' = ' . $this->db->quote($form_id));
 
-		if(!empty($form_id)) {
-			try
-			{
-				$query->select('group_id')
-					->from($this->db->quoteName('#__fabrik_formgroup'))
-					->where($this->db->quoteName('form_id') . ' = ' . $this->db->quote($form_id));
+			$this->db->setQuery($query);
+			$program_ids = $this->db->loadColumn();
+
+			if (!empty($program_ids)) {
+				$query->clear()
+					->select('id, code, label')
+					->from($this->db->quoteName('#__emundus_setup_programmes'))
+					->where($this->db->quoteName('id') . ' IN (' . implode(',', $program_ids) . ')');
 				$this->db->setQuery($query);
-				$fabrik_groups = $this->db->loadColumn();
-
-				switch ($mode) {
-					case 'decision':
-						$column = 'fabrik_decision_group_id';
-						break;
-					default:
-						$column = 'fabrik_group_id';
-						break;
-				}
-
-				if(!empty($fabrik_groups)) {
-					$query->clear()
-						->select('label,code,'.$column)
-						->from($this->db->quoteName('#__emundus_setup_programmes'));
-					$this->db->setQuery($query);
-					$programs = $this->db->loadAssocList();
-
-					foreach ($programs as $key => $program) {
-						$program_fabrik_groups = explode(',', $program[$column]);
-
-						if(!empty($program_fabrik_groups)) {
-							$program_fabrik_groups = array_intersect($program_fabrik_groups, $fabrik_groups);
-
-							if(empty($program_fabrik_groups)) {
-								unset($programs[$key]);
-							}
-						}
-					}
-
-					$programs = array_values($programs);
-				}
-			}
-			catch (Exception $e)
-			{
-				Log::add('component/com_emundus/models/form | Error at getProgramsByForm : ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), Log::ERROR, 'com_emundus');
+				$programs = $this->db->loadAssocList();
 			}
 		}
 
