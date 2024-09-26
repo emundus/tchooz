@@ -6,7 +6,7 @@
                     <div>
                         <input
                             type="color"
-                            class="custom-color-picker tw-rounded-full"
+                            class="custom-color-picker !tw-rounded-full"
                             v-model="primary"
                             id="primary_color"
                         />
@@ -21,7 +21,7 @@
                         <input
                             type="color"
                             v-model="secondary"
-                            class="custom-color-picker tw-rounded-full"
+                            class="custom-color-picker !tw-rounded-full"
                             id="secondary_color"
                         />
                     </div>
@@ -391,7 +391,7 @@ export default {
 
 <style scoped>
 .custom-color-picker {
-    width: 44px !important;
+    width: 47px !important;
     height: 48px !important;
     border: none !important;
     padding: 0 !important;
