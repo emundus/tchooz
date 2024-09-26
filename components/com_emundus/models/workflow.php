@@ -285,7 +285,7 @@ class EmundusModelWorkflow extends JModelList
 			$query->where($this->db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
 		}
 
-		if (!empty($programs)) {
+		if (!empty($programs) && !in_array('all', $programs)) {
 			$query->where($this->db->quoteName('eswp.program_id') . ' IN (' . implode(',', $programs) . ')');
 		}
 
