@@ -59,7 +59,10 @@ class EmundusControllerWorkflow extends JControllerLegacy
 			$ids = json_decode($ids, true);
 			$lim = $this->app->input->getInt('lim', 0);
 			$page = $this->app->input->getInt('page', 0);
-			$workflows = $this->model->getWorkflows($ids, $lim, $page);
+			$program_ids = $this->app->input->getString('program', '');
+			$program_ids = explode(',', $program_ids);
+
+			$workflows = $this->model->getWorkflows($ids, $lim, $page, $program_ids);
 
 			if (!empty($workflows)) {
 				$db = Factory::getContainer()->get('DatabaseDriver');

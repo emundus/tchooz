@@ -7,7 +7,7 @@
     <div id="header">
       <div class="tw-flex tw-flex-row tw-justify-between">
         <input id="workflow-label" name="workflow-label" class="!tw-w-[350px]" type="text" v-model="workflow.label" />
-        <button class="tw-btn-primary tw-flex tw-items-center tw-gap-1" href="#" @click="save">
+        <button class="tw-btn-primary tw-flex tw-items-center tw-gap-1" @click="save">
           <span class="material-icons-outlined">check</span>
           <span>{{ translate('SAVE') }}</span>
         </button>

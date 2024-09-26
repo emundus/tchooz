@@ -144,11 +144,13 @@ class EmundusControllerProgramme extends BaseController
 			$programs = $this->m_programme->getAllPrograms();
 
 			if (count((array) $programs) > 0) {
+				$type = $this->input->getString('type', '');
+
 				$values = [];
 				foreach ($programs['datas'] as $key => $program) {
 					$values[] = [
 						'label' => $program->label,
-						'value' => $program->code
+						'value' => $type === 'id' ? $program->id : $program->code
 					];
 				}
 

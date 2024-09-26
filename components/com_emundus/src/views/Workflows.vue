@@ -49,6 +49,15 @@ export default {
                   "name": "delete",
                   "confirm": "COM_EMUNDUS_WORKFLOW_DELETE_WORKFLOW_CONFIRMATION"
                 },
+              ],
+              "filters": [
+                {
+                  "label": "COM_EMUNDUS_ONBOARD_ALL_PROGRAMS",
+                  "getter": "getallprogramforfilter&type=id",
+                  "controller": "programme",
+                  "key": "program",
+                  "values": null
+                }
               ]
             }
           ]

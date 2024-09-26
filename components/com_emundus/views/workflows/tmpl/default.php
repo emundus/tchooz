@@ -13,6 +13,7 @@ Text::script('COM_EMUNDUS_ONBOARD_WORKFLOWS');
 Text::script('COM_EMUNDUS_ONBOARD_MODIFY');
 Text::script('COM_EMUNDUS_ONBOARD_ACTIONS');
 Text::script('COM_EMUNDUS_ACTIONS_DELETE');
+Text::script('COM_EMUNDUS_ONBOARD_ALL_PROGRAMS');
 Text::script('COM_EMUNDUS_WORKFLOW_DELETE_WORKFLOW_CONFIRMATION');
 
 $app          = Factory::getApplication();
@@ -34,6 +35,17 @@ else
 }
 $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id);
 $sysadmin_access    = EmundusHelperAccess::isAdministrator($this->user->id);
+
+$program_id_filter = $app->input->getInt('program_id', 0);
+
+if (!empty($program_id_filter))
+{
+    ?>
+    <script>
+        sessionStorage.setItem('tchooz_filter_workflow_program/' + document.location.hostname, <?= $program_id_filter ?>);
+    </script>
+    <?php
+}
 
 ?>
 
