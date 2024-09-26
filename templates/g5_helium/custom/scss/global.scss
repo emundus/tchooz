@@ -6262,11 +6262,11 @@ fieldset[disabled] .multiselect {
   box-sizing: border-box !important;
   margin-bottom: 0 !important;
   vertical-align: top !important;
-  padding: 0 !important;
   left: 0 !important;
   height: auto !important;
   white-space: nowrap;
   width: 100%;
+  padding: 0 0 0 8px;
 }
 
 .multiselect__input::placeholder {
@@ -6304,7 +6304,7 @@ fieldset[disabled] .multiselect {
   min-height: var(--em-coordinator-form-height);
   height: auto;
   align-items: center;
-  padding: 0 24px 0 12px;
+  padding: 0 24px 0 4px;
   border-radius: var(--em-coordinator-br);
   border: 1px solid var(--neutral-400);
   background: var(--neutral-0);
