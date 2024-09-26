@@ -1450,8 +1450,13 @@ class EmundusModelCampaign extends ListModel
 
 			$query = $this->_db->getQuery(true);
 
+			$campaign_languages = [];
 			foreach ($data as $key => $val) {
 				if (!in_array($key, $campaign_columns)) {
+					if ($key == 'languages') {
+						$campaign_languages = $val;
+					}
+
 					unset($data[$key]);
 				}
 				else {
@@ -1514,6 +1519,19 @@ class EmundusModelCampaign extends ListModel
 										$this->_db->setQuery($query);
 										$this->_db->execute();
 									}
+								}
+							}
+
+							if (!empty($campaign_languages))
+							{
+								foreach($campaign_languages as $language) {
+									$query->clear()
+										->insert($this->_db->quoteName('#__emundus_setup_campaigns_languages'))
+										->set($this->_db->quoteName('campaign_id') . ' = ' . $this->_db->quote($campaign_id))
+										->set($this->_db->quoteName('lang_id') . ' = ' . $this->_db->quote($language));
+
+									$this->_db->setQuery($query);
+									$this->_db->execute();
 								}
 							}
 
@@ -1660,6 +1678,9 @@ class EmundusModelCampaign extends ListModel
 
 						$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
 						break;
+					case 'languages':
+						// do nothing
+						break;
 					default:
 						$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
 						break;
@@ -1695,6 +1716,26 @@ class EmundusModelCampaign extends ListModel
 								$this->_db->setQuery($query);
 								$this->_db->execute();
 							}
+						}
+					}
+
+					// update campaign languages
+					$query->clear()
+						->delete($this->_db->quoteName('#__emundus_setup_campaigns_languages'))
+						->where($this->_db->quoteName('campaign_id') . ' = ' . $this->_db->quote($cid));
+
+					$this->_db->setQuery($query);
+					$this->_db->execute();
+
+					if(!empty($data['languages'])) {
+						foreach ($data['languages'] as $lang_id) {
+							$query->clear()
+								->insert('#__emundus_setup_campaigns_languages')
+								->set('campaign_id = ' . $cid)
+								->set('lang_id = ' . $lang_id);
+
+							$this->_db->setQuery($query);
+							$this->_db->execute();
 						}
 					}
 
@@ -3579,5 +3620,23 @@ class EmundusModelCampaign extends ListModel
 		}
 
 		return $profile_ids;
+	}
+
+	function getCampaignLanguages($campaign_id) {
+		$languages = [];
+
+		if (!empty($campaign_id)) {
+			$query = $this->_db->createQuery();
+
+			$query->select('el.lang_id as value, el.title as label')
+				->from($this->_db->quoteName('#__languages', 'el'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns_languages', 'esc_lang') . ' ON ' . $this->_db->quoteName('esc_lang.lang_id') . ' = ' . $this->_db->quoteName('el.lang_id'))
+				->where('esc_lang.campaign_id = ' . $this->_db->quote($campaign_id));
+
+			$this->_db->setQuery($query);
+			$languages = $this->_db->loadObjectList();
+		}
+
+		return $languages;
 	}
 }
