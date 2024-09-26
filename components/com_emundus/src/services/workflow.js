@@ -54,6 +54,15 @@ export default {
       };
     }
   },
+  async updateStepState(stepId, state) {
+    if (stepId > 0) {
+      return await client.post('updatestepstate', {step_id: stepId, state: state});
+    } else {
+      return {
+        status: false, msg: 'Invalid step id.'
+      };
+    }
+  },
   async getStepTypes() {
     try {
       return await client.get('getsteptypes');

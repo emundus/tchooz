@@ -527,7 +527,8 @@ class EmundusModelWorkflow extends JModelList
 						->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_entry_status', 'eswses') . ' ON ' . $this->db->quoteName('eswses.step_id') . ' = ' . $this->db->quoteName('esws.id'))
 						->where('esws.workflow_id IN (' . implode(',', $workflow_ids) . ')')
 						->andWhere('eswses.status = ' . $file_infos['status'])
-						->andWhere('esws.type = ' . $this->db->quote($type));
+						->andWhere('esws.type = ' . $this->db->quote($type))
+						->andWhere('esws.state = 1');
 
 					$this->db->setQuery($query);
 					$step = $this->db->loadObject();
@@ -898,5 +899,32 @@ class EmundusModelWorkflow extends JModelList
 		}
 
 		return $updated;
+	}
+
+	public function updateStepState($step_id, $state): bool
+	{
+		$archived = false;
+
+		if (!empty($step_id)) {
+			// state must be 0 or 1
+			if (!in_array($state, [0, 1])) {
+				throw new Exception('Invalid state');
+			}
+
+			$query = $this->db->getQuery(true);
+
+			$query->update($this->db->quoteName('#__emundus_setup_workflows_steps'))
+				->set($this->db->quoteName('state') . ' = ' . $state)
+				->where($this->db->quoteName('id') . ' = ' . $step_id);
+
+			try {
+				$this->db->setQuery($query);
+				$archived = $this->db->execute();
+			} catch (Exception $e) {
+				Log::add('Error while archiving workflow step: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+			}
+		}
+
+		return $archived;
 	}
 }

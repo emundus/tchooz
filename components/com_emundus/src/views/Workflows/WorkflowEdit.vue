@@ -39,11 +39,20 @@
       <a class="tw-btn-primary tw-h-fit tw-w-fit tw-mb-4" href="#" @click="addStep"> {{ translate('COM_EMUNDUS_WORKFLOW_ADD_STEP') }} </a>
 
       <div id="workflow-steps" class="tw-grid tw-grid-cols-3 tw-gap-3 tw-overflow-auto">
-        <div v-for="step in steps" :key="step.id" class="workflow-step tw-rounded tw-border tw-shadow-sm tw-p-4 em-white-bg">
+        <div v-for="step in steps" :key="step.id"
+             class="workflow-step tw-rounded tw-border tw-shadow-sm tw-p-4"
+             :class="{
+                'em-gray-bg': step.state != 1,
+                'em-white-bg': step.state == 1
+             }"
+        >
           <div class="workflow-step-head tw-flex tw-flex-row tw-justify-between">
             <h4>{{ step.label }}</h4>
             <popover>
               <ul class="tw-list-none !tw-p-0">
+                <li class="archive-workflow-step tw-cursor-pointer tw-p-2" @click="duplicateStep(step.id)">{{ translate('COM_EMUNDUS_ACTIONS_DUPLICATE') }}</li>
+                <li v-if="step.state == 1" class="archive-workflow-step tw-cursor-pointer tw-p-2" @click="updateStepState(step.id, 0)">{{ translate('COM_EMUNDUS_ACTIONS_ARCHIVE') }}</li>
+                <li v-else class="archive-workflow-step tw-cursor-pointer tw-p-2" @click="updateStepState(step.id, 1)">{{ translate('COM_EMUNDUS_ACTIONS_UNARCHIVE') }}</li>
                 <li class="delete-workflow-step tw-cursor-pointer tw-p-2" @click="beforeDeleteStep(step.id)">{{ translate('COM_EMUNDUS_ACTIONS_DELETE') }}</li>
               </ul>
             </popover>
@@ -316,6 +325,32 @@ export default {
       this.steps.push(newStep);
     },
 
+    duplicateStep(stepId) {
+
+    },
+    async updateStepState(stepId, state = 0) {
+      let archived = false;
+
+      if (stepId > 0) {
+        const response = await workflowService.updateStepState(stepId, state);
+
+        if (response.status) {
+          this.steps = this.steps.map((step) => {
+            if (step.id == stepId) {
+              step.state = state;
+            }
+            return step;
+          });
+          archived = true;
+
+          return archived;
+        } else {
+          this.displayError('COM_EMUNDUS_WORKFLOW_ARCHIVE_FAILED', response.message);
+        }
+      } else {
+        return archived;
+      }
+    },
     beforeDeleteStep(stepId) {
       Swal.fire({
         title: this.translate('COM_EMUNDUS_WORKFLOW_DELETE_STEP_CONFIRMATION'),
