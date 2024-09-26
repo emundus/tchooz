@@ -1768,6 +1768,54 @@ if(value == 1) {
 			$insert = (object) $insert;
 			$this->db->insertObject('#__emundus_setup_profiles_repeat_emundus_groups', $insert);
 
+			$columns = [
+				['name' => 'campaign_id', 'type' => 'INT', 'null' => 0],
+				['name' => 'lang_id', 'type' => 'INT', 'null' => 0],
+			];
+			$foreign_keys = [
+				[
+					'name'           => 'jos_emundus_setup_campaigns_languages_campaign_id_fk',
+					'from_column'    => 'campaign_id',
+					'ref_table'      => 'jos_emundus_setup_campaigns',
+					'ref_column'     => 'id',
+					'update_cascade' => true,
+					'delete_cascade' => true
+				],
+				[
+					'name'           => 'jos_emundus_setup_campaigns_languages_lang_id_fk',
+					'from_column'    => 'lang_id',
+					'ref_table'      => 'jos_languages',
+					'ref_column'     => 'lang_id',
+					'update_cascade' => true,
+					'delete_cascade' => true
+				]
+			];
+			EmundusHelperUpdate::createTable('jos_emundus_setup_campaigns_languages', $columns, $foreign_keys, 'Campaigns languages');
+
+			$columns = [
+				['name' => 'program_id', 'type' => 'INT', 'null' => 0],
+				['name' => 'lang_id', 'type' => 'INT', 'null' => 0],
+			];
+			$foreign_keys = [
+				[
+					'name'           => 'jos_emundus_setup_programs_languages_pid_fk',
+					'from_column'    => 'program_id',
+					'ref_table'      => 'jos_emundus_setup_programmes',
+					'ref_column'     => 'id',
+					'update_cascade' => true,
+					'delete_cascade' => true
+				],
+				[
+					'name'           => 'jos_emundus_setup_programs_lang_id_fk',
+					'from_column'    => 'lang_id',
+					'ref_table'      => 'jos_languages',
+					'ref_column'     => 'lang_id',
+					'update_cascade' => true,
+					'delete_cascade' => true
+				]
+			];
+			EmundusHelperUpdate::createTable('jos_emundus_setup_programs_languages', $columns, $foreign_keys, 'Programs languages');
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)
