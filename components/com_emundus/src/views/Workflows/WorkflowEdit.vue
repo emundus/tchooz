@@ -326,7 +326,20 @@ export default {
     },
 
     duplicateStep(stepId) {
+      const step = this.steps.find((step) => step.id == stepId);
 
+      if (step) {
+        const newStep = { ...step };
+
+        newStep.id = this.steps.reduce((acc, step) => {
+          if (step.id < acc) {
+            acc = step.id;
+          }
+          return acc;
+        }, 0) - 1;
+
+        this.steps.push(newStep);
+      }
     },
     async updateStepState(stepId, state = 0) {
       let archived = false;

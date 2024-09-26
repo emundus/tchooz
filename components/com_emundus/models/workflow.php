@@ -104,19 +104,18 @@ class EmundusModelWorkflow extends JModelList
 				$error_occurred = true;
 			}
 
-			$query->clear()
-				->delete($this->db->quoteName('#__emundus_setup_workflows_steps'))
-				->where($this->db->quoteName('workflow_id') . ' = ' . $workflow['id']);
-
-			try {
-				$this->db->setQuery($query);
-				$this->db->execute();
-			} catch (Exception $e) {
-				Log::add('Error while deleting workflow steps: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
-				$error_occurred = true;
-			}
-
 			if (!empty($steps)) {
+				// verify step entry status are not the same on multiple steps
+				$already_used_entry_status = [];
+				foreach ($steps as $step) {
+					foreach($step['entry_status'] as $status) {
+						if (in_array($status['id'], $already_used_entry_status)) {
+							throw new Exception(Text::_('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS_ALREADY_USED'));
+						}
+						$already_used_entry_status[] = $status['id'];
+					}
+				}
+
 				foreach ($steps as $step) {
 					$step['workflow_id'] = $workflow['id'];
 
@@ -133,11 +132,46 @@ class EmundusModelWorkflow extends JModelList
 					$step_object = (object)$step;
 
 					try {
-						$inserted = $this->db->insertObject('#__emundus_setup_workflows_steps', $step_object);
+						if (!isset($step->id)) {
+							$inserted = $this->db->insertObject('#__emundus_setup_workflows_steps', $step_object);
+							if ($inserted) {
+								$step['id'] = $this->db->insertid();
+							}
+						} else {
+							// update existing step
+							$query->clear()
+								->update($this->db->quoteName('#__emundus_setup_workflows_steps'))
+								->set($this->db->quoteName('label') . ' = ' . $this->db->quote($step['label']))
+								->set($this->db->quoteName('type') . ' = ' . $this->db->quote($step['type']))
+								->set($this->db->quoteName('sub_type') . ' = ' . $this->db->quote($step['sub_type']))
+								->set($this->db->quoteName('state') . ' = ' . $this->db->quote($step['state']))
+								->set($this->db->quoteName('profile_id') . ' = ' . $this->db->quote($step['profile_id']))
+								->set($this->db->quoteName('form_id') . ' = ' . $this->db->quote($step['form_id']))
+								->set($this->db->quoteName('multiple') . ' = ' . $this->db->quote($step['multiple']))
+								->set($this->db->quoteName('output_status') . ' = ' . $this->db->quote($step['output_status']))
+								->where($this->db->quoteName('id') . ' = ' . $step['id']);
 
-						if ($inserted) {
-							$step['id'] = $this->db->insertid();
+							$this->db->setQuery($query);
+							$this->db->execute();
+						}
+
+						if (!empty($step['id'])) {
 							$step['entry_status'] = array_filter($step['entry_status']);
+
+							// empty jos_emundus_setup_workflows_steps_entry_status and jos_emundus_setup_workflows_steps_groups
+							$query->clear()
+								->delete($this->db->quoteName('#__emundus_setup_workflows_steps_entry_status'))
+								->where($this->db->quoteName('step_id') . ' = ' . $step['id']);
+
+							$this->db->setQuery($query);
+							$this->db->execute();
+
+							$query->clear()
+								->delete($this->db->quoteName('#__emundus_setup_workflows_steps_groups'))
+								->where($this->db->quoteName('step_id') . ' = ' . $step['id']);
+
+							$this->db->setQuery($query);
+							$this->db->execute();
 
 							if (!empty($step['entry_status'])) {
 								foreach ($step['entry_status'] as $status) {

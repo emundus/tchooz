@@ -143,14 +143,19 @@ class EmundusControllerWorkflow extends JControllerLegacy
 			$programs = json_decode($programs, true);
 
 			if (!empty($workflow['id'])) {
-				$updated = $this->model->updateWorkflow($workflow, $steps, $programs);
+				try {
+					$updated = $this->model->updateWorkflow($workflow, $steps, $programs);
 
-				if ($updated) {
-					$response['code'] = 200;
-					$response['status'] = true;
-				} else {
+					if ($updated) {
+						$response['code'] = 200;
+						$response['status'] = true;
+					} else {
+						$response['code'] = 500;
+						$response['message'] = Text::_('ERROR_WHILE_UPDATING_WORKFLOW');
+					}
+				} catch (Exception $e) {
 					$response['code'] = 500;
-					$response['message'] = Text::_('ERROR_WHILE_UPDATING_WORKFLOW');
+					$response['message'] = $e->getMessage();
 				}
 			}
 		}
