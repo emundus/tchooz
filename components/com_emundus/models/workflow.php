@@ -132,24 +132,39 @@ class EmundusModelWorkflow extends JModelList
 					$step_object = (object)$step;
 
 					try {
-						if (!isset($step->id)) {
+						if (empty($step['id'])) {
 							$inserted = $this->db->insertObject('#__emundus_setup_workflows_steps', $step_object);
 							if ($inserted) {
 								$step['id'] = $this->db->insertid();
 							}
 						} else {
+							$fields = ['label', 'type', 'state', 'multiple', 'output_status', 'sub_type'];
+
+							$fields_set = [];
+							foreach($fields as $field) {
+								if ($step[$field] == '') {
+									$fields_set[] = $this->db->quoteName($field) . ' = NULL';
+								} else {
+									$fields_set[] = $this->db->quoteName($field) . ' = ' . $this->db->quote($step[$field]);
+								}
+							}
 							// update existing step
 							$query->clear()
 								->update($this->db->quoteName('#__emundus_setup_workflows_steps'))
-								->set($this->db->quoteName('label') . ' = ' . $this->db->quote($step['label']))
-								->set($this->db->quoteName('type') . ' = ' . $this->db->quote($step['type']))
-								->set($this->db->quoteName('sub_type') . ' = ' . $this->db->quote($step['sub_type']))
-								->set($this->db->quoteName('state') . ' = ' . $this->db->quote($step['state']))
-								->set($this->db->quoteName('profile_id') . ' = ' . $this->db->quote($step['profile_id']))
-								->set($this->db->quoteName('form_id') . ' = ' . $this->db->quote($step['form_id']))
-								->set($this->db->quoteName('multiple') . ' = ' . $this->db->quote($step['multiple']))
-								->set($this->db->quoteName('output_status') . ' = ' . $this->db->quote($step['output_status']))
-								->where($this->db->quoteName('id') . ' = ' . $step['id']);
+								->set($fields_set);
+
+							if ($step['type'] == 1)
+							{
+								$query->set($this->db->quoteName('profile_id') . ' = ' . $this->db->quote($step['profile_id']));
+								$query->set($this->db->quoteName('form_id') . ' = NULL');
+							}
+							else
+							{
+								$query->set($this->db->quoteName('form_id') . ' = ' . $this->db->quote($step['form_id']));
+								$query->set($this->db->quoteName('profile_id') . ' = NULL');
+							}
+
+							$query->where($this->db->quoteName('id') . ' = ' . $step['id']);
 
 							$this->db->setQuery($query);
 							$this->db->execute();
@@ -194,6 +209,9 @@ class EmundusModelWorkflow extends JModelList
 							}
 						}
 					} catch (Exception $e) {
+						var_dump($query->__toString());exit;
+
+						var_dump($e->getMessage());exit;
 						Log::add('Error while adding workflow step: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
 						$error_occurred = true;
 					}
@@ -451,7 +469,6 @@ class EmundusModelWorkflow extends JModelList
 							$this->db->setQuery($query);
 							$data->table = $this->db->loadResult();
 						} catch (Exception $e) {
-							var_dump($e->getMessage());
 							Log::add('Error while fetching form table name: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
 						}
 					}
