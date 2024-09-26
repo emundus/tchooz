@@ -3118,7 +3118,8 @@ class EmundusModelFormbuilder extends JModelList
 									if (!empty($newmenuid)) {
 										$update = [
 											'id' => $newmenuid,
-											'alias' => 'menu-profile' . $profile->id . '-form-' . $newmenuid
+											'alias' => 'menu-profile' . $profile->id . '-form-' . $newmenuid,
+											'published' => 1
 										];
 										$update = (object) $update;
 										$updated = $this->db->updateObject('#__menu', $update, 'id');
