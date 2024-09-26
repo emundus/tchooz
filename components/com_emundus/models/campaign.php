@@ -1661,7 +1661,7 @@ class EmundusModelCampaign extends ListModel
 						$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
 						break;
 					case 'profile_id':
-						if (!empty($val)) {
+						if (!empty($val) && $val != 'null') {
 							$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
 						} else {
 							// set null
