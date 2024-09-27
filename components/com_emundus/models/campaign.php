@@ -1634,7 +1634,7 @@ class EmundusModelCampaign extends ListModel
 					continue;
 				}
 
-				if(!in_array($key,['limit','profileLabel','progid','status','limit_status']))
+				if(!in_array($key,['limit','profileLabel','progid','status','limit_status','languages']))
 				{
 					$columns[] = $this->_db->quoteName($key);
 				}
