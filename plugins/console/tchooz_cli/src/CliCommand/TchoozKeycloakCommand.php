@@ -236,35 +236,51 @@ class TchoozKeycloakCommand extends AbstractCommand
 
 			if ($this->getAccessToken())
 			{
-				// Si option destroy, je récupére l'annuaire de source emundus et je le destroy
-				$old_client_id = $this->getEmundusDirectory();
-				//
+				// Destroy keycloak client
+				if($this->destroy) {
+					$old_client_id = $this->getEmundusDirectory();
 
-				$keycloak_client = $this->getKeycloakClient();
-
-				if (empty($keycloak_client))
-				{
-					if ($this->createKeycloakClient())
+					$keycloak_client = $this->getKeycloakClient($old_client_id);
+					if(!empty($keycloak_client))
 					{
-						$keycloak_client = $this->getKeycloakClient();
-						$roles           = ['tchooz-admin', 'tchooz-coordinator'];
-						foreach ($roles as $role)
+						if($this->deleteKeycloakClient($keycloak_client))
 						{
-							$this->createRole($role, $keycloak_client);
+							$this->ioStyle->success("Keycloak client with id $keycloak_client->id has been deleted successfully");
 						}
 					}
+
+					// We try to remove the client from the plugin even if the client does not exist on keycloak
+					$this->removeFromOAuth2Plugin();
 				}
+				// Else create/update it
 				else
 				{
-					$this->updateKeycloakClient($keycloak_client);
-				}
+					$keycloak_client = $this->getKeycloakClient();
 
-				if (empty($this->tchooz_client_secret))
-				{
-					$this->tchooz_client_secret = $this->getKeycloakClientSecret($keycloak_client);
-				}
+					if (empty($keycloak_client))
+					{
+						if ($this->createKeycloakClient())
+						{
+							$keycloak_client = $this->getKeycloakClient();
+							$roles           = ['tchooz-admin', 'tchooz-coordinator'];
+							foreach ($roles as $role)
+							{
+								$this->createRole($role, $keycloak_client);
+							}
+						}
+					}
+					else
+					{
+						$this->updateKeycloakClient($keycloak_client);
+					}
 
-				$this->updateOAuth2Plugin();
+					if (empty($this->tchooz_client_secret))
+					{
+						$this->tchooz_client_secret = $this->getKeycloakClientSecret($keycloak_client);
+					}
+
+					$this->updateOAuth2Plugin();
+				}
 			}
 		}
 
@@ -499,6 +515,35 @@ class TchoozKeycloakCommand extends AbstractCommand
 		return $created;
 	}
 
+	private function deleteKeycloakClient($keycloak_client)
+	{
+		$deleted = false;
+
+		$url = '/admin/realms/' . $this->realm . '/clients/' . $keycloak_client->id;
+
+		try
+		{
+			$request = $this->guzzleClient->request('DELETE', $this->keycloak_url . '/' . $url, ['headers' => $this->headers]);
+
+			$status = $request->getStatusCode();
+
+			if ($status == 204)
+			{
+				$deleted = true;
+			}
+			else
+			{
+				$this->ioStyle->error("Error while deleting keycloak client");
+			}
+		}
+		catch (\Exception $e)
+		{
+			$this->ioStyle->error("Error while deleting keycloak client");
+		}
+
+		return $deleted;
+	}
+
 	private function getWellKnownConfig()
 	{
 		$well_known_config = null;
@@ -604,6 +649,44 @@ class TchoozKeycloakCommand extends AbstractCommand
 		}
 
 		return $updated;
+	}
+
+	private function removeFromOAuth2Plugin()
+	{
+		$removed = false;
+
+		$plugin = PluginHelper::getPlugin('authentication', 'emundus_oauth2');
+		if (!empty($plugin))
+		{
+			$params                 = json_decode($plugin->params);
+			$params->configurations = (array) $params->configurations;
+
+			if (!empty($params->configurations))
+			{
+				foreach ($params->configurations as $key => $configuration)
+				{
+					if ($configuration->client_id == $this->tchooz_client_id)
+					{
+						unset($params->configurations[$key]);
+						break;
+					}
+				}
+
+				$plugin->params = json_encode($params);
+
+				$db    = Factory::getContainer()->get('DatabaseDriver');
+				$query = $db->getQuery(true)
+					->update($db->quoteName('#__extensions'))
+					->set($db->quoteName('params') . ' = ' . $db->quote($plugin->params))
+					->where($db->quoteName('extension_id') . ' = ' . $db->quote($plugin->id));
+				$db->setQuery($query);
+				$removed = $db->execute();
+			} else {
+				$removed = true;
+			}
+		}
+
+		return $removed;
 	}
 
 	private function setupConfig($configuration, $well_known_config)
