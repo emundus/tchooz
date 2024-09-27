@@ -1991,7 +1991,7 @@ class EmundusModelsettings extends ListModel
 		$result = [
 			'status' => false,
 			'title' => Text::_('COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_MAIL_SUCCESS'),
-			'text' => Text::sprintf('COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_MAIL_SUCCESS_BODY',$variables['mailfrom']),
+			'text' => Text::sprintf('COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_MAIL_SUCCESS_BODY',!empty($mail_to) ? $mail_to : $variables['mailfrom']),
 			'desc' => ''
 		];
 

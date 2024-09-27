@@ -1198,12 +1198,13 @@ class EmundusControllersettings extends BaseController
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
+			$emConfig = ComponentHelper::getParams('com_emundus');
+
 			$config              = [];
 			$mail_to             = $this->input->getString('testing_email', '');
 			$custom_email_config = $this->input->getInt('custom_email_conf', 0);
 			if ($custom_email_config != 1)
 			{
-				$emConfig = ComponentHelper::getParams('com_emundus');
 				// We get default email configuration
 				$config['smtpauth']   = $emConfig->get('default_email_smtpauth',$this->app->get('smtpauth', 0));
 				$config['smtphost']   = $emConfig->get('default_email_smtphost',$this->app->get('smtphost', ''));
@@ -1225,6 +1226,10 @@ class EmundusControllersettings extends BaseController
 				$config['smtpport']   = $this->input->getInt('custom_email_smtpport', '');
 				$config['mailfrom']   = $this->input->getString('custom_email_mailfrom', '');
 				$config['fromname']   = $this->app->get('fromname', '');
+
+				if(empty($config['smtppass']) || $config['smtppass'] == '************') {
+					$config['smtppass'] = $emConfig->get('custom_email_smtppass',$this->app->get('smtppass', ''));
+				}
 
 				if (empty($config['smtphost']))
 				{
