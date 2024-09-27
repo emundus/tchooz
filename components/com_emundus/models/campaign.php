@@ -18,6 +18,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Language\Text;
 
 require_once(JPATH_SITE. '/components/com_emundus/helpers/menu.php');
 
@@ -3622,19 +3623,45 @@ class EmundusModelCampaign extends ListModel
 		return $profile_ids;
 	}
 
-	function getCampaignLanguages($campaign_id) {
+	/**
+	 * @param $fnum
+	 *
+	 * @return void
+	 * @throws Exception
+	 */
+	public function getCampaignLanguages($fnum): array
+	{
 		$languages = [];
 
-		if (!empty($campaign_id)) {
-			$query = $this->_db->createQuery();
+		if (!empty($fnum)) {
+			$query = $this->_db->getQuery(true);
 
-			$query->select('el.lang_id as value, el.title as label')
-				->from($this->_db->quoteName('#__languages', 'el'))
-				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns_languages', 'esc_lang') . ' ON ' . $this->_db->quoteName('esc_lang.lang_id') . ' = ' . $this->_db->quoteName('el.lang_id'))
-				->where('esc_lang.campaign_id = ' . $this->_db->quote($campaign_id));
+			try {
+				$query->clear()
+					->select($this->_db->quoteName('escl.lang_id'))
+					->from($this->_db->quoteName('#__emundus_setup_campaigns_languages', 'escl'))
+					->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->_db->quoteName('ecc.campaign_id') . ' = ' . $this->_db->quoteName('escl.campaign_id'))
+					->where($this->_db->quoteName('ecc.fnum') . ' LIKE ' . $this->_db->quote($fnum));
 
-			$this->_db->setQuery($query);
-			$languages = $this->_db->loadObjectList();
+				$this->_db->setQuery($query);
+				$languages = $this->_db->loadColumn();
+
+				if (empty($languages)) {
+					// maybe the program has language restrictions
+					$query->clear()
+						->select($this->_db->quoteName('espl.lang_id'))
+						->from($this->_db->quoteName('#__emundus_setup_programs_languages', 'espl'))
+						->leftJoin($this->_db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON ' . $this->_db->quoteName('esp.id') . ' = ' . $this->_db->quoteName('espl.program_id'))
+						->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->quoteName('esc.training') . ' = ' . $this->_db->quoteName('esp.code'))
+						->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->_db->quoteName('ecc.campaign_id') . ' = ' . $this->_db->quoteName('esc.id'))
+						->where($this->_db->quoteName('ecc.fnum') . ' LIKE ' . $this->_db->quote($fnum));
+
+					$this->_db->setQuery($query);
+					$languages = $this->_db->loadColumn();
+				}
+			} catch (Exception $e) {
+				Log::add('Error getting campaign languages ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			}
 		}
 
 		return $languages;

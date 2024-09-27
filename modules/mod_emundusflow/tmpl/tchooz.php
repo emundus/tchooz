@@ -1,5 +1,6 @@
 <?php // no direct access
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -227,6 +228,18 @@ $now      = $dateTime->format('Y-m-d H:i:s');
     </div>
 
 </div>
+
+<?php
+if (!empty($campaign_languages) && !in_array($current_lang_id, $campaign_languages)) {
+    ?>
+    <div class="tw-m-4 alert alert-error">
+        <div class="tw-flex tw-justify-center">
+            <p class="em-text-neutral-600"><?= Text::_('MOD_EMUNDUS_FLOW_LANGUAGE_NOT_ALLOWED'); ?></p>
+        </div>
+    </div>
+    <?php
+}
+?>
 
 <script>
     function saveAndExit() {

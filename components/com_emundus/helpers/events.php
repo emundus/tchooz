@@ -1049,89 +1049,9 @@ class EmundusHelperEvents
 					}
 				}
 			}
-
-			$this->checkCampaignLanguage($fnum);
 		}
 
 		return $result;
-	}
-
-	/**
-	 * @param $fnum
-	 *
-	 * @return void
-	 * @throws Exception
-	 */
-	private function checkCampaignLanguage($fnum): void
-	{
-		if (!empty($fnum)) {
-			$app = Factory::getApplication();
-			$lang = Factory::getLanguage();
-			$current_lang_tag = $lang->getTag();
-
-			$db = Factory::getContainer()->get('DatabaseDriver');
-			$query = $db->getQuery(true);
-
-			try {
-				$query->select('lang_id')
-					->from('#__languages')
-					->where('lang_code = ' . $db->quote($current_lang_tag));
-
-				$db->setQuery($query);
-				$current_lang_id = $db->loadResult();
-
-				$query->clear()
-					->select($db->quoteName('escl.lang_id'))
-					->from($db->quoteName('#__emundus_setup_campaigns_languages', 'escl'))
-					->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('ecc.campaign_id') . ' = ' . $db->quoteName('escl.campaign_id'))
-					->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($fnum));
-
-				$db->setQuery($query);
-				$lang_ids = $db->loadColumn();
-
-				if (!empty($lang_ids)) {
-					// check if the current language is in the list of campaign languages
-					if (!in_array($current_lang_id, $lang_ids)) {
-						$query->clear()
-							->select('title_native')
-							->from('#__languages')
-							->where('lang_id IN (' . implode(',', $lang_ids) . ')');
-						$db->setQuery($query);
-						$titles = $db->loadColumn();
-
-						$app->enqueueMessage(sprintf(Text::_('COM_EMUNDUS_ALLOWED_LANGUAGES_FOR_CAMPAIGN_ARE'), implode(',', $titles)), 'warning');
-					}
-				} else {
-					// maybe the program has language restrictions
-					$query->clear()
-						->select($db->quoteName('espl.lang_id'))
-						->from($db->quoteName('#__emundus_setup_programs_languages', 'espl'))
-						->leftJoin($db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON ' . $db->quoteName('esp.id') . ' = ' . $db->quoteName('espl.program_id'))
-						->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.training') . ' = ' . $db->quoteName('esp.code'))
-						->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('ecc.campaign_id') . ' = ' . $db->quoteName('esc.id'))
-						->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($fnum));
-
-					$db->setQuery($query);
-					$lang_ids = $db->loadColumn();
-
-					if (!empty($lang_ids)) {
-						// check if the current language is in the list of program languages
-						if (!in_array($current_lang_id, $lang_ids)) {
-							$query->clear()
-								->select('title_native')
-								->from('#__languages')
-								->where('lang_id IN (' . implode(',', $lang_ids) . ')');
-							$db->setQuery($query);
-							$titles = $db->loadColumn();
-
-							$app->enqueueMessage(sprintf(Text::_('COM_EMUNDUS_ALLOWED_LANGUAGES_FOR_CAMPAIGN_ARE'), implode(',', $titles)), 'warning');
-						}
-					}
-				}
-			} catch (Exception $e) {
-				$app->enqueueMessage($e->getMessage(), 'error');
-			}
-		}
 	}
 
 	function isApplicationCompleted($params): bool
