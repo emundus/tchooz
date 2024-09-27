@@ -10,7 +10,9 @@
 
 namespace Joomla\Module\EmundusOauth2\Administrator\Dispatcher;
 
+use Joomla\CMS\Access\Access;
 use Joomla\CMS\Dispatcher\AbstractModuleDispatcher;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Helper\HelperFactoryAwareInterface;
 use Joomla\CMS\Helper\HelperFactoryAwareTrait;
 
@@ -37,6 +39,7 @@ class Dispatcher extends AbstractModuleDispatcher implements HelperFactoryAwareI
     protected function getLayoutData()
     {
 	    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
+	    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
 
         $data = parent::getLayoutData();
 
@@ -45,6 +48,18 @@ class Dispatcher extends AbstractModuleDispatcher implements HelperFactoryAwareI
 
 	    $data['state'] = bin2hex(random_bytes(128/8));
 	    $data['nonce'] = \EmundusHelperMenu::getNonce();
+
+		$app = Factory::getApplication();
+		$user = $app->getIdentity();
+
+		if(!$user->guest) {
+			if(!Access::check($user->id, 'core.login.admin'))
+			{
+				$app->redirect(\EmundusHelperMenu::getHomepageLink());
+			} else {
+				$app->redirect(\EmundusHelperMenu::getAdminLink());
+			}
+		}
 
         return $data;
     }
