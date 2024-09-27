@@ -223,5 +223,89 @@ export default {
         message: 'WRONG_PARAMETERS'
       };
     }
+  },
+  async getEmailParameters() {
+    try {
+      return await fetchClient.get('getemailparameters');
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+  async testEmail(data) {
+    try {
+      return await fetchClient.post('testemail', data);
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+  async saveEmailParameters(data) {
+    try {
+      return await fetchClient.post('saveemailparameters', data);
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+  async getLiveSite() {
+    try {
+      return await fetchClient.get('getlivesite');
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+
+  async getsslinfo() {
+    try {
+      return await fetchClient.get('getsslinfo');
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+
+  async sendRequest(data) {
+    try {
+        return await fetchClient.post('sendwebsecurityrequest', data);
+    } catch (e) {
+        return {
+            status: false,
+            msg: e.message
+        };
+    }
+  },
+
+  async getHistory(extension, only_pending = false) {
+    try {
+      return await fetchClient.get('gethistory', {extension: extension, only_pending: only_pending});
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+
+  async updateHistoryStatus(id) {
+    try {
+      return await fetchClient.post('updatehistorystatus', {id: id});
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
   }
 };

@@ -3080,7 +3080,7 @@ class EmundusModelEmails extends JModelList
 		return $tags;
 	}
 
-	public function sendEmailNoFnum($email_address, $email, $post = null, $user_id = null, $attachments = [], $fnum = null, $log_email = true)
+	public function sendEmailNoFnum($email_address, $email, $post = null, $user_id = null, $attachments = [], $fnum = null, $log_email = true, $emails_cc = [])
 	{
 		$sent = false;
 
@@ -3191,6 +3191,7 @@ class EmundusModelEmails extends JModelList
 				$mailer->setBody($body);
 				$mailer->AltBody = $body_raw;
 
+				$cc = array_merge($cc, $emails_cc);
 				if (!empty($cc)) {
 					$mailer->addCC($cc);
 				}

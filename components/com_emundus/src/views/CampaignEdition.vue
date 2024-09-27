@@ -77,6 +77,8 @@
               v-else-if="selectedMenu === 'addEmail' && program.id != 0"
               :prog="Number(program.id)"
           ></add-email>
+
+          <History v-else-if="selectedMenu === 'History'" extension="com_emundus.campaign" />
         </transition>
       </div>
 
@@ -109,12 +111,14 @@ import addFormulaire from "@/components/FunnelFormulaire/addFormulaire.vue";
 import campaignMore from "@/components/FunnelFormulaire/CampaignMore.vue";
 
 import { useGlobalStore } from '@/stores/global.js';
+import History from "@/components/History/History.vue";
 
 
 export default {
   name: 'CampaignEdition',
 
   components: {
+    History,
     AddDocumentsDropfiles,
     addCampaign,
     addFormulaire,
@@ -166,6 +170,13 @@ export default {
         description: "COM_EMUNDUS_EMAILS_DESC",
         icon: "description",
         component: "addEmail",
+        displayed: true
+      },
+      {
+        label: "COM_EMUNDUS_GLOBAL_HISTORY",
+        description: "",
+        icon: "history",
+        component: "History",
         displayed: true
       }
     ],

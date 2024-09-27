@@ -1831,6 +1831,27 @@ class EmundusModelsettings extends ListModel
 		return $params;
 	}
 
+	public function getEmailParameters()
+	{
+		$params = [];
+		$emConfig = ComponentHelper::getComponent('com_emundus')->getParams();
+
+		$params['mailonline'] = $this->app->get('mailonline');
+		$params['replyto'] = $this->app->get('replyto', '');
+		$params['replytoname'] = $this->app->get('replytoname', '');
+		$params['custom_email_conf'] = $emConfig->get('custom_email_conf', 0);
+		$params['custom_email_mailfrom'] = $emConfig->get('custom_email_mailfrom', '');
+		$params['custom_email_smtphost'] = $emConfig->get('custom_email_smtphost', '');
+		$params['custom_email_smtpport'] = $emConfig->get('custom_email_smtpport', '');
+		$params['custom_email_smtpauth'] = $emConfig->get('custom_email_smtpauth', 0);
+		$params['custom_email_smtpsecure'] = $emConfig->get('custom_email_smtpsecure', 0);
+		$params['custom_email_smtpuser'] = $emConfig->get('custom_email_smtpuser', '');
+		$params['custom_email_smtppass'] = '************';
+		$params['default_email_mailfrom'] = $emConfig->get('default_email_mailfrom', $this->app->get('mailfrom'));
+
+		return $params;
+	}
+
 	/**
 	 * @param $component
 	 * @param $param
@@ -1965,21 +1986,28 @@ class EmundusModelsettings extends ListModel
 		return $result;
 	}
 
-	public function sendTestMailSettings($params)
+	public function sendTestMailSettings($variables, $user = null, $mail_to = null)
 	{
+		$result = [
+			'status' => false,
+			'title' => Text::_('COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_MAIL_SUCCESS'),
+			'text' => Text::sprintf('COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_MAIL_SUCCESS_BODY',$variables['mailfrom']),
+			'desc' => ''
+		];
 
-		// Set the new values to test with the current settings
 		$app      = Factory::getApplication();
 		$config   = $app->getConfig();
-		$user     = $app->getIdentity();
-		$input    = $app->getInput()->json;
-		$smtppass = $input->get('smtppass', null, 'RAW');
+		if(empty($user))
+		{
+			$user = $app->getIdentity();
+		}
 
 		$logo = EmundusHelperEmails::getLogo(true);
 
+		// Prepare post data
 		$post = [
 			'SITE_URL'  => Uri::base(),
-			'SITE_NAME' => $config->get('sitename'),
+			'SITE_NAME' => $app->get('sitename'),
 			'LOGO'      => Uri::base() . 'images/custom/' . $logo,
 		];
 		$keys = [];
@@ -1994,9 +2022,7 @@ class EmundusModelsettings extends ListModel
 		$subject    = $template->subject;
 
 		$subject = preg_replace($keys, $post, $subject);
-
 		$body_raw = strip_tags($body);
-
 		if (isset($template->Template)) {
 			$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
 			$body = preg_replace($keys, $post, $body);
@@ -2006,68 +2032,16 @@ class EmundusModelsettings extends ListModel
 		}
 
 		// Create a new mailer instance
-		$values = [];
-		for ($i = 0; $i < count($params); $i++) {
-			switch ($params[$i]["param"]) {
-				case 'mailonline':
-					$values['mailonline'] = $params[$i]["value"];
-					break;
-				case 'smtpauth':
-					$values['smtpauth'] = $params[$i]["value"];
-					break;
-				case 'smtpuser':
-					$values['smtpuser'] = $params[$i]["value"];
-					break;
-				case 'smtphost':
-					$values['smtphost'] = $params[$i]["value"];
-					break;
-				case 'smtpsecure':
-					$values['smtpsecure'] = $params[$i]["value"];
-					break;
-				case 'smtpport':
-					$values['smtpport'] = $params[$i]["value"];
-					break;
-				case 'mailfrom':
-					$values['mailfrom'] = $params[$i]["value"];
-					break;
-				case 'fromname':
-					$values['fromname'] = $params[$i]["value"];
-					break;
-				case 'replyto':
-					$values['replyto'] = $params[$i]["value"];
-					break;
-				case 'replytoname':
-					$values['replytoname'] = $params[$i]["value"];
-					break;
-				case 'smtppass':
-					$values['smtppass'] = $params[$i]["value"];
-					break;
-			}
-		}
 		$config = new Registry();
-		$config->set('smtpauth', $values['smtpauth']);
-		$config->set('smtpuser', $values['smtpuser']);
-		$config->set('smtppass', $values['smtppass']);
-		$config->set('smtphost', $values['smtphost']);
-		$config->set('smtpsecure', $values['smtpsecure']);
-		$config->set('smtpport', $values['smtpport']);
-		$config->set('mailfrom', $values['mailfrom']);
-		$config->set('fromname', $values['fromname']);
-		$config->set('mailer', $input->get('mailer'));
-		$config->set('mailonline', $values['mailonline']);
-		if (!empty($values['replyto'])) {
-			$config->set('replyto', $values['replyto']);
+		foreach ($variables as $key => $variable) {
+			$config->set($key, $variable);
 		}
-		if (!empty($values['replytoname'])) {
-			$config->set('replytoname', $values['replytoname']);
-		}
-
-		$app->set('smtpport', $values['smtpport']);
-		$app->set('mailonline', $values['mailonline']);
+		
+		$mail_to = !empty($mail_to) ? $mail_to : $variables['mailfrom'];
 
 		$mailer = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer($config);
-		$mailer->setSender($values['mailfrom'], $values['fromname']);
-		$mailer->addRecipient($values['mailfrom'], $values['fromname']);
+		$mailer->setSender($variables['mailfrom'], $variables['fromname']);
+		$mailer->addRecipient($mail_to, $variables['fromname']);
 		$mailer->setSubject($subject);
 		$mailer->isHTML(true);
 		$mailer->Encoding = 'base64';
@@ -2075,35 +2049,21 @@ class EmundusModelsettings extends ListModel
 		$mailer->AltBody = $body_raw;
 
 		try {
-			$result   = null;
-			$mailSent = $mailer->send();
-			//TODO : sendEmailNoFnum BRICE -> la fonction sendEmailNoFnum ne retourne que du true false donc je n'arrive pas a récupérer le message d'erreur
-			//$IdTemplateEmail = $this->getEmailTemplate("Test de configuration mail");
-			//$result = $c_messages->sendEmailNoFnum($config->get('mailfrom'),$IdTemplateEmail,['LOGO'=>$logo],null,[],null, false);
+			$result['status'] = $mailer->send();
 		}
 		catch (MailDisabledException|phpMailerException $e) {
-			$outcome = ['COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_MAIL_ERROR', 'COM_CONFIG_SENDMAIL_ERROR', $values['mailfrom'], 'error', $this->convertTextException($e->getMessage()),];
+			$result['status'] = false;
+			$result['title'] = Text::_('COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_MAIL_ERROR');
+			$result['text'] = Text::sprintf('COM_CONFIG_SENDMAIL_ERROR',$config['mailfrom']);
+			$result['desc'] = Text::_($this->convertTextException($e->getMessage()));
 		}
 
-		if ($mailSent === true) {
-			$methodName = Text::_('COM_CONFIG_SENDMAIL_METHOD_' . strtoupper($mailer->Mailer));
-
-			// If JMail send the mail using PHP Mail as fallback.
-			if ($mailer->Mailer !== $app->get('mailer')) {
-				$outcome = null;
-			}
-			else {
-				$outcome = true;
-			}
-		}
-		else {
-			if ($outcome === null) {
-				$outcome = ['envoi non fonctionnel', 'COM_CONFIG_SENDMAIL_ERROR', 'error'];
-			}
+		if ($result['status'] && $mailer->Mailer !== $app->get('mailer')) {
+			$result['title'] = Text::_('COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_MAIL_ERROR');
+			$result['status'] = false;
 		}
 
-		return $outcome;
-
+		return $result;
 	}
 
 	public function convertTextException($textException)
@@ -2122,6 +2082,110 @@ class EmundusModelsettings extends ListModel
 		}
 
 		return $textException;
+	}
+
+	public function saveEmailParameters($config,$custom_config)
+	{
+		$saved = false;
+
+		if(!empty($config)) {
+			// First update configuration php
+			require_once JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php';
+			EmundusHelperUpdate::updateConfigurationFile($config);
+
+			// Then update default or emundus configuration
+			$emConfig = ComponentHelper::getParams('com_emundus');
+			if($custom_config == 1) {
+				$emConfig->set('custom_email_conf', 1);
+				$emConfig->set('custom_email_mailfrom', $config['mailfrom']);
+				$emConfig->set('custom_email_fromname', $config['fromname']);
+				$emConfig->set('custom_email_replyto', $config['replyto']);
+				$emConfig->set('custom_email_replytoname', $config['replytoname']);
+				$emConfig->set('custom_email_smtphost', $config['smtphost']);
+				$emConfig->set('custom_email_smtpport', $config['smtpport']);
+				$emConfig->set('custom_email_smtpsecure', $config['smtpsecure']);
+				$emConfig->set('custom_email_smtpauth', $config['smtpauth']);
+				$emConfig->set('custom_email_smtpuser', $config['smtpuser']);
+				if(!empty($config['smtppass']) && $config['smtppass'] != '************')
+				{
+					$emConfig->set('custom_email_smtppass', $config['smtppass']);
+				}
+			}
+			else {
+				$emConfig->set('custom_email_conf', 0);
+				$emConfig->set('default_email_mailfrom',$config['mailfrom']);
+			}
+
+			$componentid = ComponentHelper::getComponent('com_emundus')->id;
+			$query       = $this->db->getQuery(true);
+
+			try
+			{
+				$query->update('#__extensions')
+					->set($this->db->quoteName('params') . ' = ' . $this->db->quote($emConfig->toString()))
+					->where($this->db->quoteName('extension_id') . ' = ' . $this->db->quote($componentid));
+				$this->db->setQuery($query);
+				$saved = $this->db->execute();
+			}
+			catch (Exception $e)
+			{
+				Log::add('Failed to update extension email parameters with error ' . ': ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $saved;
+	}
+
+	public function getHistory($extension = 'com_emundus.settings', $only_pending = false)
+	{
+		$history = [];
+
+		try
+		{
+			$query = $this->db->getQuery(true);
+
+			$query->select('al.*,u.name as logged_by')
+				->from($this->db->quoteName('#__action_logs','al'))
+				->leftJoin($this->db->quoteName('#__users','u').' ON '.$this->db->quoteName('u.id').' = '.$this->db->quoteName('al.user_id'))
+				->where($this->db->quoteName('al.extension') . ' = ' . $this->db->quote($extension))
+				->where('JSON_VALID('.$this->db->quoteName('al.message') . ')');
+			if($only_pending)
+			{
+				$query->where('JSON_EXTRACT(' . $this->db->quoteName('al.message') . ', "$.status") = ' . $this->db->quote('pending'));
+			}
+			$query->order($this->db->quoteName('al.log_date').' DESC');
+			$this->db->setQuery($query);
+			$history = $this->db->loadObjectList();
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $history;
+	}
+
+	public function updateHistoryStatus($action_log_id)
+	{
+		$updated = false;
+
+		try
+		{
+			$query = $this->db->getQuery(true);
+
+			$query->update($this->db->quoteName('#__action_logs'))
+				->set($this->db->quoteName('message') . ' = JSON_SET(' . $this->db->quoteName('message') . ', "$.status", ' . $this->db->quote('done') . ')')
+				->set($this->db->quoteName('message') . ' = JSON_SET(' . $this->db->quoteName('message') . ', "$.status_updated", ' . $this->db->quote(date('Y-m-d H:i:s')) . ')')
+				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($action_log_id));
+			$this->db->setQuery($query);
+			$updated = $this->db->execute();
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $updated;
 	}
 
 }

@@ -1,83 +1,73 @@
 <template>
   <div>
-    <label v-if="parameter.hideLabel !== true" :for="'param_' + parameter.param"
+    <!-- LABEL -->
+    <label v-if="parameter.hideLabel !== true"
+           :for="'param_' + parameter.param"
            class="tw-flex tw-font-semibold tw-items-end">
       {{ translate(parameter.label) }}
+
       <span v-if="parameter.optional"
-            :class="'tw-italic tw-text-[#727272] tw-text-xs tw-ml-1'">{{
-          translate('COM_EMUNDUS_OPTIONAL')
-        }}</span>
-      <span v-else-if="parameter.optional===0" class="tw-text-red-600">*</span>
+            :class="'tw-italic tw-text-[#727272] tw-text-xs tw-ml-1'">
+        {{ translate('COM_EMUNDUS_OPTIONAL') }}
+      </span>
+      <span v-else-if="parameter.optional === 0" class="tw-text-red-600">*</span>
+
       <span v-if="parameter.helptext"
             class="material-symbols-outlined tw-ml-1 tw-cursor-pointer tw-text-neutral-600"
             @click="displayHelp(parameter.helptext)">help_outline</span>
     </label>
 
-    <div name="input-field">
-      <select v-if="isSelect" class="dropdown-toggle w-select !tw-mb-0"
+    <div name="input-field" class="tw-flex tw-items-end tw-gap-2">
+      <!-- SELECT -->
+      <select v-if="parameter.type === 'select'"
+              class="dropdown-toggle w-select !tw-mb-0"
               :class="errors[parameter.param] ?'tw-rounded-lg !tw-border-red-500':''"
               :id="paramId"
               v-model="value"
               :disabled="parameter.editable === false">
-        <option v-for="option in parameter.options" :key="option.value" :value="option.value">{{
-            translate(option.label)
-          }}
+        <option v-for="option in parameter.options" :key="option.value" :value="option.value">
+          {{ translate(option.label) }}
         </option>
       </select>
 
+      <!-- MULTISELECT -->
       <multiselect
-          v-else-if="isKeywords"
+          v-else-if="parameter.type === 'multiselect'"
           :id="paramId"
           v-model="value"
-          label="name"
-          track-by="code"
-          :options="tagOptions"
-          :multiple="true"
-          :taggable="true"
-          :placeholder="parameter.placeholder"
-          @tag="addTag"
-          :tagPlaceholder="translate('COM_EMUNDUS_MULTISELECT_ADDKEYWORDS')"
+          :class="[multiselectOptions.noOptions ? 'no-options' : '','tw-cursor-pointer']"
+          :label="multiselectOptions.label ? multiselectOptions.label : 'name'"
+          :track-by="multiselectOptions.trackBy ? multiselectOptions.trackBy : 'code'"
+          :options="multiOptions"
+          :multiple="multiselectOptions.multiple"
+          :taggable="multiselectOptions.taggable"
+          :placeholder="translate(parameter.placeholder)"
+          :searchable="multiselectOptions.searchable"
+          @tag="addOption"
+          :tagPlaceholder="translate(multiselectOptions.optionsPlaceholder)"
           :key="parameter.value !== undefined ? parameter.value.length : 0"
-          :class="['tw-cursor-pointer']"
-          :selectLabel="translate('PRESS_ENTER_TO_SELECT')"
-          :selectGroupLabel="translate('PRESS_ENTER_TO_SELECT_GROUP')"
-          :selectedLabel="translate('SELECTED')"
-          :deselect-label="translate('PRESS_ENTER_TO_REMOVE')"
-          :deselectGroupLabel="translate('PRESS_ENTER_TO_DESELECT_GROUP')"
+          :selectLabel="translate(multiselectOptions.selectLabel)"
+          :selectGroupLabel="translate(multiselectOptions.selectGroupLabel)"
+          :selectedLabel="translate(multiselectOptions.selectedLabel)"
+          :deselect-label="translate(multiselectOptions.deselectedLabel)"
+          :deselectGroupLabel="translate(multiselectOptions.deselectGroupLabel)"
+          @keyup="checkComma($event)"
       >
-        <template #noOptions>{{ translate('COM_EMUNDUS_MULTISELECT_NOKEYWORDS') }}</template>
+        <template #noOptions>{{ translate(multiselectOptions.noOptionsText) }}</template>
       </multiselect>
 
-      <textarea v-else-if="isTextarea"
+      <!-- TEXTAREA -->
+      <textarea v-else-if="parameter.type === 'textarea'"
                 :id="paramId"
                 v-model="value"
                 class="!mb-0"
                 :class="errors[parameter.param] ?'tw-rounded-lg !tw-border-red-500':''"
                 :maxlength="parameter.maxlength"
                 :readonly="parameter.editable === false">
-    </textarea>
+      </textarea>
 
-      <div v-else-if="isTimezone">
-        <multiselect
-            :class="'tw-cursor-pointer'"
-            v-model="value"
-            label="label"
-            track-by="value"
-            :options="timezoneOptions"
-            :multiple="false"
-            :taggable="false"
-            select-label=""
-            selected-label=""
-            deselect-label=""
-            :placeholder="''"
-            :close-on-select="true"
-            :clear-on-select="false"
-            :searchable="true"
-            :allow-empty="false"
-        ></multiselect>
-      </div>
-
-      <div v-else-if="isYesNo" class="tw-mb-5">
+      <!-- YESNO -->
+      <div v-else-if="parameter.type === 'yesno'">
         <fieldset data-toggle="buttons" class="tw-flex tw-items-center tw-gap-2">
           <label :for="paramId + '_input_0'"
                  :class="[value == 0 ? 'tw-bg-red-700' : 'tw-bg-white tw-border-neutral-500 hover:tw-border-red-700']"
@@ -98,7 +88,8 @@
         </fieldset>
       </div>
 
-      <div v-else-if="isToggle" class="tw-flex tw-items-center tw-mb-4">
+      <!-- TOGGLE -->
+      <div v-else-if="parameter.type === 'toggle'" class="tw-flex tw-items-center">
         <div class="em-toggle">
           <input type="checkbox"
                  true-value="1" false-value="0"
@@ -109,10 +100,13 @@
           <strong class="b em-toggle-switch"></strong>
           <strong class="b em-toggle-track"></strong>
         </div>
-        <label :for="paramId + '_input'" class="tw-ml-2 !tw-mb-0 tw-font-bold">{{ translate(parameter.label) }}</label>
+        <label :for="paramId + '_input'" class="tw-ml-2 !tw-mb-0 tw-font-bold tw-cursor-pointer">{{ translate(parameter.label) }}</label>
       </div>
 
-      <input v-else-if="isInput" :type="parameter.type" class="form-control !tw-mb-0"
+      <!-- INPUT -->
+      <input v-else-if="isInput"
+             :type="parameter.type"
+             class="form-control !tw-mb-0"
              :class="errors[parameter.param] ?'tw-rounded-lg !tw-border-red-500':''"
              :max="parameter.type === 'number' ? parameter.max : null"
              :min="undefined"
@@ -125,41 +119,25 @@
              @focusin="clearPassword(parameter)"
       >
 
-
-      <div
-          v-if="parameter.type ==='email' && parameter.editable ==='semi' && parameter.displayed"
-          :class="'tw-flex tw-items-center '">
-        <div name="input-field-semi_0" style="width: 400px;">
-          <input
-              :class="errors[parameter.param+'-semi-0'] && parameter.optional===0 ?'tw-rounded-lg !tw-border-red-500':''"
-              :placeholder="translate(senderEmailPlaceholder)" v-model="senderEmail">
-          <div v-if="errors[parameter.param+'-semi-0']"
-               class="tw-mt-1 tw-mb-4 tw-text-red-600 tw-absolute"
-               :id="'emailCheck-'+parameter.param">
-            {{ translate(errors[parameter.param + '-semi-0']) }}
-          </div>
-        </div>
-        <span class="tw-ml-2 tw-mr-2">@</span>
-        <div name="input-field-Semi1" style="width: 400px;">
-          <input v-if="customValue" :placeholder="translate(senderEmailDomainPlaceholder)" v-model="senderEmailDomain"
-                 :class="errors[parameter.param+'-semi-1'] && parameter.optional===0 ?'tw-rounded-lg !tw-border-red-500':''">
-          <span v-else :class="'tw-w-full'">{{ senderEmailDomain }}</span>
-          <div v-if="errors[parameter.param+'-semi-1']"
-               class="tw-mt-1 tw-mb-4 tw-text-red-600 tw-absolute"
-               :id="'emailCheck-'+parameter.param">
-            {{ translate(errors[parameter.param + '-semi-1']) }}
-          </div>
-        </div>
-      </div>
+      <!-- INPUT IN CASE OF SPLIT -->
+      <span v-if="parameter.splitField">{{ parameter.splitChar }}</span>
+      <Parameter
+          v-if="parameter.splitField && parameterSecondary"
+          :class="'tw-w-96'"
+          :parameter-object="parameterSecondary"
+          :multiselect-options="multiselectOptions"
+          @valueUpdated="regroupValue(parameterSecondary)"/>
     </div>
 
-    <div v-show="parameter.warning && !checkPort && value!==''" v-html="translate(parameter.warning)"
+    <!-- ERRORS -->
+    <div v-show="parameter.warning && value!==''" v-html="translate(parameter.warning)"
          @click="SwalWarningPort" class="tw-cursor-pointer tw-text-orange-400"></div>
 
-    <div v-if="(!parameter.warning || (parameter.warning && checkPort && value!=='') || value === '') && !['yesno','toggle'].includes(parameter.type) && parameter.displayed"
-         class="tw-mt-1 tw-text-red-600 tw-min-h-[24px]"
-         :class="errors[parameter.param] ?'tw-opacity-100 ':'tw-opacity-0'"
-         :id="'error-message-'+parameter.param">
+    <div
+        v-if="errors[parameter.param] && !['yesno','toggle'].includes(parameter.type) && parameter.displayed"
+        class="tw-absolute tw-mt-1 tw-text-red-600 tw-min-h-[24px]"
+        :class="errors[parameter.param] ?'tw-opacity-100 ':'tw-opacity-0'"
+        :id="'error-message-'+parameter.param">
       {{ translate(errors[parameter.param]) }}
     </div>
   </div>
@@ -168,8 +146,9 @@
 <script>
 import Multiselect from "vue-multiselect";
 import settingsService from "../../services/settings";
-import axios from "axios";
 import Swal from "sweetalert2";
+
+import { reactive } from 'vue';
 
 export default {
   name: "Parameter",
@@ -179,90 +158,86 @@ export default {
       type: Object,
       required: true
     },
-    CustomValue: {
-      type: Boolean,
-      required: false
+    multiselectOptions: {
+      type: Object,
+      required: false,
+      default: () => {
+        return {
+          options: [],
+          noOptions: false,
+          multiple: true,
+          taggable: false,
+          searchable: true,
+          optionsPlaceholder: 'COM_EMUNDUS_MULTISELECT_ADDKEYWORDS',
+          selectLabel: 'PRESS_ENTER_TO_SELECT',
+          selectGroupLabel: 'PRESS_ENTER_TO_SELECT_GROUP',
+          selectedLabel: 'SELECTED',
+          deselectedLabel: 'PRESS_ENTER_TO_REMOVE',
+          deselectGroupLabel: 'PRESS_ENTER_TO_DESELECT_GROUP',
+          noOptionsText: 'COM_EMUNDUS_MULTISELECT_NOKEYWORDS',
+          // Can add tag validations (ex. email, phone, regex)
+          tagValidations: [],
+          tagRegex: ''
+        }
+      }
     },
-
   },
+  emits: ['valueUpdated', 'needSaving'],
   data() {
     return {
       initValue: null,
       value: null,
-      config: {},
+      valueSecondary: null,
+
       parameter: {},
+      parameterSecondary: {},
 
-      senderEmail: '',
-      senderEmailDomain: '',
-      senderEmailPlaceholder: '',
-      senderEmailDomainPlaceholder: '',
-
-      tagOptions: [],
-      timezoneOptions: [],
-      inputValidationMessage: [],
-      emailValidationColor: [],
-      validationString: "",
-      customValue: false,
+      multiOptions: [],
 
       errors: {},
     }
   },
   created() {
     this.parameter = this.parameterObject;
-    if (this.parameter && this.parameter.type === 'timezone') {
-      settingsService.getTimezoneList().then((response) => {
-        if (response.data.status) {
-          this.timezoneOptions = response.data.data;
-          this.value = this.timezoneOptions.find((timezone) => timezone.value === this.parameter.value);
-          this.initValue = this.value;
-        }
-      });
-    } else if (this.parameter) {
-      this.value = this.parameter.value;
-      if (this.parameter.editable === 'semi') {
-        if (this.parameter.type === 'email') {
-          this.initValue = this.parameter.value;
-          let sender = this.parameter.value.split('@');
-          let senderPlaceholder = this.parameter.placeholder.split('@');
-          this.senderEmail = sender[0];
-          this.senderEmailDomain = sender[1];
-          this.senderEmailPlaceholder = senderPlaceholder[0];
-          this.senderEmailDomainPlaceholder = senderPlaceholder[1];
-        }
+
+    if (this.parameter.type === 'multiselect') {
+      this.multiOptions = this.$props.multiselectOptions.options;
+
+      if(!this.multiselectOptions.multiple) {
+        this.value = this.multiOptions.find((option) => option.value === this.parameter.value);
       } else {
-        this.initValue = this.value;
+        this.value = this.multiOptions.filter((option) => this.parameter.value.includes(option.value));
       }
+
+      if(!this.value) {
+        this.value = [];
+      }
+    }
+    else if (this.parameter) {
+      this.value = this.parameter.value;
     }
 
-    if (this.parameter.editable === 'semi' && this.parameter.displayed) {
-      if (this.CustomValue == 1) {
-        this.customValue = true
+    if(this.parameter.splitField) {
+      if(this.value) {
+        let splitValue = this.value.split(this.parameter.splitChar);
+        this.value = splitValue[0];
+        this.valueSecondary = splitValue[1];
       }
+
+      this.parameterSecondary = reactive({...this.parameter});
+      // Pass splitField to false to avoid infinite loop
+      this.parameterSecondary.splitField = false;
+      this.parameterSecondary.hideLabel = true;
+      this.parameterSecondary.value = this.valueSecondary;
     }
+
+    this.initValue = this.value;
   },
   methods: {
-    getEmundusParamsJoomlaConfiguration() {
-      axios.get("index.php?option=com_emundus&controller=settings&task=getemundusparams")
-          .then(response => {
-            this.config = response.data;
-
-            Object.values(this.params).forEach((param) => {
-
-              param.value = this.config[param.component][param.param];
-              if ((param.value === "1") || (param.value === true) || (param.value === "true")) {
-                param.value = 1;
-              }
-              if ((param.value === "0") || (param.value === false) || (param.value === "false")) {
-                param.value = 0;
-              }
-            });
-            this.customValue = this.config['emundus']['custom_email_conf'];
-          });
-    },
     displayHelp(message) {
       Swal.fire({
         title: this.translate("COM_EMUNDUS_SWAL_HELP_TITLE"),
-        text: this.translate(message),
+        html: this.translate(message),
         showCancelButton: false,
         confirmButtonText: this.translate("COM_EMUNDUS_SWAL_OK_BUTTON"),
         reverseButtons: true,
@@ -272,31 +247,51 @@ export default {
           actions: "em-swal-single-action",
         },
       });
-    }
-    ,
-    addTag(newTag) {
-      const tag = {
-        name: newTag,
-        code: newTag
+    },
+    addOption(newOption) {
+      if (this.$props.multiselectOptions.tagValidations.length > 0) {
+        let valid = false
+        this.$props.multiselectOptions.tagValidations.forEach(validation => {
+          switch (validation) {
+            case 'email':
+              valid = this.validateEmail(newOption)
+              break
+            case 'regex':
+              valid = new RegExp(this.$props.multiselectOptions.tagRegex).test(newOption)
+              break
+            default:
+              break
+          }
+        });
+        if (!valid) {
+          return false
+        }
       }
-      this.tagOptions.push(tag)
-      this.parameter.value.push(tag)
+
+      const option = {
+        name: newOption,
+        code: newOption
+      }
+
+      this.multiOptions.push(option)
+      this.value.push(option)
+      this.parameter.value.push(option.code)
+    },
+    checkComma(event) {
+      if (this.$props.multiselectOptions.tagValidations.includes('email') && event && event.key === ',') {
+        this.addOption(event.srcElement.value.replace(',', ''));
+        event.srcElement.blur();
+      }
     },
 
-    validateEmail(email) {
-      let res = /^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$/;
-      return res.test(email);
-    },
     validate() {
-      if (this.parameter.value === '' && this.parameter.optional == 1) {
+      if (this.parameter.value === '' && this.parameter.optional) {
         delete this.errors[this.parameter.param];
         return true;
-      }
-      else if(this.parameter.value === '' && this.parameter.optional == 0) {
+      } else if (this.parameter.value === '' && !this.parameter.optional) {
         this.errors[this.parameter.param] = 'COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_CHECK_INPUT_MAIL';
         return false;
-      }
-      else {
+      } else {
         if (this.parameter.type === 'email') {
           if (!this.validateEmail(this.parameter.value)) {
             this.errors[this.parameter.param] = 'COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_CHECK_INPUT_MAIL_NO';
@@ -315,13 +310,6 @@ export default {
         }
       } else {
         this.validate(parameter)
-      }
-    },
-    regroupeValue() {
-      if (this.senderEmail === '' && this.senderEmailDomain === '') {
-        this.value = ''
-      } else {
-        this.value = this.senderEmail + '@' + this.senderEmailDomain
       }
     },
     SwalWarningPort: function () {
@@ -347,65 +335,45 @@ export default {
           popup: 'tw-px-6 tw-py-4 tw-flex tw-justify-center tw-items-center',
         },
       });
-
     },
 
     clearPassword(parameter) {
       if (parameter.type === 'password') {
         this.value = '';
       }
-    }
+    },
+    pastedFromClipboard(event) {
+      const clipboardData = event.clipboardData
+      const pastedData = clipboardData?.getData('Text')
+      const emails = pastedData?.trim().split(',')
+      if (emails) {
+        emails.map(email => {
+          const emailAddress = email.trim()
+          if (!this.ValidateEmail(emailAddress)) {
+            this.$refs.email.onCreate(this.emailTagCreate({label: emailAddress, value: emailAddress}))
+          }
+        })
+      }
+    },
+
+    regroupValue(parameter) {
+      this.valueSecondary = parameter.value;
+    },
+
+    /* VALIDATIONS */
+    validateEmail(email) {
+      let res = /^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$/;
+      return res.test(email);
+    },
   },
   watch: {
-    senderEmail: {
-      handler: function (val, oldVal) {
-        if (val === '') {
-          this.errors[this.parameter.param + '-semi-0'] = this.parameter.error;
-          this.$emit('needSaving', true, this.parameter, false)
-        } else if (val !== '') {
-          delete this.errors[this.parameter.param + '-semi-0'];
-        }
-
-        if (this.parameter.regex !== undefined && val !== '') {
-          let res = new RegExp(this.parameter.regex[0]);
-          if (res.test(val)) {
-            delete this.errors[this.parameter.param + '-semi-0'];
-            this.regroupeValue()
-          } else {
-            this.errors[this.parameter.param + '-semi-0'] = "COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_CHECK_INPUT_MAIL_NAME_EXP";
-            this.$emit('needSaving', true, this.parameter, false)
-          }
-        }
-      },
-      deep: true
-    },
-    senderEmailDomain: {
-      handler: function (val, oldVal) {
-        if (val === '') {
-          this.errors[this.parameter.param + '-semi-1'] = this.parameter.error;
-          this.$emit('needSaving', true, this.parameter, false)
-        } else if (val !== '') {
-          delete this.errors[this.parameter.param + '-semi-1'];
-        }
-
-        if (this.parameter.regex !== undefined && val !== '') {
-          let res = new RegExp(this.parameter.regex[1]);
-          if (res.test(val)) {
-            delete this.errors[this.parameter.param + '-semi-1'];
-            this.regroupeValue()
-          } else {
-            this.errors[this.parameter.param + '-semi-1'] = "COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_CHECK_INPUT_MAIL_DOMAIN_EXP";
-            this.$emit('needSaving', true, this.parameter, false)
-          }
-        }
-      },
-      deep: true
-    },
     value: {
       handler: function (val, oldVal) {
-        if(val !== oldVal && val !== this.initValue) {
+        this.parameter.value = val;
+        this.$emit('valueUpdated', this.parameter, oldVal, val)
+
+        if (val !== oldVal && val !== this.initValue) {
           let valid = true;
-          this.parameter.value = val;
 
           if (['text', 'email', 'number', 'password', 'textarea'].includes(this.parameter.type)) {
             valid = this.validate();
@@ -414,37 +382,22 @@ export default {
           this.$emit('needSaving', true, this.parameter, valid)
         }
 
-        if(val == this.initValue) {
+        if (val == this.initValue) {
           this.$emit('needSaving', false, this.parameter, true)
         }
       },
       deep: true
     },
+    valueSecondary: {
+      handler: function (val, oldVal) {
+        this.parameter.concatValue = this.value + this.parameter.splitChar + val;
+      },
+      deep: true
+    }
   },
   computed: {
-    isSelect() {
-      return this.parameter.type === 'select' && this.parameter.displayed;
-    },
-    isKeywords() {
-      return this.parameter.type === 'keywords' && this.parameter.displayed
-    },
-    isTextarea() {
-      return this.parameter.type === 'textarea' && this.parameter.displayed;
-    },
-    isTimezone() {
-      return this.parameter.type === 'timezone' && this.parameter.displayed;
-    },
-    isYesNo() {
-      return this.parameter.type === 'yesno' && this.parameter.displayed;
-    },
-    isToggle() {
-      return this.parameter.type === 'toggle' && this.parameter.displayed;
-    },
     isInput() {
       return ['text', 'email', 'number', 'password'].includes(this.parameter.type) && this.parameter.displayed && this.parameter.editable !== "semi";
-    },
-    isEmailCheck() {
-      return this.parameter.type === 'email' && this.parameter.displayed;
     },
     paramId() {
       return 'param_' + this.parameter.param;
@@ -452,24 +405,16 @@ export default {
     paramName() {
       return 'param_' + this.parameter.param + '[]';
     },
-    checkPort() {
-      if(!this.parameter.value || this.parameter.value === '') {
-        return true;
-      }
-
-      let goodPort = [25, 587, 465]
-      if(goodPort.includes(this.parameter.value)) {
-        return true;
-      }
-
-      return false;
-    },
   }
 }
 </script>
 
-<style scoped>
-.adaptativeMultiselect {
+<style>
+.no-options .multiselect__content-wrapper {
+  display: none !important;
+}
 
+.no-options .multiselect__select {
+  display: none !important;
 }
 </style>

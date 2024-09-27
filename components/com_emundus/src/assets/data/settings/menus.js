@@ -9,6 +9,15 @@ export default
     "published": true
   },
   {
+    "label": "COM_EMUNDUS_GLOBAL_PARAMS_MENUS_WEB_SECURITY",
+    "sectionTitle": "COM_EMUNDUS_GLOBAL_PARAMS_MENUS_WEB_SECURITY",
+    "name": "web_security_settings",
+    "icon": "language",
+    "type": "component",
+    "component": "WebSecurity",
+    "published": true
+  },
+  {
     "label": "COM_EMUNDUS_GLOBAL_PARAMS_MENUS_EMAIL",
     "sectionTitle": "COM_EMUNDUS_GLOBAL_PARAMS_SECTIONS_MANAG_SERVER_MAIL",
     "name": "email_settings",
