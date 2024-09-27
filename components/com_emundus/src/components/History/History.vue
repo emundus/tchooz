@@ -14,7 +14,15 @@
       </thead>
       <tbody>
       <tr v-for="data in history" :key="data.id">
-        <td v-if="columns.includes('title')">{{ translate(data.message.title) }}</td>
+        <td v-if="columns.includes('title')">
+          <p>{{ translate(data.message.title) }}</p>
+          <p v-if="data.message.new_data.length > 0 && extension == 'com_emundus.settings.web_security'">
+            <span v-for="(newData, index) in data.message.new_data">
+              <span v-if="index > 0">, </span>
+              <span class="tw-text-green-700">{{ newData }}</span>
+            </span>
+          </p>
+        </td>
         <td v-if="columns.includes('message_language_key')">{{ translate(data.message_language_key+'_TITLE') }}</td>
         <td v-if="columns.includes('log_date')">{{ formattedDate(data.log_date, 'L') + ' ' + formattedDate(data.log_date, 'LT') }}</td>
         <td v-if="columns.includes('user_id')">{{ data.logged_by }}</td>
@@ -23,15 +31,21 @@
             <span class="material-symbols-outlined tw-mr-2" :class="colorClasses[data.message.status]">{{ icon[data.message.status] }}</span>
             <p :class="colorClasses[data.message.status]">
               {{ translate(text[data.message.status]) }}
-              <span v-if="data.message.status == 'done' && data.message.status_updated">
+              <span v-if="(data.message.status == 'done' || data.message.status == 'cancelled') && data.message.status_updated">
                 {{ formattedDate(data.message.status_updated, 'L')}}
               </span>
             </p>
             <span
                 v-if="this.sysadmin && data.message.status === 'pending'"
-                @click="updateHistoryStatus(data.id)"
+                @click="updateHistoryStatus(data.id,'done')"
                 class="material-symbols-outlined tw-cursor-pointer">
               edit
+            </span>
+            <span
+                v-if="this.sysadmin && data.message.status === 'pending'"
+                @click="updateHistoryStatus(data.id,'cancelled')"
+                class="material-symbols-outlined tw-cursor-pointer">
+              backspace
             </span>
           </div>
         </td>
@@ -95,7 +109,7 @@ export default {
       },
       icon: {
         done: 'check_circle',
-        pending: 'do_not_disturb_on',
+        pending: 'rule_settings',
         cancelled: 'cancel',
       },
       text: {
@@ -121,6 +135,16 @@ export default {
         response.data.forEach((data) => {
           //data.log_date = new Date(data.log_date).toLocaleString();
           data.message = JSON.parse(data.message);
+          if(data.message.old_data) {
+            data.message.old_data = JSON.parse(data.message.old_data);
+          }
+          if(data.message.new_data) {
+            data.message.new_data = JSON.parse(data.message.new_data);
+          }
+          // Convert data.message.new_data object to array
+          if(data.message.new_data) {
+            data.message.new_data = Object.values(data.message.new_data);
+          }
         });
 
         this.history = response.data;
@@ -128,7 +152,7 @@ export default {
       });
     },
 
-    updateHistoryStatus(id) {
+    updateHistoryStatus(id,status) {
       if(this.sysadmin) {
         Swal.fire({
           title: this.translate('COM_EMUNDUS_GLOBAL_HISTORY_STATUS_UPDATE_TITLE'),
@@ -144,7 +168,7 @@ export default {
           },
         }).then((result) => {
           if (result.isConfirmed) {
-            settingsService.updateHistoryStatus(id).then(() => {
+            settingsService.updateHistoryStatus(id,status).then(() => {
               this.fetchHistory();
             });
           }

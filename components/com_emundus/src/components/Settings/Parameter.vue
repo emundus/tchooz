@@ -369,7 +369,10 @@ export default {
   watch: {
     value: {
       handler: function (val, oldVal) {
-        this.parameter.value = val;
+        if (this.parameter.type !== 'multiselect') {
+          this.parameter.value = val;
+        }
+
         this.$emit('valueUpdated', this.parameter, oldVal, val)
 
         if (val !== oldVal && val !== this.initValue) {

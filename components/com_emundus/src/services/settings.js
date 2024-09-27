@@ -298,9 +298,9 @@ export default {
     }
   },
 
-  async updateHistoryStatus(id) {
+  async updateHistoryStatus(id,status) {
     try {
-      return await fetchClient.post('updatehistorystatus', {id: id});
+      return await fetchClient.post('updatehistorystatus', {id: id, status: status});
     } catch (e) {
       return {
         status: false,

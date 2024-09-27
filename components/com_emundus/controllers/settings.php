@@ -1986,9 +1986,10 @@ class EmundusControllersettings extends BaseController
 			$response['message'] = Text::_('MISSING_PARAMS');
 
 			$action_log_id = $this->input->getInt('id', 0);
+			$action_log_status = $this->input->getString('status', 'done');
 
 			if(!empty($action_log_id)) {
-				$response['status'] = $this->m_settings->updateHistoryStatus($action_log_id);
+				$response['status'] = $this->m_settings->updateHistoryStatus($action_log_id,$action_log_status);
 				if($response['status']) {
 					$response['code']    = 200;
 					$response['message'] = Text::_('STATUS_UPDATED');

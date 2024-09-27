@@ -50,7 +50,7 @@
 
         <template v-if="displayCustomParameters">
           <!-- EMAIL SENDER PARAM -->
-          <div class="tw-mt-7">
+          <div class="tw-mt-7" style="width: 40%">
             <Parameter
                 :parameter-object="email_sender_param"
             />
@@ -75,6 +75,12 @@
             </div>
           </div>
 
+          <div class="tw-mt-7">
+            <Parameter
+                :parameter-object="smtp_security_parameter"
+            />
+          </div>
+
           <!-- ENABLE SMTP AUTH -->
           <div class="tw-mt-7">
             <Parameter
@@ -84,12 +90,6 @@
 
           <!-- SMTP AUTH PARAMETERS -->
           <template v-if="displaySmtpAuthParameters">
-            <div class="tw-mt-7">
-              <Parameter
-                  :parameter-object="smtp_security_parameter"
-              />
-            </div>
-
             <div class="tw-mt-7 tw-flex tw-gap-7">
               <div v-for="(parameter,index) in smtp_auth_parameters" class="tw-w-full" v-show="parameter.displayed">
                 <Parameter
@@ -105,7 +105,7 @@
             <Parameter
                 :parameter-object="default_email_sender_param"
             />
-            <div class="tw-flex tw-mb-1 tw-gap-1">
+            <div class="tw-flex tw-gap-1 tw-mb-3">
               <span>@</span>
               <span>{{ default_mail_from_server }}</span>
             </div>
@@ -263,7 +263,7 @@ export default {
       enable_smtp_auth: {
         param: 'custom_email_smtpauth',
         type: 'toggle',
-        value: 0,
+        value: 1,
         label: 'COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_SMTP_ENABLE',
         displayed: true,
         hideLabel: true,

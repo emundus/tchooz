@@ -1843,7 +1843,7 @@ class EmundusModelsettings extends ListModel
 		$params['custom_email_mailfrom'] = $emConfig->get('custom_email_mailfrom', '');
 		$params['custom_email_smtphost'] = $emConfig->get('custom_email_smtphost', '');
 		$params['custom_email_smtpport'] = $emConfig->get('custom_email_smtpport', '');
-		$params['custom_email_smtpauth'] = $emConfig->get('custom_email_smtpauth', 0);
+		$params['custom_email_smtpauth'] = $emConfig->get('custom_email_smtpauth', 1);
 		$params['custom_email_smtpsecure'] = $emConfig->get('custom_email_smtpsecure', 0);
 		$params['custom_email_smtpuser'] = $emConfig->get('custom_email_smtpuser', '');
 		$params['custom_email_smtppass'] = '************';
@@ -2169,7 +2169,7 @@ class EmundusModelsettings extends ListModel
 		return $history;
 	}
 
-	public function updateHistoryStatus($action_log_id)
+	public function updateHistoryStatus($action_log_id,$action_log_status = 'done')
 	{
 		$updated = false;
 
@@ -2178,7 +2178,7 @@ class EmundusModelsettings extends ListModel
 			$query = $this->db->getQuery(true);
 
 			$query->update($this->db->quoteName('#__action_logs'))
-				->set($this->db->quoteName('message') . ' = JSON_SET(' . $this->db->quoteName('message') . ', "$.status", ' . $this->db->quote('done') . ')')
+				->set($this->db->quoteName('message') . ' = JSON_SET(' . $this->db->quoteName('message') . ', "$.status", ' . $this->db->quote($action_log_status) . ')')
 				->set($this->db->quoteName('message') . ' = JSON_SET(' . $this->db->quoteName('message') . ', "$.status_updated", ' . $this->db->quote(date('Y-m-d H:i:s')) . ')')
 				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($action_log_id));
 			$this->db->setQuery($query);
