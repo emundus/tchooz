@@ -2148,7 +2148,7 @@ class EmundusModelsettings extends ListModel
 		{
 			$query = $this->db->getQuery(true);
 
-			$query->select('al.*,u.name as logged_by')
+			$query->select('al.*,concat(u.name," - ",u.email) as logged_by')
 				->from($this->db->quoteName('#__action_logs','al'))
 				->leftJoin($this->db->quoteName('#__users','u').' ON '.$this->db->quoteName('u.id').' = '.$this->db->quoteName('al.user_id'))
 				->where($this->db->quoteName('al.extension') . ' = ' . $this->db->quote($extension))
