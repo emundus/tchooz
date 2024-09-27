@@ -26,7 +26,7 @@ export default
     "param": "offset",
     "component": "joomla",
     "label": "COM_EMUNDUS_GLOBAL_PARAMS_SITE_TIMEZONE",
-    "type": "timezone",
+    "type": "multiselect",
     "helptext": "",
     "placeholder": "",
     "optional": null

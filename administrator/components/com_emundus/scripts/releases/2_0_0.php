@@ -1800,6 +1800,9 @@ if(value == 1) {
 			];
 			EmundusHelperUpdate::createTable('jos_emundus_setup_programs_languages', $columns, $foreign_keys, 'Programs languages');
 
+			EmundusHelperUpdate::installExtension('plg_actionlog_emundus','emundus',null,'plugin',1,'actionlog');
+			EmundusHelperUpdate::updateComponentParameter('com_actionlogs','ip_logging',1);
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

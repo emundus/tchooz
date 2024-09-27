@@ -1,0 +1,180 @@
+<template>
+  <div>
+    <h2 v-if="displayTitle" class="tw-mb-6">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY') }}</h2>
+
+    <table v-if="!loading && history.length > 0">
+      <thead>
+      <tr>
+        <th v-if="columns.includes('title')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_UPDATES') }}</th>
+        <th v-if="columns.includes('message_language_key')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_TYPE') }}</th>
+        <th v-if="columns.includes('log_date')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_LOG_DATE') }}</th>
+        <th v-if="columns.includes('user_id')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_BY') }}</th>
+        <th v-if="columns.includes('status')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_STATUS') }}</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr v-for="data in history" :key="data.id">
+        <td v-if="columns.includes('title')">{{ translate(data.message.title) }}</td>
+        <td v-if="columns.includes('message_language_key')">{{ translate(data.message_language_key+'_TITLE') }}</td>
+        <td v-if="columns.includes('log_date')">{{ formattedDate(data.log_date, 'L') + ' ' + formattedDate(data.log_date, 'LT') }}</td>
+        <td v-if="columns.includes('user_id')">{{ data.logged_by }}</td>
+        <td v-if="columns.includes('status')">
+          <div class="tw-flex tw-items-center">
+            <span class="material-symbols-outlined tw-mr-2" :class="colorClasses[data.message.status]">{{ icon[data.message.status] }}</span>
+            <p :class="colorClasses[data.message.status]">
+              {{ translate(text[data.message.status]) }}
+              <span v-if="data.message.status == 'done' && data.message.status_updated">
+                {{ formattedDate(data.message.status_updated, 'L')}}
+              </span>
+            </p>
+            <span
+                v-if="this.sysadmin && data.message.status === 'pending'"
+                @click="updateHistoryStatus(data.id)"
+                class="material-symbols-outlined tw-cursor-pointer">
+              edit
+            </span>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+
+    <div v-else>
+      <h3>{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_NO_HISTORY') }}</h3>
+    </div>
+
+    <div class="em-page-loader" v-if="loading"></div>
+  </div>
+</template>
+
+<script>
+/* SERVICES */
+import settingsService from "@/services/settings";
+
+/* MIXINS */
+import mixin from "../../mixins/mixin.js";
+
+/* STORE */
+import {useGlobalStore} from "@/stores/global.js";
+
+export default {
+  name: "History",
+  props: {
+    extension: {
+      type: String,
+      required: true,
+    },
+    columns: {
+      type: Array,
+      default: () => [
+          // Modification(s)
+          'title',
+          // Type
+          'message_language_key',
+          // Date
+          'log_date',
+          // By
+          'user_id',
+          // Status
+          //'status',
+      ],
+    },
+    displayTitle: {
+      type: Boolean,
+      default: false,
+    }
+  },
+  mixins: [mixin],
+  data() {
+    return {
+      loading: true,
+      colorClasses: {
+        done: 'tw-text-main-500',
+        pending: 'tw-text-orange-500',
+        cancelled: 'tw-text-red-500',
+      },
+      icon: {
+        done: 'check_circle',
+        pending: 'do_not_disturb_on',
+        cancelled: 'cancel',
+      },
+      text: {
+        done: this.translate('COM_EMUNDUS_GLOBAL_HISTORY_STATUS_DONE'),
+        pending: this.translate('COM_EMUNDUS_GLOBAL_HISTORY_STATUS_PENDING'),
+        cancelled: this.translate('COM_EMUNDUS_GLOBAL_HISTORY_STATUS_CANCELLED'),
+      },
+
+      history: [],
+    };
+  },
+  setup() {
+    return {
+      globalStore: useGlobalStore(),
+    }
+  },
+  created() {
+    this.fetchHistory();
+  },
+  methods: {
+    fetchHistory() {
+      settingsService.getHistory(this.extension).then((response) => {
+        response.data.forEach((data) => {
+          //data.log_date = new Date(data.log_date).toLocaleString();
+          data.message = JSON.parse(data.message);
+        });
+
+        this.history = response.data;
+        this.loading = false;
+      });
+    },
+
+    updateHistoryStatus(id) {
+      if(this.sysadmin) {
+        Swal.fire({
+          title: this.translate('COM_EMUNDUS_GLOBAL_HISTORY_STATUS_UPDATE_TITLE'),
+          text: this.translate('COM_EMUNDUS_GLOBAL_HISTORY_STATUS_UPDATE_TEXT'),
+          showCancelButton: true,
+          reverseButtons: true,
+          confirmButtonText: this.translate('COM_EMUNDUS_GLOBAL_HISTORY_STATUS_UPDATE_YES'),
+          cancelButtonText: this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),
+          customClass: {
+            title: 'em-swal-title',
+            cancelButton: 'em-swal-cancel-button',
+            confirmButton: 'em-swal-confirm-button',
+          },
+        }).then((result) => {
+          if (result.isConfirmed) {
+            settingsService.updateHistoryStatus(id).then(() => {
+              this.fetchHistory();
+            });
+          }
+        });
+      }
+    }
+  },
+  computed: {
+    sysadmin: function () {
+      return parseInt(this.globalStore.hasSysadminAccess);
+    },
+  }
+}
+</script>
+
+<style scoped>
+table {
+  border: unset;
+}
+table thead th {
+  background: transparent;
+  padding: 18px 12px;
+}
+table thead tr {
+  border-bottom: solid 1px #D9D9D9;
+}
+table tbody tr:not(:last-child) {
+  border-bottom: solid 1px #D9D9D9;
+}
+table tbody tr td {
+  padding: 18px 12px;
+}
+</style>

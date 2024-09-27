@@ -1,108 +1,144 @@
 <template>
-  <div class="em-settings-menu">
-    <div class="tw-w-full" v-if="!loading">
+  <div class="tw-w-full tw-rounded-coordinator tw-p-6 tw-bg-white tw-mt-6 tw-shadow tw-relative">
+    <Tabs :tabs="tabs"></Tabs>
 
-      <Info :text="'COM_EMUNDUS_GLOBAL_PARAMS_SECTION_EMAIL_HELPTEXT'" :icon-type="'material-icons'"
-            :class="'tw-mt-2'"></Info>
+    <template v-if="!loading && tabs[0].active">
+      <Info :text="'COM_EMUNDUS_GLOBAL_PARAMS_SECTION_EMAIL_HELPTEXT'"/>
 
-      <!-- GLOBAL CONFIGURATION -->
-      <div class="tw-flex tw-items-center tw-justify-between tw-mt-6">
-        <div class="tw-flex tw-items-center tw-mb-4">
-          <div class="em-toggle">
-            <input type="checkbox"
-                   class="em-toggle-check"
-                   :id="'published'"
-                   v-model=" computedEnableEmail "
-            />
-            <strong class="b em-toggle-switch"></strong>
-            <strong class="b em-toggle-track"></strong>
-          </div>
-          <label for="published" class="tw-ml-2 !tw-mb-0 tw-font-bold">{{
-              translate('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_ENABLE')
-            }}</label>
-        </div>
-      </div>
-
-      <Info v-if="!computedEnableEmail" :text="warning" :icon="'warning'" :bg-color="'tw-bg-orange-100'"
-            :icon-type="'material-icons'" :icon-color="'tw-text-orange-600'"></Info>
-
-      <div v-if="enableEmail  && computedEnableEmail">
-        <!--<label class="font-medium">{{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_GLOBAL') }}</label>  -->
-        <div class="tw-grid tw-grid-cols-2 tw-gap-6">
-          <div class="form-group tw-w-full" v-for="param in globalInformations"
-               :key="param.param">
-            <Parameter :parameter-object="param" @needSaving="updateParameterToSaving" v-if="param.displayed === true"/>
-          </div>
-        </div>
-      </div>
-
-      <!-- CUSTOM CONFIGURATION -->
-      <div class="tw-flex tw-items-center tw-mb-3 tw-mt-2" v-if="enableEmail && computedEnableEmail" v-show="config.emundus.default_email_fromname !== '' && config.emundus.default_email_mailfrom != null">
-        <div class="em-toggle">
-          <input type="checkbox"
-                 class="em-toggle-check"
-                 :id="'custom_published'"
-                 v-model="customConfigurationToggle"
+      <!-- ERROR MESSAGE -->
+      <template class="tw-hidden">
+        <div id="error_message_test" class="tw-mt-7">
+          <p class="tw-text-red-500 tw-mb-2 tw-text-center">
+            {{ translate('COM_EMUNDUS_GLOBAL_EMAIL_ERRORS_DETAILS') }}
+          </p>
+          <Info
+              :text="errorMessage"
+              :bg-color="'tw-bg-red-50'"
+              :icon="'error'"
+              :icon-color="'tw-text-red-600'"
+              :text-color="'tw-text-red-500'"
           />
-          <strong class="b em-toggle-switch"></strong>
-          <strong class="b em-toggle-track"></strong>
+          <br/>
         </div>
-        <label for="custom_published" class="tw-ml-2 !tw-mb-0 tw-font-bold">{{
-            translate('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CUSTOM')
-          }}</label>
+      </template>
+
+      <!-- MAILONLINE -->
+      <div class="tw-mt-7">
+        <Parameter
+            :key="mailonline_key"
+            :parameter-object="mailonline_parameter"
+            @valueUpdated="showDisableWarning"
+        />
       </div>
 
-
-      <!-- visible even when the toogle custom value is false  -->
-      <div v-if="enableEmail && computedEnableEmail" class="tw-flex tw-flex-col">
-        <template v-for="param in customInformations" :key="param.param">
-          <div v-if="param.param === 'mailfrom' || param.param === 'fromname'">
-            <Parameter :key="keyParamsCustom" :CustomValue="!!+customConfigurationToggle" :parameter-object="param"
-                       @needSaving="updateParameterToSaving" v-if="param.displayed === true"/>
+      <template v-if="displayEmailParameters">
+        <!-- REPLYTO -->
+        <div class="tw-mt-7 tw-flex tw-gap-7">
+          <div v-for="(parameter,index) in reply_to_parameters" class="tw-w-full" v-show="parameter.displayed">
+            <Parameter
+                :parameter-object="parameter"
+            />
           </div>
-        </template>
-      </div>
+        </div>
 
-      <!-- only visible when the toogle custom value is true  -->
-      <div class="tw-mt-2" v-if="customConfigurationToggle && enableEmail && computedEnableEmail">
-        <div class="tw-grid tw-grid-cols-2 tw-gap-4">
-          <template v-for="param in customInformations" :key="param.param">
-            <div class="form-group tw-w-full !tw-ml-0 tw-mr-0 tw-mt-0"
-                 :class="['smtpsecure','smtpauth'].includes(param.param) ? 'tw-col-span-full' : ''"
-                 v-if="checkSmtpAuth(param) && param.param !== 'mailfrom' && param.param !== 'fromname'"
-            >
-              <Parameter :parameter-object="param" @needSaving="updateParameterToSaving"/>
+        <!-- ENABLE CUSTOM -->
+        <div class="tw-mt-7">
+          <Parameter
+              :parameter-object="custom_enable_parameter"
+          />
+        </div>
+
+        <template v-if="displayCustomParameters">
+          <!-- EMAIL SENDER PARAM -->
+          <div class="tw-mt-7">
+            <Parameter
+                :parameter-object="email_sender_param"
+            />
+          </div>
+
+          <!-- SMTP PARAMETERS -->
+          <div class="tw-mt-7 tw-flex tw-gap-7">
+            <div v-for="(parameter,index) in smtp_parameters" class="tw-w-full" v-show="parameter.displayed">
+              <Parameter
+                  :parameter-object="parameter"
+              />
+              <div v-if="parameter.param == 'custom_email_smtpport' && incorrectPort"
+                 class="tw-flex tw-items-start"
+                 @click="showPortWarning"
+              >
+                  <span class="material-symbols-outlined tw-scale-75 tw-text-orange-600 tw-pr-2">warning</span>
+                <p>
+                  {{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_PORT_WARNING') }}
+                  <u class="tw-ml-1">{{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_PORT_WARNING_SEE_ALL') }}</u>.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- ENABLE SMTP AUTH -->
+          <div class="tw-mt-7">
+            <Parameter
+                :parameter-object="enable_smtp_auth"
+            />
+          </div>
+
+          <!-- SMTP AUTH PARAMETERS -->
+          <template v-if="displaySmtpAuthParameters">
+            <div class="tw-mt-7">
+              <Parameter
+                  :parameter-object="smtp_security_parameter"
+              />
+            </div>
+
+            <div class="tw-mt-7 tw-flex tw-gap-7">
+              <div v-for="(parameter,index) in smtp_auth_parameters" class="tw-w-full" v-show="parameter.displayed">
+                <Parameter
+                    :parameter-object="parameter"
+                />
+              </div>
             </div>
           </template>
-          <!-- <Info :text="'COM_EMUNDUS_GLOBAL_PARAMS_SECTIONS_MAIL_SUBSECTION_SERVER_EMAIL_CONF_ADVICE'"
-                 class="tw-mt-4"></Info> -->
-        </div>
-      </div>
-      <div class="tw-flex tw-justify-between tw-mt-2">
-        <button
-            :class=" noSendTestClick ?  'tw-bg-gray-200 tw-text-gray-400 tw-border-gray-300 tw-cursor-not-allowed tw-flex tw-items-center tw-rounded-coordinator tw-py-2 tw-px-3' :'' +   'tw-flex tw-items-center tw-bg-white hover:tw-bg-profile-full hover:tw-text-white tw-text-profile-full tw-font-semibold tw-py-2 tw-px-3 tw-border tw-border-profile-full hover:tw-border-transparent tw-rounded-coordinator'"
-            :disabled="noSendTestClick"
-            @mouseover="hover =true"
-            @mouseout="hover = false"
-            @click="CheckSendMail">
-          <span id="iconSend" class="material-symbols-outlined" :class="iconClasses">send</span>
-          {{ translate("COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_BT") }}
-        </button>
-        <div v-if="loadingMail" class="em-page-loader"></div>
+        </template>
 
+        <template v-else>
+          <div class="tw-mt-7 tw-flex tw-items-end tw-gap-2">
+            <Parameter
+                :parameter-object="default_email_sender_param"
+            />
+            <div class="tw-flex tw-mb-1 tw-gap-1">
+              <span>@</span>
+              <span>{{ default_mail_from_server }}</span>
+            </div>
+          </div>
+        </template>
 
-        <div :title="computedTitle">
-          <button id="saveBT" class="btn btn-primary" :class="!this.updatable ? 'disabled' :''"
-                  @click="saveEmailSettings">
-            {{ translate("COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SAVE") }}
+        <!-- TEST SEND EMAIL && SAVE CONFIGURATION -->
+        <div class="tw-flex tw-justify-between tw-mt-7">
+          <button type="button" :disabled="disabledSubmit" class="tw-btn-tertiary tw-cursor-pointer"
+                  @click="testEmail"><span
+              class="material-symbols-outlined tw-mr-2">send</span>{{
+              translate('COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_BT')
+            }}
+          </button>
+
+          <button type="button" :disabled="disabledSubmit" class="tw-btn-primary tw-cursor-pointer"
+                  @click="saveConfiguration">{{
+              translate('COM_EMUNDUS_ONBOARD_SAVE')
+            }}
           </button>
         </div>
-      </div>
+      </template>
+    </template>
 
-      <div class="em-page-loader" v-if="loading"></div>
-    </div>
+    <template v-if="!loading && tabs[1].active">
+      <History
+          :extension="'com_emundus.settings.email'"
+          :columns="['title', 'message_language_key', 'log_date', 'user_id']"
+      />
+    </template>
+
+    <div class="em-page-loader" v-if="loading"></div>
   </div>
-
 </template>
 
 <script>
@@ -111,462 +147,405 @@ import axios from "axios";
 import mixin from "@/mixins/mixin";
 import Swal from "sweetalert2";
 import Parameter from "@/components/Settings/Parameter.vue";
-import Info from "@/components/info.vue";
+import Info from "@/components/Utils/Info.vue";
 import settingsService from "@/services/settings";
-
-import globalInformationsData from '@/assets/data/settings/emails/global.js';
-import customInformationsData from '@/assets/data/settings/emails/custom.js';
+import Tabs from "@/components/Utils/Tabs.vue";
+import History from "@/components/History/History.vue";
 
 export default {
   name: "EditEmailJoomla",
-  components: {Info, Parameter},
-  props: {
-    type: String,
-    showValueMail: {
-      type: Number,
-      default: -1,
-      required: false
-    },
-    customValue: {
-      type: Number,
-      default: -1,
-      required: false
-    },
-    warning: {
-      type: String,
-      default: "",
-      required: false
-    },
-  },
+  components: {History, Tabs, Info, Parameter},
+  props: {},
 
   mixins: [mixin],
 
   data() {
     return {
       loading: true,
-      loadingMail: false,
-      parametersUpdated: [],
-      updatable: false,
+      errorMessage: '',
 
-      params: [],
-      enableEmail: null,
-      customConfigurationToggle: null,
-      globalInformations: [],
-      customInformations: [],
-      config: {},
+      tabs: [
+        {
+          id: 1,
+          name: 'COM_EMUNDUS_GLOBAL_EMAIL',
+          icon: 'email',
+          active: true,
+        },
+        {
+          id: 2,
+          name: 'COM_EMUNDUS_GLOBAL_HISTORY',
+          icon: 'history',
+          active: false,
+        },
+      ],
 
-      CustomConfigServerMail: {},
-      ParamJoomlaEmundusExtensions: {},
+      mailonline_key: 0,
 
-      AuthSMTP: false,
-      editableParamsServerMail: null,
-      keyParamsCustom: 0,
-      clicker: 0,
-      noSendTestClick: false,
-      hover: null,
-      isAccordionPanelVisible: false,
-      tooltipText: this.translate('COM_EMUNDUS_ONBOARD_SETTINGS_NEED_TEST'),
-      allgood: null,
-      allgoodPromiseResolve: null,
+      mailonline_parameter: {
+        param: 'mailonline',
+        type: 'toggle',
+        value: 0,
+        label: 'COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_ENABLE',
+        displayed: true,
+        hideLabel: true,
+      },
+      reply_to_parameters: [
+        {
+          param: 'replyto',
+          type: 'email',
+          placeholder: 'no-reply@tchooz.app',
+          value: '',
+          label: 'COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_REPLYTO',
+          helptext: 'COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_REPLYTO_ADRESS_HELPTEXT',
+          displayed: true,
+          optional: true,
+        },
+        {
+          param: 'replytoname',
+          type: 'text',
+          placeholder: 'Tchooz',
+          value: '',
+          label: 'COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_REPLY_TO_NAME',
+          helptext: 'COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_REPLYTO_HELPTEXT',
+          displayed: true,
+          optional: true,
+        }
+      ],
+      custom_enable_parameter: {
+        param: 'custom_email_conf',
+        type: 'toggle',
+        value: 0,
+        label: 'COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CUSTOM',
+        displayed: true,
+        hideLabel: true,
+      },
+      default_email_sender_param: {
+        param: 'default_email_mailfrom',
+        type: 'text',
+        placeholder: '',
+        value: '',
+        label: 'COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_SENDER',
+        helptext: 'COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_SENDER_ADRESS_HELPTEXT',
+        displayed: true,
+      },
+      email_sender_param: {
+        param: 'custom_email_mailfrom',
+        type: 'text',
+        placeholder: '',
+        value: '',
+        concatValue: '',
+        label: 'COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_SENDER',
+        helptext: 'COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_SENDER_ADRESS_HELPTEXT',
+        displayed: true,
+        splitField: true,
+        splitChar: '@',
+      },
+      smtp_parameters: [
+        {
+          param: 'custom_email_smtphost',
+          type: 'text',
+          placeholder: '',
+          value: '',
+          label: 'COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_SMTP_HOST',
+          helptext: 'COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_HOSTSMTP_HELPTEXT',
+          displayed: true
+        },
+        {
+          param: 'custom_email_smtpport',
+          type: 'text',
+          placeholder: '465',
+          value: '',
+          label: 'COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_SMTP_PORT',
+          helptext: 'COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_PORT_HELPTEXT',
+          displayed: true
+        }
+      ],
+      enable_smtp_auth: {
+        param: 'custom_email_smtpauth',
+        type: 'toggle',
+        value: 0,
+        label: 'COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_SMTP_ENABLE',
+        displayed: true,
+        hideLabel: true,
+      },
+      smtp_security_parameter: {
+        param: 'custom_email_smtpsecure',
+        type: 'select',
+        value: 0,
+        label: 'COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_SMTP_SECURITY',
+        helptext: 'COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_SECURITY_HELPTEXT',
+        "options": [
+          {
+            "value": "none",
+            "label": "COM_EMUNDUS_FILTERS_CHECK_NONE"
+          },
+          {
+            "value": "ssl",
+            "label": "SSL"
+          },
+          {
+            "value": "tls",
+            "label": "TLS"
+          }
+        ],
+        displayed: true,
+      },
+      smtp_auth_parameters: [
+        {
+          param: 'custom_email_smtpuser',
+          type: 'text',
+          placeholder: '',
+          value: '',
+          label: 'COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_SMTP_USERNAME',
+          helptext: 'COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_HOSTSMTP_HELPTEXT',
+          displayed: true
+        },
+        {
+          param: 'custom_email_smtppass',
+          type: 'password',
+          placeholder: '',
+          value: '',
+          label: 'COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_SMTP_PASSWORD',
+          helptext: 'COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_PORT_HELPTEXT',
+          displayed: true
+        }
+      ],
+
+      default_mail_from_server: 'tchooz.io'
     };
   },
 
   created() {
-    // eslint-disable-next-line no-undef
-    this.globalInformations = globalInformationsData;
-    // eslint-disable-next-line no-undef
-    this.customInformations = customInformationsData;
+    this.getEmailParameters();
   },
   mounted() {
-    this.getEmundusParamsJoomlaConfiguration()
   },
 
   methods: {
-    async saveMethod() {
-      await this.CheckSendMail();
-      return await this.waitForAllGood();
-    },
-    waitForAllGood() {
-      //loop on the state of allgood until it is not null and then return it to make work globalSettings saveSection
-      return new Promise((resolve) => {
-        if (this.allgood !== null) {
-          resolve(this.allgood);
-        } else {
-          this.allgoodPromiseResolve = resolve;
-        }
-      });
-    },
+    getEmailParameters() {
+      settingsService.getEmailParameters().then((response) => {
+        if (response.status) {
+          this.mailonline_parameter.value = response.data.mailonline ? 1 : 0;
+          this.reply_to_parameters[0].value = response.data.replyto;
+          this.reply_to_parameters[1].value = response.data.replytoname;
+          this.custom_enable_parameter.value = response.data.custom_email_conf;
+          this.email_sender_param.value = response.data.custom_email_mailfrom;
+          this.smtp_parameters[0].value = response.data.custom_email_smtphost;
+          this.smtp_parameters[1].value = response.data.custom_email_smtpport;
+          this.enable_smtp_auth.value = response.data.custom_email_smtpauth;
+          this.smtp_security_parameter.value = response.data.custom_email_smtpsecure;
+          this.smtp_auth_parameters[0].value = response.data.custom_email_smtpuser;
+          this.smtp_auth_parameters[1].value = response.data.custom_email_smtppass;
 
+          this.default_email_sender_param.value = response.data.default_email_mailfrom;
+          this.default_email_sender_param.value = this.default_email_sender_param.value.split('@');
+          this.default_mail_from_server = this.default_email_sender_param.value[1];
+          this.default_email_sender_param.value = this.default_email_sender_param.value[0];
 
-    getEmundusParamsJoomlaConfiguration() {
-      axios.get("index.php?option=com_emundus&controller=settings&task=getemundusparams")
-        .then(response => {
-          this.config = response.data;
-          Object.values(this.params).forEach((param) => {
-
-            param.value = this.config[param.component][param.param];
-            if ((param.value === "1") || (param.value === true) || (param.value === "true")) {
-              param.value = 1;
-            }
-            if ((param.value === "0") || (param.value === false) || (param.value === "false")) {
-              param.value = 0;
-            }
-          });
           this.loading = false;
-
-          this.enableEmail = this.getEmundusparamsEmailValue('mailonline', 'boolean')
-          this.AuthSMTP = this.config["joomla"]['smtpauth'] == 1 ? 1 : 0;
-          this.customConfigurationToggle = this.config['emundus']['custom_email_conf'];
-          this.customConfigurationToggle = this.customConfigurationToggle == 1 ? true : false;
-          this.putValueIntoInputs(this.customConfigurationToggle);
-
-          for (let index in this.customInformations) {
-            if (this.customInformations[index].param === 'smtpauth') {
-              this.customInformations[index].value = this.AuthSMTP;
-            }
-          }
-        });
-
-    },
-    putValueIntoInputs(customConfigurationToggle) {
-      for (let index in this.globalInformations) {
-        switch (this.globalInformations[index].param) {
-        case 'replyto':
-          this.globalInformations[index].value = this.config['emundus']['custom_email_replyto'];
-          break;
-        case 'replytoname':
-          this.globalInformations[index].value = this.config['emundus']['custom_email_replytoname'];
-          break;
-        }
-      }
-      if (customConfigurationToggle == 1) {
-        this.assignValues('custom_email');
-      } else {
-        this.assignValues('default_email');
-      }
-    },
-
-    assignValues(source) {
-      for (let index in this.customInformations) {
-        const param = this.customInformations[index].param;
-        if (this.config['emundus'][source + '_' + param]) {
-          this.customInformations[index].value = this.config['emundus'][source + '_' + param];
-        }
-      }
-    },
-    getEmundusparamsEmailValue(specificValue, type) {
-      let variableInput = null;
-      for (let index in this.config) {
-        if (this.config[index][specificValue]) {
-          if (type === 'boolean') {
-            if (this.config[index][specificValue] == 1 || this.config[index][specificValue] == true || this.config[index][specificValue] == "true") {
-              variableInput = true;
-            } else {
-              variableInput = false;
-            }
-            return variableInput;
-          }
-        }
-      }
-    },
-
-
-    checkSmtpAuth(param) {
-      if (param.param === 'smtpuser' || param.param === 'smtppass') {
-        let smtpAuthParameter = this.customInformations.find((element) => element.param === 'smtpauth');
-
-        if (smtpAuthParameter.value == 1) {
-          return true;
-        } else {
-          return false;
-        }
-      }
-      return true;
-    }
-    ,
-
-    updateParameterToSaving(needSaving, parameter, valid = true) {
-      if (needSaving) {
-        let checkExisting = this.parametersUpdated.find((param) => param.param === parameter.param);
-        if (!checkExisting) {
-          this.parametersUpdated.push(parameter);
-        }
-        this.noSendTestClick = false;
-        this.updatable = false;
-      } else {
-        this.parametersUpdated = this.parametersUpdated.filter((param) => param.param !== parameter.param);
-      }
-      if (!valid) {
-        this.noSendTestClick = true;
-        this.updatable = false;
-      }
-    },
-
-
-    async saveEmailSettings() {
-      let params = [];
-      this.parametersUpdated.forEach((param) => {
-        params.push({
-          component: param.component,
-          param: param.param,
-          value: param.value
-        });
-        if (this.customConfigurationToggle == 1 && param.param !== 'custom_email_conf' && param.param !== 'mailonline') {
-          params.push({
-            component: 'emundus',
-            param: 'custom_email_' + param.param,
-            value: param.value
-          })
-        } else if (this.customConfigurationToggle == 0 && param.param !== 'custom_email_conf' && param.param !== 'mailonline') {
-          params.push({
-            component: 'emundus',
-            param: 'default_email_' + param.param,
-            value: param.value
-          })
         }
       });
+    },
 
-      settingsService.saveParams(params)
-        .then(() => {
-          this.parametersUpdated = [];
+    async testEmail(testing_email = null) {
+      this.loading = true;
+
+      const parameters = this.prepareParameters(testing_email);
+
+      settingsService.testEmail(parameters).then(async (response) => {
+        this.loading = false;
+        if (response.status) {
           Swal.fire({
-            title: this.translate("COM_EMUNDUS_ONBOARD_SUCCESS"),
-            text: this.translate("COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SAVE_SUCCESS"),
-            showCancelButton: false,
+            title: response.title,
+            html: response.text,
+            confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_SAVE'),
+            cancelButtonText: this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),
+            showCancelButton: true,
+            reverseButtons: true,
+            customClass: {
+              title: 'em-swal-title',
+              confirmButton: 'em-swal-cancel-button',
+              cancelButton: 'em-swal-confirm-button',
+              htmlContainer: 'tw-text-center'
+            },
+            didOpen: () => {
+              document.querySelector('#sendEmailNew').addEventListener('click', () => {
+                // Check if value is email
+                let value = document.querySelector('#otherEmail').value;
+                const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (value === '' || !regex.exec(value)) {
+                  document.querySelector('#otherEmail').classList.add('!tw-border-red-500');
+                  return;
+                }
+                this.testEmail(document.querySelector('#otherEmail').value);
+                Swal.close();
+              });
+            }
+          }).then((result) => {
+            if (result.isConfirmed) {
+              this.saveConfiguration();
+            }
+          })
+        } else {
+          this.errorMessage = response.desc;
+
+          Swal.fire({
+            title: response.title,
+            html: response.text,
+            cancelButtonText: this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),
             showConfirmButton: false,
             customClass: {
-              title: 'em-swal-title'
+              title: 'em-swal-title',
+              cancelButton: 'em-swal-confirm-button',
+              htmlContainer: 'tw-text-center'
             },
-            timer: 1500,
-          }).then(() => {
-            this.updatable = false;
-            this.allgood = true;
-            return this.allgood;
+            didOpen() {
+              if (response.desc !== '') {
+                let errors = document.querySelector('#error_message_test');
+                document.querySelector('#swal2-html-container').appendChild(errors);
+              }
+            }
           });
-        })
-        .catch(() => {
-          this.allgood = false;
+        }
+      });
+    },
+
+    async saveConfiguration() {
+      const parameters = this.prepareParameters();
+
+      settingsService.saveEmailParameters(parameters).then(async (response) => {
+        if(response.status) {
           Swal.fire({
-            title: this.translate("COM_EMUNDUS_ERROR"),
-            text: this.translate("COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SAVE_ERROR"),
+            title: response.msg,
+            text: response.desc,
+            confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_DOSSIERS_CLOSE'),
             showCancelButton: false,
-            confirmButtonText: this.translate("COM_EMUNDUS_SWAL_OK_BUTTON"),
-            reverseButtons: true,
-            allowOutsideClick: false,
             customClass: {
               title: 'em-swal-title',
               confirmButton: 'em-swal-confirm-button',
-              actions: "em-swal-single-action",
-            },
+              htmlContainer: '!tw-text-center',
+              actions: '!tw-justify-center'
+            }
           });
-          return this.allgood;
-        });
+        } else {
+          Swal.fire({
+            title: response.msg,
+            text: response.desc,
+            confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_DOSSIERS_CLOSE'),
+            showCancelButton: false,
+            customClass: {
+              title: 'em-swal-title',
+              confirmButton: 'em-swal-confirm-button',
+              htmlContainer: '!tw-text-center',
+              actions: '!tw-justify-center'
+            }
+          });
+        }
+      });
     },
 
-    async CheckSendMail() {
-      this.noSendTestClick = true;
-      let params = [];
-      params.push({component: 'joomla', param: 'mailonline', value: this.computedEnableEmail ? 1 : 0});
-      params = [...params, ...this.globalInformations];
-      params = [...params, ...this.customInformations];
-      this.loadingMail = true;
-      axios.post('index.php?option=com_emundus&controller=settings&task=sendTestMail', params)
-        .then(async response => {
-          this.loadingMail = false;
-          let colorBT = response.data.data[3] == 'success' ? 'green' : 'red';
-          response.data.data[3] === 'success' ? this.updatable = true : this.updatable = false;
-          await this.generateSweetAlert(response, colorBT);
-        });
+    prepareParameters(testing_email = null) {
+      this.email_sender_param.value = this.email_sender_param.concatValue;
+
+      return {
+        mailonline: this.mailonline_parameter.value,
+        replyto: this.reply_to_parameters[0].value,
+        replytoname: this.reply_to_parameters[1].value,
+        custom_email_conf: this.custom_enable_parameter.value,
+        custom_email_mailfrom: this.email_sender_param.value,
+        custom_email_smtphost: this.smtp_parameters[0].value,
+        custom_email_smtpport: this.smtp_parameters[1].value,
+        custom_email_smtpauth: this.enable_smtp_auth.value,
+        custom_email_smtpuser: this.smtp_auth_parameters[0].value,
+        custom_email_smtppass: this.smtp_auth_parameters[1].value,
+        custom_email_smtpsecure: this.smtp_security_parameter.value,
+        default_email_mailfrom: this.default_email_sender_param.value + '@' + this.default_mail_from_server,
+        testing_email: typeof (testing_email) === 'string' ? testing_email : ''
+      };
     },
-    generateSweetAlert: async function (response, colorBT) {
+
+    showPortWarning() {
       Swal.fire({
         html: `
-      <div class="tw-flex tw-flex-col tw-items-center tw-justify-center">
-        <h2 class="tw-flex tw-items-center tw-pb-2 tw-font-bold ">${this.translate(response.data.data[0])}</h2>
-        <hr class="tw-self-stretch">
-        <p class="tw-flex tw-items-center tw-justify-center tw-text-center">${this.translate(response.data.data[1])} ${this.translate(response.data.data[2])}</p>
-        <br/>
-        <button type="button" class="tw-flex tw-items-center tw-font-bold" id="hideDivButton" ${colorBT === "red" ? 'style="color:red;"' : 'style="display: none;"'}>
-            ${this.translate('COM_EMUNDUS_CLICK_HERE_INFO')}
-            <i class="material-symbols-outlined scale-150" ${colorBT === "red" ? 'style="color:red;"' : 'style="display: none;"'}>expand_more</i>
-        </button>
-        <div id="accordion-panel" class="tw-mt-2 " ${this.isAccordionPanelVisible && colorBT === "red" ? 'style="color:red; display:block;"' : 'style="display: none;"'}>
-            ${this.translate(response.data.data[4])}
-        </div>
-      </div>
-    `,
-        width: 'auto',
+    <div class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-text-center tw--mt-5">
+      <h2 class="tw-font-bold">
+        ${this.translate('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_PORT_WARNING_HELPTEXT_TITLE')}
+      </h2>
+      <p class="tw-text-center tw-mt-5 tw-text-neutral-700">
+        ${this.translate('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_PORT_WARNING_HELPTEXT_BODY')}
+      </p>
+    </div>
+  `,
+        showCancelButton: false,
         showConfirmButton: true,
-        confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_DOSSIERS_CLOSE'),
-        showCancelButton: true,
-        cancelButtonText: this.translate('COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_SAVE_ANYWAY'),
-        cancelButtonColor: colorBT,
-        allowOutsideClick: false,
-        customClass: {
-          title: 'em-swal-title',
-          confirmButton: 'em-swal-cancel-button',
-          cancelButton: 'em-swal-confirm-button',
-        },
-        didOpen: () => {
-          const hideDivButton = document.getElementById('hideDivButton');
-          if (hideDivButton) {
-            hideDivButton.addEventListener('click', () => {
-              const accordionPanel = document.getElementById('accordion-panel');
-              if (accordionPanel.style.display === 'none') {
-                accordionPanel.style.display = 'block';
-                accordionPanel.style.color = 'red';
-                accordionPanel.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
-                accordionPanel.style.border = '0.1em solid red';
-                accordionPanel.style.borderRadius = '0.5em';
-                accordionPanel.style.padding = '1em';
-
-              } else {
-                accordionPanel.style.display = 'none';
-              }
-            });
-          } else {
-            console.error('hideDivButton not found');
-          }
-        }
-      }).then((result) => {
-        if (result.dismiss === 'cancel') {
-          setTimeout(async () => {
-            await this.saveEmailSettings();
-          }, 500);
-        } else {
-          this.allgood = true;
-        }
-        this.noSendTestClick = false;
-      });
-    },
-    generateConfirmModal(valueOfToggle) {
-      Swal.fire({
-        title: this.translate("COM_EMUNDUS_SURE_TO_DISABLE"),
-        text: this.translate("COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_SURE_TO_DISABLE_TEXT"),
-        showCancelButton: true,
-        showConfirmButton: true,
-        confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
-        cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
+        confirmButtonText: this.translate("COM_EMUNDUS_SWAL_OK_BUTTON"),
         reverseButtons: true,
         customClass: {
-          title: 'em-swal-title',
-          cancelButton: 'em-swal-cancel-button',
           confirmButton: 'em-swal-confirm-button',
-        }
-      }).then((result) => {
-        if (result.value) {
-          this.updateParameterToSaving(true, {component: "joomla", param: 'mailonline', value: valueOfToggle});
-          this.updatable = !valueOfToggle;
-          this.noSendTestClick = valueOfToggle === 0;
-        } else {
-          this.enableEmail = 1;
-        }
+          actions: "em-swal-single-action",
+          popup: 'tw-px-6 tw-py-4 tw-flex tw-justify-center tw-items-center',
+        },
       });
     },
-  },
-  computed: {
-    computedEnableEmail: {
-      get() {
-        return this.enableEmail == 1 ? true : false;
-      },
-      set(value) {
-        this.enableEmail = value ? 1 : 0;
-      },
-    },
-    computedTitle() {
-      return !this.updatable ? this.tooltipText : '';
-    },
-    iconClasses() {
-      return [
-        'tw-mr-2',
-        'material-symbols-outlined',
-        this.noSendTestClick ? 'tw-text-gray-400' : (this.hover ? 'tw-text-white' : 'tw-text-profile-full')
 
-      ];
-    },
-  },
-
-  watch: {
-    allgood(newValue) {
-      if (this.allgoodPromiseResolve) {
-        this.allgoodPromiseResolve(newValue);
-        this.allgoodPromiseResolve = null;
-      }
-    },
-    parametersUpdated: {
-      handler: function (val) {
-        this.$emit('needSaving', val.length > 0)
-      },
-      deep: true
-    },
-    enableEmail(val) {
-      const oldVal = this.config["joomla"]['mailonline'];
-      if (val !== oldVal && val !== undefined) {
-        if (val === 0) {
-          this.generateConfirmModal(val);
-        } else {
-          this.updateParameterToSaving(true, {component: "joomla", param: 'mailonline', value: val});
-          this.updatable = !val;
-          this.noSendTestClick = val === 0;
-        }
-
-
-      } else {
-        this.updateParameterToSaving(false, {component: "joomla", param: 'mailonline', value: val});
-        this.noSendTestClick = false;
-        this.updatable = false;
-      }
-    },
-    customConfigurationToggle: function (val, oldVal) {
-      if (val == 1) {
-        val = '1';
-      } else if (val == 0) {
-        val = '0';
-      }
-      if (oldVal == null) {
-        oldVal = this.config['emundus']['custom_email_conf'];
-      } else {
-        oldVal = oldVal ? '1' : '0';
-      }
-
-      if (oldVal != null) {
-        this.keyParamsCustom++;
-        if (val !== oldVal) {
-          this.putValueIntoInputs(val);
-          this.updateParameterToSaving(true, {component: 'emundus', param: 'custom_email_conf', value: val});
-          if (val === '0') {
-            for (let index in this.customInformations) {
-              this.customInformations[index].value = this.config['emundus']['default_email_' + this.customInformations[index].param];
-              this.updateParameterToSaving(true, this.customInformations[index])
-            }
-          } else if (val === '1') {
-            for (let index in this.customInformations) {
-              this.customInformations[index].value = this.config['emundus']['custom_email_' + this.customInformations[index].param];
-              this.updateParameterToSaving(true, this.customInformations[index])
-            }
+    showDisableWarning(parameter,oldVal,value) {
+      if(value != 1) {
+        Swal.fire({
+          title: this.translate("COM_EMUNDUS_SURE_TO_DISABLE"),
+          text: this.translate("COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_SURE_TO_DISABLE_TEXT"),
+          showCancelButton: true,
+          showConfirmButton: true,
+          confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+          cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
+          reverseButtons: true,
+          customClass: {
+            title: 'em-swal-title',
+            cancelButton: 'em-swal-cancel-button',
+            confirmButton: 'em-swal-confirm-button',
           }
-        } else {
-          this.updateParameterToSaving(false, {component: 'emundus', param: 'custom_email_conf', value: val});
-
-        }
+        }).then((response) => {
+          if(!response.isConfirmed) {
+            this.mailonline_parameter.value = oldVal;
+            this.mailonline_key = Math.random();
+          }
+        })
       }
     },
   },
 
+  computed: {
+    disabledSubmit() {
+      return this.mailonline_parameter.value == 0 ||
+          this.default_email_sender_param.value == '' ||
+          (this.custom_enable_parameter.value == 1 &&
+              (
+                  (this.email_sender_param.value == '' || this.email_sender_param.value == null) ||
+                  this.smtp_parameters[0].value == '' || this.smtp_parameters[0].value == null)
+          );
+    },
 
+    displayEmailParameters() {
+      return this.mailonline_parameter.value == 1;
+    },
+
+    displayCustomParameters() {
+      return this.custom_enable_parameter.value == 1;
+    },
+
+    displaySmtpAuthParameters() {
+      return this.enable_smtp_auth.value == 1;
+    },
+
+    incorrectPort() {
+      if(this.smtp_parameters[1].value !== null && this.smtp_parameters[1].value !== '' && !['25','465','587'].includes(this.smtp_parameters[1].value.toString())) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
 };
 </script>
+
 <style scoped>
-.form-group label {
-  width: 100%;
-}
-
-button.swal2-styled.swal2-cancel {
-  background: #FFFFFF;
-  border: none !important;
-  color: white !important;
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-}
-
 </style>

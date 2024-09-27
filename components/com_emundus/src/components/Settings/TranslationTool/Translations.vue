@@ -28,7 +28,7 @@
       </div>
 
       <!-- Objects availables -->
-      <div v-if="lang">
+      <div v-if="lang" v-show="displayFilters">
         <multiselect
             v-model="object"
             label="name"
@@ -48,7 +48,7 @@
       </div>
 
       <!-- Datas by reference id -->
-      <div v-if="object">
+      <div v-if="object" v-show="displayFilters">
         <multiselect
             v-model="data"
             label="label"
@@ -68,7 +68,7 @@
       </div>
 
       <!-- Childrens -->
-      <div v-if="childrens.length > 0">
+      <div v-if="childrens.length > 0" v-show="displayFilters">
         <multiselect
             v-model="children"
             label="label"
@@ -138,6 +138,11 @@ export default {
     childrenValue: {
       type: String,
       required: false,
+    },
+    displayFilters: {
+      type: Boolean,
+      required: false,
+      default: true
     }
   },
   mixins: [mixin, errors],

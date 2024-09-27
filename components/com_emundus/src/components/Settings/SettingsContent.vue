@@ -61,7 +61,7 @@ import Orphelins from "@/components/Settings/TranslationTool/Orphelins.vue";
 import Translations from "@/components/Settings/TranslationTool/Translations.vue";
 import EditArticle from "@/components/Settings/Content/EditArticle.vue";
 import EditFooter from "@/components/Settings/Content/EditFooter.vue";
-import Info from "@/components/info.vue";
+import Info from "@/components/Utils/Info.vue";
 import SubSection from "@/components/Settings/SubSection.vue";
 import Swal from "sweetalert2";
 import Tile from "@/components/Settings/Tile.vue";
