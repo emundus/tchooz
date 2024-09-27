@@ -2042,6 +2042,10 @@ class EmundusModelsettings extends ListModel
 		$mailer = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer($config);
 		$mailer->setSender($variables['mailfrom'], $variables['fromname']);
 		$mailer->addRecipient($mail_to, $variables['fromname']);
+		if(!empty($variables['replyto']))
+		{
+			$mailer->addReplyTo($variables['replyto'], $variables['replytoname']);
+		}
 		$mailer->setSubject($subject);
 		$mailer->isHTML(true);
 		$mailer->Encoding = 'base64';
