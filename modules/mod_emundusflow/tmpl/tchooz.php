@@ -231,10 +231,21 @@ $now      = $dateTime->format('Y-m-d H:i:s');
 
 <?php
 if (!empty($campaign_languages) && !in_array($current_lang_id, $campaign_languages)) {
+
+    $db = JFactory::getContainer()->get('DatabaseDriver');
+    $query = $db->getQuery(true);
+
+    $query->select('title_native')
+        ->from('#__languages')
+        ->where('lang_id IN (' . implode(',', $campaign_languages) . ')');
+
+    $db->setQuery($query);
+    $titles = $db->loadColumn();
+
     ?>
     <div class="tw-m-4 alert alert-error">
         <div class="tw-flex tw-justify-center">
-            <p class="em-text-neutral-600"><?= Text::_('MOD_EMUNDUS_FLOW_LANGUAGE_NOT_ALLOWED'); ?></p>
+            <p class="em-text-neutral-600"><?= sprintf(Text::_('COM_EMUNDUS_ALLOWED_LANGUAGES_FOR_CAMPAIGN_ARE'), implode(',', $titles)); ?></p>
         </div>
     </div>
     <?php

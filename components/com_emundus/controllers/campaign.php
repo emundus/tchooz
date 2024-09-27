@@ -1285,7 +1285,7 @@ class EmundusControllerCampaign extends BaseController
 			if (!empty($campaign_id)) {
 				$m_campaign = $this->getModel('Campaign');
 
-				$languages = $m_campaign->getCampaignLanguages($campaign_id);
+				$languages = $m_campaign->getCampaignLanguagesValues($campaign_id);
 				$response = ['status' => 1, 'msg' => Text::_('LANGUAGES_RETRIEVED'), 'data' => $languages, 'code' => 200];
 			}
 		}

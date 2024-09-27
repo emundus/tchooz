@@ -3624,6 +3624,31 @@ class EmundusModelCampaign extends ListModel
 	}
 
 	/**
+	 * @param $campaign_id
+	 *
+	 * @return array|mixed
+	 */
+	public function getCampaignLanguagesValues($campaign_id)
+	{
+		$languages = [];
+
+		if (!empty($campaign_id)) {
+			$query = $this->_db->createQuery();
+
+			$query->select('el.lang_id as value, el.title as label')
+				->from($this->_db->quoteName('#__languages', 'el'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns_languages', 'esc_lang') . ' ON ' . $this->_db->quoteName('esc_lang.lang_id') . ' = ' . $this->_db->quoteName('el.lang_id'))
+				->where('esc_lang.campaign_id = ' . $this->_db->quote($campaign_id));
+
+			$this->_db->setQuery($query);
+			$languages = $this->_db->loadObjectList();
+		}
+
+		return $languages;
+	}
+
+
+	/**
 	 * @param $fnum
 	 *
 	 * @return void
