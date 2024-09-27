@@ -220,5 +220,15 @@ export default {
         msg: e.message
       };
     }
+  },
+  async getCampaignLanguages(campaignId) {
+    try {
+      return await client.get('getcampaignlanguages&campaign_id=' + campaignId);
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
   }
 };
