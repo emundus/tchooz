@@ -51,7 +51,9 @@
           :selectedLabel="translate(multiselectOptions.selectedLabel)"
           :deselect-label="translate(multiselectOptions.deselectedLabel)"
           :deselectGroupLabel="translate(multiselectOptions.deselectGroupLabel)"
+          :preserve-search="true"
           @keyup="checkComma($event)"
+          @focusout="checkAddOption($event)"
       >
         <template #noOptions>{{ translate(multiselectOptions.noOptionsText) }}</template>
       </multiselect>
@@ -249,6 +251,11 @@ export default {
       });
     },
     addOption(newOption) {
+      // Check if newOption is already in the list
+      if (this.multiOptions.find(option => option.name === newOption)) {
+        return false
+      }
+
       if (this.$props.multiselectOptions.tagValidations.length > 0) {
         let valid = false
         this.$props.multiselectOptions.tagValidations.forEach(validation => {
@@ -277,10 +284,16 @@ export default {
       this.value.push(option)
       this.parameter.value.push(option.code)
     },
+    checkAddOption(event) {
+      event.preventDefault();
+      let added = this.addOption(event.srcElement.value);
+      if(!added) {
+        event.srcElement.value = '';
+      }
+    },
     checkComma(event) {
       if (this.$props.multiselectOptions.tagValidations.includes('email') && event && event.key === ',') {
         this.addOption(event.srcElement.value.replace(',', ''));
-        event.srcElement.blur();
       }
     },
 
