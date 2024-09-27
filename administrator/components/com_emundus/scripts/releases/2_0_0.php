@@ -1780,14 +1780,6 @@ if(value == 1) {
 					'ref_column'     => 'id',
 					'update_cascade' => true,
 					'delete_cascade' => true
-				],
-				[
-					'name'           => 'jos_emundus_setup_campaigns_languages_lang_id_fk',
-					'from_column'    => 'lang_id',
-					'ref_table'      => 'jos_languages',
-					'ref_column'     => 'lang_id',
-					'update_cascade' => true,
-					'delete_cascade' => true
 				]
 			];
 			EmundusHelperUpdate::createTable('jos_emundus_setup_campaigns_languages', $columns, $foreign_keys, 'Campaigns languages');
@@ -1802,14 +1794,6 @@ if(value == 1) {
 					'from_column'    => 'program_id',
 					'ref_table'      => 'jos_emundus_setup_programmes',
 					'ref_column'     => 'id',
-					'update_cascade' => true,
-					'delete_cascade' => true
-				],
-				[
-					'name'           => 'jos_emundus_setup_programs_lang_id_fk',
-					'from_column'    => 'lang_id',
-					'ref_table'      => 'jos_languages',
-					'ref_column'     => 'lang_id',
 					'update_cascade' => true,
 					'delete_cascade' => true
 				]
