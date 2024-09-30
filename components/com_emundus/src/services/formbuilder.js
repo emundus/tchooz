@@ -684,22 +684,6 @@ export default {
       };
     }
   },
-  async getAllDatabases() {
-    try {
-      return fetch('/index.php?option=com_emundus&controller=formbuilder&task=getalldatabases', {
-        method: 'GET'
-      }).then(response => response.json()).then(response => {
-        return response;
-      }).catch(error => {
-        throw error;
-      });
-    } catch (e) {
-      return {
-        status: false,
-        message: e.message
-      };
-    }
-  },
   async getSection(section) {
     try {
       return fetch('/index.php?option=com_emundus&controller=formbuilder&task=getsection&section=' + section, {

@@ -1152,23 +1152,6 @@ class EmundusControllerFormbuilder extends BaseController
 		exit;
 	}
 
-	public function getalldatabases()
-	{
-		$user = $this->app->getIdentity();
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
-		}
-		else {
-			$databases = $this->m_formbuilder->getAllDatabases();
-
-			$tab = array('status' => 1, 'msg' => 'worked', 'data' => $databases);
-		}
-		echo json_encode((object) $tab);
-		exit;
-	}
-
 	public function getsection()
 	{
 		$user = $this->app->getIdentity();
