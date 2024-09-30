@@ -80,6 +80,54 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 		return $params->get($pname);
 	}
 
+	public function onCanEditGroup($groupModel)
+	{
+		$can_be_update = true;
+
+		$formModel = $this->getModel();
+		$listModel = $formModel->getListModel();
+
+		$table = $listModel->getTable();
+		$db_table_name = $table->db_table_name;
+
+		$fnum = $formModel->data[$db_table_name . '___fnum'];
+
+		if (is_array($groupModel))
+		{
+			$groupModel = $groupModel[0];
+		}
+
+		$referent_email = '';
+		$emails              = explode(',', $this->getParam('emails', 'jos_emundus_references___Email_1,jos_emundus_references___Email_2,jos_emundus_references___Email_3,jos_emundus_references___Email_4'));
+
+		if(!empty($emails) && !empty($formModel->data) && !empty($groupModel->getPublishedElements()))
+		{
+			foreach ($groupModel->getPublishedElements() as $element)
+			{
+				if (in_array($element->getFullName(), $emails))
+				{
+					$referent_email = $element->getValue($formModel->data);
+				}
+			}
+
+			if (!empty($fnum) && !empty($referent_email))
+			{
+				$query = $this->_db->getQuery(true);
+
+				$query->clear()
+					->select('count(id)')
+					->from($this->_db->quoteName('#__emundus_files_request'))
+					->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum))
+					->andWhere($this->_db->quoteName('email') . ' = ' . $this->_db->quote($referent_email))
+					->andWhere($this->_db->quoteName('uploaded') . ' = 1');
+				$this->_db->setQuery($query);
+				$can_be_update = (int) $this->_db->loadResult() <= 0;
+			}
+		}
+
+		return $can_be_update;
+	}
+
 	/**
 	 * Main script.
 	 *
