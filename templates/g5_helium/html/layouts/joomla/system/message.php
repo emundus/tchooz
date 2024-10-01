@@ -50,7 +50,7 @@ $msgList = $displayData['msgList'];
                                 <p id="alert-message-text"><?php echo $msg; ?></p>
 							<?php endforeach; ?>
                         </div>
-                        <span class="material-symbols-outlined tw-absolute tw-top-[3px] tw-right-[5px] !tw-text-base tw-cursor-pointer" onclick="closeAlert('<?php echo $type; ?>')">close</span>
+                        <span class="material-symbols-outlined tw-absolute tw-top-[3px] tw-right-[5px] !tw-text-base tw-cursor-pointer" onclick="closeMessage('<?php echo $type; ?>')">close</span>
 					<?php endif; ?>
                 </div>
 			<?php endforeach; ?>
@@ -73,10 +73,10 @@ $msgList = $displayData['msgList'];
                 message.style.opacity = 0;
                 message.style.bottom = '-100px'
             });
-        }, 50000000);
+        }, 8000);
     });
 
-    closeAlert = function(type) {
+    closeMessage = function(type) {
         var messages = document.querySelectorAll('#system-message .alert');
         messages.forEach(function(message) {
             if (message.classList.contains('alert-' + type)) {
