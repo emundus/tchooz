@@ -246,6 +246,7 @@ class ModEmundusQueryBuilderHelper
 
 	/**
 	 * Create the stat module
+	 * TODO: Refactor this
 	 */
 	public static function createModuleAjax()
 	{

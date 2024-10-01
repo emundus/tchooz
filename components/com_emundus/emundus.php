@@ -724,6 +724,25 @@ Text::script('COM_EMUNDUS_ERROR_INVALID_FILENAME');
 Text::script('COM_EMUNDUS_ERROR_INVALID_FILETYPE');
 Text::script('COM_EMUNDUS_ERROR_FILENAME_TOO_LONG');
 
+Text::script('COM_EMUNDUS_GLOBAL_HISTORY');
+Text::script('COM_EMUNDUS_GLOBAL_HISTORY_NO_HISTORY');
+Text::script('COM_EMUNDUS_GLOBAL_HISTORY_STATUS_DONE');
+Text::script('COM_EMUNDUS_GLOBAL_HISTORY_STATUS_PENDING');
+Text::script('COM_EMUNDUS_GLOBAL_HISTORY_STATUS_CANCELLED');
+Text::script('COM_EMUNDUS_GLOBAL_HISTORY_STATUS_UPDATE_TITLE');
+Text::script('COM_EMUNDUS_GLOBAL_HISTORY_STATUS_UPDATE_TEXT');
+Text::script('COM_EMUNDUS_GLOBAL_HISTORY_STATUS_UPDATE_YES');
+Text::script('COM_EMUNDUS_GLOBAL_HISTORY_UPDATES');
+Text::script('COM_EMUNDUS_GLOBAL_HISTORY_TYPE');
+Text::script('COM_EMUNDUS_GLOBAL_HISTORY_LOG_DATE');
+Text::script('COM_EMUNDUS_GLOBAL_HISTORY_BY');
+Text::script('COM_EMUNDUS_GLOBAL_HISTORY_STATUS');
+
+// Load translations for action log plugin
+$actionlog_translation_tags = parse_ini_file(JPATH_ADMINISTRATOR.'/language/fr-FR/plg_actionlog_emundus.ini');
+foreach ($actionlog_translation_tags as $tag => $translation) {
+	Text::script($tag);
+}
 
 // Require specific controller if requested
 if ($controller = $app->input->get('controller', '', 'WORD')) {

@@ -1621,15 +1621,22 @@ class EmundusModelCampaign extends ListModel
 
 			$limit_status = [];
 			$fields       = [];
+			$columns      = [];
+			$keys_to_unset = ['limit', 'limit_status', 'profileLabel', 'progid', 'status'];
 			$labels       = new stdClass;
-
 
 			$app->triggerEvent('onBeforeCampaignUpdate', $data);
 			$app->triggerEvent('onCallEventHandler', ['onBeforeCampaignUpdate', ['campaign' => $cid]]);
 
 			foreach ($data as $key => $val) {
 				if ($val === '') {
+					$keys_to_unset[] = $key;
 					continue;
+				}
+
+				if(!in_array($key,['limit','profileLabel','progid','status','limit_status','languages']))
+				{
+					$columns[] = $this->_db->quoteName($key);
 				}
 
 				switch ($key) {
@@ -1688,6 +1695,13 @@ class EmundusModelCampaign extends ListModel
 				}
 			}
 
+			$query->clear()
+				->select(implode(',',$columns))
+				->from($this->_db->quoteName('#__emundus_setup_campaigns'))
+				->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($cid));
+			$this->_db->setQuery($query);
+			$old_data = $this->_db->loadAssoc();
+
 			$m_falang->updateFalang($labels, $cid, 'emundus_setup_campaigns', 'label');
 
 			$query->clear()
@@ -1742,7 +1756,11 @@ class EmundusModelCampaign extends ListModel
 
 					$this->createYear($data);
 
-					$app->triggerEvent('onAfterCampaignUpdate', $data);
+					foreach ($keys_to_unset as $key) {
+						unset($data[$key]);
+					}
+
+					$app->triggerEvent('onAfterCampaignUpdate', [$data,$old_data]);
 					$app->triggerEvent('onCallEventHandler', ['onAfterCampaignUpdate', ['campaign' => $cid]]);
 				}
 				else {

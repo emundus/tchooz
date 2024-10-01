@@ -287,7 +287,7 @@
 
             .swal2-html-container{
                 @apply tw-text-base;
-                text-align: left !important;
+                text-align: left;
                 overflow: visible;
                 margin: var(--em-spacing-5) 0 0 0;
                 padding: 0;
@@ -315,6 +315,13 @@
                 button {
                     @apply tw-m-0;
                 }
+                .swal2-deny {
+                    margin-left: 35%;
+                    border-radius: var(--em-coordinator-br);
+                    padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
+                    color: var(--neutral-0);
+                    background-color: var(--em-secondary-color);
+                }
             }
 
             .swal2-validation-message {
@@ -323,6 +330,16 @@
                 border-radius: 4px;
                 justify-content: start;
                 color: var(--neutral-900);
+            }
+
+            label:where(.swal2-input-label) {
+                margin: 0 0 4px 0;
+                display: block;
+                color: var(--neutral-900);
+            }
+
+            input:where(.swal2-input) {
+                margin: 0;
             }
         }
     }

@@ -2,10 +2,16 @@
   <div class="em-settings-menu">
 
     <div class="tw-w-full">
-      <div class="tw-w-4/5" v-if="!loading">
-        <div class="form-group tw-flex tw-flex-col tw-w-full" v-for="(param, indexParam) in displayedParams"
-             :key="param.param">
-          <Parameter :parameter-object="param" @needSaving="updateParameterToSaving"/>
+      <div class="tw-w-4/5 tw-flex tw-flex-col" v-if="!loading">
+        <div v-for="parameter in displayedParams"
+             class="form-group tw-w-full tw-mb-7"
+             :key="parameter.param">
+          <Parameter
+              v-if="parameter.type === 'multiselect' && parameter.multiselectOptions || parameter.type !== 'multiselect'"
+              :parameter-object="parameter"
+              :multiselect-options="parameter.multiselectOptions ? parameter.multiselectOptions : null"
+              @needSaving="updateParameterToSaving"
+          />
         </div>
 
         <Global v-if="displayLanguage === true"/>
@@ -59,6 +65,32 @@ export default {
     import(getPath(this.$props.json_source)).then((result) => {
       if(result) {
         this.parameters = result.default;
+
+        for(let i = 0; i < this.parameters.length; i++) {
+          if(this.parameters[i].param == 'offset') {
+            settingsService.getTimezoneList().then((response) => {
+              if (response.status) {
+                this.parameters[i].multiselectOptions = {
+                  options: response.data,
+                  noOptions: false,
+                  multiple: false,
+                  taggable: false,
+                  searchable: true,
+                  label: 'label',
+                  trackBy: 'value',
+                  optionsPlaceholder: '',
+                  selectLabel: '',
+                  selectGroupLabel: '',
+                  selectedLabel: '',
+                  deselectedLabel: '',
+                  deselectGroupLabel: '',
+                  noOptionsText: '',
+                  tagValidations: [],
+                }
+              }
+            });
+          }
+        }
       }
     })
 
@@ -73,7 +105,6 @@ export default {
           this.config = response.data;
 
           Object.values(this.parameters).forEach((parameter) => {
-
             if (parameter.type === 'keywords') {
               if(this.config[parameter.component][parameter.param]) {
                 let keywords = this.config[parameter.component][parameter.param].split(',');
@@ -91,6 +122,7 @@ export default {
             if ((parameter.value === "1") || (parameter.value === true) || (parameter.value === "true")) {
               parameter.value = 1;
             }
+
             if ((parameter.value === "0") || (parameter.value === false) || (parameter.value === "false")) {
               parameter.value = 0;
             }

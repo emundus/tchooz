@@ -3425,29 +3425,6 @@ class EmundusModelFormbuilder extends JModelList
 		}
 	}
 
-	/**
-	 * TODO: limit returned tables
-	 * @return array|false|mixed
-	 */
-	function getAllDatabases()
-	{
-
-		$query = $this->db->getQuery(true);
-
-		$query->select('table_name as database_name,table_name as label')
-			->from($this->db->quoteName('information_schema.TABLES'))
-			->where($this->db->quoteName('table_name') . ' LIKE ' . $this->db->quote('jos_%'));
-		$this->db->setQuery($query);
-		try {
-			return $this->db->loadObjectList();
-		}
-		catch (Exception $e) {
-			Log::add('component/com_emundus/models/formbuilder | Error at getting databases references : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
-
-			return false;
-		}
-	}
-
 	function enableRepeatGroup($gid)
 	{
 		$saved = false;

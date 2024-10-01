@@ -56,13 +56,13 @@
         <aside class="left-panel tw-flex tw-justify-start tw-h-full tw-relative" v-show="!previewForm">
           <div class="tabs tw-flex tw-flex-col tw-justify-start tw-h-full tw-p-3 tw-gap-3">
             <div v-for="(tab,i) in displayedLeftPanels" :key="title + '_' + i"
+                 @click="setSectionShown(tab.code)"
                  class="tw-flex tw-items-start tw-w-full tw-p-2 tw-cursor-pointer tw-rounded-lg tw-group tw-user-select-none"
                  :class="tab.active ? 'tw-font-bold tw-text-profile-full tw-bg-profile-light'  : 'hover:tw-bg-gray-200'"
                  :title="tab.title">
               <span
                   class="material-symbols-outlined tw-font-bold"
                   :class="tab.active ? 'tw-text-profile-full' : ''"
-                  @click="setSectionShown(tab.code)"
               >
                 {{ tab.icon }}
               </span>
@@ -139,7 +139,21 @@
                 :rule="currentRule"
                 @close-rule-add="showInSection = 'rules';showInRightPanel = 'hierarchy';"
             />
-            <translations v-else-if="currentPage && showInSection === 'translations'" :key="currentPage.id" :class="'tw-p-4'" :objectValue="'emundus_setup_profiles'" :dataValue="profile_id" :childrenValue="currentPage.id" />
+            <history
+                v-else-if="showInSection === 'history'"
+                class="tw-p-6"
+                extension="com_emundus.formbuilder"
+                :display-title="true"
+            />
+            <translations
+                v-else-if="currentPage && showInSection === 'translations'"
+                :key="currentPage.id"
+                class="tw-p-6"
+                :objectValue="'emundus_setup_profiles'"
+                :dataValue="profile_id"
+                :childrenValue="currentPage.id"
+                :display-filters="false"
+            />
           </transition>
         </section>
 
@@ -260,10 +274,12 @@ import { useFormBuilderStore } from "@/stores/formbuilder.js";
 import formBuilderMixin from '../mixins/formbuilder';
 import Translations from "@/components/Settings/TranslationTool/Translations.vue";
 import settingsService from "@/services/settings.js";
+import History from "@/components/History/History.vue";
 
 export default {
   name: 'FormBuilder',
   components: {
+    History,
     Translations,
     FormBuilderCreateModel,
     FormBuilderSectionProperties,
@@ -337,6 +353,13 @@ export default {
             title: 'Rules',
             code: 'rules',
             icon: 'alt_route',
+            active: false,
+            displayed: false
+          },
+          {
+            title: 'History',
+            code: 'history',
+            icon: 'history',
             active: false,
             displayed: false
           }

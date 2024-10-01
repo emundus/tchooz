@@ -39,7 +39,6 @@
 }
 
 .tchooz-widget__selects .multiselect__tags, .com_emundus_vue .multiselect__tags  {
-  height: var(--em-form-height);
   border-radius: var(--em-form-br);
 }
 
@@ -6232,7 +6231,6 @@ fieldset[disabled] .multiselect {
   -webkit-box-sizing: border-box;
   box-sizing: border-box !important;
   vertical-align: top !important;
-  padding: 0 !important;
   margin: 0 !important;
   left: 0 !important;
   white-space: nowrap;

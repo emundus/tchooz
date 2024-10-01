@@ -575,6 +575,11 @@ class EmundusHelperUpdate
 		
 		// Sanitize options
 		foreach ($options as $key => $value) {
+			// Remove some options
+			if (in_array($key, ['dbtype', 'host', 'user', 'password', 'db', 'dbencryption', 'secret', 'tmp_path', 'log_path'])) {
+				unset($options[$key]);
+			}
+
 			$value = $value === 'false' ? false : $value;
 			$value = $value === 'true' ? true : $value;
 

@@ -20,7 +20,7 @@ if(strpos($d->icon, 'calendar') !== false)
 $iconParts  = explode(' ', trim($d->icon));
 $spareParts = array();
 
-if (!in_array($iconParts[0],['icon-question-sign','icon-sort']) && !in_array($iconParts[1],['fa-sort-down','fa-sort-up','fa-sort']))
+if (!in_array($iconParts[0],['icon-question-sign','icon-sort', 'icon-spinner']) && !in_array($iconParts[1],['fa-sort-down','fa-sort-up','fa-sort']))
 {
 	$class = '';
 	$style = '';
