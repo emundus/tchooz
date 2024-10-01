@@ -391,7 +391,7 @@ class EmundusControllerEmail extends BaseController
 		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
 		{
 			$data                  = $this->input->getRaw('body');
-			$data                  = json_decode($data, true);
+			$data                  = json_decode(utf8_encode($data), true);
 			$code                  = $this->input->getString('code');
 			$receivers_cc          = $this->input->getRaw('selectedReceiversCC');
 			$receivers_cc          = json_decode($receivers_cc, true);
@@ -403,6 +403,9 @@ class EmundusControllerEmail extends BaseController
 			$candidate_attachments = json_decode($candidate_attachments, true);
 			$tags                  = $this->input->getRaw('selectedTags');
 			$tags                  = json_decode($tags, true);
+
+			/*require_once JPATH_SITE . '/components/com_emundus/helpers/html.php';
+			$data['message'] = $data['message'] ? EmundusHelperHtml::sanitize($data['message']) : null;*/
 
 			$cc_list     = [];
 			$bcc_list    = [];
