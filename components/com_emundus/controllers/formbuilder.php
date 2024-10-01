@@ -1161,8 +1161,6 @@ class EmundusControllerFormbuilder extends BaseController
 			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
-
-
 			$section = $this->input->getInt('section');
 
 			$group = $this->m_formbuilder->getSection($section);

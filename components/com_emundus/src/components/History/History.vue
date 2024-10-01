@@ -1,61 +1,71 @@
 <template>
-  <div>
+  <div class="tw-relative">
     <h2 v-if="displayTitle" class="tw-mb-6">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY') }}</h2>
 
-    <table v-if="!loading && history.length > 0">
-      <thead>
-      <tr>
-        <th v-if="columns.includes('title')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_UPDATES') }}</th>
-        <th v-if="columns.includes('message_language_key')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_TYPE') }}</th>
-        <th v-if="columns.includes('log_date')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_LOG_DATE') }}</th>
-        <th v-if="columns.includes('user_id')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_BY') }}</th>
-        <th v-if="columns.includes('status')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_STATUS') }}</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr v-for="data in history" :key="data.id">
-        <td v-if="columns.includes('title')">
-          <p>{{ translate(data.message.title) }}</p>
-          <p v-if="data.message.new_data.length > 0 && extension == 'com_emundus.settings.web_security'">
+    <Pagination
+        :dataLength="historyLength" :sticky="true" v-model:page="page" v-model:limit="limit"
+    />
+
+    <template v-if="!loading">
+      <table v-if="history.length > 0">
+        <thead>
+        <tr>
+          <th v-if="columns.includes('title')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_UPDATES') }}</th>
+          <th v-if="columns.includes('message_language_key')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_TYPE') }}</th>
+          <th v-if="columns.includes('log_date')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_LOG_DATE') }}</th>
+          <th v-if="columns.includes('user_id')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_BY') }}</th>
+          <th v-if="columns.includes('status')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_STATUS') }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="data in history" :key="data.id">
+          <td v-if="columns.includes('title')">
+            <p>{{ translate(data.message.title) }}</p>
+            <p v-if="data.message.new_data.length > 0 && extension == 'com_emundus.settings.web_security'">
             <span v-for="(newData, index) in data.message.new_data">
               <span v-if="index > 0">, </span>
               <span class="tw-text-green-700">{{ newData }}</span>
             </span>
-          </p>
-        </td>
-        <td v-if="columns.includes('message_language_key')">{{ translate(data.message_language_key+'_TITLE') }}</td>
-        <td v-if="columns.includes('log_date')">{{ formattedDate(data.log_date, 'L') + ' ' + formattedDate(data.log_date, 'LT') }}</td>
-        <td v-if="columns.includes('user_id')">{{ data.logged_by }}</td>
-        <td v-if="columns.includes('status')">
-          <div class="tw-flex tw-items-center">
-            <span class="material-symbols-outlined tw-mr-2" :class="colorClasses[data.message.status]">{{ icon[data.message.status] }}</span>
-            <p :class="colorClasses[data.message.status]">
-              {{ translate(text[data.message.status]) }}
-              <span v-if="(data.message.status == 'done' || data.message.status == 'cancelled') && data.message.status_updated">
-                {{ formattedDate(data.message.status_updated, 'L')}}
-              </span>
             </p>
-            <span
-                v-if="this.sysadmin && data.message.status === 'pending'"
-                @click="updateHistoryStatus(data.id,'done')"
-                class="material-symbols-outlined tw-cursor-pointer">
+          </td>
+          <td v-if="columns.includes('message_language_key')">{{ translate(data.message_language_key + '_TITLE') }}</td>
+          <td v-if="columns.includes('log_date')">
+            {{ formattedDate(data.log_date, 'L') + ' ' + formattedDate(data.log_date, 'LT') }}
+          </td>
+          <td v-if="columns.includes('user_id')">{{ data.logged_by }}</td>
+          <td v-if="columns.includes('status')">
+            <div class="tw-flex tw-items-center">
+            <span class="material-symbols-outlined tw-mr-2"
+                  :class="colorClasses[data.message.status]">{{ icon[data.message.status] }}</span>
+              <p :class="colorClasses[data.message.status]">
+                {{ translate(text[data.message.status]) }}
+                <span
+                    v-if="(data.message.status == 'done' || data.message.status == 'cancelled') && data.message.status_updated">
+                {{ formattedDate(data.message.status_updated, 'L') }}
+              </span>
+              </p>
+              <span
+                  v-if="this.sysadmin && data.message.status === 'pending'"
+                  @click="updateHistoryStatus(data.id,'done')"
+                  class="material-symbols-outlined tw-cursor-pointer">
               edit
             </span>
-            <span
-                v-if="this.sysadmin && data.message.status === 'pending'"
-                @click="updateHistoryStatus(data.id,'cancelled')"
-                class="material-symbols-outlined tw-cursor-pointer">
+              <span
+                  v-if="this.sysadmin && data.message.status === 'pending'"
+                  @click="updateHistoryStatus(data.id,'cancelled')"
+                  class="material-symbols-outlined tw-cursor-pointer">
               backspace
             </span>
-          </div>
-        </td>
-      </tr>
-      </tbody>
-    </table>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
 
-    <div v-else>
-      <h3>{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_NO_HISTORY') }}</h3>
-    </div>
+      <div v-else>
+        <h3>{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_NO_HISTORY') }}</h3>
+      </div>
+    </template>
 
     <div class="em-page-loader" v-if="loading"></div>
   </div>
@@ -70,9 +80,11 @@ import mixin from "../../mixins/mixin.js";
 
 /* STORE */
 import {useGlobalStore} from "@/stores/global.js";
+import Pagination from "@/components/Utils/Pagination.vue";
 
 export default {
   name: "History",
+  components: {Pagination},
   props: {
     extension: {
       type: String,
@@ -81,16 +93,16 @@ export default {
     columns: {
       type: Array,
       default: () => [
-          // Modification(s)
-          'title',
-          // Type
-          'message_language_key',
-          // Date
-          'log_date',
-          // By
-          'user_id',
-          // Status
-          //'status',
+        // Modification(s)
+        'title',
+        // Type
+        'message_language_key',
+        // Date
+        'log_date',
+        // By
+        'user_id',
+        // Status
+        //'status',
       ],
     },
     displayTitle: {
@@ -119,6 +131,9 @@ export default {
       },
 
       history: [],
+      historyLength: 0,
+      page: 1,
+      limit: 10,
     };
   },
   setup() {
@@ -131,18 +146,22 @@ export default {
   },
   methods: {
     fetchHistory() {
-      settingsService.getHistory(this.extension).then((response) => {
+      this.loading = true;
+
+      settingsService.getHistory(this.extension, false, this.page, this.limit).then((response) => {
+        this.historyLength = parseInt(response.length);
+
         response.data.forEach((data) => {
           //data.log_date = new Date(data.log_date).toLocaleString();
           data.message = JSON.parse(data.message);
-          if(data.message.old_data) {
+          if (data.message.old_data) {
             data.message.old_data = JSON.parse(data.message.old_data);
           }
-          if(data.message.new_data) {
+          if (data.message.new_data) {
             data.message.new_data = JSON.parse(data.message.new_data);
           }
           // Convert data.message.new_data object to array
-          if(data.message.new_data) {
+          if (data.message.new_data) {
             data.message.new_data = Object.values(data.message.new_data);
           }
         });
@@ -152,8 +171,8 @@ export default {
       });
     },
 
-    updateHistoryStatus(id,status) {
-      if(this.sysadmin) {
+    updateHistoryStatus(id, status) {
+      if (this.sysadmin) {
         Swal.fire({
           title: this.translate('COM_EMUNDUS_GLOBAL_HISTORY_STATUS_UPDATE_TITLE'),
           text: this.translate('COM_EMUNDUS_GLOBAL_HISTORY_STATUS_UPDATE_TEXT'),
@@ -168,7 +187,7 @@ export default {
           },
         }).then((result) => {
           if (result.isConfirmed) {
-            settingsService.updateHistoryStatus(id,status).then(() => {
+            settingsService.updateHistoryStatus(id, status).then(() => {
               this.fetchHistory();
             });
           }
@@ -180,6 +199,14 @@ export default {
     sysadmin: function () {
       return parseInt(this.globalStore.hasSysadminAccess);
     },
+  },
+  watch: {
+    page: function () {
+      this.fetchHistory();
+    },
+    limit: function () {
+      this.fetchHistory();
+    },
   }
 }
 </script>
@@ -188,16 +215,20 @@ export default {
 table {
   border: unset;
 }
+
 table thead th {
   background: transparent;
   padding: 18px 12px;
 }
+
 table thead tr {
-  border-bottom: solid 1px #D9D9D9;
+  border-bottom: solid 1px var(--neutral-400);
 }
+
 table tbody tr:not(:last-child) {
-  border-bottom: solid 1px #D9D9D9;
+  border-bottom: solid 1px var(--neutral-400);
 }
+
 table tbody tr td {
   padding: 18px 12px;
 }

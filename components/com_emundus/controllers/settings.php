@@ -1961,14 +1961,18 @@ class EmundusControllersettings extends BaseController
 			$extension = $this->input->getString('extension', '');
 			$only_pending = $this->input->getString('only_pending', false);
 			$only_pending = filter_var($only_pending, FILTER_VALIDATE_BOOLEAN);
+			$page = $this->input->getInt('page', 1);
+			$limit = $this->input->getInt('limit', 10);
 
-			$requests = $this->m_settings->getHistory($extension, $only_pending);
+			$length = $this->m_settings->getHistoryLength($extension, $only_pending);
+			$requests = $this->m_settings->getHistory($extension, $only_pending, $page, $limit);
 			if (!empty($requests))
 			{
 				$response['status']  = true;
 				$response['code']    = 200;
 				$response['message'] = Text::_('REQUESTS_FOUND');
 				$response['data']    = $requests;
+				$response['length']    = $length;
 			}
 		}
 
