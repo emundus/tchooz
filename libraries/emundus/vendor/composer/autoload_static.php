@@ -66,6 +66,7 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         'S' => 
         array (
             'Symfony\\Polyfill\\Mbstring\\' => 26,
+            'Symfony\\Component\\HtmlSanitizer\\' => 32,
             'Svg\\' => 4,
             'Sabberworm\\CSS\\' => 15,
         ),
@@ -78,7 +79,6 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
             'PhpOffice\\PhpWord\\' => 18,
             'PhpOffice\\PhpSpreadsheet\\' => 25,
             'PhpOffice\\Math\\' => 15,
-            'PhpDocumentorMarkdown\\' => 22,
         ),
         'M' => 
         array (
@@ -87,6 +87,7 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         ),
         'L' => 
         array (
+            'League\\Uri\\' => 11,
             'Laminas\\Diactoros\\' => 18,
         ),
         'J' => 
@@ -161,6 +162,10 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
         ),
+        'Symfony\\Component\\HtmlSanitizer\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/html-sanitizer',
+        ),
         'Svg\\' => 
         array (
             0 => __DIR__ . '/..' . '/phenx/php-svg-lib/src/Svg',
@@ -198,10 +203,6 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         array (
             0 => __DIR__ . '/..' . '/phpoffice/math/src/Math',
         ),
-        'PhpDocumentorMarkdown\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/saggre/phpdocumentor-markdown/src',
-        ),
         'Matrix\\' => 
         array (
             0 => __DIR__ . '/..' . '/markbaker/matrix/classes/src',
@@ -209,6 +210,11 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         'Masterminds\\' => 
         array (
             0 => __DIR__ . '/..' . '/masterminds/html5/src',
+        ),
+        'League\\Uri\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/league/uri-interfaces',
+            1 => __DIR__ . '/..' . '/league/uri',
         ),
         'Laminas\\Diactoros\\' => 
         array (

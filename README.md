@@ -129,6 +129,22 @@ php cli/joomla.php tchooz:update
 phpDocumentor
 ```
 
+<!-- GITFLOW -->
+# Gitflow
+```mermaid
+gitGraph
+    commit
+    commit
+    branch develop
+    checkout develop
+    commit
+    commit
+    checkout main
+    merge develop
+    commit
+    commit
+```
+
 <!-- ROADMAP -->
 ## Roadmap
 
