@@ -104,7 +104,7 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
                                 </span>
                             </div>
                             <a href="<?php echo $form->link ?>" style="color: <?php echo $title_color; ?>;" <?php if ($form->id == $menuid) : ?>class="tw-font-medium"<?php endif; ?>>
-                                <?php echo JText::_($form->title); ?>
+                                <?php echo JText::_($form->label); ?>
                             </a>
                         </div>
 						<?php if ($index != (sizeof($forms) - 1) || ($show_mandatory_documents == 1 && !empty($mandatory_documents)) || ($show_optional_documents == 1 && !empty($optional_documents)) || !empty($checkout_url)) : ?>

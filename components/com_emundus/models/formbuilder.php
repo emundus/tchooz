@@ -3137,7 +3137,8 @@ class EmundusModelFormbuilder extends JModelList
 									if (!empty($newmenuid)) {
 										$update = [
 											'id' => $newmenuid,
-											'alias' => 'menu-profile' . $profile->id . '-form-' . $newmenuid
+											'alias' => 'menu-profile' . $profile->id . '-form-' . $newmenuid,
+											'published' => 1
 										];
 										$update = (object) $update;
 										$updated = $this->db->updateObject('#__menu', $update, 'id');
@@ -3438,29 +3439,6 @@ class EmundusModelFormbuilder extends JModelList
 		}
 		catch (Exception $e) {
 			Log::add('component/com_emundus/models/formbuilder | Error at getting databases references columns : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
-
-			return false;
-		}
-	}
-
-	/**
-	 * TODO: limit returned tables
-	 * @return array|false|mixed
-	 */
-	function getAllDatabases()
-	{
-
-		$query = $this->db->getQuery(true);
-
-		$query->select('table_name as database_name,table_name as label')
-			->from($this->db->quoteName('information_schema.TABLES'))
-			->where($this->db->quoteName('table_name') . ' LIKE ' . $this->db->quote('jos_%'));
-		$this->db->setQuery($query);
-		try {
-			return $this->db->loadObjectList();
-		}
-		catch (Exception $e) {
-			Log::add('component/com_emundus/models/formbuilder | Error at getting databases references : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}

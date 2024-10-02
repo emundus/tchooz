@@ -367,7 +367,7 @@ class EmundusHelperEvents
 
 			if (empty($user))
 			{
-				$user = Factory::getUser();
+				$user = Factory::getApplication()->getIdentity();
 			}
 
 			$eMConfig                       = ComponentHelper::getParams('com_emundus');

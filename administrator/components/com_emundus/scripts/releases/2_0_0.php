@@ -1768,6 +1768,53 @@ if(value == 1) {
 			$insert = (object) $insert;
 			$this->db->insertObject('#__emundus_setup_profiles_repeat_emundus_groups', $insert);
 
+			$columns = [
+				['name' => 'campaign_id', 'type' => 'INT', 'null' => 0],
+				['name' => 'lang_id', 'type' => 'INT', 'null' => 0],
+			];
+			$foreign_keys = [
+				[
+					'name'           => 'jos_emundus_setup_campaigns_languages_campaign_id_fk',
+					'from_column'    => 'campaign_id',
+					'ref_table'      => 'jos_emundus_setup_campaigns',
+					'ref_column'     => 'id',
+					'update_cascade' => true,
+					'delete_cascade' => true
+				]
+			];
+			EmundusHelperUpdate::createTable('jos_emundus_setup_campaigns_languages', $columns, $foreign_keys, 'Campaigns languages');
+
+			$columns = [
+				['name' => 'program_id', 'type' => 'INT', 'null' => 0],
+				['name' => 'lang_id', 'type' => 'INT', 'null' => 0],
+			];
+			$foreign_keys = [
+				[
+					'name'           => 'jos_emundus_setup_programs_languages_pid_fk',
+					'from_column'    => 'program_id',
+					'ref_table'      => 'jos_emundus_setup_programmes',
+					'ref_column'     => 'id',
+					'update_cascade' => true,
+					'delete_cascade' => true
+				]
+			];
+			EmundusHelperUpdate::createTable('jos_emundus_setup_programs_languages', $columns, $foreign_keys, 'Programs languages');
+
+			EmundusHelperUpdate::installExtension('plg_actionlog_emundus','emundus',null,'plugin',1,'actionlog');
+			EmundusHelperUpdate::updateComponentParameter('com_actionlogs','ip_logging',1);
+
+			$web_security_email = [
+				'lbl' => 'web_security_request',
+				'subject' => 'Demande de modification adresse web/SSL',
+				'message' => '<p>La plateforme <a href="[SITE_URL]" target="_blank">[SITE_URL]</a> souhaiterait apporter les modifications suivantes : [WEB_SECURITY_REQUESTS]</p>',
+				'type' => 1,
+				'published' => 0,
+				'email_tmpl' => 1,
+				'category' => 'Système'
+			];
+			$web_security_email = (object) $web_security_email;
+			$this->db->insertObject('#__emundus_setup_emails', $web_security_email);
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

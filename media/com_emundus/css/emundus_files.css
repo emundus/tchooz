@@ -1427,6 +1427,11 @@ div#em-appli-block .panel-body {
 #em_email_block .form-inline .form-group:first-child {
     padding-right: 20px;
 }
+
+.em_email_block .form-inline.row .em-form-selectCategory, .em_email_block .form-inline.row .em-form-selectTypeEmail {
+    width: 48%;
+}
+
 #quick .selectize-input{
     border-radius: 5px;
 }

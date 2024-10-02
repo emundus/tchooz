@@ -104,7 +104,7 @@
                     <div id="email-advanced-parameters" class="tw-mt-4" v-if="displayAdvancedParameters">
                         <div class="form-group tw-mb-4">
                             <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_SENDER_EMAIL') }}</label>
-                            <p class="tw-mt-2">{{ email_sender }}</p>
+                            <p class="tw-mt-2 tw-text-neutral-700">{{ email_sender }}</p>
                         </div>
 
                         <div class="form-group tw-mb-4">

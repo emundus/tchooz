@@ -257,5 +257,17 @@ if (isset($user->fnum) && !empty($user->fnum))
 		}
 	}
 
+	$lang = Factory::getLanguage();
+	$current_lang_tag = $lang->getTag();
+	$db = Factory::getContainer()->get('DatabaseDriver');
+	$query = $db->getQuery(true);
+	$query->select('lang_id')
+		->from('#__languages')
+		->where('lang_code = ' . $db->quote($current_lang_tag));
+
+	$db->setQuery($query);
+	$current_lang_id = $db->loadResult();
+	$campaign_languages = $m_campaign->getCampaignLanguages($user->fnum);
+
 	require(ModuleHelper::getLayoutPath('mod_emundusflow', $layout));
 }

@@ -41,10 +41,22 @@ module.exports = {
             pattern: /tw-grid-cols-/,
             variants: ['sm', 'md', 'lg'],
         },
+        {
+            pattern: /tw-border-/
+        },
+        {
+            pattern: /tw-bg-/
+        },
+        {
+            pattern: /tw-text-orange-500/
+        },
+        {
+            pattern: /tw-text-main-500/
+        },
     ],
     theme: {
         extend: {
-            scale:{
+            scale: {
                 '200': '2',
                 '300': '3',
                 '400': '4',
@@ -141,6 +153,7 @@ module.exports = {
                 10: 'var(--em-spacing-10)',
                 11: 'var(--em-spacing-11)',
                 12: 'var(--em-spacing-12)',
+                'py-4':'calc(var(--em-spacing-4) * 3.7)',
             },
             borderRadius: {
                 'coordinator': 'var(--em-coordinator-br)',
@@ -207,6 +220,11 @@ module.exports = {
                         border: '1px solid var(--em-profile-color)',
                         textDecoration: 'none',
                     },
+
+                    '&:disabled': {
+                        opacity: '0.6',
+                        cursor: 'not-allowed',
+                    }
                 },
 
                 '.btn-secondary': {

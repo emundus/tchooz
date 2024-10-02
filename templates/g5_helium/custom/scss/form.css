@@ -1311,12 +1311,12 @@
     .com_emundus {
         /** INPUT **/
 
-        input:not([type='radio']):not([type='checkbox']):not([type='file']), select {
+        input:not([type='radio']):not([type='checkbox']):not([type='file']):not(.custom-color-picker), select {
             height: var(--em-form-height);
             border-radius: var(--em-form-br);
         }
 
-        input:not([type='file']), select, textarea {
+        input:not([type='file']):not(.custom-color-picker), select, textarea {
             color: var(--em-default-text-color-1);
             border-radius: var(--em-coordinator-br);
             @apply tw-px-1.5 tw-py-2;

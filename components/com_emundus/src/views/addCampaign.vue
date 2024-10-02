@@ -297,6 +297,28 @@
           </a>
         </div>
 
+
+        <hr class="tw-mt-16"/>
+
+        <div id="select-campaign-languages">
+          <label>
+            {{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_LANGUAGES') }}
+          </label>
+          <multiselect
+              v-model="campaignLanguages"
+              label="label"
+              track-by="value"
+              :options="languageOptions"
+              :multiple="true"
+              :taggable="true"
+              select-label=""
+              selected-label=""
+              deselect-label=""
+          ></multiselect>
+        </div>
+
+        <hr class="tw-mt-1.5 tw-mb-1.5"/>
+
         <div class="tw-flex tw-justify-end tw-mt-4">
           <button
               id="save-btn"
@@ -334,11 +356,13 @@ import programmeService from '@/services/programme.js';
 import { useGlobalStore } from "@/stores/global.js";
 import { useCampaignStore } from "@/stores/campaign.js";
 import fileService from "@/services/file.js";
+import Multiselect from "vue-multiselect";
 
 export default {
   name: "addCampaign",
 
   components: {
+    Multiselect,
     TipTapEditor,
     Autocomplete,
     DatePicker
@@ -380,7 +404,7 @@ export default {
     old_training: "",
     old_program_form: "",
     aliasUpdated: false,
-
+    campaignLanguages: [],
     form: {
       label: {},
       start_date: "",
@@ -541,6 +565,8 @@ export default {
         this.form.start_date = new Date();
         this.ready = true;
       }
+
+      this.getCampaignLanguages();
       this.getAllPrograms();
     },
 
@@ -552,6 +578,14 @@ export default {
       }).catch(e => {
         console.log(e);
       });
+    },
+
+    getCampaignLanguages() {
+      if (this.campaignId) {
+        campaignService.getCampaignLanguages(this.campaignId).then((response) => {
+          this.campaignLanguages = response.data;
+        });
+      }
     },
 
     getAllPrograms() {
@@ -603,6 +637,7 @@ export default {
     createCampaign(form_data) {
       form_data.start_date = this.formatDate(new Date(this.form.start_date));
       form_data.end_date = this.formatDate(new Date(this.form.end_date));
+      form_data.languages = this.campaignLanguages.map((language) => language.value);
 
       campaignService.createCampaign(form_data).then((response) => {
         if(response.status == 1) {
@@ -758,6 +793,7 @@ export default {
       form_data.training = this.programForm.code;
       form_data.start_date = this.formatDate(new Date(this.form.start_date));
       form_data.end_date = this.formatDate(new Date(this.form.end_date));
+      form_data.languages = this.campaignLanguages.map((language) => language.value);
 
       campaignService.updateCampaign(form_data, this.campaignId).then((response) => {
         if (!response.status) {
@@ -879,6 +915,14 @@ export default {
 
       return new Date().getFullYear() + ' - ' + oneYearFromNow.getFullYear();
     },
+    languageOptions() {
+      return this.languages.map((language) => {
+        return {
+          label: language.title,
+          value: language.lang_id
+        }
+      });
+    }
   },
 
   watch: {

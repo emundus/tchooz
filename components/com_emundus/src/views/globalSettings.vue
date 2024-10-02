@@ -34,14 +34,16 @@
 
 <script>
 import EditEmailJoomla from "@/components/Settings/EditEmailJoomla.vue";
+import WebSecurity from "@/components/Settings/WebSecurity/WebSecurity.vue";
+
+import Multiselect from 'vue-multiselect';
 import SidebarMenu from "@/components/Menus/SidebarMenu.vue";
 import SettingsContent from "@/components/Settings/SettingsContent.vue";
 import Addons from "@/components/Settings/Addons.vue";
-import Info from "@/components/info.vue";
+import Info from "@/components/Utils/Info.vue";
 import SectionComponent from "@/components/Settings/SectionComponent.vue";
 import WorkflowSettings  from "@/views/Workflows/WorkflowSettings.vue";
 
-import Multiselect from 'vue-multiselect';
 import Swal from "sweetalert2";
 
 import { useSettingsStore } from "@/stores/settings.js";
@@ -54,6 +56,7 @@ export default {
     SettingsContent,
     SidebarMenu,
     EditEmailJoomla,
+    WebSecurity,
     Multiselect,
     Addons,
     Info,
