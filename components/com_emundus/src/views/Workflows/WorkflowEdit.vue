@@ -250,7 +250,7 @@ export default {
           return this.statuses = response.data.map(status => {
             return {
               id: status.step,
-              label: status.label.fr
+              label: status.label[useGlobalStore().shortLang]
             }
           });
         })
@@ -264,7 +264,7 @@ export default {
           this.programsOptions = response.data.datas.map(program => {
             return {
               id: program.id,
-              label: program.label.fr
+              label: program.label[useGlobalStore().shortLang]
             }
           });
         })
