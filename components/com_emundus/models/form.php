@@ -2687,9 +2687,12 @@ class EmundusModelForm extends JModelList
 					foreach ($js_condition->conditions as $condition)
 					{
 						$query->clear()
-							->select('label,plugin,params')
-							->from($this->db->quoteName('#__fabrik_elements'))
-							->where($this->db->quoteName('name') . ' = ' . $this->db->quote($condition->field));
+							->select('jfe.label,jfe.plugin,jfe.params')
+							->from($this->db->quoteName('#__fabrik_elements', 'jfe'))
+							->leftJoin($this->db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON ' . $this->db->quoteName('jffg.group_id') . ' = ' . $this->db->quoteName('jfe.group_id'))
+							->where($this->db->quoteName('jfe.name') . ' = ' . $this->db->quote($condition->field))
+							->andWhere($this->db->quoteName('jffg.form_id') . ' = ' . $this->db->quote($form_id));
+
 						$this->db->setQuery($query);
 						$elt = $this->db->loadObject();
 						$condition->elt_label = Text::_($elt->label);
