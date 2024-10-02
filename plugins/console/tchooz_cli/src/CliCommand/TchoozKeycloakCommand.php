@@ -204,6 +204,7 @@ class TchoozKeycloakCommand extends AbstractCommand
 		$this->tchooz_additional_redirect_uri = $this->getStringFromOption('tchooz_additional_redirect_uri', '[Optional] You can add other redirect uris', false);
 		$this->scopes                         = $this->getStringFromOption('scopes', '[Optional] You can override default scopes', false);
 		$this->destroy                        = $input->getOption('destroy');
+		$this->force                          = $input->getOption('force');
 
 		if (!empty($this->keycloak_url) && !empty($this->keycloak_client_id) && !empty($this->keycloak_client_secret))
 		{
@@ -239,6 +240,11 @@ class TchoozKeycloakCommand extends AbstractCommand
 				// Destroy keycloak client
 				if($this->destroy) {
 					$old_client_id = $this->getEmundusDirectory();
+
+					if(($old_client_id != $this->tchooz_client_id) && !$this->force) {
+						$this->ioStyle->error("The plugin client id $old_client_id is not the same as the live site configuration " . $this->tchooz_client_id . ". If you want to force the deletion of the client, please use the --force option");
+						return Command::FAILURE;
+					}
 
 					$keycloak_client = $this->getKeycloakClient($old_client_id);
 					if(!empty($keycloak_client))
@@ -845,6 +851,7 @@ class TchoozKeycloakCommand extends AbstractCommand
 		$this->addOption('tchooz_additional_redirect_uri', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Tchooz redirect uris');
 		$this->addOption('scopes', null, InputOption::VALUE_OPTIONAL, 'Tchooz redirect uris');
 		$this->addOption('destroy', null, InputOption::VALUE_NONE, 'Destroy keycloak client');
+		$this->addOption('force', 'f', InputOption::VALUE_NONE, 'Force destroy keycloak client');
 		$this->setDescription('Setup keycloak configuration');
 		$this->setHelp($help);
 	}
