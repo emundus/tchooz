@@ -1,5 +1,7 @@
 import {FetchClient} from './fetchClient.js';
-const fetchClient = new FetchClient('files');
+
+const client = new FetchClient('files');
+
 export default {
   async getFnums() {
     try {
@@ -29,7 +31,7 @@ export default {
   },
   async getProfiles() {
     try {
-      return await fetchClient.get('getprofiles');
+      return await client.get('getprofiles');
     } catch (e) {
       return {
         status: false,
@@ -39,7 +41,7 @@ export default {
   },
   async getFileIdFromFnum(fnum) {
     try {
-      return await fetchClient.get('getFileIdFromFnum', {
+      return await client.get('getFileIdFromFnum', {
         fnum: fnum
       });
     } catch (e) {
