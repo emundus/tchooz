@@ -286,7 +286,7 @@ Below are several links that are essential for developers working on this projec
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
 [product-screenshot]: images/product-screenshot.png
-[gitflow]: images/gitflow.svg
+[gitflow]: images/gitflow.png
 
 [Vue.js]: https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D
 
