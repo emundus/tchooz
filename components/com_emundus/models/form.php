@@ -2454,7 +2454,16 @@ class EmundusModelForm extends JModelList
 		}
 	}
 
-	function getDatabaseJoinOptions($table, $column, $value, $concat_value = null, $where = null)
+	/*
+	 *
+	 * @param $table
+	 * @param $column
+	 * @param $value
+	 * @param $concat_value
+	 * @param $where
+	 * @param $private_call -> WARNING : if true, the function will not check if the table is allowed, must not be called from controller if true
+	 */
+	function getDatabaseJoinOptions($table, $column, $value, $concat_value = null, $where = null, $private_call = false)
 	{
 		$options = [];
 
@@ -2468,7 +2477,7 @@ class EmundusModelForm extends JModelList
 			$this->db->setQuery($query);
 			$allowed_tables = $this->db->loadColumn();
 
-			if (!in_array($table, $allowed_tables)) {
+			if (!in_array($table, $allowed_tables) && !$private_call) {
 				throw new Exception(Text::_('ACCESS_DENIED'));
 			}
 
@@ -2723,7 +2732,7 @@ class EmundusModelForm extends JModelList
 							$condition->options = new stdClass();
 							$condition->options->sub_values = [];
 							$condition->options->sub_labels = [];
-							$databasejoin_options = $this->getDatabaseJoinOptions($params->join_db_name, $params->join_key_column, $params->join_val_column, $params->join_val_column_concat);
+							$databasejoin_options = $this->getDatabaseJoinOptions($params->join_db_name, $params->join_key_column, $params->join_val_column, $params->join_val_column_concat, null, true);
 							foreach ($databasejoin_options as $databasejoin_option) {
 								$condition->options->sub_values[] = $databasejoin_option->primary_key;
 								$condition->options->sub_labels[] = $databasejoin_option->value;
