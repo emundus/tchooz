@@ -525,6 +525,7 @@ div#frame.outline {
     display: flex;
     justify-content: space-between;
     flex-direction: row;
+    row-gap: 20px;
   }
 
   #header-c {
@@ -543,6 +544,10 @@ div#frame.outline {
       .platform-content {
         margin: 0 0 0 16px;
         padding: 0;
+      }
+
+      .platform-content:first-child {
+        margin: 0;
       }
     }
   }
@@ -4902,17 +4907,14 @@ screen and (max-height: 769px) {
     height: auto;
   }
 
-  #g-navigation #header-a {
-    position: absolute;
-    left: 35px;
-  }
-
   .gantry #g-navigation.em_emundus_menu_active .g-container #header-b {
     justify-content: center;
   }
 
   .gantry #g-navigation .g-grid {
-    row-gap: 8px;
+    row-gap: 20px;
+    align-items: center;
+    padding-top: 61px;
   }
 }
 
@@ -4927,6 +4929,12 @@ screen and (max-height: 769px) {
 
 @media all and (max-width: 479px) {
 
+  #g-navigation {
+    .g-grid {
+      padding-top: 61px;
+    }
+  }
+
   .mon-profil #g-container-main .g-container {
     padding: 0 20px;
   }
@@ -4940,7 +4948,7 @@ screen and (max-height: 769px) {
   }
 
   #g-navigation .g-container #header-c .moduletable .header-right {
-    flex-direction: column;
+    flex-direction: row;
     display: flex;
   }
 
@@ -5079,6 +5087,9 @@ screen and (max-height: 769px) {
 
   #g-navigation .g-container #header-c {
     justify-content: center;
+    width: 100% !important;
+    right: 0 !important;
+    padding-left: 20px;
 
     .platform-content {
       text-align: center;
@@ -5253,7 +5264,7 @@ screen and (max-height: 769px) {
 
     .g-content {
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       justify-content: center;
       align-items: center !important;
 
@@ -5348,10 +5359,14 @@ screen and (max-height: 769px) {
 
   .gantry #g-navigation .g-grid {
     row-gap: 8px;
+    flex-direction: column;
+    align-items: start;
+    gap: 20px;
   }
 
   .gantry #g-navigation .g-container #header-b {
     justify-content: center;
+    width: 100%;
   }
 
   #g-navigation #header-c {
@@ -5466,8 +5481,7 @@ screen and (max-height: 769px) {
     display: flex;
     align-items: center;
     justify-content: center;
-    position : absolute;
-    left: 20px;
+    width: fit-content;
   }
 
   #g-navigation #header-c, #g-navigation #header-c.without-tchooz-and-lang-switcher, #g-navigation #header-c.without-lang-switcher, #g-navigation #header-c.without-tchooz {
@@ -5475,7 +5489,7 @@ screen and (max-height: 769px) {
   }
 
   #g-navigation #header-c .g-content {
-    flex-direction: column !important;
+    flex-direction: row !important;
     justify-content: center !important;
     align-items: center !important;
 
@@ -5766,6 +5780,10 @@ screen and (max-height: 769px) {
 
   #g-navigation .g-container #header-c {
     justify-content: center;
+    position: absolute;
+    top: 5px;
+    right: 16px;
+    width: fit-content;
   }
 
   .em-container-footer-cand .em-flex-row {
@@ -5816,6 +5834,8 @@ screen and (max-height: 769px) {
   #g-navigation .g-container #header-c {
     .g-content .platform-content:nth-child(1) {
       margin: 0 !important;
+      top: 17px;
+      right: 226px;
     }
   }
 }
@@ -5842,6 +5862,9 @@ screen and (max-height: 769px) {
 
   #g-navigation .g-container #header-c {
     justify-content: center;
+    position: absolute;
+    right: 16px;
+    width: fit-content;
   }
 
   #g-navigation .g-container {
@@ -5849,8 +5872,7 @@ screen and (max-height: 769px) {
   }
 
   .gantry .em-guest #g-navigation .g-grid {
-    row-gap: 8px;
-    justify-content: end;
+    gap: 20px;
   }
 
   .gantry #g-navigation.em_emundus_menu_active .g-container #header-b {
@@ -5917,15 +5939,6 @@ screen and (max-height: 769px) {
       width: 100%;
       margin: auto !important;
     }
-
-    #header-a {
-      left: 20px;
-      position: absolute;
-    }
-
-    /*#header-c  .g-content {
-      flex-direction: column;
-    }*/
   }
 
   #header-c .platform-content .em-messages-modal {
