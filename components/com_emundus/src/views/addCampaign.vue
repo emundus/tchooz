@@ -301,7 +301,7 @@
 
         <hr class="tw-mt-16"/>
 
-        <div id="select-campaign-languages">
+        <div id="select-campaign-languages" v-if="languageOptions.length > 1">
           <label>
             {{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_LANGUAGES') }}
           </label>
