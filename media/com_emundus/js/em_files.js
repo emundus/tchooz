@@ -2870,9 +2870,13 @@ $(document).ready(function() {
 
                         // add an input checkbox concat_attachments_with_form
                         $('#data').append('<div class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16" id="params">' +
-                            '<div class="flex flex-row">' +
+                            '<div class="tw-flex tw-flex-row">' +
                             '<input class="em-ex-check" type="checkbox"  value="concat_attachments_with_form" name="concat_attachments_with_form" id="concat_attachments_with_form" />&ensp;' +
-                            '<label for="concat_attachments_with_form">' + Joomla.JText._('COM_EMUNDUS_EXPORTS_CONCAT_ATTACHMENTS_WITH_FORMS') + '</label>' +
+                            '<label for="concat_attachments_with_form">' + Joomla.Text._('COM_EMUNDUS_EXPORTS_CONCAT_ATTACHMENTS_WITH_FORMS') + '</label>' +
+                            '</div>' +
+                            '<div class="tw-flex tw-flex-row">' +
+                            '<input class="em-ex-check" type="checkbox" value="convert_docx_to_pdf" name="convert_docx_to_pdf" id="convert_docx_to_pdf" />&ensp;' +
+                            '<label for="convert_docx_to_pdf">' + Joomla.Text._('COM_EMUNDUS_EXPORTS_CONVERT_DOCX_TO_PDF') + '</label>' +
                             '</div>');
 
                         checkInput = getUserCheck();
