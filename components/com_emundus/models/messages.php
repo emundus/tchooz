@@ -1571,48 +1571,65 @@ class EmundusModelMessages extends ListModel
 	 */
 	public function exportMessagesBeforeADate($date)
 	{
-		$csv_filename = null;
+		$csv_filename = '';
 
 		if (!(empty($date)))
 		{
 			if(version_compare(JVERSION, '4.0', '>=')) {
-				$this->db = Factory::getContainer()->get('DatabaseDriver');
+				$db = Factory::getContainer()->get('DatabaseDriver');
 			} else {
-				$this->db = Factory::getDbo();
+				$db = Factory::getDbo();
 			}
 
-			$query = $this->db->getQuery(true);
+			$limit = 10000;
+			$offset = 0;
+			$header_written = false;
 
-			$query->select('*')
-				->from($this->db->quoteName('#__messages'))
-				->where($this->db->quoteName('date_time') . ' < ' . $this->db->quote($date->format('Y-m-d H:i:s')))
-				->where($this->db->quoteName('folder_id') . ' <> 2')
-				->where($this->db->quoteName('page') . ' IS NULL');
+			do {
+				$query = $db->getQuery(true);
 
-			try
-			{
-				$this->db->setQuery($query);
-				$messages = $this->db->loadAssocList();
-			}
-			catch (Exception $e)
-			{
-				Log::add('Could not fetch messages from jos_messages table in model messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
-			}
+				$query->clear()
+					->select('*')
+					->from($db->quoteName('#__messages'))
+					->where($db->quoteName('date_time') . ' < ' . $db->quote($date->format('Y-m-d H:i:s')))
+					->where($db->quoteName('folder_id') . ' <> 2')
+					->where($db->quoteName('page') . ' IS NULL')
+					->setLimit($limit, $offset);
 
-			if (!empty($messages))
-			{
-				$csv_filename = JPATH_SITE . '/tmp/backup_messages_' . date('Y-m-d_H-i-s') . '.csv';
-				$csv_file     = fopen($csv_filename, 'w');
-				fputcsv($csv_file, array_keys($messages[0]));
-				foreach ($messages as $message)
+				try
 				{
-					fputcsv($csv_file, $message);
+					$db->setQuery($query);
+					$messages = $db->loadAssocList();
+				}
+				catch (Exception $e)
+				{
+					Log::add('Could not fetch messages from jos_messages table in model messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+					break;
 				}
 
+				if (!empty($messages))
+				{
+					if (!$header_written) {
+						$csv_filename = JPATH_SITE . '/tmp/backup_messages_' . date('Y-m-d_H-i-s') . '.csv';
+						$csv_file     = fopen($csv_filename, 'w');
+						fputcsv($csv_file, array_keys($messages[0]));
+						$header_written = true;
+					}
+
+					foreach ($messages as $message)
+					{
+						fputcsv($csv_file, $message);
+					}
+
+					$offset += $limit;
+				}
+
+			} while (count($messages) == $limit);
+
+			if ($header_written) {
 				fclose($csv_file);
 			}
 		}
-
 		return $csv_filename;
 	}
 
