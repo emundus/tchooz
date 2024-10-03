@@ -17,6 +17,7 @@
 defined('_JEXEC') || die;
 use Joomla\CMS\Helper\ContentHelper;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Uri\Uri;
 
 /**
  * DropfilesHelper class
@@ -138,15 +139,20 @@ class DropfilesHelper
     /**
      * Ordering multi category files
      *
-     * @param array  $files     Files List
-     * @param string $ordering  Ordering
-     * @param string $direction Ordering Direction
+     * @param array  $files      Files List
+     * @param string $ordering   Ordering
+     * @param string $direction  Ordering Direction
+     * @param string $categoryId Category id
      *
      * @return array
      * @since  version
      */
-    public static function orderingMultiCategoryFiles($files, $ordering, $direction)
+    public static function orderingMultiCategoryFiles($files, $ordering, $direction, $categoryId = null)
     {
+        if (!class_exists('DropfilesModelOptions')) {
+            JLoader::register('DropfilesModelOptions', JPATH_ADMINISTRATOR . '/components/com_dropfiles/models/options.php');
+        }
+
         if (!empty($files)) {
             $ordering = strtolower($ordering);
             $direction = strtolower($direction);
@@ -180,6 +186,26 @@ class DropfilesHelper
                     usort($files, function ($first, $second) {
                         return ((int)$first->hits < (int)$second->hits) ? 1 : -1;
                     });
+                    break;
+                case 'ordering':
+                    $options = new DropfilesModelOptions();
+                    $orderingList = !is_null($categoryId) ? (array) json_decode($options->get_option('dropfiles_custom_ordering_' . $categoryId)) : null;
+                    if (!is_null($orderingList) && is_array($orderingList) && !empty($orderingList)) {
+                        foreach ($files as $index => &$file) {
+                            if (array_key_exists($file->id, $orderingList)) {
+                                $file->ordering = $orderingList[$file->id];
+                            }
+                        }
+
+                        usort($files, function ($first, $second) {
+                            return (intval($first->ordering) < intval($second->ordering)) ? 1 : -1;
+                        });
+                    } else {
+                        usort($files, function ($first, $second) {
+                            return (strtolower($first->title) < strtolower($second->title)) ? 1 : -1;
+                        });
+                        break;
+                    }
                     break;
                 case 'title':
                 default:
@@ -321,7 +347,7 @@ class DropfilesHelper
         $wam->useScript('webcomponent.media-select');
         $wam->useStyle('webcomponent.field-media')
             ->useScript('webcomponent.field-media');
-
+        $doc->addScriptOptions('media-picker-api', ['apiBaseUrl' => Uri::base() . 'index.php?option=com_media&format=json']);
 
         if (count($doc->getScriptOptions('media-picker')) === 0) {
             $imagesExt = array_map(
@@ -382,6 +408,9 @@ class DropfilesHelper
      */
     public static function validateFrontTask($task)
     {
+        if (!$task) {
+            return  false;
+        }
         if (strpos($task, 'googledrive.') === 0 || strpos($task, 'dropbox.') === 0
             || strpos($task, 'onedrive.') === 0 ||  strpos($task, 'onedrivebusiness.') === 0
             || strpos($task, 'frontdropbox.') === 0 ||  strpos($task, 'frontgoogle.') === 0

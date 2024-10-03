@@ -266,6 +266,7 @@ jQuery(document).ready(function ($) {
         if (!tasksmanage && tasksmanage !== 'site_manage') {
             updatepreview();
         } else {
+            localStorage.removeItem("dropfilesSelectedCatId");
             updatepreview(catsmanage);
         }
     }
@@ -446,9 +447,12 @@ jQuery(document).ready(function ($) {
         if (!id_category || jQuery.inArray(id_category, listIdDisable) >= 0) {
             validCat = false
         } else {
-            let activeCat = $('#categorieslist li.active[data-id-category=' + id_category + ']');
-            if (typeof(activeCat) == 'undefined' || !activeCat) {
+            let activeCat = $('#categorieslist li[data-id-category=' + id_category + ']');
+            if (typeof(activeCat) == 'undefined' || !activeCat.length) {
                 validCat = false
+            } else {
+                $('#categorieslist li').removeClass('active');
+                $(activeCat).addClass('active');
             }
         }
 
@@ -555,7 +559,6 @@ jQuery(document).ready(function ($) {
             hoverClass: "dd-content-hover",
             tolerance: "pointer",
             drop: function (event, ui) {
-
                 $(this).addClass("ui-state-highlight");
                 cat_target = $(event.target).parent().data("id-category");
                 current_cat = $("#categorieslist .dd-item.active").data('id-category');
@@ -834,7 +837,7 @@ jQuery(document).ready(function ($) {
             data: files
         }).done(function (data) {
             result = jQuery.parseJSON(data);
-            if (result.response === true) {
+            if (result === true) {
                 bootbox.alert(result.datas.nb + Joomla.JText._('COM_DROPFILES_JS_X_FILES_IMPORTED', ' files imported'));
                 updatepreview(id_category);
             } else {
@@ -1222,9 +1225,9 @@ jQuery(document).ready(function ($) {
             if ($(e.target).is('#rightcol') ||
                 $(e.target).is('#mybootstrap') ||
                 $(e.target).parents('#rightcol').length > 0 ||
-                $(e.target).parents('#rightcol').length > 0 ||
                 $(e.target).is('.modal-backdrop') ||
                 $(e.target).parents('.bootbox.modal').length > 0 ||
+                $(e.target).parents('.joomla-dialog-media-field').length > 0 ||
                 $(e.target).parents('.mce-container').length > 0 ||
                 $(e.target).parents('.tagit-autocomplete').length > 0 ||
                 $(e.target).parents('#toolbar-copy').length > 0 ||
@@ -2386,8 +2389,13 @@ jQuery(document).ready(function ($) {
                     }).done(function (data) {
                         result = jQuery.parseJSON(data);
                         if (result.response === true) {
+                            var cat_list = $('#mycategories #categorieslist li[data-id-category=' + id_category + ']').parent();
                             $('#mycategories #categorieslist li[data-id-category=' + id_category + ']').remove();
                             $('#preview').contents().remove();
+                            if (cat_list.html() == '') {
+                                cat_list.parent().find('.dd-collapse').remove();
+                                cat_list.remove();
+                            }
                             first = $('#mycategories #categorieslist li dd-content').first();
                             if (first.length > 0) {
                                 first.click();
@@ -2598,10 +2606,11 @@ function insertCategorytoEditor(editor_name) {
  */
 function insertCategory() {
     id_category = jQuery('input[name=id_category]').val();
-
+    let title =  jQuery('#categorieslist li[data-id-category="' + id_category + '"]').find('.title').text();
     dir = decodeURIComponent(getUrlVar('path'));
     code = '<img src="' + dir + '/components/com_dropfiles/assets/images/t.gif"' +
         ' data-dropfilescategory="' + id_category + '"' +
+        ' title="' + title + '"' +
         ' style="background: url(' + dir + '/components/com_dropfiles/assets/images/folder_download.png) no-repeat scroll center center #444444;' +
         'height: 200px;' +
         'border-radius: 10px;' +

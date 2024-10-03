@@ -12,19 +12,17 @@
  * @license   GNU General Public License version 2 or later; http://www.gnu.org/licenses/gpl-2.0.html
  */
 
-
 //-- No direct access
 defined('_JEXEC') || die('=;)');
 DropfilesFilesHelper::includeJSHelper();
 $usegoogleviewer  = ((int) $this->componentParams->get('usegoogleviewer', 1) === 1) ? 'dropfileslightbox' : '';
 $target           = ((int) $this->componentParams->get('usegoogleviewer', 1) === 2) ? 'target="_blank"' : '';
 $showdownload     = (int) DropfilesBase::loadValue($this->params, 'showdownload', 1);
-
+$showFolderTree   = intval(DropfilesBase::loadValue($this->params, 'showfoldertree', 0)) === 1 ? true : false;
 $showdownloadcate = 0;
 if ($this->viewfileanddowload && $showdownload) {
-    $showdownloadcate = (int) $this->componentParams->get('download_category', 0) ;
+    $showdownloadcate = (int) $this->componentParams->get('download_category', 0);
 }
-
 ?>
 <?php if ((int) DropfilesBase::loadValue($this->params, 'showsubcategories', 1) || (int) DropfilesBase::loadValue($this->params, 'showcategorytitle', 1)) : ?>
     <script type="text/x-handlebars-template" id="dropfiles-template-default-categories-<?php echo $this->category->id; ?>">
@@ -66,7 +64,6 @@ if ($this->viewfileanddowload && $showdownload) {
     </script>
 <?php endif; ?>
 
-
 <script type="text/x-handlebars-template" id="dropfiles-template-default-files-<?php echo $this->category->id; ?>">
     {{#if category}}
     {{#if category.type}}
@@ -84,7 +81,7 @@ if ($this->viewfileanddowload && $showdownload) {
                 {{#if custom_icon}}
                 <div class="custom-icon {{ext}}"><img src="{{custom_icon_thumb}}" alt=""/></div>
                 {{else}}
-                <div class="ext {{ext}}"><span class="txt">{{ext}}</span></div>
+                <div class="ext {{ext}} ext-{{ext}}"><span class="txt">{{ext}}</span></div>
                 {{/if}}
                 <?php if ((int) DropfilesBase::loadValue($this->params, 'showtitle', 1) === 1) : ?>
                     <h3>
@@ -163,7 +160,7 @@ if ($this->viewfileanddowload && $showdownload) {
 </script>
 
 <?php if (!empty($this->files) || !empty($this->category)) : ?>
-    <div class="dropfiles-content dropfiles-content-multi dropfiles-files dropfiles-content-default"
+    <div class="dropfiles-content dropfiles-content-multi dropfiles-files dropfiles-content-default <?php echo $showFolderTree ? 'dropfiles-content-folder-tree' : ''; ?>"
          data-category="<?php echo $this->category->id; ?>" data-category-name="<?php echo $this->category->title; ?>">
         <input type="hidden" id="current_category" value="<?php echo $this->category->id; ?>"/>
         <input type="hidden" id="current_category_slug" value="<?php echo $this->category->alias; ?>"/>
@@ -197,6 +194,17 @@ if ($this->viewfileanddowload && $showdownload) {
                 <a data-catid="" class="default-download-category download-all" href="<?php echo $this->category->linkdownload_cat; ?>"><span class="btn-title"><?php echo JText::_('COM_DROPFILES_DOWNLOAD_ALL'); ?></span><i class="zmdi zmdi-check-all"></i></a>
             <?php endif;?>
         <?php endif; ?>
+        <?php
+        // Show empty category message
+        if (empty($this->files) && empty($this->categories)) {
+            if ((int) $this->componentParams->get('show_empty_folder_message', 0) === 1) {
+                $msg = JText::_('COM_DROPFILES_CONFIG_EMPTY_FOLDER_MESSAGE');
+                $msg = str_replace('{category_title}', $this->category->title, $msg);
+                echo '<p class="category_empty" style="font-size: 16px; margin-top: 15px;">'. $msg .'</p>';
+                return;
+            }
+        }
+        ?>
         <div class="dropfiles-container">
             <?php if ((int) DropfilesBase::loadValue($this->params, 'showfoldertree', 0) === 1) : ?>
                 <div class="dropfiles-foldertree-default dropfiles-foldertree">
@@ -241,7 +249,7 @@ if ($this->viewfileanddowload && $showdownload) {
                                             <div class="custom-icon <?php echo $file->ext; ?>"><img
                                                         src="<?php echo $file->custom_icon_thumb; ?>" alt=""></div>
                                         <?php else : ?>
-                                            <div class="ext <?php echo $file->ext; ?>"><span
+                                            <div class="ext <?php echo $file->ext; ?> <?php echo 'ext-' . $file->ext; ?>"><span
                                                         class="txt"><?php echo $file->ext; ?></span></div>
                                         <?php endif; ?>
                                         <?php if ((int) DropfilesBase::loadValue($this->params, 'showtitle', 1) === 1) : ?>

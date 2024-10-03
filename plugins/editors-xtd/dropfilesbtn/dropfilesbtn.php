@@ -18,7 +18,7 @@ defined('_JEXEC') || die;
 /**
  * Class PlgButtonDropfilesbtn
  */
-class PlgButtonDropfilesbtn extends \Joomla\CMS\Plugin\CMSPlugin
+class PlgButtonDropfilesbtn extends JPlugin
 {
 
     /**
@@ -110,7 +110,7 @@ class PlgButtonDropfilesbtn extends \Joomla\CMS\Plugin\CMSPlugin
                     }');
         } else {
             // set modal height in J4
-            $css = '#'.$name.'_dropfiles_modal .modal-body { padding: 0; height: 90vh} #'.$name.'_dropfiles_modal .modal-body iframe, #dropfiles_modal .modal-body iframe  { height: 100%;} ';
+            $css = '#'.$name.'_dropfiles_modal .modal-body { padding: 0; height: 90vh; overflow-y: hidden !important;} #'.$name.'_dropfiles_modal .modal-body iframe, #dropfiles_modal .modal-body iframe  { height: 100%;} ';
             $doc->addStyleDeclaration($css);
         }
 

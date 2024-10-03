@@ -1,4 +1,4 @@
-@import url(../fonts/mainfonts.css);
+@import "../fonts/mainfonts.css";
 .ju-setting-label {
   font-size: 15px;
   font-weight: 600;
@@ -9,8 +9,8 @@
   color: #404852;
 }
 
-.ju-main-wrapper .ju-left-panel .tabs.ju-menu-tabs li.tab a.link-tab:hover:before, .ju-main-wrapper .ju-left-panel .tabs.ju-menu-tabs li.tab a.link-tab.active:not(.expanded):before, .ju-main-wrapper .ju-left-panel .tabs.ju-menu-tabs li.tab .ju-submenu-tabs div.link-tab:hover:before, .ju-main-wrapper .ju-left-panel .tabs.ju-menu-tabs li.tab .ju-submenu-tabs div.link-tab.active:before {
-  content: '';
+.ju-main-wrapper .ju-left-panel .tabs.ju-menu-tabs li.tab .ju-submenu-tabs div.link-tab.active:before, .ju-main-wrapper .ju-left-panel .tabs.ju-menu-tabs li.tab .ju-submenu-tabs div.link-tab:hover:before, .ju-main-wrapper .ju-left-panel .tabs.ju-menu-tabs li.tab a.link-tab.active:not(.expanded):before, .ju-main-wrapper .ju-left-panel .tabs.ju-menu-tabs li.tab a.link-tab:hover:before {
+  content: "";
   display: block;
   position: absolute;
   top: 0;
@@ -22,7 +22,7 @@
   pointer-events: none;
 }
 
-.ju-notice-success, .ju-notice-error {
+.ju-notice-error, .ju-notice-success {
   padding: 10px;
   margin: 20px 20px 20px 0;
   background-color: #fff;
@@ -33,7 +33,7 @@
 }
 
 .clearfix:after, .clearfix:before {
-  content: '';
+  content: "";
   display: block;
   clear: both;
 }
@@ -123,8 +123,7 @@
   color: #000 !important;
   border-color: #fff !important;
 }
-
-.ju-button, .ju-custom-block a.btn, #toolbar-sc-clearcache .sc_clearcache_link {
+.ju-button, #toolbar-sc-clearcache .sc_clearcache_link, .ju-custom-block a.btn {
   background-color: transparent;
   color: #000;
   padding: 10px 15px;
@@ -142,33 +141,33 @@
   -moz-border-radius: 4px;
   border-radius: 4px;
 }
-.ju-button:focus, .ju-custom-block a.btn:focus, #toolbar-sc-clearcache .sc_clearcache_link:focus {
+.ju-button:focus, #toolbar-sc-clearcache .sc_clearcache_link:focus, .ju-custom-block a.btn:focus {
   outline: none;
 }
-.ju-button:hover, .ju-custom-block a.btn:hover, #toolbar-sc-clearcache .sc_clearcache_link:hover {
+.ju-button:hover, #toolbar-sc-clearcache .sc_clearcache_link:hover, .ju-custom-block a.btn:hover {
   -webkit-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
   -moz-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
 }
-.ju-button.orange-button, .ju-custom-block a.orange-button.btn, .ju-custom-block a.btn.ju-btn-connect, .ju-custom-block a.btn.ju-btn-export, .ju-custom-block a.btn.ju-btn-import, .ju-custom-block .ju-button.ju-btn-connect, .ju-custom-block #toolbar-sc-clearcache .ju-btn-connect.sc_clearcache_link, #toolbar-sc-clearcache .ju-custom-block .ju-btn-connect.sc_clearcache_link, .ju-custom-block .ju-button.ju-btn-export, .ju-custom-block #toolbar-sc-clearcache .ju-btn-export.sc_clearcache_link, #toolbar-sc-clearcache .ju-custom-block .ju-btn-export.sc_clearcache_link, .ju-custom-block .ju-button.ju-btn-import, .ju-custom-block #toolbar-sc-clearcache .ju-btn-import.sc_clearcache_link, #toolbar-sc-clearcache .ju-custom-block .ju-btn-import.sc_clearcache_link, #toolbar-sc-clearcache .orange-button.sc_clearcache_link {
+.ju-button.orange-button, #toolbar-sc-clearcache .orange-button.sc_clearcache_link, .ju-custom-block .ju-button.ju-btn-connect, .ju-custom-block #toolbar-sc-clearcache .ju-btn-connect.sc_clearcache_link, #toolbar-sc-clearcache .ju-custom-block .ju-btn-connect.sc_clearcache_link, .ju-custom-block .ju-button.ju-btn-export, .ju-custom-block #toolbar-sc-clearcache .ju-btn-export.sc_clearcache_link, #toolbar-sc-clearcache .ju-custom-block .ju-btn-export.sc_clearcache_link, .ju-custom-block .ju-button.ju-btn-import, .ju-custom-block #toolbar-sc-clearcache .ju-btn-import.sc_clearcache_link, #toolbar-sc-clearcache .ju-custom-block .ju-btn-import.sc_clearcache_link, .ju-custom-block a.orange-button.btn, .ju-custom-block a.btn.ju-btn-connect, .ju-custom-block a.btn.ju-btn-export, .ju-custom-block a.btn.ju-btn-import {
   background-color: #ff8726;
   color: #fff;
   border-color: #ff8726;
 }
-.ju-button.orange-outline-button, .ju-custom-block a.orange-outline-button.btn, .ju-custom-block a.btn.ju-btn-disconnect, .ju-custom-block .ju-button.ju-btn-disconnect, .ju-custom-block #toolbar-sc-clearcache .ju-btn-disconnect.sc_clearcache_link, #toolbar-sc-clearcache .ju-custom-block .ju-btn-disconnect.sc_clearcache_link, #toolbar-sc-clearcache .orange-outline-button.sc_clearcache_link {
+.ju-button.orange-outline-button, #toolbar-sc-clearcache .orange-outline-button.sc_clearcache_link, .ju-custom-block .ju-button.ju-btn-disconnect, .ju-custom-block #toolbar-sc-clearcache .ju-btn-disconnect.sc_clearcache_link, #toolbar-sc-clearcache .ju-custom-block .ju-btn-disconnect.sc_clearcache_link, .ju-custom-block a.orange-outline-button.btn, .ju-custom-block a.btn.ju-btn-disconnect {
   background-color: #fff;
   color: #ff8726;
   border-color: #fff;
 }
-.ju-button.green-button, .ju-custom-block a.green-button.btn, #toolbar-sc-clearcache .green-button.sc_clearcache_link {
+.ju-button.green-button, #toolbar-sc-clearcache .green-button.sc_clearcache_link, .ju-custom-block a.green-button.btn {
   background-color: #fff;
   color: #49bf88;
   border-color: #49bf88;
 }
-.ju-button.orange-border, .ju-custom-block a.orange-border.btn, .ju-custom-block a.btn.ju-btn-disconnect, .ju-custom-block .ju-button.ju-btn-disconnect, .ju-custom-block #toolbar-sc-clearcache .ju-btn-disconnect.sc_clearcache_link, #toolbar-sc-clearcache .ju-custom-block .ju-btn-disconnect.sc_clearcache_link, #toolbar-sc-clearcache .orange-border.sc_clearcache_link {
+.ju-button.orange-border, #toolbar-sc-clearcache .orange-border.sc_clearcache_link, .ju-custom-block .ju-button.ju-btn-disconnect, .ju-custom-block #toolbar-sc-clearcache .ju-btn-disconnect.sc_clearcache_link, #toolbar-sc-clearcache .ju-custom-block .ju-btn-disconnect.sc_clearcache_link, .ju-custom-block a.orange-border.btn, .ju-custom-block a.btn.ju-btn-disconnect {
   border-color: #ff8726;
 }
-.ju-button.black-outline-button, .ju-custom-block a.black-outline-button.btn, #toolbar-sc-clearcache .black-outline-button.sc_clearcache_link {
+.ju-button.black-outline-button, #toolbar-sc-clearcache .black-outline-button.sc_clearcache_link, .ju-custom-block a.black-outline-button.btn {
   background-color: #fff;
   color: #000;
   border-color: #000;
@@ -201,7 +200,7 @@
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
 }
 
-.ju-input, .ju-custom-block input, .ju-custom-block select {
+.ju-input, .ju-custom-block select, .ju-custom-block input {
   padding: 15px !important;
   background-color: #fff;
   height: auto;
@@ -210,41 +209,41 @@
   -moz-border-radius: 4px;
   border-radius: 4px;
 }
-.ju-input:focus, .ju-custom-block input:focus, .ju-custom-block select:focus {
+.ju-input:focus, .ju-custom-block select:focus, .ju-custom-block input:focus {
   border-color: #ff8726 !important;
   box-shadow: none !important;
   outline: none !important;
 }
-.ju-input.ju-input-side, .ju-custom-block input.ju-input-side, .ju-custom-block select.ju-input-side {
+.ju-input.ju-input-side, .ju-custom-block select.ju-input-side, .ju-custom-block input.ju-input-side {
   float: right;
   margin: 3px 10px 0;
 }
-.ju-input.minicolors, .ju-custom-block input.minicolors, .ju-custom-block select.minicolors {
+.ju-input.minicolors, .ju-custom-block select.minicolors, .ju-custom-block input.minicolors {
   padding-left: 60px !important;
   width: 160px !important;
 }
-.ju-input.minicolors + .minicolors-swatch, .ju-custom-block input.minicolors + .minicolors-swatch, .ju-custom-block select.minicolors + .minicolors-swatch {
+.ju-input.minicolors + .minicolors-swatch, .ju-custom-block select.minicolors + .minicolors-swatch, .ju-custom-block input.minicolors + .minicolors-swatch {
   height: 42px;
   width: 42px;
-  top: 4px;
-  left: 4px;
+  top: 5px;
+  left: 15px;
   border: none;
 }
-.ju-input.minicolors + .minicolors-swatch + .minicolors-panel, .ju-custom-block input.minicolors + .minicolors-swatch + .minicolors-panel, .ju-custom-block select.minicolors + .minicolors-swatch + .minicolors-panel {
+.ju-input.minicolors + .minicolors-swatch + .minicolors-panel, .ju-custom-block select.minicolors + .minicolors-swatch + .minicolors-panel, .ju-custom-block input.minicolors + .minicolors-swatch + .minicolors-panel {
   top: -105px;
   left: 35%;
 }
-.ju-input.minicolors + .minicolors-swatch .minicolors-swatch-color, .ju-custom-block input.minicolors + .minicolors-swatch .minicolors-swatch-color, .ju-custom-block select.minicolors + .minicolors-swatch .minicolors-swatch-color {
+.ju-input.minicolors + .minicolors-swatch .minicolors-swatch-color, .ju-custom-block select.minicolors + .minicolors-swatch .minicolors-swatch-color, .ju-custom-block input.minicolors + .minicolors-swatch .minicolors-swatch-color {
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   border-radius: 4px;
 }
-.ju-input.minicolors .minicolors-grid .minicolors-picker, .ju-custom-block input.minicolors .minicolors-grid .minicolors-picker, .ju-custom-block select.minicolors .minicolors-grid .minicolors-picker {
+.ju-input.minicolors .minicolors-grid .minicolors-picker, .ju-custom-block select.minicolors .minicolors-grid .minicolors-picker, .ju-custom-block input.minicolors .minicolors-grid .minicolors-picker {
   -webkit-box-sizing: content-box;
   -moz-box-sizing: content-box;
   box-sizing: content-box;
 }
-.ju-input.minicolors .minicolors-grid .minicolors-picker > div, .ju-custom-block input.minicolors .minicolors-grid .minicolors-picker > div, .ju-custom-block select.minicolors .minicolors-grid .minicolors-picker > div {
+.ju-input.minicolors .minicolors-grid .minicolors-picker > div, .ju-custom-block select.minicolors .minicolors-grid .minicolors-picker > div, .ju-custom-block input.minicolors .minicolors-grid .minicolors-picker > div {
   -webkit-box-sizing: content-box;
   -moz-box-sizing: content-box;
   box-sizing: content-box;
@@ -345,7 +344,7 @@
 }
 .ju-switch-button .switch .slider:before {
   position: absolute;
-  content: '';
+  content: "";
   height: 27px;
   width: 27px;
   left: 2px;
@@ -420,7 +419,7 @@
 
 .ju-main-wrapper {
   margin-left: -20px;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
 }
 .ju-main-wrapper * {
   -webkit-box-sizing: border-box;
@@ -526,21 +525,21 @@
   box-shadow: none;
 }
 .ju-main-wrapper .ju-left-panel .tabs.ju-menu-tabs li.tab a.link-tab:after {
-  font-family: 'Material Icons';
+  font-family: "Material Icons";
   font-size: 24px;
   vertical-align: text-bottom;
   position: absolute;
   right: 15px;
 }
 .ju-main-wrapper .ju-left-panel .tabs.ju-menu-tabs li.tab a.link-tab.with-submenus:not(.expanded):after {
-  content: '\e313';
+  content: "\e313";
 }
 .ju-main-wrapper .ju-left-panel .tabs.ju-menu-tabs li.tab a.link-tab.active {
   opacity: 1;
   background-color: #4c79ca;
 }
 .ju-main-wrapper .ju-left-panel .tabs.ju-menu-tabs li.tab a.link-tab.active.with-submenus.expanded:after {
-  content: '\e316';
+  content: "\e316";
 }
 .ju-main-wrapper .ju-left-panel .tabs.ju-menu-tabs li.tab a.link-tab.active.with-submenus.expanded + .ju-submenu-tabs {
   max-height: 500px;
@@ -595,7 +594,7 @@
   background-color: #f3f6fa;
 }
 .ju-main-wrapper .ju-right-panel:before {
-  content: '';
+  content: "";
   display: block;
   clear: both;
   padding: 1px 0 0 0;
@@ -750,18 +749,20 @@ ul.field .field-item {
   height: 40px;
   line-height: 24px;
 }
+.ju-custom-block #permissions-sliders select {
+  line-height: 15px;
+}
 .ju-custom-block.ju-custom-area {
   width: 100%;
 }
-.ju-custom-block.ju-custom-area input[type="text"],
-.ju-custom-block.ju-custom-area input[type="number"] {
+.ju-custom-block.ju-custom-area input[type=text],
+.ju-custom-block.ju-custom-area input[type=number] {
   width: 100%;
   margin: 0 !important;
 }
 .ju-custom-block.ju-custom-right-side {
   float: right;
 }
-
 .icon-ju_settings:before {
   content: url(../images/settings-white.svg);
   vertical-align: sub;
@@ -811,7 +812,6 @@ ul.field .field-item {
   .block-list {
     column-count: 1;
   }
-
   ul.field .field-item {
     width: 100%;
   }
@@ -847,7 +847,6 @@ ul.field .field-item {
   .ju-main-wrapper .ju-left-panel-toggle {
     display: block;
   }
-
   .rtl .ju-main-wrapper .ju-right-panel {
     margin-right: 0;
   }
@@ -856,11 +855,9 @@ ul.field .field-item {
   .ju-main-wrapper .ju-left-panel-toggle {
     left: 0;
   }
-
   .ju-settings-option {
     width: 98%;
   }
-
   .rtl .ju-main-wrapper .ju-left-panel-toggle {
     right: 0;
   }
@@ -871,7 +868,6 @@ ul.field .field-item {
     margin: 10px 0;
     padding: 0;
   }
-
   #toolbar-sc-clearcache {
     display: block;
   }
@@ -886,21 +882,17 @@ ul.field .field-item {
     display: inline-block;
     width: 100%;
   }
-  .ju-custom-block a.btn, .ju-custom-block input[type="text"], .ju-custom-block input[type="number"], .ju-custom-block select {
+  .ju-custom-block a.btn, .ju-custom-block input[type=text], .ju-custom-block input[type=number], .ju-custom-block select {
     width: 100% !important;
     margin: 0 !important;
   }
   .ju-custom-block p {
     word-wrap: break-word;
   }
-
   .ju-setting-label {
     min-width: max-content;
   }
-
   .ju-settings-option {
     padding: 5px;
   }
 }
-
-/*# sourceMappingURL=style.css.map */

@@ -220,6 +220,37 @@ class DropfilesModelCategory extends JModelAdmin
     }
 
     /**
+     * Set category params
+     *
+     * @param integer $categoryId Category id
+     * @param array   $params     Category params
+     *
+     * @return boolean
+     * @since  version
+     */
+    public function setCategoryParams($categoryId, $params = array())
+    {
+        $dbo = $this->getDbo();
+
+        if (empty($categoryId)) {
+            return false;
+        }
+
+        if (!is_array($params) || empty($params)) {
+            return false;
+        }
+
+        $query = 'UPDATE #__dropfiles SET params=' . $dbo->quote(json_encode($params)) . ' WHERE id=' . $dbo->quote($categoryId);
+        $dbo->setQuery($query);
+
+        if ($dbo->execute()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Set the title of a category
      *
      * @param integer $id_category Category id
@@ -374,7 +405,7 @@ class DropfilesModelCategory extends JModelAdmin
             if (isset($data->params->setTheme)) {
                 unset($data->params->setTheme);
                 $dropfiles_params = JComponentHelper::getParams('com_dropfiles');
-                $defaultThemes = array('', 'default', 'ggd', 'tree', 'table');
+                $defaultThemes = array('', 'default', 'ggd', 'tree', 'table', 'preview');
                 if (in_array($category->theme, $defaultThemes)) {
                     $str_params = '{';
                     foreach ($dropfiles_params as $k => $v) {
@@ -683,13 +714,14 @@ class DropfilesModelCategory extends JModelAdmin
     /**
      * Method save category
      *
-     * @param array $data Category data
+     * @param array   $data     Category data
+     * @param boolean $returnId New category id
      *
      * @return boolean
      * @throws Exception Throw when application can not start
      * @since  version
      */
-    public function save($data)
+    public function save($data, $returnId = false)
     {
         $id = (!empty($data['id'])) ? $data['id'] : (int)$this->getState($this->getName() . '.id');
         $saved = parent::save($data);
@@ -711,7 +743,7 @@ class DropfilesModelCategory extends JModelAdmin
                         return false;
                     }
                     $cloud_id = $dropboxfolder['id'];
-                    $path = $dropboxfolder['path_lower'];
+                    $path = isset($dropboxfolder['path_display']) ? $dropboxfolder['path_display'] : $dropboxfolder['path_lower'];
                     break;
                 case 'onedrive':
                     $onedrive = new DropfilesOneDrive();
@@ -765,7 +797,11 @@ class DropfilesModelCategory extends JModelAdmin
                 return false;
             }
 
-            return true;
+            if ($returnId) {
+                return $id;
+            } else {
+                return true;
+            }
         } elseif (!$saved) { // save error
             return false;
         }

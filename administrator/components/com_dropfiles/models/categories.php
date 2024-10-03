@@ -333,7 +333,7 @@ class DropfilesModelCategories extends JModelList
             return (string) $access;
         }
 
-        if (intval($category->level) > 1) {
+        if (isset($category->level) && intval($category->level) > 1) {
             $db = $this->getDbo();
             $query = $db->getQuery(true);
             $this->setState('filter.access', null);
@@ -770,8 +770,12 @@ class DropfilesModelCategories extends JModelList
         $query = $db->getQuery(true);
         // Insert columns.
         $columns = array('id', 'type', 'cloud_id','path','params','theme');
+        $params = array();
+        $params['ordering'] = 'ordering';
+        $params['orderingdir'] = 'asc';
+        $params['access'] = -1;
         // Insert values.
-        $values = array($id, $db->quote($type), $db->quote($cloud_id), $db->quote(''), $db->quote(''), $db->quote(''));
+        $values = array($id, $db->quote($type), $db->quote($cloud_id), $db->quote(''), $db->quote(json_encode($params)), $db->quote(''));
         $query->insert($db->quoteName('#__dropfiles'))
             ->columns($db->quoteName($columns))
             ->values(implode(',', $values));
@@ -902,6 +906,24 @@ class DropfilesModelCategories extends JModelList
                     break;
             }
         }
+    }
+
+    /**
+     *  Method to remove category from Dropfiles by id
+     *
+     * @param integer $id Category id
+     *
+     * @return mixed
+     * @since  version
+     */
+    public function removeCategoryFromDropfiles($id)
+    {
+        // Get a db connection.
+        $db = $this->getDbo();
+        $query = 'DELETE From #__dropfiles WHERE BINARY `id` = ' . $db->quote($id);
+        $db->setQuery($query);
+
+        return $db->execute();
     }
 
     /**

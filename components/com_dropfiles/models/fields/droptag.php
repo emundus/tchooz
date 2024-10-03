@@ -30,6 +30,13 @@ class JFormFieldDroptag extends JFormFieldList
     protected $type = 'Droptag';
 
     /**
+     * The hideNone.
+     *
+     * @var boolean
+     */
+    protected $hideNone = false;
+    
+    /**
      * Get input
      *
      * @return string

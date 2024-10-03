@@ -14,8 +14,13 @@ if (!$this->form || empty($parameters)) {
     <div class="container-settings">
         <ul class="field block-list">
             <?php foreach ($parameters as $k => $field) : ?>
+                <?php if ($k === 'jform_leftpanelstart') : ?>
+                    <li class="ju-settings-left-panel"><ul>
+                <?php elseif ($k === 'jform_rightpanelstart') : ?>
+                    <li class="ju-settings-right-panel"><ul>
+                <?php endif; ?>
                 <?php if (in_array($k, array('jform_allowedgoogleext', 'jform_usegoogleviewer', 'jform_uri', 'jform_date_format',
-                    'jform_loadthemecategory', 'jform_secure_preview_file', 'jform_auto_generate_preview', 'jform_download_category', 'jform_custom_icon', 'jform_open_pdf_in', 'jform_show_empty_folder'))) :?>
+                    'jform_loadthemecategory', 'jform_secure_preview_file', 'jform_auto_generate_preview', 'jform_download_category', 'jform_custom_icon', 'jform_open_pdf_in', 'jform_show_empty_folder', 'jform_show_empty_folder_message', 'jform_paginationnunber'))) :?>
                     <?php
                     if ($field->type === 'Hidden') :
                         echo $field->input;
@@ -50,6 +55,9 @@ if (!$this->form || empty($parameters)) {
                     <?php endif;
                     ?>
                 <?php endif;?>
+                <?php if ($k === 'jform_leftpanelend' || $k === 'jform_rightpanelend') : ?>
+                    </ul></li>
+                <?php endif; ?>
             <?php endforeach; ?>
         </ul>
         <div class="clearfix"></div>

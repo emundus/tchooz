@@ -23,7 +23,7 @@ jimport('joomla.application.categories');
 /**
  * Content Plugin.
  */
-class PlgContentdropfiles extends \Joomla\CMS\Plugin\CMSPlugin
+class PlgContentdropfiles extends JPlugin
 {
     /**
      * Google running progress
@@ -54,6 +54,13 @@ class PlgContentdropfiles extends \Joomla\CMS\Plugin\CMSPlugin
     public static $OnedriveBusinessOnce = 1;
 
     /**
+     * The context for the content passed to the plugin
+     *
+     * @var string
+     */
+    public $context = '';
+
+    /**
      * Before display content method
      * Method is called by the view and the results are imploded and displayed in a placeholder
      *
@@ -69,17 +76,37 @@ class PlgContentdropfiles extends \Joomla\CMS\Plugin\CMSPlugin
     public function onContentPrepare($context, &$article)
     {
         JLoader::register('DropfilesFilesHelper', JPATH_ADMINISTRATOR . '/components/com_dropfiles/helpers/files.php');
-//        $cont = explode('.', $context);
-//        if($cont[0]=='com_content'){
+
         $this->context = $context;
+        // Don't run if in the API Application
+        // Don't run when the content is being indexed
+        if (JFactory::getApplication()->isClient('api') || $this->context === 'com_finder.indexer') {
+            return true;
+        }
         // Replace category
-/*        $replace_category = '@<img[^>]*?data\-dropfilescategory="([0-9]+)".*?data\-columns="([0-9]+)".*?>|<img[^>]*?data\-dropfilescategory="([0-9]+)".*?>@';*/
+        $count = 0;
         $replace_category = '@<img[^>]*?data\-dropfilescategory="([0-9]+)".*?>@';
-        $article->text = preg_replace_callback($replace_category, array($this, 'replace'), $article->text);
+        $article->text = preg_replace_callback($replace_category, array($this, 'replace'), $article->text, -1, $count);
         // Replace single file
         $replace_single = '@<img[^>]*?data\-dropfilesfile="(.*?)".*?>@';
-        $article->text = preg_replace_callback($replace_single, array($this, 'replaceSingle'), $article->text);
-//        }
+        $article->text = preg_replace_callback($replace_single, array($this, 'replaceSingle'), $article->text, -1, $count);
+
+        if ($count) {
+            // clean up p tags around block elements
+            $article->text = preg_replace(array(
+                '#<p>\s*<(div|script)#',
+                '#</(div|script)>\s*</p>#',
+                '#</(div|script)>\s*<br ?/?>#',
+                '#<(div|script)(.*?)>\s*</p>#',
+                '#<p>\s*</(div|script)#',
+            ), array(
+                '<$1',
+                '</$1>',
+                '</$1>',
+                '<$1$2>',
+                '</$1',
+            ), $article->text);
+        }
 
         /*
          * Sync page code use cUrl
@@ -293,8 +320,6 @@ class PlgContentdropfiles extends \Joomla\CMS\Plugin\CMSPlugin
         $modelFiles->setState('filter.category_id', $categoryId);
         $modelCategories->getState('onsenfout'); //To autopopulate state
         $modelCategories->setState('category.id', $categoryId);
-
-
         $category = $modelCategory->getCategory($categoryId);
 
         if (!$category) {
@@ -303,7 +328,6 @@ class PlgContentdropfiles extends \Joomla\CMS\Plugin\CMSPlugin
         $user             = JFactory::getUser();
         $categories       = $modelCategories->getItems();
         $params           = $modelConfig->getParams($category->id);
-//        $params = isset($category) ? $category : $modelConfig->getParams($category->id);
         $dropfiles_params = JComponentHelper::getParams('com_dropfiles');
         if ($dropfiles_params->get('categoryrestriction', 'accesslevel') === 'accesslevel') {
             if (!in_array($category->access, $user->getAuthorisedViewLevels())) {
@@ -337,6 +361,11 @@ class PlgContentdropfiles extends \Joomla\CMS\Plugin\CMSPlugin
                 }
             }
         }
+
+        if (!class_exists('DropfilesModelOptions')) {
+            JLoader::register('DropfilesModelOptions', JPATH_ADMINISTRATOR . '/components/com_dropfiles/models/options.php');
+        }
+
         if ($category->type === 'googledrive') {
             $google = new DropfilesGoogle();
             if (isset($params->params->ordering)) {
@@ -406,16 +435,23 @@ class PlgContentdropfiles extends \Joomla\CMS\Plugin\CMSPlugin
             if (!empty($subparams) && isset($subparams['refToFile'])) {
                 if (isset($subparams['refToFile'])) {
                     $listCatRef = $subparams['refToFile'];
-                    $lstAllFile = $this->getAllFileRef($modelFiles, $listCatRef, $ordering, $orderingdir);
+                    $lstAllFile = $this->getAllFileRef($modelFiles, $listCatRef, $ordering, $orderingdir, $categoryId);
                 }
             }
             $files = $modelFiles->getItems();
+
+            if (!empty($files) && strval($ordering) === 'ordering') {
+                foreach ($files as $index => $file) {
+                    $file->ordering = $index;
+                }
+            }
+
             if (!empty($lstAllFile)) {
                 $files = array_merge($lstAllFile, $files);
                 if (isset($params->params->ordering) && isset($params->params->orderingdir)) {
                     $ordering = $params->params->ordering;
                     $direction = $params->params->orderingdir;
-                    $files = DropfilesHelper::orderingMultiCategoryFiles($files, $ordering, $direction);
+                    $files = DropfilesHelper::orderingMultiCategoryFiles($files, $ordering, $direction, $categoryId);
                 }
             }
         }
@@ -457,6 +493,16 @@ class PlgContentdropfiles extends \Joomla\CMS\Plugin\CMSPlugin
                 $columns = 2;
             }
         }
+
+        $paginationNumber = intval($componentParams->get('paginationnunber', 0));
+        $enablePagination = false;
+        $total            = 0;
+        if ($paginationNumber && !empty($files) && is_array($files) && count($files) > $paginationNumber && $currentTheme !== 'tree') {
+            $total            = (is_array($files)) ? ceil(count($files) / $paginationNumber) : 0;
+            $files            = array_slice($files, 0, $paginationNumber);
+            $enablePagination = true;
+        }
+
         $params_arr = array(
             array(
                 'files'      => $files,
@@ -467,6 +513,16 @@ class PlgContentdropfiles extends \Joomla\CMS\Plugin\CMSPlugin
                 'columns'    => isset($columns) ? $columns : 2,
             )
         );
+
+        // Show empty category message
+        if (empty($files) && empty($categories)) {
+            if ((int) $componentParams->get('show_empty_folder_message', 0) === 1) {
+                $msg = JText::_('COM_DROPFILES_CONFIG_EMPTY_FOLDER_MESSAGE');
+                $msg = str_replace('{category_title}', $category->title, $msg);
+                return '<p class="category_empty">'. $msg .'</p>';
+            }
+        }
+
         $app = JFactory::getApplication();
         $result = $app->triggerEvent('onShowFrontCategory', $params_arr);
 
@@ -480,8 +536,6 @@ class PlgContentdropfiles extends \Joomla\CMS\Plugin\CMSPlugin
             $doc->addStyleSheet(JURI::base('true') . '/components/com_dropfiles/assets/css/front_ver5.4.css');
 
             if ((int) $componentParams->get('usegoogleviewer', 1) === 1) {
-                $path_dropfilesbase = JPATH_ADMINISTRATOR . '/components/com_droppics/classes/dropfilesBase.php';
-                JLoader::register('DropfilesBase', $path_dropfilesbase);
                 JHtml::_('jquery.framework');
                 $doc->addStyleSheet(JURI::base('true') . '/components/com_dropfiles/assets/css/video-js.css');
                 $doc->addScript(JURI::base('true') . '/components/com_dropfiles/assets/js/video.js');
@@ -489,6 +543,17 @@ class PlgContentdropfiles extends \Joomla\CMS\Plugin\CMSPlugin
             }
             $doc->addScriptDeclaration('dropfilesBaseUrl="' . JURI::base() . '";');
             $doc->addScriptDeclaration('dropfilesRootUrl="' . JURI::root(true) . '/";');
+
+            if ($enablePagination) {
+                $paginationParams = array(
+                    'base'      => '',
+                    'format'    => '',
+                    'current'   => max(1, 1),
+                    'total'     => $total,
+                    'sourcecat' => $categoryId
+                );
+                $result[0] .= DropfilesFilesHelper::dropfiles_category_pagination($paginationParams);
+            }
 
             return $result[0];
         }
@@ -584,6 +649,9 @@ class PlgContentdropfiles extends \Joomla\CMS\Plugin\CMSPlugin
         if ($category->type === 'googledrive') {
             $modelGoogle = JModelLegacy::getInstance('Frontgoogle', 'dropfilesModel');
             $file        = $modelGoogle->getFile($match[1]);
+            if (!$file) {
+                return '';
+            }
             $file->id    = $file->file_id;
             $file->file  = $file->title . '.' . $file->ext;
         } elseif ($category->type === 'dropbox') {
@@ -594,6 +662,9 @@ class PlgContentdropfiles extends \Joomla\CMS\Plugin\CMSPlugin
             $file = $modelOnedriveBusiness->getFile($match[1]);
         } else {
             $file = $modelFile->getFile((int)$match[1]);
+        }
+        if (!$file) {
+            return '';
         }
         $file             = DropfilesFilesHelper::addInfosToFile(json_decode(json_encode($file), false), $category);
 
@@ -620,8 +691,6 @@ class PlgContentdropfiles extends \Joomla\CMS\Plugin\CMSPlugin
             $doc             = JFactory::getDocument();
             $doc->addStyleSheet(JURI::base('true') . '/components/com_dropfiles/assets/css/front_ver5.4.css');
             if ((int) $componentParams->get('usegoogleviewer', 1) === 1) {
-                $path_dropfilesbase = JPATH_ADMINISTRATOR . '/components/com_droppics/classes/dropfilesBase.php';
-                JLoader::register('DropfilesBase', $path_dropfilesbase);
                 JHtml::_('jquery.framework');
                 $doc->addStyleSheet(JURI::base('true') . '/components/com_dropfiles/assets/css/video-js.css');
                 $doc->addScript(JURI::base('true') . '/components/com_dropfiles/assets/js/video.js');
@@ -662,6 +731,9 @@ class PlgContentdropfiles extends \Joomla\CMS\Plugin\CMSPlugin
             if ($hover_color !== '') {
                 $singleStyle .= ' .dropfiles-single-file .dropfiles-file-link a:hover,.dropfiles-single-file
                  .dropfiles-file-link a .droptitle:hover{
+                    color: ' . $hover_color . '  !important;
+                }';
+                $singleStyle .= ' .dropfiles-single-file a.dropfiles-file-link.dropfiles_noPreview:hover span, .dropfiles-single-file a.dropfiles-file-link.dropfiles_noPreview:focus span {
                     color: ' . $hover_color . '  !important;
                 }';
             }
@@ -772,15 +844,21 @@ class PlgContentdropfiles extends \Joomla\CMS\Plugin\CMSPlugin
      * @param array  $listCatRef  List category
      * @param string $ordering    Ordering
      * @param string $orderingdir Ordering direction
+     * @param string $categoryId  Current category id
      *
      * @return array
      */
-    private function getAllFileRef($model, $listCatRef, $ordering, $orderingdir)
+    private function getAllFileRef($model, $listCatRef, $ordering, $orderingdir, $categoryId = null)
     {
+        if (!class_exists('DropfilesModelOptions')) {
+            JLoader::register('DropfilesModelOptions', JPATH_ADMINISTRATOR . '/components/com_dropfiles/models/options.php');
+        }
+
         $lstAllFile = array();
+        $options = new DropfilesModelOptions();
         foreach ($listCatRef as $key => $value) {
             if (is_array($value) && !empty($value)) {
-                $lstFile    = $model->getFilesRef($key, $value, $ordering, $orderingdir);
+                $lstFile    = $model->getFilesRef($key, $value, $ordering, $orderingdir, $categoryId);
                 $lstAllFile = array_merge($lstFile, $lstAllFile);
             }
         }

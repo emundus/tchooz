@@ -11,6 +11,26 @@
  */
 
 .dropfiles-content-table.dropfiles-content {
+  &.dropfiles-table-content-hidden {
+    &.colstyle .mediaTableMenu.mediaTableMenuClosed,
+    .table {
+      visibility: hidden;
+      margin: 0;
+    }
+
+    .dropfiles-container-table {
+      overflow: hidden;
+    }
+
+    .mediaTableWrapperWithMenu {
+      padding: 0 !important;
+    }
+
+    .table thead th {
+      padding: 0 !important;
+      line-height: 0;
+    }
+  }
   tr, td, thead, tbody, th {
     border: none;
     font-size: 13px;
@@ -23,10 +43,6 @@
     word-wrap: break-word;
     &:focus {
       outline: none;
-    }
-    .zmdi:not(.zmdi-check-all) {
-      font-size: 16px;
-      vertical-align: middle;
     }
   }
   td {
@@ -45,7 +61,7 @@
     width: 100%;
     display: table;
     table-layout: auto;
-    box-sizing: content-box;
+    box-sizing: border-box;
     background-color: #fff;
     color: #999999;
     border: none;
@@ -98,6 +114,9 @@
       background-color: #fff;
       color: #666666;
       border: none !important;
+      &.drop-col-pd-right {
+        padding-right: 30px !important;
+      }
     }
     caption + thead tr:first-child {
       th, td {
@@ -144,25 +163,25 @@
 
     tr .file_desc,
     tr .file_version {
-      @media screen and(max-width: 1024px) {
+      @media screen and (max-width: 1024px) {
         display: none;
       }
     }
 
     tr .file_hits {
-      @media screen and(max-width: 950px) {
+      @media screen and (max-width: 950px) {
         display: none;
       }
     }
 
     tr .file_created {
-      @media screen and(max-width: 900px) {
+      @media screen and (max-width: 900px) {
         display: none;
       }
     }
 
     tr .file_size {
-      @media screen and(max-width: 850px) {
+      @media screen and (max-width: 850px) {
         display: none;
       }
     }
@@ -199,7 +218,7 @@
     th.file_title,
     td.file_title {
       position: relative;
-      @media screen and(min-width: 768px) {
+      @media screen and (min-width: 768px) {
         min-width: 132px;
       }
     }
@@ -356,6 +375,7 @@
             display: inline-block;
             box-sizing: unset;
             vertical-align: middle;
+            margin-top: 5px;
           }
         }
       }
@@ -406,6 +426,7 @@
         input:checked {
           &:before {
             content: '\2714';
+            font-family: arial, helvetica, sans-serif;
           }
         }
         label {
@@ -500,10 +521,6 @@
     font-stretch: normal;
     font-style: normal;
     letter-spacing: normal;
-    clear: both;
-    //position: absolute;
-    //top: 8px;
-    //right: 0;
     &:hover,
     &:focus {
       cursor: pointer;

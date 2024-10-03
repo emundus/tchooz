@@ -18,7 +18,7 @@ if (!$this->form || empty($parameters)) {
             <?php foreach ($parameters as $k => $field) : ?>
             <div class="plain-text-search-groups <?php echo $k;?>">
                 <?php if (in_array($k, array('jform_plain_text_search', 'jform_searchindexer'))) :?>
-                        <label for="<?php echo $field->id ?>" class="ju-setting-label dropfiles-tooltip" alt="<?php echo JText::sprintf($field->description) ?>"><?php echo strip_tags($field->label) ?></label>
+                        <label for="<?php echo $field->id ?>" class="ju-setting-label dropfiles-tooltip" title="<?php echo JText::sprintf($field->description) ?>"><?php echo strip_tags($field->label) ?></label>
                         <?php
                         switch ($field->type) {
                             case 'Radio':
@@ -56,9 +56,14 @@ if (!$this->form || empty($parameters)) {
     <div class="container-settings">
         <ul class="field block-list">
             <?php foreach ($parameters as $k => $field) : ?>
-                <?php if (!in_array($k, array('jform_plain_text_search', 'jform_searchindexer', 'jform_cat_tags'))) :?>
+                <?php if ($k === 'jform_leftpanelstart') : ?>
+                    <li class="ju-settings-left-panel"><ul>
+                <?php elseif ($k === 'jform_rightpanelstart') : ?>
+                    <li class="ju-settings-right-panel"><ul>
+                <?php endif; ?>
+                <?php if (!in_array($k, array('jform_plain_text_search', 'jform_searchindexer', 'jform_cat_tags', 'jform_leftpanelstart', 'jform_rightpanelstart', 'jform_leftpanelend', 'jform_rightpanelend'))) :?>
                     <li class="ju-settings-option block-item <?php echo $k;?>">
-                        <label for="<?php echo $field->id ?>" class="ju-setting-label dropfiles-tooltip" alt="<?php echo JText::sprintf($field->description) ?>"><?php echo strip_tags($field->label) ?></label>
+                        <label for="<?php echo $field->id ?>" class="ju-setting-label dropfiles-tooltip" title="<?php echo JText::sprintf($field->description) ?>"><?php echo strip_tags($field->label) ?></label>
                         <?php
                         switch ($field->type) {
                             case 'Radio':
@@ -83,6 +88,9 @@ if (!$this->form || empty($parameters)) {
                         ?>
                     </li>
                 <?php endif;?>
+                <?php if ($k === 'jform_leftpanelend' || $k === 'jform_rightpanelend') : ?>
+                    </ul></li>
+                <?php endif; ?>
             <?php endforeach; ?>
         </ul>
 

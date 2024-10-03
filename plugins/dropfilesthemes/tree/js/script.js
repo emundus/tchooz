@@ -15,6 +15,7 @@ jQuery(document).ready(function ($) {
     var type_sourcefiles = $("#dropfiles-template-tree-type").html();
     var sourcecategories = $("#dropfiles-template-tree-categories").html();
     var sourcefile = $("#dropfiles-template-tree-box").html();
+    var cParents = {};
 
     sourcefiles = fixJoomlaSef(sourcefiles);
     sourcefile = fixJoomlaSef(sourcefile);
@@ -22,6 +23,22 @@ jQuery(document).ready(function ($) {
     var tree_hash = window.location.hash;
     var tree_load_done = false;
     var ggd_root_cat = $('.dropfiles-content-tree').data('category');
+
+    $(".dropfiles-content-tree").each(function (index) {
+        var topCat = $(this).data('category');
+        var topCatTitle = $(this).find("h2.tree-category-title").text();
+        if (!topCatTitle) {
+            topCatTitle = $(".dropfiles-content-tree.dropfiles-content-multi[data-category=" + topCat + "] #current_category_title").val();
+        }
+        cParents[topCat] = {};
+        cParents[topCat][topCat] = {parent_id: 0, id: topCat, title: topCatTitle};
+        $(this).find("li.directory .catlink").each(function (index) {
+            var tempidCat = $(this).data('idcat');
+            cParents[topCat][tempidCat] = {parent_id: topCat, id: tempidCat, title: $(this).text()};
+        });
+        initInputSelected(topCat);
+        initDownloadSelected(topCat);
+    });
 
     initInputSelected();
     Handlebars.registerHelper('bytesToSize', function (bytes) {
@@ -48,7 +65,11 @@ jQuery(document).ready(function ($) {
             hideDownloadAllBtn(context, true);
             $(".tree-download-selected", context).remove();
             var downloadSelectedBtn = $('<a href="javascript:void(0);" class="tree-download-selected download-selected" style="display: block;"><span class="btn-title">' + Joomla.JText._('COM_DROPFILES_DOWNLOAD_SELECTED', 'Download selected') + '</span><i class="zmdi zmdi-check-all dropfiles-download-category"></i></a>');
-            downloadSelectedBtn.appendTo($(".categories-head", context));
+            if ($(".categories-head .breadcrumbs", context).length) {
+                downloadSelectedBtn.appendTo($(".categories-head .breadcrumbs", context));
+            } else {
+                downloadSelectedBtn.appendTo($(".categories-head", context));
+            }
             initDownloadSelected();
         } else {
             $(".dropfilesSelectedFiles", context).remove();
@@ -64,7 +85,11 @@ jQuery(document).ready(function ($) {
             if (selectFileInputs.length > 0) {
                 if ($(".categories-head", context).length) {
                     var downloadAllBtn = $('<a href="javascript:void(0);" class="tree-download-category download-all" style="display: block;"><span class="btn-title">' + Joomla.JText._('COM_DROPFILES_DOWNLOAD_ALL', 'Download all') + '</span><i class="zmdi zmdi-check-all"></i></a>');
-                    downloadAllBtn.prependTo($(".categories-head", context));
+                    if ($(".categories-head .breadcrumbs", context).length) {
+                        downloadAllBtn.appendTo($(".categories-head .breadcrumbs", context));
+                    } else {
+                        downloadAllBtn.prependTo($(".categories-head", context));
+                    }
                 } else {
                     var downloadAllBtn = $('<a href="javascript:void(0);" class="tree-download-category download-all" style="display: block;"><span class="btn-title">' + Joomla.JText._('COM_DROPFILES_DOWNLOAD_ALL', 'Download all') + '</span><i class="zmdi zmdi-check-all"></i></a>');
                     downloadAllBtn.insertAfter( $('#current_category_slug', context));
@@ -274,12 +299,20 @@ jQuery(document).ready(function ($) {
                 });
             }
 
+            for (i = 0; i < categories.categories.length; i++) {
+                cParents[sourcecat][categories.categories[i].id] = categories.categories[i];
+            }
+
+            treeBreadcrum(sourcecat, category);
+            tree_breadcrumb_init_click();
+
             //Get files
             $.ajax({
                 url: dropfilesBaseUrl + "index.php?option=com_dropfiles&view=frontfiles&format=json&id=" + category,
                 dataType: "json"
             }).done(function (content) {
                 var template = Handlebars.compile(sourcefiles);
+                var categoryType = content.category.type;
                 var html = template(content);
                 var type_template = Handlebars.compile(type_sourcefiles);
                 var type_html = type_template(content);
@@ -289,9 +322,23 @@ jQuery(document).ready(function ($) {
                 } else {
                     elem.parent().children('ul').append(html);
                 }
-
                 initClickFile();
                 initManageFile(category);
+
+                if (content.files.length && !$(".dropfiles-content-tree[data-category=" + sourcecat + "] .tree-download-category").length) {
+                    if ($(".dropfiles-content-tree[data-category=" + sourcecat + "] .categories-head").length) {
+                        var downloadAllBtn = $('<a href="javascript:void(0);" class="tree-download-category download-all" style="display: block;"><span class="btn-title">' + Joomla.JText._('COM_DROPFILES_DOWNLOAD_ALL', 'Download all') + '</span><i class="zmdi zmdi-check-all"></i></a>');
+                        if ($(".dropfiles-content-tree[data-category=" + sourcecat + "] .categories-head .breadcrumbs").length) {
+                            downloadAllBtn.appendTo($(".dropfiles-content-tree[data-category=" + sourcecat + "] .categories-head .breadcrumbs"));
+                        } else {
+                            downloadAllBtn.prependTo($(".dropfiles-content-tree[data-category=" + sourcecat + "] .categories-head"));
+                        }
+                    } else {
+                        var downloadAllBtn = $('<a href="javascript:void(0);" class="tree-download-category download-all" style="display: block;"><span class="btn-title">' + Joomla.JText._('COM_DROPFILES_DOWNLOAD_ALL', 'Download all') + '</span><i class="zmdi zmdi-check-all"></i></a>');
+                        downloadAllBtn.insertAfter($(".dropfiles-content-tree[data-category=" + sourcecat + "] #current_category_slug"));
+                    }
+                }
+
                 elem.parent().children('ul').slideDown(500, null, function () {
                     elem.parent().addClass('open expanded');
                     elem.parent().removeClass('dropfiles-loading-tree collapsed');
@@ -300,23 +347,17 @@ jQuery(document).ready(function ($) {
                 if (!jQuery.isEmptyObject(loadcats)) {
                     var ccat = loadcats[0];
                     if (ccat != 'undefined') {
-                        load(sourcecat, ccat, $('.dropfiles-content-tree [data-idcat="' + ccat + '"]'), loadcats);
+                        var correctSourceCategoryId = $('.catlink[data-idcat="'+ ccat +'"]').parents('.dropfiles-content-tree').attr('data-category');
+                        if (typeof (correctSourceCategoryId) === 'undefined' || !correctSourceCategoryId) {
+                            correctSourceCategoryId = sourcecat;
+                        }
+                        load(correctSourceCategoryId, ccat, $('.dropfiles-content-tree [data-idcat="' + ccat + '"]'), loadcats);
                     }
                 }
                 if($('.tree-list.tree-hide-title').length) {
                     $('.tree-list.tree-hide-title li.directory ul li.ext .dropfile-file-link').hide();
                 }
                 if ($(".dropfiles-content-tree.dropfiles-content-multi[data-category=" + sourcecat + "] #current-category-link").length) {
-                    // $.ajax({
-                    //     url: dropfilesBaseUrl + "index.php?option=com_dropfiles&task=category.isCloudCategory&id_category=" + category,
-                    //     dataType: "json"
-                    // }).done(function (result) {
-                    //     if (result.status === 'true') {
-                    //         hideDownloadAllBtn($(elem).parents('.dropfiles-content')[0], true);
-                    //     } else {
-                    //         hideDownloadAllBtn($(elem).parents('.dropfiles-content')[0], false);
-                    //     }
-                    // });
                     var current_download_link = $(".dropfiles-content-tree.dropfiles-content-multi[data-category=" + sourcecat + "] #current-category-link").val().toLowerCase();
                     if ($(".dropfiles-content-tree.dropfiles-content-multi[data-category=" + sourcecat + "] .tree-download-category").length) {
                         var root_download_link = $(".dropfiles-content-tree.dropfiles-content-multi[data-category=" + sourcecat + "] .tree-download-category").attr('href').toLowerCase();
@@ -325,10 +366,14 @@ jQuery(document).ready(function ($) {
                         }
                     }
                 }
+
+                if (categoryType !== 'default') {
+                    $(".dropfiles-content-tree[data-category=" + sourcecat + "]").find(".dropfiles_checkbox").remove();
+                    $(".dropfiles-content-tree[data-category=" + sourcecat + "]").find(".download-all").remove();
+                }
             });
             elem.removeData('clicked');
         });
-
     }
 
     function initManageFile(sourcecat) {
@@ -339,6 +384,55 @@ jQuery(document).ready(function ($) {
         link_manager = link_manager + '&task=site_manage&site_catid=' + sourcecat + '&tmpl=dropfilesfrontend';
         $(".dropfiles-content-tree.dropfiles-content-multi").find('.openlink-manage-files').attr('href', link_manager);
     }
+
+    function treeBreadcrum(sourcecat, catid) {
+        var links   = [];
+        current_Cat = cParents[sourcecat][catid];
+
+        if (typeof (current_Cat) == 'undefined') {
+            // todo: made breadcrumb working when reload page with hash
+            return;
+        }
+        links.unshift(current_Cat);
+
+        if (typeof(current_Cat.parent_id) != 'undefined') {
+            while (cParents[sourcecat][current_Cat.parent_id]) {
+                current_Cat = cParents[sourcecat][current_Cat.parent_id];
+                links.unshift(current_Cat);
+            }
+        }
+
+        let html = '';
+        for (i = 0; i < links.length; i++) {
+            if (i < links.length - 1) {
+                html += '<li><a class="catlink" data-idcat="' + links[i].id + '" href="javascript:void(0)">' + links[i].title + '</a><span class="divider"> &gt; </span></li>';
+            } else {
+                html += '<li><span>' + links[i].title + '</span></li>';
+            }
+        }
+        $(".dropfiles-content-tree.dropfiles-content-multi[data-category=" + sourcecat + "] .dropfiles-breadcrumbs-tree li").remove();
+        $(".dropfiles-content-tree.dropfiles-content-multi[data-category=" + sourcecat + "] .dropfiles-breadcrumbs-tree").append(html);
+    }
+
+    function tree_breadcrumb_init_click() {
+        $('.dropfiles-breadcrumbs-tree .catlink').on('click', function (e) {
+            e.preventDefault();
+            $(this).data('clicked', true);
+            var topCategoryId = $(this).parents('.dropfiles-content-tree').attr('data-category');
+            var selectedCategoryId = $(this).attr('data-idcat');
+            if (parseInt(topCategoryId) === parseInt(selectedCategoryId)) {
+                load(topCategoryId, topCategoryId, $(this));
+                $('.dropfiles-content-tree[data-category="'+ topCategoryId +'"]').find('.tree-list li.directory').removeClass('expanded').addClass('collapsed');
+                $('.dropfiles-content-tree[data-category="'+ topCategoryId +'"]').find('.tree-list li.directory > ul').remove();
+            } else {
+                var selectedCategory = $('.tree-list a.catlink[data-idcat="'+ selectedCategoryId +'"]').parent('.directory');
+                load(topCategoryId, $(this).data('idcat'), $(this));
+                selectedCategory.find('li.directory').remove();
+                selectedCategory.removeClass('collapsed').addClass('expanded');
+            }
+        })
+    }
+    tree_breadcrumb_init_click();
 
     // Remove the root url in case it's added by Joomla Sef plugin
     function fixJoomlaSef(template) {

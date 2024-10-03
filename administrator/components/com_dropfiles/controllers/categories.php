@@ -127,6 +127,11 @@ class DropfilesControllerCategories extends JControllerAdmin
                     }
                     $id = $item->id;
                     $category = $modelCat->getCategory($id);
+
+                    if (is_null($category)) {
+                        continue;
+                    }
+
                     if ($model->delete($id) || $joomla31) {
                         if ($category->type === 'googledrive') {
                             $google = new DropfilesGoogle();
@@ -246,12 +251,12 @@ class DropfilesControllerCategories extends JControllerAdmin
                     } else {
                         $result = $dropbox->changeDropboxOrder(
                             $itemInfo->path,
-                            $location->path,
+                            !is_null($location) ? $location->path : '/',
                             ((int)$itemInfo->parent_id - 1)
                         );
                     }
                     if ($result) {
-                        $thisModel->updatePathDropboxById($pk, $result['path_lower']);
+                        $thisModel->updatePathDropboxById($pk, isset($result['path_display']) ? $result['path_display'] : $result['path_lower']);
                     }
                 }
             } elseif ($dragType === 'onedrive') {

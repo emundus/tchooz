@@ -120,6 +120,25 @@ class DropfilesModelDropboxfiles extends JModelLegacy
     }
 
     /**
+     * Method to retrieve file information by path
+     *
+     * @param integer $file_path File path
+     *
+     * @return object file, false if an error occurs
+     * @since  version
+     */
+    public function getFileByPath($file_path)
+    {
+        $dbo = $this->getDbo();
+        $query = 'SELECT * FROM #__dropfiles_dropbox_files WHERE path=' . $dbo->quote($file_path);
+        $dbo->setQuery($query);
+        if (!$dbo->execute()) {
+            return false;
+        }
+        return $dbo->loadObject();
+    }
+
+    /**
      * Method to reorder files in database
      *
      * @param array $files Files

@@ -145,7 +145,7 @@ class OneDrive extends DropfilesCloudConnector
                     });
                 </script>';
 
-            if (!$onedrive_config || empty($onedrive_config['onedriveConnected'])) {
+            if (!$onedrive_config || empty($onedrive_config['onedriveConnected']) || empty($onedrive_config['onedriveCredentials'])) {
                 echo '<script async type="text/javascript">
                     jQuery(document).ready(function($) {
                         $(\'#dropfiles-btn-automaticconnect-onedrive\').addClass(\'ju-visibled\').show();
@@ -154,7 +154,7 @@ class OneDrive extends DropfilesCloudConnector
                 </script>';
             }
 
-            if ($onedrive_config && !empty($onedrive_config['onedriveConnected'])) {
+            if ($onedrive_config && !empty($onedrive_config['onedriveConnected']) && !empty($onedrive_config['onedriveCredentials'])) {
                 echo '<script async type="text/javascript">
                     jQuery(document).ready(function($) {
                         $(\'#dropfiles-btn-automaticconnect-onedrive\').removeClass(\'ju-visibled\').hide();
@@ -282,7 +282,7 @@ class OneDrive extends DropfilesCloudConnector
     public function getBasefolder($option)
     {
         try {
-            require_once JPATH_ADMINISTRATOR  . '/components/com_dropfiles/classes/OneDriveBusiness/packages/autoload.php';
+            require_once JPATH_ADMINISTRATOR  . '/components/com_dropfiles/classes/vendor/autoload.php';
             $client = new Client(
                 $option['onedriveKey'],
                 new Graph(),

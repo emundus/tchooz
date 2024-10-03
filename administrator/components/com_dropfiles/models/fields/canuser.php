@@ -258,6 +258,6 @@ class JFormFieldCanuser extends JFormField
      */
     protected function getExcluded()
     {
-        return explode(',', $this->element['exclude']);
+        return isset($this->element['exclude'])? explode(',', $this->element['exclude']): array();
     }
 }

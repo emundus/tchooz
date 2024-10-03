@@ -265,7 +265,7 @@ class OneDriveBusiness extends DropfilesCloudConnector
     public function getBasefolder($option)
     {
         try {
-            require_once JPATH_ADMINISTRATOR  . '/components/com_dropfiles/classes/OneDriveBusiness/packages/autoload.php';
+            require_once JPATH_ADMINISTRATOR  . '/components/com_dropfiles/classes/vendor/autoload.php';
             $client = new Client(
                 $option['onedriveBusinessKey'],
                 new Graph(),

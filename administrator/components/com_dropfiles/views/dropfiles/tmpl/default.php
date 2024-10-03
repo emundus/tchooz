@@ -96,6 +96,8 @@ JText::script('COM_DROPFILES_JS_CATEGORY_REMOVED');
 JText::script('COM_DROPFILES_JS_PLEASE_CREATE_A_FOLDER');
 JText::script('COM_DROPFILES_MULTI_CATEGORY_FILE');
 JText::script('COM_DROPFILES_MULTI_CATEGORY_EDIT_ORIGINAL_FILE');
+JText::script('JSELECT');
+JText::script('JCLOSE');
 
 $doc->addScriptDeclaration('gcaninsert=' . ($app->input->getBool('caninsert', false) ? 'true' : 'false') . ';');
 $doc->addScriptDeclaration('e_name="' . $app->input->getString('e_name') . '";');
@@ -196,6 +198,9 @@ if (DropfilesBase::isJoomla30()) {
                         <?php
                         if (count($this->allCategories) > 0) {
                             foreach ($this->allCategories as $key => $category) {
+                                if ($category->level < 1) {
+                                    continue;
+                                }
                                 echo '<option data-type="' . $category->type . '"  value="' . $category->id . '">'
                                     . str_repeat('-', ($category->level - 1)) . ' ' . $category->title
                                     . '</option>';

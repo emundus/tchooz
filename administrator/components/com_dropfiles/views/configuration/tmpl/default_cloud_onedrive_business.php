@@ -20,7 +20,7 @@ if (!$this->form || empty($onedriveBusiness)) {
                     'jform_onedriveBusinessSecretOld', 'jform_onedriveBusinessCredentialsOld', 'jform_onedriveBusinessBaseFolderIdOld',
                     'jform_onedriveBusinessBaseFolderNameOld', 'jform_onedriveBusinessConnectedBy', 'jform_onedriveBusinessConnected'))) : ?>
                 <li class="ju-settings-option block-item <?php echo $k;?>">
-                    <label for="<?php echo $field->id ?>" class="ju-setting-label dropfiles-tooltip" alt="<?php echo JText::sprintf($field->description) ?>"><?php echo strip_tags($field->label) ?></label>
+                    <label for="<?php echo $field->id ?>" class="ju-setting-label dropfiles-tooltip" title="<?php echo JText::sprintf($field->description) ?>"><?php echo strip_tags($field->label) ?></label>
                     <?php
                     switch ($field->type) {
                         case 'Radio':
