@@ -44,6 +44,7 @@ $bgdownload = array();
 $colordownload = array();
 $categoriesposition = array();
 $clonecategory = array();
+$subcategoriescolor = array();
 foreach ($themes as $name) {
     //CATEGORY SECTION OF CLONE THEME
     //    margin
@@ -63,6 +64,8 @@ foreach ($themes as $name) {
     $foldertree[] = $prefix . $name . '_showfoldertree';
     //   download popup
     $downloadpopup[] = $prefix . $name . '_download_popup';
+
+    $subcategoriescolor[] = $prefix . $name . 'subcategoriescolor';
 
     //FILE SECTION OF CLONE THEME
     //   columns
@@ -126,7 +129,8 @@ if ($this->form) {
                                     <?php if (in_array($field->id, array('jform_params_marginleft', 'jform_params_margintop',
                                         'jform_params_marginright', 'jform_params_marginbottom',
                                         'jform_params_ggd_marginleft', 'jform_params_ggd_margintop', 'jform_params_ggd_marginright',
-                                        'jform_params_ggd_marginbottom', 'jform_params_sliderinit'))
+                                        'jform_params_ggd_marginbottom', 'jform_params_sliderinit', 'jform_params_preview_marginleft', 'jform_params_preview_margintop', 'jform_params_preview_marginright',
+                                        'jform_params_preview_marginbottom'))
                                     || in_array($field->id, $clonemargin)
                                     || in_array($field->id, $sliderinit)) : ?>
                                             <?php echo $field->label; ?>
@@ -144,7 +148,10 @@ if ($this->form) {
                                         'jform_params_ggd_showsubcategories', 'jform_params_ggd_showcategorytitle',
                                         'jform_params_ggd_showbreadcrumb', 'jform_params_ggd_showfoldertree',
                                         'jform_params_ggd_download_popup', 'jform_params_tree_showsubcategories',
-                                        'jform_params_tree_showcategorytitle', 'jform_params_tree_download_popup'
+                                        'jform_params_tree_showbreadcrumb', 'jform_params_tree_showcategorytitle', 'jform_params_tree_download_popup',
+                                        'jform_params_preview_showsubcategories', 'jform_params_preview_showcategorytitle',
+                                        'jform_params_preview_showbreadcrumb', 'jform_params_preview_showfoldertree',
+                                        'jform_params_preview_download_popup'
                                         ))
                                     || in_array($field->id, $clonecategory)
                                     || in_array($field->id, $downloadpopup)) : ?>
@@ -162,6 +169,12 @@ if ($this->form) {
                                         <!--<span class="help-block"><?php echo $field->description; ?></span>-->
                                     </div>
                                     <?php endif; ?>
+                                    <?php if (in_array($field->id, array('jform_params_preview_subcategoriescolor')) || in_array($field->id, $subcategoriescolor)) : ?>
+                                        <?php echo $field->label; ?>
+                                        <span class="paraminput input-block-level <?php echo $field->id ?>">
+                                            <?php echo $field->input; ?>
+                                        </span>
+                                    <?php endif ?>
                                 <?php endforeach; ?>
                             </div>
                         </div>
@@ -183,15 +196,21 @@ if ($this->form) {
                                         'jform_params_ggd_marginbottom', 'jform_params_ggd_showsubcategories',
                                         'jform_params_ggd_showcategorytitle', 'jform_params_ggd_showbreadcrumb',
                                         'jform_params_ggd_showfoldertree', 'jform_params_ggd_download_popup',
-                                        'jform_params_tree_showsubcategories', 'jform_params_tree_showcategorytitle',
-                                        'jform_params_tree_download_popup', 'jform_params_sliderinit'))
+                                        'jform_params_tree_showsubcategories', 'jform_params_tree_showbreadcrumb', 'jform_params_tree_showcategorytitle',
+                                        'jform_params_tree_download_popup', 'jform_params_sliderinit',
+                                        'jform_params_preview_marginleft', 'jform_params_preview_margintop', 'jform_params_preview_marginright',
+                                        'jform_params_preview_marginbottom', 'jform_params_preview_showsubcategories',
+                                        'jform_params_preview_showcategorytitle', 'jform_params_preview_showbreadcrumb',
+                                        'jform_params_preview_showfoldertree', 'jform_params_preview_download_popup', 'jform_params_preview_subcategoriescolor'))
                                     && !in_array($field->id, $clonemargin)
                                     && !in_array($field->id, $clonecategory)
                                     && !in_array($field->id, $sliderinit)
-                                    && !in_array($field->id, $downloadpopup)) : ?>
+                                    && !in_array($field->id, $downloadpopup)
+                                    && !in_array($field->id, $subcategoriescolor)) : ?>
                                             <?php if (!in_array($field->id, array('jform_params_columns', 'jform_params_bgdownloadlink', 'jform_params_colordownloadlink',
                                             'jform_params_ggd_bgdownloadlink', 'jform_params_ggd_colordownloadlink', 'jform_params_table_bgdownloadlink',
-                                            'jform_params_table_colordownloadlink', 'jform_params_table_showcategoriesposition', 'jform_params_tree_bgdownloadlink', 'jform_params_tree_colordownloadlink'))
+                                            'jform_params_table_colordownloadlink', 'jform_params_table_showcategoriesposition', 'jform_params_tree_bgdownloadlink', 'jform_params_tree_colordownloadlink',
+                                            'jform_params_preview_bgdownloadlink', 'jform_params_preview_colordownloadlink', 'jform_params_preview_subcategoriescolor'))
                                             && !in_array($field->id, $columns)
                                             && !in_array($field->id, $bgdownload)
                                             && !in_array($field->id, $colordownload)

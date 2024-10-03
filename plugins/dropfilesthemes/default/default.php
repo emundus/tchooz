@@ -85,6 +85,20 @@ class PlgDropfilesthemesDefault extends DropfilesPluginBase
             $doc->addStyleSheet($path);
         }
 
+        if (!in_array($this->name, parent::getDropfilesThemes())) {
+            if (is_array($this->params)) {
+                $this->params = (object) $this->params;
+            } elseif ($this->params instanceof Joomla\Registry\Registry) {
+                $this->params = $this->params->toObject();
+            }
+        } else {
+            $this->params = $this->options['params'];
+        }
+
+        if ((int) $this->componentParams->get('loadthemecategory', 1) === 1) {
+            $this->params = $this->options['params'];
+        }
+
         $content = '';
         if (!empty($this->options['files']) || (int) DropfilesBase::loadValue($this->params, 'showsubcategories', 1) === 1) {
             $this->files = $this->options['files'];
@@ -93,20 +107,6 @@ class PlgDropfilesthemesDefault extends DropfilesPluginBase
                 $this->category->alias = JFilterOutput::stringURLSafe($this->category->title);
             }
             $this->categories = $this->options['categories'];
-
-            if (!in_array($this->name, parent::getDropfilesThemes())) {
-                if (is_array($this->params)) {
-                    $this->params = (object) $this->params;
-                } elseif ($this->params instanceof Joomla\Registry\Registry) {
-                    $this->params = $this->params->toObject();
-                }
-            } else {
-                $this->params = $this->options['params'];
-            }
-
-            if ((int) $this->componentParams->get('loadthemecategory', 1) === 1) {
-                $this->params = $this->options['params'];
-            }
 
             $this->viewfileanddowload = DropfilesBase::getAuthViewFileAndDownload();
             $canDo = DropfilesHelper::getActions();

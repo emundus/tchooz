@@ -32,6 +32,19 @@ class PlgDropfilesthemesTable extends DropfilesPluginBase
     public $name = 'table';
 
     /**
+     * Table CSS class
+     *
+     * @var string
+     */
+    public $tableclass = '';
+    /**
+     * Dropfiles container CSS class
+     *
+     * @var string
+     */
+    public $dropfilesclass = '';
+
+    /**
      * Show front category
      *
      * @param array $options Theme option
@@ -54,7 +67,6 @@ class PlgDropfilesthemesTable extends DropfilesPluginBase
             JHtml::_('behavior.framework', true);
         }
         $this->componentParams = JComponentHelper::getParams('com_dropfiles');
-        JLoader::register('DropfilesBase', JPATH_ADMINISTRATOR . '/components/com_droppics/classes/dropfilesBase.php');
         JLoader::register('DropfilesHelper', JPATH_ADMINISTRATOR . '/components/com_dropfiles/helpers/dropfiles.php');
         JHtml::_('jquery.framework');
         $this->addScriptTagLoading();
@@ -75,6 +87,19 @@ class PlgDropfilesthemesTable extends DropfilesPluginBase
 
         JText::script('COM_DROPFILES_DEFAULT_FRONT_COLUMNS');
 
+        if (!in_array($this->name, parent::getDropfilesThemes())) {
+            if (is_array($this->params)) {
+                $this->params = (object) $this->params;
+            } elseif ($this->params instanceof Joomla\Registry\Registry) {
+                $this->params = $this->params->toObject();
+            }
+        } else {
+            $this->params = $this->options['params'];
+        }
+
+        if ((int) $this->componentParams->get('loadthemecategory', 1) === 1) {
+            $this->params = $this->options['params'];
+        }
 
         $content = '';
         if (!empty($this->options['files']) || (int) DropfilesBase::loadValue($this->params, 'table_showsubcategories', 1) === 1) {
@@ -85,16 +110,6 @@ class PlgDropfilesthemesTable extends DropfilesPluginBase
             }
             $this->categories = $this->options['categories'];
 
-            if (!in_array($this->name, parent::getDropfilesThemes())) {
-                $this->params = $this->params->toObject();
-            } else {
-                $this->params = $this->options['params'];
-            }
-
-            if ((int) $this->componentParams->get('loadthemecategory', 1) === 1) {
-                $this->params = $this->options['params'];
-            }
-
             $style = ' .dropfiles-content-table[data-category="'.$this->category->id.'"] td .downloadlink, .dropfiles-content-table[data-category="'.$this->category->id.'"] .download-all, .dropfiles-content-table[data-category="'.$this->category->id.'"] .download-selected {background-color:';
             $style .= DropfilesBase::loadValue($this->params, 'table_bgdownloadlink', '#006DCC') . ' !important;color:';
             $style .= DropfilesBase::loadValue($this->params, 'table_colordownloadlink', '#fff') . ' !important;}';
@@ -104,6 +119,9 @@ class PlgDropfilesthemesTable extends DropfilesPluginBase
             $this->dropfilesclass = '';
             if (DropfilesBase::loadValue($this->params, 'table_stylingmenu', true)) {
                 $this->dropfilesclass .= 'colstyle';
+            }
+            if (empty($this->files)) {
+                $this->dropfilesclass .= ' dropfiles-table-content-hidden';
             }
             $this->viewfileanddowload = DropfilesBase::getAuthViewFileAndDownload();
             $canDo = DropfilesHelper::getActions();

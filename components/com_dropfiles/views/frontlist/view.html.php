@@ -51,10 +51,10 @@ class DropfilesViewFrontlist extends JViewLegacy
         $modelConfig = JModelLegacy::getInstance('Frontconfig', 'dropfilesModel');
         $modelCategories = JModelLegacy::getInstance('Frontcategories', 'dropfilesModel');
         $modelCategory = JModelLegacy::getInstance('Frontcategory', 'dropfilesModel');
-
         $this->filesHtml = '';
         $user = JFactory::getUser();
         $dropfiles_params = JComponentHelper::getParams('com_dropfiles');
+
         // If select all is selected
         if ($catids[0] === '' && !isset($catids[1])) {
             $mCats = JModelLegacy::getInstance('Categories', 'DropfilesModel');
@@ -103,7 +103,6 @@ class DropfilesViewFrontlist extends JViewLegacy
 
             if ($dropfiles_params->get('restrictfile', 0)) {
                 $user_id = (int) $user->id;
-
                 $canViewCategory = isset($params->params->canview) ? (int) $params->params->canview : 0;
                 if ($user_id) {
                     if (!($canViewCategory === $user_id || $canViewCategory === 0)) {
@@ -184,9 +183,8 @@ class DropfilesViewFrontlist extends JViewLegacy
                 if (isset($params->params->orderingdir)) {
                     $modelFiles->setState('list.direction', $params->params->orderingdir);
                 }
-                //to make storeid different to avoid duplicate results
+                // To make store id different to avoid duplicate results
                 $modelFiles->setState('list.limit', 1000 * $cat);
-
                 $subparams   = (array) $params->params;
                 $lstAllFile  = null;
                 $ordering    = (isset($params->params->ordering)) ? $params->params->ordering : '';
@@ -204,7 +202,7 @@ class DropfilesViewFrontlist extends JViewLegacy
                     if (isset($params->params->ordering) && isset($params->params->orderingdir)) {
                         $ordering   = $params->params->ordering;
                         $direction  = $params->params->orderingdir;
-                        $files      = DropfilesHelper::orderingMultiCategoryFiles($files, $ordering, $direction);
+                        $files      = DropfilesHelper::orderingMultiCategoryFiles($files, $ordering, $direction, $category->id);
                     }
                 }
             }
@@ -236,12 +234,21 @@ class DropfilesViewFrontlist extends JViewLegacy
             }
             JPluginHelper::importPlugin('dropfilesthemes');
             $app = JFactory::getApplication();
+            $paginationNumber = intval($componentParams->get('paginationnunber', 0));
+            $enablePagination = false;
+            $total            = 0;
+            if ($paginationNumber && !empty($files) && is_array($files) && count($files) > $paginationNumber && $theme !== 'tree') {
+                $total            = (is_array($files)) ? ceil(count($files) / $paginationNumber) : 0;
+                $files            = array_slice($files, 0, $paginationNumber);
+                $enablePagination = true;
+            }
+
             $result = $app->triggerEvent('onShowFrontCategory', array(array('files' => $files,
                 'category' => $category,
                 'categories' => $categories,
                 'params' => is_object($params) ? $params->params : '',
                 'theme' => $theme,
-                'columns'    => isset($columns) ? $columns : 2,
+                'columns' => isset($columns) ? $columns : 2,
             )
             ));
 
@@ -255,11 +262,7 @@ class DropfilesViewFrontlist extends JViewLegacy
                 $doc = JFactory::getDocument();
                 $doc->addStyleSheet(JURI::base('true') . '/components/com_dropfiles/assets/css/front_ver5.4.css');
                 if ((int) $componentParams->get('usegoogleviewer', 1) === 1) {
-                    $path_dropfilesbase = JPATH_ADMINISTRATOR . '/components/com_droppics/classes/dropfilesBase.php';
-                    JLoader::register('DropfilesBase', $path_dropfilesbase);
-
                     JHtml::_('jquery.framework');
-
 
                     $doc->addStyleSheet(JURI::base('true') . '/components/com_dropfiles/assets/css/video-js.css');
                     $doc->addScript(JURI::base('true') . '/components/com_dropfiles/assets/js/video.js');
@@ -267,6 +270,19 @@ class DropfilesViewFrontlist extends JViewLegacy
                 }
                 $doc->addScriptDeclaration('dropfilesBaseUrl="' . JURI::base() . '";');
                 $doc->addScriptDeclaration('dropfilesRootUrl="' . JURI::root(true) . '/";');
+
+                // Push pagination to special category contents
+                if ($enablePagination) {
+                    $paginationParams = array(
+                        'base'      => '',
+                        'format'    => '',
+                        'current'   => max(1, 1),
+                        'total'     => $total,
+                        'sourcecat' => $cat
+                    );
+                    $result[0] .= DropfilesFilesHelper::dropfiles_category_pagination($paginationParams);
+                }
+
                 $this->filesHtml .= $result[0];
             }
         }

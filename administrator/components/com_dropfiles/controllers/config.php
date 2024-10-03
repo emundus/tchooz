@@ -20,13 +20,13 @@ jimport('joomla.filesystem.folder');
 jimport('joomla.filesystem.file');
 
 use Joomla\Utilities\ArrayHelper;
+use Joomla\CMS\Factory;
 
 /**
  * Class DropfilesControllerConfig
  */
 class DropfilesControllerConfig extends JControllerForm
 {
-
     /**
      * Save param config
      *
@@ -264,13 +264,7 @@ class DropfilesControllerConfig extends JControllerForm
     public function downimport()
     {
         $app = JFactory::getApplication();
-        $path = JPATH_SITE . '/components/com_jdownloads/helpers/categories.php';
-        if (is_file($path)) {
-            include_once $path;
-        }
-
         include_once JPATH_ADMINISTRATOR . '/components/com_dropfiles/controllers/category.php';
-
         $params = JComponentHelper::getParams('com_dropfiles');
         $allowedext_list = '7z,ace,bz2,dmg,gz,rar,tgz,zip,csv,doc,docx,html,key,keynote,odp,ods,odt,pages,pdf,pps,ppt,'
             . 'pptx,rtf,tex,txt,xls,xlsx,xml,bmp,exif,gif,ico,jpeg,jpg,png,psd,tif,tiff,aac,aif,aiff,alac,amr,au,cdda,'
@@ -283,15 +277,26 @@ class DropfilesControllerConfig extends JControllerForm
                 unset($allowed_ext[$key]);
             }
         }
-
         $id = JFactory::getApplication()->input->getInt('doccat');
 
-        JTable::addIncludePath(JPATH_ADMINISTRATOR . DS . 'components' . DS . 'com_jdownloads' . DS . 'tables');
-        $path_admin_models = JPATH_ADMINISTRATOR . ' / components / com_jdownloads / models / ';
-        JModelLegacy::addIncludePath($path_admin_models, 'jdownloadsModel');
+        $path = JPATH_SITE . '/components/com_jdownloads/helpers/categories.php';
+        $jDownloadV3 = true;
+        if (is_file($path)) { // jDownload for J3
+            include_once $path;
+            JTable::addIncludePath(JPATH_ADMINISTRATOR . DS . 'components' . DS . 'com_jdownloads' . DS . 'tables');
+            $path_admin_models = JPATH_ADMINISTRATOR . '/components/com_jdownloads/models/';
+            JModelLegacy::addIncludePath($path_admin_models, 'jdownloadsModel');
 
-        $categories = JDCategories::getInstance('jdownloads', '');
-        $cat = $categories->get($id);
+            $categories = JDCategories::getInstance('jdownloads', '');
+            $cat = $categories->get($id);
+        } else {
+            //jDownloads for J4
+            $jDownloadV3 = false;
+            $modelCategory = Factory::getApplication()->bootComponent('jdownloads')->getMVCFactory()
+                ->createModel('Category', 'Administrator');
+            $cat = $modelCategory->getItem($id);
+        }
+
 
         if (is_object($cat)) {
             $db = JFactory::getDbo();
@@ -322,40 +327,71 @@ class DropfilesControllerConfig extends JControllerForm
                     }
                     $db = JFactory::getDbo();
                     $query = $db->getQuery(true);
+                    if ($jDownloadV3) {
+                        // Select the required fields from the table.
+                        $query->select('a.file_id, a.file_title, a.file_alias, a.description, a.file_pic, '
+                            . 'a.price,a.release, a.cat_id, a.size, a.date_added, a.publish_from, a.modified_date,'
+                            . 'a.publish_to, a.use_timeframe,a.url_download, a.other_file_id, a.extern_file,'
+                            . 'a.downloads,a.extern_site, a.notes,a.access, a.language, a.checked_out,'
+                            . 'a.checked_out_time, a.ordering, a.featured,a.published, a.asset_id');
+                        $query->from('`#__jdownloads_files` AS a');
 
-                    // Select the required fields from the table.
-                    $query->select('a.file_id, a.file_title, a.file_alias, a.description, a.file_pic, '
-                       . 'a.price,a.release, a.cat_id, a.size, a.date_added, a.publish_from, a.modified_date,'
-                       . 'a.publish_to, a.use_timeframe,a.url_download, a.other_file_id, a.extern_file,'
-                       . 'a.downloads,a.extern_site, a.notes,a.access, a.language, a.checked_out,'
-                       . 'a.checked_out_time, a.ordering, a.featured,a.published, a.asset_id');
-                    $query->from('`#__jdownloads_files` AS a');
+                        // Join over the users for the checked out user.
+                        $query->select('uc . name AS editor');
+                        $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
+                        // Join over the files for other selected file
+                        $query->select('f.url_download AS other_file_name, f.file_title AS other_download_title');
+                        $query->join('LEFT', $db->quoteName('#__jdownloads_files') .
+                            ' AS f ON f.file_id = a.other_file_id');
+                        // Join over the language
+                        $query->select('l.title AS language_title');
+                        $query->join('LEFT', $db->quoteName('#__languages') . ' AS l ON l.lang_code = a.language');
 
-                    // Join over the users for the checked out user.
-                    $query->select('uc . name AS editor');
-                    $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
+                        // Join over the asset groups.
+                        $query->select('ag.title AS access_level');
+                        $query->join('LEFT', '#__viewlevels AS ag ON ag.id = a.access');
+                        // Join over the categories.
+                        $query->select('c.title AS category_title, c.parent_id AS category_parent_id');
+                        $query->join('LEFT', '#__jdownloads_categories AS c ON c.id = a.cat_id');
 
-                    // Join over the files for other selected file
-                    $query->select('f.url_download AS other_file_name, f.file_title AS other_download_title');
-                    $query->join('LEFT', $db->quoteName('#__jdownloads_files') .
-                        ' AS f ON f.file_id = a.other_file_id');
-
-                    // Join over the language
-                    $query->select('l.title AS language_title');
-                    $query->join('LEFT', $db->quoteName('#__languages') . ' AS l ON l.lang_code = a.language');
-
-                    // Join over the asset groups.
-                    $query->select('ag.title AS access_level');
-                    $query->join('LEFT', '#__viewlevels AS ag ON ag.id = a.access');
-
-                    // Join over the categories.
-                    $query->select('c.title AS category_title, c.parent_id AS category_parent_id');
-                    $query->join('LEFT', '#__jdownloads_categories AS c ON c.id = a.cat_id');
-
-                    $query->where('a.published = 1');
+                        $query->where('a.published = 1');
 
 
-                    $query->where('a.cat_id = ' . $category->id);
+                        $query->where('a.cat_id = ' . $category->id);
+                    } else {
+                        // Select the required fields from the table.
+                        $query->select('a.id, a.title as file_title, a.alias, a.description, a.file_pic, '
+                            . 'a.price,a.release, a.catid, a.size, a.created as date_added, a.publish_up as publish_from, a.modified as modified_date,'
+                            . 'a.publish_down as publish_to, a.use_timeframe,a.url_download, a.other_file_id, a.extern_file,'
+                            . 'a.downloads,a.extern_site, a.notes,a.access, a.language, a.checked_out,'
+                            . 'a.checked_out_time, a.ordering, a.featured,a.published, a.asset_id');
+                        $query->from('`#__jdownloads_files` AS a');
+
+                        // Join over the users for the checked out user.
+                        $query->select('uc . name AS editor');
+                        $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
+                        // Join over the files for other selected file
+                        $query->select('f.url_download AS other_file_name, f.title AS other_download_title');
+                        $query->join('LEFT', $db->quoteName('#__jdownloads_files') .
+                            ' AS f ON f.id = a.other_file_id');
+                        // Join over the language
+                        $query->select('l.title AS language_title');
+                        $query->join('LEFT', $db->quoteName('#__languages') . ' AS l ON l.lang_code = a.language');
+
+                        // Join over the asset groups.
+                        $query->select('ag.title AS access_level');
+                        $query->join('LEFT', '#__viewlevels AS ag ON ag.id = a.access');
+
+                        // Join over the categories.
+                        $query->select('c.title AS category_title, c.parent_id AS category_parent_id');
+                        $query->join('LEFT', '#__jdownloads_categories AS c ON c.id = a.catid');
+
+                        $query->where('a.published = 1');
+
+
+                        $query->where('a.catid = ' . $category->id);
+                    }
+
                     $db->setQuery($query);
 
                     $downloads = $db->loadObjectList();
@@ -1098,5 +1134,1023 @@ class DropfilesControllerConfig extends JControllerForm
         JLoader::register('DropfilesCloudConnector', $path_cloudconnector);
         $connector = new DropfilesCloudConnector();
         $connector->executeAction();
+    }
+
+    /**
+     * List all categories to import from servers
+     *
+     * @return void
+     */
+    public function dropfilesListAllCategories()
+    {
+        $modelCategories = $this->getModel('categories');
+        $dropfilesCategories = $modelCategories->getAllCategories();
+
+        if (is_array($dropfilesCategories) && !empty($dropfilesCategories)) {
+            foreach ($dropfilesCategories as $index => $category) {
+                if (!isset($category->id) || (isset($category->id) && !is_numeric($category->id))) {
+                    unset($dropfilesCategories[$index]);
+                }
+            }
+            echo json_encode(array('data' => $dropfilesCategories, 'success' => true));
+            jexit();
+        } else {
+            $dropfilesCategories = array();
+            echo json_encode(array('data' => $dropfilesCategories, 'success' => false));
+            jexit();
+        }
+    }
+
+    /**
+     * Import the server folders and files into dropfiles categories
+     *
+     * @throws Exception Fire if errors
+     *
+     * @return void
+     */
+    public function dropfilesRunImportServerFolders()
+    {
+        $list_import   = JFactory::getApplication()->input->getString('dropfiles_list_import');
+        $categoryDisc  = JFactory::getApplication()->input->getString('server_category_disc');
+        $importOption  = JFactory::getApplication()->input->getString('server_import_option');
+        $exclude_terms = array();
+        $existsTerms   = array();
+
+        if (!is_array($list_import) || is_null($list_import)) {
+            echo json_encode(array('success' => false, 'existsTerms' => $existsTerms));
+            jexit();
+        }
+
+        if (!empty($list_import)) {
+            if (in_array('', $list_import)) {
+                $key_null = array_search('', $list_import);
+                unset($list_import[$key_null]);
+            }
+            foreach ($list_import as $directory) {
+                if ($directory !== '/') {
+                    $path          = realpath(JPATH_ROOT . $directory);
+                    $parent        = ($categoryDisc !== '') ? (int)$categoryDisc : 1;
+                    if (!file_exists($path)) {
+                        continue;
+                    }
+
+                    if (!in_array($path, $exclude_terms)) {
+                        $inserted_sub_terms = $this->dropfilesImportCategoryFromServers($path, $parent, $importOption);
+                        $exclude_terms      = array_merge($inserted_sub_terms['child_inserted'], $exclude_terms);
+                        $existsTerms        = array_merge($inserted_sub_terms['existsTermList'], $existsTerms);
+                    }
+                }
+            }
+        }
+
+        echo json_encode(array('success' => true, 'existsTerms' => $existsTerms));
+        jexit();
+    }
+
+    /**
+     * Recursive import each category with it's files into dropfiles
+     *
+     * @param string  $path         Directory path
+     * @param integer $parent       Category parent
+     * @param string  $importOption Advanced import option
+     *
+     * @throws Exception Fire if errors
+     *
+     * @return array
+     */
+    public function dropfilesImportCategoryFromServers($path, $parent = 1, $importOption = 'only_selected_folders')
+    {
+        $app            = JFactory::getApplication();
+        $results        = JFactory::getApplication()->input->getString('dropfiles_list_import');
+        $results        = $this->dropfilesMapImportPathList($results);
+        $child_inserted = array();
+        $existsTermList = array();
+        $existsTermObj  = null;
+
+        if (!class_exists('DropfilesControllerCategory')) {
+            $categoryControllerPath = JPATH_ADMINISTRATOR . '/components/com_dropfiles/controllers/category.php';
+            include_once $categoryControllerPath;
+        }
+
+        if (!class_exists('DropfilesControllerCategories')) {
+            $categoriesControllerPath = JPATH_ADMINISTRATOR . '/components/com_dropfiles/controllers/categories.php';
+            include_once $categoriesControllerPath;
+        }
+
+        if (!class_exists('DropfilesHelperfolder')) {
+            $helperFolderPath = JPATH_ADMINISTRATOR . '/components/com_dropfiles/helpers/dropfilesHelperFolder.php';
+            include_once $helperFolderPath;
+        }
+
+        $helperFolder = new DropfilesHelperfolder();
+        $name         = basename($helperFolder->untrailingslashit($path));
+
+        // Import category into dropfiles category disc
+        $title = !empty($name) ? $name : JText::_('COM_DROPFILES_MODEL_CATEGORY_DEFAULT_NAME');
+        $datas = array();
+        $datas['jform']['extension'] = 'com_dropfiles';
+        $datas['jform']['title'] = $title;
+        $datas['jform']['alias'] = $title . '-' . date('dmY-h-m-s', time());
+        $datas['jform']['language'] = '*';
+        $datas['jform']['metadata']['tags'] = '';
+
+        // Set state value to retrieve the correct table
+        $modelCategory = $this->getModel('category');
+        $modelCategories = $this->getModel('categories');
+        $modelCategory->setState('category.extension', 'com_dropfiles');
+
+        foreach ($datas as $data => $val) {
+            $app->input->set($data, $val, 'POST');
+        }
+        $app->input->set('id', null, 'POST');
+        $table = $modelCategory->getTable();
+        $categoryData = $app->input->get('jform', array(), 'array');
+        property_exists($table, 'checked_out');
+
+        // Determine the name of the primary key for the data.
+        $key = $table->getKeyName();
+
+        // To avoid data collisions the urlVar may be different from the primary key.
+        $urlVar = $key;
+        $recordId = $app->input->getInt($urlVar);
+
+        // Populate the row id from the session.
+        $categoryData[$key] = $recordId;
+        $categoryForm = $modelCategory->getForm($categoryData, false);
+
+        if (!$categoryForm) {
+            return array();
+        }
+
+        // Test whether the data is valid.
+        $validCategoryData = $modelCategory->validate($categoryForm, $categoryData);
+
+        // Check for validation errors.
+        if ($validCategoryData === false) {
+            return array();
+        }
+
+        // Attempt to save the category data.
+        $parent = (intval($parent) > 0) ? intval($parent) : 1;
+        $validCategoryData['published'] = 1;
+        $validCategoryData['metadesc'] = '';
+        $validCategoryData['metakey'] = '';
+        $validCategoryData['description'] = '';
+        $validCategoryData['params'] = '';
+        $validCategoryData['parent_id'] = $parent;
+        $insertedCategoryId = $modelCategory->save($validCategoryData, true);
+
+        if (empty($insertedCategoryId) || is_null($insertedCategoryId)) {
+            return array();
+        }
+
+        // Ordering categories
+        $this->dropfilesCategoryOrdering($insertedCategoryId, $parent, 'last-child');
+
+        // Import files into the new created category
+        $files = $this->dropfilesGetAllFileFromServerFolders($path, array());
+        if (!empty($files)) {
+            $this->dropfilesImportFiles((int)$insertedCategoryId, $files);
+        }
+
+        // Import sub categories
+        $directories = glob($path . '/*', GLOB_ONLYDIR);
+        if (!empty($directories)) {
+            foreach ($directories as $direct) {
+                if ($importOption === 'all_sub_folders') {
+                    $child_inserted2  = $this->dropfilesImportCategoryFromServers($direct, (int)$insertedCategoryId, 'all_sub_folders');
+                    $child_inserted   = array_merge($child_inserted2['child_inserted'], $child_inserted);
+                    $child_inserted[] = $direct;
+                    $existsTermList   = array_merge($child_inserted2['existsTermList'], $existsTermList);
+                } else {
+                    if (in_array($direct, $results)) {
+                        $child_inserted2  = $this->dropfilesImportCategoryFromServers($direct, (int)$insertedCategoryId, 'only_selected_folders');
+                        $child_inserted   = array_merge($child_inserted2['child_inserted'], $child_inserted);
+                        $child_inserted[] = $direct;
+                        $existsTermList   = array_merge($child_inserted2['existsTermList'], $existsTermList);
+                    }
+                }
+            }
+        }
+
+        return array('child_inserted' => $child_inserted, 'existsTermList' => $existsTermList);
+    }
+
+    /**
+     * List all files of the given directory from servers
+     *
+     * @param string $dir     Directory path
+     * @param array  $results Contents
+     *
+     * @return array
+     */
+    public function dropfilesGetAllFileFromServerFolders($dir, $results = array())
+    {
+        $files = scandir($dir);
+
+        foreach ($files as $key => $value) {
+            $path = realpath($dir . DIRECTORY_SEPARATOR . $value);
+            if (!is_dir($path)) {
+                $results[] = $path;
+            } elseif ($value !== '.' && $value !== '..') {
+                $this->dropfilesGetAllFileFromServerFolders($path, $results);
+                $results[] = $path;
+            }
+        }
+
+        return $results;
+    }
+
+    /**
+     * Import files from server to dropfiles category
+     *
+     * @param integer $categoryId Category id
+     * @param array   $files      File list
+     *
+     * @throws Exception Fire if errors
+     *
+     * @return void
+     */
+    public function dropfilesImportFiles($categoryId, $files)
+    {
+        if ((int)$categoryId > 0) {
+            $app = JFactory::getApplication();
+            $file_dir = DropfilesBase::getFilesPath($categoryId);
+
+            // Check folder exists
+            if (!file_exists($file_dir)) {
+                JFolder::create($file_dir);
+                $data = '<html><body bgcolor="#FFFFFF"></body></html>';
+                JFile::write($file_dir . 'index.html', $data);
+                $data = 'deny from all';
+                JFile::write($file_dir . '.htaccess', $data);
+            }
+            $params = JComponentHelper::getParams('com_dropfiles');
+            $allowedext_list = '7z,ace,bz2,dmg,gz,rar,tgz,zip,csv,doc,docx,html,key,keynote,odp,ods,odt,pages,pdf,pps,ppt,'
+                . 'pptx,rtf,tex,txt,xls,xlsx,xml,bmp,exif,gif,ico,jpeg,jpg,png,psd,tif,tiff,aac,aif,aiff,alac,amr,au,cdda,'
+                . 'flac,m3u,m4a,m4p, mid, mp3, mp4, mpa, ogg, pac, ra, wav, wma, 3gp,asf,avi,flv,m4v,mkv,mov,mpeg,mpg,'
+                . 'rm,swf,vob,wmv';
+            $allowed = explode(',', $params->get('allowedext', $allowedext_list));
+            $count = 0;
+            $modelFiles = $this->getModel('files');
+            $modelCategories = $this->getModel('Categories');
+            $user = JFactory::getUser();
+
+            // Process import files
+            if (!empty($files)) {
+                foreach ($files as $file) {
+                    if (in_array(strtolower(JFile::getExt($file)), $allowed)) {
+                        $newname = uniqid() . '.' . strtolower(JFile::getExt($file));
+                        copy($file, $file_dir . $newname);
+                        chmod($file_dir . $newname, 0777);
+                        setlocale(LC_ALL, 'C.UTF-8');
+
+                        // Insert new image into database when success
+                        $id_file = $modelFiles->addFile(array(
+                            'title'       => preg_replace('#\.[^.]*$#', '', basename($file)),
+                            'state'       => '1',
+                            'id_category' => $categoryId,
+                            'file'        => $newname,
+                            'ext'         => strtolower(JFile::getExt($file)),
+                            'size'        => filesize($file_dir . $newname),
+                            'author'      => $user->get('id')
+                        ));
+
+                        if (!$id_file) {
+                            unlink($file_dir . $newname);
+                        }
+                        $count++;
+                    }
+                }
+
+                // Update files counter
+                $modelCategories->updateFilesCount();
+            }
+        }
+    }
+
+    /**
+     * Return full of the directory path correctly
+     *
+     * @param array $importList List directory import
+     *
+     * @return array Result list
+     */
+    public function dropfilesMapImportPathList($importList)
+    {
+        $results = array();
+
+        if (!empty($importList)) {
+            foreach ($importList as $order) {
+                if ($order !== '/') {
+                    $folder_path = realpath(JPATH_ROOT . $order);
+                    $results[] = $folder_path;
+                }
+            }
+        }
+
+        return $results;
+    }
+
+    /**
+     * Ordering categories
+     *
+     * @param string|mixed   $pk       Current category id
+     * @param integer|string $ref      Parent category id
+     * @param string         $position Position to push
+     *
+     * @throws Exception Fire if errors
+     *
+     * @return void
+     */
+    public function dropfilesCategoryOrdering($pk = null, $ref = 1, $position = 'last-child')
+    {
+        $app = JFactory::getApplication();
+        $modelCategory = $this->getModel('Category');
+        $canDo = DropfilesHelper::getActions();
+
+        if (!$canDo->get('core.edit')) {
+            if ($canDo->get('core.edit.own')) {
+                $category = $modelCategory->getItem($pk);
+                if ($category->created_user_id !== JFactory::getUser()->id) {
+                    $this->exitStatus('not permitted');
+                }
+            } else {
+                $this->exitStatus('not permitted');
+            }
+        }
+
+        if ((int) $ref === 0) {
+            $ref = 1;
+        }
+
+        if ($position !== 'last-child') {
+            $position = 'first-child';
+        }
+
+        $table = $modelCategory->getTable();
+        $table->moveByReference($ref, $position, $pk);
+    }
+
+    /**
+     * Save export params for exporting
+     *
+     * @throws Exception Fire if errors
+     *
+     * @return void
+     */
+    public function saveExportParams()
+    {
+        $export_type_values    = JFactory::getApplication()->input->getString('export_type', 'all');
+        $include_folder_values = JFactory::getApplication()->input->getString('selected_categories', '');
+        $supportTypes          = array('all', 'only_folder', 'selection_folder');
+
+        if (!class_exists('DropfilesModelOptions')) {
+            JLoader::register('DropfilesModelOptions', JPATH_ADMINISTRATOR . '/components/com_dropfiles/models/options.php');
+        }
+
+        if (!in_array($export_type_values, $supportTypes)) {
+            jexit();
+        }
+
+        // Save export params for exporting
+        $options = new DropfilesModelOptions();
+        $options->update_option('dropfiles_export_folder_type', $export_type_values);
+        if ($export_type_values === 'selection_folder' && !empty($include_folder_values)) {
+            $options->update_option('dropfiles_export_selected_categories', explode(',', $include_folder_values));
+        }
+    }
+
+    /**
+     * Export dropfiles folders and files
+     *
+     * @throws Exception Fire if errors
+     *
+     * @return void
+     */
+    public function exportFolder()
+    {
+        if (!class_exists('DropfilesFilesHelper')) {
+            JLoader::register('DropfilesFilesHelper', JPATH_ADMINISTRATOR . '/components/com_dropfiles/helpers/files.php');
+        }
+
+        if (!class_exists('DropfilesModelOptions')) {
+            JLoader::register('DropfilesModelOptions', JPATH_ADMINISTRATOR . '/components/com_dropfiles/models/options.php');
+        }
+
+        $dbo                    = JFactory::getDbo();
+        $options                = new DropfilesModelOptions();
+        $export_type            = $options->get_option('dropfiles_export_folder_type');
+        $include_folders        = !is_null($options->get_option('dropfiles_export_selected_categories')) ? (array) json_decode($options->get_option('dropfiles_export_selected_categories')) : array();
+        $supportTypes           = array('all', 'only_folder', 'selection_folder');
+        $only_select_terms      = array();
+        $only_select_folders_id = array();
+        $folders                = array();
+        $pendingFolders         = array();
+        $terms                  = array();
+        $files                  = array();
+        $folders_id             = array();
+
+        if (!in_array($export_type, $supportTypes)) {
+            jexit();
+        }
+
+        if (is_null($export_type) || empty($export_type)) {
+            $export_type = 'only_folder';
+        }
+
+        if (is_null($include_folders) || empty($include_folders)) {
+            $include_folders = array();
+        }
+
+        if (empty($include_folders) || is_string($include_folders)) {
+            $include_folders = array();
+        }
+
+        $modelCategory = $this->getModel('category');
+        $modelCategories = $this->getModel('categories');
+        $modelFiles    = $this->getModel('files');
+        $config        = JFactory::getConfig();
+        $siteName      = $config->get('sitename');
+
+        if (!empty($siteName)) {
+            $siteName .= '.';
+        }
+
+        $date        = date('Y-m-d');
+        $xmlFileName = $siteName . 'dropfiles.' . $date . '.xml';
+
+        if (is_null($xmlFileName) || empty($xmlFileName)) {
+            $xmlFileName = 'Dropfiles.export.xml';
+        }
+
+        // Get categories
+        switch ($export_type) {
+            case 'all':
+            case 'only_folder':
+                $query = $dbo->getQuery(true);
+                $query->select('c.*');
+                $query->from('`#__categories` as c');
+                $query->innerJoin('`#__dropfiles` as d');
+                $query->where('c.id=d.id');
+                $query->where('c.extension = "com_dropfiles"');
+                $dbo->setQuery($query);
+                $folders = $dbo->loadObjectList();
+                break;
+            case 'selection_folder':
+                $query = $dbo->getQuery(true);
+                $query->select('c.*');
+                $query->from('`#__categories` as c');
+                $query->where('c.extension = "com_dropfiles"');
+                $query->where('c.id IN ('. implode(',', $include_folders) .')');
+                $dbo->setQuery($query);
+                $folders = $dbo->loadObjectList();
+                break;
+        }
+
+        // Categories ordering for importing
+        if (!empty($folders)) {
+            while ($folder = array_shift($folders)) {
+                if ((int) $folder->parent_id === 1 || isset($terms[$folder->parent_id])) {
+                    $terms[$folder->id] = $folder;
+                    $folders_id[] = $folder->id;
+                } else {
+                    if (isset($terms[$folder->parent_id])) {
+                        $folders[] = $folder;
+                    } else {
+                        $pendingFolders[] = $folder;
+                    }
+                }
+            }
+        }
+
+        // Process pending folders
+        if ($export_type === 'selection_folder' && !empty($pendingFolders)) {
+            foreach ($pendingFolders as $pendingFolder) {
+                $terms[$pendingFolder->id] = $pendingFolder;
+                $folders_id[] = $pendingFolder->id;
+            }
+        }
+
+        // Export exists categories only
+        if (empty($terms) || !is_array($terms) || count($terms) <= 0) {
+            jexit(JText::_('COM_DROPFILES_CONFIG_IMPORT_EXPORT_EXPORT_FAILED'));
+        }
+
+        // Get file ids for exporting the file(s)
+        switch ($export_type) {
+            case 'all':
+                $query = $dbo->getQuery(true);
+                $query->select('id');
+                $query->from('`#__dropfiles_files`');
+                $dbo->setQuery($query);
+                $post_ids = $dbo->loadAssocList();
+                break;
+            case 'selection_folder':
+                foreach ($terms as $term) {
+                    if (isset($term->id) && in_array($term->id, $include_folders)) {
+                        $only_select_terms[$term->id] = $term;
+                    }
+                }
+                $terms = $only_select_terms;
+                if (!empty($folders_id)) {
+                    foreach ($folders_id as $id) {
+                        if (in_array($id, $include_folders)) {
+                            $only_select_folders_id[] = $id;
+                        }
+                    }
+                    $folders_id = $only_select_folders_id;
+                }
+
+                // Query get posts with selected terms
+                $fQuery = 'SELECT f.id FROM #__dropfiles_files as f WHERE f.catid IN ('. implode(',', $folders_id) .')';
+                $dbo->setQuery($fQuery);
+                $post_ids = $dbo->loadAssocList();
+                break;
+            case 'only_folder':
+            default:
+                $post_ids = array();
+                break;
+        }
+
+        // Export XML contents
+        $xml = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><chanel></chanel>');
+        $record = $xml->addChild('site_name');
+        $record->addChild('title', $siteName);
+        $record = $xml->addChild('site_url');
+        $record->addChild('link', JURI::root());
+        $record = $xml->addChild('site_path');
+        $record->addChild('path', JPATH_SITE);
+        $record = $xml->addChild('site_language');
+        $record->addChild('language', JFactory::getLanguage()->getName());
+
+        // Export categories
+        foreach ($terms as $term) {
+            if (!isset($term->id)) {
+                continue;
+            }
+            $params = $modelCategory->getCategoryParams($term->id);
+            $params = !empty($params) ? json_encode($params) : '';
+            $theme  = $modelCategory->getCategoryTheme($term->id);
+            $record = $xml->addChild('category');
+            $record->addChild('id', $term->id);
+            $record->addChild('title', $term->title);
+            $record->addChild('description', $term->description);
+            $record->addChild('published', $term->published);
+            $record->addChild('parent_id', $term->parent_id);
+            $record->addChild('level', $term->level);
+            $record->addChild('hits', $term->hits);
+            $record->addChild('theme', $theme);
+            $record->addChild('params', $params);
+        }
+
+        // Export all related files
+        if ($post_ids) {
+            $fileList = array();
+            $post_ids = array_map(function ($postId) {
+                return $postId['id'];
+            }, $post_ids);
+            foreach ($terms as $term) {
+                if (is_null($term) || !isset($term->id)) {
+                    continue;
+                }
+                $category = $modelCategory->getCategory($term->id);
+                $categoryFiles = $modelFiles->getListOfCate($term->id);
+                $categoryFiles = DropfilesFilesHelper::addInfosToFile($categoryFiles, $category);
+                $fileList = array_merge($categoryFiles, $fileList);
+            }
+
+            foreach ($fileList as $file) {
+                $files[$file->id] = $file;
+            }
+
+            // Fetch 20 files at a time for improving performance
+            while ($nextPosts = array_splice($post_ids, 0, 20)) {
+                $fetchFullFileQuery = 'SELECT * FROM #__dropfiles_files as f WHERE f.id IN ('. implode(',', $nextPosts) .')';
+                $dbo->setQuery($fetchFullFileQuery);
+
+                if (!$dbo->execute()) {
+                    $attachments = array();
+                } else {
+                    $attachments = $dbo->loadObjectList();
+                }
+
+                foreach ($attachments as $attachment) {
+                    // Remove file does not exists in queue
+                    if (!key_exists($attachment->id, $files)) {
+                        continue;
+                    }
+                    $link_download_file = (isset($files[$attachment->id]) && isset($files[$attachment->id]->link)) ? $files[$attachment->id]->link : '';
+                    $record = $xml->addChild('item');
+                    $record->addChild('id', $attachment->id);
+                    $record->addChild('catid', $attachment->catid);
+                    $record->addChild('title', htmlspecialchars($attachment->title));
+                    $record->addChild('file', $attachment->file);
+                    $record->addChild('state', $attachment->state);
+                    $record->addChild('description', htmlspecialchars($attachment->description));
+                    $record->addChild('ext', $attachment->ext);
+                    $record->addChild('size', $attachment->size);
+                    $record->addChild('hits', $attachment->hits);
+                    $record->addChild('remoteurl', $attachment->remoteurl);
+                    $record->addChild('version', $attachment->version);
+                    $record->addChild('created_time', $attachment->created_time);
+                    $record->addChild('modified_time', $attachment->modified_time);
+                    $record->addChild('author', $attachment->author);
+                    $record->addChild('file_tags', $attachment->file_tags);
+                    $record->addChild('custom_icon', $attachment->custom_icon);
+                    $record->addChild('file_multi_category', $attachment->file_multi_category);
+                    $record->addChild('link_download', $link_download_file);
+                }
+            }
+        }
+
+        $xml->asXML($xmlFileName);
+        while (ob_get_level() !== 0) {
+            ob_end_clean();
+        }
+        header('Content-disposition: attachment; filename=' . $xmlFileName);
+        header('Content-type: text/xml');
+        readfile($xmlFileName);
+        jexit();
+    }
+
+    /**
+     * Import dropfiles folders and files to new site
+     *
+     * @throws Exception Fire if errors
+     *
+     * @return void
+     */
+    public function savefolderimportexportparams()
+    {
+        $app       = JFactory::getApplication();
+        $dbo       = JFactory::getDbo();
+        $importMsg = '';
+
+        if (empty($_FILES) || !isset($_FILES['file'])) {
+            $importMsg .= '<p><strong>'. JText::_('COM_DROPFILES_CONFIG_IMPORT_EXPORT_MSG_IMPORT_ERROR') .'</strong><br />';
+            $importMsg .= JText::_('COM_DROPFILES_CONFIG_IMPORT_EXPORT_MSG_FILE_NOT_FOUND') .'</p>';
+
+            echo json_encode(array('success' => false, 'msg' => $importMsg));
+            jexit();
+        }
+
+        // Read XML contents
+        $xmlFileType           = isset($_FILES['file']['type']) ? $_FILES['file']['type'] : '';
+        $xmlFileError          = $_FILES['file']['error'];
+        $insertedCategoriesIds = array();
+        $insertedFileIds       = array();
+        $missedCategoryIds     = array();
+        $files                 = array();
+        $xmlFileContents       = isset($_FILES['file']['tmp_name']) ? simplexml_load_file($_FILES['file']['tmp_name']) : '';
+        $categoryDisc          = $app->input->getString('xml_category_disc', '0');
+        $importFolderOnly      = $app->input->getString('import_only_folder', '1');
+        $categoryModel         = $this->getModel('category');
+
+        if ($xmlFileError || $xmlFileType !== 'text/xml') {
+            $importMsg .= '<p><strong>'. JText::_('COM_DROPFILES_CONFIG_IMPORT_EXPORT_MSG_IMPORT_ERROR') .'</strong><br />';
+            $importMsg .= JText::_('COM_DROPFILES_CONFIG_IMPORT_EXPORT_MSG_FILE_TYPE_VALID') .'</p>';
+
+            echo json_encode(array('success' => false, 'msg' => $importMsg));
+            jexit();
+        }
+
+        if (empty($xmlFileContents) || !is_object($xmlFileContents)) {
+            $importMsg .= '<p><strong>'. JText::_('COM_DROPFILES_CONFIG_IMPORT_EXPORT_MSG_IMPORT_ERROR') .'</strong><br />';
+            $importMsg .= JText::_('COM_DROPFILES_CONFIG_IMPORT_EXPORT_MSG_READ_FILE') .'</p>';
+
+            echo json_encode(array('success' => false, 'msg' => $importMsg));
+            jexit();
+        }
+
+        $xmlCategories = (isset($xmlFileContents->category) && !empty($xmlFileContents->category)) ? $xmlFileContents->category : array();
+        $xmlFiles      = (isset($xmlFileContents->item) && !empty($xmlFileContents->item)) ? $xmlFileContents->item : array();
+
+        if (empty($xmlFileContents->category)) {
+            $importMsg .= '<p><strong>'. JText::_('COM_DROPFILES_CONFIG_IMPORT_EXPORT_MSG_IMPORT_ERROR') .'</strong><br />';
+            $importMsg .= JText::_('COM_DROPFILES_CONFIG_IMPORT_EXPORT_MSG_NO_CATEGORY') .'</p>';
+
+            echo json_encode(array('success' => false, 'msg' => $importMsg));
+            jexit();
+        }
+
+        // Import categories to new site
+        foreach ($xmlFileContents->category as $category) {
+            $categoryId                         = htmlspecialchars($category->id, ENT_XML1, 'UTF-8');
+            $parentCategoryId                   = htmlspecialchars($category->parent_id, ENT_XML1, 'UTF-8');
+            $categoryTitle                      = isset($category->title) ? htmlspecialchars($category->title, ENT_XML1, 'UTF-8') : JText::sprintf('COM_DROPFILES_MODEL_CATEGORY_DEFAULT_NAME');
+            $datas                              = array();
+            $datas['jform']['extension']        = 'com_dropfiles';
+            $datas['jform']['title']            = $categoryTitle;
+            $datas['jform']['alias']            = $categoryTitle . '-' . date('dmY-h-m-s', time());
+            $datas['jform']['language']         = '*';
+            $datas['jform']['metadata']['tags'] = '';
+            $modelCategory                      = $this->getModel('category');
+            $modelCategory->setState('category.extension', 'com_dropfiles');
+
+            foreach ($datas as $data => $val) {
+                $app->input->set($data, $val, 'POST');
+            }
+
+            $app->input->set('id', null, 'POST');
+            $table              = $modelCategory->getTable();
+            $categoryData       = $app->input->get('jform', array(), 'array');
+            property_exists($table, 'checked_out');
+            $key                = $table->getKeyName();
+            $urlVar             = $key;
+            $recordId           = $app->input->getInt($urlVar);
+            $categoryData[$key] = $recordId;
+            $categoryForm       = $modelCategory->getForm($categoryData, false);
+
+            if (!$categoryForm) {
+                $missedCategoryIds[] = $categoryId;
+                $importMsg .= '<p>'. JText::_('COM_DROPFILES_CONFIG_IMPORT_EXPORT_MSG_IMPORT_CATEGORY_FAILED') . ' ' . $categoryTitle .'</p>';
+                continue;
+            }
+
+            $validCategoryData = $modelCategory->validate($categoryForm, $categoryData);
+
+            if ($validCategoryData === false) {
+                $missedCategoryIds[] = $categoryId;
+                $importMsg .= '<p>'. JText::_('COM_DROPFILES_CONFIG_IMPORT_EXPORT_MSG_IMPORT_CATEGORY_FAILED') . ' ' . $categoryTitle .'</p>';
+                continue;
+            }
+
+            $parent                           = (isset($insertedCategoriesIds[$parentCategoryId]) && intval($insertedCategoriesIds[$parentCategoryId]) > 1) ? $insertedCategoriesIds[$parentCategoryId] : 1;
+            $parent                           = (intval($parent) === 1 && intval($categoryDisc) > 0) ? $categoryDisc : $parent;
+            $validCategoryData['published']   = 1;
+            $validCategoryData['metadesc']    = '';
+            $validCategoryData['metakey']     = '';
+            $validCategoryData['description'] = '';
+            $validCategoryData['params']      = '';
+            $validCategoryData['parent_id']   = $parent;
+            $insertedCategoryId               = $modelCategory->save($validCategoryData, true);
+
+            // Save related category params
+            if ($insertedCategoryId) {
+                $categoryThemeName = isset($category->theme) ? htmlspecialchars($category->theme, ENT_XML1, 'UTF-8') : 'default';
+                $categoryParams    = isset($category->params) ? htmlspecialchars($category->params, ENT_XML1, 'UTF-8') : '';
+                $categoryParams    = !empty($categoryParams) ? (array) json_decode($categoryParams) : null;
+
+                $modelCategory->setTheme($insertedCategoryId, $categoryThemeName);
+
+                if (!is_null($categoryParams) && !empty($categoryParams)) {
+                    $modelCategory->setCategoryParams($insertedCategoryId, $categoryParams);
+                }
+
+                $insertedCategoriesIds[$categoryId] = $insertedCategoryId;
+            }
+
+            // Move reference for child categories
+            if (intval($parent) > 1) {
+                $this->dropfilesCategoryOrdering($insertedCategoryId, $parent, 'last-child');
+            }
+        }
+
+        // Import file to disc category
+        if (intval($importFolderOnly) === 0 && !empty($xmlFileContents->item)) {
+            foreach ($xmlFileContents->item as $item) {
+                $cateId = htmlspecialchars($item->catid, ENT_XML1, 'UTF-8');
+                $fileMultipleCategory = htmlspecialchars($item->file_multi_category, ENT_XML1, 'UTF-8');
+
+                if (!isset($cateId) || !array_key_exists($cateId, $insertedCategoriesIds)) {
+                    continue;
+                }
+
+                if (!empty($fileMultipleCategory)) {
+                    $fileMultipleCategory    = explode(',', $fileMultipleCategory);
+                    $newFileMultipleCategory = array();
+                    foreach ($fileMultipleCategory as $multipleCategory) {
+                        if (!array_key_exists($multipleCategory, $insertedCategoriesIds)) {
+                            continue;
+                        }
+
+                        $newFileMultipleCategory[] = $insertedCategoriesIds[$multipleCategory];
+                    }
+                    $newFileMultipleCategory = implode(',', $newFileMultipleCategory);
+                }
+                $fileMultipleCategory             = isset($newFileMultipleCategory) ? $newFileMultipleCategory : '';
+                $newCategoryId                    = $insertedCategoriesIds[$cateId];
+                $shortFile                        = array();
+                $shortFile['id']                  = htmlspecialchars($item->id, ENT_XML1, 'UTF-8');
+                $shortFile['title']               = htmlspecialchars($item->title, ENT_XML1, 'UTF-8');
+                $shortFile['catid']               = $cateId;
+                $shortFile['state']               = htmlspecialchars($item->state, ENT_XML1, 'UTF-8');
+                $shortFile['ext']                 = htmlspecialchars($item->ext, ENT_XML1, 'UTF-8');
+                $shortFile['size']                = htmlspecialchars($item->size, ENT_XML1, 'UTF-8');
+                $shortFile['description']         = htmlspecialchars($item->description, ENT_XML1, 'UTF-8');
+                $shortFile['hits']                = htmlspecialchars($item->hits, ENT_XML1, 'UTF-8');
+                $shortFile['remoteurl']           = htmlspecialchars($item->remoteurl, ENT_XML1, 'UTF-8');
+                $shortFile['custom_icon']         = htmlspecialchars($item->custom_icon, ENT_XML1, 'UTF-8');
+                $shortFile['file_tags']           = htmlspecialchars($item->file_tags, ENT_XML1, 'UTF-8');
+                $shortFile['version']             = htmlspecialchars($item->version, ENT_XML1, 'UTF-8');
+                $shortFile['author']              = htmlspecialchars($item->author, ENT_XML1, 'UTF-8');
+                $shortFile['file']                = htmlspecialchars($item->file, ENT_XML1, 'UTF-8');
+                $shortFile['file_multi_category'] = $fileMultipleCategory;
+                $shortFile['link_download']       = htmlspecialchars($item->link_download, ENT_XML1, 'UTF-8');
+
+                $files[$newCategoryId][] = $shortFile;
+            }
+
+            $exportSitePath = isset($xmlFileContents->site_path->path) ? htmlspecialchars($xmlFileContents->site_path->path, ENT_XML1, 'UTF-8') : '';
+
+            // Import file list for special category
+            foreach ($files as $key => $value) {
+                $fileResults = $this->dropfilesXMLFileImporting($key, $value, $importMsg, $exportSitePath);
+                $importMsg .= (is_array($fileResults) && isset($fileResults['msg']) && !empty($fileResults['msg'])) ? $fileResults['msg'] : '';
+                if (is_array($fileResults) && isset($fileResults['file_ids']) && !empty($fileResults['file_ids'])) {
+                    $insertedFileIds = array_replace($fileResults['file_ids'], $insertedFileIds);
+                }
+            }
+
+            // File multiple categories
+            foreach ($insertedCategoriesIds as $newInsertedCategoryId) {
+                $categoryParams = (array) $categoryModel->getCategoryParams($newInsertedCategoryId);
+                $refToFile      = (isset($categoryParams['refToFile'])) ? (array) $categoryParams['refToFile'] : array();
+                if (!empty($refToFile)) {
+                    $newRefToFile = array();
+                    foreach ($refToFile as $refCategoryId => $refFileIds) {
+                        if (!array_key_exists($refCategoryId, $insertedCategoriesIds)) {
+                            continue;
+                        }
+                        $newRefFileIds = array();
+                        foreach ($refFileIds as $refFileId) {
+                            if (!array_key_exists($refFileId, $insertedFileIds)) {
+                                continue;
+                            }
+                            $newRefFileIds[] = $insertedFileIds[$refFileId];
+                        }
+
+                        $newRefToFile[$insertedCategoriesIds[$refCategoryId]] = $newRefFileIds;
+                    }
+
+                    $categoryParams['refToFile'] = $newRefToFile;
+
+                    // Save params
+                    $categoryModel->setCategoryParams($newInsertedCategoryId, $categoryParams);
+                }
+            }
+        }
+
+        $importMsg .= '<p>'. JText::_('COM_DROPFILES_CONFIG_IMPORT_EXPORT_MSG_IMPORT_DONE');
+        $importMsg .= ' <a href="'. JURI::root()  .'administrator/index.php?option=com_dropfiles" class="have-fun">';
+        $importMsg .= JText::_('COM_DROPFILES_CONFIG_IMPORT_EXPORT_MSG_IMPORT_HAVE_FUN') .'</a></p>';
+
+        echo json_encode(array('success' => true, 'msg' => $importMsg));
+        jexit();
+    }
+
+    /**
+     * Import files from XML file to new site
+     *
+     * @param integer $categoryId     Category id
+     * @param array   $files          File info
+     * @param string  $importMsg      Import message
+     * @param string  $exportSitePath Export site path
+     *
+     * @throws Exception Fire if errors
+     *
+     * @return string
+     */
+    public function dropfilesXMLFileImporting($categoryId, $files, $importMsg = '', $exportSitePath = '')
+    {
+        $app             = JFactory::getApplication();
+        $file_dir        = DropfilesBase::getFilesPath($categoryId);
+        $insertedFileIds = array();
+
+        // Check folder exists
+        if (!file_exists($file_dir)) {
+            JFolder::create($file_dir);
+            $data = '<html><body bgcolor="#FFFFFF"></body></html>';
+            JFile::write($file_dir . 'index.html', $data);
+            $data = 'deny from all';
+            JFile::write($file_dir . '.htaccess', $data);
+        }
+
+        $params          = JComponentHelper::getParams('com_dropfiles');
+        $allowedext_list = '7z,ace,bz2,dmg,gz,rar,tgz,zip,csv,doc,docx,html,key,keynote,odp,ods,odt,pages,pdf,pps,ppt,'
+                         . 'pptx,rtf,tex,txt,xls,xlsx,xml,bmp,exif,gif,ico,jpeg,jpg,png,psd,tif,tiff,aac,aif,aiff,alac,amr,au,cdda,'
+                         . 'flac,m3u,m4a,m4p,mid,mp3,mp4,mpa,ogg,pac,ra,wav,wma,3gp,asf,avi,flv,m4v,mkv,mov,mpeg,mpg,'
+                         . 'rm,swf,vob,wmv';
+        $allowed         = explode(',', $params->get('allowedext', $allowedext_list));
+        $count           = 0;
+        $modelFile       = $this->getModel('file');
+        $modelFiles      = $this->getModel('files');
+        $modelCategories = $this->getModel('Categories');
+        $user            = JFactory::getUser();
+
+        // Process import files
+        if (!empty($files)) {
+            foreach ($files as $file) {
+                $fileTitle = htmlspecialchars_decode($file['title']);
+                if (!isset($file['link_download']) || empty($file['link_download'])) {
+                    $importMsg .= '<p>'. JText::_('COM_DROPFILES_CONFIG_IMPORT_EXPORT_MSG_IMPORT_FILE_URL') . ' ' . $fileTitle .'</p>';
+                    continue;
+                }
+
+                if (in_array(strtolower($file['ext']), $allowed)) {
+                    $newname      = uniqid() . '.' . strtolower($file['ext']);
+                    $remoteURL    = $file['link_download'];
+                    $httpcheck    = isset($file['file']) ? $file['file'] : '';
+                    $isRemoteFile = preg_match('(http://|https://)', $httpcheck) ? true : false;
+                    $content      = @file_get_contents($remoteURL); // phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged -- GET remote file only
+
+                    if ($content !== false) {
+                        file_put_contents($file_dir . $newname, $content);
+                        chmod($file_dir . $newname, 0777);
+                        setlocale(LC_ALL, 'C.UTF-8');
+
+                        $insertFileParams = array(
+                            'title'       => $fileTitle,
+                            'state'       => isset($file['state']) ? $file['state'] : '1',
+                            'id_category' => $categoryId,
+                            'ext'         => $file['ext'] ? strtolower($file['ext']) : strtolower(filetype($file_dir . $newname)),
+                            'size'        => filesize($file_dir . $newname) ? filesize($file_dir . $newname) : $file['size'],
+                            'description' => htmlspecialchars_decode($file['description']),
+                            'hits'        => $file['hits'],
+                            'remoteurl'   => $file['remoteurl'],
+                            'custom_icon' => $file['custom_icon'],
+                            'file_tags'   => $file['file_tags'],
+                            'author'      => $user->get('id')
+                        );
+
+                        // Remote file URL
+                        $insertFileParams['file'] = $isRemoteFile ? $file['file'] : $newname;
+
+                        // Insert new image into database when success
+                        $id_file = $modelFiles->addFile($insertFileParams);
+
+                        if (!$id_file) {
+                            unlink($file_dir . $newname);
+                            $importMsg .= '<p>'. JText::_('COM_DROPFILES_CONFIG_IMPORT_EXPORT_MSG_IMPORT_FILE_FAILED') . ' ' . $fileTitle .'</p>';
+                        } else {
+                            // Save related file version
+                            if (isset($file['version']) && intval($file['version']) > 0) {
+                                $modelFile->saveFileVersion($id_file, $file['version']);
+                            }
+
+                            // Save related file multiple category
+                            if (isset($file['file_multi_category']) && !empty($file['file_multi_category'])) {
+                                $modelFile->saveFileMultipleCategory($id_file, $file['file_multi_category']);
+                            }
+
+                            // Save related file custom icon
+                            if (isset($file['custom_icon']) && !empty($file['custom_icon'])) {
+                                $exportCustomIcon = JPath::clean($exportSitePath . '/' . $file['custom_icon']);
+                                $customIconDisc   = JPath::clean(JPATH_SITE . '/' . $file['custom_icon']);
+                                if (file_exists($exportCustomIcon) && !file_exists($customIconDisc)) {
+                                    file_put_contents($customIconDisc, file_get_contents($exportCustomIcon));
+                                }
+                                $modelFile->saveFileCustomIcon($id_file, $file['custom_icon']);
+                            }
+
+                            $insertedFileIds[$file['id']] = $id_file;
+                        }
+
+                        $count++;
+                    }
+                } else {
+                    $importMsg .= '<p>'. JText::_('COM_DROPFILES_CONFIG_IMPORT_EXPORT_MSG_IMPORT_FILE_TYPE') . ' ' . $fileTitle .'</p>';
+                }
+            }
+
+            // Update files counter
+            $modelCategories->updateFilesCount();
+        }
+
+        return array('file_ids' => $insertedFileIds, 'msg' => $importMsg);
+    }
+
+    /**
+     * Enable/Disable dropbox watch change option
+     *
+     * @throws Exception Fire if errors
+     *
+     * @return string|mixed|void
+     */
+    public function dropboxWatchChanges()
+    {
+        if (!class_exists('DropfilesFilesHelper')) {
+            JLoader::register('DropfilesFilesHelper', JPATH_ADMINISTRATOR . '/components/com_dropfiles/helpers/files.php');
+        }
+
+        if (!class_exists('DropfilesModelOptions')) {
+            JLoader::register('DropfilesModelOptions', JPATH_ADMINISTRATOR . '/components/com_dropfiles/models/options.php');
+        }
+
+        $app                 = JFactory::getApplication();
+        $options             = new DropfilesModelOptions();
+        $dropboxWatchChanges = $options->get_option('dropbox_watch_changes', false);
+
+        if ($dropboxWatchChanges === false || is_null($dropboxWatchChanges)) {
+            $options->update_option('dropbox_watch_changes', true);
+            $enable = true;
+        } else {
+            $options->update_option('dropbox_watch_changes', false);
+            $enable = false;
+        }
+
+        echo json_encode(array('success' => true, 'enable' => $enable));
+        jexit();
     }
 }

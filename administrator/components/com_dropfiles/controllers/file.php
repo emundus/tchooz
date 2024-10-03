@@ -43,9 +43,10 @@ class DropfilesControllerFile extends JControllerForm
         $modelFiles = $this->getModel('files');
         $modelCat = $this->getModel('category');
         $idCateint = JFactory::getApplication()->input->getInt('catid', 0);
+        $idFile = JFactory::getApplication()->input->getInt('id', null);
         $table = $model->getTable();
         $data = $app->input->post->get('jform', array(), 'array');
-        //file_multi_category
+        // File_multi_category
         $file_multi_category = (isset($data['file_multi_category'])) ? $data['file_multi_category'] : array();
         $idmfcat[] = JFactory::getApplication()->input->getString('catid', 0);
         $file_multi_category = array_merge($file_multi_category, $idmfcat);
@@ -73,7 +74,7 @@ class DropfilesControllerFile extends JControllerForm
         }
 
         $remotefile = '';
-        if (isset($data['id'])) {
+        if (isset($data['id']) && !is_null($idFile) && is_numeric($idFile)) {
             $file = $modelFiles->getFile($data['id']);
             if ($file && preg_match('(http://|https://)', $file->file)) {
                 if (!preg_match('(http://|https://)', $data['remoteurl'])) {
@@ -81,6 +82,14 @@ class DropfilesControllerFile extends JControllerForm
                 } else {
                     $remotefile = $data['remoteurl'];
                 }
+            }
+        }
+
+        // Custom icon: clean the path value
+        if (isset($data['custom_icon'])) {
+            $pos = strpos($data['custom_icon'], '#');
+            if ($pos !== false) {
+                $data['custom_icon'] =  substr($data['custom_icon'], 0, $pos);
             }
         }
 
@@ -109,7 +118,7 @@ class DropfilesControllerFile extends JControllerForm
                     }
                 }
             } else { // Joomla 4
-                $db    = JFactory::getDbo();
+                $db        = JFactory::getDbo();
                 $jTagModel = new Joomla\Component\Tags\Administrator\Model\TagModel();
                 $jTagTable = new Joomla\Component\Tags\Administrator\Table\TagTable($db);
                 foreach ($file_tags as $tag) {
@@ -146,7 +155,6 @@ class DropfilesControllerFile extends JControllerForm
 
         // Populate the row id from the session.
         $data[$key] = $recordId;
-
 
         // Validate the posted data.
         // Sometimes the form needs some posted data, such as for plugins and modules.
@@ -213,10 +221,8 @@ class DropfilesControllerFile extends JControllerForm
         $this->releaseEditId($context, $recordId);
         $app->setUserState($context . '.data', null);
 
-
         // Invoke the postSave method to allow for the child class to access the model.
         $this->postSaveHook($model, $validData);
-
 
         $modelC = $this->getModel('category');
 
@@ -259,13 +265,11 @@ class DropfilesControllerFile extends JControllerForm
             }
         }
 
-
         $email_title = JText::_('COM_DROPFILES_EMAIL_EDIT_EVENT_TITLE');
 
         if ($params->get('edit_event_subject', '') !== '') {
             $email_title = $params->get('edit_event_subject', '');
         }
-
 
         $email_body  = $params->get('edit_event_editor', DropfilesHelper::getHTMLEmail('file-edited.html'));
         $email_body  = str_replace(
@@ -278,8 +282,8 @@ class DropfilesControllerFile extends JControllerForm
         $email_body  = str_replace('{file_name}', $validData['title'], $email_body);
         $currentUser = JFactory::getUser();
         $email_body  = str_replace('{username}', $currentUser->name, $email_body);
-        $uploader       = JFactory::getUser($author_user_id);
-        $email_body     = str_replace('{uploader_username}', $uploader->name, $email_body);
+        $uploader    = JFactory::getUser($author_user_id);
+        $email_body  = str_replace('{uploader_username}', $uploader->name, $email_body);
 
         if ((int) $params->get('file_owner', 0) === 1 && (int) $params->get('edit_event', 1) === 1) {
             $email_body = str_replace('{receiver}', $uploader->name, $email_body);

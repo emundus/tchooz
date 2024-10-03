@@ -29,8 +29,9 @@ class DropfilesViewFrontfiles extends JViewLegacy
     public function display($tpl = null)
     {
         JLoader::register('DropfilesFilesHelper', JPATH_ADMINISTRATOR . '/components/com_dropfiles/helpers/files.php');
+        $app = JFactory::getApplication();
         $model = $this->getModel();
-        $modelCat = $this->getModel('frontcategory');
+        $modelCat = $this->getModel('frontcategory', 'DropfilesModel');
         $category = $modelCat->getCategory();
         $modelConfig = JModelLegacy::getInstance('Frontconfig', 'dropfilesModel');
 
@@ -42,6 +43,9 @@ class DropfilesViewFrontfiles extends JViewLegacy
         //check category restriction
         $user = JFactory::getUser();
         $config = JComponentHelper::getParams('com_dropfiles');
+        $useGeneratedPreview = intval($config->get('auto_generate_preview', 0)) === 1 ? true : false;
+        $previewList = array();
+
         if ($config->get('categoryrestriction', 'accesslevel') === 'accesslevel') {
             $groups = $user->getAuthorisedViewLevels();
             if (!in_array($category->access, $groups)) {
@@ -143,14 +147,81 @@ class DropfilesViewFrontfiles extends JViewLegacy
                 if (isset($params->params->ordering) && isset($params->params->orderingdir)) {
                     $ordering = $params->params->ordering;
                     $direction = $params->params->orderingdir;
-                    $files = DropfilesHelper::orderingMultiCategoryFiles($files, $ordering, $direction);
+                    $files = DropfilesHelper::orderingMultiCategoryFiles($files, $ordering, $direction, $category->id);
                 }
             }
+
+            if ($useGeneratedPreview) {
+                $optionModelPath = JPATH_ADMINISTRATOR . '/components/com_dropfiles/models/options.php';
+                require_once $optionModelPath;
+                $modelOption = new DropfilesModelOptions();
+
+                $fileView = '';
+                $imgExists = false;
+                $viewClass = '';
+                $fileList = DropfilesFilesHelper::addInfosToFile($files, $category);
+                foreach ($fileList as $file) {
+                    if ($useGeneratedPreview) {
+                        $viewFileDirPath = $modelOption->get_option('_dropfiles_thumbnail_image_file_path_' . $file->id);
+                        if (isset($viewFileDirPath) && $viewFileDirPath !== '') {
+                            $viewFileDirFullPath = JPATH_ROOT . $viewFileDirPath;
+                        }
+                        if (isset($viewFileDirPath) && isset($viewFileDirFullPath) && file_exists($viewFileDirFullPath)) {
+                            $fileView  = JUri::base() . $viewFileDirPath;
+                            $imgExists = true;
+                            $viewClass = 'dropfiles-view-image-thumbnail';
+                        } else {
+                            $fileView  = '';
+                            $imgExists = false;
+                            $viewClass = '';
+                        }
+
+                        $previewFile = array('id' => $file->id, 'view' => $imgExists, 'link' => $fileView, 'view_class' => $viewClass);
+                        $previewList[] = $previewFile;
+                    }
+                }
+            }
+        }
+
+        // Category pagination
+        $paginationNumber = intval($config->get('paginationnunber', 0));
+        $enablePagination = false;
+        $total            = 0;
+        $paged            = intval($app->input->getInt('page', 1));
+        if ($paginationNumber && !empty($files) && is_array($files) && count($files) > $paginationNumber) {
+            $url    = Juri::getInstance()->toString();
+            $total  = ceil(count($files) / $paginationNumber);
+            $length = $paginationNumber;
+            $offset = ($paged - 1) * $paginationNumber;
+
+            if ($offset < 0) {
+                $offset = 0;
+            }
+
+            if (count($files) - $offset < $paginationNumber) {
+                $length = count($files) - $offset;
+            }
+
+            $files            = array_slice($files, $offset, $length);
+            $enablePagination = true;
         }
 
         $content = new stdClass();
         $content->files = DropfilesFilesHelper::addInfosToFile($files, $category);
         $content->category = $category;
+        $content->fileview = $previewList;
+
+        if ($enablePagination) {
+            $content->pagination = DropfilesFilesHelper::dropfiles_category_pagination(
+                array(
+                    'base'      => '',
+                    'format'    => '',
+                    'current'   => max(1, $paged),
+                    'total'     => $total,
+                    'sourcecat' => $category->id
+                )
+            );
+        }
 
         echo json_encode($content);
         JFactory::getApplication()->close();

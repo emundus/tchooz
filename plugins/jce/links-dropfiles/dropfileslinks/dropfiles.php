@@ -172,9 +172,9 @@ class DropfileslinksDropfiles extends JObject
             $files[$key]['name'] = $file['title'] . '.' . $file['ext'];
             $files[$key]['class'] = 'file';
             if (!$isCloud) {
-                $file_url = DropfilesFilesHelper::genUrl($file['aid'], $file['catid'], $file['cat_title'], '', $file['text']);
+                $file_url = DropfilesFilesHelper::genUrl($file['aid'], $file['catid'], $file['cat_title'], '', $file['title']);
             } else {
-                $file_url = DropfilesFilesHelper::genUrl($file['file_id'], $file['cat_id'], $file['cat_title'], '', $file['text']);
+                $file_url = DropfilesFilesHelper::genUrl($file['file_id'], $file['cat_id'], $file['cat_title'], '', $file['title']);
             }
             $files[$key]['id'] = $file_url;
         }

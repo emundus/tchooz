@@ -20,7 +20,7 @@ if (!$this->form || empty($googledrive)) {
                     'jform_last_log', 'jform_indexgoogle', 'jform_dropfiles_google_watch_data', 'jform_dropfiles_google_last_changes_token',
                     'jform_dropfiles_google_last_sync_changes', 'jform_cron_task_url'))) :?>
                     <li class="ju-settings-option block-item <?php echo $k;?>">
-                        <label for="<?php echo $field->id ?>" class="ju-setting-label dropfiles-tooltip" alt="<?php echo JText::sprintf($field->description) ?>"><?php echo strip_tags($field->label) ?></label>
+                        <label for="<?php echo $field->id ?>" class="ju-setting-label dropfiles-tooltip" title="<?php echo JText::sprintf($field->description) ?>"><?php echo strip_tags($field->label) ?></label>
                         <?php
                         switch ($field->type) {
                             case 'Radio':
