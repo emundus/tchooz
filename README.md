@@ -204,7 +204,7 @@ gitGraph LR:
 - **dependency-check** : Check if there is any security issue in the dependencies (npm audit, composer audit)
 - **unittest-front** : Run the unit tests for the front part (VueJS)
 - **unittest-back** : Run the unit tests for the back part (PHP)
-- **integration-test** : Run the integration tests (Cypress). This is optional but can be useful to check if the application is working as expected
+- **integration-test** : Run the integration tests (Playwright). This is optional but can be useful to check if the application is working as expected
 
 #### Master
 ```mermaid
@@ -213,9 +213,17 @@ gitGraph
     commit id: "Merge request opened"
     commit id: "version-check"
     commit id: "commit-prefix-check"
+    commit id: "dependency-check"
+    commit id: "unittest-front"
+    commit id: "unittest-back"
+    commit id: "integration-test" type: HIGHLIGHT
 ```
 - **version-check** : Check if the version in the xml file (administrator/components/com_emundus/emundus.xml) was updated since the last release
 - **commit-prefix-check** : Check if at least one commit has a prefix (feat, fix, refactor, style, test, chore)
+- **dependency-check** : Check if there is any security issue in the dependencies (npm audit, composer audit)
+- **unittest-front** : Run the unit tests for the front part (VueJS)
+- **unittest-back** : Run the unit tests for the back part (PHP)
+- **integration-test** : Run the integration tests (Playwright). This is optional but can be useful to check if the application is working as expected
 
 ### Commit
 #### All branches
@@ -236,23 +244,22 @@ gitGraph
     commit id: "deployer-auto"
     
 ```
-- **deployer-auto** : Deploy the new release in some environments (staging, production)
+- **deployer-auto** : Deploy the new release in some environments (staging or testing)
 
 #### Master
 ```mermaid
 %%{init: { 'logLevel': 'debug', 'theme': 'forest', 'gitGraph': {'showBranches': false, 'showCommitLabel':true,'mainBranchName': 'master'}} }%%
 gitGraph
     commit id: "Branch merged"
+    commit id: "semantic-release"
     commit id: "sync-confluence-documentation"
     commit id: "deployer-auto"
     commit id: "deployer-manuel" type: HIGHLIGHT
-    commit id: "tag"
 ```
+- **semantic-release** : Create a new version in the master branch with a new tag (X.X.X) and generate release notes with the names of commits since the last version
 - **sync-confluence-documentation** : Update Confluence release notes
-- **deployer-auto** : Deploy the new release in some environments (staging, production)
-- **deployer-manuel** : Allow to deploy the application manually in some other environments that need to be checked before deploying
-- **tag** : Create a tag for the new release (vX.X.X)
-
+- **deployer-auto** : Deploy the new release in some environments (production and staging)
+- **deployer-manuel** : Allows manual deployment of the new version in other environments
 
 <!-- ROADMAP -->
 
