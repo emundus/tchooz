@@ -4,6 +4,9 @@
     display: flex;
     align-items: center;
     padding-left: 0 !important;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
 }
 
 #em_user_menu li {
@@ -13,10 +16,6 @@
 
 #em_user_menu li.active {
     background: var(--neutral-200);
-}
-
-#em_user_menu li:not(:first-child) {
-    margin-left: 12px;
 }
 
 #header-b {

@@ -540,9 +540,9 @@ div#frame.outline {
       flex-direction: row;
       justify-content: flex-end;
       align-items: center !important;
+      gap: 12px;
 
       .platform-content {
-        margin: 0 0 0 16px;
         padding: 0;
       }
 
@@ -4916,6 +4916,10 @@ screen and (max-height: 769px) {
     align-items: center;
     padding-top: 61px;
   }
+
+  .gantry .em-guest #g-navigation .g-grid {
+    padding-top: 0;
+  }
 }
 
 @media all and (max-width: 416px) {
@@ -4935,6 +4939,10 @@ screen and (max-height: 769px) {
     }
   }
 
+  .em-guest #g-navigation .g-grid {
+    padding-top: 0;
+  }
+
   .mon-profil #g-container-main .g-container {
     padding: 0 20px;
   }
@@ -4950,6 +4958,8 @@ screen and (max-height: 769px) {
   #g-navigation .g-container #header-c .moduletable .header-right {
     flex-direction: row;
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
 
@@ -5243,7 +5253,8 @@ screen and (max-height: 769px) {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 30;
+    max-width: fit-content;
+    margin: auto;
   }
 
   .view-login #g-navigation #header-a, .view-registration #g-navigation #header-a {
@@ -5293,6 +5304,12 @@ screen and (max-height: 769px) {
     }
   }
 
+  .em-guest #g-navigation #header-c .g-content .platform-content:first-child {
+    position: absolute;
+    right: 20px;
+    top: 17px;
+  }
+
   /* FOOTER */
 
   footer#g-footer {
@@ -5332,7 +5349,6 @@ screen and (max-height: 769px) {
       }
     }
   }
-
 }
 
 @media all and (min-width: 480px) and (max-width: 767px) {
@@ -5362,6 +5378,10 @@ screen and (max-height: 769px) {
     flex-direction: column;
     align-items: start;
     gap: 20px;
+  }
+
+  .gantry .em-guest #g-navigation .g-grid {
+    align-items: center;
   }
 
   .gantry #g-navigation .g-container #header-b {
@@ -5502,6 +5522,11 @@ screen and (max-height: 769px) {
       top: 26px;
       position: absolute;
     }
+  }
+
+  .em-guest #g-navigation #header-c .g-content .platform-content:nth-child(1) {
+    position: absolute;
+    right: 20px !important;
   }
 
   h1 {
@@ -5784,6 +5809,12 @@ screen and (max-height: 769px) {
     top: 5px;
     right: 16px;
     width: fit-content;
+    z-index: 20;
+  }
+
+  .em-guest #g-navigation .g-container #header-c {
+    top: auto;
+    position: static;
   }
 
   .em-container-footer-cand .em-flex-row {
@@ -5815,8 +5846,12 @@ screen and (max-height: 769px) {
          order: 1;
        }
      }
-   }
- }
+  }
+
+  .em-guest #mod_falang_emundus___other_languages {
+    right: -20px;
+  }
+}
 
 @media screen and (min-width: 480px) and (max-width: 959px) {
 
