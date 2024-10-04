@@ -299,13 +299,21 @@
           </transition>
         </div>
 
-        <hr class="tw-mt-16"/>
+        <hr class="tw-mt-4"/>
 
         <div id="select-campaign-languages" v-if="languageOptions.length > 1">
-          <label>
-            {{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_LANGUAGES') }}
-          </label>
+          <h2>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_LANGUAGES') }}</h2>
+
+          <div id="program-languages" class="tw-mt-4 tw-mb-0 tw-p-4 alert alert-info tw-flex tw-flex-row" v-if="programLanguages.length > 0">
+            <span class="material-icons-outlined tw-mr-2">info</span>
+            <p class="tw-font-light tw-text-sm"> {{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM_LANGUAGES') }}
+              <strong v-for="(language, index) in programLanguages" :key="language.lang_id">
+                {{ language.title }}{{ (index < (programLanguages.length - 1)) ? ', ' : '' }}
+              </strong>
+            </p>
+          </div>
           <multiselect
+              class="tw-mt-4"
               v-model="campaignLanguages"
               label="label"
               track-by="value"
@@ -316,9 +324,10 @@
               selected-label=""
               deselect-label=""
           ></multiselect>
+
+          <hr class="tw-mt-4 tw-mb-4"/>
         </div>
 
-        <hr class="tw-mt-1.5 tw-mb-1.5"/>
 
         <div class="tw-flex tw-justify-between tw-float-right tw-mb-4">
           <button
@@ -341,7 +350,7 @@ import Swal from "sweetalert2";
 import Autocomplete from "@/components/autocomplete.vue";
 
 /** VCalendar **/
-import { Calendar, DatePicker } from 'v-calendar';
+import { DatePicker } from 'v-calendar';
 import 'v-calendar/dist/style.css';
 
 /** TipTap Editor **/
@@ -930,6 +939,28 @@ export default {
           value: language.lang_id
         }
       });
+    },
+    programLanguages() {
+      let languages = [];
+
+      // check selected program
+      if (this.form.training !== '') {
+        let programLang = [];
+
+        this.programs.forEach((program) => {
+          if (program.code === this.form.training) {
+            programLang = program.language_ids != null ? program.language_ids : [];
+          }
+        });
+
+        if (programLang.length > 0) {
+          languages = programLang.map((language_id) => {
+            return this.languages.find(language => language.lang_id == language_id);
+          });
+        }
+      }
+
+      return languages;
     }
   },
 
