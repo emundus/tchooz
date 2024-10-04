@@ -1840,21 +1840,34 @@ class EmundusModelUsers extends ListModel
 
 	public function getUserInfos($uid)
 	{
+		$user_infos = [];
+		$query = $this->db->getQuery(true);
+
 		try {
-			$query = 'select u.username as login, u.email, eu.firstname, eu.lastname, eu.profile, eu.university_id, up.profile_value as newsletter
-                      from #__users as u
-                      left join #__emundus_users as eu on eu.user_id = u.id
-                      left join #__user_profiles as up on (up.user_id = u.id and up.profile_key like "emundus_profile.newsletter")
-                      where u.id = ' . $uid;
-			//var_dump($query);die;
+			$columns = [
+				'u.username as login',
+				'u.email',
+				'eu.firstname',
+				'eu.lastname',
+				'eu.profile',
+				'eu.university_id',
+				'up.profile_value as newsletter',
+				'IF(JSON_VALID(u.params), json_extract(u.params,"$.testing_account"),0) as testing_account'
+			];
 
+			$query->select($columns)
+				->from($this->db->quoteName('#__users', 'u'))
+				->leftJoin($this->db->quoteName('#__emundus_users','eu').' ON '.$this->db->quoteName('eu.user_id').' = '.$this->db->quoteName('u.id'))
+				->leftJoin($this->db->quoteName('#__user_profiles','up').' ON '.$this->db->quoteName('up.user_id').' = '.$this->db->quoteName('u.id') . ' AND ' . $this->db->quoteName('up.profile_key') . ' LIKE "emundus_profile.newsletter"')
+				->where($this->db->quoteName('u.id') . ' = ' . $uid);
 			$this->db->setQuery($query);
-
-			return $this->db->loadAssoc();
+			$user_infos = $this->db->loadAssoc();
 		}
 		catch (Exception $e) {
-			return false;
+			Log::add('Error getting user infos in model/users at query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
 		}
+
+		return $user_infos;
 	}
 
 
@@ -2590,6 +2603,11 @@ class EmundusModelUsers extends ListModel
 			$user['username'] = $user['email'];
 			$u->setProperties(['username' => $user['username']]);
 			unset($user['same_login_email']);
+		}
+
+		if(isset($user['testing_account'])) {
+			$u->setParam('testing_account', $user['testing_account']);
+			unset($user['testing_account']);
 		}
 		
 		if (!$u->bind($user)) {
