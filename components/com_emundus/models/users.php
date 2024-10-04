@@ -2594,8 +2594,12 @@ class EmundusModelUsers extends ListModel
 	}
 
 
-	public function editUser($user)
+	public function editUser($user,$current_user = null)
 	{
+		if(empty($current_user)) {
+			$current_user = Factory::getApplication()->getIdentity();
+		}
+
 		$eMConfig = ComponentHelper::getParams('com_emundus');
 		$u        = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user['id']);
 
@@ -2605,7 +2609,7 @@ class EmundusModelUsers extends ListModel
 			unset($user['same_login_email']);
 		}
 
-		if(isset($user['testing_account'])) {
+		if(isset($user['testing_account']) && EmundusHelperAccess::asAdministratorAccessLevel($current_user->id)) {
 			$u->setParam('testing_account', $user['testing_account']);
 			unset($user['testing_account']);
 		}
