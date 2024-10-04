@@ -291,6 +291,39 @@ class ApplicationModelTest extends UnitTestCase
 		//
 	}
 
+	/**
+	 * @group application
+	 * @covers EmundusModelApplication::getComment
+	 *
+	 * @since version 2.0.0
+	 */
+	public function testGetComment()
+	{
+		$applicant_email = 'applicant' . rand(0, 1000) . '@emundus.test.fr';
+		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
+		$applicant = $this->h_dataset->createSampleUser(1000, $applicant_email);
+		$coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
+
+		$comment = $this->model->getComment(0);
+		$this->assertSame([], $comment, 'getComment should return an empty array if the comment does not exist');
+
+		$program             = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $coordinator);
+		$campaign_id         = $this->h_dataset->createSampleCampaign($program, $coordinator);
+		$fnum                = $this->h_dataset->createSampleFile($campaign_id, $applicant);
+
+		$comment_id = $this->h_dataset->createSampleComment($fnum, $applicant, $coordinator);
+
+		$comment = $this->model->getComment($comment_id);
+		$this->assertNotEmpty($comment, 'getComment should return an array of comment information');
+
+		// Clear datasets
+		$this->h_dataset->deleteSampleComment($comment_id);
+		$this->h_dataset->deleteSampleUser($applicant);
+		$this->h_dataset->deleteSampleUser($coordinator);
+		$this->h_dataset->deleteSampleProgram($program['programme_id']);
+		//
+	}
+
 	public function testuploadAttachment()
 	{
 		$upload = $this->model->uploadAttachment([]);

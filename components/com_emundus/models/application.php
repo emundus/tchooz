@@ -316,10 +316,26 @@ class EmundusModelApplication extends ListModel
 
 	public function getComment($id)
 	{
-		$query = 'SELECT * FROM #__emundus_comments ec WHERE ec.id =' . $id;
-		$this->_db->setQuery($query);
+		$comment = [];
+		$query = $this->_db->getQuery(true);
 
-		return $this->_db->loadAssoc();
+		if(!empty($id))
+		{
+			try
+			{
+				$query->select('*')
+					->from($this->_db->quoteName('#__emundus_comments'))
+					->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($id));
+				$this->_db->setQuery($query);
+				$comment = $this->_db->loadAssoc();
+			}
+			catch (Exception $e)
+			{
+				Log::add('Error getting comment in model at query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $comment;
 	}
 
 	public function getTag($id)
