@@ -93,7 +93,12 @@ class EmundusModelApplication extends ListModel
 
 		if (!empty($aid) && !empty($param)) {
 			$query = $this->_db->getQuery(true);
-			$query->select(implode(",", $param))
+
+			if(!is_array($param)) {
+				$param = array($param);
+			}
+
+			$query->select(implode(',', $this->_db->quoteName($param)))
 				->from($this->_db->quoteName('#__users', 'u'))
 				->leftJoin($this->_db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->_db->quoteName('eu.user_id') . ' = ' . $this->_db->quoteName('u.id'))
 				->leftJoin($this->_db->quoteName('#__emundus_personal_detail', 'epd') . ' ON ' . $this->_db->quoteName('epd.user') . ' = ' . $this->_db->quoteName('u.id'))
@@ -101,9 +106,8 @@ class EmundusModelApplication extends ListModel
 				->leftJoin($this->_db->quoteName('#__emundus_uploads', 'euu') . ' ON ' . $this->_db->quoteName('euu.user_id') . ' = ' . $this->_db->quoteName('u.id') . ' AND ' . $this->_db->quoteName('euu.attachment_id') . ' = ' . $this->_db->quote(10))
 				->where($this->_db->quoteName('u.id') . ' = ' . $this->_db->quote($aid));
 
-			$this->_db->setQuery($query);
-
 			try {
+				$this->_db->setQuery($query);
 				$applicant_infos = $this->_db->loadAssoc();
 			}
 			catch (Exception $e) {
@@ -112,33 +116,6 @@ class EmundusModelApplication extends ListModel
 		}
 
 		return $applicant_infos;
-	}
-
-	public function getApplicantDetails($aid, $ids)
-	{
-		$query = $this->_db->getQuery(true);
-
-		$details = EmundusHelperList::getElementsDetailsByID($ids);
-		$select  = array();
-		foreach ($details as $detail) {
-			$select[] = $detail->tab_name . '.' . $detail->element_name . ' AS "' . $detail->element_id . '"';
-		}
-
-		$query->select(implode(",", $select))
-			->from($this->_db->quoteName('#__users', 'u'))
-			->leftJoin($this->_db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->_db->quoteName('eu.user_id') . ' = ' . $this->_db->quoteName('u.id'))
-			->leftJoin($this->_db->quoteName('#__emundus_personal_detail', 'epd') . ' ON ' . $this->_db->quoteName('epd.user') . ' = ' . $this->_db->quoteName('u.id'))
-			->leftJoin($this->_db->quoteName('#__emundus_setup_profiles', 'esp') . ' ON ' . $this->_db->quoteName('esp.id') . ' = ' . $this->_db->quoteName('eu.profile'))
-			->leftJoin($this->_db->quoteName('#__emundus_uploads', 'euu') . ' ON ' . $this->_db->quoteName('euu.user_id') . ' = ' . $this->_db->quoteName('u.id') . ' AND ' . $this->_db->quoteName('euu.attachment_id') . ' = ' . $this->_db->quote(10))
-			->where($this->_db->quoteName('u.id') . ' = ' . $this->_db->quote($aid));
-		$this->_db->setQuery($query);
-		$values = $this->_db->loadAssoc();
-
-		foreach ($details as $detail) {
-			$detail->element_value = $values[$detail->element_id];
-		}
-
-		return $details;
 	}
 
 	public function getUserCampaigns($id, $cid = null, $published_only = true)
@@ -174,18 +151,32 @@ class EmundusModelApplication extends ListModel
 
 	public function getCampaignByFnum($fnum)
 	{
-		$query = $this->_db->getQuery(true);
+		$campaigns = [];
 
-		$query->select('esc.*, ecc.date_submitted, ecc.submitted, ecc.id as campaign_candidature_id, efg.result_sent, efg.date_result_sent, efg.final_grade, ecc.fnum, ess.class, ess.step, ess.value as step_value')
-			->from($this->_db->quoteName('#__emundus_users', 'eu'))
-			->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->_db->quoteName('ecc.applicant_id') . ' = ' . $this->_db->quoteName('eu.user_id'))
-			->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->quoteName('ecc.campaign_id') . ' = ' . $this->_db->quoteName('esc.id'))
-			->leftJoin($this->_db->quoteName('#__emundus_final_grade', 'efg') . ' ON ' . $this->_db->quoteName('efg.campaign_id') . ' = ' . $this->_db->quoteName('esc.id') . ' AND ' . $this->_db->quoteName('efg.student_id') . ' = ' . $this->_db->quoteName('eu.user_id'))
-			->leftJoin($this->_db->quoteName('#__emundus_setup_status', 'ess') . ' ON ' . $this->_db->quoteName('ess.step') . ' = ' . $this->_db->quoteName('ecc.status'))
-			->where($this->_db->quoteName('ecc.fnum') . ' LIKE ' . $this->_db->quote($fnum));
-		$this->_db->setQuery($query);
+		if(!empty($fnum))
+		{
+			try
+			{
+				$query = $this->_db->getQuery(true);
 
-		return $this->_db->loadObjectList();
+				$query->select('esc.*, ecc.date_submitted, ecc.submitted, ecc.id as campaign_candidature_id, efg.result_sent, efg.date_result_sent, efg.final_grade, ecc.fnum, ess.class, ess.step, ess.value as step_value')
+					->from($this->_db->quoteName('#__emundus_users', 'eu'))
+					->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->_db->quoteName('ecc.applicant_id') . ' = ' . $this->_db->quoteName('eu.user_id'))
+					->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->quoteName('ecc.campaign_id') . ' = ' . $this->_db->quoteName('esc.id'))
+					->leftJoin($this->_db->quoteName('#__emundus_final_grade', 'efg') . ' ON ' . $this->_db->quoteName('efg.campaign_id') . ' = ' . $this->_db->quoteName('esc.id') . ' AND ' . $this->_db->quoteName('efg.student_id') . ' = ' . $this->_db->quoteName('eu.user_id'))
+					->leftJoin($this->_db->quoteName('#__emundus_setup_status', 'ess') . ' ON ' . $this->_db->quoteName('ess.step') . ' = ' . $this->_db->quoteName('ecc.status'))
+					->where($this->_db->quoteName('ecc.fnum') . ' LIKE ' . $this->_db->quote($fnum));
+				$this->_db->setQuery($query);
+				$campaigns = $this->_db->loadObjectList();
+			}
+			catch (Exception $e)
+			{
+				Log::add('Error getting campaign by fnum in model at query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus.error');
+			}
+
+		}
+
+		return $campaigns;
 	}
 
 	public function getUserAttachments($id)
@@ -548,26 +539,43 @@ class EmundusModelApplication extends ListModel
 		$comment_id = 0;
 
 		$query = $this->_db->getQuery(true);
-		$query->insert($this->_db->quoteName('#__emundus_comments'))
-			->columns('applicant_id, user_id, reason, date, comment_body, fnum')
-			->values($row['applicant_id'] . ', ' . $row['user_id']. ', ' . $this->_db->quote($row['reason']) . ', ' .  $this->_db->quote(EmundusHelperDate::getNow()) . ', ' . $this->_db->quote($row['comment_body']). ', ' . $this->_db->quote($row['fnum']));
 
-		try {
-			$this->_db->setQuery($query);
-			$inserted = $this->_db->execute();
-			if ($inserted) {
-				$comment_id = $this->_db->insertid();
+		if(!empty($row['fnum'])) {
+			if (!class_exists('EmundusHelperFiles')) {
+				require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
+			}
 
-				if (!empty($comment_id)) {
-					$logsStd = new stdClass();
-					$logsStd->element = empty($row['reason']) ? '[' . Text::_('COM_EMUNDUS_COMMENT_NO_TITLE') . ']' : '[' . $row['reason'] . ']';
-					$logsStd->details = $row['comment_body'];
-					$logsParams = array('created' => [$logsStd]);
-					EmundusModelLogs::log($this->_user->id, (int)substr($row['fnum'], -7), $row['fnum'], 10, 'c', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+			$ccid = EmundusHelperFiles::getIdFromFnum($row['fnum']);
+		}
+
+		if(!empty($row['fnum']) && !empty($ccid))
+		{
+			$query->insert($this->_db->quoteName('#__emundus_comments'))
+				->columns('applicant_id, user_id, reason, date, comment_body, fnum, ccid')
+				->values($row['applicant_id'] . ', ' . $row['user_id'] . ', ' . $this->_db->quote($row['reason']) . ', ' . $this->_db->quote(EmundusHelperDate::getNow()) . ', ' . $this->_db->quote($row['comment_body']) . ', ' . $this->_db->quote($row['fnum']) . ', ' . $ccid);
+
+			try
+			{
+				$this->_db->setQuery($query);
+				$inserted = $this->_db->execute();
+				if ($inserted)
+				{
+					$comment_id = $this->_db->insertid();
+
+					if (!empty($comment_id))
+					{
+						$logsStd          = new stdClass();
+						$logsStd->element = empty($row['reason']) ? '[' . Text::_('COM_EMUNDUS_COMMENT_NO_TITLE') . ']' : '[' . $row['reason'] . ']';
+						$logsStd->details = $row['comment_body'];
+						$logsParams       = array('created' => [$logsStd]);
+						EmundusModelLogs::log($this->_user->id, (int) substr($row['fnum'], -7), $row['fnum'], 10, 'c', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+					}
 				}
 			}
-		} catch (Exception $e) {
-			Log::add('Failed to insert comment ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			catch (Exception $e)
+			{
+				Log::add('Failed to insert comment ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			}
 		}
 
 		return $comment_id;
