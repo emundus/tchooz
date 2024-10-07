@@ -18,7 +18,7 @@ require_once JPATH_BASE . '/components/com_emundus/classes/api/FileSynchronizer.
  * @package     Unit\Component\Emundus\Helper
  *
  * @since       version 1.0.0
- * @covers      FileSynchronizer
+ * @covers      \classes\api\FileSynchronizer
  */
 class ApiFileSynchronizerTest extends UnitTestCase
 {

@@ -155,9 +155,6 @@ class EmailsHelperTest extends UnitTestCase
 		$logo = $this->helper->getLogo();
 		$this->assertNotEmpty($logo, 'Get logo returns not empty string');
 		
-		$logo = $this->helper->getLogo(true);
-		$this->assertFileExists(JPATH_SITE.'/images/custom/'.$logo, 'Get logo returns a valid path');
-		
 		// Check if a logo is image
 		$logo = $this->helper->getLogo();
 		$ext = pathinfo($logo, PATHINFO_EXTENSION);

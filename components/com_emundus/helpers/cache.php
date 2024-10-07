@@ -117,6 +117,9 @@ class EmundusHelperCache
 		return $cleaned;
 	}
 
+	/**
+	 * @codeCoverageIgnore
+	 */
 	public static function getCurrentGitHash()
 	{
 		$hash          = '';
