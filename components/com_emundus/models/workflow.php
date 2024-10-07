@@ -109,7 +109,7 @@ class EmundusModelWorkflow extends JModelList
 				$already_used_entry_status = [];
 				foreach ($steps as $step) {
 					foreach($step['entry_status'] as $status) {
-						if (in_array($status['id'], $already_used_entry_status)) {
+						if ($step['type'] == 1 && in_array($status['id'], $already_used_entry_status)) {
 							throw new Exception(Text::_('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS_ALREADY_USED'));
 						}
 						$already_used_entry_status[] = $status['id'];
