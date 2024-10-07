@@ -340,39 +340,84 @@ class EmundusModelApplication extends ListModel
 
 	public function getTag($id)
 	{
-		$query = 'SELECT * FROM #__emundus_tag_assoc WHERE id =' . $id;
-		$this->_db->setQuery($query);
+		$tag = [];
 
-		return $this->_db->loadAssoc();
+		if(!empty($id))
+		{
+			try
+			{
+				$query = $this->_db->getQuery(true);
+
+				$query->select('*')
+					->from($this->_db->quoteName('#__emundus_tag_assoc'))
+					->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($id));
+				$this->_db->setQuery($query);
+				$tag = $this->_db->loadAssoc();
+			}
+			catch (Exception $e)
+			{
+				Log::add('Error getting tag in model at query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $tag;
 	}
 
 	public function getFileComments($fnum)
 	{
-		$query = $this->_db->getQuery(true);
+		$file_comments = [];
 
-		$query->select('ec.id, ec.comment_body as comment, ec.reason, ec.fnum, ec.user_id, ec.date, u.name')
-			->from($this->_db->quoteName('#__emundus_comments', 'ec'))
-			->leftJoin($this->_db->quoteName('#__users', 'u') . ' ON ' . $this->_db->quoteName('u.id') . ' = ' . $this->_db->quoteName('ec.user_id'))
-			->where($this->_db->quoteName('ec.fnum') . ' LIKE ' . $this->_db->quote($fnum))
-			->order($this->_db->quoteName('ec.date') . ' ASC');
-		$this->_db->setQuery($query);
+		if(!empty($fnum))
+		{
+			try
+			{
+				$query = $this->_db->getQuery(true);
 
-		return $this->_db->loadObjectList();
+				$query->select('ec.id, ec.comment_body as comment, ec.reason, ec.fnum, ec.user_id, ec.date, u.name')
+					->from($this->_db->quoteName('#__emundus_comments', 'ec'))
+					->leftJoin($this->_db->quoteName('#__users', 'u') . ' ON ' . $this->_db->quoteName('u.id') . ' = ' . $this->_db->quoteName('ec.user_id'))
+					->where($this->_db->quoteName('ec.fnum') . ' LIKE ' . $this->_db->quote($fnum))
+					->order($this->_db->quoteName('ec.date') . ' ASC');
+				$this->_db->setQuery($query);
+
+				$file_comments = $this->_db->loadObjectList();
+			}
+			catch (Exception $e)
+			{
+				Log::add('Error getting file comments in model at query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $file_comments;
 	}
 
 	public function getFileOwnComments($fnum, $user_id)
 	{
-		$query = $this->_db->getQuery(true);
+		$file_own_comments = [];
 
-		$query->select('ec.id, ec.comment_body as comment, ec.reason, ec.fnum, ec.user_id, ec.date, u.name')
-			->from($this->_db->quoteName('#__emundus_comments', 'ec'))
-			->leftJoin($this->_db->quoteName('#__users', 'u') . ' ON ' . $this->_db->quoteName('u.id') . ' = ' . $this->_db->quoteName('ec.user_id'))
-			->where($this->_db->quoteName('ec.fnum') . ' LIKE ' . $this->_db->quote($fnum))
-			->andWhere($this->_db->quoteName('ec.user_id') . ' = ' . $this->_db->quote($user_id))
-			->order($this->_db->quoteName('ec.date') . ' ASC');
-		$this->_db->setQuery($query);
+		if(!empty($fnum) && !empty($user_id))
+		{
+			try
+			{
+				$query = $this->_db->getQuery(true);
 
-		return $this->_db->loadObjectList();
+				$query->select('ec.id, ec.comment_body as comment, ec.reason, ec.fnum, ec.user_id, ec.date, u.name')
+					->from($this->_db->quoteName('#__emundus_comments', 'ec'))
+					->leftJoin($this->_db->quoteName('#__users', 'u') . ' ON ' . $this->_db->quoteName('u.id') . ' = ' . $this->_db->quoteName('ec.user_id'))
+					->where($this->_db->quoteName('ec.fnum') . ' LIKE ' . $this->_db->quote($fnum))
+					->andWhere($this->_db->quoteName('ec.user_id') . ' = ' . $this->_db->quote($user_id))
+					->order($this->_db->quoteName('ec.date') . ' ASC');
+				$this->_db->setQuery($query);
+
+				$file_own_comments = $this->_db->loadObjectList();
+			}
+			catch (Exception $e)
+			{
+				Log::add('Error getting file own comments in model at query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $file_own_comments;
 	}
 
 	public function editComment($id, $title, $text)

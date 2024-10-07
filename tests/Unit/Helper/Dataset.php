@@ -156,6 +156,22 @@ class Dataset
 		return $m_settings->createTag()->id;
 	}
 
+	public function deleteSampleTag($id)
+	{
+		$deleted = false;
+		if (!empty($id)) {
+			$query = $this->db->getQuery(true);
+
+			$query->delete('#__emundus_setup_action_tag')
+				->where('id = ' . $id);
+
+			$this->db->setQuery($query);
+			$deleted = $this->db->execute();
+		}
+
+		return $deleted;
+	}
+
 	public function createSampleComment($fnum, $aid, $uid, $reason = 'Test unitaire', $comment_body = 'Commentaire pour un test unitaire')
 	{
 		if(!class_exists('EmundusModelApplication')){

@@ -11,6 +11,7 @@
 namespace Unit\Component\Emundus\Model;
 
 use EmundusModelApplication;
+use Joomla\CMS\Factory;
 use Joomla\Tests\Unit\UnitTestCase;
 use stdClass;
 
@@ -315,6 +316,110 @@ class ApplicationModelTest extends UnitTestCase
 
 		$comment = $this->model->getComment($comment_id);
 		$this->assertNotEmpty($comment, 'getComment should return an array of comment information');
+
+		// Clear datasets
+		$this->h_dataset->deleteSampleComment($comment_id);
+		$this->h_dataset->deleteSampleUser($applicant);
+		$this->h_dataset->deleteSampleUser($coordinator);
+		$this->h_dataset->deleteSampleProgram($program['programme_id']);
+		//
+	}
+
+	public function testGetTag()
+	{
+		$applicant_email = 'applicant' . rand(0, 1000) . '@emundus.test.fr';
+		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
+		$applicant = $this->h_dataset->createSampleUser(1000, $applicant_email);
+		$coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
+
+		$program             = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $coordinator);
+		$campaign_id         = $this->h_dataset->createSampleCampaign($program, $coordinator);
+		$fnum                = $this->h_dataset->createSampleFile($campaign_id, $applicant);
+
+		$tag = $this->model->getTag(0);
+		$this->assertSame([], $tag, 'getTag should return an empty array if the tag does not exist');
+
+		$tag_id = $this->h_dataset->createSampleTag();
+		$assoc_tag = [
+			'fnum' => $fnum,
+			'id_tag' => $tag_id,
+			'date_time' => Factory::getDate()->toSql(),
+			'user_id' => $coordinator
+		];
+		$assoc_tag = (object) $assoc_tag;
+		$this->db->insertObject('#__emundus_tag_assoc', $assoc_tag, 'id');
+		$assoc_tag_id = $this->db->insertid();
+
+		$tag = $this->model->getTag($assoc_tag_id);
+		$this->assertNotEmpty($tag, 'getTag should return an array of tag information');
+		$this->assertSame($tag['id_tag'], $tag_id, 'getTag should return the correct tag id');
+		$this->assertSame($tag['fnum'], $fnum, 'getTag should return the correct fnum');
+
+		// Clear datasets
+		$this->h_dataset->deleteSampleTag($tag_id);
+		$this->h_dataset->deleteSampleUser($applicant);
+		$this->h_dataset->deleteSampleUser($coordinator);
+		$this->h_dataset->deleteSampleProgram($program['programme_id']);
+		//
+	}
+
+	public function testGetFileComments()
+	{
+		$applicant_email = 'applicant' . rand(0, 1000) . '@emundus.test.fr';
+		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
+		$applicant = $this->h_dataset->createSampleUser(1000, $applicant_email);
+		$coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
+
+		$comments = $this->model->getFileComments(0);
+		$this->assertSame([], $comments, 'getFileComments should return an empty array if the file does not exist');
+
+		$program             = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $coordinator);
+		$campaign_id         = $this->h_dataset->createSampleCampaign($program, $coordinator);
+		$fnum                = $this->h_dataset->createSampleFile($campaign_id, $applicant);
+
+		$comment_id = $this->h_dataset->createSampleComment($fnum, $applicant, $coordinator);
+		$comments = $this->model->getFileComments($fnum);
+		$this->assertNotEmpty($comments, 'getFileComments should return an array of file comments');
+
+		$this->assertSame('Test unitaire', $comments[0]->reason, 'getFileComments should return the correct reason');
+		$this->assertSame('Commentaire pour un test unitaire', $comments[0]->comment, 'getFileComments should return the correct comment (warning: key is comment and NOT comment_body');
+		$this->assertSame($fnum, $comments[0]->fnum, 'getFileComments should return the correct fnum');
+
+		// Clear datasets
+		$this->h_dataset->deleteSampleComment($comment_id);
+		$this->h_dataset->deleteSampleUser($applicant);
+		$this->h_dataset->deleteSampleUser($coordinator);
+		$this->h_dataset->deleteSampleProgram($program['programme_id']);
+		//
+	}
+
+	public function testGetFileOwnComments()
+	{
+		$applicant_email = 'applicant' . rand(0, 1000) . '@emundus.test.fr';
+		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
+		$applicant = $this->h_dataset->createSampleUser(1000, $applicant_email);
+		$coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
+
+		$comments = $this->model->getFileOwnComments(0,0);
+		$this->assertEmpty($comments, 'getFileComments should return an empty array if the file does not exist');
+
+		$program             = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $coordinator);
+		$campaign_id         = $this->h_dataset->createSampleCampaign($program, $coordinator);
+		$fnum                = $this->h_dataset->createSampleFile($campaign_id, $applicant);
+
+		$comment_id = $this->h_dataset->createSampleComment($fnum, $applicant, $coordinator);
+		$comments = $this->model->getFileOwnComments($fnum,0);
+		$this->assertEmpty($comments, 'getFileComments should return an empty array if the user does not exist');
+
+		$comments = $this->model->getFileOwnComments($fnum,$applicant);
+		$this->assertEmpty($comments, 'getFileComments should return an empty array if the user has no comments');
+
+		$comments = $this->model->getFileOwnComments($fnum,$coordinator);
+		$this->assertNotEmpty($comments, 'getFileComments should return an array of file comments');
+
+		$this->assertSame('Test unitaire', $comments[0]->reason, 'getFileComments should return the correct reason');
+		$this->assertSame('Commentaire pour un test unitaire', $comments[0]->comment, 'getFileComments should return the correct comment (warning: key is comment and NOT comment_body');
+		$this->assertSame($fnum, $comments[0]->fnum, 'getFileComments should return the correct fnum');
 
 		// Clear datasets
 		$this->h_dataset->deleteSampleComment($comment_id);
