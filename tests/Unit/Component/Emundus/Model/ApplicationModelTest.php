@@ -325,6 +325,12 @@ class ApplicationModelTest extends UnitTestCase
 		//
 	}
 
+	/**
+	 * @group application
+	 * @covers EmundusModelApplication::getTag
+	 *
+	 * @since version 2.0.0
+	 */
 	public function testGetTag()
 	{
 		$applicant_email = 'applicant' . rand(0, 1000) . '@emundus.test.fr';
@@ -363,6 +369,12 @@ class ApplicationModelTest extends UnitTestCase
 		//
 	}
 
+	/**
+	 * @group application
+	 * @covers EmundusModelApplication::getFileComments
+	 *
+	 * @since version 2.0.0
+	 */
 	public function testGetFileComments()
 	{
 		$applicant_email = 'applicant' . rand(0, 1000) . '@emundus.test.fr';
@@ -393,6 +405,12 @@ class ApplicationModelTest extends UnitTestCase
 		//
 	}
 
+	/**
+	 * @group application
+	 * @covers EmundusModelApplication::getFileOwnComments
+	 *
+	 * @since version 2.0.0
+	 */
 	public function testGetFileOwnComments()
 	{
 		$applicant_email = 'applicant' . rand(0, 1000) . '@emundus.test.fr';

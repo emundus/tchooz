@@ -15,6 +15,12 @@ use Joomla\Tests\Unit\UnitTestCase;
 
 require_once JPATH_BASE . '/components/com_emundus/helpers/cache.php';
 
+/**
+ * @package     Unit\Component\Emundus\Helper
+ *
+ * @since       version 1.0.0
+ * @covers      EmundusHelperCache
+ */
 class CacheHelperTest extends UnitTestCase
 {
 	/**

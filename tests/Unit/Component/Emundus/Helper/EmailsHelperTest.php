@@ -16,6 +16,12 @@ use Joomla\Tests\Unit\UnitTestCase;
 require_once JPATH_BASE . '/components/com_emundus/helpers/emails.php';
 require_once JPATH_BASE . '/administrator/components/com_emundus/helpers/update.php';
 
+/**
+ * @package     Unit\Component\Emundus\Helper
+ *
+ * @since       version 1.0.0
+ * @covers      EmundusHelperEmails
+ */
 class EmailsHelperTest extends UnitTestCase
 {
 	/**
@@ -31,6 +37,11 @@ class EmailsHelperTest extends UnitTestCase
 		$this->helper = new EmundusHelperEmails();
 	}
 
+	/**
+	 * @covers EmundusHelperEmails::correctEmail
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testCorrectEmail()
 	{
 		$this->assertSame(false, $this->helper->correctEmail(''), 'Validate empty email returns false');
@@ -44,6 +55,11 @@ class EmailsHelperTest extends UnitTestCase
 		$this->assertSame(true, $this->helper->correctEmail('jeremy.legendre@emundus.fr'), 'Validate correct email format returns true');
 	}
 
+	/**
+	 * @covers EmundusHelperEmails::assertCanSendMailToUser
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testAssertCanSendEmail()
 	{
 		$this->assertSame(false, $this->helper->assertCanSendMailToUser(), 'can send mail returns false if nor user_id nor fnum given');
@@ -106,6 +122,11 @@ class EmailsHelperTest extends UnitTestCase
 		}
 	}
 
+	/**
+	 * @covers EmundusHelperEmails::getCustomHeader
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testGetCustomHeader()
 	{
 		// By default we doesn't have custom header
