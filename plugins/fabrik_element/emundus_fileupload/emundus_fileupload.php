@@ -812,12 +812,6 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 						$value_to_store[] = $file;
 					}
 				}
-
-				$query->clear()
-					->delete($this->_db->quoteName('#__fabrik_form_sessions'))
-					->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($session->id));
-				$this->_db->setQuery($query);
-				$this->_db->execute();
 			}
 		}
 
