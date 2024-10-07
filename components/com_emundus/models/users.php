@@ -347,47 +347,57 @@ class EmundusModelUsers extends ListModel
 				$and   = true;
 			}
 			if (!empty($search)) {
-
-				if ($and) {
-					$query .= ' AND ';
-				}
-				else {
-					$and   = true;
-					$query .= ' ';
-				}
-
 				$q = '';
 				foreach ($search as $str) {
-					$val = explode(': ', $str);
+					if (strpos($str, ':') !== false) {
+						$val = explode(': ', $str);
 
-					if ($val[0] == "ALL") {
-						$q .= ' OR e.lastname LIKE ' . $this->db->Quote('%' . $val[1] . '%') . '
+						if ($val[0] == "ALL") {
+							$q .= ' OR e.lastname LIKE ' . $this->db->Quote('%' . $val[1] . '%') . '
                         OR e.firstname LIKE ' . $this->db->Quote('%' . $val[1] . '%') . '
                         OR u.email LIKE ' . $this->db->Quote('%' . $val[1] . '%') . '
                         OR e.schoolyear LIKE ' . $this->db->Quote('%' . $val[1] . '%') . '
                         OR u.username LIKE ' . $this->db->Quote('%' . $val[1] . '%') . '
                         OR u.id = ' . $this->db->Quote($val[1]);
+						}
+
+						if ($val[0] == "ID")
+							$q .= ' OR u.id = ' . $this->db->Quote($val[1]);
+
+						if ($val[0] == "EMAIL")
+							$q .= ' OR u.email LIKE ' . $this->db->Quote('%' . $val[1] . '%');
+
+						if ($val[0] == "USERNAME")
+							$q .= ' OR u.username LIKE ' . $this->db->Quote('%' . $val[1] . '%');
+
+						if ($val[0] == "LAST_NAME")
+							$q .= ' OR e.lastname LIKE ' . $this->db->Quote('%' . $val[1] . '%');
+
+						if ($val[0] == "FIRST_NAME")
+							$q .= ' OR e.firstname LIKE ' . $this->db->Quote('%' . $val[1] . '%');
+
+					} else {
+						$q .= ' OR e.lastname LIKE ' . $this->db->Quote('%' . $str . '%') . '
+						OR e.firstname LIKE ' . $this->db->Quote('%' . $str . '%') . '
+						OR u.email LIKE ' . $this->db->Quote('%' . $str . '%') . '
+						OR e.schoolyear LIKE ' . $this->db->Quote('%' . $str . '%') . '
+						OR u.username LIKE ' . $this->db->Quote('%' . $str . '%') . '
+						OR u.id = ' . $this->db->Quote($str);
 					}
-
-					if ($val[0] == "ID")
-						$q .= ' OR u.id = ' . $this->db->Quote($val[1]);
-
-					if ($val[0] == "EMAIL")
-						$q .= ' OR u.email LIKE ' . $this->db->Quote('%' . $val[1] . '%');
-
-					if ($val[0] == "USERNAME")
-						$q .= ' OR u.username LIKE ' . $this->db->Quote('%' . $val[1] . '%');
-
-					if ($val[0] == "LAST_NAME")
-						$q .= ' OR e.lastname LIKE ' . $this->db->Quote('%' . $val[1] . '%');
-
-					if ($val[0] == "FIRST_NAME")
-						$q .= ' OR e.firstname LIKE ' . $this->db->Quote('%' . $val[1] . '%');
-
 				}
 
-				$q     = substr($q, 3);
-				$query .= '(' . $q . ')';
+				if (!empty($q)) {
+					if ($and) {
+						$query .= ' AND ';
+					}
+					else {
+						$and   = true;
+						$query .= ' ';
+					}
+
+					$q     = substr($q, 3);
+					$query .= '(' . $q . ')';
+				}
 			}
 			if (!empty($spam_suspect) && $spam_suspect == 1) {
 				if ($and) {
@@ -451,7 +461,6 @@ class EmundusModelUsers extends ListModel
 			$query .= $this->_buildContentOrderBy();
 
 			return $this->_getList($query, $limit_start, $limit);
-
 		}
 		catch (Exception $e) {
 			throw new $e;
