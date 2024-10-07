@@ -13,6 +13,12 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Tests\Unit\UnitTestCase;
 
+/**
+ * @package     Unit\Component\Emundus\Model
+ *
+ * @since       version 1.0.0
+ * @covers      EmundusModelForm
+ */
 class FormModelTest extends UnitTestCase
 {
 	/**
@@ -64,6 +70,10 @@ class FormModelTest extends UnitTestCase
 		// TODO: test duplicate form, error coming from cms language
 	}
 
+	/**
+	 * @test
+	 * @covers EmundusModelForm::createFormEval()
+	 */
 	public function testcreateFormEval()
 	{
 		$form_id = $this->model->createFormEval(Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']));

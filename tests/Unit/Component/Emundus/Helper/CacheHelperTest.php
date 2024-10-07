@@ -39,12 +39,6 @@ class CacheHelperTest extends UnitTestCase
 		$this->config->set('cache_handler', 'file');
 	}
 
-	public function testFoo()
-	{
-		$foo = true;
-		$this->assertSame(true, $foo);
-	}
-
 	/**
 	 * @return void
 	 * @covers EmundusHelperCache::__construct
@@ -120,5 +114,17 @@ class CacheHelperTest extends UnitTestCase
 
 		$this->h_cache->clean();
 		$this->assertSame(false, $this->h_cache->get('foo'), 'clean() should remove all keys');
+	}
+
+	/**
+	 * @return void
+	 * @covers EmundusHelperCache::getCurrentGitHash
+	 */
+	public function testGetCurrentGitHash()
+	{
+		$this->config->set('caching', 1);
+
+		$this->h_cache = new EmundusHelperCache();
+		$this->assertNotEmpty($this->h_cache->getCurrentGitHash(), 'When cache is enabled, getCurrentGitHash() should return false if key is not set');
 	}
 }

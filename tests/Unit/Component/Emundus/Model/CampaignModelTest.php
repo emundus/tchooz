@@ -21,6 +21,12 @@ require_once JPATH_SITE . '/components/com_emundus/models/programme.php';
 require_once JPATH_SITE . '/components/com_emundus/models/profile.php';
 require_once JPATH_SITE . '/components/com_emundus/helpers/access.php';
 
+/**
+ * @package     Unit\Component\Emundus\Model
+ *
+ * @since       version 1.0.0
+ * @covers      EmundusModelCampaign
+ */
 class CampaignModelTest extends UnitTestCase
 {
 	/**
@@ -102,6 +108,11 @@ class CampaignModelTest extends UnitTestCase
 		$this->assertTrue($table_exists, 'Table #__emundus_campaign_workflow_repeat_documents should exists');
 	}
 
+	/**
+	 * @covers EmundusModelCampaign::createDocument
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testCreateDocument()
 	{
 		$document = [
@@ -119,6 +130,11 @@ class CampaignModelTest extends UnitTestCase
 		$this->assertFalse($created['status'], 'Assert impossible to create document with empty types');
 	}
 
+	/**
+	 * @covers EmundusModelCampaign::createCampaign
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testCreateCampaign()
 	{
 		$new_campaign_id = $this->model->createCampaign([]);
@@ -172,6 +188,11 @@ class CampaignModelTest extends UnitTestCase
 		$this->assertTrue($deleted, 'Campaign deletion works properly');
 	}
 
+	/**
+	 * @covers EmundusModelCampaign::updateCampaign
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testUpdateCampaign()
 	{
 		$updated = $this->model->updateCampaign([], 1);
@@ -187,12 +208,22 @@ class CampaignModelTest extends UnitTestCase
 		$this->assertFalse($updated, 'Update campaign with empty data end_date stops the update');
 	}
 
+	/**
+	 * @covers EmundusModelCampaign::getAllCampaigns
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testGetAllCampaigns()
 	{
 		$campaigns = $this->model->getAllCampaigns();
 		$this->assertIsArray($campaigns, 'La fonction de récupération des campagnes renvoie toujours un tableau');
 	}
 
+	/**
+	 * @covers EmundusModelCampaign::getProgrammeByTraining
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testGetProgrammeByTraining()
 	{
 		$progam = $this->model->getProgrammeByTraining('');
@@ -200,6 +231,11 @@ class CampaignModelTest extends UnitTestCase
 	}
 
 
+	/**
+	 * @covers EmundusModelCampaign::createWorkflow
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testCreateWorkflow()
 	{
 		$workflow_on_all = $this->model->createWorkflow(9, [0], 1, null, []);
@@ -236,11 +272,21 @@ class CampaignModelTest extends UnitTestCase
 		//
 	}
 
+	/**
+	 * @covers EmundusModelCampaign::deleteWorkflows
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testDeleteWorkflow()
 	{
 		$this->assertTrue($this->model->deleteWorkflows(), 'La suppression de workflow fonctionne');
 	}
 
+	/**
+	 * @covers EmundusModelCampaign::getCurrentCampaignWorkflow
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testGetCurrentCampaignWorkflow()
 	{
 		$query = $this->db->getQuery(true);
@@ -290,6 +336,11 @@ class CampaignModelTest extends UnitTestCase
 		$this->assertSame([], $current_file_workflow->documents, 'Le workflow contient un tableau vide par défaut');
 	}
 
+	/**
+	 * @covers EmundusModelCampaign::getAllCampaignWorkflows
+	 *
+	 * @since version 1.0.0
+	 */
 	function testGetAllCampaignWorkflows()
 	{
 		$this->assertEmpty($this->model->getAllCampaignWorkflows(0), 'Pas de workflow renvoyés si la campagne n\'existe pas.');
@@ -310,6 +361,11 @@ class CampaignModelTest extends UnitTestCase
 		//
 	}
 
+	/**
+	 * @covers EmundusModelCampaign::pinCampaign
+	 *
+	 * @since version 1.0.0
+	 */
 	function testpinCampaign()
 	{
 		$pinned = $this->model->pinCampaign(9999);
@@ -345,6 +401,11 @@ class CampaignModelTest extends UnitTestCase
 		$this->assertEmpty($campaign['pinned'], 'La nouvelle campagne dupliquée n\'est pas mise en avant');
 	}
 
+	/**
+	 * @covers EmundusModelCampaign::unpinCampaign
+	 *
+	 * @since version 1.0.0
+	 */
 	function testunpinCampaign()
 	{
 		$unpinned = $this->model->unpinCampaign(0);
@@ -361,6 +422,11 @@ class CampaignModelTest extends UnitTestCase
 		$this->assertFalse($this->model->unpinCampaign(['svsfg', 'dsgdfg', 'dsg']), 'Un tableau mal formé ne peut pas être passé en paramètre');
 	}
 
+	/**
+	 * @covers EmundusModelCampaign::editDocumentDropfile
+	 *
+	 * @since version 1.0.0
+	 */
 	function testeditDocumentDropfile()
 	{
 		$query = $this->db->getQuery(true);
@@ -393,6 +459,11 @@ class CampaignModelTest extends UnitTestCase
 		//
 	}
 
+	/**
+	 * @covers EmundusModelCampaign::duplicateCampaign
+	 *
+	 * @since version 1.0.0
+	 */
 	function testduplicateCampaign()
 	{
 		$duplicated = $this->model->duplicateCampaign($this->dataset['campaign']);

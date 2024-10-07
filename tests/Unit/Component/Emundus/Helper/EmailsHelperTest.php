@@ -38,21 +38,31 @@ class EmailsHelperTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers EmundusHelperEmails::correctEmail
+	 * @covers EmundusHelperEmails::getEmail
 	 *
-	 * @since version 1.0.0
+	 * @since version 2.0.0
 	 */
-	public function testCorrectEmail()
+	public function testGetEmail()
 	{
-		$this->assertSame(false, $this->helper->correctEmail(''), 'Validate empty email returns false');
+		$this->assertEmpty($this->helper->getEmail(0), 'Get email with invalid user_id returns empty string');
 
-		$this->assertSame(false, $this->helper->correctEmail('@email.com'), 'Validate email with wrong format returns false');
-		$this->assertSame(false, $this->helper->correctEmail('jeremy.legendreemundus.fr'), 'Validate email with wrong format returns false');
-		$this->assertSame(false, $this->helper->correctEmail('jeremy.legendre@'), 'Validate email with wrong format returns false');
+		$email = $this->helper->getEmail('new_account');
+		$this->assertNotEmpty($email, 'Get email with valid user_id returns not empty string');
+		$this->assertSame($email->lbl,'new_account', 'Get email with valid label returns correct email object');
+	}
 
-		$this->assertSame(false, $this->helper->correctEmail('jeremy.legendre@wrong.dns'), 'Validate email with wrong dns returns false');
+	/**
+	 * @covers EmundusHelperEmails::getAllEmail
+	 *
+	 * @since version 2.0.0
+	 */
+	public function testGetAllEmail()
+	{
+		$emails = $this->helper->getAllEmail();
+		$this->assertIsArray($emails, 'Get all emails returns an array');
 
-		$this->assertSame(true, $this->helper->correctEmail('jeremy.legendre@emundus.fr'), 'Validate correct email format returns true');
+		$emails = $this->helper->getAllEmail(1);
+		$this->assertNotEmpty($emails, 'Get all emails returns not empty array of emails of type 1');
 	}
 
 	/**
@@ -120,6 +130,38 @@ class EmailsHelperTest extends UnitTestCase
 			$this->db->setQuery($query);
 			$this->db->execute();
 		}
+	}
+
+	/**
+	 * @covers EmundusHelperEmails::correctEmail
+	 *
+	 * @since version 1.0.0
+	 */
+	public function testCorrectEmail()
+	{
+		$this->assertSame(false, $this->helper->correctEmail(''), 'Validate empty email returns false');
+
+		$this->assertSame(false, $this->helper->correctEmail('@email.com'), 'Validate email with wrong format returns false');
+		$this->assertSame(false, $this->helper->correctEmail('jeremy.legendreemundus.fr'), 'Validate email with wrong format returns false');
+		$this->assertSame(false, $this->helper->correctEmail('jeremy.legendre@'), 'Validate email with wrong format returns false');
+
+		$this->assertSame(false, $this->helper->correctEmail('jeremy.legendre@wrong.dns'), 'Validate email with wrong dns returns false');
+
+		$this->assertSame(true, $this->helper->correctEmail('jeremy.legendre@emundus.fr'), 'Validate correct email format returns true');
+	}
+
+	public function testGetLogo()
+	{
+		$logo = $this->helper->getLogo();
+		$this->assertNotEmpty($logo, 'Get logo returns not empty string');
+		
+		$logo = $this->helper->getLogo(true);
+		$this->assertFileExists(JPATH_SITE.'/images/custom/'.$logo, 'Get logo returns a valid path');
+		
+		// Check if a logo is image
+		$logo = $this->helper->getLogo();
+		$ext = pathinfo($logo, PATHINFO_EXTENSION);
+		$this->assertContains($ext, ['jpg', 'jpeg', 'png', 'gif', 'svg'], 'Get logo returns a valid image');
 	}
 
 	/**
