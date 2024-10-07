@@ -15,6 +15,12 @@ use Joomla\Tests\Unit\UnitTestCase;
 
 require_once JPATH_SITE . '/components/com_emundus/helpers/fabrik.php';
 
+/**
+ * @package     Unit\Component\Emundus\Helper
+ *
+ * @since       version 1.0.0
+ * @covers      EmundusHelperFabrik
+ */
 class FabrikHelperTest extends UnitTestCase
 {
 	/**
@@ -30,6 +36,11 @@ class FabrikHelperTest extends UnitTestCase
 		$this->helper = new EmundusHelperFabrik();
 	}
 
+	/**
+	 * @covers EmundusHelperFabrik::getFormattedPhoneNumberValue
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testgetFormattedPhoneNumberValue()
 	{
 		$unformatted_phone_number = '';
@@ -64,6 +75,7 @@ class FabrikHelperTest extends UnitTestCase
 	/**
 	 * @return void
 	 * @description Test the getElementByAlias() method
+	 * @covers EmundusHelperFabrik::getElementByAlias
 	 * It should return the name and database table name storage of the element with the alias passed as parameter
 	 */
 	public function testGetElementByAlias()
@@ -109,6 +121,7 @@ class FabrikHelperTest extends UnitTestCase
 	/**
 	 * @return void
 	 * @description Test the getValueByAlias() method
+	 * @covers EmundusHelperFabrik::getValueByAlias
 	 * It should return the value of the element with the alias and form number passed as parameters
 	 */
 	public function testGetValueByAlias()

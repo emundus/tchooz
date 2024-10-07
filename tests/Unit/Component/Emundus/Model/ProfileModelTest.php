@@ -15,6 +15,12 @@ use Joomla\Tests\Unit\UnitTestCase;
 
 require_once JPATH_BASE . '/components/com_emundus/models/formbuilder.php';
 
+/**
+ * @package     Unit\Component\Emundus\Model
+ *
+ * @since       version 1.0.0
+ * @covers      EmundusModelProfile
+ */
 class ProfileModelTest extends UnitTestCase
 {
 	/**

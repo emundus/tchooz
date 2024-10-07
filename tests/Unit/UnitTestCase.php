@@ -90,7 +90,7 @@ abstract class UnitTestCase extends TestCase
 
 	protected function setUp(): void
 	{
-		$this->dataset['applicant']   = $this->h_dataset->createSampleUser(9, 'applicant_' . rand(0, 1000) . '@emundus.fr');
+		$this->dataset['applicant']   = $this->h_dataset->createSampleUser(1000, 'applicant_' . rand(0, 1000) . '@emundus.fr');
 		$this->dataset['coordinator'] = $this->h_dataset->createSampleUser(2, 'coordinator_' . rand(0, 1000) . '@emundus.fr','test1234',[2,7]);
 		$this->dataset['program']     = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $this->dataset['coordinator']);
 		$this->dataset['campaign']    = $this->h_dataset->createSampleCampaign($this->dataset['program'], $this->dataset['coordinator']);

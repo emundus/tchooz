@@ -16,6 +16,12 @@ use Joomla\Tests\Unit\UnitTestCase;
 require_once JPATH_BASE . '/components/com_emundus/helpers/emails.php';
 require_once JPATH_BASE . '/administrator/components/com_emundus/helpers/update.php';
 
+/**
+ * @package     Unit\Component\Emundus\Helper
+ *
+ * @since       version 1.0.0
+ * @covers      EmundusHelperEmails
+ */
 class EmailsHelperTest extends UnitTestCase
 {
 	/**
@@ -31,19 +37,39 @@ class EmailsHelperTest extends UnitTestCase
 		$this->helper = new EmundusHelperEmails();
 	}
 
-	public function testCorrectEmail()
+	/**
+	 * @covers EmundusHelperEmails::getEmail
+	 *
+	 * @since version 2.0.0
+	 */
+	public function testGetEmail()
 	{
-		$this->assertSame(false, $this->helper->correctEmail(''), 'Validate empty email returns false');
+		$this->assertEmpty($this->helper->getEmail(0), 'Get email with invalid user_id returns empty string');
 
-		$this->assertSame(false, $this->helper->correctEmail('@email.com'), 'Validate email with wrong format returns false');
-		$this->assertSame(false, $this->helper->correctEmail('jeremy.legendreemundus.fr'), 'Validate email with wrong format returns false');
-		$this->assertSame(false, $this->helper->correctEmail('jeremy.legendre@'), 'Validate email with wrong format returns false');
-
-		$this->assertSame(false, $this->helper->correctEmail('jeremy.legendre@wrong.dns'), 'Validate email with wrong dns returns false');
-
-		$this->assertSame(true, $this->helper->correctEmail('jeremy.legendre@emundus.fr'), 'Validate correct email format returns true');
+		$email = $this->helper->getEmail('new_account');
+		$this->assertNotEmpty($email, 'Get email with valid user_id returns not empty string');
+		$this->assertSame($email->lbl,'new_account', 'Get email with valid label returns correct email object');
 	}
 
+	/**
+	 * @covers EmundusHelperEmails::getAllEmail
+	 *
+	 * @since version 2.0.0
+	 */
+	public function testGetAllEmail()
+	{
+		$emails = $this->helper->getAllEmail();
+		$this->assertIsArray($emails, 'Get all emails returns an array');
+
+		$emails = $this->helper->getAllEmail(1);
+		$this->assertNotEmpty($emails, 'Get all emails returns not empty array of emails of type 1');
+	}
+
+	/**
+	 * @covers EmundusHelperEmails::assertCanSendMailToUser
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testAssertCanSendEmail()
 	{
 		$this->assertSame(false, $this->helper->assertCanSendMailToUser(), 'can send mail returns false if nor user_id nor fnum given');
@@ -106,6 +132,40 @@ class EmailsHelperTest extends UnitTestCase
 		}
 	}
 
+	/**
+	 * @covers EmundusHelperEmails::correctEmail
+	 *
+	 * @since version 1.0.0
+	 */
+	public function testCorrectEmail()
+	{
+		$this->assertSame(false, $this->helper->correctEmail(''), 'Validate empty email returns false');
+
+		$this->assertSame(false, $this->helper->correctEmail('@email.com'), 'Validate email with wrong format returns false');
+		$this->assertSame(false, $this->helper->correctEmail('jeremy.legendreemundus.fr'), 'Validate email with wrong format returns false');
+		$this->assertSame(false, $this->helper->correctEmail('jeremy.legendre@'), 'Validate email with wrong format returns false');
+
+		$this->assertSame(false, $this->helper->correctEmail('jeremy.legendre@wrong.dns'), 'Validate email with wrong dns returns false');
+
+		$this->assertSame(true, $this->helper->correctEmail('jeremy.legendre@emundus.fr'), 'Validate correct email format returns true');
+	}
+
+	public function testGetLogo()
+	{
+		$logo = $this->helper->getLogo();
+		$this->assertNotEmpty($logo, 'Get logo returns not empty string');
+		
+		// Check if a logo is image
+		$logo = $this->helper->getLogo();
+		$ext = pathinfo($logo, PATHINFO_EXTENSION);
+		$this->assertContains($ext, ['jpg', 'jpeg', 'png', 'gif', 'svg'], 'Get logo returns a valid image');
+	}
+
+	/**
+	 * @covers EmundusHelperEmails::getCustomHeader
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testGetCustomHeader()
 	{
 		// By default we doesn't have custom header

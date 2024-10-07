@@ -1327,6 +1327,9 @@ form.fabrikForm input:not([type='file']):focus:not([type='radio']):not([type='ch
                 background-color: var(--em-form-bgc-focus);
             }
 /* TEXTAREA */
+form.fabrikForm .fabrik_characters_left:not(.muted) {
+            margin-top: 4px;
+        }
 form.fabrikForm .fabrik_characters_left.muted {
             color: var(--neutral-600);
             display: flex;
@@ -114042,6 +114045,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-font-bold {
     font-weight: 700;
+}
+.tw-font-light {
+    font-weight: 300;
 }
 .tw-font-medium {
     font-weight: 500;

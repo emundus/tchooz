@@ -12,6 +12,12 @@ namespace Unit\Component\Emundus\Model;
 use Joomla\CMS\Factory;
 use Joomla\Tests\Unit\UnitTestCase;
 
+/**
+ * @package     Unit\Component\Emundus\Model
+ *
+ * @since       version 1.0.0
+ * @covers      EmundusModelEmails
+ */
 class EmailsModelTest extends UnitTestCase
 {
 
@@ -20,6 +26,11 @@ class EmailsModelTest extends UnitTestCase
 		parent::__construct('emails', $data, $dataName, 'EmundusModelEmails');
 	}
 
+	/**
+	 * @covers EmundusModelEmails::deleteEmail
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testDeleteSystemEmails()
 	{
 		$data = $this->model->getAllEmails(999, 0, '', '', '');
@@ -37,6 +48,11 @@ class EmailsModelTest extends UnitTestCase
 		$this->assertNotEmpty($email->id, 'On retrouve bien l\'email par son id');
 	}
 
+	/**
+	 * @covers EmundusModelEmails::createEmail
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testCreateEmail()
 	{
 		$data = [
@@ -63,6 +79,11 @@ class EmailsModelTest extends UnitTestCase
 		$this->model->deleteEmail($created_email->id);
 	}
 
+	/**
+	 * @covers EmundusModelEmails::deleteEmail
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testDeleteEmails()
 	{
 		$lbl  = 'Test de la suppression ' . rand(0, 1000);
@@ -88,6 +109,11 @@ class EmailsModelTest extends UnitTestCase
 		$this->assertNull($email, 'L\'email a bien été supprimé, on ne le retrouve plus en base');
 	}
 
+	/**
+	 * @covers EmundusModelEmails::sendExpertMail
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testsendExpertMail()
 	{
 		$response = $this->model->sendExpertMail([]);

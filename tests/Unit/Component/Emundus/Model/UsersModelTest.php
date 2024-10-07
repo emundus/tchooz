@@ -11,6 +11,12 @@ namespace Unit\Component\Emundus\Model;
 
 use Joomla\Tests\Unit\UnitTestCase;
 
+/**
+ * @package     Unit\Component\Emundus\Model
+ *
+ * @since       version 1.0.0
+ * @covers      EmundusModelUsers
+ */
 class UsersModelTest extends UnitTestCase
 {
 	public function __construct(?string $name = null, array $data = [], $dataName = '', $className = null)
@@ -48,6 +54,11 @@ class UsersModelTest extends UnitTestCase
 		$this->assertSame([], $this->model->getNonApplicantId([$this->dataset['applicant'], $this->dataset['applicant'], 'test passing a string instead of an id']), 'Passing an incorrect array should return an empty array');
 	}
 
+	/**
+	 * @covers EmundusModelUsers::affectToGroups
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testaffectToGroups()
 	{
 		$this->assertEmpty($this->model->affectToGroups([], []), 'Passing an incorrect user id should return false');
@@ -57,6 +68,11 @@ class UsersModelTest extends UnitTestCase
 		$this->assertTrue($this->model->affectToGroups($nonApplicantIds, [1]), 'Affect user to group, using getNonApplicantId result should return true');
 	}
 
+	/**
+	 * @covers EmundusModelUsers::getProfileDetails
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testgetProfileDetails()
 	{
 

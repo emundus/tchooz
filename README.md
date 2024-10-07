@@ -149,13 +149,13 @@ phpDocumentor
 # Gitflow
 
 ## Branches
-- **master** : This branch is the main branch. It contains the latest stable version of the application. It is protected and can only be updated by a merge request.
-- **hotfix** : This branch is used to prepare the next patch. It is created from the master branch and merged into the master branch.
-- **hotfix/xxx** : This branch is used to fix a bug. It is created from the master branch and merged into the hotfix branch.
-- **release** : This branch is used to prepare the next release. It is created from the dev branch and merged into the master branch.
-- **dev** : This branch is used to develop new features. It is created from the master branch and merged into the release branch.
-- **feature/xxx** : This branch is used to develop a new feature. It is created from the dev branch and merged into the dev branch.
-- **platform/xxx** : This branch is used to deploy a new feature in a specific environment. It is created from the dev branch and never merged.
+- **master** : This branch is the main branch. This contains the latest stable version of the application. It is protected and can only be updated by a merge request.
+- **hotfix** : This branch is used to prepare the next patch. This is created from the master branch and merged into the master branch. Only minor fixes (style, translations, minor impacts) are allowed to be committed directly in this branch. It's recommended to create a new branch from this one to fix a bug.
+- **hotfix/xxx** : These branches are used to fix a bug. They are created from the master branch and merged into the hotfix branch.
+- **release** : This branch is used to prepare the next release. This is created from the dev branch and merged into the master branch.
+- **dev** : This branch is used to test new features. This is created from the master branch and merged into the release branch. It's recommended to create a new branch from this one to develop a new feature.
+- **feature/xxx** : These branches are used to develop a new feature. They are created from the dev branch and merged into the dev branch.
+- **platform/xxx** : These branches are used to deploy a new feature in a specific environment. They are created from the dev branch and never merged.
 
 ## Simple gitflow
 
@@ -166,19 +166,19 @@ gitGraph
     branch hotfix order: 1
     branch release order: 3
     branch dev order: 4
-    branch feature/workflow_builder order: 5
+    branch feature/xxx order: 5
     commit id: "Add workflow builder"
     checkout hotfix
-    branch hotfix/security_patch order: 2
+    branch hotfix/xxx order: 2
     commit id: "Fix security issue"
     checkout hotfix
-    merge hotfix/security_patch id: "Security patch"
+    merge hotfix/xxx id: "Security patch"
     checkout master
     merge hotfix id: "Release 1.0.1" tag: "v1.0.1"
-    checkout feature/workflow_builder
+    checkout feature/xxx
     commit id: "Add new feature"
     checkout dev
-    merge feature/workflow_builder
+    merge feature/xxx
     checkout release
     merge dev
     checkout master

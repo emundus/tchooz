@@ -19,6 +19,12 @@ use Joomla\Tests\Unit\UnitTestCase;
 
 require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
 
+/**
+ * @package     Unit\Component\Emundus\Model
+ *
+ * @since       version 1.0.0
+ * @covers      EmundusModelFormbuilder
+ */
 class FormbuilderModelTest extends UnitTestCase
 {
 	/**
@@ -34,6 +40,11 @@ class FormbuilderModelTest extends UnitTestCase
 		$this->m_translations = new EmundusModelTranslations();
 	}
 
+	/**
+	 * @covers EmundusModelFormbuilder::formsTrad
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testFormsTradElement()
 	{
 		$override_original_file_size = filesize(JPATH_SITE . '/language/overrides/fr-FR.override.ini');
@@ -63,6 +74,11 @@ class FormbuilderModelTest extends UnitTestCase
 		$this->m_translations->deleteTranslation('ELEMENT_TEST', 'fr-FR', '', $reference_id);
 	}
 
+	/**
+	 * @covers EmundusModelFormbuilder::formsTrad
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testFormsTradUndefined()
 	{
 		$override_original_file_size = filesize(JPATH_SITE . '/language/overrides/fr-FR.override.ini');
@@ -93,6 +109,11 @@ class FormbuilderModelTest extends UnitTestCase
 		$this->m_translations->deleteTranslation('ELEMENT_TEST', 'fr-FR', '', $reference_id);
 	}
 
+	/**
+	 * @covers EmundusModelFormbuilder::createFabrikForm
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testCreateFabrikForm()
 	{
 		// Test 1 - Création de formulaire basique
@@ -134,6 +155,11 @@ class FormbuilderModelTest extends UnitTestCase
 		$this->assertTrue($deleted, 'Le formulaire de test a bien été supprimé');
 	}
 
+	/**
+	 * @covers EmundusModelFormbuilder::createGroup
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testCreateGroup()
 	{
 		// Test 1 - Un groupe a besoin d'un formulaire pour fonctionner
@@ -173,6 +199,11 @@ class FormbuilderModelTest extends UnitTestCase
 		}
 	}
 
+	/**
+	 * @covers EmundusModelFormbuilder::updateGroupParams
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testUpdateGroupParams()
 	{
 		$prid    = 9;
@@ -229,6 +260,11 @@ class FormbuilderModelTest extends UnitTestCase
 		}
 	}
 
+	/**
+	 * @covers EmundusModelFormbuilder::deleteFormModel
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testDeleteFormModel()
 	{
 		$deleted = $this->model->deleteFormModel(0);
@@ -259,6 +295,11 @@ class FormbuilderModelTest extends UnitTestCase
 		}
 	}
 
+	/**
+	 * @covers EmundusModelFormbuilder::copyForm
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testCopyForm()
 	{
 		$new_form_id = $this->model->copyForm(0, 'Test Unitaire - ');
@@ -289,6 +330,11 @@ class FormbuilderModelTest extends UnitTestCase
 		}
 	}
 
+	/**
+	 * @covers EmundusModelFormbuilder::getDocumentSample
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testgetDocumentSample()
 	{
 		$document = $this->model->getDocumentSample(0, 0);
@@ -323,6 +369,11 @@ class FormbuilderModelTest extends UnitTestCase
 		$this->assertNotEmpty($document, 'Le document de test est bien renvoyé');
 	}
 
+	/**
+	 * @covers EmundusModelFormbuilder::addFormModel
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testaddFormModel()
 	{
 		$created = $this->model->addFormModel(0, 'Test Unitaire - ');
@@ -332,8 +383,10 @@ class FormbuilderModelTest extends UnitTestCase
 		$this->assertFalse($created, 'addFormModel returns false if no form does not exists');
 	}
 
-	/*
+	/**
 	 * @covers EmundusModelFormbuilder::createSimpleElement
+	 *
+	 * @since version 1.0.0
 	 */
 	public function testcreateSimpleElement()
 	{
@@ -370,6 +423,11 @@ class FormbuilderModelTest extends UnitTestCase
 		$this->assertStringStartsWith('criteria', $element_data['name'], 'createSimpleElement creates the element with the correct name for evaluation');
 	}
 
+	/**
+	 * @covers EmundusModelFormbuilder::checkIfModelTableIsUsedInForm
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testcheckIfModelTableIsUsedInForm()
 	{
 		$used = $this->model->checkIfModelTableIsUsedInForm(0, 0);
@@ -412,6 +470,11 @@ class FormbuilderModelTest extends UnitTestCase
 		}
 	}
 
+	/**
+	 * @covers EmundusModelFormbuilder::createDatabaseTableFromTemplate
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testcreateDatabaseTableFromTemplate()
 	{
 		$new_table_name = $this->model->createDatabaseTableFromTemplate('', 0);

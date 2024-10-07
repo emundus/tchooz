@@ -15,6 +15,7 @@ jimport('joomla.application.component.model');
 
 use Gotenberg\Gotenberg;
 use Gotenberg\Stream;
+use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;

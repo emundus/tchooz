@@ -10,6 +10,7 @@
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Language;
 use Joomla\CMS\Language\Transliterate;
@@ -18,6 +19,7 @@ use Joomla\CMS\Table\Table;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Component\Cache\Administrator\Model\CacheModel;
 use Joomla\CMS\Language\LanguageHelper;
+use Joomla\Component\Scheduler\Administrator\Helper\ExecRuleHelper;
 use Joomla\Registry\Registry;
 
 /**
@@ -4706,5 +4708,68 @@ class EmundusHelperUpdate
 		}
 
 		return true;
+	}
+
+	public static function createSchedulerTask($title,$type,$execution_rules,$cron_rules,$params = [],$state = 1)
+	{
+		$task_created = false;
+
+		try
+		{
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true);
+
+			$query->clear()
+				->select('id')
+				->from($db->quoteName('#__scheduler_tasks'))
+				->where($db->quoteName('type') . ' LIKE ' . $db->quote($type));
+			$db->setQuery($query);
+			$task_created = $db->loadResult() > 0;
+
+			if(!$task_created)
+			{
+				$scheduler_table = Factory::getApplication()->bootComponent('com_scheduler')->getMVCFactory()->createTable('Task', 'Administrator');
+
+				$default_params = [
+					'individual_log' => false,
+					'log_file'       => '',
+					'notifications'  => [
+						'success_mail'       => '0',
+						'failure_mail'       => '0',
+						'fatal_failure_mail' => '1',
+						'orphan_mail'        => '1',
+					],
+				];
+				$params = array_merge($params, $default_params);
+
+
+				$basisDayOfMonth           = $execution_rules['exec-day'];
+				[$basisHour, $basisMinute] = explode(':', $execution_rules['exec-time']);
+
+				$last_execution = Factory::getDate('now', 'GMT')->format('Y-m') . "-$basisDayOfMonth $basisHour:$basisMinute:00";
+
+				$data = [
+					'title'           => $title,
+					'execution_rules' => $execution_rules,
+					'cron_rules'      => $cron_rules,
+					'params'          => $params,
+					'last_execution'  => $last_execution,
+					'state'           => $state,
+					'priority'        => 0,
+					'type'            => $type,
+					'created'         => Date::getInstance()->toSql(),
+					'created_by'      => 1,
+				];
+				$data['next_execution'] = (new ExecRuleHelper($data))->nextExec();
+
+				$task_created = $scheduler_table->save($data);
+			}
+		}
+		catch (Exception $e)
+		{
+			echo $e->getMessage();
+		}
+
+		return $task_created;
 	}
 }

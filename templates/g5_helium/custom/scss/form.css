@@ -399,6 +399,10 @@
 
         /* TEXTAREA */
 
+        .fabrik_characters_left:not(.muted) {
+            margin-top: 4px;
+        }
+
         .fabrik_characters_left.muted {
             color: var(--neutral-600);
             display: flex;
