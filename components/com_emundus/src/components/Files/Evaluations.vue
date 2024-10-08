@@ -13,7 +13,7 @@
     </nav>
     <iframe
         v-if="ccid > 0"
-        :src="'/index.php?option=com_fabrik&view=form&formid=' + selectedEvaluation.form_id + '&' + selectedEvaluation.table + '___ccid=' + this.ccid + '&' + selectedEvaluation.table + '___step_id=' + selectedEvaluation.id + '&tmpl=component&iframe=1'"
+        :src="'/evaluator-step?formid=' + selectedEvaluation.form_id + '&' + selectedEvaluation.table + '___ccid=' + this.ccid + '&' + selectedEvaluation.table + '___step_id=' + selectedEvaluation.id + '&tmpl=component&iframe=1'"
         class="tw-w-full tw-h-screen"
         :key="selectedTab"
       >

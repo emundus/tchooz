@@ -3854,7 +3854,7 @@ class EmundusModelApplication extends ListModel
 										$menus[] = [
 											'id' => $workflow->id . $step->id,
 											'title' => $step->label,
-											'link' => 'index.php?option=com_emundus&view=workflows&layout=evaluator_step&format=raw&step_id=' . $step->id,
+											'link' => 'evaluator-step?format=raw&step_id=' . $step->id,
 											'lft' => 9998,
 											'rgt' => 9999,
 											'note' => '1|r',
@@ -4471,8 +4471,8 @@ class EmundusModelApplication extends ListModel
 					$fnum_query->select('cc.fnum')
 						->from($this->_db->quoteName('#__emundus_campaign_candidature', 'cc'))
 						->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'sc') . ' ON ' . $this->_db->quoteName('sc.id') . ' = ' . $this->_db->quoteName('cc.campaign_id'))
-						->leftJoin($db->quoteName('#__emundus_setup_programmes','sp').' ON '.$db->quoteName('sc.training').' = '.$db->quoteName('sp.code'))
-						->where($db->quoteName('sp.id').' IN ('.implode(',',$db->quote($progs_to_check)) . ')')
+						->leftJoin($this->_db->quoteName('#__emundus_setup_programmes','sp').' ON '.$this->_db->quoteName('sc.training').' = '.$this->_db->quoteName('sp.code'))
+						->where($this->_db->quoteName('sp.id').' IN ('.implode(',',$this->_db->quote($progs_to_check)) . ')')
 						->andWhere($this->_db->quoteName('sc.year') . ' = ' . $this->_db->quote($fnumInfos['year']))
 						->andWhere($this->_db->quoteName('cc.applicant_id') . ' = ' . $this->_db->quote($fnumInfos['applicant_id']));
 					$this->_db->setQuery($fnum_query);

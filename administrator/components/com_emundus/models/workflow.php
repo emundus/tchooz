@@ -294,6 +294,40 @@ class EmundusModelAdministratorWorkflow extends JModelList
 				'access' => 7
 			], $parent_id);
 
+			EmundusHelperUpdate::addJoomlaMenu([
+				'menutype' => 'application',
+				'title' => 'Phase de gestion de dossier',
+				'link' => 'index.php?option=com_emundus&view=workflows&layout=evaluatorstep',
+				'alias' => 'evaluator-step',
+				'path' => 'evaluator-step',
+				'type' => 'component',
+				'component_id' => $component_id,
+				'access' => 7,
+				'menu_show' => 0
+			], 8);
+
+			$query->clear()
+				->select('extension_id')
+				->from('#__extensions')
+				->where('type = ' . $db->quote('component'))
+				->where('element = ' . $db->quote('com_fabrik'))
+				->where('name = ' . $db->quote('com_fabrik'));
+
+			$db->setQuery($query);
+			$fabrik_component_id = $db->loadResult();
+
+			EmundusHelperUpdate::addJoomlaMenu([
+				'menutype' => 'application',
+				'title' => 'Evaluation Step Form Menu',
+				'link' => 'index.php?option=com_fabrik&view=form',
+				'alias' => 'evaluation-step-form',
+				'path' => 'evaluation-step-form',
+				'type' => 'component',
+				'component_id' => $fabrik_component_id,
+				'access' => 7,
+				'menu_show' => 0
+			], 8);
+
 			$manifest = '{"name":"Fabrik Form - eMundus Phase \u00e9valuation","type":"plugin","creationDate":"September 2024","author":"J\u00e9r\u00e9my L","copyright":"Copyright (C) 2024 eMundus.fr - All rights reserved.","authorEmail":"jeremy.legendre@emundus.fr","authorUrl":"www.emundus.fr","version":"2.0.0","description":"Gestion d\'acc\u00e8s et des donn\u00e9es soumises pour les phases d\'\u00e9valuation","group":"","filename":"emundusstepevaluation"}';
 			EmundusHelperUpdate::installExtension('Fabrik Form - eMundus Phase évaluation', 'emundusstepevaluation', $manifest, 'plugin', 1, 'fabrik_form');
 			EmundusHelperUpdate::enableEmundusPlugins('emundusstepevaluation');
