@@ -176,7 +176,7 @@ if (!empty($this->custom_title)) :?>
 
 			if ($attachment->has_sample && !empty($attachment->sample_filepath)) {
 				$div .= '<div class="tw-ml-2 tw-mb-2 tw-flex tw-items-center tw-gap-1 attachment_model">
-                            <span>'.Text::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE') . '</span><a class="tw-flex tw-items-center" href="'.Uri::root() . $attachment->sample_filepath.'" target="_blank"> <span> ' . Text::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE_FILE').'</span><span class="material-symbols-outlined tw-ml-2 tw-text-neutral-900">cloud_download</span></a>
+                            <span>'.Text::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE') . '</span><a class="tw-flex tw-items-center" href="'.Uri::root() . $attachment->sample_filepath.'" target="_blank"> <span class="em-text-underline"> ' . Text::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE_FILE').'</span><span class="material-symbols-outlined tw-ml-2 tw-text-neutral-900">cloud_download</span></a>
                          </div>';
 			}
 
