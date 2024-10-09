@@ -135,8 +135,11 @@ export default {
   }),
 
   created() {
-    document.querySelector('body').style.overflow = 'hidden';
-    var r = document.querySelector(':root');
+    if (document.querySelector('body.layout-evaluation')) {
+      document.querySelector('body.layout-evaluation').style.overflow = 'hidden';
+    }
+
+    const r = document.querySelector(':root');
     let ratio_array = this.$props.ratio.split('/');
     r.style.setProperty('--attachment-width', ratio_array[0] + '%');
 
