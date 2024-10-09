@@ -1728,7 +1728,7 @@ const checkElement = async selector => {
 $(document).ready(function() {
     $('#check').removeClass('em-check-all-all');
 
-    const headerNav = document.querySelector('#g-navigation .g-container');
+    const headerNav = document.querySelector('#g-navigation .g-container, #g-header .g-container');
 
     // Fix actions and filters to sticky
     if (headerNav) {
