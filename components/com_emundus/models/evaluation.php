@@ -1301,7 +1301,7 @@ class EmundusModelEvaluation extends JModelList
 				{
 					if ($h_files->isTableLinkedToCampaignCandidature($table_to_join))
 					{
-						$leftJoin .= 'LEFT JOIN ' . $table_to_join . ' ON ' . $table_to_join . '.fnum = jecc.fnum ';
+						$leftJoin .= ' LEFT JOIN ' . $table_to_join . ' ON ' . $table_to_join . '.fnum = jecc.fnum ';
 
 						if (!empty($step_id) && str_starts_with($table_to_join, 'jos_emundus_evaluations_'))
 						{
