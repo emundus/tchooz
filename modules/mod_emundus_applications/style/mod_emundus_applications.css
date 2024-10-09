@@ -793,7 +793,7 @@ circle.circle {
 .mod_emundus_applications___content_app {
     position: relative;
     transition: background-image .3s;
-    height: 286px;
+    height: inherit;
     z-index: 3;
     overflow: hidden;
 }
