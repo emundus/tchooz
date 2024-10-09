@@ -126,9 +126,11 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
                 </thead>
                 <tbody>
 				<?php foreach ($this->datas as $key => $line): ?>
-					<?php if ($key != 0): ?>
+					<?php if ($key != 0):?>
                         <tr>
-							<?php foreach ($line as $k => $value): ?>
+							<?php foreach (array_keys($this->datas[0]) as $k):
+                                $value = $line[$k];
+                                ?>
 								<?php if ($k != 'evaluation_id'): ?>
 
                                     <td <?php if ($k == 'check' && $value->class != null)

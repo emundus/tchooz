@@ -1227,7 +1227,21 @@ class EmundusModelEvaluation extends JModelList
 		$this->_applicants = [];
 		if (!empty($step_ids))  {
 			foreach ($step_ids as $step_id) {
-				$list = array_merge($list, $this->getEvaluationsList($step_id));
+				$list = array_merge($list, $this->getEvaluationsList($step_id, count($step_ids)));
+			}
+			$grouped_list = [];
+			foreach($list as $item) {
+				if (!isset($grouped_list[$item['fnum']])) {
+					$grouped_list[$item['fnum']] = [];
+				}
+				$grouped_list[$item['fnum']][] = $item;
+			}
+
+			$list = [];
+			foreach($grouped_list as $fnum => $items) {
+				foreach ($items as $item) {
+					$list[] = $item;
+				}
 			}
 		} else {
 			$list = $this->getEvaluationsList();
@@ -1236,7 +1250,7 @@ class EmundusModelEvaluation extends JModelList
 		return $list;
 	}
 
-	function getEvaluationsList($step_id = 0)
+	function getEvaluationsList($step_id = 0, $nb_steps = 1)
 	{
 
 		$evaluations_list = [];
@@ -1245,7 +1259,14 @@ class EmundusModelEvaluation extends JModelList
 		$eMConfig                      = JComponentHelper::getParams('com_emundus');
 		$evaluators_can_see_other_eval = $eMConfig->get('evaluators_can_see_other_eval', '0');
 
-		$query    = 'select jecc.fnum, ss.step, ss.value as status, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name, ss.class as status_class, sp.code ';
+		$query    = 'select jecc.fnum, ss.step, ss.value as status, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name, ss.class as status_class, sp.code';
+
+		if (!empty($step_id))
+		{
+			$query .= ', ' . $step_id . ' AS evaluation_step';
+		} else {
+			$query .= ', 0 AS evaluation_step';
+		}
 		$group_by = 'GROUP BY jecc.fnum ';
 
 		$already_joined_tables = [
@@ -1354,6 +1375,24 @@ class EmundusModelEvaluation extends JModelList
 
 			$already_joined_tables[$step_data->table] = $step_data->table;
 		}
+
+		if (!empty($this->_elements_default))
+		{
+			foreach($this->_elements_default as $element) {
+				if (strpos($element, 'jos_emundus_evaluations_') !== false) {
+					if (preg_match('/jos_emundus_evaluations_([0-9]+)\.id/', $element, $matches)) {
+						$evaluation_id = $matches[1];
+						$evaluation_table = 'jos_emundus_evaluations_' . $evaluation_id;
+
+						if (!in_array($evaluation_table, $already_joined_tables)) {
+							$query .= ' LEFT JOIN ' . $evaluation_table . ' ON ' . $evaluation_table . '.fnum = jecc.fnum ';
+							$already_joined_tables[] = $evaluation_table;
+						}
+					}
+				}
+			}
+		}
+
 		$q = $this->_buildWhere($already_joined_tables, $step_id);
 
 		if (!empty($leftJoin))
@@ -1385,12 +1424,26 @@ class EmundusModelEvaluation extends JModelList
 			$this->_applicants = array_merge($this->_applicants, $res);
 			if (empty($current_fnum))
 			{
-				$limit = $session->get('limit');
+				if (!empty($step_id)) {
+					$limit = $session->get('limit');
 
-				$limitStart = $session->get('limitstart');
-				if ($limit > 0)
-				{
-					$query .= " limit $limitStart, $limit ";
+					$limitStart = $session->get('limitstart');
+					if ($limit > 0)
+					{
+						$limit = $limit / $nb_steps;
+						$limitStart = $limitStart / $nb_steps;
+
+
+						$query .= " limit $limitStart, $limit ";
+					}
+				} else {
+					$limit = $session->get('limit');
+
+					$limitStart = $session->get('limitstart');
+					if ($limit > 0)
+					{
+						$query .= " limit $limitStart, $limit ";
+					}
 				}
 			}
 
