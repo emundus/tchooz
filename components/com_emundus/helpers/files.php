@@ -5001,6 +5001,13 @@ class EmundusHelperFiles
 									foreach ($step_ids as $step_id) {
 										$step_data = $m_workflow->getStepData($step_id);
 
+										if (empty($step_data->table)) {
+											$workflow_data = $m_workflow->getWorkflow($step_data->workflow_id);
+											$step_label =  !empty($workflow_data['workflow']) ? $workflow_data['workflow']->label . ' - ' . $step_data->label : $step_data->label;
+											$app->enqueueMessage(sprintf(Text::_('COM_EMUNDUS_BUILD_WHERE_STEP_CONFIGURATION_ERROR'), $step_label), 'warning');
+											continue;
+										}
+
 										$step_table_alias = array_search($step_data->table, $already_joined);
 										if (!in_array($step_data->table, $already_joined)) {
 											// table is name jos_emundus_evaluations_<index>
