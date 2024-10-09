@@ -62,7 +62,7 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 			$this->app->redirect('/');
 		}
 
-		$current_url = '/index.php?option=com_fabrik&view=' . $view . '&formid=' . $form_model->getId() . '&tmpl=component&iframe=1&' . $db_table_name . '___ccid=' . $ccid . '&' . $db_table_name . '___step_id=' . $step_id . '&rowid=' . $current_row_id;
+		$current_url = '/evaluation-step-form?view=' . $view . '&formid=' . $form_model->getId() . '&tmpl=component&iframe=1&' . $db_table_name . '___ccid=' . $ccid . '&' . $db_table_name . '___step_id=' . $step_id . '&rowid=' . $current_row_id;
 		$final_url = $current_url;
 
 		if (!empty($step_data) && $can_edit && $view === 'form') {
