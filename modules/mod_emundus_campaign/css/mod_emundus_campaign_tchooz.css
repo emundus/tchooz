@@ -624,6 +624,14 @@ p[id*="mod_emundus_campaign__tchoozy_tab_desc"] {
     line-height: 160%;
 }
 
+.single-campaign div a {
+    text-decoration: underline;
+}
+
+.single-campaign div a:hover {
+    text-decoration: none;
+}
+
 .tchooz-single-campaign #campaign p {
     line-height: normal;
     color: var(--neutral-900);
