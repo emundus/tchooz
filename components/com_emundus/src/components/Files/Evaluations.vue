@@ -14,7 +14,7 @@
     <iframe
         v-if="ccid > 0"
         :src="'/evaluation-step-form?formid=' + selectedEvaluation.form_id + '&' + selectedEvaluation.table + '___ccid=' + this.ccid + '&' + selectedEvaluation.table + '___step_id=' + selectedEvaluation.id + '&tmpl=component&iframe=1'"
-        class="tw-w-full tw-h-screen"
+        class="tw-w-full iframe-evaluation"
         :key="selectedTab"
       >
     </iframe>
@@ -72,5 +72,9 @@ export default {
 
 
 <style scoped>
-
+  .iframe-evaluation {
+    width: 100%;
+    height: calc(100% - 124px);
+    border: unset;
+  }
 </style>

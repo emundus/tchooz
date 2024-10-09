@@ -3295,6 +3295,12 @@ hr {
 .messages__vue_attach_document {
   background: #f8f8f8;
 }
+.iframe-evaluation[data-v-8a1574e1] {
+    width: 100%;
+    height: calc(100% - 124px);
+    border: unset;
+}
+
 .modal-grid {
   display: grid;
   grid-gap: 16px;
