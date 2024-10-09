@@ -293,7 +293,7 @@ defined('_JEXEC') or die;
 
         <li class="g-menu-item g-standard tchooz-vertical-item">
             <a class="item" onclick="enableTitles()">
-                <img src="./images/emundus/menus/menu.png" style="width: 30px">
+                <img src="./images/emundus/menus/menu.png" style="width: 30px" alt="<?php echo JText::_('MOD_EMUNDUSMENU_ITEM_MENU') ?>">
                 <span class="image-title"
                       style="display: block; opacity: 1;"><?php echo JText::_('MOD_EMUNDUSMENU_ITEM_MENU') ?></span>
             </a>
