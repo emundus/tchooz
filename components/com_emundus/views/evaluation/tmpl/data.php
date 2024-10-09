@@ -131,7 +131,7 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
 							<?php foreach (array_keys($this->datas[0]) as $k):
                                 $value = $line[$k];
                                 ?>
-								<?php if ($k != 'evaluation_id'): ?>
+								<?php if ($k != 'evaluation_id' && $k != 'evaluations_step_id'): ?>
 
                                     <td <?php if ($k == 'check' && $value->class != null)
 									{

@@ -56,6 +56,7 @@ class EmundusViewEvaluation extends JViewLegacy
 		require_once(JPATH_ROOT . '/components/com_emundus/helpers/filters.php');
 		require_once(JPATH_ROOT . '/components/com_emundus/models/users.php');
 		require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+		require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
 
 		$this->app   = Factory::getApplication();
 		$this->_user = $this->app->getIdentity();
@@ -199,7 +200,7 @@ class EmundusViewEvaluation extends JViewLegacy
 				$this->datas                        = array(array('check' => '#', 'fnum' => Text::_('COM_EMUNDUS_FILES_APPLICATION_FILES'), 'status' => Text::_('COM_EMUNDUS_STATUS')));
 				$fl                                 = array();
 				$fl['evaluator'] = Text::_('COM_EMUNDUS_EVALUATION_EVALUATOR');
-				$fl['evaluations_step'] = Text::_('COM_EMUNDUS_EVALUATION_EVAL_STEP');
+				$fl['evaluations_step_label'] = Text::_('COM_EMUNDUS_EVALUATION_EVAL_STEP');
 				// Get eval crieterion
 				if (count($defaultElements) > 0) {
 					foreach ($defaultElements as $key => $elt) {
@@ -255,16 +256,33 @@ class EmundusViewEvaluation extends JViewLegacy
 					}
 
 					$i = 0;
+
+					$m_workflow = new EmundusModelWorkflow();
+
 					foreach ($this->users as $user) {
 						$usObj       = new stdClass();
 						$usObj->val  = 'X';
 						$fnumArray[] = $user['fnum'];
+
 						// get evaluation form ID
 
-						$this->formid = $m_evaluation->getEvaluationFormByProgramme($user['code']);
+						if (!empty($user['evaluations_step_id'])) {
+							$step_data = $m_workflow->getStepData($user['evaluations_step_id']);
+						} else {
+							$step_data = [];
+						}
 
-						$form_url_view       = 'index.php?option=com_fabrik&c=form&view=details&formid=' . $this->formid . '&tmpl=component&iframe=1&rowid=';
-						$this->form_url_edit = 'index.php?option=com_fabrik&c=form&view=form&formid=' . $this->formid . '&tmpl=component&iframe=1&rowid=';
+						$current_row_form = $this->formid;
+						if (!empty($step_data)) {
+							$ccid = EmundusHelperFiles::getIdFromFnum($user['fnum']);
+							$current_row_form = $step_data->form_id;
+							$form_url_view       = 'evaluation-step-form?view=details&formid=' . $step_data->form_id . '&tmpl=component&iframe=1&' . $step_data->table . '___ccid=' . $ccid. '&' . $step_data->table . '___step_id=' . $step_data->id . '&rowid=';
+							$this->form_url_edit = 'evaluation-step-form?formid=' . $step_data->form_id . '&tmpl=component&iframe=1&' . $step_data->table . '___ccid=' . $ccid. '&' . $step_data->table . '___step_id=' . $step_data->id . '&rowid=';
+						} else {
+							$form_url_view       = '';
+							$this->form_url_edit = '';
+						}
+
 						$line                = array('check' => $usObj);
 
 						if (array_key_exists($user['fnum'], $taggedFile)) {
@@ -300,7 +318,9 @@ class EmundusViewEvaluation extends JViewLegacy
 							}
 							elseif ($key == 'evaluator') {
 
-								if ($this->formid > 0 && !empty($value)) {
+								if ($current_row_form > 0 && !empty($value)) {
+									$link_view = '';
+									$link_edit = '';
 
 									if ($evaluators_can_see_other_eval || EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id)) {
 										$link_view = '<a href="' . $form_url_view . $user['evaluation_id'] . '" target="_blank" data-remote="' . $form_url_view . $user['evaluation_id'] . '" id="em_form_eval_' . $i . '-' . $user['evaluation_id'] . '"><span class="glyphicon icon-eye-open" title="' . Text::_('COM_EMUNDUS_DETAILS') . '">  </span></a>';
@@ -310,7 +330,7 @@ class EmundusViewEvaluation extends JViewLegacy
 										$link_edit = '<a href="' . $this->form_url_edit . $user['evaluation_id'] . '" target="_blank"><span class="glyphicon icon-edit" title="' . Text::_('COM_EMUNDUS_ACTIONS_EDIT') . '"> </span></a>';
 									}
 
-									$userObj->val = @$link_view . ' ' . @$link_edit . ' ' . $value;
+									$userObj->val = $link_view . ' ' . $link_edit . ' ' . $value;
 
 								}
 								else {

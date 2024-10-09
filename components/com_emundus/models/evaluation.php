@@ -1280,11 +1280,11 @@ class EmundusModelEvaluation extends JModelList
 			$already_joined_tables[$step_data->table] = $step_data->table;
 
 			$query .= ', ' . $step_data->table . '.id as evaluation_id,  CONCAT(eue.lastname," ",eue.firstname) AS evaluator ';
-			$query .= ', ' . $this->db->quote($step_data->label) . ' AS evaluations_step';
+			$query .= ', ' . $this->db->quote($step_data->label) . ' AS evaluations_step_label, ' . $step_data->id . ' AS evaluations_step_id ';
 			$group_by = 'GROUP BY evaluation_id';
 		} else {
 			$query .= ', 0 as evaluation_id, " " as evaluator ';
-			$query .= ', 0 AS evaluations_step';
+			$query .= ', "" AS evaluations_step_label, 0 AS evaluations_step_id ';
 		}
 
 		$leftJoin = '';
