@@ -1260,13 +1260,6 @@ class EmundusModelEvaluation extends JModelList
 		$evaluators_can_see_other_eval = $eMConfig->get('evaluators_can_see_other_eval', '0');
 
 		$query    = 'select jecc.fnum, ss.step, ss.value as status, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name, ss.class as status_class, sp.code';
-
-		if (!empty($step_id))
-		{
-			$query .= ', ' . $step_id . ' AS evaluation_step';
-		} else {
-			$query .= ', 0 AS evaluation_step';
-		}
 		$group_by = 'GROUP BY jecc.fnum ';
 
 		$already_joined_tables = [
@@ -1286,10 +1279,12 @@ class EmundusModelEvaluation extends JModelList
 
 			$already_joined_tables[$step_data->table] = $step_data->table;
 
-			$query    .= ', ' . $step_data->table . '.id as evaluation_id,  CONCAT(eue.lastname," ",eue.firstname) AS evaluator ';
+			$query .= ', ' . $step_data->table . '.id as evaluation_id,  CONCAT(eue.lastname," ",eue.firstname) AS evaluator ';
+			$query .= ', ' . $this->db->quote($step_data->label) . ' AS evaluations_step';
 			$group_by = 'GROUP BY evaluation_id';
 		} else {
 			$query .= ', 0 as evaluation_id, " " as evaluator ';
+			$query .= ', 0 AS evaluations_step';
 		}
 
 		$leftJoin = '';
