@@ -331,9 +331,16 @@ class DropfilesControllerDropbox extends JControllerAdmin
      */
     public function authenticated()
     {
+        if (!class_exists('DropfilesModelOptions')) {
+            JLoader::register('DropfilesModelOptions', JPATH_ADMINISTRATOR . '/components/com_dropfiles/models/options.php');
+        }
+
         $dropbox = new DropfilesDropbox;
         $result = $dropbox->authorization();
+        $options = new DropfilesModelOptions();
         if ($result) {
+            // Enable flag for syncing
+            $options->update_option('dropfiles_dropbox_sync_after_connecting', true);
             $this->setRedirect('index.php?option=com_dropfiles&view=dropbox&layout=redirect');
             $this->redirect();
         }

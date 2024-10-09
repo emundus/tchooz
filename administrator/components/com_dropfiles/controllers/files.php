@@ -24,6 +24,12 @@ jimport('joomla.filesystem.file');
  */
 class DropfilesControllerFiles extends JControllerForm
 {
+    /**
+     * Debug mode
+     *
+     * @var string
+     */
+    public $debug = false;
 
     /**
      * Allow extension
@@ -156,6 +162,8 @@ class DropfilesControllerFiles extends JControllerForm
         $modelCat = $this->getModel('category');
         $category = $modelCat->getCategory($id_category);
 
+        $params = JComponentHelper::getParams('com_dropfiles');
+        $autoGeneratePreview = (int)$params->get('auto_generate_preview', 0);
         if (!class_exists('DropfilesModelGeneratepreview')) {
             $modelGeneratePreviewPath = JPATH_ADMINISTRATOR . '/components/com_dropfiles/models/generatepreview.php';
             JLoader::register('DropfilesModelGeneratepreview', $modelGeneratePreviewPath);
@@ -167,6 +175,7 @@ class DropfilesControllerFiles extends JControllerForm
             $path_admin_component = JPATH_ADMINISTRATOR . '/components/com_dropfiles/helpers/component.php';
             JLoader::register('DropfilesComponentHelper', $path_admin_component);
         }
+
 
         $isPending = DropfilesHelper::pendingUploadStatus($id_category);
         $pendingList = (array) DropfilesComponentHelper::getParam('_dropfiles_pending_upload_files', array());
@@ -442,8 +451,10 @@ class DropfilesControllerFiles extends JControllerForm
                                 DropfilesComponentHelper::setParams(array('_dropfiles_pending_upload_files' => $pendingList));
                             }
 
-                            // Add file to queue
-                            $generatePreview->addFileToQueue($id_file);
+                            if ($autoGeneratePreview) {
+                                // Add file to queue
+                                $generatePreview->addFileToQueue($id_file);
+                            }
                         }
                         // Update files counter
                         $categoriesModel = $this->getModel('Categories', 'DropfilesModel');
@@ -1002,6 +1013,103 @@ class DropfilesControllerFiles extends JControllerForm
                     $file_data['created_time']  = date('Y-m-d H:i:s', strtotime($result['client_modified']));
                     $file_data['modified_time'] = date('Y-m-d H:i:s', strtotime($result['server_modified']));
                     $modelDropbox->save($file_data);
+                }
+            } else {
+                // Try to upload and remove previous file(s)
+                $dropbox = new DropfilesDropbox();
+                list($tem, $file) = $dropbox->downloadDropbox($id_file);
+                $catpath_dest = DropfilesBase::getFilesPath($id_category);
+
+                if (!file_exists($catpath_dest)) {
+                    JFolder::create($catpath_dest);
+                    $data = '<html><body bgcolor="#FFFFFF"></body></html>';
+                    JFile::write($catpath_dest . 'index.html', $data);
+                    $data = 'deny from all';
+                    JFile::write($catpath_dest . '.htaccess', $data);
+                }
+
+                $newname = uniqid() . '.' . JFile::getExt($file['name']);
+
+                ob_start();
+                header('Content-Disposition: attachment; filename="' . $file['name'] . '"');
+                header('Content-Description: File Transfer');
+                header('Content-Type: application/octet-stream');
+                header('Content-Transfer-Encoding: binary');
+                header('Expires: 0');
+                header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+                header('Pragma: public');
+                header('Content-Length: ' . (int) $file['size']);
+
+                echo readfile($tem);
+                unlink($tem);
+                $data = ob_get_clean();
+                file_put_contents($catpath_dest . $newname, $data);
+
+                $modelDropbox = $this->getModel('dropboxfiles');
+                $f_name = isset($file['name']) ? $file['name'] : '';
+                $result2 = $dropbox->uploadFile($f_name, $catpath_dest . $newname, filesize($catpath_dest . $newname), $target_category->path);
+
+                if ($result2) {
+                    $file_data                  = array();
+                    $file_data['id']            = 0;
+                    $file_data['title']         = JFile::stripExt($result2['name']);
+                    $file_data['file_id']       = $result2['id'];
+                    $file_data['ext']           = strtolower(JFile::getExt($result2['name']));
+                    $file_data['size']          = $result2['size'];
+                    $file_data['catid']         = $target_category->cloud_id;
+                    $file_data['path']          = $result2['path_lower'];
+                    $file_data['created_time']  = date('Y-m-d H:i:s', strtotime($result2['client_modified']));
+                    $file_data['modified_time'] = date('Y-m-d H:i:s', strtotime($result2['server_modified']));
+                    $saved = $modelDropbox->save($file_data);
+
+                    // Remove old picture
+                    if ($dropbox->deleteFileDropbox($id_file)) {
+                        $modelDropbox->deleteFile($id_file);
+                    }
+                } else {
+                    $result3 = $dropbox->uploadFile($f_name, $catpath_dest . $newname, filesize($catpath_dest . $newname), $target_category->path);
+
+                    if ($result3) {
+                        $file_data                  = array();
+                        $file_data['id']            = 0;
+                        $file_data['title']         = JFile::stripExt($result3['name']);
+                        $file_data['file_id']       = $result3['id'];
+                        $file_data['ext']           = strtolower(JFile::getExt($result3['name']));
+                        $file_data['size']          = $result3['size'];
+                        $file_data['catid']         = $target_category->cloud_id;
+                        $file_data['path']          = $result3['path_lower'];
+                        $file_data['created_time']  = date('Y-m-d H:i:s', strtotime($result3['client_modified']));
+                        $file_data['modified_time'] = date('Y-m-d H:i:s', strtotime($result3['server_modified']));
+                        $saved = $modelDropbox->save($file_data);
+
+                        // Remove old picture
+                        if ($dropbox->deleteFileDropbox($id_file)) {
+                            $modelDropbox->deleteFile($id_file);
+                        }
+                    } else {
+                        $result4 = $dropbox->uploadFile($f_name, $catpath_dest . $newname, filesize($catpath_dest . $newname), $target_category->path);
+
+                        if ($result4) {
+                            $file_data                  = array();
+                            $file_data['id']            = 0;
+                            $file_data['title']         = JFile::stripExt($result4['name']);
+                            $file_data['file_id']       = $result4['id'];
+                            $file_data['ext']           = strtolower(JFile::getExt($result4['name']));
+                            $file_data['size']          = $result4['size'];
+                            $file_data['catid']         = $target_category->cloud_id;
+                            $file_data['path']          = $result4['path_lower'];
+                            $file_data['created_time']  = date('Y-m-d H:i:s', strtotime($result4['client_modified']));
+                            $file_data['modified_time'] = date('Y-m-d H:i:s', strtotime($result4['server_modified']));
+                            $modelDropbox->save($file_data);
+
+                            // Remove old picture
+                            if ($dropbox->deleteFileDropbox($id_file)) {
+                                $modelDropbox->deleteFile($id_file);
+                            }
+                        } else {
+                            $this->writeLog('Can not move the file name ' . $f_name);
+                        }
+                    }
                 }
             }
         } elseif ($active_category->type === 'googledrive' && $target_category->type === 'dropbox') {
@@ -3051,8 +3159,9 @@ class DropfilesControllerFiles extends JControllerForm
             $email_body     = str_replace('{website_url}', JUri::root(), $email_body);
             $email_body     = str_replace('{file_name}', $file->title, $email_body);
             $uploader       = JFactory::getUser($file->author);
-            $email_body     = str_replace('{uploader_username}', $uploader->name, $email_body);
-
+            if (!is_null($uploader->name)) {
+                $email_body     = str_replace('{uploader_username}', $uploader->name, $email_body);
+            }
             $currentUser    = JFactory::getUser();
             $email_body     = str_replace('{username}', $currentUser->name, $email_body);
 
@@ -3109,8 +3218,15 @@ class DropfilesControllerFiles extends JControllerForm
         $modelCat = $this->getModel('category');
         $category = $modelCat->getCategory($idcat);
         $this->canEdit($category->id);
+        $fileOrdering = (array) json_decode($files);
+        $correctOrdering = array();
+
+        if (!class_exists('DropfilesModelOptions')) {
+            JLoader::register('DropfilesModelOptions', JPATH_ADMINISTRATOR . '/components/com_dropfiles/models/options.php');
+        }
 
         $files = json_decode($files);
+        $multipleFiles = array();
 
         if ($category->type === 'googledrive') {
             //$google = new DropfilesGoogle();
@@ -3158,13 +3274,21 @@ class DropfilesControllerFiles extends JControllerForm
             foreach ($files as $key => $file) {
                 $f = $model->getFile($file);
                 if ($f->catid !== $category->id) {
-                    $filesok = false;
-                    break;
+                    $multipleFiles[$file] = $key;
+                    unset($files->$key);
                 }
             }
 
             if ($filesok) {
                 if ($model->reorder($files)) {
+                    if (!empty($multipleFiles) && is_array($fileOrdering) && !empty($fileOrdering)) {
+                        $options = new DropfilesModelOptions();
+                        foreach ($fileOrdering as $fileIndex => $fileId) {
+                            $correctOrdering[strval($fileId)] = strval($fileIndex);
+                        }
+
+                        $options->update_option('dropfiles_custom_ordering_' . $category->id, json_encode($correctOrdering));
+                    }
                     $return = true;
                 } else {
                     $return = false;
@@ -3447,5 +3571,54 @@ class DropfilesControllerFiles extends JControllerForm
         }
 
         return null;
+    }
+
+    /**
+     * Write logs
+     *
+     * @param object|mixed $messages Messages
+     *
+     * @return void
+     */
+    public function writeLog($messages = '')
+    {
+        if ($this->debug) {
+            $ds            = DIRECTORY_SEPARATOR;
+            $dateString    = date('Y-m-d H:i:s');
+            $fileAddress   = '';
+            $logFolderPath = JPATH_ROOT . $ds . 'administrator' . $ds . 'logs';
+            $logFileName   = $logFolderPath . $ds . 'dropfiles_controller_files.php';
+
+            if ($fileAddress) {
+                $fileAddress = ' ' . $fileAddress;
+            }
+
+            // Log message
+            $message = sprintf('[%s]%s: %s', $dateString, $fileAddress, $messages);
+
+            // Push logs
+            $this->writeMessage($message, $logFileName);
+        }
+    }
+
+    /**
+     * WriteMessage
+     *
+     * @param string $message  Message
+     * @param string $fileName Destination file name
+     *
+     * @return void|mixed
+     */
+    public function writeMessage($message = '', $fileName = '') // phpcs:ignore PEAR.Functions.ValidDefaultValue.NotAtEnd -- it worked
+    {
+        if (!file_exists($fileName)) {
+            $hl = fopen($fileName, 'w');
+            fwrite($hl, " Start log: \n");
+            fclose($hl);
+        } else {
+            $hl = fopen($fileName, 'a');
+            fwrite($hl, $message . "\n");
+            fclose($hl);
+        }
     }
 }

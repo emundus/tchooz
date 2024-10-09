@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="3.1" type="plugin" group="search" method="upgrade">
     <name>Search - Dropfiles</name>
-    <creationDate>2023-03-02 03:58:44</creationDate>
+    <creationDate>2024-09-06 02:57:33</creationDate>
     <author>JoomUnited</author>
     <authorEmail>contact@joomunited.com</authorEmail>
     <authorUrl>http://www.joomunited.com</authorUrl>
     <copyright/>
     <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
-    <version>6.1.5</version>
+    <version>6.4.1</version>
     <description>Content search plugin for Dropfiles</description>
     <files>
         <filename plugin="dropfiles">dropfiles.php</filename>

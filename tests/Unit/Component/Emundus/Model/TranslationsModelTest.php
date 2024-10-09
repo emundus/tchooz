@@ -12,6 +12,12 @@ namespace Unit\Component\Emundus\Model;
 use Joomla\CMS\Factory;
 use Joomla\Tests\Unit\UnitTestCase;
 
+/**
+ * @package     Unit\Component\Emundus\Model
+ *
+ * @since       version 1.0.0
+ * @covers      EmundusModelTranslations
+ */
 class TranslationsModelTest extends UnitTestCase
 {
 	public function __construct(?string $name = null, array $data = [], $dataName = '', $className = null)
@@ -19,6 +25,11 @@ class TranslationsModelTest extends UnitTestCase
 		parent::__construct('translations', $data, $dataName, 'EmundusModelTranslations');
 	}
 
+	/**
+	 * @covers EmundusModelTranslations::insertTranslation
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testInsertTranslation()
 	{
 		// Test insert translation with empty key return false
@@ -48,6 +59,11 @@ class TranslationsModelTest extends UnitTestCase
 		}
 	}
 
+	/**
+	 * @covers EmundusModelTranslations::getTranslations
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testGetTranslations()
 	{
 		// TEST 1 - GET ALL FABRIK TRANSLATIONS BY DEFAULT
@@ -81,6 +97,11 @@ class TranslationsModelTest extends UnitTestCase
 		$this->assertNotEmpty($this->model->getTranslations('override', '*', 'Mon élément'));
 	}
 
+	/**
+	 * @covers EmundusModelTranslations::updateTranslation
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testUpdateTranslations()
 	{
 		$override_original_file_size = filesize(JPATH_SITE . '/language/overrides/fr-FR.override.ini');
@@ -105,42 +126,82 @@ class TranslationsModelTest extends UnitTestCase
 		//$this->assertSame(true,$this->model->updateTranslation('COM_EMUNDUS_EMAIL','Un nouvel email','fr-FR','component'));
 	}
 
+	/**
+	 * @covers EmundusModelTranslations::deleteTranslation
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testDeleteTranslations()
 	{
 		// TEST 1 - Delete translation that we manage in other tests
 		$this->assertSame(true, $this->model->deleteTranslation('ELEMENT_TEST'));
 	}
 
+	/**
+	 * @covers EmundusModelTranslations::getTranslationsObject
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testgetTranslationsObject()
 	{
 		$this->assertIsArray($this->model->getTranslationsObject());
 	}
 
+	/**
+	 * @covers EmundusModelTranslations::getDefaultLanguage
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testgetDefaultLanguage()
 	{
 		$this->assertIsObject($this->model->getDefaultLanguage());
 	}
 
+	/**
+	 * @covers EmundusModelTranslations::getAllLanguages
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testgetAllLanguages()
 	{
 		$this->assertIsArray($this->model->getAllLanguages());
 	}
 
+	/**
+	 * @covers EmundusModelTranslations::getOrphelins
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testgetOrphelins()
 	{
 		$this->assertIsArray($this->model->getOrphelins('fr-FR', 'en-GB'));
 	}
 
+	/**
+	 * @covers EmundusModelTranslations::checkSetup
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testCheckSetup()
 	{
 		$this->assertNotNull($this->model->checkSetup());
 	}
 
+	/**
+	 * @covers EmundusModelTranslations::getPlatformLanguages
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testGetPlatformLanguages()
 	{
 		$this->assertNotEmpty($this->model->getPlatformLanguages());
 	}
 
+	/**
+	 * @covers EmundusModelTranslations::checkTagIsCorrect
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testCheckTagIsCorrect()
 	{
 		$this->assertFalse($this->model->checkTagIsCorrect('', 'Ma traduction', 'insert', 'fr'));
@@ -148,6 +209,11 @@ class TranslationsModelTest extends UnitTestCase
 		$this->assertTrue($this->model->checkTagIsCorrect('MON_ELEMENT', 'Ma traduction', 'insert', 'fr'));
 	}
 
+	/**
+	 * @covers EmundusModelTranslations::getTranslationsFalang
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testgetTranslationsFalang()
 	{
 		$reference_id = rand(1, 9999);

@@ -4,6 +4,7 @@
   border: 1px solid #ddd;
   border-color: #ddd !important;
   background-color: $white-color;
+  color: $setting-color;
   height: auto;
   @include borderRadius($small-radius);
 

@@ -202,7 +202,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                         Swal.fire({
                             icon: 'error',
                             title: Joomla.JText._('PLG_ELEMENT_FIELD_ERROR'),
-                            text: Joomla.JText._('PLG_ELEMENT_FIELD_SIZE') + result[j].maxSize,
+                            text: Joomla.JText._('PLG_ELEMENT_FIELD_SIZE') + res[j].maxSize,
                             customClass: {
                                 title: 'em-swal-title',
                                 confirmButton: 'em-swal-confirm-button',

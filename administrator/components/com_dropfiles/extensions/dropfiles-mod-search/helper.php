@@ -32,7 +32,15 @@ class ModDropfilesSearchHelper
         DropfilesBase::loadLanguage();
 
         JHtml::_('jquery.framework');
-        JHtml::_('formbehavior.chosen', '.chzn-select');
+        if (DropfilesBase::isJoomla40()) {
+            $doc = JFactory::getDocument();
+            $doc->addScript(JURI::root() . 'components/com_dropfiles/assets/js/chosen.jquery.min.js');
+            $doc->addStyleSheet(JURI::root() . 'components/com_dropfiles/assets/css/chosen.css');
+        } else {
+            JHTML::_('behavior.formvalidation');
+            JHtml::_('formbehavior.chosen', '.chzn-select');
+        }
+
         $doc = JFactory::getDocument();
         $doc->addStyleSheet(JUri::base() . 'components/com_dropfiles/assets/css/ui-lightness/jquery-ui-1.13.0.min.css');
         $doc->addStyleSheet(JUri::base() . 'components/com_dropfiles/assets/css/jquery.tagit.css');

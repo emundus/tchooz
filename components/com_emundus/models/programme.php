@@ -469,9 +469,10 @@ class EmundusModelProgramme extends ListModel
 				$fullRecherche     = $rechercheLbl . ' OR ' . $rechercheNotes . ' OR ' . $rechercheCategory;
 			}
 
-			$query->select(['p.*', 'COUNT(sc.id) AS nb_campaigns'])
+			$query->select(['p.*', 'COUNT(sc.id) AS nb_campaigns', 'GROUP_CONCAT(DISTINCT espl.lang_id) AS language_ids'])
 				->from($this->_db->quoteName('#__emundus_setup_programmes', 'p'))
 				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'sc') . ' ON ' . $this->_db->quoteName('sc.training') . ' LIKE ' . $this->_db->quoteName('p.code'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_programs_languages', 'espl') . ' ON ' . $this->_db->quoteName('espl.program_id') . ' = ' . $this->_db->quoteName('p.id'))
 				->where($filterDate)
 				->where($fullRecherche)
 				->andWhere($this->_db->quoteName('p.code') . ' IN (' . implode(',', $this->_db->quote($programs)) . ')')
@@ -486,6 +487,11 @@ class EmundusModelProgramme extends ListModel
 
 				$programs = $this->_db->loadObjectList();
 
+				foreach ($programs as $key => $program) {
+					if (!empty($program->language_ids)) {
+						$programs[$key]->language_ids = explode(',', $program->language_ids);
+					}
+				}
 				$all_programs['datas'] = $programs;
 			}
 			catch (Exception $e) {

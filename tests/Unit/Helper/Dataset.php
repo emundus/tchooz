@@ -149,10 +149,59 @@ class Dataset
 		return $deleted;
 	}
 
-	public function createSampleTag(){
+	public function createSampleTag()
+	{
 		$m_settings = new EmundusModelSettings;
 
 		return $m_settings->createTag()->id;
+	}
+
+	public function deleteSampleTag($id)
+	{
+		$deleted = false;
+		if (!empty($id)) {
+			$query = $this->db->getQuery(true);
+
+			$query->delete('#__emundus_setup_action_tag')
+				->where('id = ' . $id);
+
+			$this->db->setQuery($query);
+			$deleted = $this->db->execute();
+		}
+
+		return $deleted;
+	}
+
+	public function createSampleComment($fnum, $aid, $uid, $reason = 'Test unitaire', $comment_body = 'Commentaire pour un test unitaire')
+	{
+		if(!class_exists('EmundusModelApplication')){
+			include_once(JPATH_SITE . '/components/com_emundus/models/application.php');
+		}
+		$m_application = new \EmundusModelApplication;
+
+		$row['fnum'] = $fnum;
+		$row['applicant_id'] = $aid;
+		$row['user_id'] = $uid;
+		$row['reason'] = $reason;
+		$row['comment_body'] = $comment_body;
+
+		return $m_application->addComment($row);
+	}
+
+	public function deleteSampleComment($id)
+	{
+		$deleted = false;
+		if (!empty($id)) {
+			$query = $this->db->getQuery(true);
+
+			$query->delete('#__emundus_comments')
+				->where('id = ' . $id);
+
+			$this->db->setQuery($query);
+			$deleted = $this->db->execute();
+		}
+
+		return $deleted;
 	}
 
 	public function createSampleStatus(){

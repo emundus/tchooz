@@ -15,6 +15,8 @@
 //-- No direct access
 defined('_JEXEC') || die('=;)');
 use Joomla\CMS\Router\Router;
+use Joomla\CMS\Plugin\CMSPlugin as JPlugin;
+use Joomla\CMS\Factory as JFactory;
 
 /**
  * Content Plugin.
@@ -87,6 +89,7 @@ class PlgSystemDropfiles extends JPlugin
             $uri->setVar('task', 'frontfile.download');
             $uri->setVar('catid', $path[$dropfilesUriSegs]);
             $uri->setVar('id', $path[$dropfilesUriSegs + 2]);
+           // $uri->setVar('template', 'dropfilesfrontend');
             $uri->setVar('Itemid', 1000000000000);
             $app = JFactory::getApplication();
             $app->redirect($uri->base() . 'index.php?' . $uri->getQuery());

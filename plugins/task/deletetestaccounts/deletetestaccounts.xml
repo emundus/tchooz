@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="plugin" group="task" method="upgrade">
+	<name>plg_task_deletetestaccounts</name>
+	<author>eMundus</author>
+	<creationDate>2024-10</creationDate>
+	<copyright>(C) 2024 Open Source Matters, Inc.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>dev@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>2.0.0</version>
+	<description>PLG_TASK_DELETETESTACCOUNTS_XML_DESCRIPTION</description>
+	<namespace path="src">Joomla\Plugin\Task\DeleteTestAccounts</namespace>
+	<files>
+		<folder>forms</folder>
+		<folder plugin="deletetestaccounts">services</folder>
+		<folder>src</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">language/en-GB/plg_task_deletetestaccounts.ini</language>
+		<language tag="en-GB">language/en-GB/plg_task_deletetestaccounts.sys.ini</language>
+	</languages>
+</extension>

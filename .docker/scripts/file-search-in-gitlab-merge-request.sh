@@ -37,9 +37,27 @@ PROJECT_ID=$3
 MERGE_REQUEST_IID=$4
 FILE=$5
 
-# Get changes in merge request
-git_query=$(curl --silent --location --request GET $(echo $GITLAB_URL)'/api/v4/projects/'$(echo $PROJECT_ID)'/merge_requests/'$(echo $MERGE_REQUEST_IID)'/changes?per_page=500' --header 'PRIVATE-TOKEN: '$(echo $GITLAB_TOKEN))
-changed_files=$(echo $git_query | jq -r '.changes[] | .new_path')
+# Get the list of modified files in the merge request with the Gitlab API
+page=1
+changed_files=""
+while true; do
+    result=$(curl --silent --location --request GET $(echo $GITLAB_URL)'/api/v4/projects/'$(echo $PROJECT_ID)'/merge_requests/'$(echo $MERGE_REQUEST_IID)'/diffs?page='$(echo $page)'' --header 'PRIVATE-TOKEN: '$(echo $GITLAB_TOKEN))
+
+    # Check if the API returns an empty array (end of the list of modified files)
+    if [[ $(echo "$result" | jq '. | length') -eq 0 ]]; then
+        break
+    fi
+
+    # Extract the list of modified files
+    new_files=$(echo "$result" | jq -r '.[].new_path')
+
+    # Concatenate new files with the previous list of files
+    changed_files="${changed_files}${new_files}"$'\n'
+
+    # Set the page number to the next page
+    page=$((page + 1))
+
+done
 
 # Check that the file is present in the list of modified files and alerts with a shell error code if missing
 if [[ $(echo $changed_files | grep "$FILE") ]]; then

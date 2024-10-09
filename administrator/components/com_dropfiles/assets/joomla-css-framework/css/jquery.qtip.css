@@ -575,3 +575,7 @@ x:-o-prefocus,
 .dropfiles-qtip-dashboard {
 	max-width: 450px !important;
 }
+
+.dropfiles-qtip-dashboard .docman h3 {
+	color: #fafafa !important;
+}

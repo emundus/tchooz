@@ -62,6 +62,9 @@ class EmundusHelperCache
 		}
 	}
 
+	/**
+	 * @codeCoverageIgnore
+	 */
 	public function isEnabled()
 	{
 		return $this->cache_enabled;
@@ -114,6 +117,9 @@ class EmundusHelperCache
 		return $cleaned;
 	}
 
+	/**
+	 * @codeCoverageIgnore
+	 */
 	public static function getCurrentGitHash()
 	{
 		$hash          = '';
@@ -138,7 +144,9 @@ class EmundusHelperCache
 		return $hash;
 	}
 
-
+	/**
+	 * @codeCoverageIgnore
+	 */
 	private function deleteDir($group) {
 		$dirPath = JPATH_ADMINISTRATOR . '/cache/' . $group;
 

@@ -16,7 +16,7 @@
 defined('_JEXEC') || die;
 jimport('joomla.filesystem.file');
 
-require_once JPATH_ADMINISTRATOR  . '/components/com_dropfiles/classes/OneDriveBusiness/packages/autoload.php';
+require_once JPATH_ADMINISTRATOR  . '/components/com_dropfiles/classes/vendor/autoload.php';
 
 use GuzzleHttp\Client as GuzzleHttpClient;
 use Krizalys\Onedrive\Client;
@@ -707,6 +707,9 @@ class DropfilesOneDrive
         try {
             $client = $this->getClient();
             if (!$client) {
+                return false;
+            }
+            if (empty($this->params->onedrive_credentials)) {
                 return false;
             }
             if ($client->getAccessTokenStatus() === AccessTokenStatus::VALID) {

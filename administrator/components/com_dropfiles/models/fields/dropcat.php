@@ -30,6 +30,13 @@ class JFormFieldDropcat extends JFormFieldList
     protected $type = 'Dropcat';
 
     /**
+     * The hideNone.
+     *
+     * @var boolean
+     */
+    protected $hideNone = false;
+
+    /**
      * Method to get the field input dropcat
      *
      * @return string

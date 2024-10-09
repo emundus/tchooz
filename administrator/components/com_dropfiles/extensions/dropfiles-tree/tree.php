@@ -31,6 +31,13 @@ class PlgDropfilesthemesTree extends DropfilesPluginBase
     public $name = 'tree';
 
     /**
+     * Download Popup flag
+     *
+     * @var boolean
+     */
+    public $download_popup;
+
+    /**
      * Show front category
      *
      * @param array $options Theme options
@@ -49,7 +56,6 @@ class PlgDropfilesthemesTree extends DropfilesPluginBase
         $doc = JFactory::getDocument();
         $this->componentParams = JComponentHelper::getParams('com_dropfiles');
 
-        JLoader::register('DropfilesBase', JPATH_ADMINISTRATOR . '/components/com_droppics/classes/dropfilesBase.php');
         JLoader::register('DropfilesHelper', JPATH_ADMINISTRATOR . '/components/com_dropfiles/helpers/dropfiles.php');
         JHtml::_('jquery.framework');
         $this->addScriptTagLoading();
@@ -66,7 +72,11 @@ class PlgDropfilesthemesTree extends DropfilesPluginBase
         $content = '';
 
         if (!in_array($this->name, parent::getDropfilesThemes())) {
-            $this->params = $this->params->toObject();
+            if (is_array($this->params)) {
+                $this->params = (object) $this->params;
+            } elseif ($this->params instanceof Joomla\Registry\Registry) {
+                $this->params = $this->params->toObject();
+            }
         } else {
             $this->params = $this->options['params'];
         }

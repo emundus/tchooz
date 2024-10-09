@@ -17,7 +17,7 @@ if (!$this->form || empty($parameters)) {
             <?php foreach ($parameters as $k => $field) : ?>
                 <?php if (!in_array($k, array('jform_note1', 'jform_note2'))) :?>
                     <li class="ju-settings-option block-item import-settings-option <?php echo $field->id;?>">
-                        <label for="<?php echo $field->id ?>" class="ju-setting-label dropfiles-tooltip" alt="<?php echo JText::sprintf($field->description) ?>"><?php echo strip_tags($field->label) ?></label>
+                        <label for="<?php echo $field->id ?>" class="ju-setting-label dropfiles-tooltip" title="<?php echo JText::sprintf($field->description) ?>"><?php echo strip_tags($field->label) ?></label>
                         <?php
                         switch ($field->type) {
                             case 'Radio':

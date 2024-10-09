@@ -11,6 +11,12 @@ namespace Unit\Component\Emundus\Model;
 
 use Joomla\Tests\Unit\UnitTestCase;
 
+/**
+ * @package     Unit\Component\Emundus\Model
+ *
+ * @since       version 1.0.0
+ * @covers      EmundusModelEvaluation
+ */
 class EvaluationModelTest extends UnitTestCase
 {
 
@@ -19,6 +25,11 @@ class EvaluationModelTest extends UnitTestCase
 		parent::__construct('evaluation', $data, $dataName, 'EmundusModelEvaluation');
 	}
 
+	/**
+	 * @covers EmundusModelEvaluation::getLettersByProgrammesStatusCampaigns
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testgetLettersByProgrammesStatusCampaigns()
 	{
 		$letters = $this->model->getLettersByProgrammesStatusCampaigns();
@@ -38,6 +49,11 @@ class EvaluationModelTest extends UnitTestCase
 		$this->h_dataset->deleteSampleLetter($letter_id);
 	}
 
+	/**
+	 * @covers EmundusModelEvaluation::getLetterTemplateForFnum
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testgetLetterTemplateForFnum()
 	{
 		$letters = $this->model->getLetterTemplateForFnum('');

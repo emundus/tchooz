@@ -16,6 +16,12 @@ use Joomla\Tests\Unit\UnitTestCase;
 
 require_once JPATH_SITE . '/components/com_emundus/helpers/files.php';
 
+/**
+ * @package     Unit\Component\Emundus\Helper
+ *
+ * @since       version 1.0.0
+ * @covers      EmundusHelperFiles
+ */
 class FilesHelperTest extends UnitTestCase
 {
 	/**
@@ -59,6 +65,10 @@ class FilesHelperTest extends UnitTestCase
 		$this->assertSame('array', gettype($coord_filters), 'Get export excel filter with correct user id returns an array even if empty');
 	}
 
+	/**
+	 * @test
+	 * @covers EmundusHelperFiles::findJoinsBetweenTablesRecursively
+	 */
 	public function testfindJoinsBetweenTablesRecursively()
 	{
 		$joins = $this->helper->findJoinsBetweenTablesRecursively('', '');
@@ -89,6 +99,10 @@ class FilesHelperTest extends UnitTestCase
 		$this->assertSame($joins, $joins_reversed, 'Join between jos_emundus_evaluations and jos_emundus_campaign_candidature returns same join as join between jos_emundus_campaign_candidature and jos_emundus_evaluations');
 	}
 
+	/**
+	 * @test
+	 * @covers EmundusHelperFiles::writeJoins
+	 */
 	public function testwriteJoins()
 	{
 		$joins          = $this->helper->findJoinsBetweenTablesRecursively('jos_emundus_campaign_candidature', 'jos_emundus_setup_campaigns');
@@ -102,6 +116,10 @@ class FilesHelperTest extends UnitTestCase
 		$this->assertSame(' LEFT JOIN `jos_emundus_setup_campaigns` ON `jos_emundus_setup_campaigns`.`id` = `jos_emundus_campaign_candidature`.`campaign_id`', $joins_as_string, 'Write joins with correct joins returns correct string');
 	}
 
+	/**
+	 * @test
+	 * @covers EmundusHelperFiles::writeQueryWithOperator
+	 */
 	public function testwriteQueryWithOperator()
 	{
 		$query_condition = $this->helper->writeQueryWithOperator(null, null, null);
@@ -153,6 +171,10 @@ class FilesHelperTest extends UnitTestCase
 		$this->assertSame('ecc.created >= \'2023-02-01\'', $query_condition, 'Write query with between operator for date filter type works even if only "from" value is passed');
 	}
 
+	/**
+	 * @test
+	 * @covers EmundusHelperFiles::getFabrikElementData
+	 */
 	public function testgetFabrikElementData()
 	{
 		$data = $this->helper->getFabrikElementData(0);
@@ -176,6 +198,10 @@ class FilesHelperTest extends UnitTestCase
 		$this->assertNotEmpty($data['list_id'], 'Get fabrik element data with correct id returns not empty list_id');
 	}
 
+	/**
+	 * @test
+	 * @covers EmundusHelperFiles::_moduleBuildWhere
+	 */
 	public function test_moduleBuildWhere()
 	{
 		$menu = new SiteMenu();

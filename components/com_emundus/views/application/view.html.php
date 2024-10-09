@@ -102,8 +102,8 @@ class EmundusViewApplication extends HtmlView
 			$this->profile = $profile->emundus_profile;
 
 			$application       = $this->getModel('application');
-			$details_id        = "82, 87, 89";
-			$this->userDetails = $application->getApplicantDetails($aid, $details_id);
+
+			$this->userDetails = [];
 
 			$infos                  = array('#__emundus_uploads.filename', '#__users.email', '#__emundus_setup_profiles.label as profile', '#__emundus_personal_detail.gender', '#__emundus_personal_detail.birth_date as birthdate', '#__emundus_users.profile as pid');
 			$this->userInformations = $application->getApplicantInfos($aid, $infos);

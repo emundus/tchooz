@@ -13,7 +13,7 @@ if (!$this->form || empty($parameters)) {
         <ul class="field block-list">
             <?php foreach ($parameters as $field) : ?>
                 <li class="ju-settings-option block-item">
-                    <label for="<?php echo $field->id ?>" class="ju-setting-label dropfiles-tooltip" alt="<?php echo JText::sprintf($field->description) ?>"><?php echo strip_tags($field->label) ?></label>
+                    <label for="<?php echo $field->id ?>" class="ju-setting-label dropfiles-tooltip" title="<?php echo JText::sprintf($field->description) ?>"><?php echo strip_tags($field->label) ?></label>
                     <?php
                     switch ($field->type) {
                         case 'Radio':

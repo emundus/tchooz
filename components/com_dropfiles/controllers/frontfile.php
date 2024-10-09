@@ -204,18 +204,19 @@ class DropfilesControllerFrontfile extends JControllerLegacy
                     $modelDropbox = $this->getModel('Frontdropbox');
                     $modelDropbox->incrHits($id);
                     $model->addCountChart($id, $userId);
+                    $file = $modelDropbox->getFile($id);
                     $temporaryDirectLink = $dropCate->getTemporaryDirectLink($id);
                     if ($temporaryDirectLink) {
                         header('Location: ' . $temporaryDirectLink);
                         break;
                     }
 
-                    list($file, $fMeta) = $dropCate->downloadDropbox($id);
+                    list($tempfile, $fMeta) = $dropCate->downloadDropbox($id);
                     $ext = strtolower(pathinfo($fMeta['path_lower'], PATHINFO_EXTENSION));
-                    $file2 = $modelDropbox->getFile($id);
-                    if ($file2) {
-                        $author_user_id = $file2->author;
-                        if (!DropfilesFilesHelper::isUserCanViewFile($file2)) {
+
+                    if ($file) {
+                        $author_user_id = $file->author;
+                        if (!DropfilesFilesHelper::isUserCanViewFile($file)) {
                             $this->setRedirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
                             $this->redirect();
                         }
@@ -244,8 +245,8 @@ class DropfilesControllerFrontfile extends JControllerLegacy
                     header('Content-Length: ' . (int)$fMeta['size']);
                     ob_clean();
                     flush();
-                    readfile($file);
-                    unlink($file);
+                    readfile($tempfile);
+                    unlink($tempfile);
                 }
 
                 break;
@@ -255,6 +256,11 @@ class DropfilesControllerFrontfile extends JControllerLegacy
                 $dropOneDrive = new DropfilesOneDrive();
                 $rev = JFactory::getApplication()->input->getString('vid', '');
                 $file = $dropOneDrive->downloadFile($id);
+                $userId = (isset($user->id)) ? $user->id : 0;
+                $modelOnedrive = $this->getModel('Frontonedrive');
+                $modelOnedrive->incrHits($id);
+                $model->addCountChart($id, $userId);
+
                 if ((int) $config->get('open_pdf_in', 0) === 1 && $file->ext === 'pdf' && (int) $preview === 1) {
                     $disposition = 'inline';
                 } else {
@@ -288,6 +294,12 @@ class DropfilesControllerFrontfile extends JControllerLegacy
                 $dropOneDriveBusiness   = new DropfilesOneDriveBusiness();
                 $rev                    = JFactory::getApplication()->input->getString('vid', '');
                 $file                   = $dropOneDriveBusiness->downloadFile($id);
+
+                $userId = (isset($user->id)) ? $user->id : 0;
+                $modelOnedrive = $this->getModel('Frontonedrivebusiness');
+                $modelOnedrive->incrHits($id);
+                $model->addCountChart($id, $userId);
+
                 $filename               = htmlspecialchars($file->title . '.' . $file->ext, ENT_QUOTES, 'UTF-8');
                 if ($preview) {
                     $contentType = DropfilesFilesHelper::mimeType($file->ext);
@@ -402,8 +414,13 @@ class DropfilesControllerFrontfile extends JControllerLegacy
                                 } else {
                                     $range = '';
                                 }
-                                // figure out download piece from range (if set)
-                                list($seekStart, $seekEnd) = explode('-', $range, 2);
+
+                                $seekStart = 0;
+                                $seekEnd = 0;
+                                if ($range) {
+                                    // figure out download piece from range (if set)
+                                    list($seekStart, $seekEnd) = explode('-', $range, 2);
+                                }
                                 // set start and end based on range (if set), else set defaults
                                 // also check for invalid ranges.
                                 $seekEnd   = (empty($seekEnd)) ? ($fileSize - 1) : min(abs(intval($seekEnd)), ($fileSize - 1));
@@ -425,6 +442,7 @@ class DropfilesControllerFrontfile extends JControllerLegacy
                                 header('Accept-Ranges: bytes');
                                 // phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged -- Not print any error when download file
                                 @set_time_limit(0);
+                                ob_end_flush();
                                 $buffer = 1024 * 8;
                                 fseek($fp, $seekStart);
                                 while (!feof($fp) && ($p = ftell($fp)) <= $seekEnd) {
@@ -451,6 +469,8 @@ class DropfilesControllerFrontfile extends JControllerLegacy
                                     echo fread($handle, 1000);
                                 }
                             }
+                        } else {
+                            die('File not exist');
                         }
                     }
                 }

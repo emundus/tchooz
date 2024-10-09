@@ -592,9 +592,11 @@ jQuery(document).ready(function ($) {
             if (eType == 'checkbox') {
                 $(el).prop('checked', false);
             } else {
-                $(el).val("").trigger('change').trigger("liszt:updated").trigger("chosen:updated");
-                if ($(el).hasClass("tagit")) {
-                    $(el).tagit("removeAll");
+                if ($(el).attr('name') != 'task' && $(el).attr('name') != 'Itemid') {
+                    $(el).val("").trigger('change').trigger("liszt:updated").trigger("chosen:updated");
+                    if ($(el).hasClass("tagit")) {
+                        $(el).tagit("removeAll");
+                    }
                 }
             }
 

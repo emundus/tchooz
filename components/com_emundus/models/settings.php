@@ -27,7 +27,7 @@ use Joomla\CMS\Mail\Exception\MailDisabledException;
 use PHPMailer\PHPMailer\Exception as phpMailerException;
 use Symfony\Component\Yaml\Yaml;
 
-class EmundusModelsettings extends ListModel
+class EmundusModelSettings extends ListModel
 {
 
 	private $db;

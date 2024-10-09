@@ -23,6 +23,12 @@ require_once JPATH_SITE . '/components/com_emundus/helpers/files.php';
 require_once JPATH_SITE . '/components/com_emundus/helpers/users.php';
 require_once JPATH_SITE . '/components/com_emundus/models/profile.php';
 
+/**
+ * @package     Unit\Component\Emundus\Model
+ *
+ * @since       version 1.0.0
+ * @covers      EmundusModelFiles
+ */
 class FilesModelTest extends UnitTestCase
 {
 	/**
@@ -38,17 +44,32 @@ class FilesModelTest extends UnitTestCase
 		$this->h_files  = new EmundusHelperFiles;
 	}
 
+	/**
+	 * @covers EmundusModelFiles::__construct
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testConstruct()
 	{
 		$this->assertSame(false, $this->model->use_module_filters, 'By default, we do not use new module filters');
 	}
 
+	/**
+	 * @covers EmundusModelFiles::shareUsers
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testshareUsers()
 	{
 		$shared = $this->model->shareUsers([2], EVALUATOR_RIGHTS, [$this->dataset['fnum']], Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']));
 		$this->assertTrue($shared, 'shareUsers returns true if the sharing is successful');
 	}
 
+	/**
+	 * @covers EmundusModelFiles::getAllFnums
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testgetAllFnums()
 	{
 		$fnums = $this->model->getAllFnums(false, 1);
@@ -62,6 +83,11 @@ class FilesModelTest extends UnitTestCase
 		$this->assertTrue(in_array($this->dataset['fnum'], $fnums), 'If a fnum is associated to me. I should see it.');
 	}
 
+	/**
+	 * @covers EmundusModelFiles::getAllTags
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testgetAllTags()
 	{
 		$tags = $this->model->getAllTags();
@@ -69,6 +95,11 @@ class FilesModelTest extends UnitTestCase
 		$this->assertNotEmpty($tags, 'getAllTags returns a non-empty array');
 	}
 
+	/**
+	 * @covers EmundusModelFiles::tagFile
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testTagFile()
 	{
 		$tagged = $this->model->tagFile([], []);
@@ -82,12 +113,22 @@ class FilesModelTest extends UnitTestCase
 		$this->assertTrue($tagged, 'tagFile returns true if a file and a tag are given');
 	}
 
+	/**
+	 * @covers EmundusModelFiles::updateState
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testUpdateState()
 	{
 		$updated = $this->model->updateState([], null);
 		$this->assertFalse($updated, 'updateState returns false if no file and no new state is given');
 	}
 
+	/**
+	 * @covers EmundusModelFiles::getFnumArray2
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testgetFnumArray2()
 	{
 		$fnums    = [];

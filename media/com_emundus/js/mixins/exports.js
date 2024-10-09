@@ -380,6 +380,12 @@ function export_pdf(fnums, ids, default_export = '') {
             params.concat_attachments_with_form = 0;
         }
 
+        if ($('#convert_docx_to_pdf').is(":checked")) {
+            params.convert_docx_to_pdf = 1;
+        } else {
+            params.convert_docx_to_pdf = 0;
+        }
+
         $('#data').hide();
 
         $('div').remove('#chargement');

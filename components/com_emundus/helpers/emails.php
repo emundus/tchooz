@@ -19,6 +19,7 @@ jimport('joomla.application.component.helper');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Helper\ModuleHelper;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
 use Symfony\Component\Yaml\Yaml;
 
@@ -33,6 +34,18 @@ use Symfony\Component\Yaml\Yaml;
 class EmundusHelperEmails
 {
 
+	/**
+	 * @codeCoverageIgnore
+	 *
+	 * @param $params
+	 * @param $users
+	 *
+	 * @return string
+	 *
+	 * @throws Exception
+	 * @since version 1.0.0
+	 * @deprecated
+	 */
 	function createEmailBlock($params, $users = null)
 	{
 		$app          = Factory::getApplication();
@@ -410,36 +423,88 @@ class EmundusHelperEmails
 
 	public static function getEmail($lbl)
 	{
-		$db = Factory::getDBO();
+		$email = null;
 
-		$query = $db->getQuery(true);
+		if(!empty($lbl))
+		{
+			try
+			{
+				$db = Factory::getContainer()->get('DatabaseDriver');
+				$query = $db->getQuery(true);
 
-		$query->select('*')
-			->from($db->quoteName('#__emundus_setup_emails'))
-			->where($db->quoteName('lbl') . ' = ' . $db->quote($lbl));
-		$db->setQuery($query);
+				$query->select('*')
+					->from($db->quoteName('#__emundus_setup_emails'))
+					->where($db->quoteName('lbl') . ' = ' . $db->quote($lbl));
+				$db->setQuery($query);
 
-		return $db->loadObject();
+				$email = $db->loadObject();
+			}
+			catch (Exception $e)
+			{
+				Log::add('Error database: ' . $e, Log::ERROR, 'emundus');
+			}
+		}
+
+		return $email;
 	}
 
 	function getAllEmail($type = 2)
 	{
-		$db    = JFactory::getDBO();
-		$query = 'SELECT * FROM #__emundus_setup_emails WHERE type IN (' . $db->Quote($type) . ') AND published=1';
-		$db->setQuery($query);
+		$all_emails = [];
 
-		return $db->loadObjectList();
+		try
+		{
+			$db    = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true);
+
+			$query->select('*')
+				->from($db->quoteName('#__emundus_setup_emails'))
+				->where($db->quoteName('type') . ' = ' . $db->quote($type))
+				->where($db->quoteName('published') . ' = 1');
+			$db->setQuery($query);
+
+			$all_emails = $db->loadObjectList();
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error database: ' . $e, Log::ERROR, 'emundus');
+		}
+
+		return $all_emails;
 	}
 
+	/**
+	 * @codeCoverageIgnore
+	 *
+	 * @throws Exception
+	 * @since version 1.0.0
+	 */
 	public static function getTemplate()
 	{
-		$db     = JFactory::getDBO();
-		$select = JFactory::getApplication()->input->get('select', null, 'POST', 'none', 0);
-		$query  = 'SELECT * FROM #__emundus_setup_emails WHERE id=' . $select;
-		$db->setQuery($query);
-		$email = $db->loadObject();
-		echo json_encode((object) (array('status' => true, 'tmpl' => $email)));
+		$result = array('status' => true, 'tmpl' => null, 'msg' => '');
+		$select = Factory::getApplication()->input->getInt('select', 0);
 
+		if(!empty($select))
+		{
+			try
+			{
+				$db    = Factory::getContainer()->get('DatabaseDriver');
+				$query = $db->getQuery(true);
+
+				$query->select('*')
+					->from($db->quoteName('#__emundus_setup_emails'))
+					->where($db->quoteName('id') . ' = ' . $db->quote($select));
+				$db->setQuery($query);
+				$result['tmpl'] = $db->loadObject();
+			}
+			catch (Exception $e)
+			{
+				$result['status'] = false;
+				$result['msg']    = $e->getMessage();
+			}
+		}
+
+		echo json_encode((object) $result);
 		die();
 	}
 
@@ -969,7 +1034,12 @@ class EmundusHelperEmails
 		}
 		
 		// Check if we are on http or https
-		$base_url = Uri::base();
+		if(Factory::getApplication()->isClient('cli')) {
+			$base_url = Factory::getApplication()->get('live_site');
+		} else
+		{
+			$base_url = Uri::base();
+		}
 		/*$protocol = $_SERVER['HTTPS'] == 'on' ? 'https' : 'http';
 		if($protocol == 'http') {
 			$base_url = JPATH_BASE . '/';
