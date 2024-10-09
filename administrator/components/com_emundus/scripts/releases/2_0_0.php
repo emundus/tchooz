@@ -16,6 +16,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Component\Scheduler\Administrator\Model\TaskModel;
 use Joomla\Component\Scheduler\Administrator\Task\Task;
+use Symfony\Component\Yaml\Yaml;
 
 class Release2_0_0Installer extends ReleaseInstaller
 {
@@ -1879,6 +1880,79 @@ if(value == 1) {
 			EmundusHelperUpdate::createSchedulerTask('Delete old action logs', 'delete.actionlogs', $execution_rules, $cron_rules, $params);
 			//
 
+			// RGAA
+			$default_g5_layout = JPATH_ROOT . '/templates/g5_helium/custom/config/default/layout.yaml';
+			$default22_g5_layout = JPATH_ROOT . '/templates/g5_helium/custom/config/22/layout.yaml';
+			$default24_g5_layout = JPATH_ROOT . '/templates/g5_helium/custom/config/24/layout.yaml';
+
+			if(file_exists($default_g5_layout)) {
+				$default_g5_layout_yaml = Yaml::parse(file_get_contents($default_g5_layout));
+				$yaml_updated = false;
+				if(empty($default_g5_layout_yaml['layout']['/header/']))
+				{
+					$default_g5_layout_yaml['layout'] = $this->change_key($default_g5_layout_yaml['layout'], '/navigation/', '/header/');
+					$yaml_updated = true;
+				}
+				if(empty($default_g5_layout_yaml['structure']['header']))
+				{
+					$default_g5_layout_yaml['structure'] = $this->change_key($default_g5_layout_yaml['structure'], 'navigation', 'header');
+					$yaml_updated = true;
+				}
+				if(empty($default_g5_layout_yaml['structure']['header']['attributes']['extra'])) {
+					$default_g5_layout_yaml['structure']['header']['attributes']['extra'] = [];
+					$default_g5_layout_yaml['structure']['header']['attributes']['extra'][0]['role'] = 'banner';
+					$yaml_updated = true;
+				}
+				if(empty($default_g5_layout_yaml['structure']['main-mainbody']['attributes'])) {
+					$default_g5_layout_yaml['structure']['main-mainbody']['attributes'] = [];
+					$default_g5_layout_yaml['structure']['main-mainbody']['attributes']['extra'] = [];
+					$default_g5_layout_yaml['structure']['main-mainbody']['attributes']['extra'][0]['role'] = 'main';
+					$yaml_updated = true;
+				}
+				if(empty($default_g5_layout_yaml['structure']['footer']['attributes']['extra'])) {
+					$default_g5_layout_yaml['structure']['footer']['attributes']['extra'] = [];
+					$default_g5_layout_yaml['structure']['footer']['attributes']['extra'][0]['role'] = 'contentinfo';
+					$yaml_updated = true;
+				}
+				if($yaml_updated) {
+					$new_default_g5_layout = Yaml::dump($default_g5_layout_yaml, 10, 2);
+					file_put_contents($default_g5_layout, $new_default_g5_layout);
+				}
+
+				$default22_g5_layout_yaml = Yaml::parse(file_get_contents($default22_g5_layout));
+				$yaml_updated = false;
+				if(empty($default22_g5_layout_yaml['layout']['header']))
+				{
+					$default22_g5_layout_yaml['layout'] = $this->change_key($default22_g5_layout_yaml['layout'], 'navigation', 'header');
+				}
+				if(empty($default22_g5_layout_yaml['structure']['header']))
+				{
+					$default22_g5_layout_yaml['structure'] = $this->change_key($default22_g5_layout_yaml['structure'], 'navigation', 'header');
+					$yaml_updated = true;
+				}
+				if($yaml_updated) {
+					$new_default22_g5_layout = Yaml::dump($default22_g5_layout_yaml, 10, 2);
+					file_put_contents($default22_g5_layout, $new_default22_g5_layout);
+				}
+
+				$default24_g5_layout_yaml = Yaml::parse(file_get_contents($default24_g5_layout));
+				$yaml_updated = false;
+				if(empty($default24_g5_layout_yaml['layout']['header']))
+				{
+					$default24_g5_layout_yaml['layout'] = $this->change_key($default24_g5_layout_yaml['layout'], 'navigation', 'header');
+					$yaml_updated = true;
+				}
+				if(empty($default24_g5_layout_yaml['structure']['header']))
+				{
+					$default24_g5_layout_yaml['structure'] = $this->change_key($default24_g5_layout_yaml['structure'], 'navigation', 'header');
+					$yaml_updated = true;
+				}
+				if($yaml_updated) {
+					$new_default24_g5_layout = Yaml::dump($default24_g5_layout_yaml, 10, 2);
+					file_put_contents($default24_g5_layout, $new_default24_g5_layout);
+				}
+			}
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)
@@ -1890,5 +1964,16 @@ if(value == 1) {
 
 
 		return $result;
+	}
+
+	private function change_key( $array, $old_key, $new_key ) {
+
+		if( ! array_key_exists( $old_key, $array ) )
+			return $array;
+
+		$keys = array_keys( $array );
+		$keys[ array_search( $old_key, $keys ) ] = $new_key;
+
+		return array_combine( $keys, $array );
 	}
 }

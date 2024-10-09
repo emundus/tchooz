@@ -394,7 +394,7 @@ if ($this->display_comments)
 
     document.addEventListener('DOMContentLoaded', () => {
         // Set sidebar sticky depends on height of header
-        const headerNav = document.getElementById('g-navigation');
+        const headerNav = document.querySelector('#g-navigation,#g-header');
         const sidebar = document.querySelector('.view-form #g-sidebar');
         if (headerNav && sidebar) {
             sidebar.style.top = headerNav.offsetHeight + 8 + 'px';

@@ -15,15 +15,14 @@ defined('_JEXEC') or die;
 
 ?>
 
-<p>
-    <a class="em-back-button tw-cursor-pointer"
-       <?php if($params->get('back_type') == 'previous') : ?>
-            onclick="<?php echo $back_link; ?>"
-       <?php else : ?>
-            href="<?php echo $back_link; ?>"
-       <?php endif; ?>
-    >
-        <span class="material-symbols-outlined tw-text-neutral-600 tw-mr-1">navigate_before</span>
-        <?php echo Text::_($params->get('button_text', 'MOD_EMUNDUS_BACK_BUTTON_LABEL')); ?>
-    </a>
+<button type="button" class="em-back-button tw-cursor-pointer"
+	<?php if ($params->get('back_type') == 'previous') : ?>
+        onclick="<?php echo $back_link; ?>"
+	<?php else : ?>
+        href="<?php echo $back_link; ?>"
+	<?php endif; ?>
+>
+    <span class="material-symbols-outlined tw-text-neutral-600 tw-mr-1" aria-hidden="true">navigate_before</span>
+	<?php echo Text::_($params->get('button_text', 'MOD_EMUNDUS_BACK_BUTTON_LABEL')); ?>
+</button>
 </php>

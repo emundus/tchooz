@@ -159,7 +159,8 @@ if ($user != null)
             border-radius: 50%;
         }
 
-        #g-navigation .g-container #header-c .userDropdownIcon-tip {
+        #g-navigation .g-container #header-c .userDropdownIcon-tip,
+        #g-header .g-container #header-c .userDropdownIcon-tip {
             margin: 23px 30px !important;
         }
 
@@ -184,7 +185,7 @@ if ($user != null)
             border: solid 3px var(--transparent);
         }
 
-        .em-profile-container p:nth-child(2) {
+        .em-profile-container p:last-child {
             overflow: hidden;
             max-width: 140px;
             max-height: 30px;
@@ -196,6 +197,7 @@ if ($user != null)
             letter-spacing: 0.004em;
             white-space: nowrap;
             text-overflow: ellipsis;
+            text-align: left;
         }
 
         .em-user-dropdown-icon:before {
@@ -256,7 +258,9 @@ if ($user != null)
 		<?php endif; ?>
 		<?php if (!empty($profile_picture)): ?>
             <div id="userDropdownLabel">
-                <div class="em-flex-row em-flex-end em-profile-container" onclick="manageHeight()">
+                <div class="em-flex-row em-flex-end em-profile-container"
+                     tabindex="0" aria-expanded="false" aria-haspopup="true"
+                     onclick="manageHeight()">
                     <div class="tw-mr-4">
 						<?php if (!empty($user)) : ?>
                             <p id="current_user_fullname" class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . $user->lastname[0] . '.'; ?></p>
@@ -317,7 +321,7 @@ if ($user != null)
                 </div>
 			<?php endif; ?>
 
-            <hr style="width: 100%">
+            <hr style="width: 100%" aria-hidden="true">
 
 			<?php
 			$ids_array = array();
@@ -383,7 +387,7 @@ if ($user != null)
 			} ?>
 
 			<?php if ($show_logout == '1') : ?>
-				<?= '<hr style="width: 100%"><li><a class="logout-button-user em-flex-important em-flex-row em-flex-center" href="' . JURI::base() . 'index.php?option=com_users&task=user.logout&' . JSession::getFormToken() . '=1"><span class="material-symbols-outlined tw-mr-2">logout</span>' . JText::_('COM_EMUNDUS_USER_MENU_LOGOUT_ACTION') . '</a></li>'; ?>
+				<?= '<hr style="width: 100%" aria-hidden="true"><li><a class="logout-button-user em-flex-important em-flex-row em-flex-center" href="' . JURI::base() . 'index.php?option=com_users&task=user.logout&' . JSession::getFormToken() . '=1"><span class="material-symbols-outlined tw-mr-2">logout</span>' . JText::_('COM_EMUNDUS_USER_MENU_LOGOUT_ACTION') . '</a></li>'; ?>
 			<?php endif; ?>
 
         </ul>
@@ -400,7 +404,7 @@ if ($user != null)
             let elmnt2 = document.getElementById("g-top");
             if (elmnt2 !== null) {
                 let hauteurTotaleElem = elmnt2.offsetHeight;
-                document.getElementById("g-navigation").style.top = hauteurTotaleElem + 'px';
+                document.querySelector("#g-navigation, #g-header").style.top = hauteurTotaleElem + 'px';
             }
         });
 
@@ -419,6 +423,7 @@ if ($user != null)
                 document.querySelector('#userDropdownMenu').style.transform = 'translate(300px)';
                 setTimeout(() => {
                     dropdown.classList.remove('open');
+                    document.getElementById("userDropdownLabel").setAttribute("aria-expanded", false);
                     document.querySelector('#userDropdownMenu').style.transform = 'unset';
                     if (icon !== null) {
                         icon.classList.remove('active');
@@ -437,6 +442,7 @@ if ($user != null)
                     commentsAside.classList.add('closed');
                 }
                 dropdown.classList.add('open');
+                document.getElementById("userDropdownLabel").setAttribute("aria-expanded", true);
                 if (icon !== null) {
                     icon.classList.add('open');
                 }
@@ -498,7 +504,7 @@ if ($user != null)
         });
 
         function manageHeight() {
-            let elmnt = document.getElementById("g-navigation");
+            let elmnt = document.querySelector("#g-navigation, #g-header");
             let elmnt2 = document.getElementById("g-top");
             if (elmnt2 !== null) {
                 let hauteurTotaleElem = elmnt.offsetHeight + elmnt2.offsetHeight;
@@ -534,7 +540,7 @@ if ($user != null)
     <script>
 		<?php if ($guest): ?>
         document.addEventListener('DOMContentLoaded', function () {
-            document.querySelector('#g-navigation .g-container').style.padding = '16px 12px';
+            document.querySelector('#g-navigation .g-container, #g-header .g-container').style.padding = '16px 12px';
         });
 		<?php endif; ?>
     </script>

@@ -205,7 +205,6 @@ if ($user_module->id)
     <form action="<?php echo (!empty($this->redirect)) ? 'index.php?option=com_users&task=user.login&redirect=' . $this->redirect : 'index.php?option=com_users&task=user.login'; ?>"
           method="post" class="form-validate form-horizontal well" id="com-users-login__form">
 
-        <fieldset>
 			<?php echo $this->form->renderFieldset('credentials', ['class' => 'com-users-login__input']); ?>
 
             <div class="tw-full tw-flex tw-items-center tw-justify-end">
@@ -277,7 +276,6 @@ if ($user_module->id)
 			<?php $return = $this->form->getValue('return', '', $this->params->get('login_redirect_url', $this->params->get('login_redirect_menuitem', ''))); ?>
             <input type="hidden" name="return" value="<?php echo base64_encode($return); ?>">
 			<?php echo HTMLHelper::_('form.token'); ?>
-        </fieldset>
     </form>
 
 	<?php if ($usersConfig->get('allowUserRegistration') && $displayRegistration) : ?>
