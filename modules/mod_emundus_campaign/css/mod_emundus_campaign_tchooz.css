@@ -228,7 +228,7 @@ button#mod_emundus_campaign__header_filter {
     z-index: 10;
 }
 
-.mod_emundus_campaign__header_sort__values a:hover {
+.mod_emundus_campaign__header_sort__values button:hover {
     background: #EBECF0 !important;
     border-radius: var(--em-default-br) !important;
     color: var(--neutral-900) !important;
@@ -236,8 +236,9 @@ button#mod_emundus_campaign__header_filter {
     padding: 6px 8px;
 }
 
-.mod_emundus_campaign__header_sort__values a {
+.mod_emundus_campaign__header_sort__values button {
     padding: 6px 8px;
+    text-align: left;
 }
 
 .mod_emundus_campaign__header_filter__values {

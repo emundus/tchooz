@@ -507,31 +507,31 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                     <div class="mod_emundus_campaign__header_sort__values em-border-neutral-400 em-neutral-800-color"
                          id="sort_block" style="display: none">
 						<?php if ($mod_em_campaign_order == 'start_date') : ?>
-                            <a onclick="filterCampaigns(['order_date','order_time'],['end_date','asc'])"
+                            <button type="button" onclick="filterCampaigns(['order_date','order_time'],['end_date','asc'])"
                                class="em-text-neutral-900 em-pointer">
 								<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_END_DATE_NEAR') ?>
-                            </a>
+                            </button>
 						<?php endif; ?>
 						<?php if ($mod_em_campaign_order == 'end_date') : ?>
-                            <a onclick="filterCampaigns(['order_date','order_time'],['start_date','asc'])"
+                            <button type="button" onclick="filterCampaigns(['order_date','order_time'],['start_date','asc'])"
                                class="em-text-neutral-900 em-pointer">
 								<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_START_DATE_NEAR') ?>
-                            </a>
+                            </button>
 						<?php endif; ?>
 						<?php if (in_array('programme', $mod_em_campaign_sort_list) && $group_by != 'program') : ?>
-                            <a onclick="filterCampaigns('group_by','program')" class="em-text-neutral-900 em-pointer">
+                            <button type="button" onclick="filterCampaigns('group_by','program')" class="em-text-neutral-900 em-pointer">
 								<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_PROGRAM') ?>
-                            </a>
+                            </button>
 						<?php endif; ?>
 						<?php if (in_array('category', $mod_em_campaign_sort_list) && $group_by != 'category') : ?>
-                            <a onclick="filterCampaigns('group_by','category')" class="em-text-neutral-900 em-pointer">
+                            <button type="button" onclick="filterCampaigns('group_by','category')" class="em-text-neutral-900 em-pointer">
 								<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_CATEGORY') ?>
-                            </a>
+                            </button>
 						<?php endif; ?>
 						<?php if (in_array('month', $mod_em_campaign_sort_list) && $group_by != 'month') : ?>
-                            <a onclick="filterCampaigns('group_by','month')" class="em-text-neutral-900 em-pointer">
+                            <button type="button" onclick="filterCampaigns('group_by','month')" class="em-text-neutral-900 em-pointer">
 								<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_MONTH') ?>
-                            </a>
+                            </button>
 						<?php endif; ?>
                     </div>
 

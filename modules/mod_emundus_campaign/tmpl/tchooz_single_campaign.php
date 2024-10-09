@@ -312,7 +312,7 @@ if(!empty($mod_em_campaign_go_back_campaigns_link)) {
                     <div id="background-shapes" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></div>
 				<?php endif; ?>
 
-                <h4><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_DOWNLOADS') ?></h4>
+                <h2 class="em-mb-24"><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_DOWNLOADS') ?></h2>
                 <div class="em-mt-24">
 					<?php foreach ($files as $file) : ?>
                         <div class="em-flex-row em-mb-16 mod_emundus_campaign__details_file">
