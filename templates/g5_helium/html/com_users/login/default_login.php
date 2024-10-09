@@ -56,6 +56,7 @@ if ($user_module->id)
 			<?php if (file_exists($this->favicon)) : ?>
                 <a href="index.php" alt="Logo" class="em-profile-picture tw-mb-8"
                    style="width: 50px;height: 50px;background-image: url(<?php echo $this->favicon ?>)">
+                    <span class="sr-only">Logo</span>
                 </a>
 			<?php endif; ?>
             <h1 class="tw-mb-4">
