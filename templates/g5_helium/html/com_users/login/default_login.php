@@ -301,6 +301,21 @@ if ($user_module->id)
             password_field.setAttribute('aria-describedby', 'alert-message-text');
             password_field.setAttribute('autocomplete', 'current-password');
         }
+
+        document.querySelector('#header-a img').style.display = 'none';
+
+	    <?php if ($eMConfig['reveal_password']): ?>
+        const inputPassword = document.querySelector('.password-group #password');
+
+        if (inputPassword) {
+            inputPassword.addEventListener('keypress', event => {
+                if (event.code === 'Space') {
+                    event.preventDefault();
+                    document.querySelector('.input-password-toggle').click();
+                }
+            });
+        }
+	    <?php endif; ?>
     });
 
     /* Modification de la couleur du background avec les formes */
