@@ -642,14 +642,14 @@ class EmundusHelperAccess
 					$fnum = EmundusHelperFiles::getFnumFromId($ccid);
 
 					// it's the bare minimum to potentially see the evaluation form
-					if (EmundusHelperAccess::asAccessAction($step_data->action_id, 'r', $user_id, $fnum)) {
+					if (EmundusHelperAccess::asAccessAction(1, 'r', $user_id, $fnum) && EmundusHelperAccess::asAccessAction($step_data->action_id, 'r', $user_id)) {
 						// get groups who can access to this step and verify if user is in one of these groups
 						$m_users = new EmundusModelUsers();
 						$user_groups = $m_users->getUserGroups($user_id, 'Column');
 
-						if (!empty(array_intersect($user_groups, $step_data->groups))) {
+						if (!empty(array_intersect($user_groups, $step_data->group_ids))) {
 							$can_see = true;
-							if (EmundusHelperAccess::asAccessAction($step_data->action_id, 'c', $user_id, $fnum)) {
+							if (EmundusHelperAccess::asAccessAction($step_data->action_id, 'c', $user_id)) {
 								// verify step is not closed
 								// file must be in one of the entry statuses and current date must be between start and end date of step
 								$query->clear()
@@ -660,7 +660,18 @@ class EmundusHelperAccess
 								$db->setQuery($query);
 								$status = $db->loadResult();
 
-								if (in_array($status, $step_data->entry_status) && $step_data->start_date <= date('Y-m-d') && $step_data->end_date >= date('Y-m-d')) {
+								$respect_dates = true;
+								if ($step_data->infinite != 1) {
+									if (!empty($step_data->start_date) && $step_data->start_date > date('Y-m-d')) {
+										$respect_dates = false;
+									}
+
+									if (!empty($step_data->end_date) && $step_data->end_date < date('Y-m-d')) {
+										$respect_dates = false;
+									}
+								}
+
+								if (in_array($status, $step_data->entry_status) && $respect_dates) {
 									$can_edit = true;
 								}
 							}

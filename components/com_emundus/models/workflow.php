@@ -493,7 +493,7 @@ class EmundusModelWorkflow extends JModelList
 
 					if (!empty($cid)) {
 						$query->clear()
-							->select('start_date, end_date')
+							->select('start_date, end_date, infinite')
 							->from('#__emundus_setup_campaigns_step_dates')
 							->where('campaign_id = ' . $cid)
 							->where('step_id = ' . $id);
@@ -503,6 +503,7 @@ class EmundusModelWorkflow extends JModelList
 
 						$data->start_date = $dates['start_date'];
 						$data->end_date = $dates['end_date'];
+						$data->infinite = $dates['infinite'];
 					}
 				}
 			} catch (Exception $e) {
