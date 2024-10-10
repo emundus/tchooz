@@ -1953,6 +1953,50 @@ if(value == 1) {
 				}
 			}
 
+			$query->clear()
+				->select('id')
+				->from($this->db->quoteName('#__menu'))
+				->where('alias = ' . $this->db->quote('forms'))
+				->where('menutype = ' . $this->db->quote('onboardingmenu'));
+
+			$this->db->setQuery($query);
+			$forms_menu = $this->db->loadResult();
+
+			$datas     = [
+				'menutype'     => 'onboardingmenu',
+				'title'        => 'Prévisulation de formulaire',
+				'alias'        => 'preview',
+				'link'         => 'index.php?option=com_fabrik&view=form',
+				'type'         => 'component',
+				'component_id' => ComponentHelper::getComponent('com_fabrik')->id,
+				'params'       => ['menu_show' => 0]
+			];
+			$preview_menu = EmundusHelperUpdate::addJoomlaMenu($datas, $forms_menu);
+
+			if ($preview_menu['status'])
+			{
+				EmundusHelperUpdate::displayMessage('Le menu de prévisualisation de formulaire a été créé', 'success');
+			}
+			else
+			{
+				throw new \Exception('Erreur lors de la création du menu de prévisualisation.');
+			}
+
+			$query->clear()
+				->select('id,params')
+				->from($this->db->quoteName('#__fabrik_elements'))
+				->where($this->db->quoteName('name') . ' LIKE ' . $this->db->quote('date_time'))
+				->where($this->db->quoteName('group_id') . ' = 111');
+			$this->db->setQuery($query);
+			$date_time_element_emails_history = $this->db->loadObject();
+
+			if(!empty($date_time_element_emails_history)) {
+				$params = json_decode($date_time_element_emails_history->params, true);
+				$params['jdate_store_as_local'] = 0;
+				$date_time_element_emails_history->params = json_encode($params);
+				$this->db->updateObject('#__fabrik_elements', $date_time_element_emails_history, 'id');
+			}
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)
