@@ -1286,7 +1286,7 @@ class EmundusModelEvaluation extends JModelList
 
 			$query .= ', ' . $step_data->table . '.id as evaluation_id,  CONCAT(eue.lastname," ",eue.firstname) AS evaluator ';
 			$query .= ', ' . $this->db->quote($step_data->label) . ' AS evaluations_step_label, ' . $step_data->id . ' AS evaluations_step_id ';
-			$group_by = 'GROUP BY evaluation_id';
+			$group_by = 'GROUP BY IF(evaluation_id IS NULL, jecc.fnum, evaluation_id)';
 		} else {
 			$query .= ', 0 as evaluation_id, " " as evaluator ';
 			$query .= ', "" AS evaluations_step_label, 0 AS evaluations_step_id ';
