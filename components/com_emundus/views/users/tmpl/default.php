@@ -122,7 +122,7 @@ $wa->registerAndUseScript('com_emundus/jquery', 'jquery/jquery.min.js');
                 <h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('COM_EMUNDUS_LOADING'); ?></h4>
             </div>
             <div class="modal-body">
-                <img src="<?php echo JURI::base(); ?>media/com_emundus/images/icones/loader-line.gif">
+                <img src="<?php echo JURI::base(); ?>media/com_emundus/images/icones/loader-line.gif" alt="Loading...">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger"
