@@ -2172,6 +2172,19 @@ form.fabrikForm .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn.btn-s
                 border-color: var(--em-form-bc-focus);
                 background-color: var(--em-form-bgc-focus);
             }
+/** MULTISELECT **/
+.com_emundus .multiselect .multiselect__input:focus {
+                outline: unset !important;
+            }
+.com_emundus .multiselect .multiselect__single {
+                color: var(--neutral-900);
+            }
+.com_emundus .multiselect .multiselect__content .multiselect__element .multiselect__option span {
+                            color: var(--neutral-900);
+                        }
+.com_emundus .multiselect .multiselect__content .multiselect__element .multiselect__option:not(.multiselect__option--group) {
+                            padding-left: var(--em-spacing-4);
+                        }
 input[type="text"],
     input[type="password"],
     input[type="datetime"],

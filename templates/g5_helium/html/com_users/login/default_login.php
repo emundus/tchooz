@@ -56,6 +56,7 @@ if ($user_module->id)
 			<?php if (file_exists($this->favicon)) : ?>
                 <a href="index.php" alt="Logo" class="em-profile-picture tw-mb-8"
                    style="width: 50px;height: 50px;background-image: url(<?php echo $this->favicon ?>)">
+                    <span class="sr-only">Logo</span>
                 </a>
 			<?php endif; ?>
             <h1 class="tw-mb-4">
@@ -205,7 +206,6 @@ if ($user_module->id)
     <form action="<?php echo (!empty($this->redirect)) ? 'index.php?option=com_users&task=user.login&redirect=' . $this->redirect : 'index.php?option=com_users&task=user.login'; ?>"
           method="post" class="form-validate form-horizontal well" id="com-users-login__form">
 
-        <fieldset>
 			<?php echo $this->form->renderFieldset('credentials', ['class' => 'com-users-login__input']); ?>
 
             <div class="tw-full tw-flex tw-items-center tw-justify-end">
@@ -277,7 +277,6 @@ if ($user_module->id)
 			<?php $return = $this->form->getValue('return', '', $this->params->get('login_redirect_url', $this->params->get('login_redirect_menuitem', ''))); ?>
             <input type="hidden" name="return" value="<?php echo base64_encode($return); ?>">
 			<?php echo HTMLHelper::_('form.token'); ?>
-        </fieldset>
     </form>
 
 	<?php if ($usersConfig->get('allowUserRegistration') && $displayRegistration) : ?>
@@ -303,6 +302,21 @@ if ($user_module->id)
             password_field.setAttribute('aria-describedby', 'alert-message-text');
             password_field.setAttribute('autocomplete', 'current-password');
         }
+
+        document.querySelector('#header-a img').style.display = 'none';
+
+	    <?php if ($eMConfig['reveal_password']): ?>
+        const inputPassword = document.querySelector('.password-group #password');
+
+        if (inputPassword) {
+            inputPassword.addEventListener('keypress', event => {
+                if (event.code === 'Space') {
+                    event.preventDefault();
+                    document.querySelector('.input-password-toggle').click();
+                }
+            });
+        }
+	    <?php endif; ?>
     });
 
     /* Modification de la couleur du background avec les formes */

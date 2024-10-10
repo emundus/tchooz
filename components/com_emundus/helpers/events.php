@@ -199,6 +199,8 @@ class EmundusHelperEvents
 				$mForm    = new EmundusModelForm();
 				$mProfile = new EmundusModelProfile();
 
+				$this->clearFormSession($user->fnum, $params['formModel']->id);
+
 				$prid               = $mProfile->getProfileByFnum($user->fnum);
 				$submittion_page    = $mForm->getSubmittionPage($prid);
 				$submittion_page_id = (int) explode('=', $submittion_page->link)[3];
@@ -229,6 +231,8 @@ class EmundusHelperEvents
 
 				if (!empty($fnum))
 				{
+					$this->clearFormSession($fnum, $params['formModel']->id);
+
 					require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
 					$mFile        = new EmundusModelFiles();
 					$applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
@@ -237,7 +241,6 @@ class EmundusHelperEvents
 					$this->applicationUpdating($fnum);
 
 					echo '<script src="' . Uri::base() . 'media/com_emundus/js/lib/sweetalert/sweetalert.min.js"></script>';
-
 					echo '<style>
 .em-swal-title{
   margin: 8px 8px 32px 8px !important;

@@ -44,13 +44,13 @@ $msgList = $displayData['msgList'];
 				?>
                 <div class="tw-shadow alert alert-<?php echo $type; ?>">
 					<?php if (!empty($msgs)) : ?>
-                        <span class="material-symbols-outlined tw-mr-3"><?php echo $icon ?></span>
+                        <span class="material-symbols-outlined tw-mr-3" aria-hidden="true"><?php echo $icon ?></span>
                         <div>
 							<?php foreach ($msgs as $msg) : ?>
                                 <p id="alert-message-text"><?php echo $msg; ?></p>
 							<?php endforeach; ?>
                         </div>
-                        <span class="material-symbols-outlined tw-absolute tw-top-[3px] tw-right-[5px] !tw-text-base tw-cursor-pointer" onclick="closeMessage('<?php echo $type; ?>')">close</span>
+                        <span class="material-symbols-outlined tw-absolute tw-top-[3px] tw-right-[5px] !tw-text-base tw-cursor-pointer" aria-hidden="true" onclick="closeMessage('<?php echo $type; ?>')">close</span>
 					<?php endif; ?>
                 </div>
 			<?php endforeach; ?>
