@@ -1424,19 +1424,12 @@ class EmundusModelEvaluation extends JModelList
 			$this->_applicants = array_merge($this->_applicants, $res);
 			if (empty($current_fnum))
 			{
-				if (!empty($step_id)) {
-					/*$limit = $session->get('limit');
-
-					$limitStart = $session->get('limitstart');
-					if ($limit > 0)
-					{
-						$limit = $limit / $nb_steps;
-						$limitStart = $limitStart / $nb_steps;
-
-
-						$query .= " limit $limitStart, $limit ";
-					}*/
-				} else {
+				/**
+				 * when step_ids are provided, we are doing multiple queries to get evaluations for each step, so we can not
+				 * limit the results on each query, we will limit the results after merging all the results
+				 * TODO: find a way to limit the results on each query
+				 */
+				if (empty($step_id)) {
 					$limit = $session->get('limit');
 
 					$limitStart = $session->get('limitstart');
