@@ -1879,6 +1879,35 @@ if(value == 1) {
 			EmundusHelperUpdate::createSchedulerTask('Delete old action logs', 'delete.actionlogs', $execution_rules, $cron_rules, $params);
 			//
 
+			$query->clear()
+				->select('id')
+				->from($this->db->quoteName('#__menu'))
+				->where('alias = ' . $this->db->quote('forms'))
+				->where('menutype = ' . $this->db->quote('onboardingmenu'));
+
+			$this->db->setQuery($query);
+			$forms_menu = $this->db->loadResult();
+
+			$datas     = [
+				'menutype'     => 'onboardingmenu',
+				'title'        => 'Prévisulation de formulaire',
+				'alias'        => 'preview',
+				'link'         => 'index.php?option=com_fabrik&view=form',
+				'type'         => 'component',
+				'component_id' => ComponentHelper::getComponent('com_fabrik')->id,
+				'params'       => ['menu_show' => 0]
+			];
+			$preview_menu = EmundusHelperUpdate::addJoomlaMenu($datas, $forms_menu);
+
+			if ($preview_menu['status'])
+			{
+				EmundusHelperUpdate::displayMessage('Le menu de prévisualisation de formulaire a été créé', 'success');
+			}
+			else
+			{
+				throw new \Exception('Erreur lors de la création du menu de prévisualisation.');
+			}
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)
