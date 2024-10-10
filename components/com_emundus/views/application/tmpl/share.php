@@ -4,7 +4,11 @@
  * User: yoan
  * Date: 20/01/15
  * Time: 17:51
- */ ?>
+ */
+
+use Joomla\CMS\Language\Text;
+
+?>
 
 <?php if (!empty($this->access['groups'])): ?>
     <div class="row">
@@ -12,7 +16,7 @@
             <div class="panel-heading em-container-share-heading !tw-bg-profile-full">
                 <h3 class="panel-title">
                     <span class="material-symbols-outlined">visibility</span>
-					<?= JText::_('COM_EMUNDUS_ACCESS_CHECK_ACL'); ?>
+					<?= Text::_('COM_EMUNDUS_ACCESS_CHECK_ACL'); ?>
                 </h3>
                 <div class="btn-group pull-right">
                     <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-symbols-outlined">arrow_back</span></button>
@@ -28,7 +32,7 @@
                                 <th></th>
                             </tr>
                             <tr>
-                                <th><?= JText::_('COM_EMUNDUS_ACCESS_GROUPS')?></th>
+                                <th><?= Text::_('COM_EMUNDUS_ACCESS_GROUPS')?></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -60,7 +64,7 @@
 								<?php foreach ($this->access['groups'] as $gid => $groups) :?>
 									<?php foreach ($groups['actions'] as $aid => $action) :?>
                                         <th colspan="4" id="<?= $aid?>">
-											<?= JText::_($action['aname'])?>
+											<?= Text::_($action['aname'])?>
                                         </th>
 									<?php endforeach;?>
 									<?php break;
@@ -69,10 +73,10 @@
                             <tr>
 								<?php foreach($this->access['groups'] as $gid => $groups) :?>
 									<?php foreach($groups['actions'] as $actions) :?>
-                                        <th class="tw-font-normal"><?= JText::_('COM_EMUNDUS_ACCESS_CREATE')?></th>
-                                        <th class="tw-font-normal"><?= JText::_('COM_EMUNDUS_ACCESS_RETRIEVE')?></th>
-                                        <th class="tw-font-normal"><?= JText::_('COM_EMUNDUS_ACCESS_UPDATE')?></th>
-                                        <th class="tw-font-normal"><?= JText::_('COM_EMUNDUS_ACTIONS_DELETE')?></th>
+                                        <th class="tw-font-normal"><?= Text::_('COM_EMUNDUS_ACCESS_CREATE')?></th>
+                                        <th class="tw-font-normal"><?= Text::_('COM_EMUNDUS_ACCESS_RETRIEVE')?></th>
+                                        <th class="tw-font-normal"><?= Text::_('COM_EMUNDUS_ACCESS_UPDATE')?></th>
+                                        <th class="tw-font-normal"><?= Text::_('COM_EMUNDUS_ACTIONS_DELETE')?></th>
 									<?php endforeach;?>
 									<?php break; endforeach;?>
                             </tr>
@@ -94,11 +98,11 @@
 													}
 
 													if ($groups['actions'][$def_action_id][$crud] > 0) {
-														$td .= '<span class="material-symbols-outlined em-green-500-color" title="' . JText::_('COM_EMUNDUS_ACTIONS_ACTIVE') . '">check_box</span>';
+														$td .= '<span class="material-symbols-outlined em-green-500-color" title="' . Text::_('COM_EMUNDUS_ACTIONS_ACTIVE') . '">check_box</span>';
 													} else if ($groups['actions'][$def_action_id][$crud] < 0) {
-														$td .= '<span class="material-symbols-outlined em-red-600-color" title="' . JText::_('BLOCKED') . '">block</span>';
+														$td .= '<span class="material-symbols-outlined em-red-600-color" title="' . Text::_('BLOCKED') . '">block</span>';
 													} else {
-														$td .= '<span class="material-symbols-outlined" title="' . JText::_('UNDEFINED') . '">check_box_outline_blank</span>';
+														$td .= '<span class="material-symbols-outlined" title="' . Text::_('UNDEFINED') . '">check_box_outline_blank</span>';
 													}
 													$td .= '</td>';
 
@@ -131,7 +135,7 @@
                     <th></th>
                 </tr>
                 <tr>
-                    <th><?= JText::_('COM_EMUNDUS_ACCESS_USER')?></th>
+                    <th><?= Text::_('COM_EMUNDUS_ACCESS_USER')?></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -165,10 +169,10 @@
                 <tr>
 					<?php foreach($this->access['users'] as $gid => $groups):?>
 						<?php foreach($groups['actions'] as $actions):?>
-                            <th class="tw-font-normal"><?= JText::_('COM_EMUNDUS_ACCESS_CREATE')?></th>
-                            <th class="tw-font-normal"><?= JText::_('COM_EMUNDUS_ACCESS_RETRIEVE')?></th>
-                            <th class="tw-font-normal"><?= JText::_('COM_EMUNDUS_ACCESS_UPDATE')?></th>
-                            <th class="tw-font-normal"><?= JText::_('COM_EMUNDUS_ACTIONS_DELETE')?></th>
+                            <th class="tw-font-normal"><?= Text::_('COM_EMUNDUS_ACCESS_CREATE')?></th>
+                            <th class="tw-font-normal"><?= Text::_('COM_EMUNDUS_ACCESS_RETRIEVE')?></th>
+                            <th class="tw-font-normal"><?= Text::_('COM_EMUNDUS_ACCESS_UPDATE')?></th>
+                            <th class="tw-font-normal"><?= Text::_('COM_EMUNDUS_ACTIONS_DELETE')?></th>
 						<?php endforeach;?>
 
 						<?php break; endforeach;?>
@@ -191,11 +195,11 @@
 										}
 
 										if ($groups['actions'][$def_action_id][$crud] > 0) {
-											$td .= '<span class="material-symbols-outlined em-green-600-color" title="' . JText::_('COM_EMUNDUS_ACTIONS_ACTIVE') . '">check_box</span>';
+											$td .= '<span class="material-symbols-outlined em-green-600-color" title="' . Text::_('COM_EMUNDUS_ACTIONS_ACTIVE') . '">check_box</span>';
 										} else if ($groups['actions'][$def_action_id][$crud] < 0) {
-											$td .= '<span class="material-symbols-outlined em-red-600-color" title="' . JText::_('BLOCKED') . '">block</span>';
+											$td .= '<span class="material-symbols-outlined em-red-600-color" title="' . Text::_('BLOCKED') . '">block</span>';
 										} else {
-											$td .= '<span class="material-symbols-outlined" title="' . JText::_('UNDEFINED') . '">check_box_outline_blank</span>';
+											$td .= '<span class="material-symbols-outlined" title="' . Text::_('UNDEFINED') . '">check_box_outline_blank</span>';
 										}
 										$td .= '</td>';
 
@@ -315,7 +319,7 @@
         if(e.handle !== true)
         {
             e.handle = true;
-            let r = confirm("<?= JText::_("COM_EMUNDUS_ACCESS_ARE_YOU_SURE_YOU_WANT_TO_REMOVE_THIS_ACCESS")?>");
+            let r = confirm("<?= Text::_("COM_EMUNDUS_ACCESS_ARE_YOU_SURE_YOU_WANT_TO_REMOVE_THIS_ACCESS")?>");
 
             if(r) {
                 $.ajax({

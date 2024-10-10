@@ -3943,10 +3943,20 @@ class EmundusModelApplication extends ListModel
 
 			try
 			{
-				$db = $this->getDbo();
+				$db = Factory::getContainer()->get('DatabaseDriver');
 				$db->setQuery($query);
 				$res = $db->loadAssocList();
 
+
+				$query = $db->createQuery();
+				$query->select('id, label')
+					->from('#__emundus_setup_actions')
+					->where('status = 1');
+
+				$db->setQuery($query);
+				$actions = $db->loadAssocList('id');
+
+				$groups_actions = [];
 				foreach($res as $r)
 				{
 					$access['groups'][$r['group_id']]['gname'] = $r['gname'];
@@ -3957,6 +3967,15 @@ class EmundusModelApplication extends ListModel
 					$access['groups'][$r['group_id']]['actions'][$r['action_id']]['r'] = $r['r'];
 					$access['groups'][$r['group_id']]['actions'][$r['action_id']]['u'] = $r['u'];
 					$access['groups'][$r['group_id']]['actions'][$r['action_id']]['d'] = $r['d'];
+
+					if (isset($groups_actions[$r['group_id']]))
+					{
+						$groups_actions[$r['group_id']][] = $r['action_id'];
+					}
+					else
+					{
+						$groups_actions[$r['group_id']] = [$r['action_id']];
+					}
 				}
 				$query = "SELECT jeacl.group_id, jeacl.action_id as acl_action_id, jeacl.c as acl_c, jeacl.r as acl_r, jeacl.u as acl_u, jeacl.d as acl_d,
                         jega.fnum, jega.action_id, jega.c, jega.r, jega.u, jega.d, jesa.label as aname,
@@ -3972,35 +3991,41 @@ class EmundusModelApplication extends ListModel
 				foreach($res as $r)
 				{
 					$overrideAction = ($r['acl_action_id'] == $r['action_id']) ? true : false;
-					if(isset($access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]))
+					if (isset($access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]))
 					{
-						$access['groups'][$r['group_id']]['isAssoc'] = true;
-						$access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['c'] += ($overrideAction) ? (($r['acl_c']==-2 || $r['c']==-2) ? -2 : max($r['acl_c'], $r['c'])) : $r['acl_c'];
-						$access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['r'] += ($overrideAction) ? (($r['acl_r']==-2 || $r['r']==-2) ? -2 : max($r['acl_r'], $r['r'])) : $r['acl_r'];
-						$access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['u'] += ($overrideAction) ? (($r['acl_u']==-2 || $r['u']==-2) ? -2 : max($r['acl_u'], $r['u'])) : $r['acl_u'];
-						$access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['d'] += ($overrideAction) ? (($r['acl_d']==-2 || $r['d']==-2) ? -2 : max($r['acl_d'], $r['d'])) : $r['acl_d'];
+						$access['groups'][$r['group_id']]['isAssoc']                           = true;
+						$access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['c'] += ($overrideAction) ? (($r['acl_c'] == -2 || $r['c'] == -2) ? -2 : max($r['acl_c'], $r['c'])) : $r['acl_c'];
+						$access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['r'] += ($overrideAction) ? (($r['acl_r'] == -2 || $r['r'] == -2) ? -2 : max($r['acl_r'], $r['r'])) : $r['acl_r'];
+						$access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['u'] += ($overrideAction) ? (($r['acl_u'] == -2 || $r['u'] == -2) ? -2 : max($r['acl_u'], $r['u'])) : $r['acl_u'];
+						$access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['d'] += ($overrideAction) ? (($r['acl_d'] == -2 || $r['d'] == -2) ? -2 : max($r['acl_d'], $r['d'])) : $r['acl_d'];
 					}
 					else
 					{
-						$access['groups'][$r['group_id']]['gname'] = $r['gname'];
-						$access['groups'][$r['group_id']]['isAssoc'] = true;
-						$access['groups'][$r['group_id']]['isACL'] = false;
+						$access['groups'][$r['group_id']]['gname']                                 = $r['gname'];
+						$access['groups'][$r['group_id']]['isAssoc']                               = true;
+						$access['groups'][$r['group_id']]['isACL']                                 = false;
 						$access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['aname'] = $r['aname'];
-						$access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['c'] = ($overrideAction) ? (($r['acl_c']==-2 || $r['c']==-2) ? -2 : max($r['acl_c'], $r['c'])) : $r['acl_c'];
-						$access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['r'] = ($overrideAction) ? (($r['acl_r']==-2 || $r['r']==-2) ? -2 : max($r['acl_r'], $r['r'])) : $r['acl_r'];
-						$access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['u'] = ($overrideAction) ? (($r['acl_u']==-2 || $r['u']==-2) ? -2 : max($r['acl_u'], $r['u'])) : $r['acl_u'];
-						$access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['d'] = ($overrideAction) ? (($r['acl_d']==-2 || $r['d']==-2) ? -2 : max($r['acl_d'], $r['d'])) : $r['acl_d'];
+						$access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['c']     = ($overrideAction) ? (($r['acl_c'] == -2 || $r['c'] == -2) ? -2 : max($r['acl_c'], $r['c'])) : $r['acl_c'];
+						$access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['r']     = ($overrideAction) ? (($r['acl_r'] == -2 || $r['r'] == -2) ? -2 : max($r['acl_r'], $r['r'])) : $r['acl_r'];
+						$access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['u']     = ($overrideAction) ? (($r['acl_u'] == -2 || $r['u'] == -2) ? -2 : max($r['acl_u'], $r['u'])) : $r['acl_u'];
+						$access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['d']     = ($overrideAction) ? (($r['acl_d'] == -2 || $r['d'] == -2) ? -2 : max($r['acl_d'], $r['d'])) : $r['acl_d'];
 					}
 				}
 
-				$query = "SELECT jeua.*, ju.name as uname, jesa.label as aname
-                        FROM #__emundus_users_assoc as jeua
-                        LEFT JOIN #__users as ju on ju.id = jeua.user_id
-                        LEFT JOIN   #__emundus_setup_actions as jesa on jesa.id = jeua.action_id
-                        where  jeua.fnum like '".$fnum."' and jesa.status = 1
-                        ORDER BY jeua.fnum, jeua.user_id, jeua.action_id";
+				$query = $db->createQuery();
+
+				$query->select('eua.*, ju.name as uname, jesa.label as aname')
+					->from($db->quoteName('#__emundus_users_assoc', 'eua'))
+					->leftJoin($db->quoteName('#__users', 'ju') . ' ON ju.id = eua.user_id')
+					->leftJoin($db->quoteName('#__emundus_setup_actions', 'jesa') . ' ON jesa.id = eua.action_id')
+					->where('eua.fnum LIKE ' . $db->quote($fnum))
+					->andWhere('jesa.status = 1')
+					->order('eua.fnum, eua.user_id, eua.action_id');
+
 				$db->setQuery($query);
 				$res = $db->loadAssocList();
+
+				$users_actions = [];
 				foreach($res as $r)
 				{
 					if(isset($access['groups'][$r['user_id']]['actions'][$r['action_id']])) {
@@ -4015,6 +4040,37 @@ class EmundusModelApplication extends ListModel
 						$access['users'][$r['user_id']]['actions'][$r['action_id']]['r'] = $r['r'];
 						$access['users'][$r['user_id']]['actions'][$r['action_id']]['u'] = $r['u'];
 						$access['users'][$r['user_id']]['actions'][$r['action_id']]['d'] = $r['d'];
+					}
+
+					if (isset($users_actions[$r['user_id']])) {
+						$users_actions[$r['user_id']][] = $r['action_id'];
+					} else {
+						$users_actions[$r['user_id']] = [$r['action_id']];
+					}
+				}
+
+				foreach($actions as $action_id => $action) {
+					foreach($groups_actions as $group_id => $group_actions)
+					{
+						if (!in_array($action_id, $group_actions)) {
+							$access['groups'][$group_id]['actions'][$action_id] = [
+								'aname' => $action['label'],
+								'c' => 0,
+								'r' => 0,
+								'u' => 0,
+								'd' => 0
+							];
+						}
+					}
+
+					foreach($users_actions as $user_id => $user_actions) {
+						if (!in_array($action_id, $user_actions)) {
+							$access['users'][$user_id]['actions'][$action_id]['aname'] = $action['label'];
+							$access['users'][$user_id]['actions'][$action_id]['c'] = 0;
+							$access['users'][$user_id]['actions'][$action_id]['r'] = 0;
+							$access['users'][$user_id]['actions'][$action_id]['u'] = 0;
+							$access['users'][$user_id]['actions'][$action_id]['d'] = 0;
+						}
 					}
 				}
 			}
@@ -4123,26 +4179,33 @@ class EmundusModelApplication extends ListModel
 
 	private function _addUserAssoc($fnum, $crud, $aid, $uid, $value)
 	{
+		$inserted = false;
 
-		$actionQuery = "select jea.c, jea.r, jea.u, jea.d from #__emundus_acl as jea left join #__emundus_groups as jeg on jeg.group_id = jea.group_id
+		try {
+			$actionQuery = "select jea.c, jea.r, jea.u, jea.d from #__emundus_acl as jea left join #__emundus_groups as jeg on jeg.group_id = jea.group_id
         where jea.action_id = {$aid}  and jeg.user_id  = {$uid}";
-		$this->_db->setQuery($actionQuery);
-		$actions     = $this->_db->loadAssoc();
-		$actionQuery = "select jega.c, jega.r, jega.u, jega.d from #__emundus_group_assoc as jega left join #__emundus_groups as jeg on jeg.group_id = jega.group_id
+			$this->_db->setQuery($actionQuery);
+			$actions     = $this->_db->loadAssoc();
+			$actionQuery = "select jega.c, jega.r, jega.u, jega.d from #__emundus_group_assoc as jega left join #__emundus_groups as jeg on jeg.group_id = jega.group_id
         where jega.action_id = {$aid} and jeg.user_id  = {$uid} and jega.fnum like {$this->_db->quote($fnum)}";
-		$this->_db->setQuery($actionQuery);
-		$actionAssoc = $this->_db->loadAssoc();
-		if (!empty($actionAssoc)) {
-			$actions['c'] += $actionAssoc['c'];
-			$actions['r'] += $actionAssoc['r'];
-			$actions['u'] += $actionAssoc['u'];
-			$actions['d'] += $actionAssoc['d'];
-		}
-		$actions[$crud] = $value;
-		$query          = "INSERT INTO `#__emundus_group_assoc`(`user_id`, `action_id`, `fnum`, `c`, `r`, `u`, `d`) VALUES ($uid, $aid, " . $this->_db->quote($fnum) . ",{$actions['c']}, {$actions['r']}, {$actions['u']}, {$actions['d']})";
-		$this->_db->setQuery($query);
+			$this->_db->setQuery($actionQuery);
+			$actionAssoc = $this->_db->loadAssoc();
+			if (!empty($actionAssoc)) {
+				$actions['c'] += $actionAssoc['c'];
+				$actions['r'] += $actionAssoc['r'];
+				$actions['u'] += $actionAssoc['u'];
+				$actions['d'] += $actionAssoc['d'];
+			}
+			$actions[$crud] = $value;
+			$query          = "INSERT INTO `#__emundus_users_assoc`(`user_id`, `action_id`, `fnum`, `c`, `r`, `u`, `d`) VALUES ($uid, $aid, " . $this->_db->quote($fnum) . ",{$actions['c']}, {$actions['r']}, {$actions['u']}, {$actions['d']})";
+			$this->_db->setQuery($query);
 
-		return $this->_db->execute();
+			$inserted = $this->_db->execute();
+		} catch (Exception $e) {
+			Log::add('Failed to add user assoc : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $inserted;
 	}
 
 	public function updateUserAccess($fnum, $uid, $actionId, $crud, $value)
