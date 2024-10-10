@@ -673,7 +673,6 @@ class EmundusModelWorkflow extends JModelList
 
 			$query = $this->db->getQuery(true);
 
-			// update the existing types
 			$updates = [];
 			foreach ($already_existing_types as $type)
 			{
@@ -686,7 +685,6 @@ class EmundusModelWorkflow extends JModelList
 					$this->db->setQuery($query);
 					$action_id = $this->db->loadResult();
 
-					// update the action label
 					if (!empty($action_id)) {
 						$query->clear()
 							->update('#__emundus_setup_actions')
@@ -709,11 +707,9 @@ class EmundusModelWorkflow extends JModelList
 				}
 			}
 
-			// insert the new types
 			$inserts = [];
 			foreach ($new_types as $type)
 			{
-				// new types need a new line in the setup_actions table
 				$action         = new stdClass();
 				$action->name   = strtolower(str_replace(' ', '_', $type['label']));
 				$action->name   = preg_replace('/[^A-Za-z0-9_]/', '', $action->name);
@@ -739,28 +735,31 @@ class EmundusModelWorkflow extends JModelList
 				}
 				catch (Exception $e)
 				{
+					$inserts[] = false;
 					Log::add('Error while adding action: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
 				}
 
-				$query->clear()
-					->insert('#__emundus_setup_step_types')
-					->columns('label, action_id, parent_id')
-					->values($this->db->quote($type['label']) . ', ' . $action_id . ', ' . $type['parent_id']);
+				if (!empty($action_id)) {
+					$query->clear()
+						->insert('#__emundus_setup_step_types')
+						->columns('label, action_id, parent_id, ordering')
+						->values($this->db->quote($type['label']) . ', ' . $action_id . ', ' . $type['parent_id'] . ', 999');
 
-				try
-				{
-					$this->db->setQuery($query);
-					$inserts[] = $this->db->execute();
-				}
-				catch (Exception $e)
-				{
-					Log::add('Error while adding step type: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+					try
+					{
+						$this->db->setQuery($query);
+						$inserts[] = $this->db->execute();
+					}
+					catch (Exception $e)
+					{
+						$inserts[] = false;
+						Log::add('Error while adding step type: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+					}
 				}
 			}
 
 			$statuses = array_merge($updates, $inserts);
 
-			// delete the removed types
 			if (!empty($removed_types))
 			{
 				$removed_types_ids = array_map(function ($type) {
@@ -779,6 +778,7 @@ class EmundusModelWorkflow extends JModelList
 				}
 				catch (Exception $e)
 				{
+					$statuses[] = false;
 					Log::add('Error while deleting step types: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
 				}
 			}
