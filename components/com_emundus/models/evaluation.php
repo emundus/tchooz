@@ -1243,6 +1243,11 @@ class EmundusModelEvaluation extends JModelList
 					$list[] = $item;
 				}
 			}
+
+			$session = $this->app->getSession();
+			$limit = $session->get('limit', 0);
+			$limitstart = $session->get('limitstart', 0);
+			$list = array_slice($list, $limitstart, $limit);
 		} else {
 			$list = $this->getEvaluationsList();
 		}
@@ -1420,7 +1425,7 @@ class EmundusModelEvaluation extends JModelList
 			if (empty($current_fnum))
 			{
 				if (!empty($step_id)) {
-					$limit = $session->get('limit');
+					/*$limit = $session->get('limit');
 
 					$limitStart = $session->get('limitstart');
 					if ($limit > 0)
@@ -1430,7 +1435,7 @@ class EmundusModelEvaluation extends JModelList
 
 
 						$query .= " limit $limitStart, $limit ";
-					}
+					}*/
 				} else {
 					$limit = $session->get('limit');
 
