@@ -134,6 +134,9 @@ if (!empty($reseaux_filt))
 
 $protocol   = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
 $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+
+
+$mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_groupby_closed : false;
 ?>
 
 <?php if (in_array('intro', $mod_em_campaign_list_sections)): ?>
