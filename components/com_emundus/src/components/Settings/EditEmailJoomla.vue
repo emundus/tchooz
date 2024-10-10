@@ -306,7 +306,7 @@ export default {
           placeholder: '',
           value: '',
           label: 'COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_SMTP_PASSWORD',
-          helptext: 'COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_PORT_HELPTEXT',
+          helptext: 'COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_HOSTPASSWORD_HELPTEXT',
           displayed: true
         }
       ],

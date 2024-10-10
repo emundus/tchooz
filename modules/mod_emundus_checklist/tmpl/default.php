@@ -38,7 +38,7 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
     <div class="mod_emundus_checklist em-mb-24 ">
         <div class="em-flex-row em-flex-space-between em-pointer mod_emundus_checklist_expand">
             <div class="em-flex-row">
-                <h4><?php echo JText::_($preliminary_documents_title) ?></h4>
+                <h3><?php echo JText::_($preliminary_documents_title) ?></h3>
             </div>
             <span id="mod_emundus_checklist___expand_icon" class="material-symbols-outlined"
                   style="transform: rotate(-90deg);">expand_more</span>
@@ -58,7 +58,7 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
 <div class="mod_emundus_checklist">
     <div class="em-flex-row em-flex-space-between em-pointer mod_emundus_checklist_expand">
         <div class="em-flex-row">
-            <h4> <?php echo JText::_($forms_title) . ' ' . $index_form . '/' . $pages_no ?></h4>
+            <h3> <?php echo JText::_($forms_title) . ' ' . $index_form . '/' . $pages_no ?></h3>
         </div>
         <span id="mod_emundus_checklist___expand_icon" class="material-symbols-outlined">expand_more</span>
     </div>

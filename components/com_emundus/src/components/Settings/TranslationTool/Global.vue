@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_GLOBAL') }}</h1>
+    <h2 class="tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_GLOBAL') }}</h2>
     <div class="tw-mb-6 tw-flex tw-items-center tw-justify-between">
       <div>
         <p class="em-body-16-semibold tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_DEFAULT') }}</p>

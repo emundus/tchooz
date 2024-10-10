@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_ORPHELINS') }}</h1>
+    <h3 class="tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_ORPHELINS') }}</h3>
     <p class="tw-text-base tw-text-neutral-700 tw-mb-6 em-h-25" v-if="!saving && last_save == null">
       {{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE') }}</p>
     <div v-if="saving" class="tw-mb-6 tw-flex tw-items-center tw-justify-start">

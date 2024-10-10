@@ -59,9 +59,10 @@
     text-overflow: ellipsis;
 }
 
-#userDropdownMenu h5 {
+#userDropdownMenu p.em-profile-font {
     color: var(--neutral-900);
     font-family: var(--em-profile-font-title), Inter, sans-serif;
+    font-weight: 500;
 }
 
 #g-navigation .header-c .open > #userDropdownMenu a,
