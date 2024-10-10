@@ -721,11 +721,12 @@ class EmundusModelWorkflow extends JModelList
 				$action->u      = 1;
 				$action->d      = 1;
 				$action->status = 1;
+				$action->ordering = 999;
 
 				$query->clear()
 					->insert('#__emundus_setup_actions')
-					->columns('name, label, multi, c, r, u, d, status')
-					->values($this->db->quote($action->name) . ', ' . $this->db->quote($action->label) . ', ' . $action->multi . ', ' . $action->c . ', ' . $action->r . ', ' . $action->u . ', ' . $action->d . ', ' . $action->status);
+					->columns('name, label, multi, c, r, u, d, status,  ordering')
+					->values($this->db->quote($action->name) . ', ' . $this->db->quote($action->label) . ', ' . $action->multi . ', ' . $action->c . ', ' . $action->r . ', ' . $action->u . ', ' . $action->d . ', ' . $action->status . ', ' . $action->ordering);
 
 				try
 				{
@@ -742,8 +743,8 @@ class EmundusModelWorkflow extends JModelList
 				if (!empty($action_id)) {
 					$query->clear()
 						->insert('#__emundus_setup_step_types')
-						->columns('label, action_id, parent_id, ordering')
-						->values($this->db->quote($type['label']) . ', ' . $action_id . ', ' . $type['parent_id'] . ', 999');
+						->columns('label, action_id, parent_id')
+						->values($this->db->quote($type['label']) . ', ' . $action_id . ', ' . $type['parent_id']);
 
 					try
 					{
