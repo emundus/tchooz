@@ -224,7 +224,7 @@ endif;
                         <div>
 							<?php
 							if ($group->showLegend) :?>
-                                <h3 class="after-em-border after:tw-bg-neutral-500"><?php echo $group->title; ?></h3>
+                                <h2 class="after-em-border after:tw-bg-neutral-500"><?php echo $group->title; ?></h2>
 							<?php
 							endif;
 
