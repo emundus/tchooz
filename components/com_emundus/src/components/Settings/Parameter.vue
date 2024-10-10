@@ -17,7 +17,7 @@
             @click="displayHelp(parameter.helptext)">help_outline</span>
     </label>
 
-    <div name="input-field" class="tw-flex tw-items-end tw-gap-2">
+    <div name="input-field" class="tw-flex tw-items-center tw-gap-2">
       <!-- SELECT -->
       <select v-if="parameter.type === 'select'"
               class="dropdown-toggle w-select !tw-mb-0"

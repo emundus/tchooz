@@ -79,9 +79,9 @@
 
                 <div class="em-container-accordeon">
                     <div class="tw-flex tw-items-center tw-gap-1 tw-justify-between">
-                        <h3 class="tw-cursor-pointer !tw-mb-0" @click="displayAdvanced">
+                        <h2 class="tw-cursor-pointer !tw-mb-0" @click="displayAdvanced">
                             {{ translate('COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING') }}
-                        </h3>
+                        </h2>
                         <button
                             :title="translate('COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING')"
                             type="button"

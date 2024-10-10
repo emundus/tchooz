@@ -155,7 +155,7 @@ endif;
                             <p class="tw-mb-5 tw-text-neutral-600"><?= Text::_('COM_FABRIK_REQUIRED_ICON_NOT_DISPLAYED') ?></p>
 						<?php endif; ?>
                         <div class="page-header">
-                            <h2 class="after-em-border after:tw-bg-red-800"><?= Text::_($form->label) ?></h2>
+                            <h1 class="after-em-border after:tw-bg-red-800"><?= Text::_($form->label) ?></h1>
                         </div>
                     </div>
                 </div>
@@ -224,7 +224,7 @@ endif;
                         <div>
 							<?php
 							if ($group->showLegend) :?>
-                                <h3 class="after-em-border after:tw-bg-neutral-500"><?php echo $group->title; ?></h3>
+                                <h2 class="after-em-border after:tw-bg-neutral-500"><?php echo $group->title; ?></h2>
 							<?php
 							endif;
 
