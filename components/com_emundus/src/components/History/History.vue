@@ -63,7 +63,7 @@
       </table>
 
       <div v-else>
-        <h3>{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_NO_HISTORY') }}</h3>
+        <p>{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_NO_HISTORY') }}</p>
       </div>
     </template>
 

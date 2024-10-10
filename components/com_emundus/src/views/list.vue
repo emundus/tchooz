@@ -2,7 +2,7 @@
   <div id="onboarding_list" class="tw-w-full" :class="{'alert-banner-displayed': alertBannerDisplayed}">
     <skeleton v-if="loading.lists" height="40px" width="100%" class="tw-mb-4 tw-mt-4 tw-rounded-lg"></skeleton>
     <div v-else class="head tw-flex tw-items-center tw-justify-between">
-      <h2>{{ translate(currentList.title) }}</h2>
+      <h1>{{ translate(currentList.title) }}</h1>
       <a v-if="addAction" id="add-action-btn" class="tw-btn-primary tw-w-auto tw-cursor-pointer"
          @click="onClickAction(addAction)">{{ translate(addAction.label) }}</a>
     </div>
