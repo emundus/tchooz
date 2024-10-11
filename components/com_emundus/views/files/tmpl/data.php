@@ -107,9 +107,9 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
             <table class="table table-striped table-hover" id="em-data">
                 <thead>
                 <tr>
-					<?php foreach ($this->datas[0] as $kl => $v): ?>
-                        <th title="<?= strip_tags(Text::_($v)); ?>" id="<?= $kl; ?>">
-                            <div class="em-cell">
+	                <?php foreach ($this->keys_order as $kl => $order): ?>
+                        <th title="<?= strip_tags(Text::_($this->datas[0][$kl])); ?>" id="<?= $kl; ?>" >
+                        <div class="em-cell">
 								<?php if ($kl == 'check'): ?>
 
                                     <div class="selectContainer" id="selectContainer">
@@ -145,10 +145,10 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
                                         <span class="glyphicon glyphicon-sort-by-attributes"></span>
 									<?php endif; ?>
                                     <strong>
-										<?= strip_tags(Text::_($v)); ?>
+										<?= strip_tags(Text::_($this->datas[0][$kl])); ?>
                                     </strong>
 								<?php else: ?>
-									<?= strip_tags(Text::_($v)); ?>
+									<?= strip_tags(Text::_($this->datas[0][$kl])); ?>
 								<?php endif; ?>
 
                             </div>
@@ -161,17 +161,11 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
 				<?php foreach ($this->datas as $key => $line): ?>
 					<?php if ($key != 0): ?>
 
-						<?php foreach ($line as $k => $value) : ?>
-							<?php
-							if ($k == 'status')
-							{ ?>
-                                <tr>
-							<?php }
-							?>
+						<tr>
 
-						<?php endforeach; ?>
-
-						<?php foreach ($line as $k => $value) : ?>
+                            <?php foreach ($this->keys_order as $k => $order) :
+                                $value = $line[$k];
+                                ?>
 
                             <td <?php if ($k == 'check' && $value->class != null)
 							{
