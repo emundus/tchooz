@@ -583,25 +583,27 @@ class EmundusModelEvaluation extends JModelList
 					$steps = $m_workflow->getEvaluatorStepsByProgram($programme_id);
 
 					foreach($steps as $step) {
-						$query->clear()
-							->select('group_id')
-							->from('#__fabrik_formgroup')
-							->where('form_id = ' . $step->form_id);
+						if (EmundusHelperAccess::asAccessAction($step->action_id, 'r', Factory::getApplication()->getIdentity()->id)) {
+							$query->clear()
+								->select('group_id')
+								->from('#__fabrik_formgroup')
+								->where('form_id = ' . $step->form_id);
 
-						$this->db->setQuery($query);
-						$group_ids = $this->db->loadColumn();
+							$this->db->setQuery($query);
+							$group_ids = $this->db->loadColumn();
 
-						if (!empty($group_ids)) {
-							$group_elements = $this->getElementsByGroups(implode(',', $group_ids), $show_in_list_summary, $hidden);
+							if (!empty($group_ids)) {
+								$group_elements = $this->getElementsByGroups(implode(',', $group_ids), $show_in_list_summary, $hidden);
 
-							foreach ($group_elements as $group_element)
-							{
-								if (isset($group_element->element_id) && !empty($group_element->element_id))
+								foreach ($group_elements as $group_element)
 								{
-									$step_element = $h_list->getElementsDetailsByID($group_element->element_id)[0];
-									$step_element->table_label = Text::_($step_element->table_label);
-									$step_element->label = $step->label;
-									$elements[] = $step_element;
+									if (!empty($group_element->element_id))
+									{
+										$step_element = $h_list->getElementsDetailsByID($group_element->element_id)[0];
+										$step_element->table_label = Text::_($step_element->table_label);
+										$step_element->label = $step->label;
+										$elements[] = $step_element;
+									}
 								}
 							}
 						}

@@ -529,7 +529,7 @@ class EmundusModelWorkflow extends JModelList
 				{
 					if ($step->type == 2)
 					{
-						$steps[] = $step;
+						$steps[] = $this->getStepData($step->id);
 					}
 				}
 			}

@@ -351,6 +351,40 @@ function export_pdf(fnums, ids, default_export = '') {
             }
         });
 
+
+        /**
+         * Steps elements
+         *
+         * all inputs that contains emundus_checkall_tbl_[id] are checked
+         */
+
+
+        // TODO: replace assessment functions to export with new steps
+        document.querySelectorAll('#evaluation-steps-elts input[id^=emundus_checkall_tbl_]').forEach(elt => {
+            if (elt.checked == true) {
+                forms = 1;
+                form_checked = (elt.id.split('emundus_checkall_tbl_')[1]);
+                let id = elt.id.split('emundus_checkall_tbl_')[1];
+                pdf_elements['tables'].push(id);
+            }
+        });
+
+        document.querySelectorAll('#evaluation-steps-elts input[id^=emundus_checkall_grp_]').forEach(elt => {
+            if (elt.checked == true) {
+                forms = 1;
+                let id = elt.id.split('emundus_checkall_grp_')[1];
+                pdf_elements['groups'].push(id);
+            }
+        });
+
+        document.querySelectorAll('#evaluation-steps-elts input[id^=emundus_checkall_elm_]').forEach(elt => {
+            if (elt.checked == true) {
+                forms = 1;
+                let id = elt.id.split('emundus_checkall_elm_')[1];
+                pdf_elements['elements'].push(id);
+            }
+        });
+
         $('#aelts input:checked').each(function() {
             attach_checked.push($(this).val());
             attachment = 0;
@@ -580,14 +614,19 @@ function generate_pdf(json,pdf_elements= null) {
                     elements: elements,         /// default is UNDEFINED
                 },
                 success: function (result) {
-                    $('#extractstep').replaceWith('<div><p class="em-main-500-color">'+Joomla.Text._('COM_EMUNDUS_EXPORT_FINISHED')+'</p></div>');
-                    $('.swal2-confirm').replaceWith('<a class="tw-btn-primary em-w-auto" title="' + Joomla.Text._('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF') + '" href="' +result.json.path+ 'tmp/' + result.json.file + '" target="_blank"><span>' + Joomla.Text._('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF') + '</span></a>');
-                    const confirmBtn = document.querySelector('.em-swal-confirm-button');
-                    if (confirmBtn) {
-                        confirmBtn.style.opacity = '1';
-                    }                }, error: function (jqXHR) {
-                    $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">!!' + jqXHR.responseText + '</div>');
-                    $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.Text._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
+                    if (result.status) {
+                        $('#extractstep').replaceWith('<div><p class="em-main-500-color">' + Joomla.Text._('COM_EMUNDUS_EXPORT_FINISHED') + '</p></div>');
+                        $('.swal2-confirm').replaceWith('<a class="tw-btn-primary em-w-auto" title="' + Joomla.Text._('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF') + '" href="' + result.json.path + 'tmp/' + result.json.file + '" target="_blank"><span>' + Joomla.Text._('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF') + '</span></a>');
+                        const confirmBtn = document.querySelector('.em-swal-confirm-button');
+                        if (confirmBtn) {
+                            confirmBtn.style.opacity = '1';
+                        }
+                    } else {
+                        $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">' + result.json.msg + '</div>');
+                    }
+                },
+                error: function (jqXHR) {
+                    $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">' + jqXHR.responseText + '</div>');
                 }
             })
         } else {
@@ -611,16 +650,19 @@ function generate_pdf(json,pdf_elements= null) {
                     options: options,
                 },
                 success: function (result) {
-                    $('#extractstep').replaceWith('<div><p class="em-main-500-color">'+Joomla.Text._('COM_EMUNDUS_EXPORT_FINISHED')+'</p></div>');
-                    $('.swal2-confirm').replaceWith('<a class="tw-btn-primary em-w-auto" title="' + Joomla.Text._('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF') + '" href="' +result.json.path+ 'tmp/' + result.json.file + '" target="_blank"><span>' + Joomla.Text._('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF') + '</span></a>');
-                    const confirmBtn = document.querySelector('.em-swal-confirm-button');
-                    if (confirmBtn) {
-                        confirmBtn.style.opacity = '1';
+                    if (result.status) {
+                        $('#extractstep').replaceWith('<div><p class="em-main-500-color">'+Joomla.Text._('COM_EMUNDUS_EXPORT_FINISHED')+'</p></div>');
+                        $('.swal2-confirm').replaceWith('<a class="tw-btn-primary em-w-auto" title="' + Joomla.Text._('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF') + '" href="' +result.json.path+ 'tmp/' + result.json.file + '" target="_blank"><span>' + Joomla.Text._('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF') + '</span></a>');
+                        const confirmBtn = document.querySelector('.em-swal-confirm-button');
+                        if (confirmBtn) {
+                            confirmBtn.style.opacity = '1';
+                        }
+                    } else {
+                        $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">' + result.json.msg + '</div>');
                     }
                 },
                 error: function (jqXHR) {
                     $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">!!' + jqXHR.responseText + '</div>');
-                    $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.Text._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
                 }
             })
         }
