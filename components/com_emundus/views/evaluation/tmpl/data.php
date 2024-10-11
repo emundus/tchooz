@@ -159,7 +159,7 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
 												<?php if ($this->open_file_in_modal) : ?>
                                                     <div id="<?php echo $value->val ?>"
                                                          class="em-pointer evaluation-open-modal-file"
-                                                         onclick="clickOpenfile('<?php echo $value->val ?>')">
+                                                         onclick="clickOpenfile('<?= $value->val ?>', '<?= implode('|', $fnums) ?>')">
 														<?php if (isset($value->photo) && !$anonymize_data) : ?>
                                                             <div class="em_list_photo"><?= $value->photo; ?></div>
 														<?php endif; ?>
@@ -244,36 +244,6 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
         </div>
 	<?php endif; ?>
 
-
-	<?php
-
-	if ($this->open_file_in_modal)
-	{
-		require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
-		$hash = EmundusHelperCache::getCurrentGitHash();
-		?>
-        <div id="em-files"
-             context="files"
-             user="<?= $this->user->id; ?>"
-             ratio="<?= $this->modal_ratio; ?>"
-             type="evaluation"
-             base="<?= JURI::base(); ?>"
-        >
-        </div>
-
-        <script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
-        <script>
-            function clickOpenfile(fnum) {
-                const fnums = <?= json_encode($fnums) ?>;
-                var event = new CustomEvent('openSingleApplicationWithFnum', {detail: {fnum: fnum, fnums: fnums}});
-                window.dispatchEvent(event);
-            }
-        </script>
-		<?php
-	}
-	?>
-
-
     <script type="text/javascript">
         // todo: maybe try to reload actions here ?
 
@@ -347,8 +317,13 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
             countFiles.style.display = 'block';
             countFiles.style.backgroundColor = '#EDEDED';
 
+
             if (!containerResult) {
                 containerResult = document.querySelector('.container-result');
+            }
+
+            if (!headerNav) {
+                const headerNav = document.querySelector('#g-navigation .g-container');
             }
 
             $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
