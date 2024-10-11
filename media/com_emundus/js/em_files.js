@@ -189,6 +189,18 @@ function reloadData(view,fnums = null) {
             }
         },
         error: function(jqXHR) {
+            removeLoader();
+
+            Swal.fire({
+                title: Joomla.Text._('COM_EMUNDUS_ERROR_OCCURED'),
+                icon: 'error',
+                customClass: {
+                    title: 'em-swal-title',
+                    confirmButton: 'em-swal-confirm-button',
+                    actions: 'em-swal-single-action'
+                },
+            })
+
             console.log(jqXHR.responseText);
         }
     });

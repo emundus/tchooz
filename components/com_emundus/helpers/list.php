@@ -16,6 +16,10 @@
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
+use Joomla\CMS\Language\Text;
+
 /**
  * Content Component Query Helper
  *
@@ -291,6 +295,31 @@ class EmundusHelperList
 							}
 						}
 					}
+				}
+			}
+		}
+
+		if (!empty($infos['campaign_id']) && EmundusHelperAccess::asPartnerAccessLevel(Factory::getApplication()->getIdentity()->id)) {
+			require_once(JPATH_SITE . '/components/com_emundus/models/campaign.php');
+			$m_campaign = new EmundusModelCampaign();
+			$evaluation_steps = $m_campaign->getAllCampaignWorkflows($infos['campaign_id'], [2]);
+
+			foreach ($evaluation_steps as $evaluation_step) {
+				$db = Factory::getContainer()->get('DatabaseDriver');
+				$query = $db->createQuery();
+
+				$query->select('fbtables.id AS table_id, fbtables.form_id, fbforms.label, fbtables.db_table_name, fbforms.params')
+					->from($db->quoteName('#__fabrik_forms', 'fbforms'))
+					->innerJoin($db->quoteName('#__fabrik_lists', 'fbtables') . ' ON ' . $db->quoteName('fbtables.form_id') . ' = ' . $db->quoteName('fbforms.id'))
+					->where($db->quoteName('fbtables.form_id') . ' = ' . $evaluation_step->form_id);
+
+				try {
+					$db->setQuery($query);
+					$evaluation_form = $db->loadObject();
+
+					$formsList[] = $evaluation_form;
+				} catch (Exception $e) {
+					Log::add('Failed to get evaluation step forms infos : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 				}
 			}
 		}
@@ -997,18 +1026,29 @@ class EmundusHelperList
 	*/
 	public static function getElementsDetailsByID($elements)
 	{
-		$db    = JFactory::getDBO();
-		$query = 'SELECT concat_ws("___",tab.db_table_name,element.name) as fabrik_element, element.id, element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin, element.ordering, element.hidden, element.published, element.id AS element_id, tab.db_table_name AS tab_name, element.plugin AS element_plugin,
-				groupe.id AS group_id, groupe.label AS group_label, element.params AS params, element.params, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label, tab.created_by_alias, tab.group_by AS tab_group_by
-				FROM #__fabrik_elements element
-				INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
-				INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
-				INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
-				WHERE element.id IN (' . $elements . ')';
-//echo str_replace("#_", "jos", $query);
-		$db->setQuery($query);
+		$element_details = [];
 
-		return @EmundusHelperFilters::insertValuesInQueryResult($db->loadObjectList(), array("sub_values", "sub_labels", "element_value"));
+		if (!empty($elements)) {
+			$db    = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
+
+			$query->select('concat_ws("___",tab.db_table_name,element.name) as fabrik_element, element.id, element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin, element.ordering, element.hidden, element.published, element.id AS element_id, tab.db_table_name AS tab_name, element.plugin AS element_plugin, groupe.id AS group_id, groupe.label AS group_label, element.params AS params, element.params, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label, tab.created_by_alias, tab.group_by AS tab_group_by')
+				->from($db->quoteName('#__fabrik_elements', 'element'))
+				->innerJoin($db->quoteName('#__fabrik_groups', 'groupe') . ' ON ' . $db->quoteName('element.group_id') . ' = ' . $db->quoteName('groupe.id'))
+				->innerJoin($db->quoteName('#__fabrik_formgroup', 'formgroup') . ' ON ' . $db->quoteName('groupe.id') . ' = ' . $db->quoteName('formgroup.group_id'))
+				->innerJoin($db->quoteName('#__fabrik_lists', 'tab') . ' ON ' . $db->quoteName('tab.form_id') . ' = ' . $db->quoteName('formgroup.form_id'))
+				->where($db->quoteName('element.id') . ' IN (' . $elements . ')');
+
+			try {
+				$db->setQuery($query);
+				$element_details = $db->loadObjectList();
+				$element_details = EmundusHelperFilters::insertValuesInQueryResult($element_details, array("sub_values", "sub_labels", "element_value"));
+			} catch (Exception $e) {
+				Log::add('Error in getElementsDetailsByID: ' . $e->getMessage(), Log::ERROR, 'emundus');
+			}
+		}
+
+		return $element_details;
 	}
 
 	/*

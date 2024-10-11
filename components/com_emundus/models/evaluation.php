@@ -14,6 +14,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
 use PhpOffice\PhpWord\TemplateProcessor;
+use Joomla\CMS\Language\Text;
 
 defined('_JEXEC') or die('Restricted access');
 define('R_MD5_MATCH', '/^[a-f0-9]{32}$/i');
@@ -597,7 +598,10 @@ class EmundusModelEvaluation extends JModelList
 							{
 								if (isset($group_element->element_id) && !empty($group_element->element_id))
 								{
-									$elements[] = $h_list->getElementsDetailsByID($group_element->element_id)[0];
+									$step_element = $h_list->getElementsDetailsByID($group_element->element_id)[0];
+									$step_element->table_label = Text::_($step_element->table_label);
+									$step_element->label = $step->label;
+									$elements[] = $step_element;
 								}
 							}
 						}
@@ -1281,6 +1285,10 @@ class EmundusModelEvaluation extends JModelList
 		{
 			$m_worfklow = new EmundusModelWorkflow();
 			$step_data  = $m_worfklow->getStepData($step_id);
+
+			if (empty($step_data->table)) {
+				throw new Exception(sprintf(Text::_('COM_EMUNDUS_BUILD_WHERE_STEP_CONFIGURATION_ERROR'), $step_data->label));
+			}
 
 			$already_joined_tables[$step_data->table] = $step_data->table;
 

@@ -84,6 +84,7 @@ class EmundusViewExport_select_columns extends JViewLegacy
 			require_once(JPATH_ROOT . '/components/com_emundus/models/evaluation.php');
 			$m_eval = new EmundusModelEvaluation;
 			$this->elements = $m_eval->getEvaluationStepsElementsName(0, 0, $code);
+			$this->form = '';
 		}
 		else {
 			$this->elements = EmundusHelperFiles::getElements($code, $camps, [], $profile);

@@ -2761,7 +2761,7 @@ class EmundusModelCampaign extends ListModel
 	 * @param $campaign_id int
 	 * @return array
 	 */
-	public function getAllCampaignWorkflows($campaign_id)
+	public function getAllCampaignWorkflows($campaign_id, $step_types = [1])
 	{
 		$steps = [];
 
@@ -2779,7 +2779,7 @@ class EmundusModelCampaign extends ListModel
 						$wf_data = $m_workflow->getWorkflow($workflow->id);
 
 						foreach ($wf_data['steps'] as $step) {
-							if ($step->type == 1) {
+							if (in_array($step->type, $step_types)) {
 								$step->profile = $step->profile_id;
 								$steps[] = $step;
 							}
