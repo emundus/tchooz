@@ -754,7 +754,7 @@ class plgUserEmundus extends CMSPlugin
 		$userid = (int) $user['id'];
 
 		include_once(JPATH_SITE.'/components/com_emundus/helpers/menu.php');
-		$url = EmundusHelperMenu::getHomepageLink();
+		$url = EmundusHelperMenu::getLogoutRedirectLink();
 
 		// Make sure we're a valid user first
 		if ($user['id'] == 0 && !$my->get('tmp_user')) {
