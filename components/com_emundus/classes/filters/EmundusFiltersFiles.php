@@ -827,6 +827,11 @@ class EmundusFiltersFiles extends EmundusFilters
 		{
 			$this->h_cache->set('em_default_filters_' . $active_menu->id, $this->applied_filters);
 		}
+
+		$session_filters = $session->get('em-applied-filters', []);
+		if ((isset($config['force_reload_on_refresh']) && $config['force_reload_on_refresh']) || empty($session_filters)) {
+			$session->set('em-applied-filters', $this->applied_filters);
+		}
 	}
 
 	private function addSessionFilters($session_values)

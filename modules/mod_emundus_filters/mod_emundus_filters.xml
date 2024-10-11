@@ -18,6 +18,7 @@
     <config>
         <fields name="params">
             <fieldset name="basic">
+                <field type="checkbox" name="force_reload_on_refresh" default="0" label="MOD_EM_FILTER_FORCE_RELOAD_ON_REFRESH"/>
                 <field type="list" name="filter_on_fnums" label="MOD_EMUNDUS_FILTER_FILTER_ON_FNUM" default="1">
                     <option value="1">JYES</option>
                     <!--<option value="0">JNO</option>-->
