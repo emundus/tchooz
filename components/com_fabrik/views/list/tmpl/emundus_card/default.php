@@ -174,7 +174,9 @@ endif;
         // Load skeleton
         let header = document.querySelector('.page-header');
         if (header) {
-            document.querySelector('.page-header h2').style.opacity = 0;
+            if(header.querySelector('h2')) {
+                document.querySelector('.page-header h2').style.opacity = 0;
+            }
             document.querySelector('.page-header .em-list-intro').style.opacity = 0;
             header.classList.add('skeleton');
         }
