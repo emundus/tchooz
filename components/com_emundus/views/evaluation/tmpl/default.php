@@ -155,6 +155,35 @@ if ($this->open_file_in_modal) {
 
         </div>
         <div class="panel panel-default"></div>
+
+	    <?php
+
+	    if ($this->open_file_in_modal)
+	    {
+		    require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
+		    $hash = EmundusHelperCache::getCurrentGitHash();
+		    ?>
+            <div id="em-files"
+                 context="files"
+                 user="<?= $this->user->id; ?>"
+                 ratio="<?= $this->modal_ratio; ?>"
+                 type="evaluation"
+                 base="<?= JURI::base(); ?>"
+            >
+            </div>
+
+            <script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
+            <script>
+                function clickOpenfile(fnum, fnums = '') {
+                    fnums = fnums.split('|');
+
+                    var event = new CustomEvent('openSingleApplicationWithFnum', {detail: {fnum: fnum, fnums: fnums}});
+                    window.dispatchEvent(event);
+                }
+            </script>
+		    <?php
+	    }
+	    ?>
     </div>
 </div>
 </div>

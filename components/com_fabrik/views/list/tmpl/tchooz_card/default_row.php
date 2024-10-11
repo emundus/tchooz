@@ -26,6 +26,7 @@ $not_displayed_headings = ['fabrik_select', 'fabrik_actions'];
 $show_delete_btn = strpos($this->_row->data->fabrik_actions, 'delete') !== false;
 $show_edit_btn = strpos($this->_row->data->fabrik_actions, 'fabrik_edit') !== false;
 $show_details_btn = strpos($this->_row->data->fabrik_actions, 'fabrik_view') !== false;
+$btn_fields = [];
 
 foreach ($this->headings as $heading => $label) {
     if (in_array($heading, $not_displayed_headings)) {
@@ -37,6 +38,8 @@ foreach ($this->headings as $heading => $label) {
             $tags[] = $this->_row->data->$heading;
         } elseif (strpos($this->cellClass[$heading]['class'], 'list_material_icons') !== false) {
             $description_fields[] = $heading;
+        } else if (strpos($this->cellClass[$heading]['class'], 'btn') !== false) {
+	        $btn_fields[] = $heading;
         } else {
             if (strpos($this->cellClass[$heading]['class'], 'list-title') !== false) {
                 $title = $this->_row->data->$heading;
@@ -104,7 +107,19 @@ foreach ($this->headings as $heading => $label) {
                 ?>
             </div>
         </div>
-        <div class="container-actions em-w-100">
+        <div class="container-actions em-w-100 tw-flex tw-flex-col tw-gap-2">
+		    <?php
+		    foreach ($this->headings as $heading => $label) {
+			    if (in_array($heading, $btn_fields) && !empty( $this->_row->data->$heading)) {
+				    ?>
+                    <a class="tw-w-full <?= $this->cellClass[$heading]['class'] ?>" target="_blank" href="<?= $this->_row->data->$heading ?>"><?= $label ?></a>
+
+				    <?php
+			    }
+		    }
+
+		    ?>
+
             <?php if (!empty($this->_row->data->fabrik_view_url && !empty($detail_url))) : ?>
                 <button type="button" class="btn btn-primary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
                    href="<?php echo $this->_row->data->fabrik_view_url ?>">
