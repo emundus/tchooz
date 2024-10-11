@@ -257,15 +257,30 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
             containerResult = document.querySelector('.container-result');
 
             setTimeout(() => {
-                if ($('.container-result')) {
-                    $('.container-result').css('top', (headerNav.offsetHeight + menuAction.offsetHeight) + 'px');
-                    $('.em-double-scroll-bar').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight - 2) + 'px');
+                if (!menuAction) {
+                    menuAction = document.querySelector('.em-menuaction');
                 }
-                if ($('#em-data th')) {
+
+                if (!headerNav) {
+                    headerNav = document.querySelector('#g-navigation .g-container');
+                }
+
+                if (!containerResult) {
+                    containerResult = document.querySelector('.container-result');
+                }
+
+                if (headerNav && menuAction) {
                     if (containerResult) {
-                        $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
-                    } else {
-                        $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight) + 'px');
+                        $('.container-result').css('top', (headerNav.offsetHeight + menuAction.offsetHeight) + 'px');
+                        $('.em-double-scroll-bar').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight - 2) + 'px');
+                    }
+
+                    if ($('#em-data th')) {
+                        if (containerResult) {
+                            $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
+                        } else {
+                            $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight) + 'px');
+                        }
                     }
                 }
             }, 2000);
