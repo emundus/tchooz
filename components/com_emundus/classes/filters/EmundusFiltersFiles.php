@@ -40,12 +40,12 @@ class EmundusFiltersFiles extends EmundusFilters
 		$this->setUsersFnumsAssoc();
 
 		if (!$skip) {
-			$session_filters = $this->app->getSession()->get('em-applied-filters', null);
 			$this->setMenuParams();
 			$this->setProfiles();
-            $this->setDefaultFilters($config);
+			$this->setDefaultFilters($config);
 			$this->setFilters();
 
+			$session_filters = $this->app->getSession()->get('em-applied-filters', null);
 			if (!empty($session_filters)) {
 				$this->addSessionFilters($session_filters);
 				$this->checkFiltersAvailability();
@@ -815,8 +815,6 @@ class EmundusFiltersFiles extends EmundusFilters
 				}
 			}
 		}
-
-		$session->set('em-applied-filters', $this->applied_filters);
 
 		// sort applied filters array by array entry 'order'
 		usort($this->applied_filters, function ($a, $b) {
