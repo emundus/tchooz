@@ -112,8 +112,10 @@ foreach ($this->headings as $heading => $label) {
 		    foreach ($this->headings as $heading => $label) {
 			    if (in_array($heading, $btn_fields) && !empty( $this->_row->data->$heading)) {
 				    ?>
-                    <a class="tw-w-full <?= $this->cellClass[$heading]['class'] ?>" target="_blank" href="<?= $this->_row->data->$heading ?>"><?= $label ?></a>
-
+                    <a class="tw-w-full <?= $this->cellClass[$heading]['class'] ?>" href="<?= $this->_row->data->$heading ?>"  <?= strpos($this->cellClass[$heading]['class'], 'blank') !== false ? 'target="_blank"' : '' ?>>
+					    <?= strpos($this->cellClass[$heading]['class'], 'blank') !== false ? '<span class="material-symbols-outlined">open_in_new</span>' : '' ?>
+					    <?= $label ?>
+                    </a>
 				    <?php
 			    }
 		    }
