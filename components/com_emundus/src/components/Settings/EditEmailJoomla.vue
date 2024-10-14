@@ -34,7 +34,7 @@
       <template v-if="displayEmailParameters">
         <!-- REPLYTO -->
         <div class="tw-mt-7 tw-flex tw-gap-7">
-          <div v-for="(parameter,index) in reply_to_parameters" class="tw-w-full" v-show="parameter.displayed">
+          <div v-for="(parameter) in reply_to_parameters" :key="parameter.param" class="tw-w-full" v-show="parameter.displayed">
             <Parameter
                 :parameter-object="parameter"
             />
@@ -58,7 +58,7 @@
 
           <!-- SMTP PARAMETERS -->
           <div class="tw-mt-7 tw-flex tw-gap-7">
-            <div v-for="(parameter,index) in smtp_parameters" class="tw-w-full" v-show="parameter.displayed">
+            <div v-for="(parameter) in smtp_parameters" :key="parameter.param" class="tw-w-full" v-show="parameter.displayed">
               <Parameter
                   :parameter-object="parameter"
               />
@@ -91,7 +91,7 @@
           <!-- SMTP AUTH PARAMETERS -->
           <template v-if="displaySmtpAuthParameters">
             <div class="tw-mt-7 tw-flex tw-gap-7">
-              <div v-for="(parameter,index) in smtp_auth_parameters" class="tw-w-full" v-show="parameter.displayed">
+              <div v-for="(parameter) in smtp_auth_parameters" :key="parameter.param" class="tw-w-full" v-show="parameter.displayed">
                 <Parameter
                     :parameter-object="parameter"
                 />
@@ -142,8 +142,6 @@
 </template>
 
 <script>
-import axios from "axios";
-
 import mixin from "@/mixins/mixin";
 import Swal from "sweetalert2";
 import Parameter from "@/components/Settings/Parameter.vue";
@@ -525,7 +523,7 @@ export default {
           this.default_email_sender_param.value == '' ||
           (this.custom_enable_parameter.value == 1 &&
               (
-                  (this.email_sender_param.value == '' || this.email_sender_param.value == null) ||
+                (this.email_sender_param.value == '' || this.email_sender_param.value == null) ||
                   this.smtp_parameters[0].value == '' || this.smtp_parameters[0].value == null)
           );
     },
