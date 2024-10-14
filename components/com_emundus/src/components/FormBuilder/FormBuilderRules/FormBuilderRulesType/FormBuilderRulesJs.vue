@@ -4,7 +4,7 @@
     <input class="tw-mt-2 tw-mb-4" v-model="label" :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_RULE_NAME')" />
 
     <div id="form-builder-rules-js-conditions-block">
-      <div v-for="(grouped_condition, index) in conditions" class="tw-mt-2 tw-rounded-lg tw-bg-white tw-px-3 tw-py-4 tw-flex tw-flex-col tw-gap-6">
+      <div v-for="(grouped_condition, index) in conditions" :key="'condition-' + index" class="tw-mt-2 tw-rounded-lg tw-bg-white tw-px-3 tw-py-4 tw-flex tw-flex-col tw-gap-6">
         <form-builder-rules-js-conditions @add-condition="addCondition" :elements="elements" :index="index" :conditions="grouped_condition" @remove-condition="removeCondition" :page="page" />
       </div>
 
@@ -22,7 +22,7 @@
     </div>
 
     <div id="form-builder-rules-js-actions-block">
-      <div v-for="(action, index) in actions" class="tw-mt-2 tw-rounded-lg tw-bg-white tw-px-3 tw-py-4 tw-flex tw-flex-col tw-gap-6">
+      <div v-for="(action, index) in actions" :key="index" class="tw-mt-2 tw-rounded-lg tw-bg-white tw-px-3 tw-py-4 tw-flex tw-flex-col tw-gap-6">
         <form-builder-rules-js-action :elements="elements" :index="index" :action="action" @remove-action="removeAction" :page="page" />
       </div>
 

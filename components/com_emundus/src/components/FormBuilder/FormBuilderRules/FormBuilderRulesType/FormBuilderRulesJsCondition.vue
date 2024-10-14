@@ -74,6 +74,7 @@ import fabrikMixin from '@/mixins/fabrik.js';
 import errorMixin from '@/mixins/errors.js';
 
 import formBuilderService from "@/services/formbuilder.js";
+import { useGlobalStore } from "@/stores/global.js";
 
 import Multiselect from 'vue-multiselect';
 import { watch } from 'vue';
@@ -115,6 +116,7 @@ export default {
       options: [],
       options_plugins: ['dropdown', 'databasejoin', 'radiobutton', 'checkbox'],
       conditionData: null,
+      currentLang: useGlobalStore().getShortLang
     };
   },
   created() {
@@ -144,7 +146,7 @@ export default {
   },
   methods: {
     labelTranslate({label}) {
-      return label ? label.fr : '';
+      return label ? label[this.currentLang] : '';
     },
     defineOptions(val) {
       if (this.options_plugins.includes(val.plugin)) {
