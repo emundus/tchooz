@@ -1326,6 +1326,7 @@ class EmundusControllersettings extends BaseController
 			$config['replyto']     = $this->input->getString('replyto', $this->app->get('replyto', ''));
 			$config['replytoname'] = $this->input->getString('replytoname', $this->app->get('replytoname', ''));
 			$config['mailer']      = $this->app->get('mailer', 'smtp');
+			$config['mailonline']  = $this->input->getInt('mailonline', 1);
 
 			$model    = $this->getModel('settings', 'EmundusModel');
 			$response['status'] = $model->saveEmailParameters($config, $custom_email_config);

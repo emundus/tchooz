@@ -489,6 +489,10 @@ export default {
     },
 
     showDisableWarning(parameter,oldVal,value) {
+      if (oldVal === null) {
+        return;
+      }
+
       if(value != 1) {
         Swal.fire({
           title: this.translate("COM_EMUNDUS_SURE_TO_DISABLE"),
@@ -507,6 +511,8 @@ export default {
           if(!response.isConfirmed) {
             this.mailonline_parameter.value = oldVal;
             this.mailonline_key = Math.random();
+          } else {
+            this.saveConfiguration();
           }
         })
       }
