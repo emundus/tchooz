@@ -28,6 +28,8 @@ class EmundusViewEvaluation extends JViewLegacy
 	protected $actions;
 	protected bool $use_module_for_filters;
 	protected bool $open_file_in_modal;
+
+	protected $modal_tabs = null;
 	protected string $modal_ratio = '66/33';
 	public function __construct($config = array())
 	{
@@ -45,7 +47,36 @@ class EmundusViewEvaluation extends JViewLegacy
 				$this->open_file_in_modal     = boolval($menu_params->get('em_open_file_in_modal', 0));
 
 				if ($this->open_file_in_modal) {
-					$this->modal_ratio = $menu_params->get('em_modal_ratio', '66/33');
+					$tabs = [];
+					$menu_tabs = $menu_params->get('modal_tabs');
+					foreach ($menu_tabs as $tab) {
+						$name = $tab->tab_type == 'component' ? $tab->tab_component : 'custom-' . $tab->tab_label;
+						$access = 1;
+
+						if ($tab->tab_type == 'component') {
+							switch($tab->tab_component) {
+								case 'application':
+									$access = 1;
+									break;
+								case 'attachments':
+									$access = 4;
+									break;
+								case 'comments':
+									$access = 10;
+									break;
+							}
+						}
+
+						$tabs[] = [
+							'label' => $tab->tab_name,
+							'type' => $tab->tab_type,
+							'name' => $name,
+							'url' => $tab->tab_url,
+							'access' => $access,
+						];
+					}
+
+					$this->modal_tabs = base64_encode(json_encode($tabs));
 				}
 			}
 		}

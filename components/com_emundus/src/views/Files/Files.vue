@@ -1,6 +1,7 @@
 <template>
   <div class="tw-ml-8 em-files">
     <Application v-if="currentFile" :file="currentFile" :type="$props.type" :user="$props.user" :ratio="$props.ratio"
+                 :defaultTabs="defaultTabs"
                  @getFiles="getFiles(true)"/>
 
     <div class="tw-mb-4 tw-flex tw-items-center tw-justify-between">
@@ -153,7 +154,7 @@
           </template>
         </el-table-column>
 
-        <template v-for="column in columns" v-if="column.show_in_list_summary == 1">
+        <template v-for="column in shownColumns" :key="column.name">
           <el-table-column
               v-if="column.name === 'status'"
               prop="status"
@@ -261,7 +262,7 @@ export default {
     Application,
     Tabs,
     'el-table': ElTable,
-	  multiselect
+    multiselect
   },
   props: {
     type: {
@@ -276,6 +277,10 @@ export default {
       type: String,
       required: true,
     },
+    defaultTabs: {
+      type: Array,
+      default: () => []
+    }
   },
   mixins: [errors],
   data: () => ({
@@ -324,6 +329,9 @@ export default {
     }
   }),
   created() {
+    console.log(this.defaultTabs);
+
+
     this.addKeyupEnterEventlistener();
 
     this.getLimit();
@@ -598,6 +606,11 @@ export default {
       if (this.openedFilters) {
         this.openedFilters = false;
       }
+    }
+  },
+  computed: {
+    shownColumns() {
+      return this.columns ? this.columns.filter(column => column.show_in_list_summary == 1) : [];
     }
   },
   watch: {

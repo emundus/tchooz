@@ -14,6 +14,7 @@
         :type="data.type"
         :user="data.user"
         :ratio="data.ratio"
+        :defaultTabs="data.tabs"
     ></Files>
 
     <ApplicationSingle
@@ -23,6 +24,7 @@
         :user="data.user"
         :ratio="data.ratio"
         :context="data.context || ''"
+        :defaultTabs="data.tabs"
     ></ApplicationSingle>
 
     <WorkflowEdit v-else-if="component === 'WorkflowEdit'" :workflow-id="datas.workflowid.value">
@@ -121,6 +123,14 @@ export default {
 
   created() {
     const globalStore = useGlobalStore();
+
+    if (this.data.tabs) {
+      this.data.tabs = JSON.parse(atob(this.data.tabs));
+
+      console.log(this.data.tabs);
+
+    }
+
 
     if (this.component === 'attachments') {
       fileService.isDataAnonymized().then(response => {

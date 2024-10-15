@@ -169,6 +169,7 @@ if ($this->open_file_in_modal) {
                  ratio="<?= $this->modal_ratio; ?>"
                  type="evaluation"
                  base="<?= JURI::base(); ?>"
+                 tabs="<?= $this->modal_tabs; ?>"
             >
             </div>
 

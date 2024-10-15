@@ -35,20 +35,22 @@
             </div>
           </div>
 
-          <div v-if="selected === 'application'" v-html="applicationform"></div>
-          <Attachments
-              v-if="selected === 'attachments'"
-              :fnum="file.fnum"
-              :user="$props.user"
-              :columns="['check', 'name','date','category','status']"
-              :displayEdit="false"
-          />
-          <Comments
-              v-if="selected === 'comments'"
-              :fnum="file.fnum"
-              :user="$props.user"
-              :access="access['10']"
-          />
+          <div v-for="tab in tabs" :key="tab.name">
+            <div v-if="tab.name === 'application' && selected === 'application'" v-html="applicationform"></div>
+            <Attachments
+                v-if="tab.name === 'attachments' && selected === 'attachments'"
+                :fnum="file.fnum"
+                :user="$props.user"
+                :columns="['check', 'name','date','category','status']"
+                :displayEdit="false"
+            />
+            <Comments
+                v-if="tab.name === 'comments' && selected === 'comments'"
+                :fnum="file.fnum"
+                :user="$props.user"
+                :access="access['10']"
+            />
+          </div>
         </div>
       </div>
 
@@ -91,6 +93,26 @@ export default {
       type: String,
       default: '66/33'
     },
+    defaultTabs: {
+      type: Array,
+      default: () => [
+        {
+          label: 'COM_EMUNDUS_FILES_APPLICANT_FILE',
+          name: 'application',
+          access: '1'
+        },
+        {
+          label: 'COM_EMUNDUS_FILES_ATTACHMENTS',
+          name: 'attachments',
+          access: '4'
+        },
+        {
+          label: 'COM_EMUNDUS_FILES_COMMENTS',
+          name: 'comments',
+          access: '10'
+        },
+      ]
+    }
   },
   mixins: [errors],
   data: () => ({

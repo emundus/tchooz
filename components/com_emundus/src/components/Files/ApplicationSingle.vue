@@ -42,22 +42,30 @@
           </div>
 
           <div v-if="!loading">
-            <div v-if="selected === 'application'" v-html="applicationform"></div>
-            <Attachments
-                v-if="selected === 'attachments'"
-                :fnum="selectedFile.fnum"
-                :user="$props.user"
-                :columns="['check', 'name','date','category','status']"
-                :displayEdit="false"
-                :key="selectedFile.fnum"
-            />
-            <Comments
-                v-if="selected === 'comments'"
-                :fnum="selectedFile.fnum"
-                :user="$props.user"
-                :access="access['10']"
-                :key="selectedFile.fnum"
-            />
+            <div v-for="tab in tabs" :key="tab.name">
+              <div v-if="tab.name === 'application' && selected === 'application'" v-html="applicationform"></div>
+              <Attachments
+                  v-if="tab.name === 'attachments' && selected === 'attachments'"
+                  :fnum="selectedFile.fnum"
+                  :user="$props.user"
+                  :columns="['check', 'name','date','category','status']"
+                  :displayEdit="false"
+                  :key="selectedFile.fnum"
+              />
+              <Comments
+                  v-if="tab.name === 'comments' && selected === 'comments'"
+                  :fnum="selectedFile.fnum"
+                  :user="$props.user"
+                  :access="access['10']"
+                  :key="selectedFile.fnum"
+              />
+
+              <div v-if="tab.type && tab.type === 'iframe' && selected === tab.name">
+                <iframe :id="tab.name" :src="tab.url" class="tw-w-full tw-h-screen">
+
+                </iframe>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -100,6 +108,10 @@ export default {
     context: {
       type: String,
       default: ''
+    },
+    defaultTabs: {
+      type: Array,
+      default: () => []
     }
   },
   mixins: [errors],
@@ -135,6 +147,10 @@ export default {
   }),
 
   created() {
+    if (this.defaultTabs.length > 0) {
+      this.tabs = this.defaultTabs;
+    }
+
     if (document.querySelector('body.layout-evaluation')) {
       document.querySelector('body.layout-evaluation').style.overflow = 'hidden';
     }
