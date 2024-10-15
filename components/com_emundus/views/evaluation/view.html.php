@@ -47,6 +47,8 @@ class EmundusViewEvaluation extends JViewLegacy
 				$this->open_file_in_modal     = boolval($menu_params->get('em_open_file_in_modal', 0));
 
 				if ($this->open_file_in_modal) {
+					$this->modal_ratio = $menu_params->get('em_modal_ratio', '66/33');
+
 					$tabs = [];
 					$menu_tabs = $menu_params->get('modal_tabs');
 					foreach ($menu_tabs as $tab) {
