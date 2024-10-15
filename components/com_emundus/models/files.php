@@ -4608,30 +4608,62 @@ class EmundusModelFiles extends JModelLegacy
 		}
 	}
 
-	public function getFormProgress($fnums)
+	/**
+	 * @param $fnums
+	 * @return array
+	 */
+	public function getFormProgress($fnums): array
 	{
-		$query        = $this->_db->getQuery(true);
-		$fnums_string = implode(',', $fnums);
+		$fnums_progress = [];
 
-		$query->select('fnum,form_progress')
-			->from($this->_db->quoteName('#__emundus_campaign_candidature'))
-			->where($this->_db->quoteName('fnum') . ' IN (' . $fnums_string . ')');
-		$this->_db->setQuery($query);
+		if (!empty($fnums))
+		{
+			$query        = $this->_db->createQuery();
+			$fnums_string = implode(',', $this->_db->quote($fnums));
 
-		return $this->_db->loadAssocList();
+			$query->select('fnum,form_progress')
+				->from($this->_db->quoteName('#__emundus_campaign_candidature'))
+				->where($this->_db->quoteName('fnum') . ' IN (' . $fnums_string . ')');
+
+			try
+			{
+				$this->_db->setQuery($query);
+				$fnums_progress = $this->_db->loadAssocList();
+			}
+			catch (Exception $e)
+			{
+				JLog::add('component/com_emundus/models/files | Error when try to get forms progress with query : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $fnums_progress;
 	}
 
-	public function getAttachmentProgress($fnums)
+	/**
+	 * @param $fnums
+	 * @return array
+	 */
+	public function getAttachmentProgress($fnums): array
 	{
-		$query        = $this->_db->getQuery(true);
-		$fnums_string = implode(',', $fnums);
+		$attachment_progress = [];
 
-		$query->select('fnum,attachment_progress')
-			->from($this->_db->quoteName('#__emundus_campaign_candidature'))
-			->where($this->_db->quoteName('fnum') . ' IN (' . $fnums_string . ')');
-		$this->_db->setQuery($query);
+		if (!empty($fnums)) {
+			$query = $this->_db->createQuery();
+			$fnums_string = implode(',', $this->_db->quote($fnums));
 
-		return $this->_db->loadAssocList();
+			$query->select('fnum,attachment_progress')
+				->from($this->_db->quoteName('#__emundus_campaign_candidature'))
+				->where($this->_db->quoteName('fnum') . ' IN (' . $fnums_string . ')');
+
+			try {
+				$this->_db->setQuery($query);
+				$attachment_progress = $this->_db->loadAssocList();
+			} catch (Exception $e) {
+				JLog::add('component/com_emundus/models/files | Error when try to get attachment progress with query : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $attachment_progress;
 	}
 
 	public function getUnreadMessages()

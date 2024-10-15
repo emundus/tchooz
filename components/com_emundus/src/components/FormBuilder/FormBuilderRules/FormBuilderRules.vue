@@ -135,11 +135,11 @@
 </template>
 
 <script>
-import formService from '../../../services/form';
+import formService from '@/services/form';
 
-import formBuilderMixin from '../../../mixins/formbuilder';
-import globalMixin from '../../../mixins/mixin';
-import errorMixin from '../../../mixins/errors';
+import formBuilderMixin from '@/mixins/formbuilder';
+import globalMixin from '@/mixins/mixin';
+import errorMixin from '@/mixins/errors';
 import Swal from 'sweetalert2';
 
 import { useFormBuilderStore } from "@/stores/formbuilder.js";
