@@ -4501,6 +4501,11 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
   transition: inherit;
 }
 
+/* FORM 102 REMOVE */
+.view-form:not(.com_emundus):not(.applicant-form) .em-applicant .col > div.emundus-form {
+  display: none;
+}
+
 /* VIEW FORM - FORMULAIRE */
 
 .view-form:not(.com_emundus),
