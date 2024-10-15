@@ -61,9 +61,7 @@
               />
 
               <div v-if="tab.type && tab.type === 'iframe' && selected === tab.name">
-                <iframe :id="tab.name" :src="tab.url" class="tw-w-full tw-h-screen">
-
-                </iframe>
+                <iframe :id="tab.name" :src="replaceTagsIframeUrl(tab.url)" class="tw-w-full tw-h-screen"></iframe>
               </div>
             </div>
           </div>
@@ -313,6 +311,9 @@ export default {
         this.render();
       }
     },
+    replaceTagsIframeUrl(url) {
+      return url.replace('{fnum}', this.selectedFile.fnum);
+    }
   },
   computed: {
     ratioStyle() {
