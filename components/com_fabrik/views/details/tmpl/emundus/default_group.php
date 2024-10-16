@@ -29,7 +29,7 @@ foreach ($this->elements as $element) :
 	$style = $element->hidden ? 'style="display:none"' : '';
 
 	if ($element->startRow) : ?>
-			<div class="em-border-unset row-fluid <?php echo $single ? 'fabrikElementContainer ' : ''; echo $single && $element->dataEmpty ? 'fabrikDataEmpty ' : ''; ?>" <?php echo $style?>><!-- start element row -->
+			<div class="em-border-unset row-fluid <?php echo $single ? 'fabrikElementContainer ' : ''; echo $single && $element->dataEmpty ? 'fabrikDataEmpty ' : ''; ?> <?= $this->is_iframe ? 'tw-p-1' : '' ?>" <?php echo $style?>><!-- start element row -->
 	<?php
 		$rowStarted = true;
 	endif;
