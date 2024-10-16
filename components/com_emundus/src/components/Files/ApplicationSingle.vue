@@ -147,6 +147,8 @@ export default {
   created() {
     if (this.defaultTabs.length > 0) {
       this.tabs = this.defaultTabs;
+      // set the first tab as selected
+      this.selected = this.defaultTabs[0].name;
     }
 
     if (document.querySelector('body.layout-evaluation')) {
