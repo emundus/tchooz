@@ -145,6 +145,8 @@ import Swal from 'sweetalert2';
 import { useFormBuilderStore } from "@/stores/formbuilder.js";
 import Popover from "@/components/Popover.vue";
 
+import {useGlobalStore} from "@/stores/global.js";
+
 export default {
   components: {Popover},
   props: {
@@ -382,7 +384,7 @@ export default {
   computed: {
     searchedRules() {
       if (this.keywords) {
-        let elements_found = this.elements.filter(element => element.label.fr.toLowerCase().includes(this.keywords.toLowerCase()));
+        let elements_found = this.elements.filter(element => element.label[useGlobalStore().getShortLang].toLowerCase().includes(this.keywords.toLowerCase()));
         return this.rules.filter(rule => {
           let found = false;
           if (rule.label) {
