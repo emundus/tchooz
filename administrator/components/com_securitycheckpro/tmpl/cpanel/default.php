@@ -197,7 +197,7 @@ while ( ($valor_a_mostrar == 0) && ($contador < 3) ){
                 <?php	}  ?>
                 </div>
                 <div class="margin-top-10">
-					<a href="?option=com_scheduler&view=tasks" class="btn btn-info" data-bs-toggle="tooltip" title="<?php echo $lang->_('COM_ADMIN_HELP_SCHEDULED_TASKS'); ?>"><i class="fa fa-cog"> </i></a>                
+					<a href="?option=com_scheduler&view=tasks" class="btn btn-info" data-bs-toggle="tooltip" title="<?php echo $lang->_('COM_ADMIN_HELP_SCHEDULED_TASKS'); ?>"><i class="fa fa-gear"> </i></a>                
                 </div>              
             </div>            
           </div>

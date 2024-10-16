@@ -316,7 +316,7 @@ class FilemanagerController extends SecuritycheckproBaseController
     /* Redirecciona a las excepciones del firewall */
     function GoToFirewallExceptions()
     {
-        $this->setRedirect('index.php?option=com_securitycheckpro&controller=firewallexceptions&view=firewallexceptions&'. Session::getFormToken() .'=1');
+        $this->setRedirect('index.php?option=com_securitycheckpro&controller=firewallconfig&view=firewallconfig&'. Session::getFormToken() .'=1');
     }
 
     /* Redirecciona al escanér de archivos del firewall */

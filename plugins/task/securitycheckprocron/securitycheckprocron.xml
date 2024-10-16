@@ -2,7 +2,7 @@
 <extension type="plugin" group="task" method="upgrade">
 	<name>plg_task_securitycheckprocron</name>
 	<author>José A. Luque</author>
-	<creationDate>17-06-2024</creationDate>
+	<creationDate>06-20-2024</creationDate>
 	<copyright>Copyright www.protegetuordenador.com</copyright>
 	<license>GNU/GPL v2 or later http://www.gnu.org/licenses/gpl-2.0.html</license>
 	<authorEmail>contacto@protegetuordenador.com</authorEmail>

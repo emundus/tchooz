@@ -66,6 +66,12 @@ function booleanlist($name, $attribs = null, $selected = null, $id=false)
 								</div>
 								
 								<div class="input-group mb-3">
+									<input class="btn btn-info" type="button" onclick="configure_toast('<?php echo Text::_('COM_SECURITYCHECKPRO_TOKEN_EXPLAIN') ?>','<?php echo Text::_('COM_SECURITYCHECKPRO_TOKEN_TEXT') ?>');" value="<?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?>" />
+									<span class="input-group-text" id="token_label" title="<?php echo Text::_('COM_SECURITYCHECKPRO_TOKEN_EXPLAIN') ?>"><?php echo Text::_('COM_SECURITYCHECKPRO_TOKEN_TEXT'); ?></span>
+									<input class="form-control" type="text" name="token" id="token" value="<?php echo $this->token ?>">									
+								</div>
+								
+								<div class="input-group mb-3">
 									<input class="btn btn-info" type="button" onclick="configure_toast('<?php echo Text::_('COM_SECURITYCHECKPRO_SECRET_KEY_EXPLAIN') ?>','<?php echo Text::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_GENERATE_KEY_TEXT') ?>');" value="<?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?>" />
 									<span class="input-group-text" id="generate_key_label" title="<?php echo Text::_('COM_SECURITYCHECKPRO_SECRET_KEY_EXPLAIN') ?>"><?php echo Text::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_GENERATE_KEY_TEXT'); ?></span>
 									<input class="form-control" type="text" name="secret_key" id="secret_key" value="<?php echo $this->secret_key ?>" readonly>

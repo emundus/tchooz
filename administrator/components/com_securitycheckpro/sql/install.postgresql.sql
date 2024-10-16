@@ -534,7 +534,7 @@ INSERT INTO "#__securitycheckpro_db" ("Product","vuln_type","Vulnerableversion",
 ('Joomla!','core','4.2.4','<=','4.0.0','>=','Joomla! core','One low vulnerability','Nov 09 2022','Joomla 4.0.0 to 4.2.4','update','4.2.5'),
 ('com_kunena','component','5.2.11',',<=','3.0.0','>=','Kunena Component','Not defined Vulnerability','Nov 23 2020','Version 5.2.11 and maybe lower','update','5.2.12'),
 ('com_kunena','component','6.0.4',',<=','4.0.0','>=','Kunena Component','Not defined Vulnerability','Nov 23 2020','Version 6.0.4 and maybe lower','update','6.0.5'),
-('Joomla!','core','4.2.7','<=','4.0.0','>=','Joomla! core','One critical vulnerability','Feb 16 2023','Joomla 4.0.0 to 4.2.7','update','4.2.8');;
+('Joomla!','core','4.2.7','<=','4.0.0','>=','Joomla! core','One critical vulnerability','Feb 16 2023','Joomla 4.0.0 to 4.2.7','update','4.2.8');
 
 DROP TABLE IF EXISTS "#__securitycheckpro_logs";
 CREATE TABLE IF NOT EXISTS "#__securitycheckpro_logs" (
@@ -652,7 +652,7 @@ CREATE TABLE IF NOT EXISTS "#__securitycheckpro_update_database" (
 "message" character varying(300),
 PRIMARY KEY ("id")
 );
-INSERT INTO "#__securitycheckpro_update_database" ("version") VALUES ('1.2.4');
+INSERT INTO "#__securitycheckpro_update_database" ("version") VALUES ('1.3.24');
 
 DROP TABLE IF EXISTS "#__securitycheckpro_users_control";
 CREATE TABLE "#__securitycheckpro_users_control" (
