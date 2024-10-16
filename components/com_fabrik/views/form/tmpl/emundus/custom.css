@@ -3,7 +3,7 @@
 form .fabrikGroupColumns.fabrikGroup .row {
     display: flex;
     flex-direction: row;
-    align-items: flex-end;
+    align-items: flex-start;
     column-gap: 8px;
     flex-wrap: nowrap;
 }
