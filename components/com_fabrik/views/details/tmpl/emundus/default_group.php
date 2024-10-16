@@ -13,7 +13,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 ?>
-<div class="row-striped em-border-radius-6">
+<div class="row-striped em-border-radius-6 <?= $this->is_iframe ? 'tw-p-2' : '' ?>">
 <?php
 $rowStarted = false;
 foreach ($this->elements as $element) :

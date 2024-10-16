@@ -21,10 +21,12 @@ require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'acces
 require_once JPATH_SITE . '/components/com_emundus/models/application.php';
 $m_application = new EmundusModelApplication();
 
-$fnum = Factory::getApplication()->input->getString('fnum','');
+$app = Factory::getApplication();
+
+$fnum = $app->input->getString('fnum','');
 $this->collaborators = $m_application->getSharedFileUsers(null, $fnum);
 $this->collaborator = false;
-$e_user = Factory::getApplication()->getSession()->get('emundusUser', null);
+$e_user = $app->getSession()->get('emundusUser', null);
 if(!empty($e_user->fnums)) {
 	$fnumInfos = $e_user->fnums[$fnum];
 	$this->collaborator = $fnumInfos->applicant_id != $e_user->id;
@@ -42,9 +44,12 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 <?php
 endif;
 
+
+$this->is_iframe = $app->input->get('iframe', 0);
+
 ?>
 
-<div id="fabrikDetailsContainer_<?php echo $form->id ?>">
+<div id="fabrikDetailsContainer_<?php echo $form->id ?>" <?= $this->is_iframe ? 'class="tw-p-4"' : '' ?>>
 
     <?php if ($user_profile_form) : ?>
         <?php
