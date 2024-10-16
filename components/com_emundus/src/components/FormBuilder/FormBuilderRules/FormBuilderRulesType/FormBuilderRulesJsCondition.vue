@@ -115,8 +115,7 @@ export default {
       ],
       options: [],
       options_plugins: ['dropdown', 'databasejoin', 'radiobutton', 'checkbox'],
-      conditionData: null,
-      currentLang: useGlobalStore().getShortLang
+      conditionData: null
     };
   },
   created() {
@@ -146,7 +145,7 @@ export default {
   },
   methods: {
     labelTranslate({label}) {
-      return label ? label[this.currentLang] : '';
+      return label ? label[useGlobalStore().getShortLang] : '';
     },
     defineOptions(val) {
       if (this.options_plugins.includes(val.plugin)) {

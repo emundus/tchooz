@@ -19,7 +19,7 @@
     </div>
 
     <div class="tw-flex tw-flex-col tw-gap-2 tw-mt-4">
-      <div class="tw-ml-4 tw-flex tw-flex-col tw-gap-2" v-for="(condition,condition_key) in conditions">
+      <div class="tw-ml-4 tw-flex tw-flex-col tw-gap-2" v-for="(condition, condition_key) in conditions" :key="condition_key">
         <span v-if="conditions.length > 1 && condition_key != 0" class="tw-font-medium tw-ml-1 tw-mr-2">{{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_CONDITION_'+conditions_group) }}</span>
         <form-builder-rules-js-condition :elements="elements" :index="condition_key" :condition="condition" @remove-condition="removeCondition" :page="page" :multiple="Object.values(conditions).length > 1" />
       </div>
@@ -31,22 +31,20 @@
 </template>
 
 <script>
-import formService from '../../../../services/form';
 
-import formBuilderMixin from '../../../../mixins/formbuilder';
-import globalMixin from '../../../../mixins/mixin';
-import fabrikMixin from '../../../../mixins/fabrik';
-import errorMixin from '../../../../mixins/errors';
-import Swal from 'sweetalert2';
-import Multiselect from 'vue-multiselect';
-import formBuilderService from "@/services/formbuilder";
+import formBuilderMixin from '@/mixins/formbuilder';
+import globalMixin from '@/mixins/mixin';
+import fabrikMixin from '@/mixins/fabrik';
+import errorMixin from '@/mixins/errors';
+
 import FormBuilderRulesJsCondition
   from "@/components/FormBuilder/FormBuilderRules/FormBuilderRulesType/FormBuilderRulesJsCondition.vue";
 
+import {useGlobalStore} from "@/stores/global.js";
+
 export default {
   components: {
-    FormBuilderRulesJsCondition,
-    Multiselect
+    FormBuilderRulesJsCondition
   },
   props: {
     page: {
@@ -55,7 +53,7 @@ export default {
     },
     conditions: {
       type: Array,
-      default: []
+      default: () => []
     },
     index: {
       type: Number,
@@ -63,7 +61,7 @@ export default {
     },
     elements: {
       type: Array,
-      default: []
+      default: () => []
     }
   },
   mixins: [formBuilderMixin, globalMixin, errorMixin, fabrikMixin],
@@ -81,7 +79,7 @@ export default {
   },
   mounted() {
     if(this.conditions.length > 1) {
-      this.conditions.forEach((condition, key) => {
+      this.conditions.forEach((condition) => {
         this.conditions_group = condition.group_type;
       });
     }
@@ -92,7 +90,7 @@ export default {
     },
 
     labelTranslate({label}) {
-      return label ? label.fr : '';
+      return label ? label[useGlobalStore().getShortLang] : '';
     },
   },
   computed: {
@@ -103,7 +101,7 @@ export default {
   watch: {
     conditions_group: {
       handler: function (val) {
-        this.conditions.forEach((condition, key) => {
+        this.conditions.forEach((condition) => {
           condition.group_type = val;
         });
       },

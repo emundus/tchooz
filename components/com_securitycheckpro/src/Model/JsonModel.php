@@ -86,16 +86,16 @@ class JsonModel extends BaseModel
 	private $info = null;  // Contendrá información sobre el sistema: versión de php, mysql y servidor
 	private $site = null;  // Contendrá la url a la que hemos de devolver el callback
 	private $site_id = null;  // Contendrá la id de la web en Control Center
-	private $log_filename = '';    // Nombre del fichero de logs
+	public $log_filename = '';    // Nombre del fichero de logs
 	// Establecemos la ruta donde se almacenarán los escaneos
     private $folder_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'scans';
 	private $array_result = array(); // Contendrá el resultado de las actualizaciones
 	
 	public function register_task($json)
 	{
-		$cron_enabled = $this->PluginStatus(9);
+		$task_checker_enabled = $this->PluginStatus(9);
 		
-		if ($cron_enabled == 0)
+		if ($task_checker_enabled == 0)
 		{
 			return "Error: task checker plugin is disabled"; 
 		} else
@@ -434,7 +434,7 @@ class JsonModel extends BaseModel
 		}
 	}
 
-		// Función que empaqueta una respuesta en formato JSON codificado, cifrando los datos si es necesario
+	// Función que empaqueta una respuesta en formato JSON codificado, cifrando los datos si es necesario
 
 	public function sendResponse($connect_back_url=null)
 	{
@@ -479,7 +479,27 @@ class JsonModel extends BaseModel
 		if (!empty($connect_back_url)) {
 			$this->site = $connect_back_url;
 		}
-						
+		
+		//To be added in future versions
+		//Get the token
+		/*$token = '';
+			
+		$cc_config = $this->getControlCenterConfig();
+		if ( (is_array($cc_config)) && (array_key_exists('token',$cc_config)) ) {
+			$token = $cc_config['token'];
+		}
+		
+		if (empty($token)) {
+			$this->log_filename = "error.php";
+			$message = "Can't send the reply to the Control Center. Token is empty or doesn't match with Control Center.";
+			$this->write_log($message,"ERROR");
+			return;
+		}
+		
+		$headers = [
+			'Token: ' . $token
+		];*/
+								
 		// ... y los devolvemos al cliente
 		$ch = curl_init($this->site . "index.php?option=com_securitycheckprocontrolcenter&view=json&format=raw&json=" . urlencode($response));
 		
@@ -491,6 +511,8 @@ class JsonModel extends BaseModel
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);	
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 		curl_setopt($ch, CURLOPT_USERAGENT, SCP_USER_AGENT);
+		//To be added in future versions
+		//curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);	
 			
 		$response = curl_exec($ch);
 		
@@ -562,8 +584,6 @@ class JsonModel extends BaseModel
 	/* Crea un log de una tarea lanzada */
     function write_log($message,$level="INFO")
     {
-		
-
 		$fp2 = @fopen($this->folder_path.DIRECTORY_SEPARATOR.$this->log_filename, 'ab');		
 		
 		if (empty($fp2)) {

@@ -79,15 +79,14 @@
 </template>
 
 <script>
-import formService from '../../../../services/form';
-
-import formBuilderMixin from '../../../../mixins/formbuilder';
-import globalMixin from '../../../../mixins/mixin';
-import fabrikMixin from '../../../../mixins/fabrik';
-import errorMixin from '../../../../mixins/errors';
-import Swal from 'sweetalert2';
+import formBuilderMixin from '@/mixins/formbuilder';
+import globalMixin from '@/mixins/mixin';
+import fabrikMixin from '@/mixins/fabrik';
+import errorMixin from '@/mixins/errors';
 import Multiselect from 'vue-multiselect';
 import formBuilderService from "@/services/formbuilder";
+
+import {useGlobalStore} from "@/stores/global.js";
 
 export default {
   components: {
@@ -153,7 +152,7 @@ export default {
   },
   methods: {
     labelTranslate({label}) {
-      return label.fr;
+      return label[useGlobalStore().getShortLang];
     },
     defineOptions(val) {
       if (['show_options', 'hide_options'].includes(this.action.action)) {

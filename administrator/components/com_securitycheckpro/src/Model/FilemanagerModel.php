@@ -1519,6 +1519,10 @@ class FileManagerModel extends BaseModel
             $filename = $this->generateKey();
             try
             {
+				// Convert the array to utf-8 to avoid errors with the json_encode function
+				if (version_compare(PHP_VERSION, '7.2.0', 'gt')) {    
+					$this->Stack = mb_convert_encoding($this->Stack,'UTF-8', 'UTF-8');	
+				}
 				
                 $content_permissions = json_encode(array('files_folders'    => $this->Stack));
 				if (json_last_error() != JSON_ERROR_NONE) {
@@ -1590,8 +1594,12 @@ class FileManagerModel extends BaseModel
         
             try
             {
+				// Convert the array to utf-8 to avoid errors with the json_encode function
+				if (version_compare(PHP_VERSION, '7.2.0', 'gt')) {    
+					$this->Stack_Integrity = mb_convert_encoding($this->Stack_Integrity,'UTF-8', 'UTF-8');	
+				}
 				
-                $content_integrity = json_encode(array('files_folders'    => $this->Stack_Integrity));
+				$content_integrity = json_encode(array('files_folders'    => $this->Stack_Integrity));
 				if (json_last_error() != JSON_ERROR_NONE) {
 					 $this->set_campo_filemanager('estado_integrity', 'DATABASE_ERROR');
 					$result_integrity = false;
@@ -1663,6 +1671,11 @@ class FileManagerModel extends BaseModel
         
             try 
             {
+				// Convert the array to utf-8 to avoid errors with the json_encode function
+				if (version_compare(PHP_VERSION, '7.2.0', 'gt')) {    
+					$this->Stack = mb_convert_encoding($this->Stack,'UTF-8', 'UTF-8');	
+				}
+				
 				$content_malwarescan = json_encode(array('files_folders'    => $this->Stack));
 				if (json_last_error() != JSON_ERROR_NONE) {
 					$this->set_campo_filemanager('estado_malwarescan', 'DATABASE_ERROR');
@@ -2604,16 +2617,15 @@ class FileManagerModel extends BaseModel
                                         $resultado[0][3] .= htmlentities(substr($content, $match[1], 200), ENT_QUOTES);
                                     }
                                 } else if (is_array($pattern)) {
-                                                                 // Found a malware pattern; it's almost sure a malware even when it's hide into a valid Joomla file.
-                                
-                                                                 $count++;
-                                                                 $resultado[0][0] = true;
-                                                                 $resultado[0][1] = $lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN');
-                                                                 $resultado[0][2] = Text::sprintf($lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN_INFO'), $pattern[2], $pattern[1], $results_count, mb_convert_encoding($pattern[3], 'UTF-8'));                                
-                                                                 $resultado[0][4] = '0';                                    
-                                                                 // Añadimos el código sospechoso encontrado (previamente sanitizado)
+                                    // Found a malware pattern; it's almost sure a malware even when it's hide into a valid Joomla file.
+                                    $count++;
+                                    $resultado[0][0] = true;
+                                    $resultado[0][1] = $lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN');
+                                    $resultado[0][2] = Text::sprintf($lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN_INFO'), $pattern[2], $pattern[1], $results_count, mb_convert_encoding($pattern[3], 'UTF-8'));                                
+                                    $resultado[0][4] = '0';                                    
+                                    // Añadimos el código sospechoso encontrado (previamente sanitizado)
                                     foreach ($all_results as $match)
-                                                                 {
+                                    {
                                         $resultado[0][3] = $lang->_('COM_SECURITYCHECKPRO_LINE') . $line; 
                                         $resultado[0][3] .= "<br />";
                                         $resultado[0][3] .= htmlentities(substr($content, $match[1], 200), ENT_QUOTES);
@@ -3530,6 +3542,11 @@ class FileManagerModel extends BaseModel
         // ... y almacenamos el nuevo contenido
         try
         {
+			// Convert the array to utf-8 to avoid errors with the json_encode function
+			if (version_compare(PHP_VERSION, '7.2.0', 'gt')) {    
+				$malwarescan_data = mb_convert_encoding($malwarescan_data,'UTF-8', 'UTF-8');			
+			}
+			
 			$content_malwarescan = json_encode(array('files_folders'    => $malwarescan_data));
             $content_malwarescan = "#<?php die('Forbidden.'); ?>" . PHP_EOL . $content_malwarescan;
             $result_malwarescan = File::write($this->folder_path.DIRECTORY_SEPARATOR.$this->malwarescan_name, $content_malwarescan);
@@ -3867,6 +3884,11 @@ class FileManagerModel extends BaseModel
     
         try 
         {
+			// Convert the array to utf-8 to avoid errors with the json_encode function
+			if (version_compare(PHP_VERSION, '7.2.0', 'gt')) {    
+				$data = mb_convert_encoding($data,'UTF-8', 'UTF-8');	
+			}
+			
 			$malware_content = json_encode(array('files_folders'    => $data));
             $malware_content = "#<?php die('Forbidden.'); ?>" . PHP_EOL . $malware_content;
             $result_malware = File::write($this->folder_path.DIRECTORY_SEPARATOR.$malwarescan_name, $malware_content);            

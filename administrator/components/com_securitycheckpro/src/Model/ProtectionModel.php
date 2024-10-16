@@ -677,6 +677,8 @@ class ProtectionModel extends BaseDatabaseModel
             $rules .= PHP_EOL . "RewriteCond %{HTTP_REFERER} !" . $site_url;
             $rules .= PHP_EOL . "RewriteCond %{QUERY_STRING} !" . $this->getValue("hide_backend_url") . "$";
             $rules .= PHP_EOL . "RewriteCond %{QUERY_STRING} !com_securitycheckprocontrolcenter [NC]";
+			// Added to make jch optimize work
+			$rules .= PHP_EOL . "RewriteCond %{QUERY_STRING} !com_jchoptimize [NC]";
 			// Added to avoid errors in Joomla 4.1
 			$rules .= PHP_EOL . "RewriteCond %{REQUEST_URI} !templates/administrator [NC]";
             if (!is_null($this->getValue("hide_backend_url"))) {
@@ -762,7 +764,7 @@ class ProtectionModel extends BaseDatabaseModel
         }
     
         /* Comprobamos si hay que redirigir las peticiones no www a www */
-        if ( ($this->getValue("redirect_to_www")) && (!$this->ConfigApplied['redirect_to_www']) ){        
+        if ( $this->getValue("redirect_to_www") ){        
             $isSecure = false;
             if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
                 $isSecure = true;
@@ -787,7 +789,7 @@ class ProtectionModel extends BaseDatabaseModel
         }
     
         /* Comprobamos si hay que redirigir las peticiones no www a www */
-        if ( ($this->getValue("redirect_to_non_www")) && (!$this->ConfigApplied['redirect_to_non_www']) ){        
+        if ( $this->getValue("redirect_to_non_www") ){        
             $isSecure = false;
             if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
                 $isSecure = true;
@@ -815,12 +817,23 @@ class ProtectionModel extends BaseDatabaseModel
         if ($ExistsHtaccess) { 
             $rules .= $rules_end;
         }
-    
-        /* Comprobamos si hay algo que aplicar */
-        if (!is_null($rules)) {
+		
+		$rules_filtered = str_replace(PHP_EOL, '', $rules);
+		$rules_applied_filtered = str_replace(PHP_EOL, '', $rules_applied);
+				
+		$diferentes = false;
+		
+		if (strcmp($rules_filtered, $rules_applied_filtered) !== 0) {			
+			$diferentes = true;
+		}
+		    
+        // Comprobamos si hay algo que aplicar
+        if ( $diferentes ) {
             // Escribimos el contenido del buffer en el fichero '.htaccess'
-            $status = File::write(JPATH_SITE.DIRECTORY_SEPARATOR.'.htaccess', $rules);
-        }
+           $status = File::write(JPATH_SITE.DIRECTORY_SEPARATOR.'.htaccess', $rules);
+        } else {
+			$status = true;
+		}
     
         return $status;
     }

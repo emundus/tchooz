@@ -2664,6 +2664,8 @@ class EmundusModelEmails extends JModelList
 	 */
 	public function getEmailCategories()
 	{
+		$categories = [];
+
 		$query = $this->_db->getQuery(true);
 
 		$query->select('DISTINCT(category)')
@@ -2673,14 +2675,13 @@ class EmundusModelEmails extends JModelList
 
 		try {
 			$this->_db->setQuery($query);
-
-			return $this->_db->loadColumn();
+			$categories = $this->_db->loadColumn();
 		}
 		catch (Exception $e) {
 			Log::add('component/com_emundus/models/email | Cannot get emails categories : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
-
-			return false;
 		}
+
+		return $categories;
 	}
 
 	/**
