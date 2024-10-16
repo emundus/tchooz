@@ -329,9 +329,6 @@ export default {
     }
   }),
   created() {
-    console.log(this.defaultTabs);
-
-
     this.addKeyupEnterEventlistener();
 
     this.getLimit();

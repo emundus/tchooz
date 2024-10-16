@@ -210,7 +210,12 @@ export default {
           if (result.status == 1) {
             this.selectedFile = result.data;
             this.access = result.rights;
-            this.selected = 'application';
+
+            if (this.defaultTabs.length > 0) {
+              this.selected = this.defaultTabs[0].name;
+            } else {
+              this.selected = 'application';
+            }
             this.updateURL(this.selectedFile.fnum)
             this.getApplicationForm();
 

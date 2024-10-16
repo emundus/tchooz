@@ -691,26 +691,26 @@
 100% {
     transform: translateX(100%);
 }
-}.em-files[data-v-06db0110] {
+}.em-files[data-v-e3634e8e] {
   width: 98% !important;
   margin: auto;
 }
-.table-columns-move[data-v-06db0110] {
+.table-columns-move[data-v-e3634e8e] {
   height: calc(100vh - 250px);
   border-radius: 8px;
   background: white;
   width: 24px;
 }
-select.em-select-no-border[data-v-06db0110] {
+select.em-select-no-border[data-v-e3634e8e] {
   background-color: transparent !important;
 }
-#filters[data-v-06db0110] {
+#filters[data-v-e3634e8e] {
   align-items: flex-start;
 }
-#filters #default-filters[data-v-06db0110] {
+#filters #default-filters[data-v-e3634e8e] {
   position: relative;
 }
-#filters #default-filters ul[data-v-06db0110] {
+#filters #default-filters ul[data-v-e3634e8e] {
   position: absolute;
   top: 50px;
   z-index: 5;
@@ -722,45 +722,45 @@ select.em-select-no-border[data-v-06db0110] {
   max-height: 500px;
   overflow-y: scroll;
 }
-#filters #default-filters ul li[data-v-06db0110] {
+#filters #default-filters ul li[data-v-e3634e8e] {
   padding: 8px;
   transition: all 0.3s;
 }
-#filters #default-filters ul li[data-v-06db0110]:hover {
+#filters #default-filters ul li[data-v-e3634e8e]:hover {
   background: ghostwhite;
 }
-#filters #applied-filters[data-v-06db0110] {
+#filters #applied-filters[data-v-e3634e8e] {
   max-width: 90%;
   flex-wrap: wrap;
 }
-#filters #applied-filters .applied-filter[data-v-06db0110] {
+#filters #applied-filters .applied-filter[data-v-e3634e8e] {
   padding: 8px 0 8px 0;
   border-bottom: solid 1px var(--neutral-400);
 }
-#filters #applied-filters .multiselect[data-v-06db0110] {
+#filters #applied-filters .multiselect[data-v-e3634e8e] {
   height: 40px !important;
 }
-#filters #applied-filters .multiselect .multiselect__tags[data-v-06db0110] {
+#filters #applied-filters .multiselect .multiselect__tags[data-v-e3634e8e] {
   height: 40px !important;
 }
-#filters #applied-filters .multiselect .multiselect__tags .multiselect__tags-wrap[data-v-06db0110] {
+#filters #applied-filters .multiselect .multiselect__tags .multiselect__tags-wrap[data-v-e3634e8e] {
   height: 24px !important;
 }
-.filter-label[data-v-06db0110] {
+.filter-label[data-v-e3634e8e] {
   min-width: 100px;
   max-width: 220px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.em-group-assoc-column[data-v-06db0110] {
+.em-group-assoc-column[data-v-e3634e8e] {
   display: flex;
   flex-direction: column;
   overflow-y: scroll;
   height: 75px;
   scrollbar-width: none;
 }
-.em-group-assoc-column[data-v-06db0110]::-webkit-scrollbar {
+.em-group-assoc-column[data-v-e3634e8e]::-webkit-scrollbar {
   display: none;
 }
 .popover-container[data-v-935d1a05] {
