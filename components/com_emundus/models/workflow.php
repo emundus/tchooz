@@ -653,9 +653,7 @@ class EmundusModelWorkflow extends JModelList
 		if (!empty($types))
 		{
 			$existing_types    = $this->getStepTypes();
-			$existing_type_ids = array_map(function ($type) {
-				return $type->id;
-			}, $existing_types);
+			$existing_type_ids = array_map(function ($type) { return $type->id;}, $existing_types);
 
 			$types_ids = array_map(function ($type) {
 				return $type['id'];
@@ -770,7 +768,7 @@ class EmundusModelWorkflow extends JModelList
 				$query->clear()
 					->delete($this->db->quoteName('#__emundus_setup_step_types'))
 					->where($this->db->quoteName('id') .' IN (' . implode(',', $removed_types_ids) . ')')
-					->andWhere($this->db->quoteName('system') . ' = 0');
+					->andWhere($this->db->quoteName('system') . ' is null or ' . $this->db->quoteName('system') . ' = 0');
 
 				try
 				{

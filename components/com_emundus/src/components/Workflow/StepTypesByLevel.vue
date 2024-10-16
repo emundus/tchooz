@@ -11,9 +11,8 @@
       <div>
         <StepTypesByLevel @updateTypes="onUpdateTypes" v-if="stepTypesOfParentId(type.id).length > 0" :defaultTypes="types" :parentId="type.id" :level="level + 1"></StepTypesByLevel>
       </div>
-      <div class="tw-w-full tw-flex tw-flex-row tw-items-center">
-        <span v-for="i in (level+1)" :key="i" class="material-symbols-outlined">horizontal_rule</span>
-        <button @click="addChildrenStepType(type)">
+      <div class="tw-w-full tw-flex tw-flex-row tw-items-center" v-if="level < levelMax">
+        <button @click="addChildrenStepType(type)" class="tw-btn-secondary tw-mt-2 tw-mb-2">
           {{ translate('COM_EMUNDUS_WORKFLOW_ADD_CHILDREN_STEP_TYPE') }}
         </button>
       </div>
@@ -44,6 +43,10 @@ export default {
     level: {
       type: Number,
       default: 0
+    },
+    levelMax: {
+      type: Number,
+      default: 1
     }
   },
   data() {
@@ -53,6 +56,9 @@ export default {
   },
   mounted() {
     this.types = this.defaultTypes;
+    console.log(this.level);
+
+    console.log(this.levelMax);
   },
   methods: {
     addStepType() {

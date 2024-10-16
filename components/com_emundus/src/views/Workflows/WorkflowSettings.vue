@@ -29,7 +29,10 @@ export default {
     getStepTypes() {
       workflowService.getStepTypes()
         .then(response => {
-          this.stepTypes = response.data
+          this.stepTypes = response.data.map(type => {
+            type.label = this.translate(type.label);
+            return type;
+          });
         })
         .catch(error => {
           console.log(error)
