@@ -402,6 +402,10 @@ class EmundusViewApplication extends HtmlView
 							$crud = ["c","u","d"];
 						}
 
+						if (is_null($this->_user->fnums)) {
+							$this->_user->fnums = [];
+						}
+
 						$this->fileLogs = $m_logs->getActionsOnFnum($fnum, null, $actions, $crud);
 
 						foreach ($this->fileLogs as $log) {
@@ -448,7 +452,7 @@ class EmundusViewApplication extends HtmlView
 						$m_campaign = new EmundusModelCampaign;
 						$m_user     = new EmundusModelUsers;
 						$applicant  = $m_user->getUserById($fnumInfos['applicant_id']);
-						if (!isset($applicant[0]->profile_picture) || empty($applicant[0]->profile_picture)) {
+						if (!empty($applicant[0]) && !isset($applicant[0]->profile_picture) || empty($applicant[0]->profile_picture)) {
 							$applicant[0]->profile_picture = $m_user->getIdentityPhoto($fnum, $fnumInfos['applicant_id']);
 						}
 
