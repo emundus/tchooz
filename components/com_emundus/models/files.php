@@ -2615,7 +2615,7 @@ class EmundusModelFiles extends JModelLegacy
 
 					$element_attribs = json_decode($elt->element_attribs);
 
-					if ($element_attribs->database_join_display_type == "checkbox") {
+					if ($element_attribs->database_join_display_type == "checkbox" || $element_attribs->database_join_display_type == "multilist") {
 						$select_check = $element_attribs->join_val_column;
 						if (!empty($element_attribs->join_val_column_concat)) {
 							$select_check = $element_attribs->join_val_column_concat;
@@ -4654,12 +4654,9 @@ class EmundusModelFiles extends JModelLegacy
 
 	public function getUnreadMessages()
 	{
-
-		
 		$query     = $this->_db->getQuery(true);
 		$user      = $this->app->getIdentity();
 		$default   = array();
-
 
 		try {
 			$query->select('ecc.fnum, COUNT(m.message_id) as nb')
