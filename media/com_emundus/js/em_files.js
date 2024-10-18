@@ -1726,6 +1726,9 @@ const checkElement = async selector => {
 };
 
 $(document).ready(function() {
+    if(typeof $ == 'undefined') {
+        return;
+    }
     $('#check').removeClass('em-check-all-all');
 
     const headerNav = document.querySelector('#g-navigation .g-container, #g-header .g-container');

@@ -171,8 +171,6 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
 
     php cli/joomla.php database:import --folder=".docker/installation/vanilla" -n
     php cli/joomla.php tchooz:vanilla --action="import" --folder=".docker/installation/vanilla" -n
-    php cli/joomla.php tchooz:vanilla --action="import_foreign_keys" --folder=".docker/installation/vanilla" -n
-
 
     echo >&2 "Create super administrator user..."
 
@@ -195,6 +193,8 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
     php cli/joomla.php tchooz:update -n --component=com_emundus
     php cli/joomla.php tchooz:update -n --component=com_hikashop
     php cli/joomla.php maintenance:database --fix
+
+    php cli/joomla.php tchooz:vanilla --action="import_foreign_keys" --folder=".docker/installation/vanilla" -n
 
     chown www-data: configuration.php
     chown www-data: .htaccess

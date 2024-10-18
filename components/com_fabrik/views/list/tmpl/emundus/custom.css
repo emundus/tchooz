@@ -242,7 +242,8 @@ font-size: 16px;
 	box-shadow: unset;
 }
 
-.view-list .fabrikDataContainer .table .fabrik_row .fabrik_actions .dropdown-menu, .view-list .fabrikButtonsContainer .em-action-buttons .dropdown-menu{
+.view-list .fabrikDataContainer .table .fabrik_row .fabrik_actions .dropdown-menu, .view-list .fabrikButtonsContainer .em-action-buttons .dropdown-menu,
+.view-list .fabrikDataContainer .table .fabrik___heading .fabrik_actions .dropdown-menu {
 	background: #FFFFFF;
 	border: 1px solid #EBECF0;
 	box-shadow: 0 8px 24px rgba(32, 35, 44, 0.1);
@@ -251,38 +252,24 @@ font-size: 16px;
 	z-index: 1;
 }
 
-.view-list .fabrikDataContainer .table .fabrik_row .fabrik_actions .dropdown-menu a, .view-list .fabrikButtonsContainer .em-action-buttons .dropdown .dropdown-menu a{
+.view-list .fabrikDataContainer .table .fabrik_row .fabrik_actions .dropdown-menu a, .view-list .fabrikButtonsContainer .em-action-buttons .dropdown .dropdown-menu a,
+.view-list .fabrikDataContainer .table .fabrik___heading .fabrik_actions .dropdown-menu a{
 	padding: 6px 8px;
 	color: black;
 	border: unset;
 	gap: 4px;
 }
 
-.view-list .fabrikDataContainer .table .fabrik_row .fabrik_actions .dropdown-menu a:hover, .view-list .fabrikButtonsContainer .em-action-buttons .dropdown-menu a:hover{
-	background: #EBECF0 !important;
-	border-radius: 4px !important;
-	color: black !important;
-}
-
-.view-list .fabrikDataContainer .table .heading .fabrik_action .dropdown-menu a:hover {
+.view-list .fabrikDataContainer .table .fabrik_row .fabrik_actions .dropdown-menu a:hover, .view-list .fabrikButtonsContainer .em-action-buttons .dropdown-menu a:hover,
+.view-list .fabrikDataContainer .table .fabrik___heading .fabrik_actions .dropdown-menu a:hover {
 	background: #EBECF0 !important;
 	border-radius: 4px !important;
 	color: var(--neutral-900) !important;
 }
 
-.view-list .fabrikDataContainer .table .heading .fabrik_action .dropdown-menu {
-	background: #FFFFFF;
-	border: 1px solid #EBECF0;
-	box-shadow: 0px 8px 24px rgba(32, 35, 44, 0.1);
-	border-radius: 8px;
-	padding: 8px;
-}
 
-.view-list .fabrikDataContainer .table .heading .fabrik_action .dropdown-menu a i {
-	display: none;
-}
-
-.view-list .fabrikDataContainer .table .fabrik_row .fabrik_actions .dropdown-menu a i{
+.view-list .fabrikDataContainer .table .fabrik_row .fabrik_actions .dropdown-menu a i,
+.view-list .fabrikDataContainer .table .fabrik___heading .fabrik_actions .dropdown-menu a i {
 	display: none;
 }
 /** **/
