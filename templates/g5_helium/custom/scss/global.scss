@@ -1807,6 +1807,10 @@ footer#g-footer > .g-container {
   gap: 6px;
   height: 40px;
 
+  &:hover {
+    box-shadow: 0 1px 4px rgb(32 35 44 / 20%);
+  }
+
   small {
     color: #353544;
   }
@@ -1814,6 +1818,10 @@ footer#g-footer > .g-container {
   select {
     color: var(--neutral-800);
     background-color: transparent;
+
+    &:hover {
+      background-color: var(--neutral-200);
+    }
   }
 
   select:focus {
@@ -3122,7 +3130,7 @@ label[for='clear-search'] img:hover:focus {
       justify-content: center;
       align-items: center;
       padding: 12px;
-      background: #ffffff30 !important;
+      background: var(--neutral-cloudy) !important;
 
       &:hover {
         background: #ffffff50 !important;
@@ -3177,7 +3185,7 @@ label[for='clear-search'] img:hover:focus {
       width: 40px;
       justify-content: center;
       padding: 12px;
-      background: #ffffff30 !important;
+      background: var(--neutral-cloudy) !important;
 
       span {
         color: var(--neutral-0);
@@ -3670,6 +3678,10 @@ ul.unstyled.em-linkForgot li a {
         padding-left: 0;
         margin-left: 0;
         margin-top: 12px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
 
       .col-sm-2 {
         width: 8%;
