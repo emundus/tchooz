@@ -2039,6 +2039,25 @@ if(value == 1) {
 				}
 			}
 
+			// Update program logo code
+			$query->clear()
+				->select('fe.id,fe.params')
+				->from($this->db->quoteName('#__fabrik_elements','fe'))
+				->leftJoin($this->db->quoteName('#__fabrik_groups','fg').' ON '.$this->db->quoteName('fg.id').' = '.$this->db->quoteName('fe.group_id'))
+				->where($this->db->quoteName('fe.name') . ' LIKE ' . $this->db->quote('logo'))
+				->where($this->db->quoteName('fg.name') . ' = ' . $this->db->quote('GROUP_PROGRAM_DETAIL'));
+			$this->db->setQuery($query);
+			$logo_element = $this->db->loadObject();
+
+			if(!empty($logo_element->id)) {
+				$params = json_decode($logo_element->params, true);
+				$params['fu_rename_file_code'] = 'error_clear_last();$new_name = $formModel->formData[\'jos_emundus_setup_programmes___code_raw\'];$new_name = preg_replace(\'/[^A-Za-z0-9_\-]/\', \'\', $new_name);$new_name .= \'-\'.rand(0,10000);$new_name .= \'.\' . pathinfo($filename, PATHINFO_EXTENSION);return $new_name;';
+
+				$logo_element->params = json_encode($params);
+				$this->db->updateObject('#__fabrik_elements', $logo_element, 'id');
+			}
+			//
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)
