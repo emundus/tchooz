@@ -2000,6 +2000,45 @@ if(value == 1) {
 			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_REFERENT_ADD_LETTER_INTRO', 'Nous vous remercions de déposer votre lettre de recommandation pour %s. Seuls les documents au format .pdf sont acceptés. Pour toute aide, vous pouvez contacter x@.fr.');
 			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_REFERENT_ADD_LETTER_INTRO', 'Thank you for submitting your letter of recommendation for %s. Only documents in .pdf format are accepted. For further assistance, please contact x@.fr', 'override', 0, null, null, 'en-GB');
 
+			$g5_head = JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/head.yaml';
+			$g5_head_24 = JPATH_ROOT . '/templates/g5_helium/custom/config/24/page/head.yaml';
+			$g5_head_22 = JPATH_ROOT . '/templates/g5_helium/custom/config/22/page/head.yaml';
+			if(file_exists($g5_head))
+			{
+				$g5_head_yaml = Yaml::parse(file_get_contents($g5_head));
+
+				if(!empty($g5_head_yaml['head_bottom'])) {
+					$g5_head_yaml['head_bottom'] = '';
+
+					$new_head_g5 = Yaml::dump($g5_head_yaml, 10, 2);
+					file_put_contents($g5_head, $new_head_g5);
+				}
+			}
+
+			if(file_exists($g5_head_24))
+			{
+				$g5_head_yaml = Yaml::parse(file_get_contents($g5_head_24));
+
+				if(!empty($g5_head_yaml['head_bottom'])) {
+					$g5_head_yaml['head_bottom'] = '';
+
+					$new_head_g5 = Yaml::dump($g5_head_yaml, 10, 2);
+					file_put_contents($g5_head_24, $new_head_g5);
+				}
+			}
+
+			if(file_exists($g5_head_22))
+			{
+				$g5_head_yaml = Yaml::parse(file_get_contents($g5_head_22));
+
+				if(!empty($g5_head_yaml['head_bottom'])) {
+					$g5_head_yaml['head_bottom'] = '';
+
+					$new_head_g5 = Yaml::dump($g5_head_yaml, 10, 2);
+					file_put_contents($g5_head_22, $new_head_g5);
+				}
+			}
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)
