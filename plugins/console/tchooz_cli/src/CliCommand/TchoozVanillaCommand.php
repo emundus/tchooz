@@ -252,11 +252,17 @@ class TchoozVanillaCommand extends AbstractCommand
 						$xml_table->setAttribute('name', $table);
 
 						foreach ($foreign_keys as $foreign_key) {
+							$query_rules = 'SELECT UPDATE_RULE,DELETE_RULE FROM information_schema.REFERENTIAL_CONSTRAINTS WHERE TABLE_NAME = "' . $table . '" AND CONSTRAINT_NAME = "' . $foreign_key['CONSTRAINT_NAME'] . '"';
+							$this->db->setQuery($query_rules);
+							$foreign_key_rules = $this->db->loadAssoc();
+
 							$xml_row = $dom->createElement('row');
 							$xml_row->setAttribute('constraint_name', $foreign_key['CONSTRAINT_NAME']);
 							$xml_row->setAttribute('column_name', $foreign_key['COLUMN_NAME']);
 							$xml_row->setAttribute('referenced_table_name', $foreign_key['REFERENCED_TABLE_NAME']);
 							$xml_row->setAttribute('referenced_column_name', $foreign_key['REFERENCED_COLUMN_NAME']);
+							$xml_row->setAttribute('update_rule', $foreign_key_rules['UPDATE_RULE']);
+							$xml_row->setAttribute('delete_rule', $foreign_key_rules['DELETE_RULE']);
 
 							$xml_table->appendChild($xml_row);
 						}
@@ -296,6 +302,8 @@ class TchoozVanillaCommand extends AbstractCommand
 					$xpath = new \DOMXPath($dom);
 					$tables = $xpath->query('//table');
 
+				    $this->db->setQuery('SET FOREIGN_KEY_CHECKS = 0')->execute();
+
 					foreach ($tables as $table) {
 						$taskTime = microtime(true);
 
@@ -319,8 +327,22 @@ class TchoozVanillaCommand extends AbstractCommand
 							$columnName = $row->getAttribute('column_name');
 							$referencedTableName = $row->getAttribute('referenced_table_name');
 							$referencedColumnName = $row->getAttribute('referenced_column_name');
+							$deleteRule = $row->getAttribute('delete_rule');
+							$updateRule = $row->getAttribute('update_rule');
 
-							$query = 'ALTER TABLE `' . $tableName . '` ADD CONSTRAINT `' . $constraintName . '` FOREIGN KEY (`' . $columnName . '`) REFERENCES `' . $referencedTableName . '` (`' . $referencedColumnName . '`) ON DELETE CASCADE ON UPDATE CASCADE';
+							// Check if foreign key exists
+							$query = 'SELECT * FROM information_schema.KEY_COLUMN_USAGE WHERE TABLE_NAME = "' . $tableName . '" AND CONSTRAINT_NAME = "' . $constraintName . '"';
+							$this->db->setQuery($query);
+							$foreignKeyExists = $this->db->loadAssoc();
+
+							if(!empty($foreignKeyExists))
+							{
+								$drop_query = "ALTER TABLE `" . $tableName . "` DROP FOREIGN KEY `" . $constraintName . "`";
+								$this->db->setQuery($drop_query);
+								$this->db->execute();
+							}
+
+							$query = 'ALTER TABLE `' . $tableName . '` ADD CONSTRAINT `' . $constraintName . '` FOREIGN KEY (`' . $columnName . '`) REFERENCES `' . $referencedTableName . '` (`' . $referencedColumnName . '`) ON DELETE ' . $deleteRule . ' ON UPDATE ' . $updateRule;
 
 							try {
 								$this->db->setQuery($query);
@@ -333,6 +355,8 @@ class TchoozVanillaCommand extends AbstractCommand
 
 						$this->ioStyle->text(sprintf('Imported data for %s in %d seconds', $tableName, round(microtime(true) - $taskTime, 3)));
 					}
+
+				    $this->db->setQuery('SET FOREIGN_KEY_CHECKS = 1')->execute();
 			    }
 
 			    $this->ioStyle->success(sprintf('Import completed in %d seconds', round(microtime(true) - $totalTime, 3)));

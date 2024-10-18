@@ -1998,7 +1998,7 @@ if(value == 1) {
 			}
 
 			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_REFERENT_ADD_LETTER_INTRO', 'Nous vous remercions de déposer votre lettre de recommandation pour %s. Seuls les documents au format .pdf sont acceptés. Pour toute aide, vous pouvez contacter x@.fr.');
-			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_REFERENT_ADD_LETTER_INTRO', 'Thank you for submitting your letter of recommendation for %s. Only documents in .pdf format are accepted. For further assistance, please contact x@.fr', 'override', null, null, null, 'en-GB');
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_REFERENT_ADD_LETTER_INTRO', 'Thank you for submitting your letter of recommendation for %s. Only documents in .pdf format are accepted. For further assistance, please contact x@.fr', 'override', 0, null, null, 'en-GB');
 
 			$result['status'] = true;
 		}
