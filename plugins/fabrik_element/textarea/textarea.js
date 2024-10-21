@@ -53,7 +53,6 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                     }
                 }
             }.bind(this));
-
         },
 
         unclonableProperties: function () {
@@ -206,6 +205,9 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
             this.getTextContainer();
             this.watchTextContainer();
             this.parent(c);
+            setTimeout(() => {
+                this.informKeyPress();
+            },500);
         },
 
         /**
