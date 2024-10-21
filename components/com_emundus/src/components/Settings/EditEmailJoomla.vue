@@ -386,6 +386,12 @@ export default {
           })
         } else {
           this.errorMessage = response.desc;
+          if(!this.errorMessage) {
+            this.errorMessage = this.translate('COM_EMUNDUS_ERROR_SMTP_AUTH');
+          }
+          if(!response.title) {
+            response.title = this.translate('COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_MAIL_ERROR');
+          }
 
           Swal.fire({
             title: response.title,

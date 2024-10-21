@@ -908,6 +908,7 @@ class EmundusModelUsers extends ListModel
 
 		$pageNavigation = "<div class='em-container-pagination-selectPage'>";
 		$pageNavigation .= "<ul class='pagination pagination-sm'>";
+
 		if($this->getPagination()->pagesCurrent == $this->getPagination()->pagesStart) {
 			$pageNavigation .= "<li><a class='disabled tw-cursor-pointer'><span class='material-symbols-outlined'>navigate_before</span></a></li>";
 		} else
@@ -916,14 +917,23 @@ class EmundusModelUsers extends ListModel
 		}
 
 		if ($this->getPagination()->pagesTotal > 15) {
-			for ($i = 1; $i <= 5; $i++) {
+			$index = 5;
+			if($this->getPagination()->pagesCurrent > 5 && $this->getPagination()->pagesCurrent < 8)
+			{
+				$index = $this->getPagination()->pagesCurrent - 3;
+			}
+
+			for ($i = 1; $i <= $index; $i++) {
 				$pageNavigation .= "<li ";
 				if ($this->getPagination()->pagesCurrent == $i) {
 					$pageNavigation .= "class='active'";
 				}
 				$pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
 			}
-			$pageNavigation .= "<li class='disabled'><span>...</span></li>";
+			if($this->getPagination()->pagesCurrent > 8)
+			{
+				$pageNavigation .= "<li class='disabled'><span>...</span></li>";
+			}
 			if ($this->getPagination()->pagesCurrent <= 5) {
 				for ($i = 6; $i <= 10; $i++) {
 					$pageNavigation .= "<li ";
@@ -944,8 +954,17 @@ class EmundusModelUsers extends ListModel
 					}
 				}
 			}
-			$pageNavigation .= "<li class='disabled'><span>...</span></li>";
-			for ($i = $this->getPagination()->pagesTotal - 4; $i <= $this->getPagination()->pagesTotal; $i++) {
+
+
+			// if total pages - current page is less than 5
+			$index = 4;
+			if($this->getPagination()->pagesTotal - $this->getPagination()->pagesCurrent < 7)
+			{
+				$index = $this->getPagination()->pagesTotal - ($this->getPagination()->pagesCurrent+3);
+			} else {
+				$pageNavigation .= "<li class='disabled'><span>...</span></li>";
+			}
+			for ($i = $this->getPagination()->pagesTotal - $index; $i <= $this->getPagination()->pagesTotal; $i++) {
 				$pageNavigation .= "<li ";
 				if ($this->getPagination()->pagesCurrent == $i) {
 					$pageNavigation .= "class='active'";

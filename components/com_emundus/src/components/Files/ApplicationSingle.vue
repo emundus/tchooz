@@ -10,7 +10,7 @@
       :class="{ 'context-files': context === 'files', 'hidden': hidden }"
   >
     <div class="em-modal-header tw-w-full tw-px-3 tw-py-4 tw-bg-profile-full tw-flex tw-items-center">
-      <div class="tw-flex tw-items-center tw-cursor-pointer tw-justify-between tw-w-full" id="evaluation-modal-close">
+      <div class="tw-flex tw-items-center tw-justify-between tw-w-full" id="evaluation-modal-close">
         <div class="tw-flex tw-items-center tw-gap-2">
           <div  @click="onClose" class="tw-w-max tw-flex tw-items-center">
                <span class="material-symbols-outlined tw-text-base" style="color: white">navigate_before</span>
@@ -63,13 +63,6 @@
       </div>
 
       <div id="modal-evaluationgrid">
-        <div class="tw-w-fit tw-mb-8" v-if="!loading && url">
-          <div class="tw-bg-profile-light tw-rounded-full tw-p-3" >
-            <div class="tw-bg-profile-medium tw-rounded-full tw-p-3 em-flex-column" >
-              <span class="material-symbols-outlined em-font-size-32 tw-text-profile-full" >troubleshoot</span>
-            </div>
-          </div>
-        </div>
         <iframe v-if="url" :src="url" class="iframe-evaluation" id="iframe-evaluation" @load="iframeLoaded($event);"
                 title="Evaluation form"/>
         <div v-else>

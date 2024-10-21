@@ -1997,6 +1997,67 @@ if(value == 1) {
 				$this->db->updateObject('#__fabrik_elements', $date_time_element_emails_history, 'id');
 			}
 
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_REFERENT_ADD_LETTER_INTRO', 'Nous vous remercions de déposer votre lettre de recommandation pour %s. Seuls les documents au format .pdf sont acceptés. Pour toute aide, vous pouvez contacter x@.fr.');
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_REFERENT_ADD_LETTER_INTRO', 'Thank you for submitting your letter of recommendation for %s. Only documents in .pdf format are accepted. For further assistance, please contact x@.fr', 'override', 0, null, null, 'en-GB');
+
+			$g5_head = JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/head.yaml';
+			$g5_head_24 = JPATH_ROOT . '/templates/g5_helium/custom/config/24/page/head.yaml';
+			$g5_head_22 = JPATH_ROOT . '/templates/g5_helium/custom/config/22/page/head.yaml';
+			if(file_exists($g5_head))
+			{
+				$g5_head_yaml = Yaml::parse(file_get_contents($g5_head));
+
+				if(!empty($g5_head_yaml['head_bottom'])) {
+					$g5_head_yaml['head_bottom'] = '';
+
+					$new_head_g5 = Yaml::dump($g5_head_yaml, 10, 2);
+					file_put_contents($g5_head, $new_head_g5);
+				}
+			}
+
+			if(file_exists($g5_head_24))
+			{
+				$g5_head_yaml = Yaml::parse(file_get_contents($g5_head_24));
+
+				if(!empty($g5_head_yaml['head_bottom'])) {
+					$g5_head_yaml['head_bottom'] = '';
+
+					$new_head_g5 = Yaml::dump($g5_head_yaml, 10, 2);
+					file_put_contents($g5_head_24, $new_head_g5);
+				}
+			}
+
+			if(file_exists($g5_head_22))
+			{
+				$g5_head_yaml = Yaml::parse(file_get_contents($g5_head_22));
+
+				if(!empty($g5_head_yaml['head_bottom'])) {
+					$g5_head_yaml['head_bottom'] = '';
+
+					$new_head_g5 = Yaml::dump($g5_head_yaml, 10, 2);
+					file_put_contents($g5_head_22, $new_head_g5);
+				}
+			}
+
+			// Update program logo code
+			$query->clear()
+				->select('fe.id,fe.params')
+				->from($this->db->quoteName('#__fabrik_elements','fe'))
+				->leftJoin($this->db->quoteName('#__fabrik_groups','fg').' ON '.$this->db->quoteName('fg.id').' = '.$this->db->quoteName('fe.group_id'))
+				->where($this->db->quoteName('fe.name') . ' LIKE ' . $this->db->quote('logo'))
+				->where($this->db->quoteName('fg.name') . ' = ' . $this->db->quote('GROUP_PROGRAM_DETAIL'));
+			$this->db->setQuery($query);
+			$logo_element = $this->db->loadObject();
+
+			if(!empty($logo_element->id)) {
+				$params = json_decode($logo_element->params, true);
+				$params['fu_rename_file_code'] = 'error_clear_last();$new_name = $formModel->formData[\'jos_emundus_setup_programmes___code_raw\'];$new_name = preg_replace(\'/[^A-Za-z0-9_\-]/\', \'\', $new_name);$new_name .= \'-\'.rand(0,10000);$new_name .= \'.\' . pathinfo($filename, PATHINFO_EXTENSION);return $new_name;';
+
+				$logo_element->params = json_encode($params);
+				$this->db->updateObject('#__fabrik_elements', $logo_element, 'id');
+			}
+			//
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

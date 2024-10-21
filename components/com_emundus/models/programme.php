@@ -16,6 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Plugin\PluginHelper;
@@ -966,11 +967,10 @@ class EmundusModelProgramme extends ListModel
 			$this->_db->setQuery($query);
 			$categories = $this->_db->loadColumn();
 
-
 			$tmp = [];
 			foreach ($categories as $category) {
 				if (!empty($category)) {
-					$tmp[] = ['value' => $category, 'label' => $category];
+					$tmp[] = ['value' => $category, 'label' => Text::_($category)];
 				}
 			}
 			$categories = $tmp;
