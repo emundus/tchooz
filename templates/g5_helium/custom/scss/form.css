@@ -988,6 +988,11 @@
                                 transform: scale(var(--em-form-checkbox-scale));
                                 margin: 0;
                             }
+                            @supports (-webkit-touch-callout: none) {
+                                input {
+                                    transform: scale(0.7,0.7);
+                                }
+                            }
 
                             label {
                                 @apply tw-cursor-pointer;
