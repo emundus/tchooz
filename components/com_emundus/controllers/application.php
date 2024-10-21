@@ -882,21 +882,30 @@ class EmundusControllerApplication extends BaseController
 	 */
 	public function reorderapplications()
 	{
-		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
+		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
 
-		$emundusUser      = $this->app->getSession()->get('emundusUser');
+		$current_user = $this->app->getIdentity();
+		$emundusUser = $this->app->getSession()->get('emundusUser');
 		$emundusUserFnums = array_keys($emundusUser->fnums);
 
-		$fnum_from    = $this->input->getString('fnum_from', '');
-		$fnum_to      = $this->input->getString('fnum_to', '');
+		$fnum = $this->input->getString('fnum', '');
+		$direction = $this->input->getString('direction', 'up');
 		$order_column = $this->input->getString('order_column', 'ordering');
+		$redirect = $this->input->getString('redirect', true);
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) || (in_array($fnum_from, $emundusUserFnums) && in_array($fnum_to, $emundusUserFnums))) {
-			$m_application = $this->getModel('Application');
-			$reordered     = $m_application->invertFnumsOrderByColumn($fnum_from, $fnum_to, $order_column);
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id) || in_array($fnum, $emundusUserFnums)) {
+			$m_application = new EmundusModelApplication();
+			try {
+				$reordered = $m_application->moveApplicationByColumn($fnum, $direction, $order_column);
+				$response['status'] = $reordered;
+				$response['msg'] =  $reordered ? Text::_('SUCCESS') : Text::_('FAILED');
+			} catch (Exception $e) {
+				$response['msg'] = $e->getMessage();
+			}
+		}
 
-			$response['status'] = $reordered;
-			$response['msg']    = $reordered ? Text::_('SUCCESS') : Text::_('FAILED');
+		if ($redirect) {
+			$this->app->redirect('/index.php');
 		}
 
 		echo json_encode($response);
