@@ -2254,25 +2254,47 @@ class EmundusModelForm extends JModelList
 		}
 	}
 
-	public function getAssociatedCampaign($profile_id)
+	public function getAssociatedCampaign($profile_id, $user_id = null)
 	{
+		$campaigns = [];
 
-		$query = $this->db->getQuery(true);
-
-		$query->select(['id as id', 'label as label'])
-			->from($this->db->quoteName('#__emundus_setup_campaigns'))
-			->where($this->db->quoteName('profile_id') . ' = ' . $this->db->quote($profile_id));
-
-		try {
-			$this->db->setQuery($query);
-
-			return $this->db->loadObjectList();
+		if(empty($user_id)) {
+			$user_id = $this->app->getIdentity()->id;
 		}
-		catch (Exception $e) {
-			Log::add('component/com_emundus/models/form | Error at getting campaigns link to the form ' . $profile_id . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
-			return false;
+		// Get affected programs
+		require_once(JPATH_SITE . '/components/com_emundus/models/programme.php');
+		$m_programme = new EmundusModelProgramme;
+		$programs = $m_programme->getUserPrograms($user_id);
+
+		if (!empty($programs))
+		{
+			$query = $this->db->getQuery(true);
+
+			$query->select([
+				'sc.id as id',
+				'sc.label as label'
+			])
+				->from($this->db->quoteName('#__emundus_setup_campaigns', 'sc'))
+				->leftJoin(
+					$this->db->quoteName('#__emundus_setup_programmes', 'sp') .
+					' ON ' .
+					$this->db->quoteName('sp.code') .
+					' LIKE ' .
+					$this->db->quoteName('sc.training')
+				)
+				->where($this->db->quoteName('sc.training') . ' IN (' . implode(',', $this->db->quote($programs)) . ')');
+
+			try {
+				$this->db->setQuery($query);
+				$campaigns = $this->db->loadObjectList();
+
+			} catch (Exception $e) {
+				Log::add('component/com_emundus/models/form | Error at getting campaigns link to the form ' . $profile_id . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), Log::ERROR, 'com_emundus');
+			}
 		}
+
+		return $campaigns;
 	}
 
 	public function getAssociatedProgram($form_id)
