@@ -1386,6 +1386,11 @@ input:focus + .em-slider {
 .em-light-tabs:hover {
     color: var(--neutral-900);
 }
+.em-light-tabs:hover{
+  span, p{
+    color: var(--neutral-700);
+  }
+}
 .em-light-selected-tab{
   border-bottom: 1px solid var(--em-profile-color);
   color: var(--neutral-900);
@@ -1397,7 +1402,11 @@ input:focus + .em-slider {
 #list-nav .em-light-tabs:not(.em-light-selected-tab){
   border-bottom: solid 1px var(--neutral-400);
 }
-
+.em-light-selected-tab:hover{
+  span, p{
+    color: var(--neutral-900) !important;
+  }
+}
 .em-tabs{
   padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
   border-radius: 6px;
