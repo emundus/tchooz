@@ -463,6 +463,10 @@ class plgUserEmundus extends CMSPlugin
 		$session = $this->app->getSession();
 		$redirect = $input->get->getBase64('redirect');
 
+		jimport('joomla.log.log');
+		Log::addLogger(['text_file' => 'com_emundus.auth.php'], JLog::ALL, array('com_emundus.auth'));
+		Log::add($user['username'] . ' try to log in.', Log::INFO, 'com_emundus.auth');
+
 		include_once(JPATH_SITE . '/components/com_emundus/models/users.php');
 		include_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
 		$m_profile = new EmundusModelProfile();
@@ -481,6 +485,7 @@ class plgUserEmundus extends CMSPlugin
 
 		if ($instance->block == 1)
 		{
+			Log::add('Failed attempt to log in ' . $user['username'] . ', user is blocked.', Log::INFO, 'com_emundus.auth');
 			return false;
 		}
 
@@ -637,6 +642,7 @@ class plgUserEmundus extends CMSPlugin
 			// Check if the user is in the emundus_users table
 			$user_repaired = $m_users->repairEmundusUser($this->app->getIdentity()->id);
 			if (!$user_repaired) {
+				Log::add('Failed attempt to log in ' . $user['username'] . ', user repair failed.', Log::WARNING, 'com_emundus.auth');
 				return false;
 			}
 
@@ -703,6 +709,8 @@ class plgUserEmundus extends CMSPlugin
 			// if user_id is null -> there is no session data because the account is not activated yet, so don't log
 			if ($user->id) {
 				EmundusModelLogs::log($user->id, $user->id, null, -2, '', 'COM_EMUNDUS_LOGS_USER_LOGIN');
+			} else {
+				Log::add('Failed attempt to log in ' . $user->username . ', user id is null.', Log::INFO, 'com_emundus.auth');
 			}
 
 			$user->just_logged = true;
@@ -729,9 +737,12 @@ class plgUserEmundus extends CMSPlugin
 			$this->app->triggerEvent('onCallEventHandler', ['onUserLogin', ['user_id' => $user->id]]);
 
 			if (!empty($previous_url)) {
+				Log::add('Log in ' . $user->username . ', user redirected to previous url ' . $previous_url . '.', Log::INFO, 'com_emundus.auth');
 				$this->app->redirect($previous_url);
 			}
 		}
+
+		Log::add('Emundus Log in returned true.', Log::INFO, 'com_emundus.auth');
 
 		return true;
 	}
