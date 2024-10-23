@@ -297,7 +297,27 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 	 */
 	public function onBeforeProcess()
 	{
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+
+		// Get default profile for applicant
 		$pid = 1000;
+		$query->select('id')
+			->from($db->quoteName('#__emundus_setup_profiles'))
+			->where($db->quoteName('id') . " = " . $db->quote($pid));
+		$db->setQuery($query);
+		$exist = $db->loadResult();
+
+		if (!$exist)
+		{
+			$query->clear()
+				->select('id')
+				->from($db->quoteName('#__emundus_setup_profiles'))
+				->where($db->quoteName('published') . " = 1");
+			$db->setQuery($query);
+			$pid = $db->loadResult();
+		}
+		//
 
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
 		$m_campaign = new EmundusModelCampaign;
@@ -325,16 +345,14 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 				return false;
 			}
 
-			$db = Factory::getContainer()->get('DatabaseDriver');
-			$query = $db->getQuery(true)
+			$query->clear()
 				->select('profile_id')
 				->from($db->quoteName('#__emundus_setup_campaigns'))
 				->where($db->quoteName('id') . " = " . $db->quote($campaign_id));
-
 			$db->setQuery($query);
-			$pid = $db->loadResult();
+			$campaign_pid = $db->loadResult();
 
-			$pid = ($pid > 0) ? $pid : 1000;
+			$pid = ($campaign_pid > 0) ? $campaign_pid : $pid;
 		}
 
 		$this->getModel()->updateFormData('jos_emundus_users___profile', $pid, true);
