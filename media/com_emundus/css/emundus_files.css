@@ -465,7 +465,7 @@ fieldset.em_filters_filedset > label, fieldset#em_select_filter > label, .panel-
     color: var(--neutral-0);
 }
 .g-back-office-emundus-tableau .navbar .nav > li > a:hover{
-    background: #ffffff30;
+    background: var(--neutral-cloudy);
 }
 
 .navbar.navbar-inverse {
@@ -492,7 +492,7 @@ button#em-close-file {
 }
 
 .back-button-menuactions:hover {
-    background: #ffffff30 !important;
+    background: var(--neutral-cloudy) !important;
 }
 
 .navbar.navbar-inverse > span {

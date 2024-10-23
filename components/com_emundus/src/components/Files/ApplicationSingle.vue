@@ -10,7 +10,7 @@
       :class="{ 'context-files': context === 'files', 'hidden': hidden }"
   >
     <div class="em-modal-header tw-w-full tw-px-3 tw-py-4 tw-bg-profile-full tw-flex tw-items-center">
-      <div class="tw-flex tw-items-center tw-cursor-pointer tw-justify-between tw-w-full" id="evaluation-modal-close">
+      <div class="tw-flex tw-items-center tw-justify-between tw-w-full" id="evaluation-modal-close">
         <div class="tw-flex tw-items-center tw-gap-2">
           <div  @click="onClose" class="tw-w-max tw-flex tw-items-center">
                <span class="material-symbols-outlined tw-text-base" style="color: white">navigate_before</span>

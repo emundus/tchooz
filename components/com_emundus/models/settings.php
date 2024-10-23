@@ -2309,6 +2309,12 @@ class EmundusModelSettings extends ListModel
 
 		if (!empty($config))
 		{
+			// unset the password if it is not changed
+			if ($config['smtppass'] == '************' || empty($config['smtppass']))
+			{
+				unset($config['smtppass']);
+			}
+
 			// First update configuration php
 			require_once JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php';
 			EmundusHelperUpdate::updateConfigurationFile($config);
@@ -2327,7 +2333,7 @@ class EmundusModelSettings extends ListModel
 				$emConfig->set('custom_email_smtpsecure', $config['smtpsecure']);
 				$emConfig->set('custom_email_smtpauth', $config['smtpauth']);
 				$emConfig->set('custom_email_smtpuser', $config['smtpuser']);
-				if (!empty($config['smtppass']) && $config['smtppass'] != '************')
+				if (!empty($config['smtppass']))
 				{
 					$emConfig->set('custom_email_smtppass', $config['smtppass']);
 				}

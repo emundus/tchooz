@@ -25,7 +25,7 @@ export class FetchClient {
     });
   }
 
-  async post(task, data, headers = null) {
+  async post(task, data, headers = null, timeout = 10000) {
     let url = this.baseUrl + '&task=' + task;
 
     let formData = new FormData();
@@ -42,6 +42,10 @@ export class FetchClient {
       parameters.headers = headers;
     }
 
+    if(timeout) {
+      parameters.signal = AbortSignal.timeout(timeout);
+    }
+
     return fetch(url, parameters).then(response => {
       if (response.ok) {
         return response.json();
@@ -51,7 +55,11 @@ export class FetchClient {
     }).then(data => {
       return data;
     }).catch(error => {
-      throw new Error('An error occurred while fetching the data. ' + error.message + '.');
+      if (err.name === "TimeoutError") {
+        throw new Error('The request timed out. ' + error.message + '.');
+      } else {
+        throw new Error('An error occurred while fetching the data. ' + error.message + '.');
+      }
     });
   }
 

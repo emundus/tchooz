@@ -1054,9 +1054,6 @@ video {
 .fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.day.selected {
                                 border-radius: 99px;
                             }
-.fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.day.\!selected {
-                                border-radius: 99px !important;
-                            }
 .fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.today:after {
                                 content: unset;
                             }
@@ -1874,6 +1871,14 @@ form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .\!row .
                                 accent-color: var(--em-form-checkbox-color-checked) !important;
                                 transform: scale(var(--em-form-checkbox-scale)) !important;
                                 margin: 0 !important;
+                            }
+@supports (-webkit-touch-callout: none) {
+                                form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row .fabrikgrid_checkbox input {
+                                    transform: scale(0.7,0.7);
+                                }
+                                form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .\!row .fabrikgrid_checkbox input {
+                                    transform: scale(0.7,0.7) !important;
+                                }
                             }
 form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row .fabrikgrid_checkbox label {
     cursor: pointer;
@@ -115053,9 +115058,6 @@ button.swal2-cancel.goback-btn:hover,
 .label-border-black {
         border-color: var(--em-black);
     }
-.\[-a-zA-Z\:0-9_\.\] {
-    -a-z-a--z: 0-9 .;
-}
 @font-face {
     font-family: 'Material Icons';
     font-style: normal;
@@ -115279,23 +115281,23 @@ body {
 /* Historique des emails */
 .view-list.email-history-indicators-page #g-container-main {
     background-image: var(--display-email-history);
-    background-position: top -10px right -10px;
+    background-position: top 74px right -10px;
     background-repeat: no-repeat;
-    background-size: 350px;
+    background-size: 248px;
 }
 /* Groupes */
 .view-list.groups-setup-page #g-container-main {
     background-image: var(--display-groups);
-    background-position: top 30px right;
+    background-position: top 74px right;
     background-repeat: no-repeat;
-    background-size: 350px;
+    background-size: 248px;
 }
 /* Profils */
 .view-list.users-profile-setup-page #g-container-main {
     background-image: var(--display-profiles);
-    background-position: top -10px right -10px;
+    background-position: top 74px right -10px;
     background-repeat: no-repeat;
-    background-size: 350px;
+    background-size: 248px;
 }
 /* TABLETTE */
 @media screen and (min-width: 768px) and (max-width: 959px) {

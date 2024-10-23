@@ -175,4 +175,5 @@ assessment/
 /plugins/authentication/miniorangesaml/
 /plugins/system/samlredirect/
 /plugins/user/samllogout/
+plugins/user/minioragejoomlaidp/
 

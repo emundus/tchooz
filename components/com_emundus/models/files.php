@@ -1149,14 +1149,23 @@ class EmundusModelFiles extends JModelLegacy
 		}
 
 		if ($this->getPagination()->pagesTotal > 15) {
-			for ($i = 1; $i <= 5; $i++) {
+			$index = 5;
+	        if($this->getPagination()->pagesCurrent > 5 && $this->getPagination()->pagesCurrent < 8)
+	        {
+		        $index = $this->getPagination()->pagesCurrent - 3;
+	        }
+
+			for ($i = 1; $i <= $index; $i++) {
 				$pageNavigation .= "<li ";
 				if ($this->getPagination()->pagesCurrent == $i) {
 					$pageNavigation .= "class='active'";
 				}
 				$pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
 			}
-			$pageNavigation .= "<li class='disabled'><span>...</span></li>";
+			if($this->getPagination()->pagesCurrent > 8)
+	        {
+				$pageNavigation .= "<li class='disabled'><span>...</span></li>";
+			}
 			if ($this->getPagination()->pagesCurrent <= 5) {
 				for ($i = 6; $i <= 10; $i++) {
 					$pageNavigation .= "<li ";
@@ -1177,8 +1186,16 @@ class EmundusModelFiles extends JModelLegacy
 					}
 				}
 			}
-			$pageNavigation .= "<li class='disabled'><span>...</span></li>";
-			for ($i = $this->getPagination()->pagesTotal - 4; $i <= $this->getPagination()->pagesTotal; $i++) {
+
+			// if total pages - current page is less than 5
+			$index = 4;
+	        if($this->getPagination()->pagesTotal - $this->getPagination()->pagesCurrent < 7)
+	        {
+				$index = $this->getPagination()->pagesTotal - ($this->getPagination()->pagesCurrent+3);
+	        } else {
+				$pageNavigation .= "<li class='disabled'><span>...</span></li>";
+			}
+			for ($i = $this->getPagination()->pagesTotal - $index; $i <= $this->getPagination()->pagesTotal; $i++) {
 				$pageNavigation .= "<li ";
 				if ($this->getPagination()->pagesCurrent == $i) {
 					$pageNavigation .= "class='active'";
@@ -2629,7 +2646,7 @@ class EmundusModelFiles extends JModelLegacy
 
 					$element_attribs = json_decode($elt->element_attribs);
 
-					if ($element_attribs->database_join_display_type == "checkbox") {
+					if ($element_attribs->database_join_display_type == "checkbox" || $element_attribs->database_join_display_type == "multilist") {
 						$select_check = $element_attribs->join_val_column;
 						if (!empty($element_attribs->join_val_column_concat)) {
 							$select_check = $element_attribs->join_val_column_concat;
@@ -4668,12 +4685,9 @@ class EmundusModelFiles extends JModelLegacy
 
 	public function getUnreadMessages()
 	{
-
-		
 		$query     = $this->_db->getQuery(true);
 		$user      = $this->app->getIdentity();
 		$default   = array();
-
 
 		try {
 			$query->select('ecc.fnum, COUNT(m.message_id) as nb')

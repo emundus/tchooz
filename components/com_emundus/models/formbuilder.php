@@ -638,16 +638,16 @@ class EmundusModelFormbuilder extends JModelList
 		            updated_by int(11) NOT NULL,
 		            step_id int(11) NOT NULL,
 		            PRIMARY KEY (id)
-		            ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4";
+		            ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci";
 			} else {
 				$query = "CREATE TABLE IF NOT EXISTS jos_emundus_" . $prid . "_" . $increment . " (
 		            id int(11) NOT NULL AUTO_INCREMENT,
 		            time_date datetime NULL DEFAULT current_timestamp(),
-		            fnum varchar(28) CHARSET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+		            fnum varchar(28) CHARSET NOT NULL,
 		            user int(11) NULL,
 		            PRIMARY KEY (id),
 		            UNIQUE KEY fnum (fnum)
-		            ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4";
+		            ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci";
 			}
 			$this->db->setQuery($query);
 			$table_created = $this->db->execute();

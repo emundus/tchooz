@@ -252,25 +252,25 @@ body {
 /* Historique des emails */
 .view-list.email-history-indicators-page #g-container-main {
     background-image: var(--display-email-history);
-    background-position: top -10px right -10px;
+    background-position: top 74px right -10px;
     background-repeat: no-repeat;
-    background-size: 350px;
+    background-size: 248px;
 }
 
 /* Groupes */
 .view-list.groups-setup-page #g-container-main {
     background-image: var(--display-groups);
-    background-position: top 30px right;
+    background-position: top 74px right;
     background-repeat: no-repeat;
-    background-size: 350px;
+    background-size: 248px;
 }
 
 /* Profils */
 .view-list.users-profile-setup-page #g-container-main {
     background-image: var(--display-profiles);
-    background-position: top -10px right -10px;
+    background-position: top 74px right -10px;
     background-repeat: no-repeat;
-    background-size: 350px;
+    background-size: 248px;
 }
 
 /* TABLETTE */

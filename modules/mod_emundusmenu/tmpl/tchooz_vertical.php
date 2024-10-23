@@ -30,7 +30,12 @@ defined('_JEXEC') or die;
     #header-a {
         position: relative;
         left: 5%;
-        opacity: 0;
+    }
+
+    #header-a .logo {
+        position: relative;
+        left: 5%;
+        display: none;
     }
 
     @media all and (max-width: 479px) {
@@ -588,7 +593,7 @@ defined('_JEXEC') or die;
                 jQuery("#g-footer").css("padding-left", "280px");
                 jQuery("#footer-rgpd").css("padding-left", "280px");
                 jQuery("#g-container-main").css("padding-left", "270px");
-                jQuery("#header-a").css("opacity", "1");
+                jQuery("#header-a .logo").css("display", "block");
                 jQuery(".tchooz-vertical-logo").css("opacity", "0");
             }
             setTimeout(() => {
@@ -622,7 +627,7 @@ defined('_JEXEC') or die;
                     }
                 }
                 document.querySelector("#g-container-main").style.paddingLeft = "280px";
-                document.querySelector("#header-a").style.opacity = "1";
+                document.querySelector("#header-a .logo").style.display = "block";
             }
             setTimeout(() => {
                 document.querySelectorAll(".image-title").forEach(function (elem) {
@@ -663,7 +668,7 @@ defined('_JEXEC') or die;
                         document.querySelector("#footer-rgpd").style.paddingLeft = "76px";
                     }
                 }
-                document.querySelector("#header-a").style.opacity = "0";
+                document.querySelector("#header-a .logo").style.display = "none";
             }
 
             setTimeout(function () {

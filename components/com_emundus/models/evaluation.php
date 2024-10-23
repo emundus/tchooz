@@ -3054,6 +3054,11 @@ class EmundusModelEvaluation extends JModelList
 										$val      = '';
 										$lowerTag = strtolower($tag);
 
+										if (str_starts_with($tag, 'CONTAINER_')) // this is used for html blocks later
+										{
+											continue;
+										}
+
 										if (array_key_exists($lowerTag, $const))
 										{
 											$preprocess->setValue($tag, $const[$lowerTag]);
@@ -3091,13 +3096,30 @@ class EmundusModelEvaluation extends JModelList
 												$i++;
 											}
 
-											if (strpos($tag, 'IMG_') !== false)
+											if (str_ends_with($tag, '_BLOCK'))
 											{
-												$preprocess->setImageValue($tag, $val);
+												$html    = $val;
+												$section = $phpWord->addSection();
+
+												\PhpOffice\PhpWord\Shared\Html::addHtml($section, $html);
+												$containers = $section->getElements();
+												$clone      = $preprocess->cloneBlock('CONTAINER_' . $tag, count($containers), true, true);
+
+												for ($j = 0; $j < count($containers); $j++)
+												{
+													$preprocess->setComplexBlock($tag . '#' . ($j + 1), $containers[$j]);
+												}
 											}
 											else
 											{
-												$preprocess->setValue($tag, $val);
+												if (strpos($tag, 'IMG_') !== false)
+												{
+													$preprocess->setImageValue($tag, $val);
+												}
+												else
+												{
+													$preprocess->setValue($tag, $val);
+												}
 											}
 										}
 									}

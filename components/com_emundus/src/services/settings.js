@@ -236,7 +236,7 @@ export default {
   },
   async testEmail(data) {
     try {
-      return await fetchClient.post('testemail', data);
+      return await fetchClient.post('testemail', data, null, 5000);
     } catch (e) {
       return {
         status: false,

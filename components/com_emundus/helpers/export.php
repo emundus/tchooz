@@ -241,7 +241,7 @@ class EmundusHelperExport
 			foreach ($files as $file) {
 				if (strrpos($file->filename, 'application_form') === false) {
 					$exFileName = explode('.', $file->filename);
-					$filePath   = EMUNDUS_PATH_ABS . $file->user_id . DS . $file->filename;
+					$filePath   = EMUNDUS_PATH_ABS . $sid . DS . $file->filename;
 
 					if (file_exists($filePath) && filesize($filePath) != 0) {
 						if ($convert_docx_to_pdf && $exFileName[1] === 'docx') {

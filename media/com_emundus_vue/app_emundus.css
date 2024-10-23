@@ -1263,11 +1263,11 @@ hr.system-pagebreak { border: #808080FF dashed 1px; color: #808080FF; }
   position: absolute;
   right: 5px;
 }
-.emails__add-email[data-v-e53bd07c] {
+.emails__add-email[data-v-3bd8501a] {
     width: 100%;
     margin-left: auto;
 }
-.em-container-accordeon[data-v-e53bd07c] {
+.em-container-accordeon[data-v-3bd8501a] {
     background: var(--neutral-0);
     padding: 24px;
     border-radius: var(--em-coordinator-br-cards);
