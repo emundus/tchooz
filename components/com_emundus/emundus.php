@@ -15,6 +15,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Router\Route;
 use Joomla\Component\Emundus\Site\Exception\EmundusException;
 
 $app = Factory::getApplication();
@@ -816,10 +817,15 @@ elseif ($user->guest && ((($name === 'webhook' || $app->input->get('controller',
 	$controller->execute($task);
 }
 elseif ($user->guest && $name != 'emailalert' && $name != 'programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign') && $task != 'passrequest' && $task != 'getusername' && $task != 'getpasswordsecurity') {
-	PluginHelper::importPlugin('emundus', 'custom_event_handler');
-	$app->triggerEvent('onCallEventHandler', ['onAccessDenied', []]);
+	if ($name == 'user' && $app->input->get('emailactivation', 0) == 1) {
+		$app->enqueueMessage(Text::_('COM_EMUNDUS_PLEASE_LOGIN_TO_COMPLETE_ACTIVATION'));
+		$app->redirect(Route::_('index.php?option=com_users&view=login'));
+	} else {
+		PluginHelper::importPlugin('emundus', 'custom_event_handler');
+		$app->triggerEvent('onCallEventHandler', ['onAccessDenied', []]);
 
-	throw new EmundusException(Text::_('JERROR_ALERTNOAUTHOR'), 403, null, false, false);
+		throw new EmundusException(Text::_('JERROR_ALERTNOAUTHOR'), 403, null, false, false);
+	}
 }
 else {
 	if ($name != 'search_engine') {
