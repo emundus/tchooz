@@ -83,16 +83,19 @@ class EmundusViewFiles extends JViewLegacy
 		}
 
 		$menu = $this->app->getMenu();
-		if (!empty($menu)) {
+		$itemId = $this->app->input->getInt('Itemid', 0);
+		if(empty($itemId) && !empty($menu)) {
 			$current_menu = $menu->getActive();
 			if (!empty($current_menu)) {
-				$menu_params = $menu->getParams($current_menu->id);
-				if (!empty($menu_params)) {
-					$this->use_module_for_filters = boolval($menu_params->get('em_use_module_for_filters', 0));
-				} else {
-					$this->use_module_for_filters = false;
-				}
+				$itemId = $current_menu->id;
 			}
+		}
+
+		$menu_params = $menu->getParams($itemId);
+		if (!empty($menu_params)) {
+			$this->use_module_for_filters = boolval($menu_params->get('em_use_module_for_filters', 0));
+		} else {
+			$this->use_module_for_filters = false;
 		}
 
 		$session = $this->app->getSession();

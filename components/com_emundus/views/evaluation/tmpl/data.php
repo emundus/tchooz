@@ -96,7 +96,7 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
                                             <label for="em-check-all" class="check-box"></label>
                                         </div>
                                         <div class="selectDropdown" id="selectDropdown">
-                                            <i class="fas fa-sort-down"></i>
+                                            <span class="material-symbols-outlined">keyboard_arrow_down</span>
                                         </div>
 
                                     </div>
