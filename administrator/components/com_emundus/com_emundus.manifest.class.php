@@ -246,28 +246,10 @@ class Com_EmundusInstallerScript
 			EmundusHelperUpdate::displayMessage('Erreur lors de la suppression du cache Joomla.', 'error');
 		}
 
-		$query->clear()
-			->update($db->quoteName('#__extensions'))
-			->set($db->quoteName('enabled') . ' = 0')
-			->where($db->quoteName('name') . ' = ' . $db->quote('plg_authentication_cookie'))
-			->where($db->quoteName('type') . ' = ' . $db->quote('plugin'))
-			->where($db->quoteName('folder') . ' = ' . $db->quote('authentication'));
-		$db->setQuery($query);
-		$db->execute();
-
-		$options['frontediting'] = 0;
-		$app                     = Factory::getApplication();
-		if (!$app->get('shared_session') || $app->get('session_name') == 'site')
+		if(!$this->checkConfig())
 		{
-			$options['shared_session'] = true;
-			$options['session_name']   = UserHelper::genRandomPassword(16);
-
-			$query->clear()
-				->delete($this->db->quoteName('#__session'));
-			$this->db->setQuery($query);
-			$this->db->execute();
+			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification de la configuration.', 'error');
 		}
-		EmundusHelperUpdate::updateConfigurationFile($options);
 
 		EmundusHelperUpdate::generateCampaignsAlias();
 
@@ -729,6 +711,67 @@ class Com_EmundusInstallerScript
 		{
 			EmundusHelperUpdate::displayMessage($e->getMessage(), 'error');
 			$checked = false;
+		}
+
+		return $checked;
+	}
+
+	private function checkConfig()
+	{
+		$checked = false;
+		$options = [];
+
+		$query = $this->db->getQuery(true);
+
+		try
+		{
+			$query->clear()
+				->update($this->db->quoteName('#__extensions'))
+				->set($this->db->quoteName('enabled') . ' = 0')
+				->where($this->db->quoteName('name') . ' = ' . $this->db->quote('plg_authentication_cookie'))
+				->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plugin'))
+				->where($this->db->quoteName('folder') . ' = ' . $this->db->quote('authentication'));
+			$this->db->setQuery($query);
+			$checked = $this->db->execute();
+
+			$options['frontediting'] = 0;
+
+			//Prepare cookies config
+			$cookie_domain = Factory::getApplication()->get('live_site','');
+			if(!empty($cookie_domain)) {
+				$cookie_domain = explode('//',$cookie_domain);
+				$cookie_domain = $cookie_domain[1];
+				if(substr($cookie_domain, -1) == '/') {
+					$cookie_domain = substr($cookie_domain, 0, -1);
+				}
+
+				if(!empty($cookie_domain)) {
+					$options['cookie_domain'] = $cookie_domain;
+				}
+
+				$options['cookie_path'] = '/';
+			}
+			//
+
+
+			$app                     = Factory::getApplication();
+			if (!$app->get('shared_session') || $app->get('session_name') == 'site')
+			{
+				$options['shared_session'] = true;
+				$options['session_name']   = UserHelper::genRandomPassword(16);
+
+				$query->clear()
+					->delete($this->db->quoteName('#__session'));
+				$this->db->setQuery($query);
+				$this->db->execute();
+			}
+
+			$checked = EmundusHelperUpdate::updateConfigurationFile($options);
+		}
+		catch (Exception $e)
+		{
+			$checked = false;
+			EmundusHelperUpdate::displayMessage($e->getMessage(), 'error');
 		}
 
 		return $checked;
