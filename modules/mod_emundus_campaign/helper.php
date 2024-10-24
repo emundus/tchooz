@@ -1,4 +1,8 @@
 <?php
+
+use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
+
 defined('_JEXEC') or die('Restricted access');
 
 class modEmundusCampaignHelper
@@ -431,5 +435,27 @@ class modEmundusCampaignHelper
 		catch (Exception $e) {
 			return new stdClass();
 		}
+	}
+
+	public function getProgramLabel($codes)
+	{
+		$label = '';
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+
+		try
+		{
+			$query->select('label')
+				->from($db->quoteName('#__emundus_setup_programmes'))
+				->where($db->quoteName('code') . ' IN (' . $db->quote($codes) . ')');
+			$db->setQuery($query);
+			$label = $db->loadResult();
+		}
+		catch (Exception $e)
+		{
+			Log::add($e->getMessage(), Log::ERROR, 'mod_emundus_campaign');
+		}
+
+		return $label;
 	}
 }
