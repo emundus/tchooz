@@ -241,7 +241,10 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                     if (res[j].noMoreUploads) {
                         div.querySelector('div.btn-upload').style.display = 'none';
                         div.querySelector('input#file_' + this.element.id).style.display = 'none';
-                        divCtrlGroup.querySelector('.fabrikLabel').style.cursor = 'default';
+                        const fabrikLabel =  divCtrlGroup.querySelector('.fabrikLabel');
+                        if (fabrikLabel) {
+                            fabrikLabel.style.cursor = 'default';
+                        }
                         input.hide();
 
                         var descriptionElt = document.querySelector('div#' + this.element.id + '_description_block');
