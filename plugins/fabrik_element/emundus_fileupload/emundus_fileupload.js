@@ -57,8 +57,11 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                     if (res.limitObtained) {
                         div.querySelector('div.btn-upload').style.display = 'none';
                         div.querySelector('input#file_' + this.element.id).style.display = 'none';
-                        divCtrlGroup.querySelector('.fabrikLabel').style.cursor = 'default';
 
+                        const fabrikLabel = divCtrlGroup.querySelector('.fabrikLabel');
+                        if (fabrikLabel)  {
+                            fabrikLabel.style.cursor = 'default';
+                        }
                         var descriptionElt = document.querySelector('div#' + this.element.id + '_description_block');
                         if (typeof descriptionElt !== 'undefined' && descriptionElt != null) {
                             descriptionElt.style.display = 'none';
@@ -66,7 +69,10 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                     } else {
                         div.querySelector('div.btn-upload').style.display = 'flex';
                         div.querySelector('input#file_' + this.element.id).style.display = 'block';
-                        divCtrlGroup.querySelector('.fabrikLabel').style.cursor = 'pointer';
+                        const fabrikLabel = divCtrlGroup.querySelector('.fabrikLabel');
+                        if (fabrikLabel)  {
+                            fabrikLabel.style.cursor = 'pointer';
+                        }
                     }
 
                     res.files.forEach((file) => {
