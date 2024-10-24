@@ -16,7 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 
 $element = $this->element;?>
 <div class=" <?php echo $element->containerClass .' '. $element->span; ?>">
-	<div class="fabrikLabel">
+	<div class="fabrikLabel tw-font-bold">
 		<?php echo $element->label_raw;?>
 	</div>
 

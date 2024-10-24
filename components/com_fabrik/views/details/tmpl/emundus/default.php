@@ -32,11 +32,6 @@ if(!empty($e_user->fnums)) {
 	$this->collaborator = $fnumInfos->applicant_id != $e_user->id;
 }
 
-$user_profile_form = false;
-if ($form->db_table_name == 'jos_emundus_users' && !empty($model->data['jos_emundus_users___user_id_raw']) && !EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)) {
-	$user_profile_form = true;
-}
-
 if ($this->params->get('show_page_heading', 1)) : ?>
     <div class="componentheading<?php echo $this->params->get('pageclass_sfx') ?>">
 		<?php echo $this->escape($this->params->get('page_heading')); ?>
@@ -51,33 +46,8 @@ $this->is_iframe = $app->input->get('iframe', 0);
 
 <div id="fabrikDetailsContainer_<?php echo $form->id ?>" <?= $this->is_iframe ? 'class="tw-p-4"' : '' ?>>
 
-    <?php if ($user_profile_form) : ?>
-        <?php
-	    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
-	    $m_user = new EmundusModelUsers;
-        $applicant = $m_user->getUserById($model->data['jos_emundus_users___user_id_raw'])[0];
-        ?>
-        <div class="em-flex-row em-mt-16">
-                <div class="em-flex-row em-small-flex-column em-small-align-items-start">
-                    <div class="em-profile-picture-big no-hover"
-					    <?php if(empty($applicant->profile_picture)) :?>
-                            style="background-image:url(<?php echo JURI::base() ?>/media/com_emundus/images/profile/default-profile.jpg)"
-					    <?php else : ?>
-                            style="background-image:url(<?php echo JURI::base() ?>/<?php echo $applicant->profile_picture ?>)"
-					    <?php endif; ?>
-                    >
-                    </div>
-                </div>
-                <div class="em-ml-24 ">
-                    <p class="em-font-weight-500">
-					    <?php echo $applicant->lastname . ' ' . $applicant->firstname; ?>
-                    </p>
-                </div>
-            </div>
-    <?php endif; ?>
-
 	<?php if ($this->params->get('show-title', 1)) : ?>
-        <div class="page-header em-mb-12 em-flex-row em-flex-space-between">
+        <div class="page-header em-mb-12 em-flex-row em-flex-space-between tw-mt-4">
             <h1><?php echo $form->label; ?></h1>
         </div>
 	<?php
@@ -102,7 +72,7 @@ $this->is_iframe = $app->input->get('iframe', 0);
 			<?php
 			if ($group->showLegend) :?>
                 <h3 class="legend em-mb-8">
-                    <span><?php echo $group->title; ?></span>
+                    <?php echo $group->title; ?>
                 </h3>
 			<?php endif;
 
