@@ -11,6 +11,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Emundus\Plugin\SampleData\Emundus\Extension\Emundus;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Language\Text;
 
 use Joomla\CMS\Log\Log;
@@ -1884,6 +1885,21 @@ class EmundusControllerFiles extends BaseController
 					$encryption_key = JFactory::getConfig()->get('secret');
 				}
 
+				$emParams = ComponentHelper::getParams('com_emundus');
+				$excel_elts_to_escape = $emParams->get('export_elements_to_escape', '');
+				if(!empty($excel_elts_to_escape) && is_array($excel_elts_to_escape)) {
+					$db = Factory::getContainer()->get('DatabaseDriver');
+					$query = $db->getQuery(true);
+
+					$query->select('name')
+						->from($db->quoteName('#__fabrik_elements'))
+						->where($db->quoteName('id') . ' IN ('.implode(',',$excel_elts_to_escape).')');
+					$db->setQuery($query);
+					$excel_elts_to_escape = $db->loadColumn();
+				} else {
+					$excel_elts_to_escape = [];
+				}
+
 				// On parcours les fnums
 				foreach ($fnumsArray as $fnum) {
 					// On traite les données du fnum
@@ -1901,12 +1917,13 @@ class EmundusControllerFiles extends BaseController
 								}
 							}
 							else {
+								list($key_table, $key_element) = explode('___', $k);
+
 								if ($v == "") {
 									$line .= " " . "\t";
 								}
 								else {
 									if (!empty($encrypted_tables)) {
-										list($key_table, $key_element) = explode('___', $k);
 										if (!empty($key_table) && in_array($key_table, $encrypted_tables)) {
 											$decoded_value = json_decode($v, true);
 
@@ -1978,7 +1995,11 @@ class EmundusControllerFiles extends BaseController
 											$line .= Text::_(preg_replace("/\r|\n|\t/", "", mb_strtoupper($v))) . "\t";
 										}
 										else {
-											$line .= Text::_(preg_replace("/\r|\n|\t/", "", $v)) . "\t";
+											if(!empty($key_element) && in_array($key_element,$excel_elts_to_escape)) {
+												$line .= "'". Text::_(preg_replace("/\r|\n|\t/", "", $v))."\t";
+											} else {
+												$line .= Text::_(preg_replace("/\r|\n|\t/", "", $v))."\t";
+											}
 										}
 									}
 								}

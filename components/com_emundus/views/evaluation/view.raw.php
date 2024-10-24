@@ -95,6 +95,7 @@ class EmundusViewEvaluation extends JViewLegacy
 		$menu_params  = $menu->getParams($current_menu->id);
 
 		$columnSupl = explode(',', $menu_params->get('em_other_columns'));
+		$show_evaluator = $menu_params->get('em_show_evaluator',1);
 		$layout     = $jinput->getString('layout', 0);
 
 		$m_files = new EmundusModelFiles();
@@ -201,8 +202,11 @@ class EmundusViewEvaluation extends JViewLegacy
 				$defaultElements                    = $this->get('DefaultElements');
 				$this->datas                        = array(array('check' => '#', 'fnum' => Text::_('COM_EMUNDUS_FILES_APPLICATION_FILES'), 'status' => Text::_('COM_EMUNDUS_STATUS')));
 				$fl                                 = array();
-				$fl['evaluator'] = Text::_('COM_EMUNDUS_EVALUATION_EVALUATOR');
 				$fl['evaluations_step_label'] = Text::_('COM_EMUNDUS_EVALUATION_EVAL_STEP');
+				if ($show_evaluator)
+				{
+					$fl['evaluator'] = Text::_('COM_EMUNDUS_EVALUATION_EVALUATOR');
+				}
 				// Get eval crieterion
 				if (count($defaultElements) > 0) {
 					foreach ($defaultElements as $key => $elt) {
@@ -318,7 +322,7 @@ class EmundusViewEvaluation extends JViewLegacy
 							elseif ($key == 'name' || $key == 'status_class' || $key == 'step' || $key == 'code') {
 								continue;
 							}
-							elseif ($key == 'evaluator') {
+							elseif ($key == 'evaluator' && $show_evaluator) {
 
 								if ($current_row_form > 0 && !empty($value)) {
 									$link_view = '';
@@ -392,6 +396,9 @@ class EmundusViewEvaluation extends JViewLegacy
 							}
 						}
 						$this->datas[$line['fnum']->val . '-' . $i] = $line;
+						if (!$show_evaluator && !empty($this->datas[$line['fnum']->val . '-' . $i]['evaluator'])) {
+							unset($this->datas[$line['fnum']->val.'-'.$i]['evaluator']);
+						}
 						$i++;
 					}
 

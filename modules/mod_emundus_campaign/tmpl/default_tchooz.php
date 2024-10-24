@@ -139,6 +139,11 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_groupby_closed : false;
 ?>
 
+
+<?php if($mod_em_campaign_display_program_label == 1 && !empty($codes)) : ?>
+    <h1 class="tw-mb-2"><?php echo $program_label; ?></h1>
+<?php endif; ?>
+
 <?php if (in_array('intro', $mod_em_campaign_list_sections)): ?>
     <div class="mod_emundus_campaign__intro">
 		<?= $mod_em_campaign_intro; ?>

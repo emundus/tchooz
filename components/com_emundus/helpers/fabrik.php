@@ -15,6 +15,7 @@ require_once(JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 include_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
 require_once(JPATH_SITE . '/components/com_emundus/helpers/cache.php');
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Log\Log;
@@ -1978,5 +1979,17 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		}
 
 		return $value;
+	}
+
+	public static function displayPasswordTip()
+	{
+		$params = ComponentHelper::getParams('com_users');
+		$min_length = $params->get('minimum_length');
+		$min_int = $params->get('minimum_integers');
+		$min_sym = $params->get('minimum_symbols');
+		$min_up = $params->get('minimum_uppercase');
+		$min_low = $params->get('minimum_lowercase');
+
+		return Text::sprintf('USER_PASSWORD_TIP', $min_length, $min_int, $min_sym, $min_up, $min_low);
 	}
 }

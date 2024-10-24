@@ -136,8 +136,13 @@ $now      = $dateTime->format('Y-m-d H:i:s');
 
 <div class="mod_emundus_flow___container tw-mt-4" style="padding: 0 20px">
     <div class="tw-flex tw-justify-between mod_emundus_flow___intro">
-        <div class="tw-flex tw-items-center">
-            <h1 class="em-mb-0-important"><?php echo $campaign_name; ?></h1>
+        <div class="tw-flex tw-flex-col tw-justify-center">
+            <?php if (!empty($title_override_display)) : ?>
+	            <?php echo $campaign_name; ?>
+            <?php else : ?>
+                <h1 class="em-mb-0-important"><?php echo $campaign_name; ?></h1>
+            <?php endif; ?>
+
 			<?php
 			$color      = '#0A53CC';
 			$background = '#C8E1FE';

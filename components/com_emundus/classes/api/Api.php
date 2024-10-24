@@ -10,8 +10,9 @@
 namespace classes\api;
 
 use GuzzleHttp\Client as GuzzleClient;
-use JLog;
+use GuzzleHttp\Exception\ClientException;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Log\Log;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -62,7 +63,7 @@ class Api
 
 	public function __construct($retry = false)
 	{
-		JLog::addLogger(['text_file' => 'com_emundus.api.php'], JLog::ALL, 'com_emundus.api');
+		Log::addLogger(['text_file' => 'com_emundus.api.php'], Log::ALL, 'com_emundus.api');
 
 		$this->setRetry($retry);
 	}
@@ -73,6 +74,11 @@ class Api
 	public function getBaseUrl(): string
 	{
 		return $this->baseUrl;
+	}
+
+	public function setBaseUrl($baseUrl): void
+	{
+		$this->baseUrl = $baseUrl;
 	}
 
 	/**
@@ -105,6 +111,16 @@ class Api
 	public function getHeaders(): array
 	{
 		return $this->headers;
+	}
+
+	public function setHeaders($headers): void
+	{
+		$this->headers = $headers;
+	}
+
+	public function addHeader($key, $value): void
+	{
+		$this->headers[$key] = $value;
 	}
 
 	/**
@@ -142,7 +158,7 @@ class Api
 				$this->get($url, $params);
 			}
 
-			JLog::add('[GET] ' . $e->getMessage(), JLog::ERROR, 'com_emundus.api');
+			Log::add('[GET] ' . $e->getMessage(), Log::ERROR, 'com_emundus.api');
 
 			$response['status']  = $e->getCode();
 			$response['message'] = $e->getMessage();
@@ -151,25 +167,42 @@ class Api
 		return $response;
 	}
 
-	public function post($url, $query_body_in_json = null)
+	public function post($url, $body = null)
 	{
 		$response = ['status' => 200, 'message' => '', 'data' => ''];
 
 		try {
-			$request = $query_body_in_json !== null ? $this->client->post($this->baseUrl . '/' . $url, ['body' => $query_body_in_json, 'headers' => $this->getHeaders()]) : $this->client->post($url, ['headers' => $this->getHeaders()]);
+			$params            = array();
+			$params['headers'] = $this->getHeaders();
+			if (is_array($body))
+			{
+				$params['form_params'] = $body;
+			}
+			else
+			{
+				if (!empty($body))
+				{
+					$params['body']                    = $body;
+					$params['headers']['Content-Type'] = 'application/json';
+					$params['headers']['Accept']       = 'application/json';
+				}
+			}
+
+			$request = $this->client->post($this->baseUrl . '/' . $url, $params);
 
 			$response['status'] = $request->getStatusCode();
 			$response['data']   = json_decode($request->getBody());
 		}
-		catch (\Exception $e) {
+		catch (ClientException $e) {
 			if ($this->getRetry()) {
 				$this->setRetry(false);
-				$this->post($url, $query_body_in_json);
+				$this->post($url, $body);
 			}
 
-			JLog::add('[POST] ' . $e->getMessage(), JLog::ERROR, 'com_emundus.api');
+			Log::add('[POST] ' . $e->getMessage(), Log::ERROR, 'com_emundus.api');
 			$response['status']  = $e->getCode();
 			$response['message'] = $e->getMessage();
+			$response['data'] = json_decode($e->getResponse()->getBody()->getContents());
 		}
 
 		return $response;
@@ -192,7 +225,7 @@ class Api
 				$this->patch($url, $query_body_in_json);
 			}
 
-			JLog::add('[PATCH] ' . $e->getMessage(), JLog::ERROR, 'com_emundus.api');
+			Log::add('[PATCH] ' . $e->getMessage(), Log::ERROR, 'com_emundus.api');
 			$response['status']  = $e->getCode();
 			$response['message'] = $e->getMessage();
 		}
@@ -219,7 +252,7 @@ class Api
 				$this->delete($url);
 			}
 
-			JLog::add('[DELETE] ' . $e->getMessage(), JLog::ERROR, 'com_emundus.api');
+			Log::add('[DELETE] ' . $e->getMessage(), Log::ERROR, 'com_emundus.api');
 			$response['status']  = $e->getCode();
 			$response['message'] = $e->getMessage();
 		}

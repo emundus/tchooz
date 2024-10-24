@@ -482,3 +482,38 @@ function prefillBic(element, bic_element) {
         }
     }
 }
+
+const callApi = function(id_api,route,data,method) {
+    addLoader();
+
+    return new Promise((resolve, reject) => {
+        let formData = new FormData();
+        formData.append('id_api', id_api);
+        formData.append('route', route);
+        formData.append('method', method);
+        formData.append('data', JSON.stringify(data));
+
+
+        fetch('index.php?option=com_emundus&controller=sync&task=callapi', {
+            method: 'POST',
+            body: formData,
+        }).then(function (response) {
+            removeLoader();
+            if (response.ok) {
+                return response.json();
+            } else {
+                console.log('Network response was not ok.');
+            }
+        }).then(function (data) {
+            if (data.status == 200) {
+                resolve(data.data);
+            } else {
+                console.log('API call failed with status: ' + data.status);
+                reject(data);
+            }
+        }).catch(function (error) {
+            console.log('There has been a problem with your fetch operation: ' + error.message);
+            reject(error);
+        });
+    });
+}

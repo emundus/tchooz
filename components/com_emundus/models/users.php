@@ -4607,7 +4607,7 @@ class EmundusModelUsers extends ListModel
 	 */
 	public function getColumnsFromProfileForm() {
 
-		$columns = null;
+		$columns = [];
 
 		$query = $this->db->getQuery(true);
 
