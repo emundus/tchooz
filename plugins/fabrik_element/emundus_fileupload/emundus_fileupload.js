@@ -59,7 +59,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                         div.querySelector('input#file_' + this.element.id).style.display = 'none';
 
                         const fabrikLabel = divCtrlGroup.querySelector('.fabrikLabel');
-                        if (fabrikLabel)  {
+                        if (fabrikLabel) {
                             fabrikLabel.style.cursor = 'default';
                         }
                         var descriptionElt = document.querySelector('div#' + this.element.id + '_description_block');
@@ -70,7 +70,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                         div.querySelector('div.btn-upload').style.display = 'flex';
                         div.querySelector('input#file_' + this.element.id).style.display = 'block';
                         const fabrikLabel = divCtrlGroup.querySelector('.fabrikLabel');
-                        if (fabrikLabel)  {
+                        if (fabrikLabel) {
                             fabrikLabel.style.cursor = 'pointer';
                         }
                     }
@@ -219,6 +219,8 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                         if (deleteButton) {
                             deleteButton.style.display = 'none';
                         }
+
+                        return;
                     }
 
                     if (res[j].nbMax) {
@@ -241,7 +243,8 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                     if (res[j].noMoreUploads) {
                         div.querySelector('div.btn-upload').style.display = 'none';
                         div.querySelector('input#file_' + this.element.id).style.display = 'none';
-                        const fabrikLabel =  divCtrlGroup.querySelector('.fabrikLabel');
+                        const fabrikLabel = divCtrlGroup.querySelector('.fabrikLabel');
+
                         if (fabrikLabel) {
                             fabrikLabel.style.cursor = 'default';
                         }
