@@ -404,6 +404,8 @@ class EmundusHelperEvents
 			$itemid  = $jinput->get('Itemid');
 			$reload  = $jinput->get('r', 0);
 			$preview = $jinput->getInt('preview', 0);
+			$iframe = $jinput->getString('iframe', 0);
+			$tmpl = $jinput->getString('tmpl', '');
 			$reload++;
 
 			if ($preview == 1 && EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
@@ -450,7 +452,14 @@ class EmundusHelperEvents
 				$rowid = $db->loadResult();
 				if (!empty($rowid))
 				{
-					$form_url = Route::_("index.php?option=com_fabrik&view=form&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&rowid=" . $rowid . "&r=" . $reload) . "&fnum=" . $fnum;
+					$form_url = Route::_("index.php?option=com_fabrik&view=" . $view . "&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&rowid=" . $rowid . "&r=" . $reload) . "&fnum=" . $fnum;
+					if (!empty($iframe)) {
+						$form_url .= '&iframe=1';
+					}
+					if (!empty($tmpl)) {
+						$form_url .= '&tmpl=' . $tmpl;
+					}
+
 					$mainframe->redirect($form_url);
 				}
 
@@ -533,8 +542,18 @@ class EmundusHelperEvents
 
 			// once access condition is not correct, redirect page
 			$reload_url  = true;
-			$form_url    = Route::_("index.php?option=com_fabrik&view=form&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&rowid=" . $rowid . "&r=" . $reload) . "&fnum=" . $fnum;
-			$details_url = Route::_("index.php?option=com_fabrik&view=details&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&rowid=" . $rowid . "&r=" . $reload) . '&fnum=' . $fnum;
+
+			$url_parameters = '';
+			if (!empty($iframe)) {
+				$url_parameters .= '&iframe=1';
+			}
+
+			if (!empty($tmpl)) {
+				$url_parameters .= '&tmpl=' . $tmpl;
+			}
+
+			$form_url    = Route::_("index.php?option=com_fabrik&view=form&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&rowid=" . $rowid . "&r=" . $reload . $url_parameters) . "&fnum=" . $fnum;
+			$details_url = Route::_("index.php?option=com_fabrik&view=details&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&rowid=" . $rowid . "&r=" . $reload . $url_parameters) . '&fnum=' . $fnum;
 
 			$session = $this->getFormSession($fnum, $params['formModel']->id);
 			if (!empty($session->id) && $session->user_id != $user->id && $can_read)
@@ -1052,7 +1071,16 @@ class EmundusHelperEvents
 						$reload++;
 						if ($reload_url)
 						{
-							$mainframe->redirect(Route::_("index.php?option=com_fabrik&view=form&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&rowid=" . $rowid . "&r=" . $reload) . '&fnum=' . $fnum);
+							$url_parameters = '';
+							if (!empty($iframe)) {
+								$url_parameters .= '&iframe=1';
+							}
+
+							if (!empty($tmpl)) {
+								$url_parameters .= '&tmpl=' . $tmpl;
+							}
+
+							$mainframe->redirect(Route::_("index.php?option=com_fabrik&view=form&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&rowid=" . $rowid . "&r=" . $reload . $url_parameters) . '&fnum=' . $fnum);
 						}
 					}
 					catch (Exception $e)
