@@ -478,9 +478,13 @@ class EmundusHelperEvents
 			$is_campaign_started = strtotime(date($now)) >= strtotime($current_start_date);
 			if (!$is_campaign_started && !in_array($user->id, $applicants))
 			{
+				if (!class_exists('EmundusHelperMenu')) {
+					require_once(JPATH_ROOT . '/components/com_emundus/helpers/menu.php');
+				}
+
 				// STOP HERE, the campaign or step is not started yet. Redirect to main page
 				$mainframe->enqueueMessage(Text::_('COM_EMUNDUS_EVENTS_APPLICATION_PERIOD_NOT_STARTED'), 'warning');
-				$mainframe->redirect('/');
+				$mainframe->redirect(EmundusHelperMenu::getHomepageLink());
 			}
 
 			$is_dead_line_passed = strtotime(date($now)) > strtotime($current_end_date);
