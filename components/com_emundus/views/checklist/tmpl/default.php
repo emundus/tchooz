@@ -15,6 +15,8 @@ $chemin  = EMUNDUS_PATH_REL;
 $itemid = $app->input->get('Itemid', null);
 
 $eMConfig                = ComponentHelper::getParams('com_emundus');
+$mediaConfig             = ComponentHelper::getParams('com_media');
+$upload_maxsize          = $mediaConfig->get('upload_maxsize', ini_get("upload_max_filesize"));
 $copy_application_form   = $eMConfig->get('copy_application_form', 0);
 $can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', '0');
 $can_edit_after_deadline = $eMConfig->get('can_edit_after_deadline', 0);
@@ -122,7 +124,7 @@ if (!empty($this->custom_title)) :?>
         <div class="alert alert-info tw-flex tw-items-center tw-gap-1 tw-mt-1">
             <span class="material-symbols-outlined">info</span>
             <div>
-                <p><?= Text::_('COM_EMUNDUS_ATTACHMENTS_INFO_UPLOAD_MAX_FILESIZE') . ' ' . ini_get("upload_max_filesize") . ' ' . Text::_('COM_EMUNDUS_ATTACHMENTS_BYTES'); ?> </p>
+                <p><?= Text::_('COM_EMUNDUS_ATTACHMENTS_INFO_UPLOAD_MAX_FILESIZE') . ' ' . $upload_maxsize  . Text::_('COM_EMUNDUS_ATTACHMENTS_MEGABYTES_SHORT'); ?> </p>
             </div>
         </div>
 		<?php if ($this->show_info_legend) : ?>
@@ -412,12 +414,14 @@ if (!empty($this->custom_title)) :?>
 						$div .= '</div>';
 
 						$div .= '<script>
-                    var maxFilesize = "' . ini_get("upload_max_filesize") . '";
+                    var maxFilesize = "' . $upload_maxsize . '";
                     Dropzone.options.formA' . $attachment->id . ' =  {
                         maxFiles: ' . $attachment->nbmax . ',
-                        maxFilesize: maxFilesize.substr(0, maxFilesize.length-1), // MB
+                        maxFilesize: maxFilesize,
                         dictDefaultMessage: "' . Text::_('COM_EMUNDUS_ATTACHMENTS_UPLOAD_DROP_FILE_OR_CLICK') . '",
                         dictInvalidFileType: "' . Text::_('COM_EMUNDUS_WRONG_FORMAT') . ' ' . $attachment->allowed_types . '",
+                        dictFileTooBig:  "' . Text::_('COM_EMUNDUS_FILE_TOO_LARGE') . '",
+                        dictMaxFilesExceeded: "' . Text::_('COM_EMUNDUS_MAX_FILES_EXCEEDED') . '",
                         url: "index.php?option=com_emundus&task=upload&duplicate=' . $attachment->duplicate . '&Itemid=' . $itemid . '&format=raw",
                 
                         accept: function(file, done) {
@@ -752,7 +756,7 @@ if (!empty($this->custom_title)) :?>
 
         function processSelectedFiles(fileInput) {
             var files = fileInput.files;
-            var max_post_size = <?= return_bytes(ini_get('post_max_size'));?>;
+            var max_post_size = <?= return_bytes($upload_maxsize);?>;
 
             var row = fileInput.parentNode.parentNode.parentNode.id;
             var rowId = document.getElementById(row);
