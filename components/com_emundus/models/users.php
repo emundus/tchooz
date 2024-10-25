@@ -294,6 +294,8 @@ class EmundusModelUsers extends ListModel
 				$exclude_users[] = $automated_task_user;
 			}
 			$query .= ' where 1=1 AND u.id NOT IN (' . implode(',', $exclude_users) . ') ';
+		} else {
+			$query .= ' where 1=1 ';
 		}
 		//
 
