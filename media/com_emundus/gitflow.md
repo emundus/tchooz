@@ -31,16 +31,16 @@ gitGraph
         checkout feature/other_feature
         commit id: "Add other feature"
         checkout hotfix
-        branch hotfix/some_security_patches order: 2
-        checkout hotfix/some_security_patches
+        branch security/some_security_patches order: 2
+        checkout security/some_security_patches
         commit id: "Fix security issue"
         checkout hotfix
-        merge hotfix/some_security_patches id: "Security patch"
-        branch hotfix/some_other_bugs order: 2
-        checkout hotfix/some_other_bugs
+        merge security/some_security_patches id: "Security patch"
+        branch patch/some_other_bugs order: 2
+        checkout patch/some_other_bugs
         commit id: "Fix bug"
         checkout hotfix
-        merge hotfix/some_other_bugs
+        merge patch/some_other_bugs
         checkout master
         merge hotfix id: "Release 1.0.1" tag: "v1.0.1"
         checkout dev

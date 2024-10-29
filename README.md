@@ -169,10 +169,10 @@ gitGraph
     branch feature/xxx order: 5
     commit id: "Add workflow builder"
     checkout hotfix
-    branch hotfix/xxx order: 2
+    branch patch/xxx order: 2
     commit id: "Fix security issue"
     checkout hotfix
-    merge hotfix/xxx id: "Security patch"
+    merge patch/xxx id: "Security patch"
     checkout master
     merge hotfix id: "Release 1.0.1" tag: "v1.0.1"
     checkout feature/xxx
