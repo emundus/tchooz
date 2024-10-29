@@ -12,6 +12,9 @@
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
 
+use Joomla\CMS\Factory;
+use Joomla\Utilities\ArrayHelper;
+
 /**
  * Plugin element to render fields
  *
@@ -74,13 +77,14 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 		$bits = $this->inputProperties($repeatCounter);
 
 		$value = $this->getValue($data, $repeatCounter);
-        $bits['inputValue'] = $this->DBFormatToE164Format($value);
-        $bits['selectValue'] = substr($value, 0, 2);
 
         if (is_array($value)) // validation error
         {
             $bits['inputValue'] = $value['country_code'].$value['num_tel'];
             $bits['selectValue'] = $value['country'];
+        } else {
+	        $bits['inputValue'] = $this->DBFormatToE164Format($value);
+	        $bits['selectValue'] = substr($value, 0, 2);
         }
 
         $bits['mustValidate'] = $this->validator->hasValidations(); // is the element mandatory ?
@@ -153,7 +157,13 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 	 */
 	public function storeDatabaseFormat($val, $data)
 	{
-		return $val['country'].$val['country_code'].$val['num_tel']; // ZZ concat with +XXYYYY to ZZ+XXYYYY format DB
+		if(is_array($val))
+		{
+
+			return $val['country'] . $val['country_code'] . $val['num_tel']; // ZZ concat with +XXYYYY to ZZ+XXYYYY format DB
+		} else {
+			return $val;
+		}
 	}
 
     /**
@@ -163,10 +173,14 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
      */
     public function DBRequest()
     {
-        $db = JFactory::getDbo();
+	    $shortlang = substr(Factory::getApplication()->getLanguage()->getTag(),0 ,2);
+	    $shortlang = $shortlang == 'fr' || $shortlang == 'en' ? $shortlang : 'en';
+
+        $db = Factory::getContainer()->get('DatabaseDriver');
         $query = $db->getQuery(true);
         $query->select('DISTINCT iso2,label_fr,label_en,flag,flag_img')
-            ->from($db->quoteName('data_country'));
+	        ->from($db->quoteName('data_country'))
+	        ->where($db->quoteName('iso2') . ' NOT IN (' . $db->quote('AN') . ', ' . $db->quote('XE') . ', ' . $db->quote('PN') . ', ' . $db->quote('TF') . ', ' . $db->quote('AQ') . ', ' . $db->quote('GS') . ', ' . $db->quote('BV') . ', ' . $db->quote('HM') . ', ' . $db->quote('UM') . ', ' . $db->quote('XS') . ', ' . $db->quote('XX') . ', ' . $db->quote('XD') . ')')	        ->order('label_'.$shortlang);
         $db->setQuery($query);
 
         $db->execute();
@@ -183,41 +197,64 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
      */
     public function validate($data, $repeatCounter = 0)
     {
-        $isValid = false;
-        $value = $data['country_code'].$data['num_tel'];
-        $is_valid_JS = $data['is_valid'] == 'on';
+		$isValid = true;
 
-        $minimalNumberlength = 5; // without counting '+', self-consider it's the minimal length, CAN BE CHANGED
-        $maximalNumberlength = 15; // without counting '+', maximal phone number length e.164 format, NO CHANGE
+	    if(!empty($data['num_tel']))
+	    {
+		    $name           = $this->getHTMLId($repeatCounter);
+		    $hiddenElements = ArrayHelper::getValue($this->getFormModel()->formData, 'hiddenElements', '[]');
+		    $hiddenElements = json_decode($hiddenElements);
 
-        $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_INVALID'); // error as default value
+		    if (!in_array($name, $hiddenElements))
+		    {
+			    $isValid     = false;
+			    $value       = $data['country_code'] . $data['num_tel'];
+			    $is_valid_JS = $data['is_valid'] == 'on';
 
-        if ($this->validator->hasValidations()) { // phone mandatory so big validation
+			    $minimalNumberlength = 5; // without counting '+', self-consider it's the minimal length, CAN BE CHANGED
+			    $maximalNumberlength = 15; // without counting '+', maximal phone number length e.164 format, NO CHANGE
 
-            if (preg_match('/^\+\d{'.$minimalNumberlength.','.$maximalNumberlength.'}$/', $value) && $is_valid_JS)
-            {
-                $isValid = true;
-            }
-            else
-            {
-                if ($value[0] !== "+")
-                {
-                    $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_BEGIN_WITH_PLUS');
-                }
-                else if (!(preg_match('/\+\d+$/', $value)))
-                {
-                    $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_ONLY_NUMBERS');
-                }
-                else if (strlen($value) < $minimalNumberlength + 1) // counting the '+'
-                {
-                    $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_SIZE_ERROR');
-                }
-            }
-        }
-        else if ($is_valid_JS && preg_match('/^\+\d*$/', $value)) // phone not mandatory but still a little validation
-        {
-            $isValid = true;
-        }
+			    $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_INVALID'); // error as default value
+
+			    if ($this->validator->hasValidations())
+			    { // phone mandatory so big validation
+
+				    if (preg_match('/^\+\d{' . $minimalNumberlength . ',' . $maximalNumberlength . '}$/', $value) && $is_valid_JS)
+				    {
+					    $isValid = true;
+				    }
+				    else
+				    {
+					    if ($value[0] !== "+")
+					    {
+						    $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_BEGIN_WITH_PLUS');
+					    }
+					    else
+					    {
+						    if (!(preg_match('/\+\d+$/', $value)))
+						    {
+							    $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_ONLY_NUMBERS');
+						    }
+						    else
+						    {
+							    if (strlen($value) < $minimalNumberlength + 1) // counting the '+'
+							    {
+								    $this->validationError = JText::_('PLG_ELEMENT_PHONE_NUMBER_SIZE_ERROR');
+							    }
+						    }
+					    }
+				    }
+			    }
+			    else
+			    {
+				    if ($is_valid_JS && preg_match('/^\+\d*$/', $value)) // phone not mandatory but still a little validation
+				    {
+					    $isValid = true;
+				    }
+			    }
+		    }
+	    }
+
         return $isValid;
     }
 
@@ -269,7 +306,29 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
      */
     public function DBFormatToE164Format($number)
     {
+		if(is_array($number)) {
+			$number = $number['country_code'].$number['num_tel'];
+		}
+
         return substr($number, 2, strlen($number));
     }
+
+	public function dataConsideredEmptyForValidation($data, $repeatCounter = 0)
+	{
+		$considered_empty = false;
+
+		if (is_array($data)) {
+			$js_validations_passed = $data['is_valid'] == 'on';
+			$phone_number = $data['country_code'].$data['num_tel'];
+
+			if (!$js_validations_passed || !preg_match('/^\+\d{5,15}$/', $phone_number)) {
+				$considered_empty = true;
+			}
+		} else {
+			$considered_empty = empty($data);
+		}
+
+		return $considered_empty;
+	}
 
 }

@@ -20,17 +20,17 @@ $wa->registerAndUseScript('com_emundus/jquery', 'jquery/jquery.min.js');
     <div>
         <div class="col-md-3 side-panel">
             <div class="panel panel-info em-containerFilter" id="em-user-filters">
-                <div class="panel-heading em-containerFilter-heading">
+                <div class="panel-heading em-containerFilter-heading !tw-bg-profile-full">
                     <div>
                         <h3 class="panel-title"><?php echo JText::_('COM_EMUNDUS_FILTERS') ?></h3> &ensp;&ensp;
                     </div>
-                    <div class="buttons" style="float:right; margin-top:0px">
-                        <label for="clear-search">
-                            <img src="<?php echo JURI::base() ?>/media/com_emundus/images/icones/clear-filters.png"
-                                 style="width: 25px;filter: invert(1);"/>
+                    <div>
+                        <label for="clear-search" class="tw-top-0.5 tw-relative">
+                            <span class="material-symbols-outlined em-pointer em-color-white"
+                                  title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_CLEAR_BTN'); ?>">filter_alt_off</span>
                         </label>
 
-                        <input type="button" style="display: none" id="clear-search"
+                        <input type="button" style="display: none" id="clear-search" name="clear-search"
                                title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_CLEAR_BTN'); ?>"/>
                     </div>
                 </div>
@@ -40,7 +40,7 @@ $wa->registerAndUseScript('com_emundus/jquery', 'jquery/jquery.min.js');
             </div>
 
             <div class="panel panel-info em-hide" id="em-appli-menu">
-                <div class="panel-heading em-hide-heading">
+                <div class="panel-heading em-hide-heading !tw-bg-profile-full">
                     <h3 class="panel-title"><?php echo JText::_('APPLICATIONS_ACTIONS') ?></h3>
                 </div>
                 <div class="panel-body em-hide-body">
@@ -50,7 +50,7 @@ $wa->registerAndUseScript('com_emundus/jquery', 'jquery/jquery.min.js');
             </div>
 
             <div class="panel panel-info em-hide" id="em-assoc-files">
-                <div class="panel-heading em-hide-heading">
+                <div class="panel-heading em-hide-heading !tw-bg-profile-full">
                     <h3 class="panel-title"><?php echo JText::_('COM_EMUNDUS_ACCESS_LINKED_APPLICATION_FILES') ?></h3>
                 </div>
                 <div class="panel-body em-hide-body">
@@ -61,7 +61,7 @@ $wa->registerAndUseScript('com_emundus/jquery', 'jquery/jquery.min.js');
 
             <div class="clearfix"></div>
             <div class="panel panel-info em-hide" id="em-last-open">
-                <div class="panel-heading em-hide-heading">
+                <div class="panel-heading em-hide-heading !tw-bg-profile-full">
                     <h3 class="panel-title"><?php echo JText::_('COM_EMUNDUS_APPLICATION_LAST_OPEN_FILES') ?></h3>
                 </div>
                 <div class="panel-body em-hide-body">
@@ -77,7 +77,7 @@ $wa->registerAndUseScript('com_emundus/jquery', 'jquery/jquery.min.js');
 		<span class=" glyphicon glyphicon-chevron-left
             "></span>
         </div>
-        <div class="navbar navbar-inverse em-menuaction">
+        <div class="navbar navbar-inverse em-menuaction !tw-bg-profile-full">
             <div class="navbar-header em-menuaction-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse"
                         data-target=".navbar-inverse-collapse">
@@ -85,7 +85,6 @@ $wa->registerAndUseScript('com_emundus/jquery', 'jquery/jquery.min.js');
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <span class="navbar-brand" href="#"><?php echo JText::_('COM_EMUNDUS_ACTIONS') ?></span>
             </div>
         </div>
         <div class="panel panel-default">
@@ -123,7 +122,7 @@ $wa->registerAndUseScript('com_emundus/jquery', 'jquery/jquery.min.js');
                 <h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('COM_EMUNDUS_LOADING'); ?></h4>
             </div>
             <div class="modal-body">
-                <img src="<?php echo JURI::base(); ?>media/com_emundus/images/icones/loader-line.gif">
+                <img src="<?php echo JURI::base(); ?>media/com_emundus/images/icones/loader-line.gif" alt="Loading...">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger"

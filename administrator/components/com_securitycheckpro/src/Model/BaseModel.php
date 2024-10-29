@@ -108,6 +108,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
     'control_center_enabled'    => '0',
     'secret_key'    => '',
 	'control_center_url'    => '',
+	'token'    => '',
     'add_geoblock_logs'            => 0,
     'upload_scanner_enabled'    =>    1,
     'check_multiple_extensions'    =>    1,
@@ -254,9 +255,10 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
             $db->execute();
             $update_site_data = $db->loadObject();
 						
-			// Remove the 'dlid=' part of the string
+			// Remove the part of the string not needed
 			if ( !empty($update_site_data) ) {
-				$update_site_data->extra_query = str_replace("dlid=", "",$update_site_data->extra_query);
+				$extra_info_to_replace = array("dlid=","key=");
+				$update_site_data->extra_query = str_replace($extra_info_to_replace, "",$update_site_data->extra_query);
 			}						
 			
 		} catch (Exception $e)		
@@ -449,7 +451,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
         return $valor;
     }
 	
-	/* Función para determinar si el plugin pasado como argumento ('1' -> Securitycheck Pro, '2' -> Securitycheck Pro Cron, '3' -> Securitycheck Pro Update Database) está habilitado o deshabilitado. También determina si el plugin Securitycheck Pro Update Database (opción 4)  está instalado */
+	/* Función para determinar si el plugin pasado como argumento ('1' -> Securitycheck Pro, '2' -> Securitycheck Pro Task Checker, '3' -> Securitycheck Pro Update Database) está habilitado o deshabilitado. También determina si el plugin Securitycheck Pro Update Database (opción 4)  está instalado */
     function PluginStatus($opcion)
     {
         
@@ -457,7 +459,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
         if ($opcion == 1) {
             $query = "SELECT enabled FROM #__extensions WHERE name='System - Securitycheck Pro'";
         } else if ($opcion == 2) {
-            $query = "SELECT enabled FROM #__extensions WHERE name='System - Securitycheck Pro Cron'";
+            $query = "SELECT COUNT(*) FROM #__scheduler_tasks WHERE type='securitycheckpro.cron' AND state='1'";
         } else if ($opcion == 3) {
             $query = "SELECT enabled FROM #__extensions WHERE name='System - Securitycheck Pro Update Database'";
         } else if ($opcion == 4) {
@@ -470,6 +472,8 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
             $query = "SELECT enabled FROM #__extensions WHERE name='System - url Inspector'";
         } else if ($opcion == 8) {
             $query = "SELECT COUNT(*) FROM #__extensions WHERE name='System - Track Actions'";
+        } else if ($opcion == 9) {
+            $query = "SELECT enabled FROM #__extensions WHERE element='securitycheckpro_task_checker'";
         }
 		try {
 			$db->setQuery($query);
@@ -499,7 +503,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
         if (!empty($plugin)) {
 			$downloadid_core_data = $this->get_extra_query_update_sites_table('securitycheckpro_update_database');
 			if ( ($downloadid_core_data <> "error") && (!empty($downloadid_core_data->extra_query)) ) {
-				$downloadid = $downloadid_core_data->extra_query;
+				$downloadid = trim($downloadid_core_data->extra_query);
 			}  
         }
         if (empty($downloadid)) {
@@ -508,7 +512,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
 			if (empty($downloadid)){				
 				$downloadid_core_data = $this->get_extra_query_update_sites_table('com_securitycheckpro');
 				if ( ($downloadid_core_data <> "error") && (!empty($downloadid_core_data->extra_query)) ) {
-					$downloadid = $downloadid_core_data->extra_query;
+					$downloadid = trim($downloadid_core_data->extra_query);
 				}				
 			}
         }
@@ -582,10 +586,27 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
     
        // Si el campo obtenido no es numérico salimos
         if (!is_numeric($response)) {
-			$message = curl_error($ch);			
-			Factory::getApplication()->enqueueMessage("Unable to retrieve " . $product_name . " subscription's status. Message: " . $message, 'error');
-            return;        
-
+			if( strpos( $response, "well-known" ) !== false) {
+				// The IP has been blocked by the firewall of Siteground.
+				$number_of_dots = substr_count($response, ":");
+				
+				$pos_well_known = strpos($response, "well-known");
+				$pos_first_dots = strpos($response, ":", $pos_well_known)+1;				
+				$pos_second_dots = strrpos($response, ":");				
+				$ip_blocked=  substr($response,$pos_first_dots,$pos_second_dots-$pos_first_dots);				
+				
+				if (filter_var($ip_blocked, FILTER_VALIDATE_IP)) {
+					Factory::getApplication()->enqueueMessage("Your IP has been blocked by Siteground. Please, contact me to solve this. " . Text::_('COM_SECURITYCHECKPRO_IP_BLOCKED') . ":" . $ip_blocked, 'error');
+					$mainframe->setUserState("scp_subscription_status", Text::_('COM_SECURITYCHECKPRO_IP_BLOCKED') . ": " . $ip_blocked);
+				} else {
+					Factory::getApplication()->enqueueMessage("Your IP has been blocked by Siteground. Please, contact me to solve this.", 'error');
+					$mainframe->setUserState("scp_subscription_status", Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_ERROR'));
+				}				
+			} else {
+				$message = curl_error($ch);			
+				Factory::getApplication()->enqueueMessage("Unable to retrieve " . $product_name . " subscription's status. Message: " . $message, 'error');
+			}			
+            return;
         }                           
 
         // Si el resultado de la petición es 'false' no podemos hacer nada
@@ -613,7 +634,16 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
                 } else if ($product == "trackactions") {
                     $mainframe->setUserState("trackactions_subscription_status", Text::_('COM_SECURITYCHECKPRO_EXPIRED'));
                 }
-            }
+            } else {
+				// Some error. Let's set the status to error and show it.
+				if ($product == "update") {
+					$mainframe->setUserState("scp_update_database_subscription_status", Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_ERROR') . " code: " . $response);
+                } else if ($product == "scp") {
+                    $mainframe->setUserState("scp_subscription_status", Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_ERROR') . " code: " . $response);
+                } else if ($product == "trackactions") {
+                    $mainframe->setUserState("trackactions_subscription_status", Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_ERROR') . " code: " . $response);
+                }				
+			}
         }
         
         // Cerramos el manejador

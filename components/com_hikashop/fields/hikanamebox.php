@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -43,6 +43,10 @@ class JFormFieldHikanamebox extends JFormField {
 				'default_text' => '<em>'.JText::_('HIKA_NONE').'</em>'
 			)
 		);
-		return $text;
+		$j5_class = '';
+		if (HIKASHOP_J50) 
+			$j5_class = 'class="hika_j5"';
+
+		return '<div id="hikashop_main_content" '.$j5_class.' >'.$text.'</div>';
 	}
 }

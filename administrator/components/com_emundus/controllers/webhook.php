@@ -24,7 +24,9 @@ class EmundusAdminControllerWebhook extends JControllerLegacy
 			$results['token'] = JUserHelper::genRandomPassword(32);
 			$hash_token       = JApplicationHelper::getHash($results['token']);
 
-			EmundusHelperUpdate::updateConfigurationFile('webhook_token', $hash_token);
+			$config = new JConfig();
+
+			EmundusHelperUpdate::updateConfigurationFile($config,'webhook_token', $hash_token);
 		}
 
 

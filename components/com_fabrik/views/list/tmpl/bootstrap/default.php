@@ -61,7 +61,7 @@ $headingsHtml = $this->loadTemplate('headings');
 echo $this->loadTemplate('tabs');
 ?>
 
-<div class="fabrikDataContainer">
+<div class="fabrikDataContainer table-responsive">
 
 <?php foreach ($this->pluginBeforeList as $c) :
 	echo $c;

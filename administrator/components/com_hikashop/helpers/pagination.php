@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -219,6 +219,7 @@ class hikashopBridgePaginationHelper extends JPagination {
 		$current_url = str_replace(array('&&', '?&'),array('&', '?'),rtrim(hikashop_currentURL(), '&?'));
 		$ret_start = false;
 		$ret_limit = false;
+
 		if(isset($_GET['limitstart'.$this->hikaSuffix])){
 			$ret_start = true;
 			$old_start = hikaInput::get()->getInt('limitstart'.$this->hikaSuffix);
@@ -248,7 +249,12 @@ class hikashopBridgePaginationHelper extends JPagination {
 		$sep = '?';
 		if(strpos($current_url, '?'))
 			$sep = '&';
-		$return_url = rtrim($current_url, $sep).$sep.'limitstart'.$this->hikaSuffix.'='.$start;
+		$return_url = rtrim($current_url, $sep);
+		$newstart = 'limitstart'.$this->hikaSuffix.'='.$start;
+
+		if(!strpos($current_url, $newstart)) {
+			$return_url = rtrim($return_url, $sep).$sep.$newstart;
+		}
 		if(strpos($return_url, '&limit='.$this->limit)) {
 			return $return_url;
 		}

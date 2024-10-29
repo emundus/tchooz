@@ -18,6 +18,7 @@ use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\Googlemap;
 use Fabrik\Helpers\Image\Image;
 use Fabrik\Helpers\Php;
+use Joomla\CMS\Uri\Uri;
 
 require_once JPATH_SITE . '/components/com_fabrik/models/element.php';
 
@@ -748,7 +749,7 @@ class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 		}
 
 		$markers .= $lat . ',' . $lon;
-		$uri = JURI::getInstance();
+		$uri = Uri::getInstance();
 		$src = $uri->getScheme() . '://maps.google.com/maps/api/staticmap?';
 		$attribs = array();
 		$attribs[] = 'center=' . $lat . ',' . $lon;

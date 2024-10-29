@@ -103,7 +103,7 @@ form:
     element-color-error:
       type: input.colorpicker
       label: Color of fields when error
-      default: '#f04437'
+      default: '#D92C20'
     after-border-height:
       type: input.text
       label: After border height

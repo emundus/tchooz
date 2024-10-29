@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -1730,7 +1730,7 @@ class hikashopCartClass extends hikashopClass {
 		return true;
 	}
 
-	public function addProduct($cart_id, $products, $options = array()) {
+	public function addProduct($cart_id, &$products, $options = array()) {
 		if(empty($products))
 			return false;
 
@@ -3156,8 +3156,10 @@ class hikashopCartClass extends hikashopClass {
 			if(bccomp(sprintf('%F',$product->product_length), 0, 5) && bccomp(sprintf('%F',$product->product_width), 0, 5) && bccomp(sprintf('%F',$product->product_height), 0, 5)) {
 				$product->product_volume = $product->product_length * $product->product_width * $product->product_height;
 				$product->product_total_volume = $product->product_volume * $product->cart_product_quantity;
-				$product->product_total_volume_orig = $product->product_total_volume;
-				$product->product_dimension_unit_orig = $product->product_dimension_unit;
+				if(!isset($product->product_total_volume_orig))
+					$product->product_total_volume_orig = $product->product_total_volume;
+				if(!isset($product->product_dimension_unit_orig))
+					$product->product_dimension_unit_orig = $product->product_dimension_unit;
 				$product->product_total_volume = $volumeHelper->convert($product->product_total_volume, $product->product_dimension_unit);
 
 				$ret['volume']['value'] += $cart->products[$k]->product_total_volume;
@@ -3184,8 +3186,10 @@ class hikashopCartClass extends hikashopClass {
 				}
 			}
 			if(bccomp(sprintf('%F',$product->product_weight), 0, 5)) {
-				$product->product_weight_orig = $product->product_weight;
-				$product->product_weight_unit_orig = $product->product_weight_unit;
+				if(!isset($product->product_weight_orig))
+					$product->product_weight_orig = $product->product_weight;
+				if(!isset($product->product_weight_unit_orig))
+					$product->product_weight_unit_orig = $product->product_weight_unit;
 				$product->product_weight = $weightHelper->convert($product->product_weight, $product->product_weight_unit);
 				$product->product_weight_unit = $ret['weight']['unit'];
 
@@ -3344,7 +3348,7 @@ class hikashopCartClass extends hikashopClass {
 				$ret = false;
 				$product['qty'] = 0;
 				unset($product['data']);
-				$this->addMessage($cart, array('msg' => $msg, 'product_id' => $id, 'type' => 'error'));
+				$this->addMessage($cart, array('msg' => $msg, 'product_id' => $id, 'type' => 'warning'));
 
 				continue;
 			}
@@ -3409,7 +3413,7 @@ class hikashopCartClass extends hikashopClass {
 					$ret = false;
 					$product['qty'] = 0;
 					unset($product['data']);
-					$this->addMessage($cart, array('msg' => $msg, 'product_id' => $id, 'type' => 'error'));
+					$this->addMessage($cart, array('msg' => $msg, 'product_id' => $id, 'type' => 'warning'));
 					continue;
 				}
 
@@ -3506,7 +3510,7 @@ class hikashopCartClass extends hikashopClass {
 					$this->addMessage($cart, array(
 						'msg' => JText::sprintf($msg, $product['data']->product_name),
 						'product_id' => $id,
-						'type' => 'error'
+						'type' => 'warning'
 					));
 					continue;
 				}

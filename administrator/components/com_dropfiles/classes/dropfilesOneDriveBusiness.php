@@ -111,7 +111,7 @@ class DropfilesOneDriveBusiness
         $path_admin_component = JPATH_ADMINISTRATOR . '/components/com_dropfiles/helpers/component.php';
         JLoader::register('DropfilesCloudHelper', $path_dropfilescloud);
         JLoader::register('DropfilesComponentHelper', $path_admin_component);
-        require_once 'OneDriveBusiness/packages/autoload.php';
+        require_once 'vendor/autoload.php';
         $this->config = DropfilesCloudHelper::getAllOneDriveBusinessConfigs();
         if ($this->client === null && isset($this->config['state']->token->data->access_token)) {
             $this->getClient();

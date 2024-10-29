@@ -732,7 +732,7 @@ class Worker
 	 */
 	public function parseMessageForRepeats($msg, $searchData, $el, $repeatCounter)
 	{
-		if (strstr($msg, '{') && !empty($searchData))
+		if (strstr($msg??'', '{') && !empty($searchData))
 		{
 			$groupModel = $el->getGroupModel();
 			if ($groupModel->canRepeat())
@@ -802,6 +802,13 @@ class Worker
 				// Merge in request and specified search data
 				$f                 = InputFilter::getInstance();
 				$post              = $f->clean($_REQUEST, 'array');
+				
+				//J!4 & SEF: $_REQUEST is empty, take also inputVars
+                $app = Factory::getApplication();
+                $inputVars = $app->getInput()->getArray();
+                $inputVars = $f->clean($inputVars,'string');
+				$searchData = is_null($searchData) ? $inputVars : array_merge($inputVars, $searchData);
+				
 				$this->_searchData = is_null($searchData) ? $post : array_merge($post, $searchData);
 
 				// Enable users to use placeholder to insert session token
@@ -1333,6 +1340,23 @@ class Worker
 			$match = htmlspecialchars($match, ENT_QUOTES, 'UTF-8');
 		}
 
+		// Check if value return by user is a function, if so return original string
+		preg_match('/[a-zA-Z_][a-zA-Z0-9_]*\s*(?=\()/', $match, $suspected_functions);
+		foreach ($suspected_functions as $suspected_function)
+		{
+			if (is_callable(preg_replace('/\s+/', '', $suspected_function))) return $orig;
+		}
+
+		// Check php variables that could indicate unsafe user input handling
+		$pattern = '/\$_(POST|GET|REQUEST|COOKIE|SERVER|FILES)\[[^\]]*\]|\bphp:\/\/[a-zA-Z]+/';
+		if (preg_match($pattern, $match, $matches)) {
+			return $orig;
+		}
+
+		// Avoid some unsecure words
+		$match = preg_replace('/\b(?:system|shell_exec|exec|passthru|proc_open|popen|eval|assert|create_function|include|require|include_once|require_once|file_get_contents|fopen|fread|fwrite|unseralize|dl|preg_replace|pcntl_exec|expect_popen|chmod|chown|chgrp|curl_\w+)\s*\([^;]*\);?/i', '', $match);
+		//
+		
 		return $found ? $match : $orig;
 	}
 
@@ -2625,7 +2649,7 @@ class Worker
 				{
 					$userColRaw = $userCol . '_raw';
 
-					if ((is_array($row) && array_key_exists($userColRaw, $row)) || (is_object($row) && isset($row->{$userColRaw})))
+					if ((is_array($row) && array_key_exists($userColRaw, $row)) || (is_object($row) && property_exists($row,$userColRaw)))
 					{
 						$userCol .= '_raw';
 					}
@@ -2676,7 +2700,9 @@ class Worker
 	{
 		$config = ComponentHelper::getParams('com_fabrik');
 
-		if ($config->get('fabrik_pdf_lib', 'dompdf') === 'dompdf')
+		$pdfLibrary = $config->get('fabrik_pdf_lib', 'dompdf');
+
+		if ($pdfLibrary === 'dompdf')
 		{
 			$file = COM_FABRIK_LIBRARY . '/vendor/vendor/dompdf/dompdf/composer.json';
 		}
@@ -2689,7 +2715,7 @@ class Worker
 		{
 			if ($puke)
 			{
-				throw new \RuntimeException(Text::_('COM_FABRIK_NOTICE_DOMPDF_NOT_FOUND'));
+				throw new \RuntimeException(Text::_($pdfLibrary === 'dompdf' ? 'COM_FABRIK_NOTICE_DOMPDF_NOT_FOUND' : 'COM_FABRIK_NOTICE_MPDF_NOT_FOUND'));
 			}
 			else
 			{

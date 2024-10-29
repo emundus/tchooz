@@ -515,16 +515,19 @@ class PartialDocument extends Document
     public function setBuffer($content, $options = array())
     {
         // The following code is just for backward compatibility.
-        if (func_num_args() > 1 && !is_array($options))
-        {
-            $args = func_get_args();
-            $options = array();
-            $options['type'] = $args[1];
-            $options['name'] = (isset($args[2])) ? $args[2] : null;
-            $options['title'] = (isset($args[3])) ? $args[3] : null;
+        if (\func_num_args() > 1 && !\is_array($options)) {
+            $args             = \func_get_args();
+            $options          = [];
+            $options['type']  = $args[1];
+            $options['name']  = $args[2] ?? null;
+            $options['title'] = $args[3] ?? null;
         }
 
-        parent::$_buffer[$options['type']][$options['name']][$options['title']] = $content;
+        $type  = $options['type'] ?? '';
+        $name  = $options['name'] ?? '';
+        $title = $options['title'] ?? '';
+
+        parent::$_buffer[$type][$name][$title] = $content;
 
         return $this;
     }

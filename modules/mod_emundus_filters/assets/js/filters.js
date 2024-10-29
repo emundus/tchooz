@@ -6,7 +6,7 @@ const filterSampleContainerHTML = '<div class="filter-container em-w-100" id="sa
     '       <div class="options em-flex-row em-flex-wrap em-ml-8 em-p-8-0"></div>' +
     '       <p class="filter-empty-selection hidden"></p>' +
     '   </div>' +
-    '   <span class="material-icons-outlined expand">expand_more</span>' +
+    '   <span class="material-symbols-outlined expand">expand_more</span>' +
     '</section>' +
     '<section class="filter-options-modal hidden em-w-100 em-white-bg em-border-radius-8 em-box-shadow" style="position: absolute;z-index:1;">' +
     '   <div class="filter-operators em-flex-col-start em-p-16"></div>' +
@@ -367,7 +367,7 @@ function createFilter(filter) {
     filterHeader.appendChild(filterLabel);
 
     const filterRm = document.createElement('span');
-    filterRm.classList.add('material-icons-outlined');
+    filterRm.classList.add('material-symbols-outlined');
     filterRm.classList.add('remove-filter');
     filterRm.classList.add('em-pointer');
     filterRm.innerHTML = 'delete';

@@ -28,13 +28,15 @@ endif;
 if ($this->params->get('show_page_heading')) :
 	echo '<h1>' . $this->params->get('page_heading') . '</h1>';
 endif;
-
-if ($this->showTitle == 1) : ?>
+?>
+<div class="page-header-container">
+<?php
+if ($this->params->get('show-title')) : ?>
 	<div class="page-header em-flex-row em-flex-space-between emundus-list-page-header">
 		<h1><?php echo $this->table->label;?></h1>
 		<?php if ($this->showAdd) :?>
 
-            <div><a class="addbutton addRecord em-primary-button em-w-max-content" href="<?php echo $this->addRecordLink;?>">
+            <div><a class="addbutton addRecord tw-btn-primary em-w-max-content tw-rounded-coordinator" href="<?php echo $this->addRecordLink;?>">
 					<?php echo Text::_($this->addLabel);?>
                 </a></div>
 		<?php
@@ -48,7 +50,7 @@ endif;
 <div class="page-intro <?php if ($this->showTitle != 1) : ?>em-mt-32<?php endif; ?>">
     <?php echo $this->table->intro; ?>
 </div>
-
+</div>
 <form class="fabrikForm form-search" action="<?php echo $this->table->action;?>" method="post" id="<?php echo $this->formid;?>" name="fabrikList">
 
 <?php
@@ -159,3 +161,31 @@ if ($pageClass !== '') :
 	echo '</div>';
 endif;
 ?>
+
+<script>
+
+    /* descendre le titre en fonction de la hauteur de l'intro intro */
+    let blocIntro = document.querySelector('.page-header-container');
+    let blocBody = document.querySelector('.fabrikForm');
+
+    let hauteurIntro = blocIntro.offsetHeight;
+    blocBody.style.marginTop = hauteurIntro + 'px';
+
+    /* descendre le titre en fonction de la hauteur de la bannière alerte */
+    let blocBanniere = document.querySelector('.alerte-message-container');
+    let hauteurBanniere = blocBanniere.offsetHeight;
+
+    if (blocBanniere) {
+        blocIntro.style.marginTop = hauteurBanniere + 'px';
+    }
+
+    let croixBanniere = document.querySelector('#close-preprod-alerte-container');
+
+    croixBanniere.addEventListener('click', function () {
+        let hauteurBanniereSansPx = parseInt(blocIntro.style.marginTop, 10);
+        let hauteurSansBanniere = hauteurBanniereSansPx - hauteurBanniere;
+        blocIntro.style.marginTop = hauteurSansBanniere + 'px';
+       }
+    );
+
+</script>

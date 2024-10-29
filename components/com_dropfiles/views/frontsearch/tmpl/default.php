@@ -241,12 +241,14 @@ $excludeCategory = (isset($excludeCategory)) ? $excludeCategory : array();
                     </div>
                 </div>
             <?php endif; ?>
+
+
             <div class="only-file input-group clearfix dropfiles_search_input <?php echo $search_class; ?>" id="Search_container">
                 <img src="<?php echo JURI::root(); ?>components/com_dropfiles/assets/images/search-24.svg" class="material-icons dropfiles-icon-search"/>
                 <input type="text" class="pull-left required" name="q" id="txtfilename"
                        placeholder="<?php echo JText::_('COM_DROPFILES_SEARCH_SEARCH_KEYWORD'); ?>"
                        placeholder="<?php echo JText::_('COM_DROPFILES_SEARCH_SEARCH_KEYWORD'); ?>"
-                       value="<?php echo isset($filters['q']) ? $filters['q'] : ''; ?>"/>
+                       value="<?php echo isset($filters['q']) ? htmlspecialchars($filters['q'], ENT_QUOTES, 'UTF-8') : ''; ?>"/>
                 <button id="btnsearch" class="pull-left"><i class="dropfiles-icon-search"></i></button>
             </div>
         </div>

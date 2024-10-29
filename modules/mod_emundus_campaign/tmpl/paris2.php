@@ -147,7 +147,7 @@ if (!empty($formation_type_input)) {
 
 					<?php if (!$user->guest): ?>
                         <div class="em-flex-row em-pointer" onclick="history.go(-1)">
-                            <span class="material-icons">arrow_back</span><span
+                            <span class="material-symbols-outlined">arrow_back</span><span
                                     class="em-ml-8"><?php echo JText::_('MOD_EM_CAMPAIGN_BACK'); ?></span>
                         </div>
 					<?php endif; ?>

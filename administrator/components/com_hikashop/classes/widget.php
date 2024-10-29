@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -16,6 +16,7 @@ class hikashopWidgetClass extends hikashopClass {
 	var $order_type = 'sale';
 
 	public $timeoffset = '';
+	public $filename = '';
 
 	public function __construct($config = array()) {
 		parent::__construct($config);
@@ -292,9 +293,10 @@ class hikashopWidgetClass extends hikashopClass {
 <?php
 	}
 
-	function csv(){
+	function csv($widget_id=null, $mode='output'){
 		if(hikashop_level(2)){
-			$widget_id = hikashop_getCID('widget_id');
+			if(is_null($widget_id))
+				$widget_id = hikashop_getCID('widget_id');
 			if($widget_id){
 				$widget = $this->get($widget_id);
 				if($widget->widget_params->display=='table'){
@@ -305,22 +307,28 @@ class hikashopWidgetClass extends hikashopClass {
 				}
 				$this->data($widget,true);
 
+				$config = hikashop_config();
+				$format = $config->get('report_csv_filename_format', '{widget_name}_{date}_{time}.csv');
+				$this->filename = str_replace(array('{widget_name}', '{date}', '{time}'), array($widget->widget_name,date('Y-m-d'), date('h-i')), $format);
+
 				$encodingHelper = hikashop_get('helper.encoding');
-				@ob_clean();
-				header("Pragma: public");
-				header("Expires: 0"); // set expiration time
-				header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-				header("Content-Type: application/force-download");
-				header("Content-Type: application/octet-stream");
-				header("Content-Type: application/download");
-				header("Content-Disposition: attachment; filename=hikashopexport.csv");
-				header("Content-Transfer-Encoding: binary");
 				$eol= "\r\n";
-				echo chr(239) . chr(187) . chr(191);
+				if($mode == 'output'){
+					@ob_clean();
+					header("Pragma: public");
+					header("Expires: 0"); // set expiration time
+					header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+					header("Content-Type: application/force-download");
+					header("Content-Type: application/octet-stream");
+					header("Content-Type: application/download");
+					header("Content-Disposition: attachment; filename*=utf-8''" . rawurlencode($this->filename));
+					header("Content-Transfer-Encoding: binary");
+					echo chr(239) . chr(187) . chr(191);
+				}
 				$config =& hikashop_config();
 				$separator = $config->get('csv_separator',";");
 				$decimal_separator = $config->get('csv_decimal_separator','.');
-				echo implode($separator,$widget->exportFields).$eol;
+				$content = implode($separator,$widget->exportFields).$eol;
 				$missing = array();
 				$convert_date = $config->get('convert_date','d-M-Y');
 				foreach($widget->elements as $el){
@@ -330,7 +338,7 @@ class hikashopWidgetClass extends hikashopClass {
 							if(isset($el->$field)){
 								if($convert_date && in_array($field,array('user_created','order_created','order_modified')))
 									$line[] = '"'.hikashop_getDate($el->$field,$convert_date).'"';
-								elseif($field == 'calculated_date')
+								elseif($field == 'calculated_date' && !empty($el->timestamp))
 									$line[] = '"'.hikashop_getDate($el->timestamp,'d-M-Y').'"';
 								else
 									$line[] = $this->_getValue($el->$field, $separator, $decimal_separator);
@@ -340,18 +348,18 @@ class hikashopWidgetClass extends hikashopClass {
 						}
 					}
 					if(empty($missing)){
-						echo $encodingHelper->change(implode($separator,$line),'UTF-8',$widget->widget_params->format).$eol;
+						$content .= $encodingHelper->change(implode($separator,$line),'UTF-8',$widget->widget_params->format).$eol;
 					}
 				}
 				if(!empty($missing)){
-					@ob_clean();
+					$content = '';
 					$fieldsLeft = array();
 					foreach($widget->exportFields as $field){
 						if(!isset($missing[$field])){
 							$fieldsLeft[]=$field;
 						}
 					}
-					echo implode($separator,$fieldsLeft).$eol;
+					$content .= implode($separator,$fieldsLeft).$eol;
 
 					foreach($widget->elements as $el){
 						$line = array();
@@ -361,10 +369,14 @@ class hikashopWidgetClass extends hikashopClass {
 							else
 								$line[] = $this->_getValue($el->$field, $separator, $decimal_separator);
 						}
-						echo $encodingHelper->change(implode($separator,$line),'UTF-8',$widget->widget_params->format).$eol;
+						$content .= $encodingHelper->change(implode($separator,$line),'UTF-8',$widget->widget_params->format).$eol;
 					}
 				}
-				exit;
+				if($mode == 'output'){
+					echo $content;
+					exit;
+				}
+				return $content;
 			}else{
 				$app = JFactory::getApplication();
 				$app->enqueueMessage();
@@ -1228,7 +1240,7 @@ class hikashopWidgetClass extends hikashopClass {
 						} else {
 							$filters = '';
 						}
-						$query='SELECT COUNT(name) FROM '.hikashop_table('users',false).' as u LEFT JOIN '.hikashop_table('user').' as a ON u.id=a.user_cms_id '.$filters;
+						$query='SELECT COUNT(name) FROM '.hikashop_table('users',false).' as u LEFT JOIN '.hikashop_table('user').' as a ON u.id=a.user_cms_id LEFT JOIN '.hikashop_table('order').' AS o ON a.user_id=o.order_user_id '.$filters;
 						$db->setQuery($query);
 						$elements = $db->loadResult();
 						$widget->elements =& $elements;

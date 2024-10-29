@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -152,6 +152,23 @@ window.localPage.imagepopupmode = function(el) {
 			echo $this->cssType->display('config[css_backend]', $this->config->get('css_backend', 'default'), 'backend');
 		?></td>
 	</tr>
+<?php
+	if(HIKASHOP_J50) {
+?>
+	<tr>
+		<td class="hk_tbl_key"<?php echo $this->docTip('dark_mode');?>><?php echo JText::_('DARK_MODE_BACKEND');?></td>
+		<td><?php
+			$values = array(
+				JHTML::_('select.option', '0', JText::_('HIKASHOP_LIGHT')),
+				JHTML::_('select.option', '1', JText::_('HIKASHOP_DARK')),
+				JHTML::_('select.option', '2', JText::_('HIKA_AUTOMATIC'))
+			);
+			echo JHTML::_('hikaselect.radiolist', $values, 'config[dark_mode]' , 'class="'.$custom_select.'"', 'value', 'text', $this->config->get('dark_mode', '2'));
+		?></td>
+	</tr>
+<?php
+	}
+?>
 
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('css_button');?>><?php echo JText::_('HIKA_CSS_BUTTON'); ?></td>

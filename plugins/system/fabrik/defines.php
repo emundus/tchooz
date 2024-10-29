@@ -18,6 +18,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Filesystem\Folder;
 use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Uri\Uri;
 
 jimport('joomla.filesystem.folder');
 
@@ -31,8 +32,8 @@ define("COM_FABRIK_BASE", JPATH_SITE . DIRECTORY_SEPARATOR);
 define("COM_FABRIK_FRONTEND", COM_FABRIK_BASE . 'components/com_fabrik');
 define("COM_FABRIK_BACKEND", COM_FABRIK_BASE . 'administrator/components/com_fabrik');
 define("COM_FABRIK_LIBRARY", COM_FABRIK_BASE . 'libraries/fabrik');
-define("COM_FABRIK_LIVESITE", JURI::root());
-define("COM_FABRIK_LIVESITE_ROOT", JURI::getInstance()->toString(array('scheme', 'host', 'port')));
+define("COM_FABRIK_LIVESITE", Uri::root());
+define("COM_FABRIK_LIVESITE_ROOT", Uri::getInstance()->toString(array('scheme', 'host', 'port')));
 define("FABRIKFILTER_TEXT", 0);
 define("FABRIKFILTER_EVAL", 1);
 define("FABRIKFILTER_QUERY", 2);

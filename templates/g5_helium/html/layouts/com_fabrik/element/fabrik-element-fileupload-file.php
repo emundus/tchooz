@@ -38,7 +38,7 @@ else :
 	?>
 	<a class="download-archive fabrik-filetype-<?php echo $d->ext;?>" title="<?php echo $d->file; ?>" href="<?php echo $d->file; ?>">
         <div class="em-flex-row em-gap-4 file-button tw-w-fit">
-            <span class="material-icons-outlined">file_download</span>
+            <span class="material-symbols-outlined">file_download</span>
             <span class="file-button__filename"><?php echo $d->filename; ?></span>
         </div>
 	</a>

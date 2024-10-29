@@ -16,13 +16,20 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/cache.php');
 require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
 require_once(JPATH_SITE . '/components/com_emundus/helpers/files.php');
 require_once(JPATH_SITE . '/components/com_emundus/helpers/list.php');
+require_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
 require_once(JPATH_SITE . '/components/com_emundus/models/logs.php');
 require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
 
+use Gotenberg\Gotenberg;
+use Gotenberg\Stream;
 use Joomla\CMS\Factory;
+use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\Mail\MailerFactoryInterface;
+use Joomla\CMS\Uri\Uri;
+use Joomla\Database\ParameterType;
 
 /**
  * Class EmundusModelFiles
@@ -188,7 +195,7 @@ class EmundusModelFiles extends JModelLegacy
 					}
 				}
 
-				if ($def_elmt->element_plugin == 'date') {
+				if (in_array($def_elmt->element_plugin,['date','jdate'])) {
 					if ($group_params->repeat_group_button == 1) {
 						$this->_elements_default[] = '(
                                                         SELECT  GROUP_CONCAT(DATE_FORMAT(' . $def_elmt->table_join . '.' . $def_elmt->element_name . ', "%d/%m/%Y %H:%i:%m") SEPARATOR ", ")
@@ -429,7 +436,7 @@ class EmundusModelFiles extends JModelLegacy
 			$em_other_columns = array();
 		}
 
-		$session          = JFactory::getSession();
+		$session          = $this->app->getSession();
 		$filter_order     = $session->get('filter_order');
 		$filter_order_Dir = $session->get('filter_order_Dir');
 
@@ -564,7 +571,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getProfileAcces($user)
 	{
-		$this->_db = JFactory::getDBO();
+		
 		$query     = 'SELECT esg.profile_id FROM #__emundus_setup_groups as esg
                     LEFT JOIN #__emundus_groups as eg on esg.id=eg.group_id
                     WHERE esg.published=1 AND eg.user_id=' . $user;
@@ -663,7 +670,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getUsers()
 	{
-		$session    = JFactory::getSession();
+		$session    = $this->app->getSession();
 		$limitStart = $session->get('limitstart', 0);
 		$limit      = $session->get('limit', 20);
 
@@ -813,7 +820,7 @@ class EmundusModelFiles extends JModelLegacy
 		}
 		catch (Exception $e) {
 			$this->app->enqueueMessage(Text::_('COM_EMUNDUS_GET_ALL_FILES_ERROR') . ' ' . $e->getMessage(), 'error');
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' ' . $e->getMessage() . ' -> ' . $query, JLog::ERROR, 'com_emundus.error');
+			Log::add(Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' ' . $e->getMessage() . ' -> ' . $query, Log::ERROR, 'com_emundus.error');
 		}
 
 		return $user_files;
@@ -887,7 +894,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getProfiles()
 	{
-		$this->_db = JFactory::getDBO();
+		
 		$query     = 'SELECT esp.id, esp.label, esp.acl_aro_groups, caag.lft FROM #__emundus_setup_profiles esp
         INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id
         ORDER BY caag.lft, esp.label';
@@ -903,7 +910,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getProfileByID($id)
 	{
-		$this->_db = JFactory::getDBO();
+		
 		$query     = 'SELECT esp.* FROM jos_emundus_setup_profiles as esp
                 LEFT JOIN jos_emundus_users as eu ON eu.profile=esp.id
                 WHERE eu.user_id=' . $id;
@@ -919,7 +926,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getProfilesByIDs($ids)
 	{
-		$this->_db = JFactory::getDBO();
+		
 		$query     = 'SELECT esp.id, esp.label, esp.acl_aro_groups, caag.lft
         FROM #__emundus_setup_profiles esp
         INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id
@@ -935,7 +942,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getAuthorProfiles()
 	{
-		$this->_db = JFactory::getDBO();
+		
 		$query     = 'SELECT esp.id, esp.label, esp.acl_aro_groups, caag.lft
         FROM #__emundus_setup_profiles esp
         INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id
@@ -950,8 +957,8 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getApplicantsProfiles()
 	{
-		$user      = JFactory::getUser();
-		$this->_db = JFactory::getDBO();
+		$user      = $this->app->getIdentity();
+		
 		$query     = 'SELECT esp.id, esp.label FROM #__emundus_setup_profiles esp
                   WHERE esp.published=1 ';
 		$no_filter = array("Super Users", "Administrator");
@@ -971,7 +978,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getApplicantsByProfile($profile)
 	{
-		$this->_db = JFactory::getDBO();
+		
 		$query     = 'SELECT eup.user_id FROM #__emundus_users_profiles eup WHERE eup.profile_id=' . $profile;
 		$this->_db->setQuery($query);
 
@@ -984,7 +991,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getAuthorUsers()
 	{
-		$this->_db = JFactory::getDBO();
+		
 		$query     = 'SELECT u.id, u.gid, u.name
         FROM #__users u
         WHERE u.gid=19';
@@ -998,7 +1005,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getMobility()
 	{
-		$this->_db = JFactory::getDBO();
+		
 		$query     = 'SELECT esm.id, esm.label, esm.value
         FROM #__emundus_setup_mobility esm
         ORDER BY ordering';
@@ -1014,7 +1021,7 @@ class EmundusModelFiles extends JModelLegacy
 	{
 		$elements = [];
 
-		$this->_db = JFactory::getDBO();
+		
 		$query     = 'SELECT element.id, element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin,
                  groupe.label AS group_label, INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated,
                  tab.db_table_name AS table_name, tab.label AS table_label
@@ -1032,7 +1039,7 @@ class EmundusModelFiles extends JModelLegacy
 			$elements = $this->_db->loadObjectList('id');
 		} catch (Exception $e) {
 			$this->app->enqueueMessage(Text::_('COM_EMUNDUS_GET_ELEMENTS_NAME_ERROR') . ' ' . $e->getMessage(), 'error');
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' ' . $e->getMessage() . ' -> ' . $query, JLog::ERROR, 'com_emundus.error');
+			Log::add(Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' ' . $e->getMessage() . ' -> ' . $query, Log::ERROR, 'com_emundus.error');
 		}
 
 		return $elements;
@@ -1045,7 +1052,7 @@ class EmundusModelFiles extends JModelLegacy
 	{
 		$elements_name = array();
 
-		$this->_db = JFactory::getDBO();
+		
 		$query = 'SELECT element.id, element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin,
                  groupe.label AS group_label, INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated,
                  tab.db_table_name AS table_name, tab.label AS table_label
@@ -1063,7 +1070,7 @@ class EmundusModelFiles extends JModelLegacy
 			$elements_name = $this->_db->loadObjectList('element_name');
 		} catch (Exception $e) {
 			$this->app->enqueueMessage(Text::_('COM_EMUNDUS_GET_ELEMENTS_NAME_ERROR') . ' ' . $e->getMessage(), 'error');
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' ' . $e->getMessage() . ' -> ' . $query, JLog::ERROR, 'com_emundus.error');
+			Log::add(Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' ' . $e->getMessage() . ' -> ' . $query, Log::ERROR, 'com_emundus.error');
 		}
 
 		return $elements_name;
@@ -1105,7 +1112,7 @@ class EmundusModelFiles extends JModelLegacy
 		// Load the content if it doesn't already exist
 		if (empty($this->_pagination)) {
 			jimport('joomla.html.pagination');
-			$session           = JFactory::getSession();
+			$session           = $this->app->getSession();
 			$this->_pagination = new JPagination($this->getTotal(), $session->get('limitstart'), $session->get('limit'));
 		}
 
@@ -1120,16 +1127,31 @@ class EmundusModelFiles extends JModelLegacy
 
 		$pageNavigation = "<div class='em-container-pagination-selectPage'>";
 		$pageNavigation .= "<ul class='pagination pagination-sm'>";
-		$pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent - 1) . "'><span class='material-icons'>navigate_before</span></a></li>";
+		if($this->getPagination()->pagesCurrent == $this->getPagination()->pagesStart) {
+			$pageNavigation .= "<li><a class='disabled tw-cursor-pointer'><span class='material-symbols-outlined'>navigate_before</span></a></li>";
+		} else
+		{
+			$pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent - 1) . "'><span class='material-symbols-outlined'>navigate_before</span></a></li>";
+		}
+
 		if ($this->getPagination()->pagesTotal > 15) {
-			for ($i = 1; $i <= 5; $i++) {
+			$index = 5;
+	        if($this->getPagination()->pagesCurrent > 5 && $this->getPagination()->pagesCurrent < 8)
+	        {
+		        $index = $this->getPagination()->pagesCurrent - 3;
+	        }
+
+			for ($i = 1; $i <= $index; $i++) {
 				$pageNavigation .= "<li ";
 				if ($this->getPagination()->pagesCurrent == $i) {
 					$pageNavigation .= "class='active'";
 				}
 				$pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
 			}
-			$pageNavigation .= "<li class='disabled'><span>...</span></li>";
+			if($this->getPagination()->pagesCurrent > 8)
+	        {
+				$pageNavigation .= "<li class='disabled'><span>...</span></li>";
+			}
 			if ($this->getPagination()->pagesCurrent <= 5) {
 				for ($i = 6; $i <= 10; $i++) {
 					$pageNavigation .= "<li ";
@@ -1150,8 +1172,16 @@ class EmundusModelFiles extends JModelLegacy
 					}
 				}
 			}
-			$pageNavigation .= "<li class='disabled'><span>...</span></li>";
-			for ($i = $this->getPagination()->pagesTotal - 4; $i <= $this->getPagination()->pagesTotal; $i++) {
+
+			// if total pages - current page is less than 5
+			$index = 4;
+	        if($this->getPagination()->pagesTotal - $this->getPagination()->pagesCurrent < 7)
+	        {
+				$index = $this->getPagination()->pagesTotal - ($this->getPagination()->pagesCurrent+3);
+	        } else {
+				$pageNavigation .= "<li class='disabled'><span>...</span></li>";
+			}
+			for ($i = $this->getPagination()->pagesTotal - $index; $i <= $this->getPagination()->pagesTotal; $i++) {
 				$pageNavigation .= "<li ";
 				if ($this->getPagination()->pagesCurrent == $i) {
 					$pageNavigation .= "class='active'";
@@ -1168,7 +1198,13 @@ class EmundusModelFiles extends JModelLegacy
 				$pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
 			}
 		}
-		$pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent + 1) . "'><span class='material-icons'>navigate_next</span></a></li></ul></div>";
+
+		if($this->getPagination()->pagesCurrent == $this->getPagination()->pagesStop) {
+			$pageNavigation .= "<li><a class='disabled tw-cursor-pointer'><span class='material-symbols-outlined'>navigate_next</span></a></li></ul></div>";
+		} else {
+			$pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent + 1) . "'><span class='material-symbols-outlined'>navigate_next</span></a></li></ul></div>";
+		}
+
 
 		return $pageNavigation;
 	}
@@ -1178,7 +1214,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getSchoolyears()
 	{
-		$this->_db = JFactory::getDBO();
+		
 		$query     = 'SELECT DISTINCT(schoolyear) as schoolyear
         FROM #__emundus_users
         WHERE schoolyear is not null AND schoolyear != ""
@@ -1256,49 +1292,49 @@ class EmundusModelFiles extends JModelLegacy
 
 		if (!empty($groups) && !empty($fnums)) {
 			try {
-				$db     = $this->getDbo();
+				
 				$insert = [];
 
 				foreach ($fnums as $fnum) {
 					foreach ($groups as $group) {
 						foreach ($actions as $action) {
 							$ac       = (array) $action;
-							$insert[] = $group . ',' . $ac['id'] . ',' . $ac['c'] . ',' . $ac['r'] . ',' . $ac['u'] . ',' . $ac['d'] . ',' . $db->quote($fnum);
+							$insert[] = $group . ',' . $ac['id'] . ',' . $ac['c'] . ',' . $ac['r'] . ',' . $ac['u'] . ',' . $ac['d'] . ',' . $this->_db->quote($fnum);
 						}
 					}
 				}
 
-				$query = $db->getQuery(true);
-				$query->delete($db->quoteName('#__emundus_group_assoc'))
-					->where($db->quoteName('group_id') . ' IN (' . implode(',', $groups) . ') AND ' . $db->quoteName('fnum') . ' IN ("' . implode('","', $fnums) . '")');
-				$db->setQuery($query);
-				$db->execute();
+				$query = $this->_db->getQuery(true);
+				$query->delete($this->_db->quoteName('#__emundus_group_assoc'))
+					->where($this->_db->quoteName('group_id') . ' IN (' . implode(',', $groups) . ') AND ' . $this->_db->quoteName('fnum') . ' IN ("' . implode('","', $fnums) . '")');
+				$this->_db->setQuery($query);
+				$this->_db->execute();
 
 				$query->clear()
-					->insert($db->quoteName('#__emundus_group_assoc'))
-					->columns($db->quoteName(['group_id', 'action_id', 'c', 'r', 'u', 'd', 'fnum']))
+					->insert($this->_db->quoteName('#__emundus_group_assoc'))
+					->columns($this->_db->quoteName(['group_id', 'action_id', 'c', 'r', 'u', 'd', 'fnum']))
 					->values($insert);
-				$db->setQuery($query);
-				$shared = $db->execute();
+				$this->_db->setQuery($query);
+				$shared = $this->_db->execute();
 
 				if ($shared) {
 					// log
 					$query->clear()
 						->select('CONCAT("Groupe ", label)')
-						->from($db->quoteName('#__emundus_setup_groups'))
-						->where($db->quoteName('id') . ' IN (' . implode(',', $groups) . ')');
-					$db->setQuery($query);
-					$group_labels = $db->loadColumn();
+						->from($this->_db->quoteName('#__emundus_setup_groups'))
+						->where($this->_db->quoteName('id') . ' IN (' . implode(',', $groups) . ')');
+					$this->_db->setQuery($query);
+					$group_labels = $this->_db->loadColumn();
 
 					foreach ($fnums as $fnum) {
 						$logsParams = array('created' => array_unique($group_labels, SORT_REGULAR));
-						EmundusModelLogs::log(JFactory::getUser()->id, '', $fnum, 11, 'c', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+						EmundusModelLogs::log($this->app->getIdentity()->id, '', $fnum, 11, 'c', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 					}
 				}
 			}
 			catch (Exception $e) {
-				$error = JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . '\n -> ' . $e->getMessage();
-				JLog::add($error, JLog::ERROR, 'com_emundus');
+				$error = Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . '\n -> ' . $e->getMessage();
+				Log::add($error, Log::ERROR, 'com_emundus');
 				$shared = false;
 			}
 		}
@@ -1313,55 +1349,58 @@ class EmundusModelFiles extends JModelLegacy
 	 *
 	 * @return bool|string
 	 */
-	public function shareUsers($users, $actions, $fnums)
+	public function shareUsers($users, $actions, $fnums, $current_user = null)
 	{
 		$error = null;
 
+		if(empty($current_user)) {
+			$current_user = $this->app->getIdentity();
+		}
+
 		if (!empty($users) && !empty($fnums)) {
 			try {
-				$db     = $this->getDbo();
+				
 				$insert = [];
 
 				foreach ($fnums as $fnum) {
 					foreach ($users as $user) {
 						foreach ($actions as $action) {
 							$ac       = (array) $action;
-							$insert[] = $user . ',' . $ac['id'] . ',' . $ac['c'] . ',' . $ac['r'] . ',' . $ac['u'] . ',' . $ac['d'] . ',' . $db->quote($fnum);
+							$insert[] = $user . ',' . $ac['id'] . ',' . $ac['c'] . ',' . $ac['r'] . ',' . $ac['u'] . ',' . $ac['d'] . ',' . $this->_db->quote($fnum);
 						}
 					}
 				}
 
-				$query = $db->getQuery(true);
-				$query->delete($db->quoteName('#__emundus_users_assoc'))
-					->where($db->quoteName('user_id') . ' IN (' . implode(',', $users) . ') AND ' . $db->quoteName('fnum') . ' IN ("' . implode('","', $fnums) . '")');
-				$db->setQuery($query);
-				$db->execute();
+				$query = $this->_db->getQuery(true);
+				$query->delete($this->_db->quoteName('#__emundus_users_assoc'))
+					->where($this->_db->quoteName('user_id') . ' IN (' . implode(',', $users) . ') AND ' . $this->_db->quoteName('fnum') . ' IN ("' . implode('","', $fnums) . '")');
+				$this->_db->setQuery($query);
+				$this->_db->execute();
 
 				$query->clear()
-					->insert($db->quoteName('#__emundus_users_assoc'))
-					->columns($db->quoteName(['user_id', 'action_id', 'c', 'r', 'u', 'd', 'fnum']))
+					->insert($this->_db->quoteName('#__emundus_users_assoc'))
+					->columns($this->_db->quoteName(['user_id', 'action_id', 'c', 'r', 'u', 'd', 'fnum']))
 					->values($insert);
-				$db->setQuery($query);
-				$shared = $db->execute();
+				$this->_db->setQuery($query);
+				$shared = $this->_db->execute();
 
 				if ($shared) {
 					$query->clear()
 						->select('name')
-						->from($db->quoteName('#__users'))
-						->where($db->quoteName('id') . ' IN (' . implode(',', $users) . ')');
+						->from($this->_db->quoteName('#__users'))
+						->where($this->_db->quoteName('id') . ' IN (' . implode(',', $users) . ')');
 
-					$db->setQuery($query);
-					$user_names = $db->loadColumn();
+					$this->_db->setQuery($query);
+					$user_names = $this->_db->loadColumn();
 
 					foreach ($fnums as $fnum) {
 						$logsParams = array('created' => array_unique($user_names, SORT_REGULAR));
-						EmundusModelLogs::log(JFactory::getUser()->id, '', $fnum, 11, 'c', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+						EmundusModelLogs::log($current_user->id, '', $fnum, 11, 'c', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 					}
 				}
 			}
 			catch (Exception $e) {
-				$error = JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage();
-				JLog::add($error, JLog::ERROR, 'com_emundus');
+				Log::add('Failed to share users' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 				$shared = false;
 			}
 		}
@@ -1370,8 +1409,11 @@ class EmundusModelFiles extends JModelLegacy
 	}
 
 	/**
-	 * @return mixed
-	 * @throws Exception
+	 * Get all action tags
+	 *
+	 * @return array
+	 *
+	 * @since version 1.0.0
 	 */
 	public function getAllTags()
 	{
@@ -1381,14 +1423,14 @@ class EmundusModelFiles extends JModelLegacy
 
 		$query->select('*')
 			->from($this->_db->quoteName('#__emundus_setup_action_tag'))
-			->order('label');
+			->order('ordering, label');
 
 		try {
 			$this->_db->setQuery($query);
 			$tags = $this->_db->loadAssocList();
 		}
 		catch (Exception $e) {
-			JLog::add('Failed to get all tags ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add('Failed to get all tags ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
 
 		return $tags;
@@ -1420,7 +1462,7 @@ class EmundusModelFiles extends JModelLegacy
 	public function getUserAssocGroups()
 	{
 
-		$user = JFactory::getUser();
+		$user = $this->app->getIdentity();
 
 		if (EmundusHelperAccess::asAccessAction(19, 'c', $user->id)) {
 			$query = 'select * from #__emundus_setup_groups where published=1';
@@ -1464,19 +1506,41 @@ class EmundusModelFiles extends JModelLegacy
 	 * @return mixed
 	 * @throws Exception
 	 */
-	public function getAllStatus()
+	public function getAllStatus($uid = null, $result_index = null)
 	{
-		$query = 'select * from #__emundus_setup_status order by ordering';
+		$all_status = [];
 
+		if (empty($uid)) {
+			$uid = Factory::getApplication()->getIdentity()->id;
+		}
 
-		try {
+		$query = $this->_db->getQuery(true);
+
+		$status_by_groups = $this->getStatusByGroup($uid);
+
+		try
+		{
+			$query->select('*')
+				->from($this->_db->quoteName('#__emundus_setup_status'))
+				->order('ordering');
+
+			if (!empty($status_by_groups)) {
+				$query->where($this->_db->quoteName('step'). ' IN ('.implode(',', $this->_db->quote($status_by_groups)).')');
+			}
 			$this->_db->setQuery($query);
 
-			return $this->_db->loadAssocList();
+			if (!empty($result_index) && in_array($result_index, ['id', 'step', 'value'])) {
+				$all_status = $this->_db->loadAssocList($result_index);
+			} else {
+				$all_status = $this->_db->loadAssocList();
+			}
 		}
-		catch (Exception $e) {
-			throw $e;
+		catch(Exception $e)
+		{
+			Log::add('Failed to get all status with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
+
+		return $all_status;
 	}
 
 	/**
@@ -1541,7 +1605,7 @@ class EmundusModelFiles extends JModelLegacy
 			try {
 
 				if (empty($user)) {
-					$user = JFactory::getUser()->id;
+					$user = $this->app->getIdentity()->id;
 				}
 
 				$now = EmundusHelperDate::getNow();
@@ -1594,7 +1658,7 @@ class EmundusModelFiles extends JModelLegacy
 				}
 			}
 			catch (Exception $e) {
-				JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add(Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 
 			\Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterTagAdd', ['fnums' => $fnums, 'tag' => $tags, 'tagged' => $tagged]]);
@@ -1614,7 +1678,7 @@ class EmundusModelFiles extends JModelLegacy
 	{
 
 		$query = 'select t.fnum, sat.class from #__emundus_tag_assoc as t join #__emundus_setup_action_tag as sat on sat.id = t.id_tag where ';
-		$user  = JFactory::getUser()->id;
+		$user  = $this->app->getIdentity()->id;
 
 		if (is_null($tag)) {
 			$query .= ' t.user_id = ' . $user;
@@ -1630,7 +1694,7 @@ class EmundusModelFiles extends JModelLegacy
 		}
 		else {
 
-			$user = JFactory::getUser()->id;
+			$user = $this->app->getIdentity()->id;
 
 			if (is_array($tag))
 				$query .= ' t.id_tag IN (' . implode(',', $tag) . ') and t.user_id = ' . $user;
@@ -1659,46 +1723,26 @@ class EmundusModelFiles extends JModelLegacy
 		$res = false;
 
 		if (!empty($fnums) && isset($state)) {
+			if (empty($user_id)) {
+				$user    = Factory::getApplication()->getIdentity();
+				$user_id = !empty($user->id) ? $user->id : 62;
+			}
+			$all_status = $this->getAllStatus(-1, 'step');
 
-			$query = $this->_db->getQuery(true);
-			$fnums = is_array($fnums) ? $fnums : [$fnums];
+			if (isset($all_status[$state])) {
+				$query = $this->_db->getQuery(true);
+				$fnums = is_array($fnums) ? $fnums : [$fnums];
 
-			try {
-				$query->select($this->_db->quoteName('profile'))
-					->from($this->_db->quoteName('#__emundus_setup_status'))
-					->where($this->_db->quoteName('step') . ' = ' . $state);
-				$this->_db->setQuery($query);
-				$profile = $this->_db->loadResult();
-
-
-				JFactory::getApplication()->triggerEvent('onBeforeMultipleStatusChange', [$fnums, $state]);
-				$trigger = JFactory::getApplication()->triggerEvent('onCallEventHandler', ['onBeforeMultipleStatusChange', ['fnums' => $fnums, 'state' => $state]]);
-				foreach ($trigger as $responses) {
-					foreach ($responses as $response) {
-						if (!empty($response) && isset($response['status']) && $response['status'] === false) {
-							return $response;
-						}
-					}
-				}
-
-				$all_status = $this->getStatus();
-
-				if (empty($user_id)) {
-					$user = JFactory::getUser();
-					$user_id = !empty($user->id) ? $user->id : 62;
-				}
-
-				foreach ($fnums as $fnum) {
-					$query->clear()
-						->select('status')
-						->from('#__emundus_campaign_candidature')
-						->where('fnum = ' . $this->_db->quote($fnum));
-
+				try {
+					$query->select($this->_db->quoteName('profile'))
+						->from($this->_db->quoteName('#__emundus_setup_status'))
+						->where($this->_db->quoteName('step') . ' = ' . $state);
 					$this->_db->setQuery($query);
-					$old_status_step = $this->_db->loadResult();
+					$profile = $this->_db->loadResult();
 
-					JFactory::getApplication()->triggerEvent('onBeforeStatusChange', [$fnum, $state]);
-					$trigger = JFactory::getApplication()->triggerEvent('onCallEventHandler', ['onBeforeStatusChange', ['fnum' => $fnum, 'state' => $state, 'old_state' => $old_status_step]]);
+
+					$this->app->triggerEvent('onBeforeMultipleStatusChange', [$fnums, $state]);
+					$trigger = $this->app->triggerEvent('onCallEventHandler', ['onBeforeMultipleStatusChange', ['fnums' => $fnums, 'state' => $state]]);
 					foreach ($trigger as $responses) {
 						foreach ($responses as $response) {
 							if (!empty($response) && isset($response['status']) && $response['status'] === false) {
@@ -1707,56 +1751,89 @@ class EmundusModelFiles extends JModelLegacy
 						}
 					}
 
-					$query->clear()
-						->update($this->_db->quoteName('#__emundus_campaign_candidature'))
-						->set($this->_db->quoteName('status') . ' = ' . $state)
-						->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->Quote($fnum));
+					$all_status = $this->getStatus($user_id);
 
-					$this->_db->setQuery($query);
-					$res = $this->_db->execute();
-
-					$old_status_lbl = $all_status[$old_status_step]['value'];
-
-					// get the applicant id
-					$query->clear()
-						->select($this->_db->quoteName('applicant_id'))
-						->from($this->_db->quoteName('#__emundus_campaign_candidature'))
-						->where($this->_db->quoteName('fnum').' LIKE '.$this->_db->quote($fnum));
-					$this->_db->setQuery($query);
-					$applicant_id = $this->_db->loadResult();
-
-					if ($res) {
-						$logs_params = ['updated' => [['old' => $old_status_lbl, 'new' => $all_status[$state]['value'], 'old_id' => $old_status_step, 'new_id' => $state]]];
-						EmundusModelLogs::log($user_id, $applicant_id, $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
-					}
-					else {
-						$logs_params = ['updated' => [['old' => $old_status_lbl, 'new' => $all_status[$state]['value'], 'old_id' => $old_status_step, 'new_id' => $state]]];
-						EmundusModelLogs::log($user_id, $applicant_id, $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE_FAILED', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
+					if (empty($user_id)) {
+						$user = $this->app->getIdentity();
+						if (empty($user->id)) {
+							$eMConfig            = ComponentHelper::getParams('com_emundus');
+							$automated_task_user = $eMConfig->get('automated_task_user', 62);
+							$user_id             = $automated_task_user;
+						}
 					}
 
-					JFactory::getApplication()->triggerEvent('onAfterStatusChange', [$fnum, $state]);
-					JFactory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterStatusChange', ['fnum' => $fnum, 'state' => $state, 'old_state' => $old_status_step]]);
-
-					if (!empty($profile)) {
+					foreach ($fnums as $fnum) {
 						$query->clear()
-							->update($this->_db->quoteName('#__emundus_users'))
-							->set($this->_db->quoteName('profile') . ' = ' . $profile)
-							->where($this->_db->quoteName('user_id') . ' = ' . substr($fnum, -7));
-						$this->_db->setQuery($query);
-						$this->_db->execute();
-					}
-				}
-			}
-			catch (Exception $e) {
-				echo $e->getMessage();
-				JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
-			}
+							->select('status')
+							->from('#__emundus_campaign_candidature')
+							->where('fnum LIKE ' . $this->_db->quote($fnum));
 
-			if ($res) {
-				$res = [
-					'status' => true,
-					'msg'    => $this->sendEmailAfterUpdateState($fnums, $state)
-				];
+						$this->_db->setQuery($query);
+						$old_status_step = $this->_db->loadResult();
+
+						$this->app->triggerEvent('onBeforeStatusChange', [$fnum, $state]);
+						$trigger = $this->app->triggerEvent('onCallEventHandler', ['onBeforeStatusChange', ['fnum' => $fnum, 'state' => $state, 'old_state' => $old_status_step]]);
+						foreach ($trigger as $responses) {
+							foreach ($responses as $response) {
+								if (!empty($response) && isset($response['status']) && $response['status'] === false) {
+									return $response;
+								}
+							}
+						}
+
+						$query->clear()
+							->update($this->_db->quoteName('#__emundus_campaign_candidature'))
+							->set($this->_db->quoteName('status') . ' = ' . $state)
+							->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->Quote($fnum));
+
+						$this->_db->setQuery($query);
+						$res = $this->_db->execute();
+
+						$old_status_lbl = $all_status[$old_status_step]['value'];
+
+						// get the applicant id
+						$query->clear()
+							->select($this->_db->quoteName('applicant_id'))
+							->from($this->_db->quoteName('#__emundus_campaign_candidature'))
+							->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
+						$this->_db->setQuery($query);
+						$applicant_id = $this->_db->loadResult();
+
+						if ($res) {
+							$logs_params = ['updated' => [['old' => $old_status_lbl, 'new' => $all_status[$state]['value'], 'old_id' => $old_status_step, 'new_id' => $state]]];
+							EmundusModelLogs::log($user_id, $applicant_id, $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
+						}
+						else {
+							$logs_params = ['updated' => [['old' => $old_status_lbl, 'new' => $all_status[$state]['value'], 'old_id' => $old_status_step, 'new_id' => $state]]];
+							EmundusModelLogs::log($user_id, $applicant_id, $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE_FAILED', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
+						}
+
+						$this->app->triggerEvent('onAfterStatusChange', [$fnum, $state]);
+						$this->app->triggerEvent('onCallEventHandler', ['onAfterStatusChange', ['fnum' => $fnum, 'state' => $state, 'old_state' => $old_status_step]]);
+
+						if (!empty($profile)) {
+							$query->clear()
+								->update($this->_db->quoteName('#__emundus_users'))
+								->set($this->_db->quoteName('profile') . ' = ' . $profile)
+								->where($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote($applicant_id));
+							$this->_db->setQuery($query);
+							$this->_db->execute();
+						}
+					}
+
+					$this->makeAttachmentsEditableByApplicant($fnums, $state);
+				}
+				catch (Exception $e) {
+					echo $e->getMessage();
+					Log::add('USER ID : ' . $user_id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+				}
+
+				if ($res) {
+					$res = [
+						'status' => true,
+						'msg'    => $this->sendEmailAfterUpdateState($fnums, $state)
+					];
+				}
 			}
 		}
 
@@ -1812,7 +1889,7 @@ class EmundusModelFiles extends JModelLegacy
 			$logsParams = ['updated' => [['old' => $old_publish_lbl, 'new' => $new_publish_lbl, 'old_id' => $old_publish, 'new_id' => $publish]]];
 
 			if (empty($user_id)) {
-				$user = JFactory::getUser();
+				$user = $this->app->getIdentity();
 				$user_id = !empty($user->id) ? $user->id : 62;
 			}
 
@@ -1838,7 +1915,7 @@ class EmundusModelFiles extends JModelLegacy
 			}
 			catch (Exception $e) {
 				echo $e->getMessage();
-				JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+				Log::add(Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
 				return false;
 			}
@@ -1879,7 +1956,7 @@ class EmundusModelFiles extends JModelLegacy
 			}
 			catch (Exception $e) {
 				echo $e->getMessage();
-				JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+				Log::add(Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -1904,7 +1981,7 @@ class EmundusModelFiles extends JModelLegacy
 		}
 		catch (Exception $e) {
 			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
 			return null;
 		}
@@ -1928,7 +2005,7 @@ class EmundusModelFiles extends JModelLegacy
 		}
 		catch (Exception $e) {
 			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
 			return null;
 		}
@@ -1944,7 +2021,7 @@ class EmundusModelFiles extends JModelLegacy
 	public function unlinkEvaluators($fnum, $id, $isGroup)
 	{
 		try {
-			$this->_db = JFactory::getDbo();
+			
 
 			if ($isGroup) {
 				$query = 'delete from #__emundus_group_assoc where fnum like ' . $this->_db->Quote($fnum) . ' and group_id =' . $id;
@@ -1959,7 +2036,7 @@ class EmundusModelFiles extends JModelLegacy
 		}
 		catch (Exception $e) {
 			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -1981,7 +2058,7 @@ class EmundusModelFiles extends JModelLegacy
 
 		try {
 			$query = $this->_db->getQuery(true);
-			$query->select('u.name, u.email, cc.fnum, cc.date_submitted, cc.applicant_id, cc.status, cc.published as state, cc.form_progress, cc.attachment_progress, ss.value, ss.class, c.*, cc.campaign_id')
+			$query->select('cc.id as ccid, u.name, u.email, cc.fnum, cc.date_submitted, cc.applicant_id, cc.status, cc.published as state, cc.form_progress, cc.attachment_progress, ss.value, ss.class, c.*, cc.campaign_id')
 				->from($this->_db->quoteName('#__emundus_campaign_candidature', 'cc'))
 				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'c') . ' ON ' . $this->_db->quoteName('c.id') . ' = ' . $this->_db->quoteName('cc.campaign_id'))
 				->leftJoin($this->_db->quoteName('#__users', 'u') . ' ON ' . $this->_db->quoteName('u.id') . ' = ' . $this->_db->quoteName('cc.applicant_id'))
@@ -1997,8 +2074,7 @@ class EmundusModelFiles extends JModelLegacy
 			}
 		}
 		catch (Exception $e) {
-			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . $user_id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(Uri::getInstance() . ' :: USER ID : ' . $user_id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 
 		return $fnumInfos;
@@ -2030,7 +2106,7 @@ class EmundusModelFiles extends JModelLegacy
 		}
 		catch (Exception $e) {
 			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -2195,13 +2271,14 @@ class EmundusModelFiles extends JModelLegacy
     *   @param elements     array of element to get value
     *   @return array
     */
-	public function getFnumArray($fnums, $elements, $methode = 0, $start = 0, $pas = 0, $raw = 0, $defaultElement = '')
+	public function getFnumArray($fnums, $elements, $methode = 0, $start = 0, $pas = 0, $raw = 0, $defaultElement = '',$user = null)
 	{
+		if(empty($user)) {
+			$user = $this->app->getIdentity();
+		}
+		$locales = substr($this->app->getLanguage()->getTag(), 0, 2);
 
-
-		$locales = substr(JFactory::getLanguage()->getTag(), 0, 2);
-
-		$anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+		$anonymize_data = EmundusHelperAccess::isDataAnonymized($user->id);
 
 		if (empty($defaultElement)) {
 			if ($anonymize_data) {
@@ -2236,7 +2313,7 @@ class EmundusModelFiles extends JModelLegacy
 				$is_join = $this->_db->loadResult();
 			}
 			catch (Exception $e) {
-				JLog::add('Error when get param is_join from group : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+				Log::add('Error when get param is_join from group : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 			}
 
 
@@ -2265,7 +2342,7 @@ class EmundusModelFiles extends JModelLegacy
 					$repeat_join_table = $this->_db->loadResult();
 				}
 				catch (Exception $e) {
-					JLog::add('Line ' . __LINE__ . ' - Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
+					Log::add('Line ' . __LINE__ . ' - Error in model/application at query: ' . $query, Log::ERROR, 'com_emundus');
 					throw $e;
 				}
 				if ($methode == 1) {
@@ -2303,8 +2380,8 @@ class EmundusModelFiles extends JModelLegacy
 
 							}
 							catch (Exception $e) {
-								$error = JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage() . ' :: ' . preg_replace("/[\r\n]/", " ", $query);
-								JLog::add($error, JLog::ERROR, 'com_emundus');
+								$error = Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage() . ' :: ' . preg_replace("/[\r\n]/", " ", $query);
+								Log::add($error, Log::ERROR, 'com_emundus');
 							}
 
 						}
@@ -2419,8 +2496,8 @@ class EmundusModelFiles extends JModelLegacy
 
 							}
 							catch (Exception $e) {
-								$error = JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage() . ' :: ' . preg_replace("/[\r\n]/", " ", $query);
-								JLog::add($error, JLog::ERROR, 'com_emundus');
+								$error = Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage() . ' :: ' . preg_replace("/[\r\n]/", " ", $query);
+								Log::add($error, Log::ERROR, 'com_emundus');
 							}
 
 						}
@@ -2555,7 +2632,7 @@ class EmundusModelFiles extends JModelLegacy
 
 					$element_attribs = json_decode($elt->element_attribs);
 
-					if ($element_attribs->database_join_display_type == "checkbox") {
+					if ($element_attribs->database_join_display_type == "checkbox" || $element_attribs->database_join_display_type == "multilist") {
 						$select_check = $element_attribs->join_val_column;
 						if (!empty($element_attribs->join_val_column_concat)) {
 							$select_check = $element_attribs->join_val_column_concat;
@@ -2636,22 +2713,22 @@ class EmundusModelFiles extends JModelLegacy
 		$query .= 'where u.block=0 AND jos_emundus_campaign_candidature.fnum in ("' . implode('","', $fnums) . '") ';
 		if (preg_match("/emundus_evaluations/i", $query)) {
 
-			$current_user = JFactory::getSession()->get('emundusUser');
+			$current_user = $this->app->getSession()->get('emundusUser');
 
 			$eval_query = $this->_db->getQuery(true);
 			$eval_query
 				->select('id')
 				->from($this->_db->quoteName('#__emundus_evaluations'))
 				->where($this->_db->quoteName('fnum') . ' IN (' . implode(',', $this->_db->quote($fnums)) . ')')
-				->andWhere($this->_db->quoteName('user') . ' = ' . JFactory::getUser()->id);
+				->andWhere($this->_db->quoteName('user') . ' = ' . $this->app->getIdentity()->id);
 
 			$this->_db->setQuery($eval_query);
 			$eval = $this->_db->loadResult();
 
-			if ((!EmundusHelperAccess::asAccessAction(5, 'r', JFactory::getUser()->id) && EmundusHelperAccess::asAccessAction(5, 'c', JFactory::getUser()->id))) {
+			if ((!EmundusHelperAccess::asAccessAction(5, 'r', $this->app->getIdentity()->id) && EmundusHelperAccess::asAccessAction(5, 'c', $this->app->getIdentity()->id))) {
 				if ((!empty($current_user->fnums) && !empty(array_diff($fnums, array_keys($current_user->fnums)))) || ((@EmundusHelperAccess::isEvaluator($current_user->id) && !@EmundusHelperAccess::isCoordinator($current_user->id)))) {
 					if ($eval) {
-						$query .= ' AND jos_emundus_evaluations.user = ' . JFactory::getUser()->id;
+						$query .= ' AND jos_emundus_evaluations.user = ' . $this->app->getIdentity()->id;
 					}
 				}
 			}
@@ -2667,8 +2744,8 @@ class EmundusModelFiles extends JModelLegacy
 			return $this->_db->loadAssocList();
 		}
 		catch (Exception $e) {
-			$error = JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage() . ' :: ' . preg_replace("/[\r\n]/", " ", $query);
-			JLog::add($error, JLog::ERROR, 'com_emundus');
+			$error = Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage() . ' :: ' . preg_replace("/[\r\n]/", " ", $query);
+			Log::add($error, Log::ERROR, 'com_emundus');
 			JFactory::getApplication()->enqueueMessage($error, 'error');
 
 			return false;
@@ -2951,28 +3028,40 @@ class EmundusModelFiles extends JModelLegacy
 						$element_params = json_decode($element->element_attribs, true);
 
 						if ($element_params['multiple'] === '0') {
-							if ($is_repeat) {
-								$query .= ', (CASE ' . $child_element_table_alias . '.' . $element->element_name . ' ';
-							}
-							else {
-								$query .= ', (CASE ' . $element_table_alias . '.' . $element->element_name . ' ';
-							}
+							if (count($element_params['sub_options']['sub_values']) == 1 && empty($element_params['sub_options']['sub_values'][0])) {
+								// If no value in dropdown, it is probably using dropdown_populate with PHP code, so return directly the value
+								// TODO: possible to retrieve the label generated by the code of a dropdown_populate field?
+								$query .= ', '.$element_table_alias . '.' . $element->element_name . ' AS ' . $element->tab_name . '___' . $element->element_name;
+							} else
+							{
+								if ($is_repeat)
+								{
+									$query .= ', (CASE ' . $child_element_table_alias . '.' . $element->element_name . ' ';
+								}
+								else
+								{
+									$query .= ', (CASE ' . $element_table_alias . '.' . $element->element_name . ' ';
+								}
 
-							foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
-								$sub_label = Text::_($element_params['sub_options']['sub_labels'][$sub_key]);
-								$sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
-								$sub_label = str_replace("'", "\'", $sub_label); // escape sub label single quotes for SQL query
-								$sub_value = str_replace("'", "\'", $sub_value);
+								foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value)
+								{
+									$sub_label = Text::_($element_params['sub_options']['sub_labels'][$sub_key]);
+									$sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
+									$sub_label = str_replace("'", "\'", $sub_label); // escape sub label single quotes for SQL query
+									$sub_value = str_replace("'", "\'", $sub_value);
 
-								$query .= ' WHEN \'' . $sub_value . '\' THEN \'' . $sub_label . '\'';
-							}
+									$query .= ' WHEN \'' . $sub_value . '\' THEN \'' . $sub_label . '\'';
+								}
 
-							if ($is_repeat) {
-								$query            .= ' END) AS ' . $already_joined[$child_element_table_alias] . '___' . $element->element_name;
-								$saved_element_as = $already_joined[$child_element_table_alias] . '___' . $element->element_name;
-							}
-							else {
-								$query .= ' END) AS ' . $element->tab_name . '___' . $element->element_name;
+								if ($is_repeat)
+								{
+									$query            .= ' END) AS ' . $already_joined[$child_element_table_alias] . '___' . $element->element_name;
+									$saved_element_as = $already_joined[$child_element_table_alias] . '___' . $element->element_name;
+								}
+								else
+								{
+									$query .= ' END) AS ' . $element->tab_name . '___' . $element->element_name;
+								}
 							}
 						}
 						else {
@@ -3068,13 +3157,12 @@ class EmundusModelFiles extends JModelLegacy
 			}
 
 			try {
-				$db = Factory::getContainer()->get('DatabaseDriver');
-				$db->setQuery($query . $from . $leftJoin . $where);
-				$rows = $db->loadAssocList();
+				$this->_db->setQuery($query . $from . $leftJoin . $where);
+				$rows = $this->_db->loadAssocList();
 			}
 			catch (Exception $e) {
 				error_log($query . $from . $leftJoin . $where);
-				JLog::add('Error trying to generate data for xlsx export ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+				Log::add('Error trying to generate data for xlsx export ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
 				return false;
 			}
@@ -3122,9 +3210,11 @@ class EmundusModelFiles extends JModelLegacy
 						if (is_array($value)) {
 							$separator = ComponentHelper::getParams('com_emundus')->get('export_concat_separator', ', ');
 							$data[$d_key][$r_key] = '"' . implode($separator, $value) . '"';
-                        } else if (!empty($value) && is_string($value)) {
+                        }
+						/*
+						else if (!empty($value) && is_string($value)) {
 							$data[$d_key][$r_key] = str_replace('-', '\-', $value);
-						}
+						} */
 					}
 				}
 
@@ -3249,26 +3339,35 @@ class EmundusModelFiles extends JModelLegacy
 	 *
 	 * @return bool|mixed
 	 */
-	public function getFilesByFnums($fnums, $attachment_ids = null)
+	public function getFilesByFnums($fnums, $attachment_ids = null, $return_as_object = false)
 	{
 		$files = false;
 
 		if (!empty($fnums)) {
-			$db = $this->getDbo();
+			$query = $this->_db->getQuery(true);
+
+			$query->select('fu.*')
+				->from($this->_db->quoteName('#__emundus_uploads', 'fu'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_attachments', 'esa') . ' ON ' . $this->_db->quoteName('esa.id') . ' = ' . $this->_db->quoteName('fu.attachment_id'))
+				->where($this->_db->quoteName('fu.fnum') . ' IN (' . implode(',', $fnums) . ')');
+
 			if (!empty($attachment_ids)) {
-				$query = 'select fu.* from #__emundus_uploads as fu where fu.fnum in ("' . implode('","', $fnums) . '") and fu.attachment_id in ("' . implode('","', $attachment_ids) . '") order by fu.fnum';
-			}
-			else {
-				$query = 'select fu.* from #__emundus_uploads as fu where fu.fnum in ("' . implode('","', $fnums) . '") order by fu.fnum';
+				$query->andWhere($this->_db->quoteName('fu.attachment_id') . ' IN (' . implode(',', $attachment_ids) . ')');
 			}
 
+			$query->order('fu.fnum, esa.ordering ASC');
+
 			try {
-				$db->setQuery($query);
-				$files = $db->loadAssocList();
-			}
-			catch (Exception $e) {
+				$this->_db->setQuery($query);
+
+				if ($return_as_object) {
+					$files = $this->_db->loadObjectList();
+				} else {
+					$files = $this->_db->loadAssocList();
+				}
+			} catch(Exception $e) {
 				echo $e;
-				JLog::add('Failed to get files by fnum ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to get files by fnum ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -3334,18 +3433,17 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getAssociatedProgrammes($user)
 	{
-		$db = $this->getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->_db->getQuery(true);
 
 		$query->select('DISTINCT sc.training')
 			->from('#__emundus_users_assoc AS ua')
 			->leftJoin('#__emundus_campaign_candidature AS cc ON cc.fnum = ua.fnum')
 			->leftJoin('#__emundus_setup_campaigns AS sc ON sc.id = cc.campaign_id')
-			->where('ua.user_id = '.$db->quote($user));
+			->where('ua.user_id = '.$this->_db->quote($user));
 		try
 		{
-			$db->setQuery($query);
-			return $db->loadColumn();
+			$this->_db->setQuery($query);
+			return $this->_db->loadColumn();
 		}
 		catch(Exception $e)
 		{
@@ -3361,20 +3459,19 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getGroupsAssociatedProgrammes($user)
 	{
-		$db    = $this->getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->_db->getQuery(true);
 
 		$query->select('DISTINCT sc.training')
 			->from('#__emundus_groups AS g')
 			->leftJoin('#__emundus_group_assoc AS ga ON ga.group_id = g.group_id AND ga.action_id = 1 AND ga.r = 1')
 			->leftJoin('#__emundus_campaign_candidature AS cc ON cc.fnum = ga.fnum')
 			->leftJoin('#__emundus_setup_campaigns AS sc ON sc.id = cc.campaign_id')
-			->where('g.user_id = ' . $db->quote($user));
+			->where('g.user_id = ' . $this->_db->quote($user));
 		try
 		{
-			$db->setQuery($query);
+			$this->_db->setQuery($query);
 
-			return $db->loadColumn();
+			return $this->_db->loadColumn();
 		}
 		catch(Exception $e)
 		{
@@ -3557,10 +3654,10 @@ class EmundusModelFiles extends JModelLegacy
 			// Write the code to show the results to the user
 			foreach ($res as $r) {
 				if (isset($access[$r['fnum']])) {
-					$access[$r['fnum']] .= '<div class="tw-flex tw-items-center tw-gap-2"><span class="circle '.$r['class'].'"></span><span class="tw-truncate tw-max-w-[200px] tw-text-sm">'.$r['uname'].'</span></div>';
+					$access[$r['fnum']] .= '<div class="tw-flex tw-items-center tw-gap-2"><span class="circle '.$r['class'].'"></span><span class="tw-truncate tw-w-[200px] tw-text-sm">'.$r['uname'].'</span></div>';
 				}
 				else {
-					$access[$r['fnum']] = '<div class="tw-flex tw-items-center tw-gap-2"><span class="circle '.$r['class'].'"></span><span class="tw-truncate tw-max-w-[200px] tw-text-sm">'.$r['uname'].'</span></div>';
+					$access[$r['fnum']] = '<div class="tw-flex tw-items-center tw-gap-2"><span class="circle '.$r['class'].'"></span><span class="tw-truncate tw-w-[200px] tw-text-sm">'.$r['uname'].'</span></div>';
 				}
 			}
 
@@ -3579,7 +3676,7 @@ class EmundusModelFiles extends JModelLegacy
 
 			// Write the code to show the results to the user
 			foreach ($res as $r) {
-				$assocTaggroup = '<div class="tw-flex tw-items-center tw-gap-2"><span class="circle '.$r['class'].'"></span><span id="'.$r['id'].'" class="tw-truncate tw-max-w-[200px] tw-text-sm">'.$r['label'].'</span></div>';
+				$assocTaggroup = '<div class="tw-flex tw-items-center tw-gap-2"><span class="circle '.$r['class'].'"></span><span id="'.$r['id'].'" class="tw-truncate tw-w-[200px] tw-text-sm">'.$r['label'].'</span></div>';
 				if (isset($access[$r['fnum']])) {
 					$access[$r['fnum']] .= '' . $assocTaggroup;
 				}
@@ -3610,7 +3707,7 @@ class EmundusModelFiles extends JModelLegacy
 				$group_labels = explode(',', $r['label']);
 				$class_labels = explode(',', $r['class']);
 				foreach ($group_labels as $key => $g_label) {
-					$assocTagcampaign = '<div class="tw-flex tw-items-center tw-gap-2"><span class="circle '.$class_labels[$key].'" id="'.$r['id'].'"></span><span id="'.$r['id'].'" class="tw-truncate tw-max-w-[200px] tw-text-sm">'.$g_label.'</span></div>';
+					$assocTagcampaign = '<div class="tw-flex tw-items-center tw-gap-2"><span class="circle '.$class_labels[$key].'" id="'.$r['id'].'"></span><span id="'.$r['id'].'" class="tw-truncate tw-w-[200px] tw-text-sm">'.$g_label.'</span></div>';
 					$access[$r['fnum']] .= $assocTagcampaign;
 				}
 			}
@@ -3618,7 +3715,7 @@ class EmundusModelFiles extends JModelLegacy
 			return $access;
 		}
 		catch (Exception $e) {
-			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -3655,7 +3752,7 @@ class EmundusModelFiles extends JModelLegacy
 				$access = $this->_db->loadAssocList('fnum', 'label');
 			}
 			catch (Exception $e) {
-				JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+				Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
 
 				return false;
 			}
@@ -3671,7 +3768,7 @@ class EmundusModelFiles extends JModelLegacy
 				$res = $this->_db->loadAssocList('fnum', 'label');
 			}
 			catch (Exception $e) {
-				JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+				Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
 
 				return false;
 			}
@@ -3703,7 +3800,7 @@ class EmundusModelFiles extends JModelLegacy
 				$res = $this->_db->loadAssocList('fnum', 'name');
 			}
 			catch (Exception $e) {
-				JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+				Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
 
 				return false;
 			}
@@ -3738,7 +3835,7 @@ class EmundusModelFiles extends JModelLegacy
 			->from($this->_db->quoteName('#__emundus_tag_assoc', 'eta'))
 			->leftJoin($this->_db->quoteName('#__emundus_setup_action_tag', 'esat') . ' ON ' . $this->_db->quoteName('esat.id') . ' = ' . $this->_db->quoteName('eta.id_tag'))
 			->leftJoin($this->_db->quoteName('#__users', 'u') . ' ON ' . $this->_db->quoteName('u.id') . ' = ' . $this->_db->quoteName('eta.user_id'))
-			->where($this->_db->quoteName('eta.fnum') . ' IN (' . implode(',', $fnums) . ')')
+			->where($this->_db->quoteName('eta.fnum') . ' IN (' . implode(',', $this->_db->quote($fnums)) . ')')
 			->order($this->_db->quoteName('esat.label'));
 
 		try {
@@ -3841,15 +3938,14 @@ class EmundusModelFiles extends JModelLegacy
 	public function addAttachment($fnum, $name, $uid, $cid, $attachment_id, $desc, $canSee = 0)
 	{
 		$now   = EmundusHelperDate::getNow();
-		$db    = $this->getDbo();
-		$query = $db->getQuery(true);
-		$query->insert($db->quoteName('#__emundus_uploads'))
-			->columns($db->quoteName(array('timedate', 'user_id', 'fnum', 'attachment_id', 'filename', 'description', 'can_be_deleted', 'can_be_viewed', 'campaign_id')))
-			->values($db->quote($now) . ', ' . $db->quote($uid) . ', ' . $db->quote($fnum) . ', ' . $db->quote($attachment_id) . ', ' . $db->quote($name) . ', ' . $db->quote($desc) . ', 0, ' . $db->quote($canSee) . ', ' . $db->quote($cid));
-		$db->setQuery($query);
-		$db->execute();
+		$query = $this->_db->getQuery(true);
+		$query->insert($this->_db->quoteName('#__emundus_uploads'))
+			->columns($this->_db->quoteName(array('timedate', 'user_id', 'fnum', 'attachment_id', 'filename', 'description', 'can_be_deleted', 'can_be_viewed', 'campaign_id')))
+			->values($this->_db->quote($now) . ', ' . $this->_db->quote($uid) . ', ' . $this->_db->quote($fnum) . ', ' . $this->_db->quote($attachment_id) . ', ' . $this->_db->quote($name) . ', ' . $this->_db->quote($desc) . ', 0, ' . $this->_db->quote($canSee) . ', ' . $this->_db->quote($cid));
+		$this->_db->setQuery($query);
+		$this->_db->execute();
 
-		return $db->insertid();
+		return $this->_db->insertid();
 	}
 
 	/**
@@ -3893,7 +3989,7 @@ class EmundusModelFiles extends JModelLegacy
 				$attachments = $this->_db->loadAssocList();
 			}
 			catch (Exception $e) {
-				JLog::add('Failed to get attachment by ids ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+				Log::add('Failed to get attachment by ids ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -3905,18 +4001,17 @@ class EmundusModelFiles extends JModelLegacy
 		$setup_attachments = [];
 
 		if (!empty($ids)) {
-			$dbo   = $this->getDbo();
-			$query = $dbo->getQuery(true);
+			$query = $this->_db->getQuery(true);
 			$query->select('*')
-				->from($dbo->quoteName('#__emundus_setup_attachments'))
-				->where($dbo->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
+				->from($this->_db->quoteName('#__emundus_setup_attachments'))
+				->where($this->_db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
 
 			try {
-				$dbo->setQuery($query);
-				$setup_attachments = $dbo->loadAssocList();
+				$this->_db->setQuery($query);
+				$setup_attachments = $this->_db->loadAssocList();
 			}
 			catch (Exception $e) {
-				JLog::add('Failed to get setup attachment by ids ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to get setup attachment by ids ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -4045,6 +4140,11 @@ class EmundusModelFiles extends JModelLegacy
 		$group = '';
 		if ($plugin === 'date') {
 			$date_form_format = $this->dateFormatToMysql($params->date_form_format);
+
+			$select = 'GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name . ', ' . $this->_db->quote($date_form_format) . ')  SEPARATOR ", ") as val, t_origin.fnum ';
+		}
+		elseif ($plugin === 'jdate') {
+			$date_form_format = $this->dateFormatToMysql($params->jdate_form_format);
 
 			$select = 'GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name . ', ' . $this->_db->quote($date_form_format) . ')  SEPARATOR ", ") as val, t_origin.fnum ';
 		}
@@ -4179,25 +4279,16 @@ class EmundusModelFiles extends JModelLegacy
 		}
 	}
 
-	public function getStatus()
-	{
-		$all_status = [];
-
-		$this->_db = JFactory::getDBO();
-		$query     = $this->_db->getQuery(true);
-		$query->select('*')
-			->from('#__emundus_setup_status')
-			->order('ordering ASC');
-
-		try {
-			$this->_db->setQuery($query);
-			$all_status = $this->_db->loadAssocList('step');
-		}
-		catch (Exception $e) {
-			JLog::add('Failed to get all status ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+	/**
+	 * @deprecated use getAllStatus instead
+	 * @return array|mixed
+	 */
+	public function getStatus($user_id = null) {
+		if (empty($user_id)) {
+			$user_id = Factory::getApplication()->getIdentity()->id;
 		}
 
-		return $all_status;
+		return $this->getAllStatus($user_id, 'step');
 	}
 
 	/**
@@ -4222,7 +4313,7 @@ class EmundusModelFiles extends JModelLegacy
 		}
 		catch (Exception $e) {
 			// Do not hard fail, delete file data anyways.
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 
 
@@ -4234,7 +4325,7 @@ class EmundusModelFiles extends JModelLegacy
 			while (false !== ($obj = readdir($dh))) {
 				if (in_array($obj, $files)) {
 					if (!unlink($dir . $obj)) {
-						JLog::add(JUri::getInstance() . ' :: Could not delete file -> ' . $obj . ' for fnum -> ' . $fnum, JLog::ERROR, 'com_emundus');
+						Log::add(Uri::getInstance() . ' :: Could not delete file -> ' . $obj . ' for fnum -> ' . $fnum, Log::ERROR, 'com_emundus');
 					}
 				}
 			}
@@ -4254,7 +4345,7 @@ class EmundusModelFiles extends JModelLegacy
 			$this->app->triggerEvent('onCallEventHandler', ['onAfterDeleteFile', ['fnum' => $fnum]]);
 		}
 		catch (Exception $e) {
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 
 		return $deleted;
@@ -4269,7 +4360,7 @@ class EmundusModelFiles extends JModelLegacy
 	public function programSessions($program)
 	{
 		try {
-			$this->_db = JFactory::getDbo();
+			
 
 			$query = $this->_db->getQuery(true);
 			$query->select('DISTINCT(t.session_code) AS sc, t.*')
@@ -4292,8 +4383,7 @@ class EmundusModelFiles extends JModelLegacy
 	public function getAppliedSessions($program)
 	{
 		try {
-			$current_user = JFactory::getUser();
-			$this->_db    = JFactory::getDbo();
+			$current_user = $this->app->getIdentity();
 
 			$query = $this->_db->getQuery(true);
 			$query->select('esc.session_code')
@@ -4322,7 +4412,7 @@ class EmundusModelFiles extends JModelLegacy
 	public function getBirthdate($fnum = null, $format = 'd-m-Y', $age = false)
 	{
 
-		$this->_db = JFactory::getDbo();
+		
 		$query     = $this->_db->getQuery(true);
 
 		$query->select($this->_db->quoteName('birth_date'))->from($this->_db->quoteName('#__emundus_personal_detail'))->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
@@ -4352,7 +4442,7 @@ class EmundusModelFiles extends JModelLegacy
 
 	public function getDocumentCategory()
 	{
-		$this->_db = JFactory::getDbo();
+		
 		$query     = $this->_db->getQuery(true);
 		$query->select($this->_db->quoteName('esa.*'))
 			->from($this->_db->quoteName('#__emundus_setup_attachments', 'esa'))
@@ -4365,7 +4455,7 @@ class EmundusModelFiles extends JModelLegacy
 
 	public function getParamsCategory($idCategory)
 	{
-		$this->_db = JFactory::getDbo();
+		
 		$query     = $this->_db->getQuery(true);
 		$query->select($this->_db->quoteName('fe.params'))
 			->from($this->_db->quoteName('#__fabrik_elements', 'fe'))
@@ -4389,7 +4479,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getAttachmentCategories()
 	{
-		$this->_db = JFactory::getDbo();
+		
 
 		$query = $this->_db->getQuery(true);
 		$query->select($this->_db->quoteName('fe.params'))
@@ -4414,7 +4504,7 @@ class EmundusModelFiles extends JModelLegacy
 
 	public function selectCity($insee)
 	{
-		$this->_db = JFactory::getDBO();
+		
 		$query     = $this->_db->getQuery(true);
 
 		$conditions = $this->_db->quoteName('insee_code') . ' LIKE ' . $this->_db->quote($insee);
@@ -4430,7 +4520,7 @@ class EmundusModelFiles extends JModelLegacy
 
 	public function selectNameCity($name)
 	{
-		$this->_db = JFactory::getDBO();
+		
 		$query     = $this->_db->getQuery(true);
 
 		$conditions = $this->_db->quoteName('name') . ' LIKE ' . $this->_db->quote($name);
@@ -4446,7 +4536,7 @@ class EmundusModelFiles extends JModelLegacy
 
 	public function selectMultiplePayment($fnum)
 	{
-		$this->_db = JFactory::getDBO();
+		
 		$query     = $this->_db->getQuery(true);
 
 		$conditions = $this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum);
@@ -4475,17 +4565,16 @@ class EmundusModelFiles extends JModelLegacy
 			$group_ids = [$group_ids];
 		}
 
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->_db->getQuery(true);
 
 		$result = [];
 		foreach ($group_ids as $group_id) {
 			$query->clear()
-				->select($db->quoteName('anonymize'))
-				->from($db->quoteName('#__emundus_setup_groups'))
-				->where($db->quoteName('id') . ' = ' . $group_id);
-			$db->setQuery($query);
-			$anonymize = $db->loadResult();
+				->select($this->_db->quoteName('anonymize'))
+				->from($this->_db->quoteName('#__emundus_setup_groups'))
+				->where($this->_db->quoteName('id') . ' = ' . $group_id);
+			$this->_db->setQuery($query);
+			$anonymize = $this->_db->loadResult();
 
 			// If the group has no anonymization, then the user can see all the attachments
 			if ($anonymize == 0) {
@@ -4493,13 +4582,13 @@ class EmundusModelFiles extends JModelLegacy
 			}
 			else {
 				$query->clear()
-					->select($db->quoteName('attachment_id_link'))
-					->from($db->quoteName('#__emundus_setup_groups_repeat_attachment_id_link'))
-					->where($db->quoteName('parent_id') . ' = ' . $group_id);
-				$db->setQuery($query);
+					->select($this->_db->quoteName('attachment_id_link'))
+					->from($this->_db->quoteName('#__emundus_setup_groups_repeat_attachment_id_link'))
+					->where($this->_db->quoteName('parent_id') . ' = ' . $group_id);
+				$this->_db->setQuery($query);
 
 				try {
-					$attachments = $db->loadColumn();
+					$attachments = $this->_db->loadColumn();
 
 					// In the case of a group having no assigned Fabrik groups, it can get them all.
 					if (empty($attachments)) {
@@ -4522,42 +4611,69 @@ class EmundusModelFiles extends JModelLegacy
 		}
 	}
 
-	public function getFormProgress($fnums)
+	/**
+	 * @param $fnums
+	 * @return array
+	 */
+	public function getFormProgress($fnums): array
 	{
-		$this->_db    = JFactory::getDBO();
-		$query        = $this->_db->getQuery(true);
-		$fnums_string = implode(',', $fnums);
+		$fnums_progress = [];
 
-		$query->select('fnum,form_progress')
-			->from($this->_db->quoteName('#__emundus_campaign_candidature'))
-			->where($this->_db->quoteName('fnum') . ' IN (' . $fnums_string . ')');
-		$this->_db->setQuery($query);
+		if (!empty($fnums))
+		{
+			$query        = $this->_db->createQuery();
+			$fnums_string = implode(',', $this->_db->quote($fnums));
 
-		return $this->_db->loadAssocList();
+			$query->select('fnum,form_progress')
+				->from($this->_db->quoteName('#__emundus_campaign_candidature'))
+				->where($this->_db->quoteName('fnum') . ' IN (' . $fnums_string . ')');
+
+			try
+			{
+				$this->_db->setQuery($query);
+				$fnums_progress = $this->_db->loadAssocList();
+			}
+			catch (Exception $e)
+			{
+				JLog::add('component/com_emundus/models/files | Error when try to get forms progress with query : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $fnums_progress;
 	}
 
-	public function getAttachmentProgress($fnums)
+	/**
+	 * @param $fnums
+	 * @return array
+	 */
+	public function getAttachmentProgress($fnums): array
 	{
-		$this->_db    = JFactory::getDBO();
-		$query        = $this->_db->getQuery(true);
-		$fnums_string = implode(',', $fnums);
+		$attachment_progress = [];
 
-		$query->select('fnum,attachment_progress')
-			->from($this->_db->quoteName('#__emundus_campaign_candidature'))
-			->where($this->_db->quoteName('fnum') . ' IN (' . $fnums_string . ')');
-		$this->_db->setQuery($query);
+		if (!empty($fnums)) {
+			$query = $this->_db->createQuery();
+			$fnums_string = implode(',', $this->_db->quote($fnums));
 
-		return $this->_db->loadAssocList();
+			$query->select('fnum,attachment_progress')
+				->from($this->_db->quoteName('#__emundus_campaign_candidature'))
+				->where($this->_db->quoteName('fnum') . ' IN (' . $fnums_string . ')');
+
+			try {
+				$this->_db->setQuery($query);
+				$attachment_progress = $this->_db->loadAssocList();
+			} catch (Exception $e) {
+				JLog::add('component/com_emundus/models/files | Error when try to get attachment progress with query : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $attachment_progress;
 	}
 
 	public function getUnreadMessages()
 	{
-
-		$this->_db = JFactory::getDbo();
 		$query     = $this->_db->getQuery(true);
-		$user      = JFactory::getUser();
+		$user      = $this->app->getIdentity();
 		$default   = array();
-
 
 		try {
 			$query->select('ecc.fnum, COUNT(m.message_id) as nb')
@@ -4572,7 +4688,7 @@ class EmundusModelFiles extends JModelLegacy
 			return $result;
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus_messages/models/messages | Error when try to get messages associated to user : ' . $user->id . ' with query : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus_messages/models/messages | Error when try to get messages associated to user : ' . $user->id . ' with query : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return 0;
 		}
@@ -4581,7 +4697,7 @@ class EmundusModelFiles extends JModelLegacy
 
 	public function getTagsAssocStatus($status)
 	{
-		$this->_db = JFactory::getDBO();
+		
 		$query     = $this->_db->getQuery(true);
 
 		$conditions = $this->_db->quoteName('ss.step') . ' = ' . $this->_db->quote($status);
@@ -4597,19 +4713,19 @@ class EmundusModelFiles extends JModelLegacy
 			return $this->_db->loadColumn();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/files | Error when get tags by status ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/files | Error when get tags by status ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 		}
 	}
 
 	public function checkIfSomeoneElseIsEditing($fnum)
 	{
 		$result       = false;
-		$user         = JFactory::getUser();
-		$config       = JComponentHelper::getParams('com_emundus');
+		$user         = $this->app->getIdentity();
+		$config       = ComponentHelper::getParams('com_emundus');
 		$editing_time = $config->get('alert_editing_time', 2);
 
 		$actions   = array(1, 4, 5, 10, 11, 12, 13, 14);
-		$this->_db = JFactory::getDBO();
+		
 		$query     = $this->_db->getQuery(true);
 
 		$query->select('DISTINCT ju.id, ju.name')
@@ -4626,7 +4742,7 @@ class EmundusModelFiles extends JModelLegacy
 			$result = $this->_db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/files | Error when check if someone else is editing ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/files | Error when check if someone else is editing ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 		}
 
 		return $result;
@@ -4649,7 +4765,7 @@ class EmundusModelFiles extends JModelLegacy
 			return $this->getStatusByID($status_id);
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/files | Error when get status by step ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/files | Error when get status by step ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -4659,7 +4775,7 @@ class EmundusModelFiles extends JModelLegacy
 	{
 		$logs = [];
 
-		$this->_db = JFactory::getDBO();
+		
 		$query     = $this->_db->getQuery(true);
 		$query->clear()->select('*')->from($this->_db->quoteName('#__emundus_setup_actions', 'jesa'))->order('jesa.id ASC');
 
@@ -4668,7 +4784,7 @@ class EmundusModelFiles extends JModelLegacy
 			$logs = $this->_db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/files | Error when get all logs' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/files | Error when get all logs' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 		}
 
 		return $logs;
@@ -4687,7 +4803,7 @@ class EmundusModelFiles extends JModelLegacy
 		$bound_fnums = [false];
 
 		if (!empty($fnums) && !empty($user_to)) {
-			$this->_db = JFactory::getDBO();
+			
 			$query     = $this->_db->getQuery(true);
 
 			$query->select('id')
@@ -4700,7 +4816,7 @@ class EmundusModelFiles extends JModelLegacy
 			}
 			catch (Exception $e) {
 				$exists = false;
-				JLog::add('Failed to check if user exists before binding fnum to him ' . $user_to . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to check if user exists before binding fnum to him ' . $user_to . ' ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 
 			if ($exists) {
@@ -4720,7 +4836,7 @@ class EmundusModelFiles extends JModelLegacy
 						$campaign_id = $this->_db->loadResult();
 					}
 					catch (Exception $e) {
-						JLog::add('Failed to retrieve campaign from fnum' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+						Log::add('Failed to retrieve campaign from fnum' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 					}
 
 					if (!empty($campaign_id)) {
@@ -4753,11 +4869,11 @@ class EmundusModelFiles extends JModelLegacy
 									$copied = $m_application->copyApplication($fnum, $fnum_to, [], 1, $campaign_id, 1, 1, 0);
 
 									if (!$copied) {
-										JLog::add("Failed to copy fnum $fnum to user $user_to account on fnum $fnum_to", JLog::WARNING, 'com_emundus.logs');
+										Log::add("Failed to copy fnum $fnum to user $user_to account on fnum $fnum_to", Log::WARNING, 'com_emundus.logs');
 									}
 									else {
 										$bound_fnums[$i] = true;
-										JLog::add("Succeed to copy fnum $fnum to user $user_to account on fnum $fnum_to", JLog::INFO, 'com_emundus.logs');
+										Log::add("Succeed to copy fnum $fnum to user $user_to account on fnum $fnum_to", Log::INFO, 'com_emundus.logs');
 									}
 								}
 							}
@@ -4766,7 +4882,7 @@ class EmundusModelFiles extends JModelLegacy
 				}
 			}
 			else {
-				JLog::add('User ' . $user_to . ' seems to not exists', JLog::WARNING, 'com_emundus.logs');
+				Log::add('User ' . $user_to . ' seems to not exists', Log::WARNING, 'com_emundus.logs');
 			}
 		}
 
@@ -4846,11 +4962,13 @@ class EmundusModelFiles extends JModelLegacy
 	{
 		$msg = '';
 
-		$email_from_sys = $this->app->get('mailfrom');
-		$fnumsInfos     = $this->getFnumsInfos($fnums);
-		$status         = $this->getStatus();
+		$config = $this->app->getConfig();
+		$email_from_sys = $config->get('mailfrom');
+		$email_from_sysname = $config->get('fromname');
 
-		$current_user = JFactory::getUser();
+		$fnumsInfos     = $this->getFnumsInfos($fnums);
+
+		$current_user = $this->app->getIdentity();
 
 		// Get all codes from fnum
 		$code = array();
@@ -4966,19 +5084,19 @@ class EmundusModelFiles extends JModelLegacy
 								'COURSE_LABEL'   => $programme->label,
 								'CAMPAIGN_LABEL' => $file['label'],
 								'CAMPAIGN_YEAR'  => $file['year'],
-								'CAMPAIGN_START' => JHTML::_('date', $file['start_date'], Text::_('DATE_FORMAT_OFFSET1'), null),
-								'CAMPAIGN_END'   => JHTML::_('date', $file['end_date'], Text::_('DATE_FORMAT_OFFSET1'), null),
-								'DEADLINE'       => JHTML::_('date', $file['end_date'], Text::_('DATE_FORMAT_OFFSET1'), null),
-								'SITE_URL'       => JURI::base(),
+								'CAMPAIGN_START' => HTMLHelper::_('date', $file['start_date'], Text::_('DATE_FORMAT_OFFSET1'), null),
+								'CAMPAIGN_END'   => HTMLHelper::_('date', $file['end_date'], Text::_('DATE_FORMAT_OFFSET1'), null),
+								'DEADLINE'       => HTMLHelper::_('date', $file['end_date'], Text::_('DATE_FORMAT_OFFSET1'), null),
+								'SITE_URL'       => Uri::base(),
 								'USER_EMAIL'     => $file['email']
 							];
 
 							$tags = $m_email->setTags($file['applicant_id'], $post, $file['fnum'], '', $trigger['tmpl']['emailfrom'] . $trigger['tmpl']['name'] . $trigger['tmpl']['subject'] . $trigger['tmpl']['message']);
 
 							$from     = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
-							$from_id  = JFactory::getUser()->id;
+							$from_id  = $this->app->getIdentity()->id;
 							$from_id  = empty($from_id) ? 62 : $from_id;
-							$fromname = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['name']);
+							$fromname = !empty($trigger['tmpl']['name']) ? preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['name']) : $email_from_sysname;
 							$to       = $file['email'];
 							$subject  = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['subject']);
 							$body     = $trigger['tmpl']['message'];
@@ -5022,35 +5140,24 @@ class EmundusModelFiles extends JModelLegacy
 								$send = $mailer->Send();
 							}
 							catch (Exception $e) {
-								JLog::add('eMundus Triggers - PHP Mailer send failed ' . $e->getMessage(), JLog::ERROR, 'com_emundus.email');
+								Log::add('eMundus Triggers - PHP Mailer send failed ' . $e->getMessage(), Log::ERROR, 'com_emundus.email');
 							}
 
 							if ($send !== true) {
 								$msg .= '<div class="alert alert-dismissable alert-danger">' . Text::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT') . ' : ' . $to . ' ' . $send . '</div>';
-								JLog::add($send, JLog::ERROR, 'com_emundus.email');
+								Log::add($send, Log::ERROR, 'com_emundus.email');
 							}
 							else {
 								// Assoc tags if email has been sent
-								if (!empty($trigger['tmpl']['tags'])) {
-									$this->_db = JFactory::getDBO();
-									$query     = $this->_db->getQuery(true);
+								if(!empty($trigger['tmpl']['tags'])) {
+									$user = $this->app->getIdentity();
+									$tags = array_filter(explode(',',$trigger['tmpl']['tags']));
 
-									$tags = array_filter(explode(',', $trigger['tmpl']['tags']));
-
-									foreach ($tags as $tag) {
-										try {
-											$query->clear()
-												->insert($this->_db->quoteName('#__emundus_tag_assoc'));
-											$query->set($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($file['fnum']))
-												->set($this->_db->quoteName('id_tag') . ' = ' . $this->_db->quote($tag))
-												->set($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote(JFactory::getUser()->id));
-
-											$this->_db->setQuery($query);
-											$this->_db->execute();
-										}
-										catch (Exception $e) {
-											JLog::add('NOT IMPORTANT IF DUPLICATE ENTRY : Error getting template in model/messages at query :' . $query->__toString() . " with " . $e->getMessage(), JLog::ERROR, 'com_emundus');
-										}
+									if(!empty($tags))
+									{
+										require_once (JPATH_SITE.'/components/com_emundus/models/files.php');
+										$m_files = new EmundusModelFiles();
+										$m_files->tagFile([$file['fnum']], $tags, $user->id);
 									}
 								}
 
@@ -5058,8 +5165,9 @@ class EmundusModelFiles extends JModelLegacy
 									'user_id_from' => $from_id,
 									'user_id_to'   => $file['applicant_id'],
 									'subject'      => $subject,
-									'message'      => '<i>' . Text::_('MESSAGE') . ' ' . Text::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . Text::_('COM_EMUNDUS_TO') . ' ' . $to . '</i><br>' . $body,
+									'message' => $body,
 									'email_id'     => $trigger_email_id,
+									'email_to' => $to
 								);
 								$logged  = $m_email->logEmail($message, $file['fnum']);
 								$msg     .= Text::_('COM_EMUNDUS_MAILS_EMAIL_SENT') . ' : ' . $to . '<br>';
@@ -5073,7 +5181,7 @@ class EmundusModelFiles extends JModelLegacy
 							continue;
 						}
 
-						$mailer = JFactory::getMailer();
+						$mailer = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer();
 
 						$post = array();
 						$tags = $m_email->setTags($recipient['id'], $post, null, '', $trigger['tmpl']['emailfrom'] . $trigger['tmpl']['name'] . $trigger['tmpl']['subject'] . $trigger['tmpl']['message']);
@@ -5110,30 +5218,19 @@ class EmundusModelFiles extends JModelLegacy
 						$send = $mailer->Send();
 						if ($send !== true) {
 							$msg .= '<div class="alert alert-dismissable alert-danger">' . Text::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT') . ' : ' . $to . ' ' . $send->__toString() . '</div>';
-							JLog::add($send->__toString(), JLog::ERROR, 'com_emundus.email');
+							Log::add($send->__toString(), Log::ERROR, 'com_emundus.email');
 						}
 						else {
 							// Assoc tags if email has been sent
-							if (!empty($trigger['tmpl']['tags'])) {
-								$this->_db = JFactory::getDBO();
-								$query     = $this->_db->getQuery(true);
+							if(!empty($trigger['tmpl']['tags'])) {
+								$user = $this->app->getIdentity();
+								$tags = array_filter(explode(',',$trigger['tmpl']['tags']));
 
-								$tags = array_filter(explode(',', $trigger['tmpl']['tags']));
-
-								foreach ($tags as $tag) {
-									try {
-										$query->clear()
-											->insert($this->_db->quoteName('#__emundus_tag_assoc'));
-										$query->set($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($file['fnum']))
-											->set($this->_db->quoteName('id_tag') . ' = ' . $this->_db->quote($tag))
-											->set($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote(JFactory::getUser()->id));
-
-										$this->_db->setQuery($query);
-										$this->_db->execute();
-									}
-									catch (Exception $e) {
-										JLog::add('NOT IMPORTANT IF DUPLICATE ENTRY : Error getting template in model/messages at query :' . $query->__toString() . " with " . $e->getMessage(), JLog::ERROR, 'com_emundus');
-									}
+								if(!empty($tags))
+								{
+									require_once (JPATH_SITE.'/components/com_emundus/models/files.php');
+									$m_files = new EmundusModelFiles();
+									$m_files->tagFile([$file['fnum']], $tags, $user->id);
 								}
 							}
 
@@ -5141,8 +5238,9 @@ class EmundusModelFiles extends JModelLegacy
 								'user_id_from' => $from_id,
 								'user_id_to'   => $recipient['id'],
 								'subject'      => $subject,
-								'message'      => '<i>' . Text::_('MESSAGE') . ' ' . Text::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . Text::_('COM_EMUNDUS_TO') . ' ' . $to . '</i><br>' . $body,
+								'message' => $body,
 								'email_id'     => $trigger_email_id,
+								'email_to' => $to
 							);
 							$m_email->logEmail($message, $file['fnum']);
 							$msg .= Text::_('COM_EMUNDUS_MAILS_EMAIL_SENT') . ' : ' . $to . '<br>';
@@ -5160,7 +5258,7 @@ class EmundusModelFiles extends JModelLegacy
 		$saved = false;
 
 		if (!empty($user_id) && !empty($name) && !empty($filters)) {
-			$this->_db = JFactory::getDbo();
+			
 			$query     = $this->_db->getQuery(true);
 			$query->insert($this->_db->quoteName('#__emundus_filters'))
 				->columns(['user', 'name', 'constraints', 'mode', 'item_id'])
@@ -5171,7 +5269,7 @@ class EmundusModelFiles extends JModelLegacy
 				$saved = $this->_db->execute();
 			}
 			catch (Exception $e) {
-				JLog::add('Error saving filter: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+				Log::add('Error saving filter: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -5183,7 +5281,7 @@ class EmundusModelFiles extends JModelLegacy
 		$filters = array();
 
 		if (!empty($user_id)) {
-			$this->_db = JFactory::getDbo();
+			
 			$query     = $this->_db->getQuery(true);
 			$query->select('id, name, constraints')
 				->from($this->_db->quoteName('#__emundus_filters'))
@@ -5196,7 +5294,7 @@ class EmundusModelFiles extends JModelLegacy
 				$filters = $this->_db->loadAssocList();
 			}
 			catch (Exception $e) {
-				JLog::add('Error getting saved filters: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+				Log::add('Error getting saved filters: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -5208,7 +5306,7 @@ class EmundusModelFiles extends JModelLegacy
 		$updated = false;
 
 		if (!empty($user_id) && !empty($filter_id) && !empty($filters)) {
-			$this->_db = JFactory::getDbo();
+			
 			$query     = $this->_db->getQuery(true);
 			$query->update($this->_db->quoteName('#__emundus_filters'))
 				->set('constraints = ' . $this->_db->quote($filters))
@@ -5222,10 +5320,630 @@ class EmundusModelFiles extends JModelLegacy
 				$updated = $this->_db->execute();
 			}
 			catch (Exception $e) {
-				JLog::add('Error updating filter: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+				Log::add('Error updating filter: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 			}
 		}
 
 		return $updated;
+	}
+
+	public function getStatusByGroup($uid = null)
+	{
+		$status = array();
+
+		if(empty($uid)) {
+			$uid = Factory::getApplication()->getIdentity()->id;
+		}
+
+		try
+		{
+			require_once JPATH_ROOT . '/components/com_emundus/models/users.php';
+			$m_users = new EmundusModelUsers();
+			$groups = $m_users->getUserGroups($uid, 'Column');
+
+			if(!empty($groups)) {
+				$query = $this->_db->getQuery(true);
+
+				$query->clear()
+					->select('COUNT(id)')
+					->from($this->_db->quoteName('#__emundus_setup_groups'))
+					->where($this->_db->quoteName('id') . ' IN (' . implode(',',$this->_db->quote($groups)) . ')')
+					->where($this->_db->quoteName('filter_status') . ' = 0');
+				$this->_db->setQuery($query);
+				$is_filter = $this->_db->loadResult();
+
+				if ($is_filter == 0)
+				{
+					$query->clear()
+						->select('DISTINCT status')
+						->from($this->_db->quoteName('#__emundus_setup_groups_repeat_status'))
+						->where($this->_db->quoteName('parent_id') . ' IN (' . implode(',', $this->_db->quote($groups)) . ')');
+					$this->_db->setQuery($query);
+					$status = $this->_db->loadColumn();
+				}
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error when get status by group ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+		}
+
+		return $status;
+	}
+
+	public function exportZip($fnums, $form_post = 1, $attachment = 1, $assessment = 1, $decision = 1, $admission = 1, $form_ids = null, $attachids = null, $options = null, $acl_override = false, $current_user = null, $params = []) {
+		$eMConfig = ComponentHelper::getParams('com_emundus');
+
+		require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+		require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'export.php');
+		require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+
+		$m_emails = new EmundusModelEmails;
+
+		$zip = new ZipArchive();
+		$nom = date("Y-m-d").'_'.rand(1000,9999).'_x'.(count($fnums)).'.zip';
+
+		$path = JPATH_SITE.DS.'tmp'.DS.$nom;
+
+		$fnumsInfo = $this->getFnumsInfos($fnums);
+
+		if (file_exists($path)) {
+			unlink($path);
+		}
+
+		$concat_attachments_with_form = $params['concat_attachments_with_form'] ?? false;
+		$convert_docx_to_pdf = $params['convert_docx_to_pdf'] ?? false;
+
+		foreach ($fnums as $fnum) {
+
+			if ($zip->open($path, ZipArchive::CREATE) == TRUE) {
+
+				$dossier = EMUNDUS_PATH_ABS.$fnumsInfo[$fnum]['applicant_id'].DS;
+
+				/// Build filename from tags, we are using helper functions found in the email model, not sending emails ;)
+				$post = array(
+					'FNUM' => $fnum,
+					'CAMPAIGN_YEAR' => $fnumsInfo[$fnum]['year']
+				);
+				$application_form_name = $eMConfig->get('application_form_name', "application_form_pdf");
+				$tags = $m_emails->setTags($fnumsInfo[$fnum]['applicant_id'], $post, $fnum, '', $application_form_name);
+				$application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $application_form_name);
+				$application_form_name = $m_emails->setTagsFabrik($application_form_name, array($fnum));
+
+				if ($application_form_name == "application_form_pdf") {
+					$application_form_name = $fnumsInfo[$fnum]['name'].'_'.$fnum;
+				}
+
+				// Format filename
+				$application_form_name = $m_emails->stripAccents($application_form_name);
+				$application_form_name = preg_replace('/[^A-Za-z0-9 _.-]/','', $application_form_name);
+				$application_form_name = preg_replace('/\s/', '', $application_form_name);
+				$application_form_name = strtolower($application_form_name);
+
+				$application_pdf = $application_form_name . '_applications.pdf';
+
+				$files_list = array();
+
+				if (isset($form_post)) {
+					$forms_to_export = array();
+					if (!empty($form_ids)) {
+						foreach ($form_ids as $fids) {
+							$detail = explode("|", $fids);
+							if ($detail[1] == $fnumsInfo[$fnum]['training'] && ($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")) {
+								$forms_to_export[] = $detail[0];
+							}
+						}
+					}
+
+					if ($form_post || !empty($forms_to_export)) {
+						if ($concat_attachments_with_form) {
+							$files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum],$fnumsInfo[$fnum]['applicant_id'], $fnum, $form_post, $forms_to_export, $options, null, null, false);
+						} else {
+							$files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $form_post, $forms_to_export, $options);
+						}
+					}
+				}
+
+
+
+				if ($assessment) {
+					$files_list[] = EmundusHelperExport::getEvalPDF($fnum, $options);
+				}
+
+				if ($decision) {
+					$files_list[] = EmundusHelperExport::getDecisionPDF($fnum, $options);
+				}
+
+				if ($admission) {
+					$admission_file = EmundusHelperExport::getAdmissionPDF($fnum, $options);
+				}
+
+				if ($concat_attachments_with_form) {
+					if ($attachment || !empty($attachids)) {
+						$attachment_to_export = array();
+						if (!empty($attachids)) {
+							foreach ($attachids as $aids) {
+								$detail = explode("|", $aids);
+								if ($detail[1] == $fnumsInfo[$fnum]['training'] && ($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")) {
+									$attachment_to_export[] = $detail[0];
+								}
+							}
+						}
+
+						if ($attachment || !empty($attachment_to_export)) {
+							$files = $this->getFilesByFnums([$fnum], $attachment_to_export, true);
+						}
+
+						$tmpArray = [];
+						EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id'], $convert_docx_to_pdf);
+					}
+				}
+
+				if (!empty($files_list)) {
+					foreach ($files_list as $key => $file_list){
+						if(empty($file_list)){
+							unset($files_list[$key]);
+						}
+					}
+
+					$gotenberg_merge_activation = $eMConfig->get('gotenberg_merge_activation', 0);
+
+					if(!$gotenberg_merge_activation || count($files_list) == 1) {
+						require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
+
+						$pdf = new ConcatPdf();
+						$pdf->setFiles($files_list);
+						$pdf->concat();
+
+						if (isset($tmpArray)) {
+							foreach ($tmpArray as $fn) {
+								unlink($fn);
+							}
+						}
+						$pdf->Output($dossier . $application_pdf, 'F');
+					} else {
+						$gotenberg_url = $eMConfig->get('gotenberg_url', '');
+
+						if (!empty($gotenberg_url)) {
+							$got_files = [];
+							foreach ($files_list as $item) {
+								$got_files[] = Stream::path($item);
+							}
+							$request  = Gotenberg::pdfEngines($gotenberg_url)
+								->merge(...$got_files);
+							$response = Gotenberg::send($request);
+							$content = $response->getBody()->getContents();
+
+							$filename = $dossier . $application_pdf;
+							$fp       = fopen($filename, 'w');
+							$pieces   = str_split($content, 1024 * 16);
+							if ($fp)
+							{
+								foreach ($pieces as $piece) {
+									fwrite($fp, $piece, strlen($piece));
+								}
+							}
+						}
+					}
+
+					$filename = $application_form_name . DS . $application_pdf;
+					if (!$zip->addFile($dossier . $application_pdf, $filename)) {
+						continue;
+					}
+				}
+
+				if (file_exists($admission_file)) {
+					$eMConfig = ComponentHelper::getParams('com_emundus');
+					$fileName = $eMConfig->get('application_admission_name', null);
+
+					if (is_null($fileName)) {
+						$name = $fnum . '-admission.pdf';
+					} else {
+						require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'checklist.php');
+						$m_checklist = new EmundusModelChecklist;
+						$post = array(
+							'FNUM' => $fnum,
+						);
+						$name = $m_checklist->formatFileName($fileName, $fnum, $post).'.pdf';
+					}
+					$filename = $application_form_name . DS . $name;
+					$zip->addFile($admission_file, $filename);
+				}
+
+				if (($attachment || !empty($attachids)) && !$concat_attachments_with_form) {
+					$attachment_to_export = array();
+					if (!empty($attachids)) {
+						foreach($attachids as $aids){
+							$detail = explode("|", $aids);
+							if ($detail[1] == $fnumsInfo[$fnum]['training'] && ($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")) {
+								$attachment_to_export[] = $detail[0];
+							}
+						}
+					}
+
+					$fnum = explode(',', $fnum);
+					if ($attachment || !empty($attachment_to_export)) {
+						$files = $this->getFilesByFnums($fnum, $attachment_to_export);
+						$file_ids = array();
+
+						foreach($files as $file) {
+							if (!empty($file['attachment_id'])) {
+								$file_ids[] = $file['attachment_id'];
+							}
+						}
+
+						// TODO: weird to use attachment_to_export here, should be $file_ids instead ? it has been like this for a long time, so I'm not sure
+						$setup_attachments = $this->getSetupAttachmentsById($attachment_to_export);
+						if (!empty($setup_attachments) && !empty($files)) {
+							foreach($setup_attachments as $att) {
+								if (!empty($files)) {
+									foreach ($files as $file) {
+										if ($file['attachment_id'] == $att['id']) {
+											$filename = $application_form_name . DS . $file['filename'];
+											$dossier = EMUNDUS_PATH_ABS . $fnumsInfo[$file['fnum']]['applicant_id'] . DS;
+											if (file_exists($dossier . $file['filename'])) {
+												if (!$zip->addFile($dossier . $file['filename'], $filename)) {
+													continue;
+												}
+											} else {
+												$zip->addFromString($filename."-missing.txt", '');
+											}
+										} elseif (!in_array($att['id'], $file_ids)) {
+											$zip->addFromString($application_form_name.DS.str_replace('_', "", $att['lbl'])."-notfound.txt", '');
+										}
+									}
+								} elseif (empty($files)) {
+									foreach ($setup_attachments as $att) {
+										$zip->addFromString($application_form_name . DS .str_replace('_', "", $att['lbl']) ."-notfound.txt", '');
+									}
+								}
+							}
+						} elseif (!empty($files)) {
+							foreach ($files as $file) {
+								$filename = $application_form_name . DS . $file['filename'];
+								$dossier = EMUNDUS_PATH_ABS . $fnumsInfo[$file['fnum']]['applicant_id'] . DS;
+								if (file_exists($dossier . $file['filename'])) {
+									if (!$zip->addFile($dossier . $file['filename'], $filename)) {
+										continue;
+									}
+								} else {
+									$zip->addFromString($filename."-missing.txt", '');
+								}
+							}
+						} elseif (empty($files)) {
+							foreach ($setup_attachments as $att) {
+								$zip->addFromString($application_form_name . DS .str_replace('_', "", $att['lbl']) ."-notfound.txt", '');
+							}
+						}
+					}
+				}
+				$zip->close();
+
+			} else {
+				die("ERROR");
+			}
+		}
+
+		return $nom;
+	}
+
+	public function generatePDF($validFnums, $file, $totalfile = 1, $start = 0, $forms = 0, $attachment = 0, $assessment = 0, $decision = 0, $admission = 0, $ids = null, $formid = null, $attachids = null, $options = null, $pdf_data = [])
+	{
+		$response_status = false;
+		$dataresult = array();
+
+		if (!empty($validFnums) && !empty($file)) {
+			$eMConfig = ComponentHelper::getParams('com_emundus');
+
+			$formids    = explode(',', $formid);
+			if (!is_array($attachids)) {
+				$attachids = explode(',', $attachids);
+			}
+			if(!is_array($options)) {
+				$options = explode(',', $options);
+			}
+
+			$fnumsInfo = $this->getFnumsInfos($validFnums);
+
+			if (count($validFnums) == 1) {
+				$application_form_name = empty($admission) ? $eMConfig->get('application_form_name', "application_form_pdf") : $eMConfig->get('application_admission_name', "application_form_pdf");
+
+				if ($application_form_name != "application_form_pdf") {
+
+					require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
+					$m_checklist = new EmundusModelChecklist;
+
+					$fnum = $validFnums[0];
+					$post = array(
+						'FNUM' => $fnum,
+						'CAMPAIGN_YEAR' => $fnumsInfo[$fnum]['year']
+					);
+
+					// Format filename
+					$application_form_name = $m_checklist->formatFileName($application_form_name, $fnum, $post);
+
+					if ($file != $application_form_name.'.pdf' && file_exists(JPATH_SITE.DS.'tmp'.DS.$application_form_name.'.pdf')) {
+						unlink(JPATH_SITE.DS.'tmp'.DS.$application_form_name.'.pdf');
+					}
+
+					$file = $application_form_name.'.pdf';
+				}
+			}
+
+			if (file_exists(JPATH_SITE . DS . 'tmp' . DS . $file)) {
+				$files_list = array(JPATH_SITE.DS.'tmp'.DS.$file);
+			} else {
+				$files_list = array();
+			}
+
+			for ($i = $start; $i <= $totalfile; $i++) {
+				$fnum = $validFnums[$i];
+				if (is_numeric($fnum) && !empty($fnum)) {
+					if (isset($forms)) {
+						$forms_to_export = array();
+						if (!empty($formids)) {
+							foreach ($formids as $fids) {
+								$detail = explode("|", $fids);
+								if ((!empty($detail[1]) && $detail[1] == $fnumsInfo[$fnum]['training']) && ($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")) {
+									$forms_to_export[] = $detail[0];
+								}
+							}
+						}
+						if ($forms || !empty($forms_to_export)) {
+
+							require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+							$m_profile = new EmundusModelProfile;
+							$infos = $m_profile->getFnumDetails($fnum);
+							$campaign_id = $infos['campaign_id'];
+
+							$files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, $forms_to_export, $options, null, $pdf_data);
+						}
+					}
+
+					if ($attachment || !empty($attachids)) {
+						$tmpArray = array();
+						$m_application = new EmundusModelApplication();
+						$attachment_to_export = array();
+						foreach ($attachids as $aids) {
+							$detail = explode("|", $aids);
+							if ((!empty($detail[1]) && $detail[1] == $fnumsInfo[$fnum]['training']) && ($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")) {
+								$attachment_to_export[] = $detail[0];
+							}
+						}
+						if ($attachment || !empty($attachment_to_export)) {
+							$files = $m_application->getAttachmentsByFnum($fnum, $ids, $attachment_to_export);
+							$files_export = EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
+						}
+					}
+					$check_eval = $eMConfig->get('check_eval', 0);
+					$skip_eval = false;
+					if ($check_eval == 1){
+						require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
+						$m_eval = new EmundusModelEvaluation();
+						$eval = $m_eval->getEvaluationsFnum($fnum);
+						if(empty($eval)){
+							$skip_eval = true;
+						}
+					}
+
+					$check_decision = $eMConfig->get('check_decision', 0);
+					$skip_decision = false;
+					if ($check_decision == 1){
+						require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'decision.php');
+						$m_decision = new EmundusModelDecision();
+						$getDecision = $m_decision->getDecisionFnum($fnum);
+						if(empty($getDecision)){
+							$skip_decision = true;
+						}
+					}
+
+					if ($assessment && !$skip_eval)
+						$files_list[] = EmundusHelperExport::getEvalPDF($fnum, $options);
+
+					if ($decision && !$skip_decision)
+						$files_list[] = EmundusHelperExport::getDecisionPDF($fnum, $options);
+
+					if ($admission)
+						$files_list[] = EmundusHelperExport::getAdmissionPDF($fnum, $options);
+
+					EmundusModelLogs::log($this->app->getIdentity()->id, (int) $fnumsInfo[$fnum]['applicant_id'], $fnum, 8, 'c', 'COM_EMUNDUS_ACCESS_EXPORT_PDF');
+				}
+
+			}
+			$start = $i;
+
+
+			if (count($files_list) === 1 && !empty($files_list[0]))
+			{
+				copy($files_list[0], JPATH_SITE . DS . 'tmp' . DS . $file);
+
+				$start = $i;
+
+				$dataresult = [
+					'start' => $start, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachids,
+					'options' => $options, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
+					'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILES_ADDED')//.' : '.$fnum
+				];
+				$response_status = true;
+			}
+			elseif (count($files_list) > 1)
+			{
+				foreach ($files_list as $key => $file_list){
+					if(empty($file_list)){
+						unset($files_list[$key]);
+					}
+				}
+
+				$gotenberg_merge_activation = $eMConfig->get('gotenberg_merge_activation', 0);
+
+				if(!$gotenberg_merge_activation) {
+					require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
+
+					$pdf = new ConcatPdf();
+					$pdf->setFiles($files_list);
+					$pdf->concat();
+
+					if (isset($tmpArray)) {
+						foreach ($tmpArray as $fn) {
+							unlink($fn);
+						}
+					}
+					$pdf->Output(JPATH_SITE . DS . 'tmp' . DS . $file, 'F');
+				} else {
+					$gotenberg_url = $eMConfig->get('gotenberg_url', 'http://localhost:3000');
+
+					if (!empty($gotenberg_url)) {
+						$got_files = [];
+						foreach ($files_list as $item) {
+							$got_files[] = Stream::path($item);
+						}
+						$request  = Gotenberg::pdfEngines($gotenberg_url)
+							->merge(...$got_files);
+						$response = Gotenberg::send($request);
+						$content = $response->getBody()->getContents();
+
+						$filename = JPATH_SITE . DS . 'tmp' . DS . $file;
+						$fp       = fopen($filename, 'w');
+						$pieces   = str_split($content, 1024 * 16);
+						if ($fp)
+						{
+							foreach ($pieces as $piece) {
+								fwrite($fp, $piece, strlen($piece));
+							}
+						}
+					}
+				}
+
+				$start = $i;
+
+				$dataresult = [
+					'start' => $start, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachids,
+					'options' => $options, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
+					'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILES_ADDED')//.' : '.$fnum
+				];
+				$response_status = true;
+			}
+			else
+			{
+				$response_status = false;
+				$dataresult = [
+					'start' => $start, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachids,
+					'options' => $options, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
+					'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND')
+				];
+			}
+		}
+
+		return [
+			'status' => $response_status,
+			'json' => $dataresult
+		];
+	}
+
+	/**
+	 * @param $fnums
+	 * @param $state
+	 * @return bool|mixed
+	 */
+	public function makeAttachmentsEditableByApplicant($fnums, $state)
+	{
+		$updated = false;
+
+		if (!empty($fnums) && isset($state)) {
+			$fnums = is_array($fnums) ? $fnums : [$fnums];
+			$emundus_config = ComponentHelper::getParams('com_emundus');
+			$can_edit_back_attachments = $emundus_config->get('can_edit_back_attachments', 0);
+			if ($can_edit_back_attachments) {
+				$attachment_to_keep_non_deletable = $emundus_config->get('attachment_to_keep_non_deletable', []);
+
+				$status_for_send = $emundus_config->get('status_for_send', '0');
+				$status_for_send = explode(',', $status_for_send);
+
+				$edit_status = array_unique(array_merge(['0'], $status_for_send));
+				$m_profile = new EmundusModelProfile();
+
+				$tasks = [];
+				foreach ($fnums as $fnum) {
+					$current_profile = $m_profile->getProfileByStatus($fnum);
+
+					if (empty($current_profile)) {
+						continue;
+					}
+
+					if (empty($current_profile['workflow_id'])) {
+						if (!in_array($state, $edit_status)) {
+							continue;
+						}
+					}
+
+					$fnumInfos = $this->getFnumInfos($fnum);
+					
+					$query = $this->_db->getQuery(true);
+
+					$query->select('attachment_id')
+						->from('#__emundus_setup_attachment_profiles')
+						->where('profile_id = ' . $this->_db->quote($current_profile['profile']));
+
+					if (!empty($attachment_to_keep_non_deletable)) {
+						$query->andWhere('attachment_id NOT IN (' . implode(',', $this->_db->quote($attachment_to_keep_non_deletable)) . ')');
+					}
+
+					$this->_db->setQuery($query);
+					$attachments = $this->_db->loadColumn();
+
+					if (!empty($attachments)) {
+						try {
+							$query->clear()
+								->update('#__emundus_uploads')
+								->set('can_be_deleted = 1')
+								->where('fnum LIKE ' . $this->_db->quote($fnum))
+								->andWhere('attachment_id IN (' . implode(',', $attachments) . ')')
+								->andWhere('user_id = ' . $fnumInfos['applicant_id']);
+							$this->_db->setQuery($query);
+							$tasks[] = $this->_db->execute();
+						} catch (Exception $e) {
+							Log::add('Error making attachments editable by applicant for fnum: ' . $fnum . ' and profile: ' . $current_profile['profile'] . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+						}
+					} else {
+						$tasks[] = true;
+					}
+				}
+
+				$updated = !in_array(false, $tasks, true);
+			}
+		}
+
+		return $updated;
+	}
+
+	public function deleteFilter($filter_id,$user_id = 0)
+	{
+		$deleted   = false;
+
+		try
+		{
+			if(empty($user_id)) {
+				$user_id = Factory::getApplication()->getIdentity()->id;
+			}
+
+			if (!empty($filter_id) && !empty($this->_user->id)) {
+				$query = $this->_db->getQuery(true);
+				$query->delete('#__emundus_filters')
+					->bind(':filterId', $filter_id, ParameterType::INTEGER)
+					->bind(':userId', $user_id, ParameterType::INTEGER)
+					->where('id = :filterId')
+					->where('user = :userId');
+				$this->_db->setQuery($query);
+				$result  = $this->_db->execute();
+
+				$deleted = $result == 1;
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error deleting filter: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+		}
+
+		return $deleted;
 	}
 }

@@ -22,11 +22,12 @@ jQuery(document).ready(function ($) {
         if (!topCatTitle) {  // show category title is off
             topCatTitle = $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + topCat + "] .dropfiles-breadcrumbs-default li").first().text();
         }
-        cParents[topCat] = {parent_id: 0, id: topCat, title: topCatTitle};
+        cParents[topCat] = {};
+        cParents[topCat][topCat] = {parent_id: 0, id: topCat, title: topCatTitle};
         $(this).find(".dropfilescategory.catlink").each(function (index) {
             var tempidCat = $(this).data('idcat');
-            cParents[tempidCat] = {parent_id: topCat, id: tempidCat, title: $(this).text()};
-        })
+            cParents[topCat][tempidCat] = {parent_id: topCat, id: tempidCat, title: $(this).text()};
+        });
         initInputSelected(topCat);
         initDownloadSelected(topCat);
     });
@@ -160,12 +161,12 @@ jQuery(document).ready(function ($) {
                 hash_category_id = 0;
             }
             setTimeout(function () {
-                default_load(hash_sourcecat, hash_category_id, page);
+                default_load(hash_sourcecat, hash_category_id, page, true);
             }, 100);
         }
     }
 
-    function default_load(sourcecat, category, page) {
+    function default_load(sourcecat, category, page, reload = false) {
         var pathname = window.location.pathname;
         var container = $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "]");
         if (container.length == 0) {
@@ -176,7 +177,7 @@ jQuery(document).ready(function ($) {
         $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "] .dropfiles-container-default").empty();
         $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "] .dropfiles-container-default").html($('#dropfiles-loading-wrap').html());
 
-        //Get categories
+        // Get categories
         $.ajax({
             url: dropfilesBaseUrl + "index.php?option=com_dropfiles&view=frontcategories&format=json&id=" + category + "&top=" + sourcecat,
             dataType: "json"
@@ -188,18 +189,32 @@ jQuery(document).ready(function ($) {
             }
             $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "]").find('#current_category_slug').val(categories.category.alias);
 
-            var sourcecategories =  $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "]").parent().find("#dropfiles-template-default-categories-"+sourcecat).html();
+            var sourcecategories = $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "]").parent().find("#dropfiles-template-default-categories-"+sourcecat).html();
             if (sourcecategories) {
                 var template = Handlebars.compile(sourcecategories);
                 var html = template(categories);
+                if ($(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "] .dropfiles-container-default .dropfiles-categories").length) {
+                    $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "] .dropfiles-container-default .dropfiles-categories").remove();
+                }
                 $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "] .dropfiles-container-default").prepend(html);
             }
 
-            for (i = 0; i < categories.categories.length; i++) {
-                cParents[categories.categories[i].id] = categories.categories[i];
+            if (typeof (cParents[sourcecat][category]) === 'undefined') {
+                cParents[sourcecat][category] = categories.category;
             }
 
-            default_breadcrum(sourcecat, category);
+            for (i = 0; i < categories.categories.length; i++) {
+                cParents[sourcecat][categories.categories[i].id] = categories.categories[i];
+            }
+
+            if (reload) {
+                default_breadcrum(sourcecat, category, true);
+            } else {
+                // Store cParents
+                localStorage.setItem('dropfiles_cParents_' + sourcecat, JSON.stringify(cParents));
+                default_breadcrum(sourcecat, category);
+            }
+
             default_initClick();
             initManageFile(sourcecat);
 
@@ -216,26 +231,33 @@ jQuery(document).ready(function ($) {
                 if (!el.hasClass('selected')) {
                     el.addClass('selected');
                 }
-
             }
         });
 
-        //Get files
+        // Get files
+        var getFilesAjaxUrl = dropfilesBaseUrl + "index.php?option=com_dropfiles&view=frontfiles&format=json&id=" + category;
+        if (page != null) {
+            getFilesAjaxUrl += "&page=" + page;
+        }
         $.ajax({
-            url: dropfilesBaseUrl + "index.php?option=com_dropfiles&view=frontfiles&format=json&id=" + category,
+            url: getFilesAjaxUrl,
             dataType: "json"
         }).done(function (content) {
-            var sourcefiles =  $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "]").parent().find("#dropfiles-template-default-files-"+sourcecat).html();
+            var sourcefiles = $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "]").parent().find("#dropfiles-template-default-files-"+sourcecat).html();
             if (sourcefiles) {
                 sourcefiles = fixJoomlaSef(sourcefiles);
                 var template = Handlebars.compile(sourcefiles);
                 var html = template(content);
+                if ($(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "] .dropfiles-container-default .dropfiles_list").length) {
+                    $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "] .dropfiles-container-default .dropfiles_list").remove();
+                }
                 $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "] .dropfiles-container-default").append(html);
             }
 
             if (typeof(dropfilesColorboxInit) !== 'undefined') {
                 dropfilesColorboxInit();
             }
+
             dropfiles_remove_loading($(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "] .dropfiles-container-default"));
             $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "] .dropfilesSelectedFiles").remove();
             $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "] .default-download-selected").remove();
@@ -261,14 +283,29 @@ jQuery(document).ready(function ($) {
                 }
             });
 
+            // Pagination initial
+            $('.dropfiles-content-default.dropfiles-content-multi[data-category=' + sourcecat + '] + .dropfiles-pagination').remove();
+            if (typeof (content.pagination) !== 'undefined') {
+                $('.dropfiles-content-default.dropfiles-content-multi[data-category=' + sourcecat + ']').after(content.pagination);
+                delete content.pagination;
+            }
+            default_init_pagination($('.dropfiles-content-default.dropfiles-content-multi[data-category=' + sourcecat + '] + .dropfiles-pagination'));
         });
         $(document).trigger('dropfiles:category-loaded');
     }
 
-    function default_breadcrum(sourcecat, catid) {
-
+    function default_breadcrum(sourcecat, catid, reload = false) {
         var links = [];
-        current_Cat = cParents[catid];
+
+        if (reload) {
+            var cParentList = localStorage.getItem('dropfiles_cParents_' + sourcecat);
+            cParentList = cParentList ? JSON.parse(localStorage.getItem('dropfiles_cParents_' + sourcecat)) : null;
+            if (cParentList !== null) {
+                cParents = cParentList;
+            }
+        }
+
+        current_Cat = cParents[sourcecat][catid];
 
         if (typeof (current_Cat) == 'undefined') {
             // todo: made breadcrumb working when reload page with hash
@@ -277,11 +314,10 @@ jQuery(document).ready(function ($) {
         links.unshift(current_Cat);
 
         if (typeof(current_Cat.parent_id) != 'undefined') {
-            while (cParents[current_Cat.parent_id]) {
-                current_Cat = cParents[current_Cat.parent_id];
+            while (cParents[sourcecat][current_Cat.parent_id]) {
+                current_Cat = cParents[sourcecat][current_Cat.parent_id];
                 links.unshift(current_Cat);
             }
-            ;
         }
 
         let html = '';
@@ -294,7 +330,76 @@ jQuery(document).ready(function ($) {
         }
         $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "] .dropfiles-breadcrumbs-default li").remove();
         $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + sourcecat + "] .dropfiles-breadcrumbs-default").append(html);
+    }
 
+    // Pagination actions on ready
+    $('.dropfiles-content-default + .dropfiles-pagination').each(function (index, elm) {
+        var $this = $(elm);
+        default_init_pagination($this);
+    });
+
+    function default_init_pagination($this) {
+        var number = $this.find('a:not(.current)');
+        var wrap = $this.prev('.dropfiles-content-default');
+        var sourcecat = wrap.data('category');
+        var current_category = wrap.find('#current_category').val();
+
+        number.unbind('click').bind('click', function () {
+            var page_number = $(this).attr('data-page');
+            var current_sourcecat = $(this).parent().prev('.dropfiles-content').attr('data-category');
+            var wrap = $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + current_sourcecat + "]");
+            var current_category = $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + current_sourcecat + "]").find('#current_category').val();
+            if (typeof page_number !== 'undefined') {
+                var pathname = window.location.href.replace(window.location.hash, '');
+                var category = $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + current_sourcecat + "]").find('#current_category').val();
+                var category_slug = $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + current_sourcecat + "]").find('#current_category_slug').val();
+                var ordering = $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + current_sourcecat + "]").find('#current_ordering_' + current_sourcecat).val();
+                var orderingDirection = $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + current_sourcecat + "]").find('#current_ordering_direction_' + current_sourcecat).val();
+                var page_limit = $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + current_sourcecat + "]").find('#page_limit_' + current_sourcecat).val();
+
+                window.history.pushState('', document.title, pathname + '#' + current_sourcecat + '-' + category + '-dropfiles-' + category_slug + '-p' + page_number);
+
+                $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + current_sourcecat + "] .dropfiles-container-default .dropfiles_list").remove();
+                $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + current_sourcecat + "] .dropfiles-container-default").append($('#dropfiles-loading-wrap').html());
+
+                var params = $.param({
+                    id: current_category,
+                    rootcat: current_sourcecat,
+                    page: page_number,
+                    orderCol: ordering,
+                    orderDir: orderingDirection,
+                    page_limit: page_limit
+                });
+
+                // Get files
+                $.ajax({
+                    url: dropfilesBaseUrl + 'index.php?option=com_dropfiles&view=frontfiles&format=json&' + params,
+                    dataType: "json",
+                    beforeSend: function () {
+                        $('html, body').animate({scrollTop: $(".dropfiles-content[data-category=" + current_sourcecat + "]").offset().top}, 'fast');
+                    }
+                }).done(function (content) {
+                    delete content.category;
+                    wrap.next('.dropfiles-pagination').remove();
+                    wrap.after(content.pagination);
+                    delete content.pagination;
+                    var sourcefiles = $(".dropfiles-content-default.dropfiles-content-multi[data-category=" + current_sourcecat + "]").parent().find("#dropfiles-template-default-files-"+current_sourcecat).html();
+                    if (sourcefiles) {
+                        sourcefiles = fixJoomlaSef(sourcefiles);
+                        var template = Handlebars.compile(sourcefiles);
+                        var html = template(content);
+                        $(".dropfiles-content-default[data-category=" + current_sourcecat + "] .dropfiles-container-default").append(html);
+                    }
+
+                    if (typeof dropfilesColorboxInit !== 'undefined') {
+                        dropfilesColorboxInit();
+                    }
+
+                    default_init_pagination(wrap.next('.dropfiles-pagination'));
+                    dropfiles_remove_loading($(".dropfiles-content-default[data-category=" + current_sourcecat + "] .dropfiles-container-default"));
+                });
+            }
+        });
     }
 
     if (tree.length) {

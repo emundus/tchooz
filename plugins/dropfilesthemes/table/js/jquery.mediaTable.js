@@ -189,12 +189,21 @@ http://www.consulenza-web.com/2012/01/mediatable-jquery-plugin/
 				
 				if ( $checkbox.is(":checked")) { 
 					cols.show();
-					 
+					cols.removeClass('drop_col_hidden');
 				} else { 
+					cols.addClass('drop_col_hidden');
 					cols.hide();
-					
 				};
-				
+
+				var visibleRow = $th.closest('tr');
+				var visibleColumn = visibleRow.find('th:not(.drop_col_hidden)');
+                visibleColumn.each(function() {
+                    if ($(this).is(visibleColumn.last()) && !$(this).hasClass('file_download')) {
+                    	$(this).addClass('drop-col-pd-right');
+                    } else {
+                    	$(this).removeClass('drop-col-pd-right');
+                    }
+                })
 			};
 			
 			var updateCheck = function() {

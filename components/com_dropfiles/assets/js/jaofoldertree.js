@@ -15,17 +15,20 @@
   
     var options =  {
       'root'            : '/',
-      'script'         : 'connectors/jaoconnector.php',
+      'script'          : 'connectors/jaoconnector.php',
       'showroot'        : 'root',
       'onclick'         : function(elem,type,file){},
       'oncheck'         : function(elem,checked,type,file){},
-      'usecheckboxes'   : true, //can be true files dirs or false
+      'onChanges'       : function(folderTree, newFolders){},
+      'usecheckboxes'   : true, // Can be true files dirs or false
       'expandSpeed'     : 500,
       'collapseSpeed'   : 500,
       'expandEasing'    : null,
       'collapseEasing'  : null,
       'canselect'       : true
     };
+
+    var newFolders = [];
 
     var methods = {
         init : function( o ) {
@@ -96,7 +99,6 @@
             }).done(function(datas) {
                 ret = '<ul class="jaofoldertree" style="display: none">';
                 for(ij=0; ij<datas.length; ij++){
-                   
                     classe = 'directory collapsed';                                         
                     ret += '<li class="'+classe+'">';
                     if(datas[ij].count_child > 0){
@@ -117,38 +119,42 @@
                 ret += '</ul>';
 
                 this.find('a[data-file="'+dir+'"]').parent().removeClass('wait').removeClass('collapsed').addClass('expanded');
-                this.find('a[data-file="'+dir+'"]').after(ret);
+                if (datas.length) {
+                    this.find('a[data-file="'+dir+'"]').after(ret);
+                }
                 this.find('a[data-file="'+dir+'"]').next().slideDown(options.expandSpeed,options.expandEasing);
-
+                newFolders = datas;
                 setevents($this);
             }).done(function(){
                 //Trigger custom event
                 $this.trigger('afteropen');
                 $this.trigger('afterupdate');
             });
-    }
+    };
 
     closedir = function(dir, $this) {
         if (typeof ($this) === "undefined") {
             return false;
         }
 
-            $this.find('a[data-file="'+dir+'"]').next().slideUp(options.collapseSpeed,options.collapseEasing,function(){$(this).remove();});
-            $this.find('a[data-file="'+dir+'"]').parent().removeClass('expanded').addClass('collapsed');
-            setevents($this);
-            
-            //Trigger custom event
-            $this.trigger('afterclose');
-            $this.trigger('afterupdate');
-            
-    }
+        $this.find('a[data-file="'+dir+'"]').next().slideUp(options.collapseSpeed,options.collapseEasing,function(){$(this).remove();});
+        $this.find('a[data-file="'+dir+'"]').parent().removeClass('expanded').addClass('collapsed');
+        setevents($this);
+
+        //Trigger custom event
+        $this.trigger('afterclose');
+        $this.trigger('afterupdate');
+    };
 
     setevents = function($this){
         var options = $this.data('jaofoldertree');
         $this.find('li a, li .icon-open-close').unbind('click');
+
+        options.onChanges($this, newFolders);
+        newFolders = [];
+
         //Bind userdefined function on click an element
         $this.find('li.directory a').bind('click', function(e) {
-                                  
             $this.find('li').removeClass('selected');
             $this.find('i.zmdi').removeClass('zmdi-folder').addClass("zmdi-folder");
             $(this).parent().addClass('selected');
@@ -172,11 +178,10 @@
       
         //Bind for collapse or expand elements
         //$this.find('li.directory.collapsed a').bind('click', function() {methods.open($(this).attr('data-file'));return false;});
-       // $this.find('li.directory.expanded a').bind('click', function() {methods.close($(this).attr('data-file'));return false;});        
+       // $this.find('li.directory.expanded a').bind('click', function() {methods.close($(this).attr('data-file'));return false;});
 
         $this.find('li.directory.collapsed .icon-open-close').bind('click', function (e) {
             e.preventDefault;
-
             var $el = $(this);
             if($el.data('clicked')){
                 // Previously clicked, stop actions

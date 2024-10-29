@@ -14,13 +14,13 @@
         <td @click="openAttachmentParameters(document)">{{ document.value }}</td>
         <td></td>
         <td>
-          <select class="em-mr-8 em-clear-dropdown" v-model="document.sync"
+          <select class="tw-mr-2 em-clear-dropdown" v-model="document.sync"
                   @change="updateSync(document.id,document.sync)">
             <option :value="type.value" v-for="type in syncTypes">{{ translate(type.label) }}</option>
           </select>
         </td>
         <td>
-          <select class="em-mr-8 em-clear-dropdown" v-if="document.sync != 0" v-model="document.sync_method"
+          <select class="tw-mr-2 em-clear-dropdown" v-if="document.sync != 0" v-model="document.sync_method"
                   @change="updateSyncMethod(document.id,document.sync_method)">
             <option :value="'write'" selected>{{
                 translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_SYNC_WRITE')
@@ -39,7 +39,7 @@
         :delay="100"
         :adaptive="true"
         id="modal-attachment-parameters"
-        class="em-h-100 em-w-25"
+        class="tw-h-full em-w-25"
     >
       <AttachmentParameters :attachment="selectedDocument"></AttachmentParameters>
     </modal>
@@ -49,10 +49,10 @@
 </template>
 
 <script>
-import syncService from "com_emundus/src/services/sync";
+import syncService from "@/services/sync.js";
 import syncs from '../../../data/ged/syncType'
-import mixin from "../../../mixins/mixin";
-import AttachmentParameters from "./AttachmentParameters";
+import mixin from "@/mixins/mixin.js";
+import AttachmentParameters from "./AttachmentParameters.vue";
 
 export default {
   name: "Storage",

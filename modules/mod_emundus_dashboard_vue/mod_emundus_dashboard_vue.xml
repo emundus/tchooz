@@ -12,6 +12,7 @@
     <authorUrl>www.emundus.fr</authorUrl>
     <version>2.0.0</version>
     <description>MOD_EMUNDUS_DASHBOARD_VUE_SYS_XML_DESC</description>
+    <namespace path="src">Emundus\Module\Dashboard</namespace>
 
     <files>
         <filename>mod_emundus_dashboard_vue.xml</filename>

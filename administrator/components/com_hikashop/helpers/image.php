@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -371,6 +371,8 @@ class hikashopImageHelper {
 			imageantialias($ret['res'], true);
 		}
 
+		if(empty($source['res']))
+			return false;
 		$origin_width = imagesx($source['res']);
 		$origin_height = imagesy($source['res']);
 		$x = 0;
@@ -760,6 +762,10 @@ class hikashopImageHelper {
 
 		$jconf = JFactory::getConfig();
 		$jdebug = $jconf->get('debug');
+
+		if(!empty($filename)) {
+			$filename = hikashop_translate($filename);
+		}
 
 		$ret = new stdClass();
 		$ret->success = false;
@@ -1274,6 +1280,10 @@ window.hikashop.ready( function() {
 			$options .= ' height="'.$this->thumbnail_y.'" width="'.$this->thumbnail_x.'" ';
 		}
 
+		if(!empty($path)) {
+			$path = hikashop_translate($path);
+		}
+
 		if($this->thumbnail){
 			jimport('joomla.filesystem.file');
 			$ok = true;
@@ -1420,7 +1430,7 @@ window.hikashop.ready( function() {
 		$extension = strtolower(substr($file_path,strrpos($file_path,'.')+1));
 
 		$img = $this->getImage($image,$extension);
-		if(!$img) return false;
+		if(!$img || empty($img['res'])) return false;
 
 		if($newWidth!=$this->width || $newHeight!=$this->height) {
 			$thumb = $this->createThumbRes($img, array('width' => $newWidth, 'height' => $newHeight), array());

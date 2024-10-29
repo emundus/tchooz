@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -193,6 +193,37 @@ if(empty($this->elements)) {
 ?>
 	</tr>
 <!-- EO ADD TO CART BUTTON -->
+<!-- BRAND -->
+<?php
+	$display = false;
+	foreach($this->elements as $element) {
+		if(!empty($element->product_manufacturer_id)) {
+			$display = true;
+		}
+	}
+	if($display) {
+?>
+<tr id="hikashop_compare_tr_brand">
+		<td class="hikashop_compare_brand_first_column"><?php echo JText::_('MANUFACTURER'); ?></td>
+<?php
+		$categoryClass = hikashop_get('class.category');
+		foreach($this->elements as $element) {
+?>
+		<td class="hikashop_compare_brand_prod_column">
+<?php
+			if(!empty($element->product_manufacturer_id)) {
+				$brand = $categoryClass->get($element->product_manufacturer_id);
+				echo $brand->category_name;
+			}
+?>
+		</td>
+<?php
+		}
+	}
+?>
+		</td>
+	</tr>
+<!-- EO BRAND -->
 <!-- CUSTOM PRODUCT FIELDS -->
 <?php
 	foreach( $this->fields[0] as $fieldName => $oneExtraField ) {

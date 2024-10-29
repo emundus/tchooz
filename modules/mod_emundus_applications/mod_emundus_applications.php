@@ -112,8 +112,14 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 
 	$show_remove_files   = $params->get('show_remove_files', 1);
 	$show_archive_files  = $params->get('show_archived_files', 1);
+	$show_collaboration_files = $params->get('show_collaboration_files', 1);
 	$show_state_files    = $params->get('show_state_files', 0);
 	$show_payment_status = $params->get('show_payment_status', 0);
+	$show_nb_comments = $params->get('show_nb_comments', 0) &&  $eMConfig->get('allow_applicant_to_comment', 0);
+	if ($show_nb_comments) {
+		$comments_page_alias = modemundusApplicationsHelper::getCommentsPageBaseUrl();
+	}
+
 	$visible_status      = $params->get('visible_status', '');
 	if ($visible_status != "") {
 		$visible_status = explode(',', $params->get('visible_status', ''));
@@ -132,6 +138,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 	$query_order_by       = $order_applications . ' ' . $applications_as_desc;
 
 	$file_status = $params->get('file_status', 1);
+	$title_override = Text::_($params->get('title_override', ''));
 	$file_tags   = Text::_($params->get('tags', ''));
 	$cc_list_url = $params->get('cc_list_url', 'index.php?option=com_fabrik&view=form&formid=102');
 
@@ -142,6 +149,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 	$custom_actions                      = $params->get('mod_em_application_custom_actions');
 	$show_tabs                           = $params->get('mod_em_applications_show_tabs', 1);
 	$actions                             = $params->get('mod_emundus_applications_actions', []);
+	$history_link = $app->getMenu()->getItems('link', 'index.php?option=com_emundus&view=application&layout=history', true);
 
 	// Due to the face that ccirs-drh is totally different, we use a different method all together to avoid further complicating the existing one.
 	if ($layout == '_:ccirs-drh') {
@@ -153,8 +161,10 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 		$applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by);
 	}
 	else {
+		$collaborate = in_array('collaborate',$actions);
 		// We send the layout as a param because Hesam needs different information.
-		$applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by, $params);
+		$applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by, $params,$collaborate);
+		modemundusApplicationsHelper::getCollaborators($applications);
 		$tabs         = $m_application->getTabs($user->id);
 	}
 

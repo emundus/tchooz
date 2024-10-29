@@ -27,6 +27,16 @@
     url(/media/com_emundus/css/fonts/google/MaterialIconsOutlined-Regular.otf) format('truetype');
 }
 
+@font-face {
+    font-family: 'Material Symbols Outlined';
+    font-style: normal;
+    font-weight: 400;
+    src: url(/media/com_emundus/css/fonts/google/MaterialSymbolsOutlined[FILL,GRAD,opsz,wght].ttf); /* For IE6-8 */
+    src: local('Material Symbols Outlined'),
+    local('MaterialSymbolsOutlined[FILL,GRAD,opsz,wght]'),
+    url(/media/com_emundus/css/fonts/google/MaterialSymbolsOutlined[FILL,GRAD,opsz,wght].ttf) format('truetype');
+}
+
 .material-icons {
     font-family: 'Material Icons';
     font-size: 18px;
@@ -77,8 +87,33 @@
     font-feature-settings: 'liga';
 }
 
+.material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-size: 20px;
+    font-weight: normal;
+    font-style: normal;
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+
+    /* Support for all WebKit browsers. */
+    -webkit-font-smoothing: antialiased;
+    /* Support for Safari and Chrome. */
+    text-rendering: optimizeLegibility;
+
+    /* Support for Firefox. */
+    -moz-osx-font-smoothing: grayscale;
+
+    /* Support for IE. */
+    font-feature-settings: 'liga';
+}
+
 body {
-    font-family: var(--em-default-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
 }
 
 /***********
@@ -97,11 +132,43 @@ body {
     background-image: var(--display-demonstration);
     background-size: 250px;
     background-repeat: no-repeat;
-    background-position: top -6px right 30px;
+    background-position: top 50% right 30px;
     width: 100%;
     padding-right: 28%;
     min-height: 150px;
 }
+
+/* Profile form */
+.mon-profil .emundus-form {
+    position: relative;
+    overflow: hidden;
+}
+
+.mon-profil .emundus-form  #background-shapes-profile {
+    mask-image: url("/media/com_emundus/images/tchoozy/backgrounds/corner-top-right-background.svg");
+    -webkit-mask-image: url("/media/com_emundus/images/tchoozy/backgrounds/corner-top-right-background.svg");
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+    mask-position: right top;
+    border-bottom-right-radius: 14px;
+    -webkit-mask-position: right top;
+    mask-size: 600px;
+    -webkit-mask-size: 600px;
+    position: absolute;
+    pointer-events: none;
+    height: 500px;
+    width: 100%;
+    z-index: 0;
+    background: var(--em-profile-color);
+    top: 0;
+}
+
+@media screen and (max-width: 767px) {
+    .mon-profil .emundus-form #background-shapes-profile {
+       display: none;
+    }
+}
+
 
 /* Connexion */
 .view-login.gantry > #g-page-surround {
@@ -112,7 +179,7 @@ body {
     overflow: hidden;
 }
 
-.view-login.gantry > #g-page-surround #login-background-shapes-left {
+#login-background-shapes-left {
     mask-image: url("/media/com_emundus/images/tchoozy/backgrounds/corner-bottom-left-background.svg");
     -webkit-mask-image: url("/media/com_emundus/images/tchoozy/backgrounds/corner-bottom-left-background.svg");
     background: var(--em-profile-color);
@@ -127,7 +194,7 @@ body {
     width: 100%;
 }
 
-.view-login.gantry > #g-page-surround #login-background-shapes-right {
+#login-background-shapes-right {
     mask-image: url("/media/com_emundus/images/tchoozy/backgrounds/corner-top-right-background.svg");
     -webkit-mask-image: url("/media/com_emundus/images/tchoozy/backgrounds/corner-top-right-background.svg");
     background: var(--em-profile-color);
@@ -185,33 +252,33 @@ body {
 /* Historique des emails */
 .view-list.email-history-indicators-page #g-container-main {
     background-image: var(--display-email-history);
-    background-position: top -10px right -10px;
+    background-position: top 74px right -10px;
     background-repeat: no-repeat;
-    background-size: 350px;
+    background-size: 248px;
 }
 
 /* Groupes */
 .view-list.groups-setup-page #g-container-main {
     background-image: var(--display-groups);
-    background-position: top 30px right;
+    background-position: top 74px right;
     background-repeat: no-repeat;
-    background-size: 350px;
+    background-size: 248px;
 }
 
 /* Profils */
 .view-list.users-profile-setup-page #g-container-main {
     background-image: var(--display-profiles);
-    background-position: top -10px right -10px;
+    background-position: top 74px right -10px;
     background-repeat: no-repeat;
-    background-size: 350px;
+    background-size: 248px;
 }
 
 /* TABLETTE */
 @media screen and (min-width: 768px) and (max-width: 959px) {
 
     /* Accueil */
-    .homepage #g-container-main .g-container {
-        background-image : none;
+    .homepage #g-container-main .g-container .mod_emundus_campaign__intro {
+        background-position: top 50% right -40px;
     }
 
     /* Coin haut droite des pages mentions légales, cookies, indicateurs, groupes, campagnes... */
@@ -244,7 +311,6 @@ body {
     }
 
     .homepage #g-container-main .g-container .mod_emundus_campaign__intro {
-        background-position: top -6px right -75px;
         background-image: none;
         padding-right: 0;
     }
@@ -301,10 +367,6 @@ small {
 }
 .em-goback-btn {
     padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
-
-    .material-icons-outlined {
-        color: var(--em-secondary-color);
-    }
 
     button.btn.goback-btn {
         text-shadow: none;

@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import AttachmentAspectsMapping from "./GED/AttachmentAspectsMapping";
+import AttachmentAspectsMapping from "./GED/AttachmentAspectsMapping.vue";
 
 export default {
   name: 'AttachmentParameters',

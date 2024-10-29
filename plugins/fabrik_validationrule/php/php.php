@@ -103,7 +103,7 @@ class PlgFabrik_ValidationrulePhp extends PlgFabrik_Validationrule {
 		 * $$$ hugh - moved the $trigger_error() into a helper func
 		 */
 		FabrikWorker::clearEval();
-		$return = Php::Eval(['code' => $phpCode, 'vars' => ['thisValidation' => $this, 'data' => $data, 'formData' => $formData]]);
+		$return = Php::Eval(['code' => $phpCode, 'vars' => ['thisValidation' => $this, 'data' => $data, 'formData' => $formData,'formModel'=>$formModel,'repeatCounter'=>$repeatCounter,'elementModel'=>$elementModel]]);
 		FabrikWorker::logEval($return, 'Caught exception on php validation of ' . $elementModel->getFullName(true, false) . ': %s');
 
 		return $return;

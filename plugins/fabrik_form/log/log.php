@@ -81,7 +81,7 @@ class PlgFabrik_FormLog extends PlgFabrik_Form
 			"CREATE TABLE IF NOT EXISTS `#__fabrik_change_log` (
 			    `id` INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,
 			    `user_id` INT( 11 ) NOT NULL DEFAULT 0 ,
-			    `ip_address` CHAR( 14 ) NOT NULL DEFAULT '' ,
+			    `ip_address` CHAR( 24 ) NOT NULL DEFAULT '' ,
 			    `referrer` TEXT,
 			    `time_date` DATETIME NOT NULL ,
 			    `form_id` INT( 11 ) NOT NULL DEFAULT 0,
@@ -92,7 +92,19 @@ class PlgFabrik_FormLog extends PlgFabrik_Form
 			    `parent_id` INT( 11 ) NOT NULL DEFAULT 0);",
 			"CREATE TABLE IF NOT EXISTS `#__fabrik_change_log_types` (
 			     `id` INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-			    `type` VARCHAR( 32 ) NOT NULL DEFAULT '');"
+			    `type` VARCHAR( 32 ) NOT NULL DEFAULT '');",
+			"INSERT IGNORE INTO `#__fabrik_change_log_types` (id, type) VALUES 
+				   (1, 'Add Row'),
+				   (2, 'Edit Row'),
+				   (3, 'Delete Row'),
+				   (4, 'Submit Form'),
+				   (5, 'Load Form'),
+				   (6, 'Delete Row'),
+				   (7, 'Add Joined Row'),
+				   (8, 'Delete Joined Row'),
+				   (9, 'Field Value Change'),
+				   (10, 'Edit Joined Row'),
+				   (11, 'Load Details');"
 		];
 
 		/* Update existing tables */
@@ -112,6 +124,7 @@ class PlgFabrik_FormLog extends PlgFabrik_Form
 			"ALTER TABLE `#__fabrik_change_log_fields` ALTER `field_name` SET DEFAULT '';",
 			"ALTER TABLE `#__fabrik_change_log_fields` ALTER `log_type_id` SET DEFAULT 0;",
 			"ALTER TABLE `#__fabrik_change_log` ALTER `user_id` SET DEFAULT 0;",
+			"ALTER TABLE `#__fabrik_change_log` MODIFY `ip_address` CHAR(24);",
 			"ALTER TABLE `#__fabrik_change_log` ALTER `ip_address` SET DEFAULT '';",
 			"ALTER TABLE `#__fabrik_change_log` MODIFY `time_date` datetime NOT NULL;",
 			"UPDATE `#__fabrik_change_log` SET `time_date` = '1980-01-01 00:00:00' WHERE `time_date` < '1000-01-01' OR `time_date` IS NULL;",

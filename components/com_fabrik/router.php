@@ -169,15 +169,19 @@ function fabrikBuildRoute(&$query)
 
 	if (isset($query['format']))
 	{
-		// Was causing error when sef on, url rewrite on and suffix add to url on.
-		// $segments[] = $query['format'];
+		if ($view == 'visualization' && Factory::getConfig()->get('sefSuffix', 0)) {
 
-		/**
-		 * Don't unset as with sef urls and extensions on - if we unset it
-		 * the url's prefix is set to .html
-		 *
-		 *  unset($query['format']);
-		 */
+			// Was causing error when sef on, url rewrite on and suffix add to url on. (in J!3)
+			// Causing error (in fullcalendar viz) if missing in J!4+
+			$segments[] = $query['format'];
+
+			/**
+			 * Don't unset as with sef urls and extensions on - if we unset it
+			 * the url's prefix is set to .html (J!3)
+			 */
+			 unset($query['format']);
+		 }
+		 
 	}
 
 	if (isset($query['type']))
@@ -207,7 +211,7 @@ function fabrikBuildRoute(&$query)
  */
 function _fabrikRouteMatchesMenuItem($query, $menuItem)
 {
-	if (!$menuItem instanceof stdClass || !isset($query['view']))
+	if (!$menuItem instanceof Joomla\CMS\Menu\MenuItem || !isset($query['view']))
 	{
 		return false;
 	}
@@ -219,6 +223,7 @@ function _fabrikRouteMatchesMenuItem($query, $menuItem)
 		return false;
 	}
 	unset($query['Itemid']);
+	if (isset($query['lang'])) unset($query['lang']);
 
 	switch ($queryView)
 	{

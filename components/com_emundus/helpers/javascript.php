@@ -70,10 +70,6 @@ function OnSubmitForm() {
 				document.adminForm.task.value = "transfert_view";
 				document.adminForm.action ="index.php?option=com_emundus&view=' . $view . '&Itemid=' . $itemid . '&task=transfert_view&v=' . $view . '";
 			break;
-			case \'custom_email\':
-				document.adminForm.task.value = "customEmail";
-				document.adminForm.action = "index.php?option=com_emundus&view=' . $view . '&controller=' . $view . '&Itemid=' . $itemid . '&task=customemail";
-			break;
 			case \'applicant_email\':
 				if(is_checked("ud")) {
 					document.adminForm.task.value = "applicantEmail";

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -26,13 +26,21 @@ echo $this->leftmenu(
 
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('display_view_files');?>><?php echo JText::_('DISPLAY_VIEW_FILES'); ?></td>
-		<td><?php
+		<td>
+<?php
 		$arr = array(
 			JHTML::_('select.option', '0', JText::_('HIKASHOP_NO') ),
 			JHTML::_('select.option', '1',  JText::_('DISPLAY_FRONTCOMP') ),
 			JHTML::_('select.option', '2',  JText::_('HIKA_ALL') ),
+			JHTML::_('select.option', '3',  JText::_('WITH_EXTRA_PARAMETER_IN_THE_URL') ),
 		);
-		echo JHTML::_('hikaselect.genericlist', $arr, "config[display_view_files]" , 'class="custom-select"', 'value', 'text',$this->config->get('display_view_files', 0) );?></td>
+		echo JHTML::_('hikaselect.genericlist', $arr, "config[display_view_files]" , 'class="custom-select"', 'value', 'text',$this->config->get('display_view_files', 0) );
+		if($this->config->get('display_view_files', 0) == 3) {
+			echo '<br/>'.JText::_('WITH_EXTRA_PARAMETER_IN_THE_URL_DESCRIPTION');
+		}
+?>
+
+		</td>
 	</tr>
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('cart_retaining_period');?>><?php echo JText::_('CART_RETAINING_PERIOD'); ?></td>

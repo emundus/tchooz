@@ -32,6 +32,13 @@ class PlgDropfilesthemesGgd extends DropfilesPluginBase
     public $name = 'ggd';
 
     /**
+     * Download Popup flag
+     *
+     * @var boolean
+     */
+    public $download_popup;
+
+    /**
      * Show front Category
      *
      * @param array $options Options pass to theme
@@ -86,6 +93,20 @@ class PlgDropfilesthemesGgd extends DropfilesPluginBase
             $doc->addStyleSheet($path);
         }
 
+        if (!in_array($this->name, parent::getDropfilesThemes())) {
+            if (is_array($this->params)) {
+                $this->params = (object) $this->params;
+            } elseif ($this->params instanceof Joomla\Registry\Registry) {
+                $this->params = $this->params->toObject();
+            }
+        } else {
+            $this->params = $this->options['params'];
+        }
+
+        if ((int) $this->componentParams->get('loadthemecategory', 1) === 1) {
+            $this->params = $this->options['params'];
+        }
+
         $content = '';
         if (!empty($this->options['files'])
             || (int) DropfilesBase::loadValue($this->params, 'ggd_showsubcategories', 1) === 1) {
@@ -96,15 +117,6 @@ class PlgDropfilesthemesGgd extends DropfilesPluginBase
             }
             $this->categories = $this->options['categories'];
 
-            if (!in_array($this->name, parent::getDropfilesThemes())) {
-                $this->params = $this->params->toObject();
-            } else {
-                $this->params = $this->options['params'];
-            }
-
-            if ((int) $this->componentParams->get('loadthemecategory', 1) === 1) {
-                $this->params = $this->options['params'];
-            }
             $this->viewfileanddowload = DropfilesBase::getAuthViewFileAndDownload();
             $this->download_popup = DropfilesBase::loadValue($this->options['params'], 'ggd_download_popup', 1);
 

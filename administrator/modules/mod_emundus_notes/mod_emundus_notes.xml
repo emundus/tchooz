@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="module" client="administrator" method="upgrade">
+    <name>mod_emundus_notes</name>
+    <author>eMundus</author>
+    <creationDate>2024-06</creationDate>
+    <copyright>Copyright (C) 2024 eMundus. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>dev@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>2.0.0</version>
+    <description>MOD_EMUNDUS_NOTES_XML_DESCRIPTION</description>
+    <namespace path="src">Joomla\Module\EmundusNotes</namespace>
+    <files>
+        <folder module="mod_emundus_notes">services</folder>
+        <folder>src</folder>
+        <folder>tmpl</folder>
+    </files>
+    <languages>
+        <language tag="en-GB">language/en-GB/mod_emundus_notes.ini</language>
+        <language tag="en-GB">language/en-GB/mod_emundus_notes.sys.ini</language>
+        <language tag="en-GB">language/fr-FR/mod_emundus_notes.ini</language>
+        <language tag="en-GB">language/fr-FR/mod_emundus_notes.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field
+                        name="ressources"
+                        type="subform"
+                        label="Ressources"
+                        multiple="true"
+                        layout="joomla.form.field.subform.repeatable-table"
+                >
+                    <form>
+                        <field
+                                name="name"
+                                type="text"
+                                label="Nom"
+                        />
+                        <field
+                                name="link"
+                                type="url"
+                                label="Lien"
+                        />
+                        <field
+                                name="type"
+                                type="list"
+                                label="Type">
+                            <option value="jira">JIRA</option>
+                            <option value="confluence">Confluence</option>
+                            <option value="mattermost">Mattermost</option>
+                            <option value="odoo">Odoo</option>
+                            <option value="logstash">LogStash</option>
+                            <option value="opensearch">OpenSearch</option>
+                            <option value="drive">Drive</option>
+                            <option value="git">Git</option>
+                            <option value="teams">Teams</option>
+                            <option value="word">Word</option>
+                            <option value="excel">Excel</option>
+                            <option value="workflow">Workflow</option>
+                            <option value="other">Autre</option>
+                        </field>
+                    </form>
+                </field>
+
+				<field
+						name="note"
+						type="editor"
+						label="Note"
+                        filter="safehtml"
+				/>
+            </fieldset>
+            <fieldset name="advanced">
+                <field
+                        name="layout"
+                        type="modulelayout"
+                        label="JFIELD_ALT_LAYOUT_LABEL"
+                        class="form-select"
+                        validate="moduleLayout"
+                />
+
+                <field
+                        name="moduleclass_sfx"
+                        type="textarea"
+                        label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL"
+                        rows="3"
+                        validate="CssIdentifier"
+                />
+            </fieldset>
+        </fields>
+    </config>
+</extension>

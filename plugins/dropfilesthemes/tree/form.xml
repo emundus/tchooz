@@ -92,6 +92,16 @@
                 <option value="0">JNO</option>
             </field>
             <field
+                name="tree_showbreadcrumb"
+                type="list"
+                label="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_BREADCRUMB_LABEL"
+                description="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_BREADCRUMB_DESC"
+                default="0"
+                class="inline">
+                <option value="1">JYES</option>
+                <option value="0">JNO</option>
+            </field>
+            <field
                 name="tree_showcategorytitle"
                 type="list"
                 label="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_CATEGORYTITLE_LABEL"

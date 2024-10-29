@@ -1,18 +1,18 @@
 <template>
-  <div :id="'form-builder-page-section-' + section.group_id" class="form-builder-page-section em-mt-32 em-mb-32">
-    <div class="section-card em-flex-column">
-      <div class="section-identifier em-bg-main-500 em-pointer em-flex-row"
+  <div :id="'form-builder-page-section-' + section.group_id" class="form-builder-page-section tw-mt-8 tw-mb-8">
+    <div class="section-card tw-flex tw-flex-col">
+      <div class="section-identifier tw-bg-profile-full tw-cursor-pointer tw-flex tw-items-center"
            @click="closedSection = !closedSection">
-        <span class="material-icons em-mr-8 em-color-white" v-show="section.repeat_group">library_add</span>
+        <span class="material-icons tw-mr-2 tw-text-white" v-show="section.repeat_group">library_add</span>
         {{ translate('COM_EMUNDUS_FORM_BUILDER_SECTION') }} {{ index }} / {{ totalSections }}
-        <span class="material-icons em-ml-8 em-color-white" v-show="!closedSection">unfold_less</span>
-        <span class="material-icons em-ml-8 em-color-white" v-show="closedSection">unfold_more</span>
+        <span class="material-icons tw-ml-2 tw-text-white" v-show="!closedSection">unfold_less</span>
+        <span class="material-icons tw-ml-2 tw-text-white" v-show="closedSection">unfold_more</span>
       </div>
-      <div class="section-content em-w-100 em-p-32" :class="{'closed': closedSection}">
-        <div class="em-flex-row em-flex-space-between em-w-100 ">
+      <div class="section-content tw-w-full em-p-32" :class="{'closed': closedSection}">
+        <div class="tw-flex tw-items-center tw-justify-between tw-w-full ">
           <input
               id="section-title"
-              class="editable-data em-w-100"
+              class="editable-data tw-w-full"
               :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_TITLE_ADD')"
               v-model="section.label[shortDefaultLang]"
               @focusout="updateTitle"
@@ -20,25 +20,24 @@
               maxlength="100"
           />
           <div class="section-actions-wrapper">
-            <span class="material-icons-outlined em-pointer hover-opacity" @click="moveSection('up')"
+            <span class="material-symbols-outlined tw-cursor-pointer hover-opacity" @click="moveSection('up')"
                   title="Move section upwards">keyboard_double_arrow_up</span>
-            <span class="material-icons-outlined em-pointer hover-opacity" @click="moveSection('down')"
+            <span class="material-symbols-outlined tw-cursor-pointer hover-opacity" @click="moveSection('down')"
                   title="Move section downwards">keyboard_double_arrow_down</span>
-            <span class="material-icons-outlined em-red-500-color em-pointer delete hover-opacity"
+            <span class="material-symbols-outlined tw-text-red-600 tw-cursor-pointer delete hover-opacity"
                   @click="deleteSection">delete</span>
-            <span class="material-icons-outlined em-pointer hover-opacity" @click="$emit('open-section-properties')">settings</span>
+            <span class="material-symbols-outlined tw-cursor-pointer hover-opacity" @click="$emit('open-section-properties')">settings</span>
           </div>
         </div>
         <transition name="slide-down">
           <div v-show="!closedSection">
-            <p id="section-intro"
-               class="editable-data"
+            <span id="section-intro"
+               class="editable-data description"
                ref="sectionIntro"
                contenteditable="true"
                @focusout="updateIntro"
-               @keyup.enter="blurElement('#section-intro')"
                v-html="section.group_intro">
-            </p>
+            </span>
             <draggable
                 v-model="elements"
                 group="form-builder-section-elements"
@@ -46,8 +45,9 @@
                 class="draggables-list"
                 @end="onDragEnd"
                 handle=".handle"
+                :data-prid="profile_id" :data-page="page_id" :data-sid="section.group_id"
             >
-              <transition-group :data-prid="profile_id" :data-page="page_id" :data-sid="section.group_id">
+              <transition-group>
                 <form-builder-page-section-element
                     v-for="element in elements"
                     :key="element.id"
@@ -66,9 +66,10 @@
                   group="form-builder-section-elements"
                   :sort="false"
                   class="draggables-list"
+                  :data-prid="profile_id" :data-page="page_id" :data-sid="section.group_id"
               >
                 <transition-group :data-prid="profile_id" :data-page="page_id" :data-sid="section.group_id">
-                  <p class="em-w-100 em-text-align-center" v-for="(item, index) in emptySection" :key="index">
+                  <p class="tw-w-full tw-text-center" v-for="(item, index) in emptySection" :key="index">
                     {{ translate(item.text) }}
                   </p>
                 </transition-group>
@@ -82,17 +83,17 @@
 </template>
 
 <script>
-import formBuilderService from '../../services/formbuilder';
-import formBuilderMixin from "../../mixins/formbuilder";
-import globalMixin from "../../mixins/mixin";
-
-import FormBuilderPageSectionElement from "./FormBuilderPageSectionElement";
-import draggable from "vuedraggable";
+import formBuilderService from '@/services/formbuilder.js';
+import formBuilderMixin from "@/mixins/formbuilder.js";
+import globalMixin from "@/mixins/mixin.js";
+import FormBuilderPageSectionElement from "./FormBuilderPageSectionElement.vue";
+import { VueDraggableNext } from 'vue-draggable-next';
+import { useGlobalStore } from "@/stores/global.js";
 
 export default {
   components: {
     FormBuilderPageSectionElement,
-    draggable
+    draggable: VueDraggableNext
   },
   props: {
     profile_id: {
@@ -129,7 +130,11 @@ export default {
       elementsDeletedPending: [],
     };
   },
-
+  setup() {
+    return {
+      globalStore: useGlobalStore()
+    }
+  },
   created() {
     this.getElements();
   },
@@ -150,7 +155,7 @@ export default {
           Swal.fire({
             title: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'),
             text: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR_SAVE_TRANSLATION'),
-            type: "error",
+            icon: "error",
             cancelButtonText: this.translate("OK"),
           });
         }
@@ -160,16 +165,16 @@ export default {
       document.querySelector(selector).blur();
     },
     updateIntro() {
-      this.$refs.sectionIntro.innerHTML = this.$refs.sectionIntro.innerHTML.trim().replace(/[\r\n]/gm, " ");
+      this.$refs.sectionIntro.innerHTML = this.$refs.sectionIntro.innerHTML.trim().replace(/[\r\n]/gm, "<br/>");
       this.section.group_intro = this.$refs.sectionIntro.innerHTML;
       formBuilderService.updateGroupParams(this.section.group_id, {'intro': this.section.group_intro}, this.shortDefaultLang).then((response) => {
-        if (response.data.status) {
+        if (response.status) {
           this.updateLastSave();
         } else {
           Swal.fire({
             title: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'),
             text: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR_UPDATE_GROUP_PARAMS'),
-            type: "error",
+            icon: "error",
             cancelButtonText: this.translate("OK"),
           });
         }
@@ -186,7 +191,7 @@ export default {
         formBuilderService.updateOrder(elements, this.section.group_id, movedElement).then((response) => {
           this.updateLastSave();
           let obj = {};
-          this.elements.forEach((elem, i) => {
+          this.elements.forEach((elem) => {
             obj['element' + elem.id] = elem
           });
           this.section.elements = obj;
@@ -207,15 +212,15 @@ export default {
     },
     deleteSection() {
       this.swalConfirm(
-          this.translate("COM_EMUNDUS_FORM_BUILDER_DELETE_SECTION"),
-          this.section.label[this.shortDefaultLang],
-          this.translate("COM_EMUNDUS_FORM_BUILDER_DELETE_SECTION_CONFIRM"),
-          this.translate("JNO"),
-          () => {
-            formBuilderService.deleteGroup(this.section.group_id);
-            this.$emit('delete-section', this.section.group_id);
-            this.updateLastSave();
-          }
+        this.translate("COM_EMUNDUS_FORM_BUILDER_DELETE_SECTION"),
+        this.section.label[this.shortDefaultLang],
+        this.translate("COM_EMUNDUS_FORM_BUILDER_DELETE_SECTION_CONFIRM"),
+        this.translate("JNO"),
+        () => {
+          formBuilderService.deleteGroup(this.section.group_id);
+          this.$emit('delete-section', this.section.group_id);
+          this.updateLastSave();
+        }
       );
     },
     moveSection(direction = 'up') {
@@ -237,7 +242,7 @@ export default {
       }) : [];
     },
     sysadmin: function () {
-      return parseInt(this.$store.state.global.sysadminAccess);
+      return parseInt(this.globalStore.hasSysadminAccess);
     },
   }
 }

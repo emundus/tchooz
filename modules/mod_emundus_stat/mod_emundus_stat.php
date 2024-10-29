@@ -1,20 +1,18 @@
 <?php
+use Joomla\CMS\Factory;
+use Joomla\CMS\Helper\ModuleHelper;
+
 defined('_JEXEC') or die('Access Deny');
 require_once(dirname(__FILE__) . DS . 'helper.php');
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'stats.php');
+require_once(JPATH_BASE . '/components/com_emundus/models/stats.php');
 
-JHtml::script('media/com_emundus/js/jquery.cookie.js');
-JHtml::script('media/jui/js/bootstrap.min.js');
-
-$document = JFactory::getDocument();
-$document->addStyleSheet("modules/mod_emundus_stat/style/mod_emundus_stat.css");
+$app = Factory::getApplication();
+$document = $app->getDocument();
+$wa = $document->getWebAssetManager();
+$wa->registerAndUseStyle('mod_emundus_stat', 'modules/mod_emundus_stat/style/mod_emundus_stat.css');
 
 $helper = new modEmundusStatHelper;
 
-/**
- * Setting parameters
- * According to the type of the graph
- */
 $listId     = $params->get('list_id');
 $view       = $params->get('view');
 $titleGraph = $module->title;
@@ -200,4 +198,4 @@ $jsonGraph = json_encode($aDataTableDetailHTML);
 
 $urlFiltre = $helper->getUrlFiltre($view, $params);
 
-require(JModuleHelper::getLayoutPath('mod_emundus_stat', 'default.php'));
+require(ModuleHelper::getLayoutPath('mod_emundus_stat', 'default.php'));

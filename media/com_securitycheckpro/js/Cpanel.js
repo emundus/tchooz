@@ -101,7 +101,7 @@
     }
 
     function Set_Easy_Config() {
-        url = 'index.php?option=com_securitycheckpro&controller=cpanel&format=raw&task=Set_Easy_Config';
+        var url = 'index.php?option=com_securitycheckpro&controller=cpanel&format=raw&task=Set_Easy_Config';
         jQuery.ajax({
             url: url,                            
             method: 'GET',
@@ -114,10 +114,10 @@
     function Set_Default_Config() {
 		var message = Joomla.getOptions("securitycheckpro.Cpanel.setdefaultconfigconfirmText");
 		var answer = confirm(message);
+		var url = 'index.php?option=com_securitycheckpro&controller=cpanel&format=raw&task=Set_Default_Config';
         if (!answer) {
             e.preventDefault();
-        }
-        url = 'index.php?option=com_securitycheckpro&controller=cpanel&format=raw&task=Set_Default_Config';
+        }       
         jQuery.ajax({
             url: url,                            
             method: 'GET',

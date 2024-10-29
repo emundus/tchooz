@@ -84,11 +84,17 @@ Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER');
 Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_CAMPNAME');
 Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION');
 Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME');
+Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME_TIP');
+Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME_TIP_TEXT');
 Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION');
+Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION_TIP');
+Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION_TIP_TEXT');
 Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM');
 Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_CHOOSEPROG');
 Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PICKYEAR');
 Text::script('COM_EMUNDUS_ONBOARD_ADDPROGRAM');
+Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_LANGUAGES');
+Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM_LANGUAGES');
 Text::script('COM_EMUNDUS_ONBOARD_ADD_QUITTER');
 Text::script('COM_EMUNDUS_ONBOARD_FILTER_PUBLISH');
 Text::script('COM_EMUNDUS_ONBOARD_FILTER_CLOSE');
@@ -102,6 +108,11 @@ Text::script('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME');
 Text::script('COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE');
 Text::script('COM_EMUNDUS_ONBOARD_PROGRAM_RESUME');
 Text::script('COM_EMUNDUS_ONBOARD_CAMP_REQUIRED_RESUME');
+Text::script('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_LINK');
+Text::script('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_START_DATE');
+Text::script('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_END_DATE');
+Text::script('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_YEAR');
+Text::script('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_PROGRAM');
 Text::script('COM_EMUNDUS_ONBOARD_TIP');
 JText::script('COM_EMUNDUS_ONBOARD_PINNED_CAMPAIGN_TIP');
 JText::script('COM_EMUNDUS_ONBOARD_PINNED_CAMPAIGN_TIP_TEXT');
@@ -230,6 +241,8 @@ Text::script('COM_EMUNDUS_FORM_ATTACHMENTS_PREVIEW');
 Text::script('COM_EMUNDUS_ONBOARD_NO_FORM_FOUND_ADD_FORM');
 Text::script('COM_EMUNDUS_ONBOARD_EDIT_FORM');
 Text::script('COM_EMUNDUS_CAMPAIGNS_PIN');
+JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_ALIAS');
+JText::script('COM_EMUNDUS_ONBOARD_ALIAS_COPIED');
 
 $app = Factory::getApplication();
 if (version_compare(JVERSION, '4.0', '>')) {
@@ -263,7 +276,7 @@ $hash = EmundusHelperCache::getCurrentGitHash();
 ?>
 
 <div id="em-component-vue"
-     component="addformnextcampaign"
+     component="campaignedition"
      campaignId="<?= $app->input->get('cid') ?>"
      shortLang="<?= $short_lang ?>" currentLanguage="<?= $current_lang ?>"
      manyLanguages="<?= $many_languages ?>"
@@ -273,4 +286,4 @@ $hash = EmundusHelperCache::getCurrentGitHash();
      index="<?= $app->input->get('index') ?>"
 ></div>
 
-<script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
+<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>

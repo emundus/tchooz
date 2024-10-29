@@ -417,6 +417,9 @@
   color: #404852;
   max-width: 25%;
 }
+#dropfiles-statistics .dropfiles-statistics--form input {
+  background-color: #fff;
+}
 #dropfiles-statistics .dropfiles-statistics--form .dropfiles-statistics--form-col.dropfiles-statistics--date-filter {
   box-sizing: border-box;
 }
@@ -732,8 +735,10 @@
   text-align: left;
   line-height: 35px;
   color: #568095;
+  background-color: #fff;
   font-size: 0.9375rem;
   padding-left: 0;
+  border-bottom-width: 0px;
 }
 #dropfiles-statistics .dropfiles-statistics--table .ju-table thead th a {
   text-decoration: none;

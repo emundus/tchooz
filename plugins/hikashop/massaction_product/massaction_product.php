@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -150,7 +150,7 @@ class plgHikashopMassaction_product extends JPlugin
 			}
 		}else{
 			$db = JFactory::getDBO();
-			if($filter['value'] == 0 || !empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL')))){
+			if($filter['value'] == 0 || !empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL','=','!=')))){
 				$query->where[] = $this->massaction->getRequest($filter,'hk_product');
 			}
 		}
@@ -191,7 +191,7 @@ class plgHikashopMassaction_product extends JPlugin
 					}else{
 						$query->where[] = $this->massaction->getRequest($filter,'hk_price');
 					}
-					if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL')))){
+					if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL','=','!=')))){
 						$query->where[] = $this->massaction->getRequest($filter,'hk_price');
 					}
 				}
@@ -250,7 +250,7 @@ class plgHikashopMassaction_product extends JPlugin
 				}
 			}
 		}else{
-			if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL')))){
+			if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL','=','!=')))){
 				$query->leftjoin['product_category'] = hikashop_table('product_category').' AS hk_product_category ON hk_product_category.product_id = hk_product.product_id';
 				$query->leftjoin['category'] = hikashop_table('category').' AS hk_category ON hk_category.category_id = hk_product_category.category_id';
 				$query->where[] = $this->massaction->getRequest($filter,'hk_category');
@@ -313,7 +313,7 @@ class plgHikashopMassaction_product extends JPlugin
 				$query->leftjoin['variant'.$num] = hikashop_table('variant').' AS hk_variant'.$num.' ON hk_variant'.$num.'.variant_product_id = hk_product.product_id';
 				$query->leftjoin['characteristic'.$num] = hikashop_table('characteristic').' AS hk_characteristic'.$num.' ON hk_characteristic'.$num.'.characteristic_id = hk_variant'.$num.'.variant_characteristic_id';
 				$query->leftjoin['characteristic_parent'.$num] = hikashop_table('characteristic').' AS hk_characteristic_parent'.$num.' ON hk_characteristic'.$num.'.characteristic_parent_id = hk_characteristic_parent'.$num.'.characteristic_id';
-				if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL')))){
+				if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL','=','!=')))){
 					$filter['type'] = str_replace('.','', $filter['type']);
 					$rquery = str_replace('`'.$filter['type'].'`','',$this->massaction->getRequest($filter));
 					$query->where[] = 'hk_characteristic'.$num.'.characteristic_value '.$rquery.' AND hk_characteristic_parent'.$num.'.characteristic_value = '.$db->quote($filter['type']).'';
@@ -348,7 +348,7 @@ class plgHikashopMassaction_product extends JPlugin
 		}else{
 			if(!empty($filter['value'])){
 				$nquery = 'SELECT hk_product_related.product_related_id FROM '.hikashop_table('product_related').' AS hk_product_related LEFT JOIN '.hikashop_table('product').' AS hk_product ON hk_product_related.product_id = hk_product.product_id ';
-				if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL')))){
+				if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL','=','!=')))){
 					$nquery .= 'WHERE '.$this->massaction->getRequest($filter,'hk_product');
 				}
 				$nquery .= ' AND hk_product_related.product_related_type = '.$db->quote('related');
@@ -391,7 +391,7 @@ class plgHikashopMassaction_product extends JPlugin
 			if(!empty($filter['value'])){
 
 				$nquery = 'SELECT hk_product_related.product_related_id FROM '.hikashop_table('product_related').' AS hk_product_related LEFT JOIN '.hikashop_table('product').' AS hk_product ON hk_product_related.product_id = hk_product.product_id ';
-				if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL')))){
+				if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL','=','!=')))){
 					$nquery .= 'WHERE '.$this->massaction->getRequest($filter,'hk_product');
 				}
 				$nquery .= ' AND hk_product_related.product_related_type = '.$db->quote('option');

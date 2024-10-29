@@ -12,9 +12,12 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Plugin\PluginHelper;
 use Symfony\Component\Yaml\Yaml;
 
 /** @var \Joomla\Component\Users\Site\View\Login\HtmlView $this */
+
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 
 $cookieLogin = $this->user->get('cookieLogin');
 
@@ -26,9 +29,7 @@ $redirect = base64_decode($jinput->get->getBase64('redirect'));
 $eMConfig = ComponentHelper::getParams('com_emundus');
 
 if (!empty($cookieLogin) || $this->user->get('guest')) {
-
-	// TODO: get registration link from jos_menu
-
+	
 	$this->campaign            = $jinput->get('cid');
 	$this->course              = $jinput->get('course');
 	$this->displayRegistration = $eMConfig->get('display_registration_link', 1);
@@ -37,11 +38,19 @@ if (!empty($cookieLogin) || $this->user->get('guest')) {
 	$this->forgottenLink       = $eMConfig->get('forgotten_password_link', 'index.php?option=com_users&view=reset') ?: 'index.php?option=com_users&view=reset';
 
 	if (empty($this->registrationLink)) {
+		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
+		$alias = EmundusHelperMenu::getSefAliasByLink('index.php?option=com_fabrik&view=form&formid=307');
+
+		if(empty($alias)) {
+			$alias = 'inscription';
+		}
+
 		if (!empty($this->campaign) && !empty($this->course)) {
-			$this->registrationLink = 'inscription?course=' . $this->course . '&cid=' . $this->campaign;
+			$this->registrationLink = $alias.'?course=' . $this->course . '&cid=' . $this->campaign;
 		}
 		else {
-			$this->registrationLink = 'inscription';
+
+			$this->registrationLink = $alias;
 		}
 	}
 	$session->set('cid', $this->campaign);
@@ -52,8 +61,35 @@ if (!empty($cookieLogin) || $this->user->get('guest')) {
 
 	$this->favicon = $m_settings->getFavicon();
 
+	$this->oauth2Directories = [];
+	$this->state = null;
+	$this->nonce = null;
+	$emundusOauth2 = PluginHelper::getPlugin('authentication','emundus_oauth2');
+	if(!empty($emundusOauth2)) {
+		$oauth2Config = json_decode($emundusOauth2->params);
+
+		if(!empty($oauth2Config->configurations)) {
+			$this->state = bin2hex(random_bytes(128/8));
+			$this->nonce = EmundusHelperMenu::getNonce();
+
+			foreach ($oauth2Config->configurations as $config) {
+				if(in_array($config->display_on_login,[1,3])) {
+					$this->oauth2Directories[] = $config;
+				}
+			}
+		}
+	}
+
 	echo $this->loadTemplate('login');
 }
 else {
-	echo $this->loadTemplate('logout');
+	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+
+	$app = Factory::getApplication();
+	if(!EmundusHelperAccess::asAdministratorAccessLevel($this->user->id))
+	{
+		$app->redirect(EmundusHelperMenu::getHomepageLink());
+	} else {
+		$app->redirect(EmundusHelperMenu::getAdminLink());
+	}
 }

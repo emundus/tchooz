@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="package" version="4" method="upgrade">
+    <name>Fabrik Libraries Package</name>
+    <packagename>fabriklibraries</packagename>
+    <version>4.2</version>
+    <gitdate>2024-06-23</gitdate>
+    <url>https://www.fabrikar.com</url>
+    <creationDate>2024-06-23</creationDate>
+    <copyright>Copyright (C) 2005-2024 Fabrikar - All rights reserved.</copyright>
+    <author>Fabrikar</author>
+    <packager>Fabrikar</packager>
+    <packagerurl>https://www.fabrikar.com</packagerurl>
+    <description>Fabrik Libraries Package</description>
+    <dlid prefix="key="></dlid>
+    <changelogurl>https://fabrikar.com/index.php?option=com_ochsubscriptions&amp;view=changelog&amp;element=fabriklibraries</changelogurl>
+    <updateservers>
+        <server type="extension" name="Fabrik Libraries">https://fabrikar.com/index.php?option=com_ochsubscriptions&amp;view=updater&amp;format=xml&amp;element=fabriklibraries</server>
+    </updateservers>
+    <files>
+        <file id="fabrik/libs" type="library">lib_fabrik_libs4.2.zip</file>
+        <file id="fabrik/vendor" type="library">lib_fabrik_vendor4.2.zip</file>
+    </files>
+    <scriptfile>pkg_fabrik_libraries.manifest.class.php</scriptfile>
+</extension>

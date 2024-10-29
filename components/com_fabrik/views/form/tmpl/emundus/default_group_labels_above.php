@@ -27,8 +27,11 @@ $element = $this->element;
 	<?php echo $element->element; ?>
 </div>
 
-<div class="<?php echo $this->class ?>">
-	<?php echo $element->error ?>
+<div class="<?php echo $this->class ?> tw-flex tw-items-start">
+    <?php if ($element->error) : ?>
+        <span class="material-symbols-outlined tw-mr-1" style="line-height: 18px;font-size: 18px">error</span>
+        <?php echo $element->error ?>
+    <?php endif; ?>
 </div>
 
 <?php if ($this->tipLocation == 'side') : ?>
@@ -36,5 +39,5 @@ $element = $this->element;
 <?php endif ?>
 
 <?php if ($this->tipLocation == 'below') : ?>
-    <span class="fabrikElementTip fabrikElementTipBelow"><?php echo $element->tipBelow ?></span>
+    <p class="fabrikElementTip fabrikElementTipBelow"><?php echo $element->tipBelow ?></p>
 <?php endif ?>

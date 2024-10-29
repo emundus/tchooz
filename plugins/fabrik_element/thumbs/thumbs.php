@@ -775,6 +775,10 @@ class PlgFabrik_ElementThumbs extends PlgFabrik_Element
 			$db->setQuery('ALTER TABLE #__fabrik_thumbs ADD PRIMARY KEY (`user_id`, `listid`, `formid`, `row_id`, `element_id`, `special`)');
 			$db->execute();
 		}
+		
+		//Set user_id to varchar(40), very old tables may have varchar(255) and so breaking index key length
+		$db->setQuery('ALTER TABLE `#__fabrik_thumbs` CHANGE `user_id` `user_id` VARCHAR(40)');
+		$db->execute();
 
 		/* Update for null datetime */
 		$sqls = [

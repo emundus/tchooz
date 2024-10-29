@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="2.5" method="upgrade" group="system">
 	<name>Hikashop Geolocation Plugin</name>
-	<creationDate>31 janvier 2024</creationDate>
-	<version>5.0.3</version>
+	<creationDate>08 juillet 2024</creationDate>
+	<version>5.1.0</version>
 	<author>Hikashop</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
@@ -11,15 +11,18 @@
 	<description>This plugin enables you to handle geolocation</description>
 	<files>
 		<filename plugin="hikashopgeolocation">hikashopgeolocation.php</filename>
+		<folder>vendor</folder>
 	</files>
 	<params addpath="/components/com_hikashop/params">
 		<param name="geoloc_timeout" type="text" size="10" default="10" label="TIMEOUT" description="GEOLOCATION_TIMEOUT" />
 		<param name="geoloc_service" type="radio" default="both" label="HIKA_GEOLOCATION_SERVICE" description="GEOLOCATION_SERVICE">
 			<option value="geoplugin">GEOLOCATION_GEOPLUGIN</option>
+			<option value="ip2location">GEOLOCATION_IP2LOCATIONIO</option>
 			<option value="ipinfodb">GEOLOCATION_IPINFODB</option>
 			<option value="both">GEOLOCATION_BOTH</option>
 		</param>
 		<param name="geoloc_api_key" type="textarea" cols="30" default="" label="API_KEY" description="GEOLOCATION_API_KEY" />
+		<field name="ip2location_api_key" type="textarea" cols="30" default="" label="API_KEY" description="IP2LOCATION_API_KEY" />
 		<param name="order" type="radio" default="1" label="HIKA_ORDERS_GEOLOCATION" description="ORDERS_GEOLOCATION">
 			<option value="0">HIKASHOP_NO</option>
 			<option value="1">HIKASHOP_YES</option>
@@ -43,13 +46,15 @@
 	<config>
 		<fields name="params" addfieldpath="/components/com_hikashop/fields">
 			<fieldset name="basic">
-				<field name="geoloc_timeout" type="text" label="TIMEOUT" size="10" default="10" description="GEOLOCATION_TIMEOUT" />
 				<field name="geoloc_service" type="radio" default="both" label="HIKA_GEOLOCATION_SERVICE" description="GEOLOCATION_SERVICE">
 					<option value="geoplugin">GEOLOCATION_GEOPLUGIN</option>
+					<option value="ip2location">GEOLOCATION_IP2LOCATIONIO</option>
 					<option value="ipinfodb">GEOLOCATION_IPINFODB</option>
 					<option value="both">GEOLOCATION_BOTH</option>
 				</field>
-				<field name="geoloc_api_key" type="textarea" cols="30" default="" label="API_KEY" description="GEOLOCATION_API_KEY" />
+				<field name="geoloc_timeout" showon="geoloc_service:both[OR]geoloc_service:geoplugin[OR]geoloc_service:ipinfodb" type="text" label="TIMEOUT" size="10" default="10" description="GEOLOCATION_TIMEOUT" />
+				<field name="geoloc_api_key" showon="geoloc_service:both[OR]geoloc_service:ipinfodb" type="textarea" cols="30" default="" label="API_KEY" description="GEOLOCATION_API_KEY" />
+				<field name="ip2location_api_key" showon="geoloc_service:both[OR]geoloc_service:ip2location" type="textarea" cols="30" default="" label="API_KEY" description="IP2LOCATION_API_KEY" />
 				<field name="order" type="radio" label="HIKA_ORDERS_GEOLOCATION" default="1" description="ORDERS_GEOLOCATION">
 					<option value="0">HIKASHOP_NO</option>
 					<option value="1">HIKASHOP_YES</option>

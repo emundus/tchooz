@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -50,8 +50,11 @@ foreach ($extraButtons as $button) {
 <input name="return" id="hidden_second_input_for_webauthn_compat" type="hidden" value="<?php echo $url; ?>"/>
 <script>
 window.hikashop.ready(function(){
-	document.querySelector('.hikashop_checkout_login #username').addEventListener('change', (event) => {
-		document.getElementById('hidden_input_for_webauthn_compat').value = event.target.value ;
-	});
+	var usernameInput = document.querySelector('.hikashop_checkout_login #username');
+	if(usernameInput) {
+		usernameInput.addEventListener('change', (event) => {
+			document.getElementById('hidden_input_for_webauthn_compat').value = event.target.value ;
+		});
+	}
 });
 </script>

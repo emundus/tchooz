@@ -26,7 +26,7 @@ JText::script('COM_EMUNDUS_ONBOARD_EMAIL_PREVIEWMODEL');
 JText::script('COM_EMUNDUS_ONBOARD_CATEGORIES');
 JText::script('COM_EMUNDUS_ONBOARD_CANT_REVERT');
 JText::script('COM_EMUNDUS_ONBOARD_EMPTY_LIST');
-JText::script('COM_EMUNDUS_ONBOARD_LABEL');
+JText::script('COM_EMUNDUS_ONBOARD_LABEL_EMAILS');
 ## END ##
 
 ## ACTIONS ##
@@ -188,4 +188,4 @@ $hash = EmundusHelperCache::getCurrentGitHash();
       manyLanguages="<?= $many_languages ?>">
 </list>
 
-<script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
+<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>

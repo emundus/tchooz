@@ -16,23 +16,23 @@ services:
       JOOMLA_DB_PASSWORD: password
       JOOMLA_DB_NAME: joomla5
 
-      TCHOOZ_OFFLINE: false
+      TCHOOZ_OFFLINE: 0
       TCHOOZ_OFFLINE_MESSAGE: 'This site is down for maintenance.<br />Please check back again soon.'
       TCHOOZ_DISPLAY_OFFLINE_MESSAGE: 1
       TCHOOZ_OFFLINE_IMAGE: images/logo.png
       TCHOOZ_SITENAME: Tchooz
-      TCHOOZ_DEBUG: false
-      TCHOOZ_DEBUG_LANG: false
+      TCHOOZ_DEBUG: 0
+      TCHOOZ_DEBUG_LANG: 0
       TCHOOZ_LIVE_SITE: 'http://localhost:8383/'
       TCHOOZ_SECRET: TXGin8XS4BEqA8cA
       TCHOOZ_OFFSET: Europe/Paris
       TCHOOZ_MAILER: smtp
       TCHOOZ_MAIL_FROM: dev@emundus.fr
       TCHOOZ_MAIL_FROM_NAME: EMUNDUS Dev
-      TCHOOZ_MAIL_SMTP_AUTH: true
-      TCHOOZ_MAIL_SMTP_USER: 4e280ecaa19d8e
-      TCHOOZ_MAIL_SMTP_PASS: b86e475ed3d798
-      TCHOOZ_MAIL_SMTP_HOST: smtp.mailtrap.io
+      TCHOOZ_MAIL_SMTP_AUTH: 1
+      TCHOOZ_MAIL_SMTP_USER: 
+      TCHOOZ_MAIL_SMTP_PASS: 
+      TCHOOZ_MAIL_SMTP_HOST: smtp.domain.com
       TCHOOZ_MAIL_SMTP_SECURITY: tls
       TCHOOZ_MAIL_SMTP_PORT: 2525
       TCHOOZ_CACHING: 0
@@ -45,18 +45,18 @@ services:
       TCHOOZ_SESSION_LIFETIME: 15
       TCHOOZ_SESSION_HANDLER: database
       TCHOOZ_FORCE_SSL: 0
-      TCHOOZ_REDIS_PERSIST: 1
+      TCHOOZ_REDIS_PERSIST: 0
       TCHOOZ_REDIS_HOST: redis
       TCHOOZ_REDIS_PORT: 6379
       TCHOOZ_REDIS_DB: 0
       TCHOOZ_MAIL_REPLY_TO:
       TCHOOZ_MAIL_REPLY_TO_NAME:
-      TCHOOZ_SESSION_REDIS_PERSIST: 1
+      TCHOOZ_SESSION_REDIS_PERSIST: 0
       TCHOOZ_SESSION_REDIS_HOST: redis
       TCHOOZ_SESSION_REDIS_PORT: 6379
       TCHOOZ_SESSION_REDIS_DB: 0
       TCHOOZ_BEHIND_LOADBALANCER: 0
-      TCHOOZ_ADMIN_ACCESS_TOKEN: TTbzQEXiJKNW57aYKNoV
+      TCHOOZ_ADMIN_ACCESS_TOKEN: X3xAqXmxNkAKd5ckHBqmT
       TCHOOZ_COORD_USERNAME: coordinator
       TCHOOZ_COORD_MAIL: dev@emundus.io
       TCHOOZ_COORD_FIRST_NAME: Dev
@@ -103,3 +103,15 @@ services:
       - ./.docker/mysql/conf/my.cnf:/etc/mysql/conf.d/my.cnf
       # Uncomment this line to use a custom sql file to init database
       - ./.docker/installation/databases:/docker-entrypoint-initdb.d
+
+  docs:
+    container_name: joomla5_docs
+    build:
+      context: ./.docker/docs
+      dockerfile: Dockerfile
+    image: tchooz-dev-docs:2.0.0
+    ports:
+      - "5173:80"
+    restart: always
+    volumes:
+      - ./public:/var/www/html

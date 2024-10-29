@@ -13,13 +13,13 @@ defined('_JEXEC') or die;
     <h2>Catalogue des activités</h2>
     <div class="em-flex-row eb-icon-links">
         <a class="eb-list-icon" href="activites-etudiantes-listes" target="_self">
-            <span class="material-icons">list</span>
+            <span class="material-symbols-outlined">list</span>
         </a>
         <a class="eb-list-icon em-ml-8" href="accueil-activites" target="_self">
-            <span class="material-icons">apps</span>
+            <span class="material-symbols-outlined">apps</span>
         </a>
         <a class="eb-map-icon em-ml-8" href="chercher-par-localisation" target="_self">
-            <span class="material-icons">map</span>
+            <span class="material-symbols-outlined">map</span>
         </a>
     </div>
 </div>

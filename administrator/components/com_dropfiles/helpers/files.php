@@ -319,7 +319,7 @@ class DropfilesFilesHelper
                         $item->catid = $category->id;
                     }
                     $item->versionNumber = $item->version;
-                    if ($item->custom_icon) {
+                    if (isset($item->custom_icon) && $item->custom_icon) {
                         $pos = strpos($item->custom_icon, '#');
                         if ($pos !== false) {
                             $item->custom_icon =  substr($item->custom_icon, 0, $pos);
@@ -650,5 +650,350 @@ class DropfilesFilesHelper
         }
 
         return false;
+    }
+
+    /**
+     * Display a custom pagination
+     *
+     * @param array  $args      Option args
+     * @param string $form_name Form name
+     *
+     * @return array|string|boolean
+     */
+    public static function dropfiles_category_pagination(array $args = array(), $form_name = '') // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- For matching
+    {
+        $uri              = JUri::getInstance();
+        $url              = $uri->toString();
+        $total            = isset($args['total']) ? $args['total'] : 1;
+        $current          = isset($args['current']) ? $args['current'] : 1;
+        $sourceCategoryId = isset($args['sourcecat']) ? $args['sourcecat'] : 0;
+
+        $args = array(
+            'base'               => $url,
+            'format'             => '',
+            'total'              => $total,
+            'current'            => $current,
+            'sourcecat'          => $sourceCategoryId,
+            'show_all'           => false,
+            'prev_next'          => true,
+            'prev_text'          => '&laquo; Previous',
+            'next_text'          => 'Next &raquo;',
+            'end_size'           => 1,
+            'mid_size'           => 2,
+            'type'               => 'plain',
+            'add_args'           => array(),
+            'add_fragment'       => '',
+            'before_page_number' => '',
+            'after_page_number'  => ''
+        );
+        if (!is_array($args['add_args'])) {
+            $args['add_args'] = array();
+        }
+
+        // Who knows what else people pass in $args
+        $total = (int)$args['total'];
+        if ($total < 2) {
+            return false;
+        }
+        $current = (int)$args['current'];
+        $end_size = (int)$args['end_size']; // Out of bounds?  Make it the default.
+        if ($end_size < 1) {
+            $end_size = 1;
+        }
+        $mid_size = (int)$args['mid_size'];
+        if ($mid_size < 0) {
+            $mid_size = 2;
+        }
+        $add_args = $args['add_args'];
+        $r = '';
+        $page_links = array();
+        $dots = false;
+        if (isset($args['sourcecat']) && intval($args['sourcecat']) === 0) {
+            $args['sourcecat'] = 'all_0';
+        }
+        if ($args['prev_next'] && $current && 1 < $current) :
+            $link = str_replace('%_%', 2 === $current ? '' : $args['format'], $args['base']);
+            $link = str_replace('%#%', $current - 1, $link);
+            if ($add_args) {
+                $link = self::add_query_arg($add_args, $link);
+            }
+            $link .= $args['add_fragment'];
+            $page_link = "<a class='prev page-numbers' data-page='" . ($current - 1) . "' data-sourcecat='" . $args['sourcecat'] . "'>";
+            $page_link .= $args['prev_text'] . '</a>';
+            $page_links[] = $page_link;
+        endif;
+        for ($n = 1; $n <= $total; $n++) :
+            if ($n === $current) :
+                $page_link = "<span class='page-numbers current'>" . $args['before_page_number'];
+                $page_link .= $n . $args['after_page_number'] . '</span>';
+                $page_links[] = $page_link;
+                $dots = true;
+            else :
+                if ($args['show_all'] ||
+                    ($n <= $end_size || ($current && $n >= $current - $mid_size && $n <= $current + $mid_size) ||
+                        $n > $total - $end_size)) :
+                    $link = str_replace('%_%', 1 === $n ? '' : $args['format'], $args['base']);
+                    $link = str_replace('%#%', $n, $link);
+                    if ($add_args) {
+                        $link = self::add_query_arg($add_args, $link);
+                    }
+                    $link .= $args['add_fragment'];
+                    $page_link = "<a class='page-numbers' data-page='" . $n . "' data-sourcecat='" . $args['sourcecat'] . "'>" . $args['before_page_number'];
+                    $page_link .= $n . $args['after_page_number'] . '</a>';
+                    $page_links[] = $page_link;
+                    $dots = true;
+                elseif ($dots && !$args['show_all']) :
+                    $page_links[] = '<span class="page-numbers dots">&hellip;</span>';
+                    $dots = false;
+                endif;
+            endif;
+        endfor;
+        if ($args['prev_next'] && $current && ($current < $total || -1 === $total)) :
+            $link = str_replace('%_%', $args['format'], $args['base']);
+            $link = str_replace('%#%', $current + 1, $link);
+            if ($add_args) {
+                $link = self::add_query_arg($add_args, $link);
+            }
+            $link .= $args['add_fragment'];
+
+            $page_link = "<a class='next page-numbers' data-page='" . ($current + 1) . "' data-sourcecat='" . $args['sourcecat'] . "'>";
+            $page_link .= $args['next_text'] . '</a>';
+            $page_links[] = $page_link;
+        endif;
+        switch ($args['type']) {
+            case 'array':
+                return $page_links;
+            case 'list':
+                $r .= "<ul class='page-numbers'>\n\t<li>";
+                $r .= join("</li>\n\t<li>", $page_links);
+                $r .= "</li>\n</ul>\n";
+                break;
+            default:
+                $r .= "<div class='dropfiles-pagination'>\n\t";
+                $r .= join("\n", $page_links);
+                $r .= "\n</div>\n";
+                break;
+        }
+        return $r;
+    }
+
+    // phpcs:ignore Squiz.Commenting.FunctionComment.MissingParamTag -- For matching
+    /**
+     * Retrieves a modified URL query string.
+     *
+     * You can rebuild the URL and append query variables to the URL query by using this function.
+     * There are two ways to use this function; either a single key and value, or an associative array.
+     *
+     * Using a single key and value:
+     *
+     *     add_query_arg( 'key', 'value', 'http://example.com' );
+     *
+     * Using an associative array:
+     *
+     *     add_query_arg( array(
+     *         'key1' => 'value1',
+     *         'key2' => 'value2',
+     *     ), 'http://example.com' );
+     *
+     * Omitting the URL from either use results in the current URL being used
+     * (the value of `$_SERVER['REQUEST_URI']`).
+     *
+     * Values are expected to be encoded appropriately with urlencode() or rawurlencode().
+     *
+     * Setting any query variable's value to boolean false removes the key (see remove_query_arg()).
+     *
+     * Important: The return value of add_query_arg() is not escaped by default. Output should be
+     * late-escaped with esc_url() or similar to help prevent vulnerability to cross-site scripting
+     * (XSS) attacks.
+     *
+     * @param string|array ...$args Either a query variable key, or an associative array of query variables.
+     *
+     * @return string New URL query string (unescaped).
+     */
+    public static function add_query_arg(...$args) // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- For matching
+    {
+        if (is_array($args[0])) {
+            if (count($args) < 2 || false === $args[1]) {
+                $uri = $_SERVER['REQUEST_URI'];
+            } else {
+                $uri = $args[1];
+            }
+        } else {
+            if (count($args) < 3 || false === $args[2]) {
+                $uri = $_SERVER['REQUEST_URI'];
+            } else {
+                $uri = $args[2];
+            }
+        }
+
+        $frag = strstr($uri, '#');
+        if ($frag) {
+            $uri = substr($uri, 0, -strlen($frag));
+        } else {
+            $frag = '';
+        }
+
+        if (0 === stripos($uri, 'http://')) {
+            $protocol = 'http://';
+            $uri      = substr($uri, 7);
+        } elseif (0 === stripos($uri, 'https://')) {
+            $protocol = 'https://';
+            $uri      = substr($uri, 8);
+        } else {
+            $protocol = '';
+        }
+
+        if (str_contains($uri, '?')) {
+            list( $base, $query ) = explode('?', $uri, 2);
+            $base                .= '?';
+        } elseif ($protocol || ! str_contains($uri, '=')) {
+            $base  = $uri . '?';
+            $query = '';
+        } else {
+            $base  = '';
+            $query = $uri;
+        }
+
+        self::dropfiles_parse_str($query, $qs);
+        $qs = self::urlencode_deep($qs); // This re-URL-encodes things that were already in the query string.
+        if (is_array($args[0])) {
+            foreach ($args[0] as $k => $v) {
+                $qs[ $k ] = $v;
+            }
+        } else {
+            $qs[ $args[0] ] = $args[1];
+        }
+
+        foreach ($qs as $k => $v) {
+            if (false === $v) {
+                unset($qs[ $k ]);
+            }
+        }
+
+        $ret = self::build_query($qs);
+        $ret = trim($ret, '?');
+        $ret = preg_replace('#=(&|$)#', '$1', $ret);
+        $ret = $protocol . $base . $ret . $frag;
+        $ret = rtrim($ret, '?');
+        $ret = str_replace('?#', '#', $ret);
+        return $ret;
+    }
+
+    /**
+     * Parses a string into variables to be stored in an array.
+     *
+     * @param string $input_string The string to be parsed.
+     * @param array  $result       Variables will be stored in this array.
+     *
+     * @return mixed|void
+     */
+    public static function dropfiles_parse_str($input_string, &$result) // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- For matching
+    {
+        parse_str((string) $input_string, $result);
+    }
+
+    /**
+     * Builds URL query based on an associative and, or indexed array.
+     *
+     * This is a convenient function for easily building url queries. It sets the
+     * separator to '&' and uses _http_build_query() function.
+     *
+     * @param array $data URL-encode key/value pairs.
+     *
+     * @return string URL-encoded string.
+     */
+    public static function build_query($data) // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- For matching
+    {
+        return self::_http_build_query($data, null, '&', '', false);
+    }
+
+    /**
+     * From php.net (modified by Mark Jaquith to behave like the native PHP5 function).
+     *
+     * @param array|object $data      An array or object of data. Converted to array.
+     * @param string       $prefix    Optional. Numeric index. If set, start parameter numbering with it.
+     *                                Default null.
+     * @param string       $sep       Optional. Argument separator; defaults to 'arg_separator.output'.
+     *                                Default null.
+     * @param string       $key       Optional. Used to prefix key name. Default empty string.
+     * @param boolean      $urlencode Optional. Whether to use urlencode() in the result. Default true.
+     *
+     * @return string The query string.
+     */
+    public static function _http_build_query($data, $prefix = null, $sep = null, $key = '', $urlencode = true) // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps, PSR2.Methods.MethodDeclaration.Underscore -- For matching
+    {
+        $ret = array();
+
+        foreach ((array) $data as $k => $v) {
+            if ($urlencode) {
+                $k = urlencode($k);
+            }
+
+            if (is_int($k) && null !== $prefix) {
+                $k = $prefix . $k;
+            }
+
+            if (! empty($key)) {
+                $k = $key . '%5B' . $k . '%5D';
+            }
+
+            if (null === $v) {
+                continue;
+            } elseif (false === $v) {
+                $v = '0';
+            }
+
+            if (is_array($v) || is_object($v)) {
+                array_push($ret, self::_http_build_query($v, '', $sep, $k, $urlencode));
+            } elseif ($urlencode) {
+                array_push($ret, $k . '=' . urlencode($v));
+            } else {
+                array_push($ret, $k . '=' . $v);
+            }
+        }
+
+        if (null === $sep) {
+            $sep = ini_get('arg_separator.output');
+        }
+
+        return implode($sep, $ret);
+    }
+
+    /**
+     * Navigates through an array, object, or scalar, and encodes the values to be used in a URL.
+     *
+     * @param mixed $value The array or string to be encoded.
+     *
+     * @return mixed The encoded value.
+     */
+    public static function urlencode_deep($value) // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- For matching
+    {
+        return self::map_deep($value, 'urlencode');
+    }
+
+    /**
+     * Maps a function to all non-iterable elements of an array or an object.
+     *
+     * @param mixed    $value    The array, object, or scalar.
+     * @param callable $callback The function to map onto $value.
+     *
+     * @return mixed The value with the callback applied to all non-arrays and non-objects inside it.
+     */
+    public static function map_deep($value, $callback) // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- For matching
+    {
+        if (is_array($value)) {
+            foreach ($value as $index => $item) {
+                $value[ $index ] = self::map_deep($item, $callback);
+            }
+        } elseif (is_object($value)) {
+            $object_vars = get_object_vars($value);
+            foreach ($object_vars as $property_name => $property_value) {
+                $value->$property_name = self::map_deep($property_value, $callback);
+            }
+        } else {
+            $value = call_user_func($callback, $value);
+        }
+
+        return $value;
     }
 }

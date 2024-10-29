@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -47,10 +47,12 @@ class plgSystemHikashopaffiliate extends hikashopJoomlaPlugin {
 			class_alias('Joomla\CMS\Factory', 'JFactory');
 
 		$app = JFactory::getApplication();
-
-		if(version_compare(JVERSION,'4.0','>=') && $app->isClient('administrator'))
-			return true;
-		if(version_compare(JVERSION,'4.0','<') && $app->isAdmin())
+		$site = false;
+		if(version_compare(JVERSION,'4.0','>=') && $app->isClient('site'))
+			$site = true;
+		if(version_compare(JVERSION,'4.0','<') && $app->isSite())
+			$site = true;
+		if(!$site)
 			return true;
 		if(@$_REQUEST['option'] == 'com_gcalendar')
 			return true;
@@ -329,13 +331,12 @@ class plgSystemHikashopaffiliate extends hikashopJoomlaPlugin {
 			return false;
 
 		$app = JFactory::getApplication();
-
-		$admin = false;
-		if(version_compare(JVERSION,'4.0','>=') && $app->isClient('administrator'))
-			$admin = true;
-		if(version_compare(JVERSION,'4.0','<') && $app->isAdmin())
-			$admin = true;
-		if($admin || !$isnew)
+		$site = false;
+		if(version_compare(JVERSION,'4.0','>=') && $app->isClient('site'))
+			$site = true;
+		if(version_compare(JVERSION,'4.0','<') && $app->isSite())
+			$site = true;
+		if(!$site || !$isnew)
 			return true;
 
 		if(!include_once(rtrim(JPATH_ADMINISTRATOR,DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php'))
@@ -420,6 +421,11 @@ class plgSystemHikashopaffiliate extends hikashopJoomlaPlugin {
 		$button = $this->params->get('button_on_control_panel','1');
 		if(!$button)
 			return;
+		if($button > 1) {
+			$partner = hikashop_loadUser(true);
+			if(empty($partner->user_partner_activated))
+				return;
+		}
 		global $Itemid;
 		$url_itemid = '';
 		if(!empty($Itemid))

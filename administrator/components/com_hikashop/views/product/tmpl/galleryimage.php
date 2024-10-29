@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -43,7 +43,7 @@ echo $this->treeContent;
 <script type="text/javascript">
 hikashopGallery.callbackSelection = function(tree,id) {
 	var d = document, node = tree.get(id);
-	if( node.value && node.name ) {
+	if( node.value && node.name && node.value != '<?php echo rtrim($this->destFolder, '/'); ?>') {
 		document.location = "<?php echo hikashop_completeLink('product&task=galleryimage&id='.hikaInput::get()->getInt('id').'&cid='.@$this->cid.'&product_id='.hikaInput::get()->getInt('product_id'), true, true) ;?>&folder=" + node.value;
 	}
 }

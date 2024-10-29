@@ -16,6 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\MVC\Controller\BaseController;
 
 /**
  * List Controller
@@ -23,13 +24,23 @@ use Joomla\CMS\Factory;
  * @package    Joomla
  * @subpackage eMundus
  */
-class EmundusControllerList extends JControllerLegacy
+class EmundusControllerList extends BaseController
 {
 
 	protected $app;
 
+	private $_user;
+
 	private $m_list;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     \JController
+	 * @since   1.0.0
+	 */
 	public function __construct($config = array())
 	{
 		parent::__construct($config);
@@ -37,15 +48,15 @@ class EmundusControllerList extends JControllerLegacy
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
 
 		$this->app    = Factory::getApplication();
+		$this->_user  = $this->app->getIdentity();
 		$this->m_list = $this->getModel('list');
 	}
 
 	public function getList()
 	{
 		$tab  = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"));
-		$user = JFactory::getUser();
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id) || EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) || EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 
 			$listId                                = $this->input->getInt('listId');
 			$listParticularConditionalColumn       = json_decode($this->input->getString('listParticularConditionalColumn'));
@@ -71,10 +82,9 @@ class EmundusControllerList extends JControllerLegacy
 
 	public function getListActions()
 	{
-		$user = JFactory::getUser();
 		$tab  = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"));
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id) || EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) || EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 
 			$listId            = $this->input->getInt('listId');
 			$lisActionColumnId = $this->input->getInt('listActionColumnId');
@@ -94,10 +104,9 @@ class EmundusControllerList extends JControllerLegacy
 
 	public function actionSetColumnValueAs()
 	{
-		$user = JFactory::getUser();
 		$tab  = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"));
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id) || EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) || EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 
 			$rowId       = $this->input->getString('row_id');
 			$value       = $this->input->getString('value');
@@ -119,10 +128,9 @@ class EmundusControllerList extends JControllerLegacy
 
 	public function updateActionState()
 	{
-		$user = JFactory::getUser();
 		$tab  = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"));
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id) || EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) || EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 
 			$newValue = $this->input->getString('newValue');
 			$rows     = json_decode($this->input->getString('rows'), true);

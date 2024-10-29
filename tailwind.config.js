@@ -5,10 +5,11 @@ module.exports = {
     prefix: 'tw-',
     content: [
         "./templates/g5_helium/html/**/*.{html,js,php}",
-        "./modules/**/src/*.{html,js,php}",
+        "./modules/**/src/**/*.{html,js,php,vue}",
         "./modules/**/tmpl/*.{html,js,php}",
         "./plugins/fabrik_element/**/*.{html,js,php}",
         "./components/com_emundus/helpers/**/*.{html,js,php,vue}",
+        "./components/com_emundus/controllers/**/*.{html,js,php,vue}",
         "./components/com_emundus/models/**/*.{html,js,php,vue}",
         "./components/com_emundus/src/**/*.{html,js,php,vue}",
         "./components/com_emundus/views/**/*.{html,js,php,vue}",
@@ -16,6 +17,7 @@ module.exports = {
         "./components/com_fabrik/views/**/*.{html,js,php}",
         "./media/com_emundus/js/em_files.js",
         "./media/com_emundus/js/em_user.js",
+        "./media/com_emundus/js/collaborate.js",
         "./media/com_emundus/js/mixins/exports.js",
         "./media/com_emundus/js/mixins/utilities.js",
     ],
@@ -34,11 +36,45 @@ module.exports = {
         },
         {
             pattern: /tw-flex-/
-        }
+        },
+        {
+            pattern: /tw-grid-cols-/,
+            variants: ['sm', 'md', 'lg'],
+        },
+        {
+            pattern: /tw-border-/
+        },
+        {
+            pattern: /tw-bg-/
+        },
+        {
+            pattern: /tw-text-orange-500/
+        },
+        {
+            pattern: /tw-text-main-500/
+        },
     ],
     theme: {
         extend: {
+            scale: {
+                '200': '2',
+                '300': '3',
+                '400': '4',
+                '500': '5',
+                '600': '6',
+                '700': '7',
+                '800': '8',
+                '900': '9',
+                '1000': '10',
+            },
             colors: {
+                profile: {
+                    full: 'var(--em-profile-color)',
+                    light: 'hsl(from var(--em-profile-color) h s l / 15%)',
+                    medium: 'hsl(from var(--em-profile-color) h s l / 30%)',
+                    dark: 'color-mix(in srgb,var(--em-profile-color),#000 15%)',
+                },
+
                 red: {
                     50: 'var(--red-50)',
                     100: 'var(--red-100)',
@@ -93,11 +129,15 @@ module.exports = {
                     200: 'var(--main-200)',
                     300: 'var(--main-300)',
                     400: 'var(--main-400)',
-                    500: 'var(--em-profile-color)',
+                    500: 'var(--main-500)',
                     600: 'var(--main-600)',
                     700: 'var(--main-700)',
                     800: 'var(--main-800)',
                     900: 'var(--main-900)',
+                },
+                green: {
+                    500: 'var(--green-500)',
+                    700: 'var(--green-700)'
                 }
             },
             spacing: {
@@ -113,7 +153,21 @@ module.exports = {
                 10: 'var(--em-spacing-10)',
                 11: 'var(--em-spacing-11)',
                 12: 'var(--em-spacing-12)',
+                'py-4':'calc(var(--em-spacing-4) * 3.7)',
             },
+            borderRadius: {
+                'coordinator': 'var(--em-coordinator-br)',
+                'applicant': 'var(--em-applicant-br)',
+            },
+            boxShadow: {
+                'modal': '0 0 0 50vmax rgba(0,0,0,.5)'
+            },
+            fontSize: {
+                'xxs': '8px'
+            },
+            height: {
+                'form': 'var(--em-form-height)',
+            }
         },
     },
     plugins: [
@@ -121,7 +175,7 @@ module.exports = {
             addComponents({
                 '.em-default-title-1': {
                     color: 'var(--em-default-title-color-1)',
-                    fontFamily: 'var(--em-applicant-font-title)',
+                    fontFamily: 'var(--em-profile-font-title)',
                     fontSize: 'var(--em-coordinator-h1)',
                     fontStyle: 'normal',
                     lineHeight: '28.8px',
@@ -129,7 +183,7 @@ module.exports = {
                 },
                 '.em-default-title-2': {
                     color: 'var(--em-default-title-color-1)',
-                    fontFamily: 'var(--em-applicant-font-title)',
+                    fontFamily: 'var(--em-profile-font-title)',
                     fontSize: 'var(--em-coordinator-h2)',
                     fontStyle: 'normal',
                     lineHeight: '26.4px',
@@ -137,12 +191,122 @@ module.exports = {
                 },
                 '.em-default-title-3': {
                     color: 'var(--em-default-title-color-1)',
-                    fontFamily: 'var(--em-applicant-font-title)',
+                    fontFamily: 'var(--em-profile-font-title)',
                     fontSize: 'var(--em-coordinator-h3)',
                     fontStyle: 'normal',
                     lineHeight: '24.2px',
                     fontWeight: 500,
-                }
+                },
+
+                '.btn-primary': {
+                    backgroundColor: 'var(--em-profile-color)',
+                    color: 'var(--neutral-0) !important',
+                    border: '1px solid var(--em-profile-color)',
+                    textShadow: 'none',
+                    textTransform: 'math-auto',
+                    padding: 'var(--em-spacing-vertical) var(--em-spacing-horizontal)',
+                    fontSize: '16px',
+                    fontFamily: 'var(--em-profile-font)',
+                    lineHeight: '1.25',
+                    borderRadius: 'var(--em-applicant-br)',
+                    transition: 'all 0.3s ease-in-out',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+
+                    '&:hover': {
+                        backgroundColor: 'var(--neutral-0)',
+                        color: 'var(--em-profile-color) !important',
+                        border: '1px solid var(--em-profile-color)',
+                        textDecoration: 'none',
+                    },
+
+                    '&:disabled': {
+                        opacity: '0.6',
+                        cursor: 'not-allowed',
+                    }
+                },
+
+                '.btn-secondary': {
+                    backgroundColor: 'var(--neutral-0)',
+                    color: 'var(--em-secondary-color) !important',
+                    border: '1px solid var(--em-secondary-color)',
+                    textShadow: 'none',
+                    textTransform: 'math-auto',
+                    padding: 'var(--em-spacing-vertical) var(--em-spacing-horizontal)',
+                    fontSize: '16px',
+                    fontFamily: 'var(--em-profile-font)',
+                    lineHeight: '1.25',
+                    borderRadius: 'var(--em-applicant-br)',
+                    transition: 'all 0.3s ease-in-out',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+
+                    '&:hover': {
+                        backgroundColor: 'var(--em-secondary-color)',
+                        color: 'var(--neutral-0) !important',
+                        border: '1px solid var(--em-secondary-color)',
+                        textDecoration: 'none',
+                    },
+                },
+
+
+                '.btn-tertiary': {
+                    backgroundColor: 'var(--neutral-0)',
+                    color: 'var(--em-tertiary-color)',
+                    border: '1px solid var(--em-tertiary-color)',
+                    textShadow: 'none',
+                    textTransform: 'math-auto',
+                    padding: 'var(--em-spacing-vertical) var(--em-spacing-horizontal)',
+                    fontSize: '16px',
+                    fontFamily: 'var(--em-profile-font)',
+                    lineHeight: '1.25',
+                    borderRadius: 'var(--em-applicant-br)',
+                    transition: 'all 0.3s ease-in-out',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+
+                    '&:hover': {
+                        backgroundColor: 'var(--em-tertiary-color)',
+                        color: 'var(--neutral-0)',
+                        border: '1px solid var(--em-tertiary-color)',
+                        textDecoration: 'none',
+                    },
+                },
+
+                '.btn-cancel': {
+                    backgroundColor: 'var(--neutral-0)',
+                    color: 'var(--em-coordinator-secondary-color) !important',
+                    border: '1px solid var(--em-coordinator-secondary-color)',
+                    textShadow: 'none',
+                    textTransform: 'math-auto',
+                    padding: 'var(--em-coordinator-vertical) var(--em-coordinator-horizontal)',
+                    fontSize: 'var(--em-coordinator-font-size)',
+                    fontFamily: 'var(--em-profile-font)',
+                    lineHeight: '1.25',
+                    borderRadius: 'var(--em-coordinator-br)',
+                    transition: 'all 0.3s ease-in-out',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+
+                    '&:hover': {
+                        backgroundColor: 'var(--em-coordinator-secondary-color)',
+                        color: 'var(--neutral-0) !important',
+                        border: '1px solid var(--em-coordinator-secondary-color)',
+                        textDecoration: 'none',
+                    },
+                },
+
+                '.btn-disabled': {
+                    opacity: '0.6',
+
+                    '&:hover': {
+                        cursor: 'not-allowed',
+                    },
+                },
             });
         })
     ],

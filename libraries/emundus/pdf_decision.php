@@ -2,7 +2,9 @@
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
+use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 
@@ -51,8 +53,8 @@ if(!function_exists('is_image_ext'))
 function pdf_decision($user_id, $fnum = null, $output = true, $name = null, $options = []) {
 	jimport( 'joomla.html.parameter' );
 	set_time_limit(0);
-	require_once (JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'date.php');
-
+	require_once (JPATH_SITE.'/components/com_emundus/helpers/emails.php');
+	require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php');
 	require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
 	include_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
 	include_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
@@ -61,60 +63,39 @@ function pdf_decision($user_id, $fnum = null, $output = true, $name = null, $opt
 	$m_profile = new EmundusModelProfile;
 	$m_files = new EmundusModelFiles;
 
-	$db = JFactory::getDBO();
-	$app = JFactory::getApplication();
-	$config = JFactory::getConfig();
+	$db = Factory::getContainer()->get('DatabaseDriver');
+	$app = Factory::getApplication();
+	$config = $app->getConfig();
+	$eMConfig = ComponentHelper::getParams('com_emundus');
 	$user = $m_profile->getEmundusUser($user_id);
 	$fnum = empty($fnum)?$user->fnum:$fnum;
 
 	$infos = $m_profile->getFnumDetails($fnum);
 	$campaign_id = $infos['campaign_id'];
 
-	$anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+	$anonymize_data = EmundusHelperAccess::isDataAnonymized($app->getIdentity()->id);
+
+	$photo_attachment_id = $eMConfig->get('photo_attachment', 10);
 
 	// Users informations
-	$query = 'SELECT u.id AS user_id, c.firstname, c.lastname, a.filename AS avatar, p.label AS cb_profile, c.profile, esc.label, esc.year AS cb_schoolyear, esc.training, u.id, u.registerDate, u.email, epd.gender, epd.nationality, epd.birth_date, ed.user, ecc.date_submitted
-				FROM #__emundus_campaign_candidature AS ecc
-				LEFT JOIN #__users AS u ON u.id=ecc.applicant_id 
-				LEFT JOIN #__emundus_users AS c ON u.id = c.user_id
-				LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id = '.$campaign_id.'  
-				LEFT JOIN #__emundus_uploads AS a ON a.user_id=u.id AND a.attachment_id = '.EMUNDUS_PHOTO_AID.' AND a.fnum like '.$db->Quote($fnum).' 
-				LEFT JOIN #__emundus_setup_profiles AS p ON p.id = esc.profile_id
-				LEFT JOIN #__emundus_personal_detail AS epd ON epd.user = u.id AND epd.fnum like '.$db->Quote($fnum).' 
-				LEFT JOIN #__emundus_declaration AS ed ON ed.user = u.id AND ed.fnum like '.$db->Quote($fnum).' 
-				WHERE ecc.fnum like '.$db->Quote($fnum).' 
-				ORDER BY esc.id DESC';
+	$query = $db->getQuery(true);
+	$query->select('u.id as user_id, c.firstname, c.lastname, a.filename AS avatar, p.label AS cb_profile, c.profile, esc.label, esc.year AS cb_schoolyear, esc.training, u.id, u.registerDate, u.email, epd.gender, epd.nationality, epd.birth_date, ed.user, ecc.date_submitted')
+		->from('#__emundus_campaign_candidature AS ecc')
+		->leftJoin('#__users AS u ON u.id=ecc.applicant_id')
+		->leftJoin('#__emundus_users AS c ON u.id = c.user_id')
+		->leftJoin('#__emundus_setup_campaigns AS esc ON esc.id = ' . $campaign_id)
+		->leftJoin('#__emundus_uploads AS a ON a.user_id=u.id AND a.attachment_id = ' . $db->quote($photo_attachment_id) . ' AND a.fnum like ' . $db->quote($fnum))
+		->leftJoin('#__emundus_setup_profiles AS p ON p.id = esc.profile_id')
+		->leftJoin('#__emundus_personal_detail AS epd ON epd.user = u.id AND epd.fnum like ' . $db->quote($fnum))
+		->leftJoin('#__emundus_declaration AS ed ON ed.user = u.id AND ed.fnum like ' . $db->quote($fnum))
+		->where('ecc.fnum like ' . $db->Quote($fnum))
+		->order('esc.id DESC');
 	$db->setQuery($query);
 	$item = $db->loadObject();
 
-	//get logo
-	$template = $app->getTemplate(true);
-	$params = $template->params;
+	/* GET LOGO */
+	$logo = EmundusHelperEmails::getLogo(false,$item->training);
 
-	if (!empty($params->get('logo')->custom->image)) {
-		$logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
-		$logo = !empty($logo['path']) ? JPATH_ROOT.DS.$logo['path'] : "";
-	} else {
-		$logo_module = JModuleHelper::getModuleById('90');
-		preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
-
-		$pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
-        (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
-        (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
-        (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
-		if ((bool) preg_match($pattern, $tab[1])) {
-			$tab[1] = parse_url($tab[1], PHP_URL_PATH);
-		}
-
-		$logo = JPATH_SITE.DS.$tab[1];
-	}
-
-	// manage logo by programme
-	$ext = substr($logo, -3);
-	$logo_prg = substr($logo, 0, -4) . '-' . $item->training . '.' . $ext;
-	if (is_file($logo_prg)) {
-		$logo = $logo_prg;
-	}
 	$type = pathinfo($logo, PATHINFO_EXTENSION);
 	$data = file_get_contents($logo);
 	$logo_base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);

@@ -1,17 +1,17 @@
 <template>
-  <div id="form-builder-preview-form" class="em-h-100 em-w-100" :class="{loading: loading}">
+  <div id="form-builder-preview-form" class="tw-h-full tw-w-full" :class="{loading: loading}">
     <div v-if="!loading">
-      <p class="em-font-size-12 em-w-100 em-text-align-left em-mb-16">{{ form_label }}</p>
-      <div class="preview-groups em-flex-column">
-        <section v-for="(group, index) in formData.groups" :key="group.id" class="em-mb-8 form-builder-page-section">
-          <div class="section-card em-flex-column">
-            <div class="section-identifier em-bg-main-500 em-flex-row">
+      <p class="tw-text-xs tw-w-full tw-text-end tw-mb-4">{{ form_label }}</p>
+      <div class="preview-groups tw-flex tw-flex-col">
+        <section v-for="(group, index) in formData.groups" :key="group.id" class="tw-mb-2 form-builder-page-section">
+          <div class="section-card tw-flex tw-flex-col">
+            <div class="section-identifier tw-bg-profile-full tw-flex tw-items-center">
               <span class="text-xxs">{{ translate('COM_EMUNDUS_FORM_BUILDER_SECTION') }} {{
                   index + 1
                 }} / {{ formData.groups.length }}</span>
             </div>
-            <div class="section-content em-w-100">
-              <p class="em-font-size-8 em-w-100 em-text-align-left">{{ group.label.replace('Model - ', '') }}</p>
+            <div class="section-content tw-w-full">
+              <p class="tw-text-xxs tw-w-full tw-text-end">{{ group.label.replace('Model - ', '') }}</p>
             </div>
           </div>
         </section>
@@ -22,8 +22,8 @@
 </template>
 
 <script>
-import formService from '../../services/form';
-import Skeleton from '../Skeleton';
+import formService from '@/services/form.js';
+import Skeleton from '@/components/Skeleton.vue';
 
 export default {
   name: "FormBuilderPreviewForm",

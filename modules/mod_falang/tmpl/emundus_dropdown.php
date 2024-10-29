@@ -36,7 +36,7 @@ foreach ($list as $key=> $language) {
                 <?php if ($params->get('show_name', 1)):?>
                     <?php echo $params->get('full_name', 1) ? $language->title_native : strtoupper($language->sef);?>
                 <?php endif; ?>
-                <span class="material-icons" style="font-size: 30px">expand_more</span>
+                <span class="material-symbols-outlined" style="font-size: 30px">expand_more</span>
             </button>
             <?php endif; ?>
         <?php endforeach; ?>

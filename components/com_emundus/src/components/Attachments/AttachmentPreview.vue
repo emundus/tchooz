@@ -4,9 +4,9 @@
         ref="a-preview"
         class="attachment-preview"
         :class="{
-        'overflow-x': overflowX,
-        'overflow-y': overflowY,
-        'hidden': !needShadowDOM
+        'tw-overflow-x': overflowX,
+        'tw-overflow-y': overflowY,
+        'tw-hidden': !needShadowDOM
       }"
     ></div>
     <div v-if="!needShadowDOM" v-html="preview" class="attachment-preview"></div>
@@ -17,7 +17,11 @@
 </template>
 
 <script>
-import attachmentService from "../../services/attachment";
+import attachmentService from "@/services/attachment";
+import { useAttachmentStore } from '@/stores/attachment.js';
+
+import { storeToRefs } from 'pinia'
+import { watch } from 'vue'
 
 export default {
   props: {
@@ -28,7 +32,7 @@ export default {
   },
   data() {
     return {
-      attachment: this.$store.state.attachment.selectedAttachment,
+      attachment: useAttachmentStore().selectedAttachment,
       preview: "",
       overflowX: false,
       overflowY: false,
@@ -42,27 +46,32 @@ export default {
     if (typeof this.$refs["a-preview"].attachShadow === 'function') {
       this.$refs["a-preview"].attachShadow({mode: "open"});
     }
-    this.attachment = this.$store.state.attachment.selectedAttachment;
+
+    const attachmentStore = useAttachmentStore();
+    const { selectedAttachment } = storeToRefs(attachmentStore);
+    watch(selectedAttachment, () => {
+      const keys = Object.keys(selectedAttachment);
+
+      if (keys.length !== 0) {
+        this.attachment = selectedAttachment;
+        this.openMsg = false;
+        this.getPreview();
+      }
+    });
+
+    this.attachment = attachmentStore.selectedAttachment;
     this.getPreview();
   },
   methods: {
     async getPreview() {
       let data;
-      if (!this.$store.state.attachment.previews[this.attachment.aid]) {
-        data = await attachmentService.getPreview(
-            this.user,
-            this.attachment.filename
-        );
-
-        // store preview data
+      if (!useAttachmentStore().previews[this.attachment.aid]) {
+        data = await attachmentService.getPreview(this.user, this.attachment.filename, this.attachment.aid);
         if (data.status) {
-          this.$store.commit("attachment/setPreview", {
-            preview: data,
-            id: this.attachment.aid,
-          });
+          useAttachmentStore().setPreview({preview: data, id: this.attachment.aid,});
         }
       } else {
-        data = this.$store.state.attachment.previews[this.attachment.aid];
+        data = useAttachmentStore().previews[this.attachment.aid];
       }
 
       this.$emit("canDownload");
@@ -178,19 +187,7 @@ export default {
         wrapper.style.overflow = "hidden";
       }
     },
-  },
-  watch: {
-    "$store.state.attachment.selectedAttachment": function () {
-      // check if selected attchment is not an empty object
-      const keys = Object.keys(this.$store.state.attachment.selectedAttachment);
-
-      if (keys.length !== 0) {
-        this.attachment = this.$store.state.attachment.selectedAttachment;
-        this.openMsg = false;
-        this.getPreview();
-      }
-    },
-  },
+  }
 };
 </script>
 

@@ -512,4 +512,66 @@ class DropfilesCloudHelper
 
         return true;
     }
+
+    /**
+     * Get term_id of dropbox folder by folder id
+     *
+     * @param integer $folderId Folder id
+     *
+     * @return boolean
+     */
+    public static function getTermIdDropBoxByDropBoxId($folderId)
+    {
+        // Get a dbo connection.
+        $dbo = JFactory::getDbo();
+        $query = $dbo->getQuery(true);
+
+        $query->select('d.*');
+        $query->from('#__categories as c, #__dropfiles AS d');
+        $query->where($dbo->quoteName('c.id') . ' = ' . $dbo->quoteName('d.id'));
+        $query->where('d.type=' . $dbo->quote('dropbox'));
+        $query->where('BINARY d.cloud_id=' . $dbo->quote($folderId));
+
+        $dbo->setQuery($query);
+        $result = $dbo->loadObject();
+
+        if (!is_null($result) && is_object($result) && isset($result->id)) {
+            $result = $result->id;
+        } else {
+            $result = null;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get id of dropbox folder by folder path
+     *
+     * @param integer $folderPath Folder path
+     *
+     * @return boolean
+     */
+    public static function getDropfilesIdByDropboxPath($folderPath)
+    {
+        // Get a dbo connection.
+        $dbo = JFactory::getDbo();
+        $query = $dbo->getQuery(true);
+
+        $query->select('d.*');
+        $query->from('#__categories as c, #__dropfiles AS d');
+        $query->where($dbo->quoteName('c.id') . ' = ' . $dbo->quoteName('d.id'));
+        $query->where('d.type=' . $dbo->quote('dropbox'));
+        $query->where('BINARY d.path=' . $dbo->quote($folderPath));
+
+        $dbo->setQuery($query);
+        $result = $dbo->loadObject();
+
+        if (!is_null($result) && is_object($result) && isset($result->id)) {
+            $result = $result->id;
+        } else {
+            $result = null;
+        }
+
+        return $result;
+    }
 }

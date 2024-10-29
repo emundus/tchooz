@@ -54,6 +54,13 @@ class Dropbox extends DropfilesCloudConnector
             $path_admin_component = JPATH_ADMINISTRATOR . '/components/com_dropfiles/helpers/component.php';
             JLoader::register('DropfilesComponentHelper', $path_admin_component);
         }
+        if (!class_exists('DropfilesControllerDropbox')) {
+            $dropboxControllerPath = JPATH_ADMINISTRATOR . '/components/com_dropfiles/controllers/dropbox.php';
+            JLoader::register('DropfilesControllerDropbox', $dropboxControllerPath);
+        }
+        if (!class_exists('DropfilesModelOptions')) {
+            JLoader::register('DropfilesModelOptions', JPATH_ADMINISTRATOR . '/components/com_dropfiles/models/options.php');
+        }
         $params = JComponentHelper::getParams('com_dropfiles');
         $mode = $params->get('dropboxConnectMethod', 'manual');
         $bundle = isset($_GET['bundle']) ? json_decode(self::urlsafeB64Decode($_GET['bundle'])) : array();
@@ -74,10 +81,10 @@ class Dropbox extends DropfilesCloudConnector
             );
         }
 
-        $dropboxParams['dropbox_key']                = $bundle->app_key;
-        $dropboxParams['dropbox_secret']             = $bundle->app_secret;
-        $dropboxParams['dropboxAccessToken']         = (!empty($bundle->accessToken) ? $bundle->accessToken : '');
-        $dropboxParams['dropbox_last_log']           = date('Y-m-d H:i:s');
+        $dropboxParams['dropbox_key']        = $bundle->app_key;
+        $dropboxParams['dropbox_secret']     = $bundle->app_secret;
+        $dropboxParams['dropboxAccessToken'] = (!empty($bundle->accessToken) ? $bundle->accessToken : '');
+        $dropboxParams['dropbox_last_log']   = date('Y-m-d H:i:s');
 
         // Save Dropbox params
         $this->saveParams($dropboxParams);
@@ -85,6 +92,13 @@ class Dropbox extends DropfilesCloudConnector
         if ($mode !== 'automatic') {
             DropfilesComponentHelper::setParams(array('dropboxConnectMethod' => 'automatic'));
         }
+
+        // Enable flag for syncing
+        if (!is_null($dropboxParams['dropboxAccessToken']) && $dropboxParams['dropboxAccessToken'] !== '') {
+            $options = new DropfilesModelOptions();
+            $options->update_option('dropfiles_dropbox_sync_after_connecting', true);
+        }
+
         $app->redirect(JURI::root() . 'administrator/index.php?option=com_dropfiles&view=dropbox&layout=redirect');
     }
 
@@ -240,8 +254,8 @@ class Dropbox extends DropfilesCloudConnector
         $params = JComponentHelper::getParams('com_dropfiles');
         $dropboxParams = array();
 
-        $dropboxParams['dropbox_key']                = trim($params->get('dropbox_key'));
-        $dropboxParams['dropbox_secret']             = trim($params->get('dropbox_secret'));
+        $dropboxParams['dropbox_key']                = trim($params->get('dropbox_key', ''));
+        $dropboxParams['dropbox_secret']             = trim($params->get('dropbox_secret', ''));
         $dropboxParams['dropboxAccessToken']         = isset($params['dropboxAccessToken']) ? $params['dropboxAccessToken'] : '';
 
         return $dropboxParams;

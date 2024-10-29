@@ -1,6 +1,6 @@
 <template>
-  <div class="em-flex-row em-gap-8">
-    <div v-for="tab in $props.tabs" class="em-tabs em-pointer" :class="selected === tab.name ? 'em-selected-tab' : ''"
+  <div class="tw-flex tw-items-center tw-gap-2">
+    <div v-for="tab in $props.tabs" class="em-tabs tw-cursor-pointer" :class="selected === tab.name ? 'em-selected-tab' : ''"
          @click="selected = tab.name;$emit('updateTab',tab.name)">
       <p>{{ translate(tab.label) }} ({{ tab.total }})</p>
     </div>

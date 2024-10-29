@@ -8,7 +8,7 @@
           v-model="searchTerm"
           @keyup="searchInAllListColumn"
       />
-      <span class="material-icons reload-icons" @click="reloadData">loop</span>
+      <span class="material-symbols-outlined reload-icons" @click="reloadData">loop</span>
     </div>
     <div class="em-flex-row em-w-auto em-mb-32">
       <filter-item :filterType="'groupBy'" :filterDatas="listColumns" @groupByCriteriaValue="groupByColumn"/>
@@ -29,12 +29,12 @@
         <th v-for="data in showingListColumns" :id="data.column_name" :key="data.id" @click="orderBy(data.column_name)"
             class="em-pointer" style="user-select: none;">
           <span v-if="sort.orderBy == data.column_name && sort.order == 'asc'"
-                class="material-icons">arrow_upward</span>
-          <span v-else-if="sort.orderBy == data.column_name && sort.order == 'desc'" class="material-icons">arrow_downward</span>
+                class="material-symbols-outlined">arrow_upward</span>
+          <span v-else-if="sort.orderBy == data.column_name && sort.order == 'desc'" class="material-symbols-outlined">arrow_downward</span>
           {{ translate(data.label) }}
         </th>
         <th>
-          <span v-if="checkedRows.length > 0" class="material-icons em-pointer"
+          <span v-if="checkedRows.length > 0" class="material-symbols-outlined em-pointer"
                 @click="moreOptionsOpened = !moreOptionsOpened">more_horiz</span>
           <more-options v-if="checkedRows.length > 0 && moreOptionsOpened" :options="moreOptionsData"
                         @select-option="onSelectOption" @focusout="moreOptionsOpened = false"></more-options>
@@ -53,8 +53,8 @@
             </td>
             <td style="border-left: none;text-align: end">
               <div>
-                <span v-if="opened.includes(rowGroupByRowKeyName(group))" class="material-icons">arrow_drop_down</span>
-                <span v-else class="material-icons">arrow_drop_up</span>
+                <span v-if="opened.includes(rowGroupByRowKeyName(group))" class="material-symbols-outlined">arrow_drop_down</span>
+                <span v-else class="material-symbols-outlined">arrow_drop_up</span>
               </div>
             </td>
           </tr>
@@ -539,7 +539,7 @@ table {
         border-bottom: 1px solid #e0e0e0;
         color: black;
 
-        .material-icons {
+        .material-symbols-outlined{
           transform: translateY(3px);
         }
       }

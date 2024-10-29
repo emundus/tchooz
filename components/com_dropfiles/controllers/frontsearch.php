@@ -315,9 +315,6 @@ class DropfilesControllerFrontsearch extends JControllerLegacy
             $componentParams = JComponentHelper::getParams('com_dropfiles');
             $doc = JFactory::getDocument();
             if ((int) $componentParams->get('usegoogleviewer', 1) === 1) {
-                $path_dropfilesbase = JPATH_ADMINISTRATOR . '/components/com_droppics/classes/dropfilesBase.php';
-                JLoader::register('DropfilesBase', $path_dropfilesbase);
-
                 JHtml::_('jquery.framework');
 
                 $doc->addScript(JURI::base('true') . '/components/com_dropfiles/assets/js/jquery.colorbox-min.js');

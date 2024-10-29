@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<extension
+        type="module"
+        version="4.2.9"
+        client="site"
+        method="upgrade">
+    <name>MOD_EMUNDUS_ATTACHMENTS</name>
+    <author>eMundus</author>
+    <creationDate>October 2024</creationDate>
+    <copyright>Copyright (C) 2015 eMundus. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>dev@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>2.0.0</version>
+    <description>MOD_EMUNDUS_ATTACHMENTS_XML_DESCRIPTION</description>
+    <files>
+        <filename>mod_emundus_attachments.xml</filename>
+        <filename module="mod_emundus_attachments">mod_emundus_attachments.php</filename>
+        <filename>helper.php</filename>
+        <filename>index.html</filename>
+        <folder>tmpl</folder>
+        <folder>language</folder>
+        <folder>css</folder>
+    </files>
+    <languages>
+        <language tag="en-GB">en-GB.mod_emundus_attachments.ini</language>
+        <language tag="en-GB">en-GB.mod_emundus_attachments.sys.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_attachments.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_attachments.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic" label="Options">
+                <field name="mod_emundus_attachments_title"
+                       type="text"
+                       label="MOD_EMUNDUS_ATTACHMENTS_TITLE"
+                       description="MOD_EMUNDUS_ATTACHMENTS_TITLE_DESC"
+                       default=""
+                       />
+                <field name="mod_emundus_attachments_groups"
+                       type="subform"
+                       label="MOD_EMUNDUS_ATTACHMENTS_GROUPS"
+                       description="MOD_EMUNDUS_ATTACHMENTS_GROUPS_DESC"
+                       multiple="true"
+                       layout="joomla.form.field.subform.repeatable-table">
+                    <form>
+                        <field name="mod_emundus_attachments_groups_attachment"
+                               type="sql"
+                               query="SELECT id, value as name FROM #__emundus_setup_attachments"
+                                 key_field="id"
+                                    value_field="name"
+                               label="MOD_EMUNDUS_ATTACHMENTS_GROUPS_ATTACHMENT"
+                               description="MOD_EMUNDUS_ATTACHMENTS_GROUPS_ATTACHMENT_DESC"
+                        />
+                        <field name="mod_emundus_attachments_groups_status"
+                               type="sql"
+                               query="SELECT step, value as name FROM #__emundus_setup_status"
+                                 key_field="step"
+                                    value_field="name"
+                               multiple="true"
+                               label="MOD_EMUNDUS_ATTACHMENTS_GROUPS_STATUS"
+                               description="MOD_EMUNDUS_ATTACHMENTS_GROUPS_STATUS_DESC"
+                        />
+                    </form>
+                </field>
+            </fieldset>
+
+        </fields>
+    </config>
+</extension>

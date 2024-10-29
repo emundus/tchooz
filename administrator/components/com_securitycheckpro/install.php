@@ -13,6 +13,8 @@ use Joomla\CMS\Factory;
 use Joomla\Filesystem\File;
 use Joomla\Filesystem\Folder;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
+use Joomla\Database\ParameterType;
 
 /**
  * Script file of Securitycheck Pro component
@@ -32,8 +34,21 @@ class com_SecuritycheckproInstallerScript extends \Joomla\CMS\Installer\Installe
     // url plugin habilitado?
     public $url_plugin_enabled = false;        
     	
-	// Badge style (" . $this->badge_style . " for J3 and bg- for J4)
-	private $badge_style = "badge-";
+	// Badge style bg- for J4 and higher
+	private $badge_style = "bg-";
+	
+	/**
+     * The extension ersion we are updating from
+     *
+     * @var    string
+     * @since  3.7
+     */
+    protected $fromVersion = null;
+	
+	// Defaul values to create the scheduled task
+	protected $exec_time = '02:00';
+	protected $old_task_set = 'integrity';
+	protected $cachetimeout = 1;
 	
 	/**
      * 
@@ -331,13 +346,28 @@ class com_SecuritycheckproInstallerScript extends \Joomla\CMS\Installer\Installe
 	
 	    
     /**
-     * Joomla! pre-flight event
-     * 
-     * @param string     $type   Installation type (install, update, discover_install)
-     * @param Installer $parent Parent object
+     * Function to act prior to installation process begins
+     *
+     * @param   string     $action     Which action is happening (install|uninstall|discover_install|update)
+     * @param   Installer  $installer  The class calling this method
+     *
+     * @return  boolean  True on success
+     *
+     * @since   3.7.0
      */
-    public function preflight($type, $parent)
+    public function preflight($action, $installer)
     {
+		if ($action === 'update') {
+            // Get the version we are updating from
+            if (!empty($installer->extension->manifest_cache)) {
+                $manifestValues = json_decode($installer->extension->manifest_cache, true);
+
+                if (\array_key_exists('version', $manifestValues)) {
+                    $this->fromVersion = $manifestValues['version'];
+                }
+            }
+        }
+		
         // Only allow to install on PHP 5.3.0 or later
         if (!version_compare(PHP_VERSION, '5.3.0', 'ge')) {        
             Factory::getApplication()->enqueueMessage('Securitycheck Pro requires, at least, PHP 5.3.0', 'error');
@@ -346,9 +376,7 @@ class com_SecuritycheckproInstallerScript extends \Joomla\CMS\Installer\Installe
             // Only allow to install on Joomla! 4.0.0 or later
             Factory::getApplication()->enqueueMessage("This version only works in Joomla! 4 or higher", 'error');
             return false;
-        } else if (version_compare(JVERSION, '4.0', 'ge')) {
-			$this->badge_style = "bg-";
-		}
+        }
         
         // Check if the 'mb_strlen' function is enabled
         if (!function_exists("mb_strlen")) {
@@ -404,14 +432,14 @@ class com_SecuritycheckproInstallerScript extends \Joomla\CMS\Installer\Installe
             );
             $db->execute();
             
-            // Disable Securitycheck Pro Cron plugin
+            // Disable Securitycheck Pro Cron Task plugin
             $db->setQuery(
                 "UPDATE 
 					$tableExtensions
 				SET
 					$columnEnabled=0
 				WHERE
-					$columnElement='securitycheckpro_cron'
+					$columnElement='securitycheckprocron'
 				AND
 					$columnType='plugin'"
             );
@@ -503,7 +531,7 @@ class com_SecuritycheckproInstallerScript extends \Joomla\CMS\Installer\Installe
             $installer = new Installer();
             $attributes = $plugin->attributes();
             $plg = $source . DIRECTORY_SEPARATOR . $attributes['folder']. DIRECTORY_SEPARATOR . $attributes['plugin'];
-            $result[$indice] = $installer->install($plg);
+			$result[$indice] = $installer->install($plg);
             $indice++;
         }
         
@@ -542,24 +570,42 @@ class com_SecuritycheckproInstallerScript extends \Joomla\CMS\Installer\Installe
         $memory_limit = ini_get('memory_limit');
         $memory_limit = (int) substr($memory_limit, 0, -1);
                 
-        // If $memory_limit value is less or equal than 128, then whe will not enable de Cron plugin to avoid issues
-        if (($memory_limit > 128) && (!$this->update)) {
-        
-            // Enable Securitycheck Pro Cron plugin
-            $db->setQuery(
-                "UPDATE 
-					$tableExtensions
-				SET
-					$columnEnabled=1
-				WHERE
-					$columnElement='securitycheckpro_cron'
-				AND
-					$columnType='plugin'"
-            );
-
-            $db->execute();
-        }
                 
+        // Enable Securitycheck Pro Cron Task plugin
+        $db->setQuery(
+            "UPDATE 
+			$tableExtensions
+				SET
+				$columnEnabled=1
+			WHERE
+				$columnElement='securitycheckprocron'
+			AND
+				$columnType='plugin'"
+        );
+
+        $db->execute();
+		
+		// Enable Securitycheck Pro Task Checker
+        $db->setQuery(
+            "UPDATE 
+				$tableExtensions
+			SET
+				$columnEnabled=1
+			WHERE
+				$columnElement='securitycheckpro_task_checker'
+			AND
+				$columnType='plugin'"
+        );
+
+        $db->execute();    
+		
+		// Create the scheduled task during the first install
+        if ( empty($this->fromVersion) ) {			
+           // Create the scheduled task
+			$this->create_scheduled_task();        
+        }
+		
+                       
         // Install message
         $this->install_message($this->id_free, $this->result_free, $result, $status, $memory_limit);
     }
@@ -620,7 +666,7 @@ class com_SecuritycheckproInstallerScript extends \Joomla\CMS\Installer\Installe
             $result[1] = false;
         }
         
-        // Uninstall  Securitycheck Pro Cron plugin
+        // Uninstall  Securitycheck Pro Cron Task plugin
         $db->setQuery(
             "SELECT 
 				$columnName
@@ -629,9 +675,9 @@ class com_SecuritycheckproInstallerScript extends \Joomla\CMS\Installer\Installe
 			WHERE
 				$type='plugin'
 			AND
-				$columnElement='securitycheckpro_cron'
+				$columnElement='securitycheckprocron'
 			AND
-				$columnType='system'"
+				$columnType='task'"
         );
 
         $id = $db->loadResult();
@@ -665,8 +711,40 @@ class com_SecuritycheckproInstallerScript extends \Joomla\CMS\Installer\Installe
             $result[3] = $installer->uninstall('plugin', $id, 1);        
         } else {
             $result[3] = false;
-        }        
-                        
+        }    
+
+		// Uninstall  Securitycheck Pro Task Checker
+        $db->setQuery(
+            "SELECT 
+				$columnName
+			FROM
+				$tableExtensions
+			WHERE
+				$type='plugin'
+			AND
+				$columnElement='securitycheckpro_task_checker'
+			AND
+				$columnType='system'"
+        );
+
+        $id = $db->loadResult();
+
+        if ($id) {
+            $installer = new Installer();
+            $result[4] = $installer->uninstall('plugin', $id, 1);        
+        } else {
+            $result[4] = false;
+        }  
+		
+		// Remove scheduled tasks
+		try {
+            $sql = "DELETE FROM #__scheduler_tasks  WHERE type='securitycheckpro.cron'";
+			$db->setQuery($sql);
+			$db->execute();  		
+        } catch (\Throwable $e) {
+           Factory::getApplication()->enqueueMessage($e->getMessge(), 'error');
+        }
+		                        
         // Uninstall message
         $this->uninstall_message($result, $status);
         
@@ -680,8 +758,164 @@ class com_SecuritycheckproInstallerScript extends \Joomla\CMS\Installer\Installe
     function update($parent)
     {        
         // This variable is updated.
-        $this->update = true;        
+        $this->update = true;
+		// Uninstall extensions before removing their files and folders
+        try {
+            Log::add('Securitycheck Pro installation', Log::INFO, 'Update');
+            $this->uninstallExtensions();
+        } catch (\Throwable $e) {
+           
+        }
+		
         $this->install($parent);        
+    }
+	
+	/**
+     * Uninstall old cron plugin
+     *
+     * @return  void
+     *
+     * @since   5.0.0
+     */
+    protected function uninstallExtensions()
+    {
+				
+        // Don't uninstall extensions when not updating from a version older than 4.2
+        if (empty($this->fromVersion) || version_compare($this->fromVersion, '4.2', 'ge')) {			
+            return true;
+        }
+
+        $extensions = [
+            /**
+             * Define here the extensions to be uninstalled and optionally migrated on update.
+             * For each extension, specify an associative array with following elements (key => value):
+             * 'type'         => Field `type` in the `#__extensions` table
+             * 'element'      => Field `element` in the `#__extensions` table
+             * 'folder'       => Field `folder` in the `#__extensions` table
+             * 'client_id'    => Field `client_id` in the `#__extensions` table
+             * 'pre_function' => Name of an optional migration function to be called before
+             *                   uninstalling, `null` if not used.
+             */
+            ['type' => 'plugin', 'element' => 'securitycheckpro_cron', 'folder' => 'system', 'client_id' => 0, 'pre_function' => 'migrateoldCronPlugin'],           
+        ];
+
+        $db = Factory::getDbo();
+
+        foreach ($extensions as $extension) {
+            $row = $db->setQuery(
+                $db->getQuery(true)
+                    ->select('*')
+                    ->from($db->quoteName('#__extensions'))
+                    ->where($db->quoteName('type') . ' = ' . $db->quote($extension['type']))
+                    ->where($db->quoteName('element') . ' = ' . $db->quote($extension['element']))
+                    ->where($db->quoteName('folder') . ' = ' . $db->quote($extension['folder']))
+                    ->where($db->quoteName('client_id') . ' = ' . $db->quote($extension['client_id']))
+            )->loadObject();
+						
+            // Skip migrating and uninstalling if the extension doesn't exist
+            if (!$row) {
+                continue;
+            }
+
+            // If there is a function for migration to be called before uninstalling, call it
+            if ($extension['pre_function'] && method_exists($this, $extension['pre_function'])) {
+                $this->{$extension['pre_function']}($row);
+            }
+			
+
+            try {
+                $db->transactionStart();				
+
+                // Unlock and unprotect the plugin so we can uninstall it
+                $db->setQuery(
+                    $db->getQuery(true)
+                        ->update($db->quoteName('#__extensions'))
+                        ->set($db->quoteName('locked') . ' = 0')
+                        ->set($db->quoteName('protected') . ' = 0')
+                        ->where($db->quoteName('extension_id') . ' = :extension_id')
+                        ->bind(':extension_id', $row->extension_id, ParameterType::INTEGER)
+                )->execute();
+				
+                // Uninstall the plugin
+                $installer = new Installer();
+                $installer->setDatabase($db);
+                $installer->uninstall($extension['type'], $row->extension_id);
+
+                $db->transactionCommit();
+            } catch (\Throwable $e) {			
+                $db->transactionRollback();
+                throw $e;
+            }
+        }
+    }
+	
+	private function create_scheduled_task(){
+				
+        /** @var SchedulerComponent $component */
+        $component = Factory::getApplication()->bootComponent('com_scheduler');
+
+        /** @var TaskModel $model*/
+        $model = $component->getMVCFactory()->createModel('Task', 'Administrator', ['ignore_request' => true]);
+		
+						
+		try {
+			$task = [
+				'title'           => 'SCP Cron',
+				'type'            => 'securitycheckpro.cron',
+				'execution_rules' => [
+					'rule-type'     => 'interval-days',
+					'interval-days' => $this->cachetimeout,
+					'exec-time'     => $this->exec_time,
+					'exec-day'      => gmdate('d'),
+				],
+				'state'  => 1,
+				'params' => [
+					'task_to_be_launched' => $this->old_task_set,
+				],
+			];	
+		} catch (\Exception $e) { 
+			
+        }	
+					
+        $model->save($task);
+	}	
+	
+	/**
+     * Migrate plugin parameters of obsolete system plugin to simulate cron
+     *
+     * @param   \stdClass  $rowOld  Object with the obsolete plugin's record in the `#__extensions` table
+     *
+     * @return  void
+     *
+     * @since   5.0.0
+     */
+    private function migrateoldCronPlugin($data)
+    {
+        $db = Factory::getDbo();
+						
+		try {
+			$old_plugin_config = $db->setQuery(
+				$db->getQuery(true)
+					->select('storage_value')
+					->from($db->quoteName('#__securitycheckpro_storage'))
+					->where($db->quoteName('storage_key') . ' = "cron_plugin"')
+			)->loadObject();
+		} catch (\Exception $e) { 
+			$old_plugin_config = null;
+        }
+				
+		if (!empty($old_plugin_config)){
+			$old_plugin_params = json_decode($old_plugin_config->storage_value,true);
+			if ((int) $old_plugin_params['launch_time'] < 10) {
+				$this->exect_time = '0' . $old_plugin_params['launch_time'] . ':00';
+			} else {
+				$this->exect_time = $old_plugin_params['launch_time'] . ':00';
+			}
+			$this->old_task_set = $old_plugin_params['tasks'];
+		} 		
+		
+		//Create the scheduled task
+		$this->create_scheduled_task();
     }
     
     /**
@@ -777,9 +1011,9 @@ class com_SecuritycheckproInstallerScript extends \Joomla\CMS\Installer\Installe
         ?>
                     </tr>
                     <tr class="row0">
-                        <td class="key" colspan="2">Securitycheck Pro Cron <?php echo Text::_('Plugin'); ?></td>
+                        <td class="key" colspan="2">Securitycheck Pro Task Cron <?php echo Text::_('Plugin'); ?></td>
         <?php
-        if ($result[2]) {
+        if ($result[4]) {
             ?>
                         <td>
             <?php 
@@ -789,33 +1023,15 @@ class com_SecuritycheckproInstallerScript extends \Joomla\CMS\Installer\Installe
                             </span>
             <?php 
             $limit = false;
-            if ($this->update) {
-                $span = "<span class=\"badge " . $this->badge_style . "info\">";    
-                $message = Text::_('COM_SECURITYCHECKPRO_PLUGIN_ENABLED');
-            } else if ($memory_limit > 128) {
-                $span = "<span class=\"badge " . $this->badge_style . "info\">";    
-                $message = Text::_('COM_SECURITYCHECKPRO_PLUGIN_ENABLED');
-            } else if ($memory_limit <= 128) {
-                $span = "<span class=\"badge " . $this->badge_style . "warning\">";
-                $message = Text::_('COM_SECURITYCHECKPRO_PLUGIN_DISABLED');
+			$span = "<span class=\"badge " . $this->badge_style . "info\">";    
+            $message = Text::_('COM_SECURITYCHECKPRO_PLUGIN_ENABLED');
+            if ($memory_limit <= 128) {               
                 $limit = true;
             }
             ?>
             <?php echo $span . $message; ?>
-                            </span>
-            <?php
-            if ($limit) {
-                ?>
-                                <br/>
-                                <tr>
-                                    <td>
-                <?php echo Text::_('COM_SECURITYCHECKPRO_MEMORY_LIMIT_LOW'); ?>    
-                                    </td>                                 
-                                </tr>
-                <?php
-            }
-            ?>
-                        </td>
+				</span>
+            </td>
             <?php
         } else {
             ?>
@@ -833,7 +1049,7 @@ class com_SecuritycheckproInstallerScript extends \Joomla\CMS\Installer\Installe
                     <tr class="row0">
                         <td class="key" colspan="2">URL Inspector <?php echo Text::_('Plugin'); ?></td>
         <?php
-        if ($result[3]) {
+        if ($result[2]) {
             ?>
                             <td>
             <?php 
@@ -867,7 +1083,39 @@ class com_SecuritycheckproInstallerScript extends \Joomla\CMS\Installer\Installe
             <?php
         }
         ?>
-                    </tr>                    
+                    </tr>      
+			<tr class="row0">
+                        <td class="key" colspan="2">Securitycheck Pro Task Checker <?php echo Text::_('Plugin'); ?></td>
+        <?php
+        if ($result[3]) {
+            ?>
+                            <td>
+            <?php 
+            $span = "<span class=\"badge " . $this->badge_style . "success\">";                                
+            ?>
+            <?php echo $span . $result_ok; ?>
+                                </span>
+            <?php 
+				$span = "<span class=\"badge " . $this->badge_style . "info\">";
+                $message = Text::_('COM_SECURITYCHECKPRO_PLUGIN_ENABLED');            
+            ?>
+            <?php echo $span . $message; ?>                                
+                </td>
+            <?php
+        } else
+                        {
+            ?>
+                            <td>
+            <?php 
+            $span = "<span class=\"badge " . $this->badge_style . "danger\">";                                
+            ?>
+            <?php echo $span . $result_not_ok; ?>
+                                </span>
+                            </td>
+            <?php
+        }
+        ?>
+                    </tr>
         <?php
         if (count($status->modules) > 0) {
             ?>
@@ -1057,7 +1305,34 @@ class com_SecuritycheckproInstallerScript extends \Joomla\CMS\Installer\Installe
             <?php
         }
         ?>
-                </tr>                
+                </tr> 
+				<tr class="row0">
+                    <td class="key" colspan="2">Securitycheck Pro Task Checker <?php echo Text::_('Plugin'); ?></td>
+        <?php
+        if ($result[4]) {
+            ?>
+                        <td>
+            <?php 
+            $span = "<span class=\"badge " . $this->badge_style . "success\">";                                
+            ?>
+            <?php echo $span . Text::_('COM_SECURITYCHECKPRO_UNINSTALLED'); ?>
+                            </span>
+                        </td>
+            <?php
+        } else
+        {
+            ?>
+                        <td>
+            <?php 
+            $span = "<span class=\"badge " . $this->badge_style . "danger\">";                                
+            ?>
+            <?php echo $span . Text::_('COM_SECURITYCHECKPRO_NOT_INSTALLED'); ?>
+                            </span>
+                        </td>
+            <?php
+        }
+        ?>
+                </tr>
         <?php
         if (count($status->modules) > 0) {
             ?>

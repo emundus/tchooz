@@ -8,6 +8,7 @@
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Language\Text;
 
 $app = Factory::getApplication();
 
@@ -22,6 +23,7 @@ $eMConfig                = ComponentHelper::getParams('com_emundus');
 $applicant_option        = false;
 $applicant_option_others = false;
 
+require_once(JPATH_SITE . '/components/com_emundus/helpers/access.php');
 require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
 
 ?>
@@ -62,19 +64,19 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
         <div id="user-information" class="em-addUser-detail-info">
             <div class="tw-grid tw-grid-cols-2 tw-gap-2">
                 <div class="form-group em-addUser-detail-info-lastname">
-                    <label class="control-label" for="lname"><?= JText::_('COM_EMUNDUS_FORM_LAST_NAME'); ?></label>
+                    <label class="control-label" for="lname"><?= Text::_('COM_EMUNDUS_FORM_LAST_NAME'); ?></label>
                     <input type="text" class="em-w-100" id="lname"
                            name="lastname" <?= ($this->edit == 1) ? 'value="' . $this->user['lastname'] . '"' : ''; ?>/>
                 </div>
                 <div class="form-group em-addUser-detail-info-firstname">
-                    <label class="control-label" for="fname"><?= JText::_('COM_EMUNDUS_FORM_FIRST_NAME'); ?></label>
+                    <label class="control-label" for="fname"><?= Text::_('COM_EMUNDUS_FORM_FIRST_NAME'); ?></label>
                     <input type="text" class="em-w-100" id="fname"
                            name="firstname" <?= ($this->edit == 1) ? 'value="' . $this->user['firstname'] . '"' : ''; ?>/>
                 </div>
             </div>
 
             <div class="form-group em-addUser-detail-info-mail">
-                <label class="control-label" for="mail"><?= JText::_('COM_EMUNDUS_EMAIL'); ?></label>
+                <label class="control-label" for="mail"><?= Text::_('COM_EMUNDUS_EMAIL'); ?></label>
                 <input type="text" class="em-w-100" id="mail"
                        name="email" <?= $this->edit == 1 ? 'value="' . $this->user['email'] . '"' : ''; ?>/>
             </div>
@@ -82,10 +84,10 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
                 <input type="checkbox" id="same_login_email" name="same_login_email"
                        style="margin-bottom: 5px; outline-offset: 1px;" <?= ($this->user['email'] == $this->user['login']) ? 'checked' : ''; ?>>
                 <label for="same_login_email"
-                       class="mb-0"><?= JText::_('COM_EMUNDUS_USERS_LOGIN_SAME_EMAIL'); ?></label>
+                       class="mb-0"><?= Text::_('COM_EMUNDUS_USERS_LOGIN_SAME_EMAIL'); ?></label>
             </div>
             <div class="form-group em-addUser-detail-info-id" id="login_field">
-                <label class="control-label" for="login"><?= JText::_('COM_EMUNDUS_USERS_LOGIN_FORM'); ?></label>
+                <label class="control-label" for="login"><?= Text::_('COM_EMUNDUS_USERS_LOGIN_FORM'); ?></label>
                 <input type="text" class="em-w-100" id="login"
                        name="login" <?= ($this->edit == 1) ? 'value="' . $this->user['login'] . '"' : ''; ?> />
             </div>
@@ -99,16 +101,16 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
 	?>
     <fieldset class="em-addUser-profil em-mt-16">
         <div class="form-group em-addUser-profil-selectProfil">
-            <label for="profiles"><?php echo JText::_('COM_EMUNDUS_PROFILE'); ?></label>
+            <label for="profiles"><?php echo Text::_('COM_EMUNDUS_PROFILE'); ?></label>
             <select id="profiles" name="profiles" class="em-chosen em-mt-4">
-                <option value="0" disabled="disabled"><?= JText::_('COM_EMUNDUS_PLEASE_SELECT'); ?></option>
+                <option value="0" disabled="disabled"><?= Text::_('COM_EMUNDUS_PLEASE_SELECT'); ?></option>
 				<?php foreach ($this->profiles as $profile) {
 					if ($profile->published && !$applicant_option) {
 						?>
                         <option id="<?= $profile->acl_aro_groups; ?>" value="<?= $profile->id; ?>"
                                 pub="<?= $profile->published; ?>" <?php if (($this->edit == 1) && (in_array($this->user['profile'], $this->app_prof))) {
 							echo 'selected="true"';
-						} ?>><?= JText::_('COM_EMUNDUS_APPLICANT'); ?></option>
+						} ?>><?= Text::_('COM_EMUNDUS_APPLICANT'); ?></option>
 						<?php
 						$applicant_option = true;
 					}
@@ -122,14 +124,14 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
             </select>
 
             <div class="em-addUser-profil-selectProfil-multiple mt-3">
-                <label for="oprofiles"><?= JText::_('COM_EMUNDUS_USERS_ALL_PROFILES'); ?></label>
+                <label for="oprofiles"><?= Text::_('COM_EMUNDUS_USERS_ALL_PROFILES'); ?></label>
                 <select id="oprofiles" name="otherprofiles" size="5" multiple="multiple" class="em-chosen em-mt-4">
-                    <option value="0" disabled="disabled"><?= JText::_('COM_EMUNDUS_PLEASE_SELECT'); ?></option>
+                    <option value="0" disabled="disabled"><?= Text::_('COM_EMUNDUS_PLEASE_SELECT'); ?></option>
 					<?php foreach ($this->profiles as $otherprofile) {
 						if ($otherprofile->published && !$applicant_option_others) {
 							?>
                             <option id="<?= $otherprofile->acl_aro_groups; ?>" value="<?= $otherprofile->id; ?>"
-                                    pub="<?= $otherprofile->published; ?>" <?= (($this->edit == 1) && $other_profiles_applicant === true) ? 'selected="true"' : ''; ?>><?= JText::_('COM_EMUNDUS_APPLICANT'); ?></option>
+                                    pub="<?= $otherprofile->published; ?>" <?= (($this->edit == 1) && $other_profiles_applicant === true) ? 'selected="true"' : ''; ?>><?= Text::_('COM_EMUNDUS_APPLICANT'); ?></option>
 							<?php
 							$applicant_option_others = true;
 						}
@@ -143,9 +145,9 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
         </div>
 		<?php if ($eMConfig->get('showUniversities')) : ?>
             <div class="form-group em-hidden-nonapli-fields em-addUser-university" <?= (($this->edit != 1) || ($this->user['university_id'] == 0)) ? 'style="display:none;"' : ''; ?>>
-                <label for="univ"><?= JText::_('COM_EMUNDUS_USERS_UNIVERSITY_FROM'); ?></label>
+                <label for="univ"><?= Text::_('COM_EMUNDUS_USERS_UNIVERSITY_FROM'); ?></label>
                 <select name="university_id" class="em-chosen em-mt-4" id="univ">
-                    <option value="0"><?= JText::_('COM_EMUNDUS_PLEASE_SELECT'); ?></option>
+                    <option value="0"><?= Text::_('COM_EMUNDUS_PLEASE_SELECT'); ?></option>
 					<?php foreach ($this->universities as $university) : ?>
                         <option value="<?= $university->id; ?>" <?= (($this->edit == 1) && ($university->id == $this->user['university_id'])) ? 'selected="true"' : ''; ?>><?= trim($university->title); ?></option>
 					<?php endforeach; ?>
@@ -154,9 +156,9 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
 		<?php endif ?>
         <div class="form-group em-hidden-nonapli-fields em-addUser-groups"
              style="<?= (($this->edit != 1) || (empty($this->uGroups))) ? 'display:none;' : 'display:block;'; ?>">
-            <label for="groups"><?= JText::_('COM_EMUNDUS_GROUPS'); ?></label>
+            <label for="groups"><?= Text::_('COM_EMUNDUS_GROUPS'); ?></label>
             <select class="em-chosen em-mt-4" name="groups" id="groups" multiple="multiple">
-                <option value="0" disabled="disabled"><?= JText::_('COM_EMUNDUS_PLEASE_SELECT'); ?></option>
+                <option value="0" disabled="disabled"><?= Text::_('COM_EMUNDUS_PLEASE_SELECT'); ?></option>
 				<?php foreach ($this->groups as $group) : ?>
                     <option value="<?= $group->id; ?>" <?= (($this->edit == 1) && (array_key_exists($group->id, $this->uGroups))) ? 'selected="true"' : ''; ?>><?= trim($group->label); ?></option>
 				<?php endforeach; ?>
@@ -166,10 +168,10 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
 
 		<?php if ($eMConfig->get('showJoomlagroups', 0)) : ?>
             <div class="form-group em-hidden-nonapli-fields em-addUser-groups" <?= (($this->edit != 1)) ? 'style="display:none;"' : ''; ?>>
-                <label for="jgroups"><?= JText::_('COM_EMUNDUS_JOOMLA_GROUPE'); ?></label>
+                <label for="jgroups"><?= Text::_('COM_EMUNDUS_JOOMLA_GROUPE'); ?></label>
                 <br/>
                 <select class="em-chosen" name="jgroups" id="jgroups" multiple="multiple">
-                    <option value="0" disabled="disabled"><?= JText::_('PLEASE_SELECT'); ?></option>
+                    <option value="0" disabled="disabled"><?= Text::_('PLEASE_SELECT'); ?></option>
 					<?php foreach ($this->jgroups as $jgroup) : ?>
                         <option value="<?= $jgroup->group_id; ?>" <?= (($this->edit == 1) && (array_key_exists($jgroup->group_id, $this->juGroups))) ? 'selected="true"' : ''; ?>><?= trim($jgroup->category_label); ?></option>
 					<?php endforeach; ?>
@@ -179,11 +181,11 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
 
         <div class="form-group em-hidden-appli-fields em-addUser-campaign"
              style="<?= (($this->edit != 1) || (empty($this->uCamps))) ? 'display:none;' : 'display:block;'; ?>">
-            <label for="campaigns"><?= JText::_('COM_EMUNDUS_CAMPAIGN'); ?></label>
+            <label for="campaigns"><?= Text::_('COM_EMUNDUS_CAMPAIGN'); ?></label>
             <select name="campaigns" size="5" multiple="multiple" id="campaigns" class="em-chosen em-mt-4">
-                <option value="0" disabled="disabled"><?= JText::_('COM_EMUNDUS_PLEASE_SELECT'); ?></option>
+                <option value="0" disabled="disabled"><?= Text::_('COM_EMUNDUS_PLEASE_SELECT'); ?></option>
 				<?php foreach ($this->campaigns as $campaign) : ?>
-                    <option value="<?= $campaign->campaign_id; ?>" <?= (($this->edit == 1) && (array_key_exists($campaign->campaign_id, $this->uCamps))) ? 'selected="true"' : ''; ?>><?= trim($campaign->label . ' (' . $campaign->year . ') - ' . $campaign->programme . ' | ' . JText::_('COM_EMUNDUS_ONBOARD_START_DATE') . ' : ' . EmundusHelperDate::displayDate($campaign->start_date, 'COM_EMUNDUS_DATE_FORMAT', 1)); ?></option>
+                    <option value="<?= $campaign->campaign_id; ?>" <?= (($this->edit == 1) && (array_key_exists($campaign->campaign_id, $this->uCamps))) ? 'selected="true"' : ''; ?>><?= trim($campaign->label . ' (' . $campaign->year . ') - ' . $campaign->programme . ' | ' . Text::_('COM_EMUNDUS_ONBOARD_START_DATE') . ' : ' . EmundusHelperDate::displayDate($campaign->start_date, 'COM_EMUNDUS_DATE_FORMAT', 1)); ?></option>
 				<?php endforeach; ?>
             </select>
         </div>
@@ -191,12 +193,21 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
         <!-- LDAP registration will go inside the div -->
         <div id="ldap-form" class="em-addUser-searchLdap" style="display : none;">
             <div id="ldap-errors"></div>
-            <label for="s"><strong><?= JText::_('COM_EMUNDUS_SEARCH_IN_LDAP'); ?> </strong></label><br/>
+            <label for="s"><strong><?= Text::_('COM_EMUNDUS_SEARCH_IN_LDAP'); ?> </strong></label><br/>
             <input type="text" class="input-xxlarge" name="s" id="s" value="<?= $s; ?>"/>
             <div id="sldap" type="button" class="button"
-                 style="margin-bottom:10px;"> <?= JText::_('COM_EMUNDUS_ACTIONS_SEARCH'); ?></div>
+                 style="margin-bottom:10px;"> <?= Text::_('COM_EMUNDUS_ACTIONS_SEARCH'); ?></div>
         </div>
         <div id="ldapresult"></div>
+
+        <?php if (EmundusHelperAccess::asAdministratorAccessLevel(Factory::getApplication()->getIdentity()->id)) : ?>
+        <div class="form-group em-addUser-detail-info-testing-account tw-flex tw-items-center tw-mt-4">
+            <input type="checkbox" id="testing_account" name="testing_account"
+                   style="margin-bottom: 5px; outline-offset: 1px;" <?= $this->user['testing_account'] ? 'checked' : ''; ?>>
+            <label for="testing_account"
+                   class="mb-0"><?= Text::_('COM_EMUNDUS_USERS_LOGIN_TESTING_ACCOUNT'); ?></label>
+        </div>
+        <?php endif; ?>
     </fieldset>
 </form>
 <script type="text/javascript">
@@ -247,7 +258,7 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
                 let ldapElements = [
 					<?php
 					foreach (explode(',', $this->ldapElements) as $elt) {
-						echo '["' . $elt . '","' . JText::_(strtoupper($elt)) . '"],';
+						echo '["' . $elt . '","' . Text::_(strtoupper($elt)) . '"],';
 					}
 					?>
                 ];
@@ -259,16 +270,16 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
                         url: 'index.php?option=com_emundus&controller=users&task=ldapsearch&search=' + $('#s')[0].value,
                         dataType: 'html',
                         beforeSend: function () {
-                            ldapResult.text('<?= Jtext::_('COM_EMUNDUS_FILTERS_SEARCHING'); ?> [' + $('#s')[0].value + ']');
+                            ldapResult.text('<?= Text::_('COM_EMUNDUS_FILTERS_SEARCHING'); ?> [' + $('#s')[0].value + ']');
                         },
                         success: function (result) {
 
                             result = JSON.parse(result);
 
                             if (!result.status) {
-                                ldapResult.html("<span class='alert alert-error'> <?php echo JText::_('COM_EMUNDUS_ERROR_OCCURED'); ?> </span>")
+                                ldapResult.html("<span class='alert alert-error'> <?php echo Text::_('COM_EMUNDUS_ERROR_OCCURED'); ?> </span>")
                             } else if (result.count == 0) {
-                                ldapResult.html("<span class='alert alert-error'> <?php echo JText::_('COM_EMUNDUS_LDAP_NO_RESULT'); ?> </span>")
+                                ldapResult.html("<span class='alert alert-error'> <?php echo Text::_('COM_EMUNDUS_LDAP_NO_RESULT'); ?> </span>")
                             } else {
                                 ldapResult.html('');
                                 // Foreach user
@@ -318,13 +329,13 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
                                         addUser = '';
                                     if (user.exists) {
                                         cardColor = 'alert-success';
-                                        cardInfo = '<div data-toggle="tooltip" data-placement="top" title="<?php echo JText::_('COM_EMUNDUS_LDAP_USER_EXISTS'); ?>">' +
+                                        cardInfo = '<div data-toggle="tooltip" data-placement="top" title="<?php echo Text::_('COM_EMUNDUS_LDAP_USER_EXISTS'); ?>">' +
                                             '<div class="hide uid">' + username.value + '</div>' +
                                             '<span class="glyphicon glyphicon-ok" style="font-size:30px; padding-top:60px;"></span>' +
                                             '</div>';
                                     } else {
                                         cardColor = 'ldap-card';
-                                        cardInfo = '<div data-toggle="tooltip" data-placement="top" title="<?php echo JText::_('COM_EMUNDUS_LDAP_USER_NEW'); ?>">' +
+                                        cardInfo = '<div data-toggle="tooltip" data-placement="top" title="<?php echo Text::_('COM_EMUNDUS_LDAP_USER_NEW'); ?>">' +
                                             '<div class="hide uid">' + username.value + '</div>' +
                                             '<span class="glyphicon glyphicon-plus" style="font-size:30px; padding-top:60px;"></span>' +
                                             '</div>';
@@ -391,7 +402,7 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
                             }
                         },
                         error: function () {
-                            ldapResult.text("<?= JText::_('COM_EMUNDUS_ERROR_OCCURED'); ?>");
+                            ldapResult.text("<?= Text::_('COM_EMUNDUS_ERROR_OCCURED'); ?>");
                         }
                     });
                 }
@@ -455,7 +466,7 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
             if ($(this).val().length == 0 || !re.test($(this).val())) {
                 $(this).parent('.form-group').addClass('has-error');
                 $(this).siblings('.help-block').remove();
-                $(this).after('<span class="help-block">' + Joomla.JText._('COM_EMUNDUS_USERS_ERROR_NOT_A_VALID_EMAIL') + '</span>');
+                $(this).after('<span class="help-block">' + Joomla.Text._('COM_EMUNDUS_USERS_ERROR_NOT_A_VALID_EMAIL') + '</span>');
             }
         });
 
@@ -469,7 +480,7 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
             if (!re.test($('#login').val())) {
                 if (!$(this).parent('.form-group').hasClass('has-error')) {
                     $(this).parent('.form-group').addClass('has-error');
-                    $(this).after('<span class="help-block">' + Joomla.JText._('COM_EMUNDUS_USERS_ERROR_NOT_A_VALID_LOGIN_MUST_NOT_CONTAIN_SPECIAL_CHARACTER') + '</span>');
+                    $(this).after('<span class="help-block">' + Joomla.Text._('COM_EMUNDUS_USERS_ERROR_NOT_A_VALID_LOGIN_MUST_NOT_CONTAIN_SPECIAL_CHARACTER') + '</span>');
                 }
             } else {
                 $(this).parent('.form-group').removeClass('has-error');
@@ -500,6 +511,7 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
                 if (other_profiles_no_published === false) {
                     $('#groups_chosen .search-choice-close').click();
                     $('.em-hidden-nonapli-fields').hide();
+                    $('.em-hidden-nonapli-fields select').val('').trigger("liszt:updated");
                 } else {
                     $('.em-hidden-nonapli-fields').show();
                 }

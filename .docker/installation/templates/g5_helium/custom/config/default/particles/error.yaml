@@ -1,0 +1,7 @@
+enabled: '1'
+title: 'Oups !'
+image: /media/com_emundus/images/tchoozy/complex-illustrations/page-not-found.svg
+description: COM_EMUNDUS_ERROR_404
+css:
+  class: ''
+button: COM_EMUNDUS_ERROR_404_BUTTON

@@ -837,6 +837,7 @@ final class plgSystemFalangdriver extends CMSPlugin
      * $since 4.0.5 load only published by param's
      *              fix subform custom field translation
      * @since 4.0.7 fix for categories custom fields
+     * @update 5.5 add mediajce custom field translation support
 	 *
 	 * @param $context
 	 * @param $item
@@ -886,6 +887,15 @@ final class plgSystemFalangdriver extends CMSPlugin
 		if (empty($translations)) {
 			return;
 		}
+
+        //get mediajce lecacymode
+        $legacy = false;
+        $field_mediajce = PluginHelper::getPlugin('fields', 'mediajce');
+        if ($field_mediajce){//legacymedia
+            $mediaJceParams = new Registry($field_mediajce->params);
+            $legacy = $mediaJceParams->get('legacymedia',false);
+        }
+
 		//supposed to be array
 		$json_value = json_decode($translations,true);
 
@@ -894,7 +904,20 @@ final class plgSystemFalangdriver extends CMSPlugin
             $field->valueUntranslated    = $field->value;
             $field->rawvalueUntranslated = $field->rawvalue;
 
+            //is_array($json_value[$field->name]) don't work checkfield and probably
             switch ($field->type) {
+                //mediajce by default is NO , it's mean it's an image with description but yootheme have problem to deal with it
+                //if it's legacy it's just a string without description
+                //Falang translation have to be resave in case of change of lecacy
+                case 'mediajce' :
+                    if ($legacy) {
+                        $field->value                = $json_value[$field->name];
+                        $field->rawvalue             = $json_value[$field->name];
+                    } else {
+                        $field->value                = json_encode($json_value[$field->name]);
+                        $field->rawvalue             = $json_value[$field->name]['media_src'];//fix yootheme dynamic field translated with Falnag ???
+                    }
+                    break;
                 case 'repeatable':
                 case 'subform' :
                 case 'media' :

@@ -30,7 +30,12 @@ defined('_JEXEC') or die;
     #header-a {
         position: relative;
         left: 5%;
-        opacity: 0;
+    }
+
+    #header-a .logo {
+        position: relative;
+        left: 5%;
+        display: none;
     }
 
     @media all and (max-width: 479px) {
@@ -95,10 +100,17 @@ defined('_JEXEC') or die;
 
     ul.tchooz-vertical-toplevel > li.active.tchooz-vertical-item > a.item span[class*="material-icons"] {
         color: var(--em-profile-color) !important;
+        background-color: hsl(from var(--em-profile-color) h s l / 15%);
+        border-radius: var(--em-default-br);
     }
 
     .active .item .image-title {
         color: var(--em-profile-color);
+    }
+
+    .item:hover .material-symbols-outlined {
+        background-color: var(--neutral-300);
+        border-radius: var(--em-default-br);
     }
 
     .g-menu-parent-indicator {
@@ -114,9 +126,10 @@ defined('_JEXEC') or die;
     /*** END ***/
 
     /*** List style ***/
-    #g-navigation .g-main-nav .tchooz-vertical-toplevel > li {
+    #g-navigation .g-main-nav .tchooz-vertical-toplevel > li,
+    #g-header .g-main-nav .tchooz-vertical-toplevel > li {
         margin-inline: 10px;
-        font-family: var(--em-default-font);
+        font-family: var(--em-profile-font), Inter, sans-serif;
         margin: 5px 0.5rem;
     }
 
@@ -136,11 +149,13 @@ defined('_JEXEC') or die;
         height: 30px;
     }
 
-    #g-navigation .g-main-nav .g-sublevel > li:not(:last-child) > .g-menu-item-container {
+    #g-navigation .g-main-nav .g-sublevel > li:not(:last-child) > .g-menu-item-container,
+    #g-header .g-main-nav .g-sublevel > li:not(:last-child) > .g-menu-item-container  {
         border-bottom: unset !important;
     }
 
-    #g-navigation .g-main-nav .g-sublevel > li:hover > .g-menu-item-container {
+    #g-navigation .g-main-nav .g-sublevel > li:hover > .g-menu-item-container,
+    #g-header .g-main-nav .g-sublevel > li:hover > .g-menu-item-container {
         color: var(--neutral-900);
     }
 
@@ -274,9 +289,7 @@ defined('_JEXEC') or die;
 </style>
 <nav class="g-main-nav <?php echo $class_sfx; ?>" data-g-hover-expand="true"
 	<?php
-	$tag = '';
-	if ($params->get('tag_id') != null) {
-		$tag = $params->get('tag_id') . '';
+	if (!empty($tag)) {
 		echo ' id="' . $tag . '"';
 	}
 	?>>
@@ -285,7 +298,7 @@ defined('_JEXEC') or die;
 
         <li class="g-menu-item g-standard tchooz-vertical-item">
             <a class="item" onclick="enableTitles()">
-                <img src="./images/emundus/menus/menu.png" style="width: 30px">
+                <img src="./images/emundus/menus/menu.png" style="width: 30px" alt="<?php echo JText::_('MOD_EMUNDUSMENU_ITEM_MENU') ?>">
                 <span class="image-title"
                       style="display: block; opacity: 1;"><?php echo JText::_('MOD_EMUNDUSMENU_ITEM_MENU') ?></span>
             </a>
@@ -516,12 +529,12 @@ defined('_JEXEC') or die;
         if (tooltipMenu) {
             if (window.getComputedStyle(document.querySelector('.image-title')).getPropertyValue('display') !== 'none') {
                 if (document.querySelector('#sublevel_list_' + menu)) {
-                    tooltipMenu.style.marginLeft = '200px';
+                    tooltipMenu.style.marginLeft = '0px';
                     tooltipMenu.style.display = 'block';
                 }
             } else {
-                tooltipMenu.style.marginLeft = '0';
                 tooltipMenu.style.display = 'block';
+                tooltipMenu.style.marginLeft = '0';
 
                 //Reposition tooltip if out of viewport or scroll happened
                 let tooltipRect = tooltipMenu.getBoundingClientRect();
@@ -538,7 +551,8 @@ defined('_JEXEC') or die;
 
                 // reposition out of viewport
                 if (tooltipRect.bottom > viewportHeight) {
-                    tooltipMenu.style.marginTop = -(tooltipRect.bottom - viewportHeight - parseInt(tooltipMenu.style.marginTop, 10)) + 'px';
+                    let tooltipMarginTop = tooltipMenu.style.marginTop ? parseInt(tooltipMenu.style.marginTop, 10) : -10;
+                    tooltipMenu.style.marginTop = -(tooltipRect.bottom - viewportHeight - tooltipMarginTop) + 'px';
                 }
             }
 
@@ -579,7 +593,7 @@ defined('_JEXEC') or die;
                 jQuery("#g-footer").css("padding-left", "280px");
                 jQuery("#footer-rgpd").css("padding-left", "280px");
                 jQuery("#g-container-main").css("padding-left", "270px");
-                jQuery("#header-a").css("opacity", "1");
+                jQuery("#header-a .logo").css("display", "block");
                 jQuery(".tchooz-vertical-logo").css("opacity", "0");
             }
             setTimeout(() => {
@@ -613,7 +627,7 @@ defined('_JEXEC') or die;
                     }
                 }
                 document.querySelector("#g-container-main").style.paddingLeft = "280px";
-                document.querySelector("#header-a").style.opacity = "1";
+                document.querySelector("#header-a .logo").style.display = "block";
             }
             setTimeout(() => {
                 document.querySelectorAll(".image-title").forEach(function (elem) {
@@ -654,7 +668,7 @@ defined('_JEXEC') or die;
                         document.querySelector("#footer-rgpd").style.paddingLeft = "76px";
                     }
                 }
-                document.querySelector("#header-a").style.opacity = "0";
+                document.querySelector("#header-a .logo").style.display = "none";
             }
 
             setTimeout(function () {

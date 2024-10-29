@@ -15,6 +15,7 @@
 defined('_JEXEC') || die;
 
 jimport('joomla.form.formfield');
+use Joomla\CMS\Factory;
 
 /**
  * Form Field class for the Joomla Framework.
@@ -39,6 +40,7 @@ class JFormFieldDownimport extends JFormField
         $class = $this->element['class'] ? ' ' . (string)$this->element['class'] . '' : '';
 
         if (JComponentHelper::isInstalled('com_jdownloads')) {
+            // jDownload for J3
             if (file_exists(JPATH_ADMINISTRATOR . '/components/com_jdownloads/models/categories.php')) {
                 $return = '<div class="import-name"><label class="ju-setting-label">'. JText::_('COM_DROPFILES_CONFIG_JDOWN_IMPORT_NAME') .'</label></div>';
                 $return .= '<select name="' . $this->name . '" id="' . $this->id . '" class="' . $class . '">';
@@ -54,7 +56,25 @@ class JFormFieldDownimport extends JFormField
                 $return .= '</select>';
                 $return .= '<style type="text/css">.docman_title {margin-bottom: 10px;} ';
                 $return .= '.docman_desc {font-weight: normal;}</style>';
-                $return .= '<button id="jdownloads_import_button" class="btn btn-small">';
+                $return .= '<button id="jdownloads_import_button" class="btn btn-small ju-button orange-outline-button">';
+                $return .= JText::_('COM_DROPFILES_CONFIG_RUN_JDOWN_IMPORT') . '</button>';
+            } elseif (file_exists(JPATH_ADMINISTRATOR . '/components/com_jdownloads/src/Model/CategoriesModel.php')) {
+                // jDownload for J4
+                $modelCategories = Factory::getApplication()->bootComponent('jdownloads')->getMVCFactory()
+                    ->createModel('Categories', 'Administrator');
+                $cats = $modelCategories->getItems();
+
+                $return = '<div class="import-name"><label class="ju-setting-label">'. JText::_('COM_DROPFILES_CONFIG_JDOWN_IMPORT_NAME') .'</label></div>';
+                $return .= '<select name="' . $this->name . '" id="' . $this->id . '" class="' . $class . '">';
+                $return .= '<option value="0">' . JText::_('COM_DROPFILES_CONFIG_SELECT_A_CATEGORY') . '</option>';
+                foreach ($cats as $cat) {
+                    $return .= '<option value="' . $cat->id . '">';
+                    $return .= str_repeat('&#8211;', $cat->level - 1) . ' ' . $cat->title . '</option>';
+                }
+                $return .= '</select>';
+                $return .= '<style type="text/css">.docman_title {margin-bottom: 10px;} ';
+                $return .= '.docman_desc {font-weight: normal;}</style>';
+                $return .= '<button id="jdownloads_import_button" class="btn btn-small ju-button orange-outline-button">';
                 $return .= JText::_('COM_DROPFILES_CONFIG_RUN_JDOWN_IMPORT') . '</button>';
             } else {
                 $return = '<span class="check-import-hidden" >';

@@ -1,10 +1,10 @@
 <template>
   <div>
-    <h1 class="em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_GLOBAL') }}</h1>
-    <div class="em-mb-24 em-flex-row em-flex-space-between">
+    <h2 class="tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_GLOBAL') }}</h2>
+    <div class="tw-mb-6 tw-flex tw-items-center tw-justify-between">
       <div>
-        <p class="em-body-16-semibold em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_DEFAULT') }}</p>
-        <p class="em-font-size-16 em-neutral-700-color">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_DEFAULT_DESC') }}</p>
+        <p class="em-body-16-semibold tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_DEFAULT') }}</p>
+        <p class="tw-text-base tw-text-neutral-700">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_DEFAULT_DESC') }}</p>
       </div>
       <div class="em-w-33">
         <multiselect
@@ -26,10 +26,10 @@
       </div>
     </div>
 
-    <div class="em-mb-24 em-flex-row em-flex-space-between">
+    <div class="tw-mb-6 tw-flex tw-items-center tw-justify-between">
       <div>
-        <p class="em-body-16-semibold em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SECONDARY') }}</p>
-        <p class="em-font-size-16 em-neutral-700-color">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SECONDARY_DESC') }}</p>
+        <p class="em-body-16-semibold tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SECONDARY') }}</p>
+        <p class="tw-text-base tw-text-neutral-700">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SECONDARY_DESC') }}</p>
       </div>
       <div class="em-w-33 tw-text-right">
         <multiselect
@@ -48,7 +48,7 @@
             @remove="unpublishLanguage"
             @select="publishLanguage"
         ></multiselect>
-        <a class="em-pointer em-mt-16 em-font-size-16 em-profile-color tw-underline"
+        <a class="tw-cursor-pointer tw-mt-4 tw-text-base em-profile-color tw-underline"
            @click="purposeLanguage">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_OTHER_LANGUAGE') }}</a>
       </div>
     </div>
@@ -59,8 +59,8 @@
 
 <script>
 
-import client from "com_emundus/src/services/axiosClient";
-import translationsService from "com_emundus/src/services/translations";
+import client from "@/services/axiosClient";
+import translationsService from "@/services/translations";
 import Multiselect from 'vue-multiselect';
 import Swal from "sweetalert2";
 
@@ -135,7 +135,7 @@ export default {
       const {value: formValues} = await Swal.fire({
         title: this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SUGGEST_LANGUAGE'),
         html:
-            '<p class="em-body-16-semibold em-mb-8 em-text-align-left">' + this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SUGGEST_LANGUAGE_FIELD') + '</p>' +
+            '<p class="em-body-16-semibold tw-mb-2 tw-text-end">' + this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SUGGEST_LANGUAGE_FIELD') + '</p>' +
             '<input id="language_purpose" class="em-input">',
         showCancelButton: true,
         cancelButtonText: this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),

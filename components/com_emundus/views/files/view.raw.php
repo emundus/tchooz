@@ -83,16 +83,19 @@ class EmundusViewFiles extends JViewLegacy
 		}
 
 		$menu = $this->app->getMenu();
-		if (!empty($menu)) {
+		$itemId = $this->app->input->getInt('Itemid', 0);
+		if(empty($itemId) && !empty($menu)) {
 			$current_menu = $menu->getActive();
 			if (!empty($current_menu)) {
-				$menu_params = $menu->getParams($current_menu->id);
-				if (!empty($menu_params)) {
-					$this->use_module_for_filters = boolval($menu_params->get('em_use_module_for_filters', 0));
-				} else {
-					$this->use_module_for_filters = false;
-				}
+				$itemId = $current_menu->id;
 			}
+		}
+
+		$menu_params = $menu->getParams($itemId);
+		if (!empty($menu_params)) {
+			$this->use_module_for_filters = boolval($menu_params->get('em_use_module_for_filters', 0));
+		} else {
+			$this->use_module_for_filters = false;
 		}
 
 		$session = $this->app->getSession();
@@ -176,6 +179,15 @@ class EmundusViewFiles extends JViewLegacy
 						$items = $h_files->getMenuList($params, $fnum);
 					}
 
+					if(empty($fnum)) {
+						$this->menu_title = $current_menu->title;
+					} else {
+						$this->menu_title = '<button id="em-close-file" class="back-button-menuactions tw-flex tw-flex-row em-color-white tw-cursor-pointer bg-transparent" style="border: none; height: 100%; margin: 0 4px 0 0; border-radius: 6px; padding: 4px 8px 4px 2px;">
+						<span class="material-symbols-outlined">chevron_left</span>
+						<span style="font-weight: 400 !important; margin-left: 8px;">' . JText::_('GO_BACK') . '</span>
+						</button>';
+					}
+
 					$this->items   = $items;
 					$this->display = $display;
 					$this->fnum    = $fnum;
@@ -247,6 +259,7 @@ class EmundusViewFiles extends JViewLegacy
 
 			// Get list of application files
 			default:
+				$e_user = $this->app->getSession()->get('emundusUser');
 				$menu         = $this->app->getMenu();
 				$current_menu = $menu->getActive();
 
@@ -257,13 +270,18 @@ class EmundusViewFiles extends JViewLegacy
 
 				$m_user = new EmundusModelUsers();
 
-				$m_files->code = $m_user->getUserGroupsProgrammeAssoc($this->user->id);
+				$groups               = $m_user->getUserGroups($this->user->id, 'Column',$e_user->profile);
 
 				// get all fnums manually associated to user
-				$groups               = $m_user->getUserGroups($this->user->id, 'Column');
 				$fnum_assoc_to_groups = $m_user->getApplicationsAssocToGroups($groups);
 				$fnum_assoc           = $m_user->getApplicantsAssoc($this->user->id);
+
 				$m_files->fnum_assoc  = array_merge($fnum_assoc_to_groups, $fnum_assoc);
+				$m_files->code = [];
+				if(!empty($groups))
+				{
+					$m_files->code = $m_user->getUserGroupsProgrammeAssoc($this->user->id, 'jesgrc.course', $groups);
+				}
 
 				$this->code       = $m_files->code;
 				$this->fnum_assoc = $m_files->fnum_assoc;
@@ -494,6 +512,23 @@ class EmundusViewFiles extends JViewLegacy
 							if (isset($colsSup[$key])) {
 								$colsSup[$key] = $h_files->createHTMLList($module, $fnumArray);
 							}
+						}
+					}
+
+					$this->keys_order = ['check' => -1, 'fnum' => 0];
+
+					if (!empty($menu_params->get('em_columns_ordered'))) {
+						$columns_ordered = explode(',', $menu_params->get('em_columns_ordered'));
+						$i = 1;
+						foreach ($columns_ordered as $key) {
+							$this->keys_order[$key] = $i;
+							$i++;
+						}
+					}
+					
+					foreach($data[0] as $k => $v) {
+						if (!array_key_exists($k, $this->keys_order) && $k != 'name') {
+							$this->keys_order[$k] = 999;
 						}
 					}
 				}

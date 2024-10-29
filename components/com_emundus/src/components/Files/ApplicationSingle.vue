@@ -1,28 +1,32 @@
 <template>
-  <div
+  <modal
+      v-show="showModal"
+      :click-to-close="false"
       id="application-modal"
       name="application-modal"
+      :height="'100vh'"
+      ref="modal"
       v-if="selectedFile !== null && selectedFile !== undefined"
       :class="{ 'context-files': context === 'files', 'hidden': hidden }"
   >
-    <div class="em-modal-header em-w-100 em-h-50 em-p-12-16 em-bg-main-900 em-flex-row">
-      <div class="em-flex-row em-pointer em-flex-space-between em-w-100" id="evaluation-modal-close">
-        <div class="em-flex-row em-gap-8">
-          <div class="em-w-max-content em-flex-row">
-          <span class="material-icons-outlined em-font-size-16"
-                @click="onClose" style="color: white">arrow_back</span>
+    <div class="em-modal-header tw-w-full tw-px-3 tw-py-4 tw-bg-profile-full tw-flex tw-items-center">
+      <div class="tw-flex tw-items-center tw-justify-between tw-w-full" id="evaluation-modal-close">
+        <div class="tw-flex tw-items-center tw-gap-2">
+          <div  @click="onClose" class="tw-w-max tw-flex tw-items-center">
+               <span class="material-symbols-outlined tw-text-base" style="color: white">navigate_before</span>
+              <span class="tw-ml-2 tw-text-neutral-900 tw-text-white tw-text-sm">{{ translate('BACK') }}</span>
           </div>
-          <span class="em-text-neutral-500">|</span>
-          <p class="em-font-size-14" style="color: white" v-if="selectedFile.applicant_name != ''">
+          <span class="tw-text-white">|</span>
+          <p class="tw-text-sm" style="color: white" v-if="selectedFile.applicant_name != ''">
             {{ selectedFile.applicant_name }} - {{ selectedFile.fnum }}
           </p>
-          <p class="em-font-size-14" style="color: white" v-else>
+          <p class="tw-text-sm" style="color: white" v-else>
             {{ selectedFile.fnum }}
           </p>
         </div>
-        <div v-if="fnums.length > 1" class="em-flex-row">
-          <span class="material-icons-outlined em-font-size-16" style="color:white;" @click="openPreviousFnum">navigate_before</span>
-          <span class="material-icons-outlined em-font-size-16" style="color:white;" @click="openNextFnum">navigate_next</span>
+        <div v-if="fnums.length > 1" class="tw-flex tw-items-center">
+          <span class="material-symbols-outlined tw-text-base" style="color:white;" @click="openPreviousFnum">navigate_before</span>
+          <span class="material-symbols-outlined tw-text-base" style="color:white;" @click="openNextFnum">navigate_next</span>
         </div>
       </div>
     </div>
@@ -30,57 +34,58 @@
     <div class="modal-grid" :style="'grid-template-columns:' + this.ratioStyle" v-if="access">
       <div id="modal-applicationform">
         <div class="scrollable">
-          <div class="em-flex-row em-flex-center em-gap-16 em-border-bottom-neutral-300 sticky-tab">
-            <div v-for="tab in tabsICanAccessTo" :key="tab.name" class="em-light-tabs em-pointer"
+          <div class="tw-flex tw-items-center tw-justify-center tw-gap-4 tw-border-b tw-border-neutral-300 sticky-tab em-bg-neutral-100" style="z-index:2;">
+            <div v-for="tab in tabsICanAccessTo" :key="tab.name" class="em-light-tabs tw-cursor-pointer"
                  @click="selected = tab.name" :class="selected === tab.name ? 'em-light-selected-tab' : ''">
-              <span class="em-font-size-14">{{ translate(tab.label) }}</span>
+              <span class="tw-text-sm">{{ translate(tab.label) }}</span>
             </div>
           </div>
 
-          <div v-if="selected === 'application'" v-html="applicationform"></div>
-          <Attachments
-              v-if="selected === 'attachments'"
-              :fnum="selectedFile.fnum"
-              :user="$props.user"
-              :columns="['name','date','category','status']"
-              :displayEdit="false"
-          />
-          <Comments
-              v-if="selected === 'comments'"
-              :fnum="selectedFile.fnum"
-              :user="$props.user"
-              :access="access['10']"
-          />
+          <div v-if="!loading">
+            <div v-if="selected === 'application'" v-html="applicationform"></div>
+            <Attachments
+                v-if="selected === 'attachments'"
+                :fnum="selectedFile.fnum"
+                :user="$props.user"
+                :columns="['check', 'name','date','category','status']"
+                :displayEdit="false"
+                :key="selectedFile.fnum"
+            />
+            <Comments
+                v-if="selected === 'comments'"
+                :fnum="selectedFile.fnum"
+                :user="$props.user"
+                :access="access['10']"
+                :key="selectedFile.fnum"
+            />
+          </div>
         </div>
       </div>
 
       <div id="modal-evaluationgrid">
-        <div class="em-flex-column" v-if="!loading" style="width: 40px;height: 40px;margin: 24px 0 12px 24px;">
-          <div class="em-circle-main-100 em-flex-column" style="width: 40px">
-            <div class="em-circle-main-200 em-flex-column" style="width: 24px">
-              <span class="material-icons-outlined em-main-400-color" style="font-size: 14px">troubleshoot</span>
-            </div>
-          </div>
-        </div>
         <iframe v-if="url" :src="url" class="iframe-evaluation" id="iframe-evaluation" @load="iframeLoaded($event);"
                 title="Evaluation form"/>
+        <div v-else>
+          {{ translate('COM_EMUNDUS_EVALUATION_NO_FORM_FOUND') }}
+        </div>
         <div class="em-page-loader" v-if="loading"></div>
       </div>
     </div>
-  </div>
+  </modal>
 </template>
 
 <script>
 import axios from "axios";
-import Attachments from "@/views/Attachments";
-import filesService from 'com_emundus/src/services/files';
-import errors from "@/mixins/errors";
-import Comments from "@/components/Files/Comments";
+import Attachments from "@/views/Attachments.vue";
+import filesService from '@/services/files.js';
+import errors from "@/mixins/errors.js";
+import Comments from "@/components/Files/Comments.vue";
+import Modal from "@/components/Modal.vue";
 
 
 export default {
   name: "ApplicationSingle",
-  components: {Comments, Attachments},
+  components: {Comments, Attachments, Modal},
   props: {
     file: Object | String,
     type: String,
@@ -99,6 +104,7 @@ export default {
   },
   mixins: [errors],
   data: () => ({
+    showModal: true,
     fnums: [],
     selectedFile: null,
     applicationform: '',
@@ -141,7 +147,7 @@ export default {
       this.render();
     } else {
       // hide modal if no file is selected
-      this.$modal.hide('application-modal');
+      this.showModal = false;
     }
 
     this.addEventListeners();
@@ -153,7 +159,10 @@ export default {
   methods: {
     addEventListeners() {
       window.addEventListener('openSingleApplicationWithFnum', (e) => {
-        this.selectedFile = e.detail.fnum;
+        this.showModal = true;
+        if (e.detail.fnum) {
+          this.selectedFile = e.detail.fnum;
+        }
 
         if (e.detail.fnums) {
           this.fnums = e.detail.fnums;
@@ -161,6 +170,9 @@ export default {
 
         if (typeof this.selectedFile !== 'undefined' && this.selectedFile !== null) {
           this.render();
+          if (this.$refs['modal']) {
+            this.$refs['modal'].open();
+          }
         }
       });
     },
@@ -179,22 +191,24 @@ export default {
           if (result.status == 1) {
             this.selectedFile = result.data;
             this.access = result.rights;
+            this.selected = 'application';
             this.updateURL(this.selectedFile.fnum)
             this.getApplicationForm();
             if (this.$props.type === 'evaluation') {
               this.getEvaluationForm();
             }
 
-            this.$modal.show('application-modal');
+            this.showModal = true;
             this.hidden = false;
+            this.loading = false;
           } else {
-            this.displayError('COM_EMUNDUS_FILES_CANNOT_ACCESS', result.msg
-            ).then((confirm) => {
+            this.displayError('COM_EMUNDUS_FILES_CANNOT_ACCESS', result.msg).then((confirm) => {
               if (confirm === true) {
-                this.$modal.hide('application-modal');
+                this.showModal = false;
                 this.hidden = true;
               }
             });
+            this.loading = false;
           }
         });
       } else {
@@ -214,16 +228,19 @@ export default {
             if (this.$props.type === 'evaluation') {
               this.getEvaluationForm();
             }
-            this.$modal.show('application-modal');
+            this.showModal = true;
             this.hidden = false;
           } else {
             this.displayError('COM_EMUNDUS_FILES_CANNOT_ACCESS', 'COM_EMUNDUS_FILES_CANNOT_ACCESS_DESC').then((confirm) => {
               if (confirm === true) {
-                this.$modal.hide('application-modal');
+                this.showModal = false;
                 this.hidden = true;
               }
             });
           }
+        }).catch((error) => {
+          this.displayError('COM_EMUNDUS_FILES_CANNOT_ACCESS', 'COM_EMUNDUS_FILES_CANNOT_ACCESS_DESC');
+          this.loading = false;
         });
       }
     },
@@ -251,7 +268,7 @@ export default {
       let view = 'form';
 
       filesService.getEvaluationFormByFnum(this.selectedFile.fnum, this.$props.type).then((response) => {
-        if (response.data !== 0) {
+        if (response.data !== 0 && response.data !== null) {
           if (typeof this.selectedFile.id === 'undefined') {
             filesService.getMyEvaluation(this.selectedFile.fnum).then((data) => {
               this.rowid = data.data;
@@ -283,7 +300,7 @@ export default {
     onClose(e) {
       e.preventDefault();
       this.hidden = true;
-      this.$modal.hide('application-modal');
+      this.showModal = false;
       document.querySelector('body').style.overflow= 'visible';
       swal.close();
     },
@@ -353,13 +370,13 @@ export default {
 
 .iframe-evaluation {
   width: 100%;
-  height: 90%;
+  height: calc(100% - 124px);
   border: unset;
 }
 
 #modal-evaluationgrid {
   border-left: 1px solid #EBECF0;
-  box-shadow: 0px 4px 16px rgba(32, 35, 44, 0.1);
+  box-shadow: 0 4px 16px rgba(32, 35, 44, 0.1);
 }
 
 .sticky-tab {
@@ -396,6 +413,7 @@ export default {
   z-index: 9999;
   width: 100vw;
   height: 100vh;
+  opacity: 1;
 }
 
 .hidden {

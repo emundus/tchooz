@@ -82,7 +82,7 @@
   font-weight: bold !important;
 }
 .dropfiles-content .dropfiles-container .dropfiles-foldertree ul.jaofoldertree a, .dropfiles-dropblock-content .dropfiles-container .dropfiles-foldertree ul.jaofoldertree a {
-  font-family: arial;
+  font-family: arial, helvetica, sans-serif;
   text-decoration: none;
   box-shadow: none;
   display: inline-block;
@@ -344,6 +344,10 @@
   background-image: url(../images/new_icons/tiff.png);
   color: transparent;
 }
+.dropfiles-content.dropfiles-content-default .file .filecontent > div.ext.ext-3gp {
+  background-image: url(../images/new_icons/3gp.png);
+  color: transparent;
+}
 .dropfiles-content.dropfiles-content-tree.dropfiles-content-multi ul li .dropfile-file.ext.doc {
   background-image: url(../images/new_icons/small/doc.png);
 }
@@ -554,13 +558,13 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-top: -3px;
   font-weight: normal;
   text-align: left;
   padding-left: 10px;
   color: #808080;
   vertical-align: baseline;
   max-width: 150px;
+  margin: 0;
 }
 @media screen and (max-width: 420px) {
   .dropfiles-content .dropfilescategory:not(.backcategory) > span {
@@ -577,7 +581,7 @@
   float: left;
   vertical-align: middle;
   font-family: Material-Design-Iconic-Font !important;
-  margin-top: -2px;
+  margin: 0;
   color: #808080;
 }
 .dropfiles-content .dropfilescategory_placeholder {
@@ -833,6 +837,7 @@
 }
 .dropfiles-content .dropfiles_checkbox .cbox_file_download:checked + span:before {
   content: "✔";
+  font-family: arial, helvetica, sans-serif;
 }
 .dropfiles-content #current-category-type.googledrive + .dropfiles_list .dropfiles_checkbox,
 .dropfiles-content #current-category-type.googledrive + .dropfiles-container .table .dropfiles_checkbox,
@@ -874,7 +879,7 @@
   }
 }
 
-.dropfiles-content-ggd .dropblock div.ext, [id^=dropfiles-box] .dropblock div.ext {
+.dropfiles-content-ggd .dropblock div.ext, .dropfiles-content-preview .dropblock div.ext, [id^=dropfiles-box] .dropblock div.ext {
   height: 114px;
   color: #fff;
   background: transparent url(../images/new_icons/neutral.png) no-repeat center center;
@@ -883,18 +888,18 @@
   position: relative;
 }
 
-.dropfiles-content-ggd.dropfiles-content .dropfilescategory .dropblock div.ext {
+.dropfiles-content-ggd.dropfiles-content .dropfilescategory .dropblock div.ext, .dropfiles-content-preview.dropfiles-content .dropfilescategory .dropblock div.ext {
   background-image: url(../images/new_icons/folder.png);
   color: transparent;
 }
-.dropfiles-content-ggd.dropfiles-content .dropfilescategory .dropblock div.ext.back {
+.dropfiles-content-ggd.dropfiles-content .dropfilescategory .dropblock div.ext.back, .dropfiles-content-preview.dropfiles-content .dropfilescategory .dropblock div.ext.back {
   background-image: url(../images/new_icons/folder-back.png);
   color: transparent;
 }
-.dropfiles-content-ggd .dropblock {
+.dropfiles-content-ggd .dropblock, .dropfiles-content-preview .dropblock {
   position: relative;
 }
-.dropfiles-content-ggd .dropblock div.custom-icon {
+.dropfiles-content-ggd .dropblock div.custom-icon, .dropfiles-content-preview .dropblock div.custom-icon {
   height: 114px;
   width: 114px;
   display: block;
@@ -904,6 +909,38 @@
   right: 0;
   top: 0;
   bottom: 0;
+}
+
+/* pagination */
+.dropfiles-pagination .page-numbers {
+  margin: 6px;
+  display: inline-block;
+}
+.dropfiles-pagination a.page-numbers {
+  cursor: pointer;
+  color: #046bd2;
+}
+.dropfiles-pagination .page-numbers.current {
+  color: #000;
+}
+
+.dropfiles-content + .dropfiles-pagination, .dropfiles-dropblock-content + .dropfiles-pagination {
+  padding: 5px;
+  text-align: center;
+}
+@media screen and (min-width: 720px) {
+  .dropfiles-content.dropfiles-content-folder-tree + .dropfiles-pagination, .dropfiles-dropblock-content.dropfiles-content-folder-tree + .dropfiles-pagination {
+    width: 70%;
+    margin-left: 0;
+    float: right;
+  }
+}
+@media screen and (max-width: 720px) {
+  .dropfiles-content.dropfiles-content-folder-tree + .dropfiles-pagination, .dropfiles-dropblock-content.dropfiles-content-folder-tree + .dropfiles-pagination {
+    text-align: center;
+    padding: 5px 5px 5px 15px;
+    margin-left: 25px;
+  }
 }
 
 [id^=dropfiles-box] .dropblock div.custom-icon {
@@ -952,239 +989,306 @@
   text-shadow: 1px 1px 1px #666;
 }
 
-.dropfiles-content.dropfiles-content-default .file .filecontent > div.ext.doc, .dropfiles-content-ggd .dropblock div.ext.doc, [id^=dropfiles-box] .dropblock div.ext.doc, .dropfiles-content-table.dropfiles-content span.ext.doc, .dropfiles-content-tree .dropblock div.ext.doc, #dropfiles-box-tree .dropblock div.ext.doc {
+.dropfiles-content.dropfiles-content-default .file .filecontent > div.ext.doc, .dropfiles-content-ggd .dropblock div.ext.doc, [id^=dropfiles-box] .dropblock div.ext.doc, .dropfiles-content-table.dropfiles-content span.ext.doc, .dropfiles-content-tree .dropblock div.ext.doc, #dropfiles-box-tree .dropblock div.ext.doc, .dropfiles-content-preview .dropblock div.ext.doc {
   background-image: url(../images/new_icons/doc.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.docx, [id^=dropfiles-box] .dropblock div.ext.docx, .dropfiles-content-table.dropfiles-content span.ext.docx, .dropfiles-content-tree .dropblock div.ext.docx, #dropfiles-box-tree .dropblock div.ext.docx {
+.dropfiles-content-ggd .dropblock div.ext.docx, [id^=dropfiles-box] .dropblock div.ext.docx, .dropfiles-content-table.dropfiles-content span.ext.docx, .dropfiles-content-tree .dropblock div.ext.docx, #dropfiles-box-tree .dropblock div.ext.docx, .dropfiles-content-preview .dropblock div.ext.docx {
   background-image: url(../images/new_icons/docx.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.xls, [id^=dropfiles-box] .dropblock div.ext.xls, .dropfiles-content-table.dropfiles-content span.ext.xls, .dropfiles-content-tree .dropblock div.ext.xls, #dropfiles-box-tree .dropblock div.ext.xls {
+.dropfiles-content-ggd .dropblock div.ext.xls, [id^=dropfiles-box] .dropblock div.ext.xls, .dropfiles-content-table.dropfiles-content span.ext.xls, .dropfiles-content-tree .dropblock div.ext.xls, #dropfiles-box-tree .dropblock div.ext.xls, .dropfiles-content-preview .dropblock div.ext.xls {
   background-image: url(../images/new_icons/xls.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.xlsx, [id^=dropfiles-box] .dropblock div.ext.xlsx, .dropfiles-content-table.dropfiles-content span.ext.xlsx, .dropfiles-content-tree .dropblock div.ext.xlsx, #dropfiles-box-tree .dropblock div.ext.xlsx {
+.dropfiles-content-ggd .dropblock div.ext.xlsx, [id^=dropfiles-box] .dropblock div.ext.xlsx, .dropfiles-content-table.dropfiles-content span.ext.xlsx, .dropfiles-content-tree .dropblock div.ext.xlsx, #dropfiles-box-tree .dropblock div.ext.xlsx, .dropfiles-content-preview .dropblock div.ext.xlsx {
   background-image: url(../images/new_icons/xlsx.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.ppt, [id^=dropfiles-box] .dropblock div.ext.ppt, .dropfiles-content-table.dropfiles-content span.ext.ppt, .dropfiles-content-tree .dropblock div.ext.ppt, #dropfiles-box-tree .dropblock div.ext.ppt {
+.dropfiles-content-ggd .dropblock div.ext.ppt, .dropfiles-content-preview .dropblock div.ext.ppt, [id^=dropfiles-box] .dropblock div.ext.ppt, .dropfiles-content-table.dropfiles-content span.ext.ppt, .dropfiles-content-tree .dropblock div.ext.ppt, #dropfiles-box-tree .dropblock div.ext.ppt {
   background-image: url(../images/new_icons/ppt.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.pptx, [id^=dropfiles-box] .dropblock div.ext.pptx, .dropfiles-content-table.dropfiles-content span.ext.pptx, .dropfiles-content-tree .dropblock div.ext.pptx, #dropfiles-box-tree .dropblock div.ext.pptx {
+.dropfiles-content-ggd .dropblock div.ext.pptx, .dropfiles-content-preview .dropblock div.ext.pptx, [id^=dropfiles-box] .dropblock div.ext.pptx, .dropfiles-content-table.dropfiles-content span.ext.pptx, .dropfiles-content-tree .dropblock div.ext.pptx, #dropfiles-box-tree .dropblock div.ext.pptx {
   background-image: url(../images/new_icons/pptx.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.pdf, [id^=dropfiles-box] .dropblock div.ext.pdf, .dropfiles-content-table.dropfiles-content span.ext.pdf, .dropfiles-content-tree .dropblock div.ext.pdf, #dropfiles-box-tree .dropblock div.ext.pdf {
+.dropfiles-content-ggd .dropblock div.ext.pdf, .dropfiles-content-preview .dropblock div.ext.pdf, [id^=dropfiles-box] .dropblock div.ext.pdf, .dropfiles-content-table.dropfiles-content span.ext.pdf, .dropfiles-content-tree .dropblock div.ext.pdf, #dropfiles-box-tree .dropblock div.ext.pdf {
   background-image: url(../images/new_icons/pdf.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.txt, [id^=dropfiles-box] .dropblock div.ext.txt, .dropfiles-content-table.dropfiles-content span.ext.txt, .dropfiles-content-tree .dropblock div.ext.txt, #dropfiles-box-tree .dropblock div.ext.txt {
+.dropfiles-content-ggd .dropblock div.ext.txt, .dropfiles-content-preview .dropblock div.ext.txt, [id^=dropfiles-box] .dropblock div.ext.txt, .dropfiles-content-table.dropfiles-content span.ext.txt, .dropfiles-content-tree .dropblock div.ext.txt, #dropfiles-box-tree .dropblock div.ext.txt {
   background-image: url(../images/new_icons/txt.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.csv, [id^=dropfiles-box] .dropblock div.ext.csv, .dropfiles-content-table.dropfiles-content span.ext.csv, .dropfiles-content-tree .dropblock div.ext.csv, #dropfiles-box-tree .dropblock div.ext.csv {
+.dropfiles-content-ggd .dropblock div.ext.csv, .dropfiles-content-preview .dropblock div.ext.csv, [id^=dropfiles-box] .dropblock div.ext.csv, .dropfiles-content-table.dropfiles-content span.ext.csv, .dropfiles-content-tree .dropblock div.ext.csv, #dropfiles-box-tree .dropblock div.ext.csv {
   background-image: url(../images/new_icons/csv.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.avi, [id^=dropfiles-box] .dropblock div.ext.avi, .dropfiles-content-table.dropfiles-content span.ext.avi, .dropfiles-content-tree .dropblock div.ext.avi, #dropfiles-box-tree .dropblock div.ext.avi {
+.dropfiles-content-ggd .dropblock div.ext.avi, .dropfiles-content-preview .dropblock div.ext.avi, [id^=dropfiles-box] .dropblock div.ext.avi, .dropfiles-content-table.dropfiles-content span.ext.avi, .dropfiles-content-tree .dropblock div.ext.avi, #dropfiles-box-tree .dropblock div.ext.avi {
   background-image: url(../images/new_icons/avi.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.mp4, [id^=dropfiles-box] .dropblock div.ext.mp4, .dropfiles-content-table.dropfiles-content span.ext.mp4, .dropfiles-content-tree .dropblock div.ext.mp4, #dropfiles-box-tree .dropblock div.ext.mp4 {
+.dropfiles-content-ggd .dropblock div.ext.mp4, .dropfiles-content-preview .dropblock div.ext.mp4, [id^=dropfiles-box] .dropblock div.ext.mp4, .dropfiles-content-table.dropfiles-content span.ext.mp4, .dropfiles-content-tree .dropblock div.ext.mp4, #dropfiles-box-tree .dropblock div.ext.mp4 {
   background-image: url(../images/new_icons/mp4.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.mov, [id^=dropfiles-box] .dropblock div.ext.mov, .dropfiles-content-table.dropfiles-content span.ext.mov, .dropfiles-content-tree .dropblock div.ext.mov, #dropfiles-box-tree .dropblock div.ext.mov {
+.dropfiles-content-ggd .dropblock div.ext.mov, .dropfiles-content-preview .dropblock div.ext.mov, [id^=dropfiles-box] .dropblock div.ext.mov, .dropfiles-content-table.dropfiles-content span.ext.mov, .dropfiles-content-tree .dropblock div.ext.mov, #dropfiles-box-tree .dropblock div.ext.mov {
   background-image: url(../images/new_icons/mov.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.fla, [id^=dropfiles-box] .dropblock div.ext.fla, .dropfiles-content-table.dropfiles-content span.ext.fla, .dropfiles-content-tree .dropblock div.ext.fla, #dropfiles-box-tree .dropblock div.ext.fla {
+.dropfiles-content-ggd .dropblock div.ext.fla, .dropfiles-content-preview .dropblock div.ext.fla, [id^=dropfiles-box] .dropblock div.ext.fla, .dropfiles-content-table.dropfiles-content span.ext.fla, .dropfiles-content-tree .dropblock div.ext.fla, #dropfiles-box-tree .dropblock div.ext.fla {
   background-image: url(../images/new_icons/fla.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.flv, [id^=dropfiles-box] .dropblock div.ext.flv, .dropfiles-content-table.dropfiles-content span.ext.flv, .dropfiles-content-tree .dropblock div.ext.flv, #dropfiles-box-tree .dropblock div.ext.flv {
+.dropfiles-content-ggd .dropblock div.ext.flv, .dropfiles-content-preview .dropblock div.ext.flv, [id^=dropfiles-box] .dropblock div.ext.flv, .dropfiles-content-table.dropfiles-content span.ext.flv, .dropfiles-content-tree .dropblock div.ext.flv, #dropfiles-box-tree .dropblock div.ext.flv {
   background-image: url(../images/new_icons/flv.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.flac, [id^=dropfiles-box] .dropblock div.ext.flac, .dropfiles-content-table.dropfiles-content span.ext.flac, .dropfiles-content-tree .dropblock div.ext.flac, #dropfiles-box-tree .dropblock div.ext.flac {
+.dropfiles-content-ggd .dropblock div.ext.flac, .dropfiles-content-preview .dropblock div.ext.flac, [id^=dropfiles-box] .dropblock div.ext.flac, .dropfiles-content-table.dropfiles-content span.ext.flac, .dropfiles-content-tree .dropblock div.ext.flac, #dropfiles-box-tree .dropblock div.ext.flac {
   background-image: url(../images/new_icons/flac.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.mpg, [id^=dropfiles-box] .dropblock div.ext.mpg, .dropfiles-content-table.dropfiles-content span.ext.mpg, .dropfiles-content-tree .dropblock div.ext.mpg, #dropfiles-box-tree .dropblock div.ext.mpg {
+.dropfiles-content-ggd .dropblock div.ext.mpg, .dropfiles-content-preview .dropblock div.ext.mpg, [id^=dropfiles-box] .dropblock div.ext.mpg, .dropfiles-content-table.dropfiles-content span.ext.mpg, .dropfiles-content-tree .dropblock div.ext.mpg, #dropfiles-box-tree .dropblock div.ext.mpg {
   background-image: url(../images/new_icons/mpg.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.ogg, [id^=dropfiles-box] .dropblock div.ext.ogg, .dropfiles-content-table.dropfiles-content span.ext.ogg, .dropfiles-content-tree .dropblock div.ext.ogg, #dropfiles-box-tree .dropblock div.ext.ogg {
+.dropfiles-content-ggd .dropblock div.ext.ogg, .dropfiles-content-preview .dropblock div.ext.ogg, [id^=dropfiles-box] .dropblock div.ext.ogg, .dropfiles-content-table.dropfiles-content span.ext.ogg, .dropfiles-content-tree .dropblock div.ext.ogg, #dropfiles-box-tree .dropblock div.ext.ogg {
   background-image: url(../images/new_icons/ogg.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.rm, [id^=dropfiles-box] .dropblock div.ext.rm, .dropfiles-content-table.dropfiles-content span.ext.rm, .dropfiles-content-tree .dropblock div.ext.rm, #dropfiles-box-tree .dropblock div.ext.rm {
+.dropfiles-content-ggd .dropblock div.ext.rm, .dropfiles-content-preview .dropblock div.ext.rm, [id^=dropfiles-box] .dropblock div.ext.rm, .dropfiles-content-table.dropfiles-content span.ext.rm, .dropfiles-content-tree .dropblock div.ext.rm, #dropfiles-box-tree .dropblock div.ext.rm {
   background-image: url(../images/new_icons/rm.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.wav, [id^=dropfiles-box] .dropblock div.ext.wav, .dropfiles-content-table.dropfiles-content span.ext.wav, .dropfiles-content-tree .dropblock div.ext.wav, #dropfiles-box-tree .dropblock div.ext.wav {
+.dropfiles-content-ggd .dropblock div.ext.wav, .dropfiles-content-preview .dropblock div.ext.wav, [id^=dropfiles-box] .dropblock div.ext.wav, .dropfiles-content-table.dropfiles-content span.ext.wav, .dropfiles-content-tree .dropblock div.ext.wav, #dropfiles-box-tree .dropblock div.ext.wav {
   background-image: url(../images/new_icons/wav.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.mp3, [id^=dropfiles-box] .dropblock div.ext.mp3, .dropfiles-content-table.dropfiles-content span.ext.mp3, .dropfiles-content-tree .dropblock div.ext.mp3, #dropfiles-box-tree .dropblock div.ext.mp3 {
+.dropfiles-content-ggd .dropblock div.ext.mp3, .dropfiles-content-preview .dropblock div.ext.mp3, [id^=dropfiles-box] .dropblock div.ext.mp3, .dropfiles-content-table.dropfiles-content span.ext.mp3, .dropfiles-content-tree .dropblock div.ext.mp3, #dropfiles-box-tree .dropblock div.ext.mp3 {
   background-image: url(../images/new_icons/mp3.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.wmv, [id^=dropfiles-box] .dropblock div.ext.wmv, .dropfiles-content-table.dropfiles-content span.ext.wmv, .dropfiles-content-tree .dropblock div.ext.wmv, #dropfiles-box-tree .dropblock div.ext.wmv {
+.dropfiles-content-ggd .dropblock div.ext.wmv, .dropfiles-content-preview .dropblock div.ext.wmv, [id^=dropfiles-box] .dropblock div.ext.wmv, .dropfiles-content-table.dropfiles-content span.ext.wmv, .dropfiles-content-tree .dropblock div.ext.wmv, #dropfiles-box-tree .dropblock div.ext.wmv {
   background-image: url(../images/new_icons/wmv.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.wma, [id^=dropfiles-box] .dropblock div.ext.wma, .dropfiles-content-table.dropfiles-content span.ext.wma, .dropfiles-content-tree .dropblock div.ext.wma #dropfiles-box-tree .dropblock div.ext.wma {
+.dropfiles-content-ggd .dropblock div.ext.wma, .dropfiles-content-preview .dropblock div.ext.wma, [id^=dropfiles-box] .dropblock div.ext.wma, .dropfiles-content-table.dropfiles-content span.ext.wma, .dropfiles-content-tree .dropblock div.ext.wma #dropfiles-box-tree .dropblock div.ext.wma {
   background-image: url(../images/new_icons/wma.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.mkv, [id^=dropfiles-box] .dropblock div.ext.mkv, .dropfiles-content-table.dropfiles-content span.ext.mkv, .dropfiles-content-tree .dropblock div.ext.mkv, #dropfiles-box-tree .dropblock div.ext.mkv {
+.dropfiles-content-ggd .dropblock div.ext.mkv, .dropfiles-content-preview .dropblock div.ext.mkv, [id^=dropfiles-box] .dropblock div.ext.mkv, .dropfiles-content-table.dropfiles-content span.ext.mkv, .dropfiles-content-tree .dropblock div.ext.mkv, #dropfiles-box-tree .dropblock div.ext.mkv {
   background-image: url(../images/new_icons/mkv.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.mpeg, [id^=dropfiles-box] .dropblock div.ext.mpeg, .dropfiles-content-table.dropfiles-content span.ext.mpeg, .dropfiles-content-tree .dropblock div.ext.mpeg, #dropfiles-box-tree .dropblock div.ext.mpeg {
+.dropfiles-content-ggd .dropblock div.ext.mpeg, .dropfiles-content-preview .dropblock div.ext.mpeg, [id^=dropfiles-box] .dropblock div.ext.mpeg, .dropfiles-content-table.dropfiles-content span.ext.mpeg, .dropfiles-content-tree .dropblock div.ext.mpeg, #dropfiles-box-tree .dropblock div.ext.mpeg {
   background-image: url(../images/new_icons/mpeg.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.gif, [id^=dropfiles-box] .dropblock div.ext.gif, .dropfiles-content-table.dropfiles-content span.ext.gif, .dropfiles-content-tree .dropblock div.ext.gif, #dropfiles-box-tree .dropblock div.ext.gif {
+.dropfiles-content-ggd .dropblock div.ext.gif, .dropfiles-content-preview .dropblock div.ext.gif, [id^=dropfiles-box] .dropblock div.ext.gif, .dropfiles-content-table.dropfiles-content span.ext.gif, .dropfiles-content-tree .dropblock div.ext.gif, #dropfiles-box-tree .dropblock div.ext.gif {
   background-image: url(../images/new_icons/gif.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.jpg, [id^=dropfiles-box] .dropblock div.ext.jpg, .dropfiles-content-table.dropfiles-content span.ext.jpg, .dropfiles-content-tree .dropblock div.ext.jpg, #dropfiles-box-tree .dropblock div.ext.jpg {
+.dropfiles-content-ggd .dropblock div.ext.jpg, .dropfiles-content-preview .dropblock div.ext.jpg, [id^=dropfiles-box] .dropblock div.ext.jpg, .dropfiles-content-table.dropfiles-content span.ext.jpg, .dropfiles-content-tree .dropblock div.ext.jpg, #dropfiles-box-tree .dropblock div.ext.jpg {
   background-image: url(../images/new_icons/jpg.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.png, [id^=dropfiles-box] .dropblock div.ext.png, .dropfiles-content-table.dropfiles-content span.ext.png, .dropfiles-content-tree .dropblock div.ext.png, #dropfiles-box-tree .dropblock div.ext.png {
+.dropfiles-content-ggd .dropblock div.ext.png, .dropfiles-content-preview .dropblock div.ext.png, [id^=dropfiles-box] .dropblock div.ext.png, .dropfiles-content-table.dropfiles-content span.ext.png, .dropfiles-content-tree .dropblock div.ext.png, #dropfiles-box-tree .dropblock div.ext.png {
   background-image: url(../images/new_icons/png.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.bmp, [id^=dropfiles-box] .dropblock div.ext.bmp, .dropfiles-content-table.dropfiles-content span.ext.bmp, .dropfiles-content-tree .dropblock div.ext.bmp, #dropfiles-box-tree .dropblock div.ext.bmp {
+.dropfiles-content-ggd .dropblock div.ext.bmp, .dropfiles-content-preview .dropblock div.ext.bmp, [id^=dropfiles-box] .dropblock div.ext.bmp, .dropfiles-content-table.dropfiles-content span.ext.bmp, .dropfiles-content-tree .dropblock div.ext.bmp, #dropfiles-box-tree .dropblock div.ext.bmp {
   background-image: url(../images/new_icons/bmp.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.svg, [id^=dropfiles-box] .dropblock div.ext.svg, .dropfiles-content-table.dropfiles-content span.ext.svg, .dropfiles-content-tree .dropblock div.ext.svg, #dropfiles-box-tree .dropblock div.ext.svg {
+.dropfiles-content-ggd .dropblock div.ext.svg, .dropfiles-content-preview .dropblock div.ext.svg, [id^=dropfiles-box] .dropblock div.ext.svg, .dropfiles-content-table.dropfiles-content span.ext.svg, .dropfiles-content-tree .dropblock div.ext.svg, #dropfiles-box-tree .dropblock div.ext.svg {
   background-image: url(../images/new_icons/svg.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.psd, [id^=dropfiles-box] .dropblock div.ext.psd, .dropfiles-content-table.dropfiles-content span.ext.psd, .dropfiles-content-tree .dropblock div.ext.psd, #dropfiles-box-tree .dropblock div.ext.psd {
+.dropfiles-content-ggd .dropblock div.ext.psd, .dropfiles-content-preview .dropblock div.ext.psd, [id^=dropfiles-box] .dropblock div.ext.psd, .dropfiles-content-table.dropfiles-content span.ext.psd, .dropfiles-content-tree .dropblock div.ext.psd, #dropfiles-box-tree .dropblock div.ext.psd {
   background-image: url(../images/new_icons/psd.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.ai, [id^=dropfiles-box] .dropblock div.ext.ai, .dropfiles-content-table.dropfiles-content span.ext.ai, .dropfiles-content-tree .dropblock div.ext.ai, #dropfiles-box-tree .dropblock div.ext.ai {
+.dropfiles-content-ggd .dropblock div.ext.ai, .dropfiles-content-preview .dropblock div.ext.ai, [id^=dropfiles-box] .dropblock div.ext.ai, .dropfiles-content-table.dropfiles-content span.ext.ai, .dropfiles-content-tree .dropblock div.ext.ai, #dropfiles-box-tree .dropblock div.ext.ai {
   background-image: url(../images/new_icons/ai.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.eps, [id^=dropfiles-box] .dropblock div.ext.eps, .dropfiles-content-table.dropfiles-content span.ext.eps, .dropfiles-content-tree .dropblock div.ext.eps, #dropfiles-box-tree .dropblock div.ext.eps {
+.dropfiles-content-ggd .dropblock div.ext.eps, .dropfiles-content-preview .dropblock div.ext.eps, [id^=dropfiles-box] .dropblock div.ext.eps, .dropfiles-content-table.dropfiles-content span.ext.eps, .dropfiles-content-tree .dropblock div.ext.eps, #dropfiles-box-tree .dropblock div.ext.eps {
   background-image: url(../images/new_icons/eps.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.html, [id^=dropfiles-box] .dropblock div.ext.html, .dropfiles-content-table.dropfiles-content span.ext.html, .dropfiles-content-tree .dropblock div.ext.html, #dropfiles-box-tree .dropblock div.ext.html {
+.dropfiles-content-ggd .dropblock div.ext.html, .dropfiles-content-preview .dropblock div.ext.html, [id^=dropfiles-box] .dropblock div.ext.html, .dropfiles-content-table.dropfiles-content span.ext.html, .dropfiles-content-tree .dropblock div.ext.html, #dropfiles-box-tree .dropblock div.ext.html {
   background-image: url(../images/new_icons/html.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.css, [id^=dropfiles-box] .dropblock div.ext.css, .dropfiles-content-table.dropfiles-content span.ext.css, .dropfiles-content-tree .dropblock div.ext.css, #dropfiles-box-tree .dropblock div.ext.css {
+.dropfiles-content-ggd .dropblock div.ext.css, .dropfiles-content-preview .dropblock div.ext.css, [id^=dropfiles-box] .dropblock div.ext.css, .dropfiles-content-table.dropfiles-content span.ext.css, .dropfiles-content-tree .dropblock div.ext.css, #dropfiles-box-tree .dropblock div.ext.css {
   background-image: url(../images/new_icons/css.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.sql, [id^=dropfiles-box] .dropblock div.ext.sql, .dropfiles-content-table.dropfiles-content span.ext.sql, .dropfiles-content-tree .dropblock div.ext.sql, #dropfiles-box-tree .dropblock div.ext.sql {
+.dropfiles-content-ggd .dropblock div.ext.sql, .dropfiles-content-preview .dropblock div.ext.sql, [id^=dropfiles-box] .dropblock div.ext.sql, .dropfiles-content-table.dropfiles-content span.ext.sql, .dropfiles-content-tree .dropblock div.ext.sql, #dropfiles-box-tree .dropblock div.ext.sql {
   background-image: url(../images/new_icons/sql.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.dll, [id^=dropfiles-box] .dropblock div.ext.dll, .dropfiles-content-table.dropfiles-content span.ext.dll, .dropfiles-content-tree .dropblock div.ext.dll, #dropfiles-box-tree .dropblock div.ext.dll {
+.dropfiles-content-ggd .dropblock div.ext.dll, .dropfiles-content-preview .dropblock div.ext.dll, [id^=dropfiles-box] .dropblock div.ext.dll, .dropfiles-content-table.dropfiles-content span.ext.dll, .dropfiles-content-tree .dropblock div.ext.dll, #dropfiles-box-tree .dropblock div.ext.dll {
   background-image: url(../images/new_icons/dll.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.xml, [id^=dropfiles-box] .dropblock div.ext.xml, .dropfiles-content-table.dropfiles-content span.ext.xml, .dropfiles-content-tree .dropblock div.ext.xml, #dropfiles-box-tree .dropblock div.ext.xml {
+.dropfiles-content-ggd .dropblock div.ext.xml, .dropfiles-content-preview .dropblock div.ext.xml, [id^=dropfiles-box] .dropblock div.ext.xml, .dropfiles-content-table.dropfiles-content span.ext.xml, .dropfiles-content-tree .dropblock div.ext.xml, #dropfiles-box-tree .dropblock div.ext.xml {
   background-image: url(../images/new_icons/xml.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.iso, [id^=dropfiles-box] .dropblock div.ext.iso, .dropfiles-content-table.dropfiles-content span.ext.iso, .dropfiles-content-tree .dropblock div.ext.iso, #dropfiles-box-tree .dropblock div.ext.iso {
+.dropfiles-content-ggd .dropblock div.ext.iso, .dropfiles-content-preview .dropblock div.ext.iso, [id^=dropfiles-box] .dropblock div.ext.iso, .dropfiles-content-table.dropfiles-content span.ext.iso, .dropfiles-content-tree .dropblock div.ext.iso, #dropfiles-box-tree .dropblock div.ext.iso {
   background-image: url(../images/new_icons/iso.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.zip, [id^=dropfiles-box] .dropblock div.ext.zip, .dropfiles-content-table.dropfiles-content span.ext.zip, .dropfiles-content-tree .dropblock div.ext.zip, #dropfiles-box-tree .dropblock div.ext.zip {
+.dropfiles-content-ggd .dropblock div.ext.zip, .dropfiles-content-preview .dropblock div.ext.zip, [id^=dropfiles-box] .dropblock div.ext.zip, .dropfiles-content-table.dropfiles-content span.ext.zip, .dropfiles-content-tree .dropblock div.ext.zip, #dropfiles-box-tree .dropblock div.ext.zip {
   background-image: url(../images/new_icons/zip.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.rar, [id^=dropfiles-box] .dropblock div.ext.rar, .dropfiles-content-table.dropfiles-content span.ext.rar, .dropfiles-content-tree .dropblock div.ext.rar, #dropfiles-box-tree .dropblock div.ext.rar {
+.dropfiles-content-ggd .dropblock div.ext.rar, .dropfiles-content-preview .dropblock div.ext.rar, [id^=dropfiles-box] .dropblock div.ext.rar, .dropfiles-content-table.dropfiles-content span.ext.rar, .dropfiles-content-tree .dropblock div.ext.rar, #dropfiles-box-tree .dropblock div.ext.rar {
   background-image: url(../images/new_icons/rar.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.exe, [id^=dropfiles-box] .dropblock div.ext.exe, .dropfiles-content-table.dropfiles-content span.ext.exe, .dropfiles-content-tree .dropblock div.ext.exe, #dropfiles-box-tree .dropblock div.ext.exe {
+.dropfiles-content-ggd .dropblock div.ext.exe, .dropfiles-content-preview .dropblock div.ext.exe, [id^=dropfiles-box] .dropblock div.ext.exe, .dropfiles-content-table.dropfiles-content span.ext.exe, .dropfiles-content-tree .dropblock div.ext.exe, #dropfiles-box-tree .dropblock div.ext.exe {
   background-image: url(../images/new_icons/exe.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.otf, [id^=dropfiles-box] .dropblock div.ext.otf, .dropfiles-content-table.dropfiles-content span.ext.otf, .dropfiles-content-tree .dropblock div.ext.otf, #dropfiles-box-tree .dropblock div.ext.otf {
+.dropfiles-content-ggd .dropblock div.ext.otf, .dropfiles-content-preview .dropblock div.ext.otf, [id^=dropfiles-box] .dropblock div.ext.otf, .dropfiles-content-table.dropfiles-content span.ext.otf, .dropfiles-content-tree .dropblock div.ext.otf, #dropfiles-box-tree .dropblock div.ext.otf {
   background-image: url(../images/new_icons/otf.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.asf, [id^=dropfiles-box] .dropblock div.ext.asf, .dropfiles-content-table.dropfiles-content span.ext.asf, .dropfiles-content-tree .dropblock div.ext.asf, #dropfiles-box-tree .dropblock div.ext.asf {
+.dropfiles-content-ggd .dropblock div.ext.asf, .dropfiles-content-preview .dropblock div.ext.asf, [id^=dropfiles-box] .dropblock div.ext.asf, .dropfiles-content-table.dropfiles-content span.ext.asf, .dropfiles-content-tree .dropblock div.ext.asf, #dropfiles-box-tree .dropblock div.ext.asf {
   background-image: url(../images/new_icons/asf.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.ico, [id^=dropfiles-box] .dropblock div.ext.ico, .dropfiles-content-table.dropfiles-content span.ext.ico, .dropfiles-content-tree .dropblock div.ext.ico, #dropfiles-box-tree .dropblock div.ext.ico {
+.dropfiles-content-ggd .dropblock div.ext.ico, .dropfiles-content-preview .dropblock div.ext.ico, [id^=dropfiles-box] .dropblock div.ext.ico, .dropfiles-content-table.dropfiles-content span.ext.ico, .dropfiles-content-tree .dropblock div.ext.ico, #dropfiles-box-tree .dropblock div.ext.ico {
   background-image: url(../images/new_icons/ico.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.raw, [id^=dropfiles-box] .dropblock div.ext.raw, .dropfiles-content-table.dropfiles-content span.ext.raw, .dropfiles-content-tree .dropblock div.ext.raw, #dropfiles-box-tree .dropblock div.ext.raw {
+.dropfiles-content-ggd .dropblock div.ext.raw, .dropfiles-content-preview .dropblock div.ext.raw, [id^=dropfiles-box] .dropblock div.ext.raw, .dropfiles-content-table.dropfiles-content span.ext.raw, .dropfiles-content-tree .dropblock div.ext.raw, #dropfiles-box-tree .dropblock div.ext.raw {
   background-image: url(../images/new_icons/raw.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.sys, [id^=dropfiles-box] .dropblock div.ext.sys, .dropfiles-content-table.dropfiles-content span.ext.sys, .dropfiles-content-tree .dropblock div.ext.sys, #dropfiles-box-tree .dropblock div.ext.sys {
+.dropfiles-content-ggd .dropblock div.ext.sys, .dropfiles-content-preview .dropblock div.ext.sys, [id^=dropfiles-box] .dropblock div.ext.sys, .dropfiles-content-table.dropfiles-content span.ext.sys, .dropfiles-content-tree .dropblock div.ext.sys, #dropfiles-box-tree .dropblock div.ext.sys {
   background-image: url(../images/new_icons/sys.png);
   color: transparent;
 }
 
-.dropfiles-content-ggd .dropblock div.ext.tiff, [id^=dropfiles-box] .dropblock div.ext.tiff, .dropfiles-content-table.dropfiles-content span.ext.tiff, .dropfiles-content-tree .dropblock div.ext.tiff, #dropfiles-box-tree .dropblock div.ext.tiff {
+.dropfiles-content-ggd .dropblock div.ext.tiff, .dropfiles-content-preview .dropblock div.ext.tiff, [id^=dropfiles-box] .dropblock div.ext.tiff, .dropfiles-content-table.dropfiles-content span.ext.tiff, .dropfiles-content-tree .dropblock div.ext.tiff, #dropfiles-box-tree .dropblock div.ext.tiff {
   background-image: url(../images/new_icons/tiff.png);
   color: transparent;
+}
+
+.dropfiles-content-ggd .dropblock div.ext.ext-3gp, .dropfiles-content-preview .dropblock div.ext.ext-3gp, [id^=dropfiles-box] .dropblock div.ext.ext-3gp, .dropfiles-content-table.dropfiles-content span.ext.ext-3gp, .dropfiles-content.dropfiles-content-tree.dropfiles-content-multi ul li .dropfile-file.ext.ext-3gp, #dropfiles-box-tree .dropblock div.ext.ext-3gp {
+  background-image: url(../images/new_icons/3gp.png);
+  color: transparent;
+}
+
+.dropfiles-content-ggd .dropblock div.ext.rtf > .txt,
+.dropfiles-content-preview .dropblock div.rtf .txt {
+  display: block;
+  top: 70px;
+  left: 40px;
+}
+
+.dropfiles-content.dropfiles-content-default .dropfiles-container-default .dropfiles_list .file .filecontent > div.ext.rtf .txt {
+  display: block;
+  font-size: 17px;
+  font-weight: bold;
+}
+
+#dropfiles-box-ggd .dropblock div.ext.rtf .txt,
+#dropfiles-box-preview .dropblock div.ext.rtf .txt {
+  display: block;
+}
+
+.dropfiles-content-table.dropfiles-content .table td.file_title span.ext > span,
+.dropfiles-content.dropfiles-content-tree.dropfiles-content-multi ul li .dropfile-file.ext > span {
+  display: none;
+}
+
+.dropfiles-content-table.dropfiles-content .table td.file_title span.ext.rtf {
+  position: relative;
+}
+
+.dropfiles-content-table.dropfiles-content .table td.file_title span.ext.rtf > span {
+  display: block;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 20px;
+  text-align: center;
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.dropfiles-content.dropfiles-content-tree.dropfiles-content-multi ul.tree-list .dropfile-file.ext.rtf {
+  position: relative;
+}
+
+.dropfiles-content.dropfiles-content-tree.dropfiles-content-multi ul.tree-list .dropfile-file.ext.rtf > span {
+  display: block;
+  text-transform: uppercase;
+  font-size: 5px;
+  font-weight: bold;
+  position: absolute;
+  top: 3px;
+  right: 0;
+  bottom: 0;
+  text-align: center;
+  left: 0;
+}
+
+#dropfiles-box-tree .dropblock .filecontent div.ext.rtf .txt {
+  color: #fff;
+  left: 10px;
+  font-size: 17px;
 }
 
 .dropfileslist .file {
@@ -1422,7 +1526,6 @@
   .dropfiles-container .dropfiles-container-table {
     margin-left: 30px;
   }
-
   .dropfiles-foldertree {
     display: none;
     float: unset;
@@ -1459,7 +1562,6 @@
   .dropfiles-foldertree + .dropfiles-open-tree:hover {
     cursor: pointer;
   }
-
   .tree-open + .dropfiles-open-tree {
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAQAAAC0NkA6AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QA/4ePzL8AAAAHdElNRQfjCwsJES8LDFBaAAAA90lEQVRYw+3WTQqDMBCG4Zcm5AJCeyqvo+RAekMV3KSLorXiz6SOUkq+dcKTMWYYSElJSYEHOU682pFzjyUyahpKrGi1paShIouroiYQ6ESMpaQjEKhiqslpCELmTQQacjniJhu3GTtbKb/Fhc1WsKoQ3mAUc5jYZ1SIbUaNWGdUiSXGYLSJOdPi8bTaxJzp6c8gBmY4/1CTMgFg8GMNgR6PkW69aZ/lxz/XBRd/wS88f90GQ3Hmey/GtqLIrPcoNWa7Daow+532MCNr5ocYJ27mn0zUIDEdifbON2WiRqI7VcQn+HK4g4zq7DH1Vc3pA3dKSso/5gmAWxwDE0VxTgAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOS0xMS0xMVQwOToxNzoyNCswMDowMF30EfwAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTktMTEtMTFUMDk6MTc6MjQrMDA6MDAsqalAAAAAAElFTkSuQmCC);
   }
@@ -1486,5 +1588,3 @@
   float: left;
   margin: 0 0 0 -20px;
 }
-
-/*# sourceMappingURL=front_ver5.4.css.map */

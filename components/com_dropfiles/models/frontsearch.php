@@ -1525,12 +1525,6 @@ class DropfilesModelFrontsearch extends JModelList
                             continue;
                         }
                     }
-
-
-                    $category = new stdClass();
-                    $category->id = $file->catid;
-                    $category->title = $file->cattitle;
-                    DropfilesFilesHelper::addInfosToFile($file, $category);
                 }
             }
 
@@ -1584,7 +1578,13 @@ class DropfilesModelFrontsearch extends JModelList
             }
         }
         $results_all = array_slice($results_all, 0, (int)$data['fCount']);
-
+        foreach ($results_all as $k => $file) {
+            $category = new stdClass();
+            $category->id = $file->catid;
+            $category->title = $file->cattitle;
+            DropfilesFilesHelper::addInfosToFile($file, $category);
+        }
+        
         return $results_all;
     }
 
@@ -1927,9 +1927,6 @@ class DropfilesModelFrontsearch extends JModelList
             $componentParams = JComponentHelper::getParams('com_dropfiles');
             if ((int) $componentParams->get('usegoogleviewer', 1) === 1) {
                 $doc = JFactory::getDocument();
-                $path_dropfilesbase = JPATH_ADMINISTRATOR . '/components/com_droppics/classes/dropfilesBase.php';
-                JLoader::register('DropfilesBase', $path_dropfilesbase);
-
                 JHtml::_('jquery.framework');
 
                 $doc->addScript(JURI::base('true') . '/components/com_dropfiles/assets/js/jquery.colorbox-min.js');

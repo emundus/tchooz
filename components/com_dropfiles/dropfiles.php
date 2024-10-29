@@ -32,7 +32,7 @@ if (($task &&preg_match('/^front.*/', $task)) ||
     DropfilesBase::initFrontComponent();
     require_once JPATH_COMPONENT . '/helpers/category.php';
     require_once JPATH_COMPONENT . '/helpers/query.php';
-    require_once JPATH_COMPONENT . '/helpers/class.exceltotext.php';
+   // require_once JPATH_COMPONENT . '/helpers/class.exceltotext.php';
     require_once JPATH_COMPONENT . '/helpers/class.filetotext.php';
 } else {
     if ($view !== 'upload' && $view !== 'singlecategory' && $view !== 'files' && $view !== 'file' && $view !== 'manage' && !DropfilesHelper::validateFrontTask($task) && !JFactory::getUser()->authorise('core.manage', 'com_dropfiles')) {
@@ -44,8 +44,10 @@ if (($task &&preg_match('/^front.*/', $task)) ||
     DropfilesBase::initComponent();
 
     // Execute the task.
-    if ($view === 'dropfiles' || $view === 'users' || $view === null || strpos($task, 'googledrive.') === 0
-        || strpos($task, 'dropbox.') === 0 || strpos($task, 'onedrive.') === 0 || strpos($task, 'onedrivebusiness.') === 0) {
+    if ($view === 'dropfiles' || $view === 'users' || $view === null) {
+        $config['base_path'] = JPATH_ADMINISTRATOR . '/components/com_dropfiles';
+    } elseif ($task && (strpos($task, 'googledrive.') === 0 || strpos($task, 'dropbox.') === 0
+            || strpos($task, 'onedrive.') === 0 || strpos($task, 'onedrivebusiness.') === 0)) {
         $config['base_path'] = JPATH_ADMINISTRATOR . '/components/com_dropfiles';
     }
 }

@@ -16,6 +16,7 @@ jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\MVC\Controller\BaseController;
 
 /**
  * campaign Controller
@@ -24,18 +25,27 @@ use Joomla\CMS\Language\Text;
  * @subpackage eMundus
  * @since      5.0.0
  */
-class EmundusControllerTranslations extends JControllerLegacy
+class EmundusControllerTranslations extends BaseController
 {
 
 	protected $app;
 
 	private $model;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     \JController
+	 * @since   1.0.0
+	 */
 	public function __construct($config = array())
 	{
+		parent::__construct($config);
+
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'translations.php');
-		parent::__construct($config);
 
 		$this->app   = Factory::getApplication();
 		$this->model = $this->getModel('Translations');
@@ -43,7 +53,7 @@ class EmundusControllerTranslations extends JControllerLegacy
 
 	public function checksetup()
 	{
-		$user = JFactory::getApplication()->getIdentity();
+		$user = $this->app->getIdentity();
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			die(Text::_('ACCESS_DENIED'));
@@ -57,7 +67,7 @@ class EmundusControllerTranslations extends JControllerLegacy
 
 	public function configuresetup()
 	{
-		$user = JFactory::getApplication()->getIdentity();
+		$user = $this->app->getIdentity();
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			die(Text::_('ACCESS_DENIED'));
@@ -71,7 +81,7 @@ class EmundusControllerTranslations extends JControllerLegacy
 
 	public function getdefaultlanguage()
 	{
-		$user = JFactory::getApplication()->getIdentity();
+		$user = $this->app->getIdentity();
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			die(Text::_('ACCESS_DENIED'));
@@ -85,7 +95,7 @@ class EmundusControllerTranslations extends JControllerLegacy
 
 	public function getlanguages()
 	{
-		$user = JFactory::getApplication()->getIdentity();
+		$user = $this->app->getIdentity();
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			die(Text::_('ACCESS_DENIED'));
@@ -99,7 +109,7 @@ class EmundusControllerTranslations extends JControllerLegacy
 
 	public function updatelanguage()
 	{
-		$user = JFactory::getApplication()->getIdentity();
+		$user = $this->app->getIdentity();
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			die(Text::_('ACCESS_DENIED'));
@@ -131,7 +141,7 @@ class EmundusControllerTranslations extends JControllerLegacy
 
 	public function gettranslationsobjects()
 	{
-		$user = JFactory::getApplication()->getIdentity();
+		$user = $this->app->getIdentity();
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			die(Text::_('ACCESS_DENIED'));
@@ -145,7 +155,7 @@ class EmundusControllerTranslations extends JControllerLegacy
 
 	public function getdatas()
 	{
-		$user = JFactory::getApplication()->getIdentity();
+		$user = $this->app->getIdentity();
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			die(Text::_('ACCESS_DENIED'));
@@ -165,7 +175,7 @@ class EmundusControllerTranslations extends JControllerLegacy
 
 	public function getchildrens()
 	{
-		$user = JFactory::getApplication()->getIdentity();
+		$user = $this->app->getIdentity();
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			die(Text::_('ACCESS_DENIED'));
@@ -184,7 +194,7 @@ class EmundusControllerTranslations extends JControllerLegacy
 
 	public function gettranslations()
 	{
-		$user = JFactory::getApplication()->getIdentity();
+		$user = $this->app->getIdentity();
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			die(Text::_('ACCESS_DENIED'));
@@ -236,7 +246,7 @@ class EmundusControllerTranslations extends JControllerLegacy
 
 	public function inserttranslation()
 	{
-		$user = JFactory::getApplication()->getIdentity();
+		$user = $this->app->getIdentity();
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			die(Text::_('ACCESS_DENIED'));
@@ -257,7 +267,7 @@ class EmundusControllerTranslations extends JControllerLegacy
 
 	public function updatetranslation()
 	{
-		$user = JFactory::getApplication()->getIdentity();
+		$user = $this->app->getIdentity();
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			die(Text::_('ACCESS_DENIED'));
@@ -330,7 +340,7 @@ class EmundusControllerTranslations extends JControllerLegacy
 
 	public function getorphelins()
 	{
-		$user = JFactory::getApplication()->getIdentity();
+		$user = $this->app->getIdentity();
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			die(Text::_('ACCESS_DENIED'));
@@ -348,7 +358,7 @@ class EmundusControllerTranslations extends JControllerLegacy
 
 	public function sendpurposenewlanguage()
 	{
-		$user = JFactory::getApplication()->getIdentity();
+		$user = $this->app->getIdentity();
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			die(Text::_('ACCESS_DENIED'));
@@ -366,12 +376,11 @@ class EmundusControllerTranslations extends JControllerLegacy
 
 	public function export()
 	{
-		$user = JFactory::getApplication()->getIdentity();
+		$user = $this->app->getIdentity();
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			die(Text::_('ACCESS_DENIED'));
 		}
-
 
 		$profile = $this->input->getString('profile', null);
 

@@ -50,7 +50,7 @@ foreach ($this->elements as $element) :
 	<?php
 	endforeach;
  	if ($group->editable) : ?>
-		<td class="fabrikGroupRepeater">
+		<td class="">
 			<div class="fabrikGroupRepeater float-end btn-group-sm">
 			<?php
 			if ($group->canAddRepeat) :

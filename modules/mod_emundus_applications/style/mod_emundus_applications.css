@@ -119,7 +119,7 @@ button#back:hover, button#back:active, button#back:focus,
     border: 1px solid var(--em-primary-color) !important;
 }
 
-#tab_adding_link a span.material-icons-outlined {
+#tab_adding_link a span.material-symbols-outlined {
     color: var(--em-primary-color);
 }
 
@@ -403,13 +403,13 @@ a.btn.btn-success:not(.btn-xs) {
 }
 
 .mod_emundus_applications___header h1 {
-    font-family: var(--em-applicant-h1);
+    font-family: var(--em-profile-font-title), Inter, sans-serif;
     color: var(--neutral-900);
 }
 
 .mod_emundus_applications___header_desc h2 {
     margin-top: var(--m-24);
-    font-family: var(--em-applicant-font-title);
+    font-family: var(--em-profile-font-title), Inter, sans-serif;
     color: var(--em-default-title-color-1);
 }
 
@@ -480,7 +480,7 @@ a.btn.btn-success:not(.btn-xs) {
     display: -webkit-box;
     line-height: 140%;
     min-height: 42px;
-    font-family: var(--em-applicant-font-title) !important;
+    font-family: var(--em-profile-font-title), Inter, sans-serif !important;
 }
 
 .mod_emundus_applications___title:hover,
@@ -504,11 +504,11 @@ a.btn.btn-success:not(.btn-xs) {
     transition: transform .3s;
 }
 
-.mod_emundus_applications___content_app:hover .material-icons {
+.mod_emundus_applications___content_app:hover .mod_emundus_applications__container .material-symbols-outlined{
     color: var(--neutral-0);
 }
 
-.mod_emundus_applications__container .material-icons {
+.mod_emundus_applications__container > .material-symbols-outlined{
     color: var(--em-profile-color);
 }
 
@@ -535,12 +535,21 @@ a.btn.btn-success:not(.btn-xs) {
 
 .mod_emundus_applications__actions a {
     padding: 6px 8px;
+    height: 32px;
 }
 
-.mod_emundus_applications__actions a.em-red-500-color:hover {
+.mod_emundus_applications__actions a:visited {
+    color: var(--neutral-900);
+}
+
+.mod_emundus_applications__actions a.em-red-600-color {
+    color: var(--red-600) !important;
+}
+
+.mod_emundus_applications__actions a.em-red-600-color:hover {
     background: #EBECF0 !important;
     border-radius: calc(var(--em-applicant-br-cards) / 2) !important;
-    color: var(--red-500) !important;
+    color: var(--red-600) !important;
     text-decoration: none;
 }
 
@@ -583,10 +592,6 @@ a.btn.btn-success:not(.btn-xs) {
     color: var(--neutral-800);
 }
 
-.em-light-selected-tab p {
-    color: var(--neutral-900);
-}
-
 .mod_emundus_application_swal_manage_tabs_popup {
     min-width: 40em;
 }
@@ -619,7 +624,6 @@ a.btn.btn-success:not(.btn-xs) {
 }
 
 .mod_emundus_application_swal_manage_tabs_actions {
-    border-top: solid 1px var(--neutral-300);
     margin-top: var(--m-8) !important;
     padding: var(--p-12) 0;
     display: flex !important;
@@ -665,7 +669,7 @@ a.btn.btn-success:not(.btn-xs) {
     border-bottom: 1px solid var(--neutral-300);
 }
 
-#applications_list_view table tbody tr:hover .mod_emundus_applications__container .material-icons {
+#applications_list_view table tbody tr:hover .mod_emundus_applications__container > .material-symbols-outlined{
     background: var(--em-profile-color);
     border-radius: var(--em-default-br);
     color: var(--neutral-0);
@@ -789,7 +793,7 @@ circle.circle {
 .mod_emundus_applications___content_app {
     position: relative;
     transition: background-image .3s;
-    height: 286px;
+    height: inherit;
     z-index: 3;
     overflow: hidden;
 }
@@ -838,16 +842,14 @@ circle.circle {
     z-index: 2;
     width: 70%;
     height: 300%;
-    top: -29px;
-    right: -70px;
     pointer-events: none;
-    mask-image: url(/modules/mod_emundus_campaign/assets/fond-fonce.svg);
-    -webkit-mask-image: url(/modules/mod_emundus_campaign/assets/fond-fonce.svg);
+    mask-image: url(/modules/mod_emundus_campaign/assets/fond-clair.svg);
+    -webkit-mask-image: url(/modules/mod_emundus_campaign/assets/fond-clair.svg);
     background: var(--em-profile-color);
     mask-repeat: no-repeat;
     -webkit-mask-repeat: no-repeat;
-    mask-position: center;
-    -webkit-mask-position: center;
+    mask-position: 102px -32px;
+    -webkit-mask-position: 102px -32px;
     mask-size: contain;
     -webkit-mask-size: contain;
 }
@@ -883,6 +885,50 @@ circle.circle {
     margin-bottom: 12px;
 }
 
+/* Nombre de commentaires */
+.comments-icon-wrapper .nb-comments {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: -10px;
+    right: -12px;
+    width: 24px;
+    height: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 90%;
+}
+
+/* Collaboration */
+
+.collaborators-icon-wrapper {
+    border-radius: 50%;
+    position: relative;
+    padding: 6px;
+
+    .material-icons-outlined {
+        width: 22px;
+        height: 22px;
+        font-size: 22px;
+        text-align: center;
+    }
+
+    .nb-collaborators {
+        position: absolute;
+        top: -8px;
+        right: -15px;
+        padding: 5px;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        border-width: 2px;
+        text-align: center;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 90%;
+    }
+}
+
 /*******************
  * Fin peps tuiles
  *******************/
@@ -892,7 +938,7 @@ circle.circle {
 
     /* Peps */
     .hover-and-tile-container #tile-hover-offset-request {
-        width: 444px;
+        width: 436px;
     }
 
     .mod_emundus_applications___content_app #background-shapes {
@@ -901,7 +947,8 @@ circle.circle {
 
     .view-featured .mod_emundus_applications__list_content--default {
         #background-shapes {
-            right: -119px;
+            mask-position: 23px -32px;
+            -webkit-mask-position: 23px -32px;
         }
     }
 }
@@ -914,7 +961,7 @@ circle.circle {
 
     /* Peps */
     .hover-and-tile-container #tile-hover-offset-request {
-        width: 348px;
+        width: 340px;
     }
 
     .mod_emundus_applications___content_app #background-shapes {
@@ -924,14 +971,19 @@ circle.circle {
 
     .view-featured .mod_emundus_applications__list_content--default {
         #background-shapes {
-            top: -61px;
-            right: -27px;
+            display: block;
+            mask-position: 18px -20px;
+            -webkit-mask-position: 18px -20px;
         }
     }
 }
 
 /* Téléphone */
 @media screen and (max-width: 767px) {
+
+    #applications_card_view.em-mt-12 {
+        margin-top: 0;
+    }
 
     #applications_list_view table tbody tr td {
         position: inherit !important;
@@ -962,7 +1014,7 @@ circle.circle {
     }
 
 
-    span.material-icons-outlined {
+    span.material-symbols-outlined {
         flex-basis: auto !important;
     }
 
@@ -1002,8 +1054,9 @@ circle.circle {
 
     .view-featured .mod_emundus_applications__list_content--default {
         #background-shapes {
-            top: -77px;
-            right: -25px;
+            display: block;
+            mask-position: 15px -20px;
+            -webkit-mask-position: 15px -20px;
         }
     }
 }

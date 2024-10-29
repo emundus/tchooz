@@ -1,0 +1,33 @@
+<?php
+/**
+ * Layout: List group by headings
+ *
+ * @package     Joomla
+ * @subpackage  Fabrik
+ * @copyright   Copyright (C) 2005-2015 fabrikar.com - All rights reserved.
+ * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
+ * @since       3.3.4
+ */
+
+// No direct access
+defined('_JEXEC') or die('Restricted access');
+use Joomla\CMS\Language\Text;
+
+$d = $displayData;
+$imgProps = array('alt' => Text::_('COM_FABRIK_TOGGLE'), 'data-role' => 'toggle', 'data-expand-icon' => 'icon-arrow-down', 'data-collapse-icon' => 'icon-arrow-right');
+?>
+
+<?php if ($d->emptyDataMessage != '') : ?>
+<a href="#" class="toggle tw-flex tw-items-center tw-gap-2">
+    <?php else: ?>
+    <a href="#" class="toggle fabrikTip" title="<?php echo $d->emptyDataMessage ?>" opts='{trigger: "hover"}'>
+        <?php endif; ?>
+        <?php echo FabrikHelperHTML::image('expand_more', 'list', $d->tmpl, $imgProps); ?>
+        <span class="groupTitle tw-font-semibold">
+		<?php echo $d->title; ?> 
+		<?php $d->group_by_show_count = isset($d->group_by_show_count) ? $d->group_by_show_count : '1'; 
+		if ($d->group_by_show_count) : ?>
+			<span class="groupCount">( <?php echo $d->count ?> )</span>
+		<?php endif; ?>	
+	</span>
+    </a>

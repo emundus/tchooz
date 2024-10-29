@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -201,20 +201,6 @@ class hikashopModulesClass extends hikashopClass{
 			}
 		}
 
-		$module_types = array(
-			'mod_hikamarket',
-			'mod_hikashop',
-		);
-		$sqlTypes = array();
-		foreach($module_types as $type) {
-			$sqlTypes[] = 'module = ' . $this->db->Quote($type);
-			if(!HIKASHOP_J30)
-				$sqlTypes[] = 'module LIKE \''.$this->db->getEscaped($type.'_', true).'%\'';
-			else
-				$sqlTypes[] = 'module LIKE \''.$this->db->escape($type.'_', true).'%\'';
-		}
-		$sqlFilters[] = '('.implode(' OR ', $sqlTypes).')';
-
 		if(!empty($search)) {
 			$searchMap = array('title', 'id');
 			$searchVal = '\'%' . $this->db->escape(HikaStringHelper::strtolower($search), true) . '%\'';
@@ -227,9 +213,11 @@ class hikashopModulesClass extends hikashopClass{
 		$start = (int)@$options['page'];
 
 		$query = 'SELECT id, title, module '.
-			' FROM ' . hikashop_table('modules', false) .
-			' WHERE ('.implode(') AND (', $sqlFilters).') '.
-			' ORDER BY '.$sqlSort;
+			' FROM ' . hikashop_table('modules', false);
+		if(count($sqlFilters)) {
+			$query .= ' WHERE ('.implode(') AND (', $sqlFilters).') ';
+		}
+		$query .= ' ORDER BY '.$sqlSort;
 		$this->db->setQuery($query, $start, $max+1);
 		$modules = $this->db->loadObjectList('id');
 		if(count($modules) > $max) {

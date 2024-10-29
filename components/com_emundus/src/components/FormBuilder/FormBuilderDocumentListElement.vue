@@ -1,20 +1,20 @@
 <template>
   <div id="form-builder-document-list-element" @click="editDocument">
-    <div class="section-card em-mt-32 em-mb-32 em-w-100 em-flex-column">
-      <div class="section-identifier em-bg-main-500 em-pointer">
+    <div class="section-card tw-mt-8 tw-mb-8 tw-w-full tw-flex tw-flex-col">
+      <div class="section-identifier tw-bg-profile-full tw-cursor-pointer">
         {{ translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT') }} {{ documentIndex }} / {{ totalDocuments }}
       </div>
       <div class="section-content" :class="{'closed': closedSection}">
         <div v-if="documentData.id">
-          <div class="em-w-100 em-flex-row em-flex-space-between">
+          <div class="tw-w-full tw-flex tw-items-center tw-justify-between">
             <span class="section-title">{{ documentData.name[shortDefaultLang] }}</span>
 
             <div>
-              <span class="material-icons-outlined em-pointer hover-opacity" @click="moveDocument('up')"
+              <span class="material-symbols-outlined tw-cursor-pointer hover-opacity" @click="moveDocument('up')"
                     title="Move section upwards">keyboard_double_arrow_up</span>
-              <span class="material-icons-outlined em-pointer hover-opacity" @click="moveDocument('down')"
+              <span class="material-symbols-outlined tw-cursor-pointer hover-opacity" @click="moveDocument('down')"
                     title="Move section downwards">keyboard_double_arrow_down</span>
-              <span v-if="canBeRemoved" class="material-icons-outlined em-red-500-color em-pointer hover-opacity"
+              <span v-if="canBeRemoved" class="material-symbols-outlined tw-text-red-600 tw-cursor-pointer hover-opacity"
                     @click="deleteDocument">delete</span>
             </div>
           </div>
@@ -29,8 +29,9 @@
 </template>
 
 <script>
-import formService from '../../services/form';
-import formBuilderMixin from '../../mixins/formbuilder.js';
+import formService from '@/services/form';
+import formBuilderMixin from '@/mixins/formbuilder.js';
+import { useFormBuilderStore } from '@/stores/formbuilder.js';
 
 export default {
   name: "FormBuilderDocumentListElement",
@@ -61,6 +62,11 @@ export default {
       reasonCantRemove: ''
     }
   },
+  setup() {
+    return {
+      formBuilderStore: useFormBuilderStore()
+    }
+  },
   created() {
     if (this.document.docid) {
       this.getDocumentModel(this.document.docid);
@@ -72,7 +78,7 @@ export default {
       this.$emit('move-document', this.document, direction);
     },
     getDocumentModel(documentId = null, from_store = true) {
-      this.models = from_store ? this.$store.getters['formBuilder/getDocumentModels'] : [];
+      this.models = from_store ? this.formBuilderStore.getDocumentModels : [];
       this.documentData = {};
 
       if (this.models.length > 0) {
@@ -102,19 +108,18 @@ export default {
 
       this.$emit('edit-document');
     },
-    deleteDocument(event) {
-      this.swalConfirm(
-          this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_DOCUMENT'),
-          this.document.label,
-          this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_DOCUMENT_CONFIRM'),
-          this.translate('JNO'),
-          () => {
-            formService.removeDocumentFromProfile(this.document.id).then(response => {
-              this.$emit('delete-document', this.document.id);
-              this.$destroy();
-            });
-          },
-      );
+    deleteDocument() {
+	    this.swalConfirm(
+			    this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_DOCUMENT'),
+			    this.document.label,
+			    this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_DOCUMENT_CONFIRM'),
+			    this.translate('JNO'),
+			    () => {
+				    formService.removeDocumentFromProfile(this.document.id).then(response => {
+					    this.$emit('delete-document', this.document.id);
+				    });
+			    },
+	    );
     },
     checkIfDocumentCanBeDeleted() {
       formService.checkIfDocumentCanBeDeletedForProfile(this.document.docid, this.profile_id).then((response) => {

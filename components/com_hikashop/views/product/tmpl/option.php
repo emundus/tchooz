@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -152,6 +152,9 @@ foreach($this->element->options as $optionElement) {
 		}
 	}
 
+	$app = JFactory::getApplication();
+	$app->triggerEvent('onBeforeOptionDisplay', array( &$this->element, &$optionElement, &$option_values, &$value));
+
 	if(!count($option_values))
 		continue;
 
@@ -160,6 +163,7 @@ foreach($this->element->options as $optionElement) {
 	if($selectionMethod == 'generic') {
 		$attribs.=' class="'.HK_FORM_SELECT_CLASS.'" ';
 	}
+
 	$html = JHTML::_('select.'.$select.'list', $option_values, $map, $attribs, 'value', 'text', (int)$value, $id);
 	if($selectionMethod == 'check')
 		$html = str_replace('type="radio"', 'type="checkbox"', $html);

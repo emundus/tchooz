@@ -1,0 +1,21 @@
+{
+    "require": {
+        "google/apiclient": "2.11.0",
+        "google/apiclient-services": "0.200.0",
+        "krizalys/onedrive-php-sdk": "2.7.0",
+        "league/oauth2-client": "2.7",
+        "guzzlehttp/psr7": "1.9.1",
+        "guzzlehttp/guzzle": "7.3.0"
+    },
+    "config": {
+        "vendor-dir": "vendor"
+    },
+    "scripts": {
+        "pre-autoload-dump": "Google\\Task\\Composer::cleanup"
+    },
+    "extra": {
+        "google/apiclient-services": [
+            "Drive"
+        ]
+    }
+}

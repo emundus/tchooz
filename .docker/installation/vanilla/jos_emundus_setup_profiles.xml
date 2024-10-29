@@ -18,6 +18,7 @@
    <field Field="evaluation" Type="int" Null="YES" Key="" Extra="" />
    <field Field="status" Type="int" Null="NO" Key="" Default="1" Extra="" />
    <field Field="class" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="display_description" Type="tinyint(1)" Null="YES" Key="" Extra="" />
    <key Table="#__emundus_setup_profiles" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_setup_profiles" Non_unique="1" Key_name="fb_tableorder_label_INDEX" Seq_in_index="1" Column_name="label" Collation="A" Null="" Index_type="BTREE" Sub_part="10" Comment="" />
    <key Table="#__emundus_setup_profiles" Non_unique="1" Key_name="fb_groupby_acl_aro_groups_INDEX" Seq_in_index="1" Column_name="acl_aro_groups" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
@@ -41,10 +42,11 @@
     <field name="evaluation" value_is_null="true"></field>
     <field name="status">1</field>
     <field name="class"></field>
+    <field name="display_description" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">2</field>
-    <field name="label">Gestionnaire de plateforme</field>
+    <field name="label">Administrateur de plateforme</field>
     <field name="description">Rôle de paramétrage de gestion de la plateforme avec tous les accès</field>
     <field name="published">0</field>
     <field name="schoolyear"></field>
@@ -59,6 +61,7 @@
     <field name="evaluation" value_is_null="true"></field>
     <field name="status">1</field>
     <field name="class">label-green-2</field>
+    <field name="display_description">0</field>
    </row>
    <row>
     <field name="id">5</field>
@@ -77,6 +80,7 @@
     <field name="evaluation" value_is_null="true"></field>
     <field name="status">1</field>
     <field name="class">label-orange-2</field>
+    <field name="display_description" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">6</field>
@@ -95,24 +99,7 @@
     <field name="evaluation" value_is_null="true"></field>
     <field name="status">1</field>
     <field name="class">label-light-blue-2</field>
-   </row>
-   <row>
-    <field name="id">9</field>
-    <field name="label">Formulaire de base candidat</field>
-    <field name="description">Déposant</field>
-    <field name="published">1</field>
-    <field name="schoolyear"></field>
-    <field name="candidature_start" value_is_null="true"></field>
-    <field name="candidature_end" value_is_null="true"></field>
-    <field name="menutype">menu-profile9</field>
-    <field name="reference_letter"></field>
-    <field name="acl_aro_groups">2</field>
-    <field name="is_evaluator">0</field>
-    <field name="evaluation_start" value_is_null="true"></field>
-    <field name="evaluation_end" value_is_null="true"></field>
-    <field name="evaluation" value_is_null="true"></field>
-    <field name="status">1</field>
-    <field name="class">label-blue-2</field>
+    <field name="display_description" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">1000</field>
@@ -131,6 +118,26 @@
     <field name="evaluation" value_is_null="true"></field>
     <field name="status">0</field>
     <field name="class"></field>
+    <field name="display_description" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">1001</field>
+    <field name="label">Formulaire de base</field>
+    <field name="description"></field>
+    <field name="published">1</field>
+    <field name="schoolyear"></field>
+    <field name="candidature_start" value_is_null="true"></field>
+    <field name="candidature_end" value_is_null="true"></field>
+    <field name="menutype">menu-profile1001</field>
+    <field name="reference_letter"></field>
+    <field name="acl_aro_groups">2</field>
+    <field name="is_evaluator">0</field>
+    <field name="evaluation_start" value_is_null="true"></field>
+    <field name="evaluation_end" value_is_null="true"></field>
+    <field name="evaluation" value_is_null="true"></field>
+    <field name="status">1</field>
+    <field name="class"></field>
+    <field name="display_description" value_is_null="true"></field>
    </row>
   </table_data>
  </database>

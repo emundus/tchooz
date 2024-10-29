@@ -4,7 +4,7 @@
   <table_structure name="#__fields_values">
    <field Field="field_id" Type="int unsigned" Null="NO" Key="MUL" Extra="" />
    <field Field="item_id" Type="varchar(255)" Null="NO" Key="MUL" Extra="" />
-   <field Field="value" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="value" Type="mediumtext" Null="YES" Key="" Extra="" />
    <key Table="#__fields_values" Non_unique="1" Key_name="idx_field_id" Seq_in_index="1" Column_name="field_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__fields_values" Non_unique="1" Key_name="idx_item_id" Seq_in_index="1" Column_name="item_id" Collation="A" Null="" Index_type="BTREE" Sub_part="191" Comment="" />
   </table_structure>

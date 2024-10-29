@@ -89,6 +89,7 @@ class JFormFieldConnections extends ListField
 
 		if ((int) $this->form->getValue('id') == 0 || !$this->element['readonlyonedit'])
 		{
+			$this->layoutData = [];
 			return parent::getInput();
 		}
 		else

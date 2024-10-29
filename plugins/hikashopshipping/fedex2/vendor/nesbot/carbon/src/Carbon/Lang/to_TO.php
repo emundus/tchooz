@@ -1,0 +1,51 @@
+<?php
+/**
+ * @package	HikaShop for Joomla!
+ * @version	5.1.0
+ * @author	hikashop.com
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
+ */
+defined('_JEXEC') or die('Restricted access');
+?><?php
+
+
+return array_replace_recursive(require __DIR__.'/en.php', [
+    'formats' => [
+        'L' => 'dddd DD MMM YYYY',
+    ],
+    'months' => ['Sānuali', 'Fēpueli', 'Maʻasi', 'ʻEpeleli', 'Mē', 'Sune', 'Siulai', 'ʻAokosi', 'Sepitema', 'ʻOkatopa', 'Nōvema', 'Tīsema'],
+    'months_short' => ['Sān', 'Fēp', 'Maʻa', 'ʻEpe', 'Mē', 'Sun', 'Siu', 'ʻAok', 'Sep', 'ʻOka', 'Nōv', 'Tīs'],
+    'weekdays' => ['Sāpate', 'Mōnite', 'Tūsite', 'Pulelulu', 'Tuʻapulelulu', 'Falaite', 'Tokonaki'],
+    'weekdays_short' => ['Sāp', 'Mōn', 'Tūs', 'Pul', 'Tuʻa', 'Fal', 'Tok'],
+    'weekdays_min' => ['Sāp', 'Mōn', 'Tūs', 'Pul', 'Tuʻa', 'Fal', 'Tok'],
+    'meridiem' => ['hengihengi', 'efiafi'],
+
+    'year' => ':count fitu', // less reliable
+    'y' => ':count fitu', // less reliable
+    'a_year' => ':count fitu', // less reliable
+
+    'month' => ':count mahina', // less reliable
+    'm' => ':count mahina', // less reliable
+    'a_month' => ':count mahina', // less reliable
+
+    'week' => ':count Sapate', // less reliable
+    'w' => ':count Sapate', // less reliable
+    'a_week' => ':count Sapate', // less reliable
+
+    'day' => ':count ʻaho', // less reliable
+    'd' => ':count ʻaho', // less reliable
+    'a_day' => ':count ʻaho', // less reliable
+
+    'hour' => ':count houa',
+    'h' => ':count houa',
+    'a_hour' => ':count houa',
+
+    'minute' => ':count miniti',
+    'min' => ':count miniti',
+    'a_minute' => ':count miniti',
+
+    'second' => ':count sekoni',
+    's' => ':count sekoni',
+    'a_second' => ':count sekoni',
+]);

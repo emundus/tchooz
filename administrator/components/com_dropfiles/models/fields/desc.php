@@ -142,7 +142,7 @@ class JFormFieldDesc extends JFormField
 
         // Including fallback code for HTML5 non supported browsers.
         JHtml::_('jquery.framework');
-        JHtml::_('script', 'system/html5fallback.js', false, true);
+        JHtml::_('script', 'system/html5fallback.js', array('version' => 'auto', 'relative' => true));
         //JHtml::_('script', 'editors/tinymce/tinymce.min.js', false, true);
         $params = JComponentHelper::getParams('com_dropfiles');
 

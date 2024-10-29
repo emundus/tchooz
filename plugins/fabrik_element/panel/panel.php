@@ -11,6 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Gantry\Framework\Gantry;
 use Joomla\Utilities\ArrayHelper;
 
 /**
@@ -123,35 +124,67 @@ class PlgFabrik_ElementPanel extends PlgFabrik_Element
 		$layout = $this->getLayout('form');
 		$displayData = new stdClass;
 		$displayData->id = $this->getHTMLId($repeatCounter);
+		$displayData->name = $this->getHTMLName($repeatCounter);
 		$displayData->type = $params->get('type', 0);
 		$displayData->accordion = $params->get('accordion', '');
 		$displayData->title = $params->get('title', '');
-		$displayData->iconType = $params->get('panel_icon_type', '');
+		$displayData->iconType = $params->get('panel_icon_type', '-outlined');
+
+		$gantry = Gantry::instance();
+		if($gantry) {
+			$alert_styles = $gantry['config']['styles']['em-alert'];
+		} else
+		{
+			$alert_styles = [
+				'info-background-color'    => '#eff8ff',
+				'info-color'          => '#727272',
+				'info-border-color'        => '#2e90fa',
+				'info-icon-color'          => '#2e90fa',
+				'warning-background-color' => '#fef6ee',
+				'warning-color'       => '#727272',
+				'warning-border-color'     => '#ef681f',
+				'warning-icon-color'       => '#ef681f',
+				'error-background-color'   => '#fef3f2',
+				'error-color'         => '#727272',
+				'error-border-color'       => '#f04437',
+				'error-icon-color'         => '#f04437',
+			];
+		}
 
 		switch ($displayData->type) {
 			case 1:
-				$displayData->backgroundColor = '#ebeefa';
-				$displayData->iconColor = '#525b85';
+				$displayData->backgroundColor = $alert_styles['info-background-color'];
+				$displayData->iconColor = $alert_styles['info-icon-color'];
+				$displayData->borderColor = $alert_styles['info-border-color'];
+				$displayData->textColor = $alert_styles['info-color'];
 				$displayData->icon = 'info';
 				break;
 			case 2:
-				$displayData->backgroundColor = '#fff6de';
-				$displayData->iconColor = '#b38405';
-				$displayData->icon = 'warning';
+				$displayData->backgroundColor = $alert_styles['warning-background-color'];
+				$displayData->iconColor = $alert_styles['warning-icon-color'];
+				$displayData->borderColor = $alert_styles['warning-border-color'];
+				$displayData->textColor = $alert_styles['warning-color'];
+				$displayData->icon = 'report_problem';
 				break;
 			case 3:
-				$displayData->backgroundColor = '#fae9e9';
-				$displayData->iconColor = '#a60e15';
-				$displayData->icon = 'error';
+				$displayData->backgroundColor = $alert_styles['error-background-color'];
+				$displayData->iconColor = $alert_styles['error-icon-color'];
+				$displayData->borderColor = $alert_styles['error-border-color'];
+				$displayData->textColor = $alert_styles['error-color'];
+				$displayData->icon = 'cancel';
 				break;
 			case 4:
 				$displayData->backgroundColor = 'transparent';
 				$displayData->iconColor = 'transparent';
+				$displayData->borderColor = 'transparent';
+				$displayData->textColor = '#727272';
 				$displayData->icon = '';
 				break;
 			default:
-				$displayData->backgroundColor = $params->get('panel_background', '#ebeefa');
-				$displayData->iconColor = $params->get('panel_icon_color', '#525b85');
+				$displayData->backgroundColor = $params->get('panel_background', $alert_styles['info-background-color']);
+				$displayData->iconColor = $params->get('panel_icon_color', $alert_styles['info-icon-color']);
+				$displayData->borderColor = $params->get('panel_border_color', $alert_styles['info-border-color']);
+				$displayData->textColor = $params->get('panel_text_color', $alert_styles['info-color']);
 				$displayData->icon = $params->get('panel_icon', 'info');
 		}
 

@@ -121,7 +121,7 @@ class JFormFieldEdocmancat extends JFormField
 
             $return .= '<style type="text/css">.docman_title {margin-bottom: 10px;} ';
             $return .= '.docman_desc {font-weight: normal;}</style>';
-            $return .= '<button id="edoc_import_button" class="btn btn-small">';
+            $return .= '<button id="edoc_import_button" class="btn btn-small ju-button orange-outline-button">';
             $return .= JText::_('COM_DROPFILES_CONFIG_RUN_EDOC_IMPORT') . '</button>';
 
             return $return;

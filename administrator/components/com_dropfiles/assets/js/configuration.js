@@ -17,6 +17,10 @@ jQuery(document).ready(function ($) {
                 }
             });
 
+            $.extend($.gritter.options, {
+                time: 3000 // Hang on the screen for...
+            });
+
             $('#ju-message-container .close').on('click', function () {
                 $("#ju-message-container").css({paddingTop: 0})
             });
@@ -204,7 +208,6 @@ jQuery(document).ready(function ($) {
                 width: '100%',
                 no_results: "No results"
             });
-            // $(document).on('click', '#dropfiles-onedrive-business-connect', dropfiles_configuration.connectOneDriveBusiness);
             // Onedrive Push Notification
             $('#dropfiles-btnpush-onedrive-business').on('click', function(e) {
                 e.preventDefault();
@@ -238,6 +241,22 @@ jQuery(document).ready(function ($) {
                     },
                 });
             });
+
+            dropfiles_configuration.showServerFolderTree();
+            $(document).on('click', '#import-server-folders-btn', dropfiles_configuration.runImportServerFolders);
+            dropfiles_configuration.dropfilesGetAllCategories();
+            $(document).on('click', '#save-category-disc', dropfiles_configuration.dropfilesProcessAndRunImport);
+            $(document).on('click', '#dropfiles-close-category-disc', dropfiles_configuration.dropfilesCloseAllCategories);
+            $('.ju-settings-option.jform_import').hide();
+            dropfiles_configuration.initExportCategoryList();
+            $(document).on('click', '#dropfiles-run-export', dropfiles_configuration.runExport);
+            $(document).on('click', '#dropfiles_import_folder_btn', dropfiles_configuration.runImportXMLCategories);
+            $(document).on('change', '#export_folder_type', this.showSelectFolderExportOptionAndSaveConfig);
+            $(document).on('click', '#open_export_tree_folders_btn', this.showExportCategoryList);
+            $(document).on('click', '.save_export_folders', this.saveExportFolders);
+            $(document).on('click', '.dropfiles-close', this.closeExportCategoryList);
+            $(document).on('click', '#dropfiles_btn_dropbox_changes', this.dropboxPushClick);
+            $('.dropfiles-dropbox-watch-change-message').insertAfter('#cloud_dropbox.ju-content-wrapper .settings-title');
         },
         showContentFromMenuTabs: function () {
             $('.ju-menu-tabs .link-tab').on('click', function () {
@@ -245,18 +264,27 @@ jQuery(document).ready(function ($) {
                     $('#main-settings-top-tabs').show();
                     $('#theme-settings-top-tabs').hide();
                     $('#cloud-settings-top-tabs').hide();
+                    $('#importer-settings-top-tabs').hide();
                 } else if($(this).parents('.parent-tabs').hasClass('theme-list-tab')) {
                     $('#theme-settings-top-tabs').show();
                     $('#main-settings-top-tabs').hide();
                     $('#cloud-settings-top-tabs').hide();
+                    $('#importer-settings-top-tabs').hide();
                 } else if($(this).parents('.parent-tabs').hasClass('cloud-connection-tab')) {
                     $('#cloud-settings-top-tabs').show();
                     $('#main-settings-top-tabs').hide();
                     $('#theme-settings-top-tabs').hide();
+                    $('#importer-settings-top-tabs').hide();
+                } else if($(this).parents('.parent-tabs').hasClass('importer-tab')) {
+                    $('#importer-settings-top-tabs').show();
+                    $('#main-settings-top-tabs').hide();
+                    $('#theme-settings-top-tabs').hide();
+                    $('#cloud-settings-top-tabs').hide();
                 } else {
                     $('#main-settings-top-tabs').hide();
                     $('#theme-settings-top-tabs').hide();
                     $('#cloud-settings-top-tabs').hide();
+                    $('#importer-settings-top-tabs').hide();
                 }
                 var menuContentName = $(this).attr('href').replace('#', '');
                 $('.ju-right-panel .ju-content-wrapper').each(function () {
@@ -382,6 +410,13 @@ jQuery(document).ready(function ($) {
                         || configid == 'cloud_dropboxjutoplink' || configid == 'cloud_onedrive_businessjutoplink') {
                         $('#cloud-settings-top-tabs').show();
                     }
+                } else if(configid == 'importerlinktab' || configid == 'docmanimportjutoplink'
+                    || configid == 'importerjutoplink' || configid == 'docmanimportlinktab'
+                    || configid == 'importexportlinktab' || configid == 'importexportjutoplink') {
+                    $('.importer-tab').addClass('expanded');
+                    if(configid == 'docmanimportjutoplink' || configid == 'importerjutoplink' || configid == 'importexportjutoplink') {
+                        $('#importer-settings-top-tabs').show();
+                    }
                 }
                 $('#' + configid).click();
             } else if (configid == null) {
@@ -389,6 +424,7 @@ jQuery(document).ready(function ($) {
                 $('.ju-right-panel #main').show();
                 $('#theme-settings-top-tabs').hide();
                 $('#cloud-settings-top-tabs').hide();
+                $('#importer-settings-top-tabs').hide();
                 $('#main-settings-top-tabs').show();
                 $('.ju-menu-tabs .main-settings-list-tab > .link-tab').click();
                 $('#mainjutoplink').click();
@@ -470,7 +506,436 @@ jQuery(document).ready(function ($) {
                 connect_window.close();
                 location.href = window.location.href;
             }, 4000);
-        }
+        },
+        showServerFolderTree: function (e) {
+            $('#dropfiles_foldertree').jaofiletree({
+                script: 'index.php?option=com_dropfiles&task=category.listdir',
+                usecheckboxes: 'dirs',
+                showroot: '//'
+            });
+
+            // Custom init list root folders
+            $('#dropfiles_foldertree li.directory input[type="checkbox"]').attr('checked', false);
+        },
+        runImportServerFolders: function (e) {
+            e.preventDefault();
+            var files = [];
+
+            $($('#dropfiles_foldertree').jaofiletree('getchecked')).each(function () {
+                files.push(this.file);
+            });
+
+            if (files.length === 0) {
+                return;
+            }
+
+            var preRun = $('#dropfiles-import-type').val();
+            var timeClass = new Date().getTime().toString();
+
+            if (typeof (timeClass) === 'undefined') {
+                timeClass = '';
+            }
+
+            if (preRun !== 'import-server-folders') {
+                $('#dropfiles-import-type').val('import-server-folders');
+                $('#dropfiles-select-category').val('');
+            }
+
+            $('#dropfiles-server-import-options').show();
+            $('#dropfiles-all-categories').show().attr('class', 'dropfiles-all-categories ' + timeClass);
+
+            // Close import selection on click outside the import popup
+            $(document).on('click', function (e) {
+                if ($('#dropfiles-all-categories.' + timeClass).length && $('#dropfiles-all-categories.' + timeClass).is(':visible') === true
+                    && !$(e.target).closest('#tree-category-list').length) {
+                    $('#dropfiles-all-categories.' + timeClass).hide();
+                }
+            });
+        },
+        dropfilesGetAllCategories: function (e) {
+            var url  = 'index.php?option=com_dropfiles&';
+            // Call ajax all categories
+            $.ajax({
+                url: url + "task=config.dropfilesListAllCategories",
+                method: 'GET',
+                data: {},
+                success: function (response) {
+                    response = $.parseJSON(response);
+                    var data = [];
+                    if (typeof (response.data) !== 'undefined' && typeof (response.data) === 'object') {
+                        data = Object.keys(response.data).map(function (key) {
+                            return response.data[key];
+                        });
+                    }
+
+                    var success = typeof (response.success) !== 'undefined' ? response.success : false;
+                    var importOption = '<div id="dropfiles-server-import-options" style="display: none">';
+                    importOption += '<h3 class="import-title">' + Joomla.JText._('COM_DROPFILES_CONFIG_IMPORT_SERVER_FOLDER_IMPORT_OPTION', 'Import option') + '</h3>';
+                    importOption += '<select id="dropfiles-import-options" class="inputbox input-block-level ju-input dropfiles-import-options">';
+                    importOption += '<option value="only_selected_folders">' + Joomla.JText._('COM_DROPFILES_CONFIG_IMPORT_SERVER_FOLDER_ONLY_SELECTED_FOLDERS', 'Only selected folders') +  '</option>';
+                    importOption += '<option value="all_sub_folders">' + Joomla.JText._('COM_DROPFILES_CONFIG_IMPORT_SERVER_FOLDER_ALL_SUB_FOLDERS', 'All sub folders') + '</option>';
+                    importOption += '</select>';
+                    importOption += '</div>';
+                    if( data.length ) {
+                        var html = '<div id="dropfiles-all-categories" class="dropfiles-all-categories">';
+                        html    += '<div class="categories-wrap">';
+                        html    += '<div class="categories-container">';
+                        html    += '<div class="dropfiles-preloader">' + Joomla.JText._('COM_DROPFILES_CONFIG_IMPORT_SERVER_FOLDER_LOADING', 'Loading...') + '</div>';
+                        html    += '<div class="dropfiles-overlay"></div>';
+                        html    += '<div class="categories-content">';
+                        html    += '<input type="hidden" id="dropfiles-import-type" value="" />';
+                        html    += '<div id="tree-category-list" class="tree-category-list white-popup">';
+                        html    += '<button id="save-category-disc" class="ju-button orange-button save-category-disc">' + Joomla.JText._('COM_DROPFILES_CONFIG_IMPORT_SERVER_FOLDER_IMPORT_SUBMIT', 'Import') + '</button>';
+                        html    += '<button title="Close" type="button" id="dropfiles-close-category-disc" class="dropfiles-close">×</button>';
+                        html    += '<div class="tree-category-view">';
+                        html    += '<div class="tree-categories dropfiles-no-margin dropfiles-no-padding">';
+                        html    += '<h3 class="import-title dropfiles-category-disc-title">' + Joomla.JText._('COM_DROPFILES_CONFIG_IMPORT_SERVER_FOLDER_IMPORT_IN_DROPFILES', 'Import in Dropfiles') + '</h3>';
+                        html    += '<select id="dropfiles-select-category" class="inputbox input-block-level ju-input dropfiles-select-category">';
+                        html    += '<option value="">' + Joomla.JText._('COM_DROPFILES_CONFIG_IMPORT_SERVER_FOLDER_ROOT', 'ROOT') + '</option>';
+                        data.forEach(function (category, index) {
+                            var level = '';
+                            var $level = parseInt(category.level) - 1;
+                            if (category.level > 0) {
+                                for(var i = 0; i < category.level; i++) {
+                                    level += '-';
+                                }
+                            }
+                            html += '<option value="' + category.id + '" class="dropfiles-category-item dropfiles-cat-lv-' + category.level + '" data-id="' + category.id + '" data-id-category="' + category.id + '" data-id-parent="' + category.parent + '" data-level="' + category.level + '">';
+                            html += level + ' ' + category.title;
+                            html += '</option>';
+                        });
+                        html += '</select>';
+                        html += importOption;
+                        html += '</div>';
+                        html += '</div>';
+                        html += '</div>';
+                        // End categories-content
+                        html += '</div>';
+                        html += '</div>';
+                        html += '</div>';
+                        html += '</div>';
+
+                        $('body').append(html);
+                    } else {
+                        var html = '<div id="dropfiles-all-categories" class="dropfiles-all-categories">';
+                        html    += '<div class="categories-wrap">';
+                        html    += '<div class="categories-container">';
+                        html    += '<div class="dropfiles-preloader">' + Joomla.JText._('COM_DROPFILES_CONFIG_IMPORT_SERVER_FOLDER_LOADING', 'Loading...') + '</div>';
+                        html    += '<div class="dropfiles-overlay"></div>';
+                        html    += '<div class="categories-content">';
+                        html    += '<div id="tree-category-list" class="tree-category-list white-popup">';
+                        html    += '<button id="save-category-disc" class="ju-button orange-button save-category-disc">' + Joomla.JText._('COM_DROPFILES_CONFIG_IMPORT_SERVER_FOLDER_IMPORT_SUBMIT', 'Import') + '</button>';
+                        html    += '<span class="spinner"></span>';
+                        html    += '<button title="Close" type="button" id="dropfiles-close-category-disc" class="dropfiles-close">×</button>';
+                        html    += '<div class="tree-category-view">';
+                        html    += '<div class="tree-categories dropfiles-no-margin dropfiles-no-padding">';
+                        html    += '<h3 class="import-title dropfiles-category-disc-title">' + Joomla.JText._('COM_DROPFILES_CONFIG_IMPORT_SERVER_FOLDER_IMPORT_IN_DROPFILES', 'Import in Dropfiles') + '</h3>';
+                        html    += '<select id="dropfiles-select-category" class="inputbox input-block-level ju-input dropfiles-select-category">';
+                        html    += '<option value="">' + Joomla.JText._('COM_DROPFILES_CONFIG_IMPORT_SERVER_FOLDER_ROOT', 'ROOT') + '</option>';
+                        html    += '</select>';
+                        html    += importOption;
+                        html    += '</div>';
+                        html    += '</div>';
+                        html    += '</div>';
+                        // End categories-content
+                        html    += '</div>';
+                        html    += '</div>';
+                        html    += '</div>';
+                        html    += '</div>';
+
+                        $('body').append(html);
+                    }
+                }
+            });
+        },
+        dropfilesProcessAndRunImport: function (e) {
+            $('#dropfiles-all-categories').hide();
+            var files = [];
+            var dropfiles_category_disc = $('#dropfiles-select-category').val();
+            var dropfiles_import_option = $('#dropfiles-import-options').val();
+
+            $($('#dropfiles_foldertree').jaofiletree('getchecked')).each(function () {
+                files.push(this.file);
+            });
+
+            if (files.length === 0) {
+                return;
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: 'index.php?option=com_dropfiles&task=config.dropfilesRunImportServerFolders',
+                data: {
+                    dropfiles_list_import: files,
+                    server_category_disc: dropfiles_category_disc,
+                    server_import_option: dropfiles_import_option
+                },
+                beforeSend: function () {
+                    $('#import-server-folders-btn').find('.spinner').show().css('visibility', 'visible');
+                },
+                success: function (res) {
+                    res = $.parseJSON(res);
+                    $('#import-server-folders-btn').find('.spinner').hide();
+                    if ($('#import-server-folders > ul').length) {
+                        $('#import-server-folders > ul').remove();
+                    }
+                    if (res.success === true) {
+                        $.gritter.add({text: Joomla.JText._('COM_DROPFILES_CONFIG_IMPORT_SERVER_FOLDER_IMPORT_SUCCESS', 'Folder imported successfully!')});
+                    } else {
+                        var messages = '<ul class="dropfiles-import-server-message">';
+                        res.existsTerms.forEach(function (val, index) {
+                            messages += '<li style="font-style: italic">' + Joomla.JText._('COM_DROPFILES_CONFIG_IMPORT_SERVER_FOLDER_IMPORT_FAILED', 'Failed to import category') + ', <span style="font-weight: bold">' + val + '</span> ' + Joomla.JText._('COM_DROPFILES_CONFIG_IMPORT_SERVER_FOLDER_IMPORT_ALREADY_EXISTS', 'already exists') + '.</li>';
+                        });
+                        messages += '</ul>';
+                        $('#import-server-folders').append(messages);
+                    }
+                }
+            });
+        },
+        dropfilesCloseAllCategories: function (e) {
+            if ($('#dropfiles-all-categories').length) {
+                $('#dropfiles-all-categories').hide();
+            }
+        },
+        runExport: function (e) {
+            e.preventDefault();
+            var url                 = 'index.php?option=com_dropfiles&task=config.saveExportParams';
+            var type_groups         = ['all', 'only_folder', 'selection_folder'];
+            var export_type         = $('#export_folder_type').val();
+            var selected_categories = $('.dropfiles_export_folders').val();
+            var countCategories     = $('#dropfiles_import_export_categories').val();
+
+            // Export supported types only
+            if ($.inArray(export_type, type_groups) === -1) {
+                bootbox.confirm(Joomla.JText._('COM_DROPFILES_CONFIG_IMPORT_EXPORT_MSG_INVALID_EXPORT_TYPE', 'The export type is invalid, please try again.') , function (result) {});
+                return;
+            }
+
+            if ((export_type === 'selection_folder' && selected_categories === '') || parseInt(countCategories) === 0) {
+                bootbox.confirm(Joomla.JText._('COM_DROPFILES_CONFIG_IMPORT_EXPORT_MSG_NO_CATEGORY_FOR_EXPORTING', 'There is no category for exporting, please try again.') , function (result) {});
+                return;
+            }
+
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: {
+                    export_type: export_type,
+                    selected_categories: selected_categories
+                },
+                beforeSend: function() {
+                    $('#dropfiles-run-export .spinner').show().css({'visibility': 'visible', 'margin': '-2px 2px'});
+                },
+                success: function (response) {
+                    $('#dropfiles-run-export .spinner').hide().css({'visibility': 'hidden', 'margin': '-2px 2px'});
+                    var exportFileUrl = 'index.php?option=com_dropfiles&task=config.exportFolder';
+                    window.open(exportFileUrl);
+                }
+            });
+        },
+        runImportXMLCategories: function (e) {
+            e.preventDefault();
+            var preRun = $('#dropfiles-import-type').val();
+            if (preRun !== 'import-xml-categories') {
+                $('#dropfiles-import-type').val('import-xml-categories');
+                $('#dropfiles-select-category').val('');
+            }
+            $('#dropfiles-server-import-options').hide();
+            $('#dropfiles-all-categories').show();
+            $('#save-category-disc').unbind('click').on('click', function (e) {
+                e.preventDefault();
+                var xmlCategoryDisc  = $('#dropfiles-select-category').val();
+                var importFolderOnly = ($('#import-attachments').is(':checked')) ? '1' : '0';
+                var action           = $('#dropfiles_import_export_action').val();
+                $('#dropfiles_import_folder_btn').unbind("click");
+                $('#dropfiles-import-xml-disc').val(xmlCategoryDisc);
+
+                var formData = new FormData();
+                formData.append('file', $('#dropfiles_import_folders')[0].files[0]);
+                formData.append('xml_category_disc', xmlCategoryDisc);
+                formData.append('import_only_folder', importFolderOnly);
+
+                // Send data for importing
+                $.ajax({
+                    url : 'index.php?option=com_dropfiles&task=config.savefolderimportexportparams',
+                    type : 'POST',
+                    data : formData,
+                    processData: false,
+                    contentType: false,
+                    beforeSend: function () {
+                        $('.dropfiles_import_error_message_wrap').html('<div id="dropfiles-import-loading" class="dropfiles-import-loading"></div>');
+                    },
+                    success : function(res) {
+                        res = $.parseJSON(res);
+                        $('.dropfiles_import_error_message_wrap').html('<div class="import_error_message">' + res.msg + '</div>');
+                    }
+                });
+            });
+        },
+        showSelectFolderExportOptionAndSaveConfig: function (e) {
+            var type = $(this).val();
+            if (type === 'selection_folder') {
+                $('#open_export_tree_folders_btn').show();
+            } else {
+                $('#open_export_tree_folders_btn').hide();
+            }
+        },
+        showExportCategoryList: function () {
+            $('#dropfiles_export_category_list').show();
+            $('.dropfiles_export_category_checkbox').on('click, change', function () {
+                var includes = [];
+                $('.dropfiles_export_category_checkbox').each(function (i, v) {
+                    var val = $(v).val();
+                    if ($(v).is(':checked')) {
+                        includes.push(val);
+                    } else {
+                        var index = includes.indexOf(val);
+                        if (index > -1) {
+                            includes.splice(index, 1);
+                        }
+                    }
+                });
+
+                $('[name="dropfiles_export_folders"]').val(includes.join()).change();
+            });
+        },
+        saveExportFolders: function () {
+            $('#dropfiles_export_category_list').hide();
+        },
+        closeExportCategoryList: function () {
+            $('#dropfiles_export_category_list').hide();
+        },
+        dropboxPushClick: function (e) {
+            e.preventDefault();
+            var $this = $(this);
+            var defaultLabel = $this.html();
+
+            $.ajax({
+                url: 'index.php?option=com_dropfiles&task=config.dropboxWatchChanges',
+                beforeSend: function () {
+                    $this.attr('disabled', true);
+                    $this.html('<span class="watch-change-name">Pending...</span> ');
+                },
+                method: "POST",
+                success: function (res) {
+                    res = $.parseJSON(res);
+                    if (res.success) {
+                        $this.attr('disabled', false);
+                        $this.html('<span class="watch-change-name">Success! Page will reload now...</span>');
+                        setTimeout(function () {
+                            document.location.reload();
+                        }, 500);
+                    } else {
+                        $this.html(defaultLabel);
+                        $this.attr('disabled', false);
+                        alert('Something wrong! Check Console Tab for more details.');
+                        console.log(res);
+                    }
+                },
+                error: function (xhr) {
+                    $this.html(defaultLabel);
+                    $this.attr('disabled', false);
+                    alert('Something wrong! Check Console Tab for more details.');
+                    console.log(xhr);
+                },
+            });
+        },
+        initExportCategoryList: function () {
+            // Show select folder when type = selection_folder
+            if ($('#export_folder_type').val() === 'selection_folder') {
+                $('#open_export_tree_folders_btn').addClass('show').removeClass('hide');
+            }
+            // Close Modal in case click outside
+            $('body').on('click', function (e) {
+                if ($('#dropfiles_export_category_list').is(':visible') && !$(e.target).is('#open_export_tree_folders') && !$(e.target).parent('#open_export_tree_folders').length && !$(e.target).parents('#open_export_tree_folders').length) {
+                    $('#dropfiles_export_category_list').hide();
+                }
+            });
+            // Call ajax category list
+            $.ajax({
+                url: "index.php?option=com_dropfiles&task=config.dropfilesListAllCategories",
+                method: 'GET',
+                data: {},
+                success: function (response) {
+                    response = $.parseJSON(response);
+                    var data = [];
+                    if (typeof (response.data) !== 'undefined' && typeof (response.data) === 'object') {
+                        data = Object.keys(response.data).map(function (key) {
+                            return response.data[key];
+                        });
+                    }
+                    var success = response.success;
+                    if( data.length ) {
+                        var html = '<div id="dropfiles_export_category_list" class="has-category">';
+                        html    += '<div class="dropfiles-export-wrap">';
+                        html    += '<div class="dropfiles-export-container">';
+                        html    += '<div class="dropfiles-preloader">' + Joomla.JText._('COM_DROPFILES_CONFIG_IMPORT_SERVER_FOLDER_LOADING', 'Loading...') +'</div>';
+                        html    += '<div class="dropfiles-overlay"></div>';
+                        html    += '<div class="dropfiles-export-content">';
+                        html    += '<div id="open_export_tree_folders" class="white-popup">';
+                        html    += '<button class="ju-button save_export_folders orange-button">'+ Joomla.JText._('COM_DROPFILES_CONFIG_IMPORT_EXPORT_IMPORT_SELECT_CATEGORY_SAVE', 'Save') +'</button>';
+                        html    += '<span class="spinner save_export_folders_spinner"></span>';
+                        html    += '<button title="Close (Esc)" type="button" class="dropfiles-close">×</button>';
+                        html    += '<div class="export_tree_folders">';
+                        html    += '<div class="dropfiles-folder-tree dropfiles-no-margin dropfiles-no-padding">';
+                        html    += '<ul>';
+                        var folderIcon = '<svg class="dashicon default-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/><path d="M0 0h24v24H0z" fill="none"/></svg>';
+                        data.forEach(function (category, index) {
+                            var haveChild = (typeof (data[index + 1]) !== 'undefined' && data[index + 1].level > category.level && data[index + 1].level > 0);
+                            var paddingLeft = category.level * 18;
+                            if (!haveChild) {
+                                paddingLeft += 16;
+                            }
+                            html += '<li class="dropfiles-export-category-folder dropfiles-export-cat-lv-' + category.level + '" style="padding-left: ' + paddingLeft + 'px;" data-id="' + category.id + '" data-id-category="' + category.id + '" data-id-parent="' + category.parent + '" data-level="' + category.level + '">';
+                            if (category.level < 16 && haveChild) {
+                                html += '<span class="dropfiles-toggle-expand"></span>';
+                            }
+                            html += folderIcon;
+                            html += '<input type="checkbox" class="dropfiles_export_category_checkbox" data-id="' + category.id + '" value="' + category.id + '"/>';
+                            html += '<span class="dropfiles-category-name">' + category.title + '</span>';
+                            html += '</li>';
+                        });
+                        html += '</ul>';
+                        html += '</div>';
+                        html += '</div>';
+                        html += '</div>';
+                        // End dropfiles-export-content
+                        html += '</div>';
+                        html += '</div>';
+                        html += '</div>';
+                        html += '</div>';
+
+                        $('body').append(html);
+                    } else {
+                        var html = '<div id="dropfiles_export_category_list">';
+                        html    += '<div class="dropfiles-export-wrap">';
+                        html    += '<div class="dropfiles-export-container">';
+                        html    += '<div class="dropfiles-export-content">';
+                        html    += '<div id="open_export_tree_folders" class="white-popup">';
+                        html    += '<button class="ju-button save_export_folders orange-button">'+ Joomla.JText._('COM_DROPFILES_CONFIG_IMPORT_EXPORT_IMPORT_SELECT_CATEGORY_SAVE', 'Save') +'</button>';
+                        html    += '<span class="spinner save_export_folders_spinner"></span>';
+                        html    += '<button title="Close (Esc)" type="button" class="dropfiles-close">×</button>';
+                        html    += '<div class="export_tree_folders">';
+                        html    += '<div class="dropfiles-folder-tree dropfiles-no-margin dropfiles-no-padding">';
+                        html    += '<ul>';
+                        html    += '<li>'+ Joomla.JText._('COM_DROPFILES_CONFIG_IMPORT_EXPORT_IMPORT_SELECT_CATEGORY_NOT_FOUND', 'No category found!') +'</li>';
+                        html    += '</ul>';
+                        html    += '</div>';
+                        html    += '</div>';
+                        html    += '</div>';
+                        // End dropfiles-export-content
+                        html    += '</div>';
+                        html    += '</div>';
+                        html    += '</div>';
+                        html    += '</div>';
+
+                        $('body').append(html);
+                    }
+
+                    $('#importexport').append('<input type="hidden" id="dropfiles_import_export_categories" value="'+ data.length +'" />')
+                }
+            });
+        },
     };
 
     // Search indexer

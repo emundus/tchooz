@@ -19,7 +19,7 @@
       'showroot'        : 'root',
       'onclick'         : function(elem,type,file){},
       'oncheck'         : function(elem,checked,type,file){},
-      'usecheckboxes'   : true, //can be true files dirs or false
+      'usecheckboxes'   : true, // Can be true files dirs or false
       'expandSpeed'     : 500,
       'collapseSpeed'   : 500,
       'expandEasing'    : null,
@@ -85,7 +85,7 @@
                 url : options.script,
                 data : {dir : dir},
                 context : $this,
-		dataType: 'json',
+		        dataType: 'json',
                 beforeSend : function(){this.find('a[data-file="'+dir+'"]').parent().addClass('wait');}
             }).done(function(datas) {
                 ret = '<ul class="jaofiletree" style="display: none">';
@@ -102,7 +102,6 @@
                         ret += '<input type="checkbox" data-file="'+dir+datas[ij].file+'" data-type="'+datas[ij].type+'"/>';
                     }
                     else{
-//                        ret += '<input disabled="disabled" type="checkbox" data-file="'+dir+datas[ij].file+'" data-type="'+datas[ij].type+'"/>';
                     }
                     ret += '<a href="#" data-file="'+dir+datas[ij].file+isdir+'" data-type="'+datas[ij].type+'">'+datas[ij].file+'</a>';
                     ret += '</li>';
@@ -114,14 +113,16 @@
                 this.find('a[data-file="'+dir+'"]').next().slideDown(options.expandSpeed,options.expandEasing);
 
                 if(options.usecheckboxes){
-                    this.find('li input[type="checkbox"]').attr('checked',null);
-                    this.find('a[data-file="'+dir+'"]').prev(':not(:disabled)').attr('checked','checked');
-                    this.find('a[data-file="'+dir+'"] + ul li input[type="checkbox"]:not(:disabled)').attr('checked','checked');
+                    this.find('a[data-file="'+dir+'"] + ul li input[type="checkbox"]').attr('checked',null);
+                    if (this.find('a[data-file="'+dir+'"]').prev().prop('checked') === true) {
+                        this.find('a[data-file="'+dir+'"]').prev(':not(:disabled)').attr('checked','checked');
+                        this.find('a[data-file="'+dir+'"] + ul li input[type="checkbox"]:not(:disabled)').attr('checked','checked');
+                    }
                 }
 
                 setevents();
             }).done(function(){
-                //Trigger custom event
+                // Trigger custom event
                 $this.trigger('afteropen');
                 $this.trigger('afterupdate');
             });
@@ -132,10 +133,9 @@
             $this.find('a[data-file="'+dir+'"]').parent().removeClass('expanded').addClass('collapsed');
             setevents();
             
-            //Trigger custom event
+            // Trigger custom event
             $this.trigger('afterclose');
             $this.trigger('afterupdate');
-            
     }
 
     setevents = function(){
@@ -154,7 +154,7 @@
             }
             return false;
         });
-        //Bind checkbox check/uncheck
+        // Bind checkbox check/uncheck
         $this.find('li input[type="checkbox"]').bind('change', function() {
             options.oncheck(this,$(this).is(':checked'), $(this).next().attr('data-type'),$(this).next().attr('data-file'));
             if($(this).is(':checked')){
@@ -163,9 +163,21 @@
                 $this.trigger('uncheck');
             }
         });
-        //Bind for collapse or expand elements
+        // Bind for collapse or expand elements
         $this.find('li.directory.collapsed a').bind('click', function() {methods.open($(this).attr('data-file'));return false;});
-        $this.find('li.directory.expanded a').bind('click', function() {methods.close($(this).attr('data-file'));return false;});        
+        $this.find('li.directory.expanded a').bind('click', function() {methods.close($(this).attr('data-file'));return false;});
+        // Init parent checkbox
+        $this.find('li.directory input[type="checkbox"]').on('click', function () {
+            if ($(this).parent('li.directory').find('ul li.directory').length) {
+                if ($(this).prop('checked') === true ) {
+                    $(this).parent('li.directory').find('ul li.directory input[type="checkbox"]').prop('checked', 'checked');
+                    $(this).parent('li.directory').find('ul li.directory input[type="checkbox"]').trigger('check');
+                } else {
+                    $(this).parent('li.directory').find('ul li.directory input[type="checkbox"]').prop('checked', '');
+                    $(this).parent('li.directory').find('ul li.directory input[type="checkbox"]').trigger('uncheck');
+                }
+            }
+        });
     }
 
     $.fn.jaofiletree = function( method ) {
@@ -175,7 +187,7 @@
         } else if ( typeof method === 'object' || ! method ) {
             return methods.init.apply( this, arguments );
         } else {
-            //error
+            // Error
         }    
   };
 })( jQuery );

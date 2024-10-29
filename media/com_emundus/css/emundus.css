@@ -1071,7 +1071,7 @@ fieldset {
 
 #attachment_list_mand fieldset .items-center h4,
 #attachment_list_opt fieldset .items-center h4 {
-	font-family: var(--em-applicant-font);
+	font-family: var(--em-profile-font), Inter, sans-serif;
 }
 
 /*#attachment_list_mand fieldset:hover {

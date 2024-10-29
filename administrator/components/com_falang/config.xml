@@ -172,11 +172,29 @@
     >
         <field name="translator" type="list" default="Bing" required="true" label="COM_FALANG_CONFIG_TRANSLATOR_SELECT_TRANSLATOR" >
             <option value="none">COM_FALANG_CONFIG_TRANSLATOR_SELECT_NONE</option>
+            <option value="Deepl">DeepL</option>
             <option value="Bing">Bing / Azure</option>
             <option value="Google">Google Cloud</option>
             <option value="Yandex">Yandex</option>
             <option value="Lingvanex">Lingvanex</option>
         </field>
+        <field
+                name="translator_deepl_free"
+                type="radio"
+                default="0"
+                layout="joomla.form.field.radio.switcher"
+                class="btn-group btn-group-yesno"
+                label="COM_FALANG_CONFIG_TRANSLATOR_DEEPL_FREE_LBL"
+                description="COM_FALANG_CONFIG_TRANSLATOR_DEEPL_FREE_DESC"
+        >
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+        <field name="translator_deeplkey"
+               type="text"
+               label="COM_FALANG_CONFIG_TRANSLATOR_DEEPL_KEY"
+               description="COM_FALANG_CONFIG_TRANSLATOR_DEEPL_KEY_DESC"
+        />
         <field name="translator_bingkey"
                type="text"
                label="COM_FALANG_CONFIG_TRANSLATOR_BING_KEY"

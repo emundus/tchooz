@@ -140,7 +140,7 @@ class FabrikViewList extends FabrikViewListBase
 	{
 		if (!$this->app->isClient('administrator') && !$this->isMambot)
 		{
-			$url = Uri::root() . trim(Route::_($this->getCanonicalLink()), '/' );
+			$url = $this->getCanonicalLink();
 
 			// Set a flag so that the system plugin can clear out any other canonical links.
 			$this->session->set('fabrik.clearCanonical', true);

@@ -119,7 +119,7 @@ $uniqid = uniqid();
                                     <div class="col-xs-12 col-md-6 main-page-file-info">
                                         <p class="em-tags-display"><?= $file_tags_display; ?></i></p>
                                         <a class="btn btn-warning" href="<?php echo JRoute::_($first_page_url); ?>" role="button">
-                                            <i class="folder open outline icon"></i> <?= ($is_admission) ? JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_ADMISSION') : $open_file_message; ?>
+                                            <i class="icon-folder"></i> <?= ($is_admission) ? JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_ADMISSION') : $open_file_message; ?>
                                         </a>
 
 										<?php if (!empty($attachments) && ((int) ($attachments[$application->fnum]) >= 100 && (int) ($forms[$application->fnum]) >= 100 && in_array($application->status, $status_for_send) && !$is_dead_line_passed) || in_array($user->id, $applicants)) : ?>
@@ -250,10 +250,10 @@ $uniqid = uniqid();
 
                                 <div class="change-wish-number" data-fnum="<?= $application->fnum; ?>" data-wish="<?= $application->wish_number; ?>">
 									<?php if ($a_index > 0 && $application->status == 0 && $files_this_year[$a_index-1]->status == 0): ?>
-                                        <a href="#"><span class="material-icons-outlined em-pointer up">keyboard_double_arrow_up</span></a>
+                                        <a href="#"><span class="material-symbols-outlined em-pointer up">keyboard_double_arrow_up</span></a>
 									<?php endif; ?>
 									<?php if (($a_index + 1) < sizeof($files_this_year) && $application->status == 0 && $files_this_year[$a_index+1]->status == 0): ?>
-                                        <a href="#"><span class="material-icons-outlined em-pointer down">keyboard_double_arrow_down</span></a>
+                                        <a href="#"><span class="material-symbols-outlined em-pointer down">keyboard_double_arrow_down</span></a>
 									<?php endif; ?>
                                 </div>
                             </div>

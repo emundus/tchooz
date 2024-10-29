@@ -573,13 +573,16 @@ EOD;
 	 *
 	 * @return  null
 	 */
-	public static function stylesheet($file, $attribs = array())
+	public static function stylesheet($file, $attribs = [])
 	{
 		// $$$ hugh - moved this to top of function, as we now apply livesite in either usage cases below.
 		if (!strstr($file, COM_FABRIK_LIVESITE))
 		{
 			$file = COM_FABRIK_LIVESITE . $file;
 		}
+
+		$opts = http_build_query($attribs);
+		if (!empty($opts)) $file .= $opts;
 
 		if (self::cssAsAsset())
 		{
@@ -591,7 +594,15 @@ EOD;
 				{
 					$opts = new stdClass;
 					echo "<script type=\"text/javascript\">
-				var v = new Asset.css('" . $file . "', " . json_encode($opts) . ");
+					function loadMyCss(file) {
+						let s = document.createElement('link');
+						s.setAttribute('href', file);
+						s.setAttribute('async', true);
+						s.setAttribute('rel', 'stylesheet');
+						document.head.appendChild(s);
+						return;
+					}
+				loadMyCss('".$file."');
     		</script>\n";
 					self::$ajaxCssFiles[] = $file;
 				}
@@ -3186,4 +3197,62 @@ EOT;
 
 		return $doc;
 	}
+
+	/**
+	 * Collect the currently used webAssets and insert them into the dom vias javascript
+	 * This allows us to use the WebAssetManager to insert scripts and styles in ajax loaded content
+	 *
+	 * @param   string $elementId  a somewhat unique identifier for the asset insertion function name
+	 *
+	 * @return string
+	 */
+	public static function getAjaxWebAssets($elementId) {
+		$assetTypes = ["script", "style"];
+		$doc = Factory::getApplication()->getDocument();
+		$wa = $doc->getWebAssetManager();
+		$output = [];
+		foreach ($assetTypes as $assetType) {
+			$assets = $wa->getAssets($assetType, true);
+			foreach ($assets as $asset) {
+				$src = $asset->getUri();
+				$attribs = $asset->getAttributes();
+				$version = $asset->getVersion();
+				$mediaVersion = $doc->getMediaVersion();
+				$conditional = $asset->getOption('conditional', false);
+				$content = str_replace(['<br>', "\t", "\\t", "\n", "\\n"], '', $asset->getOption('content', ''));
+				if (!$src && !$content) {
+					/* Inline but no content */
+					continue;
+				}
+				// Check if script uses media version.
+				if ($src && $version && strpos($src, '?') === false && ($mediaVersion || $version !== 'auto')) {
+					$src .= '?' . ($version === 'auto' ? $mediaVersion : $version);
+				}
+				switch ($assetType) {
+				case 'script':
+					$output['script'][] = [
+						'src' => htmlspecialchars($src),
+						'type' => $attribs['type'] ?? "application/javascript",
+						'content' => $content,
+					];
+					break;
+				case 'style':
+					$output['style'][] = [
+						'src' => htmlspecialchars($src),
+						'content' => $content,
+					];
+				default:
+				}
+			}
+		}
+		if (!empty($output)) {
+			/* The assets */
+			$elemJsAssets = uniqid($elementId) . 'JsAssets';
+			/* process them */
+			$js = '<style onload="insert_scripts_and_styles('.htmlspecialchars(json_encode($output)).');"/>';
+			return $js;
+		}
+		return '';
+	}
+
 }

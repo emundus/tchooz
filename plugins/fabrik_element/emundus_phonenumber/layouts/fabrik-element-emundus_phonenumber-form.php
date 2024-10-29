@@ -2,12 +2,16 @@
 
 defined('JPATH_BASE') or die;
 
+
+require_once (JPATH_SITE.'/components/com_emundus/helpers/cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
+
 // Add span with id so that element fxs work.
 $doc = JFactory::getDocument();
 $doc->addScript('https://unpkg.com/imask');
-$doc->addScript(JURI::root() . "plugins/fabrik_element/emundus_phonenumber/assets/js/emundus_phonenumber_libphone-min.js");
-$doc->addScript(JURI::root() . "plugins/fabrik_element/emundus_phonenumber/assets/js/emundus_phonenumber_ValidatorJS.js");
-$doc->addScript(JURI::root() . "plugins/fabrik_element/emundus_phonenumber/assets/js/emundus_imask-min.js");
+$doc->addScript(JURI::root() . "plugins/fabrik_element/emundus_phonenumber/assets/js/emundus_phonenumber_libphone-min.js?". $hash);
+$doc->addScript(JURI::root() . "plugins/fabrik_element/emundus_phonenumber/assets/js/emundus_phonenumber_ValidatorJS.js?". $hash);
+$doc->addScript(JURI::root() . "plugins/fabrik_element/emundus_phonenumber/assets/js/emundus_imask-min.js?". $hash);
 
 $lang = JFactory::getLanguage();
 $actualLanguage = !empty($lang->getTag()) ? substr($lang->getTag(), 0 , 2) : 'fr';
@@ -37,7 +41,7 @@ JText::script('PLG_ELEMENT_PHONE_NUMBER_UNSUPPORTED');
 		<input id="renderCountryCode" name="<?php echo $displayData->attributes['name'].'[country_code]'; ?>" tabindex="-1" class="input-medium fabrikinput input-readonly" readonly="readonly">
 
 		<input id="inputValue" name="<?php echo $displayData->attributes['name'].'[num_tel]'; ?>" class="input-medium fabrikinput" maxlength="16"
-			   value="<?php echo $displayData->attributes['inputValue']; ?>" autocomplete="off"
+			   value="<?php echo $displayData->attributes['inputValue']; ?>" autocomplete="tel"
 		>
 
 		<input id="hasValidation" type="checkbox" class="check"

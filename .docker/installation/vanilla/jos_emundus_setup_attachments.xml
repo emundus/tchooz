@@ -24,86 +24,19 @@
    <field Field="sync_method" Type="varchar(50)" Null="YES" Key="" Extra="" />
    <field Field="params" Type="text" Null="YES" Key="" Extra="" />
    <field Field="max_filesize" Type="double(6,2)" Null="YES" Key="" Extra="" />
+   <field Field="document_type" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="img_min_width" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="img_max_width" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="img_min_height" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="img_max_height" Type="varchar(255)" Null="YES" Key="" Extra="" />
    <key Table="#__emundus_setup_attachments" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_setup_attachments" Non_unique="0" Key_name="lbl" Seq_in_index="1" Column_name="lbl" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_setup_attachments" Non_unique="1" Key_name="fb_filter_value_INDEX" Seq_in_index="1" Column_name="value" Collation="A" Null="YES" Index_type="BTREE" Sub_part="10" Comment="" />
    <key Table="#__emundus_setup_attachments" Non_unique="1" Key_name="fb_tableorder_ordering_INDEX" Seq_in_index="1" Column_name="ordering" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_setup_attachments" Non_unique="1" Key_name="fb_prefilter_published_INDEX" Seq_in_index="1" Column_name="published" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
-   <key Table="#__emundus_setup_attachments" Non_unique="1" Key_name="fb_filter_category_INDEX" Seq_in_index="1" Column_name="category" Collation="A" Null="YES" Index_type="BTREE" Sub_part="10" Comment="" />
+   <key Table="#__emundus_setup_attachments" Non_unique="1" Key_name="fb_order_category_INDEX" Seq_in_index="1" Column_name="category" Collation="A" Null="YES" Index_type="BTREE" Sub_part="10" Comment="" />
   </table_structure>
   <table_data name="#__emundus_setup_attachments">
-   <row>
-    <field name="id">1</field>
-    <field name="lbl">_identity</field>
-    <field name="value">Passport or ID card</field>
-    <field name="description">Copy of the passport or ID card (1 page concerning personal details)</field>
-    <field name="allowed_types">pdf;jpg;jpeg</field>
-    <field name="nbmax">5</field>
-    <field name="ordering">4</field>
-    <field name="published">1</field>
-    <field name="ocr_keywords"></field>
-    <field name="category">1</field>
-    <field name="video_max_length" value_is_null="true"></field>
-    <field name="min_width"></field>
-    <field name="max_width"></field>
-    <field name="min_height"></field>
-    <field name="max_height"></field>
-    <field name="min_pages_pdf" value_is_null="true"></field>
-    <field name="max_pages_pdf" value_is_null="true"></field>
-    <field name="default_attachment">0</field>
-    <field name="sync">0</field>
-    <field name="sync_method"></field>
-    <field name="params"></field>
-    <field name="max_filesize" value_is_null="true"></field>
-   </row>
-   <row>
-    <field name="id">2</field>
-    <field name="lbl">_transcript</field>
-    <field name="value">University transcript</field>
-    <field name="description">Copy of university transcript including translation</field>
-    <field name="allowed_types">pdf;jpg;jpeg</field>
-    <field name="nbmax">5</field>
-    <field name="ordering">7</field>
-    <field name="published">1</field>
-    <field name="ocr_keywords"></field>
-    <field name="category">1</field>
-    <field name="video_max_length" value_is_null="true"></field>
-    <field name="min_width"></field>
-    <field name="max_width"></field>
-    <field name="min_height"></field>
-    <field name="max_height"></field>
-    <field name="min_pages_pdf" value_is_null="true"></field>
-    <field name="max_pages_pdf" value_is_null="true"></field>
-    <field name="default_attachment">0</field>
-    <field name="sync">0</field>
-    <field name="sync_method"></field>
-    <field name="params"></field>
-    <field name="max_filesize" value_is_null="true"></field>
-   </row>
-   <row>
-    <field name="id">3</field>
-    <field name="lbl">_degree</field>
-    <field name="value">University degrees</field>
-    <field name="description">Copy of university degrees, including translation</field>
-    <field name="allowed_types">pdf;jpg;jpeg</field>
-    <field name="nbmax">5</field>
-    <field name="ordering">15</field>
-    <field name="published">1</field>
-    <field name="ocr_keywords"></field>
-    <field name="category">1</field>
-    <field name="video_max_length" value_is_null="true"></field>
-    <field name="min_width"></field>
-    <field name="max_width"></field>
-    <field name="min_height"></field>
-    <field name="max_height"></field>
-    <field name="min_pages_pdf" value_is_null="true"></field>
-    <field name="max_pages_pdf" value_is_null="true"></field>
-    <field name="default_attachment">0</field>
-    <field name="sync">0</field>
-    <field name="sync_method"></field>
-    <field name="params"></field>
-    <field name="max_filesize" value_is_null="true"></field>
-   </row>
    <row>
     <field name="id">4</field>
     <field name="lbl">_referenceLetter1</field>
@@ -127,6 +60,11 @@
     <field name="sync_method"></field>
     <field name="params"></field>
     <field name="max_filesize" value_is_null="true"></field>
+    <field name="document_type" value_is_null="true"></field>
+    <field name="img_min_width" value_is_null="true"></field>
+    <field name="img_max_width" value_is_null="true"></field>
+    <field name="img_min_height" value_is_null="true"></field>
+    <field name="img_max_height" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">6</field>
@@ -151,71 +89,28 @@
     <field name="sync_method"></field>
     <field name="params"></field>
     <field name="max_filesize" value_is_null="true"></field>
-   </row>
-   <row>
-    <field name="id">8</field>
-    <field name="lbl">_motivationLetter</field>
-    <field name="value">Motivation and plans</field>
-    <field name="description"></field>
-    <field name="allowed_types">pdf;jpg;jpeg</field>
-    <field name="nbmax">5</field>
-    <field name="ordering">3</field>
-    <field name="published">1</field>
-    <field name="ocr_keywords"></field>
-    <field name="category">1</field>
-    <field name="video_max_length" value_is_null="true"></field>
-    <field name="min_width"></field>
-    <field name="max_width"></field>
-    <field name="min_height"></field>
-    <field name="max_height"></field>
-    <field name="min_pages_pdf" value_is_null="true"></field>
-    <field name="max_pages_pdf" value_is_null="true"></field>
-    <field name="default_attachment">0</field>
-    <field name="sync">0</field>
-    <field name="sync_method"></field>
-    <field name="params"></field>
-    <field name="max_filesize" value_is_null="true"></field>
+    <field name="document_type" value_is_null="true"></field>
+    <field name="img_min_width" value_is_null="true"></field>
+    <field name="img_max_width" value_is_null="true"></field>
+    <field name="img_min_height" value_is_null="true"></field>
+    <field name="img_max_height" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">10</field>
     <field name="lbl">_photo</field>
     <field name="value">Photo</field>
     <field name="description"></field>
-    <field name="allowed_types">jpg;jpeg;png</field>
+    <field name="allowed_types">jpeg;jpg;png;gif</field>
     <field name="nbmax">1</field>
     <field name="ordering">2</field>
     <field name="published">1</field>
     <field name="ocr_keywords"></field>
     <field name="category">1</field>
-    <field name="video_max_length">60</field>
-    <field name="min_width"></field>
-    <field name="max_width"></field>
-    <field name="min_height"></field>
-    <field name="max_height"></field>
-    <field name="min_pages_pdf">0</field>
-    <field name="max_pages_pdf">0</field>
-    <field name="default_attachment">0</field>
-    <field name="sync">0</field>
-    <field name="sync_method"></field>
-    <field name="params"></field>
-    <field name="max_filesize" value_is_null="true"></field>
-   </row>
-   <row>
-    <field name="id">11</field>
-    <field name="lbl">_RIB</field>
-    <field name="value">RIB</field>
-    <field name="description"></field>
-    <field name="allowed_types">pdf;jpg;jpeg;png</field>
-    <field name="nbmax">1</field>
-    <field name="ordering">19</field>
-    <field name="published">1</field>
-    <field name="ocr_keywords"></field>
-    <field name="category">1</field>
     <field name="video_max_length" value_is_null="true"></field>
-    <field name="min_width"></field>
-    <field name="max_width"></field>
-    <field name="min_height"></field>
-    <field name="max_height"></field>
+    <field name="min_width" value_is_null="true"></field>
+    <field name="max_width" value_is_null="true"></field>
+    <field name="min_height" value_is_null="true"></field>
+    <field name="max_height" value_is_null="true"></field>
     <field name="min_pages_pdf" value_is_null="true"></field>
     <field name="max_pages_pdf" value_is_null="true"></field>
     <field name="default_attachment">0</field>
@@ -223,12 +118,17 @@
     <field name="sync_method"></field>
     <field name="params"></field>
     <field name="max_filesize" value_is_null="true"></field>
+    <field name="document_type">2</field>
+    <field name="img_min_width"></field>
+    <field name="img_max_width"></field>
+    <field name="img_min_height"></field>
+    <field name="img_max_height"></field>
    </row>
    <row>
     <field name="id">12</field>
     <field name="lbl">_cv</field>
     <field name="value">CV</field>
-    <field name="description">Curriculum vitae</field>
+    <field name="description">&lt;p&gt;Curriculum vitae&lt;/p&gt;</field>
     <field name="allowed_types">pdf;jpg;jpeg</field>
     <field name="nbmax">1</field>
     <field name="ordering">1</field>
@@ -236,10 +136,10 @@
     <field name="ocr_keywords"></field>
     <field name="category">1</field>
     <field name="video_max_length">60</field>
-    <field name="min_width"></field>
-    <field name="max_width"></field>
-    <field name="min_height"></field>
-    <field name="max_height"></field>
+    <field name="min_width" value_is_null="true"></field>
+    <field name="max_width" value_is_null="true"></field>
+    <field name="min_height" value_is_null="true"></field>
+    <field name="max_height" value_is_null="true"></field>
     <field name="min_pages_pdf" value_is_null="true"></field>
     <field name="max_pages_pdf" value_is_null="true"></field>
     <field name="default_attachment">0</field>
@@ -247,6 +147,11 @@
     <field name="sync_method"></field>
     <field name="params"></field>
     <field name="max_filesize" value_is_null="true"></field>
+    <field name="document_type">1</field>
+    <field name="img_min_width"></field>
+    <field name="img_max_width"></field>
+    <field name="img_min_height"></field>
+    <field name="img_max_height"></field>
    </row>
    <row>
     <field name="id">20</field>
@@ -271,6 +176,11 @@
     <field name="sync_method"></field>
     <field name="params"></field>
     <field name="max_filesize" value_is_null="true"></field>
+    <field name="document_type" value_is_null="true"></field>
+    <field name="img_min_width" value_is_null="true"></field>
+    <field name="img_max_width" value_is_null="true"></field>
+    <field name="img_min_height" value_is_null="true"></field>
+    <field name="img_max_height" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">21</field>
@@ -295,6 +205,11 @@
     <field name="sync_method"></field>
     <field name="params"></field>
     <field name="max_filesize" value_is_null="true"></field>
+    <field name="document_type" value_is_null="true"></field>
+    <field name="img_min_width" value_is_null="true"></field>
+    <field name="img_max_width" value_is_null="true"></field>
+    <field name="img_min_height" value_is_null="true"></field>
+    <field name="img_max_height" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">25</field>
@@ -319,6 +234,11 @@
     <field name="sync_method"></field>
     <field name="params"></field>
     <field name="max_filesize" value_is_null="true"></field>
+    <field name="document_type" value_is_null="true"></field>
+    <field name="img_min_width" value_is_null="true"></field>
+    <field name="img_max_width" value_is_null="true"></field>
+    <field name="img_min_height" value_is_null="true"></field>
+    <field name="img_max_height" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">26</field>
@@ -343,23 +263,28 @@
     <field name="sync_method"></field>
     <field name="params"></field>
     <field name="max_filesize" value_is_null="true"></field>
+    <field name="document_type" value_is_null="true"></field>
+    <field name="img_min_width" value_is_null="true"></field>
+    <field name="img_max_width" value_is_null="true"></field>
+    <field name="img_min_height" value_is_null="true"></field>
+    <field name="img_max_height" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">27</field>
-    <field name="lbl">_letter</field>
-    <field name="value">Letter</field>
+    <field name="lbl">_motiv-letter</field>
+    <field name="value">Lettre de motivation</field>
     <field name="description"></field>
-    <field name="allowed_types">pdf;doc;docx;xls;xlsx;jpg;odt</field>
-    <field name="nbmax">0</field>
+    <field name="allowed_types">pdf;jpg;jpeg</field>
+    <field name="nbmax">1</field>
     <field name="ordering">0</field>
     <field name="published">1</field>
     <field name="ocr_keywords"></field>
     <field name="category">1</field>
-    <field name="video_max_length" value_is_null="true"></field>
-    <field name="min_width"></field>
-    <field name="max_width"></field>
-    <field name="min_height"></field>
-    <field name="max_height"></field>
+    <field name="video_max_length">60</field>
+    <field name="min_width" value_is_null="true"></field>
+    <field name="max_width" value_is_null="true"></field>
+    <field name="min_height" value_is_null="true"></field>
+    <field name="max_height" value_is_null="true"></field>
     <field name="min_pages_pdf" value_is_null="true"></field>
     <field name="max_pages_pdf" value_is_null="true"></field>
     <field name="default_attachment">0</field>
@@ -367,6 +292,11 @@
     <field name="sync_method"></field>
     <field name="params"></field>
     <field name="max_filesize" value_is_null="true"></field>
+    <field name="document_type">1</field>
+    <field name="img_min_width"></field>
+    <field name="img_max_width"></field>
+    <field name="img_min_height"></field>
+    <field name="img_max_height"></field>
    </row>
    <row>
     <field name="id">36</field>
@@ -391,6 +321,11 @@
     <field name="sync_method"></field>
     <field name="params"></field>
     <field name="max_filesize" value_is_null="true"></field>
+    <field name="document_type" value_is_null="true"></field>
+    <field name="img_min_width" value_is_null="true"></field>
+    <field name="img_max_width" value_is_null="true"></field>
+    <field name="img_min_height" value_is_null="true"></field>
+    <field name="img_max_height" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">37</field>
@@ -415,6 +350,11 @@
     <field name="sync_method"></field>
     <field name="params"></field>
     <field name="max_filesize" value_is_null="true"></field>
+    <field name="document_type" value_is_null="true"></field>
+    <field name="img_min_width" value_is_null="true"></field>
+    <field name="img_max_width" value_is_null="true"></field>
+    <field name="img_min_height" value_is_null="true"></field>
+    <field name="img_max_height" value_is_null="true"></field>
    </row>
   </table_data>
  </database>

@@ -23,7 +23,7 @@ jimport('joomla.application.categories');
 /**
  * Content Plugin.
  */
-class PlgK2dropfiles extends \Joomla\CMS\Plugin\CMSPlugin
+class PlgK2dropfiles extends JPlugin
 {
 
     /**

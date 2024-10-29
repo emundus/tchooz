@@ -18,7 +18,7 @@ if (!$this->form || empty($dropbox)) {
             <?php foreach ($dropbox as $k => $field) : ?>
                 <?php if (!in_array($k, array('jform___field3', 'jform_dropbox_cron_task_url'))) :?>
                 <li class="ju-settings-option block-item <?php echo $k;?>">
-                    <label for="<?php echo $field->id ?>" class="ju-setting-label dropfiles-tooltip" alt="<?php echo JText::sprintf($field->description) ?>"><?php echo strip_tags($field->label) ?></label>
+                    <label for="<?php echo $field->id ?>" class="ju-setting-label dropfiles-tooltip" title="<?php echo JText::sprintf($field->description) ?>"><?php echo strip_tags($field->label) ?></label>
                     <?php
                     switch ($field->type) {
                         case 'Radio':

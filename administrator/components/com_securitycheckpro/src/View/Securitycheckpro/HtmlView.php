@@ -55,7 +55,7 @@ class HtmlView extends BaseHtmlView {
             $last_update = $model->get_last_update();    
         } else 
         {
-            $last_update = 'Jan 10 2024';
+            $last_update = 'Sep 16 2024';
         }
 
         // Filtro por tipo de extensión

@@ -15,6 +15,12 @@ use Joomla\Tests\Unit\UnitTestCase;
 
 require_once JPATH_BASE . '/components/com_emundus/models/formbuilder.php';
 
+/**
+ * @package     Unit\Component\Emundus\Model
+ *
+ * @since       version 1.0.0
+ * @covers      EmundusModelProfile
+ */
 class ProfileModelTest extends UnitTestCase
 {
 	/**
@@ -36,19 +42,13 @@ class ProfileModelTest extends UnitTestCase
 	 */
 	public function testgetApplicantFnums()
 	{
-		$user_id = Factory::getUser()->id;
-		$fnums   = $this->model->getApplicantFnums($user_id);
+		$fnums   = $this->model->getApplicantFnums(0);
 		$this->assertIsArray($fnums);
 		$this->assertEmpty($fnums, 'Empty user return empty array');
 
-		$user_id     = $this->h_dataset->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
-		$program     = $this->h_dataset->createSampleProgram();
-		$campaign_id = $this->h_dataset->createSampleCampaign($program);
-		$fnum        = $this->h_dataset->createSampleFile($campaign_id, $user_id);
-
-		$fnums = $this->model->getApplicantFnums($user_id);
+		$fnums = $this->model->getApplicantFnums($this->dataset['applicant']);
 		$this->assertIsArray($fnums);
 		$this->assertNotEmpty($fnums);
-		$this->assertContains($fnum, array_keys($fnums));
+		$this->assertContains($this->dataset['fnum'], array_keys($fnums));
 	}
 }

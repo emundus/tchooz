@@ -36,7 +36,7 @@ class EmundusHelperMenu
 
 		if (empty($list) || !empty($formids) || !$checklevel) {
 			$app  = Factory::getApplication();
-			$db   = Factory::getDBO();
+			$db   = Factory::getContainer()->get('DatabaseDriver');
 			$user = $app->getIdentity();
 
 			$query = $db->getQuery(true);
@@ -197,10 +197,11 @@ class EmundusHelperMenu
 	{
 		$menu = 'index.php';
 
-		$activeLanguage = Factory::getLanguage()->getTag();
+		$activeLanguage = Factory::getApplication()->getLanguage()->getTag();
 		$languages = LanguageHelper::getLanguages('lang_code');
+		$defaultLanguage = ComponentHelper::getParams('com_languages')->get('site', 'fr-FR');
 		$sef = '';
-		if (isset($languages[$activeLanguage]))
+		if (isset($languages[$activeLanguage]) && $activeLanguage !== $defaultLanguage)
 		{
 			$sef = $languages[$activeLanguage]->sef;
 		}
@@ -217,10 +218,97 @@ class EmundusHelperMenu
 		if(!in_array($default_link, ['/','index.php','']) && $default_link !== $menu) {
 			$menu = $default_link;
 		} else {
-			$menu = $sef.'/'.$menu;
+			$menu = !empty($sef) ? '/'.$sef.'/'.$menu : '/'.$menu;
 		}
 
 		return $menu;
+	}
+
+	public static function getLogoutRedirectLink()
+	{
+		$logout_page_item_id = ComponentHelper::getParams('com_emundus')->get('logout_page_link', '');
+
+		if (empty($logout_page_item_id)) {
+			$menu = EmundusHelperMenu::getHomepageLink();
+		} else {
+			$menu = Factory::getApplication()->getMenu()->getItem($logout_page_item_id);
+
+			if (!empty($menu)) {
+				$menu = $menu->alias;
+			} else {
+				$menu = EmundusHelperMenu::getHomepageLink();
+			}
+		}
+
+		return $menu;
+	}
+
+	static function getAdminLink() {
+		$menu = 'administrator/index.php';
+
+		$htaccess = JPATH_BASE . '/.htaccess';
+		if (file_exists($htaccess)) {
+			$htaccess = file_get_contents($htaccess);
+			if (strpos($htaccess, 'RewriteCond %{HTTP_REFERER} !.*administrator/') !== false) {
+				preg_match('/RewriteCond %{QUERY_STRING} !\^([a-zA-Z0-9]+)\$/', $htaccess, $matches);
+				if(!empty($matches) && isset($matches[1])) {
+					$menu = 'administrator/index.php?'.$matches[1];
+				}
+			}
+		}
+
+		return $menu;
+	}
+
+	static function getSefAliasByLink($link) {
+		$alias = '';
+
+		$activeLanguage = Factory::getApplication()->getLanguage()->getTag();
+		$languages = LanguageHelper::getLanguages('lang_code');
+		$sef = '';
+		if (isset($languages[$activeLanguage]))
+		{
+			$sef = $languages[$activeLanguage]->sef;
+		}
+
+		$menu  = Factory::getApplication()->getMenu();
+		$item = $menu->getItems('link', $link, true);
+
+		if(!empty($item)) {
+			$alias = !empty($sef) ? $sef.'/'.$item->alias : $item->alias;
+		}
+
+		return $alias;
+	}
+
+	static function getNonce() {
+		$sitename = ComponentHelper::getParams('com_emundus')->get('sitename');
+
+		// Step 1: Hash the input string
+		$hash = md5($sitename);
+
+		// Step 2: Convert the hash to a numeric value
+		$numericHash = self::hexToDec($hash);
+
+		// Step 3: Split the numeric value into parts of 7 digits each
+		$part1 = substr($numericHash, 0, 7);
+		$part2 = substr($numericHash, 7, 7);
+		$part3 = substr($numericHash, 14, 7);
+
+		// Step 4: Combine the parts with hyphens
+		return sprintf('%s-%s-%s', $part1, $part2, $part3);
+	}
+
+	private static function hexToDec($hex) {
+		$dec = '0';
+		$len = strlen($hex);
+
+		for ($i = 0; $i < $len; $i++) {
+			$dec = bcmul($dec, '16');
+			$dec = bcadd($dec, hexdec($hex[$i]));
+		}
+
+		return $dec;
 	}
 }
 

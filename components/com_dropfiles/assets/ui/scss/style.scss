@@ -248,7 +248,7 @@ div#mybootstrap {
     overflow: auto;
     padding: 60px 15px 15px 15px;
     box-sizing: border-box;
-    @media screen and(max-width: 1024px) {
+    @media screen and (max-width: 1024px) {
       flex: 1 1 100%;
     }
     &::-webkit-scrollbar {
@@ -916,7 +916,7 @@ body.modal-open {
     display: none;
   }
 
-  @media screen and(max-width: 782px) {
+  @media screen and (max-width: 782px) {
     display: block;
     position: absolute;
     right: -50px;
@@ -3250,6 +3250,11 @@ html[dir="rtl"] #rightcol {
   z-index: 1;
   top: 0;
   width: 80%;
+  overflow: auto;
+  white-space: nowrap;
+  &::-webkit-scrollbar {
+    display: none;
+  }
   .btn-wrapper {
     display: inline-block;
     margin: 0;
@@ -3776,10 +3781,10 @@ body.dropfileseditpopupbody {
         .dropfiles-save-submit:nth-child(1) {
           width: calc(100% - 30px) !important;
         }
-        @media screen and(max-width: 1024px) {
+        @media screen and (max-width: 1024px) {
           flex: 1 1 10%;
         }
-        @media screen and(max-width: 768px) {
+        @media screen and (max-width: 768px) {
           flex: 1 1 100%;
         }
       }
@@ -3812,7 +3817,7 @@ body.dropfileseditpopupbody {
       .fileblock .ju-settings-option > label {
         min-width: 120px;
         max-width: 165px;
-        //@media screen and(max-width: 1024px) {
+        //@media screen and (max-width: 1024px) {
         //  min-width: 105px;
         //  max-width: 110px;
         //}
@@ -3820,7 +3825,7 @@ body.dropfileseditpopupbody {
       .control-group {
         .switch-button,
         .ju-switch-button {
-          @media screen and(max-width: 1024px) {
+          @media screen and (max-width: 1024px) {
             margin: 0;
           }
         }

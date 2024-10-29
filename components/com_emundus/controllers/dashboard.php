@@ -1,218 +1,226 @@
 <?php
 /**
- * @package     Joomla
- * @subpackage  eMundus
- * @link        http://www.emundus.fr
- * @copyright   Copyright (C) 2016 eMundus. All rights reserved.
- * @license     GNU/GPL
- * @author      James Dean
+ * @package    eMundus
+ * @subpackage Components
+ * @link       http://www.emundus.fr
+ * @license    GNU/GPL
+ * @author     Benjamin Rivalland
  */
 
-// No direct access
+// phpcs:disable PSR1.Files.SideEffects
+\defined('_JEXEC') or die;
+// phpcs:enable PSR1.Files.SideEffects
 
-defined('_JEXEC') or die('Restricted access');
-
-jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\MVC\Controller\BaseController;
 
 /**
- * Campaign Controller
- *
- * @package    Joomla
- * @subpackage eMundus
- * @since      5.0.0
+ * Emundus Dashboard Controller
+ * @package     Emundus
  */
-class EmundusControllerDashboard extends JControllerLegacy
+class EmundusControllerDashboard extends BaseController
 {
-	protected $app;
-
+	/**
+	 * @var \Joomla\CMS\User\User|JUser|mixed|null
+	 * @since version 1.0.0
+	 */
 	private $_user;
+
+	/**
+	 * @var EmundusModelDashboard
+	 * @since version 1.0.0
+	 */
 	private $m_dashboard;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     \JController
+	 * @since   1.0.0
+	 */
 	public function __construct($config = array())
 	{
 		parent::__construct($config);
 
-		$this->app         = Factory::getApplication();
 		$this->m_dashboard = $this->getModel('Dashboard');
 		$this->_user       = $this->app->getIdentity();
 	}
 
+	/**
+	 * Get all widgets by size
+	 * @deprecated since version 2.0.0
+	 *
+	 * @since version 1.0.0
+	 */
 	public function getallwidgetsbysize()
 	{
-		try {
+		$result = array('status' => false, 'msg' => '', 'data' => null);
+
+		if(!$this->_user->guest)
+		{
 			$size = $this->input->getInt('size');
 
-			$widgets = $this->m_dashboard->getallwidgetsbysize($size, $this->_user->id);
+			$result['data'] = $this->m_dashboard->getallwidgetsbysize($size, $this->_user->id);
+			$result['status'] = true;
+		}
 
-			$tab = array('status' => 0, 'msg' => 'success', 'data' => $widgets);
-		}
-		catch (Exception $e) {
-			$tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
-		}
-		echo json_encode((object) $tab);
+		echo json_encode((object) $result);
 		exit;
 	}
 
-	public function getpalettecolors()
-	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		try {
-			$menu   = $this->app->getMenu();
-			$active = $menu->getActive();
-			if (empty($active)) {
-				$menuid = 1079;
-			}
-			else {
-				$menuid = $active->id;
-			}
-
-			$query->select('m.params')
-				->from($db->quoteName('#__modules', 'm'))
-				->leftJoin($db->quoteName('#__modules_menu', 'mm') . ' ON ' . $db->quoteName('mm.moduleid') . ' = ' . $db->quoteName('m.id'))
-				->where($db->quoteName('m.module') . ' LIKE ' . $db->quote('mod_emundus_dashboard_vue'))
-				->andWhere($db->quoteName('mm.menuid') . ' = ' . $menuid);
-
-			$db->setQuery($query);
-			$modules = $db->loadColumn();
-
-			foreach ($modules as $module) {
-				$params = json_decode($module, true);
-				if (in_array(JFactory::getSession()->get('emundusUser')->profile, $params['profile'])) {
-					$colors = $params['colors'];
-				}
-			}
-
-			$tab = array('status' => 0, 'msg' => 'success', 'data' => $colors);
-		}
-		catch (Exception $e) {
-			$tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
-		}
-		echo json_encode((object) $tab);
-		exit;
-	}
-
+	/**
+	 * Get widgets to display for logged user for current profile
+	 *
+	 * @since version 1.0.0
+	 */
 	public function getwidgets()
 	{
-		try {
-			$widgets = $this->m_dashboard->getwidgets($this->_user->id);
+		$result = array('status' => false, 'msg' => '', 'data' => null);
 
-			$tab = array('status' => 0, 'msg' => 'success', 'data' => $widgets);
+		if(!$this->_user->guest)
+		{
+			$all_widgets = $this->input->getString('all', false) == 'true';
+			$profile     = $this->app->getSession()->get('emundusUser')->profile;
+
+			$result['data']   = $this->m_dashboard->getwidgets($this->_user->id, $profile, $all_widgets);
+			$result['status'] = true;
 		}
-		catch (Exception $e) {
-			$tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
-		}
-		echo json_encode((object) $tab);
+
+		echo json_encode((object) $result);
 		exit;
 	}
 
+	/**
+	 * Update widgets to display for logged user for current profile
+	 *
+	 * @since version 1.0.0
+	 */
 	public function updatemydashboard()
 	{
-		try {
-			$widget   = $this->input->getInt('widget');
-			$position = $this->input->getInt('position');
+		$result = array('status' => false, 'msg' => '', 'data' => null);
 
-			$result = $this->m_dashboard->updatemydashboard($widget, $position, $this->_user->id);
+		if(!$this->_user->guest)
+		{
+			$widget   = $this->input->getInt('widget',0);
+			$position = $this->input->getInt('position',0);
 
-			$tab = array('status' => 0, 'msg' => 'success', 'data' => $result);
+			if(!empty($widget) && !empty($position))
+			{
+				$result['data']   = $this->m_dashboard->updatemydashboard($widget, $position, $this->_user->id);
+				$result['status'] = true;
+			}
 		}
-		catch (Exception $e) {
-			$tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
-		}
-		echo json_encode((object) $tab);
+
+		echo json_encode((object) $result);
 		exit;
 	}
 
-	public function getfirstcoordinatorconnection()
-	{
-		try {
-			$table = JTable::getInstance('user', 'JTable');
-			$table->load($this->_user->id);
-
-			$params = $this->_user->getParameters();
-			if ($params->get('first_login_date')) {
-				$register_at = $params->get('first_login_date');
-			}
-			else {
-				$register_at = '0000-00-00 00:00:00';
-			}
-
-			$tab = array('msg' => 'success', 'data' => $register_at);
-		}
-		catch (Exception $e) {
-			$tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
-		}
-		echo json_encode((object) $tab);
-		exit;
-	}
-
+	/**
+	 * Get filters for a widget
+	 *
+	 * @since version 1.0.0
+	 */
 	public function getfilters()
 	{
-		try {
-			$widget = $this->input->getInt('widget');
+		$result = array('status' => false, 'filters' => array());
 
-			$tab = array('msg' => 'success', 'filters' => JFactory::getSession()->get('widget_filters_' . $widget));
+		if(!$this->_user->guest)
+		{
+			$widget = $this->input->getInt('widget',0);
+
+			if(!empty($widget))
+			{
+				$result['filters'] = json_encode($this->app->getSession()->get('widget_filters_' . $widget, []));
+				$result['status']  = true;
+			}
 		}
-		catch (Exception $e) {
-			$tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
-		}
-		echo json_encode((object) $tab);
+
+		echo json_encode((object) $result);
 		exit;
 	}
 
+	/**
+	 * Render chart
+	 *
+	 * @since version 1.0.0
+	 */
 	public function renderchartbytag()
 	{
-		try {
-			$widget  = $this->input->getInt('widget');
-			$filters = $this->input->getRaw('filters');
+		$result = array('status' => false, 'dataset' => null);
 
-			$session = JFactory::getSession();
-			$session->set('widget_filters_' . $widget, $filters);
+		if(!$this->_user->guest)
+		{
+			$widget  = $this->input->getInt('widget',0);
+			$filters = $this->input->getRaw('filters', '');
 
-			$results = $this->m_dashboard->renderchartbytag($widget);
+			if(!empty($widget))
+			{
+				if (!empty($filters))
+				{
+					$filters = json_decode($filters, true);
+				}
+				else
+				{
+					$filters = array();
+				}
 
-			$tab = array('msg' => 'success', 'dataset' => $results);
+				$session = $this->app->getSession();
+				$session->set('widget_filters_' . $widget, $filters);
+
+				$result['dataset'] = $this->m_dashboard->renderchartbytag($widget);
+				$result['status']  = true;
+			}
 		}
-		catch (Exception $e) {
-			$tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
-		}
-		echo json_encode((object) $tab);
+
+		echo json_encode((object) $result);
 		exit;
 	}
 
+	/**
+	 * Get article to display in widget
+	 *
+	 * @since version 1.0.0
+	 */
 	public function getarticle()
 	{
-		try {
-			$widget  = $this->input->getInt('widget');
-			$article = $this->input->getInt('article');
+		$result = array('status' => false, 'data' => null);
 
-			$results = $this->m_dashboard->getarticle($widget, $article);
+		if(!$this->_user->guest) {
+			$widget  = $this->input->getInt('widget',0);
+			$article = $this->input->getInt('article',0);
 
-			$tab = array('msg' => 'success', 'data' => $results);
+			if(!empty($widget) && !empty($article))
+			{
+				$result['data']   = $this->m_dashboard->getarticle($widget, $article);
+				$result['status'] = true;
+			}
 		}
-		catch (Exception $e) {
-			$tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
-		}
-		echo json_encode((object) $tab);
+
+		echo json_encode((object) $result);
 		exit;
 	}
 
+	/**
+	 * Render widget via PHP Code (cannot be applied for applicant users)
+	 *
+	 * @since version 1.0.0
+	 */
 	public function geteval()
 	{
-		$response = ['status' => 0, 'msg' => JText::_('ACCESS_DENIED')];
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'data' => null];
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
-			try {
-				$widget = $this->input->getInt('widget');
+			$widget = $this->input->getInt('widget',0);
 
-				$results  = $this->m_dashboard->renderchartbytag($widget);
-				$response = array('msg' => 'success', 'data' => $results, 'status' => 1);
-			}
-			catch (Exception $e) {
-				$response['msg'] = $e->getMessage();
+			if(!empty($widget))
+			{
+				$response['data']   = $this->m_dashboard->renderchartbytag($widget);
+				$response['msg']    = '';
+				$response['status'] = true;
 			}
 		}
 

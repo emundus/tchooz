@@ -1,5 +1,7 @@
 <?php
 
+use Joomla\CMS\Uri\Uri;
+
 JHTML::stylesheet('media/com_emundus/css/emundus.css');
 defined('_JEXEC') or die('Restricted access');
 $Itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none', 0);
@@ -19,7 +21,7 @@ $Itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none', 
             <td> <?php echo $this->profile->description; ?> </td>
         </tr>
     </table>
-    <form action="<?= JUri::base(); ?>/index.php?option=com_emundus&task=updateprofile&rowid=<?php echo JFactory::getApplication()->input->get('rowid', $default = null, $hash = 'GET', $type = 'none', $mask = 0); ?>&Itemid=<?php echo $Itemid; ?>"
+    <form action="<?= Uri::base(); ?>index.php?option=com_emundus&task=updateprofile&rowid=<?php echo JFactory::getApplication()->input->get('rowid', $default = null, $hash = 'GET', $type = 'none', $mask = 0); ?>&Itemid=<?php echo $Itemid; ?>"
           method="POST" class="em-form-documents">
         <input type="hidden" name="pid" value="<?php echo $this->profile->id; ?>"/>
         <input type="hidden" name="Itemid" value="<?php echo $Itemid; ?>"/>

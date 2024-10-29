@@ -7,6 +7,7 @@
  */
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 
 if (version_compare(JVERSION, '4.0', '>')) {
 	Factory::getApplication()->getSession()->set('application_layout', 'logs');
@@ -39,124 +40,128 @@ else {
     <input type="hidden" id="fnum_hidden" value="<?php echo $this->fnum ?>">
 
     <div class="row">
-        <div class="panel panel-default widget em-container-comment <?php if ($this->euser->applicant == 1) : ?>tw-bg-transparent<?php else : ?>tw-bg-neutral-100<?php endif; ?>">
+        <div class="panel panel-default widget em-container-logs <?php if ($this->euser->applicant == 1) : ?>tw-bg-transparent<?php else : ?>tw-bg-neutral-100<?php endif; ?>">
 
 			<?php if ($this->euser->applicant == 0) : ?>
-                <div class="panel-heading em-container-comment-heading">
+                <div class="panel-heading em-container-logs-heading !tw-bg-profile-full">
 
                     <h3 class="panel-title">
                         <span class="glyphicon glyphicon-list"></span>
-						<?php echo JText::_('COM_EMUNDUS_ACCESS_LOGS'); ?>
+						<?php echo Text::_('COM_EMUNDUS_ACCESS_LOGS'); ?>
                     </h3>
 
                     <div class="btn-group pull-right">
-                        <button id="em-prev-file" class="btn btn-info btn-xxl"><i class="small arrow left icon"></i>
-                        </button>
-                        <button id="em-next-file" class="btn btn-info btn-xxl"><i class="small arrow right icon"></i>
-                        </button>
+                        <button id="em-prev-file" class="btn btn-info btn-xxl"><span
+                                    class="material-symbols-outlined">arrow_back</span></button>
+                        <button id="em-next-file" class="btn btn-info btn-xxl"><span
+                                    class="material-symbols-outlined">arrow_forward</span></button>
                     </div>
 
                 </div>
 			<?php endif; ?>
 
-            <br class="panel-body em-container-comment-body">
+            <br class="panel-body em-container-logs-body">
 
 	        <?php if ($this->euser->applicant == 0) : ?>
-                <div class="view-type tw-flex tw-items-center tw-justify-end tw-mr-4">
-                    <span style="padding: 4px;border-radius: calc(var(--em-default-br)/2);display: flex;height: 38px;width: 38px;align-items: center;justify-content: center;"
+                <div class="view-type tw-flex tw-items-center tw-justify-end tw-mr-4 ">
+                    <span style="padding: 4px;border-radius: calc(var(--em-default-br)/2);display: flex;height: 38px;width: 38px;align-items: center;justify-content: center; background: var(--neutral-0);"
                           id="table_view_button"
-                          class="material-icons-outlined tw-ml-2 tw-cursor-pointer active em-main-500-color em-border-main-500"
+                          class="material-symbols-outlined tw-ml-2 tw-cursor-pointer active em-main-500-color em-border-main-500"
                     >dehaze</span>
-                    <span style="padding: 4px;border-radius: calc(var(--em-default-br)/2);display: flex;height: 38px;width: 38px;align-items: center;justify-content: center;"
+                    <span style="padding: 4px;border-radius: calc(var(--em-default-br)/2);display: flex;height: 38px;width: 38px;align-items: center;justify-content: center; background: var(--neutral-0);"
                           id="grid_view_button"
-                          class="material-icons-outlined tw-ml-2 tw-cursor-pointer em-neutral-600-color em-border-neutral-600"
+                          class="material-symbols-outlined tw-ml-2 tw-cursor-pointer em-neutral-600-color em-border-neutral-600"
                     >grid_view</span>
                 </div>
             <?php endif; ?>
 
-			<?php if (!empty($this->fileLogs)) { ?>
+			<?php if (!empty($this->fileLogs)) : ?>
 				<?php if ($this->euser->applicant == 0) : ?>
                     <div id="filters-logs" class="em-flex-row">
                         <!-- add CRUD filters (multi-chosen) -->
                         <div id="actions" class="em-w-33 em-mr-16">
                             <label for="crud-logs-label"
-                                   id="crud-logs-hint"><?= JText::_('COM_EMUNDUS_CRUD_FILTER_LABEL'); ?></label>
+                                   id="crud-logs-hint"><?= Text::_('COM_EMUNDUS_CRUD_FILTER_LABEL'); ?></label>
                             <select name="crud-logs-select" id="crud-logs" class="chzn-select em-w-100" multiple
-                                    data-placeholder="<?= JText::_('COM_EMUNDUS_CRUD_FILTER_PLACEHOLDER'); ?>">
-                                <option value="r"><?= JText::_('COM_EMUNDUS_LOG_READ_TYPE'); ?></option>
-                                <option value="c"><?= JText::_('COM_EMUNDUS_LOG_CREATE_TYPE'); ?></option>
-                                <option value="u"><?= JText::_('COM_EMUNDUS_LOG_UPDATE_TYPE'); ?></option>
-                                <option value="d"><?= JText::_('COM_EMUNDUS_LOG_DELETE_TYPE'); ?></option>
+                                    data-placeholder="<?= Text::_('COM_EMUNDUS_CRUD_FILTER_PLACEHOLDER'); ?>">
+                                <option value="r"><?= Text::_('COM_EMUNDUS_LOG_READ_TYPE'); ?></option>
+                                <option value="c"><?= Text::_('COM_EMUNDUS_LOG_CREATE_TYPE'); ?></option>
+                                <option value="u"><?= Text::_('COM_EMUNDUS_LOG_UPDATE_TYPE'); ?></option>
+                                <option value="d"><?= Text::_('COM_EMUNDUS_LOG_DELETE_TYPE'); ?></option>
                             </select>
                         </div>
                         <div id="types" class="em-w-33 em-mr-16">
                             <label for="actions-logs-label"
-                                   id="actions-logs-hint"><?= JText::_('COM_EMUNDUS_TYPE_FILTER_LABEL'); ?></label>
+                                   id="actions-logs-hint"><?= Text::_('COM_EMUNDUS_TYPE_FILTER_LABEL'); ?></label>
                             <select name="type-logs-select" id="type-logs" class="chzn-select em-w-100" multiple
-                                    data-placeholder="<?= JText::_('COM_EMUNDUS_TYPE_FILTER_PLACEHOLDER'); ?>"></select>
+                                    data-placeholder="<?= Text::_('COM_EMUNDUS_TYPE_FILTER_PLACEHOLDER'); ?>"></select>
                         </div>
                         <div id="actors" class="em-w-33 em-mr-16">
                             <label for="actors-logs-label"
-                                   id="actors-logs-hint"><?= JText::_('COM_EMUNDUS_ACTORS_FILTER_LABEL'); ?></label>
+                                   id="actors-logs-hint"><?= Text::_('COM_EMUNDUS_ACTORS_FILTER_LABEL'); ?></label>
                             <select name="actor-logs-select" id="actors-logs" class="chzn-select em-w-100" multiple
-                                    data-placeholder="<?= JText::_('COM_EMUNDUS_ACTOR_FILTER_PLACEHOLDER'); ?>"></select>
+                                    data-placeholder="<?= Text::_('COM_EMUNDUS_ACTOR_FILTER_PLACEHOLDER'); ?>"></select>
                         </div>
                     </div>
 
                     <div id="apply-filters" class="em-flex-row-justify-end">
                         <button id="log-reset-filter-btn"
-                                class="em-w-auto em-secondary-button em-mt-8 em-mb-8 em-ml-8 em-mr-8">
-							<?= JText::_('COM_EMUNDUS_LOGS_RESET_FILTER') ?>
+                                class="em-w-auto tw-btn-cancel em-mt-8 em-mb-8 em-ml-8 em-mr-8">
+							<?= Text::_('COM_EMUNDUS_LOGS_RESET_FILTER') ?>
                         </button>
                         <button id="log-filter-btn"
-                                class="em-w-auto em-primary-button em-mt-8 em-mb-8 em-ml-8 em-mr-16">
-							<?= JText::_('COM_EMUNDUS_LOGS_FILTER') ?>
+                                class="em-w-auto tw-btn-primary em-mt-8 em-mb-8 em-ml-8 em-mr-16">
+							<?= Text::_('COM_EMUNDUS_LOGS_FILTER') ?>
                         </button>
                     </div>
 
                     <div id="export-logs" class="em-flex-row-justify-end">
                         <button id="log-export-btn"
-                                class="em-w-auto em-secondary-button em-mt-8 em-mb-8 em-ml-8 em-mr-16"
+                                class="em-w-auto tw-btn-cancel em-mt-8 em-mb-8 em-ml-8 em-mr-16"
                                 onclick="exportLogs(<?= "'" . $this->fnum . "'" ?>)">
-                            <span class="material-icons-outlined em-mr-8">file_upload</span>
-							<?= JText::_('COM_EMUNDUS_LOGS_EXPORT') ?>
+                            <span class="material-symbols-outlined em-mr-8">file_upload</span>
+							<?= Text::_('COM_EMUNDUS_LOGS_EXPORT') ?>
                         </button>
                     </div>
 				<?php endif; ?>
 
-                <div class="<?php if ($this->euser->applicant == 1) : ?>!tw-pl-0<?php endif; ?> logs_grids tw-flex tw-flex-col tw-gap-3 <?php if ($this->euser->applicant == 0) : ?>tw-pr-1 tw-hidden<?php endif; ?>">
-	                <?php foreach ($this->fileLogs as $log) : ?>
-                        <div class="tw-border-1 tw-border-neutral-300 tw-shadow-sm tw-py-4 tw-px-6 tw-bg-white tw-rounded-lg">
-                            <div class="tw-flex tw-items-center">
-                                <span class="material-icons-outlined"
-                                      style="font-size: 48px"
-                                      alt="<?php echo JText::_('PROFILE_ICON_ALT') ?>">
-                                    account_circle
-                                </span>
-                                <div class="tw-ml-3">
-                                    <span class="tw-text-sm tw-text-neutral-600"><?= $log->date; ?></span>
-                                    <p><?= $log->firstname . ' ' . $log->lastname; ?></p>
+                <div class="<?php if ($this->euser->applicant == 1) : ?>!tw-pl-0<?php endif; ?> logs_grids <?php if ($this->euser->applicant == 0) : ?>tw-pr-1 tw-hidden<?php endif; ?>">
+                    <div id="logs_list_grid" class="tw-flex tw-flex-col tw-gap-3">
+                        <?php foreach ($this->fileLogs as $log) : ?>
+                            <div class="tw-border-1 tw-border-neutral-300 tw-shadow-sm tw-py-4 tw-px-6 tw-bg-white tw-rounded-lg">
+                                <div class="tw-flex tw-items-center">
+                                    <span class="material-symbols-outlined"
+                                          style="font-size: 48px"
+                                          alt="<?php echo Text::_('PROFILE_ICON_ALT') ?>">
+                                        account_circle
+                                    </span>
+                                    <div class="tw-ml-3">
+                                        <span class="tw-text-sm tw-text-neutral-600"><?= $log->date; ?></span>
+                                        <p><?= $log->firstname . ' ' . $log->lastname; ?></p>
+                                    </div>
+                                </div>
+                                <div class="tw-mt-3">
+                                    <p class="tw-font-bold"><?= $log->details['action_category']; ?></p>
+                                    <p><?= $log->details['action_name']; ?></p>
+                                    <p><?= $log->details['action_details']; ?></p>
                                 </div>
                             </div>
-                            <div class="tw-mt-3">
-                                <p class="tw-font-bold"><?= $log->details['action_category']; ?></p>
-                                <p><?= $log->details['action_name']; ?></p>
-                                <p><?= $log->details['action_details']; ?></p>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <div class="log-info <?php if (!empty($this->fileLogs)) : ?>tw-hidden<?php endif; ?>"><?= Text::_('COM_EMUNDUS_LOGS_NO_LOGS'); ?></div>
                 </div>
 
                 <table class="table table-hover logs_table <?php if ($this->euser->applicant == 1) : ?>tw-hidden<?php endif; ?>">
-                    <caption class="hidden"><?= JText::_('COM_EMUNDUS_LOGS_CAPTION'); ?></caption>
+                    <caption class="hidden"><?= Text::_('COM_EMUNDUS_LOGS_CAPTION'); ?></caption>
                     <thead>
                     <tr>
-                        <th id="date"><?= JText::_('DATE'); ?></th>
+                        <th id="date"><?= Text::_('DATE'); ?></th>
                         <th id="ip">IP</th>
-                        <th id="user"><?= JText::_('USER'); ?></th>
-                        <th id="action_category"><?= JText::_('COM_EMUNDUS_LOGS_VIEW_ACTION_CATEGORY'); ?></th>
-                        <th id="action_name"><?= JText::_('COM_EMUNDUS_LOGS_VIEW_ACTION'); ?></th>
-                        <th id="action_details"><?= JText::_('COM_EMUNDUS_LOGS_VIEW_ACTION_DETAILS'); ?></th>
+                        <th id="user"><?= Text::_('USER'); ?></th>
+                        <th id="action_category"><?= Text::_('COM_EMUNDUS_LOGS_VIEW_ACTION_CATEGORY'); ?></th>
+                        <th id="action_name"><?= Text::_('COM_EMUNDUS_LOGS_VIEW_ACTION'); ?></th>
+                        <th id="action_details"><?= Text::_('COM_EMUNDUS_LOGS_VIEW_ACTION_DETAILS'); ?></th>
                     </tr>
                     </thead>
                     <tbody id="logs_list">
@@ -174,14 +179,14 @@ else {
                     </tbody>
                 </table>
 				<?php
-				if (count($this->fileLogs) >= 100) { ?>
+				if (count($this->fileLogs) >= 100) : ?>
                     <div class="log-info show-more">
                         <button type="button" class="btn btn-info btn-xs" id="show-more">Afficher plus</button>
                     </div>
-				<?php } ?>
-			<?php } else { ?>
-                <div class="log-info"><?= JText::_('COM_EMUNDUS_LOGS_NO_LOGS'); ?></div>
-			<?php } ?>
+				<?php endif; ?>
+            <?php else : ?>
+                <div class="log-info"><?= Text::_('COM_EMUNDUS_LOGS_NO_LOGS'); ?></div>
+			<?php endif; ?>
         </div>
     </div>
 </div>
@@ -193,9 +198,7 @@ else {
     $('#type-logs').chosen({width: '100%'});
     $('#actors-logs').chosen({width: '100%'});
 
-    /* get all logs when loading page */
     $(document).ready(function () {
-        /* get all logs type */
         $.ajax({
             method: "post",
             url: "index.php?option=com_emundus&controller=files&task=getalllogactions",
@@ -205,13 +208,13 @@ else {
                     const typeLogs = $('#type-logs');
 
                     results.data.forEach(log => {
-                        typeLogs.append('<option value="' + log.id + '">' + Joomla.JText._(log.label) + '</option>');           /// append data
+                        typeLogs.append('<option value="' + log.id + '">' + Joomla.Text._(log.label) + '</option>');           /// append data
                         typeLogs.trigger("liszt:updated");
                     })
                 } else {
                     $('#filters-logs').remove();
                     $('#log-filter-btn').remove();
-                    $('.em-container-comment-heading').after('<b style="color:red">' + Joomla.JText._("COM_EMUNDUS_NO_ACTION_FOUND") + '</b>');
+                    $('.em-container-logs-heading').after('<b style="color:red">' + Joomla.Text._("COM_EMUNDUS_NO_ACTION_FOUND") + '</b>');
                 }
             }, error: function (jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR.responseText, textStatus, errorThrown);
@@ -220,15 +223,15 @@ else {
 
         /* show hint */
         $('#crud-logs-hint').on('hover', function () {
-            $(this).css('cursor', 'pointer').attr('title', Joomla.JText._("COM_EMUNDUS_CRUD_LOG_FILTER_HINT"));
+            $(this).css('cursor', 'pointer').attr('title', Joomla.Text._("COM_EMUNDUS_CRUD_LOG_FILTER_HINT"));
         });
 
         $('#actions-logs-hint').on('hover', function () {
-            $(this).css('cursor', 'pointer').attr('title', Joomla.JText._("COM_EMUNDUS_TYPES_LOG_FILTER_HINT"));
+            $(this).css('cursor', 'pointer').attr('title', Joomla.Text._("COM_EMUNDUS_TYPES_LOG_FILTER_HINT"));
         });
 
         $('#actors-logs-hint').on('hover', function () {
-            $(this).css('cursor', 'pointer').attr('title', Joomla.JText._("COM_EMUNDUS_ACTOR_LOG_FILTER_HINT"));
+            $(this).css('cursor', 'pointer').attr('title', Joomla.Text._("COM_EMUNDUS_ACTOR_LOG_FILTER_HINT"));
         });
 
         $.ajax({
@@ -248,7 +251,7 @@ else {
                     });
                 } else {
                     $('#actors').remove();
-                    $('#types').after('<br><p style="color:red">' + Joomla.JText._("COM_EMUNDUS_NO_LOG_USERS_FOUND") + '</p></br>');
+                    $('#types').after('<br><p style="color:red">' + Joomla.Text._("COM_EMUNDUS_NO_LOG_USERS_FOUND") + '</p></br>');
                 }
 
             }, error: function (xhr, status, error) {
@@ -281,8 +284,9 @@ else {
 
                     // add loading icon
                     const logList = $('#logs_list');
+                    const logListGrid = $('#logs_list_grid');
                     logList.empty();
-                    logList.before('<div id="loading"><img src="' + loading + '" alt="loading"/></div>');
+                    logListGrid.empty();
 
                     // remove the error-message (if any)
                     if ($('#error-message').length > 0) {
@@ -290,12 +294,13 @@ else {
                     }
 
                     if (results.status) {
-                        $('.logs_table').show();
+                        document.querySelector('.log-info').classList.add('tw-hidden');
+
                         $('#log-export-btn').show();
-                        $('#export-logs').after('<p id="log-count-results" style="font-weight: bold" class="em-main-500-color em-p-8-12 em-float-right">' + results.res.length + Joomla.JText._("COM_EMUNDUS_LOGS_FILTERS_FOUND_RESULTS") + '</p>');
                         $('#loading').remove();
 
                         let tr = '';
+                        let grid = '';
                         if (results.res.length < 100) {
                             $('.show-more').hide();
                         }
@@ -309,14 +314,30 @@ else {
                                 '<td>' + results.details[i].action_details + '</td>' +
                                 '</tr>'
                             logList.append(tr);
+
+                            // Grid
+                            grid = '<div class="tw-border-1 tw-border-neutral-300 tw-shadow-sm tw-py-4 tw-px-6 tw-bg-white tw-rounded-lg"> ' +
+                                '<div class="tw-flex tw-items-center"> ' +
+                                '<span class="material-symbols-outlined" style="font-size: 48px" alt="'+Joomla.Text._('PROFILE_ICON_ALT')+'">account_circle</span>' +
+                                '<div class="tw-ml-3"> ' +
+                                '<span class="tw-text-sm tw-text-neutral-600">'+results.res[i].date+'</span> ' +
+                                '<p>'+ results.res[i].firstname + ' ' + results.res[i].lastname +'</p> ' +
+                                '</div> ' +
+                                '</div> ' +
+                                '<div class="tw-mt-3"> ' +
+                                '<p class="tw-font-bold">'+ results.details[i].action_category +'</p> ' +
+                                '<p>'+ results.details[i].action_name +'</p> ' +
+                                '<p>'+ results.details[i].action_details +'</p> ' +
+                                '</div> ' +
+                                '</div>';
+                            logListGrid.append(grid);
                         }
+
                     } else {
-                        $('#export-logs').after('<p id="log-count-results" style="font-weight: bold;" class="em-red-500-color em-p-8-12">' + Joomla.JText._("COM_EMUNDUS_NO_LOGS_FILTERS_FOUND_RESULTS") + '</p>');
+                        document.querySelector('.log-info').classList.remove('tw-hidden');
                         $('.show-more').hide();
-                        $('#loading').remove();
-                        logList.append('<div id="error-message">' + Joomla.JText._("COM_EMUNDUS_NO_LOGS_FILTER_FOUND") + '</div>');
+                        logList.append('<div id="error-message">' + Joomla.Text._("COM_EMUNDUS_NO_LOGS_FILTER_FOUND") + '</div>');
                         $('#log-export-btn').hide();
-                        $('.logs_table').hide();
                     }
                 }, error: function (xhr, status, error) {
                     console.log(xhr, status, error);
@@ -385,14 +406,14 @@ else {
                         file_link.id = 'file-link';
                         file_link.href = response;
                         file_link.download = fnum + '_logs.csv';
-                        file_link.innerText = Joomla.JText._('COM_EMUNDUS_LOGS_DOWNLOAD');
+                        file_link.innerText = Joomla.Text._('COM_EMUNDUS_LOGS_DOWNLOAD');
                         file_link.click();
                     } else {
                         $('#log-export-btn').hide();
                         Swal.fire({
-                            title: Joomla.JText._('COM_EMUNDUS_LOGS_DOWNLOAD_ERROR'),
+                            title: Joomla.Text._('COM_EMUNDUS_LOGS_DOWNLOAD_ERROR'),
                             type: 'error',
-                            confirmButtonText: Joomla.JText._('OK')
+                            confirmButtonText: Joomla.Text._('OK')
                         });
                     }
                 } else {
@@ -466,7 +487,7 @@ else {
 <style>
     .search-field input {
         font-size: small !important;
-        font-style: italic;
+        height: 20px !important;
     }
 
     #filters-logs, #export-logs {
@@ -476,4 +497,8 @@ else {
     #apply-filters {
         padding-bottom: 0;
     }
+
+    .chzn-container.chzn-container-multi {
+        margin-top: 6px;
+     }
 </style>

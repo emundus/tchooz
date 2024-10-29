@@ -201,7 +201,7 @@ class FabrikFEModelConnection extends FabModel
 		{
 			if ($this->isJdb())
 			{
-				$db = FabrikWorker::getDbo();
+				$db = FabrikWorker::getDbo(false, $cn->id);
 			}
 			else
 			{

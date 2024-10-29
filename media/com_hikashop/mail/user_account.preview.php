@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -18,7 +18,7 @@ class user_accountPreviewMaker {
 
 		$class = hikashop_get('class.user');
 		$user = $class->get($data);
-		$user->activation_url = $user->partner_url = hikashop_currentURL();
+		$user->activation_url = $user->partner_url = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=activate&activation='.sha1('activation').'&infos='.sha1('infos');
 		$user->active = true;
 		$user->password = '*************';
 		$user->user_data = $user;
@@ -62,13 +62,18 @@ class user_accountPreviewMaker {
 	</dd>
 </dl>
 <script type="text/javascript">
-window.Oby.ready(function() {
+function setCB() {
 	var w = window;
-	if(!w.oNameboxes['data'])
+	if(!w.oNameboxes['data']) {
+		setTimeout(setCB, 300);
 		return;
+	}
 	w.oNameboxes['data'].register('set', function(e) {
 		hikashop.submitform('preview','adminForm');
 	});
+}
+window.Oby.ready(function() {
+	setCB();
 });
 </script>
 <?php

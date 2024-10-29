@@ -23,9 +23,16 @@ class ReleaseInstaller
 	 */
 	protected $db;
 
+	/**
+	 * @var \Joomla\CMS\Application\CMSApplication|\Joomla\CMS\Application\CMSApplicationInterface|null
+	 * @since version 2.0.0
+	 */
+	protected $app;
+
 
 	public function __construct()
 	{
 		$this->db = Factory::getContainer()->get('DatabaseDriver');
+		$this->app = Factory::getApplication();
 	}
 }

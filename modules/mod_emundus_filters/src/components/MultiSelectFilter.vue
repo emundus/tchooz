@@ -5,14 +5,14 @@
       <p class="recap-label" :title="translate(filter.label)">{{ translate(filter.label) }}</p>
       <div class="em-flex-row">
         <span @mouseenter="resetHover = true" @mouseleave="resetHover = false"
-              class="material-icons-outlined em-pointer reset-filter-btn" :class="{'em-blue-400-color': resetHover}"
+              class="material-symbols-outlined em-pointer reset-filter-btn" :class="{'em-blue-400-color': resetHover}"
               @click="resetFilter" :alt="translate('MOD_EMUNDUS_FILTERS_RESET')">refresh</span>
-        <span v-if="!filter.default" class="material-icons-outlined em-red-500-color em-pointer remove-filter-btn"
+        <span v-if="!filter.default" class="material-symbols-outlined em-red-600-color em-pointer remove-filter-btn"
               @click="$.emit('remove-filter')">close</span>
       </div>
     </div>
     <div
-        class="multi-select-filter-card em-border-radius-8 em-border-neutral-400 em-box-shadow em-white-bg em-p-8 em-mt-4">
+        class="multi-select-filter-card em-border-radius-8 em-border-neutral-400 tw-shadow em-white-bg em-p-8 em-mt-4">
       <section class="recap" :class="{'hidden': opened}">
         <div v-if="filter.value && filter.value.length > 0 && !filter.value.includes('all')"
              class="em-flex-column-start">
@@ -47,7 +47,7 @@
         </div>
         <hr/>
         <div class="andor-selection em-flex-row em-flex-gap-8">
-          <div v-for="andor in andorOperators" :key="filter.uid + '-' + andor.value" class="em-p-8 em-border-radius-8"
+          <div v-for="andor in displayedAndorOperators" :key="filter.uid + '-' + andor.value" class="em-p-8 em-border-radius-8"
                :class="{'label-default': andor.value !== filter.andorOperator, 'label-darkblue': andor.value === filter.andorOperator}">
             <input class="hidden label"
                    type="radio"
@@ -89,7 +89,7 @@
         </div>
       </section>
       <span
-          class="material-icons-outlined em-pointer toggle-open-close">{{ opened ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</span>
+          class="material-symbols-outlined em-pointer toggle-open-close">{{ opened ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</span>
     </div>
   </div>
 </template>
@@ -119,23 +119,33 @@ export default {
         {value: 'NOT IN', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS_NOT')}
       ],
       andorOperators: [
-        {value: 'OR', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_OR')}
+        {value: 'OR', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_OR'), display: true},
+        {value: 'AND', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_AND'), display: false}
       ],
       search: '',
       resetHover: false,
       originalFilterValue: null,
       originalFilterOperator: null,
+      originalFilterAndorOperator: null
     }
   },
   beforeMount() {
     if (this.filter.value === null || this.filter.value === undefined) {
       this.filter.value = [];
     }
+
+    if (this.filter.andorOperators) {
+      this.andorOperators = this.andorOperators.map((andor) => {
+        andor.display = this.filter.andorOperators.includes(andor.value);
+        return andor;
+      });
+    }
   },
   mounted() {
-    this.filter.operator = this.filter.operator === '=' ? 'IN' : this.filter.operator;
+    this.filter.operator = this.filter.operator === '=' || this.filter.operator === null || typeof this.filter.operator === 'undefined' ? 'IN' : this.filter.operator;
     this.originalFilterValue = this.filter.value;
     this.originalFilterOperator = this.filter.operator;
+    this.originalFilterAndorOperator = this.filter.andorOperator;
   },
   beforeUnmount() {
     document.removeEventListener('click', this.handleClickOutside);
@@ -220,10 +230,12 @@ export default {
       this.onSearchChange();
       const valueDifferences = this.filter.value && Array.isArray(this.filter.value) ? this.filter.value.filter((x) => !this.originalFilterValue.includes(x)).concat(this.originalFilterValue.filter(x => !this.filter.value.includes(x))) : [];
       const operatorDifferences = this.filter.operator !== this.originalFilterOperator;
+      const andorOperatorDifferences = this.filter.andorOperator !== this.originalFilterAndorOperator;
 
-      if (valueDifferences.length > 0 || operatorDifferences) {
+      if (valueDifferences.length > 0 || operatorDifferences || andorOperatorDifferences) {
         this.originalFilterValue = this.filter.value;
         this.originalFilterOperator = this.filter.operator;
+        this.originalFilterAndorOperator = this.filter.andorOperator;
         this.$emit('filter-changed');
       }
     },
@@ -244,6 +256,11 @@ export default {
         return operator.value === this.filter.operator
       });
       return selectedOperator ? selectedOperator.label : '';
+    },
+    displayedAndorOperators() {
+      return this.andorOperators.filter((andor) => {
+        return andor.display;
+      });
     },
     selectedAndorOperatorLabel() {
       const selectedAndorOperator = this.andorOperators.find((andor) => {

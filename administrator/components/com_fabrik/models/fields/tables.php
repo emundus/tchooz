@@ -123,6 +123,7 @@ class JFormFieldTables extends ListField
 			$this->value = '';
 		}
 
+		$this->layoutData = [];
 		$html = parent::getInput();
 		$html .= "<img style='margin-left:10px;display:none' id='" . $this->id . "_loader' src='components/com_fabrik/images/ajax-loader.gif' alt='"
 			. Text::_('LOADING') . "' />";

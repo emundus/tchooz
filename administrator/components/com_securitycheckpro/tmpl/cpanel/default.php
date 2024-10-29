@@ -26,6 +26,10 @@ $logs_status = Text::_('COM_SECURITYCHECKPRO_LOGS_STATUS');
 $autoupdate_status = Text::_('COM_SECURITYCHECKPRO_AUTOUPDATE_STATUS');
 $translator_url = Text::_('COM_SECURITYCHECKPRO_TRANSLATOR_URL');
 
+// Load the admin languague
+$lang = Factory::getLanguage();
+$lang->load('com_admin', JPATH_ADMINISTRATOR);
+
 // Url to be used on statistics
 $logUrl = 'index.php?option=com_securitycheckpro&controller=securitycheckpro&view=logs&datefrom=%s&dateto=%s';
 
@@ -193,19 +197,7 @@ while ( ($valor_a_mostrar == 0) && ($contador < 3) ){
                 <?php	}  ?>
                 </div>
                 <div class="margin-top-10">
-                <?php
-                if ($enabled) { 
-                    ?>
-                    <button id="disable_cron_button" class="btn btn-danger" href="#">
-                        <i class="fa fa-power-off"> </i>
-                    <?php echo Text::_('COM_SECURITYCHECKPRO_DISABLE'); ?>
-                    </button>
-                <?php     }else{ ?>
-                    <button id="enable_cron_button" class="btn btn-success" href="#">
-                        <i class="icon-ok icon-white"> </i>
-                    <?php echo Text::_('COM_SECURITYCHECKPRO_ENABLE'); ?>
-                    </button>
-                <?php	}  ?>
+					<a href="?option=com_scheduler&view=tasks" class="btn btn-info" data-bs-toggle="tooltip" title="<?php echo $lang->_('COM_ADMIN_HELP_SCHEDULED_TASKS'); ?>"><i class="fa fa-gear"> </i></a>                
                 </div>              
             </div>            
           </div>

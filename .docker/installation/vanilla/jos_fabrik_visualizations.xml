@@ -67,8 +67,8 @@
     <field name="created_by_alias"></field>
     <field name="modified">0000-00-00 00:00:00</field>
     <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time">0000-00-00 00:00:00</field>
+    <field name="checked_out">1</field>
+    <field name="checked_out_time">2024-07-25 12:30:14</field>
     <field name="publish_up">0000-00-00 00:00:00</field>
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="published">1</field>

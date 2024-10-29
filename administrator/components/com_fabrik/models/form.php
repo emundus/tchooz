@@ -165,11 +165,9 @@ class FabrikAdminModelForm extends FabModelAdmin {
 		$isNew = false;
 
 		if ($row->get('id') == 0) {
-			if (FabrikWorker::isNullDate($row->get('created'))) {
-				$row->set('created', $date->toSql());
-				$row->set('created_by', $this->user->get('id'));
-				$row->set('created_by_alias', $this->user->get('username'));
-			}
+			$row->set('created', $date->toSql());
+			$row->set('created_by', $this->user->get('id'));
+			$row->set('created_by_alias', $this->user->get('username'));
 			$isNew = true;
 		}
 
@@ -194,6 +192,11 @@ class FabrikAdminModelForm extends FabModelAdmin {
 		$this->setState('form.id', $row->get('id'));
 		$this->setState('form.new', $isNew);
 		$data['db_table_name'] = $tmpName;
+		$data['created'] = $row->get('created');
+		$data['created_by'] = $row->get('created_by');
+		$data['created_by_alias'] = $row->get('created_by_alias');
+		$data['published'] = $row->get('published');
+		$data['publish_up'] = $row->get('publish_up');
 
 		$this->saveFormGroups($data);
 
@@ -244,7 +247,7 @@ class FabrikAdminModelForm extends FabModelAdmin {
 		$fields = $this->getInsertFields($isNew, $data, $listModel, $dbTableName);
 
 		$currentGroups = (array) FArrayHelper::getValue($data, 'current_groups');
-		$this->_makeFormGroups($currentGroups);
+		if (!empty($currentGroups)) $this->_makeFormGroups($currentGroups);
 
 		if ($recordInDatabase != '1') {
 			return;
@@ -268,9 +271,11 @@ class FabrikAdminModelForm extends FabModelAdmin {
 			$item->set('db_primary_key', $dbTableName . '.id');
 			$item->set('auto_inc', 1);
 			$item->set('published', $data['published']);
+			$item->set('publish_up', $data['publish_up']);
 			$item->set('created', $data['created']);
 			$item->set('created_by', $data['created_by']);
 			$item->set('access', 1);
+			$item->set('introduction', '');
 			$item->set('params', $listModel->getDefaultParams());
 			$item->store();
 

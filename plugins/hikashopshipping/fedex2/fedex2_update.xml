@@ -1,0 +1,19 @@
+<updates>
+	<update>
+		<name>Hikashopshipping - Fedex</name>
+		<description>HikaShop shipping</description>
+		<element>Fedex</element>
+		<type>plugin</type>
+		<version>1.0.0</version>
+		<folder>hikashopshipping</folder>
+		<client>site</client>
+		<infourl title="Fedex Shipping">https://www.hikashop.com/marketplace/product/282-fedex-shipping-plugin.html</infourl>
+		<downloads>
+			<downloadurl type="full" format="zip">https://www.hikashop.com/support/documentation/478-download-your-plugin.html</downloadurl>
+		</downloads>
+		<tags>
+			<tag>stable</tag>
+		</tags>
+		<targetplatform name="joomla" version=".*"/>
+	</update>
+</updates>

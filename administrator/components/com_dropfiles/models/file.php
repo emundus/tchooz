@@ -168,6 +168,9 @@ class DropfilesModelFile extends JModelAdmin
             // Check the session for previously entered form data
 
             $data = $this->getItem();
+            if (!$data) {
+                $data = array();
+            }
         }
 
         return $data;
@@ -193,6 +196,93 @@ class DropfilesModelFile extends JModelAdmin
             return false;
         }
         return $dbo->loadObject();
+    }
+
+    /**
+     * Method to save file version
+     *
+     * @param integer $id      File id
+     * @param string  $version File version
+     *
+     * @return boolean
+     * @since  version
+     */
+    public function saveFileVersion($id, $version = '')
+    {
+        if (empty($id) || intval($version) <= 0) {
+            return false;
+        }
+
+        $dbo   = $this->getDbo();
+        $query = 'UPDATE #__dropfiles_files SET version=' . $dbo->quote($version) . ' WHERE id=' . (int)$id;
+
+        if (!$dbo->setQuery($query)) {
+            return false;
+        }
+
+        if (!$dbo->execute()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Method to save file multiple category of a file
+     *
+     * @param integer $id                   File id
+     * @param string  $fileMultipleCategory File multiple category
+     *
+     * @return boolean
+     * @since  version
+     */
+    public function saveFileMultipleCategory($id, $fileMultipleCategory = '')
+    {
+        if (empty($id) || empty($fileMultipleCategory)) {
+            return false;
+        }
+
+        $dbo   = $this->getDbo();
+        $query = 'UPDATE #__dropfiles_files SET file_multi_category=' . $dbo->quote($fileMultipleCategory) . ' WHERE id=' . (int)$id;
+
+        if (!$dbo->setQuery($query)) {
+            return false;
+        }
+
+        if (!$dbo->execute()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Method to save file custom icon of a file
+     *
+     * @param integer $id             File id
+     * @param string  $fileCustomIcon File custom icon
+     *
+     * @return boolean
+     * @since  version
+     */
+    public function saveFileCustomIcon($id, $fileCustomIcon = '')
+    {
+        if (empty($id) || empty($fileCustomIcon)) {
+            return false;
+        }
+
+        $dbo   = $this->getDbo();
+        $query = 'UPDATE #__dropfiles_files SET custom_icon=' . $dbo->quote($fileCustomIcon) . ' WHERE id=' . (int)$id;
+
+        if (!$dbo->setQuery($query)) {
+            return false;
+        }
+
+        if (!$dbo->execute()) {
+            return false;
+        }
+
+        return true;
     }
 
     /**

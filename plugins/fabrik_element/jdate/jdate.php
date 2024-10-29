@@ -323,8 +323,7 @@ class PlgFabrik_ElementJdate extends PlgFabrik_ElementList
 			$format .= ' ' . $timeFormat;
 		}
 
-		// J!4.4.0 issue breaks the time picker if 24h enabled; showing week number will make it work again
-		$calOpts['weekNumbers'] = true; //$params->get('jdate_show_week_numbers', '0') === '1';
+		$calOpts['weekNumbers'] = $params->get('jdate_show_week_numbers', '0') === '1';
 
 		$str[] = '<div class="fabrikSubElementContainer" id="' . $id . '">';
 		$str[] = $this->calendar($this->offsetDate, $name, $id . '_cal', $format, $calOpts, $repeatCounter);
@@ -1081,7 +1080,7 @@ class PlgFabrik_ElementJdate extends PlgFabrik_ElementList
 		}
 
 		// in some corner cases, date will be db name quoted, like in CSV export after an advanced search!
-		$value = $value ?? trim($value, "'");
+		$value = trim($value??"", "'");
         $value = $value == "" ? null : $value;
 
 		//if ($input->get('task') == 'form.process' || ($app->isClient('administrator') && $input->get('task') == 'process'))
@@ -1716,7 +1715,7 @@ class PlgFabrik_ElementJdate extends PlgFabrik_ElementList
 		$displayData          = new stdClass;
 		$displayData->rows    = $ddData;
 		$displayData->name    = $v;
-		$displayData->class   = "form-select " .$this->filterClass();
+		$displayData->class   = "form-select-sm " .$this->filterClass();
 		$displayData->size    = $size;
 		$displayData->default = $default;
 		$displayData->htmlId  = $this->getHTMLId();
