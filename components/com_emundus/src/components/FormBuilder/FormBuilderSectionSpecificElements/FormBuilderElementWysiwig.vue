@@ -4,25 +4,28 @@
     <div v-else>
       <div v-show="!editable" v-html="element.element" :id="element.id" @click="editable = true"></div>
       <transition :name="'slide-down'" type="transition">
-        <editor
-            v-if="editable"
-            :height="'30em'"
-            :text="element.default"
-            :lang="'fr'"
-            :enable_variables="false"
+        <tip-tap-editor
             :id="'editor_' + element.id"
-            :key="dynamicComponent"
             v-model="element.default"
-            @focusout="updateDisplayText"
-        ></editor>
+            :editor-content-height="'30em'"
+            :class="'tw-mt-1'"
+            :locale="'fr'"
+            :preset="'custom'"
+            :plugins="editorPlugins"
+            :toolbar-classes="['tw-bg-white']"
+            :editor-content-classes="['tw-bg-white']"
+        />
       </transition>
     </div>
   </div>
 </template>
 
 <script>
-import formBuilderService from '../../../services/formbuilder';
-import Editor from "../../editor";
+import formBuilderService from '@/services/formbuilder.js';
+
+import TipTapEditor from 'tip-tap-editor'
+import 'tip-tap-editor/style.css'
+import '../../../../../../templates/g5_helium/css/editor.css'
 
 export default {
   props: {
@@ -36,7 +39,7 @@ export default {
     }
   },
   components: {
-    Editor
+    TipTapEditor
   },
   data() {
     return {
@@ -44,6 +47,8 @@ export default {
 
       editable: false,
       dynamicComponent: 0,
+
+      editorPlugins: ['history', 'link', 'bold', 'italic', 'underline','left','center','right','h1', 'h2', 'ul'],
     };
   },
   created() {

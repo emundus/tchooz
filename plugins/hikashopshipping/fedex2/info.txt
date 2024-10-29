@@ -1,0 +1,14 @@
+// FexEx :
+Wabsite : https://www.fedex.com/secure-login/fr-fr/#/login-credentials 
+account : philippe@hikashop.com
+mot de passe : &5vp*+B8*M^cmgC
+
+Service type doc URL : https://developer.fedex.com/api/fr-fr/guides/api-reference.html#servicetypes
+
+Account Number (fr) : 200336626
+
+https://apis-sandbox.fedex.com
+TEST :
+Account Number: 654277508 
+Secret Key : 3822633240944a1792d85657cdf73876
+client Id : l760043d5a7b7048f6b4df63ffde592b21

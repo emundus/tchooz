@@ -40,10 +40,10 @@ $input = $app->input;
 
 $view = $app->input->get('view');
 $layout = $app->input->get('layout', '');
-if (in_array($view, ["element", "list", "form", "group"]) && !in_array($layout, ["confirmupdate"])) {
-	$file = 'blockuserinput.js';
-	$loc = FabrikHelperHTML::isDebug() ? Juri::root() . 'media/com_fabrik/js/' : Juri::root() .'media/com_fabrik/js/dist/';
-	Factory::getDocument()->addScript($loc.$file);
+if (in_array($view, ["element", "list", "form", "group", "visualization"]) && !in_array($layout, ["confirmupdate"])) {
+	$wa = Factory::getApplication()->getDocument()->getWebAssetManager();
+	$wa->registerAndUseScript('blockuserinput',  'media/com_fabrik/js/blockuserinput.js');
+	$wa->useScript('showon');
 	Text::script("COM_FABRIK_STILL_LOADING");
 }
 

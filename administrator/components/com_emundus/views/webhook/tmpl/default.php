@@ -21,7 +21,7 @@ defined('_JEXEC') or die('RESTRICTED');
             </td>
         </tr>
         <tr>
-            <td><button class="em-primary-button em-w-auto" type="button" onclick="generate()">Générer</button></td>
+            <td><button class="tw-btn-primary em-w-auto" type="button" onclick="generate()">Générer</button></td>
         </tr>
 </table>
 </body></html>

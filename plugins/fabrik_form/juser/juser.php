@@ -597,7 +597,7 @@ class PlgFabrik_FormJUser extends plgFabrik_Form
 				$data['sitename'] = $this->config->get('sitename');
 				$data['siteurl']  = Uri::base();
 
-				$uri  = JURI::getInstance();
+				$uri  = Uri::getInstance();
 				$base = $uri->toString(array('scheme', 'user', 'pass', 'host', 'port'));
 				$useHtml = false;
 

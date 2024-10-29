@@ -374,7 +374,12 @@ class FileManagerModel extends BaseModel
         $mainframe = Factory::getApplication();
  
         // Obtenemos las variables de paginación de la petición
-        $limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
+		// This is needed to avoid errors getting the file from cli
+		if ( !($mainframe instanceof \Joomla\CMS\Application\ConsoleApplication) ) {
+			$limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
+		} else {
+			$limit = 0;
+		}
         $jinput = Factory::getApplication()->input;
         $limitstart = $jinput->get('limitstart', 0, 'int');
 
@@ -788,7 +793,10 @@ class FileManagerModel extends BaseModel
         $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
 		
 		$mainframe = Factory::getApplication();
-		$mainframe->setUserState("time_taken_set", "");
+		// This is needed to avoid errors getting the file from cli
+		if ( !($mainframe instanceof \Joomla\CMS\Application\ConsoleApplication) ) {
+			$mainframe->setUserState("time_taken_set", "");
+		}
         
         if(empty($root)) { $root = JPATH_ROOT; }
 
@@ -824,9 +832,11 @@ class FileManagerModel extends BaseModel
                 }                 
             }
 			
-			$mainframe = Factory::getApplication();
-			$mainframe->setUserState("executable_files", 0);
-			$mainframe->setUserState("non_executable_files", 0);			
+			// This is needed to avoid errors getting the file from cli
+			if ( !($mainframe instanceof \Joomla\CMS\Application\ConsoleApplication) ) {
+				$mainframe->setUserState("executable_files", 0);
+				$mainframe->setUserState("non_executable_files", 0);
+			}
         
             /* Comprobamos si tenemos que escanear todos los archivos o sólo los ejecutables */
             if ($scan_executables_only) {
@@ -1509,7 +1519,11 @@ class FileManagerModel extends BaseModel
             $filename = $this->generateKey();
             try
             {
-				$this->Stack = mb_convert_encoding($this->Stack,'UTF-8', 'UTF-8');
+				// Convert the array to utf-8 to avoid errors with the json_encode function
+				if (version_compare(PHP_VERSION, '7.2.0', 'gt')) {    
+					$this->Stack = mb_convert_encoding($this->Stack,'UTF-8', 'UTF-8');	
+				}
+				
                 $content_permissions = json_encode(array('files_folders'    => $this->Stack));
 				if (json_last_error() != JSON_ERROR_NONE) {
 					$this->set_campo_filemanager('estado', 'DATABASE_ERROR');
@@ -1520,10 +1534,11 @@ class FileManagerModel extends BaseModel
                 $result_permissions = File::write($this->folder_path.DIRECTORY_SEPARATOR.$filename, $content_permissions);        
                 // Nos aseguramos que los permisos de la carpeta 'scans' son los correctos
                 chmod($this->folder_path, 0755);            
-            } catch (Exception $e)
+            } catch (\Throwable $e)
             {    
                 $this->set_campo_filemanager('estado', 'DATABASE_ERROR');
                 $result_permissions = false;
+				File::write($this->folder_path.DIRECTORY_SEPARATOR.'error_permissions_scan.php', $e->getMessage());
             }
         
             // Vamos a limpiar las variables que no necesitamos. No uso unset() porque así no necesitamos esperar al garbage collector
@@ -1567,7 +1582,7 @@ class FileManagerModel extends BaseModel
             // Borramos el fichero del escaneo anterior...
 			if ((!empty($this->fileintegrity_name)) && (file_exists($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name))) {           
 				try{		
-					  $delete_integrity_file = File::delete($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name);
+					$delete_integrity_file = File::delete($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name);
 				} catch (Exception $e)
 				{
 				}     
@@ -1579,21 +1594,26 @@ class FileManagerModel extends BaseModel
         
             try
             {
-				$this->Stack_Integrity = mb_convert_encoding($this->Stack_Integrity,'UTF-8', 'UTF-8');
-                $content_integrity = json_encode(array('files_folders'    => $this->Stack_Integrity));
+				// Convert the array to utf-8 to avoid errors with the json_encode function
+				if (version_compare(PHP_VERSION, '7.2.0', 'gt')) {    
+					$this->Stack_Integrity = mb_convert_encoding($this->Stack_Integrity,'UTF-8', 'UTF-8');	
+				}
+				
+				$content_integrity = json_encode(array('files_folders'    => $this->Stack_Integrity));
 				if (json_last_error() != JSON_ERROR_NONE) {
 					 $this->set_campo_filemanager('estado_integrity', 'DATABASE_ERROR');
 					$result_integrity = false;
 					$result_permissions = File::write($this->folder_path.DIRECTORY_SEPARATOR.'error_integrity_scan.php', json_last_error_msg());
 				}                           
                 $content_integrity = "#<?php die('Forbidden.'); ?>" . PHP_EOL . $content_integrity;
-                $result_integrity = File::write($this->folder_path.DIRECTORY_SEPARATOR.$filename, $content_integrity);    
+                $result_integrity = File::write($this->folder_path.DIRECTORY_SEPARATOR.$filename, $content_integrity); 			
                 // Nos aseguramos que los permisos de la carpeta 'scans' son los correctos
                 chmod($this->folder_path, 0755);
-            } catch (Exception $e)
+            } catch (\Throwable $e)
             {    
                 $this->set_campo_filemanager('estado_integrity', 'DATABASE_ERROR');
                 $result_integrity = false;
+				File::write($this->folder_path.DIRECTORY_SEPARATOR.'error_integrity_scan.php', $e->getMessage());		 
             }
             // Vamos a limpiar las variables que no necesitamos. No uso unset() porque así no necesitamos esperar al garbage collector
             $content_integrity = null;
@@ -1651,22 +1671,27 @@ class FileManagerModel extends BaseModel
         
             try 
             {
-				$this->Stack = mb_convert_encoding($this->Stack,'UTF-8', 'UTF-8');
-                 $content_malwarescan = json_encode(array('files_folders'    => $this->Stack));
+				// Convert the array to utf-8 to avoid errors with the json_encode function
+				if (version_compare(PHP_VERSION, '7.2.0', 'gt')) {    
+					$this->Stack = mb_convert_encoding($this->Stack,'UTF-8', 'UTF-8');	
+				}
+				
+				$content_malwarescan = json_encode(array('files_folders'    => $this->Stack));
 				if (json_last_error() != JSON_ERROR_NONE) {
 					$this->set_campo_filemanager('estado_malwarescan', 'DATABASE_ERROR');
 					$result_malwarescan_resume = false;
-					$result_permissions = File::write($this->folder_path.DIRECTORY_SEPARATOR.'error_malware_scan.php', json_last_error_msg());
+					File::write($this->folder_path.DIRECTORY_SEPARATOR.'error_malware_scan.php', json_last_error_msg());
 				}                 
                 $content_malwarescan = "#<?php die('Forbidden.'); ?>" . PHP_EOL . $content_malwarescan;
                 $result_malwarescan = File::write($this->folder_path.DIRECTORY_SEPARATOR.$filename, $content_malwarescan);
                 // Nos aseguramos que los permisos de la carpeta 'scans' son los correctos
                 chmod($this->folder_path, 0755);
-            } catch (Exception $e)
+            } catch (Throwable $e)
             {    
                 $this->set_campo_filemanager('estado_malwarescan', 'DATABASE_ERROR');
                 $result_malwarescan_resume = false;
-            }
+				File::write($this->folder_path.DIRECTORY_SEPARATOR.'error_malware_scan.php', $e->getMessage());
+			}
         
             // Vamos a limpiar las variables que no necesitamos. No uso unset() porque así no necesitamos esperar al garbage collector
             $content_malwarescan = null;
@@ -2060,8 +2085,11 @@ class FileManagerModel extends BaseModel
         $this->write_log("------- Begin scan: " . strtoupper($opcion) . " --------");
 		
 		$mainframe = Factory::getApplication();
-		$now = $this->global_model->get_Joomla_timestamp();        
-        $mainframe->setUserState("scan_start_time", $now );
+		$now = $this->global_model->get_Joomla_timestamp();  
+		// This is needed to avoid errors getting the file from cli
+		if ( !($mainframe instanceof \Joomla\CMS\Application\ConsoleApplication) ) {		
+			$mainframe->setUserState("scan_start_time", $now );
+		}
     
         $this->getDirectories($file_check_path, $include_exceptions, $opcion);
         $this->getFiles($file_check_path, $include_exceptions, $opcion);
@@ -2321,12 +2349,19 @@ class FileManagerModel extends BaseModel
     /* Función que chequea si estamos en IIS */
     function on_iis()
     {
-        $sSoftware = strtolower($_SERVER["SERVER_SOFTWARE"]);
-        if (strpos($sSoftware, "microsoft-iis") !== false ) {
-            return true;
-        } else {
-            return false;
-        }
+		$mainframe = Factory::getApplication();
+		
+		// This is needed to avoid errors getting the file from cli
+		if ( !($mainframe instanceof \Joomla\CMS\Application\ConsoleApplication) ) {
+			$sSoftware = strtolower($_SERVER["SERVER_SOFTWARE"]);
+			if (strpos($sSoftware, "microsoft-iis") !== false ) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
     }
 
     /* Función que chequea si hay código inyectado al principio de un archivo */
@@ -2582,16 +2617,15 @@ class FileManagerModel extends BaseModel
                                         $resultado[0][3] .= htmlentities(substr($content, $match[1], 200), ENT_QUOTES);
                                     }
                                 } else if (is_array($pattern)) {
-                                                                 // Found a malware pattern; it's almost sure a malware even when it's hide into a valid Joomla file.
-                                
-                                                                 $count++;
-                                                                 $resultado[0][0] = true;
-                                                                 $resultado[0][1] = $lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN');
-                                                                 $resultado[0][2] = Text::sprintf($lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN_INFO'), $pattern[2], $pattern[1], $results_count, mb_convert_encoding($pattern[3], 'UTF-8'));                                
-                                                                 $resultado[0][4] = '0';                                    
-                                                                 // Añadimos el código sospechoso encontrado (previamente sanitizado)
+                                    // Found a malware pattern; it's almost sure a malware even when it's hide into a valid Joomla file.
+                                    $count++;
+                                    $resultado[0][0] = true;
+                                    $resultado[0][1] = $lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN');
+                                    $resultado[0][2] = Text::sprintf($lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN_INFO'), $pattern[2], $pattern[1], $results_count, mb_convert_encoding($pattern[3], 'UTF-8'));                                
+                                    $resultado[0][4] = '0';                                    
+                                    // Añadimos el código sospechoso encontrado (previamente sanitizado)
                                     foreach ($all_results as $match)
-                                                                 {
+                                    {
                                         $resultado[0][3] = $lang->_('COM_SECURITYCHECKPRO_LINE') . $line; 
                                         $resultado[0][3] .= "<br />";
                                         $resultado[0][3] .= htmlentities(substr($content, $match[1], 200), ENT_QUOTES);
@@ -3508,8 +3542,12 @@ class FileManagerModel extends BaseModel
         // ... y almacenamos el nuevo contenido
         try
         {
-			$malwarescan_data = mb_convert_encoding($malwarescan_data,'UTF-8', 'UTF-8');
-            $content_malwarescan = json_encode(array('files_folders'    => $malwarescan_data));
+			// Convert the array to utf-8 to avoid errors with the json_encode function
+			if (version_compare(PHP_VERSION, '7.2.0', 'gt')) {    
+				$malwarescan_data = mb_convert_encoding($malwarescan_data,'UTF-8', 'UTF-8');			
+			}
+			
+			$content_malwarescan = json_encode(array('files_folders'    => $malwarescan_data));
             $content_malwarescan = "#<?php die('Forbidden.'); ?>" . PHP_EOL . $content_malwarescan;
             $result_malwarescan = File::write($this->folder_path.DIRECTORY_SEPARATOR.$this->malwarescan_name, $content_malwarescan);
         } catch (Exception $e)
@@ -3659,7 +3697,7 @@ class FileManagerModel extends BaseModel
         try
         {
             $file_result = File::write($this->folder_path.DIRECTORY_SEPARATOR.$filename, $file_analysis_result);
-        } catch (Exception $e) {
+		} catch (Exception $e) {
                 
         }
     
@@ -3846,8 +3884,12 @@ class FileManagerModel extends BaseModel
     
         try 
         {
-			$data = mb_convert_encoding($data,'UTF-8', 'UTF-8');
-            $malware_content = json_encode(array('files_folders'    => $data));
+			// Convert the array to utf-8 to avoid errors with the json_encode function
+			if (version_compare(PHP_VERSION, '7.2.0', 'gt')) {    
+				$data = mb_convert_encoding($data,'UTF-8', 'UTF-8');	
+			}
+			
+			$malware_content = json_encode(array('files_folders'    => $data));
             $malware_content = "#<?php die('Forbidden.'); ?>" . PHP_EOL . $malware_content;
             $result_malware = File::write($this->folder_path.DIRECTORY_SEPARATOR.$malwarescan_name, $malware_content);            
             
@@ -4017,7 +4059,7 @@ class FileManagerModel extends BaseModel
 		
 			// Open the log file
 			$this->fp = @fopen($this->folder_path.DIRECTORY_SEPARATOR.$filename_log, 'ab');
-			
+						
 			// If we couldn't open the file set the file pointer to null
 			if ($this->fp === false) {            
 				$this->fp = null;

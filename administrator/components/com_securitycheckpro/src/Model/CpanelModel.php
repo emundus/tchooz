@@ -145,7 +145,7 @@ class CpanelModel extends BaseModel
         $logs_pending = $this->LogsPending();
     }
 
-    /* Función que obtiene el id del plugin de: '1' -> Securitycheck Pro , '2' -> Securitycheck Pro Cron */
+    /* Función que obtiene el id del plugin pasado como argumento */
     function get_plugin_id($opcion)
     {
 
@@ -159,7 +159,7 @@ class CpanelModel extends BaseModel
         } else if ($opcion == 2) {
 			$query->select($db->quoteName('extension_id'));
 			$query->from($db->quoteName('#__extensions'));
-			$query->where($db->quoteName('name') . ' = ' . $db->quote('System - Securitycheck Pro Cron')); 
+			$query->where($db->quoteName('name') . ' = ' . $db->quote('plg_task_securitycheckprocron')); 
 			$query->where($db->quoteName('type') . ' = ' . $db->quote('plugin'));            
         } else if ($opcion == 3) {
 			$query->select($db->quoteName('extension_id'));

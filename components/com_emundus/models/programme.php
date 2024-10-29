@@ -16,6 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Plugin\PluginHelper;
@@ -327,82 +328,6 @@ class EmundusModelProgramme extends ListModel
 		}
 	}
 
-
-	/**
-	 * Adds a programme to the user's list of favorites.
-	 *
-	 * @param         $programme_id Int The ID of the programme to be favorited.
-	 * @param   null  $user_id      Int The user ID, if null: the current user ID.
-	 *
-	 * @return bool
-	 * @since version v6
-	 */
-	public function favorite($programme_id, $user_id = null)
-	{
-
-		if (empty($user_id)) {
-			$user_id = JFactory::getUser()->id;
-		}
-
-		if (empty($user_id) || empty($programme_id)) {
-			return false;
-		}
-
-
-		$query = $this->_db->getQuery(true);
-		$query->insert($this->_db->quoteName('#__emundus_favorite_programmes'))
-			->columns($this->_db->quoteName(['user_id', 'programme_id']))
-			->values($user_id . ',' . $programme_id);
-		$this->_db->setQuery($query);
-
-		try {
-			$this->_db->execute();
-
-			return true;
-		}
-		catch (Exception $e) {
-			return false;
-		}
-	}
-
-
-	/**
-	 * Removes a programme from the user's list of favorites.
-	 *
-	 * @param         $programme_id Int The ID of the programme to be unfavorited.
-	 * @param   null  $user_id      Int The user ID, if null: the current user ID.
-	 *
-	 * @return bool
-	 * @since version v6
-	 */
-	public function unfavorite($programme_id, $user_id = null)
-	{
-
-		if (empty($user_id)) {
-			$user_id = JFactory::getUser()->id;
-		}
-
-		if (empty($user_id) || empty($programme_id)) {
-			return false;
-		}
-
-
-		$query = $this->_db->getQuery(true);
-		$query->delete($this->_db->quoteName('#__emundus_favorite_programmes'))
-			->where($this->_db->quoteName('user_id') . ' = ' . $user_id . ' AND ' . $this->_db->quoteName('programme_id') . ' = ' . $programme_id);
-		$this->_db->setQuery($query);
-
-		try {
-			$this->_db->execute();
-
-			return true;
-		}
-		catch (Exception $e) {
-			return false;
-		}
-	}
-
-
 	/**
 	 * Get's the upcoming sessions of the user's favorite programs.
 	 *
@@ -545,9 +470,10 @@ class EmundusModelProgramme extends ListModel
 				$fullRecherche     = $rechercheLbl . ' OR ' . $rechercheNotes . ' OR ' . $rechercheCategory;
 			}
 
-			$query->select(['p.*', 'COUNT(sc.id) AS nb_campaigns'])
+			$query->select(['p.*', 'COUNT(sc.id) AS nb_campaigns', 'GROUP_CONCAT(DISTINCT espl.lang_id) AS language_ids'])
 				->from($this->_db->quoteName('#__emundus_setup_programmes', 'p'))
 				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'sc') . ' ON ' . $this->_db->quoteName('sc.training') . ' LIKE ' . $this->_db->quoteName('p.code'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_programs_languages', 'espl') . ' ON ' . $this->_db->quoteName('espl.program_id') . ' = ' . $this->_db->quoteName('p.id'))
 				->where($filterDate)
 				->where($fullRecherche)
 				->andWhere($this->_db->quoteName('p.code') . ' IN (' . implode(',', $this->_db->quote($programs)) . ')')
@@ -562,6 +488,11 @@ class EmundusModelProgramme extends ListModel
 
 				$programs = $this->_db->loadObjectList();
 
+				foreach ($programs as $key => $program) {
+					if (!empty($program->language_ids)) {
+						$programs[$key]->language_ids = explode(',', $program->language_ids);
+					}
+				}
 				$all_programs['datas'] = $programs;
 			}
 			catch (Exception $e) {
@@ -692,6 +623,12 @@ class EmundusModelProgramme extends ListModel
 
 		$query = $this->_db->getQuery(true);
 
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $all_rights_group_id = $eMConfig->get('all_rights_group', 1);
+        $evaluator_group_id = $eMConfig->get('evaluator_group', '');
+        $program_manager_group_id = $eMConfig->get('program_manager_group', '');
+        $create_program_groups = $eMConfig->get('create_program_groups', 1);
+
 		if (!empty($data) && !empty($data['label'])) {
 			$data['code'] = preg_replace('/[^A-Za-z0-9]/', '', $data['label']);
 			$data['code'] = str_replace(' ', '_', $data['code']);
@@ -719,47 +656,7 @@ class EmundusModelProgramme extends ListModel
 					$this->_db->setQuery($query);
 					$programme = $this->_db->loadObject();
 
-					// Create user group
-					$columns = array('label', 'published', 'class');
-					$values  = array($this->_db->quote($programme->label), $this->_db->quote(1), $this->_db->quote('label-default'));
-
-					$query->clear()
-						->insert($this->_db->quoteName('#__emundus_setup_groups'))
-						->columns($this->_db->quoteName($columns))
-						->values(implode(',', $values));
-					$this->_db->setQuery($query);
-					$this->_db->execute();
-					$group_id = $this->_db->insertid();
-					//
-
-					// Link group with programme
-					$columns = array('parent_id', 'course');
-					$values  = array($this->_db->quote($group_id), $this->_db->quote($programme->code));
-
-					$query->clear()
-						->insert($this->_db->quoteName('#__emundus_setup_groups_repeat_course'))
-						->columns($this->_db->quoteName($columns))
-						->values(implode(',', $values));
-					$this->_db->setQuery($query);
-					$this->_db->execute();
-					//
-
-					// Affect coordinator to the group of the program
-					$columns = array('user_id', 'group_id');
-					$values  = array($this->_db->quote($user_id), $group_id);
-
-					$query->clear()
-						->insert($this->_db->quoteName('#__emundus_groups'))
-						->columns($this->_db->quoteName($columns))
-						->values(implode(',', $values));
-					$this->_db->setQuery($query);
-					$this->_db->execute();
-					//
-
 					// Link All rights group with programme
-					$eMConfig            = ComponentHelper::getParams('com_emundus');
-					$all_rights_group_id = $eMConfig->get('all_rights_group', 1);
-
 					$columns = array('parent_id', 'course');
 					$values  = array($this->_db->quote($all_rights_group_id), $this->_db->quote($programme->code));
 
@@ -771,10 +668,53 @@ class EmundusModelProgramme extends ListModel
 					$this->_db->execute();
 					//
 
-					// Create evaluator and manager group
-					$this->addGroupToProgram($programme->label, $programme->code, 2);
-					$this->addGroupToProgram($programme->label, $programme->code, 3);
-					//
+                    if ($create_program_groups == 1) {
+                        // Create user group
+                        $columns = array('label', 'published', 'class');
+                        $values = array($this->_db->quote($programme->label), $this->_db->quote(1), $this->_db->quote('label-default'));
+
+                        $query->clear()
+                            ->insert($this->_db->quoteName('#__emundus_setup_groups'))
+                            ->columns($this->_db->quoteName($columns))
+                            ->values(implode(',',$values));
+	                    $this->_db->setQuery($query);
+	                    $this->_db->execute();
+                        $group_id = $this->_db->insertid();
+                        //
+
+                        // Link group with programme
+                        $columns = array('parent_id', 'course');
+                        $values = array($this->_db->quote($group_id), $this->_db->quote($programme->code));
+
+                        $query->clear()
+                            ->insert($this->_db->quoteName('#__emundus_setup_groups_repeat_course'))
+                            ->columns($this->_db->quoteName($columns))
+                            ->values(implode(',',$values));
+	                    $this->_db->setQuery($query);
+	                    $this->_db->execute();
+                        //
+
+                        // Affect coordinator to the group of the program
+                        $columns = array('user_id', 'group_id');
+                        $values = array($this->_db->quote($user_id), $group_id);
+
+                        $query->clear()
+                            ->insert($this->_db->quoteName('#__emundus_groups'))
+                            ->columns($this->_db->quoteName($columns))
+                            ->values(implode(',',$values));
+	                    $this->_db->setQuery($query);
+	                    $this->_db->execute();
+                        //
+
+                        // Create evaluator and manager group
+                        if (!empty($evaluator_group_id)) {
+                            $this->addGroupToProgram($programme->label,$programme->code,$evaluator_group_id);
+                        }
+                        if (!empty($program_manager_group_id)) {
+                            $this->addGroupToProgram($programme->label,$programme->code,$program_manager_group_id);
+                        }
+                        //
+                    }
 
 					// Call plugin triggers
 					$this->app->triggerEvent('onCallEventHandler', ['onAfterProgramCreate', ['programme' => $programme]]);
@@ -1027,11 +967,10 @@ class EmundusModelProgramme extends ListModel
 			$this->_db->setQuery($query);
 			$categories = $this->_db->loadColumn();
 
-
 			$tmp = [];
 			foreach ($categories as $category) {
 				if (!empty($category)) {
-					$tmp[] = ['value' => $category, 'label' => $category];
+					$tmp[] = ['value' => $category, 'label' => Text::_($category)];
 				}
 			}
 			$categories = $tmp;
@@ -1072,140 +1011,6 @@ class EmundusModelProgramme extends ListModel
 			Log::add('component/com_emundus/models/program | Error at getting teaching unities of the program ' . $code . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return new stdClass();
-		}
-	}
-
-	/**
-	 * @param $group
-	 *
-	 * @return array|mixed
-	 *
-	 * @since version 1.0
-	 */
-	function getuserstoaffect($group)
-	{
-
-		$query = $this->_db->getQuery(true);
-
-		$notinlist = array();
-
-		try {
-			$query->select('us.id')
-				->from($this->_db->quoteName('#__emundus_groups', 'g'))
-				->leftJoin($this->_db->quoteName('#__users', 'us') . ' ON ' . $this->_db->quoteName('g.user_id') . ' = ' . $this->_db->quoteName('us.id'))
-				->where($this->_db->quoteName('g.group_id') . ' = ' . $this->_db->quote($group))
-				->andWhere($this->_db->quoteName('us.id') . ' != 95')
-				->group('us.id');
-			$this->_db->setQuery($query);
-			$usersinprogram = $this->_db->loadObjectList();
-
-			if (!empty($usersinprogram)) {
-				foreach ($usersinprogram as $user) {
-					$notinlist[] = $user->id;
-				}
-
-				$not_conditions = array(
-					$this->_db->quoteName('eus.user_id') .
-					' NOT IN (' .
-					implode(", ", array_values($notinlist)) .
-					')'
-				);
-
-				$query->clear()
-					->select(['us.id AS id, us.name AS name, us.email AS email'])
-					->from($this->_db->quoteName('#__emundus_users', 'eus'))
-					->leftJoin($this->_db->quoteName('#__users', 'us') .
-						' ON ' .
-						$this->_db->quoteName('eus.user_id') . ' = ' . $this->_db->quoteName('us.id'))
-					->where($not_conditions)
-					->andWhere($this->_db->quoteName('eus.user_id') . ' NOT IN (62,95)')
-					->andWhere($this->_db->quoteName('us.username') . ' != ' . $this->_db->quote('sysemundus'))
-					->andWhere($this->_db->quoteName('eus.profile') . ' IN (5,6)');
-				$this->_db->setQuery($query);
-				$users = $this->_db->loadObjectList();
-			}
-			else {
-				$users = $this->getuserswithoutapplicants();
-			}
-
-			return $users;
-		}
-		catch (Exception $e) {
-			Log::add('component/com_emundus/models/program | Error at getting users that can be affected to the group ' . $group . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
-
-			return [];
-		}
-	}
-
-	/**
-	 * @param $group
-	 * @param $term
-	 *
-	 * @return array|mixed
-	 *
-	 * @since version 1.0
-	 */
-	function getuserstoaffectbyterm($group, $term)
-	{
-
-		$query = $this->_db->getQuery(true);
-
-		$notinlist = array();
-
-		try {
-			$query->select('us.id')
-				->from($this->_db->quoteName('#__emundus_groups', 'g'))
-				->leftJoin($this->_db->quoteName('#__users', 'us') . ' ON ' . $this->_db->quoteName('g.user_id') . ' = ' . $this->_db->quoteName('us.id'))
-				->where($this->_db->quoteName('g.group_id') . ' = ' . $this->_db->quote($group))
-				->andWhere($this->_db->quoteName('us.id') . ' != 95')
-				->group('us.id');
-			$this->_db->setQuery($query);
-			$usersinprogram = $this->_db->loadObjectList();
-
-			$searchName  = $this->_db->quoteName('us.name') . ' LIKE ' . $this->_db->quote('%' . $term . '%');
-			$searchEmail = $this->_db->quoteName('us.email') . ' LIKE ' . $this->_db->quote('%' . $term . '%');
-			$fullSearch  = $searchName . ' OR ' . $searchEmail;
-
-			if (!empty($usersinprogram)) {
-				foreach ($usersinprogram as $user) {
-					$notinlist[] = $user->id;
-				}
-
-				$not_conditions = array(
-					$this->_db->quoteName('eus.user_id') .
-					' NOT IN (' .
-					implode(", ", array_values($notinlist)) .
-					')'
-				);
-
-				$query->clear()
-					->select(['us.id AS id, us.name AS name, us.email AS email'])
-					->from($this->_db->quoteName('#__emundus_users', 'eus'))
-					->leftJoin($this->_db->quoteName('#__users', 'us') . ' ON ' . $this->_db->quoteName('eus.user_id') . ' = ' . $this->_db->quoteName('us.id'))
-					->where($not_conditions)
-					->andWhere($this->_db->quoteName('eus.user_id') . ' NOT IN (62,95)')
-					->andWhere($this->_db->quoteName('us.username') . ' != ' . $this->_db->quote('sysemundus'))
-					->andWhere($this->_db->quoteName('eus.profile') . ' IN (5,6)')
-					->andWhere($fullSearch);
-			}
-			else {
-				$query->select(['us.id AS id, us.name AS name, us.email AS email'])
-					->from($this->_db->quoteName('#__emundus_users', 'eus'))
-					->leftJoin($this->_db->quoteName('#__users', 'us') . ' ON ' . $this->_db->quoteName('eus.user_id') . ' = ' . $this->_db->quoteName('us.id'))
-					->where($this->_db->quoteName('eus.user_id') . ' NOT IN (62,95)')
-					->andWhere($this->_db->quoteName('us.username') . ' != ' . $this->_db->quote('sysemundus'))
-					->andWhere($this->_db->quoteName('eus.profile') . ' IN (5,6)')
-					->andWhere($fullSearch);
-			}
-
-			$this->_db->setQuery($query);
-
-			return $this->_db->loadObjectList();
-		}
-		catch (Exception $e) {
-			Log::add('component/com_emundus/models/program | Error at getting users that can be affected to the group with a search term ' . $group . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
-
-			return [];
 		}
 	}
 
@@ -1470,71 +1275,6 @@ class EmundusModelProgramme extends ListModel
 		}
 		catch (Exception $e) {
 			Log::add('component/com_emundus/models/program | Error at getting users : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
-
-			return [];
-		}
-	}
-
-	/**
-	 *
-	 * @return array|mixed
-	 *
-	 * @since version 1.0
-	 */
-	function getuserswithoutapplicants()
-	{
-
-		$query = $this->_db->getQuery(true);
-
-		$query->select(['us.id AS id, us.name AS name, us.email AS email'])
-			->from($this->_db->quoteName('#__emundus_users', 'eus'))
-			->leftJoin($this->_db->quoteName('#__users', 'us') . ' ON ' . $this->_db->quoteName('eus.user_id') . ' = ' . $this->_db->quoteName('us.id'))
-			->where($this->_db->quoteName('eus.user_id') . ' != 62')
-			->andWhere($this->_db->quoteName('us.username') . ' != ' . $this->_db->quote('sysemundus'))
-			->andWhere($this->_db->quoteName('eus.profile') . ' IN (5,6)');
-
-		try {
-			$this->_db->setQuery($query);
-
-			return $this->_db->loadObjectList();
-		}
-		catch (Exception $e) {
-			Log::add('component/com_emundus/models/program | Error at getting users without applicants : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
-
-			return [];
-		}
-	}
-
-	/**
-	 * @param $term
-	 *
-	 * @return array|mixed
-	 *
-	 * @since version 1.0
-	 */
-	function searchuserbytermwithoutapplicants($term)
-	{
-
-		$query = $this->_db->getQuery(true);
-
-		$searchName  = $this->_db->quoteName('us.name') . ' LIKE ' . $this->_db->quote('%' . $term . '%');
-		$searchEmail = $this->_db->quoteName('us.email') . ' LIKE ' . $this->_db->quote('%' . $term . '%');
-		$fullSearch  = $searchName . ' OR ' . $searchEmail;
-
-		$query->select(['us.id AS id, us.name AS name, us.email AS email'])
-			->from($this->_db->quoteName('#__emundus_users', 'eus'))
-			->leftJoin($this->_db->quoteName('#__users', 'us') . ' ON ' . $this->_db->quoteName('eus.user_id') . ' = ' . $this->_db->quoteName('us.id'))
-			->where($this->_db->quoteName('eus.user_id') . ' != 62')
-			->andWhere($this->_db->quoteName('us.username') . ' != ' . $this->_db->quote('sysemundus'))
-			->andWhere($fullSearch);
-
-		try {
-			$this->_db->setQuery($query);
-
-			return $this->_db->loadObjectList();
-		}
-		catch (Exception $e) {
-			Log::add('component/com_emundus/models/program | Error at getting users by term without applicants : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return [];
 		}

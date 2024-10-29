@@ -14,7 +14,7 @@ defined('_JEXEC') or die;
     <p style="font-weight: 500; color: #fff;">
         <span style="font-size: 16pt;"><?php echo $announcement_content ?></span>
     </p>
-    <span id="close-preprod-alerte-container" class="material-icons em-pointer"
+    <span id="close-preprod-alerte-container" aria-hidden="true" class="material-symbols-outlined em-pointer"
           style="color:white;position:absolute;top:10px;right:5px;">close</span>
 </div>
 
@@ -22,7 +22,7 @@ defined('_JEXEC') or die;
     document.addEventListener('click', (event) => {
         if (event.target.id === 'close-preprod-alerte-container') {
             document.querySelector('.alerte-message-container').classList.add('hidden');
-            let navigation = document.querySelector('#g-navigation');
+            let navigation = document.querySelector('#g-navigation, #g-header');
             if(navigation) {
                 navigation.style.top = '0';
             }

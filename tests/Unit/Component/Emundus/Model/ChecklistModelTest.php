@@ -13,6 +13,12 @@ use Joomla\CMS\Factory;
 use Joomla\Tests\Unit\UnitTestCase;
 use stdClass;
 
+/**
+ * @package     Unit\Component\Emundus\Model
+ *
+ * @since       version 1.0.0
+ * @covers      EmundusModelChecklist
+ */
 class ChecklistModelTest extends UnitTestCase
 {
 
@@ -21,6 +27,12 @@ class ChecklistModelTest extends UnitTestCase
 		parent::__construct('checklist', $data, $dataName, 'EmundusModelChecklist');
 	}
 
+	/**
+	 * @covers EmundusModelChecklist::getAttachmentsList
+	 *
+	 * @throws \Exception
+	 * @since version 1.0.0
+	 */
 	public function testgetAttachmentsList()
 	{
 		$attachments = $this->model->getAttachmentsList();
@@ -28,7 +40,7 @@ class ChecklistModelTest extends UnitTestCase
 
 		// set session
 		$user               = new stdClass();
-		$user->id           = Factory::getUser()->id;
+		$user->id           = $this->dataset['coordinator'];
 		$user->profile      = 1;
 		$user->fnum         = '00000000';
 		$user->applicant_id = 1;

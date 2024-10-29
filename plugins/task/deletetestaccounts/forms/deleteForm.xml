@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form>
+    <fields name="params">
+        <fieldset name="task_params">
+            <field
+                    name="testAccountReminderPeriod"
+                    type="number"
+                    label="PLG_TASK_DELETETESTACCOUNTS_REMINDER_PERIOD"
+                    default="20"
+                    min="5"
+                    filter="int"
+                    validate="number"
+            />
+            <field
+                    name="testAccountDeletePeriod"
+                    type="number"
+                    label="PLG_TASK_DELETETESTACCOUNTS_DELETE_PERIOD"
+                    default="30"
+                    min="10"
+                    filter="int"
+                    validate="number"
+            />
+        </fieldset>
+    </fields>
+</form>

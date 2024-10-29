@@ -32,7 +32,7 @@ class ControlcenterController extends SecuritycheckproController
     /* Guarda los cambios y redirige al cPanel */
     public function save()
     {
-        $model = $this->getModel('cron');
+        $model = $this->getModel('base');
         $jinput = Factory::getApplication()->input;
         $data = $jinput->getArray($_POST);
 		$model->saveConfig($data, 'controlcenter');

@@ -53,12 +53,18 @@ class JFormFieldGroupList extends GroupedlistField
 		$db = Factory::getDbo(true);
 		$query = $db->getQuery(true);
 
+		$sql_where   = (string) $this->element['sql_where'];
+
 		$query->select('g.id AS value, g.name AS text, f.label AS form');
 		$query->from('#__fabrik_groups AS g');
 		$query->where('g.published <> -2')
 		->join('INNER', '#__fabrik_formgroup AS fg ON fg.group_id = g.id')
 		->join('INNER', '#__fabrik_forms AS f on fg.form_id = f.id');
 		$query->order('f.label, g.name');
+
+		if(!empty($sql_where)) {
+			$query->where($sql_where);
+		}
 
 		// Get the options.
 		$db->setQuery($query);

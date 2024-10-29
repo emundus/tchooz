@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="plugin" group="editors" method="upgrade">
+	<name>plg_editors_tiptap</name>
+	<version>1.0.0</version>
+	<creationDate>2024-07</creationDate>
+	<author>eMundus - Wiin</author>
+	<authorEmail>N/A</authorEmail>
+	<authorUrl>N/A</authorUrl>
+	<copyright>N/A</copyright>
+	<license>MIT</license>
+	<description>PLG_TIPTAP_XML_DESCRIPTION</description>
+	<namespace path="src">Joomla\Plugin\Editors\TipTap</namespace>
+	<files>
+		<folder>forms</folder>
+		<folder plugin="tiptap">services</folder>
+		<folder>src</folder>
+	</files>
+	<media destination="editors" folder="media">
+		<folder>tiptap</folder>
+	</media>
+	<languages>
+		<language tag="en-GB">language/en-GB/plg_editors_tiptap.ini</language>
+		<language tag="en-GB">language/en-GB/plg_editors_tiptap.sys.ini</language>
+		<language tag="en-GB">language/fr-FR/plg_editors_tiptap.ini</language>
+		<language tag="en-GB">language/fr-FR/plg_editors_tiptap.sys.ini</language>
+	</languages>
+	<config>
+		<fields name="params">
+		</fields>
+	</config>
+</extension>

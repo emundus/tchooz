@@ -21,6 +21,7 @@
    <field Field="checked_out" Type="int unsigned" Null="YES" Key="" Extra="" />
    <field Field="language" Type="varchar(7)" Null="NO" Key="MUL" Extra="" />
    <field Field="note" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="params" Type="text" Null="YES" Key="" Extra="" />
    <key Table="#__guidedtour_steps" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__guidedtour_steps" Non_unique="1" Key_name="idx_tour" Seq_in_index="1" Column_name="tour_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__guidedtour_steps" Non_unique="1" Key_name="idx_state" Seq_in_index="1" Column_name="published" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
@@ -47,6 +48,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">2</field>
@@ -68,6 +70,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">3</field>
@@ -89,6 +92,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">4</field>
@@ -110,6 +114,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">5</field>
@@ -131,6 +136,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">6</field>
@@ -152,6 +158,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">7</field>
@@ -173,6 +180,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">8</field>
@@ -194,6 +202,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">9</field>
@@ -215,6 +224,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">10</field>
@@ -236,6 +246,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">11</field>
@@ -257,6 +268,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">12</field>
@@ -278,6 +290,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">13</field>
@@ -299,6 +312,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">14</field>
@@ -320,6 +334,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">15</field>
@@ -341,6 +356,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">16</field>
@@ -362,6 +378,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">17</field>
@@ -383,6 +400,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">18</field>
@@ -404,6 +422,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">19</field>
@@ -425,6 +444,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">20</field>
@@ -446,6 +466,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">21</field>
@@ -467,6 +488,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">22</field>
@@ -488,6 +510,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">23</field>
@@ -509,6 +532,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">24</field>
@@ -530,6 +554,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">25</field>
@@ -551,6 +576,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">26</field>
@@ -572,6 +598,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">27</field>
@@ -593,6 +620,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">28</field>
@@ -614,6 +642,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">29</field>
@@ -635,6 +664,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">30</field>
@@ -656,6 +686,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">31</field>
@@ -677,6 +708,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">32</field>
@@ -698,6 +730,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">33</field>
@@ -719,6 +752,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">34</field>
@@ -740,6 +774,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">35</field>
@@ -761,6 +796,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">36</field>
@@ -782,6 +818,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">37</field>
@@ -803,6 +840,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">38</field>
@@ -824,6 +862,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">39</field>
@@ -845,6 +884,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">40</field>
@@ -866,6 +906,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">41</field>
@@ -887,6 +928,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">42</field>
@@ -908,6 +950,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">43</field>
@@ -929,6 +972,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">44</field>
@@ -950,6 +994,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">45</field>
@@ -971,6 +1016,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">46</field>
@@ -992,6 +1038,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">47</field>
@@ -1013,6 +1060,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">48</field>
@@ -1034,6 +1082,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">49</field>
@@ -1055,6 +1104,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">50</field>
@@ -1076,6 +1126,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">51</field>
@@ -1097,6 +1148,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">52</field>
@@ -1118,6 +1170,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">53</field>
@@ -1139,6 +1192,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">54</field>
@@ -1160,6 +1214,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">55</field>
@@ -1181,6 +1236,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">56</field>
@@ -1202,6 +1258,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">57</field>
@@ -1223,6 +1280,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">58</field>
@@ -1244,6 +1302,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">59</field>
@@ -1265,6 +1324,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">60</field>
@@ -1286,6 +1346,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">61</field>
@@ -1307,6 +1368,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">62</field>
@@ -1328,6 +1390,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">63</field>
@@ -1349,6 +1412,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">64</field>
@@ -1370,6 +1434,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">65</field>
@@ -1391,6 +1456,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">66</field>
@@ -1412,6 +1478,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">67</field>
@@ -1433,6 +1500,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">68</field>
@@ -1454,6 +1522,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">69</field>
@@ -1475,6 +1544,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">70</field>
@@ -1496,6 +1566,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">71</field>
@@ -1517,6 +1588,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">72</field>
@@ -1538,6 +1610,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">73</field>
@@ -1559,6 +1632,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">74</field>
@@ -1580,6 +1654,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">75</field>
@@ -1601,6 +1676,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">76</field>
@@ -1622,6 +1698,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">77</field>
@@ -1643,6 +1720,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">78</field>
@@ -1664,6 +1742,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">79</field>
@@ -1685,6 +1764,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">80</field>
@@ -1706,6 +1786,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">81</field>
@@ -1727,6 +1808,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">82</field>
@@ -1748,6 +1830,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">83</field>
@@ -1769,6 +1852,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">84</field>
@@ -1790,6 +1874,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">85</field>
@@ -1811,6 +1896,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">86</field>
@@ -1832,6 +1918,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">87</field>
@@ -1853,6 +1940,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">88</field>
@@ -1874,6 +1962,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">89</field>
@@ -1895,6 +1984,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">90</field>
@@ -1916,6 +2006,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">91</field>
@@ -1937,6 +2028,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">92</field>
@@ -1958,6 +2050,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">93</field>
@@ -1979,6 +2072,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">94</field>
@@ -2000,6 +2094,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">95</field>
@@ -2021,6 +2116,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">96</field>
@@ -2042,6 +2138,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">97</field>
@@ -2063,6 +2160,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">98</field>
@@ -2084,6 +2182,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">99</field>
@@ -2105,6 +2204,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">100</field>
@@ -2126,6 +2226,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">101</field>
@@ -2147,6 +2248,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">102</field>
@@ -2168,6 +2270,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">103</field>
@@ -2189,6 +2292,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">104</field>
@@ -2210,6 +2314,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">105</field>
@@ -2231,6 +2336,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">106</field>
@@ -2252,6 +2358,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">107</field>
@@ -2273,6 +2380,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">108</field>
@@ -2294,6 +2402,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">109</field>
@@ -2315,6 +2424,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">110</field>
@@ -2336,6 +2446,7 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">111</field>
@@ -2357,6 +2468,117 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="language">*</field>
     <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">112</field>
+    <field name="tour_id">12</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_WELCOMETOJOOMLA_STEP_MENUS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_WELCOMETOJOOMLA_STEP_MENUS_DESCRIPTION</field>
+    <field name="ordering">1</field>
+    <field name="position">right</field>
+    <field name="target">#sidebarmenu</field>
+    <field name="type">0</field>
+    <field name="interactive_type">1</field>
+    <field name="url"></field>
+    <field name="created">2024-05-15 15:12:19</field>
+    <field name="created_by">0</field>
+    <field name="modified">2024-05-15 15:12:19</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">113</field>
+    <field name="tour_id">12</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_WELCOMETOJOOMLA_STEP_QUICKACCESS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_WELCOMETOJOOMLA_STEP_QUICKACCESS_DESCRIPTION</field>
+    <field name="ordering">2</field>
+    <field name="position">center</field>
+    <field name="target"></field>
+    <field name="type">0</field>
+    <field name="interactive_type">1</field>
+    <field name="url"></field>
+    <field name="created">2024-05-15 15:12:19</field>
+    <field name="created_by">0</field>
+    <field name="modified">2024-05-15 15:12:19</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">114</field>
+    <field name="tour_id">12</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_WELCOMETOJOOMLA_STEP_NOTIFICATIONS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_WELCOMETOJOOMLA_STEP_NOTIFICATIONS_DESCRIPTION</field>
+    <field name="ordering">3</field>
+    <field name="position">left</field>
+    <field name="target">.quickicons-for-update_quickicon .card</field>
+    <field name="type">0</field>
+    <field name="interactive_type">1</field>
+    <field name="url"></field>
+    <field name="created">2024-05-15 15:12:19</field>
+    <field name="created_by">0</field>
+    <field name="modified">2024-05-15 15:12:19</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">115</field>
+    <field name="tour_id">12</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_WELCOMETOJOOMLA_STEP_TOPBAR_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_WELCOMETOJOOMLA_STEP_TOPBAR_DESCRIPTION</field>
+    <field name="ordering">4</field>
+    <field name="position">bottom</field>
+    <field name="target">#header</field>
+    <field name="type">0</field>
+    <field name="interactive_type">1</field>
+    <field name="url"></field>
+    <field name="created">2024-05-15 15:12:19</field>
+    <field name="created_by">0</field>
+    <field name="modified">2024-05-15 15:12:19</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">116</field>
+    <field name="tour_id">12</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_WELCOMETOJOOMLA_STEP_FINALWORDS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_WELCOMETOJOOMLA_STEP_FINALWORDS_DESCRIPTION</field>
+    <field name="ordering">5</field>
+    <field name="position">right</field>
+    <field name="target">#sidebarmenu nav &gt; ul:first-of-type &gt; li:last-child</field>
+    <field name="type">0</field>
+    <field name="interactive_type">1</field>
+    <field name="url"></field>
+    <field name="created">2024-05-15 15:12:19</field>
+    <field name="created_by">0</field>
+    <field name="modified">2024-05-15 15:12:19</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+    <field name="params" value_is_null="true"></field>
    </row>
   </table_data>
  </database>

@@ -395,7 +395,7 @@ class SmartAgenda
 				}
 			}
 			else {
-				JLog::add('Request failed for params ' . json_encode($params), JLog::WARNING, 'com_emundus.smart_agenda');
+				JLog::add('Request failed for params ' . json_encode($params) . ' response => ' . json_encode($response), JLog::WARNING, 'com_emundus.smart_agenda');
 			}
 		}
 		else {

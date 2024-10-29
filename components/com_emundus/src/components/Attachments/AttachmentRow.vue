@@ -13,7 +13,7 @@
       />
     </td>
     <td v-if="columns.includes('name')" class="td-document" @click="openModal">
-      <span v-if="!attachment.existsOnServer" class="material-icons-outlined warning file-not-found em-mr-16"
+      <span v-if="!attachment.existsOnServer" class="material-symbols-outlined warning file-not-found tw-mr-4"
             :title="translate('COM_EMUNDUS_ATTACHMENTS_FILE_NOT_FOUND')">warning</span>
       <span :title="attachment.value">{{ attachment.value }}</span>
     </td>
@@ -26,13 +26,9 @@
         class="status valid-state"
         :class="{success: attachment.is_validated == 1,warning: attachment.is_validated == 2,error: attachment.is_validated == 0}"
     >
-      <select @change="(e) => updateStatus(e)" :disabled="canUpdate === false ? true : false">
+      <select @change="(e) => updateStatus(e)" :disabled="(canUpdate === false || is_applicant == 1) ? true : false">
         <option value="1" :selected="attachment.is_validated == 1">{{ translate("VALID") }}</option>
         <option value="0" :selected="attachment.is_validated == 0">{{ translate("INVALID") }}</option>
-        <option value="2" :selected="attachment.is_validated == 2">{{
-            translate("COM_EMUNDUS_ATTACHMENTS_WARNING")
-          }}
-        </option>
         <option value="-2" :selected="attachment.is_validated == -2 || attachment.is_validated === null">
           {{ translate("COM_EMUNDUS_ATTACHMENTS_WAITING") }}
         </option>
@@ -43,25 +39,22 @@
     <td class="date" v-if="columns.includes('modified')">{{ formattedDate(attachment.modified) }}</td>
     <td v-if="columns.includes('permissions')" class="permissions">
 			<span v-if="attachment.profiles.length > 0"
-            class="material-icons-outlined visibility-permission em-pointer"
+            class="material-symbols-outlined visibility-permission tw-cursor-pointer"
             :class="{ active: attachment.can_be_viewed == '1' }"
             @click="changePermission('can_be_viewed', attachment)"
             :title="translate('COM_EMUNDUS_ATTACHMENTS_PERMISSION_VIEW')">visibility</span>
       <span v-if="attachment.profiles.length > 0"
-            class="material-icons-outlined delete-permission em-pointer"
+            class="material-symbols-outlined delete-permission tw-cursor-pointer"
             :class="{ active: attachment.can_be_deleted == '1' }"
             @click="changePermission('can_be_deleted', attachment)"
-            :title="translate('COM_EMUNDUS_ATTACHMENTS_PERMISSION_DELETE')">delete_outlined</span>
+            :title="translate('COM_EMUNDUS_ATTACHMENTS_PERMISSION_DELETE')">delete</span>
     </td>
     <td v-if="sync && columns.includes('sync')">
       <div v-if="attachment.sync > 0">
         <span
             v-if="attachment.sync_method == 'write' && !syncLoading"
-            class="material-icons sync em-pointer"
-            :class="{
-              success: synchronizeState == 1,
-              error: synchronizeState != 1,
-            }"
+            class="material-icons sync tw-cursor-pointer"
+            :class="{success: synchronizeState == 1, error: synchronizeState != 1}"
             :title="translate('COM_EMUNDUS_ATTACHMENTS_SYNC_WRITE')"
             @click="synchronizeAttachments(attachment.aid)"
         >
@@ -69,7 +62,7 @@
         </span>
         <span
             v-else-if="attachment.sync_method == 'read' && !syncLoading"
-            class="material-icons sync em-pointer"
+            class="material-icons sync tw-cursor-pointer"
             :class="{
               success: synchronizeState == 1,
               error: synchronizeState != 1,
@@ -87,7 +80,11 @@
 
 <script>
 import mixin from "../../mixins/mixin.js";
-import syncService from "../../services/sync.js";
+import syncService from "@/services/sync.js";
+
+import { useAttachmentStore } from '@/stores/attachment.js';
+import { storeToRefs } from 'pinia'
+import { watch } from 'vue'
 
 export default {
   name: "AttachmentRow",
@@ -115,9 +112,13 @@ export default {
     columns: {
       type: Array,
       default() {
-        return ['name', 'date', 'desc', 'category', 'status', 'user', 'modified_by', 'modified', 'permissions', 'sync'];
+        return ['check','name', 'date', 'desc', 'category', 'status', 'user', 'modified_by', 'modified', 'permissions', 'sync'];
       }
-    }
+    },
+    is_applicant: {
+      type: String,
+      default: null
+    },
   },
   mixins: [mixin],
   data() {
@@ -130,12 +131,23 @@ export default {
     };
   },
   mounted() {
-    this.categories = this.$store.state.attachment.categories;
+    this.categories = useAttachmentStore().categories;
     if (Object.entries(this.categories).length > 0) {
       this.category = this.categories[this.attachment.category] ? this.categories[this.attachment.category] : '';
     }
 
     this.checkedAttachments = this.checkedAttachmentsProp;
+
+    const attachmentStore = useAttachmentStore();
+    const { checkedAttachments, categories } = storeToRefs(attachmentStore);
+    watch(checkedAttachments, () => {
+      this.checkedAttachments = checkedAttachments;
+    });
+
+    watch(categories, () => {
+      this.categories = categories;
+      this.category = this.categories[this.attachment.category] ? this.categories[this.attachment.category] : '';
+    });
 
     if (this.sync) {
       this.getSynchronizeState(this.attachment.aid).then((response) => {
@@ -195,16 +207,7 @@ export default {
         });
       }
     },
-  },
-  watch: {
-    "$store.state.attachment.checkedAttachments": function () {
-      this.checkedAttachments = this.$store.state.attachment.checkedAttachments;
-    },
-    "$store.state.attachment.categories": function () {
-      this.categories = this.$store.state.attachment.categories;
-      this.category = this.categories[this.attachment.category] ? this.categories[this.attachment.category] : "";
-    }
-  },
+  }
 };
 </script>
 
@@ -257,7 +260,7 @@ export default {
   }
 
   .permissions {
-    .material-icons, .material-icons-outlined {
+    .material-icons, .material-symbols-outlined {
       margin: 0 10px;
       opacity: 0.3;
 
@@ -267,7 +270,7 @@ export default {
     }
   }
 
-  .material-icons {
+  .material-icons, .material-symbols-outlined  {
     cursor: pointer;
 
     &.success {

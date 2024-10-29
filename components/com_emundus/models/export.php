@@ -15,6 +15,12 @@ jimport('joomla.application.component.model');
 
 use Gotenberg\Gotenberg;
 use Gotenberg\Stream;
+use GuzzleHttp\Client;
+use GuzzleHttp\RequestOptions;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
 
 class EmundusModelExport extends JModelList
 {
@@ -46,12 +52,12 @@ class EmundusModelExport extends JModelList
 	*/
 	function toPdf($file_src, $file_dest, $file_src_format = null, $fnum = null)
 	{
-		$eMConfig             = JComponentHelper::getParams('com_emundus');
+		$eMConfig             = ComponentHelper::getParams('com_emundus');
 		$gotenberg_activation = $eMConfig->get('gotenberg_activation', 0);
 		$gotenberg_url        = $eMConfig->get('gotenberg_url', 'http://localhost:3000');
 
 		$client = null;
-		$config = JFactory::getConfig();
+		$config = Factory::getApplication()->getConfig();
 		$proxy_enable = $config->get('proxy_enable', 0);
 
 		// If proxy enabled we have to define a guzzle client with proxy
@@ -82,9 +88,9 @@ class EmundusModelExport extends JModelList
 		}
 
 		$user_id = !empty($fnum) ? (int) substr($fnum, -7) : null;
-		$em_user = JFactory::getSession()->get('emundusUser');
+		$em_user = Factory::getApplication()->getSession()->get('emundusUser');
 
-		if (EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $fnum) || $fnum == $em_user->fnum) {
+		if (EmundusHelperAccess::asAccessAction(8, 'c', Factory::getApplication()->getIdentity()->id, $fnum) || $fnum == $em_user->fnum) {
 			require JPATH_LIBRARIES . '/emundus/vendor/autoload.php';
 
 			$src  = $file_src;
@@ -106,7 +112,9 @@ class EmundusModelExport extends JModelList
 					Gotenberg::save($request, $dest_path .'/', $client);
 				} else {
 					$request = Gotenberg::chromium($gotenberg_url)
-						->html(Stream::string('my.html', $src));
+						->pdf()
+						->outputFilename($dest_file)
+						->html(Stream::path($src));
 
 					Gotenberg::save($request, $dest_path .'/', $client);
 				}
@@ -114,8 +122,8 @@ class EmundusModelExport extends JModelList
 			}
 			catch (\Gotenberg\Exceptions\GotenbergApiErroed $e) {
 				$res->status = false;
-				$res->msg    = JText::_('COM_EMUNDUS_ERROR_EXPORT_MARGIN') . ' GOTEMBERG ERROR (' . $e->getCode() . '): ' . $e->getResponse();
-				JLog::add($res->msg, JLog::ERROR, 'com_emundus.export');
+				$res->msg    = Text::_('COM_EMUNDUS_ERROR_EXPORT_MARGIN') . ' GOTEMBERG ERROR (' . $e->getCode() . '): ' . $e->getResponse();
+				Log::add($res->msg, Log::ERROR, 'com_emundus.export');
 
 				return json_encode($res);
 			}
@@ -126,8 +134,8 @@ class EmundusModelExport extends JModelList
 		}
 		else {
 			$res->status = false;
-			$res->msg    = JText::_('ACCESS_DENIED');
-			JLog::add($res->msg, JLog::ERROR, 'com_emundus.export');
+			$res->msg    = Text::_('ACCESS_DENIED');
+			Log::add($res->msg, Log::ERROR, 'com_emundus.export');
 
 			return $res;
 		}

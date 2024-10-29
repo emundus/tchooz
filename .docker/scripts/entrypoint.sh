@@ -155,7 +155,7 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
 
     echo >&2 "Init configuration variables..."
     cp configuration.php.dist configuration.php
-    cp .htaccess.txt .htaccess
+    cp htaccess.txt .htaccess
 
     sed -i "s:\$host = '.*':\$host = '$JOOMLA_DB_HOST':g" configuration.php
     sed -i "s:\$user = '.*':\$user = '$JOOMLA_DB_USER':g" configuration.php
@@ -171,21 +171,30 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
 
     php cli/joomla.php database:import --folder=".docker/installation/vanilla" -n
     php cli/joomla.php tchooz:vanilla --action="import" --folder=".docker/installation/vanilla" -n
-    php cli/joomla.php tchooz:vanilla --action="import_foreign_keys" --folder=".docker/installation/vanilla" -n
-
 
     echo >&2 "Create super administrator user..."
 
-    #php cli/joomla.php tchooz:user:add --username="sysadmin" --lastname="ADMINISTRATOR" --firstname="Emundus" --password="password" --email="dev@emundus.io" --usergroup="Registered,Super Users" --userprofiles="System administrator" --useremundusgroups="Tous les droits" -n
-    php cli/joomla.php tchooz:user:add --username="$TCHOOZ_SYSADMIN_USERNAME" --lastname="$TCHOOZ_SYSADMIN_LAST_NAME" --firstname="$TCHOOZ_SYSADMIN_FIRST_NAME" --password="$TCHOOZ_SYSADMIN_PASSWORD" --email="$TCHOOZ_SYSADMIN_MAIL" --usergroup="Registered,Super Users" --userprofiles="System administrator" --useremundusgroups="Tous les droits" -n
+    #php cli/joomla.php tchooz:user:add --username="sysadmin" --lastname="ADMINISTRATOR" --firstname="Emundus" --password="password" --email="dev@emundus.io" --usergroup="Registered,Super Users" --userprofiles="System administrator" --useremundusgroups="Administrateur de plateforme" -n
+    php cli/joomla.php tchooz:user:add --username="$TCHOOZ_SYSADMIN_USERNAME" --lastname="$TCHOOZ_SYSADMIN_LAST_NAME" --firstname="$TCHOOZ_SYSADMIN_FIRST_NAME" --password="$TCHOOZ_SYSADMIN_PASSWORD" --email="$TCHOOZ_SYSADMIN_MAIL" --usergroup="Registered,Super Users" --userprofiles="System administrator,Administrateur de plateforme,Formulaire de base" --useremundusgroups="Administrateur de plateforme" -n
 
     echo >&2 "Create coordinator user..."
 
-    php cli/joomla.php tchooz:user:add --username="$TCHOOZ_COORD_USERNAME" --lastname="$TCHOOZ_COORD_LAST_NAME" --firstname="$TCHOOZ_COORD_FIRST_NAME" --password="$TCHOOZ_COORD_PASSWORD" --email="$TCHOOZ_COORD_MAIL" --usergroup="Registered,Administrator" --userprofiles="Gestionnaire de plateforme,Formulaire de base candidat" --useremundusgroups="Tous les droits" -n
+    #php cli/joomla.php tchooz:user:add --username="coord@emundus.fr" --lastname="DEV" --firstname="Coordinator" --password="password" --email="coord@emundus.fr" --usergroup="Registered,Administrator" --userprofiles="Administrateur de plateforme,Formulaire de base" --useremundusgroups="Administrateur de plateforme" -n
+    php cli/joomla.php tchooz:user:add --username="$TCHOOZ_COORD_USERNAME" --lastname="$TCHOOZ_COORD_LAST_NAME" --firstname="$TCHOOZ_COORD_FIRST_NAME" --password="$TCHOOZ_COORD_PASSWORD" --email="$TCHOOZ_COORD_MAIL" --usergroup="Registered,Administrator" --userprofiles="Administrateur de plateforme,Formulaire de base" --useremundusgroups="Administrateur de plateforme" -n
 
     echo >&2 "Set Fabrik connection..."
 
     php cli/joomla.php tchooz:fabrik_connection_reset -n
+
+    echo >&2 "Init standard email configuration..."
+    php cli/joomla.php tchooz:config -n --keys="default_email_mailfrom,default_email_fromname,default_email_smtphost,default_email_smtpport,default_email_smtpsecure,default_email_smtpauth,default_email_smtpuser,default_email_smtppass,custom_email_conf" --values="$TCHOOZ_MAIL_FROM,$TCHOOZ_MAIL_FROM_NAME,$TCHOOZ_MAIL_SMTP_HOST,$TCHOOZ_MAIL_SMTP_PORT,$TCHOOZ_MAIL_SMTP_SECURITY,1,$TCHOOZ_MAIL_SMTP_USER,$TCHOOZ_MAIL_SMTP_PASS,0"
+
+    echo >&2 "Run eMundus updates..."
+    php cli/joomla.php tchooz:update -n --component=com_emundus
+    php cli/joomla.php tchooz:update -n --component=com_hikashop
+    php cli/joomla.php maintenance:database --fix
+
+    php cli/joomla.php tchooz:vanilla --action="import_foreign_keys" --folder=".docker/installation/vanilla" -n
 
     chown www-data: configuration.php
     chown www-data: .htaccess
@@ -196,6 +205,11 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
     echo >&2
     echo >&2 "========================================================================"
   fi
+
+  echo >&2 "Build documentation..."
+  npm install
+  npm install --prefix components/com_emundus
+  npm run docs:build --prefix components/com_emundus
 
   echo >&2 "========================================================================"
   echo >&2

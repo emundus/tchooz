@@ -1,8 +1,9 @@
 <template>
   <div id="form-builder-page">
-    <div class="em-flex-row em-flex-space-between">
-	    <span
-          class="em-font-size-24 em-font-weight-600 editable-data"
+    <div class="tw-flex tw-items-center tw-justify-between">
+      <span
+          class="tw-text-2xl tw-font-semibold editable-data"
+          id="page-title"
           ref="pageTitle"
           @focusout="updateTitle"
           @keyup.enter="updateTitleKeyup"
@@ -10,10 +11,13 @@
           contenteditable="true"
           :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_TITLE_ADD')"
           v-html="translate(title)"></span>
-      <span class="material-icons-outlined em-pointer"
-            v-if="mode == 'forms'"
-            :title="translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_TITLE')"
-            @click="$emit('open-create-model', page.id)">post_add</span>
+      <button id="add-page-modele" class="tw-btn-cancel !tw-w-auto"  @click="$emit('open-create-model', page.id)">
+        <span class="material-symbols-outlined tw-cursor-pointer"
+              v-if="mode === 'forms'"
+              :title="translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_TITLE')"
+        >post_add</span>
+        {{ translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_TITLE') }}
+      </button>
     </div>
     <span class="description editable-data"
           id="pageDescription"
@@ -24,7 +28,7 @@
           :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_INTRO_ADD')"></span>
 
     <div class="form-builder-page-sections tw-mt-2">
-      <button v-if="sections.length > 0" id="add-section" class="em-primary-button tw-px-6 tw-py-3" @click="addSection()">
+      <button v-if="sections.length > 0" id="add-section" class="tw-btn-primary tw-px-6 tw-py-3" @click="addSection()">
         {{ translate('COM_EMUNDUS_FORM_BUILDER_ADD_SECTION') }}
       </button>
       <form-builder-page-section
@@ -45,7 +49,7 @@
       >
       </form-builder-page-section>
     </div>
-    <button id="add-section" class="em-primary-button tw-px-6 tw-py-3" @click="addSection()">
+    <button id="add-section" class="tw-btn-primary tw-px-6 tw-py-3" @click="addSection()">
       {{ translate('COM_EMUNDUS_FORM_BUILDER_ADD_SECTION') }}
     </button>
 
@@ -54,15 +58,14 @@
 </template>
 
 <script>
-import formService from '../../services/form';
-import formBuilderService from '../../services/formbuilder';
-import translationService from '../../services/translations';
+import formService from '@/services/form.js';
+import formBuilderService from '@/services/formbuilder.js';
+import translationService from '@/services/translations.js';
 
-import FormBuilderPageSection from './FormBuilderPageSection';
-import formBuilderMixin from '../../mixins/formbuilder';
-import globalMixin from '../../mixins/mixin';
-import errorMixin from '../../mixins/errors';
-import Swal from 'sweetalert2';
+import FormBuilderPageSection from '@/components/FormBuilder/FormBuilderPageSection.vue';
+import formBuilderMixin from '@/mixins/formbuilder.js';
+import globalMixin from '@/mixins/mixin.js';
+import errorMixin from '@/mixins/errors.js';
 
 export default {
   components: {
@@ -75,7 +78,7 @@ export default {
     },
     page: {
       type: Object,
-      default: {}
+      default: () => {}
     },
     mode: {
       type: String,
@@ -100,10 +103,10 @@ export default {
     }
   },
   methods: {
-    getSections(eltid = null) {
+    getSections(eltid = null, scrollTo = false) {
       this.loading = true;
       formService.getPageObject(this.page.id).then(response => {
-        if (response.status && response.data != '') {
+        if (response.status && response.data !== '') {
           this.fabrikPage = response.data;
           this.title = this.fabrikPage.show_title.label[this.shortDefaultLang];
           const groups = Object.values(response.data.Groups);
@@ -111,10 +114,12 @@ export default {
           this.getDescription();
           if(eltid) {
             setTimeout(() => {
-              document.getElementById('center_content').scrollTo(0, document.getElementById('center_content').scrollHeight);
-              console.log(document.getElementById('element_' + eltid))
+              if(scrollTo) {
+                document.getElementById('center_content').scrollTo(0, document.getElementById('center_content').scrollHeight);
+              }
               document.getElementById('element_' + eltid).style.backgroundColor = 'var(--main-50)';
               document.getElementById('element_' + eltid).style.borderColor = 'var(--main-400)';
+              document.getElementById('element-label-'+eltid).focus();
               setTimeout(() => {
                 document.getElementById('element_' + eltid).style.backgroundColor = 'inherit';
                 document.getElementById('element_' + eltid).style.borderColor = '';
@@ -129,20 +134,29 @@ export default {
       });
     },
     getDescription() {
-      formBuilderService.getAllTranslations(this.fabrikPage.intro_raw).then(response => {
-        if (response.status && response.data) {
-          if (response.data[this.shortDefaultLang] !== '') {
-            this.description = response.data[this.shortDefaultLang];
+      if (this.fabrikPage.intro_raw) {
+        formBuilderService.getAllTranslations(this.fabrikPage.intro_raw).then(response => {
+          if (response.status && response.data) {
+            if (response.data[this.shortDefaultLang] !== '') {
+              let strippedString = response.data[this.shortDefaultLang].replace(/(<([^>]+)>)/gi, "");
+
+              if (strippedString.length > 0) {
+                this.description = response.data[this.shortDefaultLang];
+              }
+            }
           }
-        }
-      });
+        });
+      } else {
+        this.fabrikPage.intro_raw = 'FORM_' + this.profile_id + '_INTRO_' + this.fabrikPage.id;
+        this.fabrikPage.intro = {};
+      }
     },
     addSection() {
       if (this.sections.length < 10) {
         formBuilderService.createSimpleGroup(this.page.id, {
           fr: 'Nouvelle section',
           en: 'New section'
-        }).then(response => {
+        }, this.mode).then(response => {
           if (response.status) {
             this.getSections();
             this.updateLastSave();
@@ -192,8 +206,9 @@ export default {
       this.$refs.pageTitle.innerText = this.$refs.pageTitle.innerText.trim().replace(/[\r\n]/gm, "");
 
       formBuilderService.updateTranslation(null, this.fabrikPage.show_title.titleraw, this.fabrikPage.show_title.label).then(response => {
-        if (response.status) {
+        if (response.data.status) {
           translationService.updateTranslations(this.fabrikPage.show_title.label[this.shortDefaultLang], 'falang', this.shortDefaultLang, this.fabrikPage.menu_id, 'title', 'menu');
+          console.log('emit update title')
           this.$emit('update-page-title', {
             page: this.page.id,
             new_title: this.$refs.pageTitle.innerText
@@ -231,7 +246,7 @@ export default {
         if (movedElement !== undefined && movedElement !== null && movedElement.id) {
           const foundElement = this.$refs['section-' + toGroup][0].elements.find(element => element.id === movedElement.id);
 
-          if (foundElement == undefined || foundElement == null) {
+          if (foundElement === undefined || foundElement === null) {
             this.$refs['section-' + toGroup][0].elements.splice(event.newIndex, 0, movedElement);
           }
 
@@ -242,15 +257,15 @@ export default {
             updated = response.data.status;
 
             if (!updated) {
-              this.displayError('COM_EMUNDUS_FORM_BUILDER_UPDATE_ELEMENTS_ORDER_FAILED');
+              this.displayError('COM_EMUNDUS_FORM_BUILDER_UPDATE_ELEMENTS_ORDER_FAILED', '');
             }
           });
           this.updateLastSave();
         } else {
-          this.displayError('COM_EMUNDUS_FORM_BUILDER_UPDATE_ELEMENTS_ORDER_FAILED');
+          this.displayError('COM_EMUNDUS_FORM_BUILDER_UPDATE_ELEMENTS_ORDER_FAILED', '');
         }
       } else {
-        this.displayError('COM_EMUNDUS_FORM_BUILDER_UPDATE_ELEMENTS_ORDER_FAILED');
+        this.displayError('COM_EMUNDUS_FORM_BUILDER_UPDATE_ELEMENTS_ORDER_FAILED', '');
       }
     },
     deleteSection(sectionId) {

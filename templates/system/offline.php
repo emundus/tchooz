@@ -40,7 +40,7 @@ $wa->registerAndUseStyle('template.system.general', 'media/system/css/system-sit
 <body>
     <jdoc:include type="message" />
     <div id="frame" class="outline">
-        <?php if ($app->get('offline_image')) : ?>
+        <?php if ($app->get('offline_image') && file_exists(explode('#',$app->get('offline_image'))[0])) : ?>
             <img src="<?php echo $app->get('offline_image'); ?>" alt="<?php echo htmlspecialchars($app->get('sitename'), ENT_COMPAT, 'UTF-8'); ?>" />
         <?php endif; ?>
         <h1>

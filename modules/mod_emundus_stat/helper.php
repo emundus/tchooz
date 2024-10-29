@@ -1,8 +1,13 @@
 <?php
+
+use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
+use Joomla\CMS\Uri\Uri;
+
 defined('_JEXEC') or die('Access Deny');
 
 jimport('joomla.log.log');
-JLog::addLogger(['text_file' => 'com_emundus.stat.php'], JLog::ALL, ['com_emundus']);
+Log::addLogger(['text_file' => 'com_emundus.stat.php'], Log::ALL, ['com_emundus']);
 
 class modEmundusStatHelper
 {
@@ -12,8 +17,9 @@ class modEmundusStatHelper
 	 */
 	public function codeProgramUser()
 	{
-		$db      = JFactory::getDBO();
-		$session = JFactory::getSession();
+		$db      = Factory::getContainer()->get('DatabaseDriver');
+		$app = Factory::getApplication();
+		$session = $app->getSession();
 		$user    = $session->get('emundusUser');
 
 		try {
@@ -23,8 +29,8 @@ class modEmundusStatHelper
 			return $db->loadColumn();
 		}
 		catch (Exception $e) {
-			$error = JUri::getInstance() . ' :: USER ID : ' . $user->id . '\n -> ' . $query;
-			JLog::add($error, JLog::ERROR, 'com_emundus');
+			$error = Uri::getInstance() . ' :: USER ID : ' . $user->id . '\n -> ' . $query;
+			Log::add($error, Log::ERROR, 'com_emundus');
 
 			return -1;
 		}
@@ -35,8 +41,9 @@ class modEmundusStatHelper
 	 */
 	public function getView($view, $number, $group, $param)
 	{
-		$db      = JFactory::getDBO();
-		$session = JFactory::getSession();
+		$db      = Factory::getContainer()->get('DatabaseDriver');
+		$app = Factory::getApplication();
+		$session = $app->getSession();
 		$user    = $session->get('emundusUser');
 		$array   = json_decode($session->get('filterStat'), true);
 		try {
@@ -94,8 +101,8 @@ class modEmundusStatHelper
 			return $db->loadAssocList();
 		}
 		catch (Exception $e) {
-			$error = JUri::getInstance() . ' :: USER ID : ' . $user->id . '\n -> ' . $query;
-			JLog::add($error, JLog::ERROR, 'com_emundus');
+			$error = Uri::getInstance() . ' :: USER ID : ' . $user->id . '\n -> ' . $query;
+			Log::add($error, Log::ERROR, 'com_emundus');
 
 			return 0;
 		}
@@ -106,8 +113,9 @@ class modEmundusStatHelper
 	 */
 	public function getViewOrder($view, $number, $group, $order, $param)
 	{
-		$db      = JFactory::getDBO();
-		$session = JFactory::getSession();
+		$db      = Factory::getContainer()->get('DatabaseDriver');
+		$app = Factory::getApplication();
+		$session = $app->getSession();
 		$user    = $session->get('emundusUser');
 		$array   = json_decode($session->get('filterStat'), true);
 		try {
@@ -160,8 +168,8 @@ class modEmundusStatHelper
 			return $db->loadAssocList();
 		}
 		catch (Exception $e) {
-			$error = JUri::getInstance() . ' :: USER ID : ' . $user->id . '\n -> ' . $query;
-			JLog::add($error, JLog::ERROR, 'com_emundus');
+			$error = Uri::getInstance() . ' :: USER ID : ' . $user->id . '\n -> ' . $query;
+			Log::add($error, Log::ERROR, 'com_emundus');
 
 			return 0;
 		}
@@ -172,10 +180,12 @@ class modEmundusStatHelper
 	 */
 	public function getCampaign($param)
 	{
-		$db      = JFactory::getDbo();
-		$session = JFactory::getSession();
+		$db      = Factory::getContainer()->get('DatabaseDriver');
+		$app = Factory::getApplication();
+		$session = $app->getSession();
 		$user    = $session->get('emundusUser');
 		$query   = "SELECT id FROM `jos_emundus_setup_campaigns` WHERE `jos_emundus_setup_campaigns`.`training` IN (" . implode(",", $db->quote((new modEmundusStatHelper)->codeProgramUser())) . ")";
+
 		if (($param->get('program')) == true || ($param->get('year')) == true || ($param->get('campaign')) == true) {
 			$query .= " AND ";
 			if (($param->get('campaign')) == true)
@@ -190,7 +200,6 @@ class modEmundusStatHelper
 				$query .= "`jos_emundus_setup_campaigns`.`training` LIKE '" . $param->get('program') . "'";
 		}
 		else {
-			$session = JFactory::getSession();
 			$array   = json_decode($session->get('filterStat'), true);
 			if ($array["campaign"] != "-1" || $array["year"] != "-1" || $array["prog"] != "-1") {
 				$query .= " AND ";
@@ -214,8 +223,8 @@ class modEmundusStatHelper
 			return $db->loadAssocList();
 		}
 		catch (Exception $e) {
-			$error = JUri::getInstance() . ' :: USER ID : ' . $user->id . '\n -> ' . $query;
-			JLog::add($error, JLog::ERROR, 'com_emundus');
+			$error = Uri::getInstance() . ' :: USER ID : ' . $user->id . '\n -> ' . $query;
+			Log::add($error, Log::ERROR, 'com_emundus');
 
 			return 0;
 		}
@@ -228,9 +237,10 @@ class modEmundusStatHelper
 	{
 		$filtre = "";
 
-		$session = JFactory::getSession();
+		$db      = Factory::getContainer()->get('DatabaseDriver');
+		$app = Factory::getApplication();
+		$session = $app->getSession();
 		$array   = json_decode($session->get('filterStat'), true);
-		$db      = JFactory::getDbo();
 		$user    = $session->get('emundusUser');
 
 		$query = "SHOW COLUMNS FROM `" . $view . "` LIKE 'campaign'";

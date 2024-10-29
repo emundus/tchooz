@@ -10,6 +10,21 @@
  * @copyright Copyright (C) 2013 Damien Barrère (http://www.crac-design.com). All rights reserved.
  * @license GNU General Public License version 2 or later; http://www.gnu.org/licenses/gpl-2.0.html
  */
+.dropfiles-content-table.dropfiles-content.dropfiles-table-content-hidden.colstyle .mediaTableMenu.mediaTableMenuClosed,
+.dropfiles-content-table.dropfiles-content.dropfiles-table-content-hidden .table {
+  visibility: hidden;
+  margin: 0;
+}
+.dropfiles-content-table.dropfiles-content.dropfiles-table-content-hidden .dropfiles-container-table {
+  overflow: hidden;
+}
+.dropfiles-content-table.dropfiles-content.dropfiles-table-content-hidden .mediaTableWrapperWithMenu {
+  padding: 0 !important;
+}
+.dropfiles-content-table.dropfiles-content.dropfiles-table-content-hidden .table thead th {
+  padding: 0 !important;
+  line-height: 0;
+}
 .dropfiles-content-table.dropfiles-content tr, .dropfiles-content-table.dropfiles-content td, .dropfiles-content-table.dropfiles-content thead, .dropfiles-content-table.dropfiles-content tbody, .dropfiles-content-table.dropfiles-content th {
   border: none;
   font-size: 13px;
@@ -23,10 +38,6 @@
 }
 .dropfiles-content-table.dropfiles-content a:focus {
   outline: none;
-}
-.dropfiles-content-table.dropfiles-content a .zmdi:not(.zmdi-check-all) {
-  font-size: 16px;
-  vertical-align: middle;
 }
 .dropfiles-content-table.dropfiles-content td.file_size, .dropfiles-content-table.dropfiles-content td.file_hits {
   white-space: nowrap;
@@ -42,7 +53,7 @@
   width: 100%;
   display: table;
   table-layout: auto;
-  box-sizing: content-box;
+  box-sizing: border-box;
   background-color: #fff;
   color: #999999;
   border: none;
@@ -94,6 +105,9 @@
   background-color: #fff;
   color: #666666;
   border: none !important;
+}
+.dropfiles-content-table.dropfiles-content .table thead th.drop-col-pd-right {
+  padding-right: 30px !important;
 }
 .dropfiles-content-table.dropfiles-content .table caption + thead tr:first-child th, .dropfiles-content-table.dropfiles-content .table caption + thead tr:first-child td {
   border-top: 0;
@@ -314,6 +328,7 @@
   display: inline-block;
   box-sizing: unset;
   vertical-align: middle;
+  margin-top: 5px;
 }
 .dropfiles-content-table.colstyle .mediaTableMenu ul {
   padding: 0 10px 5px 10px !important;
@@ -336,14 +351,14 @@
   margin: 3px 0;
 }
 .dropfiles-content-table.colstyle .mediaTableMenu ul input:before {
-  content: '';
+  content: "";
   display: inline-block;
   width: 16px;
   height: 16px;
-  margin-right: .5em;
+  margin-right: 0.5em;
   vertical-align: middle;
   font-size: 1em;
-  transition: .6s;
+  transition: 0.6s;
   text-align: center;
   background: #fff;
   border: 1px solid #808080;
@@ -358,7 +373,8 @@
   background: #efefef;
 }
 .dropfiles-content-table.colstyle .mediaTableMenu ul input:checked:before {
-  content: '\2714';
+  content: "✔";
+  font-family: arial, helvetica, sans-serif;
 }
 .dropfiles-content-table.colstyle .mediaTableMenu ul label {
   color: inherit;
@@ -447,7 +463,6 @@
   font-stretch: normal;
   font-style: normal;
   letter-spacing: normal;
-  clear: both;
 }
 .dropfiles-content-table .dropfiles-breadcrumbs-table .openlink-manage-files:hover, .dropfiles-content-table .dropfiles-breadcrumbs-table .openlink-manage-files:focus,
 .dropfiles-content-table .dropfiles-manage-files .openlink-manage-files:hover,
@@ -468,11 +483,9 @@
   padding-top: 1em !important;
 }
 
-html[dir='rtl'] .dropfiles-foldertree-table {
+html[dir=rtl] .dropfiles-foldertree-table {
   float: right;
 }
-html[dir='rtl'] .dropfiles-content-table.dropfiles-content .table th, html[dir='rtl'] .dropfiles-content-table.dropfiles-content .table td {
+html[dir=rtl] .dropfiles-content-table.dropfiles-content .table th, html[dir=rtl] .dropfiles-content-table.dropfiles-content .table td {
   text-align: right;
 }
-
-/*# sourceMappingURL=style_ver5.4.css.map */

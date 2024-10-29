@@ -6,6 +6,9 @@ use Joomla\CMS\Router\Route;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\Session\Session;
+use Joomla\CMS\HTML\HTMLHelper;
+
+HTMLHelper::_('bootstrap.modal');
 
 // styles ('data-xxx' for J3 and 'data-bs-xxxx' for J4)
 $dropdown_style = "data-bs-toggle";
@@ -219,7 +222,7 @@ if (version_compare(JVERSION, '4.0', 'ge')) {
 					<a class="dropdown-item" href="<?php echo Route::_('index.php?option=com_securitycheckpro&controller=firewallconfig&view=firewallconfig&'. Session::getFormToken() .'=1');?>"><span class="fa fa-wrench"></span><?php echo Text::_('COM_SECURITYCHECKPRO_WAF_CONFIG'); ?></a>
 				</li>
 				<li>
-					<a class="dropdown-item" href="<?php echo Route::_('index.php?option=com_securitycheckpro&controller=cron&view=cron&'. Session::getFormToken() .'=1');?>"><span class="fa fa-wrench"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_CRON_CONFIGURATION'); ?></a>
+					<a class="dropdown-item" href="<?php echo Route::_('index.php?option=com_scheduler&view=tasks');?>"><span class="fa fa-wrench"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_CRON_CONFIGURATION'); ?></a>
 				</li>
 				<li>
 					<a class="dropdown-item" href="<?php echo Route::_('index.php?option=com_securitycheckpro&controller=rules&view=rules&'. Session::getFormToken() .'=1');

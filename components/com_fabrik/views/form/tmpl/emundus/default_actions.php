@@ -10,6 +10,8 @@
  */
 
 // No direct access
+use Joomla\CMS\Factory;
+
 defined('_JEXEC') or die('Restricted access');
 
 $form = $this->form;
@@ -30,7 +32,7 @@ if ( $form->prevButton || $form->nextButton ) {
 if ($this->hasActions) : ?>
 <div class="fabrikActions form-actions tw-p-0 tw-m-0">
 	<div
-        <?php if ($form->id != 307) : ?>
+		<?php if (!($form->db_table_name == 'jos_emundus_users' && Factory::getApplication()->getIdentity()->guest == 1)) : ?>
             class="tw-flex <?php if($countActions > 1) : ?>tw-justify-between tw-items-center<?php else : ?>tw-justify-end<?php endif; ?>"
         <?php endif; ?>
     >
@@ -40,7 +42,7 @@ if ($this->hasActions) : ?>
                 <?php
                 if($form->gobackButton)
                 {
-                    echo '<div class="em-goback-btn tw-flex tw-items-center"><span class="material-icons-outlined" style="color:var(--neutral-900);">navigate_before</span>';
+                    echo '<div class="em-goback-btn tw-flex tw-items-center"><span class="material-symbols-outlined tw-text-neutral-600">navigate_before</span>';
 	                echo $form->gobackButton;
                     echo '</div>';
                 }

@@ -6,6 +6,8 @@ use JFactory;
 use JLog;
 use Throwable;
 
+use Joomla\CMS\Factory;
+
 class Files
 {
 	protected \Joomla\CMS\User\User $current_user;
@@ -384,6 +386,10 @@ class Files
 
 		if ($status_access) {
 			$select[] = 'ess.value as status,ess.class as status_color';
+		}
+
+		if(isset($params->display_filter_campaigns) && $params->display_filter_campaigns == 1){
+			$select[] = 'CONCAT(esc.label, " (", esc.year, ")") as campaign_label';
 		}
 
 		if (isset($params->display_group_assoc) && $params->display_group_assoc == 1) {
@@ -832,7 +838,7 @@ class Files
 
 	public function getFile($fnum)
 	{
-		$db = JFactory::getDbo();
+		$db = Factory::getContainer()->get('DatabaseDriver');
 
 		$select     = $this->buildSelect(false);
 		$left_joins = $this->buildLeftJoin(null, false);

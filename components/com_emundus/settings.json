@@ -1,0 +1,14 @@
+{
+  "vetur.validation.template": false,
+  "vetur.format.defaultFormatter.html": "none",
+  "editor.formatOnSave": false,
+  "[javascript]": {
+    "editor.formatOnSave": true
+  },
+  "[vue]": {
+    "editor.formatOnSave": true
+  },
+  "[php]": {
+    "editor.formatOnSave": true
+  }
+}

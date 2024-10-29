@@ -62,7 +62,7 @@
     <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_toolbar</field>
-    <field name="access">3</field>
+    <field name="access">1</field>
     <field name="showtitle">1</field>
     <field name="params"></field>
     <field name="client_id">1</field>
@@ -622,9 +622,9 @@
     <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_emundus_dashboard_vue</field>
-    <field name="access">7</field>
+    <field name="access">6</field>
     <field name="showtitle">0</field>
-    <field name="params">{&quot;profile&quot;:[&quot;1&quot;,&quot;2&quot;],&quot;filter_programmes&quot;:&quot;0&quot;,&quot;colors&quot;:&quot;#16AFE1, #78dc6e&quot;,&quot;display_name&quot;:&quot;1&quot;,&quot;display_description&quot;:&quot;0&quot;,&quot;display_shapes&quot;:&quot;1&quot;,&quot;display_dashboard_tchoozy&quot;:&quot;1&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="params">{&quot;profile&quot;:[&quot;1&quot;,&quot;2&quot;,&quot;5&quot;,&quot;6&quot;],&quot;filter_programmes&quot;:&quot;0&quot;,&quot;colors&quot;:&quot;#16AFE1, #78dc6e&quot;,&quot;display_name&quot;:&quot;1&quot;,&quot;display_description&quot;:&quot;0&quot;,&quot;display_shapes&quot;:&quot;1&quot;,&quot;display_dashboard_tchoozy&quot;:&quot;1&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
     <field name="client_id">0</field>
     <field name="language">*</field>
    </row>
@@ -634,7 +634,7 @@
     <field name="title">[CAMPAIGNS] Guest</field>
     <field name="note"></field>
     <field name="content"></field>
-    <field name="ordering">1</field>
+    <field name="ordering">4</field>
     <field name="position">content-bottom-a</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -644,7 +644,7 @@
     <field name="module">mod_emundus_campaign</field>
     <field name="access">9</field>
     <field name="showtitle">0</field>
-    <field name="params">{&quot;mod_em_campaign_layout&quot;:&quot;default_tchooz&quot;,&quot;mod_em_campaign_itemid&quot;:&quot;&quot;,&quot;mod_em_campaign_itemid2&quot;:&quot;133&quot;,&quot;mod_em_campaign_link&quot;:&quot;connexion&quot;,&quot;mod_em_campaign_date_format&quot;:&quot;d\/m\/Y \u00e0 H\\hi&quot;,&quot;mod_em_campaign_display_svg&quot;:&quot;1&quot;,&quot;mod_em_campaign_display_hover_offset&quot;:&quot;1&quot;,&quot;mod_em_campaign_get_link&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_camp_start_date&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_camp_end_date&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_formation_start_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_formation_end_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_admission_start_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_admission_end_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_timezone&quot;:&quot;1&quot;,&quot;mod_em_campaign_list_sections&quot;:[&quot;intro&quot;],&quot;mod_em_campaign_intro&quot;:&quot;&quot;,&quot;mod_em_campaign_show_search&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_results&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_filters&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_filters_list&quot;:[&quot;programme&quot;],&quot;mod_em_campaign_show_sort&quot;:&quot;1&quot;,&quot;mod_em_campaign_sort_list&quot;:[&quot;programme&quot;],&quot;mod_em_campaign_list_tab&quot;:[&quot;current&quot;,&quot;futur&quot;],&quot;mod_em_campaign_show_programme&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_programme_logo&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_pinned_campaign&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_apply_button&quot;:&quot;0&quot;,&quot;mod_em_campaign_groupby&quot;:&quot;0&quot;,&quot;mod_em_campaign_groupby_closed&quot;:&quot;0&quot;,&quot;mod_em_campaign_orderby&quot;:&quot;start_date&quot;,&quot;mod_em_campaign_order_type&quot;:&quot;desc&quot;,&quot;mod_em_campaign_get_teaching_unity&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_nav_order&quot;:&quot;1&quot;,&quot;mod_em_program_code&quot;:&quot;&quot;,&quot;mod_em_ignored_program_code&quot;:&quot;&quot;,&quot;mod_em_campaign_details_show_programme&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_faq&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_documents&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_contact&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_registration&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_registration_steps&quot;:{&quot;mod_em_campaign_show_registration_steps0&quot;:{&quot;mod_em_campaign_show_registration_steps_text&quot;:&quot;&quot;}},&quot;mod_em_campaign_allow_alerting&quot;:&quot;1&quot;,&quot;mod_em_campaign_google_schema&quot;:&quot;1&quot;,&quot;mod_em_campaign_class&quot;:&quot;&quot;,&quot;mod_em_campaign_show_localedate&quot;:&quot;0&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="params">{&quot;mod_em_campaign_layout&quot;:&quot;default_tchooz&quot;,&quot;mod_em_campaign_itemid&quot;:&quot;&quot;,&quot;mod_em_campaign_itemid2&quot;:&quot;133&quot;,&quot;mod_em_campaign_link&quot;:&quot;connexion&quot;,&quot;mod_em_campaign_date_format&quot;:&quot;d\/m\/Y \u00e0 H\\hi&quot;,&quot;mod_em_campaign_display_svg&quot;:&quot;1&quot;,&quot;mod_em_campaign_display_hover_offset&quot;:&quot;1&quot;,&quot;mod_em_campaign_get_link&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_camp_start_date&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_camp_end_date&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_formation_start_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_formation_end_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_admission_start_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_admission_end_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_timezone&quot;:&quot;1&quot;,&quot;mod_em_campaign_list_sections&quot;:[&quot;intro&quot;],&quot;mod_em_campaign_intro&quot;:&quot;&quot;,&quot;mod_em_campaign_show_search&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_results&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_filters&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_filters_list&quot;:[&quot;programme&quot;],&quot;mod_em_campaign_show_sort&quot;:&quot;1&quot;,&quot;mod_em_campaign_sort_list&quot;:[&quot;programme&quot;],&quot;mod_em_campaign_list_tab&quot;:[&quot;current&quot;,&quot;futur&quot;],&quot;mod_em_campaign_show_programme&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_programme_logo&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_pinned_campaign&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_apply_button&quot;:&quot;0&quot;,&quot;mod_em_campaign_groupby&quot;:&quot;0&quot;,&quot;mod_em_campaign_groupby_closed&quot;:&quot;0&quot;,&quot;mod_em_campaign_orderby&quot;:&quot;end_date&quot;,&quot;mod_em_campaign_order_type&quot;:&quot;desc&quot;,&quot;mod_em_campaign_get_teaching_unity&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_nav_order&quot;:&quot;1&quot;,&quot;mod_em_program_code&quot;:&quot;&quot;,&quot;mod_em_ignored_program_code&quot;:&quot;&quot;,&quot;mod_em_campaign_details_show_programme&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_faq&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_documents&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_contact&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_registration&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_registration_steps&quot;:{&quot;mod_em_campaign_show_registration_steps0&quot;:{&quot;mod_em_campaign_show_registration_steps_text&quot;:&quot;&quot;}},&quot;mod_em_campaign_allow_alerting&quot;:&quot;1&quot;,&quot;mod_em_campaign_google_schema&quot;:&quot;1&quot;,&quot;mod_em_campaign_class&quot;:&quot;&quot;,&quot;mod_em_campaign_show_localedate&quot;:&quot;0&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
     <field name="client_id">0</field>
     <field name="language">*</field>
    </row>
@@ -654,7 +654,7 @@
     <field name="title">[CAMPAIGNS] Details guest</field>
     <field name="note"></field>
     <field name="content"></field>
-    <field name="ordering">1</field>
+    <field name="ordering">5</field>
     <field name="position">content-bottom-a</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -664,7 +664,7 @@
     <field name="module">mod_emundus_campaign</field>
     <field name="access">9</field>
     <field name="showtitle">0</field>
-    <field name="params">{&quot;mod_em_campaign_layout&quot;:&quot;tchooz_single_campaign&quot;,&quot;mod_em_campaign_itemid&quot;:&quot;&quot;,&quot;mod_em_campaign_itemid2&quot;:&quot;&quot;,&quot;mod_em_campaign_link&quot;:&quot;connexion&quot;,&quot;mod_em_campaign_date_format&quot;:&quot;d\/m\/Y \u00e0 H\\hi&quot;,&quot;mod_em_campaign_display_svg&quot;:&quot;1&quot;,&quot;mod_em_campaign_display_hover_offset&quot;:&quot;1&quot;,&quot;mod_em_campaign_get_link&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_camp_start_date&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_camp_end_date&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_formation_start_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_formation_end_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_admission_start_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_admission_end_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_timezone&quot;:&quot;1&quot;,&quot;mod_em_campaign_list_sections&quot;:[&quot;intro&quot;],&quot;mod_em_campaign_intro&quot;:&quot;&quot;,&quot;mod_em_campaign_show_search&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_results&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_filters&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_filters_list&quot;:[&quot;programme&quot;],&quot;mod_em_campaign_show_sort&quot;:&quot;1&quot;,&quot;mod_em_campaign_sort_list&quot;:[&quot;programme&quot;],&quot;mod_em_campaign_list_tab&quot;:[&quot;current&quot;,&quot;futur&quot;,&quot;past&quot;,&quot;all&quot;],&quot;mod_em_campaign_show_programme&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_programme_logo&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_pinned_campaign&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_apply_button&quot;:&quot;0&quot;,&quot;mod_em_campaign_groupby&quot;:&quot;0&quot;,&quot;mod_em_campaign_orderby&quot;:&quot;start_date&quot;,&quot;mod_em_campaign_order_type&quot;:&quot;asc&quot;,&quot;mod_em_campaign_get_teaching_unity&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_nav_order&quot;:&quot;1&quot;,&quot;mod_em_program_code&quot;:&quot;&quot;,&quot;mod_em_ignored_program_code&quot;:&quot;&quot;,&quot;mod_em_campaign_param_showcampaign&quot;:&quot;1&quot;,&quot;mod_em_campaign_details_show_programme&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_faq&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_documents&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_contact&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_registration&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_registration_steps&quot;:{&quot;mod_em_campaign_show_registration_steps0&quot;:{&quot;mod_em_campaign_show_registration_steps_text&quot;:&quot;&quot;}},&quot;mod_em_campaign_allow_alerting&quot;:&quot;0&quot;,&quot;mod_em_campaign_google_schema&quot;:&quot;0&quot;,&quot;mod_em_campaign_class&quot;:&quot;&quot;,&quot;mod_em_campaign_show_localedate&quot;:&quot;0&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="params">{&quot;mod_em_campaign_layout&quot;:&quot;tchooz_single_campaign&quot;,&quot;mod_em_campaign_itemid&quot;:&quot;&quot;,&quot;mod_em_campaign_itemid2&quot;:&quot;&quot;,&quot;mod_em_campaign_link&quot;:&quot;connexion&quot;,&quot;mod_em_campaign_date_format&quot;:&quot;d\/m\/Y \u00e0 H\\hi&quot;,&quot;mod_em_campaign_display_svg&quot;:&quot;1&quot;,&quot;mod_em_campaign_display_hover_offset&quot;:&quot;1&quot;,&quot;mod_em_campaign_get_link&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_camp_start_date&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_camp_end_date&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_formation_start_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_formation_end_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_admission_start_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_admission_end_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_timezone&quot;:&quot;1&quot;,&quot;mod_em_campaign_list_sections&quot;:[&quot;intro&quot;],&quot;mod_em_campaign_intro&quot;:&quot;&quot;,&quot;mod_em_campaign_show_search&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_results&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_filters&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_filters_list&quot;:[&quot;programme&quot;],&quot;mod_em_campaign_show_sort&quot;:&quot;1&quot;,&quot;mod_em_campaign_sort_list&quot;:[&quot;programme&quot;],&quot;mod_em_campaign_list_tab&quot;:[&quot;current&quot;,&quot;futur&quot;,&quot;past&quot;,&quot;all&quot;],&quot;mod_em_campaign_show_programme&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_programme_logo&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_pinned_campaign&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_apply_button&quot;:&quot;0&quot;,&quot;mod_em_campaign_groupby&quot;:&quot;0&quot;,&quot;mod_em_campaign_groupby_closed&quot;:&quot;0&quot;,&quot;mod_em_campaign_orderby&quot;:&quot;start_date&quot;,&quot;mod_em_campaign_order_type&quot;:&quot;asc&quot;,&quot;mod_em_campaign_get_teaching_unity&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_nav_order&quot;:&quot;1&quot;,&quot;mod_em_program_code&quot;:&quot;&quot;,&quot;mod_em_ignored_program_code&quot;:&quot;&quot;,&quot;mod_em_campaign_param_showcampaign&quot;:&quot;1&quot;,&quot;mod_em_campaign_details_show_programme&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_faq&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_documents&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_contact&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_registration&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_registration_steps&quot;:{&quot;mod_em_campaign_show_registration_steps0&quot;:{&quot;mod_em_campaign_show_registration_steps_text&quot;:&quot;&quot;}},&quot;mod_em_campaign_allow_alerting&quot;:&quot;0&quot;,&quot;mod_em_campaign_google_schema&quot;:&quot;0&quot;,&quot;mod_em_campaign_class&quot;:&quot;&quot;,&quot;mod_em_campaign_show_localedate&quot;:&quot;0&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
     <field name="client_id">0</field>
     <field name="language">*</field>
    </row>
@@ -674,7 +674,7 @@
     <field name="title">[APPLICATION] My application files</field>
     <field name="note"></field>
     <field name="content"></field>
-    <field name="ordering">1</field>
+    <field name="ordering">6</field>
     <field name="position">content-bottom-a</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -682,7 +682,7 @@
     <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_emundus_applications</field>
-    <field name="access">11</field>
+    <field name="access">2</field>
     <field name="showtitle">0</field>
     <field name="params">{&quot;description&quot;:&quot;&quot;,&quot;override_default_content&quot;:&quot;&quot;,&quot;show_add_application&quot;:&quot;0&quot;,&quot;position_add_application&quot;:&quot;3&quot;,&quot;show_show_campaigns&quot;:&quot;0&quot;,&quot;show_campaigns_url&quot;:&quot;liste-des-campagnes&quot;,&quot;cc_list_url&quot;:&quot;index.php?option=com_fabrik&amp;view=form&amp;formid=102&quot;,&quot;show_remove_files&quot;:&quot;1&quot;,&quot;show_archived_files&quot;:&quot;1&quot;,&quot;absolute_urls&quot;:&quot;1&quot;,&quot;order_applications&quot;:&quot;ecc.date_time&quot;,&quot;order_applications_asc_des&quot;:&quot;DESC&quot;,&quot;for_specific_profiles&quot;:&quot;&quot;,&quot;visible_status&quot;:&quot;&quot;,&quot;show_status&quot;:&quot;&quot;,&quot;selected_campaigns_exclusion&quot;:&quot;0&quot;,&quot;mod_em_applications_show_tabs&quot;:&quot;1&quot;,&quot;mod_em_application_group&quot;:[],&quot;mod_em_application_group_title_other&quot;:&quot;&quot;,&quot;mod_em_applications_show_filters&quot;:&quot;0&quot;,&quot;mod_em_applications_show_sort&quot;:&quot;0&quot;,&quot;mod_em_applications_show_search&quot;:&quot;1&quot;,&quot;mod_em_applications_show_hello_text&quot;:&quot;1&quot;,&quot;mod_em_application_date_format&quot;:&quot;d\/m\/Y H:i&quot;,&quot;show_fnum&quot;:&quot;1&quot;,&quot;mod_emundus_applications_show_programme&quot;:&quot;1&quot;,&quot;mod_emundus_applications_show_end_date&quot;:&quot;1&quot;,&quot;show_progress&quot;:&quot;1&quot;,&quot;show_progress_color&quot;:&quot;#EA5012&quot;,&quot;show_progress_forms&quot;:&quot;0&quot;,&quot;show_progress_color_forms&quot;:&quot;#EA5012&quot;,&quot;show_progress_documents&quot;:&quot;0&quot;,&quot;show_progress_color_documents&quot;:&quot;#EA5012&quot;,&quot;admission_status&quot;:&quot;&quot;,&quot;add_admission_prefix&quot;:&quot;1&quot;,&quot;show_state_files&quot;:&quot;0&quot;,&quot;show_payment_status&quot;:&quot;0&quot;,&quot;tags&quot;:&quot;&quot;,&quot;mod_emundus_applications_actions&quot;:[&quot;rename&quot;,&quot;copy&quot;,&quot;history&quot;],&quot;mod_em_application_custom_actions&quot;:{&quot;mod_em_application_custom_actions0&quot;:{&quot;mod_em_application_custom_action_status&quot;:[&quot;0&quot;],&quot;display_condition&quot;:&quot;&quot;,&quot;mod_em_application_custom_action_icon&quot;:&quot;&quot;,&quot;mod_em_application_custom_action_label&quot;:&quot;&quot;,&quot;mod_em_application_custom_action_type&quot;:&quot;1&quot;,&quot;mod_em_application_custom_action_link&quot;:&quot;&quot;,&quot;mod_em_application_custom_action_link_blank&quot;:&quot;1&quot;,&quot;mod_em_application_custom_action_new_status&quot;:&quot;1&quot;,&quot;mod_em_application_custom_action_new_status_message&quot;:&quot;&quot;}},&quot;layout&quot;:&quot;_:tchooz&quot;,&quot;moduleclass_sfx&quot;:&quot;list-group&quot;,&quot;cache&quot;:&quot;1&quot;,&quot;cache_time&quot;:&quot;900&quot;,&quot;cachemode&quot;:&quot;static&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
     <field name="client_id">0</field>
@@ -704,7 +704,7 @@
     <field name="module">mod_emundus_user_dropdown</field>
     <field name="access">1</field>
     <field name="showtitle">0</field>
-    <field name="params">{&quot;layout&quot;:&quot;_:tchooz&quot;,&quot;menu_name&quot;:&quot;usermenu&quot;,&quot;primary_color&quot;:&quot;ECF0F1&quot;,&quot;secondary_color&quot;:&quot;3A84C1&quot;,&quot;show_logout&quot;:&quot;1&quot;,&quot;show_update&quot;:&quot;1&quot;,&quot;url_logout&quot;:&quot;index.php&quot;,&quot;icon&quot;:&quot;big circular user outline icon&quot;,&quot;intro&quot;:&quot;&quot;,&quot;link_login&quot;:&quot;connexion&quot;,&quot;link_register&quot;:&quot;inscription&quot;,&quot;link_forgotten_password&quot;:&quot;mot-de-passe-oublie&quot;,&quot;link_edit_profile&quot;:&quot;138&quot;,&quot;show_registration&quot;:&quot;0&quot;,&quot;show_profile_picture&quot;:&quot;1&quot;,&quot;switch_profile_redirect&quot;:&quot;index.php&quot;,&quot;custom_actions&quot;:[],&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="params">{&quot;layout&quot;:&quot;_:tchooz&quot;,&quot;menu_name&quot;:&quot;usermenu&quot;,&quot;primary_color&quot;:&quot;ECF0F1&quot;,&quot;secondary_color&quot;:&quot;3A84C1&quot;,&quot;display_svg&quot;:&quot;1&quot;,&quot;show_logout&quot;:&quot;1&quot;,&quot;show_update&quot;:&quot;1&quot;,&quot;url_logout&quot;:&quot;index.php&quot;,&quot;icon&quot;:&quot;big circular user outline icon&quot;,&quot;intro&quot;:&quot;&quot;,&quot;link_login&quot;:&quot;connexion&quot;,&quot;link_register&quot;:&quot;inscription&quot;,&quot;link_forgotten_password&quot;:&quot;mot-de-passe-oublie&quot;,&quot;link_edit_profile&quot;:&quot;138&quot;,&quot;show_registration&quot;:&quot;0&quot;,&quot;show_profile_picture&quot;:&quot;1&quot;,&quot;switch_profile_redirect&quot;:&quot;index.php&quot;,&quot;custom_actions&quot;:[],&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
     <field name="client_id">0</field>
     <field name="language">*</field>
    </row>
@@ -729,26 +729,6 @@
     <field name="language">*</field>
    </row>
    <row>
-    <field name="id">117</field>
-    <field name="asset_id">126</field>
-    <field name="title">[GUEST] Back button</field>
-    <field name="note">Back button available on login and register views</field>
-    <field name="content">&lt;p&gt;&lt;a class=&quot;em-back-button em-pointer&quot; href=&quot;/&quot;&gt;&lt;span class=&quot;material-icons em-mr-4&quot;&gt;navigate_before&lt;/span&gt;Retour à la page d'accueil&lt;/a&gt;&lt;/p&gt;</field>
-    <field name="ordering">1</field>
-    <field name="position">header-a</field>
-    <field name="checked_out" value_is_null="true"></field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="publish_up" value_is_null="true"></field>
-    <field name="publish_down" value_is_null="true"></field>
-    <field name="published">1</field>
-    <field name="module">mod_custom</field>
-    <field name="access">9</field>
-    <field name="showtitle">0</field>
-    <field name="params">{&quot;prepare_content&quot;:0,&quot;backgroundimage&quot;:&quot;&quot;,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;cache&quot;:1,&quot;cache_time&quot;:900,&quot;cachemode&quot;:&quot;static&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
-    <field name="client_id">0</field>
-    <field name="language">*</field>
-   </row>
-   <row>
     <field name="id">118</field>
     <field name="asset_id">127</field>
     <field name="title">Menu</field>
@@ -762,7 +742,7 @@
     <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_emundusmenu</field>
-    <field name="access">11</field>
+    <field name="access">2</field>
     <field name="showtitle">0</field>
     <field name="params">{&quot;display_applicant_menu&quot;:&quot;1&quot;,&quot;applicant_menu&quot;:&quot;applicantmenu&quot;,&quot;menu_style&quot;:&quot;tchooz_vertical&quot;,&quot;startLevel&quot;:&quot;0&quot;,&quot;endLevel&quot;:&quot;0&quot;,&quot;showAllChildren&quot;:&quot;1&quot;,&quot;displayTchooz&quot;:&quot;1&quot;,&quot;window_open&quot;:&quot;&quot;,&quot;show_whitespace&quot;:&quot;0&quot;,&quot;cache&quot;:&quot;0&quot;,&quot;tag_id&quot;:&quot;em_user_menu&quot;,&quot;class_sfx&quot;:&quot;gf-menu l1 emundus&quot;,&quot;moduleclass_sfx&quot;:&quot;menu-block&quot;,&quot;maxdepth&quot;:&quot;10&quot;,&quot;menu_images&quot;:&quot;0&quot;,&quot;menu_images_align&quot;:&quot;0&quot;,&quot;menu_images_link&quot;:&quot;0&quot;,&quot;expand_menu&quot;:&quot;0&quot;,&quot;activate_parent&quot;:&quot;0&quot;,&quot;full_active_id&quot;:&quot;0&quot;,&quot;indent_image&quot;:&quot;0&quot;,&quot;spacer&quot;:&quot;&quot;,&quot;end_spacer&quot;:&quot;&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
     <field name="client_id">0</field>
@@ -774,7 +754,7 @@
     <field name="title">[CAMPAIGNS] Logged</field>
     <field name="note"></field>
     <field name="content"></field>
-    <field name="ordering">1</field>
+    <field name="ordering">7</field>
     <field name="position">content-bottom-a</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -784,7 +764,7 @@
     <field name="module">mod_emundus_campaign</field>
     <field name="access">2</field>
     <field name="showtitle">0</field>
-    <field name="params">{&quot;mod_em_campaign_layout&quot;:&quot;default_tchooz&quot;,&quot;mod_em_campaign_itemid&quot;:&quot;&quot;,&quot;mod_em_campaign_itemid2&quot;:&quot;133&quot;,&quot;mod_em_campaign_link&quot;:&quot;apply&quot;,&quot;mod_em_campaign_date_format&quot;:&quot;d\/m\/Y \u00e0 H\\hi&quot;,&quot;mod_em_campaign_display_svg&quot;:&quot;1&quot;,&quot;mod_em_campaign_display_hover_offset&quot;:&quot;1&quot;,&quot;mod_em_campaign_get_link&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_camp_start_date&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_camp_end_date&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_formation_start_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_formation_end_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_admission_start_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_admission_end_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_timezone&quot;:&quot;1&quot;,&quot;mod_em_campaign_list_sections&quot;:[&quot;intro&quot;],&quot;mod_em_campaign_intro&quot;:&quot;&quot;,&quot;mod_em_campaign_show_search&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_results&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_filters&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_filters_list&quot;:[&quot;programme&quot;],&quot;mod_em_campaign_show_sort&quot;:&quot;1&quot;,&quot;mod_em_campaign_sort_list&quot;:[&quot;programme&quot;],&quot;mod_em_campaign_list_tab&quot;:[&quot;current&quot;,&quot;futur&quot;,&quot;past&quot;,&quot;all&quot;],&quot;mod_em_campaign_show_programme&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_programme_logo&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_pinned_campaign&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_apply_button&quot;:&quot;0&quot;,&quot;mod_em_campaign_groupby&quot;:&quot;0&quot;,&quot;mod_em_campaign_groupby_closed&quot;:&quot;0&quot;,&quot;mod_em_campaign_orderby&quot;:&quot;end_date&quot;,&quot;mod_em_campaign_order_type&quot;:&quot;desc&quot;,&quot;mod_em_campaign_get_teaching_unity&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_nav_order&quot;:&quot;1&quot;,&quot;mod_em_program_code&quot;:&quot;&quot;,&quot;mod_em_ignored_program_code&quot;:&quot;&quot;,&quot;mod_em_campaign_details_show_programme&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_faq&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_documents&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_contact&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_registration&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_registration_steps&quot;:{&quot;mod_em_campaign_show_registration_steps0&quot;:{&quot;mod_em_campaign_show_registration_steps_text&quot;:&quot;&quot;}},&quot;mod_em_campaign_allow_alerting&quot;:&quot;1&quot;,&quot;mod_em_campaign_google_schema&quot;:&quot;1&quot;,&quot;mod_em_campaign_class&quot;:&quot;&quot;,&quot;mod_em_campaign_show_localedate&quot;:&quot;0&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="params">{&quot;mod_em_campaign_layout&quot;:&quot;default_tchooz&quot;,&quot;mod_em_campaign_itemid&quot;:&quot;&quot;,&quot;mod_em_campaign_itemid2&quot;:&quot;133&quot;,&quot;mod_em_campaign_link&quot;:&quot;apply&quot;,&quot;mod_em_campaign_date_format&quot;:&quot;d\/m\/Y \u00e0 H\\hi&quot;,&quot;mod_em_campaign_display_svg&quot;:&quot;1&quot;,&quot;mod_em_campaign_display_hover_offset&quot;:&quot;1&quot;,&quot;mod_em_campaign_get_link&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_camp_start_date&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_camp_end_date&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_formation_start_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_formation_end_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_admission_start_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_admission_end_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_timezone&quot;:&quot;1&quot;,&quot;mod_em_campaign_intro&quot;:&quot;&quot;,&quot;mod_em_campaign_show_search&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_results&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_filters&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_filters_list&quot;:[&quot;programme&quot;],&quot;mod_em_campaign_show_sort&quot;:&quot;1&quot;,&quot;mod_em_campaign_sort_list&quot;:[&quot;programme&quot;],&quot;mod_em_campaign_list_tab&quot;:[&quot;current&quot;],&quot;mod_em_campaign_show_programme&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_programme_logo&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_pinned_campaign&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_apply_button&quot;:&quot;0&quot;,&quot;mod_em_campaign_groupby&quot;:&quot;0&quot;,&quot;mod_em_campaign_groupby_closed&quot;:&quot;0&quot;,&quot;mod_em_campaign_orderby&quot;:&quot;end_date&quot;,&quot;mod_em_campaign_order_type&quot;:&quot;desc&quot;,&quot;mod_em_campaign_get_teaching_unity&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_nav_order&quot;:&quot;1&quot;,&quot;mod_em_program_code&quot;:&quot;&quot;,&quot;mod_em_ignored_program_code&quot;:&quot;&quot;,&quot;mod_em_campaign_details_show_programme&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_faq&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_documents&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_contact&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_registration&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_registration_steps&quot;:{&quot;mod_em_campaign_show_registration_steps0&quot;:{&quot;mod_em_campaign_show_registration_steps_text&quot;:&quot;&quot;}},&quot;mod_em_campaign_allow_alerting&quot;:&quot;1&quot;,&quot;mod_em_campaign_google_schema&quot;:&quot;1&quot;,&quot;mod_em_campaign_class&quot;:&quot;&quot;,&quot;mod_em_campaign_show_localedate&quot;:&quot;0&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
     <field name="client_id">0</field>
     <field name="language">*</field>
    </row>
@@ -804,7 +784,7 @@
     <field name="module">mod_emundus_footer</field>
     <field name="access">1</field>
     <field name="showtitle">0</field>
-    <field name="params">{&quot;mod_emundus_footer_client_link&quot;:&quot;&quot;,&quot;mod_emundus_footer_merge_two_columns&quot;:0,&quot;mod_emundus_footer_texte_col_1&quot;:&quot;&quot;,&quot;mod_emundus_footer_texte_col_2&quot;:&quot;&quot;,&quot;mod_emundus_footer_display_tchooz_logo&quot;:0,&quot;mod_emundus_footer_display_powered_by&quot;:1,&quot;mod_emundus_footer_legal_info&quot;:1,&quot;mod_emundus_footer_data_privacy&quot;:1,&quot;mod_emundus_footer_rights&quot;:1,&quot;mod_emundus_footer_cookies&quot;:1,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="params">{&quot;mod_emundus_footer_client_link&quot;:&quot;&quot;,&quot;mod_emundus_footer_merge_two_columns&quot;:0,&quot;mod_emundus_footer_texte_col_1&quot;:&quot;&quot;,&quot;mod_emundus_footer_texte_col_2&quot;:&quot;&quot;,&quot;mod_emundus_footer_display_tchooz_logo&quot;:0,&quot;mod_emundus_footer_display_powered_by&quot;:1,&quot;mod_emundus_footer_legal_info&quot;:1,&quot;mod_emundus_footer_data_privacy&quot;:1,&quot;mod_emundus_footer_rights&quot;:1,&quot;mod_emundus_footer_cookies&quot;:1,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;,&quot;mod_emundus_footer_accessibility&quot;:1}</field>
     <field name="client_id">0</field>
     <field name="language">*</field>
    </row>
@@ -834,7 +814,7 @@
     <field name="title">[CAMPAIGNS] Details logged</field>
     <field name="note"></field>
     <field name="content"></field>
-    <field name="ordering">1</field>
+    <field name="ordering">8</field>
     <field name="position">content-bottom-a</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -844,7 +824,7 @@
     <field name="module">mod_emundus_campaign</field>
     <field name="access">2</field>
     <field name="showtitle">0</field>
-    <field name="params">{&quot;mod_em_campaign_layout&quot;:&quot;tchooz_single_campaign&quot;,&quot;mod_em_campaign_itemid&quot;:&quot;&quot;,&quot;mod_em_campaign_itemid2&quot;:&quot;&quot;,&quot;mod_em_campaign_link&quot;:&quot;apply&quot;,&quot;mod_em_campaign_date_format&quot;:&quot;d\/m\/Y \u00e0 H\\hi&quot;,&quot;mod_em_campaign_display_svg&quot;:&quot;1&quot;,&quot;mod_em_campaign_display_hover_offset&quot;:&quot;1&quot;,&quot;mod_em_campaign_get_link&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_camp_start_date&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_camp_end_date&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_formation_start_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_formation_end_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_admission_start_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_admission_end_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_timezone&quot;:&quot;1&quot;,&quot;mod_em_campaign_list_sections&quot;:[&quot;intro&quot;],&quot;mod_em_campaign_intro&quot;:&quot;&quot;,&quot;mod_em_campaign_show_search&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_results&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_filters&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_filters_list&quot;:[&quot;programme&quot;],&quot;mod_em_campaign_show_sort&quot;:&quot;1&quot;,&quot;mod_em_campaign_sort_list&quot;:[&quot;programme&quot;],&quot;mod_em_campaign_list_tab&quot;:[&quot;current&quot;,&quot;futur&quot;,&quot;past&quot;,&quot;all&quot;],&quot;mod_em_campaign_show_programme&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_programme_logo&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_pinned_campaign&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_apply_button&quot;:&quot;0&quot;,&quot;mod_em_campaign_groupby&quot;:&quot;0&quot;,&quot;mod_em_campaign_orderby&quot;:&quot;start_date&quot;,&quot;mod_em_campaign_order_type&quot;:&quot;asc&quot;,&quot;mod_em_campaign_get_teaching_unity&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_nav_order&quot;:&quot;1&quot;,&quot;mod_em_program_code&quot;:&quot;&quot;,&quot;mod_em_ignored_program_code&quot;:&quot;&quot;,&quot;mod_em_campaign_param_showcampaign&quot;:&quot;1&quot;,&quot;mod_em_campaign_details_show_programme&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_faq&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_documents&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_contact&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_registration&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_registration_steps&quot;:{&quot;mod_em_campaign_show_registration_steps0&quot;:{&quot;mod_em_campaign_show_registration_steps_text&quot;:&quot;&quot;}},&quot;mod_em_campaign_allow_alerting&quot;:&quot;0&quot;,&quot;mod_em_campaign_google_schema&quot;:&quot;0&quot;,&quot;mod_em_campaign_class&quot;:&quot;&quot;,&quot;mod_em_campaign_show_localedate&quot;:&quot;0&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="params">{&quot;mod_em_campaign_layout&quot;:&quot;tchooz_single_campaign&quot;,&quot;mod_em_campaign_itemid&quot;:&quot;&quot;,&quot;mod_em_campaign_itemid2&quot;:&quot;&quot;,&quot;mod_em_campaign_link&quot;:&quot;apply&quot;,&quot;mod_em_campaign_date_format&quot;:&quot;d\/m\/Y \u00e0 H\\hi&quot;,&quot;mod_em_campaign_display_svg&quot;:&quot;1&quot;,&quot;mod_em_campaign_display_hover_offset&quot;:&quot;1&quot;,&quot;mod_em_campaign_get_link&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_camp_start_date&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_camp_end_date&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_formation_start_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_formation_end_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_admission_start_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_admission_end_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_timezone&quot;:&quot;1&quot;,&quot;mod_em_campaign_list_sections&quot;:[&quot;intro&quot;],&quot;mod_em_campaign_intro&quot;:&quot;&quot;,&quot;mod_em_campaign_show_search&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_results&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_filters&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_filters_list&quot;:[&quot;programme&quot;],&quot;mod_em_campaign_show_sort&quot;:&quot;1&quot;,&quot;mod_em_campaign_sort_list&quot;:[&quot;programme&quot;],&quot;mod_em_campaign_list_tab&quot;:[&quot;current&quot;,&quot;futur&quot;,&quot;past&quot;,&quot;all&quot;],&quot;mod_em_campaign_show_programme&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_programme_logo&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_pinned_campaign&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_apply_button&quot;:&quot;0&quot;,&quot;mod_em_campaign_groupby&quot;:&quot;0&quot;,&quot;mod_em_campaign_groupby_closed&quot;:&quot;0&quot;,&quot;mod_em_campaign_orderby&quot;:&quot;start_date&quot;,&quot;mod_em_campaign_order_type&quot;:&quot;asc&quot;,&quot;mod_em_campaign_get_teaching_unity&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_nav_order&quot;:&quot;1&quot;,&quot;mod_em_program_code&quot;:&quot;&quot;,&quot;mod_em_ignored_program_code&quot;:&quot;&quot;,&quot;mod_em_campaign_param_showcampaign&quot;:&quot;1&quot;,&quot;mod_em_campaign_details_show_programme&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_faq&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_documents&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_contact&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_registration&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_registration_steps&quot;:{&quot;mod_em_campaign_show_registration_steps0&quot;:{&quot;mod_em_campaign_show_registration_steps_text&quot;:&quot;&quot;}},&quot;mod_em_campaign_allow_alerting&quot;:&quot;0&quot;,&quot;mod_em_campaign_google_schema&quot;:&quot;0&quot;,&quot;mod_em_campaign_class&quot;:&quot;&quot;,&quot;mod_em_campaign_show_localedate&quot;:&quot;0&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
     <field name="client_id">0</field>
     <field name="language">*</field>
    </row>
@@ -856,8 +836,8 @@
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position">drawer</field>
-    <field name="checked_out">1</field>
-    <field name="checked_out_time">2024-03-01 09:49:36</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2023-09-28 16:03:39</field>
     <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
@@ -894,7 +874,7 @@
     <field name="title">[STATS] Query Builder</field>
     <field name="note"></field>
     <field name="content" value_is_null="true"></field>
-    <field name="ordering">1</field>
+    <field name="ordering">9</field>
     <field name="position">content-bottom-a</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -914,7 +894,7 @@
     <field name="title">[STATS] - Files created</field>
     <field name="note"></field>
     <field name="content" value_is_null="true"></field>
-    <field name="ordering">1</field>
+    <field name="ordering">10</field>
     <field name="position">content-bottom-a</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -934,7 +914,7 @@
     <field name="title">[STATS] Filter</field>
     <field name="note"></field>
     <field name="content" value_is_null="true"></field>
-    <field name="ordering">1</field>
+    <field name="ordering">11</field>
     <field name="position">content-bottom-a</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -964,7 +944,7 @@
     <field name="module">mod_emundus_filters</field>
     <field name="access">6</field>
     <field name="showtitle">0</field>
-    <field name="params">{&quot;filter_on_fnums&quot;:&quot;1&quot;,&quot;element_id&quot;:&quot;0&quot;,&quot;default_filter_element_ids&quot;:{&quot;default_filter_element_ids0&quot;:{&quot;id&quot;:&quot;0&quot;,&quot;join_table&quot;:&quot;&quot;,&quot;join_column_from&quot;:&quot;&quot;,&quot;join_column_to&quot;:&quot;&quot;}},&quot;filter_status&quot;:&quot;1&quot;,&quot;filter_status_order&quot;:&quot;0&quot;,&quot;filter_campaign&quot;:&quot;1&quot;,&quot;filter_campaigns_order&quot;:&quot;0&quot;,&quot;filter_programs&quot;:&quot;1&quot;,&quot;filter_programs_order&quot;:&quot;0&quot;,&quot;filter_years&quot;:&quot;1&quot;,&quot;filter_years_order&quot;:&quot;0&quot;,&quot;filter_tags&quot;:&quot;1&quot;,&quot;filter_tags_order&quot;:&quot;0&quot;,&quot;filter_published&quot;:&quot;1&quot;,&quot;filter_published_order&quot;:&quot;0&quot;,&quot;more_filter_elements&quot;:&quot;&quot;,&quot;layout&quot;:&quot;_:vue&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="params">{&quot;filter_on_fnums&quot;:&quot;1&quot;,&quot;element_id&quot;:&quot;0&quot;,&quot;default_filter_element_ids&quot;:{&quot;default_filter_element_ids0&quot;:{&quot;id&quot;:&quot;0&quot;,&quot;join_table&quot;:&quot;&quot;,&quot;join_column_from&quot;:&quot;&quot;,&quot;join_column_to&quot;:&quot;&quot;}},&quot;filter_status&quot;:&quot;1&quot;,&quot;filter_status_order&quot;:&quot;0&quot;,&quot;filter_campaign&quot;:&quot;1&quot;,&quot;filter_campaigns_order&quot;:&quot;0&quot;,&quot;filter_programs&quot;:&quot;1&quot;,&quot;filter_programs_order&quot;:&quot;0&quot;,&quot;filter_years&quot;:&quot;1&quot;,&quot;filter_years_order&quot;:&quot;0&quot;,&quot;filter_tags&quot;:&quot;1&quot;,&quot;filter_tags_order&quot;:&quot;0&quot;,&quot;filter_published&quot;:&quot;1&quot;,&quot;filter_published_order&quot;:&quot;0&quot;,&quot;filter_groups&quot;:&quot;0&quot;,&quot;filter_groups_order&quot;:&quot;0&quot;,&quot;more_filter_elements&quot;:[],&quot;layout&quot;:&quot;_:vue&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
     <field name="client_id">0</field>
     <field name="language">*</field>
    </row>
@@ -1176,15 +1156,808 @@
     <field name="content" value_is_null="true"></field>
     <field name="ordering">0</field>
     <field name="position">emundus_filters</field>
-    <field name="checked_out" value_is_null="true">1</field>
+    <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up" value_is_null="true"></field>
     <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_emundus_filters</field>
-    <field name="access">5</field>
+    <field name="access">6</field>
     <field name="showtitle">0</field>
     <field name="params">{&quot;filter_on_fnums&quot;:&quot;1&quot;,&quot;element_id&quot;:&quot;0&quot;,&quot;default_filter_element_ids&quot;:{&quot;default_filter_element_ids0&quot;:{&quot;id&quot;:&quot;0&quot;,&quot;join_table&quot;:&quot;&quot;,&quot;join_column_from&quot;:&quot;&quot;,&quot;join_column_to&quot;:&quot;&quot;}},&quot;count_filter_values&quot;:&quot;1&quot;,&quot;filter_status&quot;:&quot;1&quot;,&quot;filter_status_order&quot;:&quot;0&quot;,&quot;filter_campaign&quot;:&quot;1&quot;,&quot;filter_campaigns_order&quot;:&quot;0&quot;,&quot;filter_programs&quot;:&quot;1&quot;,&quot;filter_programs_order&quot;:&quot;0&quot;,&quot;filter_years&quot;:&quot;0&quot;,&quot;filter_years_order&quot;:&quot;0&quot;,&quot;filter_tags&quot;:&quot;1&quot;,&quot;filter_tags_order&quot;:&quot;0&quot;,&quot;filter_published&quot;:&quot;0&quot;,&quot;filter_published_order&quot;:&quot;0&quot;,&quot;more_filter_elements&quot;:{&quot;more_filter_elements0&quot;:{&quot;fabrik_element_id&quot;:&quot;6082&quot;,&quot;order&quot;:&quot;9&quot;}},&quot;more_fabrik_forms&quot;:[&quot;270&quot;],&quot;layout&quot;:&quot;_:vue&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">151</field>
+    <field name="asset_id">0</field>
+    <field name="title">[GUEST] Back button</field>
+    <field name="note">Back button available on login and register views</field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">header-a</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">1</field>
+    <field name="module">mod_emundus_back</field>
+    <field name="access">9</field>
+    <field name="showtitle">0</field>
+    <field name="params">{&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:0,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:0}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">152</field>
+    <field name="asset_id">0</field>
+    <field name="title">Version eMundus</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">1</field>
+    <field name="position">status</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up">2024-06-11 12:54:32</field>
+    <field name="publish_down">2099-01-01 00:00:00</field>
+    <field name="published">1</field>
+    <field name="module">mod_emundus_version</field>
+    <field name="access">3</field>
+    <field name="showtitle">0</field>
+    <field name="params">{&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="client_id">1</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">153</field>
+    <field name="asset_id">192</field>
+    <field name="title">Ressources et Notes</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">1</field>
+    <field name="position">cpanel</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up">2024-06-11 12:54:32</field>
+    <field name="publish_down">2099-01-01 00:00:00</field>
+    <field name="published">1</field>
+    <field name="module">mod_emundus_notes</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;ressources&quot;:[],&quot;note&quot;:&quot;&quot;,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="client_id">1</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">154</field>
+    <field name="asset_id">0</field>
+    <field name="title">Random products</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;&quot;,&quot;content_type&quot;:&quot;product&quot;,&quot;layout_type&quot;:&quot;div&quot;,&quot;columns&quot;:&quot;1&quot;,&quot;limit&quot;:&quot;3&quot;,&quot;random&quot;:&quot;1&quot;,&quot;order_dir&quot;:&quot;ASC&quot;,&quot;filter_type&quot;:&quot;1&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;content_synchronize&quot;:&quot;1&quot;,&quot;product_order&quot;:&quot;ordering&quot;,&quot;product_synchronize&quot;:&quot;1&quot;,&quot;recently_viewed&quot;:&quot;0&quot;,&quot;add_to_cart&quot;:&quot;1&quot;,&quot;add_to_wishlist&quot;:&quot;1&quot;,&quot;link_to_product_page&quot;:&quot;1&quot;,&quot;show_vote_product&quot;:&quot;0&quot;,&quot;show_price&quot;:&quot;1&quot;,&quot;price_with_tax&quot;:&quot;3&quot;,&quot;show_original_price&quot;:&quot;1&quot;,&quot;show_discount&quot;:&quot;1&quot;,&quot;price_display_type&quot;:&quot;cheapest&quot;,&quot;category_order&quot;:&quot;category_ordering&quot;,&quot;child_display_type&quot;:&quot;nochild&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;-1&quot;,&quot;number_of_products&quot;:&quot;0&quot;,&quot;only_if_products&quot;:&quot;0&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;img_title&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;#FFFFFF&quot;,&quot;margin&quot;:&quot;10&quot;,&quot;border_visible&quot;:&quot;0&quot;,&quot;rounded_corners&quot;:&quot;1&quot;,&quot;text_center&quot;:&quot;1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">155</field>
+    <field name="asset_id">0</field>
+    <field name="title">Recently viewed</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;&quot;,&quot;content_type&quot;:&quot;product&quot;,&quot;layout_type&quot;:&quot;div&quot;,&quot;columns&quot;:&quot;1&quot;,&quot;limit&quot;:&quot;3&quot;,&quot;random&quot;:&quot;-1&quot;,&quot;order_dir&quot;:&quot;ASC&quot;,&quot;filter_type&quot;:&quot;1&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;content_synchronize&quot;:&quot;0&quot;,&quot;product_order&quot;:&quot;inherit&quot;,&quot;product_synchronize&quot;:&quot;4&quot;,&quot;recently_viewed&quot;:&quot;1&quot;,&quot;add_to_cart&quot;:&quot;-1&quot;,&quot;add_to_wishlist&quot;:&quot;-1&quot;,&quot;link_to_product_page&quot;:&quot;-1&quot;,&quot;show_vote_product&quot;:&quot;-1&quot;,&quot;show_price&quot;:&quot;-1&quot;,&quot;price_with_tax&quot;:&quot;3&quot;,&quot;show_original_price&quot;:&quot;-1&quot;,&quot;show_discount&quot;:&quot;3&quot;,&quot;price_display_type&quot;:&quot;inherit&quot;,&quot;category_order&quot;:&quot;inherit&quot;,&quot;child_display_type&quot;:&quot;inherit&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;-1&quot;,&quot;number_of_products&quot;:&quot;-1&quot;,&quot;only_if_products&quot;:&quot;-1&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;inherit&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;&quot;,&quot;margin&quot;:&quot;&quot;,&quot;border_visible&quot;:&quot;-1&quot;,&quot;rounded_corners&quot;:&quot;-1&quot;,&quot;text_center&quot;:&quot;-1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">156</field>
+    <field name="asset_id">0</field>
+    <field name="title">Categories on 1 level</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;&quot;,&quot;content_type&quot;:&quot;category&quot;,&quot;layout_type&quot;:&quot;list&quot;,&quot;columns&quot;:&quot;1&quot;,&quot;limit&quot;:&quot;21&quot;,&quot;random&quot;:&quot;0&quot;,&quot;order_dir&quot;:&quot;ASC&quot;,&quot;filter_type&quot;:&quot;0&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;content_synchronize&quot;:&quot;0&quot;,&quot;product_order&quot;:&quot;ordering&quot;,&quot;product_synchronize&quot;:&quot;1&quot;,&quot;recently_viewed&quot;:&quot;0&quot;,&quot;add_to_cart&quot;:&quot;1&quot;,&quot;add_to_wishlist&quot;:&quot;1&quot;,&quot;link_to_product_page&quot;:&quot;1&quot;,&quot;show_vote_product&quot;:&quot;0&quot;,&quot;show_price&quot;:&quot;1&quot;,&quot;price_with_tax&quot;:&quot;0&quot;,&quot;show_original_price&quot;:&quot;1&quot;,&quot;show_discount&quot;:&quot;1&quot;,&quot;price_display_type&quot;:&quot;cheapest&quot;,&quot;category_order&quot;:&quot;category_ordering&quot;,&quot;child_display_type&quot;:&quot;allchilds&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;1&quot;,&quot;number_of_products&quot;:&quot;0&quot;,&quot;only_if_products&quot;:&quot;1&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;img_title&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;#FFFFFF&quot;,&quot;margin&quot;:&quot;10&quot;,&quot;border_visible&quot;:&quot;0&quot;,&quot;rounded_corners&quot;:&quot;1&quot;,&quot;text_center&quot;:&quot;1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">157</field>
+    <field name="asset_id">0</field>
+    <field name="title">Categories on 2 levels</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;&quot;,&quot;content_type&quot;:&quot;category&quot;,&quot;layout_type&quot;:&quot;list&quot;,&quot;columns&quot;:&quot;1&quot;,&quot;limit&quot;:&quot;21&quot;,&quot;random&quot;:&quot;0&quot;,&quot;order_dir&quot;:&quot;ASC&quot;,&quot;filter_type&quot;:&quot;0&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;content_synchronize&quot;:&quot;0&quot;,&quot;product_order&quot;:&quot;ordering&quot;,&quot;product_synchronize&quot;:&quot;1&quot;,&quot;recently_viewed&quot;:&quot;0&quot;,&quot;add_to_cart&quot;:&quot;1&quot;,&quot;add_to_wishlist&quot;:&quot;1&quot;,&quot;link_to_product_page&quot;:&quot;1&quot;,&quot;show_vote_product&quot;:&quot;0&quot;,&quot;show_price&quot;:&quot;1&quot;,&quot;price_with_tax&quot;:&quot;0&quot;,&quot;show_original_price&quot;:&quot;1&quot;,&quot;show_discount&quot;:&quot;1&quot;,&quot;price_display_type&quot;:&quot;cheapest&quot;,&quot;category_order&quot;:&quot;category_ordering&quot;,&quot;child_display_type&quot;:&quot;allchildsexpand&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;1&quot;,&quot;number_of_products&quot;:&quot;0&quot;,&quot;only_if_products&quot;:&quot;1&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;img_title&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;#FFFFFF&quot;,&quot;margin&quot;:&quot;10&quot;,&quot;border_visible&quot;:&quot;0&quot;,&quot;rounded_corners&quot;:&quot;1&quot;,&quot;text_center&quot;:&quot;1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">158</field>
+    <field name="asset_id">0</field>
+    <field name="title">Best sellers</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;&quot;,&quot;content_type&quot;:&quot;product&quot;,&quot;layout_type&quot;:&quot;div&quot;,&quot;columns&quot;:&quot;1&quot;,&quot;limit&quot;:&quot;21&quot;,&quot;random&quot;:&quot;0&quot;,&quot;order_dir&quot;:&quot;DESC&quot;,&quot;filter_type&quot;:&quot;1&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;content_synchronize&quot;:&quot;0&quot;,&quot;product_order&quot;:&quot;product_sales&quot;,&quot;product_synchronize&quot;:&quot;1&quot;,&quot;recently_viewed&quot;:&quot;0&quot;,&quot;add_to_cart&quot;:&quot;-1&quot;,&quot;add_to_wishlist&quot;:&quot;-1&quot;,&quot;link_to_product_page&quot;:&quot;-1&quot;,&quot;show_vote_product&quot;:&quot;-1&quot;,&quot;show_price&quot;:&quot;-1&quot;,&quot;price_with_tax&quot;:&quot;3&quot;,&quot;show_original_price&quot;:&quot;-1&quot;,&quot;show_discount&quot;:&quot;3&quot;,&quot;price_display_type&quot;:&quot;inherit&quot;,&quot;category_order&quot;:&quot;category_ordering&quot;,&quot;child_display_type&quot;:&quot;allchildsexpand&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;1&quot;,&quot;number_of_products&quot;:&quot;0&quot;,&quot;only_if_products&quot;:&quot;1&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;inherit&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;&quot;,&quot;margin&quot;:&quot;&quot;,&quot;border_visible&quot;:&quot;-1&quot;,&quot;rounded_corners&quot;:&quot;-1&quot;,&quot;text_center&quot;:&quot;-1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">159</field>
+    <field name="asset_id">0</field>
+    <field name="title">Latest products</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;&quot;,&quot;content_type&quot;:&quot;product&quot;,&quot;layout_type&quot;:&quot;div&quot;,&quot;columns&quot;:&quot;1&quot;,&quot;limit&quot;:&quot;21&quot;,&quot;random&quot;:&quot;0&quot;,&quot;order_dir&quot;:&quot;DESC&quot;,&quot;filter_type&quot;:&quot;1&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;content_synchronize&quot;:&quot;0&quot;,&quot;product_order&quot;:&quot;product_created&quot;,&quot;product_synchronize&quot;:&quot;1&quot;,&quot;recently_viewed&quot;:&quot;0&quot;,&quot;add_to_cart&quot;:&quot;-1&quot;,&quot;add_to_wishlist&quot;:&quot;-1&quot;,&quot;link_to_product_page&quot;:&quot;-1&quot;,&quot;show_vote_product&quot;:&quot;-1&quot;,&quot;show_price&quot;:&quot;-1&quot;,&quot;price_with_tax&quot;:&quot;3&quot;,&quot;show_original_price&quot;:&quot;-1&quot;,&quot;show_discount&quot;:&quot;3&quot;,&quot;price_display_type&quot;:&quot;inherit&quot;,&quot;category_order&quot;:&quot;category_ordering&quot;,&quot;child_display_type&quot;:&quot;allchildsexpand&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;1&quot;,&quot;number_of_products&quot;:&quot;0&quot;,&quot;only_if_products&quot;:&quot;1&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;inherit&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;&quot;,&quot;margin&quot;:&quot;&quot;,&quot;border_visible&quot;:&quot;-1&quot;,&quot;rounded_corners&quot;:&quot;-1&quot;,&quot;text_center&quot;:&quot;-1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">160</field>
+    <field name="asset_id">0</field>
+    <field name="title">Brands</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;&quot;,&quot;content_type&quot;:&quot;category&quot;,&quot;layout_type&quot;:&quot;div&quot;,&quot;columns&quot;:&quot;1&quot;,&quot;limit&quot;:&quot;21&quot;,&quot;random&quot;:&quot;0&quot;,&quot;order_dir&quot;:&quot;ASC&quot;,&quot;filter_type&quot;:&quot;0&quot;,&quot;selectparentlisting&quot;:&quot;10&quot;,&quot;content_synchronize&quot;:&quot;0&quot;,&quot;product_order&quot;:&quot;product_average_score&quot;,&quot;product_synchronize&quot;:&quot;1&quot;,&quot;recently_viewed&quot;:&quot;0&quot;,&quot;add_to_cart&quot;:&quot;-1&quot;,&quot;add_to_wishlist&quot;:&quot;-1&quot;,&quot;link_to_product_page&quot;:&quot;-1&quot;,&quot;show_vote_product&quot;:&quot;-1&quot;,&quot;show_price&quot;:&quot;-1&quot;,&quot;price_with_tax&quot;:&quot;3&quot;,&quot;show_original_price&quot;:&quot;-1&quot;,&quot;show_discount&quot;:&quot;3&quot;,&quot;price_display_type&quot;:&quot;inherit&quot;,&quot;category_order&quot;:&quot;category_id&quot;,&quot;child_display_type&quot;:&quot;allchilds&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;1&quot;,&quot;number_of_products&quot;:&quot;0&quot;,&quot;only_if_products&quot;:&quot;0&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;inherit&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;&quot;,&quot;margin&quot;:&quot;&quot;,&quot;border_visible&quot;:&quot;-1&quot;,&quot;rounded_corners&quot;:&quot;-1&quot;,&quot;text_center&quot;:&quot;-1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">161</field>
+    <field name="asset_id">0</field>
+    <field name="title">Best rated</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;&quot;,&quot;content_type&quot;:&quot;product&quot;,&quot;layout_type&quot;:&quot;div&quot;,&quot;columns&quot;:&quot;1&quot;,&quot;limit&quot;:&quot;21&quot;,&quot;random&quot;:&quot;0&quot;,&quot;order_dir&quot;:&quot;DESC&quot;,&quot;filter_type&quot;:&quot;1&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;content_synchronize&quot;:&quot;0&quot;,&quot;product_order&quot;:&quot;product_average_score&quot;,&quot;product_synchronize&quot;:&quot;1&quot;,&quot;recently_viewed&quot;:&quot;0&quot;,&quot;add_to_cart&quot;:&quot;-1&quot;,&quot;add_to_wishlist&quot;:&quot;-1&quot;,&quot;link_to_product_page&quot;:&quot;-1&quot;,&quot;show_vote_product&quot;:&quot;-1&quot;,&quot;show_price&quot;:&quot;-1&quot;,&quot;price_with_tax&quot;:&quot;3&quot;,&quot;show_original_price&quot;:&quot;-1&quot;,&quot;show_discount&quot;:&quot;3&quot;,&quot;price_display_type&quot;:&quot;inherit&quot;,&quot;category_order&quot;:&quot;category_id&quot;,&quot;child_display_type&quot;:&quot;allchilds&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;1&quot;,&quot;number_of_products&quot;:&quot;0&quot;,&quot;only_if_products&quot;:&quot;0&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;inherit&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;&quot;,&quot;margin&quot;:&quot;&quot;,&quot;border_visible&quot;:&quot;-1&quot;,&quot;rounded_corners&quot;:&quot;-1&quot;,&quot;text_center&quot;:&quot;-1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">162</field>
+    <field name="asset_id">0</field>
+    <field name="title">Related products</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;&quot;,&quot;content_type&quot;:&quot;product&quot;,&quot;layout_type&quot;:&quot;div&quot;,&quot;columns&quot;:&quot;3&quot;,&quot;limit&quot;:&quot;21&quot;,&quot;random&quot;:&quot;0&quot;,&quot;order_dir&quot;:&quot;ASC&quot;,&quot;filter_type&quot;:&quot;1&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;content_synchronize&quot;:&quot;1&quot;,&quot;product_order&quot;:&quot;ordering&quot;,&quot;product_synchronize&quot;:&quot;2&quot;,&quot;recently_viewed&quot;:&quot;0&quot;,&quot;add_to_cart&quot;:&quot;-1&quot;,&quot;add_to_wishlist&quot;:&quot;-1&quot;,&quot;link_to_product_page&quot;:&quot;-1&quot;,&quot;show_vote_product&quot;:&quot;-1&quot;,&quot;show_price&quot;:&quot;-1&quot;,&quot;price_with_tax&quot;:&quot;3&quot;,&quot;show_original_price&quot;:&quot;-1&quot;,&quot;show_discount&quot;:&quot;3&quot;,&quot;price_display_type&quot;:&quot;inherit&quot;,&quot;category_order&quot;:&quot;category_id&quot;,&quot;child_display_type&quot;:&quot;allchilds&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;1&quot;,&quot;number_of_products&quot;:&quot;0&quot;,&quot;only_if_products&quot;:&quot;0&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;inherit&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;&quot;,&quot;margin&quot;:&quot;&quot;,&quot;border_visible&quot;:&quot;-1&quot;,&quot;rounded_corners&quot;:&quot;-1&quot;,&quot;text_center&quot;:&quot;-1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">163</field>
+    <field name="asset_id">0</field>
+    <field name="title">Random products</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;&quot;,&quot;content_type&quot;:&quot;product&quot;,&quot;layout_type&quot;:&quot;div&quot;,&quot;columns&quot;:&quot;1&quot;,&quot;limit&quot;:&quot;3&quot;,&quot;random&quot;:&quot;1&quot;,&quot;order_dir&quot;:&quot;ASC&quot;,&quot;filter_type&quot;:&quot;1&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;content_synchronize&quot;:&quot;1&quot;,&quot;product_order&quot;:&quot;ordering&quot;,&quot;product_synchronize&quot;:&quot;1&quot;,&quot;recently_viewed&quot;:&quot;0&quot;,&quot;add_to_cart&quot;:&quot;1&quot;,&quot;add_to_wishlist&quot;:&quot;1&quot;,&quot;link_to_product_page&quot;:&quot;1&quot;,&quot;show_vote_product&quot;:&quot;0&quot;,&quot;show_price&quot;:&quot;1&quot;,&quot;price_with_tax&quot;:&quot;3&quot;,&quot;show_original_price&quot;:&quot;1&quot;,&quot;show_discount&quot;:&quot;1&quot;,&quot;price_display_type&quot;:&quot;cheapest&quot;,&quot;category_order&quot;:&quot;category_ordering&quot;,&quot;child_display_type&quot;:&quot;nochild&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;-1&quot;,&quot;number_of_products&quot;:&quot;0&quot;,&quot;only_if_products&quot;:&quot;0&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;img_title&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;#FFFFFF&quot;,&quot;margin&quot;:&quot;10&quot;,&quot;border_visible&quot;:&quot;0&quot;,&quot;rounded_corners&quot;:&quot;1&quot;,&quot;text_center&quot;:&quot;1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">164</field>
+    <field name="asset_id">0</field>
+    <field name="title">Recently viewed</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;&quot;,&quot;content_type&quot;:&quot;product&quot;,&quot;layout_type&quot;:&quot;div&quot;,&quot;columns&quot;:&quot;1&quot;,&quot;limit&quot;:&quot;3&quot;,&quot;random&quot;:&quot;-1&quot;,&quot;order_dir&quot;:&quot;ASC&quot;,&quot;filter_type&quot;:&quot;1&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;content_synchronize&quot;:&quot;0&quot;,&quot;product_order&quot;:&quot;inherit&quot;,&quot;product_synchronize&quot;:&quot;4&quot;,&quot;recently_viewed&quot;:&quot;1&quot;,&quot;add_to_cart&quot;:&quot;-1&quot;,&quot;add_to_wishlist&quot;:&quot;-1&quot;,&quot;link_to_product_page&quot;:&quot;-1&quot;,&quot;show_vote_product&quot;:&quot;-1&quot;,&quot;show_price&quot;:&quot;-1&quot;,&quot;price_with_tax&quot;:&quot;3&quot;,&quot;show_original_price&quot;:&quot;-1&quot;,&quot;show_discount&quot;:&quot;3&quot;,&quot;price_display_type&quot;:&quot;inherit&quot;,&quot;category_order&quot;:&quot;inherit&quot;,&quot;child_display_type&quot;:&quot;inherit&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;-1&quot;,&quot;number_of_products&quot;:&quot;-1&quot;,&quot;only_if_products&quot;:&quot;-1&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;inherit&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;&quot;,&quot;margin&quot;:&quot;&quot;,&quot;border_visible&quot;:&quot;-1&quot;,&quot;rounded_corners&quot;:&quot;-1&quot;,&quot;text_center&quot;:&quot;-1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">165</field>
+    <field name="asset_id">0</field>
+    <field name="title">Categories on 1 level</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;&quot;,&quot;content_type&quot;:&quot;category&quot;,&quot;layout_type&quot;:&quot;list&quot;,&quot;columns&quot;:&quot;1&quot;,&quot;limit&quot;:&quot;21&quot;,&quot;random&quot;:&quot;0&quot;,&quot;order_dir&quot;:&quot;ASC&quot;,&quot;filter_type&quot;:&quot;0&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;content_synchronize&quot;:&quot;0&quot;,&quot;product_order&quot;:&quot;ordering&quot;,&quot;product_synchronize&quot;:&quot;1&quot;,&quot;recently_viewed&quot;:&quot;0&quot;,&quot;add_to_cart&quot;:&quot;1&quot;,&quot;add_to_wishlist&quot;:&quot;1&quot;,&quot;link_to_product_page&quot;:&quot;1&quot;,&quot;show_vote_product&quot;:&quot;0&quot;,&quot;show_price&quot;:&quot;1&quot;,&quot;price_with_tax&quot;:&quot;0&quot;,&quot;show_original_price&quot;:&quot;1&quot;,&quot;show_discount&quot;:&quot;1&quot;,&quot;price_display_type&quot;:&quot;cheapest&quot;,&quot;category_order&quot;:&quot;category_ordering&quot;,&quot;child_display_type&quot;:&quot;allchilds&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;1&quot;,&quot;number_of_products&quot;:&quot;0&quot;,&quot;only_if_products&quot;:&quot;1&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;img_title&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;#FFFFFF&quot;,&quot;margin&quot;:&quot;10&quot;,&quot;border_visible&quot;:&quot;0&quot;,&quot;rounded_corners&quot;:&quot;1&quot;,&quot;text_center&quot;:&quot;1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">166</field>
+    <field name="asset_id">0</field>
+    <field name="title">Categories on 2 levels</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;&quot;,&quot;content_type&quot;:&quot;category&quot;,&quot;layout_type&quot;:&quot;list&quot;,&quot;columns&quot;:&quot;1&quot;,&quot;limit&quot;:&quot;21&quot;,&quot;random&quot;:&quot;0&quot;,&quot;order_dir&quot;:&quot;ASC&quot;,&quot;filter_type&quot;:&quot;0&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;content_synchronize&quot;:&quot;0&quot;,&quot;product_order&quot;:&quot;ordering&quot;,&quot;product_synchronize&quot;:&quot;1&quot;,&quot;recently_viewed&quot;:&quot;0&quot;,&quot;add_to_cart&quot;:&quot;1&quot;,&quot;add_to_wishlist&quot;:&quot;1&quot;,&quot;link_to_product_page&quot;:&quot;1&quot;,&quot;show_vote_product&quot;:&quot;0&quot;,&quot;show_price&quot;:&quot;1&quot;,&quot;price_with_tax&quot;:&quot;0&quot;,&quot;show_original_price&quot;:&quot;1&quot;,&quot;show_discount&quot;:&quot;1&quot;,&quot;price_display_type&quot;:&quot;cheapest&quot;,&quot;category_order&quot;:&quot;category_ordering&quot;,&quot;child_display_type&quot;:&quot;allchildsexpand&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;1&quot;,&quot;number_of_products&quot;:&quot;0&quot;,&quot;only_if_products&quot;:&quot;1&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;img_title&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;#FFFFFF&quot;,&quot;margin&quot;:&quot;10&quot;,&quot;border_visible&quot;:&quot;0&quot;,&quot;rounded_corners&quot;:&quot;1&quot;,&quot;text_center&quot;:&quot;1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">167</field>
+    <field name="asset_id">0</field>
+    <field name="title">Best sellers</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;&quot;,&quot;content_type&quot;:&quot;product&quot;,&quot;layout_type&quot;:&quot;div&quot;,&quot;columns&quot;:&quot;1&quot;,&quot;limit&quot;:&quot;21&quot;,&quot;random&quot;:&quot;0&quot;,&quot;order_dir&quot;:&quot;DESC&quot;,&quot;filter_type&quot;:&quot;1&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;content_synchronize&quot;:&quot;0&quot;,&quot;product_order&quot;:&quot;product_sales&quot;,&quot;product_synchronize&quot;:&quot;1&quot;,&quot;recently_viewed&quot;:&quot;0&quot;,&quot;add_to_cart&quot;:&quot;-1&quot;,&quot;add_to_wishlist&quot;:&quot;-1&quot;,&quot;link_to_product_page&quot;:&quot;-1&quot;,&quot;show_vote_product&quot;:&quot;-1&quot;,&quot;show_price&quot;:&quot;-1&quot;,&quot;price_with_tax&quot;:&quot;3&quot;,&quot;show_original_price&quot;:&quot;-1&quot;,&quot;show_discount&quot;:&quot;3&quot;,&quot;price_display_type&quot;:&quot;inherit&quot;,&quot;category_order&quot;:&quot;category_ordering&quot;,&quot;child_display_type&quot;:&quot;allchildsexpand&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;1&quot;,&quot;number_of_products&quot;:&quot;0&quot;,&quot;only_if_products&quot;:&quot;1&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;inherit&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;&quot;,&quot;margin&quot;:&quot;&quot;,&quot;border_visible&quot;:&quot;-1&quot;,&quot;rounded_corners&quot;:&quot;-1&quot;,&quot;text_center&quot;:&quot;-1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">168</field>
+    <field name="asset_id">0</field>
+    <field name="title">Latest products</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;&quot;,&quot;content_type&quot;:&quot;product&quot;,&quot;layout_type&quot;:&quot;div&quot;,&quot;columns&quot;:&quot;1&quot;,&quot;limit&quot;:&quot;21&quot;,&quot;random&quot;:&quot;0&quot;,&quot;order_dir&quot;:&quot;DESC&quot;,&quot;filter_type&quot;:&quot;1&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;content_synchronize&quot;:&quot;0&quot;,&quot;product_order&quot;:&quot;product_created&quot;,&quot;product_synchronize&quot;:&quot;1&quot;,&quot;recently_viewed&quot;:&quot;0&quot;,&quot;add_to_cart&quot;:&quot;-1&quot;,&quot;add_to_wishlist&quot;:&quot;-1&quot;,&quot;link_to_product_page&quot;:&quot;-1&quot;,&quot;show_vote_product&quot;:&quot;-1&quot;,&quot;show_price&quot;:&quot;-1&quot;,&quot;price_with_tax&quot;:&quot;3&quot;,&quot;show_original_price&quot;:&quot;-1&quot;,&quot;show_discount&quot;:&quot;3&quot;,&quot;price_display_type&quot;:&quot;inherit&quot;,&quot;category_order&quot;:&quot;category_ordering&quot;,&quot;child_display_type&quot;:&quot;allchildsexpand&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;1&quot;,&quot;number_of_products&quot;:&quot;0&quot;,&quot;only_if_products&quot;:&quot;1&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;inherit&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;&quot;,&quot;margin&quot;:&quot;&quot;,&quot;border_visible&quot;:&quot;-1&quot;,&quot;rounded_corners&quot;:&quot;-1&quot;,&quot;text_center&quot;:&quot;-1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">169</field>
+    <field name="asset_id">0</field>
+    <field name="title">Brands</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;&quot;,&quot;content_type&quot;:&quot;category&quot;,&quot;layout_type&quot;:&quot;div&quot;,&quot;columns&quot;:&quot;1&quot;,&quot;limit&quot;:&quot;21&quot;,&quot;random&quot;:&quot;0&quot;,&quot;order_dir&quot;:&quot;ASC&quot;,&quot;filter_type&quot;:&quot;0&quot;,&quot;selectparentlisting&quot;:&quot;10&quot;,&quot;content_synchronize&quot;:&quot;0&quot;,&quot;product_order&quot;:&quot;product_average_score&quot;,&quot;product_synchronize&quot;:&quot;1&quot;,&quot;recently_viewed&quot;:&quot;0&quot;,&quot;add_to_cart&quot;:&quot;-1&quot;,&quot;add_to_wishlist&quot;:&quot;-1&quot;,&quot;link_to_product_page&quot;:&quot;-1&quot;,&quot;show_vote_product&quot;:&quot;-1&quot;,&quot;show_price&quot;:&quot;-1&quot;,&quot;price_with_tax&quot;:&quot;3&quot;,&quot;show_original_price&quot;:&quot;-1&quot;,&quot;show_discount&quot;:&quot;3&quot;,&quot;price_display_type&quot;:&quot;inherit&quot;,&quot;category_order&quot;:&quot;category_id&quot;,&quot;child_display_type&quot;:&quot;allchilds&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;1&quot;,&quot;number_of_products&quot;:&quot;0&quot;,&quot;only_if_products&quot;:&quot;0&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;inherit&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;&quot;,&quot;margin&quot;:&quot;&quot;,&quot;border_visible&quot;:&quot;-1&quot;,&quot;rounded_corners&quot;:&quot;-1&quot;,&quot;text_center&quot;:&quot;-1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">170</field>
+    <field name="asset_id">0</field>
+    <field name="title">Best rated</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;&quot;,&quot;content_type&quot;:&quot;product&quot;,&quot;layout_type&quot;:&quot;div&quot;,&quot;columns&quot;:&quot;1&quot;,&quot;limit&quot;:&quot;21&quot;,&quot;random&quot;:&quot;0&quot;,&quot;order_dir&quot;:&quot;DESC&quot;,&quot;filter_type&quot;:&quot;1&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;content_synchronize&quot;:&quot;0&quot;,&quot;product_order&quot;:&quot;product_average_score&quot;,&quot;product_synchronize&quot;:&quot;1&quot;,&quot;recently_viewed&quot;:&quot;0&quot;,&quot;add_to_cart&quot;:&quot;-1&quot;,&quot;add_to_wishlist&quot;:&quot;-1&quot;,&quot;link_to_product_page&quot;:&quot;-1&quot;,&quot;show_vote_product&quot;:&quot;-1&quot;,&quot;show_price&quot;:&quot;-1&quot;,&quot;price_with_tax&quot;:&quot;3&quot;,&quot;show_original_price&quot;:&quot;-1&quot;,&quot;show_discount&quot;:&quot;3&quot;,&quot;price_display_type&quot;:&quot;inherit&quot;,&quot;category_order&quot;:&quot;category_id&quot;,&quot;child_display_type&quot;:&quot;allchilds&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;1&quot;,&quot;number_of_products&quot;:&quot;0&quot;,&quot;only_if_products&quot;:&quot;0&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;inherit&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;&quot;,&quot;margin&quot;:&quot;&quot;,&quot;border_visible&quot;:&quot;-1&quot;,&quot;rounded_corners&quot;:&quot;-1&quot;,&quot;text_center&quot;:&quot;-1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">171</field>
+    <field name="asset_id">0</field>
+    <field name="title">Related products</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;&quot;,&quot;content_type&quot;:&quot;product&quot;,&quot;layout_type&quot;:&quot;div&quot;,&quot;columns&quot;:&quot;3&quot;,&quot;limit&quot;:&quot;21&quot;,&quot;random&quot;:&quot;0&quot;,&quot;order_dir&quot;:&quot;ASC&quot;,&quot;filter_type&quot;:&quot;1&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;content_synchronize&quot;:&quot;1&quot;,&quot;product_order&quot;:&quot;ordering&quot;,&quot;product_synchronize&quot;:&quot;2&quot;,&quot;recently_viewed&quot;:&quot;0&quot;,&quot;add_to_cart&quot;:&quot;-1&quot;,&quot;add_to_wishlist&quot;:&quot;-1&quot;,&quot;link_to_product_page&quot;:&quot;-1&quot;,&quot;show_vote_product&quot;:&quot;-1&quot;,&quot;show_price&quot;:&quot;-1&quot;,&quot;price_with_tax&quot;:&quot;3&quot;,&quot;show_original_price&quot;:&quot;-1&quot;,&quot;show_discount&quot;:&quot;3&quot;,&quot;price_display_type&quot;:&quot;inherit&quot;,&quot;category_order&quot;:&quot;category_id&quot;,&quot;child_display_type&quot;:&quot;allchilds&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;1&quot;,&quot;number_of_products&quot;:&quot;0&quot;,&quot;only_if_products&quot;:&quot;0&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;inherit&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;&quot;,&quot;margin&quot;:&quot;&quot;,&quot;border_visible&quot;:&quot;-1&quot;,&quot;rounded_corners&quot;:&quot;-1&quot;,&quot;text_center&quot;:&quot;-1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">172</field>
+    <field name="asset_id">174</field>
+    <field name="title">[PROJECT] Contact</field>
+    <field name="note"></field>
+    <field name="content">&lt;p&gt; &lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;table style=&quot;border-collapse: collapse; width: 100%; border-radius: 16px; box-shadow: 1px 1px 1px rgba(237, 237, 237); border-width: 0px; background-color: rgb(255, 255, 255); height: 217.312px;&quot; border=&quot;1&quot;&gt;&lt;colgroup&gt;&lt;col style=&quot;width: 50%;&quot;&gt;&lt;col style=&quot;width: 50%;&quot;&gt;&lt;/colgroup&gt;
+&lt;tbody&gt;
+&lt;tr style=&quot;height: 217.312px;&quot;&gt;
+&lt;td style=&quot;border-width: 0px; height: 217.312px;&quot;&gt;
+&lt;h2 style=&quot;text-align: center;&quot;&gt;Votre interlocuteur&lt;/h2&gt;
+&lt;p style=&quot;text-align: center;&quot;&gt;&lt;img class=&quot;mx-auto d-block&quot; title=&quot;antoine&quot; src=&quot;images/emundus/project/avatars/Antoine.png&quot; alt=&quot;antoine&quot; width=&quot;130&quot; height=&quot;134&quot;&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;td style=&quot;border-width: 0px; text-align: center; height: 217.312px;&quot;&gt;
+&lt;p style=&quot;text-align: center;&quot;&gt; &lt;/p&gt;
+&lt;strong&gt;&lt;span style=&quot;font-size: 24px;&quot;&gt;Antoine DUROZOI&lt;br&gt;&lt;span style=&quot;font-size: 14px;&quot;&gt;&lt;a href=&quot;mailto:antoine.durozoi@emundus.fr&quot;&gt;antoine.durozoi@emundus.fr&lt;/a&gt;&lt;br&gt;&lt;/span&gt;&lt;/span&gt;&lt;/strong&gt;&lt;span style=&quot;font-size: 14px;&quot;&gt;05 46 30 78 27&lt;/span&gt;&lt;strong&gt;&lt;span style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/strong&gt;&lt;a href=&quot;https://app.cal.com/antoinedurozoi/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;&lt;span style=&quot;font-size: 14px;&quot;&gt;Prendre rendez-vous avec Antoine&lt;/span&gt;&lt;/a&gt;
+&lt;p style=&quot;text-align: center;&quot;&gt; &lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;</field>
+    <field name="ordering">2</field>
+    <field name="position">content-bottom-a</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">1</field>
+    <field name="module">mod_custom</field>
+    <field name="access">1</field>
+    <field name="showtitle">0</field>
+    <field name="params">{&quot;prepare_content&quot;:0,&quot;backgroundimage&quot;:&quot;&quot;,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;cache&quot;:1,&quot;cache_time&quot;:900,&quot;cachemode&quot;:&quot;static&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">173</field>
+    <field name="asset_id">175</field>
+    <field name="title">[PROJECT] Progress</field>
+    <field name="note"></field>
+    <field name="content">&lt;p&gt; &lt;/p&gt;
+&lt;table style=&quot;font-size: 1rem; width: 100%; border-collapse: collapse; border-width: 0px; border-radius: 16px; box-shadow: rgb(237, 237, 237) 1px 1px 1px; background-color: rgb(255, 255, 255); margin-left: auto; margin-right: auto;&quot; border=&quot;1&quot;&gt;&lt;colgroup&gt;&lt;col style=&quot;width: 50%;&quot;&gt;&lt;col style=&quot;width: 50%;&quot;&gt;&lt;/colgroup&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&quot;border-width: 0px;&quot;&gt;
+&lt;h2 style=&quot;text-align: center;&quot;&gt; &lt;/h2&gt;
+&lt;h2 style=&quot;text-align: center;&quot;&gt;Avancement global&lt;/h2&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p style=&quot;text-align: center;&quot;&gt;&lt;span style=&quot;font-size: 24px;&quot;&gt;0%&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;text-align: center;&quot;&gt; &lt;/p&gt;
+&lt;p style=&quot;text-align: center;&quot;&gt; &lt;/p&gt;
+&lt;/td&gt;
+&lt;td style=&quot;border-width: 0px;&quot;&gt;
+&lt;h2 style=&quot;text-align: center;&quot;&gt; &lt;/h2&gt;
+&lt;h2 style=&quot;text-align: center;&quot;&gt;Progression et Jalons&lt;/h2&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p style=&quot;text-align: center;&quot;&gt;&lt;em&gt;Suivez l'état d'avancement de chaque jalon de votre commande,&lt;br&gt;retrouvez les éléments de planning.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p style=&quot;text-align: center;&quot;&gt;&lt;a class=&quot;btn btn-secondary&quot; href=&quot;progression/list/403&quot;&gt;Voir le détail&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;</field>
+    <field name="ordering">3</field>
+    <field name="position">content-bottom-a</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">1</field>
+    <field name="module">mod_custom</field>
+    <field name="access">7</field>
+    <field name="showtitle">0</field>
+    <field name="params">{&quot;prepare_content&quot;:0,&quot;backgroundimage&quot;:&quot;&quot;,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;cache&quot;:1,&quot;cache_time&quot;:900,&quot;cachemode&quot;:&quot;static&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">174</field>
+    <field name="asset_id">176</field>
+    <field name="title">[PROJECT] 3 buttons</field>
+    <field name="note"></field>
+    <field name="content">&lt;p&gt; &lt;/p&gt;
+&lt;table style=&quot;font-size: 1rem; width: 100%; border-collapse: collapse; border-width: 0px; border-radius: 16px; box-shadow: rgb(237, 237, 237) 1px 1px 1px; background-color: rgb(255, 255, 255); margin-left: auto; margin-right: auto;&quot; border=&quot;1&quot;&gt;&lt;colgroup&gt;&lt;col style=&quot;width: 33.3076%;&quot;&gt;&lt;col style=&quot;width: 33.3076%;&quot;&gt;&lt;col style=&quot;width: 33.3076%;&quot;&gt;&lt;/colgroup&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&quot;border-width: 0px;&quot;&gt;
+&lt;h2 style=&quot;text-align: center;&quot;&gt; &lt;/h2&gt;
+&lt;h2 style=&quot;text-align: center;&quot;&gt;Suivi des actions&lt;/h2&gt;
+&lt;p style=&quot;text-align: center;&quot;&gt; &lt;/p&gt;
+&lt;p style=&quot;text-align: center;&quot;&gt;&lt;em&gt;Retrouvez les comptes-rendus de réunion,&lt;br&gt;identifiez ce que vous avez à faire,...&lt;/em&gt;&lt;/p&gt;
+&lt;p style=&quot;text-align: center;&quot;&gt; &lt;/p&gt;
+&lt;p style=&quot;text-align: center;&quot;&gt;&lt;a class=&quot;btn btn-secondary&quot; href=&quot;rida/list/402&quot;&gt;Voir le détail&lt;/a&gt;&lt;/p&gt;
+&lt;p style=&quot;text-align: center;&quot;&gt; &lt;/p&gt;
+&lt;/td&gt;
+&lt;td style=&quot;border-width: 0px; text-align: center;&quot;&gt;
+&lt;h2 style=&quot;text-align: center;&quot;&gt; &lt;/h2&gt;
+&lt;h2 style=&quot;text-align: center;&quot;&gt;Recette et tests&lt;/h2&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Répertoriez les bugs, suivez les correctifs,...&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;a class=&quot;btn btn-secondary&quot; href=&quot;recette/list/401&quot;&gt;Suivre ma recette&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;/td&gt;
+&lt;td style=&quot;border-width: 0px;&quot;&gt;
+&lt;h2 style=&quot;text-align: center;&quot;&gt; &lt;/h2&gt;
+&lt;h2 style=&quot;text-align: center;&quot;&gt;Ressources&lt;/h2&gt;
+&lt;p style=&quot;text-align: center;&quot;&gt; &lt;/p&gt;
+&lt;p style=&quot;text-align: center;&quot;&gt;&lt;em&gt;Téléchargez vos devis, factures, contrats,&lt;br&gt;documentation, livrables,...&lt;/em&gt;&lt;/p&gt;
+&lt;p style=&quot;text-align: center;&quot;&gt; &lt;/p&gt;
+&lt;p style=&quot;text-align: center;&quot;&gt;&lt;a class=&quot;btn btn-secondary&quot; href=&quot;ressources&quot;&gt;Voir les ressources&lt;/a&gt;&lt;/p&gt;
+&lt;p style=&quot;text-align: center;&quot;&gt; &lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt; &lt;/p&gt;</field>
+    <field name="ordering">12</field>
+    <field name="position">content-bottom-a</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">1</field>
+    <field name="module">mod_custom</field>
+    <field name="access">7</field>
+    <field name="showtitle">0</field>
+    <field name="params">{&quot;prepare_content&quot;:0,&quot;backgroundimage&quot;:&quot;&quot;,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;cache&quot;:1,&quot;cache_time&quot;:900,&quot;cachemode&quot;:&quot;static&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">175</field>
+    <field name="asset_id">177</field>
+    <field name="title">Bandeau annonce</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">1</field>
+    <field name="position">top-b</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">1</field>
+    <field name="module">mod_emundus_announcements</field>
+    <field name="access">1</field>
+    <field name="showtitle">0</field>
+    <field name="params">{&quot;announcement_content&quot;:&quot;Environnement de test&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">176</field>
+    <field name="asset_id">178</field>
+    <field name="title">[PROJECT] Back to project area</field>
+    <field name="note"></field>
+    <field name="content">&lt;p&gt;&lt;a class=&quot;em-back-button tw-cursor-pointer&quot; style=&quot;width: fit-content; padding: 8px 0;&quot; href=&quot;gestion-de-projet&quot;&gt; &lt;span class=&quot;material-symbols-outlined tw-mr-1&quot;&gt;navigate_before&lt;/span&gt;Retour à la zone projet&lt;/a&gt;&lt;/p&gt;</field>
+    <field name="ordering">1</field>
+    <field name="position">content-top-a</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">1</field>
+    <field name="module">mod_custom</field>
+    <field name="access">6</field>
+    <field name="showtitle">0</field>
+    <field name="params">{&quot;prepare_content&quot;:0,&quot;backgroundimage&quot;:&quot;&quot;,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;cache&quot;:1,&quot;cache_time&quot;:900,&quot;cachemode&quot;:&quot;static&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">177</field>
+    <field name="asset_id">179</field>
+    <field name="title">[PROJECT] Back resources</field>
+    <field name="note"></field>
+    <field name="content">&lt;p&gt;&lt;a class=&quot;em-back-button tw-cursor-pointer&quot; style=&quot;width: fit-content; padding: 8px 0;&quot; href=&quot;ressources&quot;&gt; &lt;span class=&quot;material-symbols-outlined tw-mr-1&quot;&gt;navigate_before&lt;/span&gt;Retour aux ressources&lt;/a&gt;&lt;/p&gt;</field>
+    <field name="ordering">1</field>
+    <field name="position">content-top-a</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">1</field>
+    <field name="module">mod_custom</field>
+    <field name="access">6</field>
+    <field name="showtitle">0</field>
+    <field name="params">{&quot;prepare_content&quot;:0,&quot;backgroundimage&quot;:&quot;&quot;,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;cache&quot;:1,&quot;cache_time&quot;:900,&quot;cachemode&quot;:&quot;static&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">178</field>
+    <field name="asset_id">0</field>
+    <field name="title">Random products</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;&quot;,&quot;content_type&quot;:&quot;product&quot;,&quot;layout_type&quot;:&quot;div&quot;,&quot;columns&quot;:&quot;1&quot;,&quot;limit&quot;:&quot;3&quot;,&quot;random&quot;:&quot;1&quot;,&quot;order_dir&quot;:&quot;ASC&quot;,&quot;filter_type&quot;:&quot;1&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;content_synchronize&quot;:&quot;1&quot;,&quot;product_order&quot;:&quot;ordering&quot;,&quot;product_synchronize&quot;:&quot;1&quot;,&quot;recently_viewed&quot;:&quot;0&quot;,&quot;add_to_cart&quot;:&quot;1&quot;,&quot;add_to_wishlist&quot;:&quot;1&quot;,&quot;link_to_product_page&quot;:&quot;1&quot;,&quot;show_vote_product&quot;:&quot;0&quot;,&quot;show_price&quot;:&quot;1&quot;,&quot;price_with_tax&quot;:&quot;3&quot;,&quot;show_original_price&quot;:&quot;1&quot;,&quot;show_discount&quot;:&quot;1&quot;,&quot;price_display_type&quot;:&quot;cheapest&quot;,&quot;category_order&quot;:&quot;category_ordering&quot;,&quot;child_display_type&quot;:&quot;nochild&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;-1&quot;,&quot;number_of_products&quot;:&quot;0&quot;,&quot;only_if_products&quot;:&quot;0&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;img_title&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;#FFFFFF&quot;,&quot;margin&quot;:&quot;10&quot;,&quot;border_visible&quot;:&quot;0&quot;,&quot;rounded_corners&quot;:&quot;1&quot;,&quot;text_center&quot;:&quot;1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">179</field>
+    <field name="asset_id">0</field>
+    <field name="title">Recently viewed</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;&quot;,&quot;content_type&quot;:&quot;product&quot;,&quot;layout_type&quot;:&quot;div&quot;,&quot;columns&quot;:&quot;1&quot;,&quot;limit&quot;:&quot;3&quot;,&quot;random&quot;:&quot;-1&quot;,&quot;order_dir&quot;:&quot;ASC&quot;,&quot;filter_type&quot;:&quot;1&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;content_synchronize&quot;:&quot;0&quot;,&quot;product_order&quot;:&quot;inherit&quot;,&quot;product_synchronize&quot;:&quot;4&quot;,&quot;recently_viewed&quot;:&quot;1&quot;,&quot;add_to_cart&quot;:&quot;-1&quot;,&quot;add_to_wishlist&quot;:&quot;-1&quot;,&quot;link_to_product_page&quot;:&quot;-1&quot;,&quot;show_vote_product&quot;:&quot;-1&quot;,&quot;show_price&quot;:&quot;-1&quot;,&quot;price_with_tax&quot;:&quot;3&quot;,&quot;show_original_price&quot;:&quot;-1&quot;,&quot;show_discount&quot;:&quot;3&quot;,&quot;price_display_type&quot;:&quot;inherit&quot;,&quot;category_order&quot;:&quot;inherit&quot;,&quot;child_display_type&quot;:&quot;inherit&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;-1&quot;,&quot;number_of_products&quot;:&quot;-1&quot;,&quot;only_if_products&quot;:&quot;-1&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;inherit&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;&quot;,&quot;margin&quot;:&quot;&quot;,&quot;border_visible&quot;:&quot;-1&quot;,&quot;rounded_corners&quot;:&quot;-1&quot;,&quot;text_center&quot;:&quot;-1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">180</field>
+    <field name="asset_id">0</field>
+    <field name="title">Categories on 1 level</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;&quot;,&quot;content_type&quot;:&quot;category&quot;,&quot;layout_type&quot;:&quot;list&quot;,&quot;columns&quot;:&quot;1&quot;,&quot;limit&quot;:&quot;21&quot;,&quot;random&quot;:&quot;0&quot;,&quot;order_dir&quot;:&quot;ASC&quot;,&quot;filter_type&quot;:&quot;0&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;content_synchronize&quot;:&quot;0&quot;,&quot;product_order&quot;:&quot;ordering&quot;,&quot;product_synchronize&quot;:&quot;1&quot;,&quot;recently_viewed&quot;:&quot;0&quot;,&quot;add_to_cart&quot;:&quot;1&quot;,&quot;add_to_wishlist&quot;:&quot;1&quot;,&quot;link_to_product_page&quot;:&quot;1&quot;,&quot;show_vote_product&quot;:&quot;0&quot;,&quot;show_price&quot;:&quot;1&quot;,&quot;price_with_tax&quot;:&quot;0&quot;,&quot;show_original_price&quot;:&quot;1&quot;,&quot;show_discount&quot;:&quot;1&quot;,&quot;price_display_type&quot;:&quot;cheapest&quot;,&quot;category_order&quot;:&quot;category_ordering&quot;,&quot;child_display_type&quot;:&quot;allchilds&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;1&quot;,&quot;number_of_products&quot;:&quot;0&quot;,&quot;only_if_products&quot;:&quot;1&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;img_title&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;#FFFFFF&quot;,&quot;margin&quot;:&quot;10&quot;,&quot;border_visible&quot;:&quot;0&quot;,&quot;rounded_corners&quot;:&quot;1&quot;,&quot;text_center&quot;:&quot;1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">181</field>
+    <field name="asset_id">0</field>
+    <field name="title">Categories on 2 levels</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;&quot;,&quot;content_type&quot;:&quot;category&quot;,&quot;layout_type&quot;:&quot;list&quot;,&quot;columns&quot;:&quot;1&quot;,&quot;limit&quot;:&quot;21&quot;,&quot;random&quot;:&quot;0&quot;,&quot;order_dir&quot;:&quot;ASC&quot;,&quot;filter_type&quot;:&quot;0&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;content_synchronize&quot;:&quot;0&quot;,&quot;product_order&quot;:&quot;ordering&quot;,&quot;product_synchronize&quot;:&quot;1&quot;,&quot;recently_viewed&quot;:&quot;0&quot;,&quot;add_to_cart&quot;:&quot;1&quot;,&quot;add_to_wishlist&quot;:&quot;1&quot;,&quot;link_to_product_page&quot;:&quot;1&quot;,&quot;show_vote_product&quot;:&quot;0&quot;,&quot;show_price&quot;:&quot;1&quot;,&quot;price_with_tax&quot;:&quot;0&quot;,&quot;show_original_price&quot;:&quot;1&quot;,&quot;show_discount&quot;:&quot;1&quot;,&quot;price_display_type&quot;:&quot;cheapest&quot;,&quot;category_order&quot;:&quot;category_ordering&quot;,&quot;child_display_type&quot;:&quot;allchildsexpand&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;1&quot;,&quot;number_of_products&quot;:&quot;0&quot;,&quot;only_if_products&quot;:&quot;1&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;img_title&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;#FFFFFF&quot;,&quot;margin&quot;:&quot;10&quot;,&quot;border_visible&quot;:&quot;0&quot;,&quot;rounded_corners&quot;:&quot;1&quot;,&quot;text_center&quot;:&quot;1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">182</field>
+    <field name="asset_id">0</field>
+    <field name="title">Best sellers</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;&quot;,&quot;content_type&quot;:&quot;product&quot;,&quot;layout_type&quot;:&quot;div&quot;,&quot;columns&quot;:&quot;1&quot;,&quot;limit&quot;:&quot;21&quot;,&quot;random&quot;:&quot;0&quot;,&quot;order_dir&quot;:&quot;DESC&quot;,&quot;filter_type&quot;:&quot;1&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;content_synchronize&quot;:&quot;0&quot;,&quot;product_order&quot;:&quot;product_sales&quot;,&quot;product_synchronize&quot;:&quot;1&quot;,&quot;recently_viewed&quot;:&quot;0&quot;,&quot;add_to_cart&quot;:&quot;-1&quot;,&quot;add_to_wishlist&quot;:&quot;-1&quot;,&quot;link_to_product_page&quot;:&quot;-1&quot;,&quot;show_vote_product&quot;:&quot;-1&quot;,&quot;show_price&quot;:&quot;-1&quot;,&quot;price_with_tax&quot;:&quot;3&quot;,&quot;show_original_price&quot;:&quot;-1&quot;,&quot;show_discount&quot;:&quot;3&quot;,&quot;price_display_type&quot;:&quot;inherit&quot;,&quot;category_order&quot;:&quot;category_ordering&quot;,&quot;child_display_type&quot;:&quot;allchildsexpand&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;1&quot;,&quot;number_of_products&quot;:&quot;0&quot;,&quot;only_if_products&quot;:&quot;1&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;inherit&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;&quot;,&quot;margin&quot;:&quot;&quot;,&quot;border_visible&quot;:&quot;-1&quot;,&quot;rounded_corners&quot;:&quot;-1&quot;,&quot;text_center&quot;:&quot;-1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">183</field>
+    <field name="asset_id">0</field>
+    <field name="title">Latest products</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;&quot;,&quot;content_type&quot;:&quot;product&quot;,&quot;layout_type&quot;:&quot;div&quot;,&quot;columns&quot;:&quot;1&quot;,&quot;limit&quot;:&quot;21&quot;,&quot;random&quot;:&quot;0&quot;,&quot;order_dir&quot;:&quot;DESC&quot;,&quot;filter_type&quot;:&quot;1&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;content_synchronize&quot;:&quot;0&quot;,&quot;product_order&quot;:&quot;product_created&quot;,&quot;product_synchronize&quot;:&quot;1&quot;,&quot;recently_viewed&quot;:&quot;0&quot;,&quot;add_to_cart&quot;:&quot;-1&quot;,&quot;add_to_wishlist&quot;:&quot;-1&quot;,&quot;link_to_product_page&quot;:&quot;-1&quot;,&quot;show_vote_product&quot;:&quot;-1&quot;,&quot;show_price&quot;:&quot;-1&quot;,&quot;price_with_tax&quot;:&quot;3&quot;,&quot;show_original_price&quot;:&quot;-1&quot;,&quot;show_discount&quot;:&quot;3&quot;,&quot;price_display_type&quot;:&quot;inherit&quot;,&quot;category_order&quot;:&quot;category_ordering&quot;,&quot;child_display_type&quot;:&quot;allchildsexpand&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;1&quot;,&quot;number_of_products&quot;:&quot;0&quot;,&quot;only_if_products&quot;:&quot;1&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;inherit&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;&quot;,&quot;margin&quot;:&quot;&quot;,&quot;border_visible&quot;:&quot;-1&quot;,&quot;rounded_corners&quot;:&quot;-1&quot;,&quot;text_center&quot;:&quot;-1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">184</field>
+    <field name="asset_id">0</field>
+    <field name="title">Brands</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;&quot;,&quot;content_type&quot;:&quot;category&quot;,&quot;layout_type&quot;:&quot;div&quot;,&quot;columns&quot;:&quot;1&quot;,&quot;limit&quot;:&quot;21&quot;,&quot;random&quot;:&quot;0&quot;,&quot;order_dir&quot;:&quot;ASC&quot;,&quot;filter_type&quot;:&quot;0&quot;,&quot;selectparentlisting&quot;:&quot;10&quot;,&quot;content_synchronize&quot;:&quot;0&quot;,&quot;product_order&quot;:&quot;product_average_score&quot;,&quot;product_synchronize&quot;:&quot;1&quot;,&quot;recently_viewed&quot;:&quot;0&quot;,&quot;add_to_cart&quot;:&quot;-1&quot;,&quot;add_to_wishlist&quot;:&quot;-1&quot;,&quot;link_to_product_page&quot;:&quot;-1&quot;,&quot;show_vote_product&quot;:&quot;-1&quot;,&quot;show_price&quot;:&quot;-1&quot;,&quot;price_with_tax&quot;:&quot;3&quot;,&quot;show_original_price&quot;:&quot;-1&quot;,&quot;show_discount&quot;:&quot;3&quot;,&quot;price_display_type&quot;:&quot;inherit&quot;,&quot;category_order&quot;:&quot;category_id&quot;,&quot;child_display_type&quot;:&quot;allchilds&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;1&quot;,&quot;number_of_products&quot;:&quot;0&quot;,&quot;only_if_products&quot;:&quot;0&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;inherit&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;&quot;,&quot;margin&quot;:&quot;&quot;,&quot;border_visible&quot;:&quot;-1&quot;,&quot;rounded_corners&quot;:&quot;-1&quot;,&quot;text_center&quot;:&quot;-1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">185</field>
+    <field name="asset_id">0</field>
+    <field name="title">Best rated</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;&quot;,&quot;content_type&quot;:&quot;product&quot;,&quot;layout_type&quot;:&quot;div&quot;,&quot;columns&quot;:&quot;1&quot;,&quot;limit&quot;:&quot;21&quot;,&quot;random&quot;:&quot;0&quot;,&quot;order_dir&quot;:&quot;DESC&quot;,&quot;filter_type&quot;:&quot;1&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;content_synchronize&quot;:&quot;0&quot;,&quot;product_order&quot;:&quot;product_average_score&quot;,&quot;product_synchronize&quot;:&quot;1&quot;,&quot;recently_viewed&quot;:&quot;0&quot;,&quot;add_to_cart&quot;:&quot;-1&quot;,&quot;add_to_wishlist&quot;:&quot;-1&quot;,&quot;link_to_product_page&quot;:&quot;-1&quot;,&quot;show_vote_product&quot;:&quot;-1&quot;,&quot;show_price&quot;:&quot;-1&quot;,&quot;price_with_tax&quot;:&quot;3&quot;,&quot;show_original_price&quot;:&quot;-1&quot;,&quot;show_discount&quot;:&quot;3&quot;,&quot;price_display_type&quot;:&quot;inherit&quot;,&quot;category_order&quot;:&quot;category_id&quot;,&quot;child_display_type&quot;:&quot;allchilds&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;1&quot;,&quot;number_of_products&quot;:&quot;0&quot;,&quot;only_if_products&quot;:&quot;0&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;inherit&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;&quot;,&quot;margin&quot;:&quot;&quot;,&quot;border_visible&quot;:&quot;-1&quot;,&quot;rounded_corners&quot;:&quot;-1&quot;,&quot;text_center&quot;:&quot;-1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">186</field>
+    <field name="asset_id">0</field>
+    <field name="title">Related products</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;&quot;,&quot;content_type&quot;:&quot;product&quot;,&quot;layout_type&quot;:&quot;div&quot;,&quot;columns&quot;:&quot;3&quot;,&quot;limit&quot;:&quot;21&quot;,&quot;random&quot;:&quot;0&quot;,&quot;order_dir&quot;:&quot;ASC&quot;,&quot;filter_type&quot;:&quot;1&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;content_synchronize&quot;:&quot;1&quot;,&quot;product_order&quot;:&quot;ordering&quot;,&quot;product_synchronize&quot;:&quot;2&quot;,&quot;recently_viewed&quot;:&quot;0&quot;,&quot;add_to_cart&quot;:&quot;-1&quot;,&quot;add_to_wishlist&quot;:&quot;-1&quot;,&quot;link_to_product_page&quot;:&quot;-1&quot;,&quot;show_vote_product&quot;:&quot;-1&quot;,&quot;show_price&quot;:&quot;-1&quot;,&quot;price_with_tax&quot;:&quot;3&quot;,&quot;show_original_price&quot;:&quot;-1&quot;,&quot;show_discount&quot;:&quot;3&quot;,&quot;price_display_type&quot;:&quot;inherit&quot;,&quot;category_order&quot;:&quot;category_id&quot;,&quot;child_display_type&quot;:&quot;allchilds&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;1&quot;,&quot;number_of_products&quot;:&quot;0&quot;,&quot;only_if_products&quot;:&quot;0&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;inherit&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;&quot;,&quot;margin&quot;:&quot;&quot;,&quot;border_visible&quot;:&quot;-1&quot;,&quot;rounded_corners&quot;:&quot;-1&quot;,&quot;text_center&quot;:&quot;-1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
     <field name="client_id">0</field>
     <field name="language">*</field>
    </row>

@@ -24,7 +24,7 @@ if ($item->menu_image) {
 else {
 	if (($item->deeper && $item->level == 1) || (!$item->deeper && $item->level == 1)) {
 		if (!empty($icon_css)) {
-			$linktype = '<span class="material-icons-outlined" style="padding: 5px; font-size: 24px; color: black">' . $icon_css . '</span><span class="image-title" style="display: none;opacity: 0">' . $item->title . '</span>';
+			$linktype = '<span class="material-symbols-outlined" style="padding: 5px; font-size: 24px; color: black">' . $icon_css . '</span><span class="image-title" style="display: none;opacity: 0">' . $item->title . '</span>';
 		}
 		else {
 			$linktype = '<span class="simple-letter">' . $item->title[0] . '</span><span class="image-title" style="display: none;opacity: 0">' . $item->title . '</span>';

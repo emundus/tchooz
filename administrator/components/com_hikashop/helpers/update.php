@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -148,7 +148,8 @@ class hikashopUpdateHelper{
 			,'plg_hikashopshipping_aupost2' => array('HikaShop Australia Post shipping plugin V2',0,0)
 			,'plg_hikashopshipping_canadapost' => array('HikaShop Canada Post shipping plugin',0,0)
 			,'plg_hikashopshipping_canpar' => array('HikaShop CANPAR shipping plugin',0,0)
-			,'plg_hikashopshipping_fedex' => array('HikaShop Fedex shipping plugin',0,0)
+			,'plg_hikashopshipping_fedex' => array('HikaShop Fedex (legacy) shipping plugin',0,0)
+			,'plg_hikashopshipping_fedex2' => array('HikaShop Fedex shipping plugin',0,0)
 			,'plg_hikashopshipping_manual' => array('HikaShop manual shipping plugin',0,0)
 			,'plg_hikashopshipping_ups' => array('HikaShop UPS (legacy) shipping plugin',0,0)
 			,'plg_hikashopshipping_ups2' => array('HikaShop UPS OAuth shipping plugin',0,0)
@@ -158,7 +159,6 @@ class hikashopUpdateHelper{
 			,'plg_search_hikashop_products' => array('HikaShop products search plugin',0,1)
 			,'plg_system_custom_price' => array('HikaShop Donation plugin',0,0)
 			,'plg_system_hikashopaffiliate' => array('HikaShop affiliate plugin',0,1)
-			,'plg_system_hikashopanalytics' => array('HikaShop Google Analytics plugin',0,0)
 			,'plg_system_hikashopgeolocation' => array('HikaShop geolocation plugin',0,0)
 			,'plg_system_hikashopmassaction' => array('HikaShop massaction plugin',0,1)
 			,'plg_system_hikashoppayment' => array ('HikaShop Payment Notification plugin',0,1)
@@ -173,6 +173,37 @@ class hikashopUpdateHelper{
 			,'plg_system_reds_redirect' => array('Redshop Fallback Redirect plugin',0,0)
 			,'plg_system_vm_redirect' => array('VirtueMart Fallback Redirect plugin',0,0)
 		);
+
+
+		if(HIKASHOP_J40) {
+			foreach($extensioninfo as $extension => $data) {
+				$parts = explode('_', $extension);
+				$extensionData = new stdClass();
+				$extensionData->name = $data[0];
+				$type = array_shift($parts);
+				if($type == 'plg') {
+					$extensionData->type = 'plugin';
+					$folder = array_shift($parts);
+					$element = implode('_', $parts);
+				} else {
+					$extensionData->type = 'module';
+					$folder = '';
+					$element = 'mod_'. implode('_', $parts);
+				}
+				$extensionData->creationDate = date('d m Y');
+				$extensionData->author = 'HikaShop';
+				$extensionData->copyright = '(C) 2011-'.date('Y').' HIKARI SOFTWARE. All rights reserved.';
+				$extensionData->authorEmail = 'contact@hikashop.com';
+				$extensionData->authorUrl = 'https://www.hikashop.com';
+				$extensionData->version = '5.1.0';
+				$extensionData->description = $data[0];
+				$extensionData->group = '';
+				$extensionData->filename = $element;
+				$manifest = json_encode($extensionData);
+				$this->db->setQuery('UPDATE `#__extensions` SET manifest_cache = '.$this->db->Quote($manifest) .' WHERE element = ' .$this->db->Quote($element). ' AND folder = ' .$this->db->Quote($folder). ' AND type = ' .$this->db->Quote($extensionData->type));
+				$this->db->execute();
+			}
+		}
 
 		if($install == true) {
 			$this->checkExtensions($extensioninfo, $plugins, $modules);
@@ -222,7 +253,7 @@ class hikashopUpdateHelper{
 				$extensionData->copyright = '(C) 2011-'.date('Y').' HIKARI SOFTWARE. All rights reserved.';
 				$extensionData->authorEmail = 'contact@hikashop.com';
 				$extensionData->authorUrl = 'https://www.hikashop.com';
-				$extensionData->version = '5.0.3';
+				$extensionData->version = '5.1.0';
 				$extensionData->description = $oneExt->name;
 				$extensionData->group = '';
 				$extensionData->filename = $oneExt->element;

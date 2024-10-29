@@ -161,7 +161,7 @@ class DropfilesControllerOnedrivebusiness extends JControllerAdmin
                 foreach ($folders_diff as $CloudId => $folderData) {
                     try {
                         // If has parent_id
-                        if ($folderData['parent_id'] !== 0) {
+                        if ($folderData['parent_id'] !== 1) {
                             $check = in_array($folderData['parent_id'], $lstCloudIdOnDropfiles);
                             if (!$check) {
                                 // Create Parent New

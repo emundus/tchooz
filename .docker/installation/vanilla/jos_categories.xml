@@ -47,7 +47,7 @@
     <field name="asset_id">0</field>
     <field name="parent_id">0</field>
     <field name="lft">0</field>
-    <field name="rgt">71</field>
+    <field name="rgt">77</field>
     <field name="level">0</field>
     <field name="path"></field>
     <field name="extension">system</field>
@@ -275,40 +275,11 @@
     <field name="version">1</field>
    </row>
    <row>
-    <field name="id">10</field>
-    <field name="asset_id">101</field>
-    <field name="parent_id">1</field>
-    <field name="lft">15</field>
-    <field name="rgt">16</field>
-    <field name="level">1</field>
-    <field name="path">contact</field>
-    <field name="extension">com_content</field>
-    <field name="title">Contact</field>
-    <field name="alias">contact</field>
-    <field name="note"></field>
-    <field name="description"></field>
-    <field name="published">1</field>
-    <field name="checked_out" value_is_null="true"></field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="access">1</field>
-    <field name="params">{&quot;category_layout&quot;:&quot;&quot;,&quot;image&quot;:&quot;&quot;,&quot;image_alt&quot;:&quot;&quot;}</field>
-    <field name="metadesc"></field>
-    <field name="metakey"></field>
-    <field name="metadata">{&quot;author&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
-    <field name="created_user_id">650</field>
-    <field name="created_time">2023-05-10 09:07:14</field>
-    <field name="modified_user_id">650</field>
-    <field name="modified_time">2023-05-10 09:07:14</field>
-    <field name="hits">0</field>
-    <field name="language">*</field>
-    <field name="version">1</field>
-   </row>
-   <row>
     <field name="id">12</field>
     <field name="asset_id">143</field>
     <field name="parent_id">1</field>
-    <field name="lft">37</field>
-    <field name="rgt">38</field>
+    <field name="lft">35</field>
+    <field name="rgt">36</field>
     <field name="level">1</field>
     <field name="path"></field>
     <field name="extension">com_content</field>
@@ -328,6 +299,35 @@
     <field name="created_time">2023-12-05 15:26:20</field>
     <field name="modified_user_id">1</field>
     <field name="modified_time">2023-12-05 15:26:20</field>
+    <field name="hits">0</field>
+    <field name="language">*</field>
+    <field name="version">1</field>
+   </row>
+   <row>
+    <field name="id">13</field>
+    <field name="asset_id">167</field>
+    <field name="parent_id">1</field>
+    <field name="lft">69</field>
+    <field name="rgt">70</field>
+    <field name="level">1</field>
+    <field name="path">gestion-de-projet</field>
+    <field name="extension">com_content</field>
+    <field name="title">Gestion de projet</field>
+    <field name="alias">gestion-de-projet</field>
+    <field name="note"></field>
+    <field name="description"></field>
+    <field name="published">1</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="access">1</field>
+    <field name="params">{&quot;category_layout&quot;:&quot;&quot;,&quot;image&quot;:&quot;&quot;,&quot;image_alt&quot;:&quot;&quot;}</field>
+    <field name="metadesc"></field>
+    <field name="metakey"></field>
+    <field name="metadata">{&quot;author&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
+    <field name="created_user_id">1</field>
+    <field name="created_time">2024-07-30 08:05:36</field>
+    <field name="modified_user_id">1</field>
+    <field name="modified_time">2024-07-30 08:05:36</field>
     <field name="hits">0</field>
     <field name="language">*</field>
     <field name="version">1</field>

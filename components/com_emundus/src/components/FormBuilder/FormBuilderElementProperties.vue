@@ -1,29 +1,41 @@
 <template>
   <div id="form-builder-element-properties">
-    <div class="em-flex-row em-flex-space-between em-p-16 em-flex-align-start">
+    <div class="tw-flex tw-items-center tw-justify-between tw-p-4 tw-items-start">
       <div>
         <p>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES") }}</p>
-        <span class="em-font-size-14 em-neutral-700-color">{{ element.label[shortDefaultLang] }}</span>
+        <span class="tw-text-sm tw-text-neutral-700">{{ element.label[shortDefaultLang] }}</span>
       </div>
-      <span class="material-icons-outlined em-pointer" @click="$emit('close')">close</span>
+      <span class="material-symbols-outlined tw-cursor-pointer" @click="$emit('close')">close</span>
     </div>
-    <ul id="properties-tabs" class="em-flex-row em-flex-space-between em-p-16 em-w-90">
+    <ul id="properties-tabs" class="tw-flex tw-items-center tw-justify-between tw-p-4 tw-w-11/12">
       <li
           v-for="tab in publishedTabs"
           :key="tab.id"
-          :class="{ 'is-active': tab.active, 'em-w-50': publishedTabs.length == 2, 'em-w-100':  publishedTabs.length == 1}"
-          class="em-p-16 em-pointer"
+          :class="{ 'is-active': tab.active, 'tw-w-2/4': publishedTabs.length == 2, 'tw-w-full':  publishedTabs.length == 1}"
+          class="tw-p-4 tw-cursor-pointer"
           @click="selectTab(tab)"
       >
         {{ translate(tab.label) }}
       </li>
     </ul>
     <div id="properties">
-      <div v-if="tabs[0].active" id="element-parameters" class="em-p-16">
+
+      <!-- General properties -->
+      <div v-if="tabs[0].active" id="element-parameters" class="tw-p-4">
+
+        <!-- Element label -->
         <label for="element-label">{{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_LABEL') }}</label>
-        <input id="element-label" name="element-label" class="em-w-100" type="text"
+        <input id="element-label" name="element-label" class="tw-w-full" type="text"
                v-model="element.label[shortDefaultLang]"/>
-        <div class="em-flex-row em-flex-space-between em-w-100 em-pt-16 em-pb-16">
+
+        <!-- Help text -->
+        <div v-if="element.params" class="tw-mt-4">
+          <label for="element-rollover">{{ translate('COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT') }}</label>
+          <input id="element-rollover" name="element-alias" type="text" v-model="element.params.rollover" />
+        </div>
+
+        <!-- Publish/Unpublish -->
+        <div class="tw-flex tw-items-center tw-justify-between tw-w-full tw-pt-4 tw-pb-4">
           <span>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_UNPUBLISH") }}</span>
           <div class="em-toggle">
             <input type="checkbox" class="em-toggle-check" v-model="isPublished" @click="togglePublish">
@@ -32,7 +44,8 @@
           </div>
         </div>
 
-        <div class="em-flex-row em-flex-space-between em-w-100 em-pt-16 em-pb-16" v-show="!['display','panel'].includes(this.element.plugin)">
+        <!-- Mandatory/Optional -->
+        <div class="tw-flex tw-items-center tw-justify-between tw-w-full tw-pt-4 tw-pb-4" v-show="!['display','panel'].includes(this.element.plugin)">
           <span>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_REQUIRED") }}</span>
           <div class="em-toggle">
             <input type="checkbox" class="em-toggle-check" v-model="element.FRequire"
@@ -42,7 +55,8 @@
           </div>
         </div>
 
-        <div class="em-flex-row em-flex-space-between em-w-100 em-pt-16 em-pb-16" v-show="this.element.plugin == 'panel'">
+        <!-- Advanced formatting for panel only -->
+        <div class="tw-flex tw-items-center tw-justify-between tw-w-full tw-pt-4 tw-pb-4" v-show="this.element.plugin == 'panel'">
           <span>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_ADVANCED_FORMAT") }}</span>
           <div class="em-toggle">
             <input type="checkbox" true-value="1" false-value="0" class="em-toggle-check" v-model="element.eval" @click="element.eval == 1 ? element.eval = 0 : element.eval = 1">
@@ -51,14 +65,36 @@
           </div>
         </div>
 
-        <div class="w-full em-pt-16 em-pb-16" v-show="this.element.plugin == 'panel'">
+        <!-- Content for panel only -->
+        <div class="tw-w-full tw-pt-4 tw-pb-4" v-show="this.element.plugin == 'panel'">
           <label for="element-default">{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_CONTENT") }}</label>
 
           <textarea v-if="element.eval == 0" id="element-default" name="element-default" v-model="element.default" class="tw-w-full tw-resize-y"></textarea>
-          <editor-quill v-if="element.eval == 1" v-model="element.default" :id="'element-default'" :text="element.default" :height="'30em'" />
+          <tip-tap-editor
+              v-if="element.eval == 1"
+              v-model="element.default"
+              :id="'element-default'"
+              :upload-url="'/index.php?option=com_emundus&controller=settings&task=uploadmedia'"
+              :editor-content-height="'30em'"
+              :class="'tw-mt-1'"
+              :locale="'fr'"
+              :preset="'custom'"
+              :plugins="editorPlugins"
+              :toolbar-classes="['tw-bg-white']"
+              :editor-content-classes="['tw-bg-white']"
+          />
+        </div>
+      </div>
+
+      <!-- Advanced settings -->
+      <div v-if="tabs[1].active" class="tw-p-4 tw-flex tw-flex-col tw-gap-3">
+        <div v-if="element.params">
+          <label for="element-alias">{{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_ALIAS') }}</label>
+          <input id="element-alias" name="element-alias" type="text" v-model="element.params.alias" @keyup="formatAlias" />
+          <!--            <span class="mt-2" style="font-size: small;">{{translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_ALIAS_HELPTEXT')}}</span>-->
         </div>
 
-        <div class="em-flex-row em-flex-space-between em-w-100 em-pt-16 em-pb-16" v-if="sysadmin">
+        <div class="tw-flex tw-justify-between tw-w-full" v-if="sysadmin">
           <span>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_HIDDEN") }}</span>
           <div class="em-toggle">
             <input type="checkbox" class="em-toggle-check" v-model="isHidden" @click="toggleHidden">
@@ -67,13 +103,12 @@
           </div>
         </div>
 
-      </div>
-      <div v-if="tabs[1].active" class="em-p-16">
         <FormBuilderElementParams :element="element" :params="params" :key="element.id" :databases="databases"/>
       </div>
     </div>
-    <div class="em-flex-row em-flex-space-between actions em-m-16">
-      <button class="em-primary-button" @click="saveProperties()">
+
+    <div class="tw-flex tw-items-center tw-justify-between actions tw-m-4">
+      <button class="tw-btn-primary" @click="saveProperties()">
         {{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_SAVE") }}
       </button>
     </div>
@@ -83,18 +118,23 @@
 </template>
 
 <script>
-import formBuilderService from '../../services/formbuilder';
-import elementParams from '../../../data/form-builder-elements-params.json'
-import formBuilderMixin from "../../mixins/formbuilder";
+import elementParams from '../../../data/form-builder/form-builder-elements-params.json'
 
-import FormBuilderElementParams from "./FormBuilderElements/FormBuilderElementParams";
-import EditorQuill from "@/components/editorQuill.vue";
+import formBuilderService from '@/services/formbuilder.js';
+import FormBuilderElementParams from "@/components/FormBuilder/FormBuilderElements/FormBuilderElementParams.vue";
+import TipTapEditor from 'tip-tap-editor'
+import 'tip-tap-editor/style.css'
+import '../../../../../templates/g5_helium/css/editor.css'
+
+import { useGlobalStore } from "@/stores/global.js";
+
+import formBuilderMixin from "@/mixins/formbuilder.js";
 
 export default {
   name: 'FormBuilderElementProperties',
   components: {
-    EditorQuill,
-    FormBuilderElementParams
+    FormBuilderElementParams,
+    TipTapEditor
   },
   props: {
     element: {
@@ -133,6 +173,14 @@ export default {
       ],
 
       loading: false,
+      editorPlugins: ['history', 'link', 'image', 'bold', 'italic', 'underline','left','center','right','h1', 'h2', 'ul'],
+
+      advancedSettings: false,
+    };
+  },
+  setup() {
+    return {
+      globalStore: useGlobalStore(),
     };
   },
   mounted() {
@@ -142,8 +190,10 @@ export default {
   methods: {
     getDatabases() {
       formBuilderService.getDatabases().then(response => {
+        console.log(response);
+
         if (response.status) {
-          this.databases = response.data.data;
+          this.databases = response.data;
         }
       });
     },
@@ -213,23 +263,28 @@ export default {
         this.tabs[0].active = true;
         this.tabs[1].published = false;
       }
+    },
+    formatAlias(){
+      this.element.params.alias = this.element.params.alias.toLowerCase().replace(/ /g, '_');
+      this.element.params.alias = this.element.params.alias.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      this.element.params.alias = this.element.params.alias.replace(/[^a-z0-9_]/g, '');
     }
   },
   computed: {
     componentType() {
       let type = '';
       switch (this.element.plugin) {
-        case 'databasejoin':
-          type = this.element.params.database_join_display_type == 'radio' ? 'radiobutton' : this.element.params.database_join_display_type;
-          break;
-        case 'years':
-        case 'date':
-        case 'birthday':
-          type = 'birthday';
-          break;
-        default:
-          type = this.element.plugin;
-          break;
+      case 'databasejoin':
+        type = this.element.params.database_join_display_type == 'radio' ? 'radiobutton' : this.element.params.database_join_display_type;
+        break;
+      case 'years':
+      case 'date':
+      case 'birthday':
+        type = 'birthday';
+        break;
+      default:
+        type = this.element.plugin;
+        break;
       }
 
       return type;
@@ -241,7 +296,7 @@ export default {
       return this.element.hidden;
     },
     sysadmin: function () {
-      return parseInt(this.$store.state.global.sysadminAccess);
+      return parseInt(this.globalStore.hasSysadminAccess);
     },
     publishedTabs() {
       return this.tabs.filter((tab) => {

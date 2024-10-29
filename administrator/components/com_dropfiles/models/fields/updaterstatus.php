@@ -63,9 +63,12 @@ class JFormFieldUpdaterstatus extends JFormField
                                ju_url[aux[0]] = aux[1];
                             }
                         }";
-        $script[] = 'var option = ju_url.option';
+        $script[] = 'var option = ju_url.component;';
+        $script[] = "if(typeof option == 'undefined' && ju_url.option != 'undefined') {
+            option = ju_url.option;
+        }";
 
-        $script[] = "function ju_disconnect() {;
+        $script[] = "function ju_disconnect() {
                                 jQuery.ajax({
                                     url     :   'index.php?option='+ option +'&task=jutoken.juRemoveToken',
                                     method    : 'GET',

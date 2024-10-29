@@ -24,12 +24,15 @@ Text::script('COM_EMUNDUS_ONBOARD_CANCEL');
 Text::script('COM_EMUNDUS_ONBOARD_ALL');
 Text::script('COM_EMUNDUS_ONBOARD_SYSTEM');
 Text::script('COM_EMUNDUS_ONBOARD_CAMPAIGNS');
+Text::script('COM_EMUNDUS_ONBOARD_CAMPAIGNS_AND_PROGRAMS');
 Text::script('COM_EMUNDUS_ONBOARD_CAMPAIGNS_DESC');
 Text::script('COM_EMUNDUS_ONBOARD_FILES');
 Text::script('COM_EMUNDUS_ONBOARD_FILE');
 Text::script('COM_EMUNDUS_ONBOARD_CANT_REVERT');
 Text::script('COM_EMUNDUS_ONBOARD_EMPTY_LIST');
 Text::script('COM_EMUNDUS_ONBOARD_LABEL');
+Text::script('COM_EMUNDUS_ONBOARD_LABEL_CAMPAIGN');
+Text::script('COM_EMUNDUS_ONBOARD_LABEL_PROGRAMS');
 ## END ##
 
 ## ACTIONS ##
@@ -105,6 +108,7 @@ Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM');
 Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_CHOOSEPROG');
 Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PICKYEAR');
 Text::script('COM_EMUNDUS_ONBOARD_ADDPROGRAM');
+Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_LANGUAGES');
 Text::script('COM_EMUNDUS_ONBOARD_ADD_RETOUR');
 Text::script('COM_EMUNDUS_ONBOARD_ADD_QUITTER');
 Text::script('COM_EMUNDUS_ONBOARD_ADD_CONTINUER');
@@ -189,4 +193,4 @@ $hash = EmundusHelperCache::getCurrentGitHash();
 >
 </list>
 
-<script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
+<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>

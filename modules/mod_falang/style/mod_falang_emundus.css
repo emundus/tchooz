@@ -85,7 +85,7 @@ div.advanced-dropdown span.caret{
     align-items: center;
     justify-content: center;
     background-color: var(--transparent);
-    font-family: var(--em-default-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
     color: var(--em-profile-color);
 }
 
@@ -98,7 +98,7 @@ div.advanced-dropdown span.caret{
     justify-content: center;
     align-items: flex-start;
     background-color: var(--neutral-0);
-    position: fixed;
+    position: absolute;
 }
 
 .mod_falang_emundus___other_languages span{
@@ -123,6 +123,6 @@ div a[title^="Faboba"] {
 
 @media screen and (max-width: 767px) {
     div.mod-languages form[name="lang"]{
-        margin: 10px 0 !important;
+        margin: 4px 0 !important;
     }
 }

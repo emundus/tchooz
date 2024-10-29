@@ -96,6 +96,8 @@ class JToolbarButtonItrPopup extends ToolbarButton {
      * @return  string  The button HTML.
      *
      * @since  4.0.0
+     * @udpate 5.9 remove the # from the button id (can't be selected)
+     *             add inline script with webassets
      */
     protected function renderButton(array &$options): string
     {
@@ -103,7 +105,7 @@ class JToolbarButtonItrPopup extends ToolbarButton {
 
 
         $html[] = "<joomla-toolbar-button id=\"toolbar-".$options['name']."\">";
-        $html[] = "<button type=\"button\" class=\"btn btn-small " . $options['class'] . "\" data-bs-toggle=\"modal\" data-bs-target=\"#modal-" . $options['name'] . "\" id=\"#modal-" . $options['name'] . "-btn\" />";
+        $html[] = "<button type=\"button\" class=\"btn btn-small " . $options['class'] . "\" data-bs-toggle=\"modal\" data-bs-target=\"#modal-" . $options['name'] . "\" id=\"modal-" . $options['name'] . "-btn\" />";
         $html[] = "<span class=\"".$options['publish']." falang-status\">";
         $html[] = "</span>";
         $html[] = "<img src=\"../media/mod_falang/images/".$options['flag'].".gif\" alt=\"\" />";
@@ -126,7 +128,8 @@ class JToolbarButtonItrPopup extends ToolbarButton {
 
         // We have to move the modal, otherwise we get problems with the backdrop
         // TODO: There should be a better workaround than this
-        Factory::getDocument()->addScriptDeclaration(
+        $wa = Factory::getApplication()->getDocument()->getWebAssetManager();
+        $wa->addInlineScript(
             <<<JS
 window.addEventListener('DOMContentLoaded', function() {
 	document.body.appendChild(document.getElementById('modal-{$options['name']}'));
@@ -137,7 +140,7 @@ JS
         // If an $onClose event is passed, add it to the modal JS object
         if ((string) $this->getOnclose() !== '')
         {
-            Factory::getDocument()->addScriptDeclaration(
+            $wa->addInlineScript(
                 <<<JS
 window.addEventListener('DOMContentLoaded', function() {
 	jQuery('#{$options['selector']}').on('hide.bs.modal', function () {

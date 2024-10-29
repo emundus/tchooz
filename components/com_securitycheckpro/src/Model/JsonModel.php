@@ -30,6 +30,7 @@ use Joomla\CMS\Table\Table;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Helper\AuthenticationHelper;
 use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\Event\AbstractEvent;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\CpanelModel;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\FilemanagerModel;
@@ -37,6 +38,8 @@ use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\Prote
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\DatabaseupdatesModel;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\SecuritycheckproModel;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\FirewallconfigModel;
+
+if (!defined('SCP_USER_AGENT')) define('SCP_USER_AGENT', 'Securitycheck Pro User agent');
 
 class JsonModel extends BaseModel
 {
@@ -83,18 +86,18 @@ class JsonModel extends BaseModel
 	private $info = null;  // Contendrá información sobre el sistema: versión de php, mysql y servidor
 	private $site = null;  // Contendrá la url a la que hemos de devolver el callback
 	private $site_id = null;  // Contendrá la id de la web en Control Center
-	private $log_filename = '';    // Nombre del fichero de logs
+	public $log_filename = '';    // Nombre del fichero de logs
 	// Establecemos la ruta donde se almacenarán los escaneos
     private $folder_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'scans';
 	private $array_result = array(); // Contendrá el resultado de las actualizaciones
 	
 	public function register_task($json)
 	{
-		$cron_enabled = $this->PluginStatus(2);
+		$task_checker_enabled = $this->PluginStatus(9);
 		
-		if ($cron_enabled == 0)
+		if ($task_checker_enabled == 0)
 		{
-			return "Error: Cron task is disabled"; 
+			return "Error: task checker plugin is disabled"; 
 		} else
 		{
 		
@@ -108,10 +111,23 @@ class JsonModel extends BaseModel
 			try 
 			{
 				$result = $db->insertObject('#__securitycheckpro_storage', $object);            
-			} catch (Exception $e)
+			} catch (\Throwable $e)
 			{    			
-				return "Error:" . $e->getMessage(); 
+				$this->log_filename = "error.php";
+				$message = $e->getMessage();
+				$this->write_log($message,"ERROR");
+				return "Error:" . $message; 
 			}
+			
+			// Launch the 'onSCPTaskAdded', observed by the Securitycheckpro_task_checker plugin
+            $event = AbstractEvent::create(
+                'onSCPTaskAdded',
+                [
+					'subject'   => $this,
+                ]
+            );
+
+            Factory::getApplication()->getDispatcher()->dispatch('onSCPTaskAdded', $event);
 			
 			return "Task added";
 		}
@@ -418,7 +434,7 @@ class JsonModel extends BaseModel
 		}
 	}
 
-		// Función que empaqueta una respuesta en formato JSON codificado, cifrando los datos si es necesario
+	// Función que empaqueta una respuesta en formato JSON codificado, cifrando los datos si es necesario
 
 	public function sendResponse($connect_back_url=null)
 	{
@@ -463,7 +479,27 @@ class JsonModel extends BaseModel
 		if (!empty($connect_back_url)) {
 			$this->site = $connect_back_url;
 		}
-						
+		
+		//To be added in future versions
+		//Get the token
+		/*$token = '';
+			
+		$cc_config = $this->getControlCenterConfig();
+		if ( (is_array($cc_config)) && (array_key_exists('token',$cc_config)) ) {
+			$token = $cc_config['token'];
+		}
+		
+		if (empty($token)) {
+			$this->log_filename = "error.php";
+			$message = "Can't send the reply to the Control Center. Token is empty or doesn't match with Control Center.";
+			$this->write_log($message,"ERROR");
+			return;
+		}
+		
+		$headers = [
+			'Token: ' . $token
+		];*/
+								
 		// ... y los devolvemos al cliente
 		$ch = curl_init($this->site . "index.php?option=com_securitycheckprocontrolcenter&view=json&format=raw&json=" . urlencode($response));
 		
@@ -474,6 +510,9 @@ class JsonModel extends BaseModel
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);	
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		curl_setopt($ch, CURLOPT_USERAGENT, SCP_USER_AGENT);
+		//To be added in future versions
+		//curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);	
 			
 		$response = curl_exec($ch);
 		
@@ -545,8 +584,6 @@ class JsonModel extends BaseModel
 	/* Crea un log de una tarea lanzada */
     function write_log($message,$level="INFO")
     {
-		
-
 		$fp2 = @fopen($this->folder_path.DIRECTORY_SEPARATOR.$this->log_filename, 'ab');		
 		
 		if (empty($fp2)) {
@@ -1043,7 +1080,7 @@ class JsonModel extends BaseModel
 		$result = $update_model->tarea_comprobacion();
 
 		// Comprobamos el estado del plugin Update Database
-		$update_database_plugin_installed = $update_model-> PluginStatus(4);
+		$update_database_plugin_installed = $update_model->PluginStatus(4);
 		$update_database_plugin_version = $update_model->get_database_version();
 		$update_database_plugin_last_check = $update_model->last_check();
 		
@@ -1829,11 +1866,13 @@ class JsonModel extends BaseModel
 				if ( is_array($dlid) ) {
 					$this->write_log("Dlid is an array. Extracting values...");
 					foreach($dlid as $key => $value) {
-						$url .= '&amp;' . $key . '=' . $value;
+						$url .= (strpos($url, '?') === false) ? '?' : '&amp;';
+						$url .= $key . '=' . $value;
 						$this->write_log("Url: " . $url);
 					}
 				} else {
-					$url .= '&amp;dlid=' . $dlid;
+					$url .= (strpos($url, '?') === false) ? '?' : '&amp;';
+					$url .= 'dlid=' . $dlid;
 					$this->write_log("Url: " . $url);
 				}
 								
@@ -2539,8 +2578,11 @@ class JsonModel extends BaseModel
 			return false;
 		}
 
-		// Write the file to disk
-		File::write($target, $result->body);
+		// Fix Indirect Modification of Overloaded Property
+        $body = $result->body;
+
+        // Write the file to disk
+        File::write($target, $body);
 
 		return basename($target);
 	}		

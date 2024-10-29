@@ -43,7 +43,9 @@ class DropfilesViewConfiguration extends JViewLegacy
      */
     public function display($tpl = null)
     {
-
+        if (!class_exists('DropfilesModelOptions')) {
+            JLoader::register('DropfilesModelOptions', JPATH_ADMINISTRATOR . '/components/com_dropfiles/models/options.php');
+        }
         JHtml::_('jquery.framework');
         if (DropfilesBase::isJoomla40()) {
             $doc = JFactory::getDocument();
@@ -56,7 +58,6 @@ class DropfilesViewConfiguration extends JViewLegacy
             JHtml::_('script', 'jui/chosen.jquery.min.js', false, true, false, false);
             JHtml::_('stylesheet', 'jui/chosen.css', false, true);
         }
-
 
         $document = JFactory::getApplication()->getDocument();
         // Load style
@@ -74,7 +75,7 @@ class DropfilesViewConfiguration extends JViewLegacy
         $document->addScript(JUri::base() . 'components/com_dropfiles/assets/js/configuration.js');
 
         $model = $this->getModel();
-        //Load the data form
+        // Load the data form
         $form = $model->getForm();
         $data = JComponentHelper::getParams('com_dropfiles');
 
@@ -85,6 +86,30 @@ class DropfilesViewConfiguration extends JViewLegacy
 
         $this->form = &$form;
         $this->params = &$data;
+
+        if ($data->get('dropboxAccessToken', '') !== '') {
+            $options = new DropfilesModelOptions();
+            $flag = $options->get_option('dropfiles_dropbox_sync_after_connecting', false);
+
+            // Sync newest folders and files form cloud to the site
+            if ($flag === true) {
+                $cUrlFolders = curl_init();
+                curl_setopt($cUrlFolders, CURLOPT_URL, JUri::root() . 'index.php?option=com_dropfiles&task=dropbox.sync');
+                curl_setopt($cUrlFolders, CURLOPT_RETURNTRANSFER, 1);
+                curl_exec($cUrlFolders);
+                curl_close($cUrlFolders);
+
+                $cUrlFiles = curl_init();
+                $dropbox_index_url = JUri::root() . 'index.php?option=com_dropfiles&task=frontdropbox.index';
+                curl_setopt($cUrlFiles, CURLOPT_URL, $dropbox_index_url);
+                curl_setopt($cUrlFiles, CURLOPT_RETURNTRANSFER, 1);
+                curl_exec($cUrlFiles);
+                curl_close($cUrlFiles);
+
+                // Remove flag not used
+                $options->update_option('dropfiles_dropbox_sync_after_connecting', false);
+            }
+        }
 
         $this->addToolbar();
         parent::display($tpl);

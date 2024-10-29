@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -99,7 +99,6 @@ class hikashopImportHelper extends stdClass
 		}
 
 		$this->all_fields = array_merge($this->fields,array('product_name','product_published','product_code','product_created','product_modified','product_sale_start','product_sale_end','product_type','product_quantity'));
-		$this->db = JFactory::getDBO();
 
 		if(!HIKASHOP_J30) {
 			$columnsProductTable = $this->db->getTableFields(hikashop_table('product'));
@@ -130,6 +129,10 @@ class hikashopImportHelper extends stdClass
 		$this->uploadFolder_url = str_replace(DS,'/',$uploadFolder);
 		$this->uploadFolder_url = HIKASHOP_LIVE.$this->uploadFolder_url;
 		jimport('joomla.filesystem.file');
+		$app = JFactory::getApplication();
+		JPluginHelper::importPlugin( 'hikashop' );
+		$obj =& $this;
+		$app->triggerEvent( 'onInitProductsImport', array(&$obj) );
 	}
 
 	function addTemplate($template_product_id) {
@@ -489,7 +492,12 @@ class hikashopImportHelper extends stdClass
 				$data[$dataPointer].="\r\n";
 			}
 
+
 			$this->i++;
+
+			if(!$quoted) {
+				return $data;
+			}
 		}
 
 		if($data!=false) $this->_checkLineData($data,false);
@@ -1199,7 +1207,7 @@ class hikashopImportHelper extends stdClass
 		if($new_id && !empty($img)){
 			$db = JFactory::getDBO();
 			$base = substr($img,0,strrpos($img,'.'));
-			$db->setQuery('INSERT IGNORE INTO '.hikashop_table('file').' (`file_name`,`file_description`,`file_path`,`file_type`,`file_ref_id`) VALUES ('.$db->Quote($base).',\'\','.$db->Quote($img).',\'category\','.(int)$new_id.');');
+			$db->setQuery('INSERT IGNORE INTO '.hikashop_table('file').' (`file_name`,`file_description`,`file_path`,`file_type`,`file_ref_id`) VALUES ('.$db->Quote((string)$base).',\'\','.$db->Quote((string)$img).',\'category\','.(int)$new_id.');');
 			$db->execute();
 		}
 		return $new_id;
@@ -1218,11 +1226,11 @@ class hikashopImportHelper extends stdClass
 			$data[$namekey] = $newId;
 		}
 		if(!isset($data[$namekey])){
-			$query = 'SELECT category_id FROM '.hikashop_table('category').' WHERE category_namekey='.$this->db->Quote($code).' AND category_type='.$this->db->Quote($type).$parent_condition;
+			$query = 'SELECT category_id FROM '.hikashop_table('category').' WHERE category_namekey='.$this->db->Quote((string)$code).' AND category_type='.$this->db->Quote((string)$type).$parent_condition;
 			$this->db->setQuery($query);
 			$data[$namekey] = $this->db->loadResult();
 			if(empty($data[$namekey])){
-				$query = 'SELECT category_id FROM '.hikashop_table('category').' WHERE category_name='.$this->db->Quote($code).' AND category_type='.$this->db->Quote($type).$parent_condition;
+				$query = 'SELECT category_id FROM '.hikashop_table('category').' WHERE category_name='.$this->db->Quote((string)$code).' AND category_type='.$this->db->Quote((string)$type).$parent_condition;
 				$this->db->setQuery($query);
 				$data[$namekey] = $this->db->loadResult();
 				if(empty($data[$namekey])){
@@ -1242,7 +1250,7 @@ class hikashopImportHelper extends stdClass
 			$base = substr($image,0,strrpos($image,'.'));
 			$this->db->setQuery('DELETE FROM '.hikashop_table('file').' WHERE file_type = \'category\' AND file_ref_id='.(int)$data[$namekey].';');
 			$this->db->execute();
-			$this->db->setQuery('INSERT IGNORE INTO '.hikashop_table('file').' (`file_name`,`file_description`,`file_path`,`file_type`,`file_ref_id`) VALUES ('.$this->db->Quote($base).',\'\','.$this->db->Quote($image).',\'category\','.(int)$data[$namekey].');');
+			$this->db->setQuery('INSERT IGNORE INTO '.hikashop_table('file').' (`file_name`,`file_description`,`file_path`,`file_type`,`file_ref_id`) VALUES ('.$this->db->Quote((string)$base).',\'\','.$this->db->Quote((string)$image).',\'category\','.(int)$data[$namekey].');');
 			$this->db->execute();
 		}
 		return $data[$namekey];
@@ -1251,11 +1259,11 @@ class hikashopImportHelper extends stdClass
 	function _getRelated($code){
 		static $data=array();
 		if(!isset($data[$code])){
-			$query = 'SELECT product_id FROM '.hikashop_table('product').' WHERE product_code='.$this->db->Quote($code);
+			$query = 'SELECT product_id FROM '.hikashop_table('product').' WHERE product_code='.$this->db->Quote((string)$code);
 			$this->db->setQuery($query);
 			$id = $this->db->loadResult();
 			if(empty($id)){
-				$query = 'SELECT product_id FROM '.hikashop_table('product').' WHERE product_id='.$this->db->Quote($code);
+				$query = 'SELECT product_id FROM '.hikashop_table('product').' WHERE product_id='.$this->db->Quote((string)$code);
 				$this->db->setQuery($query);
 				$id = $this->db->loadResult();
 				if(empty($id)){
@@ -1273,7 +1281,7 @@ class hikashopImportHelper extends stdClass
 	function _getAccess($access){
 		static $data=array();
 		if(!isset($data[$access])){
-			$query = 'SELECT id FROM '.hikashop_table('usergroups',false).' WHERE title='.$this->db->Quote($access);
+			$query = 'SELECT id FROM '.hikashop_table('usergroups',false).' WHERE title='.$this->db->Quote((string)$access);
 			$this->db->setQuery($query);
 			$data[$access] = (int)$this->db->loadResult();
 		}
@@ -1283,7 +1291,7 @@ class hikashopImportHelper extends stdClass
 	function _getCurrency($code){
 		static $data=array();
 		if(!isset($data[$code])){
-			$query = 'SELECT currency_id FROM '.hikashop_table('currency').' WHERE currency_code='.$this->db->Quote(strtoupper($code));
+			$query = 'SELECT currency_id FROM '.hikashop_table('currency').' WHERE currency_code='.$this->db->Quote((string)strtoupper($code));
 			$this->db->setQuery($query);
 			$data[$code] = $this->db->loadResult();
 		}
@@ -1303,7 +1311,7 @@ class hikashopImportHelper extends stdClass
 			if(empty($product->prices) && empty($product->hikashop_update)){
 				if(@$product->product_type!='variant' && !empty($this->template->prices)){
 					foreach($this->template->prices as $price){
-						$value = array($this->db->Quote($price->price_value),(int)$price->price_currency_id,(int)$price->price_min_quantity,(int)$product->product_id,$this->db->Quote(@$price->price_access),$this->db->Quote(@$price->price_users));
+						$value = array($this->db->Quote((string)$price->price_value),(int)$price->price_currency_id,(int)$price->price_min_quantity,(int)$product->product_id,$this->db->Quote((string)@$price->price_access),$this->db->Quote((string)@$price->price_users));
 						$values[] = implode(',',$value);
 						$totalValid++;
 						if( $totalValid%$this->perBatch == 0){
@@ -1318,7 +1326,7 @@ class hikashopImportHelper extends stdClass
 				$ids[]=(int)$product->product_id;
 
 				foreach($product->prices as $price){
-					$value = array($this->db->Quote($price->price_value),(int)$price->price_currency_id,(int)$price->price_min_quantity,(int)$product->product_id,$this->db->Quote(@$price->price_access),$this->db->Quote(@$price->price_users));
+					$value = array($this->db->Quote((string)$price->price_value),(int)$price->price_currency_id,(int)$price->price_min_quantity,(int)$product->product_id,$this->db->Quote((string)@$price->price_access),$this->db->Quote((string)@$price->price_users));
 					$values[] = implode(',',$value);
 					$totalValid++;
 					if( $totalValid%$this->perBatch == 0){
@@ -1428,7 +1436,7 @@ class hikashopImportHelper extends stdClass
 						if($type == 'bundle' && !empty($this->template->bundle_quantity[$k]))
 							$qty = $this->template->bundle_quantity[$k];
 
-						$value = array((int)$id, $this->db->Quote($type), (int)$product->product_id, $i, (int)$qty);
+						$value = array((int)$id, $this->db->Quote((string)$type), (int)$product->product_id, $i, (int)$qty);
 						$values[] = implode(',',$value);
 						$totalValid++;
 						if( $totalValid && $totalValid%$this->perBatch == 0){
@@ -1450,13 +1458,13 @@ class hikashopImportHelper extends stdClass
 						$qty = 0;
 						if($type == 'bundle' && !empty($product->bundle_quantity[$k]))
 							$qty = $product->bundle_quantity[$k];
-						$value = array((int)$id, $this->db->Quote($type), (int)$product->product_id, $i, (int)$qty);
+						$value = array((int)$id, $this->db->Quote((string)$type), (int)$product->product_id, $i, (int)$qty);
 						$values[] = implode(',',$value);
 						$totalValid++;
 					}
 					if( $totalValid && $totalValid%$this->perBatch == 0){
 						if(!empty($ids)){
-							$this->db->setQuery('DELETE FROM '.hikashop_table('product_related').' WHERE product_id IN ('.implode(',',$ids).') AND product_related_type='.$this->db->Quote($type));
+							$this->db->setQuery('DELETE FROM '.hikashop_table('product_related').' WHERE product_id IN ('.implode(',',$ids).') AND product_related_type='.$this->db->Quote((string)$type));
 							$this->db->execute();
 							$ids=array();
 						}
@@ -1472,7 +1480,7 @@ class hikashopImportHelper extends stdClass
 			}
 		}
 		if(!empty($ids)){
-			$this->db->setQuery('DELETE FROM '.hikashop_table('product_related').' WHERE product_id IN ('.implode(',',$ids).') AND product_related_type='.$this->db->Quote($type));
+			$this->db->setQuery('DELETE FROM '.hikashop_table('product_related').' WHERE product_id IN ('.implode(',',$ids).') AND product_related_type='.$this->db->Quote((string)$type));
 			$this->db->execute();
 		}
 		if(count($values)){
@@ -1582,10 +1590,10 @@ class hikashopImportHelper extends stdClass
 						if(isset($translation->id)) unset($translation->id);
 						$value = array();
 						foreach(get_object_vars($translation) as $field){
-							$value[] = $this->db->Quote($field);
+							$value[] = $this->db->Quote((string)$field);
 						}
 						$values[] = implode(',',$value);
-						$ids[] = 'language_id='.(int)$translation->language_id.' AND reference_id='.(int)$translation->reference_id.' AND reference_table='.$this->db->Quote($translation->reference_table).' AND reference_field='.$this->db->Quote($translation->reference_field);
+						$ids[] = 'language_id='.(int)$translation->language_id.' AND reference_id='.(int)$translation->reference_id.' AND reference_table='.$this->db->Quote((string)$translation->reference_table).' AND reference_field='.$this->db->Quote((string)$translation->reference_field);
 						$totalValid++;
 						if( $totalValid%$this->perBatch == 0){
 							if(!empty($ids)){
@@ -1680,14 +1688,14 @@ class hikashopImportHelper extends stdClass
 				if(@$product->product_type!='variant' && !empty($this->template->$type)){
 					foreach($this->template->$type as $file){
 						$value = array(
-							$this->db->Quote($file->file_name),
-							$this->db->Quote($file->file_description),
-							$this->db->Quote($file->file_path),
-							$this->db->Quote($db_type),
+							$this->db->Quote((string)$file->file_name),
+							$this->db->Quote((string)$file->file_description),
+							$this->db->Quote((string)$file->file_path),
+							$this->db->Quote((string)$db_type),
 							(int)$product->product_id,
-							$this->db->Quote($file->file_ordering),
-							$this->db->Quote($file->file_free_download),
-							$this->db->Quote($file->file_limit)
+							$this->db->Quote((string)$file->file_ordering),
+							$this->db->Quote((string)$file->file_free_download),
+							$this->db->Quote((string)$file->file_limit)
 						);
 						$values[] = implode(',', $value);
 						$totalValid++;
@@ -1704,9 +1712,9 @@ class hikashopImportHelper extends stdClass
 				$ordering = 0;
 				foreach($product->$type as $file){
 					if(is_string($file)){
-						$value = array($this->db->Quote(str_replace('_',' ',substr($file,0,strrpos($file,'.')))),$this->db->Quote(''),$this->db->Quote($file),$this->db->Quote($db_type),$product->product_id,$ordering,$this->db->Quote(''),$this->db->Quote(''));
+						$value = array($this->db->Quote((string)str_replace('_',' ',substr($file,0,strrpos($file,'.')))),$this->db->Quote(''),$this->db->Quote((string)$file),$this->db->Quote((string)$db_type),$product->product_id,$ordering,$this->db->Quote(''),$this->db->Quote(''));
 					}else{
-						$value = array($this->db->Quote($file->file_name),$this->db->Quote($file->file_description),$this->db->Quote($file->file_path),$this->db->Quote($db_type),$product->product_id,(int)(@$file->file_ordering?$file->file_ordering:$ordering),$this->db->Quote($file->file_free_download),$this->db->Quote($file->file_limit));
+						$value = array($this->db->Quote((string)$file->file_name),$this->db->Quote((string)$file->file_description),$this->db->Quote((string)$file->file_path),$this->db->Quote((string)$db_type),$product->product_id,(int)(@$file->file_ordering?$file->file_ordering:$ordering),$this->db->Quote((string)$file->file_free_download),$this->db->Quote((string)$file->file_limit));
 					}
 					$ordering++;
 					$values[] = implode(',',$value);
@@ -1807,6 +1815,12 @@ class hikashopImportHelper extends stdClass
 			$columns['product_access']='product_access';
 			$columns['product_group_after_purchase']='product_group_after_purchase';
 		}
+
+		$app = JFactory::getApplication();
+		JPluginHelper::importPlugin( 'hikashop' );
+		$obj =& $this;
+		$app->triggerEvent( 'onProductsImportDetectHeader', array(&$obj, &$columns) );
+
 		foreach($this->columns as $i => $oneColumn){
 			if(function_exists('mb_strtolower')){
 				$this->columns[$i] = mb_strtolower(trim($oneColumn,'" '));
@@ -1954,7 +1968,7 @@ class hikashopImportHelper extends stdClass
 		$i = 0;
 		foreach($products as $product){
 			if($product->product_type!=$type) continue;
-			$codes[$product->product_code] = $this->db->Quote($product->product_code);
+			$codes[$product->product_code] = $this->db->Quote((string)$product->product_code);
 		}
 		if(!empty($codes)){
 			$query = 'SELECT * FROM '.hikashop_table('product'). ' WHERE product_code IN ('.implode(',',$codes).')';
@@ -2002,7 +2016,7 @@ class hikashopImportHelper extends stdClass
 								$line[] = 'NULL';
 							}else{
 								$exist++;
-								$line[] = $this->db->Quote(@$product->$field);
+								$line[] = $this->db->Quote((string)@$product->$field);
 							}
 						}else{
 							if($field=='product_published' && !isset($product->$field) && $this->force_published){
@@ -2014,7 +2028,7 @@ class hikashopImportHelper extends stdClass
 							if($this->update_product_quantity && $field=='product_quantity' && $product->product_quantity != -1){
 								$product->product_quantity += $already[$product->product_id]->$field;
 							}
-							$line[] = $this->db->Quote(@$product->$field);
+							$line[] = $this->db->Quote((string)@$product->$field);
 						}
 					}
 					$lines[]=implode(',',$line);

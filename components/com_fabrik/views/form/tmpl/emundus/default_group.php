@@ -12,9 +12,14 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-$layout          = FabrikHelperHTML::getLayout('form.fabrik-control-group');
+$layout          = FabrikHelperHTML::getLayout('form.fabrik-control-group', [JPATH_SITE . '/components/com_fabrik/views/form/tmpl/emundus/layouts/']);
 $rowStarted      = 0;
+
+$model     = $this->getModel();
+$element_ids = $model->getElementIds();
 foreach ($this->elements as $element) :
+	$element->element_fabrik_id = $element_ids[$this->index_element_id];
+	$this->index_element_id++;
 	$this->element = $element;
 	$this->class = 'fabrikErrorMessage';
 
@@ -31,6 +36,8 @@ foreach ($this->elements as $element) :
 		'startRow' => $element->startRow,
 		'endRow' => $element->endRow,
 		'column' => $element->column,
+		'element' => $element,
+		'display_comments' => $this->display_comments,
 	);
 
 	$labelsAbove = $element->labels;

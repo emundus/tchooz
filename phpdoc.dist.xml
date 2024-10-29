@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpdocumentor
+        configVersion="3"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="https://www.phpdoc.org"
+>
+    <title>eMundus Back-end documentation</title>
+
+    <paths>
+        <output>./components/com_emundus/docs/back</output>
+    </paths>
+
+    <version number="3.0.0">
+        <api format="php">
+            <source dsn=".">
+                <path>components/com_emundus/controllers</path>
+                <path>components/com_emundus/helpers</path>
+                <path>components/com_emundus/models</path>
+                <path>libraries/src/MVC</path>
+            </source>
+        </api>
+    </version>
+
+
+    <!-- Specify template element inside phpdocumentor -->
+    <template name="./libraries/emundus/docs/themes/markdown" />
+
+</phpdocumentor>

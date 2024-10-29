@@ -41,6 +41,8 @@ class JFormFieldDropboxbtn extends JFormField
     /**
      * Field connect dropbox button
      *
+     * @throws Exception Fire if errors
+     *
      * @return string
      */
     protected function getInput()
@@ -49,6 +51,16 @@ class JFormFieldDropboxbtn extends JFormField
         JLoader::register('DropfilesDropbox', $path_dropfilesdropbox);
         // Initialize JavaScript field attributes.
         $dropbox = new DropfilesDropbox();
+
+        if (!class_exists('DropfilesModelOptions')) {
+            JLoader::register('DropfilesModelOptions', JPATH_ADMINISTRATOR . '/components/com_dropfiles/models/options.php');
+        }
+
+        $options = new DropfilesModelOptions();
+        $dropboxWatchChanges = $options->get_option('dropbox_watch_changes');
+        $dropboxCallbackUrl = JURI::root() . 'index.php?option=com_dropfiles&task=frontdropbox.listener';
+        $params = JComponentHelper::getParams('com_dropfiles');
+        $connectionMode = $params->get('dropboxConnectMethod', 'none');
         $html = '
         <style>
         .btn-dropbox {
@@ -87,8 +99,22 @@ class JFormFieldDropboxbtn extends JFormField
             $html .= ' <img src="' . JURI::root() . '/components/com_dropfiles/assets/images/dropbox_icon_colored.png';
             $html .= '" alt="" /> ';
             $html .= '<span class="btn-title">' . JText::_('COM_DROPFILES_DISCONNECT_CONNECT_DROPBOX') . '</span></a>';
-        }
+            $html .= '<a id="dropfiles_btn_dropbox_changes" class="btn btn-success btn-dropbox-changes" href="#" title="'. JText::_('COM_DROPFILES_DROPBOX_WATCH_CHANGES_TOOLTIP') .'">';
 
+            if ($dropboxWatchChanges) {
+                $html .= JText::_('COM_DROPFILES_DROPBOX_STOP_WATCH_CHANGES');
+            } else {
+                $html .= JText::_('COM_DROPFILES_DROPBOX_WATCH_CHANGES');
+            }
+
+            $html .= '</a>';
+
+            if (!$dropboxWatchChanges && strval($connectionMode) === 'manual') {
+                $html .= '<div class="dropfiles-float-message dropfiles-dropbox-watch-change-message" style="padding:0; margin-top:0; min-height: 0;">';
+                $html .= '<div class="alert-message"><strong>'. JText::_('COM_DROPFILES_DROPBOX_WATCH_CHANGE_WARNING') .'</strong> '. $dropboxCallbackUrl .'</div>';
+                $html .= '</div>';
+            }
+        }
 
         return $html;
     }

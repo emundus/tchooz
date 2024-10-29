@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -81,7 +81,7 @@ if(!empty($this->element->translations)) {
 				<?php echo $this->fieldsClass->getFieldName($oneExtraField); ?>
 			</td>
 			<td>
-				<input type="text" id="<?php $this->fields[$fieldName]->field_id ?>" name="<?php echo "translation[$fieldName][".$language_id."]"; ?>" value="<?php if(!isset($translation->$fieldName->value))@$translation->$fieldName->value='';echo $this->escape(@$translation->$fieldName->value); ?>"/>
+				<input type="text" id="<?php $this->fields[$fieldName]->field_id ?>" name="<?php echo "translation[$fieldName][".$language_id."]"; ?>" value="<?php if(isset($translation->$fieldName->value))echo $this->escape(@$translation->$fieldName->value); ?>"/>
 			</td>
 		</tr>
 <?php
@@ -94,7 +94,7 @@ if(!empty($this->element->translations)) {
 				<?php echo $this->fieldsClass->getFieldName($oneExtraField); ?>
 			</td>
 			<td>
-				<textarea id="category_<?php echo $fieldName; ?>" cols="46" rows="2" name="<?php echo "translation[$fieldName][".$language_id."]"; ?>"><?php if(!isset($translation->$fieldName->value))@$translation->$fieldName->value='';echo $this->escape(@$translation->$fieldName->value); ?></textarea>
+				<textarea id="category_<?php echo $fieldName; ?>" cols="46" rows="2" name="<?php echo "translation[$fieldName][".$language_id."]"; ?>"><?php if(isset($translation->$fieldName->value))echo $this->escape(@$translation->$fieldName->value); ?></textarea>
 			</td>
 		</tr>
 <?php

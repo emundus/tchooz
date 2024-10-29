@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -265,7 +265,7 @@ class hikashopPaymentPlugin extends hikashopPlugin {
 	}
 
 	function createCallbackFile($type, &$element) {
-		if($type != 'payment' || $element->payment_type != $this->name)
+		if($type != 'payment' || empty($element->payment_type) || $element->payment_type != $this->name)
 			return true;
 		if(!$this->needCallbackFile)
 			return true;

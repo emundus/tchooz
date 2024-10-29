@@ -14,6 +14,8 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\MVC\Controller\BaseController;
+
 
 /**
  * users Controller
@@ -22,25 +24,43 @@ use Joomla\CMS\Factory;
  * @subpackage eMundus
  * @since      2.0.0
  */
-class EmundusControllerUser extends JControllerLegacy
+class EmundusControllerUser extends BaseController
 {
 	protected $app;
 
 	private $_user;
 	private $m_user;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     \JController
+	 * @since   1.0.0
+	 */
 	public function __construct($config = array())
 	{
+		parent::__construct($config);
+
 		require_once(JPATH_COMPONENT . DS . 'models' . DS . 'user.php');
 
 		$this->app    = Factory::getApplication();
 		$this->_user  = $this->app->getSession()->get('emundusUser');
 		$this->m_user = $this->getModel('User');
-
-		parent::__construct($config);
 	}
 
-
+	/**
+	 * Method to display a view.
+	 *
+	 * @param   boolean  $cachable   If true, the view output will be cached.
+	 * @param   boolean  $urlparams  An array of safe URL parameters and their variable types.
+	 *                   @see        \Joomla\CMS\Filter\InputFilter::clean() for valid values.
+	 *
+	 * @return  DisplayController  This object to support chaining.
+	 *
+	 * @since   1.0.0
+	 */
 	public function display($cachable = false, $urlparams = false)
 	{
 		// Set a default view if none exists

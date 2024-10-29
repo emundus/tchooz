@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <extension group="fabrik_list" method="upgrade" type="plugin" version="4">
-	<name>plg_fabrik_list_canviewrow</name>
-	<author>Fabrikar</author>
-	<creationDate>February 2024</creationDate>
-	<copyright>Copyright (C) 2005-2024 Fabrikar - All rights reserved.</copyright>
-	<license>GNU General Public License version 3 or later; see software_license.txt</license>
-	<authorEmail>team@fabrikar.com</authorEmail>
-	<authorUrl>https://www.fabrikar.com</authorUrl>
-	<version>4.0</version>
-	<help url="PLG_LIST_CANVIEWROW_HELP_SERVER"/>
-	<description>PLG_LIST_CANVIEWROW_DESCRIPTION</description>
-	<files>
-		<filename plugin="canviewrow">canviewrow.php</filename>
-		<filename>canviewrow.js</filename>
-		<filename>canviewrow-min.js</filename>
-		<filename>index.html</filename>
-		<folder>forms</folder>
-		<folder>language</folder>
-	</files>
+  <name>plg_fabrik_list_canviewrow</name>
+  <author>Fabrikar</author>
+  <creationDate>2024-08-26</creationDate>
+  <copyright>Copyright (C) 2005-2024 Fabrikar - All rights reserved.</copyright>
+  <license>GNU General Public License version 3 or later; see software_license.txt</license>
+  <authorEmail>team@fabrikar.com</authorEmail>
+  <authorUrl>https://www.fabrikar.com</authorUrl>
+  <version>4.3.1</version>
+  <help url="PLG_LIST_CANVIEWROW_HELP_SERVER"></help>
+  <description>PLG_LIST_CANVIEWROW_DESCRIPTION</description>
+  <files>
+    <filename plugin="canviewrow">canviewrow.php</filename>
+    <filename>canviewrow.js</filename>
+    <filename>canviewrow-min.js</filename>
+    <filename>index.html</filename>
+    <folder>forms</folder>
+    <folder>language</folder>
+  </files>
 </extension>

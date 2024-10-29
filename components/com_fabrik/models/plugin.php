@@ -28,6 +28,7 @@ use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\CMS\HTML\HTMLHelper;
 use Fabrik\Helpers\Php;
+use Fabrik\Enums\PluginStructure;
 
 jimport('joomla.application.component.model');
 
@@ -38,6 +39,7 @@ jimport('joomla.application.component.model');
  * @subpackage  Fabrik
  * @since       3.0
  */
+#[AllowDynamicProperties]
 class FabrikPlugin extends CMSPlugin
 {
 	/**
@@ -132,6 +134,12 @@ class FabrikPlugin extends CMSPlugin
 	protected $package = 'fabrik';
 
 	/**
+	 * @var structure J3/J4: Set by the plugin manager when the plugin is loaded
+	 * Default to J3 for now until we get the underlying classes updated
+	 */
+	protected $structure = PluginStructure::J3;
+
+	/**
 	 * Set the plugin id
 	 *
 	 * @param   int $id id to use
@@ -183,6 +191,28 @@ class FabrikPlugin extends CMSPlugin
 	public function getName()
 	{
 		return isset($this->name) ? $this->name : get_class($this);
+	}
+
+	/**
+	 * Set the structure
+	 * 	 *
+	 * @param   PluginStructure: structure
+	 *
+	 * @return  void
+	 */
+	public function setStructure(PluginStructure $structure)
+	{
+		$this->structure = $structure;
+	}
+
+	/**
+	 * Get PluginStructure 
+	 *
+	 * @return  PluginStructure structure
+	 */
+	public function getStructure(): PluginStructure
+	{
+		return $this->structure;
 	}
 
 	/**
@@ -468,22 +498,11 @@ class FabrikPlugin extends CMSPlugin
 			}
 
 			$form->repeat = $repeat;
-//			$j3           = FabrikWorker::j3();
-//			$j3           = true;
 
 			if ($repeat)
 			{
-//				if ($j3)
-//				{
-					$str[] = '<a class="btn" href="#" data-button="addButton">' . FabrikHelperHTML::icon('icon-plus', Text::_('COM_FABRIK_ADD')) . '</a>';
-					$str[] = '<a class="btn" href="#" data-button="deleteButton">' . FabrikHelperHTML::icon('icon-minus', Text::_('COM_FABRIK_REMOVE')) . '</a>';
-/*
-				}
-				else
-				{
-					$str[] = '<a class="addButton" href="#" data-button="addButton">' . FabrikHelperHTML::icon('icon-plus', Text::_('COM_FABRIK_ADD')) . '</a>';
-				}
-*/
+				$str[] = '<a class="btn" href="#" data-button="addButton">' . FabrikHelperHTML::icon('icon-plus', Text::_('COM_FABRIK_ADD')) . '</a>';
+				$str[] = '<a class="btn" href="#" data-button="deleteButton">' . FabrikHelperHTML::icon('icon-minus', Text::_('COM_FABRIK_REMOVE')) . '</a>';
 			}
 
 			for ($r = 0; $r < $repeatDataMax; $r++)
@@ -493,11 +512,6 @@ class FabrikPlugin extends CMSPlugin
 					$str[]               = '<div class="repeatGroup">';
 					$form->repeatCounter = $r;
 				}
-
-//				if (!$j3)
-//				{
-//					$str[] = '<ul class="adminformlist">';
-//				}
 
 				foreach ($form->getFieldset($fieldset->name) as $field)
 				{
@@ -516,52 +530,31 @@ class FabrikPlugin extends CMSPlugin
 						}
 					}
 
-//					if ($j3)
-//					{
-						if ($field->showon)
-						{
-							$showOns = FormHelper::parseShowOnConditions($field->showon, $field->formControl, $field->group);
+					if ($field->showon)
+					{
+						$showOns = FormHelper::parseShowOnConditions($field->showon, $field->formControl, $field->group);
 
-							if ($field->repeat)
+						if ($field->repeat)
+						{
+							foreach ($showOns as &$showOn)
 							{
-								foreach ($showOns as &$showOn)
-								{
-									$showOn['field'] .= '[' . $form->repeatCounter . ']';
-								}
+								$showOn['field'] .= '[' . $form->repeatCounter . ']';
 							}
-
-							$dataShowOn = ' data-showon=\'' . json_encode($showOns) . '\'';
-
 						}
-						else
-						{
-							$dataShowOn = '';
-						}
-						$str[] = '<div class="control-group"' . $dataShowOn . '>';
-						$str[] = '<div class="control-label">' . $field->label . '</div>';
-//						$str[] = '<div class="controls">' . $field->input . '</div>';
-						$str[] = '<div>' . $field->input . '</div>';
-						$str[] = '</div>';
-/*
+
+						$dataShowOn = ' data-showon=\'' . json_encode($showOns) . '\'';
+
 					}
 					else
 					{
-						$str[] = '<li>' . $field->label . $field->input . '</li>';
+						$dataShowOn = '';
 					}
-*/
+					$str[] = '<div class="control-group"' . $dataShowOn . '>';
+					$str[] = '<div class="control-label">' . $field->label . '</div>';
+//						$str[] = '<div class="controls">' . $field->input . '</div>';
+					$str[] = '<div>' . $field->input . '</div>';
+					$str[] = '</div>';
 				}
-
-//				if ($repeat && !$j3)
-//				{
-//					$str[] = '<li><a class="removeButton delete btn" href="#">' . FabrikHelperHTML::icon('icon-minus-sign', Text::_('COM_FABRIK_REMOVE'))
-//						. '</a></li>';
-//				}
-
-//				if (!$j3)
-//				{
-//					$str[] = '</ul>';
-//				}
-
 				if ($repeat)
 				{
 					$str[] = "</div>";

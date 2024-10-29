@@ -327,7 +327,79 @@ define (['jquery', 'admin/pluginmanager'], function (jQuery, PluginManager) {
 					f.submit();
 				});
 			}
-		}
+		},
+		/* A function to determine if a script is included */
+		is_asset_already_included: function (src){ 
+				src = src.substring(0, src.indexOf("?"));
+				const found_in_resources = performance.getEntries()
+		  		.filter(e => e.entryType === "resource")
+		  		.map(e => e.name)
+		  		.indexOf(src) !== -1;
+				const found_in_script_tags = document.querySelectorAll('script[src*="' + src + '"]').length > 0;
+				const found_in_style_tags = document.querySelectorAll('link[href*="' + src + '"][rel="stylesheet"]').length > 0;
+				return found_in_resources || found_in_script_tags || found_in_style_tags;
+		},
+		/* A function to insert the scripts and styles */
+		/* Uses promises so that the files are fully loaded before inline script is loaded */
+		insert_scripts_and_styles: function (passedInAssets) {
+			let deferredScripts = [];
+			let deferredStyles = [];
+			let promises = [];
+			for (var assetType in passedInAssets) {
+				let assets = passedInAssets[assetType];
+				assets.forEach(asset => {
+					if (asset.src.length == 0
+						 || is_asset_already_included(asset.src) === false) {
+						if (assetType == "script") {
+							if (asset.src.length > 0) {
+								promises.push(new Promise((resolve, reject) => {
+									let script = document.createElement("script");
+									script.setAttribute('type', asset.type);
+									script.setAttribute('src', asset.src);
+									script.addEventListener("load", (ev) => {
+										resolve({status: true});
+									});
+									script.addEventListener("error", (ev) => {
+										reject({
+											status: false,
+											message: 'failed to load the script file ${asset.src}'
+										});
+									});
+									document.body.appendChild(script);
+								}));
+							} else {
+								let script = document.createElement("script");
+								script.innerText = asset.content;
+								deferredScripts.push(script);
+							}
+						} else {
+								let style;
+								if (asset.src.length > 0) {
+									style = document.createElement("link");
+									style.rel = "stylesheet";
+									style.href = asset.src;
+								} else {
+									style = document.createElement("style");
+									style.innerText = asset.content;
+								}
+								deferredStyles.push(style);
+						}
+					}
+				});
+			}
+			Promise.all(promises).then(result => {
+				if (deferredScripts.length > 0) {
+					deferredScripts.forEach(script => {
+						document.body.appendChild(script);
+					});
+				}
+				if (deferredStyles.length > 0) {
+					deferredStyles.forEach(style => {
+						document.body.appendChild(style);
+					});
+				}
+			});
+		}	
 	});
 	return fabrikAdminElement;
 });

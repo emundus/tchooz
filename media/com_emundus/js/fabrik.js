@@ -4,6 +4,26 @@
  **
  ***/
 
+function addLoader(container = 'body') {
+    if(window.document.getElementById('em-dimmer') === null) {
+        let loaderElement = window.document.createElement('div');
+        loaderElement.id = 'em-dimmer';
+        loaderElement.classList.add('em-page-loader');
+
+        let containerElement = window.document.querySelector(container);
+        if(containerElement) {
+            containerElement.insertAdjacentElement('afterend', loaderElement);
+        }
+    }
+}
+
+function removeLoader() {
+    const loader = document.getElementById('em-dimmer');
+    if (loader!== null) {
+        loader.remove();
+    }
+}
+
 /**
  * Hide one or multiple elements
  *
@@ -393,11 +413,17 @@ function checkPasswordSymbols(element) {
     }
 }
 
-function cleanNumberInput(element, maxDecimals) {
+function cleanNumberInput(element, maxDecimals = 0,noGreaterThan = null,authorizeNegativeNumber = false) {
     var value = element.get('value');
     const input = document.getElementById(element.strElement);
+    var nonDigitExceptCommaDot = '';
 
-    const nonDigitExceptCommaDot = /[^0-9.,]/;
+    if(authorizeNegativeNumber){
+        nonDigitExceptCommaDot = /[^-0-9.,]/;
+    }
+    else{
+        nonDigitExceptCommaDot = /[^0-9.,]/;
+    }
 
     const moreThanOneCommaDot = /[.,].*[.,]/;
 
@@ -424,6 +450,70 @@ function cleanNumberInput(element, maxDecimals) {
             value = value.substring(0, caretPosition - 1) + value.substring(caretPosition);
         }
     }
+    if (maxDecimals === 0 && value.indexOf(".") !== -1) {
+        value = value.replace(".", "");
+    }
+
+    if(value > noGreaterThan){
+        value = '';
+    }
+
 
     return value;
+}
+
+function prefillBic(element, bic_element) {
+    let table_name = element.form.options.primaryKey.split('___')[0];
+    var fab = element.form.elements;
+    if(element.options.inRepeatGroup) {
+        var bic = fab.get(table_name+'_'+element.groupid+'_repeat___'+bic_element+'_'+element.getRepeatNum());
+    } else {
+        var bic = fab.get(table_name + '___' + bic_element);
+    }
+
+    var value = element.get('value')
+
+    if (bic && value != '') {
+        value = value.replace(/\s/g, "");
+        var bank_code = value.substring(4, 9);
+
+        if(element.options.bicMapping[bank_code]) {
+            bic.set(element.options.bicMapping[bank_code]);
+        }
+    }
+}
+
+const callApi = function(id_api,route,data,method) {
+    addLoader();
+
+    return new Promise((resolve, reject) => {
+        let formData = new FormData();
+        formData.append('id_api', id_api);
+        formData.append('route', route);
+        formData.append('method', method);
+        formData.append('data', JSON.stringify(data));
+
+
+        fetch('index.php?option=com_emundus&controller=sync&task=callapi', {
+            method: 'POST',
+            body: formData,
+        }).then(function (response) {
+            removeLoader();
+            if (response.ok) {
+                return response.json();
+            } else {
+                console.log('Network response was not ok.');
+            }
+        }).then(function (data) {
+            if (data.status == 200) {
+                resolve(data.data);
+            } else {
+                console.log('API call failed with status: ' + data.status);
+                reject(data);
+            }
+        }).catch(function (error) {
+            console.log('There has been a problem with your fetch operation: ' + error.message);
+            reject(error);
+        });
+    });
 }

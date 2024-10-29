@@ -1,5 +1,6 @@
 <?php
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Date\Date;
@@ -12,6 +13,7 @@ use Dompdf\Css;
 
 use Gotenberg\Gotenberg;
 use Gotenberg\Stream;
+use Joomla\CMS\Log\Log;
 
 if(!function_exists('get_mime_type'))
 {
@@ -140,7 +142,7 @@ function generateLetterFromHtml($letter, $fnum, $user_id, $training) {
         $file = $db->loadAssoc();
 
     } catch (Exception $e) {
-        JLog::add('SQL Error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
+        Log::add('SQL Error in emundus pdf library at query : '.$query, Log::ERROR, 'com_emundus');
         return false;
     }
 
@@ -159,7 +161,7 @@ function generateLetterFromHtml($letter, $fnum, $user_id, $training) {
             $db->execute();
 
         } catch (Exception $e) {
-            JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
+            Log::add('SQL error in emundus pdf library at query : '.$query, Log::ERROR, 'com_emundus');
             return false;
         }
 
@@ -231,7 +233,7 @@ function generateLetterFromHtml($letter, $fnum, $user_id, $training) {
             $db->execute();
 
         } catch (Exception $e) {
-            JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
+            Log::add('SQL error in emundus pdf library at query : '.$query, Log::ERROR, 'com_emundus');
         }
 
         return $path;
@@ -290,7 +292,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
             $courses = $db->loadAssocList();
 
         } catch (Exception $e) {
-            JLog::add('SQL Error in Emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
+            Log::add('SQL Error in Emundus pdf library at query : '.$query, Log::ERROR, 'com_emundus');
         }
     }
 
@@ -417,7 +419,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
             $file = $db->loadAssoc();
 
         } catch (Exception $e) {
-            JLog::add('SQL Error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
+            Log::add('SQL Error in emundus pdf library at query : '.$query, Log::ERROR, 'com_emundus');
         }
         // test if directory exist
         if (!file_exists(EMUNDUS_PATH_ABS.$user_id)) {
@@ -434,7 +436,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
                 $db->execute();
 
             } catch (Exception $e) {
-                JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
+                Log::add('SQL error in emundus pdf library at query : '.$query, Log::ERROR, 'com_emundus');
             }
 
             @unlink(EMUNDUS_PATH_ABS.$user_id.DS.$file['filename']);
@@ -560,7 +562,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
                     $id = $db->insertid();
 
                 } catch (Exception $e) {
-                    JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
+                    Log::add('SQL error in emundus pdf library at query : '.$query, Log::ERROR, 'com_emundus');
                 }
             }
             $file_info['id'] = $id;
@@ -615,7 +617,7 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
         $courses = $db->loadAssocList();
 
     } catch (Exception $e) {
-        JLog::add('SQL error in emundus pdf library at query : '.$query, JLog::ERROR, 'com_emundus');
+        Log::add('SQL error in emundus pdf library at query : '.$query, Log::ERROR, 'com_emundus');
     }
 
     $courses_list = '';
@@ -816,16 +818,17 @@ function data_to_img($match) {
  * @throws Exception
  */
 function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = [], $application_form_order = null, $profile_id = null, $file_lbl = null, $elements = null, $attachments = true) {
-    jimport('joomla.html.parameter');
+	jimport('joomla.html.parameter');
     set_time_limit(0);
     require_once (JPATH_SITE.'/components/com_emundus/helpers/date.php');
+    require_once (JPATH_SITE.'/components/com_emundus/helpers/emails.php');
     require_once(JPATH_SITE.'/components/com_emundus/models/application.php');
     require_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
     require_once(JPATH_SITE.'/components/com_emundus/models/files.php');
     require_once(JPATH_SITE.'/components/com_emundus/models/form.php');
 
-	$db = JFactory::getDBO();
-	$app = JFactory::getApplication();
+	$db = Factory::getContainer()->get('DatabaseDriver');
+	$app = Factory::getApplication();
 
 	if (is_null($options)) {
 		$options = [];
@@ -835,10 +838,10 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
         $file_lbl = "_application";
     }
 
-    $eMConfig = JComponentHelper::getParams('com_emundus');
+    $eMConfig = ComponentHelper::getParams('com_emundus');
     $cTitle = $eMConfig->get('export_application_pdf_title_color', '#000000'); //déclaration couleur principale
 
-    $config = JFactory::getConfig();
+    $config = $app->getConfig();
 
     $m_profile = new EmundusModelProfile;
     $m_application = new EmundusModelApplication;
@@ -856,7 +859,9 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 //    if ($form_post == 1 && (empty($form_ids) || is_null($form_ids)) && !empty($elements) && !is_null($elements)) {
     if (isset($form_post)) {
 	    try {
-		    $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+		    $anonymize_data = EmundusHelperAccess::isDataAnonymized($app->getIdentity()->id);
+
+		    $photo_attachment_id = $eMConfig->get('photo_attachment', 10);
 
 		    // Users informations
 		    $query = $db->getQuery(true);
@@ -865,7 +870,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 				->leftJoin('#__users AS u ON u.id=ecc.applicant_id')
 				->leftJoin('#__emundus_users AS c ON u.id = c.user_id')
 				->leftJoin('#__emundus_setup_campaigns AS esc ON esc.id = ' . $campaign_id)
-				->leftJoin('#__emundus_uploads AS a ON a.user_id=u.id AND a.attachment_id = ' . EMUNDUS_PHOTO_AID . ' AND a.fnum like ' . $db->quote($fnum))
+				->leftJoin('#__emundus_uploads AS a ON a.user_id=u.id AND a.attachment_id = ' . $db->quote($photo_attachment_id) . ' AND a.fnum like ' . $db->quote($fnum))
 				->leftJoin('#__emundus_setup_profiles AS p ON p.id = esc.profile_id')
 				->leftJoin('#__emundus_personal_detail AS epd ON epd.user = u.id AND epd.fnum like ' . $db->quote($fnum))
 				->leftJoin('#__emundus_declaration AS ed ON ed.user = u.id AND ed.fnum like ' . $db->quote($fnum))
@@ -875,44 +880,8 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 		    $item = $db->loadObject();
 
 		    /* GET LOGO */
-		    $template = $app->getTemplate(true);
-		    $params = $template->params;
+			$logo = EmundusHelperEmails::getLogo(false,$item->training);
 
-		    if (!empty($params->get('logo')->custom->image)) {
-
-			    $logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
-			    $logo = !empty($logo['path']) ? JPATH_ROOT . DS . $logo['path'] : "";
-
-		    } else {
-
-			    if (file_exists(JPATH_ROOT . DS . 'images/custom' . DS . $item->training . '.png')) {
-				    $logo = JPATH_ROOT . DS . 'images/custom' . DS . $item->training . '.png';
-			    } else {
-				    $logo_module = JModuleHelper::getModuleById('90');
-				    preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
-
-				    $pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
-	            (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
-	            (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
-	            (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
-
-				    if ((bool) preg_match($pattern, $tab[1])) {
-					    $tab[1] = parse_url($tab[1], PHP_URL_PATH);
-				    }
-
-					if(empty($tab[1])){
-						$tab[1] = 'images/custom/logo_custom.png';
-					}
-				    $logo = JPATH_SITE . DS . $tab[1];
-			    }
-		    }
-
-		    // manage logo by programme
-		    $ext = substr($logo, -3);
-		    $logo_prg = substr($logo, 0, -4) . '-' . $item->training . '.' . $ext;
-		    if (is_file($logo_prg)) {
-			    $logo = $logo_prg;
-		    }
 		    $type = pathinfo($logo, PATHINFO_EXTENSION);
 		    $data = file_get_contents($logo);
 		    $logo_base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
@@ -925,7 +894,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 		    } else {
 				$title = $config->get('sitename');
 		    }
-
 
 			$htmldata .= '<html>
 				<head>
@@ -1022,10 +990,10 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	            $htmldata .= '</td></table><hr/></header>';
             }
         } catch (Exception $e) {
-            JLog::add('SQL error in emundus pdf library at query : ' . $query, JLog::ERROR, 'com_emundus');
+            Log::add('SQL error in emundus pdf library at query : ' . $query, Log::ERROR, 'com_emundus');
         }
-		
-		if ($form_post == 1 && (empty($form_ids) || is_null($form_ids)) && !empty($elements) && !is_null($elements)) {
+
+	    if ($form_post == 1 && (empty($form_ids) || is_null($form_ids)) && !empty($elements) && !is_null($elements)) {
             $profile_menu = array_keys($elements);
 
             // Get form HTML
@@ -1049,7 +1017,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
         else {
 	        $forms = $m_application->getFormsPDF($user_id, $fnum, $form_ids, $application_form_order, $profile_id, null, $attachments);
         }
-		
         /*** Applicant   ***/
 	    $htmldata .= "
 			<style>
@@ -1230,7 +1197,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 		    }
 	    }
 	    catch (Exception $e) {
-		    JLog::add('Error when export following file to PDF : ' . $fnum . ' with error ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+		    Log::add('Error when export following file to PDF : ' . $fnum . ' with error ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		    return false;
 	    }
 	    /** END */
@@ -1302,7 +1269,7 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
         $item = $db->loadObject();
 
     } catch (Exception $e) {
-        JLog::add('SQL error in emundus pdf library at query : ' . $query, JLog::ERROR, 'com_emundus');
+        Log::add('SQL error in emundus pdf library at query : ' . $query, Log::ERROR, 'com_emundus');
     }
 
     //get logo

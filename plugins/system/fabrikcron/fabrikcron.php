@@ -119,6 +119,7 @@ class PlgSystemFabrikcron extends CMSPlugin
 
 	/**
 	 * Catch any fatal errors and log them
+	 * Log and reschedule on fatal errors (code==1) only!
 	 */
 	public function shutdownHandler()
 	{
@@ -128,13 +129,11 @@ class PlgSystemFabrikcron extends CMSPlugin
 			$file = isset($e['file']) ? $e['file'] : '';
 			$line = isset($e['line']) ? $e['line'] : '';
 
-			if ($code > 0) {
+			if ($code == 1) {
 				$this->log->message = "$code,$msg,$file,$line";
 				$this->log->store();
+				$this->reschedule();
 			}
-
-			$this->reschedule();
-
 		}
 	}
 
@@ -148,19 +147,22 @@ class PlgSystemFabrikcron extends CMSPlugin
 	protected function doCron()
 	{
 		$app = Factory::getApplication();
-		$mailer = Factory::getMailer();
-		$config = Factory::getApplication()->getConfig();
 		$input = $app->input;
-
-		if ($app->isClient('administrator') || $input->get('option') == 'com_acymailing')
+		
+		//Don't run in backend or on acymailing or falang (throws errors)
+		if ($app->isClient('administrator') || $input->get('option') == 'com_acymailing' || $input->get('option') == 'com_falang')
 		{
 			return;
 		}
+		
 		// $$$ hugh - don't want to run on things like AJAX calls
 		if ($input->get('format', '') == 'raw')
 		{
 			return;
 		}
+		
+		$mailer = Factory::getMailer();
+		$config = Factory::getApplication()->getConfig();
 
 		// Get all active tasks
 		$this->db = FabrikWorker::getDbo(true);

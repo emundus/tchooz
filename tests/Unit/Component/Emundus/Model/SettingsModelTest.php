@@ -15,6 +15,12 @@ use Joomla\Tests\Unit\UnitTestCase;
 
 require_once JPATH_BASE . '/components/com_emundus/helpers/cache.php';
 
+/**
+ * @package     Unit\Component\Emundus\Model
+ *
+ * @since       version 1.0.0
+ * @covers      EmundusModelSettings
+ */
 class SettingsModelTest extends UnitTestCase
 {
 	private $config;
@@ -23,7 +29,7 @@ class SettingsModelTest extends UnitTestCase
 	{
 		parent::__construct('settings', $data, $dataName, 'EmundusModelSettings');
 
-		$this->config = Factory::getConfig();
+		$this->config = Factory::getApplication()->getConfig();
 		$this->config->set('cache_handler', 'file');
 	}
 
@@ -48,6 +54,11 @@ class SettingsModelTest extends UnitTestCase
 		$this->assertSame($lists, $lists_cached);
 	}
 
+	/**
+	 * @covers EmundusModelSettings::getStatus
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testgetStatus()
 	{
 		$all_status = $this->model->getStatus();
@@ -56,6 +67,11 @@ class SettingsModelTest extends UnitTestCase
 		$this->assertNotEmpty($all_status, 'La récupération des status fonctionne');
 	}
 
+	/**
+	 * @covers EmundusModelSettings::createStatus
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testcreateStatus()
 	{
 		$status = $this->model->createStatus();
@@ -64,6 +80,11 @@ class SettingsModelTest extends UnitTestCase
 		$this->assertGreaterThan(0, $status->id, 'La création d\'un status fonctionne');
 	}
 
+	/**
+	 * @covers EmundusModelSettings::getTags
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testgetTags()
 	{
 		$all_tags = $this->model->getTags();
@@ -72,6 +93,11 @@ class SettingsModelTest extends UnitTestCase
 		$this->assertNotEmpty($all_tags, 'La récupération des étiquettes fonctionne');
 	}
 
+	/**
+	 * @covers EmundusModelSettings::createTag
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testcreateTag()
 	{
 		$tag = $this->model->createTag();
@@ -81,6 +107,11 @@ class SettingsModelTest extends UnitTestCase
 		$this->assertSame($tag->label, 'Nouvelle étiquette', 'Le tag a un titre par défaut');
 	}
 
+	/**
+	 * @covers EmundusModelSettings::updateTags
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testupdateTags()
 	{
 		$tag   = $this->model->createTag();
@@ -99,6 +130,11 @@ class SettingsModelTest extends UnitTestCase
 		$this->assertSame('label-lightblue', $tag_found->class, 'Le titre de l\'étiquette a été modifié');
 	}
 
+	/**
+	 * @covers EmundusModelSettings::deleteTag
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testdeleteTag()
 	{
 		$tag    = $this->model->createTag();
@@ -109,6 +145,11 @@ class SettingsModelTest extends UnitTestCase
 		$this->assertFalse($delete, 'On ne peut pas supprimer une étiquette qui n\'existe pas');
 	}
 
+	/**
+	 * @covers EmundusModelSettings::getHomeArticle
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testgetHomeArticle()
 	{
 		$article = $this->model->getHomeArticle();
@@ -116,6 +157,11 @@ class SettingsModelTest extends UnitTestCase
 		$this->assertNotNull($article, 'La récupération de l\'article d\'accueil fonctionne');
 	}
 
+	/**
+	 * @covers EmundusModelSettings::getRgpdArticles
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testgetRgpdArticles()
 	{
 		$articles = $this->model->getRgpdArticles();
@@ -129,6 +175,11 @@ class SettingsModelTest extends UnitTestCase
 		}
 	}
 
+	/**
+	 * @covers EmundusModelSettings::publishArticle
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testpublishArticle()
 	{
 		$articles = $this->model->getRgpdArticles();

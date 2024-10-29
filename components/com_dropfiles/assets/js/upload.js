@@ -31,6 +31,12 @@ jQuery(document).ready(function ($) {
         return;
     }
 
+    if (typeof(dropfilesRootUrl)=== 'string') {
+        dropfilesRootUrl = dropfilesRootUrl.endsWith('/') ? dropfilesRootUrl.slice(0, -1) : dropfilesRootUrl;
+    } else {
+        dropfilesRootUrl = '';
+    }
+
     var categoryAjax = null;
     Dropfiles.checkAndUpdatePreview = checkAndUpdatePreview = function () {
         var catsmanage = getUrlParameter('site_catid');
@@ -76,7 +82,7 @@ jQuery(document).ready(function ($) {
                 });
                 json = '{' + json + '}';
                 $.ajax({
-                    url: "/index.php?option=com_dropfiles&task=files.reorder&idcat=" + id_category,
+                    url: dropfilesRootUrl + "/index.php?option=com_dropfiles&task=files.reorder&idcat=" + id_category,
                     type: "POST",
                     data: {order: json}
                 }).done(function (data) {
@@ -247,7 +253,7 @@ jQuery(document).ready(function ($) {
                     ref = $(e).prev('li').data('id-category');
                 }
                 $.ajax({
-                    url: "/index.php?option=com_dropfiles&task=categories.order&pk=" + pk + "&position=" + position + "&ref=" + ref + "&dragType=" + itemChangeType,
+                    url: dropfilesRootUrl + "/index.php?option=com_dropfiles&task=categories.order&pk=" + pk + "&position=" + position + "&ref=" + ref + "&dragType=" + itemChangeType,
                     type: "POST"
                 }).done(function (data) {
                     result = jQuery.parseJSON(data);
@@ -320,7 +326,7 @@ jQuery(document).ready(function ($) {
                 while (selectedFiles.length > 0) {
                     id_file = selectedFiles.pop();
                     $.ajax({
-                        url: "/index.php?option=com_dropfiles&task=" + lastAction + "&id_category=" + cat_target + '&active_category=' + sourceCat + '&id_file=' + id_file,
+                        url: dropfilesRootUrl + "/index.php?option=com_dropfiles&task=" + lastAction + "&id_category=" + cat_target + '&active_category=' + sourceCat + '&id_file=' + id_file,
                         type: "POST"
                     }).done(function (data) {
                         iFile++;
@@ -366,7 +372,7 @@ jQuery(document).ready(function ($) {
                             id_file = selectedFile.id_File;
                             id_cateRef = selectedFile.id_CateRef;
                             $.ajax({
-                                url: "/index.php?option=com_dropfiles&task=files.delete&id_file=" + id_file + "&id_cat=" + sourceCat + "&id_cate_ref=" + id_cateRef,
+                                url: dropfilesRootUrl + "/index.php?option=com_dropfiles&task=files.delete&id_file=" + id_file + "&id_cat=" + sourceCat + "&id_cate_ref=" + id_cateRef,
                                 type: "POST"
                             }).done(function (data) {
                                 result = jQuery.parseJSON(data);
@@ -457,7 +463,7 @@ jQuery(document).ready(function ($) {
             oldCategoryAjax.abort();
         }
         categoryAjax = $.ajax({
-            url: url,
+            url: dropfilesRootUrl + url,
             type: "POST"
         }).done(function (data) {
             $('#preview').contents().remove();
@@ -518,7 +524,7 @@ jQuery(document).ready(function ($) {
                                     var ajax_url = "/index.php?option=com_dropfiles&task=files.addremoteurl&id_category=" + category_id + '&remote_title=' + remote_title.val() + '&remote_url=' + remote_url.val() + '&remote_type=' + remote_type.val();
 
                                     $.ajax({
-                                        url: ajax_url,
+                                        url: dropfilesRootUrl + ajax_url,
                                         type: "POST"
                                     }).done(function (data) {
 
@@ -813,7 +819,7 @@ jQuery(document).ready(function ($) {
                     id_file = $(that).parents('.file').data('id-file');
                     id_category = $('input[name=id_category]').val();
                     $.ajax({
-                        url: "/index.php?option=com_dropfiles&task=files.delete&id_file=" + id_file + "&id_cat=" + id_category,
+                        url: dropfilesRootUrl + "/index.php?option=com_dropfiles&task=files.delete&id_file=" + id_file + "&id_cat=" + id_category,
                         type: "POST"
                     }).done(function (data) {
                         result = jQuery.parseJSON(data);
@@ -896,7 +902,7 @@ jQuery(document).ready(function ($) {
             }
 
             $.ajax({
-                url: '/index.php?option=com_dropfiles&task=files.upload',
+                url: dropfilesRootUrl + '/index.php?option=com_dropfiles&task=files.upload',
                 method: 'POST',
                 data: {
                     id_category: fileCatId,
@@ -974,7 +980,7 @@ jQuery(document).ready(function ($) {
     }
     // Init the uploader
     Dropfiles.uploader = new Resumable({
-        target: '/index.php?option=com_dropfiles&task=files.upload',
+        target: dropfilesRootUrl + '/index.php?option=com_dropfiles&task=files.upload',
         query: {
             id_category: $('input[name=id_category]').val()
         },
@@ -1021,7 +1027,7 @@ jQuery(document).ready(function ($) {
         var response = JSON.parse(res);
         if (typeof response.datas.id !== 'undefined') {
             $.ajax({
-                url: '/index.php?option=com_dropfiles&task=files.ftsIndex',
+                url: dropfilesRootUrl + '/index.php?option=com_dropfiles&task=files.ftsIndex',
                 method: 'POST',
                 data: {id: response.datas.id},
             });
@@ -1062,7 +1068,7 @@ jQuery(document).ready(function ($) {
     (function () {
         $('#patchHtaccess').click(function () {
             $.ajax({
-                url: '/index.php?option=com_dropfiles&view=patch&tmpl=component&format=raw'
+                url: dropfilesRootUrl + '/index.php?option=com_dropfiles&view=patch&tmpl=component&format=raw'
             }).done(function (data) {
                 bootbox.alert(data);
             });

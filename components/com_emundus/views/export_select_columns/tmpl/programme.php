@@ -172,7 +172,7 @@ fprintf($csv, chr(0xEF) . chr(0xBB) . chr(0xBF));
 $res = fputcsv($csv, $fabrik_elements, ",", '"', "\\");
 
 if (count($this->elements) > 0) {
-	echo '<div class="em-link"><a class="em-primary-button em-float-right em-no-hover em-hover-background-neutral-300" href="index.php?option=com_emundus&controller=files&task=download&name=' . $name . '">' . JText::_('COM_EMUNDUS_EXPORTS_EXPORT_AS_CSV_TEMPLATE') . '</a></div>';
+	echo '<div class="em-link"><a class="tw-btn-primary em-float-right em-no-hover em-hover-background-neutral-300" href="index.php?option=com_emundus&controller=files&task=download&name=' . $name . '">' . JText::_('COM_EMUNDUS_EXPORTS_EXPORT_AS_CSV_TEMPLATE') . '</a></div>';
 }*/
 
 ?>

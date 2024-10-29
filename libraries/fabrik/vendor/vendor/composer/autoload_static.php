@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit9fffa5373d44cf6e60abe94d4c0846b8
+class ComposerStaticInit5de0835498b8cac76b6a67270594d1f9
 {
     public static $files = array (
         '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
@@ -14,12 +14,17 @@ class ComposerStaticInit9fffa5373d44cf6e60abe94d4c0846b8
         'b067bc7112e384b61c701452d53a14a8' => __DIR__ . '/..' . '/mtdowling/jmespath.php/src/JmesPath.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
         '8a9dc1de0ca7e01f3e08231539562f61' => __DIR__ . '/..' . '/aws/aws-sdk-php/src/functions.php',
+        'db356362850385d08a5381de2638b5fd' => __DIR__ . '/..' . '/mpdf/mpdf/src/functions.php',
     );
 
     public static $prefixLengthsPsr4 = array (
         's' => 
         array (
             'setasign\\Fpdi\\' => 14,
+        ),
+        'T' => 
+        array (
+            'Twilio\\' => 7,
         ),
         'S' => 
         array (
@@ -35,16 +40,14 @@ class ComposerStaticInit9fffa5373d44cf6e60abe94d4c0846b8
         ),
         'M' => 
         array (
+            'Mpdf\\PsrLogAwareTrait\\' => 22,
+            'Mpdf\\PsrHttpMessageShim\\' => 24,
             'Mpdf\\' => 5,
             'Masterminds\\' => 12,
         ),
         'J' => 
         array (
             'JmesPath\\' => 9,
-        ),
-        'H' => 
-        array (
-            'Http\\Message\\' => 13,
         ),
         'G' => 
         array (
@@ -72,6 +75,10 @@ class ComposerStaticInit9fffa5373d44cf6e60abe94d4c0846b8
         array (
             0 => __DIR__ . '/..' . '/setasign/fpdi/src',
         ),
+        'Twilio\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/twilio/sdk/src/Twilio',
+        ),
         'Symfony\\Polyfill\\Mbstring\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
@@ -97,6 +104,14 @@ class ComposerStaticInit9fffa5373d44cf6e60abe94d4c0846b8
         array (
             0 => __DIR__ . '/..' . '/psr/http-client/src',
         ),
+        'Mpdf\\PsrLogAwareTrait\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/mpdf/psr-log-aware-trait/src',
+        ),
+        'Mpdf\\PsrHttpMessageShim\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/mpdf/psr-http-message-shim/src',
+        ),
         'Mpdf\\' => 
         array (
             0 => __DIR__ . '/..' . '/mpdf/mpdf/src',
@@ -108,10 +123,6 @@ class ComposerStaticInit9fffa5373d44cf6e60abe94d4c0846b8
         'JmesPath\\' => 
         array (
             0 => __DIR__ . '/..' . '/mtdowling/jmespath.php/src',
-        ),
-        'Http\\Message\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/php-http/message-factory/src',
         ),
         'GuzzleHttp\\Psr7\\' => 
         array (
@@ -174,9 +185,9 @@ class ComposerStaticInit9fffa5373d44cf6e60abe94d4c0846b8
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit9fffa5373d44cf6e60abe94d4c0846b8::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit9fffa5373d44cf6e60abe94d4c0846b8::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit9fffa5373d44cf6e60abe94d4c0846b8::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit5de0835498b8cac76b6a67270594d1f9::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit5de0835498b8cac76b6a67270594d1f9::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit5de0835498b8cac76b6a67270594d1f9::$classMap;
 
         }, null, ClassLoader::class);
     }

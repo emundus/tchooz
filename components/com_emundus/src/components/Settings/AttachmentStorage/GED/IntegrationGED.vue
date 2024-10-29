@@ -1,19 +1,19 @@
 <template>
-  <div class="em-mt-32">
+  <div class="tw-mt-8">
 
-    <div class="em-h4 em-mb-16">{{
+    <div class="em-h4 tw-mb-4">{{
         translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_CONF_WRITING')
       }}
     </div>
 
-    <div class="em-flex-row em-mb-16">
-      <span class="material-icons">folder</span>
-      <span class="em-ml-8 em-mr-8">/{{ site }}</span>
+    <div class="tw-flex tw-items-center tw-mb-4">
+      <span class="material-symbols-outlined">folder</span>
+      <span class="tw-ml-2 tw-mr-2">/{{ site }}</span>
 
       <v-popover :popoverArrowClass="'custom-popover-arrow'">
         <span class="tooltip-target b3 material-icons">more_horiz</span>
         <template slot="popover">
-          <div class="em-font-size-14 em-pointer em-p-8-12 em-hover-background-neutral-300" @click="addNode(null)">
+          <div class="tw-text-sm tw-cursor-pointer tw-px-2 tw-py-3 em-hover-background-neutral-300" @click="addNode(null)">
             {{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_ADD_MENU') }}
           </div>
         </template>
@@ -36,12 +36,12 @@
 </template>
 
 <script>
-import Tree from "../Tree";
-import FilesName from "../FilesName";
-import Aspects from "./Aspects";
+import Tree from "../Tree.vue";
+import FilesName from "../FilesName.vue";
+import Aspects from "./Aspects.vue";
 
-import syncService from "com_emundus/src/services/sync";
-import mixin from "../../../../mixins/mixin";
+import syncService from "@/services/sync.js";
+import mixin from "@/mixins/mixin.js";
 
 export default {
   name: "IntegrationGED",

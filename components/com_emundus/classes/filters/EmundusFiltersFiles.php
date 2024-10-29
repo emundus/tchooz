@@ -10,10 +10,11 @@ use Joomla\CMS\Log\Log;
 class EmundusFiltersFiles extends EmundusFilters
 {
 	private $app;
-	
+
 	private $profiles = [];
 	private $user_campaigns = [];
 	private $user_programs = [];
+	private $user_fnum_assocs = [];
     private $config = [];
 	private $m_users = null;
 	private $menu_params = null;
@@ -35,11 +36,12 @@ class EmundusFiltersFiles extends EmundusFilters
 		$this->config = $config;
 		$this->user_campaigns = $this->m_users->getAllCampaignsAssociatedToUser($this->user->id);
 		$this->user_programs = $this->m_users->getUserGroupsProgrammeAssoc($this->user->id, 'jesp.id');
+		$this->setUsersFnumsAssoc();
 
 		if (!$skip) {
 			$this->setMenuParams();
 			$this->setProfiles();
-            $this->setDefaultFilters($config);
+			$this->setDefaultFilters($config);
 			$this->setFilters();
 
 			$session_filters = $this->app->getSession()->get('em-applied-filters', null);
@@ -47,12 +49,12 @@ class EmundusFiltersFiles extends EmundusFilters
 				$this->addSessionFilters($session_filters);
 				$this->checkFiltersAvailability();
 			}
-	
+
 			$quick_search_filters = $this->app->getSession()->get('em-quick-search-filters', null);
 			if (!empty($quick_search_filters)) {
 				$this->setQuickSearchFilters($quick_search_filters);
 			}
-	
+
 			$this->saveFiltersAllValues();
 
 			if ($this->config['count_filter_values']) {
@@ -99,6 +101,87 @@ class EmundusFiltersFiles extends EmundusFilters
         }
 	}
 
+	private function setUsersFnumsAssoc()
+	{
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+
+		$query->select('DISTINCT eua.fnum')
+			->from($db->quoteName('#__emundus_users_assoc', 'eua'))
+			->where('eua.user_id = ' . $db->quote($this->user->id))
+			->andWhere('eua.action_id = 1')
+			->andWhere('eua.r = 1');
+
+		try {
+			$db->setQuery($query);
+			$this->user_fnum_assocs = $db->loadColumn();
+		} catch (Exception $e) {
+			Log::add('Failed to get user fnums assoc : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
+		}
+
+		if (!empty($this->user_fnum_assocs))
+		{
+			// get fnums distinct campaigns
+			$query->clear()
+				->select('DISTINCT campaign_id')
+				->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+				->where('ecc.fnum IN (' . implode(',', $db->quote($this->user_fnum_assocs)) . ')');
+
+			try {
+				$db->setQuery($query);
+				$campaigns = $db->loadColumn();
+				$this->user_campaigns = array_merge($this->user_campaigns, $campaigns);
+			} catch (Exception $e) {
+				Log::add('Failed to get user campaigns assoc : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
+			}
+		}
+
+		// assoc can be done on groups too
+		// select all files that are linked to users groups
+		$query->clear()
+			->select('DISTINCT eg.group_id')
+			->from($db->quoteName('#__emundus_groups', 'eg'))
+			->leftJoin($db->quoteName('#__emundus_acl', 'acl') . ' ON ' . $db->quoteName('acl.group_id') . ' = ' . $db->quoteName('eg.group_id'))
+			->where('eg.user_id = ' . $db->quote($this->user->id))
+			->andWhere('acl.action_id = 1')
+			->andWhere('acl.r = 1');
+
+		$db->setQuery($query);
+		$user_groups = $db->loadColumn();
+
+		if (!empty($user_groups)) {
+			$query->clear()
+				->select('DISTINCT ecc.campaign_id')
+				->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+				->leftJoin($db->quoteName('#__emundus_group_assoc', 'ega') . ' ON ' . $db->quoteName('ega.fnum') . ' = ' . $db->quoteName('ecc.fnum') . ' AND action_id = 1 AND r = 1')
+				->where('ega.group_id IN (' . implode(',', $db->quote($user_groups)) . ')');
+
+			$db->setQuery($query);
+			$campaigns = $db->loadColumn();
+
+			if (!empty($campaigns)) {
+				$this->user_campaigns = array_merge($this->user_campaigns, $campaigns);
+			}
+		}
+
+		if (!empty($this->user_campaigns)) {
+			// get fnums distinct programs
+			$query->clear()
+				->select('DISTINCT jesp.id')
+				->from($db->quoteName('#__emundus_setup_programmes', 'jesp'))
+				->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.training') . ' = ' . $db->quoteName('jesp.code'))
+				->where('esc.id IN (' . implode(',', $db->quote($this->user_campaigns)) . ')');
+
+			try {
+				$db->setQuery($query);
+				$programs = $db->loadColumn();
+				$this->user_programs = array_merge($this->user_programs, $programs);
+			} catch (Exception $e) {
+				JLog::add('Failed to get user programs assoc : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
+			}
+		}
+	}
+
 	private function setProfiles()
 	{
 		if (!empty($this->user_campaigns)) {
@@ -111,32 +194,9 @@ class EmundusFiltersFiles extends EmundusFilters
 		$profile_ids = [];
 
 		if (!empty($campaign_ids)) {
-			$db    = Factory::getContainer()->get('DatabaseDriver');
-			$query = $db->getQuery(true);
-
-			// profiles from campaigns
-			$query->select('DISTINCT profile_id')
-				->from('#__emundus_setup_campaigns')
-				->where('id IN (' . implode(',', $db->quote($campaign_ids)) . ')');
-
-			$db->setQuery($query);
-			$profiles = $db->loadColumn();
-			foreach ($profiles as $profile) {
-				if (!in_array($profile, $profile_ids)) {
-					$profile_ids[] = $profile;
-				}
-			}
-
-			// profiles from workflows
 			require_once(JPATH_SITE . '/components/com_emundus/models/campaign.php');
 			$m_campaign = new EmundusModelCampaign();
-			$workflows = $m_campaign->getWorkflows($campaign_ids);
-
-			foreach ($workflows as $workflow) {
-				if (!in_array($workflow->profile_id, $profile_ids)) {
-					$profile_ids[] = $workflow->profile_id;
-				}
-			}
+			$profile_ids = $m_campaign->getProfilesFromCampaignId($campaign_ids);
 		}
 
 		return $profile_ids;
@@ -189,424 +249,495 @@ class EmundusFiltersFiles extends EmundusFilters
 
         $form_ids = array_merge($profile_form_ids, $config_form_ids);
 
-		return $this->getElementsFromFabrikForms($form_ids);
+		$unsorted_elements = $this->getElementsFromFabrikForms($form_ids);
+
+		foreach ($form_ids as $form_id) {
+			foreach ($unsorted_elements as $element) {
+				if ($element['element_form_id'] == $form_id) {
+					$elements[] = $element;
+				}
+			}
+		}
+
+		return $elements;
 	}
 
     private function getElementsFromFabrikForms($form_ids)
     {
-        $elements = [];
-        $form_ids = array_unique($form_ids);
-
-        if (!empty($form_ids)) {
-	        if ($this->h_cache->isEnabled()) {
-		        foreach($form_ids as $key => $form_id) {
-					$cache_key = 'elements_from_form_' . $form_id;
-			        $cache_elements = $this->h_cache->get($cache_key);
-
-					if (!empty($cache_elements)) {
-						$elements = array_merge($elements, $cache_elements);
-						unset($form_ids[$key]);
-					}
-		        }
-			}
-
-			if (!empty($form_ids)) {
-				$db    = Factory::getContainer()->get('DatabaseDriver');
-				$query = $db->getQuery(true);
-
-				$query->clear()
-					->select('jfe.id, jfe.plugin, jfe.label, jfe.params, jffg.form_id as element_form_id, jff.label as element_form_label')
-					->from('jos_fabrik_elements as jfe')
-					->join('inner', 'jos_fabrik_formgroup as jffg ON jfe.group_id = jffg.group_id')
-					->join('inner', 'jos_fabrik_forms as jff ON jffg.form_id = jff.id')
-					->where('jffg.form_id IN (' . implode(',', $form_ids) . ')')
-					->andWhere('jfe.published = 1')
-					->andWhere('jfe.hidden = 0');
-
-				try {
-					$db->setQuery($query);
-					$query_elements = $db->loadAssocList();
-					$elements = array_merge($elements, $query_elements);
-
-					foreach ($elements as $key => $element) {
-						$elements[$key]['label'] = Text::_($element['label']);
-						$elements[$key]['element_form_label'] = Text::_($element['element_form_label']);
-					}
-
-					if ($this->h_cache->isEnabled()) {
-						$elements_by_form = [];
-						foreach ($elements as $element) {
-							if (!isset($elements_by_form[$element['element_form_id']])) {
-								$elements_by_form[$element['element_form_id']] = [];
-							}
-							$elements_by_form[$element['element_form_id']][] = $element;
-						}
-
-						foreach ($elements_by_form as $form_id => $element_by_form) {
-							$this->h_cache->set('elements_from_form_' . $form_id, $element_by_form);
-						}
-					}
-				} catch (Exception $e) {
-					Log::add('Failed to get elements associated to profiles that current user can access : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
-				}
-			}
-        }
-
-        return $elements;
+	    require_once(JPATH_ROOT . '/components/com_emundus/helpers/fabrik.php');
+	    $h_fabrik = new EmundusHelperFabrik();
+	    return $h_fabrik->getElementsFromFabrikForms($form_ids, ['panel', 'display']);
     }
 
 	private function setDefaultFilters($config)
 	{
-		$found_from_cache = false;
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
 
-		if ($this->h_cache->isEnabled()) {
-			$menu = $this->app->getMenu();
+		$filter_menu_values           = $this->menu_params->get('em_filters_values', '');
+		$filter_menu_values           = explode(',', $filter_menu_values);
+		$filter_menu_values_are_empty = empty($filter_menu_values);
+		$filter_names                 = [];
 
-            if (!empty($menu)) {
-                $active_menu = $menu->getActive();
-                if (!empty($active_menu)) {
-                    $cache_default_filters = $this->h_cache->get('em_default_filters_' . $active_menu->id);
-
-                    if (!empty($cache_default_filters)) {
-                        $this->applied_filters = array_merge($this->applied_filters, $cache_default_filters);
-                        $found_from_cache = true;
-                    }
-                }
-            }
+		if (!$filter_menu_values_are_empty)
+		{
+			$filter_names = $this->menu_params->get('em_filters_names', '');
+			$filter_names = explode(',', $filter_names);
 		}
 
-		if (!$found_from_cache) {
-			$db    = Factory::getContainer()->get('DatabaseDriver');
-			$query = $db->getQuery(true);
+		if ($config['filter_status'])
+		{
+			$query->select('id, step, value, 0 as count')
+				->from('#__emundus_setup_status');
 
-			$filter_menu_values = $this->menu_params->get('em_filters_values', '');
-			$filter_menu_values = explode(',', $filter_menu_values);
-			$filter_menu_values_are_empty = empty($filter_menu_values);
-			$filter_names = [];
+			if (!$filter_menu_values_are_empty)
+			{
+				$position = array_search('status', $filter_names);
 
-			if (!$filter_menu_values_are_empty) {
-				$filter_names = $this->menu_params->get('em_filters_names', '');
-				$filter_names = explode(',', $filter_names);
+				if ($position !== false && isset($filter_menu_values[$position]) && $filter_menu_values[$position] !== '')
+				{
+					$statuses = explode('|', $filter_menu_values[$position]);
+
+					if (!empty($statuses))
+					{
+						$query->where('step IN (' . implode(',', $statuses) . ')');
+					}
+				}
 			}
 
-			if ($config['filter_status']) {
-				$query->select('id, step, value, 0 as count')
-					->from('#__emundus_setup_status');
+			$query->order('ordering ASC');
 
-				if (!$filter_menu_values_are_empty) {
-					$position = array_search('status', $filter_names);
+			try
+			{
+				$db->setQuery($query);
+				$statuses = $db->loadObjectList();
+			}
+			catch (Exception $e)
+			{
+				Log::add('Failed to get statuses : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
+				throw new Exception('Failed to get statuses ', 500);
+			}
 
-					if ($position !== false && isset($filter_menu_values[$position]) && $filter_menu_values[$position] !== '') {
-						$statuses = explode('|', $filter_menu_values[$position]);
+			$values = [];
+			foreach ($statuses as $status)
+			{
+				$values[] = ['value' => $status->step, 'label' => $status->value];
+			}
 
-						if (!empty($statuses))
+			$this->applied_filters[] = [
+				'uid'       => 'status',
+				'id'        => 'status',
+				'label'     => Text::_('MOD_EMUNDUS_FILTERS_STATUS'),
+				'type'      => 'select',
+				'values'    => $values,
+				'value'     => ['all'],
+				'default'   => true,
+				'available' => true,
+				'order'     => $config['filter_status_order']
+			];
+		}
+
+		if ($config['filter_programs'])
+		{
+			$programs       = [];
+			$programs_codes = [];
+
+			if (!empty($this->user_programs))
+			{
+				$query->clear()
+					->select('id as value, label, 0 as count')
+					->from('#__emundus_setup_programmes')
+					->where('published = 1')
+					->andWhere('id IN (' . implode(',', $this->user_programs) . ')');
+
+				if (!$filter_menu_values_are_empty)
+				{
+					$position = array_search('programme', $filter_names);
+
+					if ($position !== false && !empty($filter_menu_values[$position]))
+					{
+						$programs_codes = explode('|', $filter_menu_values[$position]);
+						if (!empty($programs_codes))
 						{
-							$query->where('step IN (' . implode(',', $statuses) . ')');
+							$query->where('code IN (' . implode(',', $db->quote($programs_codes)) . ')');
 						}
 					}
 				}
 
 				$query->order('ordering ASC');
 
-				try {
+				try
+				{
 					$db->setQuery($query);
-					$statuses = $db->loadObjectList();
-				} catch (Exception $e) {
-					Log::add('Failed to get statuses : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
-					throw new Exception('Failed to get statuses ', 500);
+					$programs = $db->loadAssocList();
 				}
-
-				$values = [];
-				foreach ($statuses as $status) {
-					$values[] = ['value' => $status->step, 'label' => $status->value];
+				catch (Exception $e)
+				{
+					Log::add('Failed to get programs : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
+					throw new Exception('Failed to get programs ', 500);
 				}
-
-				$this->applied_filters[] = [
-					'uid'       => 'status',
-					'id'        => 'status',
-					'label'     => Text::_('MOD_EMUNDUS_FILTERS_STATUS'),
-					'type'      => 'select',
-					'values'    => $values,
-					'value'     => ['all'],
-					'default'   => true,
-					'available' => true,
-					'order'     => $config['filter_status_order']
-				];
 			}
 
-			if ($config['filter_programs']) {
-				$programs = [];
-				$programs_codes = [];
+			$this->applied_filters[] = [
+				'uid'       => 'programs',
+				'id'        => 'programs',
+				'label'     => Text::_('MOD_EMUNDUS_FILTERS_PROGRAMS'),
+				'type'      => 'select',
+				'values'    => $programs,
+				'value'     => ['all'],
+				'default'   => true,
+				'available' => true,
+				'order'     => $config['filter_programs_order']
+			];
+		}
 
-				if(!empty($this->user_programs)) {
-					$query->clear()
-						->select('id as value, label, 0 as count')
-						->from('#__emundus_setup_programmes')
-						->where('published = 1')
-						->andWhere('id IN (' . implode(',', $this->user_programs) . ')');
+		if ($config['filter_campaign'])
+		{
+			$campaigns = [];
 
-					if (!$filter_menu_values_are_empty) {
-						$position = array_search('programme', $filter_names);
-
-						if ($position !== false && !empty($filter_menu_values[$position])) {
-							$programs_codes = explode('|', $filter_menu_values[$position]);
-							if(!empty($programs_codes))
-							{
-								$query->where('code IN (' . implode(',', $db->quote($programs_codes)) . ')');
-							}
-						}
-					}
-
-					$query->order('ordering ASC');
-
-					try {
-						$db->setQuery($query);
-						$programs = $db->loadAssocList();
-					} catch (Exception $e) {
-						Log::add('Failed to get programs : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
-						throw new Exception('Failed to get programs ', 500);
-					}
-				}
-
-				$this->applied_filters[] = [
-					'uid'       => 'programs',
-					'id'        => 'programs',
-					'label'     => Text::_('MOD_EMUNDUS_FILTERS_PROGRAMS'),
-					'type'      => 'select',
-					'values'    => $programs,
-					'value'     => ['all'],
-					'default'   => true,
-					'available' => true,
-					'order'     => $config['filter_programs_order']
-				];
-			}
-
-			if ($config['filter_campaign']) {
-				$campaigns = [];
-
-				if(!empty($this->user_campaigns)) {
-					$query->clear()
-						->select('id as value, label, 0 as count')
-						->from('#__emundus_setup_campaigns')
-						->where('published = 1')
-						->andWhere('id IN (' . implode(',', $this->user_campaigns) . ')');
-
-					if (!$filter_menu_values_are_empty) {
-						$position = array_search('campaign', $filter_names);
-
-						if ($position !== false && !empty($filter_menu_values[$position])) {
-							$campaigns = explode('|', $filter_menu_values[$position]);
-							if(!empty($campaigns))
-							{
-								$query->andWhere('id IN (' . implode(',', $campaigns) . ')');
-							}
-						}
-					}
-
-					if (!empty($programs_codes)) {
-						$query->andWhere('training IN ('. implode(',', $db->quote($programs_codes)) .')');
-					}
-
-					$query->order('id DESC');
-					try {
-						$db->setQuery($query);
-						$campaigns = $db->loadAssocList();
-					} catch (Exception $e) {
-						Log::add('Failed to get campaigns : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
-						throw new Exception('Failed to get campaigns', 500);
-					}
-				}
-
-				$this->applied_filters[] = [
-					'uid'       => 'campaigns',
-					'id'        => 'campaigns',
-					'label'     => Text::_('MOD_EMUNDUS_FILTERS_CAMPAIGNS'),
-					'type'      => 'select',
-					'values'    => $campaigns,
-					'value'     => ['all'],
-					'default'   => true,
-					'available' => true,
-					'order'     => $config['filter_campaigns_order']
-				];
-			}
-
-
-
-			if ($config['filter_years']) {
-				$years = [];
-
-				if(!empty($this->user_campaigns)) {
-					$query->clear()
-						->select('DISTINCT year as value, year as label, 0 as count')
-						->from('#__emundus_setup_campaigns')
-						->where('published = 1')
-						->andWhere('id IN (' . implode(',', $this->user_campaigns) . ')');
-
-					$db->setQuery($query);
-					$years = $db->loadAssocList();
-				}
-
-				$this->applied_filters[] = [
-					'uid'       => 'years',
-					'id'        => 'years',
-					'label'     => Text::_('MOD_EMUNDUS_FILTERS_YEARS'),
-					'type'      => 'select',
-					'values'    => $years,
-					'value'     => ['all'],
-					'default'   => true,
-					'available' => true,
-					'order'     => $config['filter_years_order']
-				];
-			}
-
-			if ($config['filter_tags']) {
+			if (!empty($this->user_campaigns))
+			{
 				$query->clear()
 					->select('id as value, label, 0 as count')
-					->from('#__emundus_setup_action_tag');
+					->from('#__emundus_setup_campaigns')
+					->where('published = 1')
+					->andWhere('id IN (' . implode(',', $this->user_campaigns) . ')');
 
-				$db->setQuery($query);
-				$tags = $db->loadAssocList();
+				if (!$filter_menu_values_are_empty)
+				{
+					$position = array_search('campaign', $filter_names);
 
-				$this->applied_filters[] = [
-					'uid'       => 'tags',
-					'id'        => 'tags',
-					'label'     => Text::_('MOD_EMUNDUS_FILTERS_TAGS'),
-					'type'      => 'select',
-					'values'    => $tags,
-					'value'     => ['all'],
-					'default'   => true,
-					'available' => true,
-					'order'     => $config['filter_tags_order']
-				];
+					if ($position !== false && !empty($filter_menu_values[$position]))
+					{
+						$campaigns = explode('|', $filter_menu_values[$position]);
+						if (!empty($campaigns))
+						{
+							$query->andWhere('id IN (' . implode(',', $campaigns) . ')');
+						}
+					}
+				}
+
+				if (!empty($programs_codes))
+				{
+					$query->andWhere('training IN (' . implode(',', $db->quote($programs_codes)) . ')');
+				}
+
+				$query->order('id DESC');
+				try
+				{
+					$db->setQuery($query);
+					$campaigns = $db->loadAssocList();
+				}
+				catch (Exception $e)
+				{
+					Log::add('Failed to get campaigns : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
+					throw new Exception('Failed to get campaigns', 500);
+				}
 			}
 
-			if ($config['filter_published']) {
-				$this->applied_filters[] = [
-					'uid'       => 'published',
-					'id'        => 'published',
-					'label'     => Text::_('MOD_EMUNDUS_FILTERS_PUBLISHED_STATE'),
-					'type'      => 'select',
-					'values'    => [
-						['value' => 1, 'label' => Text::_('MOD_EMUNDUS_FILTERS_VALUE_PUBLISHED'), 'count' => 0],
-						['value' => 0, 'label' => Text::_('MOD_EMUNDUS_FILTERS_VALUE_ARCHIVED'), 'count' => 0],
-						['value' => -1, 'label' => Text::_('MOD_EMUNDUS_FILTERS_VALUE_DELETED'), 'count' => 0]
-					],
-					'value'     => [1],
-					'default'   => true,
-					'available' => true,
-					'order'     => $config['filter_published_order']
-				];
-			}
+			$this->applied_filters[] = [
+				'uid'       => 'campaigns',
+				'id'        => 'campaigns',
+				'label'     => Text::_('MOD_EMUNDUS_FILTERS_CAMPAIGNS'),
+				'type'      => 'select',
+				'values'    => $campaigns,
+				'value'     => ['all'],
+				'default'   => true,
+				'available' => true,
+				'order'     => $config['filter_campaigns_order']
+			];
+		}
 
-			if ($config['filter_groups']) {
+
+		if ($config['filter_years'])
+		{
+			$years = [];
+
+			if (!empty($this->user_campaigns))
+			{
 				$query->clear()
-					->select('DISTINCT id as value, label')
-					->from('#__emundus_setup_groups')
-					->where('published = 1');
+					->select('DISTINCT year as value, year as label, 0 as count')
+					->from('#__emundus_setup_campaigns')
+					->where('published = 1')
+					->andWhere('id IN (' . implode(',', $this->user_campaigns) . ')');
 
 				$db->setQuery($query);
-				$groups = $db->loadAssocList();
+				$years = $db->loadAssocList();
+			}
+
+			$this->applied_filters[] = [
+				'uid'       => 'years',
+				'id'        => 'years',
+				'label'     => Text::_('MOD_EMUNDUS_FILTERS_YEARS'),
+				'type'      => 'select',
+				'values'    => $years,
+				'value'     => ['all'],
+				'default'   => true,
+				'available' => true,
+				'order'     => $config['filter_years_order']
+			];
+		}
+
+		if ($config['filter_tags'])
+		{
+			$query->clear()
+				->select('id as value, label, 0 as count')
+				->from('#__emundus_setup_action_tag');
+
+			$db->setQuery($query);
+			$tags = $db->loadAssocList();
+
+			$this->applied_filters[] = [
+				'uid'            => 'tags',
+				'id'             => 'tags',
+				'label'          => Text::_('MOD_EMUNDUS_FILTERS_TAGS'),
+				'type'           => 'select',
+				'values'         => $tags,
+				'value'          => ['all'],
+				'default'        => true,
+				'available'      => true,
+				'order'          => $config['filter_tags_order'],
+				'andorOperator'  => 'OR',
+				'andorOperators' => ['OR', 'AND']
+			];
+		}
+
+		if ($config['filter_published'])
+		{
+			$this->applied_filters[] = [
+				'uid'       => 'published',
+				'id'        => 'published',
+				'label'     => Text::_('MOD_EMUNDUS_FILTERS_PUBLISHED_STATE'),
+				'type'      => 'select',
+				'values'    => [
+					['value' => 1, 'label' => Text::_('MOD_EMUNDUS_FILTERS_VALUE_PUBLISHED'), 'count' => 0],
+					['value' => 0, 'label' => Text::_('MOD_EMUNDUS_FILTERS_VALUE_ARCHIVED'), 'count' => 0],
+					['value' => -1, 'label' => Text::_('MOD_EMUNDUS_FILTERS_VALUE_DELETED'), 'count' => 0]
+				],
+				'value'     => [1],
+				'default'   => true,
+				'available' => true,
+				'order'     => $config['filter_published_order'],
+				'operator'  => '='
+			];
+		}
+
+		if ($config['filter_groups'])
+		{
+			$query->clear()
+				->select('DISTINCT id as value, label')
+				->from('#__emundus_setup_groups')
+				->where('published = 1');
+
+			$db->setQuery($query);
+			$groups = $db->loadAssocList();
+
+			$this->applied_filters[] = [
+				'uid'            => 'group_assoc',
+				'id'             => 'group_assoc',
+				'label'          => Text::_('MOD_EMUNDUS_FILTERS_GROUP_ASSOC'),
+				'type'           => 'select',
+				'values'         => $groups,
+				'value'          => ['all'],
+				'default'        => true,
+				'available'      => true,
+				'order'          => $config['filter_groups_order'],
+				'andorOperator'  => 'OR',
+				'andorOperators' => ['OR', 'AND']
+			];
+		}
+
+		if ($config['filter_users'])
+		{
+			$query->clear()
+				->select('ju.id as value, CONCAT(ju.name, " ", ju.email ) as label')
+				->from('#__users as ju')
+				->leftJoin('#__emundus_users_assoc as jeua ON ju.id = jeua.user_id')
+				->leftJoin('#__emundus_campaign_candidature AS jecc ON jeua.fnum = jecc.fnum')
+				->leftJoin('#__emundus_setup_campaigns AS jesc ON jecc.campaign_id = jesc.id')
+				->leftJoin('#__emundus_setup_programmes AS jesp ON jesc.training = jesp.code')
+				->where('jeua.action_id = 1')
+				->andWhere('jecc.campaign_id IN ' . '(' . implode(',', $this->user_campaigns) . ') OR jesp.id IN ' . '(' . implode(',', $this->user_programs) . ')')
+				->andWhere('ju.block = 0')
+				->group('ju.id');
+
+			try
+			{
+				$db->setQuery($query);
+				$users = $db->loadAssocList();
+			}
+			catch (Exception $e)
+			{
+				Log::add('Failed to get users associated to profiles that current' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
+			}
+
+			$this->applied_filters[] = [
+				'uid'            => 'users_assoc',
+				'id'             => 'users_assoc',
+				'label'          => JText::_('MOD_EMUNDUS_FILTERS_USERS_ASSOC'),
+				'type'           => 'select',
+				'values'         => $users,
+				'value'          => ['all'],
+				'default'        => true,
+				'available'      => true,
+				'order'          => $config['filter_users_order'],
+				'andorOperator'  => 'OR',
+				'andorOperators' => ['OR', 'AND']
+			];
+		}
+
+			if ($config['filter_attachments']) {
+				$attachments = [];
+
+				$query->clear()
+					->select('esa.id as value, esa.value as label')
+					->from($db->quoteName('#__emundus_setup_attachments','esa'))
+					->leftJoin($db->quoteName('#__emundus_setup_attachment_profiles','esap') . ' ON ' . $db->quoteName('esap.attachment_id') . ' = ' . $db->quoteName('esa.id'))
+					->leftJoin($db->quoteName('#__emundus_setup_profiles','esp') . ' ON ' . $db->quoteName('esp.id') . ' = ' . $db->quoteName('esap.profile_id'))
+					->leftJoin($db->quoteName('#__emundus_setup_campaigns','esc') . ' ON ' . $db->quoteName('esc.profile_id') . ' = ' . $db->quoteName('esp.id'))
+					->leftJoin($db->quoteName('#__emundus_setup_programmes','espp') . ' ON ' . $db->quoteName('esc.training') . ' = ' . $db->quoteName('espp.code'))
+					->where('esc.id IN ' . '(' . implode(',', $this->user_campaigns) . ') OR espp.id IN ' . '(' . implode(',', $this->user_programs) . ')')
+					->group('esa.id');
+
+				try {
+					$db->setQuery($query);
+					$attachments = $db->loadAssocList();
+				} catch (Exception $e) {
+					Log::add('Failed to get attachments associated to profiles that current' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
+				}
 
 				$this->applied_filters[] = [
-					'uid' => 'group_assoc',
-					'id' => 'group_assoc',
-					'label' => Text::_('MOD_EMUNDUS_FILTERS_GROUP_ASSOC'),
+					'uid' => 'attachments',
+					'id' => 'attachments',
+					'label' => JText::_('MOD_EMUNDUS_FILTERS_ATTACHMENTS'),
 					'type' => 'select',
-					'values' => $groups,
+					'values' => $attachments,
 					'value' => ['all'],
 					'default' => true,
 					'available' => true,
-					'order' => $config['filter_groups_order']
+					'order' => $config['filter_attachments_order'],
+					'andorOperator'  => 'OR',
+					'andorOperators' => ['OR', 'AND']
 				];
 			}
 
-			if (!empty($config['more_filter_elements'])) {
-				foreach ($config['more_filter_elements'] as  $more_filter) {
-					if (!empty($more_filter['fabrik_element_id'])) {
-						$found = false;
-						$new_default_filter = [];
-						foreach ($this->filters as $filter) {
-							if ($filter['id'] == $more_filter['fabrik_element_id']) {
-								$new_default_filter = $filter;
+
+		$session = $this->app->getSession();
+
+		if (!empty($config['more_filter_elements']))
+		{
+			foreach ($config['more_filter_elements'] as $more_filter)
+			{
+				if (!empty($more_filter['fabrik_element_id']))
+				{
+					$found              = false;
+					$new_default_filter = [];
+					foreach ($this->filters as $filter)
+					{
+						if ($filter['id'] == $more_filter['fabrik_element_id'])
+						{
+							$new_default_filter            = $filter;
+							$new_default_filter['default'] = true;
+							if (empty($new_default_filter['value']))
+							{
+								$new_default_filter['value'] = $new_default_filter['type'] === 'select' ? ['all'] : '';
+							}
+							$new_default_filter['andorOperator'] = 'OR';
+							$new_default_filter['operator']      = '=';
+
+							if ($new_default_filter['type'] === 'select')
+							{
+								$new_default_filter['operator'] = 'IN';
+								$new_default_filter['values']   = $this->getFabrikElementValuesFromElementId($filter['id']);
+							}
+							$found = true;
+							break;
+						}
+					}
+
+					if (!$found)
+					{
+						$query->clear()
+							->select('jfe.id, jfe.plugin, jfe.label, jfe.params, jffg.form_id as element_form_id, jff.label as element_form_label')
+							->from('jos_fabrik_elements as jfe')
+							->join('inner', 'jos_fabrik_formgroup as jffg ON jfe.group_id = jffg.group_id')
+							->join('inner', 'jos_fabrik_forms as jff ON jffg.form_id = jff.id')
+							->where('jfe.id = ' . $more_filter['fabrik_element_id'])
+							->andWhere('jfe.published = 1');
+
+						$db->setQuery($query);
+						$element = $db->loadAssoc();
+
+						if (!empty($element))
+						{
+							$element['label']              = Text::_($element['label']);
+							$element['element_form_label'] = Text::_($element['element_form_label']);
+							$formatted_elements            = $this->createFiltersFromFabrikElements([$element]);
+
+							if (!empty($formatted_elements))
+							{
+								$new_default_filter            = $formatted_elements[0];
 								$new_default_filter['default'] = true;
-								if (empty($new_default_filter['value'])) {
+								if (empty($new_default_filter['value']))
+								{
 									$new_default_filter['value'] = $new_default_filter['type'] === 'select' ? ['all'] : '';
 								}
 								$new_default_filter['andorOperator'] = 'OR';
-								$new_default_filter['operator'] = '=';
+								$new_default_filter['operator']      = '=';
 
-								if ($new_default_filter['type'] === 'select') {
+								if ($new_default_filter['type'] === 'select')
+								{
 									$new_default_filter['operator'] = 'IN';
-									$new_default_filter['values'] = $this->getFabrikElementValuesFromElementId($filter['id']);
+									$new_default_filter['values']   = $this->getFabrikElementValuesFromElementId($element['id']);
 								}
-								$found = true;
-								break;
-							}
-						}
-
-						if (!$found) {
-							$query->clear()
-								->select('jfe.id, jfe.plugin, jfe.label, jfe.params, jffg.form_id as element_form_id, jff.label as element_form_label')
-								->from('jos_fabrik_elements as jfe')
-								->join('inner', 'jos_fabrik_formgroup as jffg ON jfe.group_id = jffg.group_id')
-								->join('inner', 'jos_fabrik_forms as jff ON jffg.form_id = jff.id')
-								->where('jfe.id = ' . $more_filter['fabrik_element_id'])
-								->andWhere('jfe.published = 1');
-
-							$db->setQuery($query);
-							$element = $db->loadAssoc();
-
-							if (!empty($element)) {
-								$element['label'] = Text::_($element['label']);
-								$element['element_form_label'] = Text::_($element['element_form_label']);
-								$formatted_elements = $this->createFiltersFromFabrikElements([$element]);
-
-								if (!empty($formatted_elements)) {
-									$new_default_filter = $formatted_elements[0];
-									$new_default_filter['default'] = true;
-									if (empty($new_default_filter['value'])) {
-										$new_default_filter['value'] = $new_default_filter['type'] === 'select' ? ['all'] : '';
-									}
-									$new_default_filter['andorOperator'] = 'OR';
-									$new_default_filter['operator'] = '=';
-
-									if ($new_default_filter['type'] === 'select') {
-										$new_default_filter['operator'] = 'IN';
-										$new_default_filter['values'] = $this->getFabrikElementValuesFromElementId($element['id']);
+								else
+								{
+									if ($new_default_filter['type'] === 'text')
+									{
+										$new_default_filter['operator'] = 'LIKE';
 									}
 								}
-                                $new_default_filter['plugin'] = $element['plugin'];
-                            }
-						}
-
-						if (!empty($new_default_filter)) {
-							$this->filters[] = $new_default_filter;
-							$new_default_filter['uid'] = 'default-filter-' . $new_default_filter['id'];
-							$new_default_filter['order'] = $more_filter['order'];
-							$this->applied_filters[] = $new_default_filter;
-
-							// add filter to adv cols
-							$session = $this->app->getSession();
-							$files_displayed_columns = $session->get('adv_cols');
-							if (!empty($files_displayed_columns)) {
-								$files_displayed_columns[] = $new_default_filter['id'];
-							} else {
-								$files_displayed_columns = [$new_default_filter['id']];
 							}
-							$session->set('adv_cols', $files_displayed_columns);
+							$new_default_filter['plugin'] = $element['plugin'];
 						}
+					}
+
+					if (!empty($new_default_filter))
+					{
+						$this->filters[]             = $new_default_filter;
+						$new_default_filter['uid']   = 'default-filter-' . $new_default_filter['id'];
+						$new_default_filter['order'] = $more_filter['order'];
+						$this->applied_filters[]     = $new_default_filter;
+
+						// add filter to adv cols
+						$files_displayed_columns = $session->get('adv_cols');
+						if (!empty($files_displayed_columns))
+						{
+							$files_displayed_columns[] = $new_default_filter['id'];
+						}
+						else
+						{
+							$files_displayed_columns = [$new_default_filter['id']];
+						}
+						$session->set('adv_cols', $files_displayed_columns);
 					}
 				}
 			}
+		}
 
-			// sort applied filters array by array entry 'order'
-			usort($this->applied_filters, function ($a, $b) {
-				return intval($a['order']) <=> intval($b['order']);
-			});
+		// sort applied filters array by array entry 'order'
+		usort($this->applied_filters, function ($a, $b) {
+			return intval($a['order']) <=> intval($b['order']);
+		});
 
-			if ($this->h_cache->isEnabled() && !empty($active_menu)) {
-				$this->h_cache->set('em_default_filters_' . $active_menu->id, $this->applied_filters);
-			}
+		if ($this->h_cache->isEnabled() && !empty($active_menu))
+		{
+			$this->h_cache->set('em_default_filters_' . $active_menu->id, $this->applied_filters);
+		}
+
+		$session_filters = $session->get('em-applied-filters', []);
+		if ((isset($config['force_reload_on_refresh']) && $config['force_reload_on_refresh']) || empty($session_filters)) {
+			$session->set('em-applied-filters', $this->applied_filters);
 		}
 	}
 
@@ -645,6 +776,9 @@ class EmundusFiltersFiles extends EmundusFilters
 				}
 			}
 		}
+
+		$session = $this->app->getSession();
+		$session->set('em-applied-filters', $this->applied_filters);
 	}
 
     private function checkFiltersAvailability()
@@ -675,6 +809,8 @@ class EmundusFiltersFiles extends EmundusFilters
 						$campaign_availables = array_intersect($this->user_campaigns, $campaign_filter['value']);
 						break;
 				}
+
+				$campaign_availables = array_values($campaign_availables);
 			}
         }
 
@@ -717,11 +853,14 @@ class EmundusFiltersFiles extends EmundusFilters
 		    if (!empty($filtered_profiles)) {
 			    $element_ids_available = $this->getElementIdsAssociatedToProfile($filtered_profiles);
 
-			    foreach($this->filters as $key => $filter) {
-					if (!in_array($filter['id'], $element_ids_available) && !in_array($filter['group_id'], $this->config['more_fabrik_forms'])) {
-					    $this->filters[$key]['available'] = false;
-				    }
-			    }
+					$config_more_fabrik_forms = $this->config['more_fabrik_forms'];
+					$config_more_fabrik_forms = empty($config_more_fabrik_forms) ? [] : $config_more_fabrik_forms;
+
+					foreach($this->filters as $key => $filter) {
+						if (!in_array($filter['id'], $element_ids_available) && !in_array($filter['group_id'], $config_more_fabrik_forms)) {
+							$this->filters[$key]['available'] = false;
+						}
+					}
 		    }
 	    }
     }

@@ -73,7 +73,6 @@ class DropfilesModelFrontdropbox extends JModelLegacy
                 return false;
             }
 
-
             // Store the data.
             if (!$table->store()) {
                 $this->setError($table->getError());

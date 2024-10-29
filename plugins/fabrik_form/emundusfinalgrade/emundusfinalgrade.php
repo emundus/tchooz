@@ -13,16 +13,23 @@
  */
 
 // No direct access
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
+use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\User\UserFactoryInterface;
+
 defined('_JEXEC') or die('Restricted access');
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
 
 /**
- * Create a Joomla user from the forms data
+ * Update state from final_grade
  *
  * @package     Joomla.Plugin
- * @subpackage  Fabrik.form.emunduscampaigncheck
+ * @subpackage  Fabrik.form.emundusfinalgrade
  * @since       3.0
  */
 
@@ -68,17 +75,29 @@ class PlgFabrik_FormEmundusFinalGrade extends plgFabrik_Form {
 
 
 	public function onBeforeLoad() {
-		$app = JFactory::getApplication();
-		$db = JFactory::getDBO();
-		$query = $db->getQuery(true);
-		$user =  JFactory::getUser();
+		$listModel = $this->getModel()->getListModel();
+		$table     = $listModel->getTable();
 
-		$r = $app->input->get('r', 0);
-		$formid = $app->input->get('formid', '256');
-		$rowid = $app->input->get('rowid');
-		$student_id = $app->input->get('jos_emundus_final_grade___student_id') ?: '';
-		$fnum = $app->input->get('jos_emundus_final_grade___fnum') ?:'';
-		$view = strpos(JUri::getInstance()->getPath(), '/details/') !== false ? 'details' : 'form';
+		$query = $this->_db->getQuery(true);
+		$user =  $this->app->getIdentity();
+
+		$r = $this->app->getInput()->get('r', 0);
+		$formid = $this->app->getInput()->getInt('formid', 256);
+		$rowid = $this->app->getInput()->get('rowid',0);
+		$student_id = $this->app->getInput()->getInt('student_id', 0) ?: $this->data['student_id'];
+		if (!empty($student_id))
+		{
+			$student = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($student_id);
+			echo '<div class="tw-bg-white tw-pb-4"><h2 class="tw-bg-white tw-pb-3 tw-border-b">' . $student->name . '</h2></div>';
+		}
+
+		$inputs = $this->app->getInput()->getArray();
+		$fnum = $this->app->getInput()->getArray()[$table->db_table_name . '___fnum'];
+		$view = strpos(Uri::getInstance()->getPath(), '/details/') !== false ? 'details' : 'form';
+
+		if(!empty($fnum) && is_array($fnum)) {
+			$fnum = $fnum['value'];
+		}
 
 		if (empty($fnum) || empty($student_id)) {
 			if (!empty($rowid)) {
@@ -87,15 +106,15 @@ class PlgFabrik_FormEmundusFinalGrade extends plgFabrik_Form {
 					->where('id = ' . $rowid);
 
 				try {
-					$db->setQuery($query);
-					$decision_row = $db->loadAssoc();
+					$this->_db->setQuery($query);
+					$decision_row = $this->_db->loadAssoc();
 
 					if (!empty($decision_row)) {
 						$fnum = $decision_row['fnum'];
 						$student_id = $decision_row['student_id'];
 					}
 				} catch (Exception $e) {
-					JLog::add('Failed to find fnum from rowid ' . $rowid . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+					Log::add('Failed to find fnum from rowid ' . $rowid . ' ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 				}
 			} else {
 				$fnum = '{jos_emundus_final_grade___fnum}';
@@ -114,13 +133,13 @@ class PlgFabrik_FormEmundusFinalGrade extends plgFabrik_Form {
 				'student_id' => $student_id,
 				'fnum' => $fnum
 			];
-			JPluginHelper::importPlugin('emundus', 'custom_event_handler');
-			\Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onRenderFinalgrade', ['event_datas' => $event_datas]]);
+			PluginHelper::importPlugin('emundus', 'custom_event_handler');
+			$this->app->triggerEvent('onCallEventHandler', ['onRenderFinalgrade', ['event_datas' => $event_datas]]);
 		}
 
-		$app->enqueueMessage($decision['message']);
+		$this->app->enqueueMessage($decision['message']);
 		if($r != 1) {
-			$app->redirect($decision['url']);
+			$this->app->redirect($decision['url']);
 		}
 
 		return true;
@@ -129,23 +148,22 @@ class PlgFabrik_FormEmundusFinalGrade extends plgFabrik_Form {
 	public function onBeforeProcess() {
 		$formModel = $this->getModel();
 
-		JPluginHelper::importPlugin('emundus','custom_event_handler');
-		\Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onBeforeSubmitFinalgrade', ['formModel' => $formModel]]);
+		PluginHelper::importPlugin('emundus','custom_event_handler');
+		$this->app->triggerEvent('onCallEventHandler', ['onBeforeSubmitFinalgrade', ['formModel' => $formModel]]);
 	}
 
 	public function onAfterProcess() {
 		$formModel = $this->getModel();
 
-		JPluginHelper::importPlugin('emundus','custom_event_handler');
-		\Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterSubmitFinalgrade', ['formModel' => $formModel]]);
+		PluginHelper::importPlugin('emundus','custom_event_handler');
+		$this->app->triggerEvent('onCallEventHandler', ['onAfterSubmitFinalgrade', ['formModel' => $formModel]]);
 	}
 
     public function onBeforeCalculations() {
 
 	    jimport('joomla.log.log');
-	    JLog::addLogger(array('text_file' => 'com_emundus.emundus-final-grade.php'), JLog::ALL, array('com_emundus.emundus-final-grade'));
+	    Log::addLogger(array('text_file' => 'com_emundus.emundus-final-grade.php'), Log::ALL, array('com_emundus.emundus-final-grade'));
 
-	    $db = JFactory::getDBO();
 	    $formModel = $this->getModel();
 
 	    $fnum = $formModel->formData['fnum_raw'];
@@ -156,5 +174,33 @@ class PlgFabrik_FormEmundusFinalGrade extends plgFabrik_Form {
 		    $m_files = new EmundusModelFiles();
 		    $m_files->updateState([$fnum], $status);
 	    }
+
+	    echo '<script src="' . Uri::base() . 'media/com_emundus/js/lib/sweetalert/sweetalert.min.js"></script>';
+
+	    echo '<script>window.parent.ScrollToTop();</script>';
+
+	    echo '<style>
+.em-swal-title{
+  margin: 8px 8px 32px 8px !important;
+  font-family: "Maven Pro", sans-serif;
+}
+</style>';
+
+	    die("<script>
+     document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire({
+          position: 'top',
+          icon: 'success',
+          title: '" . Text::_('COM_EMUNDUS_DECISION_SAVED') . "',
+          showConfirmButton: false,
+          timer: 2000,
+          customClass: {
+            title: 'em-swal-title',
+          }
+        }).then((result) => {
+		  history.go(-1);
+		});
+      });
+      </script>");
     }
 }

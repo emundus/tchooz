@@ -11,7 +11,7 @@
         // Toggle tooltip
         $('.dropfiles-tooltip').qtip({
             content: {
-                attr: 'alt'
+                attr: 'title'
             },
             position: {
                 my: 'bottom left',
@@ -23,7 +23,7 @@
                 },
                 classes: 'dropfiles-qtip qtip-rounded dropfiles-qtip-dashboard'
             },
-            show: 'hover',
+            show: 'mouseover',
             hide: {
                 fixed: true,
                 delay: 10

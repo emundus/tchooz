@@ -95,8 +95,8 @@ class com_emundusInstallerScript
 
 				EmundusHelperUpdate::genericUpdateParams('#__modules', 'module', 'mod_emundusflow', array('show_programme'), array('0'));
 				EmundusHelperUpdate::genericUpdateParams('#__fabrik_cron', 'plugin', 'emundusrecall', array('log', 'log_email', 'cron_rungate'), array('0', 'mail@emundus.fr', '1'));
-
-				EmundusHelperUpdate::updateConfigurationFile('lifetime', '45');
+				$config = new JConfig();
+				EmundusHelperUpdate::updateConfigurationFile($config,'lifetime', '45');
 
 				# Insert translations in override file
 				EmundusHelperUpdate::insertTranslationsTag('CREATE_A_NEW_FILE', 'Créer un nouveau dossier pour un utilisateur existant', 'override', null, 'fabrik_elements', 'label');
@@ -270,7 +270,7 @@ class com_emundusInstallerScript
 					$datas    = [
 						'title'    => 'eMundus - Back button',
 						'note'     => 'Back button available on login and register views',
-						'content'  => '<p><a class="em-back-button em-pointer" href="/"><span class="material-icons em-mr-4">navigate_before</span>Retour à la page d\'accueil</a></p>',
+						'content'  => '<p><a class="em-back-button em-pointer" href="/"><span class="material-symbols-outlined tw-text-neutral-600 em-mr-4">navigate_before</span>Retour à la page d\'accueil</a></p>',
 						'position' => 'header-a',
 						'module'   => 'mod_custom',
 						'access'   => 9,
@@ -768,8 +768,8 @@ if (password_value.match(regex) != null) {
 				}
 
 				EmundusHelperUpdate::genericUpdateParams('#__fabrik_cron', 'plugin', 'emundusrecall', array('log_email'), array(''));
-
-				EmundusHelperUpdate::updateConfigurationFile('caching', '1');
+				$config = new JConfig();
+				EmundusHelperUpdate::updateConfigurationFile($config,'caching', '1');
 				EmundusHelperUpdate::updateModulesParams('mod_emundusmenu', 'cache', 0);
 
 				$query->clear()
@@ -1749,7 +1749,7 @@ try {
 						$program_form_params->only_process_curl[]  = "onAfterProcess";
 						$program_form_params->form_php_file[]      = "-1";
 						$program_form_params->curl_code[]          = 'JPluginHelper::importPlugin(\'emundus\', \'custom_event_handler\');
-\Joomla\CMS\Factory::getApplication()->triggerEvent(\'callEventHandler\', [\'onAfterProgramCreate\', [\'formModel\' => $this->getModel(), \'data\' => $this->getProcessData()]]);';
+\Joomla\CMS\Factory::getApplication()->triggerEvent(\'onCallEventHandler\', [\'onAfterProgramCreate\', [\'formModel\' => $this->getModel(), \'data\' => $this->getProcessData()]]);';
 						$program_form_params->plugins[]            = "php";
 						$program_form_params->plugin_locations[]   = "both";
 						$program_form_params->plugin_events[]      = "new";
@@ -2928,7 +2928,7 @@ return $tip_text;';
 						$js_showicon = 'var passwordInput = document.querySelector(&#039;#jos_emundus_users___password&#039;);
 
 var spanShowPassword = document.createElement(&#039;span&#039;);
-spanShowPassword.classList.add(&#039;material-icons-outlined&#039;);
+spanShowPassword.classList.add(&#039;material-symbols-outlined&#039;);
 spanShowPassword.classList.add(&#039;em-pointer&#039;);
 spanShowPassword.innerText = &quot;visibility_off&quot;;
 spanShowPassword.style.position = &quot;absolute&quot;;

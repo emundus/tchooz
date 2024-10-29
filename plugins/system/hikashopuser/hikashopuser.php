@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -209,12 +209,6 @@ class plgSystemHikashopuser extends hikashopJoomlaPlugin {
 		return $this->onBeforeStoreUser($user, $isnew);
 	}
 	public function onUserAfterSave($user, $isnew, $success, $msg) {
-		$app = Factory::getApplication();
-		// The method check here ensures that if running as a CLI Application we don't get any errors
-		if (method_exists($app, 'isClient') && ($app->isClient('cli'))) {
-			return;
-		}
-
 		return $this->onAfterStoreUser($user, $isnew, $success, $msg);
 	}
 	public function onUserAfterDelete($user, $success, $msg) {
@@ -249,6 +243,11 @@ class plgSystemHikashopuser extends hikashopJoomlaPlugin {
 	}
 
 	public function onAfterStoreUser($user, $isnew, $success, $msg) {
+		$app = Factory::getApplication();
+		if (method_exists($app, 'isClient') && $app->isClient('cli')) {
+			return;
+		}
+
 		if($success === false || !is_array($user))
 			return false;
 

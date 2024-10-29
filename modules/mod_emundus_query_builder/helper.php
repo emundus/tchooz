@@ -8,24 +8,30 @@ ini_set("xdebug.var_display_max_children", -1);
 ini_set("xdebug.var_display_max_data", -1);
 ini_set("xdebug.var_display_max_depth", -1);
 
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Helper\ModuleHelper;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
+use Gotenberg\Gotenberg;
+use Gotenberg\Stream;
+use Joomla\CMS\Table\Table;
+use Joomla\CMS\Uri\Uri;
+
 jimport('joomla.log.log');
-JLog::addLogger(['text_file' => 'com_emundus.query_builder.php'], JLog::ALL, ['com_emundus']);
+Log::addLogger(['text_file' => 'com_emundus.query_builder.php'], Log::ALL, ['com_emundus']);
 
-use TheCodingMachine\Gotenberg\Client;
-use TheCodingMachine\Gotenberg\Request;
-use TheCodingMachine\Gotenberg\DocumentFactory;
-use TheCodingMachine\Gotenberg\HTMLRequest;
-
-class modEmundusQueryBuilderHelper
+class ModEmundusQueryBuilderHelper
 {
 
 	/**
 	 * Get the stats modules for the stats module manager
 	 */
-	public function getModuleStat()
+	public static function getModuleStat()
 	{
-		$db      = JFactory::getDBO();
-		$session = JFactory::getSession();
+		$db      = Factory::getContainer()->get('DatabaseDriver');
+		$app = Factory::getApplication();
+		$session = $app->getSession();
 		$user    = $session->get('emundusUser');
 
 		try {
@@ -35,8 +41,8 @@ class modEmundusQueryBuilderHelper
 			return $db->loadAssocList();
 		}
 		catch (Exception $e) {
-			$error = JUri::getInstance() . ' :: USER ID : ' . $user->id . '\n -> ' . $query;
-			JLog::add($error, JLog::ERROR, 'com_emundus');
+			$error = Uri::getInstance() . ' :: USER ID : ' . $user->id . '\n -> ' . $query;
+			Log::add($error, Log::ERROR, 'com_emundus');
 
 			return 0;
 		}
@@ -45,10 +51,11 @@ class modEmundusQueryBuilderHelper
 	/**
 	 * Retrieve the stats modules for the stats modules manager
 	 */
-	public function getExportModuleStat()
+	public static function getExportModuleStat()
 	{
-		$db      = JFactory::getDBO();
-		$session = JFactory::getSession();
+		$db      = Factory::getContainer()->get('DatabaseDriver');
+		$app = Factory::getApplication();
+		$session = $app->getSession();
 		$user    = $session->get('emundusUser');
 
 		try {
@@ -58,8 +65,8 @@ class modEmundusQueryBuilderHelper
 			return $db->loadAssocList();
 		}
 		catch (Exception $e) {
-			$error = JUri::getInstance() . ' :: USER ID : ' . $user->id . '\n -> ' . $query;
-			JLog::add($error, JLog::ERROR, 'com_emundus');
+			$error = Uri::getInstance() . ' :: USER ID : ' . $user->id . '\n -> ' . $query;
+			Log::add($error, Log::ERROR, 'com_emundus');
 
 			return 0;
 		}
@@ -68,10 +75,11 @@ class modEmundusQueryBuilderHelper
 	/**
 	 * Retrieve the stats modules for exporting stats modules
 	 */
-	public function getTypeStatModule($id)
+	public static function getTypeStatModule($id)
 	{
-		$db      = JFactory::getDBO();
-		$session = JFactory::getSession();
+		$db      = Factory::getContainer()->get('DatabaseDriver');
+		$app = Factory::getApplication();
+		$session = $app->getSession();
 		$user    = $session->get('emundusUser');
 
 		try {
@@ -81,8 +89,8 @@ class modEmundusQueryBuilderHelper
 			return json_decode($db->loadResult(), true)['type_graph'];
 		}
 		catch (Exception $e) {
-			$error = JUri::getInstance() . ' :: USER ID : ' . $user->id . '\n -> ' . $query;
-			JLog::add($error, JLog::ERROR, 'com_emundus');
+			$error = Uri::getInstance() . ' :: USER ID : ' . $user->id . '\n -> ' . $query;
+			Log::add($error, Log::ERROR, 'com_emundus');
 
 			return 0;
 		}
@@ -91,12 +99,13 @@ class modEmundusQueryBuilderHelper
 	/**
 	 * Display or not the stat module
 	 */
-	public function changePublishedModuleAjax()
+	public static function changePublishedModuleAjax()
 	{
-		$jinput  = JFactory::getApplication()->input;
+		$app = Factory::getApplication();
+		$jinput  = $app->input;
 		$id      = $jinput->post->get('idChangePublishedModule');
-		$db      = JFactory::getDBO();
-		$session = JFactory::getSession();
+		$db      = Factory::getContainer()->get('DatabaseDriver');
+		$session = $app->getSession();
 		$user    = $session->get('emundusUser');
 
 		try {
@@ -110,8 +119,8 @@ class modEmundusQueryBuilderHelper
 			return json_encode((object) ['status' => true, 'msg' => (($published == 1) ? "0" : "1")]);
 		}
 		catch (Exception $e) {
-			$error = JUri::getInstance() . ' :: USER ID : ' . $user->id . '\n -> ' . $query;
-			JLog::add($error, JLog::ERROR, 'com_emundus');
+			$error = Uri::getInstance() . ' :: USER ID : ' . $user->id . '\n -> ' . $query;
+			Log::add($error, Log::ERROR, 'com_emundus');
 			echo json_encode((object) ['status' => false, 'msg' => "Error"]);
 			exit;
 		}
@@ -120,13 +129,14 @@ class modEmundusQueryBuilderHelper
 	/**
 	 * Change the order of the stats modules
 	 */
-	public function changeOrderModuleAjax()
+	public static function changeOrderModuleAjax()
 	{
-		$jinput  = JFactory::getApplication()->input;
+		$app = Factory::getApplication();
+		$jinput  = $app->input;
 		$tabId   = $jinput->post->get('id');
 		$order1  = $jinput->post->get('order1');
-		$db      = JFactory::getDBO();
-		$session = JFactory::getSession();
+		$db      = Factory::getContainer()->get('DatabaseDriver');
+		$session = $app->getSession();
 		$user    = $session->get('emundusUser');
 
 		try {
@@ -139,8 +149,8 @@ class modEmundusQueryBuilderHelper
 			return json_encode((object) ['status' => true, 'msg' => 'It\'s ok']);
 		}
 		catch (Exception $e) {
-			$error = JUri::getInstance() . ' :: USER ID : ' . $user->id . '\n -> ' . $query;
-			JLog::add($error, JLog::ERROR, 'com_emundus');
+			$error = Uri::getInstance() . ' :: USER ID : ' . $user->id . '\n -> ' . $query;
+			Log::add($error, Log::ERROR, 'com_emundus');
 			echo json_encode((object) ['status' => false, 'msg' => "Error"]);
 			exit;
 		}
@@ -149,12 +159,13 @@ class modEmundusQueryBuilderHelper
 	/**
 	 * Remove the stat module
 	 */
-	public function deleteModuleAjax()
+	public static function deleteModuleAjax()
 	{
-		$jinput  = JFactory::getApplication()->input;
+		$app = Factory::getApplication();
+		$jinput  = $app->input;
 		$id      = $jinput->post->get('idDeleteModule');
-		$db      = JFactory::getDBO();
-		$session = JFactory::getSession();
+		$db      = Factory::getContainer()->get('DatabaseDriver');
+		$session = $app->getSession();
 		$user    = $session->get('emundusUser');
 
 		try {
@@ -176,8 +187,8 @@ class modEmundusQueryBuilderHelper
 
 		}
 		catch (Exception $e) {
-			$error = JUri::getInstance() . ' :: USER ID : ' . $user->id . '\n -> ' . $query;
-			JLog::add($error, JLog::ERROR, 'com_emundus');
+			$error = Uri::getInstance() . ' :: USER ID : ' . $user->id . '\n -> ' . $query;
+			Log::add($error, Log::ERROR, 'com_emundus');
 			echo json_encode((object) ['status' => false, 'msg' => "Error"]);
 			exit;
 		}
@@ -186,16 +197,16 @@ class modEmundusQueryBuilderHelper
 	/**
 	 * Modify the stat module
 	 */
-	public function changeModuleAjax()
+	public static function changeModuleAjax()
 	{
-
-		$jinput = JFactory::getApplication()->input;
+		$app = Factory::getApplication();
+		$jinput = $app->input;
 		$title  = addslashes(str_replace("'", " ", $jinput->post->getString('titleModule')));
 		$type   = $jinput->post->get('typeModule');
 		$id     = $jinput->post->get('idModifyModule');
 
-		$db      = JFactory::getDBO();
-		$session = JFactory::getSession();
+		$db      = Factory::getContainer()->get('DatabaseDriver');
+		$session = $app->getSession();
 		$user    = $session->get('emundusUser');
 
 		try {
@@ -226,8 +237,8 @@ class modEmundusQueryBuilderHelper
 
 		}
 		catch (Exception $e) {
-			$error = JUri::getInstance() . ' :: USER ID : ' . $user->id . '\n -> ' . $query;
-			JLog::add($error, JLog::ERROR, 'com_emundus');
+			$error = Uri::getInstance() . ' :: USER ID : ' . $user->id . '\n -> ' . $query;
+			Log::add($error, Log::ERROR, 'com_emundus');
 			echo json_encode((object) ['status' => false, 'msg' => "Error"]);
 			exit;
 		}
@@ -235,10 +246,12 @@ class modEmundusQueryBuilderHelper
 
 	/**
 	 * Create the stat module
+	 * TODO: Refactor this
 	 */
-	public function createModuleAjax()
+	public static function createModuleAjax()
 	{
-		$jinput         = JFactory::getApplication()->input;
+		$app = Factory::getApplication();
+		$jinput         = $app->input;
 		$nameGraph      = str_replace("'", " ", str_replace("\"", " ", $jinput->post->getString('titleModule')));
 		$typeModule     = $jinput->post->get('typeModule');
 		$indicateur     = $jinput->post->get('indicateurModule');
@@ -249,13 +262,13 @@ class modEmundusQueryBuilderHelper
 		$campaignModule = $jinput->post->getString('campaignModule');
 		$idMenu         = $jinput->post->getString('idMenu');
 
-		$db      = JFactory::getDBO();
-		$session = JFactory::getSession();
+		$db      = Factory::getContainer()->get('DatabaseDriver');
+		$session = $app->getSession();
 		$user    = $session->get('emundusUser');
 
-		$config   = JFactory::getConfig();
+		$config   = $app->getConfig();
 		$timezone = new DateTimeZone($config->get('offset'));
-		$date     = JFactory::getDate()->setTimezone($timezone);
+		$date     = Factory::getDate()->setTimezone($timezone);
 		$nameView = "jos_emundus_stat_" . (mb_strtolower(str_replace(" ", "_", $nameGraph), 'UTF-8'));
 
 		try {
@@ -264,6 +277,7 @@ class modEmundusQueryBuilderHelper
 			$db->execute();
 
 			$db->transactionStart();
+			
 
 			$query = "SELECT name FROM jos_fabrik_elements WHERE id = " . $indicateur;
 			$db->setQuery($query);
@@ -335,12 +349,12 @@ class modEmundusQueryBuilderHelper
 					$result   = $db->loadAssoc();
 					$paramElt = json_decode($result['params'], true);
 
-					$session = JFactory::getSession();
+					$session = $app->getSession();
 					$user    = $session->get('emundusUser');
 
 					$tableDataBaseJoin = ($paramElt['join_val_column_concat'] === "") ? "`" . $paramElt['join_db_name'] . "`.`" . $paramElt['join_val_column'] . "` AS `elt`" : "CONCAT(" . $paramElt['join_val_column_concat'] . ") AS `elt`";
 					$tableDataBaseJoin = preg_replace('#{thistable}#', $paramElt['join_db_name'], $tableDataBaseJoin);
-					$tableDataBaseJoin = preg_replace('#{shortlang}#', substr(JFactory::getLanguage()->getTag(), 0, 2), $tableDataBaseJoin);
+					$tableDataBaseJoin = preg_replace('#{shortlang}#', substr($app->getLanguage()->getTag(), 0, 2), $tableDataBaseJoin);
 					$tableDataBaseJoin = preg_replace('#{my->id}#', $user->id, $tableDataBaseJoin);
 
 					if ($paramsTableJoin['repeat_group_button'] === "1") {
@@ -364,9 +378,8 @@ class modEmundusQueryBuilderHelper
 						$db->setQuery($query);
 					}
 
-					$db->execute();
+					$result = $db->execute();
 					$elementName = 'elt';
-
 				}
 				elseif ($plugin === "dropdown" || $plugin === "radiobutton") {
 
@@ -436,12 +449,15 @@ class modEmundusQueryBuilderHelper
 				}
 			}
 
+			$query = "ANALYZE TABLE jos_modules";
+			$db->setQuery($query);
+			$db->execute();
 			$query = "SHOW TABLE STATUS LIKE 'jos_modules'";
 			$db->setQuery($query);
 			$idModule = $db->loadAssoc()['Auto_increment'];
 
 
-			$table             = JTable::getInstance('asset');
+			$table             = Table::getInstance('asset');
 			$data              = array();
 			$data['parent_id'] = 18;
 			$data['name']      = "com_module.modules." . $idModule;
@@ -453,7 +469,7 @@ class modEmundusQueryBuilderHelper
 				$table->store();
 			}
 			else {
-				JLog::add('Could not Insert data into jos_assets. -> ', JLog::ERROR, 'com_emundus');
+				Log::add('Could not Insert data into jos_assets. -> ', Log::ERROR, 'com_emundus');
 
 				return false;
 			}
@@ -467,6 +483,9 @@ class modEmundusQueryBuilderHelper
 			$db->setQuery($query);
 			$ordering = $db->loadResult() + 1;
 
+			$query = "ANALYZE TABLE jos_fabrik_forms";
+			$db->setQuery($query);
+			$db->execute();
 			$query = "SHOW TABLE STATUS LIKE 'jos_fabrik_forms'";
 			$db->setQuery($query);
 			$idForm = $db->loadAssoc()['Auto_increment'];
@@ -476,6 +495,9 @@ class modEmundusQueryBuilderHelper
 			$db->execute();
 
 
+			$query = "ANALYZE TABLE jos_fabrik_groups";
+			$db->setQuery($query);
+			$db->execute();
 			$query = "SHOW TABLE STATUS LIKE 'jos_fabrik_groups'";
 			$db->setQuery($query);
 			$idGroup = $db->loadAssoc()['Auto_increment'];
@@ -500,6 +522,9 @@ class modEmundusQueryBuilderHelper
 			$db->setQuery($query);
 			$db->execute();
 
+			$query = "ANALYZE TABLE jos_fabrik_lists";
+			$db->setQuery($query);
+			$db->execute();
 			$query = "SHOW TABLE STATUS LIKE 'jos_fabrik_lists'";
 			$db->setQuery($query);
 			$idList = $db->loadAssoc()['Auto_increment'];
@@ -508,7 +533,7 @@ class modEmundusQueryBuilderHelper
 			$db->setQuery($query);
 			$db->execute();
 
-			$query = "INSERT INTO `jos_modules` (`id`, `asset_id`, `title`, `note`, `content`, `ordering`, `position`, `checked_out`, `checked_out_time`, `publish_up`, `publish_down`, `published`, `module`, `access`, `showtitle`, `params`, `client_id`, `language`) VALUES ('" . $idModule . "', '" . $idAsset . "', '" . $nameGraph . "', '', '', '" . $ordering . "', 'content-bottom-a', '0', '0000-00-00 00:00:00.000000', '0000-00-00 00:00:00.000000', '0000-00-00 00:00:00.000000', '1', 'mod_emundus_stat', '6', '0', '{\"list_id\":\"" . $idList . "\",\"view\":\"" . $nameView . "\",\"type_graph\":\"" . $typeModule . "\",\"nb_value\":\"\",\"nb_column\":\"\",\"y_name_db_0\":\"nb\",\"serie_name_0\":\"\",\"column_choice_0\":\"\",\"y_name_db_1\":\"\",\"serie_name_1\":\"\",\"column_choice_1\":\"\",\"y_name_db_2\":\"\",\"serie_name_2\":\"\",\"column_choice_2\":\"\",\"y_name_db_3\":\"\",\"serie_name_3\":\"\",\"column_choice_3\":\"\",\"y_name_db_4\":\"\",\"serie_name_4\":\"\",\"column_choice_4\":\"\",\"x_name\":\"" . $nameAxeX . "\",\"x_name_db\":\"" . $elementName . "\",\"y_name_0\":\"" . $nameAxeY . "\",\"y_name_1\":\"\",\"program\":\"" . $progModule . "\",\"year\":\"" . $yearModule . "\",\"campaign\":\"" . $campaignModule . "\",\"module_tag\":\"div\",\"bootstrap_size\":\"0\",\"header_tag\":\"h3\",\"header_class\":\"\",\"style\":\"0\"}', '0', '*')";
+			$query = "INSERT INTO `jos_modules` (`id`, `asset_id`, `title`, `note`, `content`, `ordering`, `position`, `published`, `module`, `access`, `showtitle`, `params`, `client_id`, `language`) VALUES ('" . $idModule . "', '" . $idAsset . "', '" . $nameGraph . "', '', '', '" . $ordering . "', 'content-bottom-a', '1', 'mod_emundus_stat', '6', '0', '{\"list_id\":\"" . $idList . "\",\"view\":\"" . $nameView . "\",\"type_graph\":\"" . $typeModule . "\",\"nb_value\":\"\",\"nb_column\":\"\",\"y_name_db_0\":\"nb\",\"serie_name_0\":\"\",\"column_choice_0\":\"\",\"y_name_db_1\":\"\",\"serie_name_1\":\"\",\"column_choice_1\":\"\",\"y_name_db_2\":\"\",\"serie_name_2\":\"\",\"column_choice_2\":\"\",\"y_name_db_3\":\"\",\"serie_name_3\":\"\",\"column_choice_3\":\"\",\"y_name_db_4\":\"\",\"serie_name_4\":\"\",\"column_choice_4\":\"\",\"x_name\":\"" . $nameAxeX . "\",\"x_name_db\":\"" . $elementName . "\",\"y_name_0\":\"" . $nameAxeY . "\",\"y_name_1\":\"\",\"program\":\"" . $progModule . "\",\"year\":\"" . $yearModule . "\",\"campaign\":\"" . $campaignModule . "\",\"module_tag\":\"div\",\"bootstrap_size\":\"0\",\"header_tag\":\"h3\",\"header_class\":\"\",\"style\":\"0\"}', '0', '*')";
 			$db->setQuery($query);
 			$db->execute();
 
@@ -534,8 +559,8 @@ class modEmundusQueryBuilderHelper
 				$db->execute();
 			}
 
-			$error = JUri::getInstance() . ' :: USER ID : ' . $user->id . '\n -> ' . $query;
-			JLog::add($error, JLog::ERROR, 'com_emundus');
+			$error = Uri::getInstance() . ' :: USER ID : ' . $user->id . '\n -> ' . $query;
+			Log::add($error, Log::ERROR, 'com_emundus');
 			echo json_encode((object) ['status' => false, 'msg' => "Error"]);
 			exit;
 		}
@@ -546,8 +571,9 @@ class modEmundusQueryBuilderHelper
 	 */
 	public function getProg()
 	{
-		$db      = JFactory::getDbo();
-		$session = JFactory::getSession();
+		$db      = Factory::getContainer()->get('DatabaseDriver');
+		$app = Factory::getApplication();
+		$session = $app->getSession();
 		$user    = $session->get('emundusUser');
 
 		try {
@@ -557,8 +583,8 @@ class modEmundusQueryBuilderHelper
 			return $db->loadColumn();
 		}
 		catch (Exception $e) {
-			$error = JUri::getInstance() . ' :: USER ID : ' . $user->id . '\n -> ' . $query;
-			JLog::add($error, JLog::ERROR, 'com_emundus');
+			$error = Uri::getInstance() . ' :: USER ID : ' . $user->id . '\n -> ' . $query;
+			Log::add($error, Log::ERROR, 'com_emundus');
 
 			return 0;
 		}
@@ -569,8 +595,9 @@ class modEmundusQueryBuilderHelper
 	 */
 	public function getCampaign()
 	{
-		$db      = JFactory::getDbo();
-		$session = JFactory::getSession();
+		$db      = Factory::getContainer()->get('DatabaseDriver');
+		$app = Factory::getApplication();
+		$session = $app->getSession();
 		$user    = $session->get('emundusUser');
 
 		try {
@@ -580,8 +607,8 @@ class modEmundusQueryBuilderHelper
 			return $db->loadColumn();
 		}
 		catch (Exception $e) {
-			$error = JUri::getInstance() . ' :: USER ID : ' . $user->id . '\n -> ' . $query;
-			JLog::add($error, JLog::ERROR, 'com_emundus');
+			$error = Uri::getInstance() . ' :: USER ID : ' . $user->id . '\n -> ' . $query;
+			Log::add($error, Log::ERROR, 'com_emundus');
 
 			return 0;
 		}
@@ -599,7 +626,7 @@ class modEmundusQueryBuilderHelper
 		$elements = $h_files->getElements($tabProgram, $tabCampaign);
 		$output   = '<label>Indicateur*</label>
 					<select id="indicateurModule">
-						<option value="">' . JText::_('MOD_EMUNDUS_QUERY_BUILDER_PLEASE_SELECT') . '</option>';
+						<option value="">' . Text::_('MOD_EMUNDUS_QUERY_BUILDER_PLEASE_SELECT') . '</option>';
 		$menu     = "";
 		$groupe   = "";
 
@@ -637,29 +664,31 @@ class modEmundusQueryBuilderHelper
 	public function reloadModuleAjax()
 	{
 		jimport('joomla.application.module.helper');
-		$document = JFactory::getDocument();
+
+		$app = Factory::getApplication();
+		$document = $app->getDocument();
 		$renderer = $document->loadRenderer('module');
-		$database = JFactory::getDBO();
-		$session  = JFactory::getSession();
+		$db      = Factory::getContainer()->get('DatabaseDriver');
+		$session = $app->getSession();
 		$user     = $session->get('emundusUser');
 
 		try {
 			$query = "SELECT * FROM jos_modules WHERE module = 'mod_emundus_stat' AND published = 1 ORDER BY ordering";
-			$database->setQuery($query);
-			$modules       = $database->loadObjectList();
+			$db->setQuery($query);
+			$modules       = $db->loadObjectList();
 			$modulesString = "";
 
 			if ($modules != null) {
 				for ($cpt = 0; $cpt < count($modules); $cpt++) {
-					$modulesString .= "////" . $modules[$cpt]->id . "////" . JModuleHelper::renderModule($modules[$cpt]);
+					$modulesString .= "////" . $modules[$cpt]->id . "////" . ModuleHelper::renderModule($modules[$cpt]);
 				}
 			}
 
 			return json_encode((object) ['status' => true, 'msg' => $modulesString]);
 		}
 		catch (Exception $e) {
-			$error = JUri::getInstance() . ' :: USER ID : ' . $user->id . '\n -> ' . $query;
-			JLog::add($error, JLog::ERROR, 'com_emundus');
+			$error = Uri::getInstance() . ' :: USER ID : ' . $user->id . '\n -> ' . $query;
+			Log::add($error, Log::ERROR, 'com_emundus');
 			echo json_encode((object) ['status' => false, 'msg' => "Error"]);
 			exit;
 		}
@@ -682,60 +711,37 @@ class modEmundusQueryBuilderHelper
 	/**
 	 * Create pdf with images of selected graphs
 	 */
-	public function convertPdfAjax()
-	{
-		$eMConfig             = JComponentHelper::getParams('com_emundus');
-		$gotenberg_activation = $eMConfig->get('gotenberg_activation', 1);
-		$gotenberg_url        = $eMConfig->get('gotenberg_url', 'http://localhost:3000');
-		$res                  = new stdClass();
+	public static function convertPdfAjax() {
+		$response = ['status' => false, 'msg' => 'Error'];
 
-		if ($gotenberg_activation !== '1') {
-			$res->status = false;
-			$res->msg    = 'Please activate Gotenberg in eMundus config.';
+		$jinput = Factory::getApplication()->input;
+		$dom = $jinput->get('src', '','RAW');
 
-			return json_encode($res);
+		try {
+			$doc = new DOMDocument();
+			$doc->loadHTML($dom);
+			$doc->saveHTMLFile(JPATH_ROOT . '/tmp/tmp_export_graph.html');
+			$src = JPATH_ROOT . '/tmp/tmp_export_graph.html';
+		} catch (Exception $e) {
+			$src = '';
 		}
 
-		$fichier = JPATH_BASE;
-
-		$jinput = JFactory::getApplication()->input;
-		$src    = $jinput->get('src', '', 'RAW');
-
-		$doc = new DOMDocument();
-		@$doc->loadHTML($src);
-		$imgList = $doc->getElementsBytagName('div');
-		for ($i = 0; $i < count($imgList); $i++) {
-			file_put_contents($fichier . DS . "tmp" . DS . 'image' . $i . ".svg", utf8_decode((new modEmundusQueryBuilderHelper)->getInnerHtml($imgList->item($i))));
-			$oldNode = $imgList->item($i)->firstChild;
-			$imgList->item($i)->removeChild($oldNode);
-			$newNode = $doc->createElement("img");
-			$newNode->setAttribute('src', $fichier . DS . "tmp" . DS . 'image' . $i . ".svg");
-			$imgList->item($i)->appendChild($newNode);
+		if (!empty($src)) {
+			if (!class_exists('EmundusModelExport')) {
+				require_once(JPATH_ROOT . '/components/com_emundus/models/export.php');
+			}
+			$m_export = new EmundusModelExport();
+			$response = $m_export->toPdf($src, JPATH_ROOT . '/tmp/Graph.pdf', 'html');
+			unlink(JPATH_ROOT . '/tmp/tmp_export_graph.html');
 		}
 
-		$index = DocumentFactory::makeFromString("index.html", '<html><body style="width:10%;">' . $src . '</body></html>');
-
-		$client  = new Client($gotenberg_url, new \Http\Adapter\Guzzle6\Client());
-		$request = new HTMLRequest($index);
-		$request->setPaperSize(Request::A4);
-		$request->setMargins(Request::NO_MARGINS);
-		$dest = $fichier . DS . "tmp" . DS . 'Graph.pdf';
-		$client->store($request, $dest);
-
-		for ($i = 0; $i < count($imgList); $i++) {
-			unlink($fichier . DS . "tmp" . DS . 'image' . $i . ".svg");
-		}
-
-		$res->status = true;
-		$res->msg    = 'It\'s ok';
-
-		return json_encode($res);
+		return json_encode($response);
 	}
 
 	/**
 	 * Delete pdf in tmp folder
 	 */
-	public function deleteFileAjax()
+	public static function deleteFileAjax()
 	{
 		unlink(JPATH_BASE . DS . "tmp" . DS . "Graph.pdf");
 

@@ -21,6 +21,17 @@ jimport('joomla.form.formfield');
  */
 class JFormFieldJutranslation extends JFormField
 {
+
+    /**
+     * Get label
+     *
+     * @return string
+     */
+    protected function getLabel()
+    {
+        return '';
+    }
+
     /**
      * Ju Translation input
      *

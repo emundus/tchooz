@@ -1,20 +1,20 @@
 <template>
-  <div>
-    <a class="em-pointer em-profile-color em-text-underline" @click="addNewForm">{{ translate('COM_EMUNDUS_ONBOARD_NO_FORM_FOUND_ADD_FORM') }}</a>
-
-    <div class="em-mb-4 em-mt-16 em-text-color">{{ ChooseForm }} :</div>
-    <div class="em-mb-4">
-      <select id="select_profile" v-model="$props.profileId" @change="updateProfileCampaign">
-        <option v-for="(profile, index) in profiles" :key="index" :value="profile.id">
+  <div id="addFormulaireContent">
+    <div class="tw-mb-1 tw-mt-4 em-text-color">{{ translate("COM_EMUNDUS_ONBOARD_CHOOSE_FORM") }} :</div>
+    <div class="tw-mb-6 tw-flex tw-flex-col tw-items-start">
+      <select id="select_profile" class="!tw-mb-1" v-model="selectedProfileId" @change="updateProfileCampaign">
+        <option v-for="profile in profiles" :key="profile.id" :value="profile.id">
           {{ profile.form_label }}
         </option>
       </select>
+      <a id="editCurrentForm" class="tw-cursor-pointer em-profile-color em-text-underline" @click="formbuilder">{{ translate('COM_EMUNDUS_ONBOARD_EDIT_FORM') }}</a>
     </div>
-    <a class="em-pointer em-profile-color em-text-underline" @click="formbuilder">{{ translate('COM_EMUNDUS_ONBOARD_EDIT_FORM') }}</a>
+
+    <a id="addNewForm" class="tw-cursor-pointer em-profile-color tw-underline" @click="addNewForm">{{ translate('COM_EMUNDUS_ONBOARD_NO_FORM_FOUND_ADD_FORM') }}</a>
 
     <hr/>
     <h5>{{ translate('COM_EMUNDUS_FORM_PAGES_PREVIEW') }}</h5>
-    <div class="em-flex-row em-flex-wrap">
+    <div id="formPagesReview" class="tw-flex tw-items-center em-flex-wrap">
       <div v-for="form in fabrikFormList" :key="form.id"
            class="card-wrapper em-mr-32"
            :title="form.label"
@@ -27,9 +27,9 @@
       </div>
     </div>
 
-    <div v-if="documentsList.length > 0">
+    <div id="formAttachments" v-if="documentsList.length > 0">
       <h5 class="em-mt-12">{{ translate('COM_EMUNDUS_FORM_ATTACHMENTS_PREVIEW') }}</h5>
-      <div class="em-flex-row">
+      <div class="tw-flex tw-items-center">
         <div v-for="document in documentsList" :key="document.id"
              class="card-wrapper em-mr-32"
              :title="document.label"
@@ -49,16 +49,15 @@
 </template>
 
 <script>
-import FormCarrousel from "../../components/Form/FormCarrousel";
-import settingsService from '../../../src/services/settings';
-import axios from "axios";
-
-const qs = require("qs");
-import FormBuilderPreviewForm from "@/components/FormBuilder/FormBuilderPreviewForm.vue";
-import FormBuilderPreviewAttachments from "@/components/FormBuilder/FormBuilderPreviewAttachments";
+import FormBuilderPreviewForm from '@/components/FormBuilder/FormBuilderPreviewForm.vue';
+import FormBuilderPreviewAttachments from '@/components/FormBuilder/FormBuilderPreviewAttachments.vue';
+import settingsService from '@/services/settings.js';
+import formService from '@/services/form.js';
+import campaignService from '@/services/campaign.js';
+import {useGlobalStore} from "@/stores/global.js";
 
 export default {
-  name: "addFormulaire",
+  name: 'addFormulaire',
 
   props: {
     profileId: String,
@@ -70,30 +69,27 @@ export default {
   components: {
     FormBuilderPreviewAttachments,
     FormBuilderPreviewForm,
-    FormCarrousel
   },
 
   data() {
     return {
-      ChooseForm: this.translate("COM_EMUNDUS_ONBOARD_CHOOSE_FORM"),
-      AddForm: this.translate("COM_EMUNDUS_ONBOARD_ADD_FORM"),
-      EmitIndex: "0",
+      selectedProfileId: 0,
+      EmitIndex: '0',
       formList: [],
       documentsList: [],
       loading: false,
 
       form: {
-        label: "Nouveau formulaire",
-        description: "",
+        label: 'Nouveau formulaire',
+        description: '',
         published: 1
       },
-
-      formdescription: this.translate("COM_EMUNDUS_ONBOARD_FORMDESCRIPTION")
     };
   },
   created() {
-    this.getForms(this.profileId);
-    this.getDocuments(this.profileId);
+    this.selectedProfileId = this.profileId;
+    this.getForms(this.selectedProfileId);
+    this.getDocuments(this.selectedProfileId);
   },
   methods: {
     getEmitIndex(value) {
@@ -101,85 +97,55 @@ export default {
     },
     getForms(profile_id) {
       this.loading = true;
-      axios({
-        method: "get",
-        url:
-            "index.php?option=com_emundus&controller=form&task=getFormsByProfileId",
-        params: {
-          profile_id: profile_id
-        },
-        paramsSerializer: params => {
-          return qs.stringify(params);
-        }
-      })
-          .then(response => {
-            this.formList = response.data.data;
-            this.loading = false;
-          })
-          .catch(e => {
-            console.log(e);
-          });
+
+      formService.getFormsByProfileId(profile_id)
+        .then(response => {
+          this.formList = response.data.data;
+          this.loading = false;
+        })
+        .catch(e => {
+          console.log(e);
+        });
     },
 
     getDocuments(profile_id) {
-      axios({
-        method: "get",
-        url: "index.php?option=com_emundus&controller=form&task=getDocuments",
-        params: {
-          pid: profile_id,
-        },
-        paramsSerializer: params => {
-          return qs.stringify(params);
+      formService.getDocuments(profile_id).then(response => {
+        if (response.status && response.data) {
+          this.documentsList = response.data;
+        } else {
+          this.documentsList = [];
         }
-      }).then(response => {
-        this.documentsList = response.data.data;
       });
     },
 
     redirectJRoute(link) {
-      settingsService.redirectJRoute(link);
+      settingsService.redirectJRoute(link,useGlobalStore().getCurrentLang);
     },
 
     addNewForm() {
       this.loading = true;
-      axios({
-        method: "post",
-        url: "index.php?option=com_emundus&controller=form&task=createform",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: qs.stringify({body: this.form})
-      }).then(response => {
+
+      formService.createForm({body: JSON.stringify(this.form)}).then(response => {
         this.loading = false;
-        this.$props.profileId = response.data.data;
-        window.location.href = '/'+response.data.redirect;
+        this.$props.profileId = response.data;
+        window.location.href = '/' + response.redirect;
       }).catch(error => {
         console.log(error);
       });
     },
 
     updateProfileCampaign() {
-      axios({
-        method: "post",
-        url: "index.php?option=com_emundus&controller=campaign&task=updateprofile",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: qs.stringify({
-          profile: this.profileId,
-          campaign: this.campaignId
-        })
-      }).then(() => {
-        this.getForms(this.profileId);
-        this.getDocuments(this.profileId);
-        this.$emit("profileId", this.profileId);
-      })
+      campaignService.updateProfile(this.selectedProfileId, this.campaignId).then(() => {
+        this.getForms(this.selectedProfileId);
+        this.getDocuments(this.selectedProfileId);
+        this.$emit('profileId', this.selectedProfileId);
+      });
     },
 
     formbuilder(index) {
       index = 0;
       this.redirectJRoute('index.php?option=com_emundus&view=form&layout=formbuilder&prid=' +
-          this.profileId +
+          this.selectedProfileId +
           '&index=' +
           index +
           '&cid=' +
@@ -194,7 +160,7 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
+<style scoped lang='scss'>
 .card-wrapper {
   width: 150px;
 

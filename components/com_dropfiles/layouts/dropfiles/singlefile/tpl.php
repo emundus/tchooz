@@ -22,40 +22,54 @@ $target          = ((int) $displayData['componentParams']->get('usegoogleviewer'
 ?>
 <?php if (!empty($displayData['file'])) : ?>
     <div class="dropfiles-content dropfiles-file dropfiles-single-file" data-file="<?php echo $displayData['file']->id; ?>">
-        <div class="dropfiles-file-link dropfiles_downloadlink">
-            <a class="noLightbox downloadlink"
-               href="<?php echo $displayData['file']->link; ?>"
-               data-id="<?php echo $displayData['file']->id; ?>"
-               title="<?php echo $displayData['file']->title; ?>">
-                <span class="droptitle"><?php echo $displayData['file']->title; ?></span><br/>
-                <span class="dropinfos">
-                                            <?php if ($showsize === 1) : ?>
-                                                <b><?php echo JText::_('COM_DROPFILES_DEFAULT_FRONT_SIZE'); ?>: </b>
-                                                <?php echo DropfilesFilesHelper::bytesToSize($displayData['file']->size); ?>
-                                            <?php endif; ?>
-                    <b><?php echo JText::_('COM_DROPFILES_DEFAULT_FRONT_FORMAT'); ?>: </b>
-                    <?php echo strtoupper($displayData['file']->ext); ?>
+        <?php if (!isset($displayData['file']->openpdflink) && !isset($displayData['file']->viewerlink)) { ?>
+            <a class="dropfiles-file-link dropfiles_downloadlink dropfiles_noPreview" href="<?php echo $displayData['file']->link; ?>" title="<?php echo $displayData['file']->title; ?>">
+                <div class="noLightbox downloadlink" data-id="<?php echo $displayData['file']->id; ?>">
+                    <span class="droptitle"><?php echo $displayData['file']->title; ?></span><br/>
+                    <span class="dropinfos">
+                        <?php if ($showsize === 1) : ?>
+                            <b><?php echo JText::_('COM_DROPFILES_DEFAULT_FRONT_SIZE'); ?>: </b>
+                            <?php echo DropfilesFilesHelper::bytesToSize($displayData['file']->size); ?>
+                        <?php endif; ?>
+                        <b><?php echo JText::_('COM_DROPFILES_DEFAULT_FRONT_FORMAT'); ?>: </b>
+                        <?php echo strtoupper($displayData['file']->ext); ?>
                     </span>
-
-            </a><br>
-            <?php if (isset($displayData['file']->openpdflink)) { ?>
-                <a href="<?php echo $displayData['file']->openpdflink; ?>" class="noLightbox openlink"
-                   target="_blank">
-                    <?php echo JText::_('COM_DROPFILES_DEFAULT_FRONT_PREVIEW'); ?>
-                </a>
-            <?php } else {
-                if (isset($displayData['file']->viewerlink)) { ?>
-                    <a data-id="<?php echo $displayData['file']->id; ?>"
-                       data-catid="<?php echo $displayData['category']->id; ?>"
-                       data-file-type="<?php echo $displayData['file']->ext; ?>"
-                       class="noLightbox openlink <?php echo $usegoogleviewer; ?>"
-                        <?php echo $target; ?>
-                       href="<?php echo $displayData['file']->viewerlink; ?>">
+                </div>
+            </a>
+        <?php } else { ?>
+            <div class="dropfiles-file-link dropfiles_downloadlink">
+                <a class="noLightbox downloadlink"
+                   href="<?php echo $displayData['file']->link; ?>"
+                   data-id="<?php echo $displayData['file']->id; ?>"
+                   title="<?php echo $displayData['file']->title; ?>">
+                    <span class="droptitle"><?php echo $displayData['file']->title; ?></span><br/>
+                    <span class="dropinfos">
+                        <?php if ($showsize === 1) : ?>
+                            <b><?php echo JText::_('COM_DROPFILES_DEFAULT_FRONT_SIZE'); ?>: </b>
+                            <?php echo DropfilesFilesHelper::bytesToSize($displayData['file']->size); ?>
+                        <?php endif; ?>
+                        <b><?php echo JText::_('COM_DROPFILES_DEFAULT_FRONT_FORMAT'); ?>: </b>
+                        <?php echo strtoupper($displayData['file']->ext); ?>
+                    </span>
+                </a><br>
+                <?php if (isset($displayData['file']->openpdflink)) { ?>
+                    <a href="<?php echo $displayData['file']->openpdflink; ?>" class="noLightbox openlink"
+                       target="_blank">
                         <?php echo JText::_('COM_DROPFILES_DEFAULT_FRONT_PREVIEW'); ?>
                     </a>
-                <?php }
-            } ?>
-
-        </div>
+                <?php } else {
+                    if (isset($displayData['file']->viewerlink)) { ?>
+                        <a data-id="<?php echo $displayData['file']->id; ?>"
+                           data-catid="<?php echo $displayData['category']->id; ?>"
+                           data-file-type="<?php echo $displayData['file']->ext; ?>"
+                           class="noLightbox openlink <?php echo $usegoogleviewer; ?>"
+                            <?php echo $target; ?>
+                           href="<?php echo $displayData['file']->viewerlink; ?>">
+                            <?php echo JText::_('COM_DROPFILES_DEFAULT_FRONT_PREVIEW'); ?>
+                        </a>
+                    <?php }
+                } ?>
+            </div>
+        <?php } ?>
     </div>
 <?php endif; ?>

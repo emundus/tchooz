@@ -29,7 +29,7 @@ requirejs(['fab/fabrik'], function () {
                     if (element.plugin === 'fabrikcheckbox') {
                         document.querySelector('.fb_el_'+element.baseElementId + ' .fabrikErrorMessage').innerHTML = Joomla.JText._('PLEASE_CHECK_THIS_FIELD');
                     } else {
-                        document.querySelector('#' + element.baseElementId).style.borderColor = 'var(--red-500)';
+                        document.querySelector('#' + element.baseElementId).style.borderColor = 'var(--red-600)';
                         addErrorIcon(element);
                     }
                 } else {
@@ -75,7 +75,9 @@ requirejs(['fab/fabrik'], function () {
     function removeFabrikFormSkeleton() {
         let header = document.querySelector('.page-header');
         if (header) {
-            document.querySelector('.page-header h2').style.opacity = 1;
+            if(header.querySelector('h1')) {
+                document.querySelector('.page-header h1').style.opacity = 1;
+            }
             header.classList.remove('skeleton');
         }
         let intro = document.querySelector('.em-form-intro');
@@ -214,7 +216,7 @@ requirejs(['fab/fabrik'], function () {
         errorIcon.classList.add('material-icons');
         errorIcon.classList.add('registration-error-icon');
         errorIcon.innerHTML = 'error';
-        errorIcon.style.color = 'var(--red-500)';
+        errorIcon.style.color = 'var(--red-600)';
         errorIcon.style.position = 'absolute';
         if (element.element.type === 'password') {
             errorIcon.style.right = '32px';

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -53,6 +53,11 @@ window.hikashop.ready(function(){
 		";
 		$doc = JFactory::getDocument();
 		$doc->addScriptDeclaration( $js );
-		return JHTML::_('select.genericlist',   $this->values, $map, 'class="custom-select" size="1" onChange="hikashopLoadParent(this.value);"', 'value', 'text', $value, 'limit_parent_select' );
+		$conditions = array(
+			'IS' => JText::_('EQUAL_TO'),
+			'IS NOT' => JText::_('NOT_EQUAL_TO'),
+		);
+		$condition = JHTML::_('select.genericlist', $conditions, 'field_options[limit_to_parent_condition]', 'class="custom-select" size="1"', 'value', 'text', @$object->field_options['limit_to_parent_condition'], 'limit_parent_select_condition' );
+		return JHTML::_('select.genericlist',   $this->values, $map, 'class="custom-select" size="1" onChange="hikashopLoadParent(this.value);"', 'value', 'text', $value, 'limit_parent_select' ).$condition;
 	}
 }

@@ -17,6 +17,7 @@ jimport('joomla.application.component.controller');
 use Joomla\CMS\Factory;
 
 use GuzzleHttp\Client as GuzzleClient;
+use Joomla\CMS\MVC\Controller\BaseController;
 
 /**
  * eMundus Component Controller
@@ -24,13 +25,21 @@ use GuzzleHttp\Client as GuzzleClient;
  * @package    Joomla
  * @subpackage Components
  */
-class EmundusControllerWebhook extends JControllerLegacy
+class EmundusControllerWebhook extends BaseController
 {
 
 	protected $app;
 
 	private $m_files;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     \JController
+	 * @since   1.0.0
+	 */
 	public function __construct(array $config = array())
 	{
 		parent::__construct($config);

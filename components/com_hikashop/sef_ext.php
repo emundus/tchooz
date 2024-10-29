@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -28,9 +28,15 @@ class sef_hikashop {
 				$checkoutSef=$config->get('checkout_sef_name','checkout');
 				if(empty($categorySef)){
 					$categorySef='';
+				} else {
+					if(ctype_upper($categorySef))
+						$categorySef = JText::_($categorySef);
 				}
 				if(empty($productSef)){
 					$productSef='';
+				} else {
+					if(ctype_upper($productSef))
+						$productSef = JText::_($productSef);
 				}
 
 				if(isset($query['ctrl']) && isset($query['task'])){

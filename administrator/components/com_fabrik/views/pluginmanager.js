@@ -231,6 +231,11 @@ define(['jquery', 'fab/fabrik'], function (jQuery, Fabrik) {
                 maxTitleChars: 50,
                 fixed        : false
             });
+            
+            /* Initialize any showons loaded by the plugin */  
+            document.getElementById('adminForm').dispatchEvent(new CustomEvent("joomla:updated", {bubbles: true, cancelable: false}));      
+            //Joomla.Showon.initialise(document.getElementById('adminForm'));
+
         },
 
         /**

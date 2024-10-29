@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -56,15 +56,51 @@ class hikashopGeolocationClass extends hikashopClass {
 				return $this->ipinfodb($ip);
 			case 'geoplugin':
 				return $this->geoplugin($ip);
+			case 'ip2location':
+				return $this->ip2location($ip);
 			case 'both':
 			default:
 				$result = $this->geoplugin($ip);
+				if(empty($result)){
+					$result = $this->ip2location($ip);
+				}
 				if(empty($result)){
 					$result = $this->ipinfodb($ip);
 				}
 				break;
 		}
 		return $result;
+	}
+
+	function ip2location($ip){
+		$api_key = $this->params->get('ip2location_api_key', '');
+		if(empty($api_key))
+			return false;
+
+		try {
+			require HIKASHOP_ROOT.'plugins/system/hikashopgeolocation/vendor/autoload.php';
+			$config = new \IP2LocationIO\Configuration($api_key);
+			$ip2locationio = new \IP2LocationIO\IPGeolocation($config);
+
+			$response = $ip2locationio->lookup($ip);
+		}catch(Exception $e) {
+			$app = JFactory::getApplication();
+			$app->enqueueMessage($e->getMessage(), 'error');
+			return false;
+		}
+
+		if(empty($response)) {
+			return false;
+		}
+		if(empty($response->country_code) || $response->country_code == '-') {
+			if(!empty($response->error_message)) {
+				$app = JFactory::getApplication();
+				$app->enqueueMessage($response->error_message, 'error');
+			}
+			return false;
+		}
+		$response->countryCode = $response->country_code;
+		return $response;
 	}
 
 	function geoplugin($ip){

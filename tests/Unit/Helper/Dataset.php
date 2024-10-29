@@ -33,6 +33,7 @@ use Exception;
 use JFactory;
 use JLog;
 use Joomla\CMS\Factory;
+use Joomla\CMS\User\UserFactoryInterface;
 
 class Dataset
 {
@@ -132,10 +133,75 @@ class Dataset
 		return $fnum;
 	}
 
-	public function createSampleTag(){
+	public function deleteSampleFile($fnum)
+	{
+		$deleted = false;
+		if (!empty($fnum)) {
+			$query = $this->db->getQuery(true);
+
+			$query->delete('#__emundus_campaign_candidature')
+				->where('fnum = ' . $this->db->quote($fnum));
+
+			$this->db->setQuery($query);
+			$deleted = $this->db->execute();
+		}
+
+		return $deleted;
+	}
+
+	public function createSampleTag()
+	{
 		$m_settings = new EmundusModelSettings;
 
 		return $m_settings->createTag()->id;
+	}
+
+	public function deleteSampleTag($id)
+	{
+		$deleted = false;
+		if (!empty($id)) {
+			$query = $this->db->getQuery(true);
+
+			$query->delete('#__emundus_setup_action_tag')
+				->where('id = ' . $id);
+
+			$this->db->setQuery($query);
+			$deleted = $this->db->execute();
+		}
+
+		return $deleted;
+	}
+
+	public function createSampleComment($fnum, $aid, $uid, $reason = 'Test unitaire', $comment_body = 'Commentaire pour un test unitaire')
+	{
+		if(!class_exists('EmundusModelApplication')){
+			include_once(JPATH_SITE . '/components/com_emundus/models/application.php');
+		}
+		$m_application = new \EmundusModelApplication;
+
+		$row['fnum'] = $fnum;
+		$row['applicant_id'] = $aid;
+		$row['user_id'] = $uid;
+		$row['reason'] = $reason;
+		$row['comment_body'] = $comment_body;
+
+		return $m_application->addComment($row);
+	}
+
+	public function deleteSampleComment($id)
+	{
+		$deleted = false;
+		if (!empty($id)) {
+			$query = $this->db->getQuery(true);
+
+			$query->delete('#__emundus_comments')
+				->where('id = ' . $id);
+
+			$this->db->setQuery($query);
+			$deleted = $this->db->execute();
+		}
+
+		return $deleted;
 	}
 
 	public function createSampleStatus(){
@@ -144,9 +210,9 @@ class Dataset
 		return $m_settings->createStatus()->step;
 	}
 
-	public function createSampleForm($prid = 9, $label = ['fr' => 'Formulaire Tests unitaires', 'en' => 'form for unit tests'], $intro = ['fr' => 'Ce formulaire est un formulaire de test eMundus, utilisé uniquement pour tester le bon fonctionnement de la plateforme.', 'en' => '']) {
+	public function createSampleForm($prid = 9, $label = ['fr' => 'Formulaire Tests unitaires', 'en' => 'form for unit tests'], $intro = ['fr' => 'Ce formulaire est un formulaire de test eMundus, utilisé uniquement pour tester le bon fonctionnement de la plateforme.', 'en' => ''], $user = 1) {
 		$m_formbuilder = new EmundusModelFormbuilder;
-		return $m_formbuilder->createFabrikForm($prid, $label, $intro);
+		return $m_formbuilder->createFabrikForm($prid, $label, $intro, '', $user);
 	}
 
 	public function createSampleGroup() {
@@ -237,11 +303,10 @@ class Dataset
 		return $deleted;
 	}
 
-	public function createSampleProgram($label = 'Programme Test Unitaire')
+	public function createSampleProgram($label = 'Programme Test Unitaire',$user_id = 1)
 	{
 		$m_programme = new EmundusModelProgramme;
-		$program = $m_programme->addProgram(['label' => $label, 'published' => 1]);
-		return $program;
+		return $m_programme->addProgram(['label' => $label, 'published' => 1],Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id));
 	}
 
 	public function deleteSampleProgram($program_id) {
@@ -260,7 +325,7 @@ class Dataset
 		return $deleted;
 	}
 
-	public function createSampleCampaign($program)
+	public function createSampleCampaign($program, $user_id = 1)
 	{
 		$campaign_id = 0;
 
@@ -272,7 +337,7 @@ class Dataset
 			$end_date = new DateTime();
 			$end_date->modify('+1 year');
 			$campaign_id = $m_campaign->createCampaign([
-				'label' =>  json_encode(['fr' => 'Campagne test unitaire', 'en' => 'Campagne test unitaire']),
+				'label' =>  json_encode(['fr' => 'Campagne test unitaire '.rand(1,9999), 'en' => 'Campagne test unitaire '.rand(1,9999)]),
 				'description' => 'Lorem ipsum',
 				'short_description' => 'Lorem ipsum',
 				'start_date' => $start_date->format('Y-m-d H:i:s'),
@@ -282,7 +347,7 @@ class Dataset
 				'year' => '2022-2023',
 				'published' => 1,
 				'is_limited' => 0,
-				'user' => 1
+				'user' => $user_id
 			]);
 		}
 
@@ -324,6 +389,22 @@ class Dataset
 		}
 
 		return $sample_id;
+	}
+
+	public function deleteSampleAttachment($aid) {
+		$deleted = false;
+		if (!empty($aid)) {
+
+			$query = $this->db->getQuery(true);
+
+			$query->delete('#__emundus_setup_attachments')
+				->where('id = ' . $aid);
+
+			$this->db->setQuery($query);
+			$deleted = $this->db->execute();
+		}
+
+		return $deleted;
 	}
 
 	public function createSampleLetter($attachment_id, $template_type = 2, $programs = [], $status = [], $campaigns = []) {
@@ -393,8 +474,26 @@ class Dataset
 		return $letter_id;
 	}
 
+	public function deleteSampleLetter($letter_id)
+	{
+		$deleted = false;
+		if (!empty($letter_id)) {
+
+			$query = $this->db->getQuery(true);
+
+			$query->delete('#__emundus_setup_letters')
+				->where('id = ' . $letter_id);
+
+			$this->db->setQuery($query);
+			$deleted = $this->db->execute();
+		}
+
+		return $deleted;
+
+	}
+
 	public function createSampleUpload($fnum, $campaign_id, $user_id = 95, $attachment_id = 1) {
-		$inserted = false;
+		$upload_id = 0;
 
 		if (!empty($fnum)) {
 			$filename = $user_id . '-' . $campaign_id . '-unittest' . rand(0, 100) . '.pdf';
@@ -409,14 +508,31 @@ class Dataset
 
 			try {
 				$this->db->setQuery($query);
-				$inserted = $this->db->execute();
+				if($this->db->execute()) {
+					$upload_id = $this->db->insertid();
+				}
 			} catch (Exception $e) {
-				$inserted = false;
 				error_log('attachment insertion failed');
 			}
 		}
 
-		return $inserted;
+		return $upload_id;
+	}
+
+	public function deleteSampleUpload($upload_id) {
+		$deleted = false;
+		if (!empty($upload_id)) {
+
+			$query = $this->db->getQuery(true);
+
+			$query->delete('#__emundus_uploads')
+				->where('id = ' . $upload_id);
+
+			$this->db->setQuery($query);
+			$deleted = $this->db->execute();
+		}
+
+		return $deleted;
 	}
 
 	public function  duplicateSampleProfile($profile_id)

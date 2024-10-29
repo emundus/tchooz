@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -652,8 +652,26 @@ foreach($results as $i => $oneResult){
 					$field->field_value = $this->explodeValues($field->field_value);
 				$field->field_value_old = $field->field_value;
 			}
-			$this->database->setQuery($field->field_options['mysql_query']);
-			$values = $this->database->loadObjectList();
+
+			$query = $field->field_options['mysql_query'];
+			if(strpos($query,'{')) {
+				$user = hikashop_loadUser(true);
+				if(!empty($user)) {
+					foreach(get_object_vars($user) as $key => $val) {
+						if(!is_numeric($val)) {
+							if(is_string($val))
+								$val = $this->database->Quote($val);
+							else
+								continue;
+						}
+						$query = str_replace('{'.$key.'}', $val, $query);
+					}
+				}
+			}
+			if(strpos($query,'{') === false) {
+				$this->database->setQuery($query);
+				$values = $this->database->loadObjectList();
+			}
 			$field->field_value = array();
 			if(!empty($values)) {
 				foreach($values as $v) {
@@ -1005,18 +1023,28 @@ foreach($results as $i => $oneResult){
 					$field->field_options['parent_value'] = array();
 				if(!is_array($field->field_options['parent_value']))
 					$field->field_options['parent_value'] = array($field->field_options['parent_value']);
+				$condition = @$field->field_options['limit_to_parent_condition'];
 				$skip = false;
 				foreach($fields as $otherField) {
 					if($otherField->field_namekey != $parent)
 						continue;
-					$valid = true;
+					if($condition != 'IS NOT')
+						$valid = true;
+					else
+						$valid = false;
 					foreach($field->field_options['parent_value'] as $neededValue) {
 						if(is_array($formData[$parent])){
 							if(!in_array($neededValue,	$formData[$parent])) {
-								$valid = false;
+								if($condition != 'IS NOT')
+									$valid = false;
+								else
+									$valid = true;
 							}
 						} elseif($neededValue != $formData[$parent]) {
-							$valid = false;
+							if($condition != 'IS NOT')
+								$valid = false;
+							else
+								$valid = true;
 						}
 					}
 
@@ -1255,6 +1283,7 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 					$js .= "\nwindow.hikashopFieldsJs['".$type.$suffix_type."']['".$namekey."']['".$value."']['".$field->field_namekey."'] = '".$field->field_namekey."';";
 				}
 			}
+			$js .= "\nwindow.hikashopFieldsJs['".$type.$suffix_type."']['".$namekey."']['condition'] = '".$parent->condition."';";
 		}
 
 		$js .= $this->getLoadJSForToggle($parents, $data, $id, $prefix, $options);
@@ -1309,7 +1338,11 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 				$obj = new stdClass();
 				$obj->type = $field->field_table;
 				$obj->childs = array();
+				$obj->condition = 'IS';
 				$parents[$parent] = $obj;
+			}
+			if(!empty($field->field_options['limit_to_parent_condition']) && $field->field_options['limit_to_parent_condition'] != 'IS') {
+				$parents[$parent]->condition = 'IS NOT';
 			}
 
 			$parent_value = @$field->field_options['parent_value'];
@@ -1392,12 +1425,35 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 	function trans($name){
 		if(is_null($name))
 			return '';
-		$val = preg_replace('#[^a-z0-9]#i', '_', strtoupper($name));
-		$app = JFactory::getApplication();
-		if(hikashop_isClient('administrator') && strcmp(JText::_($val), strip_tags(JText::_($val))) !== 0)
+
+		$val = preg_replace('#[^a-z0-9]#i','_',strtoupper($name));
+
+		$trans_not_found = true;
+
+		if(!is_numeric($val)) {
+			$trans_value = JText::_($val);
+
+			$trans_not_found = strcmp($trans_value, $val) === 0;
+		}
+		if($trans_not_found) {
+			$val = preg_replace('#[^A-Z_0-9]#','',strtoupper($name));
+			$config = hikashop_config();
+			if((empty($val) || $config->get('non_latin_translation_keys', 0)) && !empty($name)) {
+				$val = 'T'.strtoupper(sha1($name));
+			} elseif(is_numeric($val)) {
+				$val = 'T'.$val;
+			}
+			$trans_value = JText::_($val);
+		}
+
+		$config = hikashop_config();
+		$translate = hikashop_isClient('administrator') && !$config->get('translate_HTML_value_in_backend_for_fields', 0);
+		$HTML_tags_found = strcmp($trans_value, strip_tags($trans_value)) !== 0;
+		if($translate && $HTML_tags_found)
 			$trans = $val;
 		else
-			$trans = JText::_($val);
+			$trans = $trans_value;
+
 		if($val == $trans)
 			$trans = $name;
 		return $trans;
@@ -1501,10 +1557,10 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 						hikashop_secureField($id);
 					if($val === '')
 						continue;
-					$fieldOptions[$column][$id] = $safeHtmlFilter->clean($val, 'string');
+					$fieldOptions[$column][$id] = trim($safeHtmlFilter->clean($val, 'string'));
 				}
 			} else {
-				$fieldOptions[$column] = $safeHtmlFilter->clean($value, 'string');
+				$fieldOptions[$column] = trim($safeHtmlFilter->clean($value, 'string'));
 			}
 		}
 
@@ -2188,9 +2244,9 @@ class hikashopFieldItem extends stdClass{
 				$cart_categories = $fieldClass->getCategories('order', $cart);
 
 				foreach($restricted_categories as $restricted_category){
-					if($field->field_with_sub_categories && in_array($restricted_category, $cart_categories['parents']))
+					if(!empty($cart_categories['parents']) && $field->field_with_sub_categories && in_array($restricted_category, $cart_categories['parents']))
 						$inCart = true;
-					else if(!$field->field_with_sub_categories && in_array($restricted_category, $cart_categories['originals']))
+					else if(!empty($cart_categories['originals']) && !$field->field_with_sub_categories && in_array($restricted_category, $cart_categories['originals']))
 						$inCart = true;
 				}
 			}
@@ -2632,57 +2688,86 @@ class hikashopFieldAjaxfile extends hikashopFieldItem {
 		if(!is_array($field->field_options)) {
 			$field->field_options = hikashop_unserialize($field->field_options);
 		}
+
+		$template = '{value}';
+		if(!empty($field->field_options['display_format'])) {
+			$template = $field->field_options['display_format'];
+		}
+
 		if(empty($field->field_options['multiple'])) {
 			if(empty($value))
 				return;
-			return '<p class="hikashop_custom_file_area">'.$this->_showOne($field, $value, $class).'</p>';
-		}
-
-		$html = '';
-		if(!empty($value)) {
-			$value = trim($value, '|');
-			$files = explode('|', $value);
-			$html = array();
-			foreach($files as $file) {
-				if(empty($file))
-					continue;
-				$html[] = '<p class="hikashop_custom_file_area">'.$this->_showOne($field, $file, $class).'</p>';
+			$html = $this->_showOne($field, $value, $class);
+		} else {
+			$html = '';
+			if(!empty($value)) {
+				$value = trim($value, '|');
+				$files = explode('|', $value);
+				$html = array();
+				foreach($files as $file) {
+					if(empty($file))
+						continue;
+					$html[] = $this->_showOne($field, $file, $class);
+				}
+				$html = implode('', $html);
 			}
-			$html = implode('', $html);
 		}
-		return $html;
+		return str_replace('{value}', $html, $template);
 	}
 
 	function _showOne(&$field, $value, $class = 'hikashop_custom_file_link') {
+		$template = '<p class="hikashop_custom_file_area"><a target="_blank" class="{class}" href="{url}">{name}</a>{description}</p>';
+		if(!empty($field->field_options['display_format_file'])) {
+			$template = $field->field_options['display_format_file'];
+		}
 		$download_link = 'order&task=download&field_table='.$field->field_table.'&field_namekey='.urlencode(base64_encode($field->field_namekey)).'&name='.urlencode(base64_encode($value));
-		if($class == 'admin_email')
-			return '<a target="_blank" class="'.$class.'" href="'.HIKASHOP_LIVE.'administrator/index.php?option=com_hikashop&ctrl='.$download_link.'">'.$value.'</a>';
-
-		if($class == 'user_email') {
+		$src = '';
+		$name = $value;
+		$override_name = hikashop_translate($name.'_NAME');
+		if($override_name != $name.'_NAME') {
+			$name = $override_name;
+		}
+		$description = '';
+		$override_description = hikashop_translate($description.'_DESCRIPTION');
+		if($override_description != $description.'_DESCRIPTION') {
+			$description = $override_description;
+		}
+		if($class == 'admin_email') {
+			$url = HIKASHOP_LIVE.'administrator/index.php?option=com_hikashop&ctrl='.$download_link;
+		} elseif($class == 'user_email') {
 			if(@$field->guest_mode)
 				return $value;
 
 			$app = JFactory::getApplication();
-			if(!hikashop_isClient('administrator'))
-				return '<a target="_blank" class="'.$class.'" href="'.hikashop_completeLink($download_link).'">'.$value.'</a>';
-			return '<a target="_blank" class="'.$class.'" href="'.HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl='.$download_link.'">'.$value.'</a>';
-		}
-
-		hikashop_loadJslib('opload');
-		if($this->mode == 'image') {
-			$thumbnail_x = 100;
-			$thumbnail_y = 100;
-			if(!empty($field->field_options['thumbnail_x'])) {
-				$thumbnail_x = $field->field_options['thumbnail_x'];
+			if(!hikashop_isClient('administrator')) {
+				$url = hikashop_completeLink($download_link);
+			} else {
+				$url = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl='.$download_link;
 			}
-			if(!empty($field->field_options['thumbnail_y'])) {
-				$thumbnail_y = $field->field_options['thumbnail_y'];
+		} else {
+			hikashop_loadJslib('opload');
+			if($this->mode == 'image') {
+				$thumbnail_x = 100;
+				$thumbnail_y = 100;
+				if(!empty($field->field_options['thumbnail_x'])) {
+					$thumbnail_x = $field->field_options['thumbnail_x'];
+				}
+				if(!empty($field->field_options['thumbnail_y'])) {
+					$thumbnail_y = $field->field_options['thumbnail_y'];
+				}
+				$src = hikashop_completeLink($download_link.'&thumbnail_x='.$thumbnail_x.'&thumbnail_y='.$thumbnail_y);
+				$url = hikashop_completeLink($download_link.'&thumbnail_x=0&thumbnail_y=0');
+				$name = htmlspecialchars($name, ENT_COMPAT, 'UTF-8');
+				$template = '<p class="hikashop_custom_file_area"><a target="_blank" class="{class}" href="{url}"><img class="{class}" src="{src}" alt="{name}" /></a>{description}</p>';
+				if(!empty($field->field_options['display_format_image'])) {
+					$template = $field->field_options['display_format_image'];
+				}
+			} else {
+				$url = hikashop_completeLink($download_link);
 			}
-			$thumbnail_link = hikashop_completeLink($download_link.'&thumbnail_x='.$thumbnail_x.'&thumbnail_y='.$thumbnail_y);
-			$main_link = hikashop_completeLink($download_link.'&thumbnail_x=0&thumbnail_y=0');
-			return '<a target="_blank" class="'.$class.'" href="'.$main_link.'"><img class="'.$class.'" src="'.$thumbnail_link.'" alt="'.htmlspecialchars($value, ENT_COMPAT, 'UTF-8').'" /></a>';
 		}
-		return '<a target="_blank" class="'.$class.'" href="'.hikashop_completeLink($download_link).'">'.$value.'</a>';
+		$html = str_replace(array('{class}', '{url}', '{value}', '{src}', '{name}', '{description}'), array($class, $url, $value, $src, $name, $description), $template);
+		return $html;
 	}
 
 	function check(&$field,&$value, $oldvalue) {
@@ -2771,9 +2856,11 @@ class hikashopFieldAjaxfile extends hikashopFieldItem {
 				}
 
 				$value = implode('|', $newvalue);
+				$value = trim($value, '|');
 			}
 		} else {
 			$return = $this->_checkOneFile($value, $oldvalue, $field);
+			$return = trim($return, '|');
 			if(!$return)
 				return $return;
 		}
@@ -2847,13 +2934,14 @@ class hikashopFieldAjaxfile extends hikashopFieldItem {
 			);
 		}
 
-		$ret->params->origin_url = hikashop_completeLink('order&task=download&field_table='.$field->field_table.'&field_namekey='.urlencode(base64_encode($field->field_namekey)).'&name='.urlencode(base64_encode($ret->params->file_path)));
+		$params = '&'.hikashop_getFormToken().'=1';
+		$ret->params->origin_url = hikashop_completeLink('order&task=download&field_table='.$field->field_table.'&field_namekey='.urlencode(base64_encode($field->field_namekey)).'&name='.urlencode(base64_encode($ret->params->file_path)).$params);
 
 		if($this->mode == 'image') {
 			$thumbnail_x = 100;
 			$thumbnail_y = 100;
-			$thumbnails_params = '&thumbnail_x='.$thumbnail_x.'&thumbnail_y='.$thumbnail_y;
-			$ret->params->thumbnail_url = hikashop_completeLink('order&task=download&field_table='.$field->field_table.'&field_namekey='.urlencode(base64_encode($field->field_namekey)).'&name='.urlencode(base64_encode($ret->params->file_path)).$thumbnails_params);
+			$params .= '&thumbnail_x='.$thumbnail_x.'&thumbnail_y='.$thumbnail_y;
+			$ret->params->thumbnail_url = hikashop_completeLink('order&task=download&field_table='.$field->field_table.'&field_namekey='.urlencode(base64_encode($field->field_namekey)).'&name='.urlencode(base64_encode($ret->params->file_path)).$params);
 		}
 	}
 

@@ -16,7 +16,7 @@ JText::script('MOD_EMUNDUS_FILTERS_PLEASE_SELECT');
 ?>
 
 <section id="mod_emundus_filters">
-    <span id="reset-all-filters" class="material-icons-outlined em-pointer" title="reset-all-filters">filter_alt_off</span>
+    <span id="reset-all-filters" class="material-symbols-outlined em-pointer" title="reset-all-filters">filter_alt_off</span>
     <input type="text" id="search" placeholder="<?= JText::_('SEARCH') ?>"/>
 
     <?php
@@ -31,7 +31,7 @@ JText::script('MOD_EMUNDUS_FILTERS_PLEASE_SELECT');
                         <div class="filter-header em-w-100 em-flex-row em-flex-space-between em-mb-8">
                             <label for="filter<?= $filter['id'] ?>" class="em-w-100"><?= $filter['label'] ?></label>
                             <?php if (!$filter['default']) : ?>
-                                <span class="material-icons-outlined em-pointer remove-filter" data-filteruid="<?= $filter['uid'] ?>">delete</span>
+                                <span class="material-symbols-outlined em-pointer remove-filter" data-filteruid="<?= $filter['uid'] ?>">delete</span>
                             <?php endif; ?>
                         </div>
                         <?php
@@ -79,8 +79,8 @@ JText::script('MOD_EMUNDUS_FILTERS_PLEASE_SELECT');
             </select>
         </div>
         <div class="actions em-mt-16">
-            <button id="apply-filters" class="em-primary-button"><?= JText::_('MOD_EMUNDUS_FILTERS_APPLY_FILTERS'); ?></button>
-            <button id="add-filter" class="em-secondary-button em-mt-16"><?= JText::_('MOD_EMUNDUS_FILTERS_ADD_FILTER'); ?></button>
+            <button id="apply-filters" class="tw-btn-primary"><?= JText::_('MOD_EMUNDUS_FILTERS_APPLY_FILTERS'); ?></button>
+            <button id="add-filter" class="tw-btn-secondary em-mt-16"><?= JText::_('MOD_EMUNDUS_FILTERS_ADD_FILTER'); ?></button>
         </div>
     <?php
     } else {

@@ -264,22 +264,40 @@ class DropfilesModelFrontfiles extends JModelList
     /**
      * Get file referent to category
      *
-     * @param integer|string $id_category   Category id
-     * @param array          $list_id_files List files id
-     * @param string         $ordering      Ordering
-     * @param string         $ordering_dir  Order direction
+     * @param integer|string $id_category    Category id
+     * @param array          $list_id_files  List files id
+     * @param string         $ordering       Ordering
+     * @param string         $ordering_dir   Order direction
+     * @param string         $showCategoryId Category id for showing
+     *
+     * @throws Exception Fire if errors
      *
      * @return array
      */
-    public function getFilesRef($id_category, $list_id_files, $ordering, $ordering_dir)
+    public function getFilesRef($id_category, $list_id_files, $ordering, $ordering_dir, $showCategoryId = null)
     {
+        if (!class_exists('DropfilesModelOptions')) {
+            JLoader::register('DropfilesModelOptions', JPATH_ADMINISTRATOR . '/components/com_dropfiles/models/options.php');
+        }
         $modelCate = JModelLegacy::getInstance('Category', 'dropfilesModel');
         $results = ($this->getListOfCate($id_category)) ? $this->getListOfCate($id_category) : array();
         $files = array();
+        $options = new DropfilesModelOptions();
+        $multipleFileOrdering = !is_null($showCategoryId) ? $options->get_option('dropfiles_custom_ordering_' . $showCategoryId) : null;
+        if (!is_null($multipleFileOrdering)) {
+            $multipleFileOrdering = (array) json_decode($multipleFileOrdering);
+        }
+
         foreach ($results as $result) {
             if (!in_array($result->id, $list_id_files)) {
                 continue;
             }
+
+            if (strval($ordering) === 'ordering' && is_array($multipleFileOrdering)
+                && !empty($multipleFileOrdering) && array_key_exists(strval($result->id), $multipleFileOrdering)) {
+                $result->ordering = intval($multipleFileOrdering[strval($result->id)]);
+            }
+
             $files[] = $result;
         }
 

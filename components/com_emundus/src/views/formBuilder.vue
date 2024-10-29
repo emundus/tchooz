@@ -1,145 +1,233 @@
 <template>
-  <div :id="'formBuilder'" class="em-w-100 em-h-100">
+  <div :id="'formBuilder'" class="tw-w-full tw-h-full">
     <modal
         :name="'formBuilder'"
-        height="auto"
+        height="100vh"
         transition="fade"
         :delay="100"
         :adaptive="true"
         :clickToClose="false"
+        ref="modal"
     >
-      <notifications
-          group="foo-velocity"
-          animation-type="velocity"
-          :speed="500"
-          position="bottom left"
-          :classes="'vue-notification-custom'"
-      />
-      <header class="em-flex-row em-flex-space-between">
-        <div class="right-actions">
-          <span id="go-back"
-                class="material-icons-outlined em-p-12-16 em-pointer"
-                @click="clickGoBack">
-            navigate_before
-          </span>
-        </div>
-        <span
-            class="em-font-size-14  em-font-weight-600 editable-data"
-            contenteditable="true"
-            ref="formTitle"
-            @focusout="updateFormTitle"
-            @keyup.enter="updateFormTitleKeyup"
-        >
-            {{ title }}
-          </span>
-        <div class="left-actions em-flex-row em-flex-space-between em-p-12-16">
+      <div v-if="this.globalStore.currentLanguage !== this.globalStore.defaultLang" class="tw-justify-center tw-bg-[#FEF6EE] tw-flex tw-items-center tw-gap-3 tw-p-2">
+        <span class="material-symbols-outlined text-[#EF681F]">warning_amber</span>
+        <span>{{ translate('COM_EMUNDUS_ONBOARD_FORMBUILDER_EDIT_DEFAULT_LANG') }}{{ defaultLangLabel }}</span>
+      </div>
+      <header class="tw-grid tw-grid-cols-3 tw-items-center">
+        <div class="right-actions tw-flex tw-items-center tw-justify-start tw-gap-2">
+          <p class="tw-flex tw-items-center tw-cursor-pointer" @click="clickGoBack">
+            <span id="go-back"
+                  class="material-symbols-outlined tw-text-neutral-600 tw-py-3 tw-pl-5 tw-pr-1 em-pointer">
+              navigate_before
+            </span>
+            {{ translate('COM_EMUNDUS_ACTIONS_BACK') }}
+          </p>
           <p v-if="lastSave" id="saved-at" class="em-font-size-14 em-main-500-color">
             {{ translate("COM_EMUNDUS_FORM_BUILDER_SAVED_AT") }} {{ lastSave }}
           </p>
         </div>
+        <span
+            class="tw-text-sm	tw-font-semibold editable-data tw-text-center"
+            contenteditable="true"
+            ref="formTitle"
+            @focusout="updateFormTitle"
+            @keyup.enter="updateFormTitleKeyup"
+            :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_FORM_TITLE_ADD')"
+        >
+            {{ title }}
+          </span>
+        <div class="tw-flex tw-flex-col tw-items-end">
+        <button class="tw-btn-primary tw-px-6 tw-py-3 tw-gap-3 em-w-auto" v-if="!previewForm && ['page','rules'].includes(showInSection)" @click="previewForm = true">
+          <span class="tw-text-white material-symbols-outlined">
+            remove_red_eye
+          </span>
+          <label class="tw-mb-0" for="previewform">{{ translate('COM_EMUNDUS_FORMBUILDER_GO_TO_PREVIEW') }}</label>
+        </button>
+          <button class="tw-btn-primary tw-px-6 tw-py-3 tw-gap-3 em-w-auto" v-if="previewForm" @click="previewForm = false">
+          <span class="tw-text-white material-symbols-outlined">
+            handyman
+          </span>
+            <label class="tw-mb-0" for="previewform">{{ translate('COM_EMUNDUS_FORMBUILDER_GO_BACK_FORMBUILDER') }}</label>
+          </button>
+        </div>
       </header>
-      <div v-if="principalContainer === 'default'" class="body em-flex-row em-flex-space-between">
-        <aside class="left-panel em-flex-row em-flex-start em-h-100">
-          <div class="tabs em-flex-column em-flex-start em-h-100">
-            <div class="tab" v-for="(tab,i) in displayedLeftPanels" :key="title + '_' + i"
-                 :class="{ active: tab.active }">
+
+      <div v-if="principalContainer === 'default'" class="body tw-flex tw-items-center tw-justify-between">
+        <aside class="left-panel tw-flex tw-justify-start tw-h-full tw-relative" v-show="!previewForm">
+          <div class="tabs tw-flex tw-flex-col tw-justify-start tw-h-full tw-p-3 tw-gap-3">
+            <div v-for="(tab,i) in displayedLeftPanels" :key="title + '_' + i"
+                 @click="setSectionShown(tab.code)"
+                 class="tw-flex tw-items-start tw-w-full tw-p-2 tw-cursor-pointer tw-rounded-lg tw-group tw-user-select-none"
+                 :class="tab.active ? 'tw-font-bold tw-text-profile-full tw-bg-profile-light'  : 'hover:tw-bg-gray-200'"
+                 :title="tab.title">
               <span
-                  class="material-icons-outlined em-p-16"
-                  @click="tab.url ? goTo(tab.url, 'blank') : selectTab(tab.title)"
+                  class="material-symbols-outlined tw-font-bold"
+                  :class="tab.active ? 'tw-text-profile-full' : ''"
               >
                 {{ tab.icon }}
               </span>
             </div>
           </div>
-          <div class="tab-content em-flex-start">
-            <form-builder-elements v-if="leftPanelActiveTab === 'Elements'" @element-created="onElementCreated" :form="currentPage" @create-element-lastgroup="createElementLastGroup">
-            </form-builder-elements>
-            <form-builder-document-formats
-                v-else-if="leftPanelActiveTab === 'Documents'"
-                :profile_id="profile_id"
-                @open-create-document="onEditDocument"
-            >
-            </form-builder-document-formats>
+
+          <div v-if="!previewForm && leftPanelActiveTab !== 'Rules' && (activeTab==='' || activeTab==='Elements')"
+               class="tab-content tw-justify-start tw-transition-all tw-duration-300" :class="minimizedLeft === true ? 'tw-max-w-0' : 'tw-max-w-md'"
+               @mouseover="showMinimizedLeft = true"
+               @mouseleave="showMinimizedLeft = false"
+          >
+            <transition name="slide-right" mode="out-in">
+              <form-builder-elements v-if="leftPanelActiveTab === 'Elements'" @element-created="onElementCreated" :form="currentPage" @create-element-lastgroup="createElementLastGroup">
+              </form-builder-elements>
+              <form-builder-document-formats
+                  v-else-if="leftPanelActiveTab === 'Documents'"
+                  :profile_id="profile_id"
+                  @open-create-document="onEditDocument"
+              >
+              </form-builder-document-formats>
+              <form-builder-rules-list
+                  v-else-if="leftPanelActiveTab === 'Rules' && this.showInSection !== 'rules-add'"
+                  :form="currentPage"
+                  @add-rule="addRule"
+              />
+              </transition>
           </div>
+          <div v-if="activeTab==='' || activeTab==='Elements'" class="tw-w-[16px]"
+               @mouseover="showMinimizedLeft = true"
+               @mouseleave="showMinimizedLeft = false">
+            <span class="material-symbols-outlined tw-absolute tw-right-[-12px] tw-top-[14px] !tw-text-xl/5 tw-bg-neutral-400 tw-rounded-full tw-cursor-pointer"
+                  :class="minimizedLeft ? 'tw-rotate-180' : ''"
+                  v-show="showMinimizedLeft === true || minimizedLeft"
+                  @click="handleSidebarSize('left')">chevron_left</span>
+          </div>
+
         </aside>
-        <section class="em-flex-column em-w-100 em-h-100" id="center_content">
+        <section v-if="!previewForm && (activeTab==='' || activeTab==='Elements')" class="tw-flex tw-flex-col tw-w-full tw-h-full" id="center_content">
           <transition name="fade" mode="out-in">
             <form-builder-page
-                ref="formBuilderPage"
                 v-if="currentPage && showInSection === 'page'"
                 :key="currentPage.id"
-                :profile_id="parseInt(profile_id)"
-                :page="currentPage"
+                ref="formBuilderPage"
                 :mode="mode"
+                :page="currentPage"
+                :profile_id="parseInt(profile_id)"
                 @open-element-properties="onOpenElementProperties"
                 @open-section-properties="onOpenSectionProperties"
                 @open-create-model="onOpenCreateModel"
                 @update-page-title="getPages(currentPage.id)"
             ></form-builder-page>
             <form-builder-document-list
-                ref="formBuilderDocumentList"
                 v-else-if="showInSection === 'documents'"
-                :profile_id="parseInt(profile_id)"
+                ref="formBuilderDocumentList"
                 :campaign_id="parseInt(campaign_id)"
+                :profile_id="parseInt(profile_id)"
                 @add-document="onOpenCreateDocument"
                 @edit-document="onEditDocument"
                 @delete-document="onDeleteDocument"
             ></form-builder-document-list>
+            <form-builder-rules
+                v-else-if="currentPage && showInSection === 'rules'"
+                :key="currentPage.id"
+                :mode="mode"
+                :page="currentPage"
+                @add-rule="addRule"
+            />
+            <form-builder-rules-add
+                v-else-if="currentPage && showInSection === 'rules-add'"
+                :key="currentPage.id"
+                :page="currentPage"
+                :mode="mode"
+                :type="ruleType"
+                :rule="currentRule"
+                @close-rule-add="showInSection = 'rules';showInRightPanel = 'hierarchy';"
+            />
+            <history
+                v-else-if="showInSection === 'history'"
+                class="tw-p-6"
+                extension="com_emundus.formbuilder"
+                :display-title="true"
+            />
+            <translations
+                v-else-if="currentPage && showInSection === 'translations'"
+                :key="currentPage.id"
+                class="tw-p-6"
+                :objectValue="'emundus_setup_profiles'"
+                :dataValue="profile_id"
+                :childrenValue="currentPage.id"
+                :display-filters="false"
+            />
           </transition>
         </section>
+
+        <div v-if="previewForm" class="tw-w-full tw-h-full" style="background: #fafafb">
+          <h2 style="padding: 1.5rem">{{ translate('COM_EMUNDUS_ONBOARD_PREVIEW') }}</h2>
+          <iframe width="100%" height="100%" frameborder="0" style="padding-bottom: 36px;" id="preview_iframe" name="preview_iframe" :src="'/forms/preview?formid='+selectedPage+'&tmpl=component&preview=1'" @load="loading = false" v-show="!loading"></iframe>
+        </div>
+
         <transition name="slide-fade" mode="out-in">
-          <aside v-if="rightPanel.tabs.includes(showInRightPanel)" class="right-panel em-flex-column em-h-100">
+          <aside v-if="rightPanel.tabs.includes(showInRightPanel) && activeTab==='' || activeTab==='Elements'" class="right-panel tw-h-full tw-flex tw-flex-col tw-relative"
+                 @mouseover="showMinimizedRight = true"
+                 @mouseleave="showMinimizedRight = false"
+          >
+            <div class="tw-w-[16px] !tw-h-0"
+                 @mouseover="showMinimizedRight = true"
+                 @mouseleave="showMinimizedRight = false">
+            <span class="material-symbols-outlined tw-absolute tw-left-[-12px] tw-top-[14px] !tw-text-xl/5 tw-bg-neutral-400 tw-rounded-full tw-cursor-pointer"
+                  :class="minimizedRight ? 'tw-rotate-180' : ''"
+                  v-show="showMinimizedRight === true || minimizedRight"
+                  @click="handleSidebarSize('right')">chevron_right</span>
+            </div>
             <transition name="fade" mode="out-in">
-              <div id="form-hierarchy" v-if="showInRightPanel === 'hierarchy' && rightPanel.tabs.includes('hierarchy')"
-                   class="em-w-100">
-                <form-builder-pages
-                    :pages="pages"
-                    :selected="parseInt(selectedPage)"
+              <div :class="minimizedRight === true ? 'tw-max-w-0' : 'tw-max-w-md tw-min-w-[22rem]'" class="tw-transition-all tw-duration-300">
+                <div id="form-hierarchy" v-if="showInRightPanel === 'hierarchy' && rightPanel.tabs.includes('hierarchy')">
+                  <form-builder-pages
+                      :pages="pages"
+                      :selected="parseInt(selectedPage)"
+                      :profile_id="parseInt(profile_id)"
+                      @select-page="selectPage($event)"
+                      @add-page="getPages(currentPage.id)"
+                      @delete-page="afterDeletedPage($event)"
+                      @open-page-create="principalContainer = 'create-page';"
+                      @reorder-pages="onReorderedPages"
+                      @open-create-model="onOpenCreateModel"
+                  ></form-builder-pages>
+                  <hr>
+                  <form-builder-documents
+                      v-if="!previewForm && leftPanelActiveTab !== 'Rules'"
+                      ref="formBuilderDocuments"
+                      :profile_id="parseInt(profile_id)"
+                      :campaign_id="parseInt(campaign_id)"
+                      @show-documents="setSectionShown('documents')"
+                      @open-create-document="onOpenCreateDocument"
+                  ></form-builder-documents>
+                </div>
+                <form-builder-element-properties
+                    v-if="showInRightPanel === 'element-properties'"
+                    @close="onCloseElementProperties"
+                    :element="selectedElement"
                     :profile_id="parseInt(profile_id)"
-                    @select-page="selectPage($event)"
-                    @add-page="getPages(currentPage.id)"
-                    @delete-page="selectedPage = pages[0].id;"
-                    @open-page-create="principalContainer = 'create-page';"
-                    @reorder-pages="onReorderedPages"
-                    @open-create-model="onOpenCreateModel"
-                ></form-builder-pages>
-                <hr>
-                <form-builder-documents
-                    ref="formBuilderDocuments"
+                ></form-builder-element-properties>
+                <form-builder-section-properties
+                    v-else-if="showInRightPanel === 'section-properties'"
+                    @close="onCloseSectionProperties"
+                    :section_id="selectedSection.group_id"
                     :profile_id="parseInt(profile_id)"
-                    :campaign_id="parseInt(campaign_id)"
-                    @show-documents="setSectionShown('documents')"
-                    @open-create-document="onOpenCreateDocument"
-                ></form-builder-documents>
+                ></form-builder-section-properties>
+                <form-builder-create-model
+                    v-else-if="showInRightPanel === 'create-model'"
+                    :page="selectedPage"
+                    @close="showInRightPanel = 'hierarchy';"
+                ></form-builder-create-model>
+                <form-builder-create-document
+                    v-else-if="showInRightPanel === 'create-document' && rightPanel.tabs.includes('create-document')"
+                    ref="formBuilderCreateDocument"
+                    :key="formBuilderCreateDocumentKey"
+                    :profile_id="parseInt(profile_id)"
+                    :current_document="selectedDocument ? selectedDocument : null"
+                    :mandatory="createDocumentMandatory"
+                    :mode="createDocumentMode"
+                    @close="showInRightPanel = 'hierarchy'"
+                    @documents-updated="onUpdateDocument"
+                ></form-builder-create-document>
               </div>
-              <form-builder-element-properties
-                  v-if="showInRightPanel === 'element-properties'"
-                  @close="onCloseElementProperties"
-                  :element="selectedElement"
-                  :profile_id="parseInt(profile_id)"
-              ></form-builder-element-properties>
-              <form-builder-section-properties
-                  v-if="showInRightPanel === 'section-properties'"
-                  @close="onCloseSectionProperties"
-                  :section_id="selectedSection.group_id"
-                  :profile_id="parseInt(profile_id)"
-              ></form-builder-section-properties>
-              <form-builder-create-model
-                  v-if="showInRightPanel === 'create-model'"
-                  :page="selectedPage"
-                  @close="showInRightPanel = 'hierarchy';"
-              ></form-builder-create-model>
-              <form-builder-create-document
-                  v-if="showInRightPanel === 'create-document' && rightPanel.tabs.includes('create-document')"
-                  ref="formBuilderCreateDocument"
-                  :key="formBuilderCreateDocumentKey"
-                  :profile_id="parseInt(profile_id)"
-                  :current_document="selectedDocument ? selectedDocument : null"
-                  :mandatory="createDocumentMandatory"
-                  :mode="createDocumentMode"
-                  @close="showInRightPanel = 'hierarchy'"
-                  @documents-updated="onUpdateDocument"
-              ></form-builder-create-document>
             </transition>
           </aside>
         </transition>
@@ -149,33 +237,50 @@
                                   @close="onCloseCreatePage"></form-builder-create-page>
       </div>
     </modal>
+
+    <div class="em-page-loader" v-if="loading"></div>
   </div>
 </template>
 
 <script>
+import { watch } from 'vue';
+
 // components
-import FormBuilderElements from "../components/FormBuilder/FormBuilderElements";
-import FormBuilderElementProperties from "../components/FormBuilder/FormBuilderElementProperties";
-import FormBuilderSectionProperties from "../components/FormBuilder/FormBuilderSectionProperties";
-import FormBuilderPage from "../components/FormBuilder/FormBuilderPage";
-import FormBuilderCreatePage from "../components/FormBuilder/FormBuilderCreatePage";
-import FormBuilderPages from "../components/FormBuilder/FormBuilderPages";
-import FormBuilderDocuments from "../components/FormBuilder/FormBuilderDocuments";
-import FormBuilderDocumentList from "../components/FormBuilder/FormBuilderDocumentList";
-import FormBuilderCreateDocument from "../components/FormBuilder/FormBuilderCreateDocument";
-import FormBuilderDocumentFormats from "../components/FormBuilder/FormBuilderDocumentFormats";
+import FormBuilderElements  from "@/components/FormBuilder/FormBuilderElements.vue";
+import FormBuilderElementProperties  from "@/components/FormBuilder/FormBuilderElementProperties.vue";
+import FormBuilderSectionProperties  from "@/components/FormBuilder/FormBuilderSectionProperties.vue";
+import FormBuilderPage      from "@/components/FormBuilder/FormBuilderPage.vue";
+import FormBuilderCreatePage from "@/components/FormBuilder/FormBuilderCreatePage.vue";
+import FormBuilderPages     from "@/components/FormBuilder/FormBuilderPages.vue";
+import FormBuilderDocuments from "@/components/FormBuilder/FormBuilderDocuments.vue";
+import FormBuilderDocumentList from "@/components/FormBuilder/FormBuilderDocumentList.vue";
+import FormBuilderCreateDocument from "@/components/FormBuilder/FormBuilderCreateDocument.vue";
+import FormBuilderDocumentFormats from "@/components/FormBuilder/FormBuilderDocumentFormats.vue";
+import FormBuilderCreateModel from "@/components/FormBuilder/FormBuilderCreateModel.vue";
+import FormBuilderRules from "@/components/FormBuilder/FormBuilderRules/FormBuilderRules.vue";
+import FormBuilderRulesList from "@/components/FormBuilder/FormBuilderRules/FormBuilderRulesList.vue";
+import FormBuilderRulesAdd from "@/components/FormBuilder/FormBuilderRules/FormBuilderRulesAdd.vue";
+import Modal from "@/components/Modal.vue";
 
 // services
-import formService from '../services/form.js';
-import FormBuilderCreateModel from "../components/FormBuilder/FormBuilderCreateModel";
+import formService from '@/services/form.js';
 import formBuilderService from "@/services/formbuilder";
+
+// store
+import { useGlobalStore } from "@/stores/global.js";
+import { useFormBuilderStore } from "@/stores/formbuilder.js";
 
 // mixins
 import formBuilderMixin from '../mixins/formbuilder';
+import Translations from "@/components/Settings/TranslationTool/Translations.vue";
+import settingsService from "@/services/settings.js";
+import History from "@/components/History/History.vue";
 
 export default {
   name: 'FormBuilder',
   components: {
+    History,
+    Translations,
     FormBuilderCreateModel,
     FormBuilderSectionProperties,
     FormBuilderCreatePage,
@@ -186,7 +291,11 @@ export default {
     FormBuilderDocuments,
     FormBuilderDocumentList,
     FormBuilderCreateDocument,
-    FormBuilderDocumentFormats
+    FormBuilderDocumentFormats,
+    Modal,
+    FormBuilderRulesAdd,
+    FormBuilderRulesList,
+    FormBuilderRules,
   },
   mixins: [formBuilderMixin],
   data() {
@@ -220,68 +329,110 @@ export default {
         tabs: [
           {
             title: 'Elements',
+            code: 'page',
             icon: 'edit_note',
             active: true,
             displayed: true
           },
           {
             title: 'Documents',
-            icon: 'edit_note',
+            code: 'documents',
+            icon: 'attach_file',
             active: false,
-            displayed: false
+            displayed: true
           },
           {
             title: 'Translations',
+            code: 'translations',
             icon: 'translate',
             active: false,
             displayed: true,
             url: '/parametres-globaux?layout=translation&default_menu=2&object=emundus_setup_profiles'
           },
+          {
+            title: 'Rules',
+            code: 'rules',
+            icon: 'alt_route',
+            active: false,
+            displayed: false
+          },
+          {
+            title: 'History',
+            code: 'history',
+            icon: 'history',
+            active: false,
+            displayed: false
+          }
         ],
       },
       formBuilderCreateDocumentKey: 0,
-      createDocumentMode: 'create'
+      createDocumentMode: 'create',
+      activeTab:'',
+      minimizedLeft: false,
+      showMinimizedLeft: false,
+      minimizedRight: false,
+      showMinimizedRight: false,
+
+      showConditionBuilder: false,
+      currentRule: null,
+      ruleType: 'js',
+
+      previewForm: false,
+      loading: false
+    }
+  },
+  setup() {
+    const formBuilderStore = useFormBuilderStore();
+    const globalStore = useGlobalStore();
+
+    return {
+      formBuilderStore,
+      globalStore
     }
   },
   created() {
-    const data = this.$store.getters['global/datas'];
-    if (parseInt(this.$store.state.global.manyLanguages) === 0) {
+    watch(() => this.formBuilderStore.lastSave, (newValue) => {
+      this.lastSave = newValue;
+    });
+
+    const data = this.globalStore.getDatas;
+    if (parseInt(this.globalStore.hasManyLanguages) === 0) {
       this.leftPanel.tabs[2].displayed = false;
     }
     this.profile_id = data.prid.value;
     this.campaign_id = data.cid.value;
 
     if (data && data.settingsmenualias && data.settingsmenualias.value) {
-      this.leftPanel.tabs[2].url = '/' + data.settingsmenualias.value + '?layout=translation&default_menu=2&object=emundus_setup_profiles';
+      this.leftPanel.tabs[2].url = '/' + data.settingsmenualias.value;
+    }
+
+    if(data && data.enableconditionbuilder && data.enableconditionbuilder.value == 1) {
+      this.leftPanel.tabs[3].displayed = true;
     }
 
     if (data && data.mode && data.mode.value) {
       this.mode = data.mode.value;
 
-      if (this.mode === 'eval' || this.mode == 'models') {
+      if (this.mode === 'eval' || this.mode === 'models') {
         this.rightPanel.tabs = this.rightPanel.tabs.filter(tab => tab !== 'hierarchy' && tab !== 'create-document');
-        this.leftPanel.tabs = this.leftPanel.tabs.filter(tab => tab.title != 'Documents');
+        this.leftPanel.tabs = this.leftPanel.tabs.filter(tab => tab.code != 'documents' && tab.code != 'translations');
         this.form_id = this.profile_id;
         this.profile_id = 0;
       }
-    }
-
-    if (this.profile_id > 0) {
-      this.leftPanel.tabs[2].url += '&data=' + this.profile_id;
     }
 
     this.getFormTitle();
     this.getPages();
   },
   mounted() {
-    this.$modal.show('formBuilder');
+    this.$refs.modal.open();
   },
   methods: {
     getFormTitle() {
       if (this.profile_id) {
         formService.getProfileLabelByProfileId(this.profile_id).then(response => {
           if (response.status !== false) {
-            this.title = response.data.data.label;
+            this.title = response.data.label;
           }
         });
       }
@@ -307,7 +458,7 @@ export default {
           this.principalContainer = 'default';
 
           formService.getSubmissionPage(this.profile_id).then(response => {
-            const formId = response.data.link.match(/formid=(\d+)/)[1];
+            const formId = response.link.match(/formid=(\d+)/)[1];
             if (formId) {
               // check if the form is already in the pages
               const page = this.pages.find(page => page.id === formId);
@@ -318,6 +469,8 @@ export default {
                   type: 'submission',
                   elements: [],
                 });
+              } else {
+                page.type = 'submission';
               }
             }
           });
@@ -334,10 +487,13 @@ export default {
     onReorderedPages(reorderedPages) {
       this.pages = reorderedPages;
     },
-    onElementCreated(eltid) {
-      this.$refs.formBuilderPage.getSections(eltid);
+    onElementCreated(eltid,scrollTo) {
+      this.$refs.formBuilderPage.getSections(eltid,scrollTo);
     },
     createElementLastGroup(element) {
+      if(this.loading) {
+        return;
+      }
       const groups = Object.values(this.$refs.formBuilderPage.fabrikPage.Groups);
       const last_group = groups[groups.length - 1].group_id;
 
@@ -347,7 +503,7 @@ export default {
         mode: this.mode
       }).then(response => {
         if (response.status && response.data > 0) {
-          this.onElementCreated(response.data);
+          this.onElementCreated(response.data,true);
           this.updateLastSave();
           this.loading = false;
         } else {
@@ -429,27 +585,29 @@ export default {
       this.showInRightPanel = 'hierarchy';
       this.setSectionShown('documents');
     },
-    selectTab(title) {
+    selectTab(section) {
       this.leftPanel.tabs.forEach((tab) => {
-        tab.active = tab.title === title;
+        tab.active = tab.code === section;
       });
     },
     selectPage(page_id) {
       this.selectedPage = page_id;
-      this.setSectionShown('page');
+      if(this.showInSection === 'documents') {
+        this.setSectionShown('page');
+      }
+      this.setSectionShown(this.showInSection);
     },
     setSectionShown(section) {
-      if (section === 'documents') {
-        this.leftPanel.tabs.forEach((tab, i) => {
-          this.leftPanel.tabs[i].displayed = tab.title !== 'Elements';
-        });
-        this.selectTab('Documents');
-        this.selectedPage = null;
+      if(section == 'rules-add') {
+        this.selectTab('rules')
       } else {
-        this.leftPanel.tabs.forEach((tab, i) => {
-          this.leftPanel.tabs[i].displayed = tab.title !== 'Documents';
-        });
-        this.selectTab('Elements');
+        this.selectTab(section)
+      }
+
+      if (section === 'documents') {
+        this.selectedPage = null;
+      } else if(this.selectedPage == null) {
+        this.selectedPage = this.pages[0].id;
       }
       this.showInSection = section;
     },
@@ -463,10 +621,39 @@ export default {
       }
     },
     clickGoBack() {
-      if (this.principalContainer === 'create-page') {
-        this.onCloseCreatePage({reload: false});
+      if(this.previewForm) {
+        this.previewForm = !this.previewForm;
       } else {
-        window.history.go(-1);
+        if (this.principalContainer === 'create-page') {
+          this.onCloseCreatePage({reload: false});
+        } else {
+          settingsService.redirectJRoute('index.php?option=com_emundus&view=form',useGlobalStore().getCurrentLang);
+        }
+      }
+    },
+    addRule(rule_type, rule = null) {
+      this.ruleType = rule_type;
+      this.currentRule = rule;
+      if(rule !== null) {
+        this.showInRightPanel = null;
+      }
+      this.showInSection = 'rules-add';
+    },
+    clickTab(tab) {
+      //todo display the composant translation
+      this.activeTab = tab.code;
+
+    },
+    handleSidebarSize(position = 'left') {
+      if (position === 'left') {
+        this.minimizedLeft = !this.minimizedLeft;
+      } else {
+        this.minimizedRight = !this.minimizedRight;
+      }
+    },
+    afterDeletedPage(page_id) {
+      if(this.selectedPage == page_id) {
+        this.selectedPage = this.pages[0].id;
       }
     }
   },
@@ -475,21 +662,59 @@ export default {
       return this.pages.find(page => page.id === this.selectedPage);
     },
     leftPanelActiveTab() {
-      return this.leftPanel.tabs.find(tab => tab.active).title;
+      let find = this.leftPanel.tabs.find(tab => tab.active);
+      if (find) {
+        return find.title;
+      } else {
+        //this.leftPanel.tabs[0].active = true;
+        return this.leftPanel.tabs[0].title;
+      }
     },
     displayedLeftPanels() {
       return this.leftPanel.tabs.filter((tab) => {
         return tab.displayed;
       });
+    },
+    defaultLangLabel() {
+      let label = 'Français';
+
+      switch (this.globalStore.defaultLang) {
+      case 'en-GB':
+        label = 'English';
+        break;
+      case 'pt-PT':
+        label = 'Português';
+      }
+
+      return label;
     }
   },
   watch: {
-    "$store.state.formBuilder.lastSave": {
-      handler(newValue) {
-        this.lastSave = newValue;
-      },
-      deep: true
-    },
+    previewForm(newValue) {
+      this.loading = true;
+      if (newValue) {
+        setTimeout(() => {
+          const myIframe = document.getElementById('preview_iframe');
+          myIframe.addEventListener("load", () => {
+            let cssLink = document.createElement("link");
+            cssLink.href = "media/com_fabrik/css/fabrik.css";
+            cssLink.rel = "stylesheet";
+            cssLink.type = "text/css";
+            frames['preview_iframe'].document.head.appendChild(cssLink);
+
+            const css = '<style type="text/css">' +
+                '.fabrikActions{display:none}; ' +
+                '</style>';
+            frames['preview_iframe'].document.head.insertAdjacentHTML('beforeend', css);
+
+            this.loading = false;
+          });
+        }, 500);
+      } else {
+        this.selectTab(this.showInSection);
+        this.loading = false;
+      }
+    }
   }
 }
 </script>
@@ -508,6 +733,11 @@ export default {
     button {
       margin: 8px 16px;
       height: 32px;
+      &:hover {
+        span {
+          color: var(--em-profile-color) !important;
+        }
+      }
     }
 
     #saved-at {
@@ -533,12 +763,9 @@ export default {
     }
 
     .right-panel {
-      min-width: 366px;
-      width: 366px;
       border-left: solid 1px #E3E5E8;
 
       > div {
-        width: 100%;
         height: 100%;
         overflow: auto;
       }
@@ -558,10 +785,13 @@ export default {
           cursor: pointer;
 
           &.active {
-            background-color: #f8f8f8;
+            background-color: var(--em-profile-color);
+            span {
+              color: white !important;
+            }
           }
 
-          .material-icons, .material-icons-outlined {
+          .material-icons, .material-symbols-outlined , .material-symbols-outlined {
             font-size: 22px !important;
           }
         }
@@ -569,9 +799,12 @@ export default {
 
       .tab-content {
         align-items: flex-start;
-        padding: 0 16px;
         height: 100%;
         overflow: auto;
+
+        #form-builder-elements,#form-builder-document-formats {
+          padding: 0 0 0 16px;
+        }
       }
     }
 
@@ -612,4 +845,33 @@ export default {
 .fade-leave-to {
   opacity: 0;
 }
+.fabrikActions {
+  display: none;
+}
+
+/* Ajout d'un hover sur les titres du formbuilder */
+
+#formBuilder #pageDescription.editable-data {
+  margin-top: 8px;
+}
+
+#formBuilder .editable-data:hover {
+  background-color: #ededed;
+}
+
+/* DATABASEJOIN */
+
+.fabrikElementdatabasejoin.element-field .fabrikElement  {
+  padding-left: 1.5rem;
+}
+
+.fabrikElementdatabasejoin.element-field .fabrikElement .fabrikgrid_radio {
+  display: flex;
+  align-items: center;
+}
+
+.fabrikElementdatabasejoin.element-field .fabrikElement .fabrikgrid_radio label {
+  margin-bottom: 0;
+}
+
 </style>

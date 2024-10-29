@@ -289,11 +289,11 @@ class EmundusModelTranslations extends JModelList
 	{
 		$objects = array();
 
-		include_once(JPATH_SITE . DS . 'administrator' . DS . 'components' . DS . 'com_falang' . DS . "models" . DS . "ContentElement.php");
+		include_once(JPATH_ROOT . '/administrator/components/com_falang/models/ContentElement.php');
 
 		jimport('joomla.filesystem.folder');
-		$dir        = JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'contentelements/';
-		$filesindir = JFolder::files($dir, ".xml");
+		$dir        = JPATH_ROOT . '/components/com_emundus/contentelements/';
+		$filesindir = Joomla\Filesystem\Folder::files($dir, '.xml');
 		if (count($filesindir) > 0) {
 			foreach ($filesindir as $file) {
 				$object = new stdClass;
@@ -662,7 +662,7 @@ class EmundusModelTranslations extends JModelList
 				$query->set($this->_db->quoteName('override') . ' = ' . $this->_db->quote($override))
 					->set($this->_db->quoteName('override_md5') . ' = ' . $this->_db->quote(md5($override)))
 					->set($this->_db->quoteName('modified_by') . ' = ' . $this->_db->quote($user->id))
-					->set($this->_db->quoteName('modified_date') . ' = ' .$this->_db->quote(date('Y-m-d H:i:s')))
+					->set($this->_db->quoteName('modified_date') . ' = ' . $this->_db->quote(date('Y-m-d H:i:s')))
 					->set($this->_db->quoteName('location') . ' = ' . $this->_db->quote($location));
 
 				if (!empty($reference_table)) {

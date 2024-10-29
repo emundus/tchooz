@@ -11,10 +11,17 @@ namespace Unit\Component\Emundus\Helper;
 
 use EmundusHelperFiles;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Menu\SiteMenu;
 use Joomla\Tests\Unit\UnitTestCase;
 
 require_once JPATH_SITE . '/components/com_emundus/helpers/files.php';
 
+/**
+ * @package     Unit\Component\Emundus\Helper
+ *
+ * @since       version 1.0.0
+ * @covers      EmundusHelperFiles
+ */
 class FilesHelperTest extends UnitTestCase
 {
 	/**
@@ -37,16 +44,12 @@ class FilesHelperTest extends UnitTestCase
 	public function testCreateFnum()
 	{
 		$this->assertSame('', EmundusHelperFiles::createFnum(0, 0, false), 'Create fnum with wrong campaign_id and user_id returns empty');
-		$this->assertSame('', EmundusHelperFiles::createFnum(0, 95, false), 'Create fnum with wrong campaign_id returns empty');
+		$this->assertSame('', EmundusHelperFiles::createFnum(0, $this->dataset['coordinator'], false), 'Create fnum with wrong campaign_id returns empty');
 
-		if (Factory::getUser()->id) {
-			$this->assertNotEmpty(EmundusHelperFiles::createFnum(1, 0, false), 'Create fnum with empty user_id  will use current user_id and returns not empty');
-		}
-		else {
-			$this->assertSame('', EmundusHelperFiles::createFnum(1, 0, false), 'Create fnum with nio user id connected or given returns empty');
-		}
-		$this->assertNotEmpty(EmundusHelperFiles::createFnum(1, 95, false), 'Create fnum with correct campaign_id and user_id returns not empty');
-		$this->assertNotEmpty(EmundusHelperFiles::createFnum(1, 95), 'Create fnum with correct campaign_id and user_id and redirect to true returns not empty');
+		$this->assertSame('', EmundusHelperFiles::createFnum(1, 0, false), 'Create fnum with nio user id connected or given returns empty');
+
+		$this->assertNotEmpty(EmundusHelperFiles::createFnum(1, $this->dataset['coordinator'], false), 'Create fnum with correct campaign_id and user_id returns not empty');
+		$this->assertNotEmpty(EmundusHelperFiles::createFnum(1, $this->dataset['coordinator']), 'Create fnum with correct campaign_id and user_id and redirect to true returns not empty');
 	}
 
 	/**
@@ -57,11 +60,15 @@ class FilesHelperTest extends UnitTestCase
 	{
 		$this->assertFalse($this->helper->getExportExcelFilter(0), 'Get export excel filter with wrong user id returns false');
 
-		$coord_filters = $this->helper->getExportExcelFilter(95);
+		$coord_filters = $this->helper->getExportExcelFilter($this->dataset['coordinator']);
 		$this->assertNotFalse($coord_filters, 'Get export excel filter with correct user id returns not false');
 		$this->assertSame('array', gettype($coord_filters), 'Get export excel filter with correct user id returns an array even if empty');
 	}
 
+	/**
+	 * @test
+	 * @covers EmundusHelperFiles::findJoinsBetweenTablesRecursively
+	 */
 	public function testfindJoinsBetweenTablesRecursively()
 	{
 		$joins = $this->helper->findJoinsBetweenTablesRecursively('', '');
@@ -92,6 +99,10 @@ class FilesHelperTest extends UnitTestCase
 		$this->assertSame($joins, $joins_reversed, 'Join between jos_emundus_evaluations and jos_emundus_campaign_candidature returns same join as join between jos_emundus_campaign_candidature and jos_emundus_evaluations');
 	}
 
+	/**
+	 * @test
+	 * @covers EmundusHelperFiles::writeJoins
+	 */
 	public function testwriteJoins()
 	{
 		$joins          = $this->helper->findJoinsBetweenTablesRecursively('jos_emundus_campaign_candidature', 'jos_emundus_setup_campaigns');
@@ -105,6 +116,10 @@ class FilesHelperTest extends UnitTestCase
 		$this->assertSame(' LEFT JOIN `jos_emundus_setup_campaigns` ON `jos_emundus_setup_campaigns`.`id` = `jos_emundus_campaign_candidature`.`campaign_id`', $joins_as_string, 'Write joins with correct joins returns correct string');
 	}
 
+	/**
+	 * @test
+	 * @covers EmundusHelperFiles::writeQueryWithOperator
+	 */
 	public function testwriteQueryWithOperator()
 	{
 		$query_condition = $this->helper->writeQueryWithOperator(null, null, null);
@@ -120,7 +135,31 @@ class FilesHelperTest extends UnitTestCase
 		$this->assertSame('ecc.fnum IN (\'24343432323\',\'24334234234234\')', $query_condition, 'Write query with = operator and array of values returns correct string with IN');
 
 		$query_condition = $this->helper->writeQueryWithOperator('ecc.fnum', ['24343432323', '24334234234234'], 'superior');
-		$this->assertSame('1=1', $query_condition, 'Write query with > operator and array of values returns 1=1 string, because > operator is not supported with type select');
+		$this->assertSame('(ecc.fnum > \'24343432323\' AND ecc.fnum > \'24334234234234\')', $query_condition, 'Write query with superior operator and multiple values for default filter type works');
+
+		$query_condition = $this->helper->writeQueryWithOperator('ecc.fnum', '24343432323', 'superior');
+		$this->assertSame('ecc.fnum > \'24343432323\'', $query_condition, 'Write query with superior operator and single for default filter type works');
+
+		$query_condition = $this->helper->writeQueryWithOperator('ecc.fnum', ['24343432323', '24334234234234'], 'inferior');
+		$this->assertSame('(ecc.fnum < \'24343432323\' AND ecc.fnum < \'24334234234234\')', $query_condition, 'Write query with inferior operator and multiple values for default filter type works');
+
+		$query_condition = $this->helper->writeQueryWithOperator('ecc.fnum', '24343432323', 'inferior');
+		$this->assertSame('ecc.fnum < \'24343432323\'', $query_condition, 'Write query with inferior operator and single for default filter type works');
+
+		$query_condition = $this->helper->writeQueryWithOperator('ecc.fnum', ['24343432323', '24334234234234'], 'superior_or_equal');
+		$this->assertSame('(ecc.fnum >= \'24343432323\' AND ecc.fnum >= \'24334234234234\')', $query_condition, 'Write query with superior_or_equal operator and multiple values for default filter type works');
+
+		$query_condition = $this->helper->writeQueryWithOperator('ecc.fnum', '24343432323', 'superior_or_equal');
+		$this->assertSame('ecc.fnum >= \'24343432323\'', $query_condition, 'Write query with superior_or_equal operator and single for default filter type works');
+
+		$query_condition = $this->helper->writeQueryWithOperator('ecc.fnum', ['24343432323', '24334234234234'], 'inferior_or_equal');
+		$this->assertSame('(ecc.fnum <= \'24343432323\' AND ecc.fnum <= \'24334234234234\')', $query_condition, 'Write query with inferior_or_equal operator and multiple values for default filter type works');
+
+		$query_condition = $this->helper->writeQueryWithOperator('ecc.fnum', '24343432323', 'inferior_or_equal');
+		$this->assertSame('ecc.fnum <= \'24343432323\'', $query_condition, 'Write query with inferior_or_equal operator and single for default filter type works');
+
+		$query_condition = $this->helper->writeQueryWithOperator('ecc.id', '1', 'superior');
+		$this->assertSame('ecc.id > \'1\'', $query_condition, 'Write query with superior operator and single for default filter type works');
 
 		$query_condition = $this->helper->writeQueryWithOperator('ecc.created', ['2023-02-01', ''], 'superior', 'date');
 		$this->assertSame('ecc.created > \'2023-02-01\'', $query_condition, 'Write query with superior operator for date filter type works');
@@ -132,6 +171,10 @@ class FilesHelperTest extends UnitTestCase
 		$this->assertSame('ecc.created >= \'2023-02-01\'', $query_condition, 'Write query with between operator for date filter type works even if only "from" value is passed');
 	}
 
+	/**
+	 * @test
+	 * @covers EmundusHelperFiles::getFabrikElementData
+	 */
 	public function testgetFabrikElementData()
 	{
 		$data = $this->helper->getFabrikElementData(0);
@@ -141,7 +184,6 @@ class FilesHelperTest extends UnitTestCase
 		$query->select('*')
 			->from('#__fabrik_elements')
 			->setLimit(1);
-
 		$this->db->setQuery($query);
 		$element = $this->db->loadAssoc();
 
@@ -156,9 +198,16 @@ class FilesHelperTest extends UnitTestCase
 		$this->assertNotEmpty($data['list_id'], 'Get fabrik element data with correct id returns not empty list_id');
 	}
 
+	/**
+	 * @test
+	 * @covers EmundusHelperFiles::_moduleBuildWhere
+	 */
 	public function test_moduleBuildWhere()
 	{
-		$where = $this->helper->_moduleBuildWhere([], 'files', []);
+		$menu = new SiteMenu();
+		$menu_item = $menu->getItems('link', 'index.php?option=com_emundus&view=files', true);
+
+		$where = $this->helper->_moduleBuildWhere([], 'files', [], [], $menu_item);
 		$this->assertNotEmpty($where, 'Build where with empty filters returns not empty string');
 
 		// $where must contain q and join entries
@@ -174,9 +223,9 @@ class FilesHelperTest extends UnitTestCase
 		]);
 		$session->set('em-applied-filters', []);
 
-		$where = $this->helper->_moduleBuildWhere([], 'files', []);
+		$where = $this->helper->_moduleBuildWhere([], 'files', [], [], $menu_item);
 		$this->assertNotEmpty($where['q'], 'Build where with filters returns not empty string');
-		$this->assertSame(' AND (jecc.applicant_id LIKE \'%test%\' OR jecc.fnum LIKE \'%test%\' OR u.username LIKE \'%test%\' OR eu.firstname LIKE \'%test%\' OR eu.lastname LIKE \'%test%\' OR u.email LIKE \'%test%\' OR u.username LIKE \'%test%\') AND jecc.published = \'1\'', $where['q'], 'Build where with filters returns correct string');
+		$this->assertSame(' AND esc.published = \'1\' AND (jecc.applicant_id LIKE \'%test%\' OR jecc.fnum LIKE \'%test%\' OR u.username LIKE \'%test%\' OR eu.firstname LIKE \'%test%\' OR eu.lastname LIKE \'%test%\' OR u.email LIKE \'%test%\') AND jecc.published = \'1\'', $where['q'], 'Build where with filters returns correct string');
 
 		$session->set('em-quick-search-filters', [
 			[
@@ -184,8 +233,8 @@ class FilesHelperTest extends UnitTestCase
 				'value' => 'test',
 			]
 		]);
-		$where = $this->helper->_moduleBuildWhere([], 'files', []);
-		$this->assertSame(' AND jecc.published = \'1\'', $where['q'], 'Build where with quick search filters with no scope returns only default filter on published');
+		$where = $this->helper->_moduleBuildWhere([], 'files', [], [], $menu_item);
+		$this->assertSame(' AND esc.published = \'1\' AND jecc.published = \'1\'', $where['q'], 'Build where with quick search filters with no scope returns only default filter on published');
 
 		$session->set('em-quick-search-filters', [
 			[
@@ -193,7 +242,10 @@ class FilesHelperTest extends UnitTestCase
 				'value' => 'test',
 			]
 		]);
-		$where = $this->helper->_moduleBuildWhere([], 'files', []);
-		$this->assertSame(' AND jecc.published = \'1\'', $where['q'], 'Build where with quick search filters with unhandled scope returns only default filter on published');
+		$where = $this->helper->_moduleBuildWhere([], 'files', [], [], $menu_item);
+		$this->assertSame(' AND esc.published = \'1\' AND jecc.published = \'1\'', $where['q'], 'Build where with quick search filters with unhandled scope returns only default filter on published');
+
+		$session->clear('em-quick-search-filters');
+		$session->clear('em-applied-filters');
 	}
 }

@@ -199,6 +199,10 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 			$bits['x-webkit-speech'] = 'x-webkit-speech';
 		}
 
+		if(!empty($params->get('autocomplete_advanced',''))) {
+			$bits['autocomplete'] = $params->get('autocomplete_advanced');
+		}
+
 		$layout = $this->getLayout('form');
 		$layoutData = new stdClass;
 		$layoutData->scanQR = $params->get('scan_qrcode', '0') === '1';

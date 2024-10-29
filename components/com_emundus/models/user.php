@@ -4,6 +4,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Uri\Uri;
 
 class EmundusModelUser extends JModelList
 {
@@ -34,30 +35,16 @@ class EmundusModelUser extends JModelList
 		// Compile the user activated notification mail values.
 		$config = JFactory::getConfig();
 
-		$activation_url_rel = '/index.php?option=com_emundus&controller=users&task=activateaccount&emailactivation=1&u=' . $userID . '&token=' . $md5Token;
+		if ($config->get('sef') == 0) {
+			$activation_url_rel = '/index.php?option=com_users&task=edit&emailactivation=1&u=' . $userID . '&' . $md5Token . '=1';
+		} else
+		{
+			$activation_url_rel = '/activation?emailactivation=1&u=' . $userID . '&' . $md5Token . '=1';
+		}
 
 		$activation_url = $baseURL . $activation_url_rel;
 
-		$template = $app->getTemplate(true);
-		$params   = $template->params;
-		if (!empty($params->get('logo')->custom->image)) {
-			$logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
-			$logo = !empty($logo['path']) ? JURI::base() . $logo['path'] : "";
-		}
-		else {
-			$logo_module = JModuleHelper::getModuleById('90');
-			preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
-			$pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
-        (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
-        (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
-        (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
-
-			if (preg_match($pattern, $tab[1])) {
-				$tab[1] = parse_url($tab[1], PHP_URL_PATH);
-			}
-
-			$logo = JURI::base() . $tab[1];
-		}
+		$logo = EmundusHelperEmails::getLogo(true);
 
 		$post = [
 			'CIVILITY'           => $civility,
@@ -69,7 +56,7 @@ class EmundusModelUser extends JModelList
 			'BASE_URL'           => $baseURL,
 			'USER_LOGIN'         => $email,
 			'USER_PASSWORD'      => $password,
-			'LOGO'               => $logo
+			'LOGO'               => Uri::base().'images/custom/'.$logo
 		];
 
 		return $c_messages->sendEmailNoFnum($email, 'registration_email', $post, $userID);

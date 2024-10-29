@@ -306,10 +306,13 @@ class FalangHelper
                         }
 
                         //2.9.0
+                        //5.5 add the dirty unset on task
+                        //    make it compatible J4 change
                         //case of k2 item with specific language set
 	                    if (!empty($vars['view']) && $vars['view'] == 'item'  && !empty($vars['option']) && $vars['option'] == 'com_k2') {
-		                    JModelLegacy::addIncludePath(JPATH_SITE.'/components/com_k2/models', 'K2Model');
-		                    $model = JModelLegacy::getInstance('Item', 'K2Model', array('ignore_request'=>true));
+                            unset($vars['task']);//task is set in sef on on k2forJ4 why
+                            \JLoader::register('K2ModelItem', JPATH_ADMINISTRATOR .'/components/com_k2/models/item.php');
+                            $model = \K2Model::getInstance('Item', 'K2Model');
 		                    $item = $model->getData();
 
 		                    if ($item->language != '*' && $language->lang_code != $item->language){
@@ -341,10 +344,13 @@ class FalangHelper
 
 
                         //fix for hikashop url with start on product page
+                        //update 5.6 remove all filter var even of non product page
                         if (isset($vars['option']) && $vars['option'] == 'com_hikashop'){
-							  if (isset($vars['view']) && $vars['view'] == 'product'){
-								  unset($vars['start']);
-							  }
+							unset($vars['start']);
+                            unset($vars['limitstart']);
+                            unset($vars['limit']);
+                            unset($vars['filter_Trierpar_1']);
+                            unset($vars['product_sort_price--lth']);
 						}
 
                         //fix for OsProperties need to have the l parameter

@@ -70,6 +70,35 @@ trait ChromiumMultipartFormDataModule
     }
 
     /**
+     * Cookies to store in the Chromium cookie jar.
+     *
+     * @param ChromiumCookie[] $cookies
+     *
+     * @throws NativeFunctionErrored
+     */
+    public function cookies(array $cookies): self
+    {
+        $json = json_encode($cookies);
+        if ($json === false) {
+            throw NativeFunctionErrored::createFromLastPhpError();
+        }
+
+        $this->formValue('cookies', $json);
+
+        return $this;
+    }
+
+    /**
+     * Overrides the default 'User-Agent' HTTP header.
+     */
+    public function userAgent(string $userAgent): self
+    {
+        $this->formValue('userAgent', $userAgent);
+
+        return $this;
+    }
+
+    /**
      * Sets extra HTTP headers that Chromium will send when loading the HTML
      * document.
      *

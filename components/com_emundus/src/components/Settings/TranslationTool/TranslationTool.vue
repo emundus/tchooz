@@ -11,31 +11,33 @@
         @closed="beforeClose"
     >
       <div class="em-modal-header">
-        <div class="em-flex-space-between em-flex-row em-pointer" @click.prevent="$modal.hide('translationTool')">
-          <div class="em-w-max-content em-flex-row">
-            <span class="material-icons-outlined">arrow_back</span>
-            <span class="em-ml-8">{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
+        <div class="tw-justify-between tw-flex tw-items-center tw-cursor-pointer" @click.prevent="beforeClose">
+          <div class="tw-w-max tw-flex tw-items-center">
+            <span class="material-symbols-outlined tw-text-neutral-600">navigate_before</span>
+            <span class="tw-ml-2 tw-text-neutral-900">{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
           </div>
-          <div v-if="saving" class="em-flex-row em-flex-start">
-            <div class="em-loader em-mr-8"></div>
-            <p class="em-font-size-14 em-flex-row">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE_PROGRESS') }}</p>
+          <div v-if="saving" class="tw-flex tw-items-center tw-justify-start">
+            <div class="em-loader tw-mr-2"></div>
+            <p class="tw-text-sm tw-flex tw-items-center">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE_PROGRESS') }}</p>
           </div>
-          <p class="em-font-size-14" v-if="!saving && last_save != null">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE_LAST') + last_save}}</p>
+          <p class="tw-text-sm" v-if="!saving && last_save != null">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE_LAST') + last_save}}</p>
         </div>
       </div>
 
       <div class="em-modal-content">
         <div class="em-modal-menu__sidebar">
-          <div v-for="(menu) in menus" :key="'menu_' + menu.index" @click="currentMenu = menu.index" class="translation-menu-item em-p-16 em-flex-row em-flex-space-between pointer" :class="currentMenu === menu.index ? 'em-modal-menu__current' : ''">
-            <p class="em-font-size-16">{{translate(menu.title)}}</p>
+          <div v-for="(menu) in menus" :key="'menu_' + menu.index" @click="currentMenu = menu.index" class="translation-menu-item tw-p-4 tw-flex tw-items-center tw-justify-between pointer" :class="currentMenu === menu.index ? 'em-modal-menu__current' : ''">
+            <p class="tw-text-base">{{translate(menu.title)}}</p>
             <div v-if="menu.index === 3 && orphelins_count > 0" class="em-notifications-yellow"></div>
           </div>
         </div>
 
         <transition name="fade">
-          <Global v-if="currentMenu === 1" v-show="!setup_success" class="em-modal-component" @updateOrphelinsCount="updateOrphelinsCount"></Global>
-          <Translations v-if="currentMenu === 2" v-show="!setup_success" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></Translations>
-          <Orphelins v-if="currentMenu === 3" v-show="!setup_success" class="em-modal-component"></Orphelins>
+          <Global v-if="currentMenu === 1" v-show="!setup_success" class="em-modal-component"
+                  @updateOrphelinsCount="updateOrphelinsCount"></Global>
+          <Translations v-else-if="currentMenu === 2" v-show="!setup_success" class="em-modal-component"
+                        @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></Translations>
+          <Orphelins v-else-if="currentMenu === 3" v-show="!setup_success" class="em-modal-component"></Orphelins>
         </transition>
 
         <img v-if="setup_success" alt="checked-animation" class="em-success-animation" :src="'/images/emundus/animations/checked.gif'" />
@@ -51,11 +53,12 @@
 </template>
 
 <script>
-import Global from "./Global";
-import Translations from "./Translations";
-import Orphelins from "./Orphelins";
+import Global from "./Global.vue";
+import Translations from "./Translations.vue";
+import Orphelins from "./Orphelins.vue";
 
-import translationsService from "com_emundus/src/services/translations";
+import translationsService from "@/services/translations";
+import {useGlobalStore} from "@/stores/global.js";
 
 export default {
   name: "translationTool",
@@ -96,7 +99,7 @@ export default {
     }
   },
   created() {
-    const data = this.$store.getters['global/datas'];
+    const data = useGlobalStore().datas;
 
     if (this.showModalOnLoad === 0) {
       if (data.showModalOnLoad !== undefined) {
@@ -116,7 +119,7 @@ export default {
   },
   methods:{
     beforeClose() {
-      const data = this.$store.getters['global/datas'];
+      const data = useGlobalStore().datas;
       if (data.hasOwnProperty('redirectOnClose')) {
         window.location.href = data.redirectOnClose.value;
       }

@@ -21,6 +21,7 @@
    <field Field="link" Type="varchar(255)" Null="YES" Key="" Extra="" />
    <field Field="logo" Type="text" Null="YES" Key="" Extra="" />
    <field Field="color" Type="varchar(10)" Null="YES" Key="" Extra="" />
+   <field Field="evaluation_form" Type="int" Null="YES" Key="" Extra="" />
    <key Table="#__emundus_setup_programmes" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_setup_programmes" Non_unique="0" Key_name="jos_emundus_setup_programmes_code_uindex" Seq_in_index="1" Column_name="code" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_setup_programmes" Non_unique="1" Key_name="label" Seq_in_index="1" Column_name="label" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />

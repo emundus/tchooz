@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -271,6 +271,9 @@ class plgHikashopGoogle_products extends JPlugin {
 				if($row->product_id == $image->file_ref_id){
 					$products[$k]->images[$i] = new stdClass();
 					foreach(get_object_vars($image) as $key => $name){
+						if(!empty($name) && in_array($key, array('file_name','file_path', 'file_description'))) {
+							$name = hikashop_translate($name);
+						}
 						$products[$k]->images[$i]->$key = $name;
 					}
 				}
@@ -473,7 +476,10 @@ class plgHikashopGoogle_products extends JPlugin {
 		$volumeHelper = hikashop_get('helper.volume');
 		$weightHelper = hikashop_get('helper.weight');
 		foreach($products as $product) {
-
+			if(!empty($plugin->params['skip_field'])) {
+				$skipColumn = $plugin->params['skip_field'];
+				if(!empty($product->$skipColumn)) continue;
+			}
 			if(isset($product->prices[0]->price_value)){
 				$price_name = 'price_value';
 				if(!empty($plugin->params['taxed_price'])){
@@ -545,6 +551,7 @@ class plgHikashopGoogle_products extends JPlugin {
 				if(@$plugin->params['preview'] == 'meta') {
 						$xml .= "\t".'<g:description><![CDATA[ '.mb_substr(strip_tags($product->product_meta_description),0,5000).' ]]></g:description>'."\n";
 				} elseif(!empty($product->product_description)){
+					$product->product_description = JHTML::_('content.prepare', $product->product_description);
 					if(@$plugin->params['preview']) {
 						 $xml .= "\t".'<g:description><![CDATA[ '.mb_substr(strip_tags(preg_replace('#<hr *id="system-readmore" */>.*#is','',$product->product_description)),0,5000).' ]]></g:description>'."\n";
 					} else {
@@ -597,7 +604,7 @@ class plgHikashopGoogle_products extends JPlugin {
 					$name = "image_link";
 					foreach($product->images as $image){
 						if($i < 10){
-							 $xml .= "\t".'<g:'.$name.'>'.htmlspecialchars($siteAddress.$this->main_uploadFolder_url.$image->file_path).'</g:'.$name.'>'."\n";
+							 $xml .= "\t".'<g:'.$name.'>'.htmlspecialchars($siteAddress.$this->main_uploadFolder_url.(ltrim($image->file_path,'/'))).'</g:'.$name.'>'."\n";
 							 $name = "additional_image_link";
 							 $i++;
 						}
@@ -620,7 +627,7 @@ class plgHikashopGoogle_products extends JPlugin {
 
 
 				if($product->product_quantity != -1){
-					$xml .= "\t".'<g:quantity>'.$product->product_quantity.'</g:quantity>'."\n";
+					$xml .= "\t".'<g:quantity_to_sell_on_facebook>'.$product->product_quantity.'</g:quantity_to_sell_on_facebook>'."\n";
 				}
 				if($product->product_quantity == 0){
 					$xml .= "\t".'<g:availability>out of stock</g:availability>'."\n";
@@ -630,9 +637,10 @@ class plgHikashopGoogle_products extends JPlugin {
 				}
 				if( $product->product_weight > 0 && 
 					(
+						($product->product_weight < 32000 && $product->product_weight_unit == 'oz') ||
 						($product->product_weight < 1000000 && $product->product_weight_unit == 'g') ||
 						($product->product_weight < 1000 && $product->product_weight_unit == 'kg') ||
-						($product->product_weight < 2000000 && $product->product_weight_unit == 'lb' )
+						($product->product_weight < 2000 && $product->product_weight_unit == 'lb' )
 					))
 					$xml .= "\t".'<g:shipping_weight>'.ceil($product->product_weight).' '.$product->product_weight_unit.'</g:shipping_weight>'."\n";
 
@@ -690,6 +698,10 @@ class plgHikashopGoogle_products extends JPlugin {
 			if(!empty($shipping_data[1])) $xml.="\t\t".'<g:region>'.$shipping_data[1].'</g:region>'."\n";
 			if(!empty($shipping_data[2])) $xml.="\t\t".'<g:service>'.$shipping_data[2].'</g:service>'."\n";
 			$xml.="\t\t".'<g:price>'.$shipping_data[3].'</g:price>'."\n";
+			if(!empty($shipping_data[4])) $xml.="\t\t".'<g:min_handling_time>'.$shipping_data[4].'</g:min_handling_time>'."\n";
+			if(!empty($shipping_data[5])) $xml.="\t\t".'<g:max_handling_time>'.$shipping_data[5].'</g:max_handling_time>'."\n";
+			if(!empty($shipping_data[6])) $xml.="\t\t".'<g:min_transit_time>'.$shipping_data[6].'</g:min_transit_time>'."\n";
+			if(!empty($shipping_data[7])) $xml.="\t\t".'<g:max_transit_time>'.$shipping_data[7].'</g:max_transit_time>'."\n";
 			$xml.="\t".'</g:shipping>'."\n";
 		}
 		return $xml;

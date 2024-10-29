@@ -106,7 +106,7 @@ class DropfilesComponentHelper extends JComponentHelper
     public static function getVersion($option = 'com_dropfiles')
     {
         $manifest = self::getManifest($option);
-        if (property_exists($manifest, 'version')) {
+        if (is_object($manifest) && property_exists($manifest, 'version')) {
             return $manifest->version;
         }
         return null;

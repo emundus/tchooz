@@ -12,7 +12,7 @@
     }
 
     h4 {
-        font-family: var(--em-default-font);
+        font-family: var(--em-profile-font), Inter, sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: var(--em-applicant-h4);
@@ -21,7 +21,7 @@
     }
 
     h5 {
-        font-family: var(--em-default-font);
+        font-family: var(--em-profile-font), Inter, sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: var(--em-applicant-h5);
@@ -30,7 +30,7 @@
     }
 
     h6 {
-        font-family: var(--em-default-font);
+        font-family: var(--em-profile-font), Inter, sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: var(--em-applicant-h6);
@@ -42,8 +42,16 @@
         color: var(--link-regular);
     }
 
+    a:visited {
+        color: var(--link-visited);
+    }
+
+    a:visited:hover {
+        color: var(--link-visited);
+    }
+
     a:hover {
-        color: var(--link-hover);
+        color: var(--link-regular);
     }
 
     a,
@@ -138,11 +146,14 @@
         margin: 16px 0;
     }
 
-    ol {
-        list-style: decimal;
-    }
     ul {
-        list-style: disc;
+        list-style: initial;
+        padding-left: 24px;
+    }
+
+    ol {
+        list-style: auto;
+        padding-left: 24px;
     }
 
     legend {
@@ -216,7 +227,7 @@
         color: var(--neutral-0) !important;
     }
 
-    .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs .material-icons {
+    .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs .material-symbols-outlined{
         color: var(--neutral-0);
     }
 
@@ -229,9 +240,9 @@
         color: var(--red-500) !important;
     }
 
-    .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs:active .material-icons,
-    .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs:focus .material-icons,
-    .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs:hover .material-icons {
+    .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs:active .material-symbols-outlined,
+    .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs:focus .material-symbols-outlined,
+    .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs:hover .material-symbols-outlined{
         color: var(--red-500);
     }
 
@@ -240,6 +251,11 @@
         div:where(.swal2-popup) {
             padding: var(--em-alert-modal-padding) !important;
             align-items: flex-start;
+
+            iframe {
+                padding-top: 0;
+                margin-top: 10px;
+            }
 
             .swal2-title {
                 @apply tw-em-default-title-3;
@@ -271,10 +287,21 @@
 
             .swal2-html-container{
                 @apply tw-text-base;
-                text-align: left !important;
+                text-align: left;
                 overflow: visible;
                 margin: var(--em-spacing-5) 0 0 0;
                 padding: 0;
+
+                    label:not([for]), .em-addUser label:not([for*="same_login_email"]), .em-addGroup label, .em-affect-groups label{
+                        font-weight: var(--em-form-label-weight);
+                        margin-bottom: 0;
+                    }
+                    .chzn-container, input {
+                        margin-top: var(--em-form-label-margin-bottom);
+                    }
+                    input {
+                       border-radius: var(--em-form-br) !important;
+                    }
             }
 
             .swal2-content {
@@ -288,11 +315,33 @@
                 button {
                     @apply tw-m-0;
                 }
+                .swal2-deny {
+                    margin-left: 35%;
+                    border-radius: var(--em-coordinator-br);
+                    padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
+                    color: var(--neutral-0);
+                    background-color: var(--em-secondary-color);
+                }
+            }
+
+            .swal2-validation-message {
+                border: 1px solid var(--red-500, #F04437);
+                background: var(--red-50, #FEF3F2);
+                border-radius: 4px;
+                justify-content: start;
+                color: var(--neutral-900);
+            }
+
+            label:where(.swal2-input-label) {
+                margin: 0 0 4px 0;
+                display: block;
+                color: var(--neutral-900);
+            }
+
+            input:where(.swal2-input) {
+                margin: 0;
             }
         }
-    }
-    .gantry.g-back-office-emundus-tableau .swal2-popup iframe {
-        padding-top: 30px;
     }
 
     .swal2-icon.swal2-question {
@@ -313,10 +362,11 @@
 
     .swal2-popup {
         border-radius: var(--em-default-br) !important;
+        width: 38em !important;
     }
 
     button.swal2-styled.swal2-confirm {
-        background: var(--blue-500);
+       /* background: var(--blue-500);*/
         border-radius: var(--em-coordinator-br);
         padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
         color: var(--neutral-0);
@@ -339,7 +389,7 @@
     }
 
     button.swal2-confirm.save-btn.sauvegarder.save_continue {
-        font-family: var(--em-coordinator-font);
+        font-family: var(--em-profile-font), Inter, sans-serif;
         background: var(--em-primary-color) !important;
         border: 1px solid var(--em-primary-color) !important;
         border-radius: var(--em-coordinator-br);
@@ -358,7 +408,7 @@
     }
 
     button.swal2-cancel.goback-btn {
-        font-family: var(--em-coordinator-font);
+        font-family: var(--em-profile-font), Inter, sans-serif;
         background: var(--em-secondary-color) !important;
         border: 1px solid var(--em-secondary-color) !important;
         border-radius: var(--em-coordinator-br) !important;
@@ -379,7 +429,7 @@
     }
 
     .swal2-content {
-        font-family: var(--em-coordinator-font);
+        font-family: var(--em-profile-font), Inter, sans-serif;
     }
 
     /* ALERTES */
@@ -396,14 +446,11 @@
         @apply tw-text-lg;
         @apply tw-mb-0;
 
-        .material-icons {
-            @apply tw-mr-3;
-        }
-
         p {
             color: inherit;
-            font-family: var(--em-coordinator-font);
+            font-family: var(--em-profile-font), Inter, sans-serif;
             line-height: 24px;
+            max-width: 40vw;
         }
     }
 
@@ -411,9 +458,11 @@
         border: solid var(--em-alert-error-border-width) var(--em-alert-error-border-color);
         background-color: var(--em-alert-error-bgc);
         color: var(--em-alert-error-color);
+        margin-bottom: var(--em-spacing-2);
 
-        .material-icons {
+        .material-icons,.material-icons-outlined, .material-symbols-outlined {
             color: var(--em-alert-error-icon-color);
+            margin-right: var(--em-spacing-3);
         }
     }
 
@@ -422,7 +471,7 @@
         background-color: var(--em-alert-warning-bgc);
         color: var(--em-alert-warning-color);
 
-        .material-icons {
+        .material-icons,.material-icons-outlined, .material-symbols-outlined  {
             color: var(--em-alert-warning-icon-color);
         }
     }
@@ -432,7 +481,7 @@
         background-color: var(--em-alert-info-bgc);
         color: var(--em-alert-info-color);
 
-        .material-icons {
+        .material-icons,.material-icons-outlined, .material-symbols-outlined {
             color: var(--em-alert-info-icon-color);
         }
     }
@@ -442,7 +491,7 @@
         background-color: var(--em-alert-success-bgc);
         color: var(--em-alert-success-color);
 
-        .material-icons {
+        .material-icons,.material-icons-outlined, .material-symbols-outlined {
             color: var(--em-alert-success-icon-color);
         }
     }
@@ -482,6 +531,11 @@
         float: right;
         right: unset;
         background: transparent;
+    }
+
+    .alert-danger .close,
+    .alert-error .close {
+        color: var(--em-alert-error-color);
     }
 
     .alert h4 {

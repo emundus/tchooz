@@ -19,9 +19,9 @@
    <row>
     <field name="id">1</field>
     <field name="step">0</field>
-    <field name="value">En cours</field>
+    <field name="value">En cours de saisie</field>
     <field name="ordering">1</field>
-    <field name="class">default</field>
+    <field name="class">yellow-1</field>
     <field name="profile" value_is_null="true"></field>
     <field name="tags" value_is_null="true"></field>
    </row>
@@ -66,7 +66,7 @@
     <field name="step">5</field>
     <field name="value">Liste d'attente</field>
     <field name="ordering">6</field>
-    <field name="class">orange-1</field>
+    <field name="class">purple-2</field>
     <field name="profile" value_is_null="true"></field>
     <field name="tags" value_is_null="true"></field>
    </row>
@@ -75,7 +75,7 @@
     <field name="step">6</field>
     <field name="value">En évaluation</field>
     <field name="ordering">7</field>
-    <field name="class">pink-1</field>
+    <field name="class">light-blue-2</field>
     <field name="profile" value_is_null="true"></field>
     <field name="tags" value_is_null="true"></field>
    </row>
@@ -84,7 +84,7 @@
     <field name="step">7</field>
     <field name="value">A évaluer</field>
     <field name="ordering">8</field>
-    <field name="class">orange-2</field>
+    <field name="class">light-blue-1</field>
     <field name="profile" value_is_null="true"></field>
     <field name="tags" value_is_null="true"></field>
    </row>

@@ -1,0 +1,668 @@
+{
+  "field": [
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE",
+      "name": "password",
+      "type": "dropdown",
+      "options" : [
+        {
+          "value": 0,
+          "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_TEXT"
+        },
+        {
+          "value": 5,
+          "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_LINK"
+        },
+        {
+          "value": 6,
+          "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_NUMBER"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_PLACEHOLDER",
+      "name": "placeholder",
+      "type": "text",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_MAXLENGTH",
+      "name": "maxlength",
+      "type": "number",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_INPUT_MASK_TITLE",
+      "name": "text_input_mask",
+      "type": "text",
+      "helptext": "COM_EMUNDUS_ONBOARD_BUILDER_INPUT_MASK_HINT",
+      "placeholder": "COM_EMUNDUS_ONBOARD_BUILDER_INPUT_MASK_PLACEHOLDER",
+      "published": true,
+      "sysadmin_only": false
+    }
+  ],
+  "textarea": [
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_DISPLAY_LABEL",
+      "name": "textarea_showlabel",
+      "type": "dropdown",
+      "options" : [
+        {
+          "value": 0,
+          "label": "JNO"
+        },
+        {
+          "value": 1,
+          "label": "JYES"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": false,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_PLACEHOLDER",
+      "name": "textarea_placeholder",
+      "type": "text",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_WYSIWIG",
+      "name": "use_wysiwyg",
+      "type": "dropdown",
+      "options" : [
+        {
+          "value": 0,
+          "label": "JNO"
+        },
+        {
+          "value": 1,
+          "label": "JYES"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_LIMIT",
+      "name": "textarea-maxlength",
+      "type": "number",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_SHOWMAX_LIMIT",
+      "name": "textarea-showmax",
+      "type": "dropdown",
+      "options" : [
+        {
+          "value": 0,
+          "label": "JNO"
+        },
+        {
+          "value": 1,
+          "label": "JYES"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_LIMIT_TYPE",
+      "name": "textarea_limit_type",
+      "type": "dropdown",
+      "options" : [
+        {
+          "value": "char",
+          "label": "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_LIMIT_TYPE_CHARACTERS"
+        },
+        {
+          "value": "word",
+          "label": "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_LIMIT_TYPE_WORDS"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    }
+  ],
+  "dropdown": [],
+  "checkbox": [
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_CHECKBOX_OPTIONS_PER_ROW",
+      "name": "ck_options_per_row",
+      "type": "number",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": true
+    }
+  ],
+  "radiobutton": [
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_RADIOBUTTON_OPTIONS_PER_ROW",
+      "name": "options_per_row",
+      "type": "number",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": true
+    }
+  ],
+  "birthday": [
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_ADVANCED",
+      "name": "advanced_behavior",
+      "type": "dropdown",
+      "options" : [
+        {
+          "value": 0,
+          "label": "JNO"
+        },
+        {
+          "value": 1,
+          "label": "JYES"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": false,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_LIST_METHOD",
+      "name": "birthday_yearopt",
+      "type": "dropdown",
+      "options" : [
+        {
+          "value": "number",
+          "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_LIST_METHOD_YEARS_NUMBER"
+        },
+        {
+          "value": "since",
+          "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_LIST_METHOD_SINCE_YEAR"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_LIST_METHOD_NUMBER",
+      "name": "birthday_yearstart",
+      "type": "number",
+      "helptext": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_LIST_METHOD_NUMBER_TIP",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_YEARS_FUTURE_PAST",
+      "name": "birthday_forward",
+      "type": "number",
+      "helptext": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_YEARS_FUTURE_PAST_TIP",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_FORMAT",
+      "name": "list_date_format",
+      "type": "dropdown",
+      "options" : [
+        {
+          "value": "d.m.Y",
+          "label": "21.12.2022"
+        },
+        {
+          "value": "m.d.Y",
+          "label": "12.21.2022"
+        },
+        {
+          "value": "d/m/Y",
+          "label": "21/12/2022"
+        },
+        {
+          "value": "d m",
+          "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_FORMAT_D_M"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    }
+  ],
+  "yesno": [
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_YESNO_DEFAULT_VALUE",
+      "name": "yesno_default",
+      "type": "dropdown",
+      "options" : [
+        {
+          "value": 0,
+          "label": "JNO"
+        },
+        {
+          "value": 1,
+          "label": "JYES"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    }
+  ],
+  "calc": [
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_CALC_VALUE",
+      "name": "calc_calculation",
+      "type": "textarea",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": true
+    }
+  ],
+  "databasejoin": [
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_DISPLAY_TYPE",
+      "name": "database_join_display_type",
+      "type": "dropdown",
+      "options" : [
+        {
+          "value": "dropdown",
+          "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_DISPLAY_TYPE_DROPDOWN"
+        },
+        {
+          "value": "radio",
+          "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_DISPLAY_TYPE_RADIO"
+        },
+        {
+          "value": "auto-complete",
+          "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_DISPLAY_TYPE_AUTOCOMPLETE"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_TABLE",
+      "name": "join_db_name",
+      "type": "databasejoin",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_VALUE",
+      "name": "join_key_column",
+      "type": "databasejoin_cascade",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": true
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_LABEL",
+      "name": "join_val_column",
+      "type": "databasejoin_cascade",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": true
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_LABEL_CONCAT",
+      "name": "join_val_column_concat",
+      "type": "textarea",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": true
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_SHOW_PLEASE_SELECT",
+      "name": "database_join_show_please_select",
+      "type": "dropdown",
+      "options" : [
+        {
+          "value": 0,
+          "label": "JNO"
+        },
+        {
+          "value": 1,
+          "label": "JYES"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_EXCLUDE",
+      "name": "database_join_exclude",
+      "type": "sqldropdown",
+      "table": "{join_db_name}",
+      "key": "{join_key_column}",
+      "value": "{join_val_column}",
+      "translate": false,
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false,
+      "options": [],
+      "multiple": true,
+      "reload_on_change": "join_db_name"
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_WHERE",
+      "name": "database_join_where_sql",
+      "type": "textarea",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": true
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_WHERE_AJAX",
+      "name": "databasejoin_where_ajax",
+      "type": "dropdown",
+      "options" : [
+        {
+          "value": 0,
+          "label": "JNO"
+        },
+        {
+          "value": 1,
+          "label": "JYES"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": true
+    }
+  ],
+  "jdate": [
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_CALENDAR_DEFAULT_TODAY",
+      "name": "jdate_defaulttotoday",
+      "type": "dropdown",
+      "options" : [
+        {
+          "value": 0,
+          "label": "JNO"
+        },
+        {
+          "value": 1,
+          "label": "JYES"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    }
+  ],
+  "emundus_geolocalisation": [
+    {
+      "label": "COM_EMUNDUS_FORM_BUILDER_GEOLOC_DEFAULT_LNG",
+      "name": "default_lng",
+      "type": "text",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_FORM_BUILDER_GEOLOC_DEFAULT_LAT",
+      "name": "default_lat",
+      "type": "text",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_FORM_BUILDER_GEOLOC_DEFAULT_ZOOM",
+      "name": "default_zoom",
+      "type": "number",
+      "minlength": 1,
+      "maxlength": 20,
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_FORM_BUILDER_GEOLOC_GET_LOCATION",
+      "name": "get_location",
+      "type": "dropdown",
+      "options": [
+        {
+          "value": 0,
+          "label": "JNO"
+        },
+        {
+          "value": 1,
+          "label": "JYES"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    }
+  ],
+  "emundus_phonenumber": [
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_PHONENUMBER_DEFAULT_COUNTRY",
+      "name": "default_country",
+      "type": "sqldropdown",
+      "table": "data_country",
+      "key": "iso2",
+      "value": "label",
+      "translate": true,
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false,
+      "options": []
+    }
+  ],
+  "panel": [
+    {
+      "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE",
+      "name": "type",
+      "type": "dropdown",
+      "options": [
+        {
+          "value": 1,
+          "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE_INFORMATION"
+        },
+        {
+          "value": 2,
+          "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE_WARNING"
+        },
+        {
+          "value": 3,
+          "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE_ERROR"
+        },
+        {
+          "value": 4,
+          "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE_NONE"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_ACCORDION",
+      "name": "accordion",
+      "type": "dropdown",
+      "options": [
+        {
+          "value": 0,
+          "label": "JNO"
+        },
+        {
+          "value": 1,
+          "label": "JYES"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_ACCORDION_TITLE",
+      "name": "title",
+      "type": "text",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    }
+  ],
+  "currency": [
+    {
+      "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES",
+      "name": "all_currencies_options",
+      "type": "repeatable",
+      "published": true,
+      "fields": [
+        {
+          "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_ISO",
+          "name": "iso3",
+          "type": "dropdown",
+          "options": [
+            {
+              "value": "EUR",
+              "label": "Euro (€ EUR)"
+            },
+            {
+              "value": "USD",
+              "label": "United States dollar ($ USD)"
+            },
+            {
+              "value": "JPY",
+              "label": "Japanese yen (¥ JPY)"
+            },
+            {
+              "value": "GBP",
+              "label": "British pound (£ GBP)"
+            }
+          ],
+          "helptext": "",
+          "placeholder": "",
+          "published": true,
+          "sysadmin_only": false
+        },
+        {
+          "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_MIN",
+          "name": "minimal_value",
+          "type": "number",
+          "helptext": "",
+          "placeholder": "",
+          "published": true,
+          "sysadmin_only": false
+        },
+        {
+          "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_MAX",
+          "name": "maximal_value",
+          "type": "number",
+          "helptext": "",
+          "placeholder": "",
+          "published": true,
+          "sysadmin_only": false
+        },
+        {
+          "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR",
+          "name": "thousand_separator",
+          "type": "dropdown",
+          "options": [
+            {
+              "value": " ",
+              "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_BLANK_SPACE"
+            },
+            {
+              "value": ",",
+              "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_COMMA"
+            },
+            {
+              "value": ".",
+              "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_DOT"
+            }
+          ],
+          "helptext": "",
+          "placeholder": "",
+          "published": true,
+          "sysadmin_only": false
+        },
+        {
+          "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_DECIMAL_SEPARATOR",
+          "name": "decimal_separator",
+          "type": "dropdown",
+          "options": [
+            {
+              "value": " ",
+              "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_BLANK_SPACE"
+            },
+            {
+              "value": ",",
+              "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_COMMA"
+            },
+            {
+              "value": ".",
+              "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_DOT"
+            }
+          ],
+          "helptext": "",
+          "placeholder": "",
+          "published": true,
+          "sysadmin_only": false
+        },
+        {
+          "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_DECIMAL_NUMBERS",
+          "name": "decimal_numbers",
+          "type": "number",
+          "helptext": "",
+          "placeholder": "",
+          "published": true,
+          "sysadmin_only": false
+        }
+      ]
+    }
+  ]
+}

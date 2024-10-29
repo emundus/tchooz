@@ -125,7 +125,7 @@ class EmundusModelAdmission extends JModelList
 			foreach ($this->_elements as $def_elmt) {
 				$group_params = json_decode($def_elmt->group_attribs);
 
-				if ($def_elmt->element_plugin == 'date') {
+				if (in_array($def_elmt->element_plugin,['date','jdate'])) {
 					if ($group_params->repeat_group_button == 1) {
 						$this->_elements_default[] = '(
 														SELECT  GROUP_CONCAT(DATE_FORMAT(' . $def_elmt->table_join . '.' . $def_elmt->element_name . ', "%d/%m/%Y %H:%i:%m") SEPARATOR ", ")
@@ -1106,7 +1106,7 @@ class EmundusModelAdmission extends JModelList
 
 		$pageNavigation = "<div class='em-container-pagination-selectPage'>";
 		$pageNavigation .= "<ul class='pagination pagination-sm'>";
-		$pageNavigation .= "<li><a href='#em-data' id='" . $this->getPagination()->pagesStart . "'><span class='material-icons'>navigate_before</span></a></li>";
+		$pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent - 1) . "'><span class='material-icons'>navigate_before</span></a></li>";
 		if ($this->getPagination()->pagesTotal > 15) {
 			for ($i = 1; $i <= 5; $i++) {
 				$pageNavigation .= "<li ";
@@ -1154,7 +1154,7 @@ class EmundusModelAdmission extends JModelList
 				$pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
 			}
 		}
-		$pageNavigation .= "<li><a href='#em-data' id='" . $this->getPagination()->pagesTotal . "'><span class='material-icons'>navigate_next</span></a></li></ul></div>";
+		$pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent + 1) . "'><span class='material-icons'>navigate_next</span></a></li></ul></div>";
 
 		return $pageNavigation;
 	}
@@ -1247,9 +1247,9 @@ class EmundusModelAdmission extends JModelList
 		return $this->_files->getAllTags();
 	}
 
-	public function getAllStatus()
+	public function getAllStatus($uid = null)
 	{
-		return $this->_files->getAllStatus();
+		return $this->_files->getAllStatus($uid);
 	}
 
 	public function tagFile($fnums, $tag)

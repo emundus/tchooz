@@ -389,7 +389,7 @@ class DropfilesViewFiles extends JViewLegacy
                 $files = array_merge($lstAllFile, $files);
                 $ordering = JFactory::getApplication()->input->getCmd('orderCol', $params->ordering);
                 $direction = JFactory::getApplication()->input->getCmd('orderDir', $params->orderingdir);
-                $files = DropfilesHelper::orderingMultiCategoryFiles($files, $ordering, $direction);
+                $files = DropfilesHelper::orderingMultiCategoryFiles($files, $ordering, $direction, $category_id);
             }
 
             if (!empty($files)) {

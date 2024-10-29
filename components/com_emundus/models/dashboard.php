@@ -15,38 +15,42 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
 
 use Joomla\CMS\Date\Date;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
 
 JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models');
 
 class EmundusModelDashboard extends JModelList
 {
-	var $_db = null;
+	private $_db;
+	private $now;
 
 	public function __construct($config = array())
 	{
 		parent::__construct($config);
-		$this->offset = JFactory::getApplication()->get('offset', 'UTC');
+		$this->offset = Factory::getApplication()->get('offset', 'UTC');
+		$this->_db = Factory::getContainer()->get('DatabaseDriver');
 
-		$this->_db = JFactory::getDBO();
-
-		try {
+		try
+		{
 			$dateTime  = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
 			$dateTime  = $dateTime->setTimezone(new DateTimeZone($this->offset));
 			$this->now = $dateTime->format('Y-m-d H:i:s');
 		}
-		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/dashboard | Error at defining the offset datetime : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/dashboard | Error at defining the offset datetime : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 	}
 
 	public function getDashboard($user_id)
 	{
-		$this->_db = JFactory::getDbo();
 		$query     = $this->_db->getQuery(true);
 
-		$current_profile = JFactory::getSession()->get('emundusUser')->profile;
+		$current_profile = Factory::getApplication()->getSession()->get('emundusUser')->profile;
 
-		try {
+		try
+		{
 			$query->select('id')
 				->from($this->_db->quoteName('#__emundus_setup_dashboard'))
 				->where($this->_db->quoteName('user') . ' = ' . $user_id)
@@ -55,19 +59,20 @@ class EmundusModelDashboard extends JModelList
 
 			return $this->_db->loadResult();
 		}
-		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/dashboard | Error at getting the dashboard of user ' . $user_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/dashboard | Error at getting the dashboard of user ' . $user_id . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 	}
 
 	public function createDashboard($user_id)
 	{
-		$this->_db = JFactory::getDbo();
 		$query     = $this->_db->getQuery(true);
 
 		$profile = JFactory::getSession()->get('emundusUser')->profile;
 
-		try {
+		try
+		{
 			$query->clear()
 				->insert($this->_db->quoteName('#__emundus_setup_dashboard'))
 				->set($this->_db->quoteName('user') . ' = ' . $user_id)
@@ -85,7 +90,8 @@ class EmundusModelDashboard extends JModelList
 			$this->_db->setQuery($query);
 			$default_widgets = $this->_db->loadObjectList();
 
-			foreach ($default_widgets as $default_widget) {
+			foreach ($default_widgets as $default_widget)
+			{
 				$query->clear()
 					->insert($this->_db->quoteName('#__emundus_setup_dashbord_repeat_widgets'))
 					->set($this->_db->quoteName('parent_id') . ' = ' . $dashboard)
@@ -97,8 +103,9 @@ class EmundusModelDashboard extends JModelList
 
 			return true;
 		}
-		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/dashboard | Error at creating a dashboard for user ' . $user_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/dashboard | Error at creating a dashboard for user ' . $user_id . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -106,18 +113,19 @@ class EmundusModelDashboard extends JModelList
 
 	public function deleteDashboard($user_id)
 	{
-		$this->_db = JFactory::getDbo();
 		$query     = $this->_db->getQuery(true);
 
-		try {
+		try
+		{
 			$query->delete('#__emundus_setup_dashboard')
 				->where($this->_db->quoteName('user') . ' = ' . $user_id);
 			$this->_db->setQuery($query);
 
 			return $this->_db->execute();
 		}
-		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/dashboard | Error at deleting the dashboard for user ' . $user_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/dashboard | Error at deleting the dashboard for user ' . $user_id . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -125,10 +133,10 @@ class EmundusModelDashboard extends JModelList
 
 	public function getallwidgetsbysize($size, $user_id)
 	{
-		$this->_db = JFactory::getDbo();
 		$query     = $this->_db->getQuery(true);
 
-		try {
+		try
+		{
 			$profile = JFactory::getSession()->get('emundusUser')->profile;
 
 			$query->clear()
@@ -143,98 +151,130 @@ class EmundusModelDashboard extends JModelList
 			$this->_db->setQuery($query);
 			$widgets = $this->_db->loadObjectList();
 
-			if (!empty($widgets)) {
-				foreach ($widgets as $key => $widget) {
+			if (!empty($widgets))
+			{
+				foreach ($widgets as $key => $widget)
+				{
 					$widgets[$key]->label = JText::_($widget->label);
 				}
 			}
 
 			return $widgets;
 		}
-		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/dashboard | Error when try to get all widgets : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/dashboard | Error when try to get all widgets : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return [];
 		}
 	}
 
-	public function getwidgets($user_id)
+	public function getwidgets($user_id, $profile = null, $all = false)
 	{
-		$this->_db = JFactory::getDbo();
-		$query     = $this->_db->getQuery(true);
+		$widgets = [];
 
-		$profile = JFactory::getSession()->get('emundusUser')->profile;
-		if (empty($profile)) {
-			$query->select('profile')
-				->from($this->_db->quoteName('#__emundus_users'))
-				->where($this->_db->quoteName('user_id') . ' = ' . $user_id);
-			$this->_db->setQuery($query);
-			$profile = $this->_db->loadResult();
-		}
+		if (!empty($user_id))
+		{
+			$query     = $this->_db->getQuery(true);
 
-		try {
-			$query->clear()
-				->select('ew.id,ew.name,ew.label,ew.params,ew.size,ew.size_small,ew.type,ew.class,esdr.position,ew.chart_type,ew.article_id')
-				->from($this->_db->quoteName('#__emundus_setup_dashbord_repeat_widgets', 'esdr'))
-				->leftJoin($this->_db->quoteName('#__emundus_setup_dashboard', 'esd') . ' ON ' . $this->_db->quoteName('esd.id') . ' = ' . $this->_db->quoteName('esdr.parent_id'))
-				->leftJoin($this->_db->quoteName('#__emundus_widgets', 'ew') . ' ON ' . $this->_db->quoteName('ew.id') . ' = ' . $this->_db->quoteName('esdr.widget'))
-				->where($this->_db->quoteName('esd.user') . ' = ' . $this->_db->quote($user_id))
-				->andWhere($this->_db->quoteName('esd.profile') . ' = ' . $this->_db->quote($profile))
-				->order('esdr.position');
-			$this->_db->setQuery($query);
-			$widgets = $this->_db->loadObjectList();
-
-			if (empty($widgets)) {
-				$query->clear()
-					->select('params')
-					->from($this->_db->quoteName('#__modules'))
-					->where($this->_db->quoteName('module') . ' LIKE ' . $this->_db->quote('mod_emundus_dashboard_vue'));
-
+			if (empty($profile))
+			{
+				$query->select('profile')
+					->from($this->_db->quoteName('#__emundus_users'))
+					->where($this->_db->quoteName('user_id') . ' = ' . $user_id);
 				$this->_db->setQuery($query);
-				$modules = $this->_db->loadColumn();
+				$profile = $this->_db->loadResult();
+			}
 
-				$widgets = array();
+			try
+			{
+				$query->clear()
+					->select('ew.id,ew.name,ew.label,ew.params,ew.size,ew.size_small,ew.type,ew.class,esdr.position,ew.chart_type,ew.article_id, ewra.access_level')
+					->from($this->_db->quoteName('#__emundus_setup_dashbord_repeat_widgets', 'esdr'))
+					->leftJoin($this->_db->quoteName('#__emundus_setup_dashboard', 'esd') . ' ON ' . $this->_db->quoteName('esd.id') . ' = ' . $this->_db->quoteName('esdr.parent_id'))
+					->leftJoin($this->_db->quoteName('#__emundus_widgets', 'ew') . ' ON ' . $this->_db->quoteName('ew.id') . ' = ' . $this->_db->quoteName('esdr.widget'))
+					->leftJoin($this->_db->quoteName('#__emundus_widgets_repeat_access', 'ewra') . ' ON ' . $this->_db->quoteName('ew.id') . ' = ' . $this->_db->quoteName('ewra.parent_id'));
+				if(!$all) {
+					$query->where($this->_db->quoteName('esd.user') . ' = ' . $this->_db->quote($user_id))
+						->where($this->_db->quoteName('esd.profile') . ' = ' . $this->_db->quote($profile));
+				}
+				$query->where('ewra.profile = ' . $this->_db->quote($profile))
+					->order('esdr.position');
+				if($all) {
+					$query->group('ew.id');
+				}
+				$this->_db->setQuery($query);
+				$widgets = $this->_db->loadObjectList();
 
-				foreach ($modules as $module) {
-					$params = json_decode($module, true);
-					if (in_array(JFactory::getSession()->get('emundusUser')->profile, $params['profile'])) {
-						$widgets = $params['widgets'];
+				if (empty($widgets))
+				{
+					$query->clear()
+						->select('params')
+						->from($this->_db->quoteName('#__modules'))
+						->where($this->_db->quoteName('module') . ' LIKE ' . $this->_db->quote('mod_emundus_dashboard_vue'));
+
+					$this->_db->setQuery($query);
+					$modules = $this->_db->loadColumn();
+
+					$widgets = array();
+
+					foreach ($modules as $module)
+					{
+						$params = json_decode($module, true);
+						if (in_array($profile, $params['profile']))
+						{
+							$widgets = $params['widgets'];
+						}
+					}
+
+					if (!empty($widgets))
+					{
+						$query->clear()
+							->select('ew.id,ew.name,ew.label,ew.params,ew.size,ew.size_small,ew.class,ew.type,ew.chart_type,ew.article_id,ew.params, ewra.access_level')
+							->from($this->_db->quoteName('#__emundus_widgets', 'ew'))
+							->leftJoin($this->_db->quoteName('#__emundus_widgets_repeat_access', 'ewra') . ' ON ' . $this->_db->quoteName('ew.id') . ' = ' . $this->_db->quoteName('ewra.parent_id'))
+							->where($this->_db->quoteName('ew.name') . ' IN (' . implode(',', $this->_db->quote($widgets)) . ')')
+							->andWhere($this->_db->quoteName('esdr.profile') . ' = ' . $this->_db->quote($profile));
+
+						$this->_db->setQuery($query);
+						$widgets = $this->_db->loadObjectList();
 					}
 				}
 
-				if (!empty($widgets)) {
-					$query->clear()
-						->select('id,name,label,params,size,size_small,class,type,chart_type,article_id,params')
-						->from($this->_db->quoteName('#__emundus_widgets'))
-						->where($this->_db->quoteName('name') . ' IN (' . implode(',', $this->_db->quote($widgets)) . ')');
-					$this->_db->setQuery($query);
+				if (!empty($widgets))
+				{
+					foreach ($widgets as $key => $widget)
+					{
+						if (!empty($widget->access_level))
+						{
+							if (!EmundusHelperAccess::isAllowedAccessLevel($user_id, $widget->access_level))
+							{
+								unset($widgets[$key]);
+								continue;
+							}
+						}
 
+						$widgets[$key]->label = JText::_($widget->label);
+					}
 
-					$widgets = $this->_db->loadObjectList();
+					$widgets = array_values($widgets);
 				}
 			}
-
-			if (!empty($widgets)) {
-				foreach ($widgets as $key => $widget) {
-					$widgets[$key]->label = JText::_($widget->label);
-				}
+			catch (Exception $e)
+			{
+				Log::add('component/com_emundus/models/dashboard | Error when try to get widgets : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 			}
-
-			return $widgets;
 		}
-		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/dashboard | Error when try to get widgets : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
 
-			return [];
-		}
+		return $widgets;
 	}
 
 	public function updatemydashboard($widget, $position, $user_id)
 	{
-		$this->_db = JFactory::getDbo();
 		$query     = $this->_db->getQuery(true);
 
-		try {
+		try
+		{
 			$dashboard = $this->getDashboard($user_id);
 
 			$query->clear()
@@ -246,8 +286,9 @@ class EmundusModelDashboard extends JModelList
 
 			return $this->_db->execute();
 		}
-		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/dashboard | Error when try update my dashboard : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/dashboard | Error when try update my dashboard : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -255,7 +296,8 @@ class EmundusModelDashboard extends JModelList
 
 	public function renderchartbytag($id)
 	{
-		try {
+		try
+		{
 			$query = $this->_db->getQuery(true);
 
 			$query->select('eval')
@@ -268,8 +310,9 @@ class EmundusModelDashboard extends JModelList
 
 			return eval("$request[1]");
 		}
-		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/dashboard | Error when get datas : ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), JLog::ERROR, 'com_emundus');
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/dashboard | Error when get datas : ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return array('dataset' => '');
 		}
@@ -277,7 +320,8 @@ class EmundusModelDashboard extends JModelList
 
 	public function getarticle($id, $article)
 	{
-		try {
+		try
+		{
 			$query = $this->_db->getQuery(true);
 
 			$query->select('id,introtext')
@@ -288,8 +332,9 @@ class EmundusModelDashboard extends JModelList
 
 			return $value->introtext;
 		}
-		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/dashboard | Error when get content of an article : ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), JLog::ERROR, 'com_emundus');
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/dashboard | Error when get content of an article : ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return array('dataset' => '');
 		}
@@ -298,10 +343,10 @@ class EmundusModelDashboard extends JModelList
 	/** Sciences PO */
 	public function getfilescountbystatus()
 	{
-		$this->_db = JFactory::getDbo();
 		$query     = $this->_db->getQuery(true);
 
-		try {
+		try
+		{
 			$query->select('*')
 				->from($this->_db->quoteName('#__emundus_setup_status'));
 			$this->_db->setQuery($query);
@@ -309,7 +354,8 @@ class EmundusModelDashboard extends JModelList
 
 			$files = [];
 
-			foreach ($status as $statu) {
+			foreach ($status as $statu)
+			{
 				$file        = new stdClass;
 				$file->label = $statu->value;
 
@@ -325,8 +371,9 @@ class EmundusModelDashboard extends JModelList
 
 			return array('files' => $files, 'status' => $status);
 		}
-		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/dashboard | Error when try to get files count by status : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/dashboard | Error when try to get files count by status : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return array('files' => '', 'status' => '');
 		}
@@ -334,10 +381,10 @@ class EmundusModelDashboard extends JModelList
 
 	public function getfilesbycampaign($cid)
 	{
-		$this->_db = JFactory::getDbo();
 		$query     = $this->_db->getQuery(true);
 
-		try {
+		try
+		{
 			$query->select('COUNT(id) as files')
 				->from($this->_db->quoteName('#__emundus_campaign_candidature'))
 				->where($this->_db->quoteName('campaign_id') . '=' . $this->_db->quote($cid));
@@ -346,8 +393,9 @@ class EmundusModelDashboard extends JModelList
 
 			return $this->_db->loadResult();
 		}
-		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/dashboard | Error when try to get files by campaign : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/dashboard | Error when try to get files by campaign : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return 0;
 		}
@@ -355,12 +403,11 @@ class EmundusModelDashboard extends JModelList
 
 	public function getusersbyday()
 	{
-		$this->_db = JFactory::getDbo();
-
 		$dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
 		$dateTime = $dateTime->setTimezone(new DateTimeZone($this->offset));
 
-		try {
+		try
+		{
 			$users = [];
 			$days  = [];
 
@@ -369,7 +416,8 @@ class EmundusModelDashboard extends JModelList
 			$this->_db->setQuery($query);
 			$totalUsers = $this->_db->loadResult();
 
-			for ($d = 1; $d < 31; $d++) {
+			for ($d = 1; $d < 31; $d++)
+			{
 				$user  = new stdClass;
 				$day   = new stdClass;
 				$query = 'SELECT COUNT(id) as users
@@ -385,8 +433,9 @@ class EmundusModelDashboard extends JModelList
 
 			return array('users' => $users, 'days' => $days, 'total' => $totalUsers);
 		}
-		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/dashboard | Error when try to get users by day : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/dashboard | Error when try to get users by day : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return array('users' => '', 'days' => '', 'total' => 0);
 		}
@@ -398,12 +447,14 @@ class EmundusModelDashboard extends JModelList
 
 		$category = [];
 
-		try {
+		try
+		{
 			$query->select('value as seriesname,step')
 				->from($this->_db->quoteName('#__emundus_setup_status'));
 			$this->_db->setQuery($query);
 			$status = $this->_db->loadObjectList();
-			foreach ($status as $key => $statu) {
+			foreach ($status as $key => $statu)
+			{
 				$status[$key]->data = [];
 			}
 			$dataset = $status;
@@ -411,7 +462,8 @@ class EmundusModelDashboard extends JModelList
 			$query->clear()
 				->select('min(cc.date_time)')
 				->from($this->_db->quoteName('#__emundus_campaign_candidature', 'cc'));
-			if (!empty($program)) {
+			if (!empty($program))
+			{
 				$query->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'sc') . ' ON ' . $this->_db->quoteName('sc.id') . ' = ' . $this->_db->quoteName('cc.campaign_id'))
 					->where($this->_db->quoteName('sc.training') . ' LIKE ' . $this->_db->quote($program));
 			}
@@ -422,24 +474,31 @@ class EmundusModelDashboard extends JModelList
 
 			$category[] = $start_date->format('d/m');
 
-			while ($start_date < $end_date) {
+			while ($start_date < $end_date)
+			{
 				$query->clear()
 					->select('count(cc.id) as value, cc.status as seriesname, cc.date_time as date')
 					->from($this->_db->quoteName('#__emundus_campaign_candidature', 'cc'));
-				if (!empty($program)) {
+				if (!empty($program))
+				{
 					$query->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'sc') . ' ON ' . $this->_db->quoteName('sc.id') . ' = ' . $this->_db->quoteName('cc.campaign_id'));
 				}
 				$query->where($this->_db->quoteName('cc.date_time') . ' < ' . $this->_db->quote($start_date->format('Y-m-d H:i:s')));
-				if (!empty($program)) {
+				if (!empty($program))
+				{
 					$query->andWhere($this->_db->quoteName('sc.training') . ' LIKE ' . $this->_db->quote($program));
 				}
 				$query->group('cc.status');
 				$this->_db->setQuery($query);
 				$files = $this->_db->loadObjectList();
-				if (!empty($files)) {
-					foreach ($dataset as $key => $data) {
-						foreach ($files as $index => $file) {
-							if ($file->seriesname == $data->step) {
+				if (!empty($files))
+				{
+					foreach ($dataset as $key => $data)
+					{
+						foreach ($files as $index => $file)
+						{
+							if ($file->seriesname == $data->step)
+							{
 								$dataset[$key]->data[] = $file;
 								break;
 							}
@@ -450,7 +509,8 @@ class EmundusModelDashboard extends JModelList
 								return $e->seriesname == $data->step;
 							}
 						);
-						if (empty($neededObject)) {
+						if (empty($neededObject))
+						{
 							$empty_file             = new stdClass;
 							$empty_file->value      = "0";
 							$empty_file->seriesname = $data->step;
@@ -459,9 +519,12 @@ class EmundusModelDashboard extends JModelList
 						}
 					}
 				}
-				else {
-					foreach ($dataset as $key => $data) {
-						if (empty($dataset[$key]->data)) {
+				else
+				{
+					foreach ($dataset as $key => $data)
+					{
+						if (empty($dataset[$key]->data))
+						{
 							$empty_file             = new stdClass;
 							$empty_file->value      = "0";
 							$empty_file->seriesname = $data->step;
@@ -471,12 +534,14 @@ class EmundusModelDashboard extends JModelList
 				}
 
 				$start_date->modify('+1 week');
-				if ($start_date < $end_date) {
+				if ($start_date < $end_date)
+				{
 					$category[] = $start_date->format('d/m');
 				}
 			}
 
-			foreach ($category as $key => $date) {
+			foreach ($category as $key => $date)
+			{
 				$value                 = $date;
 				$category[$key]        = new stdClass();
 				$category[$key]->label = $value;
@@ -485,8 +550,9 @@ class EmundusModelDashboard extends JModelList
 
 			return array('dataset' => $dataset, 'category' => $category);
 		}
-		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/dashboard | Error when try to get users by day : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/dashboard | Error when try to get users by day : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return array('dataset' => '', 'category' => '');
 		}
@@ -499,12 +565,14 @@ class EmundusModelDashboard extends JModelList
 		$category = [];
 
 
-		try {
+		try
+		{
 			$query->select('value as seriesname,step')
 				->from($this->_db->quoteName('#__emundus_setup_status'));
 			$this->_db->setQuery($query);
 			$status = $this->_db->loadObjectList();
-			foreach ($status as $key => $statu) {
+			foreach ($status as $key => $statu)
+			{
 				$status[$key]->data = [];
 			}
 			$dataset = $status;
@@ -514,38 +582,49 @@ class EmundusModelDashboard extends JModelList
 				->from($this->_db->quoteName('#__emundus_setup_campaigns', 'sc'))
 				->leftJoin($this->_db->quoteName('#__emundus_setup_teaching_unity', 'stu') . ' ON ' . $this->_db->quoteName('stu.schoolyear') . ' LIKE ' . $this->_db->quoteName('sc.year'))
 				->order('stu.id');
-			if (!empty($program)) {
+			if (!empty($program))
+			{
 				$query->where($this->_db->quoteName('sc.training') . ' LIKE ' . $this->_db->quote($program));;
 			}
 			$this->_db->setQuery($query);
 			$campaigns = $this->_db->loadObjectList();
 
-			foreach ($campaigns as $campaign) {
-				if ($campaign->year != 13 && $campaign->year != 16) {
+			foreach ($campaigns as $campaign)
+			{
+				if ($campaign->year != 13 && $campaign->year != 16)
+				{
 					$category[] = $campaign->label;
 				}
 				$query->clear()
 					->select('count(cc.id) as value, cc.status as seriesname')
 					->from($this->_db->quoteName('#__emundus_campaign_candidature', 'cc'));
-				if (!empty($program)) {
+				if (!empty($program))
+				{
 					$query->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'sc') . ' ON ' . $this->_db->quoteName('sc.id') . ' = ' . $this->_db->quoteName('cc.campaign_id'));
 				}
 				$query->where($this->_db->quoteName('cc.campaign_id') . ' = ' . $this->_db->quote($campaign->id));
-				if (!empty($program)) {
+				if (!empty($program))
+				{
 					$query->andWhere($this->_db->quoteName('sc.training') . ' LIKE ' . $this->_db->quote($program));
 				}
 				$query->group('cc.status');
 				$this->_db->setQuery($query);
 				$files = $this->_db->loadObjectList();
 
-				if (!empty($files)) {
-					foreach ($dataset as $key => $data) {
-						foreach ($files as $index => $file) {
-							if ($file->seriesname == $data->step) {
-								if ($campaign->year != 13 && $campaign->year != 16) {
+				if (!empty($files))
+				{
+					foreach ($dataset as $key => $data)
+					{
+						foreach ($files as $index => $file)
+						{
+							if ($file->seriesname == $data->step)
+							{
+								if ($campaign->year != 13 && $campaign->year != 16)
+								{
 									$dataset[$key]->data[] = $file;
 								}
-								else {
+								else
+								{
 									$number_1                   = (int) $dataset[$key]->data[0]->value + (int) $file->value;
 									$combine_file_1             = new stdClass;
 									$combine_file_1->value      = (string) $number_1;
@@ -568,23 +647,29 @@ class EmundusModelDashboard extends JModelList
 								return $e->seriesname == $data->step;
 							}
 						);
-						if (empty($neededObject)) {
+						if (empty($neededObject))
+						{
 							$empty_file             = new stdClass;
 							$empty_file->value      = "0";
 							$empty_file->seriesname = $data->step;
-							if ($campaign->year != 13 && $campaign->year != 16) {
+							if ($campaign->year != 13 && $campaign->year != 16)
+							{
 								$dataset[$key]->data[] = $empty_file;
 							}
 						}
 					}
 				}
-				else {
-					foreach ($dataset as $key => $data) {
-						if (empty($dataset[$key]->data)) {
+				else
+				{
+					foreach ($dataset as $key => $data)
+					{
+						if (empty($dataset[$key]->data))
+						{
 							$empty_file             = new stdClass;
 							$empty_file->value      = "0";
 							$empty_file->seriesname = $data->step;
-							if ($campaign->year != 13 && $campaign->year != 16) {
+							if ($campaign->year != 13 && $campaign->year != 16)
+							{
 								$dataset[$key]->data[] = $empty_file;
 							}
 						}
@@ -592,7 +677,8 @@ class EmundusModelDashboard extends JModelList
 				}
 			}
 
-			foreach ($category as $key => $date) {
+			foreach ($category as $key => $date)
+			{
 				$value                 = $date;
 				$category[$key]        = new stdClass();
 				$category[$key]->label = explode('-', $value)[1];
@@ -600,8 +686,9 @@ class EmundusModelDashboard extends JModelList
 
 			return array('dataset' => $dataset, 'category' => $category);
 		}
-		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/dashboard | Error when try to get users by day : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/dashboard | Error when try to get users by day : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return array('dataset' => '', 'category' => '');
 		}
@@ -613,12 +700,14 @@ class EmundusModelDashboard extends JModelList
 
 		$category = [];
 
-		try {
+		try
+		{
 			$query->select('value as seriesname,step')
 				->from($this->_db->quoteName('#__emundus_setup_status'));
 			$this->_db->setQuery($query);
 			$status = $this->_db->loadObjectList();
-			foreach ($status as $key => $statu) {
+			foreach ($status as $key => $statu)
+			{
 				$status[$key]->data = [];
 			}
 			$dataset = $status;
@@ -630,27 +719,34 @@ class EmundusModelDashboard extends JModelList
 			$this->_db->setQuery($query);
 			$courses = $this->_db->loadObjectList();
 
-			foreach ($courses as $course) {
+			foreach ($courses as $course)
+			{
 				$category[] = $course->cours_fr;
 				$query->clear()
 					->select('count(cc.id) as value, cc.status as seriesname')
 					->from($this->_db->quoteName('#__emundus_campaign_candidature', 'cc'))
 					->leftJoin($this->_db->quoteName('jos_emundus_1002_00', 'cu') . ' ON ' . $this->_db->quoteName('cu.fnum') . ' = ' . $this->_db->quoteName('cc.fnum'));
-				if (in_array($session, [1, 2])) {
+				if (in_array($session, [1, 2]))
+				{
 					$query->where($this->_db->quoteName('cu.e_369_7829') . ' = ' . $this->_db->quote($course->id))
 						->orWhere($this->_db->quoteName('cu.e_369_7832') . ' = ' . $this->_db->quote($course->id));
 				}
-				elseif (in_array($session, [3])) {
+				elseif (in_array($session, [3]))
+				{
 					$query->where($this->_db->quoteName('cu.e_369_8302') . ' = ' . $this->_db->quote($course->id));
 				}
 				$query->group('cc.status');
 				$this->_db->setQuery($query);
 				$files = $this->_db->loadObjectList();
 
-				if (!empty($files)) {
-					foreach ($dataset as $key => $data) {
-						foreach ($files as $index => $file) {
-							if ($file->seriesname == $data->step) {
+				if (!empty($files))
+				{
+					foreach ($dataset as $key => $data)
+					{
+						foreach ($files as $index => $file)
+						{
+							if ($file->seriesname == $data->step)
+							{
 								$dataset[$key]->data[] = $file;
 								break;
 							}
@@ -661,7 +757,8 @@ class EmundusModelDashboard extends JModelList
 								return $e->seriesname == $data->step;
 							}
 						);
-						if (empty($neededObject)) {
+						if (empty($neededObject))
+						{
 							$empty_file             = new stdClass;
 							$empty_file->value      = "0";
 							$empty_file->seriesname = $data->step;
@@ -669,9 +766,12 @@ class EmundusModelDashboard extends JModelList
 						}
 					}
 				}
-				else {
-					foreach ($dataset as $key => $data) {
-						if (empty($dataset[$key]->data)) {
+				else
+				{
+					foreach ($dataset as $key => $data)
+					{
+						if (empty($dataset[$key]->data))
+						{
 							$empty_file             = new stdClass;
 							$empty_file->value      = "0";
 							$empty_file->seriesname = $data->step;
@@ -681,7 +781,8 @@ class EmundusModelDashboard extends JModelList
 				}
 			}
 
-			foreach ($category as $key => $date) {
+			foreach ($category as $key => $date)
+			{
 				$value                 = $date;
 				$category[$key]        = new stdClass();
 				$category[$key]->label = $value;
@@ -689,8 +790,9 @@ class EmundusModelDashboard extends JModelList
 
 			return array('dataset' => $dataset, 'category' => $category);
 		}
-		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/dashboard | Error when try to get users by day : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/dashboard | Error when try to get users by day : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return array('dataset' => '', 'category' => '');
 		}
@@ -702,12 +804,14 @@ class EmundusModelDashboard extends JModelList
 
 		$category = [];
 
-		try {
+		try
+		{
 			$query->select('value as seriesname,step')
 				->from($this->_db->quoteName('#__emundus_setup_status'));
 			$this->_db->setQuery($query);
 			$status = $this->_db->loadObjectList();
-			foreach ($status as $key => $statu) {
+			foreach ($status as $key => $statu)
+			{
 				$status[$key]->data = [];
 			}
 			$dataset = $status;
@@ -719,19 +823,22 @@ class EmundusModelDashboard extends JModelList
 			$this->_db->setQuery($query);
 			$courses = $this->_db->loadObjectList();
 
-			foreach ($courses as $course) {
+			foreach ($courses as $course)
+			{
 				$category[] = $course->course_fr;
 				$query->clear()
 					->select('count(cc.id) as value, cc.status as seriesname')
 					->from($this->_db->quoteName('#__emundus_campaign_candidature', 'cc'))
 					->leftJoin($this->_db->quoteName('jos_emundus_1001_04', 'cu') . ' ON ' . $this->_db->quoteName('cu.fnum') . ' = ' . $this->_db->quoteName('cc.fnum'));
-				if ($session == 1) {
+				if ($session == 1)
+				{
 					$query->where($this->_db->quoteName('cu.e_366_7803') . ' = ' . $this->_db->quote($course->id))
 						->orWhere($this->_db->quoteName('cu.cours_voeu_2') . ' = ' . $this->_db->quote($course->id))
 						->orWhere($this->_db->quoteName('cu.e_366_7805') . ' = ' . $this->_db->quote($course->id))
 						->orWhere($this->_db->quoteName('cu.cours_voeu_1_1') . ' = ' . $this->_db->quote($course->id));
 				}
-				elseif ($session == 2) {
+				elseif ($session == 2)
+				{
 					$query->where($this->_db->quoteName('cu.e_366_7804') . ' = ' . $this->_db->quote($course->id))
 						->orWhere($this->_db->quoteName('cu.cours_voeu_2_2') . ' = ' . $this->_db->quote($course->id))
 						->orWhere($this->_db->quoteName('cu.e_366_7806') . ' = ' . $this->_db->quote($course->id))
@@ -741,10 +848,14 @@ class EmundusModelDashboard extends JModelList
 				$this->_db->setQuery($query);
 				$files = $this->_db->loadObjectList();
 
-				if (!empty($files)) {
-					foreach ($dataset as $key => $data) {
-						foreach ($files as $index => $file) {
-							if ($file->seriesname == $data->step) {
+				if (!empty($files))
+				{
+					foreach ($dataset as $key => $data)
+					{
+						foreach ($files as $index => $file)
+						{
+							if ($file->seriesname == $data->step)
+							{
 								$dataset[$key]->data[] = $file;
 								break;
 							}
@@ -755,7 +866,8 @@ class EmundusModelDashboard extends JModelList
 								return $e->seriesname == $data->step;
 							}
 						);
-						if (empty($neededObject)) {
+						if (empty($neededObject))
+						{
 							$empty_file             = new stdClass;
 							$empty_file->value      = "0";
 							$empty_file->seriesname = $data->step;
@@ -763,9 +875,12 @@ class EmundusModelDashboard extends JModelList
 						}
 					}
 				}
-				else {
-					foreach ($dataset as $key => $data) {
-						if (empty($dataset[$key]->data)) {
+				else
+				{
+					foreach ($dataset as $key => $data)
+					{
+						if (empty($dataset[$key]->data))
+						{
 							$empty_file             = new stdClass;
 							$empty_file->value      = "0";
 							$empty_file->seriesname = $data->step;
@@ -775,7 +890,8 @@ class EmundusModelDashboard extends JModelList
 				}
 			}
 
-			foreach ($category as $key => $date) {
+			foreach ($category as $key => $date)
+			{
 				$value                 = $date;
 				$category[$key]        = new stdClass();
 				$category[$key]->label = $value;
@@ -783,8 +899,9 @@ class EmundusModelDashboard extends JModelList
 
 			return array('dataset' => $dataset, 'category' => $category);
 		}
-		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/dashboard | Error when try to get users by day : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/dashboard | Error when try to get users by day : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return array('dataset' => '', 'category' => '');
 		}
@@ -796,12 +913,14 @@ class EmundusModelDashboard extends JModelList
 
 		$category = [];
 
-		try {
+		try
+		{
 			$query->select('value as seriesname,step')
 				->from($this->_db->quoteName('#__emundus_setup_status'));
 			$this->_db->setQuery($query);
 			$status = $this->_db->loadObjectList();
-			foreach ($status as $key => $statu) {
+			foreach ($status as $key => $statu)
+			{
 				$status[$key]->data = [];
 			}
 			$dataset = $status;
@@ -812,19 +931,22 @@ class EmundusModelDashboard extends JModelList
 			$this->_db->setQuery($query);
 			$nationalities = $this->_db->loadObjectList();
 
-			foreach ($nationalities as $nationality) {
+			foreach ($nationalities as $nationality)
+			{
 				$query->clear()
 					->select('count(cc.id) as value, cc.status as seriesname')
 					->from($this->_db->quoteName('#__emundus_campaign_candidature', 'cc'))
 					->leftJoin($this->_db->quoteName('jos_emundus_1001_00', 'n') . ' ON ' . $this->_db->quoteName('n.fnum') . ' = ' . $this->_db->quoteName('cc.fnum'));
 
-				if (!empty($program)) {
+				if (!empty($program))
+				{
 					$query->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'sc') . ' ON ' . $this->_db->quoteName('sc.id') . ' = ' . $this->_db->quoteName('cc.campaign_id'));
 				}
 
 				$query->where($this->_db->quoteName('n.e_360_7752') . ' = ' . $this->_db->quote($nationality->id));
 
-				if (!empty($program)) {
+				if (!empty($program))
+				{
 					$query->andWhere($this->_db->quoteName('sc.training') . ' LIKE ' . $this->_db->quote($program));
 				}
 
@@ -832,10 +954,14 @@ class EmundusModelDashboard extends JModelList
 				$this->_db->setQuery($query);
 				$files = $this->_db->loadObjectList();
 
-				if (!empty($files)) {
-					foreach ($dataset as $key => $data) {
-						foreach ($files as $index => $file) {
-							if ($file->seriesname == $data->step) {
+				if (!empty($files))
+				{
+					foreach ($dataset as $key => $data)
+					{
+						foreach ($files as $index => $file)
+						{
+							if ($file->seriesname == $data->step)
+							{
 								$dataset[$key]->data[] = $file;
 								break;
 							}
@@ -846,7 +972,8 @@ class EmundusModelDashboard extends JModelList
 								return $e->seriesname == $data->step;
 							}
 						);
-						if (empty($neededObject)) {
+						if (empty($neededObject))
+						{
 							$empty_file             = new stdClass;
 							$empty_file->value      = "0";
 							$empty_file->seriesname = $data->step;
@@ -857,7 +984,8 @@ class EmundusModelDashboard extends JModelList
 				}
 			}
 
-			foreach ($category as $key => $date) {
+			foreach ($category as $key => $date)
+			{
 				$value                 = $date;
 				$category[$key]        = new stdClass();
 				$category[$key]->label = $value;
@@ -865,8 +993,9 @@ class EmundusModelDashboard extends JModelList
 
 			return array('dataset' => $dataset, 'category' => $category);
 		}
-		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/dashboard | Error when try to get users by day : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/dashboard | Error when try to get users by day : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return array('dataset' => '', 'category' => '');
 		}

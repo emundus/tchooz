@@ -39,6 +39,13 @@ $ju-input-box-shadow: 0 10px 30px 0 rgba(160, 166, 190, 0.08);
         }
       }
     }
+    .form-control{
+      background-color: $white-color;
+      color: $setting-color;
+    }
+    h3,h4,h5{
+      color: $heading-color;
+    }
     .field-calendar {
       .calendar-container {
         float: left;
@@ -412,7 +419,7 @@ $ju-input-box-shadow: 0 10px 30px 0 rgba(160, 166, 190, 0.08);
             @include textTruncate();
             @include boxShadow(1px 1px 3px 0 #ddd);
             .search-choice-close {
-              top: 30%;
+              top: 50%;
               transition: unset;
             }
           }
@@ -533,6 +540,7 @@ $ju-input-box-shadow: 0 10px 30px 0 rgba(160, 166, 190, 0.08);
         text-decoration: none;
         margin: 5px 1%;
         min-width: 120px;
+        height: 90px;
         min-height: 90px;
         background-repeat: no-repeat;
         box-sizing: border-box;
@@ -552,6 +560,7 @@ $ju-input-box-shadow: 0 10px 30px 0 rgba(160, 166, 190, 0.08);
           -webkit-appearance: none;
           margin: -15px 5px 5px 5px;
           color: #568095;
+          text-align: left;
         }
       }
 
@@ -842,6 +851,7 @@ $ju-input-box-shadow: 0 10px 30px 0 rgba(160, 166, 190, 0.08);
         }
         #jform_custom_icon {
           margin-bottom: 0;
+          padding-right: 70px;
         }
         .visually-hidden {
           position: absolute;

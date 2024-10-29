@@ -260,6 +260,18 @@ class EmundusViewForm extends FabrikViewFormBase
 							$FRequire = false;
 						}
 
+						if(!empty($el_parmas->database_join_where_sql)) {
+							preg_match_all("/\bwhere(.*) not in\b(.*)/i", $el_parmas->database_join_where_sql, $el_parmas->database_join_exclude, PREG_SET_ORDER, 0);
+							if(!empty($el_parmas->database_join_exclude)) {
+								preg_match_all("/\((.*)\)/i", $el_parmas->database_join_exclude[0][0], $ids, PREG_SET_ORDER, 0);
+
+								if(!empty($ids))
+								{
+									$el_parmas->database_join_exclude = $ids[0][1];
+								}
+							}
+						}
+
 
 						${"element" . $o_element->id}->FRequire  = $FRequire;
 						${"element" . $o_element->id}->params    = $el_parmas;
@@ -277,7 +289,7 @@ class EmundusViewForm extends FabrikViewFormBase
 								${"element" . $o_element->id}->tipAbove = $content_element->tipAbove;
 							endif;
 							if ($content_element->element) :
-								if ($o_element->plugin == 'date') {
+								if (in_array($o_element->plugin,['date','jdate'])) {
 									${"element" . $o_element->id}->element = '<input data-v-8d3bb2fa="" class="form-control" type="date">';
 								}
 								else {
@@ -302,7 +314,7 @@ class EmundusViewForm extends FabrikViewFormBase
 								${"element" . $o_element->id}->tipAbove = $content_element->tipAbove;
 							endif;
 							if ($content_element->element) :
-								if ($o_element->plugin == 'date') {
+								if (in_array($o_element->plugin,['date','jdate'])) {
 									${"element" . $o_element->id}->element = '<input data-v-8d3bb2fa="" class="form-control" type="date">';
 								}
 								else {

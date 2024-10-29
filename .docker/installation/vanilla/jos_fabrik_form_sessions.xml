@@ -3,14 +3,15 @@
  <database name="">
   <table_structure name="#__fabrik_form_sessions">
    <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
-   <field Field="hash" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="hash" Type="varchar(255)" Null="YES" Key="" Extra="" />
    <field Field="user_id" Type="int" Null="NO" Key="" Default="0" Extra="" />
    <field Field="form_id" Type="int" Null="NO" Key="" Default="0" Extra="" />
    <field Field="row_id" Type="int" Null="NO" Key="" Default="0" Extra="" />
-   <field Field="last_page" Type="int" Null="NO" Key="" Default="0" Extra="" />
-   <field Field="referring_url" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="last_page" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="referring_url" Type="varchar(255)" Null="YES" Key="" Extra="" />
    <field Field="data" Type="mediumtext" Null="YES" Key="" Extra="" />
    <field Field="time_date" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="fnum" Type="varchar(28)" Null="YES" Key="" Extra="" />
    <key Table="#__fabrik_form_sessions" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
   </table_structure>
  </database>

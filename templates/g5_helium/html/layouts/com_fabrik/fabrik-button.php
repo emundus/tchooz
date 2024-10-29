@@ -17,9 +17,9 @@ $id 	    = isset($d->id) ? 'id="' . $d->id .'"' : '';
 <<?php echo $tag; ?> <?php echo $type; ?> class="btn <?php echo $d->class; ?>" <?php echo $attributes; ?>
 	<?php echo $name; ?> <?php echo $id; ?> <?php echo $aria; ?>>
     <?php if($d->class == 'calendarbutton') : ?>
-        <span class="material-icons-outlined">calendar_today</span>
+        <span class="material-symbols-outlined">calendar_today</span>
     <?php elseif($d->class == 'timeButton') : ?>
-        <span class="material-icons-outlined">schedule</span>
+        <span class="material-symbols-outlined">schedule</span>
     <?php else: ?>
 	    <?php echo $d->label; ?>
     <?php endif; ?>

@@ -60,6 +60,16 @@ form:
         url("/media/com_emundus/images/tchoozy/complex-illustrations/digital-testing.svg"): Enabled
         none: Disabled
 
+  #Profile form
+    profile-corner-top-right-background:
+      type: select.select
+      label: Profile form illustration
+      default: url("/media/com_emundus/images/tchoozy/backgrounds/corner-top-right-background.svg")
+      description: Fond formes coin haut droite
+      options:
+        url("/media/com_emundus/images/tchoozy/backgrounds/corner-top-right-background.svg"): Enabled
+        none: Disabled
+
     #Page settings
     corner-bottom-right-background:
       type: select.select

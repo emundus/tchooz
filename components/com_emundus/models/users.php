@@ -12,10 +12,13 @@
  * @author         Benjamin Rivalland
  */
 
-// No direct access
-defined('_JEXEC') or die('Restricted access');
-jimport('joomla.application.component.model');
+// phpcs:disable PSR1.Files.SideEffects
+\defined('_JEXEC') or die;
+// phpcs:enable PSR1.Files.SideEffects
+
+require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'fabrik.php');
 require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'filters.php');
+require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php');
 require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
 
 use Joomla\CMS\Application\ApplicationHelper;
@@ -23,43 +26,73 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Mail\MailerFactoryInterface;
+use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Component\Users\Site\Model\ResetModel;
+use Joomla\CMS\Log\Log;
+use Joomla\Database\ParameterType;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 
-class EmundusModelUsers extends JModelList
+/**
+ * Emundus Component Users Model
+ *
+ * @since  1.0.0
+ */
+class EmundusModelUsers extends ListModel
 {
-	var $_total = null;
-	var $_pagination = null;
+	/**
+	 * @var   int  The total number of items
+	 * @since version 1.0.0
+	 */
+	private $_total;
 
+	/**
+	 * @var  object  The pagination object
+	 * @since version 1.0.0
+	 */
+	private $_pagination;
+
+	/**
+	 * @var object  The data
+	 * @since version 1.0.0
+	 */
 	protected $data;
 
+	/**
+	 * @var JDatabaseDriver|\Joomla\Database\DatabaseDriver|mixed|null
+	 * @since version 1.0.0
+	 */
 	private $db;
+
+	/**
+	 * @var \Joomla\CMS\Application\CMSApplication|\Joomla\CMS\Application\CMSApplicationInterface|null
+	 * @since version 1.0.0
+	 */
 	private $app;
+
+	/**
+	 * @var \Joomla\CMS\User\User|JUser|mixed|null
+	 * @since version 1.0.0
+	 */
 	private $user;
 
 	/**
 	 * Constructor
 	 *
-	 * @since 1.5
+	 * @since 1.0.0
 	 */
 	public function __construct()
 	{
 		parent::__construct();
 
 		$this->app = Factory::getApplication();
-		if (version_compare(JVERSION, '4.0', '>')) {
-			$this->db   = Factory::getContainer()->get('DatabaseDriver');
-			$this->user = $this->app->getIdentity();
-			$session    = $this->app->getSession();
-		}
-		else {
-			$this->db   = Factory::getDBO();
-			$this->user = Factory::getUser();
-			$session    = Factory::getSession();
-		}
+		$this->db   = $this->getDatabase();
+		$this->user = $this->app->getIdentity();
+		$session    = $this->app->getSession();
 
 		if (!$session->has('filter_order')) {
 			$session->set('filter_order', 'id');
@@ -86,10 +119,10 @@ class EmundusModelUsers extends JModelList
 
 	public function _buildContentOrderBy()
 	{
-		$session          = JFactory::getSession();
+		$session          = $this->app->getSession();
 		$params           = $session->get('filt_params');
-		$filter_order     = @$params['filter_order'];
-		$filter_order_Dir = @$params['filter_order_Dir'];
+		$filter_order     = $params['filter_order'];
+		$filter_order_Dir = $params['filter_order_Dir'];
 
 		$can_be_ordering = array('user', 'id', 'lastname', 'firstname', 'username', 'email', 'profile', 'block', 'lastvisitDate', 'registerDate', 'newsletter', 'groupe', 'university');
 
@@ -103,22 +136,22 @@ class EmundusModelUsers extends JModelList
 
 	public function _buildQuery()
 	{
-		$session = JFactory::getSession();
+		$session = $this->app->getSession();
 		$params  = $session->get('filt_params');
 		
 
-		$final_grade  = @$params['finalgrade'];
-		$search       = @$params['s'];
-		$programme    = @$params['programme'];
-		$campaigns    = @$params['campaign'];
-		$schoolyears  = @$params['schoolyears'];
-		$groupEval    = @$params['evaluator_group'];
-		$spam_suspect = @$params['spam_suspect'];
-		$profile      = @$params['profile'];
-		$oprofiles    = @$params['o_profiles'];
-		$newsletter   = @$params['newsletter'];
-		$group        = @$params['group'];
-		$institution  = @$params['institution'];
+		$final_grade  = $params['finalgrade'];
+		$search       = $params['s'];
+		$programme    = $params['programme'];
+		$campaigns    = $params['campaign'];
+		$schoolyears  = $params['schoolyears'];
+		$groupEval    = $params['evaluator_group'];
+		$spam_suspect = $params['spam_suspect'];
+		$profile      = $params['profile'];
+		$oprofiles    = $params['o_profiles'];
+		$newsletter   = $params['newsletter'];
+		$group        = $params['group'];
+		$institution  = $params['institution'];
 
 		$uid       = $this->app->input->get('rowid', null, 'GET', 'none', 0);
 		$edit      = $this->app->input->get('edit', 0, 'GET', 'none', 0);
@@ -160,15 +193,12 @@ class EmundusModelUsers extends JModelList
 			}
 		}
 		elseif (!empty($campaigns) && $campaigns[0] != '%' && !empty($schoolyears) && $schoolyears[0] != '%') {
-			//$applicant_schoolyears = $this->getUserListWithSchoolyear($schoolyears);
-			$i         = 0;
 			$list_user = '';
 			foreach ($schoolyears as $schoolyear) {
 				foreach ($campaigns as $campaign) {
 					$compare = $this->compareCampaignANDSchoolyear($campaign, $schoolyear);
 					if ($compare != 0) {
 						$applicant_campaigns = $this->getUserListWithCampaign($campaign);
-						//$nb_element = count($applicant_campaigns);
 						foreach ($applicant_campaigns as $applicant) {
 							$list_user .= $applicant . ", ";
 						}
@@ -202,7 +232,7 @@ class EmundusModelUsers extends JModelList
 			}
 		}
 
-		$eMConfig         = JComponentHelper::getParams('com_emundus');
+		$eMConfig         = ComponentHelper::getParams('com_emundus');
 		$showUniversities = $eMConfig->get('showUniversities');
 		$showJoomlagroups = $eMConfig->get('showJoomlagroups', 0);
 		$showNewsletter   = $eMConfig->get('showNewsletter');
@@ -218,7 +248,7 @@ class EmundusModelUsers extends JModelList
 			$query .= 'cat.title as university,';
 		}
 		if ($showJoomlagroups == 1) {
-			$query .= 'GROUP_CONCAT( DISTINCT usg.title SEPARATOR "") as joomla_groupe,';
+			$query .= 'GROUP_CONCAT( DISTINCT usg.title SEPARATOR "<br>") as joomla_groupe,';
 		}
 
 		$query .= 'u.activation as active,u.block as block
@@ -236,22 +266,40 @@ class EmundusModelUsers extends JModelList
                     LEFT JOIN jos_usergroups AS usg ON ( um.group_id = usg.id)';
 		}
 
-		if (isset($programme) && !empty($programme) && $programme[0] != '%') {
+		if (!empty($programme) && $programme[0] != '%') {
 			$query .= ' LEFT JOIN #__emundus_campaign_candidature AS ecc ON u.id = ecc.applicant_id
                         LEFT JOIN #__emundus_setup_campaigns as esc ON ecc.campaign_id=esc.id ';
 		}
 
-		if (isset($final_grade) && !empty($final_grade)) {
+		if (!empty($final_grade)) {
 			$query .= 'LEFT JOIN #__emundus_final_grade AS efg ON u.id = efg.student_id ';
 		}
 
-		$exclude_users = [1,62];
-		if (!empty($automated_task_user)) {
-			$exclude_users[] = $automated_task_user;
-		}
-		$query .= ' where 1=1 AND u.id NOT IN ('.implode(',',$exclude_users).') ';
+		// Exclude sysadmin users
+		$automated_task_user = $eMConfig->get('automated_task_user',0);
+		$display_sysadmin_users = $eMConfig->get('display_sysadmin_users',0);
 
-		if (isset($programme) && !empty($programme) && $programme[0] != '%') {
+		if(!$display_sysadmin_users)
+		{
+			$exclude_users_query = $this->db->getQuery(true);
+			$exclude_users_query->select('eu.user_id')
+				->from($this->db->quoteName('#__emundus_users', 'eu'))
+				->leftJoin($this->db->quoteName('#__emundus_users_profiles', 'eup') . ' ON ' . $this->db->quoteName('eup.user_id') . ' = ' . $this->db->quoteName('eu.user_id'))
+				->where('eup.profile_id = 1')
+				->orWhere('eu.profile = 1');
+			$this->db->setQuery($exclude_users_query);
+			$exclude_users = $this->db->loadColumn();
+			if (!empty($automated_task_user))
+			{
+				$exclude_users[] = $automated_task_user;
+			}
+			$query .= ' where 1=1 AND u.id NOT IN (' . implode(',', $exclude_users) . ') ';
+		} else {
+			$query .= ' where 1=1 ';
+		}
+		//
+
+		if (!empty($programme) && $programme[0] != '%') {
 			$query .= ' AND ( esc.training IN ("' . implode('","', $programme) . '")
                             OR u.id IN (
                                 select _eg.user_id
@@ -262,10 +310,10 @@ class EmundusModelUsers extends JModelList
                             )';
 		}
 
-		if (isset($group) && !empty($group) && $group[0] != '%')
+		if (!empty($group) && $group[0] != '%')
 			$query .= ' AND u.id IN( SELECT jeg.user_id FROM #__emundus_groups as jeg WHERE jeg.group_id IN (' . implode(',', $group) . ')) ';
 
-		if (isset($institution) && !empty($institution) && $institution[0] != '%')
+		if (!empty($institution) && $institution[0] != '%')
 			$query .= ' AND u.id IN( SELECT jeu.user_id FROM #__emundus_users as jeu WHERE jeu.university_id IN (' . implode(',', $institution) . ')) ';
 
 		if ($edit == 1) {
@@ -273,78 +321,87 @@ class EmundusModelUsers extends JModelList
 		}
 		else {
 			$and = true;
-			/*var_dump($this->filts_details['profile']);
-            if(isset($this->filts_details['profile']) && !empty($this->filts_details['profile'])){
-                $query.= ' AND e.profile IN ('.implode(',', $this->filts_details['profile']).') ';
-                $and = true;
-            }*/
-			if (isset($profile) && !empty($profile) && is_numeric($profile)) {
-				$query .= ' AND e.profile = ' . $profile;
+
+			if (!empty($profile)) {
+				if (is_numeric($profile)) {
+					$query.= ' AND e.profile = '.$profile;
+				} else if ($profile === 'applicant') {
+					$query.= ' AND espr.published = 1';
+				}
+			}
+			if (!empty($oprofiles)) {
+				if (in_array('applicant', $oprofiles)) {
+					$query.= 'AND (eup.profile_id IN ("'.implode('","', $oprofiles).'") OR espr.published = 1)';
+
+				} else {
+					$query.= ' AND eup.profile_id IN ("'.implode('","', $oprofiles).'")';
+				}
+
 				$and   = true;
 			}
-			if (isset($oprofiles) && !empty($oprofiles)) {
-				$query .= ' AND eup.profile_id IN ("' . implode('","', $oprofiles) . '")';
-				$and   = true;
-			}
-			if (isset($final_grade) && !empty($final_grade)) {
+			if (!empty($final_grade)) {
 				if ($and) $query .= ' AND ';
 				else {
-					$and   = true;
 					$query .= 'WHERE ';
 				}
 
 				$query .= 'efg.Final_grade = "' . $final_grade . '"';
 				$and   = true;
 			}
-			if (isset($search) && !empty($search)) {
-
-				if ($and) {
-					$query .= ' AND ';
-				}
-				else {
-					$and   = true;
-					$query .= ' ';
-				}
-
+			if (!empty($search)) {
 				$q = '';
 				foreach ($search as $str) {
-					$val = explode(': ', $str);
+					if (strpos($str, ':') !== false) {
+						$val = explode(': ', $str);
 
-					if ($val[0] == "ALL") {
-						$q .= ' OR e.lastname LIKE ' . $this->db->Quote('%' . $val[1] . '%') . '
+						if ($val[0] == "ALL") {
+							$q .= ' OR e.lastname LIKE ' . $this->db->Quote('%' . $val[1] . '%') . '
                         OR e.firstname LIKE ' . $this->db->Quote('%' . $val[1] . '%') . '
                         OR u.email LIKE ' . $this->db->Quote('%' . $val[1] . '%') . '
                         OR e.schoolyear LIKE ' . $this->db->Quote('%' . $val[1] . '%') . '
                         OR u.username LIKE ' . $this->db->Quote('%' . $val[1] . '%') . '
                         OR u.id = ' . $this->db->Quote($val[1]);
+						}
+
+						if ($val[0] == "ID")
+							$q .= ' OR u.id = ' . $this->db->Quote($val[1]);
+
+						if ($val[0] == "EMAIL")
+							$q .= ' OR u.email LIKE ' . $this->db->Quote('%' . $val[1] . '%');
+
+						if ($val[0] == "USERNAME")
+							$q .= ' OR u.username LIKE ' . $this->db->Quote('%' . $val[1] . '%');
+
+						if ($val[0] == "LAST_NAME")
+							$q .= ' OR e.lastname LIKE ' . $this->db->Quote('%' . $val[1] . '%');
+
+						if ($val[0] == "FIRST_NAME")
+							$q .= ' OR e.firstname LIKE ' . $this->db->Quote('%' . $val[1] . '%');
+
+					} else {
+						$q .= ' OR e.lastname LIKE ' . $this->db->Quote('%' . $str . '%') . '
+						OR e.firstname LIKE ' . $this->db->Quote('%' . $str . '%') . '
+						OR u.email LIKE ' . $this->db->Quote('%' . $str . '%') . '
+						OR e.schoolyear LIKE ' . $this->db->Quote('%' . $str . '%') . '
+						OR u.username LIKE ' . $this->db->Quote('%' . $str . '%') . '
+						OR u.id = ' . $this->db->Quote($str);
 					}
-
-					if ($val[0] == "ID")
-						$q .= ' OR u.id = ' . $this->db->Quote($val[1]);
-
-					if ($val[0] == "EMAIL")
-						$q .= ' OR u.email LIKE ' . $this->db->Quote('%' . $val[1] . '%');
-
-					if ($val[0] == "USERNAME")
-						$q .= ' OR u.username LIKE ' . $this->db->Quote('%' . $val[1] . '%');
-
-					if ($val[0] == "LAST_NAME")
-						$q .= ' OR e.lastname LIKE ' . $this->db->Quote('%' . $val[1] . '%');
-
-					if ($val[0] == "FIRST_NAME")
-						$q .= ' OR e.firstname LIKE ' . $this->db->Quote('%' . $val[1] . '%');
-
 				}
 
-				$q     = substr($q, 3);
-				$query .= '(' . $q . ')';
+				if (!empty($q)) {
+					if ($and) {
+						$query .= ' AND ';
+					}
+					else {
+						$and   = true;
+						$query .= ' ';
+					}
+
+					$q     = substr($q, 3);
+					$query .= '(' . $q . ')';
+				}
 			}
-			/*if(isset($schoolyears) &&  !empty($schoolyears)) {
-                if($and) $query .= ' AND ';
-                else { $and = true; $query .='WHERE '; }
-                $query.= 'e.schoolyear="'.$schoolyears.'"';
-            }*/
-			if (isset($spam_suspect) && !empty($spam_suspect) && $spam_suspect == 1) {
+			if (!empty($spam_suspect) && $spam_suspect == 1) {
 				if ($and) {
 					$query .= ' AND ';
 				}
@@ -371,7 +428,7 @@ class EmundusModelUsers extends JModelList
 					$query .= 'u.id IN ( ' . $list_user . ' )';
 			}
 
-			if (isset($newsletter) && !empty($newsletter)) {
+			if (!empty($newsletter)) {
 				if ($and) {
 					$query .= ' AND ';
 				}
@@ -390,7 +447,7 @@ class EmundusModelUsers extends JModelList
 
 	public function getUsers($limit_start = null, $limit = null)
 	{
-		$session = JFactory::getSession();
+		$session = $this->app->getSession();
 
 		if ($limit_start === null) {
 			$limit_start = $session->get('limitstart');
@@ -406,7 +463,6 @@ class EmundusModelUsers extends JModelList
 			$query .= $this->_buildContentOrderBy();
 
 			return $this->_getList($query, $limit_start, $limit);
-
 		}
 		catch (Exception $e) {
 			throw new $e;
@@ -530,7 +586,7 @@ class EmundusModelUsers extends JModelList
 			if (empty($profile_info)) {
 				$query = $this->_db->getQuery(true);
 
-				$query->select('id,label,description,class,published')
+				$query->select('id,label,description,class,published,display_description')
 					->from($this->_db->quoteName('#__emundus_setup_profiles'))
 					->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($profile_id));
 
@@ -539,7 +595,7 @@ class EmundusModelUsers extends JModelList
 					$profile_info = $this->_db->loadObject();
 					$h_cache->set('profile_details_'.$profile_id, $profile_info);
 				} catch (Exception $e){
-					JLog::add('component/com_emundus/models/users | Error when try to get profile details : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
+					Log::add('component/com_emundus/models/users | Error when try to get profile details : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), Log::ERROR, 'com_emundus.error');
 				}
 			}
 		}
@@ -652,7 +708,7 @@ class EmundusModelUsers extends JModelList
 			$campaigns = $this->db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add('Failed to list all campaigns ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add('Failed to list all campaigns ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
 
 		return $campaigns;
@@ -846,6 +902,97 @@ class EmundusModelUsers extends JModelList
 		return $this->_pagination;
 	}
 
+	public function getPageNavigation(): string
+	{
+		if ($this->getPagination()->pagesTotal <= 1) {
+			return '';
+		}
+
+		$pageNavigation = "<div class='em-container-pagination-selectPage'>";
+		$pageNavigation .= "<ul class='pagination pagination-sm'>";
+
+		if($this->getPagination()->pagesCurrent == $this->getPagination()->pagesStart) {
+			$pageNavigation .= "<li><a class='disabled tw-cursor-pointer'><span class='material-symbols-outlined'>navigate_before</span></a></li>";
+		} else
+		{
+			$pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent - 1) . "'><span class='material-symbols-outlined'>navigate_before</span></a></li>";
+		}
+
+		if ($this->getPagination()->pagesTotal > 15) {
+			$index = 5;
+			if($this->getPagination()->pagesCurrent > 5 && $this->getPagination()->pagesCurrent < 8)
+			{
+				$index = $this->getPagination()->pagesCurrent - 3;
+			}
+
+			for ($i = 1; $i <= $index; $i++) {
+				$pageNavigation .= "<li ";
+				if ($this->getPagination()->pagesCurrent == $i) {
+					$pageNavigation .= "class='active'";
+				}
+				$pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
+			}
+			if($this->getPagination()->pagesCurrent > 8)
+			{
+				$pageNavigation .= "<li class='disabled'><span>...</span></li>";
+			}
+			if ($this->getPagination()->pagesCurrent <= 5) {
+				for ($i = 6; $i <= 10; $i++) {
+					$pageNavigation .= "<li ";
+					if ($this->getPagination()->pagesCurrent == $i) {
+						$pageNavigation .= "class='active'";
+					}
+					$pageNavigation .= "><a id=" . $i . " href='#em-data'>" . $i . "</a></li>";
+				}
+			}
+			else {
+				for ($i = $this->getPagination()->pagesCurrent - 2; $i <= $this->getPagination()->pagesCurrent + 2; $i++) {
+					if ($i <= $this->getPagination()->pagesTotal) {
+						$pageNavigation .= "<li ";
+						if ($this->getPagination()->pagesCurrent == $i) {
+							$pageNavigation .= "class='active'";
+						}
+						$pageNavigation .= "><a id=" . $i . " href='#em-data'>" . $i . "</a></li>";
+					}
+				}
+			}
+
+
+			// if total pages - current page is less than 5
+			$index = 4;
+			if($this->getPagination()->pagesTotal - $this->getPagination()->pagesCurrent < 7)
+			{
+				$index = $this->getPagination()->pagesTotal - ($this->getPagination()->pagesCurrent+3);
+			} else {
+				$pageNavigation .= "<li class='disabled'><span>...</span></li>";
+			}
+			for ($i = $this->getPagination()->pagesTotal - $index; $i <= $this->getPagination()->pagesTotal; $i++) {
+				$pageNavigation .= "<li ";
+				if ($this->getPagination()->pagesCurrent == $i) {
+					$pageNavigation .= "class='active'";
+				}
+				$pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
+			}
+		}
+		else {
+			for ($i = 1; $i <= $this->getPagination()->pagesStop; $i++) {
+				$pageNavigation .= "<li ";
+				if ($this->getPagination()->pagesCurrent == $i) {
+					$pageNavigation .= "class='active'";
+				}
+				$pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
+			}
+		}
+
+		if($this->getPagination()->pagesCurrent == $this->getPagination()->pagesStop) {
+			$pageNavigation .= "<li><a class='disabled tw-cursor-pointer'><span class='material-symbols-outlined'>navigate_next</span></a></li></ul></div>";
+		} else {
+			$pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent + 1) . "'><span class='material-symbols-outlined'>navigate_next</span></a></li></ul></div>";
+		}
+
+		return $pageNavigation;
+	}
+
 	/**
 	 * Method to get the registration form.
 	 *
@@ -945,7 +1092,7 @@ class EmundusModelUsers extends JModelList
 		try {
 			if (!$user->save()) {
 				$this->app->enqueueMessage(JText::_('COM_EMUNDUS_USERS_CAN_NOT_SAVE_USER') . '<BR />' . $user->getError(), 'error');
-				JLog::add('Failed to create user ' . $user->getError(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to create user ' . $user->getError(), Log::ERROR, 'com_emundus.error');
 			}
 			else {
 				$query = $this->db->getQuery(true);
@@ -962,7 +1109,7 @@ class EmundusModelUsers extends JModelList
 		}
 		catch (Exception $e) {
 			$this->app->enqueueMessage(JText::_('COM_EMUNDUS_USERS_CAN_NOT_SAVE_USER') . '<br />' . $e->getMessage(), 'error');
-			JLog::add('Failed to create user : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add('Failed to create user : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			$new_user_id = 0;
 		}
 
@@ -1005,8 +1152,8 @@ class EmundusModelUsers extends JModelList
 
 			$query = $this->db->getQuery(true);
 
-			$columns = array('user_id', 'registerDate', 'firstname', 'lastname', 'profile', 'schoolyear', 'disabled', 'disabled_date', 'cancellation_date', 'cancellation_received');
-			$values  = array($user_id, $this->db->quote($now), $this->db->quote($firstname), $this->db->quote($lastname), $profile, $this->db->quote(''), 0, $this->db->quote('0000-00-00 00:00:00'), $this->db->quote('0000-00-00 00:00:00'), $this->db->quote('0000-00-00 00:00:00'));
+			$columns = array('user_id', 'registerDate', 'firstname', 'lastname', 'profile', 'schoolyear', 'disabled', 'disabled_date');
+			$values  = array($user_id, $this->db->quote($now), $this->db->quote($firstname), $this->db->quote($lastname), $profile, $this->db->quote(''), 0, $this->db->quote('0000-00-00 00:00:00'));
 
 			if (!empty($id_ehesp)) {
 				$columns[] = 'id_ehesp';
@@ -1131,7 +1278,7 @@ class EmundusModelUsers extends JModelList
 		}
 		catch (Exception $e) {
 			$this->app->enqueueMessage(JText::_('COM_EMUNDUS_USERS_CAN_NOT_SAVE_USER') . '<br />' . $e->getMessage(), 'error');
-			JLog::add('Failed to create user : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add('Failed to create user : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
 	}
 
@@ -1153,18 +1300,12 @@ class EmundusModelUsers extends JModelList
 		return $this->db->loadColumn();
 	}
 
-	public function login($uid)
-	{
-		$app = $this->app;
+	public function login($uid) {
+		$app     = Factory::getApplication();
+		$db      = Factory::getDBO();
+		$session = Factory::getSession();
 
-		$session = JFactory::getSession();
-
-		$instance = JFactory::getUser($uid);
-
-		// $userarray = array();
-		//$userarray['username'] = $instance->username;
-		//$userarray['password'] = $instance->password;
-		//$app->login($userarray);
+		$instance   = Factory::getUser($uid);
 
 		$instance->set('guest', 0);
 
@@ -1176,12 +1317,12 @@ class EmundusModelUsers extends JModelList
 
 		// Update the user related fields for the Joomla sessions table.
 		$query = 'UPDATE #__session
-                    SET guest=' . $this->db->quote($instance->get('guest')) . ',
-                        username = ' . $this->db->quote($instance->get('username')) . ',
-                        userid = ' . (int) $instance->get('id') . '
-                        WHERE session_id like ' . $this->db->quote($session->getId());
-		$this->db->setQuery($query);
-		$this->db->execute();
+                    SET guest='.$db->quote($instance->get('guest')).',
+                        username = '.$db->quote($instance->get('username')).',
+                        userid = '.(int) $instance->get('id').'
+                        WHERE session_id like '.$db->quote($session->getId());
+		$db->setQuery($query);
+		$db->execute();
 
 		// Hit the user last visit field
 		$instance->setLastVisit();
@@ -1195,10 +1336,9 @@ class EmundusModelUsers extends JModelList
 
 		$response['username'] = $instance->get('username');
 		$app->triggerEvent('onUserLogin', array($response, $options));
-		$app->triggerEvent('callEventHandler', ['onUserLogin', ['user_id' => $uid]]);
+		$app->triggerEvent('onCallEventHandler', ['onUserLogin', ['user_id' => $uid]]);
 
 		return $instance;
-
 	}
 
 
@@ -1484,7 +1624,7 @@ class EmundusModelUsers extends JModelList
 			$str = "";
 		}
 		catch (Exception $e) {
-			JLog::add('Error on adding group: ' . $e->getMessage() . ' at query -> ' . $query, JLog::ERROR, 'com_emundus');
+			Log::add('Error on adding group: ' . $e->getMessage() . ' at query -> ' . $query, Log::ERROR, 'com_emundus');
 
 			return null;
 		}
@@ -1501,7 +1641,7 @@ class EmundusModelUsers extends JModelList
 			$str = "";
 		}
 		catch (Exception $e) {
-			JLog::add('Error on adding group: ' . $e->getMessage() . ' at query -> ' . $query, JLog::ERROR, 'com_emundus');
+			Log::add('Error on adding group: ' . $e->getMessage() . ' at query -> ' . $query, Log::ERROR, 'com_emundus');
 
 			return null;
 		}
@@ -1521,7 +1661,7 @@ class EmundusModelUsers extends JModelList
 				}
 			}
 			catch (Exception $e) {
-				JLog::add('Error on adding group: ' . $e->getMessage() . ' at query -> ' . $query, JLog::ERROR, 'com_emundus');
+				Log::add('Error on adding group: ' . $e->getMessage() . ' at query -> ' . $query, Log::ERROR, 'com_emundus');
 
 				return null;
 			}
@@ -1624,7 +1764,7 @@ class EmundusModelUsers extends JModelList
 
 		// Save user data
 		if (!$table->store()) {
-			JLog::add('Error saving params : ' . $table->getError(), JLog::ERROR, 'mod_emundus.hesam');
+			Log::add('Error saving params : ' . $table->getError(), Log::ERROR, 'mod_emundus.hesam');
 
 			return false;
 		}
@@ -1656,7 +1796,7 @@ class EmundusModelUsers extends JModelList
 				$ids = $this->db->loadAssocList();
 			}
 			catch (Exception $e) {
-				JLog::add('Error on getting non-applicant users: ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Error on getting non-applicant users: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -1688,7 +1828,7 @@ class EmundusModelUsers extends JModelList
 					$affected = $this->db->execute();
 				}
 				catch (Exception $e) {
-					JLog::add('Error on affecting users to groups: ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+					Log::add('Error on affecting users to groups: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 					$affected = false;
 				}
 			}
@@ -1730,21 +1870,34 @@ class EmundusModelUsers extends JModelList
 
 	public function getUserInfos($uid)
 	{
+		$user_infos = [];
+		$query = $this->db->getQuery(true);
+
 		try {
-			$query = 'select u.username as login, u.email, eu.firstname, eu.lastname, eu.profile, eu.university_id, up.profile_value as newsletter
-                      from #__users as u
-                      left join #__emundus_users as eu on eu.user_id = u.id
-                      left join #__user_profiles as up on (up.user_id = u.id and up.profile_key like "emundus_profile.newsletter")
-                      where u.id = ' . $uid;
-			//var_dump($query);die;
+			$columns = [
+				'u.username as login',
+				'u.email',
+				'eu.firstname',
+				'eu.lastname',
+				'eu.profile',
+				'eu.university_id',
+				'up.profile_value as newsletter',
+				'IF(JSON_VALID(u.params), json_extract(u.params,"$.testing_account"),0) as testing_account'
+			];
 
+			$query->select($columns)
+				->from($this->db->quoteName('#__users', 'u'))
+				->leftJoin($this->db->quoteName('#__emundus_users','eu').' ON '.$this->db->quoteName('eu.user_id').' = '.$this->db->quoteName('u.id'))
+				->leftJoin($this->db->quoteName('#__user_profiles','up').' ON '.$this->db->quoteName('up.user_id').' = '.$this->db->quoteName('u.id') . ' AND ' . $this->db->quoteName('up.profile_key') . ' LIKE "emundus_profile.newsletter"')
+				->where($this->db->quoteName('u.id') . ' = ' . $uid);
 			$this->db->setQuery($query);
-
-			return $this->db->loadAssoc();
+			$user_infos = $this->db->loadAssoc();
 		}
 		catch (Exception $e) {
-			return false;
+			Log::add('Error getting user infos in model/users at query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
 		}
+
+		return $user_infos;
 	}
 
 
@@ -1763,38 +1916,63 @@ class EmundusModelUsers extends JModelList
 			return $this->db->loadColumn();
 		}
 		catch (Exception $e) {
-			JLog::add('Error getting online users in model/users at query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
+			Log::add('Error getting online users in model/users at query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
 
 	}
 
-	// Get groups of user
-	public function getUserGroups($uid, $return = 'AssocList')
+	/**
+	 * Returns user's groups. If AssocList then associative array with id and label, if column, only an array of ids
+	 *
+	 * @param $uid int
+	 * @param $return string (AssocList|Column)
+	 * @return array
+	 *
+	 * @since version 1.40.0
+	 */
+	public function getUserGroups($uid, $return = 'AssocList', $current_profile = null)
 	{
-		$user_id = empty($uid) ? $this->user->id : $uid;
+		$user_groups = [];
 
-		$query = $this->db->getQuery(true);
+		if (!empty($uid)) {
+			try {
+				$query = $this->db->getQuery(true);
 
-		try {
-			$query->select('esg.id, esg.label')
-				->from($this->db->quoteName('#__emundus_groups', 'g'))
-				->leftJoin($this->db->quoteName('#__emundus_setup_groups', 'esg') . ' ON ' . $this->db->quoteName('g.group_id') . ' = ' . $this->db->quoteName('esg.id'))
-				->where($this->db->quoteName('g.user_id') . ' = ' . $user_id);
-			$this->db->setQuery($query);
+				$query->select('esg.id, esg.label')
+					->from($this->db->quoteName('#__emundus_groups', 'g'))
+					->leftJoin($this->db->quoteName('#__emundus_setup_groups', 'esg').' ON '.$this->db->quoteName('g.group_id').' = '.$this->db->quoteName('esg.id'))
+					->where($this->db->quoteName('g.user_id') . ' = ' . $uid);
+				$this->db->setQuery($query);
 
-			if ($return == 'Column') {
-				return $this->db->loadColumn();
+				if ($return == 'Column') {
+					$user_groups = $this->db->loadColumn();
+					
+					if(!empty($current_profile)) {
+						$groups_mapping = $this->getGroupsMapping();
+						if(!empty($groups_mapping)) {
+							foreach ($user_groups as $user_group) {
+								if(in_array($user_group,array_keys($groups_mapping))) {
+									$profiles_group = explode(',', $groups_mapping[$user_group]['profile_id']);
+									if(!in_array($current_profile, $profiles_group)) {
+										unset($user_groups[array_search($user_group, $user_groups)]);
+									}
+								}
+							}
+						}
+
+						$user_groups = array_values($user_groups);
+					}
+				} else {
+					$user_groups = $this->db->loadAssocList('id', 'label');
+				}
+			} catch(Exception $e) {
+				Log::add('Failed to get user groups ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
-			else {
-				return $this->db->loadAssocList('id', 'label');
-			}
+		}
 
-		}
-		catch (Exception $e) {
-			return false;
-		}
+		return $user_groups;
 	}
 
 	/**
@@ -1906,7 +2084,7 @@ class EmundusModelUsers extends JModelList
 		}
 	}
 
-	public function getUserGroupsProgrammeAssoc($uid, $select = 'jesgrc.course')
+	public function getUserGroupsProgrammeAssoc($uid, $select = 'jesgrc.course', $groups = [])
 	{
 		$program_ids = [];
 
@@ -1918,8 +2096,14 @@ class EmundusModelUsers extends JModelList
 			$query->select('DISTINCT ' . $this->db->quoteName($select))
 				->from($this->db->quoteName('#__emundus_setup_programmes', 'jesp'))
 				->innerJoin($this->db->quoteName('#__emundus_setup_groups_repeat_course', 'jesgrc') . ' ON ' . $this->db->quoteName('jesp.code') . ' = ' . $this->db->quoteName('jesgrc.course'))
-				->innerJoin($this->db->quoteName('#__emundus_groups', 'jeg') . ' ON ' . $this->db->quoteName('jeg.group_id') . ' = ' . $this->db->quoteName('jesgrc.parent_id'))
-				->where($this->db->quoteName('jeg.user_id') . ' = ' . $user_id . ' AND ' . $this->db->quoteName('jesp.published') . ' = 1');
+				->innerJoin($this->db->quoteName('#__emundus_groups', 'jeg') . ' ON ' . $this->db->quoteName('jeg.group_id') . ' = ' . $this->db->quoteName('jesgrc.parent_id'));
+			if(!empty($groups)) {
+				$query->where($this->db->quoteName('jeg.group_id') . ' IN (' . implode(',', $groups) . ')');
+			} else
+			{
+				$query->where($this->db->quoteName('jeg.user_id') . ' = ' . $user_id);
+			}
+			$query->where($this->db->quoteName('jesp.published') . ' = 1');
 
 			$this->db->setQuery($query);
 
@@ -1927,7 +2111,7 @@ class EmundusModelUsers extends JModelList
 				$program_ids = $this->db->loadColumn();
 			}
 			catch (Exception $e) {
-				JLog::add('Error getting all profiles associated to user in model/access at query : ' . $query->__toString(), JLog::ERROR, 'com_emundus');
+				Log::add('Error getting all profiles associated to user in model/access at query : ' . $query->__toString(), Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -1955,7 +2139,7 @@ class EmundusModelUsers extends JModelList
 				$campaign_ids = $this->db->loadColumn();
 			}
 			catch (Exception $e) {
-				JLog::add('Error getting all profiles associated to user in model/access at query : ' . $query->__toString(), JLog::ERROR, 'com_emundus');
+				Log::add('Error getting all profiles associated to user in model/access at query : ' . $query->__toString(), Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -1984,7 +2168,7 @@ class EmundusModelUsers extends JModelList
 				$applications = $this->db->loadColumn();
 			}
 			catch (Exception $e) {
-				JLog::add('Failed to get applications assoc to group ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to get applications assoc to group ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -2009,7 +2193,7 @@ class EmundusModelUsers extends JModelList
 				$applications = $this->db->loadColumn();
 			}
 			catch (Exception $e) {
-				JLog::add('Failed to get applications assoc to user ' . $uid . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to get applications assoc to user ' . $uid . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -2035,19 +2219,25 @@ class EmundusModelUsers extends JModelList
 
 	public function getUserOprofiles($uid)
 	{
+		$o_profiles = [];
+
 		try {
-			$query = "select esp.id, esp.label
-                      from #__emundus_setup_profiles as esp
-                      left join #__emundus_users_profiles as eup on eup.profile_id = esp.id
-                      where eup.user_id = " . $uid;
+			$query = $this->db->getQuery(true);
+
+			$query->select('esp.id,esp.label')
+				->from($this->db->quoteName('#__emundus_setup_profiles','esp'))
+				->leftJoin($this->db->quoteName('#__emundus_users_profiles','eup').' ON '.$this->db->quoteName('eup.profile_id').' = '.$this->db->quoteName('esp.id'))
+				->where($this->db->quoteName('eup.user_id').' = '.$uid);
 
 			$this->db->setQuery($query);
 
-			return $this->db->loadAssocList('id', 'label');
+			$o_profiles =  $this->db->loadAssocList('id', 'label');
 		}
 		catch (Exception $e) {
-			return false;
+			Log::add('Failed to get user o-profiles ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
+
+		return $o_profiles;
 	}
 
 	public function countUserEvaluations($uid)
@@ -2094,75 +2284,364 @@ class EmundusModelUsers extends JModelList
 	 *
 	 * @return bool
 	 *
-	 * @since version
+	 * @throws Exception
+	 * @since version 1.0.0
 	 */
 	public function addProfileToUser($uid, $pid)
 	{
-		$config = Factory::getConfig();
+		$result = true;
+		$config = $this->app->getConfig();
 
 		$timezone = new DateTimeZone($config->get('offset'));
 		$now      = Factory::getDate()->setTimezone($timezone);
 
-		$query = $this->db->getQuery(true);
+		try
+		{
+			$query = $this->db->getQuery(true);
 
-		$query->select($this->db->quoteName('id'))
-			->from($this->db->quoteName('#__emundus_users_profiles'))
-			->where($this->db->quoteName('user_id') . ' = ' . $uid . ' AND ' . $this->db->quoteName('profile_id') . ' = ' . $pid);
-		$this->db->setQuery($query);
-		try {
-			if (!empty($this->db->loadResult())) {
-				return true;
+			$query->select($this->db->quoteName('id'))
+				->from($this->db->quoteName('#__emundus_users_profiles'))
+				->where($this->db->quoteName('user_id') . ' = ' . $uid . ' AND ' . $this->db->quoteName('profile_id') . ' = ' . $pid);
+			$this->db->setQuery($query);
+
+			if(empty($this->db->loadResult()))
+			{
+				$columns = array('date_time', 'user_id', 'profile_id');
+				$values  = array($now, $uid, $pid);
+				$query->clear()
+					->insert($this->db->quoteName('#__emundus_users_profiles'))
+					->columns($this->db->quoteName($columns))
+					->values(implode(',', $this->db->quote($values)));
+				$this->db->setQuery($query);
+				$result = $this->db->execute();
+
+				// Associate Joomla group
+				$this->addProfileAclToUser($uid, $pid);
+				//
+
+				// Associate Emundus default groups
+				$this->addProfileGroupsToUser($uid, $pid);
+				//
+
 			}
 		}
-		catch (Exception $e) {
-			error_log($e->getMessage(), 0);
-
-			return false;
+		catch (Exception $e)
+		{
+			Log::add('Error on adding profile to user: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			$result = false;
 		}
 
-		$columns = array('date_time', 'user_id', 'profile_id');
-		$values = array($now, $uid, $pid);
-		$query->clear()
-			->insert($this->db->quoteName('#__emundus_users_profiles'))
-			->columns($this->db->quoteName($columns))
-			->values(implode(',', $this->db->quote($values)));
-		$this->db->setQuery($query);
-		try {
-			$this->db->execute();
-		}
-		catch (Exception $e) {
-			error_log($e->getMessage(), 0);
 
-			return false;
+		return $result;
+	}
+
+	/**
+	 * Remove emundus profile from a user
+	 *
+	 * @param $uid
+	 * @param $pid
+	 *
+	 * @return bool|mixed
+	 *
+	 * @since version 2.0.0
+	 */
+	public function removeProfileToUser($uid,$pid)
+	{
+		$removed = false;
+
+		try
+		{
+			$query = $this->db->getQuery(true);
+
+			// First we delete the profile from the user
+			$query->delete($this->db->quoteName('#__emundus_users_profiles'))
+				->where($this->db->quoteName('profile_id') . ' = :profileId')
+				->where($this->db->quoteName('user_id') . ' = :uid')
+				->bind(':profileId', $pid, ParameterType::INTEGER)
+				->bind(':uid', $uid, ParameterType::INTEGER);
+			$this->db->setQuery($query);
+
+			if($removed = $this->db->execute()) {
+				$query->clear()
+					->select('profile_id')
+					->from($this->db->quoteName('#__emundus_users_profiles'))
+					->where($this->db->quoteName('user_id') . ' = :uid')
+					->bind(':uid', $uid, ParameterType::INTEGER);
+				$this->db->setQuery($query);
+				$users_profiles = $this->db->loadColumn();
+
+				// If we remove the default profile, we set the first profile as default
+				$query->clear()
+					->select('profile')
+					->from($this->db->quoteName('#__emundus_users'))
+					->where($this->db->quoteName('user_id') . ' = :uid')
+					->bind(':uid', $uid, ParameterType::INTEGER);
+				$this->db->setQuery($query);
+				$default_profile = $this->db->loadResult();
+
+				if($default_profile == $pid) {
+					if(!empty($users_profiles)) {
+						$new_default_profile = $users_profiles[0];
+					}
+					else {
+						// If user does not have other profiles we set an applicant profile by default
+						$query->clear()
+							->select('id')
+							->from($this->db->quoteName('#__emundus_setup_profiles'))
+							->where($this->db->quoteName('published') . ' = 1');
+						$this->db->setQuery($query);
+						$new_default_profile = $this->db->loadResult();
+
+						$this->addProfileToUser($uid,$new_default_profile);
+					}
+
+					$query->clear()
+						->update($this->db->quoteName('#__emundus_users'))
+						->set('profile = ' . $this->db->quote($new_default_profile))
+						->where($this->db->quoteName('user_id') . ' = :uid')
+						->bind(':uid', $uid, ParameterType::INTEGER);
+					$this->db->setQuery($query);
+					$this->db->execute();
+				}
+
+				// Remove ACL groups if the profile is associated to a group and other profiles from user does not need this ACL
+				$query->clear()
+					->select('acl_aro_groups')
+					->from($this->db->quoteName('#__emundus_setup_profiles'))
+					->where($this->db->quoteName('id') . ' = :profileId')
+					->bind(':profileId', $pid, ParameterType::INTEGER);
+				$this->db->setQuery($query);
+				$acl_group_to_remove = $this->db->loadResult();
+
+				$query->clear()
+					->select('acl_aro_groups')
+					->from($this->db->quoteName('#__emundus_setup_profiles'))
+					->where($this->db->quoteName('id') . ' IN (' . implode(',', $users_profiles) . ')');
+				$this->db->setQuery($query);
+				$acl_groups = $this->db->loadColumn();
+
+				if(!in_array($acl_group_to_remove, $acl_groups)) {
+					$query->clear()
+						->delete($this->db->quoteName('#__user_usergroup_map'))
+						->where($this->db->quoteName('user_id') . ' = :uid')
+						->where($this->db->quoteName('group_id') . ' = :group_id')
+						->bind(':uid', $uid, ParameterType::INTEGER)
+						->bind(':group_id', $acl_group_to_remove, ParameterType::INTEGER);
+					$this->db->setQuery($query);
+					$this->db->execute();
+				}
+				//
+
+				// Remove eMundus groups if the profile is associated to a group and other profiles from user does not need this group
+				$query->clear()
+					->select($this->db->quoteName('emundus_groups'))
+					->from($this->db->quoteName('#__emundus_setup_profiles_repeat_emundus_groups'))
+					->where($this->db->quoteName('parent_id') . ' = ' . $pid);
+				$this->db->setQuery($query);
+				$emundus_groups_to_remove = $this->db->loadColumn();
+
+				$query->clear()
+					->select($this->db->quoteName('emundus_groups'))
+					->from($this->db->quoteName('#__emundus_setup_profiles_repeat_emundus_groups'))
+					->where($this->db->quoteName('parent_id') . ' IN (' . implode(',', $users_profiles) . ')');
+				$this->db->setQuery($query);
+				$emundus_groups = $this->db->loadColumn();
+
+				if(!in_array($emundus_groups_to_remove, $emundus_groups)) {
+					$query->clear()
+						->delete($this->db->quoteName('#__emundus_groups'))
+						->where($this->db->quoteName('user_id') . ' = :uid')
+						->where($this->db->quoteName('group_id') . ' = :group_id')
+						->bind(':uid', $uid, ParameterType::INTEGER)
+						->bind(':group_id', $emundus_groups_to_remove, ParameterType::INTEGER);
+					$this->db->setQuery($query);
+					$this->db->execute();
+				}
+				//
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Failed to remove profile to user ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
 
-		$query->clear()
-			->select($this->db->quoteName('acl_aro_groups'))
-			->from($this->db->quoteName('#__emundus_setup_profiles'))
-			->where($this->db->quoteName('id') . ' = ' . $pid);
-		$this->db->setQuery($query);
-		try {
-			$group = $this->db->loadResult();
-		}
-		catch (Exception $e) {
-			error_log($e->getMessage(), 0);
+		return $removed;
+	}
 
-			return false;
+	public function checkProfilesUser($uid)
+	{
+		$checked = true;
+		$query = $this->db->getQuery(true);
+
+		try
+		{
+			$query->select('eu.profile')
+				->from($this->db->quoteName('#__emundus_users', 'eu'))
+				->where($this->db->quoteName('eu.user_id') . ' = ' . $uid);
+			$this->db->setQuery($query);
+			$default_profile = $this->db->loadResult();
+
+			$query->clear()
+				->select('eup.profile_id')
+				->from($this->db->quoteName('#__emundus_users_profiles', 'eup'))
+				->where($this->db->quoteName('eup.user_id') . ' = ' . $uid);
+			$this->db->setQuery($query);
+			$profiles = $this->db->loadColumn();
+
+			$profiles = array_merge([$default_profile], $profiles);
+			$profiles = array_unique($profiles);
+
+			foreach ($profiles as $profile) {
+				// Check Joomla ACL
+				$acl_added = $this->addProfileAclToUser($uid, $profile);
+
+				// Check emundus groups
+				$groups_added = $this->addProfileGroupsToUser($uid, $profile);
+
+				$checked = $acl_added && $groups_added;
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error on checking ACL of user: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			$checked = false;
 		}
 
-		return UserHelper::addUserToGroup($uid, $group);
+		return $checked;
+	}
+
+	public function addProfileAclToUser($uid, $pid)
+	{
+		$added = true;
+		$query = $this->db->getQuery(true);
+
+		try
+		{
+			// Add ACL to user
+			$query->clear()
+				->select($this->db->quoteName('acl_aro_groups'))
+				->from($this->db->quoteName('#__emundus_setup_profiles'))
+				->where($this->db->quoteName('id') . ' = ' . $pid);
+			$this->db->setQuery($query);
+			$joomla_group = $this->db->loadResult();
+
+			$query = $this->db->getQuery(true)
+				->select($this->db->quoteName('id'))
+				->from($this->db->quoteName('#__usergroups'))
+				->where($this->db->quoteName('id') . ' = :groupId')
+				->bind(':groupId', $joomla_group, ParameterType::INTEGER);
+			$this->db->setQuery($query);
+			$exist = $this->db->loadResult();
+
+			if ($exist)
+			{
+				$query = $this->db->getQuery(true)
+					->select($this->db->quoteName('user_id'))
+					->from($this->db->quoteName('#__user_usergroup_map'))
+					->where($this->db->quoteName('group_id') . ' = :groupId')
+					->where($this->db->quoteName('user_id') . ' = :uid')
+					->bind(':groupId', $joomla_group, ParameterType::INTEGER)
+					->bind(':uid', $uid, ParameterType::INTEGER);
+				$this->db->setQuery($query);
+				$mapping_exist = $this->db->loadResult();
+
+				if (empty($mapping_exist))
+				{
+					$inserted = [
+						'user_id'  => $uid,
+						'group_id' => $joomla_group
+					];
+					$inserted = (object) $inserted;
+					$added   = $this->db->insertObject('#__user_usergroup_map', $inserted);
+				}
+			}
+			//
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error on adding profile to user: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			$added = false;
+		}
+
+
+		return $added;
+	}
+
+	public function addProfileGroupsToUser($uid, $pid)
+	{
+		$added = true;
+		$query = $this->db->getQuery(true);
+
+		try
+		{
+			$query->clear()
+				->select($this->db->quoteName('emundus_groups'))
+				->from($this->db->quoteName('#__emundus_setup_profiles_repeat_emundus_groups'))
+				->where($this->db->quoteName('parent_id') . ' = ' . $pid);
+			$this->db->setQuery($query);
+			$emundus_groups = $this->db->loadColumn();
+
+			foreach ($emundus_groups as $emundusGroup) {
+				$query->clear()
+					->select($this->db->quoteName('id'))
+					->from($this->db->quoteName('#__emundus_setup_groups'))
+					->where($this->db->quoteName('id') . ' = :groupId')
+					->bind(':groupId', $emundusGroup, ParameterType::INTEGER);
+				$this->db->setQuery($query);
+				$exist = $this->db->loadResult();
+
+				if ($exist)
+				{
+					$query->clear()
+						->select($this->db->quoteName('user_id'))
+						->from($this->db->quoteName('#__emundus_groups'))
+						->where($this->db->quoteName('group_id') . ' = :groupId')
+						->where($this->db->quoteName('user_id') . ' = :uid')
+						->bind(':groupId', $emundusGroup, ParameterType::INTEGER)
+						->bind(':uid', $uid, ParameterType::INTEGER);
+					$this->db->setQuery($query);
+					$mapping_exist = $this->db->loadResult();
+
+					if (empty($mapping_exist))
+					{
+						$inserted = [
+							'user_id'  => $uid,
+							'group_id' => $emundusGroup
+						];
+						$inserted = (object) $inserted;
+						$added   = $this->db->insertObject('#__emundus_groups', $inserted);
+					}
+				}
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error on adding profile to user: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			$added = false;
+		}
+
+		return $added;
 	}
 
 
-	public function editUser($user)
+	public function editUser($user,$current_user = null)
 	{
+		if(empty($current_user)) {
+			$current_user = Factory::getApplication()->getIdentity();
+		}
+
 		$eMConfig = ComponentHelper::getParams('com_emundus');
-		$u        = Factory::getUser($user['id']);
+		$u        = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user['id']);
 
 		if (isset($user['same_login_email']) && $user['same_login_email'] === 1) {
 			$user['username'] = $user['email'];
-			$properties_set   = $u->setProperties(['username' => $user['username']]);
+			$u->setProperties(['username' => $user['username']]);
 			unset($user['same_login_email']);
+		}
+
+		if(isset($user['testing_account']) && EmundusHelperAccess::asAdministratorAccessLevel($current_user->id)) {
+			$u->setParam('testing_account', $user['testing_account']);
+			unset($user['testing_account']);
 		}
 		
 		if (!$u->bind($user)) {
@@ -2364,6 +2843,7 @@ class EmundusModelUsers extends JModelList
 				->where('user_id = ' . $user['id']);
 			$this->db->setQuery($query);
 			$profiles_id = $this->db->loadColumn();
+
 			foreach ($oprofiles as $profile) {
 				if (!in_array($profile, $profiles_id)) {
 					$this->addProfileToUser($user['id'], $profile);
@@ -2392,6 +2872,25 @@ class EmundusModelUsers extends JModelList
 		return true;
 	}
 
+	public function getGroupDetails($gid)
+	{
+		$group = [];
+
+		try {
+			$query = $this->db->getQuery(true);
+			$query->select('id,label,description,published,class,anonymize')
+				->from($this->db->quoteName('#__emundus_setup_groups'))
+				->where($this->db->quoteName('id') . ' = ' . $gid);
+			$this->db->setQuery($query);
+			$group = $this->db->loadAssoc();
+		}
+		catch (Exception $e) {
+			Log::add('Error getting group programs ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $group;
+	}
+
 	/**
 	 * @param $gid
 	 *
@@ -2401,23 +2900,23 @@ class EmundusModelUsers extends JModelList
 	 */
 	public function getGroupProgs($gid)
 	{
+		$programs = [];
+
 		try {
-			$query = "select prg.id, prg.label, esg.label as group_label
-                      from #__emundus_setup_groups as esg
-                      left join #__emundus_setup_groups_repeat_course as esgrc on esgrc.parent_id = esg.id
-                      left join #__emundus_setup_programmes as prg on prg.code = esgrc.course
-                      where esg.id = " . $gid;
-//echo str_replace('#_', 'jos', $query);
-
+			$query = $this->db->getQuery(true);
+			$query->select('prg.id, prg.label, esg.label as group_label')
+				->from($this->db->quoteName('#__emundus_setup_groups_repeat_course', 'esgrc'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_groups', 'esg') . ' ON ' . $this->db->quoteName('esgrc.parent_id') . ' = ' . $this->db->quoteName('esg.id'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'prg') . ' ON ' . $this->db->quoteName('prg.code') . ' = ' . $this->db->quoteName('esgrc.course'))
+				->where($this->db->quoteName('esg.id') . ' = ' . $gid);
 			$this->db->setQuery($query);
-
-			return $this->db->loadAssocList();
+			$programs = $this->db->loadAssocList();
 		}
 		catch (Exception $e) {
-			error_log($e->getMessage(), 0);
-
-			return false;
+			Log::add('Error getting group programs ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
+
+		return $programs;
 	}
 
 	/**
@@ -2439,7 +2938,7 @@ class EmundusModelUsers extends JModelList
 				$gids = [$gids];
 			}
 
-			$query->select('esa.label, ea.*, esa.c as is_c, esa.r as is_r, esa.u as is_u, esa.d as is_d')
+			$query->select('esa.label, ea.*, esa.c as is_c, esa.r as is_r, esa.u as is_u, esa.d as is_d, esa.description as action_description')
 				->from($this->db->quoteName('#__emundus_acl', 'ea'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_actions', 'esa') . ' ON ' . $this->db->quoteName('esa.id') . ' = ' . $this->db->quoteName('ea.action_id'))
 				->where($this->db->quoteName('ea.group_id') . ' IN (' . implode(',', $gids) . ')')
@@ -2494,7 +2993,7 @@ class EmundusModelUsers extends JModelList
 			$groups = $this->db->loadColumn();
 		}
 		catch (Exception $e) {
-			JLog::add('Error getting effective groups for fnum ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add('Error getting effective groups for fnum ' . $fnum . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
 
 		return $groups;
@@ -2554,7 +3053,7 @@ class EmundusModelUsers extends JModelList
 				$action = $this->db->loadResult();
 			}
 			catch (Exception $e) {
-				JLog::add("Error from getUserActionByFnum aid $aid, fnum $fnum, uid $uid, crud $crud", JLog::ERROR, 'com_emundus.error');
+				Log::add("Error from getUserActionByFnum aid $aid, fnum $fnum, uid $uid, crud $crud", Log::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -2584,7 +3083,7 @@ class EmundusModelUsers extends JModelList
 				$groupActions = $this->db->loadAssocList();
 			}
 			catch (Exception $e) {
-				JLog::add("Error from getGroupActions gids " . implode(',', $gids) . ", fnum $fnum, aid $aid, crud $crud", JLog::ERROR, 'com_emundus.error');
+				Log::add("Error from getGroupActions gids " . implode(',', $gids) . ", fnum $fnum, aid $aid, crud $crud", Log::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -2645,7 +3144,7 @@ class EmundusModelUsers extends JModelList
 		if (!empty($uid)) {
 			
 			$query = $this->db->getQuery(true);
-			$query->select('eu.*, case when u.password = ' . $this->db->quote('') . ' then ' . $this->db->quote('external') . ' else ' . $this->db->quote('internal') . ' end as login_type')
+			$query->select('eu.*,u.email, u.username, u.registerDate, u.lastvisitDate, case when u.password = ' . $this->db->quote('') . ' then ' . $this->db->quote('external') . ' else ' . $this->db->quote('internal') . ' end as login_type,u.block,u.activation,u.params')
 				->from('#__emundus_users as eu')
 				->leftJoin('#__users as u on u.id = eu.user_id')
 				->where('eu.user_id = ' . $uid);
@@ -2655,7 +3154,7 @@ class EmundusModelUsers extends JModelList
 				$users = $this->db->loadObjectList();
 			}
 			catch (Exception $e) {
-				JLog::add('Failed to get user by id ' . $uid . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to get user by id ' . $uid . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -2679,7 +3178,7 @@ class EmundusModelUsers extends JModelList
 				$username = $this->db->loadAssoc();
 			}
 			catch (Exception $e) {
-				JLog::add('Failed to get username by id ' . $id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to get username by id ' . $id . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -2709,9 +3208,14 @@ class EmundusModelUsers extends JModelList
 			try {
 				$this->db->setQuery($query);
 				$users = $this->db->loadObjectList();
+
+				foreach ($users as $user)
+				{
+					unset($user->password);
+				}
 			}
 			catch (Exception $e) {
-				JLog::add('Failed to get users by ids ' . implode(',', $ids) . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to get users by ids ' . implode(',', $ids) . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -2729,7 +3233,7 @@ class EmundusModelUsers extends JModelList
 	 * @throws Exception
 	 * @since  3.9.11
 	 */
-	public function passwordReset($data, $subject = 'COM_USERS_EMAIL_PASSWORD_RESET_SUBJECT', $body = 'COM_USERS_EMAIL_PASSWORD_RESET_BODY')
+	public function passwordReset($data, $subject = 'COM_USERS_EMAIL_PASSWORD_RESET_SUBJECT', $body = 'COM_USERS_EMAIL_PASSWORD_RESET_BODY', $new_account = false)
 	{
 
 		$config = Factory::getApplication()->getConfig();
@@ -2797,6 +3301,18 @@ class EmundusModelUsers extends JModelList
 			return $return;
 		}
 
+		if(!empty($user->params))
+		{
+			$user_params = json_decode($user->params);
+
+			if(!empty($user_params->OAuth2) && $user_params->OAuth2 == 'openid') {
+				$return->message = Text::_('COM_USERS_INVALID_EMAIL');
+				$return->status  = false;
+
+				return $return;
+			}
+		}
+
 		// Make sure the user isn't a Super Admin.
 		if ($user->authorise('core.admin')) {
 			$return->message = Text::_('COM_USERS_REMIND_SUPERADMIN_ERROR');
@@ -2829,13 +3345,24 @@ class EmundusModelUsers extends JModelList
 
 		// Assemble the password reset confirmation link.
 		$mode = $config->get('force_ssl', 0) == 2 ? 1 : (-1);
+
 		$menu_item = Factory::getApplication()->getMenu()->getItems('link', 'index.php?option=com_users&view=reset', true);
+		if($new_account)
+		{
+			$account_menu_id = ComponentHelper::getComponent('com_emundus')->getParams()->get('account_creation_link',0);
+			if(!empty($account_menu_id)) {
+				$menu_item = Factory::getApplication()->getMenu()->getItem($account_menu_id);
+			}
+		}
 
 		if(!empty($menu_item)) {
 			$link = $menu_item->alias.'?layout=confirm&token=' . $token . '&username=' . $user->get('username');
 		}
 		else {
 			$link = 'index.php?option=com_users&view=reset&layout=confirm&token=' . $token . '&username=' . $user->get('username');
+		}
+		if($new_account) {
+			$link .= '&new_account=1';
 		}
 		$link = str_replace('+', '%2B', $link);
 
@@ -2918,7 +3445,8 @@ class EmundusModelUsers extends JModelList
 
 	public function getProfileForm()
 	{
-		
+		$form_id = 0;
+
 		$query = $this->db->getQuery(true);
 
 		try {
@@ -2928,13 +3456,13 @@ class EmundusModelUsers extends JModelList
 				->andWhere($this->db->quoteName('published') . ' = 1');
 			$this->db->setQuery($query);
 
-			return $this->db->loadResult();
+			$form_id = $this->db->loadResult();
 		}
 		catch (Exception $e) {
-			JLog::add(' com_emundus/models/users.php | Cannot get profile form for edit user : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
-
-			return 0;
+			Log::add(' com_emundus/models/users.php | Cannot get profile form for edit user : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
+
+		return $form_id;
 	}
 
 	public function getProfileGroups($formid)
@@ -2953,7 +3481,7 @@ class EmundusModelUsers extends JModelList
 			return $this->db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add(' com_emundus/models/users.php | Cannot get profile groups with formid : ' . $formid . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add(' com_emundus/models/users.php | Cannot get profile groups with formid : ' . $formid . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 			return [];
 		}
@@ -2995,7 +3523,7 @@ class EmundusModelUsers extends JModelList
 			return $elements;
 		}
 		catch (Exception $e) {
-			JLog::add(' com_emundus/models/users.php | Cannot get elements of group ' . $group . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add(' com_emundus/models/users.php | Cannot get elements of group ' . $group . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 			return [];
 		}
@@ -3047,7 +3575,7 @@ class EmundusModelUsers extends JModelList
 
 		}
 		catch (Exception $e) {
-			JLog::add(' com_emundus/models/users.php | Cannot update user ' . $uid . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add(' com_emundus/models/users.php | Cannot update user ' . $uid . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
 
 		return $saved;
@@ -3072,7 +3600,7 @@ class EmundusModelUsers extends JModelList
 			return $this->db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add(' com_emundus/models/users.php | Cannot get default attachments uploaded by the applicant : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add(' com_emundus/models/users.php | Cannot get default attachments uploaded by the applicant : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 			return [];
 		}
@@ -3092,7 +3620,7 @@ class EmundusModelUsers extends JModelList
 			return $this->db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add(' com_emundus/models/users.php | Cannot get attachments allowed to default values : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add(' com_emundus/models/users.php | Cannot get attachments allowed to default values : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 			return [];
 		}
@@ -3122,7 +3650,7 @@ class EmundusModelUsers extends JModelList
 			return $result;
 		}
 		catch (Exception $e) {
-			JLog::add(' com_emundus/models/users.php | Cannot insert default documents : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add(' com_emundus/models/users.php | Cannot insert default documents : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 			return false;
 		}
@@ -3154,7 +3682,7 @@ class EmundusModelUsers extends JModelList
 			return $result;
 		}
 		catch (Exception $e) {
-			JLog::add(' com_emundus/models/users.php | Cannot delete document from jos_emundus_users_attachments with id ' . $id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add(' com_emundus/models/users.php | Cannot delete document from jos_emundus_users_attachments with id ' . $id . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 			return false;
 		}
@@ -3214,7 +3742,7 @@ class EmundusModelUsers extends JModelList
 			return true;
 		}
 		catch (Exception $e) {
-			JLog::add(' com_emundus/models/users.php | Cannot copy profile document ' . json_encode($aids) . ' to fnum ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add(' com_emundus/models/users.php | Cannot copy profile document ' . json_encode($aids) . ' to fnum ' . $fnum . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 			return false;
 		}
@@ -3281,7 +3809,7 @@ class EmundusModelUsers extends JModelList
 			return true;
 		}
 		catch (Exception $e) {
-			JLog::add(' com_emundus/models/users.php | Cannot copy profile document ' . $aid . ' to fnum ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add(' com_emundus/models/users.php | Cannot copy profile document ' . $aid . ' to fnum ' . $fnum . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 			return false;
 		}
@@ -3301,7 +3829,7 @@ class EmundusModelUsers extends JModelList
 			return $this->db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add("com_emundus/models/users.php | Cannot update profile picture for user $user_id :" . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add("com_emundus/models/users.php | Cannot update profile picture for user $user_id :" . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 			return false;
 		}
@@ -3330,7 +3858,7 @@ class EmundusModelUsers extends JModelList
 			return $app_profile;
 		}
 		catch (Exception $e) {
-			JLog::add(' com_emundus/models/users.php | Cannot add applicant profile for user ' . $user_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add(' com_emundus/models/users.php | Cannot add applicant profile for user ' . $user_id . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 			return false;
 		}
@@ -3368,7 +3896,7 @@ class EmundusModelUsers extends JModelList
 				}
 				catch (Exception $e) {
 					$updated = false;
-					JLog::add('Failed to update emundus user profile from user_id ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+					Log::add('Failed to update emundus user profile from user_id ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 				}
 
 				if ($updated) {
@@ -3384,7 +3912,7 @@ class EmundusModelUsers extends JModelList
 					}
 					catch (Exception $e) {
 						// catch any database errors.
-						JLog::add('Failed to update user joomla group ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+						Log::add('Failed to update user joomla group ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 					}
 
 					$query->clear()
@@ -3400,7 +3928,7 @@ class EmundusModelUsers extends JModelList
 					}
 					catch (Exception $e) {
 						// catch any database errors.
-						JLog::add('Failed to update user ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+						Log::add('Failed to update user ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 					}
 
 					if (empty($campaign_id)) {
@@ -3432,7 +3960,7 @@ class EmundusModelUsers extends JModelList
 						}
 						catch (Exception $e) {
 							$campaign_id = 0;
-							JLog::add('Failed to get campaign ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+							Log::add('Failed to get campaign ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 							$message = JText::_('COM_EMUNDUS_ANONYM_USERS_ERROR_TRYING_TO_FIND_CAMPAIGN');
 						}
 					}
@@ -3448,7 +3976,7 @@ class EmundusModelUsers extends JModelList
 						}
 						catch (Exception $e) {
 							$campaign_id = 0;
-							JLog::add('Failed to check campaign existence ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+							Log::add('Failed to check campaign existence ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 						}
 					}
 
@@ -3497,7 +4025,7 @@ class EmundusModelUsers extends JModelList
 								]);
 
 								if (!$sent) {
-									JLog::add('Failed to send email to anonym user' . $user_id . ' campaign id :' . $campaign_id, JLog::WARNING, 'com_emundus.error');
+									Log::add('Failed to send email to anonym user' . $user_id . ' campaign id :' . $campaign_id, Log::WARNING, 'com_emundus.error');
 								}
 							}
 
@@ -3517,17 +4045,17 @@ class EmundusModelUsers extends JModelList
 								];
 							}
 							else {
-								JLog::add('Failed to open session for anonym user' . $user_id . ' campaign id :' . $campaign_id, JLog::WARNING, 'com_emundus.error');
+								Log::add('Failed to open session for anonym user' . $user_id . ' campaign id :' . $campaign_id, Log::WARNING, 'com_emundus.error');
 								$message = JText::_('COM_EMUNDUS_ANONYM_USERS_CREATE_ANONYM_SESSION_ERROR');
 							}
 						}
 						else {
-							JLog::add('Failed to create file for anonym user' . $user_id . ' campaign id :' . $campaign_id, JLog::WARNING, 'com_emundus.error');
+							Log::add('Failed to create file for anonym user' . $user_id . ' campaign id :' . $campaign_id, Log::WARNING, 'com_emundus.error');
 							$message = 'Une erreur est survenue au cours de la création d\'un dossier.';
 						}
 					}
 					else {
-						JLog::add('Failed to retrieve campaign for anonym user' . $user_id, JLog::WARNING, 'com_emundus.error');
+						Log::add('Failed to retrieve campaign for anonym user' . $user_id, Log::WARNING, 'com_emundus.error');
 						$message = JText::_('COM_EMUNDUS_ANONYM_USERS_NO_CAMPAIGN_FOUND');
 					}
 				}
@@ -3538,7 +4066,7 @@ class EmundusModelUsers extends JModelList
 		}
 		else {
 			$message = JText::_('ANONYM_FILES_ARE_FORBIDDEN');
-			JLog::add('Attempt to deposit an anonym file but emundus configuration forbid it.', JLog::INFO, 'com_emundus.users');
+			Log::add('Attempt to deposit an anonym file but emundus configuration forbid it.', Log::INFO, 'com_emundus.users');
 		}
 
 		return [
@@ -3577,7 +4105,7 @@ class EmundusModelUsers extends JModelList
 				$result = $this->db->loadObject();
 			}
 			catch (Exception $e) {
-				JLog::add('Failed to get key from token ' . $token . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to get key from token ' . $token . ' ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 				$message = 'COM_EMUNDUS_USERS_ANONYM_FAILED_TO_FOUND_KEY';
 			}
 
@@ -3633,7 +4161,7 @@ class EmundusModelUsers extends JModelList
 			$updated = $this->db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('Failed to connect from valid key ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add('Failed to connect from valid key ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
 
 		if ($updated) {
@@ -3674,7 +4202,7 @@ class EmundusModelUsers extends JModelList
 			}
 			catch (Exception $e) {
 				$result = 0;
-				JLog::add('Failed to retrieve emundus user from token ' . $token . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to retrieve emundus user from token ' . $token . ' ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 
 			if (!empty($result)) {
@@ -3715,7 +4243,7 @@ class EmundusModelUsers extends JModelList
 				$emundusUser = $this->db->loadObject();
 			}
 			catch (Exception $e) {
-				JLog::add('Failed to retrieve emundus user from token ' . $token . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to retrieve emundus user from token ' . $token . ' ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 
 			if (!empty($emundusUser) && !empty($emundusUser->user_id)) {
@@ -3730,7 +4258,7 @@ class EmundusModelUsers extends JModelList
 						$existing_user = $this->db->loadResult();
 					}
 					catch (Exception $e) {
-						JLog::add('Failed to check if user with same username already exists ' . $emundusUser->email_anonym . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+						Log::add('Failed to check if user with same username already exists ' . $emundusUser->email_anonym . ' ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 					}
 
 					if (!empty($existing_user)) {
@@ -3785,7 +4313,7 @@ class EmundusModelUsers extends JModelList
 						}
 						catch (Exception $e) {
 							$user_updated = false;
-							JLog::add('Failed to update user data ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+							Log::add('Failed to update user data ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 						}
 
 
@@ -3802,7 +4330,7 @@ class EmundusModelUsers extends JModelList
 							}
 							catch (Exception $e) {
 								$emundus_user_updated = false;
-								JLog::add('Failed to update emundus user data ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+								Log::add('Failed to update emundus user data ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 							}
 
 							if ($emundus_user_updated) {
@@ -3821,7 +4349,7 @@ class EmundusModelUsers extends JModelList
 					}
 				}
 				else {
-					JLog::add('User choose to create file anonymously, can not update without necessary info (at least email)', JLog::WARNING, 'com_emundus.error');
+					Log::add('User choose to create file anonymously, can not update without necessary info (at least email)', Log::WARNING, 'com_emundus.error');
 				}
 			}
 		}
@@ -3855,12 +4383,12 @@ class EmundusModelUsers extends JModelList
 
 				if (empty($token)) {
 					$token = '';
-					JLog::add('Existing user does not have token ' . $user_id, JLog::INFO, 'com_emundus.anonym');
+					Log::add('Existing user does not have token ' . $user_id, Log::INFO, 'com_emundus.anonym');
 				}
 			}
 			catch (Exception $e) {
 				$token = '';
-				JLog::add('Failed to find token from user id ' . $user_id . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to find token from user id ' . $user_id . ' ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -3894,7 +4422,7 @@ class EmundusModelUsers extends JModelList
 			}
 			catch (Exception $e) {
 				$failed_attempts = [];
-				JLog::add('Failed to detect if wrong attempts already occured with ip ' . $current_ip . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to detect if wrong attempts already occured with ip ' . $current_ip . ' ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 
 			if (sizeof($failed_attempts) > 4) {
@@ -3943,7 +4471,7 @@ class EmundusModelUsers extends JModelList
 				$updated = $this->db->execute();
 			}
 			catch (Exception $e) {
-				JLog::add('Failed to generate new token for user ' . $user_id . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to generate new token for user ' . $user_id . ' ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 
 			if ($updated) {
@@ -3971,7 +4499,7 @@ class EmundusModelUsers extends JModelList
 			}
 			catch (Exception $e) {
 				$params = '';
-				JLog::add(' com_emundus/models/users.php | Failed to check if is saml users : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add(' com_emundus/models/users.php | Failed to check if is saml users : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 
 			if (!empty($params)) {
@@ -4004,7 +4532,7 @@ class EmundusModelUsers extends JModelList
 				}
 			}
 			catch (Exception $e) {
-				JLog::add(' com_emundus/models/users.php | Failed to get identity photo : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add(' com_emundus/models/users.php | Failed to get identity photo : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 				return '';
 			}
@@ -4046,4 +4574,482 @@ class EmundusModelUsers extends JModelList
 		//shuffle the password string before returning!
 		return str_shuffle($password);
 	}
+
+	/**
+	 * @param $uid
+	 * @description Return the label of group(s)'s user in jos_emundus_setup_groupes table
+	 * @return array|mixed
+	 */
+	public function getUserGroupsLabelById($uid)
+	{
+		$groups_label = [];
+
+		if (!empty($uid)) {
+			$query = $this->db->getQuery(true);
+
+			$query->select('esg.label')
+				->from($this->db->quoteName('#__emundus_setup_groups', 'esg'))
+				->leftJoin($this->db->quoteName('#__emundus_groups', 'eg') . ' ON eg.group_id = esg.id')
+				->where($this->db->quoteName('eg.user_id') . ' = ' . $uid);
+
+			try {
+				$this->db->setQuery($query);
+				$groups_label = $this->db->loadColumn();
+
+			} catch (Exception $e) {
+				Log::add('component/com_emundus/models/users | Error when try to get group(s) label : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
+			}
+		}
+		return $groups_label;
+	}
+
+	/**
+	 * @description Return all columns of a profile form
+	 * @return array|mixed|null
+	 */
+	public function getColumnsFromProfileForm() {
+
+		$columns = [];
+
+		$query = $this->db->getQuery(true);
+
+		$profile_form = $this->getProfileForm();
+
+		if(!empty($profile_form))
+		{
+			$query->select('fe.id as id, fe.name as name, fe.group_id as group_id, fe.plugin as plugin, fe.label as label, fe.params as params')
+				->from($this->db->quoteName('#__fabrik_elements', 'fe'))
+				->leftJoin($this->db->quoteName('#__fabrik_formgroup', 'ff') . ' ON ff.group_id = fe.group_id')
+				->where($this->db->quoteName('ff.form_id') . ' = ' . $profile_form)
+				->andWhere($this->db->quoteName('fe.hidden') . ' = ' . '0')
+				->andWhere($this->db->quoteName('fe.published') . ' = ' . '1');
+
+			try
+			{
+				$this->db->setQuery($query);
+				$columns = $this->db->loadObjectList();
+			}
+			catch (Exception $e)
+			{
+				Log::add('component/com_emundus/models/users | Error when try to get form\'s columns : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $columns;
+	}
+
+	/**
+	 * @return object[]
+	 * @description Return all the columns of the joomla columns wanted to be exported
+	 */
+	public function getJoomlaUserColumns()
+	{
+		return array(
+			'lastname' => (object)array(
+				'id' => null,
+				'name' => 'lastname',
+				'plugin' => null,
+				'label' => 'COM_EMUNDUS_LASTNAME',
+			),
+			'firstname' => (object)array(
+				'id' => null,
+				'name' => 'firstname',
+				'plugin' => null,
+				'label' => 'COM_EMUNDUS_FIRSTNAME',
+			),
+			'email' => (object)array(
+				'id' => null,
+				'name' => 'email',
+				'plugin' => null,
+				'label' => 'COM_EMUNDUS_EMAIL',
+			),
+			'profile' => (object)array(
+				'id' => null,
+				'name' => 'profile',
+				'plugin' => null,
+				'label' => 'COM_EMUNDUS_PROFILE',
+			),
+			'oprofiles' => (object)array(
+				'id' => null,
+				'name' => 'oprofiles',
+				'plugin' => null,
+				'label' => 'COM_EMUNDUS_O_PROFILES',
+			),
+			'registerDate' => (object)array(
+				'id' => null,
+				'name' => 'registerDate',
+				'plugin' => null,
+				'label' => 'COM_EMUNDUS_REGISTERDATE',
+			),
+			'lastvisitDate' => (object)array(
+				'id' => null,
+				'name' => 'lastvisitDate',
+				'plugin' => null,
+				'label' => 'COM_EMUNDUS_LASTVISITDATE',
+			),
+			'groups' => (object)array(
+				'id' => null,
+				'name' => 'groups',
+				'plugin' => null,
+				'label' => 'COM_EMUNDUS_GROUPE',
+			),
+			'block' => (object)array(
+				'id' => null,
+				'name' => 'block',
+				'plugin' => null,
+				'label' => 'COM_EMUNDUS_BLOCK',
+			),
+		);
+	}
+
+	/**
+	 * @param $uid
+	 * @return array
+	 * @description Return an array of 2 elements
+	 *  First element concerns the columns form profile
+	 *  Second element concerns Joomla user columns (email, etc...)
+	 * @throws Exception
+	 */
+	public function getAllInformationsToExport($uid)
+	{
+		$data = [];
+
+		if (!empty($uid)) {
+			$columns = $this->getColumnsFromProfileForm();
+
+			// Configure the hour according to the location
+			if (version_compare(JVERSION, '4.0', '>=')) {
+				$config = Factory::getApplication()->getConfig();
+			} else {
+				$config = Factory::getConfig();
+			}
+			$offset = $config->get('offset', 'Europe/Paris');
+			$timezone = new DateTimeZone($offset);
+
+			// Necessary to retrieve data not available in the profile form
+			// (email, username, registerDate of the user, last connexion date of a user, profile and groups)
+			$user = $this->getUserById($uid);
+			if (!empty($user)) {
+				$user = $user[0];
+
+				$user_profile_details = $this->getProfileDetails($user->profile);
+				if ($user_profile_details->published == 0) {
+					$user_profile = $user_profile_details->label;
+				} else {
+					$user_profile = Text::_('COM_EMUNDUS_APPLICANT');
+				}
+
+				$user_groups = $this->getUserGroupsLabelById($uid);
+				$oprofiles = $this->getUserOprofiles($uid);
+
+				if (empty($user_groups)) {
+					$user_groups = array();
+				}
+
+				$register_date = $user->registerDate ?? '';
+				$lastvisit_date = $user->lastvisitDate ?? '';
+
+				// Set the right format date according to the location
+				if (!empty($register_date)) {
+					$register_date = EmundusHelperDate::displayDate($register_date, 'DATE_FORMAT_LC5', $timezone === 'UTC' ? 1 : 0);
+				}
+				if (!empty($lastvisit_date)) {
+					$lastvisit_date = EmundusHelperDate::displayDate($lastvisit_date, 'DATE_FORMAT_LC5', $timezone === 'UTC' ? 1 : 0);
+				}
+
+				// Create an array with array of each data not in the profile form
+				// Necessary to be coherent with the data in the profile form
+				// We indeed need id, name, plugin, and label at least for each
+				$j_columns = $this->getJoomlaUserColumns();
+
+				$j_columns['username'] = (object)array(
+					'id' => null,
+					'name' => 'username',
+					'plugin' => null,
+					'label' => 'COM_EMUNDUS_USERNAME',
+				);
+
+				foreach ($j_columns as $j_column) {
+					switch ($j_column->name) {
+						case 'lastname' :
+							$j_column->value = $user->lastname ?? '';
+							break;
+						case 'firstname' :
+							$j_column->value = $user->firstname ?? '';
+							break;
+						case 'email':
+							$j_column->value = $user->email ?? '';
+							break;
+						case 'username':
+							$j_column->value = $user->username ?? '';
+							break;
+						case 'registerDate':
+							$j_column->value = $register_date;
+							break;
+						case 'lastvisitDate':
+							$j_column->value = $lastvisit_date;
+							break;
+						case 'groups':
+							$j_column->value = implode(', ', $user_groups);
+							break;
+						case 'profile':
+							$j_column->value = $user_profile ?? '';
+							break;
+						case 'oprofiles':
+							$j_column->value = implode(', ', $oprofiles);
+							break;
+						case 'block':
+							$j_column->value = Text::_('COM_EMUNDUS_ONBOARD_ACTIVATED');
+
+							if($user->block == 1) {
+								$j_column->value = Text::_('COM_EMUNDUS_ONBOARD_BLOCKED');
+							}
+							elseif($user->activation != 1 && !empty($user->params)) {
+								$params = json_decode($user->params, true);
+								if(!empty($params['emailactivation_token'])) {
+									$j_column->value = Text::_('COM_EMUNDUS_USERS_ACTIVATE_WAITING');
+								}
+							}
+							break;
+						default :
+							$j_column->value = '';
+							break;
+					}
+				}
+
+				// Create a complete array with all the data we want
+				$data = array(
+					'columns' => $columns,
+					'j_columns' => $j_columns
+				);
+			}
+		}
+		return $data;
+	}
+
+	/**
+	 * @param $uid
+	 * @description Return all the details of a user to export in a csv file (profile form and emundus informations)
+	 * @return array
+	 */
+	public function getUserDetails($uid) {
+		$user_details = [];
+
+		if(!empty($uid)) {
+			$columns = $this->getAllInformationsToExport($uid);
+			$user = $this->getUserById($uid);
+
+			if(!empty($user))
+			{
+				$user = $user[0];
+
+				foreach ($columns['j_columns'] as $field)
+				{
+					$user_details[$field->label] = $field->value;
+				}
+
+				foreach ($columns['columns'] as $column) {
+					if (isset($column->value)) {
+						$user_details[$column->label] = $column->value;
+					} else {
+						$user_details[$column->label] = EmundusHelperFabrik::formatElementValue($column->name, $user->{$column->name}, $column->group_id, $uid);
+					}
+				}
+			}
+		}
+		return $user_details;
+	}
+
+	/**
+	 * Check if user is already registered in emundus_users, if not, create it
+	 * @param $user_id
+	 * @return bool true if user is already registered or if we are able to create it, false otherwise
+	 */
+	public function repairEmundusUser($user_id)
+	{
+		$repaired = false;
+
+		if (!empty($user_id)) {
+			$query = $this->db->getQuery(true);
+
+			$query->select($this->db->quoteName('id'))
+				->from($this->db->quoteName('#__emundus_users'))
+				->where($this->db->quoteName('user_id') . ' = ' . $this->db->quote($user_id));
+			$this->db->setQuery($query);
+			$user = $this->db->loadResult();
+
+			if (empty($user)) {
+				$query->clear()
+					->select('*')
+					->from($this->db->quoteName('#__users'))
+					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($user_id));
+				$this->db->setQuery($query);
+				$user_details = $this->db->loadObject();
+
+				if (!empty($user_details)) {
+					list($firstname, $lastname) = !empty($user_details->name) ? explode(' ', $user_details->name, 2) : ['',''];
+
+					$no_profile = null;
+
+					$query->clear()
+						->select('id')
+						->from('#__emundus_setup_profiles')
+						->where('label like ' . $this->db->quote('noprofile'));
+
+					$this->db->setQuery($query);
+					$no_profile = $this->db->loadResult();
+
+					if (empty($no_profile)) {
+						// select first applicant profile
+						$query->clear()
+							->select('id')
+							->from('#__emundus_setup_profiles')
+							->where('published = 1');
+
+						$this->db->setQuery($query);
+						$no_profile = $this->db->loadResult();
+					}
+
+					$query->clear()
+						->insert($this->db->quoteName('#__emundus_users'))
+						->set($this->db->quoteName('user_id') . ' = ' . $this->db->quote($user_id))
+						->set($this->db->quoteName('firstname') . ' = ' . $this->db->quote($firstname))
+						->set($this->db->quoteName('lastname') . ' = ' . $this->db->quote($lastname))
+						->set($this->db->quoteName('profile') . ' = ' . $no_profile)
+						->set($this->db->quoteName('schoolyear') . ' = ' . $this->db->quote(''))
+						->set($this->db->quoteName('disabled') . ' = 0')
+						->set($this->db->quoteName('university_id') . ' = 0')
+						->set($this->db->quoteName('email') . ' = ' . $this->db->quote($user_details->email))
+						->set($this->db->quoteName('registerDate') . ' = ' . $this->db->quote($user_details->registerDate))
+						->set($this->db->quoteName('name') . ' = ' . $this->db->quote($user_details->name));
+
+					try {
+						$this->db->setQuery($query);
+						$inserted = $this->db->execute();
+
+						if ($inserted) {
+							Log::add('com_emundus/models/users.php | reconstruction of user ' . $user_id, Log::INFO, 'com_emundus.error');
+							$repaired = true;
+
+							require_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
+							$m_profile = new EmundusModelProfile;
+							$m_profile->initEmundusSession();
+						} else {
+							Log::add('com_emundus/models/users.php | failed to repair user ' . $user_id, Log::ERROR, 'com_emundus.error');
+						}
+					} catch (Exception $e) {
+						Log::add('com_emundus/models/users.php | error while trying to repair user ' . $user_id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+					}
+				}
+			} else {
+				$repaired = true;
+			}
+		}
+
+		return $repaired;
+	}
+
+	public function convertCsvToXls($csv,$nb_cols,$nb_rows,$excel_file_name,$separator = '\t')
+	{
+		$xls_file = '';
+
+		/** PHPExcel */
+		require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
+
+		$objReader =\PhpOffice\PhpSpreadsheet\IOFactory::createReader("Csv");
+		$objReader->setDelimiter($separator);
+		$objPHPExcel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+
+		// Excel colonne
+		$colonne_by_id = array();
+		for ($i = ord("A"); $i <= ord("Z"); $i++) {
+			$colonne_by_id[]=chr($i);
+		}
+
+		for ($i = ord("A"); $i <= ord("Z"); $i++) {
+			for ($j = ord("A"); $j <= ord("Z"); $j++) {
+				$colonne_by_id[]=chr($i).chr($j);
+				if (count($colonne_by_id) == $nb_rows) break;
+			}
+		}
+
+		// Set properties
+		$objPHPExcel->getProperties()->setCreator("eMundus SAS : http://www.emundus.fr/");
+		$objPHPExcel->getProperties()->setLastModifiedBy("eMundus SAS");
+		$objPHPExcel->getProperties()->setTitle("eMmundus Report");
+		$objPHPExcel->getProperties()->setSubject("eMmundus Report");
+		$objPHPExcel->getProperties()->setDescription("Report from open source eMundus plateform : http://www.emundus.fr/");
+		$objPHPExcel->setActiveSheetIndex(0);
+		$objPHPExcel->getActiveSheet()->setTitle('Extraction');
+		$objPHPExcel->getDefaultStyle()->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+		$objPHPExcel->getDefaultStyle()->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+
+		$objPHPExcel->getActiveSheet()->freezePane('A2');
+
+		$objReader->loadIntoExisting(JPATH_SITE.DS."tmp".DS.$csv, $objPHPExcel);
+
+		$objConditional1 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+		$objConditional1->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS)
+			->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL)
+			->addCondition('0');
+		$objConditional1->getStyle()->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFF0000');
+
+		$objConditional2 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+		$objConditional2->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS)
+			->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL)
+			->addCondition('100');
+		$objConditional2->getStyle()->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FF00FF00');
+
+		$objConditional3 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+		$objConditional3->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS)
+			->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL)
+			->addCondition('50');
+		$objConditional3->getStyle()->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+
+		for ($i = 0; $i<$nb_cols; $i++) {
+			$value = $objPHPExcel->getActiveSheet()->getCell(Coordinate::stringFromColumnIndex($i) . '1')->getValue();
+
+			if ($value=="forms(%)" || $value=="attachment(%)") {
+				$conditionalStyles = $objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$i].'1')->getConditionalStyles();
+				array_push($conditionalStyles, $objConditional1);
+				array_push($conditionalStyles, $objConditional2);
+				array_push($conditionalStyles, $objConditional3);
+				$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$i].'1')->setConditionalStyles($conditionalStyles);
+				$objPHPExcel->getActiveSheet()->duplicateConditionalStyle($conditionalStyles,$colonne_by_id[$i].'1:'.$colonne_by_id[$i].($nb_rows+ 1));
+			}
+			$objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
+		}
+
+		$randomString = UserHelper::genRandomPassword(20);
+		$objWriter = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($objPHPExcel, "Xlsx");
+		$objWriter->save(JPATH_SITE . DS . 'tmp' . DS . $excel_file_name . '_' . $nb_rows . 'rows_' . $randomString . '.xlsx');
+		$objPHPExcel->disconnectWorksheets();
+		unset($objPHPExcel);
+
+		return $excel_file_name.'_'.$nb_rows.'rows_'.$randomString.'.xlsx';
+	}
+
+	public function getGroupsMapping()
+	{
+		$groups_mapping = [];
+
+		try
+		{
+			$query = $this->db->getQuery(true);
+
+			$query->clear()
+				->select('emundus_groups as id,group_concat(parent_id) as profile_id')
+				->from($this->db->quoteName('#__emundus_setup_profiles_repeat_emundus_groups'))
+				->group('emundus_groups');
+			$this->db->setQuery($query);
+			$groups_mapping = $this->db->loadAssocList('id');
+		}
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/users | Error when try to get group(s) label : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $groups_mapping;
+	}
+
 }

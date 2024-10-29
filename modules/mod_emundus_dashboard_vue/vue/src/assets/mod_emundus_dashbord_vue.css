@@ -1,0 +1,309 @@
+.blog-featuredhomepage {
+    display: none;
+}
+
+.g-grid {
+    width: 100%;
+}
+
+.tchooz-widget__selects {
+    display: flex;
+    align-items: center;
+    float: right;
+    justify-content: end;
+    width: 500px;
+    gap: 12px;
+}
+
+.tchooz-widget__select {
+    position: relative !important;
+    right: 0;
+    top: 0;
+    cursor: pointer;
+}
+
+.tchooz-widget__article-overflow {
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+#chart-container {
+    background: var(--neutral-0);
+}
+
+/** Loader **/
+.lds-ring {
+    display: inline-block;
+    position: absolute;
+    top: 50%;
+    z-index: 999;
+    right: 50%;
+    width: 80px;
+    height: 80px;
+}
+
+.lds-ring div {
+    box-sizing: border-box;
+    display: block;
+    position: absolute;
+    width: 64px;
+    height: 64px;
+    margin: 8px;
+    border: 8px solid var(--main-500);
+    border-radius: 50%;
+    animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    border-color: var(--main-500) transparent transparent transparent;
+}
+
+.lds-ring div:nth-child(1) {
+    animation-delay: -0.45s;
+}
+
+.lds-ring div:nth-child(2) {
+    animation-delay: -0.3s;
+}
+
+.lds-ring div:nth-child(3) {
+    animation-delay: -0.15s;
+}
+
+@keyframes lds-ring {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/** END **/
+
+/** FAQ **/
+.custom-faq-widget {
+    max-width: 330px !important;
+    margin: 0 30px 30px 0 !important;
+    height: 100%;
+}
+
+/* brother element of faq-widget */
+.custom-faq-widget + div {
+    width: calc(100% - 360px) !important;
+}
+
+
+.faq-widget .faq-intro {
+    max-width: 250px;
+}
+
+.faq-widget {
+    height: 100%;
+}
+
+.faq-widget > div {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.faq-widget .bouton-faq {
+    padding: 5px 30px;
+    height: 29px;
+    border-radius: 25px;
+    border: 2px solid #16afe1;
+    background-color: #16afe1;
+    transition: color .2s ease, background-color .2s cubic-bezier(.55, .085, .68, .53);
+    color: #fff;
+    text-decoration: none;
+    width: auto;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 500;
+    bottom: 30px;
+}
+
+.faq-widget .bouton-faq:hover {
+    cursor: pointer;
+    background-color: transparent;
+    color: #16afe1;
+}
+
+.faq-widget h3 {
+    margin-bottom: 15px;
+    color: #000;
+    font-size: 24px;
+}
+
+/** END **/
+
+/** Files by status - number **/
+.widget-files-status-number .section-sub-menu {
+    overflow: scroll;
+}
+
+.widget-files-status-number .widget-files-status-number-block {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10%;
+}
+
+.widget-files-status-number .widget-files-status-number-block p {
+    color: var(--neutral-600);
+    font-family: var(--em-profile-font), Inter, sans-serif;
+}
+
+.widget-files-status-number h1 {
+    color: var(--neutral-900);
+    font-family: var(--em-profile-font-title), Inter, sans-serif;
+}
+
+#g-container-main .g-container {
+    width: 100%;
+}
+
+.tchooz-widget__select {
+    width: 220px !important;
+}
+
+.custom-widget__messages-gestionnaire .tchooz-widget.widget__messages-gestionnaire .section-sub-menu,
+.custom-widget__messages__gestionnaire .tchooz-widget.widget__messages__gestionnaire .section-sub-menu {
+    overflow-y: scroll;
+}
+
+/* Widget de bienvenue */
+.profile_widget {
+    box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
+    width: 100%;
+    margin-bottom: var(--m-24);
+    position: relative;
+    z-index: 1;
+    border-radius: 16px;
+    overflow: hidden;
+    min-height: 140px;
+}
+
+.profile_widget .profile_widget-container {
+    background: var(--em-profile-color);
+    padding: 32px !important;
+    margin: 0 !important;
+    border-radius: 16px;
+    position: absolute;
+    z-index: 2;
+    height: 100%;
+}
+
+.profile_widget .profile_widget-text {
+    gap: 8px;
+    position: relative;
+    z-index: 3;
+    padding: var(--p-32);
+    display: flex;
+    flex-direction: column !important;
+    border-radius: 16px;
+    margin: 0 !important;
+
+}
+
+.profile_widget-text h1,
+.profile_widget-text h1 span {
+    color: var(--neutral-0);
+    font-family: var(--em-profile-font-title), Inter, sans-serif;
+    font-size: var(--em-coordinator-h1);
+    font-style: normal;
+    line-height: 28.8px;
+    font-weight: 500;
+}
+
+.profile_widget p {
+    color: var(--neutral-0);
+    font-size: var(--em-coordinator-h6);
+}
+
+
+.profile_widget #background-shapes {
+    mask-image: url('/modules/mod_emundus_campaign/assets/fond-fonce.svg');
+    -webkit-mask-image: url('/modules/mod_emundus_campaign/assets/fond-fonce.svg');
+    background: var(--neutral-0);
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+    mask-size: 500px;
+    -webkit-mask-size: 500px;
+    mask-origin: border-box;
+    -webkit-mask-origin: border-box;
+    mask-position: center;
+    -webkit-mask-position: center;
+    z-index: 3;
+    transform: rotate(180deg);
+    position: absolute;
+    left: 0;
+    opacity: 0.5;
+    height: 100%;
+    top: 0;
+    width: 463px !important;
+}
+
+.profile_widget-text-container {
+    margin-bottom: 0 !important;
+}
+
+.profile_widget-text-container #background-tchoozy {
+    mask-image: url('/media/com_emundus/images/tchoozy/complex-illustrations/tchoozy-gestionnaire.svg');
+    -webkit-mask-image: url('/media/com_emundus/images/tchoozy/complex-illustrations/tchoozy-gestionnaire.svg');
+    background: var(--neutral-0);
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+    mask-size: 160px;
+    -webkit-mask-size: 160px;
+    mask-position: center;
+    -webkit-mask-position: center;
+    mask-origin: border-box;
+    -webkit-mask-origin: border-box;
+    z-index: 3;
+    position: absolute;
+    height: 100%;
+    bottom: 0;
+    opacity: 0.5;
+    right: 0;
+    top: 0;
+    width: 228px;
+}
+
+.profile_widget-desc {
+    max-width: 84%;
+    word-break: break-word;
+}
+
+@media all and (max-width: 959px) {
+    .profile_widget-text-container #background-tchoozy {
+        display: none;
+    }
+
+    .profile_widget #background-shapes {
+        display: none;
+    }
+}
+
+/* Widget to show PDF files with documentation */
+.tchooz-widget.widget-documentation {
+    height:auto;
+
+    > div {
+        background:unset;
+        box-shadow:unset;
+        border:unset;
+
+        > div {
+            display:flex;
+            justify-content:center;
+        }
+    }
+}
+
+/* Widget to show a scrollable table */
+.tchooz-widget .widget-table .widget-table-scrollable {
+    overflow-y: scroll;
+    height: 300px;
+}

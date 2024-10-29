@@ -6,6 +6,21 @@ TRUNCATE TABLE jos_dropfiles;
 TRUNCATE TABLE jos_dropfiles_statistics;
 TRUNCATE TABLE jos_dropfiles_files;
 TRUNCATE TABLE jos_emundus_9_00;
+TRUNCATE TABLE jos_emundus_1001_00;
+TRUNCATE TABLE jos_emundus_1001_01;
+TRUNCATE TABLE jos_emundus_1001_01_811_repeat;
+TRUNCATE TABLE jos_emundus_1001_01_814_repeat;
+TRUNCATE TABLE jos_emundus_1001_04;
+TRUNCATE TABLE jos_emundus_1001_04_817_repeat;
+TRUNCATE TABLE jos_emundus_1001_06;
+TRUNCATE TABLE jos_emundus_1001_06_821_repeat;
+TRUNCATE TABLE jos_emundus_1001_08;
+TRUNCATE TABLE jos_emundus_project_progress;
+TRUNCATE TABLE jos_emundus_project_progress_835_repeat;
+TRUNCATE TABLE jos_emundus_project_recipe;
+TRUNCATE TABLE jos_emundus_project_recipe_830_repeat;
+TRUNCATE TABLE jos_emundus_project_rida;
+TRUNCATE TABLE jos_emundus_project_rida_837_repeat;
 TRUNCATE TABLE jos_emundus_admission;
 TRUNCATE TABLE jos_emundus_campaign_candidature;
 TRUNCATE TABLE jos_emundus_campaign_candidature_links;
@@ -129,6 +144,11 @@ DELETE FROM `jos_falang_content` WHERE `reference_id` not in (select id from jos
 DELETE FROM `jos_falang_content` WHERE `reference_id` not in (select id from jos_contact_details) AND `reference_table` like 'contact_details';
 DELETE FROM `jos_falang_content` WHERE `reference_id` not in (select id from jos_modules) AND `reference_table` like 'modules';
 DELETE FROM `jos_falang_content` WHERE `reference_id` not in (select id from jos_emundus_setup_tags) AND `reference_table` like 'emundus_setup_tags';
+DELETE FROM `jos_falang_content` WHERE `reference_id` not in (select id from jos_emundus_setup_campaigns) AND `reference_table` like 'emundus_setup_campaigns';
+DELETE FROM `jos_falang_content` WHERE `reference_id` not in (select id from jos_emundus_setup_programmes) AND `reference_table` like 'emundus_setup_programmes';
+DELETE FROM `jos_falang_content` WHERE `reference_id` not in (select id from jos_emundus_setup_status) AND `reference_table` like 'emundus_setup_status';
+DELETE FROM `jos_falang_content` WHERE `reference_id` not in (select id from jos_emundus_setup_attachments) AND `reference_table` like 'emundus_setup_attachments';
+DELETE FROM `jos_falang_content` WHERE `reference_id` not in (select id from jos_emundus_setup_action_tag) AND `reference_table` like 'emundus_setup_action_tag';
 
 UPDATE `jos_fabrik_elements` set hidden=1 WHERE `plugin` LIKE 'fabrikinternalid' OR `plugin` LIKE 'internalid';
 
@@ -159,5 +179,9 @@ ALTER TABLE `jos_users` auto_increment = 100;
 ALTER TABLE `jos_emundus_users` auto_increment = 100 ROW_FORMAT = COMPACT;
 
 TRUNCATE TABLE `jos_emundus_users_profiles`;
+
+DELETE FROM jos_menu WHERE menutype LIKE 'campaigns';
+
+DELETE FROM jos_modules_menu WHERE menuid NOT IN (SELECT id FROM jos_menu) AND menuid != 0
 
 SET FOREIGN_KEY_CHECKS=1;

@@ -38,6 +38,7 @@ class EmundusViewProgramme extends JViewLegacy
 		$this->com_emundus_programme_showcampaign   = '0';
 		$this->com_emundus_programme_showprogramme  = '1';
 		$this->com_emundus_programme_showlink       = '0';
+		$this->com_emundus_programme_campaign_id = $menu_params->get('com_emundus_programme_campaign_id',0);
 		$this->com_emundus_programme_showprogramme  = $menu_params->get('com_emundus_programme_showprogramme');
 		$this->com_emundus_programme_showcampaign   = $menu_params->get('com_emundus_programme_showcampaign');
 		$this->com_emundus_programme_progdesc_class = $menu_params->get('com_emundus_programme_progdesc_class');
@@ -48,6 +49,9 @@ class EmundusViewProgramme extends JViewLegacy
 
 
 		$idcampaign = $jinput->get('id') ? $jinput->get('id', 0, 'int') : $jinput->get('cid', 0, 'int');
+		if(empty($idcampaign)){
+			$idcampaign = $this->com_emundus_programme_campaign_id;
+		}
 		$campaign   = $model->getCampaign($idcampaign);
 
 		// Check for errors.

@@ -221,12 +221,12 @@
         max-width: 90%;
         overflow: hidden;
         text-overflow: ellipsis;
-        @media screen and(max-width: 768px) {
+        @media screen and (max-width: 768px) {
           overflow: hidden;
           text-overflow: ellipsis;
           max-width: 80%;
         }
-        @media screen and(max-width: 420px) {
+        @media screen and (max-width: 420px) {
           max-width: 70%;
         }
         &:hover {
@@ -247,6 +247,47 @@
           display: inline-block;
           vertical-align: middle;
         }
+      }
+    }
+    .tree-category-title-section {
+      display: flex;
+      flex-wrap: wrap;
+      max-width: 100%;
+      box-sizing: border-box;
+      padding: 0;
+      margin: 20px 0 0 0;
+      position: relative;
+      h2 {
+        width: 100%;
+        font-weight: normal;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.2;
+        letter-spacing: normal;
+        text-align: left;
+        color: #b3b3b3;
+        text-transform: uppercase;
+        font-size: 1.25em;
+        padding: 0;
+        margin: 0;
+        &::before,
+        &::after {
+          display: none;
+        }
+      }
+      .categories-head {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        > h2 {
+          margin: 0;
+          max-width: calc(100% - 75px);
+          vertical-align: middle;
+        }
+      }
+      .manage-files-head > h2 {
+        width: 78%;
+        display: inline-block;
       }
     }
     a {
@@ -270,14 +311,14 @@
     padding: 18px 0 !important;
     border-bottom: 1px solid #ccc;
     position: relative;
-    &:before {
-      content: '>>';
-      font-size: 16px;
-      display: inline-block;
-      text-align: left;
-      text-transform: none;
-      vertical-align: middle;
-      margin: 0 3px 0 0;
+    &.dropfiles-tree-head-breadcrumb {
+      border-bottom: unset;
+      .breadcrumbs {
+        padding: 10px 0 !important;
+        > li {
+          line-height: 25px;
+        }
+      }
     }
     .openlink-manage-files {
       background-color: #75be5f;
@@ -296,8 +337,7 @@
       font-stretch: normal;
       font-style: normal;
       letter-spacing: normal;
-      clear: both;
-      margin: -10px 0 8px 8px;
+      margin-top: -25px;
       float: right;
       &:hover,
       &:focus {
@@ -314,7 +354,7 @@
     }
     .download-all,
     .download-selected {
-      margin: -10px 0 8px 8px;
+      margin: -25px 5px 8px 8px;
     }
     > li.active {
       max-width: 74%;
@@ -365,7 +405,7 @@
     background: #FFF;
     padding: 32px 10px 15px 10px;
     color: #999999;
-    @media screen and(min-width: 768px) {
+    @media screen and (min-width: 768px) {
       border-radius: 4px;
     }
     @media only screen and (max-width: 420px) {
@@ -406,7 +446,7 @@
         background-color: #75be5f;
         border-color: #75be5f;
         color: #fff;
-        @media screen and(min-width: 768px) {
+        @media screen and (min-width: 768px) {
           margin: 0 0 5px 0;
         }
       }
