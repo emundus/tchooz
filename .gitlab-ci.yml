@@ -189,7 +189,7 @@ test_playwright:
     - job: deployer_test_playwright_in_schedule
       optional: true
 
-deployer_release_candidate:
+deployer_hotfix:
   stage: deploy
   environment: 
     name: release/auto
@@ -200,4 +200,4 @@ deployer_release_candidate:
     DEPLOY_OPTIONS: 'env=tchooz-v2 -vv'
     DEPLOY_FILE: '-f tchooz.php'
   rules:
-    - if: $CI_COMMIT_BRANCH =~ "/^release\/.*/"
+    - if: $CI_COMMIT_BRANCH == "hotfix"
