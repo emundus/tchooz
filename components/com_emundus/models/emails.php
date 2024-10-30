@@ -326,10 +326,7 @@ class EmundusModelEmails extends JModelList
 
 				foreach ($trigger_email[$student->code]['to']['recipients'] as $recipient) {
 					// Check if the user has access to the file
-					if ($h_access->asPartnerAccessLevel($recipient['id']) && !$h_access->isUserAllowedToAccessFnum($recipient['id'], $student->fnum)) {
-						continue;
-					}
-					if (!$h_emails->assertCanSendMailToUser($recipient['id'])) {
+					if (!$h_access->isUserAllowedToAccessFnum($recipient['id'],$student->fnum) || !$h_emails->assertCanSendMailToUser($recipient['id'])) {
 						continue;
 					}
 
