@@ -171,7 +171,7 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
 							{
 								echo 'class="' . $value->class . '"';
 							}
-							if ($k == 'access' || $k == 'id_tag' || $k == 'jecc___campaign_id')
+							if ($k == 'access' || $k == 'eta.id_tag' || $k == 'jecc___campaign_id')
 							{
 								echo 'class="em-cell-scroll"';
 							} ?>>
@@ -208,7 +208,7 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
                                         </a>
 									<?php elseif ($k == "access"): ?>
 										<?= $this->accessObj[$line['fnum']->val]; ?>
-									<?php elseif ($k == "id_tag"): ?>
+									<?php elseif ($k == "eta.id_tag"): ?>
 										<?= @$this->colsSup['id_tag'][$line['fnum']->val] ?>
 									<?php elseif (array_key_exists($k, $this->colsSup)) : ?>
 										<?= @$this->colsSup[$k][$line['fnum']->val] ?>
