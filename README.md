@@ -77,10 +77,10 @@ Manage your application campaigns and calls for proposals simply
 
 #### PHP
 
-[![PHP][PHP-min-badge]][PHP-url]
+[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%208.1-8892BF.svg)](https://php.net/)
 
 * MacOS : It's recommended to install PHP with homebrew : `brew install php`. You can switch of versions by adding
-  `@7.x`.
+  `@8.x`.
     * If you need more informations : https://daily-dev-tips.com/posts/installing-php-on-your-mac/
 
 #### NodeJS
@@ -151,11 +151,11 @@ phpDocumentor
 ## Branches
 - **master** : This branch is the main branch. This contains the latest stable version of the application. It is protected and can only be updated by a merge request.
 - **hotfix** : This branch is used to prepare the next patch. This is created from the master branch and merged into the master branch. Only minor fixes (style, translations, minor impacts) are allowed to be committed directly in this branch. It's recommended to create a new branch from this one to fix a bug.
-- **hotfix/xxx** : These branches are used to fix a bug. They are created from the master branch and merged into the hotfix branch.
+- **patch/xxx** : These branches are used to fix a bug. They are created from the master branch and merged into the hotfix branch.
 - **release** : This branch is used to prepare the next release. This is created from the dev branch and merged into the master branch.
 - **dev** : This branch is used to test new features. This is created from the master branch and merged into the release branch. It's recommended to create a new branch from this one to develop a new feature.
 - **feature/xxx** : These branches are used to develop a new feature. They are created from the dev branch and merged into the dev branch.
-- **platform/xxx** : These branches are used to deploy a new feature in a specific environment. They are created from the dev branch and never merged.
+- **platform/xxx** : These branches are used to deploy a new feature in a specific environment. They are created from the dev branch.
 
 ## Simple gitflow
 
@@ -258,14 +258,14 @@ gitGraph
 ```
 - **semantic-release** : Create a new version in the master branch with a new tag (X.X.X) and generate release notes with the names of commits since the last version
 - **sync-confluence-documentation** : Update Confluence release notes
-- **deployer-auto** : Deploy the new release in some environments (production and staging)
+- **deployer-auto** : Deploy the new release in some environments
 - **deployer-manuel** : Allows manual deployment of the new version in other environments
 
 <!-- ROADMAP -->
 
 ## Roadmap
 
-https://roadmap.tchooz.app/
+https://roadmap.tchooz.app
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -274,11 +274,9 @@ https://roadmap.tchooz.app/
 
 ## Acknowledgments
 
-Below are several links that are essential for developers working on this project.
-
-* [Master Joomla](https://developer.joomla.org/)
+Below are several links that are essential for developers working on this project:
+* [Joomla](https://developer.joomla.org/)
 * [Vue 3](https://vuejs.org/guide/introduction.html)
-* [Material Icons](https://fonts.google.com/icons?icon.set=Material+Icons)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 <br/>
@@ -311,9 +309,6 @@ Below are several links that are essential for developers working on this projec
 
 [Composer-global-installation]: https://getcomposer.org/doc/00-intro.md#globally
 
-[PHP-min-badge]: https://img.shields.io/badge/dependencies-PHP%208.1-green
-
 [PHP-url]: https://www.php.net/manual/en/install.macosx.php
 
 [Mailtrap-url]: https://mailtrap.io
-
