@@ -301,7 +301,7 @@ Below are several links that are essential for developers working on this projec
 
 [Node-url]: https://nodejs.org/
 
-[Node-min-badge]: https://img.shields.io/badge/min-16.x-orange
+[Node-min-badge]: https://img.shields.io/badge/min-18.x-orange
 
 [Node-reco-badge]: https://img.shields.io/badge/recommended-18.x-green
 
