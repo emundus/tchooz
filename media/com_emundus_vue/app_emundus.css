@@ -1589,10 +1589,10 @@ table tbody tr[data-v-f78392e0]:not(:last-child) {
 table tbody tr td[data-v-f78392e0] {
   padding: 18px 12px;
 }
-.row-fluid .control-group.fabrikElementContainer label.fabrikLabel.control-label.fabrikTip i.icon-star.small[data-v-72894683] {
+.row-fluid .control-group.fabrikElementContainer label.fabrikLabel.control-label.fabrikTip i.icon-star.small[data-v-3c2c5cae] {
   top: -5px;
 }
-.icon-star.small[data-v-72894683] {
+.icon-star.small[data-v-3c2c5cae] {
   margin-top: 0px;
   padding-top: 0px;
   position: relative;
@@ -1600,21 +1600,21 @@ table tbody tr td[data-v-f78392e0] {
   color: #c30505;
   font-size: 5px;
 }
-.w--current[data-v-72894683] {
+.w--current[data-v-3c2c5cae] {
   border: solid 1px #eeeeee;
   background: #eeeeee;
 }
-.w--current[data-v-72894683]:hover {
+.w--current[data-v-3c2c5cae]:hover {
   color: var(--em-profile-color);
 }
-.tw-cursor-pointer[data-v-72894683]:hover {
+.tw-cursor-pointer[data-v-3c2c5cae]:hover {
   color: var(--em-profile-color);
 }
-.em-w-custom[data-v-72894683] {
+.em-w-custom[data-v-3c2c5cae] {
   width: calc(100% - 75px) !important;
   margin-left: auto;
 }
-#add-form-next-campaign[data-v-72894683] {
+#add-form-next-campaign[data-v-3c2c5cae] {
   width: 100%;
 }
 .form-builder-element {
