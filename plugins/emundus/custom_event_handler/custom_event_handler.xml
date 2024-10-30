@@ -51,14 +51,14 @@
                         <field name="description"
                                type="text"
                                label="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_DESCRIPTION"
-                               size="1"
+                               size="20"
                         />
                         <field name="code"
                                type="textarea"
                                label="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_CODE_LABEL"
                                description="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_CODE_DESC"
                                rows="10"
-                               cols="5"
+                               cols="60"
                                filter="raw"
                                class="textarea_event_handler__code"
                         />
