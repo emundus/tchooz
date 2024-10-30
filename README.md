@@ -265,9 +265,7 @@ gitGraph
 
 ## Roadmap
 
-- [ ] Workflow builder
-- [ ] More global parameters
-- [ ] Allow conditionnal in formbuilder
+https://roadmap.tchooz.app/
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
