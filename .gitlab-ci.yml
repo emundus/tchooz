@@ -24,15 +24,15 @@ include:
   file: '.release.yml'
 - template: Security/Secret-Detection.gitlab-ci.yml
 
-# check-tchooz-version-job:
-#   stage: prepare
-#   rules:
-#     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH'
-#       when: always
-#     - when: never
-#   image: enix/ci-toolbox:1.23
-#   script:
-#     - .docker/scripts/file-search-in-gitlab-merge-request.sh "$CI_SERVER_URL" "$GITLAB_TOKEN" "$CI_PROJECT_ID" "$CI_MERGE_REQUEST_IID" "administrator/components/com_emundus/emundus.xml"
+check-tchooz-version-job:
+  stage: prepare
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH'
+      when: always
+    - when: never
+  image: enix/ci-toolbox:1.23
+  script:
+    - .docker/scripts/file-search-in-gitlab-merge-request.sh "$CI_SERVER_URL" "$GITLAB_TOKEN" "$CI_PROJECT_ID" "$CI_MERGE_REQUEST_IID" "administrator/components/com_emundus/emundus.xml"
 
 check-commit-prefixes-job:
   stage: prepare
