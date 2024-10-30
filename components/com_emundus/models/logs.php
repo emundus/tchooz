@@ -133,7 +133,7 @@ class EmundusModelLogs extends JModelList
 						$query = $db->getQuery(true);
 
 						$ip = Factory::getApplication()->input->server->get('REMOTE_ADDR','');
-						$user_to = empty($user_to) ? null : $user_to;
+						$user_to = 0;
 
 						$now = EmundusHelperDate::getNow();
 
@@ -142,7 +142,7 @@ class EmundusModelLogs extends JModelList
 							->columns($db->quoteName($columns));
 
 						foreach($fnums as $fnum) {
-							$query->values($db->quote($now) . ',' . $db->quote($user_from) . ', null,' . $db->quote($fnum) . ',' . $action . ',' . $db->quote($crud) . ',' . $db->quote($message). ',' . $db->quote($params) . ',' . $db->quote($ip));
+							$query->values($db->quote($now) . ',' . $db->quote($user_from) . ',' . $db->quote($user_to) . ',' . $db->quote($fnum) . ',' . $action . ',' . $db->quote($crud) . ',' . $db->quote($message). ',' . $db->quote($params) . ',' . $db->quote($ip));
 						}
 
 						try {
