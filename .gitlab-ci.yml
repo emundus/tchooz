@@ -18,7 +18,7 @@ include:
   file: '.php_security_checker.yml'
 - project: 'emundus/devops/ci-cd-templates'
   ref: main
-  file: '.deployer.yml'
+  file: '.deployer_tchooz_v2.yml'
 - project: 'emundus/devops/ci-cd-templates'
   ref: main
   file: '.release.yml'
@@ -132,31 +132,6 @@ sync-documentation-job:
   needs:
     - release-job
 
-deployer:
-  stage: test
-  environment: 
-    name: testing
-    deployment_tier: testing
-  variables:
-    DEPLOY_OPTIONS: "id=WcEF4kAHVHGMpbXhpM8Fx3rlkWQ4VOFP -o branch=$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME -o COORD_USERNAME=$PLAYWRIGHT_RELEASE_COORD_USERNAME -o COORD_PASSWORD=$PLAYWRIGHT_RELEASE_COORD_PASSWORD -o SYSADMIN_USERNAME=$PLAYWRIGHT_RELEASE_SYSADMIN_USERNAME -o SYSADMIN_PASSWORD=$PLAYWRIGHT_RELEASE_SYSADMIN_PASSWORD -vv"
-    DEPLOY_FILE: '-f tchooz-with-reset.php'
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: manual
-
-deployer_test_playwright_in_schedule:
-  stage: test
-  environment: 
-    name: testing
-    deployment_tier: testing
-  extends:
-    - deployer
-  variables:
-    DEPLOY_OPTIONS: "id=WcEF4kAHVHGMpbXhpM8Fx3rlkWQ4VOFP -o branch=$CI_COMMIT_BRANCH -o COORD_USERNAME=$PLAYWRIGHT_RELEASE_COORD_USERNAME -o COORD_PASSWORD=$PLAYWRIGHT_RELEASE_COORD_PASSWORD -o SYSADMIN_USERNAME=$PLAYWRIGHT_RELEASE_SYSADMIN_USERNAME -o SYSADMIN_PASSWORD=$PLAYWRIGHT_RELEASE_SYSADMIN_PASSWORD -vv"
-    DEPLOY_FILE: '-f tchooz-with-reset.php'
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-
 test_playwright:
   image: mcr.microsoft.com/playwright:v1.43.0-jammy
   script:
@@ -188,16 +163,3 @@ test_playwright:
       optional: true
     - job: deployer_test_playwright_in_schedule
       optional: true
-
-deployer_hotfix:
-  stage: deploy
-  environment: 
-    name: release/auto
-    deployment_tier: testing
-  extends:
-    - deployer
-  variables:
-    DEPLOY_OPTIONS: 'env=tchooz-v2 -vv'
-    DEPLOY_FILE: '-f tchooz.php'
-  rules:
-    - if: $CI_COMMIT_BRANCH == "hotfix"
