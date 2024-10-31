@@ -2,6 +2,7 @@
   <div id="documents-dropfiles">
     <div class="w-form">
       <vue-dropzone
+          :key="dropzoneOptions.maxFilesize"
           ref="dropzone"
           id="customdropzone"
           style="width: 100%"
@@ -136,6 +137,16 @@ export default {
   },
 
   methods: {
+    getMediaSize() {
+      campaignService.get('getmediasize')
+          .then(response => {
+            if(response.status) {
+              this.dropzoneOptions.maxFilesize = parseInt(response.size);
+            }
+          }).finally(() => {
+        this.loading = false;
+      });
+    },
     getDocumentsDropfiles() {
       this.loading = true;
 
@@ -235,7 +246,8 @@ export default {
   },
 
   created() {
-    this.getDocumentsDropfiles()
+    this.getDocumentsDropfiles();
+    this.getMediaSize();
   }
 };
 </script>
@@ -311,7 +323,7 @@ export default {
 /**** END ****/
 
 .em-document-dropzone-card {
-  background: white;
+  background: var(--neutral-100);
   border-radius: 5px;
   padding: 16px 24px;
 }

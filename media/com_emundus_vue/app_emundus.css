@@ -1273,18 +1273,18 @@ hr.system-pagebreak { border: #808080FF dashed 1px; color: #808080FF; }
         var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2),
         var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
 }
-.fa-file-upload[data-v-dc197fc5] {
+.fa-file-upload[data-v-6272a5a1] {
   font-size: 25px;
   margin-right: 20px;
 }
-.list-group-item[data-v-dc197fc5] {
+.list-group-item[data-v-6272a5a1] {
   border: 2px solid #ececec;
   margin-bottom: 10px;
   border-radius: 5px;
 }
 
 /**** CUSTOM VUE DROPZONE ****/
-#customdropzone[data-v-dc197fc5] {
+#customdropzone[data-v-6272a5a1] {
   letter-spacing: 0.2px;
   background: #fff;
   color: #C5C8CE;
@@ -1298,47 +1298,47 @@ hr.system-pagebreak { border: #808080FF dashed 1px; color: #808080FF; }
   display: flex;
   cursor: pointer;
 }
-#customdropzone .dz-preview[data-v-dc197fc5] {
+#customdropzone .dz-preview[data-v-6272a5a1] {
   width: 100%;
   display: inline-block;
   text-align: center;
 }
-#customdropzone .dz-preview .dz-image[data-v-dc197fc5] {
+#customdropzone .dz-preview .dz-image[data-v-6272a5a1] {
   width: auto;
   height: 100px;
 }
-#customdropzone .dz-preview .dz-image > div[data-v-dc197fc5] {
+#customdropzone .dz-preview .dz-image > div[data-v-6272a5a1] {
   width: inherit;
   height: inherit;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
 }
-#customdropzone .dz-preview .dz-image > img[data-v-dc197fc5] {
+#customdropzone .dz-preview .dz-image > img[data-v-6272a5a1] {
   width: 100%;
 }
-#customdropzone .dz-preview .dz-details[data-v-dc197fc5] {
+#customdropzone .dz-preview .dz-details[data-v-6272a5a1] {
   color: black;
   transition: opacity 0.2s linear;
   text-align: center;
 }
-#customdropzone .dz-success-mark[data-v-dc197fc5] {
+#customdropzone .dz-success-mark[data-v-6272a5a1] {
   display: none;
 }
-.dz-default.dz-message[data-v-dc197fc5] {
+.dz-default.dz-message[data-v-6272a5a1] {
   text-align: center !important;
 }
-.dz-error-mark[data-v-dc197fc5] {
+.dz-error-mark[data-v-6272a5a1] {
   display: none;
 }
 
 /**** END ****/
-.em-document-dropzone-card[data-v-dc197fc5] {
-  background: white;
+.em-document-dropzone-card[data-v-6272a5a1] {
+  background: var(--neutral-100);
   border-radius: 5px;
   padding: 16px 24px;
 }
-.em-filetype-icon[data-v-dc197fc5] {
+.em-filetype-icon[data-v-6272a5a1] {
   width: 50px;
 }#modalAddTriggercandidate .v--modal[data-v-5f2a6404],
 #modalAddTriggermanual .v--modal[data-v-5f2a6404],
