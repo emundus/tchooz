@@ -1085,7 +1085,7 @@ class EmundusModelUsers extends ListModel
 	 *
 	 * @return int user_id, 0 if failed
 	 */
-	public function adduser($user, $other_params)
+	public function adduser($user, $other_params, $testing_account = 0)
 	{
 		$new_user_id = 0;
 
@@ -1097,9 +1097,25 @@ class EmundusModelUsers extends ListModel
 			else {
 				$query = $this->db->getQuery(true);
 
-				$query->update('#__users')
-					->set('block = 0')
-					->where('id = ' . $user->id);
+				$query->clear()
+					->update('#__users')
+					->set('block = 0');
+
+				if($testing_account == 1) {
+					$query_params = $this->db->getQuery(true);
+					$query_params->clear()
+						->select('params')
+						->from('#__users')
+						->where('id = ' . $user->id);
+					$this->db->setQuery($query_params);
+					$params = $this->db->loadResult();
+					$params = json_decode($params, true);
+					$params['testing_account'] = 1;
+
+					$query->set('params = ' . $this->db->quote(json_encode($params)));
+				}
+
+				$query->where($this->db->quoteName('id') . ' = ' . $user->id);
 				$this->db->setQuery($query);
 				$this->db->execute();
 
@@ -1882,7 +1898,8 @@ class EmundusModelUsers extends ListModel
 				'eu.profile',
 				'eu.university_id',
 				'up.profile_value as newsletter',
-				'IF(JSON_VALID(u.params), json_extract(u.params,"$.testing_account"),0) as testing_account'
+				'IF(JSON_VALID(u.params), json_extract(u.params,"$.testing_account"),0) as testing_account',
+				'u.authProvider'
 			];
 
 			$query->select($columns)
@@ -2643,7 +2660,13 @@ class EmundusModelUsers extends ListModel
 			$u->setParam('testing_account', $user['testing_account']);
 			unset($user['testing_account']);
 		}
-		
+
+		if($user['authProvider'] == 1) {
+			$user['authProvider'] = 'sso';
+		} else {
+			$user['authProvider'] = '';
+		}
+
 		if (!$u->bind($user)) {
 			return array('msg' => $u->getError());
 		}
@@ -3233,8 +3256,12 @@ class EmundusModelUsers extends ListModel
 	 * @throws Exception
 	 * @since  3.9.11
 	 */
-	public function passwordReset($data, $subject = 'COM_USERS_EMAIL_PASSWORD_RESET_SUBJECT', $body = 'COM_USERS_EMAIL_PASSWORD_RESET_BODY', $new_account = false)
+	public function passwordReset($data, $subject = 'COM_USERS_EMAIL_PASSWORD_RESET_SUBJECT', $body = 'COM_USERS_EMAIL_PASSWORD_RESET_BODY', $new_account = false, $email_tmpl = null, $current_user = null)
 	{
+		if(empty($current_user))
+		{
+			$current_user = Factory::getApplication()->getIdentity();
+		}
 
 		$config = Factory::getApplication()->getConfig();
 
@@ -3366,8 +3393,6 @@ class EmundusModelUsers extends ListModel
 		}
 		$link = str_replace('+', '%2B', $link);
 
-		$mailer = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer();
-
 		// Put together the email template data.
 		$data              = $user->getProperties();
 		$data['sitename']  = $config->get('sitename');
@@ -3375,67 +3400,84 @@ class EmundusModelUsers extends ListModel
 		$data['link_html'] = '<a href=' . Uri::base() . $link . '> ' . Uri::base() . $link . '</a>';
 		$data['token']     = $token;
 
-		// Build the translated email.
-		$subject = Text::sprintf($subject, $data['sitename']);
-		$body    = Text::sprintf($body, $data['sitename'], $data['token'], $data['link_html']);
 
 		$post = [
 			'USER_NAME'  => $user->name,
-			'SITE_URL'   => JURI::base(),
-			'USER_EMAIL' => $user->email
+			'SITE_URL'   => Uri::base(),
+			'SITE_NAME'  => $config->get('sitename'),
+			'USER_EMAIL' => $user->email,
+			'ACCOUNT_CREATION_URL' => Uri::base() . $link,
 		];
 
-		$tags = $m_emails->setTags($user->id, $post, null, '', $subject . $body);
-
-		$subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
-
-		// Get and apply the template.
-		$query->clear()
-			->select($this->db->quoteName('Template'))
-			->from($this->db->quoteName('#__emundus_email_templates'))
-			->where($this->db->quoteName('id') . ' = 1');
-		$this->db->setQuery($query);
-
-		try {
-			$template = $this->db->loadResult();
+		if(!empty($email_tmpl))
+		{
+			$m_emails->sendEmailNoFnum($user->email, $email_tmpl, $post);
 		}
-		catch (RuntimeException $e) {
-			$return->message = Text::sprintf('COM_USERS_DATABASE_ERROR', $e->getMessage());
-			$return->status  = false;
+		else
+		{
 
-			return $return;
-		}
+			$mailer = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer();
 
-		$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/", "/\[SITE_NAME\]/"], [$subject, $body, $data['sitename']], $template);
-		$body = preg_replace($tags['patterns'], $tags['replacements'], $body);
+			// Build the translated email.
+			$subject = Text::sprintf($subject, $data['sitename']);
+			$body    = Text::sprintf($body, $data['sitename'], $data['token'], $data['link_html']);
 
-		// Set sender
-		$sender = [
-			$config->get('mailfrom'),
-			$config->get('fromname')
-		];
+			$tags = $m_emails->setTags($user->id, $post, null, '', $subject . $body);
 
-		$mailer->setSender($sender);
-		$mailer->addReplyTo($config->get('mailfrom'), $config->get('fromname'));
-		$mailer->addRecipient($user->email);
-		$mailer->setSubject($subject);
-		$mailer->isHTML(true);
-		$mailer->Encoding = 'base64';
-		$mailer->setBody($body);
+			$subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
 
-		// Send the password reset request email.
+			// Get and apply the template.
+			$query->clear()
+				->select($this->db->quoteName('Template'))
+				->from($this->db->quoteName('#__emundus_email_templates'))
+				->where($this->db->quoteName('id') . ' = 1');
+			$this->db->setQuery($query);
 
-		require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
-		$custom_email_tag = EmundusHelperEmails::getCustomHeader();
-		if (!empty($custom_email_tag)) {
-			$mailer->addCustomHeader($custom_email_tag);
-		}
+			try
+			{
+				$template = $this->db->loadResult();
+			}
+			catch (RuntimeException $e)
+			{
+				$return->message = Text::sprintf('COM_USERS_DATABASE_ERROR', $e->getMessage());
+				$return->status  = false;
 
-		$send = $mailer->Send();
+				return $return;
+			}
 
-		// Check for an error.
-		if ($send !== true) {
-			throw new Exception(Text::_('COM_USERS_MAIL_FAILED'), 500);
+			$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/", "/\[SITE_NAME\]/"], [$subject, $body, $data['sitename']], $template);
+			$body = preg_replace($tags['patterns'], $tags['replacements'], $body);
+
+			// Set sender
+			$sender = [
+				$config->get('mailfrom'),
+				$config->get('fromname')
+			];
+
+			$mailer->setSender($sender);
+			$mailer->addReplyTo($config->get('mailfrom'), $config->get('fromname'));
+			$mailer->addRecipient($user->email);
+			$mailer->setSubject($subject);
+			$mailer->isHTML(true);
+			$mailer->Encoding = 'base64';
+			$mailer->setBody($body);
+
+			// Send the password reset request email.
+
+			require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
+			$custom_email_tag = EmundusHelperEmails::getCustomHeader();
+			if (!empty($custom_email_tag))
+			{
+				$mailer->addCustomHeader($custom_email_tag);
+			}
+
+			$send = $mailer->Send();
+
+			// Check for an error.
+			if ($send !== true)
+			{
+				throw new Exception(Text::_('COM_USERS_MAIL_FAILED'), 500);
+			}
 		}
 
 		$return->status = true;

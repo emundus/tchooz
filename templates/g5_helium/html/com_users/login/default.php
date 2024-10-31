@@ -76,6 +76,15 @@ if (!empty($cookieLogin) || $this->user->get('guest')) {
 				if(in_array($config->display_on_login,[1,3])) {
 					$this->oauth2Directories[] = $config;
 				}
+				elseif ($config->display_on_login == 4 && !empty($config->specific_link)) {
+					$menu = Factory::getApplication()->getMenu();
+					$active = $menu->getActive();
+					$menuItemId = $active->id;
+
+					if(!empty($menuItemId) && $menuItemId == $config->specific_link) {
+						$this->oauth2Directories[] = $config;
+					}
+				}
 			}
 		}
 	}

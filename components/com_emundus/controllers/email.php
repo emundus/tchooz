@@ -287,8 +287,17 @@ class EmundusControllerEmail extends BaseController
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
 		{
-			$data                  = $this->input->getRaw('body');
-			$data                  = json_decode($data, true);
+			$data = [];
+			$data['lbl'] = $this->input->getString('lbl', '');
+			$data['subject'] = $this->input->getString('subject', '');
+			$data['emailfrom'] = $this->input->getString('emailfrom', '');
+			$data['message'] = $this->input->getRaw('message', '');
+			$data['email_tmpl'] = $this->input->getInt('email_tmpl', 1);
+			$data['category'] = $this->input->getString('category', '');
+			$data['name'] = $this->input->getString('name', '');
+			$data['button'] = $this->input->getString('button', '');
+
+			// Additional data
 			$receivers_cc          = $this->input->getRaw('selectedReceiversCC');
 			$receivers_cc          = json_decode($receivers_cc, true);
 			$receivers_bcc         = $this->input->getRaw('selectedReceiversBCC');
@@ -390,9 +399,19 @@ class EmundusControllerEmail extends BaseController
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
 		{
-			$data                  = $this->input->getRaw('body');
-			$data                  = json_decode(utf8_encode($data), true);
-			$code                  = $this->input->getString('code');
+			// Main data
+			$data = [];
+			$id = $this->input->getInt('id', 0);
+			$data['lbl'] = $this->input->getString('lbl', '');
+			$data['subject'] = $this->input->getString('subject', '');
+			$data['emailfrom'] = $this->input->getString('emailfrom', '');
+			$data['message'] = $this->input->getRaw('message', '');
+			$data['email_tmpl'] = $this->input->getInt('email_tmpl', 1);
+			$data['category'] = $this->input->getString('category', '');
+			$data['name'] = $this->input->getString('name', '');
+			$data['button'] = $this->input->getString('button', '');
+
+			// Additional data
 			$receivers_cc          = $this->input->getRaw('selectedReceiversCC');
 			$receivers_cc          = json_decode($receivers_cc, true);
 			$receivers_bcc         = $this->input->getRaw('selectedReceiversBCC');
@@ -474,7 +493,7 @@ class EmundusControllerEmail extends BaseController
 				}
 			}
 
-			$result = $this->m_emails->updateEmail($code, $data, $cc_list, $bcc_list, $letter_list, $document_list, $tag_list);
+			$result = $this->m_emails->updateEmail($id, $data, $cc_list, $bcc_list, $letter_list, $document_list, $tag_list);
 			if ($result)
 			{
 				$response = array('status' => true, 'msg' => Text::_('EMAIL_UPDATED'), 'data' => $result);

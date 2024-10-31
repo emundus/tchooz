@@ -378,6 +378,10 @@ class EmundusModelFiles extends JModelLegacy
 		if (in_array('commentaire', $em_other_columns)) {
 			$this->_elements_default[] = ' COUNT(`ecom`.`id`) AS `commentaire` ';
 		}
+
+		if (in_array('tags', $em_other_columns)) {
+			$this->_elements_default[] = ' GROUP_CONCAT(DISTINCT eta.id_tag) as id_tag ';
+		}
 		if (empty($col_elt)) {
 			$col_elt = array();
 		}

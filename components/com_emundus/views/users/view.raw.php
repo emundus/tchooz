@@ -15,6 +15,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\HtmlView;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Component\Emundus\Site\Exception\EmundusException;
 
 /**
@@ -46,6 +47,7 @@ class EmundusViewUsers extends HtmlView
 	protected $campaigns = null;
 	protected $universities = null;
 	protected $ldapElements = null;
+	protected $haveExternalAuth = false;
 	protected $actions = null;
 	protected $progs = null;
 	protected $items = null;
@@ -165,7 +167,6 @@ class EmundusViewUsers extends HtmlView
 			$this->uCamps     = $uCamps;
 			$this->uOprofiles = $uOprofiles;
 			$this->app_prof   = $app_prof;
-
 		}
 		$this->edit = $edit;
 
@@ -188,6 +189,26 @@ class EmundusViewUsers extends HtmlView
 		// Get the LDAP elements.
 		$params             = ComponentHelper::getParams('com_emundus');
 		$this->ldapElements = $params->get('ldapElements');
+
+		// Check if we have external authentication
+		$emundusOauth2 = PluginHelper::getPlugin('authentication','emundus_oauth2');
+		$ldap = PluginHelper::getPlugin('authentication','ldap');
+		if(!empty($ldap)) {
+			$this->haveExternalAuth = true;
+		}
+		elseif(!empty($emundusOauth2))
+		{
+			$oauth2Config = json_decode($emundusOauth2->params);
+
+			if(!empty($oauth2Config->configurations)) {
+				foreach ($oauth2Config->configurations as $config) {
+					if(in_array($config->display_on_login,[1,3,4])) {
+						$this->haveExternalAuth = true;
+						break;
+					}
+				}
+			}
+		}
 	}
 
 	private function _loadGroupForm()

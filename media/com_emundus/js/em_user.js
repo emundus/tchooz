@@ -1280,6 +1280,8 @@ $(document).ready(function () {
 				formData.append('newsletter', $('#news').is(':checked') ? 1 : 0);
 				formData.append('university_id', $('#univ').val());
 				formData.append('ldap', $('#ldap').is(':checked') ? 1 : 0);
+				formData.append('auth_provider', $('#auth_provider').is(':checked') ? 1 : 0);
+				formData.append('testing_account', $('#testing_account').is(':checked') ? 1 : 0);
 
 				fetch(action, {
 					method: 'POST',
@@ -1408,6 +1410,7 @@ $(document).ready(function () {
 				var profile = $('#profiles').val();
 				let sameLoginEmail = document.getElementById('same_login_email').checked ? 1 : 0;
 				let testingAccount = (document.getElementById('testing_account') && document.getElementById('testing_account').checked) ? 1 : 0;
+				let authProvider = (document.getElementById('auth_provider') && document.getElementById('auth_provider').checked) ? 1 : 0;
 
 				if (profile == "0") {
 					$('#profiles').parent('.form-group').addClass('has-error');
@@ -1430,6 +1433,7 @@ $(document).ready(function () {
 				formData.append('university_id', $('#univ').val());
 				formData.append('sameLoginEmail', sameLoginEmail);
 				formData.append('testingAccount', testingAccount);
+				formData.append('authProvider', authProvider);
 				action = window.location.origin + '/' + document.getElementById('em-add-user').getAttribute('action');
 				if(action.indexOf('edituser') !== -1) {
 					formData.append('id', $('.em-check:checked').attr('id').split('_')[0]);

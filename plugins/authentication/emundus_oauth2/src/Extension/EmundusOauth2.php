@@ -112,10 +112,11 @@ class EmundusOauth2 extends CMSPlugin implements SubscriberInterface
 
 		$configurations = (array)$this->params->get('configurations', null);
 		if(!empty($configurations)) {
-			$type = filter_input(INPUT_GET, 'type', FILTER_SANITIZE_STRING);
-			if (!empty($type)) {
+			$google_domain = filter_input(INPUT_GET, 'hd', FILTER_SANITIZE_STRING);
+
+			if (!empty($google_domain)) {
 				foreach ($configurations as $configuration) {
-					if ($configuration->type === $type) {
+					if ($configuration->type === 'google') {
 						$parameters = ['client_id', 'client_secret', 'scopes', 'auth_url', 'token_url', 'redirect_url', 'sso_account_url', 'emundus_profile', 'email_id', 'logout_url', 'platform_redirect_url', 'attributes', 'debug_mode'];
 
 						foreach ($parameters as $parameter) {

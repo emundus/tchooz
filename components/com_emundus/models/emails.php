@@ -326,10 +326,7 @@ class EmundusModelEmails extends JModelList
 
 				foreach ($trigger_email[$student->code]['to']['recipients'] as $recipient) {
 					// Check if the user has access to the file
-					if ($h_access->asPartnerAccessLevel($recipient['id']) && !$h_access->isUserAllowedToAccessFnum($recipient['id'], $student->fnum)) {
-						continue;
-					}
-					if (!$h_emails->assertCanSendMailToUser($recipient['id'])) {
+					if (!$h_access->isUserAllowedToAccessFnum($recipient['id'],$student->fnum) || !$h_emails->assertCanSendMailToUser($recipient['id'])) {
 						continue;
 					}
 
@@ -815,8 +812,17 @@ class EmundusModelEmails extends JModelList
 				$request = explode('|', $value);
 				if (count($request) > 1) {
 					$query = 'SELECT ' . $request[0] . ' FROM ' . $request[1] . ' WHERE ' . $request[2];
-					$db->setQuery($query);
-					$replacements[] = $db->loadResult();
+					try
+					{
+						$db->setQuery($query);
+						$replacements[] = $db->loadResult();
+					}
+					catch (Exception $e)
+					{
+						Log::add('Error setTagsWord for tag : ' . $tag['tag'] . '. Message : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+						$replacements[] = "";
+					}
+
 
 				}
 				else {
@@ -826,7 +832,13 @@ class EmundusModelEmails extends JModelList
 			else {
 				$request        = explode('php|', $value);
 				$val            = $this->setTagsFabrik($request[1], array($fnum));
-				$replacements[] = eval("$val");
+				try {
+					$replacements[] = eval("$val");
+				}
+				catch (Exception $e) {
+					Log::add('Error setTagsWord for tag : ' . $tag['tag'] . '. Message : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+					$replacements[] = "";
+				}
 			}
 		}
 
@@ -2307,7 +2319,7 @@ class EmundusModelEmails extends JModelList
 		if (!empty($data)) {
 			$query->insert($this->_db->quoteName('#__emundus_setup_emails'))
 				->columns($this->_db->quoteName(array_keys($data)))
-				->values(implode(',', $this->_db->Quote(array_values($data))));
+				->values(implode(',', $this->_db->quote(array_values($data))));
 
 			try {
 				$this->_db->setQuery($query);
@@ -3097,6 +3109,7 @@ class EmundusModelEmails extends JModelList
 				$template = $m_messages->getEmail($email);
 				$body = $template->message;
 				$subject = $template->subject;
+				$button_text = $template->button;
 
 				// Get default mail sender info
 				$mail_from_sys = $config->get('mailfrom');
@@ -3124,6 +3137,7 @@ class EmundusModelEmails extends JModelList
 					'SITE_NAME' => $config->get('sitename'),
 					'USER_EMAIL' => $email_address,
 					'LOGO' => EmundusHelperEmails::getLogo(),
+					'BUTTON_TEXT' => $button_text,
 				];
 				if(!empty($fnum)) {
 					$default_post['FNUM'] = $fnum;

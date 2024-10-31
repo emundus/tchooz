@@ -24,16 +24,19 @@ export default {
     }
   },
   async updateEmail(id, data) {
+    Object.entries(data.body).forEach((item, index) => {
+        data[item[0]] = item[1];
+    });
+    delete data.body;
+
+    data.selectedReceiversCC = JSON.stringify(data.selectedReceiversCC);
+    data.selectedReceiversBCC = JSON.stringify(data.selectedReceiversBCC);
+    data.selectedLetterAttachments = JSON.stringify(data.selectedLetterAttachments);
+    data.selectedCandidateAttachments = JSON.stringify(data.selectedCandidateAttachments);
+    data.selectedTags = JSON.stringify(data.selectedTags);
+
     try {
-      return await client.post('updateemail', {
-        code: id,
-        body: JSON.stringify(data.body),
-        selectedReceiversCC: JSON.stringify(data.selectedReceiversCC),
-        selectedReceiversBCC: JSON.stringify(data.selectedReceiversBCC),
-        selectedLetterAttachments: JSON.stringify(data.selectedLetterAttachments),
-        selectedCandidateAttachments: JSON.stringify(data.selectedCandidateAttachments),
-        selectedTags: JSON.stringify(data.selectedTags),
-      });
+      return await client.post('updateemail', data);
     } catch (e) {
       return {
         status: false,
@@ -42,15 +45,19 @@ export default {
     }
   },
   async createEmail(data) {
+    Object.entries(data.body).forEach((item, index) => {
+      data[item[0]] = item[1];
+    });
+    delete data.body;
+
+    data.selectedReceiversCC = JSON.stringify(data.selectedReceiversCC);
+    data.selectedReceiversBCC = JSON.stringify(data.selectedReceiversBCC);
+    data.selectedLetterAttachments = JSON.stringify(data.selectedLetterAttachments);
+    data.selectedCandidateAttachments = JSON.stringify(data.selectedCandidateAttachments);
+    data.selectedTags = JSON.stringify(data.selectedTags);
+
     try {
-      return await client.post('createemail', {
-        body: JSON.stringify(data.body),
-        selectedReceiversCC: JSON.stringify(data.selectedReceiversCC),
-        selectedReceiversBCC: JSON.stringify(data.selectedReceiversBCC),
-        selectedLetterAttachments: JSON.stringify(data.selectedLetterAttachments),
-        selectedCandidateAttachments: JSON.stringify(data.selectedCandidateAttachments),
-        selectedTags: JSON.stringify(data.selectedTags),
-      });
+      return await client.post('createemail', data);
     } catch (e) {
       return {
         status: false,

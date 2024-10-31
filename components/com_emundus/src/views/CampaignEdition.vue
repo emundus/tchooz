@@ -311,7 +311,12 @@ export default {
       let index = this.tabs.findIndex(tab => tab.active);
       if (index < this.tabs.length - 1) {
         this.tabs[index].active = false;
-        this.tabs[index + 1].active = true;
+
+        if(this.tabs[index+1].displayed) {
+          this.tabs[index + 1].active = true;
+        } else {
+          this.tabs[index + 2].active = true;
+        }
       }
     },
 

@@ -1689,6 +1689,23 @@ class EmundusModelCampaign extends ListModel
 					case 'languages':
 						// do nothing
 						break;
+					case 'profile_id':
+						if (empty($val)) {
+							$query->clear()
+								->select('id')
+								->from($this->_db->quoteName('#__emundus_setup_profiles'))
+								->where($this->_db->quoteName('published') . ' = 1')
+								->order('id DESC');
+							$this->_db->setQuery($query);
+							$val = $this->_db->loadResult();
+
+							if (empty($val)) {
+								$val = 1000;
+							}
+
+							$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
+						}
+						break;
 					default:
 						$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
 						break;
@@ -1768,6 +1785,9 @@ class EmundusModelCampaign extends ListModel
 				}
 			}
 			catch (Exception $e) {
+				var_dump($query->__toString());
+				exit;
+
 				Log::add('component/com_emundus/models/campaign | Error when update the campaign : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 			}
 		}
