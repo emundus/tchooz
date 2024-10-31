@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Helper\ModuleHelper;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\User\UserHelper;
 use scripts\Release2_0_0Installer;
 
@@ -229,6 +230,11 @@ class Com_EmundusInstallerScript
 		if (!$this->checkAccountApplicationMenu())
 		{
 			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification du menu compte utilisateur', 'error');
+		}
+
+		if(!$this->checkSSOAvailable())
+		{
+			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification de la disponibilité du SSO', 'error');
 		}
 
 		if (!EmundusHelperUpdate::languageBaseToFile()['status'])
@@ -772,6 +778,69 @@ class Com_EmundusInstallerScript
 		{
 			$checked = false;
 			EmundusHelperUpdate::displayMessage($e->getMessage(), 'error');
+		}
+
+		return $checked;
+	}
+
+	private function checkSSOAvailable()
+	{
+		$checked = true;
+		$haveSSO = false;
+
+		// Check if we have external authentication
+		$emundusOauth2 = PluginHelper::getPlugin('authentication','emundus_oauth2');
+		$ldap = PluginHelper::getPlugin('authentication','ldap');
+		if(!empty($ldap)) {
+			$haveSSO = true;
+		}
+		elseif(!empty($emundusOauth2))
+		{
+			$oauth2Config = json_decode($emundusOauth2->params);
+
+			if(!empty($oauth2Config->configurations)) {
+				foreach ($oauth2Config->configurations as $config) {
+					if(in_array($config->display_on_login,[1,3,4])) {
+						$haveSSO = true;
+						break;
+					}
+				}
+			}
+		}
+
+		$query = $this->db->getQuery(true);
+		if($haveSSO) {
+			// Enable new_account_sso email
+			try
+			{
+				$query->clear()
+					->update($this->db->quoteName('#__emundus_setup_emails'))
+					->set($this->db->quoteName('published') . ' = 1')
+					->where($this->db->quoteName('lbl') . ' = ' . $this->db->quote('new_account_sso'));
+				$this->db->setQuery($query);
+				$checked = $this->db->execute();
+			}
+			catch (Exception $e)
+			{
+				EmundusHelperUpdate::displayMessage($e->getMessage(), 'error');
+				$checked = false;
+			}
+		} else {
+			// Disable new_account_sso email
+			try
+			{
+				$query->clear()
+					->update($this->db->quoteName('#__emundus_setup_emails'))
+					->set($this->db->quoteName('published') . ' = 0')
+					->where($this->db->quoteName('lbl') . ' = ' . $this->db->quote('new_account_sso'));
+				$this->db->setQuery($query);
+				$checked = $this->db->execute();
+			}
+			catch (Exception $e)
+			{
+				EmundusHelperUpdate::displayMessage($e->getMessage(), 'error');
+				$checked = false;
+			}
 		}
 
 		return $checked;

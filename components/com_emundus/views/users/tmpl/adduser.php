@@ -208,6 +208,15 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
                    class="mb-0"><?= Text::_('COM_EMUNDUS_USERS_LOGIN_TESTING_ACCOUNT'); ?></label>
         </div>
         <?php endif; ?>
+
+	    <?php if ($this->haveExternalAuth) : ?>
+            <div class="form-group em-addUser-detail-info-auth-provider tw-flex tw-items-center tw-mt-4">
+                <input type="checkbox" id="auth_provider" name="auth_provider"
+                       style="margin-bottom: 5px; outline-offset: 1px;" <?= !empty($this->user['authProvider']) ? 'checked' : ''; ?>>
+                <label for="auth_provider"
+                       class="mb-0"><?= Text::_('COM_EMUNDUS_USERS_LOGIN_SSO_ACCOUNT'); ?></label>
+            </div>
+	    <?php endif; ?>
     </fieldset>
 </form>
 <script type="text/javascript">

@@ -2319,7 +2319,7 @@ class EmundusModelEmails extends JModelList
 		if (!empty($data)) {
 			$query->insert($this->_db->quoteName('#__emundus_setup_emails'))
 				->columns($this->_db->quoteName(array_keys($data)))
-				->values(implode(',', $this->_db->Quote(array_values($data))));
+				->values(implode(',', $this->_db->quote(array_values($data))));
 
 			try {
 				$this->_db->setQuery($query);
@@ -3109,6 +3109,7 @@ class EmundusModelEmails extends JModelList
 				$template = $m_messages->getEmail($email);
 				$body = $template->message;
 				$subject = $template->subject;
+				$button_text = $template->button;
 
 				// Get default mail sender info
 				$mail_from_sys = $config->get('mailfrom');
@@ -3136,6 +3137,7 @@ class EmundusModelEmails extends JModelList
 					'SITE_NAME' => $config->get('sitename'),
 					'USER_EMAIL' => $email_address,
 					'LOGO' => EmundusHelperEmails::getLogo(),
+					'BUTTON_TEXT' => $button_text,
 				];
 				if(!empty($fnum)) {
 					$default_post['FNUM'] = $fnum;
