@@ -46,7 +46,9 @@ class modEmundusAttachmentsHelper
 								])
 								->from($db->quoteName('#__emundus_uploads', 'eu'))
 								->leftJoin($db->quoteName('#__emundus_setup_attachments', 'esa') . ' ON ' . $db->quoteName('esa.id') . ' = ' . $db->quoteName('eu.attachment_id'))
-								->where($db->quoteName('eu.attachment_id') . ' = ' . $db->quote($group->mod_emundus_attachments_groups_attachment));
+								->where($db->quoteName('eu.attachment_id') . ' = ' . $db->quote($group->mod_emundus_attachments_groups_attachment))
+								->where($db->quoteName('eu.fnum') . ' = ' . $db->quote($fnum))
+								->where($db->quoteName('eu.can_be_viewed') . ' = 1');
 							$db->setQuery($query);
 							$group_attachments = $db->loadObjectList();
 							$attachments       = array_merge($attachments, $group_attachments);
