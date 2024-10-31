@@ -812,8 +812,17 @@ class EmundusModelEmails extends JModelList
 				$request = explode('|', $value);
 				if (count($request) > 1) {
 					$query = 'SELECT ' . $request[0] . ' FROM ' . $request[1] . ' WHERE ' . $request[2];
-					$db->setQuery($query);
-					$replacements[] = $db->loadResult();
+					try
+					{
+						$db->setQuery($query);
+						$replacements[] = $db->loadResult();
+					}
+					catch (Exception $e)
+					{
+						Log::add('Error setTagsWord for tag : ' . $tag['tag'] . '. Message : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+						$replacements[] = "";
+					}
+
 
 				}
 				else {
@@ -823,7 +832,13 @@ class EmundusModelEmails extends JModelList
 			else {
 				$request        = explode('php|', $value);
 				$val            = $this->setTagsFabrik($request[1], array($fnum));
-				$replacements[] = eval("$val");
+				try {
+					$replacements[] = eval("$val");
+				}
+				catch (Exception $e) {
+					Log::add('Error setTagsWord for tag : ' . $tag['tag'] . '. Message : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+					$replacements[] = "";
+				}
 			}
 		}
 
