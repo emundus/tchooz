@@ -1,19 +1,12 @@
 <?php
-/**
- * @package	HikaShop for Joomla!
- * @version	5.1.0
- * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
- * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
-defined('_JEXEC') or die('Restricted access');
-?><?php
+
+declare(strict_types=1);
 
 namespace GuzzleHttp\Promise;
 
 final class Create
 {
-    public static function promiseFor($value)
+    public static function promiseFor($value): PromiseInterface
     {
         if ($value instanceof PromiseInterface) {
             return $value;
@@ -24,13 +17,14 @@ final class Create
             $cfn = method_exists($value, 'cancel') ? [$value, 'cancel'] : null;
             $promise = new Promise($wfn, $cfn);
             $value->then([$promise, 'resolve'], [$promise, 'reject']);
+
             return $promise;
         }
 
         return new FulfilledPromise($value);
     }
 
-    public static function rejectionFor($reason)
+    public static function rejectionFor($reason): PromiseInterface
     {
         if ($reason instanceof PromiseInterface) {
             return $reason;
@@ -39,16 +33,16 @@ final class Create
         return new RejectedPromise($reason);
     }
 
-    public static function exceptionFor($reason)
+    public static function exceptionFor($reason): \Throwable
     {
-        if ($reason instanceof \Exception || $reason instanceof \Throwable) {
+        if ($reason instanceof \Throwable) {
             return $reason;
         }
 
         return new RejectionException($reason);
     }
 
-    public static function iterFor($value)
+    public static function iterFor($value): \Iterator
     {
         if ($value instanceof \Iterator) {
             return $value;

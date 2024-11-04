@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -625,7 +625,7 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 			foreach($array['capabilities'] as $capability) {
 				if($capability['name'] == 'CUSTOM_CARD_PROCESSING' && $capability['status'] == 'ACTIVE') {
 					$cap_ok_for_ACDC = true;
-					if($capability['limits'][0]['type'] == 'GENERAL') {
+					if(!empty($capability['limits']) && !empty($capability['limits'][0]['type']) && $capability['limits'][0]['type'] == 'GENERAL') {
 						$limit = true;
 					}
 				}
@@ -883,6 +883,7 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 
 		$price = new stdClass();
 		$price->price_value_with_tax = $order->order_full_price;
+		$price->price_value = $order->order_full_price-$order->order_tax_price;
 		$order->cart->full_total = new stdClass();
 		$order->cart->full_total->prices = array($price);
 		$order->cart->total = new stdClass();
@@ -957,6 +958,10 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 		if(empty($order->old->order_payment_params->paypal_checkout_id)) {
 			$app = JFactory::getApplication();
 			$app->enqueueMessage(JText::_('PAYPAL_CHECKOUT_ERROR_ORDER_ID_MISSING'), 'error');
+
+			if($this->payment_params->debug) {
+				hikashop_writeToLog('PayPal checkout error order id missing for order '.$order->order_id);
+			}
 			return false;
 		}
 
@@ -993,6 +998,36 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 				hikashop_writeToLog($response);
 			}
 			$authorization_id = $response->result->purchase_units[0]->payments->authorizations[0]->id;
+			if(!empty($response->result->purchase_units[0]->payments->authorizations[0]->expiration_time)) {
+				$d = DateTime::createFromFormat('c', $response->result->purchase_units[0]->payments->authorizations[0]->expiration_time);
+				if($d) {
+					$date = $d->getTimestamp();
+					if($date <= time()) {
+						$request = new PayPalCheckoutSdk\Payments\AuthorizationsReauthorizeRequest($authorization_id);
+						$request->headers['PayPal-Partner-Attribution-Id'] = $this->bncode;
+						$response = $client->execute($request);
+						if(empty($response->result->id)) {
+							$app = JFactory::getApplication();
+							if(!empty($response->result->status)) {
+								$app->enqueueMessage($response->result->status, 'error');
+							} else {
+								$app->enqueueMessage('Unkowned error when capturing order', 'error');
+							}
+							hikashop_writeToLog($response);
+							return false;
+						} else {
+							$authorization_id = $response->result->id;
+						}
+					} else {
+					}
+				} else {
+					$app = JFactory::getApplication();
+					$app->enqueueMessage('authorizaiont date format unknown', 'error');
+					hikashop_writeToLog('authorizaiont date format unknown');
+					hikashop_writeToLog($response);
+				}
+			} else {
+			}
 
 			$request = new PayPalCheckoutSdk\Payments\AuthorizationsCaptureRequest($authorization_id);
 			$request->headers['PayPal-Partner-Attribution-Id'] = $this->bncode;
@@ -1100,7 +1135,7 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 					hikashop_writeToLog($response);
 				}
 
-				if(!empty($response->result->payment_source->card)) {
+				if(!empty($response->result->payment_source->card->authentication_result)) {
 					$liability_shift = null;
 					if(!empty($response->result->payment_source->card->authentication_result->liability_shift)) {
 						$liability_shift = $response->result->payment_source->card->authentication_result->liability_shift;
@@ -1397,7 +1432,7 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 			$history->amount = @$ok->amount->value.@$ok->amount->currency_code;
 			$history->data = 'PayPal transaction id:'.$paypal_id;
 			$status = $this->payment_params->verified_status;
-			if($response->result->intent == 'AUTHORIZE' && $response->result->status == 'APPROVED') {
+			if($response->result->intent == 'AUTHORIZE' && in_array($response->result->status, array('APPROVED', 'COMPLETED'))) {
 				$status = $this->payment_params->pending_status;
 			}
 

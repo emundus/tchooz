@@ -7,10 +7,10 @@
 		<output type="zip" path="" filename="plg_hikashopshipping_fedex2" />
 	</outputs>
 	<dictionnary>
-		<entry name="5.1.0" value="1.1.4" />
+		<entry name="5.1.1" value="1.1.4" />
 		<entry name="2024" date="yyyy" />
-		<entry name="juillet" date="MM" />
-		<entry name="08" date="dd" />
+		<entry name="octobre" date="MM" />
+		<entry name="31" date="dd" />
 	</dictionnary>
 	<files>
 		<file name="fedex2.xml">

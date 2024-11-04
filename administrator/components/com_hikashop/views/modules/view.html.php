@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -345,6 +345,8 @@ class ModulesViewModules extends hikashopView{
 		$this->assignRef('childdisplayType',$childdisplayType);
 		$showpopupoptionType = hikashop_get('type.showpopupoption');
 		$this->assignRef('showpopupoptionType',$showpopupoptionType);
+		$consistencyType = hikashop_get('type.consistency');
+		$this->assignRef('consistencyType',$consistencyType);
 		$zoomonhoverType = hikashop_get('type.zoomonhover');
 		$this->assignRef('zoomonhoverType',$zoomonhoverType);
 		$pricetaxType = hikashop_get('type.pricetax');
@@ -522,6 +524,7 @@ class ModulesViewModules extends hikashopView{
 		$this->layoutType = hikashop_get('type.layout');
 		$this->orderdirType = hikashop_get('type.orderdir');
 		$this->showpopupoptionType = hikashop_get('type.showpopupoption');
+		$this->consistencyType = hikashop_get('type.consistency');
 		$this->zoomonhoverType = hikashop_get('type.zoomonhover');
 		$this->childdisplayType = hikashop_get('type.childdisplay');
 		$this->orderType = hikashop_get('type.order');

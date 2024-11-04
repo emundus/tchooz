@@ -1,54 +1,40 @@
 <?php
-/**
- * @package	HikaShop for Joomla!
- * @version	5.1.0
- * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
- * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
-defined('_JEXEC') or die('Restricted access');
-?><?php
+
 namespace GuzzleHttp;
 
+use GuzzleHttp\Promise as P;
 use GuzzleHttp\Promise\PromiseInterface;
-use GuzzleHttp\Promise\RejectedPromise;
-use GuzzleHttp\Psr7;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class RetryMiddleware
 {
-
     private $nextHandler;
-
 
     private $decider;
 
-
     private $delay;
 
-    public function __construct(
-        callable $decider,
-        callable $nextHandler,
-        callable $delay = null
-    ) {
+    public function __construct(callable $decider, callable $nextHandler, ?callable $delay = null)
+    {
         $this->decider = $decider;
         $this->nextHandler = $nextHandler;
-        $this->delay = $delay ?: __CLASS__ . '::exponentialDelay';
+        $this->delay = $delay ?: __CLASS__.'::exponentialDelay';
     }
 
-    public static function exponentialDelay($retries)
+    public static function exponentialDelay(int $retries): int
     {
-        return (int) pow(2, $retries - 1) * 1000;
+        return (int) 2 ** ($retries - 1) * 1000;
     }
 
-    public function __invoke(RequestInterface $request, array $options)
+    public function __invoke(RequestInterface $request, array $options): PromiseInterface
     {
         if (!isset($options['retries'])) {
             $options['retries'] = 0;
         }
 
         $fn = $this->nextHandler;
+
         return $fn($request, $options)
             ->then(
                 $this->onFulfilled($request, $options),
@@ -56,41 +42,41 @@ class RetryMiddleware
             );
     }
 
-    private function onFulfilled(RequestInterface $req, array $options)
+    private function onFulfilled(RequestInterface $request, array $options): callable
     {
-        return function ($value) use ($req, $options) {
-            if (!call_user_func(
-                $this->decider,
+        return function ($value) use ($request, $options) {
+            if (!($this->decider)(
                 $options['retries'],
-                $req,
+                $request,
                 $value,
                 null
             )) {
                 return $value;
             }
-            return $this->doRetry($req, $options, $value);
+
+            return $this->doRetry($request, $options, $value);
         };
     }
 
-    private function onRejected(RequestInterface $req, array $options)
+    private function onRejected(RequestInterface $req, array $options): callable
     {
         return function ($reason) use ($req, $options) {
-            if (!call_user_func(
-                $this->decider,
+            if (!($this->decider)(
                 $options['retries'],
                 $req,
                 null,
                 $reason
             )) {
-                return \GuzzleHttp\Promise\rejection_for($reason);
+                return P\Create::rejectionFor($reason);
             }
+
             return $this->doRetry($req, $options);
         };
     }
 
-    private function doRetry(RequestInterface $request, array $options, ResponseInterface $response = null)
+    private function doRetry(RequestInterface $request, array $options, ?ResponseInterface $response = null): PromiseInterface
     {
-        $options['delay'] = call_user_func($this->delay, ++$options['retries'], $response);
+        $options['delay'] = ($this->delay)(++$options['retries'], $response, $request);
 
         return $this($request, $options);
     }

@@ -1,13 +1,6 @@
 <?php
-/**
- * @package	HikaShop for Joomla!
- * @version	5.1.0
- * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
- * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
-defined('_JEXEC') or die('Restricted access');
-?><?php
+
+declare(strict_types=1);
 
 namespace GuzzleHttp\Promise;
 
@@ -15,38 +8,38 @@ final class Each
 {
     public static function of(
         $iterable,
-        callable $onFulfilled = null,
-        callable $onRejected = null
-    ) {
+        ?callable $onFulfilled = null,
+        ?callable $onRejected = null
+    ): PromiseInterface {
         return (new EachPromise($iterable, [
             'fulfilled' => $onFulfilled,
-            'rejected'  => $onRejected
+            'rejected' => $onRejected,
         ]))->promise();
     }
 
     public static function ofLimit(
         $iterable,
         $concurrency,
-        callable $onFulfilled = null,
-        callable $onRejected = null
-    ) {
+        ?callable $onFulfilled = null,
+        ?callable $onRejected = null
+    ): PromiseInterface {
         return (new EachPromise($iterable, [
-            'fulfilled'   => $onFulfilled,
-            'rejected'    => $onRejected,
-            'concurrency' => $concurrency
+            'fulfilled' => $onFulfilled,
+            'rejected' => $onRejected,
+            'concurrency' => $concurrency,
         ]))->promise();
     }
 
     public static function ofLimitAll(
         $iterable,
         $concurrency,
-        callable $onFulfilled = null
-    ) {
-        return each_limit(
+        ?callable $onFulfilled = null
+    ): PromiseInterface {
+        return self::ofLimit(
             $iterable,
             $concurrency,
             $onFulfilled,
-            function ($reason, $idx, PromiseInterface $aggregate) {
+            function ($reason, $idx, PromiseInterface $aggregate): void {
                 $aggregate->reject($reason);
             }
         );

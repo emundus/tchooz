@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -204,67 +204,92 @@ class plgSystemHikashopgeolocation extends hikashopJoomlaPlugin
 
 	function getZone(){
 		$app = JFactory::getApplication();
+		$db = JFactory::getDBO();
 		$zone = (int)$app->getUserState(HIKASHOP_COMPONENT.'.zone_id',0);
 		if(!empty($zone))
 			return $zone;
 
-		$geoClass = hikashop_get('class.geolocation');
-		$this->geolocation = $geoClass->getIPLocation(hikashop_getIP());
-		if(empty($this->geolocation) || empty($this->geolocation->countryCode))
-			return $zone;
+		$geoloc = new stdClass();
+		$geoloc->geolocation_created = time();
+		$geoloc->geolocation_ip = hikashop_getIP();
+		$geoloc->geolocation_type = 'visit';
+		$geoloc->geolocation_country_code = '';
 
-		$geolocation_country_code = $this->geolocation->countryCode;
-		$db = JFactory::getDBO();
-		$db->setQuery('SELECT * FROM '.hikashop_table('zone').' WHERE zone_code_2 ='.$db->Quote($geolocation_country_code).' AND zone_type=\'country\'  AND zone_published=1');
-		$zones = $db->loadObjectList();
-		if(empty($zones)) {
-			$states = array();
-			$countries = array();
-			foreach($zones as $zone){
-				if($zone->zone_type=='state'){
-					$states[]=$zone;
-				}else{
-					$countries[]=$zone;
-				}
+		$db->setQuery('SELECT * FROM '.hikashop_table('geolocation').' WHERE geolocation_ip ='.$db->Quote($geoloc->geolocation_ip).' AND geolocation_type=\'visit\' ORDER BY geolocation_created DESC');
+		$geolocFromDB = $db->loadObject();
+		if($geolocFromDB) {
+			if(!empty($geolocFromDB->geolocation_country_code)) {
+				$geoloc->geolocation_country_code = $geolocFromDB->geolocation_country_code;
 			}
-			if(!empty($states)) {
-				if(empty($countries)){
-					$zone = $states[0]->zone_id;
-				}else{
-					$child_namekeys=array();
-					foreach($states as $state){
-						$child_namekeys[]=$db->Quote($state->zone_namekey);
-					}
-					$parent_namekeys=array();
-					foreach($countries as $country){
-						$parent_namekeys[]=$db->Quote($country->zone_namekey);
-					}
-					$db->setQuery('SELECT zone_child_namekey FROM '.hikashop_table('zone_link').' WHERE zone_parent_namekey IN ('.implode(',',$parent_namekeys).') AND zone_child_namekey IN ('.implode(',',$child_namekeys).')');
-					$link = $db->loadResult();
-					if(empty($link)){
-						$zone = $countries[0]->zone_id;
+		}
+
+		$geoClass = hikashop_get('class.geolocation');
+		if(empty($geoloc->geolocation_country_code)) {
+			$this->geolocation = $geoClass->getIPLocation($geoloc->geolocation_ip);
+			if(empty($this->geolocation) || empty($this->geolocation->countryCode)) {
+				return $zone;
+			}
+			$geoloc->geolocation_country_code = $this->geolocation->countryCode;
+		}
+
+		if(!empty($geoloc->geolocation_country_code)) {
+			$db->setQuery('SELECT * FROM '.hikashop_table('zone').' WHERE zone_code_2 ='.$db->Quote($geoloc->geolocation_country_code).' AND zone_type=\'country\'  AND zone_published=1');
+			$zones = $db->loadObjectList();
+			if(empty($zones)) {
+				$states = array();
+				$countries = array();
+				foreach($zones as $zone){
+					if($zone->zone_type=='state'){
+						$states[]=$zone;
 					}else{
+						$countries[]=$zone;
+					}
+				}
+				if(!empty($states)) {
+					if(empty($countries)){
+						$zone = $states[0]->zone_id;
+					}else{
+						$child_namekeys=array();
 						foreach($states as $state){
-							if($state->zone_namekey==$link){
-								$zone = $state->zone_id;
+							$child_namekeys[]=$db->Quote($state->zone_namekey);
+						}
+						$parent_namekeys=array();
+						foreach($countries as $country){
+							$parent_namekeys[]=$db->Quote($country->zone_namekey);
+						}
+						$db->setQuery('SELECT zone_child_namekey FROM '.hikashop_table('zone_link').' WHERE zone_parent_namekey IN ('.implode(',',$parent_namekeys).') AND zone_child_namekey IN ('.implode(',',$child_namekeys).')');
+						$link = $db->loadResult();
+						if(empty($link)){
+							$zone = $countries[0]->zone_id;
+						}else{
+							foreach($states as $state){
+								if($state->zone_namekey==$link){
+									$zone = $state->zone_id;
+								}
 							}
 						}
 					}
+				} elseif(!empty($countries[0])) {
+					$zone = $countries[0]->zone_id;
+				} else {
+					hikashop_writeToLog('No zone found for the country code '.$geoloc->geolocation_country_code);
 				}
-			} elseif(!empty($countries[0])) {
-				$zone = $countries[0]->zone_id;
-			} else {
-				hikashop_writeToLog('No zone found for the country code '.$geolocation_country_code);
 			}
-		}
-		if(empty($zone)){
-			$db->setQuery('SELECT zone_id FROM '.hikashop_table('zone').' WHERE zone_code_2='.$db->Quote($geolocation_country_code).' AND zone_published=1');
-			$zone = $db->loadResult();
+
+			if(empty($zone)){
+				$db->setQuery('SELECT zone_id FROM '.hikashop_table('zone').' WHERE zone_code_2='.$db->Quote($geoloc->geolocation_country_code).' AND zone_published=1');
+				$zone = $db->loadResult();
+			}
 		}
 		if(!empty($zone)){
 			$app->setUserState( HIKASHOP_COMPONENT.'.zone_id', (int)$zone);
 			$app->setUserState( HIKASHOP_COMPONENT.'.geoloc_zone_id', (int)$zone);
 		}
+
+		$geoClass->saveRaw($geoloc);
+
+		$db->setQuery('DELETE FROM '.hikashop_table('geolocation').' WHERE geolocation_type=\'visit\' AND geolocation_created < '.(time()-31556952));
+		$db->execute();
 
 		return (int)$zone;
 	}

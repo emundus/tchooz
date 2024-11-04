@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -267,11 +267,11 @@ class hikashopProductClass extends hikashopClass{
 			unset($element->alias);
 		}
 		if(!empty($element->product_alias)){
-			$query = 'SELECT product_id FROM '.hikashop_table('product').' WHERE product_alias='.$this->database->Quote($element->product_alias);
-			$this->database->setQuery($query);
-			$product_with_same_alias = $this->database->loadResult();
-			if($product_with_same_alias && (empty($element->product_id) || $product_with_same_alias!=$element->product_id)){
-				$app->enqueueMessage(JText::_( 'ELEMENT_WITH_SAME_ALIAS_ALREADY_EXISTS' ), 'error');
+			$previous_alias = $element->product_alias;
+			$this->checkAlias($alias);
+			if($previous_alias != $element->product_alias) {
+				$app->enqueueMessage(JText::_( 'ELEMENT_WITH_SAME_ALIAS_ALREADY_EXISTS' ), 'warning');
+				$app->enqueueMessage(JText::sprintf( 'ALIAS_MODIFIED_AUTOMATICALLY_TO_X', $element->product_alias), 'warning');
 			}
 		}
 
@@ -316,6 +316,18 @@ class hikashopProductClass extends hikashopClass{
 			}
 		}
 		return $status;
+	}
+
+	public function checkAlias(&$element) {
+		if(!empty($element->product_alias)) {
+			$query = 'SELECT product_id FROM '.hikashop_table('product').' WHERE product_alias='.$this->database->Quote($element->product_alias);
+			$this->database->setQuery($query);
+			$product_with_same_alias = $this->database->loadResult();
+			if($product_with_same_alias && (empty($element->product_id) || $product_with_same_alias!=$element->product_id)) {
+				$element->product_alias = $element->product_alias.'-'.$element->product_id;
+				$this->checkAlias($element);
+			}
+		}
 	}
 
 	public function backSaveForm() {
@@ -455,7 +467,7 @@ class hikashopProductClass extends hikashopClass{
 				}
 			}
 
-			if((int)$config->get('safe_product_description', 0)) {
+			if((int)$config->get('safe_product_description', 1)) {
 				$safeHtmlFilter = JFilterInput::getInstance(array(), array(), 1, 1);
 				$product->product_description = $safeHtmlFilter->clean($product->product_description, 'string');
 			}
@@ -901,6 +913,13 @@ class hikashopProductClass extends hikashopClass{
 			unset($product->characteristic);
 		}
 
+		unset($product->tags);
+		if(hikashop_acl('product/variant/tags')) {
+			$tagsHelper = hikashop_get('helper.tags');
+			if(!empty($tagsHelper) && $tagsHelper->isCompatible())
+				$product->tags = empty($formData['variant_tags']) ? array() : $formData['variant_tags'];
+		}
+
 		if(!hikashop_acl('product/variant/name')) { unset($product->product_name); }
 		if(!hikashop_acl('product/variant/code')) { unset($product->product_code); }
 		if(!hikashop_acl('product/variant/weight')) { unset($product->product_weight); }
@@ -962,7 +981,7 @@ class hikashopProductClass extends hikashopClass{
 				}
 			}
 
-			if((int)$config->get('safe_product_description', 0)) {
+			if((int)$config->get('safe_product_description', 1)) {
 				$safeHtmlFilter = JFilterInput::getInstance(array(), array(), 1, 1);
 				$product->product_description = $safeHtmlFilter->clean($product->product_description, 'string');
 			}
@@ -1654,7 +1673,14 @@ class hikashopProductClass extends hikashopClass{
 			return false;
 
 		hikashop_toInteger($ids);
-		return $this->delete($ids);
+		$status = $this->delete($ids);
+
+		if($status) {
+			$tagsHelper = hikashop_get('helper.tags');
+			$tagsHelper->deleteUCM('product', $ids);
+		}
+
+		return $status;
 	}
 
 	private function getProductCharacteristics($product_id) {
@@ -2860,7 +2886,7 @@ class hikashopProductClass extends hikashopClass{
 		elseif(!empty($element->old->product_type))
 			$type = $element->old->product_type;
 
-		if($tags !== null && $type!='variant') {
+		if($tags !== null) {
 			$tagsHelper = hikashop_get('helper.tags');
 			$fullElement = $element;
 			if(!empty($element->old)) {
@@ -4133,7 +4159,7 @@ class hikashopProductClass extends hikashopClass{
 						if(empty($val->characteristic_value))
 							continue;
 						$char_value = $val->characteristic_value;
-						if(strpos($char_value, '<') === false)
+						if(!empty($char_value) && strpos($char_value, '<') === false)
 							$char_value = hikashop_translate($char_value);
 						$variant->characteristics_text .= $separator . $char_value;
 					}

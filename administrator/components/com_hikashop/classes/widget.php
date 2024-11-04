@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -622,8 +622,8 @@ class hikashopWidgetClass extends hikashopClass {
 					$currentDate=hikashop_getDate($widget->widget_params->end,'%m,%w,%d,%Y');
 					$previousWeekStart=explode(',',$currentDate);
 					$previousWeekEnd=explode(',',$currentDate);
-					$previousWeekStart[2]=$previousWeekStart[2]-6-$previousWeekStart[1];
-					$previousWeekEnd[2]=$previousWeekEnd[2]-7+(7-$previousWeekEnd[1]);
+					$previousWeekStart[2]=$previousWeekStart[2]-6-(int)$previousWeekStart[1];
+					$previousWeekEnd[2]=$previousWeekEnd[2]-7+(7-(int)$previousWeekEnd[1]);
 					$start = gmmktime(0, 0, 0, $previousWeekStart[0], $previousWeekStart[2], $previousWeekStart[3]) - $this->timeoffset;
 					$end = gmmktime(23, 59, 59, $previousWeekEnd[0], $previousWeekEnd[2], $previousWeekEnd[3]) - $this->timeoffset;
 					$widget->widget_params->start=$start;

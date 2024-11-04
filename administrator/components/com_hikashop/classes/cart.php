@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -1214,7 +1214,7 @@ class hikashopCartClass extends hikashopClass {
 				$zone_id = $this->extractZone(null, $zones, true);
 				$tax_zone_id = $zone_id;
 			}
-			$cart->package['zone'] = $zone_id;
+			$cart->package['zone'] = $tax_zone_id;
 		}
 
 		$user_id = 0;
@@ -1386,7 +1386,7 @@ class hikashopCartClass extends hikashopClass {
 					self::$cache['get'][$cart_id]->cart_shipping_ids = implode(',', $cart->cart_shipping_ids);
 			}
 
-			$currencyClass->processShippings($cart->usable_methods->shipping, $cart, $zone_id);
+			$currencyClass->processShippings($cart->usable_methods->shipping, $cart, $tax_zone_id);
 
 			$cart->shipping = array();
 			foreach($cart->cart_shipping_ids as $k => $shipping_id) {
@@ -3747,10 +3747,12 @@ class hikashopCartClass extends hikashopClass {
 					continue;
 				}
 
-				if(!in_array($parent_product->product_access, array('', 'all')) && hikashop_level(2)) {
+				if(!in_array($parent_product->product_access, array(null, '', 'all')) && hikashop_level(2)) {
 					if(empty($userClass))
 						$userClass = hikashop_get('class.user');
 					$user_groups = $userClass->getGroups( (int)$cart->user_id );
+					if(empty($user_groups))
+						$user_groups = array(1, 9); // 9 is guest, 1 is public
 					$parent_product_groups = explode(',', $parent_product->product_access);
 					hikashop_toInteger($parent_product_groups);
 					$intersect = array_intersect($user_groups, $parent_product_groups);

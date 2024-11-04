@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -57,6 +57,17 @@ defined('_JEXEC') or die('Restricted access');
 			<dt class="hikashop_product_quantity"><label for="data_variant__product_quantity"><?php echo JText::_('PRODUCT_QUANTITY'); ?></label></dt>
 			<dd class="hikashop_product_quantity"><?php
 				echo $this->quantityType->displayInput('data[variant][product_quantity]', @$this->product->product_quantity);
+			?></dd>
+<?php
+	}
+
+	$tagsHelper = hikashop_get('helper.tags');
+	if(!empty($tagsHelper) && $tagsHelper->isCompatible()) {
+?>
+			<dt class="hikashop_product_tags"><label for="data_tags_"><?php echo JText::_('JTAG'); ?></label></dt>
+			<dd class="hikashop_product_tags"><?php
+				$tags = $tagsHelper->loadTags('product', $this->product);
+				echo $tagsHelper->renderInput($tags, array('name' => 'data[variant_tags]', 'class' => 'inputbox'));
 			?></dd>
 <?php
 	}

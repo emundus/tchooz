@@ -1,36 +1,29 @@
 <?php
-/**
- * @package	HikaShop for Joomla!
- * @version	5.1.0
- * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
- * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
-defined('_JEXEC') or die('Restricted access');
-?><?php
+
+declare(strict_types=1);
 
 namespace GuzzleHttp\Promise;
 
 interface PromiseInterface
 {
-    const PENDING = 'pending';
-    const FULFILLED = 'fulfilled';
-    const REJECTED = 'rejected';
+    public const PENDING = 'pending';
+    public const FULFILLED = 'fulfilled';
+    public const REJECTED = 'rejected';
 
     public function then(
-        callable $onFulfilled = null,
-        callable $onRejected = null
-    );
+        ?callable $onFulfilled = null,
+        ?callable $onRejected = null
+    ): PromiseInterface;
 
-    public function otherwise(callable $onRejected);
+    public function otherwise(callable $onRejected): PromiseInterface;
 
-    public function getState();
+    public function getState(): string;
 
-    public function resolve($value);
+    public function resolve($value): void;
 
-    public function reject($reason);
+    public function reject($reason): void;
 
-    public function cancel();
+    public function cancel(): void;
 
-    public function wait($unwrap = true);
+    public function wait(bool $unwrap = true);
 }

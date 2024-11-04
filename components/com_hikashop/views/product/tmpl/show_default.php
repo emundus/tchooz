@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -147,17 +147,15 @@ defined('_JEXEC') or die('Restricted access');
 <!-- EO OPTIONS -->
 <!-- CUSTOM ITEM FIELDS -->
 <?php
-	if(!$this->params->get('catalogue') && ($this->config->get('display_add_to_cart_for_free_products') || ($this->config->get('display_add_to_wishlist_for_free_products', 1) && hikashop_level(1) && $this->params->get('add_to_wishlist') && $this->config->get('enable_wishlist', 1)) || !empty($this->element->prices))) {
-		if(!empty($this->itemFields)) {
-			$form = ',\'hikashop_product_form\'';
-			if ($this->config->get('redirect_url_after_add_cart', 'stay_if_cart') == 'ask_user') {
+	if(!empty($this->itemFields)) {
+		$form = ',\'hikashop_product_form\'';
+		if ($this->config->get('redirect_url_after_add_cart', 'stay_if_cart') == 'ask_user') {
 ?>
 		<input type="hidden" name="popup" value="1"/>
 <?php
-			}
-			$this->setLayout('show_block_custom_item');
-			echo $this->loadTemplate();
 		}
+		$this->setLayout('show_block_custom_item');
+		echo $this->loadTemplate();
 	}
 ?>
 <!-- EO CUSTOM ITEM FIELDS -->

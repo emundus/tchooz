@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -193,7 +193,10 @@ foreach($this->order->products as $k => $product) {
 								$value = $this->products[$productData->product_parent_id]->$namekey;
 							?>
 							<td class="hikashop_order_product_name_value"><?php
-							$field->currentElement = $this->products[$productData->product_parent_id];
+							if(!empty($this->products[$productData->product_parent_id]))
+								$field->currentElement = $this->products[$productData->product_parent_id];
+							else
+								$field->currentElement = null;
 							if(!empty($value))
 								echo '<p class="hikashop_order_product_'.$namekey.'">'.$this->fieldsClass->show($field, $value).'</p>';
 							?>

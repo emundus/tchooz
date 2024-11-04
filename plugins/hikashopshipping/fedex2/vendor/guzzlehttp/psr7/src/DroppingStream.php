@@ -1,31 +1,28 @@
 <?php
-/**
- * @package	HikaShop for Joomla!
- * @version	5.1.0
- * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
- * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
-defined('_JEXEC') or die('Restricted access');
-?><?php
+
+declare(strict_types=1);
 
 namespace GuzzleHttp\Psr7;
 
 use Psr\Http\Message\StreamInterface;
 
-class DroppingStream implements StreamInterface
+final class DroppingStream implements StreamInterface
 {
     use StreamDecoratorTrait;
 
+
     private $maxLength;
 
-    public function __construct(StreamInterface $stream, $maxLength)
+
+    private $stream;
+
+    public function __construct(StreamInterface $stream, int $maxLength)
     {
         $this->stream = $stream;
         $this->maxLength = $maxLength;
     }
 
-    public function write($string)
+    public function write($string): int
     {
         $diff = $this->maxLength - $this->stream->getSize();
 

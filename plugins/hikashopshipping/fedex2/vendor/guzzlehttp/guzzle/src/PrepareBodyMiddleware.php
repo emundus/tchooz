@@ -1,22 +1,12 @@
 <?php
-/**
- * @package	HikaShop for Joomla!
- * @version	5.1.0
- * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
- * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
-defined('_JEXEC') or die('Restricted access');
-?><?php
+
 namespace GuzzleHttp;
 
 use GuzzleHttp\Promise\PromiseInterface;
-use GuzzleHttp\Psr7;
 use Psr\Http\Message\RequestInterface;
 
 class PrepareBodyMiddleware
 {
-
     private $nextHandler;
 
     public function __construct(callable $nextHandler)
@@ -24,7 +14,7 @@ class PrepareBodyMiddleware
         $this->nextHandler = $nextHandler;
     }
 
-    public function __invoke(RequestInterface $request, array $options)
+    public function __invoke(RequestInterface $request, array $options): PromiseInterface
     {
         $fn = $this->nextHandler;
 
@@ -36,7 +26,7 @@ class PrepareBodyMiddleware
 
         if (!$request->hasHeader('Content-Type')) {
             if ($uri = $request->getBody()->getMetadata('uri')) {
-                if ($type = Psr7\mimetype_from_filename($uri)) {
+                if (is_string($uri) && $type = Psr7\MimeType::fromFilename($uri)) {
                     $modify['set_headers']['Content-Type'] = $type;
                 }
             }
@@ -55,26 +45,24 @@ class PrepareBodyMiddleware
 
         $this->addExpectHeader($request, $options, $modify);
 
-        return $fn(Psr7\modify_request($request, $modify), $options);
+        return $fn(Psr7\Utils::modifyRequest($request, $modify), $options);
     }
 
-    private function addExpectHeader(
-        RequestInterface $request,
-        array $options,
-        array &$modify
-    ) {
+    private function addExpectHeader(RequestInterface $request, array $options, array &$modify): void
+    {
         if ($request->hasHeader('Expect')) {
             return;
         }
 
-        $expect = isset($options['expect']) ? $options['expect'] : null;
+        $expect = $options['expect'] ?? null;
 
-        if ($expect === false || $request->getProtocolVersion() < 1.1) {
+        if ($expect === false || $request->getProtocolVersion() === '1.0') {
             return;
         }
 
         if ($expect === true) {
             $modify['set_headers']['Expect'] = '100-Continue';
+
             return;
         }
 

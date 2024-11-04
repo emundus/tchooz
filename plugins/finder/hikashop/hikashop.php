@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -60,6 +60,7 @@ class plgFinderHikashop extends plgFinderHikashopBridge
 				}
 				$copy->language = $language->code;
 				$copy->addTaxonomy('Language', $copy->language);
+				$copy->addTaxonomy('Type', 'Product');
 
 				if($translationHelper->falang) {
 					$db = JFactory::getDBO();
@@ -211,7 +212,9 @@ class plgFinderHikashop extends plgFinderHikashopBridge
 	{
 		if ($context == 'com_hikashop.product' && !is_null($row))
 		{
-
+			if(isset($row->old->product_published) && isset($row->product_published) && $row->old->product_published != $row->product_published) {
+				$this->itemStateChange(array($row->product_id), $row->product_published);
+			}
 			if(!empty($row->categories) && (!isset($row->product_parent_id) || empty($row->product_parent_id))) {
 				$query = 'SELECT category_id FROM #__hikashop_category WHERE category_id IN('.implode(',', $row->categories).') AND category_published=1;';
 				$db = JFactory::getDBO();
@@ -248,8 +251,14 @@ class plgFinderHikashop extends plgFinderHikashopBridge
 	protected function translateState($item, $category = null)
 	{
 		if(!empty($this->item->product_parent_id)) {
-			$query = 'SELECT c.category_id FROM #__hikashop_category AS c LEFT JOIN #__hikashop_product_category AS pc ON pc.category_id = c.category_id LEFT JOIN #__hikashop_product AS p ON pc.product_id = p.product_id LEFT JOIN #__hikashop_product AS v ON p.product_id = v.product_parent_id WHERE c.category_published=1 AND v.product_id ='.$this->item->id;
+			$productClass = hikashop_get('class.product');
+			$parentProduct = $productClass->get($this->item->product_parent_id);
+			if(empty($parentProduct) || $parentProduct->product_published < 1) {
+				return 0;
+			}
+
 			$db = JFactory::getDBO();
+			$query = 'SELECT c.category_id FROM #__hikashop_category AS c LEFT JOIN #__hikashop_product_category AS pc ON pc.category_id = c.category_id WHERE c.category_published=1 AND pc.product_id ='.(int)$parentProduct->product_id;
 			$db->setQuery($query);
 			$res = $db->loadResult();
 			if($res)
@@ -489,6 +498,15 @@ class plgFinderHikashop extends plgFinderHikashopBridge
 			$this->change($pk, 'state', $temp);
 
 			$this->reindex($pk);
+
+			if(empty($this->item->product_parent_id)) {
+					$db = JFactory::getDBO();
+					$db->setQuery('SELECT product_id FROM #__hikashop_product WHERE product_parent_id = '.(int)$pk);
+					$variants = $db->loadColumn();
+					foreach($variants as $variant) {
+						$this->reindex($variant);
+					}
+			}
 		}
 	}
 

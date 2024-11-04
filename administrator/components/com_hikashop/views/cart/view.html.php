@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -82,6 +82,10 @@ class CartViewCart extends hikashopView {
 		$this->getPageInfoTotal($query, '*');
 		$db->setQuery('SELECT cart.*' . $query, $pageInfo->limit->start, $pageInfo->limit->value);
 		$rows = $db->loadObjectList();
+
+		$db->setQuery('SELECT COUNT(cart.cart_id)'.$query);
+		$pageInfo->elements->total = $db->loadResult();
+		$pageInfo->elements->page = count($rows);
 
 		if(!empty($pageInfo->search)) {
 			$rows = hikashop_search($pageInfo->search, $rows, 'cart_id');
