@@ -1108,6 +1108,17 @@ class EmundusHelperEvents
 
 			$user = $mainframe->getSession()->get('emundusUser');
 
+			// check if there is not another cart open
+			$hikashop_user = $mainframe->getSession()->get('emundusPayment');
+			if (!empty($hikashop_user->fnum) && $hikashop_user->fnum != $user->fnum) {
+				$user->fnum = $hikashop_user->fnum;
+				$user->profile = $hikashop_user->profile;
+				$mainframe->getSession()->set('emundusUser', $user);
+
+				$mainframe->enqueueMessage(Text::_('ANOTHER_HIKASHOP_SESSION_OPENED'), 'error');
+				$mainframe->redirect('/');
+			}
+
 			$params                  = ComponentHelper::getParams('com_emundus');
 			$scholarship_document_id = $params->get('scholarship_document_id', null);
 			$application_fee         = $params->get('application_fee', 0);
