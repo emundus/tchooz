@@ -4574,36 +4574,23 @@ class EmundusModelFiles extends JModelLegacy
 		$result = [];
 		foreach ($group_ids as $group_id) {
 			$query->clear()
-				->select($this->_db->quoteName('anonymize'))
-				->from($this->_db->quoteName('#__emundus_setup_groups'))
-				->where($this->_db->quoteName('id') . ' = ' . $group_id);
-			$this->_db->setQuery($query);
-			$anonymize = $this->_db->loadResult();
+				->select($this->_db->quoteName('attachment_id_link'))
+				->from($this->_db->quoteName('#__emundus_setup_groups_repeat_attachment_id_link'))
+				->where($this->_db->quoteName('parent_id') . ' = ' . $group_id);
 
-			// If the group has no anonymization, then the user can see all the attachments
-			if ($anonymize == 0) {
-				return true;
-			}
-			else {
-				$query->clear()
-					->select($this->_db->quoteName('attachment_id_link'))
-					->from($this->_db->quoteName('#__emundus_setup_groups_repeat_attachment_id_link'))
-					->where($this->_db->quoteName('parent_id') . ' = ' . $group_id);
+			try {
 				$this->_db->setQuery($query);
+				$attachments = $this->_db->loadColumn();
 
-				try {
-					$attachments = $this->_db->loadColumn();
-
-					// In the case of a group having no assigned Fabrik groups, it can get them all.
-					if (empty($attachments)) {
-						return true;
-					}
-
-					$result = array_merge($result, $attachments);
+				// In the case of a group having no assigned Fabrik groups, it can get them all.
+				if (empty($attachments)) {
+					return true;
 				}
-				catch (Exception $e) {
-					return false;
-				}
+
+				$result = array_merge($result, $attachments);
+			}
+			catch (Exception $e) {
+				return false;
 			}
 		}
 
