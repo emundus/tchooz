@@ -302,6 +302,9 @@
                     input {
                        border-radius: var(--em-form-br) !important;
                     }
+                    p {
+                        margin: 1rem 0;
+                    }
             }
 
             .swal2-content {
