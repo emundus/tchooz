@@ -273,7 +273,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 			<?php endif; ?>
         </div>
 
-        <div class="em-flex-row-justify-end" style="gap: 24px">
+        <div class="em-flex-row-justify-end tw-flex-wrap" style="gap: 24px">
 			<?php if ($mod_em_applications_show_search): ?>
                 <div class="em-searchbar em-flex-row-justify-end">
                     <input name="searchword" type="text" id="applications_searchbar" class="form-control"

@@ -378,6 +378,10 @@ class EmundusModelFiles extends JModelLegacy
 		if (in_array('commentaire', $em_other_columns)) {
 			$this->_elements_default[] = ' COUNT(`ecom`.`id`) AS `commentaire` ';
 		}
+
+		if (in_array('tags', $em_other_columns)) {
+			$this->_elements_default[] = ' GROUP_CONCAT(DISTINCT eta.id_tag) as id_tag ';
+		}
 		if (empty($col_elt)) {
 			$col_elt = array();
 		}
@@ -571,7 +575,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getProfileAcces($user)
 	{
-		
+
 		$query     = 'SELECT esg.profile_id FROM #__emundus_setup_groups as esg
                     LEFT JOIN #__emundus_groups as eg on esg.id=eg.group_id
                     WHERE esg.published=1 AND eg.user_id=' . $user;
@@ -924,7 +928,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getProfileByID($id)
 	{
-		
+
 		$query     = 'SELECT esp.* FROM jos_emundus_setup_profiles as esp
                 LEFT JOIN jos_emundus_users as eu ON eu.profile=esp.id
                 WHERE eu.user_id=' . $id;
@@ -940,7 +944,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getProfilesByIDs($ids)
 	{
-		
+
 		$query     = 'SELECT esp.id, esp.label, esp.acl_aro_groups, caag.lft
         FROM #__emundus_setup_profiles esp
         INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id
@@ -956,7 +960,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getAuthorProfiles()
 	{
-		
+
 		$query     = 'SELECT esp.id, esp.label, esp.acl_aro_groups, caag.lft
         FROM #__emundus_setup_profiles esp
         INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id
@@ -972,7 +976,7 @@ class EmundusModelFiles extends JModelLegacy
 	public function getApplicantsProfiles()
 	{
 		$user      = $this->app->getIdentity();
-		
+
 		$query     = 'SELECT esp.id, esp.label FROM #__emundus_setup_profiles esp
                   WHERE esp.published=1 ';
 		$no_filter = array("Super Users", "Administrator");
@@ -992,7 +996,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getApplicantsByProfile($profile)
 	{
-		
+
 		$query     = 'SELECT eup.user_id FROM #__emundus_users_profiles eup WHERE eup.profile_id=' . $profile;
 		$this->_db->setQuery($query);
 
@@ -1005,7 +1009,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getAuthorUsers()
 	{
-		
+
 		$query     = 'SELECT u.id, u.gid, u.name
         FROM #__users u
         WHERE u.gid=19';
@@ -1019,7 +1023,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getMobility()
 	{
-		
+
 		$query     = 'SELECT esm.id, esm.label, esm.value
         FROM #__emundus_setup_mobility esm
         ORDER BY ordering';
@@ -1035,7 +1039,7 @@ class EmundusModelFiles extends JModelLegacy
 	{
 		$elements = [];
 
-		
+
 		$query     = 'SELECT element.id, element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin,
                  groupe.label AS group_label, INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated,
                  tab.db_table_name AS table_name, tab.label AS table_label
@@ -1066,7 +1070,7 @@ class EmundusModelFiles extends JModelLegacy
 	{
 		$elements_name = array();
 
-		
+
 		$query = 'SELECT element.id, element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin,
                  groupe.label AS group_label, INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated,
                  tab.db_table_name AS table_name, tab.label AS table_label
@@ -1228,7 +1232,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getSchoolyears()
 	{
-		
+
 		$query     = 'SELECT DISTINCT(schoolyear) as schoolyear
         FROM #__emundus_users
         WHERE schoolyear is not null AND schoolyear != ""
@@ -1306,7 +1310,7 @@ class EmundusModelFiles extends JModelLegacy
 
 		if (!empty($groups) && !empty($fnums)) {
 			try {
-				
+
 				$insert = [];
 
 				foreach ($fnums as $fnum) {
@@ -1373,7 +1377,7 @@ class EmundusModelFiles extends JModelLegacy
 
 		if (!empty($users) && !empty($fnums)) {
 			try {
-				
+
 				$insert = [];
 
 				foreach ($fnums as $fnum) {
@@ -2035,7 +2039,7 @@ class EmundusModelFiles extends JModelLegacy
 	public function unlinkEvaluators($fnum, $id, $isGroup)
 	{
 		try {
-			
+
 
 			if ($isGroup) {
 				$query = 'delete from #__emundus_group_assoc where fnum like ' . $this->_db->Quote($fnum) . ' and group_id =' . $id;
@@ -4374,7 +4378,7 @@ class EmundusModelFiles extends JModelLegacy
 	public function programSessions($program)
 	{
 		try {
-			
+
 
 			$query = $this->_db->getQuery(true);
 			$query->select('DISTINCT(t.session_code) AS sc, t.*')
@@ -4426,7 +4430,7 @@ class EmundusModelFiles extends JModelLegacy
 	public function getBirthdate($fnum = null, $format = 'd-m-Y', $age = false)
 	{
 
-		
+
 		$query     = $this->_db->getQuery(true);
 
 		$query->select($this->_db->quoteName('birth_date'))->from($this->_db->quoteName('#__emundus_personal_detail'))->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
@@ -4456,7 +4460,7 @@ class EmundusModelFiles extends JModelLegacy
 
 	public function getDocumentCategory()
 	{
-		
+
 		$query     = $this->_db->getQuery(true);
 		$query->select($this->_db->quoteName('esa.*'))
 			->from($this->_db->quoteName('#__emundus_setup_attachments', 'esa'))
@@ -4469,7 +4473,7 @@ class EmundusModelFiles extends JModelLegacy
 
 	public function getParamsCategory($idCategory)
 	{
-		
+
 		$query     = $this->_db->getQuery(true);
 		$query->select($this->_db->quoteName('fe.params'))
 			->from($this->_db->quoteName('#__fabrik_elements', 'fe'))
@@ -4493,7 +4497,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getAttachmentCategories()
 	{
-		
+
 
 		$query = $this->_db->getQuery(true);
 		$query->select($this->_db->quoteName('fe.params'))
@@ -4518,7 +4522,7 @@ class EmundusModelFiles extends JModelLegacy
 
 	public function selectCity($insee)
 	{
-		
+
 		$query     = $this->_db->getQuery(true);
 
 		$conditions = $this->_db->quoteName('insee_code') . ' LIKE ' . $this->_db->quote($insee);
@@ -4534,7 +4538,7 @@ class EmundusModelFiles extends JModelLegacy
 
 	public function selectNameCity($name)
 	{
-		
+
 		$query     = $this->_db->getQuery(true);
 
 		$conditions = $this->_db->quoteName('name') . ' LIKE ' . $this->_db->quote($name);
@@ -4550,7 +4554,7 @@ class EmundusModelFiles extends JModelLegacy
 
 	public function selectMultiplePayment($fnum)
 	{
-		
+
 		$query     = $this->_db->getQuery(true);
 
 		$conditions = $this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum);
@@ -4711,7 +4715,7 @@ class EmundusModelFiles extends JModelLegacy
 
 	public function getTagsAssocStatus($status)
 	{
-		
+
 		$query     = $this->_db->getQuery(true);
 
 		$conditions = $this->_db->quoteName('ss.step') . ' = ' . $this->_db->quote($status);
@@ -4739,7 +4743,7 @@ class EmundusModelFiles extends JModelLegacy
 		$editing_time = $config->get('alert_editing_time', 2);
 
 		$actions   = array(1, 4, 5, 10, 11, 12, 13, 14);
-		
+
 		$query     = $this->_db->getQuery(true);
 
 		$query->select('DISTINCT ju.id, ju.name')
@@ -4789,7 +4793,7 @@ class EmundusModelFiles extends JModelLegacy
 	{
 		$logs = [];
 
-		
+
 		$query     = $this->_db->getQuery(true);
 		$query->clear()->select('*')->from($this->_db->quoteName('#__emundus_setup_actions', 'jesa'))->order('jesa.id ASC');
 
@@ -4817,7 +4821,7 @@ class EmundusModelFiles extends JModelLegacy
 		$bound_fnums = [false];
 
 		if (!empty($fnums) && !empty($user_to)) {
-			
+
 			$query     = $this->_db->getQuery(true);
 
 			$query->select('id')
@@ -5272,7 +5276,7 @@ class EmundusModelFiles extends JModelLegacy
 		$saved = false;
 
 		if (!empty($user_id) && !empty($name) && !empty($filters)) {
-			
+
 			$query     = $this->_db->getQuery(true);
 			$query->insert($this->_db->quoteName('#__emundus_filters'))
 				->columns(['user', 'name', 'constraints', 'mode', 'item_id'])
@@ -5295,7 +5299,7 @@ class EmundusModelFiles extends JModelLegacy
 		$filters = array();
 
 		if (!empty($user_id)) {
-			
+
 			$query     = $this->_db->getQuery(true);
 			$query->select('id, name, constraints')
 				->from($this->_db->quoteName('#__emundus_filters'))
@@ -5320,7 +5324,7 @@ class EmundusModelFiles extends JModelLegacy
 		$updated = false;
 
 		if (!empty($user_id) && !empty($filter_id) && !empty($filters)) {
-			
+
 			$query     = $this->_db->getQuery(true);
 			$query->update($this->_db->quoteName('#__emundus_filters'))
 				->set('constraints = ' . $this->_db->quote($filters))
@@ -5891,7 +5895,7 @@ class EmundusModelFiles extends JModelLegacy
 					}
 
 					$fnumInfos = $this->getFnumInfos($fnum);
-					
+
 					$query = $this->_db->getQuery(true);
 
 					$query->select('attachment_id')

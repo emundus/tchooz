@@ -577,7 +577,7 @@ class EmundusHelperUpdate
 		$updated = false;
 
 		$initialOptions = (new Registry(new \JConfig()))->toArray();
-		
+
 		// Sanitize options
 		foreach ($options as $key => $value) {
 			// Remove some options
@@ -3512,7 +3512,7 @@ class EmundusHelperUpdate
 		}
 		catch (Exception $e)
 		{
-			$result['message'] = 'ADDING TABLE : Error : ' . $e->getMessage() . $query;
+			$result['message'] = 'ADDING TABLE : Error : ' . $e->getMessage();
 		}
 
 		return $result;

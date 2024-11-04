@@ -502,11 +502,6 @@ div#frame.outline {
   }
 }
 
-.hide-titles {
-  .page-header, .fabrik-group-header {
-    display: none !important;
-  }
-}
 
 /* Branding */
 .g-branding {
@@ -4595,7 +4590,6 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
 
       /* GROUPE */
       .fabrikGroup {
-        background: white;
         font-family: var(--em-profile-font), Inter, sans-serif;
 
         /* LEGEND */
@@ -5441,6 +5435,7 @@ screen and (max-height: 769px) {
   #g-navigation #header-c,
   #g-header #header-c {
     max-height: 100%;
+    position: absolute;
   }
 
   .view-users #g-container-main .g-container {
@@ -5861,7 +5856,6 @@ screen and (max-height: 769px) {
   #g-navigation .g-container #header-c,
   #g-header .g-container #header-c {
     justify-content: center;
-    position: absolute;
     top: 5px;
     right: 16px;
     width: fit-content;
@@ -7758,4 +7752,3 @@ form.fabrikForm[name=form_108] .fabrikGroup .plg-dropdown .fabrikElement {
     }
   }
 }
-

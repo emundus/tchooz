@@ -4456,6 +4456,27 @@ class EmundusModelEvaluation extends JModelList
 		return ['url' => $url, 'message' => $message];
 	}
 
+	public function getRowByFnum($fnum, $table_name)
+	{
+		$query = $this->db->getQuery(true);
+
+		try
+		{
+			$query->select('id')
+				->from($this->db->quoteName($table_name))
+				->where($this->db->quoteName('fnum') . ' LIKE ' . $this->db->quote($fnum));
+			$this->db->setQuery($query);
+
+			return $this->db->loadResult();
+		}
+		catch (Exception $e)
+		{
+			Log::add('Problem to get row by fnum ' . $fnum . ' in table ' . $table_name . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+
+			return 0;
+		}
+	}
+
 	public function getEvaluationReasons($eid)
 	{
 		$query = $this->db->getQuery(true);

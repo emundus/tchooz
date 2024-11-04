@@ -51,7 +51,16 @@
                             <option value="1">PLG_AUTHENTICATION_EMUNDUS_OAUTH2_DISPLAY_ON_LOGIN_CLIENT_LOGIN</option>
                             <option value="2">PLG_AUTHENTICATION_EMUNDUS_OAUTH2_DISPLAY_ON_LOGIN_ADMIN_LOGIN</option>
                             <option value="3">PLG_AUTHENTICATION_EMUNDUS_OAUTH2_DISPLAY_ON_LOGIN_BOTH</option>
+                            <option value="4">PLG_AUTHENTICATION_EMUNDUS_OAUTH2_DISPLAY_ON_LOGIN_SPECIFIC</option>
                         </field>
+                        <field showon="display_on_login:4"
+                                type="sql"
+                               name="specific_link"
+                               query="SELECT id, title FROM jos_menu WHERE published = 1 AND menutype = 'mainmenu' ORDER BY title"
+                               key_field="id"
+                               value_field="title"
+                               label="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_SPECIFIC_LINK"
+                        />
                         <field name="button_label" type="text" label="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_BUTTON_LABEL"/>
                         <field name="button_type" type="list" label="PLG_AUTHENTICATION_EMUNDUS_OAUTH2_BUTTON_TYPE"
                                default="custom">

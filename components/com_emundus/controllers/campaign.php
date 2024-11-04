@@ -1317,6 +1317,23 @@ class EmundusControllerCampaign extends BaseController
 		echo json_encode((object) $response);
 		exit;
 	}
+
+	public function getmediasize()
+	{
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'size' => 10];
+
+		if(!$this->_user->guest)
+		{
+			$mediaConfig      = ComponentHelper::getParams('com_media');
+
+			$response['status'] = true;
+			$response['msg']    = Text::_('SUCCESS');
+			$response['size'] = $mediaConfig->get('upload_maxsize', ini_get("upload_max_filesize"));
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
 }
 
 ?>

@@ -1559,6 +1559,14 @@ input:focus + .em-slider {
   }
 }
 
+.disabled-focus {
+  cursor: initial;
+  &:focus {
+    outline-width: 0;
+    cursor: initial;
+  }
+}
+
 /**
   Focus for lables
 */

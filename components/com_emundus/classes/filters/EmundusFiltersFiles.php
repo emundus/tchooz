@@ -156,14 +156,14 @@ class EmundusFiltersFiles extends EmundusFilters
 			->andWhere('acl.r = 1');
 
 		$db->setQuery($query);
-		$this->user_groups = $db->loadColumn();
+		$user_groups = $db->loadColumn();
 
-		if (!empty($this->user_groups)) {
+		if (!empty($user_groups)) {
 			$query->clear()
 				->select('DISTINCT ecc.campaign_id')
 				->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
 				->leftJoin($db->quoteName('#__emundus_group_assoc', 'ega') . ' ON ' . $db->quoteName('ega.fnum') . ' = ' . $db->quoteName('ecc.fnum') . ' AND action_id = 1 AND r = 1')
-				->where('ega.group_id IN (' . implode(',', $db->quote($this->user_groups)) . ')');
+				->where('ega.group_id IN (' . implode(',', $db->quote($user_groups)) . ')');
 
 			$db->setQuery($query);
 			$campaigns = $db->loadColumn();
@@ -312,6 +312,13 @@ class EmundusFiltersFiles extends EmundusFilters
 
 		return $elements;
 	}
+
+    private function getElementsFromFabrikForms($form_ids)
+    {
+	    require_once(JPATH_ROOT . '/components/com_emundus/helpers/fabrik.php');
+	    $h_fabrik = new EmundusHelperFabrik();
+	    return $h_fabrik->getElementsFromFabrikForms($form_ids, ['panel', 'display']);
+    }
 
     private function getElementsFromFabrikForms($form_ids)
     {

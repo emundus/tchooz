@@ -570,7 +570,7 @@ class EmundusModelSync extends JModelList
 		return $api;
 	}
 
-	public function callApi($api, $route, $method, $data)
+	public function callApi($api, $route, $method, $data, $parse_data = true)
 	{
 		$result = null;
 
@@ -616,15 +616,23 @@ class EmundusModelSync extends JModelList
 							if (!empty($config['authentication']['method']) && $config['authentication']['method'] == 'post')
 							{
 								$body = [];
-								if (!empty($config['authentication']['login']))
+								if(!empty($config['authentication']['key']))
 								{
-									$body['login'] = $config['authentication']['login'];
+									$body['key'] = $config['authentication']['key'];
 								}
-								if (!empty($config['authentication']['password']))
+								else
 								{
-									$body['password'] = $config['authentication']['password'];
+									if (!empty($config['authentication']['login']))
+									{
+										$body['login'] = $config['authentication']['login'];
+									}
+									if (!empty($config['authentication']['password']))
+									{
+										$body['password'] = $config['authentication']['password'];
+									}
+
+									$body = json_encode($body);
 								}
-								$body = json_encode($body);
 
 								$response = $api_class->post($api_url . '/' . $config['authentication']['route'], $body);
 							}
@@ -677,6 +685,10 @@ class EmundusModelSync extends JModelList
 								}
 							}
 						}
+
+						if($config['authentication']['type'] == 'bearer' && !empty($token)) {
+							$api_class->addHeader('Authorization', 'Bearer ' . $token);
+						}
 					}
 
 					if($config['authentication']['headers']) {
@@ -700,7 +712,10 @@ class EmundusModelSync extends JModelList
 						}
 					}
 
-					$data = json_encode($data);
+					if($parse_data)
+					{
+						$data = json_encode($data);
+					}
 				}
 
 				$result = $api_class->$method($api_url . '/' . $route, $data);

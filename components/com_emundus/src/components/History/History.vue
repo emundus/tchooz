@@ -3,6 +3,7 @@
     <h2 v-if="displayTitle" class="tw-mb-6">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY') }}</h2>
 
     <Pagination
+        v-if="history.length > 0"
         :dataLength="historyLength" :sticky="true" v-model:page="page" v-model:limit="limit"
     />
 

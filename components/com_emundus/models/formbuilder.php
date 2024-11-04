@@ -744,7 +744,6 @@ class EmundusModelFormbuilder extends JModelList
 		}
 		catch (Exception $e) {
 			$query_str = is_string($query) ? $query : $query->__toString();
-			var_dump($query_str);exit;
 			Log::add('component/com_emundus/models/formbuilder | Error when create a list ' . $prid . ' : ' . preg_replace("/[\r\n]/", " ", $query_str . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 		}
 

@@ -109,7 +109,7 @@ if ($allowed_attachments !== true) {
     #cc-box-label, #bcc-box-label, #replyto-box-label {
         border-radius: var(--em-coordinator-br);
         width: fit-content;
-        padding: var(--p-4) var(--p-4) var(--p-4) var(--p-8);
+        padding: var(--p-4) var(--p-4) var(--p-4) 0;
         margin-left: 0;
     }
 
@@ -210,7 +210,7 @@ if ($allowed_attachments !== true) {
 
         <!-- FROM -->
         <div class="form-inline row">
-            <div class="form-group em-form-sender em-mt-12 col-md-6 col-sm-6">
+            <div class="form-group em-form-sender tw-mt-3 col-md-6 col-sm-6">
                 <div class="tw-flex tw-items-center">
                     <label class='em-mr-8' for="mail_from"><?= Text::_('FROM'); ?> :</label>
                     <div id="mail_from_block" class="em-border-radius-8 em-mb-4 email-input-block">
@@ -226,7 +226,7 @@ if ($allowed_attachments !== true) {
 
             </div>
 
-            <div class="form-group em-form-recipients em-mt-12 col-md-6 col-sm-6" style="position:static;">
+            <div class="form-group em-form-recipients tw-mt-4 col-md-6 col-sm-6" style="position:static;">
 
                 <div class="email-list-modal hidden" id="email-list-modal">
                     <div class="tw-flex tw-justify-between mb-3">

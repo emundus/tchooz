@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="defaultLang">
     <h2 class="tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_GLOBAL') }}</h2>
     <div class="tw-mb-6 tw-flex tw-items-center tw-justify-between">
       <div>
@@ -94,6 +94,9 @@ export default {
 
   methods: {
     async getAllLanguages() {
+      this.otherLanguages = [];
+      this.secondaryLanguages = [];
+
       try {
         const response = await client().get('index.php?option=com_emundus&controller=translations&task=getlanguages');
 
@@ -103,15 +106,17 @@ export default {
             if (lang.published == 1) {
               this.secondaryLanguages.push(lang);
             }
+
             this.otherLanguages.push(lang);
           }
-        })
+        });
+
         this.secondaryLanguages.forEach((sec_lang) => {
           translationsService.getOrphelins(this.defaultLang.lang_code, sec_lang.lang_code).then((orphelins) => {
             this.orphelins_count = orphelins.data.length;
             this.$emit('updateOrphelinsCount', this.orphelins_count);
           })
-        })
+        });
       } catch (e) {
         return false;
       }
@@ -124,10 +129,6 @@ export default {
     },
     updateDefaultLanguage(option) {
       translationsService.updateLanguage(option.lang_code, 1, 1).then(() => {
-        let valuesToRemove = this.secondaryLanguages.findIndex(lang => lang.lang_code == option.lang_code);
-        if (valuesToRemove !== -1) {
-          this.secondaryLanguages.splice(valuesToRemove, 1);
-        }
         this.getAllLanguages();
       })
     },

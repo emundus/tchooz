@@ -1,5 +1,5 @@
 <template>
-  <div class="tw-w-full tw-rounded-coordinator tw-p-6 tw-bg-white tw-mt-6 tw-shadow tw-relative">
+  <div class="tw-w-full tw-rounded-coordinator tw-p-6 tw-bg-white tw-border tw-border-neutral-300 tw-relative">
     <Tabs :tabs="tabs"></Tabs>
 
     <template v-if="!loading && tabs[0].active">
@@ -168,12 +168,14 @@ export default {
           name: 'COM_EMUNDUS_GLOBAL_EMAIL',
           icon: 'email',
           active: true,
+          displayed: true
         },
         {
           id: 2,
           name: 'COM_EMUNDUS_GLOBAL_HISTORY',
           icon: 'history',
           active: false,
+          displayed: true
         },
       ],
 

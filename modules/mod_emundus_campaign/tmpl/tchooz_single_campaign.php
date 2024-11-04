@@ -211,9 +211,11 @@ if(!empty($mod_em_campaign_go_back_campaigns_link)) {
             <a class="em-applicant-text-color current-tab em-mr-24" onclick="displayTab('campaign')" id="campaign_tab">
                 <span><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS') ?></span>
             </a>
+	        <?php if ($mod_em_campaign_show_faq == 1 && !empty($faq_articles)) : ?>
             <a class="em-applicant-text-color" onclick="displayTab('faq')" id="faq_tab">
                 <span><?php echo JText::_('MOD_EM_CAMPAIGN_FAQ') ?></span>
             </a>
+	        <?php endif; ?>
         </div>
 		<?php endif; ?>
 

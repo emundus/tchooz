@@ -29,7 +29,7 @@ $redirect = base64_decode($jinput->get->getBase64('redirect'));
 $eMConfig = ComponentHelper::getParams('com_emundus');
 
 if (!empty($cookieLogin) || $this->user->get('guest')) {
-	
+
 	$this->campaign            = $jinput->get('cid');
 	$this->course              = $jinput->get('course');
 	$this->displayRegistration = $eMConfig->get('display_registration_link', 1);
@@ -75,6 +75,15 @@ if (!empty($cookieLogin) || $this->user->get('guest')) {
 			foreach ($oauth2Config->configurations as $config) {
 				if(in_array($config->display_on_login,[1,3])) {
 					$this->oauth2Directories[] = $config;
+				}
+				elseif ($config->display_on_login == 4 && !empty($config->specific_link)) {
+					$menu = Factory::getApplication()->getMenu();
+					$active = $menu->getActive();
+					$menuItemId = $active->id;
+
+					if(!empty($menuItemId) && $menuItemId == $config->specific_link) {
+						$this->oauth2Directories[] = $config;
+					}
 				}
 			}
 		}

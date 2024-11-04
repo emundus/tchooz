@@ -8,7 +8,7 @@
           <span class="tw-ml-2 tw-text-neutral-900">{{ translate('BACK') }}</span>
         </div>
         <div class="tw-flex tw-items-center tw-mt-4">
-          <h1>{{ translate(selectedMenuItem.label) }}</h1>
+          <h1>{{ translate(selectedMenuItem.name) }}</h1>
         </div>
         <p v-html="translate(selectedMenuItem.description)"></p>
         <hr>
@@ -23,56 +23,53 @@
           </p>
         </div>
 
-        <ul v-show="profileId" class="tw-flex tw-items-center tw-gap-2 tw-list-none tw-mb-4 tw-pl-0 tw-border-b tw-border-neutral-400">
-          <li v-for="menu in displayedMenus" :key="menu.component" @click="selectMenu(menu)" class="tw-border tw-border-transparent tw-flex tw-flex-col tw-rounded-t-lg hover:tw-border-neutral-300" :class="{'tw-border tw-border-neutral-300 tw-bg-neutral-300': selectedMenu === menu.component}">
-            <span :id="menu.component" class="tw-cursor-pointer tw-p-2 tw-text-neutral-700">{{ translate(menu.label) }}</span>
-          </li>
-        </ul>
+        <Tabs v-show="profileId" :tabs="tabs" :classes="'tw-flex tw-items-center tw-gap-2 tw-ml-7'"></Tabs>
 
-        <br>
-        <div v-if="selectedMenu === 'addEmail'" class="warning-message-program mb-1">
-          <p class="tw-text-red-600 flex flex-row"><span class="material-symbols-outlined tw-mr-2 tw-text-red-600">warning_amber</span>{{ translate('COM_EMUNDUS_ONBOARD_PROGRAM_WARNING') }}
-          </p>
-          <ul v-if="campaignsByProgram.length > 0" class="tw-mt-2 tw-mb-8 em-pl-16">
-            <li v-for="campaign in campaignsByProgram" :key="'camp_progs_' + campaign.id">{{ campaign.label }}</li>
-          </ul>
-        </div>
-        <transition name="fade">
-          <add-campaign
-              v-if="selectedMenu === 'addCampaign' && campaignId !== ''"
-              :campaign="campaignId"
-              :coordinatorAccess="true"
-              :actualLanguage="actualLanguage"
-              :manyLanguages="manyLanguages"
-              @nextSection="next"
-              @getInformations="initInformations"
-              @updateHeader="updateHeader"
-          ></add-campaign>
-          <campaign-more
-              v-else-if="selectedMenu === 'campaignMore' && campaignId !== ''"
-              :campaignId="campaignId"
-              :defaultFormUrl="campaignMoreFormUrl"
-          >
-          </campaign-more>
-          <campaign-steps
-              v-else-if="selectedMenu === 'campaignSteps' && campaignId !== ''"
-              :campaignId="campaignId"
-              @nextSection="next"
-          >
-          </campaign-steps>
-          <add-documents-dropfiles
-              v-else-if="selectedMenu === 'addDocumentsDropfiles'"
-              :funnelCategorie="selectedMenuItem.label"
-              :profileId="getProfileId"
-              :campaignId="campaignId"
-              :langue="actualLanguage"
-              :manyLanguages="manyLanguages"
-          />
 
-          <add-email
-              v-else-if="selectedMenu === 'addEmail' && program.id != 0"
-              :prog="Number(program.id)"
-          ></add-email>
+        <div class="tw-w-full tw-rounded-coordinator tw-p-6 tw-bg-white tw-border tw-border-neutral-300 tw-relative">
+          <div v-if="selectedMenuItem.id === 5" class="warning-message-program mb-1">
+            <p class="tw-text-red-600 flex flex-row"><span class="material-symbols-outlined tw-mr-2 tw-text-red-600">warning_amber</span>{{ translate('COM_EMUNDUS_ONBOARD_PROGRAM_WARNING') }}
+            </p>
+            <ul v-if="campaignsByProgram.length > 0" class="tw-mt-2 tw-mb-8 em-pl-16">
+              <li v-for="campaign in campaignsByProgram" :key="'camp_progs_' + campaign.id">{{ campaign.label }}</li>
+            </ul>
+          </div>
+
+          <transition name="fade">
+            <add-campaign
+                v-if="selectedMenuItem.id === 1 && campaignId !== ''"
+                :campaign="campaignId"
+                :coordinatorAccess="true"
+                :actualLanguage="actualLanguage"
+                :manyLanguages="manyLanguages"
+                @nextSection="next"
+                @getInformations="initInformations"
+                @updateHeader="updateHeader"
+            ></add-campaign>
+            <campaign-more
+                v-else-if="selectedMenuItem.id === 2 && campaignId !== ''"
+                :campaignId="campaignId"
+                :defaultFormUrl="campaignMoreFormUrl"
+            >
+            </campaign-more>
+            <campaign-steps
+                v-else-if="selectedMenuItem.name === 'COM_EMUNDUS_CAMPAIGN_STEPS' && campaignId !== ''"
+                :campaignId="campaignId"
+                @nextSection="next"
+            >
+            </campaign-steps>
+            <add-documents-dropfiles
+                v-else-if="selectedMenuItem.id === 3"
+                :funnelCategorie="selectedMenuItem.label"
+                :profileId="getProfileId"
+                :campaignId="campaignId"
+                :langue="actualLanguage"
+                :manyLanguages="manyLanguages"
+            />
+            <add-email
+                v-else-if="selectedMenuItem.id === 5 && program.id != 0"
+                :prog="Number(program.id)"
+            ></add-email>
 
           <History v-else-if="selectedMenu === 'History'" extension="com_emundus.campaign" />
         </transition>
@@ -105,12 +102,14 @@ import campaignSteps from "@/components/FunnelFormulaire/CampaignSteps.vue";
 
 import { useGlobalStore } from '@/stores/global.js';
 import History from "@/components/History/History.vue";
+import Tabs from "@/components/Utils/Tabs.vue";
 
 
 export default {
   name: 'CampaignEdition',
 
   components: {
+    Tabs,
     History,
     AddDocumentsDropfiles,
     addCampaign,
@@ -129,50 +128,65 @@ export default {
     actualLanguage: '',
     manyLanguages: 0,
     prid: '',
-    menus: [
+    tabs: [
       {
-        label: "COM_EMUNDUS_GLOBAL_INFORMATIONS",
+        id: 1,
+        name: 'COM_EMUNDUS_GLOBAL_INFORMATIONS',
         description: "COM_EMUNDUS_GLOBAL_INFORMATIONS_DESC",
-        icon: "info",
-        component: "addCampaign",
+        icon: 'info',
+        active: true,
         displayed: true
       },
       {
-        label: "COM_EMUNDUS_CAMPAIGN_MORE",
+        id: 2,
+        name: 'COM_EMUNDUS_CAMPAIGN_MORE',
         description: "COM_EMUNDUS_CAMPAIGN_MORE_DESC",
-        icon: "description",
-        component: "campaignMore",
+        icon: 'note_stack',
+        active: false,
         displayed: false
       },
       {
-        label: "COM_EMUNDUS_CAMPAIGN_STEPS",
-        description: "COM_EMUNDUS_CAMPAIGN_STEPS_DESC",
-        icon: "description",
-        component: "campaignSteps",
+        id: 7,
+        name: 'COM_EMUNDUS_CAMPAIGN_STEPS',
+        description: '',
+        icon: 'description',
+        active: false,
         displayed: true
       },
       {
-        label: "COM_EMUNDUS_DOCUMENTS_CAMPAIGNS",
+        id: 3,
+        name: 'COM_EMUNDUS_DOCUMENTS_CAMPAIGNS',
         description: "COM_EMUNDUS_DOCUMENTS_CAMPAIGNS_DESC",
-        icon: "description",
-        component: "addDocumentsDropfiles",
+        icon: 'description',
+        active: false,
         displayed: true
       },
       {
-        label: "COM_EMUNDUS_EMAILS",
+        id: 4,
+        name: 'COM_EMUNDUS_FORM_CAMPAIGN',
+        description: "COM_EMUNDUS_FORM_CAMPAIGN_DESC",
+        icon: 'format_list_bulleted',
+        active: false,
+        displayed: true
+      },
+      {
+        id: 5,
+        name: 'COM_EMUNDUS_EMAILS',
         description: "COM_EMUNDUS_EMAILS_DESC",
-        icon: "description",
-        component: "addEmail",
+        icon: 'mail',
+        active: false,
         displayed: true
       },
       {
-        label: "COM_EMUNDUS_GLOBAL_HISTORY",
-        description: "",
-        icon: "history",
-        component: "History",
+        id: 6,
+        name: 'COM_EMUNDUS_GLOBAL_HISTORY',
+        description: '',
+        icon: 'history',
+        active: false,
         displayed: true
-      }
+      },
     ],
+
     selectedMenu: 'addCampaign',
     formReload: 0,
     prog: 0,
@@ -214,14 +228,15 @@ export default {
       this.langue = 1;
     }
   },
+
   methods: {
     getCampaignMoreForm() {
       campaignService.getCampaignMoreFormUrl(this.campaignId)
         .then(response => {
           if (response.status && response.data.length > 0) {
-            this.menus.forEach(menu => {
-              if (menu.component === 'campaignMore') {
-                menu.displayed = true;
+            this.tabs.forEach(tab => {
+              if (tab.name === 'COM_EMUNDUS_CAMPAIGN_MORE') {
+                tab.displayed = true;
               }
             });
             this.campaignMoreFormUrl = response.data;
@@ -298,24 +313,20 @@ export default {
         console.error(e);
       });
     },
-    selectMenu(menu) {
-      this.selectedMenu = menu.component;
-    },
 
     setProfileId(prid) {
       this.profileId = prid;
     },
     next() {
-      let index = this.displayedMenus.findIndex(menu => menu.component === this.selectedMenu);
-      if (index < this.displayedMenus.length - 1) {
-        this.selectedMenu = this.displayedMenus[index + 1].component;
-      }
-    },
+      let index = this.tabs.findIndex(tab => tab.active);
+      if (index < this.tabs.length - 1) {
+        this.tabs[index].active = false;
 
-    previous() {
-      let index = this.displayedMenus.findIndex(menu => menu.component === this.selectedMenu);
-      if (index > 0) {
-        this.selectedMenu = this.displayedMenus[index - 1].component;
+        if(this.tabs[index+1].displayed) {
+          this.tabs[index + 1].active = true;
+        } else {
+          this.tabs[index + 2].active = true;
+        }
       }
     },
 
@@ -344,10 +355,7 @@ export default {
       return Number(this.profileId);
     },
     selectedMenuItem() {
-      return this.menus.find(menu => menu.component === this.selectedMenu);
-    },
-    displayedMenus() {
-      return this.menus.filter(menu => menu.displayed);
+      return this.tabs.find(tab => tab.active);
     },
   },
 };

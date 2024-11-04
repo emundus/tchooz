@@ -56,7 +56,7 @@ foreach ($this->headings as $heading => $label) {
 <div class="hover-and-tile-container">
 	<?php if (!$this->showFilters) : ?><div id="tile-hover-offset-procedure"></div><?php endif; ?>
     <div id="<?php echo $this->_row->id; ?>"
-         class="mod_emundus_campaign__list_content em-border-neutral-300 em-pointer em-flex-space-between" onclick="window.location.href='<?= $this->_row->data->fabrik_view_url; ?>'">
+         class="mod_emundus_campaign__list_content em-border-neutral-300 em-flex-space-between">
         <div id="background-shapes" alt="Fond formes"
              style="mask-image: url('/modules/mod_emundus_campaign/assets/fond-clair.svg');"></div>
         <div class="mod_emundus_campaign__list_content_container em-w-100">
@@ -123,14 +123,14 @@ foreach ($this->headings as $heading => $label) {
 		    ?>
 
             <?php if (!empty($this->_row->data->fabrik_view_url && !empty($detail_url))) : ?>
-                <button type="button" class="btn btn-primary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
+                <a class="tw-btn tw-btn-tertiary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
                    href="<?php echo $this->_row->data->fabrik_view_url ?>">
                     <span class="em-mb-8"><?php echo $detail_label; ?></span>
-                </button>
+                </a>
             <?php endif; ?>
 
             <?php if(!$this->showFilters) : if (!empty($this->_row->data->fabrik_edit_url && !empty($edit_url))) : ?>
-                <a class="btn btn-primary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
+                <a class="tw-btn tw-btn-primary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
                    href="<?php echo $this->_row->data->fabrik_edit_url ?>">
                     <span class="em-mb-8"><?php echo $edit_label; ?></span>
                 </a>

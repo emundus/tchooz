@@ -65,6 +65,7 @@ import Info from "@/components/Utils/Info.vue";
 import SubSection from "@/components/Settings/SubSection.vue";
 import Tile from "@/components/Settings/Tile.vue";
 import Swal from "sweetalert2";
+import Tile from "@/components/Settings/Tile.vue";
 import settingsService from '@/services/settings.js';
 
 const assetsPath = '/components/com_emundus/src/assets/data/';

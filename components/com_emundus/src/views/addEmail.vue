@@ -308,9 +308,11 @@ export default {
     errors: {
       subject: false,
       message: false,
+      button: false
     },
     submitted: false,
     loading: false,
+    displayButtonField: false,
 
     selectedReceiversCC: [],
     selectedReceiversBCC: [],
@@ -404,6 +406,10 @@ export default {
                         resp.data.receivers !== ''
           ) {
             this.setEmailReceivers(resp.data.receivers)
+          }
+
+          if(this.form.button !== '' && this.form.button !== null && this.form.button !== undefined) {
+            this.displayButtonField = true
           }
           this.loading = false
         })

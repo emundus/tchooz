@@ -126,6 +126,8 @@ class EmundusControllerUsers extends BaseController
 		$campaigns = $this->input->getString('campaigns');
 		$news      = $this->input->getInt('newsletter', 0);
 		$ldap      = $this->input->getInt('ldap', 0);
+		$auth_provider      = $this->input->getInt('auth_provider', 0);
+		$testing_account      = $this->input->getInt('testing_account', 0);
 
 		$user = clone(Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(0));
 
@@ -161,6 +163,7 @@ class EmundusControllerUsers extends BaseController
 		$user->lastvisitDate = null;
 		$user->groups        = array($jgr);
 		$user->block         = 0;
+		$user->authProvider = $auth_provider == 1 ? 'sso' : '';
 
 		$other_param['firstname']    = $firstname;
 		$other_param['lastname']     = $lastname;
@@ -178,7 +181,7 @@ class EmundusControllerUsers extends BaseController
 		$usertype       = $m_users->found_usertype($acl_aro_groups[0]);
 		$user->usertype = $usertype;
 
-		$uid = $m_users->adduser($user, $other_param);
+		$uid = $m_users->adduser($user, $other_param, $testing_account);
 
 		if (is_array($uid))
 		{
@@ -196,7 +199,11 @@ class EmundusControllerUsers extends BaseController
 
 		$data          = array();
 		$data['email'] = $user->email;
-		$m_users->passwordReset($data, 'COM_USERS_EMAIL_CREATE_ACCOUNT_SUBJECT', 'COM_USERS_EMAIL_CREATE_ACCOUNT_BODY', true);
+		$email_tmpl = 'new_account';
+		if($auth_provider == 1) {
+			$email_tmpl = 'new_account_sso';
+		}
+		$m_users->passwordReset($data, '', '', true, $email_tmpl);
 
 		// If index.html does not exist, create the file otherwise the process will stop with the next step
 		if (!file_exists(EMUNDUS_PATH_ABS . 'index.html'))
@@ -735,6 +742,7 @@ class EmundusControllerUsers extends BaseController
 		$newuser['email']            = $this->input->getString('email');
 		$newuser['same_login_email'] = $this->input->getInt('sameLoginEmail', 1);
 		$newuser['testing_account']  = $this->input->getInt('testingAccount', 0);
+		$newuser['authProvider']  = $this->input->getInt('authProvider', 0);
 		$newuser['profile']          = $this->input->getInt('profile', 0);
 		$newuser['em_oprofiles']     = $this->input->getString('oprofiles');
 		$newuser['groups']           = array($this->input->get('jgr'));

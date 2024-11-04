@@ -126,9 +126,6 @@ export default {
 
     if (this.data.tabs) {
       this.data.tabs = JSON.parse(atob(this.data.tabs));
-
-      console.log(this.data.tabs);
-
     }
 
 

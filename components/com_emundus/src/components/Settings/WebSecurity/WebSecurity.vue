@@ -1,5 +1,5 @@
 <template>
-  <div class="tw-rounded-coordinator tw-p-6 tw-bg-white tw-mt-6 tw-shadow tw-relative">
+  <div class="tw-w-full tw-rounded-coordinator tw-p-6 tw-bg-white tw-border tw-border-neutral-300 tw-relative">
     <Tabs :tabs="tabs"></Tabs>
 
     <template v-if="!loading && tabs[0].active">
@@ -121,6 +121,7 @@ export default {
         {
           param: 'technical_contacts',
           type: 'multiselect',
+          optional: 0,
           multiselectOptions: {
             noOptions: true,
             multiple: true,
@@ -139,7 +140,7 @@ export default {
           value: [],
           label: 'COM_EMUNDUS_GLOBAL_WEB_SECURITY_TECHNICAL_CONTACTS',
           helptext: 'COM_EMUNDUS_GLOBAL_WEB_SECURITY_TECHNICAL_CONTACTS_HELPTEXT',
-          placeholder: 'user1@emundus.fr, user2@emundus.fr',
+          placeholder: 'user1@example.fr, user2@example.fr',
           displayed: true,
         },
       ],
@@ -150,12 +151,14 @@ export default {
           name: 'COM_EMUNDUS_GLOBAL_WEB_SECURITY_REQUEST',
           icon: 'send',
           active: true,
+          displayed: true,
         },
         {
           id: 2,
           name: 'COM_EMUNDUS_GLOBAL_HISTORY',
           icon: 'history',
           active: false,
+          displayed: true
         },
       ]
     }
@@ -288,18 +291,25 @@ export default {
       let update_web_address = this.parameters.find((param) => param.param === 'update_web_address');
       let new_address = this.parameters.find((param) => param.param === 'new_address');
       let use_own_ssl_certificate = this.parameters.find((param) => param.param === 'use_own_ssl_certificate');
+      let technical_contacts = this.parameters.find((param) => param.param === 'technical_contacts');
 
       if (update_web_address.value == 1) {
         if (new_address.value !== '') {
           disabled = false;
         } else {
-          disabled = true;
+          return true;
         }
       } else if (use_own_ssl_certificate.value == 1) {
         disabled = false;
+      } else {
+        return true;
       }
 
-      console.log(disabled)
+      if(technical_contacts.value.length > 0) {
+        disabled = false;
+      } else {
+        return true;
+      }
 
       return disabled;
     }
