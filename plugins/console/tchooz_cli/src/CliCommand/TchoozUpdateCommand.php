@@ -170,6 +170,9 @@ class TchoozUpdateCommand extends AbstractCommand
 			if ($manifest_cache['filename']) {
 				$xml_file = $manifest_cache['filename'] . '.xml';
 			}
+			elseif ($elementArr["element"] == 'com_dropfiles') {
+				$xml_file = 'com_dropfiles.xml';
+			}
 			else {
 				$xml_file = preg_split("/[_]+/", $elementArr["element"], 2)[1] . '.xml';
 			}
