@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -732,12 +732,12 @@ class hikashopCategoryClass extends hikashopClass {
 		return $data[$key];
 	}
 
-	function getParents($element, $exclude = 0) {
+	function getParents($element, $exclude = 0, $columns = null) {
 		if(empty($element))
 			return array();
 
 		static $results = array();
-		$key = sha1(serialize($element).'_'.$exclude);
+		$key = sha1(serialize($element).'_'.$exclude.'_'.serialize($columns));
 		if(isset($results[$key]))
 			return $results[$key];
 
@@ -758,20 +758,39 @@ class hikashopCategoryClass extends hikashopClass {
 				else
 					$cats[(int)$cat] = (int)$cat;
 			}
-			$where = ' hk_cat.category_id IN (' . implode(',', $cats) . ') ';
+			$where = ' hk_parent.category_id IN (' . implode(',', $cats) . ') ';
 			unset($cats);
 		} else {
-			$where = ' hk_cat.category_id = '.(int)$element;
+			$where = ' hk_parent.category_id = '.(int)$element;
 		}
 
-		$query = 'SELECT hk_parent.* FROM '.hikashop_table(end($this->tables)).' AS hk_cat ' .
-			' LEFT JOIN '.hikashop_table(end($this->tables)).' AS hk_parent ON (hk_parent.category_left <= hk_cat.category_left AND hk_parent.category_right >= hk_cat.category_right) ' .
-			' WHERE ' . $where . $and .
-			' GROUP BY hk_parent.category_id '.
-			' ORDER BY hk_parent.category_left';
+		if(empty($columns)) {
+			$columns = array('*');
+		}
+		$columns[] = 'category_parent_id';
+		$select = array();
+		foreach($columns as $col) {
+			$select[] = 'hk_parent.'.$col;
+		}
 
+		$query = 'SELECT '.implode(', ', $select).' FROM #__hikashop_category AS hk_parent WHERE ' .
+			$where. $and.
+			' ORDER BY hk_parent.category_left';
 		$this->database->setQuery($query);
-		$results[$key] = $this->database->loadObjectList();
+		$results[$key] = $this->database->loadObjectList('category_id');
+		if(empty($results[$key])) {
+			return $results[$key];
+		}
+		$parentIds = array();
+		foreach($results[$key] as $category) {
+			if(!empty($category->category_parent_id) && !isset($results[$key][$category->category_parent_id]))
+				$parentIds[$category->category_parent_id] = $category->category_parent_id;
+		}
+
+		if(count($parentIds)) {
+			$parents = $this->getParents($parentIds, $exclude, $columns);
+			$results[$key] = array_merge($results[$key], $parents);
+		}
 
 		return $results[$key];
 	}

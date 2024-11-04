@@ -1,74 +1,68 @@
 <?php
-/**
- * @package	HikaShop for Joomla!
- * @version	5.1.0
- * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
- * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
-defined('_JEXEC') or die('Restricted access');
-?><?php
+
 namespace GuzzleHttp;
 
 final class RequestOptions
 {
-    const ALLOW_REDIRECTS = 'allow_redirects';
+    public const ALLOW_REDIRECTS = 'allow_redirects';
 
-    const AUTH = 'auth';
+    public const AUTH = 'auth';
 
-    const BODY = 'body';
+    public const BODY = 'body';
 
-    const CERT = 'cert';
+    public const CERT = 'cert';
 
-    const COOKIES = 'cookies';
+    public const COOKIES = 'cookies';
 
-    const CONNECT_TIMEOUT = 'connect_timeout';
+    public const CONNECT_TIMEOUT = 'connect_timeout';
 
-    const DEBUG = 'debug';
+    public const CRYPTO_METHOD = 'crypto_method';
 
-    const DECODE_CONTENT = 'decode_content';
+    public const DEBUG = 'debug';
 
-    const DELAY = 'delay';
+    public const DECODE_CONTENT = 'decode_content';
 
-    const EXPECT = 'expect';
+    public const DELAY = 'delay';
 
-    const FORM_PARAMS = 'form_params';
+    public const EXPECT = 'expect';
 
-    const HEADERS = 'headers';
+    public const FORM_PARAMS = 'form_params';
 
-    const HTTP_ERRORS = 'http_errors';
+    public const HEADERS = 'headers';
 
-    const IDN_CONVERSION = 'idn_conversion';
+    public const HTTP_ERRORS = 'http_errors';
 
-    const JSON = 'json';
+    public const IDN_CONVERSION = 'idn_conversion';
 
-    const MULTIPART = 'multipart';
+    public const JSON = 'json';
 
-    const ON_HEADERS = 'on_headers';
+    public const MULTIPART = 'multipart';
 
-    const ON_STATS = 'on_stats';
+    public const ON_HEADERS = 'on_headers';
 
-    const PROGRESS = 'progress';
+    public const ON_STATS = 'on_stats';
 
-    const PROXY = 'proxy';
+    public const PROGRESS = 'progress';
 
-    const QUERY = 'query';
+    public const PROXY = 'proxy';
 
-    const SINK = 'sink';
+    public const QUERY = 'query';
 
-    const SYNCHRONOUS = 'synchronous';
+    public const SINK = 'sink';
 
-    const SSL_KEY = 'ssl_key';
+    public const SYNCHRONOUS = 'synchronous';
 
-    const STREAM = 'stream';
+    public const SSL_KEY = 'ssl_key';
 
-    const VERIFY = 'verify';
+    public const STREAM = 'stream';
 
-    const TIMEOUT = 'timeout';
+    public const VERIFY = 'verify';
 
-    const READ_TIMEOUT = 'read_timeout';
+    public const TIMEOUT = 'timeout';
 
-    const VERSION = 'version';
+    public const READ_TIMEOUT = 'read_timeout';
 
-    const FORCE_IP_RESOLVE = 'force_ip_resolve';
+    public const VERSION = 'version';
+
+    public const FORCE_IP_RESOLVE = 'force_ip_resolve';
 }

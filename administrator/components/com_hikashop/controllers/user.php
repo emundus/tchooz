@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -126,9 +126,17 @@ class UserController extends hikashopController {
 				$address_id = $addressClass->save($addressData);
 		}
 		if(!$ok || !@$address_id) {
-			$app = JFactory::getApplication();
-			echo '<html><head><script type="text/javascript">javascript: history.go(-1);</script></head><body></body></html>';
-			exit;
+			if(!empty($_REQUEST['data']['address']['address_id'])) {
+				hikaInput::get()->set('address_id', $_REQUEST['data']['address']['address_id']);
+			}
+			if(!empty($_REQUEST['data']['address']['address_user_id'])) {
+				hikaInput::get()->set('user_id', $_REQUEST['data']['address']['address_user_id']);
+			}
+			if(!empty($_REQUEST['data']['address']['address_type'])) {
+				hikaInput::get()->set('type', $_REQUEST['data']['address']['address_type']);
+			}
+			hikaInput::get()->set('error', true);
+			return $this->editaddress();
 		}
 
 		if($new) {

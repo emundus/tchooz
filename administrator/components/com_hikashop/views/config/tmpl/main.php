@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -21,6 +21,10 @@ echo $this->leftmenu(
 		'#main_emails' => JText::_('EMAILS')
 	)
 );
+$custom_select = '';
+if (!HIKASHOP_J40)
+	$custom_select = 'custom-select';
+
 ?>
 <div id="page-main" class="rightconfig-container <?php if(HIKASHOP_BACK_RESPONSIVE) echo 'rightconfig-container-j30';?>">
 <!-- MAIN - GLOBAL -->
@@ -31,7 +35,7 @@ echo $this->leftmenu(
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('version');?>><?php echo JText::_('VERSION');?></td>
 		<td>
-			HikaShop <?php echo $this->config->get('level').' '.$this->config->get('version'); ?> [2407080940]
+			HikaShop <?php echo $this->config->get('level').' '.$this->config->get('version'); ?> [2410311051]
 		</td>
 	</tr>
 	<tr>
@@ -198,6 +202,12 @@ echo $this->leftmenu(
 		<td class="hk_tbl_key"<?php echo $this->docTip('show_out_of_stock');?>><?php echo JText::_('DISPLAY_OUT_OF_STOCK_PRODUCTS');?></td>
 		<td><?php
 			echo JHTML::_('hikaselect.booleanlist', 'config[show_out_of_stock]', '', $this->config->get('show_out_of_stock', 1));
+		?></td>
+	</tr>
+	<tr>
+		<td class="hk_tbl_key"<?php echo $this->docTip('filter_html_in_description');?>><?php echo JText::_('FILTER_HTML_IN_DESCRIPTION'); ?></td>
+		<td><?php
+			echo JHTML::_('hikaselect.booleanlist', 'config[safe_product_description]', '', $this->config->get('safe_product_description', 1));
 		?></td>
 	</tr>
 	<tr>

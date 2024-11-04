@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -662,7 +662,6 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 
 		if(@$this->payment_params->bank == 'sofinco') {
 			$this->url = 'https://'.$srv.'/php/';
-			$this->vars['PBX_BILLING'] = $this->getBillingInformation($order, 'sofinco');
 		}
 
 
@@ -693,7 +692,7 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 		return $this->showPage('end');
 	}
 
-	function getBillingInformation(&$order, $type = 'default') {
+	function getBillingInformation(&$order) {
 		$country = 'FR';
 		$countryName = 'France';
 		$countryCode = '+33';
@@ -725,58 +724,41 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 			$country = $this->country_codes[$country];
 		else
 			$country = '250';
-		if($type=='sofinco') {
-			$title = 'Monsieur';
-			switch($order->cart->billing_address->address_title) {
-				case 'Mrs':
-					$title = 'Madame';
-					break;
-				case 'Miss':
-					$title = 'Mademoiselle';
-					break;
-				default:
-					break;
-			}
-			$xml = '<?xml version="1.0" encoding="utf-8"?><Billing><Address><Title>'.
-			$this->formatTextValue($title, 'ANP', 12).
-		'</Title><FirstName>'.
-			$this->formatTextValue($order->cart->billing_address->address_firstname, 'ANP', 50).
-		'</FirstName><LastName>'.
-			$this->formatTextValue($order->cart->billing_address->address_lastname, 'ANP', 50).
-		'</LastName><Address1>'.
-			$this->formatTextValue($order->cart->billing_address->address_street, 'ANS', 50).
-		'</Address1><Address2>'.
-			$this->formatTextValue($order->cart->billing_address->address_street2, 'ANS', 50).
-		'</Address2><ZipCode>'.
-			$this->formatTextValue($order->cart->billing_address->address_post_code, 'ANS', 12).
-		'</ZipCode><City>'.
-			$this->formatTextValue($order->cart->billing_address->address_city, 'ANS', 50).
-		'</City><CountryCode>'.
-			$country.
-		'</CountryCode><CountryCodeHomePhone>'.
+
+		$title = 'Monsieur';
+		switch($order->cart->billing_address->address_title) {
+			case 'Mrs':
+				$title = 'Madame';
+				break;
+			case 'Miss':
+				$title = 'Mademoiselle';
+				break;
+			default:
+				break;
+		}
+		$xml = '<?xml version="1.0" encoding="utf-8"?><Billing><Address><Title>'.
+		$this->formatTextValue($title, 'ANP', 12).
+	'</Title><FirstName>'.
+		$this->formatTextValue($order->cart->billing_address->address_firstname, 'ANP', 50).
+	'</FirstName><LastName>'.
+		$this->formatTextValue($order->cart->billing_address->address_lastname, 'ANP', 50).
+	'</LastName><Address1>'.
+		$this->formatTextValue($order->cart->billing_address->address_street, 'ANS', 50).
+	'</Address1><Address2>'.
+		$this->formatTextValue($order->cart->billing_address->address_street2, 'ANS', 50).
+	'</Address2><ZipCode>'.
+		$this->formatTextValue($order->cart->billing_address->address_post_code, 'ANS', 12).
+	'</ZipCode><City>'.
+		$this->formatTextValue($order->cart->billing_address->address_city, 'ANS', 50).
+	'</City><CountryCode>'.
+		$country.
+	'</CountryCode><CountryCodeMobilePhone>'.
 		$countryCode.
-	'</CountryCodeHomePhone><HomePhone>'.
+	'</CountryCodeMobilePhone><MobilePhone>'.
 		$telephone.
-	'</HomePhone><CountryName>'.
+	'</MobilePhone><CountryName>'.
 		$this->formatTextValue($countryName, 'ANS', 50).
 	'</CountryName></Address></Billing>';
-		} else {
-			$xml = '<?xml version="1.0" encoding="utf-8"?><Billing><Address><FirstName>'.
-			$this->formatTextValue($order->cart->billing_address->address_firstname, 'ANP', 30).
-		'</FirstName><LastName>'.
-			$this->formatTextValue($order->cart->billing_address->address_lastname, 'ANP', 30).
-		'</LastName><Address1>'.
-			$this->formatTextValue($order->cart->billing_address->address_street, 'ANS', 50).
-		'</Address1><Address2>'.
-			$this->formatTextValue($order->cart->billing_address->address_street2, 'ANS', 50).
-		'</Address2><ZipCode>'.
-			$this->formatTextValue($order->cart->billing_address->address_post_code, 'ANS', 16).
-		'</ZipCode><City>'.
-			$this->formatTextValue($order->cart->billing_address->address_city, 'ANS', 50).
-		'</City><CountryCode>'.
-			$country.
-		'</CountryCode></Address></Billing>';
-		}
 
 		return $this->exportToXml($xml);
 	}

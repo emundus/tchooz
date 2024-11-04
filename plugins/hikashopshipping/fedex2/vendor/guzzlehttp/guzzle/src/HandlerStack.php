@@ -1,13 +1,5 @@
 <?php
-/**
- * @package	HikaShop for Joomla!
- * @version	5.1.0
- * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
- * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
-defined('_JEXEC') or die('Restricted access');
-?><?php
+
 namespace GuzzleHttp;
 
 use GuzzleHttp\Promise\PromiseInterface;
@@ -16,18 +8,15 @@ use Psr\Http\Message\ResponseInterface;
 
 class HandlerStack
 {
-
     private $handler;
-
 
     private $stack = [];
 
-
     private $cached;
 
-    public static function create(callable $handler = null)
+    public static function create(?callable $handler = null): self
     {
-        $stack = new self($handler ?: choose_handler());
+        $stack = new self($handler ?: Utils::chooseHandler());
         $stack->push(Middleware::httpErrors(), 'http_errors');
         $stack->push(Middleware::redirect(), 'allow_redirects');
         $stack->push(Middleware::cookies(), 'cookies');
@@ -36,7 +25,7 @@ class HandlerStack
         return $stack;
     }
 
-    public function __construct(callable $handler = null)
+    public function __construct(?callable $handler = null)
     {
         $this->handler = $handler;
     }
@@ -52,79 +41,85 @@ class HandlerStack
     {
         $depth = 0;
         $stack = [];
-        if ($this->handler) {
-            $stack[] = "0) Handler: " . $this->debugCallable($this->handler);
+
+        if ($this->handler !== null) {
+            $stack[] = '0) Handler: '.$this->debugCallable($this->handler);
         }
 
         $result = '';
-        foreach (array_reverse($this->stack) as $tuple) {
-            $depth++;
+        foreach (\array_reverse($this->stack) as $tuple) {
+            ++$depth;
             $str = "{$depth}) Name: '{$tuple[1]}', ";
-            $str .= "Function: " . $this->debugCallable($tuple[0]);
+            $str .= 'Function: '.$this->debugCallable($tuple[0]);
             $result = "> {$str}\n{$result}";
             $stack[] = $str;
         }
 
-        foreach (array_keys($stack) as $k) {
+        foreach (\array_keys($stack) as $k) {
             $result .= "< {$stack[$k]}\n";
         }
 
         return $result;
     }
 
-    public function setHandler(callable $handler)
+    public function setHandler(callable $handler): void
     {
         $this->handler = $handler;
         $this->cached = null;
     }
 
-    public function hasHandler()
+    public function hasHandler(): bool
     {
-        return (bool) $this->handler;
+        return $this->handler !== null;
     }
 
-    public function unshift(callable $middleware, $name = null)
+    public function unshift(callable $middleware, ?string $name = null): void
     {
-        array_unshift($this->stack, [$middleware, $name]);
+        \array_unshift($this->stack, [$middleware, $name]);
         $this->cached = null;
     }
 
-    public function push(callable $middleware, $name = '')
+    public function push(callable $middleware, string $name = ''): void
     {
         $this->stack[] = [$middleware, $name];
         $this->cached = null;
     }
 
-    public function before($findName, callable $middleware, $withName = '')
+    public function before(string $findName, callable $middleware, string $withName = ''): void
     {
         $this->splice($findName, $withName, $middleware, true);
     }
 
-    public function after($findName, callable $middleware, $withName = '')
+    public function after(string $findName, callable $middleware, string $withName = ''): void
     {
         $this->splice($findName, $withName, $middleware, false);
     }
 
-    public function remove($remove)
+    public function remove($remove): void
     {
+        if (!is_string($remove) && !is_callable($remove)) {
+            trigger_deprecation('guzzlehttp/guzzle', '7.4', 'Not passing a callable or string to %s::%s() is deprecated and will cause an error in 8.0.', __CLASS__, __FUNCTION__);
+        }
+
         $this->cached = null;
-        $idx = is_callable($remove) ? 0 : 1;
-        $this->stack = array_values(array_filter(
+        $idx = \is_callable($remove) ? 0 : 1;
+        $this->stack = \array_values(\array_filter(
             $this->stack,
-            function ($tuple) use ($idx, $remove) {
+            static function ($tuple) use ($idx, $remove) {
                 return $tuple[$idx] !== $remove;
             }
         ));
     }
 
-    public function resolve()
+    public function resolve(): callable
     {
-        if (!$this->cached) {
-            if (!($prev = $this->handler)) {
+        if ($this->cached === null) {
+            if (($prev = $this->handler) === null) {
                 throw new \LogicException('No handler has been specified');
             }
 
-            foreach (array_reverse($this->stack) as $fn) {
+            foreach (\array_reverse($this->stack) as $fn) {
+
                 $prev = $fn[0]($prev);
             }
 
@@ -134,7 +129,7 @@ class HandlerStack
         return $this->cached;
     }
 
-    private function findByName($name)
+    private function findByName(string $name): int
     {
         foreach ($this->stack as $k => $v) {
             if ($v[1] === $name) {
@@ -145,7 +140,7 @@ class HandlerStack
         throw new \InvalidArgumentException("Middleware not found: $name");
     }
 
-    private function splice($findName, $withName, callable $middleware, $before)
+    private function splice(string $findName, string $withName, callable $middleware, bool $before): void
     {
         $this->cached = null;
         $idx = $this->findByName($findName);
@@ -153,31 +148,32 @@ class HandlerStack
 
         if ($before) {
             if ($idx === 0) {
-                array_unshift($this->stack, $tuple);
+                \array_unshift($this->stack, $tuple);
             } else {
                 $replacement = [$tuple, $this->stack[$idx]];
-                array_splice($this->stack, $idx, 1, $replacement);
+                \array_splice($this->stack, $idx, 1, $replacement);
             }
-        } elseif ($idx === count($this->stack) - 1) {
+        } elseif ($idx === \count($this->stack) - 1) {
             $this->stack[] = $tuple;
         } else {
             $replacement = [$this->stack[$idx], $tuple];
-            array_splice($this->stack, $idx, 1, $replacement);
+            \array_splice($this->stack, $idx, 1, $replacement);
         }
     }
 
-    private function debugCallable($fn)
+    private function debugCallable($fn): string
     {
-        if (is_string($fn)) {
+        if (\is_string($fn)) {
             return "callable({$fn})";
         }
 
-        if (is_array($fn)) {
-            return is_string($fn[0])
+        if (\is_array($fn)) {
+            return \is_string($fn[0])
                 ? "callable({$fn[0]}::{$fn[1]})"
-                : "callable(['" . get_class($fn[0]) . "', '{$fn[1]}'])";
+                : "callable(['".\get_class($fn[0])."', '{$fn[1]}'])";
         }
 
-        return 'callable(' . spl_object_hash($fn) . ')';
+
+        return 'callable('.\spl_object_hash($fn).')';
     }
 }

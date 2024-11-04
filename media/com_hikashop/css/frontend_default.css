@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    5.1.0
+ * @version    5.1.1
  * @author     hikashop.com
  * @copyright  (C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -836,10 +836,29 @@ div.hikashop_carousel_parent_div.rounds div.owl-controls div.owl-dot {
 	padding: 5px;
 }
 
-.hikashop_category_information .hikashop_zoom_hover .hikashop_subcontainer .hikashop_product_like_link,
-.hikashop_category_information .hikashop_zoom_hover .hikashop_subcontainer .hikashop_product_like_link  i {
-	position: unset !important;
+.hikashop_products div.hikashop_subcontainer_aligned {
+	display: flex;
+    flex-direction: column;
 }
+.hikashop_products div.hikashop_subcontainer_aligned > div {
+	flex: 1;
+	display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+.hikashop_products .hikashop_subcontainer form.hikashop_aligned_btn, 
+.hikashop_products .hikashop_subcontainer a.hikabtn.hikacart.hikashop_aligned_btn {
+	margin-top: auto;
+}
+.hikashop_products .hikashop_subcontainer form.hikashop_aligned_btn {padding-bottom: 5px;}
+.hikashop_products .hikashop_subcontainer a.hikabtn.hikacart.hikashop_aligned_btn {margin-bottom: 10px;}
+
+.hikashop_subcontainer a.hikabtn.hikacart.hikashop_aligned_btn {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
 .hikashop_category_information .hikashop_zoom_hover .hikashop_subcontainer {
 	transition: transform 0.5s, z-index 0.5s, box-shadow 0.5s;
 	box-shadow: 0px 0px 0px #ddd;

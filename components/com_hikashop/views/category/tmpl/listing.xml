@@ -34,5 +34,145 @@
 				description="HikaShop options"
 			/>
 		</fieldset>
+        <fieldset
+                name="hk_custom_price_display"
+                label="COM_HIKASHOP_CATEGORY_VIEW_CUSTOM_PRICE_DISPLAY"
+        >
+			<field
+					name="advanced_price_display"
+					type="radio"
+					label="ADVANCED_PRICE_DISPLAY"
+					default="0"
+			>
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+            <field
+                    id="hk_custom_price_display_options"
+                    name="hk_custom_price_display_options"
+                    type="subform"
+                    label="COM_HIKASHOP_CATEGORY_VIEW_CUSTOM_PRICE_DISPLAY"
+					showon="advanced_price_display:1"
+                    multiple="true"
+                    buttons="move,add,remove"
+                    default='{
+					"hk_custom_price_display_order2": {
+						"key": "msrp_ex_vat",
+						"header": "COM_HIKASHOP_CATEGORY_VIEW_CUSTOM_MSRP_EX_VAT_TITLE",
+						"prefix": "HS_MSRP_EX_VAT_PREFIX",
+						"suffix": "HS_MSRP_EX_VAT_SUFFIX",
+						"enabled": "0"
+					},
+					"hk_custom_price_display_order4": {
+						"key": "msrp_in_vat",
+						"header": "COM_HIKASHOP_CATEGORY_VIEW_CUSTOM_MSRP_IN_VAT_TITLE",
+						"prefix": "HS_MSRP_IN_VAT_PREFIX",
+						"suffix": "HS_MSRP_IN_VAT_SUFFIX",
+						"enabled": "0"
+					},
+					"hk_custom_price_display_order10": {
+						"key": "ex_vat",
+						"header": "COM_HIKASHOP_CATEGORY_VIEW_CUSTOM_PRICE_EX_VAT_TITLE",
+						"prefix": "HS_PRICE_EX_VAT_PREFIX",
+						"suffix": "HS_PRICE_EX_VAT_SUFFIX",
+						"enabled": "1"
+					},
+					"hk_custom_price_display_order20": {
+						"key": "in_vat",
+						"header": "COM_HIKASHOP_CATEGORY_VIEW_CUSTOM_PRICE_IN_VAT_TITLE",
+						"prefix": "HS_PRICE_IN_VAT_PREFIX",
+						"suffix": "HS_PRICE_IN_VAT_SUFFIX",
+						"enabled": "1"
+					},
+					"hk_custom_price_display_order30": {
+						"key": "discounted_ex_vat",
+						"header": "COM_HIKASHOP_CATEGORY_VIEW_CUSTOM_PRICE_DISCOUNTED_EX_VAT_TITLE",
+						"prefix": "HS_PRICE_DISCOUNTED_EX_VAT_PREFIX",
+						"suffix": "HS_PRICE_DISCOUNTED_EX_VAT_SUFFIX",
+						"enabled": "1"
+					},
+					"hk_custom_price_display_order40": {
+						"key": "discounted_in_vat",
+						"header": "COM_HIKASHOP_CATEGORY_VIEW_CUSTOM_PRICE_DISCOUNTED_IN_VAT_TITLE",
+						"prefix": "HS_PRICE_DISCOUNTED_IN_VAT_PREFIX",
+						"suffix": "HS_PRICE_DISCOUNTED_IN_VAT_SUFFIX",
+						"enabled": "1"
+					},
+					"hk_custom_price_display_order44": {
+						"key": "discount_amount",
+						"header": "COM_HIKASHOP_CATEGORY_VIEW_CUSTOM_DISCOUNT",
+						"prefix": "HS_DISCOUNT_PREFIX",
+						"suffix": "HS_DISCOUNT_SUFFIX",
+						"enabled": "1"
+					},
+					"hk_custom_price_display_order50": {
+						"key": "orig_curr_ex_vat",
+						"header": "COM_HIKASHOP_CATEGORY_VIEW_CUSTOM_ORG_CURR_PRICE_EX_VAT_TITLE",
+						"prefix": "HS_PRICE_ORG_CURR_EX_VAT_PREFIX",
+						"suffix": "HS_PRICE_ORG_CURR_EX_VAT_SUFFIX",
+						"enabled": "1"
+					},
+					"hk_custom_price_display_order60": {
+						"key": "orig_curr_in_vat",
+						"header": "COM_HIKASHOP_CATEGORY_VIEW_CUSTOM_ORG_CURR_PRICE_IN_VAT_TITLE",
+						"prefix": "HS_PRICE_ORG_CURR_IN_VAT_PREFIX",
+						"suffix": "HS_PRICE_ORG_CURR_IN_VAT_SUFFIX",
+						"enabled": "1"
+					},
+					"hk_custom_price_display_order70": {
+						"key": "orig_curr_discounted_ex_vat",
+						"header": "COM_HIKASHOP_CATEGORY_VIEW_CUSTOM_ORG_CURR_PRICE_DISCOUNTED_EX_VAT_TITLE",
+						"prefix": "HS_PRICE_ORG_CURR_DISCOUNTED_EX_VAT_PREFIX",
+						"suffix": "HS_PRICE_ORG_CURR_DISCOUNTED_EX_VAT_SUFFIX",
+						"enabled": "1"
+					},
+					"hk_custom_price_display_order80": {
+						"key": "orig_curr_discounted_in_vat",
+						"header": "COM_HIKASHOP_CATEGORY_VIEW_CUSTOM_ORG_CURR_PRICE_DISCOUNTED_IN_VAT_TITLE",
+						"prefix": "HS_PRICE_ORG_CURR_DISCOUNTED_IN_VAT_PREFIX",
+						"suffix": "HS_PRICE_ORG_CURR_DISCOUNTED_IN_VAT_SUFFIX",
+						"enabled": "1"
+					},
+					"hk_custom_price_display_order90": {
+						"key": "advantage",
+						"header": "COM_HIKASHOP_CATEGORY_VIEW_CUSTOM_PRICE_ADVANTAGE",
+						"prefix": "HS_ADVANTAGE_PREFIX",
+						"suffix": "HS_ADVANTAGE_SUFFIX",
+						"enabled": "0"
+					}
+				}'
+            >
+                <form>
+                    <field
+                            name="key"
+                            type="hidden"
+                            label="Key"
+                    />
+                    <field
+                            name="header"
+                            type="header"
+                    />
+                    <field
+                            name="prefix"
+                            type="text"
+                            label="COM_HIKASHOP_CATEGORY_VIEW_CUSTOM_PRICE_PREFIX_LABEL"
+                    />
+                    <field
+                            name="suffix"
+                            type="text"
+                            label="COM_HIKASHOP_CATEGORY_VIEW_CUSTOM_PRICE_SUFFIX_LABEL"
+                    />
+                    <field
+                            name="enabled"
+                            type="radio"
+                            label="Enabled"
+                            default="1"
+                    >
+                        <option value="0">JNO</option>
+                        <option value="1">JYES</option>
+                    </field>
+                </form>
+            </field>
+        </fieldset>
 	</fields>
 </metadata>

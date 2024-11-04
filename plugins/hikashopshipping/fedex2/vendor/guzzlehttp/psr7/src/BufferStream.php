@@ -1,34 +1,30 @@
 <?php
-/**
- * @package	HikaShop for Joomla!
- * @version	5.1.0
- * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
- * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
-defined('_JEXEC') or die('Restricted access');
-?><?php
+
+declare(strict_types=1);
 
 namespace GuzzleHttp\Psr7;
 
 use Psr\Http\Message\StreamInterface;
 
-class BufferStream implements StreamInterface
+final class BufferStream implements StreamInterface
 {
+
     private $hwm;
+
+
     private $buffer = '';
 
-    public function __construct($hwm = 16384)
+    public function __construct(int $hwm = 16384)
     {
         $this->hwm = $hwm;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getContents();
     }
 
-    public function getContents()
+    public function getContents(): string
     {
         $buffer = $this->buffer;
         $this->buffer = '';
@@ -36,7 +32,7 @@ class BufferStream implements StreamInterface
         return $buffer;
     }
 
-    public function close()
+    public function close(): void
     {
         $this->buffer = '';
     }
@@ -48,47 +44,47 @@ class BufferStream implements StreamInterface
         return null;
     }
 
-    public function getSize()
+    public function getSize(): ?int
     {
         return strlen($this->buffer);
     }
 
-    public function isReadable()
+    public function isReadable(): bool
     {
         return true;
     }
 
-    public function isWritable()
+    public function isWritable(): bool
     {
         return true;
     }
 
-    public function isSeekable()
+    public function isSeekable(): bool
     {
         return false;
     }
 
-    public function rewind()
+    public function rewind(): void
     {
         $this->seek(0);
     }
 
-    public function seek($offset, $whence = SEEK_SET)
+    public function seek($offset, $whence = SEEK_SET): void
     {
         throw new \RuntimeException('Cannot seek a BufferStream');
     }
 
-    public function eof()
+    public function eof(): bool
     {
         return strlen($this->buffer) === 0;
     }
 
-    public function tell()
+    public function tell(): int
     {
         throw new \RuntimeException('Cannot determine the position of a BufferStream');
     }
 
-    public function read($length)
+    public function read($length): string
     {
         $currentLength = strlen($this->buffer);
 
@@ -103,12 +99,12 @@ class BufferStream implements StreamInterface
         return $result;
     }
 
-    public function write($string)
+    public function write($string): int
     {
         $this->buffer .= $string;
 
         if (strlen($this->buffer) >= $this->hwm) {
-            return false;
+            return 0;
         }
 
         return strlen($string);
@@ -116,7 +112,7 @@ class BufferStream implements StreamInterface
 
     public function getMetadata($key = null)
     {
-        if ($key == 'hwm') {
+        if ($key === 'hwm') {
             return $this->hwm;
         }
 

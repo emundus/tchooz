@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -26,6 +26,8 @@ class EmailViewEmail extends hikashopView
 	}
 
 	public function form() {
+		hikashop_loadJslib('notify');
+
 
 		$main_page_array = array('payment_notification','order_admin_notification','order_creation_notification','order_status_notification','order_notification');
 
@@ -60,7 +62,7 @@ class EmailViewEmail extends hikashopView
 				'HIKA_DISPLAY_USER_POINTS'=>'user_points',
 				'HIKA_DISPLAY_USER_NAME'=>'name',
 				'HIKA_DISPLAY_USER_USERNAME'=>'username',
-				'HIKA_DISPLAY_USER_EMAIL'=>'email',
+				'HIKA_DISPLAY_USER_MAIL'=>'email',
 				'HIKA_DISPLAY_USER_PASSWORD'=>'password',
 				'HIKA_DISPLAY_USER_REGISTERDATE'=>'registerDate',
 				'HIKA_DISPLAY_USER_LASTVISIT'=>'lastvisitDate'
@@ -91,7 +93,7 @@ class EmailViewEmail extends hikashopView
 				'HIKA_DISPLAY_ITEM_TAX'=>'order_product_tax',
 				'HIKA_DISPLAY_ITEM_SHIPPING_METH'=>'order_product_shipping_method',
 				'HIKA_DISPLAY_ITEM_SHIPPING_PRICE'=>'order_product_shipping_price',
-				'HIKA_DISPLAY_ITEM_SHIPPING_TAX'=>'order_product_shipping_tax',
+				'HIKA_DISPLAY_ORDER_SHIPPING_TAX'=>'order_product_shipping_tax',
 				'HIKA_DISPLAY_ITEM_STATUS'=>'order_product_status'
 			),
 			'item_field' =>  array(

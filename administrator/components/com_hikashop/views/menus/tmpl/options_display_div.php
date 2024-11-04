@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -186,8 +186,8 @@ if(hikashop_level(2)){
 					<label><?php echo JText::_('HIKA_HEIGHT_CONSISTENCY'); ?></label>
 				</dt>
 				<dd class="hikashop_option_value"><?php
-					if(!isset($this->element['consistencyheight'])) $this->element['consistencyheight'] = 1;
-					echo JHTML::_('hikaselect.booleanlist', $this->name.'[consistencyheight]', '', @$this->element['consistencyheight']);
+					if(!isset($this->element['consistencyheight'])) $this->element['consistencyheight'] = 2;
+					echo $this->consistencyType->display($this->name.'[consistencyheight]', $this->element['consistencyheight'], true, false, true);
 				?></dd>
 			</dl>
 			<?php if($this->menu == 'product' || ($this->menu == 'category' && $this->type == 'product')){ ?>

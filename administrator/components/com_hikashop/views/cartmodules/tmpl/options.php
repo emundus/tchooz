@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -61,7 +61,7 @@ if (HIKASHOP_J40) {
 }
 
 ?>
-<div id="hikashop_main_content" class="hikashop_main_content hk-container-fluid item-cartmodule-interface hika_j<?php echo (int)HIKASHOP_JVERSION; ?>">
+<div id="hikashop_main_content" class="hikashop_main_content hk-container-fluid item-cartmodule-interface hika_j<?php echo (int)HIKASHOP_JVERSION; if(HIKASHOP_JVERSION>4) echo ' hika_j4'; ?>">
 	<!-- module edition -->
 	<div id="hikashop_module_backend_page_edition" class="hk-row-fluid">
 <?php

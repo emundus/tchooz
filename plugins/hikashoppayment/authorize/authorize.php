@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -282,10 +282,10 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 			$negative = '';
 			if((int)@$this->payment_params->negative_coupon)
 				$negative = '-';
-			$vars["x_line_item"][]='coupon<|>'.JText::_('HIKASHOP_COUPON').'<|>'.JText::_('HIKASHOP_COUPON').'<|>1<|>'.$negative.round($order->cart->coupon->discount_value,(int)$this->currency->currency_locale['int_frac_digits']).'<|>N';
+			$vars["x_line_item"][]='coupon<|>'.strip_tags(JText::_('HIKASHOP_COUPON')).'<|>'.strip_tags(JText::_('HIKASHOP_COUPON')).'<|>1<|>'.$negative.round($order->cart->coupon->discount_value,(int)$this->currency->currency_locale['int_frac_digits']).'<|>N';
 		}
 		if(!empty($order->order_payment_price)){
-			$vars["x_line_item"][]='payment<|>'.JText::_('HIKASHOP_PAYMENT').'<|>'.JText::_('HIKASHOP_PAYMENT').'<|>1<|>'.round($order->order_payment_price,(int)$this->currency->currency_locale['int_frac_digits']).'<|>N';
+			$vars["x_line_item"][]='payment<|>'.strip_tags(JText::_('HIKASHOP_PAYMENT')).'<|>'.strip_tags(JText::_('HIKASHOP_PAYMENT')).'<|>1<|>'.round($order->order_payment_price,(int)$this->currency->currency_locale['int_frac_digits']).'<|>N';
 		}
 
 		if(count($vars["x_line_item"])>=30){

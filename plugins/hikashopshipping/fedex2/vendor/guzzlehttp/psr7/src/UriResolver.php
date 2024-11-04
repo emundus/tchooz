@@ -1,13 +1,6 @@
 <?php
-/**
- * @package	HikaShop for Joomla!
- * @version	5.1.0
- * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
- * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
-defined('_JEXEC') or die('Restricted access');
-?><?php
+
+declare(strict_types=1);
 
 namespace GuzzleHttp\Psr7;
 
@@ -15,7 +8,7 @@ use Psr\Http\Message\UriInterface;
 
 final class UriResolver
 {
-    public static function removeDotSegments($path)
+    public static function removeDotSegments(string $path): string
     {
         if ($path === '' || $path === '/') {
             return $path;
@@ -34,7 +27,7 @@ final class UriResolver
         $newPath = implode('/', $results);
 
         if ($path[0] === '/' && (!isset($newPath[0]) || $newPath[0] !== '/')) {
-            $newPath = '/' . $newPath;
+            $newPath = '/'.$newPath;
         } elseif ($newPath !== '' && ($segment === '.' || $segment === '..')) {
             $newPath .= '/';
         }
@@ -42,7 +35,7 @@ final class UriResolver
         return $newPath;
     }
 
-    public static function resolve(UriInterface $base, UriInterface $rel)
+    public static function resolve(UriInterface $base, UriInterface $rel): UriInterface
     {
         if ((string) $rel === '') {
             return $base;
@@ -66,13 +59,13 @@ final class UriResolver
                     $targetPath = $rel->getPath();
                 } else {
                     if ($targetAuthority != '' && $base->getPath() === '') {
-                        $targetPath = '/' . $rel->getPath();
+                        $targetPath = '/'.$rel->getPath();
                     } else {
                         $lastSlashPos = strrpos($base->getPath(), '/');
                         if ($lastSlashPos === false) {
                             $targetPath = $rel->getPath();
                         } else {
-                            $targetPath = substr($base->getPath(), 0, $lastSlashPos + 1) . $rel->getPath();
+                            $targetPath = substr($base->getPath(), 0, $lastSlashPos + 1).$rel->getPath();
                         }
                     }
                 }
@@ -90,10 +83,10 @@ final class UriResolver
         ));
     }
 
-    public static function relativize(UriInterface $base, UriInterface $target)
+    public static function relativize(UriInterface $base, UriInterface $target): UriInterface
     {
-        if ($target->getScheme() !== '' &&
-            ($base->getScheme() !== $target->getScheme() || $target->getAuthority() === '' && $base->getAuthority() !== '')
+        if ($target->getScheme() !== ''
+            && ($base->getScheme() !== $target->getScheme() || $target->getAuthority() === '' && $base->getAuthority() !== '')
         ) {
             return $target;
         }
@@ -118,6 +111,7 @@ final class UriResolver
 
         if ($target->getQuery() === '') {
             $segments = explode('/', $target->getPath());
+
             $lastSegment = end($segments);
 
             return $emptyPathUri->withPath($lastSegment === '' ? './' : $lastSegment);
@@ -126,7 +120,7 @@ final class UriResolver
         return $emptyPathUri;
     }
 
-    private static function getRelativePath(UriInterface $base, UriInterface $target)
+    private static function getRelativePath(UriInterface $base, UriInterface $target): string
     {
         $sourceSegments = explode('/', $base->getPath());
         $targetSegments = explode('/', $target->getPath());
@@ -140,7 +134,7 @@ final class UriResolver
             }
         }
         $targetSegments[] = $targetLastSegment;
-        $relativePath = str_repeat('../', count($sourceSegments)) . implode('/', $targetSegments);
+        $relativePath = str_repeat('../', count($sourceSegments)).implode('/', $targetSegments);
 
         if ('' === $relativePath || false !== strpos(explode('/', $relativePath, 2)[0], ':')) {
             $relativePath = "./$relativePath";

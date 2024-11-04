@@ -1,14 +1,11 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
-
-use Joomla\CMS\Factory;
-
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 include_once(JPATH_ROOT.'/administrator/components/com_hikashop/pluginCompat.php');
@@ -71,7 +68,8 @@ class plgSystemHikashopuser extends hikashopJoomlaPlugin {
 				return true;
 			JPluginHelper::importPlugin('hikashop');
 			$plugin = hikashop_import('hikashop', 'cartnotify');
-			$plugin->onBeforeCompileHead();
+			if($plugin)
+				$plugin->onBeforeCompileHead();
 		}
 	}
 
@@ -243,11 +241,6 @@ class plgSystemHikashopuser extends hikashopJoomlaPlugin {
 	}
 
 	public function onAfterStoreUser($user, $isnew, $success, $msg) {
-		$app = Factory::getApplication();
-		if (method_exists($app, 'isClient') && $app->isClient('cli')) {
-			return;
-		}
-
 		if($success === false || !is_array($user))
 			return false;
 

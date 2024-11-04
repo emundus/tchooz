@@ -1,21 +1,14 @@
 <?php
-/**
- * @package	HikaShop for Joomla!
- * @version	5.1.0
- * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
- * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
-defined('_JEXEC') or die('Restricted access');
-?><?php
 
 namespace FedexRest\Services\Ship;
 
 use FedexRest\Entity\Item;
+use FedexRest\Services\Ship\Entity\EmailNotificationDetail;
 use FedexRest\Services\Ship\Entity\Label;
 use FedexRest\Entity\Person;
 use FedexRest\Services\Ship\Entity\ShipmentSpecialServices;
 use FedexRest\Services\Ship\Entity\ShippingChargesPayment;
+use FedexRest\Services\Ship\Entity\SmartPostInfoDetail;
 use FedexRest\Services\Ship\Entity\Value;
 use FedexRest\Exceptions\MissingAccountNumberException;
 use FedexRest\Services\Ship\Exceptions\MissingLabelException;
@@ -35,6 +28,7 @@ class CreateShipment extends AbstractRequest
     protected string $packagingType = '';
     protected string $pickupType = '';
     protected int $accountNumber;
+    protected array $rateRequestTypes;
     protected array $lineItems = [];
     protected string $labelResponseOptions = '';
     protected ShipmentSpecialServices $shipmentSpecialServices;
@@ -46,10 +40,12 @@ class CreateShipment extends AbstractRequest
     protected string $recipientLocationNumber = '';
     protected int $totalWeight;
     protected Person $origin;
+    protected SmartPostInfoDetail $smartPostInfoDetail;
     protected bool $blockInsightVisibility = FALSE;
     protected bool $oneLabelAtATime = FALSE;
     protected string $preferredCurrency = '';
     protected int $totalPackageCount;
+    protected EmailNotificationDetail $emailNotificationDetail;
 
     public function setApiEndpoint() {
         return '/ship/v1/shipments';
@@ -118,6 +114,17 @@ class CreateShipment extends AbstractRequest
     public function setAccountNumber(int $accountNumber): CreateShipment {
         $this->accountNumber = $accountNumber;
         return $this;
+    }
+
+    public function setRateRequestTypes(string ...$rateRequestTypes): CreateShipment
+    {
+        $this->rateRequestTypes = $rateRequestTypes;
+        return $this;
+    }
+
+    public function getRateRequestTypes(): array
+    {
+        return $this->rateRequestTypes;
     }
 
     public function setLineItems(Item ...$lineItems): CreateShipment {
@@ -252,6 +259,17 @@ class CreateShipment extends AbstractRequest
         return $this->origin;
     }
 
+    public function setSmartPostInfoDetail(?SmartPostInfoDetail $smartPostInfoDetail): CreateShipment
+    {
+        $this->smartPostInfoDetail = $smartPostInfoDetail;
+        return $this;
+    }
+
+    public function getSmartPostInfoDetail(): ?SmartPostInfoDetail
+    {
+        return $this->smartPostInfoDetail;
+    }
+
     public function setBlockInsightVisibility(bool $blockInsightVisibility): CreateShipment
     {
         $this->blockInsightVisibility = $blockInsightVisibility;
@@ -315,36 +333,59 @@ class CreateShipment extends AbstractRequest
             'blockInsightVisibility' => $this->blockInsightVisibility,
             'requestedPackageLineItems' => $line_items,
         ];
+
         if (!empty($this->shippingChargesPayment)) {
             $data ['shippingChargesPayment'] = $this->shippingChargesPayment->prepare();
         }
+
         if (!empty($this->label)) {
             $data ['labelSpecification'] = $this->label->prepare();
         }
+
+        if (!empty($this->rateRequestTypes)) {
+            $data['rateRequestType'] = $this->rateRequestTypes;
+        }
+
         if (!empty($this->shipmentSpecialServices)) {
             $data['shipmentSpecialServices'] = $this->shipmentSpecialServices->prepare();
         }
+
         if (!empty($this->shippingChargesPayment)) {
             $data['shippingChargesPayment'] = $this->shippingChargesPayment->prepare();
         }
+
         if (!empty($this->totalDeclaredValue)) {
             $data['totalDeclaredValue'] = $this->totalDeclaredValue->prepare();
         }
+
         if (!empty($this->recipientLocationNumber)) {
             $data['recipientLocationNumber'] = $this->recipientLocationNumber;
         }
+
         if (!empty($this->totalWeight)) {
             $data['totalWeight'] = $this->totalWeight;
         }
+
         if (!empty($this->origin)) {
             $data['origin'] = $this->origin->prepare();
         }
+
+        if (!empty($this->smartPostInfoDetail)) {
+            $data['smartPostInfoDetail'] = $this->smartPostInfoDetail->prepare();
+        }
+
         if (!empty($this->preferredCurrency)) {
             $data['preferredCurrency'] = $this->preferredCurrency;
         }
+
         if (!empty($this->totalPackageCount)) {
             $data['totalPackageCount'] = $this->totalPackageCount;
         }
+
+        if (!empty($this->emailNotificationDetail)) {
+            $data['emailNotificationDetail'] = $this->emailNotificationDetail->prepare();
+        }
+
         return $data;
     }
 
@@ -364,6 +405,7 @@ class CreateShipment extends AbstractRequest
         if (!empty($this->processingOptionType)) {
             $data['processingOptionType'] = $this->processingOptionType;
         }
+
         return $data;
     }
 
@@ -394,6 +436,18 @@ class CreateShipment extends AbstractRequest
         } catch (\Exception $e) {
             return $e->getMessage();
         }
+    }
+
+    public function getEmailNotificationDetail(): EmailNotificationDetail
+    {
+        return $this->emailNotificationDetail;
+    }
+
+    public function setEmailNotificationDetail(EmailNotificationDetail $emailNotificationDetail): static
+    {
+        $this->emailNotificationDetail = $emailNotificationDetail;
+
+        return $this;
     }
 
 }

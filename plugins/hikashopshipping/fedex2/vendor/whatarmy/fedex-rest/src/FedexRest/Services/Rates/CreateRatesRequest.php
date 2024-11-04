@@ -1,13 +1,4 @@
 <?php
-/**
- * @package	HikaShop for Joomla!
- * @version	5.1.0
- * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
- * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
-defined('_JEXEC') or die('Restricted access');
-?><?php
 
 namespace FedexRest\Services\Rates;
 
@@ -40,10 +31,11 @@ class CreateRatesRequest extends AbstractRequest
     protected int $totalWeight;
     protected string $preferredCurrency = '';
     protected int $totalPackageCount;
-	protected bool $returnTransitTimes = false;
+    protected bool $returnTransitTimes = false;
     protected bool $servicesNeededOnRateFailure = false;
-	protected ?string $variableOptions = null;
+    protected ?string $variableOptions = null;
     protected ?string $rateSortOrder = null;
+    protected array $carrierCodes = [];
 
     public function setApiEndpoint()
     {
@@ -200,7 +192,7 @@ class CreateRatesRequest extends AbstractRequest
         return $this->totalPackageCount;
     }
 
-	public function setReturnTransitTimes(bool $returnTransitTimes=true): CreateRatesRequest
+    public function setReturnTransitTimes(bool $returnTransitTimes=true): CreateRatesRequest
     {
         $this->returnTransitTimes = $returnTransitTimes;
         return $this;
@@ -223,7 +215,7 @@ class CreateRatesRequest extends AbstractRequest
     }
 
     public function setVariableOptions(?string $variableOptions): CreateRatesRequest
-	   {
+    {
         $this->variableOptions = $variableOptions;
         return $this;
     }
@@ -242,6 +234,17 @@ class CreateRatesRequest extends AbstractRequest
     public function getRateSortOrder(): ?string
     {
         return $this->rateSortOrder;
+    }
+
+    public function setCarrierCodes(array $carrierCodes): CreateRatesRequest
+    {
+        $this->carrierCodes = $carrierCodes;
+        return $this;
+    }
+
+    public function getCarrierCodes(): array
+    {
+        return $this->carrierCodes;
     }
 
     public function getControlParameters(): array
@@ -318,7 +321,9 @@ class CreateRatesRequest extends AbstractRequest
             'accountNumber' => [
                 'value' => $this->accountNumber,
             ],
+            'rateRequestControlParameters' => $this->getControlParameters(),
             'requestedShipment' => $this->getRequestedShipment(),
+            'carrierCodes' => $this->getCarrierCodes(),
         ];
     }
 
@@ -333,7 +338,7 @@ class CreateRatesRequest extends AbstractRequest
         }
 
         try {
-          $prepare = $this->prepare();
+            $prepare = $this->prepare();
             $query = $this->http_client->post($this->getApiUri($this->api_endpoint), [
                 'json' => $prepare,
                 'http_errors' => false,

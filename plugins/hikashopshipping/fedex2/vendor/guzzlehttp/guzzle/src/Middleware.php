@@ -1,28 +1,21 @@
 <?php
-/**
- * @package	HikaShop for Joomla!
- * @version	5.1.0
- * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
- * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
-defined('_JEXEC') or die('Restricted access');
-?><?php
+
 namespace GuzzleHttp;
 
 use GuzzleHttp\Cookie\CookieJarInterface;
 use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Promise\RejectedPromise;
-use GuzzleHttp\Psr7;
+use GuzzleHttp\Promise as P;
+use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 
 final class Middleware
 {
-    public static function cookies()
+    public static function cookies(): callable
     {
-        return function (callable $handler) {
-            return function ($request, array $options) use ($handler) {
+        return static function (callable $handler): callable {
+            return static function ($request, array $options) use ($handler) {
                 if (empty($options['cookies'])) {
                     return $handler($request, $options);
                 } elseif (!($options['cookies'] instanceof CookieJarInterface)) {
@@ -30,10 +23,12 @@ final class Middleware
                 }
                 $cookieJar = $options['cookies'];
                 $request = $cookieJar->withCookieHeader($request);
+
                 return $handler($request, $options)
                     ->then(
-                        function ($response) use ($cookieJar, $request) {
+                        static function (ResponseInterface $response) use ($cookieJar, $request): ResponseInterface {
                             $cookieJar->extractCookies($request, $response);
+
                             return $response;
                         }
                     );
@@ -41,62 +36,65 @@ final class Middleware
         };
     }
 
-    public static function httpErrors()
+    public static function httpErrors(?BodySummarizerInterface $bodySummarizer = null): callable
     {
-        return function (callable $handler) {
-            return function ($request, array $options) use ($handler) {
+        return static function (callable $handler) use ($bodySummarizer): callable {
+            return static function ($request, array $options) use ($handler, $bodySummarizer) {
                 if (empty($options['http_errors'])) {
                     return $handler($request, $options);
                 }
+
                 return $handler($request, $options)->then(
-                    function (ResponseInterface $response) use ($request) {
+                    static function (ResponseInterface $response) use ($request, $bodySummarizer) {
                         $code = $response->getStatusCode();
                         if ($code < 400) {
                             return $response;
                         }
-                        throw RequestException::create($request, $response);
+                        throw RequestException::create($request, $response, null, [], $bodySummarizer);
                     }
                 );
             };
         };
     }
 
-    public static function history(&$container)
+    public static function history(&$container): callable
     {
-        if (!is_array($container) && !$container instanceof \ArrayAccess) {
+        if (!\is_array($container) && !$container instanceof \ArrayAccess) {
             throw new \InvalidArgumentException('history container must be an array or object implementing ArrayAccess');
         }
 
-        return function (callable $handler) use (&$container) {
-            return function ($request, array $options) use ($handler, &$container) {
+        return static function (callable $handler) use (&$container): callable {
+            return static function (RequestInterface $request, array $options) use ($handler, &$container) {
                 return $handler($request, $options)->then(
-                    function ($value) use ($request, &$container, $options) {
+                    static function ($value) use ($request, &$container, $options) {
                         $container[] = [
-                            'request'  => $request,
+                            'request' => $request,
                             'response' => $value,
-                            'error'    => null,
-                            'options'  => $options
+                            'error' => null,
+                            'options' => $options,
                         ];
+
                         return $value;
                     },
-                    function ($reason) use ($request, &$container, $options) {
+                    static function ($reason) use ($request, &$container, $options) {
                         $container[] = [
-                            'request'  => $request,
+                            'request' => $request,
                             'response' => null,
-                            'error'    => $reason,
-                            'options'  => $options
+                            'error' => $reason,
+                            'options' => $options,
                         ];
-                        return \GuzzleHttp\Promise\rejection_for($reason);
+
+                        return P\Create::rejectionFor($reason);
                     }
                 );
             };
         };
     }
 
-    public static function tap(callable $before = null, callable $after = null)
+    public static function tap(?callable $before = null, ?callable $after = null): callable
     {
-        return function (callable $handler) use ($before, $after) {
-            return function ($request, array $options) use ($handler, $before, $after) {
+        return static function (callable $handler) use ($before, $after): callable {
+            return static function (RequestInterface $request, array $options) use ($handler, $before, $after) {
                 if ($before) {
                     $before($request, $options);
                 }
@@ -104,68 +102,73 @@ final class Middleware
                 if ($after) {
                     $after($request, $options, $response);
                 }
+
                 return $response;
             };
         };
     }
 
-    public static function redirect()
+    public static function redirect(): callable
     {
-        return function (callable $handler) {
+        return static function (callable $handler): RedirectMiddleware {
             return new RedirectMiddleware($handler);
         };
     }
 
-    public static function retry(callable $decider, callable $delay = null)
+    public static function retry(callable $decider, ?callable $delay = null): callable
     {
-        return function (callable $handler) use ($decider, $delay) {
+        return static function (callable $handler) use ($decider, $delay): RetryMiddleware {
             return new RetryMiddleware($decider, $handler, $delay);
         };
     }
 
-    public static function log(LoggerInterface $logger, MessageFormatter $formatter, $logLevel = 'info' )
+    public static function log(LoggerInterface $logger, $formatter, string $logLevel = 'info'): callable
     {
-        return function (callable $handler) use ($logger, $formatter, $logLevel) {
-            return function ($request, array $options) use ($handler, $logger, $formatter, $logLevel) {
+        if (!$formatter instanceof MessageFormatter && !$formatter instanceof MessageFormatterInterface) {
+            throw new \LogicException(sprintf('Argument 2 to %s::log() must be of type %s', self::class, MessageFormatterInterface::class));
+        }
+
+        return static function (callable $handler) use ($logger, $formatter, $logLevel): callable {
+            return static function (RequestInterface $request, array $options = []) use ($handler, $logger, $formatter, $logLevel) {
                 return $handler($request, $options)->then(
-                    function ($response) use ($logger, $request, $formatter, $logLevel) {
+                    static function ($response) use ($logger, $request, $formatter, $logLevel): ResponseInterface {
                         $message = $formatter->format($request, $response);
                         $logger->log($logLevel, $message);
+
                         return $response;
                     },
-                    function ($reason) use ($logger, $request, $formatter) {
-                        $response = $reason instanceof RequestException
-                            ? $reason->getResponse()
-                            : null;
-                        $message = $formatter->format($request, $response, $reason);
-                        $logger->notice($message);
-                        return \GuzzleHttp\Promise\rejection_for($reason);
+                    static function ($reason) use ($logger, $request, $formatter): PromiseInterface {
+                        $response = $reason instanceof RequestException ? $reason->getResponse() : null;
+                        $message = $formatter->format($request, $response, P\Create::exceptionFor($reason));
+                        $logger->error($message);
+
+                        return P\Create::rejectionFor($reason);
                     }
                 );
             };
         };
     }
 
-    public static function prepareBody()
+    public static function prepareBody(): callable
     {
-        return function (callable $handler) {
+        return static function (callable $handler): PrepareBodyMiddleware {
             return new PrepareBodyMiddleware($handler);
         };
     }
 
-    public static function mapRequest(callable $fn)
+    public static function mapRequest(callable $fn): callable
     {
-        return function (callable $handler) use ($fn) {
-            return function ($request, array $options) use ($handler, $fn) {
+        return static function (callable $handler) use ($fn): callable {
+            return static function (RequestInterface $request, array $options) use ($handler, $fn) {
                 return $handler($fn($request), $options);
             };
         };
     }
 
-    public static function mapResponse(callable $fn)
+    public static function mapResponse(callable $fn): callable
     {
-        return function (callable $handler) use ($fn) {
-            return function ($request, array $options) use ($handler, $fn) {
+        return static function (callable $handler) use ($fn): callable {
+            return static function (RequestInterface $request, array $options) use ($handler, $fn) {
                 return $handler($request, $options)->then($fn);
             };
         };

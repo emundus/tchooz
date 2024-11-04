@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -138,13 +138,13 @@ paypal.Buttons(
 				} else if(resp.errorMessage == 'restart') {
 					return actions.restart();
 				}
-				document.getElementById('hikashop_paypalcheckout_end').innerHTML = '<?php echo hikashop_display(JText::_('THANK_YOU_FOR_PURCHASE', true), 'success', true); ?>';
+				document.getElementById('hikashop_paypalcheckout_end').innerHTML = '<?php echo str_replace(array("\n", "\r"), '', hikashop_display(JText::_('THANK_YOU_FOR_PURCHASE', true), 'success', true)); ?>';
 				window.location.href = "<?php echo $this->notify_url; ?>&paypal_id="+resp.id;
 			});
 		},
 		onError: function (err) {
 
-			var errormsg = "<?php echo str_replace('"','\"',JText::sprintf('PAYMENT_REQUEST_REFUSED_BY_PAYPAL_CANCEL_URL', $this->cancel_url)); ?>";
+			var errormsg = "<?php echo str_replace(array("\n", "\r"), '', str_replace('"','\"',JText::sprintf('PAYMENT_REQUEST_REFUSED_BY_PAYPAL_CANCEL_URL', $this->cancel_url))); ?>";
 
 			var data = window.Oby.extractJSON(err.message);
 			if(data) {
@@ -225,7 +225,7 @@ if (paypal.HostedFields.isEligible()) {
 		fields: {
 			number: {
 				selector: '#card-number',
-				placeholder: '<?php echo JText::_('CREDIT_CARD_NUMBER', true); ?>'
+				placeholder: '<?php echo str_replace(array("\n", "\r"), '', JText::_('CREDIT_CARD_NUMBER', true)); ?>'
 			},
 			cvv: {
 				selector: '#cvv',
@@ -276,16 +276,24 @@ if (paypal.HostedFields.isEligible()) {
 						return false;
 					}
 					var mainArea = document.getElementById('hikashop_paypalcheckout_end');
-					mainArea.innerHTML = '<?php echo hikashop_display(JText::_('THANK_YOU_FOR_PURCHASE', true), 'success', true); ?>';
+					mainArea.innerHTML = '<?php echo str_replace(array("\n", "\r"), '', hikashop_display(JText::_('THANK_YOU_FOR_PURCHASE', true), 'success', true)); ?>';
 					mainArea.scrollIntoView();
 					window.location.href = "<?php echo $this->notify_url; ?>&paypal_id="+resp.id;
 				});
+			}).catch(error => {
+				console.log(error);
+				Joomla.renderMessages({"error":['<?php echo str_replace(array("\n", "\r"), '', JText::_('PLEASE_FILL_IN_ALL_THE_FIELDS', true)); ?>']});
+				var errDiv = document.getElementById('system-message-container');
+				if(errDiv)
+					errDiv.scrollIntoView();
+				document.getElementById('paypal_pay_button').disabled = false;
+				document.getElementById('card_container').style.opacity = "1";
 			});
 		});
 	});
 } else {
 	document.querySelector('.card_container').style.display = 'none'; // hides the advanced credit and debit card payments fields if seller isn't eligible
-	document.getElementById('paypal-select-message').innerHTML = '<?php echo str_replace("'","\'",JText::sprintf('USE_PAYMENT_BUTTON_BELOW', $this->total_amount)); ?>';
+	document.getElementById('paypal-select-message').innerHTML = '<?php echo str_replace(array("\n", "\r"), '', str_replace("'","\'",JText::sprintf('USE_PAYMENT_BUTTON_BELOW', $this->total_amount))); ?>';
 }
 <?php } ?>
 </script>
