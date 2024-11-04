@@ -5950,4 +5950,30 @@ class EmundusModelFiles extends JModelLegacy
 
 		return $deleted;
 	}
+
+	public function getReferentEmail($keyid,$fnum)
+	{
+		$referent_email = '';
+
+		if(!empty($keyid) && !empty($fnum))
+		{
+			try
+			{
+				$query = $this->_db->getQuery(true);
+
+				$query->select('email')
+					->from($this->_db->quoteName('#__emundus_files_request'))
+					->where($this->_db->quoteName('keyid') . ' = ' . $this->_db->quote($keyid))
+					->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
+				$this->_db->setQuery($query);
+				$referent_email = $this->_db->loadResult();
+			}
+			catch (Exception $e)
+			{
+				Log::add('Error getting referent email: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $referent_email;
+	}
 }
