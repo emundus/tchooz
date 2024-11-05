@@ -122,7 +122,7 @@ class Com_EmundusInstallerScript
 
 					if (version_compare($cache_version, $release_version, '<=') || $firstrun)
 					{
-						EmundusHelperUpdate::displayMessage('-- Installation de la version ' . $release_version . '... --');
+						EmundusHelperUpdate::displayMessage('Installing version ' . $release_version . '...');
 
 						require_once $releases_path . $release;
 						$class             = '\scripts\Release' . $release_with_underscores . 'Installer';
@@ -130,7 +130,7 @@ class Com_EmundusInstallerScript
 						$release_installed = $release_installer->install();
 						if ($release_installed['status'])
 						{
-							EmundusHelperUpdate::displayMessage('-- Installation de la version ' . $release . ' réussi --', 'success');
+							EmundusHelperUpdate::displayMessage('Version ' . $release_version . ' installed', 'success');
 						}
 						else
 						{

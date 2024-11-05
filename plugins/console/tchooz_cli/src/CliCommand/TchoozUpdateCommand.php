@@ -296,6 +296,8 @@ class TchoozUpdateCommand extends AbstractCommand
 									break;
 							}
 
+							$this->ioStyle->text("\033[32m--- " . strtoupper($elementArr['element']) . " component updated" . " ---\n", 's');
+
 						}
 						catch (\Throwable $e) {
 							$success = false;

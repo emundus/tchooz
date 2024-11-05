@@ -17,7 +17,7 @@ $max = max(count($viewLevels), count($contentTypeViewLevels));
 
 ?>
 	<hr />
-<?php if ($d->versionMismatch) : ?>
+<?php if ($d->versionMismatch && !$d->fabrik_ct) : ?>
 	<div class="alert alert-warning"><span class="icon-stack"></span>
 		<?php echo Text::sprintf('COM_FABRIK_CONTENT_TYPE_VERSION_MISMATCH', $d->contentTypeVersion, $d->siteVersion); ?>
 	</div>
@@ -53,7 +53,13 @@ endif; ?>
 if ($d->match) :
 	?>
 	<div class="alert alert-info"><span class="icon-ok"></span>
-		<?php echo Text::_('COM_FABRIK_CONTENT_TYPE_ACL_MATCH'); ?>
+		<?php 
+		if ($d->fabrik_ct) {
+			echo 'Fabrik System Content-Types are using J! default access levels. Check the element and group access settings if you have changed them';
+		}
+		else {
+			echo Text::_('COM_FABRIK_CONTENT_TYPE_ACL_MATCH');
+		}?>
 	</div>
 	<?php
 else:

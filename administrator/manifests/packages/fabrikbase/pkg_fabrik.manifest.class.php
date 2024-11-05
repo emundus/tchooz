@@ -277,6 +277,9 @@ return new class () implements ServiceProviderInterface {
 								Factory::getApplication()->enqueueMessage("All old Fabrik update sites have been deleted.");
 							}
 
+						} elseif (version_compare($manifest_cache->version, '4.4', '=')) {
+							/* V4.4 had some messed up js files due to an inadvertant commit of a 5.0 change, we need to delete the js folder */
+							Folder::delete(JPATH_SITE . "/media/com_fabrik/js");
 						}
 					}
 				}
