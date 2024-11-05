@@ -2,6 +2,7 @@
 defined('_JEXEC') or die('Access Deny');
 
 use Joomla\CMS\Date\Date;
+use Joomla\CMS\Factory;
 
 jimport('joomla.access.access');
 
@@ -12,11 +13,16 @@ class modEmundusCampaignDropfilesHelper
 	{
 		$files = [];
 
-		$db        = JFactory::getDbo();
+		$app = Factory::getApplication();
+		$db        = Factory::getContainer()->get('DatabaseDriver');
 		$query     = $db->getQuery(true);
-		$jinput    = JFactory::getApplication()->input;
-		$id        = $jinput->get('id') ? $jinput->getInt('id', null) : $jinput->getInt('cid', null);
+		$id        = $app->input->get('id') ? $app->input->getInt('id', null) : $app->input->getInt('cid', null);
 		$id        = empty($id) ? $cid : $id;
+		if(empty($id)) {
+			$menu_params = $app->getMenu()->getActive()->getParams();
+			$id = $menu_params->get('com_emundus_programme_campaign_id', 0);
+		}
+
 		$groupUser = JFactory::getUser()->getAuthorisedGroups();
 		$dateTime  = new Date('now', 'UTC');
 		$now       = $dateTime->toSQL();
@@ -49,7 +55,7 @@ class modEmundusCampaignDropfilesHelper
 				}
 			}
 
-			$current_profile = JFactory::getSession()->get('emundusUser')->profile;
+			$current_profile = $app->getSession()->get('emundusUser')->profile;
 
 			if (!empty($column)) {
 				try {
@@ -59,7 +65,8 @@ class modEmundusCampaignDropfilesHelper
 						->leftJoin($db->quoteName('jos_emundus_campaign_workflow', 'cw') . ' ON ' . $db->quoteName('cw.id') . ' = ' . $db->quoteName('cdf.parent_id'))
 						->leftJoin($db->quoteName('jos_dropfiles_files', 'df') . ' ON ' . $db->quoteName('df.id') . ' = ' . $db->quoteName('cdf.' . $column))
 						->leftJoin($db->quoteName('jos_categories', 'cat') . ' ON ' . $db->quoteName('cat.id') . ' = ' . $db->quoteName('df.catid'))
-						->where($db->quoteName('cw.profile') . ' = ' . $db->quote($current_profile));
+						->where($db->quoteName('cw.profile') . ' = ' . $db->quote($current_profile))
+						->order($db->quoteName('df.ordering'));
 					$db->setQuery($query);
 					$files = $db->loadObjectList();
 				}
@@ -97,5 +104,7 @@ class modEmundusCampaignDropfilesHelper
 
 			return $files;
 		}
+
+		return $files;
 	}
 }

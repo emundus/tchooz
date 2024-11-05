@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="1.5" method="upgrade" group="hikashop">
 	<name>Hikashop Google Products Plugin</name>
-	<creationDate>31 janvier 2024</creationDate>
-	<version>5.0.3</version>
+	<creationDate>08 juillet 2024</creationDate>
+	<version>5.1.0</version>
 	<author>Hikashop</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
@@ -38,6 +38,7 @@
 		<param name="brand" type="text" size="50" default="" label="HIKA_BRAND_OVERRIDE" description="BRAND_OVERRIDE" />
 		<param name="categories" multiple="true" namebox_type="category" type="hikanamebox" default="" label="PRODUCT_CATEGORIES" description="GOOGLE_PRODUCTS_CATEGORIES" />
 		<param name="category" type="text" size="50" default="" label="CATEGORY" description="GOOGLE_PRODUCTS_CATEGORY" />
+		<param name="skip_field" type="text" size="50" default="" label="SKIP_FIELD" description="SKIP_FIELD_DESCRIPTION" />
 		<param name="price_displayed" type="list" default="0" label="HIKA_PRICE_DISPLAYED" description="PRICE_DISPLAYED">
 			<option value="cheapest">CHEAPEST_PRICE_DISPLAYED</option>
 			<option value="average">AVERAGE_PRICE_DISPLAYED</option>
@@ -48,11 +49,11 @@
 			<option value="0">HIKASHOP_NO</option>
 			<option value="1">HIKASHOP_YES</option>
 		</param>
-		<param name="no_discount" type="list" default="0" label="NO_DISCOUNT" description="NO_DISCOUNT">
+		<param name="no_discount" type="radio" default="0" label="NO_DISCOUNT" description="NO_DISCOUNT">
 			<option value="0">HIKASHOP_NO</option>
 			<option value="1">HIKASHOP_YES</option>
 		</param>
-		<param name="include_variants" type="list" default="0" label="INCLUDE_VARIANTS" description="INCLUDE_VARIANTS_DESC">
+		<param name="include_variants" type="radio" default="0" label="INCLUDE_VARIANTS" description="INCLUDE_VARIANTS_DESC">
 			<option value="0">HIKASHOP_NO</option>
 			<option value="1">HIKASHOP_YES</option>
 		</param>
@@ -150,13 +151,14 @@
 					<option value="10">INCREASE_PERFORMANCES_NO_LIMIT</option>
 				</field>
 				<field name="channel_description" type="text" size="50" default="" label="CHANNEL_DESCRIPTION" description="CHANNEL_DESCRIPTION_DESC" />
-				<field name="use_brand" type="list" default="1" label="HIKA_USE_PRODUCTS_BRAND" description="USE_PRODUCTS_BRAND">
+				<field name="use_brand" type="radio" default="1" label="HIKA_USE_PRODUCTS_BRAND" description="USE_PRODUCTS_BRAND" class="btn-group btn-group-yesno">
 					<option value="0">HIKASHOP_NO</option>
 					<option value="1">HIKASHOP_YES</option>
 				</field>
 				<field name="brand" type="text" size="50" default="" label="HIKA_BRAND_OVERRIDE" description="BRAND_OVERRIDE" />
 				<field name="categories" multiple="true" namebox_type="category" type="hikanamebox" default="" label="PRODUCT_CATEGORIES" description="GOOGLE_PRODUCTS_CATEGORIES" />
 				<field name="category" type="text" size="50" default="" label="GOOGLE_PRODUCT_CATEGORY" description="GOOGLE_PRODUCTS_CATEGORY" />
+				<field name="skip_field" type="text" size="50" default="" label="SKIP_FIELD" description="SKIP_FIELD_DESCRIPTION" />
 				<field name="price_displayed" type="list" default="0" label="HIKA_PRICE_DISPLAYED" description="PRICE_DISPLAYED">
 					<option value="cheapest">CHEAPEST_PRICE_DISPLAYED</option>
 					<option value="average">AVERAGE_PRICE_DISPLAYED</option>
@@ -167,11 +169,11 @@
 					<option value="0">HIKASHOP_NO</option>
 					<option value="1">HIKASHOP_YES</option>
 				</field>
-				<field name="no_discount" type="list" default="0" label="NO_DISCOUNT" description="NO_DISCOUNT">
+				<field name="no_discount" type="radio" default="0" label="NO_DISCOUNT" description="NO_DISCOUNT" class="btn-group btn-group-yesno">
 					<option value="0">HIKASHOP_NO</option>
 					<option value="1">HIKASHOP_YES</option>
 				</field>
-				<field name="include_variants" type="list" default="0" label="INCLUDE_VARIANTS" description="INCLUDE_VARIANTS_DESC">
+				<field name="include_variants" type="radio" default="0" label="INCLUDE_VARIANTS" description="INCLUDE_VARIANTS_DESC" class="btn-group btn-group-yesno">
 					<option value="0">HIKASHOP_NO</option>
 					<option value="1">HIKASHOP_YES</option>
 				</field>

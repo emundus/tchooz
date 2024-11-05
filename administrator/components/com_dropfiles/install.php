@@ -618,8 +618,8 @@ class Com_DropfilesInstallerScript
     /**
      * Method to run before an install/update/uninstall method
      *
-     * @param string $type   Type
-     * @param object $parent Parent
+     * @param string $type   The type of change (install, update or discover_install)
+     * @param object $parent The class calling this method
      *
      * @return boolean
      */
@@ -636,9 +636,6 @@ class Com_DropfilesInstallerScript
                 return false;
             }
         } else {
-            // $parent is the class calling this method
-            // $type is the type of change (install, update or discover_install)
-            $this->release = $parent->getManifest()->version ; //$parent->get('manifest')->version;
             $jversion = new JVersion();
             // abort if the current Joomla release is older
             if (version_compare($jversion->getShortVersion(), '3.7.0', 'lt')) {
@@ -657,8 +654,8 @@ class Com_DropfilesInstallerScript
     /**
      * Method to run after an install/update/uninstall method
      *
-     * @param string $type   Type
-     * @param object $parent Parent
+     * @param string $type   The type of change (install, update or discover_install)
+     * @param object $parent The class calling this method
      *
      * @return boolean
      */
@@ -736,6 +733,19 @@ class Com_DropfilesInstallerScript
                         . '/components/com_dropfiles/assets/images/exclamation.png" />
                     ' . $folder . ' : ' . JText::sprintf('COM_DROPFILES_INSTALLER_EXT_NOK') . '<br/>';
                 }
+
+                // install template
+                $sourcePath = JPATH_ADMINISTRATOR . '/components/com_dropfiles/templates';
+                if (!JFolder::exists($sourcePath)) {
+                    echo 'Unable to install dropfiles template, missing from source ZIP file!<br />';
+                } else {
+                    $installer = new JInstaller;
+                    $result = $installer->install($sourcePath . '/dropfilesfrontend');
+
+                    if (empty($result)) {
+                        echo 'Error installing dropfiles template<br />';
+                    }
+                }
             }
 
             //Set the default parameters
@@ -802,7 +812,7 @@ class Com_DropfilesInstallerScript
                         echo '<p><img src="' . JURI::root()
                             . '/components/com_dropfiles/assets/images/exclamation.png" /><b>'
                             . JText::_('COM_DROPFILES_INSTALLER_HTACCESS_OLD')
-                            . ' <a target="_blank" href="https://www.joomunited.com/support/faq/dropfiles">'
+                            . ' <a target="_blank" href="https://www.joomunited.com/faq/315-dropfiles/435-the-component-installer-tells-me-to-update-my-htaccess-what-should-i-do">'
                             . 'FAQ</a></b></p>';
                         break;
                     }
@@ -866,20 +876,6 @@ class Com_DropfilesInstallerScript
                 echo 'Error creating Dropfiles menu type: ' . $model->getError() . '<br />';
             }
         }
-
-        // install template
-        $sourcePath = JPATH_ADMINISTRATOR . '/components/com_dropfiles/templates';
-        if (!JFolder::exists($sourcePath)) {
-            echo 'Unable to install dropfiles template, missing from source ZIP file!<br />';
-        } else {
-            $installer = new JInstaller;
-            $result = $installer->install($sourcePath . '/dropfilesfrontend');
-
-            if (empty($result)) {
-                echo 'Error installing dropfiles template<br />';
-            }
-        }
-
 
         $query = $db->getQuery(true);
         $query->select('id');

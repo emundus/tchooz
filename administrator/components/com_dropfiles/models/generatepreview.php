@@ -579,7 +579,12 @@ class DropfilesModelGeneratepreview extends JModelList
             return;
         }
         $queueFilesInOption = $this->modelOption->get_option('_dropfiles_previewer_generate_queue_files');
-        $queueFilesInOption = (array) json_decode($queueFilesInOption);
+        if ($queueFilesInOption) {
+            $queueFilesInOption = (array) json_decode($queueFilesInOption);
+        } else {
+            $queueFilesInOption = array();
+        }
+
         $sourceFilePath = $this->getSourceFilePath($fileId);
         if (!$sourceFilePath) {
             self::log('Source file not exists!');

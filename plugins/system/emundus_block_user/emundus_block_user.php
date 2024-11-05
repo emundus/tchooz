@@ -76,6 +76,7 @@ class plgSystemEmundus_block_user extends CMSPlugin
 
 	        $token = $params->get('emailactivation_token');
 	        $token = md5($token);
+	        require_once(JPATH_ROOT . '/components/com_emundus/helpers/menu.php');
 	        if (!empty($token) && strlen($token) === 32 && $this->app->input->getInt($token, 0, 'get') === 1 && $input->getInt('emailactivation',0) == 1) {
 		        $table->activation = 1;
 		        $params->set('emailactivation_token', null);
@@ -85,7 +86,7 @@ class plgSystemEmundus_block_user extends CMSPlugin
 		        if ($table->store()) {
 			        $this->app->enqueueMessage(JText::_('PLG_EMUNDUS_REGISTRATION_EMAIL_ACTIVATED'), 'success');
 
-			        $redirect = $this->params->get('activation_redirect', 'index.php');
+			        $redirect = EmundusHelperMenu::getHomepageLink($this->params->get('activation_redirect', 'index.php'));
 			        if (!empty($redirect)) {
 				        $this->app->redirect($redirect);
 			        }
@@ -97,7 +98,7 @@ class plgSystemEmundus_block_user extends CMSPlugin
 	        elseif (($table->activation == 1 || $table->activation == 0) && $input->getInt('emailactivation',0) == 1) {
 		        $this->app->enqueueMessage(JText::_('PLG_EMUNDUS_REGISTRATION_EMAIL_ALREADY_ACTIVATED'), 'warning');
 
-		        $redirect = $this->params->get('activation_redirect', 'index.php');
+		        $redirect = EmundusHelperMenu::getHomepageLink($this->params->get('activation_redirect', 'index.php'));
 		        if (!empty($redirect)) {
 			        $this->app->redirect($redirect);
 		        }

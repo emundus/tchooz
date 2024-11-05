@@ -18,13 +18,13 @@ defined('_JEXEC') || die('=;)');
 DropfilesFilesHelper::includeJSHelper();
 $usegoogleviewer  = ((int) $this->componentParams->get('usegoogleviewer', 1) === 1) ? 'dropfileslightbox' : '';
 $target           = ((int) $this->componentParams->get('usegoogleviewer', 1) === 2) ? 'target="_blank"' : '';
+$showFolderTree   = intval(DropfilesBase::loadValue($this->params, 'ggd_showfoldertree', 0)) === 1 ? true : false;
 $link_download_popup = '#';
 $allowedgoogleext    = 'pdf,ppt,pptx,doc,docx,xls,xlsx,dxf,ps,eps,xps,psd,tif,tiff,bmp,svg,pages,ai,dxf,ttf,txt,mp3,mp4,png,gif,ico,jpeg,jpg';
 $showdownloadcate = 0;
 if ($this->viewfileanddowload && (int) DropfilesBase::loadValue($this->params, 'ggd_showdownload', 1)) {
     $showdownloadcate = (int) $this->componentParams->get('download_category', 0)  ;
 }
-
 ?>
     <script type="text/javascript">
         dropfilesGVExt = ["<?php echo implode('","', explode(',', DropfilesBase::loadValue($this->params, 'allowedgoogleext', $allowedgoogleext))); ?>"];
@@ -41,7 +41,7 @@ if ($this->viewfileanddowload && (int) DropfilesBase::loadValue($this->params, '
                 {{#if custom_icon}}
                 <div class="custom-icon {{ext}}"><img src="{{custom_icon_thumb}}" alt=""></div>
                 {{else}}
-                <div class="ext {{ext}}"><span class="txt">{{ext}}</div>
+                <div class="ext {{ext}} ext-{{ext}}"><span class="txt">{{ext}}</div>
                 {{/if}}
                 <?php if ((int) DropfilesBase::loadValue($this->params, 'ggd_showtitle', 1) === 1) : ?>
                     {{#if title}}
@@ -205,11 +205,13 @@ if ($this->viewfileanddowload && (int) DropfilesBase::loadValue($this->params, '
                     {{#if custom_icon}}
                     <div class="custom-icon {{ext}}"><img src="{{custom_icon_thumb}}" alt=""></div>
                     {{else}}
-                    <div class="ext {{ext}}"><span class="txt">{{ext}}</div>
+                    <div class="ext {{ext}} ext-{{ext}}"><span class="txt">{{ext}}</div>
                     {{/if}}
                 </div>
                 <div class="droptitle">
+                    <?php if ((int) DropfilesBase::loadValue($this->params, 'ggd_showtitle', 1) === 1) : ?>
                     {{title}}
+                    <?php endif; ?>
                 </div>
             </a>
             {{/if}}{{/each}}
@@ -218,7 +220,7 @@ if ($this->viewfileanddowload && (int) DropfilesBase::loadValue($this->params, '
     </script>
 
 <?php if (!empty($this->files) || !empty($this->categories)) : ?>
-    <div class="dropfiles-content dropfiles-content-ggd dropfiles-content-multi dropfiles-files"
+    <div class="dropfiles-content dropfiles-content-ggd dropfiles-content-multi dropfiles-files <?php echo $showFolderTree ? 'dropfiles-content-folder-tree' : ''; ?>"
          data-category="<?php echo $this->category->id; ?>" data-current="<?php echo $this->category->id; ?>" data-category-name="<?php echo $this->category->title; ?>">
         <input type="hidden" id="current_category" value="<?php echo $this->category->id; ?>"/>
         <input type="hidden" id="current_category_slug" value="<?php echo $this->category->alias; ?>"/>
@@ -307,7 +309,7 @@ if ($this->viewfileanddowload && (int) DropfilesBase::loadValue($this->params, '
                                                 <img src="<?php echo $file->custom_icon_thumb; ?>" alt="">
                                             </div>
                                         <?php else : ?>
-                                            <div class="ext <?php echo $file->ext; ?>">
+                                            <div class="ext <?php echo $file->ext; ?> <?php echo 'ext-' . $file->ext; ?>">
                                             <span class="txt"><?php echo $file->ext; ?>
                                             </div>
                                         <?php endif; ?>
@@ -324,5 +326,52 @@ if ($this->viewfileanddowload && (int) DropfilesBase::loadValue($this->params, '
                 <?php endif; ?>
             </div>
         </div>
+    </div>
+<?php else : ?>
+    <div class="dropfiles-content dropfiles-content-ggd dropfiles-content-multi dropfiles-files <?php echo $showFolderTree ? 'dropfiles-content-folder-tree' : ''; ?>"
+         data-category="<?php echo $this->category->id; ?>" data-current="<?php echo $this->category->id; ?>" data-category-name="<?php echo $this->category->title; ?>">
+        <input type="hidden" id="current_category" value="<?php echo $this->category->id; ?>"/>
+        <input type="hidden" id="current_category_slug" value="<?php echo $this->category->alias; ?>"/>
+        <?php if ((int) DropfilesBase::loadValue($this->params, 'ggd_showbreadcrumb', 1) === 1) : ?>
+            <ul class="breadcrumbs dropfiles-breadcrumbs-ggd">
+                <li class="active">
+                    <?php echo $this->category->title; ?>
+                </li>
+                <?php if ($this->user_id) : ?>
+                    <a data-id="" data-catid="" data-file-type="" class="openlink-manage-files " target="_blank"
+                       href="<?php echo $this->urlmanage ?>" data-urlmanage="<?php echo $this->urlmanage ?>">
+                        <span class="btn-title"><?php echo JText::_('COM_DROPFILES_MANAGE_FILES'); ?></span><i
+                                class="zmdi zmdi-edit dropfiles-preview"></i>
+                    </a>
+                <?php endif; ?>
+                <?php if ($showdownloadcate === 1 && isset($this->category->linkdownload_cat) && !empty($this->files)) : ?>
+                    <a data-catid="" class="ggd-download-category download-all" href="<?php echo $this->category->linkdownload_cat; ?>"><span class="btn-title"><?php echo JText::_('COM_DROPFILES_DOWNLOAD_ALL'); ?></span><i class="zmdi zmdi-check-all"></i></a>
+                <?php endif;?>
+            </ul>
+        <?php else : ?>
+            <?php if ($this->user_id) : ?>
+                <div class="dropfiles-manage-files">
+                    <a data-id="" data-catid="" data-file-type="" class="openlink-manage-files " target="_blank"
+                       href="<?php echo $this->urlmanage ?>" data-urlmanage="<?php echo $this->urlmanage ?>">
+                        <span class="btn-title"><?php echo JText::_('COM_DROPFILES_MANAGE_FILES'); ?></span>
+                        <i class="zmdi zmdi-edit dropfiles-preview"></i>
+                    </a>
+                </div>
+            <?php endif; ?>
+            <?php if ($showdownloadcate === 1 && isset($this->category->linkdownload_cat) && !empty($this->files)) : ?>
+                <a data-catid="" class="ggd-download-category download-all" href="<?php echo $this->category->linkdownload_cat; ?>"><span class="btn-title"><?php echo JText::_('COM_DROPFILES_DOWNLOAD_ALL'); ?></span><i class="zmdi zmdi-check-all"></i></a>
+            <?php endif;?>
+        <?php endif; ?>
+        <?php
+        // Show empty category message
+        if (empty($this->files) && empty($this->categories)) {
+            if ((int) $this->componentParams->get('show_empty_folder_message', 0) === 1) {
+                $msg = JText::_('COM_DROPFILES_CONFIG_EMPTY_FOLDER_MESSAGE');
+                $msg = str_replace('{category_title}', $this->category->title, $msg);
+                echo '<p class="category_empty" style="font-size: 16px; margin-top: 15px;">'. $msg .'</p>';
+                return;
+            }
+        }
+        ?>
     </div>
 <?php endif; ?>

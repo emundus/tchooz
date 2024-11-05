@@ -30,6 +30,9 @@ JText::script('COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING');
 JText::script('COM_EMUNDUS_ONBOARD_SUBJECT_REQUIRED');
 JText::script('COM_EMUNDUS_ONBOARD_BODY_REQUIRED');
 JText::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_BODY');
+JText::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_BUTTON_TEXT');
+JText::script('COM_EMUNDUS_ONBOARD_BUTTON_REQUIRED');
+JText::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_BUTTON_TEXT_TIP');
 JText::script('COM_EMUNDUS_ONBOARD_VARIABLESTIP');
 JText::script('COM_EMUNDUS_ONBOARD_TIP');
 JText::script('COM_EMUNDUS_ONBOARD_EMAIL_TRIGGER');
@@ -117,4 +120,4 @@ $hash = EmundusHelperCache::getCurrentGitHash();
     >
 </div>
 
-<script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
+<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>

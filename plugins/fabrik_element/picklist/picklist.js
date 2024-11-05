@@ -32,7 +32,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                     clone     : true,
                     revert    : true,
                     opacity   : 0.7,
-                    hovercolor: '#ffddff',
+                    hovercolor: this.options.bghovercolour,
                     onComplete: function (element) {
                         this.setData();
                         this.showNotices(element);

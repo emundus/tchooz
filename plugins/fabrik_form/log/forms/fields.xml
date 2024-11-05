@@ -2,6 +2,9 @@
 <form>
     <fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
         <fieldset name="plg-form-log">
+			<field type="helplink"
+				url="PLG_FORM_LOG_HELP_SERVER" />
+
             <field default="1"
                    class="btn-group"
 				layout="joomla.form.field.radio.switcher"

@@ -19,7 +19,7 @@
             <span class="tw-ml-1">{{ total_count }}</span>
           </div>
           <span class="tw-ml-3 tw-mr-3">|</span>
-          <div class="em-flex-row">
+          <div class="tw-flex tw-items-center">
             <span>{{ translate('COM_EMUNDUS_FILES_DISPLAY_PAGE') }}</span>
             <select class="em-select-no-border tw-ml-3" style="width: max-content; height: fit-content;" v-model="limit">
               <option>10</option>
@@ -50,13 +50,13 @@
         <div id="filters" class="tw-flex tw-flex-col">
           <div id="default-filters" class="tw-mb-4" v-if="defaultFilters.length > 0"
                v-click-outside="onDefaultFiltersClickOutside">
-            <div class="em-tabs tw-cursor-pointer tw-flex tw-items-center em-s-justify-content-center"
+            <div class="em-tabs tw-cursor-pointer tw-flex tw-items-center md:tw-justify-center"
                  @click="openedFilters = !openedFilters">
               <span>{{ translate('COM_EMUNDUS_FILES_FILTER') }}</span>
-              <span class="material-icons-outlined tw-ml-3">filter_list</span>
+              <span class="material-symbols-outlined tw-ml-3">filter_list</span>
             </div>
             <ul :class="{'tw-hidden': !openedFilters, 'em-input': true}">
-              <li v-for="filter in defaultFilters" :key="filter.id" @click="addFilter(filter)" class="em-pointer">
+              <li v-for="filter in defaultFilters" :key="filter.id" @click="addFilter(filter)" class="tw-cursor-pointer">
                 {{ filter.label }}
               </li>
             </ul>
@@ -100,29 +100,29 @@
               >
                 <span slot="noResult">{{translate('COM_EMUNDUS_FILES_FILTER_NO_ELEMENTS_FOUND')}}</span>
               </multiselect>
-              <span class="material-icons-outlined tw-cursor-pointer em-red-500-color tw-ml-3" @click="removeFilter(filter)">close</span>
+              <span class="material-symbols-outlined tw-cursor-pointer tw-text-red-600 tw-ml-3" @click="removeFilter(filter)">close</span>
             </div>
           </div>
         </div>
         <div v-if="defaultFilters.length > 0" class="tw-flex tw-items-center">
-          <span class="material-icons-outlined tw-mr-4 em-red-500-color"
-                :class="{'em-pointer': filters.length > 0, 'em-pointer-disbabled': filters.length < 1 }"
+          <span class="material-symbols-outlined tw-mr-4 tw-text-red-600"
+                :class="{'tw-cursor-pointer': filters.length > 0, 'tw-cursor-pointer-disbabled': filters.length < 1 }"
                 :alt="translate('COM_EMUNDUS_FILES_RESET_FILTERS')" @click="resetFilters">filter_alt_off</span>
-          <button class="em-primary-button tw-cusor-pointer" @click="applyFilters">
+          <button class="tw-btn-primary tw-cusor-pointer" @click="applyFilters">
             {{ translate('COM_EMUNDUS_FILES_APPLY_FILTER') }}
           </button>
         </div>
       </div>
-      <div v-else class="em-flex-row em-flex-space-between em-mb-16">
-        <skeleton height="40px" width="96px" class="em-border-radius-8"></skeleton>
-        <skeleton height="40px" width="120px" class="em-border-radius-8"></skeleton>
+      <div v-else class="tw-flex tw-items-center tw-justify-between tw-mb-4">
+        <skeleton height="40px" width="96px" class="tw-rounded-coordinator"></skeleton>
+        <skeleton height="40px" width="120px" class="tw-rounded-coordinator"></skeleton>
       </div>
     </div>
 
-    <div class="em-flex-row em-align-start" v-if="files && columns && files.length > 0" :key="reloadFiles">
+    <div class="tw-flex tw-items-center tw-items-start" v-if="files && columns && files.length > 0" :key="reloadFiles">
       <div id="table_columns_move_right" :class="moveRight ? '' : 'em-disabled-state'"
-           class="table-columns-move em-flex-column em-mr-4" @click="scrollToRight">
-        <span class="material-icons-outlined tw-cursor-pointer" style="font-size: 16px">arrow_back</span>
+           class="table-columns-move tw-flex tw-flex-col tw-mr-1" @click="scrollToRight">
+        <span class="material-symbols-outlined tw-cursor-pointer" style="font-size: 16px">arrow_back</span>
       </div>
 
       <el-table
@@ -145,10 +145,10 @@
             sortable
             :sort-method="(a, b) => sortBy(a, b, 'file')">
           <template slot-scope="scope">
-            <div @click="openApplication(scope.row)" class="em-pointer">
-              <p class="em-font-weight-500">
+            <div @click="openApplication(scope.row)" class="tw-cursor-pointer">
+              <p class="tw-font-medium">
                 {{ scope.row.applicant_name.charAt(0).toUpperCase() + scope.row.applicant_name.slice(1) }}</p>
-              <span class="em-text-neutral-500 em-font-size-14">{{ scope.row.fnum }}</span>
+              <span class="tw-text-neutral-500 tw-text-sm">{{ scope.row.fnum }}</span>
             </div>
           </template>
         </el-table-column>
@@ -161,7 +161,7 @@
               min-width="180">
             <template slot="header" slot-scope="scope">
               <span :title="translate('COM_EMUNDUS_ONBOARD_STATUS')"
-                    class="em-neutral-700-color">{{ translate('COM_EMUNDUS_ONBOARD_STATUS') }}</span>
+                    class="tw-text-neutral-700">{{ translate('COM_EMUNDUS_ONBOARD_STATUS') }}</span>
             </template>
             <template slot-scope="scope">
               <p :class="'label label-'+scope.row.status_color" class="em-status">{{ scope.row.status }}</p>
@@ -173,11 +173,11 @@
               min-width="180">
             <template slot="header" slot-scope="scope">
               <span :title="translate('COM_EMUNDUS_FILES_ASSOCS')"
-                    class="em-neutral-700-color">{{ translate('COM_EMUNDUS_FILES_ASSOCS') }}</span>
+                    class="tw-text-neutral-700">{{ translate('COM_EMUNDUS_FILES_ASSOCS') }}</span>
             </template>
             <template slot-scope="scope">
               <div class="em-group-assoc-column">
-                <span v-for="group in scope.row.assocs" :class="group.class" class="em-status em-mb-4">{{
+                <span v-for="group in scope.row.assocs" :class="group.class" class="em-status tw-mb-1">{{
                     group.label
                   }}</span>
               </div>
@@ -189,11 +189,11 @@
               min-width="180">
             <template slot="header" slot-scope="scope">
               <span :title="translate('COM_EMUNDUS_FILES_TAGS')"
-                    class="em-neutral-700-color">{{ translate('COM_EMUNDUS_FILES_TAGS') }}</span>
+                    class="tw-text-neutral-700">{{ translate('COM_EMUNDUS_FILES_TAGS') }}</span>
             </template>
             <template slot-scope="scope">
               <div class="em-group-assoc-column">
-                <span v-for="tag in scope.row.tags" :class="tag.class" class="em-status em-mb-4">{{ tag.label }}</span>
+                <span v-for="tag in scope.row.tags" :class="tag.class" class="em-status tw-mb-1">{{ tag.label }}</span>
               </div>
             </template>
           </el-table-column>
@@ -205,7 +205,7 @@
               sortable
               :sort-method="(a, b) => sortBy(a, b, column.name)">
             <template slot="header" slot-scope="scope">
-              <span :title="column.label" class="em-neutral-700-color">{{ column.label }}</span>
+              <span :title="column.label" class="tw-text-neutral-700">{{ column.label }}</span>
             </template>
             <template slot-scope="scope">
               <p v-html="formatter(scope.row[column.name],column)"></p>
@@ -214,9 +214,9 @@
         </template>
       </el-table>
 
-      <div id="table_columns_move_left" v-if="moveLeft" class="table-columns-move em-flex-column em-ml-4"
+      <div id="table_columns_move_left" v-if="moveLeft" class="table-columns-move tw-flex tw-flex-col tw-ml-1"
            @click="scrollToLeft">
-        <span class="material-icons-outlined em-pointer" style="font-size: 16px">arrow_forward</span>
+        <span class="material-symbols-outlined tw-cursor-pointer" style="font-size: 16px">arrow_forward</span>
       </div>
     </div>
 
@@ -225,15 +225,15 @@
     </div>
 
     <div v-if="rows_selected.length > 0" class="selected-rows-tip">
-      <div class="selected-rows-tip__content em-flex-row">
+      <div class="selected-rows-tip__content tw-flex tw-items-center">
         <span v-if="rows_selected.length === 1">{{
             rows_selected.length
           }} {{ translate('COM_EMUNDUS_FILES_ELEMENT_SELECTED') }} :</span>
         <span v-else-if="rows_selected.length > 1">{{
             rows_selected.length
           }} {{ translate('COM_EMUNDUS_FILES_ELEMENTS_SELECTED') }} :</span>
-        <a class="em-pointer em-ml-16" @click="toggleSelection()">{{ translate('COM_EMUNDUS_FILES_UNSELECT') }}</a>
-        <a class="em-pointer em-ml-16" @click="openInNewTab()">{{ translate('COM_EMUNDUS_FILES_OPEN_IN_NEW_TAB') }}</a>
+        <a class="tw-cursor-pointer em-ml-16" @click="toggleSelection()">{{ translate('COM_EMUNDUS_FILES_UNSELECT') }}</a>
+        <a class="tw-cursor-pointer em-ml-16" @click="openInNewTab()">{{ translate('COM_EMUNDUS_FILES_OPEN_IN_NEW_TAB') }}</a>
       </div>
 
     </div>
@@ -244,14 +244,15 @@
 
 <script>
 import Tabs from "@/components/Files/Tabs.vue";
-import {Table, TableColumn} from 'element-ui';
+// use element-plus instead
+import { ElTable } from 'element-plus';
 
 /** SERVICES **/
-import filesService from 'com_emundus/src/services/files';
+import filesService from '@/services/files.js'
 import errors from '@/mixins/errors';
-import Application from '@/components/Files/Application';
+import Application from '@/components/Files/Application.vue';
 import multiselect from 'vue-multiselect';
-import Skeleton from '../../components/Skeleton';
+import Skeleton from '@/components/Skeleton.vue';
 
 export default {
   name: 'Files',
@@ -259,9 +260,8 @@ export default {
     Skeleton,
     Application,
     Tabs,
-    'el-table': Table,
-    'el-table-column': TableColumn,
-    multiselect
+    'el-table': ElTable,
+	  multiselect
   },
   props: {
     type: {

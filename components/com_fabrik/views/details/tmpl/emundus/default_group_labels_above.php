@@ -10,11 +10,13 @@
  */
 
 // No direct access
+use Joomla\CMS\Language\Text;
+
 defined('_JEXEC') or die('Restricted access');
 
 $element = $this->element;?>
 <div class=" <?php echo $element->containerClass .' '. $element->span; ?>">
-	<div class="fabrikLabel">
+	<div class="fabrikLabel tw-font-bold">
 		<?php echo $element->label_raw;?>
 	</div>
 
@@ -23,6 +25,16 @@ $element = $this->element;?>
 	<?php endif ?>
 
 	<div class="fabrikElement">
+		<?php
+		if($element->plugin == 'yesno') {
+			if($element->value == 1) {
+				$element->element = Text::_('JYES');
+			} else {
+				$element->element = Text::_('JNO');
+			}
+		}
+		?>
+
 		<?php echo $element->element;?>
 	</div>
 

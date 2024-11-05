@@ -35,6 +35,9 @@
       padding: calcRem(10px) calcRem(15px);
       line-height: 28px;
     }
+    input {
+      background-color: $white-color;
+    }
     select.dropfilesinput,
     .dropfilesinput[type=text] {
       height: auto;
@@ -416,9 +419,11 @@
         th {
           text-align: left;
           line-height: 35px;
+          background-color: $white-color;
           color: #568095;
           font-size: calcRem(15px);
           padding-left: 0;
+          border-bottom-width: 0;
           a {
             text-decoration: none;
             &:hover, &:focus {

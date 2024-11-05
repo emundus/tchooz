@@ -293,8 +293,8 @@ $checkbox_shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.03), 0 2px 10px 0 rgba(0, 0, 0, 0.
     + .minicolors-swatch {
       height: 42px;
       width: 42px;
-      top: 4px;
-      left: 4px;
+      top: 5px;
+      left: 15px;
       border: none;
 
       + .minicolors-panel {
@@ -866,6 +866,12 @@ ul.field {
     margin: 0;
     height: 40px;
     line-height: 24px;
+  }
+
+  #permissions-sliders {
+    select {
+      line-height: 15px;
+    }
   }
 
   &.ju-custom-area {

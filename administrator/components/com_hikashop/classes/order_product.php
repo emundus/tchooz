@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -315,6 +315,14 @@ class hikashopOrder_productClass extends hikashopClass {
 
 		if(empty($bundle_product_ids))
 			return;
+		$query = 'SELECT product_parent_id, product_id FROM #__hikashop_product WHERE product_parent_id > 0 AND product_id IN ('.implode(',', $bundle_product_ids).')';
+		$this->database->setQuery($query);
+		$parents = $this->database->loadObjectList('product_id');
+		if(!empty($parents)) {
+			foreach($parents as $k => $v) {
+				$bundle_product_ids[ (int)$v->product_parent_id ] = (int)$v->product_parent_id;
+			}
+		}
 
 		$query = 'SELECT pr.product_id as `bundle_id`, pr.product_related_id as `product_id`, pr.product_related_quantity, p.product_name, p.product_code, p.product_tax_id '.
 			' FROM #__hikashop_product_related as pr '.
@@ -356,9 +364,16 @@ class hikashopOrder_productClass extends hikashopClass {
 		$p = array();
 		foreach($products as $product) {
 			foreach($bundles_data as $bundle_data) {
-				if($product->product_id != $bundle_data->bundle_id)
-					continue;
-
+				if($product->product_id != $bundle_data->bundle_id) {
+					$found = false;
+					foreach($parents as $parent) {
+						if($parent->product_id == $product->product_id && $parent->product_parent_id == $bundle_data->bundle_id) {
+							$found = true;
+						}
+					}
+					if(!$found)
+						continue;
+				}
 				if(empty($bundle_data->product_related_quantity))
 					$bundle_data->product_related_quantity = 1;
 
@@ -477,14 +492,20 @@ class hikashopOrder_productClass extends hikashopClass {
 							if(!isset($updates[$q]))
 								$updates[$q] = array();
 							$updates[$q][] = (int)$item->product_id;
+
+						} elseif(!empty($options['type']) && $options['type'] == 'option') {
+							$query = 'UPDATE '.hikashop_table('order_product').' SET order_product_option_parent_id=0 WHERE order_product_id = '.(int)$item->order_product_id;
+							$this->database->setQuery($query);
+							$this->database->execute();
 						}
 					}
 				}
+
 			}
 			$this->updateQuantityAndSales($updates);
 		}
 
-		if(!empty($product->tax_namekey)) {
+		if(!empty($product->tax_namekey) && $product->tax_namekey != '-1') {
 			$tax = new stdClass();
 			if(!empty($product->product_id) && !empty($old)) {
 				if(is_string($old->order_product_tax_info))

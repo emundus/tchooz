@@ -30,11 +30,59 @@ class DropfilesPluginBase extends JPlugin
     public $name;
 
     /**
+     * Dropfiles parameters
+     *
+     * @var object
+     */
+    public $componentParams;
+
+    /**
      * Options
      *
      * @var array
      */
     protected $options;
+
+    /**
+     * Arrary of files
+     *
+     * @var array
+     */
+    public $files;
+
+    /**
+     * Category object
+     *
+     * @var object
+     */
+    public $category ;
+
+    /**
+     * Arrary of sub categories
+     *
+     * @var array
+     */
+    public $categories;
+
+    /**
+     * View and Download file permission
+     *
+     * @var boolean
+     */
+    public $viewfileanddowload;
+
+    /**
+     * User ID
+     *
+     * @var integer
+     */
+    public $user_id;
+    /**
+     * URL manage files view
+     *
+     * @var string
+     */
+    public $urlmanage;
 
     /**
      * DropfilesPluginBase constructor.
@@ -121,6 +169,6 @@ class DropfilesPluginBase extends JPlugin
      */
     public static function getDropfilesThemes()
     {
-        return array('default', 'ggd', 'tree', 'table');
+        return array('default', 'ggd', 'tree', 'table', 'preview');
     }
 }

@@ -28,7 +28,7 @@ if ($item->menu_image) {
 }
 else {
 	if (!empty($icon_css)) {
-		$linktype = '<span class="material-icons-outlined" style="font-size: 16px; color: black;margin-right: 4px">' . $icon_css . '</span><span>' . $item->title . '</span>';
+		$linktype = '<span class="material-symbols-outlined" style="font-size: 16px; color: black;margin-right: 4px">' . $icon_css . '</span><span>' . $item->title . '</span>';
 	}
 	else {
 		$linktype = $item->title;

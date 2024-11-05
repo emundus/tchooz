@@ -2,7 +2,7 @@
 $d = $displayData;
 ?>
 
-<div id="<?php echo $d->id; ?>" class="fabrikinput fabrikElementReadOnly" style="background-color: <?php echo $d->backgroundColor ?>;<?php if ($d->type == 4): ?>padding: 0;<?php endif; ?>">
+<div id="<?php echo $d->id; ?>" class="fabrikinput fabrikElementReadOnly" style="background-color: <?php echo $d->backgroundColor ?>;border: solid 1px <?php echo $d->borderColor; ?>;<?php if ($d->type == 4): ?>padding: 0;<?php endif; ?>" name="<?php echo $d->name; ?>">
     <span class="material-icons<?php echo $d->iconType ?>" style="color: <?php echo $d->iconColor ?>"><?php echo $d->icon ?></span>
 
     <div class="fabrikElementContent tw-w-full" <?php if ($d->type == 4): ?>style="margin-left: 0;"<?php endif; ?>>
@@ -12,7 +12,7 @@ $d = $displayData;
                 <h3>
                     <?php echo $d->title ?>
                 </h3>
-                <span class="material-icons-outlined tw-transition-transform tw-duration-300" id="<?php echo $d->id; ?>-icon">expand_more</span>
+                <span class="material-symbols-outlined tw-transition-transform tw-duration-300" id="<?php echo $d->id; ?>-icon">expand_more</span>
             </div>
 	    <?php endif; ?>
 
@@ -22,8 +22,8 @@ $d = $displayData;
 		    <?php if (!empty($d->title) && $d->accordion == 0) : ?>
                 <h3><?php echo $d->title ?></h3>
 		    <?php endif; ?>
-            <div class="<?php if (!empty($d->title)) : ?>mt-2<?php endif; ?>">
-		        <?php echo $d->value;?>
+            <div class="<?php if (!empty($d->title)) : ?>tw-mt-2<?php else : ?>!tw-mt-0<?php endif; ?>">
+                <div class="tw-whitespace-pre-line" id="<?php echo $d->id; ?>-value" style="color: <?php echo $d->textColor; ?>"><?php echo $d->value;?></div>
             </div>
         </div>
     </div>
@@ -48,7 +48,6 @@ $d = $displayData;
                 content.classList.toggle('show');
             }
         }
-        console.log(target);
     }
 </script>
 <?php endif; ?>

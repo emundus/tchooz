@@ -237,6 +237,7 @@ class DropfilesControllerFts extends JControllerForm
             $this->rebuildindex(time());
             $response->reload();
         }
+        ob_clean();
         echo $response->getJSON();
         JFactory::getApplication()->close();
     }
@@ -293,7 +294,7 @@ class DropfilesControllerFts extends JControllerForm
 
             $response->console('pong! ' . (microtime(true) - $t0) . ' s');
         }
-
+        ob_clean();
         echo $response->getJSON();
         JFactory::getApplication()->close();
     }
@@ -437,6 +438,7 @@ class DropfilesControllerFts extends JControllerForm
                 $response->variable('code', 1);
             }
         }
+        ob_clean();
         echo $response->getJSON();
         JFactory::getApplication()->close();
     }
@@ -517,6 +519,7 @@ class DropfilesControllerFts extends JControllerForm
      */
     private function exitStatus($status, $datas = array())
     {
+        ob_clean();
         $response = array('response' => $status, 'datas' => $datas);
         echo json_encode($response);
         JFactory::getApplication()->close();

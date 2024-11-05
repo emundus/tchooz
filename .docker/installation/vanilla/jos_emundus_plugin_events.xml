@@ -884,6 +884,22 @@
     <field name="description"></field>
     <field name="label_translate"></field>
    </row>
+   <row>
+    <field name="id">113</field>
+    <field name="label">onAfterGetAttachmentsForProfile</field>
+    <field name="published">1</field>
+    <field name="category">Files</field>
+    <field name="description"></field>
+    <field name="label_translate" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">114</field>
+    <field name="label">onAfterCommentDeleted</field>
+    <field name="published">1</field>
+    <field name="category">Comments</field>
+    <field name="description"></field>
+    <field name="label_translate" value_is_null="true"></field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

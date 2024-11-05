@@ -14,7 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 
 $form = $this->form;
 if ($this->hasActions) : ?>
-<div class="fabrikActions form-actions">
+<div class="fabrikActions form-actions <?= $this->is_iframe ? 'tw-mt-4' : '' ?>">
 	<div class="row-fluid">
 		<div class="<?php echo FabrikHelperHTML::getGridSpan('12'); ?>">
 			<div class="btn-group">

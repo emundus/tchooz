@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -89,11 +89,11 @@ class hikashopFieldsType extends hikashopType {
 			);
 			$this->allValues['ajaxfile'] = array(
 				'name' => JText::_('FIELD_AJAX_FILE'),
-				'options' => array('required','default','columnname','allowed_extensions', 'multiple', 'upload_dir', 'max_filesize', 'delete_files')
+				'options' => array('required','default','columnname','allowed_extensions', 'multiple', 'upload_dir', 'max_filesize', 'delete_files', 'display_format', 'display_format_file')
 			);
 			$this->allValues['ajaximage'] = array(
 				'name' => JText::_('FIELD_AJAX_IMAGE'),
-				'options' => array('required','default','columnname','imagesize','allowed_extensions', 'multiple', 'upload_dir', 'max_filesize', 'thumbnail', 'max_dimensions', 'delete_files')
+				'options' => array('required','default','columnname','imagesize','allowed_extensions', 'multiple', 'upload_dir', 'max_filesize', 'thumbnail', 'max_dimensions', 'delete_files', 'display_format', 'display_format_image')
 			);
 		}
 		$this->allValues['customtext'] = array(

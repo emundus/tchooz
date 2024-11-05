@@ -6,13 +6,17 @@
     background: transparent;
 }
 
+.reset-complete .form-control-feedback {
+    display: none;
+}
+
 #user-registration fieldset p,
 .reset-confirm fieldset p,
 .reset-complete fieldset p {
     margin-bottom: 16px !important;
     text-align: justify;
     background: #FFFFFF;
-    font-family: var(--em-applicant-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
 }
 
 .view-reset #user-registration .controls,
@@ -46,7 +50,7 @@ form#user-registration.form-validate.form-horizontal.well,
 form#user-registration.form-validate.form-horizontal.well label,
 .reset-confirm .form-validate.form-horizontal.well label,
 .reset-complete .form-validate.form-horizontal.well  label {
-    font-family: var(--em-applicant-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
     font-size: var(--em-form-label-size);
     font-style: normal;
     font-weight: var(--em-form-label-weight);
@@ -103,7 +107,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     box-shadow: none;
     margin-top: 6px;
     color: var(--em-default-text-color-1);
-    font-family: var(--em-applicant-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
     padding-left: 0.625rem;
     padding-right: 0.625rem;
     padding-top: var(--em-spacing-2);
@@ -141,6 +145,14 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     align-items: center;
 }
 
+.password-group meter {
+    display: none;
+}
+
+.password-group #password-0 {
+    display: none;
+}
+
 
 form#user-registration.form-validate.form-horizontal.well .control-group .controls input:focus,
 .reset-confirm .form-validate.form-horizontal.well .control-group .controls input:focus,
@@ -152,7 +164,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
 form#user-registration.form-validate.form-horizontal.well .control-group .controls input.invalid,
 .reset-confirm .form-validate.form-horizontal.well .control-group .controls input.invalid,
 .reset-complete .form-validate.form-horizontal.well .control-group .controls input.invalid {
-    border: 1px solid #e5283B;
+    border: 1px solid var(--red-600);
     box-shadow: none;
 }
 
@@ -198,7 +210,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
 .view-reset .reset-complete .page-header h1 {
     margin-top: 0;
     text-align: center;
-    font-family: var(--em-applicant-font-title);
+    font-family: var(--em-profile-font-title), Inter, sans-serif;
     color: var(--em-default-title-color-1);
 }
 
@@ -218,6 +230,11 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     margin: 10px 0;
 }
 
+.view-reset .g-system-messages #system-message-container {
+    margin: 0 auto;
+    padding: 20px 0 0;
+}
+
 
 @media all and (max-width: 980px) {
     form#user-registration.form-validate.form-horizontal.well,
@@ -225,6 +242,10 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     .reset-complete .form-validate.form-horizontal.well
     {
         width: 80%;
+    }
+
+    #user-registration fieldset p, .reset-confirm fieldset p, .reset-complete fieldset p {
+        text-align: left;
     }
 }
 @media all and (max-width: 767px) {

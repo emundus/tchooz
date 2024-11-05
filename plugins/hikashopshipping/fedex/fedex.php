@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -14,6 +14,7 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 	var $doc_form = 'fedex';
 	var $packages;    // array of packages
 	var $packageCount;    // number of packages in this shipment
+	var $messages = array();
 	var $fedex_methods = array(
 		array('key'=>1,'code' => 'FEDEX_GROUND', 'name' => 'FedEx Ground', 'countries' => 'USA, PUERTO RICO', 'zones' => array('country_United_States_of_America_223','country_Puerto_Rico_172') , 'destinations' => array('country_United_States_of_America_223','country_Puerto_Rico_172')),
 		array('key'=>2,'code' => 'FEDEX_2_DAY', 'name' => 'FedEx 2 Day', 'countries' => 'USA, PUERTO RICO', 'zones' => array('country_United_States_of_America_223','country_Puerto_Rico_172'), 'destinations' => array('country_United_States_of_America_223','country_Puerto_Rico_172')),
@@ -123,7 +124,11 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 			$receivedMethods = $this->_getRates($rate, $order, $heavyProduct, $null);
 
 			if(empty($receivedMethods)) {
-				$messages['no_rates'] = JText::_('NO_SHIPPING_METHOD_FOUND');
+				if(!empty($this->messages)) {
+					$messages = array_merge($messages, $this->messages);
+				} else {
+					$messages['no_rates'] = JText::_('NO_SHIPPING_METHOD_FOUND');
+				}
 				continue;
 			}
 
@@ -189,7 +194,9 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 				if(@$rate->shipping_params->show_notes && !empty($method['notes'])) {
 					foreach($method['notes'] as $note){
 						if($note->Code != '820' && $note->Code != '819' && !empty($note->LocalizedMessage)) {
-							$local_usable_rates[$i]->shipping_description .= $sep . implode('<br/>', $note->LocalizedMessage);
+							if(is_array($note->LocalizedMessage))
+								$note->LocalizedMessage = implode('<br/>', $note->LocalizedMessage);
+							$local_usable_rates[$i]->shipping_description .= $sep . $note->LocalizedMessage;
 							$sep = '<br/>';
 						}
 					}
@@ -211,7 +218,7 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 		}
 	}
 	function getShippingDefaultValues(&$element) {
-		$element->shipping_name = 'FedEx';
+		$element->shipping_name = 'FedEx (legacy)';
 		$element->shipping_description = '';
 		$element->group_package = 0;
 		$element->debug = 0;
@@ -237,6 +244,9 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 		$this->categoryType->type = 'tax';
 		$this->categoryType->field = 'category_id';
 		$this->nameboxType = hikashop_get('type.namebox');
+
+		$app = JFactory::getApplication();
+		$app->enqueueMessage(JText::sprintf('FEDEX_LEGACY_MSG', 'Fedex'));
 
 		parent::onShippingConfiguration($element);
 
@@ -653,15 +663,11 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 
 
 			if(isset($response->HighestSeverity) && $response->HighestSeverity == "ERROR") {
-				static $notif = false;
-				if(!$notif && isset($response->Notifications->Message) && $response->Notifications->Message == 'Authentication Failed') {
-					$app = JFactory::getApplication();
-					$app->enqueueMessage('FEDEX Authentication Failed');
-					$notif = true;
+				if(isset($response->Notifications->Message) && $response->Notifications->Message == 'Authentication Failed') {
+					$this->messages['fedex_auth_failed'] = 'FEDEX Authentication Failed';
 				}
-				if(!$notif && !empty($response->Notifications->Message) && strpos($response->Notifications->Message,'Service is not allowed') === FALSE) {
-					$app = JFactory::getApplication();
-					$app->enqueueMessage('The FedEx request failed with the message : ' . $response->Notifications->Message);
+				if(!empty($response->Notifications->Message) && strpos($response->Notifications->Message,'Service is not allowed') === FALSE) {
+					$this->messages['fedex_failed'] = 'The FedEx request failed with the message : ' . $response->Notifications->Message;
 				}
 			}
 			if(@$rate->shipping_params->debug && $ctrl == 'checkout') {
@@ -728,19 +734,12 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 					);
 				}
 			} else if(!empty($response->HighestSeverity) && ($response->HighestSeverity == "ERROR")) {
-				static $errorsDisplayed = array();
 
 				if(!empty($response->Notifications)) {
 					foreach($response->Notifications as $notif) {
 						if(!is_object($notif) || !isset($notif->Code))
 							continue;
-						$errorCode = $notif->Code;
-
-						if(!isset($errorsDisplayed[$errorCode])) {
-							$app = JFactory::getApplication();
-							$app->enqueueMessage($notif->Message);
-						}
-						$errorsDisplayed[$errorCode] = true;
+						$this->messages['fedex_'.$notif->Code] = $notif->Message;
 					}
 
 				}

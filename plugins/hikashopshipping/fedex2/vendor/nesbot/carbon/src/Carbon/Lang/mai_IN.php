@@ -1,0 +1,48 @@
+<?php
+/**
+ * @package	HikaShop for Joomla!
+ * @version	5.1.0
+ * @author	hikashop.com
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
+ */
+defined('_JEXEC') or die('Restricted access');
+?><?php
+
+
+return array_replace_recursive(require __DIR__.'/en.php', [
+    'formats' => [
+        'L' => 'D/M/YY',
+    ],
+    'months' => ['बैसाख', 'जेठ', 'अषाढ़', 'सावोन', 'भादो', 'आसिन', 'कातिक', 'अगहन', 'पूस', 'माघ', 'फागुन', 'चैति'],
+    'months_short' => ['बैसाख', 'जेठ', 'अषाढ़', 'सावोन', 'भादो', 'आसिन', 'कातिक', 'अगहन', 'पूस', 'माघ', 'फागुन', 'चैति'],
+    'weekdays' => ['रविदिन', 'सोमदिन', 'मंगलदिन', 'बुधदिन', 'बृहस्पतीदिन', 'शुक्रदिन', 'शनीदिन'],
+    'weekdays_short' => ['रवि', 'सोम', 'मंगल', 'बुध', 'बृहस्पती', 'शुक्र', 'शनी'],
+    'weekdays_min' => ['रवि', 'सोम', 'मंगल', 'बुध', 'बृहस्पती', 'शुक्र', 'शनी'],
+    'day_of_first_week_of_year' => 1,
+    'meridiem' => ['पूर्वाह्न', 'अपराह्न'],
+
+    'year' => ':count ऋतु', // less reliable
+    'y' => ':count ऋतु', // less reliable
+    'a_year' => ':count ऋतु', // less reliable
+
+    'month' => ':count महिना',
+    'm' => ':count महिना',
+    'a_month' => ':count महिना',
+
+    'week' => ':count श्रेणी:क्यालेन्डर', // less reliable
+    'w' => ':count श्रेणी:क्यालेन्डर', // less reliable
+    'a_week' => ':count श्रेणी:क्यालेन्डर', // less reliable
+
+    'day' => ':count दिन',
+    'd' => ':count दिन',
+    'a_day' => ':count दिन',
+
+    'hour' => ':count घण्टा',
+    'h' => ':count घण्टा',
+    'a_hour' => ':count घण्टा',
+
+    'minute' => ':count समय', // less reliable
+    'min' => ':count समय', // less reliable
+    'a_minute' => ':count समय', // less reliable
+]);

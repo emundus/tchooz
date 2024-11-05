@@ -50,15 +50,16 @@ if ($this->open_file_in_modal) {
 	Text::script('COM_EMUNDUS_ACTIONS_CANCEL');
 	Text::script('COM_EMUNDUS_OK');
 	Text::script('COM_EMUNDUS_FILES_FILTER_NO_ELEMENTS_FOUND');
+	Text::script('COM_EMUNDUS_EVALUATION_NO_FORM_FOUND');
 }
 ?>
 
 <input type="hidden" id="view" name="view" value="evaluation">
-<div>
-    <div>
+<div class="tw-h-full">
+    <div class="tw-h-full">
         <div class="col-md-3 side-panel" style="height: calc(100vh - 72px);overflow-y: auto;">
             <div class="panel panel-info em-containerFilter" id="em-files-filters">
-                <div class="panel-heading em-containerFilter-heading">
+                <div class="panel-heading em-containerFilter-heading !tw-bg-profile-full">
                     <div>
                         <h3 class="panel-title"><?php echo Text::_('COM_EMUNDUS_FILTERS') ?></h3> &ensp;&ensp;
                     </div>
@@ -68,7 +69,7 @@ if ($this->open_file_in_modal) {
 							if ($this->use_module_for_filters) {
 								?>
                                 <label for="save-filter" class="em-mr-8 em-flex-row" style="margin-bottom: 0;">
-                                    <span class="material-icons-outlined em-pointer em-color-white"
+                                    <span class="material-symbols-outlined em-pointer em-color-white"
                                           title="<?php echo Text::_('COM_EMUNDUS_ACTIONS_SAVE_BTN'); ?>">save</span>
                                 </label>
                                 <input type="button" style="display: none" id="save-filter"
@@ -77,7 +78,7 @@ if ($this->open_file_in_modal) {
 							}
 							?>
                             <label for="clear-search" class="em-flex-row">
-                                <span class="material-icons-outlined em-pointer em-color-white"
+                                <span class="material-symbols-outlined em-pointer em-color-white"
                                       title="<?php echo Text::_('COM_EMUNDUS_ACTIONS_CLEAR_BTN'); ?>">filter_alt_off</span>
                             </label>
                             <input type="button" style="display: none" id="clear-search"
@@ -99,8 +100,8 @@ if ($this->open_file_in_modal) {
             </div>
 
             <div class="panel panel-info em-hide" id="em-appli-menu">
-                <div class="panel-heading em-hide-heading">
-                    <h3 class="panel-title"><?php echo Text::_('COM_EMUNDUS_APPLICATION_ACTIONS') ?></h3>
+                <div class="panel-heading em-hide-heading !tw-bg-profile-full">
+                    <h1 class="panel-title"><?php echo Text::_('COM_EMUNDUS_APPLICATION_ACTIONS') ?></h1>
                 </div>
                 <div class="panel-body em-hide-body">
                     <div class="list-group">
@@ -109,7 +110,7 @@ if ($this->open_file_in_modal) {
             </div>
 
             <div class="panel panel-info em-hide" id="em-synthesis">
-                <div class="panel-heading em-hide-heading">
+                <div class="panel-heading em-hide-heading !tw-bg-profile-full">
                     <h3 class="panel-title"><?php echo Text::_('COM_EMUNDUS_APPLICATION_SYNTHESIS') ?></h3>
                 </div>
                 <div class="panel-body em-hide-body">
@@ -117,7 +118,7 @@ if ($this->open_file_in_modal) {
             </div>
 
             <div class="panel panel-info em-hide" id="em-assoc-files">
-                <div class="panel-heading em-hide-heading">
+                <div class="panel-heading em-hide-heading !tw-bg-profile-full">
                     <h3 class="panel-title"><?php echo Text::_('COM_EMUNDUS_ACCESS_LINKED_APPLICATION_FILES'); ?></h3>
                 </div>
                 <div class="panel-body em-hide-body">
@@ -127,7 +128,7 @@ if ($this->open_file_in_modal) {
 
             <div class="clearfix"></div>
             <div class="panel panel-info em-hide" id="em-last-open">
-                <div class="panel-heading em-hide-heading">
+                <div class="panel-heading em-hide-heading !tw-bg-profile-full">
                     <h3 class="panel-title"><?php echo Text::_('COM_EMUNDUS_APPLICATION_LAST_OPEN_FILES'); ?></h3>
                 </div>
                 <div class="panel-body em-hide-body">
@@ -142,7 +143,7 @@ if ($this->open_file_in_modal) {
                  title=<?php echo Text::_('COM_EMUNDUS_FILTERS_HIDE_FILTER'); ?>">
 				<span class="glyphicon glyphicon-chevron-left"></span>
         </div>
-        <div class="navbar navbar-inverse em-menuaction">
+        <div class="navbar navbar-inverse em-menuaction !tw-bg-profile-full">
             <div class="navbar-header em-menuaction-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse"
                         data-target=".navbar-inverse-collapse">
@@ -150,11 +151,39 @@ if ($this->open_file_in_modal) {
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <span class="navbar-brand" href="#"><?php echo Text::_('COM_EMUNDUS_ACTIONS'); ?></span>
             </div>
 
         </div>
         <div class="panel panel-default"></div>
+
+	    <?php
+
+	    if ($this->open_file_in_modal)
+	    {
+		    require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
+		    $hash = EmundusHelperCache::getCurrentGitHash();
+		    ?>
+            <div id="em-files"
+                 context="files"
+                 user="<?= $this->user->id; ?>"
+                 ratio="<?= $this->modal_ratio; ?>"
+                 type="evaluation"
+                 base="<?= JURI::base(); ?>"
+            >
+            </div>
+
+            <script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
+            <script>
+                function clickOpenfile(fnum, fnums = '') {
+                    fnums = fnums.split('|');
+
+                    var event = new CustomEvent('openSingleApplicationWithFnum', {detail: {fnum: fnum, fnums: fnums}});
+                    window.dispatchEvent(event);
+                }
+            </script>
+		    <?php
+	    }
+	    ?>
     </div>
 </div>
 </div>

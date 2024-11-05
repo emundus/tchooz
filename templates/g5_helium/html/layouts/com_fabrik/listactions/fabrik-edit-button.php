@@ -22,4 +22,4 @@ $d = $displayData;
     data-iscustom="<?php if ($d->isCustom) echo '1'; else echo '0'; ?>"
     href="<?php echo $d->editLink;?>" 
     title="<?php echo $d->editLabel;?>">
-	<span class="material-icons-outlined">edit</span> <?php echo $d->editText; ?></a>
+	<span class="material-symbols-outlined">edit</span> <?php echo $d->editText; ?></a>

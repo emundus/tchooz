@@ -31,7 +31,7 @@ endforeach;
 $rowChunks = array_chunk($rowChunks, $d->optsPerRow);
 foreach ($rowChunks as $chunk) :
 	?>
-	<div class="row-fluid" data-role="fabrik-rowopts" data-optsperrow="<?php echo $d->optsPerRow; ?>">
+	<div class="row" data-role="fabrik-rowopts" data-optsperrow="<?php echo $d->optsPerRow; ?>">
 	<?php
 	foreach ($chunk as $option) :
 		echo $option;

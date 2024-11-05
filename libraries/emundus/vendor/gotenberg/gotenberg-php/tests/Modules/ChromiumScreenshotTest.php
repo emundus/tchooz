@@ -4,18 +4,23 @@ declare(strict_types=1);
 
 use Gotenberg\Exceptions\NativeFunctionErrored;
 use Gotenberg\Gotenberg;
+use Gotenberg\Modules\ChromiumCookie;
 use Gotenberg\Modules\ChromiumScreenshot;
 use Gotenberg\Stream;
 
 it(
     'creates a valid request for the "/forms/chromium/screenshot/url" endpoint',
     /**
+     * @param ChromiumCookie[] $cookies
      * @param array<string,string> $extraHttpHeaders
      * @param int[] $failOnHttpStatusCodes
      * @param Stream[] $assets
      */
     function (
         string $url,
+        int|null $width = null,
+        int|null $height = null,
+        bool $clip = false,
         string|null $format = null,
         int|null $quality = null,
         bool $optimizeForSpeed = false,
@@ -23,6 +28,8 @@ it(
         string|null $waitDelay = null,
         string|null $waitForExpression = null,
         string|null $emulatedMediaType = null,
+        array $cookies = [],
+        string|null $userAgent = null,
         array $extraHttpHeaders = [],
         array $failOnHttpStatusCodes = [],
         bool $failOnConsoleExceptions = false,
@@ -32,6 +39,9 @@ it(
         $chromium = Gotenberg::chromium('')->screenshot();
         $chromium = hydrateChromiumScreenshotFormData(
             $chromium,
+            $width,
+            $height,
+            $clip,
             $format,
             $quality,
             $optimizeForSpeed,
@@ -39,6 +49,8 @@ it(
             $waitDelay,
             $waitForExpression,
             $emulatedMediaType,
+            $cookies,
+            $userAgent,
             $extraHttpHeaders,
             $failOnHttpStatusCodes,
             $failOnConsoleExceptions,
@@ -54,6 +66,9 @@ it(
 
         expectChromiumScreenshotOptions(
             $body,
+            $width,
+            $height,
+            $clip,
             $format,
             $quality,
             $optimizeForSpeed,
@@ -61,6 +76,8 @@ it(
             $waitDelay,
             $waitForExpression,
             $emulatedMediaType,
+            $cookies,
+            $userAgent,
             $extraHttpHeaders,
             $failOnHttpStatusCodes,
             $failOnConsoleExceptions,
@@ -70,9 +87,11 @@ it(
     },
 )->with([
     ['https://my.url'],
-    ['https://my.url'],
     [
         'https://my.url',
+        1280,
+        800,
+        true,
         'png',
         100,
         true,
@@ -80,6 +99,11 @@ it(
         '1s',
         "window.status === 'ready'",
         'print',
+        [
+            new ChromiumCookie('yummy_cookie', 'choco', 'theyummycookie.com'),
+            new ChromiumCookie('vanilla_cookie', 'vanilla', 'theyummycookie.com', '/', true, true, 'Lax'),
+        ],
+        'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko)',
         [
             'My-Http-Header' => 'HTTP Header content',
             'My-Second-Http-Header' => 'Second HTTP Header content',
@@ -96,12 +120,16 @@ it(
 it(
     'creates a valid request for the "/forms/chromium/screenshot/html" endpoint',
     /**
+     * @param ChromiumCookie[] $cookies
      * @param array<string,string> $extraHttpHeaders
      * @param int[] $failOnHttpStatusCodes
      * @param Stream[] $assets
      */
     function (
         Stream $index,
+        int|null $width = null,
+        int|null $height = null,
+        bool $clip = false,
         string|null $format = null,
         int|null $quality = null,
         bool $optimizeForSpeed = false,
@@ -109,6 +137,8 @@ it(
         string|null $waitDelay = null,
         string|null $waitForExpression = null,
         string|null $emulatedMediaType = null,
+        array $cookies = [],
+        string|null $userAgent = null,
         array $extraHttpHeaders = [],
         array $failOnHttpStatusCodes = [],
         bool $failOnConsoleExceptions = false,
@@ -118,6 +148,9 @@ it(
         $chromium = Gotenberg::chromium('')->screenshot();
         $chromium = hydrateChromiumScreenshotFormData(
             $chromium,
+            $width,
+            $height,
+            $clip,
             $format,
             $quality,
             $optimizeForSpeed,
@@ -125,6 +158,8 @@ it(
             $waitDelay,
             $waitForExpression,
             $emulatedMediaType,
+            $cookies,
+            $userAgent,
             $extraHttpHeaders,
             $failOnHttpStatusCodes,
             $failOnConsoleExceptions,
@@ -142,6 +177,9 @@ it(
 
         expectChromiumScreenshotOptions(
             $body,
+            $width,
+            $height,
+            $clip,
             $format,
             $quality,
             $optimizeForSpeed,
@@ -149,6 +187,8 @@ it(
             $waitDelay,
             $waitForExpression,
             $emulatedMediaType,
+            $cookies,
+            $userAgent,
             $extraHttpHeaders,
             $failOnHttpStatusCodes,
             $failOnConsoleExceptions,
@@ -160,6 +200,9 @@ it(
     [Stream::string('my.html', 'HTML content')],
     [
         Stream::string('my.html', 'HTML content'),
+        1280,
+        800,
+        true,
         'jpeg',
         100,
         true,
@@ -167,6 +210,11 @@ it(
         '1s',
         "window.status === 'ready'",
         'screen',
+        [
+            new ChromiumCookie('yummy_cookie', 'choco', 'theyummycookie.com'),
+            new ChromiumCookie('vanilla_cookie', 'vanilla', 'theyummycookie.com', '/', true, true, 'Lax'),
+        ],
+        'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko)',
         [
             'My-Http-Header' => 'Http Header content',
             'My-Second-Http-Header' => 'Second Http Header content',
@@ -183,6 +231,7 @@ it(
 it(
     'creates a valid request for the "/forms/chromium/screenshot/markdown" endpoint',
     /**
+     * @param ChromiumCookie[] $cookies
      * @param array<string,string> $extraHttpHeaders
      * @param int[] $failOnHttpStatusCodes
      * @param Stream[] $markdowns
@@ -191,6 +240,9 @@ it(
     function (
         Stream $index,
         array $markdowns,
+        int|null $width = null,
+        int|null $height = null,
+        bool $clip = false,
         string|null $format = null,
         int|null $quality = null,
         bool $optimizeForSpeed = false,
@@ -198,6 +250,8 @@ it(
         string|null $waitDelay = null,
         string|null $waitForExpression = null,
         string|null $emulatedMediaType = null,
+        array $cookies = [],
+        string|null $userAgent = null,
         array $extraHttpHeaders = [],
         array $failOnHttpStatusCodes = [],
         bool $failOnConsoleExceptions = false,
@@ -207,6 +261,9 @@ it(
         $chromium = Gotenberg::chromium('')->screenshot();
         $chromium = hydrateChromiumScreenshotFormData(
             $chromium,
+            $width,
+            $height,
+            $clip,
             $format,
             $quality,
             $optimizeForSpeed,
@@ -214,6 +271,8 @@ it(
             $waitDelay,
             $waitForExpression,
             $emulatedMediaType,
+            $cookies,
+            $userAgent,
             $extraHttpHeaders,
             $failOnHttpStatusCodes,
             $failOnConsoleExceptions,
@@ -236,6 +295,9 @@ it(
 
         expectChromiumScreenshotOptions(
             $body,
+            $width,
+            $height,
+            $clip,
             $format,
             $quality,
             $optimizeForSpeed,
@@ -243,6 +305,8 @@ it(
             $waitDelay,
             $waitForExpression,
             $emulatedMediaType,
+            $cookies,
+            $userAgent,
             $extraHttpHeaders,
             $failOnHttpStatusCodes,
             $failOnConsoleExceptions,
@@ -263,6 +327,9 @@ it(
             Stream::string('my.md', 'Markdown content'),
             Stream::string('my_second.md', 'Second Markdown content'),
         ],
+        1280,
+        800,
+        true,
         'webp',
         100,
         true,
@@ -270,6 +337,11 @@ it(
         '1s',
         "window.status === 'ready'",
         'screen',
+        [
+            new ChromiumCookie('yummy_cookie', 'choco', 'theyummycookie.com'),
+            new ChromiumCookie('vanilla_cookie', 'vanilla', 'theyummycookie.com', '/', true, true, 'Lax'),
+        ],
+        'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko)',
         [
             'My-Http-Header' => 'Http Header content',
             'My-Second-Http-Header' => 'Second Http Header content',
@@ -284,12 +356,16 @@ it(
 ]);
 
 /**
+ * @param ChromiumCookie[]     $cookies
  * @param array<string,string> $extraHttpHeaders
  * @param int[]                $failOnHttpStatusCodes
  * @param Stream[]             $assets
  */
 function hydrateChromiumScreenshotFormData(
     ChromiumScreenshot $chromium,
+    int|null $width,
+    int|null $height,
+    bool $clip,
     string|null $format = null,
     int|null $quality = null,
     bool $optimizeForSpeed = false,
@@ -297,12 +373,26 @@ function hydrateChromiumScreenshotFormData(
     string|null $waitDelay = null,
     string|null $waitForExpression = null,
     string|null $emulatedMediaType = null,
+    array $cookies = [],
+    string|null $userAgent = null,
     array $extraHttpHeaders = [],
     array $failOnHttpStatusCodes = [],
     bool $failOnConsoleExceptions = false,
     bool $skipNetworkIdleEvent = false,
     array $assets = [],
 ): ChromiumScreenshot {
+    if ($width !== null) {
+        $chromium->width($width);
+    }
+
+    if ($height !== null) {
+        $chromium->height($height);
+    }
+
+    if ($clip) {
+        $chromium->clip();
+    }
+
     if ($format === 'png') {
         $chromium->png();
     }
@@ -343,6 +433,14 @@ function hydrateChromiumScreenshotFormData(
         $chromium->emulateScreenMediaType();
     }
 
+    if (count($cookies) > 0) {
+        $chromium->cookies($cookies);
+    }
+
+    if ($userAgent !== null) {
+        $chromium->userAgent($userAgent);
+    }
+
     if (count($extraHttpHeaders) > 0) {
         $chromium->extraHttpHeaders($extraHttpHeaders);
     }
@@ -367,12 +465,16 @@ function hydrateChromiumScreenshotFormData(
 }
 
 /**
+ * @param ChromiumCookie[]     $cookies
  * @param array<string,string> $extraHttpHeaders
  * @param int[]                $failOnHttpStatusCodes
  * @param Stream[]             $assets
  */
 function expectChromiumScreenshotOptions(
     string $body,
+    int|null $width,
+    int|null $height,
+    bool $clip,
     string|null $format,
     int|null $quality,
     bool $optimizeForSpeed,
@@ -380,12 +482,17 @@ function expectChromiumScreenshotOptions(
     string|null $waitDelay,
     string|null $waitForExpression,
     string|null $emulatedMediaType,
+    array $cookies,
+    string|null $userAgent,
     array $extraHttpHeaders,
     array $failOnHttpStatusCodes,
     bool $failOnConsoleExceptions,
     bool $skipNetworkIdleEvent,
     array $assets,
 ): void {
+    expect($body)->unless($width === null, fn ($body) => $body->toContainFormValue('width', $width . ''));
+    expect($body)->unless($height === null, fn ($body) => $body->toContainFormValue('height', $height . ''));
+    expect($body)->unless($clip === false, fn ($body) => $body->toContainFormValue('clip', '1'));
     expect($body)->unless($format === null, fn ($body) => $body->toContainFormValue('format', $format));
     expect($body)->unless($quality === null, fn ($body) => $body->toContainFormValue('quality', $quality . ''));
     expect($body)->unless($optimizeForSpeed === false, fn ($body) => $body->toContainFormValue('optimizeForSpeed', '1'));
@@ -393,6 +500,17 @@ function expectChromiumScreenshotOptions(
     expect($body)->unless($waitDelay === null, fn ($body) => $body->toContainFormValue('waitDelay', $waitDelay));
     expect($body)->unless($waitForExpression === null, fn ($body) => $body->toContainFormValue('waitForExpression', $waitForExpression));
     expect($body)->unless($emulatedMediaType === null, fn ($body) => $body->toContainFormValue('emulatedMediaType', $emulatedMediaType));
+
+    if (count($cookies) > 0) {
+        $json = json_encode($cookies);
+        if ($json === false) {
+            throw NativeFunctionErrored::createFromLastPhpError();
+        }
+
+        expect($body)->toContainFormValue('cookies', $json);
+    }
+
+    expect($body)->unless($userAgent === null, fn ($body) => $body->toContainFormValue('userAgent', $userAgent));
 
     if (count($extraHttpHeaders) > 0) {
         $json = json_encode($extraHttpHeaders);

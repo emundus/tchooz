@@ -14,8 +14,10 @@ layout:
   maintop: {  }
   /container-main/:
     -
-      - { 'main-mainbody 75': [[error-4677]] }
-      - { 'sidebar 25': {  } }
+      -
+        main-mainbody:
+          -
+            - system-content-9679
   mainbottom: {  }
   extension: {  }
   bottom: {  }
@@ -27,82 +29,93 @@ structure:
     type: section
     inherit:
       outline: default
-      include: [attributes, block, children]
+      include:
+        - attributes
+        - block
+        - children
   top:
     type: section
-    inherit:
-      outline: default
-      include: [attributes, block, children]
   navigation:
     type: section
-    inherit:
-      outline: default
-      include: [attributes, block, children]
   showcase:
     type: section
     inherit:
       outline: default
-      include: [attributes, block, children]
+      include:
+        - attributes
+        - block
+        - children
   feature:
     type: section
     inherit:
       outline: default
-      include: [attributes, block, children]
+      include:
+        - attributes
+        - block
+        - children
   utility:
     type: section
     inherit:
       outline: default
-      include: [attributes, block, children]
+      include:
+        - attributes
+        - block
+        - children
   breadcrumb:
     type: section
     inherit:
       outline: default
-      include: [attributes, block, children]
+      include:
+        - attributes
+        - block
+        - children
   maintop:
     type: section
     inherit:
       outline: default
-      include: [attributes, block, children]
+      include:
+        - attributes
+        - block
+        - children
   main-mainbody:
     title: Mainbody
     attributes:
       class: ''
-  sidebar:
-    type: section
-    subtype: aside
-    inherit:
-      outline: default
-      include: [attributes, block, children]
-    block:
-      fixed: 1
   container-main:
     attributes:
       boxed: ''
+      class: ''
+      extra: {  }
   mainbottom:
     type: section
     inherit:
       outline: default
-      include: [attributes, block, children]
+      include:
+        - attributes
+        - block
+        - children
   extension:
     type: section
     inherit:
       outline: default
-      include: [attributes, block, children]
+      include:
+        - attributes
+        - block
+        - children
   bottom:
     type: section
-    inherit:
-      outline: default
-      include: [attributes, block, children]
-  footer:
-    inherit:
-      outline: default
-      include: [attributes, block, children]
   copyright:
     type: section
     inherit:
       outline: default
-      include: [attributes, block, children]
+      include:
+        - attributes
+        - block
+        - children
   offcanvas:
     inherit:
       outline: default
-      include: [attributes, block, children]
+      include:
+        - attributes
+        - block
+        - children

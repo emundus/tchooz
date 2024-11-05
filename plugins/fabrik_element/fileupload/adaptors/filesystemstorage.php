@@ -16,6 +16,7 @@ use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Filesystem\Path;
 use Joomla\CMS\Filesystem\Folder;
 use Joomla\String\StringHelper;
+use Joomla\CMS\Uri\Uri;
 
 require_once JPATH_ROOT . '/plugins/fabrik_element/fileupload/adaptor.php';
 
@@ -395,7 +396,7 @@ class Filesystemstorage extends FabrikStorageAdaptor
 		$file = str_replace("\\", "/", $file);
 
 		// Replace things like $my->id may barf on other stuff
-		$afile = str_replace(JURI::root(), '', $file);
+		$afile = str_replace(Uri::root(), '', $file);
 		$afile = StringHelper::ltrim($afile, "/");
 		$ulDir = StringHelper::ltrim($ulDir, "/");
 		$ulDir = StringHelper::rtrim($ulDir, "/");

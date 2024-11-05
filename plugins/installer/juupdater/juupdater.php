@@ -16,7 +16,7 @@ jimport('joomla.plugin.plugin');
 /**
  * Juupdater Installer plugin
  */
-class PlgInstallerJuupdater extends \Joomla\CMS\Plugin\CMSPlugin
+class PlgInstallerJuupdater extends JPlugin
 {
     /**
      * Installer before package download

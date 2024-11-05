@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -361,7 +361,8 @@ if($filter_type !== 3) {
 			if(in_array($p->product_id, $category['products']))
 				$this->rows[] = $p;
 		}
-
+		if(!$this->config->get('simplified_breadcrumbs', 1))
+			$this->category_pathway = '&'.$this->pathway_sef_name.'='.$category['category']->category_id;
 		$this->params->set('main_div_name', $main_div_name.'_'.$category['category']->category_id);
 
 		$this->setLayout('listing');

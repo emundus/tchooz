@@ -6,6 +6,7 @@
         :user="data.user"
         :defaultAttachments="data.attachments ? data.attachments : null"
         :columns="data.columns"
+        :is_applicant="data.is_applicant"
     ></Attachments>
 
     <Files
@@ -24,6 +25,24 @@
         :context="data.context || ''"
     ></ApplicationSingle>
 
+    <Comments
+        v-else-if="component === 'comments'"
+        :defaultCcid="datas.ccid.value"
+        :fnum="datas.fnum && datas.fnum.value ? datas.fnum.value : ''"
+        :user="datas.user.value"
+        :is-applicant="datas.is_applicant && datas.is_applicant.value == 1"
+        :current-form="datas.current_form && datas.current_form.value"
+        :access="datas.access && datas.access.value ? JSON.parse(datas.access.value) : {
+          'c': false,
+          'r': true,
+          'u': false,
+          'd': false
+        }"
+        :applicantsAllowedToComment="datas.applicants_allowed_to_comment && datas.applicants_allowed_to_comment.value == 1"
+        :border="datas.border ? datas.border.value == 1 : true"
+    >
+    </Comments>
+
     <transition v-else name="slide-right">
       <component v-bind:is="$props.component"/>
     </transition>
@@ -33,22 +52,24 @@
 <script>
 import moment from "moment";
 
-import Attachments from "./views/Attachments.vue";
-import Files from './views/Files/Files.vue';
-
-import fileService from "./services/file.js";
-import list_v2 from "./views/list.vue";
-import addcampaign from "./views/addCampaign"
-import addemail from "./views/addEmail"
-import addformnextcampaign from "./views/addFormNextCampaign"
-import formbuilder from "./views/formBuilder"
-import settings from "./views/globalSettings"
-import messagescoordinator from "./components/Messages/MessagesCoordinator";
-import messages from "./components/Messages/Messages";
-
-import settingsService from "./services/settings.js";
+import Attachments from "@/views/Attachments.vue";
+import Files from '@/views/Files/Files.vue';
+import Comments from '@/components/Files/Comments.vue';
+import fileService from "@/services/file.js";
+import list_v2 from "@/views/list.vue";
+import addcampaign from "@/views/addCampaign.vue";
+import addemail from "@/views/addEmail.vue";
+import campaignedition from "@/views/CampaignEdition.vue";
+import formbuilder from "@/views/formBuilder.vue";
+import settings from "@/views/globalSettings.vue";
+import messagescoordinator from "@/components/Messages/MessagesCoordinator.vue";
+import messages from "@/components/Messages/Messages.vue";
 import ApplicationSingle from "@/components/Files/ApplicationSingle.vue";
-import TranslationTool from "./components/Settings/TranslationTool/TranslationTool.vue";
+import TranslationTool from "@/components/Settings/TranslationTool/TranslationTool.vue";
+
+import settingsService from "@/services/settings.js";
+import { useGlobalStore } from '@/stores/global.js';
+
 export default {
   props: {
     datas: NamedNodeMap,
@@ -74,7 +95,7 @@ export default {
     ApplicationSingle,
     Attachments,
     addcampaign,
-    addformnextcampaign,
+    campaignedition,
     addemail,
     formbuilder,
     settings,
@@ -82,14 +103,17 @@ export default {
     messages,
     Files,
     list_v2,
-    TranslationTool
+    TranslationTool,
+    Comments
   },
 
   created() {
-    if (this.$props.component === 'attachments') {
+    const globalStore = useGlobalStore();
+
+    if (this.component === 'attachments') {
       fileService.isDataAnonymized().then(response => {
         if (response.status !== false) {
-          this.$store.dispatch("global/setAnonyme", response.anonyme);
+          globalStore.setAnonyme(response.anonyme);
         }
       });
     }
@@ -102,44 +126,46 @@ export default {
       this.data.columns = JSON.parse(atob(this.data.columns));
     }
 
-    if (typeof this.$props.datas != 'undefined') {
-      this.$store.commit("global/initDatas", this.$props.datas);
+    if (typeof this.datas != 'undefined') {
+      globalStore.initDatas(this.datas);
     }
-    if (typeof this.$props.currentLanguage != 'undefined') {
-      this.$store.commit('global/initCurrentLanguage', this.$props.currentLanguage);
-      moment.locale(this.$store.state.global.currentLanguage);
+    if (typeof this.currentLanguage != 'undefined') {
+      globalStore.initCurrentLanguage(this.currentLanguage);
+
+      moment.locale(globalStore.currentLanguage);
     } else {
-      this.$store.commit('global/initCurrentLanguage', 'fr');
+      globalStore.initCurrentLanguage('fr');
       moment.locale('fr');
     }
-    if (typeof this.$props.shortLang != 'undefined') {
-      this.$store.commit('global/initShortLang', this.$props.shortLang);
+    if (typeof this.shortLang != 'undefined') {
+      globalStore.initShortLang(this.shortLang);
     }
-    if (typeof this.$props.manyLanguages != 'undefined') {
-      this.$store.commit("global/initManyLanguages", this.$props.manyLanguages);
+    if (typeof this.manyLanguages != 'undefined') {
+      globalStore.initManyLanguages(this.manyLanguages);
     }
-    if (typeof this.$props.defaultLang != 'undefined') {
-      this.$store.commit("global/initDefaultLang", this.$props.defaultLang);
+    if (typeof this.defaultLang != 'undefined') {
+      globalStore.initDefaultLang(this.defaultLang);
     }
-    if (typeof this.$props.coordinatorAccess != 'undefined') {
-      this.$store.commit("global/initCoordinatorAccess", this.$props.coordinatorAccess);
+    if (typeof this.coordinatorAccess != 'undefined') {
+      globalStore.initCoordinatorAccess(this.coordinatorAccess);
     }
-    if (typeof this.$props.coordinatorAccess != 'undefined') {
-      this.$store.commit("global/initSysadminAccess", this.$props.sysadminAccess);
+    if (typeof this.coordinatorAccess != 'undefined') {
+      globalStore.initSysadminAccess(this.sysadminAccess);
     }
 
     settingsService.getOffset().then(response => {
       if (response.status !== false) {
-        this.$store.commit("global/initOffset", response.data.data);
+        globalStore.initOffset(response.data.data);
       }
     });
   },
-
   mounted() {
     if (this.data.base) {
-      this.$store.dispatch('attachment/setAttachmentPath', this.data.base + '/images/emundus/files/');
+      const globalStore = useGlobalStore();
+
+      globalStore.initAttachmentPath(this.data.base + '/images/emundus/files/');
     }
-  },
+  }
 };
 </script>
 
@@ -204,9 +230,33 @@ export default {
 .view-campaigns.layout-add #g-container-main,
 .view-emails.layout-add #g-container-main,
 .view-emails.no-layout #g-container-main,
-.view-form #g-container-main,
-.view-settings #g-container-main {
+.view-form #g-container-main {
   padding-left: 76px;
+}
+
+#g-page-surround {
+  z-index: 1;
+}
+
+.swal2-container {
+  z-index: 2;
+}
+
+
+.com_emundus.view-settings #g-page-surround #g-container-main {
+  padding: 0 !important;
+}
+
+.com_emundus.view-settings #g-page-surround #g-container-main .g-container {
+  padding: 0 !important;
+}
+
+.com_emundus.view-settings #g-footer {
+  display: none;
+}
+
+.com_emundus.view-settings .com_emundus_vue {
+  margin-bottom: 0;
 }
 
 </style>

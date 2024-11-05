@@ -40,7 +40,7 @@ class JFormFieldAutoCreateGroup extends RadioField
 	protected function getInput()
 	{
 		$this->value = $this->form->getValue('id') == 0 ? 1 : 0;
-
+		$this->layoutData = [];
 		return parent::getInput();
 	}
 }

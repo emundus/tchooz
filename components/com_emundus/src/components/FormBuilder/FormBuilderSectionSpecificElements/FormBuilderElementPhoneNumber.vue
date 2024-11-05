@@ -4,8 +4,8 @@
     <div v-else>
       <div class="tw-flex tw-items-center">
         <div class="tw-h-10 country-select tw-flex tw-items-center tw-p-2 tw-justify-center">
-          <img v-if="element.params.default_country" :src="'/images/emundus/flags/'+element.params.default_country.toLowerCase()+'.png'">
-          <img v-else src="/images/emundus/flags/fr.png">
+          <img v-if="element.params.default_country" :src="'../../../../../../images/emundus/flags/'+element.params.default_country.toLowerCase()+'.png'">
+          <img v-else src="../../../../../../images/emundus/flags/fr.png">
         </div>
         <div class="tw-w-full">
           <input class="phonenumber" readonly type="text" value="+33 6 12 34 56 78">
@@ -16,8 +16,6 @@
 </template>
 
 <script>
-import formBuilderService from '../../../services/formbuilder';
-import Editor from "../../editor";
 
 export default {
   props: {
@@ -29,9 +27,6 @@ export default {
       type: String,
       required: true
     }
-  },
-  components: {
-    Editor
   },
   data() {
     return {

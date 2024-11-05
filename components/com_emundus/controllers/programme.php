@@ -16,6 +16,8 @@ jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\MVC\Controller\BaseController;
+
 
 /**
  * campaign Controller
@@ -24,13 +26,21 @@ use Joomla\CMS\Language\Text;
  * @subpackage eMundus
  * @since      5.0.0
  */
-class EmundusControllerProgramme extends JControllerLegacy
+class EmundusControllerProgramme extends BaseController
 {
 	protected $app;
 
 	private $_user;
 	private $m_programme;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     \JController
+	 * @since   1.0.0
+	 */
 	function __construct($config = array())
 	{
 		parent::__construct($config);
@@ -41,6 +51,17 @@ class EmundusControllerProgramme extends JControllerLegacy
 		$this->m_programme = $this->getModel('programme');
 	}
 
+	/**
+	 * Method to display a view.
+	 *
+	 * @param   boolean  $cachable   If true, the view output will be cached.
+	 * @param   boolean  $urlparams  An array of safe URL parameters and their variable types.
+	 *                   @see        \Joomla\CMS\Filter\InputFilter::clean() for valid values.
+	 *
+	 * @return  DisplayController  This object to support chaining.
+	 *
+	 * @since   1.0.0
+	 */
 	function display($cachable = false, $urlparams = false)
 	{
 		// Set a default view if none exists
@@ -112,57 +133,6 @@ class EmundusControllerProgramme extends JControllerLegacy
 			}
 		}
 		echo json_encode((object) $tab);
-		exit;
-	}
-
-
-	public function favorite()
-	{
-
-
-		$pid = $this->input->post->getInt('programme_id');
-		$uid = $this->input->post->getInt('user_id');
-
-		if (empty($uid)) {
-			$uid = $this->_user->id;
-		}
-
-		$result         = new stdClass();
-		$result->status = false;
-
-		if (empty($uid) || empty($pid)) {
-			echo json_encode($result);
-			exit;
-		}
-
-		$result->status = $this->m_programme->favorite($pid, $uid);
-
-		echo json_encode($result);
-		exit;
-	}
-
-
-	public function unfavorite()
-	{
-
-		$pid = $this->input->post->getInt('programme_id');
-		$uid = $this->input->post->getInt('user_id');
-
-		if (empty($uid)) {
-			$uid = $this->_user->id;
-		}
-
-		$result         = new stdClass();
-		$result->status = false;
-
-		if (empty($uid) || empty($pid)) {
-			echo json_encode($result);
-			exit;
-		}
-
-		$result->status = $this->m_programme->unfavorite($pid, $uid);
-
-		echo json_encode($result);
 		exit;
 	}
 
@@ -343,31 +313,30 @@ class EmundusControllerProgramme extends JControllerLegacy
 
 	public function createprogram()
 	{
-		if (!EmundusHelperAccess::isCoordinator($this->_user->id)) {
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-		}
-		else {
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
+
+		if (EmundusHelperAccess::isCoordinator($this->_user->id)) {
 			$data = $this->input->getRaw('body');
+			$data = json_decode($data, true);
 
 			$result = $this->m_programme->addProgram($data);
 
 			if (is_array($result)) {
-				$tab = array('status' => 1, 'msg' => JText::_('PROGRAMS_ADDED'), 'data' => $result);
+				$response = array('status' => true, 'msg' => Text::_('PROGRAMS_ADDED'), 'data' => $result);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_ADD_PROGRAMS'), 'data' => $result);
+				$response = array('status' => false, 'msg' => Text::_('ERROR_CANNOT_ADD_PROGRAMS'), 'data' => $result);
 			}
 		}
 
-		echo json_encode((object) $tab);
+		echo json_encode((object) $response);
 		exit;
 	}
 
 
 	public function updateprogram()
 	{
-		$tab = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
+		$tab = array('status' => 0, 'msg' => Text::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 
@@ -379,14 +348,14 @@ class EmundusControllerProgramme extends JControllerLegacy
 				$result = $this->m_programme->updateProgram($id, $data);
 
 				if ($result) {
-					$tab = array('status' => 1, 'msg' => JText::_('PROGRAMS_ADDED'), 'data' => $result);
+					$tab = array('status' => 1, 'msg' => Text::_('PROGRAMS_ADDED'), 'data' => $result);
 				}
 				else {
-					$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_ADD_PROGRAMS'), 'data' => $result);
+					$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_ADD_PROGRAMS'), 'data' => $result);
 				}
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('MISSING_PARAMS'));
+				$tab = array('status' => 0, 'msg' => Text::_('MISSING_PARAMS'));
 			}
 		}
 
@@ -458,68 +427,19 @@ class EmundusControllerProgramme extends JControllerLegacy
 
 	public function getprogramcategories()
 	{
-		$response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$categories = $this->m_programme->getProgramCategories();
 
 			if (!empty($categories)) {
-				$response = array('status' => true, 'msg' => JText::_('PROGRAMS_RETRIEVED'), 'data' => $categories);
-			}
-			else {
-				$response = array('status' => false, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_PROGRAMS'));
+				$response = array('status' => true, 'msg' => Text::_('PROGRAMS_RETRIEVED'), 'data' => $categories);
+			} else {
+				$response['data'] = [];
 			}
 		}
+
 		echo json_encode((object) $response);
-		exit;
-	}
-
-	public function getuserstoaffect()
-	{
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-		}
-		else {
-
-
-			$group = $this->input->getInt('group');
-
-			$this->_users = $this->m_programme->getuserstoaffect($group);
-
-			if (!empty($this->_users)) {
-				$tab = array('status' => 1, 'msg' => JText::_('MANAGERS_RETRIEVED'), 'data' => $this->_users);
-			}
-			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_USERS'), 'data' => $this->_users);
-			}
-		}
-		echo json_encode((object) $tab);
-		exit;
-	}
-
-	public function getuserstoaffectbyterm()
-	{
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-		}
-		else {
-
-
-			$group = $this->input->getInt('group');
-			$term  = $this->input->getString('term');
-
-			$this->_users = $this->m_programme->getuserstoaffectbyterm($group, $term);
-
-			if (!empty($this->_users)) {
-				$tab = array('status' => 1, 'msg' => JText::_('MANAGERS_RETRIEVED'), 'data' => $this->_users);
-			}
-			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_USERS'), 'data' => $this->_users);
-			}
-		}
-		echo json_encode((object) $tab);
 		exit;
 	}
 
@@ -642,49 +562,6 @@ class EmundusControllerProgramme extends JControllerLegacy
 
 			$user_ids = $this->m_programme->getusers($filters, $page['page']);
 
-			if (!empty($this->_users)) {
-				$tab = array('status' => 1, 'msg' => JText::_('USERS_RETRIEVED'), 'data' => $user_ids);
-			}
-			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_USERS'), 'data' => $user_ids);
-			}
-		}
-		echo json_encode((object) $tab);
-		exit;
-	}
-
-	public function getuserswithoutapplicants()
-	{
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-		}
-		else {
-			$user_ids = $this->m_programme->getuserswithoutapplicants();
-
-			if (!empty($user_ids)) {
-				$tab = array('status' => 1, 'msg' => JText::_('USERS_RETRIEVED'), 'data' => $user_ids);
-			}
-			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_USERS'), 'data' => $user_ids);
-			}
-		}
-		echo json_encode((object) $tab);
-		exit;
-	}
-
-	public function searchuserbytermwithoutapplicants()
-	{
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-		}
-		else {
-
-
-			$term = $this->input->getString('term');
-
-			$user_ids = $this->m_programme->searchuserbytermwithoutapplicants($term);
 			if (!empty($this->_users)) {
 				$tab = array('status' => 1, 'msg' => JText::_('USERS_RETRIEVED'), 'data' => $user_ids);
 			}

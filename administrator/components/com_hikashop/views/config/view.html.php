@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -454,7 +454,7 @@ class configViewConfig extends hikashopView
 			hikashop_display(JText::_('YOUR_PAYPAL_PAYMENT_METHOD_IS_OBSOLETE_PLEASE_SWITCH_TO_PAYPAL_CHECKOUT'),'error');
 		}
 
-		$path = rtrim(JPATH_SITE,DS).DS.'plugins'.DS.'hikashop'.DS.'history'.DS.'history.php';
+		$path = rtrim(JPATH_SITE,DS).DS.'plugins'.DS.'hikashop'.DS.'cartnotify'.DS.'cartnotify.php';
 		if(!file_exists($path)) {
 	 		$folders = array('* Joomla / Plugins','* Joomla / Plugins / User','* Joomla / Plugins / System','* Joomla / Plugins / Search');
 			hikashop_display(JText::_('ERROR_PLUGINS_1').'<br/>'.JText::_('ERROR_PLUGINS_2').'<br/>'.implode('<br/>',$folders).'<br/><a href="index.php?option=com_hikashop&amp;ctrl=update&amp;task=install">'.JText::_('ERROR_PLUGINS_3').'</a>','warning');

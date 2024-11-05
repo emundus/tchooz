@@ -168,16 +168,6 @@ class plgUserEmundus_registration_email extends CMSPlugin
 			}
 		}
 
-		if (PluginHelper::getPlugin('authentication', 'miniorangesaml')) {
-			require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
-			$m_users    = new EmundusModelusers();
-			$isSamlUser = $m_users->isSamlUser($userId);
-
-			if ($isSamlUser) {
-				return;
-			}
-		}
-
 		if (PluginHelper::getPlugin('system', 'emundusproxyredirect')) {
 			$params       = json_decode(PluginHelper::getPlugin('system', 'emundusproxyredirect')->params, true);
 			$http_headers = $_SERVER;
@@ -204,7 +194,7 @@ class plgUserEmundus_registration_email extends CMSPlugin
 		if ($result && !$error) {
 			// for anonym sessions
 			$allow_anonym_files = $eMConfig->get('allow_anonym_files', 0);
-			if ($allow_anonym_files && preg_match('/^fake.*@emundus\.io$/', $user->email)) {
+			if (($allow_anonym_files && preg_match('/^fake.*@emundus\.io$/', $user->email)) || $user->getParam('saml') == 1) {
 				$user->setParam('skip_activation', true);
 				$user->setParam('send_mail', false);
 			}
@@ -228,19 +218,22 @@ class plgUserEmundus_registration_email extends CMSPlugin
 
 				// Block the user (until he activates).
 				$table->block = $eMConfig->get('block_user', 1);
-			}
 
-			// Save user data
-			if (!$table->store()) {
-				throw new RuntimeException($table->getError());
-			}
+				// Save user data
+				if (!$table->store())
+				{
+					throw new RuntimeException($table->getError());
+				}
 
-			// Send activation email
-			if ($this->sendActivationEmail($user->getProperties(), $activation)) {
-				//Force user logout
-				if ($this->params->get('logout', null) && $userId === (int) Factory::getApplication()->getIdentity()->id) {
-					$this->app->logout();
-					$this->app->redirect(Route::_(''), false);
+				// Send activation email
+				if ($this->sendActivationEmail($user->getProperties(), $activation))
+				{
+					//Force user logout
+					if ($this->params->get('logout', null) && $userId === (int) Factory::getApplication()->getIdentity()->id)
+					{
+						$this->app->logout();
+						$this->app->redirect(Route::_(''), false);
+					}
 				}
 			}
 
@@ -290,14 +283,6 @@ class plgUserEmundus_registration_email extends CMSPlugin
 				->where($conditions);
 			$this->db->setQuery($query);
 			$this->db->execute();
-
-			$credentials             = array();
-			$credentials['username'] = $options['username'];
-			$credentials['password'] = $options['password_clear'];
-
-			$options             = array();
-			$options['redirect'] = '/index.php?option=com_emundus&view=user';
-			$this->app->login($credentials, $options);
 		}
 		else {
 			$fields     = array(
@@ -360,6 +345,8 @@ class plgUserEmundus_registration_email extends CMSPlugin
 		}
 		$activation_url = $baseURL . $activation_url_rel;
 
+		$logo = EmundusHelperEmails::getLogo(true);
+
 		$post = [
 			'CIVILITY'           => $civility,
 			'USER_NAME'          => $data['name'],
@@ -369,7 +356,8 @@ class plgUserEmundus_registration_email extends CMSPlugin
 			'ACTIVATION_URL_REL' => $activation_url_rel,
 			'BASE_URL'           => $baseURL,
 			'USER_LOGIN'         => $data['username'],
-			'USER_PASSWORD'      => $password
+			'USER_PASSWORD'      => $password,
+			'LOGO'               => Uri::base().'images/custom/'.$logo
 		];
 
 		// Send the email.

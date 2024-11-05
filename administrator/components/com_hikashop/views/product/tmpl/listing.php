@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -101,6 +101,9 @@ defined('_JEXEC') or die('Restricted access');
 							?></th>
 							<th class="title default" data-alias="weight"><?php
 								echo JHTML::_('grid.sort', JText::_('PRODUCT_WEIGHT'), 'b.product_weight', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value );
+							?></th>
+							<th class="title default" data-alias="hit"><?php
+								echo JHTML::_('grid.sort', JText::_('PRODUCT_HIT'), 'b.product_hit', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value );
 							?></th>
 <?php
 	$count_extrafields = 9;
@@ -208,6 +211,9 @@ defined('_JEXEC') or die('Restricted access');
 							?></td>
 							<td><?php
 								echo rtrim(rtrim($row->product_weight,'0'),',.').' '. JText::_($row->product_weight_unit);
+							?></td>
+							<td><?php
+								echo $row->product_hit;
 							?></td>
 <?php
 		if(!empty($this->fields)){

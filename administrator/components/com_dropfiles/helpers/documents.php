@@ -103,6 +103,7 @@ class DropfilesDocumentsHelper
         $encode = mb_detect_encoding($content, $encodes);
         switch ($encode) {
             case 'ISO-8859-1':
+                // phpcs:ignore Generic.PHP.DeprecatedFunctions.Deprecated -- UTF8 encode only
                 return utf8_encode($content);
             default:
                 return mb_convert_encoding($content, 'UTF-8', $encode);

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -345,7 +345,7 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 		$ret_billing = true;
 		if(!empty($billing)) {
 			$addr = $addressClass->get($billing);
-			if(!$addressClass->isAddressValid($addr)) {
+			if(!$addressClass->isAddressValid($addr, array('type'=>'billing'))) {
 				$checkoutHelper->addMessage('address.info_missing', array(
 					'msg' => JText::_('THE_BILLING_ADDRESS_YOU_SELECTED_CANNOT_BE_USED_AS_SOME_INFORMATION_IS_MISSING'),
 					'type' => 'error'
@@ -358,7 +358,7 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 		$ret_shipping = true;
 		if(!empty($shipping)) {
 			$addr = $addressClass->get($shipping);
-			if(!$addressClass->isAddressValid($addr)) {
+			if(!$addressClass->isAddressValid($addr, array('type'=>'shipping'))) {
 				$checkoutHelper->addMessage('address.info_missing', array(
 					'msg' => JText::_('THE_SHIPPING_ADDRESS_YOU_SELECTED_CANNOT_BE_USED_AS_SOME_INFORMATION_IS_MISSING'),
 					'type' => 'error'

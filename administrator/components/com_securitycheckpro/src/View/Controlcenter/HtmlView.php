@@ -46,7 +46,7 @@ class HtmlView extends BaseHtmlView {
 
         //  Parámetros del plugin
         $items= $model->getControlCenterConfig();
-
+		
         // Información para la barra de navegación
         $logs_pending = $model->LogsPending();
         $trackactions_plugin_exists = $model->PluginStatus(8);
@@ -72,24 +72,30 @@ class HtmlView extends BaseHtmlView {
         $control_center_enabled= null;
         $secret_key= null;
 		$control_center_url = null;
+		$token = null;
 
 
-        if (!is_null($items['control_center_enabled'])) {
+        if ( (array_key_exists('control_center_enabled',$items)) && (!is_null($items['control_center_enabled'])) ) {
             $control_center_enabled = $items['control_center_enabled'];    
         }
 
-        if (!is_null($items['secret_key'])) {
+        if ( (array_key_exists('secret_key',$items)) && (!is_null($items['secret_key'])) ) {
             $secret_key = $items['secret_key'];    
         }
 		
-		if (!is_null($items['control_center_url'])) {
+		if ( (array_key_exists('control_center_url',$items)) && (!is_null($items['control_center_url'])) ) {
             $control_center_url = $items['control_center_url'];    
+        }
+		
+		if ( (array_key_exists('token',$items)) && (!is_null($items['token'])) ) {
+            $token = $items['token'];    
         }
 
         // ... y los ponemos en el template
         $this->control_center_enabled = $control_center_enabled;
         $this->secret_key = $secret_key;
 		$this->control_center_url = $control_center_url;
+		$this->token = $token;
 		
         
         parent::display($tpl);  

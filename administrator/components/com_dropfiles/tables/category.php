@@ -31,7 +31,7 @@ class DropfilesTableCategory extends JTableCategory
      */
     public function store($updateNulls = false)
     {
-        $meta = json_decode($this->metadata);
+        $meta = json_decode((string)$this->metadata);
         if (isset($meta->tags)) {
             $meta->tags = array();
         }

@@ -15,8 +15,12 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\Mail;
+use Joomla\CMS\MVC\Controller\BaseController;
+use Joomla\CMS\Uri\Uri;
 
 /**
  * eMundus Component Controller
@@ -24,26 +28,33 @@ use Joomla\CMS\Mail;
  * @package    Joomla.eMundus
  * @subpackage Components
  */
-class EmundusControllerMessages extends JControllerLegacy
+class EmundusControllerMessages extends BaseController
 {
 
 	protected $app;
 
+	private $_user;
+
 	/**
-	 * Constructor
+	 * Constructor.
 	 *
-	 * @since 3.8.6
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     \JController
+	 * @since   1.0.0
 	 */
 	function __construct($config = array())
 	{
+		parent::__construct($config);
+
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'emails.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'messages.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
-		parent::__construct($config);
 
 		$this->app = Factory::getApplication();
+		$this->_user = $this->app->getIdentity();
 	}
 
 	/**
@@ -53,22 +64,22 @@ class EmundusControllerMessages extends JControllerLegacy
 	 */
 	function gettemplate()
 	{
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
 
-		$template_id = $this->input->post->getInt('select', null);
 
-		$m_messages = $this->getModel('Messages');
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$response['msg'] = Text::_('NO_EMAIL_FOUND');
 
-		$template = $m_messages->getEmail($template_id);
+			$template_id = $this->input->post->getInt('select', null);
+			$m_messages = $this->getModel('Messages');
+			$template = $m_messages->getEmail($template_id);
 
-		if (!$template) {
-			echo json_encode((object) (['status' => false]));
-			exit;
+			if ($template) {
+				$response = ['status' => true, 'msg' => Text::_('EMAIL_FOUND'), 'tmpl' => $template];
+			}
 		}
 
-		echo json_encode((object) ([
-			'status' => true,
-			'tmpl'   => $template
-		]));
+		echo json_encode((object) $response);
 		exit;
 
 	}
@@ -80,23 +91,21 @@ class EmundusControllerMessages extends JControllerLegacy
 	 */
 	public function setcategory()
 	{
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
 
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$response['msg'] = Text::_('NO_EMAIL_FOUND');
+			$category = $this->input->get->getString('category', 'all');
 
-		$category = $this->input->get->getString('category', 'all');
+			$m_messages = $this->getModel('Messages');
+			$templates = $m_messages->getEmailsByCategory($category);
 
-		$m_messages = $this->getModel('Messages');
-
-		$templates = $m_messages->getEmailsByCategory($category);
-
-		if (!$templates) {
-			echo json_encode((object) (['status' => false]));
-			exit;
+			if ($templates) {
+				$response = (['status'    => true, 'templates' => $templates]);
+			}
 		}
 
-		echo json_encode((object) ([
-			'status'    => true,
-			'templates' => $templates
-		]));
+		echo json_encode((object) $response);
 		exit;
 
 	}
@@ -109,72 +118,66 @@ class EmundusControllerMessages extends JControllerLegacy
 	 */
 	public function uploadfiletosend()
 	{
+		$result = ['status' => false, 'file_name' => '', 'file_path' => '', 'msg' => ''];
 
-
-		// If a filetype was sent in POST: check it.
 		$filetype = $this->input->post->get('filetype', null);
-
-		// Get the file sent via AJAX POST
 		$file = $this->input->files->get('file');
-
-		// Get the user sent via AJAX POST
 		$user = $this->input->post->get('user');
-
-		// Get the user sent via AJAX POST
 		$fnum = $this->input->post->get('fnum');
 
-		// Check if an error is present
-		if (!isset($file['error']) || is_array($file['error'])) {
-			echo json_encode(['status' => false]);
+		try {
+			if (!isset($file['error']) || is_array($file['error'])) {
+				throw new Exception(Text::_('COM_EMUNDUS_ERROR_OCCURED'));
+			}
+
+			// Sanitize filename.
+			$file['name'] = preg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $file['name']);
+			$file['name'] = preg_replace("([\.]{2,})", '', $file['name']);
+			$file['name'] = str_replace(array('(', ')'), '', $file['name']);
+
+			// Check if file name is alphanumeric
+			if (!preg_match("`^[-0-9A-Z_\.]+$`i", $file['name'])) {
+				throw new Exception(Text::_('COM_EMUNDUS_ERROR_INVALID_FILENAME'));
+			}
+
+			// Check if file name is not too long.
+			if (mb_strlen($file['name'], "UTF-8") > 225) {
+				throw new Exception(Text::_('COM_EMUNDUS_ERROR_FILENAME_TOO_LONG'));
+			}
+
+			// If we specifically are uploading a PDF, check the MIME type.
+			if ($filetype == 'pdf' && $file['type'] != 'application/pdf') {
+				throw new Exception(Text::_('COM_EMUNDUS_ERROR_INVALID_FILETYPE'));
+			}
+
+			// Check file extension and remove any dengerous ones.
+			if (preg_match("/.exe$|.com$|.bat$|.zip$|.php$|.sh$/i", $file['name'])) {
+				throw new Exception(Text::_('COM_EMUNDUS_ERROR_INVALID_FILETYPE'));
+			}
+			// Check if the message attachments directory exists.
+			if (!is_dir('images' . DS . 'emundus' . DS . 'files' . DS . $user . DS . $fnum)) {
+				mkdir('images' . DS . 'emundus' . DS . 'files' . DS . $user . DS . $fnum, 0777, true);
+			}
+
+			// Move the uploaded file to the server directory.
+			if (!empty($user) && empty($fnum)) {
+				$target = 'images' . DS . 'emundus' . DS . 'files' . DS . $user . DS . $fnum . DS . $file['name'];
+			}
+			else {
+				$target = 'images' . DS . 'emundus' . DS . 'files' . DS . $file['name'];
+			}
+
+			if (file_exists($target)) {
+				unlink($target);
+			}
+
+			move_uploaded_file($file['tmp_name'], $target);
+		}
+		catch (Exception $e) {
+			$result['msg'] = $e->getMessage();
+			echo json_encode($result);
 			exit;
 		}
-
-		// Sanitize filename.
-		$file['name'] = preg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $file['name']);
-		$file['name'] = preg_replace("([\.]{2,})", '', $file['name']);
-		$file['name'] = str_replace(array('(', ')'), '', $file['name']);
-
-		// Check if file name is alphanumeric
-		if (!preg_match("`^[-0-9A-Z_\.]+$`i", $file['name'])) {
-			echo json_encode(['status' => false]);
-			exit;
-		}
-
-		// Check if file name is not too long.
-		if (mb_strlen($file['name'], "UTF-8") > 225) {
-			echo json_encode(['status' => false]);
-			exit;
-		}
-
-		// If we specifically are uploading a PDF, check the MIME type.
-		if ($filetype == 'pdf' && $file['type'] != 'application/pdf') {
-			echo json_encode(['status' => false]);
-			exit;
-		}
-
-		// Check file extension and remove any dengerous ones.
-		if (preg_match("/.exe$|.com$|.bat$|.zip$|.php$|.sh$/i", $file['name'])) {
-			exit("You cannot upload this type of file.");
-		}
-		// Check if the message attachments directory exists.
-		if (!is_dir('images' . DS . 'emundus' . DS . 'files' . DS . $user . DS . $fnum)) {
-			mkdir('images' . DS . 'emundus' . DS . 'files' . DS . $user . DS . $fnum, 0777, true);
-		}
-
-		// Move the uploaded file to the server directory.
-
-		if (!empty($user) && empty($fnum)) {
-			$target = 'images' . DS . 'emundus' . DS . 'files' . DS . $user . DS . $fnum . DS . $file['name'];
-		}
-		else {
-			$target = 'images' . DS . 'emundus' . DS . 'files' . DS . $file['name'];
-		}
-
-		if (file_exists($target)) {
-			unlink($target);
-		}
-
-		move_uploaded_file($file['tmp_name'], $target);
 
 		// Send back the info to the frontend.
 		echo json_encode(['status' => true, 'file_name' => $file['name'], 'file_path' => $target]);
@@ -250,7 +253,7 @@ class EmundusControllerMessages extends JControllerLegacy
 	public function previewemail()
 	{
 		if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
-			die(JText::_("ACCESS_DENIED"));
+			die(Text::_("ACCESS_DENIED"));
 		}
 
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
@@ -263,8 +266,7 @@ class EmundusControllerMessages extends JControllerLegacy
 		$m_files    = $this->getModel('Files');
 		$m_campaign = $this->getModel('Campaign');
 
-		$config = JFactory::getConfig();
-
+		$config = $this->app->getConfig();
 
 		// Get default mail sender info
 		$mail_from_sys      = $config->get('mailfrom');
@@ -288,7 +290,7 @@ class EmundusControllerMessages extends JControllerLegacy
 
 		$html = '';
 		if (!empty($unpublished_tags)) {
-			$html = '<div style="color: #c91212"><p style="color: #c91212">' . JText::_('COM_EMUNDUS_EMAIL_WARNING_UNPUBLISHED_TAGS') . '</p><ul>';
+			$html = '<div style="color: #c91212"><p style="color: #c91212">' . Text::_('COM_EMUNDUS_EMAIL_WARNING_UNPUBLISHED_TAGS') . '</p><ul>';
 			foreach ($unpublished_tags as $unpublished_tag) {
 				$html .= '<li>' . $unpublished_tag . '</li>';
 			}
@@ -296,7 +298,7 @@ class EmundusControllerMessages extends JControllerLegacy
 		}
 
 		if ($nb_recipients > 1) {
-			$html .= '<h2>' . JText::sprintf('COM_EMUNDUS_EMAIL_ABOUT_TO_SEND', $nb_recipients) . '</h2>';
+			$html .= '<h2>' . Text::sprintf('COM_EMUNDUS_EMAIL_ABOUT_TO_SEND', $nb_recipients) . '</h2>';
 		}
 
 
@@ -341,15 +343,15 @@ class EmundusControllerMessages extends JControllerLegacy
 			$html .= '<div class="well">';
 
 			if (isset($bcc_html)) {
-				$html .= '<strong>' . JText::_('COM_EMUNDUS_EMAIL_PEOPLE_BCC') . '</strong> <ul>' . $bcc_html . '</ul>';
+				$html .= '<strong>' . Text::_('COM_EMUNDUS_EMAIL_PEOPLE_BCC') . '</strong> <ul>' . $bcc_html . '</ul>';
 			}
 
 			if (isset($cc_html)) {
-				$html .= '<strong>' . JText::_('COM_EMUNDUS_EMAIL_PEOPLE_CC') . '</strong> <ul>' . $cc_html . '</ul>';
+				$html .= '<strong>' . Text::_('COM_EMUNDUS_EMAIL_PEOPLE_CC') . '</strong> <ul>' . $cc_html . '</ul>';
 			}
 
 			if ($nb_recipients > 1) {
-				$html .= '<span class="alert alert-info">' . JText::sprintf('COM_EMUNDUS_EMAIL_CC_BCC_WILL_RECEIVE', $nb_recipients) . '</span>';
+				$html .= '<span class="alert alert-info">' . Text::sprintf('COM_EMUNDUS_EMAIL_CC_BCC_WILL_RECEIVE', $nb_recipients) . '</span>';
 			}
 
 			$html .= '</div>';
@@ -369,10 +371,10 @@ class EmundusControllerMessages extends JControllerLegacy
 			'COURSE_LABEL'   => $programme->label,
 			'CAMPAIGN_LABEL' => $fnum->label,
 			'CAMPAIGN_YEAR'  => $fnum->year,
-			'CAMPAIGN_START' => JHTML::_('date', $fnum->start_date, JText::_('DATE_FORMAT_OFFSET1'), null),
-			'CAMPAIGN_END'   => JHTML::_('date', $fnum->end_date, JText::_('DATE_FORMAT_OFFSET1'), null),
-			'DEADLINE'       => JHTML::_('date', $fnum->end_date, JText::_('DATE_FORMAT_OFFSET1'), null),
-			'SITE_URL'       => JURI::base(),
+			'CAMPAIGN_START' => HTMLHelper::_('date', $fnum->start_date, Text::_('DATE_FORMAT_OFFSET1'), null),
+			'CAMPAIGN_END'   => HTMLHelper::_('date', $fnum->end_date, Text::_('DATE_FORMAT_OFFSET1'), null),
+			'DEADLINE'       => HTMLHelper::_('date', $fnum->end_date, Text::_('DATE_FORMAT_OFFSET1'), null),
+			'SITE_URL'       => Uri::base(),
 			'USER_EMAIL'     => $fnum->email
 		];
 
@@ -382,7 +384,11 @@ class EmundusControllerMessages extends JControllerLegacy
 
 		// Tags are replaced with their corresponding values.
 		if (empty($template) || empty($template->Template)) {
-			$db    = JFactory::getDbo();
+			if(empty($template)) {
+				$template = new stdClass();
+			}
+
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
 			$query->select($db->quoteName('Template'))
@@ -402,26 +408,21 @@ class EmundusControllerMessages extends JControllerLegacy
 		$mail_from      = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
 		$mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
 
-		// If the email sender has the same domain as the system sender address.
-		/*if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
-			$mail_from_address = $mail_from;
-		} else {*/
 		$mail_from_address = $mail_from_sys;
-		//}
 
 		$sender = $mail_from_name . ' &lt;' . $mail_from_address . '&gt;';
 
 		// Build message preview.
 		$html .= '</hr><div class="email-info">
-                    <strong>' . JText::_('COM_EMUNDUS_EMAILS_FROM') . '</strong> ' . $sender . ' </br>';
+                    <strong>' . Text::_('COM_EMUNDUS_EMAILS_FROM') . '</strong> ' . $sender . ' </br>';
 
 		if (!empty($reply_to_from)) {
-			$html .= '<strong>' . JText::_('COM_EMUNDUS_EMAILS_REPLY_TO') . '</strong> ' . $reply_to_from . ' </br>';
+			$html .= '<strong>' . Text::_('COM_EMUNDUS_EMAILS_REPLY_TO') . '</strong> ' . $reply_to_from . ' </br>';
 		}
 
-		$html .= '<strong>' . JText::_('COM_EMUNDUS_EMAILS_TO') . '</strong> ' . $fnum->email . ' </br>' .
-			'<strong>' . JText::_('COM_EMUNDUS_EMAILS_SUBJECT') . '</strong> ' . $subject . ' </br>' .
-			'<strong>' . JText::_('COM_EMUNDUS_EMAILS_BODY') . '</strong>
+		$html .= '<strong>' . Text::_('COM_EMUNDUS_EMAILS_TO') . '</strong> ' . $fnum->email . ' </br>' .
+			'<strong>' . Text::_('COM_EMUNDUS_EMAILS_SUBJECT') . '</strong> ' . $subject . ' </br>' .
+			'<strong>' . Text::_('COM_EMUNDUS_EMAILS_BODY') . '</strong>
 			</div>
 			<div class="well">' . $body . '</div>';
 
@@ -454,7 +455,7 @@ class EmundusControllerMessages extends JControllerLegacy
 
 		// Files generated using the Letters system. Requires attachment creation and doc generation rights.
 		if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c') && !empty($attachments['setup_letters'])) {
-			$db    = JFactory::getDbo();
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
 			// Get from DB and generate using the tags.
@@ -478,11 +479,11 @@ class EmundusControllerMessages extends JControllerLegacy
 		$files = '';
 		if (!empty($toAttach)) {
 
-			$files .= '<div class="well"><h3>' . JText::_('COM_EMUNDUS_EMAILS_ATTACHMENTS') . '</h3>';
+			$files .= '<div class="well"><h3>' . Text::_('COM_EMUNDUS_EMAILS_ATTACHMENTS') . '</h3>';
 
 			if (!empty($toAttach['upload'])) {
 
-				$files .= '<strong>' . JText::_('COM_EMUNDUS_UPLOAD') . '</strong>';
+				$files .= '<strong>' . Text::_('COM_EMUNDUS_UPLOAD') . '</strong>';
 
 				$files .= '<ul>';
 				foreach ($toAttach['upload'] as $attach) {
@@ -494,7 +495,7 @@ class EmundusControllerMessages extends JControllerLegacy
 
 			if (!empty($toAttach['candidate_file'])) {
 
-				$files .= '<strong>' . JText::_('COM_EMUNDUS_EMAILS_CANDIDATE_FILE') . '</strong>';
+				$files .= '<strong>' . Text::_('COM_EMUNDUS_EMAILS_CANDIDATE_FILE') . '</strong>';
 
 				$files .= '<ul>';
 				foreach ($toAttach['candidate_file'] as $attach) {
@@ -506,7 +507,7 @@ class EmundusControllerMessages extends JControllerLegacy
 
 			if (!empty($toAttach['letter'])) {
 
-				$files .= '<strong>' . JText::_('COM_EMUNDUS_EMAILS_SETUP_LETTERS_ATTACH') . '</strong><ul>';
+				$files .= '<strong>' . Text::_('COM_EMUNDUS_EMAILS_SETUP_LETTERS_ATTACH') . '</strong><ul>';
 				foreach ($toAttach['letter'] as $attach) {
 					$files .= '<li>' . $attach . '</li>';
 				}
@@ -529,12 +530,11 @@ class EmundusControllerMessages extends JControllerLegacy
 	 */
 	public function applicantemail()
 	{
-
 		if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
 			die(Text::_("ACCESS_DENIED"));
 		}
 
-		$db = Factory::getDbo();
+		$db = Factory::getContainer()->get('DatabaseDriver');
 
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
@@ -633,10 +633,10 @@ class EmundusControllerMessages extends JControllerLegacy
 				'COURSE_LABEL'   => $programme->label,
 				'CAMPAIGN_LABEL' => $fnum->label,
 				'CAMPAIGN_YEAR'  => $fnum->year,
-				'CAMPAIGN_START' => JHTML::_('date', $fnum->start_date, Text::_('DATE_FORMAT_OFFSET1'), null),
-				'CAMPAIGN_END'   => JHTML::_('date', $fnum->end_date, Text::_('DATE_FORMAT_OFFSET1'), null),
-				'DEADLINE'       => JHTML::_('date', $fnum->end_date, Text::_('DATE_FORMAT_OFFSET1'), null),
-				'SITE_URL'       => JURI::base(),
+				'CAMPAIGN_START' => HTMLHelper::_('date', $fnum->start_date, Text::_('DATE_FORMAT_OFFSET1'), null),
+				'CAMPAIGN_END'   => HTMLHelper::_('date', $fnum->end_date, Text::_('DATE_FORMAT_OFFSET1'), null),
+				'DEADLINE'       => HTMLHelper::_('date', $fnum->end_date, Text::_('DATE_FORMAT_OFFSET1'), null),
+				'SITE_URL'       => Uri::base(),
 				'USER_EMAIL'     => $fnum->email
 			];
 
@@ -647,6 +647,10 @@ class EmundusControllerMessages extends JControllerLegacy
 			$subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
 
 			if (empty($template) || empty($template->Template)) {
+				if(empty($template)) {
+					$template = new stdClass();
+				}
+
 				$query = $db->getQuery(true);
 
 				$query->select($db->quoteName('Template'))
@@ -670,7 +674,7 @@ class EmundusControllerMessages extends JControllerLegacy
 			];
 
 			// Configure email sender
-			$mailer = Factory::getMailer();
+			$mailer = Factory::getContainer()->get(Mail\MailerFactoryInterface::class)->createMailer();
 			$mailer->setSender($sender);
 			if (!empty($reply_to_from)) {
 				$mailer->addReplyTo($reply_to_from);
@@ -779,29 +783,16 @@ class EmundusControllerMessages extends JControllerLegacy
 			if ($send !== true) {
 				$failed[] = $fnum->email;
 				echo 'Error sending email: ' . $send->__toString();
-				JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+				Log::add($send->__toString(), Log::ERROR, 'com_emundus');
 			}
 			else {
 				// Assoc tags if email has been sent
-				if ($tags_str != null || !empty($template->tags)) {
-					$query = $db->getQuery(true);
+				if($tags_str != null || !empty($template->tags)) {
+					$tags = array_filter(array_merge(explode(',',$tags_str),explode(',',$template->tags)));
 
-					$tags = array_filter(array_merge(explode(',', $tags_str), explode(',', $template->tags)));
-
-					foreach ($tags as $tag) {
-						try {
-							$query->clear()
-								->insert($db->quoteName('#__emundus_tag_assoc'))
-								->set($db->quoteName('fnum') . ' = ' . $db->quote($fnum->fnum))
-								->set($db->quoteName('id_tag') . ' = ' . $db->quote($tag))
-								->set($db->quoteName('user_id') . ' = ' . $db->quote($fnum->applicant_id));
-
-							$db->setQuery($query);
-							$db->execute();
-						}
-						catch (Exception $e) {
-							JLog::add('NOT IMPORTANT IF DUPLICATE ENTRY : Error getting template in model/messages at query :' . $query->__toString() . " with " . $e->getMessage(), JLog::ERROR, 'com_emundus');
-						}
+					if(!empty($tags))
+					{
+						$m_files->tagFile([$fnum->fnum], $tags, $user->id);
 					}
 				}
 
@@ -811,9 +802,10 @@ class EmundusControllerMessages extends JControllerLegacy
 					'user_id_from' => $user->id,
 					'user_id_to'   => $fnum->applicant_id,
 					'subject'      => $subject,
-					'message'      => '<i>' . Text::_('MESSAGE') . ' ' . Text::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . Text::_('COM_EMUNDUS_TO') . ' ' . $fnum->email . '</i><br>' . $body . $files,
+					'message' => $body . $files,
 					'type'         => (empty($template->type)) ? '' : $template->type,
-					'email_id'     => $template_id
+					'email_id' => $template_id,
+					'email_to' => $fnum->email
 				];
 				if (!empty($cc_final)) {
 					$log['email_cc'] = implode(', ', $cc_final);
@@ -853,7 +845,7 @@ class EmundusControllerMessages extends JControllerLegacy
 		$m_users    = $this->getModel('Users');
 
 		$current_user = $this->app->getIdentity();
-		$config       = Factory::getConfig();
+		$config       = $this->app->getConfig();
 
 		// Get default mail sender info
 		$mail_from_sys      = $config->get('mailfrom');
@@ -882,7 +874,7 @@ class EmundusControllerMessages extends JControllerLegacy
 			$template = $m_messages->getEmail($template_id);
 		}
 		else {
-			$db    = Factory::getDbo();
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
 			$query->clear()
@@ -905,7 +897,7 @@ class EmundusControllerMessages extends JControllerLegacy
 			$toAttach = [];
 			$post     = [
 				'USER_NAME'  => $user->name,
-				'SITE_URL'   => JURI::base(),
+				'SITE_URL'   => Uri::base(),
 				'USER_EMAIL' => $user->email
 			];
 
@@ -930,7 +922,7 @@ class EmundusControllerMessages extends JControllerLegacy
 			];
 
 			// Configure email sender
-			$mailer = Factory::getMailer();
+			$mailer = Factory::getContainer()->get(Mail\MailerFactoryInterface::class)->createMailer();
 			$mailer->setSender($sender);
 			$mailer->addReplyTo($mail_from, $mail_from_name);
 			$mailer->addRecipient($user->email);
@@ -947,6 +939,7 @@ class EmundusControllerMessages extends JControllerLegacy
 			// Files uploaded from the frontend.
 			if (!empty($attachments)) {
 
+				$attachments = explode(',', $attachments);
 				// Here we also build the HTML being logged to show which files were attached to the email.
 				$files = '<ul>';
 				foreach ($attachments as $upload) {
@@ -972,7 +965,7 @@ class EmundusControllerMessages extends JControllerLegacy
 			if ($send !== true) {
 				$failed[] = $user->email;
 				echo 'Error sending email: ' . $send->__toString();
-				JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+				Log::add($send->__toString(), Log::ERROR, 'com_emundus');
 			}
 			else {
 				$sent[] = $user->email;
@@ -980,8 +973,9 @@ class EmundusControllerMessages extends JControllerLegacy
 					'user_id_from' => $current_user->id,
 					'user_id_to'   => $user->id,
 					'subject'      => $subject,
-					'message'      => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . $user->email . '</i><br>' . $body . $files,
-					'type'         => !empty($template->type) ? $template->type : ''
+					'message' => $body . $files,
+					'type' => !empty($template->type)?$template->type:'',
+					'email_to' => $user->email
 				];
 				$m_emails->logEmail($log);
 				// Log the email in the eMundus logging system.
@@ -1270,7 +1264,7 @@ class EmundusControllerMessages extends JControllerLegacy
 		$template_email_id = $this->input->post->getString('tmpl', null);
 
 		if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
-			die(JText::_("ACCESS_DENIED"));
+			die(Text::_("ACCESS_DENIED"));
 		}
 
 		require_once(JPATH_ROOT . '/components/com_emundus/helpers/emails.php');
@@ -1430,7 +1424,7 @@ class EmundusControllerMessages extends JControllerLegacy
 		if ($send !== true) {
 			$failed[] = $fnum_info['email'];
 			echo 'Error sending email: ' . $send->__toString();
-			JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+			Log::add($send->__toString(), Log::ERROR, 'com_emundus');
 		}
 		else {
 			$sent[] = $fnum_info['email'];
@@ -1438,9 +1432,10 @@ class EmundusControllerMessages extends JControllerLegacy
 				'user_id_from' => $user->id,
 				'user_id_to'   => $fnum_info['applicant_id'],
 				'subject'      => $subject,
-				'message'      => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . $fnum_info['email'] . '</i><br>' . $body . $files,
+				'message' => $body . $files,
 				'type'         => (empty($template->type)) ? '' : $template->type,
 				'email_id'     => $template_email_id,
+				'email_to' => $fnum_info['email']
 			];
 			$m_emails->logEmail($log, $fnum);
 		}
@@ -1492,41 +1487,47 @@ class EmundusControllerMessages extends JControllerLegacy
 	// get attachments by profiles
 	public function getattachmentsbyprofiles()
 	{
+		$response = ['status' => false, 'attachments' => null];
 
-
-		$fnums = explode(',', $this->input->post->getRaw('fnums'));
-
-		$_mMessages = $this->getModel('Messages');
-		$_results   = $_mMessages->getAttachmentsByProfiles($fnums);
-
-		if ($_results) {
-			echo json_encode(['status' => true, 'attachments' => $_results]);
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$fnums = explode(',', $this->input->post->getRaw('fnums'));
+			$_mMessages = $this->getModel('Messages');
+			$_results   = $_mMessages->getAttachmentsByProfiles($fnums);
+			if ($_results) {
+				$response = ['status' => true, 'attachments' => $_results];
+			}
 		}
-		else {
-			echo json_encode(['status' => false, 'attachments' => null]);
-		}
+
+		echo json_encode($response);
 		exit;
 	}
 
 	// get all attachments
 	public function getallattachments()
 	{
-		$_mMessages = $this->getModel('Messages');
-		$_documents = $_mMessages->getAllAttachments();
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
 
-		if ($_documents) {
-			echo json_encode(['status' => true, 'attachments' => $_documents]);
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$m_messages = $this->getModel('Messages');
+			$_documents = $m_messages->getAllAttachments();
+
+			if ($_documents) {
+				$response = ['status' => true, 'attachments' => $_documents];
+			} else {
+				$response = ['status' => false, 'attachments' => null];
+			}
 		}
-		else {
-			echo json_encode(['status' => false, 'attachments' => null]);
-		}
+
+		echo json_encode($response);
 		exit;
 	}
 
 	/// set tags to fnums --> params : [fnums]
 	public function addtagsbyfnums()
 	{
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
 
+		$valid_fnums = [];
 
 		/// get data from jinput
 		$data = $this->input->post->getRaw('data');
@@ -1535,16 +1536,24 @@ class EmundusControllerMessages extends JControllerLegacy
 		$fnums      = explode(',', $data['recipients']);
 		$email_tmpl = $data['template'];
 
-		$_mMessages = $this->getModel('Messages');
-
-		$_tags = $_mMessages->addTagsByFnums($fnums, $email_tmpl);
-
-		if ($_tags) {
-			echo json_encode(['status' => true]);
+		foreach ($fnums as $fnum) {
+			if (EmundusHelperAccess::asAccessAction(14, 'c', $fnum)) {
+				$valid_fnums[] = $fnum;
+			}
 		}
-		else {
-			echo json_encode(['status' => false]);
+
+		if (!empty($valid_fnums)) {
+			$response['msg'] = Text::_('FAILED');
+
+			$_mMessages = $this->getModel('Messages');
+			$tagged = $_mMessages->addTagsByFnums($fnums, $email_tmpl);
+
+			if ($tagged) {
+				$response = ['status' => true, 'msg' => Text::_('SUCCESS')];
+			}
 		}
+
+		echo json_encode($response);
 		exit;
 	}
 

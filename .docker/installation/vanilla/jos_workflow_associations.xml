@@ -65,6 +65,31 @@
     <field name="stage_id">1</field>
     <field name="extension">com_content.article</field>
    </row>
+   <row>
+    <field name="item_id">62</field>
+    <field name="stage_id">1</field>
+    <field name="extension">com_content.article</field>
+   </row>
+   <row>
+    <field name="item_id">63</field>
+    <field name="stage_id">1</field>
+    <field name="extension">com_content.article</field>
+   </row>
+   <row>
+    <field name="item_id">64</field>
+    <field name="stage_id">1</field>
+    <field name="extension">com_content.article</field>
+   </row>
+   <row>
+    <field name="item_id">65</field>
+    <field name="stage_id">1</field>
+    <field name="extension">com_content.article</field>
+   </row>
+   <row>
+    <field name="item_id">66</field>
+    <field name="stage_id">1</field>
+    <field name="extension">com_content.article</field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

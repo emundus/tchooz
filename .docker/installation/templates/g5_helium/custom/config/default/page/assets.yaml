@@ -14,17 +14,11 @@ css:
     priority: '0'
     name: Global
   -
-    location: 'https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined'
+    location: 'gantry-assets://custom/scss/editor.scss'
     inline: ''
     extra: '{  }'
     priority: '0'
-    name: 'Material Icons'
-  -
-    location: 'gantry-assets://custom/scss/quill.scss'
-    inline: ''
-    extra: '{  }'
-    priority: '0'
-    name: Quill
+    name: Editor
   -
     location: /media/vendor/fontawesome-free/css/fontawesome.min.css
     inline: ''

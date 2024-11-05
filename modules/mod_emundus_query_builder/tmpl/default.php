@@ -95,12 +95,12 @@ header('Content-Type: text/html; charset=utf-8');
         wrapper2.innerHTML = "<a class='closeButtonWelcomeStat' onclick='deleteWelcomeStat()'></a><?php echo JText::_('MOD_EMUNDUS_QUERY_BUILDER_TEXT_WELCOME_STAT'); ?>";
 
         jQuery('.g-content').has('.etiquette').attr('style', 'margin:auto!important');
-        jQuery('.g-content').has('.etiquette').attr('style', 'padding: 14px;display:grid;grid-column-gap:15px;grid-row-gap:15px;grid-template-columns:repeat(3, 1fr);margin-bottom:15px!important;');
+        jQuery('.g-content').has('.etiquette').attr('style', 'display:grid;grid-column-gap:15px;grid-row-gap:15px;grid-template-columns:repeat(3, 1fr);margin-bottom:15px!important;');
         jQuery('.platform-content').attr('style', 'width:100%!important');
-        jQuery('.platform-content').has('.container-stat').attr('style', 'margin-bottom:50px;background-color:white;padding-bottom:1%;box-shadow: 0 1px 2px 0 hsla(0,0%,41.2%,.19);');
+        jQuery('.platform-content').has('.container-stat').attr('style', 'margin-bottom:50px;background-color:white;padding-bottom:1%;box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);border-radius: var(--em-default-br);border: 1px solid #EDEDED;');
         jQuery('.etiquette').attr('style', 'grid-column-end:span 3;');
         jQuery('.informationStatistique').attr('style', 'grid-column-end:span 3;');
-        jQuery('#g-container-main').attr('style', 'padding-left:5%!important;padding-right:5%!important');
+
 
         taillerEtiquette();
     });
@@ -215,7 +215,7 @@ header('Content-Type: text/html; charset=utf-8');
 
         jQuery.ajax({
             type: "POST",
-            url: "index.php?option=com_ajax&module=emundus_query_builder&method=convertPdf&format=json",
+            url: "/index.php?option=com_ajax&module=emundus_query_builder&method=convertPdf&format=json",
             async: true,
             cache: false,
             data: {
@@ -252,7 +252,7 @@ header('Content-Type: text/html; charset=utf-8');
 
                 jQuery.ajax({
                     type: "POST",
-                    url: "index.php?option=com_ajax&module=emundus_query_builder&method=changeOrderModule&format=json",
+                    url: "/index.php?option=com_ajax&module=emundus_query_builder&method=changeOrderModule&format=json",
                     async: true,
                     cache: false,
                     data: {
@@ -295,7 +295,7 @@ header('Content-Type: text/html; charset=utf-8');
     function refreshModuleGraphQueryBuilder() {
         jQuery.ajax({
             type: 'POST',
-            url: 'index.php?option=com_ajax&module=emundus_query_builder&method=reloadModule&format=json',
+            url: '/index.php?option=com_ajax&module=emundus_query_builder&method=reloadModule&format=json',
             dataType: 'html',
             success: function (response) {
                 msg = JSON.parse(JSON.parse(response).data);
@@ -364,7 +364,7 @@ header('Content-Type: text/html; charset=utf-8');
         if (document.getElementById("titleModule").value != "" && document.getElementById("typeModule").value != "" && document.getElementById("indicateurModule").value != "" && document.getElementById("axeXModule").value != "" && document.getElementById("axeYModule").value != "") {
             jQuery.ajax({
                 type: "POST",
-                url: "index.php?option=com_ajax&module=emundus_query_builder&method=createModule&format=json",
+                url: "/index.php?option=com_ajax&module=emundus_query_builder&method=createModule&format=json",
                 async: true,
                 cache: false,
                 data: {
@@ -400,7 +400,7 @@ header('Content-Type: text/html; charset=utf-8');
     function changePublished(idModule) {
         jQuery.ajax({
             type: "POST",
-            url: "index.php?option=com_ajax&module=emundus_query_builder&method=changePublishedModule&format=json",
+            url: "/index.php?option=com_ajax&module=emundus_query_builder&method=changePublishedModule&format=json",
             async: true,
             cache: false,
             data: {idChangePublishedModule: idModule},
@@ -458,7 +458,7 @@ header('Content-Type: text/html; charset=utf-8');
                 const answers = result.value;
                 jQuery.ajax({
                     type: "POST",
-                    url: "index.php?option=com_ajax&module=emundus_query_builder&method=changeModule&format=json",
+                    url: "/index.php?option=com_ajax&module=emundus_query_builder&method=changeModule&format=json",
                     async: true,
                     cache: false,
                     data: {idModifyModule: idModule, titleModule: answers[0], typeModule: answers[1]},
@@ -490,7 +490,7 @@ header('Content-Type: text/html; charset=utf-8');
             if (result.value) {
                 jQuery.ajax({
                     type: "POST",
-                    url: "index.php?option=com_ajax&module=emundus_query_builder&method=deleteModule&format=json",
+                    url: "/index.php?option=com_ajax&module=emundus_query_builder&method=deleteModule&format=json",
                     async: true,
                     cache: false,
                     data: {idDeleteModule: idModule},

@@ -70,14 +70,19 @@ class EmundusHelperDate
 				$config = Factory::getApplication()->getConfig();
 				$offset = $config->get('offset');
 
-				$date_time = new DateTime($date, new DateTimeZone($offset));
+				$timezone = date_default_timezone_get();
+				if (in_array($offset, timezone_identifiers_list())) {
+					$timezone = $offset;
+				}
+
+				$date_time = new DateTime($date, new DateTimeZone($timezone));
 				$date_time->setTimezone(new DateTimeZone('UTC'));
 			}
 			else {
 				$date_time = new DateTime($date);
 			}
 
-			$display_date = HtmlHelper::date($date_time->format('Y-m-d H:i:s'), Text::_($format));
+			$display_date = HtmlHelper::date($date_time->format('Y-m-d H:i:s'), Text::_($format,false,false));
 		}
 
 		return $display_date;
@@ -94,6 +99,8 @@ class EmundusHelperDate
 	 */
 	static function isNull($date)
 	{
-		return (empty($date) || $date === '0000-00-00 00:00:00' || $date === '0000-00-00');
+		preg_match('/\d{4}-\d{2}-\d{2}/', $date, $matches);
+
+		return (empty($date) || $date === '0000-00-00 00:00:00' || $date === '0000-00-00') || empty($matches);
 	}
 }

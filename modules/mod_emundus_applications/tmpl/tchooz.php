@@ -6,7 +6,13 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 // no direct access
-use Joomla\CMS\Language\Text;defined('_JEXEC') or die;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Router\Route;
+
+defined('_JEXEC') or die;
+
+Text::script('COM_EMUNDUS_APPLICATION_SHARE_CONFIRM_DELETE');
+
 
 $config      = JFactory::getConfig();
 $site_offset = $config->get('offset');
@@ -19,6 +25,11 @@ $order_by_session = JFactory::getSession()->get('applications_order_by');
 
 $tmp_applications = $applications;
 foreach ($applications as $key => $application) {
+	if (!$show_collaboration_files && $application->applicant_id !== $user->id) {
+		unset($tmp_applications[$key]);
+		continue;
+	}
+
 	if ($application->published == '1' || ($show_remove_files == 1 && $application->published == '-1') || ($show_archive_files == 1 && $application->published == '0')) {
 		continue;
 	}
@@ -49,7 +60,7 @@ if (!empty($groups) && !empty($tmp_applications)) {
 	if (!empty($missing_status)) {
 		$groups->{'mod_em_application_group' . $groups_count}                                      = new stdClass();
 		$groups->{'mod_em_application_group' . $groups_count}->{'mod_em_application_group_status'} = implode(',', $missing_status);
-		$groups->{'mod_em_application_group' . $groups_count}->{'mod_em_application_group_title'}  = JText::_($title_other_section);
+		$groups->{'mod_em_application_group' . $groups_count}->{'mod_em_application_group_title'}  = Text::_($title_other_section);
 	}
 
 	foreach ($groups as $key => $group) {
@@ -108,22 +119,53 @@ array_unshift($tabs, [
 ksort($applications);
 
 $current_tab = 0;
+
+if (!empty($applications) && !empty($title_override) && !empty(str_replace(array(' ', "\t", "\n", "\r", "&nbsp;"), '', htmlentities(strip_tags($title_override))))) {
+	if (!isset($m_email)) {
+		if (!class_exists('EmundusModelEmails')) {
+			require_once(JPATH_ROOT . '/components/com_emundus/models/emails.php');
+		}
+		$m_email = new EmundusModelEmails();
+	}
+
+	foreach ($applications[0]['all']['applications'] as $key => $sub_applications) {
+		foreach ($sub_applications as $a_key => $application) {
+			$title_override_display = $title_override;
+			$post = array(
+				'APPLICANT_ID' => $user->id,
+				'DEADLINE' => strftime("%A %d %B %Y %H:%M", strtotime($application->end_date)),
+				'CAMPAIGN_LABEL' => $application->label,
+				'CAMPAIGN_YEAR' => $application->year,
+				'CAMPAIGN_START' => $application->start_date,
+				'CAMPAIGN_END' => $application->end_date,
+				'CAMPAIGN_CODE' => $application->training,
+				'FNUM' => $application->fnum
+			);
+
+			$tags = $m_email->setTags($user->id, $post, $application->fnum, '', $title_override_display);
+			$title_override_display = preg_replace($tags['patterns'], $tags['replacements'], $title_override_display);
+			$title_override_display = $m_email->setTagsFabrik($title_override_display, array($application->fnum));
+
+			$applications[0]['all']['applications'][$key][$a_key]->label = $title_override_display;
+		}
+	}
+}
 ?>
 <div class="mod_emundus_applications___header mod_emundus_applications___tmp_tchooz">
 	<?php if ($mod_em_applications_show_hello_text == 1 && !$is_anonym_user) : ?>
         <div class="em-flex-row em-flex-space-between em-w-100 em-mb-16">
-            <h1><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_HELLO') . $user->firstname ?></h1>
+            <h1><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_HELLO') . $user->firstname ?></h1>
 			<?php if (sizeof($applications) > 0) : ?>
                 <div class="em-flex-row em-w-auto">
 					<?php if ($show_add_application && ($position_add_application == 3 || $position_add_application == 4) && $applicant_can_renew) : ?>
                         <a id="add-application" class="btn btn-success em-mt-24" href="<?= $cc_list_url; ?>">
-                            <span> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span>
+                            <span> <?= Text::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span>
                         </a>
 					<?php endif; ?>
 					<?php if ($show_show_campaigns) : ?>
                         <a id="add-application" class="btn btn-success em-ml-8 em-mt-24"
                            href="<?= $campaigns_list_url; ?>">
-                            <span> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_SHOW_CAMPAIGNS'); ?></span>
+                            <span> <?= Text::_('MOD_EMUNDUS_APPLICATIONS_SHOW_CAMPAIGNS'); ?></span>
                         </a>
 					<?php endif; ?>
                 </div>
@@ -135,13 +177,13 @@ $current_tab = 0;
         <div class="em-flex-column em-flex-align-start">
 			<?php if ($show_add_application && ($position_add_application == 3 || $position_add_application == 4) && $applicant_can_renew) : ?>
                 <a id="add-application" class="btn btn-success em-mb-8" style="width: 40%" href="<?= $cc_list_url; ?>">
-                    <span> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span>
+                    <span> <?= Text::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span>
                 </a>
 			<?php endif; ?>
 			<?php if ($show_show_campaigns) : ?>
                 <a id="add-application" class="btn btn-success em-mt-8 em-mb-8" style="width: 40%"
                    href="<?= $campaigns_list_url; ?>">
-                    <span> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_SHOW_CAMPAIGNS'); ?></span>
+                    <span> <?= Text::_('MOD_EMUNDUS_APPLICATIONS_SHOW_CAMPAIGNS'); ?></span>
                 </a>
 			<?php endif; ?>
         </div>
@@ -152,7 +194,7 @@ $current_tab = 0;
 
 		<?php if ($show_add_application && ($position_add_application == 0 || $position_add_application == 2) && $applicant_can_renew) : ?>
             <a id="add-application" class="btn btn-success em-mt-24" style="width: auto" href="<?= $cc_list_url; ?>">
-                <span> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span>
+                <span> <?= Text::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span>
             </a>
             <hr>
 		<?php endif; ?>
@@ -160,28 +202,28 @@ $current_tab = 0;
 </div>
 
 <?php if ($show_tabs == 1 && sizeof($applications) > 0) : ?>
-    <div class="em-mt-32 em-flex-row em-border-bottom-neutral-300"
+    <div class="em-mt-12 em-flex-row em-border-bottom-neutral-400"
          style="height: 50px; overflow:hidden; overflow-x: auto;">
 		<?php foreach ($tabs as $tab) : ?>
             <div id="tab_link_<?php echo $tab['id'] ?>" onclick="updateTab(<?php echo $tab['id'] ?>)"
-                 class="em-mr-16 em-flex-row em-light-tabs em-pointer <?php if ($current_tab == $tab['id']) : ?>em-light-selected-tab<?php endif; ?>">
+                 class="em-flex-row em-light-tabs em-pointer <?php if ($current_tab == $tab['id']) : ?>em-light-selected-tab<?php endif; ?>">
                 <p class="em-font-size-14"
-                   style="white-space: nowrap"><?php echo JText::_($tab['name']) ?></p>
+                   style="white-space: nowrap"><?php echo Text::_($tab['name']) ?></p>
 				<?php if ($tab['id'] != 0) : ?>
                     <span class="mod_emundus_applications_badge"><?php echo $tab['no_files'] ?></span>
 				<?php endif; ?>
             </div>
 		<?php endforeach; ?>
         <div id="tab_adding_link" onclick="createTab()"
-             class="em-mr-16 em-light-tabs em-flex-row em-pointer <?php if (count($tabs) > 1) : ?>em-display-none<?php endif; ?>">
+             class="em-light-tabs em-flex-row em-pointer <?php if (count($tabs) > 1) : ?>em-display-none<?php endif; ?>">
             <a class="em-flex-row em-no-hover-underline em-font-size-14 em-pointer" style="white-space: nowrap"><span
-                        class="material-icons-outlined em-font-size-14 em-mr-4">add</span><?php echo JText::_('MOD_EM_APPLICATION_TABS_ADD_TAB') ?>
+                        class="material-symbols-outlined em-font-size-14 em-mr-4">add</span><?php echo Text::_('MOD_EM_APPLICATION_TABS_ADD_TAB') ?>
             </a>
         </div>
         <div id="tab_manage_links" onclick="manageTabs()"
-             class="em-mr-16 em-light-tabs em-flex-row em-pointer <?php if (count($tabs) == 1) : ?>em-display-none<?php endif; ?>">
+             class="em-light-tabs em-flex-row em-pointer <?php if (count($tabs) == 1) : ?>em-display-none<?php endif; ?>">
             <a class="em-flex-row em-no-hover-underline em-font-size-14 em-pointer"
-               style="white-space: nowrap"><?php echo JText::_('MOD_EM_APPLICATION_TABS_MANAGE_TABS') ?></a>
+               style="white-space: nowrap"><?php echo Text::_('MOD_EM_APPLICATION_TABS_MANAGE_TABS') ?></a>
         </div>
     </div>
 <?php endif; ?>
@@ -194,15 +236,15 @@ $current_tab = 0;
                 <div id="mod_emundus_application__header_sort"
                      class="mod_emundus_application__header_filter em-border-neutral-400 em-white-bg em-neutral-800-color em-pointer em-mr-8"
                      onclick="displaySort()">
-                    <span class="material-icons-outlined">swap_vert</span>
-                    <span class="em-ml-8"><?php echo JText::_('MOD_EM_APPPLICATION_LIST_SORT') ?></span>
+                    <span class="material-symbols-outlined">swap_vert</span>
+                    <span class="em-ml-8"><?php echo Text::_('MOD_EM_APPPLICATION_LIST_SORT') ?></span>
                 </div>
 			<?php endif; ?>
 
 			<?php if ($mod_em_applications_show_filters == 1) : ?>
                 <!--            <div id="mod_emundus_application__header_filter" class="mod_emundus_application__header_filter em-border-neutral-400 em-white-bg em-neutral-800-color em-pointer em-mr-8" onclick="displayFilters()">
-                    <span class="material-icons-outlined">filter_list</span>
-                    <span class="em-ml-8"><?php /*echo JText::_('MOD_EM_APPPLICATION_LIST_FILTER') */ ?></span>
+                    <span class="material-symbols-outlined">filter_list</span>
+                    <span class="em-ml-8"><?php /*echo Text::_('MOD_EM_APPPLICATION_LIST_FILTER') */ ?></span>
                     <span id="mod_emundus_campaign__header_filter_count" class="mod_emundus_campaign__header_filter_count em-mr-8"></span>
                 </div>-->
 			<?php endif; ?>
@@ -214,41 +256,40 @@ $current_tab = 0;
                      style="height: 38px">
                     <span>
                         <?php if ($order_by_session == 'status') : ?>
-	                        <?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_STATUS') ?>
+	                        <?php echo Text::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_STATUS') ?>
                         <?php elseif ($order_by_session == 'campaigns') : ?>
-	                        <?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_CAMPAIGN') ?>
+	                        <?php echo Text::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_CAMPAIGN') ?>
                         <?php elseif ($order_by_session == 'programs') : ?>
-	                        <?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_PROGRAMS') ?>
+	                        <?php echo Text::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_PROGRAMS') ?>
                         <?php elseif ($order_by_session == 'last_update') : ?>
-	                        <?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_LAST_UPDATE') ?>
+	                        <?php echo Text::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_LAST_UPDATE') ?>
                         <?php elseif ($order_by_session == 'years') : ?>
-	                        <?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_YEARS') ?>
+	                        <?php echo Text::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_YEARS') ?>
                         <?php endif; ?>
                     </span>
-                    <span class="material-icons-outlined em-pointer em-ml-8"
+                    <span class="material-symbols-outlined em-pointer em-ml-8"
                           onclick="filterApplications('applications_order_by','')">close</span>
                 </div>
 			<?php endif; ?>
         </div>
 
-        <div class="em-flex-row-justify-end" style="gap: 24px">
+        <div class="em-flex-row-justify-end tw-flex-wrap" style="gap: 24px">
 			<?php if ($mod_em_applications_show_search): ?>
                 <div class="em-searchbar em-flex-row-justify-end">
-                    <label for="searchword" style="display: inline-block;margin-bottom: unset">
-                        <input name="searchword" type="text" id="applications_searchbar" class="form-control"
-                               placeholder="<?php echo JText::_('MOD_EM_APPLICATIONS_SEARCH') ?>">
-                    </label>
+                    <input name="searchword" type="text" id="applications_searchbar" class="form-control"
+                           placeholder="">
+                    <label for="applications_searchbar" style="display: inline-block;margin-bottom: unset"><?php echo JText::_('MOD_EM_APPLICATIONS_SEARCH') ?></label>
                 </div>
 			<?php endif; ?>
             <div class="em-flex-row" style="gap: 8px">
                 <div id="button_switch_card"
                      class="em-pointer mod_emundus_application___buttons_switch_view mod_emundus_application___buttons_enable"
                      onclick="updateView('card')">
-                    <span class="material-icons-outlined mod_emundus_application___buttons_switch_view_enable">grid_view</span>
+                    <span class="material-symbols-outlined mod_emundus_application___buttons_switch_view_enable">grid_view</span>
                 </div>
                 <div id="button_switch_list" class="em-pointer mod_emundus_application___buttons_switch_view"
                      onclick="updateView('list')">
-                    <span class="material-icons-outlined mod_emundus_application___buttons_switch_view_disabled">menu</span>
+                    <span class="material-symbols-outlined mod_emundus_application___buttons_switch_view_disabled">menu</span>
                 </div>
             </div>
         </div>
@@ -258,19 +299,19 @@ $current_tab = 0;
     <div class="mod_emundus_application__header_sort__values em-border-neutral-400 em-neutral-800-color" id="sort_block"
          style="display: none">
         <a onclick="filterApplications('applications_order_by','status')" class="em-text-neutral-900 em-pointer">
-			<?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_STATUS') ?>
+			<?php echo Text::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_STATUS') ?>
         </a>
         <a onclick="filterApplications('applications_order_by','campaigns')" class="em-text-neutral-900 em-pointer">
-			<?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_CAMPAIGN') ?>
+			<?php echo Text::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_CAMPAIGN') ?>
         </a>
         <a onclick="filterApplications('applications_order_by','programs')" class="em-text-neutral-900 em-pointer">
-			<?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_PROGRAMS') ?>
+			<?php echo Text::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_PROGRAMS') ?>
         </a>
         <a onclick="filterApplications('applications_order_by','years')" class="em-text-neutral-900 em-pointer">
-			<?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_YEARS') ?>
+			<?php echo Text::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_YEARS') ?>
         </a>
         <a onclick="filterApplications('applications_order_by','last_update')" class="em-text-neutral-900 em-pointer">
-			<?php echo JText::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_LAST_UPDATE') ?>
+			<?php echo Text::_('MOD_EM_APPLICATION_LIST_FILTER_GROUP_BY_LAST_UPDATE') ?>
         </a>
     </div>
 
@@ -282,16 +323,16 @@ $current_tab = 0;
         <hr>
         <div class="mod_emundus_applications__list_content--default mt-2">
 			<?php if ($mod_em_campaign_display_svg == 1) : ?>
-                <div id="background-shapes" alt="<?= JText::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
+                <div id="background-shapes" alt="<?= Text::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
 			<?php endif; ?>
 			<?php if (!empty($override_default_content)) {
 				echo $override_default_content;
 			}
 			else {
 				?>
-                <h2 class="em-applicant-title-font em-profile-color"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE') ?></h2>
-                <p class="em-text-neutral-900 em-default-font em-font-weight-500 em-mb-4"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE_TEXT') ?></p>
-                <p class="em-applicant-text-color em-default-font"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE_TEXT_2') ?></p>
+                <h2 class="em-applicant-title-font em-profile-color"><?php echo Text::_('MOD_EM_APPLICATIONS_NO_FILE') ?></h2>
+                <p class="em-text-neutral-900 em-default-font em-font-weight-500 em-mb-4"><?php echo Text::_('MOD_EM_APPLICATIONS_NO_FILE_TEXT') ?></p>
+                <p class="em-applicant-text-color em-default-font"><?php echo Text::_('MOD_EM_APPLICATIONS_NO_FILE_TEXT_2') ?></p>
 				<?php
 			}
 			?>
@@ -299,25 +340,26 @@ $current_tab = 0;
             <div class="em-flex-row-justify-end mod_emundus_campaign__buttons em-mt-32">
 				<?php if ($show_show_campaigns) : ?>
                     <a id="add-application"
-                       class="em-secondary-button em-w-auto em-default-font em-applicant-border-radius"
+                       class="tw-btn-cancel em-w-auto em-default-font em-applicant-border-radius"
                        style="width: auto" href="<?= $campaigns_list_url; ?>">
-                        <span> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_SHOW_CAMPAIGNS'); ?></span>
+                        <span> <?= Text::_('MOD_EMUNDUS_APPLICATIONS_SHOW_CAMPAIGNS'); ?></span>
                     </a>
 				<?php endif; ?>
 				<?php if ($show_add_application && $applicant_can_renew) : ?>
                     <a id="add-application"
                        class="em-applicant-primary-button em-w-auto em-ml-8 em-default-font em-applicant-border-radius"
                        style="width: auto" href="<?= $cc_list_url; ?>">
-                        <span> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span>
+                        <span> <?= Text::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span>
                     </a>
 				<?php endif; ?>
             </div>
         </div>
 	<?php else : ?>
-        <h4 id="no_file_tab_message_view" class="em-display-none"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_TAB') ?></h4>
+        <p id="no_file_tab_message_view" class="em-display-none"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_TAB') ?></p>
+        <p id="no_file_search_message_view" class="em-display-none"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_SEARCH') ?></p>
 		<?php foreach ($applications as $key => $group) : ?>
 			<?php foreach ($group as $g_key => $sub_group) : ?>
-				<?php if (sizeof($sub_group['applications'][0]) > 0) : ?>
+				<?php if ((!empty($order_by_session) && !empty($sub_group['applications'])) || !empty($sub_group['applications'][0])) : ?>
                     <div id="group_application_tab_<?php echo $key ?>"
                          class="em-mb-44 <?php if ($key != $current_tab) : ?>em-display-none<?php endif; ?>">
 						<?php if (isset($sub_group['label'])) : ?>
@@ -369,20 +411,37 @@ $current_tab = 0;
 											$current_phase = $m_campaign->getCurrentCampaignWorkflow($application->fnum);
 
 											?>
-                                            <div class="hover-and-tile-container">
+                                            <div class="hover-and-tile-container" id="application_content<?php echo $application->fnum ?>">
 												<?php if ($mod_em_campaign_display_hover_offset == 1) : ?>
                                                     <div id="tile-hover-offset-request"></div>
 												<?php endif; ?>
                                                 <div class="row em-border-neutral-300 mod_emundus_applications___content_app em-pointer"
-                                                     id="application_content<?php echo $application->fnum ?>"
                                                      onclick="openFile(event,'<?php echo $first_page_url ?>')">
 													<?php if ($mod_em_campaign_display_svg == 1) : ?>
-                                                        <div id="background-shapes" alt="<?= JText::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
+                                                        <div id="background-shapes" alt="<?= Text::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
 													<?php endif; ?>
                                                     <div class="em-w-100">
+	                                                    <?php if ($mod_emundus_applications_show_programme == 1) : ?>
+                                                        <div class="tw-flex tw-justify-between tw-items-start tw-h-fit">
+		                                                    <?php
+		                                                    $color = '#0A53CC';
+		                                                    if(!empty($application->tag_color)){
+			                                                    $color = $application->tag_color;
+		                                                    }
+		                                                    ?>
+                                                            <p class="em-programme-tag" style="color: <?php echo $color ?>;margin-bottom: 0">
+			                                                    <?php  echo $application->programme; ?>
+                                                            </p>
+                                                            <div class="mod_emundus_applications__container text-xl!">
+                                                                <span class="material-symbols-outlined em-text-neutral-600" style="font-size: 24px;"
+                                                                      id="actions_button_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>"
+                                                                >more_vert</span>
+                                                            </div>
+                                                        </div>
+                                                        <?php endif; ?>
                                                         <div class="em-flex-row em-flex-space-between em-mb-12">
-                                                            <div>
-																<?php
+                                                            <div class="tw-flex tw-flex-row tw-items-center tw-gap-2 tw-justify-center">
+                                                            <?php
 																if (empty($application->class)) {
 																	$application->class = 'default';
 																}
@@ -390,36 +449,57 @@ $current_tab = 0;
 																<?php if (empty($visible_status)) : ?>
                                                                     <div class="tw-flex tw-items-center mod_emundus_applications___status_<?= $application->class; ?> flex"
                                                                          id="application_status_<?php echo $application->fnum ?>">
-                                                                        <span class="label label-<?= $application->class; ?>"><?= $application->value; ?></span>
+                                                                        <span class="mod_emundus_applications___status_label label label-<?= $application->class; ?>"><?= $application->value; ?></span>
                                                                         <?php if($application->applicant_id !== $user->id) : ?>
-                                                                            <span class="material-icons-outlined tw-ml-3">people</span>
+                                                                            <span class="material-symbols-outlined tw-ml-3">people</span>
                                                                         <?php endif; ?>
                                                                     </div>
 																<?php elseif (in_array($application->status, $visible_status)) : ?>
                                                                     <div class="tw-flex tw-items-center mod_emundus_applications___status_<?= $application->class; ?> flex"
                                                                          id="application_status_<?php echo $application->fnum ?>">
-                                                                        <span class="label label-<?= $application->class; ?>"><?= $application->value; ?></span>
+                                                                        <span class="mod_emundus_applications___status_label label label-<?= $application->class; ?>"><?= $application->value; ?></span>
 	                                                                    <?php if($application->applicant_id !== $user->id) : ?>
-                                                                            <span class="material-icons-outlined tw-ml-3">people</span>
+                                                                            <span class="material-symbols-outlined tw-ml-3">people</span>
 	                                                                    <?php endif; ?>
                                                                     </div>
 																<?php endif; ?>
 																<?php if (!empty($application->order_status)): ?>
                                                                     <br>
-                                                                    <p><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_ORDER_STATUS') ?> <span style="color: <?= $application->order_color; ?>"><?= JText::_(strtoupper($application->order_status)); ?></span></p>
+                                                                    <p><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_ORDER_STATUS') ?> <span style="color: <?= $application->order_color; ?>"><?= Text::_(strtoupper($application->order_status)); ?></span></p>
 																<?php endif; ?>
+
+	                                                            <?php if ($show_nb_comments) {
+		                                                            $nb_comments = modemundusApplicationsHelper::getNbComments($application->application_id, $user->id);
+		                                                            if ($nb_comments > 0) {
+			                                                            ?>
+                                                                        <a href="<?= !empty($comments_page_alias) ? '/' . $comments_page_alias . '?tab=comments&ccid=' . $application->application_id . '&fnum=' . $application->fnum : '#'  ?>"  id="actions_button_comment" class="tw-flex tw-flex-row comments-icon-wrapper tw-relative tw-ml-2">
+                                                                            <span id="actions_button_comment_icon" class="material-icons tw-text-neutral-300 tw-bg-main-500 tw-p-2 tw-rounded-full">comment</span>
+                                                                            <span id="actions_button_comment_nb" class="nb-comments em-border-main-500 em-font-size-12 em-main-500-color em-white-bg tw-border-2 tw-absolute tw-rounded-full tw-p-1"><?= $nb_comments; ?></span>
+                                                                        </a>
+			                                                            <?php
+		                                                            }
+	                                                            }  ?>
+
+	                                                            <?php if ($application->show_shared_users): ?>
+                                                                    <div id="actions_button_collaborate" class="tw-flex tw-flex-row collaborators-icon-wrapper tw-bg-main-500" onclick="shareApplication('<?php echo $application->fnum ?>','<?php echo $application->application_id ?>')">
+                                                                        <span id="actions_button_collaborate_icon" class="material-symbols-outlined tw-text-neutral-300">group</span>
+                                                                        <span id="actions_button_collaborate_nb" class="nb-collaborators em-profile-color tw-border-main-500 em-font-size-12 tw-bg-neutral-100"><?= sizeof($application->collaborators) ?></span>
+                                                                    </div>
+	                                                            <?php endif; ?>
                                                             </div>
+											                <?php if ($mod_emundus_applications_show_programme != 1) : ?>
                                                             <div class="mod_emundus_applications__container">
-                                                                <span class="material-icons em-text-neutral-600 em-font-weight-600"
+                                                                <span class="material-symbols-outlined em-text-neutral-600" style="font-size: 24px;"
                                                                       id="actions_button_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>"
                                                                 >more_vert</span>
                                                             </div>
+                                                            <?php endif; ?>
                                                         </div>
 														<?php if (empty($application->name)) : ?>
                                                             <a href="<?= JRoute::_($first_page_url); ?>"
                                                                class="mod_emundus_applications___title"
                                                                id="application_title_<?php echo $application->fnum ?>">
-                                                                <h5><?= ($is_admission && $add_admission_prefix) ? JText::_('COM_EMUNDUS_INSCRIPTION') . ' - ' . $application->label : $application->label; ?></h5>
+                                                                <h5><?= ($is_admission && $add_admission_prefix) ? Text::_('COM_EMUNDUS_INSCRIPTION') . ' - ' . $application->label : $application->label; ?></h5>
                                                             </a>
 														<?php else : ?>
                                                             <a href="<?= JRoute::_($first_page_url); ?>"
@@ -463,11 +543,11 @@ $current_tab = 0;
 															?>
                                                             <div class="mod_emundus_applications___date em-mt-8">
 																<?php if (!$displayInterval && !$closed) : ?>
-                                                                    <span class="material-icons em-text-neutral-600 em-mr-8">schedule</span>
-                                                                    <p class="em-text-neutral-600 em-applicant-default-font"> <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_END_DATE'); ?><?php echo JFactory::getDate(new JDate($end_date, $site_offset))->format($date_format); ?></p>
+                                                                    <span class="material-symbols-outlined  em-text-neutral-600 em-mr-8">schedule</span>
+                                                                    <p class="em-text-neutral-600 em-applicant-default-font"> <?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_END_DATE'); ?><?php echo JFactory::getDate(new JDate($end_date, $site_offset))->format($date_format); ?></p>
 																<?php elseif ($displayInterval && !$closed) : ?>
-                                                                    <span class="material-icons-outlined em-text-neutral-600 em-red-500-color em-mr-8">schedule</span>
-                                                                    <p class="em-red-500-color"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_LAST_DAY'); ?>
+                                                                    <span class="material-symbols-outlined em-text-neutral-600 em-red-600-color em-mr-8">schedule</span>
+                                                                    <p class="em-red-600-color"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_LAST_DAY'); ?>
 																		<?php if ($interval->h > 0) {
 																			echo $interval->h . 'h' . $interval->i;
 																		}
@@ -476,8 +556,8 @@ $current_tab = 0;
 																		} ?>
                                                                     </p>
 																<?php elseif ($closed) : ?>
-                                                                    <span class="material-icons em-mr-8 em-red-500-color">schedule</span>
-                                                                    <p class="em-applicant-default-font em-red-500-color"> <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_CLOSED'); ?></p>
+                                                                    <span class="material-symbols-outlined em-mr-8 em-red-600-color">schedule</span>
+                                                                    <p class="em-applicant-default-font em-red-600-color"> <?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_CLOSED'); ?></p>
 																<?php endif; ?>
                                                             </div>
 														<?php endif; ?>
@@ -488,7 +568,7 @@ $current_tab = 0;
                                                     <div class="mod_emundus_applications___informations">
 														<?php if ($show_progress == 1) : ?>
                                                             <div>
-                                                                <label class="em-text-neutral-600 em-applicant-default-font em-font-size-14"><?= JText::_('MOD_EMUNDUS_APPLICATIONS_COMPLETED'); ?>
+                                                                <label class="em-text-neutral-600 em-applicant-default-font em-font-size-14"><?= Text::_('MOD_EMUNDUS_APPLICATIONS_COMPLETED'); ?>
                                                                     :</label>
                                                                 <p class="em-applicant-default-font em-text-neutral-900"><?php echo(($progress['forms'][$application->fnum] + $progress['attachments'][$application->fnum]) / 2) ?>
                                                                     %</p>
@@ -497,13 +577,13 @@ $current_tab = 0;
 
 														<?php if (!empty($application->updated) || !empty($application->submitted_date)) : ?>
                                                             <div>
-                                                                <label class="em-text-neutral-600 em-applicant-default-font em-font-size-14"><?= JText::_('MOD_EMUNDUS_APPLICATIONS_LAST_UPDATE'); ?>
+                                                                <label class="em-text-neutral-600 em-applicant-default-font em-font-size-14"><?= Text::_('MOD_EMUNDUS_APPLICATIONS_LAST_UPDATE'); ?>
                                                                     :</label>
                                                                 <p class="em-applicant-default-font em-text-neutral-900">
 																	<?php if (empty($application->updated)) : ?>
-																		<?php echo JFactory::getDate(new JDate($application->submitted_date, $site_offset))->format('d/m/Y H:i'); ?>
+																		<?php echo EmundusHelperDate::displayDate($application->submitted_date, 'DATE_FORMAT_EMUNDUS'); ?>
 																	<?php else : ?>
-																		<?php echo EmundusHelperDate::displayDate($application->updated, 'DATE_FORMAT_LC2', 0); ?>
+																		<?php echo EmundusHelperDate::displayDate($application->updated, 'DATE_FORMAT_EMUNDUS', 0); ?>
 																	<?php endif; ?>
                                                                 </p>
                                                             </div>
@@ -513,16 +593,16 @@ $current_tab = 0;
 													<?php if ($show_state_files == 1) : ?>
                                                         <div class="">
                                                             <div class="">
-                                                                <strong><?= JText::_('MOD_EMUNDUS_STATE'); ?></strong>
+                                                                <strong><?= Text::_('MOD_EMUNDUS_STATE'); ?></strong>
 																<?php if ($state == 1) : ?>
                                                                     <span class="label alert-success"
-                                                                          role="alert"> <?= JText::_('MOD_EMUNDUS_PUBLISH'); ?></span>
+                                                                          role="alert"> <?= Text::_('MOD_EMUNDUS_PUBLISH'); ?></span>
 																<?php elseif ($state == 0) : ?>
                                                                     <span class="label alert-secondary"
-                                                                          role="alert"> <?= JText::_('MOD_EMUNDUS_ARCHIVE'); ?></span>
+                                                                          role="alert"> <?= Text::_('MOD_EMUNDUS_ARCHIVE'); ?></span>
 																<?php else : ?>
                                                                     <span class="label alert-danger"
-                                                                          role="alert"><?= JText::_('MOD_EMUNDUS_DELETE'); ?></span>
+                                                                          role="alert"><?= Text::_('MOD_EMUNDUS_DELETE'); ?></span>
 																<?php endif; ?>
                                                             </div>
                                                         </div>
@@ -538,52 +618,61 @@ $current_tab = 0;
                                                     <a class="em-text-neutral-900 em-pointer em-flex-row"
                                                        href="<?= JRoute::_($first_page_url); ?>"
                                                        id="actions_block_open_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
-                                                        <span class="material-icons-outlined em-mr-8">open_in_new</span>
-			                                            <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION') ?>
+                                                        <span class="material-symbols-outlined em-mr-8">open_in_new</span>
+			                                            <?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION') ?>
                                                     </a>
 
-		                                            <?php if (in_array('rename', $actions)) : ?>
+		                                            <?php if (in_array('rename', $actions) && ($application->applicant_id === $user->id)) : ?>
                                                         <a class="em-text-neutral-900 em-pointer em-flex-row"
                                                            onclick="renameApplication('<?php echo $application->fnum ?>','<?php echo $application->name ?>','<?php echo $application->label ?>')"
                                                            id="actions_button_rename_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
-                                                            <span class="material-icons-outlined em-mr-8">drive_file_rename_outline</span>
-				                                            <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_RENAME_APPLICATION') ?>
+                                                            <span class="material-symbols-outlined em-mr-8">drive_file_rename_outline</span>
+				                                            <?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_RENAME_APPLICATION') ?>
                                                         </a>
 		                                            <?php endif; ?>
 
-		                                            <?php if (!empty($available_campaigns) && in_array('copy', $actions)) : ?>
+		                                            <?php if (!empty($available_campaigns) && in_array('copy', $actions) && ($application->applicant_id === $user->id)) : ?>
                                                         <a class="em-text-neutral-900 em-pointer em-flex-row"
                                                            onclick="copyApplication('<?php echo $application->fnum ?>')"
                                                            id="actions_button_copy_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
-                                                            <span class="material-icons-outlined em-mr-8">file_copy</span>
-				                                            <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_COPY_APPLICATION') ?>
+                                                            <span class="material-symbols-outlined em-mr-8">file_copy</span>
+				                                            <?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COPY_APPLICATION') ?>
                                                         </a>
 		                                            <?php endif; ?>
 
+	                                                <?php if (in_array('collaborate', $actions) && ($application->applicant_id === $user->id)) : ?>
+                                                        <a class="tw-text-neutral-900 tw-cursor-pointer tw-flex"
+                                                           onclick="shareApplication('<?php echo $application->fnum ?>','<?php echo $application->application_id ?>')"
+                                                           id="actions_button_collaborate_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
+                                                            <span class="material-symbols-outlined tw-mr-2">people</span>
+			                                                <?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_ACTIONS_COLLABORATE') ?>
+                                                        </a>
+	                                                <?php endif; ?>
+
 	                                                <?php if ($show_tabs == 1) : ?>
-                                                        <a class="em-text-neutral-900 em-pointer em-flex-row"
+                                                        <a class="tw-text-neutral-900 tw-cursor-pointer tw-flex"
                                                            onclick="moveToTab('<?php echo $application->fnum ?>','tab<?php echo $key ?>','card')"
                                                            id="actions_button_move_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
-                                                            <span class="material-icons-outlined em-mr-8">drive_file_move</span>
-			                                                <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_MOVE_INTO_TAB') ?>
+                                                            <span class="material-symbols-outlined tw-mr-2">drive_file_move</span>
+			                                                <?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_MOVE_INTO_TAB') ?>
                                                         </a>
 	                                                <?php endif; ?>
 
-	                                                <?php if (in_array('history', $actions)) : ?>
-                                                        <a class="em-text-neutral-900 em-pointer em-flex-row"
-                                                           href="<?= JRoute::_($first_page_url); ?>"
+	                                                <?php if (in_array('history', $actions) && ($application->applicant_id === $user->id || $application->show_history == 1)) : ?>
+                                                        <a class="tw-text-neutral-900 tw-cursor-pointer tw-flex"
+                                                           href="<?= Route::_($history_link->route.'?ccid='. $application->application_id .'&fnum=' . $application->fnum); ?>"
                                                            id="actions_button_history_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
-                                                            <span class="material-icons-outlined em-mr-8">history</span>
-			                                                <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_VIEW_HISTORY') ?>
+                                                            <span class="material-symbols-outlined tw-mr-2">history</span>
+			                                                <?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_VIEW_HISTORY') ?>
                                                         </a>
 	                                                <?php endif; ?>
 
-		                                            <?php if (in_array($application->status, $status_for_delete)) : ?>
-                                                        <a class="em-red-500-color em-flex-row em-pointer"
+		                                            <?php if (in_array($application->status, $status_for_delete) && ($application->applicant_id === $user->id)) : ?>
+                                                        <a class="em-red-600-color em-flex-row em-pointer"
                                                            onclick="deletefile('<?php echo $application->fnum; ?>');"
                                                            id="actions_block_delete_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
-                                                            <span class="material-icons-outlined em-red-500-color em-mr-8">delete</span>
-				                                            <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_DELETE_APPLICATION_FILE') ?>
+                                                            <span class="material-symbols-outlined em-red-600-color em-mr-8">delete</span>
+				                                            <?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_DELETE_APPLICATION_FILE') ?>
                                                         </a>
 		                                            <?php endif; ?>
 
@@ -610,42 +699,42 @@ $current_tab = 0;
         <hr>
         <div class="mod_emundus_applications__list_content--default">
 			<?php if ($mod_em_campaign_display_svg == 1) : ?>
-                <div id="background-shapes" alt="<?= JText::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
+                <div id="background-shapes" alt="<?= Text::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
 			<?php endif; ?>
 			<?php if (!empty($override_default_content)) {
 				echo $override_default_content;
 			}
 			else {
 				?>
-                <p class="em-text-neutral-900 em-applicant-title-font"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE') ?></p>
+                <p class="em-text-neutral-900 em-applicant-title-font"><?php echo Text::_('MOD_EM_APPLICATIONS_NO_FILE') ?></p>
                 <br/>
-                <p class="em-text-neutral-900 em-default-font em-font-weight-500 em-mb-4"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE_TEXT') ?></p>
-                <p class="em-text-neutral-900 em-default-font"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE_TEXT_2') ?></p>
+                <p class="em-text-neutral-900 em-default-font em-font-weight-500 em-mb-4"><?php echo Text::_('MOD_EM_APPLICATIONS_NO_FILE_TEXT') ?></p>
+                <p class="em-text-neutral-900 em-default-font"><?php echo Text::_('MOD_EM_APPLICATIONS_NO_FILE_TEXT_2') ?></p>
 				<?php
 			} ?>
             <br/>
             <div class="em-flex-row-justify-end mod_emundus_campaign__buttons em-mt-32">
 				<?php if ($show_show_campaigns) : ?>
                     <a id="add-application"
-                       class="em-secondary-button em-w-auto em-default-font em-applicant-border-radius"
+                       class="tw-btn-cancel em-w-auto em-default-font em-applicant-border-radius"
                        style="width: auto" href="<?= $campaigns_list_url; ?>">
-                        <span> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_SHOW_CAMPAIGNS'); ?></span>
+                        <span> <?= Text::_('MOD_EMUNDUS_APPLICATIONS_SHOW_CAMPAIGNS'); ?></span>
                     </a>
 				<?php endif; ?>
 				<?php if ($show_add_application && $applicant_can_renew) : ?>
                     <a id="add-application"
                        class="em-applicant-primary-button em-w-auto em-ml-8 em-default-font em-applicant-border-radius"
                        style="width: auto" href="<?= $cc_list_url; ?>">
-                        <span> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span>
+                        <span> <?= Text::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span>
                     </a>
 				<?php endif; ?>
             </div>
         </div>
 	<?php else : ?>
-        <h4 id="no_file_tab_message_list" class="em-display-none"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_TAB') ?></h4>
+        <h4 id="no_file_tab_message_list" class="em-display-none"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_TAB') ?></h4>
 		<?php foreach ($applications as $key => $group) : ?>
 			<?php foreach ($group as $g_key => $sub_group) : ?>
-				<?php if (sizeof($sub_group['applications'][0]) > 0) : ?>
+				<?php if ((!empty($order_by_session) && !empty($sub_group['applications'])) || !empty($sub_group['applications'][0])) : ?>
                     <div id="group_application_tab_<?php echo $key ?>"
                          class="em-mb-44 <?php if ($key != $current_tab) : ?>em-display-none<?php endif; ?>">
 
@@ -657,12 +746,12 @@ $current_tab = 0;
                             <thead>
                             <tr>
                                 <th></th>
-                                <th style="width: 23.75%;"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_RENAME_APPLICATION_NAME') ?></th>
-                                <th style="width: 23.75%;"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_LAST_UPDATE') ?></th>
+                                <th style="width: 23.75%;"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_RENAME_APPLICATION_NAME') ?></th>
+                                <th style="width: 23.75%;"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_LAST_UPDATE') ?></th>
 								<?php if ($show_progress == 1) : ?>
-                                    <th style="width: 23.75%;"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_COMPLETED') ?></th>
+                                    <th style="width: 23.75%;"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COMPLETED') ?></th>
 								<?php endif; ?>
-                                <th style="width: 23.75%;"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_STATUS') ?></th>
+                                <th style="width: 23.75%;"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_STATUS') ?></th>
                                 <th style="width: 5%;"></th>
                             </tr>
                             </thead>
@@ -670,7 +759,7 @@ $current_tab = 0;
 						<?php foreach ($sub_group['applications'] as $f_key => $files) : ?>
 							<?php if ($order_by_session == 'years') : ?>
                                 <div class="em-mt-12 em-flex-row em-white-bg em-applicant-border-radius em-p-6-12">
-                                    <span class="material-icons-outlined em-mr-8">expand_more</span>
+                                    <span class="material-symbols-outlined em-mr-8">expand_more</span>
                                     <h2 style="margin-top: 0"><?php echo $f_key ?></h2>
                                 </div>
 							<?php endif; ?>
@@ -717,13 +806,13 @@ $current_tab = 0;
                                                 onclick="openFile(event,'<?php echo $first_page_url ?>')">
                                                 <td style="width: 23.75%;">
 													<?php if ($mod_em_campaign_display_svg == 1) : ?>
-                                                        <div id="background-shapes" alt="<?= JText::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
+                                                        <div id="background-shapes" alt="<?= Text::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
 													<?php endif; ?>
 													<?php if (empty($application->name)) : ?>
                                                         <a href="<?= JRoute::_($first_page_url); ?>"
                                                            class="mod_emundus_applications___title em-font-size-14"
                                                            id="application_title_<?php echo $application->fnum ?>">
-                                                            <span><?= ($is_admission && $add_admission_prefix) ? JText::_('COM_EMUNDUS_INSCRIPTION') . ' - ' . $application->label : $application->label; ?></span>
+                                                            <span><?= ($is_admission && $add_admission_prefix) ? Text::_('COM_EMUNDUS_INSCRIPTION') . ' - ' . $application->label : $application->label; ?></span>
                                                         </a>
 													<?php else : ?>
                                                         <a href="<?= JRoute::_($first_page_url); ?>"
@@ -738,9 +827,9 @@ $current_tab = 0;
                                                         <div>
                                                             <p class="em-applicant-default-font em-text-neutral-900 em-font-size-14">
 																<?php if (empty($application->updated)) : ?>
-																	<?php echo JFactory::getDate(new JDate($application->submitted_date, $site_offset))->format('d/m/Y H:i'); ?>
+																	<?php echo EmundusHelperDate::displayDate($application->submitted_date, 'DATE_FORMAT_EMUNDUS'); ?>
 																<?php else : ?>
-																	<?php echo EmundusHelperDate::displayDate($application->updated, 'DATE_FORMAT_LC2', 0); ?>
+																	<?php echo EmundusHelperDate::displayDate($application->updated, 'DATE_FORMAT_EMUNDUS', 0); ?>
 																<?php endif; ?>
                                                             </p>
                                                         </div>
@@ -762,29 +851,29 @@ $current_tab = 0;
 														<?php if (empty($visible_status)) : ?>
                                                             <div class="mod_emundus_applications___status_<?= $application->class; ?> tw-flex tw-items-center"
                                                                  id="application_status_<?php echo $application->fnum ?>">
-                                                                <span class="label label-<?= $application->class; ?>"><?= $application->value; ?></span>
+                                                                <span class="mod_emundus_applications___status_label label label-<?= $application->class; ?>"><?= $application->value; ?></span>
 	                                                            <?php if($application->applicant_id !== $user->id) : ?>
-                                                                    <span class="material-icons-outlined tw-ml-3">people</span>
+                                                                    <span class="material-symbols-outlined tw-ml-3">people</span>
 	                                                            <?php endif; ?>
                                                             </div>
 														<?php elseif (in_array($application->status, $visible_status)) : ?>
                                                             <div class="mod_emundus_applications___status_<?= $application->class; ?> tw-flex tw-items-center"
                                                                  id="application_status_<?php echo $application->fnum ?>">
-                                                                <span class="label label-<?= $application->class; ?>"><?= $application->value; ?></span>
+                                                                <span class="mod_emundus_applications___status_label label label-<?= $application->class; ?>"><?= $application->value; ?></span>
 	                                                            <?php if($application->applicant_id !== $user->id) : ?>
-                                                                    <span class="material-icons-outlined tw-ml-3">people</span>
+                                                                    <span class="material-symbols-outlined tw-ml-3">people</span>
 	                                                            <?php endif; ?>
                                                             </div>
 														<?php endif; ?>
 														<?php if (!empty($application->order_status)): ?>
                                                             <br>
-                                                            <p><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_ORDER_STATUS') ?> <span style="color: <?= $application->order_color; ?>"><?= JText::_(strtoupper($application->order_status)); ?></span></p>
+                                                            <p><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_ORDER_STATUS') ?> <span style="color: <?= $application->order_color; ?>"><?= Text::_(strtoupper($application->order_status)); ?></span></p>
 														<?php endif; ?>
                                                     </div>
                                                 </td>
                                                 <td style="width: 5%;">
                                                     <div class="mod_emundus_applications__container">
-                                                            <span class="material-icons em-text-neutral-600 em-font-weight-600"
+                                                            <span class="material-symbols-outlined em-text-neutral-600" style="font-size: 24px;"
                                                                   id="actions_button_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>"
                                                             >more_vert</span>
 
@@ -797,16 +886,16 @@ $current_tab = 0;
                                                             <a class="em-text-neutral-900 em-pointer em-flex-row"
                                                                href="<?= JRoute::_($first_page_url); ?>"
                                                                id="actions_block_open_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>">
-                                                                <span class="material-icons-outlined em-mr-8">open_in_new</span>
-																<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION') ?>
+                                                                <span class="material-symbols-outlined em-mr-8">open_in_new</span>
+																<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION') ?>
                                                             </a>
 
 															<?php if (in_array('rename', $actions) && ($application->applicant_id === $user->id)) : ?>
                                                                 <a class="em-text-neutral-900 em-pointer em-flex-row"
                                                                    onclick="renameApplication('<?php echo $application->fnum ?>','<?php echo $application->name ?>','<?php echo $application->label ?>')"
                                                                    id="actions_button_rename_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>">
-                                                                    <span class="material-icons-outlined em-mr-8">drive_file_rename_outline</span>
-																	<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_RENAME_APPLICATION') ?>
+                                                                    <span class="material-symbols-outlined em-mr-8">drive_file_rename_outline</span>
+																	<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_RENAME_APPLICATION') ?>
                                                                 </a>
 															<?php endif; ?>
 
@@ -814,8 +903,8 @@ $current_tab = 0;
                                                                 <a class="em-text-neutral-900 em-pointer em-flex-row"
                                                                    onclick="copyApplication('<?php echo $application->fnum ?>')"
                                                                    id="actions_button_copy_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>">
-                                                                    <span class="material-icons-outlined em-mr-8">file_copy</span>
-																	<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_COPY_APPLICATION') ?>
+                                                                    <span class="material-symbols-outlined em-mr-8">file_copy</span>
+																	<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COPY_APPLICATION') ?>
                                                                 </a>
 															<?php endif; ?>
 
@@ -823,26 +912,35 @@ $current_tab = 0;
                                                                 <a class="em-text-neutral-900 em-pointer em-flex-row"
                                                                    onclick="moveToTab('<?php echo $application->fnum ?>','tab<?php echo $key ?>','list')"
                                                                    id="actions_button_move_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>">
-                                                                    <span class="material-icons-outlined em-mr-8">drive_file_move</span>
-																	<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_MOVE_INTO_TAB') ?>
+                                                                    <span class="material-symbols-outlined em-mr-8">drive_file_move</span>
+																	<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_MOVE_INTO_TAB') ?>
                                                                 </a>
 															<?php endif; ?>
 
-	                                                        <?php if (in_array('history', $actions)) : ?>
+	                                                        <?php if (in_array('collaborate', $actions) && ($application->applicant_id === $user->id)) : ?>
                                                                 <a class="em-text-neutral-900 em-pointer em-flex-row"
-                                                                   href="<?= JRoute::_($first_page_url); ?>"
+                                                                   onclick="shareApplication('<?php echo $application->fnum ?>','<?php echo $application->application_id ?>')"
+                                                                   id="actions_button_collaborate_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>">
+                                                                    <span class="material-symbols-outlined em-mr-8">people</span>
+			                                                        <?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_ACTIONS_COLLABORATE') ?>
+                                                                </a>
+	                                                        <?php endif; ?>
+
+	                                                        <?php if (in_array('history', $actions) && ($application->applicant_id === $user->id || $application->show_history == 1)) : ?>
+                                                                <a class="em-text-neutral-900 em-pointer em-flex-row"
+                                                                   href="<?= Route::_($history_link->route.'?ccid='. $application->application_id .'&fnum=' . $application->fnum); ?>"
                                                                    id="actions_button_history_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>">
-                                                                    <span class="material-icons-outlined em-mr-8">history</span>
-			                                                        <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_VIEW_HISTORY') ?>
+                                                                    <span class="material-symbols-outlined em-mr-8">history</span>
+			                                                        <?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_VIEW_HISTORY') ?>
                                                                 </a>
 	                                                        <?php endif; ?>
 
 															<?php if (in_array($application->status, $status_for_delete) && ($application->applicant_id === $user->id)) : ?>
-                                                                <a class="em-red-500-color em-flex-row em-pointer"
+                                                                <a class="em-red-600-color em-flex-row em-pointer"
                                                                    onclick="deletefile('<?php echo $application->fnum; ?>');"
                                                                    id="actions_block_delete_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>">
-                                                                    <span class="material-icons-outlined em-red-500-color em-mr-8">delete</span>
-																	<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_DELETE_APPLICATION_FILE') ?>
+                                                                    <span class="material-symbols-outlined em-red-600-color em-mr-8">delete</span>
+																	<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_DELETE_APPLICATION_FILE') ?>
                                                                 </a>
 															<?php endif; ?>
 
@@ -877,7 +975,7 @@ $current_tab = 0;
 <?php if ($show_add_application && ($position_add_application == 1 || $position_add_application == 2 || $position_add_application == 4) && $applicant_can_renew) : ?>
     <div class="mod_emundus_applications___footer">
         <a class="btn btn-success" href="<?= $cc_list_url; ?>"><span
-                    class="icon-plus-sign"> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span></a>
+                    class="icon-plus-sign"> <?= Text::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span></a>
     </div>
 <?php endif; ?>
 
@@ -890,7 +988,7 @@ $current_tab = 0;
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <h4 class="modal-title" id="em-modal-form-title"><?= JText::_('LOADING'); ?></h4>
+                    <h4 class="modal-title" id="em-modal-form-title"><?= Text::_('LOADING'); ?></h4>
                     <img src="media/com_emundus/images/icones/loader-line.gif">
                 </div>
             </div>
@@ -913,6 +1011,8 @@ $current_tab = 0;
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 
 <script type="text/javascript">
+    var $ = jQuery.noConflict();
+
     window.addEventListener('DOMContentLoaded', (event) => {
         let selected_tab_session = sessionStorage.getItem('mod_emundus_applications___selected_tab');
         let selected_view = sessionStorage.getItem('mod_emundus_applications___selected_view');
@@ -926,18 +1026,18 @@ $current_tab = 0;
 
     function deletefile(fnum) {
         Swal.fire({
-            title: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_CONFIRM_DELETE_FILE'); ?>",
+            title: "<?= Text::_('MOD_EMUNDUS_APPLICATIONS_CONFIRM_DELETE_FILE'); ?>",
             text: "",
             type: "warning",
             showCancelButton: true,
             confirmButtonColor: "#28a745",
             cancelButtonColor: "#dc3545",
             reverseButtons: true,
-            confirmButtonText: "<?php echo JText::_('JYES');?>",
-            cancelButtonText: "<?php echo JText::_('JNO');?>"
+            confirmButtonText: "<?php echo Text::_('JYES');?>",
+            cancelButtonText: "<?php echo Text::_('JNO');?>"
         }).then((confirm) => {
             if (confirm.value) {
-                document.location.href = "index.php?option=com_emundus&task=deletefile&fnum=" + fnum + "&redirect=<?php echo base64_encode(JUri::getInstance()->getPath()); ?>";
+                document.location.href = "/index.php?option=com_emundus&task=deletefile&fnum=" + fnum + "&redirect=<?php echo base64_encode(JUri::getInstance()->getPath()); ?>";
             }
         });
     }
@@ -976,12 +1076,14 @@ $current_tab = 0;
                 let view = url[url.length - 2];
 
                 actions = document.getElementById('actions_block_' + fnum + '_' + view + '_' + tab);
-                if (modal !== null) {
-                    actions.style.display = 'none';
-                } else if (actions.style.display === 'none') {
-                    actions.style.display = 'flex';
-                } else {
-                    actions.style.display = 'none';
+                if (actions) {
+                    if (modal !== null) {
+                        actions.style.display = 'none';
+                    } else if (actions.style.display === 'none') {
+                        actions.style.display = 'flex';
+                    } else {
+                        actions.style.display = 'none';
+                    }
                 }
             }
         }
@@ -993,7 +1095,7 @@ $current_tab = 0;
         if (target.indexOf('actions_button_') !== -1 || target.indexOf('actions_block_delete_') !== -1) {
             //do nothing
         } else {
-            window.location.href = url;
+            window.location.href = '/'+url;
         }
     }
 
@@ -1046,7 +1148,15 @@ $current_tab = 0;
                         block.style.display = 'block';
                     }
                 })
-            })
+            });
+
+            if (fnums_to_show.length === 0) {
+                document.getElementById('no_file_search_message_view').style.display = 'block';
+                document.title = "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_SEARCH'); ?>";
+            } else {
+                document.getElementById('no_file_search_message_view').style.display = 'none';
+                document.title = "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_FILE_SEARCH_RESET'); ?>";
+            }
         } else {
             for (let application of document.querySelectorAll("div[id^='application_content']")) {
                 if (application.nodeName === 'TR') {
@@ -1056,6 +1166,7 @@ $current_tab = 0;
                 }
             }
 
+            document.getElementById('no_file_search_message_view').style.display = 'none';
         }
 
     }, 500));
@@ -1121,16 +1232,16 @@ $current_tab = 0;
 
     async function createTab() {
         const {value: tabName} = await Swal.fire({
-            title: "<?= JText::_('MOD_EM_APPLICATION_TABS_CREATE_TAB_SWAL'); ?>",
+            title: "<?= Text::_('MOD_EM_APPLICATION_TABS_CREATE_TAB_SWAL'); ?>",
             input: 'text',
             inputAttributes: {
                 maxlength: 30,
             },
-            text: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_TAB_NAME'); ?>",
+            text: "<?= Text::_('MOD_EMUNDUS_APPLICATIONS_TAB_NAME'); ?>",
             showCancelButton: true,
             reverseButtons: true,
-            confirmButtonText: "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_TAB_CREATE_BUTTON');?>",
-            cancelButtonText: "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_TAB_CANCEL_BUTTON');?>",
+            confirmButtonText: "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_TAB_CREATE_BUTTON');?>",
+            cancelButtonText: "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_TAB_CANCEL_BUTTON');?>",
             customClass: {
                 container: 'mod_emundus_application_swal_manage_tabs_container',
                 popup: 'mod_emundus_application_swal_manage_tabs_popup',
@@ -1141,8 +1252,19 @@ $current_tab = 0;
                 actions: 'mod_emundus_application_swal_manage_tabs_actions',
             },
             inputValidator: (value) => {
+                const regex = /^[\d\s\p{L}'"\-]{3,255}$/u;
+
                 if (!value) {
-                    return "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_TAB_PLEASE_FILL_NAME');?>";
+                    return "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_TAB_PLEASE_FILL_NAME');?>";
+                }
+                if(value.length < 3) {
+                    return "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_TAB_NAME_TOO_SHORT');?>";
+                }
+                if(value.length > 30) {
+                    return "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_TAB_NAME_TOO_LONG');?>";
+                }
+                if(!regex.exec(value)) {
+                    return "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_TAB_NAME_INVALID');?>";
                 }
             }
         });
@@ -1151,7 +1273,7 @@ $current_tab = 0;
             let formData = new FormData();
             formData.append('name', tabName);
 
-            fetch('index.php?option=com_emundus&controller=application&task=createtab', {
+            fetch('/index.php?option=com_emundus&controller=application&task=createtab', {
                 body: formData,
                 method: 'post',
             }).then((response) => {
@@ -1160,17 +1282,17 @@ $current_tab = 0;
                 }
             }).then((res) => {
                 if (res.tab != 0) {
-                    let html = '<div id="tab_link_' + res.tab + '" onclick="updateTab(' + res.tab + ')" class="em-mr-16 em-flex-row em-light-tabs em-pointer"><p class="em-font-size-14 em-text-neutral-600" style="white-space: nowrap">' + tabName + '</p><span class="mod_emundus_applications_badge">0</span></div>';
+                    let html = '<div id="tab_link_' + res.tab + '" onclick="updateTab(' + res.tab + ')" class="em-flex-row em-light-tabs em-pointer"><p class="em-font-size-14 em-text-neutral-600" style="white-space: nowrap">' + tabName + '</p><span class="mod_emundus_applications_badge">0</span></div>';
                     document.getElementById('tab_adding_link').insertAdjacentHTML('beforebegin', html);
                     document.getElementById('tab_adding_link').style.display = 'none';
                     document.getElementById('tab_manage_links').style.display = 'flex';
                 } else {
                     Swal.fire({
-                        title: "Une erreur est survenue",
+                        title: "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_AN_ERROR_OCCURED');?>",
                         text: "",
                         type: "error",
                         reverseButtons: true,
-                        confirmButtonText: "<?php echo JText::_('JYES');?>",
+                        confirmButtonText: "<?php echo Text::_('JYES');?>",
                         timer: 3000
                     });
                 }
@@ -1183,7 +1305,7 @@ $current_tab = 0;
         if (document.getElementById('add_link_manage') != null) {
             document.getElementById('add_link_manage').remove();
         }
-        fetch('index.php?option=com_emundus&controller=application&task=gettabs', {
+        fetch('/index.php?option=com_emundus&controller=application&task=gettabs', {
             method: 'get',
         }).then((response) => {
             if (response.ok) {
@@ -1194,26 +1316,26 @@ $current_tab = 0;
                 let item = document.createElement('li');
                 item.classList.add('em-flex-row', 'em-mb-12', 'em-grab', 'em-flex-space-between');
                 item.id = 'tab_li_' + tab.id;
-                item.innerHTML = '<div class="em-flex-row"><span class="material-icons-outlined em-font-size-14 em-mr-4">drag_indicator</span><span contenteditable="true" class="em-cursor-text" id="' + tab.id + '">' + tab.name + '</span></div><span class="material-icons-outlined em-mr-4 em-pointer em-red-500-color" onclick="deleteTab(' + tab.id + ',\'' + tab.name + '\')">close</span>';
+                item.innerHTML = '<div class="em-flex-row"><span class="material-symbols-outlined em-font-size-14 em-mr-4">drag_indicator</span><span contenteditable="true" class="em-cursor-text" id="' + tab.id + '">' + tab.name + '</span></div><span class="material-symbols-outlined em-mr-4 em-pointer em-red-600-color" onclick="deleteTab(' + tab.id + ',\'' + tab.name + '\')">close</span>';
                 document.getElementById('items').appendChild(item);
             });
             let link_to_add = document.createElement('a');
             link_to_add.classList.add('em-flex-row', 'em-no-hover-underline', 'em-font-size-14', 'em-pointer');
             link_to_add.setAttribute('onclick', 'createTab()');
             link_to_add.id = 'add_link_manage'
-            link_to_add.innerHTML = '<span class="material-icons-outlined em-font-size-14 em-mr-4">add</span><?php echo JText::_('MOD_EM_APPLICATION_TABS_ADD_TAB') ?>';
+            link_to_add.innerHTML = '<span class="material-symbols-outlined em-font-size-14 em-mr-4">add</span><?php echo Text::_('MOD_EM_APPLICATION_TABS_ADD_TAB') ?>';
             document.getElementById('swal_manage').appendChild(link_to_add);
 
             let el = document.getElementById('swal_manage').cloneNode(true);
             Sortable.create(el.childNodes[1]);
 
             Swal.fire({
-                title: "<?= JText::_('MOD_EM_APPLICATION_TABS_MANAGE_TABS_SWAL'); ?>",
+                title: "<?= Text::_('MOD_EM_APPLICATION_TABS_MANAGE_TABS_SWAL'); ?>",
                 html: el,
                 showCancelButton: true,
                 reverseButtons: true,
-                confirmButtonText: "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_TAB_SAVE');?>",
-                cancelButtonText: "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_TAB_CANCEL_BUTTON');?>",
+                confirmButtonText: "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_TAB_SAVE');?>",
+                cancelButtonText: "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_TAB_CANCEL_BUTTON');?>",
                 customClass: {
                     container: 'mod_emundus_application_swal_manage_tabs_container',
                     popup: 'mod_emundus_application_swal_manage_tabs_popup',
@@ -1239,7 +1361,7 @@ $current_tab = 0;
                     let formData = new FormData();
                     formData.append('tabs', JSON.stringify(tabs_to_post));
 
-                    fetch('index.php?option=com_emundus&controller=application&task=updatetabs', {
+                    fetch('/index.php?option=com_emundus&controller=application&task=updatetabs', {
                         body: formData,
                         method: 'post',
                     }).then((updating_response) => {
@@ -1251,11 +1373,11 @@ $current_tab = 0;
                             window.location.reload();
                         } else {
                             Swal.fire({
-                                title: "Une erreur est survenue",
+                                title: "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_AN_ERROR_OCCURED');?>",
                                 text: "",
                                 type: "error",
                                 reverseButtons: true,
-                                confirmButtonText: "<?php echo JText::_('JYES');?>",
+                                confirmButtonText: "<?php echo Text::_('JYES');?>",
                                 timer: 3000
                             });
                         }
@@ -1267,12 +1389,12 @@ $current_tab = 0;
 
     function deleteTab(tab, name) {
         Swal.fire({
-            title: "<?= JText::_('MOD_EM_APPLICATION_TABS_MANAGE_TABS_DELETE_SWAL'); ?>",
-            text: "<?= JText::_('MOD_EM_APPLICATION_TABS_MANAGE_TABS_CONFIRM_DELETE_SWAL'); ?> " + name + " ?",
+            title: "<?= Text::_('MOD_EM_APPLICATION_TABS_MANAGE_TABS_DELETE_SWAL'); ?>",
+            text: "<?= Text::_('MOD_EM_APPLICATION_TABS_MANAGE_TABS_CONFIRM_DELETE_SWAL'); ?> " + name + " ?",
             showCancelButton: true,
             reverseButtons: true,
-            confirmButtonText: "<?php echo JText::_('MOD_EM_APPLICATION_TABS_MANAGE_TABS_DELETE_SWAL_BUTTON');?>",
-            cancelButtonText: "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_TAB_CANCEL_BUTTON');?>",
+            confirmButtonText: "<?php echo Text::_('MOD_EM_APPLICATION_TABS_MANAGE_TABS_DELETE_SWAL_BUTTON');?>",
+            cancelButtonText: "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_TAB_CANCEL_BUTTON');?>",
             customClass: {
                 container: 'mod_emundus_application_swal_manage_tabs_container',
                 popup: 'mod_emundus_application_swal_manage_tabs_popup',
@@ -1284,7 +1406,7 @@ $current_tab = 0;
             }
         }).then((confirm) => {
             if (confirm.value) {
-                fetch('index.php?option=com_emundus&controller=application&task=deletetab&tab=' + tab, {
+                fetch('/index.php?option=com_emundus&controller=application&task=deletetab&tab=' + tab, {
                     method: 'get'
                 }).then((response) => {
                     if (response.ok) {
@@ -1298,6 +1420,12 @@ $current_tab = 0;
                             sessionStorage.removeItem('mod_emundus_applications___selected_tab');
                             this.updateTab(0);
                         }
+
+                        let tabs =  document.querySelectorAll('div[id^="tab_link_"]');
+                        if(tabs.length <= 1) {
+                            document.getElementById('tab_manage_links').style.display = 'none';
+                            document.getElementById('tab_adding_link').style.display = 'flex';
+                        }
                     }
                 });
             }
@@ -1307,7 +1435,7 @@ $current_tab = 0;
     async function moveToTab(fnum, tab, view) {
         let tabs = {};
 
-        fetch('index.php?option=com_emundus&controller=application&task=gettabs', {
+        fetch('/index.php?option=com_emundus&controller=application&task=gettabs', {
             method: 'get',
         }).then((response) => {
             if (response.ok) {
@@ -1318,20 +1446,20 @@ $current_tab = 0;
             if (res.tabs.length === 0) {
                 await this.createTab();
             } else {
-                tabs[0] = "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_PLEASE_SELECT'); ?>"
+                tabs[0] = "<?= Text::_('MOD_EMUNDUS_APPLICATIONS_PLEASE_SELECT'); ?>"
                 res.tabs.forEach((tab) => {
                     tabs[tab.id] = tab.name;
                 });
 
                 const {value: tab} = await Swal.fire({
-                    title: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_MOVE_TO_TAB_SWAL'); ?>",
-                    text: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_TAB_SELECT'); ?>",
+                    title: "<?= Text::_('MOD_EMUNDUS_APPLICATIONS_MOVE_TO_TAB_SWAL'); ?>",
+                    text: "<?= Text::_('MOD_EMUNDUS_APPLICATIONS_TAB_SELECT'); ?>",
                     input: 'select',
                     inputOptions: tabs,
                     showCancelButton: true,
                     reverseButtons: true,
-                    confirmButtonText: "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_TAB_MOVE');?>",
-                    cancelButtonText: "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_TAB_CANCEL_BUTTON');?>",
+                    confirmButtonText: "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_TAB_MOVE');?>",
+                    cancelButtonText: "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_TAB_CANCEL_BUTTON');?>",
                     customClass: {
                         container: 'mod_emundus_application_swal_manage_tabs_container',
                         popup: 'mod_emundus_application_swal_manage_tabs_popup',
@@ -1343,7 +1471,7 @@ $current_tab = 0;
                     },
                     inputValidator: (value) => {
                         if (value == 0) {
-                            return "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_TAB_PLEASE_SELECT_A_TAB');?>";
+                            return "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_TAB_PLEASE_SELECT_A_TAB');?>";
                         }
                     }
                 });
@@ -1353,7 +1481,7 @@ $current_tab = 0;
                     formData.append('fnum', fnum);
                     formData.append('tab', tab);
 
-                    fetch('index.php?option=com_emundus&controller=application&task=movetotab', {
+                    fetch('/index.php?option=com_emundus&controller=application&task=movetotab', {
                         body: formData,
                         method: 'post',
                     }).then((response) => {
@@ -1365,11 +1493,11 @@ $current_tab = 0;
                             window.location.reload();
                         } else {
                             Swal.fire({
-                                title: "Une erreur est survenue",
+                                title: "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_AN_ERROR_OCCURED');?>",
                                 text: res.msg,
                                 type: "error",
                                 reverseButtons: true,
-                                confirmButtonText: "<?php echo JText::_('JYES');?>",
+                                confirmButtonText: "<?php echo Text::_('JYES');?>",
                                 timer: 3000
                             });
                         }
@@ -1382,7 +1510,7 @@ $current_tab = 0;
     /** END **/
 
     async function copyApplication(fnum) {
-        fetch('index.php?option=com_emundus&controller=application&task=getcampaignsavailableforcopy&' + new URLSearchParams({
+        fetch('/index.php?option=com_emundus&controller=application&task=getcampaignsavailableforcopy&' + new URLSearchParams({
             fnum: fnum,
         }), {
             method: 'get',
@@ -1394,14 +1522,14 @@ $current_tab = 0;
             document.querySelector('.mod_emundus_applications__actions').style.display = 'none';
 
             const {value: campaign} = await Swal.fire({
-                title: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_COPY_FILE'); ?>",
-                text: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_COPY_FILE_CAMPAIGN'); ?>",
+                title: "<?= Text::_('MOD_EMUNDUS_APPLICATIONS_COPY_FILE'); ?>",
+                text: "<?= Text::_('MOD_EMUNDUS_APPLICATIONS_COPY_FILE_CAMPAIGN'); ?>",
                 input: 'select',
                 inputOptions: res.campaigns,
                 showCancelButton: true,
                 reverseButtons: true,
-                confirmButtonText: "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_COPY_FILE_ACTION');?>",
-                cancelButtonText: "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_TAB_CANCEL_BUTTON');?>",
+                confirmButtonText: "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COPY_FILE_ACTION');?>",
+                cancelButtonText: "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_TAB_CANCEL_BUTTON');?>",
                 customClass: {
                     container: 'mod_emundus_application_swal_manage_tabs_container',
                     popup: 'mod_emundus_application_swal_manage_tabs_popup',
@@ -1413,7 +1541,7 @@ $current_tab = 0;
                 },
                 inputValidator: (value) => {
                     if (!value) {
-                        return "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_TAB_PLEASE_SELECT_A_CAMPAIGN');?>";
+                        return "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_TAB_PLEASE_SELECT_A_CAMPAIGN');?>";
                     }
                 }
             });
@@ -1423,7 +1551,7 @@ $current_tab = 0;
                 formData.append('fnum', fnum);
                 formData.append('campaign', campaign);
 
-                fetch('index.php?option=com_emundus&controller=application&task=copyfile', {
+                fetch('/index.php?option=com_emundus&controller=application&task=copyfile', {
                     body: formData,
                     method: 'post',
                 }).then((response) => {
@@ -1435,11 +1563,11 @@ $current_tab = 0;
                         window.location.href = res.first_page;
                     } else {
                         Swal.fire({
-                            title: "Une erreur est survenue",
+                            title: "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_AN_ERROR_OCCURED');?>",
                             text: res.msg,
                             type: "error",
                             reverseButtons: true,
-                            confirmButtonText: "<?php echo JText::_('JYES');?>",
+                            confirmButtonText: "<?php echo Text::_('JYES');?>",
                             timer: 3000
                         });
                     }
@@ -1453,8 +1581,8 @@ $current_tab = 0;
             name = campaign_label;
         }
         await Swal.fire({
-            title: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_RENAME_APPLICATION'); ?>",
-            text: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_RENAME_APPLICATION_NAME'); ?>",
+            title: "<?= Text::_('MOD_EMUNDUS_APPLICATIONS_RENAME_APPLICATION'); ?>",
+            text: "<?= Text::_('MOD_EMUNDUS_APPLICATIONS_RENAME_APPLICATION_NAME'); ?>",
             input: 'text',
             inputValue: name,
             inputAttributes: {
@@ -1462,8 +1590,8 @@ $current_tab = 0;
             },
             showCancelButton: true,
             reverseButtons: true,
-            confirmButtonText: "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_RENAME_FILE_ACTION');?>",
-            cancelButtonText: "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_TAB_CANCEL_BUTTON');?>",
+            confirmButtonText: "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_RENAME_FILE_ACTION');?>",
+            cancelButtonText: "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_TAB_CANCEL_BUTTON');?>",
             customClass: {
                 container: 'mod_emundus_application_swal_manage_tabs_container',
                 popup: 'mod_emundus_application_swal_manage_tabs_popup',
@@ -1479,7 +1607,7 @@ $current_tab = 0;
                 formData.append('fnum', fnum);
                 formData.append('new_name', result.value);
 
-                fetch('index.php?option=com_emundus&controller=application&task=renamefile', {
+                fetch('/index.php?option=com_emundus&controller=application&task=renamefile', {
                     body: formData,
                     method: 'post',
                 }).then((response) => {
@@ -1491,16 +1619,188 @@ $current_tab = 0;
                         window.location.reload();
                     } else {
                         Swal.fire({
-                            title: "Une erreur est survenue",
+                            title: "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_AN_ERROR_OCCURED');?>",
                             text: res.msg,
                             type: "error",
                             reverseButtons: true,
-                            confirmButtonText: "<?php echo JText::_('JYES');?>",
+                            confirmButtonText: "<?php echo Text::_('JYES');?>",
                             timer: 3000
                         });
                     }
                 });
             }
+        });
+    }
+
+    async function shareApplication(fnum,ccid) {
+        document.querySelector('.em-page-loader').style.display = 'block';
+
+        fetch('index.php?option=com_emundus&view=application&layout=collaborate&format=raw&fnum='+fnum+'&ccid='+ccid, {
+            method: 'get',
+        }).then((response) => {
+            if (response.ok) {
+                return response.text();
+            }
+        }).then((res) => {
+            document.querySelector('.em-page-loader').style.display = 'none';
+
+            let actions = document.querySelectorAll("div[id^='actions_block_']");
+
+            if (typeof actions !== 'undefined') {
+                actions.forEach((action) => {
+                    if (action.style.display === 'flex') {
+                        action.style.display = 'none';
+                    }
+                });
+            }
+
+            Swal.fire({
+                title: "<?= Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_TITLE'); ?>",
+                html: res,
+                showCancelButton: true,
+                reverseButtons: true,
+                confirmButtonText: "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_SEND');?>",
+                cancelButtonText: "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_BACK');?>",
+                customClass: {
+                    title: 'em-swal-title',
+                    cancelButton: 'em-swal-cancel-button',
+                    confirmButton: 'em-swal-confirm-button',
+                    popup: '!w-3/6',
+                    validationMessage: 'em-swal-validation-message',
+                },
+                didOpen: (toast) => {
+                    var tag = document.createElement("script");
+                    tag.src = "media/com_emundus/js/collaborate.js";
+                    document.getElementsByTagName("head")[0].appendChild(tag);
+
+                    jQuery("#collab_emails").selectize({
+                        plugins: ["remove_button"],
+                        delimiter: ",",
+                        persist: false,
+                        createOnBlur: true,
+                        create: true,
+                        preload: true,
+                        maxItems: null,
+                        placeholder: '<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_ADD_EMAILPLACEHOLDER'); ?>',
+                        render: {
+                            create: function (input) {
+                                return {
+                                    value: input,
+                                    text: input,
+                                };
+                            },
+                            item: function (data, escape) {
+                                const val = data.value;
+                                return '<div>' +
+                                    '<span class="title">' +
+                                    '<span class="name">' + escape(val.substring(val.indexOf(":") + 1)) + '</span>' +
+                                    '</span>' +
+                                    '</div>';
+                            },
+                            option_create: function(data, escape) {
+                                const addString = '<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_ADD_EMAIL'); ?>';
+                                return '<div class="create">' + addString + ' <strong>' + escape(data.input) + '</strong>&hellip;</div>';
+                            }
+                        },
+                        onItemAdd: function (value, $item) {
+                            if(document.querySelector('#collab_error')) {
+                                document.querySelector('#collab_error').remove();
+                            }
+
+                            var email = value.substring(value.indexOf(":") + 1);
+                            email = email.trim();
+
+                            const regex = /^\S{1,64}@\S{1,255}\.\S{1,255}$/;
+                            if (!regex.test(email) || '<?php echo $user->email?>' === email) {
+                                this.removeItem(value);
+                                let p = document.createElement('p');
+                                p.classList.add('tw-text-red-500');
+                                p.id = 'collab_error';
+                                if('<?php echo $user->email?>' === email) {
+                                    p.innerText = '<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_ERROR_NOT_YOUR_OWN'); ?>';
+                                }
+                                if(!regex.test(email)) {
+                                    p.innerText = '<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_ERROR_INVALID_EMAIL'); ?>';
+                                }
+                                document.querySelector('#collab_emails_block').append(p);
+                            }
+                        }
+                    });
+                },
+                preConfirm: () => {
+                    if(document.querySelector("#collab_emails").value === '') {
+                        Swal.showValidationMessage('<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_ERROR_FILL_EMAILS'); ?>')
+                    }
+                }
+            }).then((result) => {
+                if(result.value) {
+                    let formData = new FormData();
+
+                    formData.append('fnum', fnum);
+                    formData.append('ccid', ccid);
+                    formData.append('emails', document.querySelector('#collab_emails').value);
+
+                    Swal.fire({
+                        title: "<?= Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_SUCCESS'); ?>",
+                        text: res.msg,
+                        iconHtml: '<img class="em-sending-email-img tw-w-1/3 tw-max-w-none" src="/media/com_emundus/images/tchoozy/complex-illustrations/sending-message.svg"/>',
+                        showCancelButton: false,
+                        showConfirmButton: false,
+                        customClass: {
+                            title: 'em-swal-title !tw-text-center',
+                            cancelButton: 'em-swal-cancel-button',
+                            confirmButton: 'em-swal-confirm-button',
+                            icon: 'em-swal-icon',
+                        },
+                        timer: 3000
+                    });
+
+                    fetch('index.php?option=com_emundus&controller=application&task=sharefilewith', {
+                        body: formData,
+                        method: 'post',
+                    }).then((response) => {
+                        if (response.ok) {
+                            return response.json();
+                        } else {
+                            return response.text().then((text) => {
+                                throw new Error(text);
+                            });
+                        }
+                    }).then((res) => {
+                        if (res.status != true) {
+                            throw new Error(res.msg);
+                        } else {
+                            if (res.data.failed_emails.length > 0) {
+                                let failed_emails = res.data.failed_emails.join(', ');
+                                throw new Error("<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_ERROR_EMAILS'); ?> " + failed_emails);
+                            } else {
+                                Swal.fire({
+                                    title: "<?= Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_FINISH_SUCCESS'); ?>",
+                                    text: res.msg,
+                                    iconHtml: '<img class="em-sending-email-img tw-w-1/3 tw-max-w-none" src="/media/com_emundus/images/tchoozy/complex-illustrations/message-sent.svg"/>',
+                                    showCancelButton: false,
+                                    showConfirmButton: false,
+                                    customClass: {
+                                        title: 'em-swal-title !tw-text-center',
+                                        cancelButton: 'em-swal-cancel-button',
+                                        confirmButton: 'em-swal-confirm-button',
+                                        icon: 'em-swal-icon',
+                                    },
+                                    timer: 3000
+                                });
+                            }
+                        }
+                    }).catch((error) => {
+                        Swal.fire({
+                            title: "Une erreur est survenue",
+                            text: error,
+                            type: "error",
+                            reverseButtons: true,
+                            confirmButtonText: "<?php echo Text::_('JYES');?>"
+                        });
+                    });
+                }
+            });
         });
     }
 
@@ -1518,7 +1818,7 @@ $current_tab = 0;
         formData.append('type', type);
         formData.append('value', value);
 
-        fetch('index.php?option=com_emundus&controller=application&task=filterapplications', {
+        fetch('/index.php?option=com_emundus&controller=application&task=filterapplications', {
             body: formData,
             method: 'post',
         }).then((response) => {
@@ -1530,11 +1830,11 @@ $current_tab = 0;
                 window.location.reload();
             } else {
                 Swal.fire({
-                    title: "Une erreur est survenue",
+                    title: "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_AN_ERROR_OCCURED');?>",
                     text: res.msg,
                     type: "error",
                     reverseButtons: true,
-                    confirmButtonText: "<?php echo JText::_('JYES');?>",
+                    confirmButtonText: "<?php echo Text::_('JYES');?>",
                     timer: 3000
                 });
             }
@@ -1558,15 +1858,15 @@ $current_tab = 0;
                     confirmButtonColor: '#28a745',
                     cancelButtonColor: '#dc3545',
                     reverseButtons: true,
-                    confirmButtonText: "<?php echo JText::_('JYES');?>",
-                    cancelButtonText: "<?php echo JText::_('JNO');?>"
+                    confirmButtonText: "<?php echo Text::_('JYES');?>",
+                    cancelButtonText: "<?php echo Text::_('JNO');?>"
                 }).then((confirm) => {
                     if (confirm.value) {
                         const actions = customAction.closest('.mod_emundus_applications__actions');
                         const module_id = actions.dataset.mid;
                         const fnum = customAction.dataset.fnum;
 
-                        fetch('index.php?option=com_emundus&controller=application&task=applicantcustomaction&action=' + action + '&fnum=' + fnum + '&module_id=' + module_id)
+                        fetch('/index.php?option=com_emundus&controller=application&task=applicantcustomaction&action=' + action + '&fnum=' + fnum + '&module_id=' + module_id)
                             .then((response) => {
                                 if (response.ok) {
                                     return response.json();

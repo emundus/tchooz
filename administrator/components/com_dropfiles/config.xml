@@ -10,6 +10,7 @@
     >
         <field name="updated" type="hidden" default="1"/>
 
+        <field name="leftpanelstart"/>
         <field
             name="allowedext"
             type="textarea"
@@ -19,6 +20,77 @@
             class="ju-input ju-large-text"
             size="100"
         />
+        <field
+            name="catcollapsed"
+            type="radio"
+            label="COM_DROPFILES_CONFIG_CATCOLLAPSE_LABEL"
+            description="COM_DROPFILES_CONFIG_CATCOLLAPSE_DESC"
+            class="btn-group ju-input"
+            default="0">
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field
+            name="usereditor"
+            type="radio"
+            label="COM_DROPFILES_CONFIG_USE_WYSIWYG_EDITOR_LABEL"
+            description="COM_DROPFILES_CONFIG_USE_WYSIWYG_EDITOR_DESC"
+            class="btn-group ju-input"
+            default="0">
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field
+            name="versioning_number"
+            type="text"
+            label="COM_DROPFILES_CONFIG_VERSION_NUMBER_LABEL"
+            description="COM_DROPFILES_CONFIG_VERSION_NUMBER_DESC"
+            class="btn-group ju-input"
+            default="10"
+        />
+
+        <field
+            name="allowedgoogleext"
+            type="textarea"
+            label="COM_DROPFILES_CONFIG_ALLOWEDGOOGLEEXT_LABEL"
+            description="COM_DROPFILES_CONFIG_ALLOWEDGOOGLEEXT_DESC"
+            default="pdf,ppt,pptx,doc,docx,xls,xlsx,dxf,ps,eps,xps,psd,tif,tiff,bmp,svg,pages,ai,dxf,ttf,txt,mp3,mp4,png,gif,ico,jpeg,jpg"
+            class="ju-input ju-large-text"
+            size="100"
+        />
+        <field
+            name="date_format"
+            type="dateformat"
+            label="COM_DROPFILES_CONFIG_DATEFORMAT_LABEL"
+            description="COM_DROPFILES_CONFIG_DATEFORMAT_DESC"
+            default="Y-m-d"
+            size="100"
+            requried="true"
+        />
+        <field
+            name="download_category"
+            type="radio"
+            label="COM_DROPFILES_CONFIG_DOWNLOAD_CATEGORY_LABEL"
+            description="COM_DROPFILES_CONFIG_DOWNLOAD_CATEGORY_DESC"
+            class="btn-group ju-input"
+            default="0">
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field
+            name="show_empty_folder"
+            type="radio"
+            label="COM_DROPFILES_CONFIG_SHOW_EMPTY_FOLDER_LABEL"
+            description="COM_DROPFILES_CONFIG_SHOW_EMPTY_FOLDER_DESC"
+            class="btn-group ju-input"
+            default="1">
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field name="leftpanelend"/>
+
+
+        <field name="rightpanelstart"/>
         <field
             name="maxinputfile"
             type="text"
@@ -59,30 +131,10 @@
             <option value="0">JNO</option>
         </field>
         <field
-            name="catcollapsed"
-            type="radio"
-            label="COM_DROPFILES_CONFIG_CATCOLLAPSE_LABEL"
-            description="COM_DROPFILES_CONFIG_CATCOLLAPSE_DESC"
-            class="btn-group ju-input"
-            default="0">
-            <option value="1">JYES</option>
-            <option value="0">JNO</option>
-        </field>
-        <field
             name="import"
             type="radio"
             label="COM_DROPFILES_CONFIG_IMPORT_LABEL"
             description="COM_DROPFILES_CONFIG_IMPORT_DESC"
-            class="btn-group ju-input"
-            default="0">
-            <option value="1">JYES</option>
-            <option value="0">JNO</option>
-        </field>
-        <field
-            name="usereditor"
-            type="radio"
-            label="COM_DROPFILES_CONFIG_USE_WYSIWYG_EDITOR_LABEL"
-            description="COM_DROPFILES_CONFIG_USE_WYSIWYG_EDITOR_DESC"
             class="btn-group ju-input"
             default="0">
             <option value="1">JYES</option>
@@ -98,23 +150,7 @@
             <option value="1">JYES</option>
             <option value="0">JNO</option>
         </field>
-        <field
-            name="versioning_number"
-            type="text"
-            label="COM_DROPFILES_CONFIG_VERSION_NUMBER_LABEL"
-            description="COM_DROPFILES_CONFIG_VERSION_NUMBER_DESC"
-            class="btn-group ju-input"
-            default="10"
-        />
-        <field
-            name="allowedgoogleext"
-            type="textarea"
-            label="COM_DROPFILES_CONFIG_ALLOWEDGOOGLEEXT_LABEL"
-            description="COM_DROPFILES_CONFIG_ALLOWEDGOOGLEEXT_DESC"
-            default="pdf,ppt,pptx,doc,docx,xls,xlsx,dxf,ps,eps,xps,psd,tif,tiff,bmp,svg,pages,ai,dxf,ttf,txt,mp3,mp4,png,gif,ico,jpeg,jpg"
-            class="ju-input ju-large-text"
-            size="100"
-        />
+
         <field
             name="open_pdf_in"
             type="radio"
@@ -143,15 +179,6 @@
             description="COM_DROPFILES_CONFIG_URI_DESC"
             default="files"/>
         <field
-            name="date_format"
-            type="dateformat"
-            label="COM_DROPFILES_CONFIG_DATEFORMAT_LABEL"
-            description="COM_DROPFILES_CONFIG_DATEFORMAT_DESC"
-            default="Y-m-d"
-            size="100"
-            requried="true"
-        />
-        <field
             name="loadthemecategory"
             type="radio"
             label="COM_DROPFILES_CONFIG_HIDE_CATEGORY_PARAMETERS_LABEL"
@@ -176,16 +203,6 @@
             <option value="0">JNO</option>
         </field>
         <field
-            name="download_category"
-            type="radio"
-            label="COM_DROPFILES_CONFIG_DOWNLOAD_CATEGORY_LABEL"
-            description="COM_DROPFILES_CONFIG_DOWNLOAD_CATEGORY_DESC"
-            class="btn-group ju-input"
-            default="0">
-            <option value="1">JYES</option>
-            <option value="0">JNO</option>
-        </field>
-        <field
             name="custom_icon"
             type="radio"
             label="COM_DROPFILES_CONFIG_CUSTOM_ICON_LABEL"
@@ -196,16 +213,29 @@
             <option value="0">JNO</option>
         </field>
         <field
-                name="show_empty_folder"
-                type="radio"
-                label="COM_DROPFILES_CONFIG_SHOW_EMPTY_FOLDER_LABEL"
-                description="COM_DROPFILES_CONFIG_SHOW_EMPTY_FOLDER_DESC"
-                class="btn-group ju-input"
-                default="1"
-        >
+            name="paginationnunber"
+            type="list"
+            label="COM_DROPFILES_CONFIG_PAGINATION_NUMBER_LABEL"
+            description="COM_DROPFILES_CONFIG_PAGINATION_NUMBER_DESC"
+            class="btn-group ju-input"
+            default="0">
+            <option value="0">JNO</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+        </field>
+        <field
+            name="show_empty_folder_message"
+            type="radio"
+            label="COM_DROPFILES_CONFIG_SHOW_EMPTY_FOLDER_MESSAGE_LABEL"
+            description="COM_DROPFILES_CONFIG_SHOW_EMPTY_FOLDER_MESSAGE_DESC"
+            class="btn-group ju-input"
+            default="0">
             <option value="1">JYES</option>
             <option value="0">JNO</option>
         </field>
+        <field name="rightpanelend"/>
     </fieldset>
 
     <fieldset
@@ -225,6 +255,7 @@
             <option value="0">JNO</option>
         </field>
         <field name="searchindexer" label="" type="indexbutton"/>
+        <field name="leftpanelstart"/>
         <field
             name="show_filters"
             type="radio"
@@ -234,24 +265,6 @@
             default="1">
             <option value="1">JYES</option>
             <option value="0">JNO</option>
-        </field>
-        <field
-            name="cat_filter"
-            type="radio"
-            label="COM_DROPFILES_CONFIG_SEARCH_CAT_FILTER_LABEL"
-            description="COM_DROPFILES_CONFIG_SEARCH_CAT_FILTER_DESC"
-            class="btn-group ju-input"
-            default="1">
-            <option value="1">JYES</option>
-            <option value="0">JNO</option>
-        </field>
-        <field
-            name="ref_exclude_category_id"
-            type="excludecategory"
-            label="COM_DROPFILES_CONFIG_SEARCH_EXCLUDE_CATEGORIES_LABEL"
-            description="COM_DROPFILES_CONFIG_SEARCH_EXCLUDE_CATEGORIES_DESC"
-            id="ref_exclude_category_id"
-            class="inputbox dropfilesinput">
         </field>
         <field
             name="tag_filter"
@@ -294,6 +307,26 @@
             <option value="0">JNO</option>
         </field>
 
+        <field name="leftpanelend"/>
+        <field name="rightpanelstart"/>
+        <field
+            name="cat_filter"
+            type="radio"
+            label="COM_DROPFILES_CONFIG_SEARCH_CAT_FILTER_LABEL"
+            description="COM_DROPFILES_CONFIG_SEARCH_CAT_FILTER_DESC"
+            class="btn-group ju-input"
+            default="1">
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field
+            name="ref_exclude_category_id"
+            type="excludecategory"
+            label="COM_DROPFILES_CONFIG_SEARCH_EXCLUDE_CATEGORIES_LABEL"
+            description="COM_DROPFILES_CONFIG_SEARCH_EXCLUDE_CATEGORIES_DESC"
+            id="ref_exclude_category_id"
+            class="inputbox dropfilesinput">
+        </field>
         <field
             name="search_limit"
             type="list"
@@ -307,6 +340,7 @@
             <option value="50">50</option>
             <option value="100">100</option>
         </field>
+        <field name="rightpanelend"/>
         <field
             name="cat_tags"
             type="hidden"
@@ -937,6 +971,16 @@
             <option value="0">JNO</option>
         </field>
         <field
+            name="tree_showbreadcrumb"
+            type="radio"
+            label="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_BREADCRUMB_LABEL"
+            description="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_BREADCRUMB_DESC"
+            default="0"
+            class="btn-group ju-input">
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field
             name="tree_showcategorytitle"
             type="radio"
             label="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_CATEGORYTITLE_LABEL"
@@ -951,6 +995,176 @@
             type="radio"
             label="COM_DROPFILES_THEME_GGD_DOWNLOAD_POPUP_LABEL"
             description="COM_DROPFILES_THEME_GGD_DOWNLOAD_POPUP_DESC"
+            default="1"
+            class="btn-group ju-input">
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+    </fieldset>
+    <fieldset
+        name="preview_theme"
+        label="COM_DROPFILES_THEME_PREVIEW_LABEL"
+        description="COM_DROPFILES_THEME_PREVIEW_DESC">
+
+        <field name="preview_marginleft"
+               type="text"
+               default="10"
+               label="COM_DROPFILES_THEME_DEFAULT_PARAM_MARGIN_LEFT_LABEL"
+               description="COM_DROPFILES_THEME_DEFAULT_PARAM_MARGIN_LEFT_DESC"
+               message="COM_DROPFILES_THEME_DEFAULT_PARAM_MARGIN_LEFT_MSG"
+               validate="integer"
+        />
+        <field name="preview_marginright"
+               type="text"
+               default="5"
+               label="COM_DROPFILES_THEME_DEFAULT_PARAM_MARGIN_RIGHT_LABEL"
+               description="COM_DROPFILES_THEME_DEFAULT_PARAM_MARGIN_RIGHT_DESC"
+               message="COM_DROPFILES_THEME_DEFAULT_PARAM_MARGIN_RIGHT_MSG"
+               validate="integer"
+        />
+        <field name="preview_margintop"
+               type="text"
+               default="5"
+               label="COM_DROPFILES_THEME_DEFAULT_PARAM_MARGIN_TOP_LABEL"
+               description="COM_DROPFILES_THEME_DEFAULT_PARAM_MARGIN_TOP_DESC"
+               message="COM_DROPFILES_THEME_DEFAULT_PARAM_MARGIN_TOP_MSG"
+               validate="integer"
+        />
+        <field name="preview_marginbottom"
+               type="text"
+               default="5"
+               label="COM_DROPFILES_THEME_DEFAULT_PARAM_MARGIN_BOTTOM_LABEL"
+               description="COM_DROPFILES_THEME_DEFAULT_PARAM_MARGIN_BOTTOM_DESC"
+               message="COM_DROPFILES_THEME_DEFAULT_PARAM_MARGIN_BOTTOM_MSG"
+               validate="integer"
+        />
+        <field
+            name="preview_showsize"
+            type="radio"
+            label="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_SIZE_LABEL"
+            description="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_SIZE_DESC"
+            default="1"
+            class="btn-group ju-input">
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field
+            name="preview_showtitle"
+            type="radio"
+            label="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_TITLE_LABEL"
+            description="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_TITLE_DESC"
+            default="1"
+            class="btn-group ju-input">
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field
+            name="preview_showversion"
+            type="radio"
+            label="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_VERSION_LABEL"
+            description="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_VERSION_DESC"
+            default="1"
+            class="btn-group ju-input">
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field
+            name="preview_showhits"
+            type="radio"
+            label="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_HITS_LABEL"
+            description="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_HITS_DESC"
+            default="1"
+            class="btn-group ju-input">
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field
+            name="preview_showdownload"
+            type="radio"
+            label="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_DOWNLOAD_LABEL"
+            description="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_DOWNLOAD_DESC"
+            default="1"
+            class="btn-group ju-input">
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field name="preview_bgdownloadlink" type="color" default="#006DCC"
+               label="COM_DROPFILES_THEME_DEFAULT_PARAM_BACKGROUND_COLOR_LABEL"
+               description="COM_DROPFILES_THEME_DEFAULT_PARAM_BACKGROUND_COLOR_DESC"
+        />
+        <field name="preview_colordownloadlink" type="color" default="#FFF"
+               label="COM_DROPFILES_THEME_DEFAULT_PARAM_COLOR_DOWNLOAD_LINK_LABEL"
+               description="COM_DROPFILES_THEME_DEFAULT_PARAM_COLOR_DOWNLOAD_LINK_DESC"
+        />
+        <field
+            name="preview_showdateadd"
+            type="radio"
+            label="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_DATEADD_LABEL"
+            description="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_DATEADD_DESC"
+            default="1"
+            class="btn-group ju-input">
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field
+            name="preview_showdatemodified"
+            type="radio"
+            label="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_DATEMODIFIED_LABEL"
+            description="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_DATEMODIFIED_DESC"
+            default="0"
+            class="btn-group ju-input">
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field
+                name="preview_showcategorytitle"
+                type="radio"
+                label="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_CATEGORYTITLE_LABEL"
+                description="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_CATEGORYTITLE_DESC"
+                default="1"
+                class="btn-group ju-input">
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field
+            name="preview_showsubcategories"
+            type="radio"
+            label="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_SUBCATEGORIES_LABEL"
+            description="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_SUBCATEGORIES_DESC"
+            default="1"
+            class="btn-group ju-input">
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field name="preview_subcategoriescolor" type="color" default="#3e3294"
+               label="COM_DROPFILES_THEME_PREVIEW_SUB_CATEGORY_COLOR_LABEL"
+               description="COM_DROPFILES_THEME_PREVIEW_SUB_CATEGORY_COLOR_DESC"
+        />
+        <field
+            name="preview_showbreadcrumb"
+            type="radio"
+            label="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_BREADCRUMB_LABEL"
+            description="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_BREADCRUMB_DESC"
+            default="1"
+            class="btn-group ju-input">
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field
+            name="preview_showfoldertree"
+            type="radio"
+            label="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_FOLDERTREE_LABEL"
+            description="COM_DROPFILES_THEME_DEFAULT_PARAM_SHOW_FOLDERTREE_DESC"
+            default="0"
+            class="btn-group ju-input">
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field
+            name="preview_download_popup"
+            type="radio"
+            label="COM_DROPFILES_THEME_PREVIEW_DOWNLOAD_POPUP_LABEL"
+            description="COM_DROPFILES_THEME_PREVIEW_DOWNLOAD_POPUP_DESC"
             default="1"
             class="btn-group ju-input">
             <option value="1">JYES</option>
@@ -1345,6 +1559,16 @@
                 name="dropboxbtn"
                 type="dropboxbtn"
                 default=""/>
+        <field
+                name="dropbox_watch_changes"
+                type="hidden"
+                label="COM_DROPFILES_DROPBOX_WATCH_CHANGES_LABEL"
+                description="COM_DROPFILES_DROPBOX_WATCH_CHANGES_DESC"
+                class="btn-group ju-input"
+                default="0">
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
         <field name="dropbox_last_log" type="hidden" default=""/>
         <field
             name="dropbox_document"
@@ -1661,6 +1885,32 @@
     </fieldset>
 
     <fieldset
+            name="importexport"
+            label="COM_DROPFILES_CONFIG_IMPORTER_TAB_LABEL"
+            description="COM_DROPFILES_CONFIG_IMPORTER_TAB_DESC"
+    >
+        <field
+            name="importexport"
+            type="importexport"
+            class="check-import importexport ju-input"
+            label="COM_DROPFILES_CONFIG_IMPORT_EXPORT_LABEL"
+            description="COM_DROPFILES_CONFIG_IMPORT_EXPORT_DESC"/>
+    </fieldset>
+
+    <fieldset
+            name="importer"
+            label="COM_DROPFILES_CONFIG_IMPORTER_TAB_LABEL"
+            description="COM_DROPFILES_CONFIG_IMPORTER_TAB_DESC"
+    >
+        <field
+            name="serverfolder"
+            type="serverfolder"
+            class="check-import serverfolder ju-input"
+            label="COM_DROPFILES_CONFIG_ROOT_CATEGORY_FOR_IMPORT_LABEL"
+            description=""/>
+    </fieldset>
+
+    <fieldset
         name="docmanimport"
         label="COM_DROPFILES_CONFIG_IMPORT_TAB_LABEL"
         description="COM_DROPFILES_CONFIG_IMPORT_TAB_DESC"
@@ -1673,7 +1923,7 @@
             type="docmanimport"
             class="check-import doccat ju-input"
             label="COM_DROPFILES_CONFIG_ROOT_CATEGORY_FOR_IMPORT_LABEL"
-            description="COM_DROPFILES_CONFIG_ROOT_CATEGORY_FOR_IMPORT_DESC"/>
+            description="COM_DROPFILES_CONFIG_ROOT_CATEGORY_FOR_DOCMAN_IMPORT_DESC"/>
 
         <field
             name="jdowncat"
@@ -1720,7 +1970,6 @@
     <fieldset
         name="jutranslation"
         label="Translations"
-        description="Joomunited translations"
         addfieldpath="administrator/components/com_dropfiles/models/fields">
         <field name="jutranslation" label="Translations" type="jutranslation"/>
     </fieldset>

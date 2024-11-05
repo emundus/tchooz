@@ -1,118 +1,130 @@
 <template>
   <div>
     <ModalAddTrigger
+        v-if="showModalAddTriggerApplicant"
         :prog="this.prog"
         :trigger="this.triggerSelected"
         :triggerAction="'candidate'"
-        @UpdateTriggers="getTriggers"
         :key="'candidate' + candidate_trigger"
+        :classes="'tw-rounded tw-shadow-modal tw-p-4'"
+        :placement="'center'"
+        @UpdateTriggers="getTriggers"
+        @close="showModalAddTriggerApplicant = false;"
     />
     <ModalAddTrigger
+        v-else-if="showModalAddTriggerManual"
         :prog="this.prog"
         :trigger="this.triggerSelected"
         :triggerAction="'manual'"
-        @UpdateTriggers="getTriggers"
         :key="'manual-' + manual_trigger"
+        :classes="'tw-rounded tw-shadow-modal tw-p-4'"
+        :placement="'center'"
+        @UpdateTriggers="getTriggers"
+        @close="showModalAddTriggerManual = false;"
     />
-    <div class="em-flex-row">
-      <h4>{{ CandidateAction }}</h4>
+
+    <div id="candidate-action">
+      <div class="tw-flex tw-items-center">
+        <h4>{{ translate('COM_EMUNDUS_ONBOARD_CANDIDATE_ACTION') }}</h4>
+      </div>
+      <p>{{ translate('COM_EMUNDUS_ONBOARD_THE_CANDIDATE_DESCRIPTION') }}</p>
+
+      <button class="tw-btn-primary tw-w-auto tw-mt-2"
+              @click="showModalAddTriggerApplicant = true; triggerSelected = null">
+        {{ translate("COM_EMUNDUS_ONBOARD_EMAIL_ADDTRIGGER") }}
+      </button>
+
+      <transition-group :name="'slide-down'" type="transition" class="em-grid-2 tw-m-4" style="margin-left: 0">
+        <div
+            v-for="trigger in applicantTriggers"
+            :key="trigger.trigger_id"
+            class="em-email-card mt-4"
+        >
+          <div class="tw-flex tw-items-center tw-items-start tw-justify-between tw-w-full">
+            <div>
+              <span class="tw-mb-2">{{ trigger.subject }}</span>
+              <div class="tw-mt-2 tw-mb-2">
+                <span style="font-weight: bold">{{ translate("COM_EMUNDUS_ONBOARD_TRIGGERTARGET") }} : </span>
+                <span v-for="(user, index) in triggerUsersWithProfile(trigger)" :key="'user_' + index">
+                  {{ user.firstname }} {{ user.lastname }}
+                  <span v-if="index != Object.keys(trigger.users).length - 1">, </span>
+                </span>
+                <span
+                    v-if="trigger.users.length == 0 && trigger.profile != 5 && trigger.profile != 6">{{ translate("COM_EMUNDUS_ONBOARD_THE_CANDIDATE") }}</span>
+                <span v-if="trigger.profile == 5">{{ translate("COM_EMUNDUS_ONBOARD_PROGRAM_ADMINISTRATORS") }}</span>
+                <span v-if="trigger.profile == 6">{{ translate("COM_EMUNDUS_ONBOARD_PROGRAM_EVALUATORS") }}</span>
+              </div>
+              <span>{{ translate("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS") }} {{ trigger.status }}</span>
+            </div>
+
+            <div class="tw-flex tw-items-center em-flex-end">
+              <a class="tw-mr-2 tw-cursor-pointer" @click="editTrigger(trigger)">
+                <span class="material-symbols-outlined">edit</span>
+              </a>
+              <a class="tw-cursor-pointer" @click="removeTrigger(trigger.trigger_id)" :title="removeTrig">
+                <span class="material-symbols-outlined tw-text-red-600">close</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </transition-group>
     </div>
-    <p>{{ TheCandidateDescription }}</p>
 
-    <button class="em-primary-button em-w-auto em-mt-8"
-            @click="$modal.show('modalAddTriggercandidate'); triggerSelected = null">
-      {{ addTrigger }}
-    </button>
+    <div id="manager-action">
+      <div class="tw-flex tw-items-center">
+        <h4 class="tw-mt-4">{{ translate('COM_EMUNDUS_ONBOARD_MANAGER_ACTION') }}</h4>
+      </div>
+      <p>{{ translate('COM_EMUNDUS_ONBOARD_MANUAL_DESCRIPTION') }}</p>
 
-    <transition-group :name="'slide-down'" type="transition" class="em-grid-2 em-m-16" style="margin-left: 0">
-      <div
-          v-for="trigger in candidateTriggers"
-          :key="trigger.trigger_id"
-          class="em-email-card"
-      >
-        <div class="em-flex-row em-align-start em-flex-space-between em-w-100">
-          <div>
-            <span class="em-mb-8">{{ trigger.subject }}</span>
-            <div class="em-mt-8 em-mb-8">
-              <span style="font-weight: bold">{{ Target }} : </span>
-              <span v-for="(user, index) in triggerUsersWithProfile(trigger)" :key="'user_' + index">
+      <button class="tw-btn-primary tw-w-auto tw-mt-2"
+              @click="showModalAddTriggerManual = true; triggerSelected = null">
+        {{ translate("COM_EMUNDUS_ONBOARD_EMAIL_ADDTRIGGER") }}
+      </button>
+
+      <transition-group :name="'slide-down'" type="transition" class="em-grid-2 tw-m-4" style="margin-left: 0">
+        <div v-for="trigger in manualTriggers" :key="trigger.trigger_id" class="em-email-card mt-4">
+
+          <div class="tw-flex tw-items-center tw-items-start tw-justify-between tw-w-full">
+            <div>
+              <span class="tw-mb-2">{{ trigger.subject }}</span>
+              <div class="tw-mt-2 tw-mb-2">
+                <span style="font-weight: bold">{{ translate("COM_EMUNDUS_ONBOARD_TRIGGERTARGET") }} : </span>
+                <span
+                    v-for="(user, index) in triggerUsersNoProfile(trigger)"
+                    :key="'user_manual_' + index"
+                >
                 {{ user.firstname }} {{ user.lastname }}
                 <span v-if="index != Object.keys(trigger.users).length - 1">, </span>
               </span>
-              <span
-                  v-if="trigger.users.length == 0 && trigger.profile != 5 && trigger.profile != 6">{{ TheCandidate }}</span>
-              <span v-if="trigger.profile == 5">{{ Administrators }}</span>
-              <span v-if="trigger.profile == 6">{{ Evaluators }}</span>
+                <span v-if="trigger.users.length == 0 && trigger.profile != 5 && trigger.profile != 6">{{ translate("COM_EMUNDUS_ONBOARD_THE_CANDIDATE") }}</span>
+                <span v-if="trigger.profile == 5">{{ translate("COM_EMUNDUS_ONBOARD_PROGRAM_ADMINISTRATORS") }}</span>
+                <span v-if="trigger.profile == 6">{{ translate("COM_EMUNDUS_ONBOARD_PROGRAM_EVALUATORS") }}</span>
+              </div>
+              <span>{{ translate("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS") }} {{ trigger.status }}</span>
             </div>
-            <span>{{ Status }} {{ trigger.status }}</span>
-          </div>
 
-          <div class="em-flex-row em-flex-end">
-            <a class="em-mr-8 em-pointer" @click="editTrigger(trigger)">
-              <span class="material-icons-outlined">edit</span>
-            </a>
-            <a class="em-pointer" @click="removeTrigger(trigger.trigger_id)" :title="removeTrig">
-              <span class="material-icons-outlined em-red-500-color">close</span>
-            </a>
+            <div class="tw-flex tw-items-center em-flex-end">
+              <a class="tw-cursor-pointer tw-mr-2" @click="editTrigger(trigger)">
+                <span class="material-symbols-outlined">edit</span>
+              </a>
+              <a class="tw-cursor-pointer" @click="removeTrigger(trigger.trigger_id)">
+                <span class="material-symbols-outlined tw-text-red-600">close</span>
+              </a>
+            </div>
           </div>
         </div>
-      </div>
-    </transition-group>
-
-    <div class="em-flex-row">
-      <h4 class="em-mt-16">{{ ManagerAction }}</h4>
+      </transition-group>
     </div>
-    <p>{{ ManualDescription }}</p>
-
-    <button class="em-primary-button em-w-auto em-mt-8"
-            @click="$modal.show('modalAddTriggermanual'); triggerSelected = null">
-      {{ addTrigger }}
-    </button>
-
-    <transition-group :name="'slide-down'" type="transition" class="em-grid-2 em-m-16" style="margin-left: 0">
-      <div v-for="trigger in manualTriggers" :key="trigger.trigger_id" class="em-email-card">
-
-        <div class="em-flex-row em-align-start em-flex-space-between em-w-100">
-          <div>
-            <span class="em-mb-8">{{ trigger.subject }}</span>
-            <div class="em-mt-8 em-mb-8">
-              <span style="font-weight: bold">{{ Target }} : </span>
-              <span
-                  v-for="(user, index) in triggerUsersNoProfile(trigger)"
-                  :key="'user_manual_' + index"
-              >
-              {{ user.firstname }} {{ user.lastname }}
-              <span v-if="index != Object.keys(trigger.users).length - 1">, </span>
-            </span>
-              <span
-                  v-if="trigger.users.length == 0 && trigger.profile != 5 && trigger.profile != 6">{{ TheCandidate }}</span>
-              <span v-if="trigger.profile == 5">{{ Administrators }}</span>
-              <span v-if="trigger.profile == 6">{{ Evaluators }}</span>
-            </div>
-            <p>{{ Status }} {{ trigger.status }}</p>
-          </div>
-
-          <div class="em-flex-row em-flex-end">
-            <a class="em-pointer em-mr-8" @click="editTrigger(trigger)">
-              <span class="material-icons-outlined">edit</span>
-            </a>
-            <a class="em-pointer" @click="removeTrigger(trigger.trigger_id)">
-              <span class="material-icons-outlined em-red-500-color">close</span>
-            </a>
-          </div>
-        </div>
-      </div>
-    </transition-group>
 
     <div class="em-page-loader" v-if="loading"></div>
   </div>
 </template>
 
 <script>
-import ModalAddTrigger from "../AdvancedModals/ModalAddTrigger";
+import ModalAddTrigger from "@/components/AdvancedModals/ModalAddTrigger.vue";
 import axios from "axios";
 
-const qs = require("qs");
+import qs from "qs";
 
 export default {
   name: "addEmail",
@@ -129,21 +141,8 @@ export default {
       manual_trigger: 0,
       candidate_trigger: 0,
       loading: false,
-
-      addTrigger: this.translate("COM_EMUNDUS_ONBOARD_EMAIL_ADDTRIGGER"),
-      removeTrig: this.translate("COM_EMUNDUS_ONBOARD_EMAIL_REMOVETRIGGER"),
-      affectTriggers: this.translate("COM_EMUNDUS_ONBOARD_EMAIL_AFFECTTRIGGERS"),
-      ChooseEmailTrigger: this.translate("COM_EMUNDUS_ONBOARD_CHOOSE_EMAIL_TRIGGER"),
-      Target: this.translate("COM_EMUNDUS_ONBOARD_TRIGGERTARGET"),
-      Status: this.translate("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS"),
-      Administrators: this.translate("COM_EMUNDUS_ONBOARD_PROGRAM_ADMINISTRATORS"),
-      Evaluators: this.translate("COM_EMUNDUS_ONBOARD_PROGRAM_EVALUATORS"),
-      TheCandidate: this.translate("COM_EMUNDUS_ONBOARD_THE_CANDIDATE"),
-      Manual: this.translate("COM_EMUNDUS_ONBOARD_MANUAL"),
-      TheCandidateDescription: this.translate("COM_EMUNDUS_ONBOARD_THE_CANDIDATE_DESCRIPTION"),
-      ManualDescription: this.translate("COM_EMUNDUS_ONBOARD_MANUAL_DESCRIPTION"),
-      CandidateAction: this.translate("COM_EMUNDUS_ONBOARD_CANDIDATE_ACTION"),
-      ManagerAction: this.translate("COM_EMUNDUS_ONBOARD_MANAGER_ACTION"),
+      showModalAddTriggerApplicant: false,
+      showModalAddTriggerManual: false
     };
   },
   methods: {
@@ -153,9 +152,9 @@ export default {
       this.candidate_trigger += 1;
       setTimeout(() => {
         if (trigger.candidate == 1) {
-          this.$modal.show('modalAddTriggercandidate');
+          this.showModalAddTriggerApplicant = true;
         } else {
-          this.$modal.show('modalAddTriggermanual');
+          this.showModalAddTriggerManual = true;
         }
       }, 500);
     },
@@ -175,10 +174,11 @@ export default {
     },
     getTriggers() {
       axios.get("index.php?option=com_emundus&controller=email&task=gettriggersbyprogram&pid=" + this.prog)
-          .then(response => {
-            this.triggers = response.data.data;
-            this.loading = false;
-          });
+        .then(response => {
+          this.triggers = response.data.data;
+
+          this.loading = false;
+        });
     },
     triggerUsersWithProfile(trigger) {
       if (trigger.profile !== null) {
@@ -196,7 +196,7 @@ export default {
     }
   },
   computed: {
-    candidateTriggers() {
+    applicantTriggers() {
       return this.triggers.filter(trigger => trigger.candidate == 1);
     },
     manualTriggers() {
@@ -216,11 +216,11 @@ export default {
   padding: 16px 24px;
 }
 
-a.em-pointer:nth-child(2) .material-icons {
+a.tw-cursor-pointer:nth-child(2) .material-icons {
   color: #DB333E;
 }
 
-a.em-pointer:nth-child(2):hover .material-icons {
+a.tw-cursor-pointer:nth-child(2):hover .material-icons {
   color: #C31924;
 }
 </style>

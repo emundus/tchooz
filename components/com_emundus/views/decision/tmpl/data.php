@@ -33,7 +33,7 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
     .em-double-scroll-bar {
         position: sticky;
         padding: 0 !important;
-        z-index: 999;
+        z-index: 1;
     }
     div.top-scrollbars::-webkit-scrollbar, .em-double-scroll-bar::-webkit-scrollbar {
         -webkit-appearance: none;
@@ -116,7 +116,7 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
                                             <label for="em-check-all" class="check-box"></label>
                                         </div>
                                         <div class="selectDropdown" id="selectDropdown">
-                                            <i class="fas fa-sort-down"></i>
+                                            <span class="material-symbols-outlined">keyboard_arrow_down</span>
                                         </div>
                                     </div>
 
@@ -279,7 +279,7 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
         $('#rt-main').children().children().addClass('mainemundus');
 
         menuAction = document.querySelector('.em-menuaction');
-        headerNav = document.querySelector('#g-navigation .g-container');
+        headerNav = document.querySelector('#g-navigation .g-container, #g-header .g-container');
         containerResult = document.querySelector('.container-result');
         setTimeout(() => {
             $('.container-result').css('top', (headerNav.offsetHeight + menuAction.offsetHeight) + 'px');
@@ -389,10 +389,21 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
         let pageCheckAll = $('.selectPage #em-check-all').is(':checked');
         let is_checked = false;
 
+        var numberOfFilesDisplayed = null;
+        if(document.querySelector('#pager-select')) {
+            numberOfFilesDisplayed = document.querySelector('#pager-select').value;
+        }
+
         if (e.target.id === 'em-check-all') {
             if (pageCheckAll === false) {
                 $('.em-check-all-page#em-check-all-page').prop('checked', false);
             } else {
+                if(numberOfFilesDisplayed == 0) {
+                    $('.em-check-all-all').prop('checked', true);
+                    $('.em-check-all-all').trigger('change');
+                    return;
+                }
+
                 is_checked = true;
             }
         }
@@ -403,6 +414,12 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
             if (pageCheck === false) {
                 $('.selectPage #em-check-all').prop('checked', false);
             } else {
+                if(numberOfFilesDisplayed == 0) {
+                    $('.em-check-all-all').prop('checked', true);
+                    $('.em-check-all-all').trigger('change');
+                    return;
+                }
+
                 is_checked = true;
             }
         }

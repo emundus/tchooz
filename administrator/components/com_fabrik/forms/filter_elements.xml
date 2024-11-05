@@ -20,7 +20,7 @@
 			<option value="">JOPTION_SELECT_PUBLISHED</option>
 		</field>
 
-		<field
+		<field class="advancedSelect"
 			name="form"
 			type="formlist"
 			label="COM_FABRIK_SELECT_FORM"
@@ -29,7 +29,7 @@
 			<option value="">COM_FABRIK_SELECT_FORM</option>
 		</field>
 
-		<field
+		<field class="advancedSelect"
 			name="group"
 			type="grouplist"
 			label="COM_FABRIK_SELECT_GROUP"

@@ -19,6 +19,7 @@
    <field Field="language" Type="varchar(7)" Null="NO" Key="MUL" Extra="" />
    <field Field="note" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
    <field Field="access" Type="int unsigned" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="autostart" Type="int" Null="NO" Key="" Default="0" Extra="" />
    <key Table="#__guidedtours" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__guidedtours" Non_unique="1" Key_name="idx_access" Seq_in_index="1" Column_name="access" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__guidedtours" Non_unique="1" Key_name="idx_state" Seq_in_index="1" Column_name="published" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
@@ -44,6 +45,7 @@
     <field name="language">*</field>
     <field name="note"></field>
     <field name="access">1</field>
+    <field name="autostart">0</field>
    </row>
    <row>
     <field name="id">2</field>
@@ -63,6 +65,7 @@
     <field name="language">*</field>
     <field name="note"></field>
     <field name="access">1</field>
+    <field name="autostart">0</field>
    </row>
    <row>
     <field name="id">3</field>
@@ -82,6 +85,7 @@
     <field name="language">*</field>
     <field name="note"></field>
     <field name="access">1</field>
+    <field name="autostart">0</field>
    </row>
    <row>
     <field name="id">4</field>
@@ -101,6 +105,7 @@
     <field name="language">*</field>
     <field name="note"></field>
     <field name="access">1</field>
+    <field name="autostart">0</field>
    </row>
    <row>
     <field name="id">5</field>
@@ -120,6 +125,7 @@
     <field name="language">*</field>
     <field name="note"></field>
     <field name="access">1</field>
+    <field name="autostart">0</field>
    </row>
    <row>
     <field name="id">6</field>
@@ -139,6 +145,7 @@
     <field name="language">*</field>
     <field name="note"></field>
     <field name="access">1</field>
+    <field name="autostart">0</field>
    </row>
    <row>
     <field name="id">7</field>
@@ -158,6 +165,7 @@
     <field name="language">*</field>
     <field name="note"></field>
     <field name="access">1</field>
+    <field name="autostart">0</field>
    </row>
    <row>
     <field name="id">8</field>
@@ -177,6 +185,7 @@
     <field name="language">*</field>
     <field name="note"></field>
     <field name="access">1</field>
+    <field name="autostart">0</field>
    </row>
    <row>
     <field name="id">9</field>
@@ -196,6 +205,7 @@
     <field name="language">*</field>
     <field name="note"></field>
     <field name="access">1</field>
+    <field name="autostart">0</field>
    </row>
    <row>
     <field name="id">10</field>
@@ -215,6 +225,7 @@
     <field name="language">*</field>
     <field name="note"></field>
     <field name="access">1</field>
+    <field name="autostart">0</field>
    </row>
    <row>
     <field name="id">11</field>
@@ -234,6 +245,27 @@
     <field name="language">*</field>
     <field name="note"></field>
     <field name="access">1</field>
+    <field name="autostart">0</field>
+   </row>
+   <row>
+    <field name="id">12</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_WELCOMETOJOOMLA_TITLE</field>
+    <field name="uid">joomla-welcome</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_WELCOMETOJOOMLA_DESCRIPTION</field>
+    <field name="ordering">1</field>
+    <field name="extensions">[&quot;com_cpanel&quot;]</field>
+    <field name="url">administrator/index.php</field>
+    <field name="created">2024-05-15 15:12:19</field>
+    <field name="created_by">0</field>
+    <field name="modified">2024-05-15 15:12:19</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="published">1</field>
+    <field name="language">*</field>
+    <field name="note"></field>
+    <field name="access">1</field>
+    <field name="autostart">0</field>
    </row>
   </table_data>
  </database>

@@ -78,7 +78,7 @@ button.btn-primary:hover{
     text-transform: initial;
     width: 100%;
     border-radius: var(--em-applicant-br) !important;
-    font-family: var(--em-applicant-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
     line-height: normal;
 }
 
@@ -87,7 +87,7 @@ button.btn-primary:hover{
     font-weight: 600;
 }
 .login .well label {
-    font-family: var(--em-applicant-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
     font-size: 16px;
     font-style: normal;
     font-weight: 500;
@@ -116,7 +116,7 @@ ul.nav.nav-tabs.nav-stacked {
     margin-bottom: 50px;
 }
 
-.login form > fieldset .control-group:nth-child(3) .controls {
+.login form .control-group:nth-child(3) .controls {
     justify-content: center;
     margin-top: 20px;
     width: 100%;
@@ -211,7 +211,7 @@ footer div{
     width: 100% !important;
     margin-right: 0 !important;
     margin-bottom: 0;
-    font-family: var(--em-applicant-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
     font-weight: 500;
 }
 form.form-validate.form-horizontal.well .control-group .controls input {
@@ -230,7 +230,7 @@ form.form-validate.form-horizontal.well .control-group .controls input:focus {
 }
 
 form.form-validate.form-horizontal.well .control-group .controls input.invalid {
-    border: 1px solid #e5283B;
+    border: 1px solid var(--red-600);
     box-shadow: none;
 }
 
@@ -252,7 +252,7 @@ h1.em-titre-connectez-vous {
 }
 
 .page-header h1 {
-    font-family: var(--em-applicant-font-title);
+    font-family: var(--em-profile-font-title), Inter, sans-serif;
     color: var(--em-default-title-color-1);
 }
 
@@ -357,7 +357,7 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     .form-validate.form-horizontal.well {
         width: 100%;
     }
-    .view-login .form-horizontal fieldset .control-group {
+    .view-login .form-horizontal .control-group {
         width: 100% !important;
     }
 
@@ -388,7 +388,7 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
         margin-top: 0;
     }
 
-    .view-login .form-horizontal fieldset .control-group {
+    .view-login .form-horizontal .control-group {
         width: 100% !important;
     }
 
@@ -448,17 +448,13 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
         width: 75% !important;
     }
 
-    .login form.form-validate.form-horizontal.well {
-        width: 70%;
-    }
-
 }
 
 @media all and (max-width: 1150px) {
     .form-validate.form-horizontal.well {
         width: 50%;
     }
-    .em-formRegistrationCenter .form-horizontal fieldset .control-group {
+    .em-formRegistrationCenter .form-horizontal .control-group {
         width: 100% !important;
     }
 }

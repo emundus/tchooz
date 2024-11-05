@@ -42,14 +42,14 @@ else {
 					<?php if (!empty($this->url_form)): ?>
                         <a href="<?php echo $this->url_form; ?>" target="_blank" class="em-flex-row"
                            title="<?php echo JText::_('COM_EMUNDUS_ADMISSION_OPEN_ADMISSION_FORM_IN_NEW_TAB_DESC'); ?>"><span
-                                    class="material-icons">open_in_new</span></a>
+                                    class="material-symbols-outlined">open_in_new</span></a>
 					<?php endif; ?>
                 </div>
             </h3>
             <div class="btn-group pull-right">
-                <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_back</span>
+                <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-symbols-outlined">arrow_back</span>
                 </button>
-                <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_forward</span>
+                <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-symbols-outlined">arrow_forward</span>
                 </button>
             </div>
         </div>

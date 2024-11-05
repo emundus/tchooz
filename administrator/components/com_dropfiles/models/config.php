@@ -194,7 +194,7 @@ class DropfilesModelConfig extends JModelAdmin
         rename($newThemePath . $ds . 'language' . $ds . 'en-GB' . $ds . 'en-GB.plg_dropfilesthemes_' . $cloneTheme . '.ini', $newThemePath . $ds . 'language' . $ds . 'en-GB' . $ds . 'en-GB.plg_dropfilesthemes_' . $newTheme . '.ini');
         // Copy thumbnail
         $source = JPATH_ROOT . $ds . 'components' . $ds . 'com_dropfiles' . $ds . 'assets' . $ds . 'images' . $ds . 'theme' . $ds . strtolower($cloneTheme) . '.png';
-        if (!in_array(strtolower($cloneTheme), array('default', 'ggd', 'tree', 'table'))) {
+        if (!in_array(strtolower($cloneTheme), array('default', 'ggd', 'tree', 'table', 'preview'))) {
             $source = $pluginsPath . $ds . strtolower($cloneTheme) . $ds . strtolower($cloneTheme) . '.png';
         }
         $target = $pluginsPath . $ds . strtolower($newTheme) . $ds . strtolower($newTheme) . '.png';
@@ -228,7 +228,7 @@ class DropfilesModelConfig extends JModelAdmin
         // Get default theme params
         $prefix = strtolower($cloneTheme) . '_';
 
-        if (in_array(strtolower($cloneTheme), array('default', 'ggd', 'tree', 'table'))) {
+        if (in_array(strtolower($cloneTheme), array('default', 'ggd', 'tree', 'table', 'preview'))) {
             $params = JComponentHelper::getParams('com_dropfiles')->toArray();
         } else {
             // Get params from plugins

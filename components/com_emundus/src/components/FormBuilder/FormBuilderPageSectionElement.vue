@@ -2,11 +2,11 @@
   <div class="form-builder-page-section-element"
        :id="'element_'+element.id"
        v-show="(!element.hidden && element.publish !== -2) || (element.hidden && sysadmin)"
-       :class="{'unpublished': !element.publish || element.hidden, 'properties-active':propertiesOpened == element.id}">
+       :class="{'unpublished': !element.publish || element.hidden, 'properties-active':propertiesOpened === element.id}">
     <div class="tw-flex tw-items-start tw-justify-between tw-w-full tw-mb-2">
       <div class="tw-w-11/12">
-        <label class="em-w-100 tw-flex tw-items-center fabrikLabel control-label tw-mb-0" @click="triggerElementProperties">
-          <span v-if="element.FRequire" class="material-icons !tw-text-xs tw-text-red-500 tw-mr-0" style="top: -5px;position: relative">emergency</span>
+        <label class="tw-w-full tw-flex tw-items-center fabrikLabel control-label tw-mb-0" @click="triggerElementProperties">
+          <span v-if="element.FRequire" class="material-icons !tw-text-xs tw-text-red-600 tw-mr-0" style="top: -5px;position: relative">emergency</span>
         <input
             v-if="element.label_value && element.labelsAbove != 2"
             :ref="'element-label-' + element.id"
@@ -15,6 +15,7 @@
             :name="'element-label-' + element.id"
             type="text"
             v-model="element.label[shortDefaultLang]"
+            :placeholder="translate('COM_EMUNDUS_ONBOARD_TYPE_'+element.plugin.toUpperCase())"
             @focusout="updateLabel"
             @keyup.enter="updateLabelKeyup"
         />
@@ -22,9 +23,9 @@
         <span class="fabrikElementTip fabrikElementTipAbove">{{ element.params.rollover.replace(/(<([^>]+)>)/gi, "") }}</span>
       </div>
       <div id="element-action-icons" class="tw-flex tw-items-end tw-mt-2">
-        <span class="material-icons-outlined handle em-grab">drag_indicator</span>
-        <span id="delete-element" class="material-icons-outlined em-red-500-color em-pointer" @click="deleteElement">delete</span>
-        <span v-if="sysadmin" class="material-icons-outlined em-pointer em-ml-8" @click="openAdmin">content_copy</span>
+        <span class="material-symbols-outlined handle tw-cursor-grab">drag_indicator</span>
+        <span id="delete-element" class="material-symbols-outlined tw-text-red-600 tw-cursor-pointer" @click="deleteElement">delete</span>
+        <span v-if="sysadmin" class="material-symbols-outlined tw-cursor-pointer tw-ml-2" @click="openAdmin">content_copy</span>
       </div>
     </div>
     <div :class="'element-field fabrikElement' + element.plugin" @click="triggerElementProperties">
@@ -45,17 +46,16 @@
 </template>
 
 <script>
-import formBuilderService from '../../services/formbuilder';
-import formBuilderMixin from "../../mixins/formbuilder";
-import mixin from "../../mixins/mixin";
-import FormBuilderElementOptions from "./FormBuilderSectionSpecificElements/FormBuilderElementOptions";
-import FormBuilderElementWysiwig from "./FormBuilderSectionSpecificElements/FormBuilderElementWysiwig";
-import FormBuilderElementPhoneNumber
-  from "@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementPhoneNumber.vue";
-import FormBuilderElementCurrency
-  from "@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementCurrency.vue";
-import FormBuilderElementGeolocation
-  from "@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementGeolocation.vue";
+import formBuilderService from '@/services/formbuilder.js';
+import formBuilderMixin from "@/mixins/formbuilder.js";
+import mixin from "@/mixins/mixin.js";
+import FormBuilderElementOptions from "./FormBuilderSectionSpecificElements/FormBuilderElementOptions.vue";
+import FormBuilderElementWysiwig from "./FormBuilderSectionSpecificElements/FormBuilderElementWysiwig.vue";
+import FormBuilderElementPhoneNumber from "@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementPhoneNumber.vue";
+import FormBuilderElementCurrency from "@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementCurrency.vue";
+import FormBuilderElementGeolocation from "@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementGeolocation.vue";
+
+import { useGlobalStore } from "@/stores/global.js";
 
 export default {
   components: {
@@ -78,6 +78,11 @@ export default {
       options_enabled: false,
     }
   },
+  setup() {
+    return {
+      globalStore: useGlobalStore()
+    }
+  },
   methods: {
     updateLabel() {
       this.element.label[this.shortDefaultLang] = this.$refs['element-label-' + this.element.id].value.trim().replace(/[\r\n]/gm, "");
@@ -93,7 +98,7 @@ export default {
           Swal.fire({
             title: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'),
             text: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR_SAVE_TRANSLATION'),
-            type: "error",
+            icon: "error",
             cancelButtonText: this.translate("OK"),
           });
         }
@@ -111,7 +116,7 @@ export default {
           Swal.fire({
             title: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'),
             text: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR_UPDATE_PARAMS'),
-            type: "error",
+            icon: "error",
             cancelButtonText: this.translate("OK"),
           });
         }
@@ -119,25 +124,25 @@ export default {
     },
     deleteElement() {
       this.swalConfirm(
-          this.translate("COM_EMUNDUS_FORM_BUILDER_DELETE_ELEMENT"),
-          this.element.label[this.shortDefaultLang],
-          this.translate("COM_EMUNDUS_FORM_BUILDER_DELETE_ELEMENT_CONFIRM"),
-          this.translate("JNO"),
-          () => {
-            formBuilderService.deleteElement(this.element.id);
-            this.$emit('delete-element', this.element.id);
-            this.updateLastSave();
+        this.translate("COM_EMUNDUS_FORM_BUILDER_DELETE_ELEMENT"),
+        this.element.label[this.shortDefaultLang],
+        this.translate("COM_EMUNDUS_FORM_BUILDER_DELETE_ELEMENT_CONFIRM"),
+        this.translate("JNO"),
+        () => {
+          formBuilderService.deleteElement(this.element.id);
+          this.$emit('delete-element', this.element.id);
+          this.updateLastSave();
 
-            this.tip("foo-velocity", this.translate("COM_EMUNDUS_FORM_BUILDER_DELETED_ELEMENT_TEXT"), this.translate("COM_EMUNDUS_FORM_BUILDER_DELETED_ELEMENT_TITLE"));
-            window.addEventListener('keydown', this.cancelDelete);
-          }
+          this.tipToast(this.translate("COM_EMUNDUS_FORM_BUILDER_DELETED_ELEMENT_TEXT"));
+          window.addEventListener('keydown', this.cancelDelete);
+        }
       );
     },
     openAdmin() {
       navigator.clipboard.writeText(this.element.id);
       Swal.fire({
         title: 'Identifiant de l\'élément copié',
-        type: "success",
+        icon: "success",
         showCancelButton: false,
         showConfirmButton: false,
         customClass: {
@@ -150,7 +155,7 @@ export default {
       this.$emit('open-element-properties');
     },
     cancelDelete(event) {
-      let elementsPending = this.$parent.$parent.$parent.elementsDeletedPending;
+      let elementsPending = this.$parent.$parent.$parent.$parent.$data.elementsDeletedPending
       let index = elementsPending.indexOf(this.element.id)
 
       if (elementsPending.indexOf(this.element.id) === (elementsPending.length - 1)) {
@@ -163,23 +168,22 @@ export default {
           this.keysPressed = [];
 
           document.removeEventListener('keydown', this.cancelDelete);
-          this.$parent.$parent.$parent.elementsDeletedPending.splice(index, 1)
+          this.$parent.$parent.$parent.$parent.$data.elementsDeletedPending.splice(index, 1)
         }
       }
     }
   },
   computed: {
     sysadmin: function () {
-      return parseInt(this.$store.state.global.sysadminAccess);
+      return parseInt(this.globalStore.hasSysadminAccess);
     },
     displayOptions: function () {
-      return this.$parent.$parent.$parent.$parent.$parent.$parent.optionsSelectedElement
-          && this.$parent.$parent.$parent.$parent.$parent.$parent.selectedElement !== null
-          && this.$parent.$parent.$parent.$parent.$parent.$parent.selectedElement.id == this.element.id;
+      return this.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$data.selectedElement !== null
+          && this.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$data.selectedElement.id == this.element.id;
     },
-    propertiesOpened: function () {
-      if (this.$parent.$parent.$parent.$parent.$parent.$parent.selectedElement !== null) {
-        return this.$parent.$parent.$parent.$parent.$parent.$parent.selectedElement.id;
+    propertiesOpened: function(){
+      if (this.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$data.selectedElement !== null) {
+        return this.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$data.selectedElement.id;
       } else {
         return 0;
       }
@@ -380,7 +384,7 @@ export default {
     font-size: 12px;
     line-height: 1.5rem;
     font-weight: 400;
-    font-family: var(--em-applicant-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
     font-style: normal;
     display: flex;
   }
@@ -434,7 +438,7 @@ export default {
   }
 
   label.btn-default.btn.btn-success.active:hover span {
-    font-family: var(--em-default-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
     font-size: 16px;
     font-style: normal;
     line-height: 24px;
@@ -444,7 +448,7 @@ export default {
   }
 
   label.btn-default.btn.btn-success.active span {
-    font-family: var(--em-default-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
     font-size: 16px;
     font-style: normal;
     line-height: 24px;
@@ -479,7 +483,7 @@ export default {
   }
 
   label.btn-default.btn.btn-danger.active:hover span {
-    font-family: var(--em-default-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
     font-size: 16px;
     font-style: normal;
     line-height: 24px;
@@ -489,7 +493,7 @@ export default {
   }
 
   label.btn-default.btn.btn-danger.active span {
-    font-family: var(--em-default-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
     font-size: 16px;
     font-style: normal;
     line-height: 24px;
@@ -522,7 +526,7 @@ export default {
   }
 
   label.btn-default.btn:not(.active):hover span {
-    font-family: var(--em-default-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
     font-size: 16px;
     font-style: normal;
     line-height: 24px;
@@ -532,7 +536,7 @@ export default {
   }
 
   label.btn-default.btn:not(.active) span {
-    font-family: var(--em-default-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
     font-size: 16px;
     font-style: normal;
     line-height: 24px;
@@ -550,6 +554,11 @@ export default {
     .fabrikElementContent {
       margin-left: var(--em-spacing-3);
       line-height: 24px;
+      p:after {
+        content: "";
+        display: inline-block;
+        width: 0px;
+      }
     }
   }
 }

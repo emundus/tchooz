@@ -1,9 +1,9 @@
 <template>
-  <div id="form-builder-document-formats">
-    <p id="form-builder-document-title" class="em-text-align-center em-w-100 em-p-16">
+  <div id="form-builder-document-formats" class="!tw-pr-4">
+    <p id="form-builder-document-title" class="tw-text-center tw-full tw-p-4">
       {{ translate('COM_EMUNDUS_FORM_BUILDER_FORMATS') }}
     </p>
-    <input v-if="formats.length > 0" id="search" v-model="search" type="text" class="em-mt-16 em-w-100" placeholder=""/>
+    <input v-if="formats.length > 0" id="search" v-model="search" type="text" class="tw-mt-4 tw-full" :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_SEARCH_FORMAT')"/>
     <draggable
         v-model="displayedFormats"
         class="draggables-list"
@@ -17,11 +17,11 @@
         <div
             v-for="format in displayedFormats"
             :key="format.id"
-            class="em-flex-row em-flex-space-between draggable-element em-mt-8 em-mb-8 em-p-16"
+            class="tw-flex tw-justify-between tw-items-center draggable-element tw-mt-2 tw-mb-2 tw-p-4"
         >
-          <span id="format-name" class="em-w-100 em-p-16"
+          <span id="format-name" class="tw-full tw-p-4"
                 :title="format.name[shortDefaultLang]">{{ format.name[shortDefaultLang] }}</span>
-          <span class="material-icons-outlined"> drag_indicator </span>
+          <span class="material-symbols-outlined"> drag_indicator </span>
         </div>
       </transition-group>
     </draggable>
@@ -29,13 +29,13 @@
 </template>
 
 <script>
-import draggable from 'vuedraggable';
+import { VueDraggableNext } from 'vue-draggable-next';
 import formBuilderMixin from '../../mixins/formbuilder';
-import formService from '../../services/form';
+import formService from '@/services/form';
 
 export default {
   components: {
-    draggable
+    draggable: VueDraggableNext
   },
   props: {
     profile_id: {
@@ -67,7 +67,7 @@ export default {
     },
     onDragEnd(event) {
       const to = event.to;
-      if (to === null) {
+      if (to === null || to.id === '') {
         return;
       }
 

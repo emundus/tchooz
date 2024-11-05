@@ -1,4 +1,7 @@
 <?php // no direct access
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+
 defined('_JEXEC') or die('Restricted access');
 
 $config      = JFactory::getConfig();
@@ -18,9 +21,9 @@ $now      = $dateTime->format('Y-m-d H:i:s');
         border: 1px solid var(--em-primary-color) !important;
     }
 
-    .btn.btn-primary.mod_emundus_flow___print:hover .material-icons-outlined,
-    .btn.btn-primary.mod_emundus_flow___print:active .material-icons-outlined
-    .btn.btn-primary.mod_emundus_flow___print:focus .material-icons-outlined {
+    .btn.btn-primary.mod_emundus_flow___print:hover .material-symbols-outlined,
+    .btn.btn-primary.mod_emundus_flow___print:active .material-symbols-outlined,
+    .btn.btn-primary.mod_emundus_flow___print:focus .material-symbols-outlined {
         color: var(--neutral-0) !important;
     }
 
@@ -117,12 +120,29 @@ $now      = $dateTime->format('Y-m-d H:i:s');
             padding: 0 40px !important;
         }
     }
+
+    @media all and (min-width: 768px) and (max-width: 1198px) {
+        .justify-end.mod_emundus_flow___buttons {
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .mod_emundus_flow___buttons .btn-primary {
+            margin-right: 0;
+        }
+    }
+
 </style>
 
-<div class="mod_emundus_flow___container" style="padding: 0 20px">
+<div class="mod_emundus_flow___container tw-mt-4" style="padding: 0 20px">
     <div class="tw-flex tw-justify-between mod_emundus_flow___intro">
-        <div class="tw-flex tw-items-center">
-            <h1 class="em-mb-0-important"><?php echo $campaign_name ?></h1>
+        <div class="tw-flex tw-flex-col tw-justify-center">
+            <?php if (!empty($title_override_display)) : ?>
+	            <?php echo $campaign_name; ?>
+            <?php else : ?>
+                <h1 class="em-mb-0-important"><?php echo $campaign_name; ?></h1>
+            <?php endif; ?>
+
 			<?php
 			$color      = '#0A53CC';
 			$background = '#C8E1FE';
@@ -150,9 +170,9 @@ $now      = $dateTime->format('Y-m-d H:i:s');
                 </a>
 			<?php endif; ?>
             <a href="<?php echo JURI::base() ?>component/emundus/?task=pdf&amp;fnum=<?= $current_application->fnum ?>"
-               target="_blank" title="<?php echo JText::_('PRINT') ?>">
-                <button class="btn-tertiary mod_emundus_flow___print">
-                    <span class="material-icons-outlined" style="font-size: 19px">print</span>
+               target="blank" title="<?php echo JText::_('PRINT') ?>">
+                <button class="tw-btn-tertiary mod_emundus_flow___print">
+                    <span class="material-symbols-outlined" style="font-size: 19px">print</span>
                     <p><?php echo JText::_('PRINT') ?></p>
                 </button>
             </a>
@@ -163,8 +183,7 @@ $now      = $dateTime->format('Y-m-d H:i:s');
 			<?php if ($show_deadline == 1) : ?>
                 <div class="tw-flex tw-items-center">
                     <p class="em-text-neutral-600 em-font-size-16"> <?php echo JText::_('MOD_EMUNDUS_FLOW_END_DATE'); ?></p>
-                    <span class="tw-ml-1.5"
-                          style="white-space: nowrap"><?php echo JFactory::getDate(new JDate($deadline, $site_offset))->format('d/m/Y H:i'); ?></span>
+                    <span class="tw-ml-1.5" style="white-space: nowrap"><?php echo EmundusHelperDate::displayDate($deadline,'DATE_FORMAT_EMUNDUS') ?></span>
                 </div>
 			<?php endif; ?>
 
@@ -185,6 +204,13 @@ $now      = $dateTime->format('Y-m-d H:i:s');
                     </div>
                 </div>
 			<?php endif; ?>
+
+	        <?php if($fnumInfos['applicant_id'] !== Factory::getApplication()->getIdentity()->id) : ?>
+                <div class="tw-flex tw-items-center">
+                    <p class="tw-text-neutral-600 tw-mr-2"><?= JText::_('MOD_EMUNDUS_FLOW_APPLICANT'); ?></p>
+                    <p><?= $fnumInfos['name']; ?></p>
+                </div>
+	        <?php endif; ?>
         </div>
 	<?php endif; ?>
 
@@ -219,6 +245,31 @@ $now      = $dateTime->format('Y-m-d H:i:s');
     </div>
 
 </div>
+
+<?php
+if (!empty($campaign_languages) && !in_array($current_lang_id, $campaign_languages)) {
+
+    $db = JFactory::getContainer()->get('DatabaseDriver');
+    $query = $db->getQuery(true);
+
+    $query->select('title_native')
+        ->from('#__languages')
+        ->where('lang_id IN (' . implode(',', $campaign_languages) . ')');
+
+    $db->setQuery($query);
+    $titles = $db->loadColumn();
+
+    ?>
+    <div class="tw-mt-8 alert alert-error tw-flex" style="margin-bottom: 32px; margin-inline: 16px;">
+        <span class="material-icons-outlined" style="color: #a60e15">warning</span>
+        <div class="tw-w-full">
+            <p class="em-text-neutral-600" style="color: #520105"><?= sprintf(Text::_('COM_EMUNDUS_ALLOWED_LANGUAGES_FOR_CAMPAIGN_ARE'), implode(',', $titles)); ?></p>
+        </div>
+    </div>
+
+    <?php
+}
+?>
 
 <script>
     function saveAndExit() {

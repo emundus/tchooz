@@ -84,7 +84,7 @@
               </template>
         </vue-csv-import>
       </div>
-      <div class="em-flex-row em-flex-space-between mb-1">
+      <div class="tw-flex tw-items-center tw-justify-between mb-1">
         <button type="button" class="bouton-sauvergarder-et-continuer w-retour" @click.prevent="goBack">
             {{ translations.Retour }}
         </button>
@@ -98,11 +98,10 @@
 </template>
 
 <script>
-import axios from "axios";
-import {VueCsvImport} from 'vue-csv-import';
-import _ from "lodash";
-
-const qs = require("qs");
+    import axios from "axios";
+    import { VueCsvImport } from 'vue-csv-import';
+    import _ from "lodash";
+    import qs from "qs";
 
 export default {
   name: "modalImportDatas",

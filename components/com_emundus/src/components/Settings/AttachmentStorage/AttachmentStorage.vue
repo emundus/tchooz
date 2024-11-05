@@ -10,18 +10,18 @@
         @closed="beforeClose"
     >
       <div class="em-modal-header">
-        <div class="em-flex-space-between em-flex-row em-pointer" @click.prevent="$modal.hide('attachmentStorage')">
-          <div class="em-w-max-content em-flex-row">
-            <span class="material-icons-outlined">arrow_back</span>
-            <span class="em-ml-8">{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
+        <div class="tw-justify-between tw-flex tw-items-center tw-cursor-pointer" @click.prevent="$modal.hide('attachmentStorage')">
+          <div class="tw-w-max tw-flex tw-items-center">
+            <span class="material-symbols-outlined">arrow_back</span>
+            <span class="tw-ml-2">{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
           </div>
-          <div v-if="saving" class="em-flex-row em-flex-start">
-            <div class="em-loader em-mr-8"></div>
-            <p class="em-font-size-14 em-flex-row">{{
+          <div v-if="saving" class="tw-flex tw-items-center tw-justify-start">
+            <div class="em-loader tw-mr-2"></div>
+            <p class="tw-text-sm tw-flex tw-items-center">{{
                 translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE_PROGRESS')
               }}</p>
           </div>
-          <p class="em-font-size-14"
+          <p class="tw-text-sm"
              v-if="!saving && last_save != null">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE_LAST') + last_save }}</p>
         </div>
       </div>
@@ -29,16 +29,16 @@
       <div class="em-modal-content">
         <div class="em-modal-menu__sidebar">
           <div v-for="menu in menus" :key="'menu_' + menu.index" @click="currentMenu = menu.index"
-               class="translation-menu-item em-p-16 em-flex-row em-flex-space-between em-pointer"
+               class="translation-menu-item tw-p-4 tw-flex tw-items-center tw-justify-between tw-cursor-pointer"
                :class="currentMenu === menu.index ? 'em-modal-menu__current' : ''">
-            <p class="em-font-size-16">{{ translate(menu.title) }}</p>
+            <p class="tw-text-base">{{ translate(menu.title) }}</p>
           </div>
         </div>
 
         <transition name="fade" mode="out-in">
           <Configuration v-if="currentMenu === 1" class="em-modal-component" @updateSaving="updateSaving"
                          @updateLastSaving="updateLastSaving"></Configuration>
-          <Storage v-if="currentMenu === 2" class="em-modal-component" @updateSaving="updateSaving"
+          <Storage v-else-if="currentMenu === 2" class="em-modal-component" @updateSaving="updateSaving"
                    @updateLastSaving="updateLastSaving"></Storage>
         </transition>
       </div>
@@ -49,8 +49,8 @@
 </template>
 
 <script>
-import Configuration from "./Configuration";
-import Storage from "./Storage";
+import Configuration from "./Configuration.vue";
+import Storage from "./Storage.vue";
 
 export default {
   name: "attachmentStorage",

@@ -1,0 +1,85 @@
+<?php
+/**
+ * @package	HikaShop for Joomla!
+ * @version	5.1.0
+ * @author	hikashop.com
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
+ */
+defined('_JEXEC') or die('Restricted access');
+?><?php
+
+namespace GuzzleHttp\Promise;
+
+class FulfilledPromise implements PromiseInterface
+{
+    private $value;
+
+    public function __construct($value)
+    {
+        if (is_object($value) && method_exists($value, 'then')) {
+            throw new \InvalidArgumentException(
+                'You cannot create a FulfilledPromise with a promise.'
+            );
+        }
+
+        $this->value = $value;
+    }
+
+    public function then(
+        callable $onFulfilled = null,
+        callable $onRejected = null
+    ) {
+        if (!$onFulfilled) {
+            return $this;
+        }
+
+        $queue = Utils::queue();
+        $p = new Promise([$queue, 'run']);
+        $value = $this->value;
+        $queue->add(static function () use ($p, $value, $onFulfilled) {
+            if (Is::pending($p)) {
+                try {
+                    $p->resolve($onFulfilled($value));
+                } catch (\Throwable $e) {
+                    $p->reject($e);
+                } catch (\Exception $e) {
+                    $p->reject($e);
+                }
+            }
+        });
+
+        return $p;
+    }
+
+    public function otherwise(callable $onRejected)
+    {
+        return $this->then(null, $onRejected);
+    }
+
+    public function wait($unwrap = true, $defaultDelivery = null)
+    {
+        return $unwrap ? $this->value : null;
+    }
+
+    public function getState()
+    {
+        return self::FULFILLED;
+    }
+
+    public function resolve($value)
+    {
+        if ($value !== $this->value) {
+            throw new \LogicException("Cannot resolve a fulfilled promise");
+        }
+    }
+
+    public function reject($reason)
+    {
+        throw new \LogicException("Cannot reject a fulfilled promise");
+    }
+
+    public function cancel()
+    {
+    }
+}

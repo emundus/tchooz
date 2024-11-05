@@ -13,10 +13,18 @@ use EmundusModelForm;
 use EmundusModelTranslations;
 use Exception;
 use JLog;
+use Joomla\CMS\Factory;
+use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Tests\Unit\UnitTestCase;
 
 require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
 
+/**
+ * @package     Unit\Component\Emundus\Model
+ *
+ * @since       version 1.0.0
+ * @covers      EmundusModelFormbuilder
+ */
 class FormbuilderModelTest extends UnitTestCase
 {
 	/**
@@ -32,6 +40,11 @@ class FormbuilderModelTest extends UnitTestCase
 		$this->m_translations = new EmundusModelTranslations();
 	}
 
+	/**
+	 * @covers EmundusModelFormbuilder::formsTrad
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testFormsTradElement()
 	{
 		$override_original_file_size = filesize(JPATH_SITE . '/language/overrides/fr-FR.override.ini');
@@ -61,6 +74,11 @@ class FormbuilderModelTest extends UnitTestCase
 		$this->m_translations->deleteTranslation('ELEMENT_TEST', 'fr-FR', '', $reference_id);
 	}
 
+	/**
+	 * @covers EmundusModelFormbuilder::formsTrad
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testFormsTradUndefined()
 	{
 		$override_original_file_size = filesize(JPATH_SITE . '/language/overrides/fr-FR.override.ini');
@@ -91,11 +109,16 @@ class FormbuilderModelTest extends UnitTestCase
 		$this->m_translations->deleteTranslation('ELEMENT_TEST', 'fr-FR', '', $reference_id);
 	}
 
+	/**
+	 * @covers EmundusModelFormbuilder::createFabrikForm
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testCreateFabrikForm()
 	{
 		// Test 1 - Création de formulaire basique
 		$prid    = 9;
-		$form_id = $this->h_dataset->createSampleForm($prid);
+		$form_id = $this->h_dataset->createSampleForm($prid, ['fr' => 'Formulaire Tests unitaires', 'en' => 'form for unit tests'],['fr' => 'Introduction pour les tests unitaires', 'en' => 'Introduction for unit tests'],Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']));
 
 		$this->assertGreaterThan(0, $form_id, 'le formulaire a bien été créé');
 
@@ -125,13 +148,18 @@ class FormbuilderModelTest extends UnitTestCase
 		$this->assertSame(0, $form_id);
 
 		// Se tromper pour le champ introduction ne devrait pas causer d'erreur
-		$form_id = $this->h_dataset->createSampleForm($prid, ['fr' => 'Formulaire Tests unitaires', 'en' => 'form for unit tests'], 'label intro');
+		$form_id = $this->h_dataset->createSampleForm($prid, ['fr' => 'Formulaire Tests unitaires', 'en' => 'form for unit tests'], 'label intro',Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']));
 		$this->assertGreaterThan(0, $form_id);
 
 		$deleted = $this->h_dataset->deleteSampleForm($form_id);
 		$this->assertTrue($deleted, 'Le formulaire de test a bien été supprimé');
 	}
 
+	/**
+	 * @covers EmundusModelFormbuilder::createGroup
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testCreateGroup()
 	{
 		// Test 1 - Un groupe a besoin d'un formulaire pour fonctionner
@@ -139,7 +167,7 @@ class FormbuilderModelTest extends UnitTestCase
 		$this->assertArrayNotHasKey('group_id', $group);
 
 		$prid    = 9;
-		$form_id = $this->h_dataset->createSampleForm($prid, ['fr' => 'Formulaire Tests unitaires', 'en' => 'form for unit tests']);
+		$form_id = $this->h_dataset->createSampleForm($prid, ['fr' => 'Formulaire Tests unitaires', 'en' => 'form for unit tests'], 'label intro',Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']));
 		$this->assertGreaterThan(0, $form_id);
 
 		$group = $this->model->createGroup(['fr' => 'Groupe Tests unitaires', 'en' => 'Group Unit tests'], $form_id);
@@ -171,10 +199,15 @@ class FormbuilderModelTest extends UnitTestCase
 		}
 	}
 
+	/**
+	 * @covers EmundusModelFormbuilder::updateGroupParams
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testUpdateGroupParams()
 	{
 		$prid    = 9;
-		$form_id = $this->h_dataset->createSampleForm($prid, ['fr' => 'Formulaire Tests unitaires', 'en' => 'form for unit tests'], 'label intro');
+		$form_id = $this->h_dataset->createSampleForm($prid, ['fr' => 'Formulaire Tests unitaires', 'en' => 'form for unit tests'], 'label intro',Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']));
 		$this->assertGreaterThan(0, $form_id);
 
 		$group = $this->model->createGroup(['fr' => 'Groupe Tests unitaires', 'en' => 'Group Unit tests'], $form_id);
@@ -227,6 +260,11 @@ class FormbuilderModelTest extends UnitTestCase
 		}
 	}
 
+	/**
+	 * @covers EmundusModelFormbuilder::deleteFormModel
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testDeleteFormModel()
 	{
 		$deleted = $this->model->deleteFormModel(0);
@@ -257,6 +295,11 @@ class FormbuilderModelTest extends UnitTestCase
 		}
 	}
 
+	/**
+	 * @covers EmundusModelFormbuilder::copyForm
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testCopyForm()
 	{
 		$new_form_id = $this->model->copyForm(0, 'Test Unitaire - ');
@@ -287,6 +330,11 @@ class FormbuilderModelTest extends UnitTestCase
 		}
 	}
 
+	/**
+	 * @covers EmundusModelFormbuilder::getDocumentSample
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testgetDocumentSample()
 	{
 		$document = $this->model->getDocumentSample(0, 0);
@@ -321,6 +369,11 @@ class FormbuilderModelTest extends UnitTestCase
 		$this->assertNotEmpty($document, 'Le document de test est bien renvoyé');
 	}
 
+	/**
+	 * @covers EmundusModelFormbuilder::addFormModel
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testaddFormModel()
 	{
 		$created = $this->model->addFormModel(0, 'Test Unitaire - ');
@@ -330,17 +383,20 @@ class FormbuilderModelTest extends UnitTestCase
 		$this->assertFalse($created, 'addFormModel returns false if no form does not exists');
 	}
 
-	/*
+	/**
 	 * @covers EmundusModelFormbuilder::createSimpleElement
+	 *
+	 * @since version 1.0.0
 	 */
 	public function testcreateSimpleElement()
 	{
+		$applicant_user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['applicant']);
 		$this->assertFalse($this->model->createSimpleElement(0, ''), 'createSimpleElement returns false if no group id nor plugin given');
 		$this->assertFalse($this->model->createSimpleElement(1, ''), 'createSimpleElement returns false if no plugin given');
 		$this->assertFalse($this->model->createSimpleElement(0, 'field'), 'createSimpleElement returns false if no group id given');
 
 		$group_eval_id  = 551;
-		$new_element_id = $this->model->createSimpleElement($group_eval_id, 'field');
+		$new_element_id = $this->model->createSimpleElement($group_eval_id, 'field',null,0,null,$applicant_user);
 		$this->assertGreaterThan(0, $new_element_id, 'createSimpleElement returns the id of the created element');
 
 		
@@ -354,7 +410,7 @@ class FormbuilderModelTest extends UnitTestCase
 		$plugin = $this->db->loadResult();
 		$this->assertSame('field', $plugin, 'createSimpleElement creates the element with the correct plugin');
 
-		$new_email_element = $this->model->createSimpleElement($group_eval_id, 'email', 0, 1);
+		$new_email_element = $this->model->createSimpleElement($group_eval_id, 'email', 0, 1, null, $applicant_user);
 		$query->clear()
 			->select('name, plugin')
 			->from('#__fabrik_elements')
@@ -367,6 +423,11 @@ class FormbuilderModelTest extends UnitTestCase
 		$this->assertStringStartsWith('criteria', $element_data['name'], 'createSimpleElement creates the element with the correct name for evaluation');
 	}
 
+	/**
+	 * @covers EmundusModelFormbuilder::checkIfModelTableIsUsedInForm
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testcheckIfModelTableIsUsedInForm()
 	{
 		$used = $this->model->checkIfModelTableIsUsedInForm(0, 0);
@@ -409,6 +470,11 @@ class FormbuilderModelTest extends UnitTestCase
 		}
 	}
 
+	/**
+	 * @covers EmundusModelFormbuilder::createDatabaseTableFromTemplate
+	 *
+	 * @since version 1.0.0
+	 */
 	public function testcreateDatabaseTableFromTemplate()
 	{
 		$new_table_name = $this->model->createDatabaseTableFromTemplate('', 0);

@@ -66,8 +66,8 @@ endforeach;
             <h2 class="em-fabrik-table-label"><?php echo $this->table->label;?></h2>
             <?php if(!in_array('list_only', $notes) && !in_array('grid_only', $notes)) : ?>
                 <div class="em-flex-row em-gap-8 fabrik-switch-view-buttons">
-                    <span onclick="switchView('grid')" class="em-pointer material-icons-outlined fabrik-switch-view-icon" id="fabrik_switch_view_grid_icon">grid_view</span>
-                    <span onclick="switchView('list')" class="em-pointer material-icons-outlined fabrik-switch-view-icon" id="fabrik_switch_view_list_icon">menu</span>
+                    <span onclick="switchView('grid')" class="em-pointer material-symbols-outlined fabrik-switch-view-icon" id="fabrik_switch_view_grid_icon">grid_view</span>
+                    <span onclick="switchView('list')" class="em-pointer material-symbols-outlined fabrik-switch-view-icon" id="fabrik_switch_view_list_icon">menu</span>
                 </div>
             <?php endif; ?>
         </div>
@@ -82,7 +82,7 @@ endforeach;
     <div class="em-flex-row em-flex-start">
 
         <a class="em-flex-row em-mr-16 em-pointer em-w-max-content em-icon-back-button" onclick="window.location.href = document.referrer">
-            <span class="material-icons-outlined em-repeat-card-no-padding">chevron_left</span>
+            <span class="material-symbols-outlined em-repeat-card-no-padding">chevron_left</span>
         </a>
 
          <h2 class="em-fabrik-table-label"><?php echo $this->table->label;?></h2>
@@ -174,7 +174,9 @@ endif;
         // Load skeleton
         let header = document.querySelector('.page-header');
         if (header) {
-            document.querySelector('.page-header h2').style.opacity = 0;
+            if(header.querySelector('h2')) {
+                document.querySelector('.page-header h2').style.opacity = 0;
+            }
             document.querySelector('.page-header .em-list-intro').style.opacity = 0;
             header.classList.add('skeleton');
         }

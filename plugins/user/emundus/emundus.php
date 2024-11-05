@@ -459,16 +459,24 @@ class plgUserEmundus extends CMSPlugin
 	 */
 	public function onUserLogin($user, $options = array())
 	{
-		// Here you would do whatever you need for a login routine with the credentials
-		// Remember, this is not the authentication routine as that is done separately.
-		// The most common use of this routine would be logging the user into a third party application
-		// In this example the boolean variable $success would be set to true if the login routine succeeds
-		// ThirdPartyApp::loginUser($user['username'], $user['password']);
 		$input    = $this->app->input;
+		$session = $this->app->getSession();
 		$redirect = $input->get->getBase64('redirect');
+
+		jimport('joomla.log.log');
+		Log::addLogger(['text_file' => 'com_emundus.auth.php'], JLog::ALL, array('com_emundus.auth'));
+		Log::add($user['username'] . ' try to log in.', Log::INFO, 'com_emundus.auth');
+
+		include_once(JPATH_SITE . '/components/com_emundus/models/users.php');
+		include_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
+		$m_profile = new EmundusModelProfile();
+		$m_users = new EmundusModelUsers();
 
 		$instance = User::getInstance();
 		$id = (int) UserHelper::getUserId($user['username']);
+
+		$mapping_emundus_profiles = !empty($user['emundus_profiles']) ? $user['emundus_profiles'] : [];
+		$openid_profiles = !empty($user['openid_profiles']) ? $user['openid_profiles'] : [];
 
 		if ($id)
 		{
@@ -477,6 +485,7 @@ class plgUserEmundus extends CMSPlugin
 
 		if ($instance->block == 1)
 		{
+			Log::add('Failed attempt to log in ' . $user['username'] . ', user is blocked.', Log::INFO, 'com_emundus.auth');
 			return false;
 		}
 
@@ -499,14 +508,13 @@ class plgUserEmundus extends CMSPlugin
 
 			// Users coming from an OAuth system are immediately signed in and thus need to have their data entered in the eMundus table.
 			if ($user['type'] == 'OAuth2') {
-
 				// Insert the eMundus user info into the DB.
 				if ($user['isnew']) {
 					$query = $this->db->getQuery(true);
 
 					$query->select('*')
 						->from('#__emundus_users')
-						->where('user_id = ' . JFactory::getUser()->id);
+						->where('user_id = ' . $this->app->getIdentity()->id);
 
 					try {
 						$this->db->setQuery($query);
@@ -517,30 +525,23 @@ class plgUserEmundus extends CMSPlugin
 					}
 
 					if (empty($result) && empty($result->id)) {
-						require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
-						$m_users     = new EmundusModelUsers();
 						$user_params = [
 							'firstname' => $user['firstname'],
-							'lastname'  => $user['lastname'],
+							'lastname'  => strtoupper($user['lastname']),
 							'profile'   => $user['profile']
 						];
-						$m_users->addEmundusUser(Factory::getUser()->id, $user_params);
+						$m_users->addEmundusUser($this->app->getIdentity()->id, $user_params);
 					}
 
-					$o_user   = new JUser(JUserHelper::getUserId($user['username']));
 					$pass     = bin2hex(openssl_random_pseudo_bytes(4));
 					$password = array('password' => $pass, 'password2' => $pass);
+
+					$o_user   = new User(UserHelper::getUserId($user['username']));
+					$o_user->name = $user['firstname'] . ' ' . strtoupper($user['lastname']);
 					$o_user->bind($password);
 					$o_user->save();
-					$user['password'] = $pass;
+
 					unset($pass, $password);
-					// Set the user table instance to not block the user.
-					$table = JTable::getInstance('user', 'JTable');
-					$table->load(Factory::getUser()->id);
-					$table->block = 0;
-					if (!$table->store()) {
-						throw new RuntimeException($table->getError());
-					}
 
 					PluginHelper::importPlugin('authentication');
 					$this->app->triggerEvent('onOAuthAfterRegister', ['user' => $user]);
@@ -548,7 +549,7 @@ class plgUserEmundus extends CMSPlugin
 
 				// Add the Oauth provider type to the Joomla user params.
 				if (!empty($options['provider'])) {
-					$o_user = new JUser(JUserHelper::getUserId($user['username']));
+					$o_user = new User(UserHelper::getUserId($user['username']));
 					$o_user->setParam('OAuth2', $options['provider']);
 					$o_user->setParam('token', json_encode($options['token']));
 					$o_user->save();
@@ -560,11 +561,13 @@ class plgUserEmundus extends CMSPlugin
 				}
 
 			}
+
+			/* DEPRECATED */
 			if ($user['type'] == 'externallogin') {
 				try {
 					$query = $this->db->getQuery(true);
 
-					$user_id = Factory::getUser()->id;
+					$user_id = $this->app->getIdentity()->id;
 
 					if (isset($user['firstname']) || isset($user['lastname'])) {
 						$query->clear()
@@ -634,21 +637,70 @@ class plgUserEmundus extends CMSPlugin
 				}
 
 			}
+			// END DEPRECATED
 
-			// Init first_login parameter
-			$user  = Factory::getUser();
-			$table = JTable::getInstance('user', 'JTable');
-
-			$user = Factory::getSession()->get('emundusUser');
-			if (empty($user) || empty($user->id)) {
-				include_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
-				$m_profile = new EmundusModelProfile();
-				$m_profile->initEmundusSession();
-				$user = Factory::getSession()->get('emundusUser');
-
-				$user->just_logged = true;
+			// Check if the user is in the emundus_users table
+			$user_repaired = $m_users->repairEmundusUser($this->app->getIdentity()->id);
+			if (!$user_repaired) {
+				Log::add('Failed attempt to log in ' . $user['username'] . ', user repair failed.', Log::WARNING, 'com_emundus.auth');
+				return false;
 			}
 
+			$m_profile->initEmundusSession();
+			$user = $session->get('emundusUser');
+
+			$user_profiles_id = array_map(function($profile) {
+				return $profile->id;
+			}, $user->emProfiles);
+			$user_default_profile = $user->profile;
+
+			// Check if we have to remove openid profiles
+			if(!empty($openid_profiles)) {
+				$query = $this->db->getQuery(true);
+				foreach ($openid_profiles as $openidProfile)
+				{
+					if (!in_array($openidProfile, $mapping_emundus_profiles) && in_array($openidProfile, $user_profiles_id))
+					{
+						$m_users->removeProfileToUser($user->id, $openidProfile);
+					}
+				}
+			}
+
+			// Check if we have a mapping of emundus_profiles
+			if(!empty($mapping_emundus_profiles)) {
+				foreach ($mapping_emundus_profiles as $profile) {
+					if (!in_array($profile, $user_profiles_id)) {
+						$query = $this->db->getQuery(true);
+						$query->clear()
+							->select('esp.published')
+							->from($this->db->quoteName('#__emundus_users','eu'))
+							->leftJoin($this->db->quoteName('#__emundus_setup_profiles','esp').' ON '.$this->db->quoteName('esp.id').' = '.$this->db->quoteName('eu.profile'))
+							->where($this->db->quoteName('eu.user_id').' = '.$this->db->quote($user->id));
+						$this->db->setQuery($query);
+						$default_profile_status = $this->db->loadResult();
+
+						if($default_profile_status == 1) {
+							$query->clear()
+								->update($this->db->quoteName('#__emundus_users'))
+								->set($this->db->quoteName('profile').' = '.$this->db->quote($profile))
+								->where($this->db->quoteName('user_id').' = '.$this->db->quote($user->id));
+							$this->db->setQuery($query);
+							$this->db->execute();
+
+							$user->profile = $profile;
+						}
+
+						$m_users->addProfileToUser($user->id, $profile);
+					}
+				}
+			}
+
+			$m_users->checkProfilesUser($user->id);
+
+			if(!empty($openid_profiles) || !empty($mapping_emundus_profiles)) {
+				$m_profile->initEmundusSession();
+				$user = $session->get('emundusUser');
+			}
 
 			// Log the action of signing in.
 			// No id exists in jos_emundus_actions for signin so we use -2 instead.
@@ -657,33 +709,40 @@ class plgUserEmundus extends CMSPlugin
 			// if user_id is null -> there is no session data because the account is not activated yet, so don't log
 			if ($user->id) {
 				EmundusModelLogs::log($user->id, $user->id, null, -2, '', 'COM_EMUNDUS_LOGS_USER_LOGIN');
+			} else {
+				Log::add('Failed attempt to log in ' . $user->username . ', user id is null.', Log::INFO, 'com_emundus.auth');
 			}
+
+			$user->just_logged = true;
 
 			if (empty($user->lastvisitDate)) {
 				$user->first_logged = true;
 			}
-			Factory::getSession()->set('emundusUser', $user);
+			$session->set('emundusUser', $user);
 
 			if ($options['redirect'] === 0) {
 				$previous_url = '';
 			}
 			else {
 				if ($user->activation != -1) {
-					$cid_session = JFactory::getSession()->get('login_campaign_id');
+					$cid_session = $session->get('login_campaign_id');
 					if (!empty($cid_session)) {
 						$previous_url = 'index.php?option=com_fabrik&view=form&formid=102&cid=' . $cid_session;
-						Factory::getSession()->clear('login_campaign_id');
+						$session->clear('login_campaign_id');
 					}
 				}
 			}
 
 			PluginHelper::importPlugin('emundus', 'custom_event_handler');
-			Factory::getApplication()->triggerEvent('onCallEventHandler', ['onUserLogin', ['user_id' => $user->id]]);
+			$this->app->triggerEvent('onCallEventHandler', ['onUserLogin', ['user_id' => $user->id]]);
 
 			if (!empty($previous_url)) {
+				Log::add('Log in ' . $user->username . ', user redirected to previous url ' . $previous_url . '.', Log::INFO, 'com_emundus.auth');
 				$this->app->redirect($previous_url);
 			}
 		}
+
+		Log::add('Emundus Log in returned true.', Log::INFO, 'com_emundus.auth');
 
 		return true;
 	}
@@ -700,21 +759,13 @@ class plgUserEmundus extends CMSPlugin
 	 */
 	public function onUserLogout($user, $options = array())
 	{
-		$my        = JFactory::getUser();
-		$session   = JFactory::getSession();
+		$my        = $this->app->getIdentity();
+		$session   = $this->app->getSession();
 
 		$userid = (int) $user['id'];
 
-		// Get by position instead of id and type (2 mod_emundus_user_dropdown are present)
-		$modules = JModuleHelper::getModules('header-c');
-		foreach ($modules as $module) {
-			$params = new JRegistry($module->params);
-			$url    = $params->get('url_logout', 'index.php');
-		}
-
-		if ($url == '') {
-			$url = 'index.php';
-		}
+		include_once(JPATH_SITE.'/components/com_emundus/helpers/menu.php');
+		$url = EmundusHelperMenu::getLogoutRedirectLink();
 
 		// Make sure we're a valid user first
 		if ($user['id'] == 0 && !$my->get('tmp_user')) {
@@ -722,15 +773,6 @@ class plgUserEmundus extends CMSPlugin
 		}
 
 		$sharedSessions = $this->app->get('shared_session', '0');
-
-		// Check if the user is using oAuth2
-		if (Factory::getUser($user["id"])->getParam('OAuth2')) {
-
-			PluginHelper::importPlugin('authentication');
-			$this->app->triggerEvent('onUserAfterLogout', $user['id']);
-
-			return true;
-		}
 
 		// Check to see if we're deleting the current session
 		if ($my->id == $userid && ($sharedSessions || (!$sharedSessions && $options['clientid'] == $this->app->getClientId()))) {

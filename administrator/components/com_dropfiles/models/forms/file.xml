@@ -28,18 +28,18 @@
                filter="JComponentHelper::filterText"/>
         <field name="created_time" type="calendar"
                label="COM_DROPFILES_FIELD_CREATE_TIME_LABEL" description="COM_DROPFILES_FIELD_CREATE_TIME_DESC"
-               format="%Y-%m-%d %H:%M:%S" filter="user_utc"/>
-        <field name="modified_time" type="text"
+               translateformat="true" showtime="true" filter="user_utc" />
+        <field name="modified_time" type="calendar"
                label="COM_DROPFILES_FIELD_MODIFIED_LABEL" description="COM_DROPFILES_FIELD_MODIFIED_TIME_DESC"
-               format="%Y-%m-%d %H:%M:%S" disabled="1"/>
+               translateformat="true" showtime="true" disabled="1"/>
         <field name="publish" type="calendar"
                label="COM_DROPFILES_FIELD_START_PUBLISHING_LABEL"
                description="COM_DROPFILES_FIELD_START_PUBLISHING_DESC"
-               format="%Y-%m-%d %H:%M:%S" filter="user_utc"/>
+               translateformat="true" showtime="true" filter="user_utc" />
         <field name="publish_down" type="calendar"
                label="COM_DROPFILES_FIELD_FINISH_PUBLISHING_LABEL"
                description="COM_DROPFILES_FIELD_FINISH_PUBLISHING_DESC"
-               format="%Y-%m-%d %H:%M:%S" filter="user_utc"/>
+               translateformat="true" showtime="true" filter="user_utc"/>
         <field name="version" type="text" class="inputbox input-block-level" labelclass="control-label"
                label="COM_DROPFILES_FIELD_FILE_VERSION_LABEL"
                description="COM_DROPFILES_FIELD_FILE_VERSION_DESC" required="false"/>

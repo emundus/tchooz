@@ -18,7 +18,7 @@ if (!$this->form || empty($onedrive)) {
             <?php foreach ($onedrive as $k => $field) : ?>
                 <?php if (!in_array($k, array('jform___field2', 'jform_cron_task_url'))) :?>
                 <li class="ju-settings-option block-item <?php echo $k;?>">
-                    <label for="<?php echo $field->id ?>" class="ju-setting-label dropfiles-tooltip" alt="<?php echo JText::sprintf($field->description) ?>"><?php echo strip_tags($field->label) ?></label>
+                    <label for="<?php echo $field->id ?>" class="ju-setting-label dropfiles-tooltip" title="<?php echo JText::sprintf($field->description) ?>"><?php echo strip_tags($field->label) ?></label>
                     <?php
                     switch ($field->type) {
                         case 'Radio':

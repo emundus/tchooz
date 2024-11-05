@@ -1,30 +1,30 @@
 <template>
-  <div id='form-builder-create-model' class="em-flex-column em-flex-space-between em-w-100">
-    <div class="em-w-100">
-      <div class="em-flex-row em-flex-space-between em-p-16">
+  <div id='form-builder-create-model' class="tw-flex tw-flex-col tw-justify-between tw-w-full">
+    <div class="tw-w-full">
+      <div class="tw-flex tw-items-center tw-justify-between tw-p-4">
         <p>{{ translate('COM_EMUNDUS_FORM_BUILDER_MODEL_PROPERTIES') }}</p>
-        <span class="material-icons-outlined em-pointer" @click="$emit('close')">close</span>
+        <span class="material-symbols-outlined tw-cursor-pointer" @click="$emit('close')">close</span>
       </div>
 
-      <div v-if="!loading" id="model-properties" class="em-flex-column em-flex-start em-p-16 em-text-align-left">
+      <div v-if="!loading" id="model-properties" class="tw-flex tw-flex-col tw-justify-start tw-p-4 tw-text-end">
         <p class="em-main-500-color">{{ translate('COM_EMUNDUS_FORM_BUILDER_MODEL_PROPERTIES_INTRO') }}</p>
-        <label for="page-model-title" class="em-mt-16 em-text-align-left em-w-100">{{
+        <label for="page-model-title" class="tw-mt-4 tw-text-end tw-w-full">{{
             translate('COM_EMUNDUS_FORM_BUILDER_MODEL_INPUT_LABEL')
           }}</label>
-        <input id="page-model-title" class="em-w-100 em-mb-16" type="text" v-model="modelTitle"/>
-        <p v-if="alreadyExists" class="em-red-500-color">
+        <input id="page-model-title" class="tw-w-full tw-mb-4" type="text" v-model="modelTitle"/>
+        <p v-if="alreadyExists" class="tw-text-red-600">
           {{ translate('COM_EMUNDUS_FORM_BUILDER_MODEL_WITH_SAME_TITLE_EXISTS') }}</p>
       </div>
-      <div v-else class="em-w-100 em-flex-row em-flex-center">
+      <div v-else class="tw-w-full tw-flex tw-items-center tw-justify-center">
         <div class="em-loader"></div>
       </div>
     </div>
-    <div class="em-flex-row em-flex-space-between actions em-w-100">
+    <div class="tw-flex tw-items-center tw-justify-between actions tw-w-full">
       <button
-          class="em-primary-button em-m-16"
+          class="tw-btn-primary tw-m-4"
           @click="addFormModel()"
           :disabled="modelTitle.length < 1 || loading"
-          :class="{'em-color-white em-gray-bg em-w-100 em-p-8-12 em-border-radius': modelTitle.length < 1 || loading,}"
+          :class="{'tw-text-white tw-bg-gray-500 tw-w-full tw-px-2 tw-py-3 tw-rounded-coordinator': modelTitle.length < 1 || loading,}"
       >
         {{ translate('COM_EMUNDUS_FORM_BUILDER_SECTION_PROPERTIES_SAVE') }}
       </button>
@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import formBuilderService from '../../services/formbuilder';
+import formBuilderService from '@/services/formbuilder';
 import Swal from "sweetalert2";
 
 export default {
@@ -153,7 +153,7 @@ export default {
     height: fit-content;
   }
 
-  .em-primary-button:disabled {
+  .tw-btn-primary:disabled {
     cursor: not-allowed;
     border-color: var(--grey-color);
     background: var(--grey-color);

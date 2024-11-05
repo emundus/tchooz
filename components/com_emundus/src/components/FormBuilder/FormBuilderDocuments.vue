@@ -1,15 +1,15 @@
 <template>
   <div id="form-builder-documents">
-    <div id="form-builder-title" class="em-pointer em-flex-row em-flex-space-between em-p-16"
+    <div id="form-builder-title" class="tw-cursor-pointer tw-flex tw-items-center tw-justify-between tw-p-4"
          @click="$emit('show-documents')">
       <span>{{ translate('COM_EMUNDUS_FORM_BUILDER_EVERY_DOCUMENTS') }}</span>
-      <span id="add-document" class="material-icons-outlined em-pointer" @click="createDocument">add</span>
+      <span id="add-document" class="material-symbols-outlined tw-cursor-pointer" @click="createDocument">add</span>
     </div>
     <div
         v-for="document in documents"
         :key="document.id"
         @click="$emit('show-documents')"
-        class="em-p-16"
+        class="tw-p-4"
     >
       <p class="document-label">{{ document.label }}</p>
     </div>
@@ -17,8 +17,9 @@
 </template>
 
 <script>
-import formService from '../../services/form.js';
-import errors from "../../mixins/errors";
+import formService from '@/services/form.js';
+import errors from "@/mixins/errors";
+import { useFormBuilderStore } from "@/stores/formbuilder.js";
 
 export default {
   name: 'FormBuilderDocuments',
@@ -38,9 +39,15 @@ export default {
       documents: [],
     }
   },
+  setup() {
+    return {
+      formBuilderStore: useFormBuilderStore()
+    }
+  },
   created() {
     this.getDocuments();
-    if (this.$store.getters['formBuilder/getDocumentModels'].length === 0) {
+
+    if (this.formBuilderStore.getDocumentModels.length === 0) {
       this.getDocumentModels();
     }
   },
@@ -50,6 +57,7 @@ export default {
         if (response.status) {
           this.documents = response.data;
         } else {
+          this.documents = [];
           this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_GET_DOCUMENTS_FAILED'), response.msg);
         }
       });
@@ -57,7 +65,7 @@ export default {
     getDocumentModels() {
       formService.getDocumentModels().then(response => {
         if (response.status) {
-          this.$store.dispatch('formBuilder/updateDocumentModels', response.data);
+          this.formBuilderStore.updateDocumentModels(response.data);
         }
       });
     },

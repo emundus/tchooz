@@ -13,6 +13,7 @@
  */
 
 // no direct access
+use Joomla\CMS\Access\Access;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 
@@ -37,7 +38,7 @@ class EmundusHelperAccess
 
 	static function isAllowedAccessLevel($user_id, $current_menu_access)
 	{
-		$user_access_level = JAccess::getAuthorisedViewLevels($user_id);
+		$user_access_level = Access::getAuthorisedViewLevels($user_id);
 
 		return in_array($current_menu_access, $user_access_level);
 	}
@@ -172,10 +173,11 @@ class EmundusHelperAccess
 	 */
 	static function asAccessAction($action_id, $crud, $user_id = null, $fnum = null)
 	{
-		if (!is_null($fnum) && !empty($fnum))
+		require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
+		$m_users   = new EmundusModelUsers();
+
+		if (!empty($fnum))
 		{
-			require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
-			$m_users   = new EmundusModelUsers();
 			$canAccess = $m_users->getUserActionByFnum($action_id, $fnum, $user_id, $crud);
 			if ($canAccess > 0)
 			{
@@ -183,8 +185,13 @@ class EmundusHelperAccess
 			}
 			elseif ($canAccess == 0 || $canAccess === null)
 			{
-				$groups = Factory::getApplication()->getSession()->get('emundusUser')->emGroups;
-				if (!empty($groups))
+				if (!empty($user_id)) {
+                    $groups = $m_users->getUserGroups($user_id, 'Column');
+                } else {
+                    $groups = Factory::getApplication()->getSession()->get('emundusUser')->emGroups;
+                }
+
+				if (!empty($groups) && count($groups) > 0)
 				{
 					return EmundusHelperAccess::canAccessGroup($groups, $action_id, $crud, $fnum);
 				}
@@ -200,7 +207,13 @@ class EmundusHelperAccess
 		}
 		else
 		{
-			return EmundusHelperAccess::canAccessGroup(Factory::getApplication()->getSession()->get('emundusUser')->emGroups, $action_id, $crud);
+			if (!empty($user_id)) {
+                $groups = $m_users->getUserGroups($user_id, 'Column');
+            } else {
+                $groups = Factory::getApplication()->getSession()->get('emundusUser')->emGroups;
+            }
+
+			return EmundusHelperAccess::canAccessGroup($groups, $action_id, $crud);
 		}
 	}
 
@@ -321,7 +334,7 @@ class EmundusHelperAccess
 	public static function isDataAnonymized($user_id)
 	{
 		$is_data_anonymized = false;
-		JLog::addLogger(['text_file' => 'com_emundus.access.error.php'], JLog::ERROR, 'com_emundus');
+		Log::addLogger(['text_file' => 'com_emundus.access.error.php'], Log::ERROR, 'com_emundus');
 
 		if (!empty($user_id))
 		{
@@ -344,7 +357,7 @@ class EmundusHelperAccess
 				}
 				catch (Exception $e)
 				{
-					JLog::add('Error seeing if user can access non anonymous data. -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+					Log::add('Error seeing if user can access non anonymous data. -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
 					$is_data_anonymized = false;
 				}
@@ -360,7 +373,8 @@ class EmundusHelperAccess
 	 *
 	 * @return bool
 	 *
-	 * @since version
+	 * @throws Exception
+	 * @since version 1.0.0
 	 */
 	public static function isUserAllowedToAccessFnum($user_id, $fnum)
 	{
@@ -368,24 +382,15 @@ class EmundusHelperAccess
 
 		if (empty($user_id))
 		{
-			$user_id = JFactory::getUser()->id;
+			$user_id = Factory::getApplication()->getIdentity()->id;
 		}
 
 		if (!empty($user_id) && !empty($fnum))
 		{
-			$db    = JFactory::getDbo();
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
-			// is the fnum mine ?
-			$query->select('id')
-				->from($db->quoteName('#__emundus_campaign_candidature'))
-				->where('applicant_id = ' . $db->quote($user_id))
-				->andWhere('fnum LIKE ' . $db->quote($fnum));
-			$db->setQuery($query);
-			$ccid = $db->loadResult();
-
-			if (!empty($ccid))
-			{
+			if (self::isFnumMine($user_id, $fnum)) {
 				$allowed = true;
 			}
 			else
@@ -532,5 +537,64 @@ class EmundusHelperAccess
 		}
 
 		return $rowid;
+	}
+
+	/**
+	 * Check if the application file is mine
+	 * 
+	 * @param $user_id
+	 * @param $fnum
+	 *
+	 * @return bool
+	 *
+	 * @since version 1.40.0
+	 */
+	public static function isFnumMine($user_id, $fnum) {
+		$mine = false;
+
+		if (!empty($user_id) && !empty($fnum)) {
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true);
+
+			$query->select('id')
+				->from($db->quoteName('#__emundus_campaign_candidature'))
+				->where('applicant_id = ' . $db->quote($user_id))
+				->andWhere('fnum LIKE ' . $db->quote($fnum));
+			try {
+				$db->setQuery($query);
+				$ccid = $db->loadResult();
+
+				if (!empty($ccid)) {
+					$mine = true;
+				}
+
+			} catch (Exception $e) {
+				Log::add('Error seeing if fnum is mine. -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			}
+
+			if (!$mine) {
+				// maybe filed has been shared to me (collaboration)
+				$query->clear()
+					->select('efr.id')
+					->from($db->quoteName('#__emundus_files_request', 'efr'))
+					->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.id = efr.ccid')
+					->where('ecc.fnum LIKE ' . $db->quote($fnum))
+					->andWhere('efr.user_id = ' . $db->quote($user_id))
+					->andWhere('efr.uploaded = 1');
+
+				try {
+					$db->setQuery($query);
+					$collaboration_id = $db->loadResult();
+
+					if (!empty($collaboration_id)) {
+						$mine = true;
+					}
+				} catch (Exception $e) {
+					Log::add('Error seeing if fnum is mine. -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+				}
+			}
+		}
+
+		return $mine;
 	}
 }

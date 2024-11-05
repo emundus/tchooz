@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="plugin" group="sampledata" method="upgrade">
+	<name>plg_sampledata_emundus</name>
+	<author>eMundus</author>
+	<creationDate>2024-05</creationDate>
+	<copyright>(C) 2024 Open Source Matters, Inc.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>dev@emundus.io</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>2.0.0</version>
+	<description>PLG_SAMPLEDATA_EMUNDUS_XML_DESCRIPTION</description>
+	<namespace path="src">Emundus\Plugin\SampleData\Emundus</namespace>
+	<files>
+		<folder plugin="emundus">services</folder>
+		<folder>src</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">language/en-GB/plg_sampledata_emundus.ini</language>
+		<language tag="en-GB">language/en-GB/plg_sampledata_emundus.sys.ini</language>
+		<language tag="fr-FR">language/fr-FR/plg_sampledata_emundus.ini</language>
+		<language tag="fr-FR">language/fr-FR/plg_sampledata_emundus.sys.ini</language>
+	</languages>
+	<config>
+		<fields name="params">
+		</fields>
+	</config>
+</extension>

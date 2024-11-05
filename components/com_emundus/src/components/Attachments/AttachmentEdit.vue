@@ -31,7 +31,7 @@
               name="status"
               v-model="attachmentIsValidated"
               @change="updateAttachmentStatus"
-              :disabled="!canUpdate"
+              :disabled="!canUpdate || is_applicant == 1"
           >
             <option value=1>{{ translate("VALID") }}</option>
             <option value=0>{{ translate("INVALID") }}</option>
@@ -39,7 +39,7 @@
             <option value=-2>{{ translate("COM_EMUNDUS_ATTACHMENTS_WAITING") }}</option>
           </select>
         </div>
-        <div class="input-group" v-if="canUpdate">
+        <div class="input-group" v-if="canUpdate || (is_applicant == 1 && attachmentIsValidated == 0)">
           <label for="replace">{{ translate("COM_EMUNDUS_ATTACHMENTS_REPLACE") }}</label>
           <input
               type="file"
@@ -48,7 +48,7 @@
               :accept="allowedType"
           />
         </div>
-        <div class="input-group" v-if="attachment.profiles && attachment.profiles.length > 0">
+        <div class="input-group" v-if="is_applicant != 1 && attachment.profiles && attachment.profiles.length > 0">
           <label for="can_be_viewed">{{ translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_VIEWED") }}</label>
           <input
               type="checkbox"
@@ -58,7 +58,7 @@
               @click="saveChanges"
           />
         </div>
-        <div class="input-group" v-if="attachment.profiles && attachment.profiles.length > 0">
+        <div class="input-group" v-if="is_applicant != 1 && attachment.profiles && attachment.profiles.length > 0">
           <label for="can_be_deleted">{{ translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_DELETED") }}</label>
           <input
               type="checkbox"
@@ -70,36 +70,36 @@
         </div>
       </div>
       <div class="non-editable-data">
-        <div>
+        <div v-if="columns.includes('date')">
           <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_SEND_DATE") }}</span>
-          <span class="em-text-align-right">{{ formattedDate(attachment.timedate) }}</span>
+          <span class="tw-text-right">{{ formattedDate(attachment.timedate) }}</span>
         </div>
         <div v-if="attachment.user_id && canSee">
           <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_UPLOADED_BY") }}</span>
-          <span class="em-text-align-right">{{ getUserNameById(attachment.user_id) }}</span>
+          <span class="tw-text-right">{{ getUserNameById(attachment.user_id) }}</span>
         </div>
-        <div v-if="attachment.category">
+        <div v-if="attachment.category && columns.includes('category')">
           <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_CATEGORY") }}</span>
-          <span class="em-text-align-right">{{ this.categories[attachment.category] }}</span>
+          <span class="tw-text-right">{{ this.categories[attachment.category] }}</span>
         </div>
-        <div v-if="attachment.modified_by && canSee">
+        <div v-if="attachment.modified_by && canSee && columns.includes('modified_by')">
           <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY") }}</span>
-          <span class="em-text-align-right">{{ getUserNameById(attachment.modified_by) }}</span>
+          <span class="tw-text-right">{{ getUserNameById(attachment.modified_by) }}</span>
         </div>
-        <div v-if="attachment.modified">
+        <div v-if="attachment.modified && columns.includes('modified')">
           <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE") }}</span>
-          <span class="em-text-align-right">{{ formattedDate(attachment.modified) }}</span>
+          <span class="tw-text-right">{{ formattedDate(attachment.modified) }}</span>
         </div>
         <!-- TODO: add file size -->
       </div>
     </div>
 
-    <div class="em-w-100 em-flex-row em-flex-space-between">
+    <div class="tw-w-full tw-flex tw-items-center tw-justify-between">
       <div id="toggle-display">
-			  <span v-if="displayed" class="material-icons-outlined displayed em-pointer" @click="toggleDisplay(false)">
+			  <span v-if="displayed" class="material-symbols-outlined displayed tw-cursor-pointer" @click="toggleDisplay(false)">
 				  chevron_right
 			  </span>
-        <span v-else class="material-icons-outlined not-displayed em-pointer" @click="toggleDisplay(true)">
+        <span v-else class="material-symbols-outlined not-displayed tw-cursor-pointer" @click="toggleDisplay(true)">
 				  menu_open
 			  </span>
       </div>
@@ -109,8 +109,14 @@
 </template>
 
 <script>
-import attachmentService from "../../services/attachment";
+import attachmentService from "@/services/attachment";
 import mixin from "../../mixins/mixin.js";
+
+import { useAttachmentStore } from '@/stores/attachment.js';
+import { useGlobalStore } from '@/stores/global.js';
+import { useUserStore } from '@/stores/user.js';
+import {storeToRefs} from "pinia";
+import {watch} from "vue";
 
 export default {
   name: "AttachmentEdit",
@@ -122,6 +128,16 @@ export default {
     isDisplayed: {
       type: Boolean,
       default: true
+    },
+    is_applicant: {
+      type: String,
+      default: null,
+    },
+    columns: {
+      type: Array,
+      default() {
+        return ['check', 'name', 'date', 'desc', 'category', 'status', 'user', 'modified_by', 'modified', 'permissions', 'sync'];
+      }
     }
   },
   mixins: [mixin],
@@ -143,17 +159,36 @@ export default {
   },
   mounted() {
     this.displayed = this.isDisplayed;
-    this.canUpdate = this.$store.state.user.rights[this.fnum] ? this.$store.state.user.rights[this.fnum].canUpdate : false;
-    this.canSee = !this.$store.state.global.anonyme;
-    this.attachment = this.$store.state.attachment.selectedAttachment;
-    this.categories = this.$store.state.attachment.categories;
+    this.canUpdate = useUserStore().rights[this.fnum] ? useUserStore().rights[this.fnum].canUpdate : false;
+    this.canSee = !useGlobalStore().anonyme;
 
-    this.attachmentCanBeViewed = this.attachment.can_be_viewed == "1";
-    this.attachmentCanBeDeleted = this.attachment.can_be_deleted == "1";
-    this.attachmentDescription = this.attachment.upload_description != null ? this.attachment.upload_description : '';
-    this.attachmentIsValidated = this.attachment.is_validated;
+
+    const attachmentStore = useAttachmentStore();
+    this.categories = attachmentStore.categories;
+
+    const { selectedAttachment } = storeToRefs(attachmentStore);
+    watch(selectedAttachment, () => {
+      const keys = Object.keys(selectedAttachment);
+
+      if (keys.length !== 0) {
+        this.setAttachment(selectedAttachment);
+      }
+    });
+
+    this.setAttachment(attachmentStore.selectedAttachment);
   },
   methods: {
+    setAttachment(attachment) {
+      this.attachment = attachment;
+      this.attachmentCanBeViewed = this.attachment.can_be_viewed == "1";
+      this.attachmentCanBeDeleted = this.attachment.can_be_deleted == "1";
+      this.attachmentDescription = this.attachment.upload_description != null ? this.attachment.upload_description : '';
+      if(this.attachment.is_validated != null) {
+        this.attachmentIsValidated = this.attachment.is_validated;
+      } else {
+        this.attachmentIsValidated = "-2";
+      }
+    },
     async saveChanges() {
       let formData = new FormData();
 
@@ -161,7 +196,7 @@ export default {
       const canBeDeleted = this.attachmentCanBeDeleted ? "1" : "0";
 
       formData.append("fnum", this.fnum);
-      formData.append("user", this.$store.state.user.currentUser);
+      formData.append("user", useUserStore().currentUser);
       formData.append("id", this.attachment.aid);
       formData.append("description", this.attachmentDescription);
       formData.append("is_validated", this.attachmentIsValidated);
@@ -175,26 +210,25 @@ export default {
       const response = await attachmentService.updateAttachment(formData);
 
       if (response.status.update) {
-        this.attachment.modified_by = this.$store.state.user.currentUser;
+        this.attachment.modified_by = useUserStore().currentUser;
         this.attachment.upload_description = this.attachmentDescription != null ? this.attachmentDescription : '';
         this.attachment.is_validated = this.attachmentIsValidated;
         this.attachment.can_be_viewed = this.attachmentCanBeViewed;
         this.attachment.can_be_deleted = this.attachmentCanBeDeleted;
 
-        this.$store.dispatch("attachment/updateAttachmentOfFnum", {
+        useAttachmentStore().updateAttachmentOfFnum({
           fnum: this.fnum,
           attachment: this.attachment,
-        });
+        })
 
         if (response.status.file_update) {
           // need to update file preview
           const data = await attachmentService.getPreview(
-              this.$store.state.user.displayedUser,
+              useUserStore().displayedUser,
               this.attachment.filename
           );
 
-          // store preview data
-          this.$store.dispatch("attachment/setPreview", {
+          useAttachmentStore().setPreview({
             preview: data,
             id: this.attachment.aid,
           });
@@ -235,17 +269,7 @@ export default {
 
       return allowed_type;
     },
-  },
-  watch: {
-    "$store.state.attachment.selectedAttachment": function () {
-      // check if selected attachment is not an empty object
-      const keys = Object.keys(this.$store.state.attachment.selectedAttachment);
-
-      if (keys.length > 0) {
-        this.attachment = this.$store.state.attachment.selectedAttachment;
-      }
-    },
-  },
+  }
 };
 </script>
 
@@ -256,6 +280,10 @@ export default {
   float: right;
   border-left: 1px solid var(--border-color);
   position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
 
   .error-msg {
     position: absolute;
@@ -277,11 +305,6 @@ export default {
       margin-bottom: 16px;
     }
   }
-
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-start;
 
   .editable-data {
     width: 100%;

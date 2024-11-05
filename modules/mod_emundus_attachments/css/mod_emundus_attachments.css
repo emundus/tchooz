@@ -1,0 +1,48 @@
+.mod_emundus_attachments__container {
+    margin: 12px;
+}
+
+.mod_emundus_attachments__container h2 {
+    text-transform: math-auto;
+    color: var(--neutral-900);
+    font-weight: 400;
+    font-size: 24px;
+    margin-bottom: 24px;
+    margin-left: 12px;
+}
+
+.mod_emundus_attachments__attachment_block {
+    min-height: 50px;
+    min-width: 350px;
+    display: flex;
+    flex-direction: column;
+    border-color: var(--neutral-300);
+    box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
+    border-radius: 16px;
+    padding: 25px;
+    background-color: white;
+}
+
+.mod_emundus_attachments__attachment_fileinfo {
+    padding: 15px 0 0 0;
+    color: var(--neutral-600);
+}
+
+.mod_emundus_attachments__download_link {
+    border: 1px solid var(--em-secondary-color);
+    padding: 8px 12px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 8px;
+    font-size: 16px;
+    gap: 8px;
+    background-color: #e6142d !important;
+    color: #ffffff !important;
+}
+
+.mod_emundus_attachments__download_link:hover {
+    background-color: white !important;
+    color: #e6142d !important;
+}

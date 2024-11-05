@@ -8,7 +8,7 @@
       padding-left:60px!important;
 }
 
-.em-primary-button {
+.tw-btn-primary {
       display: flex;
       flex-direction: row;
       justify-content: center;
@@ -22,7 +22,7 @@
       background-color: #20835F;
       border: solid 1px transparent;
 }
-.em-primary-button:hover {
+.tw-btn-primary:hover {
       background-color: white;
       color: #20835F;
       border: 1px solid #20835F;

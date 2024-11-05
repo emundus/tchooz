@@ -28,7 +28,12 @@ class EmundusControllerTrombinoscope extends EmundusController
 	protected $app;
 
 	/**
-	 * @param   array  $config
+	 * Constructor.
+	 *
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     \JController
+	 * @since   1.0.0
 	 */
 	public function __construct($config = array())
 	{
@@ -77,23 +82,28 @@ class EmundusControllerTrombinoscope extends EmundusController
 	 */
 	public function generate_preview()
 	{
+		$response     = ['status' => false, 'code' => 403, 'msg' => JText::_('ACCESS_DENIED'), 'html_content' => ''];
 
-		$gridL        = $this->input->get('gridL');
-		$gridH        = $this->input->get('gridH');
-		$margin       = $this->input->get('margin');
-		$template     = $this->input->post->get('template', null, 'raw');
-		$string_fnums = $this->input->post->get('string_fnums', null, 'raw');
-		$generate     = $this->input->get('generate');
-		$border       = $this->input->get('border');
-		$fnums        = $this->fnums_json_decode($string_fnums);
-		$headerHeight = $this->input->get('headerHeight');
-		// Génération du HTML
-		$html_content = $this->generate_data_for_pdf($fnums, $gridL, $gridH, $margin, $template, false, false, $generate, false, false, $border, $headerHeight);
-		$value        = array(
-			'html_content' => $html_content
-		);
-		$return       = json_encode($value);
-		echo $return;
+		if (EmundusHelperAccess::asAccessAction(31, 'c', $this->app->getIdentity()->id)) {
+
+			$gridL        = $this->input->get('gridL');
+			$gridH        = $this->input->get('gridH');
+			$margin       = $this->input->get('margin');
+			$template     = $this->input->post->get('template', null, 'raw');
+			$string_fnums = $this->input->post->get('string_fnums', null, 'raw');
+			$generate     = $this->input->get('generate');
+			$border       = $this->input->get('border');
+			$fnums        = $this->fnums_json_decode($string_fnums);
+			$headerHeight = $this->input->get('headerHeight');
+			// Génération du HTML
+			$html_content = $this->generate_data_for_pdf($fnums, $gridL, $gridH, $margin, $template, false, false, $generate, false, false, $border, $headerHeight);
+			$response        = array(
+				'status'       => true,
+				'html_content' => $html_content
+			);
+		}
+
+		echo json_encode($response);
 		exit;
 	}
 
@@ -288,7 +298,7 @@ footer {
 				$body .= '<div style="page-break-after: always;"></div>';
 			}
 		}
-		if ($generate == 1) {
+
 			$header_tags = preg_replace($tags['patterns'], $tags['replacements'], $templHeader);
 			$header_tmp  = $emails->setTagsFabrik($header_tags, array($fnum["fnum"]));
 			$header      = preg_replace_callback('/< *img[^>]*src *= *["\']?([^"\']*)/i', function ($match) {
@@ -307,7 +317,6 @@ footer {
 
 				return '<img src="' . JURI::base() . $src;
 			}, $templFooter);
-		}
 		if ($checkHeader == 1) {
 			return $head . '<body class="em-body"><header>' . $header . '</header><footer>' . $footer . '</footer><main>' . $body . '</main></body></html>';
 		}

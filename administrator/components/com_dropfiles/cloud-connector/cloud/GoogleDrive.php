@@ -328,7 +328,7 @@ class GoogleDrive extends DropfilesCloudConnector
      */
     public function getBasefolder($authenticate)
     {
-        require_once JPATH_ADMINISTRATOR  . '/components/com_dropfiles/classes/GoogleV3/packages/autoload.php';
+        require_once JPATH_ADMINISTRATOR  . '/components/com_dropfiles/classes/vendor/autoload.php';
         $google_client = new Google_Client();
         $google_client->setClientId($authenticate['client_id']);
         $google_client->setClientSecret($authenticate['client_secret']);

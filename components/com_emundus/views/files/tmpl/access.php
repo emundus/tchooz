@@ -51,7 +51,7 @@ $current_user = JFactory::getUser();
 
     <div class="em-access" style="min-height: 282px;">
         <div class="em-access-form">
-            <div class="em-flex-column em-mt-12">
+            <div class="tw-flex tw-flex-col tw-items-start em-mt-12">
                 <label><?= JText::_('COM_EMUNDUS_SHARE_MESSAGE') ?></label>
                 <div  class="em-mb-6" style="width: 100%;">
                     <input type="checkbox" id="group-user-choice">
@@ -64,7 +64,7 @@ $current_user = JFactory::getUser();
             </div>
 			<?php if (EmundusHelperAccess::asAccessAction(11, 'c', $current_user->id)) { ?>
                 <div id="group-div" class="em-mt-12 hidden">
-                    <label><?= JText::_('COM_EMUNDUS_GROUPS') ?></label>
+                    <label><?= JText::_('COM_EMUNDUS_GROUPS_SHARE') ?></label>
                     <select class="modal-chzn-select" multiple="true"
                             data-placeholder="<?= JText::_('COM_EMUNDUS_GROUPS_PLEASE_SELECT_GROUP'); ?>"
                             name="em-access-groups-eval" id="em-access-groups-eval" value="">
@@ -86,7 +86,7 @@ $current_user = JFactory::getUser();
                 </select>
             </div>
 
-            <div class="em-flex-row em-mt-12">
+            <div class="em-flex-row em-mt-12 hidden">
                 <input type="checkbox" id="evaluator-email"><label for="evaluator-email"
                                                                    class="em-mb-0-important"><?= JText::_('COM_EMUNDUS_GROUPS_NOTIFY_EVALUATORS'); ?></label>
             </div>

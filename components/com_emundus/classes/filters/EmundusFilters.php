@@ -74,7 +74,8 @@ class EmundusFilters
 					'group_label' => $element['element_form_label'],
 					'group_id' => $element['element_form_id'],
 					'available' => true,
-                    'plugin' => $element['plugin']
+                    'plugin' => $element['plugin'],
+					'operator' => '='
                 ];
 
 				switch ($element['plugin']) {
@@ -84,6 +85,7 @@ class EmundusFilters
 					case 'databasejoin':
 						$filter['type'] = 'select';
 						$filter['values'] = [];
+						$filter['operator'] = 'IN';
 						break;
 					case 'yesno':
 						$filter['type'] = 'select';
@@ -144,6 +146,7 @@ class EmundusFilters
 										break;
 									default:
 										$filter['type'] = 'text';
+										$filter['operator'] = 'LIKE';
 										break;
 								}
 							} catch (Exception $e) {
@@ -152,6 +155,8 @@ class EmundusFilters
 						}
 
 						break;
+					default:
+						$filter['operator'] = 'LIKE';
 				}
 
 				$created_filters[] = $filter;
@@ -279,7 +284,9 @@ class EmundusFilters
 									$params['database_join_where_sql'] = substr($params['database_join_where_sql'], $first_where_pos + 5);
 								}
 
-								$query->where($params['database_join_where_sql']);
+								// this field can contains order by clause, so we need to split it
+								$where_clause = stripos($params['database_join_where_sql'], 'ORDER BY') !== false ? substr($params['database_join_where_sql'], 0, $order_by_pos) : $params['database_join_where_sql'];
+								$query->where($where_clause);
 							}
 						}
 

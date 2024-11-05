@@ -85,7 +85,16 @@ $listDirn  = $this->state->get('list.direction');
 				</tr>
 				</tfoot>
 				<tbody>
-				<?php foreach ($this->items as $i => $item) :
+				<?php 
+				//Select group form_ids for marking invalid forms
+				$fdb    = Factory::getContainer()->get('DatabaseDriver');
+				$query = $fdb->getQuery(true);
+				$query->select('form_id');
+				$query->from('#__fabrik_formgroup');
+				$fdb->setQuery($query);
+				$group_form_ids = $fdb->loadColumn();
+				
+				foreach ($this->items as $i => $item) :
 					$ordering    = ($listOrder == 'ordering');
 					$link       = Route::_('index.php?option=com_fabrik&task=form.edit&id=' . (int) $item->id);
 					$canCreate  = $user->authorise('core.create', 'com_fabrik.form.1');
@@ -93,6 +102,7 @@ $listDirn  = $this->state->get('list.direction');
 					$canCheckin = $user->authorise('core.manage', 'com_checkin') || $item->checked_out == $user->get('id') || $item->checked_out == 0;
 					$canChange  = $user->authorise('core.edit.state', 'com_fabrik.form.1') && $canCheckin;
 					$params     = new Registry($item->params);
+					$invalid_form = !in_array($item->id,$group_form_ids);
 
 					$elementLink = Route::_('index.php?option=com_fabrik&task=element.edit&id=0&filter_groupId=' . $item->group_id);
 					?>
@@ -100,13 +110,16 @@ $listDirn  = $this->state->get('list.direction');
 						<td><?= HTMLHelper::_('grid.id', $i, $item->id); ?></td>
 						<td><?= $item->id; ?></td>
 						<td>
+							<?php if ($invalid_form) : ?>
+								<span class="hasTooltip text-bg-danger fa icon-warning" data-isicon="true" title="<?= 'Invalid form, no groups'; ?>"></span>
+							<?php endif; ?>
 							<?php if ($item->checked_out) : ?>
 								<?= HTMLHelper::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'forms.', $canCheckin); ?>
 							<?php endif; ?>
 							<?php
 							if ($item->checked_out && ($item->checked_out != $user->get('id')))
 							{ ?>
-								<span class="editlinktip hasTip"
+								<span class="editlinktip hasTooltip"
 									title="foo <?= Text::_($item->label) . "::" . $params->get('note'); ?>"> <?= Text::_($item->label); ?>
 								</span>
 							<?php }
@@ -114,7 +127,7 @@ $listDirn  = $this->state->get('list.direction');
 							{
 								?>
 								<a href="<?= $link; ?>">
-									<span class="editlinktip hasTip" title="<?= Text::_($item->label) . "::" . $params->get('note'); ?>">
+									<span class="editlinktip hasTooltip" title="<?= Text::_($item->label) . "::" . $params->get('note'); ?>">
 										<?= Text::_($item->label); ?>
 									</span>
 								</a>

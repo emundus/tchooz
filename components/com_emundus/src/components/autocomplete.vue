@@ -10,7 +10,7 @@
         @keydown.enter="onEnter"
         :placeholder="year !== '' ? year : name"
         :class="year !== '' ? '' : 'placeholder'"
-        class="em-w-100"
+        class="tw-w-full"
     />
     <ul v-show="isOpen" class="autocomplete-results">
       <li
@@ -52,16 +52,11 @@ export default {
   },
 
   created() {
-    const sleep = milliseconds => {
-      return new Promise(resolve => setTimeout(resolve, milliseconds));
-    };
-    sleep(2000).then(() => {
-      this.search = this.year;
-    });
+    this.search = this.year;
   },
 
   methods: {
-    onSearching(event) {
+    onSearching() {
       this.$emit("searched", this.search);
     },
 
@@ -72,7 +67,7 @@ export default {
     },
     filterResults() {
       this.results = this.items.filter(
-          item => item.toLowerCase().indexOf(this.search.toLowerCase()) > -1
+        item => item.toLowerCase().indexOf(this.search.toLowerCase()) > -1
       );
     },
     setResult(result) {

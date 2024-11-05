@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -20,6 +20,7 @@ abstract class plgFinderHikashopBridge extends FinderIndexerAdapter {
 			$this->params = new JRegistry(@$plugin->params);
 		}
 
+		$this->setup();
 		parent::__construct($subject, $config);
 	}
 
@@ -69,8 +70,8 @@ abstract class plgFinderHikashopBridge extends FinderIndexerAdapter {
 		if(!empty($itemid))
 			$extra = '&Itemid='.$itemid;
 
-		$item->url   = "index.php?option=com_hikashop&ctrl=product&task=show&cid=" . $item->id."&name=".$item->alias.$extra;
-		$item->route = "index.php?option=com_hikashop&ctrl=product&task=show&cid=" . $item->id."&name=".$item->alias.$extra;
+		$item->url   = $this->getUrl($item->id, 'com_hikashop','product'); // "index.php?option=com_hikashop&ctrl=product&task=show&cid=" . $item->id."&name=".$item->alias.$extra;
+		$item->route = $this->getUrl($item->id, 'com_hikashop','product'); // "index.php?option=com_hikashop&ctrl=product&task=show&cid=" . $item->id."&name=".$item->alias.$extra;
 		$item->path  = FinderIndexerHelper::getContentPath($item->route);
 
 		$title = $this->getItemMenuTitle($item->url);
@@ -110,7 +111,7 @@ abstract class plgFinderHikashopBridge extends FinderIndexerAdapter {
 		if(!empty($fields) && count($fields)) {
 			foreach($fields as $field) {
 				if(!in_array($field, array('product_name', 'product_description', 'product_keywords', 'product_meta_description')))
-					$item->addInstruction(FinderIndexer::META_CONTEXT, $field);
+					$item->addInstruction(FinderIndexer::TEXT_CONTEXT, $field);
 			}
 		}
 
@@ -127,8 +128,9 @@ abstract class plgFinderHikashopBridge extends FinderIndexerAdapter {
 
 		FinderIndexerHelper::getContentExtras($item);
 
-		$this->indexer->index($item);
-		$this->handleOtherLanguages($item);
+		if(!$this->handleOtherLanguages($item)) {
+			$this->indexer->index($item);
+		}
 	}
 
 	public function prepareContent($summary, $params) {
@@ -137,9 +139,13 @@ abstract class plgFinderHikashopBridge extends FinderIndexerAdapter {
 
 	protected function addAlias(&$element){
 		if(empty($element->alias)){
-			if(empty($element->title))
-				return;
-			$element->alias = strip_tags(preg_replace('#<span class="hikashop_product_variant_subname">.*</span>#isU','',$element->title));
+			if(empty($element->product_alias)) {
+				if(empty($element->title))
+					return;
+				$element->alias = strip_tags(preg_replace('#<span class="hikashop_product_variant_subname">.*</span>#isU','',$element->title));
+			} else {
+				$element->alias = $element->product_alias;
+			}
 		}
 
 		$config = JFactory::getConfig();

@@ -12,7 +12,7 @@
           :class="classFromValue(rowData[column.column_name])">{{ texteFromValue(rowData[column.column_name]) }}</span>
       </div>
     </td>
-    <td><span v-if="!readOnly" class="material-icons em-pointer" @click="moreOptionsOpened = !moreOptionsOpened">more_horiz</span>
+    <td><span v-if="!readOnly" class="material-symbols-outlined em-pointer" @click="moreOptionsOpened = !moreOptionsOpened">more_horiz</span>
     </td>
     <more-options v-if="moreOptionsOpened && !readOnly" :options="moreOptionsData" @select-option="onSelectOption"
                   @focusout="moreOptionsOpened = false"></more-options>

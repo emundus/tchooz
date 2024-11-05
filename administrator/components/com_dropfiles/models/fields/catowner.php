@@ -137,7 +137,6 @@ class JFormFieldCatowner extends JFormField
                             'closeButton' => true,
                             'height'      => '100%',
                             'width'       => '100%',
-                            'modalWidth'  => 80,
                             'bodyHeight'  => 70
                         )
                     ); ?>
@@ -260,6 +259,6 @@ class JFormFieldCatowner extends JFormField
      */
     protected function getExcluded()
     {
-        return explode(',', $this->element['exclude']);
+        return isset($this->element['exclude'])? explode(',', $this->element['exclude']): array();
     }
 }

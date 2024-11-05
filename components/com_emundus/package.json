@@ -1,27 +1,53 @@
 {
   "name": "com_emundus",
-  "version": "0.1.0",
+  "version": "2.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build --mode production",
-    "watch": "vue-cli-service build --watch",
-    "lint": "vue-cli-service lint",
-    "test:unit": "vue-cli-service test:unit"
+    "dev": "vite build --mode development",
+    "build": "vite build",
+    "watch": "vite build --watch --mode development",
+    "preview": "vite preview",
+    "lint": "eslint src/**/*.{vue,js} --fix --ignore-path .gitignore",
+    "docs:dev": "vitepress dev docs --port 5555",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
-  "devDependencies": {},
-  "eslintConfig": {
-    "extends": [],
-    "rules": {},
-    "parserOptions": {}
+  "dependencies": {
+    "autoprefixer": "^10.4.15",
+    "axios": "^1.5.0",
+    "element-plus": "^2.3.12",
+    "moment": "^2.29.4",
+    "pinia": "^2.2.0",
+    "qs": "^6.11.2",
+    "sass": "^1.66.1",
+    "sweetalert2": "^11.7.27",
+    "tip-tap-editor": "https://github.com/emundus/tiptap",
+    "v-calendar": "3.0.0-alpha.8",
+    "vue": "^3.3.4",
+    "vue-draggable-next": "^2.2.1",
+    "vue-multiselect": "^3.0.0-beta.3",
+    "vue2-dropzone-vue3": "^1.1.0",
+    "vue3-toastify": "^0.2.2"
+  },
+  "devDependencies": {
+    "@prettier/plugin-php": "^0.22.2",
+    "@vitejs/plugin-vue": "^4.3.1",
+    "@vue/compiler-sfc": "^3.3.4",
+    "eslint": "^8.46.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "eslint-plugin-vue": "^9.27.0",
+    "prettier": "^3.3.2",
+    "vite": "^4.4.9",
+    "vitepress": "^1.3.1"
   },
   "postcss": {
     "plugins": {
       "autoprefixer": {}
     }
   },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions"
-  ]
+  "jshintConfig": {
+    "esversion": 10
+  }
 }

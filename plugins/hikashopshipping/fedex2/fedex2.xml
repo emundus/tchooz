@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" version="1.0" method="upgrade" group="hikashopshipping">
+	<name>Hikashop FedEx 2 Shipping Plugin</name>
+	<creationDate>08 juillet 2024</creationDate>
+	<version>5.1.0</version>
+	<author>Hikashop</author>
+	<authorEmail>dev@hikashop.com</authorEmail>
+	<authorUrl>http://www.hikashop.com</authorUrl>
+	<copyright>(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.</copyright>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<description>This plugin enables you to setup FedEx Shipping with your HikaShop</description>
+	<files>
+		<filename plugin="fedex2">fedex2.php</filename>
+		<folder>vendor</folder>
+	</files>
+	<params addpath="/components/com_hikashop/params">
+	</params>
+</extension>

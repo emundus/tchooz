@@ -12,16 +12,6 @@ $props = isset($d->properties) ? $d->properties : '';
  * uses "icon-clock timeButton".  Also handle multiple icon-foo, like "icon-spinner icon-spin"
  */
 
-if(strpos($d->icon, 'sort-down') !== false)
-{
-    $d->icon = 'icon-expand_more';
-}
-
-if(strpos($d->icon, 'sort-up') !== false)
-{
-	$d->icon = 'icon-expand_less';
-}
-
 if(strpos($d->icon, 'calendar') !== false)
 {
 	$d->icon = 'icon-event';
@@ -30,19 +20,30 @@ if(strpos($d->icon, 'calendar') !== false)
 $iconParts  = explode(' ', trim($d->icon));
 $spareParts = array();
 
-if ($iconParts[1] == 'notempty' || $iconParts[0] != 'icon-question-sign')
+if (!in_array($iconParts[0],['icon-question-sign','icon-sort', 'icon-spinner']) && !in_array($iconParts[1],['fa-sort-down','fa-sort-up','fa-sort']))
 {
 	$class = '';
 	$style = '';
+	$material_icon_class = 'material-symbols-outlined';
 
     $icon = explode('-',$iconParts[0]);
     if(in_array(trim($icon[1]),['eye','star','envelope'])) {
         $icon[1] = 'emergency';
-        $class = '!tw-text-xs tw-text-red-500 tw-mr-0';
+        $class = '!tw-text-xs tw-text-red-600 tw-mr-0';
         $style = 'style="top: -5px;position: relative"';
+
+        $material_icon_class = 'material-icons';
     }
+
+    if ($icon[1] == 'plus') {
+        $icon[1] = 'add';
+    }
+
+	if ($icon[1] == 'checkmark') {
+		$icon[1] = 'check';
+	}
 	?>
-    <span class="material-icons <?php echo $class ?>" <?php echo $style ?>>
+    <span class="<?php echo $material_icon_class ?> <?php echo $class ?>" <?php echo $style ?>>
 	    <?php echo trim($icon[1]) ?>
     </span>
 	<?php

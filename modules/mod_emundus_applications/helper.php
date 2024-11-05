@@ -18,7 +18,7 @@ defined('_JEXEC') or die;
 class modemundusApplicationsHelper
 {
 
-	static function getApplications($layout, $order_by, $params = null)
+	static function getApplications($layout, $order_by, $params = null, $collaborate = false)
 	{
 		$applications = [];
 		$app = Factory::getApplication();
@@ -81,7 +81,6 @@ class modemundusApplicationsHelper
 		}
 
 		$query->clear()
-			->select(implode(',',$select))
 			->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
 			->leftJoin($db->quoteName('#__emundus_campaign_candidature_tabs', 'ecct') . ' ON ecct.id=ecc.tab')
 			->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.id=ecc.campaign_id')
@@ -98,6 +97,22 @@ class modemundusApplicationsHelper
 
 		$query->where('ecc.applicant_id =' . $user->id);
 
+		// Files request
+		if ($collaborate) {
+			$select_collab = [
+				'efr.r',
+				'efr.u',
+				'efr.show_history',
+				'efr.show_shared_users',
+			];
+			$select = array_merge($select,$select_collab);
+
+			$query->leftJoin($db->quoteName('#__emundus_files_request', 'efr') . ' ON efr.ccid = ecc.id');
+			$query->orWhere($db->quoteName('efr.user_id') . ' = ' . $user->id . ' AND ' . $db->quoteName('efr.uploaded') . ' = 1');
+		}
+
+		$query->select(implode(',',$select));
+
 		if (!empty($params)) {
 			$selected_campaigns = $params->get('selected_campaigns', []);
 
@@ -111,7 +126,14 @@ class modemundusApplicationsHelper
 					$query->andWhere('ecc.campaign_id IN (' . implode(', ', $selected_campaigns) . ')');
 				}
 			}
+
+			$show_status = $params->get('show_status', '') !== '' ? explode(',', $params->get('show_status', '')) : null;
+			if(!empty($show_status)) {
+				$query->andWhere('ecc.status IN (' . implode(', ', $show_status) . ')');
+			}
 		}
+
+
 
 		$order_by_session = $app->getSession()->get('applications_order_by');
 		switch ($order_by_session) {
@@ -144,6 +166,26 @@ class modemundusApplicationsHelper
 		}
 
 		return $applications;
+	}
+
+	static function getCollaborators(&$applications)
+	{
+		foreach ($applications as $fnum => $application) {
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true);
+
+			$query->select('efr.email, efr.user_id')
+				->from($db->quoteName('#__emundus_files_request', 'efr'))
+				->where($db->quoteName('efr.ccid') . ' = ' . $application->application_id)
+				->andWhere($db->quoteName('efr.show_shared_users') . ' = 1');
+
+			try {
+				$db->setQuery($query);
+				$application->collaborators = $db->loadObjectList();
+			} catch (Exception $e) {
+				Log::add('Module emundus applications failed to get collaborators for application ' . $application->application_id . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			}
+		}
 	}
 
 	static function getStatusFiles()
@@ -513,7 +555,7 @@ class modemundusApplicationsHelper
 					if ($custom_action->mod_em_application_custom_action_type == 2) {
 						$html .= '<div class="em-flex-row px-2.5 py-2">';
 						if ($custom_action->mod_em_application_custom_action_icon) {
-							$html .= '<span class="material-icons-outlined em-font-size-16 em-mr-8">' . $custom_action->mod_em_application_custom_action_icon . '</span>';
+							$html .= '<span class="material-symbols-outlined em-font-size-16 em-mr-8">' . $custom_action->mod_em_application_custom_action_icon . '</span>';
 						}
 
 						$html .= '<span id="actions_button_custom_' . $custom_action_key . '" 
@@ -533,7 +575,7 @@ class modemundusApplicationsHelper
                                     href="' . $link . '" ' . $target . '>';
 
 							if ($custom_action->mod_em_application_custom_action_icon) {
-								$html .= '<span class="material-icons-outlined em-font-size-16 em-mr-8">' . $custom_action->mod_em_application_custom_action_icon . '</span>';
+								$html .= '<span class="material-symbols-outlined em-font-size-16 em-mr-8">' . $custom_action->mod_em_application_custom_action_icon . '</span>';
 							}
 
 							$html .= Text::_($custom_action->mod_em_application_custom_action_label) . '</a>';
@@ -544,5 +586,37 @@ class modemundusApplicationsHelper
 		}
 
 		echo $html;
+	}
+
+	static function getNbComments($ccid, $current_user) {
+		$nb_comments = 0;
+
+		if (!empty($ccid)) {
+			if (!class_exists('EmundusModelComments')) {
+				require_once(JPATH_ROOT . '/components/com_emundus/models/comments.php');
+			}
+			$m_comments = new EmundusModelComments();
+			$comments = $m_comments->getComments($ccid, $current_user, true, [], 0, 1);
+
+			$nb_comments = count($comments);
+		}
+
+		return $nb_comments;
+	}
+
+	static function getCommentsPageBaseUrl()
+	{
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+
+		$query->select('alias')
+			->from($db->quoteName('#__menu'))
+			->where($db->quoteName('published') . ' = 1')
+			->where($db->quoteName('link') . ' LIKE "%view=application&layout=history%"');
+
+		$db->setQuery($query);
+		$alias = $db->loadResult();
+
+		return $alias;
 	}
 }

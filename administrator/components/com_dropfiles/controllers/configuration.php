@@ -117,6 +117,9 @@ class DropfilesControllerConfiguration extends JControllerForm
 
         $params = JComponentHelper::getParams('com_dropfiles');
 
+        if ((int) $params->get('google_watch_changes', 1) === 0) {
+            $jformData['google_watch_changes'] = 0;
+        }
         if ((int) $params->get('onedriveBusinessConnectedBy', 0) !== 0) {
             $jformData['onedriveBusinessConnectedBy'] = $params->get('onedriveBusinessConnectedBy', 0);
         }

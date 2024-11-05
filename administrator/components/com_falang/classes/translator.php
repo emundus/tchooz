@@ -22,12 +22,14 @@ class translatorFactory
 		$translator = new $service();
 
 		$falangManager  = FalangManager::getInstance();
-		$languageParams = JComponentHelper::getParams('com_languages');
+		$languageParams = ComponentHelper::getParams('com_languages');
 
 		$from = $translator->languageCodeToISO($languageParams->get('site'));
 		$to   = $translator->languageCodeToISO($falangManager->activeLanguagesCacheByID[$target_language_id]->lang_code);
 
 		$translator->installScripts($from, $to);
 		translatorFactory::$translator = $translator;
+
+        return $translator;
 	}
 }

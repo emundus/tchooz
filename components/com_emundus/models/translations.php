@@ -9,6 +9,7 @@
 
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -289,11 +290,11 @@ class EmundusModelTranslations extends JModelList
 	{
 		$objects = array();
 
-		include_once(JPATH_SITE . DS . 'administrator' . DS . 'components' . DS . 'com_falang' . DS . "models" . DS . "ContentElement.php");
+		include_once(JPATH_ROOT . '/administrator/components/com_falang/models/ContentElement.php');
 
 		jimport('joomla.filesystem.folder');
-		$dir        = JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'contentelements/';
-		$filesindir = JFolder::files($dir, ".xml");
+		$dir        = JPATH_ROOT . '/components/com_emundus/contentelements/';
+		$filesindir = Joomla\Filesystem\Folder::files($dir, '.xml');
 		if (count($filesindir) > 0) {
 			foreach ($filesindir as $file) {
 				$object = new stdClass;
@@ -662,7 +663,7 @@ class EmundusModelTranslations extends JModelList
 				$query->set($this->_db->quoteName('override') . ' = ' . $this->_db->quote($override))
 					->set($this->_db->quoteName('override_md5') . ' = ' . $this->_db->quote(md5($override)))
 					->set($this->_db->quoteName('modified_by') . ' = ' . $this->_db->quote($user->id))
-					->set($this->_db->quoteName('modified_date') . ' = ' .$this->_db->quote(date('Y-m-d H:i:s')))
+					->set($this->_db->quoteName('modified_date') . ' = ' . $this->_db->quote(date('Y-m-d H:i:s')))
 					->set($this->_db->quoteName('location') . ' = ' . $this->_db->quote($location));
 
 				if (!empty($reference_table)) {
@@ -876,26 +877,40 @@ class EmundusModelTranslations extends JModelList
 	 */
 	public function updateLanguage($lang_code, $published, $default)
 	{
+		$updated = false;
 		$query = $this->_db->getQuery(true);
 
 		try {
 			if (!empty($default)) {
 				$old_lang = $this->getDefaultLanguage();
-				ComponentHelper::getParams('com_languages')->set('site', $lang_code);
+				$language_params = ComponentHelper::getParams('com_languages');
+				$language_params->set('site', $lang_code);
 
-				$query->update($this->_db->quoteName('#__languages'))
-					->set($this->_db->quoteName('published') . ' = ' . $this->_db->quote($published))
-					->where($this->_db->quoteName('lang_code') . ' = ' . $this->_db->quote($lang_code));
-				$this->_db->setQuery($query);
-				$this->_db->execute();
-
-				$query->clear()
-					->update($this->_db->quoteName('#__languages'))
-					->set($this->_db->quoteName('published') . ' = 0')
-					->where($this->_db->quoteName('lang_code') . ' = ' . $this->_db->quote($old_lang->lang_code));
+				// Update the default language
+				$query->update($this->_db->quoteName('#__extensions'))
+					->set($this->_db->quoteName('params') . ' = ' . $this->_db->quote($language_params->toString()))
+					->where($this->_db->quoteName('extension_id') . ' = ' . ComponentHelper::getComponent('com_languages')->id);
 				$this->_db->setQuery($query);
 
-				return $this->_db->execute();
+				if($this->_db->execute())
+				{
+					$query->clear()
+						->update($this->_db->quoteName('#__languages'))
+						->set($this->_db->quoteName('published') . ' = ' . $this->_db->quote($published))
+						->where($this->_db->quoteName('lang_code') . ' = ' . $this->_db->quote($lang_code));
+					$this->_db->setQuery($query);
+
+					if($this->_db->execute())
+					{
+						$query->clear()
+							->update($this->_db->quoteName('#__languages'))
+							->set($this->_db->quoteName('published') . ' = 0')
+							->where($this->_db->quoteName('lang_code') . ' = ' . $this->_db->quote($old_lang->lang_code));
+						$this->_db->setQuery($query);
+
+						$updated = $this->_db->execute();
+					}
+				}
 			}
 			else {
 				$query->update($this->_db->quoteName('#__languages'))
@@ -903,14 +918,14 @@ class EmundusModelTranslations extends JModelList
 					->where($this->_db->quoteName('lang_code') . ' = ' . $this->_db->quote($lang_code));
 				$this->_db->setQuery($query);
 
-				return $this->_db->execute();
+				$updated = $this->_db->execute();
 			}
 		}
 		catch (Exception $e) {
-			JLog::add('Problem when try to update language ' . $lang_code . ' with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.translations');
-
-			return false;
+			Log::add('Problem when try to update language ' . $lang_code . ' with error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.translations');
 		}
+
+		return $updated;
 	}
 
 	public function updateFalangModule($published)

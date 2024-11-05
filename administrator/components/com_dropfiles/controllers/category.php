@@ -370,6 +370,8 @@ class DropfilesControllerCategory extends JControllerForm
         $validData['published'] = 1;
         $validData['metadesc'] = '';
         $validData['metakey'] = '';
+        $validData['description'] = '';
+        $validData['params'] = '';
         if (!isset($validData['parent_id'])) {
             $validData['parent_id'] = 1;
         }
@@ -436,5 +438,89 @@ class DropfilesControllerCategory extends JControllerForm
             echo json_encode(array('status' => 'false', 'type' => $isCloud['type']));
             die();
         }
+    }
+
+    /**
+     * List categories for jaofiletree
+     *
+     * @return mixed
+     *
+     * @since 1.0
+     *
+     * @throws Exception Message if not start
+     */
+    public function listdir()
+    {
+        $user = JFactory::getUser();
+        if (!$user->authorise('core.admin')) {
+            return json_encode(array());
+        }
+        $params = JComponentHelper::getParams('com_dropfiles');
+        $allowedext_list = '7z,ace,bz2,dmg,gz,rar,tgz,zip,csv,doc,docx,html,key,keynote,odp,ods,odt,pages,pdf,pps,ppt,'
+            . 'pptx,rtf,tex,txt,xls,xlsx,xml,bmp,exif,gif,ico,jpeg,jpg,png,psd,tif,tiff,aac,aif,aiff,alac,amr,au,cdda,'
+            . 'flac,m3u,m4a,m4p, mid, mp3, mp4, mpa, ogg, pac, ra, wav, wma, 3gp,asf,avi,flv,m4v,mkv,mov,mpeg,mpg,'
+            . 'rm,swf,vob,wmv';
+        $allowed_ext = explode(',', $params->get('allowedext', $allowedext_list));
+        foreach ($allowed_ext as $key => $value) {
+            $allowed_ext[$key] = strtolower(trim($allowed_ext[$key]));
+            if ($allowed_ext[$key] === '') {
+                unset($allowed_ext[$key]);
+            }
+        }
+
+        $path = JPATH_ROOT . DIRECTORY_SEPARATOR . DIRECTORY_SEPARATOR;
+        $dir = JFactory::getApplication()->input->getString('dir'); //JFolder::makeSafe(JRequest::getString('dir'));
+
+        //Prevent  directory traversal
+        if (strpos($dir, '..') !== false) {
+            jexit();
+        }
+
+        $return = array();
+        $dirs   = array();
+        $fi     = array();
+
+        if (file_exists($path . $dir)) {
+            $files = scandir($path . $dir);
+            natcasesort($files);
+            if (count($files) > 2) { // The 2 counts for . and ..
+                // All dirs
+                foreach ($files as $file) {
+                    if (file_exists($path . $dir . DIRECTORY_SEPARATOR . $file) &&
+                        $file !== '.' && $file !== '..' && is_dir($path . $dir . DIRECTORY_SEPARATOR . $file)) {
+                        $dirs[] = array('type' => 'dir', 'dir' => $dir, 'file' => $file);
+                    } elseif (file_exists($path . $dir . DIRECTORY_SEPARATOR . $file) &&
+                        $file !== '.' && $file !== '..' &&
+                        !is_dir($path . $dir . DIRECTORY_SEPARATOR . $file) &&
+                        in_array(JFile::getExt($file), $allowed_ext)) {
+                        $fi[] = array('type' => 'file',
+                            'dir' => $dir,
+                            'file' => $file,
+                            'ext' => strtolower(JFile::getExt($file))
+                        );
+                    }
+                }
+                $return = array_merge($dirs, $fi);
+            }
+        }
+        echo json_encode($return);
+        jexit();
+    }
+
+    /**
+     * Get extension of file
+     *
+     * @param string $file File name
+     *
+     * @return boolean|string
+     *
+     * @since 1.0
+     *
+     * @throws Exception Message if not start
+     */
+    public function dropfilesGetExt($file)
+    {
+        $dot = strrpos($file, '.') + 1;
+        return substr($file, $dot);
     }
 }

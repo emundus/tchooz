@@ -6,13 +6,13 @@
           v-model="arraySubValues"
           handle=".handle-options"
           @end="updateOrder">
-        <div class="element-option em-flex-row em-flex-space-between em-mt-8 em-mb-8"
+        <div class="element-option tw-flex tw-items-center tw-justify-between tw-mt-2 tw-mb-2"
              v-for="(option, index) in arraySubValues" :key="option" @mouseover="optionHighlight = index;"
              @mouseleave="optionHighlight = null">
           <div class="tw-flex tw-items-center tw-w-full">
             <div class="tw-flex tw-items-center">
               <span class="icon-handle" :style="optionHighlight === index ? 'opacity: 1' : 'opacity: 0'">
-                <span class="material-icons-outlined handle-options em-grab" style="font-size: 18px">drag_indicator</span>
+                <span class="material-symbols-outlined handle-options tw-cursor-grab" style="font-size: 18px">drag_indicator</span>
               </span>
             </div>
             <input v-if="type !== 'dropdown'" :type="type" :name="'element-id-' + element.id"
@@ -20,26 +20,29 @@
             <div v-else>{{ index + 1 }}.</div>
             <input
                 type="text"
-                class="editable-data editable-data-input em-ml-4 em-w-100"
+                class="editable-data editable-data-input tw-ml-1 tw-w-full"
+                :id="'option-' + element.id + '-' + index"
                 v-model="optionsTranslations[index]"
                 @focusout="updateOption(index, optionsTranslations[index])"
+                @keyup.enter="updateOption(index, optionsTranslations[index],true)"
+                @keyup.tab="document.getElementById('new-option-' + element.id).focus();"
                 :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_OPTION')">
           </div>
-          <div class="em-flex-row">
-            <span class="material-icons-outlined em-pointer" @click="removeOption(index)"
+          <div class="tw-flex tw-items-center">
+            <span class="material-symbols-outlined tw-cursor-pointer" @click="removeOption(index)"
                   :style="optionHighlight === index ? 'opacity: 1' : 'opacity: 0'">close</span>
           </div>
         </div>
       </draggable>
-      <div id="add-option" class="em-flex-row em-flex-start em-s-justify-content-center">
+      <div id="add-option" class="tw-flex tw-items-center lg:tw-justify-start md:tw-justify-center">
         <span class="icon-handle" style="opacity: 0">
-          <span class="material-icons-outlined handle-options" style="font-size: 18px">drag_indicator</span>
+          <span class="material-symbols-outlined handle-options" style="font-size: 18px">drag_indicator</span>
         </span>
         <input v-if="type !== 'dropdown'" :type="type" :name="'element-id-' + element.id">
         <div v-else>{{ element.params.sub_options.sub_labels.length + 1 }}.</div>
         <input
             type="text"
-            class="editable-data editable-data-input em-ml-4 em-w-100"
+            class="editable-data editable-data-input tw-ml-1 tw-w-full"
             :id="'new-option-'+ element.id"
             v-model="newOption"
             @focusout="addOption"
@@ -52,7 +55,7 @@
 
 <script>
 import formBuilderService from '../../../services/formbuilder';
-import draggable from "vuedraggable";
+import { VueDraggableNext } from 'vue-draggable-next';
 
 export default {
   props: {
@@ -66,7 +69,7 @@ export default {
     }
   },
   components: {
-    draggable,
+    draggable: VueDraggableNext,
   },
   data() {
     return {
@@ -84,8 +87,8 @@ export default {
     async reloadOptions(new_option = false) {
       this.loading = true;
       formBuilderService.getElementSubOptions(this.element.id).then((response) => {
-        if (response.data.status) {
-          this.element.params.sub_options = response.data.new_options;
+        if (response.status) {
+          this.element.params.sub_options = response.new_options;
           this.getSubOptionsTranslation(new_option);
         } else {
           this.loading = false;
@@ -97,6 +100,7 @@ export default {
 
       formBuilderService.getJTEXTA(this.element.params.sub_options.sub_labels).then(response => {
         if (response) {
+          // transform object response to array
           this.optionsTranslations = Object.values(response.data);
           this.arraySubValues = this.element.params.sub_options.sub_values.map((value, i) => {
             return {
@@ -109,7 +113,7 @@ export default {
             if(new_option) {
               document.getElementById('new-option-' + this.element.id).focus();
             }
-          }, 500)
+          }, 200)
 
         }
 
@@ -124,17 +128,27 @@ export default {
       this.loading = true;
       formBuilderService.addOption(this.element.id, this.newOption, this.shortDefaultLang).then((response) => {
         this.newOption = '';
-        if (response.data.status) {
+        if (response.status) {
           this.reloadOptions(true);
         }
         this.loading = false;
       })
     },
-    updateOption(index, option) {
+    updateOption(index, option, next = false) {
       this.loading = true;
       formBuilderService.updateOption(this.element.id, this.element.params.sub_options, index, option, this.shortDefaultLang).then((response) => {
-        if (response.data.status) {
-          this.reloadOptions();
+        if (response.status) {
+          this.reloadOptions().then(() => {
+            if(next) {
+              setTimeout(() => {
+                if(!document.getElementById('option-' + this.element.id + '-' + (index + 1))) {
+                  document.getElementById('new-option-' + this.element.id).focus();
+                } else {
+                  document.getElementById('option-' + this.element.id + '-' + (index + 1)).focus();
+                }
+              }, 300)
+            }
+          })
         } else {
           this.loading = false;
         }
@@ -155,7 +169,7 @@ export default {
         if (!this.element.params.sub_options.sub_values.every((value, index) => value === sub_options_in_new_order.sub_values[index])) {
           this.loading = true;
           formBuilderService.updateElementSubOptionsOrder(this.element.id, this.element.params.sub_options, sub_options_in_new_order).then((response) => {
-            if (response.data.status) {
+            if (response.status) {
               this.reloadOptions();
             } else {
               this.loading = false;
@@ -171,7 +185,7 @@ export default {
     removeOption(index) {
       this.loading = true;
       formBuilderService.deleteElementSubOption(this.element.id, index).then((response) => {
-        if (response.data.status) {
+        if (response.status) {
           this.reloadOptions();
         } else {
           this.loading = false;

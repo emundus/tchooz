@@ -1059,9 +1059,14 @@ class FabrikViewListBase extends FabrikView
 		{
 			$model = $this->getModel();
 			$id    = $model->getId();
-			$url   = Route::_('index.php?option=com_' . $this->package . '&view=list&listid=' . $id);
-		}
-
-		return $url;
+			$itemId = FabrikWorker::itemId();
+            $url    = 'index.php?option=com_fabrik' . '&view=list&listid=' . $id;
+            if (!empty($itemId))
+            {
+                $url .= '&Itemid=' . $itemId;
+            }
+       }
+        return Route::_($url,true,Route::TLS_IGNORE,true);
 	}
+
 }

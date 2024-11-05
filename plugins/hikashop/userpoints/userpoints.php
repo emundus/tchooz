@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -28,6 +28,8 @@ class plgHikashopUserpoints extends hikashopPlugin {
 			}	
 			$this->modes[] = JHTML::_('select.option', 'aup', $name);
 		}
+		if($this->getRewardify(false))
+			$this->modes[] = JHTML::_('select.option', 'rwd', JText::_('Rewardify'));
 		if($this->getEasysocial(false))
 			$this->modes[] = JHTML::_('select.option', 'esp', JText::_('EASYSOCIAL_POINTS'));
 		$this->modes[] = JHTML::_('select.option', 'hk', JText::_('HIKASHOP_USER_POINTS'));
@@ -250,9 +252,34 @@ class plgHikashopUserpoints extends hikashopPlugin {
 				$cms_user_id = $user->id;
 			}
 			$userInfo = AlphaUserPointsHelper::getUserInfo('', $cms_user_id);
-			if($mode == 'aup')
-				return (int)$userInfo->points;
-			$ret['aup'] = (int)$userInfo->points;
+			if(empty($userInfo)) {
+				if($mode == 'aup')
+					return 0;
+				$ret['aup'] = 0;
+			} else {
+				if($mode == 'aup')
+					return (int)$userInfo->points;
+				$ret['aup'] = (int)$userInfo->points;
+			}
+		}
+
+		if($mode == 'rwd' || ($mode == 'all' && $this->getRewardify())) {
+			if($mode == 'rwd' && !$this->getRewardify(true))
+				return false;
+			if($cms_user_id === null) {
+				$user = Jfactory::getUser();
+				$cms_user_id = $user->id;
+			}
+			$userInfo = Factory::getApplication()->bootComponent( 'com_rewardify' )->getUserProfile($cms_user_id);
+			if(empty($userInfo)) {
+				if($mode == 'rwd')
+					return 0;
+				$ret['rwd'] = 0;
+			} else {
+				if($mode == 'rwd')
+					return (int)$userInfo->points;
+				$ret['rwd'] = (int)$userInfo->points;
+			}
 		}
 
 		if($mode == 'esp' || ($mode == 'all' && $this->getEasysocial())) {
@@ -263,9 +290,15 @@ class plgHikashopUserpoints extends hikashopPlugin {
 				$cms_user_id = $user->id;
 			}
 			$userInfo = FD::user( $cms_user_id );
-			if($mode == 'esp')
-				return (int)$userInfo->getPoints();
-			$ret['esp'] = (int)$userInfo->getPoints();
+			if(empty($userInfo)) {
+				if($mode == 'esp')
+					return 0;
+				$ret['esp'] = 0;
+			} else {
+				if($mode == 'esp')
+					return (int)$userInfo->getPoints();
+				$ret['esp'] = (int)$userInfo->getPoints();
+			}
 		}
 
 		if($cms_user_id === null) {
@@ -329,6 +362,33 @@ class plgHikashopUserpoints extends hikashopPlugin {
 			}
 			return false;
 		}
+
+		if($points_mode == 'rwd') {
+			if(empty($order->customer)) {
+				$userClass = hikashop_get('class.user');
+				$order->customer = $userClass->get($order->order_user_id);
+			}
+			if($this->getRewardify(true)) {
+				if($data === null)
+					$data = $this->getDataReference($order, $points_mode);
+				$rwd = Factory::getApplication()->bootComponent( 'com_rewardify' );
+				$userInfo = $rwd->getUserProfile( $order->customer->user_cms_id );
+				$userPoints = $rwd->getUserPoints();
+				$userPoints->assign(
+					[
+						'rule'        => 'com_hikashop.order.purchase',
+						'userid'      => $userInfo->id,
+						'ref'         => $order->order_id,
+						'title'       => $data,
+						'points'	  => $points,
+						'description' => 'Points attributes upon payment of the order '.$data,
+					]
+				);
+				return true;
+			}
+			return false;
+		}
+
 
 		$ret = true;
 		$userClass = hikashop_get('class.user');
@@ -968,7 +1028,7 @@ class plgHikashopUserpoints extends hikashopPlugin {
 		if(!$this->legacy) {
 			$this->ajax = isset($view->ajax) && $view->ajax;
 			$this->step = $view->step;
-			$this->module_position = $pos;
+			$this->module_position = $view->module_position;
 			$this->cart = $cart;
 		}
 
@@ -1091,7 +1151,7 @@ class plgHikashopUserpoints extends hikashopPlugin {
 		}
 		if($aup === true && $init && !$aup_init) {
 			$db = JFactory::getDBO();
-			$query = 'SELECT id FROM '.hikashop_table('alpha_userpoints_rules', false).' WHERE rule_name=' . $db->Quote('Order_validation');
+			$query = 'SELECT id FROM '.hikashop_table('alpha_userpoints_rules', false).' WHERE plugin_function=' . $db->Quote('plgaup_orderValidation');
 			$db->setQuery($query);
 			$exist = $db->loadResult();
 			if(empty($exist)) {
@@ -1135,6 +1195,28 @@ class plgHikashopUserpoints extends hikashopPlugin {
 
 		return $foundry;
 	}
+
+	public function getRewardify($warning = false) {
+		static $foundry = null;
+
+		if($foundry !== null)
+			return $foundry;
+
+		$file = JPATH_ADMINISTRATOR . '/components/com_rewardify/rewardify.php';
+		jimport('joomla.filesystem.file');
+		$foundry = JFile::exists($file);
+
+		if($foundry) {
+			Factory::getApplication()->bootComponent( 'com_rewardify' );
+		} else if($warning) {
+			$app = JFactory::getApplication();
+			if(hikashop_isClient('administrator'))
+				$app->enqueueMessage('The HikaShop UserPoints plugin requires the component Rewardify to be installed. If you want to use it, please install the component or use another mode.');
+		}
+
+		return $foundry;
+	}
+
 
 	public function getDataReference(&$order, $points_mode='aup') {
 		if(!empty($order->order_number)) {

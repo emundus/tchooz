@@ -51,6 +51,9 @@ function formCheck(id) {
 	let field = document.querySelector('#' + id);
 	let form_group = field.parentElement;
 	let help_block = document.querySelector('.em-addUser-detail-info-'+id+' .help-block');
+	if(id == 'login') {
+		help_block = document.querySelector('.em-addUser-detail-info-id .help-block');
+	}
 
 	field.style.border = null;
 
@@ -61,7 +64,7 @@ function formCheck(id) {
 		}
 	}
 
-	if (field.value.trim().length === 0 && check) {
+	if (field.value && field.value.trim().length === 0 && check) {
 		if(form_group) {
 			form_group.classList.add('has-error');
 		}
@@ -69,7 +72,7 @@ function formCheck(id) {
 
 		if(help_block) {
 			help_block.remove();
-			field.insertAdjacentHTML('afterend', '<span class="help-block">' + Joomla.JText._('NOT_A_VALID_LOGIN_MUST_NOT_CONTAIN_SPECIAL_CHARACTER') + '</span>');
+			field.insertAdjacentHTML('afterend', '<span class="help-block">' + Joomla.JText._('COM_EMUNDUS_USERS_ERROR_NOT_A_VALID_LOGIN_MUST_NOT_CONTAIN_SPECIAL_CHARACTER') + '</span>');
 		}
 
 		return false;
@@ -91,7 +94,7 @@ function formCheck(id) {
 					help_block.remove();
 				}
 
-				field.insertAdjacentHTML('afterend', '<span class="help-block">' + Joomla.JText._('NOT_A_VALID_LOGIN_MUST_NOT_CONTAIN_SPECIAL_CHARACTER') + '</span>');
+				field.insertAdjacentHTML('afterend', '<span class="help-block">' + Joomla.JText._('COM_EMUNDUS_USERS_ERROR_NOT_A_VALID_LOGIN_MUST_NOT_CONTAIN_SPECIAL_CHARACTER') + '</span>');
 
 			return false;
 		}
@@ -243,7 +246,7 @@ function search() {
 }
 
 $(document).ready(function () {
-	reloadData();
+	//reloadData();
 	refreshFilter();
 	var lastVal = new Object();
 	$(document).on('click', function () {
@@ -260,60 +263,30 @@ $(document).ready(function () {
 		}
 	});
 
-	$(document).on('click', 'input:button', function (e) {
-
-		if (e.event !== true) {
-			e.handle = true;
-			var name = $(this).attr('name');
-			switch (name) {
-				case 'clear-search':
-					lastVal = new Object();
-
-					let url = window.location.origin+'/index.php?option=com_emundus&controller=users&task=clear';
-					fetch(url, {
-						method: 'GET',
-					}).then((response) => {
-						if (response.ok) {
-							return response.json();
-						}
-						throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
-					}).then((result) => {
-						if (result.status) {
-							refreshFilter();
-						}
-					});
-
-					break;
-				case 'search':
-					search();
-					break;
-				default:
-					break;
-			}
-		}
-	});
-	$(document).on('click', '.pagination.pagination-sm li a', function (e) {
+	$(document).on('click', 'body.view-users .pagination.pagination-sm li a', function (e) {
 		if (e.handle !== true) {
 			e.handle = true;
 			var id = $(this).attr('id');
 
-			let url = window.location.origin+'/index.php?option=com_emundus&controller=users&task=setlimitstart';
-			let formData = new FormData();
-			formData.append('limitstart', id);
+			if(id) {
+				let url = window.location.origin + '/index.php?option=com_emundus&controller=users&task=setlimitstart';
+				let formData = new FormData();
+				formData.append('limitstart', id);
 
-			fetch(url, {
-				method: 'POST',
-				body: formData,
-			}).then((response) => {
-				if (response.ok) {
-					return response.json();
-				}
-				throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
-			}).then((result) => {
-				if (result.status) {
-					reloadData();
-				}
-			})
+				fetch(url, {
+					method: 'POST',
+					body: formData,
+				}).then((response) => {
+					if (response.ok) {
+						return response.json();
+					}
+					throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+				}).then((result) => {
+					if (result.status) {
+						reloadData();
+					}
+				})
+			}
 		}
 	});
 	$(document).on('click', '#em-last-open .list-group-item', function (e) {
@@ -618,6 +591,7 @@ $(document).ready(function () {
 	});
 
 	/* Button Form actions*/
+
 	$(document).on('click', '.em-actions-form', function (e) {
 		var id = parseInt($(this).attr('id'));
 		var url = $(this).attr('url');
@@ -717,7 +691,7 @@ $(document).ready(function () {
 				break;
 			case 20:
 				title = 'COM_EMUNDUS_ONBOARD_PROGRAM_ADDUSER';
-				preconfirm = "let checklanme =formCheck('lname');let checkfname =formCheck('fname');let checkmail =formCheck('mail');let checklogin =formCheck('login'); if (!checklanme || !checkfname || !checkmail || !checklogin) {Swal.showValidationMessage(Joomla.JText._('COM_EMUNDUS_USERS_ERROR_PLEASE_COMPLETE'))}";
+				preconfirm = "let checklanme =formCheck('lname');let checkfname =formCheck('fname');let checkmail =formCheck('mail');let checklogin =formCheck('login'); if (!checklanme || !checkfname || !checkmail || !checklogin) {return Swal.showValidationMessage(Joomla.JText._('COM_EMUNDUS_USERS_ERROR_PLEASE_COMPLETE'))}";
 				swal_confirm_button = 'COM_EMUNDUS_USERS_CREATE_USER_CONFIRM';
 				break;
 			case 23:
@@ -754,7 +728,9 @@ $(document).ready(function () {
 				swalForm = true;
 				title = 'COM_EMUNDUS_ACTIONS_EDIT_USER';
 				swal_confirm_button = 'COM_EMUNDUS_USERS_EDIT_USER_CONFIRM';
-				preconfirm = "let checklanme =formCheck('lname');let checkfname =formCheck('fname');let checkmail =formCheck('mail');let checklogin =formCheck('login'); if (!checklanme || !checkfname || !checkmail || !checklogin) {Swal.showValidationMessage(Joomla.JText._('COM_EMUNDUS_USERS_ERROR_PLEASE_COMPLETE'))}";				html = '<div id="data"></div>';
+				preconfirm = "let checklanme =formCheck('lname');let checkfname =formCheck('fname');let checkmail =formCheck('mail');let checklogin =formCheck('login'); if (!checklanme || !checkfname || !checkmail || !checklogin) {return Swal.showValidationMessage(Joomla.JText._('COM_EMUNDUS_USERS_ERROR_PLEASE_COMPLETE'))}";
+
+				html = '<div id="data"></div>';
 
 				addLoader();
 
@@ -857,10 +833,35 @@ $(document).ready(function () {
 					title = 'COM_EMUNDUS_USERS_SHOW_USER_RIGHTS';
 					swal_popup_class = 'em-w-auto';
 					html = result
-
-					console.log(swalForm);
 				});
 
+				break;
+
+			case 6:
+				addLoader();
+
+				await fetch(url, {
+					method: 'POST',
+					body: new URLSearchParams({})
+				})
+					.then((response) => {
+						if (!response.ok) {
+							throw new Error('Network response was not ok');
+						}
+						return response.text();
+					})
+					.then((result) => {
+						removeLoader();
+						swalForm = true;
+						title = 'COM_EMUNDUS_EXPORT_EXCEL';
+						swal_confirm_button = 'COM_EMUNDUS_EXPORTS_GENERATE_EXCEL';
+						preconfirm = "var atLeastOneChecked = false; $('.form-group input[type=\"checkbox\"], .all-boxes input[type=\"checkbox\"]').each(function() { if ($(this).is(':checked')) { atLeastOneChecked = true; return false; } }); if (!atLeastOneChecked) { Swal.showValidationMessage(Joomla.JText._('COM_EMUNDUS_EXPORTS_SELECT_AT_LEAST_ONE_INFORMATION')); }";
+						html = result;
+					})
+					.catch((error) => {
+						removeLoader();
+						console.error('Error:', error);
+					});
 				break;
 
 			case 26:
@@ -1064,6 +1065,7 @@ $(document).ready(function () {
 	});
 
 	function runAction(id, url = '', option = '') {
+		var formData = new FormData();
 
 		if ($('#em-check-all-all').is(':checked')) {
 			var checkInput = 'all';
@@ -1087,6 +1089,7 @@ $(document).ready(function () {
 		let action = '';
 
 		/**
+		 * 6: export
 		 * 19: create group
 		 * 20: create user
 		 * 21: activate
@@ -1099,6 +1102,72 @@ $(document).ready(function () {
 		 * 34: send email
 		 */
 		switch (id) {
+			case 6:
+				addLoader();
+
+				let checkedBoxes = {};
+				let allChecked = $('#checkbox-all').prop('checked');
+
+				// Verify which checkboxes have been selected
+				$('input[type="checkbox"]').each(function () {
+					if ($(this).attr('value') !== 'all') {
+						let checkboxValue = $(this).attr('value');
+						if (allChecked || $(this).prop('checked')) {
+							checkedBoxes[checkboxValue] = true;
+						}
+					}
+				});
+
+				formData = new FormData();
+				formData.append('users', getUserCheck());
+				formData.append('checkboxes', JSON.stringify(checkedBoxes));
+
+				fetch('/index.php?option=com_emundus&controller=users&task=exportusers&Itemid=' + itemId, {
+					method: 'POST',
+					body: formData
+				})
+					.then(function (response) {
+						if (!response.ok) {
+							throw new Error('Network response was not ok');
+						}
+						return response.json();
+					})
+					.then(function (result) {
+						removeLoader();
+
+						Swal.fire({
+							position: 'center',
+							icon: 'success',
+							title: Joomla.JText._('COM_EMUNDUS_ATTACHMENTS_DOWNLOAD_READY'),
+							showCancelButton: true,
+							showConfirmButton: true,
+							confirmButtonText: Joomla.JText._('COM_EMUNDUS_ATTACHMENTS_DOWNLOAD'),
+							cancelButtonText: Joomla.JText._('JCANCEL'),
+							reverseButtons: true,
+							allowOutsideClick: false,
+							customClass: {
+								cancelButton: 'em-swal-cancel-button',
+								confirmButton: 'em-swal-confirm-button btn btn-success',
+								title: 'w-full justify-center',
+							},
+							preConfirm: function () {
+								var link = document.createElement('a');
+								link.href = '/tmp/' + result.fileName;
+								link.download = result.fileName;
+								document.body.appendChild(link);
+								link.click();
+								document.body.removeChild(link);
+							}
+						});
+					})
+
+					.catch(function (error) {
+						removeLoader();
+						console.error('Error:', error);
+					});
+
+				break;
+
 			case 19:
 				action = window.location.origin + '/' + document.querySelector('#em-add-group').getAttribute('action');
 
@@ -1114,7 +1183,7 @@ $(document).ready(function () {
 
 				addLoader();
 
-				var formData = new FormData();
+				formData = new FormData();
 				formData.append('gname', $('#gname').val());
 				formData.append('gdesc', $('#gdescription').val());
 				formData.append('gprog', progs);
@@ -1198,7 +1267,7 @@ $(document).ready(function () {
 
 				addLoader();
 
-				var formData = new FormData();
+				formData = new FormData();
 				formData.append('login', login);
 				formData.append('firstname', fn);
 				formData.append('lastname', ln);
@@ -1211,6 +1280,8 @@ $(document).ready(function () {
 				formData.append('newsletter', $('#news').is(':checked') ? 1 : 0);
 				formData.append('university_id', $('#univ').val());
 				formData.append('ldap', $('#ldap').is(':checked') ? 1 : 0);
+				formData.append('auth_provider', $('#auth_provider').is(':checked') ? 1 : 0);
+				formData.append('testing_account', $('#testing_account').is(':checked') ? 1 : 0);
 
 				fetch(action, {
 					method: 'POST',
@@ -1268,7 +1339,7 @@ $(document).ready(function () {
 					}
 				}
 
-				var formData = new FormData();
+				formData = new FormData();
 				formData.append('users', checkInput);
 				formData.append('groups', groups.substr(0, groups.length - 1));
 
@@ -1338,6 +1409,8 @@ $(document).ready(function () {
 				var email = $('#mail').val();
 				var profile = $('#profiles').val();
 				let sameLoginEmail = document.getElementById('same_login_email').checked ? 1 : 0;
+				let testingAccount = (document.getElementById('testing_account') && document.getElementById('testing_account').checked) ? 1 : 0;
+				let authProvider = (document.getElementById('auth_provider') && document.getElementById('auth_provider').checked) ? 1 : 0;
 
 				if (profile == "0") {
 					$('#profiles').parent('.form-group').addClass('has-error');
@@ -1346,7 +1419,7 @@ $(document).ready(function () {
 				}
 				addLoader();
 
-				var formData = new FormData();
+				formData = new FormData();
 				formData.append('login', login);
 				formData.append('firstname', fn);
 				formData.append('lastname', ln);
@@ -1359,6 +1432,8 @@ $(document).ready(function () {
 				formData.append('newsletter', $('#news').is(':checked') ? 1 : 0);
 				formData.append('university_id', $('#univ').val());
 				formData.append('sameLoginEmail', sameLoginEmail);
+				formData.append('testingAccount', testingAccount);
+				formData.append('authProvider', authProvider);
 				action = window.location.origin + '/' + document.getElementById('em-add-user').getAttribute('action');
 				if(action.indexOf('edituser') !== -1) {
 					formData.append('id', $('.em-check:checked').attr('id').split('_')[0]);
@@ -1417,7 +1492,7 @@ $(document).ready(function () {
 					data.attachments.push(attachment.find('.value').text());
 				});
 
-				var formData = new FormData();
+				formData = new FormData();
 				formData.append('recipients', $('#uids').val());
 				formData.append('template', $('#message_template :selected').val());
 				formData.append('Bcc', $('#sendUserACopy').prop('checked'));
@@ -1441,7 +1516,7 @@ $(document).ready(function () {
 					if(result.status) {
 						if (result.sent.length > 0) {
 
-							var sent_to = '<p>' + Joomla.JText._('SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
+							var sent_to = '<p>' + Joomla.Text._('COM_EMUNDUS_MAILS_SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
 							result.sent.forEach(element => {
 								sent_to += '<li class="list-group-item alert-success">' + element + '</li>';
 							});
@@ -1449,7 +1524,7 @@ $(document).ready(function () {
 							Swal.fire({
 								position: 'center',
 								icon: 'success',
-								title: Joomla.JText._('COM_EMUNDUS_EMAILS_EMAILS_SENT') + result.sent.length,
+								title: Joomla.Text._('COM_EMUNDUS_EMAILS_EMAILS_SENT') + result.sent.length,
 								html: sent_to + '</ul>',
 								customClass: {
 									title: 'w-full justify-center',
@@ -1461,7 +1536,7 @@ $(document).ready(function () {
 						} else {
 							Swal.fire({
 								icon: 'error',
-								title: Joomla.JText._('COM_EMUNDUS_EMAILS_NO_EMAILS_SENT'),
+								title: Joomla.Text._('COM_EMUNDUS_EMAILS_NO_EMAILS_SENT'),
 								customClass: {
 									title: 'em-swal-title',
 									confirmButton: 'em-swal-confirm-button',
@@ -1512,7 +1587,7 @@ $(document).ready(function () {
 			e.handle = true;
 			var id = $(this).val();
 			var text = $('#em-modal-actions #em-export-form option:selected').attr('data-value');
-			$('#em-export').append('<li class="em-export-item" id="' + id + '-item"><strong>' + text + '</strong><button class="btn btn-danger btn-xs pull-right"><span class="material-icons">delete_outline</span></button></li>');
+			$('#em-export').append('<li class="em-export-item" id="' + id + '-item"><strong>' + text + '</strong><button class="btn btn-danger btn-xs pull-right"><span class="material-symbols-outlined">delete_outline</span></button></li>');
 		}
 	});
 
@@ -1598,4 +1673,28 @@ function createScrollbarForElement(element, id) {
 		new_scrollbar.scrollLeft = element.scrollLeft;
 	};
 	element.parentNode.insertBefore(new_scrollbar, element);
+}
+
+/*
+ * Check/Uncheck checkboxes according to the "all" checkbox
+ * (Only use in the file components/com_emundus/views/users/tmpl/export.php for now)
+ */
+function checkAllUserElement(checkboxAll){
+	let allChecked = checkboxAll.checked;
+	var checkboxes = document.querySelectorAll('input[type=checkbox][id^=checkbox-]');
+	checkboxes.forEach(function (checkbox) {
+		checkbox.checked = allChecked;
+	});
+}
+
+/*
+ * Uncheck the "all" checkbox when an another checkbox is uncheck
+ * (Only use in the file components/com_emundus/views/users/tmpl/export.php for now)
+ */
+function uncheckCheckboxAllElement(checkbox)
+{
+	var checkboxAll = document.getElementById('checkbox-all');
+	if (!checkbox.checked && checkboxAll.checked) {
+		checkboxAll.checked = false;
+	}
 }

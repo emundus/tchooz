@@ -1,9 +1,9 @@
 <template>
   <div>
-    <h1 class="em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS') }}</h1>
-    <p class="em-font-size-16 em-neutral-700-color em-mb-24 em-h-25">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE') }}</p>
+    <h3 class="tw-mb-2">{{  this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS') }}</h3>
+    <p class="tw-text-base tw-text-neutral-700 tw-mb-6 em-h-25">{{ this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE') }}</p>
 
-    <p class="em-font-size-16 em-mb-24 em-h-25" v-if="availableLanguages.length === 0 && !loading">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_NO_LANGUAGES_AVAILABLE') }}</p>
+    <p class="tw-text-base tw-mb-6 em-h-25" v-if="availableLanguages.length === 0 && !loading">{{ this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_NO_LANGUAGES_AVAILABLE') }}</p>
 
     <div class="em-grid-4" v-else>
       <!-- Languages -->
@@ -18,7 +18,7 @@
             select-label=""
             selected-label=""
             deselect-label=""
-            :placeholder="translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SELECT_LANGUAGE')"
+            :placeholder="this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SELECT_LANGUAGE')"
             :close-on-select="true"
             :clear-on-select="false"
             :searchable="false"
@@ -28,7 +28,7 @@
       </div>
 
       <!-- Objects availables -->
-      <div v-if="lang">
+      <div v-if="lang" v-show="displayFilters">
         <multiselect
             v-model="object"
             label="name"
@@ -39,7 +39,7 @@
             select-label=""
             selected-label=""
             deselect-label=""
-            :placeholder="translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SELECT_OBJECT')"
+            :placeholder="this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SELECT_OBJECT')"
             :close-on-select="true"
             :clear-on-select="false"
             :searchable="false"
@@ -48,7 +48,7 @@
       </div>
 
       <!-- Datas by reference id -->
-      <div v-if="object">
+      <div v-if="object" v-show="displayFilters">
         <multiselect
             v-model="data"
             label="label"
@@ -59,7 +59,7 @@
             select-label=""
             selected-label=""
             deselect-label=""
-            :placeholder="translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SELECT')"
+            :placeholder="this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SELECT')"
             :close-on-select="true"
             :clear-on-select="false"
             :searchable="true"
@@ -68,7 +68,7 @@
       </div>
 
       <!-- Childrens -->
-      <div v-if="childrens.length > 0">
+      <div v-if="childrens.length > 0" v-show="displayFilters">
         <multiselect
             v-model="children"
             label="label"
@@ -79,7 +79,7 @@
             select-label=""
             selected-label=""
             deselect-label=""
-            :placeholder="translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SELECT')"
+            :placeholder="this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SELECT')"
             :close-on-select="true"
             :clear-on-select="false"
             :searchable="true"
@@ -91,15 +91,15 @@
     <hr class="col-md-12" style="z-index: 0"/>
 
     <div class="col-md-12">
-      <div v-if="lang === '' || lang == null || object === '' || object == null || init_translations === false" class="text-center em-mt-80">
-        <h5 class="em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_TRANSLATION_TITLE') }}</h5>
-        <p class="em-font-size-16 em-text-neutral-600">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_TRANSLATION_TEXT') }}</p>
+      <div v-if="lang === '' || lang == null || object === '' || object == null || init_translations === false" class="text-center tw-mt-20">
+        <h5 class="tw-mb-2">{{ this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_TRANSLATION_TITLE') }}</h5>
+        <p class="tw-text-base em-text-neutral-600">{{ this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_TRANSLATION_TEXT') }}</p>
       </div>
 
       <div v-else>
-        <button v-if="object.table.name === 'emundus_setup_profiles'" class="float-right em-profile-color em-text-underline" @click="exportToCsv">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_EXPORT') }}</button>
+        <button v-if="object.table.name === 'emundus_setup_profiles'" class="float-right em-profile-color em-text-underline" @click="exportToCsv">{{ this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_EXPORT') }}</button>
 
-        <div v-for="section in object.fields.Sections" :key="section.Table" class="em-mb-32">
+        <div v-for="section in object.fields.Sections" :key="section.Table" class="tw-mb-8">
           <h4 class="mb-2">{{section.Label}}</h4>
 
           <TranslationRow :section="section" :translations="translations" @saveTranslation="saveTranslation"/>
@@ -112,11 +112,13 @@
 </template>
 
 <script>
-import client from "com_emundus/src/services/axiosClient";
-import translationsService from "com_emundus/src/services/translations";
-import mixin from "com_emundus/src/mixins/mixin";
+import client from "@/services/axiosClient.js";
+import translationsService from "@/services/translations.js";
 import Multiselect from 'vue-multiselect';
-import TranslationRow from "./TranslationRow";
+import TranslationRow from "./TranslationRow.vue";
+
+import mixin from "@/mixins/mixin.js";
+import errors from "@/mixins/errors.js";
 
 export default {
   name: 'Translations',
@@ -124,7 +126,26 @@ export default {
     TranslationRow,
     Multiselect
   },
-  mixins: [mixin],
+  props: {
+    objectValue: {
+      type: String,
+      required: false,
+    },
+    dataValue: {
+      type: String,
+      required: false,
+    },
+    childrenValue: {
+      type: String,
+      required: false,
+    },
+    displayFilters: {
+      type: Boolean,
+      required: false,
+      default: true
+    }
+  },
+  mixins: [mixin, errors],
   data() {
     return {
       defaultLang: null,
@@ -181,6 +202,7 @@ export default {
         this.loading = false;
         return false;
       }
+
     },
 
     async getObjects(){
@@ -221,53 +243,65 @@ export default {
         value.table.label,
         value.table.filters
       ).then(async (response) => {
-        this.datas = response.data;
+        if (response.status) {
+          if (response.data.length > 0) {
+            this.datas = response.data;
 
+            if (value.table.load_all === 'true') {
+              let fields = [];
+              await this.asyncForEach(this.object.fields.Fields, async (field) => {
+                fields.push(field.Name);
+              })
+              fields = fields.join(',');
+              const build = async () => {
+                for (const data of this.datas) {
+                  await translationsService.getTranslations(
+                    this.object.table.type,
+                    this.defaultLang.lang_code,
+                    this.lang.lang_code,
+                    data.id,
+                    fields,
+                    this.object.table.name
+                  ).then(async (rep) => {
+                    console.log(rep);
 
-
-        if (value.table.load_all === 'true') {
-          let fields = [];
-          await this.asyncForEach(this.object.fields.Fields, async (field) => {
-            fields.push(field.Name);
-          })
-          fields = fields.join(',');
-          const build = async () => {
-            for (const data of this.datas) {
-              await translationsService.getTranslations(
-                this.object.table.type,
-                this.defaultLang.lang_code,
-                this.lang.lang_code,
-                data.id,
-                fields,
-                this.object.table.name
-              ).then(async (rep) => {
-                for (const translation of Object.values(rep.data)) {
-                  this.translations[data.id] = {};
-                  this.object.fields.Fields.forEach((field) => {
-                    this.translations[data.id][field.Name] = translation[field.Name];
+                    if (rep.status) {
+                      for (const translation of Object.values(rep.data)) {
+                        this.translations[data.id] = {};
+                        this.object.fields.Fields.forEach((field) => {
+                          this.translations[data.id][field.Name] = translation[field.Name];
+                        });
+                      }
+                    } else {
+                      this.displayError(rep.message, '');
+                    }
                   })
                 }
-              })
-            }
-            this.init_translations = true;
-            this.loading = false;
-          }
-          await build();
-        } else if (value.table.load_first_data === 'true') {
-          if (this.firstLoadDatas) {
-            // get url parameter data
-            const urlParams = new URLSearchParams(window.location.search);
+                this.init_translations = true;
+                this.loading = false;
+              }
+              await build();
+            } else if (value.table.load_first_data === 'true') {
+              if (this.firstLoadDatas) {
+                // get url parameter data
+                const urlParams = new URLSearchParams(window.location.search);
 
-            const dataParam = urlParams.get('data');
-            if (dataParam) {
-              this.data = this.datas.find(d => parseInt(d.id) === parseInt(dataParam));
+                const dataParam = urlParams.get('data');
+                if (dataParam) {
+                  this.data = this.datas.find(d => parseInt(d.id) === parseInt(dataParam));
+                } else {
+                  this.data = this.datas[0];
+                }
+
+                this.firstLoadDatas = false;
+              } else {
+                this.data = this.datas[0];
+              }
             } else {
-              this.data = this.datas[0];
-            }
-
-            this.firstLoadDatas = false;
+              this.loading = false;
+            } 
           } else {
-            this.data = this.datas[0];
+            this.loading = false;
           }
         } else {
           this.loading = false;
@@ -309,11 +343,26 @@ export default {
     },
 
     async exportToCsv() {
-      window.open('index.php?option=com_emundus&controller=translations&task=export&profile='+this.data.id, '_blank');
-    }
+      window.open('/index.php?option=com_emundus&controller=translations&task=export&profile='+this.data.id, '_blank');
+    },
+    translate(key) {
+      if (typeof key != undefined && key != null && Joomla !== null && typeof Joomla !== 'undefined') {
+        return Joomla.JText._(key) ? Joomla.JText._(key) : key;
+      } else {
+        return '';
+      }
+    },
   },
 
+
   watch: {
+    objects: function(value){
+      if(value.length > 0 ) {
+        if (this.objectValue) {
+          this.object = this.objects.find(obj => obj.table.name === this.objectValue);
+        }
+      }
+    },
     object: function(value){
       this.init_translations = false;
       this.translations = {};
@@ -324,9 +373,16 @@ export default {
 
       if(value != null) {
         this.getDatas(value);
+
       }
     },
-
+    datas: function(value){
+      if(value.length > 0) {
+        if (this.dataValue){
+          this.data = this.datas.find(d => d.id == this.dataValue);
+        }
+      }
+    },
     data: function(value){
       this.loading = true;
       this.init_translations = false;
@@ -360,7 +416,13 @@ export default {
         this.getDatas(this.object);
       }
     },
-
+    childrens: function(value){
+      if(value.length > 0) {
+        if (this.childrenValue){
+          this.children = this.childrens.find(c => c.id == this.childrenValue);
+        }
+      }
+    },
     children: function(value){
       this.loading = true;
       this.init_translations = false;

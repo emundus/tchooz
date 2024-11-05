@@ -18,7 +18,7 @@ if (!empty((array) $this->assoc_files)) :
                             <h6 title="<?php echo $camp->label ?>">
 								<?php echo $camp->label ?>
                             </h6>
-                                <span id="<?php echo $camp->fnum ?>-icon" class="material-icons-outlined" style="transform: rotate(-180deg)">expand_less</span>
+                                <span id="<?php echo $camp->fnum ?>-icon" class="material-symbols-outlined" style="transform: rotate(-180deg)">expand_less</span>
                         </div>
                         <div class="em-flex-row em-flex-space-between em-mb-8">
                             <span class="label label-<?php echo $camp->class ?>"> <?php echo $camp->step_value ?></span>
@@ -26,13 +26,13 @@ if (!empty((array) $this->assoc_files)) :
 								<?php if (EmundusHelperAccess::asAccessAction(1, 'd', $this->_user->id, $camp->fnum)): ?>
                                     <button id="em-delete-files" class="btn btn-danger btn-xs pull-right"
                                             title="<?php echo JText::_('COM_EMUNDUS_APPLICATION_DELETE_APPLICATION_FILE') ?>">
-                                        <span class="material-icons-outlined">delete_outline</span>
+                                        <span class="material-symbols-outlined">delete_outline</span>
                                     </button>
 								<?php endif; ?>
 								<?php if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $camp->fnum)): ?>
                                     <button id="em-see-files" class="btn btn-info btn-xs pull-right"
                                             title="<?php echo JText::_('COM_EMUNDUS_APPLICATION_OPEN_APPLICATION_FILE') ?>">
-                                        <span class="material-icons-outlined">visibility</span>
+                                        <span class="material-symbols-outlined">visibility</span>
                                     </button>
 								<?php endif; ?>
                             </div>
@@ -76,7 +76,7 @@ if (!empty((array) $this->assoc_files)) :
         <div class="unpublished_campaigns_tab em-flex-row em-flex-space-between"
              onclick="displayUnpublishedCampaignsContainer()">
             <p><?php echo JText::_('COM_EMUNDUS_APPLICATION_UNPUBLISHED_CAMPAIGNS'); ?></p>
-            <span id="unpublished_campaigns_icon" class="material-icons-outlined">expand_less</span>
+            <span id="unpublished_campaigns_icon" class="material-symbols-outlined">expand_less</span>
         </div>
     <?php endif; ?>
 
@@ -94,7 +94,7 @@ if (!empty((array) $this->assoc_files)) :
                                 <h6 title="<?php echo $camp->label ?>">
                                     <?php echo $camp->label ?>
                                 </h6>
-                                <span id="<?php echo $camp->fnum ?>-icon" class="material-icons-outlined" style="transform: rotate(-180deg)">expand_less</span>
+                                <span id="<?php echo $camp->fnum ?>-icon" class="material-symbols-outlined" style="transform: rotate(-180deg)">expand_less</span>
                             </div>
                             <div class="em-flex-row em-flex-space-between em-mb-8">
                                 <span class="label label-<?php echo $camp->class ?>"> <?php echo $camp->step_value ?></span>
@@ -102,13 +102,13 @@ if (!empty((array) $this->assoc_files)) :
                                     <?php if (EmundusHelperAccess::asAccessAction(1, 'd', $this->_user->id, $camp->fnum)): ?>
                                         <button id="em-delete-files" class="btn btn-danger btn-xs pull-right"
                                                 title="<?php echo JText::_('COM_EMUNDUS_APPLICATION_DELETE_APPLICATION_FILE') ?>">
-                                            <span class="material-icons-outlined">delete_outline</span>
+                                            <span class="material-symbols-outlined">delete_outline</span>
                                         </button>
                                     <?php endif; ?>
                                     <?php if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $camp->fnum)): ?>
                                         <button id="em-see-files" class="btn btn-info btn-xs pull-right"
                                                 title="<?php echo JText::_('COM_EMUNDUS_APPLICATION_OPEN_APPLICATION_FILE') ?>">
-                                            <span class="material-icons-outlined">visibility</span>
+                                            <span class="material-symbols-outlined">visibility</span>
                                         </button>
                                     <?php endif; ?>
                                 </div>

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="component" version="3.6" method="upgrade">
 <name>Securitycheck Pro</name>
-<creationDate>03-01-2024</creationDate>
+<creationDate>16-09-2024</creationDate>
 <author>Jose A. Luque</author>
 <authorEmail>contacto@protegetuordenador.com</authorEmail>
 <authorUrl>securitycheck.protegetuordenador.com</authorUrl>
 <copyright>Copyright www.protegetuordenador.com</copyright>
 <license>GNU/GPL v2 or later http://www.gnu.org/licenses/gpl-2.0.html</license>
-<version>4.1</version>
+<version>4.2.1</version>
 <description>COM_SECURITYCHECKPRO_DESCRIPTION</description>
 <namespace path="src">SecuritycheckExtensions\Component\SecuritycheckPro</namespace>
 <dlid prefix="dlid=" suffix=""/>
@@ -102,9 +102,10 @@
 </administration>
 
 <plugins>
-       <plugin folder="plugins/system" plugin="securitycheckpro" name="System - Securitycheck Pro" group="system" />	  
-	   <plugin folder="plugins/system" plugin="securitycheckpro_cron" name="System - Securitycheck Pro Cron" group="system" />	  
-	   <plugin folder="plugins/system" plugin="url_inspector" name="System - url inspector" group="system" />	   
+    <plugin folder="plugins/system" plugin="securitycheckpro" name="System - Securitycheck Pro" group="system" />	  
+	<plugin folder="plugins/system" plugin="url_inspector" name="System - url inspector" group="system" />
+	<plugin folder="plugins/system" plugin="securitycheckpro_task_checker" name="System - Securitycheck Pro Task Checker" group="system" />
+	<plugin folder="plugins/task" plugin="securitycheckprocron" name="Task - Securitycheck Pro Cron" group="task" />
 </plugins> 
 	
 <updateservers>

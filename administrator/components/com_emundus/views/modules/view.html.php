@@ -70,6 +70,11 @@ class EmundusAdminViewModules extends HtmlView
                 'title' => 'Remplacer les modules des formulaires candidats',
                 'desc' => '',
                 'install_button' => 'Installer'
+            ],
+            'events' => [
+	            'title' => 'Événements pour un site vitrine',
+	            'desc' => '',
+	            'install_button' => 'Installer'
             ]
         ];
         $this->modules = $modules;

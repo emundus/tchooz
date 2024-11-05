@@ -4,31 +4,35 @@
  * User: yoan
  * Date: 20/01/15
  * Time: 17:51
- */ ?>
+ */
+
+use Joomla\CMS\Language\Text;
+
+?>
 
 <?php if (!empty($this->access['groups'])): ?>
     <div class="row">
         <div class="panel panel-default widget em-container-share">
-            <div class="panel-heading em-container-share-heading">
+            <div class="panel-heading em-container-share-heading !tw-bg-profile-full">
                 <h3 class="panel-title">
-                    <span class="material-icons">visibility</span>
-					<?= JText::_('COM_EMUNDUS_ACCESS_CHECK_ACL'); ?>
+                    <span class="material-symbols-outlined">visibility</span>
+					<?= Text::_('COM_EMUNDUS_ACCESS_CHECK_ACL'); ?>
                 </h3>
                 <div class="btn-group pull-right">
-                    <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_back</span></button>
-                    <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_forward</span></button>
+                    <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-symbols-outlined">arrow_back</span></button>
+                    <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-symbols-outlined">arrow_forward</span></button>
                 </div>
             </div>
             <div class="panel-body em-container-share-body">
                 <div class="active content em-container-share-table em-flex-row">
                     <div class="table-left em-container-share-table-left">
-                        <table id="groups-table" class="table table-bordered">
+                        <table id="groups-table" class="table table-bordered !tw-mb-0">
                             <thead>
                             <tr>
                                 <th></th>
                             </tr>
                             <tr>
-                                <th><?= JText::_('COM_EMUNDUS_ACCESS_GROUPS')?></th>
+                                <th><?= Text::_('COM_EMUNDUS_ACCESS_GROUPS')?></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -39,11 +43,11 @@
 										<?php if ($groups['isAssoc'] && EmundusHelperAccess::asAccessAction(11, 'd', $this->_user->id, $this->fnum)) :?>
 											<?php if($groups['isACL']):?>
                                                 <a class="em-flex-row em-del-access" href="index.php?option=com_emundus&controller=application&task=deleteaccess&fnum=<?= $this->fnum ?>&id=<?= $gid ?>&type=groups">
-                                                    <span class="material-icons-outlined">autorenew</span>
+                                                    <span class="material-symbols-outlined">autorenew</span>
                                                 </a>
 											<?php else :?>
                                                 <a class="em-flex-row em-del-access" href="index.php?option=com_emundus&controller=application&task=deleteaccess&fnum=<?= $this->fnum ?>&id=<?= $gid ?>&type=groups">
-                                                    <span class="material-icons-outlined">close</span>
+                                                    <span class="material-symbols-outlined">close</span>
                                                 </a>
 											<?php endif; ?>
 										<?php endif; ?>
@@ -60,7 +64,7 @@
 								<?php foreach ($this->access['groups'] as $gid => $groups) :?>
 									<?php foreach ($groups['actions'] as $aid => $action) :?>
                                         <th colspan="4" id="<?= $aid?>">
-											<?= JText::_($action['aname'])?>
+											<?= Text::_($action['aname'])?>
                                         </th>
 									<?php endforeach;?>
 									<?php break;
@@ -69,10 +73,10 @@
                             <tr>
 								<?php foreach($this->access['groups'] as $gid => $groups) :?>
 									<?php foreach($groups['actions'] as $actions) :?>
-                                        <th class="tw-font-normal"><?= JText::_('COM_EMUNDUS_ACCESS_CREATE')?></th>
-                                        <th class="tw-font-normal"><?= JText::_('COM_EMUNDUS_ACCESS_RETRIEVE')?></th>
-                                        <th class="tw-font-normal"><?= JText::_('COM_EMUNDUS_ACCESS_UPDATE')?></th>
-                                        <th class="tw-font-normal"><?= JText::_('COM_EMUNDUS_ACTIONS_DELETE')?></th>
+                                        <th class="tw-font-normal"><?= Text::_('COM_EMUNDUS_ACCESS_CREATE')?></th>
+                                        <th class="tw-font-normal"><?= Text::_('COM_EMUNDUS_ACCESS_RETRIEVE')?></th>
+                                        <th class="tw-font-normal"><?= Text::_('COM_EMUNDUS_ACCESS_UPDATE')?></th>
+                                        <th class="tw-font-normal"><?= Text::_('COM_EMUNDUS_ACTIONS_DELETE')?></th>
 									<?php endforeach;?>
 									<?php break; endforeach;?>
                             </tr>
@@ -82,23 +86,23 @@
                                 <tr>
 									<?php
 									$cruds = ['c', 'r', 'u', 'd'];
-									foreach($this->defaultActions as $def_action_id => $default_action) {
+                                    foreach($this->defaultActions as $def_action_id => $default_action) {
 										if ($default_action['status'] == 1) {
 											foreach($cruds as $crud) {
 												$td = '';
 												if ($default_action[$crud] == 1) {
-													if ($this->canUpdate) {
+													if ($this->canUpdateAccess) {
 														$td .= '<td class="can-update" id="' . $gid . '-' . $def_action_id . '-' . $crud . '" state="' . $groups['actions'][$def_action_id][$crud] . '">';
 													} else {
 														$td .= '<td id="' . $gid . '-' . $def_action_id . '-' . $crud . '" state="' . $groups['actions'][$def_action_id][$crud] . '">';
 													}
 
 													if ($groups['actions'][$def_action_id][$crud] > 0) {
-														$td .= '<span class="material-icons-outlined em-green-500-color" title="' . JText::_('COM_EMUNDUS_ACTIONS_ACTIVE') . '">check_box</span>';
+														$td .= '<span class="material-symbols-outlined em-green-500-color" title="' . Text::_('COM_EMUNDUS_ACTIONS_ACTIVE') . '">check_box</span>';
 													} else if ($groups['actions'][$def_action_id][$crud] < 0) {
-														$td .= '<span class="material-icons-outlined em-red-500-color" title="' . JText::_('BLOCKED') . '">block</span>';
+														$td .= '<span class="material-symbols-outlined em-red-600-color" title="' . Text::_('BLOCKED') . '">block</span>';
 													} else {
-														$td .= '<span class="material-icons-outlined" title="' . JText::_('UNDEFINED') . '">check_box_outline_blank</span>';
+														$td .= '<span class="material-symbols-outlined" title="' . Text::_('UNDEFINED') . '">check_box_outline_blank</span>';
 													}
 													$td .= '</td>';
 
@@ -131,7 +135,7 @@
                     <th></th>
                 </tr>
                 <tr>
-                    <th><?= JText::_('COM_EMUNDUS_ACCESS_USER')?></th>
+                    <th><?= Text::_('COM_EMUNDUS_ACCESS_USER')?></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -141,7 +145,7 @@
                             <span><?= ucfirst($groups['uname']) ?></span>
 							<?php if(EmundusHelperAccess::asAccessAction(11, 'd', $this->_user->id, $this->fnum)):?>
                                 <a class="em-flex-row em-del-access" href = "/index.php?option=com_emundus&controller=application&task=deleteaccess&fnum=<?= $this->fnum ?>&id=<?= $gid ?>&type=users">
-                                    <span class="material-icons-outlined">close</span>
+                                    <span class="material-symbols-outlined">close</span>
                                 </a>
 							<?php endif;?>
                         </td>
@@ -165,10 +169,10 @@
                 <tr>
 					<?php foreach($this->access['users'] as $gid => $groups):?>
 						<?php foreach($groups['actions'] as $actions):?>
-                            <th class="tw-font-normal"><?= JText::_('COM_EMUNDUS_ACCESS_CREATE')?></th>
-                            <th class="tw-font-normal"><?= JText::_('COM_EMUNDUS_ACCESS_RETRIEVE')?></th>
-                            <th class="tw-font-normal"><?= JText::_('COM_EMUNDUS_ACCESS_UPDATE')?></th>
-                            <th class="tw-font-normal"><?= JText::_('COM_EMUNDUS_ACTIONS_DELETE')?></th>
+                            <th class="tw-font-normal"><?= Text::_('COM_EMUNDUS_ACCESS_CREATE')?></th>
+                            <th class="tw-font-normal"><?= Text::_('COM_EMUNDUS_ACCESS_RETRIEVE')?></th>
+                            <th class="tw-font-normal"><?= Text::_('COM_EMUNDUS_ACCESS_UPDATE')?></th>
+                            <th class="tw-font-normal"><?= Text::_('COM_EMUNDUS_ACTIONS_DELETE')?></th>
 						<?php endforeach;?>
 
 						<?php break; endforeach;?>
@@ -184,18 +188,18 @@
 								$td = '';
 								if ($default_action['status'] == 1) {
 									if ($default_action[$crud] == 1) {
-										if ($this->canUpdate) {
+										if ($this->canUpdateAccess) {
 											$td .= '<td class="can-update" id="' . $gid . '-' . $def_action_id . '-' . $crud . '" state="' . $groups['actions'][$def_action_id][$crud] . '">';
 										} else {
 											$td .= '<td id="' . $gid . '-' . $def_action_id . '-' . $crud . '" state="' . $groups['actions'][$def_action_id][$crud] . '">';
 										}
 
 										if ($groups['actions'][$def_action_id][$crud] > 0) {
-											$td .= '<span class="material-icons-outlined em-green-500-color" title="' . JText::_('COM_EMUNDUS_ACTIONS_ACTIVE') . '">check_box</span>';
+											$td .= '<span class="material-symbols-outlined em-green-600-color" title="' . Text::_('COM_EMUNDUS_ACTIONS_ACTIVE') . '">check_box</span>';
 										} else if ($groups['actions'][$def_action_id][$crud] < 0) {
-											$td .= '<span class="material-icons-outlined em-red-500-color" title="' . JText::_('BLOCKED') . '">block</span>';
+											$td .= '<span class="material-symbols-outlined em-red-600-color" title="' . Text::_('BLOCKED') . '">block</span>';
 										} else {
-											$td .= '<span class="material-icons-outlined" title="' . JText::_('UNDEFINED') . '">check_box_outline_blank</span>';
+											$td .= '<span class="material-symbols-outlined" title="' . Text::_('UNDEFINED') . '">check_box_outline_blank</span>';
 										}
 										$td .= '</td>';
 
@@ -219,10 +223,11 @@
 <script type="text/javascript">
     var fnum = "<?= $this->fnum?>";
     const iconArray = [
-        {icon: "block", class: "em-red-500-color"},
+        {icon: "block", class: "em-red-600-color"},
         {icon: "check_box_outline_blank", class: ""},
         {icon: "check_box", class: "em-green-500-color"},
     ];
+
     $(document).off('click', '.table-right td.can-update');
     $(document).on('click', '.table-right td.can-update', function(e)
     {
@@ -261,9 +266,9 @@
                     const element = document.getElementById(accessId)
                     const span = element.querySelector('span');
 
-                    // remove all classes that are not material-icons-outlined
+                    // remove all classes that are not material-symbols-outlined
                     span.classList.forEach((className) => {
-                        if (className !== 'material-icons-outlined') {
+                        if (className !== 'material-symbols-outlined') {
                             span.classList.remove(className);
                         }
                     });
@@ -306,6 +311,7 @@
         }
     });
 
+
     $(document).off('click', '.em-del-access');
     $(document).on('click', '.em-del-access', function(e)
     {
@@ -313,7 +319,7 @@
         if(e.handle !== true)
         {
             e.handle = true;
-            let r = confirm("<?= JText::_("COM_EMUNDUS_ACCESS_ARE_YOU_SURE_YOU_WANT_TO_REMOVE_THIS_ACCESS")?>");
+            let r = confirm("<?= Text::_("COM_EMUNDUS_ACCESS_ARE_YOU_SURE_YOU_WANT_TO_REMOVE_THIS_ACCESS")?>");
 
             if(r) {
                 $.ajax({
@@ -355,9 +361,31 @@
 </script>
 
 <style>
+
+    a.em-del-access:hover, a.em-del-access:focus {
+        text-decoration: none;
+    }
+
+    a.em-del-access:hover span, a.em-del-access:focus span {
+        color: var(--red-700);
+    }
+
+    a.em-del-access span {
+        color: var(--red-500);
+    }
+
+    #em-appli-block div.em-w-100 {
+        flex-wrap: nowrap;
+    }
+
     #groups-access-table, #users-access-table {
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
+        margin-bottom: 0;
+    }
+
+    .em-container-share-table-left {
+        width: fit-content;
     }
 
     .table-left table {

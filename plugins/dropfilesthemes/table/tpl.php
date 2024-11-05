@@ -12,18 +12,16 @@
  * @license   GNU General Public License version 2 or later; http://www.gnu.org/licenses/gpl-2.0.html
  */
 
-
 //-- No direct access
 defined('_JEXEC') || die('=;)');
 DropfilesFilesHelper::includeJSHelper();
 $dropfileslightbox = ((int) $this->componentParams->get('usegoogleviewer', 1) === 1) ? 'dropfileslightbox' : '';
 $target            = ((int) $this->componentParams->get('usegoogleviewer', 1) === 2) ? 'target="_blank"' : '';
-
-$showdownloadcate = 0;
+$showFolderTree    = intval(DropfilesBase::loadValue($this->params, 'table_showfoldertree', 0)) === 1 ? true : false;
+$showdownloadcate  = 0;
 if ($this->viewfileanddowload && (int) DropfilesBase::loadValue($this->params, 'table_showdownload', 1)) {
     $showdownloadcate = (int) $this->componentParams->get('download_category', 0)  ;
 }
-
 ?>
 <?php if ((int) DropfilesBase::loadValue($this->params, 'table_showsubcategories', 1) || (int) DropfilesBase::loadValue($this->params, 'table_showcategorytitle', 1)) : ?>
     <script type="text/x-handlebars-template" id="dropfiles-template-table-categories-<?php echo $this->category->id; ?>">
@@ -83,7 +81,7 @@ if ($this->viewfileanddowload && (int) DropfilesBase::loadValue($this->params, '
                 {{#if custom_icon}}
                 <div class="custom-icon {{ext}}"><img src="{{custom_icon_thumb}}" alt=""></div>
                 {{else}}
-                <span class="ext {{ext}}"></span>
+                <span class="ext {{ext}} ext-{{ext}}"><span>{{ext}}</span></span>
                 {{/if}}
                 <a class="title" href='{{link}}'>{{title}}</a>
             </td>
@@ -171,7 +169,7 @@ if ($this->viewfileanddowload && (int) DropfilesBase::loadValue($this->params, '
 
 <?php if (!empty($this->files) || !empty($this->categories)) : ?>
     <div class="dropfiles-content dropfiles-content-table dropfiles-content-multi dropfiles-files
-        <?php echo $this->dropfilesclass; ?>"
+        <?php echo $this->dropfilesclass; ?> <?php echo $showFolderTree ? 'dropfiles-content-folder-tree' : ''; ?>"
          data-category="<?php echo $this->category->id; ?>" data-current="<?php echo $this->category->id; ?>" data-category-name="<?php echo $this->category->title; ?>">
         <input type="hidden" id="current_category" value="<?php echo $this->category->id; ?>"/>
         <input type="hidden" id="current_category_slug" value="<?php echo $this->category->alias; ?>"/>
@@ -318,7 +316,7 @@ if ($this->viewfileanddowload && (int) DropfilesBase::loadValue($this->params, '
                                                         <img src="<?php echo $file->custom_icon_thumb; ?>" alt="">
                                                     </div>
                                                 <?php else : ?>
-                                                    <span class="ext <?php echo $file->ext; ?>"></span>
+                                                    <span class="ext <?php echo $file->ext; ?> <?php echo 'ext-' . $file->ext; ?>"><span><?php echo $file->ext; ?></span></span>
                                                 <?php endif; ?>
                                             </a>
                                             <a class="title" href="<?php echo $file->link; ?>"><?php echo $file->title; ?></a>
@@ -402,5 +400,53 @@ if ($this->viewfileanddowload && (int) DropfilesBase::loadValue($this->params, '
                 </table>
             </div>
         </div>
+    </div>
+<?php else : ?>
+    <div class="dropfiles-content dropfiles-content-table dropfiles-content-multi dropfiles-files
+        <?php echo $this->dropfilesclass; ?> <?php echo $showFolderTree ? 'dropfiles-content-folder-tree' : ''; ?>"
+         data-category="<?php echo $this->category->id; ?>" data-current="<?php echo $this->category->id; ?>" data-category-name="<?php echo $this->category->title; ?>">
+        <input type="hidden" id="current_category" value="<?php echo $this->category->id; ?>"/>
+        <input type="hidden" id="current_category_slug" value="<?php echo $this->category->alias; ?>"/>
+        <?php if ((int) DropfilesBase::loadValue($this->params, 'table_showbreadcrumb', 1) === 1) : ?>
+            <ul class="breadcrumbs dropfiles-breadcrumbs-table">
+                <li class="active">
+                    <?php echo $this->category->title; ?>
+                </li>
+                <?php if ($this->user_id) : ?>
+                    <a data-id="" data-catid="" data-file-type="" class="openlink-manage-files " target="_blank"
+                       href="<?php echo $this->urlmanage ?>" data-urlmanage="<?php echo $this->urlmanage ?>">
+                        <span class="btn-title"><?php echo JText::_('COM_DROPFILES_MANAGE_FILES'); ?></span>
+                        <i class="zmdi zmdi-edit dropfiles-preview"></i>
+                    </a>
+                <?php endif; ?>
+                <?php if ($showdownloadcate === 1 && isset($this->category->linkdownload_cat) && !empty($this->files)) : ?>
+                    <a data-catid="" class="table-download-category download-all" href="<?php echo $this->category->linkdownload_cat; ?>"><span class="btn-title"><?php echo JText::_('COM_DROPFILES_DOWNLOAD_ALL'); ?></span><i class="zmdi zmdi-check-all"></i></a>
+                <?php endif;?>
+            </ul>
+        <?php else : ?>
+            <?php if ($this->user_id) : ?>
+                <div class="dropfiles-manage-files">
+                    <a data-id="" data-catid="" data-file-type="" class="openlink-manage-files " target="_blank"
+                       href="<?php echo $this->urlmanage ?>" data-urlmanage="<?php echo $this->urlmanage ?>">
+                        <span class="btn-title"><?php echo JText::_('COM_DROPFILES_MANAGE_FILES'); ?></span>
+                        <i class="zmdi zmdi-edit dropfiles-preview"></i>
+                    </a>
+                </div>
+            <?php endif; ?>
+            <?php if ($showdownloadcate === 1 && isset($this->category->linkdownload_cat) && !empty($this->files)) : ?>
+                <a data-catid="" class="table-download-category download-all" href="<?php echo $this->category->linkdownload_cat; ?>"><span class="btn-title"><?php echo JText::_('COM_DROPFILES_DOWNLOAD_ALL'); ?></span><i class="zmdi zmdi-check-all"></i></a>
+            <?php endif;?>
+        <?php endif; ?>
+        <?php
+        // Show empty category message
+        if (empty($this->files) && empty($this->categories)) {
+            if ((int) $this->componentParams->get('show_empty_folder_message', 0) === 1) {
+                $msg = JText::_('COM_DROPFILES_CONFIG_EMPTY_FOLDER_MESSAGE');
+                $msg = str_replace('{category_title}', $this->category->title, $msg);
+                echo '<p class="category_empty" style="font-size: 16px; margin-top: 15px;">'. $msg .'</p>';
+                return;
+            }
+        }
+        ?>
     </div>
 <?php endif; ?>

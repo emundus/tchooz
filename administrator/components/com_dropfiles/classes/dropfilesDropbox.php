@@ -47,7 +47,7 @@ class DropfilesDropbox
      */
     public function __construct()
     {
-        require_once 'DropboxV2/packages/autoload.php';
+        require_once 'vendor/autoload.php';
         require_once 'Dropbox/autoload.php';
 
         $this->loadParams();
@@ -81,10 +81,10 @@ class DropfilesDropbox
         $params = JComponentHelper::getParams('com_dropfiles');
         $this->params = new stdClass();
 
-        $this->params->dropboxKey = trim($params->get('dropbox_key'));
-        $this->params->dropboxSecret = trim($params->get('dropbox_secret'));
-        $this->params->dropboxAccessToken = trim($params->get('dropboxAccessToken'));
-        $this->params->dropboxState = trim($params->get('dropboxState'));
+        $this->params->dropboxKey = trim($params->get('dropbox_key', ''));
+        $this->params->dropboxSecret = trim($params->get('dropbox_secret', ''));
+        $this->params->dropboxAccessToken = trim($params->get('dropboxAccessToken', ''));
+        $this->params->dropboxState = trim($params->get('dropboxState', ''));
     }
 
 
@@ -893,6 +893,40 @@ class DropfilesDropbox
             $this->lastError = $e->getMessage();
 
             return false;
+        }
+    }
+
+    /**
+     * Get Dropbox parent folder id
+     *
+     * @param string $folderPath Folder path
+     *
+     * @throws Exception Fire if errors
+     *
+     * @return string
+     */
+    public function getDropboxParentFolderId($folderPath)
+    {
+        if (empty($folderPath)) {
+            return null;
+        }
+
+        // Initialize client
+        $client = $this->getAccount();
+
+        try {
+            $parentFolderPath = substr($folderPath, 0, strrpos($folderPath, '/'));
+
+            if (!empty($parentFolderPath)) {
+                // Get metadata for the specified folder
+                $parentFolderMetadata = $client->getMetadata($parentFolderPath);
+                return isset($parentFolderMetadata['id']) ? $parentFolderMetadata['id'] : null;
+            } else {
+                return null;
+            }
+        } catch (Exception $e) {
+            // Handle any errors
+            return null;
         }
     }
 }

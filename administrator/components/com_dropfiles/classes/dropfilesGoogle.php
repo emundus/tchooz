@@ -49,7 +49,7 @@ class DropfilesGoogle
     public function __construct()
     {
         set_include_path(__DIR__ . PATH_SEPARATOR . get_include_path());
-        require_once 'GoogleV3/packages/autoload.php';
+        require_once 'vendor/autoload.php';
 
         $this->loadParams();
     }

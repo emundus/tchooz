@@ -134,6 +134,9 @@ class FalangRouter extends Router
 
 	/**
 	 * Method to get the segment(s) for an article
+     *
+     * @update 5.9 fix bug 2 articles with the same alias in 2 categories
+     *             path on second article was not found => 404
 	 *
 	 * @param   string  $segment  Segment of the article to retrieve the ID for
 	 * @param   array   $query    The request that is parsed right now
@@ -208,7 +211,7 @@ class FalangRouter extends Router
                         $db->setQuery($dbquery);
                         $db->execute();
                         $num_rows = $db->getNumRows();
-                        if (isset($num_rows)) {
+                        if ($num_rows != 0){
                             return (int) $db->loadResult();
                         }
                     }

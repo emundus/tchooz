@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    5.0.3
+ * @version    5.1.0
  * @author     hikashop.com
  * @copyright  (C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -736,9 +736,6 @@ div.hikashop_quantity_form.hika_j4  input.hikashop_product_quantity_field,
 }
 .hika_j3 div.hikashop_product_quantity_div.hikashop_product_quantity_change_div_leftright {
     margin-bottom: 5px;
-}
-.hikashop_product_quantity_change_div_leftright span.add-on a.hikashop_product_quantity_field_change {
-	border-radius: 3px 0px 0px 3px;
 }
 
 

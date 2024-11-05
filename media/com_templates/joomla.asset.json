@@ -15,7 +15,7 @@
       "attributes": {
         "type": "module"
       },
-      "version": "8402e3"
+      "version": "0480c2"
     },
     {
       "name": "com_templates.admin-template-toggle-switch",
@@ -31,12 +31,6 @@
     },
     {
       "name": "com_templates.admin-templates",
-      "type": "style",
-      "uri": "com_templates/admin-templates-default.min.css",
-      "version": "3f544a"
-    },
-    {
-      "name": "com_templates.admin-templates",
       "type": "script",
       "uri": "com_templates/admin-templates-default.min.js",
       "dependencies": [
@@ -45,7 +39,13 @@
       "attributes": {
         "type": "module"
       },
-      "version": "060b32"
+      "version": "f515a4"
+    },
+    {
+      "name": "com_templates.admin-templates",
+      "type": "style",
+      "uri": "com_templates/admin-templates-default.min.css",
+      "version": "09765e"
     }
   ]
 }

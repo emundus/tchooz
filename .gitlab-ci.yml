@@ -1,7 +1,3 @@
-default:
-  tags:
-    - k8s
-
 variables:
   GIT_SUBMODULE_STRATEGY: normal
   DOCKER_DRIVER: overlay2
@@ -10,7 +6,10 @@ variables:
   DOCKER_TLS_CERTDIR: ""
 
 stages:
+  - prepare
+  - build
   - test
+  - release
   - deploy
 
 include:
@@ -19,8 +18,31 @@ include:
   file: '.php_security_checker.yml'
 - project: 'emundus/devops/ci-cd-templates'
   ref: main
-  file: '.deployer.yml'
+  file: '.deployer_tchooz_v2.yml'
+- project: 'emundus/devops/ci-cd-templates'
+  ref: main
+  file: '.release.yml'
 - template: Security/Secret-Detection.gitlab-ci.yml
+
+check-tchooz-version-job:
+  stage: prepare
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH'
+      when: always
+    - when: never
+  image: enix/ci-toolbox:1.23
+  script:
+    - .docker/scripts/file-search-in-gitlab-merge-request.sh "$CI_SERVER_URL" "$GITLAB_TOKEN" "$CI_PROJECT_ID" "$CI_MERGE_REQUEST_IID" "administrator/components/com_emundus/emundus.xml"
+
+check-commit-prefixes-job:
+  stage: prepare
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH'
+      when: always
+    - when: never
+  image: enix/ci-toolbox:1.23
+  script:
+    - .docker/scripts/commit-prefix-compliance-check.sh "$CI_SERVER_URL" "$GITLAB_TOKEN" "$CI_PROJECT_ID" "$CI_MERGE_REQUEST_IID"
 
 php_security_checker:
   variables:
@@ -32,30 +54,83 @@ php_security_checker_gantry5:
   variables:
     COMPOSER_PATH: "./libraries/gantry5/composer.lock"
 
-deployer:
-  stage: test
-  environment: 
-    name: testing
-    deployment_tier: testing
-  variables:
-    DEPLOY_OPTIONS: "id=WcEF4kAHVHGMpbXhpM8Fx3rlkWQ4VOFP -o branch=$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME -o COORD_USERNAME=$PLAYWRIGHT_RELEASE_COORD_USERNAME -o COORD_PASSWORD=$PLAYWRIGHT_RELEASE_COORD_PASSWORD -o SYSADMIN_USERNAME=$PLAYWRIGHT_RELEASE_SYSADMIN_USERNAME -o SYSADMIN_PASSWORD=$PLAYWRIGHT_RELEASE_SYSADMIN_PASSWORD -vv"
-    DEPLOY_FILE: '-f tchooz-with-reset.php'
+build-app-to-test-job:
+  stage: build
+  services:
+    - name: docker:24.0.5-dind
+  image: docker:24.0.5
+  before_script:
+    - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
+  script:
+    - docker pull emundus/tchooz-test-app:latest || true
+    - docker build --cache-from emundus/tchooz-test-app:latest --compress -t emundus/tchooz-test-app:latest --build-arg=BUILDKIT_INLINE_CACHE=1 --build-arg test_env=1 .
+    - docker push emundus/tchooz-test-app:latest
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: manual
+      changes:
+        - Dockerfile
+        - .docker/scripts/entrypoint-build-ci-env.sh
 
-deployer_test_playwright_in_schedule:
-  stage: test
-  environment: 
-    name: testing
-    deployment_tier: testing
-  extends:
-    - deployer
-  variables:
-    DEPLOY_OPTIONS: "id=WcEF4kAHVHGMpbXhpM8Fx3rlkWQ4VOFP -o branch=$CI_COMMIT_BRANCH -o COORD_USERNAME=$PLAYWRIGHT_RELEASE_COORD_USERNAME -o COORD_PASSWORD=$PLAYWRIGHT_RELEASE_COORD_PASSWORD -o SYSADMIN_USERNAME=$PLAYWRIGHT_RELEASE_SYSADMIN_USERNAME -o SYSADMIN_PASSWORD=$PLAYWRIGHT_RELEASE_SYSADMIN_PASSWORD -vv"
-    DEPLOY_FILE: '-f tchooz-with-reset.php'
+build-db-to-test-job:
+  stage: build
+  services:
+    - name: docker:24.0.5-dind
+  image: docker:24.0.5
+  before_script:
+    - echo $DOCKER_REGISTRY_TOKEN | docker login -u $DOCKER_REGISTRY_USER --password-stdin
+  script:
+    - docker pull emundus/tchooz-test-db:latest || true
+    - docker build --cache-from emundus/tchooz-test-db:latest --compress -f Dockerfile.db -t emundus/tchooz-test-db:latest --build-arg=BUILDKIT_INLINE_CACHE=1 .
+    - docker push emundus/tchooz-test-db:latest
   rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - Dockerfile.db
+        - .docker/mysql/*
+        - .docker/installation/databases/*
+
+phpunit-job:
+  stage: test
+  image: emundus/tchooz-test-app:latest
+  coverage: '/^\s*Lines:\s*\d+.\d+\%/'
+  services:
+    - name: emundus/tchooz-test-db:latest
+      alias: database
+    - redis:7
+  before_script:
+    - php -v
+    - libraries/emundus/composer.phar install --working-dir=tests/
+    - /entrypoint.sh
+    - cat configuration.php
+    - apache2-foreground &
+  script:
+    - tests/vendor/phpunit/phpunit/phpunit -c tests/phpunit.xml --coverage-text --colors=never
+  only:
+    - merge_request
+
+release-job:
+  variables:
+    IMAGE_TAG: "latest"
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - administrator/components/com_emundus/emundus.xml
+      when: on_success
+    - when: never
+
+sync-documentation-job:
+  stage: release
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - administrator/components/com_emundus/emundus.xml
+      when: on_success
+    - when: never
+  image: emundus/sync-documentation:latest
+  script:
+    - /go/generate-release-note.sh "$CI_SERVER_URL" "$CI_PROJECT_ID" "$GITLAB_TOKEN" "$ATLASSIAN_URL" "$ATLASSIAN_USER" "$ATLASSIAN_TOKEN" "$ATLASSIAN_SPACE" "$ATLASSIAN_PARENT_PAGE" "$ATLASSIAN_PAGE_TITLE"
+  needs:
+    - release-job
 
 test_playwright:
   image: mcr.microsoft.com/playwright:v1.43.0-jammy
@@ -88,16 +163,3 @@ test_playwright:
       optional: true
     - job: deployer_test_playwright_in_schedule
       optional: true
-
-deployer_release_candidate:
-  stage: deploy
-  environment: 
-    name: release/auto
-    deployment_tier: testing
-  extends:
-    - deployer
-  variables:
-    DEPLOY_OPTIONS: 'env=tchooz-v2 -vv'
-    DEPLOY_FILE: '-f tchooz.php'
-  rules:
-    - if: $CI_COMMIT_BRANCH =~ "/^release\/.*/"

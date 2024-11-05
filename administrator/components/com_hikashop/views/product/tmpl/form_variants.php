@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -95,11 +95,18 @@ if(!hikashop_acl('product/edit/variants') || empty($this->product->product_id))
 		if($this->config->get('floating_tax_prices')){
 			$field = 'price_value_with_tax';
 		}
+
+		if(HIKASHOP_J50)
+			$variant_default .= ' badge';
+
 ?>			<td style="cursor:pointer" onclick="return window.productMgr.editVariant(<?php echo $variant->product_id; ?>);"><?php echo $this->currencyClass->displayPrices(@$variant->prices, $field);?></td>
 			<td style="cursor:pointer" onclick="return window.productMgr.editVariant(<?php echo $variant->product_id; ?>);"><?php echo (($variant->product_quantity == -1) ? JText::_('UNLIMITED') : $variant->product_quantity); ?></td>
 			<td style="text-align:center" href="#" onclick="return window.productMgr.publishVariant(event, <?php echo $variant->product_id; ?>);"><?php echo $this->toggleClass->display('product_published', $variant->product_published); ?></td>
 			<td style="text-align:center">
-				<div class="toggle_loading"><a class="<?php echo $variant_default; ?>" href="#" onclick="return window.productMgr.setDefaultVariant(event, <?php echo $variant->product_id; ?>);"></a></div>
+				<div class="toggle_loading">
+					<a class="<?php echo $variant_default; ?>" href="#" onclick="return window.productMgr.setDefaultVariant(event, <?php echo $variant->product_id; ?>);">
+					</a>
+				</div>
 			</td>
 			<td><?php echo $variant->product_id; ?></td>
 		</tr>

@@ -1,17 +1,46 @@
 requirejs(['fab/fabrik'], function () {
     var removedFabrikFormSkeleton = false;
     var formDataChanged = false;
+    var js_rules = [];
+    var table_name = '';
+    var form_loaded = false;
+    var elt_to_not_clear = ['panel','calc'];
+
+    var operators = {
+        '=': function(a, b, plugin) {
+                if(!Array.isArray(a)) {
+                    if(typeof a === 'string' && typeof b === 'string') {
+                        a = a.toLowerCase();
+                        b = b.toLowerCase();
+                    }
+                    return a == b;
+                } else {
+                    return a.includes(b);
+                }
+            },
+        '!=': function(a, b, plugin) { if(!Array.isArray(a)) { return a != b; } else { return !a.includes(b); } },
+        // ...
+    };
 
     Fabrik.addEvent('fabrik.form.loaded', function (form) {
-        if (!removedFabrikFormSkeleton) {
-            removeFabrikFormSkeleton();
-        }
+        /*setCookie('fabrik_form_session', 'true', 15);
+
+        setInterval(() => {
+            let active_form_session = getCookie('fabrik_form_session');
+            if(!active_form_session) {
+                setTimeout(() => {
+                    window.location.href = window.location.origin + '/';
+                }, 2000);
+            }
+        }, 10000);*/
+
+        table_name = form.options.primaryKey.split('___')[0];
 
         manageRepeatGroup(form);
 
-        var form = document.getElementsByClassName('fabrikForm')[0];
+        var formBlock = document.getElementsByClassName('fabrikForm')[0];
 
-        form.addEventListener('input', function () {
+        formBlock.addEventListener('input', function () {
             if(!formDataChanged) {
                 formDataChanged = true;
             }
@@ -35,9 +64,9 @@ requirejs(['fab/fabrik'], function () {
 
                     Swal.fire({
                         title: Joomla.JText._('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TITLE'),
-                        text: Joomla.JText._('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TEXT'),
+                        html: Joomla.JText._('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TEXT'),
                         reverseButtons: true,
-                        showCloseButton: true,
+                        showCloseButton: false,
                         showCancelButton: true,
                         confirmButtonText: Joomla.JText._('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CONFIRM'),
                         cancelButtonText: Joomla.JText._('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CANCEL'),
@@ -49,6 +78,8 @@ requirejs(['fab/fabrik'], function () {
                     }).then((result) => {
                         if(result.value)
                         {
+                            clearFormSession(form.id);
+
                             if(e.srcElement.classList.contains('goback-btn')) {
                                 window.history.back();
                             }
@@ -77,6 +108,7 @@ requirejs(['fab/fabrik'], function () {
                         }
                     });
                 } else {
+                    clearFormSession(form.id);
                     if(e.srcElement.classList.contains('goback-btn')) {
                         if(window.history.length > 1) {
                             window.history.back();
@@ -91,10 +123,61 @@ requirejs(['fab/fabrik'], function () {
 
     Fabrik.addEvent('fabrik.form.group.duplicate.end', function(form, event) {
         manageRepeatGroup(form);
+
+        setTimeout(() => {
+            let last_index_added = form.addedGroups.length;
+            form.elements.forEach(function (element) {
+                if(element.getRepeatNum() == last_index_added) {
+                    manageRules(form, element, true);
+
+                    var $el = jQuery(element.element);
+                    $el.on(element.getChangeEvent(), function (e) {
+                        manageRules(form, element);
+                    });
+                }
+            });
+        },200);
     });
 
     Fabrik.addEvent('fabrik.form.group.delete.end', function(form, event) {
         manageRepeatGroup(form);
+    });
+
+    Fabrik.addEvent('fabrik.form.elements.added', function (form, event) {
+        let formHeight = document.getElementById(form.getBlock()).offsetHeight;
+        if(!form_loaded) {
+            setTimeout(() => {
+                fetch('/index.php?option=com_emundus&controller=form&task=getjsconditions&form_id=' + form.id).then(response => response.json()).then(data => {
+                    if (data.status) {
+                        js_rules = data.data.conditions;
+
+                        form.elements.forEach(function (element) {
+                            manageRules(form, element, false);
+
+                            var $el = jQuery(element.element);
+                            $el.on(element.getChangeEvent(), function (e) {
+                                manageRules(form, element);
+                            });
+                        });
+                    }
+
+                    if (!removedFabrikFormSkeleton) {
+                        removeFabrikFormSkeleton();
+                    }
+
+                    form_loaded = true;
+                });
+            }, 500);
+
+            form.elements.forEach(function (element) {
+                if(element.plugin === 'fabrikdate') {
+                    var elementOffset = element.element.parentElement.parentElement.offsetTop;
+                    if(formHeight - elementOffset < 400) {
+                        element.element.getElementsByClassName('js-calendar')[0].style.bottom = 'var(--em-form-height)';
+                    }
+                }
+            });
+        }
     });
 
     window.setInterval(function() {
@@ -106,8 +189,8 @@ requirejs(['fab/fabrik'], function () {
     function removeFabrikFormSkeleton() {
         let header = document.querySelector('.page-header');
         if(header) {
-            if(header.querySelector('h2')) {
-                document.querySelector('.page-header h2').style.opacity = 1;
+            if(header.querySelector('h1')) {
+                document.querySelector('.page-header h1').style.opacity = 1;
             }
             header.classList.remove('skeleton');
         }
@@ -195,5 +278,372 @@ requirejs(['fab/fabrik'], function () {
                 }
             });
         },100)
+    }
+
+    function manageRules(form, element, clear = true) {
+        let elt_name = element.origId ? element.origId.split('___')[1] : element.baseElementId.split('___')[1];
+
+        let elt_rules = [];
+        js_rules.forEach((js_rule) => {
+            js_rule.conditions.forEach((condition) => {
+                if (condition.field == elt_name) {
+                    elt_rules.push(js_rule);
+                }
+            });
+        });
+
+        if (elt_rules.length > 0) {
+            elt_rules.forEach((rule) => {
+                let condition_state = [];
+
+                rule.conditions.forEach((condition) => {
+                    if(condition.group && !condition_state[condition.group]) {
+                        condition_state[condition.group] = {
+                            'type': condition.group_type,
+                            'states': []
+                        };
+                    }
+
+                    form.elements.forEach((elt) => {
+                        let name = elt.origId ? elt.origId.split('___')[1] : elt.baseElementId.split('___')[1];
+
+                        if (name == condition.field && elt.getRepeatNum() == element.getRepeatNum()) {
+                            if(operators[condition.state](elt.get('value'), condition.values, elt.plugin)) {
+                                if(condition.group) {
+                                    condition_state[condition.group].states.push(true);
+                                } else {
+                                    condition_state.push(true);
+                                }
+                            } else {
+                                if(condition.group) {
+                                    condition_state[condition.group].states.push(false);
+                                } else {
+                                    condition_state.push(false);
+                                }
+                            }
+                        }
+                    });
+                });
+
+                if (condition_state.length > 0 && check_condition(condition_state, rule.group)) {
+                    rule.actions.forEach((action) => {
+
+                        let fields = action.fields.split(',');
+
+                        if(action.action == 'define_repeat_group') {
+                            let params = JSON.parse(action.params);
+                            form.options.maxRepeat[action.fields] = params[0].maxRepeat;
+                            form.options.minRepeat[action.fields] = params[0].minRepeat;
+                            var repeat_counter = document.getElementById('fabrik_repeat_group_' + action.fields + '_counter');
+                            var repeat_rows = repeat_counter.value.toInt();
+
+                            if (params[0].maxRepeat > 0 && repeat_rows > params[0].maxRepeat) {
+                                var group = document.getElementById('group' + action.fields);
+                                // Delete groups
+                                for (i = repeat_rows; i > params[0].maxRepeat; i--) {
+                                    var del_btn = jQuery(document.querySelector('#group' + action.fields + ' .deleteGroup')).last()[0];
+                                    subGroup = jQuery(group.getElements('.fabrikSubGroup')).last()[0];
+                                    if (typeOf(del_btn) !== 'null') {
+                                        var del_e = new Event.Mock(del_btn, 'click');
+                                        form.deleteGroup(del_e, group, subGroup);
+                                    }
+                                }
+                            }
+
+                            manageRepeatGroup(form);
+                        } else {
+                            form.elements.forEach((elt) => {
+                                let name = elt.origId ? elt.origId.split('___')[1] : elt.baseElementId.split('___')[1];
+                                let id = elt.baseElementId ? elt.baseElementId : elt.strElement;
+                                if (fields.includes(name) && ((element.options.inRepeatGroup && elt.getRepeatNum() == element.getRepeatNum()) || !element.options.inRepeatGroup)) {
+                                    if (['show', 'hide'].includes(action.action)) {
+                                        form.doElementFX('element_' + elt.strElement, action.action, elt);
+
+                                        if (action.action == 'hide') {
+                                            if (clear && !elt_to_not_clear.includes(elt.plugin)) {
+                                                elt.clear();
+                                            }
+                                        }
+
+                                        let event = new Event(elt.getChangeEvent());
+                                        elt.element.dispatchEvent(event);
+                                    } else if (['show_options', 'hide_options'].includes(action.action)) {
+                                        switch (action.action) {
+                                            case 'show_options':
+                                                addOption(elt, action.params);
+                                                if(clear) {
+                                                    sortSelect(elt.element);
+                                                }
+                                                break;
+                                            case 'hide_options':
+                                                removeOption(elt, action.params);
+                                                break;
+                                        }
+
+                                        if(clear) {
+                                            let event = new Event(elt.getChangeEvent());
+                                            elt.element.dispatchEvent(event);
+                                        }
+                                    } else if (['set_optional', 'set_mandatory']) {
+                                        let required_icon = document.querySelector('label[for="' + id + '"] span.material-icons');
+                                        if (required_icon) {
+                                            if (action.action == 'set_optional') {
+                                                required_icon.style.display = 'none';
+                                            } else {
+                                                required_icon.style.display = 'inline-block';
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    let opposite_action = 'hide';
+
+                    rule.actions.forEach((action) => {
+
+                        if(action.action == 'define_repeat_group') {
+                            form.options.maxRepeat[action.fields] = 0;
+                            form.options.minRepeat[action.fields] = 1;
+                            manageRepeatGroup(form);
+                        } else {
+
+                            switch (action.action) {
+                                case 'show':
+                                    opposite_action = 'hide';
+                                    break;
+                                case 'hide':
+                                    opposite_action = 'show';
+                                    break;
+                                case 'show_options':
+                                    opposite_action = 'hide_options';
+                                    break;
+                                case 'hide_options':
+                                    opposite_action = 'show_options';
+                                    break;
+                                case 'set_optional':
+                                    opposite_action = 'set_mandatory';
+                                    break;
+                                case 'set_mandatory':
+                                    opposite_action = 'set_optional';
+                                    break;
+                            }
+
+                            let fields = action.fields.split(',');
+
+                            form.elements.forEach((elt) => {
+                                let name = elt.origId ? elt.origId.split('___')[1] : elt.baseElementId.split('___')[1];
+                                let id = elt.baseElementId ? elt.baseElementId : elt.strElement;
+                                if (fields.includes(name) && ((element.options.inRepeatGroup && elt.getRepeatNum() == element.getRepeatNum()) || !element.options.inRepeatGroup)) {
+                                    if (['show', 'hide'].includes(opposite_action)) {
+                                        form.doElementFX('element_' + elt.strElement, opposite_action, elt);
+
+                                        if (opposite_action == 'hide') {
+                                            if (clear && !elt_to_not_clear.includes(elt.plugin)) {
+                                                elt.clear();
+                                            }
+                                        }
+
+                                        let event = new Event(elt.getChangeEvent());
+                                        elt.element.dispatchEvent(event);
+                                    } else if (['show_options', 'hide_options'].includes(action.action)) {
+                                        switch (opposite_action) {
+                                            case 'show_options':
+                                                addOption(elt, action.params);
+                                                if(clear) {
+                                                    sortSelect(elt.element);
+                                                }
+                                                break;
+                                            case 'hide_options':
+                                                removeOption(elt, action.params);
+                                                break;
+                                        }
+
+                                        if(clear) {
+                                            let event = new Event(elt.getChangeEvent());
+                                            elt.element.dispatchEvent(event);
+                                        }
+                                    } else if (['set_optional', 'set_mandatory']) {
+                                        let required_icon = document.querySelector('label[for="' + id + '"] span.material-icons');
+                                        if (required_icon) {
+                                            if (opposite_action == 'set_optional') {
+                                                required_icon.style.display = 'none';
+                                            } else {
+                                                required_icon.style.display = 'inline-block';
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    function check_condition(condition_states, group) {
+        let is_group = false;
+        let grouped_conditions = [];
+
+        for(var i = 0; i < condition_states.length; i++) {
+            if(typeof condition_states[i] === 'object') {
+                is_group = true;
+                break;
+            }
+        }
+
+        if(is_group) {
+            for(var i = 0; i < condition_states.length; i++) {
+                if(condition_states[i] !== undefined && typeof condition_states[i] === 'object') {
+                    if(condition_states[i].type === 'AND') {
+                        if(condition_states[i].states.every(v => v === true)) {
+                            grouped_conditions.push(true);
+                        } else {
+                            grouped_conditions.push(false);
+                        }
+                    } else {
+                        if(condition_states[i].states.some(v => v === true)) {
+                            grouped_conditions.push(true);
+                        } else {
+                            grouped_conditions.push(false);
+                        }
+                    }
+                } else if (condition_states[i] !== undefined && typeof condition_states[i] === 'boolean') {
+                    grouped_conditions.push(condition_states[i]);
+                }
+            }
+        } else {
+            grouped_conditions = condition_states;
+        }
+
+        if(group === 'AND') {
+            return grouped_conditions.every(v => v === true);
+        } else {
+            return grouped_conditions.some(v => v === true);
+        }
+    }
+
+    function addOption(field,params) {
+        params = JSON.parse(params);
+        const options = field.element.options;
+
+        params.forEach((p) => {
+            // Check if option already exists
+            var exists = false;
+            [...options].map((o) => {
+                if(o.value == p.primary_key) {
+                    exists = true;
+                }
+            });
+            if (!exists) {
+                var option = document.createElement("option");
+                option.text = p.value;
+                option.value = p.primary_key;
+                field.element.add(option);
+            }
+        });
+    }
+
+    function removeOption(field,params) {
+        params = JSON.parse(params);
+        const options = field.element.options;
+        const values = params.map((param) => {
+            return param.primary_key.toString();
+        });
+
+        [...options].map((option, i) => {
+            if (values.includes(option.value)) {
+                field.element.remove(i);
+            }
+        });
+    }
+
+    function sortSelect(selElem) {
+        var tmpAry = new Array();
+        for (var i=0;i<selElem.options.length;i++) {
+            tmpAry[i] = new Array();
+            tmpAry[i][0] = selElem.options[i].text;
+            tmpAry[i][1] = selElem.options[i].value;
+        }
+        tmpAry.sort((a,b) => {
+            // Sort by value
+            return a[1].localeCompare(b[1]);
+        });
+        while (selElem.options.length > 0) {
+            selElem.options[0] = null;
+        }
+        for (var i=0;i<tmpAry.length;i++) {
+            var op = new Option(tmpAry[i][0], tmpAry[i][1]);
+            selElem.options[i] = op;
+        }
+        return;
+    }
+
+    function saveDatas(element, event) {
+        let name = element.baseElementId;
+        let value = element.get('value');
+
+        let formData = new FormData();
+        formData.append('element', name);
+        formData.append('value', value);
+        formData.append('form_id', element.form.id);
+
+        fetch('/index.php?option=com_emundus&controller=application&task=saveformsession', {
+            method: 'POST',
+            credentials: 'same-origin',
+            body: formData,
+        }).then((response) => {
+            return response.json();
+        }).then((data) => {
+            if (data.success) {
+                setCookie('fabrik_form_session', 'true', 15);
+            }
+        }).catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+
+    function clearFormSession(form_id) {
+        let formData = new FormData();
+        formData.append('form_id', form_id);
+
+        fetch('/index.php?option=com_emundus&controller=application&task=clearformsession', {
+            method: 'POST',
+            credentials: 'same-origin',
+            body: formData,
+        }).then((response) => {
+            return response.json();
+        }).then((data) => {
+            if (data.success) {
+                document.cookie = "fabrik_form_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            }
+        }).catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+
+    function setCookie(cname, cvalue, minutes) {
+        const d = new Date();
+        d.setTime(d.getTime() + (minutes*60*1000));
+        let expires = "expires="+ d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+
+    function getCookie(cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i <ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
     }
 });

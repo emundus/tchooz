@@ -28,25 +28,30 @@ class DropfilesModelOptions extends JModelList
     /**
      * Method to retrieve option value
      *
-     * @param string $name Option name
+     * @param string $name         Option name
+     * @param mixed  $defaultValue Default value
      *
      * @return string|boolean|void
      */
-    public function get_option($name) // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- GET data only
+    public function get_option($name, $defaultValue = false) // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- GET data only
     {
         if (!$name || $name === '') {
-            return false;
+            return $defaultValue;
         }
 
         $dbo = $this->getDbo();
-        $query = 'SELECT value FROM #__dropfiles_options WHERE name = ' . $dbo->quote($name);
+        $query = 'SELECT value FROM `#__dropfiles_options` WHERE name = ' . $dbo->quote($name);
         $dbo->setQuery($query);
 
         if (!$dbo->execute()) {
-            return false;
+            return $defaultValue;
         }
 
         $rs = $dbo->loadResult();
+
+        if (is_null($rs)) {
+            return $defaultValue;
+        }
 
         if ($rs === 'true') {
             $rs = true;
@@ -72,7 +77,7 @@ class DropfilesModelOptions extends JModelList
         }
 
         $dbo = $this->getDbo();
-        $has = $this->get_option($name);
+        $exists = $this->check_exist_option($name);
         $type = gettype($val);
 
         switch ($type) {
@@ -86,12 +91,14 @@ class DropfilesModelOptions extends JModelList
                     $val = 'false';
                 }
                 break;
+            default:
+                break;
         }
 
-        if (!is_null($has)) {
-            $query = 'UPDATE #__dropfiles_options SET value=' . $dbo->quote($val) . ' WHERE name=' . $dbo->quote($name);
+        if ($exists === true) {
+            $query = 'UPDATE `#__dropfiles_options` SET value=' . $dbo->quote($val) . ' WHERE name=' . $dbo->quote($name);
         } else {
-            $query = 'INSERT INTO #__dropfiles_options (name,value) VALUES (' . $dbo->quote($name) . ',' . $dbo->quote($val) . ')';
+            $query = 'INSERT INTO `#__dropfiles_options` (name,value) VALUES (' . $dbo->quote($name) . ',' . $dbo->quote($val) . ')';
         }
 
         $dbo->setQuery($query);
@@ -117,7 +124,7 @@ class DropfilesModelOptions extends JModelList
         }
 
         $dbo = $this->getDbo();
-        $query = 'DELETE From #__dropfiles_options WHERE name = ' . $dbo->quote($name);
+        $query = 'DELETE From `#__dropfiles_options` WHERE name = ' . $dbo->quote($name);
         $dbo->setQuery($query);
 
         if (!$dbo->execute()) {
@@ -161,5 +168,59 @@ class DropfilesModelOptions extends JModelList
         }
 
         return true;
+    }
+
+    /**
+     * Method to retrieve all records
+     *
+     * @return string|array|void
+     */
+    public function get_all_records() // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- Get data only
+    {
+        $dbo = $this->getDbo();
+        $query = 'SELECT * FROM `#__dropfiles_options` WHERE id > 0';
+        $dbo->setQuery($query);
+
+        if (!$dbo->execute()) {
+            return array();
+        }
+
+        $rs = $dbo->loadObjectList();
+
+        if (is_null($rs)) {
+            return array();
+        }
+
+        return $rs;
+    }
+
+    /**
+     * Method to check if exists option name
+     *
+     * @param string $optionName Option name
+     *
+     * @return string|boolean|void
+     */
+    public function check_exist_option($optionName) // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps -- Check data only
+    {
+        if (is_null($optionName) || !$optionName || empty($optionName)) {
+            return false;
+        }
+
+        $dbo = $this->getDbo();
+        $query = 'SELECT options.* FROM `#__dropfiles_options` as options WHERE options.name = ' . $dbo->quote($optionName);
+        $dbo->setQuery($query);
+
+        if (!$dbo->execute()) {
+            return false;
+        }
+
+        $rs = $dbo->loadObjectList();
+
+        if (is_array($rs) && !empty($rs)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

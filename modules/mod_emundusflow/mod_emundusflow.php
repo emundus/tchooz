@@ -12,11 +12,19 @@
  */
 
 // no direct access
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Helper\ModuleHelper;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
+
 defined('_JEXEC') or die('Restricted access');
 
-$user = JFactory::getSession()->get('emundusUser');
+$app  = Factory::getApplication();
+$user = $app->getSession()->get('emundusUser');
 
-if (isset($user->fnum) && !empty($user->fnum)) {
+if (isset($user->fnum) && !empty($user->fnum))
+{
 
 	require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
 	require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
@@ -28,9 +36,10 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
 
 	// Load Joomla framework classes
-	$document = JFactory::getDocument();
-	$jinput   = JFactory::getApplication()->input;
-	$db       = JFactory::getDBO();
+	$document = $app->getDocument();
+	$wa = $document->getWebAssetManager();
+	$jinput   = $app->input;
+	$db       = Factory::getContainer()->get('DatabaseDriver');
 
 	// Parameters
 	$show_programme     = $params->get('show_programme', 1);
@@ -42,14 +51,15 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	$show_deadline      = $params->get('show_deadline', 0);
 	$admission          = $params->get('admission', 0);
 	$layout             = $params->get('layout', 'default');
-	$offset             = JFactory::getConfig()->get('offset');
-	$home_link = EmundusHelperMenu::getHomepageLink($params->get('home_link', 'index.php'));
+	$offset             = Factory::getConfig()->get('offset');
+	$home_link          = EmundusHelperMenu::getHomepageLink($params->get('home_link', 'index.php'));
 	$add_to_cart_icon   = $params->get('add_to_cart_icon', 'large add to cart icon');
 	$scholarship_icon   = $params->get('scholarship_icon', 'large student icon');
-	$file_tags          = JText::_($params->get('tags', ''));
+	$title_override     = Text::_($params->get('title_override', ''));
+	$file_tags          = Text::_($params->get('tags', ''));
 
 	// eMundus parameters
-	$params_emundus       = JComponentHelper::getParams('com_emundus');
+	$params_emundus       = ComponentHelper::getParams('com_emundus');
 	$applicant_can_renew  = $params_emundus->get('applicant_can_renew', 0);
 	$application_fee      = $params_emundus->get('application_fee', 0);
 	$scholarship_document = $params_emundus->get('scholarship_document_id', null);
@@ -57,24 +67,30 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	$id_profiles          = explode(',', $id_profiles);
 
 
-	if ($layout != '_:tchooz') {
-		$document->addStyleSheet("modules/mod_emundusflow/style/emundus.css");
+	if ($layout != '_:tchooz')
+	{
+		$wa->registerAndUseStyle("modules/mod_emundusflow/style/emundus.css");
 	}
 
 	$header_class = $params->get('header_class', '');
-	if (!empty($header_class)) {
-		$document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/components/site." . $header_class . ".css");
+	if (!empty($header_class))
+	{
+		$wa->registerAndUseStyle("media/com_emundus/lib/Semantic-UI-CSS-master/components/site." . $header_class . ".css");
 	}
 
 	// Jinput
 	$option = $jinput->get('option');
 	$view   = $jinput->get('view');
-	if (EmundusHelperAccess::asAccessAction(1, 'c')) {
+	if (EmundusHelperAccess::asAccessAction(1, 'c'))
+	{
 		$applicant_can_renew = 1;
 	}
-	else {
-		foreach ($user->emProfiles as $profile) {
-			if (in_array($profile->id, $id_profiles)) {
+	else
+	{
+		foreach ($user->emProfiles as $profile)
+		{
+			if (in_array($profile->id, $id_profiles))
+			{
 				$applicant_can_renew = 1;
 				break;
 			}
@@ -93,25 +109,55 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 
 	$campaign_name = $current_application->label;
 
-	if ($layout != '_:tchooz') {
+	$fnumInfos = $m_files->getFnumInfos($user->fnum);
+
+	if (!empty($title_override) && !empty(str_replace(array(' ', "\t", "\n", "\r", "&nbsp;"), '', htmlentities(strip_tags($title_override))))) {
+		$m_email = new EmundusModelEmails();
+		$emundusUser = $app->getSession()->get('emundusUser');
+
+		$post = array(
+			'APPLICANT_ID'   => $user->id,
+			'DEADLINE'       => strftime("%A %d %B %Y %H:%M", strtotime($emundusUser->end_date)),
+			'CAMPAIGN_LABEL' => $emundusUser->label,
+			'CAMPAIGN_YEAR'  => $emundusUser->year,
+			'CAMPAIGN_START' => $emundusUser->start_date,
+			'CAMPAIGN_END'   => $emundusUser->end_date,
+			'CAMPAIGN_CODE'  => $emundusUser->training,
+			'FNUM'           => $emundusUser->fnum
+		);
+
+		$tags                   = $m_email->setTags($user->id, $post, $emundusUser->fnum, '', $title_override);
+		$title_override_display = preg_replace($tags['patterns'], $tags['replacements'], $title_override);
+		$title_override_display = $m_email->setTagsFabrik($title_override_display, array($emundusUser->fnum));
+
+		if (!empty($title_override_display)) {
+			$campaign_name = $title_override_display;
+		}
+	}
+
+	if ($layout != '_:tchooz')
+	{
 		$application_fee = (!empty($application_fee) && !empty($m_profile->getHikashopMenu($user->profile)));
 		$paid            = null;
 
-		if ($application_fee) {
-			$fnumInfos = $m_files->getFnumInfos($user->fnum);
+		if ($application_fee)
+		{
 			$order     = $m_application->getHikashopOrder($fnumInfos);
 			$paid      = !empty($order);
 			$cart      = $m_application->getHikashopCartUrl($user->profile);
 			$cartorder = null;
 
-			if (!$paid || !empty($cart)) {
+			if (!$paid || !empty($cart))
+			{
 
 				// If students with a scholarship have a different fee.
 				// The form ID will be appended to the URL, taking him to a different checkout page.
-				if (isset($scholarship_document)) {
+				if (isset($scholarship_document))
+				{
 
 					// See if applicant has uploaded the required scolarship form.
-					try {
+					try
+					{
 
 						$query = 'SELECT count(id) FROM #__emundus_uploads
 								WHERE attachment_id = ' . $scholarship_document . '
@@ -121,41 +167,49 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 						$uploaded_document = $db->loadResult();
 
 					}
-					catch (Exception $e) {
-						JLog::Add('Error in plugin/isApplicationCompleted at SQL query : ' . $query, Jlog::ERROR, 'plugins');
+					catch (Exception $e)
+					{
+						Log::Add('Error in plugin/isApplicationCompleted at SQL query : ' . $query, Log::ERROR, 'plugins');
 					}
 
 					// If he hasn't, no discount for him.
-					if ($uploaded_document == 0) {
+					if ($uploaded_document == 0)
+					{
 						$scholarship_document = null;
 					}
-					else {
+					else
+					{
 						$scholarship = true;
 					}
 
 				}
-				if (!empty($cart)) {
+				if (!empty($cart))
+				{
 					$cartorder    = $m_application->getHikashopCart($fnumInfos);
 					$checkout_url = 'cart' . $user->profile;
 				}
-				elseif (!$paid) {
+				elseif (!$paid)
+				{
 					$orderCancelled = false;
 
 					$checkout_url = $m_application->getHikashopCheckoutUrl($user->profile . $scholarship_document);
-					if (strpos($checkout_url, '${') !== false) {
+					if (strpos($checkout_url, '${') !== false)
+					{
 						$checkout_url = $m_emails->setTagsFabrik($checkout_url, [$user->fnum]);
 					}
 					$checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url=' . urlencode(base64_encode($checkout_url)) . '&usekey=fnum&rowid=' . $user->fnum;
 
 					$cancelled_orders = $m_application->getHikashopOrder($fnumInfos, true);
 
-					if (!empty($cancelled_orders)) {
+					if (!empty($cancelled_orders))
+					{
 						$orderCancelled = true;
 					}
 				}
 
 			}
-			else {
+			else
+			{
 				$checkout_url = 'index.php';
 			}
 		}
@@ -170,29 +224,45 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 
 		$confirm_form_url = $m_checklist->getConfirmUrl() . '&usekey=fnum&rowid=' . $user->fnum;
 
-		$app    = JFactory::getApplication();
 		$offset = $app->get('offset', 'UTC');
-		try {
+		try
+		{
 			$dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
 			$dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
 			$now      = $dateTime->format('Y-m-d H:i:s');
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			echo $e->getMessage() . '<br />';
 		}
 
-		if (!empty($user->end_date)) {
+		if (!empty($user->end_date))
+		{
 			$is_dead_line_passed = (strtotime(date($now)) > strtotime($user->end_date)) ? true : false;
 		}
 	}
 
 	$current_phase = $m_campaign->getCurrentCampaignWorkflow($user->fnum);
-	if (!empty($current_phase) && !empty($current_phase->end_date)) {
+	if (!empty($current_phase) && !empty($current_phase->end_date))
+	{
 		$deadline = new JDate($current_phase->end_date);
 	}
-	else {
+	else
+	{
 		$deadline = !empty($admission) ? new JDate($user->fnums[$user->fnum]->admission_end_date) : new JDate($user->end_date);
 	}
 
-	require(JModuleHelper::getLayoutPath('mod_emundusflow', $layout));
+	$lang = Factory::getLanguage();
+	$current_lang_tag = $lang->getTag();
+	$db = Factory::getContainer()->get('DatabaseDriver');
+	$query = $db->getQuery(true);
+	$query->select('lang_id')
+		->from('#__languages')
+		->where('lang_code = ' . $db->quote($current_lang_tag));
+
+	$db->setQuery($query);
+	$current_lang_id = $db->loadResult();
+	$campaign_languages = $m_campaign->getCampaignLanguages($user->fnum);
+
+	require(ModuleHelper::getLayoutPath('mod_emundusflow', $layout));
 }

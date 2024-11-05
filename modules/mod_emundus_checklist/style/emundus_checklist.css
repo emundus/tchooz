@@ -35,7 +35,8 @@
     -webkit-box-orient: vertical;
     display: -webkit-box;
     color: black;
-    font-family: var(--em-applicant-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
+    word-break: break-word;
 }
 
 .mod_emundus_checklist___attachment_links {
@@ -85,21 +86,32 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: var(--em-applicant-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
     color: var(--neutral-800);
 }
 
 .mod_emundus_checklist___step_count {
     margin-right: 12px;
     border-radius: 50px;
-    background: var(--main-50);
-    color: var(--neutral-600);
+    background: var(--main-500);
+    color: var(--neutral-0);
     height: 24px;
     width: 24px;
     display: flex;
     justify-content: center;
     align-items: center;
     border: solid 1px var(--neutral-600);
+}
+
+.mod_emundus_checklist___check_circle {
+    position: absolute;
+    left: 14px;
+    top: -4px;
+    font-size: 12px !important;
+    z-index: 999;
+    color: var(--main-500);
+    border-radius: 50%;
+    background: var(--neutral-0);
 }
 
 .mod_emundus_checklist___border_item {
@@ -109,25 +121,29 @@
 }
 
 .mod_emundus_checklist .active .mod_emundus_checklist___step_count {
-    background: var(--blue-100);
-    color: var(--em-primary-color);
-    font-family: var(--em-default-font);
+    background: var(--blue-200);
+    color: var(--blue-900);
+    font-family: var(--em-profile-font), Inter, sans-serif;
     border: solid 1px var(--blue-100);
+    outline-width: 2px;
+    outline-style: solid;
+    outline-color: var(--blue-200);
+    outline-offset: 2px;
 }
 
-.mod_emundus_checklist .active .mod_emundus_checklist___step_count .material-icons-outlined {
+.mod_emundus_checklist .active .mod_emundus_checklist___step_count .material-symbols-outlined {
     color: var(--blue-500);
 }
 
 .mod_emundus_checklist .mod_emundus_checklist_need_missing:not(.active) .mod_emundus_checklist___step_count {
     color: #727272;
-    font-family: var(--em-default-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
     background: transparent;
     border: solid 1px var(--neutral-300);
     background: var(--neutral-300);
 }
 
-.mod_emundus_checklist .mod_emundus_checklist_need_missing:not(.active) .mod_emundus_checklist___step_count .material-icons-outlined {
+.mod_emundus_checklist .mod_emundus_checklist_need_missing:not(.active) .mod_emundus_checklist___step_count .material-symbols-outlined {
     color: var(--red-500);
 }
 
@@ -136,11 +152,15 @@
     border: none;
 }
 
-.mod_emundus_checklist .mod_emundus_checklist_need_ok:not(.active) .mod_emundus_checklist___step_count .material-icons-outlined {
+.mod_emundus_checklist .mod_emundus_checklist_need_ok:not(.active) .mod_emundus_checklist___step_count .material-symbols-outlined {
     color: var(--main-500);
 }
 
-.mod_emundus_checklist___step_count .material-icons-outlined {
+.mod_emundus_checklist .mod_emundus_checklist_need_ok:not(.active) .mod_emundus_checklist___step_count .material-symbols-outlined.tw-text-white {
+    color: var(--neutral-0);
+}
+
+.mod_emundus_checklist___step_count .material-symbols-outlined {
     font-size: 14px;
 }
 

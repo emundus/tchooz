@@ -7,7 +7,7 @@ $current_user = JFactory::getUser();
 <div class="em-activation-header">
     <p><a class="em-back-button em-pointer em-w-auto em-float-left" style="text-decoration: unset"
           href="<?php echo JUri::base() ?>index.php?option=com_users&task=user.logout&<?php echo JSession::getFormToken() ?>=1"><span
-                    class="material-icons em-mr-4">navigate_before</span><?= JText::_('COM_EMUNDUS_MAIL_GB_BUTTON'); ?>
+                    class="material-symbols-outlined em-mr-4 tw-text-neutral-600">navigate_before</span><?= JText::_('COM_EMUNDUS_MAIL_GB_BUTTON'); ?>
         </a></p>
 </div>
 
@@ -15,9 +15,9 @@ $current_user = JFactory::getUser();
     <section class="info">
         <div class="infoContainer">
             <div class="em-flex-column">
-                <div class="em-circle-main-100 em-flex-column">
-                    <div class="em-circle-main-200 em-flex-column">
-                        <span class="material-icons-outlined em-font-size-48 em-main-400-color">mail</span>
+                <div class="tw-bg-profile-light em-flex-column tw-rounded-full tw-p-3">
+                    <div class="tw-bg-profile-medium em-flex-column tw-rounded-full tw-p-3">
+                        <span class="material-symbols-outlined em-font-size-32 tw-text-profile-full">mail</span>
                     </div>
                 </div>
             </div>

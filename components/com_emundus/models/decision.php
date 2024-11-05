@@ -15,6 +15,8 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
+use Joomla\CMS\Uri\Uri;
 
 include_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php');
 include_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'list.php');
@@ -133,7 +135,7 @@ class EmundusModelDecision extends JModelList
 			foreach ($this->_elements as $def_elmt) {
 				$group_params = json_decode($def_elmt->group_attribs);
 
-				if ($def_elmt->element_plugin == 'date') {
+				if (in_array($def_elmt->element_plugin,['date','jdate'])) {
 					if ($group_params->repeat_group_button == 1) {
 						$this->_elements_default[] = '(
 														SELECT  GROUP_CONCAT(DATE_FORMAT(' . $def_elmt->table_join . '.' . $def_elmt->element_name . ', "%d/%m/%Y %H:%i:%m") SEPARATOR ", ")
@@ -405,7 +407,7 @@ class EmundusModelDecision extends JModelList
 	 * @return    array list of Fabrik element ID used in evaluation form
 	 * @throws Exception
 	 */
-	public function getAllDecisionElements($show_in_list_summary = 1, $programme_code)
+	public function getAllDecisionElements($show_in_list_summary, $programme_code)
 	{
 		if (version_compare(JVERSION, '4.0', '>')) {
 			$session = $this->app->getSession();
@@ -986,7 +988,7 @@ class EmundusModelDecision extends JModelList
 		}
 		catch (Exception $e) {
 			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $query, JLog::ERROR, 'com_emundus');
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $query, Log::ERROR, 'com_emundus');
 		}
 	}
 
@@ -1097,7 +1099,7 @@ class EmundusModelDecision extends JModelList
 
 		$pageNavigation = "<div class='em-container-pagination-selectPage'>";
 		$pageNavigation .= "<ul class='pagination pagination-sm'>";
-		$pageNavigation .= "<li><a href='#em-data' id='" . $this->getPagination()->pagesStart . "'><span class='material-icons'>navigate_before</span></a></li>";
+		$pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent - 1) . "'><span class='material-icons'>navigate_before</span></a></li>";
 		if ($this->getPagination()->pagesTotal > 15) {
 			for ($i = 1; $i <= 5; $i++) {
 				$pageNavigation .= "<li ";
@@ -1145,7 +1147,7 @@ class EmundusModelDecision extends JModelList
 				$pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
 			}
 		}
-		$pageNavigation .= "<li><a href='#em-data' id='" . $this->getPagination()->pagesTotal . "'><span class='material-icons'>navigate_next</span></a></li></ul></div>";
+		$pageNavigation .= "<li><a href='#em-data' id='" . ($this->getPagination()->pagesCurrent + 1) . "'><span class='material-icons'>navigate_next</span></a></li></ul></div>";
 
 		return $pageNavigation;
 	}
@@ -1365,7 +1367,7 @@ class EmundusModelDecision extends JModelList
 		}
 		catch (Exception $e) {
 			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 	}
 
@@ -1388,7 +1390,7 @@ class EmundusModelDecision extends JModelList
 		}
 		catch (Exception $e) {
 			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 	}
 
@@ -1409,7 +1411,7 @@ class EmundusModelDecision extends JModelList
 			return $this->_db->loadAssocList();
 		}
 		catch (Exception $e) {
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 			echo $e->getMessage();
 		}
 	}
@@ -1442,42 +1444,39 @@ class EmundusModelDecision extends JModelList
 		}
 		catch (Exception $e) {
 			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 	}
 
 	function getDecisionFormByProgramme($code = null)
 	{
-		if (version_compare(JVERSION, '4.0', '>')) {
-			$session = $this->app->getSession();
-		}
-		else {
-			$session = Factory::getSession();
-		}
+		$decision_form = 0;
 
-		if ($code === null) {
+		if ($code === NULL) {
+			$session = $this->app->getSession();
 			if ($session->has('filt_params')) {
 				$filt_params = $session->get('filt_params');
-				if (count($filt_params['programme']) > 0) {
+				if (!empty($filt_params['programme'])) {
 					$code = $filt_params['programme'][0];
 				}
 			}
 		}
 
-		try {
-			$query = $this->db->getQuery(true);
+		if (!empty($code)) {
+			try {
+				$query = 'SELECT ff.form_id
+                    FROM #__fabrik_formgroup ff
+                    WHERE ff.group_id IN (SELECT fabrik_decision_group_id FROM #__emundus_setup_programmes WHERE code like ' .
+					$this->_db->Quote($code) . ') AND ff.group_id <> \'\'';
 
-			$query->select('ff.form_id')
-				->from($this->db->quoteName('#__fabrik_formgroup', 'ff'))
-				->where('ff.group_id IN (SELECT fabrik_decision_group_id FROM #__emundus_setup_programmes WHERE code like ' . $this->db->quote($code) . ')');
-			$this->db->setQuery($query);
+				$this->_db->setQuery($query);
+				$decision_form = $this->_db->loadResult();
+			} catch (Exception $e) {
+				Log::add(Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			}
+		}
 
-			return $this->db->loadResult();
-		}
-		catch (Exception $e) {
-			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
-		}
+		return $decision_form;
 	}
 
 	public function getDecisionUrl($fnum, $formid, $rowid = 0, $student_id = 0, $redirect = 0, $view = 'form')
@@ -1570,7 +1569,7 @@ class EmundusModelDecision extends JModelList
 		catch (Exception $e) {
 			$message = 'COM_EMUNDUS_ERROR';
 			$url     = '';
-			JLog::add('Cannot get decision URL with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add('Cannot get decision URL with error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
 
 		if (!empty($url)) {

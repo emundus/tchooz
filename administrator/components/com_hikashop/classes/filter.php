@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -1668,7 +1668,8 @@ class hikashopFilterTypeClass extends hikashopClass {
 				$key = $this->_getKey($categories_name, $category);
 				$sorting_array[$key] = $category;
 			}
-			$categories_name = ksort($sorting_array, SORT_STRING);
+			ksort($sorting_array, SORT_STRING);
+			$categories_name = $sorting_array;
 		}
 		if(!empty($datas))
 			$this->storeValuesInSession($filter, $categories_name);
@@ -1960,7 +1961,7 @@ class hikashopSingledropdownClass extends hikashopFilterTypeClass{
 
 		if($filter->filter_data=='category'){
 			$categories_name=parent::getCategories($filter, $datas);
-			if(!empty($categories_name) && count($categories_name)){
+			if(!empty($categories_name) && is_array($categories_name) && count($categories_name)){
 				foreach($categories_name as $cat){
 					$selectedItem='';
 					if(!empty($selected) && in_array($cat->category_id, $selected)){
@@ -2038,7 +2039,7 @@ class hikashopSingledropdownClass extends hikashopFilterTypeClass{
 			}
 		}
 
-		if($filter->filter_data=='custom_field'){
+		if($filter->filter_data=='custom_field' && empty($filter->filter_value)){
 			$field = parent::getFields($filter, $datas);
 			if(isset($field->field_value) && is_array($field->field_value) && count($field->field_value)){
 				foreach($field->field_value as $val){
@@ -2154,7 +2155,7 @@ class hikashopRadioClass extends hikashopFilterTypeClass{
 		}
 		if($filter->filter_data=='category'){
 			$categories_name=parent::getCategories($filter, $datas);
-			if(!empty($categories_name) && count($categories_name)){
+			if(!empty($categories_name) && is_array($categories_name) && count($categories_name)){
 				foreach($categories_name as $cat){
 					$checked='';$deleteButton='';
 					if(!empty($selected) && is_array($selected) && (in_array($cat->category_id, $selected) || strpos($selected[0], (string)$cat->category_id) !== false)) {
@@ -2358,7 +2359,7 @@ class hikashopListClass extends hikashopFilterTypeClass{
 		}
 		if($filter->filter_data=='category'){
 			$categories_name=parent::getCategories($filter, $datas);
-			if(!empty($categories_name) && count($categories_name)){
+			if(!empty($categories_name) && is_array($categories_name) && count($categories_name)){
 				foreach($categories_name as $cat){
 					if(!empty($selected) &&  (is_numeric($selected)&&$cat->category_id==$selected) ||(is_array($selected) && in_array($cat->category_id, $selected))){
 						$html.='<li><a class="hikashop_filter_list_selected" style="font-weight:bold">'.$cat->category_name.'</a>';
@@ -2922,7 +2923,12 @@ class hikashopMultipledropdownClass extends hikashopSingledropdownClass{
 	function display(&$filter, $divName, &$parent, $datas='', $multiple='', $tab=''){
 		$multiple='multiple="multiple" size="5" data-placeholder="'.$filter->filter_name.'"';
 		$tab='[]';
-		return parent::display($filter, $divName, $parent, $datas, $multiple, $tab);
+		$html = parent::display($filter, $divName, $parent, $datas, $multiple, $tab);
+		if(HIKASHOP_J40) {
+			JFactory::getDocument()->getWebAssetManager()->usePreset('choicesjs')->useScript('webcomponent.field-fancy-select');
+			$html = '<joomla-field-fancy-select>'.$html.'</joomla-field-fancy-select>';
+		}
+		return $html;
 	}
 }
 

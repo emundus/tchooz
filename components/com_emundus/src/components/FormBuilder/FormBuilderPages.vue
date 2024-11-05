@@ -1,42 +1,37 @@
 <template>
   <div id="form-builder-pages">
-    <p class="form-builder-title em-flex-row em-s-justify-content-center em-flex-space-between em-p-16">
+    <p class="form-builder-title tw-flex tw-items-center md:tw-justify-center lg:tw-justify-between tw-p-4">
       <span>{{ translate('COM_EMUNDUS_FORM_BUILDER_EVERY_PAGE') }}</span>
-      <span id="add-page" class="material-icons em-pointer" @click="$emit('open-page-create')"> add </span>
+      <span id="add-page" class="material-icons tw-cursor-pointer" @click="$emit('open-page-create')"> add </span>
     </p>
-    <draggable v-model="pages" group="form-builder-pages" :sort="true" class="draggables-list" @end="onDragEnd">
+    <draggable :model-value="pages" @update:model-value="pages = $event" group="form-builder-pages" :sort="true" class="draggables-list" @end="onDragEnd">
       <transition-group>
         <div
-            class="em-font-weight-500 em-pointer"
+            class="tw-font-medium tw-cursor-pointer"
             v-for="(page, index) in formPages"
             :key="page.id"
             :class="{selected: page.id == selected}"
         >
-          <div class="em-flex-row em-flex-space-between" @mouseover="pageOptionsShown = page.id"
+          <div class="tw-flex tw-items-center tw-justify-between" @mouseover="pageOptionsShown = page.id"
                @mouseleave="pageOptionsShown = 0">
-            <p @click="selectPage(page.id)" class="em-w-100 em-p-16 form-builder-page-label">{{
+            <p @click="selectPage(page.id)" class="tw-w-full tw-p-4 form-builder-page-label">{{
                 page.label !== '' ? translate(page.label) : (translate('COM_EMUNDUS_FILES_PAGE') + ' ' + (index + 1))
               }}</p>
-            <div class="em-flex-row em-p-16" :style="pageOptionsShown == page.id ? 'opacity:1' : 'opacity: 0'">
-              <v-popover :popoverArrowClass="'custom-popover-arraow'" :open-class="'form-builder-pages-popover'"
-                         :placement="'left'">
-                <span class="material-icons">more_horiz</span>
-
-                <template slot="popover">
-                  <transition :name="'slide-down'" type="transition">
-                    <div>
-                      <nav aria-label="action" class="em-flex-col-start">
-                        <p @click="deletePage(page)" class="em-p-8-12 em-w-100 em-red-500-color">
-                          {{ translate('COM_EMUNDUS_FORM_BUILDER_DELETE_PAGE') }}
-                        </p>
-                        <p @click="createModelFrom(page)" class="em-p-8-12 em-w-100">
-                          {{ translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_TITLE') }}
-                        </p>
-                      </nav>
-                    </div>
-                  </transition>
-                </template>
-              </v-popover>
+            <div class="tw-flex tw-items-center tw-p-4" :style="pageOptionsShown === page.id ? 'opacity:1' : 'opacity: 0'">
+              <popover :popoverArrowClass="'custom-popover-arraow'" :open-class="'form-builder-pages-popover'" :position="'left'">
+                <transition :name="'slide-down'" type="transition">
+                  <div>
+                    <nav aria-label="action" class="em-flex-col-start">
+                      <p @click="deletePage(page)" class="tw-cursor-pointer tw-p-2 tw-text-base tw-text-red-600">
+                        {{ translate('COM_EMUNDUS_FORM_BUILDER_DELETE_PAGE') }}
+                      </p>
+                      <p @click="createModelFrom(page)" class="tw-cursor-pointer tw-p-2 tw-text-base">
+                        {{ translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_TITLE') }}
+                      </p>
+                    </nav>
+                  </div>
+                </transition>
+              </popover>
             </div>
           </div>
         </div>
@@ -45,13 +40,13 @@
 
     <transition-group>
       <div
-          class="em-font-weight-500 em-pointer"
+          class="tw-font-medium tw-cursor-pointer"
           v-for="page in submissionPages"
           :key="page.id"
           :class="{selected: page.id == selected}"
       >
-        <div class="em-flex-row em-flex-space-between">
-          <p @click="selectPage(page.id)" class="em-w-100 em-p-16">{{ page.label }}</p>
+        <div class="tw-flex tw-items-center tw-justify-between">
+          <p @click="selectPage(page.id)" class="tw-w-full tw-p-4">{{ page.label }}</p>
         </div>
       </div>
     </transition-group>
@@ -59,15 +54,17 @@
 </template>
 
 <script>
-import formBuilderService from '../../services/formbuilder';
-import formBuilderMixin from '../../mixins/formbuilder';
-import draggable from "vuedraggable";
+import formBuilderService from '@/services/formbuilder';
+import formBuilderMixin from '@/mixins/formbuilder';
+import popover from '@/components/Popover.vue';
+import { VueDraggableNext } from 'vue-draggable-next';
 import Swal from "sweetalert2";
 
 export default {
   name: 'FormBuilderPages',
   components: {
-    draggable,
+    draggable: VueDraggableNext,
+    popover
   },
   props: {
     pages: {
@@ -89,8 +86,6 @@ export default {
       pageOptionsShown: 0,
     };
   },
-  created() {
-  },
   methods: {
     selectPage(id) {
       this.$emit('select-page', id);
@@ -100,7 +95,6 @@ export default {
         Swal.fire({
           title: this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_PAGE_CONFIRMATION') + page.label,
           text: this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_PAGE_CONFIRMATION_TEXT'),
-          type: "warning",
           showCancelButton: true,
           confirmButtonText: this.translate('COM_EMUNDUS_ACTIONS_DELETE'),
           cancelButtonText: this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),
@@ -113,14 +107,12 @@ export default {
         }).then(result => {
           if (result.value) {
             formBuilderService.deletePage(page.id).then(response => {
-              if (response.status) {
-                let deletedPage = this.pages.findIndex(p => p.id === page.id);
-                this.pages.splice(deletedPage, 1);
-                if (this.selected == page.id) {
-                  this.$emit('delete-page');
-                }
-                this.updateLastSave();
-              }
+							if (response.status) {
+								let deletedPage = this.pages.findIndex(p => p.id === page.id);
+								this.pages.splice(deletedPage, 1);
+                this.$emit('delete-page', page.id);
+								this.updateLastSave();
+							}
             });
           }
         });
@@ -150,7 +142,7 @@ export default {
       });
 
       formBuilderService.reorderMenu(newOrder, this.$props.profile_id).then((response) => {
-        if (response.status == 200 && response.data.status) {
+        if (response.status) {
           this.$emit('reorder-pages', this.pages);
         } else {
           Swal.fire({
@@ -173,14 +165,14 @@ export default {
   computed: {
     // return all pages but not submission page
     formPages() {
-      return this.pages.filter((page) => {
-        return page.type != 'submission';
-      });
+      return this.pages.length > 0 ? this.pages.filter((page) => {
+        return page.type === 'form';
+      }): [];
     },
     submissionPages() {
-      return this.pages.filter((page) => {
-        return page.type == 'submission';
-      });
+      return this.pages.length > 0 ? this.pages.filter((page) => {
+        return page.type === 'submission';
+      }) : [];
     }
   },
 }

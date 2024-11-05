@@ -228,18 +228,24 @@ class EmundusModelPayment extends JModelList
 
 	private function getHikashopUserId($user_id)
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$hikashop_user_id = 0;
 
-		$query->select('jhu.user_id')
-			->from('#__hikashop_user AS jhu')
-			->where('jhu.user_cms_id = ' . $user_id);
+		if (!empty($user_id))
+		{
+			$db    = JFactory::getDbo();
+			$query = $db->getQuery(true);
 
-		$db->setQuery($query);
-		$hikashop_user_id = $db->loadResult();
+			$query->select('jhu.user_id')
+				->from('#__hikashop_user AS jhu')
+				->where('jhu.user_cms_id = ' . $user_id);
 
-		if (empty($hikashop_user_id)) {
-			$hikashop_user_id = $this->createHikashopUser($user_id);
+			$db->setQuery($query);
+			$hikashop_user_id = $db->loadResult();
+
+			if (empty($hikashop_user_id))
+			{
+				$hikashop_user_id = $this->createHikashopUser($user_id);
+			}
 		}
 
 		return $hikashop_user_id;
@@ -777,6 +783,8 @@ class EmundusModelPayment extends JModelList
 
 			$config = json_decode($params, true);
 			if (empty($config) && empty($config['sender_first_name'])) {
+				$config = array();
+
 				$query->clear()
 					->select('ju.email, jepd.first_name, jepd.last_name, dc.code_iso_2, jepd.city_1, jepd.telephone_1, jepd.street_1')
 					->from('#__users as ju')
@@ -785,9 +793,8 @@ class EmundusModelPayment extends JModelList
 					->leftJoin('data_country AS dc ON dc.id = jepd.country_1')
 					->where('jecc.fnum LIKE ' . $db->quote($fnum));
 
-				$db->setQuery($query);
-
 				try {
+					$db->setQuery($query);
 					$data = $db->loadObject();
 				}
 				catch (Exception $e) {

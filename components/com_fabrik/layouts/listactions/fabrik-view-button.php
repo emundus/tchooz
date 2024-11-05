@@ -12,7 +12,10 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 $d = $displayData;
-
+$icon = '<span class="fa fa-search"></span>';
+if ($d->list_detail_link_icon !== 'search') {
+	$icon = FabrikHelperHTML::image($d->list_detail_link_icon, 'list', '', array('alt' => $d->viewLabel));
+}
 ?>
 <a data-loadmethod="<?php echo $d->loadMethod;?>" 
     class="<?php echo $d->class;?> btn-default" <?php echo $d->detailsAttributes; ?>
@@ -23,4 +26,4 @@ $d = $displayData;
     href="<?php echo $d->link; ?>" 
     title="<?php echo $d->viewLabel;?>" 
     target="<?php echo $d->viewLinkTarget; ?>">
-    <span class="fa fa-search"></span> <?php echo $d->viewText; ?></a>
+    <?php echo $icon.$d->viewText; ?></a>

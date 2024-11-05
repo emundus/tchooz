@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -36,17 +36,11 @@ function _HikashopBuildRoute( &$query, $separator = '-' )
 		$app = JFactory::getApplication();
 		$app->triggerEvent('onBeforeHikashopBuildRoute', array(&$query, $separator, &$params));
 
-		$config =& hikashop_config();
+		$config = hikashop_config();
 		if($config->get('activate_sef',1)){
-			$categorySef=$config->get('category_sef_name','category');
-			$productSef=$config->get('product_sef_name','product');
 			$checkoutSef=$config->get('checkout_sef_name','checkout');
-			if(empty($categorySef)){
-				$categorySef='';
-			}
-			if(empty($productSef)){
-				$productSef='';
-			}
+			$categorySef = hikashop_get_sef_name($query, 'category');
+			$productSef = hikashop_get_sef_name($query, 'product');
 
 			if(isset($query['ctrl']) && isset($query['task'])){
 				if($query['ctrl']=='category' && $query['task']=='listing'){
@@ -178,7 +172,11 @@ function _HikashopParseRoute( &$segments, $separator = '-' )
 	}
 
 	$categorySef=$config->get('category_sef_name','category');
+	if(!empty($categorySef) && ctype_upper(str_replace('_', '', $categorySef)))
+		$categorySef = JText::_($categorySef);
 	$productSef=$config->get('product_sef_name','product');
+	if(!empty($productSef) && ctype_upper(str_replace('_', '', $productSef)))
+		$productSef = JText::_($productSef);
 	$checkoutSef=$config->get('checkout_sef_name','checkout');
 	$skip = false;
 	if(isset($segments[0])) {
@@ -299,6 +297,36 @@ function _HikashopParseRoute( &$segments, $separator = '-' )
 
 	$segments = array();
 	return $vars;
+}
+
+function hikashop_get_sef_name(&$query, $type='product') {
+	$config = hikashop_config();
+	$sefName = $config->get($type.'_sef_name', $type);
+	if(empty($sefName)) {
+		$sefName = '';
+	} else {
+		if(ctype_upper(str_replace('_', '', $sefName))) {
+			if(!empty($query['lang'])) {
+				$code = $query['lang'];
+				if(strlen($query['lang']) == 2) {
+					$languages	= JLanguageHelper::getLanguages();
+					foreach($languages as $language) {
+						$sef = substr($language->lang_code, 0,2);
+						if(!empty($language->sef))
+							$sef = $language->sef;
+						if($sef == $query['lang']) {
+							$code = $language->lang_code;
+							break;
+						}
+					}
+				}
+				$sefName = hikashop_translate($sefName, $code, true);
+			} else {
+				$sefName = JText::_($sefName);
+			}
+		}
+	}
+	return $sefName;
 }
 
 function hikashop_retrieve_url_id(&$vars,$name){

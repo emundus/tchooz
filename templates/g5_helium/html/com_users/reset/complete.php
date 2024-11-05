@@ -7,18 +7,30 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+
 defined('_JEXEC') or die;
 
 JHtml::_('behavior.keepalive');
 JHtml::_('behavior.formvalidator');
 
-$document = JFactory::getDocument();
+$document = Factory::getApplication()->getDocument();
 $document->addStyleSheet("templates/g5_helium/html/com_users/reset/style/com_users_reset.css");
 
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'settings.php');
 $m_settings = new EmundusModelsettings();
 
 $favicon = $m_settings->getFavicon();
+
+$new_account = Factory::getApplication()->getSession()->get('new_account', 0);
+
+$title = $this->escape($this->params->get('page_heading'));
+if($new_account == 1) {
+	$title = Text::_('COM_USERS_ACCOUNT_CREATION_PASSWORD');
+}
+
+Factory::getApplication()->getSession()->clear('new_account');
 
 ?>
 <div class="reset-complete<?php echo $this->pageclass_sfx; ?>">
@@ -29,14 +41,14 @@ $favicon = $m_settings->getFavicon();
                 </a>
             <?php endif; ?>
             <h3 class="tw-mb-4">
-                <?php echo $this->escape($this->params->get('page_heading')); ?>
+                <?php echo $title; ?>
             </h3>
 		</div>
 	<?php endif; ?>
 	<form action="<?php echo JRoute::_('index.php?option=com_users&task=reset.complete'); ?>" method="post" class="form-validate form-horizontal well">
 		<?php foreach ($this->form->getFieldsets() as $fieldset) : ?>
 			<fieldset>
-				<?php if (isset($fieldset->label)) : ?>
+				<?php if (isset($fieldset->label) && $new_account != 1) : ?>
 					<p class="mb-4"><?php echo JText::_($fieldset->label); ?></p>
 				<?php endif; ?>
 				<?php echo $this->form->renderFieldset($fieldset->name); ?>
@@ -55,10 +67,19 @@ $favicon = $m_settings->getFavicon();
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+        var password_rules = document.getElementById('jform[password1]-rules');
+        if(password_rules) {
+            var new_location = document.querySelector(".password-group");
+            new_location.appendChild(password_rules);
+        }
         var password = document.getElementById('jform_password1');
         password.addEventListener('input', function() {
             checkPasswordSymbols(password);
         });
+
+        <?php if($new_account == 1) : ?>
+        document.title = <?php echo json_encode($title); ?>;
+        <?php endif; ?>
     });
 
     function checkPasswordSymbols(element) {

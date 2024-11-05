@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -90,7 +90,7 @@ window.hikashop.ready(hikaInitEditor_'.$id.');
 
 	function jsCode() {
 		if(HIKASHOP_J40)
-			return 'Joomla.editors.instances["'.$this->id.'"].getValue();';
+			return 'document.getElementById("'.$this->id.'").value = Joomla.editors.instances["'.$this->id.'"].getValue();';
 		$js = 'var unload = false; if(window.navigator.userAgent.indexOf("Edge") > -1) { unload = true; } ';
 		if($this->editor=='tinymce'){
 			$js .= 'if(!unload) { try{ tinyMCE.execCommand(\'mceToggleEditor\', false, \''.$this->id.'\'); unload = true; }catch(h){}} ';

@@ -20,6 +20,7 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Mail\MailerFactoryInterface;
+use Joomla\CMS\Uri\Uri;
 use Joomla\Registry\Registry;
 
 class EmundusModelEmails extends JModelList
@@ -39,13 +40,15 @@ class EmundusModelEmails extends JModelList
 	{
 		parent::__construct();
 
+		require_once JPATH_SITE . '/components/com_emundus/helpers/emails.php';
+
 		$this->app = Factory::getApplication();
 
 		$this->_db      = Factory::getContainer()->get('DatabaseDriver');
 		$this->_em_user = $this->app->getSession()->get('emundusUser');
 		$this->_user    = $this->app->getIdentity();
 
-		JLog::addLogger(['text_file' => 'com_emundus.email.error.php'], JLog::ERROR);
+		Log::addLogger(['text_file' => 'com_emundus.email.error.php'], Log::ERROR);
 	}
 
 	/**
@@ -74,7 +77,7 @@ class EmundusModelEmails extends JModelList
 			}
 			catch (Exception $e) {
 				error_log($e->getMessage(), 0);
-				JLog::add($query, JLog::ERROR, 'com_emundus.email');
+				Log::add($query, Log::ERROR, 'com_emundus.email');
 			}
 		}
 
@@ -108,7 +111,7 @@ class EmundusModelEmails extends JModelList
 				$email = $this->_db->loadObject();
 			}
 			catch (Exception $e) {
-				JLog::add('Failed to get email by id ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to get email by id ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -133,7 +136,7 @@ class EmundusModelEmails extends JModelList
 		}
 
 		$query = $this->_db->getQuery(true);
-		$query->select('eset.id as trigger_id, eset.step, ese.*, eset.to_current_user, eset.to_applicant, eserp.programme_id, esp.code, esp.label, eser.profile_id, eserg.group_id, eseru.user_id, et.Template, GROUP_CONCAT(ert.tags) as tags, GROUP_CONCAT(erca.candidate_attachment) as attachments, GROUP_CONCAT(erla.letter_attachment) as letter_attachments, GROUP_CONCAT(err1.receivers) as cc, GROUP_CONCAT(err2.receivers) as bcc')
+		$query->select('eset.id as trigger_id, eset.step, ese.*, eset.to_current_user, eset.to_applicant, eserp.programme_id, esp.code, esp.label, GROUP_CONCAT(DISTINCT eser.profile_id) as profile_id, GROUP_CONCAT(DISTINCT eserg.group_id) as group_id, GROUP_CONCAT(DISTINCT eseru.user_id) as user_id, et.Template, GROUP_CONCAT(ert.tags) as tags, GROUP_CONCAT(erca.candidate_attachment) as attachments, GROUP_CONCAT(erla.letter_attachment) as letter_attachments, GROUP_CONCAT(err1.receivers) as cc, GROUP_CONCAT(err2.receivers) as bcc')
 			->from($this->_db->quoteName('#__emundus_setup_emails_trigger', 'eset'))
 			->leftJoin($this->_db->quoteName('#__emundus_setup_emails', 'ese') . ' ON ' . $this->_db->quoteName('ese.id') . ' = ' . $this->_db->quoteName('eset.email_id'))
 			->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_programme_id', 'eserp') . ' ON ' . $this->_db->quoteName('eserp.parent_id') . ' = ' . $this->_db->quoteName('eset.id'))
@@ -159,7 +162,7 @@ class EmundusModelEmails extends JModelList
 			$results = $this->_db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add('Error when get emails triggers with query : ' . $query->__toString(), JLog::ERROR, 'com_emundus');
+			Log::add('Error when get emails triggers with query : ' . $query->__toString(), Log::ERROR, 'com_emundus');
 		}
 
 		$triggers = array_filter($results, function ($obj) {
@@ -188,15 +191,15 @@ class EmundusModelEmails extends JModelList
 
 				// default recipients
 				if (isset($trigger->profile_id) && !empty($trigger->profile_id)) {
-					$emails_tmpl[$trigger->id][$trigger->code]['to']['profile'][] = $trigger->profile_id;
+					$emails_tmpl[$trigger->id][$trigger->code]['to']['profile'] = explode(',', $trigger->profile_id);
 				}
 
 				if (isset($trigger->group_id) && !empty($trigger->group_id)) {
-					$emails_tmpl[$trigger->id][$trigger->code]['to']['group'][] = $trigger->group_id;
+					$emails_tmpl[$trigger->id][$trigger->code]['to']['group'] = explode(',', $trigger->group_id);
 				}
 
 				if (isset($trigger->user_id) && !empty($trigger->user_id)) {
-					$emails_tmpl[$trigger->id][$trigger->code]['to']['user'][] = $trigger->user_id;
+					$emails_tmpl[$trigger->id][$trigger->code]['to']['user'] = explode(',', $trigger->user_id);
 				}
 
 				$emails_tmpl[$trigger->id][$trigger->code]['to']['to_applicant']    = $trigger->to_applicant;
@@ -323,10 +326,7 @@ class EmundusModelEmails extends JModelList
 
 				foreach ($trigger_email[$student->code]['to']['recipients'] as $recipient) {
 					// Check if the user has access to the file
-					if ($h_access->asPartnerAccessLevel($recipient['id']) && !$h_access->isUserAllowedToAccessFnum($recipient['id'], $student->fnum)) {
-						continue;
-					}
-					if (!$h_emails->assertCanSendMailToUser($recipient['id'])) {
+					if (!$h_access->isUserAllowedToAccessFnum($recipient['id'],$student->fnum) || !$h_emails->assertCanSendMailToUser($recipient['id'])) {
 						continue;
 					}
 
@@ -408,20 +408,21 @@ class EmundusModelEmails extends JModelList
 						$send = $mailer->Send();
 					}
 					catch (Exception $e) {
-						Log::add('eMundus Triggers - PHP Mailer send failed ' . $e->getMessage(), JLog::ERROR, 'com_emundus.email');
+						Log::add('eMundus Triggers - PHP Mailer send failed ' . $e->getMessage(), Log::ERROR, 'com_emundus.email');
 					}
 
 					if ($send !== true) {
 						echo 'Error sending email: ' . $send;
-						Log::add($send, JLog::ERROR, 'com_emundus');
+						Log::add($send, Log::ERROR, 'com_emundus');
 					}
 					else {
 						$message = array(
 							'user_id_from' => $from_id,
 							'user_id_to'   => $to_id,
 							'subject'      => $subject,
-							'message'      => '<i>' . Text::_('MESSAGE') . ' ' . Text::_('SENT') . ' ' . Text::_('TO') . ' ' . $to . '</i><br>' . $body,
-							'email_id'     => $trigger_email_id
+							'message' => $body,
+							'email_id' => $trigger_email_id,
+							'email_to' => $to
 						);
 
 						$this->logEmail($message, $student->fnum);
@@ -573,13 +574,7 @@ class EmundusModelEmails extends JModelList
 		$config = $app->getConfig();
 
 		if (!empty($user) && !empty($user->id)) {
-			//get logo
-			if (method_exists($app, 'getTemplate')) {
-				$template = $app->getTemplate(true);
-				$params   = $template->params;
-			} else {
-				$params = new Registry();
-			}
+			$logo = EmundusHelperEmails::getLogo();
 
 			$sitename = $config->get('sitename');
 			$siteurl = $config->get('live_site');
@@ -587,34 +582,6 @@ class EmundusModelEmails extends JModelList
 			$base_url = JURI::base();
 			if ($app->isClient('administrator')) {
 				$base_url = JURI::root();
-			}
-
-			if (!empty($params->get('logo')->custom->image)) {
-				$logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
-				$logo = !empty($logo['path']) ? $base_url . $logo['path'] : "";
-			}
-			else {
-				$logo_module = JModuleHelper::getModuleById('90');
-
-				if (empty($logo_module->content)) {
-					$logo = JURI::root() . 'images/custom/logo_custom.png';
-					if (!file_exists($logo)) {
-						$logo = JURI::root() . 'images/custom/logo.png';
-					}
-				}
-				else {
-					preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
-					$pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
-        (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
-        (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
-        (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
-
-					if ((bool) preg_match($pattern, $tab[1])) {
-						$tab[1] = parse_url($tab[1], PHP_URL_PATH);
-					}
-
-					$logo = $base_url . $tab[1];
-				}
 			}
 
 			$activation = $user->get('activation');
@@ -627,10 +594,13 @@ class EmundusModelEmails extends JModelList
 			$replacements = array(
 				$user->id, $user->name, $user->email, $current_user->email, $user->username, $current_user->id, $current_user->name, $current_user->email, ' ', $current_user->username, $passwd,
 				$base_url . "index.php?option=com_users&task=registration.activate&token=" . $activation, "index.php?option=com_users&task=registration.activate&token=" . $activation, $base_url, $sitename,
-				$user->id, $user->name, $user->email, $user->username, JFactory::getDate('now')->format(JText::_('DATE_FORMAT_LC3')), $logo
+				$user->id, $user->name, $user->email, $user->username, Factory::getDate('now')->format(JText::_('DATE_FORMAT_LC3')), $logo
 			);
 
 			if (!empty($fnum)) {
+				$patterns[] = '/\[FNUM\]/';
+				$replacements[] = $fnum;
+
 				require_once(JPATH_SITE . DS . 'components/com_emundus/models/files.php');
 				$m_files = new EmundusModelFiles();
 				$status  = $m_files->getStatusByFnums([$fnum]);
@@ -645,6 +615,10 @@ class EmundusModelEmails extends JModelList
 				}
 				$patterns[]     = '/\[APPLICATION_TAGS\]/';
 				$replacements[] = implode(',', $tags_label);
+
+				$fnumInfos = $m_files->getFnumInfos($fnum);
+				$patterns[] = '/\[CAMPAIGN_LABEL\]/';
+				$replacements[] = $fnumInfos['label'];
 			}
 
 			if (isset($post)) {
@@ -701,7 +675,7 @@ class EmundusModelEmails extends JModelList
 			$tags = $db->loadAssocList();
 		}
 		catch (Exception $e) {
-			JLog::add('Error getting tags model/emails/setTags at query : ' . $query->__toString(), JLog::ERROR, 'com_emundus.email');
+			Log::add('Error getting tags model/emails/setTags at query : ' . $query->__toString(), Log::ERROR, 'com_emundus.email');
 
 			return array('patterns' => array(), 'replacements' => array());
 		}
@@ -731,7 +705,7 @@ class EmundusModelEmails extends JModelList
 					catch (Exception $e) {
 						error_log($query);
 						$error = JUri::getInstance() . ' :: USER ID : ' . $user_id . '\n -> ' . $query;
-						JLog::add($error, JLog::ERROR, 'com_emundus');
+						Log::add($error, Log::ERROR, 'com_emundus');
 						$result = "";
 
 					}
@@ -770,7 +744,7 @@ class EmundusModelEmails extends JModelList
 					$result = eval("$val");
 				}
 				catch (Exception $e) {
-					JLog::add('Error setTags for tag : ' . $tag['tag'] . '. Message : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+					Log::add('Error setTags for tag : ' . $tag['tag'] . '. Message : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 					$result = "";
 				}
 
@@ -788,7 +762,7 @@ class EmundusModelEmails extends JModelList
 					$result = eval("$request");
 				}
 				catch (Exception $e) {
-					JLog::add('Error setTags for tag : ' . $tag['tag'] . '. Message : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+					Log::add('Error setTags for tag : ' . $tag['tag'] . '. Message : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 					$result = "";
 				}
 
@@ -838,8 +812,17 @@ class EmundusModelEmails extends JModelList
 				$request = explode('|', $value);
 				if (count($request) > 1) {
 					$query = 'SELECT ' . $request[0] . ' FROM ' . $request[1] . ' WHERE ' . $request[2];
-					$db->setQuery($query);
-					$replacements[] = $db->loadResult();
+					try
+					{
+						$db->setQuery($query);
+						$replacements[] = $db->loadResult();
+					}
+					catch (Exception $e)
+					{
+						Log::add('Error setTagsWord for tag : ' . $tag['tag'] . '. Message : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+						$replacements[] = "";
+					}
+
 
 				}
 				else {
@@ -849,7 +832,13 @@ class EmundusModelEmails extends JModelList
 			else {
 				$request        = explode('php|', $value);
 				$val            = $this->setTagsFabrik($request[1], array($fnum));
-				$replacements[] = eval("$val");
+				try {
+					$replacements[] = eval("$val");
+				}
+				catch (Exception $e) {
+					Log::add('Error setTagsWord for tag : ' . $tag['tag'] . '. Message : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+					$replacements[] = "";
+				}
 			}
 		}
 
@@ -900,7 +889,7 @@ class EmundusModelEmails extends JModelList
 
 				$params         = json_decode($elt['params']);
 				$groupParams    = json_decode($elt['group_params']);
-				$isDate         = ($elt['plugin'] == 'date');
+				$isDate         = (in_array($elt['plugin'],['date','jdate']));
 				$isDatabaseJoin = ($elt['plugin'] === 'databasejoin');
 
 				if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
@@ -915,7 +904,11 @@ class EmundusModelEmails extends JModelList
 				}
 				else {
 					if ($isDate) {
-						$fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name'], $params->date_form_format);
+						if($elt['plugin'] == 'jdate') {
+							$fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name'], $params->jdate_form_format);
+						} else {
+							$fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name'], $params->date_form_format);
+						}
 					}
 					else {
 						$fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
@@ -1002,7 +995,7 @@ class EmundusModelEmails extends JModelList
 	 * @return mixed|string
 	 * @since version v6
 	 */
-	private function getCddLabel($elt, $val)
+	public function getCddLabel($elt, $val)
 	{
 		$attribs = json_decode($elt['params']);
 		$id      = $attribs->cascadingdropdown_id;
@@ -1026,7 +1019,7 @@ class EmundusModelEmails extends JModelList
 			return $ret;
 		}
 		catch (Exception $e) {
-			JLog::add('Error getting cascadingdropdown label in model/emails/getCddLabel at query : ' . $query->__toString(), JLog::ERROR, 'com_emundus');
+			Log::add('Error getting cascadingdropdown label in model/emails/getCddLabel at query : ' . $query->__toString(), Log::ERROR, 'com_emundus');
 
 			return $val;
 		}
@@ -1107,7 +1100,8 @@ class EmundusModelEmails extends JModelList
 				'user_id_from' => $this->_em_user->id,
 				'user_id_to'   => $mail_to_id,
 				'subject'      => $mail_subject,
-				'message'      => $mail_body
+				'message'       => $mail_body,
+				'email_to'      => $mail_to
 			];
 			$this->logEmail($message);
 
@@ -1181,7 +1175,7 @@ class EmundusModelEmails extends JModelList
 					$this->_db->query();
 				}
 				catch (Exception $e) {
-					JLog::add('Error trying to insert emundus files request (fnum ' . $fnum . ') : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+					Log::add('Error trying to insert emundus files request (fnum ' . $fnum . ') : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 				}
 
 				// 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
@@ -1277,7 +1271,8 @@ class EmundusModelEmails extends JModelList
 							'user_id_from' => $this->_em_user->id,
 							'user_id_to'   => $user_id_to,
 							'subject'      => $mail_subject,
-							'message'      => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . $m_to . '</i><br>' . $body
+							'message'       => $body,
+							'email_to'      => $m_to
 						];
 						$this->logEmail($message);
 					}
@@ -1345,7 +1340,7 @@ class EmundusModelEmails extends JModelList
 			$h_filters = new EmundusHelperFilters();
 			$m_files   = new EmundusModelFiles();
 
-			JLog::addLogger(['text_file' => 'com_emundus.inviteExpert.error.php'], JLog::ALL, 'com_emundus');
+			Log::addLogger(['text_file' => 'com_emundus.inviteExpert.error.php'], Log::ALL, 'com_emundus');
 
 			$eMConfig   = JComponentHelper::getParams('com_emundus');
 			$formid = json_decode($eMConfig->get('expert_fabrikformid', '{"accepted":169, "refused":328, "agreement": 0}'));
@@ -1444,7 +1439,7 @@ class EmundusModelEmails extends JModelList
 					catch (Exception $e) {
 						$failed[]      = $m_to;
 						$print_message .= '<hr>Error inviting expert ' . $m_to;
-						JLog::add('Error inserting file requests for expert invitations ' . $m_to . ' : ' . $e->getMessage() . ' with query : ' . $query->__toString(), JLog::ERROR, 'com_emundus');
+						Log::add('Error inserting file requests for expert invitations ' . $m_to . ' : ' . $e->getMessage() . ' with query : ' . $query->__toString(), Log::ERROR, 'com_emundus');
 						continue;
 					}
 
@@ -1484,7 +1479,7 @@ class EmundusModelEmails extends JModelList
 							catch (Exception $e) {
 								$failed[]      = $m_to . '  ' . $fnum['fnum'];
 								$print_message .= '<hr>Error associating expert ' . $m_to . ' to fnum ' . $fnum['fnum'];
-								JLog::add('Error inserting file requests for expert invitations ' . $m_to . ' and fnum ' . $fnum['fnum'] . ' : ' . $e->getMessage() . ' with query : ' . $query->__toString(), JLog::ERROR, 'com_emundus');
+								Log::add('Error inserting file requests for expert invitations ' . $m_to . ' and fnum ' . $fnum['fnum'] . ' : ' . $e->getMessage() . ' with query : ' . $query->__toString(), Log::ERROR, 'com_emundus');
 								continue;
 							}
 						}
@@ -1582,13 +1577,14 @@ class EmundusModelEmails extends JModelList
 									'user_id_from' => $this->_em_user->id,
 									'user_id_to'   => $user_id_to,
 									'subject'      => $mail_subject,
-									'message'      => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . $m_to . '</i><br>' . $body
+									'message'       => $body,
+									'email_to'      => $m_to
 								];
 								$this->logEmail($message);
 							}
 						}
 						catch (Exception $e) {
-							JLog::add('Could not get user by email : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+							Log::add('Could not get user by email : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 						}
 
 						$print_message .= '<hr>' . JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT') . ' : ' . $m_to;
@@ -1596,7 +1592,7 @@ class EmundusModelEmails extends JModelList
 						$print_message .= '<hr>' . $body;
 					}
 
-					Factory::getApplication()->triggerEvent('callEventHandler', ['onSendExpertRequest', [
+					Factory::getApplication()->triggerEvent('onCallEventHandler', ['onSendExpertRequest', [
 						'keyid' => $key1,
 						'fnums' => $fnums,
 						'mail_to' => $m_to
@@ -1619,7 +1615,7 @@ class EmundusModelEmails extends JModelList
 							$this->_db->execute();
 						}
 						catch (Exception $e) {
-							JLog::add('Could not delete file : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+							Log::add('Could not delete file : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 							continue;
 						}
 
@@ -1628,7 +1624,7 @@ class EmundusModelEmails extends JModelList
 					}
 				}
 				else {
-					JLog::add(JFactory::getUser()->id . ' Function sendExpertMail has been called but mail_to has been found empty. fnums => (' . json_encode($fnums) . ')', JLog::WARNING, 'com_emundus');
+					Log::add(JFactory::getUser()->id . ' Function sendExpertMail has been called but mail_to has been found empty. fnums => (' . json_encode($fnums) . ')', Log::WARNING, 'com_emundus');
 					$print_message = JText::_('NO_MAIL_TO_SEND');
 				}
 			}
@@ -1654,15 +1650,15 @@ class EmundusModelEmails extends JModelList
 		// log email to admin user if user_id_from is empty
 		$row['user_id_from'] = !empty($row['user_id_from']) ? $row['user_id_from'] : 62;
 		$row['email_cc']     = !empty($row['email_cc']) ? $row['email_cc'] : '';
+		$row['email_to'] = !empty($row['email_to']) ? $row['email_to'] : '';
 
 		require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
-		$h_date = new EmundusHelperDate();
-		$now    = $h_date->getNow();
+		$now    = EmundusHelperDate::getNow();
 
 		$query = $this->_db->getQuery(true);
 
-		$columns = ['user_id_from', 'user_id_to', 'date_time', 'subject', 'message', 'email_cc'];
-		$values  = [$row['user_id_from'], $row['user_id_to'], $this->_db->quote($now), $this->_db->quote($row['subject']), $this->_db->quote($row['message']), $this->_db->quote($row['email_cc'])];
+		$columns = ['user_id_from', 'user_id_to', 'date_time', 'subject', 'message', 'email_cc', 'email_to'];
+		$values  = [$row['user_id_from'], $row['user_id_to'], $this->_db->quote($now), $this->_db->quote($row['subject']), $this->_db->quote($row['message']), $this->_db->quote($row['email_cc']), $this->_db->quote($row['email_to'])];
 
 		// If we are logging the email type as well, this allows us to put them in separate folders.
 		if (isset($row['type']) && !empty($row['type'])) {
@@ -1701,7 +1697,7 @@ class EmundusModelEmails extends JModelList
 			}
 		}
 		catch (Exception $e) {
-			JLog::add('Error logging email in model/emails : ' . preg_replace("/[\r\n]/", " ", $query->__toString()) . ' data : ' . json_encode($row), JLog::ERROR, 'com_emundus.email.error');
+			Log::add('Error logging email in model/emails with error '.$e->getMessage().' : ' . preg_replace("/[\r\n]/", " ", $query->__toString()) . ' data : ' . json_encode($row), Log::ERROR, 'com_emundus.email.error');
 		}
 
 		return $logged;
@@ -1777,7 +1773,7 @@ class EmundusModelEmails extends JModelList
 					}
 				}
 			} catch (Exception $e) {
-				JLog::add('Error getting messages sent to or from user: '.$user_id.' at query: '.$query, JLog::ERROR, 'com_emundus.error');
+				Log::add('Error getting messages sent to or from user: '.$user_id.' at query: '.$query, Log::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -1796,7 +1792,7 @@ class EmundusModelEmails extends JModelList
 	{
 
 		if (empty($email) || empty($groups)) {
-			JLog::add('No user or group found in sendEmailToGroup function: ', JLog::ERROR, 'com_emundus');
+			Log::add('No user or group found in sendEmailToGroup function: ', Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -1814,12 +1810,12 @@ class EmundusModelEmails extends JModelList
 				$this->sendEmailFromPlatform($user["user_id"], $template, $attachments);
 			}
 			catch (Exception $e) {
-				JLog::add('Error sending an email via the platform: ', JLog::ERROR, 'com_emundus');
+				Log::add('Error sending an email via the platform: ', Log::ERROR, 'com_emundus');
 
 				return false;
 			}
 		}
-		JLog::add(sizeof($users) . ' emails sent to the following groups: ' . implode(",", $groups), JLog::ERROR, 'com_emundus');
+		Log::add(sizeof($users) . ' emails sent to the following groups: ' . implode(",", $groups), Log::ERROR, 'com_emundus');
 
 		return true;
 	}
@@ -1894,7 +1890,7 @@ class EmundusModelEmails extends JModelList
 			if ($send !== true) {
 				$failed[] = $user->email;
 				echo 'Error sending email: ' . $send->__toString();
-				JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+				Log::add($send->__toString(), Log::ERROR, 'com_emundus');
 			}
 			else {
 				$sent[] = $user->email;
@@ -1902,8 +1898,9 @@ class EmundusModelEmails extends JModelList
 					'user_id_from' => $current_user->id,
 					'user_id_to'   => $user->id,
 					'subject'      => $subject,
-					'message'      => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . $user->email . '</i><br>' . $body . $files,
-					'type'         => !empty($template) ? $template->type : ''
+					'message' => $body . $files,
+					'type' => !empty($template)?$template->type:'',
+					'email_to' => $user->email
 				];
 				$this->logEmail($log);
 				// Log the email in the eMundus logging system.
@@ -2009,7 +2006,7 @@ class EmundusModelEmails extends JModelList
 			return array('datas' => $emails, 'count' => $count_emails);
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/email | Error when try to get emails : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/email | Error when try to get emails : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return [];
 		}
@@ -2061,7 +2058,7 @@ class EmundusModelEmails extends JModelList
 				}
 			}
 			catch (Exception $e) {
-				JLog::add('component/com_emundus/models/email | Cannot delete emails: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/models/email | Cannot delete emails: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -2101,7 +2098,7 @@ class EmundusModelEmails extends JModelList
 				return $this->_db->execute();
 			}
 			catch (Exception $e) {
-				JLog::add('component/com_emundus/models/email | Cannot unpublish emails: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/models/email | Cannot unpublish emails: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 				return false;
 			}
@@ -2144,7 +2141,7 @@ class EmundusModelEmails extends JModelList
 				return $this->_db->execute();
 			}
 			catch (Exception $e) {
-				JLog::add('component/com_emundus/models/email | Cannot publish emails: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/models/email | Cannot publish emails: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 				return $e->getMessage();
 			}
@@ -2201,7 +2198,7 @@ class EmundusModelEmails extends JModelList
 
 			}
 			catch (Exception $e) {
-				JLog::add('component/com_emundus/models/email | Cannot duplicate emails: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/models/email | Cannot duplicate emails: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 				return false;
 			}
@@ -2293,7 +2290,7 @@ class EmundusModelEmails extends JModelList
 			return array('email' => $email_Info, 'receivers' => $receiver_Info, 'template' => $template_Info, 'letter_attachment' => $letter_Info, 'candidate_attachment' => $attachments_Info, 'tags' => $tags_Info);
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/email | Cannot get the email by id ' . $id . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/email | Cannot get the email by id ' . $id . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -2322,7 +2319,7 @@ class EmundusModelEmails extends JModelList
 		if (!empty($data)) {
 			$query->insert($this->_db->quoteName('#__emundus_setup_emails'))
 				->columns($this->_db->quoteName(array_keys($data)))
-				->values(implode(',', $this->_db->Quote(array_values($data))));
+				->values(implode(',', $this->_db->quote(array_values($data))));
 
 			try {
 				$this->_db->setQuery($query);
@@ -2434,7 +2431,7 @@ class EmundusModelEmails extends JModelList
 				}
 			}
 			catch (Exception $e) {
-				JLog::add('component/com_emundus/models/email | Cannot create an email: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/models/email | Cannot create an email: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 				$created = false;
 			}
 		}
@@ -2463,7 +2460,7 @@ class EmundusModelEmails extends JModelList
 		// set regular expression for fabrik elem
 		$fabrik_pattern = '/\${(.+[0-9])\}/';
 
-		if (count($data) > 0) {
+		if (!empty($data)) {
 
 			$fields = [];
 
@@ -2637,7 +2634,7 @@ class EmundusModelEmails extends JModelList
 				$updated = true;
 			}
 			catch (Exception $e) {
-				JLog::add('component/com_emundus/models/email | Cannot update the email ' . $id . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/models/email | Cannot update the email ' . $id . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 			}
 
 		}
@@ -2665,7 +2662,7 @@ class EmundusModelEmails extends JModelList
 			return $this->_db->loadColumn();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/email | Cannot get emails types : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/email | Cannot get emails types : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -2679,6 +2676,8 @@ class EmundusModelEmails extends JModelList
 	 */
 	public function getEmailCategories()
 	{
+		$categories = [];
+
 		$query = $this->_db->getQuery(true);
 
 		$query->select('DISTINCT(category)')
@@ -2688,14 +2687,13 @@ class EmundusModelEmails extends JModelList
 
 		try {
 			$this->_db->setQuery($query);
-
-			return $this->_db->loadColumn();
+			$categories = $this->_db->loadColumn();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/email | Cannot get emails categories : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
-
-			return false;
+			Log::add('component/com_emundus/models/email | Cannot get emails categories : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 		}
+
+		return $categories;
 	}
 
 	/**
@@ -2718,7 +2716,7 @@ class EmundusModelEmails extends JModelList
 			return $this->_db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/email | Cannot get status : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/email | Cannot get status : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -2733,49 +2731,95 @@ class EmundusModelEmails extends JModelList
 	 */
 	function getTriggersByProgramId($pid)
 	{
-		$lang = JFactory::getLanguage();
-		$lid  = 2;
-		if ($lang->getTag() != 'fr-FR') {
-			$lid = 1;
+		$triggers = [];
+
+		if (!empty($pid)) {
+
+			$lang = JFactory::getApplication()->getLanguage();
+			$lid  = 2;
+			if ($lang->getTag() != 'fr-FR') {
+				$lid = 1;
+			}
+
+			$query = $this->_db->getQuery(true);
+
+			$query->select(['DISTINCT(et.id) AS trigger_id', 'se.subject AS subject', 'ss.step AS status', 'ep.profile_id AS profile', 'et.to_current_user AS candidate', 'et.to_applicant AS manual'])
+				->from($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_programme_id', 'etrp'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger', 'et') . ' ON ' . $this->_db->quoteName('etrp.parent_id') . ' = ' . $this->_db->quoteName('et.id'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_emails', 'se') . ' ON ' . $this->_db->quoteName('et.email_id') . ' = ' . $this->_db->quoteName('se.id'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_status', 'ss') . ' ON ' . $this->_db->quoteName('et.step') . ' = ' . $this->_db->quoteName('ss.step'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_profile_id', 'ep') . ' ON ' . $this->_db->quoteName('et.id') . ' = ' . $this->_db->quoteName('ep.parent_id'))
+				->where($this->_db->quoteName('etrp.programme_id') . ' = ' . $this->_db->quote($pid));
+
+			try {
+				$this->_db->setQuery($query);
+				$triggers = $this->_db->loadObjectList();
+
+				foreach ($triggers as $trigger) {
+					$query->clear()
+						->select('value')
+						->from($this->_db->quoteName('#__falang_content'))
+						->where($this->_db->quoteName('reference_id') . ' = ' . $this->_db->quote($trigger->status))
+						->andWhere($this->_db->quoteName('reference_table') . ' = ' . $this->_db->quote('emundus_setup_status'))
+						->andWhere($this->_db->quoteName('reference_field') . ' = ' . $this->_db->quote('value'))
+						->andWhere($this->_db->quoteName('language_id') . ' = ' . $this->_db->quote($lid));
+					$this->_db->setQuery($query);
+					$translated_status = $this->_db->loadResult();
+
+					if (empty($translated_status)) {
+						$query->clear()
+							->select('value')
+							->from('#__emundus_setup_status')
+							->where('step = ' . $trigger->status);
+
+						$this->_db->setQuery($query);
+						$trigger->status = $this->_db->loadResult();
+					} else {
+						$trigger->status = $translated_status;
+					}
+
+					$query->clear()
+						->select(['us.firstname', 'us.lastname'])
+						->from($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id', 'tu'))
+						->leftJoin($this->_db->quoteName('#__emundus_users', 'us') . ' ON ' . $this->_db->quoteName('tu.user_id') . ' = ' . $this->_db->quoteName('us.user_id'))
+						->where($this->_db->quoteName('tu.parent_id') . ' = ' . $this->_db->quote($trigger->trigger_id));
+
+					$this->_db->setQuery($query);
+					$trigger->users = array_values($this->_db->loadObjectList());
+				}
+			}
+			catch (Exception $e) {
+				Log::add('component/com_emundus/models/email | Error at getting triggers by program id ' . $pid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+			}
 		}
 
+		return $triggers;
+	}
 
-		$query = $this->_db->getQuery(true);
+	/**
+	 * @param $tid
+	 *
+	 * @return object | null
+	 *
+	 * @since version 1.0
+	 */
+	function getTriggerById($tid)
+	{
+		$trigger = null;
 
-		$query
-			->select(['DISTINCT(et.id) AS trigger_id', 'se.subject AS subject', 'ss.step AS status', 'ep.profile_id AS profile', 'et.to_current_user AS candidate', 'et.to_applicant AS manual'])
-			->from($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_programme_id', 'etrp'))
-			->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger', 'et')
-				. ' ON ' .
-				$this->_db->quoteName('etrp.parent_id') . ' = ' . $this->_db->quoteName('et.id'))
-			->leftJoin($this->_db->quoteName('#__emundus_setup_emails', 'se')
-				. ' ON ' .
-				$this->_db->quoteName('et.email_id') . ' = ' . $this->_db->quoteName('se.id'))
-			->leftJoin($this->_db->quoteName('#__emundus_setup_status', 'ss')
-				. ' ON ' .
-				$this->_db->quoteName('et.step') . ' = ' . $this->_db->quoteName('ss.step'))
-			->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_profile_id', 'ep')
-				. ' ON ' .
-				$this->_db->quoteName('et.id') . ' = ' . $this->_db->quoteName('ep.parent_id'))
-			->where($this->_db->quoteName('etrp.programme_id') . ' = ' . $this->_db->quote($pid));
+		if (!empty($tid)) {
+			$query = $this->_db->getQuery(true);
+			$query->select(['DISTINCT(et.id) AS trigger_id', 'et.step AS status', 'et.email_id AS model', 'ep.profile_id AS target', 'et.to_current_user', 'et.to_applicant'])
+				->from($this->_db->quoteName('#__emundus_setup_emails_trigger', 'et'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_profile_id', 'ep') . ' ON ' . $this->_db->quoteName('et.id') . ' = ' . $this->_db->quoteName('ep.parent_id'))
+				->where($this->_db->quoteName('et.id') . ' = ' . $this->_db->quote($tid));
 
-		try {
-			$this->_db->setQuery($query);
-			$triggers = $this->_db->loadObjectList();
-
-			foreach ($triggers as $trigger) {
-				$query->clear()
-					->select('value')
-					->from($this->_db->quoteName('#__falang_content'))
-					->where($this->_db->quoteName('reference_id') . ' = ' . $this->_db->quote($trigger->status))
-					->andWhere($this->_db->quoteName('reference_table') . ' = ' . $this->_db->quote('emundus_setup_status'))
-					->andWhere($this->_db->quoteName('reference_field') . ' = ' . $this->_db->quote('value'))
-					->andWhere($this->_db->quoteName('language_id') . ' = ' . $this->_db->quote($lid));
+			try {
 				$this->_db->setQuery($query);
-				$trigger->status = $this->_db->loadResult();
+				$trigger = $this->_db->loadObject();
 
 				$query->clear()
-					->select(['us.firstname', 'us.lastname'])
+					->select('us.user_id')
 					->from($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id', 'tu'))
 					->leftJoin($this->_db->quoteName('#__emundus_users', 'us')
 						. ' ON ' .
@@ -2784,67 +2828,23 @@ class EmundusModelEmails extends JModelList
 				$this->_db->setQuery($query);
 				$trigger->users = array_values($this->_db->loadObjectList());
 			}
-
-			return $triggers;
+			catch (Exception $e) {
+				Log::add('component/com_emundus/models/email | Error at getting trigger ' . $tid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+			}
 		}
-		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/email | Error at getting triggers by program id ' . $pid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
 
-			return false;
-		}
-	}
-
-	/**
-	 * @param $tid
-	 *
-	 * @return false
-	 *
-	 * @since version 1.0
-	 */
-	function getTriggerById($tid)
-	{
-		$query = $this->_db->getQuery(true);
-
-		$query->select(['DISTINCT(et.id) AS trigger_id', 'et.step AS status', 'et.email_id AS model', 'ep.profile_id AS target', 'et.to_current_user', 'et.to_applicant'])
-			->from($this->_db->quoteName('#__emundus_setup_emails_trigger', 'et'))
-			->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_profile_id', 'ep')
-				. ' ON ' .
-				$this->_db->quoteName('et.id') . ' = ' . $this->_db->quoteName('ep.parent_id'))
-			->where($this->_db->quoteName('et.id') . ' = ' . $this->_db->quote($tid));
-
-		try {
-			$this->_db->setQuery($query);
-			$trigger = $this->_db->loadObject();
-
-			$query->clear()
-				->select('us.user_id')
-				->from($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id', 'tu'))
-				->leftJoin($this->_db->quoteName('#__emundus_users', 'us')
-					. ' ON ' .
-					$this->_db->quoteName('tu.user_id') . ' = ' . $this->_db->quoteName('us.user_id'))
-				->where($this->_db->quoteName('tu.parent_id') . ' = ' . $this->_db->quote($trigger->trigger_id));
-			$this->_db->setQuery($query);
-			$trigger->users = array_values($this->_db->loadObjectList());
-
-			return $trigger;
-		}
-		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/email | Error at getting trigger ' . $tid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
-
-			return false;
-		}
+		return $trigger;
 	}
 
 	/**
 	 * @param $trigger
-	 * @param $users
 	 * @param $user
 	 *
-	 * @return false
+	 * @return boolean
 	 *
 	 * @since version 1.0
 	 */
-	function createTrigger($trigger, $users, $user)
+	function createTrigger($trigger, $user)
 	{
 		$created = false;
 
@@ -2886,17 +2886,6 @@ class EmundusModelEmails extends JModelList
 							$this->_db->setQuery($query);
 							$this->_db->execute();
 						}
-						elseif ($trigger['target'] == 0) {
-							foreach (array_keys($users) as $uid) {
-								$query->clear()
-									->insert($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id'))
-									->set($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($trigger_id))
-									->set($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote($uid));
-
-								$this->_db->setQuery($query);
-								$this->_db->execute();
-							}
-						}
 
 						$query->clear()
 							->insert($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_programme_id'))
@@ -2904,12 +2893,11 @@ class EmundusModelEmails extends JModelList
 							->set($this->_db->quoteName('programme_id') . ' = ' . $this->_db->quote($trigger['program']));
 
 						$this->_db->setQuery($query);
-						$trigger_assoc_prog = $this->_db->execute();
-						$created            = true;
+						$created = $this->_db->execute();
 					}
 				}
 				catch (Exception $e) {
-					JLog::add('component/com_emundus/models/email | Cannot create a trigger : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
+					Log::add('component/com_emundus/models/email | Cannot create a trigger : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 				}
 			}
 		}
@@ -2920,88 +2908,89 @@ class EmundusModelEmails extends JModelList
 	/**
 	 * @param $tid
 	 * @param $trigger
-	 * @param $users
 	 *
 	 * @return false|void
 	 *
 	 * @since version 1.0
 	 */
-	function updateTrigger($tid, $trigger, $users)
+	function updateTrigger($tid, $trigger)
 	{
+		$updated = false;
 
-		$query = $this->_db->getQuery(true);
+		if (!empty($tid) && !empty($trigger)) {
+			$query = $this->_db->getQuery(true);
 
-		$to_current_user = 0;
-		$to_applicant    = 0;
+			$to_current_user = 0;
+			$to_applicant    = 0;
 
-		if ($trigger['action_status'] == 'to_current_user') {
-			$to_current_user = 1;
-		}
-		elseif ($trigger['action_status'] == 'to_applicant') {
-			$to_applicant = 1;
-		}
-
-		$query->update($this->_db->quoteName('#__emundus_setup_emails_trigger'))
-			->set($this->_db->quoteName('step') . ' = ' . $this->_db->quote($trigger['status']))
-			->set($this->_db->quoteName('email_id') . ' = ' . $this->_db->quote($trigger['model']))
-			->set($this->_db->quoteName('to_current_user') . ' = ' . $this->_db->quote($to_current_user))
-			->set($this->_db->quoteName('to_applicant') . ' = ' . $this->_db->quote($to_applicant))
-			->where($this->_db->quoteName('id') . ' = ' . $tid);
-
-		try {
-			$this->_db->setQuery($query);
-			$this->_db->execute();
-
-			if ($trigger['target'] == 5 || $trigger['target'] == 6) {
-				$query->clear()
-					->update($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_profile_id'))
-					->set($this->_db->quoteName('profile_id') . ' = ' . $this->_db->quote($trigger['target']))
-					->where($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($tid));
-
-				try {
-					$this->_db->setQuery($query);
-					$this->_db->execute();
-				}
-				catch (Exception $e) {
-					JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
-
-					return false;
-				}
-
+			if ($trigger['action_status'] == 'to_current_user') {
+				$to_current_user = 1;
 			}
-			elseif ($trigger['target'] == 0) {
-				foreach (array_keys($users) as $uid) {
-					$query->clear()
-						->select('COUNT(*)')
-						->from($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id'))
-						->where($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote($uid))
-						->andWhere($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($tid));
-					$this->_db->setQuery($query);
-					$row = $this->_db->loadResult();
+			elseif ($trigger['action_status'] == 'to_applicant') {
+				$to_applicant = 1;
+			}
 
-					if ($row < 1) {
+			$query->update($this->_db->quoteName('#__emundus_setup_emails_trigger'))
+				->set($this->_db->quoteName('step') . ' = ' . $this->_db->quote($trigger['status']))
+				->set($this->_db->quoteName('email_id') . ' = ' . $this->_db->quote($trigger['model']))
+				->set($this->_db->quoteName('to_current_user') . ' = ' . $this->_db->quote($to_current_user))
+				->set($this->_db->quoteName('to_applicant') . ' = ' . $this->_db->quote($to_applicant))
+				->where($this->_db->quoteName('id') . ' = ' . $tid);
+
+			try {
+				$this->_db->setQuery($query);
+				$updated = $this->_db->execute();
+
+				if ($trigger['target'] == 5 || $trigger['target'] == 6) {
+					$query->clear()
+						->select('id')
+						->from($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_profile_id'))
+						->where($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($tid));
+
+					$this->_db->setQuery($query);
+					$row_id = $this->_db->loadResult();
+
+					if (!empty($row_id)) {
 						$query->clear()
-							->insert($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id'))
-							->set($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($tid))
-							->set($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote($uid));
+							->update($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_profile_id'))
+							->set($this->_db->quoteName('profile_id') . ' = ' . $this->_db->quote($trigger['target']))
+							->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($row_id));
+
 						try {
 							$this->_db->setQuery($query);
-							$this->_db->execute();
+							$updated = $this->_db->execute();
 						}
 						catch (Exception $e) {
-							JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+							Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
+						}
+					} else {
+						$query->clear()
+							->insert($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_profile_id'))
+							->set($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($tid))
+							->set($this->_db->quoteName('profile_id') . ' = ' . $this->_db->quote($trigger['target']));
 
-							return false;
+						try {
+							$this->_db->setQuery($query);
+							$updated = $this->_db->execute();
+						}
+						catch (Exception $e) {
+							Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
 						}
 					}
+				} else {
+					$query->clear()
+						->delete($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_profile_id'))
+						->where($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($tid));
+
+					$this->_db->setQuery($query);
+					$updated = $this->_db->execute();
 				}
+			} catch (Exception $e) {
+				Log::add('component/com_emundus/models/email | Cannot update the trigger ' . $tid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 			}
 		}
-		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/email | Cannot update the trigger ' . $tid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
 
-			return false;
-		}
+		return $updated;
 	}
 
 	/**
@@ -3024,7 +3013,7 @@ class EmundusModelEmails extends JModelList
 			return $this->_db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/email | Error at remove the trigger ' . $tid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/email | Error at remove the trigger ' . $tid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -3094,7 +3083,7 @@ class EmundusModelEmails extends JModelList
 					$tags = $db->loadColumn();
 				}
 				catch (Exception $e) {
-					JLog::add('Error checking unpublished tags model/emails/setTags at query : ' . $query->__toString(), JLog::ERROR, 'com_emundus.email');
+					Log::add('Error checking unpublished tags model/emails/setTags at query : ' . $query->__toString(), Log::ERROR, 'com_emundus.email');
 
 					return array('patterns' => array(), 'replacements' => array());
 				}
@@ -3104,7 +3093,7 @@ class EmundusModelEmails extends JModelList
 		return $tags;
 	}
 
-	public function sendEmailNoFnum($email_address, $email, $post = null, $user_id = null, $attachments = [], $fnum = null, $log_email = true)
+	public function sendEmailNoFnum($email_address, $email, $post = null, $user_id = null, $attachments = [], $fnum = null, $log_email = true, $emails_cc = [])
 	{
 		$sent = false;
 
@@ -3120,6 +3109,7 @@ class EmundusModelEmails extends JModelList
 				$template = $m_messages->getEmail($email);
 				$body = $template->message;
 				$subject = $template->subject;
+				$button_text = $template->button;
 
 				// Get default mail sender info
 				$mail_from_sys = $config->get('mailfrom');
@@ -3143,11 +3133,15 @@ class EmundusModelEmails extends JModelList
 
 				// In case no post value is supplied
 				$default_post = [
-					'SITE_URL'   => JURI::base(),
+					'SITE_URL'   => Uri::base(),
 					'SITE_NAME' => $config->get('sitename'),
 					'USER_EMAIL' => $email_address,
 					'LOGO' => EmundusHelperEmails::getLogo(),
+					'BUTTON_TEXT' => $button_text,
 				];
+				if(!empty($fnum)) {
+					$default_post['FNUM'] = $fnum;
+				}
 
 				if (!empty($post)) {
 					$post = array_merge($default_post, $post);
@@ -3169,7 +3163,7 @@ class EmundusModelEmails extends JModelList
 					}
 
 					$password = !empty($post['PASSWORD']) ? $post['PASSWORD'] : "";
-					$post = $this->setTags($user_id, $post, null, $password, $mail_from_name.$mail_from.$template->subject.$template->message);
+					$post = $this->setTags($user_id, $post, $fnum, $password, $mail_from_name.$mail_from.$template->subject.$template->message);
 
 					$mail_from_name = preg_replace($post['patterns'], $post['replacements'], $mail_from_name);
 					$mail_from = preg_replace($post['patterns'], $post['replacements'], $mail_from);
@@ -3212,6 +3206,7 @@ class EmundusModelEmails extends JModelList
 				$mailer->setBody($body);
 				$mailer->AltBody = $body_raw;
 
+				$cc = array_merge($cc, $emails_cc);
 				if (!empty($cc)) {
 					$mailer->addCC($cc);
 				}
@@ -3229,9 +3224,9 @@ class EmundusModelEmails extends JModelList
 				$send = $mailer->Send();
 				if ($send !== true) {
 					if ($send === false) {
-						JLog::add('Tried sending email with mailer disabled in site settings.', JLog::ERROR, 'com_emundus');
+						Log::add('Tried sending email with mailer disabled in site settings.', Log::ERROR, 'com_emundus');
 					} else {
-						JLog::add($send->getMessage(), JLog::ERROR, 'com_emundus');
+						Log::add($send->getMessage(), Log::ERROR, 'com_emundus');
 					}
 				} else {
 					$user_id_to = !empty($user_id) ? $user_id : null;
@@ -3248,7 +3243,7 @@ class EmundusModelEmails extends JModelList
 							$db->setQuery($query);
 							$user_id_to = $db->loadResult();
 						} catch (Exception $e) {
-							JLog::add('error trying to find user_id_to ' . $e->getMessage(), JLog::ERROR);
+							Log::add('error trying to find user_id_to ' . $e->getMessage(), Log::ERROR);
 						}
 					}
 
@@ -3257,8 +3252,9 @@ class EmundusModelEmails extends JModelList
 							'user_id_from'  => !empty(JFactory::getUser()->id) ? JFactory::getUser()->id : 62,
 							'user_id_to'    => $user_id_to,
 							'subject'       => $subject,
-							'message'       => '<i>'.JText::_('COM_EMUNDUS_EMAILS_MESSAGE_SENT_TO').' '.$email_address.'</i><br>'.$body,
-							'type'          => $template->type
+							'message'       => $body,
+							'type'          => $template->type,
+							'email_to'      => $email_address
 						];
 						$this->logEmail($log);
 					}
@@ -3463,7 +3459,7 @@ class EmundusModelEmails extends JModelList
 			$send = $mailer->Send();
 
 			if ($send !== true) {
-				JLog::add($send, JLog::WARNING, 'com_emundus.email');
+				Log::add($send, Log::WARNING, 'com_emundus.email');
 			} else {
 				// in cron task, the current user is the last logged user, so we use a sender_id given in parameter, or the current user id, or the default user_id if none is found.
 				if (!empty($sender_id)) {
@@ -3478,9 +3474,10 @@ class EmundusModelEmails extends JModelList
 					'user_id_from'  => $user_id,
 					'user_id_to'    => $fnum['applicant_id'],
 					'subject'       => $subject,
-					'message'       => '<i>'.JText::_('COM_EMUNDUS_EMAILS_MESSAGE_SENT_TO').' '.$fnum['email'].'</i><br>'.$body,
+					'message'       => $body,
 					'type'          => $template->type,
 					'email_id'      => $email_id,
+					'email_to'      => $fnum['email']
 				];
 				$this->logEmail($log, $fnum['fnum']);
 

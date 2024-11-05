@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -12,7 +12,7 @@ defined('_JEXEC') or die('Restricted access');
 $labelcolumnclass = 'hkc-sm-4';
 $inputcolumnclass = 'hkc-sm-8';
 if(!empty($this->options['override_registration']) && !empty($this->options['registration_registration'])) {
-	echo hikashop_translate($this->options['text']);
+	echo JHTML::_('content.prepare', hikashop_translate($this->options['text']));
 	$this->options['registration_registration'] = false;
 }
 if(!empty($this->options['registration_registration'])) {
@@ -206,7 +206,16 @@ if(!empty($this->options['affiliate_registration'])) {
 ?>
 				<input class="hikashop_affiliate_checkbox" id="hikashop_affiliate_checkbox" type="checkbox" name="hikashop_affiliate_checkbox" value="1" <?php echo $this->affiliate_checked; ?> />
 				<span class="hikashop_affiliate_terms_span_link" id="hikashop_affiliate_terms_span_link">
-					<a class="hikashop_affiliate_terms_link" id="hikashop_affiliate_terms_link" target="_blank" href="<?php echo JRoute::_('index.php?option=com_content&view=article&id='.$affiliate_terms); ?>"><?php echo JText::_('BECOME_A_PARTNER'); ?></a>
+<?php
+			$popupHelper = hikashop_get('helper.popup');
+			echo $popupHelper->display(
+				JText::_('BECOME_A_PARTNER'),
+				'BECOME_A_PARTNER',
+				JRoute::_('index.php?option=com_hikashop&ctrl=checkout&task=termsandconditions&type=affiliate_terms&tmpl=component'),
+				'hikashop_affiliate_terms_link',
+				(int)$this->config->get('affiliate_terms_x', 450), (int)$this->config->get('affiliate_terms_y', 480), '', '', 'link'
+			);
+?>
 				</span>
 <?php
 		} else {

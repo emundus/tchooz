@@ -1,15 +1,15 @@
 <template>
   <div id="emundus-filters" class="em-w-100">
     <section id="filters-top-actions" class="em-mb-16">
-      <span id="clear-filters" class="material-icons-outlined em-pointer hidden" @click="clearFilters" :alt="translate('MOD_EMUNDUS_FILTERS_CLEAR_FILTERS')">filter_list_off</span>
-      <span id="save-filters" class="material-icons-outlined em-pointer hidden" @click="onClickSaveFilter" :alt="translate('MOD_EMUNDUS_FILTERS_SAVE_FILTERS')">save</span>
+      <span id="clear-filters" class="material-symbols-outlined em-pointer hidden" @click="clearFilters" :alt="translate('MOD_EMUNDUS_FILTERS_CLEAR_FILTERS')">filter_list_off</span>
+      <span id="save-filters" class="material-symbols-outlined em-pointer hidden" @click="onClickSaveFilter" :alt="translate('MOD_EMUNDUS_FILTERS_SAVE_FILTERS')">save</span>
 
       <div id="global-search-wrapper" style="position: relative;">
         <div id="global-search-values" ref="globalSearchValues" class="em-border-radius-8 em-border-neutral-400 em-flex-row em-flex-wrap em-white-bg" @click="onEnterGlobalSearchDiv">
           <div v-if="globalSearch.length > 0" class="em-flex-row em-flex-wrap">
             <div v-for="value in globalSearch" :key="value.value + '-' + value.scope" class="global-search-tag em-flex-row em-box-shadow em-border-radius-8 em-border-neutral-400 em-w-auto em-mt-4 em-mb-4 em-ml-4 em-mr-4">
               <span style="white-space: nowrap">{{ translatedScope(value.scope) }} : {{ value.value }}</span>
-              <span class="material-icons-outlined em-pointer" @click="removeGlobalSearchValue(value.value, value.scope)">clear</span>
+              <span class="material-symbols-outlined em-pointer" @click="removeGlobalSearchValue(value.value, value.scope)">clear</span>
             </div>
           </div>
           <input id="current-global-search" ref="globalSearchInput" class="em-border-radius-8" v-model="currentGlobalSearch" type="text" @keyup.enter="(e) => {this.onGlobalSearchChange(e, 'everywhere')}" :placeholder="globalSearchPlaceholder">
@@ -23,7 +23,7 @@
       <div id="save-filters-inputs-btns">
         <div id="save-filter-new-name" class="em-flex-row em-flex-space-between em-border-radius-8 em-white-bg em-box-shadow em-w-100 em-p-16" :class="{'hidden': !openSaveFilter}">
           <input id="new-filter-name" ref="new-filter-name" type="text" class="em-flex-row" v-model="newFilterName" :placeholder="translate('MOD_EMUNDUS_FILTERS_SAVE_FILTER_NAME')" minlength="2" @keyup.enter="saveFilters" @focusout="onFocusOutNewFilter">
-          <span id="save-new-filter" class="material-icons-outlined em-pointer" :class="{'em-pointer em-dark-blue-500-color': newFilterName.length > 1}" @click="saveFilters">done</span>
+          <span id="save-new-filter" class="material-symbols-outlined em-pointer" :class="{'em-pointer em-dark-blue-500-color': newFilterName.length > 1}" @click="saveFilters">done</span>
         </div>
         <div v-if="registeredFilters.length > 0" id="registered-filters-wrapper" class="em-mt-8">
           <label for="registered-filters">{{ translate('MOD_EMUNDUS_FILTERS_SAVED_FILTERS') }}</label>
@@ -32,7 +32,7 @@
               <option value="0">{{ translate('MOD_EMUNDUS_FILTERS_PLEASE_SELECT') }}</option>
               <option v-for="registeredFilter in registeredFilters" :key="registeredFilter.id" :value="registeredFilter.id">{{ registeredFilter.name }}</option>
             </select>
-            <span v-if="selectedRegisteredFilter > 0" class="material-icons-outlined em-red-500-color em-pointer" @click="deleteRegisteredFilter">delete</span>
+            <span v-if="selectedRegisteredFilter > 0" class="material-symbols-outlined em-red-600-color em-pointer" @click="deleteRegisteredFilter">delete</span>
           </div>
         </div>
       </div>
@@ -50,8 +50,8 @@
       <AdvancedSelect :module-id="moduleId" :filters="availableFilters" @filter-selected="onSelectNewFilter"></AdvancedSelect>
     </div>
     <section id="filters-bottom-actions">
-      <button id="em-add-filter" class="em-secondary-button em-white-bg em-mt-16" @click="openFilterOptions = !openFilterOptions">{{ translate('MOD_EMUNDUS_FILTERS_ADD_FILTER') }}</button>
-      <button id="em-apply-filters" class="em-primary-button em-mt-16 hidden" @click="applyFilters">{{ translate('MOD_EMUNDUS_FILTERS_APPLY_FILTERS') }}</button>
+      <button id="em-add-filter" class="tw-btn-cancel tw-w-full em-white-bg em-mt-16" @click="openFilterOptions = !openFilterOptions">{{ translate('MOD_EMUNDUS_FILTERS_ADD_FILTER') }}</button>
+      <button id="em-apply-filters" class="tw-btn-primary em-mt-16 hidden" @click="applyFilters">{{ translate('MOD_EMUNDUS_FILTERS_APPLY_FILTERS') }}</button>
     </section>
   </div>
 </template>
@@ -125,10 +125,10 @@ export default {
 		this.getRegisteredFilters();
 		this.selectedRegisteredFilter = sessionStorage.getItem('emundus-current-filter') || 0;
 		this.appliedFilters = this.defaultAppliedFilters.map((filter) => {
-      if (!filter.hasOwnProperty('operator')) {
+			if (!filter.hasOwnProperty('operator')) {
 				filter.operator = '=';
 			}
-      if (!filter.hasOwnProperty('andorOperator')) {
+			if (!filter.hasOwnProperty('andorOperator')) {
 				filter.andorOperator = 'OR';
 			}
 
@@ -200,7 +200,7 @@ export default {
 
 				newFilter.uid = new Date().getTime();
 				newFilter.default = false;
-				newFilter.operator = '=';
+				newFilter.operator = newFilter.hasOwnProperty('operator') && newFilter.operator != '' ? newFilter.operator : '=';
 				newFilter.andorOperator = 'OR';
 
 				switch (newFilter.type) {
@@ -262,9 +262,11 @@ export default {
 			this.globalSearch = [];
 			// reset applied filters values
 			this.appliedFilters = this.appliedFilters.map((filter) => {
-        filter.operator = '=';
-				if (filter.type === 'select') {
+				filter.operator = '=';
+
+        if (filter.type === 'select') {
           filter.operator = 'IN';
+
 					// TODO: too specific to the published filter, should create a default_value field.
 					if (filter.uid === 'published') {
 						filter.value = [1];
@@ -369,17 +371,31 @@ export default {
 			this.applyFilters();
 		},
 		onGlobalSearchChange(event, scope = 'everywhere') {
-      event.stopPropagation();
+			event.stopPropagation();
 			event.preventDefault();
 
 			if (this.currentGlobalSearch.length > 0) {
-				// if the current search is already in the list, no need to add it again
-				const foundSearch = this.globalSearch.find((search) => search.value === this.currentGlobalSearch && search.scope === scope);
+        // if currentGlobalSearch contains ; then split it and add each value as a new search
+        if (this.currentGlobalSearch.includes(';')) {
+          const searches = this.currentGlobalSearch.split(';');
+          searches.forEach((search) => {
+            const foundSearch = this.globalSearch.find((existingSearch) => existingSearch.value === search && existingSearch.scope === scope);
 
-				if (!foundSearch) {
-					this.globalSearch.push({value: this.currentGlobalSearch, scope: scope});
-					this.applyFilters();
-				}
+            if (!foundSearch) {
+              this.globalSearch.push({value: search, scope: scope});
+            }
+          });
+
+          this.applyFilters();
+        } else {
+          // if the current search is already in the list, no need to add it again
+          const foundSearch = this.globalSearch.find((search) => search.value === this.currentGlobalSearch && search.scope === scope);
+
+          if (!foundSearch) {
+            this.globalSearch.push({value: this.currentGlobalSearch, scope: scope});
+            this.applyFilters();
+          }
+        }
 			}
 
 			this.currentGlobalSearch = '';
@@ -452,7 +468,7 @@ export default {
 
 #select-scopes:not(.hidden) {
 	position: absolute;
-	top: 83px;
+	top: 42px;
 	z-index:2;
 	list-style-type: none;
 	margin: 0;
@@ -466,20 +482,11 @@ export default {
 #global-search-values {
 	height: 42px;
 	overflow-y: auto;
-  align-items: flex-start;
-}
-
-.global-search-values-wide {
-  height: 84px !important;
-}
-
-#em-files-filters input[type="text"]:focus, #em-user-filters input[type="text"]:focus {
-  box-shadow: none;
 }
 
 .global-search-scope button {
-  white-space: break-spaces;
-  text-align: left;
+	white-space: break-spaces;
+	text-align: left;
 }
 
 #current-global-search {

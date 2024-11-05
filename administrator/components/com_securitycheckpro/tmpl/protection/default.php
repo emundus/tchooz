@@ -151,6 +151,9 @@ $site_url = Uri::base();
                         <div class="alert alert-danger">
 							<?php echo Text::_('COM_SECURITYCHECKPRO_HTTP_HEADERS_EXPLAIN'); ?>    
                         </div>
+						<div class="alert alert-info">
+							<?php echo Text::_('COM_SECURITYCHECKPRO_HTTP_HEADERS_PROTECTION_ALREADY_APPLIED'); ?>
+                        </div>					
 						
 						<div class="input-group mb-3">
 							<input class="btn btn-info" type="button" onclick="configure_toast('<?php echo Text::_('COM_SECURITYCHECKPRO_XFRAME_OPTIONS_EXPLAIN') ?>','<?php echo Text::_('COM_SECURITYCHECKPRO_XFRAME_OPTIONS_TEXT') ?>');" value="<?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?>" />
@@ -188,7 +191,7 @@ $site_url = Uri::base();
                             <?php } ?>							
 						</div>
 						
-						<div class="input-group mb-3">
+						<div class="input-group mb-3">							
 							<input class="btn btn-info" type="button" onclick="configure_toast('<?php echo Text::_('COM_SECURITYCHECKPRO_CSP_OPTIONS_EXPLAIN') ?>','<?php echo Text::_('COM_SECURITYCHECKPRO_CSP_OPTIONS_TEXT') ?>');" value="<?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?>" />
 							<span class="input-group-text" id="csp_policy_label" title="<?php echo Text::_('COM_SECURITYCHECKPRO_CSP_OPTIONS_EXPLAIN') ?>"><?php echo Text::_('COM_SECURITYCHECKPRO_CSP_OPTIONS_TEXT'); ?></span>
 							<input type="text" class="form-control width_560" id="csp_policy" name="csp_policy" aria-describedby="csp_policy" placeholder="<?php echo Text::_('COM_SECURITYCHECKPRO_ENTER_POLICY') ?>" value="<?php echo htmlentities($this->protection_config['csp_policy']); ?>">         

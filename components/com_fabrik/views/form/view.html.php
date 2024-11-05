@@ -106,10 +106,14 @@ class FabrikViewForm extends FabrikViewFormBase
 			$slug   = $model->getListModel()->getSlug(ArrayHelper::toObject($data));
 			$rowId  = $slug === '' ? $model->getRowId() : $slug;
 			$view   = $model->isEditable() ? 'form' : 'details';
-			$url    = Route::_('index.php?option=com_' . $this->package . '&view=' . $view . '&formid=' . $formId . '&rowid=' . $rowId);
-		}
-
-		return $url;
+			$itemId = FabrikWorker::itemId();
+            $url    = 'index.php?option=com_fabrik' . '&view=' . $view . '&formid=' . $formId . '&rowid=' . $rowId;
+            if (!empty($itemId))
+            {
+                $url .= '&Itemid=' . $itemId;
+            }
+       }
+       return Route::_($url,true,Route::TLS_IGNORE,true);
 	}
 
 	/**
@@ -122,7 +126,7 @@ class FabrikViewForm extends FabrikViewFormBase
 	{
 		if (!$this->app->isClient('administrator') && !$this->isMambot)
 		{
-			$url = Uri::root() . trim(Route::_($this->getCanonicalLink()), '/' );
+			$url = $this->getCanonicalLink();
 
 			// Set a flag so that the system plugin can clear out any other canonical links.
 			$this->session->set('fabrik.clearCanonical', true);

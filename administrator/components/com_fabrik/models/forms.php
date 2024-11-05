@@ -90,7 +90,8 @@ class FabrikAdminModelForms extends FabModelList
 		$query->join('LEFT', '#__users AS u ON checked_out = u.id');
 		$query->join('LEFT', '#__fabrik_lists AS l ON l.form_id = f.id');
 
-		$query->join('INNER', '#__fabrik_formgroup AS fg ON fg.form_id = f.id');
+		//Don't exclude forms without groups
+		//$query->join('INNER', '#__fabrik_formgroup AS fg ON fg.form_id = f.id');
 
 		// Add the list ordering clause.
 		$orderCol  = $this->state->get('list.ordering');

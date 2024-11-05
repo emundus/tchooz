@@ -1,9 +1,18 @@
 # DOCKER AND CI
 .docker/data/*
-.docker/installation/databases/*
-!.docker/installation/databases/core.sql
 docker-compose-*.yml
-## UNIT TESTS
+
+# VITEPRESS
+public/
+!public/logo.png
+!public/logo_black.png
+!public/favicon.ico
+components/com_emundus/docs/.vitepress/cache/
+
+# PHPDOC
+.phpdoc/
+
+# UNIT TESTS
 /components/com_emundus/unittest/logs/
 /components/coverage/
 .phpunit.result.cache
@@ -60,6 +69,7 @@ images/stories/*
 /images/emundus/phases/*
 /image/logo.png
 /images/custom/logo_custom.png
+images/custom/favicon.png
 /images/emundus/custom/*
 
 # COMPILER
@@ -73,6 +83,8 @@ custom_variables.js
 
 # INSTALLATION FOLDER
 /installation/*
+README.txt
+LICENSE.txt
 
 # FRONTEND LANGUAGES
 /language/overrides/*
@@ -94,6 +106,7 @@ libraries/emundus/custom/*
 
 # MEDIA FOLDER
 /media/cache/*
+/media/com_dropfiles/*
 
 # FRONTEND TEMPLATES
 ## G5_HELIUM
@@ -131,6 +144,7 @@ libraries/emundus/custom/*
 /configuration*.php
 /configuration.php
 /.htaccess
+/.htaccess.bak
 
 # WAITING QUEUE
 waiting-queue.html
@@ -161,4 +175,5 @@ assessment/
 /plugins/authentication/miniorangesaml/
 /plugins/system/samlredirect/
 /plugins/user/samllogout/
+plugins/user/minioragejoomlaidp/
 
