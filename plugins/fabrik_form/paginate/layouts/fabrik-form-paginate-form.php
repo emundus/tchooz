@@ -17,23 +17,23 @@ $end = Text::_('COM_FABRIK_END');
 <div class="form-actions">
     <nav>
         <ul class="pagination">
-            <li data-paginate="first" class="pagination-start <?php echo $displayData['first-active'] ? 'active' : ''?>">
-                <a class="pagenav" href="<?php echo $displayData['first'];?>" title="<?php echo $start; ?>">
+            <li data-paginate="first" class="pagination-start page-item <?php echo $displayData['first-active']?>">
+                <a class="pagenav page-link" href="<?php echo $displayData['first'];?>" title="<?php echo $start; ?>">
 					<?php echo $start; ?>
                 </a>
             </li>
-            <li data-paginate="prev" class="pagination-prev <?php echo $displayData['first-active'] ? 'active' : ''?>">
-                <a class="pagenav" href="<?php echo $displayData['prev'];?>" title="<?php echo $prev; ?>">
+            <li data-paginate="prev" class="pagination-prev page-item <?php echo $displayData['first-active'] ?>">
+                <a class="pagenav page-link" href="<?php echo $displayData['prev'];?>" title="<?php echo $prev; ?>">
 					<?php echo $prev; ?>
                 </a>
             </li>
-            <li data-paginate="next" class="pagination-next <?php echo $displayData['last-active'] ? 'active' : ''?>">
-                <a class="pagenav" href="<?php echo $displayData['next'];?>" title="<?php echo $next; ?>">
+            <li data-paginate="next" class="pagination-next page-item  <?php echo $displayData['last-active']?>">
+                <a class="pagenav page-link" href="<?php echo $displayData['next'];?>" title="<?php echo $next; ?>">
 					<?php echo $next; ?>
                 </a>
             </li>
-            <li data-paginate="last" class="pagination-end <?php echo $displayData['last-active'] ? 'active' : ''?>">
-                <a class="pagenav" href="<?php echo $displayData['last'];?>" title="<?php echo $end; ?>">
+            <li data-paginate="last" class="pagination-end page-item <?php echo $displayData['last-active']?>">
+                <a class="pagenav page-link" href="<?php echo $displayData['last'];?>" title="<?php echo $end; ?>">
 					<?php echo $end; ?>
                 </a>
             </li>
