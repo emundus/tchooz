@@ -4,6 +4,8 @@ variables:
   DOCKER_BUILDKIT: 1
   BUILDKIT_INLINE_CACHE: 1
   DOCKER_TLS_CERTDIR: ""
+  SAST_SEMGREP_METRICS: "false"
+  SAST_EXCLUDED_ANALYZERS: "sobelow"
 
 stages:
   - prepare
@@ -23,6 +25,7 @@ include:
   ref: main
   file: '.release.yml'
 - template: Security/Secret-Detection.gitlab-ci.yml
+- template: Security/SAST.gitlab-ci.yml
 
 check-tchooz-version-job:
   stage: prepare
