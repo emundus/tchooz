@@ -1,4 +1,4 @@
-function translateService(sourceText){
+function translateService(fieldName,sourceText){
 	var translatedText;
 
     var data = {
@@ -19,13 +19,19 @@ function translateService(sourceText){
         },
         data: data,
         type: 'POST',
+        beforeSend: function() {
+            document.body.style.cursor = 'wait';
+        },
 		success: function (response) {
 			translatedText = response.result;
+            setTranslation(fieldName,translatedText);
 		},
 		error: function (xhr) {
 			translatedText = "ERROR : "+xhr.responseJSON["err"];
 		},
-		async:false
+        complete: function() {
+            document.body.style.cursor = 'default';
+        }
 	});
       
 	return translatedText;

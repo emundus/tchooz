@@ -8,42 +8,50 @@
 
 // No direct access to this file
 defined('_JEXEC') or die;
+
 use Joomla\CMS\Language\Text;
 
 ?>
-<script language="javascript" type="text/javascript">
-    function copyToClipboard(value, action) {
+<script type="text/javascript">
+    function copyToClipboard(fieldname, action) {
         //codemirror
         try {
-            if (document.getElementById) {
-                innerHTML="";
-                if (action=="copy") {
-                    srcEl = document.getElementById("original_value_"+value);
-                    innerHTML = srcEl.innerHTML;
-                }
-                if (action=="translate") {
-                    srcEl = document.getElementById("original_value_"+value);
-                    innerHTML = translateService(srcEl.innerHTML);
-                }
-                //Joomla.editors.instances["refField_"+value].replaceSelection(innerHTML);
-                Joomla.editors.instances["refField_"+value].setValue(innerHTML);
-
-                if (window.clipboardData){
-                    window.clipboardData.setData("Text",innerHTML);
-                    alert("<?php echo preg_replace( '#<br\s*/>#', '\n', Text::_('CLIPBOARD_COPIED') );?>");
-                }
-                else {
-                    srcEl = document.getElementById("text_origText_"+value);
-                    if (srcEl != null) {
-                        srcEl.value = innerHTML;
-                        srcEl.select();
-                        alert("<?php echo preg_replace( '#<br\s*/>#', '\n', Text::_('CLIPBOARD_COPY'));?>");
-                    }
-                }
+            innerHTML = "";
+            if (action == "copy") {
+                srcEl = document.getElementById("original_value_" + fieldname);
+                setTranslation(fieldname, srcEl.innerHTML);
             }
+            if (action == "translate") {
+                srcEl = document.getElementById("original_value_" + fieldname);
+                translateService(fieldname, srcEl.innerHTML);
+            }
+            if (action == "clear") {
+                setTranslation(fieldname, "");
+            }
+
+        } catch (e) {
+            alert("<?php echo preg_replace('#<br\s*/>#', '\n', Text::_('CLIPBOARD_NOSUPPORT'));?>");
         }
-        catch(e){
-            alert("<?php echo preg_replace( '#<br\s*/>#', '\n', Text::_('CLIPBOARD_NOSUPPORT'));?>");
+    }
+
+    /*
+    * from : 5.11
+    * Set the translation in field work with editor and textarea mode
+    * */
+    function setTranslation(fieldname, value) {
+        editor = Joomla.editors.instances["refField_" + fieldname];
+        //both need to be done in case we are
+        if (editor != null) {
+            //don't work for editor in visual mode but work in text mode and for other field type
+            try {
+                editor.setValue(value.trim());
+            } catch (e) {
+                //nothing to do
+            }
+        } else {
+            //not the editor input // textarea
+            srcEl = document.getElementById("refField_" + fieldname);
+            srcEl.value = value.trim();
         }
     }
 </script>
