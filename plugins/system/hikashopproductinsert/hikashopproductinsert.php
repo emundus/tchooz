@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -263,7 +263,7 @@ class plgSystemHikashopproductInsert extends hikashopJoomlaPlugin {
 			$statuses[$k] = $db->Quote($v);
 		}
 
-		$product_query = 'SELECT op.order_product_id, op.order_product_name, op.order_product_code FROM #__hikashop_order AS o LEFT JOIN #__hikashop_order_product AS op ON o.order_id=op.order_id WHERE o.order_status IN ('.implode(',', $statuses).') AND op.order_product_quantity > 1 AND o.order_user_id = ' . $user_id;
+		$product_query = 'SELECT op.product_id, op.order_product_id, op.order_product_name, op.order_product_code FROM #__hikashop_order AS o LEFT JOIN #__hikashop_order_product AS op ON o.order_id=op.order_id WHERE o.order_status IN ('.implode(',', $statuses).') AND op.order_product_quantity >= 1 AND o.order_user_id = ' . $user_id;
 		$db->setQuery($product_query);
 		$productsBought = $db->loadObjectList();
 		return $productsBought;

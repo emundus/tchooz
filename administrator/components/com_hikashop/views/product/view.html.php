@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -156,7 +156,7 @@ class ProductViewProduct extends hikashopView
 		if(hikashop_level(1)) {
 			$parent_cat_ids = array();
 			if(!empty($cat_ids)) {
-				$parents = $categoryClass->getParents($cat_ids, true, array(), '', 0, 0);
+				$parents = $categoryClass->getParents($cat_ids, 0, array('category_id'));
 				if(!empty($parents)) {
 					foreach($parents as $parent) {
 						$parent_cat_ids[] = (int)$parent->category_id;
@@ -930,7 +930,7 @@ class ProductViewProduct extends hikashopView
 		$parent_cat_ids = array();
 		if(!empty($cat_ids)){
 			$categoryClass = hikashop_get('class.category');
-			$parents = $categoryClass->getParents($cat_ids,true,array(),'',0,0);
+			$parents = $categoryClass->getParents($cat_ids, 0, array('category_id'));
 			if(!empty($parents)){
 				foreach($parents as $parent){
 					$parent_cat_ids[]=$parent->category_id;

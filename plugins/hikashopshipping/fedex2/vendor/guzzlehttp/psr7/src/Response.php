@@ -1,13 +1,6 @@
 <?php
-/**
- * @package	HikaShop for Joomla!
- * @version	5.1.0
- * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
- * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
-defined('_JEXEC') or die('Restricted access');
-?><?php
+
+declare(strict_types=1);
 
 namespace GuzzleHttp\Psr7;
 
@@ -19,7 +12,7 @@ class Response implements ResponseInterface
     use MessageTrait;
 
 
-    private static $phrases = [
+    private const PHRASES = [
         100 => 'Continue',
         101 => 'Switching Protocols',
         102 => 'Processing',
@@ -40,6 +33,7 @@ class Response implements ResponseInterface
         305 => 'Use Proxy',
         306 => 'Switch Proxy',
         307 => 'Temporary Redirect',
+        308 => 'Permanent Redirect',
         400 => 'Bad Request',
         401 => 'Unauthorized',
         402 => 'Payment Required',
@@ -77,24 +71,23 @@ class Response implements ResponseInterface
         506 => 'Variant Also Negotiates',
         507 => 'Insufficient Storage',
         508 => 'Loop Detected',
+        510 => 'Not Extended',
         511 => 'Network Authentication Required',
     ];
 
 
-    private $reasonPhrase = '';
+    private $reasonPhrase;
 
 
-    private $statusCode = 200;
+    private $statusCode;
 
     public function __construct(
-        $status = 200,
+        int $status = 200,
         array $headers = [],
         $body = null,
-        $version = '1.1',
-        $reason = null
+        string $version = '1.1',
+        ?string $reason = null
     ) {
-        $this->assertStatusCodeIsInteger($status);
-        $status = (int) $status;
         $this->assertStatusCodeRange($status);
 
         $this->statusCode = $status;
@@ -104,8 +97,8 @@ class Response implements ResponseInterface
         }
 
         $this->setHeaders($headers);
-        if ($reason == '' && isset(self::$phrases[$this->statusCode])) {
-            $this->reasonPhrase = self::$phrases[$this->statusCode];
+        if ($reason == '' && isset(self::PHRASES[$this->statusCode])) {
+            $this->reasonPhrase = self::PHRASES[$this->statusCode];
         } else {
             $this->reasonPhrase = (string) $reason;
         }
@@ -113,17 +106,17 @@ class Response implements ResponseInterface
         $this->protocol = $version;
     }
 
-    public function getStatusCode()
+    public function getStatusCode(): int
     {
         return $this->statusCode;
     }
 
-    public function getReasonPhrase()
+    public function getReasonPhrase(): string
     {
         return $this->reasonPhrase;
     }
 
-    public function withStatus($code, $reasonPhrase = '')
+    public function withStatus($code, $reasonPhrase = ''): ResponseInterface
     {
         $this->assertStatusCodeIsInteger($code);
         $code = (int) $code;
@@ -131,21 +124,22 @@ class Response implements ResponseInterface
 
         $new = clone $this;
         $new->statusCode = $code;
-        if ($reasonPhrase == '' && isset(self::$phrases[$new->statusCode])) {
-            $reasonPhrase = self::$phrases[$new->statusCode];
+        if ($reasonPhrase == '' && isset(self::PHRASES[$new->statusCode])) {
+            $reasonPhrase = self::PHRASES[$new->statusCode];
         }
         $new->reasonPhrase = (string) $reasonPhrase;
+
         return $new;
     }
 
-    private function assertStatusCodeIsInteger($statusCode)
+    private function assertStatusCodeIsInteger($statusCode): void
     {
         if (filter_var($statusCode, FILTER_VALIDATE_INT) === false) {
             throw new \InvalidArgumentException('Status code must be an integer value.');
         }
     }
 
-    private function assertStatusCodeRange($statusCode)
+    private function assertStatusCodeRange(int $statusCode): void
     {
         if ($statusCode < 100 || $statusCode >= 600) {
             throw new \InvalidArgumentException('Status code must be an integer value between 1xx and 5xx.');

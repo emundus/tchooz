@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -45,6 +45,11 @@ $has_options = !empty($this->row->has_options) || (!$display_fields && $has_requ
 $css_button = $this->config->get('css_button', 'hikabtn');
 $css_button_cart = $this->config->get('css_button_cart', 'hikacart');
 $css_button_wishlist = $this->config->get('css_button_wishlist', 'hikawishlist');
+
+$consistency =  $this->params->get('consistencyheight', 0);
+$extra_class = '';
+if ($consistency == '2')
+	$extra_class = 'hikashop_aligned_btn';
 
 $now = time();
 $start_date = (int)(@$this->row->product_sale_start || empty($this->element->main)) ? @$this->row->product_sale_start : $this->element->main->product_sale_start;
@@ -109,7 +114,7 @@ if($waitlist_btn) {
 <?php
 if(($add_to_cart || $add_to_wishlist) && (($has_fields && $display_fields) || $display_quantity_field) && !$has_options && !$global_on_listing) {
 ?>
-	<form action="<?php echo hikashop_completeLink($classical_url); ?>" method="post" name="hikashop_product_form_<?php echo $this->row->product_id.'_'.$this->params->get('main_div_name'); ?>" enctype="multipart/form-data">
+	<form class="<?php echo $extra_class; ?>" action="<?php echo hikashop_completeLink($classical_url); ?>" method="post" name="hikashop_product_form_<?php echo $this->row->product_id.'_'.$this->params->get('main_div_name'); ?>" enctype="multipart/form-data">
 <?php
 }
 ?>

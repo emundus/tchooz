@@ -1,70 +1,79 @@
 <?php
-/**
- * @package	HikaShop for Joomla!
- * @version	5.1.0
- * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
- * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
-defined('_JEXEC') or die('Restricted access');
-?><?php
+
 namespace GuzzleHttp\Handler;
 
+use Closure;
 use GuzzleHttp\Promise as P;
 use GuzzleHttp\Promise\Promise;
+use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Utils;
 use Psr\Http\Message\RequestInterface;
 
 class CurlMultiHandler
 {
-
     private $factory;
+
     private $selectTimeout;
-    private $active;
+
+    private $active = 0;
+
     private $handles = [];
+
     private $delays = [];
+
     private $options = [];
+
+
+    private $_mh;
 
     public function __construct(array $options = [])
     {
-        $this->factory = isset($options['handle_factory'])
-            ? $options['handle_factory'] : new CurlFactory(50);
+        $this->factory = $options['handle_factory'] ?? new CurlFactory(50);
 
         if (isset($options['select_timeout'])) {
             $this->selectTimeout = $options['select_timeout'];
-        } elseif ($selectTimeout = getenv('GUZZLE_CURL_SELECT_TIMEOUT')) {
-            $this->selectTimeout = $selectTimeout;
+        } elseif ($selectTimeout = Utils::getenv('GUZZLE_CURL_SELECT_TIMEOUT')) {
+            @trigger_error('Since guzzlehttp/guzzle 7.2.0: Using environment variable GUZZLE_CURL_SELECT_TIMEOUT is deprecated. Use option "select_timeout" instead.', \E_USER_DEPRECATED);
+            $this->selectTimeout = (int) $selectTimeout;
         } else {
             $this->selectTimeout = 1;
         }
 
-        $this->options = isset($options['options']) ? $options['options'] : [];
+        $this->options = $options['options'] ?? [];
+
+        unset($this->_mh);
     }
 
     public function __get($name)
     {
-        if ($name === '_mh') {
-            $this->_mh = curl_multi_init();
-
-            foreach ($this->options as $option => $value) {
-                curl_multi_setopt($this->_mh, $option, $value);
-            }
-
-            return $this->_mh;
+        if ($name !== '_mh') {
+            throw new \BadMethodCallException("Can not get other property as '_mh'.");
         }
 
-        throw new \BadMethodCallException();
+        $multiHandle = \curl_multi_init();
+
+        if (false === $multiHandle) {
+            throw new \RuntimeException('Can not initialize curl multi handle.');
+        }
+
+        $this->_mh = $multiHandle;
+
+        foreach ($this->options as $option => $value) {
+            curl_multi_setopt($this->_mh, $option, $value);
+        }
+
+        return $this->_mh;
     }
 
     public function __destruct()
     {
         if (isset($this->_mh)) {
-            curl_multi_close($this->_mh);
+            \curl_multi_close($this->_mh);
             unset($this->_mh);
         }
     }
 
-    public function __invoke(RequestInterface $request, array $options)
+    public function __invoke(RequestInterface $request, array $options): PromiseInterface
     {
         $easy = $this->factory->create($request, $options);
         $id = (int) $easy->handle;
@@ -81,14 +90,14 @@ class CurlMultiHandler
         return $promise;
     }
 
-    public function tick()
+    public function tick(): void
     {
         if ($this->delays) {
             $currentTime = Utils::currentTime();
             foreach ($this->delays as $id => $delay) {
                 if ($currentTime >= $delay) {
                     unset($this->delays[$id]);
-                    curl_multi_add_handle(
+                    \curl_multi_add_handle(
                         $this->_mh,
                         $this->handles[$id]['easy']->handle
                     );
@@ -96,62 +105,79 @@ class CurlMultiHandler
             }
         }
 
-        P\queue()->run();
+        P\Utils::queue()->add(Closure::fromCallable([$this, 'tickInQueue']));
 
-        if ($this->active &&
-            curl_multi_select($this->_mh, $this->selectTimeout) === -1
-        ) {
-            usleep(250);
+        P\Utils::queue()->run();
+
+        if ($this->active && \curl_multi_select($this->_mh, $this->selectTimeout) === -1) {
+            \usleep(250);
         }
 
-        while (curl_multi_exec($this->_mh, $this->active) === CURLM_CALL_MULTI_PERFORM);
+        while (\curl_multi_exec($this->_mh, $this->active) === \CURLM_CALL_MULTI_PERFORM) {
+            \curl_multi_select($this->_mh, $this->selectTimeout);
+        }
 
         $this->processMessages();
     }
 
-    public function execute()
+    private function tickInQueue(): void
     {
-        $queue = P\queue();
+        if (\curl_multi_exec($this->_mh, $this->active) === \CURLM_CALL_MULTI_PERFORM) {
+            \curl_multi_select($this->_mh, 0);
+            P\Utils::queue()->add(Closure::fromCallable([$this, 'tickInQueue']));
+        }
+    }
+
+    public function execute(): void
+    {
+        $queue = P\Utils::queue();
 
         while ($this->handles || !$queue->isEmpty()) {
             if (!$this->active && $this->delays) {
-                usleep($this->timeToNext());
+                \usleep($this->timeToNext());
             }
             $this->tick();
         }
     }
 
-    private function addRequest(array $entry)
+    private function addRequest(array $entry): void
     {
         $easy = $entry['easy'];
         $id = (int) $easy->handle;
         $this->handles[$id] = $entry;
         if (empty($easy->options['delay'])) {
-            curl_multi_add_handle($this->_mh, $easy->handle);
+            \curl_multi_add_handle($this->_mh, $easy->handle);
         } else {
             $this->delays[$id] = Utils::currentTime() + ($easy->options['delay'] / 1000);
         }
     }
 
-    private function cancel($id)
+    private function cancel($id): bool
     {
+        if (!is_int($id)) {
+            trigger_deprecation('guzzlehttp/guzzle', '7.4', 'Not passing an integer to %s::%s() is deprecated and will cause an error in 8.0.', __CLASS__, __FUNCTION__);
+        }
+
         if (!isset($this->handles[$id])) {
             return false;
         }
 
         $handle = $this->handles[$id]['easy']->handle;
         unset($this->delays[$id], $this->handles[$id]);
-        curl_multi_remove_handle($this->_mh, $handle);
-        curl_close($handle);
+        \curl_multi_remove_handle($this->_mh, $handle);
+        \curl_close($handle);
 
         return true;
     }
 
-    private function processMessages()
+    private function processMessages(): void
     {
-        while ($done = curl_multi_info_read($this->_mh)) {
+        while ($done = \curl_multi_info_read($this->_mh)) {
+            if ($done['msg'] !== \CURLMSG_DONE) {
+                continue;
+            }
             $id = (int) $done['handle'];
-            curl_multi_remove_handle($this->_mh, $done['handle']);
+            \curl_multi_remove_handle($this->_mh, $done['handle']);
 
             if (!isset($this->handles[$id])) {
                 continue;
@@ -161,25 +187,21 @@ class CurlMultiHandler
             unset($this->handles[$id], $this->delays[$id]);
             $entry['easy']->errno = $done['result'];
             $entry['deferred']->resolve(
-                CurlFactory::finish(
-                    $this,
-                    $entry['easy'],
-                    $this->factory
-                )
+                CurlFactory::finish($this, $entry['easy'], $this->factory)
             );
         }
     }
 
-    private function timeToNext()
+    private function timeToNext(): int
     {
         $currentTime = Utils::currentTime();
-        $nextTime = PHP_INT_MAX;
+        $nextTime = \PHP_INT_MAX;
         foreach ($this->delays as $time) {
             if ($time < $nextTime) {
                 $nextTime = $time;
             }
         }
 
-        return max(0, $nextTime - $currentTime) * 1000000;
+        return ((int) \max(0, $nextTime - $currentTime)) * 1000000;
     }
 }

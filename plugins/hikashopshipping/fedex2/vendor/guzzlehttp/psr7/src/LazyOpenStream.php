@@ -1,19 +1,12 @@
 <?php
-/**
- * @package	HikaShop for Joomla!
- * @version	5.1.0
- * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
- * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
-defined('_JEXEC') or die('Restricted access');
-?><?php
+
+declare(strict_types=1);
 
 namespace GuzzleHttp\Psr7;
 
 use Psr\Http\Message\StreamInterface;
 
-class LazyOpenStream implements StreamInterface
+final class LazyOpenStream implements StreamInterface
 {
     use StreamDecoratorTrait;
 
@@ -23,13 +16,17 @@ class LazyOpenStream implements StreamInterface
 
     private $mode;
 
-    public function __construct($filename, $mode)
+    private $stream;
+
+    public function __construct(string $filename, string $mode)
     {
         $this->filename = $filename;
         $this->mode = $mode;
+
+        unset($this->stream);
     }
 
-    protected function createStream()
+    protected function createStream(): StreamInterface
     {
         return Utils::streamFor(Utils::tryFopen($this->filename, $this->mode));
     }

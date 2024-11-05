@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="1.5" method="upgrade" group="hikashop">
 	<name>Hikashop Google Products Plugin</name>
-	<creationDate>08 juillet 2024</creationDate>
-	<version>5.1.0</version>
+	<creationDate>31 octobre 2024</creationDate>
+	<version>5.1.1</version>
 	<author>Hikashop</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
@@ -74,6 +74,11 @@
 		<param name="in_stock_only" type="radio" default="0" label="HIKA_IN_STOCK_PRODUCTS_ONLY" description="IN_STOCK_PRODUCTS_ONLY">
 			<option value="0">HIKASHOP_NO</option>
 			<option value="1">HIKASHOP_YES</option>
+		</param>
+		<param name="checkout_link_template" type="radio" default="0" label="CHECKOUT_LINK_TEMPLATE" description="CHECKOUT_LINK_TEMPLATE_DESC">
+			<option value="0">HIKASHOP_NO</option>
+			<option value="1">HIKASHOP_YES</option>
+			<option value="checkout_link_template">ON_A_PER_PRODUCT_BASIS</option>
 		</param>
 		<param name="identifier_exists" type="text" size="50" default="" label="HIKA_IDENTIFIER_EXISTS" description="IDENTIFIER_EXISTS" />
 		<param name="age_group" type="text" size="50" default="" label="AGE_GROUP" description="GOOGLE_PRODUCTS_AGE_GROUP" />
@@ -203,6 +208,11 @@
 				<field name="in_stock_only" type="radio" default="0" label="HIKA_IN_STOCK_PRODUCTS_ONLY" description="IN_STOCK_PRODUCTS_ONLY" class="btn-group btn-group-yesno">
 					<option value="0">HIKASHOP_NO</option>
 					<option value="1">HIKASHOP_YES</option>
+				</field>
+				<field name="checkout_link_template" type="radio" default="0" label="CHECKOUT_LINK_TEMPLATE" description="CHECKOUT_LINK_TEMPLATE_DESC">
+					<option value="0">HIKASHOP_NO</option>
+					<option value="1">HIKASHOP_YES</option>
+					<option value="checkout_link_template">ON_A_PER_PRODUCT_BASIS</option>
 				</field>
 				<field name="identifier_exists" type="text" size="50" default="" label="HIKA_IDENTIFIER_EXISTS" description="IDENTIFIER_EXISTS" />
 				<field name="age_group" type="text" size="50" default="" label="AGE_GROUP" description="GOOGLE_PRODUCTS_AGE_GROUP" />

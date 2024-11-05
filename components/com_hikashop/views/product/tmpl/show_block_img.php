@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -160,17 +160,6 @@ if(!$this->config->get('thumbnail')) {
 		$firstThunb = true;
 		$i = 0;
 		foreach($this->element->images as $key => $image) {
-			if($this->image->override) {
-				echo $this->image->display($image->file_path, 'hikashop_main_image'.$variant_name, $image->file_name, 'class="hikashop_child_image"','', $width,  $height);
-				continue;
-			}
-
-			if(empty($this->popup))
-				$this->popup = hikashop_get('helper.popup');
-			$img = $this->image->getThumbnail(@$image->file_path, array('width' => $width, 'height' => $height), $image_options);
-			if(empty($img->success))
-				continue;
-
 			$id = null;
 			$classname = 'hikashop_child_image';
 			$thumbnail_class = 'hikashop_thumbnail_'.$key;
@@ -181,6 +170,26 @@ if(!$this->config->get('thumbnail')) {
 				$thumbnail_class .= ' hikashop_active_thumbnail';
 			}
 			$thumbnail_class = 'class="'.$thumbnail_class.'"';
+
+			if(!$this->config->get('thumbnail')) {
+				$attr = $thumbnail_class.' title="'.$this->escape((string)@$image->file_description).'" onmouseover="return window.localPage.changeImage('
+				. 'this, \'hikashop_main_image'.$variant_name.'\', \''.$this->image->uploadFolder_url . $image->file_path.'\', 0, 0, \''.str_replace(array("'", '"'),
+				array("\'", '&quot;'),@$image->file_description).'\', \''.str_replace(array("'", '"'),array("\'", '&quot;'),@$image->file_name).'\', '.$key.');"';
+
+				$html = '<img src="' . $this->image->uploadFolder_url . $image->file_path . '" title="'.$this->escape((string)@$image->file_description).'" alt="' . $this->escape((string)@$image->file_name) . '" class="'.$classname.'" />';
+				echo '<a href="#" '.$attr.'>'.$html.'</a>';
+				continue;
+			}
+			if($this->image->override) {
+				echo $this->image->display($image->file_path, 'hikashop_main_image'.$variant_name, $image->file_name, 'class="hikashop_child_image"','', $width,  $height);
+				continue;
+			}
+
+			if(empty($this->popup))
+				$this->popup = hikashop_get('helper.popup');
+			$img = $this->image->getThumbnail(@$image->file_path, array('width' => $width, 'height' => $height), $image_options);
+			if(empty($img->success))
+				continue;
 
 			$main_image_size = $img->width.', '.$img->height;
 			if($img->external && $img->req_width && $img->req_height)
@@ -222,8 +231,10 @@ window.localPage.changeImage = function(el, id, url, width, height, title, alt, 
 	var d = document, target = d.getElementById(id), w = window, o = window.Oby;
 	if(!target) return false;
 	target.src = url;
-	target.width = width;
-	target.height = height;
+	if(width>0)
+		target.width = width;
+	if(height>0)
+		target.height = height;
 	target.title = title;
 	target.alt = alt;
 

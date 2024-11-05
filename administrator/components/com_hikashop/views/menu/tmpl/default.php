@@ -1,13 +1,74 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
-?><nav class="hk-navbar hk-navbar-default">
+?><?php
+$doc = JFactory::getDocument();
+$doc->addCustomTag('<div class="theme-overlay">
+	<img class="overlay-spinner " src="http://localhost/J510/Joomla_5.1.0-Stable-Full_Package_fr/media/com_hikashop/images/spinner_03.svg">
+</div>');
+
+$doc->addStyleDeclaration("
+.theme-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: #000;
+	opacity: 0.975;
+	z-index: 9999;
+	display: none;
+}
+img.overlay-spinner {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    top: 250px;
+}	
+");
+
+$doc->addScriptDeclaration("
+document.addEventListener('DOMContentLoaded', function() {
+	const themeButton = document.querySelector('button.dropdown-item[data-color-scheme-switch]');
+	const overlay = document.querySelector('.theme-overlay');
+
+	if (themeButton && overlay) {
+		const observer = new MutationObserver(function(mutationsList, observer) {
+			for (const mutation of mutationsList) {
+				if (mutation.type === 'attributes' && mutation.attributeName === 'data-bs-theme') {
+					overlay.style.display = 'block';
+					setTimeout(function() {
+						location.reload();
+					}, 100);
+				}
+			}
+		});
+
+		observer.observe(themeButton, { attributes: true });
+
+		themeButton.addEventListener('click', function() {
+			const currentTheme = themeButton.getAttribute('data-bs-theme');
+			if (currentTheme === 'light') {
+				themeButton.setAttribute('data-bs-theme', 'dark');
+				themeButton.setAttribute('data-color-scheme', 'dark');
+			} else {
+				themeButton.setAttribute('data-bs-theme', 'light');
+				themeButton.setAttribute('data-color-scheme', 'light');
+			}
+		});
+	}
+});
+");
+?>
+
+<nav class="hk-navbar hk-navbar-default">
 	<div class="hk-container-fluid">
 		<ul class="hk-nav hk-navbar-nav">
 <?php

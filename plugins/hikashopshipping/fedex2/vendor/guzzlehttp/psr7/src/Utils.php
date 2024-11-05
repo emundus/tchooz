@@ -1,13 +1,6 @@
 <?php
-/**
- * @package	HikaShop for Joomla!
- * @version	5.1.0
- * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
- * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
-defined('_JEXEC') or die('Restricted access');
-?><?php
+
+declare(strict_types=1);
 
 namespace GuzzleHttp\Psr7;
 
@@ -18,16 +11,16 @@ use Psr\Http\Message\UriInterface;
 
 final class Utils
 {
-    public static function caselessRemove($keys, array $data)
+    public static function caselessRemove(array $keys, array $data): array
     {
         $result = [];
 
         foreach ($keys as &$key) {
-            $key = strtolower($key);
+            $key = strtolower((string) $key);
         }
 
         foreach ($data as $k => $v) {
-            if (!in_array(strtolower($k), $keys)) {
+            if (!in_array(strtolower((string) $k), $keys)) {
                 $result[$k] = $v;
             }
         }
@@ -35,7 +28,7 @@ final class Utils
         return $result;
     }
 
-    public static function copyToStream(StreamInterface $source, StreamInterface $dest, $maxLen = -1)
+    public static function copyToStream(StreamInterface $source, StreamInterface $dest, int $maxLen = -1): void
     {
         $bufferSize = 8192;
 
@@ -59,25 +52,26 @@ final class Utils
         }
     }
 
-    public static function copyToString(StreamInterface $stream, $maxLen = -1)
+    public static function copyToString(StreamInterface $stream, int $maxLen = -1): string
     {
         $buffer = '';
 
         if ($maxLen === -1) {
             while (!$stream->eof()) {
                 $buf = $stream->read(1048576);
-                if ($buf == null) {
+                if ($buf === '') {
                     break;
                 }
                 $buffer .= $buf;
             }
+
             return $buffer;
         }
 
         $len = 0;
         while (!$stream->eof() && $len < $maxLen) {
             $buf = $stream->read($maxLen - $len);
-            if ($buf == null) {
+            if ($buf === '') {
                 break;
             }
             $buffer .= $buf;
@@ -87,7 +81,7 @@ final class Utils
         return $buffer;
     }
 
-    public static function hash(StreamInterface $stream, $algo, $rawOutput = false)
+    public static function hash(StreamInterface $stream, string $algo, bool $rawOutput = false): string
     {
         $pos = $stream->tell();
 
@@ -100,13 +94,13 @@ final class Utils
             hash_update($ctx, $stream->read(1048576));
         }
 
-        $out = hash_final($ctx, (bool) $rawOutput);
+        $out = hash_final($ctx, $rawOutput);
         $stream->seek($pos);
 
         return $out;
     }
 
-    public static function modifyRequest(RequestInterface $request, array $changes)
+    public static function modifyRequest(RequestInterface $request, array $changes): RequestInterface
     {
         if (!$changes) {
             return $request;
@@ -124,7 +118,7 @@ final class Utils
                     $standardPorts = ['http' => 80, 'https' => 443];
                     $scheme = $changes['uri']->getScheme();
                     if (isset($standardPorts[$scheme]) && $port != $standardPorts[$scheme]) {
-                        $changes['set_headers']['Host'] .= ':' . $port;
+                        $changes['set_headers']['Host'] .= ':'.$port;
                     }
                 }
             }
@@ -146,13 +140,11 @@ final class Utils
 
         if ($request instanceof ServerRequestInterface) {
             $new = (new ServerRequest(
-                isset($changes['method']) ? $changes['method'] : $request->getMethod(),
+                $changes['method'] ?? $request->getMethod(),
                 $uri,
                 $headers,
-                isset($changes['body']) ? $changes['body'] : $request->getBody(),
-                isset($changes['version'])
-                    ? $changes['version']
-                    : $request->getProtocolVersion(),
+                $changes['body'] ?? $request->getBody(),
+                $changes['version'] ?? $request->getProtocolVersion(),
                 $request->getServerParams()
             ))
             ->withParsedBody($request->getParsedBody())
@@ -168,23 +160,21 @@ final class Utils
         }
 
         return new Request(
-            isset($changes['method']) ? $changes['method'] : $request->getMethod(),
+            $changes['method'] ?? $request->getMethod(),
             $uri,
             $headers,
-            isset($changes['body']) ? $changes['body'] : $request->getBody(),
-            isset($changes['version'])
-                ? $changes['version']
-                : $request->getProtocolVersion()
+            $changes['body'] ?? $request->getBody(),
+            $changes['version'] ?? $request->getProtocolVersion()
         );
     }
 
-    public static function readLine(StreamInterface $stream, $maxLength = null)
+    public static function readLine(StreamInterface $stream, ?int $maxLength = null): string
     {
         $buffer = '';
         $size = 0;
 
         while (!$stream->eof()) {
-            if (null == ($byte = $stream->read(1))) {
+            if ('' === ($byte = $stream->read(1))) {
                 return $buffer;
             }
             $buffer .= $byte;
@@ -196,28 +186,43 @@ final class Utils
         return $buffer;
     }
 
-    public static function streamFor($resource = '', array $options = [])
+    public static function redactUserInfo(UriInterface $uri): UriInterface
+    {
+        $userInfo = $uri->getUserInfo();
+
+        if (false !== ($pos = \strpos($userInfo, ':'))) {
+            return $uri->withUserInfo(\substr($userInfo, 0, $pos), '***');
+        }
+
+        return $uri;
+    }
+
+    public static function streamFor($resource = '', array $options = []): StreamInterface
     {
         if (is_scalar($resource)) {
             $stream = self::tryFopen('php://temp', 'r+');
             if ($resource !== '') {
-                fwrite($stream, $resource);
+                fwrite($stream, (string) $resource);
                 fseek($stream, 0);
             }
+
             return new Stream($stream, $options);
         }
 
         switch (gettype($resource)) {
             case 'resource':
-                $metaData = \stream_get_meta_data($resource);
-                if (isset($metaData['uri']) && $metaData['uri'] === 'php://input') {
+
+
+                if ((\stream_get_meta_data($resource)['uri'] ?? '') === 'php://input') {
                     $stream = self::tryFopen('php://temp', 'w+');
-                    fwrite($stream, stream_get_contents($resource));
+                    stream_copy_to_stream($resource, $stream);
                     fseek($stream, 0);
                     $resource = $stream;
                 }
+
                 return new Stream($resource, $options);
             case 'object':
+
                 if ($resource instanceof StreamInterface) {
                     return $resource;
                 } elseif ($resource instanceof \Iterator) {
@@ -227,10 +232,11 @@ final class Utils
                         }
                         $result = $resource->current();
                         $resource->next();
+
                         return $result;
                     }, $options);
                 } elseif (method_exists($resource, '__toString')) {
-                    return Utils::streamFor((string) $resource, $options);
+                    return self::streamFor((string) $resource, $options);
                 }
                 break;
             case 'NULL':
@@ -241,24 +247,25 @@ final class Utils
             return new PumpStream($resource, $options);
         }
 
-        throw new \InvalidArgumentException('Invalid resource type: ' . gettype($resource));
+        throw new \InvalidArgumentException('Invalid resource type: '.gettype($resource));
     }
 
-    public static function tryFopen($filename, $mode)
+    public static function tryFopen(string $filename, string $mode)
     {
         $ex = null;
-        set_error_handler(function () use ($filename, $mode, &$ex) {
+        set_error_handler(static function (int $errno, string $errstr) use ($filename, $mode, &$ex): bool {
             $ex = new \RuntimeException(sprintf(
                 'Unable to open "%s" using mode "%s": %s',
                 $filename,
                 $mode,
-                func_get_args()[1]
+                $errstr
             ));
 
             return true;
         });
 
         try {
+
             $handle = fopen($filename, $mode);
         } catch (\Throwable $e) {
             $ex = new \RuntimeException(sprintf(
@@ -279,7 +286,43 @@ final class Utils
         return $handle;
     }
 
-    public static function uriFor($uri)
+    public static function tryGetContents($stream): string
+    {
+        $ex = null;
+        set_error_handler(static function (int $errno, string $errstr) use (&$ex): bool {
+            $ex = new \RuntimeException(sprintf(
+                'Unable to read stream contents: %s',
+                $errstr
+            ));
+
+            return true;
+        });
+
+        try {
+
+            $contents = stream_get_contents($stream);
+
+            if ($contents === false) {
+                $ex = new \RuntimeException('Unable to read stream contents');
+            }
+        } catch (\Throwable $e) {
+            $ex = new \RuntimeException(sprintf(
+                'Unable to read stream contents: %s',
+                $e->getMessage()
+            ), 0, $e);
+        }
+
+        restore_error_handler();
+
+        if ($ex) {
+
+            throw $ex;
+        }
+
+        return $contents;
+    }
+
+    public static function uriFor($uri): UriInterface
     {
         if ($uri instanceof UriInterface) {
             return $uri;

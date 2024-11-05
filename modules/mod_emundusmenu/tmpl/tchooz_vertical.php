@@ -226,7 +226,7 @@ defined('_JEXEC') or die;
         font-weight: 600;
         display: none;
         margin-top: -38px;
-        z-index: 1;
+        z-index: 10;
     }
 
     .message-tooltip-block p {
@@ -252,7 +252,7 @@ defined('_JEXEC') or die;
     }
 
     .message-tooltip-block::after {
-        content: "";
+        /*content: "";
         position: absolute;
         height: 0;
         width: 0;
@@ -262,7 +262,7 @@ defined('_JEXEC') or die;
         border-right-color: transparent;
         border-right-style: solid;
         border-right-width: 10px;
-        border-right: 10px solid var(--neutral-0);
+        border-right: 10px solid var(--neutral-0);*/
     }
 
     .g-main-nav .g-standard .g-sublevel .g-menu-item a.g-menu-item-container:hover {

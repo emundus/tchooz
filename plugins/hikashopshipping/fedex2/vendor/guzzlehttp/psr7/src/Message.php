@@ -1,13 +1,6 @@
 <?php
-/**
- * @package	HikaShop for Joomla!
- * @version	5.1.0
- * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
- * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
-defined('_JEXEC') or die('Restricted access');
-?><?php
+
+declare(strict_types=1);
 
 namespace GuzzleHttp\Psr7;
 
@@ -17,37 +10,37 @@ use Psr\Http\Message\ResponseInterface;
 
 final class Message
 {
-    public static function toString(MessageInterface $message)
+    public static function toString(MessageInterface $message): string
     {
         if ($message instanceof RequestInterface) {
-            $msg = trim($message->getMethod() . ' '
-                    . $message->getRequestTarget())
-                . ' HTTP/' . $message->getProtocolVersion();
+            $msg = trim($message->getMethod().' '
+                    .$message->getRequestTarget())
+                .' HTTP/'.$message->getProtocolVersion();
             if (!$message->hasHeader('host')) {
-                $msg .= "\r\nHost: " . $message->getUri()->getHost();
+                $msg .= "\r\nHost: ".$message->getUri()->getHost();
             }
         } elseif ($message instanceof ResponseInterface) {
-            $msg = 'HTTP/' . $message->getProtocolVersion() . ' '
-                . $message->getStatusCode() . ' '
-                . $message->getReasonPhrase();
+            $msg = 'HTTP/'.$message->getProtocolVersion().' '
+                .$message->getStatusCode().' '
+                .$message->getReasonPhrase();
         } else {
             throw new \InvalidArgumentException('Unknown message type');
         }
 
         foreach ($message->getHeaders() as $name => $values) {
-            if (strtolower($name) === 'set-cookie') {
+            if (is_string($name) && strtolower($name) === 'set-cookie') {
                 foreach ($values as $value) {
-                    $msg .= "\r\n{$name}: " . $value;
+                    $msg .= "\r\n{$name}: ".$value;
                 }
             } else {
-                $msg .= "\r\n{$name}: " . implode(', ', $values);
+                $msg .= "\r\n{$name}: ".implode(', ', $values);
             }
         }
 
-        return "{$msg}\r\n\r\n" . $message->getBody();
+        return "{$msg}\r\n\r\n".$message->getBody();
     }
 
-    public static function bodySummary(MessageInterface $message, $truncateAt = 120)
+    public static function bodySummary(MessageInterface $message, int $truncateAt = 120): ?string
     {
         $body = $message->getBody();
 
@@ -61,6 +54,7 @@ final class Message
             return null;
         }
 
+        $body->rewind();
         $summary = $body->read($truncateAt);
         $body->rewind();
 
@@ -68,14 +62,14 @@ final class Message
             $summary .= ' (truncated...)';
         }
 
-        if (preg_match('/[^\pL\pM\pN\pP\pS\pZ\n\r\t]/u', $summary)) {
+        if (preg_match('/[^\pL\pM\pN\pP\pS\pZ\n\r\t]/u', $summary) !== 0) {
             return null;
         }
 
         return $summary;
     }
 
-    public static function rewindBody(MessageInterface $message)
+    public static function rewindBody(MessageInterface $message): void
     {
         $body = $message->getBody();
 
@@ -84,7 +78,7 @@ final class Message
         }
     }
 
-    public static function parseMessage($message)
+    public static function parseMessage(string $message): array
     {
         if (!$message) {
             throw new \InvalidArgumentException('Invalid message');
@@ -98,7 +92,7 @@ final class Message
             throw new \InvalidArgumentException('Invalid message: Missing header delimiter');
         }
 
-        list($rawHeaders, $body) = $messageParts;
+        [$rawHeaders, $body] = $messageParts;
         $rawHeaders .= "\r\n"; // Put back the delimiter we split previously
         $headerParts = preg_split("/\r?\n/", $rawHeaders, 2);
 
@@ -106,7 +100,7 @@ final class Message
             throw new \InvalidArgumentException('Invalid message: Missing status line');
         }
 
-        list($startLine, $rawHeaders) = $headerParts;
+        [$startLine, $rawHeaders] = $headerParts;
 
         if (preg_match("/(?:^HTTP\/|^[A-Z]+ \S+ HTTP\/)(\d+(?:\.\d+)?)/i", $startLine, $matches) && $matches[1] === '1.0') {
             $rawHeaders = preg_replace(Rfc7230::HEADER_FOLD_REGEX, ' ', $rawHeaders);
@@ -136,9 +130,11 @@ final class Message
         ];
     }
 
-    public static function parseRequestUri($path, array $headers)
+    public static function parseRequestUri(string $path, array $headers): string
     {
         $hostKey = array_filter(array_keys($headers), function ($k) {
+            $k = (string) $k;
+
             return strtolower($k) === 'host';
         });
 
@@ -149,10 +145,10 @@ final class Message
         $host = $headers[reset($hostKey)][0];
         $scheme = substr($host, -4) === ':443' ? 'https' : 'http';
 
-        return $scheme . '://' . $host . '/' . ltrim($path, '/');
+        return $scheme.'://'.$host.'/'.ltrim($path, '/');
     }
 
-    public static function parseRequest($message)
+    public static function parseRequest(string $message): RequestInterface
     {
         $data = self::parseMessage($message);
         $matches = [];
@@ -173,11 +169,11 @@ final class Message
         return $matches[1] === '/' ? $request : $request->withRequestTarget($parts[1]);
     }
 
-    public static function parseResponse($message)
+    public static function parseResponse(string $message): ResponseInterface
     {
         $data = self::parseMessage($message);
         if (!preg_match('/^HTTP\/.* [0-9]{3}( .*|$)/', $data['start-line'])) {
-            throw new \InvalidArgumentException('Invalid response string: ' . $data['start-line']);
+            throw new \InvalidArgumentException('Invalid response string: '.$data['start-line']);
         }
         $parts = explode(' ', $data['start-line'], 3);
 
@@ -186,7 +182,7 @@ final class Message
             $data['headers'],
             $data['body'],
             explode('/', $parts[0])[1],
-            isset($parts[2]) ? $parts[2] : null
+            $parts[2] ?? null
         );
     }
 }

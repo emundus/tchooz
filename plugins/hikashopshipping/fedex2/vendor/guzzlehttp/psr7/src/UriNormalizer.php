@@ -1,13 +1,6 @@
 <?php
-/**
- * @package	HikaShop for Joomla!
- * @version	5.1.0
- * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
- * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
-defined('_JEXEC') or die('Restricted access');
-?><?php
+
+declare(strict_types=1);
 
 namespace GuzzleHttp\Psr7;
 
@@ -15,25 +8,31 @@ use Psr\Http\Message\UriInterface;
 
 final class UriNormalizer
 {
-    const PRESERVING_NORMALIZATIONS = 63;
+    public const PRESERVING_NORMALIZATIONS =
+        self::CAPITALIZE_PERCENT_ENCODING |
+        self::DECODE_UNRESERVED_CHARACTERS |
+        self::CONVERT_EMPTY_PATH |
+        self::REMOVE_DEFAULT_HOST |
+        self::REMOVE_DEFAULT_PORT |
+        self::REMOVE_DOT_SEGMENTS;
 
-    const CAPITALIZE_PERCENT_ENCODING = 1;
+    public const CAPITALIZE_PERCENT_ENCODING = 1;
 
-    const DECODE_UNRESERVED_CHARACTERS = 2;
+    public const DECODE_UNRESERVED_CHARACTERS = 2;
 
-    const CONVERT_EMPTY_PATH = 4;
+    public const CONVERT_EMPTY_PATH = 4;
 
-    const REMOVE_DEFAULT_HOST = 8;
+    public const REMOVE_DEFAULT_HOST = 8;
 
-    const REMOVE_DEFAULT_PORT = 16;
+    public const REMOVE_DEFAULT_PORT = 16;
 
-    const REMOVE_DOT_SEGMENTS = 32;
+    public const REMOVE_DOT_SEGMENTS = 32;
 
-    const REMOVE_DUPLICATE_SLASHES = 64;
+    public const REMOVE_DUPLICATE_SLASHES = 64;
 
-    const SORT_QUERY_PARAMETERS = 128;
+    public const SORT_QUERY_PARAMETERS = 128;
 
-    public static function normalize(UriInterface $uri, $flags = self::PRESERVING_NORMALIZATIONS)
+    public static function normalize(UriInterface $uri, int $flags = self::PRESERVING_NORMALIZATIONS): UriInterface
     {
         if ($flags & self::CAPITALIZE_PERCENT_ENCODING) {
             $uri = self::capitalizePercentEncoding($uri);
@@ -43,8 +42,8 @@ final class UriNormalizer
             $uri = self::decodeUnreservedCharacters($uri);
         }
 
-        if ($flags & self::CONVERT_EMPTY_PATH && $uri->getPath() === '' &&
-            ($uri->getScheme() === 'http' || $uri->getScheme() === 'https')
+        if ($flags & self::CONVERT_EMPTY_PATH && $uri->getPath() === ''
+            && ($uri->getScheme() === 'http' || $uri->getScheme() === 'https')
         ) {
             $uri = $uri->withPath('/');
         }
@@ -74,16 +73,16 @@ final class UriNormalizer
         return $uri;
     }
 
-    public static function isEquivalent(UriInterface $uri1, UriInterface $uri2, $normalizations = self::PRESERVING_NORMALIZATIONS)
+    public static function isEquivalent(UriInterface $uri1, UriInterface $uri2, int $normalizations = self::PRESERVING_NORMALIZATIONS): bool
     {
         return (string) self::normalize($uri1, $normalizations) === (string) self::normalize($uri2, $normalizations);
     }
 
-    private static function capitalizePercentEncoding(UriInterface $uri)
+    private static function capitalizePercentEncoding(UriInterface $uri): UriInterface
     {
         $regex = '/(?:%[A-Fa-f0-9]{2})++/';
 
-        $callback = function (array $match) {
+        $callback = function (array $match): string {
             return strtoupper($match[0]);
         };
 
@@ -95,11 +94,11 @@ final class UriNormalizer
             );
     }
 
-    private static function decodeUnreservedCharacters(UriInterface $uri)
+    private static function decodeUnreservedCharacters(UriInterface $uri): UriInterface
     {
         $regex = '/%(?:2D|2E|5F|7E|3[0-9]|[46][1-9A-F]|[57][0-9A])/i';
 
-        $callback = function (array $match) {
+        $callback = function (array $match): string {
             return rawurldecode($match[0]);
         };
 

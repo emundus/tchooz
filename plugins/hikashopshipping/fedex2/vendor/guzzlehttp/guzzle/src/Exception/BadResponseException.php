@@ -1,13 +1,5 @@
 <?php
-/**
- * @package	HikaShop for Joomla!
- * @version	5.1.0
- * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
- * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
-defined('_JEXEC') or die('Restricted access');
-?><?php
+
 namespace GuzzleHttp\Exception;
 
 use Psr\Http\Message\RequestInterface;
@@ -16,18 +8,23 @@ use Psr\Http\Message\ResponseInterface;
 class BadResponseException extends RequestException
 {
     public function __construct(
-        $message,
+        string $message,
         RequestInterface $request,
-        ResponseInterface $response = null,
-        \Exception $previous = null,
+        ResponseInterface $response,
+        ?\Throwable $previous = null,
         array $handlerContext = []
     ) {
-        if (null === $response) {
-            @trigger_error(
-                'Instantiating the ' . __CLASS__ . ' class without a Response is deprecated since version 6.3 and will be removed in 7.0.',
-                E_USER_DEPRECATED
-            );
-        }
         parent::__construct($message, $request, $response, $previous, $handlerContext);
+    }
+
+    public function hasResponse(): bool
+    {
+        return true;
+    }
+
+    public function getResponse(): ResponseInterface
+    {
+
+        return parent::getResponse();
     }
 }

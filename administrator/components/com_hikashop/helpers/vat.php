@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -9,6 +9,7 @@
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 class hikashopVatHelper{
+	var $message = '';
 	function isValid(&$vat){
 		$zone_code = '';
 		if(!empty($vat->address_country)){
@@ -208,13 +209,19 @@ class hikashopVatHelper{
 				}
 			}catch(SoapFault $e) {
 				$this->message = $e->__toString();
+				hikashop_writeToLog('VAT number check for '.$vat.' failed');
+				hikashop_writeToLog($this->message);
 				return true;
 			}catch (Exception $e) {
 				$this->message = $e->__toString();
+				hikashop_writeToLog('VAT number check for '.$vat.' failed');
+				hikashop_writeToLog($this->message);
 				return true;
 			}
 			if ($result === false || empty($result) || !$result->valid ) {
 				$app = JFactory::getApplication();
+				hikashop_writeToLog('VAT number check for '.$vat.' failed');
+				hikashop_writeToLog($result);
 				if(@$_REQUEST['tmpl']=='component'){
 					hikashop_display($this->message,'error');
 				}else{

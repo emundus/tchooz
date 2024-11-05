@@ -38,6 +38,8 @@
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
+    <li><a href="#gitflow">Gitflow</a></li>
+    <li><a href="#release-management">Release management</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
@@ -261,6 +263,53 @@ gitGraph
 - **deployer-auto** : Deploy the new release in some environments
 - **deployer-manuel** : Allows manual deployment of the new version in other environments
 
+<!-- RELEASES -->
+
+## Release management
+We use the Semantic Versioning convention for version numbers. For more information, please visit [semver.org](https://semver.org/).
+
+Each release is therefore named like this: `<major> ‘.’ <minor> ‘.’ <patch>` (example 1.20.4).
+
+`<major>`: The major number indicates the major version of the software, which means that there have been major changes that are potentially incompatible with previous versions.
+
+`<minor>`: The minor number indicates the minor version of the software, meaning that there have been minor changes, such as bug fixes, performance improvements or new features, but which are compatible with previous versions.
+
+`<patch>`: The patch number indicates the patch version of the software. This means that bugs or vulnerabilities have been fixed.
+
+The release number is incremented by checking the names of all the commits included in the history of the merge request or squash commit where applicable.
+
+## Naming convention
+> [!WARNING]  
+> The prefixes must be used at the beginning of the name of your commits, and the space after the : is essential!
+
+### Are you releasing a major version of the product?
+At least one commit must be present in the commit history of your merge request with one of these prefixes:
+- `BREAKING:`
+- `BREAKING CHANGE:`
+- `BREAKING CHANGES:`
+
+> This will trigger the creation of a major release (example 1.0.0 → 2.0.0) when merging to the main branch.
+
+### Are you releasing a feature?
+At least one commit must be present in the commit history of your merge request with one of these prefixes:
+- `minor:`
+- `feat:`
+- `feature:`
+> This will trigger the creation of a major release (example 1.0.0 → 1.1.0) when merging to the main branch.
+
+### Are you committing a patch or hotfix?
+At least one commit must be present in the commit history of your merge request with one of these prefixes:
+- `patch:`
+- `hotfix:`
+- `security:`
+- `fix:`
+- `style:`
+- `refactor:`
+- `perf:`
+> This will trigger the creation of a major release (example 1.0.0 → 1.0.1) when merging to the main branch.
+
+All the prefixes below will be taken into account in the release creation process when the main branch is merged.
+
 <!-- ROADMAP -->
 
 ## Roadmap
@@ -303,7 +352,7 @@ Below are several links that are essential for developers working on this projec
 
 [Node-min-badge]: https://img.shields.io/badge/min-18.x-orange
 
-[Node-reco-badge]: https://img.shields.io/badge/recommended-18.x-green
+[Node-reco-badge]: https://img.shields.io/badge/recommended-20.x-green
 
 [Composer-local-installation]: https://getcomposer.org/download/
 

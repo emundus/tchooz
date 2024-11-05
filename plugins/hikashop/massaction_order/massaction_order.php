@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -583,7 +583,7 @@ class plgHikashopMassaction_order extends JPlugin
 							$data['order']['product'][$i]['order_product_id'] = '';
 							$data['order']['product'][$i]['order_product_name'] = $product->product_name;
 							$data['order']['product'][$i]['order_product_code'] = $product->product_code;
-							$data['order']['product'][$i]['order_product_price'] = $product->prices[0]->price_value;
+							$data['order']['product'][$i]['order_product_price'] = (empty($product->prices[0]) ? '' : $product->prices[0]->price_value);
 						}
 						hikaInput::get()->set('data', $data);
 						$orderClass->saveForm('products');

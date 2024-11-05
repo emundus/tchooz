@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -295,7 +295,7 @@ class hikashopFieldClass extends hikashopClass {
 						else
 							$categories[$id]['originals'][$category->category_id] = $category->category_id;
 					}
-					$parents = $categoryClass->getParents($data->categories);
+					$parents = $categoryClass->getParents($data->categories, 0, array('category_id'));
 				} else {
 					if(isset($data->product_type) && $data->product_type == 'variant' && !empty($data->product_parent_id))
 						$loadedCategories = $productClass->getCategories($data->product_parent_id);
@@ -305,7 +305,7 @@ class hikashopFieldClass extends hikashopClass {
 						foreach($loadedCategories as $cat) {
 							$categories[$id]['originals'][$cat] = $cat;
 						}
-						$parents = $categoryClass->getParents($loadedCategories);
+						$parents = $categoryClass->getParents($loadedCategories, 0, array('category_id'));
 					}
 				}
 				if(!empty($parents) && is_array($parents)) {
@@ -349,7 +349,7 @@ class hikashopFieldClass extends hikashopClass {
 				}
 
 				$categoryClass = hikashop_get('class.category');
-				$parents = $categoryClass->getParents($c['originals']);
+				$parents = $categoryClass->getParents($c['originals'], 0, array('category_id', 'category_parent_id'));
 
 				$c['children'] = array();
 				if(!empty($parents) && is_array($parents)) {
@@ -466,7 +466,7 @@ class hikashopFieldClass extends hikashopClass {
 						$allCat['originals'][$cat]=$cat;
 					}
 				}
-				$parents = $categoryClass->getParents($loadedCategories);
+				$parents = $categoryClass->getParents($loadedCategories, 0, array('category_id'));
 
 				if(!empty($parents) && is_array($parents)) {
 					foreach($parents as $parent) {
@@ -492,7 +492,7 @@ class hikashopFieldClass extends hikashopClass {
 				if(!isset($categories2[$id])) {
 					$categories2[$id]['originals'][$id] = $id;
 					$categoryClass = hikashop_get('class.category');
-					$parents = $categoryClass->getParents($id);
+					$parents = $categoryClass->getParents($id, 0, array('category_id'));
 					if(!empty($parents)) {
 						foreach($parents as $parent) {
 							$categories2[$id]['parents'][$parent->category_id] = $parent->category_id;
@@ -1279,11 +1279,19 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 			$js .= "\nwindow.hikashopFieldsJs['".$type.$suffix_type."']['".$namekey."'] = {};";
 			foreach($parent->childs as $value => $childs){
 				$js .= "\nwindow.hikashopFieldsJs['".$type.$suffix_type."']['".$namekey."']['".$value."'] = {};";
+				$conditionAdded = false;
 				foreach($childs as $field){
 					$js .= "\nwindow.hikashopFieldsJs['".$type.$suffix_type."']['".$namekey."']['".$value."']['".$field->field_namekey."'] = '".$field->field_namekey."';";
+					if(!empty($field->condition)) {
+						if(!$conditionAdded) {
+							$conditionAdded = true;
+						$js .= "\nwindow.hikashopFieldsJs['".$type.$suffix_type."']['".$namekey."']['".$value."']['condition'] = {};";
+						}
+					$js .= "\nwindow.hikashopFieldsJs['".$type.$suffix_type."']['".$namekey."']['".$value."']['condition']['".$field->field_namekey."'] = '".$field->condition."';";
 				}
 			}
-			$js .= "\nwindow.hikashopFieldsJs['".$type.$suffix_type."']['".$namekey."']['condition'] = '".$parent->condition."';";
+			}
+
 		}
 
 		$js .= $this->getLoadJSForToggle($parents, $data, $id, $prefix, $options);
@@ -1333,6 +1341,7 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 				continue;
 
 			$parent = $field->field_options['limit_to_parent'];
+			$field->condition = 'IS';
 
 			if(!isset($parents[$parent])) {
 				$obj = new stdClass();
@@ -1343,6 +1352,7 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 			}
 			if(!empty($field->field_options['limit_to_parent_condition']) && $field->field_options['limit_to_parent_condition'] != 'IS') {
 				$parents[$parent]->condition = 'IS NOT';
+				$field->condition = 'IS NOT';
 			}
 
 			$parent_value = @$field->field_options['parent_value'];

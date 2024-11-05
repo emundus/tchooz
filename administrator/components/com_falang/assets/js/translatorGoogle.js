@@ -1,4 +1,4 @@
-function translateService(sourceText){
+function translateService(fieldName,sourceText){
 
     var translatedText;
 
@@ -19,15 +19,21 @@ function translateService(sourceText){
         url: endpoint,
         dataType: 'json',
         data : data,
+        beforeSend: function() {
+            document.body.style.cursor = 'wait';
+        },
         success: function (result) {
             console.log(result);
             translatedText = result.data.translations[0].translatedText;
+            setTranslation(fieldName,translatedText);
         },
         error: function (xhr, textStatus, errorThrown) {
             console.log(xhr);
             translatedText = "ERROR "+xhr.responseJSON["code"]+": "+xhr.responseJSON["message"];
         },
-        async:false
+        complete: function() {
+            document.body.style.cursor = 'default';
+        }
     });
 
     return translatedText;

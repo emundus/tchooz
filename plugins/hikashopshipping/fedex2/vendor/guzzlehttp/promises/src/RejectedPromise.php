@@ -1,13 +1,6 @@
 <?php
-/**
- * @package	HikaShop for Joomla!
- * @version	5.1.0
- * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
- * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
-defined('_JEXEC') or die('Restricted access');
-?><?php
+
+declare(strict_types=1);
 
 namespace GuzzleHttp\Promise;
 
@@ -27,9 +20,9 @@ class RejectedPromise implements PromiseInterface
     }
 
     public function then(
-        callable $onFulfilled = null,
-        callable $onRejected = null
-    ) {
+        ?callable $onFulfilled = null,
+        ?callable $onRejected = null
+    ): PromiseInterface {
         if (!$onRejected) {
             return $this;
         }
@@ -37,13 +30,11 @@ class RejectedPromise implements PromiseInterface
         $queue = Utils::queue();
         $reason = $this->reason;
         $p = new Promise([$queue, 'run']);
-        $queue->add(static function () use ($p, $reason, $onRejected) {
+        $queue->add(static function () use ($p, $reason, $onRejected): void {
             if (Is::pending($p)) {
                 try {
                     $p->resolve($onRejected($reason));
                 } catch (\Throwable $e) {
-                    $p->reject($e);
-                } catch (\Exception $e) {
                     $p->reject($e);
                 }
             }
@@ -52,12 +43,12 @@ class RejectedPromise implements PromiseInterface
         return $p;
     }
 
-    public function otherwise(callable $onRejected)
+    public function otherwise(callable $onRejected): PromiseInterface
     {
         return $this->then(null, $onRejected);
     }
 
-    public function wait($unwrap = true, $defaultDelivery = null)
+    public function wait(bool $unwrap = true)
     {
         if ($unwrap) {
             throw Create::exceptionFor($this->reason);
@@ -66,24 +57,24 @@ class RejectedPromise implements PromiseInterface
         return null;
     }
 
-    public function getState()
+    public function getState(): string
     {
         return self::REJECTED;
     }
 
-    public function resolve($value)
+    public function resolve($value): void
     {
-        throw new \LogicException("Cannot resolve a rejected promise");
+        throw new \LogicException('Cannot resolve a rejected promise');
     }
 
-    public function reject($reason)
+    public function reject($reason): void
     {
         if ($reason !== $this->reason) {
-            throw new \LogicException("Cannot reject a rejected promise");
+            throw new \LogicException('Cannot reject a rejected promise');
         }
     }
 
-    public function cancel()
+    public function cancel(): void
     {
     }
 }

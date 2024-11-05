@@ -190,8 +190,7 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
     php cli/joomla.php tchooz:config -n --keys="default_email_mailfrom,default_email_fromname,default_email_smtphost,default_email_smtpport,default_email_smtpsecure,default_email_smtpauth,default_email_smtpuser,default_email_smtppass,custom_email_conf" --values="$TCHOOZ_MAIL_FROM,$TCHOOZ_MAIL_FROM_NAME,$TCHOOZ_MAIL_SMTP_HOST,$TCHOOZ_MAIL_SMTP_PORT,$TCHOOZ_MAIL_SMTP_SECURITY,1,$TCHOOZ_MAIL_SMTP_USER,$TCHOOZ_MAIL_SMTP_PASS,0"
 
     echo >&2 "Run eMundus updates..."
-    php cli/joomla.php tchooz:update -n --component=com_emundus
-    php cli/joomla.php tchooz:update -n --component=com_hikashop
+    php cli/joomla.php tchooz:update -n --component=com_emundus,com_hikashop,com_fabrik,com_dropfiles
     php cli/joomla.php maintenance:database --fix
 
     php cli/joomla.php tchooz:vanilla --action="import_foreign_keys" --folder=".docker/installation/vanilla" -n

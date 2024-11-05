@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    5.1.0
+ * @version    5.1.1
  * @author     hikashop.com
  * @copyright  (C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -239,6 +239,12 @@ var Oby = {
 		xhr.open(options.mode, url, true);
 		if(options.mode.toUpperCase() == 'POST' && typeof(options.data) == 'string') {
 			xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+		}
+		if(typeof Joomla !== 'undefined' && Joomla && Joomla.getOptions) {
+			var csrf = Joomla.getOptions("csrf.token", "");
+			if(csrf) {
+				xhr.setRequestHeader("X-CSRF-Token", csrf);
+			}
 		}
 		xhr.send( options.data );
 	},
@@ -1209,8 +1215,13 @@ var hikashop = {
 		var className = el.getAttribute('data-addTo-class');
 		if(className) o.addClass(el, className);
 
-		if(window.self !== window.top && window.top.hikashop) {
-			return window.top.hikashop.addToCart(el, type, container, data);
+		// if we are in a popup we want the add to cart to happen in the parent frame.
+		// however, this can cause issues if the website is inside an iframe from another domain so we add a try/catch so that the add to cart can work
+		if(window.self !== window.top) {
+			try {
+				if(window.top.hikashop)
+					return window.top.hikashop.addToCart(el, type, container, data);
+			} catch(e) {}
 		}
 
 		o.xRequest(url, {mode:'POST', data: data}, function(xhr) {
@@ -1373,7 +1384,7 @@ var hikashop = {
 		el.processing = true;
 		if(container)
 			o.addClass(container, "hikashop_checkout_loading");
-		var data = 'cart_type=' + cart_type + '&cart_id' + cart_id + '&cart_product_id=' + cart_product_id;
+		var data = 'cart_type=' + cart_type + '&cart_id=' + cart_id + '&cart_product_id=' + cart_product_id;
 
 		o.xRequest(url, {mode:'POST', data: data}, function(xhr) {
 			el.processing = false;
@@ -1484,6 +1495,12 @@ var hikashop = {
 		xhr.open(options.mode, url, true);
 		if(options.mode.toUpperCase() == 'POST' && typeof(options.data) == 'string') {
 			xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+		}
+		if(typeof Joomla !== 'undefined' && Joomla && Joomla.getOptions) {
+			var csrf = Joomla.getOptions("csrf.token", "");
+			if(csrf) {
+				xhr.setRequestHeader("X-CSRF-Token", csrf);
+			}
 		}
 		xhr.send( options.data );
 	},
@@ -1952,8 +1969,6 @@ var hikashop = {
 			}
 			var data = this.fields_data[field_type][namekey];
 
-			var condition = data['condition'];
-
 			for(var k in data) {
 				if(typeof data[k] != 'object')
 					continue;
@@ -1990,6 +2005,9 @@ var hikashop = {
 					el = document.getElementById(elementName);
 					if(!el)
 						continue;
+					var condition = 'IS';
+					if(data[j]['condition'] && data[j]['condition'][i])
+						condition = data[j]['condition'][i];
 					if( condition != 'IS NOT') {
 						var display = 'none';
 						var value = '';
@@ -2224,7 +2242,13 @@ window.hikashop.ready(function(){
 	}
 	if(window.hikaVotes && typeof(initVote) == 'function')
 		initVote();
-	window.hikashop.checkConsistency();
+	// timeout to make sure that everything is rendered before triggering the height calculations
+	window.setTimeout(
+		function(){
+			window.hikashop.checkConsistency();
+		},
+		50
+	);
 });
 if(window.jQuery && typeof(jQuery.noConflict) == "function" && !window.hkjQuery) {
 	window.hkjQuery = jQuery.noConflict();

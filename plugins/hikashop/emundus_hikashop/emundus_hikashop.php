@@ -147,6 +147,7 @@ class PlgHikashopEmundus_hikashop extends CMSPlugin {
 
                 $db->setQuery($query);
 
+	            Log::add('Inserting Order '. $order_id .' update -> '. preg_replace("/[\r\n]/"," ",$query->__toString()), Log::INFO, 'com_emundus');
             } else {
                 Log::add('Updating Order '. $order_id .' update -> '. preg_replace("/[\r\n]/"," ",$query->__toString()), Log::INFO, 'com_emundus');
 

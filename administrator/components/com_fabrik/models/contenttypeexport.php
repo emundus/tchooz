@@ -379,12 +379,12 @@ class FabrikAdminModelContentTypeExport extends FabModelAdmin
 		$tabDbo= FabrikWorker::getDbo(false, $tableConnId);
 
 		// Until the J! exporters are fixed, we only handle Mysqli (with out extended class)
-		if (!($tabDbo instanceof JDatabaseDriverMysqli))
+		if (!($tabDbo instanceof Joomla\Database\Mysqli\MysqliDriver))
 		{
 			throw new Exception('Sorry, we currently only support the Mysqli database driver for export');
 		}
 
-		$exporter = new JDatabaseExporterMysqli2;
+		$exporter = new JDatabaseExporterMysqli2([]);
 
 		$exporter->setDbo($tabDbo);
 		$exporter->from($tableName);

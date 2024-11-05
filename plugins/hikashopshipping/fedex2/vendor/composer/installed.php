@@ -1,13 +1,4 @@
-<?php
-/**
- * @package	HikaShop for Joomla!
- * @version	5.1.0
- * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
- * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
-defined('_JEXEC') or die('Restricted access');
-?><?php return array(
+<?php return array(
     'root' => array(
         'pretty_version' => '1.0.0+no-version-set',
         'version' => '1.0.0.0',
@@ -28,65 +19,32 @@ defined('_JEXEC') or die('Restricted access');
             'reference' => NULL,
             'dev_requirement' => false,
         ),
-        'carbonphp/carbon-doctrine-types' => array(
-            'pretty_version' => '3.2.0',
-            'version' => '3.2.0.0',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../carbonphp/carbon-doctrine-types',
-            'aliases' => array(),
-            'reference' => '18ba5ddfec8976260ead6e866180bd5d2f71aa1d',
-            'dev_requirement' => false,
-        ),
         'guzzlehttp/guzzle' => array(
-            'pretty_version' => '7.8.1',
-            'version' => '7.8.1.0',
+            'pretty_version' => '7.9.2',
+            'version' => '7.9.2.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../guzzlehttp/guzzle',
             'aliases' => array(),
-            'reference' => '41042bc7ab002487b876a0683fc8dce04ddce104',
+            'reference' => 'd281ed313b989f213357e3be1a179f02196ac99b',
             'dev_requirement' => false,
         ),
         'guzzlehttp/promises' => array(
-            'pretty_version' => '2.0.2',
-            'version' => '2.0.2.0',
+            'pretty_version' => '2.0.3',
+            'version' => '2.0.3.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../guzzlehttp/promises',
             'aliases' => array(),
-            'reference' => 'bbff78d96034045e58e13dedd6ad91b5d1253223',
+            'reference' => '6ea8dd08867a2a42619d65c3deb2c0fcbf81c8f8',
             'dev_requirement' => false,
         ),
         'guzzlehttp/psr7' => array(
-            'pretty_version' => '2.6.2',
-            'version' => '2.6.2.0',
+            'pretty_version' => '2.7.0',
+            'version' => '2.7.0.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../guzzlehttp/psr7',
             'aliases' => array(),
-            'reference' => '45b30f99ac27b5ca93cb4831afe16285f57b8221',
+            'reference' => 'a70f5c95fb43bc83f07c9c948baa0dc1829bf201',
             'dev_requirement' => false,
-        ),
-        'nesbot/carbon' => array(
-            'pretty_version' => '2.72.3',
-            'version' => '2.72.3.0',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../nesbot/carbon',
-            'aliases' => array(),
-            'reference' => '0c6fd108360c562f6e4fd1dedb8233b423e91c83',
-            'dev_requirement' => false,
-        ),
-        'psr/clock' => array(
-            'pretty_version' => '1.0.0',
-            'version' => '1.0.0.0',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../psr/clock',
-            'aliases' => array(),
-            'reference' => 'e41a24703d4560fd0acb709162f73b8adfc3aa0d',
-            'dev_requirement' => false,
-        ),
-        'psr/clock-implementation' => array(
-            'dev_requirement' => false,
-            'provided' => array(
-                0 => '1.0',
-            ),
         ),
         'psr/http-client' => array(
             'pretty_version' => '1.0.3',
@@ -104,12 +62,12 @@ defined('_JEXEC') or die('Restricted access');
             ),
         ),
         'psr/http-factory' => array(
-            'pretty_version' => '1.0.2',
-            'version' => '1.0.2.0',
+            'pretty_version' => '1.1.0',
+            'version' => '1.1.0.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../psr/http-factory',
             'aliases' => array(),
-            'reference' => 'e616d01114759c4c489f93b099585439f795fe35',
+            'reference' => '2b4765fddfe3b508ac62f829e852b1501d3f6e8a',
             'dev_requirement' => false,
         ),
         'psr/http-factory-implementation' => array(
@@ -143,63 +101,21 @@ defined('_JEXEC') or die('Restricted access');
             'dev_requirement' => false,
         ),
         'symfony/deprecation-contracts' => array(
-            'pretty_version' => 'v3.4.0',
-            'version' => '3.4.0.0',
+            'pretty_version' => 'v3.5.0',
+            'version' => '3.5.0.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../symfony/deprecation-contracts',
             'aliases' => array(),
-            'reference' => '7c3aff79d10325257a001fcf92d991f24fc967cf',
+            'reference' => '0e0d29ce1f20deffb4ab1b016a7257c4f1e789a1',
             'dev_requirement' => false,
-        ),
-        'symfony/polyfill-mbstring' => array(
-            'pretty_version' => 'v1.29.0',
-            'version' => '1.29.0.0',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../symfony/polyfill-mbstring',
-            'aliases' => array(),
-            'reference' => '9773676c8a1bb1f8d4340a62efe641cf76eda7ec',
-            'dev_requirement' => false,
-        ),
-        'symfony/polyfill-php80' => array(
-            'pretty_version' => 'v1.29.0',
-            'version' => '1.29.0.0',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../symfony/polyfill-php80',
-            'aliases' => array(),
-            'reference' => '87b68208d5c1188808dd7839ee1e6c8ec3b02f1b',
-            'dev_requirement' => false,
-        ),
-        'symfony/translation' => array(
-            'pretty_version' => 'v6.4.4',
-            'version' => '6.4.4.0',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../symfony/translation',
-            'aliases' => array(),
-            'reference' => 'bce6a5a78e94566641b2594d17e48b0da3184a8e',
-            'dev_requirement' => false,
-        ),
-        'symfony/translation-contracts' => array(
-            'pretty_version' => 'v3.4.1',
-            'version' => '3.4.1.0',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../symfony/translation-contracts',
-            'aliases' => array(),
-            'reference' => '06450585bf65e978026bda220cdebca3f867fde7',
-            'dev_requirement' => false,
-        ),
-        'symfony/translation-implementation' => array(
-            'dev_requirement' => false,
-            'provided' => array(
-                0 => '2.3|3.0',
-            ),
         ),
         'whatarmy/fedex-rest' => array(
-            'pretty_version' => '0.5.10',
-            'version' => '0.5.10.0',
+            'pretty_version' => '0.5.16',
+            'version' => '0.5.16.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../whatarmy/fedex-rest',
             'aliases' => array(),
-            'reference' => 'f6831aca33f6fcb9f8a7faf20c628012ea9ce563',
+            'reference' => '41dee87c8194a958ac6baa866faa301f8febac01',
             'dev_requirement' => false,
         ),
     ),

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -285,7 +285,7 @@ class plgSystemHikashopaffiliate extends hikashopJoomlaPlugin {
 					$points = round($order->order_partner_price);
 					$pointsOrder = new stdClass();
 					$pointsOrder->order_user_id = $partner_id;
-					$data = JTex::_('PARTNER_CLICK_FEE').' ( '.JText::_('HKASHOP_USER_ID').': '.$partner_id.' )';
+					$data = JText::_('PARTNER_CLICK_FEE').' ( '.JText::_('HKASHOP_USER_ID').': '.$partner_id.' )';
 					if($plugin->addPoints($points, $pointsOrder, $data, null)) {
 						$order->order_partner_price = 0;
 						break;

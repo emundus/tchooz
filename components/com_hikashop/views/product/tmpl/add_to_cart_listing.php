@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -13,10 +13,14 @@ if(!$this->config->get('add_to_cart_legacy', true)) {
 	echo $this->loadTemplate();
 	return;
 }
+$consistency =  $this->params->get('consistencyheight', 0);
+$extra_class = '';
+if ($consistency == '2')
+	$extra_class = 'hikashop_aligned_btn';
 
 if($this->config->get('show_quantity_field') < 2) {
 ?>
-	<form action="<?php echo hikashop_completeLink('product&task=updatecart'); ?>" method="post" name="hikashop_product_form_<?php echo $this->row->product_id.'_'.$this->params->get('main_div_name'); ?>" enctype="multipart/form-data">
+	<form class="<?php echo $extra_class; ?>" action="<?php echo hikashop_completeLink('product&task=updatecart'); ?>" method="post" name="hikashop_product_form_<?php echo $this->row->product_id.'_'.$this->params->get('main_div_name'); ?>" enctype="multipart/form-data">
 <?php
 }
 

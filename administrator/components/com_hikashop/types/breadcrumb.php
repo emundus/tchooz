@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -11,7 +11,7 @@ defined('_JEXEC') or die('Restricted access');
 class hikashopBreadcrumbType extends hikashopType{
 	function display($map,$value,$type=''){
 		$categoryClass = hikashop_get('class.category');
-		$mainCategories = $categoryClass->getParents($value);
+		$mainCategories = $categoryClass->getParents($value, 0, array('category_id'));
 		$mainHTML = array();
 		$ids = array();
 		if(!empty($mainCategories)){

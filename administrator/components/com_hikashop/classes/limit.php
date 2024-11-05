@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -337,7 +337,7 @@ class hikashopLimitClass extends hikashopClass {
 			$value = 0;
 
 			foreach($data['products'] as $entry) {
-				if( $entry->order_created < $baseDate || (!empty($limiter->limit_status) && strpos(','.$limiter->limit_status.',', ','.$entry->order_status.',') === false) )
+				if( $entry->order_created < $baseDate || (!empty($limiter->limit_status) && strpos(',all,', $limiter->limit_status) === false && strpos(','.$limiter->limit_status.',', ','.$entry->order_status.',') === false) )
 					continue;
 
 				$pid = (int)$entry->order_product_id;
@@ -765,7 +765,7 @@ class hikashopLimitClass extends hikashopClass {
 			if($rule['currency'] != $c['currency'])
 				$c['currency'] = false;
 		}
-		if(!empty($c['status'])) {
+		if(!empty($c['status']) && !in_array('all', $c['status'])) {
 			$s = hikashop_db_quote($c['status']);
 			$filters['order_status'] = 'o.order_status IN ('.implode(',', $s).')';
 		}
@@ -782,7 +782,7 @@ class hikashopLimitClass extends hikashopClass {
 			$sql = array(
 				'o.order_created >= ' . (int)$date
 			);
-			if(!empty($rule['status']) && empty($filters['order_status'])) {
+			if(!empty($rule['status']) && empty($filters['order_status']) && !in_array('all', $c['status'])) {
 				$s = hikashop_db_quote($c['status']);
 				$sql[] = 'o.order_status IN ('.implode(',', $s).')';
 			}

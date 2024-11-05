@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -550,7 +550,7 @@ function hikashopUpdateVariant(obj) {
 function hikashopUpdateVariantData(selection) {
 	if(!selection)
 		return true;
-	var names = ['id','name','code','image','price','quantity','description','weight','url','width','length','height','contact','custom_info','files'];
+	var names = ['id','name','code','image','price','quantity','description','weight','url','width','length','height','contact','custom_info','files','tags'];
 	var len = names.length;
 	for(var i = 0; i < len; i++){
 		var el = document.getElementById('hikashop_product_'+names[i]+'_main');

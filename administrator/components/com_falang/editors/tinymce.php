@@ -12,40 +12,49 @@ use Joomla\CMS\Language\Text;
 
 ?>
 <script type="text/javascript">
-   function copyToClipboard(value, action) {
-      try {
-         if (document.getElementById) {
-            innerHTML="";
-            if (action=="copy") {
-               srcEl = document.getElementById("original_value_"+value);
-               innerHTML = srcEl.innerHTML;
+    function copyToClipboard(fieldname, action) {
+        try {
+            innerHTML = "";
+            if (action == "copy") {
+                srcEl = document.getElementById("original_value_" + fieldname);
+                setTranslation(fieldname, srcEl.innerHTML);
             }
-         if (action=="translate") {
-             srcEl = document.getElementById("original_value_"+value);
-             innerHTML = translateService(srcEl.innerHTML);
-         }
-            if ( typeof(tinyMCE)=="object") {
-                tinyMCE.get("refField_"+value).execCommand("mceSetContent",false,innerHTML );
+            if (action == "translate") {
+                srcEl = document.getElementById("original_value_" + fieldname);
+                translateService(fieldname, srcEl.innerHTML);
             }
-            else {
-               if (window.clipboardData){
-                  window.clipboardData.setData("Text",innerHTML);
-                  alert("<?php echo preg_replace( '#<br\s*/>#', '\n', Text::_('CLIPBOARD_COPIED',true) );?>");
+            if (action == "clear") {
+                setTranslation(fieldname, "");
+            }
+        } catch (e) {
+            console.log(e.message);
+            alert("<?php echo preg_replace('#<br\s*/>#', '\n', Text::_('CLIPBOARD_NOSUPPORT'));?>");
+        }
+    }
+
+   /*
+   * from : 5.11
+   * Set the translation in field work with editor and textarea mode
+   * */
+   function setTranslation(fieldname,value){
+       srcEl = document.getElementById("refField_"+fieldname);
+
+       //both need to be done in case we are
+       if (srcEl != null) {
+           //don't work for editor in visual mode but work in text mode and for other field type
+           srcEl.value = value.trim();//set the text area
+           try {
+               //save the content in visual mode
+               if (!tinymce.get("refField_"+fieldname).hidden){
+                   //visual mode
+                   tinymce.get("refField_"+fieldname).setContent(value.trim()); //set the editor in visual mode
                }
-               else {
-                  srcEl = document.getElementById("text_origText_"+value);
-                       srcEl.value = innerHTML;
-                       srcEl.select();
-                  alert("<?php echo preg_replace( '#<br\s*/>#', '\n', Text::_('CLIPBOARD_COPY'));?>");
-               }
-            }
-         }
-      }
-      catch(e){
-          console.log(e.message);
-          alert("<?php echo preg_replace( '#<br\s*/>#', '\n', Text::_('CLIPBOARD_NOSUPPORT'));?>");
-      }
+           } catch(e){
+               //nothing to do
+           }
+       }
    }
+
    
    function getRefField(value){
       try {
