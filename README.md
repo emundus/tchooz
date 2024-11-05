@@ -292,20 +292,20 @@ At least one commit must be present in the commit history of your merge request 
 
 ### Are you releasing a feature?
 At least one commit must be present in the commit history of your merge request with one of these prefixes:
-- minor:
-- feat:
-- feature:
+- `minor:`
+- `feat:`
+- `feature:`
 > This will trigger the creation of a major release (example 1.0.0 → 1.1.0) when merging to the main branch.
 
 ### Are you committing a patch or hotfix?
 At least one commit must be present in the commit history of your merge request with one of these prefixes:
-- patch:
-- hotfix:
-- security:
-- fix:
-- style:
-- refactor:
-- perf:
+- `patch:`
+- `hotfix:`
+- `security:`
+- `fix:`
+- `style:`
+- `refactor:`
+- `perf:`
 > This will trigger the creation of a major release (example 1.0.0 → 1.0.1) when merging to the main branch.
 
 All the prefixes below will be taken into account in the release creation process when the main branch is merged.
