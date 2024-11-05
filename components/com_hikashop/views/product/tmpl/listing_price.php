@@ -1,13 +1,30 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
+if(!$this->module || hikaInput::get()->getVar('hikashop_front_end_main',0)) {
+	$app    = JFactory::getApplication();
+	$active = $app->getMenu()->getActive();
+	if (!$active) {
+		$active = $app->getMenu()->getDefault();
+	}
+	$priceDisplayParams = $active->getParams();
+} else {
+	$priceDisplayParams = $this->params;
+}
+$priceOptions = $priceDisplayParams->get('hk_custom_price_display_options');
+if(!empty($priceOptions) && !empty($priceDisplayParams->get('advanced_price_display'))) {
+	$this->setLayout('listing_price_advanced');
+	echo $this->loadTemplate();
+	return;
+}
+
 $config =& hikashop_config();
 $class = (!empty($this->row->prices) && count($this->row->prices) > 1) ? ' hikashop_product_several_prices' : '';
 if(!empty($this->row->has_options))

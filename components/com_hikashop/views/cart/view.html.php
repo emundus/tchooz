@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -555,12 +555,14 @@ class CartViewCart extends HikaShopView {
 			if($multi_cart) {
 				$link = hikashop_completeLink('cart&task=listing&cart_type=' . $cart->cart_type.'&Itemid='.$Itemid);
 			}
-			$toolbar['back'] = array(
-				'icon' => 'back',
-				'name' => JText::_('HIKA_BACK'),
-				'url' => $link,
-				'fa' => array('html' => '<i class="fas fa-arrow-circle-left"></i>')
-			);
+			if(!empty($menu) && $menu->link != 'index.php?option=com_hikashop&view=cart&layout=show') {
+				$toolbar['back'] = array(
+					'icon' => 'back',
+					'name' => JText::_('HIKA_BACK'),
+					'url' => $link,
+					'fa' => array('html' => '<i class="fas fa-arrow-circle-left"></i>')
+				);
+			}
 		}
 		$this->toolbar = $toolbar;
 

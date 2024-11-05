@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -27,7 +27,7 @@ define('HIKASHOP_PHP5',version_compare(PHP_VERSION,'5.0.0', '>=') ? true : false
 define('HIKASHOP_PHP7',version_compare(PHP_VERSION,'7.0.0', '>=') ? true : false);
 define('HIKASHOP_PHP8',version_compare(PHP_VERSION,'8.0.0', '>=') ? true : false);
 
-define('HIKASHOP_VERSION', '5.1.0');
+define('HIKASHOP_VERSION', '5.1.1');
 
 
 if(HIKASHOP_J50 && !Joomla\CMS\Plugin\PluginHelper::isEnabled('behaviour', 'compat')) {
@@ -1168,7 +1168,8 @@ if(!function_exists('hikashop_contentLink')) {
 							else
 								$object->alias = $parent->alias;
 						}
-						$url = str_replace('/'.$parent->product_id.'-'.$parent->alias,'/'.$object->product_id.'-'.$object->alias,$url);
+						if(!empty($url))
+							$url = str_replace('/'.$parent->product_id.'-'.$parent->alias,'/'.$object->product_id.'-'.$object->alias,$url);
 					}
 				}
 			}elseif(!empty($object->category_canonical)){
@@ -1452,7 +1453,7 @@ if(!function_exists('hikashop_footer')) {
 			$link.='?partner_id='.$aff;
 		}
 		$text = '<!--  HikaShop Component powered by '.$link.' -->
-		<!-- version '.$config->get('level').' : '.$config->get('version').' [2407080940] -->';
+		<!-- version '.$config->get('level').' : '.$config->get('version').' [2410311051] -->';
 		if(!$config->get('show_footer',true)) return $text;
 		$text .= '<div class="hikashop_footer" style="text-align:center"><a href="'.$link.'" target="_blank" title="'.HIKASHOP_NAME.' : '.strip_tags($description).'">'.HIKASHOP_NAME.' ';
 		$app= JFactory::getApplication();

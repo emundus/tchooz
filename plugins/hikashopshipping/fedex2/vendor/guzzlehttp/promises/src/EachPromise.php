@@ -1,13 +1,6 @@
 <?php
-/**
- * @package	HikaShop for Joomla!
- * @version	5.1.0
- * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
- * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
-defined('_JEXEC') or die('Restricted access');
-?><?php
+
+declare(strict_types=1);
 
 namespace GuzzleHttp\Promise;
 
@@ -53,7 +46,7 @@ class EachPromise implements PromisorInterface
     }
 
 
-    public function promise()
+    public function promise(): PromiseInterface
     {
         if ($this->aggregate) {
             return $this->aggregate;
@@ -66,17 +59,15 @@ class EachPromise implements PromisorInterface
             $this->refillPending();
         } catch (\Throwable $e) {
             $this->aggregate->reject($e);
-        } catch (\Exception $e) {
-            $this->aggregate->reject($e);
         }
 
         return $this->aggregate;
     }
 
-    private function createPromise()
+    private function createPromise(): void
     {
         $this->mutex = false;
-        $this->aggregate = new Promise(function () {
+        $this->aggregate = new Promise(function (): void {
             if ($this->checkIfFinished()) {
                 return;
             }
@@ -90,7 +81,7 @@ class EachPromise implements PromisorInterface
             }
         });
 
-        $clearFn = function () {
+        $clearFn = function (): void {
             $this->iterable = $this->concurrency = $this->pending = null;
             $this->onFulfilled = $this->onRejected = null;
             $this->nextPendingIndex = 0;
@@ -99,15 +90,17 @@ class EachPromise implements PromisorInterface
         $this->aggregate->then($clearFn, $clearFn);
     }
 
-    private function refillPending()
+    private function refillPending(): void
     {
         if (!$this->concurrency) {
-            while ($this->addPending() && $this->advanceIterator());
+            while ($this->addPending() && $this->advanceIterator()) {
+            }
+
             return;
         }
 
         $concurrency = is_callable($this->concurrency)
-            ? call_user_func($this->concurrency, count($this->pending))
+            ? ($this->concurrency)(count($this->pending))
             : $this->concurrency;
         $concurrency = max($concurrency - count($this->pending), 0);
         if (!$concurrency) {
@@ -116,10 +109,11 @@ class EachPromise implements PromisorInterface
         $this->addPending();
         while (--$concurrency
             && $this->advanceIterator()
-            && $this->addPending());
+            && $this->addPending()) {
+        }
     }
 
-    private function addPending()
+    private function addPending(): bool
     {
         if (!$this->iterable || !$this->iterable->valid()) {
             return false;
@@ -131,10 +125,9 @@ class EachPromise implements PromisorInterface
         $idx = $this->nextPendingIndex++;
 
         $this->pending[$idx] = $promise->then(
-            function ($value) use ($idx, $key) {
+            function ($value) use ($idx, $key): void {
                 if ($this->onFulfilled) {
-                    call_user_func(
-                        $this->onFulfilled,
+                    ($this->onFulfilled)(
                         $value,
                         $key,
                         $this->aggregate
@@ -142,10 +135,9 @@ class EachPromise implements PromisorInterface
                 }
                 $this->step($idx);
             },
-            function ($reason) use ($idx, $key) {
+            function ($reason) use ($idx, $key): void {
                 if ($this->onRejected) {
-                    call_user_func(
-                        $this->onRejected,
+                    ($this->onRejected)(
                         $reason,
                         $key,
                         $this->aggregate
@@ -158,7 +150,7 @@ class EachPromise implements PromisorInterface
         return true;
     }
 
-    private function advanceIterator()
+    private function advanceIterator(): bool
     {
         if ($this->mutex) {
             return false;
@@ -169,19 +161,17 @@ class EachPromise implements PromisorInterface
         try {
             $this->iterable->next();
             $this->mutex = false;
+
             return true;
         } catch (\Throwable $e) {
             $this->aggregate->reject($e);
             $this->mutex = false;
-            return false;
-        } catch (\Exception $e) {
-            $this->aggregate->reject($e);
-            $this->mutex = false;
+
             return false;
         }
     }
 
-    private function step($idx)
+    private function step(int $idx): void
     {
         if (Is::settled($this->aggregate)) {
             return;
@@ -194,10 +184,11 @@ class EachPromise implements PromisorInterface
         }
     }
 
-    private function checkIfFinished()
+    private function checkIfFinished(): bool
     {
         if (!$this->pending && !$this->iterable->valid()) {
             $this->aggregate->resolve(null);
+
             return true;
         }
 

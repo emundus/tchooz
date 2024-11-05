@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -296,7 +296,7 @@ class hikashopBridgePaginationHelper extends JPagination {
 			if(function_exists('pagination_list_footer')) {
 				$ret = pagination_list_footer($list);
 				if(strpos($ret, $list['limitfield']) === false) {
-					$display = JText::_('JGLOBAL_DISPLAY_NUM');
+					$display = '<label for="limit'.$this->hikaSuffix.'">'.JText::_('JGLOBAL_DISPLAY_NUM').'</label>';
 					$ret = "\n<div class=\"limit\">".$display.$list['limitfield'] ."</div>" . $ret;
 				}
 				if(strpos($ret, 'name="limitstart'.$this->hikaSuffix.'"') === false)

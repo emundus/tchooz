@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -9,13 +9,15 @@
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 use WhatArmy\fedexRest as fedexRest;
-use FedexRest\Authorization\Authorize;
 use FedexRest\Services\Rates\CreateRatesRequest;
 use FedexRest\Entity\Person;
 use FedexRest\Entity\Address;
 use FedexRest\Entity\Item;
 use FedexRest\Entity\Weight;
 use FedexRest\Entity\Dimensions;
+
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 
 use FedexRest\Services\Ship\Entity\Value;
 use FedexRest\Services\Ship\Type\LinearUnits;
@@ -51,7 +53,6 @@ class plgHikashopshippingFedEx2 extends hikashopShippingPlugin
 				"CONTACT_FEDEX_TO_SCHEDULE"=>"Contact Fedex to Schedule",
 				"DROPOFF_AT_FEDEX_LOCATION"=> 'Drop off at Fedex Location',
 				"USE_SCHEDULED_PICKUP"=>"Use scheduled pickup",
-				"REGULAR_STOP"=>"Regular pickup FedEx schedule",
 			),
 		),
 		'weight_unit' => array('WEIGHT_UNIT', 'list', array(
@@ -68,7 +69,7 @@ class plgHikashopshippingFedEx2 extends hikashopShippingPlugin
 		'dimensions_approximation' => array('FEDEX_DIMENSION_APPROXIMATION', 'input'),
 		'name' => array('HIKA_NAME', 'input'),
 		'address_street' => array('STREET','input'),
-		'address_street2' => array('STREET','input'),
+		'address_street2' => array('STREET_LINE2','input'),
 		'address_city' => array('CITY', 'input'),
 		'postal_code' => array('POSTAL_CODE', 'input'),
 		'state_code' => array('STATE_CODE', 'input'),
@@ -85,7 +86,7 @@ class plgHikashopshippingFedEx2 extends hikashopShippingPlugin
 		array('key'=>6,'code' => 'PRIORITY_OVERNIGHT', 'name' => 'FedEx Priority Overnight', 'countries' => 'USA, PUERTO RICO', 'zones' => array('country_United_States_of_America_223','country_Puerto_Rico_172'), 'destinations' => array('country_United_States_of_America_223','country_Puerto_Rico_172')),
 		array('key'=>7,'code' => 'SMART_POST', 'name' => 'FedEx Smart Post', 'countries' => 'USA, PUERTO RICO', 'zones' => array('country_United_States_of_America_223','country_Puerto_Rico_172'), 'destinations' => array('country_United_States_of_America_223','country_Puerto_Rico_172')),
 		array('key'=>8,'code' => 'STANDARD_OVERNIGHT', 'name' => 'FedEx Standard Overnight', 'countries' => 'USA, PUERTO RICO', 'zones' => array('country_United_States_of_America_223','country_Puerto_Rico_172'), 'destinations' => array('country_United_States_of_America_223','country_Puerto_Rico_172')),
-		array('key'=>9,'code' => 'FEDEX_GROUND', 'name' => 'FedEx International Ground'),
+		array('key'=>9,'code' => 'FEDEX_INTERNATIONAL_GROUND', 'name' => 'FedEx International Ground'),
 		array('key'=>10,'code' => 'INTERNATIONAL_ECONOMY', 'name' => 'FedEx International Economy'),
 		array('key'=>11,'code' => 'INTERNATIONAL_ECONOMY_DISTRIBUTION', 'name' => 'FedEx International Economy Distribution'),
 		array('key'=>12,'code' => 'INTERNATIONAL_FIRST', 'name' => 'FedEx International First'),
@@ -95,6 +96,9 @@ class plgHikashopshippingFedEx2 extends hikashopShippingPlugin
 		array('key'=>16,'code' => 'FEDEX_REGIONAL_ECONOMY', 'name' => 'FedEx Regional Economy', 'countries' => 'Austria, Belgium, Czech Republic, Denmark, Estonia, Finland, France, Germany, Hungary, Ireland, Italy, Latvia, Lithuania, Luxembourg, Netherlands, Norway, Poland, Slovenia, Spain, Sweden, Switzerland, United Kingdom'),
 		array('key'=>17,'code' => 'FEDEX_INTERNATIONAL_PRIORITY_EXPRESS', 'name' => 'FedEx International Priority Express'),
 		array('key'=>18,'code' => 'FEDEX_INTERNATIONAL_CONNECT_PLUS', 'name' => 'FedEx International Connect Plus'),
+		array('key'=>19,'code' => 'FEDEX_FIRST', 'name' => 'FedEx First'),
+		array('key'=>20,'code' => 'FEDEX_PRIORITY_EXPRESS', 'name' => 'FedEx Priority Express'),
+		array('key'=>21,'code' => 'FEDEX_PRIORITY', 'name' => 'FedEx Priority'),
 	);
 
 	var $multiple = true;
@@ -281,7 +285,7 @@ class plgHikashopshippingFedEx2 extends hikashopShippingPlugin
 			'USE_SCHEDULED_PICKUP' => PickupType::_USE_SCHEDULED_PICKUP,
 		);
 		$pickupParams = 'CONTACT_FEDEX_TO_SCHEDULE';
-		if (!empty($method_params->shipping_params->pickup_type))
+		if (!empty($method_params->shipping_params->pickup_type) && in_array($method_params->shipping_params->pickup_type, $pickup))
 			$pickupParams = $method_params->shipping_params->pickup_type;
 
 		$addr_address_street2 = '';
@@ -319,19 +323,16 @@ class plgHikashopshippingFedEx2 extends hikashopShippingPlugin
 			$array_address['method']->setStateOrProvince($meth_state_code);
 
 		try {
-			$auth = (new Authorize)
-				->setClientId($clientId)
-				->setClientSecret($clientSecret)
-				->useProduction();
-
-			$auth_result = $auth->authorize();
+			$auth_result = $this->authorize($clientId, $clientSecret);
 
 			$requested_rates = false;
-			if (is_string($auth_result) && isset($responseArray['errors']) && is_array($responseArray['errors'])) {
+			if (is_string($auth_result)) {
 				$responseArray = json_decode($auth_result, true);
 				$app = JFactory::getApplication();
-				foreach ($responseArray['errors'] as $error) {
-					$app->enqueueMessage('An error occurred. '. $error['message'] .', Code error :'. $error['code']);
+				if(isset($responseArray['errors']) && is_array($responseArray['errors'])) {
+					foreach ($responseArray['errors'] as $error) {
+						$app->enqueueMessage('An error occurred. '. $error['message'] .', Code error :'. $error['code']);
+					}
 				}
 			}
 			if (isset($auth_result->access_token)) {
@@ -398,12 +399,37 @@ class plgHikashopshippingFedEx2 extends hikashopShippingPlugin
 				$requested_rates = $createRatesRequest->request();
 			}
 		} catch(Exception $e) {
-			$app = JFactory::getApplication();
-			$app->enqueueMessage($e->getMessage());
+			if(!empty($rate->shipping_params->debug)) {
+				hikashop_writeToLog($e->getMessage());
+			}
+			$this->error_messages['fedex2_error'] = $e->getMessage();
 
 			$requested_rates = false;
 		}
 		return $requested_rates;
+	}
+
+
+	protected function authorize($client_id, $client_secret) {
+		$config = ["verify" => __DIR__ . "/cacert.pem"];
+		$httpClient = new Client($config);
+		if (!empty($client_id) && !empty($client_secret)) {
+			$query = $httpClient->request('POST', 'https://apis.fedex.com/oauth/token', [
+				'headers' => [
+					'Content-Type' => 'application/x-www-form-urlencoded',
+				],
+				'form_params' => [
+					'grant_type' => 'client_credentials',
+					'client_id' => $client_id,
+					'client_secret' => $client_secret,
+				]
+			]);
+			if ($query->getStatusCode() === 200) {
+				return json_decode($query->getBody()->getContents());
+			}
+		} else {
+			throw new MissingAuthCredentialsException('Please provide auth credentials');
+		}
 	}
 
 	protected function _getBestMethods(&$rate, &$order, $null) {
@@ -501,7 +527,7 @@ class plgHikashopshippingFedEx2 extends hikashopShippingPlugin
 		if (isset($fedex_rates->errors)) {
 			$code = $fedex_rates->errors[0]->code;
 			$message = $fedex_rates->errors[0]->message;
-			$cache_messages['no_shipping_methods_available'] = $code .'</br>'. $message;
+			$this->error_messages['no_shipping_methods_available'] = $code .'</br>'. $message;
 
 			if(!empty($rate->shipping_params->debug)) {
 				hikashop_writeToLog('FedEx 2 : no FedEx rates available = '. $code .' : '. $message);
@@ -673,21 +699,20 @@ class plgHikashopshippingFedEx2 extends hikashopShippingPlugin
 		}
 		if(empty($element->shipping_params->country_code)) {
 			$app->enqueueMessage(JText::sprintf('ENTER_INFO', 'Fedex', 'Country Code'));
+		} else {
+			if(strlen($element->shipping_params->country_code) > 2) {
+				$app->enqueueMessage(JText::sprintf('FEDEX_CODE_2_CHAR', 'Fedex', 'Country Code'));
+			}
+			if(empty($element->shipping_params->state_code) && in_array($element->shipping_params->country_code, $country_array)) {
+				$app->enqueueMessage(JText::sprintf('STATE_ENTER_INFO', 'Fedex', 'State Code'));
+			}
 		}
-		if(!empty($element->shipping_params->country_code) && strlen($element->shipping_params->country_code) > 2) {
-			$app->enqueueMessage(JText::sprintf('FEDEX_CODE_2_CHAR', 'Fedex', 'Country Code'));
-		}
-		if(empty($element->shipping_params->state_code) && in_array($element->shipping_params->country_code, $country_array)) {
-			$app->enqueueMessage(JText::sprintf('STATE_ENTER_INFO', 'Fedex', 'State Code'));
-		}
+
 		if(!empty($element->shipping_params->dimensions_approximation) && !ctype_digit($element->shipping_params->dimensions_approximation)) {
 			$app->enqueueMessage(JText::sprintf('DIGITS_ONLY', 'Fedex', 'Dimensions Approximation'));
 		}
 		if(!empty($element->shipping_params->weight_approximation) && !ctype_digit($element->shipping_params->weight_approximation)) {
 			$app->enqueueMessage(JText::sprintf('DIGITS_ONLY', 'Fedex', 'Weight Approximation'));
-		}
-		if(empty($element->shipping_params->transit_time)) {
-			$element->shipping_params->transit_time = 0;
 		}
 		parent::onShippingConfiguration($element);
 	}
@@ -698,6 +723,8 @@ class plgHikashopshippingFedEx2 extends hikashopShippingPlugin
 		$element->sort_rate = 'default';
 		$element->shipping_images = 'fedex';
 		$element->shipping_type = 'fedex 2';
+		$element->shipping_params = new stdClass();
+		$element->shipping_params->transit_time = 0;
 		$config = hikashop_config();
 	}
 }

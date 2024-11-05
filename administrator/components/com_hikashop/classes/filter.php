@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -356,7 +356,7 @@ class hikashopFilterClass extends hikashopClass {
 			return $filters;
 
 		$categoryClass = hikashop_get('class.category');
-		$parents = $categoryClass->getParents($category_id);
+		$parents = $categoryClass->getParents($category_id, 0, array('category_id'));
 		foreach($filters as $filter){
 			if(empty($filter->filter_category_id)){
 				$filterList[]=$filter;
@@ -513,13 +513,26 @@ class hikashopFilterClass extends hikashopClass {
 			$fieldsLimits='';
 		}
 
-		$database = JFactory::getDBO();
-		$query='SELECT DISTINCT b.product_id'.$fields.' '.$copy_query;
-		$database->setQuery($query);
-		$datas['products']=$database->loadObjectList();
-		$query='SELECT DISTINCT b.product_id'.$fieldsLimits.' '.$copy_query;
-		$database->setQuery($query);
-		$datas['limits']=$database->loadObject();
+		static $cachedDatas = array();
+		if(isset($cachedDatas[$fields.' '.$copy_query])) {
+			$datas['products'] = $cachedDatas[$fields.' '.$copy_query];
+		} else {
+			$database = JFactory::getDBO();
+			$query='SELECT DISTINCT b.product_id'.$fields.' '.$copy_query;
+			$database->setQuery($query);
+			$datas['products'] = $database->loadObjectList();
+			$cachedDatas[$fields.' '.$copy_query] = $datas['products'];
+		}
+		if($fields == $fieldsLimits) {
+			$datas['limits'] = reset($datas['products']);
+		}elseif(isset($cachedDatas[$fieldsLimits.' '.$copy_query])){
+			$datas['limits'] = $cachedDatas[$fieldsLimits.' '.$copy_query];
+		}else {
+			$database = JFactory::getDBO();
+			$query='SELECT DISTINCT b.product_id'.$fieldsLimits.' '.$copy_query;
+			$database->setQuery($query);
+			$datas['limits']=$database->loadObject();
+		}
 
 		if(!is_null($currentFilter) && isset($filters[$currentFilter]))
 			$filters[$currentFilter]->datas = $datas;
@@ -1679,6 +1692,9 @@ class hikashopFilterTypeClass extends hikashopClass {
 	function _getKey(&$categories, $category, $calls = 0) {
 		if($calls>20)
 			return 0;
+		if(empty($category->category_ordering)) {
+			$category->category_ordering = $category->category_id;
+		}
 		if(empty($category->category_parent_id) || !isset($categories[$category->category_parent_id])) {
 			return (int)$category->category_ordering;
 		}

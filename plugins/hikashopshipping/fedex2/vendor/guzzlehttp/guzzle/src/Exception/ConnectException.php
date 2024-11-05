@@ -1,35 +1,34 @@
 <?php
-/**
- * @package	HikaShop for Joomla!
- * @version	5.1.0
- * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
- * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
-defined('_JEXEC') or die('Restricted access');
-?><?php
+
 namespace GuzzleHttp\Exception;
 
+use Psr\Http\Client\NetworkExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 
-class ConnectException extends RequestException
+class ConnectException extends TransferException implements NetworkExceptionInterface
 {
+    private $request;
+
+    private $handlerContext;
+
     public function __construct(
-        $message,
+        string $message,
         RequestInterface $request,
-        \Exception $previous = null,
+        ?\Throwable $previous = null,
         array $handlerContext = []
     ) {
-        parent::__construct($message, $request, null, $previous, $handlerContext);
+        parent::__construct($message, 0, $previous);
+        $this->request = $request;
+        $this->handlerContext = $handlerContext;
     }
 
-    public function getResponse()
+    public function getRequest(): RequestInterface
     {
-        return null;
+        return $this->request;
     }
 
-    public function hasResponse()
+    public function getHandlerContext(): array
     {
-        return false;
+        return $this->handlerContext;
     }
 }

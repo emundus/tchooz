@@ -31,6 +31,7 @@
 			<option value="0">HIKASHOP_NO</option>
 			<option value="1">HIKASHOP_YES</option>
 		</param>
+		<param name="exemption_flag" type="text" default="" label="TAXCLOUD_EXEMPTION_FLAG" description="TAXCLOUD_EXEMPTION_FLAG_DESC"/>
 		<param type="spacer" label="TIC" />
 		<param name="default_tic" type="text" default="" label="DEFAULT_TIC_ID" description=""/>
 		<param name="shipping_tic" type="text" default="" label="SHIPPING_TIC_ID" description=""/>
@@ -55,6 +56,7 @@
 					<option value="0">HIKASHOP_NO</option>
 					<option value="1">HIKASHOP_YES</option>
 				</field>
+				<field name="exemption_flag" type="text" default="" label="TAXCLOUD_EXEMPTION_FLAG" description="TAXCLOUD_EXEMPTION_FLAG_DESC"/>
 				<field type="spacer" label="TIC" />
 				<field name="default_tic" type="text" default="" label="DEFAULT_TIC_ID" description=""/>
 				<field name="shipping_tic" type="text" default="" label="SHIPPING_TIC_ID" description=""/>

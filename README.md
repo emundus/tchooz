@@ -303,7 +303,7 @@ Below are several links that are essential for developers working on this projec
 
 [Node-min-badge]: https://img.shields.io/badge/min-18.x-orange
 
-[Node-reco-badge]: https://img.shields.io/badge/recommended-18.x-green
+[Node-reco-badge]: https://img.shields.io/badge/recommended-20.x-green
 
 [Composer-local-installation]: https://getcomposer.org/download/
 

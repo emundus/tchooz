@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -154,7 +154,7 @@ class FilterViewFilter extends hikashopView{
 				$categories_filter=array();
 				$categoryClass = hikashop_get('class.category');
 				$children = $categoryClass->getChildren($filter_category_ids,true);
-				$parents = $categoryClass->getParents($filter_category_ids);
+				$parents = $categoryClass->getParents($filter_category_ids, 0, array('category_id'));
 				foreach($children as $cat){
 					 $categories_filter[]='field_categories LIKE \'%,'.$cat->category_id.',%\'';
 				}

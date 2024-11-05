@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -938,6 +938,18 @@ class plgHikaShopTaxcloud extends JPlugin {
 		}
 
 
+		if(!empty($address->address_user_id) && !empty($this->plugin_options['exemption_flag'])) {
+			$flagColumn = $this->plugin_options['exemption_flag'];
+			$userClass = hikashop_get('class.user');
+			$user = $userClass->get($address->address_user_id);
+			if(!empty($user)) {
+				if(!empty($user->$flagColumn) && !in_array(strtolower($user->$flagColumn), array('0', '','no'))) {		
+					$app->setUserState(HIKASHOP_COMPONENT.'.taxcloud.address_result', 2);
+					return 2;
+				}
+			}
+		}
+
 		$parameters = array(
 			'uspsUserID' => $this->plugin_options['usps_id'],
 			'address1' => $address->address_street,
@@ -1005,12 +1017,17 @@ class plgHikaShopTaxcloud extends JPlugin {
 		if($override !== false){
 			if(@$this->plugin_options['use_origin_address_when_override']){
 				$address = new stdClass();
+				$address->address_user_id = hikashop_loadUser(false);
 				$address->address_street = $this->plugin_options['origin_address1'];
 				$address->address_street2 = $this->plugin_options['origin_address2'];
 				$address->address_city = $this->plugin_options['origin_city'];
 				$address->address_state = new stdClass();
 				$address->address_state->zone_code_3 = $this->plugin_options['origin_state'];
 				$address->address_post_code = $this->plugin_options['origin_zip5'].$this->plugin_options['origin_zip4'];
+				if(empty($address->address_country)) {
+					$address->address_country = new stdClass();
+					$address->address_country->zone_code_3 = 'USA';
+				}
 				return $address;
 			}
 			return false;
@@ -1092,6 +1109,17 @@ class plgHikaShopTaxcloud extends JPlugin {
 
 		if($address->address_country->zone_code_3 != 'USA')
 			return true;
+
+		if(!empty($address->address_user_id) && !empty($this->plugin_options['exemption_flag'])) {
+			$flagColumn = $this->plugin_options['exemption_flag'];
+			$userClass = hikashop_get('class.user');
+			$user = $userClass->get($address->address_user_id);
+			if(!empty($user)) {
+				if(!empty($user->$flagColumn) && !in_array(strtolower($user->$flagColumn), array('0', '','no'))) {
+					return true;
+				}
+			}
+		}
 
 		$app = JFactory::getApplication();
 

@@ -960,7 +960,7 @@ class Com_DropfilesInstallerScript
         $dbo = JFactory::getDbo();
         $tables = $dbo->getTableList();
         $app = JFactory::getApplication();
-        $prefix = $app->getCfg('dbprefix');
+        $prefix = $app->get('dbprefix');
         if (in_array($prefix . 'joomunited_config', $tables)) {
             $query = $dbo->getQuery(true);
             $query->select('*');

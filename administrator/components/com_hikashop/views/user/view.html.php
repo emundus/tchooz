@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -539,15 +539,20 @@ function updateCustomFeesPanel(active) {
 
 	public function editaddress() {
 		$user_id = hikaInput::get()->getInt('user_id');
-		$address_id = hikashop_getCID('address_id');
-		$address = new stdClass();
-		if(!empty($address_id)){
-			$class=hikashop_get('class.address');
-			$address = $class->get($address_id);
-		}else{
-			$type = hikaInput::get()->getCmd('type');
-			if(in_array($type, array('billing', '', 'both','shipping')))
-				$address->address_type = $type;
+		$error = hikaInput::get()->getInt('error');
+		if(!empty($error) && !empty($_SESSION['hikashop_address_data'])) {
+			$address = $_SESSION['hikashop_address_data'];
+		} else {
+			$address_id = hikashop_getCID('address_id');
+			$address = new stdClass();
+			if(!empty($address_id)){
+				$class=hikashop_get('class.address');
+				$address = $class->get($address_id);
+			}else{
+				$type = hikaInput::get()->getCmd('type');
+				if(in_array($type, array('billing', '', 'both','shipping')))
+					$address->address_type = $type;
+			}
 		}
 		$extraFields=array();
 		$fieldsClass = hikashop_get('class.field');

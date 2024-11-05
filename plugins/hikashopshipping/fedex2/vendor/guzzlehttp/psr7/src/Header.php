@@ -1,59 +1,102 @@
 <?php
-/**
- * @package	HikaShop for Joomla!
- * @version	5.1.0
- * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
- * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
-defined('_JEXEC') or die('Restricted access');
-?><?php
+
+declare(strict_types=1);
 
 namespace GuzzleHttp\Psr7;
 
 final class Header
 {
-    public static function parse($header)
+    public static function parse($header): array
     {
         static $trimmed = "\"'  \n\t\r";
         $params = $matches = [];
 
-        foreach (self::normalize($header) as $val) {
-            $part = [];
-            foreach (preg_split('/;(?=([^"]*"[^"]*")*[^"]*$)/', $val) as $kvp) {
-                if (preg_match_all('/<[^>]+>|[^=]+/', $kvp, $matches)) {
-                    $m = $matches[0];
-                    if (isset($m[1])) {
-                        $part[trim($m[0], $trimmed)] = trim($m[1], $trimmed);
-                    } else {
-                        $part[] = trim($m[0], $trimmed);
+        foreach ((array) $header as $value) {
+            foreach (self::splitList($value) as $val) {
+                $part = [];
+                foreach (preg_split('/;(?=([^"]*"[^"]*")*[^"]*$)/', $val) ?: [] as $kvp) {
+                    if (preg_match_all('/<[^>]+>|[^=]+/', $kvp, $matches)) {
+                        $m = $matches[0];
+                        if (isset($m[1])) {
+                            $part[trim($m[0], $trimmed)] = trim($m[1], $trimmed);
+                        } else {
+                            $part[] = trim($m[0], $trimmed);
+                        }
                     }
                 }
-            }
-            if ($part) {
-                $params[] = $part;
+                if ($part) {
+                    $params[] = $part;
+                }
             }
         }
 
         return $params;
     }
 
-    public static function normalize($header)
+    public static function normalize($header): array
     {
-        if (!is_array($header)) {
-            return array_map('trim', explode(',', $header));
+        $result = [];
+        foreach ((array) $header as $value) {
+            foreach (self::splitList($value) as $parsed) {
+                $result[] = $parsed;
+            }
+        }
+
+        return $result;
+    }
+
+    public static function splitList($values): array
+    {
+        if (!\is_array($values)) {
+            $values = [$values];
         }
 
         $result = [];
-        foreach ($header as $value) {
-            foreach ((array) $value as $v) {
-                if (strpos($v, ',') === false) {
-                    $result[] = $v;
+        foreach ($values as $value) {
+            if (!\is_string($value)) {
+                throw new \TypeError('$header must either be a string or an array containing strings.');
+            }
+
+            $v = '';
+            $isQuoted = false;
+            $isEscaped = false;
+            for ($i = 0, $max = \strlen($value); $i < $max; ++$i) {
+                if ($isEscaped) {
+                    $v .= $value[$i];
+                    $isEscaped = false;
+
                     continue;
                 }
-                foreach (preg_split('/,(?=([^"]*"[^"]*")*[^"]*$)/', $v) as $vv) {
-                    $result[] = trim($vv);
+
+                if (!$isQuoted && $value[$i] === ',') {
+                    $v = \trim($v);
+                    if ($v !== '') {
+                        $result[] = $v;
+                    }
+
+                    $v = '';
+                    continue;
                 }
+
+                if ($isQuoted && $value[$i] === '\\') {
+                    $isEscaped = true;
+                    $v .= $value[$i];
+
+                    continue;
+                }
+                if ($value[$i] === '"') {
+                    $isQuoted = !$isQuoted;
+                    $v .= $value[$i];
+
+                    continue;
+                }
+
+                $v .= $value[$i];
+            }
+
+            $v = \trim($v);
+            if ($v !== '') {
+                $result[] = $v;
             }
         }
 

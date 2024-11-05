@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -111,7 +111,7 @@ class hikashopBadgeClass extends hikashopClass {
 			}
 		}
 
-		$parents = $categoryClass->getParents($loadedCategories);
+		$parents = $categoryClass->getParents($loadedCategories, 0, array('category_id'));
 		if(!empty($parents) && is_array($parents)) {
 			foreach($parents as $parent) {
 				$categories['parents'][$parent->category_id] = $parent->category_id;

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -71,10 +71,12 @@ function _HikashopBuildRoute( &$query, $separator = '-' )
 					if(!empty($menu) && !empty($menu->link) && $menu->link =='index.php?option=com_hikashop&view=checkout&layout=step'){
 						if(isset($query['ctrl'])) unset($query['ctrl']);
 						if(isset($query['view'])) unset($query['view']);
+						if(isset($query['layout'])) unset($query['layout']);
 					}
 				}else{
 					if(isset($query['ctrl'])) unset($query['ctrl']);
 					if(isset($query['view'])) unset($query['view']);
+					if(isset($query['layout'])) unset($query['layout']);
 					if(!empty($checkoutSef)) $segments[] = $checkoutSef;
 				}
 			}
@@ -230,6 +232,10 @@ function _HikashopParseRoute( &$segments, $separator = '-' )
 				}else if(str_replace(':','-',$name)==$categorySef){
 					$vars['ctrl']='category';
 					$vars['task']='listing';
+					$check=true;
+				}else if(str_replace(':','-',$name)==$checkoutSef){
+					$vars['ctrl']='checkout';
+					$vars['task']='show';
 					$check=true;
 				}else if($arg=='step' && is_numeric($val)) {
 					$vars['ctrl']='checkout';

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -1717,23 +1717,45 @@ class ProductViewProduct extends HikaShopView {
 		$this->assignRef('fieldsClass', $fieldsClass);
 		$this->assignRef('fields', $fields);
 		if(hikashop_level(2)) {
-			$itemFields = $fieldsClass->getFields('frontcomp', $element, 'item', 'checkout&task=state');
+			$this->itemFields = null;
+			if(!$this->params->get('catalogue')) {
+				$display_item_fields = true;
+				if(!$this->config->get('display_add_to_cart_for_free_products') || ($this->config->get('display_add_to_wishlist_for_free_products', 1) && $this->params->get('add_to_wishlist') && $this->config->get('enable_wishlist', 1))) {
+					if(empty($element->variants)) {
+						if(empty($element->prices))
+							$display_item_fields = false;
+					} else {
+						$variants_are_all_free = true;
+						foreach($element->variants as $variant) {
+							if(!empty($variant->prices)) {
+								$variants_are_all_free = false;
+							}
+						}
 
-			foreach ($itemFields as $fieldName => $oneExtraField) {
-				if(empty($element->$fieldName)) {
-					$element->$fieldName = $oneExtraField->field_default;
+						if($variants_are_all_free)
+							$display_item_fields = false;
+					}
+
+				}
+				if($display_item_fields) {
+					$this->itemFields = $fieldsClass->getFields('frontcomp', $element, 'item', 'checkout&task=state');
+
+					foreach ($this->itemFields as $fieldName => $oneExtraField) {
+						if(empty($element->$fieldName)) {
+							$element->$fieldName = $oneExtraField->field_default;
+						}
+					}
+					$null = array();
+					$fieldsClass->addJS($null, $null, $null);
+					$fieldsClass->jsToggle($this->itemFields, $element, 0);
+					$extraFields = array('item'=> &$this->itemFields);
+					$requiredFields = array();
+					$validMessages = array();
+					$values = array('item'=> $element);
+					$fieldsClass->checkFieldsForJS($extraFields, $requiredFields, $validMessages, $values);
+					$fieldsClass->addJS($requiredFields, $validMessages, array('item'));
 				}
 			}
-			$null = array();
-			$fieldsClass->addJS($null, $null, $null);
-			$fieldsClass->jsToggle($itemFields, $element, 0);
-			$this->assignRef('itemFields', $itemFields);
-			$extraFields = array('item'=> &$itemFields);
-			$requiredFields = array();
-			$validMessages = array();
-			$values = array('item'=> $element);
-			$fieldsClass->checkFieldsForJS($extraFields, $requiredFields, $validMessages, $values);
-			$fieldsClass->addJS($requiredFields, $validMessages, array('item'));
 		}
 
 		$product_name = hikashop_translate($element->product_name);
@@ -3207,22 +3229,22 @@ window.hikashop.ready( function() {
 			if(empty($element->prices)) {
 				return 0;
 			} else {
-			foreach ($element->prices as $k => $price) {
-				$price_value = ($taxedPrice == '0') ? $price->price_value : $price->price_value_with_tax;
+				foreach ($element->prices as $k => $price) {
+					$price_value = ($taxedPrice == '0') ? $price->price_value : $price->price_value_with_tax;
 
-				if (isset($element->discount)) {
-					$priceNoTax = $price->price_value_with_tax - ($price->price_value_without_discount_with_tax - $price->price_value_without_discount);
-					if ($noDiscount == '0')
-						$price_value = ($taxedPrice == '0') ? $priceNoTax : $price->price_value_with_tax;
+					if (isset($element->discount)) {
+						$priceNoTax = $price->price_value_with_tax - ($price->price_value_without_discount_with_tax - $price->price_value_without_discount);
+						if ($noDiscount == '0')
+							$price_value = ($taxedPrice == '0') ? $priceNoTax : $price->price_value_with_tax;
+						else
+							$price_value = ($taxedPrice == '0') ? $price->price_value_without_discount : $price->price_value_without_discount_with_tax;
+					}
+					if ($price->price_min_quantity == 0 && $priceDisplayed == 'unit')
+						$prices_array['main_unit'.$element->product_id] = $price_value;
 					else
-						$price_value = ($taxedPrice == '0') ? $price->price_value_without_discount : $price->price_value_without_discount_with_tax;
+						$prices_array['main_'.$element->product_id] = $price_value;
 				}
-				if ($price->price_min_quantity == 0 && $priceDisplayed == 'unit')
-					$prices_array['main_unit'.$element->product_id] = $price_value;
-				else
-					$prices_array['main_'.$element->product_id] = $price_value;
 			}
-		}
 		}
 		foreach($prices_array as $k => $price) {
 			if ($priceDisplayed == 'expensive') {
@@ -3266,5 +3288,77 @@ window.hikashop.ready( function() {
 				$new_array[$key] = $product->$value;
 		}
 		return $new_array;
+	}
+}
+
+if (!class_exists('HikaShopPriceHelper'))
+{
+	class HikaShopPriceHelper
+	{
+		var $row;
+
+		var $currencyHelper;
+
+		var $mainCurr;
+
+		var $currCurrency;
+
+		var $retailPrices = null;
+
+		public function __construct($row, $currencyHelper)
+		{
+			$this->row            = $row;
+			$this->currencyHelper = $currencyHelper;
+
+			$this->mainCurr     = $currencyHelper->mainCurrency();
+			$this->currCurrency = hikashop_getCurrency();
+
+			$this->setRetailPrice();
+		}
+
+		public function setRetailPrice()
+		{
+			$round = $this->currencyHelper->getRounding($this->currCurrency, true);
+
+			$prices = [
+				'exTax'  => $this->row->product_msrp,
+				'incTax' => $this->currencyHelper->getTaxedPrice(
+					$this->row->product_msrp, hikashop_getZone(), $this->row->product_tax_id, $round, false
+				),
+			];
+
+			$prices['exTaxCurrencied']  = $this->currencyHelper->convertUniquePrice(
+				$prices['exTax'], $this->mainCurr, $this->currCurrency
+			);
+			$prices['incTaxCurrencied'] = $this->currencyHelper->convertUniquePrice(
+				$prices['incTax'], $this->mainCurr, $this->currCurrency
+			);
+
+			$this->retailPrices = (object) $prices;
+		}
+
+		public function getRetailPrice()
+		{
+			return $this->retailPrices;
+		}
+
+		public function getFormattedRetailPrice($incTax = false)
+		{
+			$prices          = $this->getRetailPrice();
+			$value           = $incTax ? $prices->incTax : $prices->exTax;
+			$valueCurrencied = $incTax ? $prices->incTaxCurrencied : $prices->exTaxCurrencied;
+
+			if ($valueCurrencied == $value)
+			{
+				return $this->currencyHelper->format($value, $this->mainCurr);
+			}
+
+			return $this->currencyHelper->format($valueCurrencied, $this->currCurrency);
+		}
+
+		public function formatPrice($value)
+		{
+			return $this->currencyHelper->format($value, $this->currCurrency);
+		}
 	}
 }

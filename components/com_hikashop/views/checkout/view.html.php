@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -57,13 +57,11 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 		$step = hikaInput::get()->getInt('step', 0)-1;
 		$pos = hikaInput::get()->getInt('pos', 0);
 		$type = hikaInput::get()->getString('type', 'checkout_terms');
-		if(isset($_REQUEST['step']) && isset($_REQUEST['pos'])) {
-			$checkoutHelper = hikashopCheckoutHelper::get();
-			$this->workflow = $checkoutHelper->checkout_workflow;
-			$block = @$this->workflow['steps'][$step]['content'][$pos];
-			if(!empty($block) && $block['task'] == 'terms' && !empty($block['params']['article_id']))
-				$terms_article = $block['params']['article_id'];
-		}
+		$checkoutHelper = hikashopCheckoutHelper::get();
+		$this->workflow = $checkoutHelper->checkout_workflow;
+		$block = @$this->workflow['steps'][$step]['content'][$pos];
+		if(!empty($block) && $block['task'] == 'terms' && !empty($block['params']['article_id']))
+			$terms_article = $block['params']['article_id'];
 		if(empty($terms_article))
 			$terms_article = $this->config->get($type, 0);
 
@@ -74,6 +72,7 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 		$sql = 'SELECT * FROM #__content WHERE id = ' . (int)$terms_article;
 		$db->setQuery($sql);
 		$data = $db->loadObject();
+
 
 		$lang = JFactory::getLanguage();
 		$currentLanguage = $lang->getTag();
@@ -247,9 +246,7 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 		$events = $checkoutHelper->getEvents();
 		if(!empty($events)) {
 			$tryToAutoSubmitCurrentStep = false;
-			if(!empty($this->workflow['steps'][$this->workflow_step+1]['content']) && $this->workflow['steps'][$this->workflow_step+1]['content'][0]['task'] != 'end' && $block_task != 'cart') {
-				$tryToAutoSubmitCurrentStep = true;
-			}
+
 			echo 
 			'
 <script type="text/javascript">

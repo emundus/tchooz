@@ -1,13 +1,5 @@
 <?php
-/**
- * @package	HikaShop for Joomla!
- * @version	5.1.0
- * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
- * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
-defined('_JEXEC') or die('Restricted access');
-?><?php
+
 namespace GuzzleHttp;
 
 use Psr\Http\Message\RequestInterface;
@@ -17,17 +9,21 @@ use Psr\Http\Message\UriInterface;
 final class TransferStats
 {
     private $request;
+
     private $response;
+
     private $transferTime;
+
     private $handlerStats;
+
     private $handlerErrorData;
 
     public function __construct(
         RequestInterface $request,
-        ResponseInterface $response = null,
-        $transferTime = null,
+        ?ResponseInterface $response = null,
+        ?float $transferTime = null,
         $handlerErrorData = null,
-        $handlerStats = []
+        array $handlerStats = []
     ) {
         $this->request = $request;
         $this->response = $response;
@@ -36,17 +32,17 @@ final class TransferStats
         $this->handlerStats = $handlerStats;
     }
 
-    public function getRequest()
+    public function getRequest(): RequestInterface
     {
         return $this->request;
     }
 
-    public function getResponse()
+    public function getResponse(): ?ResponseInterface
     {
         return $this->response;
     }
 
-    public function hasResponse()
+    public function hasResponse(): bool
     {
         return $this->response !== null;
     }
@@ -56,25 +52,23 @@ final class TransferStats
         return $this->handlerErrorData;
     }
 
-    public function getEffectiveUri()
+    public function getEffectiveUri(): UriInterface
     {
         return $this->request->getUri();
     }
 
-    public function getTransferTime()
+    public function getTransferTime(): ?float
     {
         return $this->transferTime;
     }
 
-    public function getHandlerStats()
+    public function getHandlerStats(): array
     {
         return $this->handlerStats;
     }
 
-    public function getHandlerStat($stat)
+    public function getHandlerStat(string $stat)
     {
-        return isset($this->handlerStats[$stat])
-            ? $this->handlerStats[$stat]
-            : null;
+        return $this->handlerStats[$stat] ?? null;
     }
 }

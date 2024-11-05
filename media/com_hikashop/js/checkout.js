@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    5.1.0
+ * @version    5.1.1
  * @author     hikashop.com
  * @copyright  (C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -106,8 +106,13 @@ var hikashopCheckout = {
 		url = t.handleParams({'type': type, 'cid': step, 'pos': id, 'token': 1 }, url, params);
 
 		o.xRequest(url, params, function(x,p) {
-			if(x.responseText == '401')
+			if(x.responseText == '401') {
+				console.log('[HikaShop Checkout Error] The session token could not be validated on the server side when calling ' + url + ' with the data :');
+				console.log(params);
+				console.log('The page will be refreshed');
 				window.location.reload(true);
+			}
+
 			if(x.status == 303 || x.status == 301) {
 				console.log('[HikaShop Checkout Error] Something on the server side requested a redirect to "' + x.getResponseHeader('Location') + '". It\'s probably a third party plugin which shouldn\'t do that. The page was reload to avoid any issue.');
 				window.location.reload(true);

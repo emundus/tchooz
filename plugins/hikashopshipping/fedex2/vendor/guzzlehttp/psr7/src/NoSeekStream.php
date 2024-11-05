@@ -1,28 +1,24 @@
 <?php
-/**
- * @package	HikaShop for Joomla!
- * @version	5.1.0
- * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
- * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
-defined('_JEXEC') or die('Restricted access');
-?><?php
+
+declare(strict_types=1);
 
 namespace GuzzleHttp\Psr7;
 
 use Psr\Http\Message\StreamInterface;
 
-class NoSeekStream implements StreamInterface
+final class NoSeekStream implements StreamInterface
 {
     use StreamDecoratorTrait;
 
-    public function seek($offset, $whence = SEEK_SET)
+
+    private $stream;
+
+    public function seek($offset, $whence = SEEK_SET): void
     {
         throw new \RuntimeException('Cannot seek a NoSeekStream');
     }
 
-    public function isSeekable()
+    public function isSeekable(): bool
     {
         return false;
     }

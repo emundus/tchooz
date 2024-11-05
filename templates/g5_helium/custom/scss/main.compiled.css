@@ -114052,6 +114052,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .\!tw-font-medium {
     font-weight: 500 !important;
 }
+.\!tw-font-semibold {
+    font-weight: 600 !important;
+}
 .tw-font-bold {
     font-weight: 700;
 }
@@ -114554,6 +114557,9 @@ div:where(.swal2-container) div:where(.swal2-popup) .swal2-html-container .chzn-
                     }
 div:where(.swal2-container) div:where(.swal2-popup) .swal2-html-container input {
                        border-radius: var(--em-form-br) !important;
+                    }
+div:where(.swal2-container) div:where(.swal2-popup) .swal2-html-container p {
+                        margin: 1rem 0;
                     }
 div:where(.swal2-container) div:where(.swal2-popup) .swal2-content {
     font-size: 1rem;

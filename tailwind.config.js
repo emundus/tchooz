@@ -8,6 +8,7 @@ module.exports = {
         "./modules/**/src/**/*.{html,js,php,vue}",
         "./modules/**/tmpl/*.{html,js,php}",
         "./plugins/fabrik_element/**/*.{html,js,php}",
+        "./plugins/fabrik_list/js/scripts/*.{html,js}",
         "./components/com_emundus/helpers/**/*.{html,js,php,vue}",
         "./components/com_emundus/controllers/**/*.{html,js,php,vue}",
         "./components/com_emundus/models/**/*.{html,js,php,vue}",
