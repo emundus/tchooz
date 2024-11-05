@@ -320,13 +320,6 @@ class EmundusFiltersFiles extends EmundusFilters
 	    return $h_fabrik->getElementsFromFabrikForms($form_ids, ['panel', 'display']);
     }
 
-    private function getElementsFromFabrikForms($form_ids)
-    {
-	    require_once(JPATH_ROOT . '/components/com_emundus/helpers/fabrik.php');
-	    $h_fabrik = new EmundusHelperFabrik();
-	    return $h_fabrik->getElementsFromFabrikForms($form_ids, ['panel', 'display']);
-    }
-
 	private function setDefaultFilters($config)
 	{
 		$db    = Factory::getContainer()->get('DatabaseDriver');

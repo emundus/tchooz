@@ -1426,7 +1426,6 @@ class EmundusModelEvaluation extends JModelList
 		$query .= ' ' . $group_by;
 
 		$query .= $this->_buildContentOrderBy();
-
 		try
 		{
 			$this->db->setQuery($query);

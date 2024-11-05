@@ -63,7 +63,6 @@ import EditArticle from "@/components/Settings/Content/EditArticle.vue";
 import EditFooter from "@/components/Settings/Content/EditFooter.vue";
 import Info from "@/components/Utils/Info.vue";
 import SubSection from "@/components/Settings/SubSection.vue";
-import Tile from "@/components/Settings/Tile.vue";
 import Swal from "sweetalert2";
 import Tile from "@/components/Settings/Tile.vue";
 import settingsService from '@/services/settings.js';

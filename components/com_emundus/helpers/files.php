@@ -5041,49 +5041,6 @@ class EmundusHelperFiles
 										// we want the fnums that are related to the step through the programs they are linked to
 										$where['q'] .= ' AND ' . $this->writeQueryWithOperator($jesp_alias . '.id', array_unique($program_ids), $filter['operator']);
 									}
-
-									if ($filter['andorOperator'] === 'AND' && is_array($filter['value']) && sizeof($filter['value']) > 1) {
-										$user_assoc_fnums = [];
-
-										$first = true;
-										$subquery = '';
-										foreach ($filter['value'] as $value) {
-											if ($first) {
-												$first = false;
-											} else {
-												$subquery .= ' INTERSECT ';
-											}
-
-											$subquery .= ' SELECT DISTINCT jos_emundus_users_assoc.fnum
-                                            FROM jos_emundus_users_assoc
-                                            WHERE ' . $this->writeQueryWithOperator('jos_emundus_users_assoc.user_id', $value, 'IN')  . ' AND jos_emundus_users_assoc.fnum IS NOT NULL';
-										}
-
-										try {
-											$db->setQuery($subquery);
-											$user_assoc_fnums = $db->loadColumn();
-										} catch (Exception $e) {
-											Log::add('Failed to get fnums for users_assoc filter ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
-										}
-
-										if (!empty($user_assoc_fnums)) {
-											$where['q'] .= $filter['operator'] === 'NOT IN' ? ' AND jecc.fnum NOT IN (' : ' AND jecc.fnum IN (';
-											$where['q'] .= implode(',', $user_assoc_fnums) . ')';
-										} else {
-											$where['q'] .= ' AND 1=2';
-										}
-									} else {
-										if ($filter['operator'] === 'NOT IN') {
-											$where['q'] .= ' AND jecc.fnum NOT IN (
-                                            SELECT DISTINCT jos_emundus_users_assoc.fnum
-                                            FROM jos_emundus_users_assoc
-                                            WHERE ' . $this->writeQueryWithOperator('jos_emundus_users_assoc.user_id', $filter['value'], 'IN') . '
-                                            AND jos_emundus_users_assoc.action_id = 1 AND jos_emundus_users_assoc.r = 1
-                                        )';
-										} else {
-											$where['q'] .= ' AND ' . $this->writeQueryWithOperator($users_assoc_alias . '.user_id', $filter['value'], $filter['operator']);
-										}
-									}
 									break;
 								default:
 									break;

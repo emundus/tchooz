@@ -73,6 +73,7 @@
 
           <History v-else-if="selectedMenu === 'History'" extension="com_emundus.campaign" />
         </transition>
+        </div>
       </div>
 
       <div class="tw-flex tw-items-center tw-justify-end tw-mt-4"
@@ -158,14 +159,6 @@ export default {
         name: 'COM_EMUNDUS_DOCUMENTS_CAMPAIGNS',
         description: "COM_EMUNDUS_DOCUMENTS_CAMPAIGNS_DESC",
         icon: 'description',
-        active: false,
-        displayed: true
-      },
-      {
-        id: 4,
-        name: 'COM_EMUNDUS_FORM_CAMPAIGN',
-        description: "COM_EMUNDUS_FORM_CAMPAIGN_DESC",
-        icon: 'format_list_bulleted',
         active: false,
         displayed: true
       },
