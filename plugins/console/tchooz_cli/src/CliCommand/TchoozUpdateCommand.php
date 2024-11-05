@@ -101,7 +101,7 @@ class TchoozUpdateCommand extends AbstractCommand
 		$this->components = explode(',',$this->getApplication()->getConsoleInput()->getOption('component'));
 
 		if(empty($components)) {
-			$availableComponents = array('all', 'com_emundus', 'com_fabrik', 'com_hikashop', 'com_falang', 'com_gantry5', 'com_securitycheckpro', 'com_dropfiles');
+			$availableComponents = array('all', 'com_emundus', 'com_fabrik', 'com_hikashop', 'com_dropfiles');
 			$choice              = new ChoiceQuestion(
 				'Please select components to update (separate multiple profiles with a comma)',
 				$availableComponents
