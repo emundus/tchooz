@@ -730,6 +730,7 @@ class PlgFabrik_FormLog extends PlgFabrik_Form
 
 					foreach ($change as $key => $value)
 					{
+						$value = is_array($value) ? implode(',',$value) : $value;
 						$query->set($db->qn($key) . ' = ' . $db->quote($value));
 					}
 

@@ -76,9 +76,7 @@ class PlgFabrik_FormPaginate extends PlgFabrik_Form
 		$linkStartPrev = $this->ids->index == 0 ? ' disabled' : '';
 		$linkNextEnd = $this->ids->index == $this->ids->lastKey ? ' disabled' : '';
 
-		if ($this->app->
-
-isClient('administrator'))
+		if ($this->app->isClient('administrator'))
 		{
 			$url = 'index.php?option=com_fabrik&task=' . $mode . '.view&formid=' . $formId . '&rowid=';
 		}
@@ -98,7 +96,7 @@ isClient('administrator'))
 		$layout = $this->getLayout('form');
 		$this->data = $layout->render($links);
 
-		FabrikHelperHTML::stylesheet('plugins/fabrik_form/paginate/paginate.css');
+		//FabrikHelperHTML::stylesheet('plugins/fabrik_form/paginate/paginate.css');
 	}
 
 	/**
@@ -117,7 +115,9 @@ isClient('administrator'))
 
 		// As we are selecting on primary key we can select all rows - 3000 records load in 0.014 seconds
 		$query->select($table->db_primary_key)->from($table->db_table_name);
-		$query = $listModel->buildQueryJoin($query);
+		
+		//Don't use joins here, we only want the distict ids of the main table
+		//$query = $listModel->buildQueryJoin($query);
 		$query = $listModel->buildQueryWhere(true, $query);
 		$query = $listModel->buildQueryOrder($query);
 

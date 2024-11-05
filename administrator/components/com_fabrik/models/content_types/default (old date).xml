@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
-<contenttype ignoreacl="true">
-    <name>Default (old date)</name>
-    <fabrikversion>4.0</fabrikversion>
+<contenttype ignoreacl="true" fabrik_ct="true">
+    <name>Default (Fabrik System: id, old date element)</name>
+    <fabrikversion>4.4</fabrikversion>
     <group join_id="" is_join="0" id="118" name="{label}" label="{label}" css="" published="1"
-           created="2016-01-10 08:53:39" private="0">
+           created="2024-01-10 08:53:39" private="0">
         <params repeat_group_button="0" repeat_group_show_first="1"/>
 
         <element label="id" published="1" name="id" id="662" plugin="internalid" created="2016-01-10 08:53:39" width="3"
@@ -14,7 +14,7 @@
                     median_access="1" count_access="1" custom_calc_access="1"/>
         </element>
 
-        <element label="date_time" published="1" name="date_time" id="664" plugin="date" created="2016-01-10 08:53:39"
+        <element label="created" published="1" name="date_time" id="664" plugin="date" created="2016-01-10 08:53:39"
                  width="0" height="0" default="" hidden="1" eval="0" ordering="0" show_in_list_summary="1"
                  filter_type="" filter_exact_match="1" link_to_detail="1" primary_key="0" auto_increment="0" access="1"
                  use_in_page_title="0" parent_id="0">
