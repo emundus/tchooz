@@ -5,11 +5,14 @@ defined('_JEXEC') or die('Restricted Access');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 
+require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+$m_workflow = new EmundusModelWorkflow();
+
 ?>
 
 <div class="panel panel-default widget em-container-evaluator-step">
 	<?php
-	if (!empty($this->step) && $this->step->type == 2 && !empty($this->step->form_id) && $this->access['can_see'])
+	if (!empty($this->step) && $m_workflow->isEvaluationStep($this->step->type) && !empty($this->step->form_id) && $this->access['can_see'])
 	{
 		?>
 		<?php if (1) : ?>

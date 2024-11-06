@@ -58,20 +58,16 @@
               </div>
 
               <div class="tw-mb-4 tw-flex tw-flex-col">
-                <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_TYPE_PARENT') }}</label>
+                <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_TYPE') }}</label>
                 <select v-model="step.type">
-                  <option v-for="type in parentStepTypes" :key="type.id" :value="type.id">{{ translate(type.label) }}</option>
+                  <option v-for="type in stepTypes" :key="type.id" :value="type.id">
+                    <span v-if="type.parent_id > 0"> - </span>
+                    {{ translate(type.label) }}
+                  </option>
                 </select>
               </div>
 
-              <div v-if="getStepSubTypes(step.type).length > 0" class="tw-mb-4 tw-flex tw-flex-col">
-                <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_TYPE_CHILDREN') }}</label>
-                <select v-model="step.sub_type">
-                  <option v-for="type in getStepSubTypes(step.type)" :key="type.id" :value="type.id">{{ translate(type.label) }}</option>
-                </select>
-              </div>
-
-              <div v-if="step.type == 1" class="tw-mb-4 tw-flex tw-flex-col">
+              <div v-if="isApplicantStep(step)" class="tw-mb-4 tw-flex tw-flex-col">
                 <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_PROFILE') }}</label>
                 <select v-model="step.profile_id">
                   <option v-for="profile in applicantProfiles" :key="profile.id" :value="profile.id">{{ profile.label }}</option>
@@ -92,12 +88,12 @@
                     v-model="step.entry_status"
                     label="label"
                     track-by="id"
-                    placeholder="Select a status"
+                    :placeholder="translate('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS_SELECT')"
                     :multiple="true">
                 </Multiselect>
               </div>
 
-              <div v-if="step.type == 1" class="tw-mb-4 tw-flex tw-flex-col">
+              <div v-if="isApplicantStep(step)" class="tw-mb-4 tw-flex tw-flex-col">
                 <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_OUTPUT_STATUS') }}</label>
                 <select v-model="step.output_status">
                   <option value="-1">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_OUTPUT_STATUS_SELECT') }}</option>
@@ -105,7 +101,7 @@
                 </select>
               </div>
 
-              <div v-if="step.type == 2" class="tw-flex tw-flex-row tw-items-center tw-cursor-pointer">
+              <div v-if="!isApplicantStep(step)" class="tw-flex tw-flex-row tw-items-center tw-cursor-pointer">
                 <input v-model="step.multiple" true-value="1" false-value="0" type="checkbox" :name="'step-' + step.id + '-multiple'" :id="'step-' + step.id + '-multiple'" class="tw-cursor-pointer"/>
                 <label :for="'step-' + step.id + '-multiple'" class="tw-cursor-pointer">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_IS_MULTIPLE') }}</label>
               </div>
@@ -472,6 +468,19 @@ export default {
     },
     goBack() {
       window.history.go(-1);
+    },
+    isApplicantStep(step) {
+      let isApplicantStep = step.type == 1;
+
+      if (!isApplicantStep) {
+        const stepData = this.stepTypes.find((stepType) => stepType.id === step.type);
+
+        if (stepData.parent_id == 1) {
+          isApplicantStep = true;
+        }
+      }
+
+      return isApplicantStep;
     }
   },
   computed: {

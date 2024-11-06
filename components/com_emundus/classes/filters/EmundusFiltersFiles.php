@@ -686,7 +686,7 @@ class EmundusFiltersFiles extends EmundusFilters
 
 				if (!empty($workflow_data['steps'])) {
 					foreach($workflow_data['steps'] as $step) {
-						if ($step->type == 2) {
+						if ($m_workflow->isEvaluationStep($step->type)) {
 							$action_id = $m_workflow->getStepAssocActionId($step->id);
 							if (EmundusHelperAccess::asAccessAction($action_id, 'c', $this->user->id)) {
 								$steps[] = ['value' => $step->id, 'label' => $workflow->label . ' - ' . $step->label];

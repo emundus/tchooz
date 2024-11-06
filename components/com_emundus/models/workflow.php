@@ -124,7 +124,7 @@ class EmundusModelWorkflow extends JModelList
 					if ($step['id'] < 1) {
 						unset($step['id']);
 					}
-					if ($step['type'] == 2) {
+					if ($this->isEvaluationStep($step['type'])) {
 						$step['profile_id'] = null;
 					} else {
 						$step['form_id'] = null;
@@ -502,7 +502,7 @@ class EmundusModelWorkflow extends JModelList
 
 				foreach ($workflow_data['steps'] as $step)
 				{
-					if ($step->type == 2)
+					if ($this->isEvaluationStep($step->type))
 					{
 						$steps[] = $this->getStepData($step->id);
 					}
@@ -952,5 +952,27 @@ class EmundusModelWorkflow extends JModelList
 		}
 
 		return $archived;
+	}
+
+	public function isEvaluationStep($type) {
+		$is_evaluation_step = false;
+
+		if (!empty($type)) {
+			if ($type == 2) {
+				$is_evaluation_step = true;
+			} else {
+				$query = $this->db->createQuery();
+				$query->select('parent_id')
+					->from($this->db->quoteName('#__emundus_setup_step_types'))
+					->where('id = ' . $type);
+
+				$this->db->setQuery($query);
+				$parent_id = $this->db->loadResult();
+
+				$is_evaluation_step = $parent_id == 2;
+			}
+		}
+
+		return $is_evaluation_step;
 	}
 }
