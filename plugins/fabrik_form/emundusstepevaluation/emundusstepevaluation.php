@@ -93,7 +93,7 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 				// if coord or admin, he is allowed to edit all rows, so if rowid is not 0, keep it
 				// if not, replace it with the rowid
 
-				if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id) || $current_row_id == 0) {
+				if ($current_row_id == 0 || EmundusHelperAccess::asAccessAction($step_data->action_id, 'r', $user->id)) {
 					$final_url = preg_replace('/&rowid=\d+/', '&rowid=' . $row_id, $final_url);
 					if (strpos($final_url, 'rowid') === false) {
 						$final_url .= '&rowid=' . $row_id;

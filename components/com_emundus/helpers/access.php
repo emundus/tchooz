@@ -642,38 +642,38 @@ class EmundusHelperAccess
 					$fnum = EmundusHelperFiles::getFnumFromId($ccid);
 
 					// it's the bare minimum to potentially see the evaluation form
-					if (EmundusHelperAccess::asAccessAction(1, 'r', $user_id, $fnum) && EmundusHelperAccess::asAccessAction($step_data->action_id, 'r', $user_id)) {
-						// get groups who can access to this step and verify if user is in one of these groups
-						$m_users = new EmundusModelUsers();
-						$user_groups = $m_users->getUserGroups($user_id, 'Column');
+					if (EmundusHelperAccess::asAccessAction(1, 'r', $user_id, $fnum) && EmundusHelperAccess::asAccessAction($step_data->action_id, 'c', $user_id))
+					{
+						$can_see = true;
+						if (EmundusHelperAccess::asAccessAction($step_data->action_id, 'c', $user_id))
+						{
+							// verify step is not closed
+							// file must be in one of the entry statuses and current date must be between start and end date of step
+							$query->clear()
+								->select('status')
+								->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+								->where('ecc.id = ' . $ccid);
 
-						if (!empty(array_intersect($user_groups, $step_data->group_ids))) {
-							$can_see = true;
-							if (EmundusHelperAccess::asAccessAction($step_data->action_id, 'c', $user_id)) {
-								// verify step is not closed
-								// file must be in one of the entry statuses and current date must be between start and end date of step
-								$query->clear()
-									->select('status')
-									->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
-									->where('ecc.id = ' . $ccid);
+							$db->setQuery($query);
+							$status = $db->loadResult();
 
-								$db->setQuery($query);
-								$status = $db->loadResult();
-
-								$respect_dates = true;
-								if ($step_data->infinite != 1) {
-									if (!empty($step_data->start_date) && $step_data->start_date > date('Y-m-d')) {
-										$respect_dates = false;
-									}
-
-									if (!empty($step_data->end_date) && $step_data->end_date < date('Y-m-d')) {
-										$respect_dates = false;
-									}
+							$respect_dates = true;
+							if ($step_data->infinite != 1)
+							{
+								if (!empty($step_data->start_date) && $step_data->start_date > date('Y-m-d'))
+								{
+									$respect_dates = false;
 								}
 
-								if (in_array($status, $step_data->entry_status) && $respect_dates) {
-									$can_edit = true;
+								if (!empty($step_data->end_date) && $step_data->end_date < date('Y-m-d'))
+								{
+									$respect_dates = false;
 								}
+							}
+
+							if (in_array($status, $step_data->entry_status) && $respect_dates)
+							{
+								$can_edit = true;
 							}
 						}
 					}

@@ -3850,6 +3850,7 @@ class EmundusModelApplication extends ListModel
 
 								try {
 									$step_access = EmundusHelperAccess::getUserEvaluationStepAccess($ccid, $step_data, $user_id);
+
 									if ($step_access['can_see']) {
 										$menus[] = [
 											'id' => $workflow->id . $step->id,

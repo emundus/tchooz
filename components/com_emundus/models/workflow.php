@@ -173,16 +173,8 @@ class EmundusModelWorkflow extends JModelList
 						if (!empty($step['id'])) {
 							$step['entry_status'] = array_filter($step['entry_status']);
 
-							// empty jos_emundus_setup_workflows_steps_entry_status and jos_emundus_setup_workflows_steps_groups
 							$query->clear()
 								->delete($this->db->quoteName('#__emundus_setup_workflows_steps_entry_status'))
-								->where($this->db->quoteName('step_id') . ' = ' . $step['id']);
-
-							$this->db->setQuery($query);
-							$this->db->execute();
-
-							$query->clear()
-								->delete($this->db->quoteName('#__emundus_setup_workflows_steps_groups'))
 								->where($this->db->quoteName('step_id') . ' = ' . $step['id']);
 
 							$this->db->setQuery($query);
@@ -197,21 +189,8 @@ class EmundusModelWorkflow extends JModelList
 									$this->db->insertObject('#__emundus_setup_workflows_steps_entry_status', $entry_status);
 								}
 							}
-
-							if (!empty($step['group_ids'])) {
-								foreach($step['group_ids'] as $group) {
-									$row = new stdClass();
-									$row->step_id = $step['id'];
-									$row->group_id = $group['id'];
-
-									$this->db->insertObject('#__emundus_setup_workflows_steps_groups', $row);
-								}
-							}
 						}
 					} catch (Exception $e) {
-						var_dump($query->__toString());exit;
-
-						var_dump($e->getMessage());exit;
 						Log::add('Error while adding workflow step: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
 						$error_occurred = true;
 					}
@@ -393,10 +372,9 @@ class EmundusModelWorkflow extends JModelList
 				];
 
 				$query->clear()
-					->select('esws.*, GROUP_CONCAT(eswses.status) AS entry_status, GROUP_CONCAT(DISTINCT eswsg.group_id) AS group_ids')
+					->select('esws.*, GROUP_CONCAT(eswses.status) AS entry_status')
 					->from($this->db->quoteName('#__emundus_setup_workflows_steps', 'esws'))
 					->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_entry_status', 'eswses') . ' ON ' . $this->db->quoteName('eswses.step_id') . ' = ' . $this->db->quoteName('esws.id'))
-					->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_groups', 'eswsg') . ' ON ' . $this->db->quoteName('eswsg.step_id') . ' = ' . $this->db->quoteName('esws.id'))
 					->where($this->db->quoteName('esws.workflow_id') . ' = ' . $id)
 					->group($this->db->quoteName('esws.id'));
 
@@ -407,7 +385,6 @@ class EmundusModelWorkflow extends JModelList
 
 					foreach ($workflowData['steps'] as $key => $step) {
 						$workflowData['steps'][$key]->entry_status = array_unique(explode(',', $step->entry_status));
-						$workflowData['steps'][$key]->group_ids = !empty($step->group_ids) ? array_unique(explode(',', $step->group_ids)) : [];
 					}
 				} catch (Exception $e) {
 					Log::add('Error while fetching workflow steps: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
@@ -442,10 +419,9 @@ class EmundusModelWorkflow extends JModelList
 		if (!empty($id)) {
 			$query = $this->db->createQuery();
 			$query->clear()
-				->select('esws.*, GROUP_CONCAT(DISTINCT eswses.status) AS entry_status, GROUP_CONCAT(DISTINCT eswsg.group_id) AS group_ids')
+				->select('esws.*, GROUP_CONCAT(DISTINCT eswses.status) AS entry_status')
 				->from($this->db->quoteName('#__emundus_setup_workflows_steps', 'esws'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_entry_status', 'eswses') . ' ON ' . $this->db->quoteName('eswses.step_id') . ' = ' . $this->db->quoteName('esws.id'))
-				->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_groups', 'eswsg') . ' ON ' . $this->db->quoteName('eswsg.step_id') . ' = ' . $this->db->quoteName('esws.id'))
 				->where('esws.id = ' . $id)
 				->group($this->db->quoteName('esws.id'));
 
@@ -455,7 +431,6 @@ class EmundusModelWorkflow extends JModelList
 
 				if (!empty($data->id)) {
 					$data->entry_status = array_unique(explode(',', $data->entry_status));
-					$data->group_ids = !empty($data->group_ids) ? array_unique(explode(',', $data->group_ids)) : [];
 					$data->action_id = 1;
 					$data->table = '';
 
