@@ -9,7 +9,7 @@
  */
 
 // No direct access
-require_once JPATH_BASE . '/components/com_emundus/classes/api/Api.php';
+require_once JPATH_SITE . '/components/com_emundus/classes/api/Api.php';
 use classes\api\Api;
 use classes\api\FileSynchronizer;
 use Joomla\CMS\Factory;
