@@ -510,7 +510,7 @@ export default {
       }
     },
     goBack() {
-      window.history.go(-1);
+      window.location.href = '/workflows';
     },
     isApplicantStep(step) {
       let isApplicantStep = step.type == 1;
