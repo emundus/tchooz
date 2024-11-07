@@ -4147,6 +4147,10 @@ class EmundusModelFiles extends JModelLegacy
 
 			$select = 'GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name . ', ' . $this->_db->quote($date_form_format) . ')  SEPARATOR ", ") as val, t_origin.fnum ';
 		}
+		else if ($plugin === 'birthday') {
+			$date_form_format = $this->dateFormatToMysql($params->list_date_format);
+			$query = 'select GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name . ', ' . $this->_db->quote($date_form_format).')  SEPARATOR ", ") as val, t_origin.fnum ';
+		}
 		elseif ($plugin === 'jdate') {
 			$date_form_format = $this->dateFormatToMysql($params->jdate_form_format);
 

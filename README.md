@@ -237,6 +237,7 @@ gitGraph
     
 ```
 - **secret-detection** : Check if there is any secret in the code
+- **semgrep-sast** : This is a Static Application Security Testing (SAST) tool that analyzes source code for security vulnerabilities. 
 
 #### Releases
 ```mermaid
