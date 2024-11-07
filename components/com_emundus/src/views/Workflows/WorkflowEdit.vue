@@ -25,7 +25,7 @@
     <Tabs :tabs="tabs" :classes="'tw-flex tw-items-center tw-gap-2 tw-ml-7'"></Tabs>
 
     <div id="tabs-wrapper" class="tw-w-full tw-rounded-coordinator tw-p-6 tw-bg-white tw-border tw-border-neutral-300 tw-relative">
-      <div v-if="activeTab.id == 'steps'" id="workflow-steps-wrapper" class="tw-my-4 tw-flex tw-flex-col tw-p-2">
+      <div v-if="activeTab.id == 'steps'" id="workflow-steps-wrapper" class="tw-flex tw-flex-col">
         <a class="tw-btn-primary tw-h-fit tw-w-fit tw-mb-4" href="#" @click="addStep"> {{ translate('COM_EMUNDUS_WORKFLOW_ADD_STEP') }} </a>
 
         <div id="workflow-steps" class="tw-flex tw-flex-row tw-gap-3 tw-overflow-auto">
