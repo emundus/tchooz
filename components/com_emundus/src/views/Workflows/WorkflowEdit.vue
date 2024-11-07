@@ -301,7 +301,7 @@ export default {
       const newStep = {
         id: 0,
         label: this.translate('COM_EMUNDUS_WORKFLOW_NEW_STEP_LABEL'),
-        type: 'applicant',
+        type: 1,
         roles: [],
         profile_id: 9,
         entry_status: [],
@@ -473,9 +473,9 @@ export default {
       let isApplicantStep = step.type == 1;
 
       if (!isApplicantStep) {
-        const stepData = this.stepTypes.find((stepType) => stepType.id === step.type);
+        const stepType = this.stepTypes.find((stepType) => stepType.id === step.type);
 
-        if (stepData.parent_id == 1) {
+        if (stepType.parent_id == 1) {
           isApplicantStep = true;
         }
       }
