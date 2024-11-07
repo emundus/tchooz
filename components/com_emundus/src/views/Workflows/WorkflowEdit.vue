@@ -101,9 +101,18 @@
                 </select>
               </div>
 
-              <div v-if="!isApplicantStep(step)" class="tw-flex tw-flex-row tw-items-center tw-cursor-pointer">
+              <div v-if="!isApplicantStep(step)" class="tw-mb-4 tw-flex tw-flex-row tw-items-center tw-cursor-pointer">
                 <input v-model="step.multiple" true-value="1" false-value="0" type="checkbox" :name="'step-' + step.id + '-multiple'" :id="'step-' + step.id + '-multiple'" class="tw-cursor-pointer"/>
-                <label :for="'step-' + step.id + '-multiple'" class="tw-cursor-pointer">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_IS_MULTIPLE') }}</label>
+                <label :for="'step-' + step.id + '-multiple'" class="tw-cursor-pointer tw-mb-0">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_IS_MULTIPLE') }}</label>
+              </div>
+
+              <div v-if="!isApplicantStep(step)" class="step-associated-groups">
+                <label>{{ translate('COM_EMUNDUS_WORKFLOW_STEP_GROUPS') }}</label>
+                <ul class="tw-my-2">
+                  <li v-for="group_id in step.group_ids" :key="group_id"> {{ getGroupLabel(group_id) }} </li>
+                </ul>
+
+                <a href="/users-menu/groups" class="tw-underline">{{ translate('COM_EMUNDUS_WORKFLOW_EDIT_RIGHTS') }}</a>
               </div>
             </div>
           </div>
@@ -134,6 +143,7 @@ import settingsService from '@/services/settings.js';
 import programmeService from '@/services/programme.js';
 import fileService from '@/services/file.js';
 import formService from '@/services/form.js';
+import groupsService from '@/services/groups.js';
 
 import Popover from '@/components/Popover.vue';
 import Tabs from '@/components/Utils/Tabs.vue';
@@ -168,6 +178,7 @@ export default {
       sortByOptions: [],
       statuses : [],
       profiles: [],
+      groups: [],
       evaluationForms: [],
       programsOptions: [],
       stepMandatoryFields: [
@@ -210,6 +221,7 @@ export default {
       });
     });
     this.getEvaluationForms();
+    this.getGroups();
   },
   methods: {
     getWorkflow() {
@@ -221,6 +233,8 @@ export default {
             step.entry_status = this.statuses.filter(status => step.entry_status.includes(status.id.toString()));
           });
           this.steps = tmpSteps;
+
+          console.log(this.steps);
 
           let program_ids = response.data.programs;
           this.programs = this.programsOptions.filter(program => program_ids.includes(program.id));
@@ -313,6 +327,25 @@ export default {
     },
     getStepSubTypes(stepType) {
       return this.stepTypes.filter(type => type.parent_id == stepType);
+    },
+    async getGroups() {
+      return await groupsService.getGroups()
+        .then(response => {
+          this.groups = response.data.map(group => {
+            return {
+              id: group.id,
+              label: group.label
+            }
+          });
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    },
+    getGroupLabel(groupId) {
+      const group = this.groups.find(group => group.id == groupId);
+
+      return group ? group.label : '';
     },
     addStep() {
       const newStep = {

@@ -46,6 +46,7 @@ Text::script('COM_EMUNDUS_WORKFLOW_PROGRAMS_DESC');
 Text::script('COM_EMUNDUS_WORKFLOW_SEARCH_PROGRAMS_PLACEHOLDER');
 Text::script('COM_EMUNDUS_WORKFLOW_STEPS');
 Text::script('COM_EMUNDUS_WORKFLOW_STEPS_DESC');
+Text::script('COM_EMUNDUS_WORKFLOW_EDIT_RIGHTS');
 
 $app          = Factory::getApplication();
 $lang         = $app->getLanguage();

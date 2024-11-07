@@ -387,19 +387,17 @@ class EmundusModelWorkflow extends JModelList
 				];
 
 				$query->clear()
-					->select('esws.*, GROUP_CONCAT(eswses.status) AS entry_status')
+					->select('esws.id')
 					->from($this->db->quoteName('#__emundus_setup_workflows_steps', 'esws'))
-					->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_entry_status', 'eswses') . ' ON ' . $this->db->quoteName('eswses.step_id') . ' = ' . $this->db->quoteName('esws.id'))
-					->where($this->db->quoteName('esws.workflow_id') . ' = ' . $id)
-					->group($this->db->quoteName('esws.id'));
+					->where($this->db->quoteName('esws.workflow_id') . ' = ' . $id);
 
 				try {
 					$this->db->setQuery($query);
-					$workflowData['steps'] = $this->db->loadObjectList();
-					$workflowData['steps'] = array_values($workflowData['steps']);
+					$step_ids = $this->db->loadColumn();
 
-					foreach ($workflowData['steps'] as $key => $step) {
-						$workflowData['steps'][$key]->entry_status = array_unique(explode(',', $step->entry_status));
+					foreach ($step_ids as $step_id)
+					{
+						$workflowData['steps'][] = $this->getStepData($step_id);
 					}
 				} catch (Exception $e) {
 					Log::add('Error while fetching workflow steps: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
@@ -463,11 +461,11 @@ class EmundusModelWorkflow extends JModelList
 						}
 					}
 
-					if (!empty($data->sub_type)) {
+					if (!empty($data->type)) {
 						$query->clear()
 							->select('action_id')
 							->from($this->db->quoteName('#__emundus_setup_step_types'))
-							->where('id = ' . $data->sub_type);
+							->where('id = ' . $data->type);
 
 						$this->db->setQuery($query);
 						$data->action_id = $this->db->loadResult();
@@ -480,6 +478,15 @@ class EmundusModelWorkflow extends JModelList
 
 					$this->db->setQuery($query);
 					$data->programs = $this->db->loadColumn();
+
+					$query->clear()
+						->select('DISTINCT(group_id)')
+						->from('#__emundus_acl')
+						->where('action_id = ' . $data->action_id)
+						->andWhere('c = 1 OR r = 1');
+
+					$this->db->setQuery($query);
+					$data->group_ids = $this->db->loadColumn();
 
 					if (!empty($cid)) {
 						$query->clear()

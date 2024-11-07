@@ -80,7 +80,6 @@ class EmundusModelAdministratorWorkflow extends JModelList
 				['name' => 'workflow_id', 'type' => 'INT', 'null' => 0],
 				['name' => 'label', 'type' => 'VARCHAR', 'length' => 255, 'null' => 0],
 				['name' => 'type', 'type' => 'INT', 'length' => 11, 'null' => 0], // 1 is 'applicant' 2 is 'evaluator'
-				['name' => 'sub_type', 'type' => 'INT', 'length' => 11, 'null' => 1, 'default' => 0],
 				['name' => 'profile_id', 'type' => 'INT', 'null' => 1],
 				['name' => 'form_id', 'type' => 'INT', 'null' => 1],
 				['name' => 'multiple', 'type' => 'TINYINT', 'null' => 1],
@@ -147,31 +146,6 @@ class EmundusModelAdministratorWorkflow extends JModelList
 				],
 			];
 			$created = EmundusHelperUpdate::createTable('jos_emundus_setup_workflows_steps_entry_status', $columns, $foreign_keys);
-			$tasks[] = $created['status'];
-
-			$columns = [
-				['name' => 'step_id', 'type' => 'INT', 'null' => 0],
-				['name' => 'group_id', 'type' => 'INT', 'null' => 0],
-			];
-			$foreign_keys = [
-				[
-					'name' => 'jos_emundus_setup_workflows_steps_groups_steps_id_fk',
-					'from_column' => 'step_id',
-					'ref_table' => 'jos_emundus_setup_workflows_steps',
-					'ref_column' => 'id',
-					'update_cascade' => true,
-					'delete_cascade' => true
-				],
-				[
-					'name' => 'jos_emundus_setup_workflows_steps_groups_group_id_fk',
-					'from_column' => 'group_id',
-					'ref_table' => 'jos_emundus_setup_groups',
-					'ref_column' => 'id',
-					'update_cascade' => true,
-					'delete_cascade' => true
-				],
-			];
-			$created = EmundusHelperUpdate::createTable('jos_emundus_setup_workflows_steps_groups', $columns, $foreign_keys);
 			$tasks[] = $created['status'];
 
 			$columns = [
