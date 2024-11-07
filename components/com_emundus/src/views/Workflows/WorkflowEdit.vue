@@ -272,10 +272,12 @@ export default {
       return await workflowService.getProgramsWorkflows()
         .then(response => {
           this.programsOptions.forEach((program) => {
-            program.workflows = response.data[program.id] ? response.data[program.id] : [];
+            if (response.data[program.id]) {
+              program.workflows = response.data[program.id].map(workflow => parseInt(workflow));
+            } else {
+              program.workflows = [];
+            }
           });
-
-          console.log(this.programsOptions);
         })
         .catch(e => {
           console.log(e);
@@ -539,7 +541,7 @@ export default {
     },
     displayedProgramsOptions() {
       return this.programsOptions.filter((program) => {
-        program.associatedToAnotherWorkflow = program.workflows && program.workflows.length > 0 && !program.workflows.includes(this.workflow.id);
+        program.associatedToAnotherWorkflow = program.workflows && program.workflows.length > 0 && !(program.workflows.includes(this.workflow.id));
         return program.label.toLowerCase().includes(this.searchThroughPrograms.toLowerCase());
       });
     }

@@ -247,6 +247,21 @@ class EmundusModelWorkflow extends JModelList
 					}
 				}
 			}
+
+			// remove the programs that are linked to another workflow, if any
+			// there can be only one workflow per program
+			$query->clear()
+				->delete($this->db->quoteName('#__emundus_setup_workflows_programs'))
+				->where($this->db->quoteName('program_id') . ' IN (' . implode(',', $new_program_ids) . ')')
+				->where($this->db->quoteName('workflow_id') . ' != ' . $workflow['id']);
+
+			try {
+				$this->db->setQuery($query);
+				$this->db->execute();
+			} catch (Exception $e) {
+				Log::add('Error while deleting workflow programs: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+				$error_occurred = true;
+			}
 		}
 
 		if ($error_occurred) {
