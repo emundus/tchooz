@@ -3368,6 +3368,11 @@ hr {
   width: 0;
   height: 0;
 }
+
+.workflow-step[data-v-f4e11f54] {
+  width: 350px;
+}
+
 :root {
   --primary-color: #16afe1;
   --secondary-color: #12db42;

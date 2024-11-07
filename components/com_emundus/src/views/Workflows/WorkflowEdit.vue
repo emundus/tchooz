@@ -28,7 +28,7 @@
       <div v-if="activeTab.id == 'steps'" id="workflow-steps-wrapper" class="tw-my-4 tw-flex tw-flex-col tw-p-2">
         <a class="tw-btn-primary tw-h-fit tw-w-fit tw-mb-4" href="#" @click="addStep"> {{ translate('COM_EMUNDUS_WORKFLOW_ADD_STEP') }} </a>
 
-        <div id="workflow-steps" class="tw-grid tw-grid-cols-3 tw-gap-3 tw-overflow-auto">
+        <div id="workflow-steps" class="tw-flex tw-flex-row tw-gap-3 tw-overflow-auto">
           <div v-for="step in steps" :key="step.id"
                class="workflow-step tw-rounded tw-border tw-shadow-sm tw-p-4"
                :class="{
@@ -550,5 +550,9 @@ export default {
 </script>
 
 <style scoped>
+
+.workflow-step {
+  width: 350px;
+}
 
 </style>
