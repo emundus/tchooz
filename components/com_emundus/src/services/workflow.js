@@ -107,5 +107,14 @@ export default {
         status: false, msg: e.message
       };
     }
+  },
+  async getProgramsWorkflows() {
+    try {
+      return await client.get('getprogramsworkflows');
+    } catch (e) {
+      return {
+        status: false, msg: e.message
+      };
+    }
   }
 };

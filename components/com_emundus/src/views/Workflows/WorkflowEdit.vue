@@ -117,8 +117,8 @@
         <div class="tw-mt-4 tw-grid tw-grid-cols-4 tw-gap-3 tw-overflow-auto">
           <div v-for="program in displayedProgramsOptions" :key="program.id">
               <div class="tw-mb-4 tw-flex tw-flex-row tw-items-center tw-cursor-pointer">
-                <input :id="'program-' + program.id" type="checkbox" v-model="programs" :value="program" class="tw-cursor-pointer"/>
-                <label :for="'program-' + program.id" class="tw-cursor-pointer tw-m-0"> {{ program.label }} </label>
+                <input :id="'program-' + program.id" type="checkbox" v-model="programs" :value="program" class="tw-cursor-pointer" @change="onCheckProgram(program)" />
+                <label :for="'program-' + program.id" class="tw-cursor-pointer tw-m-0" :class="{'tw-text-gray-300': program.associatedToAnotherWorkflow}"> {{ program.label }} </label>
               </div>
           </div>
           <p v-if="programsOptions.length < 1" class="tw-w-full tw-text-center"> {{ translate('COM_EMUNDUS_WORKFLOW_NO_PROGRAMS') }} </p>
@@ -261,6 +261,21 @@ export default {
               label: program.label[useGlobalStore().shortLang]
             }
           });
+
+          this.getProgramWorkflows();
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    },
+    async getProgramWorkflows() {
+      return await workflowService.getProgramsWorkflows()
+        .then(response => {
+          this.programsOptions.forEach((program) => {
+            program.workflows = response.data[program.id] ? response.data[program.id] : [];
+          });
+
+          console.log(this.programsOptions);
         })
         .catch(e => {
           console.log(e);
@@ -435,6 +450,32 @@ export default {
 
       return check;
     },
+    onCheckProgram(program) {
+      if (program.associatedToAnotherWorkflow) {
+        Swal.fire({
+          icon: 'warning',
+          title: this.translate('COM_EMUNDUS_WORKFLOW_PROGRAM_ASSOCIATED_TO_ANOTHER_WORKFLOW'),
+          text: this.translate('COM_EMUNDUS_WORKFLOW_PROGRAM_ASSOCIATED_TO_ANOTHER_WORKFLOW_TEXT'),
+          showConfirmButton: true,
+          confirmButtonText: this.translate('COM_EMUNDUS_WORKFLOW_CONFIRM_CHANGE_PROGRAM_ASSOCIATION'),
+          showCancelButton: true,
+          cancelButtonText: this.translate('CANCEL'),
+          reverseButtons: true,
+          customClass: {
+            title: 'em-swal-title',
+            confirmButton: 'em-swal-confirm-button',
+            cancelButton: 'em-swal-cancel-button',
+            actions: 'em-swal-double-action'
+          }
+        }).then((result) => {
+          if (result.value) {
+            program.workflows = [this.workflow.id];
+          } else {
+            this.programs = this.programs.filter((p) => p.id !== program.id);
+          }
+        });
+      }
+    },
     save() {
       const checked = this.onBeforeSave();
 
@@ -498,6 +539,7 @@ export default {
     },
     displayedProgramsOptions() {
       return this.programsOptions.filter((program) => {
+        program.associatedToAnotherWorkflow = program.workflows && program.workflows.length > 0 && !program.workflows.includes(this.workflow.id);
         return program.label.toLowerCase().includes(this.searchThroughPrograms.toLowerCase());
       });
     }

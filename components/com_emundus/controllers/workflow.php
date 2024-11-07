@@ -54,25 +54,29 @@ class EmundusControllerWorkflow extends JControllerLegacy
 	{
 		$response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
-			$ids = $this->app->input->getString('ids', '[]');
-			$ids = json_decode($ids, true);
-			$lim = $this->app->input->getInt('lim', 0);
-			$page = $this->app->input->getInt('page', 0);
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$ids         = $this->app->input->getString('ids', '[]');
+			$ids         = json_decode($ids, true);
+			$lim         = $this->app->input->getInt('lim', 0);
+			$page        = $this->app->input->getInt('page', 0);
 			$program_ids = $this->app->input->getString('program', '');
 			$program_ids = !empty($program_ids) ? explode(',', $program_ids) : [];
 
 			$workflows = $this->model->getWorkflows($ids, $lim, $page, $program_ids);
 
-			if (!empty($workflows)) {
-				$db = Factory::getContainer()->get('DatabaseDriver');
+			if (!empty($workflows))
+			{
+				$db    = Factory::getContainer()->get('DatabaseDriver');
 				$query = $db->createQuery();
 
-				foreach ($workflows as $key => $workflow) {
+				foreach ($workflows as $key => $workflow)
+				{
 					$workflow->label = ['fr' => $workflow->label, 'en' => $workflow->label];
 
 					$associated_programmes_html = '<span class="label label-red-2">' . Text::_('COM_EMUNDUS_WORKFLOW_ZERO_ASSOCIATED_PROGRAMS') . '</span>';
-					if (!empty($workflow->programme_ids)) {
+					if (!empty($workflow->programme_ids))
+					{
 						$query->clear()
 							->select('id, label')
 							->from('#__emundus_setup_programmes')
@@ -81,9 +85,11 @@ class EmundusControllerWorkflow extends JControllerLegacy
 						$db->setQuery($query);
 						$associated_programmes = $db->loadObjectList();
 
-						if (!empty($associated_programmes)) {
+						if (!empty($associated_programmes))
+						{
 							$associated_programmes_html = '';
-							foreach ($associated_programmes as $program) {
+							foreach ($associated_programmes as $program)
+							{
 								$associated_programmes_html .= '<a class="tw-flex tw-flex-row tw-underline em-main-500-color tw-transition-all" href="/campaigns/edit-program?id=' . $program->id . '" target="_blank">' . $program->label . '</a>';
 							}
 						}
@@ -97,12 +103,12 @@ class EmundusControllerWorkflow extends JControllerLegacy
 							'display' => 'all'
 						]
 					];
-					$workflows[$key] = $workflow;
+					$workflows[$key]              = $workflow;
 				}
 			}
 
-			$response['data'] = ['datas' => array_values($workflows), 'count' => $this->model->countWorkflows($ids)];
-			$response['code'] = 200;
+			$response['data']   = ['datas' => array_values($workflows), 'count' => $this->model->countWorkflows($ids)];
+			$response['code']   = 200;
 			$response['status'] = true;
 		}
 
@@ -113,14 +119,16 @@ class EmundusControllerWorkflow extends JControllerLegacy
 	{
 		$response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
 			$id = $this->app->input->getInt('id', 0);
 
 			$workflow = $this->model->getWorkflow($id);
 
-			if ($workflow) {
-				$response['data'] = $workflow;
-				$response['code'] = 200;
+			if ($workflow)
+			{
+				$response['data']   = $workflow;
+				$response['code']   = 200;
 				$response['status'] = true;
 			}
 		}
@@ -132,7 +140,8 @@ class EmundusControllerWorkflow extends JControllerLegacy
 	{
 		$response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
 			$workflow = $this->app->input->getString('workflow');
 			$workflow = json_decode($workflow, true);
 
@@ -142,19 +151,26 @@ class EmundusControllerWorkflow extends JControllerLegacy
 			$programs = $this->app->input->getString('programs');
 			$programs = json_decode($programs, true);
 
-			if (!empty($workflow['id'])) {
-				try {
+			if (!empty($workflow['id']))
+			{
+				try
+				{
 					$updated = $this->model->updateWorkflow($workflow, $steps, $programs);
 
-					if ($updated) {
-						$response['code'] = 200;
+					if ($updated)
+					{
+						$response['code']   = 200;
 						$response['status'] = true;
-					} else {
-						$response['code'] = 500;
+					}
+					else
+					{
+						$response['code']    = 500;
 						$response['message'] = Text::_('ERROR_WHILE_UPDATING_WORKFLOW');
 					}
-				} catch (Exception $e) {
-					$response['code'] = 500;
+				}
+				catch (Exception $e)
+				{
+					$response['code']    = 500;
 					$response['message'] = $e->getMessage();
 				}
 			}
@@ -167,16 +183,19 @@ class EmundusControllerWorkflow extends JControllerLegacy
 	{
 		$response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
-			$step_id = $this->app->input->getInt('step_id', 0);
-			$response['code'] = 500;
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$step_id             = $this->app->input->getInt('step_id', 0);
+			$response['code']    = 500;
 			$response['message'] = Text::_('ERROR_WHILE_DELETING_WORKFLOW_STEP');
 
-			if (!empty($step_id)) {
+			if (!empty($step_id))
+			{
 				$deleted = $this->model->deleteWorkflowStep($step_id);
 
-				if ($deleted) {
-					$response['code'] = 200;
+				if ($deleted)
+				{
+					$response['code']   = 200;
 					$response['status'] = true;
 				}
 			}
@@ -189,16 +208,19 @@ class EmundusControllerWorkflow extends JControllerLegacy
 	{
 		$response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
-			$id = $this->app->input->getInt('id', 0);
-			$response['code'] = 500;
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$id                  = $this->app->input->getInt('id', 0);
+			$response['code']    = 500;
 			$response['message'] = Text::_('ERROR_WHILE_DELETING_WORKFLOW_STEP');
 
-			if (!empty($id)) {
+			if (!empty($id))
+			{
 				$deleted = $this->model->delete($id, $this->user->id);
 
-				if ($deleted) {
-					$response['code'] = 200;
+				if ($deleted)
+				{
+					$response['code']   = 200;
 					$response['status'] = true;
 				}
 			}
@@ -211,12 +233,14 @@ class EmundusControllerWorkflow extends JControllerLegacy
 	{
 		$response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
 			$types = $this->model->getStepTypes();
 
-			if (!empty($types)) {
-				$response['data'] = $types;
-				$response['code'] = 200;
+			if (!empty($types))
+			{
+				$response['data']   = $types;
+				$response['code']   = 200;
 				$response['status'] = true;
 			}
 		}
@@ -228,7 +252,8 @@ class EmundusControllerWorkflow extends JControllerLegacy
 	{
 		$response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
 			$types = $this->app->input->getString('types');
 			$types = json_decode($types, true);
 
@@ -237,11 +262,14 @@ class EmundusControllerWorkflow extends JControllerLegacy
 			{
 				$response['code']    = 500;
 				$response['message'] = Text::_('INVALID_STEP_TYPES');
-			} else {
+			}
+			else
+			{
 				$saved = $this->model->saveStepTypes($types);
 
-				if ($saved) {
-					$response['code'] = 200;
+				if ($saved)
+				{
+					$response['code']   = 200;
 					$response['status'] = true;
 				}
 			}
@@ -256,15 +284,16 @@ class EmundusControllerWorkflow extends JControllerLegacy
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
-			$response['code'] = 500;
+			$response['code']    = 500;
 			$response['message'] = Text::_('MISSING_PARAMS');
-			$campaign_id = $this->app->input->getInt('campaign_id', 0);
+			$campaign_id         = $this->app->input->getInt('campaign_id', 0);
 
-			if (!empty($campaign_id)) {
+			if (!empty($campaign_id))
+			{
 				$steps = $this->model->getCampaignSteps($campaign_id);
 
-				$response['data'] = $steps;
-				$response['code'] = 200;
+				$response['data']   = $steps;
+				$response['code']   = 200;
 				$response['status'] = true;
 			}
 		}
@@ -279,14 +308,16 @@ class EmundusControllerWorkflow extends JControllerLegacy
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
 			$campaign_id = $this->app->input->getInt('campaign_id', 0);
-			$steps = $this->app->input->getString('steps', '[]');
-			$steps = json_decode($steps, true);
+			$steps       = $this->app->input->getString('steps', '[]');
+			$steps       = json_decode($steps, true);
 
-			if (!empty($campaign_id) && !empty($steps)) {
+			if (!empty($campaign_id) && !empty($steps))
+			{
 				$saved = $this->model->saveCampaignStepsDates($campaign_id, $steps);
 
-				if ($saved) {
-					$response['code'] = 200;
+				if ($saved)
+				{
+					$response['code']   = 200;
 					$response['status'] = true;
 				}
 			}
@@ -303,12 +334,13 @@ class EmundusControllerWorkflow extends JControllerLegacy
 		{
 			$program_id = $this->app->input->getInt('program_id', 0);
 
-			if (!empty($program_id)) {
+			if (!empty($program_id))
+			{
 				$workflows = $this->model->getWorkflows([], 0, 0, [$program_id]);
 
 				$response = [
-					'data' => $workflows,
-					'code' => 200,
+					'data'   => $workflows,
+					'code'   => 200,
 					'status' => true
 				];
 			}
@@ -324,14 +356,16 @@ class EmundusControllerWorkflow extends JControllerLegacy
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
 			$program_id = $this->app->input->getInt('program_id', 0);
-			$workflows = $this->app->input->getString('workflows', '');
-			$workflows = json_decode($workflows, true);
+			$workflows  = $this->app->input->getString('workflows', '');
+			$workflows  = json_decode($workflows, true);
 
-			if (!empty($program_id)) {
+			if (!empty($program_id))
+			{
 				$updated = $this->model->updateProgramWorkflows($program_id, $workflows);
 
-				if ($updated) {
-					$response['code'] = 200;
+				if ($updated)
+				{
+					$response['code']   = 200;
 					$response['status'] = true;
 				}
 			}
@@ -340,28 +374,53 @@ class EmundusControllerWorkflow extends JControllerLegacy
 		$this->sendJsonResponse($response);
 	}
 
-	public function  updatestepstate()
+	public function updatestepstate()
 	{
 		$response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
-			$step_id = $this->app->input->getInt('step_id', 0);
-			$state = $this->app->input->getInt('state', 0);
-			$response['code'] = 500;
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$step_id             = $this->app->input->getInt('step_id', 0);
+			$state               = $this->app->input->getInt('state', 0);
+			$response['code']    = 500;
 			$response['message'] = Text::_('ERROR_WHILE_UPDATING_WORKFLOW_STEP_STATE');
 
-			if (!empty($step_id)) {
-				try {
+			if (!empty($step_id))
+			{
+				try
+				{
 					$updated = $this->model->updateStepState($step_id, $state);
 
-					if ($updated) {
-						$response['code'] = 200;
+					if ($updated)
+					{
+						$response['code']   = 200;
 						$response['status'] = true;
 					}
-				} catch (Exception $e) {
+				}
+				catch (Exception $e)
+				{
 					$response['message'] = $e->getMessage();
 				}
 			}
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function getprogramsworkflows()
+	{
+		$response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+
+			$workflows = $this->model->getProgramsWorkflows();
+
+			$response = [
+				'data'   => $workflows,
+				'code'   => 200,
+				'status' => true
+			];
 		}
 
 		$this->sendJsonResponse($response);

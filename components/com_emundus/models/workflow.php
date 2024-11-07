@@ -975,4 +975,28 @@ class EmundusModelWorkflow extends JModelList
 
 		return $is_evaluation_step;
 	}
+
+	public function getProgramsWorkflows()
+	{
+		$programs_workflows = [];
+
+		$query = $this->db->getQuery(true);
+		$query->select('GROUP_CONCAT(workflow_id) as workflow_ids, program_id')
+			->from($this->db->quoteName('#__emundus_setup_workflows_programs'))
+			->group('program_id');
+
+		try {
+			$this->db->setQuery($query);
+			$programs_workflows = $this->db->loadAssocList('program_id');
+
+			foreach ($programs_workflows as $key => $program_workflow) {
+				$programs_workflows[$key] = explode(',', $program_workflow['workflow_ids']);
+			}
+
+		} catch (Exception $e) {
+			Log::add('Error while fetching programs workflows: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+		}
+
+		return $programs_workflows;
+	}
 }

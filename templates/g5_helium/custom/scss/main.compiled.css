@@ -114109,6 +114109,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-text-blue-500 {
     color: var(--blue-500);
 }
+.tw-text-gray-300 {
+    --tw-text-opacity: 1;
+    color: rgb(209 213 219 / var(--tw-text-opacity));
+}
 .tw-text-green-500 {
     color: var(--green-500);
 }
