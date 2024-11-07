@@ -1,0 +1,34 @@
+# Ignore third-party code
+administrator/components/com_fabrik/
+administrator/components/com_fabrik/**
+administrator/components/com_hikashop/
+administrator/components/com_hikashop/**
+
+components/com_fabrik/
+components/com_fabrik/**
+components/com_hikashop/
+components/com_hikashop/**
+
+media/com_fabrik/
+media/com_fabrik/**
+media/com_hikashop/
+media/com_hikashop/**
+
+libraries/fabrik/
+libraries/fabrik/**
+libraries/src/
+libraries/src/**
+
+plugins/hikashop/
+plugins/hikashop/**
+plugins/hikashoppayment/
+plugins/hikashoppayment/**
+plugins/fabrik_form/
+plugins/fabrik_form/**
+plugins/system/hikashopmassaction/
+plugins/system/hikashopmassaction/**
+
+# Joomla legacy
+libraries/php-encryption/Crypto.php
+
+# Exclude code from analysis : https://docs.gitlab.com/ee/user/application_security/sast/index.html#exclude-code-from-analysis
