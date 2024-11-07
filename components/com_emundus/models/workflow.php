@@ -109,7 +109,7 @@ class EmundusModelWorkflow extends JModelList
 				$already_used_entry_status = [];
 				foreach ($steps as $step) {
 					foreach($step['entry_status'] as $status) {
-						if ($step['type'] == 1 && in_array($status['id'], $already_used_entry_status)) {
+						if (!$this->isEvaluationStep($step['type']) && in_array($status['id'], $already_used_entry_status)) {
 							throw new Exception(Text::_('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS_ALREADY_USED'));
 						}
 						$already_used_entry_status[] = $status['id'];
@@ -153,7 +153,7 @@ class EmundusModelWorkflow extends JModelList
 								->update($this->db->quoteName('#__emundus_setup_workflows_steps'))
 								->set($fields_set);
 
-							if ($step['type'] == 1)
+							if (!$this->isEvaluationStep($step['type']))
 							{
 								$query->set($this->db->quoteName('profile_id') . ' = ' . $this->db->quote($step['profile_id']));
 								$query->set($this->db->quoteName('form_id') . ' = NULL');
@@ -449,7 +449,7 @@ class EmundusModelWorkflow extends JModelList
 					$data->action_id = 1;
 					$data->table = '';
 
-					if ($data->type == 2) {
+					if ($this->isEvaluationStep($data->type)) {
 						$query->clear()
 							->select('db_table_name')
 							->from('#__fabrik_lists')
