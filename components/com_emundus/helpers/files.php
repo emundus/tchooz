@@ -5059,6 +5059,16 @@ class EmundusHelperFiles
 			$where['q'] .= ' AND ' . $this->writeQueryWithOperator('jecc.published', 1, '=');
 		}
 
+		if (!empty($caller_params['step_id'])) {
+			require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+			$m_workflow = new EmundusModelWorkflow();
+			$step_data = $m_workflow->getStepData($caller_params['step_id']);
+
+			if (!empty($step_data->programs)) {
+				$where['q'] .= ' AND ' . $this->writeQueryWithOperator('sp.id', $step_data->programs, 'IN');
+			}
+		}
+
 		return $where;
 	}
 

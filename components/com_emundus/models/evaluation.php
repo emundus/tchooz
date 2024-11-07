@@ -1261,14 +1261,16 @@ class EmundusModelEvaluation extends JModelList
 		return $list;
 	}
 
-	function getEvaluationsList($step_id = 0, $nb_steps = 1)
+	function getEvaluationsList($step_id = 0, $nb_steps = 1, $user_id = null)
 	{
-
 		$evaluations_list = [];
 
 		$session                       = $this->app->getSession();
-		$eMConfig                      = JComponentHelper::getParams('com_emundus');
-		$evaluators_can_see_other_eval = $eMConfig->get('evaluators_can_see_other_eval', '0');
+		$evaluators_can_see_other_eval = false;
+
+		if (empty($user_id)) {
+			$user_id = $this->app->getIdentity()->id;
+		}
 
 		$query    = 'select jecc.fnum, ss.step, ss.value as status, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name, ss.class as status_class, sp.code';
 		$group_by = 'GROUP BY jecc.fnum ';
@@ -1290,6 +1292,10 @@ class EmundusModelEvaluation extends JModelList
 
 			if (empty($step_data->table)) {
 				throw new Exception(sprintf(Text::_('COM_EMUNDUS_BUILD_WHERE_STEP_CONFIGURATION_ERROR'), $step_data->label));
+			}
+
+			if (EmundusHelperAccess::asAccessAction($step_data->action_id, 'r', $user_id)) {
+				$evaluators_can_see_other_eval = true;
 			}
 
 			$already_joined_tables[$step_data->table] = $step_data->table;
@@ -1381,6 +1387,11 @@ class EmundusModelEvaluation extends JModelList
 		if (!empty($step_id))
 		{
 			$query .= ' LEFT JOIN ' . $step_data->table . ' ON ' . $step_data->table . '.fnum = jecc.fnum AND ' . $step_data->table . '.step_id = ' . $step_id . ' ';
+
+			if (!$evaluators_can_see_other_eval) {
+				$query .= ' AND ' . $step_data->table . '.evaluator = ' . $user_id . ' ';
+			}
+
 			$query .= ' LEFT JOIN #__emundus_users as eue on eue.user_id = ' . $step_data->table . '.evaluator ';
 
 			$already_joined_tables[$step_data->table] = $step_data->table;
