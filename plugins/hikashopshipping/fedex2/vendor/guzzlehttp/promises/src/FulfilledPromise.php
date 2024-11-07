@@ -1,13 +1,6 @@
 <?php
-/**
- * @package	HikaShop for Joomla!
- * @version	5.1.0
- * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
- * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
-defined('_JEXEC') or die('Restricted access');
-?><?php
+
+declare(strict_types=1);
 
 namespace GuzzleHttp\Promise;
 
@@ -27,9 +20,9 @@ class FulfilledPromise implements PromiseInterface
     }
 
     public function then(
-        callable $onFulfilled = null,
-        callable $onRejected = null
-    ) {
+        ?callable $onFulfilled = null,
+        ?callable $onRejected = null
+    ): PromiseInterface {
         if (!$onFulfilled) {
             return $this;
         }
@@ -37,13 +30,11 @@ class FulfilledPromise implements PromiseInterface
         $queue = Utils::queue();
         $p = new Promise([$queue, 'run']);
         $value = $this->value;
-        $queue->add(static function () use ($p, $value, $onFulfilled) {
+        $queue->add(static function () use ($p, $value, $onFulfilled): void {
             if (Is::pending($p)) {
                 try {
                     $p->resolve($onFulfilled($value));
                 } catch (\Throwable $e) {
-                    $p->reject($e);
-                } catch (\Exception $e) {
                     $p->reject($e);
                 }
             }
@@ -52,34 +43,34 @@ class FulfilledPromise implements PromiseInterface
         return $p;
     }
 
-    public function otherwise(callable $onRejected)
+    public function otherwise(callable $onRejected): PromiseInterface
     {
         return $this->then(null, $onRejected);
     }
 
-    public function wait($unwrap = true, $defaultDelivery = null)
+    public function wait(bool $unwrap = true)
     {
         return $unwrap ? $this->value : null;
     }
 
-    public function getState()
+    public function getState(): string
     {
         return self::FULFILLED;
     }
 
-    public function resolve($value)
+    public function resolve($value): void
     {
         if ($value !== $this->value) {
-            throw new \LogicException("Cannot resolve a fulfilled promise");
+            throw new \LogicException('Cannot resolve a fulfilled promise');
         }
     }
 
-    public function reject($reason)
+    public function reject($reason): void
     {
-        throw new \LogicException("Cannot reject a fulfilled promise");
+        throw new \LogicException('Cannot reject a fulfilled promise');
     }
 
-    public function cancel()
+    public function cancel(): void
     {
     }
 }

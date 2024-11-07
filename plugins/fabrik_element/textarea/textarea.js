@@ -53,6 +53,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                     }
                 }
             }.bind(this));
+
         },
 
         unclonableProperties: function () {

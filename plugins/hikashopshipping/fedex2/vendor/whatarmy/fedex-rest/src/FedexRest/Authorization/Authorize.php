@@ -1,13 +1,4 @@
 <?php
-/**
- * @package	HikaShop for Joomla!
- * @version	5.1.0
- * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
- * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
-defined('_JEXEC') or die('Restricted access');
-?><?php
 
 
 namespace FedexRest\Authorization;
@@ -41,12 +32,7 @@ class Authorize
 
     public function authorize()
     {
-        $httpClient = new Client(
-            array( 
-            'curl'   => array( CURLOPT_SSL_VERIFYPEER => false ),
-            'verify' => false
-          )
-        );
+        $httpClient = new Client();
         if (isset($this->client_id) && isset($this->client_secret)) {
             try {
                 $query = $httpClient->request('POST', $this->getApiUri('/oauth/token'), [

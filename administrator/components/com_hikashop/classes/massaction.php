@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -562,6 +562,8 @@ class hikashopMassactionClass extends hikashopClass{
 			'price_value'=>'price_currency_id',
 			'price_value_with_tax'=>'price_currency_id',
 			'order_full_price'=>'order_currency_id',
+			'order_product_price'=>'order_currency_id',
+			'order_product_tax'=>'order_currency_id',
 			'user_partner_price'=>'user_partner_currency_id',
 			'user_unpaid_amout'=>'user_currency_id'
 		);
@@ -650,6 +652,17 @@ class hikashopMassactionClass extends hikashopClass{
 						$p->value = $element->$price;
 						$p->currency = $element->$currency;
 						$element->$price = $p;
+					} elseif(is_array($array)) {
+						foreach($array as $data) {
+							if(isset($data->$price)){
+								$params->types[$price] = new stdClass();
+								$params->types[$price]->type = 'price';
+								$p = new stdClass();
+								$p->value = $data->$price;
+								$p->currency = $element->$currency;
+								$data->$price = $p;
+							}
+						}
 					}
 				}else{
 					foreach($element as $array){

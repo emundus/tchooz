@@ -101,7 +101,7 @@ class TchoozUpdateCommand extends AbstractCommand
 		$this->components = explode(',',$this->getApplication()->getConsoleInput()->getOption('component'));
 
 		if(empty($components)) {
-			$availableComponents = array('all', 'com_emundus', 'com_fabrik', 'com_hikashop', 'com_falang', 'com_gantry5', 'com_securitycheckpro');
+			$availableComponents = array('all', 'com_emundus', 'com_fabrik', 'com_hikashop', 'com_dropfiles');
 			$choice              = new ChoiceQuestion(
 				'Please select components to update (separate multiple profiles with a comma)',
 				$availableComponents
@@ -169,6 +169,9 @@ class TchoozUpdateCommand extends AbstractCommand
 
 			if ($manifest_cache['filename']) {
 				$xml_file = $manifest_cache['filename'] . '.xml';
+			}
+			elseif ($elementArr["element"] == 'com_dropfiles') {
+				$xml_file = 'com_dropfiles.xml';
 			}
 			else {
 				$xml_file = preg_split("/[_]+/", $elementArr["element"], 2)[1] . '.xml';
@@ -292,6 +295,8 @@ class TchoozUpdateCommand extends AbstractCommand
 
 									break;
 							}
+
+							$this->ioStyle->text("\033[32m--- " . strtoupper($elementArr['element']) . " component updated" . " ---\n", 's');
 
 						}
 						catch (\Throwable $e) {

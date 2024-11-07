@@ -12,8 +12,10 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Object\CMSObject;
+use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 
 function getTranslationFilters($catid, $contentElement)
 {
@@ -952,6 +954,7 @@ class JFContentParams extends CMSObject
      *              add JA Content Type support for custom fields display
      * @update 5.0 url/image in first position
      *             add jolly extra param's
+     * @update 5.10 display original value for custom fields (text, radio, checkbox)
      * */
     function render($type)
     {
@@ -1043,6 +1046,18 @@ class JFContentParams extends CMSObject
         $ignoreFieldsets = ['jmetadata', 'item_associations','workflow'];
         if (isset($customfieldSets))
         {
+            $supported_original = array('Text','Checkboxes','Radio');
+            $default_lang = ComponentHelper::getParams('com_languages')->get('site', 'en-GB');
+            $languages	= LanguageHelper::getLanguages('lang_code');
+            $language = $languages[$default_lang];
+
+            //get the original custom fields (article_id is not set in perhaps use reference_id
+            $jinput = Factory::getApplication()->input;
+            $reference_id = $jinput->get('reference_id', 0,'INT');
+            $model = Factory::getApplication()->bootComponent('com_content')->getMVCFactory()->createModel('Article', 'Administrator');
+            $article = $model->getItem($reference_id);
+            $original_cfs = FieldsHelper::getFields('com_content.article', $article, true);
+
             foreach ($customfieldSets as $name => $fieldSet)
             {
                 if (in_array($name, $ignoreFieldsets, true))
@@ -1062,6 +1077,26 @@ class JFContentParams extends CMSObject
                     <ul class="adminformlist">
                         <?php foreach ($this->form->getFieldset($name) as $field) : ?>
                             <?php echo $field->renderField(); ?>
+                            <?php if (in_array($field->type , $supported_original) ) { ?>
+                                <div class="control-group">
+                                    <div class="control-label">&nbsp;</div>
+                                    <div class="controls">
+                                        <?php
+                                            $originalValue = '';
+                                            //loop throught all the item even we found the field
+                                            foreach ($original_cfs as $original_cf){
+                                                if ($original_cf->name == $field->fieldname){
+                                                    $originalValue = $original_cf->value;
+                                                }
+                                            }
+                                        ?>
+                                        <div class="" style="float: left">
+                                            <?php echo HTMLHelper::_('image', 'mod_languages/' .$language->image  . '.gif',$language->title_native, array('title'=>$language->title_native,'style'=>'opacity:0.5;width:18px;height:12px;') , true); ?>
+                                        </div>
+                                        <div class="" style="font-style: italic;color: #ccc;"><?php echo '&nbsp;'.$originalValue; ?></div>
+                                    </div>
+                                </div>
+                            <?php } ?>
                         <?php endforeach; ?>
                     </ul>
                 </fieldset>
@@ -1476,6 +1511,9 @@ class TranslateParams_fields extends TranslateParams_xml
 
 }
 
+/*
+ * @update 5.10 add reference_id in the input for easier original custom fields value display
+ * */
 class TranslateParams_content extends TranslateParams_xml
 {
 
@@ -1534,6 +1572,9 @@ class TranslateParams_content extends TranslateParams_xml
         $cid = $oldcid;
         $jinput->set('cid', $cid);
         $jinput->set("article_id", $oldid);
+
+        //set the reference_id (translated article id, use for original custom fields display)
+        $jinput->set("reference_id", $contentid);
 
         //	$this->origparams = new JFContentParams( $jfcontentModelForm);
         $this->transparams = new JFContentParams($translationcontentModelForm);

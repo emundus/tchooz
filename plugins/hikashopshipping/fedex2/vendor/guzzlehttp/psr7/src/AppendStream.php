@@ -1,25 +1,23 @@
 <?php
-/**
- * @package	HikaShop for Joomla!
- * @version	5.1.0
- * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
- * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
-defined('_JEXEC') or die('Restricted access');
-?><?php
+
+declare(strict_types=1);
 
 namespace GuzzleHttp\Psr7;
 
 use Psr\Http\Message\StreamInterface;
 
-class AppendStream implements StreamInterface
+final class AppendStream implements StreamInterface
 {
 
     private $streams = [];
 
+
     private $seekable = true;
+
+
     private $current = 0;
+
+
     private $pos = 0;
 
     public function __construct(array $streams = [])
@@ -29,17 +27,23 @@ class AppendStream implements StreamInterface
         }
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         try {
             $this->rewind();
+
             return $this->getContents();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            if (\PHP_VERSION_ID >= 70400) {
+                throw $e;
+            }
+            trigger_error(sprintf('%s::__toString exception: %s', self::class, (string) $e), E_USER_ERROR);
+
             return '';
         }
     }
 
-    public function addStream(StreamInterface $stream)
+    public function addStream(StreamInterface $stream): void
     {
         if (!$stream->isReadable()) {
             throw new \InvalidArgumentException('Each stream must be readable');
@@ -52,12 +56,12 @@ class AppendStream implements StreamInterface
         $this->streams[] = $stream;
     }
 
-    public function getContents()
+    public function getContents(): string
     {
         return Utils::copyToString($this);
     }
 
-    public function close()
+    public function close(): void
     {
         $this->pos = $this->current = 0;
         $this->seekable = true;
@@ -83,12 +87,12 @@ class AppendStream implements StreamInterface
         return null;
     }
 
-    public function tell()
+    public function tell(): int
     {
         return $this->pos;
     }
 
-    public function getSize()
+    public function getSize(): ?int
     {
         $size = 0;
 
@@ -103,19 +107,19 @@ class AppendStream implements StreamInterface
         return $size;
     }
 
-    public function eof()
+    public function eof(): bool
     {
-        return !$this->streams ||
-            ($this->current >= count($this->streams) - 1 &&
-             $this->streams[$this->current]->eof());
+        return !$this->streams
+            || ($this->current >= count($this->streams) - 1
+             && $this->streams[$this->current]->eof());
     }
 
-    public function rewind()
+    public function rewind(): void
     {
         $this->seek(0);
     }
 
-    public function seek($offset, $whence = SEEK_SET)
+    public function seek($offset, $whence = SEEK_SET): void
     {
         if (!$this->seekable) {
             throw new \RuntimeException('This AppendStream is not seekable');
@@ -130,7 +134,7 @@ class AppendStream implements StreamInterface
                 $stream->rewind();
             } catch (\Exception $e) {
                 throw new \RuntimeException('Unable to seek stream '
-                    . $i . ' of the AppendStream', 0, $e);
+                    .$i.' of the AppendStream', 0, $e);
             }
         }
 
@@ -142,7 +146,7 @@ class AppendStream implements StreamInterface
         }
     }
 
-    public function read($length)
+    public function read($length): string
     {
         $buffer = '';
         $total = count($this->streams) - 1;
@@ -150,18 +154,17 @@ class AppendStream implements StreamInterface
         $progressToNext = false;
 
         while ($remaining > 0) {
-
             if ($progressToNext || $this->streams[$this->current]->eof()) {
                 $progressToNext = false;
                 if ($this->current === $total) {
                     break;
                 }
-                $this->current++;
+                ++$this->current;
             }
 
             $result = $this->streams[$this->current]->read($remaining);
 
-            if ($result == null) {
+            if ($result === '') {
                 $progressToNext = true;
                 continue;
             }
@@ -175,22 +178,22 @@ class AppendStream implements StreamInterface
         return $buffer;
     }
 
-    public function isReadable()
+    public function isReadable(): bool
     {
         return true;
     }
 
-    public function isWritable()
+    public function isWritable(): bool
     {
         return false;
     }
 
-    public function isSeekable()
+    public function isSeekable(): bool
     {
         return $this->seekable;
     }
 
-    public function write($string)
+    public function write($string): int
     {
         throw new \RuntimeException('Cannot write to an AppendStream');
     }

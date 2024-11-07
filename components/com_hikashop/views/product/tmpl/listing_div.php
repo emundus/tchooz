@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -26,6 +26,11 @@ $enableCarousel = (int)$this->params->get('enable_carousel', 0) && $this->module
 $infinite_scroll = !$enableCarousel && ((int)$this->params->get('infinite_scroll', 0) == 1) && !hikashop_isAmpPage();
 $switchMode = !$enableCarousel && (int)$this->params->get('enable_switcher', 0) && (!$infinite_scroll || empty($this->pageInfo->limit->start)) && (!$this->module || hikaInput::get()->getVar('hikashop_front_end_main', 0));
 $pagination = false;
+$consistency =  $this->params->get('consistencyheight', 0);
+$extra_class = '';
+if ($consistency == '2')
+	$extra_class = 'hikashop_subcontainer_aligned';
+
 if(!$enableCarousel) {
 	$pagination = $this->config->get('pagination','bottom');
 }
@@ -193,7 +198,7 @@ window.localPage.switcherDisplay = function (oldClass, newClass, delay, target) 
 		<div class="hkc-md-<?php echo (int)$span; ?> hikashop_product hikashop_product_column_<?php echo $current_column; ?> hikashop_product_row_<?php echo $current_row; ?>"
 			itemprop="itemList" itemscope="" itemtype="http://schema.org/ItemList">
 			<div class="hikashop_container <?php echo $classZoom; ?>">
-				<div class="hikashop_subcontainer <?php echo $this->borderClass; ?>">
+				<div class="hikashop_subcontainer <?php echo $this->borderClass; ?> <?php echo $extra_class; ?>">
 <?php
 			$this->quantityLayout = $this->getProductQuantityLayout($row);
 			$this->row =& $row;

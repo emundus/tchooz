@@ -86,8 +86,8 @@ class PlgFabrik_FormEmundusisevaluatedbyme extends plgFabrik_Form
 			}
 			else
 			{
-				$fnum       = '{jos_emundus_evaluations___fnum}';
-				$student_id = '{jos_emundus_evaluations___student_id}';
+				$fnum       = '';
+				$student_id = 0;
 			}
 		}
 

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -122,7 +122,7 @@ activate: true,
 									echo '<p>'.$ref.'</p>';
 								}
 								else { ?>
-							<a onclick="window.emailMgr.copyToClipboard('{VAR:<?php echo $key; ?>.<?php echo $ref; ?>}'); return false;" href="#" >
+							<a onclick="window.emailMgr.copyToClipboard(this, '{VAR:<?php echo $key; ?>.<?php echo $ref; ?>}'); return false;" href="#" >
 								<p data-toggle="hk-tooltip" data-title="<?php echo JText::_($translation); ?>" data-original-title="" title="">
 									{VAR:<span class="hikashop_mail_tag_key_table"><?php echo $key; ?></span>.<span class="hikashop_mail_tag_key_column"><?php echo $ref; ?></span>}
 								</p>
@@ -157,7 +157,7 @@ activate: true,
 									echo '<p>'.$ref.'</p>';
 								}
 								else { ?>
-							<a onclick="window.emailMgr.copyToClipboard('{LINEVAR:<?php echo $key; ?>.<?php echo $ref; ?>}'); return false;" href="#" >
+							<a onclick="window.emailMgr.copyToClipboard(this, '{LINEVAR:<?php echo $key; ?>.<?php echo $ref; ?>}'); return false;" href="#" >
 								<p data-toggle="hk-tooltip" data-title="<?php echo JText::_($translation); ?>" data-original-title="" title="">
 									{LINEVAR:<span class="hikashop_mail_tag_key_table"><?php echo $key; ?></span>.<span class="hikashop_mail_tag_key_column"><?php echo $ref; ?></span>}
 								</p>
@@ -265,7 +265,7 @@ window.emailMgr.toggleTags = function(btn) {
 	}
 	return false;
 };
-window.emailMgr.copyToClipboard = function(text) {
+window.emailMgr.copyToClipboard = function(el, text) {
 	var textArea = document.createElement("textarea");
 	textArea.value = text;
 	document.body.appendChild(textArea);
@@ -273,6 +273,21 @@ window.emailMgr.copyToClipboard = function(text) {
 	try {
 		var successful = document.execCommand('copy');
 		if(successful) {
+			if(hkjQuery.notify) {
+				hkjQuery(el).notify(
+					{
+						title:'<?php echo JText::_('COPY_TO_CLIPBOARD_SUCCESSFUL', true); ?>',
+						text:'<?php echo JText::_('COPY_TO_CLIPBOARD_SUCCESSFUL_DESC', true); ?>',
+						image:'<i class="fa fa-3x fa-exclamation-circle"></i>'
+					},
+					{
+						style:"metro",
+						className:"info",
+						arrowShow:true,
+						position:"top left"
+					}
+				);
+			}
 		}
 		var msg = successful ? 'successful' : 'unsuccessful';
 		console.log('Copying text command was ' + msg);

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -23,6 +23,10 @@ if (!isset($this->haveLink))
 
 $popup_mode = $this->params->get('product_popup_mode', 0);
 $mainDivName = $this->params->get('main_div_name', '');
+$consistency =  $this->params->get('consistencyheight', 0);
+$extra_class = '';
+if ($consistency == 2)
+	$extra_class = 'hikashop_aligned_btn';
 
 $link_content = $this->link_content;
 $url_link = 'product&task=show&cid=' . (int)$this->row->product_id . '&name=' . $this->row->alias . $this->itemid . $this->category_pathway;
@@ -61,12 +65,12 @@ if ($display_popup) {
 		'HIKASHOP_PRODUCT_POPUP',
 		$link.'?tmpl=component',
 		$mainDivName.'_popup_product_'.$this->row->product_id,
-		1075, 580, 'title="'.JText::_('EDIT_THE_OPTIONS_OF_THE_PRODUCT').'" class="'.$this->css_button.'"', '', 'link'
+		1075, 580, 'title="'.JText::_('EDIT_THE_OPTIONS_OF_THE_PRODUCT').'" class="'.$this->css_button.'" "'.$extra_class, '', 'link'
 	);
 }
 else {
 	if(($this->haveLink) || (!empty($this->type))) { ?>
-		<a href="<?php echo $link;?>" class="<?php echo $this->css_button; ?>">
+		<a href="<?php echo $link;?>" class="<?php echo $this->css_button; ?> <?php echo $extra_class; ?>">
 <?php 
 	} ?>
 		<?php echo $link_content; ?>

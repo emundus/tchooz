@@ -15,6 +15,7 @@
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
+use Joomla\CMS\Uri\Uri;
 
 
 /**
@@ -738,6 +739,81 @@ class EmundusControllerEmail extends BaseController
 			}
 		}
 		echo json_encode((object) $tab);
+		exit;
+	}
+
+	public function getemailcontent()
+	{
+		$template = $this->input->getString('tmp');
+
+		$result = array('status' => false, 'msg' => Text::_('ERROR_CANNOT_RETRIEVE_EMAIL'), 'data' => []);
+
+		switch ($template) {
+			case 8 : // referent_letter
+				if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
+				{
+					$result['msg'] = Text::_('ACCESS_DENIED');
+				}
+				else
+				{
+					require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
+					$m_files    = $this->getModel('Files');
+
+					$fnum = $this->input->getString('fnum');
+					$keyid = $this->input->getString('keyid');
+
+					if(!empty($fnum) && !empty($keyid))
+					{
+						$email = $this->m_emails->getEmail('referent_letter');
+
+						if(!empty($email))
+						{
+							$result['status'] = true;
+							$result['msg'] = Text::_('EMAIL_RETRIEVED');
+
+							$referent_email = $m_files->getReferentEmail($keyid,$fnum);
+							$fnum = $m_files->getFnumInfos($fnum);
+
+							$baseurl = Uri::base();
+							//TODO: Via fnum : get referent form id
+							$link_upload = $baseurl . 'index.php?option=com_fabrik&c=form&view=form&formid=68&tableid=71&keyid=' . $keyid . '&sid=' . $fnum['applicant_id'];
+
+							$post = [
+								'NAME'              => $fnum['name'],
+								'EMAIL'             => $fnum['email'],
+								'APPLICANT_PROGRAM' => $fnum['label'],
+								'UPLOAD_URL'        => $link_upload
+							];
+
+							$tags = $this->m_emails->setTags($fnum['applicant_id'], $post, $fnum['fnum'], '', $email->message);
+
+							$email->message = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
+
+							$translations = [
+								'title'        => Text::_('COM_EMUNDUS_REFERENT'),
+								'copy'         => Text::_('COM_EMUNDUS_EMAILS_CONTENT_COPY'),
+								'close'        => Text::_('COM_EMUNDUS_ATTACHMENTS_CLOSE'),
+								'emailContent' => Text::_('COM_EMUNDUS_EMAILS_CONTENT'),
+								'linkLabel'    => Text::_('COM_EMUNDUS_REFERENT_LINK'),
+								'referentEmailLabel' => Text::_('COM_EMUNDUS_REFERENT_EMAIL'),
+								'copied'       => Text::_('COM_EMUNDUS_EMAILS_CONTENT_COPIED'),
+							];
+
+							$data = [
+								'message'      => $email->message,
+								'link'         => $link_upload,
+								'referent_email'         => $referent_email,
+								'translations' => $translations
+							];
+
+							$result['data'] = $data;
+						}
+					}
+				}
+				break;
+		}
+
+		echo json_encode((object) $result);
 		exit;
 	}
 

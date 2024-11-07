@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -10,6 +10,8 @@ defined('_JEXEC') or die('Restricted access');
 ?><?php
 class plgHikashopGoogle_products extends JPlugin {
 	public $error = '';
+	private $siteAddress = '';
+	private $itemID = '';
 
 	function onHikashopCronTrigger(&$messages) {
 		if(!hikashop_level(1))
@@ -464,14 +466,19 @@ class plgHikashopGoogle_products extends JPlugin {
 		if(!empty($plugin->params['channel_description'])) {
 			$siteDesc = $plugin->params['channel_description'];
 		}
-		$siteAddress = JURI::base();
-		$siteAddress = str_replace('administrator/','',$siteAddress);
+
+		if(!empty($plugin->params['item_id'])){
+			$this->itemID = '&Itemid='.$plugin->params['item_id'];
+		}
+		$this->siteAddress = JURI::base();
+		$this->siteAddress = str_replace('administrator/','',$this->siteAddress);
+
 		$xml = '<?xml version="1.0" encoding="UTF-8" ?>'."\n".
 					'<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">'."\n".
 					"\t".'<channel>'."\n".
 								"\t\t".'<title><![CDATA[ '.$siteName.' ]]></title>'."\n".
 								"\t\t".'<description><![CDATA[ '.$siteDesc.' ]]></description>'."\n".
-								"\t\t".'<link><![CDATA[ '.$siteAddress.' ]]></link>'."\n"."\n";
+								"\t\t".'<link><![CDATA[ '.$thi->siteAddress.' ]]></link>'."\n"."\n";
 		$productClass = hikashop_get('class.product');
 		$volumeHelper = hikashop_get('helper.volume');
 		$weightHelper = hikashop_get('helper.weight');
@@ -521,15 +528,11 @@ class plgHikashopGoogle_products extends JPlugin {
 
 				$xml .= "\t".'<g:id>'.$product->product_id.'</g:id>'."\n";
 				$xml .= "\t".'<title><![CDATA[ '.mb_substr($product->product_name, 0 ,150).' ]]></title>'."\n";
-				$itemID = '';
 
-				if(!empty($plugin->params['item_id'])){
-					$itemID = '&Itemid='.$plugin->params['item_id'];
-				}
 				if(!empty($product->product_canonical)){
 					$xml .= "\t".'<g:link><![CDATA[ '.str_replace('/administrator/','/',hikashop_cleanURL($product->product_canonical)).' ]]></g:link>'."\n";
 				}else{
-					$xml .= "\t".'<g:link><![CDATA[ '.$siteAddress.'index.php?option=com_hikashop&ctrl=product&task=show&cid='.$product->product_id.'&name='.$product->alias.$itemID.' ]]></g:link>'."\n";
+					$xml .= "\t".'<g:link><![CDATA[ '.$this->siteAddress.'index.php?option=com_hikashop&ctrl=product&task=show&cid='.$product->product_id.'&name='.$product->alias.$this->itemID.' ]]></g:link>'."\n";
 				}
 				if(!empty($product->discount)) {
 					$xml .= "\t".'<g:sale_price>'.$price.' '.$currency->currency_code.'</g:sale_price>'."\n";
@@ -583,6 +586,8 @@ class plgHikashopGoogle_products extends JPlugin {
 
 				$xml .= $this->_additionalParameter($product,$plugin,'shipping_label','shipping_label');
 
+				$xml .= $this->_addCheckoutLink($product,$plugin);
+
 				$xml .= $this->_addShipping($product,$plugin);
 
 				if(!empty($plugin->params['use_brand']) && !empty($brands[$product->product_manufacturer_id]->category_name)){
@@ -604,7 +609,7 @@ class plgHikashopGoogle_products extends JPlugin {
 					$name = "image_link";
 					foreach($product->images as $image){
 						if($i < 10){
-							 $xml .= "\t".'<g:'.$name.'>'.htmlspecialchars($siteAddress.$this->main_uploadFolder_url.(ltrim($image->file_path,'/'))).'</g:'.$name.'>'."\n";
+							 $xml .= "\t".'<g:'.$name.'>'.htmlspecialchars($this->siteAddress.$this->main_uploadFolder_url.(ltrim($image->file_path,'/'))).'</g:'.$name.'>'."\n";
 							 $name = "additional_image_link";
 							 $i++;
 						}
@@ -669,6 +674,26 @@ class plgHikashopGoogle_products extends JPlugin {
 		}
 
 		$xml .= '</channel>'."\n".'</rss>'."\n";
+		return $xml;
+	}
+
+	function _addCheckoutLink(&$product, &$plugin) {
+		$xml = '';
+
+		if(empty($plugin->params['checkout_link_template'])){
+			return $xml;
+		}
+
+		$column = $plugin->params['checkout_link_template'];
+		if(isset($product->$column)){
+			if(empty($product->$column)) return $xml;
+		}
+		$qty = 1;
+		if(!empty($product->product_min_per_order)){
+			$qty = (int)$product->product_min_per_order;
+		}
+		$url = $this->siteAddress.'index.php?option=com_hikashop&ctrl=product&task=updatecart&add=1&cid='.$product->product_id.'&qty='.$qty.$this->itemID;
+		$xml.="\t".'<g:checkout_link_template><![CDATA[ '.$url.' ]]></g:checkout_link_template>'."\n";
 		return $xml;
 	}
 

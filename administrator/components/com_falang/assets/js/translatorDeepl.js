@@ -1,4 +1,4 @@
-function translateService(sourceText){
+function translateService(fieldName,sourceText){
 
     var translatedText;
 
@@ -24,6 +24,7 @@ function translateService(sourceText){
             data = JSON.parse(result.data);
             if (result.success) {
                 translatedText = data.translations[0].text;
+                setTranslation(fieldName,translatedText);
             } else {
                 console.log('Error : '+ data);
                 translatedText = '--error--';
@@ -31,11 +32,11 @@ function translateService(sourceText){
         },
         error: function (xhr, textStatus, errorThrown) {
             translatedText = "ERROR "+xhr.responseJSON["code"]+": "+xhr.responseJSON["message"];
+            document.body.style.cursor = 'default';
         },
         complete: function() {
             document.body.style.cursor = 'default';
-        },
-        async:false
+        }
     });
 
     return translatedText;

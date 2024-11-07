@@ -151,46 +151,9 @@ if (file_exists($editorFile)){
 else {
 	?>
 	<script type="text/javascript">
-
-	function copyToClipboard(value,action) {
-		try {
-			if (document.getElementById) {
-				innerHTML="";
-				if (action=="copy") {
-					srcEl = document.getElementById("original_value_"+value);
-					innerHTML = srcEl.innerHTML;
-				}
-				if (action=="translate") {
-					srcEl = document.getElementById("original_value_"+value);
-					innerHTML = translateService(srcEl.innerHTML);
-				}
-				if (window.clipboardData){
-					window.clipboardData.setData("Text",innerHTML);
-					alert("<?php echo Text::_('CLIPBOARD_COPIED'); ?>");
-				}
-				else {
-					srcEl = document.getElementById("text_origText_"+value);
-					if (srcEl != null) {
-						srcEl.value = innerHTML;
-						srcEl.select();
-						alert("<?php echo Text::_('CLIPBOARD_COPY');?>");
-					} else {
-						srcEl = document.getElementById("refField_"+value);
-						if (srcEl != null) {
-							srcEl.value = innerHTML;
-							srcEl.select();
-							alert("<?php echo Text::_('CLIPBOARD_COPY');?>");
-						}
-					}
-				}
-			}
-		}
-		catch(e){
-            console.log(e.message);
-			alert("<?php echo Text::_('CLIPBOARD_NOSUPPORT');?>");
-		}
-	}
+      Console.log("Editor not supported");
     </script>
+
 <?php } ?>
 
 <script type="text/javascript">
@@ -327,7 +290,8 @@ else {
                                     <?php if (strtolower($field->Type)=='htmltext') { ?>
                                         <?php
                                             $editorFields[] = array( "editor_".$field->Name, "origText_".$field->Name );
-                                            echo $wysiwygeditor->display("origText_".$field->Name,htmlspecialchars($field->originalValue ?? '', ENT_COMPAT, 'UTF-8'), '100%','300', '70', '15',$field->ebuttons);
+                                            //need to pass the id at the end or it was not working with codemirror
+                                            echo $wysiwygeditor->display("origText_".$field->Name,htmlspecialchars($field->originalValue ?? '', ENT_COMPAT, 'UTF-8'), '100%','300', '70', '15',$field->ebuttons,"origText_".$field->Name);
                                         ?>
                                     <?php } //end if htmltext?>
                                     <?php if (strtolower($field->Type)=='titletext') { ?>
@@ -396,11 +360,11 @@ else {
 
 		                    <?php if( strtolower($field->Type)!='htmltext' && strtolower($field->Type)!='readonlytext') {?>
                                 <!-- Translate button -->
-                                <a class="button btn btn-translate <?php echo $translate_button_available ? '': 'disabled';?>" title="<?php echo !$translate_button_available ?Text::_('COM_FALANG_SERVICE_NOT_CONFIGURED'):'';?>"  onclick="document.adminForm.refField_<?php echo $field->Name;?>.value = translateService(document.adminForm.origText_<?php echo $field->Name;?>.value);" title="<?php echo Text::sprintf('COM_FALANG_BTN_TRANSLATE',$translate_service); ?>"><i class="<?php echo $translate_button_icon;?>"></i></a>
+                                <a class="button btn btn-translate <?php echo $translate_button_available ? '': 'disabled';?>" title="<?php echo !$translate_button_available ?Text::_('COM_FALANG_SERVICE_NOT_CONFIGURED'):'';?>"  onclick="copyToClipboard('<?php echo $field->Name;?>','translate')" title="<?php echo Text::sprintf('COM_FALANG_BTN_TRANSLATE',$translate_service); ?>"><i class="<?php echo $translate_button_icon;?>"></i></a>
                                 <!-- Copy button -->
-                                <a class="button btn btn-copy" onclick="document.adminForm.refField_<?php echo $field->Name;?>.value = document.adminForm.origText_<?php echo $field->Name;?>.value;" title="<?php echo Text::_('COM_FALANG_BTN_COPY'); ?>"><i class="icon-copy"></i></a>
+                                <a class="button btn btn-copy" onclick="copyToClipboard('<?php echo $field->Name;?>','copy')" title="<?php echo Text::_('COM_FALANG_BTN_COPY'); ?>"><i class="icon-copy"></i></a>
                                 <!-- Delete button -->
-                                <a class="button btn btn-delete" onclick="document.adminForm.refField_<?php echo $field->Name;?>.value = '';" title="<?php echo Text::_('Delete'); ?>"><i class="icon-delete"></i></a>
+                                <a class="button btn btn-delete" onclick="copyToClipboard('<?php echo $field->Name;?>','clear')" title="<?php echo Text::_('Delete'); ?>"><i class="icon-delete"></i></a>
 		                    <?php } ?>
 
 		                    <?php if( strtolower($field->Type)=='htmltext' && strtolower($field->Type)!='readonlytext') {?>
@@ -440,7 +404,8 @@ else {
                                     <!-- htmltext,text,textarea,image,param's,readonly,hiddentext-->
                                     <?php if (strtolower($field->Type)=='htmltext') { ?>
                                         <?php $editorFields[] = array( "editor_".$field->Name, "refField_".$field->Name );
-                                        echo $wysiwygeditor->display("refField_".$field->Name,htmlspecialchars($translationContent->value ?? '', ENT_COMPAT, 'UTF-8'), '100%','300', '70', '15',$field->ebuttons);
+                                        //need to pass the id at the end or it was not working with codemirror
+                                        echo $wysiwygeditor->display("refField_".$field->Name,htmlspecialchars($translationContent->value ?? '', ENT_COMPAT, 'UTF-8'), '100%','300', '70', '15',$field->ebuttons,"refField_".$field->Name);
                                         ?>
                                     <?php } //end if htmltext?>
 

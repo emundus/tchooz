@@ -326,51 +326,40 @@ ServerSignature Off
   ExpiresActive on
 
 # Perhaps better to whitelist expires rules? Perhaps.
-  ExpiresDefault "access plus 1 month"
-
-# cache.appcache needs re-requests in FF 3.6 (thanks Remy ~Introducing HTML5)
-  ExpiresByType text/cache-manifest "access plus 0 seconds"
-
-# Your document html
-  ExpiresByType text/html "access plus 0 seconds"
-
-# Data
-  ExpiresByType text/xml "access plus 0 seconds"
-  ExpiresByType application/xml "access plus 0 seconds"
-  ExpiresByType application/json "access plus 0 seconds"
+  ExpiresDefault "modification plus 0 seconds"
 
 # Feed
-  ExpiresByType application/rss+xml "access plus 1 hour"
-  ExpiresByType application/atom+xml "access plus 1 hour"
+  ExpiresByType application/rss+xml "modification plus 1 hour"
+  ExpiresByType application/atom+xml "modification plus 1 hour"
 
 # Favicon (cannot be renamed)
-  ExpiresByType image/x-icon "access plus 1 week"
+  ExpiresByType image/x-icon "modification plus 1 week"
 
 # Media: images, video, audio
-  ExpiresByType image/gif "access plus 1 day"
-  ExpiresByType image/png "access plus 1 day"
-  ExpiresByType image/jpg "access plus 1 day"
-  ExpiresByType image/jpeg "access plus 1 day"
-  ExpiresByType video/ogg "access plus 1 day"
-  ExpiresByType audio/ogg "access plus 1 day"
-  ExpiresByType video/mp4 "access plus 1 day"
-  ExpiresByType video/webm "access plus 1 day"
+  ExpiresByType image/gif "modification plus 6 hours"
+  ExpiresByType image/png "modification plus 6 hours"
+  ExpiresByType image/jpg "modification plus 6 hours"
+  ExpiresByType image/jpeg "modification plus 6 hours"
+  ExpiresByType video/ogg "modification plus 6 hours"
+  ExpiresByType audio/ogg "modification plus 6 hours"
+  ExpiresByType video/mp4 "modification plus 6 hours"
+  ExpiresByType video/webm "modification plus 6 hours"
 
 # HTC files (css3pie)
-  ExpiresByType text/x-component "access plus 1 day"
+  ExpiresByType text/x-component "modification plus 1 day"
 
 # Webfonts
-  ExpiresByType application/font-ttf "access plus 1 day"
-  ExpiresByType font/opentype "access plus 1 day"
-  ExpiresByType application/font-woff "access plus 1 day"
-  ExpiresByType application/font-woff2 "access plus 1 day"
-  ExpiresByType image/svg+xml "access plus 1 day"
-  ExpiresByType application/vnd.ms-fontobject "access plus 1 day"
+  ExpiresByType application/font-ttf "modification plus 1 day"
+  ExpiresByType font/opentype "modification plus 1 day"
+  ExpiresByType application/font-woff "modification plus 1 day"
+  ExpiresByType application/font-woff2 "modification plus 1 day"
+  ExpiresByType image/svg+xml "modification plus 1 day"
+  ExpiresByType application/vnd.ms-fontobject "modification plus 1 day"
 
 # CSS and JavaScript
-  ExpiresByType text/css "access plus 1 hour"
-  ExpiresByType text/javascript "access plus 1 hour"
-  ExpiresByType application/javascript "access plus 1 hour"
+  ExpiresByType text/css "modification plus 1 hour"
+  ExpiresByType text/javascript "modification plus 1 hour"
+  ExpiresByType application/javascript "modification plus 1 hour"
 
   <IfModule mod_headers.c>
     Header append Cache-Control "public"

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -333,6 +333,8 @@ class hikashopAddressClass extends hikashopClass {
 				unset($addressData->address_id);
 				$new = true;
 				$oldData->address_published = 0;
+				if(!empty($oldData->address_type))
+					$addressData->address_type = $oldData->address_type;
 				parent::save($oldData);
 				$this->cleanCaches();
 			}
@@ -576,7 +578,7 @@ class hikashopAddressClass extends hikashopClass {
 			$cart = $cartClass->get(0);
 			if($type == 'shipping' && !empty($cart))
 				$user_address = (int)$cart->cart_shipping_address_ids;
-			if(($type == 'billing' || empty($shipping_address)) && !empty($cart))
+			if(($type == 'billing' || empty($user_address)) && !empty($cart))
 				$user_address = (int)$cart->cart_billing_address_id;
 		}
 

@@ -1,13 +1,6 @@
 <?php
-/**
- * @package	HikaShop for Joomla!
- * @version	5.1.0
- * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
- * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
-defined('_JEXEC') or die('Restricted access');
-?><?php
+
+declare(strict_types=1);
 
 namespace GuzzleHttp\Psr7;
 
@@ -20,43 +13,50 @@ trait StreamDecoratorTrait
         $this->stream = $stream;
     }
 
-    public function __get($name)
+    public function __get(string $name)
     {
-        if ($name == 'stream') {
+        if ($name === 'stream') {
             $this->stream = $this->createStream();
+
             return $this->stream;
         }
 
         throw new \UnexpectedValueException("$name not found on class");
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         try {
             if ($this->isSeekable()) {
                 $this->seek(0);
             }
+
             return $this->getContents();
-        } catch (\Exception $e) {
-            trigger_error('StreamDecorator::__toString exception: '
-                . (string) $e, E_USER_ERROR);
+        } catch (\Throwable $e) {
+            if (\PHP_VERSION_ID >= 70400) {
+                throw $e;
+            }
+            trigger_error(sprintf('%s::__toString exception: %s', self::class, (string) $e), E_USER_ERROR);
+
             return '';
         }
     }
 
-    public function getContents()
+    public function getContents(): string
     {
         return Utils::copyToString($this);
     }
 
-    public function __call($method, array $args)
+    public function __call(string $method, array $args)
     {
-        $result = call_user_func_array([$this->stream, $method], $args);
+
+        $callable = [$this->stream, $method];
+        $result = ($callable)(...$args);
 
         return $result === $this->stream ? $this : $result;
     }
 
-    public function close()
+    public function close(): void
     {
         $this->stream->close();
     }
@@ -71,57 +71,57 @@ trait StreamDecoratorTrait
         return $this->stream->detach();
     }
 
-    public function getSize()
+    public function getSize(): ?int
     {
         return $this->stream->getSize();
     }
 
-    public function eof()
+    public function eof(): bool
     {
         return $this->stream->eof();
     }
 
-    public function tell()
+    public function tell(): int
     {
         return $this->stream->tell();
     }
 
-    public function isReadable()
+    public function isReadable(): bool
     {
         return $this->stream->isReadable();
     }
 
-    public function isWritable()
+    public function isWritable(): bool
     {
         return $this->stream->isWritable();
     }
 
-    public function isSeekable()
+    public function isSeekable(): bool
     {
         return $this->stream->isSeekable();
     }
 
-    public function rewind()
+    public function rewind(): void
     {
         $this->seek(0);
     }
 
-    public function seek($offset, $whence = SEEK_SET)
+    public function seek($offset, $whence = SEEK_SET): void
     {
         $this->stream->seek($offset, $whence);
     }
 
-    public function read($length)
+    public function read($length): string
     {
         return $this->stream->read($length);
     }
 
-    public function write($string)
+    public function write($string): int
     {
         return $this->stream->write($string);
     }
 
-    protected function createStream()
+    protected function createStream(): StreamInterface
     {
         throw new \BadMethodCallException('Not implemented');
     }

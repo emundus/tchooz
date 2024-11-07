@@ -183,7 +183,7 @@ class Com_FabrikInstallerScript
 
 			$this->fixMenuComponentId();
 
-			if ($this->templateOverride() === false) return false;
+			if (method_exists(Factory::getApplication(), 'isClient') && !Factory::getApplication()->isClient('cli') && $this->templateOverride() === false) return false;
 		}
 
 		if ($type !== 'update' && $type !== 'uninstall')

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -41,7 +41,7 @@ defined('_JEXEC') or die('Restricted access');
 				for($i = 0,$a = count($this->element->categories);$i<$a;$i++){
 					$row =& $this->element->categories[$i];
 					if(!empty($row->category_id)){
-						$parents = $class->getParents($row->category_id);
+						$parents = $class->getParents($row->category_id, 0, array('category_id', 'category_name', 'category_type'));
 						$html = array();
 					?>
 						<tr id="category_<?php echo $row->category_id;?>">

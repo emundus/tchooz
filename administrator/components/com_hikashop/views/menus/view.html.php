@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -127,6 +127,8 @@ function switchDisplay(value,name,activevalue){
 		$this->assignRef('childdisplayType',$childdisplayType);
 		$showpopupoptionType = hikashop_get('type.showpopupoption');
 		$this->assignRef('showpopupoptionType',$showpopupoptionType);
+		$consistencyType = hikashop_get('type.consistency');
+		$this->assignRef('consistencyType',$consistencyType);
 		$zoomonhoverType = hikashop_get('type.zoomonhover');
 		$this->assignRef('zoomonhoverType',$zoomonhoverType);
 		$pricetaxType = hikashop_get('type.pricetax');
@@ -213,6 +215,7 @@ function switchDisplay(value,name,activevalue){
 			'layoutType' => 'type.layout',
 			'orderdirType' => 'type.orderdir',
 			'showpopupoptionType' => 'type.showpopupoption',
+			'consistencyType' => 'type.consistency',
 			'zoomonhoverType' => 'type.zoomonhover',
 			'childdisplayType' => 'type.childdisplay',
 			'orderType' => 'type.order',

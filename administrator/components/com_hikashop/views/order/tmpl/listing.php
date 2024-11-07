@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -187,14 +187,14 @@ if ((!empty($this->extrafilters)) && (count($this->extrafilters))) {
 						$attributes .= ' style="background-color:'.$this->orderStatuses[$row->order_status]->orderstatus_color.';"';
 			?>
 				<tr class="row<?php echo $k; ?>"<?php echo $attributes; ?>>
-					<td class="hikashop_order_num_value">
+					<td class="hikashop_order_num_value"<?php echo $attributes; ?>>
 					<?php echo $this->pagination->getRowOffset($i);
 					?>
 					</td>
-					<td class="hikashop_order_select_value">
+					<td class="hikashop_order_select_value"<?php echo $attributes; ?>>
 						<?php echo JHTML::_('grid.id', $i, $row->order_id ); ?>
 					</td>
-					<td class="hikashop_order_number_value">
+					<td class="hikashop_order_number_value"<?php echo $attributes; ?>>
 						<?php if($this->manage){ ?>
 							<a title="<?php echo JText::_('ORDER_NUMBER'); ?>" href="<?php echo hikashop_completeLink('order&task=edit&cid[]='.$row->order_id.'&cancel_redirect='.urlencode(base64_encode(hikashop_completeLink('order')))).$target; ?>">
 						<?php } ?>
@@ -212,7 +212,7 @@ if ((!empty($this->extrafilters)) && (count($this->extrafilters))) {
 						<?php }
 							} ?>
 					</td>
-					<td class="hikashop_order_customer_value">
+					<td class="hikashop_order_customer_value"<?php echo $attributes; ?>>
 						<?php
 						if(empty($row->address_firstname) && empty($row->address_lastname)){
 							echo $row->name;
@@ -232,17 +232,17 @@ if ((!empty($this->extrafilters)) && (count($this->extrafilters))) {
 						}
 						?>
 					</td>
-					<td class="hikashop_order_total_number_of_products_value">
+					<td class="hikashop_order_total_number_of_products_value"<?php echo $attributes; ?>>
 						<?php
 							echo hikashop_hktooltip($products, '', (int)$row->total_number_of_products);
 						?>
 					</td>
-					<td class="hikashop_order_products_value">
+					<td class="hikashop_order_products_value"<?php echo $attributes; ?>>
 						<?php 
 							echo $products;
 						?>
 					</td>
-					<td class="hikashop_order_billing_address_value">
+					<td class="hikashop_order_billing_address_value"<?php echo $attributes; ?>>
 <?php
 					if(!empty($row->billing_address)){
 						if(empty($row->override_billing_address)) {
@@ -254,7 +254,7 @@ if ((!empty($this->extrafilters)) && (count($this->extrafilters))) {
 					}
 ?>
 					</td>
-					<td class="hikashop_order_shipping_address_value">
+					<td class="hikashop_order_shipping_address_value"<?php echo $attributes; ?>>
 <?php
 					if(!empty($row->order_shipping_id) && !empty($row->shipping_address)){
 						if(empty($row->override_shipping_address)) {
@@ -266,7 +266,7 @@ if ((!empty($this->extrafilters)) && (count($this->extrafilters))) {
 					}
 ?>
 					</td>
-					<td class="hikashop_order_shipping_value">
+					<td class="hikashop_order_shipping_value"<?php echo $attributes; ?>>
 						<?php
 						if(!empty($row->order_shipping_method)){
 							$shippings_data = $this->shippingClass->getAllShippingNames($row);
@@ -278,7 +278,7 @@ if ((!empty($this->extrafilters)) && (count($this->extrafilters))) {
 							}
 						} ?>
 					</td>
-					<td class="hikashop_order_payment_value">
+					<td class="hikashop_order_payment_value"<?php echo $attributes; ?>>
 						<?php if(!empty($row->order_payment_method)){
 							if(!empty($this->payments[$row->order_payment_id])){
 								echo $this->payments[$row->order_payment_id]->payment_name;
@@ -289,13 +289,13 @@ if ((!empty($this->extrafilters)) && (count($this->extrafilters))) {
 							}
 						} ?>
 					</td>
-					<td class="hikashop_order_date_value">
+					<td class="hikashop_order_date_value"<?php echo $attributes; ?>>
 						<?php echo hikashop_getDate($row->order_created,'%d %B %Y %H:%M');?>
 					</td>
-					<td class="hikashop_order_modified_value">
+					<td class="hikashop_order_modified_value"<?php echo $attributes; ?>>
 						<?php echo hikashop_getDate($row->order_modified,'%d %B %Y %H:%M');?>
 					</td>
-					<td class="hikashop_order_status_value">
+					<td class="hikashop_order_status_value"<?php echo $attributes; ?>>
 						<?php
 						if($this->manage && !$this->popup){
 							$doc = JFactory::getDocument();
@@ -306,19 +306,19 @@ if ((!empty($this->extrafilters)) && (count($this->extrafilters))) {
 						}
 						?>
 					</td>
-					<td class="hikashop_order_coupon_code_value">
+					<td class="hikashop_order_coupon_code_value"<?php echo $attributes; ?>>
 						<?php echo $row->order_discount_code;?>
 					</td>
-					<td class="hikashop_order_coupon_price_value">
+					<td class="hikashop_order_coupon_price_value"<?php echo $attributes; ?>>
 						<?php echo $this->currencyHelper->format($row->order_discount_price,$row->order_currency_id);?>
 					</td>
-					<td class="hikashop_order_total_value">
+					<td class="hikashop_order_total_value"<?php echo $attributes; ?>>
 						<?php echo $this->currencyHelper->format($row->order_full_price,$row->order_currency_id);?>
 					</td>
 <?php
 					if(!empty($this->rates)){
 						foreach($this->rates as $rate){
-							echo '<td>';
+							echo '<td'.$attributes.'>';
 							if(!empty($row->order_tax_info)) {
 								if(is_string($row->order_tax_info))
 									$row->order_tax_info = hikashop_unserialize($row->order_tax_info);
@@ -334,7 +334,7 @@ if ((!empty($this->extrafilters)) && (count($this->extrafilters))) {
 						foreach($this->fields as $field){
 							$field->currentElement = $row;
 							$namekey = $field->field_namekey;
-							echo '<td class="hikashop_order_'.$namekey.'_value">';
+							echo '<td class="hikashop_order_'.$namekey.'_value"'.$attributes.'>';
 							if(!empty($row->$namekey)) echo $this->fieldsClass->show($field,$row->$namekey);
 							echo '</td>';
 						}
@@ -349,11 +349,11 @@ if ((!empty($this->extrafilters)) && (count($this->extrafilters))) {
 								$n = $extrafield->obj;
 								$value = $n->showfield($this, $namekey, $row);
 							}
-							echo '<td class="hikashop_order_'.$namekey.'_value">'.$value.'</td>';
+							echo '<td class="hikashop_order_'.$namekey.'_value"'.$attributes.'>'.$value.'</td>';
 						}
 					}
 ?>
-					<td class="hikashop_order_id_value">
+					<td class="hikashop_order_id_value"<?php echo $attributes; ?>>
 						<?php echo $row->order_id; ?>
 					</td>
 				</tr>

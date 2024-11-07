@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -33,6 +33,10 @@ class hikashopGeolocationClass extends hikashopClass {
 			$element->geolocation_city = @$location->city;
 			$element->geolocation_created = time();
 		}
+		return parent::save($element);
+	}
+
+	function saveRaw(&$element) {
 		return parent::save($element);
 	}
 

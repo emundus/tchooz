@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.0
+ * @version	5.1.1
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -54,6 +54,11 @@ class plgHikashopshippingUps2 extends hikashopShippingPlugin
 		'exclude_dimensions' => array('EXCLUDE_DIMENSIONS', 'boolean', 1),
 		'weight_approximation' => array('UPS_WEIGHT_APPROXIMATION', 'input'),
 		'dim_approximation' => array('DIMENSION_APPROXIMATION', 'input'),
+		'sort' => array('SORT_SHIPPING_SERVICES', 'list', array(
+			'' =>'HIKA_DEFAULT',
+			'cheapest_first' =>'CHEAPEST_PRICE_DISPLAYED',
+		),
+	),
 		'debug' => array('DEBUG', 'boolean', 0),
 	);
 
@@ -202,6 +207,19 @@ class plgHikashopshippingUps2 extends hikashopShippingPlugin
 			if(empty($receivedMethods)) {
 				$this->error_messages['no_rates'] = JText::_('NO_SHIPPING_METHOD_FOUND');
 				continue;
+			}
+
+			if(!empty($rate->shipping_params->sort) && $rate->shipping_params->sort == 'cheapest_first') {
+				$tmp = array();
+				foreach($receivedMethods as $key => $method) {
+					$sorting_key = (int)round($method['value'], 2)*100;
+					while(isset($tmp[$sorting_key])) {
+						$sorting_key++;
+					}
+					$tmp[$sorting_key] = $method;
+				}
+				ksort($tmp, SORT_NUMERIC);
+				$receivedMethods = $tmp;
 			}
 
 			$i = 0;

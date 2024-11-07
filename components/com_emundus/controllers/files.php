@@ -1746,6 +1746,7 @@ class EmundusControllerFiles extends BaseController
 
 				$nbcol         = 6;
 				$date_elements = [];
+				$textarea_elements = [];
 				$iban_elements = [];
 				foreach ($ordered_elements as $fLine) {
 					if ($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_label != 'Programme' && $fLine->element_name != 'campaign_id') {
@@ -1831,6 +1832,7 @@ class EmundusControllerFiles extends BaseController
 			} else {
 				// On définit les bons formats
 				$date_elements = [];
+				$textarea_elements = [];
 				$iban_elements = [];
 				foreach ($ordered_elements as $fLine) {
 					if (in_array($fLine->element_plugin,['date','jdate'])) {
@@ -1967,11 +1969,11 @@ class EmundusControllerFiles extends BaseController
 											}
 											$line .= preg_replace("/\r|\n|\t/", "", $v) . "\t";
 										}
-										elseif (!empty($textarea_elements[$k])) {
+										elseif (!empty($textarea_elements) && array_key_exists($k, $textarea_elements)) {
 											if ($textarea_elements[$k] == 1) {
 												$v = strip_tags($v);
 											}
-											$line .= preg_replace("/\r|\n|\t/", "", $v) . "\t";
+											$line .= $v."\t"; // no preg_replace to keep linebreaks
 										}
 										elseif(!empty($iban_elements[$k])){
 											if($iban_elements[$k] == 1){

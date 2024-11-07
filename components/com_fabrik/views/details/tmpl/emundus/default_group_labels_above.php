@@ -27,11 +27,13 @@ $element = $this->element;?>
 	<div class="fabrikElement">
 		<?php
 		if($element->plugin == 'yesno') {
+            $element->element = '<div id="'.$element->id.'" class="fabrikElementReadOnly">';
 			if($element->value == 1) {
-				$element->element = Text::_('JYES');
+				$element->element .= Text::_('JYES');
 			} else {
-				$element->element = Text::_('JNO');
+				$element->element .= Text::_('JNO');
 			}
+            $element->element .= '</div>';
 		}
 		?>
 

@@ -1,9 +1,10 @@
-function translateService(sourceText){
+function translateService(fieldName,sourceText){
+
 	var translatedText;
 
     var data = [{
-		    text:sourceText
-     }];
+        text:sourceText
+    }];
 
     var endpoint = "https://api.cognitive.microsofttranslator.com/translate?api-version=3.0";
     endpoint = endpoint + '&from='+translator.from;
@@ -19,14 +20,20 @@ function translateService(sourceText){
         },
         data: JSON.stringify(data),
         type: 'POST',
+        beforeSend: function() {
+            document.body.style.cursor = 'wait';
+        },
         success: function (result) {
             console.log(result);
-			translatedText = result[0]['translations'][0].text;
+            translatedText = result[0]['translations'][0].text;
+            setTranslation(fieldName,translatedText);
 		},
 		error: function (xhr, textStatus, errorThrown) {
 			translatedText = "ERROR : "+errorThrown;
 		},
-		async:false
+        complete: function() {
+            document.body.style.cursor = 'default';
+        }
 	});
       
 	return translatedText;

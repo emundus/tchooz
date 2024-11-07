@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    5.1.0
+ * @version    5.1.1
  * @author     hikashop.com
  * @copyright  (C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -1333,16 +1333,16 @@ dl.hika_suboptions {
 }
 
 dl.hika_options > dt {
-	float:left;
-	clear:left;
-	font-weight:bold;
-	width:120px;
-	text-align:right;
-	line-height:16px;
-
-	overflow:hidden;
-	text-overflow:ellipsis;
-	white-space:nowrap;
+	float: left;
+    clear: left;
+    font-weight: bold;
+    width: 175px;
+    text-align: left;
+    line-height: 16px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin: 5px 0 0 10px;
 }
 
 dl.hika_options.large > dt {
@@ -1351,11 +1351,11 @@ dl.hika_options.large > dt {
 }
 
 dl.hika_options > dd {
-	margin-left:130px;
-	padding-top:4px;
-	padding-bottom:4px;
-	line-height:20px;
-	min-height:20px;
+	margin-left: 180px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    line-height: 20px;
+    min-height: 20px;
 }
 dl.hika_options.large > dd {
 	margin-left:190px;
@@ -4330,7 +4330,7 @@ div#hikashop_main_content.hika_j4 .hikashop_listing_filters_order input#period_s
 div#hikashop_main_content.hika_j4 .hikashop_listing_filters_order input#period_end {
 	width: 60%;
 }
-.hika_j4 dl.hika_options > dt {padding: 5px 0 0 5px;}
+
 .hika_j4 div.hikashop_backend_tile_edition dl.hika_options {padding:0px;}
 
 .hika_j4 .hikashop_product_edit_restrictions dl.hika_options > dd {
@@ -4843,6 +4843,9 @@ div#hikashop_main_content #hikashop_product_backend_page_edition .hikashop_produ
 }
 div#hikashop_main_content.hika_j3 #hikashop_product_backend_page_edition .hikashop_product_edit_restrictions .hikashop_product_salestart input[type="text"] {
     width: 135px;
+}
+div#hikashop_main_content #hikashop_product_backend_page_edition .field-calendar input[type="text"] {
+    width: 215px;
 }
 
 

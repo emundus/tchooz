@@ -4161,6 +4161,10 @@ class EmundusModelFiles extends JModelLegacy
 
 			$select = 'GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name . ', ' . $this->_db->quote($date_form_format) . ')  SEPARATOR ", ") as val, t_origin.fnum ';
 		}
+		else if ($plugin === 'birthday') {
+			$date_form_format = $this->dateFormatToMysql($params->list_date_format);
+			$query = 'select GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name . ', ' . $this->_db->quote($date_form_format).')  SEPARATOR ", ") as val, t_origin.fnum ';
+		}
 		elseif ($plugin === 'jdate') {
 			$date_form_format = $this->dateFormatToMysql($params->jdate_form_format);
 
@@ -4588,36 +4592,23 @@ class EmundusModelFiles extends JModelLegacy
 		$result = [];
 		foreach ($group_ids as $group_id) {
 			$query->clear()
-				->select($this->_db->quoteName('anonymize'))
-				->from($this->_db->quoteName('#__emundus_setup_groups'))
-				->where($this->_db->quoteName('id') . ' = ' . $group_id);
-			$this->_db->setQuery($query);
-			$anonymize = $this->_db->loadResult();
+				->select($this->_db->quoteName('attachment_id_link'))
+				->from($this->_db->quoteName('#__emundus_setup_groups_repeat_attachment_id_link'))
+				->where($this->_db->quoteName('parent_id') . ' = ' . $group_id);
 
-			// If the group has no anonymization, then the user can see all the attachments
-			if ($anonymize == 0) {
-				return true;
-			}
-			else {
-				$query->clear()
-					->select($this->_db->quoteName('attachment_id_link'))
-					->from($this->_db->quoteName('#__emundus_setup_groups_repeat_attachment_id_link'))
-					->where($this->_db->quoteName('parent_id') . ' = ' . $group_id);
+			try {
 				$this->_db->setQuery($query);
+				$attachments = $this->_db->loadColumn();
 
-				try {
-					$attachments = $this->_db->loadColumn();
-
-					// In the case of a group having no assigned Fabrik groups, it can get them all.
-					if (empty($attachments)) {
-						return true;
-					}
-
-					$result = array_merge($result, $attachments);
+				// In the case of a group having no assigned Fabrik groups, it can get them all.
+				if (empty($attachments)) {
+					return true;
 				}
-				catch (Exception $e) {
-					return false;
-				}
+
+				$result = array_merge($result, $attachments);
+			}
+			catch (Exception $e) {
+				return false;
 			}
 		}
 
@@ -5963,5 +5954,31 @@ class EmundusModelFiles extends JModelLegacy
 		}
 
 		return $deleted;
+	}
+
+	public function getReferentEmail($keyid,$fnum)
+	{
+		$referent_email = '';
+
+		if(!empty($keyid) && !empty($fnum))
+		{
+			try
+			{
+				$query = $this->_db->getQuery(true);
+
+				$query->select('email')
+					->from($this->_db->quoteName('#__emundus_files_request'))
+					->where($this->_db->quoteName('keyid') . ' = ' . $this->_db->quote($keyid))
+					->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
+				$this->_db->setQuery($query);
+				$referent_email = $this->_db->loadResult();
+			}
+			catch (Exception $e)
+			{
+				Log::add('Error getting referent email: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $referent_email;
 	}
 }

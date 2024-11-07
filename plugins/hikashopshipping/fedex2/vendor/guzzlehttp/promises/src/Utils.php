@@ -1,19 +1,12 @@
 <?php
-/**
- * @package	HikaShop for Joomla!
- * @version	5.1.0
- * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
- * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
-defined('_JEXEC') or die('Restricted access');
-?><?php
+
+declare(strict_types=1);
 
 namespace GuzzleHttp\Promise;
 
 final class Utils
 {
-    public static function queue(TaskQueueInterface $assign = null)
+    public static function queue(?TaskQueueInterface $assign = null): TaskQueueInterface
     {
         static $queue;
 
@@ -26,18 +19,16 @@ final class Utils
         return $queue;
     }
 
-    public static function task(callable $task)
+    public static function task(callable $task): PromiseInterface
     {
         $queue = self::queue();
         $promise = new Promise([$queue, 'run']);
-        $queue->add(function () use ($task, $promise) {
+        $queue->add(function () use ($task, $promise): void {
             try {
                 if (Is::pending($promise)) {
                     $promise->resolve($task());
                 }
             } catch (\Throwable $e) {
-                $promise->reject($e);
-            } catch (\Exception $e) {
                 $promise->reject($e);
             }
         });
@@ -45,33 +36,31 @@ final class Utils
         return $promise;
     }
 
-    public static function inspect(PromiseInterface $promise)
+    public static function inspect(PromiseInterface $promise): array
     {
         try {
             return [
                 'state' => PromiseInterface::FULFILLED,
-                'value' => $promise->wait()
+                'value' => $promise->wait(),
             ];
         } catch (RejectionException $e) {
             return ['state' => PromiseInterface::REJECTED, 'reason' => $e->getReason()];
         } catch (\Throwable $e) {
             return ['state' => PromiseInterface::REJECTED, 'reason' => $e];
-        } catch (\Exception $e) {
-            return ['state' => PromiseInterface::REJECTED, 'reason' => $e];
         }
     }
 
-    public static function inspectAll($promises)
+    public static function inspectAll($promises): array
     {
         $results = [];
         foreach ($promises as $key => $promise) {
-            $results[$key] = inspect($promise);
+            $results[$key] = self::inspect($promise);
         }
 
         return $results;
     }
 
-    public static function unwrap($promises)
+    public static function unwrap($promises): array
     {
         $results = [];
         foreach ($promises as $key => $promise) {
@@ -81,19 +70,20 @@ final class Utils
         return $results;
     }
 
-    public static function all($promises, $recursive = false)
+    public static function all($promises, bool $recursive = false): PromiseInterface
     {
         $results = [];
         $promise = Each::of(
             $promises,
-            function ($value, $idx) use (&$results) {
+            function ($value, $idx) use (&$results): void {
                 $results[$idx] = $value;
             },
-            function ($reason, $idx, Promise $aggregate) {
+            function ($reason, $idx, Promise $aggregate): void {
                 $aggregate->reject($reason);
             }
         )->then(function () use (&$results) {
             ksort($results);
+
             return $results;
         });
 
@@ -104,6 +94,7 @@ final class Utils
                         return self::all($promises, $recursive);
                     }
                 }
+
                 return $results;
             });
         }
@@ -111,14 +102,14 @@ final class Utils
         return $promise;
     }
 
-    public static function some($count, $promises)
+    public static function some(int $count, $promises): PromiseInterface
     {
         $results = [];
         $rejections = [];
 
         return Each::of(
             $promises,
-            function ($value, $idx, PromiseInterface $p) use (&$results, $count) {
+            function ($value, $idx, PromiseInterface $p) use (&$results, $count): void {
                 if (Is::settled($p)) {
                     return;
                 }
@@ -127,7 +118,7 @@ final class Utils
                     $p->resolve(null);
                 }
             },
-            function ($reason) use (&$rejections) {
+            function ($reason) use (&$rejections): void {
                 $rejections[] = $reason;
             }
         )->then(
@@ -139,32 +130,34 @@ final class Utils
                     );
                 }
                 ksort($results);
+
                 return array_values($results);
             }
         );
     }
 
-    public static function any($promises)
+    public static function any($promises): PromiseInterface
     {
         return self::some(1, $promises)->then(function ($values) {
             return $values[0];
         });
     }
 
-    public static function settle($promises)
+    public static function settle($promises): PromiseInterface
     {
         $results = [];
 
         return Each::of(
             $promises,
-            function ($value, $idx) use (&$results) {
+            function ($value, $idx) use (&$results): void {
                 $results[$idx] = ['state' => PromiseInterface::FULFILLED, 'value' => $value];
             },
-            function ($reason, $idx) use (&$results) {
+            function ($reason, $idx) use (&$results): void {
                 $results[$idx] = ['state' => PromiseInterface::REJECTED, 'reason' => $reason];
             }
         )->then(function () use (&$results) {
             ksort($results);
+
             return $results;
         });
     }

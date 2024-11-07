@@ -1,19 +1,12 @@
 <?php
-/**
- * @package	HikaShop for Joomla!
- * @version	5.1.0
- * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
- * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
-defined('_JEXEC') or die('Restricted access');
-?><?php
+
+declare(strict_types=1);
 
 namespace GuzzleHttp\Psr7;
 
 use Psr\Http\Message\StreamInterface;
 
-class LimitStream implements StreamInterface
+final class LimitStream implements StreamInterface
 {
     use StreamDecoratorTrait;
 
@@ -23,41 +16,44 @@ class LimitStream implements StreamInterface
 
     private $limit;
 
+
+    private $stream;
+
     public function __construct(
         StreamInterface $stream,
-        $limit = -1,
-        $offset = 0
+        int $limit = -1,
+        int $offset = 0
     ) {
         $this->stream = $stream;
         $this->setLimit($limit);
         $this->setOffset($offset);
     }
 
-    public function eof()
+    public function eof(): bool
     {
         if ($this->stream->eof()) {
             return true;
         }
 
-        if ($this->limit == -1) {
+        if ($this->limit === -1) {
             return false;
         }
 
         return $this->stream->tell() >= $this->offset + $this->limit;
     }
 
-    public function getSize()
+    public function getSize(): ?int
     {
         if (null === ($length = $this->stream->getSize())) {
             return null;
-        } elseif ($this->limit == -1) {
+        } elseif ($this->limit === -1) {
             return $length - $this->offset;
         } else {
             return min($this->limit, $length - $this->offset);
         }
     }
 
-    public function seek($offset, $whence = SEEK_SET)
+    public function seek($offset, $whence = SEEK_SET): void
     {
         if ($whence !== SEEK_SET || $offset < 0) {
             throw new \RuntimeException(sprintf(
@@ -78,12 +74,12 @@ class LimitStream implements StreamInterface
         $this->stream->seek($offset);
     }
 
-    public function tell()
+    public function tell(): int
     {
         return $this->stream->tell() - $this->offset;
     }
 
-    public function setOffset($offset)
+    public function setOffset(int $offset): void
     {
         $current = $this->stream->tell();
 
@@ -100,14 +96,14 @@ class LimitStream implements StreamInterface
         $this->offset = $offset;
     }
 
-    public function setLimit($limit)
+    public function setLimit(int $limit): void
     {
         $this->limit = $limit;
     }
 
-    public function read($length)
+    public function read($length): string
     {
-        if ($this->limit == -1) {
+        if ($this->limit === -1) {
             return $this->stream->read($length);
         }
 
