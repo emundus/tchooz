@@ -57,25 +57,39 @@ class EmundusModelWorkflow extends JModelList
 	 * @param $wid
 	 * @return bool true if deleted, false otherwise
 	 */
-	public function delete($wid, $user_id): bool
+	public function delete($wid, $user_id, $force = false): bool
 	{
 		$deleted = false;
 
 		if (!empty($wid)) {
 			$query = $this->db->createQuery();
 
-			$query->delete('#__emundus_setup_workflows')
-				->where('id = ' . $wid);
+			if ($force) {
+				$query->delete('#__emundus_setup_workflows')
+					->where('id = ' . $wid);
 
-			try {
-				$this->db->setQuery($query);
-				$deleted = $this->db->execute();
-			} catch (Exception $e) {
-				Log::add('Error while deleting workflow [' . $wid . '] : ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+				try {
+					$this->db->setQuery($query);
+					$deleted = $this->db->execute();
+				} catch (Exception $e) {
+					Log::add('Error while deleting workflow [' . $wid . '] : ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+				}
+			} else {
+				$query->update('#__emundus_setup_workflows')
+					->set('published = 0')
+					->where('id = ' . $wid);
+
+				try {
+					$this->db->setQuery($query);
+					$deleted = $this->db->execute();
+				} catch (Exception $e) {
+					Log::add('Error while unpublishing workflow [' . $wid . '] : ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+				}
 			}
 
 			if ($deleted) {
-				// TODO: log the action, and who did it
+				$action = $force ? 'deleted' : 'unpublished';
+				Log::add('Workflow [' . $wid . '] ' . $action . ' by user [' . $user_id . ']', Log::INFO, 'com_emundus.workflow');
 			}
 		}
 
