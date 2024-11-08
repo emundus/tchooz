@@ -493,15 +493,6 @@ class EmundusModelWorkflow extends JModelList
 					$this->db->setQuery($query);
 					$data->programs = $this->db->loadColumn();
 
-					$query->clear()
-						->select('DISTINCT(group_id)')
-						->from('#__emundus_acl')
-						->where('action_id = ' . $data->action_id)
-						->andWhere('c = 1 OR r = 1');
-
-					$this->db->setQuery($query);
-					$data->group_ids = $this->db->loadColumn();
-
 					if (!empty($cid)) {
 						$query->clear()
 							->select('start_date, end_date, infinite')
@@ -571,11 +562,12 @@ class EmundusModelWorkflow extends JModelList
 			$file_infos = $this->db->loadAssoc();
 
 			if (!empty($file_infos['program_id']) && $file_infos['published']) {
-				// get workflows associated to this program
 				$query->clear()
-					->select('workflow_id')
-					->from($this->db->quoteName('#__emundus_setup_workflows_programs'))
-					->where('program_id = ' . $this->db->quote($file_infos['program_id']));
+					->select('eswp.workflow_id')
+					->from($this->db->quoteName('#__emundus_setup_workflows_programs', 'eswp'))
+					->leftJoin($this->db->quoteName('#__emundus_setup_workflows', 'esw') . ' ON ' . $this->db->quoteName('esw.id') . ' = ' . $this->db->quoteName('eswp.workflow_id'))
+					->where('eswp.program_id = ' . $this->db->quote($file_infos['program_id']))
+					->andWhere('esw.published = 1');
 
 				try {
 					$this->db->setQuery($query);
@@ -645,6 +637,17 @@ class EmundusModelWorkflow extends JModelList
 
 			$this->db->setQuery($query);
 			$types = $this->db->loadObjectList();
+
+			foreach ($types as $key => $type) {
+				$query->clear()
+					->select('DISTINCT(group_id)')
+					->from('#__emundus_acl')
+					->where('action_id = ' . $type->action_id)
+					->andWhere('c = 1 OR r = 1');
+
+				$this->db->setQuery($query);
+				$types[$key]->group_ids = $this->db->loadColumn();
+			}
 		} catch (Exception $e) {
 			Log::add('Error while fetching step types: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
 		}
@@ -1017,9 +1020,11 @@ class EmundusModelWorkflow extends JModelList
 		$programs_workflows = [];
 
 		$query = $this->db->getQuery(true);
-		$query->select('GROUP_CONCAT(workflow_id) as workflow_ids, program_id')
-			->from($this->db->quoteName('#__emundus_setup_workflows_programs'))
-			->group('program_id');
+		$query->select('GROUP_CONCAT(eswp.workflow_id) as workflow_ids, eswp.program_id')
+			->from($this->db->quoteName('#__emundus_setup_workflows_programs', 'eswp'))
+			->leftJoin($this->db->quoteName('#__emundus_setup_workflows', 'esw') . ' ON ' . $this->db->quoteName('id') . ' = ' . $this->db->quoteName('eswp.workflow_id'))
+			->where('esw.published = 1')
+			->group('eswp.program_id');
 
 		try {
 			$this->db->setQuery($query);

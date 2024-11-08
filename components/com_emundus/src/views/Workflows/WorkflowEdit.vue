@@ -59,7 +59,7 @@
 
               <div class="tw-mb-4 tw-flex tw-flex-col">
                 <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_TYPE') }}</label>
-                <select v-model="step.type">
+                <select v-model="step.type" @change="onChangeStepType(step)">
                   <option v-for="type in stepTypes" :key="type.id" :value="type.id">
                     <span v-if="type.parent_id > 0"> - </span>
                     {{ translate(type.label) }}
@@ -109,7 +109,7 @@
               <div v-if="!isApplicantStep(step)" class="step-associated-groups">
                 <label>{{ translate('COM_EMUNDUS_WORKFLOW_STEP_GROUPS') }}</label>
                 <ul class="tw-my-2">
-                  <li v-for="group_id in step.group_ids" :key="group_id"> {{ getGroupLabel(group_id) }} </li>
+                  <li v-for="group_id in getGroupsFromStepType(step.type)" :key="group_id"> {{ getGroupLabel(group_id) }} </li>
                 </ul>
 
                 <a href="/users-menu/groups" class="tw-underline">{{ translate('COM_EMUNDUS_WORKFLOW_EDIT_RIGHTS') }}</a>
@@ -246,7 +246,11 @@ export default {
     async getStepTypes() {
       return await workflowService.getStepTypes()
         .then(response => {
-          this.stepTypes = response.data
+          this.stepTypes = response.data.map((type) => {
+            type.group_ids = type.group_ids.map(groupId => parseInt(groupId));
+
+            return type;
+          })
         })
         .catch(e => {
           console.log(e);
@@ -341,6 +345,12 @@ export default {
         .catch(e => {
           console.log(e);
         });
+    },
+    getGroupsFromStepType(type)
+    {
+      const stepType = this.stepTypes.find((stepType) => stepType.id === type);
+
+      return stepType ? stepType.group_ids : [];
     },
     getGroupLabel(groupId) {
       const group = this.groups.find(group => group.id == groupId);
@@ -510,6 +520,9 @@ export default {
           }
         });
       }
+    },
+    onChangeStepType(step) {
+      console.log(step);
     },
     save() {
       const checked = this.onBeforeSave();
