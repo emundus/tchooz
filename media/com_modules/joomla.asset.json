@@ -18,18 +18,6 @@
       "deprecated": true
     },
     {
-      "name": "com_modules.admin-module-edit-assignment",
-      "type": "script",
-      "uri": "com_modules/admin-module-edit_assignment.min.js",
-      "dependencies": [
-        "core"
-      ],
-      "attributes": {
-        "type": "module"
-      },
-      "version": "d8d12e"
-    },
-    {
       "name": "com_modules.admin-module-search",
       "type": "script",
       "uri": "com_modules/admin-module-search.min.js",
@@ -52,6 +40,18 @@
         "type": "module"
       },
       "version": "4dd1dc"
+    },
+    {
+      "name": "com_modules.admin-module-edit-assignment",
+      "type": "script",
+      "uri": "com_modules/admin-module-edit_assignment.min.js",
+      "dependencies": [
+        "core"
+      ],
+      "attributes": {
+        "type": "module"
+      },
+      "version": "d8d12e"
     },
     {
       "name": "com_modules.admin-modules-modal",
