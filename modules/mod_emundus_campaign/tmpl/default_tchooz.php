@@ -208,11 +208,17 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
 					<?php if (strtotime($now) > strtotime($campaign_pinned->end_date)) : ?>
 
                     <div class="mod_emundus_campaign__list_content--closed mod_emundus_campaign__list_content em-border-neutral-300 em-pointer"
-                         onclick="window.location.href='<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'">
+	                    <?php if($mod_em_campaign_click_to_details == 1) : ?>
+                         onclick="window.location.href='<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'"
+                        <?php endif; ?>
+                    >
 
 						<?php else : ?>
                         <div class="mod_emundus_campaign__list_content <?php echo ($mod_em_campaign_single_campaign_line == 1) ? 'mod_emundus_campaign__list_content--fc' : '' ; ?> em-border-neutral-300 em-pointer"
-                             onclick="window.location.href='<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'">
+	                        <?php if($mod_em_campaign_click_to_details == 1) : ?>
+                             onclick="window.location.href='<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'"
+                            <?php endif; ?>
+                        >
 							<?php endif; ?>
 
 							<?php if ($mod_em_campaign_display_svg == 1) : ?>
@@ -257,10 +263,16 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
 											<?php endif; ?>
                                         </div>
 
-                                        <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
+                                        <?php if($mod_em_campaign_click_to_details == 1) : ?>
+                                            <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
+                                                <h3 class="mod_emundus_campaign__campaign_title"
+                                                    title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></h3>
+                                            </a>
+                                        <?php else : ?>
                                             <h3 class="mod_emundus_campaign__campaign_title"
                                                 title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></h3>
-                                        </a>
+                                        <?php endif; ?>
+
 									<?php elseif ($mod_em_campaign_list_show_programme == '1' && $mod_em_campaign_show_programme_logo == '0') : ?>
                                         <div class="tw-min-h-[38px]">
                                             <p class="em-programme-tag" title="<?php echo $campaign_pinned->programme ?>"
@@ -268,26 +280,44 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
                                                 <?php echo $campaign_pinned->programme; ?>
                                             </p>
                                         </div>
-                                        <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
-                                            <h3 class="mod_emundus_campaign__campaign_title"
-                                                title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></h3>
-                                        </a>
-									<?php elseif ($mod_em_campaign_list_show_programme == '0' && $mod_em_campaign_show_programme_logo == '1') : ?>
-                                        <div class="mod_emundus_campaign__campagne_properties">
+
+                                        <?php if($mod_em_campaign_click_to_details == 1) : ?>
                                             <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
                                                 <h3 class="mod_emundus_campaign__campaign_title"
                                                     title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></h3>
                                             </a>
+                                        <?php else : ?>
+                                            <h3 class="mod_emundus_campaign__campaign_title"
+                                                title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></h3>
+                                        <?php endif; ?>
+
+									<?php elseif ($mod_em_campaign_list_show_programme == '0' && $mod_em_campaign_show_programme_logo == '1') : ?>
+                                        <div class="mod_emundus_campaign__campagne_properties">
+	                                        <?php if($mod_em_campaign_click_to_details == 1) : ?>
+                                            <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
+                                                <h3 class="mod_emundus_campaign__campaign_title"
+                                                    title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></h3>
+                                            </a>
+                                            <?php else : ?>
+                                                <h3 class="mod_emundus_campaign__campaign_title"
+                                                    title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></h3>
+                                            <?php endif; ?>
+
 											<?php if (!empty($campaign_pinned->logo)) : ?>
                                                 <img src="<?php echo $campaign_pinned->logo; ?>"
                                                      alt="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_PROGRAMME_LOGO_ALT'); ?>">
 											<?php endif; ?>
                                         </div>
 									<?php else : ?>
-                                        <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
+                                        <?php if($mod_em_campaign_click_to_details == 1) : ?>
+                                            <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
+                                                <h3 class="mod_emundus_campaign__campaign_title"
+                                                    title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></h3>
+                                            </a>
+                                        <?php else : ?>
                                             <h3 class="mod_emundus_campaign__campaign_title"
                                                 title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></h3>
-                                        </a>
+                                        <?php endif; ?>
 									<?php endif; ?>
 
 	                                <?php if (!empty($mod_em_campaign_tags)):
@@ -782,7 +812,10 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
                         <div id="tile-hover-offset-procedure" class="tile-hover-offset-procedure--closed"></div>
 					<?php endif; ?>
                         <div class="mod_emundus_campaign__list_content--closed mod_emundus_campaign__list_content em-border-neutral-300 em-pointer"
-                             onclick="window.location.href='<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'">
+                             <?php if($mod_em_campaign_click_to_details == 1) : ?>
+                             onclick="window.location.href='<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'"
+                             <?php endif; ?>
+                        >
 							<?php if ($mod_em_campaign_display_svg == 1) : ?>
                                 <div id="background-shapes" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></div>
 							<?php endif; ?>
@@ -793,7 +826,10 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
                                 <div id="tile-hover-offset-procedure"></div>
 							<?php endif; ?>
                             <div class="mod_emundus_campaign__list_content <?php echo ($mod_em_campaign_single_campaign_line == 1) ? 'mod_emundus_campaign__list_content--fc' : '' ; ?> em-border-neutral-300 em-pointer"
-                                 onclick="window.location.href='<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'">
+	                            <?php if($mod_em_campaign_click_to_details == 1) : ?>
+                                 onclick="window.location.href='<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'"
+                                <?php endif; ?>
+                            >
 								<?php if ($mod_em_campaign_display_svg == 1) : ?>
                                     <div id="background-shapes" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></div>
 								<?php endif; ?>
@@ -836,9 +872,14 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
 												<?php endif; ?>
                                             </div>
 
-                                            <a href="<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
+                                            <?php if($mod_em_campaign_click_to_details == 1) : ?>
+                                                <a href="<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
+                                                    <h3 class="mod_emundus_campaign__campaign_title"><?php echo $result->label; ?></h3>
+                                                </a>
+                                            <?php else : ?>
                                                 <h3 class="mod_emundus_campaign__campaign_title"><?php echo $result->label; ?></h3>
-                                            </a>
+                                            <?php endif; ?>
+
 										<?php elseif ($mod_em_campaign_list_show_programme == '1' && $mod_em_campaign_show_programme_logo == '0') : ?>
                                             <div class="tw-min-h-[38px]">
                                                 <p class="em-programme-tag" title="<?php echo $result->programme ?>"
@@ -847,26 +888,43 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
                                                 </p>
                                             </div>
 
-                                            <a href="<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
-                                                <h3 class="mod_emundus_campaign__campaign_title"
-                                                    title="<?php echo $result->label; ?>"><?php echo $result->label; ?></h3>
-                                            </a>
-										<?php elseif ($mod_em_campaign_list_show_programme == '0' && $mod_em_campaign_show_programme_logo == '1') : ?>
-                                            <div class="mod_emundus_campaign__campagne_properties">
+                                            <?php if($mod_em_campaign_click_to_details == 1) : ?>
                                                 <a href="<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
                                                     <h3 class="mod_emundus_campaign__campaign_title"
                                                         title="<?php echo $result->label; ?>"><?php echo $result->label; ?></h3>
                                                 </a>
+                                            <?php else : ?>
+                                                <h3 class="mod_emundus_campaign__campaign_title"
+                                                    title="<?php echo $result->label; ?>"><?php echo $result->label; ?></h3>
+                                            <?php endif; ?>
+
+										<?php elseif ($mod_em_campaign_list_show_programme == '0' && $mod_em_campaign_show_programme_logo == '1') : ?>
+                                            <div class="mod_emundus_campaign__campagne_properties">
+	                                            <?php if ($mod_em_campaign_click_to_details == 1) : ?>
+                                                    <a href="<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
+                                                        <h3 class="mod_emundus_campaign__campaign_title"
+                                                            title="<?php echo $result->label; ?>"><?php echo $result->label; ?></h3>
+                                                    </a>
+	                                            <?php else : ?>
+                                                    <h3 class="mod_emundus_campaign__campaign_title"
+                                                        title="<?php echo $result->label; ?>"><?php echo $result->label; ?></h3>
+	                                            <?php endif; ?>
+
 												<?php if (!empty($result->logo)) : ?>
                                                     <img src="<?php echo $result->logo; ?>"
                                                          alt="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_PROGRAMME_LOGO_ALT'); ?>">
 												<?php endif; ?>
                                             </div>
 										<?php else : ?>
-                                            <a href="<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
+                                            <?php if($mod_em_campaign_click_to_details == 1) : ?>
+                                                <a href="<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
+                                                    <h3 class="mod_emundus_campaign__campaign_title"
+                                                        title="<?php echo $result->label; ?>"><?php echo $result->label; ?></h3>
+                                                </a>
+                                            <?php else : ?>
                                                 <h3 class="mod_emundus_campaign__campaign_title"
                                                     title="<?php echo $result->label; ?>"><?php echo $result->label; ?></h3>
-                                            </a>
+                                            <?php endif; ?>
 										<?php endif; ?>
 
 	                                    <?php if (!empty($mod_em_campaign_tags)):

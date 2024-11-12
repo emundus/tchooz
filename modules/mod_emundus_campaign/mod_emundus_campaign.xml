@@ -139,6 +139,11 @@
                     <option value="1">JYES</option>
                 </field>
 
+                <field type="list" name="mod_em_campaign_click_to_details" label="MOD_EM_CAMPAIGN_CLICK_TO_DETAILS" description="MOD_EM_CAMPAIGN_CLICK_TO_DETAILS_DESC" default="1">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+
                 <field
                         name="mod_em_campaign_intro"
                         type="editor" filter="safehtml" hide="readmore,pagebreak"
