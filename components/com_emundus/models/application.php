@@ -646,39 +646,54 @@ class EmundusModelApplication extends ListModel
 	{
 		$deleted = false;
 
-		try {
-			$query = 'SELECT * FROM #__emundus_uploads WHERE id=' . $id;
-			$this->_db->setQuery($query);
-			$file = $this->_db->loadAssoc();
-		}
-		catch (Exception $e) {
-			Log::add('Error in model/application at query: ' . $query, Log::ERROR, 'com_emundus');
-		}
+		if (!empty($id)) {
+			$query = $this->_db->getQuery(true);
+			try {
+				$query->clear()
+					->select('*')
+					->from('#__emundus_uploads')
+					->where('id = ' . $id);
 
-		$f = EMUNDUS_PATH_ABS . $file['user_id'] . DS . $file['filename'];
-		@unlink($f);
-
-		try {
-			$query = 'DELETE FROM #__emundus_uploads WHERE id=' . $id;
-			$this->_db->setQuery($query);
-			$deleted = $this->_db->execute();
-
-			if ($deleted) {
-				// Log the tag in the eMundus logging system.
-				$logsStd = new stdClass();
-
-				// get attachment data
-				$attachmentTpe = $this->getAttachmentByID($file['attachment_id']);
-
-				$logsStd->element = "[" . $attachmentTpe['value'] . "]";
-				$logsStd->details = $file['filename'];
-				$logsParams       = array('deleted' => [$logsStd]);
-
-				EmundusModelLogs::log(JFactory::getUser()->id, (int) substr($file['fnum'], -7), $file['fnum'], 4, 'd', 'COM_EMUNDUS_ACCESS_ATTACHMENT_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+				$this->_db->setQuery($query);
+				$file = $this->_db->loadAssoc();
+			} catch (Exception $e) {
+				Log::add('Error in model/application at query: ' . $query, Log::ERROR, 'com_emundus');
 			}
-		}
-		catch (Exception $e) {
-			Log::add('Error in model/application at query: ' . $query, Log::ERROR, 'com_emundus');
+
+			if (!empty($file)) {
+				$query->clear()
+					->select('applicant_id')
+					->from($this->_db->quoteName('#__emundus_campaign_candidature'))
+					->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($file['fnum']));
+				$this->_db->setQuery($query);
+				$applicant_id = $this->_db->loadResult();
+
+				$f = EMUNDUS_PATH_ABS . $applicant_id . DS . $file['filename'];
+				$deleted_file = unlink($f);
+
+				if ($deleted_file) {
+					try {
+						$query->clear()
+							->delete('#__emundus_uploads')
+							->where('id = ' . $id);
+						$this->_db->setQuery($query);
+						$deleted = $this->_db->execute();
+
+						if ($deleted) {
+							$logsStd = new stdClass();
+							$attachmentTpe = $this->getAttachmentByID($file['attachment_id']);
+
+							$logsStd->element = '[' . $attachmentTpe['value'] . ']';
+							$logsStd->details = $file['filename'];
+							$logsParams = array('deleted' => [$logsStd]);
+
+							EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($file['fnum'], -7), $file['fnum'], 4, 'd', 'COM_EMUNDUS_ACCESS_ATTACHMENT_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+						}
+					} catch (Exception $e) {
+						Log::add('Error in model/application at query: ' . $query, Log::ERROR, 'com_emundus');
+					}
+				}
+			}
 		}
 
 		return $deleted;
