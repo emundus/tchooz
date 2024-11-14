@@ -101,7 +101,7 @@ import moment from 'moment';
 
 import "../../assets/css/messenger.scss";
 
-import AttachDocument from "@/components/Messages/modals/AttachDocument.vue";
+import AttachDocument from "./modals/AttachDocument.vue";
 
 import qs from "qs";
 
