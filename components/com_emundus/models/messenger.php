@@ -148,7 +148,8 @@ class EmundusModelMessenger extends JModelList
 				}
 
 				if (!empty($chatroom)) {
-					$query->insert($db->quoteName('#__messages'))
+					$query->clear()
+						->insert($db->quoteName('#__messages'))
 						->set($db->quoteName('user_id_from') . ' = ' . $db->quote($user->id))
 						->set($db->quoteName('folder_id') . ' = 2')
 						->set($db->quoteName('date_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))

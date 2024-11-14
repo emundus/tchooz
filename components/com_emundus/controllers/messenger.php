@@ -106,7 +106,7 @@ class EmundusControllerMessenger extends BaseController
 
 		if (!empty($fnum) && !empty($message)) {
 			$response['msg'] = JText::_('ACCESS_DENIED');
-			$current_user    = JFactory::getUser();
+			$current_user    = Factory::getApplication()->getIdentity();
 			require_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
 			$m_profile          = $this->getModel('Profile');
 			$current_user_fnums = array_keys($m_profile->getApplicantFnums($current_user->id));
