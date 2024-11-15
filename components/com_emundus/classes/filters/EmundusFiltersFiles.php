@@ -18,8 +18,6 @@ class EmundusFiltersFiles extends EmundusFilters
     private $config = [];
 	private $m_users = null;
 	private $menu_params = null;
-	private $h_cache = null;
-
 	public function __construct($config = array(), $skip = false)
 	{
 		Log::addLogger(['text_file' => 'com_emundus.filters.php'], Log::ALL, 'com_emundus.filters');
