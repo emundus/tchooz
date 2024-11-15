@@ -18,14 +18,14 @@ use Joomla\CMS\Language\Text;
             innerHTML = "";
             if (action == "copy") {
                 srcEl = document.getElementById("original_value_" + fieldname);
-                setTranslation(fieldname, srcEl.innerHTML);
+                setTranslation("refField_" + fieldname, srcEl.innerHTML);
             }
             if (action == "translate") {
                 srcEl = document.getElementById("original_value_" + fieldname);
-                translateService(fieldname, srcEl.innerHTML);
+                translateService("refField_" + fieldname, srcEl.innerHTML);
             }
             if (action == "clear") {
-                setTranslation(fieldname, "");
+                setTranslation("refField_" + fieldname, "");
             }
         } catch (e) {
             alert("<?php echo preg_replace('#<br\s*/>#', '\n', Text::_('CLIPBOARD_NOSUPPORT', true));?>");
@@ -59,7 +59,7 @@ use Joomla\CMS\Language\Text;
     function setTranslation(fieldname, value) {
         //check if we want ot add the translation to the editor
         if ( typeof(tinyMCE)=="object") {
-            editor = tinyMCE.editors["refField_" + fieldname];
+            editor = tinyMCE.editors[fieldname];
         }
         if (typeof editor !== "undefined") {
             try {
@@ -69,7 +69,7 @@ use Joomla\CMS\Language\Text;
             }
         } else {
             //not the editor input // textarea
-            srcEl = document.getElementById("refField_" + fieldname);
+            srcEl = document.getElementById(fieldname);
             srcEl.value = value.trim();
         }
     }

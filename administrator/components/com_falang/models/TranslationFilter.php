@@ -955,6 +955,8 @@ class JFContentParams extends CMSObject
      * @update 5.0 url/image in first position
      *             add jolly extra param's
      * @update 5.10 display original value for custom fields (text, radio, checkbox)
+     * @update 5.13 change the way the tab are open not on a list to open but on a list to not open (allow extra plugin to work directly)
+     *              add display original value for list and list multiple
      * */
     function render($type)
     {
@@ -1000,11 +1002,11 @@ class JFContentParams extends CMSObject
             foreach ($paramsfieldSets as $name => $fieldSet)
             {
 
-                $new_open_tab = ['attribs','helix_ultimate_blog_options','articletypeoptions','articleblogoptions','articleogoptions','cwattachments','general_attribs','jollyanycourseoptions','jollyanyeventoptions'];
-
+                //$new_open_tab = ['attribs','gsd','helix_ultimate_blog_options','articletypeoptions','articleblogoptions','articleogoptions','cwattachments','general_attribs','jollyanycourseoptions','jollyanyeventoptions'];
+                $no_tab_to_open = ['basic','category','frontendassociations','author','date','other','basic-limited'];
                 $label = !empty($fieldSet->label) ? $fieldSet->label : 'COM_CONTENT_' . $name . '_FIELDSET_LABEL';
 
-                if (in_array($name,$new_open_tab) ){
+                if (!in_array($name,$no_tab_to_open) ){
                     echo HTMLHelper::_('uitab.addTab', 'myTab', $name, Text::_($label), true);
                 }
 
@@ -1031,13 +1033,16 @@ class JFContentParams extends CMSObject
 
                 <?php
 
-                $new_close_tab = ['editorConfig','helix_ultimate_blog_options','articletypeoptions','articleblogoptions','articleogoptions','cwattachments','general_attribs','jollyanycourseoptions','jollyanyeventoptions'];
+                //$new_close_tab = ['editorConfig','gsd','helix_ultimate_blog_options','articletypeoptions','articleblogoptions','articleogoptions','cwattachments','general_attribs','jollyanycourseoptions','jollyanyeventoptions'];
 
-                if (in_array($name,$new_close_tab) ){
+                if (!in_array($name,$no_tab_to_open) ){
+                    echo HTMLHelper::_('uitab.endTab');
+                }
+                //close the tab on the last of options the other fieldset
+                if ($name == 'other'){
                     echo HTMLHelper::_('uitab.endTab');
                 }
             }
-            //echo HTMLHelper::_('uitab.endTab');
         }
 
 
@@ -1046,7 +1051,7 @@ class JFContentParams extends CMSObject
         $ignoreFieldsets = ['jmetadata', 'item_associations','workflow'];
         if (isset($customfieldSets))
         {
-            $supported_original = array('Text','Checkboxes','Radio');
+            $supported_original = array('Text','Checkboxes','Radio','Textarea','List');
             $default_lang = ComponentHelper::getParams('com_languages')->get('site', 'en-GB');
             $languages	= LanguageHelper::getLanguages('lang_code');
             $language = $languages[$default_lang];
@@ -1093,6 +1098,13 @@ class JFContentParams extends CMSObject
                                         <div class="" style="float: left">
                                             <?php echo HTMLHelper::_('image', 'mod_languages/' .$language->image  . '.gif',$language->title_native, array('title'=>$language->title_native,'style'=>'opacity:0.5;width:18px;height:12px;') , true); ?>
                                         </div>
+                                        <?php
+                                        if ($field->type == 'Text' || $field->type == 'Textarea') { ?>
+                                            <div class="falang-cf" style = "" >
+                                                <a style="margin-right: 5px;" class="button btn-translate" onclick="TranslateCF('<?php echo $field->id;?>','<?php echo $originalValue;?>','translate')" title="<?php echo Text::sprintf('COM_FALANG_BTN_TRANSLATE','Translate'); ?>"><i class="fas fa-globe"></i></a>
+                                                <a class="button btn-copy" onclick="TranslateCF('<?php echo $field->id;?>','<?php echo $originalValue;?>','copy')" title="<?php echo Text::_('COM_FALANG_BTN_COPY'); ?>"><i class="icon-copy"></i></a>
+                                            </div>
+                                            <?php } ?>
                                         <div class="" style="font-style: italic;color: #ccc;"><?php echo '&nbsp;'.$originalValue; ?></div>
                                     </div>
                                 </div>

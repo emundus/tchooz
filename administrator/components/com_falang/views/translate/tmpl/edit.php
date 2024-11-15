@@ -158,6 +158,24 @@ else {
 
 <script type="text/javascript">
 
+    function TranslateCF(field,value,action){
+        console.log("TranslateCF");
+        console.log(action);
+        try {
+            if (action == "copy") {
+                srcEl = document.getElementById(field);
+                srcEl.value = value.trim();
+            }
+            if (action == "translate"){
+                translateService(field, value);
+            }
+
+        } catch (e) {
+            console.log(e.message);
+        }
+
+    }
+
     //add insert image name for image type
     function jInsertFieldValue(value,id) {
         var old_id = document.getElementById(id).value;
