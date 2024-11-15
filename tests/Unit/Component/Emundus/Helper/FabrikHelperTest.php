@@ -80,7 +80,7 @@ class FabrikHelperTest extends UnitTestCase
 	 */
 	public function testGetElementByAlias()
 	{
-		$this->assertNull($this->helper::getElementByAlias(""), 'Empty alias should return null');
+		$this->assertSame([], $this->helper::getElementsByAlias(""), 'Empty alias should return empty array');
 
 		$form_id = $this->h_dataset->getUnitTestFabrikForm();
 
@@ -112,9 +112,9 @@ class FabrikHelperTest extends UnitTestCase
 				$db->execute();
 			}
 
-			$element_by_alias = $this->helper::getElementByAlias($params["alias"], $form_id);
-			$this->assertEquals($element->name, $element_by_alias->name, 'The element name obtained should be the same as the element name in the database.');
-			$this->assertEquals($element->db_table_name, $element_by_alias->db_table_name, 'The database table name storage obtained should be the same as the database table name storage in the database.');
+			$elements_by_alias = $this->helper::getElementsByAlias($params["alias"], $form_id);
+			$this->assertEquals($element->name, $elements_by_alias[0]->name, 'The element name obtained should be the same as the element name in the database.');
+			$this->assertEquals($element->db_table_name, $elements_by_alias[0]->db_table_name, 'The database table name storage obtained should be the same as the database table name storage in the database.');
 		}
 	}
 
