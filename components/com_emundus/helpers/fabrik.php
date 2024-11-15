@@ -1888,36 +1888,43 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 	 *
 	 * @description Return element name and storage table according to alias
 	 *
-	 * @return object|null
+	 * @return array
 	 */
-	static function getElementByAlias($alias,$form_id = null){
+	static function getElementsByAlias($alias, $form_id = null)
+	{
 
-		$db = Factory::getContainer()->get('DatabaseDriver');
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
-		$element = null;
+		$elements = [];
 
-		if(!empty($alias)){
-			try {
-				$query->select('fl.db_table_name,fe.name')
-					->from($db->quoteName('#__fabrik_elements','fe'))
-					->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.group_id').' = '.$db->quoteName('fe.group_id'))
-					->leftJoin($db->quoteName('#__fabrik_lists','fl').' ON '.$db->quoteName('fl.form_id').' = '.$db->quoteName('ffg.form_id'))
+		if (!empty($alias))
+		{
+			try
+			{
+				$query->select('fl.db_table_name,fe.name,fe.id')
+					->from($db->quoteName('#__fabrik_elements', 'fe'))
+					->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.group_id') . ' = ' . $db->quoteName('fe.group_id'))
+					->leftJoin($db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('ffg.form_id'))
 					->where("JSON_EXTRACT(fe.params, '$.alias') = " . $db->quote($alias));
-				if(!empty($form_id)){
+				if (!empty($form_id))
+				{
 					$query->where($db->quoteName('fl.form_id') . ' = ' . $db->quote($form_id));
 				}
 				$db->setQuery($query);
-				$element =  $db->loadObject();
+				$elements = $db->loadObjectList();
 			}
-			catch (Exception $e) {
-				Log::add('component/com_emundus/helpers/fabrik | Cannot retrive element by alias : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), Log::ERROR, 'com_emundus');
+			catch (Exception $e)
+			{
+				Log::add('component/com_emundus/helpers/fabrik | Cannot retrive elements by alias : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 			}
 		}
-		return $element;
+
+		return $elements;
 	}
 
 	/**
+	 * TODO: Get valueS by alias, why stop at one value?
 	 * @param         $alias  string The alias to search the element's value for
 	 * @param   null  $fnum   int    The form number to search the element's value for
 	 * @param   int   $user_id
@@ -1926,54 +1933,73 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 	 * @description Return the value of an element according to its alias in a form
 	 *
 	 */
-	static function getValueByAlias($alias,$fnum = null,$user_id = 0)
+	static function getValueByAlias($alias, $fnum = null, $user_id = 0)
 	{
 		$value = ['value' => '', 'raw' => ''];
 
-		if(!empty($alias) && (!empty($fnum) || !empty($user_id))){
-			$element = self::getElementByAlias($alias);
+		if (!empty($alias) && (!empty($fnum) || !empty($user_id)))
+		{
+			$elements = self::getElementsByAlias($alias);
 
-			if(!empty($element))
+			if (!empty($elements))
 			{
-				$db = Factory::getContainer()->get('DatabaseDriver');
+				$db    = Factory::getContainer()->get('DatabaseDriver');
 				$query = $db->getQuery(true);
 
-				try {
-					$columns = array_keys($db->getTableColumns($element->db_table_name));
+				if (!empty($fnum))
+				{
+					require_once(JPATH_SITE . '/components/com_emundus/models/application.php');
+					$m_application = new EmundusModelApplication();
+					$fnumElements  = $m_application->getFabrikDataByFnum($fnum, 'element');
 
-					if(in_array('fnum',$columns) || in_array('user',$columns) || in_array('user_id',$columns))
+					$elements = array_filter($elements, function ($element) use ($fnumElements) {
+						return in_array($element->id, $fnumElements);
+					});
+				}
+
+				try
+				{
+					foreach ($elements as $element)
 					{
-						$query->select($db->quoteName($element->name))
-							->from($db->quoteName($element->db_table_name));
+						$columns = array_keys($db->getTableColumns($element->db_table_name));
 
-						if (!empty($fnum) && in_array('fnum',$columns))
+						if (in_array('fnum', $columns) || in_array('user', $columns) || in_array('user_id', $columns))
 						{
-							$query->where("fnum = " . $db->quote($fnum));
-						}
+							$query->select($db->quoteName($element->name))
+								->from($db->quoteName($element->db_table_name));
 
-						if (!empty($user_id) && (in_array('user',$columns) || in_array('user_id',$columns)))
-						{
-							if(in_array('user',$columns)){
-								$query->where("user = " . $db->quote($user_id));
-							}
-							elseif(in_array('user_id',$columns))
+							if (!empty($fnum) && in_array('fnum', $columns))
 							{
-								$query->where("user_id = " . $db->quote($user_id));
+								$query->where("fnum LIKE " . $db->quote($fnum));
 							}
-						}
 
-						$db->setQuery($query);
-						$raw_value = $db->loadResult();
+							if (!empty($user_id) && (in_array('user', $columns) || in_array('user_id', $columns)))
+							{
+								if (in_array('user', $columns))
+								{
+									$query->where("user = " . $db->quote($user_id));
+								}
+								elseif (in_array('user_id', $columns))
+								{
+									$query->where("user_id = " . $db->quote($user_id));
+								}
+							}
 
-						if (!empty($raw_value))
-						{
-							$value['raw'] = $raw_value;
-							$value['value'] = EmundusHelperFabrik::formatElementValue($element->name, $raw_value);
+							$db->setQuery($query);
+							$raw_value = $db->loadResult();
+
+							if (!empty($raw_value))
+							{
+								$value['raw']   = $raw_value;
+								$value['value'] = EmundusHelperFabrik::formatElementValue($element->name, $raw_value);
+								break;
+							}
 						}
 					}
 				}
-				catch (Exception $e) {
-					Log::add('component/com_emundus/helpers/fabrik | Cannot retrive value by alias : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), Log::ERROR, 'com_emundus');
+				catch (Exception $e)
+				{
+					Log::add('component/com_emundus/helpers/fabrik | Cannot retrive value by alias : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 				}
 			}
 		}

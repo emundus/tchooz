@@ -7215,4 +7215,106 @@ class EmundusModelApplication extends ListModel
 
 		return $cleared;
 	}
+
+    /**
+     * Retrieve Fabrik Groups associated to a fnum (campaign form and phases)
+     *
+     * @param $fnum
+     *
+     * @return array
+     *
+     */
+    public function getFabrikDataByFnum($fnum, $type = 'form') {
+        // TODO: adapt to also retrieve data of partners form (eval, decision...)
+        $result = [];
+
+        if (!empty($fnum) && !empty($type)) {
+            require_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
+            require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
+
+            $m_profile  = new EmundusModelProfile;
+            $m_files    = new EmundusModelFiles;
+
+            $query = $this->_db->createQuery();
+
+            $fnumInfos  = $m_files->getFnumInfos($fnum);
+            $profiles = $m_profile->getProfilesIDByCampaign([$fnumInfos['campaign_id']]);
+
+            $forms = [];
+			if (!empty($profiles)) {
+				require_once(JPATH_SITE . '/components/com_emundus/models/form.php');
+				$m_form = new EmundusModelForm();
+
+				foreach ($profiles as $profile) {
+					$forms_data = $m_form->getFormsByProfileId($profile);
+					$forms = array_map(function($form) {
+						return $form->id;
+					}, $forms_data);
+				}
+
+				if (!empty($forms)) {
+					switch ($type) {
+						case 'list':
+							// Retrieve the list ids
+							$query->clear()
+								->select('jfl.id')
+								->from($this->_db->quoteName('#__fabrik_lists', 'jfl'))
+								->where('jfl.form_id IN (' . implode(',', $this->_db->quote($forms)) . ')')
+								->andWhere('jfl.published = 1');
+
+							try {
+								$this->_db->setQuery($query);
+								$result = $this->_db->loadColumn();
+							} catch (Exception $e) {
+								Log::add('Failed to get Fabrik lists on query: ' . $query->__toString() . ' with error -> ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+							}
+							break;
+						case 'group':
+						case 'element':
+							// Retrieve the group ids
+							$groups = [];
+							$query->clear()
+								->select('jffg.group_id')
+								->from($this->_db->quoteName('#__fabrik_formgroup', 'jffg'))
+								->leftJoin($this->_db->quoteName('#__fabrik_groups', 'jfg') . ' ON ' . $this->_db->quoteName('jfg.id') . ' = ' . $this->_db->quoteName('jffg.group_id'))
+								->where('jffg.form_id IN (' . implode(',', $this->_db->quote($forms)) . ')')
+								->andWhere('jfg.published = 1');
+
+							try {
+								$this->_db->setQuery($query);
+								$groups = $this->_db->loadColumn();
+							} catch (Exception $e) {
+								Log::add('Failed to get Fabrik groups on query: ' . $query->__toString() . ' with error -> ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+							}
+
+							if (!empty($groups)) {
+								if ($type == 'group') {
+									$result = $groups;
+								} else {
+									// Retrieve the element ids
+									$query->clear()
+										->select('jfe.id')
+										->from($this->_db->quoteName('#__fabrik_elements', 'jfe'))
+										->where('jfe.group_id IN (' . implode(',', $this->_db->quote($groups)) . ')')
+										->andWhere('jfe.published = 1');
+
+									try {
+										$this->_db->setQuery($query);
+										$result = $this->_db->loadColumn();
+									} catch (Exception $e) {
+										Log::add('Failed to get Fabrik elements on query: ' . $query->__toString() . ' with error -> ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+									}
+								}
+							}
+							break;
+						default:
+							$result = $forms;
+							break;
+					}
+				}
+			}
+        }
+
+        return $result;
+    }
 }
