@@ -33,7 +33,7 @@ if ($this->hasActions) : ?>
 <div class="fabrikActions form-actions tw-p-0 tw-m-0">
 	<div
 		<?php if (!($form->db_table_name == 'jos_emundus_users' && Factory::getApplication()->getIdentity()->guest == 1)) : ?>
-            class="tw-flex <?php if($countActions > 1) : ?>tw-justify-between tw-items-center<?php else : ?>tw-justify-end<?php endif; ?>"
+            class="tw-w-full tw-flex <?php if($countActions > 1) : ?>tw-justify-between tw-items-center<?php else : ?>tw-justify-end<?php endif; ?>"
         <?php endif; ?>
     >
         <?php if ( $form->gobackButton || $form->resetButton || $form->deleteButton || $form->clearMultipageSessionButton): ?>
