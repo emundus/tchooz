@@ -3,7 +3,7 @@
         'name' => 'joomla/joomla-cms',
         'pretty_version' => 'dev-5.2-dev',
         'version' => 'dev-5.2-dev',
-        'reference' => '05c9d38b7281613743088956265b6b9e0fafd0dd',
+        'reference' => 'ba684a462f6ccc9ebef1292a5b548e59d780a21c',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../../',
         'aliases' => array(),
@@ -274,7 +274,7 @@
         'joomla/joomla-cms' => array(
             'pretty_version' => 'dev-5.2-dev',
             'version' => 'dev-5.2-dev',
-            'reference' => '05c9d38b7281613743088956265b6b9e0fafd0dd',
+            'reference' => 'ba684a462f6ccc9ebef1292a5b548e59d780a21c',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../../',
             'aliases' => array(),

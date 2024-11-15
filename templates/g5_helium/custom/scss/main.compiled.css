@@ -1003,12 +1003,27 @@ video {
     line-height: 28.8px;
     font-weight: 500;
 }
-.emundus-form .em-form-intro * {
+.emundus-form .em-form-intro *:not(a) {
                 color: var(--neutral-600);
             }
+.emundus-form .em-form-intro a {
+                text-decoration: underline;
+                color: var(--link-regular);
+            }
+.emundus-form .em-form-intro a:hover {
+                    text-decoration: none;
+                    cursor: pointer;
+                }
 .emundus-form .groupintro {
             white-space: pre-line;
+            color: var(--neutral-600);
         }
+.emundus-form .groupintro a {
+                text-decoration: underline;
+            }
+.emundus-form .groupintro a:hover {
+                    text-decoration: none;
+                }
 @media all and (max-width: 480px) {
     .emundus-form {
             margin-top: unset !important
@@ -1053,6 +1068,9 @@ video {
                             }
 .fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.day.selected {
                                 border-radius: 99px;
+                            }
+.fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.day.\!selected {
+                                border-radius: 99px !important;
                             }
 .fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.today:after {
                                 content: unset;
@@ -1281,9 +1299,15 @@ form.fabrikForm .fabrikElementTip {
             font-family: var(--em-profile-font), Inter, sans-serif;
             font-style: normal;
         }
-form.fabrikForm .fabrikElementTip * {
+form.fabrikForm .fabrikElementTip *:not(a) {
                 color: var(--em-form-tip-color);
             }
+form.fabrikForm .fabrikElementTip a {
+                text-decoration: underline;
+            }
+form.fabrikForm .fabrikElementTip a:hover {
+                    text-decoration: none;
+                }
 form.fabrikForm .fabrikElementTip i.icon-question-sign {
                 display: none;
             }
@@ -115058,6 +115082,9 @@ button.swal2-cancel.goback-btn:hover,
 .label-border-black {
         border-color: var(--em-black);
     }
+.\[-a-zA-Z\:0-9_\.\] {
+    -a-z-a--z: 0-9 .;
+}
 @font-face {
     font-family: 'Material Icons';
     font-style: normal;

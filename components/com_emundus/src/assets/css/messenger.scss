@@ -136,13 +136,16 @@ hr {
   width: max-content;
   margin: 5px 15px 15px 15px;
   word-wrap: break-word;
+  display: flex;
+  flex-direction: column;
 }
 
 .messages__message-item-span {
   margin: 5px 0 !important;
   padding: 10px;
   border-radius: 5px;
-  width: 100%;
+  width: fit-content;
+  align-self: flex-end;
   max-width: 30vw;
 }
 
