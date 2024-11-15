@@ -572,7 +572,7 @@ div#frame.outline {
   }
 
   #header-a {
-    z-index: 20;
+    z-index: 1;
     display: flex;
     align-items: center;
     transition: all 0.3s ease-in-out;
@@ -2104,7 +2104,7 @@ tr.fabrikFilterContainer {
   display: contents;
 }
 
-.fabrikForm .plg-calc span {
+.fabrikForm .plg-calc span:not([class*="material"]) {
   border: none !important;
   padding: 15px 0;
 }
