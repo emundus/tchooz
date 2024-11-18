@@ -7252,13 +7252,13 @@ class EmundusModelApplication extends ListModel
                             return $form->id;
                         }, $forms_data);
 
-                        foreach ($forms_data_ids as $forms_data_id) {
-                            $forms[] = $forms_data_id;
-                        }
+                        $forms = array_merge($forms, $forms_data_ids);
                     }
                 }
 
 				if (!empty($forms)) {
+					$forms = array_unique($forms);
+
 					switch ($type) {
 						case 'list':
 							// Retrieve the list ids
