@@ -40,7 +40,7 @@ $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
 $sysadmin_access    = EmundusHelperAccess::isAdministrator($user->id);
 
 require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
-$hash = EmundusHelperCache::getCurrentGitHash();
+$hash = EmundusHelperCache::getCurrentGitHash() . rand(0, 99999);
 ?>
 <div id="em-component-vue"
      component="messagescoordinator"
