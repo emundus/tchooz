@@ -40,7 +40,7 @@
               <i class="fas fa-times pointer" @click="$modal.hide('messages')"></i>
             </div>
             <div class="messages__list-block tw-w-full tw-h-full" id="messages__list">
-              <div v-for="date in messageByDates">
+              <div v-for="date in messageByDates" :key="date.date">
                 <div class="messages__date-section">
                   <hr>
                   <p>{{ moment(date.date).format("DD/MM/YYYY") }}</p>
@@ -52,7 +52,7 @@
                       <span class="messages__message-item-from">
                         <span v-if="anonymous === 0 && user != message.user_id_from">{{message.name}} - </span>
                         <span v-if="user == message.user_id_from">{{message.name}} - </span>
-                        {{ moment(message.date_time).format("HH:mm") }}
+                        {{ message.date_hour }}
                       </span>
                     </p>
                     <span class="messages__message-item-span" :class="user == message.user_id_from ? 'messages__message-item-span_current-user' : 'messages__message-item-span_other-user'" v-html="message.message"></span>
@@ -128,11 +128,11 @@ export default {
       showDate: 0,
       attachOpen: false,
       send_progress: false,
-
+      currentUserName: '',
       translations:{
-        messages: Joomla.JText._("COM_EMUNDUS_MESSENGER_TITLE"),
-        send: Joomla.JText._("COM_EMUNDUS_MESSENGER_SEND"),
-        writeMessage: Joomla.JText._("COM_EMUNDUS_MESSENGER_WRITE_MESSAGE"),
+        messages: this.translate("COM_EMUNDUS_MESSENGER_TITLE"),
+        send: this.translate("COM_EMUNDUS_MESSENGER_SEND"),
+        writeMessage: this.translate("COM_EMUNDUS_MESSENGER_WRITE_MESSAGE"),
       }
     };
   },
@@ -144,6 +144,19 @@ export default {
 
     beforeClose() {
       clearInterval(this.interval);
+    },
+
+    getUsername() {
+      fetch('index.php?option=com_emundus&controller=users&task=getuserbyid')
+        .then((res) => {
+          if (res.ok) {
+            return res.json();
+          }
+        }).then((response) => {
+          if (response.status) {
+            this.currentUserName = response.user[0].firstname + ' ' + response.user[0].lastname;
+          }
+        });
     },
 
     getFilesByUser() {
@@ -164,7 +177,7 @@ export default {
       });
     },
 
-    getMessagesByFnum(loader = true, scroll = true) {
+    async getMessagesByFnum(loader = true,scroll = true){
       this.loading = loader;
       axios({
         method: "get",
@@ -187,45 +200,69 @@ export default {
       });
     },
 
-    markAsRead() {
-      axios({
-        method: "get",
-        url: "index.php?option=com_emundus&controller=messenger&task=markasread",
-        params: {
-          fnum: this.fileSelected,
-        },
-        paramsSerializer: params => {
-          return qs.stringify(params);
-        }
-      }).then(response => {
-        this.$emit('removeNotifications', response.data.data);
-      });
-    },
-
-    sendMessage(e) {
-      if (typeof e != 'undefined') {
-        e.stopImmediatePropagation();
-      }
-      if (this.message.trim() !== '' && !this.send_progress) {
-        this.send_progress = true;
-        axios({
-          method: "post",
-          url: "index.php?option=com_emundus&controller=messenger&task=sendmessage",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          data: qs.stringify({
-            message: this.message,
-            fnum: this.fileSelected
-          })
-        }).then(response => {
-          if (response.data.status) {
-            this.message = '';
-            this.send_progress = false;
-            this.pushToDatesArray(response.data.data);
-            this.scrollToBottom();
+    markAsRead(){
+      fetch('index.php?option=com_emundus&controller=messenger&task=markasread&fnum=' + this.fileSelected)
+        .then((res) => {
+          if (res.ok) {
+            return res.json;
+          }
+        }).then((response) => {
+          if (response.status) {
+            this.$emit('removeNotifications',response.data);
           }
         });
+    },
+
+    async sendMessage(e){
+      if (this.message.trim() !== '' && !this.send_progress) {
+        this.send_progress = true;
+
+        const formData = new FormData();
+        formData.append('message', this.message);
+        formData.append('fnum', this.fileSelected);
+
+        fetch('index.php?option=com_emundus&controller=messenger&task=sendmessage', {
+          method: 'POST',
+          body: formData
+        }).then((res) => {
+          if (res.ok) {
+            return res.json();
+          }
+        }).then((response) => {
+          this.send_progress = false;
+
+          if (response.status) {
+            this.getMessagesByFnum(true, true);
+          } else {
+            Swal.fire({
+              title: this.translate("COM_EMUNDUS_ONBOARD_ERROR"),
+              text: response.msg,
+              type: "error",
+              showCancelButton: false,
+              showConfirmButton: false,
+              timer: 3000,
+            });
+          }
+        });
+
+        this.pushToDatesArray({
+          message_id: Math.floor(Math.random() * 1000) + 9999,
+          user_id_from: this.user,
+          user_id_to: null,
+          folder_id: 2,
+          date_time: this.formatedTimestamp(),
+          state: 0,
+          priority: 0,
+          subject: 0,
+          message: this.message,
+          email_from: null,
+          email_cc: null,
+          email_to: null,
+          name: this.currentUserName
+        });
+
+        this.message = '';
+        this.send_progress = false;
       }
     },
 
@@ -273,6 +310,13 @@ export default {
       this.pushToDatesArray(message);
       this.scrollToBottom();
       this.attachOpen = !this.attachOpen;
+    },
+
+    formatedTimestamp()  {
+      const d = new Date()
+      const date = d.toISOString().split('T')[0];
+      const time = d.toTimeString().split(' ')[0];
+      return `${date} ${time}`
     }
   },
 
@@ -280,12 +324,12 @@ export default {
     messageByDates() {
       let messages = [];
 
-      this.dates.forEach((elt,index) => {
+      this.dates.forEach((elt) => {
         let date = elt.dates;
         let messages_array = [];
         elt.messages.forEach((message_id) => {
           this.messages.forEach((message) => {
-            if(message.message_id == message_id){
+            if (message.message_id == message_id) {
               messages_array.push(message);
             }
           });
