@@ -1965,7 +1965,8 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 
 						if (in_array('fnum', $columns) || in_array('user', $columns) || in_array('user_id', $columns))
 						{
-							$query->select($db->quoteName($element->name))
+							$query->clear()
+                                ->select($db->quoteName($element->name))
 								->from($db->quoteName($element->db_table_name));
 
 							if (!empty($fnum) && in_array('fnum', $columns))

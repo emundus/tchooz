@@ -7245,12 +7245,18 @@ class EmundusModelApplication extends ListModel
 				require_once(JPATH_SITE . '/components/com_emundus/models/form.php');
 				$m_form = new EmundusModelForm();
 
-				foreach ($profiles as $profile) {
-					$forms_data = $m_form->getFormsByProfileId($profile);
-					$forms = array_map(function($form) {
-						return $form->id;
-					}, $forms_data);
-				}
+                foreach ($profiles as $profile) {
+                    $forms_data = $m_form->getFormsByProfileId($profile);
+                    if (!empty($forms_data)) {
+                        $forms_data_ids = array_map(function($form) {
+                            return $form->id;
+                        }, $forms_data);
+
+                        foreach ($forms_data_ids as $forms_data_id) {
+                            $forms[] = $forms_data_id;
+                        }
+                    }
+                }
 
 				if (!empty($forms)) {
 					switch ($type) {
