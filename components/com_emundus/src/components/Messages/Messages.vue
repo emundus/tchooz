@@ -98,7 +98,6 @@
 <script>
 import axios from "axios";
 import moment from 'moment';
-
 import "../../assets/css/messenger.scss";
 
 import AttachDocument from "./modals/AttachDocument.vue";
@@ -130,9 +129,9 @@ export default {
       send_progress: false,
       currentUserName: '',
       translations:{
-        messages: this.translate("COM_EMUNDUS_MESSENGER_TITLE"),
-        send: this.translate("COM_EMUNDUS_MESSENGER_SEND"),
-        writeMessage: this.translate("COM_EMUNDUS_MESSENGER_WRITE_MESSAGE"),
+        messages: Joomla.Text._("COM_EMUNDUS_MESSENGER_TITLE"),
+        send: Joomla.Text._("COM_EMUNDUS_MESSENGER_SEND"),
+        writeMessage: Joomla.Text._("COM_EMUNDUS_MESSENGER_WRITE_MESSAGE"),
       }
     };
   },
@@ -235,7 +234,7 @@ export default {
             this.getMessagesByFnum(true, true);
           } else {
             Swal.fire({
-              title: this.translate("COM_EMUNDUS_ONBOARD_ERROR"),
+              title: Joomla.Text._("COM_EMUNDUS_ONBOARD_ERROR"),
               text: response.msg,
               type: "error",
               showCancelButton: false,
