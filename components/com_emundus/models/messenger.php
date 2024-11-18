@@ -28,20 +28,26 @@ class EmundusModelMessenger extends JModelList
 		parent::__construct($config);
 	}
 
-	function getFilesByUser()
+	function getFilesByUser($user_id = null, $only_published = true)
 	{
 		$files = [];
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
-		$user = JFactory::getSession()->get('emundusUser');
+		if(empty($user_id)) {
+			$user_id = Factory::getApplication()->getIdentity()->id;
+		}
 
-		if (!empty($user)) {
+		if (!empty($user_id)) {
 			$query->select('sc.*,cc.fnum,cc.published as file_publish')
 				->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
 				->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'sc') . ' ON ' . $db->quoteName('sc.id') . ' = ' . $db->quoteName('cc.campaign_id'))
-				->where($db->quoteName('cc.applicant_id') . ' = ' . $user->id);
+				->where($db->quoteName('cc.applicant_id') . ' = ' . $user_id);
 			//->group('sc.id');
+
+			if ($only_published) {
+				$query->where($db->quoteName('sc.published') . ' = 1');
+			}
 
 			try {
 				$db->setQuery($query);
@@ -91,9 +97,16 @@ class EmundusModelMessenger extends JModelList
 					->order('m.date_time DESC');
 				$db->setQuery($query, $offset);
 
+				$messages = $db->loadObjectList();
+
+				foreach($messages as $key => $message) {
+					$hour = EmundusHelperDate::displayDate($message->date_time, 'H:i', 0);
+					$messages[$key]->date_hour = $hour;
+				}
+
 				$datas            = new stdClass;
 				$datas->dates     = $dates;
-				$datas->messages  = array_reverse($db->loadObjectList());
+				$datas->messages = array_reverse($messages);
 				$datas->anonymous = $anonymous_coordinator;
 				$messages         = $datas;
 			}

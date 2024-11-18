@@ -10,18 +10,22 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 
-JText::script('COM_EMUNDUS_MESSENGER_TITLE');
-JText::script('COM_EMUNDUS_MESSENGER_SEND_DOCUMENT');
-JText::script('COM_EMUNDUS_MESSENGER_ASK_DOCUMENT');
-JText::script('COM_EMUNDUS_MESSENGER_DROP_HERE');
-JText::script('COM_EMUNDUS_MESSENGER_SEND');
-JText::script('COM_EMUNDUS_MESSENGER_WRITE_MESSAGE');
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 
-$jinput = JFactory::getApplication()->input;
+Text::script('COM_EMUNDUS_MESSENGER_TITLE');
+Text::script('COM_EMUNDUS_MESSENGER_SEND_DOCUMENT');
+Text::script('COM_EMUNDUS_MESSENGER_ASK_DOCUMENT');
+Text::script('COM_EMUNDUS_MESSENGER_DROP_HERE');
+Text::script('COM_EMUNDUS_MESSENGER_SEND');
+Text::script('COM_EMUNDUS_MESSENGER_WRITE_MESSAGE');
+
+$app = Factory::getApplication();
+$jinput = $app->input;
 $fnum   = $jinput->getString('fnum', null);
-$user   = JFactory::getUser();
+$user   = $app->getIdentity();
 
-$lang         = JFactory::getLanguage();
+$lang         = $app->getLanguage();
 $short_lang   = substr($lang->getTag(), 0, 2);
 $current_lang = $lang->getTag();
 $languages    = JLanguageHelper::getLanguages();
@@ -35,9 +39,8 @@ else {
 $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
 $sysadmin_access    = EmundusHelperAccess::isAdministrator($user->id);
 
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
+require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();
-
 ?>
 <div id="em-component-vue"
      component="messagescoordinator"
