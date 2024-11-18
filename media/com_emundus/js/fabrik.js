@@ -415,7 +415,7 @@ function checkPasswordSymbols(element) {
 
 function cleanNumberInput(element, maxDecimals = 0,noGreaterThan = null,authorizeNegativeNumber = false) {
     var value = element.get('value');
-    const input = document.getElementById(element.strElement);
+    const input = document.getElementById(element.baseElementId);
     var nonDigitExceptCommaDot = '';
 
     if(authorizeNegativeNumber){
