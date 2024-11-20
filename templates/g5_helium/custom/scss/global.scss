@@ -5,11 +5,30 @@
 @import "dependencies";
 @import "tchooz";
 
-@font-face {
-  font-family: 'Inter';
-  src: url('/media/com_emundus/css/fonts/google/Inter/Inter-VariableFont_opsz,wght.ttf') format('truetype');
-  font-weight: 400;
-  font-style: normal;
+/* Set up Roboto for old browsers, only regular + bold */
+@supports not (font-variation-settings: normal) {
+  @font-face {
+    font-family: Inter;
+    src: url('/media/com_emundus/css/fonts/google/Inter/Inter_18pt-Regular.ttf');
+    font-weight: normal;
+  }
+
+  @font-face {
+    font-family: Inter;
+    src: url('/media/com_emundus/css/fonts/google/Inter/Inter_18pt-Medium.ttf');
+    font-weight: 500;
+  }
+}
+
+@supports (font-variation-settings: normal) {
+  @font-face {
+    font-family: 'Inter';
+    src: url('/media/com_emundus/css/fonts/google/Inter/Inter-VariableFont_opsz,wght.ttf') format('truetype supports variations'),
+    url('/media/com_emundus/css/fonts/google/Inter/Inter-VariableFont_opsz,wght.ttf') format('truetype-variations');
+    font-weight: 100 1000;
+    font-stretch: 25% 151%;
+    font-style: normal;
+  }
 }
 
 /* Here you can add Anything you want to be present on the entire site AND with variables */
@@ -577,7 +596,7 @@ div#frame.outline {
     align-items: center;
     transition: all 0.3s ease-in-out;
     max-height: 40px;
-    left: 70px;
+    left: 75px;
   }
 }
 
@@ -4900,7 +4919,7 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
 screen and (max-height: 769px) {
   .gantry #g-navigation .g-main-nav .tchooz-vertical-toplevel > li.g-menu-item,
   .gantry #g-header .g-main-nav .tchooz-vertical-toplevel > li.g-menu-item {
-    margin: 3px 10px !important;
+    margin: 3px 10px;
   }
 
   hr#menu_separator {
