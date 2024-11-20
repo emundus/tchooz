@@ -152,17 +152,26 @@ if (!empty((array) $this->assoc_files)) :
 
 <script>
 
-    let headings = document.querySelectorAll(".closed-tab");
-    headings.forEach((heading) => {
-        let clickElement = heading.querySelector('.em-container-assocFiles-heading');
-        clickElement.addEventListener('click', function () {
-            if (heading.classList.contains('closed-tab')) {
-                heading.classList.remove('closed-tab');
-            } else {
-                heading.classList.add('closed-tab');
-            }
+    if (typeof headings === 'undefined') {
+        let headings = document.querySelectorAll(".closed-tab");
+        onClickOnHeadings(headings);
+    } else {
+        headings = document.querySelectorAll(".closed-tab");
+        onClickOnHeadings(headings);
+    }
+
+    function onClickOnHeadings(headings) {
+        headings.forEach((heading) => {
+            let clickElement = heading.querySelector('.em-container-assocFiles-heading');
+            clickElement.addEventListener('click', function () {
+                if (heading.classList.contains('closed-tab')) {
+                    heading.classList.remove('closed-tab');
+                } else {
+                    heading.classList.add('closed-tab');
+                }
+            });
         });
-    });
+    }
 
     function openAccordion(fnum) {
         let block = document.getElementById(fnum + '-collapse-item');

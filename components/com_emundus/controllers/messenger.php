@@ -55,10 +55,13 @@ class EmundusControllerMessenger extends BaseController
 	 */
 	public function getfilesbyuser()
 	{
-		$user = JFactory::getUser();
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->user->id)) {
+			$files = $this->m_messenger->getFilesByUser($this->user->id, false);
+		} else {
+			$files = $this->m_messenger->getFilesByUser($this->user->id);
+		}
 
-		$files = $this->m_messenger->getFilesByUser();
-		$data  = array('data' => $files, 'current_user' => $user->id);
+		$data  = array('data' => $files, 'current_user' => $this->user->id);
 
 		echo json_encode((object) $data);
 		exit;
@@ -68,9 +71,8 @@ class EmundusControllerMessenger extends BaseController
 	{
 		$response = ['data' => null, 'status' => false, 'msg' => JText::_('BAD_REQUEST'), 'code' => 403];
 
-
 		$fnum         = $this->input->getString('fnum');
-		$current_user = JFactory::getUser();
+		$current_user = $this->user;
 
 		if (!empty($fnum) && !empty($current_user->id)) {
 			require_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
@@ -83,6 +85,7 @@ class EmundusControllerMessenger extends BaseController
 
 				$response['data'] = $this->m_messenger->getMessagesByFnum($fnum, $offset);
 				if (!empty($response['data'])) {
+					$response['status'] = true;
 					$response['msg']  = JText::_('SUCCESS');
 					$response['code'] = 200;
 				}
