@@ -400,6 +400,10 @@ button .quicktranslate.unpublished{
 	background-color: #cccccc;
 }
 .translation-field-fieldparams td div.btn-group,.translation-field-fieldparams th div.btn-group, .translation-field-fieldparams th:nth-child(3){display: none}
+
+#falang-params .control-group{
+	margin:0 ;/* reset the select parameter for better display on the select translation button*/
+}
 /*end custom field*/
 
 @media (max-width: 1200px){
@@ -492,4 +496,19 @@ button .quicktranslate.unpublished{
 
 [data-bs-theme=dark] a.quickmodal {
 	color: #fff !important;
+}
+
+/*Custom fields */
+.falang-cf{
+	float: left;
+	margin-left: 5px;
+	margin-right: 5px;
+	font-size: 14px;
+	opacity:0.5
+}
+.falang-cf a.button {
+	margin-right: 5px;
+	vertical-align: bottom;
+	display: inline-block;
+	line-height: 16px;
 }

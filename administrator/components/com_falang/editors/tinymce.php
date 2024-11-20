@@ -17,14 +17,14 @@ use Joomla\CMS\Language\Text;
             innerHTML = "";
             if (action == "copy") {
                 srcEl = document.getElementById("original_value_" + fieldname);
-                setTranslation(fieldname, srcEl.innerHTML);
+                setTranslation("refField_"+fieldname, srcEl.innerHTML);
             }
             if (action == "translate") {
                 srcEl = document.getElementById("original_value_" + fieldname);
-                translateService(fieldname, srcEl.innerHTML);
+                translateService("refField_"+fieldname, srcEl.innerHTML);
             }
             if (action == "clear") {
-                setTranslation(fieldname, "");
+                setTranslation("refField_"+fieldname, "");
             }
         } catch (e) {
             console.log(e.message);
@@ -37,7 +37,7 @@ use Joomla\CMS\Language\Text;
    * Set the translation in field work with editor and textarea mode
    * */
    function setTranslation(fieldname,value){
-       srcEl = document.getElementById("refField_"+fieldname);
+       srcEl = document.getElementById(fieldname);
 
        //both need to be done in case we are
        if (srcEl != null) {
@@ -45,9 +45,9 @@ use Joomla\CMS\Language\Text;
            srcEl.value = value.trim();//set the text area
            try {
                //save the content in visual mode
-               if (!tinymce.get("refField_"+fieldname).hidden){
+               if (!tinymce.get(fieldname).hidden){
                    //visual mode
-                   tinymce.get("refField_"+fieldname).setContent(value.trim()); //set the editor in visual mode
+                   tinymce.get(fieldname).setContent(value.trim()); //set the editor in visual mode
                }
            } catch(e){
                //nothing to do
