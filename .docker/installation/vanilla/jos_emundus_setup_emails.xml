@@ -148,7 +148,7 @@
     <field name="category">Système</field>
     <field name="cci"></field>
     <field name="tags">0</field>
-    <field name="button"></field>
+    <field name="button">Activer mon compte / Activate my account</field>
    </row>
    <row>
     <field name="id">73</field>

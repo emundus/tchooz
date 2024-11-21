@@ -284,7 +284,7 @@
                                 &lt;a href=&quot;[ACTIVATION_URL]&quot;
                                    target=&quot;_blank&quot;
                                    style=&quot;color: rgb(255, 255, 255);font-family: sans-serif; background-color: rgb(38, 166, 91);padding: 10px 12px;border-radius: 8px;text-decoration: unset&quot;&gt;
-                                    Activer mon compte / Activate my account
+                                    [BUTTON_TEXT]
                                 &lt;/a&gt;
                             &lt;/td&gt;
                         &lt;/tr&gt;
