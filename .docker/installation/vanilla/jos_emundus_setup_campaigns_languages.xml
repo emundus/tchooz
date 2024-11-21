@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_setup_campaigns_languages">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="campaign_id" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="lang_id" Type="int" Null="NO" Key="" Extra="" />
+   <key Table="#__emundus_setup_campaigns_languages" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_campaigns_languages" Non_unique="1" Key_name="jos_emundus_setup_campaigns_languages_campaign_id_fk" Seq_in_index="1" Column_name="campaign_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

@@ -205,11 +205,6 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
     echo >&2 "========================================================================"
   fi
 
-  echo >&2 "Build documentation..."
-  npm install
-  npm install --prefix components/com_emundus
-  npm run docs:build --prefix components/com_emundus
-
   echo >&2 "========================================================================"
   echo >&2
   echo >&2 "This server is now configured to run Joomla!"

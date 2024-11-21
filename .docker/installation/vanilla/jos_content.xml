@@ -56,10 +56,10 @@
     <field name="fulltext"></field>
     <field name="state">0</field>
     <field name="catid">2</field>
-    <field name="created">2024-08-23 08:23:38</field>
+    <field name="created">2024-11-21 10:30:24</field>
     <field name="created_by">1</field>
     <field name="created_by_alias"></field>
-    <field name="modified">2024-08-23 08:23:38</field>
+    <field name="modified">2024-11-21 10:30:24</field>
     <field name="modified_by">1</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -88,10 +88,10 @@
     <field name="fulltext"></field>
     <field name="state">1</field>
     <field name="catid">2</field>
-    <field name="created">2024-08-23 08:23:38</field>
+    <field name="created">2024-11-21 10:30:24</field>
     <field name="created_by">1</field>
     <field name="created_by_alias"></field>
-    <field name="modified">2024-08-23 08:23:38</field>
+    <field name="modified">2024-11-21 10:30:24</field>
     <field name="modified_by">1</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -120,10 +120,10 @@
     <field name="fulltext"></field>
     <field name="state">1</field>
     <field name="catid">2</field>
-    <field name="created">2024-08-23 08:23:38</field>
+    <field name="created">2024-11-21 10:30:24</field>
     <field name="created_by">1</field>
     <field name="created_by_alias"></field>
-    <field name="modified">2024-08-23 08:23:38</field>
+    <field name="modified">2024-11-21 10:30:24</field>
     <field name="modified_by">1</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -176,13 +176,13 @@
 &lt;p data-renderer-start-pos=&quot;1794&quot;&gt;Le schéma pluriannuel décrit les points importants sur lesquels &lt;span class=&quot;fabric-text-color-mark&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[NOM DE L’ENTITÉ]&lt;/span&gt; &lt;/span&gt;s’appuiera pour améliorer l’accessibilité numérique de l’ensemble de ses sites web et applications.&lt;/p&gt;
 &lt;p data-renderer-start-pos=&quot;1794&quot;&gt; &lt;/p&gt;
 &lt;ul&gt;
-&lt;li data-renderer-start-pos=&quot;1977&quot;&gt; &lt;u data-renderer-mark=&quot;true&quot;&gt;Consulter le schéma pluriannuel d’accessibilité 2023 – 2025&lt;/u&gt; &lt;span style=&quot;color: #ff0000;&quot;&gt;&lt;span class=&quot;fabric-text-color-mark&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;(Les utilisateurs doivent avoir accès au schéma pluriannuel - [insérer un lien cliquable vers le schéma pluriannuel]) – Exemple de schéma pluriannuel : &lt;/span&gt;&lt;a class=&quot;css-tgpl01&quot; style=&quot;color: #ff0000;&quot; title=&quot;https://www.numerique.gouv.fr/uploads/DINUM_SchemaPluriannuel_2020.pdf&quot; href=&quot;https://www.numerique.gouv.fr/uploads/DINUM_SchemaPluriannuel_2020.pdf&quot; data-testid=&quot;link-with-safety&quot; data-renderer-mark=&quot;true&quot;&gt;&lt;span class=&quot;fabric-text-color-mark&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;https://www.numerique.gouv.fr/uploads/DINUM_SchemaPluriannuel_2020.pdf&lt;/span&gt;&lt;/a&gt;&lt;/span&gt;&lt;/li&gt;
+&lt;li data-renderer-start-pos=&quot;1977&quot;&gt; &lt;u data-renderer-mark=&quot;true&quot;&gt;Consulter le schéma pluriannuel d’accessibilité 2023 – 2025&lt;/u&gt; &lt;span style=&quot;color: #ff0000;&quot;&gt;&lt;span class=&quot;fabric-text-color-mark&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;(Les utilisateurs doivent avoir accès au schéma pluriannuel - [insérer un lien cliquable vers le schéma pluriannuel]) – Exemple de schéma pluriannuel : &lt;/span&gt;&lt;a class=&quot;css-tgpl01&quot; style=&quot;color: #ff0000;&quot; title=&quot;https://www.numerique.gouv.fr/uploads/DINUM_SchemaPluriannuel_2020.pdf&quot; href=&quot;https://www.numerique.gouv.fr/uploads/DINUM_SchemaPluriannuel_2020.pdf&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot; data-testid=&quot;link-with-safety&quot; data-renderer-mark=&quot;true&quot;&gt;&lt;span class=&quot;fabric-text-color-mark&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;https://www.numerique.gouv.fr/uploads/DINUM_SchemaPluriannuel_2020.pdf&lt;/span&gt;&lt;/a&gt;&lt;/span&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p data-renderer-start-pos=&quot;2268&quot;&gt; &lt;/p&gt;
 &lt;p data-renderer-start-pos=&quot;2271&quot;&gt;Il s’accompagne d’un plan d’action annuel qui détaille les opérations programmées et mises en œuvre, ainsi que l’état de suivi de ces actions :&lt;/p&gt;
 &lt;p data-renderer-start-pos=&quot;2271&quot;&gt; &lt;/p&gt;
 &lt;ul&gt;
-&lt;li data-renderer-start-pos=&quot;2416&quot;&gt; &lt;u data-renderer-mark=&quot;true&quot;&gt;Consulter plan annuel d’accessibilité 2023&lt;/u&gt; &lt;span style=&quot;color: #ff0000;&quot;&gt;&lt;span class=&quot;fabric-text-color-mark&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;(Les utilisateurs doivent avoir accès au plan annuel - [insérer un lien cliquable vers le plan annuel]) – Exemple de plan annuel : &lt;/span&gt;&lt;a class=&quot;css-tgpl01&quot; style=&quot;color: #ff0000;&quot; title=&quot;https://www.numerique.gouv.fr/uploads/DINUM-plan-annuel-2021.pdf&quot; href=&quot;https://www.numerique.gouv.fr/uploads/DINUM-plan-annuel-2021.pdf&quot; data-testid=&quot;link-with-safety&quot; data-renderer-mark=&quot;true&quot;&gt;&lt;span class=&quot;fabric-text-color-mark&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;https://www.numerique.gouv.fr/uploads/DINUM-plan-annuel-2021.pdf&lt;/span&gt;&lt;/a&gt;&lt;/span&gt;&lt;/li&gt;
+&lt;li data-renderer-start-pos=&quot;2416&quot;&gt; &lt;u data-renderer-mark=&quot;true&quot;&gt;Consulter plan annuel d’accessibilité 2023&lt;/u&gt; &lt;span style=&quot;color: #ff0000;&quot;&gt;&lt;span class=&quot;fabric-text-color-mark&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;(Les utilisateurs doivent avoir accès au plan annuel - [insérer un lien cliquable vers le plan annuel]) – Exemple de plan annuel : &lt;/span&gt;&lt;a class=&quot;css-tgpl01&quot; style=&quot;color: #ff0000;&quot; title=&quot;https://www.numerique.gouv.fr/uploads/DINUM-plan-annuel-2021.pdf&quot; href=&quot;https://www.numerique.gouv.fr/uploads/DINUM-plan-annuel-2021.pdf&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot; data-testid=&quot;link-with-safety&quot; data-renderer-mark=&quot;true&quot;&gt;&lt;span class=&quot;fabric-text-color-mark&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;https://www.numerique.gouv.fr/uploads/DINUM-plan-annuel-2021.pdf&lt;/span&gt;&lt;/a&gt;&lt;/span&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p data-renderer-start-pos=&quot;2663&quot;&gt; &lt;/p&gt;
 &lt;p data-renderer-start-pos=&quot;2663&quot;&gt; &lt;/p&gt;
@@ -322,10 +322,10 @@
     <field name="fulltext"></field>
     <field name="state">1</field>
     <field name="catid">8</field>
-    <field name="created">2024-08-23 08:23:38</field>
+    <field name="created">2024-11-21 10:30:24</field>
     <field name="created_by">1</field>
     <field name="created_by_alias"></field>
-    <field name="modified">2024-08-23 08:23:38</field>
+    <field name="modified">2024-11-21 10:30:24</field>
     <field name="modified_by">1</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -334,7 +334,7 @@
     <field name="images">{&quot;image_intro&quot;:&quot;&quot;,&quot;image_intro_alt&quot;:&quot;&quot;,&quot;float_intro&quot;:&quot;&quot;,&quot;image_intro_caption&quot;:&quot;&quot;,&quot;image_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_alt&quot;:&quot;&quot;,&quot;float_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_caption&quot;:&quot;&quot;}</field>
     <field name="urls">{&quot;urla&quot;:&quot;&quot;,&quot;urlatext&quot;:&quot;&quot;,&quot;targeta&quot;:&quot;&quot;,&quot;urlb&quot;:&quot;&quot;,&quot;urlbtext&quot;:&quot;&quot;,&quot;targetb&quot;:&quot;&quot;,&quot;urlc&quot;:&quot;&quot;,&quot;urlctext&quot;:&quot;&quot;,&quot;targetc&quot;:&quot;&quot;}</field>
     <field name="attribs">{&quot;article_layout&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;flags&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;alternative_readmore&quot;:&quot;&quot;,&quot;article_page_title&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;&quot;,&quot;show_article_options&quot;:&quot;&quot;,&quot;show_urls_images_backend&quot;:&quot;&quot;,&quot;show_urls_images_frontend&quot;:&quot;&quot;}</field>
-    <field name="version">6</field>
+    <field name="version">8</field>
     <field name="ordering">4</field>
     <field name="metakey"></field>
     <field name="metadesc"></field>
@@ -358,14 +358,14 @@
 &lt;p&gt; &lt;/p&gt;
 &lt;p&gt;Elle vous informe sur les finalités des traitements effectués, la base légale des traitements, les destinataires des données ainsi que leur durée de conservation, les mesures de sécurité, l’existence éventuelle de transferts de données hors de l’Union Européenne ou de prises de décisions automatisées, l’utilisation et la gestion des cookies.&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
-&lt;p&gt;Concernant vos droits informatiques et libertés et la façon de les exercer, nous vous invitons à consulter la page &lt;a href=&quot;gestion-des-droits&quot;&gt;Gestion des Droits&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Concernant vos droits informatiques et libertés et la façon de les exercer, nous vous invitons à consulter la page &lt;a href=&quot;gestion-des-droits&quot;&gt;Gestion des droits&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
 &lt;h3&gt;Qui est le responsable de traitement des données effectués par ce site Internet ?&lt;/h3&gt;
 &lt;p&gt; &lt;/p&gt;
 &lt;p&gt;Le responsable du traitement des données effectué par le site Internet &lt;span style=&quot;color: #ff0000;&quot;&gt;[URL SITE CLIENT]&lt;/span&gt; est la société &lt;span style=&quot;color: #ff0000;&quot;&gt;[RAISON SOCIALE CLIENT]&lt;/span&gt;, située &lt;span style=&quot;color: #ff0000;&quot;&gt;[ADRESSE SIÈGE SOCIAL DU CLIENT]&lt;/span&gt;.&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
-&lt;p&gt;Pour en savoir plus, voir les &lt;a href=&quot;mentions-legales&quot;&gt;mentions légales&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Pour en savoir plus, voir les &lt;a href=&quot;mentions-legales&quot;&gt;Mentions légales&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
 &lt;h3&gt;Ce site collecte-t-il des données à caractère personnel ?&lt;/h3&gt;
@@ -495,7 +495,7 @@
 &lt;p&gt;&lt;br&gt;D'autres informations, telles que les données de connexion ou les formulaires en ligne déjà remplis, sont également conservées pendant la session.&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;Toutefois, si vous mettez fin à votre session de navigation, l’identifiant de session et toutes les autres données stockées seront effacés. Cela signifie que lorsque vous ouvrez la même page web dans une nouvelle fenêtre de navigateur, vous serez considéré comme un nouveau visiteur.&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
-&lt;p&gt;Pour plus d’information sur les cookies, vous pouvez consulter notre &lt;a href=&quot;gestion-des-cookies&quot;&gt;politique de cookies&lt;/a&gt; ou vous rendre sur &lt;a href=&quot;https://www.cnil.fr/&quot;&gt;le site de la CNIL&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Pour plus d’information sur les cookies, vous pouvez consulter notre &lt;a href=&quot;gestion-des-cookies&quot;&gt;Politique de cookies&lt;/a&gt; ou vous rendre sur &lt;a href=&quot;https://www.cnil.fr/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;le site de la CNIL&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
 &lt;h3&gt;Puis-je m’opposer à ces cookies ?&lt;/h3&gt;
@@ -512,10 +512,10 @@
     <field name="fulltext"></field>
     <field name="state">1</field>
     <field name="catid">8</field>
-    <field name="created">2024-08-23 08:23:38</field>
+    <field name="created">2024-11-21 10:30:24</field>
     <field name="created_by">1</field>
     <field name="created_by_alias"></field>
-    <field name="modified">2024-08-23 08:23:38</field>
+    <field name="modified">2024-11-21 10:30:24</field>
     <field name="modified_by">1</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -524,7 +524,7 @@
     <field name="images">{&quot;image_intro&quot;:&quot;&quot;,&quot;image_intro_alt&quot;:&quot;&quot;,&quot;float_intro&quot;:&quot;&quot;,&quot;image_intro_caption&quot;:&quot;&quot;,&quot;image_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_alt&quot;:&quot;&quot;,&quot;float_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_caption&quot;:&quot;&quot;}</field>
     <field name="urls">{&quot;urla&quot;:&quot;&quot;,&quot;urlatext&quot;:&quot;&quot;,&quot;targeta&quot;:&quot;&quot;,&quot;urlb&quot;:&quot;&quot;,&quot;urlbtext&quot;:&quot;&quot;,&quot;targetb&quot;:&quot;&quot;,&quot;urlc&quot;:&quot;&quot;,&quot;urlctext&quot;:&quot;&quot;,&quot;targetc&quot;:&quot;&quot;}</field>
     <field name="attribs">{&quot;article_layout&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;flags&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;alternative_readmore&quot;:&quot;&quot;,&quot;article_page_title&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;&quot;,&quot;show_article_options&quot;:&quot;&quot;,&quot;show_urls_images_backend&quot;:&quot;&quot;,&quot;show_urls_images_frontend&quot;:&quot;&quot;}</field>
-    <field name="version">20</field>
+    <field name="version">28</field>
     <field name="ordering">3</field>
     <field name="metakey"></field>
     <field name="metadesc"></field>
@@ -707,10 +707,10 @@
     <field name="fulltext"></field>
     <field name="state">1</field>
     <field name="catid">8</field>
-    <field name="created">2024-08-23 08:23:38</field>
+    <field name="created">2024-11-21 10:30:24</field>
     <field name="created_by">1</field>
     <field name="created_by_alias"></field>
-    <field name="modified">2024-08-23 08:23:38</field>
+    <field name="modified">2024-11-21 10:30:24</field>
     <field name="modified_by">1</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -773,7 +773,7 @@
 &lt;p&gt; &lt;/p&gt;
 &lt;h4&gt; &lt;/h4&gt;
 &lt;h4&gt;À titre d’exemple :&lt;/h4&gt;
-&lt;p&gt;&lt;br&gt;Edge™ : &lt;a href=&quot;https://support.microsoft.com/fr-fr/microsoft-edge/supprimer-les-cookies-dans-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09&quot;&gt;https://support.microsoft.com/fr-fr/microsoft-edge/supprimer-les-cookies-dans-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09&lt;/a&gt;&lt;br&gt;Safari™ : &lt;a href=&quot;https://apple.co/3gL5sDd&quot;&gt;https://apple.co/3gL5sDd&lt;/a&gt;&lt;br&gt;Chrome™ : &lt;a href=&quot;https://bit.ly/3iqnMSj&quot;&gt;https://bit.ly/3iqnMSj&lt;/a&gt;&lt;br&gt;Firefox™: &lt;a href=&quot;https://mzl.la/3iq71GV&quot;&gt;https://mzl.la/3iq71GV&lt;/a&gt;&lt;br&gt;Opera™ : &lt;a href=&quot;https://bit.ly/3aiU2Eb&quot;&gt;https://bit.ly/3aiU2Eb&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;Edge™ : &lt;a href=&quot;https://support.microsoft.com/fr-fr/microsoft-edge/supprimer-les-cookies-dans-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;https://support.microsoft.com/fr-fr/microsoft-edge/supprimer-les-cookies-dans-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09&lt;/a&gt;&lt;br&gt;Safari™ : &lt;a href=&quot;https://apple.co/3gL5sDd&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;https://apple.co/3gL5sDd&lt;/a&gt;&lt;br&gt;Chrome™ : &lt;a href=&quot;https://bit.ly/3iqnMSj&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;https://bit.ly/3iqnMSj&lt;/a&gt;&lt;br&gt;Firefox™: &lt;a href=&quot;https://mzl.la/3iq71GV&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;https://mzl.la/3iq71GV&lt;/a&gt;&lt;br&gt;Opera™ : &lt;a href=&quot;https://bit.ly/3aiU2Eb&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;https://bit.ly/3aiU2Eb&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
 &lt;h4&gt;À noter :&lt;/h4&gt;
@@ -783,10 +783,10 @@
     <field name="fulltext"></field>
     <field name="state">1</field>
     <field name="catid">8</field>
-    <field name="created">2024-08-23 08:23:38</field>
+    <field name="created">2024-11-21 10:30:24</field>
     <field name="created_by">1</field>
     <field name="created_by_alias"></field>
-    <field name="modified">2024-08-23 08:23:38</field>
+    <field name="modified">2024-11-21 10:30:24</field>
     <field name="modified_by">1</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -795,7 +795,7 @@
     <field name="images">{&quot;image_intro&quot;:&quot;&quot;,&quot;image_intro_alt&quot;:&quot;&quot;,&quot;float_intro&quot;:&quot;&quot;,&quot;image_intro_caption&quot;:&quot;&quot;,&quot;image_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_alt&quot;:&quot;&quot;,&quot;float_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_caption&quot;:&quot;&quot;}</field>
     <field name="urls">{&quot;urla&quot;:&quot;&quot;,&quot;urlatext&quot;:&quot;&quot;,&quot;targeta&quot;:&quot;&quot;,&quot;urlb&quot;:&quot;&quot;,&quot;urlbtext&quot;:&quot;&quot;,&quot;targetb&quot;:&quot;&quot;,&quot;urlc&quot;:&quot;&quot;,&quot;urlctext&quot;:&quot;&quot;,&quot;targetc&quot;:&quot;&quot;}</field>
     <field name="attribs">{&quot;article_layout&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;flags&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;alternative_readmore&quot;:&quot;&quot;,&quot;article_page_title&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;&quot;,&quot;show_article_options&quot;:&quot;&quot;,&quot;show_urls_images_backend&quot;:&quot;&quot;,&quot;show_urls_images_frontend&quot;:&quot;&quot;}</field>
-    <field name="version">15</field>
+    <field name="version">21</field>
     <field name="ordering">1</field>
     <field name="metakey"></field>
     <field name="metadesc"></field>
@@ -845,15 +845,15 @@
 &lt;p&gt;&lt;strong&gt;Conception Technique, Ergonomique et Graphique : &lt;/strong&gt;EMUNDUS SAS – 10 passage du Drakkar, 17000 La Rochelle&lt;/p&gt;
 &lt;p&gt;Adresse e-mail : info[@]emundus.fr&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Hébergement et Infogérance : &lt;/strong&gt;SCALEWAY SAS – BP 438 – 75366 PARIS CEDEX 08 FRANCE - &lt;a href=&quot;https://scaleway.com&quot;&gt;website : scaleway.com&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Hébergement et Infogérance : &lt;/strong&gt;SCALEWAY SAS – BP 438 – 75366 PARIS CEDEX 08 FRANCE - &lt;a href=&quot;https://scaleway.com&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;website : scaleway.com&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;</field>
     <field name="fulltext"></field>
     <field name="state">1</field>
     <field name="catid">8</field>
-    <field name="created">2024-08-23 08:23:38</field>
+    <field name="created">2024-11-21 10:30:24</field>
     <field name="created_by">1</field>
     <field name="created_by_alias"></field>
-    <field name="modified">2024-08-23 08:23:38</field>
+    <field name="modified">2024-11-21 10:30:24</field>
     <field name="modified_by">1</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -862,7 +862,7 @@
     <field name="images">{&quot;image_intro&quot;:&quot;&quot;,&quot;image_intro_alt&quot;:&quot;&quot;,&quot;float_intro&quot;:&quot;&quot;,&quot;image_intro_caption&quot;:&quot;&quot;,&quot;image_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_alt&quot;:&quot;&quot;,&quot;float_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_caption&quot;:&quot;&quot;}</field>
     <field name="urls">{&quot;urla&quot;:&quot;&quot;,&quot;urlatext&quot;:&quot;&quot;,&quot;targeta&quot;:&quot;&quot;,&quot;urlb&quot;:&quot;&quot;,&quot;urlbtext&quot;:&quot;&quot;,&quot;targetb&quot;:&quot;&quot;,&quot;urlc&quot;:&quot;&quot;,&quot;urlctext&quot;:&quot;&quot;,&quot;targetc&quot;:&quot;&quot;}</field>
     <field name="attribs">{&quot;article_layout&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;flags&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;alternative_readmore&quot;:&quot;&quot;,&quot;article_page_title&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;&quot;,&quot;show_article_options&quot;:&quot;&quot;,&quot;show_urls_images_backend&quot;:&quot;&quot;,&quot;show_urls_images_frontend&quot;:&quot;&quot;}</field>
-    <field name="version">6</field>
+    <field name="version">8</field>
     <field name="ordering">0</field>
     <field name="metakey"></field>
     <field name="metadesc"></field>
@@ -876,16 +876,16 @@
    <row>
     <field name="id">60</field>
     <field name="asset_id">141</field>
-    <field name="title">Fiche déjà envoyée</field>
+    <field name="title">Lettre de recommandation déjà envoyée</field>
     <field name="alias">fiche-deja-envoyee</field>
-    <field name="introtext">&lt;p&gt;Vous avez déjà soumis votre fiche d'appréciation individuelle&lt;/p&gt;</field>
+    <field name="introtext">&lt;p&gt;Une lettre de recommandation a déjà été reçue pour ce candidat.&lt;/p&gt;</field>
     <field name="fulltext"></field>
     <field name="state">1</field>
     <field name="catid">12</field>
-    <field name="created">2024-08-23 08:23:38</field>
+    <field name="created">2024-11-21 10:30:24</field>
     <field name="created_by">1</field>
     <field name="created_by_alias"></field>
-    <field name="modified">2024-08-23 08:23:38</field>
+    <field name="modified">2024-11-21 10:30:24</field>
     <field name="modified_by">1</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -894,7 +894,7 @@
     <field name="images">{&quot;image_intro&quot;:&quot;&quot;,&quot;image_intro_alt&quot;:&quot;&quot;,&quot;float_intro&quot;:&quot;&quot;,&quot;image_intro_caption&quot;:&quot;&quot;,&quot;image_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_alt&quot;:&quot;&quot;,&quot;float_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_caption&quot;:&quot;&quot;}</field>
     <field name="urls">{&quot;urla&quot;:&quot;&quot;,&quot;urlatext&quot;:&quot;&quot;,&quot;targeta&quot;:&quot;&quot;,&quot;urlb&quot;:&quot;&quot;,&quot;urlbtext&quot;:&quot;&quot;,&quot;targetb&quot;:&quot;&quot;,&quot;urlc&quot;:&quot;&quot;,&quot;urlctext&quot;:&quot;&quot;,&quot;targetc&quot;:&quot;&quot;}</field>
     <field name="attribs">{&quot;article_layout&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;flags&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;alternative_readmore&quot;:&quot;&quot;,&quot;article_page_title&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;&quot;,&quot;show_article_options&quot;:&quot;&quot;,&quot;show_urls_images_backend&quot;:&quot;&quot;,&quot;show_urls_images_frontend&quot;:&quot;&quot;}</field>
-    <field name="version">3</field>
+    <field name="version">5</field>
     <field name="ordering">1</field>
     <field name="metakey"></field>
     <field name="metadesc"></field>
@@ -908,16 +908,16 @@
    <row>
     <field name="id">61</field>
     <field name="asset_id">142</field>
-    <field name="title">Fiche envoyée</field>
+    <field name="title">Lettre de recommandation envoyée</field>
     <field name="alias">fiche-envoyee</field>
-    <field name="introtext">&lt;p&gt;Votre formulaire a bien été envoyé, merci pour votre contribution.&lt;/p&gt;</field>
+    <field name="introtext">&lt;p&gt;Votre lettre de recommandation a bien été envoyé, merci pour votre contribution.&lt;/p&gt;</field>
     <field name="fulltext"></field>
     <field name="state">1</field>
     <field name="catid">12</field>
-    <field name="created">2024-08-23 08:23:38</field>
+    <field name="created">2024-11-21 10:30:24</field>
     <field name="created_by">1</field>
     <field name="created_by_alias"></field>
-    <field name="modified">2024-08-23 08:23:38</field>
+    <field name="modified">2024-11-21 10:30:24</field>
     <field name="modified_by">1</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -926,7 +926,7 @@
     <field name="images">{&quot;image_intro&quot;:&quot;&quot;,&quot;image_intro_alt&quot;:&quot;&quot;,&quot;float_intro&quot;:&quot;&quot;,&quot;image_intro_caption&quot;:&quot;&quot;,&quot;image_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_alt&quot;:&quot;&quot;,&quot;float_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_caption&quot;:&quot;&quot;}</field>
     <field name="urls">{&quot;urla&quot;:&quot;&quot;,&quot;urlatext&quot;:&quot;&quot;,&quot;targeta&quot;:&quot;&quot;,&quot;urlb&quot;:&quot;&quot;,&quot;urlbtext&quot;:&quot;&quot;,&quot;targetb&quot;:&quot;&quot;,&quot;urlc&quot;:&quot;&quot;,&quot;urlctext&quot;:&quot;&quot;,&quot;targetc&quot;:&quot;&quot;}</field>
     <field name="attribs">{&quot;article_layout&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;flags&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;alternative_readmore&quot;:&quot;&quot;,&quot;article_page_title&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;&quot;,&quot;show_article_options&quot;:&quot;&quot;,&quot;show_urls_images_backend&quot;:&quot;&quot;,&quot;show_urls_images_frontend&quot;:&quot;&quot;}</field>
-    <field name="version">2</field>
+    <field name="version">4</field>
     <field name="ordering">0</field>
     <field name="metakey"></field>
     <field name="metadesc"></field>
@@ -944,15 +944,17 @@
     <field name="alias">ressources</field>
     <field name="introtext">&lt;ul&gt;
 &lt;li&gt;&lt;a href=&quot;ressources/engagements-respectifs&quot;&gt;Nos engagements respectifs&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;images/emundus/project/Attestation%20de%20Respect%20de%20Conformite%20RGPD%20-%20EMUNDUS.pdf&quot;&gt;Attestation de respect de conformité RGPD&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Annexe RGPD &lt;em&gt;(mettre le lien public)&lt;/em&gt;&lt;/li&gt;
 &lt;li&gt;Devis SOxxxx&lt;/li&gt;
 &lt;/ul&gt;</field>
     <field name="fulltext"></field>
     <field name="state">1</field>
     <field name="catid">13</field>
-    <field name="created">2024-08-23 08:23:38</field>
+    <field name="created">2024-11-21 10:30:24</field>
     <field name="created_by">1</field>
     <field name="created_by_alias"></field>
-    <field name="modified">2024-08-23 08:23:38</field>
+    <field name="modified">2024-11-21 10:30:24</field>
     <field name="modified_by">1</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -961,7 +963,7 @@
     <field name="images">{&quot;image_intro&quot;:&quot;&quot;,&quot;image_intro_alt&quot;:&quot;&quot;,&quot;float_intro&quot;:&quot;&quot;,&quot;image_intro_caption&quot;:&quot;&quot;,&quot;image_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_alt&quot;:&quot;&quot;,&quot;float_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_caption&quot;:&quot;&quot;}</field>
     <field name="urls">{&quot;urla&quot;:&quot;&quot;,&quot;urlatext&quot;:&quot;&quot;,&quot;targeta&quot;:&quot;&quot;,&quot;urlb&quot;:&quot;&quot;,&quot;urlbtext&quot;:&quot;&quot;,&quot;targetb&quot;:&quot;&quot;,&quot;urlc&quot;:&quot;&quot;,&quot;urlctext&quot;:&quot;&quot;,&quot;targetc&quot;:&quot;&quot;}</field>
     <field name="attribs">{&quot;article_layout&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;flags&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;alternative_readmore&quot;:&quot;&quot;,&quot;article_page_title&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;&quot;,&quot;show_article_options&quot;:&quot;&quot;,&quot;show_urls_images_backend&quot;:&quot;&quot;,&quot;show_urls_images_frontend&quot;:&quot;&quot;}</field>
-    <field name="version">4</field>
+    <field name="version">6</field>
     <field name="ordering">5</field>
     <field name="metakey"></field>
     <field name="metadesc"></field>
@@ -992,10 +994,10 @@
     <field name="fulltext"></field>
     <field name="state">1</field>
     <field name="catid">13</field>
-    <field name="created">2024-08-23 08:23:38</field>
+    <field name="created">2024-11-21 10:30:24</field>
     <field name="created_by">1</field>
     <field name="created_by_alias"></field>
-    <field name="modified">2024-08-23 08:23:38</field>
+    <field name="modified">2024-11-21 10:30:24</field>
     <field name="modified_by">1</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -1337,10 +1339,10 @@
     <field name="fulltext"></field>
     <field name="state">1</field>
     <field name="catid">13</field>
-    <field name="created">2024-08-23 08:23:38</field>
+    <field name="created">2024-11-21 10:30:24</field>
     <field name="created_by">1</field>
     <field name="created_by_alias"></field>
-    <field name="modified">2024-08-23 08:23:38</field>
+    <field name="modified">2024-11-21 10:30:24</field>
     <field name="modified_by">1</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -1369,10 +1371,10 @@
     <field name="fulltext"></field>
     <field name="state">1</field>
     <field name="catid">13</field>
-    <field name="created">2024-08-23 08:23:38</field>
+    <field name="created">2024-11-21 10:30:24</field>
     <field name="created_by">1</field>
     <field name="created_by_alias"></field>
-    <field name="modified">2024-08-23 08:23:38</field>
+    <field name="modified">2024-11-21 10:30:24</field>
     <field name="modified_by">1</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -1447,10 +1449,10 @@
     <field name="fulltext"></field>
     <field name="state">1</field>
     <field name="catid">13</field>
-    <field name="created">2024-08-23 08:23:38</field>
+    <field name="created">2024-11-21 10:30:24</field>
     <field name="created_by">1</field>
     <field name="created_by_alias"></field>
-    <field name="modified">2024-08-23 08:23:38</field>
+    <field name="modified">2024-11-21 10:30:24</field>
     <field name="modified_by">1</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>

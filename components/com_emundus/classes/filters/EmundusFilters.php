@@ -12,6 +12,8 @@ class EmundusFilters
 	protected $applied_filters = [];
 	protected $quick_search_filters = [];
 
+	protected $h_cache = null;
+
 	public function __construct($config = array())
 	{
 		Log::addLogger(['text_file' => 'com_emundus.filters.php'], Log::ALL, 'com_emundus.filters');
@@ -22,6 +24,9 @@ class EmundusFilters
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->user->id)) {
 			throw new Exception('Access denied', 403);
 		}
+
+		require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
+		$this->h_cache = new EmundusHelperCache();
 
 		if (!empty($config['element_id'])) {
 			$this->default_element = $config['element_id'];
@@ -61,7 +66,6 @@ class EmundusFilters
 		if (!empty($elements)) {
 			$db = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->createQuery();
-
 
 			foreach($elements as $element) {
                 $label = strip_tags(Text::_($element['label']));
@@ -106,51 +110,76 @@ class EmundusFilters
 						break;
 					case 'field':
 					case 'calc':
-						// field and calc maybe are integers or floats
-						// check sql column type of element and set type accordingly
-						$query->clear()
-							->select('jfl.db_table_name, jfe.name')
-							->from('jos_fabrik_elements as jfe')
-							->leftJoin('jos_fabrik_formgroup as jffg ON jffg.group_id = jfe.group_id')
-							->leftJoin('jos_fabrik_lists as jfl ON jfl.form_id = jffg.form_id')
-							->where('jfe.id = ' . $element['id']);
+						$found_from_cache = false;
+						if ($this->h_cache->isEnabled()) {
+							$element_filter_type = $this->h_cache->get('em-filters-element-' . $element['id'] . '-type');
 
-						try {
-							$db->setQuery($query);
-							$table_infos = $db->loadAssoc();
-						} catch (Exception $e) {
-							Log::add('Failed to get infos from fabrik element id ' . $element['id'] . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
-						}
+							if (!empty($element_filter_type)) {
+								$filter['type'] = $element_filter_type;
 
-						if (!empty($table_infos)) {
-							$query->clear()
-								->select('DATA_TYPE')
-								->from('INFORMATION_SCHEMA.COLUMNS')
-								->where('table_name = ' . $db->quote($table_infos['db_table_name']))
-								->where('column_name = ' . $db->quote($table_infos['name']));
-
-							try {
-								$db->setQuery($query);
-								$column_type = $db->loadResult();
-
-								switch($column_type) {
-									case 'int':
-									case 'tinyint':
-									case 'smallint':
-									case 'mediumint':
-									case 'bigint':
-									case 'decimal':
-									case 'float':
-									case 'double':
-										$filter['type'] = 'number';
+								switch($filter['type']) {
+									case 'number':
 										break;
 									default:
-										$filter['type'] = 'text';
 										$filter['operator'] = 'LIKE';
 										break;
 								}
+
+								$found_from_cache = true;
+							}
+						}
+
+						if (!$found_from_cache) {
+							// field and calc maybe are integers or floats
+							// check sql column type of element and set type accordingly
+							$query->clear()
+								->select('jfl.db_table_name, jfe.name')
+								->from('jos_fabrik_elements as jfe')
+								->leftJoin('jos_fabrik_formgroup as jffg ON jffg.group_id = jfe.group_id')
+								->leftJoin('jos_fabrik_lists as jfl ON jfl.form_id = jffg.form_id')
+								->where('jfe.id = ' . $element['id']);
+
+							try {
+								$db->setQuery($query);
+								$table_infos = $db->loadAssoc();
 							} catch (Exception $e) {
-								Log::add('Failed to get column type from table ' . $table_infos['db_table_name'] . ' and column ' . $table_infos['name'] . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
+								Log::add('Failed to get infos from fabrik element id ' . $element['id'] . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
+							}
+
+							if (!empty($table_infos)) {
+								$query->clear()
+									->select('DATA_TYPE')
+									->from('INFORMATION_SCHEMA.COLUMNS')
+									->where('table_name = ' . $db->quote($table_infos['db_table_name']))
+									->where('column_name = ' . $db->quote($table_infos['name']));
+
+								try {
+									$db->setQuery($query);
+									$column_type = $db->loadResult();
+
+									switch($column_type) {
+										case 'int':
+										case 'tinyint':
+										case 'smallint':
+										case 'mediumint':
+										case 'bigint':
+										case 'decimal':
+										case 'float':
+										case 'double':
+											$filter['type'] = 'number';
+											break;
+										default:
+											$filter['type'] = 'text';
+											$filter['operator'] = 'LIKE';
+											break;
+									}
+
+									if ($this->h_cache->isEnabled()) {
+										$this->h_cache->set('em-filters-element-' . $element['id'] . '-type', $filter['type']);
+									}
+								} catch (Exception $e) {
+									Log::add('Failed to get column type from table ' . $table_infos['db_table_name'] . ' and column ' . $table_infos['name'] . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
+								}
 							}
 						}
 
@@ -285,7 +314,8 @@ class EmundusFilters
 								}
 
 								// this field can contains order by clause, so we need to split it
-								$where_clause = stripos($params['database_join_where_sql'], 'ORDER BY') !== false ? substr($params['database_join_where_sql'], 0, $order_by_pos) : $params['database_join_where_sql'];
+								$order_by_pos = stripos($params['database_join_where_sql'], 'ORDER BY');
+								$where_clause = $order_by_pos !== false ? substr($params['database_join_where_sql'], 0, $order_by_pos) : $params['database_join_where_sql'];
 								$query->where($where_clause);
 							}
 						}

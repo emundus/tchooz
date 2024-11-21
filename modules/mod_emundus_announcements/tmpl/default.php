@@ -19,6 +19,18 @@ defined('_JEXEC') or die;
 </div>
 
 <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let sidebar_menu = document.querySelector('#g-navigation,#g-header #header-b');
+        if(sidebar_menu) {
+            sidebar_menu.style.top = document.getElementsByClassName('alerte-message-container')[0].offsetHeight + 'px';
+        }
+
+        let switch_menu_icon = document.querySelector('.switch-sidebar-icon');
+        if(switch_menu_icon) {
+            switch_menu_icon.style.top = (document.getElementsByClassName('alerte-message-container')[0].offsetHeight*1.6) + 'px';
+        }
+    });
+
     document.addEventListener('click', (event) => {
         if (event.target.id === 'close-preprod-alerte-container') {
             document.querySelector('.alerte-message-container').classList.add('hidden');

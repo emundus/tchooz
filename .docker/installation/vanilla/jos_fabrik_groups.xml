@@ -118,10 +118,10 @@
     <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
     <field name="is_join">0</field>
     <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
+    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_sortable&quot;:&quot;0&quot;,&quot;repeat_order_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
    </row>
    <row>
     <field name="id">139</field>
@@ -338,8 +338,8 @@
     <field name="created_by_alias">admin</field>
     <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out">1</field>
+    <field name="checked_out_time">2024-08-29 14:07:34</field>
     <field name="is_join">0</field>
     <field name="private">0</field>
     <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
@@ -593,8 +593,8 @@
     <field name="created_by_alias">admin</field>
     <field name="modified">2021-02-15 10:54:47</field>
     <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time">0000-00-00 00:00:00</field>
+    <field name="checked_out">1</field>
+    <field name="checked_out_time">2024-09-02 12:44:21</field>
     <field name="is_join">0</field>
     <field name="private">0</field>
     <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_sortable&quot;:&quot;0&quot;,&quot;repeat_order_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
@@ -1392,8 +1392,8 @@
     <field name="created_by_alias">admin</field>
     <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time">0000-00-00 00:00:00</field>
+    <field name="checked_out">1</field>
+    <field name="checked_out_time">2024-08-30 12:00:20</field>
     <field name="is_join">1</field>
     <field name="private">0</field>
     <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:1,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_sortable&quot;:&quot;0&quot;,&quot;repeat_order_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
@@ -1431,6 +1431,57 @@
     <field name="is_join">0</field>
     <field name="private">0</field>
     <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:1,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">840</field>
+    <field name="name">COM_EMUNDUS_COLLABORATION</field>
+    <field name="css"></field>
+    <field name="label"></field>
+    <field name="published">1</field>
+    <field name="created">2024-08-27 11:33:25</field>
+    <field name="created_by">1</field>
+    <field name="created_by_alias">admin</field>
+    <field name="modified">2024-08-27 11:33:25</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time">2024-08-27 11:33:25</field>
+    <field name="is_join">0</field>
+    <field name="private">0</field>
+    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:1,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">841</field>
+    <field name="name">Names</field>
+    <field name="css"></field>
+    <field name="label"></field>
+    <field name="published">1</field>
+    <field name="created">2024-08-27 11:33:25</field>
+    <field name="created_by">1</field>
+    <field name="created_by_alias">admin</field>
+    <field name="modified">2024-08-27 11:33:25</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time">2024-08-27 11:33:25</field>
+    <field name="is_join">0</field>
+    <field name="private">0</field>
+    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:2,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:1,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">842</field>
+    <field name="name">TABLE_SETUP_PROGRAMS- [jos_emundus_setup_programs_languages]</field>
+    <field name="css"></field>
+    <field name="label">PROGRAM_LANGUAGES</field>
+    <field name="published">1</field>
+    <field name="created">2024-10-08 15:16:16</field>
+    <field name="created_by">1</field>
+    <field name="created_by_alias">admin</field>
+    <field name="modified">2024-10-08 15:16:16</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
+    <field name="is_join">1</field>
+    <field name="private">0</field>
+    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&lt;p&gt;PROGRAM_LANGUAGES_INTRO&lt;\/p&gt;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;1&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_sortable&quot;:&quot;0&quot;,&quot;repeat_order_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
    </row>
   </table_data>
  </database>

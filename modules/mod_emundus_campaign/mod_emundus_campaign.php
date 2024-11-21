@@ -56,6 +56,7 @@ if ($user->guest || in_array($e_user->profile, $app_prof)) {
 	$mod_em_campaign_show_timezone        = $params->get('mod_em_campaign_show_timezone', 1);
 	$mod_em_campaign_list_sections        = $params->get('mod_em_campaign_list_sections', []);
 	$mod_em_campaign_display_program_label = $params->get('mod_em_campaign_display_program_label',0);
+	$mod_em_campaign_click_to_details = $params->get('mod_em_campaign_click_to_details',1);
 	$mod_em_campaign_intro                = $params->get('mod_em_campaign_intro', null);
 	if (empty($mod_em_campaign_intro) && $params->get('mod_em_campaign_layout') == 'default_tchooz') {
 		$mod_em_campaign_intro = $m_settings->getArticle($lang_tag, 52)->introtext;

@@ -18,14 +18,14 @@ use Joomla\CMS\Language\Text;
             innerHTML = "";
             if (action == "copy") {
                 srcEl = document.getElementById("original_value_" + fieldname);
-                setTranslation(fieldname, srcEl.innerHTML);
+                setTranslation("refField_" + , srcEl.innerHTML);
             }
             if (action == "translate") {
                 srcEl = document.getElementById("original_value_" + fieldname);
-                translateService(fieldname, srcEl.innerHTML);
+                translateService("refField_" + , srcEl.innerHTML);
             }
             if (action == "clear") {
-                setTranslation(fieldname, "");
+                setTranslation("refField_" + , "");
             }
         } catch (e) {
             console.log(e.message);
@@ -38,7 +38,7 @@ use Joomla\CMS\Language\Text;
     * Set the translation in field work with editor and textarea mode
     * */
     function setTranslation(fieldname, value) {
-        srcEl = document.getElementById("refField_" + fieldname);
+        srcEl = document.getElementById(fieldname);
         //console.log(srcEl);
         //both need to be done in case we are
         if (srcEl != null) {

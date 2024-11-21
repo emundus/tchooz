@@ -646,39 +646,54 @@ class EmundusModelApplication extends ListModel
 	{
 		$deleted = false;
 
-		try {
-			$query = 'SELECT * FROM #__emundus_uploads WHERE id=' . $id;
-			$this->_db->setQuery($query);
-			$file = $this->_db->loadAssoc();
-		}
-		catch (Exception $e) {
-			Log::add('Error in model/application at query: ' . $query, Log::ERROR, 'com_emundus');
-		}
+		if (!empty($id)) {
+			$query = $this->_db->getQuery(true);
+			try {
+				$query->clear()
+					->select('*')
+					->from('#__emundus_uploads')
+					->where('id = ' . $id);
 
-		$f = EMUNDUS_PATH_ABS . $file['user_id'] . DS . $file['filename'];
-		@unlink($f);
-
-		try {
-			$query = 'DELETE FROM #__emundus_uploads WHERE id=' . $id;
-			$this->_db->setQuery($query);
-			$deleted = $this->_db->execute();
-
-			if ($deleted) {
-				// Log the tag in the eMundus logging system.
-				$logsStd = new stdClass();
-
-				// get attachment data
-				$attachmentTpe = $this->getAttachmentByID($file['attachment_id']);
-
-				$logsStd->element = "[" . $attachmentTpe['value'] . "]";
-				$logsStd->details = $file['filename'];
-				$logsParams       = array('deleted' => [$logsStd]);
-
-				EmundusModelLogs::log(JFactory::getUser()->id, (int) substr($file['fnum'], -7), $file['fnum'], 4, 'd', 'COM_EMUNDUS_ACCESS_ATTACHMENT_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+				$this->_db->setQuery($query);
+				$file = $this->_db->loadAssoc();
+			} catch (Exception $e) {
+				Log::add('Error in model/application at query: ' . $query, Log::ERROR, 'com_emundus');
 			}
-		}
-		catch (Exception $e) {
-			Log::add('Error in model/application at query: ' . $query, Log::ERROR, 'com_emundus');
+
+			if (!empty($file)) {
+				$query->clear()
+					->select('applicant_id')
+					->from($this->_db->quoteName('#__emundus_campaign_candidature'))
+					->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($file['fnum']));
+				$this->_db->setQuery($query);
+				$applicant_id = $this->_db->loadResult();
+
+				$f = EMUNDUS_PATH_ABS . $applicant_id . DS . $file['filename'];
+				$deleted_file = unlink($f);
+
+				if ($deleted_file) {
+					try {
+						$query->clear()
+							->delete('#__emundus_uploads')
+							->where('id = ' . $id);
+						$this->_db->setQuery($query);
+						$deleted = $this->_db->execute();
+
+						if ($deleted) {
+							$logsStd = new stdClass();
+							$attachmentTpe = $this->getAttachmentByID($file['attachment_id']);
+
+							$logsStd->element = '[' . $attachmentTpe['value'] . ']';
+							$logsStd->details = $file['filename'];
+							$logsParams = array('deleted' => [$logsStd]);
+
+							EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($file['fnum'], -7), $file['fnum'], 4, 'd', 'COM_EMUNDUS_ACCESS_ATTACHMENT_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+						}
+					} catch (Exception $e) {
+						Log::add('Error in model/application at query: ' . $query, Log::ERROR, 'com_emundus');
+					}
+				}
+			}
 		}
 
 		return $deleted;
@@ -7200,4 +7215,112 @@ class EmundusModelApplication extends ListModel
 
 		return $cleared;
 	}
+
+    /**
+     * Retrieve Fabrik Groups associated to a fnum (campaign form and phases)
+     *
+     * @param $fnum
+     *
+     * @return array
+     *
+     */
+    public function getFabrikDataByFnum($fnum, $type = 'form') {
+        // TODO: adapt to also retrieve data of partners form (eval, decision...)
+        $result = [];
+
+        if (!empty($fnum) && !empty($type)) {
+            require_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
+            require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
+
+            $m_profile  = new EmundusModelProfile;
+            $m_files    = new EmundusModelFiles;
+
+            $query = $this->_db->createQuery();
+
+            $fnumInfos  = $m_files->getFnumInfos($fnum);
+            $profiles = $m_profile->getProfilesIDByCampaign([$fnumInfos['campaign_id']]);
+
+            $forms = [];
+			if (!empty($profiles)) {
+				require_once(JPATH_SITE . '/components/com_emundus/models/form.php');
+				$m_form = new EmundusModelForm();
+
+                foreach ($profiles as $profile) {
+                    $forms_data = $m_form->getFormsByProfileId($profile);
+                    if (!empty($forms_data)) {
+                        $forms_data_ids = array_map(function($form) {
+                            return $form->id;
+                        }, $forms_data);
+
+                        $forms = array_merge($forms, $forms_data_ids);
+                    }
+                }
+
+				if (!empty($forms)) {
+					$forms = array_unique($forms);
+
+					switch ($type) {
+						case 'list':
+							// Retrieve the list ids
+							$query->clear()
+								->select('jfl.id')
+								->from($this->_db->quoteName('#__fabrik_lists', 'jfl'))
+								->where('jfl.form_id IN (' . implode(',', $this->_db->quote($forms)) . ')')
+								->andWhere('jfl.published = 1');
+
+							try {
+								$this->_db->setQuery($query);
+								$result = $this->_db->loadColumn();
+							} catch (Exception $e) {
+								Log::add('Failed to get Fabrik lists on query: ' . $query->__toString() . ' with error -> ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+							}
+							break;
+						case 'group':
+						case 'element':
+							// Retrieve the group ids
+							$groups = [];
+							$query->clear()
+								->select('jffg.group_id')
+								->from($this->_db->quoteName('#__fabrik_formgroup', 'jffg'))
+								->leftJoin($this->_db->quoteName('#__fabrik_groups', 'jfg') . ' ON ' . $this->_db->quoteName('jfg.id') . ' = ' . $this->_db->quoteName('jffg.group_id'))
+								->where('jffg.form_id IN (' . implode(',', $this->_db->quote($forms)) . ')')
+								->andWhere('jfg.published = 1');
+
+							try {
+								$this->_db->setQuery($query);
+								$groups = $this->_db->loadColumn();
+							} catch (Exception $e) {
+								Log::add('Failed to get Fabrik groups on query: ' . $query->__toString() . ' with error -> ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+							}
+
+							if (!empty($groups)) {
+								if ($type == 'group') {
+									$result = $groups;
+								} else {
+									// Retrieve the element ids
+									$query->clear()
+										->select('jfe.id')
+										->from($this->_db->quoteName('#__fabrik_elements', 'jfe'))
+										->where('jfe.group_id IN (' . implode(',', $this->_db->quote($groups)) . ')')
+										->andWhere('jfe.published = 1');
+
+									try {
+										$this->_db->setQuery($query);
+										$result = $this->_db->loadColumn();
+									} catch (Exception $e) {
+										Log::add('Failed to get Fabrik elements on query: ' . $query->__toString() . ' with error -> ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+									}
+								}
+							}
+							break;
+						default:
+							$result = $forms;
+							break;
+					}
+				}
+			}
+        }
+
+        return $result;
+    }
 }
