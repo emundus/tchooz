@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Component\ComponentHelper;
 
 class EmundusModelAdministratorWorkflow extends JModelList
 {
@@ -204,15 +205,7 @@ class EmundusModelAdministratorWorkflow extends JModelList
 			$tasks[] = $created['status'];
 
 
-			$query->clear()
-				->select('extension_id')
-				->from('#__extensions')
-				->where('type = ' . $db->quote('component'))
-				->where('element = ' . $db->quote('com_emundus'))
-				->where('name = ' . $db->quote('com_emundus'));
-
-			$db->setQuery($query);
-			$component_id = $db->loadResult();
+			$component_id = ComponentHelper::getComponent('com_emundus')->id;
 
 			$result = EmundusHelperUpdate::addJoomlaMenu([
 				'menutype' => 'onboardingmenu',
@@ -222,8 +215,12 @@ class EmundusModelAdministratorWorkflow extends JModelList
 				'alias' => 'workflows',
 				'type' => 'component',
 				'component_id' => $component_id,
-				'access' => 7
-			]);
+				'access' => 7,
+				'params'       => [
+					'menu_image_css' => 'schema'
+					]
+				]
+			);
 
 			if ($result['id']) {
 				EmundusHelperUpdate::addJoomlaMenu([
@@ -257,6 +254,7 @@ class EmundusModelAdministratorWorkflow extends JModelList
 				->andWhere('menutype = ' . $this->db->quote('onboardingmenu'));
 			$this->db->setQuery($query);
 			$parent_id = $this->db->loadResult();
+
 			EmundusHelperUpdate::addJoomlaMenu([
 				'menutype' => 'onboardingmenu',
 				'title' => 'Éditer un programme',
@@ -280,15 +278,7 @@ class EmundusModelAdministratorWorkflow extends JModelList
 				'menu_show' => 0
 			], 8);
 
-			$query->clear()
-				->select('extension_id')
-				->from('#__extensions')
-				->where('type = ' . $db->quote('component'))
-				->where('element = ' . $db->quote('com_fabrik'))
-				->where('name = ' . $db->quote('com_fabrik'));
-
-			$db->setQuery($query);
-			$fabrik_component_id = $db->loadResult();
+			$fabrik_component_id = ComponentHelper::getComponent('com_fabrik')->id;
 
 			EmundusHelperUpdate::addJoomlaMenu([
 				'menutype' => 'application',
