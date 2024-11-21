@@ -684,7 +684,7 @@
     <field name="module">mod_emundus_applications</field>
     <field name="access">2</field>
     <field name="showtitle">0</field>
-    <field name="params">{&quot;description&quot;:&quot;&quot;,&quot;override_default_content&quot;:&quot;&quot;,&quot;show_add_application&quot;:&quot;0&quot;,&quot;position_add_application&quot;:&quot;3&quot;,&quot;show_show_campaigns&quot;:&quot;0&quot;,&quot;show_campaigns_url&quot;:&quot;liste-des-campagnes&quot;,&quot;cc_list_url&quot;:&quot;index.php?option=com_fabrik&amp;view=form&amp;formid=102&quot;,&quot;show_remove_files&quot;:&quot;1&quot;,&quot;show_archived_files&quot;:&quot;1&quot;,&quot;absolute_urls&quot;:&quot;1&quot;,&quot;order_applications&quot;:&quot;ecc.date_time&quot;,&quot;order_applications_asc_des&quot;:&quot;DESC&quot;,&quot;for_specific_profiles&quot;:&quot;&quot;,&quot;visible_status&quot;:&quot;&quot;,&quot;show_status&quot;:&quot;&quot;,&quot;selected_campaigns_exclusion&quot;:&quot;0&quot;,&quot;mod_em_applications_show_tabs&quot;:&quot;1&quot;,&quot;mod_em_application_group&quot;:[],&quot;mod_em_application_group_title_other&quot;:&quot;&quot;,&quot;mod_em_applications_show_filters&quot;:&quot;0&quot;,&quot;mod_em_applications_show_sort&quot;:&quot;0&quot;,&quot;mod_em_applications_show_search&quot;:&quot;1&quot;,&quot;mod_em_applications_show_hello_text&quot;:&quot;1&quot;,&quot;mod_em_application_date_format&quot;:&quot;d\/m\/Y H:i&quot;,&quot;show_fnum&quot;:&quot;1&quot;,&quot;mod_emundus_applications_show_programme&quot;:&quot;1&quot;,&quot;mod_emundus_applications_show_end_date&quot;:&quot;1&quot;,&quot;show_progress&quot;:&quot;1&quot;,&quot;show_progress_color&quot;:&quot;#EA5012&quot;,&quot;show_progress_forms&quot;:&quot;0&quot;,&quot;show_progress_color_forms&quot;:&quot;#EA5012&quot;,&quot;show_progress_documents&quot;:&quot;0&quot;,&quot;show_progress_color_documents&quot;:&quot;#EA5012&quot;,&quot;admission_status&quot;:&quot;&quot;,&quot;add_admission_prefix&quot;:&quot;1&quot;,&quot;show_state_files&quot;:&quot;0&quot;,&quot;show_payment_status&quot;:&quot;0&quot;,&quot;tags&quot;:&quot;&quot;,&quot;mod_emundus_applications_actions&quot;:[&quot;rename&quot;,&quot;copy&quot;,&quot;history&quot;],&quot;mod_em_application_custom_actions&quot;:{&quot;mod_em_application_custom_actions0&quot;:{&quot;mod_em_application_custom_action_status&quot;:[&quot;0&quot;],&quot;display_condition&quot;:&quot;&quot;,&quot;mod_em_application_custom_action_icon&quot;:&quot;&quot;,&quot;mod_em_application_custom_action_label&quot;:&quot;&quot;,&quot;mod_em_application_custom_action_type&quot;:&quot;1&quot;,&quot;mod_em_application_custom_action_link&quot;:&quot;&quot;,&quot;mod_em_application_custom_action_link_blank&quot;:&quot;1&quot;,&quot;mod_em_application_custom_action_new_status&quot;:&quot;1&quot;,&quot;mod_em_application_custom_action_new_status_message&quot;:&quot;&quot;}},&quot;layout&quot;:&quot;_:tchooz&quot;,&quot;moduleclass_sfx&quot;:&quot;list-group&quot;,&quot;cache&quot;:&quot;1&quot;,&quot;cache_time&quot;:&quot;900&quot;,&quot;cachemode&quot;:&quot;static&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="params">{&quot;description&quot;:&quot;&quot;,&quot;override_default_content&quot;:&quot;&quot;,&quot;show_add_application&quot;:&quot;0&quot;,&quot;position_add_application&quot;:&quot;3&quot;,&quot;show_show_campaigns&quot;:&quot;0&quot;,&quot;show_campaigns_url&quot;:&quot;liste-des-campagnes&quot;,&quot;cc_list_url&quot;:&quot;index.php?option=com_fabrik&amp;view=form&amp;formid=102&quot;,&quot;show_remove_files&quot;:&quot;0&quot;,&quot;show_archived_files&quot;:&quot;1&quot;,&quot;show_collaboration_files&quot;:&quot;1&quot;,&quot;absolute_urls&quot;:&quot;1&quot;,&quot;order_applications&quot;:&quot;ecc.date_time&quot;,&quot;order_applications_asc_des&quot;:&quot;DESC&quot;,&quot;for_specific_profiles&quot;:&quot;&quot;,&quot;visible_status&quot;:&quot;&quot;,&quot;show_status&quot;:&quot;&quot;,&quot;selected_campaigns_exclusion&quot;:&quot;0&quot;,&quot;mod_em_applications_show_tabs&quot;:&quot;1&quot;,&quot;mod_em_application_group&quot;:[],&quot;mod_em_application_group_title_other&quot;:&quot;&quot;,&quot;mod_em_applications_show_filters&quot;:&quot;0&quot;,&quot;mod_em_applications_show_sort&quot;:&quot;0&quot;,&quot;mod_em_applications_show_search&quot;:&quot;1&quot;,&quot;mod_em_applications_show_hello_text&quot;:&quot;1&quot;,&quot;mod_em_application_date_format&quot;:&quot;d\/m\/Y H:i&quot;,&quot;show_fnum&quot;:&quot;1&quot;,&quot;mod_emundus_applications_show_programme&quot;:&quot;0&quot;,&quot;mod_emundus_applications_show_end_date&quot;:&quot;1&quot;,&quot;show_progress&quot;:&quot;1&quot;,&quot;show_progress_color&quot;:&quot;#EA5012&quot;,&quot;show_progress_forms&quot;:&quot;0&quot;,&quot;show_progress_color_forms&quot;:&quot;#EA5012&quot;,&quot;show_progress_documents&quot;:&quot;0&quot;,&quot;show_progress_color_documents&quot;:&quot;#EA5012&quot;,&quot;admission_status&quot;:&quot;&quot;,&quot;add_admission_prefix&quot;:&quot;1&quot;,&quot;show_state_files&quot;:&quot;0&quot;,&quot;show_payment_status&quot;:&quot;0&quot;,&quot;title_override&quot;:&quot;&quot;,&quot;tags&quot;:&quot;&quot;,&quot;show_nb_comments&quot;:&quot;0&quot;,&quot;mod_emundus_applications_actions&quot;:[&quot;rename&quot;,&quot;copy&quot;,&quot;history&quot;],&quot;mod_emundus_applications_collaborate_default_rights&quot;:[&quot;r&quot;,&quot;u&quot;],&quot;mod_em_application_custom_actions&quot;:{&quot;mod_em_application_custom_actions0&quot;:{&quot;mod_em_application_custom_action_status&quot;:[&quot;0&quot;],&quot;display_condition&quot;:&quot;&quot;,&quot;mod_em_application_custom_action_icon&quot;:&quot;&quot;,&quot;mod_em_application_custom_action_label&quot;:&quot;&quot;,&quot;mod_em_application_custom_action_type&quot;:&quot;1&quot;,&quot;mod_em_application_custom_action_link&quot;:&quot;&quot;,&quot;mod_em_application_custom_action_link_blank&quot;:&quot;1&quot;,&quot;mod_em_application_custom_action_new_status&quot;:&quot;1&quot;,&quot;mod_em_application_custom_action_new_status_message&quot;:&quot;&quot;}},&quot;layout&quot;:&quot;_:tchooz&quot;,&quot;moduleclass_sfx&quot;:&quot;list-group&quot;,&quot;cache&quot;:&quot;1&quot;,&quot;cache_time&quot;:&quot;900&quot;,&quot;cachemode&quot;:&quot;static&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
     <field name="client_id">0</field>
     <field name="language">*</field>
    </row>
@@ -744,7 +744,7 @@
     <field name="module">mod_emundusmenu</field>
     <field name="access">2</field>
     <field name="showtitle">0</field>
-    <field name="params">{&quot;display_applicant_menu&quot;:&quot;1&quot;,&quot;applicant_menu&quot;:&quot;applicantmenu&quot;,&quot;menu_style&quot;:&quot;tchooz_vertical&quot;,&quot;startLevel&quot;:&quot;0&quot;,&quot;endLevel&quot;:&quot;0&quot;,&quot;showAllChildren&quot;:&quot;1&quot;,&quot;displayTchooz&quot;:&quot;1&quot;,&quot;window_open&quot;:&quot;&quot;,&quot;show_whitespace&quot;:&quot;0&quot;,&quot;cache&quot;:&quot;0&quot;,&quot;tag_id&quot;:&quot;em_user_menu&quot;,&quot;class_sfx&quot;:&quot;gf-menu l1 emundus&quot;,&quot;moduleclass_sfx&quot;:&quot;menu-block&quot;,&quot;maxdepth&quot;:&quot;10&quot;,&quot;menu_images&quot;:&quot;0&quot;,&quot;menu_images_align&quot;:&quot;0&quot;,&quot;menu_images_link&quot;:&quot;0&quot;,&quot;expand_menu&quot;:&quot;0&quot;,&quot;activate_parent&quot;:&quot;0&quot;,&quot;full_active_id&quot;:&quot;0&quot;,&quot;indent_image&quot;:&quot;0&quot;,&quot;spacer&quot;:&quot;&quot;,&quot;end_spacer&quot;:&quot;&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="params">{&quot;display_applicant_menu&quot;:&quot;1&quot;,&quot;applicant_menu&quot;:&quot;applicantmenu&quot;,&quot;menu_style&quot;:&quot;tchooz_vertical&quot;,&quot;startLevel&quot;:&quot;0&quot;,&quot;endLevel&quot;:&quot;0&quot;,&quot;showAllChildren&quot;:&quot;1&quot;,&quot;displayTchooz&quot;:&quot;1&quot;,&quot;window_open&quot;:&quot;&quot;,&quot;favicon_link&quot;:&quot;index.php&quot;,&quot;show_whitespace&quot;:&quot;0&quot;,&quot;cache&quot;:&quot;0&quot;,&quot;tag_id&quot;:&quot;em_user_menu&quot;,&quot;class_sfx&quot;:&quot;gf-menu l1 emundus&quot;,&quot;moduleclass_sfx&quot;:&quot;menu-block&quot;,&quot;maxdepth&quot;:&quot;10&quot;,&quot;menu_images&quot;:&quot;0&quot;,&quot;menu_images_align&quot;:&quot;0&quot;,&quot;menu_images_link&quot;:&quot;0&quot;,&quot;expand_menu&quot;:&quot;0&quot;,&quot;activate_parent&quot;:&quot;0&quot;,&quot;full_active_id&quot;:&quot;0&quot;,&quot;indent_image&quot;:&quot;0&quot;,&quot;spacer&quot;:&quot;&quot;,&quot;end_spacer&quot;:&quot;&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
     <field name="client_id">0</field>
     <field name="language">*</field>
    </row>
@@ -914,7 +914,7 @@
     <field name="title">[STATS] Filter</field>
     <field name="note"></field>
     <field name="content" value_is_null="true"></field>
-    <field name="ordering">11</field>
+    <field name="ordering">8</field>
     <field name="position">content-bottom-a</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -944,7 +944,7 @@
     <field name="module">mod_emundus_filters</field>
     <field name="access">6</field>
     <field name="showtitle">0</field>
-    <field name="params">{&quot;filter_on_fnums&quot;:&quot;1&quot;,&quot;element_id&quot;:&quot;0&quot;,&quot;default_filter_element_ids&quot;:{&quot;default_filter_element_ids0&quot;:{&quot;id&quot;:&quot;0&quot;,&quot;join_table&quot;:&quot;&quot;,&quot;join_column_from&quot;:&quot;&quot;,&quot;join_column_to&quot;:&quot;&quot;}},&quot;filter_status&quot;:&quot;1&quot;,&quot;filter_status_order&quot;:&quot;0&quot;,&quot;filter_campaign&quot;:&quot;1&quot;,&quot;filter_campaigns_order&quot;:&quot;0&quot;,&quot;filter_programs&quot;:&quot;1&quot;,&quot;filter_programs_order&quot;:&quot;0&quot;,&quot;filter_years&quot;:&quot;1&quot;,&quot;filter_years_order&quot;:&quot;0&quot;,&quot;filter_tags&quot;:&quot;1&quot;,&quot;filter_tags_order&quot;:&quot;0&quot;,&quot;filter_published&quot;:&quot;1&quot;,&quot;filter_published_order&quot;:&quot;0&quot;,&quot;filter_groups&quot;:&quot;0&quot;,&quot;filter_groups_order&quot;:&quot;0&quot;,&quot;more_filter_elements&quot;:[],&quot;layout&quot;:&quot;_:vue&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="params">{&quot;filter_on_fnums&quot;:&quot;1&quot;,&quot;element_id&quot;:&quot;0&quot;,&quot;default_filter_element_ids&quot;:{&quot;default_filter_element_ids0&quot;:{&quot;id&quot;:&quot;0&quot;,&quot;join_table&quot;:&quot;&quot;,&quot;join_column_from&quot;:&quot;&quot;,&quot;join_column_to&quot;:&quot;&quot;}},&quot;filter_status&quot;:&quot;1&quot;,&quot;filter_status_order&quot;:&quot;0&quot;,&quot;filter_campaign&quot;:&quot;1&quot;,&quot;filter_campaigns_order&quot;:&quot;0&quot;,&quot;filter_programs&quot;:&quot;1&quot;,&quot;filter_programs_order&quot;:&quot;0&quot;,&quot;filter_years&quot;:&quot;1&quot;,&quot;filter_years_order&quot;:&quot;0&quot;,&quot;filter_tags&quot;:&quot;1&quot;,&quot;filter_tags_order&quot;:&quot;0&quot;,&quot;filter_published&quot;:&quot;1&quot;,&quot;filter_published_order&quot;:&quot;0&quot;,&quot;filter_groups&quot;:&quot;0&quot;,&quot;filter_groups_order&quot;:&quot;0&quot;,&quot;filter_users&quot;:&quot;0&quot;,&quot;filter_users_order&quot;:&quot;0&quot;,&quot;more_filter_elements&quot;:[],&quot;layout&quot;:&quot;_:vue&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
     <field name="client_id">0</field>
     <field name="language">*</field>
    </row>
@@ -1150,11 +1150,11 @@
    </row>
    <row>
     <field name="id">150</field>
-    <field name="asset_id">0</field>
+    <field name="asset_id">193</field>
     <field name="title">Filtres avancés - évaluations</field>
     <field name="note"></field>
     <field name="content" value_is_null="true"></field>
-    <field name="ordering">0</field>
+    <field name="ordering">1</field>
     <field name="position">emundus_filters</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -1164,7 +1164,7 @@
     <field name="module">mod_emundus_filters</field>
     <field name="access">6</field>
     <field name="showtitle">0</field>
-    <field name="params">{&quot;filter_on_fnums&quot;:&quot;1&quot;,&quot;element_id&quot;:&quot;0&quot;,&quot;default_filter_element_ids&quot;:{&quot;default_filter_element_ids0&quot;:{&quot;id&quot;:&quot;0&quot;,&quot;join_table&quot;:&quot;&quot;,&quot;join_column_from&quot;:&quot;&quot;,&quot;join_column_to&quot;:&quot;&quot;}},&quot;count_filter_values&quot;:&quot;1&quot;,&quot;filter_status&quot;:&quot;1&quot;,&quot;filter_status_order&quot;:&quot;0&quot;,&quot;filter_campaign&quot;:&quot;1&quot;,&quot;filter_campaigns_order&quot;:&quot;0&quot;,&quot;filter_programs&quot;:&quot;1&quot;,&quot;filter_programs_order&quot;:&quot;0&quot;,&quot;filter_years&quot;:&quot;0&quot;,&quot;filter_years_order&quot;:&quot;0&quot;,&quot;filter_tags&quot;:&quot;1&quot;,&quot;filter_tags_order&quot;:&quot;0&quot;,&quot;filter_published&quot;:&quot;0&quot;,&quot;filter_published_order&quot;:&quot;0&quot;,&quot;more_filter_elements&quot;:{&quot;more_filter_elements0&quot;:{&quot;fabrik_element_id&quot;:&quot;6082&quot;,&quot;order&quot;:&quot;9&quot;}},&quot;more_fabrik_forms&quot;:[&quot;270&quot;],&quot;layout&quot;:&quot;_:vue&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="params">{&quot;filter_on_fnums&quot;:&quot;1&quot;,&quot;element_id&quot;:&quot;0&quot;,&quot;default_filter_element_ids&quot;:{&quot;default_filter_element_ids0&quot;:{&quot;id&quot;:&quot;0&quot;,&quot;join_table&quot;:&quot;&quot;,&quot;join_column_from&quot;:&quot;&quot;,&quot;join_column_to&quot;:&quot;&quot;}},&quot;count_filter_values&quot;:&quot;1&quot;,&quot;filter_status&quot;:&quot;1&quot;,&quot;filter_status_order&quot;:&quot;0&quot;,&quot;filter_campaign&quot;:&quot;1&quot;,&quot;filter_campaigns_order&quot;:&quot;0&quot;,&quot;filter_programs&quot;:&quot;1&quot;,&quot;filter_programs_order&quot;:&quot;0&quot;,&quot;filter_years&quot;:&quot;0&quot;,&quot;filter_years_order&quot;:&quot;0&quot;,&quot;filter_tags&quot;:&quot;1&quot;,&quot;filter_tags_order&quot;:&quot;0&quot;,&quot;filter_published&quot;:&quot;0&quot;,&quot;filter_published_order&quot;:&quot;0&quot;,&quot;filter_groups&quot;:&quot;0&quot;,&quot;filter_groups_order&quot;:&quot;0&quot;,&quot;filter_users&quot;:&quot;0&quot;,&quot;filter_users_order&quot;:&quot;0&quot;,&quot;more_filter_elements&quot;:{&quot;more_filter_elements0&quot;:{&quot;fabrik_element_id&quot;:&quot;6082&quot;,&quot;order&quot;:&quot;9&quot;}},&quot;layout&quot;:&quot;_:vue&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
     <field name="client_id">0</field>
     <field name="language">*</field>
    </row>
@@ -1746,7 +1746,7 @@
     <field name="asset_id">178</field>
     <field name="title">[PROJECT] Back to project area</field>
     <field name="note"></field>
-    <field name="content">&lt;p&gt;&lt;a class=&quot;em-back-button tw-cursor-pointer&quot; style=&quot;width: fit-content; padding: 8px 0;&quot; href=&quot;gestion-de-projet&quot;&gt; &lt;span class=&quot;material-symbols-outlined tw-mr-1&quot;&gt;navigate_before&lt;/span&gt;Retour à la zone projet&lt;/a&gt;&lt;/p&gt;</field>
+    <field name="content">&lt;p&gt;&lt;a class=&quot;em-back-button tw-cursor-pointer&quot; style=&quot;width: fit-content; padding: 8px 0;&quot; href=&quot;gestion-de-projet&quot;&gt; &lt;span class=&quot;material-icons tw-mr-1&quot;&gt;navigate_before&lt;/span&gt;Retour à la zone projet&lt;/a&gt;&lt;/p&gt;</field>
     <field name="ordering">1</field>
     <field name="position">content-top-a</field>
     <field name="checked_out" value_is_null="true"></field>
@@ -1766,7 +1766,7 @@
     <field name="asset_id">179</field>
     <field name="title">[PROJECT] Back resources</field>
     <field name="note"></field>
-    <field name="content">&lt;p&gt;&lt;a class=&quot;em-back-button tw-cursor-pointer&quot; style=&quot;width: fit-content; padding: 8px 0;&quot; href=&quot;ressources&quot;&gt; &lt;span class=&quot;material-symbols-outlined tw-mr-1&quot;&gt;navigate_before&lt;/span&gt;Retour aux ressources&lt;/a&gt;&lt;/p&gt;</field>
+    <field name="content">&lt;p&gt;&lt;a class=&quot;em-back-button tw-cursor-pointer&quot; style=&quot;width: fit-content; padding: 8px 0;&quot; href=&quot;ressources&quot;&gt; &lt;span class=&quot;material-icons tw-mr-1&quot;&gt;navigate_before&lt;/span&gt;Retour aux ressources&lt;/a&gt;&lt;/p&gt;</field>
     <field name="ordering">1</field>
     <field name="position">content-top-a</field>
     <field name="checked_out" value_is_null="true"></field>
@@ -1958,6 +1958,46 @@
     <field name="access">1</field>
     <field name="showtitle">1</field>
     <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;&quot;,&quot;content_type&quot;:&quot;product&quot;,&quot;layout_type&quot;:&quot;div&quot;,&quot;columns&quot;:&quot;3&quot;,&quot;limit&quot;:&quot;21&quot;,&quot;random&quot;:&quot;0&quot;,&quot;order_dir&quot;:&quot;ASC&quot;,&quot;filter_type&quot;:&quot;1&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;content_synchronize&quot;:&quot;1&quot;,&quot;product_order&quot;:&quot;ordering&quot;,&quot;product_synchronize&quot;:&quot;2&quot;,&quot;recently_viewed&quot;:&quot;0&quot;,&quot;add_to_cart&quot;:&quot;-1&quot;,&quot;add_to_wishlist&quot;:&quot;-1&quot;,&quot;link_to_product_page&quot;:&quot;-1&quot;,&quot;show_vote_product&quot;:&quot;-1&quot;,&quot;show_price&quot;:&quot;-1&quot;,&quot;price_with_tax&quot;:&quot;3&quot;,&quot;show_original_price&quot;:&quot;-1&quot;,&quot;show_discount&quot;:&quot;3&quot;,&quot;price_display_type&quot;:&quot;inherit&quot;,&quot;category_order&quot;:&quot;category_id&quot;,&quot;child_display_type&quot;:&quot;allchilds&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;1&quot;,&quot;number_of_products&quot;:&quot;0&quot;,&quot;only_if_products&quot;:&quot;0&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;inherit&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;&quot;,&quot;margin&quot;:&quot;&quot;,&quot;border_visible&quot;:&quot;-1&quot;,&quot;rounded_corners&quot;:&quot;-1&quot;,&quot;text_center&quot;:&quot;-1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">189</field>
+    <field name="asset_id">0</field>
+    <field name="title">External login</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">1</field>
+    <field name="position">login</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up">2024-08-28 15:43:48</field>
+    <field name="publish_down">2099-01-01 00:00:00</field>
+    <field name="published">1</field>
+    <field name="module">mod_emundus_oauth2</field>
+    <field name="access">1</field>
+    <field name="showtitle">0</field>
+    <field name="params">{&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="client_id">1</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">190</field>
+    <field name="asset_id">196</field>
+    <field name="title">[GUEST] Back button - RGPD</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">1</field>
+    <field name="position">content-top-a</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up">2024-09-08 15:30:08</field>
+    <field name="publish_down">2099-01-01 00:00:00</field>
+    <field name="published">1</field>
+    <field name="module">mod_emundus_back</field>
+    <field name="access">1</field>
+    <field name="showtitle">0</field>
+    <field name="params">{&quot;back_type&quot;:&quot;homepage&quot;,&quot;link&quot;:&quot;1&quot;,&quot;button_text&quot;:&quot;MOD_EMUNDUS_BACK_BUTTON_LABEL&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
     <field name="client_id">0</field>
     <field name="language">*</field>
    </row>

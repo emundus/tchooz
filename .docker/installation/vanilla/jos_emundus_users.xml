@@ -11,6 +11,8 @@
    <field Field="schoolyear" Type="varchar(20)" Null="YES" Key="" Extra="" />
    <field Field="disabled" Type="int" Null="YES" Key="MUL" Extra="" />
    <field Field="disabled_date" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="cancellation_date" Type="date" Null="YES" Key="" Extra="" />
+   <field Field="cancellation_received" Type="date" Null="YES" Key="" Extra="" />
    <field Field="university_id" Type="int" Null="YES" Key="MUL" Extra="" />
    <field Field="email" Type="varchar(255)" Null="YES" Key="" Extra="" />
    <field Field="name" Type="varchar(255)" Null="YES" Key="" Extra="" />

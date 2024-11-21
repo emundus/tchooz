@@ -16,6 +16,7 @@
    <field Field="category" Type="varchar(255)" Null="YES" Key="MUL" Extra="" />
    <field Field="cci" Type="varchar(255)" Null="YES" Key="" Extra="" />
    <field Field="tags" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="button" Type="varchar(255)" Null="YES" Key="" Default="" Extra="" />
    <key Table="#__emundus_setup_emails" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_setup_emails" Non_unique="0" Key_name="lbl" Seq_in_index="1" Column_name="lbl" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_setup_emails" Non_unique="1" Key_name="fb_tableorder_name_INDEX" Seq_in_index="1" Column_name="name" Collation="A" Null="YES" Index_type="BTREE" Sub_part="10" Comment="" />
@@ -38,38 +39,27 @@
     <field name="category">Système</field>
     <field name="cci"></field>
     <field name="tags">0</field>
+    <field name="button"></field>
    </row>
    <row>
     <field name="id">2</field>
     <field name="lbl">attachment</field>
-    <field name="subject">Une nouveau document a été ajouté sur votre dossier / A new document has been uploaded to your application file</field>
+    <field name="subject">Une lettre de recommandation a été ajoutée sur votre dossier / A letter of recommendation has been added to your application</field>
     <field name="emailfrom"></field>
-    <field name="message">&lt;p&gt;[NAME],&lt;/p&gt;&lt;p&gt;Un nouveau document a été ajouté à votre dossier &lt;a href=&quot;[SITE_URL]&quot; target=&quot;_blank&quot;&gt;sur cette plateforme&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;A new document has been uploaded on your application file &lt;a href=&quot;[SITE_URL]&quot; target=&quot;_blank&quot;&gt;on this platform&lt;/a&gt;.&lt;/p&gt;</field>
+    <field name="message">&lt;p&gt;[NAME],&lt;/p&gt;
+&lt;p&gt;Une nouvelle lettre de recommandation a été ajoutée à votre dossier &lt;a href=&quot;[SITE_URL]&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;sur cette plateforme&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;A new letter of recommendation has been uploaded on your application file &lt;a href=&quot;[SITE_URL]&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;on this platform&lt;/a&gt;.&lt;/p&gt;</field>
     <field name="name"></field>
     <field name="type">1</field>
-    <field name="published">1</field>
+    <field name="published">0</field>
     <field name="email_tmpl">1</field>
     <field name="letter_attachment">0</field>
     <field name="candidate_attachment">0</field>
     <field name="category">Système</field>
     <field name="cci"></field>
     <field name="tags">0</field>
-   </row>
-   <row>
-    <field name="id">5</field>
-    <field name="lbl">new_account</field>
-    <field name="subject">Nouveau compte créé / New account created</field>
-    <field name="emailfrom"></field>
-    <field name="message">&lt;p&gt;Cher [NAME],&lt;/p&gt;&lt;p&gt;Un nouveau compte a été créé pour vous &lt;a href=&quot;[SITE_URL]&quot; target=&quot;_blank&quot;&gt;sur cette plateforme&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Cordialement,&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Votre email : &lt;strong&gt;[EMAIL] &lt;/strong&gt;&lt;/p&gt;&lt;p&gt;Votre nom d'utilisateur : &lt;strong&gt;[USERNAME]&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;Votre mot de passe : &lt;strong&gt;[PASSWORD]&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;A new account has been created for you &lt;a href=&quot;https://vanilla.tchooz.us/emails/[SITE_URL]&quot; target=&quot;_blank&quot;&gt;on this plateform&lt;/a&gt;.&lt;/p&gt;</field>
-    <field name="name"></field>
-    <field name="type">1</field>
-    <field name="published">1</field>
-    <field name="email_tmpl">1</field>
-    <field name="letter_attachment" value_is_null="true"></field>
-    <field name="candidate_attachment" value_is_null="true"></field>
-    <field name="category">Système</field>
-    <field name="cci"></field>
-    <field name="tags" value_is_null="true"></field>
+    <field name="button"></field>
    </row>
    <row>
     <field name="id">8</field>
@@ -104,6 +94,7 @@
     <field name="category">Système</field>
     <field name="cci"></field>
     <field name="tags" value_is_null="true"></field>
+    <field name="button"></field>
    </row>
    <row>
     <field name="id">9</field>
@@ -120,6 +111,7 @@
     <field name="category">Système</field>
     <field name="cci"></field>
     <field name="tags">0</field>
+    <field name="button"></field>
    </row>
    <row>
     <field name="id">15</field>
@@ -136,6 +128,7 @@
     <field name="category">Système</field>
     <field name="cci"></field>
     <field name="tags" value_is_null="true"></field>
+    <field name="button"></field>
    </row>
    <row>
     <field name="id">72</field>
@@ -155,6 +148,7 @@
     <field name="category">Système</field>
     <field name="cci"></field>
     <field name="tags">0</field>
+    <field name="button">Activer mon compte / Activate my account</field>
    </row>
    <row>
     <field name="id">73</field>
@@ -171,6 +165,7 @@
     <field name="category">Système</field>
     <field name="cci"></field>
     <field name="tags" value_is_null="true"></field>
+    <field name="button"></field>
    </row>
    <row>
     <field name="id">74</field>
@@ -187,29 +182,36 @@
     <field name="category">Système</field>
     <field name="cci"></field>
     <field name="tags">0</field>
+    <field name="button"></field>
    </row>
    <row>
     <field name="id">75</field>
     <field name="lbl">regenerate_password</field>
     <field name="subject">Réinitialisation de votre mot de passe / Password reset</field>
     <field name="emailfrom"></field>
-    <field name="message">&lt;p&gt;Bonjour,&lt;/p&gt;&lt;p&gt;Voici votre nouveau mot de passe : &lt;strong&gt;[PASSWORD]&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;N'oubliez pas de le modifier lors de &lt;a href=&quot;[SITE_URL]&quot; target=&quot;_blank&quot;&gt;votre prochaine connexion&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Here is your new password: &lt;strong&gt;[PASSWORD]&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;We strongly recommend that you change it &lt;a href=&quot;[SITE_URL]&quot; target=&quot;_blank&quot; class=&quot;&quot;&gt;next time you log in&lt;/a&gt;.&lt;/p&gt;</field>
+    <field name="message">&lt;p&gt;Bonjour,&lt;/p&gt;
+&lt;p&gt;Voici votre nouveau mot de passe : &lt;strong&gt;[PASSWORD]&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;N'oubliez pas de le modifier lors de &lt;a href=&quot;[SITE_URL]&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;votre prochaine connexion&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Here is your new password: &lt;strong&gt;[PASSWORD]&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;We strongly recommend that you change it &lt;a class=&quot;&quot; href=&quot;[SITE_URL]&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;next time you log in&lt;/a&gt;.&lt;/p&gt;</field>
     <field name="name"></field>
     <field name="type">1</field>
-    <field name="published">1</field>
+    <field name="published">0</field>
     <field name="email_tmpl">1</field>
     <field name="letter_attachment">0</field>
     <field name="candidate_attachment">0</field>
     <field name="category">Système</field>
     <field name="cci"></field>
     <field name="tags">0</field>
+    <field name="button"></field>
    </row>
    <row>
     <field name="id">76</field>
     <field name="lbl">share_with_evaluator</field>
     <field name="subject">Accès à de nouveaux dossiers / Access to new application files</field>
     <field name="emailfrom"></field>
-    <field name="message">&lt;p&gt;Bonjour [NAME],&lt;/p&gt;&lt;p&gt;De nouveaux dossiers sont disponibles &lt;a href=&quot;[SITE_URL]&quot; target=&quot;_blank&quot;&gt;sur cette plateforme&lt;/a&gt; :&lt;/p&gt;&lt;p&gt;[FNUMS]&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;em&gt;New application files are now visible for you &lt;/em&gt;&lt;a href=&quot;[SITE_URL]&quot; target=&quot;_blank&quot;&gt;&lt;em&gt;on this platform&lt;/em&gt;&lt;/a&gt;&lt;em&gt; (list above).&lt;/em&gt;&lt;/p&gt;</field>
+    <field name="message">&lt;p&gt;Bonjour [NAME],&lt;/p&gt;&lt;p&gt;De nouveaux dossiers sont disponibles &lt;a target=&quot;_blank&quot; rel=&quot;noopener noreferrer nofollow&quot; href=&quot;[SITE_URL]&quot;&gt;sur cette plateforme&lt;/a&gt; :&lt;/p&gt;&lt;p&gt;[FNUMS]&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;New application files are now visible for you &lt;a target=&quot;_blank&quot; rel=&quot;noopener noreferrer nofollow&quot; href=&quot;[SITE_URL]&quot;&gt;on this platform&lt;/a&gt; (list above).&lt;/p&gt;</field>
     <field name="name"></field>
     <field name="type">1</field>
     <field name="published">1</field>
@@ -219,6 +221,7 @@
     <field name="category">Système</field>
     <field name="cci"></field>
     <field name="tags">0</field>
+    <field name="button"></field>
    </row>
    <row>
     <field name="id">77</field>
@@ -235,6 +238,7 @@
     <field name="category">Système</field>
     <field name="cci"></field>
     <field name="tags">0</field>
+    <field name="button"></field>
    </row>
    <row>
     <field name="id">78</field>
@@ -255,6 +259,7 @@
     <field name="category">Système</field>
     <field name="cci"></field>
     <field name="tags" value_is_null="true"></field>
+    <field name="button"></field>
    </row>
    <row>
     <field name="id">79</field>
@@ -275,6 +280,7 @@
     <field name="category">Système</field>
     <field name="cci"></field>
     <field name="tags" value_is_null="true"></field>
+    <field name="button"></field>
    </row>
    <row>
     <field name="id">81</field>
@@ -297,6 +303,7 @@
     <field name="category">Système</field>
     <field name="cci"></field>
     <field name="tags">0</field>
+    <field name="button"></field>
    </row>
    <row>
     <field name="id">82</field>
@@ -313,6 +320,7 @@
     <field name="category">Système</field>
     <field name="cci"></field>
     <field name="tags" value_is_null="true"></field>
+    <field name="button"></field>
    </row>
    <row>
     <field name="id">83</field>
@@ -329,6 +337,77 @@
     <field name="category">Système</field>
     <field name="cci" value_is_null="true"></field>
     <field name="tags" value_is_null="true"></field>
+    <field name="button"></field>
+   </row>
+   <row>
+    <field name="id">84</field>
+    <field name="lbl">collaborate_invitation</field>
+    <field name="subject">Invitation à collaborer</field>
+    <field name="emailfrom"></field>
+    <field name="message">&lt;p style=&quot;text-align: center;&quot;&gt;&lt;strong&gt;Bonjour !&lt;/strong&gt;&lt;/p&gt;
+&lt;p style=&quot;text-align: center;&quot;&gt; &lt;/p&gt;
+&lt;p style=&quot;text-align: center;&quot;&gt;&lt;strong&gt;Je vous invite à collaborer avec moi pour compléter mon dossier de candidature sur la plateforme&lt;/strong&gt;&lt;a href=&quot;[SITE_URL]&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;&lt;strong&gt; &lt;span class=&quot;mention&quot; data-denotation-char=&quot;&quot; data-id=&quot;17&quot; data-value=&quot;[SITE_URL]&quot;&gt;&lt;span class=&quot;&quot; contenteditable=&quot;false&quot;&gt;[SITE_URL]&lt;/span&gt;&lt;/span&gt;&lt;/strong&gt;&lt;/a&gt;&lt;strong&gt;.&lt;/strong&gt;&lt;/p&gt;</field>
+    <field name="name"></field>
+    <field name="type">1</field>
+    <field name="published">0</field>
+    <field name="email_tmpl">3</field>
+    <field name="letter_attachment" value_is_null="true"></field>
+    <field name="candidate_attachment" value_is_null="true"></field>
+    <field name="category">Système</field>
+    <field name="cci"></field>
+    <field name="tags" value_is_null="true"></field>
+    <field name="button"></field>
+   </row>
+   <row>
+    <field name="id">85</field>
+    <field name="lbl">web_security_request</field>
+    <field name="subject">Demande de modification adresse web/SSL</field>
+    <field name="emailfrom" value_is_null="true"></field>
+    <field name="message">&lt;p&gt;La plateforme &lt;a href=&quot;[SITE_URL]&quot; target=&quot;_blank&quot;&gt;[SITE_URL]&lt;/a&gt; souhaiterait apporter les modifications suivantes : [WEB_SECURITY_REQUESTS]&lt;/p&gt;</field>
+    <field name="name" value_is_null="true"></field>
+    <field name="type">1</field>
+    <field name="published">0</field>
+    <field name="email_tmpl">1</field>
+    <field name="letter_attachment" value_is_null="true"></field>
+    <field name="candidate_attachment" value_is_null="true"></field>
+    <field name="category">Système</field>
+    <field name="cci" value_is_null="true"></field>
+    <field name="tags" value_is_null="true"></field>
+    <field name="button"></field>
+   </row>
+   <row>
+    <field name="id">98</field>
+    <field name="lbl">new_account</field>
+    <field name="subject">Finalisation de la création de votre compte / Complete my account</field>
+    <field name="emailfrom"></field>
+    <field name="message">&lt;p&gt;Madame, Monsieur,&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;Nous avons le plaisir de vous informer qu'un compte a été créé à votre attention sur [SITE_NAME]. Vous pouvez désormais finaliser sa création et accéder à votre espace personnel en utilisant le bouton ci-dessous.&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;-------------------------&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;Dear Sir/Madam,&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;We are pleased to inform you that an account has been created for you on [SITE_NAME]. You can now complete his creation and access your personal area using the button below.&lt;/p&gt;</field>
+    <field name="name" value_is_null="true"></field>
+    <field name="type">1</field>
+    <field name="published">1</field>
+    <field name="email_tmpl">4</field>
+    <field name="letter_attachment" value_is_null="true"></field>
+    <field name="candidate_attachment" value_is_null="true"></field>
+    <field name="category">Système</field>
+    <field name="cci"></field>
+    <field name="tags" value_is_null="true"></field>
+    <field name="button">Finaliser mon compte / Complete my account</field>
+   </row>
+   <row>
+    <field name="id">99</field>
+    <field name="lbl">new_account_sso</field>
+    <field name="subject">Un compte a été crée pour vous / An account has been created for you</field>
+    <field name="emailfrom"></field>
+    <field name="message">&lt;p&gt;Madame, Monsieur,&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;Nous avons le plaisir de vous informer qu'un compte a été créé à votre attention sur [SITE_NAME]. Vous pouvez désormais vous connecter et accéder à votre espace personnel en utilisant le lien ci-dessous :&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;a target=&quot;_blank&quot; rel=&quot;noopener noreferrer nofollow&quot; href=&quot;[SITE_URL]&quot;&gt;[SITE_URL]&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;Si vous avez des questions ou besoin d’assistance, n’hésitez pas à nous contacter.&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;-------------------------&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;Dear Sir/Madam&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;We are pleased to inform you that an account has been created for you on [SITE_NAME]. You can now log in and access your personal space using the link below:&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;&lt;a target=&quot;_blank&quot; rel=&quot;noopener noreferrer nofollow&quot; href=&quot;[SITE_URL]&quot;&gt;[SITE_URL]&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;If you have any questions or require assistance, please do not hesitate to contact us.&lt;/p&gt;</field>
+    <field name="name" value_is_null="true"></field>
+    <field name="type">1</field>
+    <field name="published">0</field>
+    <field name="email_tmpl">1</field>
+    <field name="letter_attachment" value_is_null="true"></field>
+    <field name="candidate_attachment" value_is_null="true"></field>
+    <field name="category">Système</field>
+    <field name="cci"></field>
+    <field name="tags" value_is_null="true"></field>
+    <field name="button"></field>
    </row>
   </table_data>
  </database>

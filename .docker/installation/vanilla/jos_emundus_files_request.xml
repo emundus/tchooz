@@ -6,8 +6,8 @@
    <field Field="time_date" Type="datetime" Null="NO" Key="MUL" Extra="" />
    <field Field="student_id" Type="int" Null="YES" Key="MUL" Extra="" />
    <field Field="fnum" Type="varchar(28)" Null="NO" Key="MUL" Extra="" />
-   <field Field="keyid" Type="varchar(255)" Null="NO" Key="" Extra="" />
-   <field Field="attachment_id" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="keyid" Type="varchar(255)" Null="NO" Key="MUL" Extra="" />
+   <field Field="attachment_id" Type="int" Null="YES" Key="MUL" Extra="" />
    <field Field="filename" Type="varchar(255)" Null="YES" Key="MUL" Extra="" />
    <field Field="uploaded" Type="tinyint" Null="YES" Key="" Default="0" Extra="" />
    <field Field="campaign_id" Type="int" Null="YES" Key="MUL" Extra="" />
@@ -19,9 +19,15 @@
    <field Field="lastname" Type="varchar(255)" Null="YES" Key="" Extra="" />
    <field Field="signer_id" Type="int" Null="YES" Key="" Extra="" />
    <field Field="signed_file" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="ccid" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="user_id" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="r" Type="tinyint" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="u" Type="tinyint" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="show_history" Type="tinyint" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="show_shared_users" Type="tinyint" Null="NO" Key="" Default="0" Extra="" />
    <key Table="#__emundus_files_request" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_files_request" Non_unique="1" Key_name="student_id" Seq_in_index="1" Column_name="student_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
-   <key Table="#__emundus_files_request" Non_unique="1" Key_name="attachment_id" Seq_in_index="1" Column_name="attachment_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_files_request" Non_unique="1" Key_name="attachment_id" Seq_in_index="1" Column_name="attachment_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_files_request" Non_unique="1" Key_name="fnum" Seq_in_index="1" Column_name="fnum" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_files_request" Non_unique="1" Key_name="fb_order_filename_INDEX" Seq_in_index="1" Column_name="filename" Collation="A" Null="YES" Index_type="BTREE" Sub_part="10" Comment="" />
    <key Table="#__emundus_files_request" Non_unique="1" Key_name="fb_order_email_INDEX" Seq_in_index="1" Column_name="email" Collation="A" Null="YES" Index_type="BTREE" Sub_part="10" Comment="" />
@@ -29,6 +35,7 @@
    <key Table="#__emundus_files_request" Non_unique="1" Key_name="fb_order_time_date_INDEX" Seq_in_index="1" Column_name="time_date" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_files_request" Non_unique="1" Key_name="fb_filter_time_date_INDEX" Seq_in_index="1" Column_name="time_date" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_files_request" Non_unique="1" Key_name="jos_emundus_files_request_ibfk_4" Seq_in_index="1" Column_name="campaign_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_files_request" Non_unique="1" Key_name="fb_order_keyid_INDEX" Seq_in_index="1" Column_name="keyid" Collation="A" Null="" Index_type="BTREE" Sub_part="10" Comment="" />
   </table_structure>
  </database>
 </mysqldump>

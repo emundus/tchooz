@@ -12,6 +12,7 @@
    <field Field="data" Type="mediumtext" Null="YES" Key="" Extra="" />
    <field Field="time_date" Type="datetime" Null="YES" Key="" Extra="" />
    <field Field="fnum" Type="varchar(28)" Null="YES" Key="" Extra="" />
+   <field Field="last_update" Type="varchar(50)" Null="YES" Key="" Extra="" />
    <key Table="#__fabrik_form_sessions" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
   </table_structure>
  </database>
