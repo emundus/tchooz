@@ -1135,6 +1135,42 @@
     <field name="group_id">838</field>
     <field name="params">{&quot;join-label&quot;:&quot;label&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_campaigns`.`id`&quot;}</field>
    </row>
+   <row>
+    <field name="id">1399</field>
+    <field name="list_id">0</field>
+    <field name="element_id">8146</field>
+    <field name="join_from_table">jos_emundus_setup_profiles</field>
+    <field name="table_join">jos_emundus_setup_profiles_repeat_emundus_groups</field>
+    <field name="table_key">emundus_groups</field>
+    <field name="table_join_key">parent_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">0</field>
+    <field name="params">{&quot;type&quot;:&quot;repeatElement&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_profiles_repeat_emundus_groups`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1400</field>
+    <field name="list_id">111</field>
+    <field name="element_id">0</field>
+    <field name="join_from_table">jos_emundus_setup_programmes</field>
+    <field name="table_join">jos_emundus_setup_programs_languages</field>
+    <field name="table_key">id</field>
+    <field name="table_join_key">program_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">842</field>
+    <field name="params">{&quot;pk&quot;:&quot;`jos_emundus_setup_programs_languages`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1401</field>
+    <field name="list_id">0</field>
+    <field name="element_id">8149</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_languages</field>
+    <field name="table_key">lang_id</field>
+    <field name="table_join_key">lang_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">842</field>
+    <field name="params">{&quot;join-label&quot;:&quot;title&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_languages`.`lang_id`&quot;}</field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

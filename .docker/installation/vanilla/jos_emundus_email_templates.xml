@@ -315,6 +315,326 @@
     <field name="type">1</field>
     <field name="published">1</field>
    </row>
+   <row>
+    <field name="id">3</field>
+    <field name="date_time">2024-08-27 11:33:26</field>
+    <field name="lbl">collaborate</field>
+    <field name="Template">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+
+&lt;head&gt;
+    &lt;meta charset=&quot;utf-8&quot;&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width&quot;&gt;
+    &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge&quot;&gt;
+    &lt;meta name=&quot;x-apple-disable-message-reformatting&quot;&gt;
+    &lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html charset=UTF-8&quot;/&gt;
+    &lt;title&gt;[EMAIL_SUBJECT]&lt;/title&gt;
+    &lt;style&gt;
+        table {
+            border-spacing: 0 !important;
+            border-collapse: collapse !important;
+            table-layout: fixed !important;
+        }
+
+        table table table {
+            table-layout: auto;
+        }
+
+        img {
+            -ms-interpolation-mode: bicubic;
+        }
+
+        *[x-apple-data-detectors] {
+            color: inherit !important;
+            text-decoration: none !important;
+        }
+
+        .x-gmail-data-detectors,
+        .x-gmail-data-detectors *,
+        .aBn {
+            border-bottom: 0 !important;
+            cursor: default !important;
+        }
+
+        .a6S {
+            display: none !important;
+            opacity: 0.01 !important;
+        }
+
+        img.g-img + div {
+            display: none !important;
+        }
+
+        .button-link {
+            text-decoration: none !important;
+        }
+
+        .bas-footer {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between !important;
+            align-items: center;
+            margin-top: 2px !important;
+            background: #e3e3e3;
+            border-top: 1px solid #bbb;
+            color: #2f4486 !important;
+            left: 0px;
+        }
+
+        @media only screen and (min-device-width: 375px) and (max-device-width: 413px) {
+            .email-container {
+                min-width: 375px !important;
+            }
+        }
+
+    &lt;/style&gt;
+    &lt;style&gt;
+        .button-td,
+        .button-a {
+            transition: all 100ms ease-in;
+        }
+
+        .button-td:hover,
+        .button-a:hover {
+            background: #EA4503 !important;
+            border-color: #EA4503 !important;
+            color: #FFFFFF;
+        }
+
+        @media screen and (max-width: 600px) {
+            .email-container p {
+                font-size: 17px !important;
+                line-height: 22px !important;
+            }
+        }
+
+    &lt;/style&gt;
+&lt;/head&gt;
+
+&lt;body width=&quot;100%&quot; bgcolor=&quot;#ffffff&quot;&gt;
+&lt;center style=&quot;width: 100%; background: #ffffff; text-align: left;&quot;&gt;
+    &lt;div style=&quot;display:none;font-size:1px;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;font-family: sans-serif;&quot;&gt;
+        (IMPORTANT) [EMAIL_SUBJECT]
+    &lt;/div&gt;
+    &lt;div style=&quot;max-width: 600px; margin: auto;&quot; class=&quot;email-container&quot;&gt;
+        &lt;table role=&quot;presentation&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot; width=&quot;600&quot; align=&quot;center&quot;&gt;
+            &lt;tr&gt;
+                &lt;td&gt;
+                    &lt;table role=&quot;presentation&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot; align=&quot;center&quot; width=&quot;100%&quot;&gt;
+                        &lt;tr&gt;
+                            &lt;td style=&quot;padding: 20px 0; text-align: center&quot;&gt;
+                                &lt;a href=&quot;[SITE_URL]&quot;&gt;&lt;img class=&quot;logo&quot; src=&quot;[LOGO]&quot; alt=&quot;Logo&quot; width=&quot;180&quot;&gt;&lt;/a&gt;&lt;/td&gt;
+                        &lt;/tr&gt;
+                    &lt;/table&gt;
+                    &lt;table role=&quot;presentation&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot; align=&quot;center&quot; width=&quot;100%&quot;
+                           style=&quot;max-width: 600px;&quot;&gt;
+                        &lt;tr&gt;
+                            &lt;td bgcolor=&quot;#ffffff&quot;&gt;
+                                &lt;table role=&quot;presentation&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot; width=&quot;100%&quot;&gt;
+                                    &lt;tr&gt;
+                                        &lt;td style=&quot;padding: 40px 0; font-family: sans-serif; font-size: 15px; line-height: 20px; color: #555555;&quot;&gt;
+                                            [EMAIL_BODY]
+                                        &lt;/td&gt;
+                                    &lt;/tr&gt;
+                                    &lt;tr&gt;
+                                        &lt;td style=&quot;border-radius: 3px; text-align: center;&quot;&gt;&lt;a
+                                                style=&quot;font-size: 16px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; background-color: #26a65b; text-decoration: none; border-radius: 3px; padding: 12px 18px; border: 1px solid #26a65b; display: inline-block;&quot;
+                                                href=&quot;[COLLABORATE_URL]&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot;&gt;[COLLABORATE_BUTTON]&lt;/a&gt;
+                                        &lt;/td&gt;
+                                    &lt;/tr&gt;
+                                    &lt;tr&gt;
+                                        &lt;td style=&quot;padding-top: 24px;text-align: center&quot;&gt;
+                                            &lt;img src=&quot;[SITE_URL]/media/com_emundus/images/tchoozy/complex-illustrations/handshake.svg&quot;
+                                                 width=&quot;350&quot;/&gt;
+                                        &lt;/td&gt;
+                                    &lt;/tr&gt;
+                                &lt;/table&gt;
+                            &lt;/td&gt;
+                        &lt;/tr&gt;
+                    &lt;/table&gt;
+                    &lt;table role=&quot;presentation&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot; align=&quot;center&quot; width=&quot;100%&quot;&gt;
+                        &lt;tr&gt;
+                            &lt;td style=&quot;padding:0; font-family: sans-serif; font-size: 15px; line-height: 20px; color: #555555;&quot;&gt;
+                                &lt;br&gt;
+                                &lt;div class=&quot;bas-footer&quot; style=&quot;background-color: white; padding-top:24px;&quot;&gt;
+                                    &lt;div class=&quot;adresse&quot; style=&quot;width: 50%;&quot;&gt;
+                                        &lt;a class=&quot;university&quot; style=&quot;margin-top: 0px;&quot; href=&quot;[SITE_URL]&quot;&gt;[SITE_NAME]&lt;/a&gt;
+                                    &lt;/div&gt;
+                                    &lt;div class=&quot;logo&quot; style=&quot;width:50%; text-align: end;&quot;&gt;&lt;a href=&quot;[SITE_URL]&quot;&gt;&lt;img
+                                            class=&quot;logo&quot; src=&quot;[LOGO]&quot; alt=&quot;Logo&quot; width=&quot;100&quot;&gt;&lt;/a&gt;&lt;/div&gt;
+                                &lt;/div&gt;
+                            &lt;/td&gt;
+                        &lt;/tr&gt;
+                    &lt;/table&gt;
+                &lt;/td&gt;
+            &lt;/tr&gt;
+        &lt;/table&gt;
+    &lt;/div&gt;
+&lt;/center&gt;
+&lt;/body&gt;
+
+&lt;/html&gt;</field>
+    <field name="type">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">4</field>
+    <field name="date_time">2024-10-31 15:21:09</field>
+    <field name="lbl">account_creation</field>
+    <field name="Template">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+
+&lt;head&gt;
+    &lt;meta charset=&quot;utf-8&quot;&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width&quot;&gt;
+    &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge&quot;&gt;
+    &lt;meta name=&quot;x-apple-disable-message-reformatting&quot;&gt;
+    &lt;title&gt;[EMAIL_SUBJECT]&lt;/title&gt;
+    &lt;style&gt;
+        table {
+            border-spacing: 0 !important;
+            border-collapse: collapse !important;
+            table-layout: fixed !important;
+        }
+
+        table table table {
+            table-layout: auto;
+        }
+
+        img {
+            -ms-interpolation-mode: bicubic;
+        }
+
+        *[x-apple-data-detectors] {
+            color: inherit !important;
+            text-decoration: none !important;
+        }
+
+        .x-gmail-data-detectors,
+        .x-gmail-data-detectors *,
+        .aBn {
+            border-bottom: 0 !important;
+            cursor: default !important;
+        }
+
+        .a6S {
+            display: none !important;
+            opacity: 0.01 !important;
+        }
+
+        img.g-img + div {
+            display: none !important;
+        }
+
+        .button-link {
+            text-decoration: none !important;
+        }
+
+        .bas-footer {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between !important;
+            align-items: center;
+            margin-top: 2px !important;
+            background: #e3e3e3;
+            border-top: 1px solid #bbb;
+            color: #2f4486 !important;
+            left: 0px;
+        }
+
+        @media only screen and (min-device-width: 375px) and (max-device-width: 413px) {
+            .email-container {
+                min-width: 375px !important;
+            }
+        }
+
+    &lt;/style&gt;
+    &lt;style&gt;
+        .button-td,
+        .button-a {
+            transition: all 100ms ease-in;
+        }
+
+        .button-td:hover,
+        .button-a:hover {
+            background: #EA4503 !important;
+            border-color: #EA4503 !important;
+            color: #FFFFFF;
+        }
+
+        @media screen and (max-width: 600px) {
+            .email-container p {
+                font-size: 17px !important;
+                line-height: 22px !important;
+            }
+        }
+
+    &lt;/style&gt;
+&lt;/head&gt;
+
+&lt;body width=&quot;100%&quot; bgcolor=&quot;#ffffff&quot;&gt;
+&lt;center style=&quot;width: 100%; background: #ffffff; text-align: left;&quot;&gt;
+    &lt;div style=&quot;display:none;font-size:1px;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;font-family: sans-serif;&quot;&gt;
+        (IMPORTANT) [EMAIL_SUBJECT]
+    &lt;/div&gt;
+    &lt;div style=&quot;max-width: 600px; margin: auto;&quot; class=&quot;email-container&quot;&gt;
+        &lt;table role=&quot;presentation&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot; width=&quot;600&quot; align=&quot;center&quot;&gt;
+            &lt;tr&gt;
+                &lt;td&gt;
+                    &lt;table role=&quot;presentation&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot; align=&quot;center&quot; width=&quot;100%&quot;&gt;
+                        &lt;tr&gt;
+                            &lt;td style=&quot;padding: 20px 0; text-align: center&quot;&gt;
+                                &lt;a href=&quot;[SITE_URL]&quot;&gt;&lt;img class=&quot;logo&quot; src=&quot;[LOGO]&quot; alt=&quot;Logo&quot; width=&quot;180&quot;&gt;&lt;/a&gt;&lt;/td&gt;
+                        &lt;/tr&gt;
+                    &lt;/table&gt;
+                    &lt;table role=&quot;presentation&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot; align=&quot;center&quot; width=&quot;100%&quot;
+                           style=&quot;max-width: 600px;&quot;&gt;
+                        &lt;tr&gt;
+                            &lt;td bgcolor=&quot;#ffffff&quot;&gt;
+                                &lt;table role=&quot;presentation&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot; width=&quot;100%&quot;&gt;
+                                    &lt;tr&gt;
+                                        &lt;td style=&quot;padding: 40px 0; font-family: sans-serif; font-size: 15px; line-height: 20px; color: #555555;&quot;&gt;
+                                            [EMAIL_BODY]
+                                        &lt;/td&gt;
+                                    &lt;/tr&gt;
+                                &lt;/table&gt;
+                            &lt;/td&gt;
+                        &lt;/tr&gt;
+                        &lt;tr&gt;
+                            &lt;td style=&quot;padding-bottom: 28px&quot;&gt;
+                                &lt;a href=&quot;[ACCOUNT_CREATION_URL]&quot;
+                                   target=&quot;_blank&quot;
+                                   style=&quot;color: rgb(255, 255, 255);font-family: sans-serif; background-color: rgb(38, 166, 91);padding: 10px 12px;border-radius: 8px;text-decoration: unset&quot;&gt;
+                                    [BUTTON_TEXT]
+                                &lt;/a&gt;
+                            &lt;/td&gt;
+                        &lt;/tr&gt;
+                    &lt;/table&gt;
+                    &lt;table role=&quot;presentation&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot; align=&quot;center&quot; width=&quot;100%&quot;&gt;
+                        &lt;tr&gt;
+                            &lt;td style=&quot;padding:0; font-family: sans-serif; font-size: 15px; line-height: 20px; color: #555555;&quot;&gt;
+                                &lt;br&gt;
+                                &lt;div class=&quot;bas-footer&quot; style=&quot;background-color: white; padding-top:24px;&quot;&gt;
+                                    &lt;div class=&quot;adresse&quot; style=&quot;width: 50%;&quot;&gt;
+                                        &lt;a class=&quot;university&quot; style=&quot;margin-top: 0px;&quot; href=&quot;[SITE_URL]&quot;&gt;[SITE_NAME]&lt;/a&gt;
+                                    &lt;/div&gt;
+                                    &lt;div class=&quot;logo&quot; style=&quot;width:50%; text-align: end;&quot;&gt;&lt;a href=&quot;[SITE_URL]&quot;&gt;&lt;img
+                                            class=&quot;logo&quot; src=&quot;[LOGO]&quot; alt=&quot;Logo&quot; width=&quot;100&quot;&gt;&lt;/a&gt;&lt;/div&gt;
+                                &lt;/div&gt;
+                            &lt;/td&gt;
+                        &lt;/tr&gt;
+                    &lt;/table&gt;
+                &lt;/td&gt;
+            &lt;/tr&gt;
+        &lt;/table&gt;
+    &lt;/div&gt;
+&lt;/center&gt;
+&lt;/body&gt;
+
+&lt;/html&gt;</field>
+    <field name="type">1</field>
+    <field name="published">1</field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

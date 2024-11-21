@@ -20,7 +20,7 @@
     <field name="type">tuf</field>
     <field name="location">https://update.joomla.org/cms/</field>
     <field name="enabled">1</field>
-    <field name="last_check_timestamp">1724053678</field>
+    <field name="last_check_timestamp">1732025893</field>
     <field name="extra_query"></field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -31,7 +31,7 @@
     <field name="type">collection</field>
     <field name="location">https://update.joomla.org/language/translationlist_5.xml</field>
     <field name="enabled">1</field>
-    <field name="last_check_timestamp">1724053678</field>
+    <field name="last_check_timestamp">1732025893</field>
     <field name="extra_query"></field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -42,7 +42,7 @@
     <field name="type">extension</field>
     <field name="location">https://update.joomla.org/core/extensions/com_joomlaupdate.xml</field>
     <field name="enabled">1</field>
-    <field name="last_check_timestamp">1724053678</field>
+    <field name="last_check_timestamp">1732025893</field>
     <field name="extra_query"></field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -53,7 +53,7 @@
     <field name="type">extension</field>
     <field name="location">http://updates.gantry.org/5.0/joomla/pkg_gantry5.xml</field>
     <field name="enabled">1</field>
-    <field name="last_check_timestamp">1724053678</field>
+    <field name="last_check_timestamp">1732025893</field>
     <field name="extra_query"></field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -64,7 +64,7 @@
     <field name="type">collection</field>
     <field name="location">http://updates.gantry.org/5.0/joomla/list.xml</field>
     <field name="enabled">1</field>
-    <field name="last_check_timestamp">1724053679</field>
+    <field name="last_check_timestamp">1732025894</field>
     <field name="extra_query"></field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -75,7 +75,7 @@
     <field name="type">extension</field>
     <field name="location">https://updates.gantry.org/5.0/joomla/tpl_g5_helium.xml</field>
     <field name="enabled">1</field>
-    <field name="last_check_timestamp">1724053679</field>
+    <field name="last_check_timestamp">1732025894</field>
     <field name="extra_query"></field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -84,9 +84,9 @@
     <field name="update_site_id">9</field>
     <field name="name">Hikashop</field>
     <field name="type">extension</field>
-    <field name="location">http://www.hikashop.com/component/updateme/updatexml/component-hikashop/version-5.0.4/level-Business/li-aHR0cDovL2xvY2FsaG9zdDo4MzgzLw%3D%3D/file-extension.xml</field>
+    <field name="location">http://www.hikashop.com/component/updateme/updatexml/component-hikashop/version-5.1.0/level-Business/li-aHR0cHM6Ly92YW5pbGxhLnRjaG9vei51cy8%3D/file-extension.xml</field>
     <field name="enabled">1</field>
-    <field name="last_check_timestamp">1724053680</field>
+    <field name="last_check_timestamp">1732025895</field>
     <field name="extra_query"></field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -97,7 +97,7 @@
     <field name="type">extension</field>
     <field name="location">https://www.joomunited.com/juupdater_files/dropfiles-update.xml</field>
     <field name="enabled">1</field>
-    <field name="last_check_timestamp">1724053680</field>
+    <field name="last_check_timestamp">1732025895</field>
     <field name="extra_query"></field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -108,7 +108,7 @@
     <field name="type">extension</field>
     <field name="location">https://securitycheck.protegetuordenador.com/update/updates_securitycheckpro.xml</field>
     <field name="enabled">1</field>
-    <field name="last_check_timestamp">1724053680</field>
+    <field name="last_check_timestamp">1732025895</field>
     <field name="extra_query">dlid=cbcedd17778da43027105168976584df</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -119,7 +119,7 @@
     <field name="type">extension</field>
     <field name="location">https://www.faboba.com/update/falang/pkgfalangstd.xml</field>
     <field name="enabled">1</field>
-    <field name="last_check_timestamp">1724053680</field>
+    <field name="last_check_timestamp">1732025895</field>
     <field name="extra_query"></field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -130,7 +130,7 @@
     <field name="type">extension</field>
     <field name="location">https://fabrikar.com/index.php?option=com_ochsubscriptions&amp;view=updater&amp;format=xml&amp;element=Fabrik</field>
     <field name="enabled">1</field>
-    <field name="last_check_timestamp">1724053682</field>
+    <field name="last_check_timestamp">1732025897</field>
     <field name="extra_query"></field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -141,7 +141,7 @@
     <field name="type">collection</field>
     <field name="location">http://localhost:81/fabrik31x/public_html/update/premium.php?productKey=62af0f805f4a2f4defcb0ac3751f67e8</field>
     <field name="enabled">1</field>
-    <field name="last_check_timestamp">1724053682</field>
+    <field name="last_check_timestamp">1732025897</field>
     <field name="extra_query"></field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
