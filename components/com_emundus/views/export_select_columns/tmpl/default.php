@@ -31,8 +31,7 @@ if (!empty($s_elements)) {
 if (is_array($this->elements) && count($this->elements) > 0) {
 	// If the form is set then this means that we are getting the Admission form details or some other extra form
 	// We are going to use the form value as a way to make unique IDs so the JS works correctly :)
-	if (isset($this->form) && !empty($this->form)) {
-
+	if (!empty($this->form)) {
 		echo '<div id="emundus_elements_' . $this->form . '" class="otherForm">';
 		$tbl_tmp = '';
 		$grp_tmp = '';

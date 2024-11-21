@@ -5692,14 +5692,18 @@ class EmundusModelFiles extends JModelLegacy
 						$forms_to_export = array();
 						if (!empty($formids)) {
 							foreach ($formids as $fids) {
-								$detail = explode("|", $fids);
-								if ((!empty($detail[1]) && $detail[1] == $fnumsInfo[$fnum]['training']) && ($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")) {
-									$forms_to_export[] = $detail[0];
+
+								if (strpos('|', $fids) !== false) {
+									$fids = explode("|", $fids);
+									if ((!empty($detail[1]) && $detail[1] == $fnumsInfo[$fnum]['training']) && ($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")) {
+										$forms_to_export[] = $detail[0];
+									}
+								} else if (is_numeric($fids)) {
+									$forms_to_export[] = $fids;
 								}
 							}
 						}
 						if ($forms || !empty($forms_to_export)) {
-
 							require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
 							$m_profile = new EmundusModelProfile;
 							$infos = $m_profile->getFnumDetails($fnum);

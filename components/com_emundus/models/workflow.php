@@ -1015,6 +1015,22 @@ class EmundusModelWorkflow extends JModelList
 		return $is_evaluation_step;
 	}
 
+	public function getParentStepType($type) {
+		$parent_id = 0;
+
+		if (!empty($type)) {
+			$query = $this->db->createQuery();
+			$query->select('parent_id')
+				->from($this->db->quoteName('#__emundus_setup_step_types'))
+				->where('id = ' . $type);
+
+			$this->db->setQuery($query);
+			$parent_id = $this->db->loadResult();
+		}
+
+		return $parent_id;
+	}
+
 	public function getProgramsWorkflows()
 	{
 		$programs_workflows = [];

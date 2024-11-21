@@ -598,7 +598,7 @@ class EmundusModelProfile extends ListModel
 	 *
 	 * @return array
 	 */
-	function getWorkflowProfilesByCampaign($campaign_id)
+	function getWorkflowProfilesByCampaign($campaign_id, $step_types = [1])
 	{
 		$profiles = [];
 
@@ -606,7 +606,7 @@ class EmundusModelProfile extends ListModel
 		{
 			require_once(JPATH_ROOT . '/components/com_emundus/models/campaign.php');
 			$m_campaign = new EmundusModelCampaign();
-			$workflows  = $m_campaign->getAllCampaignWorkflows($campaign_id);
+			$workflows  = $m_campaign->getAllCampaignWorkflows($campaign_id, $step_types);
 
 			foreach ($workflows as $workflow)
 			{

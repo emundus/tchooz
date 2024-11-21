@@ -3449,31 +3449,24 @@ class EmundusControllerFiles extends BaseController
 
 	public function checkforms()
 	{
-		$user_id = JFactory::getUser()->id;
+		$user_id = $this->_user->id;
 
 		$code = $this->input->getString('code', null);
-
 		$m_eval = $this->getModel('Evaluation');
-		$m_adm  = $this->getModel('Admission');
-
 		$eval = $m_eval->getGroupsEvalByProgramme($code);
-		$dec  = $m_eval->getGroupsDecisionByProgramme($code);
-		$adm  = $m_adm->getGroupsAdmissionByProgramme($code);
-		$adm  .= $m_adm->getGroupsApplicantAdmissionByProgramme($code);
 
 		$hasAccessForm = EmundusHelperAccess::asAccessAction(1, 'r', $user_id);
 		$hasAccessAtt  = EmundusHelperAccess::asAccessAction(4, 'r', $user_id);
 		$hasAccessEval = EmundusHelperAccess::asAccessAction(5, 'r', $user_id);
-		$hasAccessDec  = EmundusHelperAccess::asAccessAction(29, 'r', $user_id);
-		$hasAccessAdm  = EmundusHelperAccess::asAccessAction(32, 'r', $user_id);
 		$hasAccessTags = EmundusHelperAccess::asAccessAction(14, 'r', $user_id);
 
 		$showform = 0;
 		$showatt  = 0;
-		$showeval = 0;
-		$showdec  = 0;
-		$showadm  = 0;
 		$showtag  = 0;
+
+		if ($eval && $hasAccessEval) {
+			$showeval = 1;
+		}
 
 		if ($hasAccessForm) {
 			$showform = 1;
@@ -3481,20 +3474,11 @@ class EmundusControllerFiles extends BaseController
 		if ($hasAccessAtt) {
 			$showatt = 1;
 		}
-		if (!empty($eval) && $hasAccessEval) {
-			$showeval = 1;
-		}
-		if (!empty($dec) && $hasAccessDec) {
-			$showdec = 1;
-		}
-		if (!empty($adm) && $hasAccessAdm) {
-			$showadm = 1;
-		}
 		if ($hasAccessTags) {
 			$showtag = 1;
 		}
 
-		echo json_encode((object) (array('status' => true, 'att' => $showatt, 'eval' => $showeval, 'dec' => $showdec, 'adm' => $showadm, 'tag' => $showtag, 'form' => $showform)));
+		echo json_encode((object) (array('status' => true, 'att' => $showatt, 'eval_steps' => $showeval, 'tag' => $showtag, 'form' => $showform)));
 		exit;
 
 	}

@@ -277,7 +277,8 @@ class EmundusHelperList
 		$formsList = $h_menu->buildMenuQuery($profile['profile_id'], $formids);
 
 		if (empty($profile_id)) {
-			$workflow_profiles = $m_profile->getWorkflowProfilesByCampaign($infos['campaign_id']);
+			$workflow_profiles = $m_profile->getWorkflowProfilesByCampaign($infos['campaign_id'], [1, 2]);
+
 			foreach ($workflow_profiles as $workflow_profile) {
 				if ($workflow_profile != $profile['profile_id']) {
 					$workflow_form_list = $h_menu->buildMenuQuery($workflow_profile, $formids);

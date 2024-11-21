@@ -2821,6 +2821,7 @@ class EmundusModelCampaign extends ListModel
 
 	/**
 	 * @param $campaign_id int
+	 * @param array $step_types if 1, only applicant steps, if 2, only admin steps, can be both
 	 * @return array
 	 */
 	public function getAllCampaignWorkflows($campaign_id, $step_types = [1])
@@ -2841,7 +2842,7 @@ class EmundusModelCampaign extends ListModel
 						$wf_data = $m_workflow->getWorkflow($workflow->id);
 
 						foreach ($wf_data['steps'] as $step) {
-							if (in_array($step->type, $step_types)) {
+							if (in_array($step->type, $step_types) || in_array($m_workflow->getParentStepType($step->type), $step_types)) {
 								$step->profile = $step->profile_id;
 								$steps[] = $step;
 							}

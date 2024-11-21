@@ -2837,42 +2837,15 @@ $(document).ready(function() {
                         '<div id="aelts" style="overflow:auto;display:none;"></div>'+
                         '</div>'+
 
-                        '<div id="eval-steps-exists" class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16">'+
-                        '<div>'+
-                        '<div class="em-flex-row">' +
-                        '<input class="em-ex-check" type="checkbox"  value="evaluation-steps" name="evaluation-steps" id="em-evaluation-steps"/>' +
-                        '<label for="evaluation-steps" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_EXPORTS_EVAL_STEPS_PDF')+'</label>'+
-                        '</div>' +
-                        '</div>'+
                         '<div id="evaluation-steps-elts" style="overflow:auto;display:none;"></div>'+
-                        '</div>'+
-
-                        '<div class="em-mt-8 em-p-12-16 em-bg-neutral-200 em-border-radius-8" id="eval-exists" style="display:none;">'+
-                        '<div>'+
-                        '<div class="em-flex-row">' +
-                        '<input class="em-ex-check" type="checkbox"  value="assessment" name="assessment" id="em-ex-assessment"/>' +
-                        '<label for="em-ex-assessment" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_EXPORTS_ASSESSMENT_PDF')+'</label>'+
-                        '</div>' +
-                        '</div>'+
-                        '</div>'+
-
-                        '<div class="em-mt-8" id="dec-exists" style="display:none;">'+
                         '<div class="em-p-12-16 em-bg-neutral-200 em-border-radius-8">'+
                         '<div class="em-flex-row">' +
                         '<input class="em-ex-check" type="checkbox"  value="decision" name="decision" id="em-ex-decision"/>' +
                         '<label for="em-ex-decision" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_EXPORTS_DECISION_PDF')+'</label>'+
                         '</div>' +
                         '</div>'+
-                        '</div>'+
-
-                        '<div class="em-mt-8" id="adm-exists" style="display:none;">'+
-                        '<div class="em-p-12-16 em-bg-neutral-200 em-border-radius-8">'+
-                        '<div class="em-flex-row">' +
-                        '<input class="em-ex-check" type="checkbox"  value="admission" name="admission" id="em-ex-admission"/>' +
-                        '<label for="em-ex-admission" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_EXPORTS_ADMISSION_PDF')+'</label>'+
-                        '</div>' +
-                        '</div>'+
-                        '</div>');
+                        '</div>'
+                    );
 
                     $('#data').append('<div class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16" id="exp-options">'+
                         '<div class="em-flex-row">' +
@@ -2943,12 +2916,8 @@ $(document).ready(function() {
                                                     $('#form-exists').show();
                                                 if (result.att == 1)
                                                     $('#att-exists').show();
-                                                if (result.eval == 1)
-                                                    $('#eval-exists').show();
-                                                if (result.dec == 1)
-                                                    $('#dec-exists').show();
-                                                if (result.adm == 1)
-                                                    $('#adm-exists').show();
+                                                if (result.eval_steps == 1)
+                                                    $('#eval-steps-exists').show();
 
                                                 if (result.tag == 1) {
                                                     $('#em-export-opt option:disabled').removeAttr("disabled").attr("selected", "selected");
@@ -3364,7 +3333,7 @@ $(document).ready(function() {
                     '<div id="aelts" style="overflow:auto;display:none;"></div>'+
                     '</div>'+
 
-                    '<div id="eval-steps-exists" class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16">'+
+                    '<div id="eval-steps-exists" class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16" style="display: none;">'+
                     '<div>'+
                     '<div class="em-flex-row">' +
                     '<input class="em-ex-check" type="checkbox"  value="evaluation-steps" name="evaluation-steps" id="em-evaluation-steps"/>' +
@@ -3372,34 +3341,8 @@ $(document).ready(function() {
                     '</div>' +
                     '</div>'+
                     '<div id="evaluation-steps-elts" style="overflow:auto;display:none;"></div>'+
-                    '</div>'+
-
-                    '<div class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16" id="eval-exists" style="display:none;">'+
-                    '<div>'+
-                    '<div class="em-flex-row">' +
-                    '<input class="em-ex-check" type="checkbox"  value="assessment" name="assessment" id="em-ex-assessment"/>' +
-                    '<label for="em-ex-assessment" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_EXPORTS_ASSESSMENT_PDF')+'</label>'+
-                    '</div>'+
-                    '</div>'+
-                    '</div>'+
-
-                    '<div class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16" id="dec-exists" style="display:none;">'+
-                    '<div>'+
-                    '<div class="em-flex-row">' +
-                    '<input class="em-ex-check" type="checkbox"  value="decision" name="decision" id="em-ex-decision"/>' +
-                    '<label for="em-ex-decision" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_EXPORTS_DECISION_PDF')+'</label>'+
-                    '</div>' +
-                    '</div>'+
-                    '</div>'+
-
-                    '<div class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16" id="adm-exists" style="display:none;">'+
-                    '<div>'+
-                    '<div class="em-flex-row">' +
-                    '<input class="em-ex-check" type="checkbox"  value="admission" name="admission" id="em-ex-admission"/>' +
-                    '<label for="em-ex-admission" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_EXPORTS_ADMISSION_PDF')+'</label>'+
-                    '</div>' +
-                    '</div>'+
-                    '</div>';
+                    '</div>'
+                ;
 
                 html += '<div class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16" id="adm-exists" style="display:none;">'+
                     '<div>'+
@@ -3508,13 +3451,7 @@ $(document).ready(function() {
                                     $('#att-exists').show();
 
                                     // show #eval-div
-                                    $('#eval-exists').show();
-
-                                    // show #document-div
-                                    $('#dec-exists').show();
-
-                                    // show #admission-div
-                                    $('#adm-exists').show();
+                                    $('#eval-steps-exists').show();
 
                                     let result = {status: false};
 
@@ -3596,29 +3533,11 @@ $(document).ready(function() {
                                                             });
                                                         });
 
-                                                        if (json.pdffilter.assessment === '1') {
-                                                            document.getElementById('em-ex-assessment').checked = true;
+                                                        if (json.pdffilter.checkAllAttachments === '1') {
+                                                            document.getElementById('em-ex-attachment').checked = true;
                                                         } else {
-                                                            document.getElementById('em-ex-assessment').checked = false;
+                                                            document.getElementById('em-ex-attachment').checked = false;
                                                         }
-
-                                                        if (json.pdffilter.decision === '1') {
-                                                            document.getElementById('em-ex-decision').checked = true;
-                                                        } else {
-                                                            document.getElementById('em-ex-assessment').checked = false;
-                                                        }
-
-                                                        if (json.pdffilter.admission === '1') {
-                                                            document.getElementById('em-ex-admission').checked = true;
-                                                        } else {
-                                                            document.getElementById('em-ex-assessment').checked = false;
-                                                        }
-
-                                                if (json.pdffilter.checkAllAttachments === '1') {
-                                                    document.getElementById('em-ex-attachment').checked = true;
-                                                } else {
-                                                    document.getElementById('em-ex-attachment').checked = false;
-                                                }
                                                     } else {
                                                         $('#loadingimg-campaign').remove();
                                                         $('#filt_save_pdf_chosen').append('<div id="model-err-pdf" style="color: red">' + Joomla.Text._('COM_EMUNDUS_MODEL_ERR') + '</div>');
