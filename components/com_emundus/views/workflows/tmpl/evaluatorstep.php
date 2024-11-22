@@ -51,7 +51,7 @@ $m_workflow = new EmundusModelWorkflow();
                     </div>
                 </div>
 			<?php endif; ?>
-            <iframe class="tw-mt-4" height="600" width="100%"
+            <iframe id="evaluation-step-iframe" class="tw-mt-4" height="600" width="100%" loading="lazy"
                     src="evaluation-step-form?view=form&formid=<?= $this->step->form_id ?>&<?= $this->step->db_table_name ?>___ccid=<?= $this->ccid ?>&<?= $this->step->db_table_name ?>___step_id=<?= $this->step->id ?>&tmpl=component&iframe=1"></iframe>
         </div>
 		<?php
@@ -69,3 +69,12 @@ $m_workflow = new EmundusModelWorkflow();
 	}
 	?>
 </div>
+
+<script>
+    document.getElementById('evaluation-step-iframe').onload = function() {
+        let iframeElement = document.getElementById('evaluation-step-iframe');
+
+        // set the height of the iframe to the height of the content
+        iframeElement.style.height = iframeElement.contentWindow.document.body.scrollHeight + 'px';
+    }
+</script>
