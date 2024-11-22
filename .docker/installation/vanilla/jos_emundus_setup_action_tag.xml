@@ -27,7 +27,7 @@
    <row>
     <field name="id">3</field>
     <field name="label">Documents manquants</field>
-    <field name="class">label-orange-1</field>
+    <field name="class">label-red-1</field>
     <field name="category"></field>
     <field name="ordering">0</field>
    </row>

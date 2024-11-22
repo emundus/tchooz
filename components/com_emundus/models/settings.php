@@ -708,7 +708,7 @@ class EmundusModelSettings extends ListModel
 	 *
 	 * @since 1.29.0
 	 */
-	function updateArticle($content, $lang_code, $article_id = 0, $article_alias = '', $reference_field = 'introtext', $note)
+	function updateArticle($content, $lang_code, $article_id = 0, $article_alias = '', $reference_field = 'introtext', $note = null)
 	{
 		$updated = false;
 

@@ -150,7 +150,7 @@ if ($just_logged && !$only_applicant) {
                 return;
             }
 
-            const url = window.location.origin.toString() + '/' + '<?php echo $redirect ?>';
+            const url = window.location.origin.toString() + '/' + '<?= str_starts_with($redirect, '/') ? substr($redirect, 1) : $redirect ?>';
 
             jQuery.ajax({
                 type: 'POST',
