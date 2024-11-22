@@ -3201,28 +3201,6 @@ $(document).ready(function() {
                         }
                     });
 
-                    $('#em-ex-assessment').click(function(e) {
-                        if ($("#felts input[type=checkbox]").is(":checked") || $('#em-ex-forms').is(":checked") || $('#em-ex-assessment').is(":checked") || $('#em-ex-decision').is(":checked") || $('#em-ex-admission').is(":checked")) {
-                            $('#exp-options').show();
-                        } else {
-                            $('#exp-options').hide();
-                        }
-                    });
-                    $('#em-ex-decision').click(function(e) {
-                        if ($("#felts input[type=checkbox]").is(":checked") || $('#em-ex-forms').is(":checked") || $('#em-ex-assessment').is(":checked") || $('#em-ex-decision').is(":checked") || $('#em-ex-admission').is(":checked")) {
-                            $('#exp-options').show();
-                        } else {
-                            $('#exp-options').hide();
-                        }
-                    });
-                    $('#em-ex-admission').click(function(e) {
-                        if ($("#felts input[type=checkbox]").is(":checked") || $('#em-ex-forms').is(":checked") || $('#em-ex-assessment').is(":checked") || $('#em-ex-decision').is(":checked") || $('#em-ex-admission').is(":checked")) {
-                            $('#exp-options').show();
-                        } else {
-                            $('#exp-options').hide();
-                        }
-                    });
-
                     $('#felts').click(function(e) {
                         if ($(".em-ex-check").is(":checked")) {
                             $('#em-ex-forms').attr('checked', false);
@@ -3337,7 +3315,7 @@ $(document).ready(function() {
                     '<div>'+
                     '<div class="em-flex-row">' +
                     '<input class="em-ex-check" type="checkbox"  value="evaluation-steps" name="evaluation-steps" id="em-evaluation-steps"/>' +
-                    '<label for="evaluation-steps" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_EXPORTS_EVAL_STEPS_PDF')+'</label>'+
+                    '<label for="em-evaluation-steps" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_EXPORTS_EVAL_STEPS_PDF')+'</label>'+
                     '</div>' +
                     '</div>'+
                     '<div id="evaluation-steps-elts" style="overflow:auto;display:none;"></div>'+
@@ -3809,6 +3787,21 @@ $(document).ready(function() {
                                         var id = flt.id;
                                         $('#'+id+" :input").attr('checked', false);
                                     })
+                                }
+                            });
+
+                            document.getElementById('em-evaluation-steps').addEventListener('click' , function() {
+                                var evaluationStepsElts = document.getElementById('evaluation-steps-elts');
+                                var evaluationStepsEltsInputs = evaluationStepsElts.querySelectorAll('input');
+
+                                if (document.getElementById('em-evaluation-steps').checked) {
+                                    evaluationStepsEltsInputs.forEach(input => {
+                                        input.checked = true;
+                                    });
+                                } else {
+                                    evaluationStepsEltsInputs.forEach(input => {
+                                        input.checked = false;
+                                    });
                                 }
                             });
 
