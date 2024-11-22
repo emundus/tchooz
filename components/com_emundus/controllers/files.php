@@ -3450,7 +3450,6 @@ class EmundusControllerFiles extends BaseController
 	public function checkforms()
 	{
 		$user_id = $this->_user->id;
-
 		$code = $this->input->getString('code', null);
 		$m_eval = $this->getModel('Evaluation');
 		$eval = $m_eval->getGroupsEvalByProgramme($code);
@@ -3460,25 +3459,26 @@ class EmundusControllerFiles extends BaseController
 		$hasAccessEval = EmundusHelperAccess::asAccessAction(5, 'r', $user_id);
 		$hasAccessTags = EmundusHelperAccess::asAccessAction(14, 'r', $user_id);
 
-		$showform = 0;
-		$showatt  = 0;
-		$showtag  = 0;
+		$show_form = 0;
+		$show_attachments  = 0;
+		$show_tag  = 0;
+		$show_eval = 0;
 
 		if ($eval && $hasAccessEval) {
-			$showeval = 1;
+			$show_eval = 1;
 		}
 
 		if ($hasAccessForm) {
-			$showform = 1;
+			$show_form = 1;
 		}
 		if ($hasAccessAtt) {
-			$showatt = 1;
+			$show_attachments = 1;
 		}
 		if ($hasAccessTags) {
-			$showtag = 1;
+			$show_tag = 1;
 		}
 
-		echo json_encode((object) (array('status' => true, 'att' => $showatt, 'eval_steps' => $showeval, 'tag' => $showtag, 'form' => $showform)));
+		echo json_encode((object) (array('status' => true, 'att' => $show_attachments, 'eval_steps' => $show_eval, 'tag' => $show_tag, 'form' => $show_form)));
 		exit;
 
 	}

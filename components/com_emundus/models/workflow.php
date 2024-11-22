@@ -463,13 +463,16 @@ class EmundusModelWorkflow extends JModelList
 
 					if ($this->isEvaluationStep($data->type)) {
 						$query->clear()
-							->select('db_table_name')
+							->select('db_table_name, id')
 							->from('#__fabrik_lists')
 							->where('form_id = ' . $data->form_id);
 
 						try {
 							$this->db->setQuery($query);
-							$data->table = $this->db->loadResult();
+							$table_data = $this->db->loadAssoc();
+
+							$data->table = $table_data['db_table_name'];
+							$data->table_id = $table_data['id'];
 						} catch (Exception $e) {
 							Log::add('Error while fetching form table name: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
 						}

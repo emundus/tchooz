@@ -288,6 +288,11 @@ class EmundusHelperList
 
 						$ids = array();
 						foreach ($formsList as $form) {
+							if (!in_array($form->id, $formids)) {
+								unset($formsList[$form->id]);
+								continue;
+							}
+
 							if (!in_array($form->id, $ids)) {
 								$ids[] = $form->id;
 							}
@@ -306,6 +311,11 @@ class EmundusHelperList
 			$evaluation_steps = $m_campaign->getAllCampaignWorkflows($infos['campaign_id'], [2]);
 
 			foreach ($evaluation_steps as $evaluation_step) {
+				// TODO: for whatever reason, what is called $formids corresponds in reality to the table ids, change this one day
+				if (!empty($formids) && !in_array($evaluation_step->table_id, $formids)) {
+					continue;
+				}
+
 				$db = Factory::getContainer()->get('DatabaseDriver');
 				$query = $db->createQuery();
 

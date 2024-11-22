@@ -431,15 +431,16 @@ class EmundusModelEvaluation extends JModelList
 	/**
 	 * Get list of evaluation element
 	 *
-	 * @param   int displayed in Fabrik List ; yes=1
+	 * @param int $show_in_list_summary in Fabrik List
+	 * @param int $hidden get hidden elements
 	 *
-	 * @return    string list of Fabrik element ID used in evaluation form
+	 * @return    array list of Fabrik element ID used in evaluation form
 	 **@throws Exception
 	 */
 	public function getEvaluationElements($show_in_list_summary = 1, $hidden = 0, $fnums = null)
 	{
 		$elements_id = [];
-		$session = JFactory::getSession();
+		$session = $this->app->getSession();
 		$h_files = new EmundusHelperFiles;
 
 		if ($session->has('filt_params'))
@@ -465,7 +466,7 @@ class EmundusModelEvaluation extends JModelList
 							{
 								foreach ($eval_elt_list as $eel)
 								{
-									if (isset($eel->element_id) && !empty($eel->element_id))
+									if (!empty($eel->element_id))
 									{
 										$elements_id[] = $eel->element_id;
 									}
@@ -494,7 +495,7 @@ class EmundusModelEvaluation extends JModelList
 							{
 								foreach ($eval_elt_list as $eel)
 								{
-									if (isset($eel->element_id) && !empty($eel->element_id))
+									if (!empty($eel->element_id))
 									{
 										$elements_id[] = $eel->element_id;
 									}
@@ -1677,13 +1678,16 @@ class EmundusModelEvaluation extends JModelList
 	}
 
 	// get string of fabrik group ID use for evaluation form
-	public function getGroupsEvalByProgramme($code, $column = 'code')
+	public function getGroupsEvalByProgramme($code, $column = 'code', $user_id = 0)
 	{
 		$group_ids = [];
 
 		if (!empty($code)) {
-			$query = $this->db->createQuery();
+			if (empty($user_id)) {
+				$user_id = $this->app->getIdentity()->id;
+			}
 
+			$query = $this->db->createQuery();
 			$query->select('id')
 				->from('#__emundus_setup_programmes')
 				->where($this->db->quoteName($column) . ' = ' . $this->db->quote($code));
@@ -1698,8 +1702,12 @@ class EmundusModelEvaluation extends JModelList
 
 			if (!empty($eval_steps))
 			{
-				$form_ids = array_map(function ($step) {
-					return $step->form_id;
+				$form_ids = array_map(function ($step) use ($user_id, $m_workflow) {
+					if ($m_workflow->isEvaluationStep($step->type) && (EmundusHelperAccess::asAccessAction($step->action_id, 'r', $user_id) || EmundusHelperAccess::asAccessAction($step->action_id, 'c', $user_id))) {
+						return $step->form_id;
+					}
+
+					return null;
 				}, $eval_steps);
 
 				if (!empty($form_ids)) {
