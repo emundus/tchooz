@@ -1868,9 +1868,6 @@ $(document).ready(function() {
              * [IFRAME]
              * 1  : Create an application file
              * 4  : Add attachments to file
-             * 5  : Add an evaluation
-             * 29 : Add a decision
-             * 32 : Add an admission
              * [BASIC]
              * 6  : Export Excel
              * 7  : Export ZIP
@@ -1887,21 +1884,6 @@ $(document).ready(function() {
              * 35 : Fast PDF export
              * 18 : Send email to experts
              */
-
-            // IFRAME
-            case 5 :
-            case 29 :
-            case 32 :
-                addLoader();
-                swal_popup_class = 'em-w-auto'
-                swal_actions_class = '!tw-hidden'
-                verb = 'c';
-
-                html = '<iframe src="'+url+'" style="width:'+$(window).width()*0.8+'px; height:'+$(window).height()*0.8+'px; border:none"></iframe>';
-
-                removeLoader();
-                break;
-
 
             case 1 :
             case 4 :
@@ -2017,16 +1999,6 @@ $(document).ready(function() {
                                 '<p>'+Joomla.Text._('COM_EMUNDUS_CHOOSE_EVAL_FORM_ELEM')+'</p>'+
                                 '</div></th>' +
 
-                                '<th class="em-bg-transparent" id="th-dec" style="display: none;"><div class="em-flex-row em-pointer" id="showdecisionelements">' +
-                                '<span title="'+Joomla.Text._('COM_EMUNDUS_SHOW_ELEMENTS')+'" class="material-symbols-outlined em-mr-4" id="showdecisionelements_icon" style="transform: rotate(-90deg)">expand_more</span>' +
-                                '<p>'+Joomla.Text._('COM_EMUNDUS_CHOOSE_DECISION_FORM_ELEM')+'</p>'+
-                                '</div></th>' +
-
-                                '<th class="em-bg-transparent" id="th-adm" style="display: none;"><div class="em-flex-row em-pointer" id="showadmissionelements">' +
-                                '<span title="'+Joomla.Text._('COM_EMUNDUS_SHOW_ELEMENTS')+'" class="material-symbols-outlined em-mr-4" id="showadmissionelements_icon" style="transform: rotate(-90deg)">expand_more</span>' +
-                                '<p>'+Joomla.Text._('COM_EMUNDUS_CHOOSE_ADMISSION_FORM_ELEM')+'</p>'+
-                                '</div></th>' +
-
                                 '</tr></table>' +
 
                                 '</div>' +
@@ -2038,14 +2010,6 @@ $(document).ready(function() {
                                 '</div>'+
                                 '<div id="evalelement" style="display: none;">' +
                                 '<div id="eval-elements-popup" style="display: none;">' +
-                                '</div>' +
-                                '</div>' +
-                                '<div id="decelement" style="display: none;">' +
-                                '<div id="decision-elements-popup" style="display: none;">' +
-                                '</div>' +
-                                '</div>' +
-                                '<div id="admelement" style="display: none;">' +
-                                '<div id="admission-elements-popup" style="display: none;">' +
                                 '</div>' +
                                 '</div>' +
                                 '</div>' +
@@ -2085,17 +2049,14 @@ $(document).ready(function() {
                                         dataType:'json',
                                         success: function(result) {
                                             if (result.status) {
-                                                if (result.eval == 1) {
+                                                if (result.eval_steps == 1) {
+
+                                                    getEvaluationStepsForms(code).then((html) => {
+                                                        document.getElementById('eval-elements-popup').innerHTML = html;
+                                                    });
+
                                                     $('#th-eval').show();
                                                     $('#evalelement').show();
-                                                }
-                                                if (result.dec == 1) {
-                                                    $('#th-dec').show();
-                                                    $('#decelement').show();
-                                                }
-                                                if (result.adm == 1) {
-                                                    $('#th-adm').show();
-                                                    $('#admelement').show();
                                                 }
 
                                                 /// add loading
@@ -3157,15 +3118,6 @@ $(document).ready(function() {
                     '</div>'
                 ;
 
-                html += '<div class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16" id="adm-exists" style="display:none;">'+
-                    '<div>'+
-                    '<div class="em-flex-row">' +
-                    '<input class="em-ex-check" type="checkbox"  value="admission" name="admission" id="em-ex-admission"/>' +
-                    '<label for="em-ex-admission" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_EXPORTS_ADMISSION_PDF')+'</label>'+
-                    '</div>' +
-                    '</div>'+
-                    '</div>';
-
                 html += '<div class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16" id="em-options">'+
                     '<div class="em-flex-row">' +
                     '<input class="em-ex-check" type="checkbox"  value="header" name="em-add-header" id="em-add-header" checked />' +
@@ -3390,12 +3342,6 @@ $(document).ready(function() {
 
                                     // hide #eval-div
                                     $('#eval-exists').hide();
-
-                                    // hide #decision-div
-                                    $('#dec-exists').hide();
-
-                                    // hide #admission-div
-                                    $('#adm-exists').hide();
 
                                     removeLoader();
                                 }
@@ -3736,17 +3682,6 @@ $(document).ready(function() {
                                     attachments.push($(this).val());
                                 });
 
-                                var is_assessment = 0;
-                                var is_decision = 0;
-                                var is_admission = 0;
-
-                                if ($('#em-ex-assessment').is(":checked"))
-                                    is_assessment = 1;
-                                if ($('#em-ex-decision').is(":checked"))
-                                    is_decision = 1;
-                                if ($('#em-ex-admission').is(":checked"))
-                                    is_admission = 1;
-
                                 var params = {
                                     'code':code,
                                     'camp': camp,
@@ -3764,9 +3699,9 @@ $(document).ready(function() {
 
                                     'checkAllAttachments': $('#em-ex-attachment').is(":checked") ? 1 : 0,
                                     'attachments': attachments.length > 0 ? attachments : [""],
-                                    'assessment': is_assessment,
-                                    'admission': is_admission,
-                                    'decision': is_decision,
+                                    'assessment': 0,
+                                    'admission': 0,
+                                    'decision': 0,
                                 };
 
                                 /// jquery remove all empty data before sending
@@ -5559,25 +5494,6 @@ $(document).ready(function() {
         }
     });
 
-    $(document).on('change', '#em-admission-export-form', function(e) {
-        if (e.handle !== true) {
-            e.handle = true;
-            var id = $(this).val();
-            var text = $('#em-admission-export-form option:selected').attr('data-value');
-            $('#emundus_elm_'+id).prop("checked", true);
-            $('#em-export').append('<li class="em-export-item" id="' + id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + id + '-itembtn" class="em-pointer fabrik-elt-delete material-symbols-outlined em-red-600-color em-mr-4">delete_outline</span><p>' + text + '</p></span></li>');
-        }
-    });
-
-    $(document).on('change', '#em-decision-export-form', function(e) {
-        if (e.handle !== true) {
-            e.handle = true;
-            var id = $(this).val();
-            var text = $('#em-decision-export-form option:selected').attr('data-value');
-            $('#emundus_elm_'+id).prop("checked", true);
-            $('#em-export').append('<li class="em-export-item" id="' + id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + id + '-itembtn" class="em-pointer fabrik-elt-delete material-symbols-outlined em-red-600-color em-mr-4">delete_outline</span><p>' + text + '</p></span></li>');
-        }
-    });
 
     $(document).on('click', '.emundusraw', function(e) {
         $.ajaxQ.abortAll();
@@ -5672,12 +5588,6 @@ $(document).ready(function() {
             $('#eval-elements-popup').hide();
             $('#showevalelements_icon').css('transform','rotate(-90deg)');
 
-            $('#decision-elements-popup').hide();
-            $('#showdecisionelements_icon').css('transform','rotate(-90deg)');
-
-            $('#admission-elements-popup').hide();
-            $('#showadmissionelements_icon').css('transform','rotate(-90deg)');
-
             $('#elements-popup').toggle(300);
             $('#showelements_icon').css('transform','rotate(0deg)');
 
@@ -5694,62 +5604,12 @@ $(document).ready(function() {
             $('#elements-popup').hide();
             $('#showelements_icon').css('transform','rotate(-90deg)');
 
-            $('#decision-elements-popup').hide();
-            $('#showdecisionelements_icon').css('transform','rotate(-90deg)');
-
-            $('#admission-elements-popup').hide();
-            $('#showadmissionelements_icon').css('transform','rotate(-90deg)');
-
             $('#eval-elements-popup').toggle(300);
             $('#showevalelements_icon').css('transform','rotate(0deg)');
 
         } else {
             $('#eval-elements-popup').toggle(300);
             $('#showevalelements_icon').css('transform','rotate(-90deg)');
-        }
-    });
-
-    $(document).on('click', '#showdecisionelements', function() {
-        var decision_elements_block = document.getElementById('decision-elements-popup');
-        if (decision_elements_block.style.display == 'none') {
-
-            $('#elements-popup').hide();
-            $('#showelements_icon').css('transform','rotate(-90deg)');
-
-            $('#eval-elements-popup').hide();
-            $('#showevalelements_icon').css('transform','rotate(-90deg)');
-
-            $('#admission-elements-popup').hide();
-            $('#showadmissionelements_icon').css('transform','rotate(-90deg)');
-
-            $('#decision-elements-popup').toggle(300);
-            $('#showdecisionelements_icon').css('transform','rotate(0deg)');
-
-        } else {
-            $('#decision-elements-popup').toggle(300);
-            $('#showdecisionelements_icon').css('transform','rotate(-90deg)');
-        }
-    });
-
-    $(document).on('click', '#showadmissionelements', function() {
-        var admission_elements_block = document.getElementById('admission-elements-popup');
-        if (admission_elements_block.style.display == 'none') {
-
-            $('#elements-popup').hide();
-            $('#showelements_icon').css('transform','rotate(-90deg)');
-
-            $('#eval-elements-popup').hide();
-            $('#showevalelements_icon').css('transform','rotate(-90deg)');
-
-            $('#decision-elements-popup').hide();
-            $('#showdecisionelements_icon').css('transform','rotate(-90deg)');
-
-            $('#admission-elements-popup').toggle(300);
-            $('#showadmissionelements_icon').css('transform','rotate(0deg)');
-
-        } else {
-            $('#admission-elements-popup').toggle(300);
-            $('#showadmissionelements_icon').css('transform','rotate(-90deg)');
         }
     });
 
