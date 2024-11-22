@@ -67,6 +67,7 @@ class EmundusHelperExport
 		if (!function_exists('application_form_pdf')) {
 			require_once($file);
 		}
+
 		$result = application_form_pdf($sid, $fnum, false, $form_post, $form_ids, $options, $application_form_order, null, null, $elements, $attachments);
 
 		if ($result) {

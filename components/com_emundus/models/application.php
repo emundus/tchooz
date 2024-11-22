@@ -2609,7 +2609,7 @@ class EmundusModelApplication extends ListModel
 	}
 
 
-	public function getFormsPDF($aid, $fnum = 0, $fids = null, $gids = 0, $profile_id = null, $eids = null, $attachments = true)
+	public function getFormsPDF($aid, $fnum = 0, $fids = null, $gids = 0, $profile_id = null, $eids = null, $attachments = true, $step_types = [1])
 	{
 		/* COULEURS*/
 		$eMConfig          = JComponentHelper::getParams('com_emundus');
@@ -2618,7 +2618,7 @@ class EmundusModelApplication extends ListModel
 
 		require_once(JPATH_SITE . '/components/com_emundus/helpers/list.php');
 		$h_list    = new EmundusHelperList();
-		$tableuser = $h_list->getFormsList($aid, $fnum, $fids, $profile_id);
+		$tableuser = $h_list->getFormsList($aid, $fnum, $fids, $profile_id, $step_types);
 		$forms     = '';
 
 		if (isset($tableuser)) {

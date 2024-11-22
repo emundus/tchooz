@@ -309,6 +309,9 @@ function export_pdf(fnums, ids, default_export = '') {
         elements: []
     };
 
+    console.log(default_export);
+
+
     if (default_export === '') {
         /// if at least one is checked --> forms = 1
         forms = $('[id^=felts] input:checked').length > 0 ?  1 : 0;
@@ -370,6 +373,10 @@ function export_pdf(fnums, ids, default_export = '') {
                     form_checked = id;
                 }
                 pdf_elements['tables'].push(id);
+
+                if (!options.includes('eval_steps')) {
+                    options.push('eval_steps');
+                }
             }
         });
 
@@ -377,6 +384,9 @@ function export_pdf(fnums, ids, default_export = '') {
             if (elt.checked == true) {
                 forms = 1;
                 pdf_elements['groups'].push(elt.id.split('emundus_checkall_grp_')[1]);
+                if (!options.includes('eval_steps')) {
+                    options.push('eval_steps');
+                }
             }
         });
 
@@ -384,8 +394,13 @@ function export_pdf(fnums, ids, default_export = '') {
             if (elt.checked == true) {
                 forms = 1;
                 pdf_elements['elements'].push(elt.id.split('emundus_checkall_elm_')[1]);
+                if (!options.includes('eval_steps')) {
+                    options.push('eval_steps');
+                }
             }
         });
+
+        console.log(options);
 
         $('#aelts input:checked').each(function() {
             attach_checked.push($(this).val());

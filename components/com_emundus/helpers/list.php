@@ -259,7 +259,7 @@ class EmundusHelperList
 	// @description get forms list to create action block for each users
 	// @param	int applicant user id
 	// @return 	array Menu links of all forms needed to apply
-	function getFormsList($user_id, $fnum = '0', $formids = null, $profile_id = null)
+	function getFormsList($user_id, $fnum = '0', $formids = null, $profile_id = null, $step_types = [1])
 	{
 		$formsList = [];
 
@@ -277,7 +277,7 @@ class EmundusHelperList
 		$formsList = $h_menu->buildMenuQuery($profile['profile_id'], $formids);
 
 		if (empty($profile_id)) {
-			$workflow_profiles = $m_profile->getWorkflowProfilesByCampaign($infos['campaign_id'], [1, 2]);
+			$workflow_profiles = $m_profile->getWorkflowProfilesByCampaign($infos['campaign_id'], $step_types);
 
 			foreach ($workflow_profiles as $workflow_profile) {
 				if ($workflow_profile != $profile['profile_id']) {
@@ -300,7 +300,7 @@ class EmundusHelperList
 			}
 		}
 
-		if (!empty($infos['campaign_id']) && EmundusHelperAccess::asPartnerAccessLevel(Factory::getApplication()->getIdentity()->id)) {
+		if (!empty($infos['campaign_id']) && EmundusHelperAccess::asPartnerAccessLevel(Factory::getApplication()->getIdentity()->id) && in_array(2, $step_types)) {
 			require_once(JPATH_SITE . '/components/com_emundus/models/campaign.php');
 			$m_campaign = new EmundusModelCampaign();
 			$evaluation_steps = $m_campaign->getAllCampaignWorkflows($infos['campaign_id'], [2]);

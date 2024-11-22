@@ -834,6 +834,11 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 		$options = [];
 	}
 
+	$step_types = [1];
+	if (in_array('eval_steps', $options)) {
+		$step_types[] = 2;
+	}
+
     if (empty($file_lbl)) {
         $file_lbl = "_application";
     }
@@ -1017,12 +1022,12 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                 }
 
 
-                $forms .= $m_application->getFormsPDF($user_id, $fnum, $fids, $gids, $profile_id, $eids, $attachments);
+                $forms .= $m_application->getFormsPDF($user_id, $fnum, $fids, $gids, $profile_id, $eids, $attachments, $step_types);
             }
         }
         else {
-			$eids = $elements[key($elements)]['eids'];
-			$forms = $m_application->getFormsPDF($user_id, $fnum, $form_ids, $application_form_order, $profile_id, $eids, $attachments);
+			$eids = !empty($elements) ? $elements[key($elements)]['eids'] : null;
+			$forms = $m_application->getFormsPDF($user_id, $fnum, $form_ids, $application_form_order, $profile_id, $eids, $attachments, $step_types);
 		}
         /*** Applicant   ***/
 	    $htmldata .= "
