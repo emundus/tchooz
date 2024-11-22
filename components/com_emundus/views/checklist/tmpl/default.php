@@ -6,6 +6,11 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
 
+JPluginHelper::importPlugin('emundus', 'custom_event_handler');
+$dispatcher = JEventDispatcher::getInstance();
+$dispatcher->trigger('onBeforeLoadChecklist', ['fnum' => $this->user->fnum]);
+$dispatcher->trigger('callEventHandler', ['onBeforeLoadChecklist', ['fnum' => $this->user->fnum]]);
+
 $app     = Factory::getApplication();
 $sesdion = $app->getSession();
 $_db     = Factory::getContainer()->get('DatabaseDriver');
