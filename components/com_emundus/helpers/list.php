@@ -288,11 +288,6 @@ class EmundusHelperList
 
 						$ids = array();
 						foreach ($formsList as $form) {
-							if (!in_array($form->id, $formids)) {
-								unset($formsList[$form->id]);
-								continue;
-							}
-
 							if (!in_array($form->id, $ids)) {
 								$ids[] = $form->id;
 							}
@@ -322,13 +317,37 @@ class EmundusHelperList
 				$query->select('fbtables.id AS table_id, fbtables.form_id, fbforms.label, fbtables.db_table_name, fbforms.params')
 					->from($db->quoteName('#__fabrik_forms', 'fbforms'))
 					->innerJoin($db->quoteName('#__fabrik_lists', 'fbtables') . ' ON ' . $db->quoteName('fbtables.form_id') . ' = ' . $db->quoteName('fbforms.id'))
-					->where($db->quoteName('fbtables.form_id') . ' = ' . $evaluation_step->form_id);
+					->where($db->quoteName('fbtables.id') . ' = ' . $evaluation_step->table_id);
 
 				try {
 					$db->setQuery($query);
 					$evaluation_form = $db->loadObject();
+					$evaluation_form->step_id = $evaluation_step->id;
 
-					$formsList[] = $evaluation_form;
+					// if evaluation is multiple and current user can read others evaluations, we need to add the form for each evaluation
+					if ($evaluation_step->multiple) {
+						$query->clear()
+							->select('DISTINCT id')
+							->from($db->quoteName($evaluation_step->table))
+							->where($db->quoteName('fnum') . ' = ' . $fnum)
+							->andWhere($db->quoteName('step_id') . ' = ' . $evaluation_step->id);
+
+						if (!EmundusHelperAccess::asAccessAction($evaluation_step->action_id, 'r', $user_id, $fnum)) {
+							$query->andWhere($db->quoteName('user_id') . ' = ' . $user_id);
+						}
+
+						$db->setQuery($query);
+						$evaluations = $db->loadColumn();
+
+						foreach ($evaluations as $evaluation_id) {
+							$evaluation_form_row = clone $evaluation_form;
+							$evaluation_form_row->evaluation_row_id = $evaluation_id;
+							$formsList[] = $evaluation_form_row;
+						}
+					}
+					else {
+						$formsList[] = $evaluation_form;
+					}
 				} catch (Exception $e) {
 					Log::add('Failed to get evaluation step forms infos : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 				}

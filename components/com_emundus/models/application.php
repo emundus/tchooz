@@ -2622,7 +2622,6 @@ class EmundusModelApplication extends ListModel
 		$forms     = '';
 
 		if (isset($tableuser)) {
-
 			$allowed_groups = EmundusHelperAccess::getUserFabrikGroups($this->_user->id);
 
 			foreach ($tableuser as $key => $itemt) {
@@ -2660,7 +2659,27 @@ class EmundusModelApplication extends ListModel
 				}
 				$forms .= '</h2>';
 
-				/*-- Liste des groupes -- */
+				// HANDLE CASE OF EVALUATION STEP, DISPLAY THE EVALUATOR NAME
+				if (!empty($itemt->step_id)) {
+					$evaluation_step_query = $this->_db->getQuery(true);
+					$evaluation_step_query->clear()
+						->select($this->_db->quoteName('u.name'))
+						->from($this->_db->quoteName($itemt->db_table_name, 't'))
+						->leftJoin($this->_db->quoteName('#__users', 'u') . ' ON ' . $this->_db->quoteName('u.id') . ' = ' . $this->_db->quoteName('t.evaluator'))
+						->where($this->_db->quoteName('t.fnum') . ' = ' . $this->_db->quote($fnum))
+						->andWhere($this->_db->quoteName('t.step_id') . ' = ' . $this->_db->quote($itemt->step_id));
+
+					if (!empty($itemt->evaluation_row_id)) {
+						$evaluation_step_query->andWhere($this->_db->quoteName('t.id') . ' = ' . $this->_db->quote($itemt->evaluation_row_id));
+					}
+
+					$this->_db->setQuery($evaluation_step_query);
+					$evaluator_name = $this->_db->loadResult();
+
+					$forms .= '<h3>' . Text::_('EVALUATOR') . ': ' . $evaluator_name . '</h3>';
+				}
+
+					/*-- Liste des groupes -- */
 				foreach ($groupes as $itemg) {
 					$query    = $this->_db->getQuery(true);
 					$g_params = json_decode($itemg->params);
@@ -3191,7 +3210,17 @@ class EmundusModelApplication extends ListModel
 
 									$res = [];
 
-									$query = 'SELECT `id`, `' . $element->name . '` FROM `' . $itemt->db_table_name . '` WHERE fnum like ' . $this->_db->Quote($fnum);
+									if (!empty($itemt->step_id)) {
+										$query = 'SELECT `id`, `' . $element->name . '` FROM `' . $itemt->db_table_name . '` WHERE fnum like ' . $this->_db->Quote($fnum);
+										$query .= ' AND step_id = ' . $itemt->step_id;
+
+										if (!empty($itemt->evaluation_row_id)) {
+											$query .= ' AND id = ' . $itemt->evaluation_row_id;
+										}
+									} else {
+										$query = 'SELECT `id`, `' . $element->name . '` FROM `' . $itemt->db_table_name . '` WHERE fnum like ' . $this->_db->Quote($fnum);
+									}
+
 									try {
 										$this->_db->setQuery($query);
 										$res = $this->_db->loadRow();

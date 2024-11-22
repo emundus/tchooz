@@ -294,9 +294,6 @@ function export_pdf(fnums, ids, default_export = '') {
     var limit = 2;
     var forms = 0;
     var attachment  = 0;
-    var assessment  = 0;
-    var decision    = 0;
-    var admission   = 0;
 
     var form_checked = [];
     var attach_checked = [];
@@ -330,6 +327,11 @@ function export_pdf(fnums, ids, default_export = '') {
         $('[id^=emundus_table_]').each(function (flt) {
             if($(this).find($('[id^=emundus_elm_]')).is(':checked') == true) {
                 let id = $(this).attr('id').split('emundus_table_')[1];
+                if (form_checked.length > 0) {
+                    form_checked = form_checked.concat(',', id);
+                } else {
+                    form_checked = id;
+                }
                 pdf_elements['tables'].push(id);
             }
         });
@@ -357,14 +359,16 @@ function export_pdf(fnums, ids, default_export = '') {
          *
          * all inputs that contains emundus_checkall_tbl_[id] are checked
          */
-
-
-        // TODO: replace assessment functions to export with new steps
         document.querySelectorAll('#evaluation-steps-elts input[id^=emundus_checkall_tbl_]').forEach(elt => {
             if (elt.checked == true) {
                 forms = 1;
-                form_checked = (elt.id.split('emundus_checkall_tbl_')[1]);
                 let id = elt.id.split('emundus_checkall_tbl_')[1];
+
+                if (form_checked.length > 0) {
+                    form_checked = form_checked.concat(',', id);
+                } else {
+                    form_checked = id;
+                }
                 pdf_elements['tables'].push(id);
             }
         });
@@ -372,16 +376,14 @@ function export_pdf(fnums, ids, default_export = '') {
         document.querySelectorAll('#evaluation-steps-elts input[id^=emundus_checkall_grp_]').forEach(elt => {
             if (elt.checked == true) {
                 forms = 1;
-                let id = elt.id.split('emundus_checkall_grp_')[1];
-                pdf_elements['groups'].push(id);
+                pdf_elements['groups'].push(elt.id.split('emundus_checkall_grp_')[1]);
             }
         });
 
         document.querySelectorAll('#evaluation-steps-elts input[id^=emundus_checkall_elm_]').forEach(elt => {
             if (elt.checked == true) {
                 forms = 1;
-                let id = elt.id.split('emundus_checkall_elm_')[1];
-                pdf_elements['elements'].push(id);
+                pdf_elements['elements'].push(elt.id.split('emundus_checkall_elm_')[1]);
             }
         });
 
@@ -394,12 +396,6 @@ function export_pdf(fnums, ids, default_export = '') {
             forms = 1;
         if ($('#em-ex-attachment').is(":checked"))
             attachment = 1;
-        if ($('#em-ex-assessment').is(":checked"))
-            assessment = 1;
-        if ($('#em-ex-decision').is(":checked"))
-            decision = 1;
-        if ($('#em-ex-admission').is(":checked"))
-            admission = 1;
         if ($('#em-add-header').is(":checked")) {
             $('#em-export-opt option:selected').each(function() {
                 options.push($(this).val());
@@ -435,37 +431,7 @@ function export_pdf(fnums, ids, default_export = '') {
             "status",
             "upload"
         ];
-    } else if (default_export === 'evaluation') {
-        forms = 0
-        assessment = 1;
-        options = [
-            "aid",
-            "afnum",
-            "aemail",
-            "aapp-sent",
-            "adoc-print",
-            "tags",
-            "status",
-            "upload",
-            "evaluation"
-        ];
-    } else if (default_export === 'decision') {
-        forms = 0;
-        assessment = 0;
-        decision = 1;
-        options = [
-            "aid",
-            "afnum",
-            "aemail",
-            "aapp-sent",
-            "adoc-print",
-            "tags",
-            "status",
-            "upload",
-            "decision"
-        ];
     }
-
 
     var swal_container_class = '';
     var swal_popup_class = '';
@@ -523,9 +489,6 @@ function export_pdf(fnums, ids, default_export = '') {
                                 attachment: attachment,
                                 attachids: attach_checked,
                                 options: options,
-                                assessment: assessment,
-                                decision: decision,
-                                admission: admission,
                                 file: result.file,
                                 ids: ids
                             };
@@ -562,7 +525,7 @@ function export_pdf(fnums, ids, default_export = '') {
     });
 }
 
-function generate_pdf(json,pdf_elements= null) {
+function generate_pdf(json, pdf_elements= null) {
     const maxfiles = 5000;
     var start       = json.start;
     var limit       = json.limit;
@@ -570,9 +533,6 @@ function generate_pdf(json,pdf_elements= null) {
     var file        = json.file;
     var forms       = json.forms;
     var attachment  = json.attachment;
-    var assessment  = json.assessment;
-    var decision    = json.decision;
-    var admission   = json.admission;
     var ids         = json.ids;
     var formids     = json.formids;
     var attachids   = json.attachids;
@@ -601,9 +561,6 @@ function generate_pdf(json,pdf_elements= null) {
                     limit: limit,
                     forms: forms,
                     attachment: attachment,
-                    assessment: assessment,
-                    decision: decision,
-                    admission: admission,
                     ids: ids,
                     formids: formids,
                     attachids: attachids,
@@ -642,9 +599,6 @@ function generate_pdf(json,pdf_elements= null) {
                     limit: limit,
                     forms: forms,
                     attachment: attachment,
-                    assessment: assessment,
-                    decision: decision,
-                    admission: admission,
                     ids: ids,
                     formids: formids,
                     attachids: attachids,
