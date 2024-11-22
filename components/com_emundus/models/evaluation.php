@@ -602,8 +602,10 @@ class EmundusModelEvaluation extends JModelList
 									{
 										$step_element = $h_list->getElementsDetailsByID($group_element->element_id)[0];
 										$step_element->table_label = Text::_($step_element->table_label);
-										$step_element->label = $step->label;
+										$step_element->label =  Text::_($step->label);
 										$step_element->form_id = $step->form_id;
+										$step_element->step_id = $step->id;
+										$step_element->step_label =  Text::_($step->label);
 										$elements[] = $step_element;
 									}
 								}

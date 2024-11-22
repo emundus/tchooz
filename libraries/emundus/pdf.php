@@ -993,7 +993,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
             Log::add('SQL error in emundus pdf library at query : ' . $query, Log::ERROR, 'com_emundus');
         }
 
-	    if ($form_post == 1 && (empty($form_ids) || is_null($form_ids)) && !empty($elements) && !is_null($elements)) {
+	    if ($form_post == 1 && empty($form_ids) && !empty($elements)) {
             $profile_menu = array_keys($elements);
 
             // Get form HTML
@@ -1009,14 +1009,21 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                     if($key != 0) {
                         $forms .= '<br pagebreak="true" class="page-break"/>';
                     }
-                    $forms .= '<h1>' . $m_form->getProfileLabelByProfileId($profile_id)->label . '</h1>';
+
+					$profile_data = $m_form->getProfileLabelByProfileId($profile_id);
+					if (!empty($profile_data)) {
+						$forms .= '<h1>' . $m_form->getProfileLabelByProfileId($profile_id)->label . '</h1>';
+					}
                 }
+
+
                 $forms .= $m_application->getFormsPDF($user_id, $fnum, $fids, $gids, $profile_id, $eids, $attachments);
             }
         }
         else {
-	        $forms = $m_application->getFormsPDF($user_id, $fnum, $form_ids, $application_form_order, $profile_id, null, $attachments);
-        }
+			$eids = $elements[key($elements)]['eids'];
+			$forms = $m_application->getFormsPDF($user_id, $fnum, $form_ids, $application_form_order, $profile_id, $eids, $attachments);
+		}
         /*** Applicant   ***/
 	    $htmldata .= "
 			<style>

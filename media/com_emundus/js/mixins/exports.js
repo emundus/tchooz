@@ -339,9 +339,10 @@ function export_pdf(fnums, ids, default_export = '') {
         /// save all groups
         let groups = [];
         $('[id^=emundus_grp_]').each(function (flt) {
-            if($(this).find($('[id^=emundus_elm_]')).is(':checked') == true) {
-                let id = $(this).attr('id').split('emundus_grp_')[1];
-                pdf_elements['groups'].push(id);
+            const group_id = $(this).attr('id').split('emundus_grp_')[1];
+
+            if ($(this).find($('.emundusitem_' + group_id + '[id^=emundus_elm_]')).is(':checked') == true) {
+                pdf_elements['groups'].push(group_id);
             }
         });
 
@@ -352,7 +353,6 @@ function export_pdf(fnums, ids, default_export = '') {
                 pdf_elements['elements'].push(elt.value);
             }
         });
-
 
         /**
          * Steps elements

@@ -5643,9 +5643,9 @@ class EmundusModelFiles extends JModelLegacy
 	 * @param $start
 	 * @param $forms
 	 * @param $attachment
-	 * @param $assessment @deprecated
-	 * @param $decision @deprecated
-	 * @param $admission @deprecated
+	 * @param $assessment @deprecated, evaluation steps are now in forms
+	 * @param $decision @deprecated, evaluation steps are now in forms
+	 * @param $admission @deprecated, evaluation steps are now in forms
 	 * @param $ids
 	 * @param $formid
 	 * @param $attachids

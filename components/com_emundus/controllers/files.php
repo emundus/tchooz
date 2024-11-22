@@ -2259,9 +2259,9 @@ class EmundusControllerFiles extends BaseController
 		$limit      = $this->input->getInt('limit', 1);
 		$forms      = $this->input->getInt('forms', 0);
 		$attachment = $this->input->getInt('attachment', 0);
-		$assessment = $this->input->getInt('assessment', 0);
-		$decision   = $this->input->getInt('decision', 0);
-		$admission  = $this->input->getInt('admission', 0);
+		$assessment = 0;
+		$decision   = 0;
+		$admission  = 0;
 		$ids        = $this->input->getString('ids', null);
 		$formid     = $this->input->getString('formids', null);
 		$attachids   = $this->input->getString('attachids', null);

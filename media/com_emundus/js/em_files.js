@@ -6015,6 +6015,7 @@ $(document).ready(function() {
 
         if(dataType == '.emunduspage') {
             var profile_id = $(this).attr('id').split('emundus_checkall')[1];
+
             // if excel found
             if($('#appelement').length > 0) {
                 if ($('#emundus_checkall' + profile_id).is(":checked")) {
@@ -6048,12 +6049,16 @@ $(document).ready(function() {
             }
 
             /// if pdf found
-            if($('#felts' + profile_id).length) {
-                if ($('#emundus_checkall' + profile_id).is(":checked")) {
-                    $('#felts' + profile_id + ' :input').attr('checked', true);
-                } else {
-                    $('#felts' + profile_id + ' :input').attr('checked', false);
-                }
+            if ($('#felts' + profile_id).length) {
+                const checkState = $('#emundus_checkall' + profile_id).is(":checked");
+                document.querySelectorAll('#felts' + profile_id + ' input[type="checkbox"]').forEach(function(e) {
+                    if (checkState) {
+                        e.checked = true;
+                    } else {
+                        e.checked = false;
+                        e.removeAttribute('checked');
+                    }
+                });
             }
         }
     });
@@ -6101,36 +6106,15 @@ $(document).ready(function() {
     $(document).on('click', '[id^=emundus_checkall_grp_]', function(){
         var id = $(this).attr('id').split('emundus_checkall_grp_')[1];
 
-        var elements = $('#emundus_grp_' + id).find('[id^=emundus_elm_]');
-
-        if($('#emundus_checkall_grp_' + id).is(":checked")) {
-            $('#emundus_grp_' + id + " :input").attr('checked', true);
-
-            elements.each(function(e) {
-                var eclass = $(this).attr('class').split('_')[0];
-                if(eclass == 'emundusitem') {
-                    var eid = $(this).attr('id').split('emundus_elm_')[1];
-                    var elabel = $('label[for="emundus_elm_' + eid + '"]').text();
-
-                    // check exist
-                    if($('#' + eid + '-item').length == 0) {
-                        $('#em-export').append('<li class="em-export-item" id="' + eid + '-item"><span class="em-excel_elts em-flex-row"><span id="' + eid + '-itembtn" class="em-pointer fabrik-elt-delete material-symbols-outlined em-red-600-color em-mr-4">delete_outline</span><p>' + elabel + '</p></span></li>');
-                    }
-                }
-            })
-        } else {
-            $('#emundus_grp_' + id + " :input").attr('checked', false);
-
-            elements.each(function(e) {
-                var eclass = $(this).attr('class').split('_')[0];
-                if(eclass == 'emundusitem') {
-                    var eid = $(this).attr('id').split('emundus_elm_')[1];
-
-                    // remove all <li>
-                    $('#' + eid + '-item').remove();
-                }
-            })
-        }
+        const checked = $('#emundus_checkall_grp_' + id).is(":checked");
+        document.querySelector('#emundus_grp_' + id).querySelectorAll('input[id^=emundus_elm_]').forEach(function(e) {
+            if (checked) {
+                e.checked = true;
+            } else {
+                e.checked = false;
+                e.removeAttribute('checked');
+            }
+        });
     });
 });
 
