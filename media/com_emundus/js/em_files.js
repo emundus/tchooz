@@ -2236,113 +2236,6 @@ $(document).ready(function() {
                                                                     }
                                                                     $('#em-export').append(item);
                                                                 }
-
-                                                                /*** evaluation elements */
-                                                                $.ajax({
-                                                                    type: 'get',
-                                                                    url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&code=' + code + '&form=evaluation',
-
-                                                                    success: function(data) {
-
-                                                                        $('#eval-elements-popup').empty();
-                                                                        $.ajax({
-                                                                            type:'get',
-                                                                            url: 'index.php?option=com_emundus&controller=evaluation&task=getformelem',
-                                                                            data: {code:code},
-                                                                            dataType:'json',
-                                                                            success: function(result) {
-
-                                                                                var item='';
-
-                                                                                $('#eval-elements-popup').append(data);
-
-                                                                                if (view == "evaluation") {
-                                                                                    for (var d in result.defaults) {
-                                                                                        if (isNaN(parseInt(d)))
-                                                                                            break;
-                                                                                        item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + result.defaults[d].element_id + '-itembtn" class="em-pointer fabrik-elt-delete material-symbols-outlined em-red-600-color em-mr-4">delete_outline</span><p>' + result.defaults[d].element_label + '</p></span></li>';
-                                                                                        $('#emundus_elm_'+ result.defaults[d].element_id).prop("checked", true);
-                                                                                    }
-                                                                                    $('#em-export').append(item);
-                                                                                }
-                                                                                /*** decision elements */
-                                                                                $.ajax({
-                                                                                    type: 'get',
-                                                                                    url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&code=' + code + '&form=decision',
-                                                                                    success: function (data) {
-
-                                                                                        $('#decision-elements-popup').empty();
-                                                                                        $.ajax({
-                                                                                            type:'get',
-                                                                                            url: 'index.php?option=com_emundus&controller=admission&task=getformelem&form=decision',
-                                                                                            data: {code:code},
-                                                                                            dataType:'json',
-                                                                                            success: function(result) {
-
-                                                                                                var item='';
-
-                                                                                                $('#decision-elements-popup').append(data);
-                                                                                                $('.btn-success').show();
-
-                                                                                                /*** admission elements */
-                                                                                                $.ajax({
-                                                                                                    type: 'get',
-                                                                                                    url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&code=' + code + '&form=admission',
-                                                                                                    success: function (data) {
-
-                                                                                                        $('#admission-elements-popup').empty();
-
-                                                                                                        $.ajax({
-                                                                                                            type:'get',
-                                                                                                            url: 'index.php?option=com_emundus&controller=admission&task=getformelem&form=admission',
-                                                                                                            data: {code:code},
-                                                                                                            dataType:'json',
-                                                                                                            success: function(result) {
-
-                                                                                                                var item='';
-
-                                                                                                                $('#admission-elements-popup').append(data);
-
-                                                                                                                if (view == "admission") {
-                                                                                                                    for (var d in result.defaults) {
-                                                                                                                        if (isNaN(parseInt(d)))
-                                                                                                                            break;
-                                                                                                                        item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + result.defaults[d].element_id + '-itembtn" class="em-pointer fabrik-elt-delete material-symbols-outlined em-red-600-color em-mr-4">delete_outline</span><p>' + result.defaults[d].element_label + '</p></span></li>';
-                                                                                                                        $('#emundus_elm_'+ result.defaults[d].element_id).prop("checked", true);
-                                                                                                                    }
-                                                                                                                    $('#em-export').append(item);
-                                                                                                                }
-                                                                                                            },
-                                                                                                            error: function (jqXHR) {
-                                                                                                                console.log(jqXHR.responseText);
-                                                                                                            }
-                                                                                                        });
-                                                                                                    },
-                                                                                                    error: function (jqXHR) {
-                                                                                                        console.log(jqXHR.responseText);
-                                                                                                    }
-                                                                                                });
-                                                                                            },
-                                                                                            error: function (jqXHR) {
-                                                                                                console.log(jqXHR.responseText);
-                                                                                            }
-                                                                                        });
-
-                                                                                    },
-                                                                                    error: function (jqXHR) {
-                                                                                        console.log(jqXHR.responseText);
-                                                                                    }
-                                                                                });
-                                                                            },
-                                                                            error: function (jqXHR) {
-                                                                                console.log(jqXHR.responseText);
-                                                                            }
-                                                                        });
-                                                                    },
-                                                                    error: function (jqXHR) {
-                                                                        console.log(jqXHR.responseText);
-                                                                    }
-                                                                });
                                                             },
                                                             error: function (jqXHR) {
                                                                 console.log(jqXHR.responseText);
@@ -2619,80 +2512,6 @@ $(document).ready(function() {
                                                                             }
                                                                         });
 
-                                                                        /*** evaluation elements */
-                                                                        $.ajax({
-                                                                            type: 'get',
-                                                                            url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&code=' + code + '&form=evaluation',
-                                                                            success: function(data) {
-                                                                                $('#eval-elements-popup').empty();
-                                                                                $('#eval-elements-popup').append(data);
-
-                                                                                /*** decision elements */
-                                                                                $.ajax({
-                                                                                    type: 'get',
-                                                                                    url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&code=' + code + '&form=decision',
-                                                                                    success: function(data) {
-                                                                                        $('#decision-elements-popup').empty();
-                                                                                        $('#decision-elements-popup').append(data);
-
-                                                                                        /*** admission elements */
-                                                                                        $.ajax({
-                                                                                            type: 'get',
-                                                                                            url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&code=' + code + '&form=admission',
-                                                                                            success: function(data) {
-
-                                                                                                $('#admission-elements-popup').empty();
-                                                                                                $('#admission-elements-popup').append(data);
-                                                                                                $('#elements_detail').show();
-
-                                                                                                //**** on change, check the elements and add it to selected elements */
-                                                                                                var elements = filter.elements;
-                                                                                                var others = filter.objects;
-                                                                                                var methode = filter.methode;
-                                                                                                var options = filter.options;
-
-
-                                                                                                for (var d in elements) {
-                                                                                                    if (isNaN(parseInt(d)))
-                                                                                                        break;
-
-                                                                                                    $('#emundus_elm_' + elements[d]).prop("checked", true);
-                                                                                                    var checked = $('#emundus_elm_' + elements[d]).is(':checked');
-                                                                                                    if (checked == true) {
-                                                                                                        var text =  $("label[for='emundus_elm_" + elements[d] + "']").text();
-                                                                                                    }
-                                                                                                }
-
-                                                                                                $('input[name=em-export-methode][value="'+methode+'"]').prop("checked",true);
-
-                                                                                                if (options != "") {
-
-                                                                                                    $('#forms').find('input[type=checkbox]:checked').removeAttr('checked');
-
-                                                                                                    for (var d in options) {
-                                                                                                        if (isNaN(parseInt(d)))
-                                                                                                            break;
-
-                                                                                                        $('#'+ options[d]).prop("checked", true);
-                                                                                                    }
-                                                                                                }
-
-                                                                                            },
-                                                                                            error: function (jqXHR) {
-                                                                                                console.log(jqXHR.responseText);
-                                                                                            }
-                                                                                        });
-                                                                                    },
-                                                                                    error: function (jqXHR) {
-                                                                                        console.log(jqXHR.responseText);
-                                                                                    }
-                                                                                });
-                                                                            },
-                                                                            error: function (jqXHR) {
-                                                                                console.log(jqXHR.responseText);
-                                                                            }
-                                                                        });
-
                                                                         $('#elements-popup').empty();
                                                                         $('#elements-popup').append(data);
                                                                     },
@@ -2840,8 +2659,8 @@ $(document).ready(function() {
                         '<div id="evaluation-steps-elts" style="overflow:auto;display:none;"></div>'+
                         '<div class="em-p-12-16 em-bg-neutral-200 em-border-radius-8">'+
                         '<div class="em-flex-row">' +
-                        '<input class="em-ex-check" type="checkbox"  value="decision" name="decision" id="em-ex-decision"/>' +
-                        '<label for="em-ex-decision" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_EXPORTS_DECISION_PDF')+'</label>'+
+                        '<input class="em-ex-check" type="checkbox"  value="decision" name="decision" id="em-ex-evaluation-steps"/>' +
+                        '<label for="em-ex-evaluation-steps" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_EXPORTS_EVALUATIONS_PDF')+'</label>'+
                         '</div>' +
                         '</div>'+
                         '</div>'
@@ -3697,12 +3516,6 @@ $(document).ready(function() {
                                                             $('#form-exists').show();
                                                         if (result.att == 1)
                                                             $('#att-exists').show();
-                                                        if (result.eval == 1)
-                                                            $('#eval-exists').show();
-                                                        if (result.dec == 1)
-                                                            $('#dec-exists').show();
-                                                        if (result.adm == 1)
-                                                            $('#adm-exists').show();
 
                                                         if (result.tag == 1) {
                                                             $('#em-export-opt option:disabled').removeAttr("disabled").attr("selected", "selected");
