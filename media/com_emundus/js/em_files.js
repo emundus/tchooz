@@ -2654,17 +2654,34 @@ $(document).ready(function() {
                         '</div>' +
                         '</div>'+
                         '<div id="aelts" style="overflow:auto;display:none;"></div>'+
-                        '</div>'+
-
-                        '<div id="evaluation-steps-elts" style="overflow:auto;display:none;"></div>'+
-                        '<div class="em-p-12-16 em-bg-neutral-200 em-border-radius-8">'+
-                        '<div class="em-flex-row">' +
-                        '<input class="em-ex-check" type="checkbox"  value="decision" name="decision" id="em-ex-evaluation-steps"/>' +
-                        '<label for="em-ex-evaluation-steps" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_EXPORTS_EVALUATIONS_PDF')+'</label>'+
-                        '</div>' +
-                        '</div>'+
                         '</div>'
                     );
+
+                    // create a container for the evaluation steps
+                    const evalStepsContainer = document.createElement('div');
+                    evalStepsContainer.id = 'eval-steps-container';
+                    //evalStepsContainer.style.display = 'none';
+                    evalStepsContainer.classList = 'tw-p-4 tw-rounded tw-bg-neutral-200 tw-mt-4';
+
+                    const evalDefaultCheckWrapper = document.createElement('div');
+                    const evalStepsCheckbox = document.createElement('input');
+                    evalStepsCheckbox.type = 'checkbox';
+                    evalStepsCheckbox.value = 'evaluation_steps';
+                    evalStepsCheckbox.name = 'evaluation_steps';
+                    evalStepsCheckbox.id = 'evaluation_steps';
+
+                    const evalStepsLabel = document.createElement('label');
+                    evalStepsLabel.setAttribute('for', 'evaluation_steps');
+                    evalStepsLabel.textContent = Joomla.Text._('EVALUATIONS');
+
+                    const evalElementsContainer = document.createElement('div');
+                    evalElementsContainer.id = 'eval-elements-container';
+
+                    evalDefaultCheckWrapper.append(evalStepsCheckbox);
+                    evalDefaultCheckWrapper.append(evalStepsLabel);
+                    evalStepsContainer.append(evalDefaultCheckWrapper);
+                    evalStepsContainer.append(evalElementsContainer);
+                    document.getElementById('data').append(evalStepsContainer);
 
                     $('#data').append('<div class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16" id="exp-options">'+
                         '<div class="em-flex-row">' +
@@ -2750,6 +2767,11 @@ $(document).ready(function() {
                                         }
                                     });
 
+                                    getEvaluationStepsForms(code).then(function(html) {
+                                        let evalElementsContainer = document.getElementById('eval-elements-container');
+                                        evalElementsContainer.innerHTML = html;
+                                    });
+
                                     $.ajax({
                                         type:'get',
                                         url: 'index.php?option=com_emundus&controller=files&task=getPDFCampaigns&code=' + code,
@@ -2829,12 +2851,6 @@ $(document).ready(function() {
                                             $('#form-exists').show();
                                         if (result.att == 1)
                                             $('#att-exists').show();
-                                        if (result.eval == 1)
-                                            $('#eval-exists').show();
-                                        if (result.dec == 1)
-                                            $('#dec-exists').show();
-                                        if (result.adm == 1)
-                                            $('#adm-exists').show();
 
                                         if (result.tag == 1) {
                                             $('#em-export-opt option:disabled').removeAttr("disabled").attr("selected", "selected");
@@ -6359,3 +6375,14 @@ window.addEventListener('emundus-start-apply-filters', () => {
 window.addEventListener('emundus-apply-filters-success', () => {
      reloadData(document.getElementById('view').getAttribute('value'), false);
 });
+
+async function getEvaluationStepsForms(program_code)
+{
+    return await fetch('/index.php?option=com_emundus&view=export_select_columns&format=raw&form=evaluation_steps&code=' + program_code).then((response) => {
+        return response.text();
+    }).then((html) => {
+        return html;
+    }).catch((e) => {
+        return '<p>Oops</p>';
+    });
+}

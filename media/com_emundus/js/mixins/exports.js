@@ -309,9 +309,6 @@ function export_pdf(fnums, ids, default_export = '') {
         elements: []
     };
 
-    console.log(default_export);
-
-
     if (default_export === '') {
         /// if at least one is checked --> forms = 1
         forms = $('[id^=felts] input:checked').length > 0 ?  1 : 0;
@@ -676,12 +673,6 @@ function export_zip(fnums){
         forms = 1;
     if ($('#em-ex-attachment').is(":checked"))
         attachment = 1;
-    if ($('#em-ex-assessment').is(":checked"))
-        assessment = 1;
-    if ($('#em-ex-decision').is(":checked"))
-        decision = 1;
-    if ($('#em-ex-admission').is(":checked"))
-        admission = 1;
 
     if ($('#em-add-header').is(":checked")) {
         $('#em-export-opt option:selected').each(function() {
