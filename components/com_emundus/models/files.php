@@ -4678,29 +4678,34 @@ class EmundusModelFiles extends JModelLegacy
 		return $attachment_progress;
 	}
 
-	public function getUnreadMessages()
-	{
-		$query     = $this->_db->getQuery(true);
-		$user      = $this->app->getIdentity();
-		$default   = array();
+	/**
+	 * @param int current_user_id, if given, user messages won't be counted
+	 */
+	public function getUnreadMessages($current_user_id = null) {
+		$unread_messages = [];
+
+		$query = $this->_db->getQuery(true);
 
 		try {
 			$query->select('ecc.fnum, COUNT(m.message_id) as nb')
-				->from($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc'))
-				->leftJoin($this->_db->quoteName('#__emundus_chatroom', 'ec') . ' ON ' . $this->_db->quoteName('ec.fnum') . ' LIKE ' . $this->_db->quoteName('ecc.fnum'))
-				->leftJoin($this->_db->quoteName('#__messages', 'm') . ' ON ' . $this->_db->quoteName('m.page') . ' = ' . $this->_db->quoteName('ec.id') . ' AND ' . $this->_db->quoteName('m.state') . ' = ' . $this->_db->quote(0))
-				->group('ecc.fnum');
+				->from($this->_db->quoteName('#__emundus_campaign_candidature','ecc'))
+				->leftJoin($this->_db->quoteName('#__emundus_chatroom','ec').' ON '.$this->_db->quoteName('ec.fnum').' LIKE '.$this->_db->quoteName('ecc.fnum'))
+				->leftJoin($this->_db->quoteName('#__messages','m').' ON '.$this->_db->quoteName('m.page').' = '.$this->_db->quoteName('ec.id') . ' AND ' . $this->_db->quoteName('m.state') . ' = ' . $this->_db->quote(0));
+
+			if (!empty($current_user_id)) {
+				$query->where($this->_db->quoteName('m.user_id_from') . ' <> ' . $current_user_id);
+			}
+
+			$query->group('ecc.fnum');
 
 			$this->_db->setQuery($query);
-			$result = $this->_db->loadAssocList();
-
-			return $result;
+			$unread_messages = $this->_db->loadAssocList();
+		} catch (Exception $e) {
+			$user = $this->app->getIdentity();
+			JLog::add('component/com_emundus_messages/models/messages | Error when try to get messages associated to user : '. $user->id . ' with query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
 		}
-		catch (Exception $e) {
-			Log::add('component/com_emundus_messages/models/messages | Error when try to get messages associated to user : ' . $user->id . ' with query : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
-			return 0;
-		}
+		return $unread_messages;
 	}
 
 

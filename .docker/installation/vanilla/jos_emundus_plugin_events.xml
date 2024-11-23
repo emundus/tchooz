@@ -900,6 +900,22 @@
     <field name="description"></field>
     <field name="label_translate" value_is_null="true"></field>
    </row>
+   <row>
+    <field name="id">115</field>
+    <field name="label">onAfterAcceptCollaboration</field>
+    <field name="published">1</field>
+    <field name="category">Collaboration</field>
+    <field name="description"></field>
+    <field name="label_translate" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">116</field>
+    <field name="label">onAfterShareFileWith</field>
+    <field name="published">1</field>
+    <field name="category">Collaboration</field>
+    <field name="description"></field>
+    <field name="label_translate" value_is_null="true"></field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

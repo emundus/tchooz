@@ -10,6 +10,7 @@
    <field Field="who" Type="text" Null="YES" Key="" Extra="" />
    <field Field="date" Type="datetime" Null="YES" Key="" Extra="" />
    <field Field="comment" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="rida_state" Type="text" Null="YES" Key="" Extra="" />
    <key Table="#__emundus_project_rida_837_repeat" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_project_rida_837_repeat" Non_unique="1" Key_name="fb_parent_fk_parent_id_INDEX" Seq_in_index="1" Column_name="parent_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
   </table_structure>

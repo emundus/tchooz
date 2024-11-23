@@ -7,7 +7,7 @@ defined('_JEXEC') or die;
 header('Content-Type: text/html; charset=utf-8');
 
 $menu      = Factory::getApplication()->getMenu();
-$user      = JFactory::getUser();
+$user      = Factory::getApplication()->getIdentity();
 $lang      = JFactory::getLanguage();
 $locallang = $lang->getTag();
 
@@ -158,7 +158,7 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
                 <div id="background-shapes" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></div>
 			<?php endif; ?>
             <h2 class="em-applicant-title-font em-mb-16 em-profile-color"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN') ?></h2>
-			<?php if (JFactory::getUser()->guest) : ?>
+			<?php if ($user->guest) : ?>
 				<?php if ($show_registration) : ?>
                     <h3 class="em-font-weight-500 em-mb-4"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT') ?></h3>
                     <p class="em-applicant-text-color"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_TEXT_2') ?></p>
@@ -207,12 +207,18 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
 
 					<?php if (strtotime($now) > strtotime($campaign_pinned->end_date)) : ?>
 
-                    <div class="mod_emundus_campaign__list_content--closed mod_emundus_campaign__list_content em-border-neutral-300 em-pointer"
-                         onclick="window.location.href='<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'">
+                    <div class="mod_emundus_campaign__list_content--closed mod_emundus_campaign__list_content em-border-neutral-300 <?= $mod_em_campaign_click_to_details == 1 ? 'tw-pointer-cursor' : '' ?>"
+	                    <?php if($mod_em_campaign_click_to_details == 1) : ?>
+                         onclick="window.location.href='<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'"
+                        <?php endif; ?>
+                    >
 
 						<?php else : ?>
-                        <div class="mod_emundus_campaign__list_content <?php echo ($mod_em_campaign_single_campaign_line == 1) ? 'mod_emundus_campaign__list_content--fc' : '' ; ?> em-border-neutral-300 em-pointer"
-                             onclick="window.location.href='<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'">
+                        <div class="mod_emundus_campaign__list_content <?php echo ($mod_em_campaign_single_campaign_line == 1) ? 'mod_emundus_campaign__list_content--fc' : '' ; ?> em-border-neutral-300 <?= $mod_em_campaign_click_to_details == 1 ? 'tw-pointer-cursor' : '' ?>"
+	                        <?php if($mod_em_campaign_click_to_details == 1) : ?>
+                             onclick="window.location.href='<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'"
+                            <?php endif; ?>
+                        >
 							<?php endif; ?>
 
 							<?php if ($mod_em_campaign_display_svg == 1) : ?>
@@ -257,10 +263,16 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
 											<?php endif; ?>
                                         </div>
 
-                                        <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
+                                        <?php if($mod_em_campaign_click_to_details == 1) : ?>
+                                            <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
+                                                <h3 class="mod_emundus_campaign__campaign_title"
+                                                    title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></h3>
+                                            </a>
+                                        <?php else : ?>
                                             <h3 class="mod_emundus_campaign__campaign_title"
                                                 title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></h3>
-                                        </a>
+                                        <?php endif; ?>
+
 									<?php elseif ($mod_em_campaign_list_show_programme == '1' && $mod_em_campaign_show_programme_logo == '0') : ?>
                                         <div class="tw-min-h-[38px]">
                                             <p class="em-programme-tag" title="<?php echo $campaign_pinned->programme ?>"
@@ -268,26 +280,44 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
                                                 <?php echo $campaign_pinned->programme; ?>
                                             </p>
                                         </div>
-                                        <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
-                                            <h3 class="mod_emundus_campaign__campaign_title"
-                                                title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></h3>
-                                        </a>
-									<?php elseif ($mod_em_campaign_list_show_programme == '0' && $mod_em_campaign_show_programme_logo == '1') : ?>
-                                        <div class="mod_emundus_campaign__campagne_properties">
+
+                                        <?php if($mod_em_campaign_click_to_details == 1) : ?>
                                             <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
                                                 <h3 class="mod_emundus_campaign__campaign_title"
                                                     title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></h3>
                                             </a>
+                                        <?php else : ?>
+                                            <h3 class="mod_emundus_campaign__campaign_title"
+                                                title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></h3>
+                                        <?php endif; ?>
+
+									<?php elseif ($mod_em_campaign_list_show_programme == '0' && $mod_em_campaign_show_programme_logo == '1') : ?>
+                                        <div class="mod_emundus_campaign__campagne_properties">
+	                                        <?php if($mod_em_campaign_click_to_details == 1) : ?>
+                                            <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
+                                                <h3 class="mod_emundus_campaign__campaign_title"
+                                                    title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></h3>
+                                            </a>
+                                            <?php else : ?>
+                                                <h3 class="mod_emundus_campaign__campaign_title"
+                                                    title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></h3>
+                                            <?php endif; ?>
+
 											<?php if (!empty($campaign_pinned->logo)) : ?>
                                                 <img src="<?php echo $campaign_pinned->logo; ?>"
                                                      alt="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_PROGRAMME_LOGO_ALT'); ?>">
 											<?php endif; ?>
                                         </div>
 									<?php else : ?>
-                                        <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
+                                        <?php if($mod_em_campaign_click_to_details == 1) : ?>
+                                            <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
+                                                <h3 class="mod_emundus_campaign__campaign_title"
+                                                    title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></h3>
+                                            </a>
+                                        <?php else : ?>
                                             <h3 class="mod_emundus_campaign__campaign_title"
                                                 title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></h3>
-                                        </a>
+                                        <?php endif; ?>
 									<?php endif; ?>
 
 	                                <?php if (!empty($mod_em_campaign_tags)):
@@ -445,7 +475,7 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
                         <!-- BUTTONS -->
 						<?php if ($mod_em_campaign_show_sort == 1 && !empty($mod_em_campaign_sort_list)) : ?>
                             <button type="button" id="mod_emundus_campaign__header_sort"
-                                 class="mod_emundus_campaign__header_filter em-border-neutral-400 em-neutral-800-color em-pointer em-mr-8"
+                                 class="mod_emundus_campaign__header_filter em-border-neutral-400 em-neutral-800-color tw-cursor-pointer em-mr-8"
                                  onclick="displaySort()">
                                 <span class="material-symbols-outlined" aria-hidden="true">swap_vert</span>
                                 <span class="em-ml-8"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_SORT') ?></span>
@@ -454,7 +484,7 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
 
 						<?php if ($mod_em_campaign_show_filters == 1 && !empty($mod_em_campaign_show_filters_list)) : ?>
                             <button type="button" id="mod_emundus_campaign__header_filter"
-                                 class="mod_emundus_campaign__header_filter em-border-neutral-400 em-neutral-800-color em-pointer em-mr-8"
+                                 class="mod_emundus_campaign__header_filter em-border-neutral-400 em-neutral-800-color tw-cursor-pointer em-mr-8"
                                  onclick="displayFilters()">
                                 <span class="material-symbols-outlined" aria-hidden="true">filter_list</span>
                                 <span class="em-ml-8"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER') ?></span>
@@ -466,7 +496,7 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
                         <!-- TAGS ENABLED -->
 						<?php if ($mod_em_campaign_order == 'start_date' && $order == 'end_date') : ?>
                             <div class="mod_emundus_campaign__header_filter em-mr-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
-                                <button type="button" class="em-flex-row em-text-neutral-900 em-pointer"
+                                <button type="button" class="em-flex-row em-text-neutral-900 tw-cursor-pointer"
                                         onclick="deleteSort(['order_date','order_time'])">
                                     <span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_END_DATE_NEAR') ?></span>
                                     <span class="material-symbols-outlined" aria-hidden="true">close</span>
@@ -475,7 +505,7 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
 						<?php endif; ?>
 						<?php if ($mod_em_campaign_order == 'end_date' && $order == 'start_date') : ?>
                             <div class="mod_emundus_campaign__header_filter em-mr-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
-                                <button type="button" class="em-flex-row em-text-neutral-900 em-pointer"
+                                <button type="button" class="em-flex-row em-text-neutral-900 tw-cursor-pointer"
                                    onclick="deleteSort(['order_date','order_time'])">
                                     <span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_START_DATE_NEAR') ?></span>
                                     <span class="material-symbols-outlined" aria-hidden="true">close</span>
@@ -484,7 +514,7 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
 						<?php endif; ?>
 						<?php if ($mod_em_campaign_show_sort == 1 && $group_by == 'program') : ?>
                             <div class="mod_emundus_campaign__header_filter em-mr-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
-                                <button type="button" class="em-flex-row em-text-neutral-900 em-pointer"
+                                <button type="button" class="em-flex-row em-text-neutral-900 tw-cursor-pointer"
                                    onclick="deleteSort(['group_by'])">
                                     <span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_PROGRAM') ?></span>
                                     <span class="material-symbols-outlined" aria-hidden="true">close</span>
@@ -493,7 +523,7 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
 						<?php endif; ?>
 						<?php if ($mod_em_campaign_show_sort == 1 && $group_by == 'category') : ?>
                             <div class="mod_emundus_campaign__header_filter em-mr-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
-                                <button type="button" class="em-flex-row em-text-neutral-900 em-pointer"
+                                <button type="button" class="em-flex-row em-text-neutral-900 tw-cursor-pointer"
                                    onclick="deleteSort(['group_by'])">
                                     <span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_CATEGORY') ?></span>
                                     <span class="material-symbols-outlined" aria-hidden="true">close</span>
@@ -502,7 +532,7 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
 						<?php endif; ?>
 						<?php if ($mod_em_campaign_show_sort == 1 && $group_by == 'month') : ?>
                             <div class="mod_emundus_campaign__header_filter em-mr-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
-                                <button type="button" class="em-flex-row em-text-neutral-900 em-pointer"
+                                <button type="button" class="em-flex-row em-text-neutral-900 tw-cursor-pointer"
                                    onclick="deleteSort(['month'])">
                                     <span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_MONTH') ?></span>
                                     <span class="material-symbols-outlined" aria-hidden="true">close</span>
@@ -516,28 +546,28 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
                          id="sort_block" style="display: none">
 						<?php if ($mod_em_campaign_order == 'start_date') : ?>
                             <button type="button" onclick="filterCampaigns(['order_date','order_time'],['end_date','asc'])"
-                               class="em-text-neutral-900 em-pointer">
+                               class="em-text-neutral-900 tw-cursor-pointer">
 								<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_END_DATE_NEAR') ?>
                             </button>
 						<?php endif; ?>
 						<?php if ($mod_em_campaign_order == 'end_date') : ?>
                             <button type="button" onclick="filterCampaigns(['order_date','order_time'],['start_date','asc'])"
-                               class="em-text-neutral-900 em-pointer">
+                               class="em-text-neutral-900 tw-cursor-pointer">
 								<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_START_DATE_NEAR') ?>
                             </button>
 						<?php endif; ?>
 						<?php if (in_array('programme', $mod_em_campaign_sort_list) && $group_by != 'program') : ?>
-                            <button type="button" onclick="filterCampaigns('group_by','program')" class="em-text-neutral-900 em-pointer">
+                            <button type="button" onclick="filterCampaigns('group_by','program')" class="em-text-neutral-900 tw-cursor-pointer">
 								<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_PROGRAM') ?>
                             </button>
 						<?php endif; ?>
 						<?php if (in_array('category', $mod_em_campaign_sort_list) && $group_by != 'category') : ?>
-                            <button type="button" onclick="filterCampaigns('group_by','category')" class="em-text-neutral-900 em-pointer">
+                            <button type="button" onclick="filterCampaigns('group_by','category')" class="em-text-neutral-900 tw-cursor-pointer">
 								<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_CATEGORY') ?>
                             </button>
 						<?php endif; ?>
 						<?php if (in_array('month', $mod_em_campaign_sort_list) && $group_by != 'month') : ?>
-                            <button type="button" onclick="filterCampaigns('group_by','month')" class="em-text-neutral-900 em-pointer">
+                            <button type="button" onclick="filterCampaigns('group_by','month')" class="em-text-neutral-900 tw-cursor-pointer">
 								<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_MONTH') ?>
                             </button>
 						<?php endif; ?>
@@ -547,7 +577,7 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
 					<?php if ($mod_em_campaign_show_filters == 1 && !empty($mod_em_campaign_show_filters_list)) : ?>
                         <div class="mod_emundus_campaign__header_filter__values em-border-neutral-400 em-neutral-800-color"
                              id="filters_block" style="display: none">
-                            <button type="button" class="add-filter-btn em-mb-8 em-flex-row em-font-size-14 em-pointer" onclick="addFilter()"
+                            <button type="button" class="add-filter-btn em-mb-8 em-flex-row em-font-size-14 tw-cursor-pointer" onclick="addFilter()"
                                title="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_ADD_FILTER') ?>">
                                 <span class="material-symbols-outlined em-font-size-14" aria-hidden="true">add</span>
 								<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_ADD_FILTER') ?>
@@ -577,7 +607,7 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
                                             </select>
                                         </div>
                                         <div class="em-flex-row">
-                                            <button type="button" class="material-symbols-outlined em-red-600-color em-pointer"
+                                            <button type="button" class="material-symbols-outlined em-red-600-color tw-cursor-pointer"
                                                   onclick="deleteFilter('<?php echo $i ?>')"
                                                   title="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_DELETE') ?>">delete</button>
                                         </div>
@@ -608,7 +638,7 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
                                             </select>
                                         </div>
                                         <div class="em-flex-row">
-                                            <button type="button" class="material-symbols-outlined em-red-600-color em-pointer"
+                                            <button type="button" class="material-symbols-outlined em-red-600-color tw-cursor-pointer"
                                                   onclick="deleteFilter('<?php echo $i ?>')"
                                                   title="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_DELETE') ?>">delete</button>
                                         </div>
@@ -639,7 +669,7 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
                                             </select>
                                         </div>
                                         <div class="em-flex-row">
-                                            <button type="button" class="material-symbols-outlined em-red-600-color em-pointer"
+                                            <button type="button" class="material-symbols-outlined em-red-600-color tw-cursor-pointer"
                                                   onclick="deleteFilter('<?php echo $i ?>')"
                                                   title="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_DELETE') ?>">delete</button>
                                         </div>
@@ -781,8 +811,11 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
 					<?php if ($mod_em_campaign_display_hover_offset == 1) : ?>
                         <div id="tile-hover-offset-procedure" class="tile-hover-offset-procedure--closed"></div>
 					<?php endif; ?>
-                        <div class="mod_emundus_campaign__list_content--closed mod_emundus_campaign__list_content em-border-neutral-300 em-pointer"
-                             onclick="window.location.href='<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'">
+                        <div class="mod_emundus_campaign__list_content--closed mod_emundus_campaign__list_content em-border-neutral-300 <?= $mod_em_campaign_click_to_details == 1 ? 'tw-pointer-cursor' : '' ?>"
+                             <?php if($mod_em_campaign_click_to_details == 1) : ?>
+                             onclick="window.location.href='<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'"
+                             <?php endif; ?>
+                        >
 							<?php if ($mod_em_campaign_display_svg == 1) : ?>
                                 <div id="background-shapes" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></div>
 							<?php endif; ?>
@@ -792,8 +825,11 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
 							<?php if ($mod_em_campaign_display_hover_offset == 1) : ?>
                                 <div id="tile-hover-offset-procedure"></div>
 							<?php endif; ?>
-                            <div class="mod_emundus_campaign__list_content <?php echo ($mod_em_campaign_single_campaign_line == 1) ? 'mod_emundus_campaign__list_content--fc' : '' ; ?> em-border-neutral-300 em-pointer"
-                                 onclick="window.location.href='<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'">
+                            <div class="mod_emundus_campaign__list_content <?php echo ($mod_em_campaign_single_campaign_line == 1) ? 'mod_emundus_campaign__list_content--fc' : '' ; ?> em-border-neutral-300 <?= $mod_em_campaign_click_to_details == 1 ? 'tw-pointer-cursor' : '' ?>"
+	                            <?php if($mod_em_campaign_click_to_details == 1) : ?>
+                                 onclick="window.location.href='<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'"
+                                <?php endif; ?>
+                            >
 								<?php if ($mod_em_campaign_display_svg == 1) : ?>
                                     <div id="background-shapes" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></div>
 								<?php endif; ?>
@@ -836,9 +872,14 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
 												<?php endif; ?>
                                             </div>
 
-                                            <a href="<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
+                                            <?php if($mod_em_campaign_click_to_details == 1) : ?>
+                                                <a href="<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
+                                                    <h3 class="mod_emundus_campaign__campaign_title"><?php echo $result->label; ?></h3>
+                                                </a>
+                                            <?php else : ?>
                                                 <h3 class="mod_emundus_campaign__campaign_title"><?php echo $result->label; ?></h3>
-                                            </a>
+                                            <?php endif; ?>
+
 										<?php elseif ($mod_em_campaign_list_show_programme == '1' && $mod_em_campaign_show_programme_logo == '0') : ?>
                                             <div class="tw-min-h-[38px]">
                                                 <p class="em-programme-tag" title="<?php echo $result->programme ?>"
@@ -847,26 +888,43 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
                                                 </p>
                                             </div>
 
-                                            <a href="<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
-                                                <h3 class="mod_emundus_campaign__campaign_title"
-                                                    title="<?php echo $result->label; ?>"><?php echo $result->label; ?></h3>
-                                            </a>
-										<?php elseif ($mod_em_campaign_list_show_programme == '0' && $mod_em_campaign_show_programme_logo == '1') : ?>
-                                            <div class="mod_emundus_campaign__campagne_properties">
+                                            <?php if($mod_em_campaign_click_to_details == 1) : ?>
                                                 <a href="<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
                                                     <h3 class="mod_emundus_campaign__campaign_title"
                                                         title="<?php echo $result->label; ?>"><?php echo $result->label; ?></h3>
                                                 </a>
+                                            <?php else : ?>
+                                                <h3 class="mod_emundus_campaign__campaign_title"
+                                                    title="<?php echo $result->label; ?>"><?php echo $result->label; ?></h3>
+                                            <?php endif; ?>
+
+										<?php elseif ($mod_em_campaign_list_show_programme == '0' && $mod_em_campaign_show_programme_logo == '1') : ?>
+                                            <div class="mod_emundus_campaign__campagne_properties">
+	                                            <?php if ($mod_em_campaign_click_to_details == 1) : ?>
+                                                    <a href="<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
+                                                        <h3 class="mod_emundus_campaign__campaign_title"
+                                                            title="<?php echo $result->label; ?>"><?php echo $result->label; ?></h3>
+                                                    </a>
+	                                            <?php else : ?>
+                                                    <h3 class="mod_emundus_campaign__campaign_title"
+                                                        title="<?php echo $result->label; ?>"><?php echo $result->label; ?></h3>
+	                                            <?php endif; ?>
+
 												<?php if (!empty($result->logo)) : ?>
                                                     <img src="<?php echo $result->logo; ?>"
                                                          alt="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_PROGRAMME_LOGO_ALT'); ?>">
 												<?php endif; ?>
                                             </div>
 										<?php else : ?>
-                                            <a href="<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
+                                            <?php if($mod_em_campaign_click_to_details == 1) : ?>
+                                                <a href="<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
+                                                    <h3 class="mod_emundus_campaign__campaign_title"
+                                                        title="<?php echo $result->label; ?>"><?php echo $result->label; ?></h3>
+                                                </a>
+                                            <?php else : ?>
                                                 <h3 class="mod_emundus_campaign__campaign_title"
                                                     title="<?php echo $result->label; ?>"><?php echo $result->label; ?></h3>
-                                            </a>
+                                            <?php endif; ?>
 										<?php endif; ?>
 
 	                                    <?php if (!empty($mod_em_campaign_tags)):
@@ -1172,7 +1230,7 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
             '<span class="em-text-neutral-800"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_IS') ?></span> ' +
             '<div id="filters_options_' + index + '"></div>' +
             '<div class="em-flex-row">' +
-            '<button type="button" class="material-symbols-outlined em-red-600-color em-pointer" onclick="deleteFilter(' + index + ')">delete</span>' +
+            '<button type="button" class="material-symbols-outlined em-red-600-color tw-cursor-pointer" onclick="deleteFilter(' + index + ')">delete</span>' +
             '</div>' +
             '</div>';
         document.getElementById('filters_list').insertAdjacentHTML('beforeend', html);

@@ -1390,6 +1390,7 @@ class EmundusHelperFiles
 		$filt_menu   = $session->get('filt_menu');
 		$filt_params = $session->get('filt_params');
 		$select_id   = $session->get('select_filter');
+		$eMConfig = JComponentHelper::getParams('com_emundus');
 
 		if (!is_null($select_id))
 		{
@@ -1417,6 +1418,7 @@ class EmundusHelperFiles
 		$current_user_profile = @$filt_params['profile_users'];
 		$newsletter           = @$filt_params['newsletter'];
 		$current_group        = @$filt_params['group'];
+		$current_jgroup         = @$filt_params['joomla_group'];
 		$current_institution  = @$filt_params['institution'];
 		$spam_suspect         = @$filt_params['spam_suspect'];
 		$current_group_assoc  = @$filt_params['group_assoc'];
@@ -2295,6 +2297,45 @@ class EmundusHelperFiles
 			}
 
 			$filters .= $group;
+		}
+
+		if($eMConfig->get('showJoomlagroups',0)) {
+			$hidden = $types['group'] == 'hidden';
+
+			$jgroup = '';
+			if (!$hidden) {
+				$jgroup .= '<div id="group" class="em-filter">
+                              <div class="em_label">
+                                 <label class="control-label em_filter_label">'.JText::_('COM_EMUNDUS_JOOMLA_GROUPE').' &ensp;
+                                    <a href="javascript:clearchosen(\'#select_multiple_jgroups\')"><span class="fas fa-redo" title="'.JText::_('COM_EMUNDUS_FILTERS_CLEAR').'"></span></a>
+                                 </label>
+                           	  </div>
+                            <div class="em_label">
+                                 <label class="control-label em_filter_label">'.JText::_('COM_EMUNDUS_JOOMLA_GROUPE').' &ensp;
+                                    <a href="javascript:clearchosen(\'#select_multiple_jgroups\')"><span class="fas fa-redo" title="'.JText::_('COM_EMUNDUS_FILTERS_CLEAR').'"></span></a>
+                                 </label>
+                            </div>
+                            <div class="em_filtersElement">';
+			}
+			$jgroup .= '<select '.(!$hidden ? 'class="testSelAll em-filt-select"' : '').' id="select_multiple_jgroups" name="joomla_group" multiple="multiple" '.($hidden ? 'style="height: 100%;visibility:hidden;max-height:0px;width:0px;" >' : 'style="height: 100%;">');
+
+			require_once JPATH_SITE . '/components/com_emundus/models/users.php';
+			$m_users = new EmundusModelUsers();
+			$jgroupList = $m_users->getLascalaIntranetGroups();
+			foreach ($jgroupList as $p) {
+				$jgroup .= '<option title="' . $p->category_label . '" value="'.$p->group_id.'"';
+				if (!empty($current_jgroup) && in_array($p->group_id, $current_jgroup)) {
+					$jgroup .= ' selected="true"';
+				}
+				$jgroup .= '>'.$p->category_label.'</option>';
+			}
+
+			$jgroup .= '</select>';
+			if (!$hidden) {
+				$jgroup .= '</div></div>';
+			}
+
+			$filters .= $jgroup;
 		}
 
 		if (@$params['institution'] !== null)

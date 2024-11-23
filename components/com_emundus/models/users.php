@@ -151,6 +151,7 @@ class EmundusModelUsers extends ListModel
 		$oprofiles    = $params['o_profiles'];
 		$newsletter   = $params['newsletter'];
 		$group        = $params['group'];
+		$jgroup       = $params['joomla_group'];
 		$institution  = $params['institution'];
 
 		$uid       = $this->app->input->get('rowid', null, 'GET', 'none', 0);
@@ -312,6 +313,9 @@ class EmundusModelUsers extends ListModel
 
 		if (!empty($group) && $group[0] != '%')
 			$query .= ' AND u.id IN( SELECT jeg.user_id FROM #__emundus_groups as jeg WHERE jeg.group_id IN (' . implode(',', $group) . ')) ';
+
+		if (isset($jgroup) && !empty($jgroup) && $jgroup[0] != '%')
+			$query .= ' AND u.id IN (SELECT juum.user_id FROM #__user_usergroup_map as juum WHERE juum.group_id IN ('.implode(',', $jgroup).')) ';
 
 		if (!empty($institution) && $institution[0] != '%')
 			$query .= ' AND u.id IN( SELECT jeu.user_id FROM #__emundus_users as jeu WHERE jeu.university_id IN (' . implode(',', $institution) . ')) ';
@@ -1856,18 +1860,28 @@ class EmundusModelUsers extends ListModel
 	public function affectToJoomlaGroups($users, $groups)
 	{
 		try {
-			if (count($users) > 0) {
-
+			if (!empty($users)) {
+				$query = $this->db->getQuery(true);
 				$str = "";
 
 				foreach ($users as $user) {
+					$query->clear()
+						->select('group_id')
+						->from($db->quoteName('#__user_usergroup_map'))
+						->where($db->quoteName('user_id') . ' = ' . $user);
+					$db->setQuery($query);
+					$usergroups = $db->loadColumn();
+
 					foreach ($groups as $gid) {
-						$str .= "(" . $user . ", $gid),";
+						if(!in_array($gid, $usergroups))
+						{
+							$str .= "(" . $user . ", $gid),";
+						}
 					}
 				}
 				$str = rtrim($str, ",");
 
-				$query = "insert into #__user_usergroup_map(`user_id`, `group_id`) values $str";
+				$query = "INSERT INTO #__user_usergroup_map(`user_id`, `group_id`) values $str";
 				$this->db->setQuery($query);
 				$res = $this->db->query();
 

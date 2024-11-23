@@ -25,13 +25,32 @@
         }
 
         .em-form-intro {
-            * {
+            *:not(a) {
                 color: var(--neutral-600);
+            }
+
+            a {
+                text-decoration: underline;
+                color: var(--link-regular);
+
+                &:hover {
+                    text-decoration: none;
+                    cursor: pointer;
+                }
             }
         }
 
         .groupintro {
             white-space: pre-line;
+            color: var(--neutral-600);
+
+            a {
+                text-decoration: underline;
+
+                &:hover {
+                    text-decoration: none;
+                }
+            }
         }
 
         @media all and (max-width: 480px) {
@@ -350,8 +369,15 @@
             font-family: var(--em-profile-font), Inter, sans-serif;
             font-style: normal;
 
-            * {
+            *:not(a) {
                 color: var(--em-form-tip-color);
+            }
+
+            a {
+                text-decoration: underline;
+                &:hover {
+                    text-decoration: none;
+                }
             }
 
             i.icon-question-sign {

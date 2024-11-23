@@ -35,9 +35,9 @@ else {
 	}
 }
 
-if ($item->deeper) {
+/*if ($item->deeper) {
 	$linktype .= '<span class="g-menu-parent-indicator parent-indicator-close" style="display: none;" id="parent_' . $item->id . '" data-g-menuparent=""></span>';
-}
+}*/
 
 switch ($item->browserNav) :
 	default:

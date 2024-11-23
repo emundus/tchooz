@@ -35,7 +35,6 @@ defined('_JEXEC') or die;
     #header-a .logo {
         position: relative;
         left: 5%;
-        display: none;
     }
 
     @media all and (max-width: 479px) {
@@ -45,6 +44,7 @@ defined('_JEXEC') or die;
     }
 
     #header-b {
+        z-index: 21;
         width: auto;
         position: fixed;
         background: var(--neutral-0);
@@ -56,6 +56,7 @@ defined('_JEXEC') or die;
         overflow-y: auto;
         -ms-overflow-style: none; /* IE and Edge */
         scrollbar-width: none; /* Firefox */
+        box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.25);
     }
 
     #header-b::-webkit-scrollbar {
@@ -88,14 +89,12 @@ defined('_JEXEC') or die;
     /*** END ***/
 
     /*** Sublevel parent ***/
-    ul.tchooz-vertical-toplevel > li.active.tchooz-vertical-item > a.item::before {
-        background: var(--em-profile-color);
-        width: 4px;
-        height: 100%;
-        content: "";
-        position: absolute;
-        left: -20px;
-        display: flex;
+    ul.tchooz-vertical-toplevel > li.tchooz-vertical-item > a.item {
+        border-radius: var(--em-default-br);
+    }
+
+    ul.tchooz-vertical-toplevel > li.active.tchooz-vertical-item > a.item {
+        background: linear-gradient(0deg, rgba(0, 138, 53, 0.10) 0%, rgba(0, 138, 53, 0.10) 100%), #FFF;
     }
 
     ul.tchooz-vertical-toplevel > li.active.tchooz-vertical-item > a.item span[class*="material-icons"] {
@@ -108,7 +107,7 @@ defined('_JEXEC') or die;
         color: var(--em-profile-color);
     }
 
-    .item:hover .material-symbols-outlined {
+    li:not(.active) .item:hover {
         background-color: var(--neutral-300);
         border-radius: var(--em-default-br);
     }
@@ -135,18 +134,17 @@ defined('_JEXEC') or die;
 
     .g-menu-item.g-standard.tchooz-vertical-item.tchooz-vertical-logo.tchooz-vertical-item.tchooz-vertical-logo {
         order: -1;
-        height: 61px;
+        margin-top: 10px !important;
         display: flex;
         justify-content: center;
         align-items: center;
         padding-bottom: 10px;
-        max-width: 30px;
-        margin: 0 !important;
     }
 
     .g-menu-item.g-standard.tchooz-vertical-item.tchooz-vertical-logo.tchooz-vertical-item.tchooz-vertical-logo img {
         width: 30px;
         height: 30px;
+        padding: 3px
     }
 
     #g-navigation .g-main-nav .g-sublevel > li:not(:last-child) > .g-menu-item-container,
@@ -154,8 +152,8 @@ defined('_JEXEC') or die;
         border-bottom: unset !important;
     }
 
-    #g-navigation .g-main-nav .g-sublevel > li:hover > .g-menu-item-container,
-    #g-header .g-main-nav .g-sublevel > li:hover > .g-menu-item-container {
+    #g-navigation .g-main-nav .g-sublevel > li:hover:not(.active) > .g-menu-item-container,
+    #g-header .g-main-nav .g-sublevel > li:hover:not(.active) > .g-menu-item-container {
         color: var(--neutral-900);
     }
 
@@ -178,11 +176,11 @@ defined('_JEXEC') or die;
     .tchooz-vertical-item a span[class*="material-icons"] {
         width: 30px;
         height: 30px;
-        padding: 3px !important;
+        padding-left: 5px;
     }
 
     .image-title {
-        margin-left: 30px;
+        margin-left: 18px;
         transition: opacity 0.2s ease-in-out;
     }
 
@@ -286,6 +284,25 @@ defined('_JEXEC') or die;
     #g-container-main, #g-footer, #footer-rgpd {
         padding-left: 76px;
     }
+
+    .switch-sidebar-icon {
+        position: fixed;
+        top: 25px;
+        left: 65px;
+        background: white;
+        border: 1px solid var(--neutral-400);
+        border-radius: 999px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        width: 25px;
+        height: 25px;
+        transition: left 0.3s ease-in-out, background 0.2s ease-in-out, opacity 0.1s ease-in-out;
+    }
+    .switch-sidebar-icon:hover {
+        background: var(--neutral-200);
+    }
 </style>
 <nav class="g-main-nav <?php echo $class_sfx; ?>" data-g-hover-expand="true"
 	<?php
@@ -293,18 +310,20 @@ defined('_JEXEC') or die;
 		echo ' id="' . $tag . '"';
 	}
 	?>>
-    <div style="opacity: 0" class="grey-navbar-icons"></div>
+    <div style="opacity: 0" class="navbar-icons"></div>
     <ul class="g-toplevel tchooz-vertical-toplevel">
 
-        <li class="g-menu-item g-standard tchooz-vertical-item">
+<!--        <li class="g-menu-item g-standard tchooz-vertical-item tw-mb-6">
             <a class="item" onclick="enableTitles()">
-                <img src="./images/emundus/menus/menu.png" style="width: 30px" alt="<?php echo JText::_('MOD_EMUNDUSMENU_ITEM_MENU') ?>">
+                <img src="./images/emundus/menus/menu.png" style="width: 30px;padding-left: 5px" alt="<?php echo JText::_('MOD_EMUNDUSMENU_ITEM_MENU') ?>">
                 <span class="image-title"
                       style="display: block; opacity: 1;"><?php echo JText::_('MOD_EMUNDUSMENU_ITEM_MENU') ?></span>
             </a>
-        </li>
+        </li>-->
 
 		<?php
+
+        echo '<div class="switch-sidebar-icon" onclick="enableTitles()"><span class="material-symbols-outlined">chevron_right</span></div>';
 
         echo '<li class="g-menu-item g-standard tchooz-vertical-item tchooz-vertical-logo"><a class="item" title="'.JText::_('MOD_EMUNDUSMENU_HOME').'" href="'.$favicon_link.'"><img src="'.JURI::base().'/'.$favicon.'" alt="'.JText::_('MOD_EMUNDUSMENU_HOME').'"></a>
         </li>';
@@ -529,7 +548,11 @@ defined('_JEXEC') or die;
         if (tooltipMenu) {
             if (window.getComputedStyle(document.querySelector('.image-title')).getPropertyValue('display') !== 'none') {
                 if (document.querySelector('#sublevel_list_' + menu)) {
-                    tooltipMenu.style.marginLeft = '0px';
+                    if(document.querySelector(".image-title").style.display == 'block') {
+                        tooltipMenu.style.marginLeft = '200px';
+                    } else {
+                        tooltipMenu.style.marginLeft = '0';
+                    }
                     tooltipMenu.style.display = 'block';
                 }
             } else {
@@ -581,11 +604,13 @@ defined('_JEXEC') or die;
             state === undefined
         ) {
             localStorage.setItem("menu", "true");
+            document.querySelector(".switch-sidebar-icon").style.left = "260px";
+            document.querySelector(".switch-sidebar-icon").style.transform = "rotate(180deg)";
             document.querySelector(".tchooz-vertical-toplevel").style.width = "250px";
             document.querySelectorAll(".tchooz-vertical-item").forEach(function (elem) {
                 elem.style.width = "auto";
             });
-            document.querySelector(".grey-navbar-icons").style.opacity = "1";
+            document.querySelector(".navbar-icons").style.opacity = "1";
             if (document.querySelector(".sidebar-formbuilder")) {
                 document.querySelector(".sidebar-formbuilder").style.opacity = "0";
             }
@@ -593,8 +618,8 @@ defined('_JEXEC') or die;
                 jQuery("#g-footer").css("padding-left", "280px");
                 jQuery("#footer-rgpd").css("padding-left", "280px");
                 jQuery("#g-container-main").css("padding-left", "270px");
-                jQuery("#header-a .logo").css("display", "block");
-                jQuery(".tchooz-vertical-logo").css("opacity", "0");
+                //jQuery("#header-a .logo").css("display", "block");
+                //jQuery(".tchooz-vertical-logo").css("opacity", "0");
             }
             setTimeout(() => {
                 document.querySelectorAll(".image-title").forEach(function (elem) {
@@ -606,16 +631,20 @@ defined('_JEXEC') or die;
                 }
                 setTimeout(() => {
                     if (document.querySelector(".g-menu-parent-indicator")) {
-                        document.querySelector(".g-menu-parent-indicator").style.display = "block";
+                        document.querySelectorAll(".g-menu-parent-indicator").forEach(function (elem) {
+                            elem.style.display = "block";
+                        });
                     }
                 }, 50);
             }, 250);
         } else if (state === "true") {
+            document.querySelector(".switch-sidebar-icon").style.left = "260px";
+            document.querySelector(".switch-sidebar-icon").style.transform = "rotate(180deg)";
             document.querySelector(".tchooz-vertical-toplevel").style.width = "250px";
             document.querySelectorAll(".tchooz-vertical-item").forEach(function (elem) {
                 elem.style.width = "auto";
             });
-            document.querySelector(".grey-navbar-icons").style.opacity = "1";
+            document.querySelector(".navbar-icons").style.opacity = "1";
             if (document.querySelector(".sidebar-formbuilder")) {
                 document.querySelector(".sidebar-formbuilder").style.opacity = "0";
             }
@@ -627,7 +656,7 @@ defined('_JEXEC') or die;
                     }
                 }
                 document.querySelector("#g-container-main").style.paddingLeft = "280px";
-                document.querySelector("#header-a .logo").style.display = "block";
+                //document.querySelector("#header-a .logo").style.display = "block";
             }
             setTimeout(() => {
                 document.querySelectorAll(".image-title").forEach(function (elem) {
@@ -639,12 +668,17 @@ defined('_JEXEC') or die;
                 }
                 setTimeout(() => {
                     if (document.querySelector(".g-menu-parent-indicator")) {
-                        document.querySelector(".g-menu-parent-indicator").style.display = "block";
+                        document.querySelectorAll(".g-menu-parent-indicator").forEach(function (elem) {
+                            elem.style.display = "block";
+                        });
                     }
                 }, 50);
             }, 250);
         } else {
             localStorage.setItem("menu", "false");
+            document.querySelector(".switch-sidebar-icon").style.left = "65px";
+            document.querySelector(".switch-sidebar-icon").style.transform = "rotate(0deg)";
+            document.querySelector(".switch-sidebar-icon").style.opacity = "1";
             document.querySelector(".tchooz-vertical-toplevel").style.width = "55px";
             document.querySelectorAll(".image-title").forEach(function (elem) {
                 elem.style.opacity = "0";
@@ -668,15 +702,15 @@ defined('_JEXEC') or die;
                         document.querySelector("#footer-rgpd").style.paddingLeft = "76px";
                     }
                 }
-                document.querySelector("#header-a .logo").style.display = "none";
+                //document.querySelector("#header-a .logo").style.display = "none";
             }
 
             setTimeout(function () {
-                document.querySelector(".tchooz-vertical-logo").style.opacity = "1";
+                //document.querySelector(".tchooz-vertical-logo").style.opacity = "1";
                 document.querySelectorAll(".image-title").forEach(function (elem) {
                     elem.style.display = "none";
                 });
-                document.querySelectorAll(".grey-navbar-icons").forEach(function (elem) {
+                document.querySelectorAll(".navbar-icons").forEach(function (elem) {
                     elem.style.opacity = "0";
                 });
             }, 50);
@@ -726,6 +760,18 @@ defined('_JEXEC') or die;
 
         if (imageTitle && imageTitle.style.display == 'block') {
             enableTitles();
+        }
+    });
+
+    document.querySelector('#header-b').addEventListener('mouseover', function (e) {
+        document.querySelector('.switch-sidebar-icon').style.opacity = '1';
+    });
+
+    document.querySelector('#header-b').addEventListener('mouseleave', function (e) {
+        if(document.querySelector(".image-title").style.display == 'block') {
+            document.querySelector('.switch-sidebar-icon').style.opacity = '0';
+        } else {
+            document.querySelector('.switch-sidebar-icon').style.opacity = '1';
         }
     });
 
