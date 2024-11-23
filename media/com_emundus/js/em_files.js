@@ -2116,14 +2116,6 @@ $(document).ready(function() {
                                                     $('#th-eval').show();
                                                     $('#evalelement').show();
                                                 }
-                                                if (result.dec == 1) {
-                                                    $('#th-dec').show();
-                                                    $('#decelement').show();
-                                                }
-                                                if (result.adm == 1) {
-                                                    $('#th-adm').show();
-                                                    $('#admelement').show();
-                                                }
 
                                                 document.getElementById('list-element-export').style.display = 'block';
                                                 document.getElementById('oelts').style.display = 'block';
@@ -2230,7 +2222,7 @@ $(document).ready(function() {
 
                             $('#data').append('<div id="main" class="em-grid-2 em-mt-16"><div id="list-element-export" style="display: none"></div><div id="oelts" style="display:none;"></div></div>');
 
-                            var defaults = '<div class="em-flex-row em-pointer" id="list-element-export-button"><label><strong>' + Joomla.JText._('COM_EMUNDUS_CHOOSEN_FORM_ELEM') + '</strong></label></div>' +
+                            var defaults = '<div class="tw-flex tw-flex-row tw-cursor-pointer" id="list-element-export-button"><label><strong>' + Joomla.JText._('COM_EMUNDUS_CHOOSEN_FORM_ELEM') + '</strong></label></div>' +
                                 '<div class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 mt-1" id="em-export-elts">' +
                                 '<ul id="em-export" class="em-m-8"></ul>' +
                                 '</div>';
@@ -5683,69 +5675,44 @@ $(document).ready(function() {
     });
 
     $(document).on('click', '[id^=emundus_elm_]', function(e) {
-        var eid = $(this).attr('id').split('emundus_elm_')[1];
-        var elabel = $('label[for="emundus_elm_' + eid + '"]').text();
-        var eclass = $(this).attr('class').split('_')[0];
+        const eid = $(this).attr('id').split('emundus_elm_')[1];
+        const isXlsExport = document.getElementById('appelement');
+        const element = document.getElementById('emundus_elm_' + eid);
 
-        if($(this).is(":checked")) {
-            if(eclass == 'emundusitem') {
-                if($('#' + eid + '-item').length == 0) {
-                    $('#em-export').append('<li class="em-export-item" id="' + eid + '-item"><span class="em-excel_elts em-flex-row"><span id="' + eid + '-itembtn" class="em-pointer fabrik-elt-delete material-symbols-outlined em-red-600-color em-mr-4">delete_outline</span><p>' + elabel + '</p></span></li>');
-                }
+        if (isXlsExport) {
+            if ($(this).is(":checked")) {
+                let exportRecapContainer = document.getElementById('em-export');
+                addElementToXlsRecap(element, exportRecapContainer);
+            } else {
+                removeElementFromXlsRecap(element);
             }
-        } else {
-            $('#' + eid + '-item').remove();
         }
     })
 
     $(document).on('click', '[id^=emundus_checkall]', function() {
         var dataType = $(this).attr('data-check');
-        var elements = $('#appelement').find('[id^=emundus_elm_]');
 
-        if(dataType == '.emunduspage') {
-            var profile_id = $(this).attr('id').split('emundus_checkall')[1];
+        if (dataType === '.emunduspage') {
+            let profile_id = $(this).attr('id').split('emundus_checkall')[1];
 
-            // if excel found
-            if($('#appelement').length > 0) {
-                if ($('#emundus_checkall' + profile_id).is(":checked")) {
-                    $('#emundus_elements :input').prop('checked', true);
+            const isXlsExport = document.getElementById('appelement');
+            const checkState = $('#emundus_checkall' + profile_id).is(":checked");
 
-                    elements.each(function(e) {
-                        var eclass = $(this).attr('class').split('_')[0];
-                        if(eclass == 'emundusitem') {
-                            var eid = $(this).attr('id').split('emundus_elm_')[1];
-                            var elabel = $('label[for="emundus_elm_' + eid + '"]').text();
+            if (checkState) {
+                document.querySelectorAll('#felts' + profile_id + ' input[type="checkbox"]').forEach((e) => {
+                    e.checked = true;
 
-                            // check exist
-                            if($('#' + eid + '-item').length == 0) {
-                                $('#em-export').append('<li class="em-export-item" id="' + eid + '-item"><span class="em-excel_elts em-flex-row"><span id="' + eid + '-itembtn" class="em-pointer fabrik-elt-delete material-symbols-outlined em-red-600-color em-mr-4">delete_outline</span><p>' + elabel + '</p></span></li>');
-                            }
-                        }
-                    })
-                } else {
-                    $('#emundus_elements :input').prop('checked', false);
+                    if (isXlsExport) {
+                        let exportRecapContainer = document.getElementById('em-export');
+                        addElementToXlsRecap(e, exportRecapContainer);
+                    }
+                });
+            } else {
+                document.querySelectorAll('#felts' + profile_id + ' input[type="checkbox"]').forEach((e) => {
+                    e.removeAttribute('checked');
 
-                    elements.each(function(e) {
-                        var eclass = $(this).attr('class').split('_')[0];
-                        if(eclass == 'emundusitem') {
-                            var eid = $(this).attr('id').split('emundus_elm_')[1];
-
-                            // remove all <li>
-                            $('#' + eid + '-item').remove();
-                        }
-                    })
-                }
-            }
-
-            /// if pdf found
-            if ($('#felts' + profile_id).length) {
-                const checkState = $('#emundus_checkall' + profile_id).is(":checked");
-                document.querySelectorAll('#felts' + profile_id + ' input[type="checkbox"]').forEach(function(e) {
-                    if (checkState) {
-                        e.checked = true;
-                    } else {
-                        e.checked = false;
-                        e.removeAttribute('checked');
+                    if (isXlsExport) {
+                        removeElementFromXlsRecap(e);
                     }
                 });
             }
@@ -5796,12 +5763,23 @@ $(document).ready(function() {
         var id = $(this).attr('id').split('emundus_checkall_grp_')[1];
 
         const checked = $('#emundus_checkall_grp_' + id).is(":checked");
+        const isXlsExport = document.getElementById('appelement');
+
         document.querySelector('#emundus_grp_' + id).querySelectorAll('input[id^=emundus_elm_]').forEach(function(e) {
             if (checked) {
                 e.checked = true;
+
+                if (isXlsExport) {
+                    let exportRecapContainer = document.getElementById('em-export');
+                    addElementToXlsRecap(e, exportRecapContainer);
+                }
             } else {
                 e.checked = false;
                 e.removeAttribute('checked');
+
+                if (isXlsExport) {
+                    removeElementFromXlsRecap(e);
+                }
             }
         });
     });
@@ -6245,4 +6223,45 @@ async function getEvaluationStepsForms(program_code)
     }).catch((e) => {
         return '<p>Oops</p>';
     });
+}
+
+function addElementToXlsRecap(e, exportRecapContainer) {
+    let inserted = false;
+
+    if (!e.id.startsWith('emundus_elm_')) {
+        return inserted;
+    }
+
+    let elementId = e.value;
+
+    if (!document.getElementById(elementId + '-item')) {
+        let elementLabel = document.querySelector('label[for="emundus_elm_' + elementId + '"]').textContent;
+        let elementLi = document.createElement('li');
+        elementLi.classList.add('em-export-item', 'tw-flex', 'tw-flex-row');
+        elementLi.id = elementId + '-item';
+
+        let elementDeleteIcon = document.createElement('span');
+        elementDeleteIcon.id = elementId + '-itembtn';
+        elementDeleteIcon.classList.add('material-symbols-outlined', 'tw-cursor-pointer', 'tw-text-red-600', 'tw-mr-4');
+        elementDeleteIcon.innerText = 'delete_outline';
+
+        let elementSpanLabel = document.createElement('span');
+        elementSpanLabel.innerText = elementLabel;
+
+        elementLi.appendChild(elementDeleteIcon);
+        elementLi.appendChild(elementSpanLabel);
+
+        exportRecapContainer.appendChild(elementLi);
+
+        return inserted;
+    }
+}
+
+function removeElementFromXlsRecap(e) {
+    let elementId = e.value;
+
+    let elementLi = document.getElementById(elementId + '-item');
+    if (elementLi) {
+        elementLi.remove();
+    }
 }
