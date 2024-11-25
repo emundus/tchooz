@@ -77,10 +77,34 @@ class WorkflowModelTest extends UnitTestCase
 		$updated = $this->model->updateWorkflow($workflow, [$step], []);
 		$this->assertTrue($updated, 'Adding a step to the workflow worked');
 
-
 		$program = $this->h_dataset->createSampleProgram();
 		$updated = $this->model->updateWorkflow($workflow, [], [['id' => $program['programme_id']]]);
 		$this->assertTrue($updated, 'Adding a program to the workflow worked');
+	}
+
+	public function testExceptionUpdateWorkflow()
+	{
+		$workflow_id = $this->model->add();
+		$this->assertNotEmpty($workflow_id);
+
+		$workflow = [
+			'id' => $workflow_id,
+			'label' => 'Test Workflow',
+			'published' => 1
+		];
+
+		$step = [
+			'id' => 0,
+			'entry_status' => [['id' => 0]],
+			'type' => 1,
+			'profile_id' => '1000',
+			'label' => 'Test Step',
+			'output_status' => 1
+		];
+
+		// adding two steps with same entry status should throw an exception
+		$this->expectException(\Exception::class);
+		$this->model->updateWorkflow($workflow, [$step, $step], []);
 	}
 
 	public function testGetCurrentWorkflowStepFromFile()
