@@ -154,7 +154,7 @@ class EmundusModelWorkflow extends JModelList
 								$step['id'] = $this->db->insertid();
 							}
 						} else {
-							$fields = ['label', 'type', 'state', 'multiple', 'output_status', 'sub_type'];
+							$fields = ['label', 'type', 'state', 'multiple', 'output_status'];
 
 							$fields_set = [];
 							foreach($fields as $field) {
@@ -248,35 +248,37 @@ class EmundusModelWorkflow extends JModelList
 				}
 			}
 
-			// insert the programs that are not in the workflow
-			foreach ($new_program_ids as $new_prog_id) {
-				if (!array_key_exists($new_prog_id, $workflow_programs)) {
-					$programData = new stdClass();
-					$programData->workflow_id = $workflow['id'];
-					$programData->program_id = $new_prog_id;
+			if (!empty($new_program_ids)) {
+				// insert the programs that are not in the workflow
+				foreach ($new_program_ids as $new_prog_id) {
+					if (!array_key_exists($new_prog_id, $workflow_programs)) {
+						$programData = new stdClass();
+						$programData->workflow_id = $workflow['id'];
+						$programData->program_id = $new_prog_id;
 
-					try {
-						$this->db->insertObject('#__emundus_setup_workflows_programs', $programData);
-					} catch (Exception $e) {
-						Log::add('Error while adding workflow program: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
-						$error_occurred = true;
+						try {
+							$this->db->insertObject('#__emundus_setup_workflows_programs', $programData);
+						} catch (Exception $e) {
+							Log::add('Error while adding workflow program: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+							$error_occurred = true;
+						}
 					}
 				}
-			}
 
-			// remove the programs that are linked to another workflow, if any
-			// there can be only one workflow per program
-			$query->clear()
-				->delete($this->db->quoteName('#__emundus_setup_workflows_programs'))
-				->where($this->db->quoteName('program_id') . ' IN (' . implode(',', $new_program_ids) . ')')
-				->where($this->db->quoteName('workflow_id') . ' != ' . $workflow['id']);
+				// remove the programs that are linked to another workflow, if any
+				// there can be only one workflow per program
+				$query->clear()
+					->delete($this->db->quoteName('#__emundus_setup_workflows_programs'))
+					->where($this->db->quoteName('program_id') . ' IN (' . implode(',', $new_program_ids) . ')')
+					->where($this->db->quoteName('workflow_id') . ' != ' . $workflow['id']);
 
-			try {
-				$this->db->setQuery($query);
-				$this->db->execute();
-			} catch (Exception $e) {
-				Log::add('Error while deleting workflow programs: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
-				$error_occurred = true;
+				try {
+					$this->db->setQuery($query);
+					$this->db->execute();
+				} catch (Exception $e) {
+					Log::add('Error while deleting workflow programs: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+					$error_occurred = true;
+				}
 			}
 		}
 
@@ -404,7 +406,8 @@ class EmundusModelWorkflow extends JModelList
 				$query->clear()
 					->select('esws.id')
 					->from($this->db->quoteName('#__emundus_setup_workflows_steps', 'esws'))
-					->where($this->db->quoteName('esws.workflow_id') . ' = ' . $id);
+					->where($this->db->quoteName('esws.workflow_id') . ' = ' . $id)
+					->andWhere($this->db->quoteName('esws.state') . ' = 1');
 
 				try {
 					$this->db->setQuery($query);
@@ -696,9 +699,11 @@ class EmundusModelWorkflow extends JModelList
 						$this->db->setQuery($query);
 						$dates = $this->db->loadAssoc();
 
-						$step->start_date = $dates['start_date'];
-						$step->end_date = $dates['end_date'];
-						$step->infinite = $dates['infinite'];
+						if (!empty($dates)) {
+							$step->start_date = $dates['start_date'];
+							$step->end_date = $dates['end_date'];
+							$step->infinite = $dates['infinite'];
+						}
 					} else {
 						$step = null;
 					}

@@ -1297,6 +1297,9 @@ class EmundusModelUsers extends ListModel
 			$this->db->execute() or die($this->db->getErrorMsg());
 		}
 		catch (Exception $e) {
+			error_log($e->getMessage());
+
+
 			$this->app->enqueueMessage(JText::_('COM_EMUNDUS_USERS_CAN_NOT_SAVE_USER') . '<br />' . $e->getMessage(), 'error');
 			Log::add('Failed to create user : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
