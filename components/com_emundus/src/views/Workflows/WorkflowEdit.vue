@@ -125,7 +125,7 @@
 
         <div class="tw-flex tw-flex-row tw-items-center tw-cursor-pointer">
           <input id="check-all" class="tw-cursor-pointer" type="checkbox" v-model="checkall" @change="onClickCheckAllProgram"/>
-          <label for="check-all" class="tw-cursor-pointer">{{ translate('COM_EMUNDUS_WORKFLOW_CHECK_ALL') }}</label>
+          <label for="check-all" class="tw-cursor-pointer !tw-mb-0">{{ translate('COM_EMUNDUS_WORKFLOW_CHECK_ALL') }}</label>
         </div>
 
         <div class="tw-mt-4 tw-grid tw-grid-cols-4 tw-gap-3 tw-overflow-auto">
