@@ -1128,7 +1128,7 @@ class EmundusModelWorkflow extends JModelList
 		$query = $this->db->getQuery(true);
 		$query->select('GROUP_CONCAT(eswp.workflow_id) as workflow_ids, eswp.program_id')
 			->from($this->db->quoteName('#__emundus_setup_workflows_programs', 'eswp'))
-			->leftJoin($this->db->quoteName('#__emundus_setup_workflows', 'esw') . ' ON ' . $this->db->quoteName('id') . ' = ' . $this->db->quoteName('eswp.workflow_id'))
+			->leftJoin($this->db->quoteName('#__emundus_setup_workflows', 'esw') . ' ON ' . $this->db->quoteName('esw.id') . ' = ' . $this->db->quoteName('eswp.workflow_id'))
 			->where('esw.published = 1')
 			->group('eswp.program_id');
 

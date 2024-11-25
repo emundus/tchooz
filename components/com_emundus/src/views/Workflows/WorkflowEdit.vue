@@ -59,7 +59,7 @@
 
               <div class="tw-mb-4 tw-flex tw-flex-col">
                 <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_TYPE') }}</label>
-                <select v-model="step.type" @change="onChangeStepType(step)">
+                <select v-model="step.type">
                   <option v-for="type in stepTypes" :key="type.id" :value="type.id">
                     <span v-if="type.parent_id > 0"> - </span>
                     {{ translate(type.label) }}
@@ -123,11 +123,16 @@
         <!-- set a checkbox input for each programsOptions -->
         <input type="text" v-model="searchThroughPrograms" :placeholder="translate('COM_EMUNDUS_WORKFLOW_SEARCH_PROGRAMS_PLACEHOLDER')" class="tw-w-full tw-p-2 tw-mb-4 tw-border tw-border-neutral-300 tw-rounded" />
 
+        <div class="tw-flex tw-flex-row tw-items-center tw-cursor-pointer">
+          <input id="check-all" class="tw-cursor-pointer" type="checkbox" v-model="checkall" @change="onClickCheckAllProgram"/>
+          <label for="check-all" class="tw-cursor-pointer">{{ translate('COM_EMUNDUS_WORKFLOW_CHECK_ALL') }}</label>
+        </div>
+
         <div class="tw-mt-4 tw-grid tw-grid-cols-4 tw-gap-3 tw-overflow-auto">
           <div v-for="program in displayedProgramsOptions" :key="program.id">
               <div class="tw-mb-4 tw-flex tw-flex-row tw-items-center tw-cursor-pointer">
                 <input :id="'program-' + program.id" type="checkbox" v-model="programs" :value="program" class="tw-cursor-pointer" @change="onCheckProgram(program)" />
-                <label :for="'program-' + program.id" class="tw-cursor-pointer tw-m-0" :class="{'tw-text-gray-300': program.associatedToAnotherWorkflow}"> {{ program.label }} </label>
+                <label :for="'program-' + program.id" class="tw-cursor-pointer tw-m-0" :class="{'tw-text-gray-300': isProgramAssociatedToAnotherWorkflow(program)}"> {{ program.label }} </label>
               </div>
           </div>
           <p v-if="programsOptions.length < 1" class="tw-w-full tw-text-center"> {{ translate('COM_EMUNDUS_WORKFLOW_NO_PROGRAMS') }} </p>
@@ -190,6 +195,7 @@ export default {
       displayErrors: false,
 
       searchThroughPrograms: '',
+      checkall: 0,
 
       tabs: [
         {
@@ -234,8 +240,6 @@ export default {
           });
           this.steps = tmpSteps;
 
-          console.log(this.steps);
-
           let program_ids = response.data.programs;
           this.programs = this.programsOptions.filter(program => program_ids.includes(program.id));
         })
@@ -276,7 +280,8 @@ export default {
           this.programsOptions = response.data.datas.map(program => {
             return {
               id: program.id,
-              label: program.label[useGlobalStore().shortLang]
+              label: program.label[useGlobalStore().shortLang],
+              workflows: []
             }
           });
 
@@ -292,8 +297,6 @@ export default {
           this.programsOptions.forEach((program) => {
             if (response.data[program.id]) {
               program.workflows = response.data[program.id].map(workflow => parseInt(workflow));
-            } else {
-              program.workflows = [];
             }
           });
         })
@@ -496,7 +499,7 @@ export default {
       return check;
     },
     onCheckProgram(program) {
-      if (program.associatedToAnotherWorkflow) {
+      if (this.isProgramAssociatedToAnotherWorkflow(program)) {
         Swal.fire({
           icon: 'warning',
           title: this.translate('COM_EMUNDUS_WORKFLOW_PROGRAM_ASSOCIATED_TO_ANOTHER_WORKFLOW'),
@@ -521,8 +524,18 @@ export default {
         });
       }
     },
-    onChangeStepType(step) {
-      console.log(step);
+    onClickCheckAllProgram() {
+      if (this.checkall) {
+        this.displayedProgramsOptions.forEach((program) => {
+          if (!(this.isProgramAssociatedToAnotherWorkflow(program)) && !this.programs.includes(program)) {
+            this.programs.push(program);
+          }
+        });
+      } else {
+        this.displayedProgramsOptions.forEach((program) => {
+          this.programs = this.programs.filter((p) => p.id !== program.id);
+        });
+      }
     },
     save() {
       const checked = this.onBeforeSave();
@@ -570,6 +583,9 @@ export default {
       }
 
       return isApplicantStep;
+    },
+    isProgramAssociatedToAnotherWorkflow(program) {
+      return program.workflows && program.workflows.length > 0 && !(program.workflows.includes(this.workflow.id));
     }
   },
   computed: {
@@ -587,7 +603,6 @@ export default {
     },
     displayedProgramsOptions() {
       return this.programsOptions.filter((program) => {
-        program.associatedToAnotherWorkflow = program.workflows && program.workflows.length > 0 && !(program.workflows.includes(this.workflow.id));
         return program.label.toLowerCase().includes(this.searchThroughPrograms.toLowerCase());
       });
     }
