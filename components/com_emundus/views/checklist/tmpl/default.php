@@ -1,15 +1,17 @@
 <?php
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 
-JPluginHelper::importPlugin('emundus', 'custom_event_handler');
-$dispatcher = JEventDispatcher::getInstance();
-$dispatcher->trigger('onBeforeLoadChecklist', ['fnum' => $this->user->fnum]);
-$dispatcher->trigger('callEventHandler', ['onBeforeLoadChecklist', ['fnum' => $this->user->fnum]]);
+PluginHelper::importPlugin('emundus');
+$dispatcher = Factory::getApplication()->getDispatcher();
+$onBeforeLoadChecklist  = new GenericEvent('onCallEventHandler',['onBeforeLoadChecklist', ['fnum' => $this->user->fnum]]);
+$dispatcher->dispatch('onCallEventHandler', $onBeforeLoadChecklist);
 
 $app     = Factory::getApplication();
 $sesdion = $app->getSession();
