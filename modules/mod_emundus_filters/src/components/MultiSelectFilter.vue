@@ -20,7 +20,7 @@
             <span class="recap-operator label label-darkblue"> {{ selectedOperatorLabel }}</span>
             <div v-for="(value, index) in filter.value.slice(0, 2)" :key="value"
                  class="em-flex-row em-flex-wrap em-flex-gap-8">
-              <span class="label label-default">{{ selectedValuesLabels[index] }}</span>
+              <span class="label label-default">{{ translate(selectedValuesLabels[index]) }}</span>
               <span v-if="filter.value.length > 1 && index == 0"
                     class="label label-darkblue"> {{ selectedAndorOperatorLabel }} </span>
             </div>

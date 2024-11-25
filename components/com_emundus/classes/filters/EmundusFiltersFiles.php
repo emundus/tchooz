@@ -711,6 +711,27 @@ class EmundusFiltersFiles extends EmundusFilters
 			];
 		}
 
+		if ($config['filter_evaluated']) {
+			$this->applied_filters[] = [
+				'uid'            => 'evaluated',
+				'id'             => 'evaluated',
+				'label'          => Text::_('MOD_EMUNDUS_FILTERS_WORKFLOW_EVALUATION_STATE'),
+				'type'           => 'select',
+				'values'         => [
+					['value' => 1, 'label' => Text::_('MOD_EMUNDUS_FILTERS_VALUE_EVALUATED')],
+					['value' => 0, 'label' => Text::_('MOD_EMUNDUS_FILTERS_VALUE_TO_EVALUATE')]
+				],
+				'value'          => ['all'],
+				'default'        => true,
+				'available'      => true,
+				'order'          => 0,
+				'andorOperator'  => 'OR',
+				'andorOperators' => ['OR'],
+				'operator'       => 'IN',
+				'operators'      => ['IN']
+			];
+		}
+
 		$session = $this->app->getSession();
 
 		if (!empty($config['more_filter_elements']))

@@ -5061,10 +5061,6 @@ class EmundusHelperFiles
 											} else {
 												$where['join'] .= ' LEFT JOIN ' . $db->quoteName($step_data->table) . ' ON ' . $db->quoteName($step_data->table . '.fnum') . ' = ' . $db->quoteName('jecc.fnum') . ' AND ' . $db->quoteName($step_data->table . '.step_id') . ' = ' . $db->quote($step_id) . ' ';
 											}
-
-											if ($step_data->multiple) {
-												// todo: maybe treat multiple steps differently
-											}
 										}
 
 										if (!empty($caller_params['step_id'])) {
@@ -5082,6 +5078,43 @@ class EmundusHelperFiles
 										// we want the fnums that are related to the step through the programs they are linked to
 										$where['q'] .= ' AND ' . $this->writeQueryWithOperator($jesp_alias . '.id', array_unique($program_ids), $filter['operator']);
 									}
+									break;
+								case 'evaluated':
+									$evaluated_row_ids = [];
+
+									require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+									$m_workflow = new EmundusModelWorkflow();
+									$steps = $m_workflow->getEvaluatorSteps($user->id);
+									if (!empty($steps)) {
+										foreach ($steps as $step) {
+											if (is_array($filter['value']) && in_array('0', $filter['value']) && in_array('1', $filter['value'])) {
+												continue;
+											}
+
+											if (!empty($caller_params['step_id']) && $step->id != $caller_params['step_id']) {
+												continue;
+											}
+
+											$row_ids = $m_workflow->getEvaluatedRowIdsByUser($step, $user->id);
+
+											$step_table_alias = array_search($step->table, $already_joined);
+											if (!in_array($step->table, $already_joined)) {
+												$table_index = substr($step->table, strlen('jos_emundus_evaluations_'));
+												$step_table_alias = 'jee_' . $table_index;
+												$already_join[$step_table_alias] = $step->table;
+
+												$where['join'] .= ' LEFT JOIN ' . $db->quoteName($step->table) . ' ON ' . $db->quoteName($step->table . '.fnum') . ' = ' . $db->quoteName('jecc.fnum') . ' AND ' . $db->quoteName($step->table . '.step_id') . ' = ' . $db->quote($step->id) . ' ';
+											}
+
+											if ($filter['value'] == 1) {
+												$where['q'] .= ' AND ' . $this->writeQueryWithOperator($step_table_alias . '.id', $row_ids, $filter['operator']);
+											} else {
+												$operator = $filter['operator'] === 'IN' ? 'NOT IN' : 'IN';
+												$where['q'] .= ' AND ' . $this->writeQueryWithOperator($step_table_alias . '.id', $row_ids, $operator);
+											}
+										}
+									}
+
 									break;
 								default:
 									break;

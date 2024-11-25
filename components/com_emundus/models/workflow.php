@@ -17,6 +17,8 @@ jimport('joomla.application.component.model');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Event\GenericEvent;
 
 class EmundusModelWorkflow extends JModelList
 {
@@ -540,6 +542,88 @@ class EmundusModelWorkflow extends JModelList
 		}
 
 		return $steps;
+	}
+
+	/**
+	 * @param $user_id
+	 *
+	 * @return array
+	 */
+	public function getEvaluatorSteps($user_id): array
+	{
+		$steps = [];
+
+		if (!empty($user_id)) {
+			$workflows = $this->getWorkflows();
+
+			if (!class_exists('EmundusHelperAccess')) {
+				require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
+			}
+
+			foreach ($workflows as $workflow)
+			{
+				$workflow_data = $this->getWorkflow($workflow->id);
+
+				foreach ($workflow_data['steps'] as $step)
+				{
+					if ($this->isEvaluationStep($step->type) && (EmundusHelperAccess::asAccessAction($step->action_id, 'c', $user_id) || EmundusHelperAccess::asAccessAction($step->action_id, 'r', $user_id)))
+					{
+						$steps[] = $step;
+					}
+				}
+			}
+		}
+
+		return $steps;
+	}
+
+	/*
+	 * @param $step object use getStepData to get the step object
+	 * @param $user_id
+	 *
+	 * What is a file evaluated :
+	 * for each steps, if file has been evaluated by me (presence of a row with current user as evaluator in the step table), then it is evaluated
+	 * if file has been evaluated by someone else and not me, and evaluation step is "multiple", then it is not evaluated
+	 * if file has been evaluated by someone else, and evaluation step is not "multiple", then it is evaluated
+	 * But, we will allow through an event to define if a file is evaluated or not with different rules
+	 * Event Name : onGetEvaluatedRowIdsByUser
+	 *
+	 * @return array of file ids that are evaluated by the user for this step
+	 */
+	public function getEvaluatedRowIdsByUser($step, $user_id)
+	{
+		$ids = [];
+
+		if (!empty($step->id) && !empty($user_id)) {
+			if (!empty($step->table)) {
+				$query = $this->db->createQuery();
+
+				if ($step->multiple) {
+					$query->select('id')
+						->from($this->db->quoteName($step->table))
+						->where('evaluator = ' . $user_id)
+						->andWhere('step_id = ' . $step->id);
+				} else {
+					$query->select('id')
+						->from($this->db->quoteName($step->table))
+						->where('step_id = ' . $step->id);
+				}
+
+				try {
+					$this->db->setQuery($query);
+					$ids = $this->db->loadColumn();
+				} catch (Exception $e) {
+					Log::add('Error while fetching files evaluated by user: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+				}
+			}
+
+			PluginHelper::importPlugin('emundus');
+			$dispatcher = Factory::getApplication()->getDispatcher();
+			$onGetEvaluatedRowIdsByUser = new GenericEvent('onCallEventHandler', ['onGetEvaluatedRowIdsByUser', ['step' => $step, 'user_id' => (int)$user_id, 'evaluation_row_ids' => &$ids]]);
+			$dispatcher->dispatch('onCallEventHandler', $onGetEvaluatedRowIdsByUser);
+		}
+
+		return $ids;
 	}
 
 	/**
