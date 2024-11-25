@@ -598,7 +598,7 @@ export default {
 <style scoped>
 
 .workflow-step {
-  width: 350px;
+  min-width: 350px;
 }
 
 </style>
