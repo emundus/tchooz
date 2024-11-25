@@ -651,22 +651,16 @@ function generate_pdf(json, pdf_elements= null) {
 function export_zip(fnums){
     var forms = 0;
     var attachment  = 0;
-    var assessment  = 0;
-    var decision    = 0;
-    var admission   = 0;
     var form_checked = [];
     var attach_checked = [];
     var options = [];
     let params = {};
+    let eval_steps = getCheckedEvalSteps();
+
 
     $('#felts input:checked').each(function() {
         form_checked.push($(this).val());
         forms = 0;
-    });
-
-    $('#aelts input:checked').each(function() {
-        attach_checked.push($(this).val());
-        attachment = 0;
     });
 
     if ($('#em-ex-forms').is(":checked"))
@@ -679,7 +673,7 @@ function export_zip(fnums){
             options.push($(this).val());
         });
     } else {
-        options.push("0");
+        options.push('0');
     }
 
     if ($('#concat_attachments_with_form').is(":checked")) {
@@ -727,12 +721,10 @@ function export_zip(fnums){
             fnums: fnums,
             forms: forms,
             attachment: attachment,
-            assessment: assessment,
-            decision: decision,
-            admission: admission,
             formids: form_checked,
             attachids:attach_checked,
-            options:options,
+            eval_steps: JSON.stringify(eval_steps),
+            options: options,
             params: JSON.stringify(params)
         },
         dataType:'json',
@@ -1040,4 +1032,46 @@ async function getEvaluationStepsElements(code)
     } else {
         return elements;
     }
+}
+
+
+function getCheckedEvalSteps()
+{
+    let json = {
+        tables: [],
+        groups: [],
+        elements: []
+    }
+
+    document.querySelectorAll('#eval-steps-container input[id^=emundus_checkall_tbl_]').forEach(elt => {
+        if (elt.checked == true) {
+            let table_id = elt.id.split('emundus_checkall_tbl_')[1];
+
+            if (!json.tables.includes(table_id)) {
+                json.tables.push(table_id);
+            }
+        }
+    });
+
+    document.querySelectorAll('#eval-steps-container input[id^=emundus_checkall_grp_]').forEach(elt => {
+        if (elt.checked == true) {
+            let group_id = elt.id.split('emundus_checkall_grp_')[1];
+
+            if (!json.groups.includes(group_id)) {
+                json.groups.push(group_id);
+            }
+        }
+    });
+
+    document.querySelectorAll('#eval-steps-container input[id^=emundus_elm_]').forEach(elt => {
+        if (elt.checked == true) {
+            let element_id = elt.id.split('emundus_elm_')[1];
+
+            if (!json.elements.includes(element_id)) {
+                json.elements.push(element_id);
+            }
+        }
+    });
+
+    return json;
 }

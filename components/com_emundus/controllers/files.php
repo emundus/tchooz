@@ -1319,9 +1319,8 @@ class EmundusControllerFiles extends BaseController
 		if (EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
 			$forms      = $this->input->getInt('forms', 0);
 			$attachment = $this->input->getInt('attachment', 0);
-			$assessment = $this->input->getInt('assessment', 0);
-			$decision   = $this->input->getInt('decision', 0);
-			$admission  = $this->input->getInt('admission', 0);
+			$eval_steps = $this->input->getString('eval_steps', '');
+			$eval_steps = !empty($eval_steps) ? json_decode($eval_steps, true) : [];
 			$formids    = $this->input->getVar('formids', null);
 			$attachids  = $this->input->getVar('attachids', null);
 			$options    = $this->input->getVar('options', null);
@@ -1352,7 +1351,7 @@ class EmundusControllerFiles extends BaseController
 
 
 			if (extension_loaded('zip')) {
-				$name = $m_files->exportZip($validFnums, $forms, $attachment, $assessment, $decision, $admission, $formids, $attachids, $options, false, $current_user, $params);
+				$name = $m_files->exportZip($validFnums, $forms, $attachment, $eval_steps, $formids, $attachids, $options, false, $current_user, $params);
 			}
 			else {
 				$name = $this->export_zip_pcl($validFnums);
@@ -2992,7 +2991,7 @@ class EmundusControllerFiles extends BaseController
 	 *
 	 * @return string
 	 */
-	function export_zip($fnums, $form_post = 1, $attachment = 1, $assessment = 1, $decision = 1, $admission = 1, $form_ids = null, $attachids = null, $options = null, $acl_override = false)
+	function export_zip($fnums, $form_post = 1, $attachment = 1, $eval_steps = [], $form_ids = null, $attachids = null, $options = null, $acl_override = false)
 	{
 		$view         = $this->input->get('view');
 		$current_user = $this->app->getIdentity();
@@ -3003,7 +3002,7 @@ class EmundusControllerFiles extends BaseController
 
 		$m_files = $this->getModel('Files');
 
-		return $m_files->exportZip($fnums, $form_post, $attachment, $assessment, $decision, $admission, $form_ids, $attachids, $options, false, $current_user);
+		return $m_files->exportZip($fnums, $form_post, $attachment, $eval_steps, $form_ids, $attachids, $options, false, $current_user);
 	}
 
 	/**

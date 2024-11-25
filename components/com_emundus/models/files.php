@@ -5385,7 +5385,7 @@ class EmundusModelFiles extends JModelLegacy
 		return $status;
 	}
 
-	public function exportZip($fnums, $form_post = 1, $attachment = 1, $assessment = 1, $decision = 1, $admission = 1, $form_ids = null, $attachids = null, $options = null, $acl_override = false, $current_user = null, $params = []) {
+	public function exportZip($fnums, $form_post = 1, $attachment = 1, $eval_steps = [], $form_ids = null, $attachids = null, $options = null, $acl_override = false, $current_user = null, $params = []) {
 		$eMConfig = ComponentHelper::getParams('com_emundus');
 
 		require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
@@ -5460,16 +5460,14 @@ class EmundusModelFiles extends JModelLegacy
 
 
 
-				if ($assessment) {
-					$files_list[] = EmundusHelperExport::getEvalPDF($fnum, $options);
-				}
+				if (!empty($eval_steps) && (!empty($eval_steps['tables']) || !empty($eval_steps['groups']) || !empty($eval_steps['elements']))) {
+					$elements = [
+						['fids' => $eval_steps['tables'], 'gids' => $eval_steps['groups'], 'eids' => $eval_steps['elements']]
+					];
+					$options[] = 'eval_steps';
 
-				if ($decision) {
-					$files_list[] = EmundusHelperExport::getDecisionPDF($fnum, $options);
-				}
-
-				if ($admission) {
-					$admission_file = EmundusHelperExport::getAdmissionPDF($fnum, $options);
+					$eval_pdf_filename = '_evaluations';
+					$files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, 0, $eval_steps['tables'], $options, null, $elements, false, $eval_pdf_filename);
 				}
 
 				if ($concat_attachments_with_form) {
@@ -5544,24 +5542,6 @@ class EmundusModelFiles extends JModelLegacy
 					if (!$zip->addFile($dossier . $application_pdf, $filename)) {
 						continue;
 					}
-				}
-
-				if (file_exists($admission_file)) {
-					$eMConfig = ComponentHelper::getParams('com_emundus');
-					$fileName = $eMConfig->get('application_admission_name', null);
-
-					if (is_null($fileName)) {
-						$name = $fnum . '-admission.pdf';
-					} else {
-						require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'checklist.php');
-						$m_checklist = new EmundusModelChecklist;
-						$post = array(
-							'FNUM' => $fnum,
-						);
-						$name = $m_checklist->formatFileName($fileName, $fnum, $post).'.pdf';
-					}
-					$filename = $application_form_name . DS . $name;
-					$zip->addFile($admission_file, $filename);
 				}
 
 				if (($attachment || !empty($attachids)) && !$concat_attachments_with_form) {

@@ -9,6 +9,7 @@
 
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Factory;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -90,14 +91,53 @@ class plgEmundusSend_file_archive extends CMSPlugin {
 		$m_emails = new EmundusModelEmails();
 
 		$zip_attachments = $this->params->get('zip_attachments',1);
-		$zip_evaluation = $this->params->get('zip_evaluation',0);
-		$zip_decision = $this->params->get('zip_decision',0);
+		$zip_evaluation = $this->params->get('zip_evaluation', 0);
+
+
+		$eval_steps = [];
+		if ($zip_evaluation) {
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
+
+			$query->select('esp.id')
+				->from($db->quoteName('#__emundus_setup_programmes', 'esp'))
+				->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc').' ON esc.training = esp.code')
+				->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc').' ON ecc.campaign_id = esc.id')
+				->where('ecc.fnum = '. $db->quote($fnum));
+
+			try {
+				$db->setQuery($query);
+				$program_id = $db->loadResult();
+			} catch (Exception $e) {
+				Log::add('Error: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			}
+
+			if (!empty($program_id)) {
+				require_once(JPATH_SITE.'/components/com_emundus/models/workflow.php');
+				$m_workflow = new EmundusModelWorkflow();
+				$steps = $m_workflow->getEvaluatorStepsByProgram($program_id);
+
+				if (!empty($steps)) {
+					$eval_steps = [
+						'tables' => [],
+						'groups' => [],
+						'elements' => []
+					];
+
+					foreach ($steps as $step) {
+						if (!in_array($step->table_id, $eval_steps['tables'])) {
+							$eval_steps['tables'][] = $step->table_id;
+						}
+					}
+				}
+			}
+		}
 
 		if (!defined(EMUNDUS_PATH_ABS)) {
 			define('EMUNDUS_PATH_ABS',     JPATH_ROOT.DIRECTORY_SEPARATOR.'images/emundus/files/');
 		}
 
-		$zip_name = $m_files->exportZip([$fnum], 1, $zip_attachments, $zip_evaluation, $zip_decision, 0, null, null, null, true);
+		$zip_name = $m_files->exportZip([$fnum], 1, $zip_attachments, $eval_steps, 0, null, null, null, true);
 		$file = JPATH_SITE.'/tmp/'.$zip_name;
 
 		$m_emails->sendEmail($fnum, $email, null, $file, false, 2);

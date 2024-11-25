@@ -355,7 +355,6 @@ class EmundusModelWorkflow extends JModelList
 			$offset = ($page - 1) * $limit;
 			$query->setLimit($limit, $offset);
 		}
-
 		try {
 			$this->db->setQuery($query);
 			$workflows = $this->db->loadObjectList();
