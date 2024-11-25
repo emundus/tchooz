@@ -1155,7 +1155,7 @@ class EmundusControllerEvaluation extends BaseController
 				foreach ($steps as $step) {
 					$step_data = $m_workflow->getStepData($step->id, $campaign_id);
 
-					if ($step_data->type == 2 && EmundusHelperAccess::getUserEvaluationStepAccess($ccid, $step_data, $this->_user->id)['can_see']) {
+					if ($m_workflow->isEvaluationStep($step_data->type) && EmundusHelperAccess::getUserEvaluationStepAccess($ccid, $step_data, $this->_user->id)['can_see']) {
 						$response['status'] = true;
 						$response['code'] = 200;
 						$response['data'][] = $step_data;

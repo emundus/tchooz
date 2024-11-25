@@ -5095,22 +5095,13 @@ class EmundusHelperFiles
 												continue;
 											}
 
-											$row_ids = $m_workflow->getEvaluatedRowIdsByUser($step, $user->id);
-
-											$step_table_alias = array_search($step->table, $already_joined);
-											if (!in_array($step->table, $already_joined)) {
-												$table_index = substr($step->table, strlen('jos_emundus_evaluations_'));
-												$step_table_alias = 'jee_' . $table_index;
-												$already_join[$step_table_alias] = $step->table;
-
-												$where['join'] .= ' LEFT JOIN ' . $db->quoteName($step->table) . ' ON ' . $db->quoteName($step->table . '.fnum') . ' = ' . $db->quoteName('jecc.fnum') . ' AND ' . $db->quoteName($step->table . '.step_id') . ' = ' . $db->quote($step->id) . ' ';
-											}
+											$ccids = $m_workflow->getEvaluatedFilesByUser($step, $user->id);
 
 											if ($filter['value'] == 1) {
-												$where['q'] .= ' AND ' . $this->writeQueryWithOperator($step_table_alias . '.id', $row_ids, $filter['operator']);
+												$where['q'] .= ' AND ' . $this->writeQueryWithOperator('jecc.id', $ccids, $filter['operator']);
 											} else {
 												$operator = $filter['operator'] === 'IN' ? 'NOT IN' : 'IN';
-												$where['q'] .= ' AND ' . $this->writeQueryWithOperator($step_table_alias . '.id', $row_ids, $operator);
+												$where['q'] .= ' AND ' . $this->writeQueryWithOperator('jecc.id', $ccids, $operator);
 											}
 										}
 									}

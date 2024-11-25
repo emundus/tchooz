@@ -590,7 +590,7 @@ class EmundusModelWorkflow extends JModelList
 	 *
 	 * @return array of file ids that are evaluated by the user for this step
 	 */
-	public function getEvaluatedRowIdsByUser($step, $user_id)
+	public function getEvaluatedFilesByUser($step, $user_id)
 	{
 		$ids = [];
 
@@ -599,12 +599,12 @@ class EmundusModelWorkflow extends JModelList
 				$query = $this->db->createQuery();
 
 				if ($step->multiple) {
-					$query->select('id')
+					$query->select('ccid')
 						->from($this->db->quoteName($step->table))
 						->where('evaluator = ' . $user_id)
 						->andWhere('step_id = ' . $step->id);
 				} else {
-					$query->select('id')
+					$query->select('ccid')
 						->from($this->db->quoteName($step->table))
 						->where('step_id = ' . $step->id);
 				}
@@ -619,8 +619,8 @@ class EmundusModelWorkflow extends JModelList
 
 			PluginHelper::importPlugin('emundus');
 			$dispatcher = Factory::getApplication()->getDispatcher();
-			$onGetEvaluatedRowIdsByUser = new GenericEvent('onCallEventHandler', ['onGetEvaluatedRowIdsByUser', ['step' => $step, 'user_id' => (int)$user_id, 'evaluation_row_ids' => &$ids]]);
-			$dispatcher->dispatch('onCallEventHandler', $onGetEvaluatedRowIdsByUser);
+			$onGetEvaluatedFilesByUser = new GenericEvent('onCallEventHandler', ['onGetEvaluatedFilesByUser', ['step' => $step, 'user_id' => (int)$user_id, 'evaluation_row_ids' => &$ids]]);
+			$dispatcher->dispatch('onCallEventHandler', $onGetEvaluatedFilesByUser);
 		}
 
 		return $ids;
@@ -1010,7 +1010,7 @@ class EmundusModelWorkflow extends JModelList
 		return $saved;
 	}
 
-	public function updateProgramWorkflows($program_id, $workflows)
+	public function updateProgramWorkflows($program_id, $workflows): bool
 	{
 		$updated = false;
 
@@ -1079,7 +1079,11 @@ class EmundusModelWorkflow extends JModelList
 		return $archived;
 	}
 
-	public function isEvaluationStep($type) {
+	/*
+	 * @param $type int
+	 */
+	public function isEvaluationStep($type): bool
+	{
 		$is_evaluation_step = false;
 
 		if (!empty($type)) {
