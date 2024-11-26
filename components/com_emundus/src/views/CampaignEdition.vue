@@ -3,7 +3,8 @@
     <div class="em-w-custom"></div>
     <div>
       <div>
-        <div class="tw-flex tw-items-center tw-cursor-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
+        <div class="tw-flex tw-items-center tw-cursor-pointer"
+             @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
           <span class="material-symbols-outlined tw-text-neutral-600">navigate_before</span>
           <span class="tw-ml-2 tw-text-neutral-900">{{ translate('BACK') }}</span>
         </div>
@@ -23,11 +24,14 @@
           </p>
         </div>
 
-        <Tabs v-show="profileId" :tabs="tabs" :classes="'tw-flex tw-items-center tw-gap-2 tw-ml-7'"></Tabs>
+        <Tabs v-show="profileId" :tabs="tabs"
+              :classes="'tw-overflow-x-scroll tw-flex tw-items-center tw-gap-2 tw-ml-7'"></Tabs>
 
         <div class="tw-w-full tw-rounded-coordinator tw-p-6 tw-bg-white tw-border tw-border-neutral-300 tw-relative">
           <div v-if="selectedMenuItem.id === 5" class="warning-message-program mb-1">
-            <p class="tw-text-red-600 flex flex-row"><span class="material-symbols-outlined tw-mr-2 tw-text-red-600">warning_amber</span>{{ translate('COM_EMUNDUS_ONBOARD_PROGRAM_WARNING') }}
+            <p class="tw-text-red-600 flex flex-row"><span class="material-symbols-outlined tw-mr-2 tw-text-red-600">warning_amber</span>{{
+                translate('COM_EMUNDUS_ONBOARD_PROGRAM_WARNING')
+              }}
             </p>
             <ul v-if="campaignsByProgram.length > 0" class="tw-mt-2 tw-mb-8 em-pl-16">
               <li v-for="campaign in campaignsByProgram" :key="'camp_progs_' + campaign.id">{{ campaign.label }}</li>
@@ -75,7 +79,7 @@
                 :prog="Number(program.id)"
             ></add-email>
 
-            <History v-else-if="selectedMenuItem.id === 6" extension="com_emundus.campaign" />
+            <History v-else-if="selectedMenuItem.id === 6" extension="com_emundus.campaign"/>
           </transition>
         </div>
       </div>
@@ -108,7 +112,7 @@ import addEmail from "@/components/FunnelFormulaire/addEmail.vue";
 import addFormulaire from "@/components/FunnelFormulaire/addFormulaire.vue";
 import campaignMore from "@/components/FunnelFormulaire/CampaignMore.vue";
 
-import { useGlobalStore } from '@/stores/global.js';
+import {useGlobalStore} from '@/stores/global.js';
 import History from "@/components/History/History.vue";
 import Tabs from "@/components/Utils/Tabs.vue";
 
@@ -196,7 +200,7 @@ export default {
     selectedMenu: 'addCampaign',
     formReload: 0,
     prog: 0,
-    loading: false,
+    loading: true,
     closeSubmenu: true,
     profileId: null,
     profiles: [],
@@ -226,19 +230,36 @@ export default {
     this.manyLanguages = globalStore.hasManyLanguages;
     //
 
-    this.getCampaignMoreForm();
     this.getProgram();
+    this.getCampaignMoreForm().then((response) => {
+      if (globalStore.datas.tabs) {
+        let tabsToDisplay = globalStore.datas.tabs.value.split(',');
+        this.tabs.forEach((tab) => {
+          if (tab.code !== 'more') {
+            tab.displayed = tabsToDisplay.includes(tab.code);
+            if (!tab.displayed) {
+              tab.active = false;
+            }
+          }
+        })
+      }
 
-    if(globalStore.datas.tabs) {
-      let tabsToDisplay = globalStore.datas.tabs.value.split(',');
-      this.tabs.forEach((tab) => {
-        if(tab.code !== 'more') {
-          tab.displayed = tabsToDisplay.includes(tab.code);
-        }
-      })
-    }
+      // First found tab displayed and set active
+      let firstTabDisplayed = this.tabs.find(tab => tab.displayed);
+      if (firstTabDisplayed) {
+        firstTabDisplayed.active = true;
+      }
 
-    //this.loading = true;
+      if (!this.tabs[0].displayed) {
+        campaignService.getCampaignById(this.campaignId).then((response) => {
+          this.form = response.data.campaign;
+          this.initInformations(this.form);
+        });
+      }
+
+      this.loading = false;
+    });
+
     if (this.actualLanguage === "en") {
       this.langue = 1;
     }
@@ -246,24 +267,31 @@ export default {
 
   methods: {
     getCampaignMoreForm() {
-      campaignService.getCampaignMoreFormUrl(this.campaignId)
-        .then(response => {
-          if (response.status && response.data.length > 0) {
-            if(globalStore.datas.tabs) {
-              let tabsToDisplay = globalStore.datas.tabs.value.split(',');
-              if (tabsToDisplay.includes('more')) {
-                this.tabs[1].displayed = true;
-              }
-            } else {
-              this.tabs[1].displayed = true;
-            }
+      return new Promise((resolve, reject) => {
+        campaignService.getCampaignMoreFormUrl(this.campaignId)
+            .then(response => {
+              if (response.status && response.data.length > 0) {
+                const globalStore = useGlobalStore();
+                if (globalStore.datas.tabs) {
+                  let tabsToDisplay = globalStore.datas.tabs.value.split(',');
+                  if (tabsToDisplay.includes('more')) {
+                    this.tabs[1].displayed = true;
+                  }
+                } else {
+                  this.tabs[1].displayed = true;
+                }
 
-            this.campaignMoreFormUrl = response.data;
-          }
-        }).catch(error => {
+                this.campaignMoreFormUrl = response.data;
+              }
+
+              resolve();
+            }).catch(error => {
+          reject(error);
           console.error(error);
         });
+      });
     },
+
     initInformations(campaign) {
       this.form.label = campaign.label;
       this.form.profile_id = campaign.profile_id;
@@ -335,7 +363,7 @@ export default {
       if (index < this.tabs.length - 1) {
         this.tabs[index].active = false;
 
-        if(this.tabs[index+1].displayed) {
+        if (this.tabs[index + 1].displayed) {
           this.tabs[index + 1].active = true;
         } else {
           this.tabs[index + 2].active = true;
@@ -344,7 +372,7 @@ export default {
     },
 
     redirectJRoute(link) {
-      settingsService.redirectJRoute(link,useGlobalStore().getCurrentLang);
+      settingsService.redirectJRoute(link, useGlobalStore().getCurrentLang);
     },
   },
   computed: {
