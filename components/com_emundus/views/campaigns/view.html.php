@@ -20,7 +20,7 @@ use Joomla\CMS\Factory;
 class EmundusViewCampaigns extends JViewLegacy
 {
 
-	protected $tabs_to_display = 'global,more,form,emails,history';
+	protected $tabs_to_display = 'global,more,attachments,form,emails,history';
 
 	function display($tpl = null)
 	{
