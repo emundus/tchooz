@@ -547,7 +547,10 @@ class FileMaker
 
             $upload_response = $this->upload($url, $filePath, $fileName);
 
-            $response = $upload_response->response;
+	        if (is_object($upload_response))
+	        {
+		        $response = $upload_response->response;
+	        }
         } else {
             throw new Exception('Filename and Filed Path can\'t be empty');
         }
@@ -796,14 +799,13 @@ class FileMaker
             }
         }
         //Here I remove all unsable keys for posting data to filemakeer api;
-        $finalArray = array_map(function ($tuple) {
+	    return array_map(function ($tuple) {
             unset($tuple["db_table"]);
             unset($tuple["recordId_emundus_element_name"]);
             unset($tuple["id"]);
             unset($tuple["id"]);
             return $tuple;
         }, $data);
-        return $finalArray;
     }
 
     public function getAssocElementsWithFileMakerFormLabel($mapped_columns, $label)
@@ -1113,7 +1115,7 @@ class FileMaker
 
 					$m_files->updateState($fnum, $step_properties->status);
 					$m_message->sendEmail($fnum, $step_properties->email);
-					$this->logActionIntoEmundusFileMakerlog(0, $fnum, $single_field_data->fieldData->uuid, $single_field_data->fieldData->uuidConnect, $step_properties->status, null, 1, "layouts/zWEB_FORMULAIRES/_find", "");
+					$this->logActionIntoEmundusFileMakerlog(0, $fnum, $single_field_data->fieldData->uuid, $single_field_data->fieldData->uuidConnect, $step_properties->status, null, 1, "layouts/zWEB_FORMULAIRES/_find", $single_field_data);
 				}
 
 			} catch (Exception $e) {
@@ -1577,7 +1579,8 @@ class FileMaker
 				case 'PRE':
 					$update_file = [
 						'uuid' => $single_field_data->fieldData->uuid,
-						'uuidConnect' => $single_field_data->fieldData->uuidConnect
+						'uuidConnect' => $single_field_data->fieldData->uuidConnect,
+						'recordId'=> $single_field_data->recordId
 					];
 					$update_file = (object) $update_file;
 
@@ -1595,7 +1598,8 @@ class FileMaker
 				case 'POST':
 					$update_file = [
 						'uuid' => $single_field_data->fieldData->uuid,
-						'uuidConnect' => $single_field_data->fieldData->uuidConnect
+						'uuidConnect' => $single_field_data->fieldData->uuidConnect,
+						'recordId'=> $single_field_data->recordId
 					];
 					$update_file = (object) $update_file;
 

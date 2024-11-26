@@ -193,7 +193,7 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
             $profile = intval($this->getParams()->get('profile'));
             $m_users = new EmundusModelUsers;
             $h_users = new EmundusHelperUsers;
-            $firstname_and_lastname = explode(" ", $name);
+	        $lastname_and_firstname = explode(" ", $name);
 
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
@@ -218,8 +218,8 @@ class PlgFabrik_Cronemundusfilemaker extends PlgFabrik_Cron
             }
 
             if (!empty($user_id)) {
-                $other_param['firstname'] = $firstname_and_lastname[0];
-                $other_param['lastname'] = $firstname_and_lastname[1];
+                $other_param['firstname'] = $lastname_and_firstname[0];
+                $other_param['lastname'] = $lastname_and_firstname[1];
                 $other_param['profile'] = $profile;
                 $other_param['em_oprofiles'] = '';
                 $other_param['univ_id'] = 0;
