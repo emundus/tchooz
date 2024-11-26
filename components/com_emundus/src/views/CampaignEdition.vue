@@ -139,6 +139,7 @@ export default {
     tabs: [
       {
         id: 1,
+        code: 'global',
         name: 'COM_EMUNDUS_GLOBAL_INFORMATIONS',
         description: "COM_EMUNDUS_GLOBAL_INFORMATIONS_DESC",
         icon: 'info',
@@ -147,6 +148,7 @@ export default {
       },
       {
         id: 2,
+        code: 'more',
         name: 'COM_EMUNDUS_CAMPAIGN_MORE',
         description: "COM_EMUNDUS_CAMPAIGN_MORE_DESC",
         icon: 'note_stack',
@@ -155,6 +157,7 @@ export default {
       },
       {
         id: 3,
+        code: 'attachments',
         name: 'COM_EMUNDUS_DOCUMENTS_CAMPAIGNS',
         description: "COM_EMUNDUS_DOCUMENTS_CAMPAIGNS_DESC",
         icon: 'description',
@@ -163,6 +166,7 @@ export default {
       },
       {
         id: 4,
+        code: 'form',
         name: 'COM_EMUNDUS_FORM_CAMPAIGN',
         description: "COM_EMUNDUS_FORM_CAMPAIGN_DESC",
         icon: 'format_list_bulleted',
@@ -171,6 +175,7 @@ export default {
       },
       {
         id: 5,
+        code: 'emails',
         name: 'COM_EMUNDUS_EMAILS',
         description: "COM_EMUNDUS_EMAILS_DESC",
         icon: 'mail',
@@ -179,6 +184,7 @@ export default {
       },
       {
         id: 6,
+        code: 'history',
         name: 'COM_EMUNDUS_GLOBAL_HISTORY',
         description: '',
         icon: 'history',
@@ -223,6 +229,15 @@ export default {
     this.getCampaignMoreForm();
     this.getProgram();
 
+    if(globalStore.datas.tabs) {
+      let tabsToDisplay = globalStore.datas.tabs.value.split(',');
+      this.tabs.forEach((tab) => {
+        if(tab.code !== 'more') {
+          tab.displayed = tabsToDisplay.includes(tab.code);
+        }
+      })
+    }
+
     //this.loading = true;
     if (this.actualLanguage === "en") {
       this.langue = 1;
@@ -234,7 +249,15 @@ export default {
       campaignService.getCampaignMoreFormUrl(this.campaignId)
         .then(response => {
           if (response.status && response.data.length > 0) {
-            this.tabs[1].displayed = true;
+            if(globalStore.datas.tabs) {
+              let tabsToDisplay = globalStore.datas.tabs.value.split(',');
+              if (tabsToDisplay.includes('more')) {
+                this.tabs[1].displayed = true;
+              }
+            } else {
+              this.tabs[1].displayed = true;
+            }
+
             this.campaignMoreFormUrl = response.data;
           }
         }).catch(error => {
