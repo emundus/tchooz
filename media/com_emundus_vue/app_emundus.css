@@ -1573,20 +1573,20 @@ a.tw-cursor-pointer:nth-child(2):hover .material-icons[data-v-bb742359] {
   color: var(--neutral-500) !important;
 }
 
-table[data-v-5e7f4e1f] {
+table[data-v-e2e11361] {
   border: unset;
 }
-table thead th[data-v-5e7f4e1f] {
+table thead th[data-v-e2e11361] {
   background: transparent;
   padding: 18px 12px;
 }
-table thead tr[data-v-5e7f4e1f] {
+table thead tr[data-v-e2e11361] {
   border-bottom: solid 1px var(--neutral-400);
 }
-table tbody tr[data-v-5e7f4e1f]:not(:last-child) {
+table tbody tr[data-v-e2e11361]:not(:last-child) {
   border-bottom: solid 1px var(--neutral-400);
 }
-table tbody tr td[data-v-5e7f4e1f] {
+table tbody tr td[data-v-e2e11361] {
   padding: 18px 12px;
 }
 .row-fluid .control-group.fabrikElementContainer label.fabrikLabel.control-label.fabrikTip i.icon-star.small[data-v-18f58abf] {

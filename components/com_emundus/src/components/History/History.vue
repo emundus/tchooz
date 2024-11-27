@@ -24,7 +24,7 @@
           <td v-if="columns.includes('title')">
             <p>{{ translate(data.message.title) }}</p>
             <p v-if="data.message.new_data.length > 0 && extension == 'com_emundus.settings.web_security'">
-            <span v-for="(newData, index) in data.message.new_data">
+            <span v-for="(newData, index) in data.message.new_data" :key="index">
               <span v-if="index > 0">, </span>
               <span class="tw-text-green-700">{{ newData }}</span>
             </span>
@@ -60,8 +60,12 @@
             </span>
             </div>
           </td>
-          <td v-if="columns.includes('diff')">
-            <table class="!tw-border !tw-border-slate-100 !tw-border-solid tw-rounded tw-text-sm">
+          <td>
+            <table
+                v-if="columns.includes('diff')
+                && (!Array.isArray(data.message.old_data) || data.message.old_data.length > 0)
+                && (!Array.isArray(data.message.new_data) || data.message.new_data.length > 0)"
+                class="!tw-border !tw-border-slate-100 !tw-border-solid tw-rounded tw-text-sm">
               <thead>
                 <tr>
                   <th> {{ translate('COM_EMUNDUS_GLOBAL_HISTORY_DIFF_COLUMN') }} </th>
