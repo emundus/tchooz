@@ -1690,7 +1690,7 @@ class EmundusModelCampaign extends ListModel
 						// do nothing
 						break;
 					case 'profile_id':
-						if (empty($val)) {
+						if (!empty($val)) {
 							$query->clear()
 								->select('id')
 								->from($this->_db->quoteName('#__emundus_setup_profiles'))
