@@ -79,7 +79,7 @@
                 :prog="Number(program.id)"
             ></add-email>
 
-            <History v-else-if="selectedMenuItem.id === 6" extension="com_emundus.campaign"/>
+            <History v-else-if="selectedMenuItem.id === 6" extension="com_emundus.campaign" :itemId="campaignId"/>
           </transition>
         </div>
       </div>

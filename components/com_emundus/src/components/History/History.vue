@@ -91,6 +91,10 @@ export default {
       type: String,
       required: true,
     },
+    itemId: {
+      type: Number,
+      default: 0,
+    },
     columns: {
       type: Array,
       default: () => [
@@ -149,7 +153,7 @@ export default {
     fetchHistory() {
       this.loading = true;
 
-      settingsService.getHistory(this.extension, false, this.page, this.limit).then((response) => {
+      settingsService.getHistory(this.extension, false, this.page, this.limit, this.itemId).then((response) => {
         this.historyLength = parseInt(response.length);
 
         response.data.forEach((data) => {

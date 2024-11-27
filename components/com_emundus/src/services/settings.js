@@ -287,9 +287,9 @@ export default {
     }
   },
 
-  async getHistory(extension, only_pending = false, page = 1, limit = 10) {
+  async getHistory(extension, only_pending = false, page = 1, limit = 10, itemId = 0) {
     try {
-      return await fetchClient.get('gethistory', {extension: extension, only_pending: only_pending, page: page, limit: limit});
+      return await fetchClient.get('gethistory', {extension: extension, only_pending: only_pending, page: page, limit: limit, item_id: itemId});
     } catch (e) {
       return {
         status: false,

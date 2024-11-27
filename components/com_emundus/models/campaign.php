@@ -1785,9 +1785,6 @@ class EmundusModelCampaign extends ListModel
 				}
 			}
 			catch (Exception $e) {
-				var_dump($query->__toString());
-				exit;
-
 				Log::add('component/com_emundus/models/campaign | Error when update the campaign : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 			}
 		}
