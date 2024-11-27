@@ -1719,7 +1719,9 @@ class EmundusModelCampaign extends ListModel
 			$this->_db->setQuery($query);
 			$old_data = $this->_db->loadAssoc();
 
-			$m_falang->updateFalang($labels, $cid, 'emundus_setup_campaigns', 'label');
+			if (!empty($data['label'])) {
+				$m_falang->updateFalang($labels, $cid, 'emundus_setup_campaigns', 'label');
+			}
 
 			$query->clear()
 				->update($this->_db->quoteName('#__emundus_setup_campaigns'))
@@ -1777,7 +1779,7 @@ class EmundusModelCampaign extends ListModel
 						unset($data[$key]);
 					}
 
-					$app->triggerEvent('onAfterCampaignUpdate', [$data,$old_data]);
+					$app->triggerEvent('onAfterCampaignUpdate', [$data, $old_data]);
 					$app->triggerEvent('onCallEventHandler', ['onAfterCampaignUpdate', ['campaign' => $cid]]);
 				}
 				else {
