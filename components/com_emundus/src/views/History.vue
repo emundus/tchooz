@@ -100,7 +100,7 @@
 import settingsService from "@/services/settings";
 
 /* MIXINS */
-import mixin from "../../mixins/mixin.js";
+import mixin from "@/mixins/mixin.js";
 
 /* STORE */
 import {useGlobalStore} from "@/stores/global.js";

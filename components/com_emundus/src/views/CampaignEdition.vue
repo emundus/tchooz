@@ -113,7 +113,7 @@ import addFormulaire from "@/components/FunnelFormulaire/addFormulaire.vue";
 import campaignMore from "@/components/FunnelFormulaire/CampaignMore.vue";
 
 import {useGlobalStore} from '@/stores/global.js';
-import History from "@/components/History/History.vue";
+import History from "@/views/History.vue";
 import Tabs from "@/components/Utils/Tabs.vue";
 
 
