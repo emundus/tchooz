@@ -79,7 +79,7 @@ import settingsService from "@/services/settings";
 import Info from "@/components/Utils/Info.vue";
 import Parameter from "@/components/Settings/Parameter.vue";
 import Tabs from "@/components/Utils/Tabs.vue";
-import History from "@/components/History/History.vue";
+import History from "@/views/History.vue";
 
 export default {
   name: "WebSecurity",

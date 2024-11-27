@@ -148,7 +148,7 @@ import Parameter from "@/components/Settings/Parameter.vue";
 import Info from "@/components/Utils/Info.vue";
 import settingsService from "@/services/settings";
 import Tabs from "@/components/Utils/Tabs.vue";
-import History from "@/components/History/History.vue";
+import History from "@/views/History.vue";
 
 export default {
   name: "EditEmailJoomla",
