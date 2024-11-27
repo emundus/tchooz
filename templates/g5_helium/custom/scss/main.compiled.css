@@ -1069,6 +1069,9 @@ video {
 .fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.day.selected {
                                 border-radius: 99px;
                             }
+.fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.day.\!selected {
+                                border-radius: 99px !important;
+                            }
 .fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.today:after {
                                 content: unset;
                             }
@@ -5069,6 +5072,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
     border-top-left-radius: 0.5rem;
     border-top-right-radius: 0.5rem;
 }
+.\!tw-border {
+    border-width: 1px !important;
+}
 .tw-border {
     border-width: 1px;
 }
@@ -5214,6 +5220,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-border-t-8 {
     border-top-width: 8px;
 }
+.\!tw-border-solid {
+    border-style: solid !important;
+}
 .tw-border-solid {
     border-style: solid;
 }
@@ -5237,6 +5246,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .\!tw-border-red-600 {
     border-color: var(--red-600) !important;
+}
+.\!tw-border-slate-100 {
+    --tw-border-opacity: 1 !important;
+    border-color: rgb(241 245 249 / var(--tw-border-opacity)) !important;
 }
 .tw-border-amber-100 {
     --tw-border-opacity: 1;
@@ -115082,6 +115095,9 @@ button.swal2-cancel.goback-btn:hover,
 .label-border-black {
         border-color: var(--em-black);
     }
+.\[-a-zA-Z\:0-9_\.\] {
+    -a-z-a--z: 0-9 .;
+}
 @font-face {
     font-family: 'Material Icons';
     font-style: normal;

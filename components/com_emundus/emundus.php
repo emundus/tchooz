@@ -739,6 +739,10 @@ Text::script('COM_EMUNDUS_GLOBAL_HISTORY_TYPE');
 Text::script('COM_EMUNDUS_GLOBAL_HISTORY_LOG_DATE');
 Text::script('COM_EMUNDUS_GLOBAL_HISTORY_BY');
 Text::script('COM_EMUNDUS_GLOBAL_HISTORY_STATUS');
+Text::script('COM_EMUNDUS_GLOBAL_HISTORY_DIFF');
+Text::script('COM_EMUNDUS_GLOBAL_HISTORY_DIFF_COLUMN');
+Text::script('COM_EMUNDUS_GLOBAL_HISTORY_DIFF_OLD_DATA');
+Text::script('COM_EMUNDUS_GLOBAL_HISTORY_DIFF_NEW_DATA');
 
 // Load translations for action log plugin
 $actionlog_translation_tags = parse_ini_file(JPATH_ADMINISTRATOR.'/language/fr-FR/plg_actionlog_emundus.ini');

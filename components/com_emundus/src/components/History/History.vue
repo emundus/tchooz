@@ -16,6 +16,7 @@
           <th v-if="columns.includes('log_date')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_LOG_DATE') }}</th>
           <th v-if="columns.includes('user_id')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_BY') }}</th>
           <th v-if="columns.includes('status')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_STATUS') }}</th>
+          <th v-if="columns.includes('diff')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_DIFF') }}</th>
         </tr>
         </thead>
         <tbody>
@@ -58,6 +59,24 @@
               backspace
             </span>
             </div>
+          </td>
+          <td v-if="columns.includes('diff')">
+            <table class="!tw-border !tw-border-slate-100 !tw-border-solid tw-rounded tw-text-sm">
+              <thead>
+                <tr>
+                  <th> {{ translate('COM_EMUNDUS_GLOBAL_HISTORY_DIFF_COLUMN') }} </th>
+                  <th> {{ translate('COM_EMUNDUS_GLOBAL_HISTORY_DIFF_OLD_DATA') }} </th>
+                  <th> {{ translate('COM_EMUNDUS_GLOBAL_HISTORY_DIFF_NEW_DATA') }} </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(value, key) in data.message.old_data" :key="key">
+                  <td>{{ key }}</td>
+                  <td>{{ value }}</td>
+                  <td>{{ data.message.new_data_json[key] }}</td>
+                </tr>
+              </tbody>
+            </table>
           </td>
         </tr>
         </tbody>
@@ -108,6 +127,7 @@ export default {
         'user_id',
         // Status
         //'status',
+        'diff'
       ],
     },
     displayTitle: {
@@ -164,6 +184,7 @@ export default {
           }
           if (data.message.new_data) {
             data.message.new_data = JSON.parse(data.message.new_data);
+            data.message.new_data_json = JSON.parse(JSON.stringify(data.message.new_data));
           }
           // Convert data.message.new_data object to array
           if (data.message.new_data) {
