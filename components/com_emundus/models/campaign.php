@@ -68,7 +68,7 @@ class EmundusModelCampaign extends ListModel
 			'text_file'         => 'com_emundus.campaign.error.php',
 			'text_entry_format' => '{DATETIME} {PRIORITY} {MESSAGE}'
 		],
-			Log::ERROR,
+			Log::ALL,
 			array('com_emundus')
 		);
 
@@ -1733,6 +1733,8 @@ class EmundusModelCampaign extends ListModel
 				$updated = $this->_db->execute();
 
 				if ($updated) {
+					Log::add('User ' . Factory::getApplication()->getIdentity()->id . ' updated campaign ' . $cid . ' ' . date('d/m/Y H:i:s') . ' query ' . $query->__toString(), Log::INFO, 'com_emundus.campaign');
+
 					$query->clear()
 						->delete($this->_db->quoteName('#__emundus_setup_campaigns_repeat_limit_status'))
 						->where($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($cid));
