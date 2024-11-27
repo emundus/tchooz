@@ -268,7 +268,7 @@ class TchoozKeycloakCommand extends AbstractCommand
 						if ($this->createKeycloakClient())
 						{
 							$keycloak_client = $this->getKeycloakClient();
-							$roles           = ['tchooz-admin', 'tchooz-coordinator'];
+							$roles           = ['tchooz-admin', 'tchooz-coordinator', 'tchooz-base-role'];
 							foreach ($roles as $role)
 							{
 								$this->createRole($role, $keycloak_client);
@@ -759,8 +759,13 @@ class TchoozKeycloakCommand extends AbstractCommand
 			$coordinator_mapping->emundus_profile = 2;
 			$coordinator_mapping->attribute_value = 'tchooz-coordinator';
 
+			$default_mapping                  = new \stdClass();
+			$default_mapping->emundus_profile = 1000;
+			$default_mapping->attribute_value = 'tchooz-base-role';
+
 			$configuration->mapping[] = $sysadmin_mapping;
 			$configuration->mapping[] = $coordinator_mapping;
+			$configuration->mapping[] = $default_mapping;
 		}
 
 		$configuration->debug_mode = 0;
