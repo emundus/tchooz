@@ -20,6 +20,8 @@ use Joomla\CMS\Factory;
 class EmundusViewCampaigns extends JViewLegacy
 {
 
+	protected $tabs_to_display = 'global,more,attachments,form,emails,history';
+
 	function display($tpl = null)
 	{
 		$jinput = Factory::getApplication()->input;
@@ -27,6 +29,15 @@ class EmundusViewCampaigns extends JViewLegacy
 		$layout = $jinput->getString('layout', null);
 		if ($layout == 'add') {
 			$this->id = $jinput->getString('cid', null);
+		}
+
+		$menu                         = Factory::getApplication()->getMenu();
+		$current_menu                 = $menu->getActive();
+		$menu_params                  = $menu->getParams($current_menu->id);
+		if($menu_params->get('tabs_to_display')) {
+			if(!empty($menu_params->get('tabs_to_display'))) {
+				$this->tabs_to_display = implode(',', $menu_params->get('tabs_to_display'));
+			}
 		}
 
 		parent::display($tpl);

@@ -153,4 +153,45 @@ class EmundusControllerPayment extends BaseController
 		echo json_encode(array('response' => $is_valid));
 		exit;
 	}
+
+	// Ajoute les données du virement aux différents versements sélectionnés (use case FHDP)
+	public function insertvirementdata()
+	{
+		$results = array('status' => false, 'msg' => '', 'data' => []);
+		$user = JFactory::getUser();
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+			try {
+				$jinput = JFactory::getApplication()->input;
+				$rowids = $jinput->getString('repeat_ids','');
+				$virement_date = $jinput->getString('virement_date','');
+				$virement_number = $jinput->getString('virement_number','');
+				$table_name = $jinput->getString('table_name','');
+
+				if(!empty($rowids) && !empty($virement_date) && !empty($virement_number) && !empty($table_name))
+				{
+					$virement_date   = DateTime::createFromFormat('Y-m-d', $virement_date);
+					$results['data'] = date_format($virement_date,'d/m/Y');
+					$virement_date   = date_format($virement_date,'Y-m-d');
+
+					$model = $this->getModel('payment');
+					$updated = $model->insertVirementData($rowids, $table_name, $virement_date, $virement_number);
+					if (!$updated)
+					{
+						throw new Exception('Une erreur est survenue', 401);
+					}
+
+					$result['msg'] = 'Virement sauvegardé';
+					$results['status'] = true;
+				}
+			}
+			catch (Exception $e)
+			{
+				$results = array('status' => false, 'msg' => JText::_($e->getMessage()), 'data' => [], 'code' => $e->getCode());
+			}
+		}
+
+		echo json_encode((object)$results);
+		exit;
+	}
 }

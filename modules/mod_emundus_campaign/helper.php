@@ -1,6 +1,7 @@
 <?php
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 
 defined('_JEXEC') or die('Restricted access');
@@ -11,175 +12,254 @@ class modEmundusCampaignHelper
 	private $totalFutur;
 	private $totalPast;
 	private $total;
+	private $offset;
+	public $now;
+
+	private $app;
+	private $db;
 
 	public function __construct()
 	{
+		$this->app = Factory::getApplication();
+		$this->db  = Factory::getContainer()->get('DatabaseDriver');
+
 		$this->totalCurrent = 0;
 		$this->totalFutur   = 0;
 		$this->totalPast    = 0;
 		$this->total        = 0;
-		$this->offset       = JFactory::getApplication()->get('offset', 'UTC');
-		try {
+		$this->offset       = $this->app->get('offset', 'UTC');
+
+		try
+		{
 			$dateTime  = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
 			$dateTime  = $dateTime->setTimezone(new DateTimeZone($this->offset));
 			$this->now = $dateTime->format('Y-m-d H:i:s');
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			echo $e->getMessage() . '<br />';
 		}
 
-		JLog::addLogger(array('text_file' => 'mod_emundus_campaign.php'), JLog::ALL, array('mod_emundus_campaign'));
+		Log::addLogger(array('text_file' => 'mod_emundus_campaign.php'), Log::ALL, array('mod_emundus_campaign'));
 	}
 
-	/* **** CURRENT **** */
 	public function getCurrent($condition, $teachingUnityDates = null, $order = 'start_date')
 	{
 		$current_campaigns = [];
 
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
-		if ($teachingUnityDates) {
-			$query->select('ca.*, pr.apply_online, pr.code,pr.ordering as programme_ordering,pr.label as programme,pr.color as tag_color, pr.link, tu.date_start as formation_start, tu.date_end as formation_end, pr.programmes as prog_type, pr.id as p_id, pr.notes,ca.is_limited, pr.logo,MONTH(ca.'.$order.') as month,concat(MONTHNAME(ca.'.$order.'),"-",YEAR(ca.'.$order.')) as month_name')
-				->from($db->qn('#__emundus_setup_campaigns', 'ca'))
-				->leftJoin($db->qn('#__emundus_setup_programmes', 'pr') . ' ON ' . $db->qn('pr.code') . ' = ' . $db->qn('ca.training'))
-				->leftJoin($db->qn('#__emundus_setup_teaching_unity', 'tu') . ' ON ' . $db->qn('tu.code') . ' = ' . $db->qn('ca.training') . ' AND ' . $db->quoteName('ca.year') . ' = ' . $db->quoteName('tu.schoolyear'))
-				->where('ca.published=1 AND "' . $this->now . '" <= ca.end_date and "' . $this->now . '">= ca.start_date ' . $condition);
+		$columns = [
+			'ca.*',
+			'pr.apply_online',
+			'pr.code',
+			'pr.ordering as programme_ordering',
+			'pr.label as programme',
+			'pr.color as tag_color',
+			'pr.link',
+			'pr.programmes as prog_type',
+			'pr.id as p_id',
+			'pr.notes',
+			'pr.logo',
+			'MONTH(ca.' . $order . ') as month',
+			'concat(MONTHNAME(ca.' . $order . '),"-",YEAR(ca.' . $order . ')) as month_name'
+		];
+
+		if ($teachingUnityDates)
+		{
+			$columns[] = 'tu.date_start as formation_start';
+			$columns[] = 'tu.date_end as formation_end';
+
+			$query->select($columns)
+				->from($this->db->qn('#__emundus_setup_campaigns', 'ca'))
+				->leftJoin($this->db->qn('#__emundus_setup_programmes', 'pr') . ' ON ' . $this->db->qn('pr.code') . ' = ' . $this->db->qn('ca.training'))
+				->leftJoin($this->db->qn('#__emundus_setup_teaching_unity', 'tu') . ' ON ' . $this->db->qn('tu.code') . ' = ' . $this->db->qn('ca.training') . ' AND ' . $this->db->quoteName('ca.year') . ' = ' . $this->db->quoteName('tu.schoolyear'))
+				->where('ca.published = 1 AND ca.visible = 1 AND "' . $this->now . '" <= ca.end_date and "' . $this->now . '">= ca.start_date ' . $condition);
 		}
-		else {
-			$query = $db->getQuery(true);
-			$query->select('ca.*, pr.apply_online, pr.code,pr.ordering as programme_ordering,pr.label as programme,pr.color as tag_color, pr.link, pr.programmes as prog_type, pr.id as p_id, pr.notes, pr.logo,MONTH(ca.'.$order.') as month,concat(MONTHNAME(ca.'.$order.'),"-",YEAR(ca.'.$order.')) as month_name');
-			$query->from('#__emundus_setup_campaigns as ca, #__emundus_setup_programmes as pr');
-			$query->where('ca.training = pr.code AND ca.published=1 AND "' . $this->now . '" <= ca.end_date and "' . $this->now . '">= ca.start_date ' . $condition);
+		else
+		{
+			$query->select($columns)
+				->from('#__emundus_setup_campaigns as ca, #__emundus_setup_programmes as pr')
+				->where('ca.training = pr.code AND ca.published = 1 AND ca.visible = 1 AND "' . $this->now . '" <= ca.end_date and "' . $this->now . '">= ca.start_date ' . $condition);
 		}
 
-		 try {
-            $db->setQuery($query);
-            $current_campaigns = (array) $db->loadObjectList();
-            $this->totalCurrent = count($current_campaigns);
-        } catch (Exception $e) {
-            $app  = JFactory::getApplication();
-            $app->enqueueMessage(JText::_('MOD_EMUNDUS_CAMPAIGN_ERROR_GETTING_CURRENT_CAMPAIGNS'), 'error');
-        }
+		try
+		{
+			$this->db->setQuery($query);
+			$current_campaigns  = (array) $this->db->loadObjectList();
+			$this->totalCurrent = count($current_campaigns);
+		}
+		catch (Exception $e)
+		{
+			Log::add($e->getMessage(), Log::ERROR, 'mod_emundus_campaign');
+			$this->app->enqueueMessage(Text::_('MOD_EMUNDUS_CAMPAIGN_ERROR_GETTING_CURRENT_CAMPAIGNS'), 'error');
+		}
 
 		return $current_campaigns;
 	}
 
-	public function getPaginationCurrent($condition)
-	{
-		$mainframe  = JFactory::getApplication();
-		$limitstart = $mainframe->getUserStateFromRequest('global.list.limitstart', 'limitstart', 0, 'int');
-		$limitstart = (2 != 0 ? (floor($limitstart / 2) * 2) : 0);
-		$mainframe->setUserState('limitstart', $limitstart);
-		jimport('joomla.html.pagination');
-
-		return new JPagination(modEmundusCampaignHelper::getTotalCurrent($condition), $mainframe->getUserState('limitstart'), 2);
-	}
-
-	/* **** PAST **** */
 	public function getPast($condition, $teachingUnityDates = null, $order = 'start_date')
 	{
 		$list = [];
 
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-		if ($teachingUnityDates) {
-			$query
-				->select('ca.*, pr.apply_online, pr.code,pr.ordering as programme_ordering,pr.label as programme,pr.color as tag_color, pr.link, tu.date_start as formation_start, tu.date_end as formation_end, pr.programmes as prog_type, pr.id as p_id, pr.notes,ca.is_limited, pr.logo,MONTH(ca.'.$order.') as month,concat(MONTHNAME(ca.'.$order.'),"-",YEAR(ca.'.$order.')) as month_name')
-				->from($db->qn('#__emundus_setup_campaigns', 'ca'))
-				->leftJoin($db->qn('#__emundus_setup_programmes', 'pr') . ' ON ' . $db->qn('pr.code') . ' = ' . $db->qn('ca.training'))
-				->leftJoin($db->qn('#__emundus_setup_teaching_unity', 'tu') . ' ON ' . $db->qn('tu.code') . ' = ' . $db->qn('ca.training') . ' AND ' . $db->quoteName('ca.year') . ' = ' . $db->quoteName('tu.schoolyear'))
-				->where('ca.published=1 AND "' . $this->now . '" >= ca.end_date ' . $condition);
+		$query    = $this->db->getQuery(true);
+
+		$columns = [
+			'ca.*',
+			'pr.apply_online',
+			'pr.code',
+			'pr.ordering as programme_ordering',
+			'pr.label as programme',
+			'pr.color as tag_color',
+			'pr.link',
+			'pr.programmes as prog_type',
+			'pr.id as p_id',
+			'pr.notes',
+			'pr.logo',
+			'MONTH(ca.' . $order . ') as month',
+			'concat(MONTHNAME(ca.' . $order . '),"-",YEAR(ca.' . $order . ')) as month_name'
+		];
+
+		if ($teachingUnityDates)
+		{
+			$columns[] = 'tu.date_start as formation_start';
+			$columns[] = 'tu.date_end as formation_end';
+
+			$query->select($columns)
+				->from($this->db->qn('#__emundus_setup_campaigns', 'ca'))
+				->leftJoin($this->db->qn('#__emundus_setup_programmes', 'pr') . ' ON ' . $this->db->qn('pr.code') . ' = ' . $this->db->qn('ca.training'))
+				->leftJoin($this->db->qn('#__emundus_setup_teaching_unity', 'tu') . ' ON ' . $this->db->qn('tu.code') . ' = ' . $this->db->qn('ca.training') . ' AND ' . $this->db->quoteName('ca.year') . ' = ' . $this->db->quoteName('tu.schoolyear'))
+				->where('ca.published = 1 AND ca.visible = 1 AND "' . $this->now . '" >= ca.end_date ' . $condition);
 		}
-		else {
-			$query
-				->select('ca.*, pr.apply_online, pr.code,pr.ordering as programme_ordering,pr.label as programme,pr.color as tag_color, pr.link,pr.programmes as prog_type, pr.logo,MONTH(ca.'.$order.') as month,concat(MONTHNAME(ca.'.$order.'),"-",YEAR(ca.'.$order.')) as month_name')
+		else
+		{
+			$query->select($columns)
 				->from('#__emundus_setup_campaigns as ca, #__emundus_setup_programmes as pr')
-				->where('ca.training = pr.code AND ca.published=1 AND "' . $this->now . '" >= ca.end_date ' . $condition);
+				->where('ca.training = pr.code AND ca.published = 1 AND ca.visible = 1 AND "' . $this->now . '" >= ca.end_date ' . $condition);
 		}
 
-		try {
-            $db->setQuery($query);
-            $list = (array) $db->loadObjectList();
-            $this->totalPast = count($list);
-        } catch (Exception $e) {
-            $app  = JFactory::getApplication();
-            $app->enqueueMessage(JText::_('MOD_EMUNDUS_CAMPAIGN_ERROR_GETTING_PAST_CAMPAIGNS'), 'error');
-            JLog::add($e->getMessage(), JLog::ERROR, 'mod_emundus_campaign');
-        }
+		try
+		{
+			$this->db->setQuery($query);
+			$list            = (array) $this->db->loadObjectList();
+			$this->totalPast = count($list);
+		}
+		catch (Exception $e)
+		{
+			$this->app->enqueueMessage(Text::_('MOD_EMUNDUS_CAMPAIGN_ERROR_GETTING_PAST_CAMPAIGNS'), 'error');
+			Log::add($e->getMessage(), Log::ERROR, 'mod_emundus_campaign');
+		}
 
 		return $list;
 	}
 
-
-	/* **** FUTUR **** */
 	public function getFutur($condition, $teachingUnityDates = null, $order = 'start_date')
 	{
 		$list = [];
 
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query    = $this->db->getQuery(true);
 
-		if ($teachingUnityDates) {
+		$columns = [
+			'ca.*',
+			'pr.apply_online',
+			'pr.code',
+			'pr.ordering as programme_ordering',
+			'pr.label as programme',
+			'pr.color as tag_color',
+			'pr.link',
+			'pr.programmes as prog_type',
+			'pr.id as p_id',
+			'pr.notes',
+			'pr.logo',
+			'MONTH(ca.' . $order . ') as month',
+			'concat(MONTHNAME(ca.' . $order . '),"-",YEAR(ca.' . $order . ')) as month_name'
+		];
+
+		if ($teachingUnityDates)
+		{
+			$columns[] = 'tu.date_start as formation_start';
+			$columns[] = 'tu.date_end as formation_end';
+
 			$query
-				->select('ca.*, pr.apply_online, pr.code,pr.ordering as programme_ordering,pr.label as programme,pr.color as tag_color, pr.link, tu.date_start as formation_start, tu.date_end as formation_end, pr.programmes as prog_type, pr.id as p_id, pr.notes,ca.is_limited, pr.logo,MONTH(ca.'.$order.') as month,concat(MONTHNAME(ca.'.$order.'),"-",YEAR(ca.'.$order.')) as month_name')
-				->from($db->qn('#__emundus_setup_campaigns', 'ca'))
-				->leftJoin($db->qn('#__emundus_setup_programmes', 'pr') . ' ON ' . $db->qn('pr.code') . ' = ' . $db->qn('ca.training'))
-				->leftJoin($db->qn('#__emundus_setup_teaching_unity', 'tu') . ' ON ' . $db->qn('tu.code') . ' = ' . $db->qn('ca.training') . ' AND ' . $db->quoteName('ca.year') . ' = ' . $db->quoteName('tu.schoolyear'))
-				->where('ca.published=1 AND "' . $this->now . '" <= ca.start_date ' . $condition);
+				->select($columns)
+				->from($this->db->qn('#__emundus_setup_campaigns', 'ca'))
+				->leftJoin($this->db->qn('#__emundus_setup_programmes', 'pr') . ' ON ' . $this->db->qn('pr.code') . ' = ' . $this->db->qn('ca.training'))
+				->leftJoin($this->db->qn('#__emundus_setup_teaching_unity', 'tu') . ' ON ' . $this->db->qn('tu.code') . ' = ' . $this->db->qn('ca.training') . ' AND ' . $this->db->quoteName('ca.year') . ' = ' . $this->db->quoteName('tu.schoolyear'))
+				->where('ca.published = 1 AND ca.visible = 1 AND "' . $this->now . '" <= ca.start_date ' . $condition);
 		}
-		else {
-			$query
-				->select('ca.*, pr.apply_online, pr.code,pr.ordering as programme_ordering,pr.label as programme,pr.color as tag_color, pr.link,pr.programmes as prog_type, pr.logo,MONTH(ca.'.$order.') as month,concat(MONTHNAME(ca.'.$order.'),"-",YEAR(ca.'.$order.')) as month_name')
+		else
+		{
+			$query->select($columns)
 				->from('#__emundus_setup_campaigns as ca,#__emundus_setup_programmes as pr')
-				->where('ca.training = pr.code AND ca.published=1 AND "' . $this->now . '" <= ca.start_date ' . $condition);
+				->where('ca.training = pr.code AND ca.published = 1 AND ca.visible = 1 AND "' . $this->now . '" <= ca.start_date ' . $condition);
 		}
 
-		try {
-            $db->setQuery($query);
-            $list = (array) $db->loadObjectList();
-            $this->totalFutur = count($list);
-        } catch (Exception $e) {
-            $app  = JFactory::getApplication();
-            $app->enqueueMessage(JText::_('MOD_EMUNDUS_CAMPAIGN_ERROR_GETTING_FUTUR_CAMPAIGNS'), 'error');
-            JLog::add($e->getMessage(), JLog::ERROR, 'mod_emundus_campaign');
-        }
+		try
+		{
+			$this->db->setQuery($query);
+			$list             = (array) $this->db->loadObjectList();
+			$this->totalFutur = count($list);
+		}
+		catch (Exception $e)
+		{
+			$this->app->enqueueMessage(Text::_('MOD_EMUNDUS_CAMPAIGN_ERROR_GETTING_FUTUR_CAMPAIGNS'), 'error');
+			Log::add($e->getMessage(), Log::ERROR, 'mod_emundus_campaign');
+		}
 
 		return $list;
 	}
 
-
-	/* **** ALL **** */
 	public function getProgram($condition, $teachingUnityDates = null)
 	{
-		$list = [];
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$list     = [];
 
-		if ($teachingUnityDates) {
+		$query    = $this->db->getQuery(true);
+
+		$columns = [
+			'ca.*',
+			'pr.apply_online',
+			'pr.code',
+			'pr.ordering as programme_ordering',
+			'pr.label as programme',
+			'pr.color as tag_color',
+			'pr.link',
+			'pr.logo'
+		];
+
+		if ($teachingUnityDates)
+		{
+			$columns[] = 'tu.date_start as formation_start';
+			$columns[] = 'tu.date_end as formation_end';
+			$columns[] = 'pr.notes as desc';
+			$columns[] = 'ca.is_limited';
+			$columns[] = 'pr.programmes as prog_type';
 			$query
-				->select('ca.*, pr.apply_online, pr.code,pr.ordering as programme_ordering,pr.label as programme,pr.color as tag_color, pr.link, tu.date_start as formation_start, tu.date_end as formation_end, pr.notes as desc,ca.is_limited,pr.programmes as prog_type, pr.logo')
-				->from($db->qn('#__emundus_setup_campaigns', 'ca'))
-				->leftJoin($db->qn('#__emundus_setup_programmes', 'pr') . ' ON ' . $db->qn('pr.code') . ' = ' . $db->qn('ca.training'))
-				->leftJoin($db->qn('#__emundus_setup_teaching_unity', 'tu') . ' ON ' . $db->qn('tu.code') . ' = ' . $db->qn('ca.training') . ' AND ' . $db->quoteName('ca.year') . ' = ' . $db->quoteName('tu.schoolyear'))
+				->select($columns)
+				->from($this->db->qn('#__emundus_setup_campaigns', 'ca'))
+				->leftJoin($this->db->qn('#__emundus_setup_programmes', 'pr') . ' ON ' . $this->db->qn('pr.code') . ' = ' . $this->db->qn('ca.training'))
+				->leftJoin($this->db->qn('#__emundus_setup_teaching_unity', 'tu') . ' ON ' . $this->db->qn('tu.code') . ' = ' . $this->db->qn('ca.training') . ' AND ' . $this->db->quoteName('ca.year') . ' = ' . $this->db->quoteName('tu.schoolyear'))
 				->where('ca.training = pr.code AND ca.published=1 ' . $condition);
 		}
-		else {
+		else
+		{
+			$columns[] = 'pr.notes';
 			$query
-				->select('ca.*, pr.apply_online, pr.code,pr.ordering as programme_ordering,pr.label as programme,pr.color as tag_color, pr.link, pr.notes, pr.logo')
+				->select($columns)
 				->from('#__emundus_setup_campaigns as ca, #__emundus_setup_programmes as pr')
 				->where('ca.training = pr.code AND ca.published=1 ' . $condition);
 		}
 
-		try {
-            $db->setQuery($query);
-            $list = (array) $db->loadObjectList();
-            $this->total = count($list);
-        } catch (Exception $e) {
-            $app  = JFactory::getApplication();
-            $app->enqueueMessage(JText::_('MOD_EMUNDUS_CAMPAIGN_ERROR_GETTING_PAST_CAMPAIGNS'), 'error');
-            JLog::add($e->getMessage(), JLog::ERROR, 'mod_emundus_campaign');
-        }
+		try
+		{
+			$this->db->setQuery($query);
+			$list        = (array) $this->db->loadObjectList();
+			$this->total = count($list);
+		}
+		catch (Exception $e)
+		{
+			$this->app->enqueueMessage(Text::_('MOD_EMUNDUS_CAMPAIGN_ERROR_GETTING_PAST_CAMPAIGNS'), 'error');
+			Log::add($e->getMessage(), Log::ERROR, 'mod_emundus_campaign');
+		}
 
 		return $list;
 	}
@@ -206,31 +286,29 @@ class modEmundusCampaignHelper
 
 	function getCampaignTags($id)
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query    = $this->db->getQuery(true);
 
 		$query->select('d.*')
-			->from($db->qn('data_tags', 'd'))
-			->leftJoin($db->qn('#__emundus_setup_campaigns_repeat_discipline', 'rd') . ' ON ' . $db->qn('d.id') . " = " . $db->qn("rd.discipline"))
-			->where($db->qn('d.published') . ' = 1 AND ' . $db->qn('rd.parent_id') . ' = ' . $id);
+			->from($this->db->qn('data_tags', 'd'))
+			->leftJoin($this->db->qn('#__emundus_setup_campaigns_repeat_discipline', 'rd') . ' ON ' . $this->db->qn('d.id') . " = " . $this->db->qn("rd.discipline"))
+			->where($this->db->qn('d.published') . ' = 1 AND ' . $this->db->qn('rd.parent_id') . ' = ' . $id);
 
-		$db->setQuery($query);
+		$this->db->setQuery($query);
 
-		return $db->loadAssocList('id', 'label');
+		return $this->db->loadAssocList('id', 'label');
 	}
 
 	function getReseaux($cid)
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query    = $this->db->getQuery(true);
 
 		$query->select('reseaux_cult, hors_reseaux')
-			->from($db->qn('#__emundus_setup_campaigns'))
-			->where($db->qn('id') . ' = ' . $cid);
+			->from($this->db->qn('#__emundus_setup_campaigns'))
+			->where($this->db->qn('id') . ' = ' . $cid);
 
-		$db->setQuery($query);
+		$this->db->setQuery($query);
 
-		return $db->loadObject();
+		return $this->db->loadObject();
 	}
 
 	/***
@@ -244,135 +322,142 @@ class modEmundusCampaignHelper
 	 */
 	function getNantesInfos($id)
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query    = $this->db->getQuery(true);
 
 		$query
-			->select([$db->quoteName('p.public'), $db->quoteName('tu.formation_length'), $db->quoteName('tu.date_start')])
-			->from($db->qn('#__emundus_setup_programmes', 'p'))
-			->leftJoin($db->quoteName('#__emundus_setup_teaching_unity', 'tu') . ' ON ' . $db->quoteName('tu.code') . ' = ' . $db->quoteName('p.code'))
-			->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.training') . ' = ' . $db->quoteName('tu.code') . ' AND ' . $db->quoteName('esc.year') . ' LIKE ' . $db->quoteName('tu.schoolyear'))
-			->where($db->quoteName('esc.id') . ' = ' . $id);
+			->select([$this->db->quoteName('p.public'), $this->db->quoteName('tu.formation_length'), $this->db->quoteName('tu.date_start')])
+			->from($this->db->qn('#__emundus_setup_programmes', 'p'))
+			->leftJoin($this->db->quoteName('#__emundus_setup_teaching_unity', 'tu') . ' ON ' . $this->db->quoteName('tu.code') . ' = ' . $this->db->quoteName('p.code'))
+			->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('esc.training') . ' = ' . $this->db->quoteName('tu.code') . ' AND ' . $this->db->quoteName('esc.year') . ' LIKE ' . $this->db->quoteName('tu.schoolyear'))
+			->where($this->db->quoteName('esc.id') . ' = ' . $id);
 
-		try {
-			$db->setQuery($query);
+		try
+		{
+			$this->db->setQuery($query);
 
-			return $db->loadObject();
+			return $this->db->loadObject();
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			return null;
 		}
 	}
 
 	public function getFaq()
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query    = $this->db->getQuery(true);
 
 		$query
 			->select('c.id,c.title,c.introtext')
-			->from($db->quoteName('#__content', 'c'))
-			->leftJoin($db->quoteName('#__categories', 'ca') . ' ON ' . $db->quoteName('ca.id') . ' = ' . $db->quoteName('c.catid'))
-			->where($db->quoteName('ca.alias') . ' LIKE ' . $db->quote('f-a-q'))
-			->andWhere($db->quoteName('c.state') . ' = 1');
+			->from($this->db->quoteName('#__content', 'c'))
+			->leftJoin($this->db->quoteName('#__categories', 'ca') . ' ON ' . $this->db->quoteName('ca.id') . ' = ' . $this->db->quoteName('c.catid'))
+			->where($this->db->quoteName('ca.alias') . ' LIKE ' . $this->db->quote('f-a-q'))
+			->andWhere($this->db->quoteName('c.state') . ' = 1');
 
-		try {
-			$db->setQuery($query);
+		try
+		{
+			$this->db->setQuery($query);
 
-			return $db->loadObjectList();
+			return $this->db->loadObjectList();
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			return null;
 		}
 	}
 
 	public function getFormationsWithType()
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query    = $this->db->getQuery(true);
 
 		$query
 			->select('*')
-			->from($db->quoteName('data_formation'));
+			->from($this->db->quoteName('data_formation'));
 
-		try {
-			$db->setQuery($query);
+		try
+		{
+			$this->db->setQuery($query);
 
-			$formations = $db->loadObjectList();
+			$formations = $this->db->loadObjectList();
 
-			foreach ($formations as $formation) {
+			foreach ($formations as $formation)
+			{
 				$query
 					->clear()
 					->select('repeat.voie_d_acces')
-					->from($db->quoteName('data_acces_formation_repeat_voie_d_acces', 'repeat'))
-					->leftJoin($db->quoteName('data_acces_formation', 'daf') . ' ON ' . $db->quoteName('repeat.parent_id') . ' = ' . $db->quoteName('daf.id'))
-					->where($db->quoteName('daf.id') . ' = ' . $formation->id);
+					->from($this->db->quoteName('data_acces_formation_repeat_voie_d_acces', 'repeat'))
+					->leftJoin($this->db->quoteName('data_acces_formation', 'daf') . ' ON ' . $this->db->quoteName('repeat.parent_id') . ' = ' . $this->db->quoteName('daf.id'))
+					->where($this->db->quoteName('daf.id') . ' = ' . $formation->id);
 
-				$formation->voies_d_acces = $db->setQuery($query)->loadObjectList();
+				$formation->voies_d_acces = $this->db->setQuery($query)->loadObjectList();
 			}
 
 			return $formations;
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			return null;
 		}
 	}
 
 	public function getFormationTypes()
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query    = $this->db->getQuery(true);
 
 		$query
 			->select('*')
-			->from($db->quoteName('data_formation_type'));
+			->from($this->db->quoteName('data_formation_type'));
 
-		try {
-			$db->setQuery($query);
+		try
+		{
+			$this->db->setQuery($query);
 
-			return $db->loadObjectList();
+			return $this->db->loadObjectList();
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			return null;
 		}
 	}
 
 	public function getFormationLevels()
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query    = $this->db->getQuery(true);
 
 		$query
 			->select('*')
-			->from($db->quoteName('data_formation_level'));
+			->from($this->db->quoteName('data_formation_level'));
 
-		try {
-			$db->setQuery($query);
+		try
+		{
+			$this->db->setQuery($query);
 
-			return $db->loadObjectList();
+			return $this->db->loadObjectList();
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			return null;
 		}
 	}
 
 	public function getVoiesDAcces()
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query    = $this->db->getQuery(true);
 
 		$query
 			->select('*')
-			->from($db->quoteName('data_voies_d_acces'))
-			->where($db->quoteName('published') . ' = 1')
-			->order($db->quoteName('order'));
+			->from($this->db->quoteName('data_voies_d_acces'))
+			->where($this->db->quoteName('published') . ' = 1')
+			->order($this->db->quoteName('order'));
 
-		try {
-			$db->setQuery($query);
+		try
+		{
+			$this->db->setQuery($query);
 
-			return $db->loadObjectList();
+			return $this->db->loadObjectList();
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			return null;
 		}
 	}
@@ -384,12 +469,15 @@ class modEmundusCampaignHelper
 			$item->class = !isset($item->class) ? '' : $item->class;
 
 			// find formation associated to item inside formations array
-			foreach ($formations as $formation) {
-				if ($formation->id == $item->formation) {
+			foreach ($formations as $formation)
+			{
+				if ($formation->id == $item->formation)
+				{
 					$item->class .= 'formation_type-' . $formation->type;
 					$item->class .= ' formation_level-' . $formation->level;
 
-					foreach ($formation->voies_d_acces as $voie) {
+					foreach ($formation->voies_d_acces as $voie)
+					{
 						$item->class .= ' voie_d_acces-' . $voie->voie_d_acces;
 
 					}
@@ -398,14 +486,13 @@ class modEmundusCampaignHelper
 				}
 			}
 
-			$db    = JFactory::getDbo();
-			$query = $db->getQuery(true);
+			$query    = $this->db->getQuery(true);
 			$query->select('label')
 				->from('#__emundus_setup_campaigns')
 				->where('id = ' . $item->id);
 
-			$db->setQuery($query);
-			$item->label = $db->loadResult();
+			$this->db->setQuery($query);
+			$item->label = $this->db->loadResult();
 
 			return $item;
 		}, $data);
@@ -415,41 +502,42 @@ class modEmundusCampaignHelper
 
 	public function getLinks()
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query    = $this->db->getQuery(true);
 
-		try {
+		try
+		{
 			$query->select('params')
-				->from($db->quoteName('#__modules'))
-				->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_user_dropdown'))
-				->andWhere($db->quoteName('published') . ' = 1');
-			$db->setQuery($query);
-			$params = $db->loadResult();
+				->from($this->db->quoteName('#__modules'))
+				->where($this->db->quoteName('module') . ' LIKE ' . $this->db->quote('mod_emundus_user_dropdown'))
+				->andWhere($this->db->quoteName('published') . ' = 1');
+			$this->db->setQuery($query);
+			$params = $this->db->loadResult();
 
-			if (!empty($params)) {
+			if (!empty($params))
+			{
 				$params = json_decode($params);
 			}
 
 			return $params;
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			return new stdClass();
 		}
 	}
 
 	public function getProgramLabel($codes)
 	{
-		$label = '';
-		$db = Factory::getContainer()->get('DatabaseDriver');
-		$query = $db->getQuery(true);
+		$label    = '';
+		$query    = $this->db->getQuery(true);
 
 		try
 		{
 			$query->select('label')
-				->from($db->quoteName('#__emundus_setup_programmes'))
-				->where($db->quoteName('code') . ' IN (' . $db->quote($codes) . ')');
-			$db->setQuery($query);
-			$label = $db->loadResult();
+				->from($this->db->quoteName('#__emundus_setup_programmes'))
+				->where($this->db->quoteName('code') . ' IN (' . $this->db->quote($codes) . ')');
+			$this->db->setQuery($query);
+			$label = $this->db->loadResult();
 		}
 		catch (Exception $e)
 		{

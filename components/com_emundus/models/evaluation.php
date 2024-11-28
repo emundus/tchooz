@@ -1596,18 +1596,24 @@ class EmundusModelEvaluation extends JModelList
     */
 	function getExperts()
 	{
+		$experts = [];
+
 		$query = $this->db->getQuery(true);
 
-		$query->select([$this->db->quoteName('c.last_name'), $this->db->quoteName('c.first_name'), $this->db->quoteName('c.email'), 'CONCAT(g.name) AS ' . $this->db->quoteName('group')])
-			->from($this->db->quoteName('#__jcrm_contacts', 'c'))
-			->leftJoin($this->db->quoteName('#__jcrm_group_contact', 'gc') . ' ON ' . $this->db->quoteName('c.id') . ' = ' . $this->db->quoteName('gc.contact_id'))
-			->leftJoin($this->db->quoteName('#__jcrm_groups', 'g') . ' ON ' . $this->db->quoteName('gc.group_id') . ' = ' . $this->db->quoteName('g.id'))
-			->where($this->db->quoteName('c.state') . ' = 1')
-			->andWhere($this->db->quoteName('c.email') . ' <> ""');
+		$query->select([$this->db->quoteName('jeu.lastname'), $this->db->quoteName('jeu.firstname'), $this->db->quoteName('ju.email')])
+			->from($this->db->quoteName('#__emundus_files_request', 'efr'))
+			->innerJoin($this->db->quoteName('#__users', 'ju') . ' ON ju.email = efr.email')
+			->leftJoin($this->db->quoteName('#__emundus_users', 'jeu') . ' ON ju.id = jeu.user_id')
+			->order('ju.email ASC');
 
-		$this->db->setQuery($query);
+		try {
+			$this->db->setQuery($query);
+			$experts = $this->db->loadAssocList();
+		} catch (Exception $e) {
+			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+		}
 
-		return $this->db->loadAssocList();
+		return $experts;
 	}
 
 	/**

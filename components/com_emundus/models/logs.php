@@ -19,6 +19,7 @@ use Joomla\CMS\Uri\Uri;
 defined('_JEXEC') or die('Restricted access');
 
 require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
+require_once(JPATH_SITE . '/components/com_emundus/helpers/files.php');
 
 class EmundusModelLogs extends JModelList
 {
@@ -121,6 +122,8 @@ class EmundusModelLogs extends JModelList
 				$fnums = [$fnums];
 			}
 
+			$m_files = new EmundusModelFiles();
+
 			$eMConfig = ComponentHelper::getParams('com_emundus');
 			$log_actions = $eMConfig->get('log_actions', null);
 			$log_actions_exclude = $eMConfig->get('log_actions_exclude', null);
@@ -133,7 +136,6 @@ class EmundusModelLogs extends JModelList
 						$query = $db->getQuery(true);
 
 						$ip = Factory::getApplication()->input->server->get('REMOTE_ADDR','');
-						$user_to = 0;
 
 						$now = EmundusHelperDate::getNow();
 
@@ -142,6 +144,7 @@ class EmundusModelLogs extends JModelList
 							->columns($db->quoteName($columns));
 
 						foreach($fnums as $fnum) {
+							$user_to = $m_files->getFnumInfos($fnum)['applicant_id'];
 							$query->values($db->quote($now) . ',' . $db->quote($user_from) . ',' . $db->quote($user_to) . ',' . $db->quote($fnum) . ',' . $action . ',' . $db->quote($crud) . ',' . $db->quote($message). ',' . $db->quote($params) . ',' . $db->quote($ip));
 						}
 

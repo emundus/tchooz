@@ -1524,8 +1524,6 @@ class EmundusControllerUsers extends BaseController
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
-
-
 			$params = $this->input->getArray();
 			$users  = json_decode($params['users'], true);
 			$groups = explode(',', $params['groups']);
@@ -1544,6 +1542,30 @@ class EmundusControllerUsers extends BaseController
 		}
 
 		echo json_encode($response);
+		exit;
+	}
+
+	public function removejoomlagroups()
+	{
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
+			$params = $this->input->getArray();
+			$users = json_decode($params['users'], true);
+			$groups = explode(',', $params['groups']);
+
+			if (!empty($users) && !empty($groups))
+			{
+				$m_users  = $this->getModel('Users');
+				$removed = $m_users->removeJoomlaGroups($users, $groups);
+			} else {
+				$removed = false;
+			}
+
+			$tab = array('status' => $removed, 'msg' => Text::_("GROUPS_REMOVED"));
+		} else {
+			$tab = array('status' => false, 'msg' => Text::_("ACCESS_DENIED"));
+		}
+
+		echo json_encode($tab);
 		exit;
 	}
 
