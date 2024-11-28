@@ -2364,7 +2364,7 @@ class EmundusModelSettings extends ListModel
 		return $saved;
 	}
 
-	public function getHistory($extension = 'com_emundus.settings', $only_pending = false, $page = 1, $limit = 10)
+	public function getHistory($extension = 'com_emundus.settings', $only_pending = false, $page = 1, $limit = 10, $item_id = 0)
 	{
 		$history = [];
 
@@ -2377,10 +2377,16 @@ class EmundusModelSettings extends ListModel
 				->leftJoin($this->db->quoteName('#__users', 'u') . ' ON ' . $this->db->quoteName('u.id') . ' = ' . $this->db->quoteName('al.user_id'))
 				->where($this->db->quoteName('al.extension') . ' = ' . $this->db->quote($extension))
 				->where('JSON_VALID(' . $this->db->quoteName('al.message') . ')');
+
 			if ($only_pending)
 			{
 				$query->where('JSON_EXTRACT(' . $this->db->quoteName('al.message') . ', "$.status") = ' . $this->db->quote('pending'));
 			}
+
+			if (!empty($item_id)) {
+				$query->andWhere('item_id = ' . $this->db->quote($item_id));
+			}
+
 			$query->order($this->db->quoteName('al.log_date') . ' DESC');
 			$this->db->setQuery($query, ($page - 1) * $limit, $limit);
 			$history = $this->db->loadObjectList();
@@ -2393,7 +2399,7 @@ class EmundusModelSettings extends ListModel
 		return $history;
 	}
 
-	public function getHistoryLength($extension = 'com_emundus.settings')
+	public function getHistoryLength($extension = 'com_emundus.settings', $item_id = 0)
 	{
 		$length = 0;
 
@@ -2406,6 +2412,11 @@ class EmundusModelSettings extends ListModel
 				->leftJoin($this->db->quoteName('#__users', 'u') . ' ON ' . $this->db->quoteName('u.id') . ' = ' . $this->db->quoteName('al.user_id'))
 				->where($this->db->quoteName('al.extension') . ' = ' . $this->db->quote($extension))
 				->where('JSON_VALID(' . $this->db->quoteName('al.message') . ')');
+
+			if (!empty($item_id)) {
+				$query->andWhere('item_id = ' . $this->db->quote($item_id));
+			}
+
 			$this->db->setQuery($query);
 			$length = $this->db->loadResult();
 		}

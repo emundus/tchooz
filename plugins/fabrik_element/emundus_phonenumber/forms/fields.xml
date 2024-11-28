@@ -33,7 +33,7 @@
 			<field name="default_country"
 				   type="sql"
 				   label="PLG_ELEMENT_PHONE_NUMBER_SELECT_COUNTRY"
-				   query="SELECT DISTINCT label_fr, iso2 from data_country"
+				   query="SELECT DISTINCT label_fr, iso2 from data_country ORDER BY label_fr"
 				   key_field="iso2"
 				   value_field="label_fr"
 			>
@@ -50,7 +50,7 @@
 					<field name="country"
 						   type="sql"
 						   label="PLG_ELEMENT_PHONE_NUMBER_SELECT_COUNTRY_OPTION"
-						   query="SELECT DISTINCT label_fr, iso2 from data_country"
+						   query="SELECT DISTINCT label_fr, iso2 from data_country ORDER BY label_fr"
 						   key_field="iso2"
 						   value_field="label_fr"
 					>

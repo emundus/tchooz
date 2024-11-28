@@ -16,6 +16,7 @@
           <th v-if="columns.includes('log_date')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_LOG_DATE') }}</th>
           <th v-if="columns.includes('user_id')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_BY') }}</th>
           <th v-if="columns.includes('status')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_STATUS') }}</th>
+          <th v-if="columns.includes('diff')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_DIFF') }}</th>
         </tr>
         </thead>
         <tbody>
@@ -23,7 +24,7 @@
           <td v-if="columns.includes('title')">
             <p>{{ translate(data.message.title) }}</p>
             <p v-if="data.message.new_data.length > 0 && extension == 'com_emundus.settings.web_security'">
-            <span v-for="(newData, index) in data.message.new_data">
+            <span v-for="(newData, index) in data.message.new_data" :key="index">
               <span v-if="index > 0">, </span>
               <span class="tw-text-green-700">{{ newData }}</span>
             </span>
@@ -59,6 +60,28 @@
             </span>
             </div>
           </td>
+          <td>
+            <table
+                v-if="columns.includes('diff')
+                && (!Array.isArray(data.message.old_data) || data.message.old_data.length > 0)
+                && (!Array.isArray(data.message.new_data) || data.message.new_data.length > 0)"
+                class="!tw-border !tw-border-slate-100 !tw-border-solid tw-rounded tw-text-sm">
+              <thead>
+                <tr>
+                  <th> {{ translate('COM_EMUNDUS_GLOBAL_HISTORY_DIFF_COLUMN') }} </th>
+                  <th> {{ translate('COM_EMUNDUS_GLOBAL_HISTORY_DIFF_OLD_DATA') }} </th>
+                  <th> {{ translate('COM_EMUNDUS_GLOBAL_HISTORY_DIFF_NEW_DATA') }} </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(value, key) in data.message.old_data" :key="key">
+                  <td>{{ key }}</td>
+                  <td>{{ value }}</td>
+                  <td>{{ data.message.new_data_json[key] }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
         </tr>
         </tbody>
       </table>
@@ -77,7 +100,7 @@
 import settingsService from "@/services/settings";
 
 /* MIXINS */
-import mixin from "../../mixins/mixin.js";
+import mixin from "@/mixins/mixin.js";
 
 /* STORE */
 import {useGlobalStore} from "@/stores/global.js";
@@ -90,6 +113,10 @@ export default {
     extension: {
       type: String,
       required: true,
+    },
+    itemId: {
+      type: Number,
+      default: 0,
     },
     columns: {
       type: Array,
@@ -104,6 +131,7 @@ export default {
         'user_id',
         // Status
         //'status',
+        'diff'
       ],
     },
     displayTitle: {
@@ -149,7 +177,7 @@ export default {
     fetchHistory() {
       this.loading = true;
 
-      settingsService.getHistory(this.extension, false, this.page, this.limit).then((response) => {
+      settingsService.getHistory(this.extension, false, this.page, this.limit, this.itemId).then((response) => {
         this.historyLength = parseInt(response.length);
 
         response.data.forEach((data) => {
@@ -160,6 +188,7 @@ export default {
           }
           if (data.message.new_data) {
             data.message.new_data = JSON.parse(data.message.new_data);
+            data.message.new_data_json = JSON.parse(JSON.stringify(data.message.new_data));
           }
           // Convert data.message.new_data object to array
           if (data.message.new_data) {

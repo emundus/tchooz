@@ -23,6 +23,24 @@
 					<field type="color" name="background_color" label="MOD_EMUNDUS_EVENTS_BG_COLOR" default="#FDFBFF" />
 					<field type="color" name="text_color" label="MOD_EMUNDUS_EVENTS_TEXT_COLOR" default="#622E68" />
 					<field type="color" name="border_color" label="MOD_EMUNDUS_EVENTS_BORDER_COLOR" default="#E8E2F5" />
+					<field type="list" name="period" label="MOD_EMUNDUS_EVENTS_PERIOD" default="1">
+						<option value="1">MOD_EMUNDUS_EVENTS_PERIOD_ALL</option>
+						<option value="2">MOD_EMUNDUS_EVENTS_PERIOD_YEAR</option>
+						<option value="3">MOD_EMUNDUS_EVENTS_PERIOD_MONTH</option>
+					</field>
+					<field type="list" name="number" label="MOD_EMUNDUS_EVENTS_NUMBER_LINE" default="3">
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+					</field>
+					<field type="radio" name="show_year" label="MOD_EMUNDUS_EVENTS_SHOW_YEAR" default="1">
+						<option value="1">JYES</option>
+						<option value="2">JNO</option>
+					</field>
+					<field type="radio" name="end_date" label="MOD_EMUNDUS_EVENTS_END_DATE" default="2">
+						<option value="1">JYES</option>
+						<option value="2">JNO</option>
+					</field>
 				</fieldset>
 			</fields>
 		</config>

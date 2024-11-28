@@ -200,6 +200,7 @@ class EmundusViewUsers extends JViewLegacy
 				$this->_loadAffectForm();
 				break;
 			case 'affectintranetlascala':
+			case 'removeintranetlascala':
 				$this->_loadAffectIntranetForm();
 				break;
 			case 'showrights':
