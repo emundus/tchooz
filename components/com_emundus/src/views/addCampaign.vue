@@ -158,6 +158,25 @@
           <div class="tw-mb-4 tw-flex tw-items-center">
             <div class="em-toggle">
               <input type="checkbox"
+                     true-value="0"
+                     false-value="1"
+                     class="tw-mt-2 em-toggle-check"
+                     id="visible"
+                     name="visible"
+                     v-model="form.visible"
+                     @click="onFormChange()"
+              />
+              <strong class="b em-toggle-switch"></strong>
+              <strong class="b em-toggle-track"></strong>
+            </div>
+            <span for="visible" class="tw-ml-2 tw-flex tw-items-center">
+              {{ translate('COM_EMUNDUS_CAMPAIGNS_VISIBLE') }}
+            </span>
+          </div>
+
+          <div class="tw-mb-4 tw-flex tw-items-center">
+            <div class="em-toggle">
+              <input type="checkbox"
                      true-value="1"
                      false-value="0"
                      class="tw-mt-2 em-toggle-check"
@@ -427,6 +446,7 @@ export default {
       limit: 50,
       limit_status: [],
       pinned: 0,
+      visible: 1,
       alias: '',
     },
     programForm: {

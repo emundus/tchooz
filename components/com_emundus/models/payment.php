@@ -1295,4 +1295,37 @@ class EmundusModelPayment extends JModelList
 
 		return $paid;
 	}
+
+	/**
+	 * Ajoute les données du virement aux différents versements sélectionnés (use case FHDP)
+	 *
+	 * @param $rows array
+	 * @param $table_name string
+	 * @param $date_virement string
+	 * @param $numero_virement string
+	 *
+	 * @return bool
+	 */
+	public function insertVirementData($rows, $table_name, $date_virement, $numero_virement)
+	{
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		try
+		{
+			$query->update($db->quoteName($table_name))
+				->set('date_virement = '.$db->quote($date_virement))
+				->set('numero_virement = '.$db->quote($numero_virement))
+				->where('id IN ('.implode(',', $db->quote($rows)).')');
+			$db->setQuery($query);
+			$db->execute();
+
+			return true;
+		}
+		catch (Exception $e)
+		{
+			JFactory::getApplication()->enqueueMessage($e->getMessage(), 'error');
+			return false;
+		}
+	}
 }

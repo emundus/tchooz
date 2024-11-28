@@ -274,7 +274,7 @@ import { useFormBuilderStore } from "@/stores/formbuilder.js";
 import formBuilderMixin from '../mixins/formbuilder';
 import Translations from "@/components/Settings/TranslationTool/Translations.vue";
 import settingsService from "@/services/settings.js";
-import History from "@/components/History/History.vue";
+import History from "@/views/History.vue";
 
 export default {
   name: 'FormBuilder',

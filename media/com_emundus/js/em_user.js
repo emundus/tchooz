@@ -699,6 +699,11 @@ $(document).ready(function () {
 				swal_confirm_button = 'COM_EMUNDUS_USERS_AFFECT_USER_CONFIRM';
 				preconfirm = "if ($('#agroups').val() == null) {Swal.showValidationMessage(Joomla.JText._('COM_EMUNDUS_USERS_AFFECT_GROUP_ERROR'))}"
 				break;
+			case 27:
+				title = 'COM_EMUNDUS_USERS_REMOVE_GROUP';
+				swal_confirm_button = 'COM_EMUNDUS_USERS_REMOVE_GROUP_CONFIRM';
+				preconfirm = "if ($('#agroups').val() == null) {Swal.showValidationMessage(Joomla.JText._('COM_EMUNDUS_USERS_AFFECT_GROUP_ERROR'))}"
+				break;
 		}
 
 		switch (id) {
@@ -706,6 +711,7 @@ $(document).ready(function () {
 			case 19:
 			case 20:
 			case 23:
+			case 27:
 				swalForm = true;
 				html = '<div id="data"></div>';
 				addLoader();
@@ -1323,6 +1329,7 @@ $(document).ready(function () {
 				break;
 
 			case 23:
+			case 27:
 				action = window.location.origin + '/' + document.querySelector('#em-affect-groups').getAttribute('action');
 
 				var checkInput = getUserCheck();

@@ -488,7 +488,7 @@ class EmundusModelMessenger extends JModelList
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
-		include_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
+		include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 		include_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
 		include_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
 		include_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'messages.php');
@@ -545,7 +545,7 @@ class EmundusModelMessenger extends JModelList
 				->from($db->quoteName('#__emundus_groups', 'g'))
 				->leftJoin($db->quoteName('#__emundus_group_assoc', 'ga') . ' ON ' . $db->quoteName('ga.group_id') . ' = ' . $db->quoteName('g.group_id'))
 				->innerJoin($db->quoteName('#__users', 'u') . ' ON ' . $db->quoteName('u.id') . ' = ' . $db->quoteName('g.user_id'))
-				->where($db->quoteName('ga.fnum').' LIKE '.$db->quote($applicant_fnum));
+				->where($db->quoteName('ga.fnum').' = '.$db->quote($applicant_fnum));
 			$db->setQuery($query);
 			$groups_associated = $db->loadColumn();
 
@@ -592,6 +592,15 @@ class EmundusModelMessenger extends JModelList
 					->where($db->quoteName('profile_id') . ' = 2');
 				$db->setQuery($query);
 				$users_to_send = $db->loadColumn();
+
+				// Check if the coords have access to the fnum before sending
+				foreach($users_to_send as $key => $user_to_check) {
+					$can_access = EmundusHelperAccess::isUserAllowedToAccessFnum($user_to_check, $applicant_fnum);
+
+					if (!$can_access) {
+						unset($users_to_send[$key]);
+					}
+				}
 			}
 
 			if (!empty($users_to_send)) {

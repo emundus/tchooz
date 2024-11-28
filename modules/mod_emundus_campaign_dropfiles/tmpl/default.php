@@ -12,8 +12,7 @@ header('Content-Type: text/html; charset=utf-8');
             <a href="files/<?php echo $file->catid . "/" . $file->title_category . "/" . $file->id . "/" . $file->title_file . "." . $file->ext; ?>"
                target="_blank" rel="noopener noreferrer">
                 <li class="em-infoComp__btn">
-					<?php echo $file->title_file . "." . $file->ext; ?><span><i
-                                class="fas fa-arrow-circle-down"></i></span>
+	                <?php echo $file->title_file.".".$file->ext; ?><span class="material-symbols-outlined">file_download</span>
                 </li>
             </a>
 		<?php } ?>

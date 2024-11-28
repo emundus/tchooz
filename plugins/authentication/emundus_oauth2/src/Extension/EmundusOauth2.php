@@ -285,9 +285,20 @@ class EmundusOauth2 extends CMSPlugin implements SubscriberInterface
 								}
 								//
 
+								// Remove uma_protection from openid_resources_access
+								$openid_resources_access = array_filter($openid_resources_access, function($value) {
+									return $value !== 'uma_protection';
+								});
+								//
+
 								foreach ($this->mapping as $map) {
 									$response->openid_profiles[] = $map->emundus_profile;
-									if (in_array($map->attribute_value, $openid_groups) || in_array($map->attribute_value, $openid_resources_access)) {
+
+									if(!empty($openid_resources_access)) {
+										if (in_array($map->attribute_value, $openid_resources_access)) {
+											$response->emundus_profiles[] = $map->emundus_profile;
+										}
+									} elseif (in_array($map->attribute_value, $openid_groups)) {
 										$response->emundus_profiles[] = $map->emundus_profile;
 									}
 								}
