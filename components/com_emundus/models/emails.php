@@ -444,12 +444,12 @@ class EmundusModelEmails extends JModelList
 	 * @return string $strval         String      str with tags replace by value
 	 * @since          version v6
 	 */
-	public function setBody($user, $str, $passwd = '')
+	public function setBody($user, $str, $passwd = '', $fnum = null)
 	{
 		$body = '';
 
 		if (!empty($user) && !empty($user->id)) {
-			$constants = $this->setConstants($user->id, null, $passwd);
+			$constants = $this->setConstants($user->id, null, $passwd, $fnum);
 
 			if (!empty($constants['patterns']) && !empty($constants['replacements'])) {
 				$body      = html_entity_decode(preg_replace($constants['patterns'], $constants['replacements'], $str), ENT_QUOTES);
@@ -603,6 +603,18 @@ class EmundusModelEmails extends JModelList
 
 				require_once(JPATH_SITE . DS . 'components/com_emundus/models/files.php');
 				$m_files = new EmundusModelFiles();
+
+				// Replace APPLICANT tags with applicant information
+				$fnumInfos = $m_files->getFnumInfos($fnum);
+				$applicant_id_key = array_search('/\[APPLICANT_ID\]/', $patterns);
+				$replacements[$applicant_id_key] = $fnumInfos['applicant_id'];
+				$applicant_name_key = array_search('/\[APPLICANT_NAME\]/', $patterns);
+				$replacements[$applicant_name_key] = $fnumInfos['name'];
+				$applicant_email_key = array_search('/\[APPLICANT_EMAIL\]/', $patterns);
+				$replacements[$applicant_email_key] = $fnumInfos['email'];
+				$applicant_username_key = array_search('/\[APPLICANT_USERNAME\]/', $patterns);
+				$replacements[$applicant_username_key] = $fnumInfos['username'];
+
 				$status  = $m_files->getStatusByFnums([$fnum]);
 
 				$patterns[]     = '/\[APPLICATION_STATUS\]/';
@@ -799,7 +811,7 @@ class EmundusModelEmails extends JModelList
 		$db->setQuery($query);
 		$tags = $db->loadAssocList();
 
-		$constants = $this->setConstants($user_id, $post, $passwd);
+		$constants = $this->setConstants($user_id, $post, $passwd, $fnum);
 
 		$patterns     = array();
 		$replacements = array();
@@ -1089,7 +1101,7 @@ class EmundusModelEmails extends JModelList
 			$student    = JFactory::getUser($mail_to_id);
 			$mail_to    = $student->email;
 
-			$mail_body        = $this->setBody($student, JFactory::getApplication()->input->get('mail_body', null, 'POST', 'VARCHAR', JREQUEST_ALLOWHTML), '');
+			$mail_body        = $this->setBody($student, JFactory::getApplication()->input->get('mail_body', null, 'POST', 'VARCHAR', JREQUEST_ALLOWHTML), '', $fnum);
 			$mail_attachments = $jinput->get('mail_attachments', null, 'STRING');
 
 			if (!empty($mail_attachments)) {
@@ -1125,7 +1137,7 @@ class EmundusModelEmails extends JModelList
 			$mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
 			$mail_from      = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
 			$mail_to        = explode(',', $mail_to);
-			$mail_body      = $this->setBody($student, $mail_body);
+			$mail_body      = $this->setBody($student, $mail_body, '', $fnum);
 
 			//
 			// Replacement
