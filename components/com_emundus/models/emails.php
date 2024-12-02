@@ -3105,11 +3105,23 @@ class EmundusModelEmails extends JModelList
 		return $tags;
 	}
 
-	public function sendEmailNoFnum($email_address, $email, $post = null, $user_id = null, $attachments = [], $fnum = null, $log_email = true, $emails_cc = [])
+	public function sendEmailNoFnum($email_address, $email, $post = null, $user_id = null, $attachments = [], $fnum = null, $log_email = true, $emails_cc = [], $user_id_from = null)
 	{
 		$sent = false;
 
 		if (!empty($email_address) && !empty($email)) {
+			$e_config   = JComponentHelper::getParams('com_emundus');
+
+
+			if (empty($user_id_from)) {
+				if (!empty($this->_user->id)) {
+					$user_id_from = $this->_user->id;
+				} else {
+					$automated_task_user = $e_config->get('automated_task_user', 1); // if empty, 1 shoud be sysadmin
+					$user_id_from = $automated_task_user;
+				}
+			}
+
 			require_once (JPATH_ROOT.'/components/com_emundus/helpers/emails.php');
 			$h_emails = new EmundusHelperEmails();
 			$is_correct = $h_emails->correctEmail($email_address);
@@ -3261,7 +3273,7 @@ class EmundusModelEmails extends JModelList
 
 					if (!empty($user_id_to) && $log_email) {
 						$log = [
-							'user_id_from'  => !empty(JFactory::getUser()->id) ? JFactory::getUser()->id : 62,
+							'user_id_from'  => $user_id_from,
 							'user_id_to'    => $user_id_to,
 							'subject'       => $subject,
 							'message'       => $body,
