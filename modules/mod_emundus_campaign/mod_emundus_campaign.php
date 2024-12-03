@@ -4,6 +4,7 @@ defined('_JEXEC') or die('Access Deny');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Helper\ModuleHelper;
 
+
 // INCLUDES
 require_once(dirname(__FILE__) . DS . 'helper.php');
 include_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');

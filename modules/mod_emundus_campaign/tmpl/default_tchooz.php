@@ -1,6 +1,7 @@
 <?php
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 
 defined('_JEXEC') or die;
 
@@ -42,6 +43,8 @@ if (in_array('past', $mod_em_campaign_list_tab) && !empty($pastCampaign))
 
 if (sizeof($tmp_campaigns) > 0)
 {
+	$campaign_label_prefix = $params->get('mod_emundus_campaign_label_prefix', '');
+
 	foreach ($tmp_campaigns as $key => $campaign)
 	{
         $item = $menu->getItems('alias', $campaign->alias, true);
@@ -55,6 +58,8 @@ if (sizeof($tmp_campaigns) > 0)
 			$campaigns_pinned[] = $campaign;
 			unset($tmp_campaigns[$key]);
 		}
+
+        $campaign->label = Text::_($campaign_label_prefix) . $campaign->label;
 	}
 
 	$tmp_campaigns = array_values($tmp_campaigns);
