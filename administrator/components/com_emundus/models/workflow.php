@@ -276,7 +276,7 @@ class EmundusModelAdministratorWorkflow extends JModelList
 				'component_id' => $component_id,
 				'access' => 7,
 				'menu_show' => 0
-			], 8);
+			], 1);
 
 			$fabrik_component_id = ComponentHelper::getComponent('com_fabrik')->id;
 
@@ -290,7 +290,7 @@ class EmundusModelAdministratorWorkflow extends JModelList
 				'component_id' => $fabrik_component_id,
 				'access' => 7,
 				'menu_show' => 0
-			], 8);
+			], 1);
 
 			$manifest = '{"name":"Fabrik Form - eMundus Phase \u00e9valuation","type":"plugin","creationDate":"September 2024","author":"J\u00e9r\u00e9my L","copyright":"Copyright (C) 2024 eMundus.fr - All rights reserved.","authorEmail":"jeremy.legendre@emundus.fr","authorUrl":"www.emundus.fr","version":"2.0.0","description":"Gestion d\'acc\u00e8s et des donn\u00e9es soumises pour les phases d\'\u00e9valuation","group":"","filename":"emundusstepevaluation"}';
 			EmundusHelperUpdate::installExtension('Fabrik Form - eMundus Phase évaluation', 'emundusstepevaluation', $manifest, 'plugin', 1, 'fabrik_form');
