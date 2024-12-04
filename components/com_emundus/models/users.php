@@ -1901,6 +1901,41 @@ class EmundusModelUsers extends ListModel
 		}
 	}
 
+	public function removeJoomlaGroups($users, $groups) {
+		$removed = false;
+
+		try
+		{
+			// Remove groups that are not in jos_emundus_intranet_categories
+			if(!empty($users)) {
+				$query = $this->db->getQuery(true);
+
+				$query->select('group_id')
+					->from($this->db->quoteName('#__emundus_intranet_categories'))
+					->where('group_id IN ('.implode(',', $groups).')');
+				$this->db->setQuery($query);
+				$groups = $this->db->loadColumn();
+
+				if(!empty($groups)) {
+					$query = $this->db->getQuery(true);
+
+					$query->delete($this->db->quoteName('#__user_usergroup_map'))
+						->where('user_id IN ('.implode(',', $users).')')
+						->where('group_id IN ('.implode(',', $groups).')');
+					$this->db->setQuery($query);
+					$removed = $this->db->execute();
+				}
+			}
+		}
+		catch (Exception $e)
+		{
+			error_log($e->getMessage(), 0);
+			return false;
+		}
+
+		return $removed;
+	}
+
 	public function getUserInfos($uid)
 	{
 		$user_infos = [];

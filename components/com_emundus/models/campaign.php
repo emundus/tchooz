@@ -68,7 +68,7 @@ class EmundusModelCampaign extends ListModel
 			'text_file'         => 'com_emundus.campaign.error.php',
 			'text_entry_format' => '{DATETIME} {PRIORITY} {MESSAGE}'
 		],
-			Log::ERROR,
+			Log::ALL,
 			array('com_emundus')
 		);
 
@@ -1690,7 +1690,7 @@ class EmundusModelCampaign extends ListModel
 						// do nothing
 						break;
 					case 'profile_id':
-						if (empty($val)) {
+						if (!empty($val)) {
 							$query->clear()
 								->select('id')
 								->from($this->_db->quoteName('#__emundus_setup_profiles'))
@@ -1753,7 +1753,9 @@ class EmundusModelCampaign extends ListModel
 			$this->_db->setQuery($query);
 			$old_data = $this->_db->loadAssoc();
 
-			$m_falang->updateFalang($labels, $cid, 'emundus_setup_campaigns', 'label');
+			if (!empty($data['label'])) {
+				$m_falang->updateFalang($labels, $cid, 'emundus_setup_campaigns', 'label');
+			}
 
 			$query->clear()
 				->update($this->_db->quoteName('#__emundus_setup_campaigns'))
@@ -1765,6 +1767,8 @@ class EmundusModelCampaign extends ListModel
 				$updated = $this->_db->execute();
 
 				if ($updated) {
+					Log::add('User ' . Factory::getApplication()->getIdentity()->id . ' updated campaign ' . $cid . ' ' . date('d/m/Y H:i:s') . ' query ' . $query->__toString(), Log::INFO, 'com_emundus.campaign');
+
 					$query->clear()
 						->delete($this->_db->quoteName('#__emundus_setup_campaigns_repeat_limit_status'))
 						->where($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($cid));
@@ -1831,7 +1835,7 @@ class EmundusModelCampaign extends ListModel
 						unset($data[$key]);
 					}
 
-					$app->triggerEvent('onAfterCampaignUpdate', [$data,$old_data]);
+					$app->triggerEvent('onAfterCampaignUpdate', [$data, $old_data]);
 					$app->triggerEvent('onCallEventHandler', ['onAfterCampaignUpdate', ['campaign' => $cid]]);
 				}
 				else {
@@ -1839,7 +1843,7 @@ class EmundusModelCampaign extends ListModel
 				}
 			}
 			catch (Exception $e) {
-				JLog::add('component/com_emundus/models/campaign | Error when update the campaign : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
+				Log::add('component/com_emundus/models/campaign | Error when update the campaign : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 			}
 		}
 

@@ -284,6 +284,7 @@ class EmundusViewUsers extends HtmlView
 				$this->_loadGroupForm();
 				break;
 			case 'affectintranetlascala':
+			case 'removeintranetlascala':
 				$this->_loadAffectIntranetForm();
 				break;
 			case 'affectgroup':

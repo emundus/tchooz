@@ -517,3 +517,81 @@ const callApi = function(id_api,route,data,method) {
         });
     });
 }
+
+/**
+ * Return the showed value in the form
+ * <div> element from attachment for fileupload
+ * @param element
+ * @returns {string}
+ */
+function getElementShowedValue(element) {
+    let value = '';
+
+    if (element) {
+        const html = element.element;
+
+        if (html.tagName === 'SELECT') { // only for select
+            value = html.options[html.selectedIndex].text;
+        } else {
+
+            value = element.get('value');
+            const inputs = html.getElementsByTagName('input');
+
+            for (let i = 0; i < inputs.length; i++) {
+                if (inputs[i].type === 'radio' || inputs[i].type === 'checkbox') {
+                    if (inputs[i].id.includes(html.id)) { // only for databasejoin, yesno, radio, checkbox
+                        if (inputs[i].checked) {
+                            value = inputs[i].nextElementSibling.textContent; // the span value
+                        }
+                    }
+                }
+            }
+        }
+    } else {
+        console.log(`getElementShowedValue: Element is undefined`)
+    }
+
+    return value;
+}
+
+
+/**
+ * Put elements in readonly mode
+ * @param elements
+ * @param flag
+ * @returns {void}
+ */
+function readOnlyElt(elements, flag = true) {
+
+    if (!Array.isArray(elements)) elements = [elements];
+
+    elements.forEach((element, index) => {
+        if (element) {
+            const elementHTML = element.element;
+            const prefix = 'span ';
+            let span = document.getElementById(prefix + elementHTML.id);
+
+            if (flag) { // on rajoute le span s'il n'existe pas
+                if (span === null) {
+                    span = document.createElement('span');
+                    span.id = prefix + elementHTML.id;
+
+                    let parent = document.getElementById(elementHTML.id).parentNode;
+
+                    elementHTML.classList.add('fabrikHide');
+                    parent.appendChild(span);
+                }
+
+                span.textContent = getElementShowedValue(element);
+
+            } else { // on retire le span s'il existe
+                if (span != null) {
+                    elementHTML.classList.remove('fabrikHide');
+                    span.remove();
+                }
+            }
+        } else {
+            console.log(`readOnlyElt: Element at index ${index} is undefined`);
+        }
+    });
+}

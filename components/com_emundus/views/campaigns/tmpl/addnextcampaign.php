@@ -250,6 +250,7 @@ Text::script('COM_EMUNDUS_CAMPAIGNS_PIN');
 Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_ALIAS');
 Text::script('COM_EMUNDUS_ONBOARD_ALIAS_COPIED');
 Text::script('COM_EMUNDUS_OPTIONAL');
+Text::script('COM_EMUNDUS_CAMPAIGNS_VISIBLE');
 
 $app = Factory::getApplication();
 if (version_compare(JVERSION, '4.0', '>')) {
@@ -291,6 +292,7 @@ $hash = EmundusHelperCache::getCurrentGitHash();
      coordinatorAccess="<?= $coordinator_access ?>"
      sysadminAccess="<?= $sysadmin_access ?>"
      index="<?= $app->input->get('index') ?>"
+     tabs="<?= $this->tabs_to_display ?>"
 ></div>
 
 <script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>

@@ -89,6 +89,7 @@ Text::script('COM_EMUNDUS_ONBOARD_TUTORIAL_DOCUMENTS');
 Text::script('COM_EMUNDUS_ONBOARD_TUTORIAL_PROGRAM');
 Text::script('BACK');
 Text::script('COM_EMUNDUS_CAMPAIGNS_PIN');
+Text::script('COM_EMUNDUS_CAMPAIGNS_VISIBLE');
 ## END ##
 
 $app = Factory::getApplication();

@@ -1741,10 +1741,6 @@ class EmundusModelFiles extends JModelLegacy
 		$res = false;
 
 		if (!empty($fnums) && isset($state)) {
-			if (empty($user_id)) {
-				$user    = Factory::getApplication()->getIdentity();
-				$user_id = !empty($user->id) ? $user->id : 62;
-			}
 			$all_status = $this->getAllStatus(-1, 'step');
 
 			if (isset($all_status[$state])) {
@@ -2145,7 +2141,7 @@ class EmundusModelFiles extends JModelLegacy
                         left join jos_emundus_setup_campaigns as sc on sc.id = cc.campaign_id
                         left join jos_emundus_setup_programmes as jesp on jesp.code = sc.training
                         left join jos_emundus_setup_status as jess on jess.step = cc.status
-                        left join jos_emundus_tag_assoc as jeta on jeta.fnum like cc.fnum
+                        left join jos_emundus_tag_assoc as jeta on jeta.fnum = cc.fnum
                         left join jos_emundus_setup_action_tag as jesat on jesat.id = jeta.id_tag
                         where cc.fnum in ("' . implode('","', $fnums) . '")
                         group by cc.fnum';
@@ -2174,7 +2170,7 @@ class EmundusModelFiles extends JModelLegacy
                         left join jos_emundus_setup_campaigns as sc on sc.id = cc.campaign_id
                         left join jos_emundus_setup_programmes as jesp on jesp.code = sc.training
                         left join jos_emundus_setup_status as jess on jess.step = cc.status
-                        left join jos_emundus_tag_assoc as jeta on jeta.fnum like cc.fnum
+                        left join jos_emundus_tag_assoc as jeta on jeta.fnum = cc.fnum
                         left join jos_emundus_setup_action_tag as jesat on jesat.id = jeta.id_tag
                         where cc.fnum = ' . $fnum;
 			$this->_db->setQuery($query);
