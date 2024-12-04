@@ -32,7 +32,7 @@
           <div v-for="step in steps" :key="step.id"
                class="workflow-step tw-rounded tw-border tw-shadow-sm tw-p-4"
                :class="{
-                'em-gray-bg': step.state != 1,
+                'tw-bg-slate-50': step.state != 1,
                 'em-white-bg': step.state == 1
              }"
           >
@@ -503,7 +503,7 @@ export default {
         Swal.fire({
           icon: 'warning',
           title: this.translate('COM_EMUNDUS_WORKFLOW_PROGRAM_ASSOCIATED_TO_ANOTHER_WORKFLOW'),
-          text: this.translate('COM_EMUNDUS_WORKFLOW_PROGRAM_ASSOCIATED_TO_ANOTHER_WORKFLOW_TEXT'),
+          html: this.translate('COM_EMUNDUS_WORKFLOW_PROGRAM_ASSOCIATED_TO_ANOTHER_WORKFLOW_TEXT').replace('%s', program.label),
           showConfirmButton: true,
           confirmButtonText: this.translate('COM_EMUNDUS_WORKFLOW_CONFIRM_CHANGE_PROGRAM_ASSOCIATION'),
           showCancelButton: true,
