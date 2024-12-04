@@ -29,12 +29,12 @@ class modEmundusCampaignDropfilesHelper
 		$now       = $dateTime->toSQL();
 
 		// If empty id module is probably on a form
-		if (!empty($id)) {
-			if (!empty($fnum)) {
-				// we should check current campaign workflow and get files from it if there are any
-				require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
-				$m_workflow    = new EmundusModelWorkflow;
-				$current_phase = $m_workflow->getCurrentWorkflowStepFromFile($fnum);
+		if (!empty($fnum))
+		{
+			// we should check current campaign workflow and get files from it if there are any
+			require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+			$m_workflow    = new EmundusModelWorkflow;
+			$current_phase = $m_workflow->getCurrentWorkflowStepFromFile($fnum);
 
 			if (!empty($current_phase->id) && !empty($current_phase->documents))
 			{

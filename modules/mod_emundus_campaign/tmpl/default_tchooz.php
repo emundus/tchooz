@@ -1182,14 +1182,6 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
 			        <?php endforeach; ?>
                     '</select>';
                 break;
-            case 'reseau':
-                html = '<select id="filter_value_' + index + '"> ' +
-                    '<option value = 0></option>' +
-			        <?php foreach ($reseaux as $key => $reseau) : ?>
-                    "<option value=\"<?php echo $key ?>\"><?php echo $reseau ?></option>" +
-			        <?php endforeach; ?>
-                    '</select>';
-                break;
             default:
                 break;
         }
