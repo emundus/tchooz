@@ -36,12 +36,12 @@ class EmundusModelWorkflow extends JModelList
 		Log::addLogger(['text_file' => 'com_emundus.formbuilder.php'], Log::ALL, array('com_emundus.workflow'));
 	}
 
-	public function add(): int
+	public function add($label = ''): int
 	{
 		$new_workflow_id = 0;
 
 		$workflow = new stdClass();
-		$workflow->label = Text::_('COM_EMUNDUS_WORKFLOW_NEW');
+		$workflow->label = !empty($label) ? $label : Text::_('COM_EMUNDUS_WORKFLOW_NEW');
 		$workflow->published = 1;
 
 		try {
@@ -1150,5 +1150,72 @@ class EmundusModelWorkflow extends JModelList
 		}
 
 		return $programs_workflows;
+	}
+
+	/**
+	 * Duplicate a workflow and all its steps (not programs)
+	 *
+	 * @param $workflow_id
+	 *
+	 * @return int
+	 */
+	public function duplicateWorkflow($workflow_id): int
+	{
+		$new_workflow_id = 0;
+
+		if (!empty($workflow_id)) {
+			$workflow_data = $this->getWorkflow($workflow_id);
+
+			if (!empty($workflow_data)) {
+				$new_workflow_id = $this->add();
+
+				$query = $this->db->getQuery(true);
+
+				$query->update('#__emundus_setup_workflows')
+					->set('label = ' . $this->db->quote($workflow_data['workflow']->label . ' - Copie'))
+					->where('id = ' . $new_workflow_id);
+
+				$this->db->setQuery($query);
+				$this->db->execute();
+
+				$steps = $workflow_data['steps'];
+
+				foreach($steps as $step) {
+					$columns = ['workflow_id', 'label', 'type', 'multiple', 'state', 'output_status'];
+					$values = [$new_workflow_id, $this->db->quote($step->label), $step->type, $step->multiple, $step->state, $step->output_status];
+
+					if ($this->isEvaluationStep($step->type)) {
+						$columns[] = 'form_id';
+						$values[] = $step->form_id;
+					} else {
+						$columns[] = 'profile_id';
+						$values[] = $step->profile_id;
+					}
+
+					$query->clear()
+						->insert('#__emundus_setup_workflows_steps')
+						->columns($columns)
+						->values(implode(',', $values));
+
+					$this->db->setQuery($query);
+					$this->db->execute();
+					$new_step_id = $this->db->insertid();
+
+					if (!empty($new_step_id)) {
+						foreach($step->entry_status as $status) {
+							$query->clear()
+								->insert('#__emundus_setup_workflows_steps_entry_status')
+								->columns('step_id, status')
+								->values($new_step_id . ', ' . $status);
+
+							$this->db->setQuery($query);
+							$this->db->execute();
+						}
+					}
+				}
+			}
+		}
+
+		return $new_workflow_id;
 	}
 }

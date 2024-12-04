@@ -148,4 +148,20 @@ class WorkflowModelTest extends UnitTestCase
 		$this->assertEquals('Test Step', $step->label);
 		$this->assertEquals('1000', $step->profile_id, 'The profile_id should be set to the one from the step');
 	}
+
+	public function testDuplicateWorkflow()
+	{
+		$new_workflow_id = $this->model->duplicateWorkflow(999999999);
+		$this->assertEmpty($new_workflow_id, 'Duplicating a non-existing workflow should return an empty value');
+
+		$workflow_id = $this->model->add('Workflow qui doit être dupliqué');
+		$this->assertNotEmpty($workflow_id);
+
+		$new_workflow_id = $this->model->duplicateWorkflow($workflow_id);
+		$this->assertNotEmpty($new_workflow_id, 'Duplicating an existing workflow should return a new workflow id');
+
+		$workflow_data = $this->model->getWorkflow($new_workflow_id);
+		$this->assertSame('Workflow qui doit être dupliqué - Copie', $workflow_data['workflow']->label, 'The label of the duplicated workflow should be the same as the original one, with a suffix');
+
+	}
 }
