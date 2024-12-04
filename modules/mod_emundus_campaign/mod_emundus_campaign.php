@@ -62,6 +62,15 @@ if ($user->guest || in_array($e_user->profile, $app_prof)) {
 	if (empty($mod_em_campaign_intro) && $params->get('mod_em_campaign_layout') == 'default_tchooz') {
 		$mod_em_campaign_intro = $m_settings->getArticle($lang_tag, 52)->introtext;
 	}
+
+	if(!empty($mod_em_campaign_intro))
+	{
+		require_once JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php';
+		$m_emails              = new EmundusModelEmails();
+		$tags                  = $m_emails->setTags($user->id, null, null, '', $mod_em_campaign_intro);
+		$mod_em_campaign_intro = preg_replace($tags['patterns'], $tags['replacements'], $mod_em_campaign_intro);
+	}
+
 	$mod_em_campaign_show_search             = $params->get('mod_em_campaign_show_search', 1);
 	$mod_em_campaign_show_results            = $params->get('mod_em_campaign_show_results', 1);
 	$mod_em_campaign_list_tab                = $params->get('mod_em_campaign_list_tab');
