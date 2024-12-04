@@ -317,36 +317,6 @@
           </a>
         </div>
 
-
-        <hr class="tw-mt-4"/>
-
-        <div id="select-campaign-languages" v-if="languageOptions.length > 1">
-          <h2>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_LANGUAGES') }}</h2>
-
-          <div id="program-languages" class="tw-mt-4 tw-mb-0 tw-p-4 alert alert-info tw-flex tw-flex-row" v-if="programLanguages.length > 0">
-            <span class="material-icons-outlined tw-mr-2">info</span>
-            <p class="tw-font-light tw-text-sm"> {{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM_LANGUAGES') }}
-              <strong v-for="(language, index) in programLanguages" :key="language.lang_id">
-                {{ language.title }}{{ (index < (programLanguages.length - 1)) ? ', ' : '' }}
-              </strong>
-            </p>
-          </div>
-          <multiselect
-              class="tw-mt-4"
-              v-model="campaignLanguages"
-              label="label"
-              track-by="value"
-              :options="languageOptions"
-              :multiple="true"
-              :taggable="true"
-              select-label=""
-              selected-label=""
-              deselect-label=""
-          ></multiselect>
-
-          <hr class="tw-mt-4 tw-mb-4"/>
-        </div>
-
         <hr class="tw-mt-4"/>
 
         <div id="select-campaign-languages" v-if="languageOptions.length > 1">
