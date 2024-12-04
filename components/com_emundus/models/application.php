@@ -3884,6 +3884,7 @@ class EmundusModelApplication extends ListModel
 					$m_workflow = new EmundusModelWorkflow();
 					$workflows = $m_workflow->getWorkflows([], 0, 0, [$program_id]);
 
+					$workflow_menus = [];
 					foreach($workflows as $workflow) {
 						$workflow_data = $m_workflow->getWorkflow($workflow->id);
 
@@ -3896,7 +3897,7 @@ class EmundusModelApplication extends ListModel
 									$step_access = EmundusHelperAccess::getUserEvaluationStepAccess($ccid, $step_data, $user_id);
 
 									if ($step_access['can_see']) {
-										$menus[] = [
+										$workflow_menus[] = [
 											'id' => $workflow->id . $step->id,
 											'title' => $step->label,
 											'link' => 'evaluator-step?format=raw&step_id=' . $step->id,
@@ -3913,6 +3914,14 @@ class EmundusModelApplication extends ListModel
 							}
 						}
 					}
+					foreach ($menus as $key => $menu) {
+						if (str_contains($menu['link'], 'layout=attachment')) {
+							$pos = $key + 1;
+							break;
+						}
+					}
+
+					$menus = array_merge(array_slice($menus, 0, $pos), $workflow_menus, array_slice($menus, $pos));
 				}
 			}
 		} catch (Exception $e) {
