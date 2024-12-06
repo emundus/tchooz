@@ -445,7 +445,8 @@ export default {
       })
   },
   mounted() {
-    this.loading = true
+    this.loading = true;
+
     this.setDisplayedUser().then(() => {
       if (this.defaultAttachments !== null) {
         this.getAttachmentCategories().then((response) => {

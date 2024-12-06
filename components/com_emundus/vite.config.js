@@ -21,7 +21,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         entryFileNames: 'app_emundus.js',
-        chunkFileNames: 'app_emundus.js.map',
+        chunkFileNames: '[name].js',
         assetFileNames: (assetInfo) => {
           if (assetInfo.name.endsWith('.css')) {
             return 'app_emundus.css';

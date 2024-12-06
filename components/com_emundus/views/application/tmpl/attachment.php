@@ -45,7 +45,9 @@ $hash = EmundusHelperCache::getCurrentGitHash() . rand(0, 99999);
     </div>
 </div>
 
-<div id="em-application-attachment"
+<div id="em-component-vue"
+     component="Attachments"
+     class="com_emundus_vue"
      user="<?= $this->_user->id ?>"
      fnum="<?= $this->fnum ?>"
      currentLanguage="<?= $lang->getTag() ?>"

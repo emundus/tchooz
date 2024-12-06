@@ -179,13 +179,14 @@ require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers
 $hash = EmundusHelperCache::getCurrentGitHash();
 ?>
 
-<list id="em-component-vue"
-      component="list_v2"
+<div id="em-component-vue"
+      component="List"
       type="emails"
       coordinatorAccess="<?= $coordinator_access ?>"
       sysadminAccess="<?= $sysadmin_access ?>"
-      shortLang="<?= $short_lang ?>" currentLanguage="<?= $current_lang ?>"
+      shortLang="<?= $short_lang ?>"
+      currentLanguage="<?= $current_lang ?>"
       manyLanguages="<?= $many_languages ?>">
-</list>
+</div>
 
 <script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>

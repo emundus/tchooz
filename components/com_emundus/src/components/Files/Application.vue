@@ -73,7 +73,7 @@ import axios from "axios";
 import Attachments from "@/views/Attachments.vue";
 import filesService from '@/services/files.js';
 import errors from "@/mixins/errors.js";
-import Comments from "@/components/Files/Comments.vue";
+import Comments from "@/views/Comments.vue";
 import Modal from '@/components/Modal.vue';
 
 
