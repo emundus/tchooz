@@ -573,7 +573,7 @@ else {
 
 $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
 $sysadmin_access = EmundusHelperAccess::isAdministrator($user->id);
-$component = $app->input->get('evaluation') ? 'evaluationbuilder' : 'formbuilder';
+$component = $app->input->get('evaluation') ? 'evaluationbuilder' : 'formBuilder';
 
 require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();
@@ -595,7 +595,7 @@ JHTML::script('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js');
 ?>
 
 <div id="em-component-vue"
-     component="<?= $component ?>"
+     component="Formbuilder"
      prid="<?= JFactory::getApplication()->input->get('prid') ?>"
      index="<?= JFactory::getApplication()->input->get('index') ?>"
      cid="<?= JFactory::getApplication()->input->get('cid') ?>"
@@ -606,7 +606,7 @@ JHTML::script('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js');
      sysadminAccess="<?= $sysadmin_access ?>"
      settingsMenuAlias="<?= $settings_menu_alias ?>"
      enableConditionBuilder="<?= $condition_builder ?>"
-        <?php if (!empty($mode)) : ?>
+    <?php if (!empty($mode)) : ?>
         mode="<?= $mode ?>"
 	<?php endif; ?>
 ></div>

@@ -42,39 +42,34 @@
           </div>
 
           <div v-if="!loading">
-            <div v-for="tab in tabs" :key="tab.name">
-              <div v-if="tab.name === 'application' && selected === 'application'" v-html="applicationform"></div>
-              <Attachments
-                  v-if="tab.name === 'attachments' && selected === 'attachments'"
-                  :fnum="selectedFile.fnum"
-                  :user="$props.user"
-                  :columns="['check', 'name','date','category','status']"
-                  :displayEdit="false"
-                  :key="selectedFile.fnum"
-              />
-              <Comments
-                  v-if="tab.name === 'comments' && selected === 'comments'"
-                  :fnum="selectedFile.fnum"
-                  :user="$props.user"
-                  :access="access['10']"
-                  :key="selectedFile.fnum"
-              />
-
-              <div v-if="tab.type && tab.type === 'iframe' && selected === tab.name">
-                <iframe :id="tab.name" :src="replaceTagsIframeUrl(tab.url)" class="tw-w-full tw-h-screen"></iframe>
-              </div>
-            </div>
+            <div v-if="selected === 'application'" v-html="applicationform"></div>
+            <Attachments
+                v-if="selected === 'attachments'"
+                :fnum="selectedFile.fnum"
+                :user="$props.user"
+                :columns="['check', 'name','date','category','status']"
+                :displayEdit="false"
+                :key="selectedFile.fnum"
+            />
+            <Comments
+                v-if="selected === 'comments'"
+                :fnum="selectedFile.fnum"
+                :user="$props.user"
+                :access="access['10']"
+                :key="selectedFile.fnum"
+            />
           </div>
         </div>
       </div>
 
-      <Evaluations
-          v-if="selectedFile"
-          :fnum="typeof selectedFile === 'string' ? selectedFile : selectedFile.fnum"
-          :key="typeof selectedFile === 'string' ? selectedFile : selectedFile.fnum"
-      >
-      </Evaluations>
-
+      <div id="modal-evaluationgrid">
+        <iframe v-if="url" :src="url" class="iframe-evaluation" id="iframe-evaluation" @load="iframeLoaded($event);"
+                title="Evaluation form"/>
+        <div v-else>
+          {{ translate('COM_EMUNDUS_EVALUATION_NO_FORM_FOUND') }}
+        </div>
+        <div class="em-page-loader" v-if="loading"></div>
+      </div>
     </div>
   </modal>
 </template>
@@ -82,7 +77,6 @@
 <script>
 import axios from "axios";
 import Attachments from "@/views/Attachments.vue";
-import Evaluations from "@/components/Files/Evaluations.vue";
 import filesService from '@/services/files.js';
 import errors from "@/mixins/errors.js";
 import Comments from "@/views/Comments.vue";
@@ -91,7 +85,7 @@ import Modal from "@/components/Modal.vue";
 
 export default {
   name: "ApplicationSingle",
-  components: {Comments, Attachments, Modal, Evaluations},
+  components: {Comments, Attachments, Modal},
   props: {
     file: Object | String,
     type: String,
@@ -106,10 +100,6 @@ export default {
     context: {
       type: String,
       default: ''
-    },
-    defaultTabs: {
-      type: Array,
-      default: () => []
     }
   },
   mixins: [errors],
@@ -145,17 +135,8 @@ export default {
   }),
 
   created() {
-    if (this.defaultTabs.length > 0) {
-      this.tabs = this.defaultTabs;
-      // set the first tab as selected
-      this.selected = this.defaultTabs[0].name;
-    }
-
-    if (document.querySelector('body.layout-evaluation')) {
-      document.querySelector('body.layout-evaluation').style.overflow = 'hidden';
-    }
-
-    const r = document.querySelector(':root');
+    document.querySelector('body').style.overflow = 'hidden';
+    var r = document.querySelector(':root');
     let ratio_array = this.$props.ratio.split('/');
     r.style.setProperty('--attachment-width', ratio_array[0] + '%');
 
@@ -210,14 +191,12 @@ export default {
           if (result.status == 1) {
             this.selectedFile = result.data;
             this.access = result.rights;
-
-            if (this.defaultTabs.length > 0) {
-              this.selected = this.defaultTabs[0].name;
-            } else {
-              this.selected = 'application';
-            }
+            this.selected = 'application';
             this.updateURL(this.selectedFile.fnum)
             this.getApplicationForm();
+            if (this.$props.type === 'evaluation') {
+              this.getEvaluationForm();
+            }
 
             this.showModal = true;
             this.hidden = false;
@@ -246,6 +225,9 @@ export default {
                 this.selected = 'comments';
               }
             }
+            if (this.$props.type === 'evaluation') {
+              this.getEvaluationForm();
+            }
             this.showModal = true;
             this.hidden = false;
           } else {
@@ -273,6 +255,37 @@ export default {
           this.loading = false;
         }
       });
+    },
+    getEvaluationForm() {
+      if (this.selectedFile.id != null) {
+        this.rowid = this.selectedFile.id;
+      }
+      if (typeof this.selectedFile.applicant_id != 'undefined') {
+        this.student_id = this.selectedFile.applicant_id;
+      } else {
+        this.student_id = this.selectedFile.student_id;
+      }
+      let view = 'form';
+
+      filesService.getEvaluationFormByFnum(this.selectedFile.fnum, this.$props.type).then((response) => {
+        if (response.data !== 0 && response.data !== null) {
+          if (typeof this.selectedFile.id === 'undefined') {
+            filesService.getMyEvaluation(this.selectedFile.fnum).then((data) => {
+              this.rowid = data.data;
+              if (this.rowid == null) {
+                this.rowid = "";
+              }
+
+              this.url = 'index.php?option=com_fabrik&c=form&view=' + view + '&formid=' + response.data + '&rowid=' + this.rowid + '&jos_emundus_evaluations___student_id[value]=' + this.student_id + '&jos_emundus_evaluations___campaign_id[value]=' + this.selectedFile.campaign + '&jos_emundus_evaluations___fnum[value]=' + this.selectedFile.fnum + '&student_id=' + this.student_id + '&tmpl=component&iframe=1'
+            });
+          } else {
+            this.url = 'index.php?option=com_fabrik&c=form&view=' + view + '&formid=' + response.data + '&rowid=' + this.rowid + '&jos_emundus_evaluations___student_id[value]=' + this.student_id + '&jos_emundus_evaluations___campaign_id[value]=' + this.selectedFile.campaign + '&jos_emundus_evaluations___fnum[value]=' + this.selectedFile.fnum + '&student_id=' + this.student_id + '&tmpl=component&iframe=1'
+          }
+        }
+      });
+    },
+    iframeLoaded() {
+      this.loading = false;
     },
     updateURL(fnum = '') {
       let url = window.location.href;
@@ -318,9 +331,6 @@ export default {
         this.render();
       }
     },
-    replaceTagsIframeUrl(url) {
-      return url.replace('{fnum}', this.selectedFile.fnum);
-    }
   },
   computed: {
     ratioStyle() {

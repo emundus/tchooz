@@ -362,7 +362,8 @@ if ($this->display_comments)
                 close
             </span>
             <div id="em-component-vue"
-                 component="comments"
+                 component="Comments"
+                 class="com_emundus_vue"
                  user="<?= $user->id ?>"
                  ccid="<?= $ccid ?>"
                  fnum="<?= $fnum ?>"

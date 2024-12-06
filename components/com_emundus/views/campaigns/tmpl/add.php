@@ -93,11 +93,13 @@ Text::script('COM_EMUNDUS_CAMPAIGNS_VISIBLE');
 ## END ##
 
 $app = Factory::getApplication();
-if (version_compare(JVERSION, '4.0', '>')) {
+if (version_compare(JVERSION, '4.0', '>'))
+{
 	$lang = $app->getLanguage();
 	$user = $app->getIdentity();
 }
-else {
+else
+{
 	$lang = Factory::getLanguage();
 	$user = Factory::getUser();
 }
@@ -105,13 +107,15 @@ else {
 $short_lang   = substr($lang->getTag(), 0, 2);
 $current_lang = $lang->getTag();
 $languages    = LanguageHelper::getLanguages();
-if (count($languages) > 1) {
+if (count($languages) > 1)
+{
 	$many_languages = '1';
 	require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
 	$m_translations = new EmundusModelTranslations();
 	$default_lang   = $m_translations->getDefaultLanguage()->lang_code;
 }
-else {
+else
+{
 	$many_languages = '0';
 	$default_lang   = $current_lang;
 }
@@ -125,9 +129,10 @@ $hash = EmundusHelperCache::getCurrentGitHash();
 
 
 <div id="em-component-vue"
-     component="addcampaign"
+     component="addCampaign"
      campaign="<?= $this->id; ?>"
-     shortLang="<?= $short_lang ?>" currentLanguage="<?= $current_lang ?>"
+     shortLang="<?= $short_lang ?>"
+     currentLanguage="<?= $current_lang ?>"
      defaultLang="<?= $default_lang ?>"
      manyLanguages="<?= $many_languages ?>"
      coordinatorAccess="<?= $coordinator_access ?>"

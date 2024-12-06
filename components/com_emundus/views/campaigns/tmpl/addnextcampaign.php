@@ -284,7 +284,7 @@ $hash = EmundusHelperCache::getCurrentGitHash();
 ?>
 
 <div id="em-component-vue"
-     component="campaignedition"
+     component="CampaignEdition"
      campaignId="<?= $app->input->get('cid') ?>"
      shortLang="<?= $short_lang ?>" currentLanguage="<?= $current_lang ?>"
      manyLanguages="<?= $many_languages ?>"

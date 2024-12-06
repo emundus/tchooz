@@ -564,8 +564,9 @@ $hash = EmundusHelperCache::getCurrentGitHash();
 <style link="media/com_emundus_vue/app_emundus.css?<?php echo $hash ?>"></style>
 
 <div id="em-component-vue"
-     component="settings"
-     shortLang="<?= $short_lang ?>" currentLanguage="<?= $current_lang ?>"
+     component="Settings"
+     shortLang="<?= $short_lang ?>"
+     currentLanguage="<?= $current_lang ?>"
      defaultLang="<?= $default_lang ?>"
      coordinatorAccess="<?= $coordinator_access ?>"
      sysadminAccess="<?= $sysadmin_access ?>"

@@ -218,7 +218,7 @@ import Swal from 'sweetalert2';
 import {useGlobalStore} from "@/stores/global.js";
 
 export default {
-  name: 'list_v2',
+  name: 'list',
   components: {
     Skeleton,
     Popover,
