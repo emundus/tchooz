@@ -1,5 +1,4 @@
-import { F as FetchClient, _ as _export_sfc, C as Comments, A as Attachments, M as Modal, a as axios, r as resolveComponent, w as withDirectives, v as vShow, o as openBlock, c as createBlock, b as withCtx, d as createBaseVNode, t as toDisplayString, e as createElementBlock, f as createCommentVNode, n as normalizeStyle, g as Fragment, h as renderList, i as normalizeClass } from "./app_emundus.js";
-import { e as errors } from "./errors.js";
+import { f as FetchClient, _ as _export_sfc, C as Comments, A as Attachments, M as Modal, g as errors, h as axios, r as resolveComponent, d as withDirectives, v as vShow, o as openBlock, i as createBlock, j as withCtx, a as createBaseVNode, t as toDisplayString, c as createElementBlock, k as createCommentVNode, l as normalizeStyle, F as Fragment, b as renderList, n as normalizeClass } from "./app_emundus.js";
 const client = new FetchClient("file");
 const filesService = {
   // eslint-disable-next-line no-unused-vars

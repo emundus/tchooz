@@ -899,7 +899,7 @@ class EmundusModelWorkflow extends JModelList
 
 		if (!empty($step_id)) {
 			$query = $this->db->createQuery();
-			$query->select('type, sub_type')
+			$query->select('type')
 				->from($this->db->quoteName('#__emundus_setup_workflows_steps'))
 				->where('id = ' . $step_id);
 
@@ -909,7 +909,7 @@ class EmundusModelWorkflow extends JModelList
 			$query->clear()
 				->select('action_id')
 				->from($this->db->quoteName('#__emundus_setup_step_types'))
-				->where('id = ' . (!empty($step_types['sub_type']) ? $step_types['sub_type'] : $step_types['type']));
+				->where('id = ' . $step_types['type']);
 
 			$this->db->setQuery($query);
 			$action_id = $this->db->loadResult();

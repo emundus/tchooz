@@ -1,7 +1,7 @@
-import { s as script, V as V32 } from "./vue-multiselect.esm.js";
+import { f as FetchClient, _ as _export_sfc, E as mixin, s as script, y as useGlobalStore, p as settingsService, r as resolveComponent, o as openBlock, c as createElementBlock, a as createBaseVNode, q as withModifiers, t as toDisplayString, x as createTextVNode, d as withDirectives, L as vModelText, n as normalizeClass, k as createCommentVNode, i as createBlock, v as vShow, e as createVNode } from "./app_emundus.js";
 import { I as IncrementalSelect } from "./IncrementalSelect.js";
-import { F as FetchClient, _ as _export_sfc, q as mixin, u as useGlobalStore, s as settingsService, r as resolveComponent, o as openBlock, e as createElementBlock, d as createBaseVNode, k as withModifiers, t as toDisplayString, p as createTextVNode, w as withDirectives, B as vModelText, i as normalizeClass, f as createCommentVNode, c as createBlock, v as vShow, j as createVNode } from "./app_emundus.js";
 import { e as emailService } from "./email.js";
+import { V as V32 } from "./editor.js";
 const client = new FetchClient("messages");
 const messagesService = {
   async getAllAttachments() {
@@ -25,7 +25,7 @@ const messagesService = {
     }
   }
 };
-const addEmail_vue_vue_type_style_index_0_scoped_0d908019_lang = "";
+const addEmail_vue_vue_type_style_index_0_scoped_348173ab_lang = "";
 const _sfc_main = {
   name: "addEmail",
   mixins: [mixin],
@@ -216,10 +216,6 @@ const _sfc_main = {
         this.errors.message = true;
         return 0;
       }
-      if (this.displayButtonField && this.form.button == "") {
-        this.errors.button = true;
-        return 0;
-      }
       this.submitted = true;
       if (this.email !== "") {
         emailService.updateEmail(this.email, {
@@ -323,11 +319,11 @@ const _hoisted_4 = { class: "tw-text-red-600 tw-mb-2" };
 const _hoisted_5 = { class: "tw-mb-4" };
 const _hoisted_6 = {
   key: 0,
-  class: "tw-text-red-600 tw-mt-1"
+  class: "tw-text-red-600 tw-mb-2"
 };
 const _hoisted_7 = { class: "tw-text-red-600" };
 const _hoisted_8 = { class: "tw-mb-4" };
-const _hoisted_9 = { class: "tw-mt-2" };
+const _hoisted_9 = { class: "tw-mt-12" };
 const _hoisted_10 = {
   href: "/export-tags",
   class: "em-main-500-color em-hover-main-600 em-text-underline",
@@ -335,63 +331,53 @@ const _hoisted_10 = {
 };
 const _hoisted_11 = {
   key: 1,
-  class: "tw-text-red-600 tw-mt-1"
+  class: "tw-text-red-600 tw-mb-2"
 };
 const _hoisted_12 = { class: "tw-text-red-600" };
-const _hoisted_13 = {
-  key: 0,
-  class: "tw-mb-4"
-};
-const _hoisted_14 = { class: "tw-mt-1 tw-mb-1 tw-text-xs tw-text-neutral-700" };
-const _hoisted_15 = {
-  key: 0,
-  class: "tw-text-red-600 tw-mt-1"
-};
-const _hoisted_16 = { class: "tw-text-red-600" };
-const _hoisted_17 = { class: "form-group" };
-const _hoisted_18 = { class: "em-container-accordeon" };
-const _hoisted_19 = { class: "tw-flex tw-items-center tw-gap-1 tw-justify-between" };
-const _hoisted_20 = ["title"];
-const _hoisted_21 = ["title"];
-const _hoisted_22 = {
+const _hoisted_13 = { class: "form-group" };
+const _hoisted_14 = { class: "em-container-accordeon" };
+const _hoisted_15 = { class: "tw-flex tw-items-center tw-gap-1 tw-justify-between" };
+const _hoisted_16 = ["title"];
+const _hoisted_17 = ["title"];
+const _hoisted_18 = {
   key: 0,
   id: "email-advanced-parameters",
   class: "tw-mt-4"
 };
-const _hoisted_23 = { class: "form-group tw-mb-4" };
-const _hoisted_24 = { class: "tw-mt-2 tw-text-neutral-700" };
-const _hoisted_25 = { class: "form-group tw-mb-4" };
-const _hoisted_26 = { class: "form-group tw-mb-4" };
-const _hoisted_27 = { class: "tw-text-xs tw-text-neutral-700" };
-const _hoisted_28 = {
+const _hoisted_19 = { class: "form-group tw-mb-4" };
+const _hoisted_20 = { class: "tw-mt-2 tw-text-neutral-700" };
+const _hoisted_21 = { class: "form-group tw-mb-4" };
+const _hoisted_22 = { class: "form-group tw-mb-4" };
+const _hoisted_23 = { class: "tw-text-xs tw-text-neutral-700" };
+const _hoisted_24 = {
   class: "form-group tw-mb-4",
   id: "receivers_cc"
 };
-const _hoisted_29 = {
+const _hoisted_25 = {
   class: "form-group tw-mb-4",
   id: "receivers_bcc"
 };
-const _hoisted_30 = {
+const _hoisted_26 = {
   key: 0,
   class: "form-group tw-mb-4",
   id: "attached_letters"
 };
-const _hoisted_31 = {
+const _hoisted_27 = {
   key: 1,
   class: "form-group tw-mb-4"
 };
-const _hoisted_32 = { class: "form-group tw-mb-4" };
-const _hoisted_33 = { class: "tw-flex tw-justify-between tw-mt-4" };
-const _hoisted_34 = {
+const _hoisted_28 = { class: "form-group tw-mb-4" };
+const _hoisted_29 = { class: "tw-flex tw-justify-between tw-mt-4" };
+const _hoisted_30 = {
   type: "button",
   class: "tw-btn-cancel !tw-w-auto",
   onclick: "history.back()"
 };
-const _hoisted_35 = {
+const _hoisted_31 = {
   type: "submit",
   class: "tw-btn-primary !tw-w-auto"
 };
-const _hoisted_36 = {
+const _hoisted_32 = {
   key: 0,
   class: "em-page-loader"
 };
@@ -402,7 +388,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", _hoisted_1, [
     createBaseVNode("div", null, [
       createBaseVNode("form", {
-        onSubmit: _cache[13] || (_cache[13] = withModifiers((...args) => $options.submit && $options.submit(...args), ["prevent"])),
+        onSubmit: _cache[12] || (_cache[12] = withModifiers((...args) => $options.submit && $options.submit(...args), ["prevent"])),
         class: "fabrikForm emundus-form"
       }, [
         createBaseVNode("div", null, [
@@ -414,23 +400,23 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             createBaseVNode("div", _hoisted_5, [
               createBaseVNode("label", null, [
                 createTextVNode(toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDEMAIL_NAME")) + " ", 1),
-                _cache[14] || (_cache[14] = createBaseVNode("span", { style: { "color": "#e5283b" } }, "*", -1))
+                _cache[13] || (_cache[13] = createBaseVNode("span", { style: { "color": "#e5283b" } }, "*", -1))
               ]),
               withDirectives(createBaseVNode("input", {
                 type: "text",
-                class: normalizeClass(["tw-w-full tw-mt-2", { "is-invalid !tw-border-red-600": _ctx.errors.subject }]),
+                class: normalizeClass(["tw-w-full tw-mt-2", { "is-invalid": _ctx.errors.subject }]),
                 "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => _ctx.form.subject = $event)
               }, null, 2), [
                 [vModelText, _ctx.form.subject]
-              ]),
-              _ctx.errors.subject ? (openBlock(), createElementBlock("p", _hoisted_6, [
-                createBaseVNode("span", _hoisted_7, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_SUBJECT_REQUIRED")), 1)
-              ])) : createCommentVNode("", true)
+              ])
             ]),
+            _ctx.errors.subject ? (openBlock(), createElementBlock("span", _hoisted_6, [
+              createBaseVNode("span", _hoisted_7, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_SUBJECT_REQUIRED")), 1)
+            ])) : createCommentVNode("", true),
             createBaseVNode("div", _hoisted_8, [
               createBaseVNode("label", null, [
                 createTextVNode(toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDEMAIL_BODY")) + " ", 1),
-                _cache[15] || (_cache[15] = createBaseVNode("span", { style: { "color": "#e5283b" } }, "*", -1))
+                _cache[14] || (_cache[14] = createBaseVNode("span", { style: { "color": "#e5283b" } }, "*", -1))
               ]),
               _ctx.editor_ready ? (openBlock(), createBlock(_component_tip_tap_editor, {
                 key: 0,
@@ -451,30 +437,13 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               }, null, 8, ["modelValue", "plugins", "suggestions", "media-files", "onUploadedImage"])) : createCommentVNode("", true),
               createBaseVNode("div", _hoisted_9, [
                 createBaseVNode("a", _hoisted_10, toDisplayString(_ctx.translate("COM_EMUNDUS_EMAIL_SHOW_TAGS")), 1)
-              ]),
-              _ctx.errors.message ? (openBlock(), createElementBlock("p", _hoisted_11, [
-                createBaseVNode("span", _hoisted_12, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_BODY_REQUIRED")), 1)
-              ])) : createCommentVNode("", true)
+              ])
             ]),
-            _ctx.displayButtonField ? (openBlock(), createElementBlock("div", _hoisted_13, [
-              createBaseVNode("label", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDEMAIL_BUTTON_TEXT")), 1),
-              createBaseVNode("p", _hoisted_14, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDEMAIL_BUTTON_TEXT_TIP")), 1),
-              withDirectives(createBaseVNode("input", {
-                type: "text",
-                class: normalizeClass(["tw-w-full tw-mt-2", { "is-invalid !tw-border-red-600": _ctx.errors.button }]),
-                "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => _ctx.form.button = $event)
-              }, null, 2), [
-                [vModelText, _ctx.form.button]
-              ]),
-              _ctx.errors.button ? (openBlock(), createElementBlock("p", _hoisted_15, [
-                createBaseVNode("span", _hoisted_16, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_BUTTON_REQUIRED")), 1)
-              ])) : createCommentVNode("", true)
+            _ctx.errors.message ? (openBlock(), createElementBlock("p", _hoisted_11, [
+              createBaseVNode("span", _hoisted_12, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_BODY_REQUIRED")), 1)
             ])) : createCommentVNode("", true),
-            createBaseVNode("div", _hoisted_17, [
-              createBaseVNode("label", null, [
-                createTextVNode(toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_CHOOSECATEGORY")), 1),
-                _cache[16] || (_cache[16] = createBaseVNode("span", { style: { "color": "#e5283b" } }, "*", -1))
-              ]),
+            createBaseVNode("div", _hoisted_13, [
+              createBaseVNode("label", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_CHOOSECATEGORY")), 1),
               (openBlock(), createBlock(_component_incremental_select, {
                 options: this.categoriesList,
                 defaultValue: $options.incSelectDefaultValue,
@@ -485,67 +454,67 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             ])
           ])
         ]),
-        _cache[19] || (_cache[19] = createBaseVNode("hr", null, null, -1)),
-        createBaseVNode("div", _hoisted_18, [
-          createBaseVNode("div", _hoisted_19, [
+        _cache[17] || (_cache[17] = createBaseVNode("hr", null, null, -1)),
+        createBaseVNode("div", _hoisted_14, [
+          createBaseVNode("div", _hoisted_15, [
             createBaseVNode("h2", {
-              class: "tw-cursor-pointer !tw-mb-0 tw-w-full",
-              onClick: _cache[3] || (_cache[3] = (...args) => $options.displayAdvanced && $options.displayAdvanced(...args))
+              class: "tw-cursor-pointer !tw-mb-0",
+              onClick: _cache[2] || (_cache[2] = (...args) => $options.displayAdvanced && $options.displayAdvanced(...args))
             }, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING")), 1),
             withDirectives(createBaseVNode("button", {
               title: _ctx.translate("COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING"),
               type: "button",
               class: "tw-bg-transparent tw-flex tw-flex-col",
-              onClick: _cache[4] || (_cache[4] = (...args) => $options.displayAdvanced && $options.displayAdvanced(...args))
-            }, _cache[17] || (_cache[17] = [
+              onClick: _cache[3] || (_cache[3] = (...args) => $options.displayAdvanced && $options.displayAdvanced(...args))
+            }, _cache[15] || (_cache[15] = [
               createBaseVNode("span", { class: "material-symbols-outlined em-main-500-color" }, "add_circle_outline", -1)
-            ]), 8, _hoisted_20), [
+            ]), 8, _hoisted_16), [
               [vShow, !_ctx.displayAdvancedParameters]
             ]),
             withDirectives(createBaseVNode("button", {
               title: _ctx.translate("COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING"),
               type: "button",
-              onClick: _cache[5] || (_cache[5] = (...args) => $options.displayAdvanced && $options.displayAdvanced(...args)),
+              onClick: _cache[4] || (_cache[4] = (...args) => $options.displayAdvanced && $options.displayAdvanced(...args)),
               class: "tw-bg-transparent tw-flex tw-flex-col"
-            }, _cache[18] || (_cache[18] = [
+            }, _cache[16] || (_cache[16] = [
               createBaseVNode("span", { class: "material-symbols-outlined em-main-500-color" }, "remove_circle_outline", -1)
-            ]), 8, _hoisted_21), [
+            ]), 8, _hoisted_17), [
               [vShow, _ctx.displayAdvancedParameters]
             ])
           ]),
-          _ctx.displayAdvancedParameters ? (openBlock(), createElementBlock("div", _hoisted_22, [
-            createBaseVNode("div", _hoisted_23, [
+          _ctx.displayAdvancedParameters ? (openBlock(), createElementBlock("div", _hoisted_18, [
+            createBaseVNode("div", _hoisted_19, [
               createBaseVNode("label", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDEMAIL_SENDER_EMAIL")), 1),
-              createBaseVNode("p", _hoisted_24, toDisplayString(_ctx.email_sender), 1)
+              createBaseVNode("p", _hoisted_20, toDisplayString(_ctx.email_sender), 1)
             ]),
-            createBaseVNode("div", _hoisted_25, [
+            createBaseVNode("div", _hoisted_21, [
               createBaseVNode("label", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDEMAIL_RECEIVER")), 1),
               withDirectives(createBaseVNode("input", {
                 type: "text",
                 class: "tw-w-full fabrikinput tw-mt-2",
-                "onUpdate:modelValue": _cache[6] || (_cache[6] = ($event) => _ctx.form.name = $event)
+                "onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => _ctx.form.name = $event)
               }, null, 512), [
                 [vModelText, _ctx.form.name]
               ])
             ]),
-            createBaseVNode("div", _hoisted_26, [
+            createBaseVNode("div", _hoisted_22, [
               createBaseVNode("label", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESS")), 1),
               withDirectives(createBaseVNode("input", {
                 type: "text",
                 class: "tw-w-full fabrikinput tw-mt-2",
-                "onUpdate:modelValue": _cache[7] || (_cache[7] = ($event) => _ctx.form.emailfrom = $event),
+                "onUpdate:modelValue": _cache[6] || (_cache[6] = ($event) => _ctx.form.emailfrom = $event),
                 placeholder: "reply-to@tchooz.io"
               }, null, 512), [
                 [vModelText, _ctx.form.emailfrom]
               ]),
-              createBaseVNode("p", _hoisted_27, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESTIP")), 1)
+              createBaseVNode("p", _hoisted_23, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESTIP")), 1)
             ]),
-            createBaseVNode("div", _hoisted_28, [
+            createBaseVNode("div", _hoisted_24, [
               createBaseVNode("label", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_RECEIVER_CC_TAGS")), 1),
               createVNode(_component_multiselect, {
                 class: normalizeClass("tw-mt-2"),
                 modelValue: _ctx.selectedReceiversCC,
-                "onUpdate:modelValue": _cache[8] || (_cache[8] = ($event) => _ctx.selectedReceiversCC = $event),
+                "onUpdate:modelValue": _cache[7] || (_cache[7] = ($event) => _ctx.selectedReceiversCC = $event),
                 label: "email",
                 "track-by": "email",
                 options: _ctx.receivers_cc,
@@ -560,12 +529,12 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 "clear-on-select": false
               }, null, 8, ["modelValue", "options", "onTag"])
             ]),
-            createBaseVNode("div", _hoisted_29, [
+            createBaseVNode("div", _hoisted_25, [
               createBaseVNode("label", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_RECEIVER_BCC_TAGS")), 1),
               createVNode(_component_multiselect, {
                 class: normalizeClass("tw-mt-2"),
                 modelValue: _ctx.selectedReceiversBCC,
-                "onUpdate:modelValue": _cache[9] || (_cache[9] = ($event) => _ctx.selectedReceiversBCC = $event),
+                "onUpdate:modelValue": _cache[8] || (_cache[8] = ($event) => _ctx.selectedReceiversBCC = $event),
                 label: "email",
                 "track-by": "email",
                 options: _ctx.receivers_bcc,
@@ -580,12 +549,12 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 "clear-on-select": false
               }, null, 8, ["modelValue", "options", "onTag"])
             ]),
-            _ctx.attached_letters ? (openBlock(), createElementBlock("div", _hoisted_30, [
+            _ctx.attached_letters ? (openBlock(), createElementBlock("div", _hoisted_26, [
               createBaseVNode("label", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT")), 1),
               createVNode(_component_multiselect, {
                 class: normalizeClass("tw-mt-2"),
                 modelValue: _ctx.selectedLetterAttachments,
-                "onUpdate:modelValue": _cache[10] || (_cache[10] = ($event) => _ctx.selectedLetterAttachments = $event),
+                "onUpdate:modelValue": _cache[9] || (_cache[9] = ($event) => _ctx.selectedLetterAttachments = $event),
                 label: "value",
                 "track-by": "id",
                 options: _ctx.attached_letters,
@@ -599,12 +568,12 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 "clear-on-select": false
               }, null, 8, ["modelValue", "options", "placeholder"])
             ])) : createCommentVNode("", true),
-            _ctx.tags ? (openBlock(), createElementBlock("div", _hoisted_31, [
+            _ctx.tags ? (openBlock(), createElementBlock("div", _hoisted_27, [
               createBaseVNode("label", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_EMAIL_TAGS")), 1),
               createVNode(_component_multiselect, {
                 class: normalizeClass("tw-mt-2"),
                 modelValue: _ctx.selectedTags,
-                "onUpdate:modelValue": _cache[11] || (_cache[11] = ($event) => _ctx.selectedTags = $event),
+                "onUpdate:modelValue": _cache[10] || (_cache[10] = ($event) => _ctx.selectedTags = $event),
                 label: "label",
                 "track-by": "id",
                 options: _ctx.action_tags,
@@ -618,12 +587,12 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 "clear-on-select": false
               }, null, 8, ["modelValue", "options", "placeholder"])
             ])) : createCommentVNode("", true),
-            createBaseVNode("div", _hoisted_32, [
+            createBaseVNode("div", _hoisted_28, [
               createBaseVNode("label", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_CANDIDAT_ATTACHMENTS")), 1),
               createVNode(_component_multiselect, {
                 class: normalizeClass("tw-mt-2"),
                 modelValue: _ctx.selectedCandidateAttachments,
-                "onUpdate:modelValue": _cache[12] || (_cache[12] = ($event) => _ctx.selectedCandidateAttachments = $event),
+                "onUpdate:modelValue": _cache[11] || (_cache[11] = ($event) => _ctx.selectedCandidateAttachments = $event),
                 label: "value",
                 "track-by": "id",
                 options: _ctx.candidate_attachments,
@@ -639,16 +608,16 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             ])
           ])) : createCommentVNode("", true)
         ]),
-        createBaseVNode("div", _hoisted_33, [
-          createBaseVNode("button", _hoisted_34, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADD_RETOUR")), 1),
-          createBaseVNode("button", _hoisted_35, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADD_CONTINUER")), 1)
+        createBaseVNode("div", _hoisted_29, [
+          createBaseVNode("button", _hoisted_30, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADD_RETOUR")), 1),
+          createBaseVNode("button", _hoisted_31, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADD_CONTINUER")), 1)
         ])
       ], 32)
     ]),
-    _ctx.loading || _ctx.submitted ? (openBlock(), createElementBlock("div", _hoisted_36)) : createCommentVNode("", true)
+    _ctx.loading || _ctx.submitted ? (openBlock(), createElementBlock("div", _hoisted_32)) : createCommentVNode("", true)
   ]);
 }
-const addEmail = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-0d908019"]]);
+const addEmail = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-348173ab"]]);
 export {
   addEmail as default
 };

@@ -1,12 +1,88 @@
-import { _ as _export_sfc, u as useGlobalStore, s as settingsService, K as ref, S as Swal, r as resolveComponent, o as openBlock, e as createElementBlock, c as createBlock, d as createBaseVNode, t as toDisplayString, f as createCommentVNode, j as createVNode, g as Fragment, h as renderList, i as normalizeClass, w as withDirectives, l as vModelSelect, B as vModelText, b as withCtx } from "./app_emundus.js";
+import { _ as _export_sfc, o as openBlock, c as createElementBlock, a as createBaseVNode, F as Fragment, b as renderList, t as toDisplayString, Q as Popover, y as useGlobalStore, p as settingsService, a4 as ref, S as Swal, r as resolveComponent, i as createBlock, k as createCommentVNode, e as createVNode, n as normalizeClass, d as withDirectives, u as vModelSelect, L as vModelText, j as withCtx } from "./app_emundus.js";
 import { S as Skeleton } from "./Skeleton.js";
-import { P as Popover } from "./Popover.js";
+const _sfc_main$1 = {
+  name: "Gantt",
+  props: {
+    defaultDisplay: {
+      type: String,
+      default: "year"
+    },
+    defaultStartDate: {
+      type: String,
+      default: /* @__PURE__ */ new Date()
+    },
+    defaultEndDate: {
+      type: String,
+      default: (/* @__PURE__ */ new Date()).setDate((/* @__PURE__ */ new Date()).getDate() + 365)
+    },
+    language: {
+      type: String,
+      default: "fr-FR"
+    },
+    periods: {
+      type: Array,
+      required: true
+    }
+  },
+  data() {
+    return {
+      display: this.defaultDisplay,
+      displayValues: ["year", "month", "week", "day"],
+      dateRange: []
+    };
+  },
+  mounted() {
+    this.setDateRange(this.defaultStartDate, this.defaultEndDate);
+  },
+  methods: {
+    changeDisplay(value) {
+      if (this.displayValues.includes(value)) {
+        this.display = value;
+      }
+    },
+    setDateRange(startDate, endDate) {
+      if (startDate && endDate) {
+        switch (this.display) {
+          case "year":
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            let date = new Date(start);
+            this.dateRange = [];
+            while (date <= end) {
+              const formattedString = new Intl.DateTimeFormat(this.language, { month: "short", year: "numeric" }).format(date);
+              this.dateRange.push(formattedString);
+              date.setMonth(date.getMonth() + 1);
+            }
+            break;
+        }
+      }
+    }
+  }
+};
+const _hoisted_1$1 = { id: "gantt-view" };
+const _hoisted_2$1 = {
+  id: "gantt-head",
+  class: "tw-flex tw-flex-row"
+};
+function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", _hoisted_1$1, [
+    _cache[0] || (_cache[0] = createBaseVNode("div", { id: "gantt-options" }, null, -1)),
+    createBaseVNode("div", _hoisted_2$1, [
+      (openBlock(true), createElementBlock(Fragment, null, renderList($data.dateRange, (value) => {
+        return openBlock(), createElementBlock("span", { key: value }, toDisplayString(value), 1);
+      }), 128))
+    ]),
+    _cache[1] || (_cache[1] = createBaseVNode("div", { id: "gantt-rows" }, null, -1))
+  ]);
+}
+const Gantt = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1]]);
 const List_vue_vue_type_style_index_0_lang = "";
 const _sfc_main = {
   name: "list",
   components: {
     Skeleton,
-    Popover
+    Popover,
+    Gantt
   },
   props: {
     defaultLists: {
@@ -34,7 +110,11 @@ const _sfc_main = {
       items: {},
       title: "",
       viewType: "table",
-      viewTypeOptions: [{ value: "table", icon: "dehaze" }, { value: "blocs", icon: "grid_view" }],
+      viewTypeOptions: [
+        { value: "table", icon: "dehaze" },
+        { value: "blocs", icon: "grid_view" }
+        /*{value: 'gantt', icon: 'view_timeline'}*/
+      ],
       searches: {},
       filters: {},
       alertBannerDisplayed: false
@@ -50,12 +130,13 @@ const _sfc_main = {
     }
     this.loading.lists = true;
     this.loading.tabs = true;
+    const globalStore = useGlobalStore();
     if (this.defaultType !== null) {
       this.params = {
-        "type": this.defaultType
+        "type": this.defaultType,
+        "shortlang": globalStore.getShortLang
       };
     } else {
-      const globalStore = useGlobalStore();
       const data = globalStore.getDatas;
       this.params = Object.assign({}, ...Array.from(data).map(({ name, value }) => ({ [name]: value })));
     }
@@ -285,8 +366,8 @@ const _sfc_main = {
         if (Object.prototype.hasOwnProperty.call(action, "confirm")) {
           Swal.fire({
             icon: "warning",
-            title: action.label,
-            text: action.confirm,
+            title: this.translate(action.label),
+            text: this.translate(action.confirm),
             showCancelButton: true,
             confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
             cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
@@ -458,7 +539,11 @@ const _sfc_main = {
     displayedItems() {
       let items = typeof this.items[this.selectedListTab] !== "undefined" ? this.items[this.selectedListTab] : [];
       return items.filter((item) => {
-        return item.label[this.params.shortlang].toLowerCase().includes(this.searches[this.selectedListTab].search.toLowerCase());
+        if (item !== void 0 && item !== null) {
+          return item.label[this.params.shortlang].toLowerCase().includes(this.searches[this.selectedListTab].search.toLowerCase());
+        } else {
+          return false;
+        }
       });
     },
     additionalColumns() {
@@ -582,6 +667,7 @@ const _hoisted_43 = ["innerHTML"];
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_skeleton = resolveComponent("skeleton");
   const _component_popover = resolveComponent("popover");
+  const _component_Gantt = resolveComponent("Gantt");
   return openBlock(), createElementBlock("div", {
     id: "onboarding_list",
     class: normalizeClass(["tw-w-full", { "alert-banner-displayed": $data.alertBannerDisplayed }])
@@ -744,7 +830,8 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         }), 64))
       ], 2)) : (openBlock(), createElementBlock("div", _hoisted_25, [
         $options.displayedItems.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_26, [
-          createBaseVNode("table", {
+          $data.viewType != "gantt" ? (openBlock(), createElementBlock("table", {
+            key: 0,
             id: "list-table",
             class: normalizeClass({ "blocs": $data.viewType === "blocs" })
           }, [
@@ -851,7 +938,11 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 ], 10, _hoisted_28);
               }), 128))
             ])
-          ], 2)
+          ], 2)) : (openBlock(), createBlock(_component_Gantt, {
+            key: 1,
+            language: $data.params.shortlang,
+            periods: $options.displayedItems
+          }, null, 8, ["language", "periods"]))
         ])) : (openBlock(), createElementBlock("div", {
           key: 1,
           id: "empty-list",
@@ -862,7 +953,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ]))
   ], 2);
 }
-const List = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render]]);
+const list = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render]]);
 export {
-  List as default
+  list as default
 };

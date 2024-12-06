@@ -1,4 +1,4 @@
-import { F as FetchClient } from "./app_emundus.js";
+import { f as FetchClient } from "./app_emundus.js";
 const client = new FetchClient("campaign");
 const campaignService = {
   async get(task, params) {
@@ -210,6 +210,16 @@ const campaignService = {
   async deleteDropfileDocument(documentId) {
     try {
       return await client.post("deletedocumentdropfile", { did: documentId });
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+  async getCampaignsByProgramId(programId) {
+    try {
+      return await client.get("getCampaignsByProgramId&program_id=" + programId);
     } catch (e) {
       return {
         status: false,

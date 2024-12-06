@@ -22,6 +22,7 @@ import clickOutside from './directives/clickOutside';
 import './assets/css/main.scss';
 import Attachments from "@/views/Attachments.vue";
 import Comments from "@/views/Comments.vue";
+import WorkflowEdit from "@/views/Workflows/WorkflowEdit.vue";
 
 if (document) {
     let app = null;
@@ -46,7 +47,7 @@ if (document) {
 
         if (componentName) {
 
-            if (componentName === 'Attachments' || filesElement || componentName === 'Comments') {
+            if (componentName === 'Attachments' || filesElement || componentName === 'Comments' || componentName === 'Workflows/WorkflowEdit') {
                 Array.prototype.slice.call(el.attributes).forEach(function (attr) {
                     datas[attr.name] = attr.value;
                 });
@@ -85,6 +86,11 @@ if (document) {
                         },
                         applicantsAllowedToComment: datas.applicants_allowed_to_comment == 1,
                         border: datas.border ? datas.border == 1 : true
+                    });
+                    break;
+                case 'Workflows/WorkflowEdit':
+                    app = createApp(WorkflowEdit, {
+                        workflowId: Number(datas.workflowid),
                     });
                     break;
                 default:

@@ -1,10 +1,10 @@
-import { _ as _export_sfc, N as reactive, S as Swal$1, r as resolveComponent, o as openBlock, e as createElementBlock, p as createTextVNode, t as toDisplayString, f as createCommentVNode, d as createBaseVNode, w as withDirectives, l as vModelSelect, i as normalizeClass, g as Fragment, h as renderList, c as createBlock, b as withCtx, B as vModelText, H as vModelRadio, E as vModelCheckbox, D as vModelDynamic, k as withModifiers, v as vShow, q as mixin, s as settingsService, j as createVNode, I as client, O as __vitePreload, a as axios, n as normalizeStyle, u as useGlobalStore, G as withKeys, z as defineStore, m as mergeProps, P as resolveDynamicComponent } from "./app_emundus.js";
-import { s as script, V as V32 } from "./vue-multiselect.esm.js";
-import { T as Tabs, v as vueDropzone } from "./Tabs.js";
+import { _ as _export_sfc, s as script, V as reactive, S as Swal$1, r as resolveComponent, o as openBlock, c as createElementBlock, x as createTextVNode, t as toDisplayString, k as createCommentVNode, a as createBaseVNode, d as withDirectives, u as vModelSelect, n as normalizeClass, F as Fragment, b as renderList, i as createBlock, j as withCtx, L as vModelText, P as vModelRadio, z as vModelCheckbox, N as vModelDynamic, q as withModifiers, v as vShow, D as Tabs, E as mixin, p as settingsService, e as createVNode, R as client, W as __vitePreload, h as axios, l as normalizeStyle, g as errors, y as useGlobalStore, O as withKeys, K as defineStore, m as mergeProps, X as resolveDynamicComponent } from "./app_emundus.js";
 import History from "./History.js";
 import { t as translationsService, T as Translations } from "./Translations.js";
 import { q as qs, V as VueDraggableNext } from "./index.js";
-import { e as errors } from "./errors.js";
+import { v as vueDropzone } from "./vue-dropzone.js";
+import { V as V32 } from "./editor.js";
+import WorkflowSettings from "./WorkflowSettings.js";
 const Parameter_vue_vue_type_style_index_0_lang = "";
 const _sfc_main$k = {
   name: "Parameter",
@@ -4930,6 +4930,15 @@ const menus = [
     "type": "JSON",
     "source": "translate.js",
     "published": true
+  },
+  {
+    "label": "COM_EMUNDUS_GLOBAL_PARAMS_MENUS_WORKFLOWS",
+    "name": "workflows",
+    "icon": "schema",
+    "type": "component",
+    "component": "WorkflowSettings",
+    "published": true,
+    "props": {}
   }
 ];
 const _sfc_main = {
@@ -4942,7 +4951,8 @@ const _sfc_main = {
     WebSecurity,
     Multiselect: script,
     Addons,
-    Info
+    Info,
+    WorkflowSettings
   },
   props: {
     actualLanguage: {

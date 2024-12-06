@@ -9708,7 +9708,7 @@ class VueElement extends BaseClass {
     }
   }
   _update() {
-    render$1(this._createVNode(), this._root);
+    render$2(this._createVNode(), this._root);
   }
   _createVNode() {
     const baseProps = {};
@@ -10317,7 +10317,7 @@ function ensureHydrationRenderer() {
   enabledHydration = true;
   return renderer;
 }
-const render$1 = (...args) => {
+const render$2 = (...args) => {
   ensureRenderer().render(...args);
 };
 const hydrate = (...args) => {
@@ -10492,7 +10492,7 @@ const runtimeDom = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePr
   readonly,
   ref,
   registerRuntimeCompiler,
-  render: render$1,
+  render: render$2,
   renderList,
   renderSlot,
   resolveComponent,
@@ -16351,18 +16351,18 @@ class FetchClient {
     });
   }
 }
-const client$2 = new FetchClient("files");
+const client$5 = new FetchClient("files");
 const fileService = {
   async getFnums() {
     try {
-      return await client$2.get("getallfnums");
+      return await client$5.get("getallfnums");
     } catch (e) {
       return false;
     }
   },
   async getFnumInfos(fnum) {
     try {
-      return await client$2.get("getfnuminfos", {
+      return await client$5.get("getfnuminfos", {
         fnum
       });
     } catch (e) {
@@ -16371,7 +16371,17 @@ const fileService = {
   },
   async isDataAnonymized() {
     try {
-      return await client$2.get("isdataanonymized");
+      return await client$5.get("isdataanonymized");
+    } catch (e) {
+      return {
+        status: false,
+        message: e.message
+      };
+    }
+  },
+  async getProfiles() {
+    try {
+      return await client$5.get("getprofiles");
     } catch (e) {
       return {
         status: false,
@@ -16381,7 +16391,7 @@ const fileService = {
   },
   async getFileIdFromFnum(fnum) {
     try {
-      return await client$2.get("getFileIdFromFnum", {
+      return await client$5.get("getFileIdFromFnum", {
         fnum
       });
     } catch (e) {
@@ -16392,11 +16402,11 @@ const fileService = {
     }
   }
 };
-const fetchClient = new FetchClient("settings");
+const fetchClient$1 = new FetchClient("settings");
 const settingsService = {
   async getActiveLanguages() {
     try {
-      return await fetchClient.get("getactivelanguages");
+      return await fetchClient$1.get("getactivelanguages");
     } catch (e) {
       return {
         status: false,
@@ -16409,7 +16419,7 @@ const settingsService = {
       param
     };
     try {
-      return await fetchClient.post("removeparam", data);
+      return await fetchClient$1.post("removeparam", data);
     } catch (e) {
       return {
         status: false,
@@ -16419,7 +16429,7 @@ const settingsService = {
   },
   async checkFirstDatabaseJoin() {
     try {
-      return await fetchClient.get("checkfirstdatabasejoin");
+      return await fetchClient$1.get("checkfirstdatabasejoin");
     } catch (e) {
       return {
         status: false,
@@ -16429,7 +16439,7 @@ const settingsService = {
   },
   async getEmundusParams() {
     try {
-      return await fetchClient.get("getemundusparams");
+      return await fetchClient$1.get("getemundusparams");
     } catch (e) {
       return false;
     }
@@ -16452,7 +16462,7 @@ const settingsService = {
   },
   async getOffset() {
     try {
-      return await fetchClient.get("getOffset");
+      return await fetchClient$1.get("getOffset");
     } catch (e) {
       return false;
     }
@@ -16479,7 +16489,7 @@ const settingsService = {
   },
   async getTimezoneList() {
     try {
-      return await fetchClient.get("gettimezonelist");
+      return await fetchClient$1.get("gettimezonelist");
     } catch (e) {
       return false;
     }
@@ -16507,7 +16517,7 @@ const settingsService = {
     let data = {};
     data.preset = JSON.stringify(preset);
     try {
-      return await fetchClient.post("updatecolor", data);
+      return await fetchClient$1.post("updatecolor", data);
     } catch (e) {
       return {
         status: false,
@@ -16517,7 +16527,7 @@ const settingsService = {
   },
   async getStatus() {
     try {
-      return await fetchClient.get("getstatus");
+      return await fetchClient$1.get("getstatus");
     } catch (e) {
       return {
         status: false,
@@ -16527,7 +16537,7 @@ const settingsService = {
   },
   async getTags() {
     try {
-      return await fetchClient.get("gettags");
+      return await fetchClient$1.get("gettags");
     } catch (e) {
       return {
         status: false,
@@ -16537,7 +16547,7 @@ const settingsService = {
   },
   async getEmailSender() {
     try {
-      return await fetchClient.get("getemailsender");
+      return await fetchClient$1.get("getemailsender");
     } catch (e) {
       return {
         status: false,
@@ -16547,7 +16557,7 @@ const settingsService = {
   },
   async getLogo() {
     try {
-      return await fetchClient.get("getlogo");
+      return await fetchClient$1.get("getlogo");
     } catch (e) {
       return {
         status: false,
@@ -16557,7 +16567,7 @@ const settingsService = {
   },
   async getVariables() {
     try {
-      return await fetchClient.get("geteditorvariables");
+      return await fetchClient$1.get("geteditorvariables");
     } catch (e) {
       return {
         status: false,
@@ -16567,7 +16577,7 @@ const settingsService = {
   },
   async getAllArticleNeedToModify() {
     try {
-      return await fetchClient.get("getAllArticleNeedToModify");
+      return await fetchClient$1.get("getAllArticleNeedToModify");
     } catch (e) {
       return {
         status: false,
@@ -16577,7 +16587,7 @@ const settingsService = {
   },
   async getMedia() {
     try {
-      return await fetchClient.get("getmedia");
+      return await fetchClient$1.get("getmedia");
     } catch (e) {
       return {
         status: false,
@@ -16590,7 +16600,7 @@ const settingsService = {
       const data = {
         tags: orderedTags.join(",")
       };
-      return fetchClient.post("updatetagsorder", data);
+      return fetchClient$1.post("updatetagsorder", data);
     } else {
       return {
         status: false,
@@ -16600,7 +16610,7 @@ const settingsService = {
   },
   async getEmailParameters() {
     try {
-      return await fetchClient.get("getemailparameters");
+      return await fetchClient$1.get("getemailparameters");
     } catch (e) {
       return {
         status: false,
@@ -16610,7 +16620,7 @@ const settingsService = {
   },
   async testEmail(data) {
     try {
-      return await fetchClient.post("testemail", data, null, 5e3);
+      return await fetchClient$1.post("testemail", data, null, 5e3);
     } catch (e) {
       return {
         status: false,
@@ -16620,7 +16630,7 @@ const settingsService = {
   },
   async saveEmailParameters(data) {
     try {
-      return await fetchClient.post("saveemailparameters", data);
+      return await fetchClient$1.post("saveemailparameters", data);
     } catch (e) {
       return {
         status: false,
@@ -16630,7 +16640,7 @@ const settingsService = {
   },
   async getLiveSite() {
     try {
-      return await fetchClient.get("getlivesite");
+      return await fetchClient$1.get("getlivesite");
     } catch (e) {
       return {
         status: false,
@@ -16640,7 +16650,7 @@ const settingsService = {
   },
   async getsslinfo() {
     try {
-      return await fetchClient.get("getsslinfo");
+      return await fetchClient$1.get("getsslinfo");
     } catch (e) {
       return {
         status: false,
@@ -16650,7 +16660,7 @@ const settingsService = {
   },
   async sendRequest(data) {
     try {
-      return await fetchClient.post("sendwebsecurityrequest", data);
+      return await fetchClient$1.post("sendwebsecurityrequest", data);
     } catch (e) {
       return {
         status: false,
@@ -16660,7 +16670,7 @@ const settingsService = {
   },
   async getHistory(extension, only_pending = false, page = 1, limit = 10, itemId = 0) {
     try {
-      return await fetchClient.get("gethistory", { extension, only_pending, page, limit, item_id: itemId });
+      return await fetchClient$1.get("gethistory", { extension, only_pending, page, limit, item_id: itemId });
     } catch (e) {
       return {
         status: false,
@@ -16670,7 +16680,7 @@ const settingsService = {
   },
   async updateHistoryStatus(id, status) {
     try {
-      return await fetchClient.post("updatehistorystatus", { id, status });
+      return await fetchClient$1.post("updatehistorystatus", { id, status });
     } catch (e) {
       return {
         status: false,
@@ -23271,7 +23281,7 @@ const useAttachmentStore = /* @__PURE__ */ defineStore("attachment", {
   }
 });
 const AttachmentPreview_vue_vue_type_style_index_0_lang = "";
-const _sfc_main$5 = {
+const _sfc_main$8 = {
   props: {
     user: {
       type: Number,
@@ -23418,10 +23428,10 @@ const _sfc_main$5 = {
     }
   }
 };
-const _hoisted_1$5 = { id: "em-attachment-preview" };
-const _hoisted_2$4 = ["innerHTML"];
-function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
-  return openBlock(), createElementBlock("div", _hoisted_1$5, [
+const _hoisted_1$9 = { id: "em-attachment-preview" };
+const _hoisted_2$7 = ["innerHTML"];
+function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", _hoisted_1$9, [
     createBaseVNode("div", {
       ref: "a-preview",
       class: normalizeClass(["attachment-preview", {
@@ -23434,7 +23444,7 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
       key: 0,
       innerHTML: $data.preview,
       class: "attachment-preview"
-    }, null, 8, _hoisted_2$4)) : createCommentVNode("", true),
+    }, null, 8, _hoisted_2$7)) : createCommentVNode("", true),
     createBaseVNode("div", {
       id: "msg",
       class: normalizeClass({ active: $data.msg && $data.openMsg })
@@ -23443,7 +23453,7 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
     ], 2)
   ]);
 }
-const AttachmentPreview = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$5]]);
+const AttachmentPreview = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$8]]);
 //! moment.js
 //! version : 2.30.1
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -29829,7 +29839,7 @@ axios.default = axios;
 const axios$1 = axios;
 const SystemPath = typeof Joomla != "undefined" && Joomla !== null ? Joomla.getOptions("system.paths") : { base: "" };
 axios$1.defaults.baseURL = SystemPath.base !== void 0 && SystemPath.base !== "" ? SystemPath.base : "/";
-const client$1 = (headers = {
+const client$4 = (headers = {
   "Content-Type": "application/json",
   "Cache-Control": "no-cache"
 }) => axios$1.create({
@@ -29841,7 +29851,7 @@ const client$1 = (headers = {
 const userService = {
   async getUserById(id) {
     try {
-      const response = await client$1().get("index.php?option=com_emundus&controller=users&task=getuserbyid", {
+      const response = await client$4().get("index.php?option=com_emundus&controller=users&task=getuserbyid", {
         params: {
           id
         }
@@ -29856,7 +29866,7 @@ const userService = {
   },
   async getUserNameById(id) {
     try {
-      const response = await client$1().get("index.php?option=com_emundus&controller=users&task=getUserNameById", {
+      const response = await client$4().get("index.php?option=com_emundus&controller=users&task=getUserNameById", {
         params: {
           id
         }
@@ -29871,7 +29881,7 @@ const userService = {
   },
   async getAccessRights(id, fnum) {
     try {
-      const response = await client$1().get(
+      const response = await client$4().get(
         "index.php?option=com_emundus&controller=users&task=getattachmentaccessrights",
         {
           params: {
@@ -31226,7 +31236,7 @@ var mixin$1 = {
   }
 };
 const AttachmentEdit_vue_vue_type_style_index_0_lang = "";
-const _sfc_main$4 = {
+const _sfc_main$7 = {
   name: "AttachmentEdit",
   props: {
     fnum: {
@@ -31362,62 +31372,62 @@ const _sfc_main$4 = {
     }
   }
 };
-const _hoisted_1$4 = { id: "attachment-edit" };
-const _hoisted_2$3 = { class: "wrapper" };
-const _hoisted_3$3 = { class: "title" };
-const _hoisted_4$3 = { class: "editable-data" };
-const _hoisted_5$3 = { class: "input-group" };
-const _hoisted_6$3 = { for: "description" };
-const _hoisted_7$3 = ["disabled"];
-const _hoisted_8$3 = ["innerHTML"];
-const _hoisted_9$3 = { for: "status" };
-const _hoisted_10$3 = ["disabled"];
-const _hoisted_11$3 = { value: "1" };
-const _hoisted_12$3 = { value: "0" };
-const _hoisted_13$3 = { value: "2" };
-const _hoisted_14$3 = { value: "-2" };
-const _hoisted_15$3 = {
+const _hoisted_1$8 = { id: "attachment-edit" };
+const _hoisted_2$6 = { class: "wrapper" };
+const _hoisted_3$5 = { class: "title" };
+const _hoisted_4$5 = { class: "editable-data" };
+const _hoisted_5$5 = { class: "input-group" };
+const _hoisted_6$5 = { for: "description" };
+const _hoisted_7$5 = ["disabled"];
+const _hoisted_8$5 = ["innerHTML"];
+const _hoisted_9$5 = { for: "status" };
+const _hoisted_10$4 = ["disabled"];
+const _hoisted_11$4 = { value: "1" };
+const _hoisted_12$4 = { value: "0" };
+const _hoisted_13$4 = { value: "2" };
+const _hoisted_14$4 = { value: "-2" };
+const _hoisted_15$4 = {
   key: 0,
   class: "input-group"
 };
-const _hoisted_16$3 = { for: "replace" };
-const _hoisted_17$3 = ["accept"];
-const _hoisted_18$3 = {
+const _hoisted_16$4 = { for: "replace" };
+const _hoisted_17$4 = ["accept"];
+const _hoisted_18$4 = {
   key: 1,
   class: "input-group"
 };
-const _hoisted_19$3 = { for: "can_be_viewed" };
-const _hoisted_20$3 = ["disabled"];
-const _hoisted_21$3 = {
+const _hoisted_19$4 = { for: "can_be_viewed" };
+const _hoisted_20$4 = ["disabled"];
+const _hoisted_21$4 = {
   key: 2,
   class: "input-group"
 };
-const _hoisted_22$3 = { for: "can_be_deleted" };
-const _hoisted_23$2 = ["disabled"];
-const _hoisted_24$2 = { class: "non-editable-data" };
-const _hoisted_25$2 = { key: 0 };
-const _hoisted_26$2 = { class: "tw-text-right" };
-const _hoisted_27$2 = { key: 1 };
-const _hoisted_28$2 = { class: "tw-text-right" };
-const _hoisted_29$2 = { key: 2 };
-const _hoisted_30$2 = { class: "tw-text-right" };
-const _hoisted_31$2 = { key: 3 };
-const _hoisted_32$2 = { class: "tw-text-right" };
-const _hoisted_33$2 = { key: 4 };
-const _hoisted_34$2 = { class: "tw-text-right" };
-const _hoisted_35$2 = { class: "tw-w-full tw-flex tw-items-center tw-justify-between" };
-const _hoisted_36$2 = { id: "toggle-display" };
-const _hoisted_37$2 = {
+const _hoisted_22$4 = { for: "can_be_deleted" };
+const _hoisted_23$3 = ["disabled"];
+const _hoisted_24$3 = { class: "non-editable-data" };
+const _hoisted_25$3 = { key: 0 };
+const _hoisted_26$3 = { class: "tw-text-right" };
+const _hoisted_27$3 = { key: 1 };
+const _hoisted_28$3 = { class: "tw-text-right" };
+const _hoisted_29$3 = { key: 2 };
+const _hoisted_30$3 = { class: "tw-text-right" };
+const _hoisted_31$3 = { key: 3 };
+const _hoisted_32$3 = { class: "tw-text-right" };
+const _hoisted_33$3 = { key: 4 };
+const _hoisted_34$3 = { class: "tw-text-right" };
+const _hoisted_35$3 = { class: "tw-w-full tw-flex tw-items-center tw-justify-between" };
+const _hoisted_36$3 = { id: "toggle-display" };
+const _hoisted_37$3 = {
   key: 0,
   class: "error-msg"
 };
-function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
-  return openBlock(), createElementBlock("div", _hoisted_1$4, [
-    createBaseVNode("div", _hoisted_2$3, [
-      createBaseVNode("h2", _hoisted_3$3, toDisplayString($data.attachment.value), 1),
-      createBaseVNode("div", _hoisted_4$3, [
-        createBaseVNode("div", _hoisted_5$3, [
-          createBaseVNode("label", _hoisted_6$3, toDisplayString(_ctx.translate("DESCRIPTION")), 1),
+function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", _hoisted_1$8, [
+    createBaseVNode("div", _hoisted_2$6, [
+      createBaseVNode("h2", _hoisted_3$5, toDisplayString($data.attachment.value), 1),
+      createBaseVNode("div", _hoisted_4$5, [
+        createBaseVNode("div", _hoisted_5$5, [
+          createBaseVNode("label", _hoisted_6$5, toDisplayString(_ctx.translate("DESCRIPTION")), 1),
           $data.attachment.allowed_types !== "video" ? withDirectives((openBlock(), createElementBlock("textarea", {
             key: 0,
             name: "description",
@@ -31426,12 +31436,12 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
             "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $data.attachmentDescription = $event),
             disabled: !$data.canUpdate,
             onFocusout: _cache[1] || (_cache[1] = (...args) => $options.saveChanges && $options.saveChanges(...args))
-          }, "					", 40, _hoisted_7$3)), [
+          }, "					", 40, _hoisted_7$5)), [
             [vModelText, $data.attachmentDescription]
           ]) : (openBlock(), createElementBlock("span", {
             key: 1,
             innerHTML: $data.attachmentDescription
-          }, null, 8, _hoisted_8$3))
+          }, null, 8, _hoisted_8$5))
         ]),
         createBaseVNode("div", {
           class: normalizeClass(["input-group valid-state", {
@@ -31440,80 +31450,80 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
             error: $data.attachmentIsValidated == 0
           }])
         }, [
-          createBaseVNode("label", _hoisted_9$3, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_CHECK")), 1),
+          createBaseVNode("label", _hoisted_9$5, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_CHECK")), 1),
           withDirectives(createBaseVNode("select", {
             name: "status",
             "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => $data.attachmentIsValidated = $event),
             onChange: _cache[3] || (_cache[3] = (...args) => $options.updateAttachmentStatus && $options.updateAttachmentStatus(...args)),
             disabled: !$data.canUpdate || $props.is_applicant == 1
           }, [
-            createBaseVNode("option", _hoisted_11$3, toDisplayString(_ctx.translate("VALID")), 1),
-            createBaseVNode("option", _hoisted_12$3, toDisplayString(_ctx.translate("INVALID")), 1),
-            createBaseVNode("option", _hoisted_13$3, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_WARNING")), 1),
-            createBaseVNode("option", _hoisted_14$3, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_WAITING")), 1)
-          ], 40, _hoisted_10$3), [
+            createBaseVNode("option", _hoisted_11$4, toDisplayString(_ctx.translate("VALID")), 1),
+            createBaseVNode("option", _hoisted_12$4, toDisplayString(_ctx.translate("INVALID")), 1),
+            createBaseVNode("option", _hoisted_13$4, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_WARNING")), 1),
+            createBaseVNode("option", _hoisted_14$4, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_WAITING")), 1)
+          ], 40, _hoisted_10$4), [
             [vModelSelect, $data.attachmentIsValidated]
           ])
         ], 2),
-        $data.canUpdate || $props.is_applicant == 1 && $data.attachmentIsValidated == 0 ? (openBlock(), createElementBlock("div", _hoisted_15$3, [
-          createBaseVNode("label", _hoisted_16$3, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_REPLACE")), 1),
+        $data.canUpdate || $props.is_applicant == 1 && $data.attachmentIsValidated == 0 ? (openBlock(), createElementBlock("div", _hoisted_15$4, [
+          createBaseVNode("label", _hoisted_16$4, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_REPLACE")), 1),
           createBaseVNode("input", {
             type: "file",
             name: "replace",
             onChange: _cache[4] || (_cache[4] = (...args) => $options.updateFile && $options.updateFile(...args)),
             accept: $options.allowedType
-          }, null, 40, _hoisted_17$3)
+          }, null, 40, _hoisted_17$4)
         ])) : createCommentVNode("", true),
-        $props.is_applicant != 1 && $data.attachment.profiles && $data.attachment.profiles.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_18$3, [
-          createBaseVNode("label", _hoisted_19$3, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_VIEWED")), 1),
+        $props.is_applicant != 1 && $data.attachment.profiles && $data.attachment.profiles.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_18$4, [
+          createBaseVNode("label", _hoisted_19$4, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_VIEWED")), 1),
           withDirectives(createBaseVNode("input", {
             type: "checkbox",
             name: "can_be_viewed",
             "onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => $data.attachmentCanBeViewed = $event),
             disabled: !$data.canUpdate,
             onClick: _cache[6] || (_cache[6] = (...args) => $options.saveChanges && $options.saveChanges(...args))
-          }, null, 8, _hoisted_20$3), [
+          }, null, 8, _hoisted_20$4), [
             [vModelCheckbox, $data.attachmentCanBeViewed]
           ])
         ])) : createCommentVNode("", true),
-        $props.is_applicant != 1 && $data.attachment.profiles && $data.attachment.profiles.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_21$3, [
-          createBaseVNode("label", _hoisted_22$3, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_DELETED")), 1),
+        $props.is_applicant != 1 && $data.attachment.profiles && $data.attachment.profiles.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_21$4, [
+          createBaseVNode("label", _hoisted_22$4, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_DELETED")), 1),
           withDirectives(createBaseVNode("input", {
             type: "checkbox",
             name: "can_be_deleted",
             "onUpdate:modelValue": _cache[7] || (_cache[7] = ($event) => $data.attachmentCanBeDeleted = $event),
             disabled: !$data.canUpdate,
             onClick: _cache[8] || (_cache[8] = (...args) => $options.saveChanges && $options.saveChanges(...args))
-          }, null, 8, _hoisted_23$2), [
+          }, null, 8, _hoisted_23$3), [
             [vModelCheckbox, $data.attachmentCanBeDeleted]
           ])
         ])) : createCommentVNode("", true)
       ]),
-      createBaseVNode("div", _hoisted_24$2, [
-        $props.columns.includes("date") ? (openBlock(), createElementBlock("div", _hoisted_25$2, [
+      createBaseVNode("div", _hoisted_24$3, [
+        $props.columns.includes("date") ? (openBlock(), createElementBlock("div", _hoisted_25$3, [
           createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_SEND_DATE")), 1),
-          createBaseVNode("span", _hoisted_26$2, toDisplayString(_ctx.formattedDate($data.attachment.timedate)), 1)
+          createBaseVNode("span", _hoisted_26$3, toDisplayString(_ctx.formattedDate($data.attachment.timedate)), 1)
         ])) : createCommentVNode("", true),
-        $data.attachment.user_id && $data.canSee ? (openBlock(), createElementBlock("div", _hoisted_27$2, [
+        $data.attachment.user_id && $data.canSee ? (openBlock(), createElementBlock("div", _hoisted_27$3, [
           createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_UPLOADED_BY")), 1),
-          createBaseVNode("span", _hoisted_28$2, toDisplayString(_ctx.getUserNameById($data.attachment.user_id)), 1)
+          createBaseVNode("span", _hoisted_28$3, toDisplayString(_ctx.getUserNameById($data.attachment.user_id)), 1)
         ])) : createCommentVNode("", true),
-        $data.attachment.category && $props.columns.includes("category") ? (openBlock(), createElementBlock("div", _hoisted_29$2, [
+        $data.attachment.category && $props.columns.includes("category") ? (openBlock(), createElementBlock("div", _hoisted_29$3, [
           createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_CATEGORY")), 1),
-          createBaseVNode("span", _hoisted_30$2, toDisplayString(this.categories[$data.attachment.category]), 1)
+          createBaseVNode("span", _hoisted_30$3, toDisplayString(this.categories[$data.attachment.category]), 1)
         ])) : createCommentVNode("", true),
-        $data.attachment.modified_by && $data.canSee && $props.columns.includes("modified_by") ? (openBlock(), createElementBlock("div", _hoisted_31$2, [
+        $data.attachment.modified_by && $data.canSee && $props.columns.includes("modified_by") ? (openBlock(), createElementBlock("div", _hoisted_31$3, [
           createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY")), 1),
-          createBaseVNode("span", _hoisted_32$2, toDisplayString(_ctx.getUserNameById($data.attachment.modified_by)), 1)
+          createBaseVNode("span", _hoisted_32$3, toDisplayString(_ctx.getUserNameById($data.attachment.modified_by)), 1)
         ])) : createCommentVNode("", true),
-        $data.attachment.modified && $props.columns.includes("modified") ? (openBlock(), createElementBlock("div", _hoisted_33$2, [
+        $data.attachment.modified && $props.columns.includes("modified") ? (openBlock(), createElementBlock("div", _hoisted_33$3, [
           createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE")), 1),
-          createBaseVNode("span", _hoisted_34$2, toDisplayString(_ctx.formattedDate($data.attachment.modified)), 1)
+          createBaseVNode("span", _hoisted_34$3, toDisplayString(_ctx.formattedDate($data.attachment.modified)), 1)
         ])) : createCommentVNode("", true)
       ])
     ]),
-    createBaseVNode("div", _hoisted_35$2, [
-      createBaseVNode("div", _hoisted_36$2, [
+    createBaseVNode("div", _hoisted_35$3, [
+      createBaseVNode("div", _hoisted_36$3, [
         $data.displayed ? (openBlock(), createElementBlock("span", {
           key: 0,
           class: "material-symbols-outlined displayed tw-cursor-pointer",
@@ -31525,14 +31535,14 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
         }, " menu_open "))
       ])
     ]),
-    $data.error ? (openBlock(), createElementBlock("div", _hoisted_37$2, toDisplayString($data.errorMessage), 1)) : createCommentVNode("", true)
+    $data.error ? (openBlock(), createElementBlock("div", _hoisted_37$3, toDisplayString($data.errorMessage), 1)) : createCommentVNode("", true)
   ]);
 }
-const AttachmentEdit = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4]]);
+const AttachmentEdit = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$7]]);
 const syncService = {
   async isSyncModuleActive() {
     try {
-      const response = await client$1().get("index.php?option=com_emundus&controller=sync&task=issyncmoduleactive");
+      const response = await client$4().get("index.php?option=com_emundus&controller=sync&task=issyncmoduleactive");
       return response.data;
     } catch (e) {
       return {
@@ -31543,7 +31553,7 @@ const syncService = {
   },
   async getSyncType(uploadId) {
     try {
-      const response = await client$1().get("index.php?option=com_emundus&controller=sync&task=getsynctype", {
+      const response = await client$4().get("index.php?option=com_emundus&controller=sync&task=getsynctype", {
         params: {
           "upload_id": uploadId
         }
@@ -31563,7 +31573,7 @@ const syncService = {
      */
   async getSynchronizeState(uploadId) {
     try {
-      const response = await client$1().get(
+      const response = await client$4().get(
         "index.php?option=com_emundus&controller=sync&task=getsynchronizestate",
         {
           params: {
@@ -31587,7 +31597,7 @@ const syncService = {
     try {
       const formData = new FormData();
       formData.append("upload_ids", JSON.stringify(uploadIds));
-      const response = await client$1().post(
+      const response = await client$4().post(
         "index.php?option=com_emundus&controller=sync&task=synchronizeattachments",
         formData,
         {
@@ -31608,7 +31618,7 @@ const syncService = {
     try {
       const formData = new FormData();
       formData.append("upload_ids", JSON.stringify(uploadIds));
-      const response = await client$1().post(
+      const response = await client$4().post(
         "index.php?option=com_emundus&controller=sync&task=deleteattachments",
         formData,
         {
@@ -31629,7 +31639,7 @@ const syncService = {
     try {
       const formData = new FormData();
       formData.append("upload_ids", JSON.stringify(uploadIds));
-      const response = await client$1().post(
+      const response = await client$4().post(
         "index.php?option=com_emundus&controller=sync&task=checkattachmentsexists",
         formData,
         {
@@ -31651,7 +31661,7 @@ const syncService = {
       const formData = new FormData();
       formData.append("config", JSON.stringify(config));
       formData.append("type", type);
-      return await client$1().post(
+      return await client$4().post(
         `index.php?option=com_emundus&controller=sync&task=saveconfig`,
         formData,
         {
@@ -31669,7 +31679,7 @@ const syncService = {
   },
   async getConfig(type) {
     try {
-      return await client$1().get(`index.php?option=com_emundus&controller=sync&task=getconfig`, {
+      return await client$4().get(`index.php?option=com_emundus&controller=sync&task=getconfig`, {
         params: {
           type
         }
@@ -31683,7 +31693,7 @@ const syncService = {
   },
   async getAttachmentAspectsConfig(attachmentId) {
     try {
-      const response = await client$1().get(`index.php?option=com_emundus&controller=sync&task=getattachmentaspectsconfig`, {
+      const response = await client$4().get(`index.php?option=com_emundus&controller=sync&task=getattachmentaspectsconfig`, {
         params: {
           attachmentId
         }
@@ -31701,7 +31711,7 @@ const syncService = {
       const formData = new FormData();
       formData.append("attachmentId", attachmentId);
       formData.append("config", JSON.stringify(config));
-      return client$1().post(
+      return client$4().post(
         `index.php?option=com_emundus&controller=sync&task=saveattachmentaspectsconfig`,
         formData,
         {
@@ -31719,7 +31729,7 @@ const syncService = {
   },
   async getAspects() {
     try {
-      return await client$1().get(`index.php?option=com_emundus&controller=sync&task=getaspects`);
+      return await client$4().get(`index.php?option=com_emundus&controller=sync&task=getaspects`);
     } catch (e) {
       return {
         status: false,
@@ -31731,7 +31741,7 @@ const syncService = {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      return await client$1().post(
+      return await client$4().post(
         `index.php?option=com_emundus&controller=sync&task=uploadaspectfile`,
         formData,
         {
@@ -31751,7 +31761,7 @@ const syncService = {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      return await client$1().post(
+      return await client$4().post(
         `index.php?option=com_emundus&controller=sync&task=updateaspectlistfromfile`,
         formData,
         {
@@ -31769,7 +31779,7 @@ const syncService = {
   },
   async getDocuments() {
     try {
-      return await client$1().get(`index.php?option=com_emundus&controller=sync&task=getdocuments`);
+      return await client$4().get(`index.php?option=com_emundus&controller=sync&task=getdocuments`);
     } catch (e) {
       return {
         status: false,
@@ -31779,7 +31789,7 @@ const syncService = {
   },
   async getEmundusTags() {
     try {
-      return await client$1().get(`index.php?option=com_emundus&controller=sync&task=getemundustags`);
+      return await client$4().get(`index.php?option=com_emundus&controller=sync&task=getemundustags`);
     } catch (e) {
       return {
         status: false,
@@ -31792,7 +31802,7 @@ const syncService = {
       const formData = new FormData();
       formData.append("did", did);
       formData.append("sync", sync);
-      return await client$1().post(
+      return await client$4().post(
         `index.php?option=com_emundus&controller=sync&task=updatedocumentsync`,
         formData,
         {
@@ -31813,7 +31823,7 @@ const syncService = {
       const formData = new FormData();
       formData.append("did", did);
       formData.append("sync_method", sync_method);
-      return await client$1().post(
+      return await client$4().post(
         `index.php?option=com_emundus&controller=sync&task=updatedocumentsyncmethod`,
         formData,
         {
@@ -31831,7 +31841,7 @@ const syncService = {
   },
   async getSetupTags() {
     try {
-      const response = await client$1().get(`index.php?option=com_emundus&controller=sync&task=getsetuptags`);
+      const response = await client$4().get(`index.php?option=com_emundus&controller=sync&task=getsetuptags`);
       return response.data;
     } catch (e) {
       return {
@@ -31844,7 +31854,7 @@ const syncService = {
     let nodeId = null;
     if (typeof uploadId != "undefined" && uploadId !== null) {
       try {
-        const response = await client$1().get(`index.php?option=com_emundus&controller=sync&task=getnodeid`, {
+        const response = await client$4().get(`index.php?option=com_emundus&controller=sync&task=getnodeid`, {
           params: {
             uploadId
           }
@@ -31860,7 +31870,7 @@ const syncService = {
   }
 };
 const AttachmentRow_vue_vue_type_style_index_0_lang = "";
-const _sfc_main$3 = {
+const _sfc_main$6 = {
   name: "AttachmentRow",
   props: {
     attachment: {
@@ -31976,58 +31986,58 @@ const _sfc_main$3 = {
     }
   }
 };
-const _hoisted_1$3 = { key: 0 };
-const _hoisted_2$2 = ["checked"];
-const _hoisted_3$2 = ["title"];
-const _hoisted_4$2 = ["title"];
-const _hoisted_5$2 = {
+const _hoisted_1$7 = { key: 0 };
+const _hoisted_2$5 = ["checked"];
+const _hoisted_3$4 = ["title"];
+const _hoisted_4$4 = ["title"];
+const _hoisted_5$4 = {
   key: 2,
   class: "date"
 };
-const _hoisted_6$2 = {
+const _hoisted_6$4 = {
   key: 3,
   class: "desc"
 };
-const _hoisted_7$2 = {
+const _hoisted_7$4 = {
   key: 4,
   class: "category"
 };
-const _hoisted_8$2 = ["disabled"];
-const _hoisted_9$2 = ["selected"];
-const _hoisted_10$2 = ["selected"];
-const _hoisted_11$2 = ["selected"];
-const _hoisted_12$2 = { key: 6 };
-const _hoisted_13$2 = { key: 7 };
-const _hoisted_14$2 = {
+const _hoisted_8$4 = ["disabled"];
+const _hoisted_9$4 = ["selected"];
+const _hoisted_10$3 = ["selected"];
+const _hoisted_11$3 = ["selected"];
+const _hoisted_12$3 = { key: 6 };
+const _hoisted_13$3 = { key: 7 };
+const _hoisted_14$3 = {
   key: 8,
   class: "date"
 };
-const _hoisted_15$2 = {
+const _hoisted_15$3 = {
   key: 9,
   class: "permissions"
 };
-const _hoisted_16$2 = ["title"];
-const _hoisted_17$2 = ["title"];
-const _hoisted_18$2 = { key: 10 };
-const _hoisted_19$2 = { key: 0 };
-const _hoisted_20$2 = ["title"];
-const _hoisted_21$2 = ["title"];
-const _hoisted_22$2 = {
+const _hoisted_16$3 = ["title"];
+const _hoisted_17$3 = ["title"];
+const _hoisted_18$3 = { key: 10 };
+const _hoisted_19$3 = { key: 0 };
+const _hoisted_20$3 = ["title"];
+const _hoisted_21$3 = ["title"];
+const _hoisted_22$3 = {
   key: 2,
   class: "sync-loader em-loader"
 };
-function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("tr", {
     class: normalizeClass(["attachment-row", { checked: $data.checkedAttachments.includes($props.attachment.aid) }]),
     key: $props.attachment.aid
   }, [
-    $props.columns.includes("check") ? (openBlock(), createElementBlock("td", _hoisted_1$3, [
+    $props.columns.includes("check") ? (openBlock(), createElementBlock("td", _hoisted_1$7, [
       createBaseVNode("input", {
         class: "attachment-check",
         type: "checkbox",
         onChange: _cache[0] || (_cache[0] = ($event) => $options.updateCheckedAttachments($props.attachment.aid)),
         checked: $data.checkedAttachments.includes($props.attachment.aid)
-      }, null, 40, _hoisted_2$2)
+      }, null, 40, _hoisted_2$5)
     ])) : createCommentVNode("", true),
     $props.columns.includes("name") ? (openBlock(), createElementBlock("td", {
       key: 1,
@@ -32038,14 +32048,14 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
         key: 0,
         class: "material-symbols-outlined warning file-not-found tw-mr-4",
         title: _ctx.translate("COM_EMUNDUS_ATTACHMENTS_FILE_NOT_FOUND")
-      }, "warning", 8, _hoisted_3$2)) : createCommentVNode("", true),
+      }, "warning", 8, _hoisted_3$4)) : createCommentVNode("", true),
       createBaseVNode("span", {
         title: $props.attachment.value
-      }, toDisplayString($props.attachment.value), 9, _hoisted_4$2)
+      }, toDisplayString($props.attachment.value), 9, _hoisted_4$4)
     ])) : createCommentVNode("", true),
-    $props.columns.includes("date") ? (openBlock(), createElementBlock("td", _hoisted_5$2, toDisplayString(_ctx.formattedDate($props.attachment.timedate)), 1)) : createCommentVNode("", true),
-    $props.columns.includes("desc") ? (openBlock(), createElementBlock("td", _hoisted_6$2, toDisplayString(_ctx.strippedHtml($props.attachment.upload_description)), 1)) : createCommentVNode("", true),
-    $props.columns.includes("category") ? (openBlock(), createElementBlock("td", _hoisted_7$2, toDisplayString($data.category), 1)) : createCommentVNode("", true),
+    $props.columns.includes("date") ? (openBlock(), createElementBlock("td", _hoisted_5$4, toDisplayString(_ctx.formattedDate($props.attachment.timedate)), 1)) : createCommentVNode("", true),
+    $props.columns.includes("desc") ? (openBlock(), createElementBlock("td", _hoisted_6$4, toDisplayString(_ctx.strippedHtml($props.attachment.upload_description)), 1)) : createCommentVNode("", true),
+    $props.columns.includes("category") ? (openBlock(), createElementBlock("td", _hoisted_7$4, toDisplayString($data.category), 1)) : createCommentVNode("", true),
     $props.columns.includes("status") ? (openBlock(), createElementBlock("td", {
       key: 5,
       class: normalizeClass(["status valid-state", { success: $props.attachment.is_validated == 1, warning: $props.attachment.is_validated == 2, error: $props.attachment.is_validated == 0 }])
@@ -32057,42 +32067,42 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
         createBaseVNode("option", {
           value: "1",
           selected: $props.attachment.is_validated == 1
-        }, toDisplayString(_ctx.translate("VALID")), 9, _hoisted_9$2),
+        }, toDisplayString(_ctx.translate("VALID")), 9, _hoisted_9$4),
         createBaseVNode("option", {
           value: "0",
           selected: $props.attachment.is_validated == 0
-        }, toDisplayString(_ctx.translate("INVALID")), 9, _hoisted_10$2),
+        }, toDisplayString(_ctx.translate("INVALID")), 9, _hoisted_10$3),
         createBaseVNode("option", {
           value: "-2",
           selected: $props.attachment.is_validated == -2 || $props.attachment.is_validated === null
-        }, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_WAITING")), 9, _hoisted_11$2)
-      ], 40, _hoisted_8$2)
+        }, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_WAITING")), 9, _hoisted_11$3)
+      ], 40, _hoisted_8$4)
     ], 2)) : createCommentVNode("", true),
-    $props.canSee && $props.columns.includes("user") ? (openBlock(), createElementBlock("td", _hoisted_12$2, toDisplayString(_ctx.getUserNameById($props.attachment.user_id)), 1)) : createCommentVNode("", true),
-    $props.canSee && $props.columns.includes("modified_by") ? (openBlock(), createElementBlock("td", _hoisted_13$2, toDisplayString(_ctx.getUserNameById($props.attachment.modified_by)), 1)) : createCommentVNode("", true),
-    $props.columns.includes("modified") ? (openBlock(), createElementBlock("td", _hoisted_14$2, toDisplayString(_ctx.formattedDate($props.attachment.modified)), 1)) : createCommentVNode("", true),
-    $props.columns.includes("permissions") ? (openBlock(), createElementBlock("td", _hoisted_15$2, [
+    $props.canSee && $props.columns.includes("user") ? (openBlock(), createElementBlock("td", _hoisted_12$3, toDisplayString(_ctx.getUserNameById($props.attachment.user_id)), 1)) : createCommentVNode("", true),
+    $props.canSee && $props.columns.includes("modified_by") ? (openBlock(), createElementBlock("td", _hoisted_13$3, toDisplayString(_ctx.getUserNameById($props.attachment.modified_by)), 1)) : createCommentVNode("", true),
+    $props.columns.includes("modified") ? (openBlock(), createElementBlock("td", _hoisted_14$3, toDisplayString(_ctx.formattedDate($props.attachment.modified)), 1)) : createCommentVNode("", true),
+    $props.columns.includes("permissions") ? (openBlock(), createElementBlock("td", _hoisted_15$3, [
       $props.attachment.profiles.length > 0 ? (openBlock(), createElementBlock("span", {
         key: 0,
         class: normalizeClass(["material-symbols-outlined visibility-permission tw-cursor-pointer", { active: $props.attachment.can_be_viewed == "1" }]),
         onClick: _cache[3] || (_cache[3] = ($event) => $options.changePermission("can_be_viewed", $props.attachment)),
         title: _ctx.translate("COM_EMUNDUS_ATTACHMENTS_PERMISSION_VIEW")
-      }, "visibility", 10, _hoisted_16$2)) : createCommentVNode("", true),
+      }, "visibility", 10, _hoisted_16$3)) : createCommentVNode("", true),
       $props.attachment.profiles.length > 0 ? (openBlock(), createElementBlock("span", {
         key: 1,
         class: normalizeClass(["material-symbols-outlined delete-permission tw-cursor-pointer", { active: $props.attachment.can_be_deleted == "1" }]),
         onClick: _cache[4] || (_cache[4] = ($event) => $options.changePermission("can_be_deleted", $props.attachment)),
         title: _ctx.translate("COM_EMUNDUS_ATTACHMENTS_PERMISSION_DELETE")
-      }, "delete", 10, _hoisted_17$2)) : createCommentVNode("", true)
+      }, "delete", 10, _hoisted_17$3)) : createCommentVNode("", true)
     ])) : createCommentVNode("", true),
-    $props.sync && $props.columns.includes("sync") ? (openBlock(), createElementBlock("td", _hoisted_18$2, [
-      $props.attachment.sync > 0 ? (openBlock(), createElementBlock("div", _hoisted_19$2, [
+    $props.sync && $props.columns.includes("sync") ? (openBlock(), createElementBlock("td", _hoisted_18$3, [
+      $props.attachment.sync > 0 ? (openBlock(), createElementBlock("div", _hoisted_19$3, [
         $props.attachment.sync_method == "write" && !$data.syncLoading ? (openBlock(), createElementBlock("span", {
           key: 0,
           class: normalizeClass(["material-icons sync tw-cursor-pointer", { success: $data.synchronizeState == 1, error: $data.synchronizeState != 1 }]),
           title: _ctx.translate("COM_EMUNDUS_ATTACHMENTS_SYNC_WRITE"),
           onClick: _cache[5] || (_cache[5] = ($event) => $options.synchronizeAttachments($props.attachment.aid))
-        }, " cloud_upload ", 10, _hoisted_20$2)) : $props.attachment.sync_method == "read" && !$data.syncLoading ? (openBlock(), createElementBlock("span", {
+        }, " cloud_upload ", 10, _hoisted_20$3)) : $props.attachment.sync_method == "read" && !$data.syncLoading ? (openBlock(), createElementBlock("span", {
           key: 1,
           class: normalizeClass(["material-icons sync tw-cursor-pointer", {
             success: $data.synchronizeState == 1,
@@ -32100,15 +32110,15 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
           }]),
           title: _ctx.translate("COM_EMUNDUS_ATTACHMENTS_SYNC_READ"),
           onClick: _cache[6] || (_cache[6] = ($event) => $options.synchronizeAttachments($props.attachment.aid))
-        }, " cloud_download ", 10, _hoisted_21$2)) : createCommentVNode("", true),
-        $data.syncLoading ? (openBlock(), createElementBlock("div", _hoisted_22$2)) : createCommentVNode("", true)
+        }, " cloud_download ", 10, _hoisted_21$3)) : createCommentVNode("", true),
+        $data.syncLoading ? (openBlock(), createElementBlock("div", _hoisted_22$3)) : createCommentVNode("", true)
       ])) : createCommentVNode("", true)
     ])) : createCommentVNode("", true)
   ], 2);
 }
-const AttachmentRow = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3]]);
+const AttachmentRow = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$6]]);
 const Modal_vue_vue_type_style_index_0_scoped_62997022_lang = "";
-const _sfc_main$2 = {
+const _sfc_main$5 = {
   props: {
     name: {
       type: String,
@@ -32161,8 +32171,8 @@ const _sfc_main$2 = {
     }
   }
 };
-const _hoisted_1$2 = ["id"];
-function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
+const _hoisted_1$6 = ["id"];
+function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createBlock(Transition, {
     name: $props.transition,
     duration: $props.delay
@@ -32175,14 +32185,14 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
         onFocusout: _cache[0] || (_cache[0] = (...args) => $options.onFocusOut && $options.onFocusOut(...args))
       }, [
         renderSlot(_ctx.$slots, "default", {}, void 0, true)
-      ], 40, _hoisted_1$2), [
+      ], 40, _hoisted_1$6), [
         [vShow, _ctx.isOpened]
       ])
     ]),
     _: 3
   }, 8, ["name", "duration"]);
 }
-const Modal = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-62997022"]]);
+const Modal = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$5], ["__scopeId", "data-v-62997022"]]);
 /*!
 * sweetalert2 v11.14.4
 * Released under the MIT License.
@@ -33248,7 +33258,7 @@ const renderTitle = (instance, params) => {
   }
   applyCustomClass(title, params, "title");
 };
-const render = (instance, params) => {
+const render$1 = (instance, params) => {
   renderPopup(instance, params);
   renderContainer(instance, params);
   renderProgressSteps(instance, params);
@@ -33646,7 +33656,7 @@ const triggerDidCloseAndDispose = (instance, didClose) => {
 const showLoading = (buttonToReplace) => {
   let popup = getPopup();
   if (!popup) {
-    new Swal();
+    new Swal$1();
   }
   popup = getPopup();
   if (!popup) {
@@ -34182,7 +34192,7 @@ function update(params) {
   }
   const validUpdatableParams = filterValidParams(params);
   const updatedParams = Object.assign({}, innerParams, validUpdatableParams);
-  render(this, updatedParams);
+  render$1(this, updatedParams);
   privateProps.innerParams.set(this, updatedParams);
   Object.defineProperties(this, {
     params: {
@@ -34965,7 +34975,7 @@ class SweetAlert {
     }
     clearTimeout(globalState.restoreFocusTimeout);
     const domCache = populateDomCache(currentInstance);
-    render(currentInstance, innerParams);
+    render$1(currentInstance, innerParams);
     privateProps.innerParams.set(currentInstance, innerParams);
     return swalPromise(currentInstance, domCache, innerParams);
   }
@@ -35151,8 +35161,8 @@ Object.keys(instanceMethods).forEach((key) => {
 });
 SweetAlert.DismissReason = DismissReason;
 SweetAlert.version = "11.14.4";
-const Swal = SweetAlert;
-Swal.default = Swal;
+const Swal$1 = SweetAlert;
+Swal$1.default = Swal$1;
 "undefined" != typeof document && function(e, t) {
   var n = e.createElement("style");
   if (e.getElementsByTagName("head")[0].appendChild(n), n.styleSheet)
@@ -35165,7 +35175,7 @@ Swal.default = Swal;
     }
 }(document, '.swal2-popup.swal2-toast{box-sizing:border-box;grid-column:1/4 !important;grid-row:1/4 !important;grid-template-columns:min-content auto min-content;padding:1em;overflow-y:hidden;background:#fff;box-shadow:0 0 1px rgba(0,0,0,.075),0 1px 2px rgba(0,0,0,.075),1px 2px 4px rgba(0,0,0,.075),1px 3px 8px rgba(0,0,0,.075),2px 4px 16px rgba(0,0,0,.075);pointer-events:all}.swal2-popup.swal2-toast>*{grid-column:2}.swal2-popup.swal2-toast .swal2-title{margin:.5em 1em;padding:0;font-size:1em;text-align:initial}.swal2-popup.swal2-toast .swal2-loading{justify-content:center}.swal2-popup.swal2-toast .swal2-input{height:2em;margin:.5em;font-size:1em}.swal2-popup.swal2-toast .swal2-validation-message{font-size:1em}.swal2-popup.swal2-toast .swal2-footer{margin:.5em 0 0;padding:.5em 0 0;font-size:.8em}.swal2-popup.swal2-toast .swal2-close{grid-column:3/3;grid-row:1/99;align-self:center;width:.8em;height:.8em;margin:0;font-size:2em}.swal2-popup.swal2-toast .swal2-html-container{margin:.5em 1em;padding:0;overflow:initial;font-size:1em;text-align:initial}.swal2-popup.swal2-toast .swal2-html-container:empty{padding:0}.swal2-popup.swal2-toast .swal2-loader{grid-column:1;grid-row:1/99;align-self:center;width:2em;height:2em;margin:.25em}.swal2-popup.swal2-toast .swal2-icon{grid-column:1;grid-row:1/99;align-self:center;width:2em;min-width:2em;height:2em;margin:0 .5em 0 0}.swal2-popup.swal2-toast .swal2-icon .swal2-icon-content{display:flex;align-items:center;font-size:1.8em;font-weight:bold}.swal2-popup.swal2-toast .swal2-icon.swal2-success .swal2-success-ring{width:2em;height:2em}.swal2-popup.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line]{top:.875em;width:1.375em}.swal2-popup.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=left]{left:.3125em}.swal2-popup.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=right]{right:.3125em}.swal2-popup.swal2-toast .swal2-actions{justify-content:flex-start;height:auto;margin:0;margin-top:.5em;padding:0 .5em}.swal2-popup.swal2-toast .swal2-styled{margin:.25em .5em;padding:.4em .6em;font-size:1em}.swal2-popup.swal2-toast .swal2-success{border-color:#a5dc86}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-circular-line]{position:absolute;width:1.6em;height:3em;border-radius:50%}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-circular-line][class$=left]{top:-0.8em;left:-0.5em;transform:rotate(-45deg);transform-origin:2em 2em;border-radius:4em 0 0 4em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-circular-line][class$=right]{top:-0.25em;left:.9375em;transform-origin:0 1.5em;border-radius:0 4em 4em 0}.swal2-popup.swal2-toast .swal2-success .swal2-success-ring{width:2em;height:2em}.swal2-popup.swal2-toast .swal2-success .swal2-success-fix{top:0;left:.4375em;width:.4375em;height:2.6875em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-line]{height:.3125em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-line][class$=tip]{top:1.125em;left:.1875em;width:.75em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-line][class$=long]{top:.9375em;right:.1875em;width:1.375em}.swal2-popup.swal2-toast .swal2-success.swal2-icon-show .swal2-success-line-tip{animation:swal2-toast-animate-success-line-tip .75s}.swal2-popup.swal2-toast .swal2-success.swal2-icon-show .swal2-success-line-long{animation:swal2-toast-animate-success-line-long .75s}.swal2-popup.swal2-toast.swal2-show{animation:swal2-toast-show .5s}.swal2-popup.swal2-toast.swal2-hide{animation:swal2-toast-hide .1s forwards}div:where(.swal2-container){display:grid;position:fixed;z-index:1060;inset:0;box-sizing:border-box;grid-template-areas:"top-start     top            top-end" "center-start  center         center-end" "bottom-start  bottom-center  bottom-end";grid-template-rows:minmax(min-content, auto) minmax(min-content, auto) minmax(min-content, auto);height:100%;padding:.625em;overflow-x:hidden;transition:background-color .1s;-webkit-overflow-scrolling:touch}div:where(.swal2-container).swal2-backdrop-show,div:where(.swal2-container).swal2-noanimation{background:rgba(0,0,0,.4)}div:where(.swal2-container).swal2-backdrop-hide{background:rgba(0,0,0,0) !important}div:where(.swal2-container).swal2-top-start,div:where(.swal2-container).swal2-center-start,div:where(.swal2-container).swal2-bottom-start{grid-template-columns:minmax(0, 1fr) auto auto}div:where(.swal2-container).swal2-top,div:where(.swal2-container).swal2-center,div:where(.swal2-container).swal2-bottom{grid-template-columns:auto minmax(0, 1fr) auto}div:where(.swal2-container).swal2-top-end,div:where(.swal2-container).swal2-center-end,div:where(.swal2-container).swal2-bottom-end{grid-template-columns:auto auto minmax(0, 1fr)}div:where(.swal2-container).swal2-top-start>.swal2-popup{align-self:start}div:where(.swal2-container).swal2-top>.swal2-popup{grid-column:2;place-self:start center}div:where(.swal2-container).swal2-top-end>.swal2-popup,div:where(.swal2-container).swal2-top-right>.swal2-popup{grid-column:3;place-self:start end}div:where(.swal2-container).swal2-center-start>.swal2-popup,div:where(.swal2-container).swal2-center-left>.swal2-popup{grid-row:2;align-self:center}div:where(.swal2-container).swal2-center>.swal2-popup{grid-column:2;grid-row:2;place-self:center center}div:where(.swal2-container).swal2-center-end>.swal2-popup,div:where(.swal2-container).swal2-center-right>.swal2-popup{grid-column:3;grid-row:2;place-self:center end}div:where(.swal2-container).swal2-bottom-start>.swal2-popup,div:where(.swal2-container).swal2-bottom-left>.swal2-popup{grid-column:1;grid-row:3;align-self:end}div:where(.swal2-container).swal2-bottom>.swal2-popup{grid-column:2;grid-row:3;place-self:end center}div:where(.swal2-container).swal2-bottom-end>.swal2-popup,div:where(.swal2-container).swal2-bottom-right>.swal2-popup{grid-column:3;grid-row:3;place-self:end end}div:where(.swal2-container).swal2-grow-row>.swal2-popup,div:where(.swal2-container).swal2-grow-fullscreen>.swal2-popup{grid-column:1/4;width:100%}div:where(.swal2-container).swal2-grow-column>.swal2-popup,div:where(.swal2-container).swal2-grow-fullscreen>.swal2-popup{grid-row:1/4;align-self:stretch}div:where(.swal2-container).swal2-no-transition{transition:none !important}div:where(.swal2-container) div:where(.swal2-popup){display:none;position:relative;box-sizing:border-box;grid-template-columns:minmax(0, 100%);width:32em;max-width:100%;padding:0 0 1.25em;border:none;border-radius:5px;background:#fff;color:hsl(0,0%,33%);font-family:inherit;font-size:1rem}div:where(.swal2-container) div:where(.swal2-popup):focus{outline:none}div:where(.swal2-container) div:where(.swal2-popup).swal2-loading{overflow-y:hidden}div:where(.swal2-container) h2:where(.swal2-title){position:relative;max-width:100%;margin:0;padding:.8em 1em 0;color:inherit;font-size:1.875em;font-weight:600;text-align:center;text-transform:none;word-wrap:break-word}div:where(.swal2-container) div:where(.swal2-actions){display:flex;z-index:1;box-sizing:border-box;flex-wrap:wrap;align-items:center;justify-content:center;width:auto;margin:1.25em auto 0;padding:0}div:where(.swal2-container) div:where(.swal2-actions):not(.swal2-loading) .swal2-styled[disabled]{opacity:.4}div:where(.swal2-container) div:where(.swal2-actions):not(.swal2-loading) .swal2-styled:hover{background-image:linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1))}div:where(.swal2-container) div:where(.swal2-actions):not(.swal2-loading) .swal2-styled:active{background-image:linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2))}div:where(.swal2-container) div:where(.swal2-loader){display:none;align-items:center;justify-content:center;width:2.2em;height:2.2em;margin:0 1.875em;animation:swal2-rotate-loading 1.5s linear 0s infinite normal;border-width:.25em;border-style:solid;border-radius:100%;border-color:#2778c4 rgba(0,0,0,0) #2778c4 rgba(0,0,0,0)}div:where(.swal2-container) button:where(.swal2-styled){margin:.3125em;padding:.625em 1.1em;transition:box-shadow .1s;box-shadow:0 0 0 3px rgba(0,0,0,0);font-weight:500}div:where(.swal2-container) button:where(.swal2-styled):not([disabled]){cursor:pointer}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-confirm){border:0;border-radius:.25em;background:initial;background-color:#7066e0;color:#fff;font-size:1em}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-confirm):focus-visible{box-shadow:0 0 0 3px rgba(112,102,224,.5)}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-deny){border:0;border-radius:.25em;background:initial;background-color:#dc3741;color:#fff;font-size:1em}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-deny):focus-visible{box-shadow:0 0 0 3px rgba(220,55,65,.5)}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-cancel){border:0;border-radius:.25em;background:initial;background-color:#6e7881;color:#fff;font-size:1em}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-cancel):focus-visible{box-shadow:0 0 0 3px rgba(110,120,129,.5)}div:where(.swal2-container) button:where(.swal2-styled).swal2-default-outline:focus-visible{box-shadow:0 0 0 3px rgba(100,150,200,.5)}div:where(.swal2-container) button:where(.swal2-styled):focus-visible{outline:none}div:where(.swal2-container) button:where(.swal2-styled)::-moz-focus-inner{border:0}div:where(.swal2-container) div:where(.swal2-footer){margin:1em 0 0;padding:1em 1em 0;border-top:1px solid #eee;color:inherit;font-size:1em;text-align:center}div:where(.swal2-container) .swal2-timer-progress-bar-container{position:absolute;right:0;bottom:0;left:0;grid-column:auto !important;overflow:hidden;border-bottom-right-radius:5px;border-bottom-left-radius:5px}div:where(.swal2-container) div:where(.swal2-timer-progress-bar){width:100%;height:.25em;background:rgba(0,0,0,.2)}div:where(.swal2-container) img:where(.swal2-image){max-width:100%;margin:2em auto 1em}div:where(.swal2-container) button:where(.swal2-close){z-index:2;align-items:center;justify-content:center;width:1.2em;height:1.2em;margin-top:0;margin-right:0;margin-bottom:-1.2em;padding:0;overflow:hidden;transition:color .1s,box-shadow .1s;border:none;border-radius:5px;background:rgba(0,0,0,0);color:#ccc;font-family:monospace;font-size:2.5em;cursor:pointer;justify-self:end}div:where(.swal2-container) button:where(.swal2-close):hover{transform:none;background:rgba(0,0,0,0);color:#f27474}div:where(.swal2-container) button:where(.swal2-close):focus-visible{outline:none;box-shadow:inset 0 0 0 3px rgba(100,150,200,.5)}div:where(.swal2-container) button:where(.swal2-close)::-moz-focus-inner{border:0}div:where(.swal2-container) .swal2-html-container{z-index:1;justify-content:center;margin:0;padding:1em 1.6em .3em;overflow:auto;color:inherit;font-size:1.125em;font-weight:normal;line-height:normal;text-align:center;word-wrap:break-word;word-break:break-word}div:where(.swal2-container) input:where(.swal2-input),div:where(.swal2-container) input:where(.swal2-file),div:where(.swal2-container) textarea:where(.swal2-textarea),div:where(.swal2-container) select:where(.swal2-select),div:where(.swal2-container) div:where(.swal2-radio),div:where(.swal2-container) label:where(.swal2-checkbox){margin:1em 2em 3px}div:where(.swal2-container) input:where(.swal2-input),div:where(.swal2-container) input:where(.swal2-file),div:where(.swal2-container) textarea:where(.swal2-textarea){box-sizing:border-box;width:auto;transition:border-color .1s,box-shadow .1s;border:1px solid hsl(0,0%,85%);border-radius:.1875em;background:rgba(0,0,0,0);box-shadow:inset 0 1px 1px rgba(0,0,0,.06),0 0 0 3px rgba(0,0,0,0);color:inherit;font-size:1.125em}div:where(.swal2-container) input:where(.swal2-input).swal2-inputerror,div:where(.swal2-container) input:where(.swal2-file).swal2-inputerror,div:where(.swal2-container) textarea:where(.swal2-textarea).swal2-inputerror{border-color:#f27474 !important;box-shadow:0 0 2px #f27474 !important}div:where(.swal2-container) input:where(.swal2-input):focus,div:where(.swal2-container) input:where(.swal2-file):focus,div:where(.swal2-container) textarea:where(.swal2-textarea):focus{border:1px solid #b4dbed;outline:none;box-shadow:inset 0 1px 1px rgba(0,0,0,.06),0 0 0 3px rgba(100,150,200,.5)}div:where(.swal2-container) input:where(.swal2-input)::placeholder,div:where(.swal2-container) input:where(.swal2-file)::placeholder,div:where(.swal2-container) textarea:where(.swal2-textarea)::placeholder{color:#ccc}div:where(.swal2-container) .swal2-range{margin:1em 2em 3px;background:#fff}div:where(.swal2-container) .swal2-range input{width:80%}div:where(.swal2-container) .swal2-range output{width:20%;color:inherit;font-weight:600;text-align:center}div:where(.swal2-container) .swal2-range input,div:where(.swal2-container) .swal2-range output{height:2.625em;padding:0;font-size:1.125em;line-height:2.625em}div:where(.swal2-container) .swal2-input{height:2.625em;padding:0 .75em}div:where(.swal2-container) .swal2-file{width:75%;margin-right:auto;margin-left:auto;background:rgba(0,0,0,0);font-size:1.125em}div:where(.swal2-container) .swal2-textarea{height:6.75em;padding:.75em}div:where(.swal2-container) .swal2-select{min-width:50%;max-width:100%;padding:.375em .625em;background:rgba(0,0,0,0);color:inherit;font-size:1.125em}div:where(.swal2-container) .swal2-radio,div:where(.swal2-container) .swal2-checkbox{align-items:center;justify-content:center;background:#fff;color:inherit}div:where(.swal2-container) .swal2-radio label,div:where(.swal2-container) .swal2-checkbox label{margin:0 .6em;font-size:1.125em}div:where(.swal2-container) .swal2-radio input,div:where(.swal2-container) .swal2-checkbox input{flex-shrink:0;margin:0 .4em}div:where(.swal2-container) label:where(.swal2-input-label){display:flex;justify-content:center;margin:1em auto 0}div:where(.swal2-container) div:where(.swal2-validation-message){align-items:center;justify-content:center;margin:1em 0 0;padding:.625em;overflow:hidden;background:hsl(0,0%,94%);color:#666;font-size:1em;font-weight:300}div:where(.swal2-container) div:where(.swal2-validation-message)::before{content:"!";display:inline-block;width:1.5em;min-width:1.5em;height:1.5em;margin:0 .625em;border-radius:50%;background-color:#f27474;color:#fff;font-weight:600;line-height:1.5em;text-align:center}div:where(.swal2-container) .swal2-progress-steps{flex-wrap:wrap;align-items:center;max-width:100%;margin:1.25em auto;padding:0;background:rgba(0,0,0,0);font-weight:600}div:where(.swal2-container) .swal2-progress-steps li{display:inline-block;position:relative}div:where(.swal2-container) .swal2-progress-steps .swal2-progress-step{z-index:20;flex-shrink:0;width:2em;height:2em;border-radius:2em;background:#2778c4;color:#fff;line-height:2em;text-align:center}div:where(.swal2-container) .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step{background:#2778c4}div:where(.swal2-container) .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step{background:#add8e6;color:#fff}div:where(.swal2-container) .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step-line{background:#add8e6}div:where(.swal2-container) .swal2-progress-steps .swal2-progress-step-line{z-index:10;flex-shrink:0;width:2.5em;height:.4em;margin:0 -1px;background:#2778c4}div:where(.swal2-icon){position:relative;box-sizing:content-box;justify-content:center;width:5em;height:5em;margin:2.5em auto .6em;border:0.25em solid rgba(0,0,0,0);border-radius:50%;border-color:#000;font-family:inherit;line-height:5em;cursor:default;user-select:none}div:where(.swal2-icon) .swal2-icon-content{display:flex;align-items:center;font-size:3.75em}div:where(.swal2-icon).swal2-error{border-color:#f27474;color:#f27474}div:where(.swal2-icon).swal2-error .swal2-x-mark{position:relative;flex-grow:1}div:where(.swal2-icon).swal2-error [class^=swal2-x-mark-line]{display:block;position:absolute;top:2.3125em;width:2.9375em;height:.3125em;border-radius:.125em;background-color:#f27474}div:where(.swal2-icon).swal2-error [class^=swal2-x-mark-line][class$=left]{left:1.0625em;transform:rotate(45deg)}div:where(.swal2-icon).swal2-error [class^=swal2-x-mark-line][class$=right]{right:1em;transform:rotate(-45deg)}div:where(.swal2-icon).swal2-error.swal2-icon-show{animation:swal2-animate-error-icon .5s}div:where(.swal2-icon).swal2-error.swal2-icon-show .swal2-x-mark{animation:swal2-animate-error-x-mark .5s}div:where(.swal2-icon).swal2-warning{border-color:rgb(249.95234375,205.965625,167.74765625);color:#f8bb86}div:where(.swal2-icon).swal2-warning.swal2-icon-show{animation:swal2-animate-error-icon .5s}div:where(.swal2-icon).swal2-warning.swal2-icon-show .swal2-icon-content{animation:swal2-animate-i-mark .5s}div:where(.swal2-icon).swal2-info{border-color:rgb(156.7033492823,224.2822966507,246.2966507177);color:#3fc3ee}div:where(.swal2-icon).swal2-info.swal2-icon-show{animation:swal2-animate-error-icon .5s}div:where(.swal2-icon).swal2-info.swal2-icon-show .swal2-icon-content{animation:swal2-animate-i-mark .8s}div:where(.swal2-icon).swal2-question{border-color:rgb(200.8064516129,217.9677419355,225.1935483871);color:#87adbd}div:where(.swal2-icon).swal2-question.swal2-icon-show{animation:swal2-animate-error-icon .5s}div:where(.swal2-icon).swal2-question.swal2-icon-show .swal2-icon-content{animation:swal2-animate-question-mark .8s}div:where(.swal2-icon).swal2-success{border-color:#a5dc86;color:#a5dc86}div:where(.swal2-icon).swal2-success [class^=swal2-success-circular-line]{position:absolute;width:3.75em;height:7.5em;border-radius:50%}div:where(.swal2-icon).swal2-success [class^=swal2-success-circular-line][class$=left]{top:-0.4375em;left:-2.0635em;transform:rotate(-45deg);transform-origin:3.75em 3.75em;border-radius:7.5em 0 0 7.5em}div:where(.swal2-icon).swal2-success [class^=swal2-success-circular-line][class$=right]{top:-0.6875em;left:1.875em;transform:rotate(-45deg);transform-origin:0 3.75em;border-radius:0 7.5em 7.5em 0}div:where(.swal2-icon).swal2-success .swal2-success-ring{position:absolute;z-index:2;top:-0.25em;left:-0.25em;box-sizing:content-box;width:100%;height:100%;border:.25em solid rgba(165,220,134,.3);border-radius:50%}div:where(.swal2-icon).swal2-success .swal2-success-fix{position:absolute;z-index:1;top:.5em;left:1.625em;width:.4375em;height:5.625em;transform:rotate(-45deg)}div:where(.swal2-icon).swal2-success [class^=swal2-success-line]{display:block;position:absolute;z-index:2;height:.3125em;border-radius:.125em;background-color:#a5dc86}div:where(.swal2-icon).swal2-success [class^=swal2-success-line][class$=tip]{top:2.875em;left:.8125em;width:1.5625em;transform:rotate(45deg)}div:where(.swal2-icon).swal2-success [class^=swal2-success-line][class$=long]{top:2.375em;right:.5em;width:2.9375em;transform:rotate(-45deg)}div:where(.swal2-icon).swal2-success.swal2-icon-show .swal2-success-line-tip{animation:swal2-animate-success-line-tip .75s}div:where(.swal2-icon).swal2-success.swal2-icon-show .swal2-success-line-long{animation:swal2-animate-success-line-long .75s}div:where(.swal2-icon).swal2-success.swal2-icon-show .swal2-success-circular-line-right{animation:swal2-rotate-success-circular-line 4.25s ease-in}[class^=swal2]{-webkit-tap-highlight-color:rgba(0,0,0,0)}.swal2-show{animation:swal2-show .3s}.swal2-hide{animation:swal2-hide .15s forwards}.swal2-noanimation{transition:none}.swal2-scrollbar-measure{position:absolute;top:-9999px;width:50px;height:50px;overflow:scroll}.swal2-rtl .swal2-close{margin-right:initial;margin-left:0}.swal2-rtl .swal2-timer-progress-bar{right:0;left:auto}@keyframes swal2-toast-show{0%{transform:translateY(-0.625em) rotateZ(2deg)}33%{transform:translateY(0) rotateZ(-2deg)}66%{transform:translateY(0.3125em) rotateZ(2deg)}100%{transform:translateY(0) rotateZ(0deg)}}@keyframes swal2-toast-hide{100%{transform:rotateZ(1deg);opacity:0}}@keyframes swal2-toast-animate-success-line-tip{0%{top:.5625em;left:.0625em;width:0}54%{top:.125em;left:.125em;width:0}70%{top:.625em;left:-0.25em;width:1.625em}84%{top:1.0625em;left:.75em;width:.5em}100%{top:1.125em;left:.1875em;width:.75em}}@keyframes swal2-toast-animate-success-line-long{0%{top:1.625em;right:1.375em;width:0}65%{top:1.25em;right:.9375em;width:0}84%{top:.9375em;right:0;width:1.125em}100%{top:.9375em;right:.1875em;width:1.375em}}@keyframes swal2-show{0%{transform:scale(0.7)}45%{transform:scale(1.05)}80%{transform:scale(0.95)}100%{transform:scale(1)}}@keyframes swal2-hide{0%{transform:scale(1);opacity:1}100%{transform:scale(0.5);opacity:0}}@keyframes swal2-animate-success-line-tip{0%{top:1.1875em;left:.0625em;width:0}54%{top:1.0625em;left:.125em;width:0}70%{top:2.1875em;left:-0.375em;width:3.125em}84%{top:3em;left:1.3125em;width:1.0625em}100%{top:2.8125em;left:.8125em;width:1.5625em}}@keyframes swal2-animate-success-line-long{0%{top:3.375em;right:2.875em;width:0}65%{top:3.375em;right:2.875em;width:0}84%{top:2.1875em;right:0;width:3.4375em}100%{top:2.375em;right:.5em;width:2.9375em}}@keyframes swal2-rotate-success-circular-line{0%{transform:rotate(-45deg)}5%{transform:rotate(-45deg)}12%{transform:rotate(-405deg)}100%{transform:rotate(-405deg)}}@keyframes swal2-animate-error-x-mark{0%{margin-top:1.625em;transform:scale(0.4);opacity:0}50%{margin-top:1.625em;transform:scale(0.4);opacity:0}80%{margin-top:-0.375em;transform:scale(1.15)}100%{margin-top:0;transform:scale(1);opacity:1}}@keyframes swal2-animate-error-icon{0%{transform:rotateX(100deg);opacity:0}100%{transform:rotateX(0deg);opacity:1}}@keyframes swal2-rotate-loading{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}@keyframes swal2-animate-question-mark{0%{transform:rotateY(-360deg)}100%{transform:rotateY(0)}}@keyframes swal2-animate-i-mark{0%{transform:rotateZ(45deg);opacity:0}25%{transform:rotateZ(-25deg);opacity:.4}50%{transform:rotateZ(15deg);opacity:.8}75%{transform:rotateZ(-5deg);opacity:1}100%{transform:rotateX(0);opacity:1}}body.swal2-shown:not(.swal2-no-backdrop,.swal2-toast-shown){overflow:hidden}body.swal2-height-auto{height:auto !important}body.swal2-no-backdrop .swal2-container{background-color:rgba(0,0,0,0) !important;pointer-events:none}body.swal2-no-backdrop .swal2-container .swal2-popup{pointer-events:all}body.swal2-no-backdrop .swal2-container .swal2-modal{box-shadow:0 0 10px rgba(0,0,0,.4)}@media print{body.swal2-shown:not(.swal2-no-backdrop,.swal2-toast-shown){overflow-y:scroll !important}body.swal2-shown:not(.swal2-no-backdrop,.swal2-toast-shown)>[aria-hidden=true]{display:none}body.swal2-shown:not(.swal2-no-backdrop,.swal2-toast-shown) .swal2-container{position:static !important}}body.swal2-toast-shown .swal2-container{box-sizing:border-box;width:360px;max-width:100%;background-color:rgba(0,0,0,0);pointer-events:none}body.swal2-toast-shown .swal2-container.swal2-top{inset:0 auto auto 50%;transform:translateX(-50%)}body.swal2-toast-shown .swal2-container.swal2-top-end,body.swal2-toast-shown .swal2-container.swal2-top-right{inset:0 0 auto auto}body.swal2-toast-shown .swal2-container.swal2-top-start,body.swal2-toast-shown .swal2-container.swal2-top-left{inset:0 auto auto 0}body.swal2-toast-shown .swal2-container.swal2-center-start,body.swal2-toast-shown .swal2-container.swal2-center-left{inset:50% auto auto 0;transform:translateY(-50%)}body.swal2-toast-shown .swal2-container.swal2-center{inset:50% auto auto 50%;transform:translate(-50%, -50%)}body.swal2-toast-shown .swal2-container.swal2-center-end,body.swal2-toast-shown .swal2-container.swal2-center-right{inset:50% 0 auto auto;transform:translateY(-50%)}body.swal2-toast-shown .swal2-container.swal2-bottom-start,body.swal2-toast-shown .swal2-container.swal2-bottom-left{inset:auto auto 0 0}body.swal2-toast-shown .swal2-container.swal2-bottom{inset:auto auto 0 50%;transform:translateX(-50%)}body.swal2-toast-shown .swal2-container.swal2-bottom-end,body.swal2-toast-shown .swal2-container.swal2-bottom-right{inset:auto 0 0 auto}');
 const Attachments_vue_vue_type_style_index_0_lang = "";
-const _sfc_main$1 = {
+const _sfc_main$4 = {
   name: "Attachments",
   components: {
     AttachmentPreview,
@@ -35450,7 +35460,7 @@ const _sfc_main$1 = {
         });
         list = list.substring(0, list.length - 2);
         html += "<p>" + list + "</p>";
-        Swal.fire({
+        Swal$1.fire({
           title: this.translate("DELETE_SELECTED_ATTACHMENTS"),
           html,
           icon: "warning",
@@ -35578,7 +35588,7 @@ const _sfc_main$1 = {
       this.attachmentStore.setSelectedAttachment({});
     },
     displayErrorMessage(msg) {
-      Swal.fire({
+      Swal$1.fire({
         title: this.translate("ERROR"),
         text: msg,
         icon: "error",
@@ -35610,7 +35620,7 @@ const _sfc_main$1 = {
       );
     },
     addAttachment() {
-      Swal.fire({
+      Swal$1.fire({
         html: '<iframe style="width:' + window.innerWidth * 0.8 + "px; height:" + window.innerHeight * 0.8 + 'px;" src="/component/fabrik/form/67/?jos_emundus_uploads___user_id[value]=' + this.fnumInfos.applicant_id + "&jos_emundus_uploads___fnum[value]=" + this.displayedFnum + "&student_id=" + this.fnumInfos.applicant_id + "&jos_emundus_uploads___campaign_id[value]=" + this.fnumInfos.campaign_id + '&tmpl=component&iframe=1&action_id=4"></iframe>',
         showCancelButton: true,
         showCloseButton: true,
@@ -35693,140 +35703,140 @@ const _sfc_main$1 = {
     }
   }
 };
-const _hoisted_1$1 = {
+const _hoisted_1$5 = {
   id: "em-attachments",
   class: "tw-w-full"
 };
-const _hoisted_2$1 = {
+const _hoisted_2$4 = {
   id: "filters",
   class: "tw-flex tw-items-center tw-justify-between"
 };
-const _hoisted_3$1 = { class: "tw-flex tw-items-center" };
-const _hoisted_4$1 = { class: "tw-flex tw-items-center searchbar-wrapper" };
-const _hoisted_5$1 = ["placeholder"];
-const _hoisted_6$1 = { value: "all" };
-const _hoisted_7$1 = ["value"];
-const _hoisted_8$1 = { class: "actions tw-flex tw-items-center" };
-const _hoisted_9$1 = ["title"];
-const _hoisted_10$1 = ["title"];
-const _hoisted_11$1 = ["title"];
-const _hoisted_12$1 = {
+const _hoisted_3$3 = { class: "tw-flex tw-items-center" };
+const _hoisted_4$3 = { class: "tw-flex tw-items-center searchbar-wrapper" };
+const _hoisted_5$3 = ["placeholder"];
+const _hoisted_6$3 = { value: "all" };
+const _hoisted_7$3 = ["value"];
+const _hoisted_8$3 = { class: "actions tw-flex tw-items-center" };
+const _hoisted_9$3 = ["title"];
+const _hoisted_10$2 = ["title"];
+const _hoisted_11$2 = ["title"];
+const _hoisted_12$2 = {
   key: 0,
   class: "tw-mt-4 tw-mb-4"
 };
-const _hoisted_13$1 = ["href"];
-const _hoisted_14$1 = {
+const _hoisted_13$2 = ["href"];
+const _hoisted_14$2 = {
   key: 1,
   class: "table-wrapper tw-w-full"
 };
-const _hoisted_15$1 = {
+const _hoisted_15$2 = {
   key: 0,
   id: "check-th"
 };
-const _hoisted_16$1 = {
+const _hoisted_16$2 = {
   key: 0,
   class: "material-symbols-outlined tw-text-base"
 };
-const _hoisted_17$1 = {
+const _hoisted_17$2 = {
   key: 1,
   class: "material-symbols-outlined tw-text-base"
 };
-const _hoisted_18$1 = {
+const _hoisted_18$2 = {
   key: 0,
   class: "material-symbols-outlined tw-text-base"
 };
-const _hoisted_19$1 = {
+const _hoisted_19$2 = {
   key: 1,
   class: "material-symbols-outlined tw-text-base"
 };
-const _hoisted_20$1 = {
+const _hoisted_20$2 = {
   key: 0,
   class: "material-symbols-outlined tw-text-base"
 };
-const _hoisted_21$1 = {
+const _hoisted_21$2 = {
   key: 1,
   class: "material-symbols-outlined tw-text-base"
 };
-const _hoisted_22$1 = {
+const _hoisted_22$2 = {
   key: 0,
   class: "material-symbols-outlined tw-text-base"
 };
-const _hoisted_23$1 = {
+const _hoisted_23$2 = {
   key: 1,
   class: "material-symbols-outlined tw-text-base"
 };
-const _hoisted_24$1 = {
+const _hoisted_24$2 = {
   key: 0,
   class: "material-symbols-outlined tw-text-base"
 };
-const _hoisted_25$1 = {
+const _hoisted_25$2 = {
   key: 1,
   class: "material-symbols-outlined tw-text-base"
 };
-const _hoisted_26$1 = {
+const _hoisted_26$2 = {
   key: 0,
   class: "material-symbols-outlined tw-text-base"
 };
-const _hoisted_27$1 = {
+const _hoisted_27$2 = {
   key: 1,
   class: "material-symbols-outlined tw-text-base"
 };
-const _hoisted_28$1 = {
+const _hoisted_28$2 = {
   key: 0,
   class: "material-symbols-outlined tw-text-base"
 };
-const _hoisted_29$1 = {
+const _hoisted_29$2 = {
   key: 1,
   class: "material-symbols-outlined tw-text-base"
 };
-const _hoisted_30$1 = {
+const _hoisted_30$2 = {
   key: 0,
   class: "material-symbols-outlined tw-text-base"
 };
-const _hoisted_31$1 = {
+const _hoisted_31$2 = {
   key: 1,
   class: "material-symbols-outlined tw-text-base"
 };
-const _hoisted_32$1 = {
+const _hoisted_32$2 = {
   key: 9,
   id: "permissions",
   class: "permissions"
 };
-const _hoisted_33$1 = { key: 2 };
-const _hoisted_34$1 = {
+const _hoisted_33$2 = { key: 2 };
+const _hoisted_34$2 = {
   key: 3,
   id: "add-document-section",
   class: "tw-mt-4 tw-flex tw-items-center"
 };
-const _hoisted_35$1 = { class: "modal-head tw-w-full tw-flex tw-items-center tw-justify-between" };
-const _hoisted_36$1 = {
+const _hoisted_35$2 = { class: "modal-head tw-w-full tw-flex tw-items-center tw-justify-between" };
+const _hoisted_36$2 = {
   id: "actions-left",
   class: "tw-flex tw-items-center tw-justify-start"
 };
-const _hoisted_37$1 = {
+const _hoisted_37$2 = {
   id: "actions-right",
   class: "tw-flex tw-items-center"
 };
-const _hoisted_38$1 = ["href"];
-const _hoisted_39$1 = ["href"];
-const _hoisted_40$1 = { class: "prev-next-attachments tw-flex tw-items-center tw-justify-between tw-mr-2" };
-const _hoisted_41$1 = { class: "lvl" };
-const _hoisted_42$1 = {
+const _hoisted_38$2 = ["href"];
+const _hoisted_39$2 = ["href"];
+const _hoisted_40$2 = { class: "prev-next-attachments tw-flex tw-items-center tw-justify-between tw-mr-2" };
+const _hoisted_41$2 = { class: "lvl" };
+const _hoisted_42$2 = {
   key: 0,
   class: "vue-em-loader em-loader"
 };
-function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_AttachmentRow = resolveComponent("AttachmentRow");
   const _component_AttachmentPreview = resolveComponent("AttachmentPreview");
   const _component_AttachmentEdit = resolveComponent("AttachmentEdit");
   const _component_modal = resolveComponent("modal");
-  return openBlock(), createElementBlock("div", _hoisted_1$1, [
+  return openBlock(), createElementBlock("div", _hoisted_1$5, [
     createBaseVNode("div", {
       class: normalizeClass(["wrapper", { loading: $data.loading }])
     }, [
-      createBaseVNode("section", _hoisted_2$1, [
-        createBaseVNode("div", _hoisted_3$1, [
-          createBaseVNode("div", _hoisted_4$1, [
+      createBaseVNode("section", _hoisted_2$4, [
+        createBaseVNode("div", _hoisted_3$3, [
+          createBaseVNode("div", _hoisted_4$3, [
             withDirectives(createBaseVNode("input", {
               id: "searchbar",
               type: "text",
@@ -35835,7 +35845,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
               "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $data.search = $event),
               onInput: _cache[1] || (_cache[1] = (...args) => $options.onSearch && $options.onSearch(...args)),
               onKeyup: _cache[2] || (_cache[2] = withKeys((...args) => $options.onSearchKeyup && $options.onSearchKeyup(...args), ["enter"]))
-            }, null, 40, _hoisted_5$1), [
+            }, null, 40, _hoisted_5$3), [
               [vModelText, $data.search]
             ]),
             _cache[26] || (_cache[26] = createBaseVNode("span", { class: "material-symbols-outlined search" }, "search", -1)),
@@ -35850,18 +35860,18 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
             class: "category-select em-ml-16",
             "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => $data.category = $event)
           }, [
-            createBaseVNode("option", _hoisted_6$1, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_SELECT_CATEGORY")), 1),
+            createBaseVNode("option", _hoisted_6$3, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_SELECT_CATEGORY")), 1),
             (openBlock(true), createElementBlock(Fragment, null, renderList($options.displayedAttachmentCategories, (category, key) => {
               return openBlock(), createElementBlock("option", {
                 key,
                 value: key
-              }, toDisplayString(category), 9, _hoisted_7$1);
+              }, toDisplayString(category), 9, _hoisted_7$3);
             }), 128))
           ], 512)), [
             [vModelSelect, $data.category]
           ]) : createCommentVNode("", true)
         ]),
-        createBaseVNode("div", _hoisted_8$1, [
+        createBaseVNode("div", _hoisted_8$3, [
           $data.canExport ? (openBlock(), createElementBlock("div", {
             key: 0,
             class: normalizeClass(["btn-icon-text", { disabled: $data.checkedAttachments.length < 1 }]),
@@ -35878,37 +35888,37 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
             createBaseVNode("span", {
               class: "material-symbols-outlined cloud_sync",
               title: _ctx.translate("COM_EMUNDUS_ATTACHMENTS_SYNC_TITLE")
-            }, " cloud_sync ", 8, _hoisted_9$1),
+            }, " cloud_sync ", 8, _hoisted_9$3),
             createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_SYNC_TITLE")), 1)
           ], 2)) : createCommentVNode("", true),
           createBaseVNode("span", {
             class: "material-symbols-outlined refresh tw-cursor-pointer",
             onClick: _cache[7] || (_cache[7] = ($event) => $options.refreshAttachments(true)),
             title: _ctx.translate("COM_EMUNDUS_ATTACHMENTS_REFRESH_TITLE")
-          }, " autorenew ", 8, _hoisted_10$1),
+          }, " autorenew ", 8, _hoisted_10$2),
           $data.canDelete ? (openBlock(), createElementBlock("span", {
             key: 2,
             class: normalizeClass(["material-symbols-outlined delete", { disabled: $data.checkedAttachments.length < 1 }]),
             onClick: _cache[8] || (_cache[8] = (...args) => $options.confirmDeleteAttachments && $options.confirmDeleteAttachments(...args)),
             title: _ctx.translate("COM_EMUNDUS_ATTACHMENTS_DELETE_TITLE")
-          }, " delete ", 10, _hoisted_11$1)) : createCommentVNode("", true)
+          }, " delete ", 10, _hoisted_11$2)) : createCommentVNode("", true)
         ])
       ]),
-      $data.exportLink ? (openBlock(), createElementBlock("div", _hoisted_12$1, [
+      $data.exportLink ? (openBlock(), createElementBlock("div", _hoisted_12$2, [
         createBaseVNode("a", {
           href: $data.exportLink,
           target: "_blank",
           onClick: _cache[9] || (_cache[9] = ($event) => $data.exportLink = "")
-        }, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_EXPORT_LINK")), 9, _hoisted_13$1)
+        }, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_EXPORT_LINK")), 9, _hoisted_13$2)
       ])) : createCommentVNode("", true),
-      $data.attachments.length ? (openBlock(), createElementBlock("section", _hoisted_14$1, [
+      $data.attachments.length ? (openBlock(), createElementBlock("section", _hoisted_14$2, [
         createBaseVNode("table", {
           class: normalizeClass({ loading: $data.loading }),
           "aria-describedby": "Table of attachments information"
         }, [
           createBaseVNode("thead", null, [
             createBaseVNode("tr", null, [
-              $props.columns.includes("check") ? (openBlock(), createElementBlock("th", _hoisted_15$1, [
+              $props.columns.includes("check") ? (openBlock(), createElementBlock("th", _hoisted_15$2, [
                 createBaseVNode("input", {
                   class: "attachment-check",
                   type: "checkbox",
@@ -35921,8 +35931,8 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
                 onClick: _cache[11] || (_cache[11] = ($event) => $options.orderBy("value"))
               }, [
                 createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_NAME")), 1),
-                $data.sort.orderBy === "value" && $data.sort.order === "asc" ? (openBlock(), createElementBlock("span", _hoisted_16$1, "arrow_upward")) : createCommentVNode("", true),
-                $data.sort.orderBy === "value" && $data.sort.order === "desc" ? (openBlock(), createElementBlock("span", _hoisted_17$1, "arrow_downward")) : createCommentVNode("", true)
+                $data.sort.orderBy === "value" && $data.sort.order === "asc" ? (openBlock(), createElementBlock("span", _hoisted_16$2, "arrow_upward")) : createCommentVNode("", true),
+                $data.sort.orderBy === "value" && $data.sort.order === "desc" ? (openBlock(), createElementBlock("span", _hoisted_17$2, "arrow_downward")) : createCommentVNode("", true)
               ])) : createCommentVNode("", true),
               $props.columns.includes("date") ? (openBlock(), createElementBlock("th", {
                 key: 2,
@@ -35931,8 +35941,8 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
                 onClick: _cache[12] || (_cache[12] = ($event) => $options.orderBy("timedate"))
               }, [
                 createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_SEND_DATE")), 1),
-                $data.sort.orderBy === "timedate" && $data.sort.order === "asc" ? (openBlock(), createElementBlock("span", _hoisted_18$1, "arrow_upward")) : createCommentVNode("", true),
-                $data.sort.orderBy === "timedate" && $data.sort.order === "desc" ? (openBlock(), createElementBlock("span", _hoisted_19$1, "arrow_downward")) : createCommentVNode("", true)
+                $data.sort.orderBy === "timedate" && $data.sort.order === "asc" ? (openBlock(), createElementBlock("span", _hoisted_18$2, "arrow_upward")) : createCommentVNode("", true),
+                $data.sort.orderBy === "timedate" && $data.sort.order === "desc" ? (openBlock(), createElementBlock("span", _hoisted_19$2, "arrow_downward")) : createCommentVNode("", true)
               ])) : createCommentVNode("", true),
               $props.columns.includes("desc") ? (openBlock(), createElementBlock("th", {
                 key: 3,
@@ -35941,8 +35951,8 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
                 onClick: _cache[13] || (_cache[13] = ($event) => $options.orderBy("upload_description"))
               }, [
                 createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_DESCRIPTION")), 1),
-                $data.sort.orderBy === "upload_description" && $data.sort.order === "asc" ? (openBlock(), createElementBlock("span", _hoisted_20$1, "arrow_upward")) : createCommentVNode("", true),
-                $data.sort.orderBy === "upload_description" && $data.sort.order === "desc" ? (openBlock(), createElementBlock("span", _hoisted_21$1, "arrow_downward")) : createCommentVNode("", true)
+                $data.sort.orderBy === "upload_description" && $data.sort.order === "asc" ? (openBlock(), createElementBlock("span", _hoisted_20$2, "arrow_upward")) : createCommentVNode("", true),
+                $data.sort.orderBy === "upload_description" && $data.sort.order === "desc" ? (openBlock(), createElementBlock("span", _hoisted_21$2, "arrow_downward")) : createCommentVNode("", true)
               ])) : createCommentVNode("", true),
               $props.columns.includes("category") ? (openBlock(), createElementBlock("th", {
                 key: 4,
@@ -35951,8 +35961,8 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
                 onClick: _cache[14] || (_cache[14] = ($event) => $options.orderBy("category"))
               }, [
                 createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_CATEGORY")), 1),
-                $data.sort.orderBy === "category" && $data.sort.order === "asc" ? (openBlock(), createElementBlock("span", _hoisted_22$1, "arrow_upward")) : createCommentVNode("", true),
-                $data.sort.orderBy === "category" && $data.sort.order === "desc" ? (openBlock(), createElementBlock("span", _hoisted_23$1, "arrow_downward")) : createCommentVNode("", true)
+                $data.sort.orderBy === "category" && $data.sort.order === "asc" ? (openBlock(), createElementBlock("span", _hoisted_22$2, "arrow_upward")) : createCommentVNode("", true),
+                $data.sort.orderBy === "category" && $data.sort.order === "desc" ? (openBlock(), createElementBlock("span", _hoisted_23$2, "arrow_downward")) : createCommentVNode("", true)
               ])) : createCommentVNode("", true),
               $props.columns.includes("status") ? (openBlock(), createElementBlock("th", {
                 key: 5,
@@ -35961,8 +35971,8 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
                 onClick: _cache[15] || (_cache[15] = ($event) => $options.orderBy("is_validated"))
               }, [
                 createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_CHECK")), 1),
-                $data.sort.orderBy === "is_validated" && $data.sort.order === "asc" ? (openBlock(), createElementBlock("span", _hoisted_24$1, "arrow_upward")) : createCommentVNode("", true),
-                $data.sort.orderBy === "is_validated" && $data.sort.order === "desc" ? (openBlock(), createElementBlock("span", _hoisted_25$1, "arrow_downward")) : createCommentVNode("", true)
+                $data.sort.orderBy === "is_validated" && $data.sort.order === "asc" ? (openBlock(), createElementBlock("span", _hoisted_24$2, "arrow_upward")) : createCommentVNode("", true),
+                $data.sort.orderBy === "is_validated" && $data.sort.order === "desc" ? (openBlock(), createElementBlock("span", _hoisted_25$2, "arrow_downward")) : createCommentVNode("", true)
               ])) : createCommentVNode("", true),
               $data.canSee && $props.columns.includes("user") ? (openBlock(), createElementBlock("th", {
                 key: 6,
@@ -35970,8 +35980,8 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
                 onClick: _cache[16] || (_cache[16] = ($event) => $options.orderBy("user_id"))
               }, [
                 createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_UPLOADED_BY")), 1),
-                $data.sort.orderBy === "user_id" && $data.sort.order === "asc" ? (openBlock(), createElementBlock("span", _hoisted_26$1, "arrow_upward")) : createCommentVNode("", true),
-                $data.sort.orderBy === "user_id" && $data.sort.order === "desc" ? (openBlock(), createElementBlock("span", _hoisted_27$1, "arrow_downward")) : createCommentVNode("", true)
+                $data.sort.orderBy === "user_id" && $data.sort.order === "asc" ? (openBlock(), createElementBlock("span", _hoisted_26$2, "arrow_upward")) : createCommentVNode("", true),
+                $data.sort.orderBy === "user_id" && $data.sort.order === "desc" ? (openBlock(), createElementBlock("span", _hoisted_27$2, "arrow_downward")) : createCommentVNode("", true)
               ])) : createCommentVNode("", true),
               $data.canSee && $props.columns.includes("modified_by") ? (openBlock(), createElementBlock("th", {
                 key: 7,
@@ -35979,8 +35989,8 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
                 onClick: _cache[17] || (_cache[17] = ($event) => $options.orderBy("modified_by"))
               }, [
                 createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY")), 1),
-                $data.sort.orderBy === "modified_by" && $data.sort.order === "asc" ? (openBlock(), createElementBlock("span", _hoisted_28$1, "arrow_upward")) : createCommentVNode("", true),
-                $data.sort.orderBy === "modified_by" && $data.sort.order === "desc" ? (openBlock(), createElementBlock("span", _hoisted_29$1, "arrow_downward")) : createCommentVNode("", true)
+                $data.sort.orderBy === "modified_by" && $data.sort.order === "asc" ? (openBlock(), createElementBlock("span", _hoisted_28$2, "arrow_upward")) : createCommentVNode("", true),
+                $data.sort.orderBy === "modified_by" && $data.sort.order === "desc" ? (openBlock(), createElementBlock("span", _hoisted_29$2, "arrow_downward")) : createCommentVNode("", true)
               ])) : createCommentVNode("", true),
               $props.columns.includes("modified") ? (openBlock(), createElementBlock("th", {
                 key: 8,
@@ -35989,10 +35999,10 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
                 onClick: _cache[18] || (_cache[18] = ($event) => $options.orderBy("modified"))
               }, [
                 createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE")), 1),
-                $data.sort.orderBy === "modified" && $data.sort.order === "asc" ? (openBlock(), createElementBlock("span", _hoisted_30$1, "arrow_upward")) : createCommentVNode("", true),
-                $data.sort.orderBy === "modified" && $data.sort.order === "desc" ? (openBlock(), createElementBlock("span", _hoisted_31$1, "arrow_downward")) : createCommentVNode("", true)
+                $data.sort.orderBy === "modified" && $data.sort.order === "asc" ? (openBlock(), createElementBlock("span", _hoisted_30$2, "arrow_upward")) : createCommentVNode("", true),
+                $data.sort.orderBy === "modified" && $data.sort.order === "desc" ? (openBlock(), createElementBlock("span", _hoisted_31$2, "arrow_downward")) : createCommentVNode("", true)
               ])) : createCommentVNode("", true),
-              $props.columns.includes("permissions") ? (openBlock(), createElementBlock("th", _hoisted_32$1, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_PERMISSIONS")), 1)) : createCommentVNode("", true),
+              $props.columns.includes("permissions") ? (openBlock(), createElementBlock("th", _hoisted_32$2, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_PERMISSIONS")), 1)) : createCommentVNode("", true),
               $data.sync && $props.columns.includes("sync") ? (openBlock(), createElementBlock("th", {
                 key: 10,
                 id: "sync",
@@ -36022,8 +36032,8 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
             }), 128))
           ])
         ], 2)
-      ])) : (openBlock(), createElementBlock("p", _hoisted_33$1, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_NO_ATTACHMENTS_FOUND")), 1)),
-      this.canCreate ? (openBlock(), createElementBlock("section", _hoisted_34$1, [
+      ])) : (openBlock(), createElementBlock("p", _hoisted_33$2, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_NO_ATTACHMENTS_FOUND")), 1)),
+      this.canCreate ? (openBlock(), createElementBlock("section", _hoisted_34$2, [
         createBaseVNode("button", {
           class: "tw-btn-primary em-w-auto",
           onClick: _cache[20] || (_cache[20] = (...args) => $options.addAttachment && $options.addAttachment(...args))
@@ -36040,11 +36050,11 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
         "click-to-close": false
       }, {
         default: withCtx(() => [
-          createBaseVNode("div", _hoisted_35$1, [
-            createBaseVNode("div", _hoisted_36$1, [
+          createBaseVNode("div", _hoisted_35$2, [
+            createBaseVNode("div", _hoisted_36$2, [
               createBaseVNode("span", null, toDisplayString($data.selectedAttachment.filename), 1)
             ]),
-            createBaseVNode("div", _hoisted_37$1, [
+            createBaseVNode("div", _hoisted_37$2, [
               $data.sync && $data.syncSelectedPreview ? (openBlock(), createElementBlock("a", {
                 key: 0,
                 class: "download btn-icon-text tw-mr-6",
@@ -36053,7 +36063,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
               }, [
                 _cache[28] || (_cache[28] = createBaseVNode("span", { class: "material-symbols-outlined" }, "open_in_new", -1)),
                 createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_OPEN_IN_GED")), 1)
-              ], 8, _hoisted_38$1)) : createCommentVNode("", true),
+              ], 8, _hoisted_38$2)) : createCommentVNode("", true),
               $data.canDownload ? (openBlock(), createElementBlock("a", {
                 key: 1,
                 download: "",
@@ -36062,15 +36072,15 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
               }, [
                 _cache[29] || (_cache[29] = createBaseVNode("span", { class: "material-symbols-outlined" }, " file_download ", -1)),
                 createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_LINK_TO_DOWNLOAD")), 1)
-              ], 8, _hoisted_39$1)) : createCommentVNode("", true),
-              createBaseVNode("div", _hoisted_40$1, [
+              ], 8, _hoisted_39$2)) : createCommentVNode("", true),
+              createBaseVNode("div", _hoisted_40$2, [
                 createBaseVNode("div", {
                   class: normalizeClass(["prev tw-flex tw-items-center tw-mr-1", { active: $options.selectedAttachmentPosition > 0 }]),
                   onClick: _cache[21] || (_cache[21] = ($event) => $options.changeAttachment($options.selectedAttachmentPosition - 1, true))
                 }, _cache[30] || (_cache[30] = [
                   createBaseVNode("span", { class: "material-symbols-outlined" }, " navigate_before ", -1)
                 ]), 2),
-                createBaseVNode("span", _hoisted_41$1, toDisplayString($options.selectedAttachmentPosition + 1) + " /" + toDisplayString($options.displayedAttachments.length), 1),
+                createBaseVNode("span", _hoisted_41$2, toDisplayString($options.selectedAttachmentPosition + 1) + " /" + toDisplayString($options.displayedAttachments.length), 1),
                 createBaseVNode("div", {
                   class: normalizeClass(["next tw-flex tw-items-center tw-ml-1", { active: $options.selectedAttachmentPosition < $options.displayedAttachments.length - 1 }]),
                   onClick: _cache[22] || (_cache[22] = ($event) => $options.changeAttachment($options.selectedAttachmentPosition + 1))
@@ -36119,20 +36129,20 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
     ], 512), [
       [vShow, $data.openedModal]
     ]),
-    $data.loading ? (openBlock(), createElementBlock("div", _hoisted_42$1)) : createCommentVNode("", true)
+    $data.loading ? (openBlock(), createElementBlock("div", _hoisted_42$2)) : createCommentVNode("", true)
   ]);
 }
-const Attachments = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1]]);
+const Attachments = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4]]);
 const Attachments$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Attachments
 }, Symbol.toStringTag, { value: "Module" }));
-const client = new FetchClient("comments");
+const client$3 = new FetchClient("comments");
 const commentsService = {
   async getComments(ccid) {
     if (ccid > 0) {
       try {
-        return await client.get("getcomments", {
+        return await client$3.get("getcomments", {
           ccid
         });
       } catch (e) {
@@ -36154,7 +36164,7 @@ const commentsService = {
           visible_to_applicant,
           parent_id
         };
-        return await client.post("addcomment", params);
+        return await client$3.post("addcomment", params);
       } catch (e) {
         return {
           status: false,
@@ -36175,7 +36185,7 @@ const commentsService = {
           comment_id,
           comment
         };
-        return await client.post("updatecomment", params);
+        return await client$3.post("updatecomment", params);
       } catch (e) {
         return {
           status: false,
@@ -36196,7 +36206,7 @@ const commentsService = {
           comment_id,
           opened
         };
-        return await client.post("updatecommentopenedstate", params);
+        return await client$3.post("updatecommentopenedstate", params);
       } catch (e) {
         return {
           status: false,
@@ -36211,7 +36221,7 @@ const commentsService = {
         const params = {
           comment_id
         };
-        return await client.post("deletecomment", params);
+        return await client$3.post("deletecomment", params);
       } catch (e) {
         return {
           status: false,
@@ -36227,7 +36237,7 @@ const commentsService = {
   },
   async getTargetableElements(ccid) {
     try {
-      return await client.get("gettargetableelements", {
+      return await client$3.get("gettargetableelements", {
         ccid
       });
     } catch (e) {
@@ -36239,7 +36249,7 @@ const commentsService = {
   },
   async getMenuItemForFormId(ccid, formId) {
     try {
-      return await client.get("getMenuItemForFormId", {
+      return await client$3.get("getMenuItemForFormId", {
         ccid,
         form_id: formId
       });
@@ -36320,7 +36330,7 @@ const alerts = {
       return await this.displayAlert(options, callback);
     },
     displayAlert(options, callback) {
-      return Swal.fire(options).then((result) => {
+      return Swal$1.fire(options).then((result) => {
         if (result.value) {
           if (callback != null) {
             callback();
@@ -36331,7 +36341,7 @@ const alerts = {
     }
   }
 };
-const _sfc_main = {
+const _sfc_main$3 = {
   name: "Comments",
   components: { Modal },
   props: {
@@ -36732,101 +36742,101 @@ const _sfc_main = {
     }
   }
 };
-const _hoisted_1 = {
+const _hoisted_1$4 = {
   key: 0,
   id: "filter-comments",
   class: "tw-flex tw-flex-row tw-flex-wrap tw-gap-2"
 };
-const _hoisted_2 = ["placeholder"];
-const _hoisted_3 = { value: "all" };
-const _hoisted_4 = { value: "1" };
-const _hoisted_5 = { value: "0" };
-const _hoisted_6 = { value: "all" };
-const _hoisted_7 = { value: "0" };
-const _hoisted_8 = { value: "1" };
-const _hoisted_9 = {
+const _hoisted_2$3 = ["placeholder"];
+const _hoisted_3$2 = { value: "all" };
+const _hoisted_4$2 = { value: "1" };
+const _hoisted_5$2 = { value: "0" };
+const _hoisted_6$2 = { value: "all" };
+const _hoisted_7$2 = { value: "0" };
+const _hoisted_8$2 = { value: "1" };
+const _hoisted_9$2 = {
   key: 1,
   id: "comments-list-container",
   class: "tw-p-1"
 };
-const _hoisted_10 = ["id"];
-const _hoisted_11 = { class: "file-comment-header tw-flex tw-flex-col tw-mb-3" };
-const _hoisted_12 = { class: "tw-flex tw-flex-row tw-justify-between tw-items-center" };
-const _hoisted_13 = ["onClick"];
-const _hoisted_14 = { class: "tw-flex tw-flex-row tw-items-center" };
-const _hoisted_15 = {
+const _hoisted_10$1 = ["id"];
+const _hoisted_11$1 = { class: "file-comment-header tw-flex tw-flex-col tw-mb-3" };
+const _hoisted_12$1 = { class: "tw-flex tw-flex-row tw-justify-between tw-items-center" };
+const _hoisted_13$1 = ["onClick"];
+const _hoisted_14$1 = { class: "tw-flex tw-flex-row tw-items-center" };
+const _hoisted_15$1 = {
   key: 1,
   class: "tw-text-sm"
 };
-const _hoisted_16 = { class: "tw-flex tw-flex-col tw-mr-3" };
-const _hoisted_17 = { class: "tw-text-neutral-500 tw-text-xs" };
-const _hoisted_18 = { class: "tw-text-xs" };
-const _hoisted_19 = {
+const _hoisted_16$1 = { class: "tw-flex tw-flex-col tw-mr-3" };
+const _hoisted_17$1 = { class: "tw-text-neutral-500 tw-text-xs" };
+const _hoisted_18$1 = { class: "tw-text-xs" };
+const _hoisted_19$1 = {
   key: 0,
   class: "label tw-bg-profile-medium !tw-text-neutral-900"
 };
-const _hoisted_20 = { class: "tw-flex tw-flex-row tw-items-start tw-justify-between" };
-const _hoisted_21 = { class: "tw-w-full" };
-const _hoisted_22 = {
+const _hoisted_20$1 = { class: "tw-flex tw-flex-row tw-items-start tw-justify-between" };
+const _hoisted_21$1 = { class: "tw-w-full" };
+const _hoisted_22$1 = {
   key: 0,
   class: "tw-w-full"
 };
-const _hoisted_23 = ["id", "onUpdate:modelValue", "onKeyup"];
-const _hoisted_24 = { class: "tw-flex tw-flex-row tw-justify-end tw-mt-2" };
-const _hoisted_25 = ["onClick"];
-const _hoisted_26 = {
+const _hoisted_23$1 = ["id", "onUpdate:modelValue", "onKeyup"];
+const _hoisted_24$1 = { class: "tw-flex tw-flex-row tw-justify-end tw-mt-2" };
+const _hoisted_25$1 = ["onClick"];
+const _hoisted_26$1 = {
   key: 1,
   class: "comment-body"
 };
-const _hoisted_27 = {
+const _hoisted_27$1 = {
   key: 0,
   class: "file-comment-header-right tw-ease-in-out tw-duration-300 tw-opacity-0 group-hover:tw-opacity-100 tw-flex tw-flex-row"
 };
-const _hoisted_28 = ["onClick"];
-const _hoisted_29 = ["onClick"];
-const _hoisted_30 = ["onClick"];
-const _hoisted_31 = {
+const _hoisted_28$1 = ["onClick"];
+const _hoisted_29$1 = ["onClick"];
+const _hoisted_30$1 = ["onClick"];
+const _hoisted_31$1 = {
   key: 0,
   class: "tw-text-xs em-gray-color tw-mt-3"
 };
-const _hoisted_32 = ["id"];
-const _hoisted_33 = { class: "child-comment tw-flex tw-flex-col tw-border-s-4 tw-my-3 tw-px-3" };
-const _hoisted_34 = { class: "file-comment-header tw-flex tw-flex-row tw-justify-between tw-mb-2" };
-const _hoisted_35 = { class: "file-comment-header-left tw-flex tw-flex-col" };
-const _hoisted_36 = { class: "tw-flex tw-flex-row tw-items-center" };
-const _hoisted_37 = { class: "profile-picture tw-h-8 tw-w-8 tw-rounded-full tw-border-2 tw-mr-2 tw-flex tw-flex-row tw-justify-center tw-items-center" };
-const _hoisted_38 = { key: 1 };
-const _hoisted_39 = { class: "tw-flex tw-flex-col tw-mr-3" };
-const _hoisted_40 = { class: "tw-text-neutral-500 tw-text-xs" };
-const _hoisted_41 = { class: "tw-text-xs" };
-const _hoisted_42 = { class: "tw-flex tw-flex-row tw-justify-between tw-items-start" };
-const _hoisted_43 = { class: "tw-w-full" };
-const _hoisted_44 = {
+const _hoisted_32$1 = ["id"];
+const _hoisted_33$1 = { class: "child-comment tw-flex tw-flex-col tw-border-s-4 tw-my-3 tw-px-3" };
+const _hoisted_34$1 = { class: "file-comment-header tw-flex tw-flex-row tw-justify-between tw-mb-2" };
+const _hoisted_35$1 = { class: "file-comment-header-left tw-flex tw-flex-col" };
+const _hoisted_36$1 = { class: "tw-flex tw-flex-row tw-items-center" };
+const _hoisted_37$1 = { class: "profile-picture tw-h-8 tw-w-8 tw-rounded-full tw-border-2 tw-mr-2 tw-flex tw-flex-row tw-justify-center tw-items-center" };
+const _hoisted_38$1 = { key: 1 };
+const _hoisted_39$1 = { class: "tw-flex tw-flex-col tw-mr-3" };
+const _hoisted_40$1 = { class: "tw-text-neutral-500 tw-text-xs" };
+const _hoisted_41$1 = { class: "tw-text-xs" };
+const _hoisted_42$1 = { class: "tw-flex tw-flex-row tw-justify-between tw-items-start" };
+const _hoisted_43$1 = { class: "tw-w-full" };
+const _hoisted_44$1 = {
   key: 0,
   class: "tw-w-full"
 };
-const _hoisted_45 = ["id", "onUpdate:modelValue", "onKeyup"];
-const _hoisted_46 = { class: "tw-flex tw-flex-row tw-justify-end tw-mt-2" };
-const _hoisted_47 = ["onClick"];
-const _hoisted_48 = {
+const _hoisted_45$1 = ["id", "onUpdate:modelValue", "onKeyup"];
+const _hoisted_46$1 = { class: "tw-flex tw-flex-row tw-justify-end tw-mt-2" };
+const _hoisted_47$1 = ["onClick"];
+const _hoisted_48$1 = {
   key: 1,
   class: "comment-body"
 };
-const _hoisted_49 = {
+const _hoisted_49$1 = {
   key: 0,
   class: "tw-flex tw-flex-row tw-items-center"
 };
-const _hoisted_50 = ["onClick"];
-const _hoisted_51 = ["onClick"];
-const _hoisted_52 = {
+const _hoisted_50$1 = ["onClick"];
+const _hoisted_51$1 = ["onClick"];
+const _hoisted_52$1 = {
   key: 0,
   class: "tw-text-xs em-gray-color tw-mt-3"
 };
-const _hoisted_53 = { class: "add-child-comment" };
-const _hoisted_54 = ["onKeyup", "placeholder"];
-const _hoisted_55 = { class: "tw-w-full tw-flex tw-flex-row tw-justify-between tw-items-center tw-mt-2" };
-const _hoisted_56 = ["disabled", "onClick"];
-const _hoisted_57 = ["onClick"];
+const _hoisted_53$1 = { class: "add-child-comment" };
+const _hoisted_54$1 = ["onKeyup", "placeholder"];
+const _hoisted_55$1 = { class: "tw-w-full tw-flex tw-flex-row tw-justify-between tw-items-center tw-mt-2" };
+const _hoisted_56$1 = ["disabled", "onClick"];
+const _hoisted_57$1 = ["onClick"];
 const _hoisted_58 = ["title"];
 const _hoisted_59 = ["onClick"];
 const _hoisted_60 = ["title"];
@@ -36881,29 +36891,29 @@ const _hoisted_81 = {
 };
 const _hoisted_82 = { class: "tw-flex tw-flex-row tw-justify-between" };
 const _hoisted_83 = ["disabled"];
-function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_modal = resolveComponent("modal");
   return openBlock(), createElementBlock("div", {
     id: "comments",
     class: normalizeClass(["tw-p-4 tw-w-full tw-bg-[#f8f8f8] tw-flex tw-flex-col", { "tw-border-l-4 tw-border-profile-full": $props.border }])
   }, [
-    _ctx.comments.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_1, [
+    _ctx.comments.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_1$4, [
       withDirectives(createBaseVNode("input", {
         type: "text",
         class: "em-input tw-mr-2",
         placeholder: _ctx.translate("COM_EMUNDUS_COMMENTS_SEARCH"),
         "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => _ctx.search = $event),
         onKeyup: _cache[1] || (_cache[1] = (...args) => $options.onSearchChange && $options.onSearchChange(...args))
-      }, null, 40, _hoisted_2), [
+      }, null, 40, _hoisted_2$3), [
         [vModelText, _ctx.search]
       ]),
       withDirectives(createBaseVNode("select", {
         "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => _ctx.filterOpenedState = $event),
         class: "tw-mr-2 tw-rounded-applicant"
       }, [
-        createBaseVNode("option", _hoisted_3, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_ALL_THREAD")), 1),
-        createBaseVNode("option", _hoisted_4, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_OPENED_THREAD")), 1),
-        createBaseVNode("option", _hoisted_5, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_CLOSED_THREAD")), 1)
+        createBaseVNode("option", _hoisted_3$2, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_ALL_THREAD")), 1),
+        createBaseVNode("option", _hoisted_4$2, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_OPENED_THREAD")), 1),
+        createBaseVNode("option", _hoisted_5$2, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_CLOSED_THREAD")), 1)
       ], 512), [
         [vModelSelect, _ctx.filterOpenedState]
       ]),
@@ -36912,14 +36922,14 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => _ctx.filterVisibleToApplicant = $event),
         class: "tw-rounded-applicant"
       }, [
-        createBaseVNode("option", _hoisted_6, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_VISIBLE_ALL_OPT")), 1),
-        createBaseVNode("option", _hoisted_7, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_VISIBLE_PARTNERS")), 1),
-        createBaseVNode("option", _hoisted_8, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_VISIBLE_ALL")), 1)
+        createBaseVNode("option", _hoisted_6$2, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_VISIBLE_ALL_OPT")), 1),
+        createBaseVNode("option", _hoisted_7$2, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_VISIBLE_PARTNERS")), 1),
+        createBaseVNode("option", _hoisted_8$2, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_VISIBLE_ALL")), 1)
       ], 512)), [
         [vModelSelect, _ctx.filterVisibleToApplicant]
       ]) : createCommentVNode("", true)
     ])) : createCommentVNode("", true),
-    $options.parentComments.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_9, [
+    $options.parentComments.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_9$2, [
       (openBlock(true), createElementBlock(Fragment, null, renderList($options.parentComments, (comment) => {
         return openBlock(), createElementBlock("div", {
           id: "file-comment-" + comment.id,
@@ -36931,13 +36941,13 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             "tw-white-bg": comment.opened == 1
           }])
         }, [
-          createBaseVNode("div", _hoisted_11, [
-            createBaseVNode("div", _hoisted_12, [
+          createBaseVNode("div", _hoisted_11$1, [
+            createBaseVNode("div", _hoisted_12$1, [
               createBaseVNode("div", {
                 class: "file-comment-header-left tw-flex tw-flex-row tw-cursor-pointer tw-items-center tw-justify-between tw-w-full",
                 onClick: ($event) => $options.replyToComment(comment.id)
               }, [
-                createBaseVNode("div", _hoisted_14, [
+                createBaseVNode("div", _hoisted_14$1, [
                   createBaseVNode("div", {
                     class: normalizeClass(["profile-picture tw-h-8 tw-w-8 tw-rounded-full tw-border-2 tw-mr-2 tw-flex tw-flex-row tw-justify-center tw-items-center", { "tw-bg-neutral-300": !comment.profile_picture }])
                   }, [
@@ -36945,31 +36955,31 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                       key: 0,
                       class: "image tw-h-full tw-w-full tw-rounded-full",
                       style: normalizeStyle("background-image: url(" + comment.profile_picture + ");background-size: cover;background-position: center;")
-                    }, null, 4)) : (openBlock(), createElementBlock("span", _hoisted_15, toDisplayString(comment.firstname.charAt(0).toUpperCase()) + toDisplayString(comment.lastname.charAt(0).toUpperCase()), 1))
+                    }, null, 4)) : (openBlock(), createElementBlock("span", _hoisted_15$1, toDisplayString(comment.firstname.charAt(0).toUpperCase()) + toDisplayString(comment.lastname.charAt(0).toUpperCase()), 1))
                   ], 2),
-                  createBaseVNode("div", _hoisted_16, [
-                    createBaseVNode("span", _hoisted_17, toDisplayString(comment.updated ? comment.updated : comment.date), 1),
-                    createBaseVNode("span", _hoisted_18, toDisplayString(comment.username), 1)
+                  createBaseVNode("div", _hoisted_16$1, [
+                    createBaseVNode("span", _hoisted_17$1, toDisplayString(comment.updated ? comment.updated : comment.date), 1),
+                    createBaseVNode("span", _hoisted_18$1, toDisplayString(comment.username), 1)
                   ])
                 ]),
                 createBaseVNode("div", null, [
-                  $options.childrenComments[comment.id].length > 0 ? (openBlock(), createElementBlock("span", _hoisted_19, toDisplayString($options.childrenComments[comment.id].length) + " " + toDisplayString($options.childrenComments[comment.id].length > 1 ? _ctx.translate("COM_EMUNDUS_COMMENTS_ANSWERS") : _ctx.translate("COM_EMUNDUS_COMMENTS_ANSWER")), 1)) : createCommentVNode("", true)
+                  $options.childrenComments[comment.id].length > 0 ? (openBlock(), createElementBlock("span", _hoisted_19$1, toDisplayString($options.childrenComments[comment.id].length) + " " + toDisplayString($options.childrenComments[comment.id].length > 1 ? _ctx.translate("COM_EMUNDUS_COMMENTS_ANSWERS") : _ctx.translate("COM_EMUNDUS_COMMENTS_ANSWER")), 1)) : createCommentVNode("", true)
                 ])
-              ], 8, _hoisted_13)
+              ], 8, _hoisted_13$1)
             ])
           ]),
-          createBaseVNode("div", _hoisted_20, [
-            createBaseVNode("div", _hoisted_21, [
-              _ctx.editable == comment.id ? (openBlock(), createElementBlock("div", _hoisted_22, [
+          createBaseVNode("div", _hoisted_20$1, [
+            createBaseVNode("div", _hoisted_21$1, [
+              _ctx.editable == comment.id ? (openBlock(), createElementBlock("div", _hoisted_22$1, [
                 withDirectives(createBaseVNode("textarea", {
                   id: "editable-comment-" + comment.id,
                   class: "comment-body",
                   "onUpdate:modelValue": ($event) => comment.comment_body = $event,
                   onKeyup: withKeys(($event) => $options.updateComment(comment.id), ["enter"])
-                }, null, 40, _hoisted_23), [
+                }, null, 40, _hoisted_23$1), [
                   [vModelText, comment.comment_body]
                 ]),
-                createBaseVNode("div", _hoisted_24, [
+                createBaseVNode("div", _hoisted_24$1, [
                   createBaseVNode("button", {
                     id: "add-comment-btn",
                     class: "tw-btn-primary tw-w-fit",
@@ -36977,7 +36987,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                   }, [
                     createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_UPDATE_COMMENT")), 1),
                     _cache[17] || (_cache[17] = createBaseVNode("span", { class: "material-symbols-outlined tw-ml-1 tw-text-neutral-300" }, "send", -1))
-                  ], 8, _hoisted_25),
+                  ], 8, _hoisted_25$1),
                   createBaseVNode("button", {
                     id: "abort-update",
                     class: "tw-btn-secondary tw-w-fit tw-ml-2",
@@ -36986,26 +36996,26 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                     createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_CANCEL")), 1)
                   ])
                 ])
-              ])) : (openBlock(), createElementBlock("p", _hoisted_26, toDisplayString(comment.comment_body), 1))
+              ])) : (openBlock(), createElementBlock("p", _hoisted_26$1, toDisplayString(comment.comment_body), 1))
             ]),
-            _ctx.editable != comment.id ? (openBlock(), createElementBlock("div", _hoisted_27, [
+            _ctx.editable != comment.id ? (openBlock(), createElementBlock("div", _hoisted_27$1, [
               createBaseVNode("span", {
                 class: "material-symbols-outlined tw-cursor-pointer",
                 onClick: ($event) => $options.replyToComment(comment.id)
-              }, "reply", 8, _hoisted_28),
+              }, "reply", 8, _hoisted_28$1),
               $props.access.d || comment.user_id == $props.user ? (openBlock(), createElementBlock("span", {
                 key: 0,
                 class: "material-symbols-outlined tw-cursor-pointer em-red-500-color",
                 onClick: ($event) => $options.deleteComment(comment.id)
-              }, "delete", 8, _hoisted_29)) : createCommentVNode("", true),
+              }, "delete", 8, _hoisted_29$1)) : createCommentVNode("", true),
               $props.access.u || $props.access.c && comment.user_id == $props.user ? (openBlock(), createElementBlock("span", {
                 key: 1,
                 class: "material-symbols-outlined tw-cursor-pointer",
                 onClick: ($event) => $options.makeCommentEditable(comment.id)
-              }, "edit", 8, _hoisted_30)) : createCommentVNode("", true)
+              }, "edit", 8, _hoisted_30$1)) : createCommentVNode("", true)
             ])) : createCommentVNode("", true)
           ]),
-          comment.updated_by > 0 ? (openBlock(), createElementBlock("i", _hoisted_31, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_EDITED")), 1)) : createCommentVNode("", true),
+          comment.updated_by > 0 ? (openBlock(), createElementBlock("i", _hoisted_31$1, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_EDITED")), 1)) : createCommentVNode("", true),
           createBaseVNode("div", {
             class: normalizeClass(["comment-children", { "opened": _ctx.openedCommentId == comment.id, "hidden": _ctx.openedCommentId !== comment.id }])
           }, [
@@ -37016,36 +37026,36 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 key: child.id,
                 dir: "ltr"
               }, [
-                createBaseVNode("div", _hoisted_33, [
-                  createBaseVNode("div", _hoisted_34, [
-                    createBaseVNode("div", _hoisted_35, [
-                      createBaseVNode("div", _hoisted_36, [
-                        createBaseVNode("div", _hoisted_37, [
+                createBaseVNode("div", _hoisted_33$1, [
+                  createBaseVNode("div", _hoisted_34$1, [
+                    createBaseVNode("div", _hoisted_35$1, [
+                      createBaseVNode("div", _hoisted_36$1, [
+                        createBaseVNode("div", _hoisted_37$1, [
                           comment.profile_picture ? (openBlock(), createElementBlock("div", {
                             key: 0,
                             class: "image tw-h-full tw-w-full tw-rounded-full",
                             style: normalizeStyle("background-image: url(" + comment.profile_picture + "); background-size: cover;background-position: center;")
-                          }, null, 4)) : (openBlock(), createElementBlock("span", _hoisted_38, toDisplayString(comment.firstname.charAt(0)) + toDisplayString(comment.lastname.charAt(0)), 1))
+                          }, null, 4)) : (openBlock(), createElementBlock("span", _hoisted_38$1, toDisplayString(comment.firstname.charAt(0)) + toDisplayString(comment.lastname.charAt(0)), 1))
                         ]),
-                        createBaseVNode("div", _hoisted_39, [
-                          createBaseVNode("span", _hoisted_40, toDisplayString(child.updated ? child.updated : child.date), 1),
-                          createBaseVNode("span", _hoisted_41, toDisplayString(child.username), 1)
+                        createBaseVNode("div", _hoisted_39$1, [
+                          createBaseVNode("span", _hoisted_40$1, toDisplayString(child.updated ? child.updated : child.date), 1),
+                          createBaseVNode("span", _hoisted_41$1, toDisplayString(child.username), 1)
                         ])
                       ])
                     ])
                   ]),
-                  createBaseVNode("div", _hoisted_42, [
-                    createBaseVNode("div", _hoisted_43, [
-                      _ctx.editable == child.id ? (openBlock(), createElementBlock("div", _hoisted_44, [
+                  createBaseVNode("div", _hoisted_42$1, [
+                    createBaseVNode("div", _hoisted_43$1, [
+                      _ctx.editable == child.id ? (openBlock(), createElementBlock("div", _hoisted_44$1, [
                         withDirectives(createBaseVNode("textarea", {
                           id: "editable-comment-" + child.id,
                           class: "comment-body",
                           "onUpdate:modelValue": ($event) => child.comment_body = $event,
                           onKeyup: withKeys(($event) => $options.updateComment(child.id), ["enter"])
-                        }, null, 40, _hoisted_45), [
+                        }, null, 40, _hoisted_45$1), [
                           [vModelText, child.comment_body]
                         ]),
-                        createBaseVNode("div", _hoisted_46, [
+                        createBaseVNode("div", _hoisted_46$1, [
                           createBaseVNode("button", {
                             id: "add-comment-btn",
                             class: "tw-btn-primary tw-w-fit",
@@ -37053,7 +37063,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                           }, [
                             createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_UPDATE_COMMENT")), 1),
                             _cache[18] || (_cache[18] = createBaseVNode("span", { class: "material-symbols-outlined tw-ml-1 tw-text-neutral-300" }, "send", -1))
-                          ], 8, _hoisted_47),
+                          ], 8, _hoisted_47$1),
                           createBaseVNode("button", {
                             id: "abort-update",
                             class: "tw-btn-secondary tw-w-fit tw-ml-2",
@@ -37062,35 +37072,35 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                             createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_CANCEL")), 1)
                           ])
                         ])
-                      ])) : (openBlock(), createElementBlock("p", _hoisted_48, toDisplayString(child.comment_body), 1))
+                      ])) : (openBlock(), createElementBlock("p", _hoisted_48$1, toDisplayString(child.comment_body), 1))
                     ]),
-                    _ctx.editable != child.id ? (openBlock(), createElementBlock("div", _hoisted_49, [
+                    _ctx.editable != child.id ? (openBlock(), createElementBlock("div", _hoisted_49$1, [
                       $props.access.d || child.user_id == $props.user ? (openBlock(), createElementBlock("span", {
                         key: 0,
                         class: "material-symbols-outlined tw-cursor-pointer em-red-500-color",
                         onClick: ($event) => $options.deleteComment(child.id)
-                      }, "delete", 8, _hoisted_50)) : createCommentVNode("", true),
+                      }, "delete", 8, _hoisted_50$1)) : createCommentVNode("", true),
                       $props.access.u || $props.access.c && child.user_id == $props.user ? (openBlock(), createElementBlock("span", {
                         key: 1,
                         class: "material-symbols-outlined tw-cursor-pointer",
                         onClick: ($event) => $options.makeCommentEditable(child.id)
-                      }, "edit", 8, _hoisted_51)) : createCommentVNode("", true)
+                      }, "edit", 8, _hoisted_51$1)) : createCommentVNode("", true)
                     ])) : createCommentVNode("", true)
                   ]),
-                  child.updated_by > 0 ? (openBlock(), createElementBlock("i", _hoisted_52, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_EDITED")), 1)) : createCommentVNode("", true)
+                  child.updated_by > 0 ? (openBlock(), createElementBlock("i", _hoisted_52$1, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_EDITED")), 1)) : createCommentVNode("", true)
                 ])
-              ], 8, _hoisted_32);
+              ], 8, _hoisted_32$1);
             }), 128)),
-            createBaseVNode("div", _hoisted_53, [
+            createBaseVNode("div", _hoisted_53$1, [
               withDirectives(createBaseVNode("textarea", {
                 class: "tw-mb-2 tw-p-2",
                 onKeyup: withKeys(($event) => $options.addComment(comment.id), ["enter"]),
                 "onUpdate:modelValue": _cache[6] || (_cache[6] = ($event) => _ctx.newChildCommentText = $event),
                 placeholder: _ctx.translate("COM_EMUNDUS_COMMENTS_ADD_COMMENT_PLACEHOLDER")
-              }, null, 40, _hoisted_54), [
+              }, null, 40, _hoisted_54$1), [
                 [vModelText, _ctx.newChildCommentText]
               ]),
-              createBaseVNode("div", _hoisted_55, [
+              createBaseVNode("div", _hoisted_55$1, [
                 createBaseVNode("button", {
                   id: "add-comment-btn",
                   class: normalizeClass(["tw-btn-primary tw-bg-profile-full tw-text-neutral-300 tw-w-fit", { "tw-cursor-not-allowed tw-opacity-50": _ctx.newChildCommentText.length === 0 }]),
@@ -37099,7 +37109,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 }, [
                   createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_ADD_COMMENT")), 1),
                   _cache[19] || (_cache[19] = createBaseVNode("span", { class: "material-symbols-outlined tw-ml-1 tw-text-neutral-300" }, "send", -1))
-                ], 10, _hoisted_56),
+                ], 10, _hoisted_56$1),
                 comment.opened == 1 ? (openBlock(), createElementBlock("button", {
                   key: 0,
                   class: "tw-btn-secondary tw-w-fit",
@@ -37109,7 +37119,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                     title: _ctx.translate("COM_EMUNDUS_COMMENTS_CLOSE_COMMENT_THREAD"),
                     class: "material-symbols-outlined tw-text-neutral-300"
                   }, "check_circle", 8, _hoisted_58)
-                ], 8, _hoisted_57)) : (openBlock(), createElementBlock("button", {
+                ], 8, _hoisted_57$1)) : (openBlock(), createElementBlock("button", {
                   key: 1,
                   class: "tw-btn-secondary tw-w-fit",
                   onClick: ($event) => $options.updateCommentOpenedState(comment.id, 1)
@@ -37127,7 +37137,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             class: "comment-target-label tw-text-sm em-gray-color tw-cursor-pointer tw-mt-4",
             onClick: ($event) => $options.goToCommentTarget(comment)
           }, toDisplayString($options.getCommentTargetLabel(comment.target_id, comment.target_type)), 9, _hoisted_61)) : createCommentVNode("", true)
-        ], 10, _hoisted_10);
+        ], 10, _hoisted_10$1);
       }), 128))
     ])) : (openBlock(), createElementBlock("p", _hoisted_62, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_NO_COMMENTS")), 1)),
     _cache[23] || (_cache[23] = createBaseVNode("hr", null, null, -1)),
@@ -37253,10 +37263,2830 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 2);
 }
-const Comments = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render]]);
+const Comments = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3]]);
 const Comments$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Comments
+}, Symbol.toStringTag, { value: "Module" }));
+const client$2 = new FetchClient("workflow");
+const workflowService = {
+  async getWorkflow(id) {
+    try {
+      return await client$2.get("getworkflow", { id });
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+  async getWorkflows() {
+    try {
+      return await client$2.get("getworkflows");
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+  async saveWorkflow(workflow, steps, programs) {
+    try {
+      const data = {
+        workflow: JSON.stringify(workflow),
+        steps: JSON.stringify(steps),
+        programs: JSON.stringify(programs)
+      };
+      return await client$2.post("updateworkflow", data);
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+  async updateProgramWorkflows(programId, workflows) {
+    try {
+      return await client$2.post("updateprogramworkflows", { program_id: programId, workflows: JSON.stringify(workflows.map((w2) => w2.id)) });
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+  async deleteWorkflowStep(stepId) {
+    if (stepId > 0) {
+      return await client$2.post("deleteworkflowstep", { step_id: stepId });
+    } else {
+      return {
+        status: false,
+        msg: "Invalid step id."
+      };
+    }
+  },
+  async updateStepState(stepId, state) {
+    if (stepId > 0) {
+      return await client$2.post("updatestepstate", { step_id: stepId, state });
+    } else {
+      return {
+        status: false,
+        msg: "Invalid step id."
+      };
+    }
+  },
+  async getStepTypes() {
+    try {
+      return await client$2.get("getsteptypes");
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+  async saveTypes(types) {
+    try {
+      return await client$2.post("savesteptypes", { types: JSON.stringify(types) });
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+  async getCampaignSteps(campaignId) {
+    try {
+      return await client$2.get("getcampaignsteps", { campaign_id: campaignId });
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+  async saveCampaignSteps(campaignId, steps) {
+    try {
+      return await client$2.post("savecampaignstepsdates", { campaign_id: campaignId, steps: JSON.stringify(steps) });
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+  async getWorkflowsByProgramId(programId) {
+    try {
+      return await client$2.get("getworkflowsbyprogramid", { program_id: programId });
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+  async getProgramsWorkflows() {
+    try {
+      return await client$2.get("getprogramsworkflows");
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  }
+};
+const client$1 = new FetchClient("programme");
+const programmeService = {
+  async getCampaignsByProgram(programId) {
+    try {
+      return await client$1.get("getcampaignsbyprogram", {
+        pid: programId
+      });
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+  async getAllPrograms() {
+    try {
+      return await client$1.get("getallprogram");
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+  async createProgram(program) {
+    try {
+      return await client$1.post("createprogram", {
+        body: JSON.stringify(program)
+      });
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  }
+};
+const fetchClient = new FetchClient("form");
+const baseUrl = "index.php?option=com_emundus&controller=form";
+const formService = {
+  async updateFormLabel(params) {
+    try {
+      return await fetchClient.post("updateformlabel", params);
+    } catch (error2) {
+      return {
+        status: false,
+        error: error2
+      };
+    }
+  },
+  async getFilesByForm(id) {
+    try {
+      return await fetchClient.get("getfilesbyform", {
+        pid: id
+      });
+    } catch (error2) {
+      return {
+        status: false,
+        error: error2
+      };
+    }
+  },
+  async getSubmissionPage(id) {
+    try {
+      return await fetchClient.get("getsubmittionpage", {
+        prid: id
+      });
+    } catch (error2) {
+      return {
+        status: false,
+        error: error2
+      };
+    }
+  },
+  async getApplicantForms() {
+  },
+  async getFormsByProfileId(id) {
+    try {
+      const response = await client$4().get(
+        baseUrl + "&task=getFormsByProfileId",
+        {
+          params: {
+            profile_id: id
+          }
+        }
+      );
+      response.data.data.forEach((form) => {
+        if (typeof form.type == "undefined") {
+          form.type = "form";
+        }
+      });
+      return response;
+    } catch (error2) {
+      return {
+        status: false,
+        error: error2
+      };
+    }
+  },
+  async getFormByFabrikId(id) {
+    try {
+      const response = await client$4().get(baseUrl + "&task=getFormByFabrikId", { params: { form_id: id } });
+      return response;
+    } catch (error2) {
+      return {
+        status: false,
+        error: error2
+      };
+    }
+  },
+  async getEvaluationForms() {
+    try {
+      return await fetchClient.get("getallgrilleEval");
+    } catch (error2) {
+      return {
+        status: false,
+        error: error2
+      };
+    }
+  },
+  async createForm(params) {
+    try {
+      return await fetchClient.post("createform", params);
+    } catch (error2) {
+      return {
+        status: false,
+        error: error2
+      };
+    }
+  },
+  async getProfileLabelByProfileId(id) {
+    try {
+      return await fetchClient.get("getProfileLabelByProfileId&profile_id=" + id);
+    } catch (error2) {
+      return {
+        status: false,
+        error: error2
+      };
+    }
+  },
+  async getDocuments(id) {
+    if (id > 0) {
+      try {
+        const response = await client$4().get(baseUrl + "&task=getDocuments", { params: { pid: id } });
+        return response.data;
+      } catch (error2) {
+        return {
+          status: false,
+          data: [],
+          msg: error2
+        };
+      }
+    } else {
+      return {
+        status: false,
+        msg: "Missing parameter"
+      };
+    }
+  },
+  async getDocumentModels(documentId = null) {
+    try {
+      let data = {
+        status: false
+      };
+      const response = await client$4().get(
+        baseUrl + "&task=getAttachments"
+      );
+      if (response.data.status) {
+        if (documentId !== null) {
+          const document2 = response.data.data.filter((document3) => document3.id === documentId);
+          if (document2.length > 0) {
+            data = {
+              status: true,
+              data: document2[0]
+            };
+          } else {
+            data = {
+              status: false,
+              error: "Document not found"
+            };
+          }
+        } else {
+          data = response.data;
+        }
+      }
+      return data;
+    } catch (error2) {
+      return {
+        status: false,
+        error: error2
+      };
+    }
+  },
+  async getDocumentModelsUsage(documentIds) {
+    if (documentIds.length > 0) {
+      try {
+        const response = await client$4().get(baseUrl + "&task=getdocumentsusage&documentIds=" + documentIds);
+        return response.data;
+      } catch (error2) {
+        return {
+          status: false,
+          error: error2
+        };
+      }
+    } else {
+      return {
+        status: false,
+        msg: "Missing parameter"
+      };
+    }
+  },
+  async getPageGroups(formId) {
+    if (typeof formId == "number" && formId > 0) {
+      try {
+        const response = await client$4().get(baseUrl + "&task=getpagegroups&form_id=" + formId);
+        return response.data;
+      } catch (error2) {
+        return {
+          status: false,
+          error: error2
+        };
+      }
+    } else {
+      return {
+        status: false,
+        msg: "MISSING_PARAMS"
+      };
+    }
+  },
+  async reorderDocuments(documents) {
+    let data = {};
+    data.documents = JSON.stringify(documents);
+    try {
+      return await fetchClient.post("reorderDocuments", data);
+    } catch (error2) {
+      return {
+        status: false,
+        error: error2
+      };
+    }
+  },
+  async addDocument(params) {
+    const formData = new FormData();
+    Object.keys(params).forEach((key) => formData.append(key, params[key]));
+    try {
+      const response = await client$4().post(baseUrl + "&task=addDocument", formData);
+      return response;
+    } catch (error2) {
+      return {
+        status: false,
+        error: error2
+      };
+    }
+  },
+  async getAssociatedCampaigns(id) {
+    try {
+      const response = client$4().get(
+        baseUrl + "&task=getassociatedcampaign",
+        {
+          params: {
+            pid: id
+          }
+        }
+      );
+      return response;
+    } catch (error2) {
+      return {
+        status: false,
+        error: error2
+      };
+    }
+  },
+  async removeDocumentFromProfile(id) {
+    try {
+      const response = await client$4().get(
+        baseUrl + "&task=removeDocumentFromProfile",
+        {
+          params: {
+            did: id
+          }
+        }
+      );
+      return response;
+    } catch (error2) {
+      return {
+        status: false,
+        error: error2
+      };
+    }
+  },
+  async getPageObject(formId) {
+    try {
+      const response = await client$4().get(
+        "/index.php?option=com_emundus&view=form&formid=" + formId + "&format=vue_jsonclean"
+      );
+      if (typeof response.data !== "object") {
+        throw "COM_EMUNDUS_FORM_BUILDER_FAILED_TO_LOAD_FORM";
+      }
+      return response;
+    } catch (error2) {
+      return {
+        status: false,
+        msg: error2
+      };
+    }
+  },
+  async checkIfDocumentCanBeDeletedForProfile(documentId, profileId) {
+    try {
+      const response = await client$4().get(
+        baseUrl + "&task=checkcandocbedeleted&docid=" + documentId + "&prid=" + profileId
+      );
+      return response.data;
+    } catch (error2) {
+      return {
+        status: false,
+        error: error2
+      };
+    }
+  },
+  async getConditions(formId) {
+    try {
+      const response = await client$4().get(
+        baseUrl + "&task=getjsconditions&form_id=" + formId + "&format=view"
+      );
+      return response.data;
+    } catch (error2) {
+      return {
+        status: false,
+        error: error2
+      };
+    }
+  },
+  async addRule(formId, conditions, actions, group, label) {
+    let data = {};
+    data.conditions = JSON.stringify(conditions);
+    data.actions = JSON.stringify(actions);
+    data.form_id = formId;
+    data.group = group;
+    data.label = label;
+    try {
+      return await fetchClient.post("addRule", data);
+    } catch (error2) {
+      return {
+        status: false,
+        error: error2
+      };
+    }
+  },
+  async editRule(ruleId, conditions, actions, group, label) {
+    let data = {};
+    data.conditions = JSON.stringify(conditions);
+    data.actions = JSON.stringify(actions);
+    data.rule_id = ruleId;
+    data.group = group;
+    data.label = label;
+    try {
+      return await fetchClient.post("editRule", data);
+    } catch (error2) {
+      return {
+        status: false,
+        error: error2
+      };
+    }
+  },
+  async deleteRule(ruleId) {
+    try {
+      const response = await client$4().get(baseUrl + "&task=deleteRule&rule_id=" + ruleId);
+      return response;
+    } catch (error2) {
+      return {
+        status: false,
+        error: error2
+      };
+    }
+  },
+  async publishRule(ruleId, state) {
+    try {
+      const response = await client$4().get(baseUrl + "&task=publishRule&rule_id=" + ruleId + "&state=" + state);
+      return response;
+    } catch (error2) {
+      return {
+        status: false,
+        error: error2
+      };
+    }
+  },
+  async getPublishedForms() {
+    try {
+      return await client$4().get(baseUrl + "&task=getallformpublished");
+    } catch (error2) {
+      return {
+        status: false,
+        error: error2
+      };
+    }
+  },
+  async getUnDocuments() {
+    try {
+      return await fetchClient.get("getundocuments");
+    } catch (error2) {
+      return {
+        status: false,
+        error: error2
+      };
+    }
+  }
+};
+const client = new FetchClient("groups");
+const groupsService = {
+  async getGroups() {
+    try {
+      return await client.get("getgroups");
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  }
+};
+const Popover_vue_vue_type_style_index_0_scoped_935d1a05_lang = "";
+const _sfc_main$2 = {
+  name: "Popover",
+  props: {
+    icon: {
+      type: String,
+      default: "more_vert"
+    },
+    position: {
+      type: String,
+      default: "bottom"
+      // top, bottom, left, right
+    },
+    popoverContentStyle: {
+      type: Object,
+      default: () => ({})
+    }
+  },
+  data: () => ({
+    id: "popover-" + Math.random().toString(36).substring(2, 9),
+    isOpen: false
+  }),
+  created() {
+    this.calculatePosition();
+    document.addEventListener("click", this.handleClickOutside);
+  },
+  beforeUnmount() {
+    document.removeEventListener("click", this.handleClickOutside);
+  },
+  methods: {
+    calculatePosition() {
+      const popoverContentContainer = this.$refs.popoverContent;
+      if (popoverContentContainer) {
+        const popoverContentWidth = popoverContentContainer.children[0].offsetWidth;
+        const popoverContentHeight = popoverContentContainer.children[0].offsetHeight;
+        const popoverToggleBtnWidth = popoverContentContainer.previousElementSibling.offsetWidth;
+        const popoverToggleBtnHeight = popoverContentContainer.previousElementSibling.offsetHeight;
+        const margin = 4;
+        switch (this.position) {
+          case "top":
+            popoverContentContainer.style.left = `calc(50% - ${popoverContentWidth / 2}px)`;
+            popoverContentContainer.style.bottom = `${popoverToggleBtnHeight + margin}px`;
+            break;
+          case "left":
+            popoverContentContainer.style.top = `calc(50% - ${popoverContentHeight / 2}px)`;
+            popoverContentContainer.style.right = `${popoverToggleBtnWidth + margin}px`;
+            break;
+          case "right":
+            popoverContentContainer.style.top = `calc(50% - ${popoverContentHeight / 2}px)`;
+            popoverContentContainer.style.left = `${popoverToggleBtnWidth + margin}px`;
+            break;
+          case "bottom":
+          default:
+            popoverContentContainer.style.left = `calc(50% - ${popoverContentWidth / 2}px)`;
+            popoverContentContainer.style.top = `${popoverToggleBtnHeight + margin}px`;
+            break;
+        }
+      }
+    },
+    onClickToggle() {
+      this.isOpen = !this.isOpen;
+      if (this.isOpen) {
+        this.calculatePosition();
+      }
+    },
+    onFocusOut() {
+      this.isOpen = false;
+    },
+    handleClickOutside(event) {
+      const clickedElement = event.target;
+      if (!clickedElement.closest("#" + this.id)) {
+        this.isOpen = false;
+      }
+    }
+  }
+};
+const _hoisted_1$3 = ["id"];
+const _hoisted_2$2 = ["id"];
+function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", {
+    id: _ctx.id,
+    class: "popover-container",
+    onFocusout: _cache[1] || (_cache[1] = (...args) => $options.onFocusOut && $options.onFocusOut(...args))
+  }, [
+    createBaseVNode("span", {
+      class: "material-symbols-outlined popover-toggle-btn tw-cursor-pointer",
+      onClick: _cache[0] || (_cache[0] = (...args) => $options.onClickToggle && $options.onClickToggle(...args))
+    }, toDisplayString($props.icon), 1),
+    createVNode(Transition, { name: "fade" }, {
+      default: withCtx(() => [
+        withDirectives(createBaseVNode("div", {
+          class: "popover-content tw-shadow tw-rounded",
+          ref: "popoverContent",
+          id: "popover-content-" + _ctx.id,
+          style: normalizeStyle($props.popoverContentStyle)
+        }, [
+          renderSlot(_ctx.$slots, "default", {}, void 0, true)
+        ], 12, _hoisted_2$2), [
+          [vShow, _ctx.isOpen]
+        ])
+      ]),
+      _: 3
+    })
+  ], 40, _hoisted_1$3);
+}
+const Popover = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-935d1a05"]]);
+const _sfc_main$1 = {
+  name: "Tabs",
+  props: {
+    tabs: {
+      type: Array,
+      required: true
+    },
+    classes: {
+      type: String,
+      default: "tw-overflow-x-scroll tw-absolute tw-right-6 tw-flex tw-items-center tw-justify-end tw-gap-2 -tw-top-[36px]"
+    }
+  },
+  data() {
+    return {
+      currentTabs: []
+    };
+  },
+  created() {
+    this.currentTabs = this.tabs;
+  },
+  methods: {
+    changeTab(id) {
+      this.currentTabs.forEach((tab) => {
+        tab.active = tab.id === id;
+      });
+      this.$emit("changeTabActive", id);
+    }
+  }
+};
+const _hoisted_1$2 = ["onClick"];
+function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", {
+    class: normalizeClass($props.classes)
+  }, [
+    (openBlock(true), createElementBlock(Fragment, null, renderList($data.currentTabs, (tab) => {
+      return withDirectives((openBlock(), createElementBlock("div", {
+        onClick: ($event) => $options.changeTab(tab.id),
+        class: normalizeClass(["tw-cursor-pointer tw-rounded-t-lg tw-flex tw-items-center tw-py-2 tw-px-4 tw-transition-colors tw-duration-300 tw-border-x tw-border-t", tab.active ? "tw-bg-white tw-border-profile-full" : "tw-bg-neutral-200 tw-border-neutral-400"])
+      }, [
+        createBaseVNode("span", {
+          class: normalizeClass(["material-symbols-outlined tw-mr-2", tab.active ? "tw-text-profile-full" : "tw-text-neutral-700"])
+        }, toDisplayString(tab.icon), 3),
+        createBaseVNode("span", {
+          class: normalizeClass([tab.active ? "tw-text-profile-full" : "tw-text-neutral-700", "tw-whitespace-nowrap"])
+        }, toDisplayString(_ctx.translate(tab.name)), 3)
+      ], 10, _hoisted_1$2)), [
+        [vShow, tab.displayed]
+      ]);
+    }), 256))
+  ], 2);
+}
+const Tabs = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1]]);
+function isEmpty(opt) {
+  if (opt === 0)
+    return false;
+  if (Array.isArray(opt) && opt.length === 0)
+    return true;
+  return !opt;
+}
+function not(fun) {
+  return (...params) => !fun(...params);
+}
+function includes(str, query) {
+  if (str === void 0)
+    str = "undefined";
+  if (str === null)
+    str = "null";
+  if (str === false)
+    str = "false";
+  const text = str.toString().toLowerCase();
+  return text.indexOf(query.trim()) !== -1;
+}
+function filterOptions(options, search, label, customLabel) {
+  return search ? options.filter((option) => includes(customLabel(option, label), search)).sort((a, b) => customLabel(a, label).length - customLabel(b, label).length) : options;
+}
+function stripGroups(options) {
+  return options.filter((option) => !option.$isLabel);
+}
+function flattenOptions(values, label) {
+  return (options) => options.reduce((prev, curr) => {
+    if (curr[values] && curr[values].length) {
+      prev.push({
+        $groupLabel: curr[label],
+        $isLabel: true
+      });
+      return prev.concat(curr[values]);
+    }
+    return prev;
+  }, []);
+}
+function filterGroups(search, label, values, groupLabel, customLabel) {
+  return (groups) => groups.map((group) => {
+    if (!group[values]) {
+      console.warn(`Options passed to vue-multiselect do not contain groups, despite the config.`);
+      return [];
+    }
+    const groupOptions = filterOptions(group[values], search, label, customLabel);
+    return groupOptions.length ? {
+      [groupLabel]: group[groupLabel],
+      [values]: groupOptions
+    } : [];
+  });
+}
+const flow = (...fns) => (x2) => fns.reduce((v, f) => f(v), x2);
+var multiselectMixin = {
+  data() {
+    return {
+      search: "",
+      isOpen: false,
+      preferredOpenDirection: "below",
+      optimizedHeight: this.maxHeight
+    };
+  },
+  props: {
+    /**
+     * Decide whether to filter the results based on search query.
+     * Useful for async filtering, where we search through more complex data.
+     * @type {Boolean}
+     */
+    internalSearch: {
+      type: Boolean,
+      default: true
+    },
+    /**
+     * Array of available options: Objects, Strings or Integers.
+     * If array of objects, visible label will default to option.label.
+     * If `labal` prop is passed, label will equal option['label']
+     * @type {Array}
+     */
+    options: {
+      type: Array,
+      required: true
+    },
+    /**
+     * Equivalent to the `multiple` attribute on a `<select>` input.
+     * @default false
+     * @type {Boolean}
+     */
+    multiple: {
+      type: Boolean,
+      default: false
+    },
+    /**
+     * Key to compare objects
+     * @default 'id'
+     * @type {String}
+     */
+    trackBy: {
+      type: String
+    },
+    /**
+     * Label to look for in option Object
+     * @default 'label'
+     * @type {String}
+     */
+    label: {
+      type: String
+    },
+    /**
+     * Enable/disable search in options
+     * @default true
+     * @type {Boolean}
+     */
+    searchable: {
+      type: Boolean,
+      default: true
+    },
+    /**
+     * Clear the search input after `)
+     * @default true
+     * @type {Boolean}
+     */
+    clearOnSelect: {
+      type: Boolean,
+      default: true
+    },
+    /**
+     * Hide already selected options
+     * @default false
+     * @type {Boolean}
+     */
+    hideSelected: {
+      type: Boolean,
+      default: false
+    },
+    /**
+     * Equivalent to the `placeholder` attribute on a `<select>` input.
+     * @default 'Select option'
+     * @type {String}
+     */
+    placeholder: {
+      type: String,
+      default: "Select option"
+    },
+    /**
+     * Allow to remove all selected values
+     * @default true
+     * @type {Boolean}
+     */
+    allowEmpty: {
+      type: Boolean,
+      default: true
+    },
+    /**
+     * Reset this.internalValue, this.search after this.internalValue changes.
+     * Useful if want to create a stateless dropdown.
+     * @default false
+     * @type {Boolean}
+     */
+    resetAfter: {
+      type: Boolean,
+      default: false
+    },
+    /**
+     * Enable/disable closing after selecting an option
+     * @default true
+     * @type {Boolean}
+     */
+    closeOnSelect: {
+      type: Boolean,
+      default: true
+    },
+    /**
+     * Function to interpolate the custom label
+     * @default false
+     * @type {Function}
+     */
+    customLabel: {
+      type: Function,
+      default(option, label) {
+        if (isEmpty(option))
+          return "";
+        return label ? option[label] : option;
+      }
+    },
+    /**
+     * Disable / Enable tagging
+     * @default false
+     * @type {Boolean}
+     */
+    taggable: {
+      type: Boolean,
+      default: false
+    },
+    /**
+     * String to show when highlighting a potential tag
+     * @default 'Press enter to create a tag'
+     * @type {String}
+    */
+    tagPlaceholder: {
+      type: String,
+      default: "Press enter to create a tag"
+    },
+    /**
+     * By default new tags will appear above the search results.
+     * Changing to 'bottom' will revert this behaviour
+     * and will proritize the search results
+     * @default 'top'
+     * @type {String}
+    */
+    tagPosition: {
+      type: String,
+      default: "top"
+    },
+    /**
+     * Number of allowed selected options. No limit if 0.
+     * @default 0
+     * @type {Number}
+    */
+    max: {
+      type: [Number, Boolean],
+      default: false
+    },
+    /**
+     * Will be passed with all events as second param.
+     * Useful for identifying events origin.
+     * @default null
+     * @type {String|Integer}
+    */
+    id: {
+      default: null
+    },
+    /**
+     * Limits the options displayed in the dropdown
+     * to the first X options.
+     * @default 1000
+     * @type {Integer}
+    */
+    optionsLimit: {
+      type: Number,
+      default: 1e3
+    },
+    /**
+     * Name of the property containing
+     * the group values
+     * @default 1000
+     * @type {String}
+    */
+    groupValues: {
+      type: String
+    },
+    /**
+     * Name of the property containing
+     * the group label
+     * @default 1000
+     * @type {String}
+    */
+    groupLabel: {
+      type: String
+    },
+    /**
+     * Allow to select all group values
+     * by selecting the group label
+     * @default false
+     * @type {Boolean}
+     */
+    groupSelect: {
+      type: Boolean,
+      default: false
+    },
+    /**
+     * Array of keyboard keys to block
+     * when selecting
+     * @default 1000
+     * @type {String}
+    */
+    blockKeys: {
+      type: Array,
+      default() {
+        return [];
+      }
+    },
+    /**
+     * Prevent from wiping up the search value
+     * @default false
+     * @type {Boolean}
+    */
+    preserveSearch: {
+      type: Boolean,
+      default: false
+    },
+    /**
+     * Select 1st options if value is empty
+     * @default false
+     * @type {Boolean}
+    */
+    preselectFirst: {
+      type: Boolean,
+      default: false
+    },
+    /**
+     * Prevent autofocus
+     * @default false
+     * @type {Boolean}
+    */
+    preventAutofocus: {
+      type: Boolean,
+      default: false
+    }
+  },
+  mounted() {
+    if (!this.multiple && this.max) {
+      console.warn("[Vue-Multiselect warn]: Max prop should not be used when prop Multiple equals false.");
+    }
+    if (this.preselectFirst && !this.internalValue.length && this.options.length) {
+      this.select(this.filteredOptions[0]);
+    }
+  },
+  computed: {
+    internalValue() {
+      return this.modelValue || this.modelValue === 0 ? Array.isArray(this.modelValue) ? this.modelValue : [this.modelValue] : [];
+    },
+    filteredOptions() {
+      const search = this.search || "";
+      const normalizedSearch = search.toLowerCase().trim();
+      let options = this.options.concat();
+      if (this.internalSearch) {
+        options = this.groupValues ? this.filterAndFlat(options, normalizedSearch, this.label) : filterOptions(options, normalizedSearch, this.label, this.customLabel);
+      } else {
+        options = this.groupValues ? flattenOptions(this.groupValues, this.groupLabel)(options) : options;
+      }
+      options = this.hideSelected ? options.filter(not(this.isSelected)) : options;
+      if (this.taggable && normalizedSearch.length && !this.isExistingOption(normalizedSearch)) {
+        if (this.tagPosition === "bottom") {
+          options.push({ isTag: true, label: search });
+        } else {
+          options.unshift({ isTag: true, label: search });
+        }
+      }
+      return options.slice(0, this.optionsLimit);
+    },
+    valueKeys() {
+      if (this.trackBy) {
+        return this.internalValue.map((element) => element[this.trackBy]);
+      } else {
+        return this.internalValue;
+      }
+    },
+    optionKeys() {
+      const options = this.groupValues ? this.flatAndStrip(this.options) : this.options;
+      return options.map((element) => this.customLabel(element, this.label).toString().toLowerCase());
+    },
+    currentOptionLabel() {
+      return this.multiple ? this.searchable ? "" : this.placeholder : this.internalValue.length ? this.getOptionLabel(this.internalValue[0]) : this.searchable ? "" : this.placeholder;
+    }
+  },
+  watch: {
+    internalValue: {
+      handler() {
+        if (this.resetAfter && this.internalValue.length) {
+          this.search = "";
+          this.$emit("update:modelValue", this.multiple ? [] : null);
+        }
+      },
+      deep: true
+    },
+    search() {
+      this.$emit("search-change", this.search);
+    }
+  },
+  emits: ["open", "search-change", "close", "select", "update:modelValue", "remove", "tag"],
+  methods: {
+    /**
+     * Returns the internalValue in a way it can be emited to the parent
+     * @returns {Object||Array||String||Integer}
+     */
+    getValue() {
+      return this.multiple ? this.internalValue : this.internalValue.length === 0 ? null : this.internalValue[0];
+    },
+    /**
+     * Filters and then flattens the options list
+     * @param  {Array}
+     * @return {Array} returns a filtered and flat options list
+     */
+    filterAndFlat(options, search, label) {
+      return flow(
+        filterGroups(search, label, this.groupValues, this.groupLabel, this.customLabel),
+        flattenOptions(this.groupValues, this.groupLabel)
+      )(options);
+    },
+    /**
+     * Flattens and then strips the group labels from the options list
+     * @param  {Array}
+     * @return {Array} returns a flat options list without group labels
+     */
+    flatAndStrip(options) {
+      return flow(
+        flattenOptions(this.groupValues, this.groupLabel),
+        stripGroups
+      )(options);
+    },
+    /**
+     * Updates the search value
+     * @param  {String}
+     */
+    updateSearch(query) {
+      this.search = query;
+    },
+    /**
+     * Finds out if the given query is already present
+     * in the available options
+     * @param  {String}
+     * @return {Boolean} returns true if element is available
+     */
+    isExistingOption(query) {
+      return !this.options ? false : this.optionKeys.indexOf(query) > -1;
+    },
+    /**
+     * Finds out if the given element is already present
+     * in the result value
+     * @param  {Object||String||Integer} option passed element to check
+     * @returns {Boolean} returns true if element is selected
+     */
+    isSelected(option) {
+      const opt = this.trackBy ? option[this.trackBy] : option;
+      return this.valueKeys.indexOf(opt) > -1;
+    },
+    /**
+     * Finds out if the given option is disabled
+     * @param  {Object||String||Integer} option passed element to check
+     * @returns {Boolean} returns true if element is disabled
+     */
+    isOptionDisabled(option) {
+      return !!option.$isDisabled;
+    },
+    /**
+     * Returns empty string when options is null/undefined
+     * Returns tag query if option is tag.
+     * Returns the customLabel() results and casts it to string.
+     *
+     * @param  {Object||String||Integer} Passed option
+     * @returns {Object||String}
+     */
+    getOptionLabel(option) {
+      if (isEmpty(option))
+        return "";
+      if (option.isTag)
+        return option.label;
+      if (option.$isLabel)
+        return option.$groupLabel;
+      const label = this.customLabel(option, this.label);
+      if (isEmpty(label))
+        return "";
+      return label;
+    },
+    /**
+     * Add the given option to the list of selected options
+     * or sets the option as the selected option.
+     * If option is already selected -> remove it from the results.
+     *
+     * @param  {Object||String||Integer} option to select/deselect
+     * @param  {Boolean} block removing
+     */
+    select(option, key) {
+      if (option.$isLabel && this.groupSelect) {
+        this.selectGroup(option);
+        return;
+      }
+      if (this.blockKeys.indexOf(key) !== -1 || this.disabled || option.$isDisabled || option.$isLabel)
+        return;
+      if (this.max && this.multiple && this.internalValue.length === this.max)
+        return;
+      if (key === "Tab" && !this.pointerDirty)
+        return;
+      if (option.isTag) {
+        this.$emit("tag", option.label, this.id);
+        this.search = "";
+        if (this.closeOnSelect && !this.multiple)
+          this.deactivate();
+      } else {
+        const isSelected2 = this.isSelected(option);
+        if (isSelected2) {
+          if (key !== "Tab")
+            this.removeElement(option);
+          return;
+        }
+        if (this.multiple) {
+          this.$emit("update:modelValue", this.internalValue.concat([option]));
+        } else {
+          this.$emit("update:modelValue", option);
+        }
+        this.$emit("select", option, this.id);
+        if (this.clearOnSelect)
+          this.search = "";
+      }
+      if (this.closeOnSelect)
+        this.deactivate();
+    },
+    /**
+     * Add the given group options to the list of selected options
+     * If all group optiona are already selected -> remove it from the results.
+     *
+     * @param  {Object||String||Integer} group to select/deselect
+     */
+    selectGroup(selectedGroup) {
+      const group = this.options.find((option) => {
+        return option[this.groupLabel] === selectedGroup.$groupLabel;
+      });
+      if (!group)
+        return;
+      if (this.wholeGroupSelected(group)) {
+        this.$emit("remove", group[this.groupValues], this.id);
+        const groupValues = this.trackBy ? group[this.groupValues].map((val) => val[this.trackBy]) : group[this.groupValues];
+        const newValue = this.internalValue.filter(
+          (option) => groupValues.indexOf(this.trackBy ? option[this.trackBy] : option) === -1
+        );
+        this.$emit("update:modelValue", newValue);
+      } else {
+        let optionsToAdd = group[this.groupValues].filter(
+          (option) => !(this.isOptionDisabled(option) || this.isSelected(option))
+        );
+        if (this.max) {
+          optionsToAdd.splice(this.max - this.internalValue.length);
+        }
+        this.$emit("select", optionsToAdd, this.id);
+        this.$emit(
+          "update:modelValue",
+          this.internalValue.concat(optionsToAdd)
+        );
+      }
+      if (this.closeOnSelect)
+        this.deactivate();
+    },
+    /**
+     * Helper to identify if all values in a group are selected
+     *
+     * @param {Object} group to validated selected values against
+     */
+    wholeGroupSelected(group) {
+      return group[this.groupValues].every(
+        (option) => this.isSelected(option) || this.isOptionDisabled(option)
+      );
+    },
+    /**
+     * Helper to identify if all values in a group are disabled
+     *
+     * @param {Object} group to check for disabled values
+     */
+    wholeGroupDisabled(group) {
+      return group[this.groupValues].every(this.isOptionDisabled);
+    },
+    /**
+     * Removes the given option from the selected options.
+     * Additionally checks this.allowEmpty prop if option can be removed when
+     * it is the last selected option.
+     *
+     * @param  {type} option description
+     * @return {type}        description
+     */
+    removeElement(option, shouldClose = true) {
+      if (this.disabled)
+        return;
+      if (option.$isDisabled)
+        return;
+      if (!this.allowEmpty && this.internalValue.length <= 1) {
+        this.deactivate();
+        return;
+      }
+      const index2 = typeof option === "object" ? this.valueKeys.indexOf(option[this.trackBy]) : this.valueKeys.indexOf(option);
+      if (this.multiple) {
+        const newValue = this.internalValue.slice(0, index2).concat(this.internalValue.slice(index2 + 1));
+        this.$emit("update:modelValue", newValue);
+      } else {
+        this.$emit("update:modelValue", null);
+      }
+      this.$emit("remove", option, this.id);
+      if (this.closeOnSelect && shouldClose)
+        this.deactivate();
+    },
+    /**
+     * Calls this.removeElement() with the last element
+     * from this.internalValue (selected element Array)
+     *
+     * @fires this#removeElement
+     */
+    removeLastElement() {
+      if (this.blockKeys.indexOf("Delete") !== -1)
+        return;
+      if (this.search.length === 0 && Array.isArray(this.internalValue) && this.internalValue.length) {
+        this.removeElement(this.internalValue[this.internalValue.length - 1], false);
+      }
+    },
+    /**
+     * Opens the multiselect’s dropdown.
+     * Sets this.isOpen to TRUE
+     */
+    activate() {
+      if (this.isOpen || this.disabled)
+        return;
+      this.adjustPosition();
+      if (this.groupValues && this.pointer === 0 && this.filteredOptions.length) {
+        this.pointer = 1;
+      }
+      this.isOpen = true;
+      if (this.searchable) {
+        if (!this.preserveSearch)
+          this.search = "";
+        if (!this.preventAutofocus)
+          this.$nextTick(() => this.$refs.search && this.$refs.search.focus());
+      } else if (!this.preventAutofocus) {
+        if (typeof this.$el !== "undefined")
+          this.$el.focus();
+      }
+      this.$emit("open", this.id);
+    },
+    /**
+     * Closes the multiselect’s dropdown.
+     * Sets this.isOpen to FALSE
+     */
+    deactivate() {
+      if (!this.isOpen)
+        return;
+      this.isOpen = false;
+      if (this.searchable) {
+        if (this.$refs.search !== null && typeof this.$refs.search !== "undefined")
+          this.$refs.search.blur();
+      } else {
+        if (typeof this.$el !== "undefined")
+          this.$el.blur();
+      }
+      if (!this.preserveSearch)
+        this.search = "";
+      this.$emit("close", this.getValue(), this.id);
+    },
+    /**
+     * Call this.activate() or this.deactivate()
+     * depending on this.isOpen value.
+     *
+     * @fires this#activate || this#deactivate
+     * @property {Boolean} isOpen indicates if dropdown is open
+     */
+    toggle() {
+      this.isOpen ? this.deactivate() : this.activate();
+    },
+    /**
+     * Updates the hasEnoughSpace variable used for
+     * detecting where to expand the dropdown
+     */
+    adjustPosition() {
+      if (typeof window === "undefined")
+        return;
+      const spaceAbove = this.$el.getBoundingClientRect().top;
+      const spaceBelow = window.innerHeight - this.$el.getBoundingClientRect().bottom;
+      const hasEnoughSpaceBelow = spaceBelow > this.maxHeight;
+      if (hasEnoughSpaceBelow || spaceBelow > spaceAbove || this.openDirection === "below" || this.openDirection === "bottom") {
+        this.preferredOpenDirection = "below";
+        this.optimizedHeight = Math.min(spaceBelow - 40, this.maxHeight);
+      } else {
+        this.preferredOpenDirection = "above";
+        this.optimizedHeight = Math.min(spaceAbove - 40, this.maxHeight);
+      }
+    }
+  }
+};
+var pointerMixin = {
+  data() {
+    return {
+      pointer: 0,
+      pointerDirty: false
+    };
+  },
+  props: {
+    /**
+     * Enable/disable highlighting of the pointed value.
+     * @type {Boolean}
+     * @default true
+     */
+    showPointer: {
+      type: Boolean,
+      default: true
+    },
+    optionHeight: {
+      type: Number,
+      default: 40
+    }
+  },
+  computed: {
+    pointerPosition() {
+      return this.pointer * this.optionHeight;
+    },
+    visibleElements() {
+      return this.optimizedHeight / this.optionHeight;
+    }
+  },
+  watch: {
+    filteredOptions() {
+      this.pointerAdjust();
+    },
+    isOpen() {
+      this.pointerDirty = false;
+    },
+    pointer() {
+      this.$refs.search && this.$refs.search.setAttribute("aria-activedescendant", this.id + "-" + this.pointer.toString());
+    }
+  },
+  methods: {
+    optionHighlight(index2, option) {
+      return {
+        "multiselect__option--highlight": index2 === this.pointer && this.showPointer,
+        "multiselect__option--selected": this.isSelected(option)
+      };
+    },
+    groupHighlight(index2, selectedGroup) {
+      if (!this.groupSelect) {
+        return [
+          "multiselect__option--disabled",
+          { "multiselect__option--group": selectedGroup.$isLabel }
+        ];
+      }
+      const group = this.options.find((option) => {
+        return option[this.groupLabel] === selectedGroup.$groupLabel;
+      });
+      return group && !this.wholeGroupDisabled(group) ? [
+        "multiselect__option--group",
+        { "multiselect__option--highlight": index2 === this.pointer && this.showPointer },
+        { "multiselect__option--group-selected": this.wholeGroupSelected(group) }
+      ] : "multiselect__option--disabled";
+    },
+    addPointerElement({ key } = "Enter") {
+      if (this.filteredOptions.length > 0) {
+        this.select(this.filteredOptions[this.pointer], key);
+      }
+      this.pointerReset();
+    },
+    pointerForward() {
+      if (this.pointer < this.filteredOptions.length - 1) {
+        this.pointer++;
+        if (this.$refs.list.scrollTop <= this.pointerPosition - (this.visibleElements - 1) * this.optionHeight) {
+          this.$refs.list.scrollTop = this.pointerPosition - (this.visibleElements - 1) * this.optionHeight;
+        }
+        if (this.filteredOptions[this.pointer] && this.filteredOptions[this.pointer].$isLabel && !this.groupSelect)
+          this.pointerForward();
+      }
+      this.pointerDirty = true;
+    },
+    pointerBackward() {
+      if (this.pointer > 0) {
+        this.pointer--;
+        if (this.$refs.list.scrollTop >= this.pointerPosition) {
+          this.$refs.list.scrollTop = this.pointerPosition;
+        }
+        if (this.filteredOptions[this.pointer] && this.filteredOptions[this.pointer].$isLabel && !this.groupSelect)
+          this.pointerBackward();
+      } else {
+        if (this.filteredOptions[this.pointer] && this.filteredOptions[0].$isLabel && !this.groupSelect)
+          this.pointerForward();
+      }
+      this.pointerDirty = true;
+    },
+    pointerReset() {
+      if (!this.closeOnSelect)
+        return;
+      this.pointer = 0;
+      if (this.$refs.list) {
+        this.$refs.list.scrollTop = 0;
+      }
+    },
+    pointerAdjust() {
+      if (this.pointer >= this.filteredOptions.length - 1) {
+        this.pointer = this.filteredOptions.length ? this.filteredOptions.length - 1 : 0;
+      }
+      if (this.filteredOptions.length > 0 && this.filteredOptions[this.pointer].$isLabel && !this.groupSelect) {
+        this.pointerForward();
+      }
+    },
+    pointerSet(index2) {
+      this.pointer = index2;
+      this.pointerDirty = true;
+    }
+  }
+};
+var script = {
+  name: "vue-multiselect",
+  mixins: [multiselectMixin, pointerMixin],
+  compatConfig: {
+    MODE: 3,
+    ATTR_ENUMERATED_COERCION: false
+  },
+  props: {
+    /**
+       * name attribute to match optional label element
+       * @default ''
+       * @type {String}
+       */
+    name: {
+      type: String,
+      default: ""
+    },
+    /**
+       * Presets the selected options value.
+       * @type {Object||Array||String||Integer}
+       */
+    modelValue: {
+      type: null,
+      default() {
+        return [];
+      }
+    },
+    /**
+       * String to show when pointing to an option
+       * @default 'Press enter to select'
+       * @type {String}
+       */
+    selectLabel: {
+      type: String,
+      default: "Press enter to select"
+    },
+    /**
+       * String to show when pointing to an option
+       * @default 'Press enter to select'
+       * @type {String}
+       */
+    selectGroupLabel: {
+      type: String,
+      default: "Press enter to select group"
+    },
+    /**
+       * String to show next to selected option
+       * @default 'Selected'
+       * @type {String}
+       */
+    selectedLabel: {
+      type: String,
+      default: "Selected"
+    },
+    /**
+       * String to show when pointing to an already selected option
+       * @default 'Press enter to remove'
+       * @type {String}
+       */
+    deselectLabel: {
+      type: String,
+      default: "Press enter to remove"
+    },
+    /**
+       * String to show when pointing to an already selected option
+       * @default 'Press enter to remove'
+       * @type {String}
+       */
+    deselectGroupLabel: {
+      type: String,
+      default: "Press enter to deselect group"
+    },
+    /**
+       * Decide whether to show pointer labels
+       * @default true
+       * @type {Boolean}
+       */
+    showLabels: {
+      type: Boolean,
+      default: true
+    },
+    /**
+       * Limit the display of selected options. The rest will be hidden within the limitText string.
+       * @default 99999
+       * @type {Integer}
+       */
+    limit: {
+      type: Number,
+      default: 99999
+    },
+    /**
+       * Sets maxHeight style value of the dropdown
+       * @default 300
+       * @type {Integer}
+       */
+    maxHeight: {
+      type: Number,
+      default: 300
+    },
+    /**
+       * Function that process the message shown when selected
+       * elements pass the defined limit.
+       * @default 'and * more'
+       * @param {Int} count Number of elements more than limit
+       * @type {Function}
+       */
+    limitText: {
+      type: Function,
+      default: (count) => `and ${count} more`
+    },
+    /**
+       * Set true to trigger the loading spinner.
+       * @default False
+       * @type {Boolean}
+       */
+    loading: {
+      type: Boolean,
+      default: false
+    },
+    /**
+       * Disables the multiselect if true.
+       * @default false
+       * @type {Boolean}
+       */
+    disabled: {
+      type: Boolean,
+      default: false
+    },
+    /**
+     * Enables search input's spellcheck if true.
+     * @default false
+     * @type {Boolean}
+     */
+    spellcheck: {
+      type: Boolean,
+      default: false
+    },
+    /**
+       * Fixed opening direction
+       * @default ''
+       * @type {String}
+       */
+    openDirection: {
+      type: String,
+      default: ""
+    },
+    /**
+       * Shows slot with message about empty options
+       * @default true
+       * @type {Boolean}
+       */
+    showNoOptions: {
+      type: Boolean,
+      default: true
+    },
+    showNoResults: {
+      type: Boolean,
+      default: true
+    },
+    tabindex: {
+      type: Number,
+      default: 0
+    },
+    required: {
+      type: Boolean,
+      default: false
+    }
+  },
+  computed: {
+    hasOptionGroup() {
+      return this.groupValues && this.groupLabel && this.groupSelect;
+    },
+    isSingleLabelVisible() {
+      return (this.singleValue || this.singleValue === 0) && (!this.isOpen || !this.searchable) && !this.visibleValues.length;
+    },
+    isPlaceholderVisible() {
+      return !this.internalValue.length && (!this.searchable || !this.isOpen);
+    },
+    visibleValues() {
+      return this.multiple ? this.internalValue.slice(0, this.limit) : [];
+    },
+    singleValue() {
+      return this.internalValue[0];
+    },
+    deselectLabelText() {
+      return this.showLabels ? this.deselectLabel : "";
+    },
+    deselectGroupLabelText() {
+      return this.showLabels ? this.deselectGroupLabel : "";
+    },
+    selectLabelText() {
+      return this.showLabels ? this.selectLabel : "";
+    },
+    selectGroupLabelText() {
+      return this.showLabels ? this.selectGroupLabel : "";
+    },
+    selectedLabelText() {
+      return this.showLabels ? this.selectedLabel : "";
+    },
+    inputStyle() {
+      if (this.searchable || this.multiple && this.modelValue && this.modelValue.length) {
+        return this.isOpen ? { width: "100%" } : { width: "0", position: "absolute", padding: "0" };
+      }
+      return "";
+    },
+    contentStyle() {
+      return this.options.length ? { display: "inline-block" } : { display: "block" };
+    },
+    isAbove() {
+      if (this.openDirection === "above" || this.openDirection === "top") {
+        return true;
+      } else if (this.openDirection === "below" || this.openDirection === "bottom") {
+        return false;
+      } else {
+        return this.preferredOpenDirection === "above";
+      }
+    },
+    showSearchInput() {
+      return this.searchable && (this.hasSingleSelectedSlot && (this.visibleSingleValue || this.visibleSingleValue === 0) ? this.isOpen : true);
+    }
+  }
+};
+const _hoisted_1$1 = {
+  ref: "tags",
+  class: "multiselect__tags"
+};
+const _hoisted_2$1 = { class: "multiselect__tags-wrap" };
+const _hoisted_3$1 = { class: "multiselect__spinner" };
+const _hoisted_4$1 = { key: 0 };
+const _hoisted_5$1 = { class: "multiselect__option" };
+const _hoisted_6$1 = { class: "multiselect__option" };
+const _hoisted_7$1 = /* @__PURE__ */ createTextVNode("No elements found. Consider changing the search query.");
+const _hoisted_8$1 = { class: "multiselect__option" };
+const _hoisted_9$1 = /* @__PURE__ */ createTextVNode("List is empty.");
+function render(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createBlock("div", {
+    tabindex: _ctx.searchable ? -1 : $props.tabindex,
+    class: [{ "multiselect--active": _ctx.isOpen, "multiselect--disabled": $props.disabled, "multiselect--above": $options.isAbove, "multiselect--has-options-group": $options.hasOptionGroup }, "multiselect"],
+    onFocus: _cache[14] || (_cache[14] = ($event) => _ctx.activate()),
+    onBlur: _cache[15] || (_cache[15] = ($event) => _ctx.searchable ? false : _ctx.deactivate()),
+    onKeydown: [
+      _cache[16] || (_cache[16] = withKeys(withModifiers(($event) => _ctx.pointerForward(), ["self", "prevent"]), ["down"])),
+      _cache[17] || (_cache[17] = withKeys(withModifiers(($event) => _ctx.pointerBackward(), ["self", "prevent"]), ["up"]))
+    ],
+    onKeypress: _cache[18] || (_cache[18] = withKeys(withModifiers(($event) => _ctx.addPointerElement($event), ["stop", "self"]), ["enter", "tab"])),
+    onKeyup: _cache[19] || (_cache[19] = withKeys(($event) => _ctx.deactivate(), ["esc"])),
+    role: "combobox",
+    "aria-owns": "listbox-" + _ctx.id
+  }, [
+    renderSlot(_ctx.$slots, "caret", { toggle: _ctx.toggle }, () => [
+      createVNode(
+        "div",
+        {
+          onMousedown: _cache[1] || (_cache[1] = withModifiers(($event) => _ctx.toggle(), ["prevent", "stop"])),
+          class: "multiselect__select"
+        },
+        null,
+        32
+        /* HYDRATE_EVENTS */
+      )
+    ]),
+    renderSlot(_ctx.$slots, "clear", { search: _ctx.search }),
+    createVNode(
+      "div",
+      _hoisted_1$1,
+      [
+        renderSlot(_ctx.$slots, "selection", {
+          search: _ctx.search,
+          remove: _ctx.removeElement,
+          values: $options.visibleValues,
+          isOpen: _ctx.isOpen
+        }, () => [
+          withDirectives(createVNode(
+            "div",
+            _hoisted_2$1,
+            [
+              (openBlock(true), createBlock(
+                Fragment,
+                null,
+                renderList($options.visibleValues, (option, index2) => {
+                  return renderSlot(_ctx.$slots, "tag", {
+                    option,
+                    search: _ctx.search,
+                    remove: _ctx.removeElement
+                  }, () => [
+                    (openBlock(), createBlock("span", {
+                      class: "multiselect__tag",
+                      key: index2
+                    }, [
+                      createVNode("span", {
+                        textContent: toDisplayString(_ctx.getOptionLabel(option))
+                      }, null, 8, ["textContent"]),
+                      createVNode("i", {
+                        tabindex: "1",
+                        onKeypress: withKeys(withModifiers(($event) => _ctx.removeElement(option), ["prevent"]), ["enter"]),
+                        onMousedown: withModifiers(($event) => _ctx.removeElement(option), ["prevent"]),
+                        class: "multiselect__tag-icon"
+                      }, null, 40, ["onKeypress", "onMousedown"])
+                    ]))
+                  ]);
+                }),
+                256
+                /* UNKEYED_FRAGMENT */
+              ))
+            ],
+            512
+            /* NEED_PATCH */
+          ), [
+            [vShow, $options.visibleValues.length > 0]
+          ]),
+          _ctx.internalValue && _ctx.internalValue.length > $props.limit ? renderSlot(_ctx.$slots, "limit", { key: 0 }, () => [
+            createVNode("strong", {
+              class: "multiselect__strong",
+              textContent: toDisplayString($props.limitText(_ctx.internalValue.length - $props.limit))
+            }, null, 8, ["textContent"])
+          ]) : createCommentVNode("v-if", true)
+        ]),
+        createVNode(Transition, { name: "multiselect__loading" }, {
+          default: withCtx(() => [
+            renderSlot(_ctx.$slots, "loading", {}, () => [
+              withDirectives(createVNode(
+                "div",
+                _hoisted_3$1,
+                null,
+                512
+                /* NEED_PATCH */
+              ), [
+                [vShow, $props.loading]
+              ])
+            ])
+          ]),
+          _: 3
+          /* FORWARDED */
+        }),
+        _ctx.searchable ? (openBlock(), createBlock("input", {
+          key: 0,
+          ref: "search",
+          name: $props.name,
+          id: _ctx.id,
+          type: "text",
+          autocomplete: "off",
+          spellcheck: $props.spellcheck,
+          placeholder: _ctx.placeholder,
+          required: $props.required,
+          style: $options.inputStyle,
+          value: _ctx.search,
+          disabled: $props.disabled,
+          tabindex: $props.tabindex,
+          onInput: _cache[2] || (_cache[2] = ($event) => _ctx.updateSearch($event.target.value)),
+          onFocus: _cache[3] || (_cache[3] = withModifiers(($event) => _ctx.activate(), ["prevent"])),
+          onBlur: _cache[4] || (_cache[4] = withModifiers(($event) => _ctx.deactivate(), ["prevent"])),
+          onKeyup: _cache[5] || (_cache[5] = withKeys(($event) => _ctx.deactivate(), ["esc"])),
+          onKeydown: [
+            _cache[6] || (_cache[6] = withKeys(withModifiers(($event) => _ctx.pointerForward(), ["prevent"]), ["down"])),
+            _cache[7] || (_cache[7] = withKeys(withModifiers(($event) => _ctx.pointerBackward(), ["prevent"]), ["up"])),
+            _cache[9] || (_cache[9] = withKeys(withModifiers(($event) => _ctx.removeLastElement(), ["stop"]), ["delete"]))
+          ],
+          onKeypress: _cache[8] || (_cache[8] = withKeys(withModifiers(($event) => _ctx.addPointerElement($event), ["prevent", "stop", "self"]), ["enter"])),
+          class: "multiselect__input",
+          "aria-controls": "listbox-" + _ctx.id
+        }, null, 44, ["name", "id", "spellcheck", "placeholder", "required", "value", "disabled", "tabindex", "aria-controls"])) : createCommentVNode("v-if", true),
+        $options.isSingleLabelVisible ? (openBlock(), createBlock(
+          "span",
+          {
+            key: 1,
+            class: "multiselect__single",
+            onMousedown: _cache[10] || (_cache[10] = withModifiers((...args) => _ctx.toggle && _ctx.toggle(...args), ["prevent"]))
+          },
+          [
+            renderSlot(_ctx.$slots, "singleLabel", { option: $options.singleValue }, () => [
+              createTextVNode(
+                toDisplayString(_ctx.currentOptionLabel),
+                1
+                /* TEXT */
+              )
+            ])
+          ],
+          32
+          /* HYDRATE_EVENTS */
+        )) : createCommentVNode("v-if", true),
+        $options.isPlaceholderVisible ? (openBlock(), createBlock(
+          "span",
+          {
+            key: 2,
+            class: "multiselect__placeholder",
+            onMousedown: _cache[11] || (_cache[11] = withModifiers((...args) => _ctx.toggle && _ctx.toggle(...args), ["prevent"]))
+          },
+          [
+            renderSlot(_ctx.$slots, "placeholder", {}, () => [
+              createTextVNode(
+                toDisplayString(_ctx.placeholder),
+                1
+                /* TEXT */
+              )
+            ])
+          ],
+          32
+          /* HYDRATE_EVENTS */
+        )) : createCommentVNode("v-if", true)
+      ],
+      512
+      /* NEED_PATCH */
+    ),
+    createVNode(Transition, { name: "multiselect" }, {
+      default: withCtx(() => [
+        withDirectives(createVNode(
+          "div",
+          {
+            class: "multiselect__content-wrapper",
+            onFocus: _cache[12] || (_cache[12] = (...args) => _ctx.activate && _ctx.activate(...args)),
+            tabindex: "-1",
+            onMousedown: _cache[13] || (_cache[13] = withModifiers(() => {
+            }, ["prevent"])),
+            style: { maxHeight: _ctx.optimizedHeight + "px" },
+            ref: "list"
+          },
+          [
+            createVNode("ul", {
+              class: "multiselect__content",
+              style: $options.contentStyle,
+              role: "listbox",
+              id: "listbox-" + _ctx.id,
+              "aria-multiselectable": _ctx.multiple
+            }, [
+              renderSlot(_ctx.$slots, "beforeList"),
+              _ctx.multiple && _ctx.max === _ctx.internalValue.length ? (openBlock(), createBlock("li", _hoisted_4$1, [
+                createVNode("span", _hoisted_5$1, [
+                  renderSlot(_ctx.$slots, "maxElements", {}, () => [
+                    createTextVNode(
+                      "Maximum of " + toDisplayString(_ctx.max) + " options selected. First remove a selected option to select another.",
+                      1
+                      /* TEXT */
+                    )
+                  ])
+                ])
+              ])) : createCommentVNode("v-if", true),
+              !_ctx.max || _ctx.internalValue.length < _ctx.max ? (openBlock(true), createBlock(
+                Fragment,
+                { key: 1 },
+                renderList(_ctx.filteredOptions, (option, index2) => {
+                  return openBlock(), createBlock("li", {
+                    class: "multiselect__element",
+                    key: index2,
+                    "aria-selected": _ctx.isSelected(option),
+                    id: _ctx.id + "-" + index2,
+                    role: !(option && (option.$isLabel || option.$isDisabled)) ? "option" : null
+                  }, [
+                    !(option && (option.$isLabel || option.$isDisabled)) ? (openBlock(), createBlock("span", {
+                      key: 0,
+                      class: [_ctx.optionHighlight(index2, option), "multiselect__option"],
+                      onClick: withModifiers(($event) => _ctx.select(option), ["stop"]),
+                      onMouseenter: withModifiers(($event) => _ctx.pointerSet(index2), ["self"]),
+                      "data-select": option && option.isTag ? _ctx.tagPlaceholder : $options.selectLabelText,
+                      "data-selected": $options.selectedLabelText,
+                      "data-deselect": $options.deselectLabelText
+                    }, [
+                      renderSlot(_ctx.$slots, "option", {
+                        option,
+                        search: _ctx.search,
+                        index: index2
+                      }, () => [
+                        createVNode(
+                          "span",
+                          null,
+                          toDisplayString(_ctx.getOptionLabel(option)),
+                          1
+                          /* TEXT */
+                        )
+                      ])
+                    ], 42, ["onClick", "onMouseenter", "data-select", "data-selected", "data-deselect"])) : createCommentVNode("v-if", true),
+                    option && (option.$isLabel || option.$isDisabled) ? (openBlock(), createBlock("span", {
+                      key: 1,
+                      "data-select": _ctx.groupSelect && $options.selectGroupLabelText,
+                      "data-deselect": _ctx.groupSelect && $options.deselectGroupLabelText,
+                      class: [_ctx.groupHighlight(index2, option), "multiselect__option"],
+                      onMouseenter: withModifiers(($event) => _ctx.groupSelect && _ctx.pointerSet(index2), ["self"]),
+                      onMousedown: withModifiers(($event) => _ctx.selectGroup(option), ["prevent"])
+                    }, [
+                      renderSlot(_ctx.$slots, "option", {
+                        option,
+                        search: _ctx.search,
+                        index: index2
+                      }, () => [
+                        createVNode(
+                          "span",
+                          null,
+                          toDisplayString(_ctx.getOptionLabel(option)),
+                          1
+                          /* TEXT */
+                        )
+                      ])
+                    ], 42, ["data-select", "data-deselect", "onMouseenter", "onMousedown"])) : createCommentVNode("v-if", true)
+                  ], 8, ["aria-selected", "id", "role"]);
+                }),
+                128
+                /* KEYED_FRAGMENT */
+              )) : createCommentVNode("v-if", true),
+              withDirectives(createVNode(
+                "li",
+                null,
+                [
+                  createVNode("span", _hoisted_6$1, [
+                    renderSlot(_ctx.$slots, "noResult", { search: _ctx.search }, () => [
+                      _hoisted_7$1
+                    ])
+                  ])
+                ],
+                512
+                /* NEED_PATCH */
+              ), [
+                [vShow, $props.showNoResults && (_ctx.filteredOptions.length === 0 && _ctx.search && !$props.loading)]
+              ]),
+              withDirectives(createVNode(
+                "li",
+                null,
+                [
+                  createVNode("span", _hoisted_8$1, [
+                    renderSlot(_ctx.$slots, "noOptions", {}, () => [
+                      _hoisted_9$1
+                    ])
+                  ])
+                ],
+                512
+                /* NEED_PATCH */
+              ), [
+                [vShow, $props.showNoOptions && ((_ctx.options.length === 0 || $options.hasOptionGroup === true && _ctx.filteredOptions.length === 0) && !_ctx.search && !$props.loading)]
+              ]),
+              renderSlot(_ctx.$slots, "afterList")
+            ], 12, ["id", "aria-multiselectable"])
+          ],
+          36
+          /* STYLE, HYDRATE_EVENTS */
+        ), [
+          [vShow, _ctx.isOpen]
+        ])
+      ]),
+      _: 3
+      /* FORWARDED */
+    })
+  ], 42, ["tabindex", "aria-owns"]);
+}
+script.render = render;
+var errors = {
+  methods: {
+    async displayError(title, text, type = "error", showCancelButton = false, confirm2 = "COM_EMUNDUS_OK", cancel = "COM_EMUNDUS_ACTIONS_CANCEL", html = false, callback = null) {
+      let options = {
+        title: this.translate(title),
+        text: this.translate(text),
+        icon: type,
+        showCancelButton,
+        confirmButtonText: this.translate(confirm2),
+        reverseButtons: true,
+        customClass: {
+          title: "em-swal-title",
+          confirmButton: "em-swal-confirm-button",
+          header: "tw-flex tw-justify-center tw-items-center tw-w-full"
+        }
+      };
+      if (showCancelButton) {
+        options.cancelButtonText = this.translate(cancel);
+        options.customClass.cancelButton = "em-swal-cancel-button";
+      } else {
+        options.customClass.actions = "em-swal-single-action";
+      }
+      if (html) {
+        options.html = text;
+      } else {
+        options.text = this.translate(text);
+      }
+      return Swal$1.fire(options).then((result) => {
+        if (result.value) {
+          if (callback != null) {
+            callback();
+          }
+          return true;
+        } else {
+          return false;
+        }
+      });
+    }
+  }
+};
+const WorkflowEdit_vue_vue_type_style_index_0_scoped_5a4d4747_lang = "";
+const _sfc_main = {
+  name: "WorkflowEdit",
+  props: {
+    workflowId: {
+      type: Number,
+      required: true
+    }
+  },
+  components: {
+    Multiselect: script,
+    Popover,
+    Tabs
+  },
+  mixins: [errors],
+  data() {
+    return {
+      workflow: {
+        id: 0,
+        label: ""
+      },
+      steps: [],
+      programs: [],
+      stepTypes: [],
+      sortByOptions: [],
+      statuses: [],
+      profiles: [],
+      groups: [],
+      evaluationForms: [],
+      programsOptions: [],
+      stepMandatoryFields: [
+        "label",
+        "type",
+        "entry_status"
+      ],
+      fieldsInError: {},
+      displayErrors: false,
+      searchThroughPrograms: "",
+      checkall: 0,
+      tabs: [
+        {
+          id: "steps",
+          name: "COM_EMUNDUS_WORKFLOW_STEPS",
+          description: "COM_EMUNDUS_WORKFLOW_STEPS_DESC",
+          icon: "schema",
+          active: true,
+          displayed: true
+        },
+        {
+          id: "programs",
+          name: "COM_EMUNDUS_WORKFLOW_PROGRAMS",
+          description: "COM_EMUNDUS_WORKFLOW_PROGRAMS_DESC",
+          icon: "join",
+          active: false,
+          displayed: true
+        }
+      ]
+    };
+  },
+  mounted() {
+    this.getStepTypes();
+    this.getStatuses().then(() => {
+      this.getPrograms().then(() => {
+        this.getProfiles().then(() => {
+          this.getWorkflow();
+        });
+      });
+    });
+    this.getEvaluationForms();
+    this.getGroups();
+  },
+  methods: {
+    getWorkflow() {
+      workflowService.getWorkflow(this.workflowId).then((response) => {
+        this.workflow = response.data.workflow;
+        let tmpSteps = response.data.steps;
+        tmpSteps.forEach((step) => {
+          step.entry_status = this.statuses.filter((status) => step.entry_status.includes(status.id.toString()));
+        });
+        this.steps = tmpSteps;
+        let program_ids = response.data.programs;
+        this.programs = this.programsOptions.filter((program) => program_ids.includes(program.id));
+      }).catch((e) => {
+        console.log(e);
+      });
+    },
+    async getStepTypes() {
+      return await workflowService.getStepTypes().then((response) => {
+        this.stepTypes = response.data.map((type) => {
+          type.group_ids = type.group_ids.map((groupId) => parseInt(groupId));
+          return type;
+        });
+      }).catch((e) => {
+        console.log(e);
+      });
+    },
+    async getStatuses() {
+      return await settingsService.getStatus().then((response) => {
+        return this.statuses = response.data.map((status) => {
+          return {
+            id: status.step,
+            label: status.label[useGlobalStore().shortLang]
+          };
+        });
+      }).catch((e) => {
+        console.log(e);
+      });
+    },
+    async getPrograms() {
+      return await programmeService.getAllPrograms().then((response) => {
+        this.programsOptions = response.data.datas.map((program) => {
+          return {
+            id: program.id,
+            label: program.label[useGlobalStore().shortLang],
+            workflows: []
+          };
+        });
+        this.getProgramWorkflows();
+      }).catch((e) => {
+        console.log(e);
+      });
+    },
+    async getProgramWorkflows() {
+      return await workflowService.getProgramsWorkflows().then((response) => {
+        this.programsOptions.forEach((program) => {
+          if (response.data[program.id]) {
+            program.workflows = response.data[program.id].map((workflow) => parseInt(workflow));
+          }
+        });
+      }).catch((e) => {
+        console.log(e);
+      });
+    },
+    async getProfiles() {
+      return await fileService.getProfiles().then((response) => {
+        const filteredProfiles = response.data.filter((profile) => {
+          return profile.label !== "noprofile";
+        });
+        this.profiles = filteredProfiles.map((profile) => {
+          return {
+            id: profile.id,
+            label: profile.label,
+            applicantProfile: profile.published
+          };
+        });
+      }).catch((e) => {
+        console.log(e);
+      });
+    },
+    getEvaluationForms() {
+      formService.getEvaluationForms().then((response) => {
+        if (response.status) {
+          this.evaluationForms = response.data.datas.map((form) => {
+            return { id: form.id, label: form.label[useGlobalStore().shortLang] };
+          });
+        }
+      });
+    },
+    getStepSubTypes(stepType) {
+      return this.stepTypes.filter((type) => type.parent_id == stepType);
+    },
+    async getGroups() {
+      return await groupsService.getGroups().then((response) => {
+        this.groups = response.data.map((group) => {
+          return {
+            id: group.id,
+            label: group.label
+          };
+        });
+      }).catch((e) => {
+        console.log(e);
+      });
+    },
+    getGroupsFromStepType(type) {
+      const stepType = this.stepTypes.find((stepType2) => stepType2.id === type);
+      return stepType ? stepType.group_ids : [];
+    },
+    getGroupLabel(groupId) {
+      const group = this.groups.find((group2) => group2.id == groupId);
+      return group ? group.label : "";
+    },
+    addStep() {
+      const newStep = {
+        id: 0,
+        label: this.translate("COM_EMUNDUS_WORKFLOW_NEW_STEP_LABEL"),
+        type: 1,
+        roles: [],
+        profile_id: 9,
+        entry_status: [],
+        output_status: 0
+      };
+      newStep.id = this.steps.reduce((acc, step) => {
+        if (step.id < acc) {
+          acc = step.id;
+        }
+        return acc;
+      }, 0) - 1;
+      this.steps.push(newStep);
+    },
+    duplicateStep(stepId) {
+      const step = this.steps.find((step2) => step2.id == stepId);
+      if (step) {
+        const newStep = { ...step };
+        newStep.id = this.steps.reduce((acc, step2) => {
+          if (step2.id < acc) {
+            acc = step2.id;
+          }
+          return acc;
+        }, 0) - 1;
+        this.steps.push(newStep);
+      }
+    },
+    async updateStepState(stepId, state = 0) {
+      let archived = false;
+      if (stepId > 0) {
+        const response = await workflowService.updateStepState(stepId, state);
+        if (response.status) {
+          this.steps = this.steps.map((step) => {
+            if (step.id == stepId) {
+              step.state = state;
+            }
+            return step;
+          });
+          archived = true;
+          return archived;
+        } else {
+          this.displayError("COM_EMUNDUS_WORKFLOW_ARCHIVE_FAILED", response.message);
+        }
+      } else {
+        return archived;
+      }
+    },
+    beforeDeleteStep(stepId) {
+      Swal.fire({
+        title: this.translate("COM_EMUNDUS_WORKFLOW_DELETE_STEP_CONFIRMATION"),
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: this.translate("COM_EMUNDUS_ACTIONS_DELETE"),
+        cancelButtonText: this.translate("CANCEL"),
+        reverseButtons: true,
+        customClass: {
+          title: "em-swal-title",
+          confirmButton: "em-swal-confirm-button",
+          cancelButton: "em-swal-cancel-button",
+          actions: "em-swal-double-action"
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.deleteStep(stepId);
+        }
+      });
+    },
+    async deleteStep(stepId) {
+      let deleted = false;
+      if (stepId < 1) {
+        this.steps = this.steps.filter((step) => {
+          return step.id != stepId;
+        });
+        deleted = true;
+      } else {
+        const response = await workflowService.deleteWorkflowStep(stepId);
+        if (response.status) {
+          this.steps = this.steps.filter((step) => {
+            return step.id != stepId;
+          });
+          deleted = true;
+        }
+      }
+      return deleted;
+    },
+    onBeforeSave() {
+      let check = false;
+      let stepsCheck = [];
+      this.fieldsInError = {};
+      this.steps.forEach((step) => {
+        this.fieldsInError[step.id] = [];
+        stepsCheck.push(this.stepMandatoryFields.every((field) => {
+          let emptyField = true;
+          switch (typeof step[field]) {
+            case "string":
+              emptyField = step[field].trim() === "";
+              break;
+            case "object":
+              emptyField = step[field].length < 1;
+              break;
+            default:
+              emptyField = step[field] === "";
+          }
+          if (emptyField) {
+            this.fieldsInError[step.id].push(field);
+          }
+          return !emptyField;
+        }));
+      });
+      check = stepsCheck.every((stepCheck) => {
+        return stepCheck;
+      });
+      return check;
+    },
+    onCheckProgram(program) {
+      if (this.isProgramAssociatedToAnotherWorkflow(program)) {
+        Swal.fire({
+          icon: "warning",
+          title: this.translate("COM_EMUNDUS_WORKFLOW_PROGRAM_ASSOCIATED_TO_ANOTHER_WORKFLOW"),
+          html: this.translate("COM_EMUNDUS_WORKFLOW_PROGRAM_ASSOCIATED_TO_ANOTHER_WORKFLOW_TEXT").replace("%s", program.label),
+          showConfirmButton: true,
+          confirmButtonText: this.translate("COM_EMUNDUS_WORKFLOW_CONFIRM_CHANGE_PROGRAM_ASSOCIATION"),
+          showCancelButton: true,
+          cancelButtonText: this.translate("CANCEL"),
+          reverseButtons: true,
+          customClass: {
+            title: "em-swal-title",
+            confirmButton: "em-swal-confirm-button",
+            cancelButton: "em-swal-cancel-button",
+            actions: "em-swal-double-action"
+          }
+        }).then((result) => {
+          if (result.value) {
+            program.workflows = [this.workflow.id];
+          } else {
+            this.programs = this.programs.filter((p2) => p2.id !== program.id);
+          }
+        });
+      }
+    },
+    onClickCheckAllProgram() {
+      if (this.checkall) {
+        this.displayedProgramsOptions.forEach((program) => {
+          if (!this.isProgramAssociatedToAnotherWorkflow(program) && !this.programs.includes(program)) {
+            this.programs.push(program);
+          }
+        });
+      } else {
+        this.displayedProgramsOptions.forEach((program) => {
+          this.programs = this.programs.filter((p2) => p2.id !== program.id);
+        });
+      }
+    },
+    save() {
+      const checked = this.onBeforeSave();
+      if (checked) {
+        workflowService.saveWorkflow(this.workflow, this.steps, this.programs).then((response) => {
+          if (response.status) {
+            Swal.fire({
+              icon: "success",
+              title: this.translate("COM_EMUNDUS_WORKFLOW_SAVE_SUCCESS"),
+              showConfirmButton: false,
+              timer: 1500
+            });
+            this.getWorkflow();
+          } else {
+            this.displayError("COM_EMUNDUS_WORKFLOW_SAVE_FAILED", response.message);
+          }
+        }).catch((e) => {
+          console.log(e);
+          this.displayError("COM_EMUNDUS_WORKFLOW_SAVE_FAILED", "");
+        });
+      } else {
+        this.displayErrors = true;
+        setTimeout(() => {
+          this.displayErrors = false;
+        }, 15e3);
+      }
+    },
+    goBack() {
+      window.location.href = "/workflows";
+    },
+    isApplicantStep(step) {
+      let isApplicantStep = step.type == 1;
+      if (!isApplicantStep) {
+        const stepType = this.stepTypes.find((stepType2) => stepType2.id === step.type);
+        if (stepType.parent_id == 1) {
+          isApplicantStep = true;
+        }
+      }
+      return isApplicantStep;
+    },
+    isProgramAssociatedToAnotherWorkflow(program) {
+      return program.workflows && program.workflows.length > 0 && !program.workflows.includes(this.workflow.id);
+    }
+  },
+  computed: {
+    nonApplicantProfiles() {
+      return this.profiles.filter((profile) => !profile.applicantProfile);
+    },
+    applicantProfiles() {
+      return this.profiles.filter((profile) => profile.applicantProfile);
+    },
+    parentStepTypes() {
+      return this.stepTypes.filter((type) => type.parent_id === 0);
+    },
+    activeTab() {
+      return this.tabs.find((tab) => tab.active);
+    },
+    displayedProgramsOptions() {
+      return this.programsOptions.filter((program) => {
+        return program.label.toLowerCase().includes(this.searchThroughPrograms.toLowerCase());
+      });
+    }
+  }
+};
+const _hoisted_1 = { class: "tw-m-2" };
+const _hoisted_2 = { class: "tw-ml-2 tw-text-neutral-900" };
+const _hoisted_3 = { id: "header" };
+const _hoisted_4 = { class: "tw-flex tw-flex-row tw-justify-between" };
+const _hoisted_5 = { class: "tw-mt-4 tw-w-full tw-flex tw-flex-row tw-justify-between tw-items-center" };
+const _hoisted_6 = { key: 0 };
+const _hoisted_7 = { value: "0" };
+const _hoisted_8 = {
+  id: "tabs-wrapper",
+  class: "tw-w-full tw-rounded-coordinator tw-p-6 tw-bg-white tw-border tw-border-neutral-300 tw-relative"
+};
+const _hoisted_9 = {
+  key: 0,
+  id: "workflow-steps-wrapper",
+  class: "tw-flex tw-flex-col"
+};
+const _hoisted_10 = {
+  id: "workflow-steps",
+  class: "tw-flex tw-flex-row tw-gap-3 tw-overflow-auto"
+};
+const _hoisted_11 = { class: "workflow-step-head tw-flex tw-flex-row tw-justify-between" };
+const _hoisted_12 = { class: "tw-list-none !tw-p-0" };
+const _hoisted_13 = ["onClick"];
+const _hoisted_14 = ["onClick"];
+const _hoisted_15 = ["onClick"];
+const _hoisted_16 = ["onClick"];
+const _hoisted_17 = { class: "workflow-step-content" };
+const _hoisted_18 = { class: "tw-mb-4 tw-flex tw-flex-col" };
+const _hoisted_19 = { class: "tw-mb-2" };
+const _hoisted_20 = ["onUpdate:modelValue"];
+const _hoisted_21 = { key: 0 };
+const _hoisted_22 = { class: "tw-mb-4 tw-flex tw-flex-col" };
+const _hoisted_23 = { class: "tw-mb-2" };
+const _hoisted_24 = ["onUpdate:modelValue"];
+const _hoisted_25 = ["value"];
+const _hoisted_26 = { key: 0 };
+const _hoisted_27 = {
+  key: 0,
+  class: "tw-mb-4 tw-flex tw-flex-col"
+};
+const _hoisted_28 = { class: "tw-mb-2" };
+const _hoisted_29 = ["onUpdate:modelValue"];
+const _hoisted_30 = ["value"];
+const _hoisted_31 = {
+  key: 1,
+  class: "tw-mb-4 tw-flex tw-flex-col"
+};
+const _hoisted_32 = { class: "tw-mb-2" };
+const _hoisted_33 = ["onUpdate:modelValue"];
+const _hoisted_34 = ["value"];
+const _hoisted_35 = { class: "tw-mb-4 tw-flex tw-flex-col" };
+const _hoisted_36 = { class: "tw-mb-2" };
+const _hoisted_37 = {
+  key: 2,
+  class: "tw-mb-4 tw-flex tw-flex-col"
+};
+const _hoisted_38 = { class: "tw-mb-2" };
+const _hoisted_39 = ["onUpdate:modelValue"];
+const _hoisted_40 = { value: "-1" };
+const _hoisted_41 = ["value"];
+const _hoisted_42 = {
+  key: 3,
+  class: "tw-mb-4 tw-flex tw-flex-row tw-items-center tw-cursor-pointer"
+};
+const _hoisted_43 = ["onUpdate:modelValue", "name", "id"];
+const _hoisted_44 = ["for"];
+const _hoisted_45 = {
+  key: 4,
+  class: "step-associated-groups"
+};
+const _hoisted_46 = { class: "tw-my-2" };
+const _hoisted_47 = {
+  href: "/users-menu/groups",
+  class: "tw-underline"
+};
+const _hoisted_48 = {
+  key: 0,
+  class: "tw-w-full tw-text-center"
+};
+const _hoisted_49 = { key: 1 };
+const _hoisted_50 = ["placeholder"];
+const _hoisted_51 = { class: "tw-flex tw-flex-row tw-items-center tw-cursor-pointer" };
+const _hoisted_52 = {
+  for: "check-all",
+  class: "tw-cursor-pointer !tw-mb-0"
+};
+const _hoisted_53 = { class: "tw-mt-4 tw-grid tw-grid-cols-4 tw-gap-3 tw-overflow-auto" };
+const _hoisted_54 = { class: "tw-mb-4 tw-flex tw-flex-row tw-items-center tw-cursor-pointer" };
+const _hoisted_55 = ["id", "value", "onChange"];
+const _hoisted_56 = ["for"];
+const _hoisted_57 = {
+  key: 0,
+  class: "tw-w-full tw-text-center"
+};
+function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+  const _component_Tabs = resolveComponent("Tabs");
+  const _component_popover = resolveComponent("popover");
+  const _component_Multiselect = resolveComponent("Multiselect");
+  return openBlock(), createElementBlock("div", _hoisted_1, [
+    createBaseVNode("div", {
+      class: "tw-flex tw-items-center tw-cursor-pointer tw-mb-4",
+      onClick: _cache[0] || (_cache[0] = (...args) => $options.goBack && $options.goBack(...args))
+    }, [
+      _cache[8] || (_cache[8] = createBaseVNode("span", { class: "material-icons-outlined" }, "navigate_before", -1)),
+      createBaseVNode("span", _hoisted_2, toDisplayString(_ctx.translate("BACK")), 1)
+    ]),
+    createBaseVNode("div", _hoisted_3, [
+      createBaseVNode("div", _hoisted_4, [
+        withDirectives(createBaseVNode("input", {
+          id: "workflow-label",
+          name: "workflow-label",
+          class: "!tw-w-[350px]",
+          type: "text",
+          "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => $data.workflow.label = $event)
+        }, null, 512), [
+          [vModelText, $data.workflow.label]
+        ]),
+        createBaseVNode("button", {
+          class: "tw-btn-primary tw-flex tw-items-center tw-gap-1",
+          onClick: _cache[2] || (_cache[2] = (...args) => $options.save && $options.save(...args))
+        }, [
+          _cache[9] || (_cache[9] = createBaseVNode("span", { class: "material-icons-outlined" }, "check", -1)),
+          createBaseVNode("span", null, toDisplayString(_ctx.translate("SAVE")), 1)
+        ])
+      ]),
+      createBaseVNode("div", _hoisted_5, [
+        createBaseVNode("div", null, [
+          $data.sortByOptions.length > 0 ? (openBlock(), createElementBlock("select", _hoisted_6, [
+            createBaseVNode("option", _hoisted_7, toDisplayString(_ctx.translate("SORT_BY")), 1)
+          ])) : createCommentVNode("", true)
+        ])
+      ])
+    ]),
+    createVNode(_component_Tabs, {
+      tabs: $data.tabs,
+      classes: "tw-flex tw-items-center tw-gap-2 tw-ml-7"
+    }, null, 8, ["tabs"]),
+    createBaseVNode("div", _hoisted_8, [
+      $options.activeTab.id == "steps" ? (openBlock(), createElementBlock("div", _hoisted_9, [
+        createBaseVNode("a", {
+          class: "tw-btn-primary tw-h-fit tw-w-fit tw-mb-4",
+          href: "#",
+          onClick: _cache[3] || (_cache[3] = (...args) => $options.addStep && $options.addStep(...args))
+        }, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_ADD_STEP")), 1),
+        createBaseVNode("div", _hoisted_10, [
+          (openBlock(true), createElementBlock(Fragment, null, renderList($data.steps, (step) => {
+            return openBlock(), createElementBlock("div", {
+              key: step.id,
+              class: normalizeClass(["workflow-step tw-rounded tw-border tw-shadow-sm tw-p-4", {
+                "tw-bg-slate-50": step.state != 1,
+                "em-white-bg": step.state == 1
+              }])
+            }, [
+              createBaseVNode("div", _hoisted_11, [
+                createBaseVNode("h4", null, toDisplayString(step.label), 1),
+                createVNode(_component_popover, null, {
+                  default: withCtx(() => [
+                    createBaseVNode("ul", _hoisted_12, [
+                      createBaseVNode("li", {
+                        class: "archive-workflow-step tw-cursor-pointer tw-p-2",
+                        onClick: ($event) => $options.duplicateStep(step.id)
+                      }, toDisplayString(_ctx.translate("COM_EMUNDUS_ACTIONS_DUPLICATE")), 9, _hoisted_13),
+                      step.state == 1 ? (openBlock(), createElementBlock("li", {
+                        key: 0,
+                        class: "archive-workflow-step tw-cursor-pointer tw-p-2",
+                        onClick: ($event) => $options.updateStepState(step.id, 0)
+                      }, toDisplayString(_ctx.translate("COM_EMUNDUS_ACTIONS_ARCHIVE")), 9, _hoisted_14)) : (openBlock(), createElementBlock("li", {
+                        key: 1,
+                        class: "archive-workflow-step tw-cursor-pointer tw-p-2",
+                        onClick: ($event) => $options.updateStepState(step.id, 1)
+                      }, toDisplayString(_ctx.translate("COM_EMUNDUS_ACTIONS_UNARCHIVE")), 9, _hoisted_15)),
+                      createBaseVNode("li", {
+                        class: "delete-workflow-step tw-cursor-pointer tw-p-2",
+                        onClick: ($event) => $options.beforeDeleteStep(step.id)
+                      }, toDisplayString(_ctx.translate("COM_EMUNDUS_ACTIONS_DELETE")), 9, _hoisted_16)
+                    ])
+                  ]),
+                  _: 2
+                }, 1024)
+              ]),
+              createBaseVNode("div", _hoisted_17, [
+                createBaseVNode("div", _hoisted_18, [
+                  createBaseVNode("label", _hoisted_19, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_LABEL")), 1),
+                  withDirectives(createBaseVNode("input", {
+                    type: "text",
+                    "onUpdate:modelValue": ($event) => step.label = $event
+                  }, null, 8, _hoisted_20), [
+                    [vModelText, step.label]
+                  ]),
+                  _ctx.displayError && $data.fieldsInError[step.id] && $data.fieldsInError[step.id].includes("label") ? (openBlock(), createElementBlock("span", _hoisted_21, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_LABEL_REQUIRED")), 1)) : createCommentVNode("", true)
+                ]),
+                createBaseVNode("div", _hoisted_22, [
+                  createBaseVNode("label", _hoisted_23, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_TYPE")), 1),
+                  withDirectives(createBaseVNode("select", {
+                    "onUpdate:modelValue": ($event) => step.type = $event
+                  }, [
+                    (openBlock(true), createElementBlock(Fragment, null, renderList($data.stepTypes, (type) => {
+                      return openBlock(), createElementBlock("option", {
+                        key: type.id,
+                        value: type.id
+                      }, [
+                        type.parent_id > 0 ? (openBlock(), createElementBlock("span", _hoisted_26, " - ")) : createCommentVNode("", true),
+                        createTextVNode(" " + toDisplayString(_ctx.translate(type.label)), 1)
+                      ], 8, _hoisted_25);
+                    }), 128))
+                  ], 8, _hoisted_24), [
+                    [vModelSelect, step.type]
+                  ])
+                ]),
+                $options.isApplicantStep(step) ? (openBlock(), createElementBlock("div", _hoisted_27, [
+                  createBaseVNode("label", _hoisted_28, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_PROFILE")), 1),
+                  withDirectives(createBaseVNode("select", {
+                    "onUpdate:modelValue": ($event) => step.profile_id = $event
+                  }, [
+                    (openBlock(true), createElementBlock(Fragment, null, renderList($options.applicantProfiles, (profile) => {
+                      return openBlock(), createElementBlock("option", {
+                        key: profile.id,
+                        value: profile.id
+                      }, toDisplayString(profile.label), 9, _hoisted_30);
+                    }), 128))
+                  ], 8, _hoisted_29), [
+                    [vModelSelect, step.profile_id]
+                  ])
+                ])) : (openBlock(), createElementBlock("div", _hoisted_31, [
+                  createBaseVNode("label", _hoisted_32, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_PROFILE")), 1),
+                  withDirectives(createBaseVNode("select", {
+                    "onUpdate:modelValue": ($event) => step.form_id = $event
+                  }, [
+                    (openBlock(true), createElementBlock(Fragment, null, renderList($data.evaluationForms, (form) => {
+                      return openBlock(), createElementBlock("option", {
+                        key: form.id,
+                        value: form.id
+                      }, toDisplayString(form.label), 9, _hoisted_34);
+                    }), 128))
+                  ], 8, _hoisted_33), [
+                    [vModelSelect, step.form_id]
+                  ])
+                ])),
+                createBaseVNode("div", _hoisted_35, [
+                  createBaseVNode("label", _hoisted_36, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS")), 1),
+                  createVNode(_component_Multiselect, {
+                    options: $data.statuses,
+                    modelValue: step.entry_status,
+                    "onUpdate:modelValue": ($event) => step.entry_status = $event,
+                    label: "label",
+                    "track-by": "id",
+                    placeholder: _ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS_SELECT"),
+                    multiple: true
+                  }, null, 8, ["options", "modelValue", "onUpdate:modelValue", "placeholder"])
+                ]),
+                $options.isApplicantStep(step) ? (openBlock(), createElementBlock("div", _hoisted_37, [
+                  createBaseVNode("label", _hoisted_38, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_OUTPUT_STATUS")), 1),
+                  withDirectives(createBaseVNode("select", {
+                    "onUpdate:modelValue": ($event) => step.output_status = $event
+                  }, [
+                    createBaseVNode("option", _hoisted_40, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_OUTPUT_STATUS_SELECT")), 1),
+                    (openBlock(true), createElementBlock(Fragment, null, renderList($data.statuses, (status) => {
+                      return openBlock(), createElementBlock("option", {
+                        key: status.id,
+                        value: status.id
+                      }, toDisplayString(status.label), 9, _hoisted_41);
+                    }), 128))
+                  ], 8, _hoisted_39), [
+                    [vModelSelect, step.output_status]
+                  ])
+                ])) : createCommentVNode("", true),
+                !$options.isApplicantStep(step) ? (openBlock(), createElementBlock("div", _hoisted_42, [
+                  withDirectives(createBaseVNode("input", {
+                    "onUpdate:modelValue": ($event) => step.multiple = $event,
+                    "true-value": "1",
+                    "false-value": "0",
+                    type: "checkbox",
+                    name: "step-" + step.id + "-multiple",
+                    id: "step-" + step.id + "-multiple",
+                    class: "tw-cursor-pointer"
+                  }, null, 8, _hoisted_43), [
+                    [vModelCheckbox, step.multiple]
+                  ]),
+                  createBaseVNode("label", {
+                    for: "step-" + step.id + "-multiple",
+                    class: "tw-cursor-pointer tw-mb-0"
+                  }, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_IS_MULTIPLE")), 9, _hoisted_44)
+                ])) : createCommentVNode("", true),
+                !$options.isApplicantStep(step) ? (openBlock(), createElementBlock("div", _hoisted_45, [
+                  createBaseVNode("label", null, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_GROUPS")), 1),
+                  createBaseVNode("ul", _hoisted_46, [
+                    (openBlock(true), createElementBlock(Fragment, null, renderList($options.getGroupsFromStepType(step.type), (group_id) => {
+                      return openBlock(), createElementBlock("li", { key: group_id }, toDisplayString($options.getGroupLabel(group_id)), 1);
+                    }), 128))
+                  ]),
+                  createBaseVNode("a", _hoisted_47, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_EDIT_RIGHTS")), 1)
+                ])) : createCommentVNode("", true)
+              ])
+            ], 2);
+          }), 128)),
+          $data.steps.length < 1 ? (openBlock(), createElementBlock("p", _hoisted_48, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_NO_STEPS")), 1)) : createCommentVNode("", true)
+        ])
+      ])) : $options.activeTab.id === "programs" ? (openBlock(), createElementBlock("div", _hoisted_49, [
+        withDirectives(createBaseVNode("input", {
+          type: "text",
+          "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => $data.searchThroughPrograms = $event),
+          placeholder: _ctx.translate("COM_EMUNDUS_WORKFLOW_SEARCH_PROGRAMS_PLACEHOLDER"),
+          class: "tw-w-full tw-p-2 tw-mb-4 tw-border tw-border-neutral-300 tw-rounded"
+        }, null, 8, _hoisted_50), [
+          [vModelText, $data.searchThroughPrograms]
+        ]),
+        createBaseVNode("div", _hoisted_51, [
+          withDirectives(createBaseVNode("input", {
+            id: "check-all",
+            class: "tw-cursor-pointer",
+            type: "checkbox",
+            "onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => $data.checkall = $event),
+            onChange: _cache[6] || (_cache[6] = (...args) => $options.onClickCheckAllProgram && $options.onClickCheckAllProgram(...args))
+          }, null, 544), [
+            [vModelCheckbox, $data.checkall]
+          ]),
+          createBaseVNode("label", _hoisted_52, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_CHECK_ALL")), 1)
+        ]),
+        createBaseVNode("div", _hoisted_53, [
+          (openBlock(true), createElementBlock(Fragment, null, renderList($options.displayedProgramsOptions, (program) => {
+            return openBlock(), createElementBlock("div", {
+              key: program.id
+            }, [
+              createBaseVNode("div", _hoisted_54, [
+                withDirectives(createBaseVNode("input", {
+                  id: "program-" + program.id,
+                  type: "checkbox",
+                  "onUpdate:modelValue": _cache[7] || (_cache[7] = ($event) => $data.programs = $event),
+                  value: program,
+                  class: "tw-cursor-pointer",
+                  onChange: ($event) => $options.onCheckProgram(program)
+                }, null, 40, _hoisted_55), [
+                  [vModelCheckbox, $data.programs]
+                ]),
+                createBaseVNode("label", {
+                  for: "program-" + program.id,
+                  class: normalizeClass(["tw-cursor-pointer tw-m-0", { "tw-text-gray-300": $options.isProgramAssociatedToAnotherWorkflow(program) }])
+                }, toDisplayString(program.label), 11, _hoisted_56)
+              ])
+            ]);
+          }), 128)),
+          $data.programsOptions.length < 1 ? (openBlock(), createElementBlock("p", _hoisted_57, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_NO_PROGRAMS")), 1)) : createCommentVNode("", true)
+        ])
+      ])) : createCommentVNode("", true)
+    ])
+  ]);
+}
+const WorkflowEdit = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-5a4d4747"]]);
+const WorkflowEdit$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: WorkflowEdit
 }, Symbol.toStringTag, { value: "Module" }));
 if (document) {
   let app = null;
@@ -37275,7 +40105,7 @@ if (document) {
   if (el) {
     const componentName = el.getAttribute("component");
     if (componentName) {
-      if (componentName === "Attachments" || filesElement || componentName === "Comments") {
+      if (componentName === "Attachments" || filesElement || componentName === "Comments" || componentName === "Workflows/WorkflowEdit") {
         Array.prototype.slice.call(el.attributes).forEach(function(attr) {
           datas[attr.name] = attr.value;
         });
@@ -37313,6 +40143,11 @@ if (document) {
             border: datas.border ? datas.border == 1 : true
           });
           break;
+        case "Workflows/WorkflowEdit":
+          app = createApp(WorkflowEdit, {
+            workflowId: Number(datas.workflowid)
+          });
+          break;
         default:
           app = createApp({
             components: {
@@ -37321,9 +40156,9 @@ if (document) {
                 if (componentPath.length > 1) {
                   let directory = componentPath[0];
                   let name = componentPath[1];
-                  return __variableDynamicImportRuntimeHelper(/* @__PURE__ */ Object.assign({}), `./views/${directory}/${name}.vue`);
+                  return __variableDynamicImportRuntimeHelper(/* @__PURE__ */ Object.assign({ "./views/Program/ProgramEdit.vue": () => __vitePreload(() => import("./ProgramEdit.js"), true ? ["ProgramEdit.js","campaign.js"] : void 0), "./views/Workflows/WorkflowEdit.vue": () => __vitePreload(() => Promise.resolve().then(() => WorkflowEdit$1), true ? void 0 : void 0), "./views/Workflows/WorkflowSettings.vue": () => __vitePreload(() => import("./WorkflowSettings.js"), true ? [] : void 0) }), `./views/${directory}/${name}.vue`);
                 } else {
-                  return __variableDynamicImportRuntimeHelper(/* @__PURE__ */ Object.assign({ "./views/ApplicationSingle.vue": () => __vitePreload(() => import("./ApplicationSingle.js"), true ? ["ApplicationSingle.js","errors.js"] : void 0), "./views/Attachments.vue": () => __vitePreload(() => Promise.resolve().then(() => Attachments$1), true ? void 0 : void 0), "./views/CampaignEdition.vue": () => __vitePreload(() => import("./CampaignEdition.js"), true ? ["CampaignEdition.js","campaign.js","FormBuilderPreviewForm.js","Skeleton.js","addCampaign.js","vue-multiselect.esm.js","Tabs.js","index.js","email.js","History.js"] : void 0), "./views/Comments.vue": () => __vitePreload(() => Promise.resolve().then(() => Comments$1), true ? void 0 : void 0), "./views/Formbuilder.vue": () => __vitePreload(() => import("./Formbuilder.js"), true ? ["Formbuilder.js","index.js","errors.js","vue-multiselect.esm.js","FormBuilderPreviewForm.js","Skeleton.js","Translations.js","Popover.js","campaign.js","IncrementalSelect.js","History.js"] : void 0), "./views/History.vue": () => __vitePreload(() => import("./History.js"), true ? [] : void 0), "./views/List.vue": () => __vitePreload(() => import("./List.js"), true ? ["List.js","Skeleton.js","Popover.js"] : void 0), "./views/Settings.vue": () => __vitePreload(() => import("./Settings.js"), true ? ["Settings.js","vue-multiselect.esm.js","Tabs.js","History.js","Translations.js","index.js","errors.js"] : void 0), "./views/addCampaign.vue": () => __vitePreload(() => import("./addCampaign.js").then((n) => n.b), true ? ["addCampaign.js","vue-multiselect.esm.js","campaign.js"] : void 0), "./views/addEmail.vue": () => __vitePreload(() => import("./addEmail.js"), true ? ["addEmail.js","vue-multiselect.esm.js","IncrementalSelect.js","email.js"] : void 0) }), `./views/${componentName}.vue`);
+                  return __variableDynamicImportRuntimeHelper(/* @__PURE__ */ Object.assign({ "./views/ApplicationSingle.vue": () => __vitePreload(() => import("./ApplicationSingle.js"), true ? [] : void 0), "./views/Attachments.vue": () => __vitePreload(() => Promise.resolve().then(() => Attachments$1), true ? void 0 : void 0), "./views/CampaignEdition.vue": () => __vitePreload(() => import("./CampaignEdition.js"), true ? ["CampaignEdition.js","campaign.js","addCampaign.js","editor.js","vue-dropzone.js","index.js","email.js","History.js"] : void 0), "./views/Comments.vue": () => __vitePreload(() => Promise.resolve().then(() => Comments$1), true ? void 0 : void 0), "./views/Formbuilder.vue": () => __vitePreload(() => import("./Formbuilder.js"), true ? ["Formbuilder.js","index.js","editor.js","Translations.js","Skeleton.js","campaign.js","IncrementalSelect.js","History.js"] : void 0), "./views/History.vue": () => __vitePreload(() => import("./History.js"), true ? [] : void 0), "./views/List.vue": () => __vitePreload(() => import("./List.js"), true ? ["List.js","Skeleton.js"] : void 0), "./views/Settings.vue": () => __vitePreload(() => import("./Settings.js"), true ? ["Settings.js","History.js","Translations.js","index.js","vue-dropzone.js","editor.js","WorkflowSettings.js"] : void 0), "./views/Workflows.vue": () => __vitePreload(() => import("./Workflows.js"), true ? ["Workflows.js","List.js","Skeleton.js"] : void 0), "./views/addCampaign.vue": () => __vitePreload(() => import("./addCampaign.js").then((n) => n.b), true ? ["addCampaign.js","editor.js","campaign.js"] : void 0), "./views/addEmail.vue": () => __vitePreload(() => import("./addEmail.js"), true ? ["addEmail.js","IncrementalSelect.js","email.js","editor.js"] : void 0) }), `./views/${componentName}.vue`);
                 }
               })
             },
@@ -37389,71 +40224,92 @@ if (document) {
         const globalStore2 = useGlobalStore();
         globalStore2.initAttachmentPath(datas.base + "/images/emundus/files/");
       }
+      {
+        app.config.productionTip = false;
+        app.config.devtools = true;
+        app.config.performance = true;
+      }
       app.mount(elementId);
+      {
+        const version2 = app.version;
+        const devtools2 = window.__VUE_DEVTOOLS_GLOBAL_HOOK__;
+        if (devtools2) {
+          devtools2.enabled = true;
+          devtools2.emit("app:init", app, version2, {});
+        }
+      }
     }
   }
 }
 export {
   $3ed269f2f0fb224b$export$2e2bcd8739ae039 as $,
   Attachments as A,
-  vModelText as B,
+  toHandlers as B,
   Comments as C,
-  vModelDynamic as D,
-  vModelCheckbox as E,
-  FetchClient as F,
-  withKeys as G,
-  vModelRadio as H,
-  client$1 as I,
-  watch as J,
-  ref as K,
-  renderSlot as L,
+  Tabs as D,
+  mixin$1 as E,
+  Fragment as F,
+  formService as G,
+  programmeService as H,
+  Transition as I,
+  hooks as J,
+  defineStore as K,
+  vModelText as L,
   Modal as M,
-  reactive as N,
-  __vitePreload as O,
-  resolveDynamicComponent as P,
-  defineComponent as Q,
-  h as R,
-  Swal as S,
+  vModelDynamic as N,
+  withKeys as O,
+  vModelRadio as P,
+  Popover as Q,
+  client$4 as R,
+  Swal$1 as S,
   TransitionGroup as T,
-  getAugmentedNamespace as U,
-  commonjsGlobal as V,
-  getDefaultExportFromCjs as W,
-  computed as X,
-  toHandlers as Y,
-  markRaw as Z,
+  watch as U,
+  reactive as V,
+  __vitePreload as W,
+  resolveDynamicComponent as X,
+  renderSlot as Y,
+  defineComponent as Z,
   _export_sfc as _,
-  axios$1 as a,
-  watchEffect as a0,
-  nextTick as a1,
-  unref as a2,
-  onBeforeUnmount as a3,
-  customRef as a4,
-  getCurrentInstance as a5,
-  render$1 as a6,
-  onMounted as a7,
-  withCtx as b,
-  createBlock as c,
-  createBaseVNode as d,
-  createElementBlock as e,
-  createCommentVNode as f,
-  Fragment as g,
-  renderList as h,
-  normalizeClass as i,
-  createVNode as j,
-  withModifiers as k,
-  vModelSelect as l,
+  createBaseVNode as a,
+  h as a0,
+  getAugmentedNamespace as a1,
+  commonjsGlobal as a2,
+  getDefaultExportFromCjs as a3,
+  ref as a4,
+  computed as a5,
+  fileService as a6,
+  markRaw as a7,
+  watchEffect as a8,
+  nextTick as a9,
+  unref as aa,
+  onBeforeUnmount as ab,
+  customRef as ac,
+  getCurrentInstance as ad,
+  render$2 as ae,
+  onMounted as af,
+  renderList as b,
+  createElementBlock as c,
+  withDirectives as d,
+  createVNode as e,
+  FetchClient as f,
+  errors as g,
+  axios$1 as h,
+  createBlock as i,
+  withCtx as j,
+  createCommentVNode as k,
+  normalizeStyle as l,
   mergeProps as m,
-  normalizeStyle as n,
+  normalizeClass as n,
   openBlock as o,
-  createTextVNode as p,
-  mixin$1 as q,
+  settingsService as p,
+  withModifiers as q,
   resolveComponent as r,
-  settingsService as s,
+  script as s,
   toDisplayString as t,
-  useGlobalStore as u,
+  vModelSelect as u,
   vShow as v,
-  withDirectives as w,
-  Transition as x,
-  hooks as y,
-  defineStore as z
+  workflowService as w,
+  createTextVNode as x,
+  useGlobalStore as y,
+  vModelCheckbox as z
 };
