@@ -807,7 +807,6 @@ if (!in_array($name, ['settings', 'campaigns', 'emails', 'form'])) {
 	$wa->registerAndUseStyle('com_emundus_sumoselect', 'media/com_emundus/lib/sumoselect/sumoselect.css');
 }
 
-$wa->registerAndUseScript('com_emundus_chunk_vendors', 'media/com_emundus_vue/chunk-vendors_emundus.js', ['version' => $hash]);
 $wa->registerAndUseStyle('com_emundus_app', 'media/com_emundus_vue/app_emundus.css', ['version' => $hash]);
 
 $wa->registerAndUseScript('lottie', 'media/com_emundus/js/lib/@lottiefiles/lottie-player/dist/lottie-player.js');
