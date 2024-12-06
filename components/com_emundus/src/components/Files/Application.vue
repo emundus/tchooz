@@ -54,18 +54,12 @@
         </div>
       </div>
 
-      <div id="modal-evaluationgrid">
-        <div class="tw-flex tw-flex-col" v-if="!loading" style="width: 40px;height: 40px;margin: 24px 0 12px 24px;">
-          <div class="em-circle-main-100 tw-flex tw-flex-col" style="width: 40px">
-            <div class="em-circle-main-200 tw-flex tw-flex-col" style="width: 24px">
-              <span class="material-symbols-outlined tw-text-main-400" style="font-size: 14px">troubleshoot</span>
-            </div>
-          </div>
-        </div>
-        <iframe v-if="url" :src="url" class="iframe-evaluation" id="iframe-evaluation" @load="iframeLoaded($event);"
-                title="Evaluation form"/>
-        <div class="em-page-loader" v-if="loading"></div>
-      </div>
+      <Evaluations
+          v-if="selectedFile"
+          :fnum="typeof selectedFile === 'string' ? selectedFile : selectedFile.fnum"
+          :key="typeof selectedFile === 'string' ? selectedFile : selectedFile.fnum"
+      >
+      </Evaluations>
     </div>
   </modal>
 </template>
@@ -77,11 +71,12 @@ import filesService from '@/services/files.js';
 import errors from "@/mixins/errors.js";
 import Comments from "@/views/Comments.vue";
 import Modal from '@/components/Modal.vue';
+import Evaluations from "@/components/Files/Evaluations.vue";
 
 
 export default {
   name: "Application",
-  components: {Comments, Attachments, Modal},
+  components: {Evaluations, Comments, Attachments, Modal},
   props: {
     file: Object | String,
     type: String,
