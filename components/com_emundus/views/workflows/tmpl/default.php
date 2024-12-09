@@ -16,6 +16,8 @@ Text::script('COM_EMUNDUS_ACTIONS_DELETE');
 Text::script('COM_EMUNDUS_ACTIONS_DUPLICATE');
 Text::script('COM_EMUNDUS_ONBOARD_ALL_PROGRAMS');
 Text::script('COM_EMUNDUS_WORKFLOW_DELETE_WORKFLOW_CONFIRMATION');
+Text::script('COM_EMUNDUS_WORKFLOW_PROGRAMS_ASSOCIATED_TITLE');
+Text::script('COM_EMUNDUS_WORKFLOW_PROGRAMS_ASSOCIATED');
 
 $app          = Factory::getApplication();
 $lang         = $app->getLanguage();

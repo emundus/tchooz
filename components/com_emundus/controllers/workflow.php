@@ -88,21 +88,42 @@ class EmundusControllerWorkflow extends JControllerLegacy
 						if (!empty($associated_programmes))
 						{
 							$associated_programmes_html = '';
-							foreach ($associated_programmes as $program)
+							$associated_programmes_html_long = '';
+							if (count($associated_programmes) < 2)
 							{
-								$associated_programmes_html .= '<a class="tw-flex tw-flex-row tw-underline em-main-500-color tw-transition-all" href="/campaigns/edit-program?id=' . $program->id . '" target="_blank">' . $program->label . '</a>';
+								$associated_programmes_html .= '<a class="tw-flex tw-flex-row tw-underline em-main-500-color tw-transition-all" href="/campaigns/edit-program?id=' . $associated_programmes[0]->id . '" target="_blank">' . $associated_programmes[0]->label . '</a>';
+							}
+							else
+							{
+								$associated_programmes_html_long = '<div>';
+								$associated_programmes_html_long       .= '<h2 class="tw-mb-2">' . Text::_('COM_EMUNDUS_WORKFLOW_PROGRAMS_ASSOCIATED_TITLE') . '</h2>';
+								$associated_programmes_html_long       .= '<div class="tw-flex tw-flex-col tw-flex-wrap">';
+								foreach ($associated_programmes as $program)
+								{
+									$associated_programmes_html_long .= '<a class="tw-flex tw-flex-row tw-underline em-main-500-color tw-transition-all" href="/campaigns/edit-program?id=' . $program->id . '" target="_blank">' . $program->label . '</a>';
+								}
+								$associated_programmes_html_long .= '</div></div>';
+
+								$associated_programmes_html = '<div>';
+								$associated_programmes_html .= '<span class="tw-cursor-pointer tw-font-semibold tw-text-profile-full tw-flex tw-items-center tw-underline">' . count($associated_programmes) . ' ' . Text::_('COM_EMUNDUS_WORKFLOW_ASSOCIATED_PROGRAMS') . '</span>';
+								$associated_programmes_html .= '</div>';
+
 							}
 						}
 					}
 
-					$workflow->additional_columns = [
-						[
-							'key'     => Text::_('COM_EMUNDUS_WORKFLOW_ASSOCIATED_PROGRAMS'),
-							'value'   => $associated_programmes_html,
-							'classes' => '',
-							'display' => 'all'
-						]
+					$additional_col = [
+						'key'     => Text::_('COM_EMUNDUS_WORKFLOW_ASSOCIATED_PROGRAMS'),
+						'value'   => $associated_programmes_html,
+						'classes' => '',
+						'display' => 'all'
 					];
+
+					if (!empty($associated_programmes_html_long)) {
+						$additional_col['long_value'] = $associated_programmes_html_long;
+					}
+
+					$workflow->additional_columns = [$additional_col];
 					$workflows[$key]              = $workflow;
 				}
 			}
