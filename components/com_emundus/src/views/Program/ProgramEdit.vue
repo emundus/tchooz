@@ -28,17 +28,10 @@
     </div>
 
     <div class="tw-w-full tw-my-4" v-show="selectedTab === 'workflows'">
-      <label class="tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_WORKFLOWS_ASSOCIATED_TITLE') }}</label>
-      <Multiselect
-          :options="workflowOptions"
-          class="tw-my-4"
-          v-model="workflows"
-          label="label"
-          track-by="id"
-          placeholder="Select a program"
-          :multiple="true"
-      >
-      </Multiselect>
+      <label class="tw-mb-2 tw-mr-2">{{ translate('COM_EMUNDUS_ONBOARD_WORKFLOWS_ASSOCIATED_TITLE') }}</label>
+      <select v-model="workflowId">
+        <option v-for="workflow in workflowOptions" :key="workflow.id" :value="workflow.id">{{ workflow.label }}</option>
+      </select>
       <div class="tw-flex tw-flex-row tw-justify-between">
         <a href="/workflows" class="tw-underline" target="_blank"> {{ translate('COM_EMUNDUS_PROGRAMS_ACCESS_TO_WORKFLOWS') }} </a>
         <button class="tw-btn-primary" @click="updateProgramWorkflows">
@@ -67,7 +60,7 @@ export default {
     return {
       program: {},
       campaigns: [],
-      workflows: [],
+      workflowId: 0,
       workflowOptions: [],
       tabs: [
         {
@@ -89,7 +82,7 @@ export default {
   created() {
     this.getWorkflows();
     this.getAssociatedCampaigns();
-    this.getAssociatedWorkflows();
+    this.getAssociatedWorkflow();
   },
   methods: {
     getWorkflows() {
@@ -109,21 +102,22 @@ export default {
         this.campaigns = response.data;
       });
     },
-    getAssociatedWorkflows() {
+    getAssociatedWorkflow() {
       workflowService.getWorkflowsByProgramId(this.programId).then((response) => {
-        this.workflows = response.data.map((workflow) => {
-          console.log(workflow)
-
-          return {
-            id: workflow.id,
-            label: workflow.label,
-          };
-        });
+        const workflows = response.data.map((workflow) => workflow.id);
+        if (workflows.length) {
+          this.workflowId = workflows[0];
+        }
       });
     },
     updateProgramWorkflows() {
-      workflowService.updateProgramWorkflows(this.programId, this.workflows).then((response) => {
-
+      workflowService.updateProgramWorkflows(this.programId, [this.workflowId]).then((response) => {
+        Swal.fire({
+          icon: 'success',
+          title: this.translate('COM_EMUNDUS_PROGRAM_UPDATE_ASSOCIATED_WORKFLOW_SUCCESS'),
+          showConfirmButton: false,
+          timer: 1500
+        });
       });
     }
   }

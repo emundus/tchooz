@@ -38,7 +38,7 @@ export default {
   },
   async updateProgramWorkflows(programId, workflows) {
     try {
-      return await client.post('updateprogramworkflows', {program_id: programId, workflows: JSON.stringify(workflows.map(w => w.id))});
+      return await client.post('updateprogramworkflows', {program_id: programId, workflows: JSON.stringify(workflows)});
     } catch (e) {
       return {
         status: false, msg: e.message

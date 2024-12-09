@@ -31392,7 +31392,7 @@ const _hoisted_15$5 = {
 };
 const _hoisted_16$5 = { for: "replace" };
 const _hoisted_17$5 = ["accept"];
-const _hoisted_18$4 = {
+const _hoisted_18$5 = {
   key: 1,
   class: "input-group"
 };
@@ -31474,7 +31474,7 @@ function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
             accept: $options.allowedType
           }, null, 40, _hoisted_17$5)
         ])) : createCommentVNode("", true),
-        $props.is_applicant != 1 && $data.attachment.profiles && $data.attachment.profiles.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_18$4, [
+        $props.is_applicant != 1 && $data.attachment.profiles && $data.attachment.profiles.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_18$5, [
           createBaseVNode("label", _hoisted_19$4, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_VIEWED")), 1),
           withDirectives(createBaseVNode("input", {
             type: "checkbox",
@@ -32018,7 +32018,7 @@ const _hoisted_15$4 = {
 };
 const _hoisted_16$4 = ["title"];
 const _hoisted_17$4 = ["title"];
-const _hoisted_18$3 = { key: 10 };
+const _hoisted_18$4 = { key: 10 };
 const _hoisted_19$3 = { key: 0 };
 const _hoisted_20$3 = ["title"];
 const _hoisted_21$3 = ["title"];
@@ -32095,7 +32095,7 @@ function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
         title: _ctx.translate("COM_EMUNDUS_ATTACHMENTS_PERMISSION_DELETE")
       }, "delete", 10, _hoisted_17$4)) : createCommentVNode("", true)
     ])) : createCommentVNode("", true),
-    $props.sync && $props.columns.includes("sync") ? (openBlock(), createElementBlock("td", _hoisted_18$3, [
+    $props.sync && $props.columns.includes("sync") ? (openBlock(), createElementBlock("td", _hoisted_18$4, [
       $props.attachment.sync > 0 ? (openBlock(), createElementBlock("div", _hoisted_19$3, [
         $props.attachment.sync_method == "write" && !$data.syncLoading ? (openBlock(), createElementBlock("span", {
           key: 0,
@@ -35744,7 +35744,7 @@ const _hoisted_17$3 = {
   key: 1,
   class: "material-symbols-outlined tw-text-base"
 };
-const _hoisted_18$2 = {
+const _hoisted_18$3 = {
   key: 0,
   class: "material-symbols-outlined tw-text-base"
 };
@@ -35944,7 +35944,7 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
                 onClick: _cache[12] || (_cache[12] = ($event) => $options.orderBy("timedate"))
               }, [
                 createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_SEND_DATE")), 1),
-                $data.sort.orderBy === "timedate" && $data.sort.order === "asc" ? (openBlock(), createElementBlock("span", _hoisted_18$2, "arrow_upward")) : createCommentVNode("", true),
+                $data.sort.orderBy === "timedate" && $data.sort.order === "asc" ? (openBlock(), createElementBlock("span", _hoisted_18$3, "arrow_upward")) : createCommentVNode("", true),
                 $data.sort.orderBy === "timedate" && $data.sort.order === "desc" ? (openBlock(), createElementBlock("span", _hoisted_19$2, "arrow_downward")) : createCommentVNode("", true)
               ])) : createCommentVNode("", true),
               $props.columns.includes("desc") ? (openBlock(), createElementBlock("th", {
@@ -36773,7 +36773,7 @@ const _hoisted_15$2 = {
 };
 const _hoisted_16$2 = { class: "tw-flex tw-flex-col tw-mr-3" };
 const _hoisted_17$2 = { class: "tw-text-neutral-500 tw-text-xs" };
-const _hoisted_18$1 = { class: "tw-text-xs" };
+const _hoisted_18$2 = { class: "tw-text-xs" };
 const _hoisted_19$1 = {
   key: 0,
   class: "label tw-bg-profile-medium !tw-text-neutral-900"
@@ -36962,7 +36962,7 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
                   ], 2),
                   createBaseVNode("div", _hoisted_16$2, [
                     createBaseVNode("span", _hoisted_17$2, toDisplayString(comment.updated ? comment.updated : comment.date), 1),
-                    createBaseVNode("span", _hoisted_18$1, toDisplayString(comment.username), 1)
+                    createBaseVNode("span", _hoisted_18$2, toDisplayString(comment.username), 1)
                   ])
                 ]),
                 createBaseVNode("div", null, [
@@ -37310,7 +37310,7 @@ const workflowService = {
   },
   async updateProgramWorkflows(programId, workflows) {
     try {
-      return await client$3.post("updateprogramworkflows", { program_id: programId, workflows: JSON.stringify(workflows.map((w2) => w2.id)) });
+      return await client$3.post("updateprogramworkflows", { program_id: programId, workflows: JSON.stringify(workflows) });
     } catch (e) {
       return {
         status: false,
@@ -39766,7 +39766,7 @@ const _hoisted_14$1 = ["onClick"];
 const _hoisted_15$1 = ["onClick"];
 const _hoisted_16$1 = ["onClick"];
 const _hoisted_17$1 = { class: "workflow-step-content" };
-const _hoisted_18 = { class: "tw-mb-4 tw-flex tw-flex-col" };
+const _hoisted_18$1 = { class: "tw-mb-4 tw-flex tw-flex-col" };
 const _hoisted_19 = { class: "tw-mb-2" };
 const _hoisted_20 = ["onUpdate:modelValue"];
 const _hoisted_21 = {
@@ -39936,7 +39936,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
                 }, 1024)
               ]),
               createBaseVNode("div", _hoisted_17$1, [
-                createBaseVNode("div", _hoisted_18, [
+                createBaseVNode("div", _hoisted_18$1, [
                   createBaseVNode("label", _hoisted_19, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_LABEL")), 1),
                   withDirectives(createBaseVNode("input", {
                     type: "text",
@@ -40362,7 +40362,7 @@ const _sfc_main = {
     return {
       program: {},
       campaigns: [],
-      workflows: [],
+      workflowId: 0,
       workflowOptions: [],
       tabs: [
         {
@@ -40384,7 +40384,7 @@ const _sfc_main = {
   created() {
     this.getWorkflows();
     this.getAssociatedCampaigns();
-    this.getAssociatedWorkflows();
+    this.getAssociatedWorkflow();
   },
   methods: {
     getWorkflows() {
@@ -40404,19 +40404,22 @@ const _sfc_main = {
         this.campaigns = response.data;
       });
     },
-    getAssociatedWorkflows() {
+    getAssociatedWorkflow() {
       workflowService.getWorkflowsByProgramId(this.programId).then((response) => {
-        this.workflows = response.data.map((workflow) => {
-          console.log(workflow);
-          return {
-            id: workflow.id,
-            label: workflow.label
-          };
-        });
+        const workflows = response.data.map((workflow) => workflow.id);
+        if (workflows.length) {
+          this.workflowId = workflows[0];
+        }
       });
     },
     updateProgramWorkflows() {
-      workflowService.updateProgramWorkflows(this.programId, this.workflows).then((response) => {
+      workflowService.updateProgramWorkflows(this.programId, [this.workflowId]).then((response) => {
+        Swal.fire({
+          icon: "success",
+          title: this.translate("COM_EMUNDUS_PROGRAM_UPDATE_ASSOCIATED_WORKFLOW_SUCCESS"),
+          showConfirmButton: false,
+          timer: 1500
+        });
       });
     }
   }
@@ -40442,15 +40445,15 @@ const _hoisted_13 = {
   target: "_blank"
 };
 const _hoisted_14 = { class: "tw-w-full tw-my-4" };
-const _hoisted_15 = { class: "tw-mb-2" };
-const _hoisted_16 = { class: "tw-flex tw-flex-row tw-justify-between" };
-const _hoisted_17 = {
+const _hoisted_15 = { class: "tw-mb-2 tw-mr-2" };
+const _hoisted_16 = ["value"];
+const _hoisted_17 = { class: "tw-flex tw-flex-row tw-justify-between" };
+const _hoisted_18 = {
   href: "/workflows",
   class: "tw-underline",
   target: "_blank"
 };
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
-  const _component_Multiselect = resolveComponent("Multiselect");
   return openBlock(), createElementBlock("div", _hoisted_1, [
     createBaseVNode("h1", _hoisted_2, toDisplayString(_ctx.translate("COM_EMUNDUS_PROGRAMS_EDITION_TITLE")), 1),
     createBaseVNode("h2", _hoisted_3, toDisplayString(_ctx.translate("COM_EMUNDUS_PROGRAMS_EDITION_SUBTITLE")), 1),
@@ -40495,18 +40498,20 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ]),
     withDirectives(createBaseVNode("div", _hoisted_14, [
       createBaseVNode("label", _hoisted_15, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_WORKFLOWS_ASSOCIATED_TITLE")), 1),
-      createVNode(_component_Multiselect, {
-        options: $data.workflowOptions,
-        class: "tw-my-4",
-        modelValue: $data.workflows,
-        "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $data.workflows = $event),
-        label: "label",
-        "track-by": "id",
-        placeholder: "Select a program",
-        multiple: true
-      }, null, 8, ["options", "modelValue"]),
-      createBaseVNode("div", _hoisted_16, [
-        createBaseVNode("a", _hoisted_17, toDisplayString(_ctx.translate("COM_EMUNDUS_PROGRAMS_ACCESS_TO_WORKFLOWS")), 1),
+      withDirectives(createBaseVNode("select", {
+        "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $data.workflowId = $event)
+      }, [
+        (openBlock(true), createElementBlock(Fragment, null, renderList($data.workflowOptions, (workflow) => {
+          return openBlock(), createElementBlock("option", {
+            key: workflow.id,
+            value: workflow.id
+          }, toDisplayString(workflow.label), 9, _hoisted_16);
+        }), 128))
+      ], 512), [
+        [vModelSelect, $data.workflowId]
+      ]),
+      createBaseVNode("div", _hoisted_17, [
+        createBaseVNode("a", _hoisted_18, toDisplayString(_ctx.translate("COM_EMUNDUS_PROGRAMS_ACCESS_TO_WORKFLOWS")), 1),
         createBaseVNode("button", {
           class: "tw-btn-primary",
           onClick: _cache[1] || (_cache[1] = (...args) => $options.updateProgramWorkflows && $options.updateProgramWorkflows(...args))
