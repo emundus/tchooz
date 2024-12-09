@@ -1,9 +1,8 @@
-import { f as FetchClient, K as hooks, L as defineStore, z as useGlobalStore, S as Swal$1, _ as _export_sfc, i as errors, r as resolveComponent, o as openBlock, c as createElementBlock, a as createBaseVNode, F as Fragment, b as renderList, n as normalizeClass, t as toDisplayString, d as withDirectives, N as vModelText, e as createVNode, l as withCtx, T as TransitionGroup, y as createTextVNode, v as vShow, h as createCommentVNode, s as script, x as vModelSelect, k as createBlock, O as vModelDynamic, B as vModelCheckbox, m as normalizeStyle, P as withKeys, J as Transition, G as mixin, H as formService, Q as vModelRadio, R as Popover, U as client$1, V as watch, M as Modal, q as settingsService } from "./app_emundus.js";
+import { F as FetchClient, K as hooks, L as defineStore, y as useGlobalStore, S as Swal$1, _ as _export_sfc, e as errors, h as resolveComponent, o as openBlock, c as createElementBlock, a as createBaseVNode, b as Fragment, r as renderList, n as normalizeClass, t as toDisplayString, w as withDirectives, N as vModelText, m as createVNode, j as withCtx, T as TransitionGroup, x as createTextVNode, v as vShow, d as createCommentVNode, O as script, u as vModelSelect, i as createBlock, P as vModelDynamic, B as vModelCheckbox, k as normalizeStyle, Q as withKeys, J as Transition, G as mixin, H as formService, R as vModelRadio, U as Popover, l as campaignService, V as client$1, W as watch, M as Modal, s as settingsService } from "./app_emundus.js";
 import { V as VueDraggableNext } from "./index.js";
 import { V as V32 } from "./editor.js";
 import { t as translationsService, T as Translations } from "./Translations.js";
 import { S as Skeleton } from "./Skeleton.js";
-import { c as campaignService } from "./campaign.js";
 import { I as IncrementalSelect } from "./IncrementalSelect.js";
 import History from "./History.js";
 const client = new FetchClient("formbuilder");

@@ -16351,18 +16351,18 @@ class FetchClient {
     });
   }
 }
-const client$5 = new FetchClient("files");
+const client$6 = new FetchClient("files");
 const fileService = {
   async getFnums() {
     try {
-      return await client$5.get("getallfnums");
+      return await client$6.get("getallfnums");
     } catch (e) {
       return false;
     }
   },
   async getFnumInfos(fnum) {
     try {
-      return await client$5.get("getfnuminfos", {
+      return await client$6.get("getfnuminfos", {
         fnum
       });
     } catch (e) {
@@ -16371,7 +16371,7 @@ const fileService = {
   },
   async isDataAnonymized() {
     try {
-      return await client$5.get("isdataanonymized");
+      return await client$6.get("isdataanonymized");
     } catch (e) {
       return {
         status: false,
@@ -16381,7 +16381,7 @@ const fileService = {
   },
   async getProfiles() {
     try {
-      return await client$5.get("getprofiles");
+      return await client$6.get("getprofiles");
     } catch (e) {
       return {
         status: false,
@@ -16391,7 +16391,7 @@ const fileService = {
   },
   async getFileIdFromFnum(fnum) {
     try {
-      return await client$5.get("getFileIdFromFnum", {
+      return await client$6.get("getFileIdFromFnum", {
         fnum
       });
     } catch (e) {
@@ -23281,7 +23281,7 @@ const useAttachmentStore = /* @__PURE__ */ defineStore("attachment", {
   }
 });
 const AttachmentPreview_vue_vue_type_style_index_0_lang = "";
-const _sfc_main$8 = {
+const _sfc_main$9 = {
   props: {
     user: {
       type: Number,
@@ -23428,10 +23428,10 @@ const _sfc_main$8 = {
     }
   }
 };
-const _hoisted_1$9 = { id: "em-attachment-preview" };
-const _hoisted_2$7 = ["innerHTML"];
-function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
-  return openBlock(), createElementBlock("div", _hoisted_1$9, [
+const _hoisted_1$a = { id: "em-attachment-preview" };
+const _hoisted_2$8 = ["innerHTML"];
+function _sfc_render$9(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", _hoisted_1$a, [
     createBaseVNode("div", {
       ref: "a-preview",
       class: normalizeClass(["attachment-preview", {
@@ -23444,7 +23444,7 @@ function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
       key: 0,
       innerHTML: $data.preview,
       class: "attachment-preview"
-    }, null, 8, _hoisted_2$7)) : createCommentVNode("", true),
+    }, null, 8, _hoisted_2$8)) : createCommentVNode("", true),
     createBaseVNode("div", {
       id: "msg",
       class: normalizeClass({ active: $data.msg && $data.openMsg })
@@ -23453,7 +23453,7 @@ function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
     ], 2)
   ]);
 }
-const AttachmentPreview = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$8]]);
+const AttachmentPreview = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["render", _sfc_render$9]]);
 //! moment.js
 //! version : 2.30.1
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -29839,7 +29839,7 @@ axios.default = axios;
 const axios$1 = axios;
 const SystemPath = typeof Joomla != "undefined" && Joomla !== null ? Joomla.getOptions("system.paths") : { base: "" };
 axios$1.defaults.baseURL = SystemPath.base !== void 0 && SystemPath.base !== "" ? SystemPath.base : "/";
-const client$4 = (headers = {
+const client$5 = (headers = {
   "Content-Type": "application/json",
   "Cache-Control": "no-cache"
 }) => axios$1.create({
@@ -29851,7 +29851,7 @@ const client$4 = (headers = {
 const userService = {
   async getUserById(id) {
     try {
-      const response = await client$4().get("index.php?option=com_emundus&controller=users&task=getuserbyid", {
+      const response = await client$5().get("index.php?option=com_emundus&controller=users&task=getuserbyid", {
         params: {
           id
         }
@@ -29866,7 +29866,7 @@ const userService = {
   },
   async getUserNameById(id) {
     try {
-      const response = await client$4().get("index.php?option=com_emundus&controller=users&task=getUserNameById", {
+      const response = await client$5().get("index.php?option=com_emundus&controller=users&task=getUserNameById", {
         params: {
           id
         }
@@ -29881,7 +29881,7 @@ const userService = {
   },
   async getAccessRights(id, fnum) {
     try {
-      const response = await client$4().get(
+      const response = await client$5().get(
         "index.php?option=com_emundus&controller=users&task=getattachmentaccessrights",
         {
           params: {
@@ -31236,7 +31236,7 @@ var mixin$1 = {
   }
 };
 const AttachmentEdit_vue_vue_type_style_index_0_lang = "";
-const _sfc_main$7 = {
+const _sfc_main$8 = {
   name: "AttachmentEdit",
   props: {
     fnum: {
@@ -31372,26 +31372,26 @@ const _sfc_main$7 = {
     }
   }
 };
-const _hoisted_1$8 = { id: "attachment-edit" };
-const _hoisted_2$6 = { class: "wrapper" };
-const _hoisted_3$5 = { class: "title" };
-const _hoisted_4$5 = { class: "editable-data" };
-const _hoisted_5$5 = { class: "input-group" };
-const _hoisted_6$5 = { for: "description" };
-const _hoisted_7$5 = ["disabled"];
-const _hoisted_8$5 = ["innerHTML"];
-const _hoisted_9$5 = { for: "status" };
-const _hoisted_10$4 = ["disabled"];
-const _hoisted_11$4 = { value: "1" };
-const _hoisted_12$4 = { value: "0" };
-const _hoisted_13$4 = { value: "2" };
-const _hoisted_14$4 = { value: "-2" };
-const _hoisted_15$4 = {
+const _hoisted_1$9 = { id: "attachment-edit" };
+const _hoisted_2$7 = { class: "wrapper" };
+const _hoisted_3$6 = { class: "title" };
+const _hoisted_4$6 = { class: "editable-data" };
+const _hoisted_5$6 = { class: "input-group" };
+const _hoisted_6$6 = { for: "description" };
+const _hoisted_7$6 = ["disabled"];
+const _hoisted_8$6 = ["innerHTML"];
+const _hoisted_9$6 = { for: "status" };
+const _hoisted_10$5 = ["disabled"];
+const _hoisted_11$5 = { value: "1" };
+const _hoisted_12$5 = { value: "0" };
+const _hoisted_13$5 = { value: "2" };
+const _hoisted_14$5 = { value: "-2" };
+const _hoisted_15$5 = {
   key: 0,
   class: "input-group"
 };
-const _hoisted_16$4 = { for: "replace" };
-const _hoisted_17$4 = ["accept"];
+const _hoisted_16$5 = { for: "replace" };
+const _hoisted_17$5 = ["accept"];
 const _hoisted_18$4 = {
   key: 1,
   class: "input-group"
@@ -31421,13 +31421,13 @@ const _hoisted_37$3 = {
   key: 0,
   class: "error-msg"
 };
-function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
-  return openBlock(), createElementBlock("div", _hoisted_1$8, [
-    createBaseVNode("div", _hoisted_2$6, [
-      createBaseVNode("h2", _hoisted_3$5, toDisplayString($data.attachment.value), 1),
-      createBaseVNode("div", _hoisted_4$5, [
-        createBaseVNode("div", _hoisted_5$5, [
-          createBaseVNode("label", _hoisted_6$5, toDisplayString(_ctx.translate("DESCRIPTION")), 1),
+function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", _hoisted_1$9, [
+    createBaseVNode("div", _hoisted_2$7, [
+      createBaseVNode("h2", _hoisted_3$6, toDisplayString($data.attachment.value), 1),
+      createBaseVNode("div", _hoisted_4$6, [
+        createBaseVNode("div", _hoisted_5$6, [
+          createBaseVNode("label", _hoisted_6$6, toDisplayString(_ctx.translate("DESCRIPTION")), 1),
           $data.attachment.allowed_types !== "video" ? withDirectives((openBlock(), createElementBlock("textarea", {
             key: 0,
             name: "description",
@@ -31436,12 +31436,12 @@ function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
             "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $data.attachmentDescription = $event),
             disabled: !$data.canUpdate,
             onFocusout: _cache[1] || (_cache[1] = (...args) => $options.saveChanges && $options.saveChanges(...args))
-          }, "					", 40, _hoisted_7$5)), [
+          }, "					", 40, _hoisted_7$6)), [
             [vModelText, $data.attachmentDescription]
           ]) : (openBlock(), createElementBlock("span", {
             key: 1,
             innerHTML: $data.attachmentDescription
-          }, null, 8, _hoisted_8$5))
+          }, null, 8, _hoisted_8$6))
         ]),
         createBaseVNode("div", {
           class: normalizeClass(["input-group valid-state", {
@@ -31450,29 +31450,29 @@ function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
             error: $data.attachmentIsValidated == 0
           }])
         }, [
-          createBaseVNode("label", _hoisted_9$5, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_CHECK")), 1),
+          createBaseVNode("label", _hoisted_9$6, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_CHECK")), 1),
           withDirectives(createBaseVNode("select", {
             name: "status",
             "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => $data.attachmentIsValidated = $event),
             onChange: _cache[3] || (_cache[3] = (...args) => $options.updateAttachmentStatus && $options.updateAttachmentStatus(...args)),
             disabled: !$data.canUpdate || $props.is_applicant == 1
           }, [
-            createBaseVNode("option", _hoisted_11$4, toDisplayString(_ctx.translate("VALID")), 1),
-            createBaseVNode("option", _hoisted_12$4, toDisplayString(_ctx.translate("INVALID")), 1),
-            createBaseVNode("option", _hoisted_13$4, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_WARNING")), 1),
-            createBaseVNode("option", _hoisted_14$4, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_WAITING")), 1)
-          ], 40, _hoisted_10$4), [
+            createBaseVNode("option", _hoisted_11$5, toDisplayString(_ctx.translate("VALID")), 1),
+            createBaseVNode("option", _hoisted_12$5, toDisplayString(_ctx.translate("INVALID")), 1),
+            createBaseVNode("option", _hoisted_13$5, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_WARNING")), 1),
+            createBaseVNode("option", _hoisted_14$5, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_WAITING")), 1)
+          ], 40, _hoisted_10$5), [
             [vModelSelect, $data.attachmentIsValidated]
           ])
         ], 2),
-        $data.canUpdate || $props.is_applicant == 1 && $data.attachmentIsValidated == 0 ? (openBlock(), createElementBlock("div", _hoisted_15$4, [
-          createBaseVNode("label", _hoisted_16$4, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_REPLACE")), 1),
+        $data.canUpdate || $props.is_applicant == 1 && $data.attachmentIsValidated == 0 ? (openBlock(), createElementBlock("div", _hoisted_15$5, [
+          createBaseVNode("label", _hoisted_16$5, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_REPLACE")), 1),
           createBaseVNode("input", {
             type: "file",
             name: "replace",
             onChange: _cache[4] || (_cache[4] = (...args) => $options.updateFile && $options.updateFile(...args)),
             accept: $options.allowedType
-          }, null, 40, _hoisted_17$4)
+          }, null, 40, _hoisted_17$5)
         ])) : createCommentVNode("", true),
         $props.is_applicant != 1 && $data.attachment.profiles && $data.attachment.profiles.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_18$4, [
           createBaseVNode("label", _hoisted_19$4, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_VIEWED")), 1),
@@ -31538,11 +31538,11 @@ function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
     $data.error ? (openBlock(), createElementBlock("div", _hoisted_37$3, toDisplayString($data.errorMessage), 1)) : createCommentVNode("", true)
   ]);
 }
-const AttachmentEdit = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$7]]);
+const AttachmentEdit = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$8]]);
 const syncService = {
   async isSyncModuleActive() {
     try {
-      const response = await client$4().get("index.php?option=com_emundus&controller=sync&task=issyncmoduleactive");
+      const response = await client$5().get("index.php?option=com_emundus&controller=sync&task=issyncmoduleactive");
       return response.data;
     } catch (e) {
       return {
@@ -31553,7 +31553,7 @@ const syncService = {
   },
   async getSyncType(uploadId) {
     try {
-      const response = await client$4().get("index.php?option=com_emundus&controller=sync&task=getsynctype", {
+      const response = await client$5().get("index.php?option=com_emundus&controller=sync&task=getsynctype", {
         params: {
           "upload_id": uploadId
         }
@@ -31573,7 +31573,7 @@ const syncService = {
      */
   async getSynchronizeState(uploadId) {
     try {
-      const response = await client$4().get(
+      const response = await client$5().get(
         "index.php?option=com_emundus&controller=sync&task=getsynchronizestate",
         {
           params: {
@@ -31597,7 +31597,7 @@ const syncService = {
     try {
       const formData = new FormData();
       formData.append("upload_ids", JSON.stringify(uploadIds));
-      const response = await client$4().post(
+      const response = await client$5().post(
         "index.php?option=com_emundus&controller=sync&task=synchronizeattachments",
         formData,
         {
@@ -31618,7 +31618,7 @@ const syncService = {
     try {
       const formData = new FormData();
       formData.append("upload_ids", JSON.stringify(uploadIds));
-      const response = await client$4().post(
+      const response = await client$5().post(
         "index.php?option=com_emundus&controller=sync&task=deleteattachments",
         formData,
         {
@@ -31639,7 +31639,7 @@ const syncService = {
     try {
       const formData = new FormData();
       formData.append("upload_ids", JSON.stringify(uploadIds));
-      const response = await client$4().post(
+      const response = await client$5().post(
         "index.php?option=com_emundus&controller=sync&task=checkattachmentsexists",
         formData,
         {
@@ -31661,7 +31661,7 @@ const syncService = {
       const formData = new FormData();
       formData.append("config", JSON.stringify(config));
       formData.append("type", type);
-      return await client$4().post(
+      return await client$5().post(
         `index.php?option=com_emundus&controller=sync&task=saveconfig`,
         formData,
         {
@@ -31679,7 +31679,7 @@ const syncService = {
   },
   async getConfig(type) {
     try {
-      return await client$4().get(`index.php?option=com_emundus&controller=sync&task=getconfig`, {
+      return await client$5().get(`index.php?option=com_emundus&controller=sync&task=getconfig`, {
         params: {
           type
         }
@@ -31693,7 +31693,7 @@ const syncService = {
   },
   async getAttachmentAspectsConfig(attachmentId) {
     try {
-      const response = await client$4().get(`index.php?option=com_emundus&controller=sync&task=getattachmentaspectsconfig`, {
+      const response = await client$5().get(`index.php?option=com_emundus&controller=sync&task=getattachmentaspectsconfig`, {
         params: {
           attachmentId
         }
@@ -31711,7 +31711,7 @@ const syncService = {
       const formData = new FormData();
       formData.append("attachmentId", attachmentId);
       formData.append("config", JSON.stringify(config));
-      return client$4().post(
+      return client$5().post(
         `index.php?option=com_emundus&controller=sync&task=saveattachmentaspectsconfig`,
         formData,
         {
@@ -31729,7 +31729,7 @@ const syncService = {
   },
   async getAspects() {
     try {
-      return await client$4().get(`index.php?option=com_emundus&controller=sync&task=getaspects`);
+      return await client$5().get(`index.php?option=com_emundus&controller=sync&task=getaspects`);
     } catch (e) {
       return {
         status: false,
@@ -31741,7 +31741,7 @@ const syncService = {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      return await client$4().post(
+      return await client$5().post(
         `index.php?option=com_emundus&controller=sync&task=uploadaspectfile`,
         formData,
         {
@@ -31761,7 +31761,7 @@ const syncService = {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      return await client$4().post(
+      return await client$5().post(
         `index.php?option=com_emundus&controller=sync&task=updateaspectlistfromfile`,
         formData,
         {
@@ -31779,7 +31779,7 @@ const syncService = {
   },
   async getDocuments() {
     try {
-      return await client$4().get(`index.php?option=com_emundus&controller=sync&task=getdocuments`);
+      return await client$5().get(`index.php?option=com_emundus&controller=sync&task=getdocuments`);
     } catch (e) {
       return {
         status: false,
@@ -31789,7 +31789,7 @@ const syncService = {
   },
   async getEmundusTags() {
     try {
-      return await client$4().get(`index.php?option=com_emundus&controller=sync&task=getemundustags`);
+      return await client$5().get(`index.php?option=com_emundus&controller=sync&task=getemundustags`);
     } catch (e) {
       return {
         status: false,
@@ -31802,7 +31802,7 @@ const syncService = {
       const formData = new FormData();
       formData.append("did", did);
       formData.append("sync", sync);
-      return await client$4().post(
+      return await client$5().post(
         `index.php?option=com_emundus&controller=sync&task=updatedocumentsync`,
         formData,
         {
@@ -31823,7 +31823,7 @@ const syncService = {
       const formData = new FormData();
       formData.append("did", did);
       formData.append("sync_method", sync_method);
-      return await client$4().post(
+      return await client$5().post(
         `index.php?option=com_emundus&controller=sync&task=updatedocumentsyncmethod`,
         formData,
         {
@@ -31841,7 +31841,7 @@ const syncService = {
   },
   async getSetupTags() {
     try {
-      const response = await client$4().get(`index.php?option=com_emundus&controller=sync&task=getsetuptags`);
+      const response = await client$5().get(`index.php?option=com_emundus&controller=sync&task=getsetuptags`);
       return response.data;
     } catch (e) {
       return {
@@ -31854,7 +31854,7 @@ const syncService = {
     let nodeId = null;
     if (typeof uploadId != "undefined" && uploadId !== null) {
       try {
-        const response = await client$4().get(`index.php?option=com_emundus&controller=sync&task=getnodeid`, {
+        const response = await client$5().get(`index.php?option=com_emundus&controller=sync&task=getnodeid`, {
           params: {
             uploadId
           }
@@ -31870,7 +31870,7 @@ const syncService = {
   }
 };
 const AttachmentRow_vue_vue_type_style_index_0_lang = "";
-const _sfc_main$6 = {
+const _sfc_main$7 = {
   name: "AttachmentRow",
   props: {
     attachment: {
@@ -31986,38 +31986,38 @@ const _sfc_main$6 = {
     }
   }
 };
-const _hoisted_1$7 = { key: 0 };
-const _hoisted_2$5 = ["checked"];
-const _hoisted_3$4 = ["title"];
-const _hoisted_4$4 = ["title"];
-const _hoisted_5$4 = {
+const _hoisted_1$8 = { key: 0 };
+const _hoisted_2$6 = ["checked"];
+const _hoisted_3$5 = ["title"];
+const _hoisted_4$5 = ["title"];
+const _hoisted_5$5 = {
   key: 2,
   class: "date"
 };
-const _hoisted_6$4 = {
+const _hoisted_6$5 = {
   key: 3,
   class: "desc"
 };
-const _hoisted_7$4 = {
+const _hoisted_7$5 = {
   key: 4,
   class: "category"
 };
-const _hoisted_8$4 = ["disabled"];
-const _hoisted_9$4 = ["selected"];
-const _hoisted_10$3 = ["selected"];
-const _hoisted_11$3 = ["selected"];
-const _hoisted_12$3 = { key: 6 };
-const _hoisted_13$3 = { key: 7 };
-const _hoisted_14$3 = {
+const _hoisted_8$5 = ["disabled"];
+const _hoisted_9$5 = ["selected"];
+const _hoisted_10$4 = ["selected"];
+const _hoisted_11$4 = ["selected"];
+const _hoisted_12$4 = { key: 6 };
+const _hoisted_13$4 = { key: 7 };
+const _hoisted_14$4 = {
   key: 8,
   class: "date"
 };
-const _hoisted_15$3 = {
+const _hoisted_15$4 = {
   key: 9,
   class: "permissions"
 };
-const _hoisted_16$3 = ["title"];
-const _hoisted_17$3 = ["title"];
+const _hoisted_16$4 = ["title"];
+const _hoisted_17$4 = ["title"];
 const _hoisted_18$3 = { key: 10 };
 const _hoisted_19$3 = { key: 0 };
 const _hoisted_20$3 = ["title"];
@@ -32026,18 +32026,18 @@ const _hoisted_22$3 = {
   key: 2,
   class: "sync-loader em-loader"
 };
-function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("tr", {
     class: normalizeClass(["attachment-row", { checked: $data.checkedAttachments.includes($props.attachment.aid) }]),
     key: $props.attachment.aid
   }, [
-    $props.columns.includes("check") ? (openBlock(), createElementBlock("td", _hoisted_1$7, [
+    $props.columns.includes("check") ? (openBlock(), createElementBlock("td", _hoisted_1$8, [
       createBaseVNode("input", {
         class: "attachment-check",
         type: "checkbox",
         onChange: _cache[0] || (_cache[0] = ($event) => $options.updateCheckedAttachments($props.attachment.aid)),
         checked: $data.checkedAttachments.includes($props.attachment.aid)
-      }, null, 40, _hoisted_2$5)
+      }, null, 40, _hoisted_2$6)
     ])) : createCommentVNode("", true),
     $props.columns.includes("name") ? (openBlock(), createElementBlock("td", {
       key: 1,
@@ -32048,14 +32048,14 @@ function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
         key: 0,
         class: "material-symbols-outlined warning file-not-found tw-mr-4",
         title: _ctx.translate("COM_EMUNDUS_ATTACHMENTS_FILE_NOT_FOUND")
-      }, "warning", 8, _hoisted_3$4)) : createCommentVNode("", true),
+      }, "warning", 8, _hoisted_3$5)) : createCommentVNode("", true),
       createBaseVNode("span", {
         title: $props.attachment.value
-      }, toDisplayString($props.attachment.value), 9, _hoisted_4$4)
+      }, toDisplayString($props.attachment.value), 9, _hoisted_4$5)
     ])) : createCommentVNode("", true),
-    $props.columns.includes("date") ? (openBlock(), createElementBlock("td", _hoisted_5$4, toDisplayString(_ctx.formattedDate($props.attachment.timedate)), 1)) : createCommentVNode("", true),
-    $props.columns.includes("desc") ? (openBlock(), createElementBlock("td", _hoisted_6$4, toDisplayString(_ctx.strippedHtml($props.attachment.upload_description)), 1)) : createCommentVNode("", true),
-    $props.columns.includes("category") ? (openBlock(), createElementBlock("td", _hoisted_7$4, toDisplayString($data.category), 1)) : createCommentVNode("", true),
+    $props.columns.includes("date") ? (openBlock(), createElementBlock("td", _hoisted_5$5, toDisplayString(_ctx.formattedDate($props.attachment.timedate)), 1)) : createCommentVNode("", true),
+    $props.columns.includes("desc") ? (openBlock(), createElementBlock("td", _hoisted_6$5, toDisplayString(_ctx.strippedHtml($props.attachment.upload_description)), 1)) : createCommentVNode("", true),
+    $props.columns.includes("category") ? (openBlock(), createElementBlock("td", _hoisted_7$5, toDisplayString($data.category), 1)) : createCommentVNode("", true),
     $props.columns.includes("status") ? (openBlock(), createElementBlock("td", {
       key: 5,
       class: normalizeClass(["status valid-state", { success: $props.attachment.is_validated == 1, warning: $props.attachment.is_validated == 2, error: $props.attachment.is_validated == 0 }])
@@ -32067,33 +32067,33 @@ function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
         createBaseVNode("option", {
           value: "1",
           selected: $props.attachment.is_validated == 1
-        }, toDisplayString(_ctx.translate("VALID")), 9, _hoisted_9$4),
+        }, toDisplayString(_ctx.translate("VALID")), 9, _hoisted_9$5),
         createBaseVNode("option", {
           value: "0",
           selected: $props.attachment.is_validated == 0
-        }, toDisplayString(_ctx.translate("INVALID")), 9, _hoisted_10$3),
+        }, toDisplayString(_ctx.translate("INVALID")), 9, _hoisted_10$4),
         createBaseVNode("option", {
           value: "-2",
           selected: $props.attachment.is_validated == -2 || $props.attachment.is_validated === null
-        }, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_WAITING")), 9, _hoisted_11$3)
-      ], 40, _hoisted_8$4)
+        }, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_WAITING")), 9, _hoisted_11$4)
+      ], 40, _hoisted_8$5)
     ], 2)) : createCommentVNode("", true),
-    $props.canSee && $props.columns.includes("user") ? (openBlock(), createElementBlock("td", _hoisted_12$3, toDisplayString(_ctx.getUserNameById($props.attachment.user_id)), 1)) : createCommentVNode("", true),
-    $props.canSee && $props.columns.includes("modified_by") ? (openBlock(), createElementBlock("td", _hoisted_13$3, toDisplayString(_ctx.getUserNameById($props.attachment.modified_by)), 1)) : createCommentVNode("", true),
-    $props.columns.includes("modified") ? (openBlock(), createElementBlock("td", _hoisted_14$3, toDisplayString(_ctx.formattedDate($props.attachment.modified)), 1)) : createCommentVNode("", true),
-    $props.columns.includes("permissions") ? (openBlock(), createElementBlock("td", _hoisted_15$3, [
+    $props.canSee && $props.columns.includes("user") ? (openBlock(), createElementBlock("td", _hoisted_12$4, toDisplayString(_ctx.getUserNameById($props.attachment.user_id)), 1)) : createCommentVNode("", true),
+    $props.canSee && $props.columns.includes("modified_by") ? (openBlock(), createElementBlock("td", _hoisted_13$4, toDisplayString(_ctx.getUserNameById($props.attachment.modified_by)), 1)) : createCommentVNode("", true),
+    $props.columns.includes("modified") ? (openBlock(), createElementBlock("td", _hoisted_14$4, toDisplayString(_ctx.formattedDate($props.attachment.modified)), 1)) : createCommentVNode("", true),
+    $props.columns.includes("permissions") ? (openBlock(), createElementBlock("td", _hoisted_15$4, [
       $props.attachment.profiles.length > 0 ? (openBlock(), createElementBlock("span", {
         key: 0,
         class: normalizeClass(["material-symbols-outlined visibility-permission tw-cursor-pointer", { active: $props.attachment.can_be_viewed == "1" }]),
         onClick: _cache[3] || (_cache[3] = ($event) => $options.changePermission("can_be_viewed", $props.attachment)),
         title: _ctx.translate("COM_EMUNDUS_ATTACHMENTS_PERMISSION_VIEW")
-      }, "visibility", 10, _hoisted_16$3)) : createCommentVNode("", true),
+      }, "visibility", 10, _hoisted_16$4)) : createCommentVNode("", true),
       $props.attachment.profiles.length > 0 ? (openBlock(), createElementBlock("span", {
         key: 1,
         class: normalizeClass(["material-symbols-outlined delete-permission tw-cursor-pointer", { active: $props.attachment.can_be_deleted == "1" }]),
         onClick: _cache[4] || (_cache[4] = ($event) => $options.changePermission("can_be_deleted", $props.attachment)),
         title: _ctx.translate("COM_EMUNDUS_ATTACHMENTS_PERMISSION_DELETE")
-      }, "delete", 10, _hoisted_17$3)) : createCommentVNode("", true)
+      }, "delete", 10, _hoisted_17$4)) : createCommentVNode("", true)
     ])) : createCommentVNode("", true),
     $props.sync && $props.columns.includes("sync") ? (openBlock(), createElementBlock("td", _hoisted_18$3, [
       $props.attachment.sync > 0 ? (openBlock(), createElementBlock("div", _hoisted_19$3, [
@@ -32116,9 +32116,9 @@ function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
     ])) : createCommentVNode("", true)
   ], 2);
 }
-const AttachmentRow = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$6]]);
+const AttachmentRow = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$7]]);
 const Modal_vue_vue_type_style_index_0_scoped_62997022_lang = "";
-const _sfc_main$5 = {
+const _sfc_main$6 = {
   props: {
     name: {
       type: String,
@@ -32171,8 +32171,8 @@ const _sfc_main$5 = {
     }
   }
 };
-const _hoisted_1$6 = ["id"];
-function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
+const _hoisted_1$7 = ["id"];
+function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createBlock(Transition, {
     name: $props.transition,
     duration: $props.delay
@@ -32185,14 +32185,14 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
         onFocusout: _cache[0] || (_cache[0] = (...args) => $options.onFocusOut && $options.onFocusOut(...args))
       }, [
         renderSlot(_ctx.$slots, "default", {}, void 0, true)
-      ], 40, _hoisted_1$6), [
+      ], 40, _hoisted_1$7), [
         [vShow, _ctx.isOpened]
       ])
     ]),
     _: 3
   }, 8, ["name", "duration"]);
 }
-const Modal = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$5], ["__scopeId", "data-v-62997022"]]);
+const Modal = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$6], ["__scopeId", "data-v-62997022"]]);
 /*!
 * sweetalert2 v11.14.5
 * Released under the MIT License.
@@ -35178,7 +35178,7 @@ Swal$1.default = Swal$1;
     }
 }(document, '.swal2-popup.swal2-toast{box-sizing:border-box;grid-column:1/4 !important;grid-row:1/4 !important;grid-template-columns:min-content auto min-content;padding:1em;overflow-y:hidden;background:#fff;box-shadow:0 0 1px rgba(0,0,0,.075),0 1px 2px rgba(0,0,0,.075),1px 2px 4px rgba(0,0,0,.075),1px 3px 8px rgba(0,0,0,.075),2px 4px 16px rgba(0,0,0,.075);pointer-events:all}.swal2-popup.swal2-toast>*{grid-column:2}.swal2-popup.swal2-toast .swal2-title{margin:.5em 1em;padding:0;font-size:1em;text-align:initial}.swal2-popup.swal2-toast .swal2-loading{justify-content:center}.swal2-popup.swal2-toast .swal2-input{height:2em;margin:.5em;font-size:1em}.swal2-popup.swal2-toast .swal2-validation-message{font-size:1em}.swal2-popup.swal2-toast .swal2-footer{margin:.5em 0 0;padding:.5em 0 0;font-size:.8em}.swal2-popup.swal2-toast .swal2-close{grid-column:3/3;grid-row:1/99;align-self:center;width:.8em;height:.8em;margin:0;font-size:2em}.swal2-popup.swal2-toast .swal2-html-container{margin:.5em 1em;padding:0;overflow:initial;font-size:1em;text-align:initial}.swal2-popup.swal2-toast .swal2-html-container:empty{padding:0}.swal2-popup.swal2-toast .swal2-loader{grid-column:1;grid-row:1/99;align-self:center;width:2em;height:2em;margin:.25em}.swal2-popup.swal2-toast .swal2-icon{grid-column:1;grid-row:1/99;align-self:center;width:2em;min-width:2em;height:2em;margin:0 .5em 0 0}.swal2-popup.swal2-toast .swal2-icon .swal2-icon-content{display:flex;align-items:center;font-size:1.8em;font-weight:bold}.swal2-popup.swal2-toast .swal2-icon.swal2-success .swal2-success-ring{width:2em;height:2em}.swal2-popup.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line]{top:.875em;width:1.375em}.swal2-popup.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=left]{left:.3125em}.swal2-popup.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=right]{right:.3125em}.swal2-popup.swal2-toast .swal2-actions{justify-content:flex-start;height:auto;margin:0;margin-top:.5em;padding:0 .5em}.swal2-popup.swal2-toast .swal2-styled{margin:.25em .5em;padding:.4em .6em;font-size:1em}.swal2-popup.swal2-toast .swal2-success{border-color:#a5dc86}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-circular-line]{position:absolute;width:1.6em;height:3em;border-radius:50%}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-circular-line][class$=left]{top:-0.8em;left:-0.5em;transform:rotate(-45deg);transform-origin:2em 2em;border-radius:4em 0 0 4em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-circular-line][class$=right]{top:-0.25em;left:.9375em;transform-origin:0 1.5em;border-radius:0 4em 4em 0}.swal2-popup.swal2-toast .swal2-success .swal2-success-ring{width:2em;height:2em}.swal2-popup.swal2-toast .swal2-success .swal2-success-fix{top:0;left:.4375em;width:.4375em;height:2.6875em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-line]{height:.3125em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-line][class$=tip]{top:1.125em;left:.1875em;width:.75em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-line][class$=long]{top:.9375em;right:.1875em;width:1.375em}.swal2-popup.swal2-toast .swal2-success.swal2-icon-show .swal2-success-line-tip{animation:swal2-toast-animate-success-line-tip .75s}.swal2-popup.swal2-toast .swal2-success.swal2-icon-show .swal2-success-line-long{animation:swal2-toast-animate-success-line-long .75s}.swal2-popup.swal2-toast.swal2-show{animation:swal2-toast-show .5s}.swal2-popup.swal2-toast.swal2-hide{animation:swal2-toast-hide .1s forwards}div:where(.swal2-container){display:grid;position:fixed;z-index:1060;inset:0;box-sizing:border-box;grid-template-areas:"top-start     top            top-end" "center-start  center         center-end" "bottom-start  bottom-center  bottom-end";grid-template-rows:minmax(min-content, auto) minmax(min-content, auto) minmax(min-content, auto);height:100%;padding:.625em;overflow-x:hidden;transition:background-color .1s;-webkit-overflow-scrolling:touch}div:where(.swal2-container).swal2-backdrop-show,div:where(.swal2-container).swal2-noanimation{background:rgba(0,0,0,.4)}div:where(.swal2-container).swal2-backdrop-hide{background:rgba(0,0,0,0) !important}div:where(.swal2-container).swal2-top-start,div:where(.swal2-container).swal2-center-start,div:where(.swal2-container).swal2-bottom-start{grid-template-columns:minmax(0, 1fr) auto auto}div:where(.swal2-container).swal2-top,div:where(.swal2-container).swal2-center,div:where(.swal2-container).swal2-bottom{grid-template-columns:auto minmax(0, 1fr) auto}div:where(.swal2-container).swal2-top-end,div:where(.swal2-container).swal2-center-end,div:where(.swal2-container).swal2-bottom-end{grid-template-columns:auto auto minmax(0, 1fr)}div:where(.swal2-container).swal2-top-start>.swal2-popup{align-self:start}div:where(.swal2-container).swal2-top>.swal2-popup{grid-column:2;place-self:start center}div:where(.swal2-container).swal2-top-end>.swal2-popup,div:where(.swal2-container).swal2-top-right>.swal2-popup{grid-column:3;place-self:start end}div:where(.swal2-container).swal2-center-start>.swal2-popup,div:where(.swal2-container).swal2-center-left>.swal2-popup{grid-row:2;align-self:center}div:where(.swal2-container).swal2-center>.swal2-popup{grid-column:2;grid-row:2;place-self:center center}div:where(.swal2-container).swal2-center-end>.swal2-popup,div:where(.swal2-container).swal2-center-right>.swal2-popup{grid-column:3;grid-row:2;place-self:center end}div:where(.swal2-container).swal2-bottom-start>.swal2-popup,div:where(.swal2-container).swal2-bottom-left>.swal2-popup{grid-column:1;grid-row:3;align-self:end}div:where(.swal2-container).swal2-bottom>.swal2-popup{grid-column:2;grid-row:3;place-self:end center}div:where(.swal2-container).swal2-bottom-end>.swal2-popup,div:where(.swal2-container).swal2-bottom-right>.swal2-popup{grid-column:3;grid-row:3;place-self:end end}div:where(.swal2-container).swal2-grow-row>.swal2-popup,div:where(.swal2-container).swal2-grow-fullscreen>.swal2-popup{grid-column:1/4;width:100%}div:where(.swal2-container).swal2-grow-column>.swal2-popup,div:where(.swal2-container).swal2-grow-fullscreen>.swal2-popup{grid-row:1/4;align-self:stretch}div:where(.swal2-container).swal2-no-transition{transition:none !important}div:where(.swal2-container) div:where(.swal2-popup){display:none;position:relative;box-sizing:border-box;grid-template-columns:minmax(0, 100%);width:32em;max-width:100%;padding:0 0 1.25em;border:none;border-radius:5px;background:#fff;color:hsl(0,0%,33%);font-family:inherit;font-size:1rem}div:where(.swal2-container) div:where(.swal2-popup):focus{outline:none}div:where(.swal2-container) div:where(.swal2-popup).swal2-loading{overflow-y:hidden}div:where(.swal2-container) h2:where(.swal2-title){position:relative;max-width:100%;margin:0;padding:.8em 1em 0;color:inherit;font-size:1.875em;font-weight:600;text-align:center;text-transform:none;word-wrap:break-word}div:where(.swal2-container) div:where(.swal2-actions){display:flex;z-index:1;box-sizing:border-box;flex-wrap:wrap;align-items:center;justify-content:center;width:auto;margin:1.25em auto 0;padding:0}div:where(.swal2-container) div:where(.swal2-actions):not(.swal2-loading) .swal2-styled[disabled]{opacity:.4}div:where(.swal2-container) div:where(.swal2-actions):not(.swal2-loading) .swal2-styled:hover{background-image:linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1))}div:where(.swal2-container) div:where(.swal2-actions):not(.swal2-loading) .swal2-styled:active{background-image:linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2))}div:where(.swal2-container) div:where(.swal2-loader){display:none;align-items:center;justify-content:center;width:2.2em;height:2.2em;margin:0 1.875em;animation:swal2-rotate-loading 1.5s linear 0s infinite normal;border-width:.25em;border-style:solid;border-radius:100%;border-color:#2778c4 rgba(0,0,0,0) #2778c4 rgba(0,0,0,0)}div:where(.swal2-container) button:where(.swal2-styled){margin:.3125em;padding:.625em 1.1em;transition:box-shadow .1s;box-shadow:0 0 0 3px rgba(0,0,0,0);font-weight:500}div:where(.swal2-container) button:where(.swal2-styled):not([disabled]){cursor:pointer}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-confirm){border:0;border-radius:.25em;background:initial;background-color:#7066e0;color:#fff;font-size:1em}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-confirm):focus-visible{box-shadow:0 0 0 3px rgba(112,102,224,.5)}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-deny){border:0;border-radius:.25em;background:initial;background-color:#dc3741;color:#fff;font-size:1em}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-deny):focus-visible{box-shadow:0 0 0 3px rgba(220,55,65,.5)}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-cancel){border:0;border-radius:.25em;background:initial;background-color:#6e7881;color:#fff;font-size:1em}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-cancel):focus-visible{box-shadow:0 0 0 3px rgba(110,120,129,.5)}div:where(.swal2-container) button:where(.swal2-styled).swal2-default-outline:focus-visible{box-shadow:0 0 0 3px rgba(100,150,200,.5)}div:where(.swal2-container) button:where(.swal2-styled):focus-visible{outline:none}div:where(.swal2-container) button:where(.swal2-styled)::-moz-focus-inner{border:0}div:where(.swal2-container) div:where(.swal2-footer){margin:1em 0 0;padding:1em 1em 0;border-top:1px solid #eee;color:inherit;font-size:1em;text-align:center}div:where(.swal2-container) .swal2-timer-progress-bar-container{position:absolute;right:0;bottom:0;left:0;grid-column:auto !important;overflow:hidden;border-bottom-right-radius:5px;border-bottom-left-radius:5px}div:where(.swal2-container) div:where(.swal2-timer-progress-bar){width:100%;height:.25em;background:rgba(0,0,0,.2)}div:where(.swal2-container) img:where(.swal2-image){max-width:100%;margin:2em auto 1em}div:where(.swal2-container) button:where(.swal2-close){z-index:2;align-items:center;justify-content:center;width:1.2em;height:1.2em;margin-top:0;margin-right:0;margin-bottom:-1.2em;padding:0;overflow:hidden;transition:color .1s,box-shadow .1s;border:none;border-radius:5px;background:rgba(0,0,0,0);color:#ccc;font-family:monospace;font-size:2.5em;cursor:pointer;justify-self:end}div:where(.swal2-container) button:where(.swal2-close):hover{transform:none;background:rgba(0,0,0,0);color:#f27474}div:where(.swal2-container) button:where(.swal2-close):focus-visible{outline:none;box-shadow:inset 0 0 0 3px rgba(100,150,200,.5)}div:where(.swal2-container) button:where(.swal2-close)::-moz-focus-inner{border:0}div:where(.swal2-container) .swal2-html-container{z-index:1;justify-content:center;margin:0;padding:1em 1.6em .3em;overflow:auto;color:inherit;font-size:1.125em;font-weight:normal;line-height:normal;text-align:center;word-wrap:break-word;word-break:break-word}div:where(.swal2-container) input:where(.swal2-input),div:where(.swal2-container) input:where(.swal2-file),div:where(.swal2-container) textarea:where(.swal2-textarea),div:where(.swal2-container) select:where(.swal2-select),div:where(.swal2-container) div:where(.swal2-radio),div:where(.swal2-container) label:where(.swal2-checkbox){margin:1em 2em 3px}div:where(.swal2-container) input:where(.swal2-input),div:where(.swal2-container) input:where(.swal2-file),div:where(.swal2-container) textarea:where(.swal2-textarea){box-sizing:border-box;width:auto;transition:border-color .1s,box-shadow .1s;border:1px solid hsl(0,0%,85%);border-radius:.1875em;background:rgba(0,0,0,0);box-shadow:inset 0 1px 1px rgba(0,0,0,.06),0 0 0 3px rgba(0,0,0,0);color:inherit;font-size:1.125em}div:where(.swal2-container) input:where(.swal2-input).swal2-inputerror,div:where(.swal2-container) input:where(.swal2-file).swal2-inputerror,div:where(.swal2-container) textarea:where(.swal2-textarea).swal2-inputerror{border-color:#f27474 !important;box-shadow:0 0 2px #f27474 !important}div:where(.swal2-container) input:where(.swal2-input):focus,div:where(.swal2-container) input:where(.swal2-file):focus,div:where(.swal2-container) textarea:where(.swal2-textarea):focus{border:1px solid #b4dbed;outline:none;box-shadow:inset 0 1px 1px rgba(0,0,0,.06),0 0 0 3px rgba(100,150,200,.5)}div:where(.swal2-container) input:where(.swal2-input)::placeholder,div:where(.swal2-container) input:where(.swal2-file)::placeholder,div:where(.swal2-container) textarea:where(.swal2-textarea)::placeholder{color:#ccc}div:where(.swal2-container) .swal2-range{margin:1em 2em 3px;background:#fff}div:where(.swal2-container) .swal2-range input{width:80%}div:where(.swal2-container) .swal2-range output{width:20%;color:inherit;font-weight:600;text-align:center}div:where(.swal2-container) .swal2-range input,div:where(.swal2-container) .swal2-range output{height:2.625em;padding:0;font-size:1.125em;line-height:2.625em}div:where(.swal2-container) .swal2-input{height:2.625em;padding:0 .75em}div:where(.swal2-container) .swal2-file{width:75%;margin-right:auto;margin-left:auto;background:rgba(0,0,0,0);font-size:1.125em}div:where(.swal2-container) .swal2-textarea{height:6.75em;padding:.75em}div:where(.swal2-container) .swal2-select{min-width:50%;max-width:100%;padding:.375em .625em;background:rgba(0,0,0,0);color:inherit;font-size:1.125em}div:where(.swal2-container) .swal2-radio,div:where(.swal2-container) .swal2-checkbox{align-items:center;justify-content:center;background:#fff;color:inherit}div:where(.swal2-container) .swal2-radio label,div:where(.swal2-container) .swal2-checkbox label{margin:0 .6em;font-size:1.125em}div:where(.swal2-container) .swal2-radio input,div:where(.swal2-container) .swal2-checkbox input{flex-shrink:0;margin:0 .4em}div:where(.swal2-container) label:where(.swal2-input-label){display:flex;justify-content:center;margin:1em auto 0}div:where(.swal2-container) div:where(.swal2-validation-message){align-items:center;justify-content:center;margin:1em 0 0;padding:.625em;overflow:hidden;background:hsl(0,0%,94%);color:#666;font-size:1em;font-weight:300}div:where(.swal2-container) div:where(.swal2-validation-message)::before{content:"!";display:inline-block;width:1.5em;min-width:1.5em;height:1.5em;margin:0 .625em;border-radius:50%;background-color:#f27474;color:#fff;font-weight:600;line-height:1.5em;text-align:center}div:where(.swal2-container) .swal2-progress-steps{flex-wrap:wrap;align-items:center;max-width:100%;margin:1.25em auto;padding:0;background:rgba(0,0,0,0);font-weight:600}div:where(.swal2-container) .swal2-progress-steps li{display:inline-block;position:relative}div:where(.swal2-container) .swal2-progress-steps .swal2-progress-step{z-index:20;flex-shrink:0;width:2em;height:2em;border-radius:2em;background:#2778c4;color:#fff;line-height:2em;text-align:center}div:where(.swal2-container) .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step{background:#2778c4}div:where(.swal2-container) .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step{background:#add8e6;color:#fff}div:where(.swal2-container) .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step-line{background:#add8e6}div:where(.swal2-container) .swal2-progress-steps .swal2-progress-step-line{z-index:10;flex-shrink:0;width:2.5em;height:.4em;margin:0 -1px;background:#2778c4}div:where(.swal2-icon){position:relative;box-sizing:content-box;justify-content:center;width:5em;height:5em;margin:2.5em auto .6em;border:0.25em solid rgba(0,0,0,0);border-radius:50%;border-color:#000;font-family:inherit;line-height:5em;cursor:default;user-select:none}div:where(.swal2-icon) .swal2-icon-content{display:flex;align-items:center;font-size:3.75em}div:where(.swal2-icon).swal2-error{border-color:#f27474;color:#f27474}div:where(.swal2-icon).swal2-error .swal2-x-mark{position:relative;flex-grow:1}div:where(.swal2-icon).swal2-error [class^=swal2-x-mark-line]{display:block;position:absolute;top:2.3125em;width:2.9375em;height:.3125em;border-radius:.125em;background-color:#f27474}div:where(.swal2-icon).swal2-error [class^=swal2-x-mark-line][class$=left]{left:1.0625em;transform:rotate(45deg)}div:where(.swal2-icon).swal2-error [class^=swal2-x-mark-line][class$=right]{right:1em;transform:rotate(-45deg)}div:where(.swal2-icon).swal2-error.swal2-icon-show{animation:swal2-animate-error-icon .5s}div:where(.swal2-icon).swal2-error.swal2-icon-show .swal2-x-mark{animation:swal2-animate-error-x-mark .5s}div:where(.swal2-icon).swal2-warning{border-color:rgb(249.95234375,205.965625,167.74765625);color:#f8bb86}div:where(.swal2-icon).swal2-warning.swal2-icon-show{animation:swal2-animate-error-icon .5s}div:where(.swal2-icon).swal2-warning.swal2-icon-show .swal2-icon-content{animation:swal2-animate-i-mark .5s}div:where(.swal2-icon).swal2-info{border-color:rgb(156.7033492823,224.2822966507,246.2966507177);color:#3fc3ee}div:where(.swal2-icon).swal2-info.swal2-icon-show{animation:swal2-animate-error-icon .5s}div:where(.swal2-icon).swal2-info.swal2-icon-show .swal2-icon-content{animation:swal2-animate-i-mark .8s}div:where(.swal2-icon).swal2-question{border-color:rgb(200.8064516129,217.9677419355,225.1935483871);color:#87adbd}div:where(.swal2-icon).swal2-question.swal2-icon-show{animation:swal2-animate-error-icon .5s}div:where(.swal2-icon).swal2-question.swal2-icon-show .swal2-icon-content{animation:swal2-animate-question-mark .8s}div:where(.swal2-icon).swal2-success{border-color:#a5dc86;color:#a5dc86}div:where(.swal2-icon).swal2-success [class^=swal2-success-circular-line]{position:absolute;width:3.75em;height:7.5em;border-radius:50%}div:where(.swal2-icon).swal2-success [class^=swal2-success-circular-line][class$=left]{top:-0.4375em;left:-2.0635em;transform:rotate(-45deg);transform-origin:3.75em 3.75em;border-radius:7.5em 0 0 7.5em}div:where(.swal2-icon).swal2-success [class^=swal2-success-circular-line][class$=right]{top:-0.6875em;left:1.875em;transform:rotate(-45deg);transform-origin:0 3.75em;border-radius:0 7.5em 7.5em 0}div:where(.swal2-icon).swal2-success .swal2-success-ring{position:absolute;z-index:2;top:-0.25em;left:-0.25em;box-sizing:content-box;width:100%;height:100%;border:.25em solid rgba(165,220,134,.3);border-radius:50%}div:where(.swal2-icon).swal2-success .swal2-success-fix{position:absolute;z-index:1;top:.5em;left:1.625em;width:.4375em;height:5.625em;transform:rotate(-45deg)}div:where(.swal2-icon).swal2-success [class^=swal2-success-line]{display:block;position:absolute;z-index:2;height:.3125em;border-radius:.125em;background-color:#a5dc86}div:where(.swal2-icon).swal2-success [class^=swal2-success-line][class$=tip]{top:2.875em;left:.8125em;width:1.5625em;transform:rotate(45deg)}div:where(.swal2-icon).swal2-success [class^=swal2-success-line][class$=long]{top:2.375em;right:.5em;width:2.9375em;transform:rotate(-45deg)}div:where(.swal2-icon).swal2-success.swal2-icon-show .swal2-success-line-tip{animation:swal2-animate-success-line-tip .75s}div:where(.swal2-icon).swal2-success.swal2-icon-show .swal2-success-line-long{animation:swal2-animate-success-line-long .75s}div:where(.swal2-icon).swal2-success.swal2-icon-show .swal2-success-circular-line-right{animation:swal2-rotate-success-circular-line 4.25s ease-in}[class^=swal2]{-webkit-tap-highlight-color:rgba(0,0,0,0)}.swal2-show{animation:swal2-show .3s}.swal2-hide{animation:swal2-hide .15s forwards}.swal2-noanimation{transition:none}.swal2-scrollbar-measure{position:absolute;top:-9999px;width:50px;height:50px;overflow:scroll}.swal2-rtl .swal2-close{margin-right:initial;margin-left:0}.swal2-rtl .swal2-timer-progress-bar{right:0;left:auto}@keyframes swal2-toast-show{0%{transform:translateY(-0.625em) rotateZ(2deg)}33%{transform:translateY(0) rotateZ(-2deg)}66%{transform:translateY(0.3125em) rotateZ(2deg)}100%{transform:translateY(0) rotateZ(0deg)}}@keyframes swal2-toast-hide{100%{transform:rotateZ(1deg);opacity:0}}@keyframes swal2-toast-animate-success-line-tip{0%{top:.5625em;left:.0625em;width:0}54%{top:.125em;left:.125em;width:0}70%{top:.625em;left:-0.25em;width:1.625em}84%{top:1.0625em;left:.75em;width:.5em}100%{top:1.125em;left:.1875em;width:.75em}}@keyframes swal2-toast-animate-success-line-long{0%{top:1.625em;right:1.375em;width:0}65%{top:1.25em;right:.9375em;width:0}84%{top:.9375em;right:0;width:1.125em}100%{top:.9375em;right:.1875em;width:1.375em}}@keyframes swal2-show{0%{transform:scale(0.7)}45%{transform:scale(1.05)}80%{transform:scale(0.95)}100%{transform:scale(1)}}@keyframes swal2-hide{0%{transform:scale(1);opacity:1}100%{transform:scale(0.5);opacity:0}}@keyframes swal2-animate-success-line-tip{0%{top:1.1875em;left:.0625em;width:0}54%{top:1.0625em;left:.125em;width:0}70%{top:2.1875em;left:-0.375em;width:3.125em}84%{top:3em;left:1.3125em;width:1.0625em}100%{top:2.8125em;left:.8125em;width:1.5625em}}@keyframes swal2-animate-success-line-long{0%{top:3.375em;right:2.875em;width:0}65%{top:3.375em;right:2.875em;width:0}84%{top:2.1875em;right:0;width:3.4375em}100%{top:2.375em;right:.5em;width:2.9375em}}@keyframes swal2-rotate-success-circular-line{0%{transform:rotate(-45deg)}5%{transform:rotate(-45deg)}12%{transform:rotate(-405deg)}100%{transform:rotate(-405deg)}}@keyframes swal2-animate-error-x-mark{0%{margin-top:1.625em;transform:scale(0.4);opacity:0}50%{margin-top:1.625em;transform:scale(0.4);opacity:0}80%{margin-top:-0.375em;transform:scale(1.15)}100%{margin-top:0;transform:scale(1);opacity:1}}@keyframes swal2-animate-error-icon{0%{transform:rotateX(100deg);opacity:0}100%{transform:rotateX(0deg);opacity:1}}@keyframes swal2-rotate-loading{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}@keyframes swal2-animate-question-mark{0%{transform:rotateY(-360deg)}100%{transform:rotateY(0)}}@keyframes swal2-animate-i-mark{0%{transform:rotateZ(45deg);opacity:0}25%{transform:rotateZ(-25deg);opacity:.4}50%{transform:rotateZ(15deg);opacity:.8}75%{transform:rotateZ(-5deg);opacity:1}100%{transform:rotateX(0);opacity:1}}body.swal2-shown:not(.swal2-no-backdrop,.swal2-toast-shown){overflow:hidden}body.swal2-height-auto{height:auto !important}body.swal2-no-backdrop .swal2-container{background-color:rgba(0,0,0,0) !important;pointer-events:none}body.swal2-no-backdrop .swal2-container .swal2-popup{pointer-events:all}body.swal2-no-backdrop .swal2-container .swal2-modal{box-shadow:0 0 10px rgba(0,0,0,.4)}@media print{body.swal2-shown:not(.swal2-no-backdrop,.swal2-toast-shown){overflow-y:scroll !important}body.swal2-shown:not(.swal2-no-backdrop,.swal2-toast-shown)>[aria-hidden=true]{display:none}body.swal2-shown:not(.swal2-no-backdrop,.swal2-toast-shown) .swal2-container{position:static !important}}body.swal2-toast-shown .swal2-container{box-sizing:border-box;width:360px;max-width:100%;background-color:rgba(0,0,0,0);pointer-events:none}body.swal2-toast-shown .swal2-container.swal2-top{inset:0 auto auto 50%;transform:translateX(-50%)}body.swal2-toast-shown .swal2-container.swal2-top-end,body.swal2-toast-shown .swal2-container.swal2-top-right{inset:0 0 auto auto}body.swal2-toast-shown .swal2-container.swal2-top-start,body.swal2-toast-shown .swal2-container.swal2-top-left{inset:0 auto auto 0}body.swal2-toast-shown .swal2-container.swal2-center-start,body.swal2-toast-shown .swal2-container.swal2-center-left{inset:50% auto auto 0;transform:translateY(-50%)}body.swal2-toast-shown .swal2-container.swal2-center{inset:50% auto auto 50%;transform:translate(-50%, -50%)}body.swal2-toast-shown .swal2-container.swal2-center-end,body.swal2-toast-shown .swal2-container.swal2-center-right{inset:50% 0 auto auto;transform:translateY(-50%)}body.swal2-toast-shown .swal2-container.swal2-bottom-start,body.swal2-toast-shown .swal2-container.swal2-bottom-left{inset:auto auto 0 0}body.swal2-toast-shown .swal2-container.swal2-bottom{inset:auto auto 0 50%;transform:translateX(-50%)}body.swal2-toast-shown .swal2-container.swal2-bottom-end,body.swal2-toast-shown .swal2-container.swal2-bottom-right{inset:auto 0 0 auto}');
 const Attachments_vue_vue_type_style_index_0_lang = "";
-const _sfc_main$4 = {
+const _sfc_main$5 = {
   name: "Attachments",
   components: {
     AttachmentPreview,
@@ -35706,41 +35706,41 @@ const _sfc_main$4 = {
     }
   }
 };
-const _hoisted_1$5 = {
+const _hoisted_1$6 = {
   id: "em-attachments",
   class: "tw-w-full"
 };
-const _hoisted_2$4 = {
+const _hoisted_2$5 = {
   id: "filters",
   class: "tw-flex tw-items-center tw-justify-between"
 };
-const _hoisted_3$3 = { class: "tw-flex tw-items-center" };
-const _hoisted_4$3 = { class: "tw-flex tw-items-center searchbar-wrapper" };
-const _hoisted_5$3 = ["placeholder"];
-const _hoisted_6$3 = { value: "all" };
-const _hoisted_7$3 = ["value"];
-const _hoisted_8$3 = { class: "actions tw-flex tw-items-center" };
-const _hoisted_9$3 = ["title"];
-const _hoisted_10$2 = ["title"];
-const _hoisted_11$2 = ["title"];
-const _hoisted_12$2 = {
+const _hoisted_3$4 = { class: "tw-flex tw-items-center" };
+const _hoisted_4$4 = { class: "tw-flex tw-items-center searchbar-wrapper" };
+const _hoisted_5$4 = ["placeholder"];
+const _hoisted_6$4 = { value: "all" };
+const _hoisted_7$4 = ["value"];
+const _hoisted_8$4 = { class: "actions tw-flex tw-items-center" };
+const _hoisted_9$4 = ["title"];
+const _hoisted_10$3 = ["title"];
+const _hoisted_11$3 = ["title"];
+const _hoisted_12$3 = {
   key: 0,
   class: "tw-mt-4 tw-mb-4"
 };
-const _hoisted_13$2 = ["href"];
-const _hoisted_14$2 = {
+const _hoisted_13$3 = ["href"];
+const _hoisted_14$3 = {
   key: 1,
   class: "table-wrapper tw-w-full"
 };
-const _hoisted_15$2 = {
+const _hoisted_15$3 = {
   key: 0,
   id: "check-th"
 };
-const _hoisted_16$2 = {
+const _hoisted_16$3 = {
   key: 0,
   class: "material-symbols-outlined tw-text-base"
 };
-const _hoisted_17$2 = {
+const _hoisted_17$3 = {
   key: 1,
   class: "material-symbols-outlined tw-text-base"
 };
@@ -35828,18 +35828,18 @@ const _hoisted_42$2 = {
   key: 0,
   class: "vue-em-loader em-loader"
 };
-function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_AttachmentRow = resolveComponent("AttachmentRow");
   const _component_AttachmentPreview = resolveComponent("AttachmentPreview");
   const _component_AttachmentEdit = resolveComponent("AttachmentEdit");
   const _component_modal = resolveComponent("modal");
-  return openBlock(), createElementBlock("div", _hoisted_1$5, [
+  return openBlock(), createElementBlock("div", _hoisted_1$6, [
     createBaseVNode("div", {
       class: normalizeClass(["wrapper", { loading: $data.loading }])
     }, [
-      createBaseVNode("section", _hoisted_2$4, [
-        createBaseVNode("div", _hoisted_3$3, [
-          createBaseVNode("div", _hoisted_4$3, [
+      createBaseVNode("section", _hoisted_2$5, [
+        createBaseVNode("div", _hoisted_3$4, [
+          createBaseVNode("div", _hoisted_4$4, [
             withDirectives(createBaseVNode("input", {
               id: "searchbar",
               type: "text",
@@ -35848,7 +35848,7 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
               "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $data.search = $event),
               onInput: _cache[1] || (_cache[1] = (...args) => $options.onSearch && $options.onSearch(...args)),
               onKeyup: _cache[2] || (_cache[2] = withKeys((...args) => $options.onSearchKeyup && $options.onSearchKeyup(...args), ["enter"]))
-            }, null, 40, _hoisted_5$3), [
+            }, null, 40, _hoisted_5$4), [
               [vModelText, $data.search]
             ]),
             _cache[26] || (_cache[26] = createBaseVNode("span", { class: "material-symbols-outlined search" }, "search", -1)),
@@ -35863,18 +35863,18 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
             class: "category-select em-ml-16",
             "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => $data.category = $event)
           }, [
-            createBaseVNode("option", _hoisted_6$3, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_SELECT_CATEGORY")), 1),
+            createBaseVNode("option", _hoisted_6$4, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_SELECT_CATEGORY")), 1),
             (openBlock(true), createElementBlock(Fragment, null, renderList($options.displayedAttachmentCategories, (category, key) => {
               return openBlock(), createElementBlock("option", {
                 key,
                 value: key
-              }, toDisplayString(category), 9, _hoisted_7$3);
+              }, toDisplayString(category), 9, _hoisted_7$4);
             }), 128))
           ], 512)), [
             [vModelSelect, $data.category]
           ]) : createCommentVNode("", true)
         ]),
-        createBaseVNode("div", _hoisted_8$3, [
+        createBaseVNode("div", _hoisted_8$4, [
           $data.canExport ? (openBlock(), createElementBlock("div", {
             key: 0,
             class: normalizeClass(["btn-icon-text", { disabled: $data.checkedAttachments.length < 1 }]),
@@ -35891,37 +35891,37 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
             createBaseVNode("span", {
               class: "material-symbols-outlined cloud_sync",
               title: _ctx.translate("COM_EMUNDUS_ATTACHMENTS_SYNC_TITLE")
-            }, " cloud_sync ", 8, _hoisted_9$3),
+            }, " cloud_sync ", 8, _hoisted_9$4),
             createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_SYNC_TITLE")), 1)
           ], 2)) : createCommentVNode("", true),
           createBaseVNode("span", {
             class: "material-symbols-outlined refresh tw-cursor-pointer",
             onClick: _cache[7] || (_cache[7] = ($event) => $options.refreshAttachments(true)),
             title: _ctx.translate("COM_EMUNDUS_ATTACHMENTS_REFRESH_TITLE")
-          }, " autorenew ", 8, _hoisted_10$2),
+          }, " autorenew ", 8, _hoisted_10$3),
           $data.canDelete ? (openBlock(), createElementBlock("span", {
             key: 2,
             class: normalizeClass(["material-symbols-outlined delete", { disabled: $data.checkedAttachments.length < 1 }]),
             onClick: _cache[8] || (_cache[8] = (...args) => $options.confirmDeleteAttachments && $options.confirmDeleteAttachments(...args)),
             title: _ctx.translate("COM_EMUNDUS_ATTACHMENTS_DELETE_TITLE")
-          }, " delete ", 10, _hoisted_11$2)) : createCommentVNode("", true)
+          }, " delete ", 10, _hoisted_11$3)) : createCommentVNode("", true)
         ])
       ]),
-      $data.exportLink ? (openBlock(), createElementBlock("div", _hoisted_12$2, [
+      $data.exportLink ? (openBlock(), createElementBlock("div", _hoisted_12$3, [
         createBaseVNode("a", {
           href: $data.exportLink,
           target: "_blank",
           onClick: _cache[9] || (_cache[9] = ($event) => $data.exportLink = "")
-        }, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_EXPORT_LINK")), 9, _hoisted_13$2)
+        }, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_EXPORT_LINK")), 9, _hoisted_13$3)
       ])) : createCommentVNode("", true),
-      $data.attachments.length ? (openBlock(), createElementBlock("section", _hoisted_14$2, [
+      $data.attachments.length ? (openBlock(), createElementBlock("section", _hoisted_14$3, [
         createBaseVNode("table", {
           class: normalizeClass({ loading: $data.loading }),
           "aria-describedby": "Table of attachments information"
         }, [
           createBaseVNode("thead", null, [
             createBaseVNode("tr", null, [
-              $props.columns.includes("check") ? (openBlock(), createElementBlock("th", _hoisted_15$2, [
+              $props.columns.includes("check") ? (openBlock(), createElementBlock("th", _hoisted_15$3, [
                 createBaseVNode("input", {
                   class: "attachment-check",
                   type: "checkbox",
@@ -35934,8 +35934,8 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
                 onClick: _cache[11] || (_cache[11] = ($event) => $options.orderBy("value"))
               }, [
                 createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_NAME")), 1),
-                $data.sort.orderBy === "value" && $data.sort.order === "asc" ? (openBlock(), createElementBlock("span", _hoisted_16$2, "arrow_upward")) : createCommentVNode("", true),
-                $data.sort.orderBy === "value" && $data.sort.order === "desc" ? (openBlock(), createElementBlock("span", _hoisted_17$2, "arrow_downward")) : createCommentVNode("", true)
+                $data.sort.orderBy === "value" && $data.sort.order === "asc" ? (openBlock(), createElementBlock("span", _hoisted_16$3, "arrow_upward")) : createCommentVNode("", true),
+                $data.sort.orderBy === "value" && $data.sort.order === "desc" ? (openBlock(), createElementBlock("span", _hoisted_17$3, "arrow_downward")) : createCommentVNode("", true)
               ])) : createCommentVNode("", true),
               $props.columns.includes("date") ? (openBlock(), createElementBlock("th", {
                 key: 2,
@@ -36135,17 +36135,17 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
     $data.loading ? (openBlock(), createElementBlock("div", _hoisted_42$2)) : createCommentVNode("", true)
   ]);
 }
-const Attachments = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4]]);
+const Attachments = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$5]]);
 const Attachments$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Attachments
 }, Symbol.toStringTag, { value: "Module" }));
-const client$3 = new FetchClient("comments");
+const client$4 = new FetchClient("comments");
 const commentsService = {
   async getComments(ccid) {
     if (ccid > 0) {
       try {
-        return await client$3.get("getcomments", {
+        return await client$4.get("getcomments", {
           ccid
         });
       } catch (e) {
@@ -36167,7 +36167,7 @@ const commentsService = {
           visible_to_applicant,
           parent_id
         };
-        return await client$3.post("addcomment", params);
+        return await client$4.post("addcomment", params);
       } catch (e) {
         return {
           status: false,
@@ -36188,7 +36188,7 @@ const commentsService = {
           comment_id,
           comment
         };
-        return await client$3.post("updatecomment", params);
+        return await client$4.post("updatecomment", params);
       } catch (e) {
         return {
           status: false,
@@ -36209,7 +36209,7 @@ const commentsService = {
           comment_id,
           opened
         };
-        return await client$3.post("updatecommentopenedstate", params);
+        return await client$4.post("updatecommentopenedstate", params);
       } catch (e) {
         return {
           status: false,
@@ -36224,7 +36224,7 @@ const commentsService = {
         const params = {
           comment_id
         };
-        return await client$3.post("deletecomment", params);
+        return await client$4.post("deletecomment", params);
       } catch (e) {
         return {
           status: false,
@@ -36240,7 +36240,7 @@ const commentsService = {
   },
   async getTargetableElements(ccid) {
     try {
-      return await client$3.get("gettargetableelements", {
+      return await client$4.get("gettargetableelements", {
         ccid
       });
     } catch (e) {
@@ -36252,7 +36252,7 @@ const commentsService = {
   },
   async getMenuItemForFormId(ccid, formId) {
     try {
-      return await client$3.get("getMenuItemForFormId", {
+      return await client$4.get("getMenuItemForFormId", {
         ccid,
         form_id: formId
       });
@@ -36344,7 +36344,7 @@ const alerts = {
     }
   }
 };
-const _sfc_main$3 = {
+const _sfc_main$4 = {
   name: "Comments",
   components: { Modal },
   props: {
@@ -36745,34 +36745,34 @@ const _sfc_main$3 = {
     }
   }
 };
-const _hoisted_1$4 = {
+const _hoisted_1$5 = {
   key: 0,
   id: "filter-comments",
   class: "tw-flex tw-flex-row tw-flex-wrap tw-gap-2"
 };
-const _hoisted_2$3 = ["placeholder"];
-const _hoisted_3$2 = { value: "all" };
-const _hoisted_4$2 = { value: "1" };
-const _hoisted_5$2 = { value: "0" };
-const _hoisted_6$2 = { value: "all" };
-const _hoisted_7$2 = { value: "0" };
-const _hoisted_8$2 = { value: "1" };
-const _hoisted_9$2 = {
+const _hoisted_2$4 = ["placeholder"];
+const _hoisted_3$3 = { value: "all" };
+const _hoisted_4$3 = { value: "1" };
+const _hoisted_5$3 = { value: "0" };
+const _hoisted_6$3 = { value: "all" };
+const _hoisted_7$3 = { value: "0" };
+const _hoisted_8$3 = { value: "1" };
+const _hoisted_9$3 = {
   key: 1,
   id: "comments-list-container",
   class: "tw-p-1"
 };
-const _hoisted_10$1 = ["id"];
-const _hoisted_11$1 = { class: "file-comment-header tw-flex tw-flex-col tw-mb-3" };
-const _hoisted_12$1 = { class: "tw-flex tw-flex-row tw-justify-between tw-items-center" };
-const _hoisted_13$1 = ["onClick"];
-const _hoisted_14$1 = { class: "tw-flex tw-flex-row tw-items-center" };
-const _hoisted_15$1 = {
+const _hoisted_10$2 = ["id"];
+const _hoisted_11$2 = { class: "file-comment-header tw-flex tw-flex-col tw-mb-3" };
+const _hoisted_12$2 = { class: "tw-flex tw-flex-row tw-justify-between tw-items-center" };
+const _hoisted_13$2 = ["onClick"];
+const _hoisted_14$2 = { class: "tw-flex tw-flex-row tw-items-center" };
+const _hoisted_15$2 = {
   key: 1,
   class: "tw-text-sm"
 };
-const _hoisted_16$1 = { class: "tw-flex tw-flex-col tw-mr-3" };
-const _hoisted_17$1 = { class: "tw-text-neutral-500 tw-text-xs" };
+const _hoisted_16$2 = { class: "tw-flex tw-flex-col tw-mr-3" };
+const _hoisted_17$2 = { class: "tw-text-neutral-500 tw-text-xs" };
 const _hoisted_18$1 = { class: "tw-text-xs" };
 const _hoisted_19$1 = {
   key: 0,
@@ -36894,29 +36894,29 @@ const _hoisted_81 = {
 };
 const _hoisted_82 = { class: "tw-flex tw-flex-row tw-justify-between" };
 const _hoisted_83 = ["disabled"];
-function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_modal = resolveComponent("modal");
   return openBlock(), createElementBlock("div", {
     id: "comments",
     class: normalizeClass(["tw-p-4 tw-w-full tw-bg-[#f8f8f8] tw-flex tw-flex-col", { "tw-border-l-4 tw-border-profile-full": $props.border }])
   }, [
-    _ctx.comments.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_1$4, [
+    _ctx.comments.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_1$5, [
       withDirectives(createBaseVNode("input", {
         type: "text",
         class: "em-input tw-mr-2",
         placeholder: _ctx.translate("COM_EMUNDUS_COMMENTS_SEARCH"),
         "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => _ctx.search = $event),
         onKeyup: _cache[1] || (_cache[1] = (...args) => $options.onSearchChange && $options.onSearchChange(...args))
-      }, null, 40, _hoisted_2$3), [
+      }, null, 40, _hoisted_2$4), [
         [vModelText, _ctx.search]
       ]),
       withDirectives(createBaseVNode("select", {
         "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => _ctx.filterOpenedState = $event),
         class: "tw-mr-2 tw-rounded-applicant"
       }, [
-        createBaseVNode("option", _hoisted_3$2, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_ALL_THREAD")), 1),
-        createBaseVNode("option", _hoisted_4$2, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_OPENED_THREAD")), 1),
-        createBaseVNode("option", _hoisted_5$2, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_CLOSED_THREAD")), 1)
+        createBaseVNode("option", _hoisted_3$3, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_ALL_THREAD")), 1),
+        createBaseVNode("option", _hoisted_4$3, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_OPENED_THREAD")), 1),
+        createBaseVNode("option", _hoisted_5$3, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_CLOSED_THREAD")), 1)
       ], 512), [
         [vModelSelect, _ctx.filterOpenedState]
       ]),
@@ -36925,14 +36925,14 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
         "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => _ctx.filterVisibleToApplicant = $event),
         class: "tw-rounded-applicant"
       }, [
-        createBaseVNode("option", _hoisted_6$2, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_VISIBLE_ALL_OPT")), 1),
-        createBaseVNode("option", _hoisted_7$2, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_VISIBLE_PARTNERS")), 1),
-        createBaseVNode("option", _hoisted_8$2, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_VISIBLE_ALL")), 1)
+        createBaseVNode("option", _hoisted_6$3, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_VISIBLE_ALL_OPT")), 1),
+        createBaseVNode("option", _hoisted_7$3, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_VISIBLE_PARTNERS")), 1),
+        createBaseVNode("option", _hoisted_8$3, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_VISIBLE_ALL")), 1)
       ], 512)), [
         [vModelSelect, _ctx.filterVisibleToApplicant]
       ]) : createCommentVNode("", true)
     ])) : createCommentVNode("", true),
-    $options.parentComments.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_9$2, [
+    $options.parentComments.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_9$3, [
       (openBlock(true), createElementBlock(Fragment, null, renderList($options.parentComments, (comment) => {
         return openBlock(), createElementBlock("div", {
           id: "file-comment-" + comment.id,
@@ -36944,13 +36944,13 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
             "tw-white-bg": comment.opened == 1
           }])
         }, [
-          createBaseVNode("div", _hoisted_11$1, [
-            createBaseVNode("div", _hoisted_12$1, [
+          createBaseVNode("div", _hoisted_11$2, [
+            createBaseVNode("div", _hoisted_12$2, [
               createBaseVNode("div", {
                 class: "file-comment-header-left tw-flex tw-flex-row tw-cursor-pointer tw-items-center tw-justify-between tw-w-full",
                 onClick: ($event) => $options.replyToComment(comment.id)
               }, [
-                createBaseVNode("div", _hoisted_14$1, [
+                createBaseVNode("div", _hoisted_14$2, [
                   createBaseVNode("div", {
                     class: normalizeClass(["profile-picture tw-h-8 tw-w-8 tw-rounded-full tw-border-2 tw-mr-2 tw-flex tw-flex-row tw-justify-center tw-items-center", { "tw-bg-neutral-300": !comment.profile_picture }])
                   }, [
@@ -36958,17 +36958,17 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
                       key: 0,
                       class: "image tw-h-full tw-w-full tw-rounded-full",
                       style: normalizeStyle("background-image: url(" + comment.profile_picture + ");background-size: cover;background-position: center;")
-                    }, null, 4)) : (openBlock(), createElementBlock("span", _hoisted_15$1, toDisplayString(comment.firstname.charAt(0).toUpperCase()) + toDisplayString(comment.lastname.charAt(0).toUpperCase()), 1))
+                    }, null, 4)) : (openBlock(), createElementBlock("span", _hoisted_15$2, toDisplayString(comment.firstname.charAt(0).toUpperCase()) + toDisplayString(comment.lastname.charAt(0).toUpperCase()), 1))
                   ], 2),
-                  createBaseVNode("div", _hoisted_16$1, [
-                    createBaseVNode("span", _hoisted_17$1, toDisplayString(comment.updated ? comment.updated : comment.date), 1),
+                  createBaseVNode("div", _hoisted_16$2, [
+                    createBaseVNode("span", _hoisted_17$2, toDisplayString(comment.updated ? comment.updated : comment.date), 1),
                     createBaseVNode("span", _hoisted_18$1, toDisplayString(comment.username), 1)
                   ])
                 ]),
                 createBaseVNode("div", null, [
                   $options.childrenComments[comment.id].length > 0 ? (openBlock(), createElementBlock("span", _hoisted_19$1, toDisplayString($options.childrenComments[comment.id].length) + " " + toDisplayString($options.childrenComments[comment.id].length > 1 ? _ctx.translate("COM_EMUNDUS_COMMENTS_ANSWERS") : _ctx.translate("COM_EMUNDUS_COMMENTS_ANSWER")), 1)) : createCommentVNode("", true)
                 ])
-              ], 8, _hoisted_13$1)
+              ], 8, _hoisted_13$2)
             ])
           ]),
           createBaseVNode("div", _hoisted_20$1, [
@@ -37140,7 +37140,7 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
             class: "comment-target-label tw-text-sm em-gray-color tw-cursor-pointer tw-mt-4",
             onClick: ($event) => $options.goToCommentTarget(comment)
           }, toDisplayString($options.getCommentTargetLabel(comment.target_id, comment.target_type)), 9, _hoisted_61)) : createCommentVNode("", true)
-        ], 10, _hoisted_10$1);
+        ], 10, _hoisted_10$2);
       }), 128))
     ])) : (openBlock(), createElementBlock("p", _hoisted_62, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_NO_COMMENTS")), 1)),
     _cache[23] || (_cache[23] = createBaseVNode("hr", null, null, -1)),
@@ -37266,16 +37266,16 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 2);
 }
-const Comments = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3]]);
+const Comments = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4]]);
 const Comments$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Comments
 }, Symbol.toStringTag, { value: "Module" }));
-const client$2 = new FetchClient("workflow");
+const client$3 = new FetchClient("workflow");
 const workflowService = {
   async getWorkflow(id) {
     try {
-      return await client$2.get("getworkflow", { id });
+      return await client$3.get("getworkflow", { id });
     } catch (e) {
       return {
         status: false,
@@ -37285,7 +37285,7 @@ const workflowService = {
   },
   async getWorkflows() {
     try {
-      return await client$2.get("getworkflows");
+      return await client$3.get("getworkflows");
     } catch (e) {
       return {
         status: false,
@@ -37300,7 +37300,7 @@ const workflowService = {
         steps: JSON.stringify(steps),
         programs: JSON.stringify(programs)
       };
-      return await client$2.post("updateworkflow", data);
+      return await client$3.post("updateworkflow", data);
     } catch (e) {
       return {
         status: false,
@@ -37310,7 +37310,7 @@ const workflowService = {
   },
   async updateProgramWorkflows(programId, workflows) {
     try {
-      return await client$2.post("updateprogramworkflows", { program_id: programId, workflows: JSON.stringify(workflows.map((w2) => w2.id)) });
+      return await client$3.post("updateprogramworkflows", { program_id: programId, workflows: JSON.stringify(workflows.map((w2) => w2.id)) });
     } catch (e) {
       return {
         status: false,
@@ -37320,7 +37320,7 @@ const workflowService = {
   },
   async deleteWorkflowStep(stepId) {
     if (stepId > 0) {
-      return await client$2.post("deleteworkflowstep", { step_id: stepId });
+      return await client$3.post("deleteworkflowstep", { step_id: stepId });
     } else {
       return {
         status: false,
@@ -37330,7 +37330,7 @@ const workflowService = {
   },
   async updateStepState(stepId, state) {
     if (stepId > 0) {
-      return await client$2.post("updatestepstate", { step_id: stepId, state });
+      return await client$3.post("updatestepstate", { step_id: stepId, state });
     } else {
       return {
         status: false,
@@ -37340,7 +37340,7 @@ const workflowService = {
   },
   async getStepTypes() {
     try {
-      return await client$2.get("getsteptypes");
+      return await client$3.get("getsteptypes");
     } catch (e) {
       return {
         status: false,
@@ -37350,7 +37350,7 @@ const workflowService = {
   },
   async saveTypes(types) {
     try {
-      return await client$2.post("savesteptypes", { types: JSON.stringify(types) });
+      return await client$3.post("savesteptypes", { types: JSON.stringify(types) });
     } catch (e) {
       return {
         status: false,
@@ -37360,7 +37360,7 @@ const workflowService = {
   },
   async getCampaignSteps(campaignId) {
     try {
-      return await client$2.get("getcampaignsteps", { campaign_id: campaignId });
+      return await client$3.get("getcampaignsteps", { campaign_id: campaignId });
     } catch (e) {
       return {
         status: false,
@@ -37370,7 +37370,7 @@ const workflowService = {
   },
   async saveCampaignSteps(campaignId, steps) {
     try {
-      return await client$2.post("savecampaignstepsdates", { campaign_id: campaignId, steps: JSON.stringify(steps) });
+      return await client$3.post("savecampaignstepsdates", { campaign_id: campaignId, steps: JSON.stringify(steps) });
     } catch (e) {
       return {
         status: false,
@@ -37380,7 +37380,7 @@ const workflowService = {
   },
   async getWorkflowsByProgramId(programId) {
     try {
-      return await client$2.get("getworkflowsbyprogramid", { program_id: programId });
+      return await client$3.get("getworkflowsbyprogramid", { program_id: programId });
     } catch (e) {
       return {
         status: false,
@@ -37390,7 +37390,7 @@ const workflowService = {
   },
   async getProgramsWorkflows() {
     try {
-      return await client$2.get("getprogramsworkflows");
+      return await client$3.get("getprogramsworkflows");
     } catch (e) {
       return {
         status: false,
@@ -37399,11 +37399,11 @@ const workflowService = {
     }
   }
 };
-const client$1 = new FetchClient("programme");
+const client$2 = new FetchClient("programme");
 const programmeService = {
   async getCampaignsByProgram(programId) {
     try {
-      return await client$1.get("getcampaignsbyprogram", {
+      return await client$2.get("getcampaignsbyprogram", {
         pid: programId
       });
     } catch (e) {
@@ -37415,7 +37415,7 @@ const programmeService = {
   },
   async getAllPrograms() {
     try {
-      return await client$1.get("getallprogram");
+      return await client$2.get("getallprogram");
     } catch (e) {
       return {
         status: false,
@@ -37425,7 +37425,7 @@ const programmeService = {
   },
   async createProgram(program) {
     try {
-      return await client$1.post("createprogram", {
+      return await client$2.post("createprogram", {
         body: JSON.stringify(program)
       });
     } catch (e) {
@@ -37477,7 +37477,7 @@ const formService = {
   },
   async getFormsByProfileId(id) {
     try {
-      const response = await client$4().get(
+      const response = await client$5().get(
         baseUrl + "&task=getFormsByProfileId",
         {
           params: {
@@ -37500,7 +37500,7 @@ const formService = {
   },
   async getFormByFabrikId(id) {
     try {
-      const response = await client$4().get(baseUrl + "&task=getFormByFabrikId", { params: { form_id: id } });
+      const response = await client$5().get(baseUrl + "&task=getFormByFabrikId", { params: { form_id: id } });
       return response;
     } catch (error2) {
       return {
@@ -37542,7 +37542,7 @@ const formService = {
   async getDocuments(id) {
     if (id > 0) {
       try {
-        const response = await client$4().get(baseUrl + "&task=getDocuments", { params: { pid: id } });
+        const response = await client$5().get(baseUrl + "&task=getDocuments", { params: { pid: id } });
         return response.data;
       } catch (error2) {
         return {
@@ -37563,7 +37563,7 @@ const formService = {
       let data = {
         status: false
       };
-      const response = await client$4().get(
+      const response = await client$5().get(
         baseUrl + "&task=getAttachments"
       );
       if (response.data.status) {
@@ -37595,7 +37595,7 @@ const formService = {
   async getDocumentModelsUsage(documentIds) {
     if (documentIds.length > 0) {
       try {
-        const response = await client$4().get(baseUrl + "&task=getdocumentsusage&documentIds=" + documentIds);
+        const response = await client$5().get(baseUrl + "&task=getdocumentsusage&documentIds=" + documentIds);
         return response.data;
       } catch (error2) {
         return {
@@ -37613,7 +37613,7 @@ const formService = {
   async getPageGroups(formId) {
     if (typeof formId == "number" && formId > 0) {
       try {
-        const response = await client$4().get(baseUrl + "&task=getpagegroups&form_id=" + formId);
+        const response = await client$5().get(baseUrl + "&task=getpagegroups&form_id=" + formId);
         return response.data;
       } catch (error2) {
         return {
@@ -37644,7 +37644,7 @@ const formService = {
     const formData = new FormData();
     Object.keys(params).forEach((key) => formData.append(key, params[key]));
     try {
-      const response = await client$4().post(baseUrl + "&task=addDocument", formData);
+      const response = await client$5().post(baseUrl + "&task=addDocument", formData);
       return response;
     } catch (error2) {
       return {
@@ -37655,7 +37655,7 @@ const formService = {
   },
   async getAssociatedCampaigns(id) {
     try {
-      const response = client$4().get(
+      const response = client$5().get(
         baseUrl + "&task=getassociatedcampaign",
         {
           params: {
@@ -37673,7 +37673,7 @@ const formService = {
   },
   async removeDocumentFromProfile(id) {
     try {
-      const response = await client$4().get(
+      const response = await client$5().get(
         baseUrl + "&task=removeDocumentFromProfile",
         {
           params: {
@@ -37691,7 +37691,7 @@ const formService = {
   },
   async getPageObject(formId) {
     try {
-      const response = await client$4().get(
+      const response = await client$5().get(
         "/index.php?option=com_emundus&view=form&formid=" + formId + "&format=vue_jsonclean"
       );
       if (typeof response.data !== "object") {
@@ -37707,7 +37707,7 @@ const formService = {
   },
   async checkIfDocumentCanBeDeletedForProfile(documentId, profileId) {
     try {
-      const response = await client$4().get(
+      const response = await client$5().get(
         baseUrl + "&task=checkcandocbedeleted&docid=" + documentId + "&prid=" + profileId
       );
       return response.data;
@@ -37720,7 +37720,7 @@ const formService = {
   },
   async getConditions(formId) {
     try {
-      const response = await client$4().get(
+      const response = await client$5().get(
         baseUrl + "&task=getjsconditions&form_id=" + formId + "&format=view"
       );
       return response.data;
@@ -37765,7 +37765,7 @@ const formService = {
   },
   async deleteRule(ruleId) {
     try {
-      const response = await client$4().get(baseUrl + "&task=deleteRule&rule_id=" + ruleId);
+      const response = await client$5().get(baseUrl + "&task=deleteRule&rule_id=" + ruleId);
       return response;
     } catch (error2) {
       return {
@@ -37776,7 +37776,7 @@ const formService = {
   },
   async publishRule(ruleId, state) {
     try {
-      const response = await client$4().get(baseUrl + "&task=publishRule&rule_id=" + ruleId + "&state=" + state);
+      const response = await client$5().get(baseUrl + "&task=publishRule&rule_id=" + ruleId + "&state=" + state);
       return response;
     } catch (error2) {
       return {
@@ -37787,7 +37787,7 @@ const formService = {
   },
   async getPublishedForms() {
     try {
-      return await client$4().get(baseUrl + "&task=getallformpublished");
+      return await client$5().get(baseUrl + "&task=getallformpublished");
     } catch (error2) {
       return {
         status: false,
@@ -37806,11 +37806,11 @@ const formService = {
     }
   }
 };
-const client = new FetchClient("groups");
+const client$1 = new FetchClient("groups");
 const groupsService = {
   async getGroups() {
     try {
-      return await client.get("getgroups");
+      return await client$1.get("getgroups");
     } catch (e) {
       return {
         status: false,
@@ -37820,7 +37820,7 @@ const groupsService = {
   }
 };
 const Popover_vue_vue_type_style_index_0_scoped_935d1a05_lang = "";
-const _sfc_main$2 = {
+const _sfc_main$3 = {
   name: "Popover",
   props: {
     icon: {
@@ -37895,9 +37895,9 @@ const _sfc_main$2 = {
     }
   }
 };
-const _hoisted_1$3 = ["id"];
-const _hoisted_2$2 = ["id"];
-function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
+const _hoisted_1$4 = ["id"];
+const _hoisted_2$3 = ["id"];
+function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", {
     id: _ctx.id,
     class: "popover-container",
@@ -37916,16 +37916,16 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
           style: normalizeStyle($props.popoverContentStyle)
         }, [
           renderSlot(_ctx.$slots, "default", {}, void 0, true)
-        ], 12, _hoisted_2$2), [
+        ], 12, _hoisted_2$3), [
           [vShow, _ctx.isOpen]
         ])
       ]),
       _: 3
     })
-  ], 40, _hoisted_1$3);
+  ], 40, _hoisted_1$4);
 }
-const Popover = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-935d1a05"]]);
-const _sfc_main$1 = {
+const Popover = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-935d1a05"]]);
+const _sfc_main$2 = {
   name: "Tabs",
   props: {
     tabs: {
@@ -37954,8 +37954,8 @@ const _sfc_main$1 = {
     }
   }
 };
-const _hoisted_1$2 = ["onClick"];
-function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
+const _hoisted_1$3 = ["onClick"];
+function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", {
     class: normalizeClass($props.classes)
   }, [
@@ -37970,13 +37970,13 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
         createBaseVNode("span", {
           class: normalizeClass([tab.active ? "tw-text-profile-full" : "tw-text-neutral-700", "tw-whitespace-nowrap"])
         }, toDisplayString(_ctx.translate(tab.name)), 3)
-      ], 10, _hoisted_1$2)), [
+      ], 10, _hoisted_1$3)), [
         [vShow, tab.displayed]
       ]);
     }), 256))
   ], 2);
 }
-const Tabs = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1]]);
+const Tabs = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2]]);
 function isEmpty(opt) {
   if (opt === 0)
     return false;
@@ -38978,18 +38978,18 @@ var script = {
     }
   }
 };
-const _hoisted_1$1 = {
+const _hoisted_1$2 = {
   ref: "tags",
   class: "multiselect__tags"
 };
-const _hoisted_2$1 = { class: "multiselect__tags-wrap" };
-const _hoisted_3$1 = { class: "multiselect__spinner" };
-const _hoisted_4$1 = { key: 0 };
-const _hoisted_5$1 = { class: "multiselect__option" };
-const _hoisted_6$1 = { class: "multiselect__option" };
-const _hoisted_7$1 = /* @__PURE__ */ createTextVNode("No elements found. Consider changing the search query.");
-const _hoisted_8$1 = { class: "multiselect__option" };
-const _hoisted_9$1 = /* @__PURE__ */ createTextVNode("List is empty.");
+const _hoisted_2$2 = { class: "multiselect__tags-wrap" };
+const _hoisted_3$2 = { class: "multiselect__spinner" };
+const _hoisted_4$2 = { key: 0 };
+const _hoisted_5$2 = { class: "multiselect__option" };
+const _hoisted_6$2 = { class: "multiselect__option" };
+const _hoisted_7$2 = /* @__PURE__ */ createTextVNode("No elements found. Consider changing the search query.");
+const _hoisted_8$2 = { class: "multiselect__option" };
+const _hoisted_9$2 = /* @__PURE__ */ createTextVNode("List is empty.");
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createBlock("div", {
     tabindex: _ctx.searchable ? -1 : $props.tabindex,
@@ -39020,7 +39020,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     renderSlot(_ctx.$slots, "clear", { search: _ctx.search }),
     createVNode(
       "div",
-      _hoisted_1$1,
+      _hoisted_1$2,
       [
         renderSlot(_ctx.$slots, "selection", {
           search: _ctx.search,
@@ -39030,7 +39030,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         }, () => [
           withDirectives(createVNode(
             "div",
-            _hoisted_2$1,
+            _hoisted_2$2,
             [
               (openBlock(true), createBlock(
                 Fragment,
@@ -39078,7 +39078,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
             renderSlot(_ctx.$slots, "loading", {}, () => [
               withDirectives(createVNode(
                 "div",
-                _hoisted_3$1,
+                _hoisted_3$2,
                 null,
                 512
                 /* NEED_PATCH */
@@ -39181,8 +39181,8 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
               "aria-multiselectable": _ctx.multiple
             }, [
               renderSlot(_ctx.$slots, "beforeList"),
-              _ctx.multiple && _ctx.max === _ctx.internalValue.length ? (openBlock(), createBlock("li", _hoisted_4$1, [
-                createVNode("span", _hoisted_5$1, [
+              _ctx.multiple && _ctx.max === _ctx.internalValue.length ? (openBlock(), createBlock("li", _hoisted_4$2, [
+                createVNode("span", _hoisted_5$2, [
                   renderSlot(_ctx.$slots, "maxElements", {}, () => [
                     createTextVNode(
                       "Maximum of " + toDisplayString(_ctx.max) + " options selected. First remove a selected option to select another.",
@@ -39257,9 +39257,9 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
                 "li",
                 null,
                 [
-                  createVNode("span", _hoisted_6$1, [
+                  createVNode("span", _hoisted_6$2, [
                     renderSlot(_ctx.$slots, "noResult", { search: _ctx.search }, () => [
-                      _hoisted_7$1
+                      _hoisted_7$2
                     ])
                   ])
                 ],
@@ -39272,9 +39272,9 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
                 "li",
                 null,
                 [
-                  createVNode("span", _hoisted_8$1, [
+                  createVNode("span", _hoisted_8$2, [
                     renderSlot(_ctx.$slots, "noOptions", {}, () => [
-                      _hoisted_9$1
+                      _hoisted_9$2
                     ])
                   ])
                 ],
@@ -39339,7 +39339,7 @@ var errors = {
   }
 };
 const WorkflowEdit_vue_vue_type_style_index_0_scoped_5a4d4747_lang = "";
-const _sfc_main = {
+const _sfc_main$1 = {
   name: "WorkflowEdit",
   props: {
     workflowId: {
@@ -39739,33 +39739,33 @@ const _sfc_main = {
     }
   }
 };
-const _hoisted_1 = { class: "tw-m-2" };
-const _hoisted_2 = { class: "tw-ml-2 tw-text-neutral-900" };
-const _hoisted_3 = { id: "header" };
-const _hoisted_4 = { class: "tw-flex tw-flex-row tw-justify-between" };
-const _hoisted_5 = { class: "tw-mt-4 tw-w-full tw-flex tw-flex-row tw-justify-between tw-items-center" };
-const _hoisted_6 = { key: 0 };
-const _hoisted_7 = { value: "0" };
-const _hoisted_8 = {
+const _hoisted_1$1 = { class: "tw-m-2" };
+const _hoisted_2$1 = { class: "tw-ml-2 tw-text-neutral-900" };
+const _hoisted_3$1 = { id: "header" };
+const _hoisted_4$1 = { class: "tw-flex tw-flex-row tw-justify-between" };
+const _hoisted_5$1 = { class: "tw-mt-4 tw-w-full tw-flex tw-flex-row tw-justify-between tw-items-center" };
+const _hoisted_6$1 = { key: 0 };
+const _hoisted_7$1 = { value: "0" };
+const _hoisted_8$1 = {
   id: "tabs-wrapper",
   class: "tw-w-full tw-rounded-coordinator tw-p-6 tw-bg-white tw-border tw-border-neutral-300 tw-relative"
 };
-const _hoisted_9 = {
+const _hoisted_9$1 = {
   key: 0,
   id: "workflow-steps-wrapper",
   class: "tw-flex tw-flex-col"
 };
-const _hoisted_10 = {
+const _hoisted_10$1 = {
   id: "workflow-steps",
   class: "tw-flex tw-flex-row tw-gap-3 tw-overflow-auto"
 };
-const _hoisted_11 = { class: "workflow-step-head tw-flex tw-flex-row tw-justify-between" };
-const _hoisted_12 = { class: "tw-list-none !tw-p-0" };
-const _hoisted_13 = ["onClick"];
-const _hoisted_14 = ["onClick"];
-const _hoisted_15 = ["onClick"];
-const _hoisted_16 = ["onClick"];
-const _hoisted_17 = { class: "workflow-step-content" };
+const _hoisted_11$1 = { class: "workflow-step-head tw-flex tw-flex-row tw-justify-between" };
+const _hoisted_12$1 = { class: "tw-list-none !tw-p-0" };
+const _hoisted_13$1 = ["onClick"];
+const _hoisted_14$1 = ["onClick"];
+const _hoisted_15$1 = ["onClick"];
+const _hoisted_16$1 = ["onClick"];
+const _hoisted_17$1 = { class: "workflow-step-content" };
 const _hoisted_18 = { class: "tw-mb-4 tw-flex tw-flex-col" };
 const _hoisted_19 = { class: "tw-mb-2" };
 const _hoisted_20 = ["onUpdate:modelValue"];
@@ -39833,20 +39833,20 @@ const _hoisted_57 = {
   key: 0,
   class: "tw-w-full tw-text-center"
 };
-function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_Tabs = resolveComponent("Tabs");
   const _component_popover = resolveComponent("popover");
   const _component_Multiselect = resolveComponent("Multiselect");
-  return openBlock(), createElementBlock("div", _hoisted_1, [
+  return openBlock(), createElementBlock("div", _hoisted_1$1, [
     createBaseVNode("div", {
       class: "tw-flex tw-items-center tw-cursor-pointer tw-mb-4",
       onClick: _cache[0] || (_cache[0] = (...args) => $options.goBack && $options.goBack(...args))
     }, [
       _cache[8] || (_cache[8] = createBaseVNode("span", { class: "material-icons-outlined" }, "navigate_before", -1)),
-      createBaseVNode("span", _hoisted_2, toDisplayString(_ctx.translate("BACK")), 1)
+      createBaseVNode("span", _hoisted_2$1, toDisplayString(_ctx.translate("BACK")), 1)
     ]),
-    createBaseVNode("div", _hoisted_3, [
-      createBaseVNode("div", _hoisted_4, [
+    createBaseVNode("div", _hoisted_3$1, [
+      createBaseVNode("div", _hoisted_4$1, [
         withDirectives(createBaseVNode("input", {
           id: "workflow-label",
           name: "workflow-label",
@@ -39864,10 +39864,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           createBaseVNode("span", null, toDisplayString(_ctx.translate("SAVE")), 1)
         ])
       ]),
-      createBaseVNode("div", _hoisted_5, [
+      createBaseVNode("div", _hoisted_5$1, [
         createBaseVNode("div", null, [
-          $data.sortByOptions.length > 0 ? (openBlock(), createElementBlock("select", _hoisted_6, [
-            createBaseVNode("option", _hoisted_7, toDisplayString(_ctx.translate("SORT_BY")), 1)
+          $data.sortByOptions.length > 0 ? (openBlock(), createElementBlock("select", _hoisted_6$1, [
+            createBaseVNode("option", _hoisted_7$1, toDisplayString(_ctx.translate("SORT_BY")), 1)
           ])) : createCommentVNode("", true)
         ])
       ])
@@ -39876,14 +39876,14 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       tabs: $data.tabs,
       classes: "tw-flex tw-items-center tw-gap-2 tw-ml-7"
     }, null, 8, ["tabs"]),
-    createBaseVNode("div", _hoisted_8, [
-      $options.activeTab.id == "steps" ? (openBlock(), createElementBlock("div", _hoisted_9, [
+    createBaseVNode("div", _hoisted_8$1, [
+      $options.activeTab.id == "steps" ? (openBlock(), createElementBlock("div", _hoisted_9$1, [
         createBaseVNode("a", {
           class: "tw-btn-primary tw-h-fit tw-w-fit tw-mb-4",
           href: "#",
           onClick: _cache[3] || (_cache[3] = (...args) => $options.addStep && $options.addStep(...args))
         }, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_ADD_STEP")), 1),
-        createBaseVNode("div", _hoisted_10, [
+        createBaseVNode("div", _hoisted_10$1, [
           (openBlock(true), createElementBlock(Fragment, null, renderList($data.steps, (step) => {
             return openBlock(), createElementBlock("div", {
               key: step.id,
@@ -39892,34 +39892,34 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 "em-white-bg": step.state == 1
               }])
             }, [
-              createBaseVNode("div", _hoisted_11, [
+              createBaseVNode("div", _hoisted_11$1, [
                 createBaseVNode("h4", null, toDisplayString(step.label), 1),
                 createVNode(_component_popover, null, {
                   default: withCtx(() => [
-                    createBaseVNode("ul", _hoisted_12, [
+                    createBaseVNode("ul", _hoisted_12$1, [
                       createBaseVNode("li", {
                         class: "archive-workflow-step tw-cursor-pointer tw-p-2",
                         onClick: ($event) => $options.duplicateStep(step.id)
-                      }, toDisplayString(_ctx.translate("COM_EMUNDUS_ACTIONS_DUPLICATE")), 9, _hoisted_13),
+                      }, toDisplayString(_ctx.translate("COM_EMUNDUS_ACTIONS_DUPLICATE")), 9, _hoisted_13$1),
                       step.state == 1 ? (openBlock(), createElementBlock("li", {
                         key: 0,
                         class: "archive-workflow-step tw-cursor-pointer tw-p-2",
                         onClick: ($event) => $options.updateStepState(step.id, 0)
-                      }, toDisplayString(_ctx.translate("COM_EMUNDUS_ACTIONS_ARCHIVE")), 9, _hoisted_14)) : (openBlock(), createElementBlock("li", {
+                      }, toDisplayString(_ctx.translate("COM_EMUNDUS_ACTIONS_ARCHIVE")), 9, _hoisted_14$1)) : (openBlock(), createElementBlock("li", {
                         key: 1,
                         class: "archive-workflow-step tw-cursor-pointer tw-p-2",
                         onClick: ($event) => $options.updateStepState(step.id, 1)
-                      }, toDisplayString(_ctx.translate("COM_EMUNDUS_ACTIONS_UNARCHIVE")), 9, _hoisted_15)),
+                      }, toDisplayString(_ctx.translate("COM_EMUNDUS_ACTIONS_UNARCHIVE")), 9, _hoisted_15$1)),
                       createBaseVNode("li", {
                         class: "delete-workflow-step tw-cursor-pointer tw-p-2",
                         onClick: ($event) => $options.beforeDeleteStep(step.id)
-                      }, toDisplayString(_ctx.translate("COM_EMUNDUS_ACTIONS_DELETE")), 9, _hoisted_16)
+                      }, toDisplayString(_ctx.translate("COM_EMUNDUS_ACTIONS_DELETE")), 9, _hoisted_16$1)
                     ])
                   ]),
                   _: 2
                 }, 1024)
               ]),
-              createBaseVNode("div", _hoisted_17, [
+              createBaseVNode("div", _hoisted_17$1, [
                 createBaseVNode("div", _hoisted_18, [
                   createBaseVNode("label", _hoisted_19, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_LABEL")), 1),
                   withDirectives(createBaseVNode("input", {
@@ -40086,10 +40086,422 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ]);
 }
-const WorkflowEdit = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-5a4d4747"]]);
+const WorkflowEdit = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-5a4d4747"]]);
 const WorkflowEdit$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: WorkflowEdit
+}, Symbol.toStringTag, { value: "Module" }));
+const client = new FetchClient("campaign");
+const campaignService = {
+  async get(task, params) {
+    try {
+      return client.get(task, params);
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+  async updateDocument(params, create = false) {
+    const task = create ? "createdocument" : "updatedocument";
+    try {
+      return await client.post(task, params);
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+  async setDocumentMandatory(params) {
+    try {
+      return await client.post("updatedocumentmandatory", params);
+    } catch (error2) {
+      return {
+        status: false,
+        error: error2
+      };
+    }
+  },
+  async getAllCampaigns(filter2 = "", sort = "DESC", recherche = "", lim = 9999, page = 0, program = "all") {
+    try {
+      const response = await client.get("getallcampaign", {
+        filter: filter2,
+        sort,
+        recherche,
+        lim,
+        page,
+        program
+      });
+      return response.data;
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+  async createCampaign(form) {
+    if (!form.label || !form.start_date || !form.end_date) {
+      return {
+        status: false,
+        msg: "Label, start date and end date are required"
+      };
+    }
+    try {
+      const data = {
+        label: JSON.stringify(form.label),
+        start_date: form.start_date,
+        end_date: form.end_date,
+        short_description: form.short_description,
+        description: form.description,
+        training: form.training,
+        year: form.year,
+        published: form.published,
+        is_limited: form.is_limited,
+        profile_id: form.profile_id,
+        limit: form.limit,
+        limit_status: form.limit_status,
+        alias: form.alias,
+        pinned: form.pinned
+      };
+      return await client.post(`createcampaign`, {
+        body: JSON.stringify(form)
+      });
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+  async updateCampaign(form, cid) {
+    if (cid < 1) {
+      return this.createCampaign(form);
+    } else {
+      try {
+        return await client.post(`updatecampaign`, {
+          body: JSON.stringify(form),
+          cid
+        });
+      } catch (e) {
+        return {
+          status: false,
+          msg: e.message
+        };
+      }
+    }
+  },
+  async pinCampaign(cid) {
+    if (cid < 1) {
+      return {
+        status: false,
+        msg: "Invalid campaign ID"
+      };
+    }
+    try {
+      const formData = new FormData();
+      formData.append("cid", cid);
+      return await client.post(`pincampaign`, formData, {
+        "Content-Type": "multipart/form-data"
+      });
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+  async getCampaignMoreFormUrl(cid) {
+    if (cid < 1) {
+      return {
+        status: false,
+        msg: "Invalid campaign ID"
+      };
+    }
+    try {
+      return await client.get(`getcampaignmoreformurl&cid=${cid}`);
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+  async getAllItemsAlias(campaignId) {
+    try {
+      return await client.get("getallitemsalias&campaign_id=" + campaignId);
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+  async getProgrammeByCampaignID(campaignId) {
+    try {
+      return await client.get("getProgrammeByCampaignID&campaign_id=" + campaignId);
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+  async getCampaignById(campaignId) {
+    try {
+      return await client.get("getcampaignbyid&id=" + campaignId);
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+  async getYears() {
+    try {
+      return await client.get("getyears");
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+  async updateProfile(profileId, campaignId) {
+    try {
+      return await client.post("updateprofile", { profile: profileId, campaign: campaignId });
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+  async editDropfileDocument(documentId, newName) {
+    try {
+      return await client.post("editdocumentdropfile", { did: documentId, name: newName });
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+  async reorderDropfileDocuments(orderedDocuments) {
+    try {
+      return await client.post("updateorderdropfiledocuments", { documents: JSON.stringify(orderedDocuments) });
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+  async deleteDropfileDocument(documentId) {
+    try {
+      return await client.post("deletedocumentdropfile", { did: documentId });
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+  async getCampaignsByProgramId(programId) {
+    try {
+      return await client.get("getCampaignsByProgramId&program_id=" + programId);
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+  async getCampaignLanguages(campaignId) {
+    try {
+      return await client.get("getcampaignlanguages&campaign_id=" + campaignId);
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  }
+};
+const _sfc_main = {
+  name: "ProgramEdit",
+  components: { Multiselect: script },
+  props: {
+    programId: {
+      type: Number,
+      required: true
+    }
+  },
+  data() {
+    return {
+      program: {},
+      campaigns: [],
+      workflows: [],
+      workflowOptions: [],
+      tabs: [
+        {
+          name: "general",
+          label: this.translate("COM_EMUNDUS_PROGRAMS_EDITION_TAB_GENERAL")
+        },
+        {
+          name: "campaigns",
+          label: this.translate("COM_EMUNDUS_PROGRAMS_EDITION_TAB_CAMPAIGNS")
+        },
+        {
+          name: "workflows",
+          label: this.translate("COM_EMUNDUS_PROGRAMS_EDITION_TAB_WORKFLOWS")
+        }
+      ],
+      selectedTab: "general"
+    };
+  },
+  created() {
+    this.getWorkflows();
+    this.getAssociatedCampaigns();
+    this.getAssociatedWorkflows();
+  },
+  methods: {
+    getWorkflows() {
+      workflowService.getWorkflows().then((response) => {
+        if (response.status) {
+          this.workflowOptions = response.data.datas.map((workflow) => {
+            return {
+              id: workflow.id,
+              label: workflow.label.fr
+            };
+          });
+        }
+      });
+    },
+    getAssociatedCampaigns() {
+      campaignService.getCampaignsByProgramId(this.programId).then((response) => {
+        this.campaigns = response.data;
+      });
+    },
+    getAssociatedWorkflows() {
+      workflowService.getWorkflowsByProgramId(this.programId).then((response) => {
+        this.workflows = response.data.map((workflow) => {
+          console.log(workflow);
+          return {
+            id: workflow.id,
+            label: workflow.label
+          };
+        });
+      });
+    },
+    updateProgramWorkflows() {
+      workflowService.updateProgramWorkflows(this.programId, this.workflows).then((response) => {
+      });
+    }
+  }
+};
+const _hoisted_1 = {
+  id: "program-edition-container",
+  class: "em-border-cards em-card-shadow tw-rounded em-white-bg em-p-24 tw-m-4"
+};
+const _hoisted_2 = { class: "tw-mb-4" };
+const _hoisted_3 = { class: "tw-mb-2" };
+const _hoisted_4 = { class: "tw-mt-4" };
+const _hoisted_5 = { class: "tw-flex tw-flex-row tw-list-none" };
+const _hoisted_6 = ["onClick"];
+const _hoisted_7 = { class: "tw-w-full" };
+const _hoisted_8 = ["src"];
+const _hoisted_9 = { class: "tw-w-full tw-p-4" };
+const _hoisted_10 = { class: "tw-mb-2" };
+const _hoisted_11 = { class: "tw-my-4" };
+const _hoisted_12 = ["href"];
+const _hoisted_13 = {
+  href: "/campaigns",
+  class: "tw-underline",
+  target: "_blank"
+};
+const _hoisted_14 = { class: "tw-w-full tw-my-4" };
+const _hoisted_15 = { class: "tw-mb-2" };
+const _hoisted_16 = { class: "tw-flex tw-flex-row tw-justify-between" };
+const _hoisted_17 = {
+  href: "/workflows",
+  class: "tw-underline",
+  target: "_blank"
+};
+function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+  const _component_Multiselect = resolveComponent("Multiselect");
+  return openBlock(), createElementBlock("div", _hoisted_1, [
+    createBaseVNode("h1", _hoisted_2, toDisplayString(_ctx.translate("COM_EMUNDUS_PROGRAMS_EDITION_TITLE")), 1),
+    createBaseVNode("h2", _hoisted_3, toDisplayString(_ctx.translate("COM_EMUNDUS_PROGRAMS_EDITION_SUBTITLE")), 1),
+    createBaseVNode("p", null, toDisplayString(_ctx.translate("COM_EMUNDUS_PROGRAMS_EDITION_INTRO")), 1),
+    createBaseVNode("nav", _hoisted_4, [
+      createBaseVNode("ul", _hoisted_5, [
+        (openBlock(true), createElementBlock(Fragment, null, renderList($data.tabs, (tab) => {
+          return openBlock(), createElementBlock("li", {
+            class: normalizeClass(["tw-cursor-pointer tw-shadow tw-rounded-t-lg tw-px-2.5 tw-py-3", { "em-bg-main-500 em-text-neutral-300": $data.selectedTab === tab.name }]),
+            key: tab.name,
+            onClick: ($event) => $data.selectedTab = tab.name
+          }, toDisplayString(_ctx.translate(tab.label)), 11, _hoisted_6);
+        }), 128))
+      ])
+    ]),
+    withDirectives(createBaseVNode("div", _hoisted_7, [
+      createBaseVNode("iframe", {
+        class: "tw-w-full hide-titles",
+        style: { "height": "150vh" },
+        src: "/campaigns/modifier-un-programme?rowid=" + this.programId + "&tmpl=component&iframe=1"
+      }, null, 8, _hoisted_8)
+    ], 512), [
+      [vShow, $data.selectedTab === "general"]
+    ]),
+    withDirectives(createBaseVNode("div", _hoisted_9, [
+      createBaseVNode("p", _hoisted_10, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_TITLE")), 1),
+      createBaseVNode("ul", _hoisted_11, [
+        (openBlock(true), createElementBlock(Fragment, null, renderList($data.campaigns, (campaign) => {
+          return openBlock(), createElementBlock("li", {
+            key: campaign.id
+          }, [
+            createBaseVNode("a", {
+              href: "/campaigns/edit?cid=" + campaign.id,
+              target: "_blank"
+            }, toDisplayString(campaign.label), 9, _hoisted_12)
+          ]);
+        }), 128))
+      ]),
+      createBaseVNode("a", _hoisted_13, toDisplayString(_ctx.translate("COM_EMUNDUS_PROGRAMS_ACCESS_TO_CAMPAIGNS")), 1)
+    ], 512), [
+      [vShow, $data.selectedTab === "campaigns"]
+    ]),
+    withDirectives(createBaseVNode("div", _hoisted_14, [
+      createBaseVNode("label", _hoisted_15, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_WORKFLOWS_ASSOCIATED_TITLE")), 1),
+      createVNode(_component_Multiselect, {
+        options: $data.workflowOptions,
+        class: "tw-my-4",
+        modelValue: $data.workflows,
+        "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $data.workflows = $event),
+        label: "label",
+        "track-by": "id",
+        placeholder: "Select a program",
+        multiple: true
+      }, null, 8, ["options", "modelValue"]),
+      createBaseVNode("div", _hoisted_16, [
+        createBaseVNode("a", _hoisted_17, toDisplayString(_ctx.translate("COM_EMUNDUS_PROGRAMS_ACCESS_TO_WORKFLOWS")), 1),
+        createBaseVNode("button", {
+          class: "tw-btn-primary",
+          onClick: _cache[1] || (_cache[1] = (...args) => $options.updateProgramWorkflows && $options.updateProgramWorkflows(...args))
+        }, toDisplayString(_ctx.translate("SAVE")), 1)
+      ])
+    ], 512), [
+      [vShow, $data.selectedTab === "workflows"]
+    ])
+  ]);
+}
+const ProgramEdit = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render]]);
+const ProgramEdit$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: ProgramEdit
 }, Symbol.toStringTag, { value: "Module" }));
 if (document) {
   let app = null;
@@ -40108,7 +40520,8 @@ if (document) {
   if (el) {
     const componentName = el.getAttribute("component");
     if (componentName) {
-      if (componentName === "Attachments" || filesElement || componentName === "Comments" || componentName === "Workflows/WorkflowEdit") {
+      const componentNames = ["Attachments", "Comments", "Workflows/WorkflowEdit", "Program/ProgramEdit"];
+      if (filesElement || componentNames.includes(componentName)) {
         Array.prototype.slice.call(el.attributes).forEach(function(attr) {
           datas[attr.name] = attr.value;
         });
@@ -40151,6 +40564,11 @@ if (document) {
             workflowId: Number(datas.workflowid)
           });
           break;
+        case "Program/ProgramEdit":
+          app = createApp(ProgramEdit, {
+            programId: Number(datas.program_id)
+          });
+          break;
         default:
           app = createApp({
             components: {
@@ -40159,9 +40577,9 @@ if (document) {
                 if (componentPath.length > 1) {
                   let directory = componentPath[0];
                   let name = componentPath[1];
-                  return __variableDynamicImportRuntimeHelper(/* @__PURE__ */ Object.assign({ "./views/Program/ProgramEdit.vue": () => __vitePreload(() => import("./ProgramEdit.js"), true ? ["ProgramEdit.js","campaign.js"] : void 0), "./views/Workflows/WorkflowEdit.vue": () => __vitePreload(() => Promise.resolve().then(() => WorkflowEdit$1), true ? void 0 : void 0), "./views/Workflows/WorkflowSettings.vue": () => __vitePreload(() => import("./WorkflowSettings.js"), true ? [] : void 0) }), `./views/${directory}/${name}.vue`);
+                  return __variableDynamicImportRuntimeHelper(/* @__PURE__ */ Object.assign({ "./views/Program/ProgramEdit.vue": () => __vitePreload(() => Promise.resolve().then(() => ProgramEdit$1), true ? void 0 : void 0), "./views/Workflows/WorkflowEdit.vue": () => __vitePreload(() => Promise.resolve().then(() => WorkflowEdit$1), true ? void 0 : void 0), "./views/Workflows/WorkflowSettings.vue": () => __vitePreload(() => import("./WorkflowSettings.js"), true ? [] : void 0) }), `./views/${directory}/${name}.vue`);
                 } else {
-                  return __variableDynamicImportRuntimeHelper(/* @__PURE__ */ Object.assign({ "./views/ApplicationSingle.vue": () => __vitePreload(() => import("./ApplicationSingle.js"), true ? [] : void 0), "./views/Attachments.vue": () => __vitePreload(() => Promise.resolve().then(() => Attachments$1), true ? void 0 : void 0), "./views/CampaignEdition.vue": () => __vitePreload(() => import("./CampaignEdition.js"), true ? ["CampaignEdition.js","campaign.js","addCampaign.js","editor.js","vue-dropzone.js","index.js","email.js","History.js"] : void 0), "./views/Comments.vue": () => __vitePreload(() => Promise.resolve().then(() => Comments$1), true ? void 0 : void 0), "./views/Formbuilder.vue": () => __vitePreload(() => import("./Formbuilder.js"), true ? ["Formbuilder.js","index.js","editor.js","Translations.js","Skeleton.js","campaign.js","IncrementalSelect.js","History.js"] : void 0), "./views/History.vue": () => __vitePreload(() => import("./History.js"), true ? [] : void 0), "./views/List.vue": () => __vitePreload(() => import("./List.js"), true ? ["List.js","Skeleton.js"] : void 0), "./views/Settings.vue": () => __vitePreload(() => import("./Settings.js"), true ? ["Settings.js","History.js","Translations.js","index.js","vue-dropzone.js","editor.js","WorkflowSettings.js"] : void 0), "./views/Workflows.vue": () => __vitePreload(() => import("./Workflows.js"), true ? ["Workflows.js","List.js","Skeleton.js"] : void 0), "./views/addCampaign.vue": () => __vitePreload(() => import("./addCampaign.js").then((n) => n.b), true ? ["addCampaign.js","editor.js","campaign.js"] : void 0), "./views/addEmail.vue": () => __vitePreload(() => import("./addEmail.js"), true ? ["addEmail.js","IncrementalSelect.js","email.js","editor.js"] : void 0) }), `./views/${componentName}.vue`);
+                  return __variableDynamicImportRuntimeHelper(/* @__PURE__ */ Object.assign({ "./views/ApplicationSingle.vue": () => __vitePreload(() => import("./ApplicationSingle.js"), true ? [] : void 0), "./views/Attachments.vue": () => __vitePreload(() => Promise.resolve().then(() => Attachments$1), true ? void 0 : void 0), "./views/CampaignEdition.vue": () => __vitePreload(() => import("./CampaignEdition.js"), true ? ["CampaignEdition.js","addCampaign.js","editor.js","vue-dropzone.js","index.js","email.js","History.js"] : void 0), "./views/Comments.vue": () => __vitePreload(() => Promise.resolve().then(() => Comments$1), true ? void 0 : void 0), "./views/Formbuilder.vue": () => __vitePreload(() => import("./Formbuilder.js"), true ? ["Formbuilder.js","index.js","editor.js","Translations.js","Skeleton.js","IncrementalSelect.js","History.js"] : void 0), "./views/History.vue": () => __vitePreload(() => import("./History.js"), true ? [] : void 0), "./views/List.vue": () => __vitePreload(() => import("./List.js"), true ? ["List.js","Skeleton.js"] : void 0), "./views/Settings.vue": () => __vitePreload(() => import("./Settings.js"), true ? ["Settings.js","History.js","Translations.js","index.js","vue-dropzone.js","editor.js","WorkflowSettings.js"] : void 0), "./views/Workflows.vue": () => __vitePreload(() => import("./Workflows.js"), true ? ["Workflows.js","List.js","Skeleton.js"] : void 0), "./views/addCampaign.vue": () => __vitePreload(() => import("./addCampaign.js").then((n) => n.b), true ? ["addCampaign.js","editor.js"] : void 0), "./views/addEmail.vue": () => __vitePreload(() => import("./addEmail.js"), true ? ["addEmail.js","IncrementalSelect.js","email.js","editor.js"] : void 0) }), `./views/${componentName}.vue`);
                 }
               })
             },
@@ -40227,7 +40645,20 @@ if (document) {
         const globalStore2 = useGlobalStore();
         globalStore2.initAttachmentPath(datas.base + "/images/emundus/files/");
       }
+      {
+        app.config.productionTip = false;
+        app.config.devtools = true;
+        app.config.performance = true;
+      }
       app.mount(elementId);
+      {
+        const version2 = app.version;
+        const devtools2 = window.__VUE_DEVTOOLS_GLOBAL_HOOK__;
+        if (devtools2) {
+          devtools2.enabled = true;
+          devtools2.emit("app:init", app, version2, {});
+        }
+      }
     }
   }
 }
@@ -40238,7 +40669,7 @@ export {
   Comments as C,
   toHandlers as D,
   Tabs as E,
-  Fragment as F,
+  FetchClient as F,
   mixin$1 as G,
   formService as H,
   programmeService as I,
@@ -40247,59 +40678,60 @@ export {
   defineStore as L,
   Modal as M,
   vModelText as N,
-  vModelDynamic as O,
-  withKeys as P,
-  vModelRadio as Q,
-  Popover as R,
+  script as O,
+  vModelDynamic as P,
+  withKeys as Q,
+  vModelRadio as R,
   Swal$1 as S,
   TransitionGroup as T,
-  client$4 as U,
-  watch as V,
-  reactive as W,
-  __vitePreload as X,
-  resolveDynamicComponent as Y,
-  renderSlot as Z,
+  Popover as U,
+  client$5 as V,
+  watch as W,
+  reactive as X,
+  __vitePreload as Y,
+  resolveDynamicComponent as Z,
   _export_sfc as _,
   createBaseVNode as a,
-  defineComponent as a0,
-  h as a1,
-  getAugmentedNamespace as a2,
-  commonjsGlobal as a3,
-  getDefaultExportFromCjs as a4,
-  ref as a5,
-  computed as a6,
-  markRaw as a7,
-  watchEffect as a8,
-  nextTick as a9,
-  unref as aa,
-  onBeforeUnmount as ab,
-  customRef as ac,
-  getCurrentInstance as ad,
-  render$2 as ae,
-  onMounted as af,
-  renderList as b,
+  renderSlot as a0,
+  defineComponent as a1,
+  h as a2,
+  getAugmentedNamespace as a3,
+  commonjsGlobal as a4,
+  getDefaultExportFromCjs as a5,
+  ref as a6,
+  computed as a7,
+  markRaw as a8,
+  watchEffect as a9,
+  nextTick as aa,
+  unref as ab,
+  onBeforeUnmount as ac,
+  customRef as ad,
+  getCurrentInstance as ae,
+  render$2 as af,
+  onMounted as ag,
+  Fragment as b,
   createElementBlock as c,
-  withDirectives as d,
-  createVNode as e,
-  FetchClient as f,
-  fileService as g,
-  createCommentVNode as h,
-  errors as i,
-  axios$1 as j,
-  createBlock as k,
-  withCtx as l,
-  normalizeStyle as m,
+  createCommentVNode as d,
+  errors as e,
+  fileService as f,
+  axios$1 as g,
+  resolveComponent as h,
+  createBlock as i,
+  withCtx as j,
+  normalizeStyle as k,
+  campaignService as l,
+  createVNode as m,
   normalizeClass as n,
   openBlock as o,
   mergeProps as p,
-  settingsService as q,
-  resolveComponent as r,
-  script as s,
+  withModifiers as q,
+  renderList as r,
+  settingsService as s,
   toDisplayString as t,
-  withModifiers as u,
+  vModelSelect as u,
   vShow as v,
-  workflowService as w,
-  vModelSelect as x,
-  createTextVNode as y,
-  useGlobalStore as z
+  withDirectives as w,
+  createTextVNode as x,
+  useGlobalStore as y,
+  workflowService as z
 };

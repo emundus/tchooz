@@ -20,7 +20,6 @@
     "moment": "^2.29.4",
     "pinia": "^2.2.0",
     "qs": "^6.11.2",
-    "sass": "^1.66.1",
     "sweetalert2": "^11.7.27",
     "tip-tap-editor": "https://github.com/emundus/tiptap",
     "v-calendar": "3.0.0-alpha.8",

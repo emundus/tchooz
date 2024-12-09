@@ -42,7 +42,7 @@ $sysadmin_access    = EmundusHelperAccess::isAdministrator($this->user->id);
 
 ?>
 
-<div id="em-component-vue" component="ProgramEdit"
+<div id="em-component-vue" component="Program/ProgramEdit"
      program_id="<?= $this->program_id; ?>"
      shortLang="<?= $short_lang ?>"
      currentLanguage="<?= $current_lang ?>"

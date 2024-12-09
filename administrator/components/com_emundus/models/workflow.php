@@ -29,6 +29,7 @@ class EmundusModelAdministratorWorkflow extends JModelList
 
 	public function install() {
 		$installed = false;
+		$tasks = [];
 
 		require_once (JPATH_ROOT . '/administrator/components/com_emundus/helpers/update.php');
 
@@ -50,7 +51,6 @@ class EmundusModelAdministratorWorkflow extends JModelList
 		];
 		$response = EmundusHelperUpdate::createTable('jos_emundus_setup_workflows', $columns);
 
-		$tasks = [];
 		if ($response['status']) {
 			$columns = [
 				['name' => 'workflow_id', 'type' => 'INT', 'null' => 0],
@@ -296,9 +296,46 @@ class EmundusModelAdministratorWorkflow extends JModelList
 			EmundusHelperUpdate::installExtension('Fabrik Form - eMundus Phase évaluation', 'emundusstepevaluation', $manifest, 'plugin', 1, 'fabrik_form');
 			EmundusHelperUpdate::enableEmundusPlugins('emundusstepevaluation');
 
-			if (!in_array(false, $tasks)) {
-				$installed = true;
+			// modify edit redirect url for the program edition
+			$query->clear()
+				->select('value')
+				->from('#__emundus_setup_config')
+				->where($db->quoteName('namekey') . ' = ' . $db->quote('onboarding_lists'));
+
+			$db->setQuery($query);
+			$onboarding_lists = $db->loadResult();
+			$onboarding_lists = json_decode($onboarding_lists, true);
+			$list_to_update = false;
+			if (!empty($onboarding_lists['campaigns'])) {
+				foreach ($onboarding_lists['campaigns']['tabs'] as $tab_key => $tab) {
+					if ($tab['key'] !== 'programs') {
+						continue;
+					}
+
+					foreach($tab['actions'] as $action_key => $action) {
+						if ($action['name'] == 'edit' && $action['action'] !== '/campaigns/edit-program?id=%id%') {
+							$action['action'] = '/campaigns/edit-program?id=%id%';
+
+							$onboarding_lists['campaigns']['tabs'][$tab_key]['actions'][$action_key] = $action;
+							$list_to_update = true;
+						}
+					}
+				}
 			}
+
+			if ($list_to_update) {
+				$query->clear()
+					->update('#__emundus_setup_config')
+					->set('value = ' . $db->quote(json_encode($onboarding_lists)))
+					->where($db->quoteName('namekey') . ' = ' . $db->quote('onboarding_lists'));
+
+				$db->setQuery($query);
+				$tasks[] = $db->execute();
+			}
+		}
+
+		if (!in_array(false, $tasks)) {
+			$installed = true;
 		}
 
 		return $installed;

@@ -1,4 +1,4 @@
-import { f as FetchClient } from "./app_emundus.js";
+import { F as FetchClient } from "./app_emundus.js";
 const client = new FetchClient("email");
 const emailService = {
   async getEmails() {

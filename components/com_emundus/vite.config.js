@@ -32,5 +32,12 @@ export default defineConfig({
     },
     cssCodeSplit: false
   },
+  css: {
+    preprocessorOptions: {
+      sass: {
+        api: 'modern-compiler'
+      }
+    }
+  },
   base: "/media/com_emundus_vue"
 });
