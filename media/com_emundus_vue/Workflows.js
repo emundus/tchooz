@@ -39,6 +39,13 @@ const _sfc_main = {
                   "parameters": "&id=%id%",
                   "name": "delete",
                   "confirm": "COM_EMUNDUS_WORKFLOW_DELETE_WORKFLOW_CONFIRMATION"
+                },
+                {
+                  action: "duplicate",
+                  label: "COM_EMUNDUS_ACTIONS_DUPLICATE",
+                  controller: "workflow",
+                  parameters: "id=%id%",
+                  name: "duplicate"
                 }
               ],
               "filters": [

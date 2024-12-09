@@ -1166,53 +1166,58 @@ class EmundusModelWorkflow extends JModelList
 		if (!empty($workflow_id)) {
 			$workflow_data = $this->getWorkflow($workflow_id);
 
-			if (!empty($workflow_data)) {
-				$new_workflow_id = $this->add();
+			try {
+				if (!empty($workflow_data)) {
+					$new_workflow_id = $this->add();
 
-				$query = $this->db->getQuery(true);
+					$query = $this->db->getQuery(true);
 
-				$query->update('#__emundus_setup_workflows')
-					->set('label = ' . $this->db->quote($workflow_data['workflow']->label . ' - Copie'))
-					->where('id = ' . $new_workflow_id);
-
-				$this->db->setQuery($query);
-				$this->db->execute();
-
-				$steps = $workflow_data['steps'];
-
-				foreach($steps as $step) {
-					$columns = ['workflow_id', 'label', 'type', 'multiple', 'state', 'output_status'];
-					$values = [$new_workflow_id, $this->db->quote($step->label), $step->type, $step->multiple, $step->state, $step->output_status];
-
-					if ($this->isEvaluationStep($step->type)) {
-						$columns[] = 'form_id';
-						$values[] = $step->form_id;
-					} else {
-						$columns[] = 'profile_id';
-						$values[] = $step->profile_id;
-					}
-
-					$query->clear()
-						->insert('#__emundus_setup_workflows_steps')
-						->columns($columns)
-						->values(implode(',', $values));
+					$query->update('#__emundus_setup_workflows')
+						->set('label = ' . $this->db->quote($workflow_data['workflow']->label . ' - Copie'))
+						->where('id = ' . $new_workflow_id);
 
 					$this->db->setQuery($query);
 					$this->db->execute();
-					$new_step_id = $this->db->insertid();
 
-					if (!empty($new_step_id)) {
-						foreach($step->entry_status as $status) {
-							$query->clear()
-								->insert('#__emundus_setup_workflows_steps_entry_status')
-								->columns('step_id, status')
-								->values($new_step_id . ', ' . $status);
+					$steps = $workflow_data['steps'];
 
-							$this->db->setQuery($query);
-							$this->db->execute();
+					foreach($steps as $step) {
+						$step->multiple = empty($step->multiple) ? 0 : $step->multiple;
+						$columns = ['workflow_id', 'label', 'type', 'multiple', 'state', 'output_status'];
+						$values = [$new_workflow_id, $this->db->quote($step->label), $step->type, $step->multiple, $step->state, $step->output_status];
+
+						if ($this->isEvaluationStep($step->type)) {
+							$columns[] = 'form_id';
+							$values[] = $step->form_id;
+						} else {
+							$columns[] = 'profile_id';
+							$values[] = $step->profile_id;
+						}
+
+						$query->clear()
+							->insert('#__emundus_setup_workflows_steps')
+							->columns($columns)
+							->values(implode(',', $values));
+
+						$this->db->setQuery($query);
+						$this->db->execute();
+						$new_step_id = $this->db->insertid();
+
+						if (!empty($new_step_id)) {
+							foreach($step->entry_status as $status) {
+								$query->clear()
+									->insert('#__emundus_setup_workflows_steps_entry_status')
+									->columns('step_id, status')
+									->values($new_step_id . ', ' . $status);
+
+								$this->db->setQuery($query);
+								$this->db->execute();
+							}
 						}
 					}
 				}
+			} catch (Exception $e) {
+				var_dump($e->getMessage() . '  ' .  $query->__toString());exit;
 			}
 		}
 

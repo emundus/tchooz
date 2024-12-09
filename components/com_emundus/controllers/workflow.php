@@ -425,4 +425,27 @@ class EmundusControllerWorkflow extends JControllerLegacy
 
 		$this->sendJsonResponse($response);
 	}
+
+	public function duplicate()
+	{
+		$response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$workflow_id = $this->app->input->getInt('id', 0);
+
+			if (!empty($workflow_id))
+			{
+				$new_workflow_id = $this->model->duplicateWorkflow($workflow_id);
+
+				if (!empty($new_workflow_id))
+				{
+					$response['code']   = 200;
+					$response['status'] = true;
+				}
+			}
+		}
+
+		$this->sendJsonResponse($response);
+	}
 }

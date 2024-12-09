@@ -151,6 +151,9 @@ class WorkflowModelTest extends UnitTestCase
 
 	public function testDuplicateWorkflow()
 	{
+		$new_workflow_id = $this->model->duplicateWorkflow(1);
+		$this->assertNotEmpty($new_workflow_id, 'Duplicating a complete workflow should return a value');
+
 		$new_workflow_id = $this->model->duplicateWorkflow(999999999);
 		$this->assertEmpty($new_workflow_id, 'Duplicating a non-existing workflow should return an empty value');
 
