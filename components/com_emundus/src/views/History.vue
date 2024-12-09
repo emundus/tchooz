@@ -11,6 +11,7 @@
       <table v-if="history.length > 0">
         <thead>
         <tr>
+          <th v-if="columns.includes('itemId')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_ITEM_ID') }}</th>
           <th v-if="columns.includes('title')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_UPDATES') }}</th>
           <th v-if="columns.includes('message_language_key')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_TYPE') }}</th>
           <th v-if="columns.includes('log_date')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_LOG_DATE') }}</th>
@@ -21,6 +22,9 @@
         </thead>
         <tbody>
         <tr v-for="data in history" :key="data.id">
+          <td v-if="columns.includes('itemId')">
+            <span> {{ data.message.id }} </span>
+          </td>
           <td v-if="columns.includes('title')">
             <p>{{ translate(data.message.title) }}</p>
             <p v-if="data.message.new_data.length > 0 && extension == 'com_emundus.settings.web_security'">
@@ -172,6 +176,10 @@ export default {
   },
   created() {
     this.fetchHistory();
+
+    if (this.itemId < 1) {
+      this.columns.push('itemId');
+    }
   },
   methods: {
     fetchHistory() {
