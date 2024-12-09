@@ -947,7 +947,7 @@ footer#g-footer > .g-container {
 /* DROPFILE - APPLICANT SIDE */
 .com_dropfiles.resources-page {
 
-  .content-top-a  .em-back-button {
+  .em-back-button {
     justify-content: flex-start;
     margin-top: 20px;
   }
@@ -1017,6 +1017,7 @@ footer#g-footer > .g-container {
         padding: 25px;
         margin: 0 !important;
         min-width: -webkit-fill-available;
+        height: 100%;
 
         .ext {
           display: none;
@@ -1027,6 +1028,7 @@ footer#g-footer > .g-container {
           .file-xinfo {
             margin-left: 0;
             padding-left: 0;
+            margin-bottom: 8px;
 
             &> div > span {
               min-width: auto;
@@ -1047,6 +1049,7 @@ footer#g-footer > .g-container {
               display: -webkit-box;
               min-height: 46px;
               line-height: 1.5;
+              height: 60px;
             }
           }
         }

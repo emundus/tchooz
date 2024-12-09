@@ -895,9 +895,6 @@ video {
                 color: var(--neutral-0);
             }
 /** DROPFILES **/
-.dropfiles-page .breadcrumbs {
-            display: none;
-        }
 .dropfiles-page .dropfiles-container .dropfiles_list .\!file a.downloadlink {
                         margin-top: 0 !important;
                     }
@@ -919,27 +916,6 @@ video {
                         color: transparent !important;
                         background-size: contain !important;
                     }
-.dropfiles-page .dropfiles-container .dropfiles_list .\!file .file-size {
-                        display: none !important;
-                    }
-.dropfiles-page .dropfiles-container .dropfiles_list .file .file-size {
-                        display: none;
-                    }
-.dropfiles-page .dropfiles-container .dropfiles_list .\!file .file-hits {
-                        display: none !important;
-                    }
-.dropfiles-page .dropfiles-container .dropfiles_list .file .file-hits {
-                        display: none;
-                    }
-.dropfiles-page .dropfiles-container .dropfiles_list .\!file .file-dated {
-                        display: none !important;
-                    }
-.dropfiles-page .dropfiles-container .dropfiles_list .file .file-dated {
-                        display: none;
-                    }
-.dropfiles-page .dropfiles-container .dropfiles_list .dropfileslightbox {
-                    display: none;
-                }
 .com_dropfiles.view-manage .g-container {
             width: 100%;
         }
@@ -1068,6 +1044,9 @@ video {
                             }
 .fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.day.selected {
                                 border-radius: 99px;
+                            }
+.fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.day.\!selected {
+                                border-radius: 99px !important;
                             }
 .fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.today:after {
                                 content: unset;
@@ -115092,6 +115071,9 @@ button.swal2-cancel.goback-btn:hover,
 .label-border-black {
         border-color: var(--em-black);
     }
+.\[-a-zA-Z\:0-9_\.\] {
+    -a-z-a--z: 0-9 .;
+}
 @font-face {
     font-family: 'Material Icons';
     font-style: normal;
