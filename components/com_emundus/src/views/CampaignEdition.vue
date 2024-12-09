@@ -154,6 +154,7 @@ export default {
       },
       {
         id: 7,
+        code: 'steps',
         name: 'COM_EMUNDUS_CAMPAIGN_STEPS',
         description: '',
         icon: 'description',
@@ -166,15 +167,6 @@ export default {
         name: 'COM_EMUNDUS_DOCUMENTS_CAMPAIGNS',
         description: "COM_EMUNDUS_DOCUMENTS_CAMPAIGNS_DESC",
         icon: 'description',
-        active: false,
-        displayed: true
-      },
-      {
-        id: 4,
-        code: 'form',
-        name: 'COM_EMUNDUS_FORM_CAMPAIGN',
-        description: "COM_EMUNDUS_FORM_CAMPAIGN_DESC",
-        icon: 'format_list_bulleted',
         active: false,
         displayed: true
       },

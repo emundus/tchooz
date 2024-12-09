@@ -1077,7 +1077,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const campaignSteps = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1]]);
-const CampaignEdition_vue_vue_type_style_index_0_scoped_25f262f7_lang = "";
+const CampaignEdition_vue_vue_type_style_index_0_scoped_109d6ef3_lang = "";
 const _sfc_main = {
   name: "CampaignEdition",
   components: {
@@ -1119,6 +1119,7 @@ const _sfc_main = {
       },
       {
         id: 7,
+        code: "steps",
         name: "COM_EMUNDUS_CAMPAIGN_STEPS",
         description: "",
         icon: "description",
@@ -1131,15 +1132,6 @@ const _sfc_main = {
         name: "COM_EMUNDUS_DOCUMENTS_CAMPAIGNS",
         description: "COM_EMUNDUS_DOCUMENTS_CAMPAIGNS_DESC",
         icon: "description",
-        active: false,
-        displayed: true
-      },
-      {
-        id: 4,
-        code: "form",
-        name: "COM_EMUNDUS_FORM_CAMPAIGN",
-        description: "COM_EMUNDUS_FORM_CAMPAIGN_DESC",
-        icon: "format_list_bulleted",
         active: false,
         displayed: true
       },
@@ -1473,7 +1465,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ]);
 }
-const CampaignEdition = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-25f262f7"]]);
+const CampaignEdition = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-109d6ef3"]]);
 export {
   CampaignEdition as default
 };

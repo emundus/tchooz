@@ -992,7 +992,7 @@ export default {
     },
 
     'form.alias': function(val, oldVal) {
-      if (val !== oldVal) {
+      if (val !== oldVal && val && val !== '') {
         this.form.alias = val.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9_-]+/g, '-').toLowerCase();
         // Check if alias already exists
         if (typeof this.aliases !== 'undefined' && this.aliases.includes(val)) {
