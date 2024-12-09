@@ -21,7 +21,7 @@
             <span class="material-symbols-outlined">navigate_before</span>
           </a>
         </li>
-        <li v-for="pageAvailable in Math.ceil(dataLength / limit)"
+        <li v-for="pageAvailable in pagesAvailable"
             :key="pageAvailable"
             :class="{'active': pageAvailable === this.currentPage}"
             @click="this.currentPage = pageAvailable"
@@ -30,8 +30,8 @@
         </li>
         <li class="tw-flex">
           <a class="tw-cursor-pointer"
-             :class="{'disabled': this.currentPage === Math.ceil(dataLength / limit)}"
-             @click="this.currentPage !== Math.ceil(dataLength / limit) ? this.currentPage += 1 : null"
+             :class="{'disabled': this.currentPage === totalPages}"
+             @click="this.currentPage !== totalPages ? this.currentPage += 1 : null"
           >
             <span class="material-symbols-outlined">navigate_next</span>
           </a>
@@ -47,7 +47,7 @@ export default {
   props: {
     limits: {
       type: Array,
-      default: () => [5, 10, 25, 50, 100]
+      default: () => [1, 5, 10, 25, 50, 100]
     },
     dataLength: {
       type: Number,
@@ -93,6 +93,24 @@ export default {
         let top = banner.offsetHeight;
         return {top: `${top}px`};
       }
+    },
+    totalPages() {
+      return Math.ceil(this.dataLength / this.currentLimit);
+    },
+    pagesAvailable() {
+      // the current page and the 5 pages around it
+      let pages = [this.currentPage];
+
+      for(let i = 1; i <= 5; i++) {
+        if(this.currentPage - i > 0) {
+          pages.unshift(this.currentPage - i);
+        }
+        if(this.currentPage + i <= this.totalPages) {
+          pages.push(this.currentPage + i);
+        }
+      }
+
+      return pages;
     }
   }
 }

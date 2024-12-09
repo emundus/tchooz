@@ -2000,13 +2000,13 @@ class EmundusModelCampaign extends ListModel
 
 		if (!empty($profile) && !empty($campaign)) {
 			$query = $this->_db->getQuery(true);
-			$query->select('label,year,training')
+			$query->select('id, label, year, training, profile_id')
 				->from($this->_db->quoteName('#__emundus_setup_campaigns'))
 				->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($campaign));
 
 			try {
 				$this->_db->setQuery($query);
-				$schoolyear = $this->_db->loadAssoc();
+				$old_data = $this->_db->loadAssoc();
 
 				$query->clear()
 					->update($this->_db->quoteName('#__emundus_setup_attachment_profiles'))
@@ -2038,8 +2038,15 @@ class EmundusModelCampaign extends ListModel
 				$this->_db->execute();
 
 				// Create teaching unity
-				$this->createYear($schoolyear, $profile);
+				$this->createYear($old_data, $profile);
 				//
+
+				$new_data = $old_data;
+				$new_data['profile_id'] = $profile;
+
+				$app = JFactory::getApplication();
+				$app->triggerEvent('onAfterCampaignUpdate', [$new_data, $old_data]);
+				$app->triggerEvent('onCallEventHandler', ['onAfterCampaignUpdate', ['campaign' => $campaign]]);
 
 				$updated = true;
 			}

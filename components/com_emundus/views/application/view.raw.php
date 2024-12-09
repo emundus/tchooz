@@ -203,7 +203,7 @@ class EmundusViewApplication extends HtmlView
 
 						$m_files = new EmundusModelFiles;
 
-						$this->userAttachments     = $m_application->getUserAttachmentsByFnum($fnum, $search, null, (bool)$this->_user->applicant);
+						$this->userAttachments     = $m_application->getUserAttachmentsByFnum($fnum, $search, $fnumInfos['profile_id'], (bool)$this->_user->applicant);
 						$this->attachmentsProgress = $m_application->getAttachmentsProgress($fnum);
 						$this->nameCategory        = $m_files->getAttachmentCategories();
 						$this->student_id          = $fnumInfos['applicant_id'];

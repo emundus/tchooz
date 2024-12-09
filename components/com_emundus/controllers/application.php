@@ -770,7 +770,14 @@ class EmundusControllerApplication extends BaseController
 				$m_application = $this->getModel('Application');
 				$euser = $this->app->getSession()->get('emundusUser');
 
-				$response['attachments'] = $m_application->getUserAttachmentsByFnum($fnum,'',null,$euser->applicant == 1,$this->_user->id);
+				if (!class_exists('EmundusModelFiles')) {
+					require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+				}
+
+				$m_files = new EmundusModelFiles();
+				$fnumInfos = $m_files->getFnumInfos($fnum);
+
+				$response['attachments'] = $m_application->getUserAttachmentsByFnum($fnum,'',$fnumInfos['profile_id'],$euser->applicant == 1,$this->_user->id);
 				$response['msg']         = Text::_('SUCCESS');
 				$response['status']      = true;
 				$response['code']        = 200;

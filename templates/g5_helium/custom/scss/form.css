@@ -349,7 +349,7 @@
         }
 
         .fabrikLabel {
-            display: inline-block !important;
+            display: inline-block;
             font-size: var(--em-form-label-size);
             @apply tw-w-full;
             font-family: var(--em-profile-font), Inter, sans-serif;

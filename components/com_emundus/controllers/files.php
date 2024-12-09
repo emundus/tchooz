@@ -3782,27 +3782,32 @@ class EmundusControllerFiles extends BaseController
 	{
 		$res = array('status' => false, 'data' => []);
 
-		if(EmundusHelperAccess::asAccessAction(27,'c',$this->_user->id))
+		$fnums     = $this->input->post->getRaw('fnums');
+		if(!empty($fnums))
 		{
-			$fnums     = $this->input->post->getRaw('fnums');
-			$templates = $this->input->post->getRaw('ids_tmpl');
-			$canSee    = $this->input->post->getRaw('cansee', 0);
+			$fnums_array = explode(',', $fnums);
 
-			$showMode  = $this->input->post->getRaw('showMode', 0);
-			$mergeMode = $this->input->post->getRaw('mergeMode', 0);
-
-			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php');
-			$_mEval = $this->getModel('Evaluation');
-
-			$res['data'] = $_mEval->generateLetters($fnums, $templates, $canSee, $showMode, $mergeMode);
-			ob_clean();
-
-			if ($res['data'])
+			if (EmundusHelperAccess::asAccessAction(27, 'c', $this->_user->id) || (sizeof($fnums_array) === 1 && EmundusHelperAccess::isFnumMine($this->_user->id, $fnums)))
 			{
-				$this->app->triggerEvent('onAfterGenerateLetters', ['letters' => $res['data']]);
-				$this->app->triggerEvent('onCallEventHandler', ['onAfterGenerateLetters', ['letters' => $res['data']]]);
+				$templates = $this->input->post->getRaw('ids_tmpl');
+				$canSee    = $this->input->post->getRaw('cansee', 0);
 
-				$res['status'] = true;
+				$showMode  = $this->input->post->getRaw('showMode', 0);
+				$mergeMode = $this->input->post->getRaw('mergeMode', 0);
+
+				require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php');
+				$_mEval = $this->getModel('Evaluation');
+
+				$res['data'] = $_mEval->generateLetters($fnums, $templates, $canSee, $showMode, $mergeMode);
+				ob_clean();
+
+				if ($res['data'])
+				{
+					$this->app->triggerEvent('onAfterGenerateLetters', ['letters' => $res['data']]);
+					$this->app->triggerEvent('onCallEventHandler', ['onAfterGenerateLetters', ['letters' => $res['data']]]);
+
+					$res['status'] = true;
+				}
 			}
 		}
 

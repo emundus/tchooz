@@ -145,6 +145,13 @@
                 </field>
 
                 <field
+                    name="mod_emundus_campaign_label_prefix"
+                    type="text"
+                    label="MOD_EMUNDUS_CAMPAIGN_LABEL_PREFIX"
+                    description="MOD_EMUNDUS_CAMPAIGN_LABEL_PREFIX_DESC"
+                />
+                
+                <field
                         name="mod_em_campaign_intro"
                         type="editor" filter="safehtml" hide="readmore,pagebreak"
                         default=""

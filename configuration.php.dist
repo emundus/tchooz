@@ -33,7 +33,7 @@ class JConfig {
 	public $offset = 'Europe/Paris';
 	public $mailonline = true;
 	public $mailer = 'smtp';
-	public $mailfrom = 'support@emundus.fr';
+	public $mailfrom = 'tchooz@example.fr';
 	public $fromname = 'Tchooz';
 	public $sendmail = '/usr/sbin/sendmail';
 	public $smtpauth = true;

@@ -1,11 +1,11 @@
-import { _ as _export_sfc, o as openBlock, c as createElementBlock, a as createBaseVNode, d as withDirectives, x as vModelSelect, F as Fragment, b as renderList, t as toDisplayString, n as normalizeClass, m as normalizeStyle, G as mixin, z as useGlobalStore, q as settingsService, r as resolveComponent, h as createCommentVNode, k as createBlock, y as createTextVNode } from "./app_emundus.js";
-const Pagination_vue_vue_type_style_index_0_scoped_ba33d3d6_lang = "";
+import { _ as _export_sfc, o as openBlock, e as createElementBlock, d as createBaseVNode, w as withDirectives, l as vModelSelect, g as Fragment, h as renderList, t as toDisplayString, i as normalizeClass, n as normalizeStyle, q as mixin, u as useGlobalStore, s as settingsService, r as resolveComponent, f as createCommentVNode, c as createBlock, p as createTextVNode } from "./app_emundus.js";
+const Pagination_vue_vue_type_style_index_0_scoped_81c853d5_lang = "";
 const _sfc_main$1 = {
   name: "Pagination",
   props: {
     limits: {
       type: Array,
-      default: () => [5, 10, 25, 50, 100]
+      default: () => [1, 5, 10, 25, 50, 100]
     },
     dataLength: {
       type: Number,
@@ -51,6 +51,21 @@ const _sfc_main$1 = {
         let top = banner.offsetHeight;
         return { top: `${top}px` };
       }
+    },
+    totalPages() {
+      return Math.ceil(this.dataLength / this.currentLimit);
+    },
+    pagesAvailable() {
+      let pages = [this.currentPage];
+      for (let i = 1; i <= 5; i++) {
+        if (this.currentPage - i > 0) {
+          pages.unshift(this.currentPage - i);
+        }
+        if (this.currentPage + i <= this.totalPages) {
+          pages.push(this.currentPage + i);
+        }
+      }
+      return pages;
     }
   }
 };
@@ -97,7 +112,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
             createBaseVNode("span", { class: "material-symbols-outlined" }, "navigate_before", -1)
           ]), 2)
         ]),
-        (openBlock(true), createElementBlock(Fragment, null, renderList(Math.ceil($props.dataLength / $props.limit), (pageAvailable) => {
+        (openBlock(true), createElementBlock(Fragment, null, renderList($options.pagesAvailable, (pageAvailable) => {
           return openBlock(), createElementBlock("li", {
             key: pageAvailable,
             class: normalizeClass([{ "active": pageAvailable === this.currentPage }, "tw-cursor-pointer tw-flex"]),
@@ -108,8 +123,8 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
         }), 128)),
         createBaseVNode("li", _hoisted_8$1, [
           createBaseVNode("a", {
-            class: normalizeClass(["tw-cursor-pointer", { "disabled": this.currentPage === Math.ceil($props.dataLength / $props.limit) }]),
-            onClick: _cache[2] || (_cache[2] = ($event) => this.currentPage !== Math.ceil($props.dataLength / $props.limit) ? this.currentPage += 1 : null)
+            class: normalizeClass(["tw-cursor-pointer", { "disabled": this.currentPage === $options.totalPages }]),
+            onClick: _cache[2] || (_cache[2] = ($event) => this.currentPage !== $options.totalPages ? this.currentPage += 1 : null)
           }, _cache[5] || (_cache[5] = [
             createBaseVNode("span", { class: "material-symbols-outlined" }, "navigate_next", -1)
           ]), 2)
@@ -118,8 +133,8 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 6);
 }
-const Pagination = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-ba33d3d6"]]);
-const History_vue_vue_type_style_index_0_scoped_94ef35dd_lang = "";
+const Pagination = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-81c853d5"]]);
+const History_vue_vue_type_style_index_0_scoped_09715b43_lang = "";
 const _sfc_main = {
   name: "History",
   components: { Pagination },
@@ -185,6 +200,9 @@ const _sfc_main = {
   },
   created() {
     this.fetchHistory();
+    if (this.itemId < 1) {
+      this.columns.push("itemId");
+    }
   },
   methods: {
     fetchHistory() {
@@ -258,24 +276,26 @@ const _hoisted_6 = { key: 2 };
 const _hoisted_7 = { key: 3 };
 const _hoisted_8 = { key: 4 };
 const _hoisted_9 = { key: 5 };
-const _hoisted_10 = { key: 0 };
+const _hoisted_10 = { key: 6 };
 const _hoisted_11 = { key: 0 };
-const _hoisted_12 = { key: 0 };
-const _hoisted_13 = { class: "tw-text-green-700" };
-const _hoisted_14 = { key: 1 };
-const _hoisted_15 = { key: 2 };
-const _hoisted_16 = { key: 3 };
-const _hoisted_17 = { key: 4 };
-const _hoisted_18 = { class: "tw-flex tw-items-center" };
-const _hoisted_19 = { key: 0 };
-const _hoisted_20 = ["onClick"];
-const _hoisted_21 = ["onClick"];
-const _hoisted_22 = {
+const _hoisted_12 = { key: 1 };
+const _hoisted_13 = { key: 0 };
+const _hoisted_14 = { key: 0 };
+const _hoisted_15 = { class: "tw-text-green-700" };
+const _hoisted_16 = { key: 2 };
+const _hoisted_17 = { key: 3 };
+const _hoisted_18 = { key: 4 };
+const _hoisted_19 = { key: 5 };
+const _hoisted_20 = { class: "tw-flex tw-items-center" };
+const _hoisted_21 = { key: 0 };
+const _hoisted_22 = ["onClick"];
+const _hoisted_23 = ["onClick"];
+const _hoisted_24 = {
   key: 0,
   class: "!tw-border !tw-border-slate-100 !tw-border-solid tw-rounded tw-text-sm"
 };
-const _hoisted_23 = { key: 1 };
-const _hoisted_24 = {
+const _hoisted_25 = { key: 1 };
+const _hoisted_26 = {
   key: 3,
   class: "em-page-loader"
 };
@@ -296,12 +316,13 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       $data.history.length > 0 ? (openBlock(), createElementBlock("table", _hoisted_3, [
         createBaseVNode("thead", null, [
           createBaseVNode("tr", null, [
-            $props.columns.includes("title") ? (openBlock(), createElementBlock("th", _hoisted_4, toDisplayString(_ctx.translate("COM_EMUNDUS_GLOBAL_HISTORY_UPDATES")), 1)) : createCommentVNode("", true),
-            $props.columns.includes("message_language_key") ? (openBlock(), createElementBlock("th", _hoisted_5, toDisplayString(_ctx.translate("COM_EMUNDUS_GLOBAL_HISTORY_TYPE")), 1)) : createCommentVNode("", true),
-            $props.columns.includes("log_date") ? (openBlock(), createElementBlock("th", _hoisted_6, toDisplayString(_ctx.translate("COM_EMUNDUS_GLOBAL_HISTORY_LOG_DATE")), 1)) : createCommentVNode("", true),
-            $props.columns.includes("user_id") ? (openBlock(), createElementBlock("th", _hoisted_7, toDisplayString(_ctx.translate("COM_EMUNDUS_GLOBAL_HISTORY_BY")), 1)) : createCommentVNode("", true),
-            $props.columns.includes("status") ? (openBlock(), createElementBlock("th", _hoisted_8, toDisplayString(_ctx.translate("COM_EMUNDUS_GLOBAL_HISTORY_STATUS")), 1)) : createCommentVNode("", true),
-            $props.columns.includes("diff") ? (openBlock(), createElementBlock("th", _hoisted_9, toDisplayString(_ctx.translate("COM_EMUNDUS_GLOBAL_HISTORY_DIFF")), 1)) : createCommentVNode("", true)
+            $props.columns.includes("itemId") ? (openBlock(), createElementBlock("th", _hoisted_4, toDisplayString(_ctx.translate("COM_EMUNDUS_GLOBAL_HISTORY_ITEM_ID")), 1)) : createCommentVNode("", true),
+            $props.columns.includes("title") ? (openBlock(), createElementBlock("th", _hoisted_5, toDisplayString(_ctx.translate("COM_EMUNDUS_GLOBAL_HISTORY_UPDATES")), 1)) : createCommentVNode("", true),
+            $props.columns.includes("message_language_key") ? (openBlock(), createElementBlock("th", _hoisted_6, toDisplayString(_ctx.translate("COM_EMUNDUS_GLOBAL_HISTORY_TYPE")), 1)) : createCommentVNode("", true),
+            $props.columns.includes("log_date") ? (openBlock(), createElementBlock("th", _hoisted_7, toDisplayString(_ctx.translate("COM_EMUNDUS_GLOBAL_HISTORY_LOG_DATE")), 1)) : createCommentVNode("", true),
+            $props.columns.includes("user_id") ? (openBlock(), createElementBlock("th", _hoisted_8, toDisplayString(_ctx.translate("COM_EMUNDUS_GLOBAL_HISTORY_BY")), 1)) : createCommentVNode("", true),
+            $props.columns.includes("status") ? (openBlock(), createElementBlock("th", _hoisted_9, toDisplayString(_ctx.translate("COM_EMUNDUS_GLOBAL_HISTORY_STATUS")), 1)) : createCommentVNode("", true),
+            $props.columns.includes("diff") ? (openBlock(), createElementBlock("th", _hoisted_10, toDisplayString(_ctx.translate("COM_EMUNDUS_GLOBAL_HISTORY_DIFF")), 1)) : createCommentVNode("", true)
           ])
         ]),
         createBaseVNode("tbody", null, [
@@ -309,22 +330,25 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             return openBlock(), createElementBlock("tr", {
               key: data.id
             }, [
-              $props.columns.includes("title") ? (openBlock(), createElementBlock("td", _hoisted_10, [
+              $props.columns.includes("itemId") ? (openBlock(), createElementBlock("td", _hoisted_11, [
+                createBaseVNode("span", null, toDisplayString(data.message.id), 1)
+              ])) : createCommentVNode("", true),
+              $props.columns.includes("title") ? (openBlock(), createElementBlock("td", _hoisted_12, [
                 createBaseVNode("p", null, toDisplayString(_ctx.translate(data.message.title)), 1),
-                data.message.new_data.length > 0 && $props.extension == "com_emundus.settings.web_security" ? (openBlock(), createElementBlock("p", _hoisted_11, [
+                data.message.new_data.length > 0 && $props.extension == "com_emundus.settings.web_security" ? (openBlock(), createElementBlock("p", _hoisted_13, [
                   (openBlock(true), createElementBlock(Fragment, null, renderList(data.message.new_data, (newData, index) => {
                     return openBlock(), createElementBlock("span", { key: index }, [
-                      index > 0 ? (openBlock(), createElementBlock("span", _hoisted_12, ", ")) : createCommentVNode("", true),
-                      createBaseVNode("span", _hoisted_13, toDisplayString(newData), 1)
+                      index > 0 ? (openBlock(), createElementBlock("span", _hoisted_14, ", ")) : createCommentVNode("", true),
+                      createBaseVNode("span", _hoisted_15, toDisplayString(newData), 1)
                     ]);
                   }), 128))
                 ])) : createCommentVNode("", true)
               ])) : createCommentVNode("", true),
-              $props.columns.includes("message_language_key") ? (openBlock(), createElementBlock("td", _hoisted_14, toDisplayString(_ctx.translate(data.message_language_key + "_TITLE")), 1)) : createCommentVNode("", true),
-              $props.columns.includes("log_date") ? (openBlock(), createElementBlock("td", _hoisted_15, toDisplayString(_ctx.formattedDate(data.log_date, "L") + " " + _ctx.formattedDate(data.log_date, "LT")), 1)) : createCommentVNode("", true),
-              $props.columns.includes("user_id") ? (openBlock(), createElementBlock("td", _hoisted_16, toDisplayString(data.logged_by), 1)) : createCommentVNode("", true),
-              $props.columns.includes("status") ? (openBlock(), createElementBlock("td", _hoisted_17, [
-                createBaseVNode("div", _hoisted_18, [
+              $props.columns.includes("message_language_key") ? (openBlock(), createElementBlock("td", _hoisted_16, toDisplayString(_ctx.translate(data.message_language_key + "_TITLE")), 1)) : createCommentVNode("", true),
+              $props.columns.includes("log_date") ? (openBlock(), createElementBlock("td", _hoisted_17, toDisplayString(_ctx.formattedDate(data.log_date, "L") + " " + _ctx.formattedDate(data.log_date, "LT")), 1)) : createCommentVNode("", true),
+              $props.columns.includes("user_id") ? (openBlock(), createElementBlock("td", _hoisted_18, toDisplayString(data.logged_by), 1)) : createCommentVNode("", true),
+              $props.columns.includes("status") ? (openBlock(), createElementBlock("td", _hoisted_19, [
+                createBaseVNode("div", _hoisted_20, [
                   createBaseVNode("span", {
                     class: normalizeClass(["material-symbols-outlined tw-mr-2", $data.colorClasses[data.message.status]])
                   }, toDisplayString($data.icon[data.message.status]), 3),
@@ -332,22 +356,22 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                     class: normalizeClass($data.colorClasses[data.message.status])
                   }, [
                     createTextVNode(toDisplayString(_ctx.translate($data.text[data.message.status])) + " ", 1),
-                    (data.message.status == "done" || data.message.status == "cancelled") && data.message.status_updated ? (openBlock(), createElementBlock("span", _hoisted_19, toDisplayString(_ctx.formattedDate(data.message.status_updated, "L")), 1)) : createCommentVNode("", true)
+                    (data.message.status == "done" || data.message.status == "cancelled") && data.message.status_updated ? (openBlock(), createElementBlock("span", _hoisted_21, toDisplayString(_ctx.formattedDate(data.message.status_updated, "L")), 1)) : createCommentVNode("", true)
                   ], 2),
                   this.sysadmin && data.message.status === "pending" ? (openBlock(), createElementBlock("span", {
                     key: 0,
                     onClick: ($event) => $options.updateHistoryStatus(data.id, "done"),
                     class: "material-symbols-outlined tw-cursor-pointer"
-                  }, " edit ", 8, _hoisted_20)) : createCommentVNode("", true),
+                  }, " edit ", 8, _hoisted_22)) : createCommentVNode("", true),
                   this.sysadmin && data.message.status === "pending" ? (openBlock(), createElementBlock("span", {
                     key: 1,
                     onClick: ($event) => $options.updateHistoryStatus(data.id, "cancelled"),
                     class: "material-symbols-outlined tw-cursor-pointer"
-                  }, " backspace ", 8, _hoisted_21)) : createCommentVNode("", true)
+                  }, " backspace ", 8, _hoisted_23)) : createCommentVNode("", true)
                 ])
               ])) : createCommentVNode("", true),
               createBaseVNode("td", null, [
-                $props.columns.includes("diff") && (!Array.isArray(data.message.old_data) || data.message.old_data.length > 0) && (!Array.isArray(data.message.new_data) || data.message.new_data.length > 0) ? (openBlock(), createElementBlock("table", _hoisted_22, [
+                $props.columns.includes("diff") && (!Array.isArray(data.message.old_data) || data.message.old_data.length > 0) && (!Array.isArray(data.message.new_data) || data.message.new_data.length > 0) ? (openBlock(), createElementBlock("table", _hoisted_24, [
                   createBaseVNode("thead", null, [
                     createBaseVNode("tr", null, [
                       createBaseVNode("th", null, toDisplayString(_ctx.translate("COM_EMUNDUS_GLOBAL_HISTORY_DIFF_COLUMN")), 1),
@@ -369,14 +393,14 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             ]);
           }), 128))
         ])
-      ])) : (openBlock(), createElementBlock("div", _hoisted_23, [
+      ])) : (openBlock(), createElementBlock("div", _hoisted_25, [
         createBaseVNode("p", null, toDisplayString(_ctx.translate("COM_EMUNDUS_GLOBAL_HISTORY_NO_HISTORY")), 1)
       ]))
     ], 64)) : createCommentVNode("", true),
-    $data.loading ? (openBlock(), createElementBlock("div", _hoisted_24)) : createCommentVNode("", true)
+    $data.loading ? (openBlock(), createElementBlock("div", _hoisted_26)) : createCommentVNode("", true)
   ]);
 }
-const History = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-94ef35dd"]]);
+const History = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-09715b43"]]);
 export {
   History as default
 };
