@@ -944,6 +944,176 @@ footer#g-footer > .g-container {
   margin-bottom: 0;
 }
 
+/* DROPFILE - APPLICANT SIDE */
+.com_dropfiles.resources-page {
+
+  .content-top-a  .em-back-button {
+    justify-content: flex-start;
+    margin-top: 20px;
+  }
+
+  .dropfiles-page  {
+    margin: 0 0 48px 0;
+  }
+
+  .dropfiles-content.dropfiles-content-default[data-category]  {
+    background: var(--transparent);
+    background-color: var(--transparent);
+    margin: 0;
+
+
+    .categories-head h2 {
+      text-transform: math-auto;
+      color: var(--neutral-900);
+      font-weight: 400;
+      font-size: 24px;
+      margin-bottom: 24px;
+    }
+
+    .catlink.dropfilescategory {
+      background: transparent;
+      border: none;
+      padding: 0;
+      height: auto;
+      margin: 0 10px 20px 10px !important;
+
+      span {
+        color: var(--neutral-700);
+        font-size: 22px;
+        padding: 0;
+      }
+
+      i {
+        display: none;
+      }
+
+      &:hover {
+        box-shadow: none;
+      }
+    }
+
+    .dropfiles-container-default .dropfiles_list {
+      display: grid;
+      align-items: flex-start;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fill, 359px);
+
+      .file.flexspan {
+        border: none;
+        box-shadow: none;
+      }
+
+      .file {
+        display: flex;
+        flex-direction: column;
+        border-color: var(--neutral-300);
+        box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1)
+        var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1),
+        var(--em-box-shadow-x-2) var(--em-box-shadow-y-2)
+        var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2),
+        var(--em-box-shadow-x-3) var(--em-box-shadow-y-3)
+        var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
+        border-radius: 16px;
+        padding: 25px;
+        margin: 0 !important;
+        min-width: -webkit-fill-available;
+
+        .ext {
+          display: none;
+        }
+
+        .filecontent {
+          width: 100%;
+          .file-xinfo {
+            margin-left: 0;
+            padding-left: 0;
+
+            &> div > span {
+              min-width: auto;
+              margin-right: 0;
+            }
+          }
+
+          h3 {
+            padding-left: 0;
+
+            a {
+              color: var(--neutral-800);
+              font-weight: 400;
+              font-size: 20px;
+              -webkit-line-clamp: 2;
+              overflow: hidden;
+              -webkit-box-orient: vertical;
+              display: -webkit-box;
+              min-height: 46px;
+              line-height: 1.5;
+            }
+          }
+        }
+
+        .file-xinfo span, .file-xinfo div  {
+          color: var(--neutral-600);
+        }
+
+        .file-right {
+          width: 100%;
+          flex-direction: column-reverse;
+          display: flex;
+          padding: 0;
+          gap: 8px;
+
+          a.openlink {
+            background: var(--neutral-0);
+            color: var(--em-primary-color);
+            border: 1px solid var(--em-primary-color);
+            padding: 8px 12px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            min-height: 38px;
+
+            &:hover,
+            &:active,
+            &:focus {
+              background: var(--em-primary-color);
+              color: var(--neutral-0);
+              border: 1px solid var(--em-primary-color);
+              box-shadow: none;
+            }
+          }
+
+          a.downloadlink {
+            border: 1px solid var(--em-secondary-color);
+            background: var(--em-secondary-color) !important;
+            color: var(--neutral-0);
+            padding: 8px 12px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 8px;
+            margin-bottom: 0;
+            font-size: 16px;
+            line-height: normal;
+            min-height: 38px;
+
+            &:hover,
+            &:active,
+            &:focus {
+              background: var(--neutral-0) !important;
+              color: var(--em-secondary-color) !important;
+              border: 1px solid var(--em-secondary-color);
+              box-shadow: none;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 /* DROPFILE */
 
 .com_dropfiles.view-manage {
