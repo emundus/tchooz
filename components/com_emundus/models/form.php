@@ -1215,7 +1215,7 @@ class EmundusModelForm extends JModelList
 				$m_formbuilder->createElement('updated_by', $group['group_id'], 'user', 'user', '{$my->id}}', 1);
 			}
 
-			$list = $m_formbuilder->createFabrikList('evaluations', $form_id, 6, 'eval');
+			$list = $m_formbuilder->createFabrikList('evaluations', $form_id, 6, 'eval', $user);
 			if (empty($list)) {
 				Log::add('component/com_emundus/models/form | Error when create a list for evaluation form', Log::WARNING, 'com_emundus.error');
 				throw new Exception('Error when create a list for evaluation form');

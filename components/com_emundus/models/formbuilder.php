@@ -607,7 +607,7 @@ class EmundusModelFormbuilder extends JModelList
 		return $form_id;
 	}
 
-	function createFabrikList($prid, $formid, $access = null, $type = 'default')
+	function createFabrikList($prid, $formid, $access = null, $type = 'default', $user = null)
 	{
 		$response = [];
 
@@ -615,9 +615,11 @@ class EmundusModelFormbuilder extends JModelList
 			$access = $prid;
 		}
 
-		$query = $this->db->getQuery(true);
+		if (empty($user)) {
+			$user =  $this->app->getIdentity();
+		}
 
-		$user =  $this->app->getIdentity();
+		$query = $this->db->getQuery(true);
 
 		try {
 			// Create core table
@@ -744,6 +746,10 @@ class EmundusModelFormbuilder extends JModelList
 		}
 		catch (Exception $e) {
 			$query_str = is_string($query) ? $query : $query->__toString();
+
+			error_log($e->getMessage());
+			error_log($query_str);
+
 			Log::add('component/com_emundus/models/formbuilder | Error when create a list ' . $prid . ' : ' . preg_replace("/[\r\n]/", " ", $query_str . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 		}
 
