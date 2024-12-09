@@ -950,6 +950,10 @@ class EmundusModelCampaign extends ListModel
 					$this->_db->quoteName('sc.label') .
 					' LIKE ' .
 					$this->_db->quote('%' . $recherche . '%') . ')';
+				$fullRecherche .= ' OR (' .
+					$this->_db->quoteName('sp.label') .
+					' LIKE ' .
+					$this->_db->quote('%' . $recherche . '%') . ')';
 			}
 
 			$query->select([
