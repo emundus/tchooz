@@ -49,6 +49,9 @@ Text::script('COM_EMUNDUS_WORKFLOW_STEPS_DESC');
 Text::script('COM_EMUNDUS_WORKFLOW_EDIT_RIGHTS');
 Text::script('COM_EMUNDUS_WORKFLOW_CHECK_ALL');
 Text::script('COM_EMUNDUS_WORKFLOW_ADDED');
+Text::script('COM_EMUNDUS_WORKFLOW_STEP_LABEL_REQUIRED');
+Text::script('COM_EMUNDUS_WORKFLOW_STEP_FORM_REQUIRED');
+Text::script('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS_REQUIRED');
 
 $app          = Factory::getApplication();
 $lang         = $app->getLanguage();

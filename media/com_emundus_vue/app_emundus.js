@@ -36840,9 +36840,9 @@ const _hoisted_54$1 = ["onKeyup", "placeholder"];
 const _hoisted_55$1 = { class: "tw-w-full tw-flex tw-flex-row tw-justify-between tw-items-center tw-mt-2" };
 const _hoisted_56$1 = ["disabled", "onClick"];
 const _hoisted_57$1 = ["onClick"];
-const _hoisted_58 = ["title"];
-const _hoisted_59 = ["onClick"];
-const _hoisted_60 = ["title"];
+const _hoisted_58$1 = ["title"];
+const _hoisted_59$1 = ["onClick"];
+const _hoisted_60$1 = ["title"];
 const _hoisted_61 = ["onClick"];
 const _hoisted_62 = {
   key: 2,
@@ -37121,7 +37121,7 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
                   createBaseVNode("span", {
                     title: _ctx.translate("COM_EMUNDUS_COMMENTS_CLOSE_COMMENT_THREAD"),
                     class: "material-symbols-outlined tw-text-neutral-300"
-                  }, "check_circle", 8, _hoisted_58)
+                  }, "check_circle", 8, _hoisted_58$1)
                 ], 8, _hoisted_57$1)) : (openBlock(), createElementBlock("button", {
                   key: 1,
                   class: "tw-btn-secondary tw-w-fit",
@@ -37130,8 +37130,8 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
                   createBaseVNode("span", {
                     title: _ctx.translate("COM_EMUNDUS_COMMENTS_REOPEN_COMMENT_THREAD"),
                     class: "material-symbols-outlined tw-text-neutral-300"
-                  }, "unpublished", 8, _hoisted_60)
-                ], 8, _hoisted_59))
+                  }, "unpublished", 8, _hoisted_60$1)
+                ], 8, _hoisted_59$1))
               ])
             ])
           ], 2),
@@ -39338,7 +39338,7 @@ var errors = {
     }
   }
 };
-const WorkflowEdit_vue_vue_type_style_index_0_scoped_5a4d4747_lang = "";
+const WorkflowEdit_vue_vue_type_style_index_0_scoped_8e439728_lang = "";
 const _sfc_main$1 = {
   name: "WorkflowEdit",
   props: {
@@ -39769,7 +39769,10 @@ const _hoisted_17$1 = { class: "workflow-step-content" };
 const _hoisted_18 = { class: "tw-mb-4 tw-flex tw-flex-col" };
 const _hoisted_19 = { class: "tw-mb-2" };
 const _hoisted_20 = ["onUpdate:modelValue"];
-const _hoisted_21 = { key: 0 };
+const _hoisted_21 = {
+  key: 0,
+  class: "tw-text-red-600"
+};
 const _hoisted_22 = { class: "tw-mb-4 tw-flex tw-flex-col" };
 const _hoisted_23 = { class: "tw-mb-2" };
 const _hoisted_24 = ["onUpdate:modelValue"];
@@ -39783,53 +39786,65 @@ const _hoisted_28 = { class: "tw-mb-2" };
 const _hoisted_29 = ["onUpdate:modelValue"];
 const _hoisted_30 = ["value"];
 const _hoisted_31 = {
+  key: 0,
+  class: "tw-text-red-600"
+};
+const _hoisted_32 = {
   key: 1,
   class: "tw-mb-4 tw-flex tw-flex-col"
 };
-const _hoisted_32 = { class: "tw-mb-2" };
-const _hoisted_33 = ["onUpdate:modelValue"];
-const _hoisted_34 = ["value"];
-const _hoisted_35 = { class: "tw-mb-4 tw-flex tw-flex-col" };
-const _hoisted_36 = { class: "tw-mb-2" };
-const _hoisted_37 = {
+const _hoisted_33 = { class: "tw-mb-2" };
+const _hoisted_34 = ["onUpdate:modelValue"];
+const _hoisted_35 = ["value"];
+const _hoisted_36 = {
+  key: 0,
+  class: "tw-text-red-600"
+};
+const _hoisted_37 = { class: "tw-mb-4 tw-flex tw-flex-col" };
+const _hoisted_38 = { class: "tw-mb-2" };
+const _hoisted_39 = {
+  key: 0,
+  class: "tw-text-red-600"
+};
+const _hoisted_40 = {
   key: 2,
   class: "tw-mb-4 tw-flex tw-flex-col"
 };
-const _hoisted_38 = { class: "tw-mb-2" };
-const _hoisted_39 = ["onUpdate:modelValue"];
-const _hoisted_40 = { value: "-1" };
-const _hoisted_41 = ["value"];
-const _hoisted_42 = {
+const _hoisted_41 = { class: "tw-mb-2" };
+const _hoisted_42 = ["onUpdate:modelValue"];
+const _hoisted_43 = { value: "-1" };
+const _hoisted_44 = ["value"];
+const _hoisted_45 = {
   key: 3,
   class: "tw-mb-4 tw-flex tw-flex-row tw-items-center tw-cursor-pointer"
 };
-const _hoisted_43 = ["onUpdate:modelValue", "name", "id"];
-const _hoisted_44 = ["for"];
-const _hoisted_45 = {
+const _hoisted_46 = ["onUpdate:modelValue", "name", "id"];
+const _hoisted_47 = ["for"];
+const _hoisted_48 = {
   key: 4,
   class: "step-associated-groups"
 };
-const _hoisted_46 = { class: "tw-my-2" };
-const _hoisted_47 = {
+const _hoisted_49 = { class: "tw-my-2" };
+const _hoisted_50 = {
   href: "/users-menu/groups",
   class: "tw-underline"
 };
-const _hoisted_48 = {
+const _hoisted_51 = {
   key: 0,
   class: "tw-w-full tw-text-center"
 };
-const _hoisted_49 = { key: 1 };
-const _hoisted_50 = ["placeholder"];
-const _hoisted_51 = { class: "tw-flex tw-flex-row tw-items-center tw-cursor-pointer" };
-const _hoisted_52 = {
+const _hoisted_52 = { key: 1 };
+const _hoisted_53 = ["placeholder"];
+const _hoisted_54 = { class: "tw-flex tw-flex-row tw-items-center tw-cursor-pointer" };
+const _hoisted_55 = {
   for: "check-all",
   class: "tw-cursor-pointer !tw-mb-0"
 };
-const _hoisted_53 = { class: "tw-mt-4 tw-grid tw-grid-cols-4 tw-gap-3 tw-overflow-auto" };
-const _hoisted_54 = { class: "tw-mb-4 tw-flex tw-flex-row tw-items-center tw-cursor-pointer" };
-const _hoisted_55 = ["id", "value", "onChange"];
-const _hoisted_56 = ["for"];
-const _hoisted_57 = {
+const _hoisted_56 = { class: "tw-mt-4 tw-grid tw-grid-cols-4 tw-gap-3 tw-overflow-auto" };
+const _hoisted_57 = { class: "tw-mb-4 tw-flex tw-flex-row tw-items-center tw-cursor-pointer" };
+const _hoisted_58 = ["id", "value", "onChange"];
+const _hoisted_59 = ["for"];
+const _hoisted_60 = {
   key: 0,
   class: "tw-w-full tw-text-center"
 };
@@ -39880,7 +39895,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
       $options.activeTab.id == "steps" ? (openBlock(), createElementBlock("div", _hoisted_9$1, [
         createBaseVNode("a", {
           class: "tw-btn-primary tw-h-fit tw-w-fit tw-mb-4",
-          href: "#",
+          type: "button",
           onClick: _cache[3] || (_cache[3] = (...args) => $options.addStep && $options.addStep(...args))
         }, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_ADD_STEP")), 1),
         createBaseVNode("div", _hoisted_10$1, [
@@ -39889,7 +39904,8 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
               key: step.id,
               class: normalizeClass(["workflow-step tw-rounded tw-border tw-shadow-sm tw-p-4", {
                 "tw-bg-slate-50": step.state != 1,
-                "em-white-bg": step.state == 1
+                "em-white-bg": step.state == 1,
+                "tw-border-red-600": $data.displayErrors && $data.fieldsInError[step.id] && $data.fieldsInError[step.id].length > 0
               }])
             }, [
               createBaseVNode("div", _hoisted_11$1, [
@@ -39928,7 +39944,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
                   }, null, 8, _hoisted_20), [
                     [vModelText, step.label]
                   ]),
-                  _ctx.displayError && $data.fieldsInError[step.id] && $data.fieldsInError[step.id].includes("label") ? (openBlock(), createElementBlock("span", _hoisted_21, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_LABEL_REQUIRED")), 1)) : createCommentVNode("", true)
+                  $data.displayErrors && $data.fieldsInError[step.id] && $data.fieldsInError[step.id].includes("label") ? (openBlock(), createElementBlock("span", _hoisted_21, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_LABEL_REQUIRED")), 1)) : createCommentVNode("", true)
                 ]),
                 createBaseVNode("div", _hoisted_22, [
                   createBaseVNode("label", _hoisted_23, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_TYPE")), 1),
@@ -39961,9 +39977,10 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
                     }), 128))
                   ], 8, _hoisted_29), [
                     [vModelSelect, step.profile_id]
-                  ])
-                ])) : (openBlock(), createElementBlock("div", _hoisted_31, [
-                  createBaseVNode("label", _hoisted_32, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_PROFILE")), 1),
+                  ]),
+                  $data.displayErrors && $data.fieldsInError[step.id] && $data.fieldsInError[step.id].includes("form_id") ? (openBlock(), createElementBlock("span", _hoisted_31, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_FORM_REQUIRED")), 1)) : createCommentVNode("", true)
+                ])) : (openBlock(), createElementBlock("div", _hoisted_32, [
+                  createBaseVNode("label", _hoisted_33, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_PROFILE")), 1),
                   withDirectives(createBaseVNode("select", {
                     "onUpdate:modelValue": ($event) => step.form_id = $event
                   }, [
@@ -39971,14 +39988,15 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
                       return openBlock(), createElementBlock("option", {
                         key: form.id,
                         value: form.id
-                      }, toDisplayString(form.label), 9, _hoisted_34);
+                      }, toDisplayString(form.label), 9, _hoisted_35);
                     }), 128))
-                  ], 8, _hoisted_33), [
+                  ], 8, _hoisted_34), [
                     [vModelSelect, step.form_id]
-                  ])
+                  ]),
+                  $data.displayErrors && $data.fieldsInError[step.id] && $data.fieldsInError[step.id].includes("form_id") ? (openBlock(), createElementBlock("span", _hoisted_36, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_FORM_REQUIRED")), 1)) : createCommentVNode("", true)
                 ])),
-                createBaseVNode("div", _hoisted_35, [
-                  createBaseVNode("label", _hoisted_36, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS")), 1),
+                createBaseVNode("div", _hoisted_37, [
+                  createBaseVNode("label", _hoisted_38, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS")), 1),
                   createVNode(_component_Multiselect, {
                     options: $data.statuses,
                     modelValue: step.entry_status,
@@ -39987,25 +40005,26 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
                     "track-by": "id",
                     placeholder: _ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS_SELECT"),
                     multiple: true
-                  }, null, 8, ["options", "modelValue", "onUpdate:modelValue", "placeholder"])
+                  }, null, 8, ["options", "modelValue", "onUpdate:modelValue", "placeholder"]),
+                  $data.displayErrors && $data.fieldsInError[step.id] && $data.fieldsInError[step.id].includes("entry_status") ? (openBlock(), createElementBlock("span", _hoisted_39, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS_REQUIRED")), 1)) : createCommentVNode("", true)
                 ]),
-                $options.isApplicantStep(step) ? (openBlock(), createElementBlock("div", _hoisted_37, [
-                  createBaseVNode("label", _hoisted_38, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_OUTPUT_STATUS")), 1),
+                $options.isApplicantStep(step) ? (openBlock(), createElementBlock("div", _hoisted_40, [
+                  createBaseVNode("label", _hoisted_41, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_OUTPUT_STATUS")), 1),
                   withDirectives(createBaseVNode("select", {
                     "onUpdate:modelValue": ($event) => step.output_status = $event
                   }, [
-                    createBaseVNode("option", _hoisted_40, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_OUTPUT_STATUS_SELECT")), 1),
+                    createBaseVNode("option", _hoisted_43, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_OUTPUT_STATUS_SELECT")), 1),
                     (openBlock(true), createElementBlock(Fragment, null, renderList($data.statuses, (status) => {
                       return openBlock(), createElementBlock("option", {
                         key: status.id,
                         value: status.id
-                      }, toDisplayString(status.label), 9, _hoisted_41);
+                      }, toDisplayString(status.label), 9, _hoisted_44);
                     }), 128))
-                  ], 8, _hoisted_39), [
+                  ], 8, _hoisted_42), [
                     [vModelSelect, step.output_status]
                   ])
                 ])) : createCommentVNode("", true),
-                !$options.isApplicantStep(step) ? (openBlock(), createElementBlock("div", _hoisted_42, [
+                !$options.isApplicantStep(step) ? (openBlock(), createElementBlock("div", _hoisted_45, [
                   withDirectives(createBaseVNode("input", {
                     "onUpdate:modelValue": ($event) => step.multiple = $event,
                     "true-value": "1",
@@ -40014,38 +40033,38 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
                     name: "step-" + step.id + "-multiple",
                     id: "step-" + step.id + "-multiple",
                     class: "tw-cursor-pointer"
-                  }, null, 8, _hoisted_43), [
+                  }, null, 8, _hoisted_46), [
                     [vModelCheckbox, step.multiple]
                   ]),
                   createBaseVNode("label", {
                     for: "step-" + step.id + "-multiple",
                     class: "tw-cursor-pointer tw-mb-0"
-                  }, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_IS_MULTIPLE")), 9, _hoisted_44)
+                  }, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_IS_MULTIPLE")), 9, _hoisted_47)
                 ])) : createCommentVNode("", true),
-                !$options.isApplicantStep(step) ? (openBlock(), createElementBlock("div", _hoisted_45, [
+                !$options.isApplicantStep(step) ? (openBlock(), createElementBlock("div", _hoisted_48, [
                   createBaseVNode("label", null, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_GROUPS")), 1),
-                  createBaseVNode("ul", _hoisted_46, [
+                  createBaseVNode("ul", _hoisted_49, [
                     (openBlock(true), createElementBlock(Fragment, null, renderList($options.getGroupsFromStepType(step.type), (group_id) => {
                       return openBlock(), createElementBlock("li", { key: group_id }, toDisplayString($options.getGroupLabel(group_id)), 1);
                     }), 128))
                   ]),
-                  createBaseVNode("a", _hoisted_47, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_EDIT_RIGHTS")), 1)
+                  createBaseVNode("a", _hoisted_50, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_EDIT_RIGHTS")), 1)
                 ])) : createCommentVNode("", true)
               ])
             ], 2);
           }), 128)),
-          $data.steps.length < 1 ? (openBlock(), createElementBlock("p", _hoisted_48, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_NO_STEPS")), 1)) : createCommentVNode("", true)
+          $data.steps.length < 1 ? (openBlock(), createElementBlock("p", _hoisted_51, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_NO_STEPS")), 1)) : createCommentVNode("", true)
         ])
-      ])) : $options.activeTab.id === "programs" ? (openBlock(), createElementBlock("div", _hoisted_49, [
+      ])) : $options.activeTab.id === "programs" ? (openBlock(), createElementBlock("div", _hoisted_52, [
         withDirectives(createBaseVNode("input", {
           type: "text",
           "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => $data.searchThroughPrograms = $event),
           placeholder: _ctx.translate("COM_EMUNDUS_WORKFLOW_SEARCH_PROGRAMS_PLACEHOLDER"),
           class: "tw-w-full tw-p-2 tw-mb-4 tw-border tw-border-neutral-300 tw-rounded"
-        }, null, 8, _hoisted_50), [
+        }, null, 8, _hoisted_53), [
           [vModelText, $data.searchThroughPrograms]
         ]),
-        createBaseVNode("div", _hoisted_51, [
+        createBaseVNode("div", _hoisted_54, [
           withDirectives(createBaseVNode("input", {
             id: "check-all",
             class: "tw-cursor-pointer",
@@ -40055,14 +40074,14 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
           }, null, 544), [
             [vModelCheckbox, $data.checkall]
           ]),
-          createBaseVNode("label", _hoisted_52, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_CHECK_ALL")), 1)
+          createBaseVNode("label", _hoisted_55, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_CHECK_ALL")), 1)
         ]),
-        createBaseVNode("div", _hoisted_53, [
+        createBaseVNode("div", _hoisted_56, [
           (openBlock(true), createElementBlock(Fragment, null, renderList($options.displayedProgramsOptions, (program) => {
             return openBlock(), createElementBlock("div", {
               key: program.id
             }, [
-              createBaseVNode("div", _hoisted_54, [
+              createBaseVNode("div", _hoisted_57, [
                 withDirectives(createBaseVNode("input", {
                   id: "program-" + program.id,
                   type: "checkbox",
@@ -40070,23 +40089,23 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
                   value: program,
                   class: "tw-cursor-pointer",
                   onChange: ($event) => $options.onCheckProgram(program)
-                }, null, 40, _hoisted_55), [
+                }, null, 40, _hoisted_58), [
                   [vModelCheckbox, $data.programs]
                 ]),
                 createBaseVNode("label", {
                   for: "program-" + program.id,
                   class: normalizeClass(["tw-cursor-pointer tw-m-0", { "tw-text-gray-300": $options.isProgramAssociatedToAnotherWorkflow(program) }])
-                }, toDisplayString(program.label), 11, _hoisted_56)
+                }, toDisplayString(program.label), 11, _hoisted_59)
               ])
             ]);
           }), 128)),
-          $data.programsOptions.length < 1 ? (openBlock(), createElementBlock("p", _hoisted_57, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_NO_PROGRAMS")), 1)) : createCommentVNode("", true)
+          $data.programsOptions.length < 1 ? (openBlock(), createElementBlock("p", _hoisted_60, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_NO_PROGRAMS")), 1)) : createCommentVNode("", true)
         ])
       ])) : createCommentVNode("", true)
     ])
   ]);
 }
-const WorkflowEdit = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-5a4d4747"]]);
+const WorkflowEdit = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-8e439728"]]);
 const WorkflowEdit$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: WorkflowEdit

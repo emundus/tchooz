@@ -26,14 +26,15 @@
 
     <div id="tabs-wrapper" class="tw-w-full tw-rounded-coordinator tw-p-6 tw-bg-white tw-border tw-border-neutral-300 tw-relative">
       <div v-if="activeTab.id == 'steps'" id="workflow-steps-wrapper" class="tw-flex tw-flex-col">
-        <a class="tw-btn-primary tw-h-fit tw-w-fit tw-mb-4" href="#" @click="addStep"> {{ translate('COM_EMUNDUS_WORKFLOW_ADD_STEP') }} </a>
+        <a class="tw-btn-primary tw-h-fit tw-w-fit tw-mb-4" type="button" @click="addStep"> {{ translate('COM_EMUNDUS_WORKFLOW_ADD_STEP') }} </a>
 
         <div id="workflow-steps" class="tw-flex tw-flex-row tw-gap-3 tw-overflow-auto">
           <div v-for="step in steps" :key="step.id"
                class="workflow-step tw-rounded tw-border tw-shadow-sm tw-p-4"
                :class="{
                 'tw-bg-slate-50': step.state != 1,
-                'em-white-bg': step.state == 1
+                'em-white-bg': step.state == 1,
+                'tw-border-red-600': displayErrors && fieldsInError[step.id] && fieldsInError[step.id].length > 0
              }"
           >
             <div class="workflow-step-head tw-flex tw-flex-row tw-justify-between">
@@ -52,7 +53,7 @@
               <div class="tw-mb-4 tw-flex tw-flex-col">
                 <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_LABEL') }}</label>
                 <input type="text" v-model="step.label" />
-                <span v-if="displayError && fieldsInError[step.id] && fieldsInError[step.id].includes('label')">
+                <span class="tw-text-red-600" v-if="displayErrors && fieldsInError[step.id] && fieldsInError[step.id].includes('label')">
                   {{ translate('COM_EMUNDUS_WORKFLOW_STEP_LABEL_REQUIRED') }}
                 </span>
               </div>
@@ -72,6 +73,10 @@
                 <select v-model="step.profile_id">
                   <option v-for="profile in applicantProfiles" :key="profile.id" :value="profile.id">{{ profile.label }}</option>
                 </select>
+
+                <span class="tw-text-red-600" v-if="displayErrors && fieldsInError[step.id] && fieldsInError[step.id].includes('form_id')">
+                  {{ translate('COM_EMUNDUS_WORKFLOW_STEP_FORM_REQUIRED') }}
+                </span>
               </div>
 
               <div v-else class="tw-mb-4 tw-flex tw-flex-col">
@@ -79,6 +84,10 @@
                 <select v-model="step.form_id">
                   <option v-for="form in evaluationForms" :key="form.id" :value="form.id">{{ form.label }}</option>
                 </select>
+
+                <span class="tw-text-red-600" v-if="displayErrors && fieldsInError[step.id] && fieldsInError[step.id].includes('form_id')">
+                  {{ translate('COM_EMUNDUS_WORKFLOW_STEP_FORM_REQUIRED') }}
+                </span>
               </div>
 
               <div class="tw-mb-4 tw-flex tw-flex-col">
@@ -91,6 +100,10 @@
                     :placeholder="translate('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS_SELECT')"
                     :multiple="true">
                 </Multiselect>
+
+                <span class="tw-text-red-600" v-if="displayErrors && fieldsInError[step.id] && fieldsInError[step.id].includes('entry_status')">
+                  {{ translate('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS_REQUIRED') }}
+                </span>
               </div>
 
               <div v-if="isApplicantStep(step)" class="tw-mb-4 tw-flex tw-flex-col">
