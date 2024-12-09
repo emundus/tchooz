@@ -340,4 +340,15 @@ class EmundusModelAdministratorWorkflow extends JModelList
 
 		return $installed;
 	}
+
+
+	public function migrateOldWorkflows()
+	{
+		// TODO
+	}
+
+	public function migrateEvaluations()
+	{
+		// TODO
+	}
 }

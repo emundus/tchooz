@@ -167,4 +167,11 @@ class WorkflowModelTest extends UnitTestCase
 		$this->assertSame('Workflow qui doit être dupliqué - Copie', $workflow_data['workflow']->label, 'The label of the duplicated workflow should be the same as the original one, with a suffix');
 
 	}
+
+	public function testMigrateDeprecatedCampaignWorkflows() {
+		// old Workflows were kind of equals to current Step Object, not Workflow Object
+		// before a program could be linked to muliple workflows, now it can only be linked to one
+		// before campaigns could be linked to multiple workflows, now they can not be linked to any, it must be througth campaign's program
+
+	}
 }

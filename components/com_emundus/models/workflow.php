@@ -1223,4 +1223,70 @@ class EmundusModelWorkflow extends JModelList
 
 		return $new_workflow_id;
 	}
+
+	/**
+	 * old Workflows were kind of equals to current Step Object, not Workflow Object
+	 * before a program could be linked to muliple workflows, now it can only be linked to one
+	 * before campaigns could be linked to multiple workflows, now they can not be linked to any, it must be througth campaign's program
+	 * if two campaigns have the same program, but don't have the same steps, then they must have different programs
+	 * @return bool migrated
+	 */
+	public function migrateDeprecatedCampaignWorkflows(): bool
+	{
+		$migrated = false;
+
+		$query = $this->db->getQuery(true);
+		$query->select('id')
+			->from($this->db->quoteName('#__emundus_campaign_workflow'));
+
+		try {
+			$this->db->setQuery($query);
+			$workflow_ids = $this->db->loadColumn();
+		} catch (Exception $e) {
+			Log::add('Error while fetching deprecated campaign workflows: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+		}
+
+		if (!empty($workflow_ids)) {
+			$deprecated_workflows = [];
+
+			foreach($workflow_ids as $workflow_id) {
+				$query = $this->db->getQuery(true);
+				$query->clear()
+					->select('ecw.id, ecw.profile, ecw.start_date, ecw.end_date, ecw.output_status, GROUP_CONCAT(ecwrc.campaign) as campaign_ids, GROUP_CONCAT(ecwrp.programs) as program_codes, ecwres.entry_status as entry_status')
+					->from($this->db->quoteName('#__emundus_campaign_workflow', 'ecw'))
+					->leftJoin($this->db->quoteName('jos_emundus_campaign_workflow_repeat_campaign', 'ecwrc') . ' ON ' . $this->db->quoteName('ecwrc.parent_id') . ' = ' . $this->db->quoteName('ecw.id'))
+					->leftJoin($this->db->quoteName('jos_emundus_campaign_workflow_repeat_programs', 'ecwrp') . ' ON ' . $this->db->quoteName('ecwrp.parent_id') . ' = ' . $this->db->quoteName('ecw.id'))
+					->leftJoin($this->db->quoteName('joomla5.jos_emundus_campaign_workflow_repeat_entry_status', 'ecwres') . ' ON ' . $this->db->quoteName('ecwres.parent_id') . ' = ' . $this->db->quoteName('ecw.id'))
+					->where('ecw.id = ' . $workflow_id);
+
+				try {
+					$this->db->setQuery($query);
+					$deprecated_workflow_data = $this->db->loadAssoc();
+				} catch (Exception $e) {
+					Log::add('Error while fetching deprecated campaign workflow: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+				}
+
+				if (!empty($deprecated_workflow_data)) {
+					$deprecated_workflow_data['entry_status'] = array_unique(explode(',', $deprecated_workflow_data['entry_status']));
+					$deprecated_workflow_data['campaign_ids'] = array_unique(explode(',', $deprecated_workflow_data['campaign_ids']));
+					$deprecated_workflow_data['program_codes'] = array_unique(explode(',', $deprecated_workflow_data['program_codes']));
+				}
+				$deprecated_workflows[] = $deprecated_workflow_data;
+			}
+
+			$new_workflows_data = [];
+
+			foreach ($deprecated_workflows as $deprecated_workflow)
+			{
+
+
+
+			}
+		} else {
+			// no deprecated workflows, perfect
+			$migrated = true;
+		}
+
+		return $migrated;
+	}
 }
