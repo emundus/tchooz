@@ -1,4 +1,4 @@
-import { _ as _export_sfc, $ as $3ed269f2f0fb224b$export$2e2bcd8739ae039, o as openBlock, e as createElementBlock, L as renderSlot, p as createTextVNode, f as createCommentVNode, i as normalizeClass, g as Fragment, h as renderList, w as withDirectives, v as vShow, d as createBaseVNode, t as toDisplayString } from "./app_emundus.js";
+import { _ as _export_sfc, $ as $3ed269f2f0fb224b$export$2e2bcd8739ae039, o as openBlock, c as createElementBlock, a0 as renderSlot, x as createTextVNode, d as createCommentVNode, n as normalizeClass } from "./app_emundus.js";
 const awsEndpoint = {
   getSignedURL(file, config) {
     let payload = {
@@ -83,7 +83,7 @@ const awsEndpoint = {
     });
   }
 };
-const _sfc_main$1 = {
+const _sfc_main = {
   props: {
     id: {
       type: String,
@@ -491,12 +491,12 @@ const _sfc_main$1 = {
     }
   }
 };
-const _hoisted_1$1 = ["id"];
+const _hoisted_1 = ["id"];
 const _hoisted_2 = {
   key: 0,
   class: "dz-message"
 };
-function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", {
     id: $props.id,
     ref: "dropzoneElement",
@@ -507,61 +507,9 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
         _cache[0] || (_cache[0] = createTextVNode("Drop files here to upload"))
       ])
     ])) : createCommentVNode("", true)
-  ], 10, _hoisted_1$1);
+  ], 10, _hoisted_1);
 }
-const vueDropzone = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1]]);
-const _sfc_main = {
-  name: "Tabs",
-  props: {
-    tabs: {
-      type: Array,
-      required: true
-    },
-    classes: {
-      type: String,
-      default: "tw-overflow-x-scroll tw-absolute tw-right-6 tw-flex tw-items-center tw-justify-end tw-gap-2 -tw-top-[36px]"
-    }
-  },
-  data() {
-    return {
-      currentTabs: []
-    };
-  },
-  created() {
-    this.currentTabs = this.tabs;
-  },
-  methods: {
-    changeTab(id) {
-      this.currentTabs.forEach((tab) => {
-        tab.active = tab.id === id;
-      });
-    }
-  }
-};
-const _hoisted_1 = ["onClick"];
-function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
-  return openBlock(), createElementBlock("div", {
-    class: normalizeClass($props.classes)
-  }, [
-    (openBlock(true), createElementBlock(Fragment, null, renderList($data.currentTabs, (tab) => {
-      return withDirectives((openBlock(), createElementBlock("div", {
-        onClick: ($event) => $options.changeTab(tab.id),
-        class: normalizeClass(["tw-cursor-pointer tw-rounded-t-lg tw-flex tw-items-center tw-py-2 tw-px-4 tw-transition-colors tw-duration-300 tw-border-x tw-border-t", tab.active ? "tw-bg-white tw-border-profile-full" : "tw-bg-neutral-200 tw-border-neutral-400"])
-      }, [
-        createBaseVNode("span", {
-          class: normalizeClass(["material-symbols-outlined tw-mr-2", tab.active ? "tw-text-profile-full" : "tw-text-neutral-700"])
-        }, toDisplayString(tab.icon), 3),
-        createBaseVNode("span", {
-          class: normalizeClass([tab.active ? "tw-text-profile-full" : "tw-text-neutral-700", "tw-whitespace-nowrap"])
-        }, toDisplayString(_ctx.translate(tab.name)), 3)
-      ], 10, _hoisted_1)), [
-        [vShow, tab.displayed]
-      ]);
-    }), 256))
-  ], 2);
-}
-const Tabs = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render]]);
+const vueDropzone = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render]]);
 export {
-  Tabs as T,
   vueDropzone as v
 };

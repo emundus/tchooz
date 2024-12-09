@@ -1274,6 +1274,30 @@ class EmundusControllerCampaign extends BaseController
 		exit;
 	}
 
+	public function getCampaignsByProgramId()
+	{
+		$response = ['status' => 0, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+		{
+			$response['code'] = 500;
+			$program_id = $this->input->getInt('program_id', 0);
+
+			if (!empty($program_id)) {
+				$campaigns = $this->m_campaign->getCampaignsByProgramId($program_id);
+
+				$response = [
+					'status' => 1,
+					'msg'    => Text::_('CAMPAIGNS_RETRIEVED'),
+					'data'   => $campaigns,
+				];
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
 	public function getcampaignlanguages()
 	{
 		$response = ['status' => 0, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403];

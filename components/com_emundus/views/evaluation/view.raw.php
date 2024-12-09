@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.view');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 
 /**
  * HTML View class for the Emundus Component
@@ -46,6 +47,8 @@ class EmundusViewEvaluation extends JViewLegacy
 	protected bool $open_file_in_modal = false;
 	protected string $modal_ratio = '66/33';
 
+	protected $modal_tabs = null;
+
 	public function __construct($config = array())
 	{
 		require_once(JPATH_ROOT . '/components/com_emundus/helpers/list.php');
@@ -55,6 +58,7 @@ class EmundusViewEvaluation extends JViewLegacy
 		require_once(JPATH_ROOT . '/components/com_emundus/helpers/filters.php');
 		require_once(JPATH_ROOT . '/components/com_emundus/models/users.php');
 		require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+		require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
 
 		$this->app   = Factory::getApplication();
 		$this->_user = $this->app->getIdentity();
@@ -79,7 +83,7 @@ class EmundusViewEvaluation extends JViewLegacy
 	public function display($tpl = null)
 	{
 		if (!EmundusHelperAccess::asEvaluatorAccessLevel($this->_user->id)) {
-			die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
+			die(Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 		}
 
 
@@ -196,16 +200,17 @@ class EmundusViewEvaluation extends JViewLegacy
 
 				// Columns
 				$defaultElements                    = $this->get('DefaultElements');
-				$this->datas                        = array(array('check' => '#', 'name' => JText::_('COM_EMUNDUS_FILES_APPLICATION_FILES'), 'c.status' => JText::_('COM_EMUNDUS_STATUS')));
+				$this->datas                        = array(array('check' => '#', 'fnum' => Text::_('COM_EMUNDUS_FILES_APPLICATION_FILES'), 'status' => Text::_('COM_EMUNDUS_STATUS')));
 				$fl                                 = array();
+				$fl['evaluations_step_label'] = Text::_('COM_EMUNDUS_EVALUATION_EVAL_STEP');
 				if ($show_evaluator)
 				{
-					$fl['jos_emundus_evaluations.user'] = JText::_('COM_EMUNDUS_EVALUATION_EVALUATOR');
+					$fl['evaluator'] = Text::_('COM_EMUNDUS_EVALUATION_EVALUATOR');
 				}
 				// Get eval crieterion
 				if (count($defaultElements) > 0) {
 					foreach ($defaultElements as $key => $elt) {
-						$fl[$elt->tab_name . '.' . $elt->element_name] = $elt->element_label;
+						$fl[$elt->tab_name . '___' . $elt->element_name] = $elt->element_label;
 					}
 				}
 
@@ -221,20 +226,20 @@ class EmundusViewEvaluation extends JViewLegacy
 						$col = explode('.', $col);
 						switch ($col[0]) {
 							case 'evaluators':
-								$this->datas[0]['EVALUATORS'] = JText::_('COM_EMUNDUS_EVALUATION_EVALUATORS');
+								$this->datas[0]['EVALUATORS'] = Text::_('COM_EMUNDUS_EVALUATION_EVALUATORS');
 								$this->colsSup['evaluators']  = $h_files->createEvaluatorList($col[1], $m_evaluation);
 								break;
 							case 'overall':
-								$this->datas[0]['overall'] = JText::_('COM_EMUNDUS_EVALUATIONS_OVERALL');
+								$this->datas[0]['overall'] = Text::_('COM_EMUNDUS_EVALUATIONS_OVERALL');
 								$this->colsSup['overall']  = array();
 								break;
 							case 'tags':
 								$taggedFile                   = $m_evaluation->getTaggedFile();
-								$this->datas[0]['eta.id_tag'] = JText::_('COM_EMUNDUS_TAGS');
+								$this->datas[0]['id_tag'] = Text::_('COM_EMUNDUS_TAGS');
 								$this->colsSup['id_tag']      = array();
 								break;
 							case 'access':
-								$this->datas[0]['access'] = JText::_('COM_EMUNDUS_ASSOCIATED_TO');
+								$this->datas[0]['access'] = Text::_('COM_EMUNDUS_ASSOCIATED_TO');
 								$this->colsSup['access']  = array();
 								break;
 							case 'photos':
@@ -246,7 +251,7 @@ class EmundusViewEvaluation extends JViewLegacy
 								foreach (JModuleHelper::getModules('') as $module) {
 									if ($module->module == 'mod_emundus_custom' && ($module->menuid == 0 || $module->menuid == $jinput->get('Itemid', null))) {
 										$mod_emundus_custom[$module->title] = $module->content;
-										$this->datas[0][$module->title]     = JText::_($module->title);
+										$this->datas[0][$module->title]     = Text::_($module->title);
 										$this->colsSup[$module->title]      = array();
 									}
 								}
@@ -257,16 +262,33 @@ class EmundusViewEvaluation extends JViewLegacy
 					}
 
 					$i = 0;
+
+					$m_workflow = new EmundusModelWorkflow();
+
 					foreach ($this->users as $user) {
 						$usObj       = new stdClass();
 						$usObj->val  = 'X';
 						$fnumArray[] = $user['fnum'];
+
 						// get evaluation form ID
 
-						$this->formid = $m_evaluation->getEvaluationFormByProgramme($user['code']);
+						if (!empty($user['evaluations_step_id'])) {
+							$step_data = $m_workflow->getStepData($user['evaluations_step_id']);
+						} else {
+							$step_data = [];
+						}
 
-						$form_url_view       = 'index.php?option=com_fabrik&c=form&view=details&formid=' . $this->formid . '&tmpl=component&iframe=1&rowid=';
-						$this->form_url_edit = 'index.php?option=com_fabrik&c=form&view=form&formid=' . $this->formid . '&tmpl=component&iframe=1&rowid=';
+						$current_row_form = $this->formid;
+						if (!empty($step_data)) {
+							$ccid = EmundusHelperFiles::getIdFromFnum($user['fnum']);
+							$current_row_form = $step_data->form_id;
+							$form_url_view       = 'evaluation-step-form?view=details&formid=' . $step_data->form_id . '&tmpl=component&iframe=1&' . $step_data->table . '___ccid=' . $ccid. '&' . $step_data->table . '___step_id=' . $step_data->id . '&rowid=';
+							$this->form_url_edit = 'evaluation-step-form?formid=' . $step_data->form_id . '&tmpl=component&iframe=1&' . $step_data->table . '___ccid=' . $ccid. '&' . $step_data->table . '___step_id=' . $step_data->id . '&rowid=';
+						} else {
+							$form_url_view       = '';
+							$this->form_url_edit = '';
+						}
+
 						$line                = array('check' => $usObj);
 
 						if (array_key_exists($user['fnum'], $taggedFile)) {
@@ -302,17 +324,19 @@ class EmundusViewEvaluation extends JViewLegacy
 							}
 							elseif ($key == 'evaluator' && $show_evaluator) {
 
-								if ($this->formid > 0 && !empty($value)) {
+								if ($current_row_form > 0 && !empty($value)) {
+									$link_view = '';
+									$link_edit = '';
 
 									if ($evaluators_can_see_other_eval || EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id)) {
-										$link_view = '<a href="' . $form_url_view . $user['evaluation_id'] . '" target="_blank" data-remote="' . $form_url_view . $user['evaluation_id'] . '" id="em_form_eval_' . $i . '-' . $user['evaluation_id'] . '"><span class="glyphicon icon-eye-open" title="' . JText::_('COM_EMUNDUS_DETAILS') . '">  </span></a>';
+										$link_view = '<a href="' . $form_url_view . $user['evaluation_id'] . '" target="_blank" data-remote="' . $form_url_view . $user['evaluation_id'] . '" id="em_form_eval_' . $i . '-' . $user['evaluation_id'] . '"><span class="material-symbols-outlined tw-cursor-pointer" title="' . Text::_('COM_EMUNDUS_DETAILS') . '">visibility</span></a>';
 									}
 
 									if (EmundusHelperAccess::asAccessAction(5, 'u', $this->_user->id)) {
-										$link_edit = '<a href="' . $this->form_url_edit . $user['evaluation_id'] . '" target="_blank"><span class="glyphicon icon-edit" title="' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '"> </span></a>';
+										$link_edit = '<a href="' . $this->form_url_edit . $user['evaluation_id'] . '" target="_blank"><span class="material-symbols-outlined tw-cursor-pointer" title="' . Text::_('COM_EMUNDUS_ACTIONS_EDIT') . '">edit</span></a>';
 									}
 
-									$userObj->val = @$link_view . ' ' . @$link_edit . ' ' . $value;
+									$userObj->val = $link_view . ' ' . $link_edit . ' ' . $value;
 
 								}
 								else {
@@ -358,7 +382,7 @@ class EmundusViewEvaluation extends JViewLegacy
 										$userObj->val                     = $obj[$user['fnum']];
 										$userObj->type                    = 'html';
 										$userObj->fnum                    = $user['fnum'];
-										$line[JText::_(strtoupper($key))] = $userObj;
+										$line[Text::_(strtoupper($key))] = $userObj;
 									}
 									else {
 										$userObj->val  = '';
@@ -401,7 +425,7 @@ class EmundusViewEvaluation extends JViewLegacy
 
 				}
 				else {
-					$this->datas = JText::_('COM_EMUNDUS_NO_RESULT');
+					$this->datas = Text::_('COM_EMUNDUS_NO_RESULT');
 				}
 
 				/* Get the values from the state object that were inserted in the model's construct function */
@@ -409,6 +433,36 @@ class EmundusViewEvaluation extends JViewLegacy
 				$this->lists['order']     = $this->app->getSession()->get('filter_order');
 				$this->pagination         = $this->get('Pagination');
 				$this->pageNavigation     = $this->get('PageNavigation');
+
+				$tabs = [];
+				$menu_tabs = $menu_params->get('modal_tabs');
+				foreach ($menu_tabs as $tab) {
+					$name = $tab->tab_type == 'component' ? $tab->tab_component : 'custom-' . $tab->tab_label;
+					$access = 1;
+
+					if ($tab->tab_type == 'component') {
+						switch($tab->tab_component) {
+							case 'application':
+								$access = 1;
+								break;
+							case 'attachments':
+								$access = 4;
+								break;
+							case 'comments':
+								$access = 10;
+								break;
+						}
+					}
+
+					$tabs[] = [
+						'label' => $tab->tab_name,
+						'type' => $tab->tab_type,
+						'name' => $name,
+						'url' => $tab->tab_url,
+						'access' => $access,
+					];
+				}
+				$this->modal_tabs = base64_encode(json_encode($tabs));
 				break;
 		}
 

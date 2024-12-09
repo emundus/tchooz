@@ -1952,7 +1952,7 @@ class EmundusControllersettings extends BaseController
 	
 	public function gethistory()
 	{
-		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => [], 'length' => 0];
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{

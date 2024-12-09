@@ -1,7 +1,7 @@
 <template>
   <div id="edit-campaign">
     <div class="em-w-custom"></div>
-    <div>
+    <div class="em-border-cards em-card-shadow tw-rounded em-white-bg em-p-24">
       <div>
         <div class="tw-flex tw-items-center tw-cursor-pointer"
              @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
@@ -26,6 +26,7 @@
 
         <Tabs v-show="profileId" :tabs="tabs"
               :classes="'tw-overflow-x-scroll tw-flex tw-items-center tw-gap-2 tw-ml-7'"></Tabs>
+
 
         <div class="tw-w-full tw-rounded-coordinator tw-p-6 tw-bg-white tw-border tw-border-neutral-300 tw-relative">
           <div v-if="selectedMenuItem.id === 5" class="warning-message-program mb-1">
@@ -55,16 +56,12 @@
                 :defaultFormUrl="campaignMoreFormUrl"
             >
             </campaign-more>
-            <addFormulaire
-                v-else-if="selectedMenuItem.id === 4"
-                :profileId="profileId"
+            <campaign-steps
+                v-else-if="selectedMenuItem.name === 'COM_EMUNDUS_CAMPAIGN_STEPS' && campaignId !== ''"
                 :campaignId="campaignId"
-                :profiles="profiles"
-                :key="formReload"
-                @profileId="setProfileId"
-                :visibility="null"
-            ></addFormulaire>
-
+                @nextSection="next"
+            >
+            </campaign-steps>
             <add-documents-dropfiles
                 v-else-if="selectedMenuItem.id === 3"
                 :funnelCategorie="selectedMenuItem.label"
@@ -73,7 +70,6 @@
                 :langue="actualLanguage"
                 :manyLanguages="manyLanguages"
             />
-
             <add-email
                 v-else-if="selectedMenuItem.id === 5 && program.id != 0"
                 :prog="Number(program.id)"
@@ -84,12 +80,9 @@
         </div>
       </div>
 
-      <div class="tw-flex tw-items-center tw-justify-between tw-float-right"
-           v-if="['addDocumentsDropfiles', 'addFormulaire'].includes(selectedMenu)">
-        <button
-            type="button"
-            class="tw-btn-primary tw-w-auto mb-4"
-            @click="next">
+      <div class="tw-flex tw-items-center tw-justify-end tw-mt-4"
+           v-if="['addDocumentsDropfiles'].includes(selectedMenu)">
+        <button type="button" class="tw-btn-primary tw-w-auto mb-4" @click="next">
           {{ translate('COM_EMUNDUS_ONBOARD_ADD_CONTINUER') }}
         </button>
       </div>
@@ -109,8 +102,8 @@ import settingsService from "@/services/settings.js";
 import addCampaign from "@/views/addCampaign.vue";
 import AddDocumentsDropfiles from "@/components/FunnelFormulaire/addDocumentsDropfiles.vue";
 import addEmail from "@/components/FunnelFormulaire/addEmail.vue";
-import addFormulaire from "@/components/FunnelFormulaire/addFormulaire.vue";
 import campaignMore from "@/components/FunnelFormulaire/CampaignMore.vue";
+import campaignSteps from "@/components/FunnelFormulaire/CampaignSteps.vue";
 
 import {useGlobalStore} from '@/stores/global.js';
 import History from "@/views/History.vue";
@@ -125,9 +118,9 @@ export default {
     History,
     AddDocumentsDropfiles,
     addCampaign,
-    addFormulaire,
     addEmail,
-    campaignMore
+    campaignMore,
+    campaignSteps
   },
 
   props: {
@@ -158,6 +151,14 @@ export default {
         icon: 'note_stack',
         active: false,
         displayed: false
+      },
+      {
+        id: 7,
+        name: 'COM_EMUNDUS_CAMPAIGN_STEPS',
+        description: '',
+        icon: 'description',
+        active: false,
+        displayed: true
       },
       {
         id: 3,
@@ -311,6 +312,12 @@ export default {
           this.profileId = this.form.profile_id;
         }
         this.loading = false;
+
+        let cookie = this.getCookie('campaign_' + this.campaignId + '_menu');
+        if (cookie) {
+          this.menuHighlight = cookie;
+          document.cookie = 'campaign_' + this.campaignId + '_menu =; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        }
       });
     },
 
@@ -373,6 +380,22 @@ export default {
 
     redirectJRoute(link) {
       settingsService.redirectJRoute(link, useGlobalStore().getCurrentLang);
+    },
+
+    getCookie(cname) {
+      var name = cname + "=";
+      var decodedCookie = decodeURIComponent(document.cookie);
+      var ca = decodedCookie.split(';');
+
+      for (let c of ca) {
+        while (c.charAt(0) == ' ') {
+          c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+          return c.substring(name.length, c.length);
+        }
+      }
+      return "";
     },
   },
   computed: {

@@ -29,7 +29,7 @@ $redirect = base64_decode($jinput->get->getBase64('redirect'));
 $eMConfig = ComponentHelper::getParams('com_emundus');
 
 if (!empty($cookieLogin) || $this->user->get('guest')) {
-	
+
 	$this->campaign            = $jinput->get('cid');
 	$this->course              = $jinput->get('course');
 	$this->displayRegistration = $eMConfig->get('display_registration_link', 1);

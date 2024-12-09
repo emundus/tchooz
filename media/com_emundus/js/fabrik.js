@@ -454,7 +454,7 @@ function cleanNumberInput(element, maxDecimals = 0,noGreaterThan = null,authoriz
         value = value.replace(".", "");
     }
 
-    if(value > noGreaterThan){
+    if (noGreaterThan !== null && value > noGreaterThan) {
         value = '';
     }
 

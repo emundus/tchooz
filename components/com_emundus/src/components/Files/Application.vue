@@ -35,35 +35,31 @@
             </div>
           </div>
 
-          <div v-if="selected === 'application'" v-html="applicationform"></div>
-          <Attachments
-              v-if="selected === 'attachments'"
-              :fnum="file.fnum"
-              :user="$props.user"
-              :columns="['check', 'name','date','category','status']"
-              :displayEdit="false"
-          />
-          <Comments
-              v-if="selected === 'comments'"
-              :fnum="file.fnum"
-              :user="$props.user"
-              :access="access['10']"
-          />
+          <div v-for="tab in tabs" :key="tab.name">
+            <div v-if="tab.name === 'application' && selected === 'application'" v-html="applicationform"></div>
+            <Attachments
+                v-if="tab.name === 'attachments' && selected === 'attachments'"
+                :fnum="file.fnum"
+                :user="$props.user"
+                :columns="['check', 'name','date','category','status']"
+                :displayEdit="false"
+            />
+            <Comments
+                v-if="tab.name === 'comments' && selected === 'comments'"
+                :fnum="file.fnum"
+                :user="$props.user"
+                :access="access['10']"
+            />
+          </div>
         </div>
       </div>
 
-      <div id="modal-evaluationgrid">
-        <div class="tw-flex tw-flex-col" v-if="!loading" style="width: 40px;height: 40px;margin: 24px 0 12px 24px;">
-          <div class="em-circle-main-100 tw-flex tw-flex-col" style="width: 40px">
-            <div class="em-circle-main-200 tw-flex tw-flex-col" style="width: 24px">
-              <span class="material-symbols-outlined tw-text-main-400" style="font-size: 14px">troubleshoot</span>
-            </div>
-          </div>
-        </div>
-        <iframe v-if="url" :src="url" class="iframe-evaluation" id="iframe-evaluation" @load="iframeLoaded($event);"
-                title="Evaluation form"/>
-        <div class="em-page-loader" v-if="loading"></div>
-      </div>
+      <Evaluations
+          v-if="selectedFile"
+          :fnum="typeof selectedFile === 'string' ? selectedFile : selectedFile.fnum"
+          :key="typeof selectedFile === 'string' ? selectedFile : selectedFile.fnum"
+      >
+      </Evaluations>
     </div>
   </modal>
 </template>
@@ -75,11 +71,12 @@ import filesService from '@/services/files.js';
 import errors from "@/mixins/errors.js";
 import Comments from "@/views/Comments.vue";
 import Modal from '@/components/Modal.vue';
+import Evaluations from "@/components/Files/Evaluations.vue";
 
 
 export default {
   name: "Application",
-  components: {Comments, Attachments, Modal},
+  components: {Evaluations, Comments, Attachments, Modal},
   props: {
     file: Object | String,
     type: String,
@@ -91,6 +88,26 @@ export default {
       type: String,
       default: '66/33'
     },
+    defaultTabs: {
+      type: Array,
+      default: () => [
+        {
+          label: 'COM_EMUNDUS_FILES_APPLICANT_FILE',
+          name: 'application',
+          access: '1'
+        },
+        {
+          label: 'COM_EMUNDUS_FILES_ATTACHMENTS',
+          name: 'attachments',
+          access: '4'
+        },
+        {
+          label: 'COM_EMUNDUS_FILES_COMMENTS',
+          name: 'comments',
+          access: '10'
+        },
+      ]
+    }
   },
   mixins: [errors],
   data: () => ({
@@ -123,8 +140,11 @@ export default {
 
   methods: {
     beforeOpen() {
-      document.querySelector('body.layout-evaluation').style.overflow = 'hidden';
-      var r = document.querySelector(':root');
+      if (document.querySelector('body.layout-evaluation')) {
+        document.querySelector('body.layout-evaluation').style.overflow = 'hidden';
+      }
+
+      const r = document.querySelector(':root');
       let ratio_array = this.$props.ratio.split('/');
       r.style.setProperty('--attachment-width', ratio_array[0] + '%');
 

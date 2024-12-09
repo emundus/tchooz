@@ -1,6 +1,6 @@
-import { FetchClient } from './fetchClient.js'
+import {FetchClient} from './fetchClient.js';
 
-const client = new FetchClient('files')
+const client = new FetchClient('files');
 
 export default {
   async getFnums() {
@@ -22,6 +22,16 @@ export default {
   async isDataAnonymized() {
     try {
       return await client.get('isdataanonymized');
+    } catch (e) {
+      return {
+        status: false,
+        message: e.message
+      };
+    }
+  },
+  async getProfiles() {
+    try {
+      return await client.get('getprofiles');
     } catch (e) {
       return {
         status: false,

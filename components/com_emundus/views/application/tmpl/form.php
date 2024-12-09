@@ -72,24 +72,28 @@ $user = $this->userid;
 		<?php endif; ?>
         <div id="application-form-container" class="tw-relative tw-flex tw-flex-row">
             <div id="application-form-container-content" class="tw-w-full">
-				<?php if (!EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id) && $this->header == 1) : ?>
+
+                <?php if (!EmundusHelperAccess::isDataAnonymized($this->_user->id) && $this->header == 1) : ?>
                     <div class="em-flex-row em-mt-16">
                         <div class="em-flex-row em-small-flex-column em-small-align-items-start">
-							<?php if(!empty($this->applicant->profile_picture)) :?>
-                                <div class="em-profile-picture-big no-hover" style="background-image:url(<?php echo JURI::base() ?>/<?php echo $this->applicant->profile_picture ?>)">
-                                </div>
-							<?php else : ?>
-                                <span class="em-no-profile-picture-big" data-initials="<?php echo substr($this->applicant->firstname,0, 1).substr($this->applicant->lastname,0,1);?>" alt="<?php echo Text::_('PROFILE_ICON_ALT')?>"></span>
-							<?php endif; ?>
+                            <div class="em-profile-picture-big no-hover"
+                                <?php if (empty($this->applicant->profile_picture)) : ?>
+                                    style="background-image:url(<?php echo JURI::base() ?>/media/com_emundus/images/profile/default-profile.jpg)"
+                                <?php else : ?>
+                                    style="background-image:url(<?php echo JURI::base() ?>/<?php echo $this->applicant->profile_picture ?>)"
+                                <?php endif; ?>
+                            >
+                            </div>
                         </div>
-                        <div class="em-ml-24 ">
+                        <div class="tw-ml-4">
                             <p class="em-font-weight-500">
-								<?php echo $this->applicant->lastname . ' ' . $this->applicant->firstname; ?>
+                                <?php echo $this->applicant->lastname . ' ' . $this->applicant->firstname; ?>
                             </p>
                             <p><?php echo $this->fnum ?></p>
                         </div>
                     </div>
-				<?php endif; ?>
+                <?php endif; ?>
+
                 <div class="panel-body Marginpanel-body em-container-form-body">
                     <input type="hidden" id="dpid_hidden" value="<?php echo $defaultpid->pid ?>"/>
 

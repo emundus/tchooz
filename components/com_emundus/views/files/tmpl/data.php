@@ -160,6 +160,7 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
                 <tbody>
 				<?php foreach ($this->datas as $key => $line): ?>
 					<?php if ($key != 0): ?>
+
 						<tr>
 
                             <?php foreach ($this->keys_order as $k => $order) :

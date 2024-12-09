@@ -92,6 +92,7 @@ class EmundusController extends JControllerLegacy
 		$fnum       = !empty($fnum) ? $fnum : $this->_user->fnum;
 		$m_profile  = $this->getModel('Profile');
 		$m_campaign = $this->getModel('Campaign');
+		$m_workflow = $this->getModel('Workflow');
 
 		$can_access = false;
 		if (EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum)) {
@@ -117,7 +118,7 @@ class EmundusController extends JControllerLegacy
 			);
 
 			$infos          = $m_profile->getFnumDetails($fnum);
-			$workflow_infos = $m_campaign->getCurrentCampaignWorkflow($fnum);
+			$workflow_infos = $m_workflow->getCurrentWorkflowStepFromFile($fnum);
 
 			if ($profile == null) {
 				$profile = !empty($infos['profile']) ? $infos['profile'] : $infos['profile_id'];
@@ -733,6 +734,10 @@ class EmundusController extends JControllerLegacy
 		if (empty($redirect)) {
 			if (empty($confirm)) {
 				$redirect = $m_application->getFirstPage();
+
+				if ($redirect == '/index.php') {
+					$this->app->enqueueMessage(Text::_('COM_EMUNDUS_APPLICATION_CANNOT_OPEN_FILE'), 'error');
+				}
 			}
 			else {
 				$redirect = $m_application->getConfirmUrl();

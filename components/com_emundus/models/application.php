@@ -955,8 +955,10 @@ class EmundusModelApplication extends ListModel
 
 	public function getFilesProgress($fnum = null)
 	{
+		$result = ['attachments' => [], 'forms' => []];
+
 		if (empty($fnum) || (!is_array($fnum) && !is_numeric($fnum))) {
-			return false;
+			return $result;
 		}
 
 		$m_profile = new EmundusModelProfile();
@@ -967,9 +969,7 @@ class EmundusModelApplication extends ListModel
 			$fnum = [$fnum];
 		}
 
-		$result = array();
 		foreach ($fnum as $f) {
-
 			$current_profile = $m_profile->getProfileByFnum($f);
 			$this->getFormsProgressWithProfile($f, $current_profile);
 
@@ -977,12 +977,16 @@ class EmundusModelApplication extends ListModel
 				->select('attachment_progress, form_progress')
 				->from($this->_db->quoteName('#__emundus_campaign_candidature'))
 				->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($f));
-			$this->_db->setQuery($query);
 
-			$progress = $this->_db->loadObject();
+			try {
+				$this->_db->setQuery($query);
+				$progress = $this->_db->loadObject();
 
-			$result['attachments'][$f] = $progress->attachment_progress;
-			$result['forms'][$f]       = $progress->form_progress;
+				$result['attachments'][$f] = $progress->attachment_progress;
+				$result['forms'][$f]       = $progress->form_progress;
+			} catch (Exception $e) {
+				Log::add('Error trying to get progress for fnum ' . $f . ' in model/application.', Log::ERROR, 'com_emundus.error');
+			}
 		}
 
 		return $result;
@@ -2619,7 +2623,7 @@ class EmundusModelApplication extends ListModel
 	}
 
 
-	public function getFormsPDF($aid, $fnum = 0, $fids = null, $gids = 0, $profile_id = null, $eids = null, $attachments = true)
+	public function getFormsPDF($aid, $fnum = 0, $fids = null, $gids = 0, $profile_id = null, $eids = null, $attachments = true, $step_types = [1])
 	{
 		/* COULEURS*/
 		$eMConfig          = JComponentHelper::getParams('com_emundus');
@@ -2628,11 +2632,10 @@ class EmundusModelApplication extends ListModel
 
 		require_once(JPATH_SITE . '/components/com_emundus/helpers/list.php');
 		$h_list    = new EmundusHelperList();
-		$tableuser = $h_list->getFormsList($aid, $fnum, $fids, $profile_id);
+		$tableuser = $h_list->getFormsList($aid, $fnum, $fids, $profile_id, $step_types);
 		$forms     = '';
 
 		if (isset($tableuser)) {
-
 			$allowed_groups = EmundusHelperAccess::getUserFabrikGroups($this->_user->id);
 
 			foreach ($tableuser as $key => $itemt) {
@@ -2670,7 +2673,27 @@ class EmundusModelApplication extends ListModel
 				}
 				$forms .= '</h2>';
 
-				/*-- Liste des groupes -- */
+				// HANDLE CASE OF EVALUATION STEP, DISPLAY THE EVALUATOR NAME
+				if (!empty($itemt->step_id)) {
+					$evaluation_step_query = $this->_db->getQuery(true);
+					$evaluation_step_query->clear()
+						->select($this->_db->quoteName('u.name'))
+						->from($this->_db->quoteName($itemt->db_table_name, 't'))
+						->leftJoin($this->_db->quoteName('#__users', 'u') . ' ON ' . $this->_db->quoteName('u.id') . ' = ' . $this->_db->quoteName('t.evaluator'))
+						->where($this->_db->quoteName('t.fnum') . ' = ' . $this->_db->quote($fnum))
+						->andWhere($this->_db->quoteName('t.step_id') . ' = ' . $this->_db->quote($itemt->step_id));
+
+					if (!empty($itemt->evaluation_row_id)) {
+						$evaluation_step_query->andWhere($this->_db->quoteName('t.id') . ' = ' . $this->_db->quote($itemt->evaluation_row_id));
+					}
+
+					$this->_db->setQuery($evaluation_step_query);
+					$evaluator_name = $this->_db->loadResult();
+
+					$forms .= '<h3>' . Text::_('EVALUATOR') . ': ' . $evaluator_name . '</h3>';
+				}
+
+					/*-- Liste des groupes -- */
 				foreach ($groupes as $itemg) {
 					$query    = $this->_db->getQuery(true);
 					$g_params = json_decode($itemg->params);
@@ -3201,7 +3224,17 @@ class EmundusModelApplication extends ListModel
 
 									$res = [];
 
-									$query = 'SELECT `id`, `' . $element->name . '` FROM `' . $itemt->db_table_name . '` WHERE fnum like ' . $this->_db->Quote($fnum);
+									if (!empty($itemt->step_id)) {
+										$query = 'SELECT `id`, `' . $element->name . '` FROM `' . $itemt->db_table_name . '` WHERE fnum like ' . $this->_db->Quote($fnum);
+										$query .= ' AND step_id = ' . $itemt->step_id;
+
+										if (!empty($itemt->evaluation_row_id)) {
+											$query .= ' AND id = ' . $itemt->evaluation_row_id;
+										}
+									} else {
+										$query = 'SELECT `id`, `' . $element->name . '` FROM `' . $itemt->db_table_name . '` WHERE fnum like ' . $this->_db->Quote($fnum);
+									}
+
 									try {
 										$this->_db->setQuery($query);
 										$res = $this->_db->loadRow();
@@ -3813,16 +3846,14 @@ class EmundusModelApplication extends ListModel
 		return $results;
 	}
 
-	public function getApplicationMenu($user_id = 0)
+	public function getApplicationMenu($user_id = 0, $fnum = '')
 	{
-		$user_id = $user_id ?: JFactory::getUser()->id;
+		$user_id = $user_id ?: Factory::getApplication()->getIdentity()->id;
 		$juser   = JFactory::getUser($user_id);
 
 		$menus = [];
-
 		try {
-
-			$query = $this->_db->getQuery(true);
+			$query = $this->_db->createQuery();
 
 			$grUser = $juser->getAuthorisedViewLevels();
 
@@ -3835,8 +3866,64 @@ class EmundusModelApplication extends ListModel
 			$this->_db->setQuery($query);
 			$menus = $this->_db->loadAssocList();
 
-		}
-		catch (Exception $e) {
+			if (!empty($fnum)) {
+				// get menu related to workflow steps of type evaluator
+				$query->clear()
+					->select('esp.id')
+					->from($this->_db->quoteName('#__emundus_setup_programmes', 'esp'))
+					->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.training = esp.code')
+					->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.campaign_id = esc.id')
+					->where('ecc.fnum LIKE ' . $this->_db->quote($fnum));
+
+				$this->_db->setQuery($query);
+				$program_id = $this->_db->loadResult();
+
+				if (!empty($program_id)) {
+					require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+					$m_workflow = new EmundusModelWorkflow();
+					$workflows = $m_workflow->getWorkflows([], 0, 0, [$program_id]);
+
+					$workflow_menus = [];
+					foreach($workflows as $workflow) {
+						$workflow_data = $m_workflow->getWorkflow($workflow->id);
+
+						$ccid = EmundusHelperFiles::getIdFromFnum($fnum);
+						foreach($workflow_data['steps'] as $step) {
+							if ($m_workflow->isEvaluationStep($step->type)) {
+								$step_data = $m_workflow->getStepData($step->id);
+
+								try {
+									$step_access = EmundusHelperAccess::getUserEvaluationStepAccess($ccid, $step_data, $user_id);
+
+									if ($step_access['can_see']) {
+										$workflow_menus[] = [
+											'id' => $workflow->id . $step->id,
+											'title' => $step->label,
+											'link' => 'evaluator-step?format=raw&step_id=' . $step->id,
+											'lft' => 9998,
+											'rgt' => 9999,
+											'note' => '1|r',
+											'hasSons' => false
+										];
+									}
+								} catch (Exception $e) {
+									Log::add('line ' . __LINE__ . ' - Error in model/application at query: ' . $query->__toString(), Log::ERROR, 'com_emundus');
+									continue;
+								}
+							}
+						}
+					}
+					foreach ($menus as $key => $menu) {
+						if (str_contains($menu['link'], 'layout=attachment')) {
+							$pos = $key + 1;
+							break;
+						}
+					}
+
+					$menus = array_merge(array_slice($menus, 0, $pos), $workflow_menus, array_slice($menus, $pos));
+				}
+			}
+		} catch (Exception $e) {
 			Log::add('line ' . __LINE__ . ' - Error in model/application at query: ' . $query->__toString(), Log::ERROR, 'com_emundus');
 		}
 
@@ -4500,8 +4587,8 @@ class EmundusModelApplication extends ListModel
 					$fnum_query->select('cc.fnum')
 						->from($this->_db->quoteName('#__emundus_campaign_candidature', 'cc'))
 						->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'sc') . ' ON ' . $this->_db->quoteName('sc.id') . ' = ' . $this->_db->quoteName('cc.campaign_id'))
-						->leftJoin($db->quoteName('#__emundus_setup_programmes','sp').' ON '.$db->quoteName('sc.training').' = '.$db->quoteName('sp.code'))
-						->where($db->quoteName('sp.id').' IN ('.implode(',',$db->quote($progs_to_check)) . ')')
+						->leftJoin($this->_db->quoteName('#__emundus_setup_programmes','sp').' ON '.$this->_db->quoteName('sc.training').' = '.$this->_db->quoteName('sp.code'))
+						->where($this->_db->quoteName('sp.id').' IN ('.implode(',',$this->_db->quote($progs_to_check)) . ')')
 						->andWhere($this->_db->quoteName('sc.year') . ' = ' . $this->_db->quote($fnumInfos['year']))
 						->andWhere($this->_db->quoteName('cc.applicant_id') . ' = ' . $this->_db->quote($fnumInfos['applicant_id']));
 					$this->_db->setQuery($fnum_query);
@@ -5361,7 +5448,7 @@ class EmundusModelApplication extends ListModel
 	 * @return String The URL to the form.
 	 * @since 3.8.8
 	 */
-	function getFirstPage($redirect = 'index.php', $fnums = null)
+	function getFirstPage($redirect = '/index.php', $fnums = null)
 	{
 		$user = $this->_mainframe->getSession()->get('emundusUser');
 		$query = $this->_db->getQuery(true);
@@ -5433,6 +5520,7 @@ class EmundusModelApplication extends ListModel
 	 */
 	function getConfirmUrl($fnums = null)
 	{
+		$return = false;
 
 		$user = JFactory::getSession()->get('emundusUser');
 
@@ -5449,38 +5537,32 @@ class EmundusModelApplication extends ListModel
 
 			$this->_db->setQuery($query);
 			try {
-				return $this->_db->loadAssocList('fnum');
+				$return = $this->_db->loadAssocList('fnum');
 			}
 			catch (Exception $e) {
 				Log::add('Error getting confirm URLs in model/application at query -> ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
-
-				return false;
 			}
 		}
 		else {
 
-			if (empty($user->menutype)) {
-				return false;
-			}
+			if (!empty($user->menutype)) {
+				$query->select(['id', 'link'])
+					->from($this->_db->quoteName('#__menu'))
+					->where($this->_db->quoteName('published') . '=1 AND ' . $this->_db->quoteName('menutype') . ' LIKE ' . $this->_db->quote($user->menutype) . ' AND ' . $this->_db->quoteName('link') . ' <> "" AND ' . $this->_db->quoteName('link') . ' <> "#"')
+					->order($this->_db->quoteName('lft') . ' DESC');
+				try {
+					$this->_db->setQuery($query);
+					$res = $this->_db->loadObject();
 
-			$query->select(['id', 'link'])
-				->from($this->_db->quoteName('#__menu'))
-				->where($this->_db->quoteName('published') . '=1 AND ' . $this->_db->quoteName('menutype') . ' LIKE ' . $this->_db->quote($user->menutype) . ' AND ' . $this->_db->quoteName('link') . ' <> "" AND ' . $this->_db->quoteName('link') . ' <> "#"')
-				->order($this->_db->quoteName('lft') . ' DESC');
-			try {
-				$this->_db->setQuery($query);
-
-				$res = $this->_db->loadObject();
-
-				return $res->link . '&Itemid=' . $res->id;
-			}
-			catch (Exception $e) {
-				Log::add('Error getting first page of application at model/application in query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
-
-				return false;
+					$return = $res->link . '&Itemid=' . $res->id;
+				}
+				catch (Exception $e) {
+					Log::add('Error getting first page of application at model/application in query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
+				}
 			}
 		}
 
+		return $return;
 	}
 
 

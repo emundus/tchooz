@@ -5032,6 +5032,81 @@ class EmundusHelperFiles
 										}
 									}
 									break;
+								case 'workflow_steps':
+									require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+									$m_workflow = new EmundusModelWorkflow();
+									$program_ids = [];
+
+									$step_ids = is_array($filter['value']) ? $filter['value'] : [$filter['value']];
+
+									foreach ($step_ids as $step_id) {
+										$step_data = $m_workflow->getStepData($step_id);
+
+										if (empty($step_data->table)) {
+											$workflow_data = $m_workflow->getWorkflow($step_data->workflow_id);
+											$step_label =  !empty($workflow_data['workflow']) ? $workflow_data['workflow']->label . ' - ' . $step_data->label : $step_data->label;
+											$app->enqueueMessage(sprintf(Text::_('COM_EMUNDUS_BUILD_WHERE_STEP_CONFIGURATION_ERROR'), $step_label), 'warning');
+											continue;
+										}
+
+										$step_table_alias = array_search($step_data->table, $already_joined);
+										if (!in_array($step_data->table, $already_joined)) {
+											// table is name jos_emundus_evaluations_<index>
+											$table_index = substr($step_data->table, strlen('jos_emundus_evaluations_'));
+											$step_table_alias = 'jee_' . $table_index;
+											$already_join[$step_table_alias] = $step_data->table;
+
+											if (!empty($caller_params['step_id'])) {
+												$where['join'] .= ' LEFT JOIN ' . $db->quoteName($step_data->table) . ' ON ' . $db->quoteName($step_data->table . '.fnum') . ' = ' . $db->quoteName('jecc.fnum') . ' AND ' . $db->quoteName($step_data->table . '.step_id') . ' = ' . $db->quote($caller_params['step_id'] . ' ');
+											} else {
+												$where['join'] .= ' LEFT JOIN ' . $db->quoteName($step_data->table) . ' ON ' . $db->quoteName($step_data->table . '.fnum') . ' = ' . $db->quoteName('jecc.fnum') . ' AND ' . $db->quoteName($step_data->table . '.step_id') . ' = ' . $db->quote($step_id) . ' ';
+											}
+										}
+
+										if (!empty($caller_params['step_id'])) {
+											if ($caller_params['step_id'] == $step_id) {
+												$program_ids = array_merge($program_ids, $step_data->programs);
+											}
+										} else {
+											$program_ids = array_merge($program_ids, $step_data->programs);
+										}
+									}
+
+									if (!empty($program_ids)) {
+										$jesp_alias = array_search('jos_emundus_setup_programmes', $already_joined);
+
+										// we want the fnums that are related to the step through the programs they are linked to
+										$where['q'] .= ' AND ' . $this->writeQueryWithOperator($jesp_alias . '.id', array_unique($program_ids), $filter['operator']);
+									}
+									break;
+								case 'evaluated':
+									$evaluated_row_ids = [];
+
+									require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+									$m_workflow = new EmundusModelWorkflow();
+									$steps = $m_workflow->getEvaluatorSteps($user->id);
+									if (!empty($steps)) {
+										foreach ($steps as $step) {
+											if (is_array($filter['value']) && in_array('0', $filter['value']) && in_array('1', $filter['value'])) {
+												continue;
+											}
+
+											if (!empty($caller_params['step_id']) && $step->id != $caller_params['step_id']) {
+												continue;
+											}
+
+											$ccids = $m_workflow->getEvaluatedFilesByUser($step, $user->id);
+
+											if ($filter['value'] == 1) {
+												$where['q'] .= ' AND ' . $this->writeQueryWithOperator('jecc.id', $ccids, $filter['operator']);
+											} else {
+												$operator = $filter['operator'] === 'IN' ? 'NOT IN' : 'IN';
+												$where['q'] .= ' AND ' . $this->writeQueryWithOperator('jecc.id', $ccids, $operator);
+											}
+										}
+									}
+
+									break;
 								default:
 									break;
 							}
@@ -5047,6 +5122,16 @@ class EmundusHelperFiles
 		else if (!in_array('published', $filters_to_exclude))
 		{
 			$where['q'] .= ' AND ' . $this->writeQueryWithOperator('jecc.published', 1, '=');
+		}
+
+		if (!empty($caller_params['step_id'])) {
+			require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+			$m_workflow = new EmundusModelWorkflow();
+			$step_data = $m_workflow->getStepData($caller_params['step_id']);
+
+			if (!empty($step_data->programs)) {
+				$where['q'] .= ' AND ' . $this->writeQueryWithOperator('sp.id', $step_data->programs, 'IN');
+			}
 		}
 
 		return $where;

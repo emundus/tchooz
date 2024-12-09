@@ -38,7 +38,7 @@
           <div class="tw-mb-4">
             <label for="alias" class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_ALIAS') }} <span class="tw-text-red-600">*</span></label>
             <div class="tw-flex tw-items-center tw-gap-2">
-              <span class="tw-whitespace-nowrap">{{ baseUrl }}/</span>
+              <span>{{ baseUrl }}/</span>
               <div class="tw-w-full">
                 <input
                     id="alias"
@@ -240,8 +240,6 @@
           </div>
         </div>
 
-        <hr class="tw-mt-16"/>
-
         <div class="tw-mt-8">
           <div class="tw-mb-4">
             <h2>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM') }}</h2>
@@ -299,23 +297,24 @@
                 <p v-if="errors.progLabel" class="tw-text-red-600 tw-mb-2">
                   <span class="tw-text-red-600">{{ translate('COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL') }}</span>
                 </p>
-
-                <div class="tw-mb-4" style="display: none">
-                  <label for="prog_color" class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_PROGCOLOR') }}</label>
-                  <div class="tw-flex">
-                    <div v-for="(color,index) in colors" :key="index">
-                      <div class="em-color-round tw-cursor-pointer tw-flex tw-justify-center"
-                           :class="index !== 0 ? 'ml-2' : ''"
-                           :style="selectedColor === color.text ? 'background-color:' + color.text + ';border: 2px solid ' + color.background : 'background-color:' + color.text"
-                           @click="programForm.color = color.text;selectedColor = color.text">
-                        <span v-if="selectedColor === color.text" class="material-symbols-outlined" style="font-weight: bold;color: black;filter: invert(1)">done</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </transition>
+        </div>
+
+        <div id="campaign-form-container">
+          <h2 class="tw-mt-2 tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_FORM') }} <i>{{ translate('COM_EMUNDUS_OPTIONAL') }}</i></h2>
+          <p class="tw-mt-2 tw-mb-2"> {{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_FORM_DESC') }} </p>
+          <div class="tw-flex tw-flex-row tw-items-center">
+            <select class="tw-w-full" v-model="form.profile_id">
+              <option value="0">{{ translate('COM_EMUNDUS_ONBOARD_CHOOSE_FORM') }}</option>
+              <option v-for="applicantForm in applicantForms" :key="applicantForm.id" :value="applicantForm.id" > {{ applicantForm.label }} </option>
+            </select>
+            <span class="material-symbols-outlined tw-cursor-pointer" @click="getAllForms">refresh</span>
+          </div>
+          <a href="/forms" target="_blank" class="tw-my-2 tw-underline">
+            {{ translate('COM_EMUNDUS_ONBOARD_ACCESS_TO_FORMS_LIST') }}
+          </a>
         </div>
 
         <hr class="tw-mt-4"/>
@@ -348,7 +347,7 @@
         </div>
 
 
-        <div class="tw-flex tw-justify-end tw-mb-4">
+        <div class="tw-flex tw-justify-end tw-mt-4">
           <button
               id="save-btn"
               type="button"
@@ -384,6 +383,7 @@ import programmeService from '@/services/programme.js';
 
 import { useGlobalStore } from "@/stores/global.js";
 import { useCampaignStore } from "@/stores/campaign.js";
+import fileService from "@/services/file.js";
 import Multiselect from "vue-multiselect";
 
 export default {
@@ -422,6 +422,7 @@ export default {
     //
 
     programs: [],
+    applicantForms: [],
     years: [],
     languages: [],
     aliases: [],
@@ -477,32 +478,13 @@ export default {
       limit_status: false
     },
 
-    colors: [
-      {
-        text: '#1C6EF2',
-        background: '#79B6FB',
-      },
-      {
-        text: '#20835F',
-        background: '#87D4B8',
-      },
-      {
-        text: '#DB333E',
-        background: '#FBABAB',
-      },
-      {
-        text: '#FFC633',
-        background: '#FEEBA1',
-      },
-    ],
-    selectedColor: '#1C6EF2',
-
     submitted: false,
     ready: false,
   }),
 
   created() {
     const globalStore = useGlobalStore();
+    this.getAllForms();
 
     if (this.campaign === '') {
       this.campaignId = globalStore.getDatas.campaign ? globalStore.getDatas.campaign.value : 0;
@@ -615,6 +597,16 @@ export default {
 
       this.getCampaignLanguages();
       this.getAllPrograms();
+    },
+
+    getAllForms() {
+      fileService.getProfiles().then(response => {
+        if (response.status) {
+          this.applicantForms = response.data.filter(form => form.published == 1);
+        }
+      }).catch(e => {
+        console.log(e);
+      });
     },
 
     getCampaignLanguages() {
@@ -972,7 +964,7 @@ export default {
 
         this.programs.forEach((program) => {
           if (program.code === this.form.training) {
-            programLang = program.language_ids != null ? program.language_ids : [];
+            programLang = program.language_ids != null && Array.isArray(program.language_ids) ? program.language_ids : [];
           }
         });
 

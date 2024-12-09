@@ -282,7 +282,7 @@ class EmundusViewForm extends FabrikViewFormBase
 						}
 						${"element" . $o_element->id}->labelToFind = $element->label;
 						${"element" . $o_element->id}->publish     = $element->isPublished();
-
+						${"element" . $o_element->id}->show_in_list_summary = $element->getElement()->show_in_list_summary;
 
 						if ($labelsAbove == 2) {
 							if ($el_parmas->tipLocation == 'above') :

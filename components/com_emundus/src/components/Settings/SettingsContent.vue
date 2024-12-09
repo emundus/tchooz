@@ -86,7 +86,7 @@ export default {
     EditFooter,
     Info,
     SubSection,
-    Tile,
+    Tile
   },
 
   props: {

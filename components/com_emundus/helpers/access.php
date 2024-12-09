@@ -16,6 +16,7 @@
 use Joomla\CMS\Access\Access;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\Language\Text;
 
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
@@ -596,5 +597,95 @@ class EmundusHelperAccess
 		}
 
 		return $mine;
+	}
+
+	/**
+	 * @param $ccid int campaign candidature id
+	 * @param $step_data object step data, use getStepData from EmundusModelWorkflow
+	 * @param $user_id int if not given, current user will be taken
+	 * @param $profile_ids array if not given, only current session profile will be taken
+	 *
+	 * @return bool[] (can_see, can_edit)
+	 * @throws Exception
+	 */
+	public static function getUserEvaluationStepAccess($ccid, $step_data, $user_id): array
+	{
+		$can_see = false;
+		$can_edit = false;
+
+		if (!empty($ccid) && !empty($step_data->id)) {
+			$app = Factory::getApplication();
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
+
+			if (empty($user_id)) {
+				$user_id = $app->getIdentity()->id;
+			}
+
+			// Verify if this step and this ccid are linked together by workflow
+			$query->clear()
+				->select('esp.id')
+				->from($db->quoteName('#__emundus_setup_programmes', 'esp'))
+				->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.training = esp.code')
+				->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.campaign_id = esc.id')
+				->where('ecc.id = ' . $ccid);
+
+			$db->setQuery($query);
+			$programme_id = $db->loadResult();
+
+			if (!empty($programme_id) && in_array($programme_id, $step_data->programs)) {
+				// verify if user can access to this evaluation form
+				if (EmundusHelperAccess::asCoordinatorAccessLevel($user_id) || EmundusHelperAccess::asAdministratorAccessLevel($user_id)) {
+					$can_see = true;
+					$can_edit = true;
+				} else if (EmundusHelperAccess::asPartnerAccessLevel($user_id)) {
+					$fnum = EmundusHelperFiles::getFnumFromId($ccid);
+
+					// it's the bare minimum to potentially see the evaluation form
+					if (EmundusHelperAccess::asAccessAction(1, 'r', $user_id, $fnum) && EmundusHelperAccess::asAccessAction($step_data->action_id, 'c', $user_id))
+					{
+						$can_see = true;
+						if (EmundusHelperAccess::asAccessAction($step_data->action_id, 'c', $user_id))
+						{
+							// verify step is not closed
+							// file must be in one of the entry statuses and current date must be between start and end date of step
+							$query->clear()
+								->select('status')
+								->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+								->where('ecc.id = ' . $ccid);
+
+							$db->setQuery($query);
+							$status = $db->loadResult();
+
+							$respect_dates = true;
+							if ($step_data->infinite != 1)
+							{
+								if (!empty($step_data->start_date) && $step_data->start_date > date('Y-m-d'))
+								{
+									$respect_dates = false;
+								}
+
+								if (!empty($step_data->end_date) && $step_data->end_date < date('Y-m-d'))
+								{
+									$respect_dates = false;
+								}
+							}
+
+							if (in_array($status, $step_data->entry_status) && $respect_dates)
+							{
+								$can_edit = true;
+							}
+						}
+					}
+				}
+			} else {
+				throw new Exception(Text::_('ERROR_INCOHERENT_STEP_FOR_CCID'));
+			}
+		}
+
+		return [
+			'can_see' => $can_see,
+			'can_edit' => $can_edit
+		];
 	}
 }

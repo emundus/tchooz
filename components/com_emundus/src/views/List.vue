@@ -116,7 +116,7 @@
 
       <div v-else>
         <div v-if="displayedItems.length > 0" id="list-items">
-          <table id="list-table" :class="{'blocs': viewType === 'blocs'}">
+          <table v-if="viewType != 'gantt'"  id="list-table" :class="{'blocs': viewType === 'blocs'}">
             <thead>
             <tr>
               <th>{{ translate('COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase()) == ('COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase()) ?
@@ -192,6 +192,11 @@
             </tr>
             </tbody>
           </table>
+          <Gantt v-else
+            :language="params.shortlang"
+            :periods="displayedItems"
+          ></Gantt>
+
         </div>
         <div v-else id="empty-list" class="noneDiscover tw-text-center" v-html="noneDiscoverTranslation"></div>
       </div>
@@ -205,6 +210,7 @@ import {ref} from 'vue';
 // Components
 import Skeleton from '@/components/Skeleton.vue';
 import Popover from '@/components/Popover.vue';
+import Gantt from '@/components/Gantt/Gantt.vue';
 
 // Services
 import settingsService from '@/services/settings.js';
@@ -215,7 +221,8 @@ export default {
   name: 'list',
   components: {
     Skeleton,
-    Popover
+    Popover,
+    Gantt
   },
   props: {
     defaultLists: {
@@ -243,7 +250,11 @@ export default {
       items: {},
       title: '',
       viewType: 'table',
-      viewTypeOptions: [{value: 'table', icon: 'dehaze'}, {value: 'blocs', icon: 'grid_view'}],
+      viewTypeOptions: [
+        {value: 'table', icon: 'dehaze'},
+        {value: 'blocs', icon: 'grid_view'},
+        /*{value: 'gantt', icon: 'view_timeline'}*/
+      ],
       searches: {},
       filters: {},
       alertBannerDisplayed: false
@@ -262,12 +273,13 @@ export default {
     this.loading.lists = true;
     this.loading.tabs = true;
 
+    const globalStore = useGlobalStore();
     if (this.defaultType !== null) {
       this.params = {
-        'type': this.defaultType
+        'type': this.defaultType,
+        'shortlang': globalStore.getShortLang
       };
     } else {
-      const globalStore = useGlobalStore();
       const data = globalStore.getDatas;
       this.params = Object.assign({}, ...Array.from(data).map(({name, value}) => ({[name]: value})));
     }
@@ -534,8 +546,8 @@ export default {
         if (Object.prototype.hasOwnProperty.call(action, 'confirm')) {
           Swal.fire({
             icon: 'warning',
-            title: action.label,
-            text: action.confirm,
+            title: this.translate(action.label),
+            text: this.translate(action.confirm),
             showCancelButton: true,
             confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_OK'),
             cancelButtonText: this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),
@@ -721,7 +733,11 @@ export default {
     displayedItems() {
       let items = typeof this.items[this.selectedListTab] !== 'undefined' ? this.items[this.selectedListTab] : [];
       return items.filter((item) => {
-        return item.label[this.params.shortlang].toLowerCase().includes(this.searches[this.selectedListTab].search.toLowerCase());
+        if (item !== undefined && item !== null) {
+          return item.label[this.params.shortlang].toLowerCase().includes(this.searches[this.selectedListTab].search.toLowerCase());
+        } else {
+          return false;
+        }
       });
     },
     additionalColumns() {
@@ -787,6 +803,10 @@ export default {
   left: 75px;
   padding: 24px 33px 24px 33px;
   min-height: 86px;
+}
+
+.view-settings #onboarding_list .head {
+  position: inherit;
 }
 
 #onboarding_list .list {

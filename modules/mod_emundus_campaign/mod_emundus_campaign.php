@@ -297,7 +297,7 @@ if ($user->guest || in_array($e_user->profile, $app_prof)) {
 	$allCampaign                        = $helper->getProgram($condition, $mod_em_campaign_get_teaching_unity);
 
 	if ($params->get('mod_em_campaign_layout') == "single_campaign" || $params->get('mod_em_campaign_layout') == "tchooz_single_campaign" || $params->get('mod_em_campaign_layout') == "institut_fr_single_campaign") {
-// FAQ
+		// FAQ
 		$faq_articles = $helper->getFaq();
 
 		include_once(JPATH_BASE . DS . 'modules' . DS . 'mod_emundus_campaign_dropfiles' . DS . 'helper.php');

@@ -177,7 +177,7 @@ class EmundusModelForm extends JModelList
 				->select([$this->db->quoteName('ff.id'), $this->db->quoteName('ff.label'), '"grilleEval" AS type'])
 				->from($this->db->quoteName('#__fabrik_forms', 'ff'))
 				->leftJoin($this->db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $this->db->quoteName('fl.form_id') . ' = ' . $this->db->quoteName('ff.id'))
-				->where($this->db->quoteName('fl.db_table_name') . ' = ' . $this->db->quote('jos_emundus_evaluations'));
+				->where($this->db->quoteName('fl.db_table_name') . ' LIKE ' . $this->db->quote('jos_emundus_evaluations_%'));
 			$this->db->setQuery($query);
 
 			$evaluation_forms = $this->db->loadObjectList();
@@ -1186,73 +1186,46 @@ class EmundusModelForm extends JModelList
 		}
 	}
 
+	/**
+	 * @param $user
+	 *
+	 * @return int
+	 * @throws Exception
+	 */
 	public function createFormEval($user = null)
 	{
+		$new_form_id = 0;
 		require_once(JPATH_ROOT . '/components/com_emundus/models/formbuilder.php');
 		$m_formbuilder = new EmundusModelFormbuilder();
-		$form_id       = $m_formbuilder->createFabrikForm('EVALUATION', ['fr' => 'Nouvelle Évaluation', 'en' => 'New Evaluation'], ['fr' => 'Introduction de l\'évaluation', 'en' => 'Evaluation introduction'], 'eval',$user);
 
-		if (!empty($form_id)) {
+		$form_id = $m_formbuilder->createFabrikForm('EVALUATION', ['fr' => 'Nouvelle Évaluation', 'en' => 'New Evaluation'], ['fr' => 'Introduction de l\'évaluation', 'en' => 'Evaluation introduction'], 'eval', $user);
+		if (!empty($form_id))
+		{
+			$new_form_id = $form_id;
 			$group = $m_formbuilder->createGroup(array('fr' => 'Hidden group', 'en' => 'Hidden group'), $form_id, -1);
-			if (!empty($group)) {
+			if (!empty($group))
+			{
 				// Create hidden group
 				$m_formbuilder->createElement('id', $group['group_id'], 'internalid', 'id', '', 1, 0);
 				$m_formbuilder->createElement('time_date', $group['group_id'], 'jdate', 'time date', '', 1, 0);
-				$m_formbuilder->createElement('fnum', $group['group_id'], 'field', 'fnum', '{jos_emundus_evaluations___fnum}', 1, 0, 1, 1, 0, 44);
-				$dbjoin_element_id = $m_formbuilder->createElement('user', $group['group_id'], 'databasejoin', 'user', '{$my->id}', 1, 0);
-
-				if (!empty($dbjoin_element_id)) {
-					$query = $this->db->createQuery(true);
-					$query->select('params')
-						->from('#__fabrik_elements')
-						->where('id = ' . $dbjoin_element_id);
-
-					$this->db->setQuery($query);
-					$params = $this->db->loadResult();
-
-					$params = json_decode($params, true);
-
-					$params['join_db_name'] = 'jos_users';
-					$params['join_key_column'] = 'id';
-					$params['join_val_column'] = 'name';
-
-					$query->clear()
-						->update('#__fabrik_elements')
-						->set('params = ' . $this->db->quote(json_encode($params)))
-						->where('id = ' . $dbjoin_element_id);
-					$this->db->setQuery($query);
-					$this->db->execute();
-				}
-
-				$m_formbuilder->createElement('student_id', $group['group_id'], 'field', 'student_id', '{jos_emundus_evaluations___student_id}', 1, 0);
+				$m_formbuilder->createElement('ccid', $group['group_id'], 'field', 'Identifiant du dossier', '', 1, 1, 1, 1, 0, 44);
+				$m_formbuilder->createElement('fnum', $group['group_id'], 'field', 'fnum', '', 1, 0, 1, 1, 0, 44);
+				$m_formbuilder->createElement('step_id', $group['group_id'], 'field', 'Phase', '', 1, 1, 1, 1, 0, 44);
+				$m_formbuilder->createElement('evaluator', $group['group_id'], 'user', 'user', '{$my->id}', 1);
+				$m_formbuilder->createElement('updated_by', $group['group_id'], 'user', 'user', '{$my->id}}', 1);
 			}
 
-			$list = [
-				'form_id'        => $form_id,
-				'db_table_name'  => 'jos_emundus_evaluations',
-				'db_primary_key' => 'jos_emundus_evaluations.id',
-				'auto_inc'       => '1',
-				'connection_id'  => '1',
-				'template'       => 'emundus',
-				'access'         => 7,
-				'published'      => 1,
-				'created_by'     => !empty($user->id) ? $user->id : 0,
-				'params'         => '{"show-table-filters":"1","advanced-filter":"0","advanced-filter-default-statement":"=","search-mode":"0","search-mode-advanced":"0","search-mode-advanced-default":"all","search_elements":"","list_search_elements":"null","search-all-label":"All","require-filter":"0","filter-dropdown-method":"0","toggle_cols":"0","list_filter_cols":"1","empty_data_msg":"","outro":"","list_ajax":"0","show-table-add":"1","show-table-nav":"1","show_displaynum":"1","showall-records":"0","show-total":"0","sef-slug":"","show-table-picker":"1","admin_template":"","show-title":"1","pdf":"","pdf_template":"","pdf_orientation":"portrait","pdf_size":"a4","bootstrap_stripped_class":"1","bootstrap_bordered_class":"0","bootstrap_condensed_class":"0","bootstrap_hover_class":"1","responsive_elements":"","responsive_class":"","list_responsive_elements":"null","tabs_field":"","tabs_max":"10","tabs_all":"1","list_ajax_links":"0","actionMethod":"default","detailurl":"","detaillabel":"","list_detail_link_icon":"visibility","list_detail_link_target":"_self","editurl":"","editlabel":"","list_edit_link_icon":"edit","checkboxLocation":"end","addurl":"","addlabel":"","list_add_icon":"plus","list_delete_icon":"remove","popup_width":"","popup_height":"","popup_offset_x":"","popup_offset_y":"","note":"","alter_existing_db_cols":"default","process-jplugins":"1","cloak_emails":"0","enable_single_sorting":"default","collation":"latin1_swedish_ci","force_collate":"","list_disable_caching":"0","distinct":"1","group_by_raw":"1","group_by_access":"1","group_by_order":"","group_by_template":"","group_by_order_dir":"ASC","group_by_start_collapsed":"0","group_by_collapse_others":"0","group_by_show_count":"1","menu_module_prefilters_override":"1","prefilter_query":"","join-display":"default","delete-joined-rows":"0","show_related_add":"0","show_related_info":"0","rss":"0","feed_title":"","feed_date":"","feed_image_src":"","rsslimit":"150","rsslimitmax":"2500","csv_import_frontend":"10","csv_export_frontend":"10","csvfullname":"0","csv_export_step":"100","newline_csv_export":"nl2br","csv_clean_html":"leave","csv_custom_qs":"","csv_frontend_selection":"0","incfilters":"0","csv_format":"0","csv_which_elements":"selected","show_in_csv":"","csv_elements":"null","csv_include_data":"1","csv_include_raw_data":"1","csv_include_calculations":"0","csv_filename":"","csv_encoding":"","csv_double_quote":"1","csv_local_delimiter":"","csv_end_of_line":"n","open_archive_active":"0","open_archive_set_spec":"","open_archive_timestamp":"","open_archive_license":"http:\/\/creativecommons.org\/licenses\/by-nd\/2.0\/rdf","dublin_core_element":"","dublin_core_type":"dc:description.abstract","raw":"0","open_archive_elements":"null","search_use":"0","search_title":"","search_description":"","search_date":"","search_link_type":"details","dashboard":"0","dashboard_icon":"","allow_view_details":"6","allow_edit_details":"6","allow_edit_details2":"","allow_add":"6","allow_delete":"7","allow_delete2":"","allow_drop":"10","isView":"0"}'
-			];
-
-			$list_id = $m_formbuilder->copyList($list, $form_id);
-
-			if (empty($list_id))
-			{
-				Log::add('component/com_emundus/models/form | Error when create a list for evaluation form, could not copy list based on jos_emundus_evaluations', Log::WARNING, 'com_emundus.error');
-				throw new Exception('Error when create a list for evaluation form, could not copy list based on jos_emundus_evaluations');
+			$list = $m_formbuilder->createFabrikList('evaluations', $form_id, 6, 'eval', $user);
+			if (empty($list)) {
+				Log::add('component/com_emundus/models/form | Error when create a list for evaluation form', Log::WARNING, 'com_emundus.error');
+				throw new Exception('Error when create a list for evaluation form');
 			}
 		} else {
 			Log::add('component/com_emundus/models/form | Error when create a form for evaluation form', Log::WARNING, 'com_emundus.error');
 			throw new Exception('Error when create a form for evaluation form');
 		}
 
-		return $form_id;
+		return $new_form_id;
 	}
 
 	public function createMenuType($menutype, $title)
@@ -2283,15 +2256,46 @@ class EmundusModelForm extends JModelList
 					' LIKE ' .
 					$this->db->quoteName('sc.training')
 				)
-				->where($this->db->quoteName('sc.training') . ' IN (' . implode(',', $this->db->quote($programs)) . ')')
-				->where($this->db->quoteName('sc.profile_id') . ' = ' . $this->db->quote($profile_id));
+				->where($this->db->quoteName('sc.training') . ' IN (' . implode(',', $this->db->quote($programs)) . ')');
 
 			try {
 				$this->db->setQuery($query);
 				$campaigns = $this->db->loadObjectList();
 
-			} catch (Exception $e) {
-				Log::add('component/com_emundus/models/form | Error at getting campaigns link to the form ' . $profile_id . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), Log::ERROR, 'com_emundus');
+				$campaigns = $this->db->loadObjectList();
+			}
+			catch (Exception $e) {
+				Log::add('component/com_emundus/models/form | Error at getting campaigns link to the form ' . $profile_id . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+			}
+
+			/**
+			 * campaigns can be associated by workflow step
+			 */
+			$campaign_ids = array_column($campaigns, 'id');
+			$query->clear()
+				->select('DISTINCT esc.id, esc.label')
+				->from($this->db->quoteName('#__emundus_setup_campaigns', 'esc'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_programmes','esp') . ' ON esp.code = esc.training')
+				->leftJoin($this->db->quoteName('#__emundus_setup_workflows_programs','eswp') . ' ON eswp.program_id = esp.id')
+				->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps','esws') . ' ON esws.workflow_id = eswp.workflow_id')
+				->where($this->db->quoteName('esws.profile_id') . ' = ' . $this->db->quote($profile_id));
+
+			if (!empty($campaign_ids))  {
+				$query->andWhere($this->db->quoteName('esc.id') . ' NOT IN (' . implode(',', $campaign_ids) . ')');
+			}
+
+			$query->andWhere($this->db->quoteName('esc.training') . ' IN (' . implode(',', $this->db->quote($programs)) . ')');
+
+			try {
+				$this->db->setQuery($query);
+				$workflow_campaigns = $this->db->loadObjectList();
+
+				foreach ($workflow_campaigns as $campaign) {
+					$campaigns[] = $campaign;
+				}
+			}
+			catch (Exception $e) {
+				Log::add('component/com_emundus/models/form | Error at getting campaigns link to the form ' . $profile_id . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -2571,55 +2575,27 @@ class EmundusModelForm extends JModelList
 		return $data;
 	}
 
-	public function getProgramsByForm($form_id,$mode = 'eval')
+	public function getProgramsByForm($form_id)
 	{
 		$programs = [];
 
-		$query = $this->db->getQuery(true);
+		if (!empty($form_id)) {
+			$query = $this->db->getQuery(true);
+			$query->select('DISTINCT eswp.program_id')
+				->from($this->db->quoteName('#__emundus_setup_workflows_programs', 'eswp'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps', 'esws') . ' ON ' . $this->db->quoteName('esws.workflow_id') . ' = ' . $this->db->quoteName('eswp.workflow_id'))
+				->where($this->db->quoteName('esws.form_id') . ' = ' . $this->db->quote($form_id));
 
-		if(!empty($form_id)) {
-			try
-			{
-				$query->select('group_id')
-					->from($this->db->quoteName('#__fabrik_formgroup'))
-					->where($this->db->quoteName('form_id') . ' = ' . $this->db->quote($form_id));
+			$this->db->setQuery($query);
+			$program_ids = $this->db->loadColumn();
+
+			if (!empty($program_ids)) {
+				$query->clear()
+					->select('id, code, label')
+					->from($this->db->quoteName('#__emundus_setup_programmes'))
+					->where($this->db->quoteName('id') . ' IN (' . implode(',', $program_ids) . ')');
 				$this->db->setQuery($query);
-				$fabrik_groups = $this->db->loadColumn();
-
-				switch ($mode) {
-					case 'decision':
-						$column = 'fabrik_decision_group_id';
-						break;
-					default:
-						$column = 'fabrik_group_id';
-						break;
-				}
-
-				if(!empty($fabrik_groups)) {
-					$query->clear()
-						->select('label,code,'.$column)
-						->from($this->db->quoteName('#__emundus_setup_programmes'));
-					$this->db->setQuery($query);
-					$programs = $this->db->loadAssocList();
-
-					foreach ($programs as $key => $program) {
-						$program_fabrik_groups = explode(',', $program[$column]);
-
-						if(!empty($program_fabrik_groups)) {
-							$program_fabrik_groups = array_intersect($program_fabrik_groups, $fabrik_groups);
-
-							if(empty($program_fabrik_groups)) {
-								unset($programs[$key]);
-							}
-						}
-					}
-
-					$programs = array_values($programs);
-				}
-			}
-			catch (Exception $e)
-			{
-				Log::add('component/com_emundus/models/form | Error at getProgramsByForm : ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), Log::ERROR, 'com_emundus');
+				$programs = $this->db->loadAssocList();
 			}
 		}
 

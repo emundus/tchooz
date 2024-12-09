@@ -36,6 +36,8 @@ export default {
       this.currentTabs.forEach(tab => {
         tab.active = tab.id === id;
       });
+
+      this.$emit('changeTabActive', id);
     }
   }
 }

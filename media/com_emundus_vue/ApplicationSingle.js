@@ -1,5 +1,85 @@
-import { F as FetchClient, _ as _export_sfc, C as Comments, A as Attachments, M as Modal, a as axios, r as resolveComponent, w as withDirectives, v as vShow, o as openBlock, c as createBlock, b as withCtx, d as createBaseVNode, t as toDisplayString, e as createElementBlock, f as createCommentVNode, n as normalizeStyle, g as Fragment, h as renderList, i as normalizeClass } from "./app_emundus.js";
-import { e as errors } from "./errors.js";
+import { F as FetchClient, _ as _export_sfc, f as fileService, o as openBlock, c as createElementBlock, a as createBaseVNode, b as Fragment, r as renderList, n as normalizeClass, t as toDisplayString, d as createCommentVNode, C as Comments, A as Attachments, M as Modal, e as errors, g as axios, h as resolveComponent, w as withDirectives, v as vShow, i as createBlock, j as withCtx, k as normalizeStyle } from "./app_emundus.js";
+const fetchClient = new FetchClient("evaluation");
+const evaluationService = {
+  async getEvaluationsForms(fnum) {
+    try {
+      return await fetchClient.get("getevaluationsforms", {
+        fnum
+      });
+    } catch (e) {
+      return false;
+    }
+  }
+};
+const Evaluations_vue_vue_type_style_index_0_scoped_8a1574e1_lang = "";
+const _sfc_main$1 = {
+  name: "Evaluations",
+  props: {
+    fnum: {
+      type: String,
+      required: true
+    }
+  },
+  data() {
+    return {
+      evaluations: [],
+      selectedTab: 0,
+      ccid: 0
+    };
+  },
+  mounted() {
+    this.getFileId();
+    this.getEvaluationsForms();
+  },
+  methods: {
+    getFileId() {
+      fileService.getFileIdFromFnum(this.fnum).then((response) => {
+        if (response.status) {
+          this.ccid = response.data;
+        }
+      });
+    },
+    getEvaluationsForms() {
+      evaluationService.getEvaluationsForms(this.fnum).then((response) => {
+        this.evaluations = response.data;
+        this.selectedTab = this.evaluations[0].id;
+      }).catch((error) => {
+        console.log(error);
+      });
+    }
+  },
+  computed: {
+    selectedEvaluation() {
+      return this.evaluations.find((evaluation) => evaluation.id === this.selectedTab);
+    }
+  }
+};
+const _hoisted_1$1 = { id: "evaluations-container" };
+const _hoisted_2$1 = { class: "tw-mt-1" };
+const _hoisted_3$1 = { class: "tw-list-none tw-flex tw-flex-row" };
+const _hoisted_4$1 = ["onClick"];
+const _hoisted_5$1 = ["src"];
+function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", _hoisted_1$1, [
+    createBaseVNode("nav", _hoisted_2$1, [
+      createBaseVNode("ul", _hoisted_3$1, [
+        (openBlock(true), createElementBlock(Fragment, null, renderList($data.evaluations, (evaluation) => {
+          return openBlock(), createElementBlock("li", {
+            key: evaluation.id,
+            class: normalizeClass(["tw-cursor-pointer tw-shadow tw-rounded-t-lg tw-px-2.5 tw-py-3", { "em-bg-main-500 em-text-neutral-300": $data.selectedTab === evaluation.id }]),
+            onClick: ($event) => $data.selectedTab = evaluation.id
+          }, toDisplayString(evaluation.label), 11, _hoisted_4$1);
+        }), 128))
+      ])
+    ]),
+    $data.ccid > 0 ? (openBlock(), createElementBlock("iframe", {
+      src: "/evaluation-step-form?formid=" + $options.selectedEvaluation.form_id + "&" + $options.selectedEvaluation.table + "___ccid=" + this.ccid + "&" + $options.selectedEvaluation.table + "___step_id=" + $options.selectedEvaluation.id + "&tmpl=component&iframe=1",
+      class: "tw-w-full iframe-evaluation",
+      key: $data.selectedTab
+    }, null, 8, _hoisted_5$1)) : createCommentVNode("", true)
+  ]);
+}
+const Evaluations = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-8a1574e1"]]);
 const client = new FetchClient("file");
 const filesService = {
   // eslint-disable-next-line no-unused-vars
@@ -136,7 +216,7 @@ const filesService = {
 const ApplicationSingle_vue_vue_type_style_index_0_lang = "";
 const _sfc_main = {
   name: "ApplicationSingle",
-  components: { Comments, Attachments, Modal },
+  components: { Comments, Attachments, Modal, Evaluations },
   props: {
     file: Object | String,
     type: String,
@@ -151,6 +231,10 @@ const _sfc_main = {
     context: {
       type: String,
       default: ""
+    },
+    defaultTabs: {
+      type: Array,
+      default: () => []
     }
   },
   mixins: [errors],
@@ -185,8 +269,14 @@ const _sfc_main = {
     loading: false
   }),
   created() {
-    document.querySelector("body").style.overflow = "hidden";
-    var r = document.querySelector(":root");
+    if (this.defaultTabs.length > 0) {
+      this.tabs = this.defaultTabs;
+      this.selected = this.defaultTabs[0].name;
+    }
+    if (document.querySelector("body.layout-evaluation")) {
+      document.querySelector("body.layout-evaluation").style.overflow = "hidden";
+    }
+    const r = document.querySelector(":root");
     let ratio_array = this.$props.ratio.split("/");
     r.style.setProperty("--attachment-width", ratio_array[0] + "%");
     this.selectedFile = this.file;
@@ -231,12 +321,13 @@ const _sfc_main = {
           if (result.status == 1) {
             this.selectedFile = result.data;
             this.access = result.rights;
-            this.selected = "application";
+            if (this.defaultTabs.length > 0) {
+              this.selected = this.defaultTabs[0].name;
+            } else {
+              this.selected = "application";
+            }
             this.updateURL(this.selectedFile.fnum);
             this.getApplicationForm();
-            if (this.$props.type === "evaluation") {
-              this.getEvaluationForm();
-            }
             this.showModal = true;
             this.hidden = false;
             this.loading = false;
@@ -264,9 +355,6 @@ const _sfc_main = {
                 this.selected = "comments";
               }
             }
-            if (this.$props.type === "evaluation") {
-              this.getEvaluationForm();
-            }
             this.showModal = true;
             this.hidden = false;
           } else {
@@ -293,35 +381,6 @@ const _sfc_main = {
           this.loading = false;
         }
       });
-    },
-    getEvaluationForm() {
-      if (this.selectedFile.id != null) {
-        this.rowid = this.selectedFile.id;
-      }
-      if (typeof this.selectedFile.applicant_id != "undefined") {
-        this.student_id = this.selectedFile.applicant_id;
-      } else {
-        this.student_id = this.selectedFile.student_id;
-      }
-      let view = "form";
-      filesService.getEvaluationFormByFnum(this.selectedFile.fnum, this.$props.type).then((response) => {
-        if (response.data !== 0 && response.data !== null) {
-          if (typeof this.selectedFile.id === "undefined") {
-            filesService.getMyEvaluation(this.selectedFile.fnum).then((data) => {
-              this.rowid = data.data;
-              if (this.rowid == null) {
-                this.rowid = "";
-              }
-              this.url = "index.php?option=com_fabrik&c=form&view=" + view + "&formid=" + response.data + "&rowid=" + this.rowid + "&jos_emundus_evaluations___student_id[value]=" + this.student_id + "&jos_emundus_evaluations___campaign_id[value]=" + this.selectedFile.campaign + "&jos_emundus_evaluations___fnum[value]=" + this.selectedFile.fnum + "&student_id=" + this.student_id + "&tmpl=component&iframe=1";
-            });
-          } else {
-            this.url = "index.php?option=com_fabrik&c=form&view=" + view + "&formid=" + response.data + "&rowid=" + this.rowid + "&jos_emundus_evaluations___student_id[value]=" + this.student_id + "&jos_emundus_evaluations___campaign_id[value]=" + this.selectedFile.campaign + "&jos_emundus_evaluations___fnum[value]=" + this.selectedFile.fnum + "&student_id=" + this.student_id + "&tmpl=component&iframe=1";
-          }
-        }
-      });
-    },
-    iframeLoaded() {
-      this.loading = false;
     },
     updateURL(fnum = "") {
       let url = window.location.href;
@@ -362,6 +421,9 @@ const _sfc_main = {
         }
         this.render();
       }
+    },
+    replaceTagsIframeUrl(url) {
+      return url.replace("{fnum}", this.selectedFile.fnum);
     }
   },
   computed: {
@@ -405,16 +467,12 @@ const _hoisted_11 = ["onClick"];
 const _hoisted_12 = { class: "tw-text-sm" };
 const _hoisted_13 = { key: 0 };
 const _hoisted_14 = ["innerHTML"];
-const _hoisted_15 = { id: "modal-evaluationgrid" };
-const _hoisted_16 = ["src"];
-const _hoisted_17 = { key: 1 };
-const _hoisted_18 = {
-  key: 2,
-  class: "em-page-loader"
-};
+const _hoisted_15 = { key: 3 };
+const _hoisted_16 = ["id", "src"];
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_Attachments = resolveComponent("Attachments");
   const _component_Comments = resolveComponent("Comments");
+  const _component_Evaluations = resolveComponent("Evaluations");
   const _component_modal = resolveComponent("modal");
   return _ctx.selectedFile !== null && _ctx.selectedFile !== void 0 ? withDirectives((openBlock(), createBlock(_component_modal, {
     key: 0,
@@ -433,13 +491,13 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               onClick: _cache[0] || (_cache[0] = (...args) => $options.onClose && $options.onClose(...args)),
               class: "tw-w-max tw-flex tw-items-center"
             }, [
-              _cache[4] || (_cache[4] = createBaseVNode("span", {
+              _cache[3] || (_cache[3] = createBaseVNode("span", {
                 class: "material-symbols-outlined tw-text-base",
                 style: { "color": "white" }
               }, "navigate_before", -1)),
               createBaseVNode("span", _hoisted_4, toDisplayString(_ctx.translate("BACK")), 1)
             ]),
-            _cache[5] || (_cache[5] = createBaseVNode("span", { class: "tw-text-white" }, "|", -1)),
+            _cache[4] || (_cache[4] = createBaseVNode("span", { class: "tw-text-white" }, "|", -1)),
             _ctx.selectedFile.applicant_name != "" ? (openBlock(), createElementBlock("p", _hoisted_5, toDisplayString(_ctx.selectedFile.applicant_name) + " - " + toDisplayString(_ctx.selectedFile.fnum), 1)) : (openBlock(), createElementBlock("p", _hoisted_6, toDisplayString(_ctx.selectedFile.fnum), 1))
           ]),
           _ctx.fnums.length > 1 ? (openBlock(), createElementBlock("div", _hoisted_7, [
@@ -475,39 +533,43 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               }), 128))
             ]),
             !_ctx.loading ? (openBlock(), createElementBlock("div", _hoisted_13, [
-              _ctx.selected === "application" ? (openBlock(), createElementBlock("div", {
-                key: 0,
-                innerHTML: _ctx.applicationform
-              }, null, 8, _hoisted_14)) : createCommentVNode("", true),
-              _ctx.selected === "attachments" ? (openBlock(), createBlock(_component_Attachments, {
-                fnum: _ctx.selectedFile.fnum,
-                user: _ctx.$props.user,
-                columns: ["check", "name", "date", "category", "status"],
-                displayEdit: false,
-                key: _ctx.selectedFile.fnum
-              }, null, 8, ["fnum", "user"])) : createCommentVNode("", true),
-              _ctx.selected === "comments" ? (openBlock(), createBlock(_component_Comments, {
-                fnum: _ctx.selectedFile.fnum,
-                user: _ctx.$props.user,
-                access: _ctx.access["10"],
-                key: _ctx.selectedFile.fnum
-              }, null, 8, ["fnum", "user", "access"])) : createCommentVNode("", true)
+              (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.tabs, (tab) => {
+                return openBlock(), createElementBlock("div", {
+                  key: tab.name
+                }, [
+                  tab.name === "application" && _ctx.selected === "application" ? (openBlock(), createElementBlock("div", {
+                    key: 0,
+                    innerHTML: _ctx.applicationform
+                  }, null, 8, _hoisted_14)) : createCommentVNode("", true),
+                  tab.name === "attachments" && _ctx.selected === "attachments" ? (openBlock(), createBlock(_component_Attachments, {
+                    fnum: _ctx.selectedFile.fnum,
+                    user: _ctx.$props.user,
+                    columns: ["check", "name", "date", "category", "status"],
+                    displayEdit: false,
+                    key: _ctx.selectedFile.fnum
+                  }, null, 8, ["fnum", "user"])) : createCommentVNode("", true),
+                  tab.name === "comments" && _ctx.selected === "comments" ? (openBlock(), createBlock(_component_Comments, {
+                    fnum: _ctx.selectedFile.fnum,
+                    user: _ctx.$props.user,
+                    access: _ctx.access["10"],
+                    key: _ctx.selectedFile.fnum
+                  }, null, 8, ["fnum", "user", "access"])) : createCommentVNode("", true),
+                  tab.type && tab.type === "iframe" && _ctx.selected === tab.name ? (openBlock(), createElementBlock("div", _hoisted_15, [
+                    createBaseVNode("iframe", {
+                      id: tab.name,
+                      src: $options.replaceTagsIframeUrl(tab.url),
+                      class: "tw-w-full tw-h-screen"
+                    }, null, 8, _hoisted_16)
+                  ])) : createCommentVNode("", true)
+                ]);
+              }), 128))
             ])) : createCommentVNode("", true)
           ])
         ]),
-        createBaseVNode("div", _hoisted_15, [
-          _ctx.url ? (openBlock(), createElementBlock("iframe", {
-            key: 0,
-            src: _ctx.url,
-            class: "iframe-evaluation",
-            id: "iframe-evaluation",
-            onLoad: _cache[3] || (_cache[3] = ($event) => {
-              $options.iframeLoaded($event);
-            }),
-            title: "Evaluation form"
-          }, null, 40, _hoisted_16)) : (openBlock(), createElementBlock("div", _hoisted_17, toDisplayString(_ctx.translate("COM_EMUNDUS_EVALUATION_NO_FORM_FOUND")), 1)),
-          _ctx.loading ? (openBlock(), createElementBlock("div", _hoisted_18)) : createCommentVNode("", true)
-        ])
+        _ctx.selectedFile ? (openBlock(), createBlock(_component_Evaluations, {
+          fnum: typeof _ctx.selectedFile === "string" ? _ctx.selectedFile : _ctx.selectedFile.fnum,
+          key: typeof _ctx.selectedFile === "string" ? _ctx.selectedFile : _ctx.selectedFile.fnum
+        }, null, 8, ["fnum"])) : createCommentVNode("", true)
       ], 4)) : createCommentVNode("", true)
     ]),
     _: 1

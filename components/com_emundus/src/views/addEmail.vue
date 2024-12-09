@@ -20,12 +20,12 @@
                                 type="text"
                                 class="tw-w-full tw-mt-2"
                                 v-model="form.subject"
-                                :class="{ 'is-invalid !tw-border-red-600': errors.subject }"
+                                :class="{ 'is-invalid': errors.subject }"
                             />
-                          <p v-if="errors.subject" class="tw-text-red-600 tw-mt-1">
-                            <span class="tw-text-red-600">{{ translate('COM_EMUNDUS_ONBOARD_SUBJECT_REQUIRED') }}</span>
-                          </p>
                         </div>
+                        <span v-if="errors.subject" class="tw-text-red-600 tw-mb-2">
+                            <span class="tw-text-red-600">{{ translate('COM_EMUNDUS_ONBOARD_SUBJECT_REQUIRED') }}</span>
+                        </span>
 
                         <div class="tw-mb-4">
                             <label
@@ -48,7 +48,7 @@
                                 :media-files="medias"
                                 @uploadedImage="getMedia"
                             />
-                            <div class="tw-mt-2">
+                            <div class="tw-mt-12">
                                 <a
                                     href="/export-tags"
                                     class="em-main-500-color em-hover-main-600 em-text-underline"
@@ -56,29 +56,13 @@
                                     >{{ translate('COM_EMUNDUS_EMAIL_SHOW_TAGS') }}</a
                                 >
                             </div>
-                            <p v-if="errors.message" class="tw-text-red-600 tw-mt-1">
-                              <span class="tw-text-red-600">{{ translate('COM_EMUNDUS_ONBOARD_BODY_REQUIRED') }}</span>
-                            </p>
                         </div>
-
-                      <div class="tw-mb-4" v-if="displayButtonField">
-                        <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_BUTTON_TEXT') }}</label>
-                        <p class="tw-mt-1 tw-mb-1 tw-text-xs tw-text-neutral-700">
-                          {{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_BUTTON_TEXT_TIP') }}
+                        <p v-if="errors.message" class="tw-text-red-600 tw-mb-2">
+                            <span class="tw-text-red-600">{{ translate('COM_EMUNDUS_ONBOARD_BODY_REQUIRED') }}</span>
                         </p>
-                        <input
-                            type="text"
-                            class="tw-w-full tw-mt-2"
-                            :class="{ 'is-invalid !tw-border-red-600': errors.button }"
-                            v-model="form.button"
-                        />
-                        <p v-if="errors.button" class="tw-text-red-600 tw-mt-1">
-                          <span class="tw-text-red-600">{{ translate('COM_EMUNDUS_ONBOARD_BUTTON_REQUIRED') }}</span>
-                        </p>
-                      </div>
 
                         <div class="form-group">
-                            <label>{{ translate('COM_EMUNDUS_ONBOARD_CHOOSECATEGORY') }}<span style="color: #e5283b">*</span></label>
+                            <label>{{ translate('COM_EMUNDUS_ONBOARD_CHOOSECATEGORY') }}</label>
                             <incremental-select
                                 :options="this.categoriesList"
                                 :defaultValue="incSelectDefaultValue"
@@ -95,7 +79,7 @@
 
                 <div class="em-container-accordeon">
                     <div class="tw-flex tw-items-center tw-gap-1 tw-justify-between">
-                        <h2 class="tw-cursor-pointer !tw-mb-0 tw-w-full" @click="displayAdvanced">
+                        <h2 class="tw-cursor-pointer !tw-mb-0" @click="displayAdvanced">
                             {{ translate('COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING') }}
                         </h2>
                         <button
@@ -427,7 +411,6 @@ export default {
           if(this.form.button !== '' && this.form.button !== null && this.form.button !== undefined) {
             this.displayButtonField = true
           }
-
           this.loading = false
         })
         .catch((e) => {
@@ -503,11 +486,6 @@ export default {
 
       if (this.form.message == '') {
         this.errors.message = true
-        return 0
-      }
-
-      if(this.displayButtonField && this.form.button == '') {
-        this.errors.button = true
         return 0
       }
 

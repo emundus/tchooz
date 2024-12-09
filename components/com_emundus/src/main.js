@@ -22,6 +22,8 @@ import clickOutside from './directives/clickOutside';
 import './assets/css/main.scss';
 import Attachments from "@/views/Attachments.vue";
 import Comments from "@/views/Comments.vue";
+import WorkflowEdit from "@/views/Workflows/WorkflowEdit.vue";
+import ProgramEdit from "@/views/Program/ProgramEdit.vue";
 
 if (document) {
     let app = null;
@@ -45,8 +47,9 @@ if (document) {
         const componentName = el.getAttribute('component');
 
         if (componentName) {
+            const componentNames = ['Attachments', 'Comments', 'Workflows/WorkflowEdit', 'Program/ProgramEdit'];
 
-            if (componentName === 'Attachments' || filesElement || componentName === 'Comments') {
+            if (filesElement || componentNames.includes(componentName)) {
                 Array.prototype.slice.call(el.attributes).forEach(function (attr) {
                     datas[attr.name] = attr.value;
                 });
@@ -85,6 +88,16 @@ if (document) {
                         },
                         applicantsAllowedToComment: datas.applicants_allowed_to_comment == 1,
                         border: datas.border ? datas.border == 1 : true
+                    });
+                    break;
+                case 'Workflows/WorkflowEdit':
+                    app = createApp(WorkflowEdit, {
+                        workflowId: Number(datas.workflowid),
+                    });
+                    break;
+                case 'Program/ProgramEdit':
+                    app = createApp(ProgramEdit, {
+                        programId: Number(datas.program_id),
                     });
                     break;
                 default:

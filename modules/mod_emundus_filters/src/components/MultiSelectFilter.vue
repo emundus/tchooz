@@ -6,7 +6,7 @@
       <div class="em-flex-row">
         <span @mouseenter="resetHover = true" @mouseleave="resetHover = false"
               class="material-symbols-outlined em-pointer reset-filter-btn" :class="{'em-blue-400-color': resetHover}"
-              @click="resetFilter" :alt="translate('MOD_EMUNDUS_FILTERS_RESET')">refresh</span>
+              @click="resetFilter" :title="translate('MOD_EMUNDUS_FILTERS_RESET')">refresh</span>
         <span v-if="!filter.default" class="material-symbols-outlined em-red-600-color em-pointer remove-filter-btn"
               @click="$.emit('remove-filter')">close</span>
       </div>
@@ -20,7 +20,7 @@
             <span class="recap-operator label label-darkblue"> {{ selectedOperatorLabel }}</span>
             <div v-for="(value, index) in filter.value.slice(0, 2)" :key="value"
                  class="em-flex-row em-flex-wrap em-flex-gap-8">
-              <span class="label label-default">{{ selectedValuesLabels[index] }}</span>
+              <span class="label label-default">{{ translate(selectedValuesLabels[index]) }}</span>
               <span v-if="filter.value.length > 1 && index == 0"
                     class="label label-darkblue"> {{ selectedAndorOperatorLabel }} </span>
             </div>
@@ -35,7 +35,7 @@
       </section>
       <section class="multi-select-filter-options" :class="{'hidden': !opened}">
         <div class="operators-selection em-flex-row em-flex-wrap em-flex-gap-8">
-          <div v-for="operator in operators" :key="filter.uid + '-' +operator.value" class="em-p-8 em-border-radius-8 em-pointer"
+          <div v-for="operator in displayedOperators" :key="filter.uid + '-' +operator.value" class="em-p-8 em-border-radius-8 em-pointer"
                :class="{'label-default': operator.value !== filter.operator, 'label-darkblue': operator.value === filter.operator}">
             <input class="hidden label"
                    type="radio"
@@ -115,8 +115,8 @@ export default {
     return {
       opened: false,
       operators: [
-        {value: 'IN', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS')},
-        {value: 'NOT IN', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS_NOT')}
+        {value: 'IN', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS'), display: true},
+        {value: 'NOT IN', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_IS_NOT'),  display: true}
       ],
       andorOperators: [
         {value: 'OR', label: this.translate('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_OR'), display: true},
@@ -139,6 +139,15 @@ export default {
         andor.display = this.filter.andorOperators.includes(andor.value);
         return andor;
       });
+    }
+
+    if (this.filter.operators) {
+      this.operators = this.operators.map((operator) => {
+        operator.display = this.filter.operators.includes(operator.value);
+        return operator;
+      });
+
+      console.log(this.operators);
     }
   },
   mounted() {
@@ -260,6 +269,11 @@ export default {
     displayedAndorOperators() {
       return this.andorOperators.filter((andor) => {
         return andor.display;
+      });
+    },
+    displayedOperators() {
+      return this.operators.filter((operator) => {
+        return operator.display;
       });
     },
     selectedAndorOperatorLabel() {
