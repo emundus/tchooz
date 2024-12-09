@@ -964,7 +964,7 @@ export default {
 
         this.programs.forEach((program) => {
           if (program.code === this.form.training) {
-            programLang = program.language_ids != null ? program.language_ids : [];
+            programLang = program.language_ids != null && Array.isArray(program.language_ids) ? program.language_ids : [];
           }
         });
 

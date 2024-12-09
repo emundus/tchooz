@@ -8878,7 +8878,7 @@ const useCampaignStore = defineStore("campaign", {
     }
   }
 });
-const addCampaign_vue_vue_type_style_index_0_scoped_893c170e_lang = "";
+const addCampaign_vue_vue_type_style_index_0_scoped_cedfa4a8_lang = "";
 const _sfc_main = {
   name: "addCampaign",
   components: {
@@ -9371,7 +9371,7 @@ const _sfc_main = {
         let programLang = [];
         this.programs.forEach((program) => {
           if (program.code === this.form.training) {
-            programLang = program.language_ids != null ? program.language_ids : [];
+            programLang = program.language_ids != null && Array.isArray(program.language_ids) ? program.language_ids : [];
           }
         });
         if (programLang.length > 0) {
@@ -9962,7 +9962,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     _ctx.submitted || !_ctx.ready ? (openBlock(), createElementBlock("div", _hoisted_69)) : createCommentVNode("", true)
   ]);
 }
-const addCampaign = /* @__PURE__ */ _export_sfc$1(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-893c170e"]]);
+const addCampaign = /* @__PURE__ */ _export_sfc$1(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-cedfa4a8"]]);
 const addCampaign$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: addCampaign
