@@ -257,12 +257,6 @@ class EmundusControllerProgramme extends BaseController
 							'display' => 'table'
 						],
 						[
-							'key'     => Text::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_TITLE'),
-							'value'   => $program->nb_campaigns,
-							'classes' => '',
-							'display' => 'table'
-						],
-						[
 							'type'    => 'tags',
 							'key'     => Text::_('COM_EMUNDUS_ONBOARD_PROGRAM_TAGS'),
 							'values'  => [
@@ -275,11 +269,6 @@ class EmundusControllerProgramme extends BaseController
 									'key'     => Text::_('COM_EMUNDUS_ONBOARD_PROGRAM_APPLY_ONLINE'),
 									'value'   => $program->apply_online ? Text::_('COM_EMUNDUS_ONBOARD_PROGRAM_APPLY_ONLINE') : '',
 									'classes' => $program->apply_online ? 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius' : 'hidden',
-								],
-								[
-									'key'     => '',
-									'value'   => $program->nb_campaigns > 1 ? $program->nb_campaigns . ' ' . Text::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED') : $program->nb_campaigns . ' ' . Text::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_SINGLE'),
-									'classes' => 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius',
 								]
 							],
 							'display' => 'blocs',
