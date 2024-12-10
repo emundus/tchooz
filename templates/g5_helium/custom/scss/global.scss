@@ -1179,6 +1179,23 @@ footer#g-footer > .g-container {
           }
         }
 
+       .dd-item {
+         .dd-content {
+           height: auto;
+
+           a {
+             max-width: calc(102% - 50px);
+             top: 0 !important;
+             padding: 8px;
+             text-align: left;
+
+             .title {
+               white-space: break-spaces;
+             }
+           }
+         }
+       }
+
         .dd-item.active {
           & > .dd-content {
             background: var(--main-100);
