@@ -224,6 +224,7 @@ const _sfc_main = {
           const searchValue = sessionStorage.getItem("tchooz_filter_" + this.selectedListTab + "_search/" + document.location.hostname);
           if (searchValue !== null) {
             this.searches[this.selectedListTab].search = searchValue;
+            this.searches[this.selectedListTab].lastSearch = searchValue;
           }
           this.setTabFilters(tab2);
           if (typeof tab2.getter !== "undefined") {
@@ -538,13 +539,7 @@ const _sfc_main = {
     },
     displayedItems() {
       let items = typeof this.items[this.selectedListTab] !== "undefined" ? this.items[this.selectedListTab] : [];
-      return items.filter((item) => {
-        if (item !== void 0 && item !== null) {
-          return item.label[this.params.shortlang].toLowerCase().includes(this.searches[this.selectedListTab].search.toLowerCase());
-        } else {
-          return false;
-        }
-      });
+      return items;
     },
     additionalColumns() {
       let columns = [];
