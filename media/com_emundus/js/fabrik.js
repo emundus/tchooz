@@ -383,24 +383,14 @@ function submitNewFile() {
 }
 
 function checkPasswordSymbols(element) {
-    var wrong_password_title = ['Invalid password', 'Mot de passe invalide'];
-    var wrong_password_description = ['The #$\{\};<> characters are forbidden, as are spaces.', 'Les caractères #$\{\};<> sont interdits ainsi que les espaces'];
-
-    var site_url = window.location.toString();
-    var site_url_lang_regexp = /\w+.\/en/d;
-
-    var index = 0;
-
-    if(site_url.match(site_url_lang_regexp) === null) { index = 1; }
-
     var regex = /[#$\{\};<> ]/;
     var password_value = element.get('value');
 
     if (password_value.match(regex) != null) {
         Swal.fire({
             icon: 'error',
-            title: wrong_password_title[index],
-            text: wrong_password_description[index],
+            title: Joomla.Text._('COM_EMUNDUS_FABRIK_WRONG_PASSWORD_TITLE'),
+            text: Joomla.Text._('COM_EMUNDUS_FABRIK_WRONG_PASSWORD_DESC'),
             reverseButtons: true,
             customClass: {
                 title: 'em-swal-title',
