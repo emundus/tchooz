@@ -274,7 +274,7 @@ class EmundusModelAdministratorWorkflow extends JModelList
 				'path' => 'evaluator-step',
 				'type' => 'component',
 				'component_id' => $component_id,
-				'access' => 7,
+				'access' => 6,
 				'menu_show' => 0
 			], 1);
 
@@ -288,7 +288,7 @@ class EmundusModelAdministratorWorkflow extends JModelList
 				'path' => 'evaluation-step-form',
 				'type' => 'component',
 				'component_id' => $fabrik_component_id,
-				'access' => 7,
+				'access' => 6,
 				'menu_show' => 0
 			], 1);
 
