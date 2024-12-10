@@ -182,6 +182,55 @@ class EmundusControllerProgramme extends BaseController
 			if (count((array) $programs) > 0) {
 				foreach ($programs['datas'] as $key => $program) {
 					$programs['datas'][$key]->label              = ['fr' => Text::_($program->label), 'en' => Text::_($program->label)];
+
+					if (!empty($program->nb_campaigns))
+					{
+						$campaigns = $this->m_programme->getAssociatedCampaigns($program->code, $this->_user->id);
+
+						if (!empty($campaigns))
+						{
+							$translation = 'COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED';
+							$title = 'COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_TITLE';
+							if($program->nb_campaigns < 2) {
+								$title = 'COM_EMUNDUS_ONBOARD_CAMPAIGN_ASSOCIATED_TITLE';
+								$translation = 'COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_SINGLE';
+							}
+
+							$tags       = '<div>';
+							$short_tags = $tags;
+							$tags       .= '<h2 class="tw-mb-2">' . Text::_($title) . '</h2>';
+							$tags       .= '<div class="tw-flex tw-flex-wrap">';
+							foreach ($campaigns as $campaign)
+							{
+								$tags .= '<a href="/campaigns/edit?cid=' . $campaign->id . '" class="tw-cursor-pointer tw-mr-2 tw-mb-2 tw-h-max tw-px-3 tw-py-1 tw-bg-main-100 tw-text-neutral-900 tw-text-sm tw-rounded-coordinator em-campaign-tag"> ' . $campaign->label . ' (' . $campaign->year . ')</a>';
+							}
+							$tags .= '</div>';
+
+							$short_tags .= '<span class="tw-cursor-pointer tw-font-semibold tw-text-profile-full tw-flex tw-items-center tw-underline">' . count($campaigns) . Text::_($translation) . '</span>';
+							$short_tags .= '</div>';
+							$tags       .= '</div>';
+						} else
+						{
+							$short_tags = Text::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_NOT');
+						}
+					}
+					else
+					{
+						$short_tags = Text::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_NOT');
+					}
+
+					$campaigns_assiocated_column = [
+						'key'     => Text::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_TITLE'),
+						'value'   => $short_tags,
+						'classes' => '',
+						'display' => 'all'
+					];
+
+					if (isset($tags))
+					{
+						$campaigns_assiocated_column['long_value'] = $tags;
+					}
+
 					$programs['datas'][$key]->additional_columns = [
 						[
 							'key'     => Text::_('COM_EMUNDUS_ONBOARD_PROGCODE'),
@@ -235,7 +284,8 @@ class EmundusControllerProgramme extends BaseController
 							],
 							'display' => 'blocs',
 							'classes' => 'em-mt-8 em-mb-8'
-						]
+						],
+						$campaigns_assiocated_column
 					];
 				}
 

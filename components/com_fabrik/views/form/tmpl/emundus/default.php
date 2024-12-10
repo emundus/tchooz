@@ -101,6 +101,12 @@ if (($allow_to_comment || $is_applicant === 0) && !$is_preview)
     }
 }
 
+Factory::getApplication()->getLanguage()->load(
+        'com_fabrik',
+        JPATH_SITE.'/components/com_fabrik/views/form/tmpl/emundus'
+);
+
+
 Text::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TITLE');
 Text::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TEXT');
 Text::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CONFIRM');
@@ -113,6 +119,9 @@ Text::script('COM_EMUNDUS_FABRIK_NEW_FILE_DESC');
 Text::script('COM_EMUNDUS_COMMENTS_CONFIRM_DELETE');
 Text::script('COM_EMUNDUS_ACTIONS_CANCEL');
 Text::script('COM_EMUNDUS_OK');
+
+Text::script('COM_EMUNDUS_FABRIK_WRONG_PASSWORD_TITLE');
+Text::script('COM_EMUNDUS_FABRIK_WRONG_PASSWORD_DESC');
 
 if ($pageClass !== '') :
 	echo '<div class="' . $pageClass . '">';
