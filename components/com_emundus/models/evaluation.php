@@ -2671,9 +2671,11 @@ class EmundusModelEvaluation extends JModelList
 									$params      = json_decode($elt['params']);
 									$groupParams = json_decode($elt['group_params']);
 
-									$fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
-
 									if (!empty($groupParams) && $groupParams->repeat_group_button == 1)
+									{
+										$fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, true);
+									}
+									else if ($elt['plugin'] === 'databasejoin')
 									{
 										$fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
 									}
@@ -2685,7 +2687,11 @@ class EmundusModelEvaluation extends JModelList
 									{
 										$fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name'], $params->jdate_form_format);
 									}
-									else if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton")
+									else {
+										$fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
+									}
+
+									if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton")
 									{
 										foreach ($fabrikValues[$elt['id']] as $fnum => $val)
 										{
@@ -2759,13 +2765,6 @@ class EmundusModelEvaluation extends JModelList
                                             $fabrikValues[$elt['id']][$fnum]['val'] = $_mEmail->getCddLabel($elt, $val['val']);
                                         }
                                     }
-									else
-									{
-										if ($groupParams->repeat_group_button == 1 || $elt['plugin'] === 'databasejoin')
-										{
-											$fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
-										}
-									}
 
 									if (!isset($fabrikValues[$elt['id']][$fnum]['complex_data']))
 									{

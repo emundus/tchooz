@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<metadata>
+    <layout title="Historique">
+        <message>
+            <![CDATA[Historique]]>
+        </message>
+    </layout>
+
+    <fields name="params">
+        <fieldset name="basic">
+            <field name="extension" type="text" label="COM_EMUNDUS_HISTORY_EXTENSION"></field>
+        </fieldset>
+    </fields>
+</metadata>

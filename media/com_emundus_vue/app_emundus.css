@@ -1217,17 +1217,17 @@ hr#system-readmore  { border: #FF0000FF dashed 1px; color: #FF0000FF; }
 hr.system-pagebreak { border: #808080FF dashed 1px; color: #808080FF; }
 
 
-#add-program[data-v-f9dead38] {
+#add-program[data-v-5a25ed6d] {
   height: 24px;
   width: 24px;
   padding: unset;
 }
-.em-color-round[data-v-f9dead38] {
+.em-color-round[data-v-5a25ed6d] {
   height: 30px;
   width: 30px;
   border-radius: 50%;
 }
-.modal-date-picker[data-v-f9dead38] {
+.modal-date-picker[data-v-5a25ed6d] {
   transform: translate(-50%, -50%);
   box-shadow: 0 0 9999px 9999px rgb(0 0 0 / 50%);
 }
@@ -1541,7 +1541,7 @@ a.tw-cursor-pointer:nth-child(2):hover .material-icons[data-v-bb742359] {
   height: 50vh;
 }
 
-.pagination li a[data-v-ba33d3d6] {
+.pagination li a[data-v-81c853d5] {
   background: hsl(from var(--em-profile-color) h s l / 15%);
   border: none;
   color: var(--em-profile-color) !important;
@@ -1555,38 +1555,38 @@ a.tw-cursor-pointer:nth-child(2):hover .material-icons[data-v-bb742359] {
   align-items: center;
   text-decoration: unset;
 }
-.pagination li.active a[data-v-ba33d3d6] {
+.pagination li.active a[data-v-81c853d5] {
   background: var(--em-profile-color);
   color: var(--neutral-0) !important;
 }
-.pagination li:first-child a[data-v-ba33d3d6], .pagination li:last-child a[data-v-ba33d3d6] {
+.pagination li:first-child a[data-v-81c853d5], .pagination li:last-child a[data-v-81c853d5] {
   background: none;
   border-radius: var(--em-applicant-br);
 }
-.pagination li a[data-v-ba33d3d6]:hover {
+.pagination li a[data-v-81c853d5]:hover {
   background: hsl(from var(--em-profile-color) h s l / 30%);
 }
-.pagination li a.disabled[data-v-ba33d3d6]:hover {
+.pagination li a.disabled[data-v-81c853d5]:hover {
   background: none;
 }
-.pagination li a.disabled span[data-v-ba33d3d6] {
+.pagination li a.disabled span[data-v-81c853d5] {
   color: var(--neutral-500) !important;
 }
 
-table[data-v-94ef35dd] {
+table[data-v-09715b43] {
   border: unset;
 }
-table thead th[data-v-94ef35dd] {
+table thead th[data-v-09715b43] {
   background: transparent;
   padding: 18px 12px;
 }
-table thead tr[data-v-94ef35dd] {
+table thead tr[data-v-09715b43] {
   border-bottom: solid 1px var(--neutral-400);
 }
-table tbody tr[data-v-94ef35dd]:not(:last-child) {
+table tbody tr[data-v-09715b43]:not(:last-child) {
   border-bottom: solid 1px var(--neutral-400);
 }
-table tbody tr td[data-v-94ef35dd] {
+table tbody tr td[data-v-09715b43] {
   padding: 18px 12px;
 }
 .row-fluid .control-group.fabrikElementContainer label.fabrikLabel.control-label.fabrikTip i.icon-star.small[data-v-adf674f4] {

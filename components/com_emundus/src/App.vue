@@ -43,6 +43,12 @@
     >
     </Comments>
 
+    <History v-else-if="component === 'history'"
+      :extension="datas.extension.value"
+      :itemId="datas.itemId.value"
+    >
+    </History>
+
     <transition v-else name="slide-right">
       <component v-bind:is="$props.component"/>
     </transition>
@@ -66,6 +72,7 @@ import messagescoordinator from "@/components/Messages/MessagesCoordinator.vue";
 import messages from "@/components/Messages/Messages.vue";
 import ApplicationSingle from "@/components/Files/ApplicationSingle.vue";
 import TranslationTool from "@/components/Settings/TranslationTool/TranslationTool.vue";
+import History from "@/views/History.vue";
 
 import settingsService from "@/services/settings.js";
 import { useGlobalStore } from '@/stores/global.js';
@@ -104,7 +111,8 @@ export default {
     Files,
     list_v2,
     TranslationTool,
-    Comments
+    Comments,
+    History
   },
 
   created() {

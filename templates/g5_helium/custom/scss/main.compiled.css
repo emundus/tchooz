@@ -895,9 +895,6 @@ video {
                 color: var(--neutral-0);
             }
 /** DROPFILES **/
-.dropfiles-page .breadcrumbs {
-            display: none;
-        }
 .dropfiles-page .dropfiles-container .dropfiles_list .\!file a.downloadlink {
                         margin-top: 0 !important;
                     }
@@ -919,27 +916,6 @@ video {
                         color: transparent !important;
                         background-size: contain !important;
                     }
-.dropfiles-page .dropfiles-container .dropfiles_list .\!file .file-size {
-                        display: none !important;
-                    }
-.dropfiles-page .dropfiles-container .dropfiles_list .file .file-size {
-                        display: none;
-                    }
-.dropfiles-page .dropfiles-container .dropfiles_list .\!file .file-hits {
-                        display: none !important;
-                    }
-.dropfiles-page .dropfiles-container .dropfiles_list .file .file-hits {
-                        display: none;
-                    }
-.dropfiles-page .dropfiles-container .dropfiles_list .\!file .file-dated {
-                        display: none !important;
-                    }
-.dropfiles-page .dropfiles-container .dropfiles_list .file .file-dated {
-                        display: none;
-                    }
-.dropfiles-page .dropfiles-container .dropfiles_list .dropfileslightbox {
-                    display: none;
-                }
 .com_dropfiles.view-manage .g-container {
             width: 100%;
         }
@@ -1280,7 +1256,7 @@ form.fabrikForm .fabrikElementContainer:not(.fabrikHide) {
             margin-bottom: var(--em-form-field-margin-bottom);
         }
 form.fabrikForm .fabrikLabel {
-            display: inline-block !important;
+            display: inline-block;
             font-size: var(--em-form-label-size);
             width: 100%;
             font-family: var(--em-profile-font), Inter, sans-serif;

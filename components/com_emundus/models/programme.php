@@ -106,6 +106,34 @@ class EmundusModelProgramme extends ListModel
 		return $associated_programs;
 	}
 
+	public function getAssociatedCampaigns($training)
+	{
+		$campaigns = [];
+
+		if (!empty($training))
+		{
+			$query = $this->_db->getQuery(true);
+
+			$query->select([
+				'sc.id as id',
+				'sc.label as label',
+				'sc.year'
+			])
+				->from($this->_db->quoteName('#__emundus_setup_campaigns', 'sc'))
+				->where($this->_db->quoteName('sc.training') . ' = ' . $this->_db->quote($training));
+
+			try {
+				$this->_db->setQuery($query);
+				$campaigns = $this->_db->loadObjectList();
+
+			} catch (Exception $e) {
+				Log::add('component/com_emundus/models/form | Error at getting campaigns link to the program ' . $training . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $campaigns;
+	}
+
 	/**
 	 * @param $published  int     get published or unpublished programme
 	 * @param $codeList   array   array of IN and NOT IN programme code to get

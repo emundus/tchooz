@@ -267,10 +267,21 @@ class EmundusControllerCampaign extends BaseController
 							'display' => 'table'
 						],
 						[
+							'key'     => Text::_('COM_EMUNDUS_ONBOARD_PROGRAM'),
+							'value'   => $campaign->program_label,
+							'display' => 'table'
+						],
+						[
 							'key'     => Text::_('COM_EMUNDUS_ONBOARD_NB_FILES'),
 							'value'   => '<a target="_blank" class="em-profile-color hover:tw-font-semibold tw-font-semibold em-text-underline" href="/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=' . $campaign->id . '" style="line-height: unset;font-size: unset;">' . $campaign->nb_files . '</a>',
 							'classes' => 'go-to-campaign-link',
 							'display' => 'table'
+						],
+						[
+							'key'     => Text::_('COM_EMUNDUS_ONBOARD_PROGRAM'),
+							'value'   => $campaign->program_label,
+							'classes' => 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius',
+							'display' => 'blocs'
 						],
 						[
 							'value'   => Text::_('COM_EMUNDUS_DASHBOARD_CAMPAIGN_FROM') . ' ' . $start_date . ' ' . Text::_('COM_EMUNDUS_DASHBOARD_CAMPAIGN_TO') . ' ' . $end_date,
