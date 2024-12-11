@@ -650,9 +650,9 @@ class FileMaker
         $m_application = new \EmundusModelApplication();
         $temp_records_mapping = [];
         if ($is_portal_data_form === true) {
-            $recordId_meta_data = new \stdClass();
+            $recordId_meta_data = new stdClass();
             $recordId_meta_data->name = "recordId";
-            $emundusId_meta_data = new \stdClass();
+            $emundusId_meta_data = new stdClass();
             $emundusId_meta_data->name = "id";
             $meta_datas->fieldMetaData[] = $recordId_meta_data;
             $meta_datas->fieldMetaData[] = $emundusId_meta_data;

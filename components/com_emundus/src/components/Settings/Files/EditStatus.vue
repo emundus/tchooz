@@ -4,8 +4,8 @@
 
       <div class="tw-grid tw-grid-cols-3 tw-mb-4">
         <button @click="pushStatus" class="tw-btn-primary tw-mb-6 tw-w-max">
-          <div class="add-button-div">
-            <em class="fas fa-plus tw-mr-1"></em>
+          <div class="add-button-div em-flex-row">
+            <span class="material-symbols-outlined em-mr-4">add</span>
             {{ translate('COM_EMUNDUS_ONBOARD_ADD_STATUS') }}
           </div>
         </button>
@@ -275,5 +275,14 @@ export default {
   justify-content: center;
   max-width: 95%;
   width: 100%;
+}
+
+
+.add-button-div span[class*="material"] {
+  color: var(--neutral-0);
+}
+
+.add-button-div:hover span[class*="material"] {
+  color: var(--em-profile-color);
 }
 </style>
