@@ -588,6 +588,10 @@ class EmundusModelWorkflow extends JModelList
 	 * for each steps, if file has been evaluated by me (presence of a row with current user as evaluator in the step table), then it is evaluated
 	 * if file has been evaluated by someone else and not me, and evaluation step is "multiple", then it is not evaluated
 	 * if file has been evaluated by someone else, and evaluation step is not "multiple", then it is evaluated
+	 *
+	 * TODO: If I use only have read access on the specific step, what is the rule for the user on the file ?
+	 * It is not up to him to evaluate the file, so is it always considered as evaluated ? only if another evaluator has evaluated it ?
+	 *
 	 * But, we will allow through an event to define if a file is evaluated or not with different rules
 	 * Event Name : onGetEvaluatedRowIdsByUser
 	 *
@@ -599,9 +603,11 @@ class EmundusModelWorkflow extends JModelList
 
 		if (!empty($step->id) && !empty($user_id)) {
 			if (!empty($step->table)) {
+				$has_edition_access = EmundusHelperAccess::asAccessAction($step->action_id, 'c', $user_id);
+
 				$query = $this->db->createQuery();
 
-				if ($step->multiple) {
+				if ($step->multiple && $has_edition_access) {
 					$query->select('ccid')
 						->from($this->db->quoteName($step->table))
 						->where('evaluator = ' . $user_id)
