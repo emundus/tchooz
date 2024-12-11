@@ -90,7 +90,7 @@ class EmundusControllerForm extends BaseController
 						}
 						$tags .= '</div>';
 
-						$short_tags .= '<span class="tw-cursor-pointer tw-font-semibold tw-text-profile-full tw-flex tw-items-center tw-underline">' . count($campaigns) . Text::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED') . '</span>';
+						$short_tags .= '<span class="tw-cursor-pointer tw-text-profile-full tw-flex tw-items-center tw-underline">' . count($campaigns) . Text::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED') . '</span>';
 						$short_tags .= '</div>';
 						$tags       .= '</div>';
 					}

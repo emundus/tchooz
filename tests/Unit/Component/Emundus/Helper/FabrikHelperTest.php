@@ -75,7 +75,7 @@ class FabrikHelperTest extends UnitTestCase
 	/**
 	 * @return void
 	 * @description Test the getElementByAlias() method
-	 * @covers EmundusHelperFabrik::getElementByAlias
+	 * @covers EmundusHelperFabrik::getElementsByAlias
 	 * It should return the name and database table name storage of the element with the alias passed as parameter
 	 */
 	public function testGetElementByAlias()
@@ -98,19 +98,15 @@ class FabrikHelperTest extends UnitTestCase
 
 		foreach ($elements as $element) {
 			$params = json_decode($element->params, true);
+			$params['alias'] = 'alias_' . $element->id;
 
-			if(empty($params["alias"]))
-			{
-				$params['alias'] = 'alias' . rand(0, 1000);
-
-				$query->clear()
-					->update($db->quoteName('#__fabrik_elements'))
-					->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
-					->where($db->quoteName('id') . ' = ' . $element->id)
-					->setLimit(1);
-				$db->setQuery($query);
-				$db->execute();
-			}
+			$query->clear()
+				->update($db->quoteName('#__fabrik_elements'))
+				->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+				->where($db->quoteName('id') . ' = ' . $element->id)
+				->setLimit(1);
+			$db->setQuery($query);
+			$db->execute();
 
 			$elements_by_alias = $this->helper::getElementsByAlias($params["alias"], $form_id);
 			$this->assertEquals($element->name, $elements_by_alias[0]->name, 'The element name obtained should be the same as the element name in the database.');

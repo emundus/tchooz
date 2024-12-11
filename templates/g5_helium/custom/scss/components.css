@@ -52,16 +52,10 @@
     }
 
     /** DROPFILES **/
-    #pwrapper #preview .restableMenu {
-        display: none;
-    }
     .dropfiles-page {
         .dropfiles-content-multi {
             border-radius: 8px;
             margin-top: 0;
-        }
-        .breadcrumbs {
-            display: none;
         }
         .dropfiles-container {
             margin-top: 0;
@@ -81,18 +75,6 @@
                         color: transparent;
                         background-size: contain;
                     }
-                    .file-size {
-                        display: none;
-                    }
-                    .file-hits {
-                        display: none;
-                    }
-                    .file-dated {
-                        display: none;
-                    }
-                }
-                .dropfileslightbox {
-                    display: none;
                 }
             }
         }
