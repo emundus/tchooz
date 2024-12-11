@@ -32194,7 +32194,7 @@ function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
 }
 const Modal = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$6], ["__scopeId", "data-v-62997022"]]);
 /*!
-* sweetalert2 v11.14.4
+* sweetalert2 v11.14.5
 * Released under the MIT License.
 */
 function _assertClassBrand(e, t, n) {
@@ -33617,12 +33617,13 @@ const prepareResolveValue = (resolveValue) => {
   }, resolveValue);
 };
 const handlePopupAnimation = (instance, popup, innerParams) => {
+  var _globalState$eventEmi;
   const container = getContainer();
   const animationIsSupported = hasCssAnimation(popup);
   if (typeof innerParams.willClose === "function") {
     innerParams.willClose(popup);
   }
-  globalState.eventEmitter.emit("willClose", popup);
+  (_globalState$eventEmi = globalState.eventEmitter) === null || _globalState$eventEmi === void 0 || _globalState$eventEmi.emit("willClose", popup);
   if (animationIsSupported) {
     animatePopup(instance, popup, container, innerParams.returnFocus, innerParams.didClose);
   } else {
@@ -33633,7 +33634,8 @@ const animatePopup = (instance, popup, container, returnFocus, didClose) => {
   globalState.swalCloseEventFinishedCallback = removePopupAndResetState.bind(null, instance, container, returnFocus, didClose);
   const swalCloseAnimationFinished = function(e) {
     if (e.target === popup) {
-      globalState.swalCloseEventFinishedCallback();
+      var _globalState$swalClos;
+      (_globalState$swalClos = globalState.swalCloseEventFinishedCallback) === null || _globalState$swalClos === void 0 || _globalState$swalClos.call(globalState);
       delete globalState.swalCloseEventFinishedCallback;
       popup.removeEventListener("animationend", swalCloseAnimationFinished);
       popup.removeEventListener("transitionend", swalCloseAnimationFinished);
@@ -33644,10 +33646,11 @@ const animatePopup = (instance, popup, container, returnFocus, didClose) => {
 };
 const triggerDidCloseAndDispose = (instance, didClose) => {
   setTimeout(() => {
+    var _globalState$eventEmi2;
     if (typeof didClose === "function") {
       didClose.bind(instance.params)();
     }
-    globalState.eventEmitter.emit("didClose");
+    (_globalState$eventEmi2 = globalState.eventEmitter) === null || _globalState$eventEmi2 === void 0 || _globalState$eventEmi2.emit("didClose");
     if (instance._destroy) {
       instance._destroy();
     }
@@ -35086,7 +35089,7 @@ const initFocus = (domCache, innerParams) => {
   setFocus(-1, 1);
 };
 const focusAutofocus = (domCache) => {
-  const autofocusElements = domCache.popup.querySelectorAll("[autofocus]");
+  const autofocusElements = Array.from(domCache.popup.querySelectorAll("[autofocus]"));
   for (const autofocusElement of autofocusElements) {
     if (autofocusElement instanceof HTMLElement && isVisible$1(autofocusElement)) {
       autofocusElement.focus();
@@ -35160,7 +35163,7 @@ Object.keys(instanceMethods).forEach((key) => {
   };
 });
 SweetAlert.DismissReason = DismissReason;
-SweetAlert.version = "11.14.4";
+SweetAlert.version = "11.14.5";
 const Swal$1 = SweetAlert;
 Swal$1.default = Swal$1;
 "undefined" != typeof document && function(e, t) {
@@ -40708,24 +40711,15 @@ export {
   getDefaultExportFromCjs as a5,
   ref as a6,
   computed as a7,
-  normalizeProps as a8,
-  guardReactiveProps as a9,
-  onMounted as aa,
-  nextTick as ab,
-  toRef as ac,
-  provide as ad,
-  unref as ae,
-  inject as af,
-  isRef as ag,
-  onUnmounted as ah,
-  toRefs as ai,
-  watchEffect as aj,
-  resolveDirective as ak,
-  markRaw as al,
-  onBeforeUnmount as am,
-  customRef as an,
-  getCurrentInstance as ao,
-  render$2 as ap,
+  markRaw as a8,
+  watchEffect as a9,
+  nextTick as aa,
+  unref as ab,
+  onBeforeUnmount as ac,
+  customRef as ad,
+  getCurrentInstance as ae,
+  render$2 as af,
+  onMounted as ag,
   Fragment as b,
   createElementBlock as c,
   createCommentVNode as d,
