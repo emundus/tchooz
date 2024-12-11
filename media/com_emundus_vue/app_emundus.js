@@ -40669,7 +40669,20 @@ if (document) {
         const globalStore2 = useGlobalStore();
         globalStore2.initAttachmentPath(datas.base + "/images/emundus/files/");
       }
+      {
+        app.config.productionTip = false;
+        app.config.devtools = true;
+        app.config.performance = true;
+      }
       app.mount(elementId);
+      {
+        const version2 = app.version;
+        const devtools2 = window.__VUE_DEVTOOLS_GLOBAL_HOOK__;
+        if (devtools2) {
+          devtools2.enabled = true;
+          devtools2.emit("app:init", app, version2, {});
+        }
+      }
     }
   }
 }
@@ -40711,15 +40724,24 @@ export {
   getDefaultExportFromCjs as a5,
   ref as a6,
   computed as a7,
-  markRaw as a8,
-  watchEffect as a9,
-  nextTick as aa,
-  unref as ab,
-  onBeforeUnmount as ac,
-  customRef as ad,
-  getCurrentInstance as ae,
-  render$2 as af,
-  onMounted as ag,
+  normalizeProps as a8,
+  guardReactiveProps as a9,
+  onMounted as aa,
+  nextTick as ab,
+  toRef as ac,
+  provide as ad,
+  unref as ae,
+  inject as af,
+  isRef as ag,
+  onUnmounted as ah,
+  toRefs as ai,
+  watchEffect as aj,
+  resolveDirective as ak,
+  markRaw as al,
+  onBeforeUnmount as am,
+  customRef as an,
+  getCurrentInstance as ao,
+  render$2 as ap,
   Fragment as b,
   createElementBlock as c,
   createCommentVNode as d,

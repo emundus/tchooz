@@ -1,5 +1,5 @@
 import { _ as _export_sfc, l as campaignService, S as Swal, h as resolveComponent, o as openBlock, c as createElementBlock, a as createBaseVNode, i as createBlock, j as withCtx, t as toDisplayString, m as createVNode, T as TransitionGroup, b as Fragment, r as renderList, d as createCommentVNode, p as mergeProps, M as Modal, s as settingsService, q as withModifiers, w as withDirectives, n as normalizeClass, u as vModelSelect, g as axios, x as createTextVNode, y as useGlobalStore, z as workflowService, B as vModelCheckbox, D as toHandlers, E as Tabs, G as mixin, H as formService, I as programmeService, v as vShow, J as Transition } from "./app_emundus.js";
-import { _ as _sfc_main$6, a as addCampaign } from "./addCampaign.js";
+import { D as DatePicker, a as addCampaign } from "./addCampaign.js";
 import { v as vueDropzone } from "./vue-dropzone.js";
 import { V as VueDraggableNext, q as qs } from "./index.js";
 import { e as emailService } from "./email.js";
@@ -895,7 +895,7 @@ const campaignMore = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_r
 const _sfc_main$1 = {
   name: "CampaignSteps",
   components: {
-    DatePicker: _sfc_main$6
+    DatePicker
   },
   props: {
     campaignId: {
