@@ -1694,7 +1694,7 @@ class EmundusModelCampaign extends ListModel
 						// do nothing
 						break;
 					case 'profile_id':
-						if (!empty($val)) {
+						if (empty($val)) {
 							$query->clear()
 								->select('id')
 								->from($this->_db->quoteName('#__emundus_setup_profiles'))
@@ -1706,9 +1706,9 @@ class EmundusModelCampaign extends ListModel
 							if (empty($val)) {
 								$val = 1000;
 							}
-
-							$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
 						}
+
+						$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
 						break;
 					case 'pinned':
 					case 'is_limited':
