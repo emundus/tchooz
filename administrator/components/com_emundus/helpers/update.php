@@ -4474,8 +4474,8 @@ class EmundusHelperUpdate
 			// Upload scanner
 			$storage_value['upload_scanner_enabled']    = 1;
 			$storage_value['check_multiple_extensions'] = 1;
-			$storage_value['mimetypes_blacklist']       = 'application/x-dosexec,application/x-msdownload ,text/x-php,application/x-php,application/x-httpd-php,application/x-httpd-php-source,application/javascript,application/xml';
-			$storage_value['extensions_blacklist']      = 'php,js,exe,xml';
+			$storage_value['mimetypes_blacklist']       = 'application/x-dosexec,application/x-msdownload ,text/x-php,application/x-php,application/x-httpd-php,application/x-httpd-php-source,application/javascript';
+			$storage_value['extensions_blacklist']      = 'php,js,exe';
 			$storage_value['delete_files']              = 1;
 			$storage_value['actions_upload_scanner']    = 1;
 

@@ -162,6 +162,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 		$send_email_accept = $this->getParam('send_email_accept', 1);
 		$keep_accepted_fnums =  $this->getParam('keep_accepted_fnums', 0);
 
+		$files_picked = [];
 		if ($pick_fnums) {
 			$files_picked = $jinput->get('jos_emundus_files_request___your_files');
 		}
@@ -196,7 +197,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 			die("NO_EMAIL_FOUND");
 		}
 
-		$not_selected_fnum = array();
+		$not_selected_fnum = [];
 
 		$this->_db->setQuery('show tables');
 		$existingTables = $this->_db->loadColumn();
@@ -234,7 +235,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 			$query->clear()
 				->update($db->quoteName('#__emundus_files_request'))
 				->set([$db->quoteName('uploaded').'=1', $db->quoteName('firstname').'='.$db->quote($firstname), $db->quoteName('lastname').'='.$db->quote($lastname), $db->quoteName('modified_date').'=NOW()'])
-				->where($db->quoteName('keyid').' LIKE '.$db->quote($key_id).' AND '.$db->quoteName('fnum').' IN ("'.implode('","', $files_picked).'")');
+				->where($db->quoteName('keyid').' LIKE '.$db->quote($key_id).' AND '.$db->quoteName('fnum').' IN ('.implode(',', $db->quote($files_picked)).')');
 			$db->setQuery($query);
 			$db->execute();
 		} catch (Exception $e) {
@@ -247,7 +248,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 				$query->clear()
 					->update($db->quoteName('#__emundus_files_request'))
 					->set([$db->quoteName('uploaded').'=2', $db->quoteName('firstname').'='.$db->quote($firstname), $db->quoteName('lastname').'='.$db->quote($lastname), $db->quoteName('modified_date').'=NOW()'])
-					->where($db->quoteName('keyid').' LIKE '.$db->quote($key_id).' AND '.$db->quoteName('fnum').' IN ("'.implode('","', $not_selected_fnum).'")');
+					->where($db->quoteName('keyid').' LIKE '.$db->quote($key_id).' AND '.$db->quoteName('fnum').' IN ('.implode(',', $db->quote($not_selected_fnum)).')');
 				$db->setQuery($query);
 				$db->execute();
 			} catch (Exception $e) {

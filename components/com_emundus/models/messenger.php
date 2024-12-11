@@ -568,10 +568,11 @@ class EmundusModelMessenger extends JModelList
 				$users_associated = array_filter($users_associated);
 			}
 
-			// Merge all users list and add the list of users to notify defined in the messenger configuration
-			$users_to_send = array_filter(array_unique(array_merge($users_associated_programs, $groups_associated, $users_associated, $notify_users)));
+			$users_to_send = array_filter(array_unique(array_merge($users_associated_programs,$groups_associated,$users_associated)));
 
-			// Check groups to notify
+			$users_notify_groups = array();
+
+			// Pre-filter users to send the notification to by their group
 			if (!empty($notify_groups)) {
 				$query->clear()
 					->select('DISTINCT user_id')
@@ -580,10 +581,27 @@ class EmundusModelMessenger extends JModelList
 				$db->setQuery($query);
 				$users_notify_groups = $db->loadColumn();
 
-				$users_to_send = array_filter(array_unique(array_merge($users_notify_groups,$users_to_send)));
 			}
 
-			// If no users found to notify send to coordinators
+			if (!empty($users_notify_groups)) {
+				$users_to_send = array_intersect($users_to_send,$users_notify_groups);
+			}
+
+			// Just to be sure, check for every user in the list if they can access the file
+			foreach($users_to_send as $key => $user_to_check) {
+				$can_access = EmundusHelperAccess::isUserAllowedToAccessFnum($user_to_check, $applicant_fnum);
+
+				if (!$can_access) {
+					unset($users_to_send[$key]);
+				}
+			}
+
+			// Add additional users to notify, these do not need to be able to access the file
+			if (!empty($notify_users)) {
+				$users_to_send = array_intersect($users_to_send, $notify_users);
+			}
+
+			// If no users found to notify send to coordinators instead
 			if (empty($users_to_send)) {
 				$query->clear()
 					->select('DISTINCT ' . $db->quoteName('eu.user_id'))
@@ -593,7 +611,7 @@ class EmundusModelMessenger extends JModelList
 				$db->setQuery($query);
 				$users_to_send = $db->loadColumn();
 
-				// Check if the coords have access to the fnum before sending
+				// We still need to check if the coordinator has access to the fnum
 				foreach($users_to_send as $key => $user_to_check) {
 					$can_access = EmundusHelperAccess::isUserAllowedToAccessFnum($user_to_check, $applicant_fnum);
 
