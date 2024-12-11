@@ -269,7 +269,7 @@ export default {
     getApplicationForm() {
       axios({
         method: "get",
-        url: "index.php?option=com_emundus&view=application&format=raw&layout=form&fnum=" + this.selectedFile.fnum,
+        url: "index.php?option=com_emundus&view=application&format=raw&layout=form&fnum=" + this.selectedFile.fnum + "&context=modal",
       }).then(response => {
         this.applicationform = response.data;
         if (this.$props.type !== 'evaluation') {
