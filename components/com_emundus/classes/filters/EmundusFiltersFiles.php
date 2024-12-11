@@ -703,7 +703,7 @@ class EmundusFiltersFiles extends EmundusFilters
 				'value'          => ['all'],
 				'default'        => true,
 				'available'      => true,
-				'order'          => 0,
+				'order'          => $config['filter_steps_order'],
 				'andorOperator'  => 'OR',
 				'andorOperators' => ['OR', 'AND'],
 				'operator'       => 'IN',
@@ -718,17 +718,16 @@ class EmundusFiltersFiles extends EmundusFilters
 				'label'          => Text::_('MOD_EMUNDUS_FILTERS_WORKFLOW_EVALUATION_STATE'),
 				'type'           => 'select',
 				'values'         => [
-					['value' => 1, 'label' => Text::_('MOD_EMUNDUS_FILTERS_VALUE_EVALUATED')],
-					['value' => 0, 'label' => Text::_('MOD_EMUNDUS_FILTERS_VALUE_TO_EVALUATE')]
+					['value' => 1, 'label' => Text::_('MOD_EMUNDUS_FILTERS_VALUE_EVALUATED')]
 				],
 				'value'          => ['all'],
 				'default'        => true,
 				'available'      => true,
-				'order'          => 0,
+				'order'          => $config['filter_evaluated_order'],
 				'andorOperator'  => 'OR',
-				'andorOperators' => ['OR'],
+				'andorOperators' => [],
 				'operator'       => 'IN',
-				'operators'      => ['IN']
+				'operators'      => ['IN', 'NOT IN']
 			];
 		}
 

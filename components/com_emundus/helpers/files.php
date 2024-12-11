@@ -5098,10 +5098,26 @@ class EmundusHelperFiles
 											$ccids = $m_workflow->getEvaluatedFilesByUser($step, $user->id);
 
 											if ($filter['value'] == 1) {
-												$where['q'] .= ' AND ' . $this->writeQueryWithOperator('jecc.id', $ccids, $filter['operator']);
+												if (empty($ccids)) {
+													if ($filter['operator'] === 'IN') {
+														$where['q'] .= ' AND 1=2';
+													} else {
+														$where['q'] .= ' AND 1=1';
+													}
+												} else {
+													$where['q'] .= ' AND ' . $this->writeQueryWithOperator('jecc.id', $ccids, $filter['operator']);
+												}
 											} else {
-												$operator = $filter['operator'] === 'IN' ? 'NOT IN' : 'IN';
-												$where['q'] .= ' AND ' . $this->writeQueryWithOperator('jecc.id', $ccids, $operator);
+												if (empty($ccids)) {
+													if ($filter['operator'] === 'IN') {
+														$where['q'] .= ' AND 1=1';
+													} else {
+														$where['q'] .= ' AND 1=2';
+													}
+												} else {
+													$operator = $filter['operator'] === 'IN' ? 'NOT IN' : 'IN';
+													$where['q'] .= ' AND ' . $this->writeQueryWithOperator('jecc.id', $ccids, $operator);
+												}
 											}
 										}
 									}
