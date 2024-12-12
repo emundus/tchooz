@@ -25,8 +25,8 @@
           </p>
         </div>
         <div v-if="fnums.length > 1" class="tw-flex tw-items-center">
-          <span class="material-symbols-outlined tw-text-base" style="color:white;" @click="openPreviousFnum">navigate_before</span>
-          <span class="material-symbols-outlined tw-text-base" style="color:white;"
+          <span class="material-symbols-outlined tw-text-base tw-cursor-pointer" style="color:white;" @click="openPreviousFnum">navigate_before</span>
+          <span class="material-symbols-outlined tw-text-base tw-cursor-pointer" style="color:white;"
                 @click="openNextFnum">navigate_next</span>
         </div>
       </div>

@@ -652,12 +652,12 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           ]),
           _ctx.fnums.length > 1 ? (openBlock(), createElementBlock("div", _hoisted_7, [
             createBaseVNode("span", {
-              class: "material-symbols-outlined tw-text-base",
+              class: "material-symbols-outlined tw-text-base tw-cursor-pointer",
               style: { "color": "white" },
               onClick: _cache[1] || (_cache[1] = (...args) => $options.openPreviousFnum && $options.openPreviousFnum(...args))
             }, "navigate_before"),
             createBaseVNode("span", {
-              class: "material-symbols-outlined tw-text-base",
+              class: "material-symbols-outlined tw-text-base tw-cursor-pointer",
               style: { "color": "white" },
               onClick: _cache[2] || (_cache[2] = (...args) => $options.openNextFnum && $options.openNextFnum(...args))
             }, "navigate_next")
