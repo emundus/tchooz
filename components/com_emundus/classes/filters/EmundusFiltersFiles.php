@@ -724,7 +724,8 @@ class EmundusFiltersFiles extends EmundusFilters
 				'label'          => Text::_('MOD_EMUNDUS_FILTERS_WORKFLOW_EVALUATION_STATE'),
 				'type'           => 'select',
 				'values'         => [
-					['value' => 1, 'label' => Text::_('MOD_EMUNDUS_FILTERS_VALUE_EVALUATED')]
+					['value' => 1, 'label' => Text::_('MOD_EMUNDUS_FILTERS_VALUE_EVALUATED')],
+					['value' => 0, 'label' => Text::_('MOD_EMUNDUS_FILTERS_VALUE_TO_EVALUATE')]
 				],
 				'value'          => ['all'],
 				'default'        => true,

@@ -1169,8 +1169,9 @@ class EmundusControllerEvaluation extends BaseController
 							continue;
 						}
 
+						$view = !$user_access['can_edit'] ? 'details' : 'form';
 						$step_data->user_access = EmundusHelperAccess::getUserEvaluationStepAccess($ccid, $step_data, $this->_user->id);
-						$step_data->url = '/evaluation-step-form?formid=' . $step_data->form_id . '&' . $step_data->table . '___ccid=' . $ccid . '&' . $step_data->table . '___step_id=' . $step_data->id . '&tmpl=component&iframe=1';
+						$step_data->url = '/evaluation-step-form?view=' . $view . '&formid=' . $step_data->form_id . '&' . $step_data->table . '___ccid=' . $ccid . '&' . $step_data->table . '___step_id=' . $step_data->id . '&tmpl=component&iframe=1';
 						$response['status'] = true;
 						$response['code'] = 200;
 						$response['data'][] = $step_data;
