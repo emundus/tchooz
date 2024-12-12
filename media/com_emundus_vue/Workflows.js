@@ -1,5 +1,5 @@
 import list from "./List.js";
-import { _ as _export_sfc, e as resolveComponent, o as openBlock, c as createElementBlock, m as createVNode } from "./app_emundus.js";
+import { _ as _export_sfc, e as resolveComponent, o as openBlock, c as createElementBlock, g as createVNode } from "./app_emundus.js";
 import "./Skeleton.js";
 const _sfc_main = {
   name: "Workflows",

@@ -894,10 +894,14 @@ body ::-webkit-scrollbar-track {
 }
 
 
-.iframe-evaluation[data-v-1a0dd5e5] {
+.iframe-evaluation-list[data-v-f9486817] {
     width: 100%;
-    height: calc(100% - 124px);
+    min-height: 80%;
     border: unset;
+}
+
+.iframe-selected-evaluation[data-v-008c5608] {
+  height: calc(100vh - 258px);
 }
 
 .modal-grid {

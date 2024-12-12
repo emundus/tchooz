@@ -14,7 +14,7 @@
     <iframe
         v-if="ccid > 0 && selectedEvaluation && selectedEvaluation.form_id"
         :src="selectedEvaluation.url"
-        class="tw-w-full iframe-evaluation"
+        class="tw-w-full iframe-evaluation-list"
         :key="selectedTab"
       >
     </iframe>
@@ -88,9 +88,9 @@ export default {
 
 
 <style scoped>
-  .iframe-evaluation {
+  .iframe-evaluation-list {
     width: 100%;
-    height: calc(100% - 124px);
+    min-height: 80%;
     border: unset;
   }
 </style>

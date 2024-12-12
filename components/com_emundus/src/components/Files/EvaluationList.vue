@@ -1,23 +1,23 @@
 <template>
   <div :id="'evaluation-step-' + step.id + '-list'" class="tw-p-4">
-    <h2>List of evaluations</h2>
-    <Tabs v-if="evaluations.length > 0"
-          :tabs="evaluationsTabs"
-          :classes="'tw-overflow-x-scroll tw-flex tw-items-center tw-justify-start tw-gap-2'"
-          @changeTabActive="onChangeTab"
-    ></Tabs>
+    <h2 class="tw-mb-4">{{ translate('COM_EMUNDUS_EVALUATIONS_LIST') }}</h2>
+    <div v-if="evaluations.length > 0">
+      <Tabs
+            :tabs="evaluationsTabs"
+            :classes="'tw-overflow-x-scroll tw-flex tw-items-center tw-justify-start tw-gap-2'"
+            @changeTabActive="onChangeTab"
+      ></Tabs>
 
-    <iframe :src="selectedEvaluation.url" :key="selectedEvaluation.id"
-      width="100%" height="100%"
-    >
-    </iframe>
+      <iframe :src="selectedEvaluation.url" :key="selectedEvaluation.id" class="tw-w-full iframe-selected-evaluation">
+      </iframe>
+    </div>
+    <p v-else>{{ translate('COM_EMUNDUS_EVALUATIONS_LIST_NO_EVALUATIONS') }}</p>
   </div>
 </template>
 
 <script>
 import evaluationService from '@/services/evaluation.js';
 import Tabs from "@/components/Utils/Tabs.vue";
-import evaluation from "@/services/evaluation.js";
 
 export default {
   name: "EvaluationList",
@@ -76,5 +76,7 @@ export default {
 
 
 <style scoped>
-
+.iframe-selected-evaluation {
+  height: calc(100vh - 258px);
+}
 </style>
