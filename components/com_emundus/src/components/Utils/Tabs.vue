@@ -30,7 +30,6 @@ export default {
   },
   created() {
     this.currentTabs = this.tabs;
-    console.log(this.currentTabs, 'current tabs');
   },
   methods: {
     changeTab(id) {
