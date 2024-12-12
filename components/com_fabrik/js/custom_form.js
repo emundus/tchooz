@@ -246,11 +246,11 @@ requirejs(['fab/fabrik'], function () {
 
                     if (repeatGroupsMarked > 1) {
                         deleteButtons.forEach(function (button) {
-                            button.show();
+                            button.style.display = 'flex';
                         });
                     } else if (minRepeat > 0) {
                         deleteButtons.forEach(function (button) {
-                            button.hide();
+                            button.style.display = 'none';
                         });
                     }
 
@@ -258,13 +258,13 @@ requirejs(['fab/fabrik'], function () {
 
                     if (maxRepeat !== 0 && repeatGroupsMarked >= maxRepeat) {
                         addButtons.forEach(function (button, index) {
-                            button.hide();
+                            button.style.display = 'none';
                         })
                     } else {
                         if(addButtons.length > 1) {
                         addButtons.forEach(function (button, index) {
                                 if((index + 1) < addButtons.length) {
-                                    button.hide();
+                                    button.style.display = 'none';
                                 } else {
                                     button.style.display = 'flex';
                                 }
