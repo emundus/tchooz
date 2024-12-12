@@ -1626,21 +1626,23 @@ class EmundusModelCampaign extends ListModel
 			$limit_status = [];
 			$fields       = [];
 			$columns      = [];
-			$keys_to_unset = ['limit', 'limit_status', 'profileLabel', 'progid', 'status'];
+			$keys_to_unset = ['limit', 'limit_status', 'profileLabel', 'progid', 'status', 'languages'];
 			$labels       = new stdClass;
 
 			$app->triggerEvent('onBeforeCampaignUpdate', $data);
 			$app->triggerEvent('onCallEventHandler', ['onBeforeCampaignUpdate', ['campaign' => $cid]]);
 
 			foreach ($data as $key => $val) {
-				if ($val === '') {
+				if ($val === '' || is_null($val)) {
 					$keys_to_unset[] = $key;
 					continue;
 				}
 
-				if(!in_array($key,['limit','profileLabel','progid','status','limit_status','languages']))
+				if (!in_array($key, $keys_to_unset))
 				{
 					$columns[] = $this->_db->quoteName($key);
+				} else {
+					continue;
 				}
 
 				switch ($key) {
@@ -1665,14 +1667,8 @@ class EmundusModelCampaign extends ListModel
 					case 'profileLabel':
 					case 'progid':
 					case 'status':
+					case 'languages':
 						// do nothing
-						break;
-					case 'pinned':
-					case 'is_limited':
-						if (!isset($val) || $val == '') {
-							$val = 0;
-						}
-						$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
 						break;
 					case 'alias':
 						$details_menu = $this->getCampaignDetailsMenu($cid);
@@ -1689,9 +1685,6 @@ class EmundusModelCampaign extends ListModel
 						}
 
 						$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
-						break;
-					case 'languages':
-						// do nothing
 						break;
 					case 'profile_id':
 						if (empty($val)) {
@@ -1716,33 +1709,6 @@ class EmundusModelCampaign extends ListModel
 							$val = 0;
 						}
 						$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
-						break;
-					case 'alias':
-						$details_menu = $this->getCampaignDetailsMenu($cid);
-						if(!empty($details_menu)) {
-							$query->clear()
-								->update($this->_db->quoteName('#__menu'))
-								->set($this->_db->quoteName('alias') . ' = ' . $this->_db->quote($val))
-								->set($this->_db->quoteName('path') . ' = ' . $this->_db->quote($val))
-								->where($this->_db->quoteName('id') . ' = ' . $details_menu->id);
-							$this->_db->setQuery($query);
-							$this->_db->execute();
-						} else {
-							$this->createCampaignAlias($cid, $val, $data['label']);
-						}
-
-						$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
-						break;
-					case 'profile_id':
-						if (!empty($val) && $val != 'null') {
-							$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
-						} else {
-							// set null
-							$fields[] = $this->_db->quoteName($key) . ' = NULL';
-						}
-						break;
-					case 'languages':
-						// do nothing
 						break;
 					default:
 						$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
