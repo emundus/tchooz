@@ -622,7 +622,7 @@ class EmundusFiltersFiles extends EmundusFilters
 			$this->applied_filters[] = [
 				'uid'            => 'users_assoc',
 				'id'             => 'users_assoc',
-				'label'          => JText::_('MOD_EMUNDUS_FILTERS_USERS_ASSOC'),
+				'label'          => Text::_('MOD_EMUNDUS_FILTERS_USERS_ASSOC'),
 				'type'           => 'select',
 				'values'         => $users,
 				'value'          => ['all'],
@@ -661,7 +661,7 @@ class EmundusFiltersFiles extends EmundusFilters
 			$this->applied_filters[] = [
 				'uid'            => 'attachments',
 				'id'             => 'attachments',
-				'label'          => JText::_('MOD_EMUNDUS_FILTERS_ATTACHMENTS'),
+				'label'          => Text::_('MOD_EMUNDUS_FILTERS_ATTACHMENTS'),
 				'type'           => 'select',
 				'values'         => $attachments,
 				'value'          => ['all'],

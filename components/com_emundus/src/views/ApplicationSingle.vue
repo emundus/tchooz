@@ -378,16 +378,10 @@ export default {
   background: white;
 }
 
-#modal-applicationform #em-attachments .v--modal-overlay {
-  height: 100% !important;
-  width: var(--attachment-width) !important;
-  margin-top: 50px;
-}
-
-#modal-applicationform #em-attachments .v--modal-box.v--modal {
-  width: 100% !important;
-  height: calc(100vh - 50px) !important;
-  box-shadow: unset;
+#em-attachments #edit-modal {
+    width: var(--attachment-width) !important;
+    top: 52px;
+    height: calc(100% - 52px) !important;
 }
 
 #modal-applicationform #em-attachments .modal-body {
