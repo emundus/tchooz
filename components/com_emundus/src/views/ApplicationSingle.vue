@@ -66,6 +66,14 @@
               <div v-if="tab.type && tab.type === 'iframe' && selected === tab.name">
                 <iframe :id="tab.name" :src="replaceTagsIframeUrl(tab.url)" class="tw-w-full tw-h-screen"></iframe>
               </div>
+
+              <evaluation-list
+                  v-if="tab.type && tab.type === 'evaluation-list' && selected === tab.name"
+                  :step="tab.step"
+                  :ccid="this.ccid"
+              >
+
+              </evaluation-list>
             </div>
           </div>
         </div>
@@ -93,11 +101,12 @@ import Comments from "@/views/Comments.vue";
 import Modal from "@/components/Modal.vue";
 import evaluationService from "@/services/evaluation.js";
 import fileService from "@/services/file.js";
+import EvaluationList from "@/components/Files/EvaluationList.vue";
 
 
 export default {
   name: "ApplicationSingle",
-  components: {Comments, Attachments, Modal, Evaluations},
+  components: {EvaluationList, Comments, Attachments, Modal, Evaluations},
   props: {
     file: Object | String,
     type: String,
@@ -303,13 +312,25 @@ export default {
                 return;
               }
 
-              this.tabs.push({
-                label: step.label,
-                name: 'step-' + step.id,
-                access: step.action_id,
-                type: 'iframe',
-                url: step.url,
-              });
+              if (step.url) {
+                this.tabs.push({
+                  label: step.label,
+                  name: 'step-' + step.id,
+                  access: step.action_id,
+                  type: 'iframe',
+                  url: step.url,
+                });
+              } else if (step.multiple) {
+                this.tabs.push({
+                  label: step.label,
+                  name: 'step-' + step.id,
+                  access: step.action_id,
+                  type: 'evaluation-list',
+                  step: step
+                });
+              }
+
+              console.log(this.tabs, 'tabs');
             });
           }).catch(error => {
             console.log(error);

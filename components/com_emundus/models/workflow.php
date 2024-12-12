@@ -635,6 +635,31 @@ class EmundusModelWorkflow extends JModelList
 		return $ids;
 	}
 
+	public function getStepEvaluationsForFile($step_id, $ccid)
+	{
+		$evaluations = [];
+
+		if (!empty($step_id) && !empty($ccid)) {
+			$step = $this->getStepData($step_id);
+
+			$query = $this->db->createQuery();
+			$query->select('evaluation_table.*, CONCAT(jeu.firstname, " ", jeu.lastname) as evaluator_name')
+				->from($this->db->quoteName($step->table, 'evaluation_table'))
+				->leftJoin($this->db->quoteName('#__emundus_users', 'jeu') . ' ON jeu.user_id = evaluation_table.evaluator')
+				->where('evaluation_table.ccid = ' . $ccid)
+				->andWhere('evaluation_table.step_id = ' . $step_id);
+
+			$this->db->setQuery($query);
+			$evaluations = $this->db->loadAssocList();
+
+			foreach($evaluations as $key => $evaluation) {
+				$evaluations[$key]['url'] = '/evaluation-step-form?view=details&rowid=' . $evaluation['id'] . '&formid=' . $step->form_id . '&' . $step->table . '___ccid=' . $ccid . '&' . $step->table . '___step_id=' . $step->id . '&tmpl=component&iframe=1';
+			}
+		}
+
+		return $evaluations;
+	}
+
 	/**
 	 * @param $fnum
 	 *

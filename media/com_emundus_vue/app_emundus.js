@@ -37944,6 +37944,7 @@ const _sfc_main$2 = {
   },
   created() {
     this.currentTabs = this.tabs;
+    console.log(this.currentTabs, "current tabs");
   },
   methods: {
     changeTab(id) {
@@ -37960,20 +37961,24 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     class: normalizeClass($props.classes)
   }, [
     (openBlock(true), createElementBlock(Fragment, null, renderList($data.currentTabs, (tab) => {
-      return withDirectives((openBlock(), createElementBlock("div", {
-        onClick: ($event) => $options.changeTab(tab.id),
-        class: normalizeClass(["tw-cursor-pointer tw-rounded-t-lg tw-flex tw-items-center tw-py-2 tw-px-4 tw-transition-colors tw-duration-300 tw-border-x tw-border-t", tab.active ? "tw-bg-white tw-border-profile-full" : "tw-bg-neutral-200 tw-border-neutral-400"])
+      return openBlock(), createElementBlock("div", {
+        key: tab.id
       }, [
-        createBaseVNode("span", {
-          class: normalizeClass(["material-symbols-outlined tw-mr-2", tab.active ? "tw-text-profile-full" : "tw-text-neutral-700"])
-        }, toDisplayString(tab.icon), 3),
-        createBaseVNode("span", {
-          class: normalizeClass([tab.active ? "tw-text-profile-full" : "tw-text-neutral-700", "tw-whitespace-nowrap"])
-        }, toDisplayString(_ctx.translate(tab.name)), 3)
-      ], 10, _hoisted_1$3)), [
-        [vShow, tab.displayed]
+        withDirectives(createBaseVNode("div", {
+          onClick: ($event) => $options.changeTab(tab.id),
+          class: normalizeClass(["tw-cursor-pointer tw-rounded-t-lg tw-flex tw-items-center tw-py-2 tw-px-4 tw-transition-colors tw-duration-300 tw-border-x tw-border-t", tab.active ? "tw-bg-white tw-border-profile-full" : "tw-bg-neutral-200 tw-border-neutral-400"])
+        }, [
+          createBaseVNode("span", {
+            class: normalizeClass(["material-symbols-outlined tw-mr-2", tab.active ? "tw-text-profile-full" : "tw-text-neutral-700"])
+          }, toDisplayString(tab.icon), 3),
+          createBaseVNode("span", {
+            class: normalizeClass([tab.active ? "tw-text-profile-full" : "tw-text-neutral-700", "tw-whitespace-nowrap"])
+          }, toDisplayString(_ctx.translate(tab.name)), 3)
+        ], 10, _hoisted_1$3), [
+          [vShow, tab.displayed]
+        ])
       ]);
-    }), 256))
+    }), 128))
   ], 2);
 }
 const Tabs = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2]]);
@@ -40669,17 +40674,30 @@ if (document) {
         const globalStore2 = useGlobalStore();
         globalStore2.initAttachmentPath(datas.base + "/images/emundus/files/");
       }
+      {
+        app.config.productionTip = false;
+        app.config.devtools = true;
+        app.config.performance = true;
+      }
       app.mount(elementId);
+      {
+        const version2 = app.version;
+        const devtools2 = window.__VUE_DEVTOOLS_GLOBAL_HOOK__;
+        if (devtools2) {
+          devtools2.enabled = true;
+          devtools2.emit("app:init", app, version2, {});
+        }
+      }
     }
   }
 }
 export {
   $3ed269f2f0fb224b$export$2e2bcd8739ae039 as $,
   Attachments as A,
-  vModelCheckbox as B,
+  workflowService as B,
   Comments as C,
-  toHandlers as D,
-  Tabs as E,
+  vModelCheckbox as D,
+  toHandlers as E,
   FetchClient as F,
   mixin$1 as G,
   formService as H,
@@ -40694,7 +40712,7 @@ export {
   withKeys as Q,
   vModelRadio as R,
   Swal$1 as S,
-  TransitionGroup as T,
+  Tabs as T,
   Popover as U,
   client$5 as V,
   watch as W,
@@ -40732,26 +40750,26 @@ export {
   Fragment as b,
   createElementBlock as c,
   createCommentVNode as d,
-  errors as e,
+  resolveComponent as e,
   fileService as f,
-  axios$1 as g,
-  resolveComponent as h,
-  createBlock as i,
+  createBlock as g,
+  errors as h,
+  axios$1 as i,
   withCtx as j,
   normalizeStyle as k,
   campaignService as l,
   createVNode as m,
   normalizeClass as n,
   openBlock as o,
-  mergeProps as p,
-  withModifiers as q,
+  TransitionGroup as p,
+  mergeProps as q,
   renderList as r,
   settingsService as s,
   toDisplayString as t,
-  vModelSelect as u,
+  withModifiers as u,
   vShow as v,
   withDirectives as w,
-  createTextVNode as x,
-  useGlobalStore as y,
-  workflowService as z
+  vModelSelect as x,
+  createTextVNode as y,
+  useGlobalStore as z
 };

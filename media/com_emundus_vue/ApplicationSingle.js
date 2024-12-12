@@ -1,4 +1,4 @@
-import { F as FetchClient, _ as _export_sfc, f as fileService, o as openBlock, c as createElementBlock, a as createBaseVNode, b as Fragment, r as renderList, n as normalizeClass, t as toDisplayString, d as createCommentVNode, C as Comments, A as Attachments, M as Modal, e as errors, g as axios, h as resolveComponent, w as withDirectives, v as vShow, i as createBlock, j as withCtx, k as normalizeStyle } from "./app_emundus.js";
+import { F as FetchClient, _ as _export_sfc, f as fileService, o as openBlock, c as createElementBlock, a as createBaseVNode, b as Fragment, r as renderList, n as normalizeClass, t as toDisplayString, d as createCommentVNode, T as Tabs, e as resolveComponent, g as createBlock, C as Comments, A as Attachments, M as Modal, h as errors, i as axios, w as withDirectives, v as vShow, j as withCtx, k as normalizeStyle } from "./app_emundus.js";
 const fetchClient = new FetchClient("evaluation");
 const evaluationService = {
   async getEvaluationsForms(fnum, readonly = false) {
@@ -10,10 +10,20 @@ const evaluationService = {
     } catch (e) {
       return false;
     }
+  },
+  async getEvaluations(stepId, ccid) {
+    try {
+      return await fetchClient.get("getstepevaluationsforfile", {
+        step_id: stepId,
+        ccid
+      });
+    } catch (e) {
+      return false;
+    }
   }
 };
 const Evaluations_vue_vue_type_style_index_0_scoped_1a0dd5e5_lang = "";
-const _sfc_main$1 = {
+const _sfc_main$2 = {
   name: "Evaluations",
   props: {
     fnum: {
@@ -71,14 +81,14 @@ const _sfc_main$1 = {
     }
   }
 };
-const _hoisted_1$1 = { id: "evaluations-container" };
-const _hoisted_2$1 = { class: "tw-mt-1" };
+const _hoisted_1$2 = { id: "evaluations-container" };
+const _hoisted_2$2 = { class: "tw-mt-1" };
 const _hoisted_3$1 = { class: "tw-list-none tw-flex tw-flex-row" };
 const _hoisted_4$1 = ["onClick"];
 const _hoisted_5$1 = ["src"];
-function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
-  return openBlock(), createElementBlock("div", _hoisted_1$1, [
-    createBaseVNode("nav", _hoisted_2$1, [
+function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", _hoisted_1$2, [
+    createBaseVNode("nav", _hoisted_2$2, [
       createBaseVNode("ul", _hoisted_3$1, [
         (openBlock(true), createElementBlock(Fragment, null, renderList($data.evaluations, (evaluation) => {
           return openBlock(), createElementBlock("li", {
@@ -96,7 +106,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
     }, null, 8, _hoisted_5$1)) : createCommentVNode("", true)
   ]);
 }
-const Evaluations = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-1a0dd5e5"]]);
+const Evaluations = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-1a0dd5e5"]]);
 const client = new FetchClient("file");
 const filesService = {
   // eslint-disable-next-line no-unused-vars
@@ -230,10 +240,87 @@ const filesService = {
     }
   }
 };
+const _sfc_main$1 = {
+  name: "EvaluationList",
+  props: {
+    ccid: {
+      type: Number,
+      required: true
+    },
+    step: {
+      type: Object,
+      required: true
+    }
+  },
+  data: () => {
+    return {
+      evaluations: [],
+      selectedEvaluation: 0
+    };
+  },
+  components: {
+    Tabs
+  },
+  created() {
+    this.getEvaluations();
+  },
+  methods: {
+    getEvaluations() {
+      evaluationService.getEvaluations(this.step.id, this.ccid).then((response) => {
+        this.evaluations = response.data;
+        this.selectedEvaluation = this.evaluations[0];
+      }).catch((error) => {
+        console.log(error);
+      });
+    },
+    onChangeTab(tabId) {
+      this.selectedEvaluation = this.evaluations.find((evaluation) => {
+        return evaluation.id == tabId;
+      });
+    }
+  },
+  computed: {
+    evaluationsTabs() {
+      return this.evaluations.map((evaluation, index) => {
+        return {
+          id: evaluation.id,
+          name: evaluation.evaluator_name,
+          displayed: true,
+          active: index == 0,
+          icon: null
+        };
+      });
+    }
+  }
+};
+const _hoisted_1$1 = ["id"];
+const _hoisted_2$1 = ["src"];
+function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
+  const _component_Tabs = resolveComponent("Tabs");
+  return openBlock(), createElementBlock("div", {
+    id: "evaluation-step-" + $props.step.id + "-list",
+    class: "tw-p-4"
+  }, [
+    _cache[0] || (_cache[0] = createBaseVNode("h2", null, "List of evaluations", -1)),
+    _ctx.evaluations.length > 0 ? (openBlock(), createBlock(_component_Tabs, {
+      key: 0,
+      tabs: $options.evaluationsTabs,
+      classes: "tw-overflow-x-scroll tw-flex tw-items-center tw-justify-start tw-gap-2",
+      onChangeTabActive: $options.onChangeTab
+    }, null, 8, ["tabs", "onChangeTabActive"])) : createCommentVNode("", true),
+    (openBlock(), createElementBlock("iframe", {
+      src: _ctx.selectedEvaluation.url,
+      key: _ctx.selectedEvaluation.id,
+      width: "100%",
+      height: "100%"
+    }, null, 8, _hoisted_2$1))
+  ], 8, _hoisted_1$1);
+}
+const EvaluationList = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1]]);
 const ApplicationSingle_vue_vue_type_style_index_0_lang = "";
 const _sfc_main = {
   name: "ApplicationSingle",
-  components: { Comments, Attachments, Modal, Evaluations },
+  components: { EvaluationList, Comments, Attachments, Modal, Evaluations },
   props: {
     file: Object | String,
     type: String,
@@ -415,13 +502,24 @@ const _sfc_main = {
               if (this.tabs.find((tab) => tab.name === "step-" + step.id)) {
                 return;
               }
-              this.tabs.push({
-                label: step.label,
-                name: "step-" + step.id,
-                access: step.action_id,
-                type: "iframe",
-                url: step.url
-              });
+              if (step.url) {
+                this.tabs.push({
+                  label: step.label,
+                  name: "step-" + step.id,
+                  access: step.action_id,
+                  type: "iframe",
+                  url: step.url
+                });
+              } else if (step.multiple) {
+                this.tabs.push({
+                  label: step.label,
+                  name: "step-" + step.id,
+                  access: step.action_id,
+                  type: "evaluation-list",
+                  step
+                });
+              }
+              console.log(this.tabs, "tabs");
             });
           }).catch((error) => {
             console.log(error);
@@ -519,6 +617,7 @@ const _hoisted_16 = ["id", "src"];
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_Attachments = resolveComponent("Attachments");
   const _component_Comments = resolveComponent("Comments");
+  const _component_evaluation_list = resolveComponent("evaluation-list");
   const _component_Evaluations = resolveComponent("Evaluations");
   const _component_modal = resolveComponent("modal");
   return _ctx.selectedFile !== null && _ctx.selectedFile !== void 0 ? withDirectives((openBlock(), createBlock(_component_modal, {
@@ -607,7 +706,12 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                       src: $options.replaceTagsIframeUrl(tab.url),
                       class: "tw-w-full tw-h-screen"
                     }, null, 8, _hoisted_16)
-                  ])) : createCommentVNode("", true)
+                  ])) : createCommentVNode("", true),
+                  tab.type && tab.type === "evaluation-list" && _ctx.selected === tab.name ? (openBlock(), createBlock(_component_evaluation_list, {
+                    key: 4,
+                    step: tab.step,
+                    ccid: this.ccid
+                  }, null, 8, ["step", "ccid"])) : createCommentVNode("", true)
                 ]);
               }), 128))
             ])) : createCommentVNode("", true)

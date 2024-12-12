@@ -12,5 +12,15 @@ export default {
     } catch (e) {
       return false;
     }
+  },
+  async getEvaluations(stepId, ccid) {
+    try {
+      return await fetchClient.get('getstepevaluationsforfile', {
+        step_id: stepId,
+        ccid: ccid
+      });
+    } catch (e) {
+      return false;
+    }
   }
 }
