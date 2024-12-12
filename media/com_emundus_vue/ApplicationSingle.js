@@ -412,6 +412,9 @@ const _sfc_main = {
                 r: true,
                 c: false
               };
+              if (this.tabs.find((tab) => tab.name === "step-" + step.id)) {
+                return;
+              }
               this.tabs.push({
                 label: step.label,
                 name: "step-" + step.id,

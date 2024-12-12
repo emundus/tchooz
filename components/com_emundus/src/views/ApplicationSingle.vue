@@ -298,6 +298,11 @@ export default {
                 c: false,
               };
 
+              // check if the tab already exists
+              if (this.tabs.find(tab => tab.name === 'step-' + step.id)) {
+                return;
+              }
+
               this.tabs.push({
                 label: step.label,
                 name: 'step-' + step.id,
