@@ -679,6 +679,8 @@ class EmundusFiltersFiles extends EmundusFilters
 
 			$workflows = $m_workflow->getWorkflows([], 0, 0, $this->user_programs);
 			$steps = [];
+			$values_selected = [];
+
 			foreach($workflows as $workflow) {
 				$workflow_data = $m_workflow->getWorkflow($workflow->id);
 
@@ -686,8 +688,12 @@ class EmundusFiltersFiles extends EmundusFilters
 					foreach($workflow_data['steps'] as $step) {
 						if ($m_workflow->isEvaluationStep($step->type)) {
 							$action_id = $m_workflow->getStepAssocActionId($step->id);
-							if (EmundusHelperAccess::asAccessAction($action_id, 'c', $this->user->id)) {
+							if (EmundusHelperAccess::asAccessAction($action_id, 'r', $this->user->id)) {
 								$steps[] = ['value' => $step->id, 'label' => $workflow->label . ' - ' . $step->label];
+
+								if (EmundusHelperAccess::asAccessAction($action_id, 'c', $this->user->id)) {
+									$values_selected[] = $step->id;
+								}
 							}
 						}
 					}
@@ -700,7 +706,7 @@ class EmundusFiltersFiles extends EmundusFilters
 				'label'          => Text::_('MOD_EMUNDUS_FILTERS_WORKFLOW_STEPS'),
 				'type'           => 'select',
 				'values'         => $steps,
-				'value'          => ['all'],
+				'value'          => count($values_selected) !== count($steps) ? $values_selected : ['all'],
 				'default'        => true,
 				'available'      => true,
 				'order'          => $config['filter_steps_order'],
