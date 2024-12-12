@@ -1128,6 +1128,12 @@ class EmundusControllerEvaluation extends BaseController
 		exit;
 	}
 
+	/**
+	 * readonly parameter is used to get only the evaluations that the user can see but not edit
+	 *
+	 * @return void
+	 * @throws Exception
+	 */
 	public function getevaluationsforms()
 	{
 		$response = ['status' => false, 'code' => 403, 'msg' => Text::_('ACCESS_DENIED')];
@@ -1135,6 +1141,8 @@ class EmundusControllerEvaluation extends BaseController
 		$fnum = $this->input->getString('fnum', null);
 
 		if (!empty($fnum) && EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$readonly =  $this->input->getString('readonly', 0);
+
 			$db = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->createQuery();
 
@@ -1155,7 +1163,14 @@ class EmundusControllerEvaluation extends BaseController
 				foreach ($steps as $step) {
 					$step_data = $m_workflow->getStepData($step->id, $campaign_id);
 
-					if ($m_workflow->isEvaluationStep($step_data->type) && EmundusHelperAccess::getUserEvaluationStepAccess($ccid, $step_data, $this->_user->id)['can_see']) {
+					$user_access = EmundusHelperAccess::getUserEvaluationStepAccess($ccid, $step_data, $this->_user->id);
+					if ($m_workflow->isEvaluationStep($step_data->type) && $user_access['can_see']) {
+						if ($readonly && $user_access['can_edit']) {
+							continue;
+						}
+
+						$step_data->user_access = EmundusHelperAccess::getUserEvaluationStepAccess($ccid, $step_data, $this->_user->id);
+						$step_data->url = '/evaluation-step-form?formid=' . $step_data->form_id . '&' . $step_data->table . '___ccid=' . $ccid . '&' . $step_data->table . '___step_id=' . $step_data->id . '&tmpl=component&iframe=1';
 						$response['status'] = true;
 						$response['code'] = 200;
 						$response['data'][] = $step_data;

@@ -1,23 +1,32 @@
 import { F as FetchClient, _ as _export_sfc, f as fileService, o as openBlock, c as createElementBlock, a as createBaseVNode, b as Fragment, r as renderList, n as normalizeClass, t as toDisplayString, d as createCommentVNode, C as Comments, A as Attachments, M as Modal, e as errors, g as axios, h as resolveComponent, w as withDirectives, v as vShow, i as createBlock, j as withCtx, k as normalizeStyle } from "./app_emundus.js";
 const fetchClient = new FetchClient("evaluation");
 const evaluationService = {
-  async getEvaluationsForms(fnum) {
+  async getEvaluationsForms(fnum, readonly = false) {
     try {
       return await fetchClient.get("getevaluationsforms", {
-        fnum
+        fnum,
+        readonly: readonly ? 1 : 0
       });
     } catch (e) {
       return false;
     }
   }
 };
-const Evaluations_vue_vue_type_style_index_0_scoped_8a1574e1_lang = "";
+const Evaluations_vue_vue_type_style_index_0_scoped_1a0dd5e5_lang = "";
 const _sfc_main$1 = {
   name: "Evaluations",
   props: {
     fnum: {
       type: String,
       required: true
+    },
+    defaultCcid: {
+      type: Number,
+      default: 0
+    },
+    onlyEditionAccess: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -33,15 +42,23 @@ const _sfc_main$1 = {
   },
   methods: {
     getFileId() {
-      fileService.getFileIdFromFnum(this.fnum).then((response) => {
-        if (response.status) {
-          this.ccid = response.data;
-        }
-      });
+      if (this.defaultCcid > 0) {
+        this.ccid = this.defaultCcid;
+      } else {
+        fileService.getFileIdFromFnum(this.fnum).then((response) => {
+          if (response.status) {
+            this.ccid = response.data;
+          }
+        });
+      }
     },
     getEvaluationsForms() {
       evaluationService.getEvaluationsForms(this.fnum).then((response) => {
-        this.evaluations = response.data;
+        if (this.onlyEditionAccess) {
+          this.evaluations = response.data.filter((evaluation) => evaluation.user_access.can_edit);
+        } else {
+          this.evaluations = response.data;
+        }
         this.selectedTab = this.evaluations[0].id;
       }).catch((error) => {
         console.log(error);
@@ -50,7 +67,7 @@ const _sfc_main$1 = {
   },
   computed: {
     selectedEvaluation() {
-      return this.evaluations.find((evaluation) => evaluation.id === this.selectedTab);
+      return this.evaluations.length > 0 ? this.evaluations.find((evaluation) => evaluation.id === this.selectedTab) : {};
     }
   }
 };
@@ -72,14 +89,14 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
         }), 128))
       ])
     ]),
-    $data.ccid > 0 ? (openBlock(), createElementBlock("iframe", {
-      src: "/evaluation-step-form?formid=" + $options.selectedEvaluation.form_id + "&" + $options.selectedEvaluation.table + "___ccid=" + this.ccid + "&" + $options.selectedEvaluation.table + "___step_id=" + $options.selectedEvaluation.id + "&tmpl=component&iframe=1",
+    $data.ccid > 0 && $options.selectedEvaluation && $options.selectedEvaluation.form_id ? (openBlock(), createElementBlock("iframe", {
+      src: $options.selectedEvaluation.url,
       class: "tw-w-full iframe-evaluation",
       key: $data.selectedTab
     }, null, 8, _hoisted_5$1)) : createCommentVNode("", true)
   ]);
 }
-const Evaluations = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-8a1574e1"]]);
+const Evaluations = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-1a0dd5e5"]]);
 const client = new FetchClient("file");
 const filesService = {
   // eslint-disable-next-line no-unused-vars
@@ -261,7 +278,7 @@ const _sfc_main = {
         access: "10"
       }
     ],
-    evaluation_form: 0,
+    ccid: 0,
     url: null,
     access: null,
     student_id: null,
@@ -328,6 +345,7 @@ const _sfc_main = {
             }
             this.updateURL(this.selectedFile.fnum);
             this.getApplicationForm();
+            this.getReadonlyEvaluations();
             this.showModal = true;
             this.hidden = false;
             this.loading = false;
@@ -355,6 +373,7 @@ const _sfc_main = {
                 this.selected = "comments";
               }
             }
+            this.getReadonlyEvaluations();
             this.showModal = true;
             this.hidden = false;
           } else {
@@ -379,6 +398,31 @@ const _sfc_main = {
         this.applicationform = response.data;
         if (this.$props.type !== "evaluation") {
           this.loading = false;
+        }
+      });
+    },
+    getReadonlyEvaluations() {
+      const fnum = typeof this.selectedFile === "string" ? this.selectedFile : this.selectedFile.fnum;
+      fileService.getFileIdFromFnum(fnum).then((response) => {
+        if (response.status) {
+          this.ccid = response.data;
+          evaluationService.getEvaluationsForms(fnum, true).then((response2) => {
+            response2.data.forEach((step) => {
+              this.access[step.action_id] = {
+                r: true,
+                c: false
+              };
+              this.tabs.push({
+                label: step.label,
+                name: "step-" + step.id,
+                access: step.action_id,
+                type: "iframe",
+                url: step.url
+              });
+            });
+          }).catch((error) => {
+            console.log(error);
+          });
         }
       });
     },
@@ -568,8 +612,9 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         ]),
         _ctx.selectedFile ? (openBlock(), createBlock(_component_Evaluations, {
           fnum: typeof _ctx.selectedFile === "string" ? _ctx.selectedFile : _ctx.selectedFile.fnum,
-          key: typeof _ctx.selectedFile === "string" ? _ctx.selectedFile : _ctx.selectedFile.fnum
-        }, null, 8, ["fnum"])) : createCommentVNode("", true)
+          key: typeof _ctx.selectedFile === "string" ? _ctx.selectedFile : _ctx.selectedFile.fnum,
+          defaultCcid: _ctx.ccid
+        }, null, 8, ["fnum", "defaultCcid"])) : createCommentVNode("", true)
       ], 4)) : createCommentVNode("", true)
     ]),
     _: 1

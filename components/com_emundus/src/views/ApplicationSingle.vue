@@ -75,6 +75,7 @@
           v-if="selectedFile"
           :fnum="typeof selectedFile === 'string' ? selectedFile : selectedFile.fnum"
           :key="typeof selectedFile === 'string' ? selectedFile : selectedFile.fnum"
+          :defaultCcid="ccid"
       >
       </Evaluations>
 
@@ -90,6 +91,8 @@ import filesService from '@/services/files.js';
 import errors from "@/mixins/errors.js";
 import Comments from "@/views/Comments.vue";
 import Modal from "@/components/Modal.vue";
+import evaluationService from "@/services/evaluation.js";
+import fileService from "@/services/file.js";
 
 
 export default {
@@ -139,7 +142,7 @@ export default {
         access: '10'
       },
     ],
-    evaluation_form: 0,
+    ccid: 0,
     url: null,
     access: null,
     student_id: null,
@@ -221,6 +224,7 @@ export default {
             }
             this.updateURL(this.selectedFile.fnum)
             this.getApplicationForm();
+            this.getReadonlyEvaluations();
 
             this.showModal = true;
             this.hidden = false;
@@ -249,6 +253,9 @@ export default {
                 this.selected = 'comments';
               }
             }
+
+            this.getReadonlyEvaluations();
+
             this.showModal = true;
             this.hidden = false;
           } else {
@@ -274,6 +281,34 @@ export default {
         this.applicationform = response.data;
         if (this.$props.type !== 'evaluation') {
           this.loading = false;
+        }
+      });
+    },
+    getReadonlyEvaluations() {
+      const fnum = typeof this.selectedFile === 'string' ? this.selectedFile : this.selectedFile.fnum;
+
+      fileService.getFileIdFromFnum(fnum).then((response) =>  {
+        if (response.status) {
+          this.ccid = response.data;
+
+          evaluationService.getEvaluationsForms(fnum, true).then(response => {
+            response.data.forEach((step) => {
+              this.access[step.action_id] = {
+                r: true,
+                c: false,
+              };
+
+              this.tabs.push({
+                label: step.label,
+                name: 'step-' + step.id,
+                access: step.action_id,
+                type: 'iframe',
+                url: step.url,
+              });
+            });
+          }).catch(error => {
+            console.log(error);
+          });
         }
       });
     },
