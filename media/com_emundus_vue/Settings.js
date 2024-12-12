@@ -1,7 +1,8 @@
 import { _ as _export_sfc, O as script, X as reactive, S as Swal$1, e as resolveComponent, o as openBlock, c as createElementBlock, y as createTextVNode, t as toDisplayString, d as createCommentVNode, a as createBaseVNode, w as withDirectives, x as vModelSelect, n as normalizeClass, b as Fragment, r as renderList, j as createBlock, k as withCtx, N as vModelText, R as vModelRadio, D as vModelCheckbox, P as vModelDynamic, u as withModifiers, v as vShow, T as Tabs, G as mixin, s as settingsService, g as createVNode, V as client, Y as __vitePreload, i as axios, l as normalizeStyle, h as errors, z as useGlobalStore, Q as withKeys, L as defineStore, q as mergeProps, Z as resolveDynamicComponent } from "./app_emundus.js";
 import History from "./History.js";
 import { t as translationsService, T as Translations } from "./Translations.js";
-import { q as qs, V as VueDraggableNext } from "./index.js";
+import { q as qs } from "./index.js";
+import { V as VueDraggableNext } from "./vue-draggable-next.esm-bundler.js";
 import { v as vueDropzone } from "./vue-dropzone.js";
 import { V as V32 } from "./editor.js";
 import WorkflowSettings from "./WorkflowSettings.js";

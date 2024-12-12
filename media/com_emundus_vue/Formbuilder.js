@@ -1,10 +1,11 @@
 import { F as FetchClient, K as hooks, L as defineStore, z as useGlobalStore, S as Swal$1, _ as _export_sfc, h as errors, e as resolveComponent, o as openBlock, c as createElementBlock, a as createBaseVNode, b as Fragment, r as renderList, n as normalizeClass, t as toDisplayString, w as withDirectives, N as vModelText, g as createVNode, k as withCtx, p as TransitionGroup, y as createTextVNode, v as vShow, d as createCommentVNode, O as script, x as vModelSelect, j as createBlock, P as vModelDynamic, D as vModelCheckbox, l as normalizeStyle, Q as withKeys, J as Transition, G as mixin, H as formService, R as vModelRadio, U as Popover, m as campaignService, V as client$1, W as watch, M as Modal, s as settingsService } from "./app_emundus.js";
-import { V as VueDraggableNext } from "./index.js";
+import { V as VueDraggableNext } from "./vue-draggable-next.esm-bundler.js";
 import { V as V32 } from "./editor.js";
 import { t as translationsService, T as Translations } from "./Translations.js";
 import { S as Skeleton } from "./Skeleton.js";
 import { I as IncrementalSelect } from "./IncrementalSelect.js";
 import History from "./History.js";
+import "./index.js";
 const client = new FetchClient("formbuilder");
 const formBuilderService = {
   async createSimpleElement(params) {

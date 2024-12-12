@@ -40607,7 +40607,7 @@ if (document) {
                   let name = componentPath[1];
                   return __variableDynamicImportRuntimeHelper(/* @__PURE__ */ Object.assign({ "./views/Program/ProgramEdit.vue": () => __vitePreload(() => Promise.resolve().then(() => ProgramEdit$1), true ? void 0 : void 0), "./views/Workflows/WorkflowEdit.vue": () => __vitePreload(() => Promise.resolve().then(() => WorkflowEdit$1), true ? void 0 : void 0), "./views/Workflows/WorkflowSettings.vue": () => __vitePreload(() => import("./WorkflowSettings.js"), true ? [] : void 0) }), `./views/${directory}/${name}.vue`);
                 } else {
-                  return __variableDynamicImportRuntimeHelper(/* @__PURE__ */ Object.assign({ "./views/ApplicationSingle.vue": () => __vitePreload(() => import("./ApplicationSingle.js"), true ? [] : void 0), "./views/Attachments.vue": () => __vitePreload(() => Promise.resolve().then(() => Attachments$1), true ? void 0 : void 0), "./views/CampaignEdition.vue": () => __vitePreload(() => import("./CampaignEdition.js"), true ? ["CampaignEdition.js","addCampaign.js","editor.js","vue-dropzone.js","index.js","email.js","History.js"] : void 0), "./views/Comments.vue": () => __vitePreload(() => Promise.resolve().then(() => Comments$1), true ? void 0 : void 0), "./views/Formbuilder.vue": () => __vitePreload(() => import("./Formbuilder.js"), true ? ["Formbuilder.js","index.js","editor.js","Translations.js","Skeleton.js","IncrementalSelect.js","History.js"] : void 0), "./views/History.vue": () => __vitePreload(() => import("./History.js"), true ? [] : void 0), "./views/List.vue": () => __vitePreload(() => import("./List.js"), true ? ["List.js","Skeleton.js"] : void 0), "./views/Settings.vue": () => __vitePreload(() => import("./Settings.js"), true ? ["Settings.js","History.js","Translations.js","index.js","vue-dropzone.js","editor.js","WorkflowSettings.js"] : void 0), "./views/Workflows.vue": () => __vitePreload(() => import("./Workflows.js"), true ? ["Workflows.js","List.js","Skeleton.js"] : void 0), "./views/addCampaign.vue": () => __vitePreload(() => import("./addCampaign.js").then((n) => n.b), true ? ["addCampaign.js","editor.js"] : void 0), "./views/addEmail.vue": () => __vitePreload(() => import("./addEmail.js"), true ? ["addEmail.js","IncrementalSelect.js","email.js","editor.js"] : void 0) }), `./views/${componentName}.vue`);
+                  return __variableDynamicImportRuntimeHelper(/* @__PURE__ */ Object.assign({ "./views/ApplicationSingle.vue": () => __vitePreload(() => import("./ApplicationSingle.js"), true ? [] : void 0), "./views/Attachments.vue": () => __vitePreload(() => Promise.resolve().then(() => Attachments$1), true ? void 0 : void 0), "./views/CampaignEdition.vue": () => __vitePreload(() => import("./CampaignEdition.js"), true ? ["CampaignEdition.js","addCampaign.js","editor.js","vue-dropzone.js","vue-draggable-next.esm-bundler.js","email.js","index.js","History.js"] : void 0), "./views/Comments.vue": () => __vitePreload(() => Promise.resolve().then(() => Comments$1), true ? void 0 : void 0), "./views/Formbuilder.vue": () => __vitePreload(() => import("./Formbuilder.js"), true ? ["Formbuilder.js","vue-draggable-next.esm-bundler.js","editor.js","Translations.js","index.js","Skeleton.js","IncrementalSelect.js","History.js"] : void 0), "./views/History.vue": () => __vitePreload(() => import("./History.js"), true ? [] : void 0), "./views/List.vue": () => __vitePreload(() => import("./List.js"), true ? ["List.js","Skeleton.js"] : void 0), "./views/MessagesCoordinator.vue": () => __vitePreload(() => import("./MessagesCoordinator.js"), true ? ["MessagesCoordinator.js","vue-dropzone.js","index.js"] : void 0), "./views/Settings.vue": () => __vitePreload(() => import("./Settings.js"), true ? ["Settings.js","History.js","Translations.js","index.js","vue-draggable-next.esm-bundler.js","vue-dropzone.js","editor.js","WorkflowSettings.js"] : void 0), "./views/Workflows.vue": () => __vitePreload(() => import("./Workflows.js"), true ? ["Workflows.js","List.js","Skeleton.js"] : void 0), "./views/addCampaign.vue": () => __vitePreload(() => import("./addCampaign.js").then((n) => n.b), true ? ["addCampaign.js","editor.js"] : void 0), "./views/addEmail.vue": () => __vitePreload(() => import("./addEmail.js"), true ? ["addEmail.js","IncrementalSelect.js","email.js","editor.js"] : void 0) }), `./views/${componentName}.vue`);
                 }
               })
             },
@@ -40673,12 +40673,25 @@ if (document) {
         const globalStore2 = useGlobalStore();
         globalStore2.initAttachmentPath(datas.base + "/images/emundus/files/");
       }
+      {
+        app.config.productionTip = false;
+        app.config.devtools = true;
+        app.config.performance = true;
+      }
       app.mount(elementId);
+      {
+        const version2 = app.version;
+        const devtools2 = window.__VUE_DEVTOOLS_GLOBAL_HOOK__;
+        if (devtools2) {
+          devtools2.enabled = true;
+          devtools2.emit("app:init", app, version2, {});
+        }
+      }
     }
   }
 }
 export {
-  $3ed269f2f0fb224b$export$2e2bcd8739ae039 as $,
+  defineComponent as $,
   Attachments as A,
   workflowService as B,
   Comments as C,
@@ -40707,32 +40720,23 @@ export {
   resolveDynamicComponent as Z,
   _export_sfc as _,
   createBaseVNode as a,
-  renderSlot as a0,
-  defineComponent as a1,
-  h as a2,
+  h as a0,
+  $3ed269f2f0fb224b$export$2e2bcd8739ae039 as a1,
+  renderSlot as a2,
   getAugmentedNamespace as a3,
   commonjsGlobal as a4,
   getDefaultExportFromCjs as a5,
   ref as a6,
   computed as a7,
-  normalizeProps as a8,
-  guardReactiveProps as a9,
-  onMounted as aa,
-  nextTick as ab,
-  toRef as ac,
-  provide as ad,
-  unref as ae,
-  inject as af,
-  isRef as ag,
-  onUnmounted as ah,
-  toRefs as ai,
-  watchEffect as aj,
-  resolveDirective as ak,
-  markRaw as al,
-  onBeforeUnmount as am,
-  customRef as an,
-  getCurrentInstance as ao,
-  render$2 as ap,
+  markRaw as a8,
+  watchEffect as a9,
+  nextTick as aa,
+  unref as ab,
+  onBeforeUnmount as ac,
+  customRef as ad,
+  getCurrentInstance as ae,
+  render$2 as af,
+  onMounted as ag,
   Fragment as b,
   createElementBlock as c,
   createCommentVNode as d,

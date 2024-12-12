@@ -43,7 +43,7 @@ require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash() . rand(0, 99999);
 ?>
 <div id="em-component-vue"
-     component="messagescoordinator"
+     component="MessagesCoordinator"
      coordinatorAccess="<?= $coordinator_access ?>"
      shortLang="<?= $short_lang ?>"
      currentLanguage="<?= $current_lang ?>"
