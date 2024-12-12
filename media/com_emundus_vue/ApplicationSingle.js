@@ -489,7 +489,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           createBaseVNode("div", _hoisted_3, [
             createBaseVNode("div", {
               onClick: _cache[0] || (_cache[0] = (...args) => $options.onClose && $options.onClose(...args)),
-              class: "tw-w-max tw-flex tw-items-center"
+              class: "tw-w-max tw-flex tw-items-center tw-cursor-pointer"
             }, [
               _cache[3] || (_cache[3] = createBaseVNode("span", {
                 class: "material-symbols-outlined tw-text-base",
