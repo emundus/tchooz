@@ -1171,7 +1171,19 @@ class EmundusControllerEvaluation extends BaseController
 						$step_data->user_access = EmundusHelperAccess::getUserEvaluationStepAccess($ccid, $step_data, $this->_user->id);
 
 						if ($user_access['can_edit'] || !$step_data->multiple) {
-							$step_data->url = '/evaluation-step-form?view=form&formid=' . $step_data->form_id . '&' . $step_data->table . '___ccid=' . $ccid . '&' . $step_data->table . '___step_id=' . $step_data->id . '&tmpl=component&iframe=1';
+							if (!$user_access['can_edit']) {
+								// get the evaluation row id
+								$row_id = 0;
+								$evaluations = $m_workflow->getStepEvaluationsForFile($step_data->id, $ccid);
+
+								if (!empty($evaluations)) {
+									$row_id = $evaluations[0]['id'];
+								}
+
+								$step_data->url = '/evaluation-step-form?view=form&formid=' . $step_data->form_id . '&' . $step_data->table . '___ccid=' . $ccid . '&' . $step_data->table . '___step_id=' . $step_data->id . '&tmpl=component&iframe=1&rowid=' . $row_id;
+							} else {
+								$step_data->url = '/evaluation-step-form?view=form&formid=' . $step_data->form_id . '&' . $step_data->table . '___ccid=' . $ccid . '&' . $step_data->table . '___step_id=' . $step_data->id . '&tmpl=component&iframe=1';
+							}
 						}
 
 						$response['status'] = true;
