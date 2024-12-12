@@ -439,7 +439,7 @@ export default {
   background: white;
 }
 
-#em-attachments #edit-modal {
+#modal-applicationform #em-attachments #edit-modal {
     width: var(--attachment-width) !important;
     top: 52px;
     height: calc(100% - 52px) !important;
