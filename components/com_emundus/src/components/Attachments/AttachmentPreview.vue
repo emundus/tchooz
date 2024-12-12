@@ -200,7 +200,7 @@ export default {
   .attachment-preview {
     height: 100%;
     width: 100%;
-    overflow: hidden;
+    overflow: auto;
     background-color: var(--grey-bg-color);
 
     &.overflow-x {
