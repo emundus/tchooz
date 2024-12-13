@@ -1,4 +1,4 @@
-import { $ as defineComponent, a0 as h, e as resolveComponent } from "./app_emundus.js";
+import { a0 as defineComponent, a1 as h, e as resolveComponent } from "./app_emundus.js";
 /*!
   * vue-draggable-next v2.2.0
   * (c) 2023 Anish George

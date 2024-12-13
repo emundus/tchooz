@@ -23281,7 +23281,7 @@ const useAttachmentStore = /* @__PURE__ */ defineStore("attachment", {
   }
 });
 const AttachmentPreview_vue_vue_type_style_index_0_lang = "";
-const _sfc_main$9 = {
+const _sfc_main$b = {
   props: {
     user: {
       type: Number,
@@ -23428,10 +23428,10 @@ const _sfc_main$9 = {
     }
   }
 };
-const _hoisted_1$a = { id: "em-attachment-preview" };
-const _hoisted_2$8 = ["innerHTML"];
-function _sfc_render$9(_ctx, _cache, $props, $setup, $data, $options) {
-  return openBlock(), createElementBlock("div", _hoisted_1$a, [
+const _hoisted_1$c = { id: "em-attachment-preview" };
+const _hoisted_2$a = ["innerHTML"];
+function _sfc_render$b(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", _hoisted_1$c, [
     createBaseVNode("div", {
       ref: "a-preview",
       class: normalizeClass(["attachment-preview", {
@@ -23444,7 +23444,7 @@ function _sfc_render$9(_ctx, _cache, $props, $setup, $data, $options) {
       key: 0,
       innerHTML: $data.preview,
       class: "attachment-preview"
-    }, null, 8, _hoisted_2$8)) : createCommentVNode("", true),
+    }, null, 8, _hoisted_2$a)) : createCommentVNode("", true),
     createBaseVNode("div", {
       id: "msg",
       class: normalizeClass({ active: $data.msg && $data.openMsg })
@@ -23453,7 +23453,7 @@ function _sfc_render$9(_ctx, _cache, $props, $setup, $data, $options) {
     ], 2)
   ]);
 }
-const AttachmentPreview = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["render", _sfc_render$9]]);
+const AttachmentPreview = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["render", _sfc_render$b]]);
 //! moment.js
 //! version : 2.30.1
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -31236,7 +31236,7 @@ var mixin$1 = {
   }
 };
 const AttachmentEdit_vue_vue_type_style_index_0_lang = "";
-const _sfc_main$8 = {
+const _sfc_main$a = {
   name: "AttachmentEdit",
   props: {
     fnum: {
@@ -31372,41 +31372,41 @@ const _sfc_main$8 = {
     }
   }
 };
-const _hoisted_1$9 = { id: "attachment-edit" };
-const _hoisted_2$7 = { class: "wrapper" };
-const _hoisted_3$6 = { class: "title" };
-const _hoisted_4$6 = { class: "editable-data" };
-const _hoisted_5$6 = { class: "input-group" };
-const _hoisted_6$6 = { for: "description" };
-const _hoisted_7$6 = ["disabled"];
-const _hoisted_8$6 = ["innerHTML"];
-const _hoisted_9$6 = { for: "status" };
-const _hoisted_10$5 = ["disabled"];
-const _hoisted_11$5 = { value: "1" };
-const _hoisted_12$5 = { value: "0" };
-const _hoisted_13$5 = { value: "2" };
-const _hoisted_14$5 = { value: "-2" };
-const _hoisted_15$5 = {
+const _hoisted_1$b = { id: "attachment-edit" };
+const _hoisted_2$9 = { class: "wrapper" };
+const _hoisted_3$8 = { class: "title" };
+const _hoisted_4$8 = { class: "editable-data" };
+const _hoisted_5$8 = { class: "input-group" };
+const _hoisted_6$8 = { for: "description" };
+const _hoisted_7$8 = ["disabled"];
+const _hoisted_8$8 = ["innerHTML"];
+const _hoisted_9$7 = { for: "status" };
+const _hoisted_10$6 = ["disabled"];
+const _hoisted_11$6 = { value: "1" };
+const _hoisted_12$6 = { value: "0" };
+const _hoisted_13$6 = { value: "2" };
+const _hoisted_14$6 = { value: "-2" };
+const _hoisted_15$6 = {
   key: 0,
   class: "input-group"
 };
-const _hoisted_16$5 = { for: "replace" };
-const _hoisted_17$5 = ["accept"];
-const _hoisted_18$5 = {
+const _hoisted_16$6 = { for: "replace" };
+const _hoisted_17$6 = ["accept"];
+const _hoisted_18$6 = {
   key: 1,
   class: "input-group"
 };
-const _hoisted_19$4 = { for: "can_be_viewed" };
-const _hoisted_20$4 = ["disabled"];
-const _hoisted_21$4 = {
+const _hoisted_19$5 = { for: "can_be_viewed" };
+const _hoisted_20$5 = ["disabled"];
+const _hoisted_21$5 = {
   key: 2,
   class: "input-group"
 };
-const _hoisted_22$4 = { for: "can_be_deleted" };
-const _hoisted_23$3 = ["disabled"];
-const _hoisted_24$3 = { class: "non-editable-data" };
-const _hoisted_25$3 = { key: 0 };
-const _hoisted_26$3 = { class: "tw-text-right" };
+const _hoisted_22$5 = { for: "can_be_deleted" };
+const _hoisted_23$4 = ["disabled"];
+const _hoisted_24$4 = { class: "non-editable-data" };
+const _hoisted_25$4 = { key: 0 };
+const _hoisted_26$4 = { class: "tw-text-right" };
 const _hoisted_27$3 = { key: 1 };
 const _hoisted_28$3 = { class: "tw-text-right" };
 const _hoisted_29$3 = { key: 2 };
@@ -31421,13 +31421,13 @@ const _hoisted_37$3 = {
   key: 0,
   class: "error-msg"
 };
-function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
-  return openBlock(), createElementBlock("div", _hoisted_1$9, [
-    createBaseVNode("div", _hoisted_2$7, [
-      createBaseVNode("h2", _hoisted_3$6, toDisplayString($data.attachment.value), 1),
-      createBaseVNode("div", _hoisted_4$6, [
-        createBaseVNode("div", _hoisted_5$6, [
-          createBaseVNode("label", _hoisted_6$6, toDisplayString(_ctx.translate("DESCRIPTION")), 1),
+function _sfc_render$a(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", _hoisted_1$b, [
+    createBaseVNode("div", _hoisted_2$9, [
+      createBaseVNode("h2", _hoisted_3$8, toDisplayString($data.attachment.value), 1),
+      createBaseVNode("div", _hoisted_4$8, [
+        createBaseVNode("div", _hoisted_5$8, [
+          createBaseVNode("label", _hoisted_6$8, toDisplayString(_ctx.translate("DESCRIPTION")), 1),
           $data.attachment.allowed_types !== "video" ? withDirectives((openBlock(), createElementBlock("textarea", {
             key: 0,
             name: "description",
@@ -31436,12 +31436,12 @@ function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
             "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $data.attachmentDescription = $event),
             disabled: !$data.canUpdate,
             onFocusout: _cache[1] || (_cache[1] = (...args) => $options.saveChanges && $options.saveChanges(...args))
-          }, "					", 40, _hoisted_7$6)), [
+          }, "					", 40, _hoisted_7$8)), [
             [vModelText, $data.attachmentDescription]
           ]) : (openBlock(), createElementBlock("span", {
             key: 1,
             innerHTML: $data.attachmentDescription
-          }, null, 8, _hoisted_8$6))
+          }, null, 8, _hoisted_8$8))
         ]),
         createBaseVNode("div", {
           class: normalizeClass(["input-group valid-state", {
@@ -31450,59 +31450,59 @@ function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
             error: $data.attachmentIsValidated == 0
           }])
         }, [
-          createBaseVNode("label", _hoisted_9$6, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_CHECK")), 1),
+          createBaseVNode("label", _hoisted_9$7, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_CHECK")), 1),
           withDirectives(createBaseVNode("select", {
             name: "status",
             "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => $data.attachmentIsValidated = $event),
             onChange: _cache[3] || (_cache[3] = (...args) => $options.updateAttachmentStatus && $options.updateAttachmentStatus(...args)),
             disabled: !$data.canUpdate || $props.is_applicant == 1
           }, [
-            createBaseVNode("option", _hoisted_11$5, toDisplayString(_ctx.translate("VALID")), 1),
-            createBaseVNode("option", _hoisted_12$5, toDisplayString(_ctx.translate("INVALID")), 1),
-            createBaseVNode("option", _hoisted_13$5, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_WARNING")), 1),
-            createBaseVNode("option", _hoisted_14$5, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_WAITING")), 1)
-          ], 40, _hoisted_10$5), [
+            createBaseVNode("option", _hoisted_11$6, toDisplayString(_ctx.translate("VALID")), 1),
+            createBaseVNode("option", _hoisted_12$6, toDisplayString(_ctx.translate("INVALID")), 1),
+            createBaseVNode("option", _hoisted_13$6, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_WARNING")), 1),
+            createBaseVNode("option", _hoisted_14$6, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_WAITING")), 1)
+          ], 40, _hoisted_10$6), [
             [vModelSelect, $data.attachmentIsValidated]
           ])
         ], 2),
-        $data.canUpdate || $props.is_applicant == 1 && $data.attachmentIsValidated == 0 ? (openBlock(), createElementBlock("div", _hoisted_15$5, [
-          createBaseVNode("label", _hoisted_16$5, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_REPLACE")), 1),
+        $data.canUpdate || $props.is_applicant == 1 && $data.attachmentIsValidated == 0 ? (openBlock(), createElementBlock("div", _hoisted_15$6, [
+          createBaseVNode("label", _hoisted_16$6, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_REPLACE")), 1),
           createBaseVNode("input", {
             type: "file",
             name: "replace",
             onChange: _cache[4] || (_cache[4] = (...args) => $options.updateFile && $options.updateFile(...args)),
             accept: $options.allowedType
-          }, null, 40, _hoisted_17$5)
+          }, null, 40, _hoisted_17$6)
         ])) : createCommentVNode("", true),
-        $props.is_applicant != 1 && $data.attachment.profiles && $data.attachment.profiles.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_18$5, [
-          createBaseVNode("label", _hoisted_19$4, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_VIEWED")), 1),
+        $props.is_applicant != 1 && $data.attachment.profiles && $data.attachment.profiles.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_18$6, [
+          createBaseVNode("label", _hoisted_19$5, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_VIEWED")), 1),
           withDirectives(createBaseVNode("input", {
             type: "checkbox",
             name: "can_be_viewed",
             "onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => $data.attachmentCanBeViewed = $event),
             disabled: !$data.canUpdate,
             onClick: _cache[6] || (_cache[6] = (...args) => $options.saveChanges && $options.saveChanges(...args))
-          }, null, 8, _hoisted_20$4), [
+          }, null, 8, _hoisted_20$5), [
             [vModelCheckbox, $data.attachmentCanBeViewed]
           ])
         ])) : createCommentVNode("", true),
-        $props.is_applicant != 1 && $data.attachment.profiles && $data.attachment.profiles.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_21$4, [
-          createBaseVNode("label", _hoisted_22$4, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_DELETED")), 1),
+        $props.is_applicant != 1 && $data.attachment.profiles && $data.attachment.profiles.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_21$5, [
+          createBaseVNode("label", _hoisted_22$5, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_DELETED")), 1),
           withDirectives(createBaseVNode("input", {
             type: "checkbox",
             name: "can_be_deleted",
             "onUpdate:modelValue": _cache[7] || (_cache[7] = ($event) => $data.attachmentCanBeDeleted = $event),
             disabled: !$data.canUpdate,
             onClick: _cache[8] || (_cache[8] = (...args) => $options.saveChanges && $options.saveChanges(...args))
-          }, null, 8, _hoisted_23$3), [
+          }, null, 8, _hoisted_23$4), [
             [vModelCheckbox, $data.attachmentCanBeDeleted]
           ])
         ])) : createCommentVNode("", true)
       ]),
-      createBaseVNode("div", _hoisted_24$3, [
-        $props.columns.includes("date") ? (openBlock(), createElementBlock("div", _hoisted_25$3, [
+      createBaseVNode("div", _hoisted_24$4, [
+        $props.columns.includes("date") ? (openBlock(), createElementBlock("div", _hoisted_25$4, [
           createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_SEND_DATE")), 1),
-          createBaseVNode("span", _hoisted_26$3, toDisplayString(_ctx.formattedDate($data.attachment.timedate)), 1)
+          createBaseVNode("span", _hoisted_26$4, toDisplayString(_ctx.formattedDate($data.attachment.timedate)), 1)
         ])) : createCommentVNode("", true),
         $data.attachment.user_id && $data.canSee ? (openBlock(), createElementBlock("div", _hoisted_27$3, [
           createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_UPLOADED_BY")), 1),
@@ -31538,7 +31538,7 @@ function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
     $data.error ? (openBlock(), createElementBlock("div", _hoisted_37$3, toDisplayString($data.errorMessage), 1)) : createCommentVNode("", true)
   ]);
 }
-const AttachmentEdit = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$8]]);
+const AttachmentEdit = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["render", _sfc_render$a]]);
 const syncService = {
   async isSyncModuleActive() {
     try {
@@ -31870,7 +31870,7 @@ const syncService = {
   }
 };
 const AttachmentRow_vue_vue_type_style_index_0_lang = "";
-const _sfc_main$7 = {
+const _sfc_main$9 = {
   name: "AttachmentRow",
   props: {
     attachment: {
@@ -31986,58 +31986,58 @@ const _sfc_main$7 = {
     }
   }
 };
-const _hoisted_1$8 = { key: 0 };
-const _hoisted_2$6 = ["checked"];
-const _hoisted_3$5 = ["title"];
-const _hoisted_4$5 = ["title"];
-const _hoisted_5$5 = {
+const _hoisted_1$a = { key: 0 };
+const _hoisted_2$8 = ["checked"];
+const _hoisted_3$7 = ["title"];
+const _hoisted_4$7 = ["title"];
+const _hoisted_5$7 = {
   key: 2,
   class: "date"
 };
-const _hoisted_6$5 = {
+const _hoisted_6$7 = {
   key: 3,
   class: "desc"
 };
-const _hoisted_7$5 = {
+const _hoisted_7$7 = {
   key: 4,
   class: "category"
 };
-const _hoisted_8$5 = ["disabled"];
-const _hoisted_9$5 = ["selected"];
-const _hoisted_10$4 = ["selected"];
-const _hoisted_11$4 = ["selected"];
-const _hoisted_12$4 = { key: 6 };
-const _hoisted_13$4 = { key: 7 };
-const _hoisted_14$4 = {
+const _hoisted_8$7 = ["disabled"];
+const _hoisted_9$6 = ["selected"];
+const _hoisted_10$5 = ["selected"];
+const _hoisted_11$5 = ["selected"];
+const _hoisted_12$5 = { key: 6 };
+const _hoisted_13$5 = { key: 7 };
+const _hoisted_14$5 = {
   key: 8,
   class: "date"
 };
-const _hoisted_15$4 = {
+const _hoisted_15$5 = {
   key: 9,
   class: "permissions"
 };
-const _hoisted_16$4 = ["title"];
-const _hoisted_17$4 = ["title"];
-const _hoisted_18$4 = { key: 10 };
-const _hoisted_19$3 = { key: 0 };
-const _hoisted_20$3 = ["title"];
-const _hoisted_21$3 = ["title"];
-const _hoisted_22$3 = {
+const _hoisted_16$5 = ["title"];
+const _hoisted_17$5 = ["title"];
+const _hoisted_18$5 = { key: 10 };
+const _hoisted_19$4 = { key: 0 };
+const _hoisted_20$4 = ["title"];
+const _hoisted_21$4 = ["title"];
+const _hoisted_22$4 = {
   key: 2,
   class: "sync-loader em-loader"
 };
-function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render$9(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("tr", {
     class: normalizeClass(["attachment-row", { checked: $data.checkedAttachments.includes($props.attachment.aid) }]),
     key: $props.attachment.aid
   }, [
-    $props.columns.includes("check") ? (openBlock(), createElementBlock("td", _hoisted_1$8, [
+    $props.columns.includes("check") ? (openBlock(), createElementBlock("td", _hoisted_1$a, [
       createBaseVNode("input", {
         class: "attachment-check",
         type: "checkbox",
         onChange: _cache[0] || (_cache[0] = ($event) => $options.updateCheckedAttachments($props.attachment.aid)),
         checked: $data.checkedAttachments.includes($props.attachment.aid)
-      }, null, 40, _hoisted_2$6)
+      }, null, 40, _hoisted_2$8)
     ])) : createCommentVNode("", true),
     $props.columns.includes("name") ? (openBlock(), createElementBlock("td", {
       key: 1,
@@ -32048,14 +32048,14 @@ function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
         key: 0,
         class: "material-symbols-outlined warning file-not-found tw-mr-4",
         title: _ctx.translate("COM_EMUNDUS_ATTACHMENTS_FILE_NOT_FOUND")
-      }, "warning", 8, _hoisted_3$5)) : createCommentVNode("", true),
+      }, "warning", 8, _hoisted_3$7)) : createCommentVNode("", true),
       createBaseVNode("span", {
         title: $props.attachment.value
-      }, toDisplayString($props.attachment.value), 9, _hoisted_4$5)
+      }, toDisplayString($props.attachment.value), 9, _hoisted_4$7)
     ])) : createCommentVNode("", true),
-    $props.columns.includes("date") ? (openBlock(), createElementBlock("td", _hoisted_5$5, toDisplayString(_ctx.formattedDate($props.attachment.timedate)), 1)) : createCommentVNode("", true),
-    $props.columns.includes("desc") ? (openBlock(), createElementBlock("td", _hoisted_6$5, toDisplayString(_ctx.strippedHtml($props.attachment.upload_description)), 1)) : createCommentVNode("", true),
-    $props.columns.includes("category") ? (openBlock(), createElementBlock("td", _hoisted_7$5, toDisplayString($data.category), 1)) : createCommentVNode("", true),
+    $props.columns.includes("date") ? (openBlock(), createElementBlock("td", _hoisted_5$7, toDisplayString(_ctx.formattedDate($props.attachment.timedate)), 1)) : createCommentVNode("", true),
+    $props.columns.includes("desc") ? (openBlock(), createElementBlock("td", _hoisted_6$7, toDisplayString(_ctx.strippedHtml($props.attachment.upload_description)), 1)) : createCommentVNode("", true),
+    $props.columns.includes("category") ? (openBlock(), createElementBlock("td", _hoisted_7$7, toDisplayString($data.category), 1)) : createCommentVNode("", true),
     $props.columns.includes("status") ? (openBlock(), createElementBlock("td", {
       key: 5,
       class: normalizeClass(["status valid-state", { success: $props.attachment.is_validated == 1, warning: $props.attachment.is_validated == 2, error: $props.attachment.is_validated == 0 }])
@@ -32067,42 +32067,42 @@ function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
         createBaseVNode("option", {
           value: "1",
           selected: $props.attachment.is_validated == 1
-        }, toDisplayString(_ctx.translate("VALID")), 9, _hoisted_9$5),
+        }, toDisplayString(_ctx.translate("VALID")), 9, _hoisted_9$6),
         createBaseVNode("option", {
           value: "0",
           selected: $props.attachment.is_validated == 0
-        }, toDisplayString(_ctx.translate("INVALID")), 9, _hoisted_10$4),
+        }, toDisplayString(_ctx.translate("INVALID")), 9, _hoisted_10$5),
         createBaseVNode("option", {
           value: "-2",
           selected: $props.attachment.is_validated == -2 || $props.attachment.is_validated === null
-        }, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_WAITING")), 9, _hoisted_11$4)
-      ], 40, _hoisted_8$5)
+        }, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_WAITING")), 9, _hoisted_11$5)
+      ], 40, _hoisted_8$7)
     ], 2)) : createCommentVNode("", true),
-    $props.canSee && $props.columns.includes("user") ? (openBlock(), createElementBlock("td", _hoisted_12$4, toDisplayString(_ctx.getUserNameById($props.attachment.user_id)), 1)) : createCommentVNode("", true),
-    $props.canSee && $props.columns.includes("modified_by") ? (openBlock(), createElementBlock("td", _hoisted_13$4, toDisplayString(_ctx.getUserNameById($props.attachment.modified_by)), 1)) : createCommentVNode("", true),
-    $props.columns.includes("modified") ? (openBlock(), createElementBlock("td", _hoisted_14$4, toDisplayString(_ctx.formattedDate($props.attachment.modified)), 1)) : createCommentVNode("", true),
-    $props.columns.includes("permissions") ? (openBlock(), createElementBlock("td", _hoisted_15$4, [
+    $props.canSee && $props.columns.includes("user") ? (openBlock(), createElementBlock("td", _hoisted_12$5, toDisplayString(_ctx.getUserNameById($props.attachment.user_id)), 1)) : createCommentVNode("", true),
+    $props.canSee && $props.columns.includes("modified_by") ? (openBlock(), createElementBlock("td", _hoisted_13$5, toDisplayString(_ctx.getUserNameById($props.attachment.modified_by)), 1)) : createCommentVNode("", true),
+    $props.columns.includes("modified") ? (openBlock(), createElementBlock("td", _hoisted_14$5, toDisplayString(_ctx.formattedDate($props.attachment.modified)), 1)) : createCommentVNode("", true),
+    $props.columns.includes("permissions") ? (openBlock(), createElementBlock("td", _hoisted_15$5, [
       $props.attachment.profiles.length > 0 ? (openBlock(), createElementBlock("span", {
         key: 0,
         class: normalizeClass(["material-symbols-outlined visibility-permission tw-cursor-pointer", { active: $props.attachment.can_be_viewed == "1" }]),
         onClick: _cache[3] || (_cache[3] = ($event) => $options.changePermission("can_be_viewed", $props.attachment)),
         title: _ctx.translate("COM_EMUNDUS_ATTACHMENTS_PERMISSION_VIEW")
-      }, "visibility", 10, _hoisted_16$4)) : createCommentVNode("", true),
+      }, "visibility", 10, _hoisted_16$5)) : createCommentVNode("", true),
       $props.attachment.profiles.length > 0 ? (openBlock(), createElementBlock("span", {
         key: 1,
         class: normalizeClass(["material-symbols-outlined delete-permission tw-cursor-pointer", { active: $props.attachment.can_be_deleted == "1" }]),
         onClick: _cache[4] || (_cache[4] = ($event) => $options.changePermission("can_be_deleted", $props.attachment)),
         title: _ctx.translate("COM_EMUNDUS_ATTACHMENTS_PERMISSION_DELETE")
-      }, "delete", 10, _hoisted_17$4)) : createCommentVNode("", true)
+      }, "delete", 10, _hoisted_17$5)) : createCommentVNode("", true)
     ])) : createCommentVNode("", true),
-    $props.sync && $props.columns.includes("sync") ? (openBlock(), createElementBlock("td", _hoisted_18$4, [
-      $props.attachment.sync > 0 ? (openBlock(), createElementBlock("div", _hoisted_19$3, [
+    $props.sync && $props.columns.includes("sync") ? (openBlock(), createElementBlock("td", _hoisted_18$5, [
+      $props.attachment.sync > 0 ? (openBlock(), createElementBlock("div", _hoisted_19$4, [
         $props.attachment.sync_method == "write" && !$data.syncLoading ? (openBlock(), createElementBlock("span", {
           key: 0,
           class: normalizeClass(["material-icons sync tw-cursor-pointer", { success: $data.synchronizeState == 1, error: $data.synchronizeState != 1 }]),
           title: _ctx.translate("COM_EMUNDUS_ATTACHMENTS_SYNC_WRITE"),
           onClick: _cache[5] || (_cache[5] = ($event) => $options.synchronizeAttachments($props.attachment.aid))
-        }, " cloud_upload ", 10, _hoisted_20$3)) : $props.attachment.sync_method == "read" && !$data.syncLoading ? (openBlock(), createElementBlock("span", {
+        }, " cloud_upload ", 10, _hoisted_20$4)) : $props.attachment.sync_method == "read" && !$data.syncLoading ? (openBlock(), createElementBlock("span", {
           key: 1,
           class: normalizeClass(["material-icons sync tw-cursor-pointer", {
             success: $data.synchronizeState == 1,
@@ -32110,15 +32110,15 @@ function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
           }]),
           title: _ctx.translate("COM_EMUNDUS_ATTACHMENTS_SYNC_READ"),
           onClick: _cache[6] || (_cache[6] = ($event) => $options.synchronizeAttachments($props.attachment.aid))
-        }, " cloud_download ", 10, _hoisted_21$3)) : createCommentVNode("", true),
-        $data.syncLoading ? (openBlock(), createElementBlock("div", _hoisted_22$3)) : createCommentVNode("", true)
+        }, " cloud_download ", 10, _hoisted_21$4)) : createCommentVNode("", true),
+        $data.syncLoading ? (openBlock(), createElementBlock("div", _hoisted_22$4)) : createCommentVNode("", true)
       ])) : createCommentVNode("", true)
     ])) : createCommentVNode("", true)
   ], 2);
 }
-const AttachmentRow = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$7]]);
+const AttachmentRow = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["render", _sfc_render$9]]);
 const Modal_vue_vue_type_style_index_0_scoped_62997022_lang = "";
-const _sfc_main$6 = {
+const _sfc_main$8 = {
   props: {
     name: {
       type: String,
@@ -32171,8 +32171,8 @@ const _sfc_main$6 = {
     }
   }
 };
-const _hoisted_1$7 = ["id"];
-function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
+const _hoisted_1$9 = ["id"];
+function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createBlock(Transition, {
     name: $props.transition,
     duration: $props.delay
@@ -32185,14 +32185,14 @@ function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
         onFocusout: _cache[0] || (_cache[0] = (...args) => $options.onFocusOut && $options.onFocusOut(...args))
       }, [
         renderSlot(_ctx.$slots, "default", {}, void 0, true)
-      ], 40, _hoisted_1$7), [
+      ], 40, _hoisted_1$9), [
         [vShow, _ctx.isOpened]
       ])
     ]),
     _: 3
   }, 8, ["name", "duration"]);
 }
-const Modal = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$6], ["__scopeId", "data-v-62997022"]]);
+const Modal = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$8], ["__scopeId", "data-v-62997022"]]);
 /*!
 * sweetalert2 v11.14.4
 * Released under the MIT License.
@@ -35175,7 +35175,7 @@ Swal$1.default = Swal$1;
     }
 }(document, '.swal2-popup.swal2-toast{box-sizing:border-box;grid-column:1/4 !important;grid-row:1/4 !important;grid-template-columns:min-content auto min-content;padding:1em;overflow-y:hidden;background:#fff;box-shadow:0 0 1px rgba(0,0,0,.075),0 1px 2px rgba(0,0,0,.075),1px 2px 4px rgba(0,0,0,.075),1px 3px 8px rgba(0,0,0,.075),2px 4px 16px rgba(0,0,0,.075);pointer-events:all}.swal2-popup.swal2-toast>*{grid-column:2}.swal2-popup.swal2-toast .swal2-title{margin:.5em 1em;padding:0;font-size:1em;text-align:initial}.swal2-popup.swal2-toast .swal2-loading{justify-content:center}.swal2-popup.swal2-toast .swal2-input{height:2em;margin:.5em;font-size:1em}.swal2-popup.swal2-toast .swal2-validation-message{font-size:1em}.swal2-popup.swal2-toast .swal2-footer{margin:.5em 0 0;padding:.5em 0 0;font-size:.8em}.swal2-popup.swal2-toast .swal2-close{grid-column:3/3;grid-row:1/99;align-self:center;width:.8em;height:.8em;margin:0;font-size:2em}.swal2-popup.swal2-toast .swal2-html-container{margin:.5em 1em;padding:0;overflow:initial;font-size:1em;text-align:initial}.swal2-popup.swal2-toast .swal2-html-container:empty{padding:0}.swal2-popup.swal2-toast .swal2-loader{grid-column:1;grid-row:1/99;align-self:center;width:2em;height:2em;margin:.25em}.swal2-popup.swal2-toast .swal2-icon{grid-column:1;grid-row:1/99;align-self:center;width:2em;min-width:2em;height:2em;margin:0 .5em 0 0}.swal2-popup.swal2-toast .swal2-icon .swal2-icon-content{display:flex;align-items:center;font-size:1.8em;font-weight:bold}.swal2-popup.swal2-toast .swal2-icon.swal2-success .swal2-success-ring{width:2em;height:2em}.swal2-popup.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line]{top:.875em;width:1.375em}.swal2-popup.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=left]{left:.3125em}.swal2-popup.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=right]{right:.3125em}.swal2-popup.swal2-toast .swal2-actions{justify-content:flex-start;height:auto;margin:0;margin-top:.5em;padding:0 .5em}.swal2-popup.swal2-toast .swal2-styled{margin:.25em .5em;padding:.4em .6em;font-size:1em}.swal2-popup.swal2-toast .swal2-success{border-color:#a5dc86}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-circular-line]{position:absolute;width:1.6em;height:3em;border-radius:50%}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-circular-line][class$=left]{top:-0.8em;left:-0.5em;transform:rotate(-45deg);transform-origin:2em 2em;border-radius:4em 0 0 4em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-circular-line][class$=right]{top:-0.25em;left:.9375em;transform-origin:0 1.5em;border-radius:0 4em 4em 0}.swal2-popup.swal2-toast .swal2-success .swal2-success-ring{width:2em;height:2em}.swal2-popup.swal2-toast .swal2-success .swal2-success-fix{top:0;left:.4375em;width:.4375em;height:2.6875em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-line]{height:.3125em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-line][class$=tip]{top:1.125em;left:.1875em;width:.75em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-line][class$=long]{top:.9375em;right:.1875em;width:1.375em}.swal2-popup.swal2-toast .swal2-success.swal2-icon-show .swal2-success-line-tip{animation:swal2-toast-animate-success-line-tip .75s}.swal2-popup.swal2-toast .swal2-success.swal2-icon-show .swal2-success-line-long{animation:swal2-toast-animate-success-line-long .75s}.swal2-popup.swal2-toast.swal2-show{animation:swal2-toast-show .5s}.swal2-popup.swal2-toast.swal2-hide{animation:swal2-toast-hide .1s forwards}div:where(.swal2-container){display:grid;position:fixed;z-index:1060;inset:0;box-sizing:border-box;grid-template-areas:"top-start     top            top-end" "center-start  center         center-end" "bottom-start  bottom-center  bottom-end";grid-template-rows:minmax(min-content, auto) minmax(min-content, auto) minmax(min-content, auto);height:100%;padding:.625em;overflow-x:hidden;transition:background-color .1s;-webkit-overflow-scrolling:touch}div:where(.swal2-container).swal2-backdrop-show,div:where(.swal2-container).swal2-noanimation{background:rgba(0,0,0,.4)}div:where(.swal2-container).swal2-backdrop-hide{background:rgba(0,0,0,0) !important}div:where(.swal2-container).swal2-top-start,div:where(.swal2-container).swal2-center-start,div:where(.swal2-container).swal2-bottom-start{grid-template-columns:minmax(0, 1fr) auto auto}div:where(.swal2-container).swal2-top,div:where(.swal2-container).swal2-center,div:where(.swal2-container).swal2-bottom{grid-template-columns:auto minmax(0, 1fr) auto}div:where(.swal2-container).swal2-top-end,div:where(.swal2-container).swal2-center-end,div:where(.swal2-container).swal2-bottom-end{grid-template-columns:auto auto minmax(0, 1fr)}div:where(.swal2-container).swal2-top-start>.swal2-popup{align-self:start}div:where(.swal2-container).swal2-top>.swal2-popup{grid-column:2;place-self:start center}div:where(.swal2-container).swal2-top-end>.swal2-popup,div:where(.swal2-container).swal2-top-right>.swal2-popup{grid-column:3;place-self:start end}div:where(.swal2-container).swal2-center-start>.swal2-popup,div:where(.swal2-container).swal2-center-left>.swal2-popup{grid-row:2;align-self:center}div:where(.swal2-container).swal2-center>.swal2-popup{grid-column:2;grid-row:2;place-self:center center}div:where(.swal2-container).swal2-center-end>.swal2-popup,div:where(.swal2-container).swal2-center-right>.swal2-popup{grid-column:3;grid-row:2;place-self:center end}div:where(.swal2-container).swal2-bottom-start>.swal2-popup,div:where(.swal2-container).swal2-bottom-left>.swal2-popup{grid-column:1;grid-row:3;align-self:end}div:where(.swal2-container).swal2-bottom>.swal2-popup{grid-column:2;grid-row:3;place-self:end center}div:where(.swal2-container).swal2-bottom-end>.swal2-popup,div:where(.swal2-container).swal2-bottom-right>.swal2-popup{grid-column:3;grid-row:3;place-self:end end}div:where(.swal2-container).swal2-grow-row>.swal2-popup,div:where(.swal2-container).swal2-grow-fullscreen>.swal2-popup{grid-column:1/4;width:100%}div:where(.swal2-container).swal2-grow-column>.swal2-popup,div:where(.swal2-container).swal2-grow-fullscreen>.swal2-popup{grid-row:1/4;align-self:stretch}div:where(.swal2-container).swal2-no-transition{transition:none !important}div:where(.swal2-container) div:where(.swal2-popup){display:none;position:relative;box-sizing:border-box;grid-template-columns:minmax(0, 100%);width:32em;max-width:100%;padding:0 0 1.25em;border:none;border-radius:5px;background:#fff;color:hsl(0,0%,33%);font-family:inherit;font-size:1rem}div:where(.swal2-container) div:where(.swal2-popup):focus{outline:none}div:where(.swal2-container) div:where(.swal2-popup).swal2-loading{overflow-y:hidden}div:where(.swal2-container) h2:where(.swal2-title){position:relative;max-width:100%;margin:0;padding:.8em 1em 0;color:inherit;font-size:1.875em;font-weight:600;text-align:center;text-transform:none;word-wrap:break-word}div:where(.swal2-container) div:where(.swal2-actions){display:flex;z-index:1;box-sizing:border-box;flex-wrap:wrap;align-items:center;justify-content:center;width:auto;margin:1.25em auto 0;padding:0}div:where(.swal2-container) div:where(.swal2-actions):not(.swal2-loading) .swal2-styled[disabled]{opacity:.4}div:where(.swal2-container) div:where(.swal2-actions):not(.swal2-loading) .swal2-styled:hover{background-image:linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1))}div:where(.swal2-container) div:where(.swal2-actions):not(.swal2-loading) .swal2-styled:active{background-image:linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2))}div:where(.swal2-container) div:where(.swal2-loader){display:none;align-items:center;justify-content:center;width:2.2em;height:2.2em;margin:0 1.875em;animation:swal2-rotate-loading 1.5s linear 0s infinite normal;border-width:.25em;border-style:solid;border-radius:100%;border-color:#2778c4 rgba(0,0,0,0) #2778c4 rgba(0,0,0,0)}div:where(.swal2-container) button:where(.swal2-styled){margin:.3125em;padding:.625em 1.1em;transition:box-shadow .1s;box-shadow:0 0 0 3px rgba(0,0,0,0);font-weight:500}div:where(.swal2-container) button:where(.swal2-styled):not([disabled]){cursor:pointer}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-confirm){border:0;border-radius:.25em;background:initial;background-color:#7066e0;color:#fff;font-size:1em}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-confirm):focus-visible{box-shadow:0 0 0 3px rgba(112,102,224,.5)}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-deny){border:0;border-radius:.25em;background:initial;background-color:#dc3741;color:#fff;font-size:1em}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-deny):focus-visible{box-shadow:0 0 0 3px rgba(220,55,65,.5)}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-cancel){border:0;border-radius:.25em;background:initial;background-color:#6e7881;color:#fff;font-size:1em}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-cancel):focus-visible{box-shadow:0 0 0 3px rgba(110,120,129,.5)}div:where(.swal2-container) button:where(.swal2-styled).swal2-default-outline:focus-visible{box-shadow:0 0 0 3px rgba(100,150,200,.5)}div:where(.swal2-container) button:where(.swal2-styled):focus-visible{outline:none}div:where(.swal2-container) button:where(.swal2-styled)::-moz-focus-inner{border:0}div:where(.swal2-container) div:where(.swal2-footer){margin:1em 0 0;padding:1em 1em 0;border-top:1px solid #eee;color:inherit;font-size:1em;text-align:center}div:where(.swal2-container) .swal2-timer-progress-bar-container{position:absolute;right:0;bottom:0;left:0;grid-column:auto !important;overflow:hidden;border-bottom-right-radius:5px;border-bottom-left-radius:5px}div:where(.swal2-container) div:where(.swal2-timer-progress-bar){width:100%;height:.25em;background:rgba(0,0,0,.2)}div:where(.swal2-container) img:where(.swal2-image){max-width:100%;margin:2em auto 1em}div:where(.swal2-container) button:where(.swal2-close){z-index:2;align-items:center;justify-content:center;width:1.2em;height:1.2em;margin-top:0;margin-right:0;margin-bottom:-1.2em;padding:0;overflow:hidden;transition:color .1s,box-shadow .1s;border:none;border-radius:5px;background:rgba(0,0,0,0);color:#ccc;font-family:monospace;font-size:2.5em;cursor:pointer;justify-self:end}div:where(.swal2-container) button:where(.swal2-close):hover{transform:none;background:rgba(0,0,0,0);color:#f27474}div:where(.swal2-container) button:where(.swal2-close):focus-visible{outline:none;box-shadow:inset 0 0 0 3px rgba(100,150,200,.5)}div:where(.swal2-container) button:where(.swal2-close)::-moz-focus-inner{border:0}div:where(.swal2-container) .swal2-html-container{z-index:1;justify-content:center;margin:0;padding:1em 1.6em .3em;overflow:auto;color:inherit;font-size:1.125em;font-weight:normal;line-height:normal;text-align:center;word-wrap:break-word;word-break:break-word}div:where(.swal2-container) input:where(.swal2-input),div:where(.swal2-container) input:where(.swal2-file),div:where(.swal2-container) textarea:where(.swal2-textarea),div:where(.swal2-container) select:where(.swal2-select),div:where(.swal2-container) div:where(.swal2-radio),div:where(.swal2-container) label:where(.swal2-checkbox){margin:1em 2em 3px}div:where(.swal2-container) input:where(.swal2-input),div:where(.swal2-container) input:where(.swal2-file),div:where(.swal2-container) textarea:where(.swal2-textarea){box-sizing:border-box;width:auto;transition:border-color .1s,box-shadow .1s;border:1px solid hsl(0,0%,85%);border-radius:.1875em;background:rgba(0,0,0,0);box-shadow:inset 0 1px 1px rgba(0,0,0,.06),0 0 0 3px rgba(0,0,0,0);color:inherit;font-size:1.125em}div:where(.swal2-container) input:where(.swal2-input).swal2-inputerror,div:where(.swal2-container) input:where(.swal2-file).swal2-inputerror,div:where(.swal2-container) textarea:where(.swal2-textarea).swal2-inputerror{border-color:#f27474 !important;box-shadow:0 0 2px #f27474 !important}div:where(.swal2-container) input:where(.swal2-input):focus,div:where(.swal2-container) input:where(.swal2-file):focus,div:where(.swal2-container) textarea:where(.swal2-textarea):focus{border:1px solid #b4dbed;outline:none;box-shadow:inset 0 1px 1px rgba(0,0,0,.06),0 0 0 3px rgba(100,150,200,.5)}div:where(.swal2-container) input:where(.swal2-input)::placeholder,div:where(.swal2-container) input:where(.swal2-file)::placeholder,div:where(.swal2-container) textarea:where(.swal2-textarea)::placeholder{color:#ccc}div:where(.swal2-container) .swal2-range{margin:1em 2em 3px;background:#fff}div:where(.swal2-container) .swal2-range input{width:80%}div:where(.swal2-container) .swal2-range output{width:20%;color:inherit;font-weight:600;text-align:center}div:where(.swal2-container) .swal2-range input,div:where(.swal2-container) .swal2-range output{height:2.625em;padding:0;font-size:1.125em;line-height:2.625em}div:where(.swal2-container) .swal2-input{height:2.625em;padding:0 .75em}div:where(.swal2-container) .swal2-file{width:75%;margin-right:auto;margin-left:auto;background:rgba(0,0,0,0);font-size:1.125em}div:where(.swal2-container) .swal2-textarea{height:6.75em;padding:.75em}div:where(.swal2-container) .swal2-select{min-width:50%;max-width:100%;padding:.375em .625em;background:rgba(0,0,0,0);color:inherit;font-size:1.125em}div:where(.swal2-container) .swal2-radio,div:where(.swal2-container) .swal2-checkbox{align-items:center;justify-content:center;background:#fff;color:inherit}div:where(.swal2-container) .swal2-radio label,div:where(.swal2-container) .swal2-checkbox label{margin:0 .6em;font-size:1.125em}div:where(.swal2-container) .swal2-radio input,div:where(.swal2-container) .swal2-checkbox input{flex-shrink:0;margin:0 .4em}div:where(.swal2-container) label:where(.swal2-input-label){display:flex;justify-content:center;margin:1em auto 0}div:where(.swal2-container) div:where(.swal2-validation-message){align-items:center;justify-content:center;margin:1em 0 0;padding:.625em;overflow:hidden;background:hsl(0,0%,94%);color:#666;font-size:1em;font-weight:300}div:where(.swal2-container) div:where(.swal2-validation-message)::before{content:"!";display:inline-block;width:1.5em;min-width:1.5em;height:1.5em;margin:0 .625em;border-radius:50%;background-color:#f27474;color:#fff;font-weight:600;line-height:1.5em;text-align:center}div:where(.swal2-container) .swal2-progress-steps{flex-wrap:wrap;align-items:center;max-width:100%;margin:1.25em auto;padding:0;background:rgba(0,0,0,0);font-weight:600}div:where(.swal2-container) .swal2-progress-steps li{display:inline-block;position:relative}div:where(.swal2-container) .swal2-progress-steps .swal2-progress-step{z-index:20;flex-shrink:0;width:2em;height:2em;border-radius:2em;background:#2778c4;color:#fff;line-height:2em;text-align:center}div:where(.swal2-container) .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step{background:#2778c4}div:where(.swal2-container) .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step{background:#add8e6;color:#fff}div:where(.swal2-container) .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step-line{background:#add8e6}div:where(.swal2-container) .swal2-progress-steps .swal2-progress-step-line{z-index:10;flex-shrink:0;width:2.5em;height:.4em;margin:0 -1px;background:#2778c4}div:where(.swal2-icon){position:relative;box-sizing:content-box;justify-content:center;width:5em;height:5em;margin:2.5em auto .6em;border:0.25em solid rgba(0,0,0,0);border-radius:50%;border-color:#000;font-family:inherit;line-height:5em;cursor:default;user-select:none}div:where(.swal2-icon) .swal2-icon-content{display:flex;align-items:center;font-size:3.75em}div:where(.swal2-icon).swal2-error{border-color:#f27474;color:#f27474}div:where(.swal2-icon).swal2-error .swal2-x-mark{position:relative;flex-grow:1}div:where(.swal2-icon).swal2-error [class^=swal2-x-mark-line]{display:block;position:absolute;top:2.3125em;width:2.9375em;height:.3125em;border-radius:.125em;background-color:#f27474}div:where(.swal2-icon).swal2-error [class^=swal2-x-mark-line][class$=left]{left:1.0625em;transform:rotate(45deg)}div:where(.swal2-icon).swal2-error [class^=swal2-x-mark-line][class$=right]{right:1em;transform:rotate(-45deg)}div:where(.swal2-icon).swal2-error.swal2-icon-show{animation:swal2-animate-error-icon .5s}div:where(.swal2-icon).swal2-error.swal2-icon-show .swal2-x-mark{animation:swal2-animate-error-x-mark .5s}div:where(.swal2-icon).swal2-warning{border-color:rgb(249.95234375,205.965625,167.74765625);color:#f8bb86}div:where(.swal2-icon).swal2-warning.swal2-icon-show{animation:swal2-animate-error-icon .5s}div:where(.swal2-icon).swal2-warning.swal2-icon-show .swal2-icon-content{animation:swal2-animate-i-mark .5s}div:where(.swal2-icon).swal2-info{border-color:rgb(156.7033492823,224.2822966507,246.2966507177);color:#3fc3ee}div:where(.swal2-icon).swal2-info.swal2-icon-show{animation:swal2-animate-error-icon .5s}div:where(.swal2-icon).swal2-info.swal2-icon-show .swal2-icon-content{animation:swal2-animate-i-mark .8s}div:where(.swal2-icon).swal2-question{border-color:rgb(200.8064516129,217.9677419355,225.1935483871);color:#87adbd}div:where(.swal2-icon).swal2-question.swal2-icon-show{animation:swal2-animate-error-icon .5s}div:where(.swal2-icon).swal2-question.swal2-icon-show .swal2-icon-content{animation:swal2-animate-question-mark .8s}div:where(.swal2-icon).swal2-success{border-color:#a5dc86;color:#a5dc86}div:where(.swal2-icon).swal2-success [class^=swal2-success-circular-line]{position:absolute;width:3.75em;height:7.5em;border-radius:50%}div:where(.swal2-icon).swal2-success [class^=swal2-success-circular-line][class$=left]{top:-0.4375em;left:-2.0635em;transform:rotate(-45deg);transform-origin:3.75em 3.75em;border-radius:7.5em 0 0 7.5em}div:where(.swal2-icon).swal2-success [class^=swal2-success-circular-line][class$=right]{top:-0.6875em;left:1.875em;transform:rotate(-45deg);transform-origin:0 3.75em;border-radius:0 7.5em 7.5em 0}div:where(.swal2-icon).swal2-success .swal2-success-ring{position:absolute;z-index:2;top:-0.25em;left:-0.25em;box-sizing:content-box;width:100%;height:100%;border:.25em solid rgba(165,220,134,.3);border-radius:50%}div:where(.swal2-icon).swal2-success .swal2-success-fix{position:absolute;z-index:1;top:.5em;left:1.625em;width:.4375em;height:5.625em;transform:rotate(-45deg)}div:where(.swal2-icon).swal2-success [class^=swal2-success-line]{display:block;position:absolute;z-index:2;height:.3125em;border-radius:.125em;background-color:#a5dc86}div:where(.swal2-icon).swal2-success [class^=swal2-success-line][class$=tip]{top:2.875em;left:.8125em;width:1.5625em;transform:rotate(45deg)}div:where(.swal2-icon).swal2-success [class^=swal2-success-line][class$=long]{top:2.375em;right:.5em;width:2.9375em;transform:rotate(-45deg)}div:where(.swal2-icon).swal2-success.swal2-icon-show .swal2-success-line-tip{animation:swal2-animate-success-line-tip .75s}div:where(.swal2-icon).swal2-success.swal2-icon-show .swal2-success-line-long{animation:swal2-animate-success-line-long .75s}div:where(.swal2-icon).swal2-success.swal2-icon-show .swal2-success-circular-line-right{animation:swal2-rotate-success-circular-line 4.25s ease-in}[class^=swal2]{-webkit-tap-highlight-color:rgba(0,0,0,0)}.swal2-show{animation:swal2-show .3s}.swal2-hide{animation:swal2-hide .15s forwards}.swal2-noanimation{transition:none}.swal2-scrollbar-measure{position:absolute;top:-9999px;width:50px;height:50px;overflow:scroll}.swal2-rtl .swal2-close{margin-right:initial;margin-left:0}.swal2-rtl .swal2-timer-progress-bar{right:0;left:auto}@keyframes swal2-toast-show{0%{transform:translateY(-0.625em) rotateZ(2deg)}33%{transform:translateY(0) rotateZ(-2deg)}66%{transform:translateY(0.3125em) rotateZ(2deg)}100%{transform:translateY(0) rotateZ(0deg)}}@keyframes swal2-toast-hide{100%{transform:rotateZ(1deg);opacity:0}}@keyframes swal2-toast-animate-success-line-tip{0%{top:.5625em;left:.0625em;width:0}54%{top:.125em;left:.125em;width:0}70%{top:.625em;left:-0.25em;width:1.625em}84%{top:1.0625em;left:.75em;width:.5em}100%{top:1.125em;left:.1875em;width:.75em}}@keyframes swal2-toast-animate-success-line-long{0%{top:1.625em;right:1.375em;width:0}65%{top:1.25em;right:.9375em;width:0}84%{top:.9375em;right:0;width:1.125em}100%{top:.9375em;right:.1875em;width:1.375em}}@keyframes swal2-show{0%{transform:scale(0.7)}45%{transform:scale(1.05)}80%{transform:scale(0.95)}100%{transform:scale(1)}}@keyframes swal2-hide{0%{transform:scale(1);opacity:1}100%{transform:scale(0.5);opacity:0}}@keyframes swal2-animate-success-line-tip{0%{top:1.1875em;left:.0625em;width:0}54%{top:1.0625em;left:.125em;width:0}70%{top:2.1875em;left:-0.375em;width:3.125em}84%{top:3em;left:1.3125em;width:1.0625em}100%{top:2.8125em;left:.8125em;width:1.5625em}}@keyframes swal2-animate-success-line-long{0%{top:3.375em;right:2.875em;width:0}65%{top:3.375em;right:2.875em;width:0}84%{top:2.1875em;right:0;width:3.4375em}100%{top:2.375em;right:.5em;width:2.9375em}}@keyframes swal2-rotate-success-circular-line{0%{transform:rotate(-45deg)}5%{transform:rotate(-45deg)}12%{transform:rotate(-405deg)}100%{transform:rotate(-405deg)}}@keyframes swal2-animate-error-x-mark{0%{margin-top:1.625em;transform:scale(0.4);opacity:0}50%{margin-top:1.625em;transform:scale(0.4);opacity:0}80%{margin-top:-0.375em;transform:scale(1.15)}100%{margin-top:0;transform:scale(1);opacity:1}}@keyframes swal2-animate-error-icon{0%{transform:rotateX(100deg);opacity:0}100%{transform:rotateX(0deg);opacity:1}}@keyframes swal2-rotate-loading{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}@keyframes swal2-animate-question-mark{0%{transform:rotateY(-360deg)}100%{transform:rotateY(0)}}@keyframes swal2-animate-i-mark{0%{transform:rotateZ(45deg);opacity:0}25%{transform:rotateZ(-25deg);opacity:.4}50%{transform:rotateZ(15deg);opacity:.8}75%{transform:rotateZ(-5deg);opacity:1}100%{transform:rotateX(0);opacity:1}}body.swal2-shown:not(.swal2-no-backdrop,.swal2-toast-shown){overflow:hidden}body.swal2-height-auto{height:auto !important}body.swal2-no-backdrop .swal2-container{background-color:rgba(0,0,0,0) !important;pointer-events:none}body.swal2-no-backdrop .swal2-container .swal2-popup{pointer-events:all}body.swal2-no-backdrop .swal2-container .swal2-modal{box-shadow:0 0 10px rgba(0,0,0,.4)}@media print{body.swal2-shown:not(.swal2-no-backdrop,.swal2-toast-shown){overflow-y:scroll !important}body.swal2-shown:not(.swal2-no-backdrop,.swal2-toast-shown)>[aria-hidden=true]{display:none}body.swal2-shown:not(.swal2-no-backdrop,.swal2-toast-shown) .swal2-container{position:static !important}}body.swal2-toast-shown .swal2-container{box-sizing:border-box;width:360px;max-width:100%;background-color:rgba(0,0,0,0);pointer-events:none}body.swal2-toast-shown .swal2-container.swal2-top{inset:0 auto auto 50%;transform:translateX(-50%)}body.swal2-toast-shown .swal2-container.swal2-top-end,body.swal2-toast-shown .swal2-container.swal2-top-right{inset:0 0 auto auto}body.swal2-toast-shown .swal2-container.swal2-top-start,body.swal2-toast-shown .swal2-container.swal2-top-left{inset:0 auto auto 0}body.swal2-toast-shown .swal2-container.swal2-center-start,body.swal2-toast-shown .swal2-container.swal2-center-left{inset:50% auto auto 0;transform:translateY(-50%)}body.swal2-toast-shown .swal2-container.swal2-center{inset:50% auto auto 50%;transform:translate(-50%, -50%)}body.swal2-toast-shown .swal2-container.swal2-center-end,body.swal2-toast-shown .swal2-container.swal2-center-right{inset:50% 0 auto auto;transform:translateY(-50%)}body.swal2-toast-shown .swal2-container.swal2-bottom-start,body.swal2-toast-shown .swal2-container.swal2-bottom-left{inset:auto auto 0 0}body.swal2-toast-shown .swal2-container.swal2-bottom{inset:auto auto 0 50%;transform:translateX(-50%)}body.swal2-toast-shown .swal2-container.swal2-bottom-end,body.swal2-toast-shown .swal2-container.swal2-bottom-right{inset:auto 0 0 auto}');
 const Attachments_vue_vue_type_style_index_0_lang = "";
-const _sfc_main$5 = {
+const _sfc_main$7 = {
   name: "Attachments",
   components: {
     AttachmentPreview,
@@ -35703,77 +35703,77 @@ const _sfc_main$5 = {
     }
   }
 };
-const _hoisted_1$6 = {
+const _hoisted_1$8 = {
   id: "em-attachments",
   class: "tw-w-full"
 };
-const _hoisted_2$5 = {
+const _hoisted_2$7 = {
   id: "filters",
   class: "tw-flex tw-items-center tw-justify-between"
 };
-const _hoisted_3$4 = { class: "tw-flex tw-items-center" };
-const _hoisted_4$4 = { class: "tw-flex tw-items-center searchbar-wrapper" };
-const _hoisted_5$4 = ["placeholder"];
-const _hoisted_6$4 = { value: "all" };
-const _hoisted_7$4 = ["value"];
-const _hoisted_8$4 = { class: "actions tw-flex tw-items-center" };
-const _hoisted_9$4 = ["title"];
-const _hoisted_10$3 = ["title"];
-const _hoisted_11$3 = ["title"];
-const _hoisted_12$3 = {
+const _hoisted_3$6 = { class: "tw-flex tw-items-center" };
+const _hoisted_4$6 = { class: "tw-flex tw-items-center searchbar-wrapper" };
+const _hoisted_5$6 = ["placeholder"];
+const _hoisted_6$6 = { value: "all" };
+const _hoisted_7$6 = ["value"];
+const _hoisted_8$6 = { class: "actions tw-flex tw-items-center" };
+const _hoisted_9$5 = ["title"];
+const _hoisted_10$4 = ["title"];
+const _hoisted_11$4 = ["title"];
+const _hoisted_12$4 = {
   key: 0,
   class: "tw-mt-4 tw-mb-4"
 };
-const _hoisted_13$3 = ["href"];
-const _hoisted_14$3 = {
+const _hoisted_13$4 = ["href"];
+const _hoisted_14$4 = {
   key: 1,
   class: "table-wrapper tw-w-full"
 };
-const _hoisted_15$3 = {
+const _hoisted_15$4 = {
   key: 0,
   id: "check-th"
 };
-const _hoisted_16$3 = {
+const _hoisted_16$4 = {
   key: 0,
   class: "material-symbols-outlined tw-text-base"
 };
-const _hoisted_17$3 = {
+const _hoisted_17$4 = {
   key: 1,
   class: "material-symbols-outlined tw-text-base"
 };
-const _hoisted_18$3 = {
+const _hoisted_18$4 = {
   key: 0,
   class: "material-symbols-outlined tw-text-base"
 };
-const _hoisted_19$2 = {
+const _hoisted_19$3 = {
   key: 1,
   class: "material-symbols-outlined tw-text-base"
 };
-const _hoisted_20$2 = {
+const _hoisted_20$3 = {
   key: 0,
   class: "material-symbols-outlined tw-text-base"
 };
-const _hoisted_21$2 = {
+const _hoisted_21$3 = {
   key: 1,
   class: "material-symbols-outlined tw-text-base"
 };
-const _hoisted_22$2 = {
+const _hoisted_22$3 = {
   key: 0,
   class: "material-symbols-outlined tw-text-base"
 };
-const _hoisted_23$2 = {
+const _hoisted_23$3 = {
   key: 1,
   class: "material-symbols-outlined tw-text-base"
 };
-const _hoisted_24$2 = {
+const _hoisted_24$3 = {
   key: 0,
   class: "material-symbols-outlined tw-text-base"
 };
-const _hoisted_25$2 = {
+const _hoisted_25$3 = {
   key: 1,
   class: "material-symbols-outlined tw-text-base"
 };
-const _hoisted_26$2 = {
+const _hoisted_26$3 = {
   key: 0,
   class: "material-symbols-outlined tw-text-base"
 };
@@ -35825,18 +35825,18 @@ const _hoisted_42$2 = {
   key: 0,
   class: "vue-em-loader em-loader"
 };
-function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_AttachmentRow = resolveComponent("AttachmentRow");
   const _component_AttachmentPreview = resolveComponent("AttachmentPreview");
   const _component_AttachmentEdit = resolveComponent("AttachmentEdit");
   const _component_modal = resolveComponent("modal");
-  return openBlock(), createElementBlock("div", _hoisted_1$6, [
+  return openBlock(), createElementBlock("div", _hoisted_1$8, [
     createBaseVNode("div", {
       class: normalizeClass(["wrapper", { loading: $data.loading }])
     }, [
-      createBaseVNode("section", _hoisted_2$5, [
-        createBaseVNode("div", _hoisted_3$4, [
-          createBaseVNode("div", _hoisted_4$4, [
+      createBaseVNode("section", _hoisted_2$7, [
+        createBaseVNode("div", _hoisted_3$6, [
+          createBaseVNode("div", _hoisted_4$6, [
             withDirectives(createBaseVNode("input", {
               id: "searchbar",
               type: "text",
@@ -35845,7 +35845,7 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
               "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $data.search = $event),
               onInput: _cache[1] || (_cache[1] = (...args) => $options.onSearch && $options.onSearch(...args)),
               onKeyup: _cache[2] || (_cache[2] = withKeys((...args) => $options.onSearchKeyup && $options.onSearchKeyup(...args), ["enter"]))
-            }, null, 40, _hoisted_5$4), [
+            }, null, 40, _hoisted_5$6), [
               [vModelText, $data.search]
             ]),
             _cache[26] || (_cache[26] = createBaseVNode("span", { class: "material-symbols-outlined search" }, "search", -1)),
@@ -35860,18 +35860,18 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
             class: "category-select em-ml-16",
             "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => $data.category = $event)
           }, [
-            createBaseVNode("option", _hoisted_6$4, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_SELECT_CATEGORY")), 1),
+            createBaseVNode("option", _hoisted_6$6, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_SELECT_CATEGORY")), 1),
             (openBlock(true), createElementBlock(Fragment, null, renderList($options.displayedAttachmentCategories, (category, key) => {
               return openBlock(), createElementBlock("option", {
                 key,
                 value: key
-              }, toDisplayString(category), 9, _hoisted_7$4);
+              }, toDisplayString(category), 9, _hoisted_7$6);
             }), 128))
           ], 512)), [
             [vModelSelect, $data.category]
           ]) : createCommentVNode("", true)
         ]),
-        createBaseVNode("div", _hoisted_8$4, [
+        createBaseVNode("div", _hoisted_8$6, [
           $data.canExport ? (openBlock(), createElementBlock("div", {
             key: 0,
             class: normalizeClass(["btn-icon-text", { disabled: $data.checkedAttachments.length < 1 }]),
@@ -35888,37 +35888,37 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
             createBaseVNode("span", {
               class: "material-symbols-outlined cloud_sync",
               title: _ctx.translate("COM_EMUNDUS_ATTACHMENTS_SYNC_TITLE")
-            }, " cloud_sync ", 8, _hoisted_9$4),
+            }, " cloud_sync ", 8, _hoisted_9$5),
             createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_SYNC_TITLE")), 1)
           ], 2)) : createCommentVNode("", true),
           createBaseVNode("span", {
             class: "material-symbols-outlined refresh tw-cursor-pointer",
             onClick: _cache[7] || (_cache[7] = ($event) => $options.refreshAttachments(true)),
             title: _ctx.translate("COM_EMUNDUS_ATTACHMENTS_REFRESH_TITLE")
-          }, " autorenew ", 8, _hoisted_10$3),
+          }, " autorenew ", 8, _hoisted_10$4),
           $data.canDelete ? (openBlock(), createElementBlock("span", {
             key: 2,
             class: normalizeClass(["material-symbols-outlined delete", { disabled: $data.checkedAttachments.length < 1 }]),
             onClick: _cache[8] || (_cache[8] = (...args) => $options.confirmDeleteAttachments && $options.confirmDeleteAttachments(...args)),
             title: _ctx.translate("COM_EMUNDUS_ATTACHMENTS_DELETE_TITLE")
-          }, " delete ", 10, _hoisted_11$3)) : createCommentVNode("", true)
+          }, " delete ", 10, _hoisted_11$4)) : createCommentVNode("", true)
         ])
       ]),
-      $data.exportLink ? (openBlock(), createElementBlock("div", _hoisted_12$3, [
+      $data.exportLink ? (openBlock(), createElementBlock("div", _hoisted_12$4, [
         createBaseVNode("a", {
           href: $data.exportLink,
           target: "_blank",
           onClick: _cache[9] || (_cache[9] = ($event) => $data.exportLink = "")
-        }, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_EXPORT_LINK")), 9, _hoisted_13$3)
+        }, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_EXPORT_LINK")), 9, _hoisted_13$4)
       ])) : createCommentVNode("", true),
-      $data.attachments.length ? (openBlock(), createElementBlock("section", _hoisted_14$3, [
+      $data.attachments.length ? (openBlock(), createElementBlock("section", _hoisted_14$4, [
         createBaseVNode("table", {
           class: normalizeClass({ loading: $data.loading }),
           "aria-describedby": "Table of attachments information"
         }, [
           createBaseVNode("thead", null, [
             createBaseVNode("tr", null, [
-              $props.columns.includes("check") ? (openBlock(), createElementBlock("th", _hoisted_15$3, [
+              $props.columns.includes("check") ? (openBlock(), createElementBlock("th", _hoisted_15$4, [
                 createBaseVNode("input", {
                   class: "attachment-check",
                   type: "checkbox",
@@ -35931,8 +35931,8 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
                 onClick: _cache[11] || (_cache[11] = ($event) => $options.orderBy("value"))
               }, [
                 createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_NAME")), 1),
-                $data.sort.orderBy === "value" && $data.sort.order === "asc" ? (openBlock(), createElementBlock("span", _hoisted_16$3, "arrow_upward")) : createCommentVNode("", true),
-                $data.sort.orderBy === "value" && $data.sort.order === "desc" ? (openBlock(), createElementBlock("span", _hoisted_17$3, "arrow_downward")) : createCommentVNode("", true)
+                $data.sort.orderBy === "value" && $data.sort.order === "asc" ? (openBlock(), createElementBlock("span", _hoisted_16$4, "arrow_upward")) : createCommentVNode("", true),
+                $data.sort.orderBy === "value" && $data.sort.order === "desc" ? (openBlock(), createElementBlock("span", _hoisted_17$4, "arrow_downward")) : createCommentVNode("", true)
               ])) : createCommentVNode("", true),
               $props.columns.includes("date") ? (openBlock(), createElementBlock("th", {
                 key: 2,
@@ -35941,8 +35941,8 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
                 onClick: _cache[12] || (_cache[12] = ($event) => $options.orderBy("timedate"))
               }, [
                 createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_SEND_DATE")), 1),
-                $data.sort.orderBy === "timedate" && $data.sort.order === "asc" ? (openBlock(), createElementBlock("span", _hoisted_18$3, "arrow_upward")) : createCommentVNode("", true),
-                $data.sort.orderBy === "timedate" && $data.sort.order === "desc" ? (openBlock(), createElementBlock("span", _hoisted_19$2, "arrow_downward")) : createCommentVNode("", true)
+                $data.sort.orderBy === "timedate" && $data.sort.order === "asc" ? (openBlock(), createElementBlock("span", _hoisted_18$4, "arrow_upward")) : createCommentVNode("", true),
+                $data.sort.orderBy === "timedate" && $data.sort.order === "desc" ? (openBlock(), createElementBlock("span", _hoisted_19$3, "arrow_downward")) : createCommentVNode("", true)
               ])) : createCommentVNode("", true),
               $props.columns.includes("desc") ? (openBlock(), createElementBlock("th", {
                 key: 3,
@@ -35951,8 +35951,8 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
                 onClick: _cache[13] || (_cache[13] = ($event) => $options.orderBy("upload_description"))
               }, [
                 createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_DESCRIPTION")), 1),
-                $data.sort.orderBy === "upload_description" && $data.sort.order === "asc" ? (openBlock(), createElementBlock("span", _hoisted_20$2, "arrow_upward")) : createCommentVNode("", true),
-                $data.sort.orderBy === "upload_description" && $data.sort.order === "desc" ? (openBlock(), createElementBlock("span", _hoisted_21$2, "arrow_downward")) : createCommentVNode("", true)
+                $data.sort.orderBy === "upload_description" && $data.sort.order === "asc" ? (openBlock(), createElementBlock("span", _hoisted_20$3, "arrow_upward")) : createCommentVNode("", true),
+                $data.sort.orderBy === "upload_description" && $data.sort.order === "desc" ? (openBlock(), createElementBlock("span", _hoisted_21$3, "arrow_downward")) : createCommentVNode("", true)
               ])) : createCommentVNode("", true),
               $props.columns.includes("category") ? (openBlock(), createElementBlock("th", {
                 key: 4,
@@ -35961,8 +35961,8 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
                 onClick: _cache[14] || (_cache[14] = ($event) => $options.orderBy("category"))
               }, [
                 createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_CATEGORY")), 1),
-                $data.sort.orderBy === "category" && $data.sort.order === "asc" ? (openBlock(), createElementBlock("span", _hoisted_22$2, "arrow_upward")) : createCommentVNode("", true),
-                $data.sort.orderBy === "category" && $data.sort.order === "desc" ? (openBlock(), createElementBlock("span", _hoisted_23$2, "arrow_downward")) : createCommentVNode("", true)
+                $data.sort.orderBy === "category" && $data.sort.order === "asc" ? (openBlock(), createElementBlock("span", _hoisted_22$3, "arrow_upward")) : createCommentVNode("", true),
+                $data.sort.orderBy === "category" && $data.sort.order === "desc" ? (openBlock(), createElementBlock("span", _hoisted_23$3, "arrow_downward")) : createCommentVNode("", true)
               ])) : createCommentVNode("", true),
               $props.columns.includes("status") ? (openBlock(), createElementBlock("th", {
                 key: 5,
@@ -35971,8 +35971,8 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
                 onClick: _cache[15] || (_cache[15] = ($event) => $options.orderBy("is_validated"))
               }, [
                 createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_CHECK")), 1),
-                $data.sort.orderBy === "is_validated" && $data.sort.order === "asc" ? (openBlock(), createElementBlock("span", _hoisted_24$2, "arrow_upward")) : createCommentVNode("", true),
-                $data.sort.orderBy === "is_validated" && $data.sort.order === "desc" ? (openBlock(), createElementBlock("span", _hoisted_25$2, "arrow_downward")) : createCommentVNode("", true)
+                $data.sort.orderBy === "is_validated" && $data.sort.order === "asc" ? (openBlock(), createElementBlock("span", _hoisted_24$3, "arrow_upward")) : createCommentVNode("", true),
+                $data.sort.orderBy === "is_validated" && $data.sort.order === "desc" ? (openBlock(), createElementBlock("span", _hoisted_25$3, "arrow_downward")) : createCommentVNode("", true)
               ])) : createCommentVNode("", true),
               $data.canSee && $props.columns.includes("user") ? (openBlock(), createElementBlock("th", {
                 key: 6,
@@ -35980,7 +35980,7 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
                 onClick: _cache[16] || (_cache[16] = ($event) => $options.orderBy("user_id"))
               }, [
                 createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ATTACHMENTS_UPLOADED_BY")), 1),
-                $data.sort.orderBy === "user_id" && $data.sort.order === "asc" ? (openBlock(), createElementBlock("span", _hoisted_26$2, "arrow_upward")) : createCommentVNode("", true),
+                $data.sort.orderBy === "user_id" && $data.sort.order === "asc" ? (openBlock(), createElementBlock("span", _hoisted_26$3, "arrow_upward")) : createCommentVNode("", true),
                 $data.sort.orderBy === "user_id" && $data.sort.order === "desc" ? (openBlock(), createElementBlock("span", _hoisted_27$2, "arrow_downward")) : createCommentVNode("", true)
               ])) : createCommentVNode("", true),
               $data.canSee && $props.columns.includes("modified_by") ? (openBlock(), createElementBlock("th", {
@@ -36132,7 +36132,7 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
     $data.loading ? (openBlock(), createElementBlock("div", _hoisted_42$2)) : createCommentVNode("", true)
   ]);
 }
-const Attachments = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$5]]);
+const Attachments = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$7]]);
 const Attachments$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Attachments
@@ -36341,7 +36341,7 @@ const alerts = {
     }
   }
 };
-const _sfc_main$4 = {
+const _sfc_main$6 = {
   name: "Comments",
   components: { Modal },
   props: {
@@ -36742,49 +36742,49 @@ const _sfc_main$4 = {
     }
   }
 };
-const _hoisted_1$5 = {
+const _hoisted_1$7 = {
   key: 0,
   id: "filter-comments",
   class: "tw-flex tw-flex-row tw-flex-wrap tw-gap-2"
 };
-const _hoisted_2$4 = ["placeholder"];
-const _hoisted_3$3 = { value: "all" };
-const _hoisted_4$3 = { value: "1" };
-const _hoisted_5$3 = { value: "0" };
-const _hoisted_6$3 = { value: "all" };
-const _hoisted_7$3 = { value: "0" };
-const _hoisted_8$3 = { value: "1" };
-const _hoisted_9$3 = {
+const _hoisted_2$6 = ["placeholder"];
+const _hoisted_3$5 = { value: "all" };
+const _hoisted_4$5 = { value: "1" };
+const _hoisted_5$5 = { value: "0" };
+const _hoisted_6$5 = { value: "all" };
+const _hoisted_7$5 = { value: "0" };
+const _hoisted_8$5 = { value: "1" };
+const _hoisted_9$4 = {
   key: 1,
   id: "comments-list-container",
   class: "tw-p-1"
 };
-const _hoisted_10$2 = ["id"];
-const _hoisted_11$2 = { class: "file-comment-header tw-flex tw-flex-col tw-mb-3" };
-const _hoisted_12$2 = { class: "tw-flex tw-flex-row tw-justify-between tw-items-center" };
-const _hoisted_13$2 = ["onClick"];
-const _hoisted_14$2 = { class: "tw-flex tw-flex-row tw-items-center" };
-const _hoisted_15$2 = {
+const _hoisted_10$3 = ["id"];
+const _hoisted_11$3 = { class: "file-comment-header tw-flex tw-flex-col tw-mb-3" };
+const _hoisted_12$3 = { class: "tw-flex tw-flex-row tw-justify-between tw-items-center" };
+const _hoisted_13$3 = ["onClick"];
+const _hoisted_14$3 = { class: "tw-flex tw-flex-row tw-items-center" };
+const _hoisted_15$3 = {
   key: 1,
   class: "tw-text-sm"
 };
-const _hoisted_16$2 = { class: "tw-flex tw-flex-col tw-mr-3" };
-const _hoisted_17$2 = { class: "tw-text-neutral-500 tw-text-xs" };
-const _hoisted_18$2 = { class: "tw-text-xs" };
-const _hoisted_19$1 = {
+const _hoisted_16$3 = { class: "tw-flex tw-flex-col tw-mr-3" };
+const _hoisted_17$3 = { class: "tw-text-neutral-500 tw-text-xs" };
+const _hoisted_18$3 = { class: "tw-text-xs" };
+const _hoisted_19$2 = {
   key: 0,
   class: "label tw-bg-profile-medium !tw-text-neutral-900"
 };
-const _hoisted_20$1 = { class: "tw-flex tw-flex-row tw-items-start tw-justify-between" };
-const _hoisted_21$1 = { class: "tw-w-full" };
-const _hoisted_22$1 = {
+const _hoisted_20$2 = { class: "tw-flex tw-flex-row tw-items-start tw-justify-between" };
+const _hoisted_21$2 = { class: "tw-w-full" };
+const _hoisted_22$2 = {
   key: 0,
   class: "tw-w-full"
 };
-const _hoisted_23$1 = ["id", "onUpdate:modelValue", "onKeyup"];
-const _hoisted_24$1 = { class: "tw-flex tw-flex-row tw-justify-end tw-mt-2" };
-const _hoisted_25$1 = ["onClick"];
-const _hoisted_26$1 = {
+const _hoisted_23$2 = ["id", "onUpdate:modelValue", "onKeyup"];
+const _hoisted_24$2 = { class: "tw-flex tw-flex-row tw-justify-end tw-mt-2" };
+const _hoisted_25$2 = ["onClick"];
+const _hoisted_26$2 = {
   key: 1,
   class: "comment-body"
 };
@@ -36891,29 +36891,29 @@ const _hoisted_81 = {
 };
 const _hoisted_82 = { class: "tw-flex tw-flex-row tw-justify-between" };
 const _hoisted_83 = ["disabled"];
-function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_modal = resolveComponent("modal");
   return openBlock(), createElementBlock("div", {
     id: "comments",
     class: normalizeClass(["tw-p-4 tw-w-full tw-bg-[#f8f8f8] tw-flex tw-flex-col", { "tw-border-l-4 tw-border-profile-full": $props.border }])
   }, [
-    _ctx.comments.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_1$5, [
+    _ctx.comments.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_1$7, [
       withDirectives(createBaseVNode("input", {
         type: "text",
         class: "em-input tw-mr-2",
         placeholder: _ctx.translate("COM_EMUNDUS_COMMENTS_SEARCH"),
         "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => _ctx.search = $event),
         onKeyup: _cache[1] || (_cache[1] = (...args) => $options.onSearchChange && $options.onSearchChange(...args))
-      }, null, 40, _hoisted_2$4), [
+      }, null, 40, _hoisted_2$6), [
         [vModelText, _ctx.search]
       ]),
       withDirectives(createBaseVNode("select", {
         "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => _ctx.filterOpenedState = $event),
         class: "tw-mr-2 tw-rounded-applicant"
       }, [
-        createBaseVNode("option", _hoisted_3$3, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_ALL_THREAD")), 1),
-        createBaseVNode("option", _hoisted_4$3, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_OPENED_THREAD")), 1),
-        createBaseVNode("option", _hoisted_5$3, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_CLOSED_THREAD")), 1)
+        createBaseVNode("option", _hoisted_3$5, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_ALL_THREAD")), 1),
+        createBaseVNode("option", _hoisted_4$5, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_OPENED_THREAD")), 1),
+        createBaseVNode("option", _hoisted_5$5, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_CLOSED_THREAD")), 1)
       ], 512), [
         [vModelSelect, _ctx.filterOpenedState]
       ]),
@@ -36922,14 +36922,14 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
         "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => _ctx.filterVisibleToApplicant = $event),
         class: "tw-rounded-applicant"
       }, [
-        createBaseVNode("option", _hoisted_6$3, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_VISIBLE_ALL_OPT")), 1),
-        createBaseVNode("option", _hoisted_7$3, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_VISIBLE_PARTNERS")), 1),
-        createBaseVNode("option", _hoisted_8$3, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_VISIBLE_ALL")), 1)
+        createBaseVNode("option", _hoisted_6$5, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_VISIBLE_ALL_OPT")), 1),
+        createBaseVNode("option", _hoisted_7$5, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_VISIBLE_PARTNERS")), 1),
+        createBaseVNode("option", _hoisted_8$5, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_VISIBLE_ALL")), 1)
       ], 512)), [
         [vModelSelect, _ctx.filterVisibleToApplicant]
       ]) : createCommentVNode("", true)
     ])) : createCommentVNode("", true),
-    $options.parentComments.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_9$3, [
+    $options.parentComments.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_9$4, [
       (openBlock(true), createElementBlock(Fragment, null, renderList($options.parentComments, (comment) => {
         return openBlock(), createElementBlock("div", {
           id: "file-comment-" + comment.id,
@@ -36941,13 +36941,13 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
             "tw-white-bg": comment.opened == 1
           }])
         }, [
-          createBaseVNode("div", _hoisted_11$2, [
-            createBaseVNode("div", _hoisted_12$2, [
+          createBaseVNode("div", _hoisted_11$3, [
+            createBaseVNode("div", _hoisted_12$3, [
               createBaseVNode("div", {
                 class: "file-comment-header-left tw-flex tw-flex-row tw-cursor-pointer tw-items-center tw-justify-between tw-w-full",
                 onClick: ($event) => $options.replyToComment(comment.id)
               }, [
-                createBaseVNode("div", _hoisted_14$2, [
+                createBaseVNode("div", _hoisted_14$3, [
                   createBaseVNode("div", {
                     class: normalizeClass(["profile-picture tw-h-8 tw-w-8 tw-rounded-full tw-border-2 tw-mr-2 tw-flex tw-flex-row tw-justify-center tw-items-center", { "tw-bg-neutral-300": !comment.profile_picture }])
                   }, [
@@ -36955,31 +36955,31 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
                       key: 0,
                       class: "image tw-h-full tw-w-full tw-rounded-full",
                       style: normalizeStyle("background-image: url(" + comment.profile_picture + ");background-size: cover;background-position: center;")
-                    }, null, 4)) : (openBlock(), createElementBlock("span", _hoisted_15$2, toDisplayString(comment.firstname.charAt(0).toUpperCase()) + toDisplayString(comment.lastname.charAt(0).toUpperCase()), 1))
+                    }, null, 4)) : (openBlock(), createElementBlock("span", _hoisted_15$3, toDisplayString(comment.firstname.charAt(0).toUpperCase()) + toDisplayString(comment.lastname.charAt(0).toUpperCase()), 1))
                   ], 2),
-                  createBaseVNode("div", _hoisted_16$2, [
-                    createBaseVNode("span", _hoisted_17$2, toDisplayString(comment.updated ? comment.updated : comment.date), 1),
-                    createBaseVNode("span", _hoisted_18$2, toDisplayString(comment.username), 1)
+                  createBaseVNode("div", _hoisted_16$3, [
+                    createBaseVNode("span", _hoisted_17$3, toDisplayString(comment.updated ? comment.updated : comment.date), 1),
+                    createBaseVNode("span", _hoisted_18$3, toDisplayString(comment.username), 1)
                   ])
                 ]),
                 createBaseVNode("div", null, [
-                  $options.childrenComments[comment.id].length > 0 ? (openBlock(), createElementBlock("span", _hoisted_19$1, toDisplayString($options.childrenComments[comment.id].length) + " " + toDisplayString($options.childrenComments[comment.id].length > 1 ? _ctx.translate("COM_EMUNDUS_COMMENTS_ANSWERS") : _ctx.translate("COM_EMUNDUS_COMMENTS_ANSWER")), 1)) : createCommentVNode("", true)
+                  $options.childrenComments[comment.id].length > 0 ? (openBlock(), createElementBlock("span", _hoisted_19$2, toDisplayString($options.childrenComments[comment.id].length) + " " + toDisplayString($options.childrenComments[comment.id].length > 1 ? _ctx.translate("COM_EMUNDUS_COMMENTS_ANSWERS") : _ctx.translate("COM_EMUNDUS_COMMENTS_ANSWER")), 1)) : createCommentVNode("", true)
                 ])
-              ], 8, _hoisted_13$2)
+              ], 8, _hoisted_13$3)
             ])
           ]),
-          createBaseVNode("div", _hoisted_20$1, [
-            createBaseVNode("div", _hoisted_21$1, [
-              _ctx.editable == comment.id ? (openBlock(), createElementBlock("div", _hoisted_22$1, [
+          createBaseVNode("div", _hoisted_20$2, [
+            createBaseVNode("div", _hoisted_21$2, [
+              _ctx.editable == comment.id ? (openBlock(), createElementBlock("div", _hoisted_22$2, [
                 withDirectives(createBaseVNode("textarea", {
                   id: "editable-comment-" + comment.id,
                   class: "comment-body",
                   "onUpdate:modelValue": ($event) => comment.comment_body = $event,
                   onKeyup: withKeys(($event) => $options.updateComment(comment.id), ["enter"])
-                }, null, 40, _hoisted_23$1), [
+                }, null, 40, _hoisted_23$2), [
                   [vModelText, comment.comment_body]
                 ]),
-                createBaseVNode("div", _hoisted_24$1, [
+                createBaseVNode("div", _hoisted_24$2, [
                   createBaseVNode("button", {
                     id: "add-comment-btn",
                     class: "tw-btn-primary tw-w-fit",
@@ -36987,7 +36987,7 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
                   }, [
                     createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_UPDATE_COMMENT")), 1),
                     _cache[17] || (_cache[17] = createBaseVNode("span", { class: "material-symbols-outlined tw-ml-1 tw-text-neutral-300" }, "send", -1))
-                  ], 8, _hoisted_25$1),
+                  ], 8, _hoisted_25$2),
                   createBaseVNode("button", {
                     id: "abort-update",
                     class: "tw-btn-secondary tw-w-fit tw-ml-2",
@@ -36996,7 +36996,7 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
                     createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_CANCEL")), 1)
                   ])
                 ])
-              ])) : (openBlock(), createElementBlock("p", _hoisted_26$1, toDisplayString(comment.comment_body), 1))
+              ])) : (openBlock(), createElementBlock("p", _hoisted_26$2, toDisplayString(comment.comment_body), 1))
             ]),
             _ctx.editable != comment.id ? (openBlock(), createElementBlock("div", _hoisted_27$1, [
               createBaseVNode("span", {
@@ -37137,7 +37137,7 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
             class: "comment-target-label tw-text-sm em-gray-color tw-cursor-pointer tw-mt-4",
             onClick: ($event) => $options.goToCommentTarget(comment)
           }, toDisplayString($options.getCommentTargetLabel(comment.target_id, comment.target_type)), 9, _hoisted_61)) : createCommentVNode("", true)
-        ], 10, _hoisted_10$2);
+        ], 10, _hoisted_10$3);
       }), 128))
     ])) : (openBlock(), createElementBlock("p", _hoisted_62, toDisplayString(_ctx.translate("COM_EMUNDUS_COMMENTS_NO_COMMENTS")), 1)),
     _cache[23] || (_cache[23] = createBaseVNode("hr", null, null, -1)),
@@ -37263,7 +37263,7 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 2);
 }
-const Comments = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4]]);
+const Comments = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$6]]);
 const Comments$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Comments
@@ -37817,7 +37817,7 @@ const groupsService = {
   }
 };
 const Popover_vue_vue_type_style_index_0_scoped_935d1a05_lang = "";
-const _sfc_main$3 = {
+const _sfc_main$5 = {
   name: "Popover",
   props: {
     icon: {
@@ -37892,9 +37892,9 @@ const _sfc_main$3 = {
     }
   }
 };
-const _hoisted_1$4 = ["id"];
-const _hoisted_2$3 = ["id"];
-function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
+const _hoisted_1$6 = ["id"];
+const _hoisted_2$5 = ["id"];
+function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", {
     id: _ctx.id,
     class: "popover-container",
@@ -37913,16 +37913,16 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
           style: normalizeStyle($props.popoverContentStyle)
         }, [
           renderSlot(_ctx.$slots, "default", {}, void 0, true)
-        ], 12, _hoisted_2$3), [
+        ], 12, _hoisted_2$5), [
           [vShow, _ctx.isOpen]
         ])
       ]),
       _: 3
     })
-  ], 40, _hoisted_1$4);
+  ], 40, _hoisted_1$6);
 }
-const Popover = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-935d1a05"]]);
-const _sfc_main$2 = {
+const Popover = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$5], ["__scopeId", "data-v-935d1a05"]]);
+const _sfc_main$4 = {
   name: "Tabs",
   props: {
     tabs: {
@@ -37951,8 +37951,8 @@ const _sfc_main$2 = {
     }
   }
 };
-const _hoisted_1$3 = ["onClick"];
-function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
+const _hoisted_1$5 = ["onClick"];
+function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", {
     class: normalizeClass($props.classes)
   }, [
@@ -37970,14 +37970,14 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
           createBaseVNode("span", {
             class: normalizeClass([tab.active ? "tw-text-profile-full" : "tw-text-neutral-700", "tw-whitespace-nowrap"])
           }, toDisplayString(_ctx.translate(tab.name)), 3)
-        ], 10, _hoisted_1$3), [
+        ], 10, _hoisted_1$5), [
           [vShow, tab.displayed]
         ])
       ]);
     }), 128))
   ], 2);
 }
-const Tabs = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2]]);
+const Tabs = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4]]);
 function isEmpty(opt) {
   if (opt === 0)
     return false;
@@ -38979,18 +38979,18 @@ var script = {
     }
   }
 };
-const _hoisted_1$2 = {
+const _hoisted_1$4 = {
   ref: "tags",
   class: "multiselect__tags"
 };
-const _hoisted_2$2 = { class: "multiselect__tags-wrap" };
-const _hoisted_3$2 = { class: "multiselect__spinner" };
-const _hoisted_4$2 = { key: 0 };
-const _hoisted_5$2 = { class: "multiselect__option" };
-const _hoisted_6$2 = { class: "multiselect__option" };
-const _hoisted_7$2 = /* @__PURE__ */ createTextVNode("No elements found. Consider changing the search query.");
-const _hoisted_8$2 = { class: "multiselect__option" };
-const _hoisted_9$2 = /* @__PURE__ */ createTextVNode("List is empty.");
+const _hoisted_2$4 = { class: "multiselect__tags-wrap" };
+const _hoisted_3$4 = { class: "multiselect__spinner" };
+const _hoisted_4$4 = { key: 0 };
+const _hoisted_5$4 = { class: "multiselect__option" };
+const _hoisted_6$4 = { class: "multiselect__option" };
+const _hoisted_7$4 = /* @__PURE__ */ createTextVNode("No elements found. Consider changing the search query.");
+const _hoisted_8$4 = { class: "multiselect__option" };
+const _hoisted_9$3 = /* @__PURE__ */ createTextVNode("List is empty.");
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createBlock("div", {
     tabindex: _ctx.searchable ? -1 : $props.tabindex,
@@ -39021,7 +39021,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     renderSlot(_ctx.$slots, "clear", { search: _ctx.search }),
     createVNode(
       "div",
-      _hoisted_1$2,
+      _hoisted_1$4,
       [
         renderSlot(_ctx.$slots, "selection", {
           search: _ctx.search,
@@ -39031,7 +39031,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         }, () => [
           withDirectives(createVNode(
             "div",
-            _hoisted_2$2,
+            _hoisted_2$4,
             [
               (openBlock(true), createBlock(
                 Fragment,
@@ -39079,7 +39079,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
             renderSlot(_ctx.$slots, "loading", {}, () => [
               withDirectives(createVNode(
                 "div",
-                _hoisted_3$2,
+                _hoisted_3$4,
                 null,
                 512
                 /* NEED_PATCH */
@@ -39182,8 +39182,8 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
               "aria-multiselectable": _ctx.multiple
             }, [
               renderSlot(_ctx.$slots, "beforeList"),
-              _ctx.multiple && _ctx.max === _ctx.internalValue.length ? (openBlock(), createBlock("li", _hoisted_4$2, [
-                createVNode("span", _hoisted_5$2, [
+              _ctx.multiple && _ctx.max === _ctx.internalValue.length ? (openBlock(), createBlock("li", _hoisted_4$4, [
+                createVNode("span", _hoisted_5$4, [
                   renderSlot(_ctx.$slots, "maxElements", {}, () => [
                     createTextVNode(
                       "Maximum of " + toDisplayString(_ctx.max) + " options selected. First remove a selected option to select another.",
@@ -39258,9 +39258,9 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
                 "li",
                 null,
                 [
-                  createVNode("span", _hoisted_6$2, [
+                  createVNode("span", _hoisted_6$4, [
                     renderSlot(_ctx.$slots, "noResult", { search: _ctx.search }, () => [
-                      _hoisted_7$2
+                      _hoisted_7$4
                     ])
                   ])
                 ],
@@ -39273,9 +39273,9 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
                 "li",
                 null,
                 [
-                  createVNode("span", _hoisted_8$2, [
+                  createVNode("span", _hoisted_8$4, [
                     renderSlot(_ctx.$slots, "noOptions", {}, () => [
-                      _hoisted_9$2
+                      _hoisted_9$3
                     ])
                   ])
                 ],
@@ -39340,7 +39340,7 @@ var errors = {
   }
 };
 const WorkflowEdit_vue_vue_type_style_index_0_scoped_8e439728_lang = "";
-const _sfc_main$1 = {
+const _sfc_main$3 = {
   name: "WorkflowEdit",
   props: {
     workflowId: {
@@ -39740,45 +39740,45 @@ const _sfc_main$1 = {
     }
   }
 };
-const _hoisted_1$1 = { class: "tw-m-2" };
-const _hoisted_2$1 = { class: "tw-ml-2 tw-text-neutral-900" };
-const _hoisted_3$1 = { id: "header" };
-const _hoisted_4$1 = { class: "tw-flex tw-flex-row tw-justify-between" };
-const _hoisted_5$1 = { class: "tw-mt-4 tw-w-full tw-flex tw-flex-row tw-justify-between tw-items-center" };
-const _hoisted_6$1 = { key: 0 };
-const _hoisted_7$1 = { value: "0" };
-const _hoisted_8$1 = {
+const _hoisted_1$3 = { class: "tw-m-2" };
+const _hoisted_2$3 = { class: "tw-ml-2 tw-text-neutral-900" };
+const _hoisted_3$3 = { id: "header" };
+const _hoisted_4$3 = { class: "tw-flex tw-flex-row tw-justify-between" };
+const _hoisted_5$3 = { class: "tw-mt-4 tw-w-full tw-flex tw-flex-row tw-justify-between tw-items-center" };
+const _hoisted_6$3 = { key: 0 };
+const _hoisted_7$3 = { value: "0" };
+const _hoisted_8$3 = {
   id: "tabs-wrapper",
   class: "tw-w-full tw-rounded-coordinator tw-p-6 tw-bg-white tw-border tw-border-neutral-300 tw-relative"
 };
-const _hoisted_9$1 = {
+const _hoisted_9$2 = {
   key: 0,
   id: "workflow-steps-wrapper",
   class: "tw-flex tw-flex-col"
 };
-const _hoisted_10$1 = {
+const _hoisted_10$2 = {
   id: "workflow-steps",
   class: "tw-flex tw-flex-row tw-gap-3 tw-overflow-auto"
 };
-const _hoisted_11$1 = { class: "workflow-step-head tw-flex tw-flex-row tw-justify-between" };
-const _hoisted_12$1 = { class: "tw-list-none !tw-p-0" };
-const _hoisted_13$1 = ["onClick"];
-const _hoisted_14$1 = ["onClick"];
-const _hoisted_15$1 = ["onClick"];
-const _hoisted_16$1 = ["onClick"];
-const _hoisted_17$1 = { class: "workflow-step-content" };
-const _hoisted_18$1 = { class: "tw-mb-4 tw-flex tw-flex-col" };
-const _hoisted_19 = { class: "tw-mb-2" };
-const _hoisted_20 = ["onUpdate:modelValue"];
-const _hoisted_21 = {
+const _hoisted_11$2 = { class: "workflow-step-head tw-flex tw-flex-row tw-justify-between" };
+const _hoisted_12$2 = { class: "tw-list-none !tw-p-0" };
+const _hoisted_13$2 = ["onClick"];
+const _hoisted_14$2 = ["onClick"];
+const _hoisted_15$2 = ["onClick"];
+const _hoisted_16$2 = ["onClick"];
+const _hoisted_17$2 = { class: "workflow-step-content" };
+const _hoisted_18$2 = { class: "tw-mb-4 tw-flex tw-flex-col" };
+const _hoisted_19$1 = { class: "tw-mb-2" };
+const _hoisted_20$1 = ["onUpdate:modelValue"];
+const _hoisted_21$1 = {
   key: 0,
   class: "tw-text-red-600"
 };
-const _hoisted_22 = { class: "tw-mb-4 tw-flex tw-flex-col" };
-const _hoisted_23 = { class: "tw-mb-2" };
-const _hoisted_24 = ["onUpdate:modelValue"];
-const _hoisted_25 = ["value"];
-const _hoisted_26 = { key: 0 };
+const _hoisted_22$1 = { class: "tw-mb-4 tw-flex tw-flex-col" };
+const _hoisted_23$1 = { class: "tw-mb-2" };
+const _hoisted_24$1 = ["onUpdate:modelValue"];
+const _hoisted_25$1 = ["value"];
+const _hoisted_26$1 = { key: 0 };
 const _hoisted_27 = {
   key: 0,
   class: "tw-mb-4 tw-flex tw-flex-col"
@@ -39849,20 +39849,20 @@ const _hoisted_60 = {
   key: 0,
   class: "tw-w-full tw-text-center"
 };
-function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_Tabs = resolveComponent("Tabs");
   const _component_popover = resolveComponent("popover");
   const _component_Multiselect = resolveComponent("Multiselect");
-  return openBlock(), createElementBlock("div", _hoisted_1$1, [
+  return openBlock(), createElementBlock("div", _hoisted_1$3, [
     createBaseVNode("div", {
       class: "tw-flex tw-items-center tw-cursor-pointer tw-mb-4",
       onClick: _cache[0] || (_cache[0] = (...args) => $options.goBack && $options.goBack(...args))
     }, [
       _cache[8] || (_cache[8] = createBaseVNode("span", { class: "material-icons-outlined" }, "navigate_before", -1)),
-      createBaseVNode("span", _hoisted_2$1, toDisplayString(_ctx.translate("BACK")), 1)
+      createBaseVNode("span", _hoisted_2$3, toDisplayString(_ctx.translate("BACK")), 1)
     ]),
-    createBaseVNode("div", _hoisted_3$1, [
-      createBaseVNode("div", _hoisted_4$1, [
+    createBaseVNode("div", _hoisted_3$3, [
+      createBaseVNode("div", _hoisted_4$3, [
         withDirectives(createBaseVNode("input", {
           id: "workflow-label",
           name: "workflow-label",
@@ -39880,10 +39880,10 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
           createBaseVNode("span", null, toDisplayString(_ctx.translate("SAVE")), 1)
         ])
       ]),
-      createBaseVNode("div", _hoisted_5$1, [
+      createBaseVNode("div", _hoisted_5$3, [
         createBaseVNode("div", null, [
-          $data.sortByOptions.length > 0 ? (openBlock(), createElementBlock("select", _hoisted_6$1, [
-            createBaseVNode("option", _hoisted_7$1, toDisplayString(_ctx.translate("SORT_BY")), 1)
+          $data.sortByOptions.length > 0 ? (openBlock(), createElementBlock("select", _hoisted_6$3, [
+            createBaseVNode("option", _hoisted_7$3, toDisplayString(_ctx.translate("SORT_BY")), 1)
           ])) : createCommentVNode("", true)
         ])
       ])
@@ -39892,14 +39892,14 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
       tabs: $data.tabs,
       classes: "tw-flex tw-items-center tw-gap-2 tw-ml-7"
     }, null, 8, ["tabs"]),
-    createBaseVNode("div", _hoisted_8$1, [
-      $options.activeTab.id == "steps" ? (openBlock(), createElementBlock("div", _hoisted_9$1, [
+    createBaseVNode("div", _hoisted_8$3, [
+      $options.activeTab.id == "steps" ? (openBlock(), createElementBlock("div", _hoisted_9$2, [
         createBaseVNode("a", {
           class: "tw-btn-primary tw-h-fit tw-w-fit tw-mb-4",
           type: "button",
           onClick: _cache[3] || (_cache[3] = (...args) => $options.addStep && $options.addStep(...args))
         }, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_ADD_STEP")), 1),
-        createBaseVNode("div", _hoisted_10$1, [
+        createBaseVNode("div", _hoisted_10$2, [
           (openBlock(true), createElementBlock(Fragment, null, renderList($data.steps, (step) => {
             return openBlock(), createElementBlock("div", {
               key: step.id,
@@ -39909,46 +39909,46 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
                 "tw-border-red-600": $data.displayErrors && $data.fieldsInError[step.id] && $data.fieldsInError[step.id].length > 0
               }])
             }, [
-              createBaseVNode("div", _hoisted_11$1, [
+              createBaseVNode("div", _hoisted_11$2, [
                 createBaseVNode("h4", null, toDisplayString(step.label), 1),
                 createVNode(_component_popover, null, {
                   default: withCtx(() => [
-                    createBaseVNode("ul", _hoisted_12$1, [
+                    createBaseVNode("ul", _hoisted_12$2, [
                       createBaseVNode("li", {
                         class: "archive-workflow-step tw-cursor-pointer tw-p-2",
                         onClick: ($event) => $options.duplicateStep(step.id)
-                      }, toDisplayString(_ctx.translate("COM_EMUNDUS_ACTIONS_DUPLICATE")), 9, _hoisted_13$1),
+                      }, toDisplayString(_ctx.translate("COM_EMUNDUS_ACTIONS_DUPLICATE")), 9, _hoisted_13$2),
                       step.state == 1 ? (openBlock(), createElementBlock("li", {
                         key: 0,
                         class: "archive-workflow-step tw-cursor-pointer tw-p-2",
                         onClick: ($event) => $options.updateStepState(step.id, 0)
-                      }, toDisplayString(_ctx.translate("COM_EMUNDUS_ACTIONS_ARCHIVE")), 9, _hoisted_14$1)) : (openBlock(), createElementBlock("li", {
+                      }, toDisplayString(_ctx.translate("COM_EMUNDUS_ACTIONS_ARCHIVE")), 9, _hoisted_14$2)) : (openBlock(), createElementBlock("li", {
                         key: 1,
                         class: "archive-workflow-step tw-cursor-pointer tw-p-2",
                         onClick: ($event) => $options.updateStepState(step.id, 1)
-                      }, toDisplayString(_ctx.translate("COM_EMUNDUS_ACTIONS_UNARCHIVE")), 9, _hoisted_15$1)),
+                      }, toDisplayString(_ctx.translate("COM_EMUNDUS_ACTIONS_UNARCHIVE")), 9, _hoisted_15$2)),
                       createBaseVNode("li", {
                         class: "delete-workflow-step tw-cursor-pointer tw-p-2",
                         onClick: ($event) => $options.beforeDeleteStep(step.id)
-                      }, toDisplayString(_ctx.translate("COM_EMUNDUS_ACTIONS_DELETE")), 9, _hoisted_16$1)
+                      }, toDisplayString(_ctx.translate("COM_EMUNDUS_ACTIONS_DELETE")), 9, _hoisted_16$2)
                     ])
                   ]),
                   _: 2
                 }, 1024)
               ]),
-              createBaseVNode("div", _hoisted_17$1, [
-                createBaseVNode("div", _hoisted_18$1, [
-                  createBaseVNode("label", _hoisted_19, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_LABEL")), 1),
+              createBaseVNode("div", _hoisted_17$2, [
+                createBaseVNode("div", _hoisted_18$2, [
+                  createBaseVNode("label", _hoisted_19$1, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_LABEL")), 1),
                   withDirectives(createBaseVNode("input", {
                     type: "text",
                     "onUpdate:modelValue": ($event) => step.label = $event
-                  }, null, 8, _hoisted_20), [
+                  }, null, 8, _hoisted_20$1), [
                     [vModelText, step.label]
                   ]),
-                  $data.displayErrors && $data.fieldsInError[step.id] && $data.fieldsInError[step.id].includes("label") ? (openBlock(), createElementBlock("span", _hoisted_21, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_LABEL_REQUIRED")), 1)) : createCommentVNode("", true)
+                  $data.displayErrors && $data.fieldsInError[step.id] && $data.fieldsInError[step.id].includes("label") ? (openBlock(), createElementBlock("span", _hoisted_21$1, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_LABEL_REQUIRED")), 1)) : createCommentVNode("", true)
                 ]),
-                createBaseVNode("div", _hoisted_22, [
-                  createBaseVNode("label", _hoisted_23, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_TYPE")), 1),
+                createBaseVNode("div", _hoisted_22$1, [
+                  createBaseVNode("label", _hoisted_23$1, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_TYPE")), 1),
                   withDirectives(createBaseVNode("select", {
                     "onUpdate:modelValue": ($event) => step.type = $event
                   }, [
@@ -39957,11 +39957,11 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
                         key: type.id,
                         value: type.id
                       }, [
-                        type.parent_id > 0 ? (openBlock(), createElementBlock("span", _hoisted_26, " - ")) : createCommentVNode("", true),
+                        type.parent_id > 0 ? (openBlock(), createElementBlock("span", _hoisted_26$1, " - ")) : createCommentVNode("", true),
                         createTextVNode(" " + toDisplayString(_ctx.translate(type.label)), 1)
-                      ], 8, _hoisted_25);
+                      ], 8, _hoisted_25$1);
                     }), 128))
-                  ], 8, _hoisted_24), [
+                  ], 8, _hoisted_24$1), [
                     [vModelSelect, step.type]
                   ])
                 ]),
@@ -40106,7 +40106,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ]);
 }
-const WorkflowEdit = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-8e439728"]]);
+const WorkflowEdit = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-8e439728"]]);
 const WorkflowEdit$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: WorkflowEdit
@@ -40350,7 +40350,7 @@ const campaignService = {
     }
   }
 };
-const _sfc_main = {
+const _sfc_main$2 = {
   name: "ProgramEdit",
   components: { Multiselect: script },
   props: {
@@ -40425,63 +40425,63 @@ const _sfc_main = {
     }
   }
 };
-const _hoisted_1 = {
+const _hoisted_1$2 = {
   id: "program-edition-container",
   class: "em-border-cards em-card-shadow tw-rounded em-white-bg em-p-24 tw-m-4"
 };
-const _hoisted_2 = { class: "tw-mb-4" };
-const _hoisted_3 = { class: "tw-mb-2" };
-const _hoisted_4 = { class: "tw-mt-4" };
-const _hoisted_5 = { class: "tw-flex tw-flex-row tw-list-none" };
-const _hoisted_6 = ["onClick"];
-const _hoisted_7 = { class: "tw-w-full" };
-const _hoisted_8 = ["src"];
-const _hoisted_9 = { class: "tw-w-full tw-p-4" };
-const _hoisted_10 = { class: "tw-mb-2" };
-const _hoisted_11 = { class: "tw-my-4" };
-const _hoisted_12 = ["href"];
-const _hoisted_13 = {
+const _hoisted_2$2 = { class: "tw-mb-4" };
+const _hoisted_3$2 = { class: "tw-mb-2" };
+const _hoisted_4$2 = { class: "tw-mt-4" };
+const _hoisted_5$2 = { class: "tw-flex tw-flex-row tw-list-none" };
+const _hoisted_6$2 = ["onClick"];
+const _hoisted_7$2 = { class: "tw-w-full" };
+const _hoisted_8$2 = ["src"];
+const _hoisted_9$1 = { class: "tw-w-full tw-p-4" };
+const _hoisted_10$1 = { class: "tw-mb-2" };
+const _hoisted_11$1 = { class: "tw-my-4" };
+const _hoisted_12$1 = ["href"];
+const _hoisted_13$1 = {
   href: "/campaigns",
   class: "tw-underline",
   target: "_blank"
 };
-const _hoisted_14 = { class: "tw-w-full tw-my-4" };
-const _hoisted_15 = { class: "tw-mb-2 tw-mr-2" };
-const _hoisted_16 = ["value"];
-const _hoisted_17 = { class: "tw-flex tw-flex-row tw-justify-between" };
-const _hoisted_18 = {
+const _hoisted_14$1 = { class: "tw-w-full tw-my-4" };
+const _hoisted_15$1 = { class: "tw-mb-2 tw-mr-2" };
+const _hoisted_16$1 = ["value"];
+const _hoisted_17$1 = { class: "tw-flex tw-flex-row tw-justify-between" };
+const _hoisted_18$1 = {
   href: "/workflows",
   class: "tw-underline",
   target: "_blank"
 };
-function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
-  return openBlock(), createElementBlock("div", _hoisted_1, [
-    createBaseVNode("h1", _hoisted_2, toDisplayString(_ctx.translate("COM_EMUNDUS_PROGRAMS_EDITION_TITLE")), 1),
-    createBaseVNode("h2", _hoisted_3, toDisplayString(_ctx.translate("COM_EMUNDUS_PROGRAMS_EDITION_SUBTITLE")), 1),
+function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", _hoisted_1$2, [
+    createBaseVNode("h1", _hoisted_2$2, toDisplayString(_ctx.translate("COM_EMUNDUS_PROGRAMS_EDITION_TITLE")), 1),
+    createBaseVNode("h2", _hoisted_3$2, toDisplayString(_ctx.translate("COM_EMUNDUS_PROGRAMS_EDITION_SUBTITLE")), 1),
     createBaseVNode("p", null, toDisplayString(_ctx.translate("COM_EMUNDUS_PROGRAMS_EDITION_INTRO")), 1),
-    createBaseVNode("nav", _hoisted_4, [
-      createBaseVNode("ul", _hoisted_5, [
+    createBaseVNode("nav", _hoisted_4$2, [
+      createBaseVNode("ul", _hoisted_5$2, [
         (openBlock(true), createElementBlock(Fragment, null, renderList($data.tabs, (tab) => {
           return openBlock(), createElementBlock("li", {
             class: normalizeClass(["tw-cursor-pointer tw-shadow tw-rounded-t-lg tw-px-2.5 tw-py-3", { "em-bg-main-500 em-text-neutral-300": $data.selectedTab === tab.name }]),
             key: tab.name,
             onClick: ($event) => $data.selectedTab = tab.name
-          }, toDisplayString(_ctx.translate(tab.label)), 11, _hoisted_6);
+          }, toDisplayString(_ctx.translate(tab.label)), 11, _hoisted_6$2);
         }), 128))
       ])
     ]),
-    withDirectives(createBaseVNode("div", _hoisted_7, [
+    withDirectives(createBaseVNode("div", _hoisted_7$2, [
       createBaseVNode("iframe", {
         class: "tw-w-full hide-titles",
         style: { "height": "150vh" },
         src: "/campaigns/modifier-un-programme?rowid=" + this.programId + "&tmpl=component&iframe=1"
-      }, null, 8, _hoisted_8)
+      }, null, 8, _hoisted_8$2)
     ], 512), [
       [vShow, $data.selectedTab === "general"]
     ]),
-    withDirectives(createBaseVNode("div", _hoisted_9, [
-      createBaseVNode("p", _hoisted_10, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_TITLE")), 1),
-      createBaseVNode("ul", _hoisted_11, [
+    withDirectives(createBaseVNode("div", _hoisted_9$1, [
+      createBaseVNode("p", _hoisted_10$1, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_TITLE")), 1),
+      createBaseVNode("ul", _hoisted_11$1, [
         (openBlock(true), createElementBlock(Fragment, null, renderList($data.campaigns, (campaign) => {
           return openBlock(), createElementBlock("li", {
             key: campaign.id
@@ -40489,16 +40489,16 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             createBaseVNode("a", {
               href: "/campaigns/edit?cid=" + campaign.id,
               target: "_blank"
-            }, toDisplayString(campaign.label), 9, _hoisted_12)
+            }, toDisplayString(campaign.label), 9, _hoisted_12$1)
           ]);
         }), 128))
       ]),
-      createBaseVNode("a", _hoisted_13, toDisplayString(_ctx.translate("COM_EMUNDUS_PROGRAMS_ACCESS_TO_CAMPAIGNS")), 1)
+      createBaseVNode("a", _hoisted_13$1, toDisplayString(_ctx.translate("COM_EMUNDUS_PROGRAMS_ACCESS_TO_CAMPAIGNS")), 1)
     ], 512), [
       [vShow, $data.selectedTab === "campaigns"]
     ]),
-    withDirectives(createBaseVNode("div", _hoisted_14, [
-      createBaseVNode("label", _hoisted_15, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_WORKFLOWS_ASSOCIATED_TITLE")), 1),
+    withDirectives(createBaseVNode("div", _hoisted_14$1, [
+      createBaseVNode("label", _hoisted_15$1, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_WORKFLOWS_ASSOCIATED_TITLE")), 1),
       withDirectives(createBaseVNode("select", {
         "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $data.workflowId = $event)
       }, [
@@ -40506,13 +40506,13 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           return openBlock(), createElementBlock("option", {
             key: workflow.id,
             value: workflow.id
-          }, toDisplayString(workflow.label), 9, _hoisted_16);
+          }, toDisplayString(workflow.label), 9, _hoisted_16$1);
         }), 128))
       ], 512), [
         [vModelSelect, $data.workflowId]
       ]),
-      createBaseVNode("div", _hoisted_17, [
-        createBaseVNode("a", _hoisted_18, toDisplayString(_ctx.translate("COM_EMUNDUS_PROGRAMS_ACCESS_TO_WORKFLOWS")), 1),
+      createBaseVNode("div", _hoisted_17$1, [
+        createBaseVNode("a", _hoisted_18$1, toDisplayString(_ctx.translate("COM_EMUNDUS_PROGRAMS_ACCESS_TO_WORKFLOWS")), 1),
         createBaseVNode("button", {
           class: "tw-btn-primary",
           onClick: _cache[1] || (_cache[1] = (...args) => $options.updateProgramWorkflows && $options.updateProgramWorkflows(...args))
@@ -40523,10 +40523,416 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ]);
 }
-const ProgramEdit = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render]]);
+const ProgramEdit = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2]]);
 const ProgramEdit$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: ProgramEdit
+}, Symbol.toStringTag, { value: "Module" }));
+const Pagination_vue_vue_type_style_index_0_scoped_81c853d5_lang = "";
+const _sfc_main$1 = {
+  name: "Pagination",
+  props: {
+    limits: {
+      type: Array,
+      default: () => [1, 5, 10, 25, 50, 100]
+    },
+    dataLength: {
+      type: Number,
+      default: 0
+    },
+    page: {
+      type: Number,
+      default: 1
+    },
+    limit: {
+      type: Number,
+      default: 5
+    },
+    sticky: {
+      type: Boolean,
+      default: false
+    }
+  },
+  emits: ["update:page", "update:limit"],
+  data: () => ({
+    currentPage: 1,
+    currentLimit: 5
+  }),
+  created() {
+    this.currentPage = this.page;
+    this.currentLimit = this.limit;
+  },
+  watch: {
+    currentPage() {
+      this.$emit("update:page", this.currentPage);
+    },
+    currentLimit() {
+      this.$emit("update:limit", this.currentLimit);
+    }
+  },
+  computed: {
+    stickyClass() {
+      return this.sticky ? "tw-sticky tw-border-b tw-border-neutral-400 tw-top-0" : "";
+    },
+    stickyStyle() {
+      let banner = document.querySelector(".alerte-message-container");
+      if (banner) {
+        let top = banner.offsetHeight;
+        return { top: `${top}px` };
+      }
+    },
+    totalPages() {
+      return Math.ceil(this.dataLength / this.currentLimit);
+    },
+    pagesAvailable() {
+      let pages = [this.currentPage];
+      for (let i2 = 1; i2 <= 5; i2++) {
+        if (this.currentPage - i2 > 0) {
+          pages.unshift(this.currentPage - i2);
+        }
+        if (this.currentPage + i2 <= this.totalPages) {
+          pages.push(this.currentPage + i2);
+        }
+      }
+      return pages;
+    }
+  }
+};
+const _hoisted_1$1 = { class: "tw-ml-2" };
+const _hoisted_2$1 = { class: "em-ml-16 em-flex-row" };
+const _hoisted_3$1 = ["value"];
+const _hoisted_4$1 = { class: "em-container-pagination-selectPage" };
+const _hoisted_5$1 = { class: "tw-flex tw-items-center tw-gap-1 pagination pagination-sm" };
+const _hoisted_6$1 = { class: "tw-flex" };
+const _hoisted_7$1 = ["onClick"];
+const _hoisted_8$1 = { class: "tw-flex" };
+function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", {
+    class: normalizeClass(["tw-flex tw-items-center tw-justify-between tw-py-2 tw-px-3 tw-bg-white", $options.stickyClass]),
+    style: normalizeStyle($options.stickyStyle)
+  }, [
+    createBaseVNode("div", _hoisted_1$1, [
+      createBaseVNode("div", _hoisted_2$1, [
+        _cache[3] || (_cache[3] = createBaseVNode("label", {
+          for: "pager-select",
+          class: "em-mb-0-important em-mr-4"
+        }, "Afficher", -1)),
+        withDirectives(createBaseVNode("select", {
+          name: "pager-select",
+          id: "pager-select",
+          class: "em-select-no-border",
+          "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => _ctx.currentLimit = $event)
+        }, [
+          (openBlock(true), createElementBlock(Fragment, null, renderList($props.limits, (availableLimit) => {
+            return openBlock(), createElementBlock("option", { value: availableLimit }, toDisplayString(availableLimit), 9, _hoisted_3$1);
+          }), 256))
+        ], 512), [
+          [vModelSelect, _ctx.currentLimit]
+        ])
+      ])
+    ]),
+    createBaseVNode("div", _hoisted_4$1, [
+      createBaseVNode("ul", _hoisted_5$1, [
+        createBaseVNode("li", _hoisted_6$1, [
+          createBaseVNode("a", {
+            class: normalizeClass(["tw-cursor-pointer", { "disabled": this.currentPage === 1 }]),
+            onClick: _cache[1] || (_cache[1] = ($event) => this.currentPage !== 1 ? this.currentPage -= 1 : null)
+          }, _cache[4] || (_cache[4] = [
+            createBaseVNode("span", { class: "material-symbols-outlined" }, "navigate_before", -1)
+          ]), 2)
+        ]),
+        (openBlock(true), createElementBlock(Fragment, null, renderList($options.pagesAvailable, (pageAvailable) => {
+          return openBlock(), createElementBlock("li", {
+            key: pageAvailable,
+            class: normalizeClass([{ "active": pageAvailable === this.currentPage }, "tw-cursor-pointer tw-flex"]),
+            onClick: ($event) => this.currentPage = pageAvailable
+          }, [
+            createBaseVNode("a", null, toDisplayString(pageAvailable), 1)
+          ], 10, _hoisted_7$1);
+        }), 128)),
+        createBaseVNode("li", _hoisted_8$1, [
+          createBaseVNode("a", {
+            class: normalizeClass(["tw-cursor-pointer", { "disabled": this.currentPage === $options.totalPages }]),
+            onClick: _cache[2] || (_cache[2] = ($event) => this.currentPage !== $options.totalPages ? this.currentPage += 1 : null)
+          }, _cache[5] || (_cache[5] = [
+            createBaseVNode("span", { class: "material-symbols-outlined" }, "navigate_next", -1)
+          ]), 2)
+        ])
+      ])
+    ])
+  ], 6);
+}
+const Pagination = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-81c853d5"]]);
+const History_vue_vue_type_style_index_0_scoped_09715b43_lang = "";
+const _sfc_main = {
+  name: "History",
+  components: { Pagination },
+  props: {
+    extension: {
+      type: String,
+      required: true
+    },
+    itemId: {
+      type: Number,
+      default: 0
+    },
+    columns: {
+      type: Array,
+      default: () => [
+        // Modification(s)
+        "title",
+        // Type
+        "message_language_key",
+        // Date
+        "log_date",
+        // By
+        "user_id",
+        // Status
+        //'status',
+        "diff"
+      ]
+    },
+    displayTitle: {
+      type: Boolean,
+      default: false
+    }
+  },
+  mixins: [mixin$1],
+  data() {
+    return {
+      loading: true,
+      colorClasses: {
+        done: "tw-text-main-500",
+        pending: "tw-text-orange-500",
+        cancelled: "tw-text-red-500"
+      },
+      icon: {
+        done: "check_circle",
+        pending: "rule_settings",
+        cancelled: "cancel"
+      },
+      text: {
+        done: this.translate("COM_EMUNDUS_GLOBAL_HISTORY_STATUS_DONE"),
+        pending: this.translate("COM_EMUNDUS_GLOBAL_HISTORY_STATUS_PENDING"),
+        cancelled: this.translate("COM_EMUNDUS_GLOBAL_HISTORY_STATUS_CANCELLED")
+      },
+      history: [],
+      historyLength: 0,
+      page: 1,
+      limit: 10
+    };
+  },
+  setup() {
+    return {
+      globalStore: useGlobalStore()
+    };
+  },
+  created() {
+    this.fetchHistory();
+    if (this.itemId < 1) {
+      this.columns.push("itemId");
+    }
+  },
+  methods: {
+    fetchHistory() {
+      this.loading = true;
+      settingsService.getHistory(this.extension, false, this.page, this.limit, this.itemId).then((response) => {
+        this.historyLength = parseInt(response.length);
+        response.data.forEach((data) => {
+          data.message = JSON.parse(data.message);
+          if (data.message.old_data) {
+            data.message.old_data = JSON.parse(data.message.old_data);
+          }
+          if (data.message.new_data) {
+            data.message.new_data = JSON.parse(data.message.new_data);
+            data.message.new_data_json = JSON.parse(JSON.stringify(data.message.new_data));
+          }
+          if (data.message.new_data) {
+            data.message.new_data = Object.values(data.message.new_data);
+          }
+        });
+        this.history = response.data;
+        this.loading = false;
+      });
+    },
+    updateHistoryStatus(id, status) {
+      if (this.sysadmin) {
+        Swal.fire({
+          title: this.translate("COM_EMUNDUS_GLOBAL_HISTORY_STATUS_UPDATE_TITLE"),
+          text: this.translate("COM_EMUNDUS_GLOBAL_HISTORY_STATUS_UPDATE_TEXT"),
+          showCancelButton: true,
+          reverseButtons: true,
+          confirmButtonText: this.translate("COM_EMUNDUS_GLOBAL_HISTORY_STATUS_UPDATE_YES"),
+          cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
+          customClass: {
+            title: "em-swal-title",
+            cancelButton: "em-swal-cancel-button",
+            confirmButton: "em-swal-confirm-button"
+          }
+        }).then((result) => {
+          if (result.isConfirmed) {
+            settingsService.updateHistoryStatus(id, status).then(() => {
+              this.fetchHistory();
+            });
+          }
+        });
+      }
+    }
+  },
+  computed: {
+    sysadmin: function() {
+      return parseInt(this.globalStore.hasSysadminAccess);
+    }
+  },
+  watch: {
+    page: function() {
+      this.fetchHistory();
+    },
+    limit: function() {
+      this.fetchHistory();
+    }
+  }
+};
+const _hoisted_1 = { class: "tw-relative" };
+const _hoisted_2 = {
+  key: 0,
+  class: "tw-mb-6"
+};
+const _hoisted_3 = { key: 0 };
+const _hoisted_4 = { key: 0 };
+const _hoisted_5 = { key: 1 };
+const _hoisted_6 = { key: 2 };
+const _hoisted_7 = { key: 3 };
+const _hoisted_8 = { key: 4 };
+const _hoisted_9 = { key: 5 };
+const _hoisted_10 = { key: 6 };
+const _hoisted_11 = { key: 0 };
+const _hoisted_12 = { key: 1 };
+const _hoisted_13 = { key: 0 };
+const _hoisted_14 = { key: 0 };
+const _hoisted_15 = { class: "tw-text-green-700" };
+const _hoisted_16 = { key: 2 };
+const _hoisted_17 = { key: 3 };
+const _hoisted_18 = { key: 4 };
+const _hoisted_19 = { key: 5 };
+const _hoisted_20 = { class: "tw-flex tw-items-center" };
+const _hoisted_21 = { key: 0 };
+const _hoisted_22 = ["onClick"];
+const _hoisted_23 = ["onClick"];
+const _hoisted_24 = {
+  key: 0,
+  class: "!tw-border !tw-border-slate-100 !tw-border-solid tw-rounded tw-text-sm"
+};
+const _hoisted_25 = { key: 1 };
+const _hoisted_26 = {
+  key: 3,
+  class: "em-page-loader"
+};
+function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+  const _component_Pagination = resolveComponent("Pagination");
+  return openBlock(), createElementBlock("div", _hoisted_1, [
+    $props.displayTitle ? (openBlock(), createElementBlock("h2", _hoisted_2, toDisplayString(_ctx.translate("COM_EMUNDUS_GLOBAL_HISTORY")), 1)) : createCommentVNode("", true),
+    $data.history.length > 0 ? (openBlock(), createBlock(_component_Pagination, {
+      key: 1,
+      dataLength: $data.historyLength,
+      sticky: true,
+      page: $data.page,
+      "onUpdate:page": _cache[0] || (_cache[0] = ($event) => $data.page = $event),
+      limit: $data.limit,
+      "onUpdate:limit": _cache[1] || (_cache[1] = ($event) => $data.limit = $event)
+    }, null, 8, ["dataLength", "page", "limit"])) : createCommentVNode("", true),
+    !$data.loading ? (openBlock(), createElementBlock(Fragment, { key: 2 }, [
+      $data.history.length > 0 ? (openBlock(), createElementBlock("table", _hoisted_3, [
+        createBaseVNode("thead", null, [
+          createBaseVNode("tr", null, [
+            $props.columns.includes("itemId") ? (openBlock(), createElementBlock("th", _hoisted_4, toDisplayString(_ctx.translate("COM_EMUNDUS_GLOBAL_HISTORY_ITEM_ID")), 1)) : createCommentVNode("", true),
+            $props.columns.includes("title") ? (openBlock(), createElementBlock("th", _hoisted_5, toDisplayString(_ctx.translate("COM_EMUNDUS_GLOBAL_HISTORY_UPDATES")), 1)) : createCommentVNode("", true),
+            $props.columns.includes("message_language_key") ? (openBlock(), createElementBlock("th", _hoisted_6, toDisplayString(_ctx.translate("COM_EMUNDUS_GLOBAL_HISTORY_TYPE")), 1)) : createCommentVNode("", true),
+            $props.columns.includes("log_date") ? (openBlock(), createElementBlock("th", _hoisted_7, toDisplayString(_ctx.translate("COM_EMUNDUS_GLOBAL_HISTORY_LOG_DATE")), 1)) : createCommentVNode("", true),
+            $props.columns.includes("user_id") ? (openBlock(), createElementBlock("th", _hoisted_8, toDisplayString(_ctx.translate("COM_EMUNDUS_GLOBAL_HISTORY_BY")), 1)) : createCommentVNode("", true),
+            $props.columns.includes("status") ? (openBlock(), createElementBlock("th", _hoisted_9, toDisplayString(_ctx.translate("COM_EMUNDUS_GLOBAL_HISTORY_STATUS")), 1)) : createCommentVNode("", true),
+            $props.columns.includes("diff") ? (openBlock(), createElementBlock("th", _hoisted_10, toDisplayString(_ctx.translate("COM_EMUNDUS_GLOBAL_HISTORY_DIFF")), 1)) : createCommentVNode("", true)
+          ])
+        ]),
+        createBaseVNode("tbody", null, [
+          (openBlock(true), createElementBlock(Fragment, null, renderList($data.history, (data) => {
+            return openBlock(), createElementBlock("tr", {
+              key: data.id
+            }, [
+              $props.columns.includes("itemId") ? (openBlock(), createElementBlock("td", _hoisted_11, [
+                createBaseVNode("span", null, toDisplayString(data.message.id), 1)
+              ])) : createCommentVNode("", true),
+              $props.columns.includes("title") ? (openBlock(), createElementBlock("td", _hoisted_12, [
+                createBaseVNode("p", null, toDisplayString(_ctx.translate(data.message.title)), 1),
+                data.message.new_data.length > 0 && $props.extension == "com_emundus.settings.web_security" ? (openBlock(), createElementBlock("p", _hoisted_13, [
+                  (openBlock(true), createElementBlock(Fragment, null, renderList(data.message.new_data, (newData, index2) => {
+                    return openBlock(), createElementBlock("span", { key: index2 }, [
+                      index2 > 0 ? (openBlock(), createElementBlock("span", _hoisted_14, ", ")) : createCommentVNode("", true),
+                      createBaseVNode("span", _hoisted_15, toDisplayString(newData), 1)
+                    ]);
+                  }), 128))
+                ])) : createCommentVNode("", true)
+              ])) : createCommentVNode("", true),
+              $props.columns.includes("message_language_key") ? (openBlock(), createElementBlock("td", _hoisted_16, toDisplayString(_ctx.translate(data.message_language_key + "_TITLE")), 1)) : createCommentVNode("", true),
+              $props.columns.includes("log_date") ? (openBlock(), createElementBlock("td", _hoisted_17, toDisplayString(_ctx.formattedDate(data.log_date, "L") + " " + _ctx.formattedDate(data.log_date, "LT")), 1)) : createCommentVNode("", true),
+              $props.columns.includes("user_id") ? (openBlock(), createElementBlock("td", _hoisted_18, toDisplayString(data.logged_by), 1)) : createCommentVNode("", true),
+              $props.columns.includes("status") ? (openBlock(), createElementBlock("td", _hoisted_19, [
+                createBaseVNode("div", _hoisted_20, [
+                  createBaseVNode("span", {
+                    class: normalizeClass(["material-symbols-outlined tw-mr-2", $data.colorClasses[data.message.status]])
+                  }, toDisplayString($data.icon[data.message.status]), 3),
+                  createBaseVNode("p", {
+                    class: normalizeClass($data.colorClasses[data.message.status])
+                  }, [
+                    createTextVNode(toDisplayString(_ctx.translate($data.text[data.message.status])) + " ", 1),
+                    (data.message.status == "done" || data.message.status == "cancelled") && data.message.status_updated ? (openBlock(), createElementBlock("span", _hoisted_21, toDisplayString(_ctx.formattedDate(data.message.status_updated, "L")), 1)) : createCommentVNode("", true)
+                  ], 2),
+                  this.sysadmin && data.message.status === "pending" ? (openBlock(), createElementBlock("span", {
+                    key: 0,
+                    onClick: ($event) => $options.updateHistoryStatus(data.id, "done"),
+                    class: "material-symbols-outlined tw-cursor-pointer"
+                  }, " edit ", 8, _hoisted_22)) : createCommentVNode("", true),
+                  this.sysadmin && data.message.status === "pending" ? (openBlock(), createElementBlock("span", {
+                    key: 1,
+                    onClick: ($event) => $options.updateHistoryStatus(data.id, "cancelled"),
+                    class: "material-symbols-outlined tw-cursor-pointer"
+                  }, " backspace ", 8, _hoisted_23)) : createCommentVNode("", true)
+                ])
+              ])) : createCommentVNode("", true),
+              createBaseVNode("td", null, [
+                $props.columns.includes("diff") && (!Array.isArray(data.message.old_data) || data.message.old_data.length > 0) && (!Array.isArray(data.message.new_data) || data.message.new_data.length > 0) ? (openBlock(), createElementBlock("table", _hoisted_24, [
+                  createBaseVNode("thead", null, [
+                    createBaseVNode("tr", null, [
+                      createBaseVNode("th", null, toDisplayString(_ctx.translate("COM_EMUNDUS_GLOBAL_HISTORY_DIFF_COLUMN")), 1),
+                      createBaseVNode("th", null, toDisplayString(_ctx.translate("COM_EMUNDUS_GLOBAL_HISTORY_DIFF_OLD_DATA")), 1),
+                      createBaseVNode("th", null, toDisplayString(_ctx.translate("COM_EMUNDUS_GLOBAL_HISTORY_DIFF_NEW_DATA")), 1)
+                    ])
+                  ]),
+                  createBaseVNode("tbody", null, [
+                    (openBlock(true), createElementBlock(Fragment, null, renderList(data.message.old_data, (value, key) => {
+                      return openBlock(), createElementBlock("tr", { key }, [
+                        createBaseVNode("td", null, toDisplayString(key), 1),
+                        createBaseVNode("td", null, toDisplayString(value), 1),
+                        createBaseVNode("td", null, toDisplayString(data.message.new_data_json[key]), 1)
+                      ]);
+                    }), 128))
+                  ])
+                ])) : createCommentVNode("", true)
+              ])
+            ]);
+          }), 128))
+        ])
+      ])) : (openBlock(), createElementBlock("div", _hoisted_25, [
+        createBaseVNode("p", null, toDisplayString(_ctx.translate("COM_EMUNDUS_GLOBAL_HISTORY_NO_HISTORY")), 1)
+      ]))
+    ], 64)) : createCommentVNode("", true),
+    $data.loading ? (openBlock(), createElementBlock("div", _hoisted_26)) : createCommentVNode("", true)
+  ]);
+}
+const History = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-09715b43"]]);
+const History$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: History
 }, Symbol.toStringTag, { value: "Module" }));
 if (document) {
   let app = null;
@@ -40545,7 +40951,7 @@ if (document) {
   if (el) {
     const componentName = el.getAttribute("component");
     if (componentName) {
-      const componentNames = ["Attachments", "Comments", "Workflows/WorkflowEdit", "Program/ProgramEdit"];
+      const componentNames = ["Attachments", "Comments", "Workflows/WorkflowEdit", "Program/ProgramEdit", "History"];
       if (filesElement || componentNames.includes(componentName)) {
         Array.prototype.slice.call(el.attributes).forEach(function(attr) {
           datas[attr.name] = attr.value;
@@ -40553,7 +40959,7 @@ if (document) {
         if (datas.attachments) {
           datas.attachments = JSON.parse(atob(datas.attachments));
         }
-        if (datas.columns) {
+        if (datas.columns && componentName !== "History") {
           datas.columns = JSON.parse(atob(datas.columns));
         }
       }
@@ -40594,6 +41000,12 @@ if (document) {
             programId: Number(datas.program_id)
           });
           break;
+        case "History":
+          app = createApp(History, {
+            extension: datas.extension,
+            itemid: Number(datas.itemid)
+          });
+          break;
         default:
           app = createApp({
             components: {
@@ -40604,7 +41016,7 @@ if (document) {
                   let name = componentPath[1];
                   return __variableDynamicImportRuntimeHelper(/* @__PURE__ */ Object.assign({ "./views/Program/ProgramEdit.vue": () => __vitePreload(() => Promise.resolve().then(() => ProgramEdit$1), true ? void 0 : void 0), "./views/Workflows/WorkflowEdit.vue": () => __vitePreload(() => Promise.resolve().then(() => WorkflowEdit$1), true ? void 0 : void 0), "./views/Workflows/WorkflowSettings.vue": () => __vitePreload(() => import("./WorkflowSettings.js"), true ? [] : void 0) }), `./views/${directory}/${name}.vue`);
                 } else {
-                  return __variableDynamicImportRuntimeHelper(/* @__PURE__ */ Object.assign({ "./views/ApplicationSingle.vue": () => __vitePreload(() => import("./ApplicationSingle.js"), true ? [] : void 0), "./views/Attachments.vue": () => __vitePreload(() => Promise.resolve().then(() => Attachments$1), true ? void 0 : void 0), "./views/CampaignEdition.vue": () => __vitePreload(() => import("./CampaignEdition.js"), true ? ["CampaignEdition.js","addCampaign.js","editor.js","vue-dropzone.js","vue-draggable-next.esm-bundler.js","email.js","index.js","History.js"] : void 0), "./views/Comments.vue": () => __vitePreload(() => Promise.resolve().then(() => Comments$1), true ? void 0 : void 0), "./views/Formbuilder.vue": () => __vitePreload(() => import("./Formbuilder.js"), true ? ["Formbuilder.js","vue-draggable-next.esm-bundler.js","editor.js","Translations.js","index.js","Skeleton.js","IncrementalSelect.js","History.js"] : void 0), "./views/History.vue": () => __vitePreload(() => import("./History.js"), true ? [] : void 0), "./views/List.vue": () => __vitePreload(() => import("./List.js"), true ? ["List.js","Skeleton.js"] : void 0), "./views/MessagesCoordinator.vue": () => __vitePreload(() => import("./MessagesCoordinator.js"), true ? ["MessagesCoordinator.js","vue-dropzone.js","index.js"] : void 0), "./views/Settings.vue": () => __vitePreload(() => import("./Settings.js"), true ? ["Settings.js","History.js","Translations.js","index.js","vue-draggable-next.esm-bundler.js","vue-dropzone.js","editor.js","WorkflowSettings.js"] : void 0), "./views/Workflows.vue": () => __vitePreload(() => import("./Workflows.js"), true ? ["Workflows.js","List.js","Skeleton.js"] : void 0), "./views/addCampaign.vue": () => __vitePreload(() => import("./addCampaign.js").then((n) => n.b), true ? ["addCampaign.js","editor.js"] : void 0), "./views/addEmail.vue": () => __vitePreload(() => import("./addEmail.js"), true ? ["addEmail.js","IncrementalSelect.js","email.js","editor.js"] : void 0) }), `./views/${componentName}.vue`);
+                  return __variableDynamicImportRuntimeHelper(/* @__PURE__ */ Object.assign({ "./views/ApplicationSingle.vue": () => __vitePreload(() => import("./ApplicationSingle.js"), true ? [] : void 0), "./views/Attachments.vue": () => __vitePreload(() => Promise.resolve().then(() => Attachments$1), true ? void 0 : void 0), "./views/CampaignEdition.vue": () => __vitePreload(() => import("./CampaignEdition.js"), true ? ["CampaignEdition.js","addCampaign.js","editor.js","vue-dropzone.js","vue-draggable-next.esm-bundler.js","email.js","index.js"] : void 0), "./views/Comments.vue": () => __vitePreload(() => Promise.resolve().then(() => Comments$1), true ? void 0 : void 0), "./views/Formbuilder.vue": () => __vitePreload(() => import("./Formbuilder.js"), true ? ["Formbuilder.js","vue-draggable-next.esm-bundler.js","editor.js","Translations.js","index.js","Skeleton.js","IncrementalSelect.js"] : void 0), "./views/History.vue": () => __vitePreload(() => Promise.resolve().then(() => History$1), true ? void 0 : void 0), "./views/List.vue": () => __vitePreload(() => import("./List.js"), true ? ["List.js","Skeleton.js"] : void 0), "./views/MessagesCoordinator.vue": () => __vitePreload(() => import("./MessagesCoordinator.js"), true ? ["MessagesCoordinator.js","vue-dropzone.js","index.js"] : void 0), "./views/Settings.vue": () => __vitePreload(() => import("./Settings.js"), true ? ["Settings.js","Translations.js","index.js","vue-draggable-next.esm-bundler.js","vue-dropzone.js","editor.js","WorkflowSettings.js"] : void 0), "./views/Workflows.vue": () => __vitePreload(() => import("./Workflows.js"), true ? ["Workflows.js","List.js","Skeleton.js"] : void 0), "./views/addCampaign.vue": () => __vitePreload(() => import("./addCampaign.js").then((n) => n.b), true ? ["addCampaign.js","editor.js"] : void 0), "./views/addEmail.vue": () => __vitePreload(() => import("./addEmail.js"), true ? ["addEmail.js","IncrementalSelect.js","email.js","editor.js"] : void 0) }), `./views/${componentName}.vue`);
                 }
               })
             },
@@ -40675,7 +41087,7 @@ if (document) {
   }
 }
 export {
-  defineComponent as $,
+  resolveDynamicComponent as $,
   Attachments as A,
   workflowService as B,
   Comments as C,
@@ -40683,53 +41095,54 @@ export {
   toHandlers as E,
   FetchClient as F,
   mixin$1 as G,
-  formService as H,
-  programmeService as I,
-  Transition as J,
-  hooks as K,
-  defineStore as L,
+  History as H,
+  formService as I,
+  programmeService as J,
+  Transition as K,
+  hooks as L,
   Modal as M,
-  vModelText as N,
-  script as O,
-  vModelDynamic as P,
-  withKeys as Q,
-  vModelRadio as R,
+  defineStore as N,
+  vModelText as O,
+  script as P,
+  vModelDynamic as Q,
+  withKeys as R,
   Swal$1 as S,
   Tabs as T,
-  Popover as U,
-  client$5 as V,
-  watch as W,
-  reactive as X,
-  __vitePreload as Y,
-  resolveDynamicComponent as Z,
+  vModelRadio as U,
+  Popover as V,
+  client$5 as W,
+  watch as X,
+  reactive as Y,
+  __vitePreload as Z,
   _export_sfc as _,
   createBaseVNode as a,
-  h as a0,
-  $3ed269f2f0fb224b$export$2e2bcd8739ae039 as a1,
-  renderSlot as a2,
-  getAugmentedNamespace as a3,
-  commonjsGlobal as a4,
-  getDefaultExportFromCjs as a5,
-  ref as a6,
-  computed as a7,
-  normalizeProps as a8,
-  guardReactiveProps as a9,
-  onMounted as aa,
-  nextTick as ab,
-  toRef as ac,
-  provide as ad,
-  unref as ae,
-  inject as af,
-  isRef as ag,
-  onUnmounted as ah,
-  toRefs as ai,
-  watchEffect as aj,
-  resolveDirective as ak,
-  markRaw as al,
-  onBeforeUnmount as am,
-  customRef as an,
-  getCurrentInstance as ao,
-  render$2 as ap,
+  defineComponent as a0,
+  h as a1,
+  $3ed269f2f0fb224b$export$2e2bcd8739ae039 as a2,
+  renderSlot as a3,
+  getAugmentedNamespace as a4,
+  commonjsGlobal as a5,
+  getDefaultExportFromCjs as a6,
+  ref as a7,
+  computed as a8,
+  normalizeProps as a9,
+  guardReactiveProps as aa,
+  onMounted as ab,
+  nextTick as ac,
+  toRef as ad,
+  provide as ae,
+  unref as af,
+  inject as ag,
+  isRef as ah,
+  onUnmounted as ai,
+  toRefs as aj,
+  watchEffect as ak,
+  resolveDirective as al,
+  markRaw as am,
+  onBeforeUnmount as an,
+  customRef as ao,
+  getCurrentInstance as ap,
+  render$2 as aq,
   Fragment as b,
   createElementBlock as c,
   createCommentVNode as d,

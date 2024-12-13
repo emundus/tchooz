@@ -24,6 +24,7 @@ import Attachments from "@/views/Attachments.vue";
 import Comments from "@/views/Comments.vue";
 import WorkflowEdit from "@/views/Workflows/WorkflowEdit.vue";
 import ProgramEdit from "@/views/Program/ProgramEdit.vue";
+import History from "@/views/History.vue";
 
 if (document) {
     let app = null;
@@ -47,7 +48,7 @@ if (document) {
         const componentName = el.getAttribute('component');
 
         if (componentName) {
-            const componentNames = ['Attachments', 'Comments', 'Workflows/WorkflowEdit', 'Program/ProgramEdit'];
+            const componentNames = ['Attachments', 'Comments', 'Workflows/WorkflowEdit', 'Program/ProgramEdit', 'History'];
 
             if (filesElement || componentNames.includes(componentName)) {
                 Array.prototype.slice.call(el.attributes).forEach(function (attr) {
@@ -58,7 +59,7 @@ if (document) {
                     datas.attachments = JSON.parse(atob(datas.attachments));
                 }
 
-                if (datas.columns) {
+                if (datas.columns && componentName !== 'History') {
                     datas.columns = JSON.parse(atob(datas.columns));
                 }
             }
@@ -98,6 +99,12 @@ if (document) {
                 case 'Program/ProgramEdit':
                     app = createApp(ProgramEdit, {
                         programId: Number(datas.program_id),
+                    });
+                    break;
+                case 'History':
+                    app = createApp(History, {
+                        extension: datas.extension,
+                        itemid: Number(datas.itemid)
                     });
                     break;
                 default:
