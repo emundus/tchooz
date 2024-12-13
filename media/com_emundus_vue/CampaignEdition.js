@@ -1,8 +1,9 @@
-import { _ as _export_sfc, l as campaignService, S as Swal, h as resolveComponent, o as openBlock, c as createElementBlock, a as createBaseVNode, i as createBlock, j as withCtx, t as toDisplayString, m as createVNode, T as TransitionGroup, b as Fragment, r as renderList, d as createCommentVNode, p as mergeProps, M as Modal, s as settingsService, q as withModifiers, w as withDirectives, n as normalizeClass, u as vModelSelect, g as axios, x as createTextVNode, y as useGlobalStore, z as workflowService, B as vModelCheckbox, D as toHandlers, E as Tabs, G as mixin, H as formService, I as programmeService, v as vShow, J as Transition } from "./app_emundus.js";
-import { D as DatePicker, a as addCampaign } from "./addCampaign.js";
+import { _ as _export_sfc, m as campaignService, S as Swal, e as resolveComponent, o as openBlock, c as createElementBlock, a as createBaseVNode, j as createBlock, k as withCtx, t as toDisplayString, g as createVNode, p as TransitionGroup, b as Fragment, r as renderList, d as createCommentVNode, q as mergeProps, M as Modal, s as settingsService, u as withModifiers, w as withDirectives, n as normalizeClass, x as vModelSelect, i as axios, y as createTextVNode, z as useGlobalStore, B as workflowService, D as vModelCheckbox, E as toHandlers, T as Tabs, G as mixin, H as formService, I as programmeService, v as vShow, J as Transition } from "./app_emundus.js";
+import { _ as _sfc_main$6, a as addCampaign } from "./addCampaign.js";
 import { v as vueDropzone } from "./vue-dropzone.js";
-import { V as VueDraggableNext, q as qs } from "./index.js";
+import { V as VueDraggableNext } from "./vue-draggable-next.esm-bundler.js";
 import { e as emailService } from "./email.js";
+import { q as qs } from "./index.js";
 import History from "./History.js";
 import "./editor.js";
 const _imports_0 = "/media/com_emundus_vue/assets/pdf.png";
@@ -895,7 +896,7 @@ const campaignMore = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_r
 const _sfc_main$1 = {
   name: "CampaignSteps",
   components: {
-    DatePicker
+    DatePicker: _sfc_main$6
   },
   props: {
     campaignId: {

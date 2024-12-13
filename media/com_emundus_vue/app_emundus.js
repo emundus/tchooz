@@ -32194,7 +32194,7 @@ function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
 }
 const Modal = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$6], ["__scopeId", "data-v-62997022"]]);
 /*!
-* sweetalert2 v11.14.4
+* sweetalert2 v11.14.5
 * Released under the MIT License.
 */
 function _assertClassBrand(e, t, n) {
@@ -33617,12 +33617,13 @@ const prepareResolveValue = (resolveValue) => {
   }, resolveValue);
 };
 const handlePopupAnimation = (instance, popup, innerParams) => {
+  var _globalState$eventEmi;
   const container = getContainer();
   const animationIsSupported = hasCssAnimation(popup);
   if (typeof innerParams.willClose === "function") {
     innerParams.willClose(popup);
   }
-  globalState.eventEmitter.emit("willClose", popup);
+  (_globalState$eventEmi = globalState.eventEmitter) === null || _globalState$eventEmi === void 0 || _globalState$eventEmi.emit("willClose", popup);
   if (animationIsSupported) {
     animatePopup(instance, popup, container, innerParams.returnFocus, innerParams.didClose);
   } else {
@@ -33633,7 +33634,8 @@ const animatePopup = (instance, popup, container, returnFocus, didClose) => {
   globalState.swalCloseEventFinishedCallback = removePopupAndResetState.bind(null, instance, container, returnFocus, didClose);
   const swalCloseAnimationFinished = function(e) {
     if (e.target === popup) {
-      globalState.swalCloseEventFinishedCallback();
+      var _globalState$swalClos;
+      (_globalState$swalClos = globalState.swalCloseEventFinishedCallback) === null || _globalState$swalClos === void 0 || _globalState$swalClos.call(globalState);
       delete globalState.swalCloseEventFinishedCallback;
       popup.removeEventListener("animationend", swalCloseAnimationFinished);
       popup.removeEventListener("transitionend", swalCloseAnimationFinished);
@@ -33644,10 +33646,11 @@ const animatePopup = (instance, popup, container, returnFocus, didClose) => {
 };
 const triggerDidCloseAndDispose = (instance, didClose) => {
   setTimeout(() => {
+    var _globalState$eventEmi2;
     if (typeof didClose === "function") {
       didClose.bind(instance.params)();
     }
-    globalState.eventEmitter.emit("didClose");
+    (_globalState$eventEmi2 = globalState.eventEmitter) === null || _globalState$eventEmi2 === void 0 || _globalState$eventEmi2.emit("didClose");
     if (instance._destroy) {
       instance._destroy();
     }
@@ -35086,7 +35089,7 @@ const initFocus = (domCache, innerParams) => {
   setFocus(-1, 1);
 };
 const focusAutofocus = (domCache) => {
-  const autofocusElements = domCache.popup.querySelectorAll("[autofocus]");
+  const autofocusElements = Array.from(domCache.popup.querySelectorAll("[autofocus]"));
   for (const autofocusElement of autofocusElements) {
     if (autofocusElement instanceof HTMLElement && isVisible$1(autofocusElement)) {
       autofocusElement.focus();
@@ -35160,7 +35163,7 @@ Object.keys(instanceMethods).forEach((key) => {
   };
 });
 SweetAlert.DismissReason = DismissReason;
-SweetAlert.version = "11.14.4";
+SweetAlert.version = "11.14.5";
 const Swal$1 = SweetAlert;
 Swal$1.default = Swal$1;
 "undefined" != typeof document && function(e, t) {
@@ -37957,20 +37960,24 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     class: normalizeClass($props.classes)
   }, [
     (openBlock(true), createElementBlock(Fragment, null, renderList($data.currentTabs, (tab) => {
-      return withDirectives((openBlock(), createElementBlock("div", {
-        onClick: ($event) => $options.changeTab(tab.id),
-        class: normalizeClass(["tw-cursor-pointer tw-rounded-t-lg tw-flex tw-items-center tw-py-2 tw-px-4 tw-transition-colors tw-duration-300 tw-border-x tw-border-t", tab.active ? "tw-bg-white tw-border-profile-full" : "tw-bg-neutral-200 tw-border-neutral-400"])
+      return openBlock(), createElementBlock("div", {
+        key: tab.id
       }, [
-        createBaseVNode("span", {
-          class: normalizeClass(["material-symbols-outlined tw-mr-2", tab.active ? "tw-text-profile-full" : "tw-text-neutral-700"])
-        }, toDisplayString(tab.icon), 3),
-        createBaseVNode("span", {
-          class: normalizeClass([tab.active ? "tw-text-profile-full" : "tw-text-neutral-700", "tw-whitespace-nowrap"])
-        }, toDisplayString(_ctx.translate(tab.name)), 3)
-      ], 10, _hoisted_1$3)), [
-        [vShow, tab.displayed]
+        withDirectives(createBaseVNode("div", {
+          onClick: ($event) => $options.changeTab(tab.id),
+          class: normalizeClass(["tw-cursor-pointer tw-rounded-t-lg tw-flex tw-items-center tw-py-2 tw-px-4 tw-transition-colors tw-duration-300 tw-border-x tw-border-t", tab.active ? "tw-bg-white tw-border-profile-full" : "tw-bg-neutral-200 tw-border-neutral-400"])
+        }, [
+          createBaseVNode("span", {
+            class: normalizeClass(["material-symbols-outlined tw-mr-2", tab.active ? "tw-text-profile-full" : "tw-text-neutral-700"])
+          }, toDisplayString(tab.icon), 3),
+          createBaseVNode("span", {
+            class: normalizeClass([tab.active ? "tw-text-profile-full" : "tw-text-neutral-700", "tw-whitespace-nowrap"])
+          }, toDisplayString(_ctx.translate(tab.name)), 3)
+        ], 10, _hoisted_1$3), [
+          [vShow, tab.displayed]
+        ])
       ]);
-    }), 256))
+    }), 128))
   ], 2);
 }
 const Tabs = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2]]);
@@ -40600,7 +40607,7 @@ if (document) {
                   let name = componentPath[1];
                   return __variableDynamicImportRuntimeHelper(/* @__PURE__ */ Object.assign({ "./views/Program/ProgramEdit.vue": () => __vitePreload(() => Promise.resolve().then(() => ProgramEdit$1), true ? void 0 : void 0), "./views/Workflows/WorkflowEdit.vue": () => __vitePreload(() => Promise.resolve().then(() => WorkflowEdit$1), true ? void 0 : void 0), "./views/Workflows/WorkflowSettings.vue": () => __vitePreload(() => import("./WorkflowSettings.js"), true ? [] : void 0) }), `./views/${directory}/${name}.vue`);
                 } else {
-                  return __variableDynamicImportRuntimeHelper(/* @__PURE__ */ Object.assign({ "./views/ApplicationSingle.vue": () => __vitePreload(() => import("./ApplicationSingle.js"), true ? [] : void 0), "./views/Attachments.vue": () => __vitePreload(() => Promise.resolve().then(() => Attachments$1), true ? void 0 : void 0), "./views/CampaignEdition.vue": () => __vitePreload(() => import("./CampaignEdition.js"), true ? ["CampaignEdition.js","addCampaign.js","editor.js","vue-dropzone.js","index.js","email.js","History.js"] : void 0), "./views/Comments.vue": () => __vitePreload(() => Promise.resolve().then(() => Comments$1), true ? void 0 : void 0), "./views/Formbuilder.vue": () => __vitePreload(() => import("./Formbuilder.js"), true ? ["Formbuilder.js","index.js","editor.js","Translations.js","Skeleton.js","IncrementalSelect.js","History.js"] : void 0), "./views/History.vue": () => __vitePreload(() => import("./History.js"), true ? [] : void 0), "./views/List.vue": () => __vitePreload(() => import("./List.js"), true ? ["List.js","Skeleton.js"] : void 0), "./views/Settings.vue": () => __vitePreload(() => import("./Settings.js"), true ? ["Settings.js","History.js","Translations.js","index.js","vue-dropzone.js","editor.js","WorkflowSettings.js"] : void 0), "./views/Workflows.vue": () => __vitePreload(() => import("./Workflows.js"), true ? ["Workflows.js","List.js","Skeleton.js"] : void 0), "./views/addCampaign.vue": () => __vitePreload(() => import("./addCampaign.js").then((n) => n.b), true ? ["addCampaign.js","editor.js"] : void 0), "./views/addEmail.vue": () => __vitePreload(() => import("./addEmail.js"), true ? ["addEmail.js","IncrementalSelect.js","email.js","editor.js"] : void 0) }), `./views/${componentName}.vue`);
+                  return __variableDynamicImportRuntimeHelper(/* @__PURE__ */ Object.assign({ "./views/ApplicationSingle.vue": () => __vitePreload(() => import("./ApplicationSingle.js"), true ? [] : void 0), "./views/Attachments.vue": () => __vitePreload(() => Promise.resolve().then(() => Attachments$1), true ? void 0 : void 0), "./views/CampaignEdition.vue": () => __vitePreload(() => import("./CampaignEdition.js"), true ? ["CampaignEdition.js","addCampaign.js","editor.js","vue-dropzone.js","vue-draggable-next.esm-bundler.js","email.js","index.js","History.js"] : void 0), "./views/Comments.vue": () => __vitePreload(() => Promise.resolve().then(() => Comments$1), true ? void 0 : void 0), "./views/Formbuilder.vue": () => __vitePreload(() => import("./Formbuilder.js"), true ? ["Formbuilder.js","vue-draggable-next.esm-bundler.js","editor.js","Translations.js","index.js","Skeleton.js","IncrementalSelect.js","History.js"] : void 0), "./views/History.vue": () => __vitePreload(() => import("./History.js"), true ? [] : void 0), "./views/List.vue": () => __vitePreload(() => import("./List.js"), true ? ["List.js","Skeleton.js"] : void 0), "./views/MessagesCoordinator.vue": () => __vitePreload(() => import("./MessagesCoordinator.js"), true ? ["MessagesCoordinator.js","vue-dropzone.js","index.js"] : void 0), "./views/Settings.vue": () => __vitePreload(() => import("./Settings.js"), true ? ["Settings.js","History.js","Translations.js","index.js","vue-draggable-next.esm-bundler.js","vue-dropzone.js","editor.js","WorkflowSettings.js"] : void 0), "./views/Workflows.vue": () => __vitePreload(() => import("./Workflows.js"), true ? ["Workflows.js","List.js","Skeleton.js"] : void 0), "./views/addCampaign.vue": () => __vitePreload(() => import("./addCampaign.js").then((n) => n.b), true ? ["addCampaign.js","editor.js"] : void 0), "./views/addEmail.vue": () => __vitePreload(() => import("./addEmail.js"), true ? ["addEmail.js","IncrementalSelect.js","email.js","editor.js"] : void 0) }), `./views/${componentName}.vue`);
                 }
               })
             },
@@ -40666,17 +40673,30 @@ if (document) {
         const globalStore2 = useGlobalStore();
         globalStore2.initAttachmentPath(datas.base + "/images/emundus/files/");
       }
+      {
+        app.config.productionTip = false;
+        app.config.devtools = true;
+        app.config.performance = true;
+      }
       app.mount(elementId);
+      {
+        const version2 = app.version;
+        const devtools2 = window.__VUE_DEVTOOLS_GLOBAL_HOOK__;
+        if (devtools2) {
+          devtools2.enabled = true;
+          devtools2.emit("app:init", app, version2, {});
+        }
+      }
     }
   }
 }
 export {
-  $3ed269f2f0fb224b$export$2e2bcd8739ae039 as $,
+  defineComponent as $,
   Attachments as A,
-  vModelCheckbox as B,
+  workflowService as B,
   Comments as C,
-  toHandlers as D,
-  Tabs as E,
+  vModelCheckbox as D,
+  toHandlers as E,
   FetchClient as F,
   mixin$1 as G,
   formService as H,
@@ -40691,7 +40711,7 @@ export {
   withKeys as Q,
   vModelRadio as R,
   Swal$1 as S,
-  TransitionGroup as T,
+  Tabs as T,
   Popover as U,
   client$5 as V,
   watch as W,
@@ -40700,55 +40720,46 @@ export {
   resolveDynamicComponent as Z,
   _export_sfc as _,
   createBaseVNode as a,
-  renderSlot as a0,
-  defineComponent as a1,
-  h as a2,
+  h as a0,
+  $3ed269f2f0fb224b$export$2e2bcd8739ae039 as a1,
+  renderSlot as a2,
   getAugmentedNamespace as a3,
   commonjsGlobal as a4,
   getDefaultExportFromCjs as a5,
   ref as a6,
   computed as a7,
-  normalizeProps as a8,
-  guardReactiveProps as a9,
-  onMounted as aa,
-  nextTick as ab,
-  toRef as ac,
-  provide as ad,
-  unref as ae,
-  inject as af,
-  isRef as ag,
-  onUnmounted as ah,
-  toRefs as ai,
-  watchEffect as aj,
-  resolveDirective as ak,
-  markRaw as al,
-  onBeforeUnmount as am,
-  customRef as an,
-  getCurrentInstance as ao,
-  render$2 as ap,
+  markRaw as a8,
+  watchEffect as a9,
+  nextTick as aa,
+  unref as ab,
+  onBeforeUnmount as ac,
+  customRef as ad,
+  getCurrentInstance as ae,
+  render$2 as af,
+  onMounted as ag,
   Fragment as b,
   createElementBlock as c,
   createCommentVNode as d,
-  errors as e,
+  resolveComponent as e,
   fileService as f,
-  axios$1 as g,
-  resolveComponent as h,
-  createBlock as i,
-  withCtx as j,
-  normalizeStyle as k,
-  campaignService as l,
-  createVNode as m,
+  createVNode as g,
+  errors as h,
+  axios$1 as i,
+  createBlock as j,
+  withCtx as k,
+  normalizeStyle as l,
+  campaignService as m,
   normalizeClass as n,
   openBlock as o,
-  mergeProps as p,
-  withModifiers as q,
+  TransitionGroup as p,
+  mergeProps as q,
   renderList as r,
   settingsService as s,
   toDisplayString as t,
-  vModelSelect as u,
+  withModifiers as u,
   vShow as v,
   withDirectives as w,
-  createTextVNode as x,
-  useGlobalStore as y,
-  workflowService as z
+  vModelSelect as x,
+  createTextVNode as y,
+  useGlobalStore as z
 };

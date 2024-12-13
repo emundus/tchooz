@@ -39,9 +39,8 @@ class EmundusViewWorkflows extends JViewLegacy
 
 			$jinput = $app->input;
 			$layout = $jinput->getString('layout', null);
-			if ($layout !== 'evaluatorstep') {
-				return;
-			} else {
+
+			if ($layout === 'evaluatorstep') {
 				$step_id = $jinput->getInt('step_id', 0);
 				$this->fnum = $jinput->getString('fnum', '');
 

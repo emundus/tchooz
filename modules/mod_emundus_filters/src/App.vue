@@ -259,6 +259,7 @@ export default {
 		},
 		clearFilters() {
 			sessionStorage.removeItem('emundus-current-filter');
+      this.selectedRegisteredFilter = 0;
 			this.globalSearch = [];
 			// reset applied filters values
 			this.appliedFilters = this.appliedFilters.map((filter) => {
@@ -295,7 +296,15 @@ export default {
 			let saved = false;
 
 			if (this.newFilterName.length > 0) {
-				filtersService.saveFilters(this.appliedFilters, this.newFilterName, this.moduleId).then((saved) => {
+        // keep only the selected values, not all the values
+        const filterContent = this.appliedFilters.map((filter) => {
+          // remove the values, not needed to save the filter
+          let filterCopy = JSON.parse(JSON.stringify(filter));
+          delete filterCopy.values;
+          return filterCopy;
+        });
+
+        filtersService.saveFilters(filterContent, this.newFilterName, this.moduleId).then((saved) => {
 					if (saved) {
 						this.getRegisteredFilters();
 					}
@@ -329,7 +338,31 @@ export default {
 
 				if (foundFilter) {
 					sessionStorage.setItem('emundus-current-filter', foundFilter.id);
-					this.appliedFilters = JSON.parse(foundFilter.constraints);
+          this.appliedFilters = JSON.parse(foundFilter.constraints).map((filter) => {
+            if (!filter.hasOwnProperty('operator')) {
+              filter.operator = '=';
+            }
+            if (!filter.hasOwnProperty('andorOperator')) {
+              filter.andorOperator = 'OR';
+            }
+
+            if (!filter.hasOwnProperty('values')) {
+              filter.values = [];
+              this.defaultFilters.forEach((defaultFilter) => {
+                if (defaultFilter.id === filter.id) {
+                  filter.values = defaultFilter.values;
+                }
+              });
+              this.appliedFilters.forEach((defaultFilter) => {
+                if (defaultFilter.id === filter.id) {
+                  filter.values = defaultFilter.values;
+                }
+              });
+            }
+
+            return filter;
+          });
+
 					this.applyFilters();
 				}
 			} else {

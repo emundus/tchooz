@@ -46,7 +46,7 @@
           </div>
         </div>
         <hr/>
-        <div class="andor-selection em-flex-row em-flex-gap-8">
+        <div class="andor-selection em-flex-row em-flex-gap-8" v-if="displayedAndorOperators.length > 0">
           <div v-for="andor in displayedAndorOperators" :key="filter.uid + '-' + andor.value" class="em-p-8 em-border-radius-8"
                :class="{'label-default': andor.value !== filter.andorOperator, 'label-darkblue': andor.value === filter.andorOperator}">
             <input class="hidden label"
@@ -58,7 +58,7 @@
             <label :for="filter.uid + '-andor-' + andor.value" style="margin: 0">{{ andor.label }}</label>
           </div>
         </div>
-        <hr/>
+        <hr v-if="displayedAndorOperators.length > 0" />
         <input class="em-w-100 em-p-8 em-border-radius-8 em-border-neutral-400 em-box-shadow em-white-bg"
                :id="filter.uid + '-filter-search'"
                :ref="filter.uid + '-search-input'"

@@ -642,7 +642,7 @@ class EmundusHelperAccess
 					$fnum = EmundusHelperFiles::getFnumFromId($ccid);
 
 					// it's the bare minimum to potentially see the evaluation form
-					if (EmundusHelperAccess::asAccessAction(1, 'r', $user_id, $fnum) && EmundusHelperAccess::asAccessAction($step_data->action_id, 'c', $user_id))
+					if (EmundusHelperAccess::asAccessAction(1, 'r', $user_id, $fnum) && EmundusHelperAccess::asAccessAction($step_data->action_id, 'r', $user_id))
 					{
 						$can_see = true;
 						if (EmundusHelperAccess::asAccessAction($step_data->action_id, 'c', $user_id))

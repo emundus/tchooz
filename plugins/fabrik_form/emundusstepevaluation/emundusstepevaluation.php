@@ -95,7 +95,7 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 
 				if ($current_row_id == 0 || EmundusHelperAccess::asAccessAction($step_data->action_id, 'r', $user->id)) {
 					$final_url = preg_replace('/&rowid=\d+/', '&rowid=' . $row_id, $final_url);
-					if (strpos($final_url, 'rowid') === false) {
+					if (!str_contains($final_url, 'rowid')) {
 						$final_url .= '&rowid=' . $row_id;
 					}
 				}
@@ -103,7 +103,7 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 		}
 
 		if (!$can_edit && $view !== 'details') {
-			$this->app->enqueueMessage(Text::_('READONLY_ACCESS'), 'error');
+			$this->app->enqueueMessage(Text::_('READONLY_ACCESS'));
 			$final_url = str_replace('view=form', 'view=details', $final_url);
 		}
 

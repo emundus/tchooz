@@ -1,10 +1,11 @@
-import { F as FetchClient, K as hooks, L as defineStore, y as useGlobalStore, S as Swal$1, _ as _export_sfc, e as errors, h as resolveComponent, o as openBlock, c as createElementBlock, a as createBaseVNode, b as Fragment, r as renderList, n as normalizeClass, t as toDisplayString, w as withDirectives, N as vModelText, m as createVNode, j as withCtx, T as TransitionGroup, x as createTextVNode, v as vShow, d as createCommentVNode, O as script, u as vModelSelect, i as createBlock, P as vModelDynamic, B as vModelCheckbox, k as normalizeStyle, Q as withKeys, J as Transition, G as mixin, H as formService, R as vModelRadio, U as Popover, l as campaignService, V as client$1, W as watch, M as Modal, s as settingsService } from "./app_emundus.js";
-import { V as VueDraggableNext } from "./index.js";
+import { F as FetchClient, K as hooks, L as defineStore, z as useGlobalStore, S as Swal$1, _ as _export_sfc, h as errors, e as resolveComponent, o as openBlock, c as createElementBlock, a as createBaseVNode, b as Fragment, r as renderList, n as normalizeClass, t as toDisplayString, w as withDirectives, N as vModelText, g as createVNode, k as withCtx, p as TransitionGroup, y as createTextVNode, v as vShow, d as createCommentVNode, O as script, x as vModelSelect, j as createBlock, P as vModelDynamic, D as vModelCheckbox, l as normalizeStyle, Q as withKeys, J as Transition, G as mixin, H as formService, R as vModelRadio, U as Popover, m as campaignService, V as client$1, W as watch, M as Modal, s as settingsService } from "./app_emundus.js";
+import { V as VueDraggableNext } from "./vue-draggable-next.esm-bundler.js";
 import { V as V32 } from "./editor.js";
 import { t as translationsService, T as Translations } from "./Translations.js";
 import { S as Skeleton } from "./Skeleton.js";
 import { I as IncrementalSelect } from "./IncrementalSelect.js";
 import History from "./History.js";
+import "./index.js";
 const client = new FetchClient("formbuilder");
 const formBuilderService = {
   async createSimpleElement(params) {
@@ -8585,9 +8586,24 @@ const _sfc_main = {
       }
     },
     updateFormTitle() {
-      this.title = this.$refs.formTitle.innerText.trim().replace(/[\r\n]/gm, " ");
-      this.$refs.formTitle.innerText = this.$refs.formTitle.innerText.trim().replace(/[\r\n]/gm, " ");
-      formService.updateFormLabel({ label: this.title, prid: this.profile_id, form_id: this.form_id });
+      if (this.profile_id == 0) {
+        formService.getPageObject(this.pages[0].id).then((response) => {
+          const fabrikPage = response.data;
+          fabrikPage.show_title.label[this.shortDefaultLang] = this.$refs.formTitle.innerText.trim().replace(/[\r\n]/gm, " ");
+          const tag = fabrikPage.show_title.titleraw;
+          this.pages[0].label = fabrikPage.show_title.label[this.shortDefaultLang];
+          formBuilderService.updateTranslation(null, tag, fabrikPage.show_title.label).then((response2) => {
+            if (response2.data.status) {
+              translationsService.updateTranslations(fabrikPage.show_title.label[this.shortDefaultLang], "falang", this.shortDefaultLang, fabrikPage.menu_id, "title", "menu");
+              this.$refs.formBuilderPage.getSections();
+            }
+          });
+        });
+      } else {
+        this.title = this.$refs.formTitle.innerText.trim().replace(/[\r\n]/gm, " ");
+        this.$refs.formTitle.innerText = this.$refs.formTitle.innerText.trim().replace(/[\r\n]/gm, " ");
+        formService.updateFormLabel({ label: this.title, prid: this.profile_id, form_id: this.form_id });
+      }
     },
     updateFormTitleKeyup() {
       document.activeElement.blur();
@@ -9044,7 +9060,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             }, {
               default: withCtx(() => [
                 $options.currentPage && $data.showInSection === "page" ? (openBlock(), createBlock(_component_form_builder_page, {
-                  key: $options.currentPage.id,
+                  key: $data.selectedPage,
                   ref: "formBuilderPage",
                   mode: $data.mode,
                   page: $options.currentPage,

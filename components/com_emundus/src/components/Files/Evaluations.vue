@@ -12,9 +12,9 @@
       </ul>
     </nav>
     <iframe
-        v-if="ccid > 0"
-        :src="'/evaluation-step-form?formid=' + selectedEvaluation.form_id + '&' + selectedEvaluation.table + '___ccid=' + this.ccid + '&' + selectedEvaluation.table + '___step_id=' + selectedEvaluation.id + '&tmpl=component&iframe=1'"
-        class="tw-w-full iframe-evaluation"
+        v-if="ccid > 0 && selectedEvaluation && selectedEvaluation.form_id"
+        :src="selectedEvaluation.url"
+        class="tw-w-full iframe-evaluation-list"
         :key="selectedTab"
       >
     </iframe>
@@ -31,6 +31,14 @@ export default {
     fnum: {
       type: String,
       required: true
+    },
+    defaultCcid: {
+      type: Number,
+      default: 0
+    },
+    onlyEditionAccess: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -46,16 +54,24 @@ export default {
   },
   methods: {
     getFileId() {
-      fileService.getFileIdFromFnum(this.fnum).then((response) =>  {
-        if (response.status) {
-          this.ccid = response.data;
-        }
-      });
+      if (this.defaultCcid > 0) {
+        this.ccid = this.defaultCcid;
+      } else {
+        fileService.getFileIdFromFnum(this.fnum).then((response) =>  {
+          if (response.status) {
+            this.ccid = response.data;
+          }
+        });
+      }
     },
     getEvaluationsForms() {
       // there can be multiple evaluations forms, based on fnums and evaluator access
       evaluationService.getEvaluationsForms(this.fnum).then(response => {
-        this.evaluations = response.data;
+        if (this.onlyEditionAccess) {
+          this.evaluations = response.data.filter(evaluation => evaluation.user_access.can_edit);
+        } else {
+          this.evaluations = response.data;
+        }
         this.selectedTab = this.evaluations[0].id;
       }).catch(error => {
         console.log(error);
@@ -64,7 +80,7 @@ export default {
   },
   computed: {
     selectedEvaluation() {
-      return this.evaluations.find(evaluation => evaluation.id === this.selectedTab);
+      return this.evaluations.length > 0 ? this.evaluations.find(evaluation => evaluation.id === this.selectedTab) : {};
     }
   }
 }
@@ -72,9 +88,9 @@ export default {
 
 
 <style scoped>
-  .iframe-evaluation {
+  .iframe-evaluation-list {
     width: 100%;
-    height: calc(100% - 124px);
+    min-height: 80%;
     border: unset;
   }
 </style>

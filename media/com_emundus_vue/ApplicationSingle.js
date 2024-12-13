@@ -1,23 +1,42 @@
-import { F as FetchClient, _ as _export_sfc, f as fileService, o as openBlock, c as createElementBlock, a as createBaseVNode, b as Fragment, r as renderList, n as normalizeClass, t as toDisplayString, d as createCommentVNode, C as Comments, A as Attachments, M as Modal, e as errors, g as axios, h as resolveComponent, w as withDirectives, v as vShow, i as createBlock, j as withCtx, k as normalizeStyle } from "./app_emundus.js";
+import { F as FetchClient, _ as _export_sfc, f as fileService, o as openBlock, c as createElementBlock, a as createBaseVNode, b as Fragment, r as renderList, n as normalizeClass, t as toDisplayString, d as createCommentVNode, T as Tabs, e as resolveComponent, g as createVNode, C as Comments, A as Attachments, M as Modal, h as errors, i as axios, w as withDirectives, v as vShow, j as createBlock, k as withCtx, l as normalizeStyle } from "./app_emundus.js";
 const fetchClient = new FetchClient("evaluation");
 const evaluationService = {
-  async getEvaluationsForms(fnum) {
+  async getEvaluationsForms(fnum, readonly = false) {
     try {
       return await fetchClient.get("getevaluationsforms", {
-        fnum
+        fnum,
+        readonly: readonly ? 1 : 0
+      });
+    } catch (e) {
+      return false;
+    }
+  },
+  async getEvaluations(stepId, ccid) {
+    try {
+      return await fetchClient.get("getstepevaluationsforfile", {
+        step_id: stepId,
+        ccid
       });
     } catch (e) {
       return false;
     }
   }
 };
-const Evaluations_vue_vue_type_style_index_0_scoped_8a1574e1_lang = "";
-const _sfc_main$1 = {
+const Evaluations_vue_vue_type_style_index_0_scoped_f9486817_lang = "";
+const _sfc_main$2 = {
   name: "Evaluations",
   props: {
     fnum: {
       type: String,
       required: true
+    },
+    defaultCcid: {
+      type: Number,
+      default: 0
+    },
+    onlyEditionAccess: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -33,15 +52,23 @@ const _sfc_main$1 = {
   },
   methods: {
     getFileId() {
-      fileService.getFileIdFromFnum(this.fnum).then((response) => {
-        if (response.status) {
-          this.ccid = response.data;
-        }
-      });
+      if (this.defaultCcid > 0) {
+        this.ccid = this.defaultCcid;
+      } else {
+        fileService.getFileIdFromFnum(this.fnum).then((response) => {
+          if (response.status) {
+            this.ccid = response.data;
+          }
+        });
+      }
     },
     getEvaluationsForms() {
       evaluationService.getEvaluationsForms(this.fnum).then((response) => {
-        this.evaluations = response.data;
+        if (this.onlyEditionAccess) {
+          this.evaluations = response.data.filter((evaluation) => evaluation.user_access.can_edit);
+        } else {
+          this.evaluations = response.data;
+        }
         this.selectedTab = this.evaluations[0].id;
       }).catch((error) => {
         console.log(error);
@@ -50,36 +77,36 @@ const _sfc_main$1 = {
   },
   computed: {
     selectedEvaluation() {
-      return this.evaluations.find((evaluation) => evaluation.id === this.selectedTab);
+      return this.evaluations.length > 0 ? this.evaluations.find((evaluation) => evaluation.id === this.selectedTab) : {};
     }
   }
 };
-const _hoisted_1$1 = { id: "evaluations-container" };
-const _hoisted_2$1 = { class: "tw-mt-1" };
-const _hoisted_3$1 = { class: "tw-list-none tw-flex tw-flex-row" };
-const _hoisted_4$1 = ["onClick"];
-const _hoisted_5$1 = ["src"];
-function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
-  return openBlock(), createElementBlock("div", _hoisted_1$1, [
-    createBaseVNode("nav", _hoisted_2$1, [
-      createBaseVNode("ul", _hoisted_3$1, [
+const _hoisted_1$2 = { id: "evaluations-container" };
+const _hoisted_2$2 = { class: "tw-mt-1" };
+const _hoisted_3$2 = { class: "tw-list-none tw-flex tw-flex-row" };
+const _hoisted_4$2 = ["onClick"];
+const _hoisted_5$2 = ["src"];
+function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", _hoisted_1$2, [
+    createBaseVNode("nav", _hoisted_2$2, [
+      createBaseVNode("ul", _hoisted_3$2, [
         (openBlock(true), createElementBlock(Fragment, null, renderList($data.evaluations, (evaluation) => {
           return openBlock(), createElementBlock("li", {
             key: evaluation.id,
             class: normalizeClass(["tw-cursor-pointer tw-shadow tw-rounded-t-lg tw-px-2.5 tw-py-3", { "em-bg-main-500 em-text-neutral-300": $data.selectedTab === evaluation.id }]),
             onClick: ($event) => $data.selectedTab = evaluation.id
-          }, toDisplayString(evaluation.label), 11, _hoisted_4$1);
+          }, toDisplayString(evaluation.label), 11, _hoisted_4$2);
         }), 128))
       ])
     ]),
-    $data.ccid > 0 ? (openBlock(), createElementBlock("iframe", {
-      src: "/evaluation-step-form?formid=" + $options.selectedEvaluation.form_id + "&" + $options.selectedEvaluation.table + "___ccid=" + this.ccid + "&" + $options.selectedEvaluation.table + "___step_id=" + $options.selectedEvaluation.id + "&tmpl=component&iframe=1",
-      class: "tw-w-full iframe-evaluation",
+    $data.ccid > 0 && $options.selectedEvaluation && $options.selectedEvaluation.form_id ? (openBlock(), createElementBlock("iframe", {
+      src: $options.selectedEvaluation.url,
+      class: "tw-w-full iframe-evaluation-list",
       key: $data.selectedTab
-    }, null, 8, _hoisted_5$1)) : createCommentVNode("", true)
+    }, null, 8, _hoisted_5$2)) : createCommentVNode("", true)
   ]);
 }
-const Evaluations = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-8a1574e1"]]);
+const Evaluations = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-f9486817"]]);
 const client = new FetchClient("file");
 const filesService = {
   // eslint-disable-next-line no-unused-vars
@@ -213,10 +240,91 @@ const filesService = {
     }
   }
 };
+const EvaluationList_vue_vue_type_style_index_0_scoped_008c5608_lang = "";
+const _sfc_main$1 = {
+  name: "EvaluationList",
+  props: {
+    ccid: {
+      type: Number,
+      required: true
+    },
+    step: {
+      type: Object,
+      required: true
+    }
+  },
+  data: () => {
+    return {
+      evaluations: [],
+      selectedEvaluation: 0
+    };
+  },
+  components: {
+    Tabs
+  },
+  created() {
+    this.getEvaluations();
+  },
+  methods: {
+    getEvaluations() {
+      evaluationService.getEvaluations(this.step.id, this.ccid).then((response) => {
+        this.evaluations = response.data;
+        this.selectedEvaluation = this.evaluations[0];
+      }).catch((error) => {
+        console.log(error);
+      });
+    },
+    onChangeTab(tabId) {
+      this.selectedEvaluation = this.evaluations.find((evaluation) => {
+        return evaluation.id == tabId;
+      });
+    }
+  },
+  computed: {
+    evaluationsTabs() {
+      return this.evaluations.map((evaluation, index) => {
+        return {
+          id: evaluation.id,
+          name: evaluation.evaluator_name,
+          displayed: true,
+          active: index == 0,
+          icon: null
+        };
+      });
+    }
+  }
+};
+const _hoisted_1$1 = ["id"];
+const _hoisted_2$1 = { class: "tw-mb-4" };
+const _hoisted_3$1 = { key: 0 };
+const _hoisted_4$1 = ["src"];
+const _hoisted_5$1 = { key: 1 };
+function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
+  const _component_Tabs = resolveComponent("Tabs");
+  return openBlock(), createElementBlock("div", {
+    id: "evaluation-step-" + $props.step.id + "-list",
+    class: "tw-p-4"
+  }, [
+    createBaseVNode("h2", _hoisted_2$1, toDisplayString(_ctx.translate("COM_EMUNDUS_EVALUATIONS_LIST")), 1),
+    _ctx.evaluations.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_3$1, [
+      createVNode(_component_Tabs, {
+        tabs: $options.evaluationsTabs,
+        classes: "tw-overflow-x-scroll tw-flex tw-items-center tw-justify-start tw-gap-2",
+        onChangeTabActive: $options.onChangeTab
+      }, null, 8, ["tabs", "onChangeTabActive"]),
+      (openBlock(), createElementBlock("iframe", {
+        src: _ctx.selectedEvaluation.url,
+        key: _ctx.selectedEvaluation.id,
+        class: "tw-w-full iframe-selected-evaluation"
+      }, null, 8, _hoisted_4$1))
+    ])) : (openBlock(), createElementBlock("p", _hoisted_5$1, toDisplayString(_ctx.translate("COM_EMUNDUS_EVALUATIONS_LIST_NO_EVALUATIONS")), 1))
+  ], 8, _hoisted_1$1);
+}
+const EvaluationList = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-008c5608"]]);
 const ApplicationSingle_vue_vue_type_style_index_0_lang = "";
 const _sfc_main = {
   name: "ApplicationSingle",
-  components: { Comments, Attachments, Modal, Evaluations },
+  components: { EvaluationList, Comments, Attachments, Modal, Evaluations },
   props: {
     file: Object | String,
     type: String,
@@ -261,7 +369,7 @@ const _sfc_main = {
         access: "10"
       }
     ],
-    evaluation_form: 0,
+    ccid: 0,
     url: null,
     access: null,
     student_id: null,
@@ -328,6 +436,7 @@ const _sfc_main = {
             }
             this.updateURL(this.selectedFile.fnum);
             this.getApplicationForm();
+            this.getReadonlyEvaluations();
             this.showModal = true;
             this.hidden = false;
             this.loading = false;
@@ -355,6 +464,7 @@ const _sfc_main = {
                 this.selected = "comments";
               }
             }
+            this.getReadonlyEvaluations();
             this.showModal = true;
             this.hidden = false;
           } else {
@@ -374,11 +484,50 @@ const _sfc_main = {
     getApplicationForm() {
       axios({
         method: "get",
-        url: "index.php?option=com_emundus&view=application&format=raw&layout=form&fnum=" + this.selectedFile.fnum
+        url: "index.php?option=com_emundus&view=application&format=raw&layout=form&fnum=" + this.selectedFile.fnum + "&context=modal"
       }).then((response) => {
         this.applicationform = response.data;
         if (this.$props.type !== "evaluation") {
           this.loading = false;
+        }
+      });
+    },
+    getReadonlyEvaluations() {
+      const fnum = typeof this.selectedFile === "string" ? this.selectedFile : this.selectedFile.fnum;
+      fileService.getFileIdFromFnum(fnum).then((response) => {
+        if (response.status) {
+          this.ccid = response.data;
+          evaluationService.getEvaluationsForms(fnum, true).then((response2) => {
+            response2.data.forEach((step) => {
+              this.access[step.action_id] = {
+                r: true,
+                c: false
+              };
+              if (this.tabs.find((tab) => tab.name === "step-" + step.id)) {
+                return;
+              }
+              if (step.url) {
+                this.tabs.push({
+                  label: step.label,
+                  name: "step-" + step.id,
+                  access: step.action_id,
+                  type: "iframe",
+                  url: step.url
+                });
+              } else if (step.multiple) {
+                this.tabs.push({
+                  label: step.label,
+                  name: "step-" + step.id,
+                  access: step.action_id,
+                  type: "evaluation-list",
+                  step
+                });
+              }
+              console.log(this.tabs, "tabs");
+            });
+          }).catch((error) => {
+            console.log(error);
+          });
         }
       });
     },
@@ -472,6 +621,7 @@ const _hoisted_16 = ["id", "src"];
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_Attachments = resolveComponent("Attachments");
   const _component_Comments = resolveComponent("Comments");
+  const _component_evaluation_list = resolveComponent("evaluation-list");
   const _component_Evaluations = resolveComponent("Evaluations");
   const _component_modal = resolveComponent("modal");
   return _ctx.selectedFile !== null && _ctx.selectedFile !== void 0 ? withDirectives((openBlock(), createBlock(_component_modal, {
@@ -489,7 +639,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           createBaseVNode("div", _hoisted_3, [
             createBaseVNode("div", {
               onClick: _cache[0] || (_cache[0] = (...args) => $options.onClose && $options.onClose(...args)),
-              class: "tw-w-max tw-flex tw-items-center"
+              class: "tw-w-max tw-flex tw-items-center tw-cursor-pointer"
             }, [
               _cache[3] || (_cache[3] = createBaseVNode("span", {
                 class: "material-symbols-outlined tw-text-base",
@@ -502,12 +652,12 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           ]),
           _ctx.fnums.length > 1 ? (openBlock(), createElementBlock("div", _hoisted_7, [
             createBaseVNode("span", {
-              class: "material-symbols-outlined tw-text-base",
+              class: "material-symbols-outlined tw-text-base tw-cursor-pointer",
               style: { "color": "white" },
               onClick: _cache[1] || (_cache[1] = (...args) => $options.openPreviousFnum && $options.openPreviousFnum(...args))
             }, "navigate_before"),
             createBaseVNode("span", {
-              class: "material-symbols-outlined tw-text-base",
+              class: "material-symbols-outlined tw-text-base tw-cursor-pointer",
               style: { "color": "white" },
               onClick: _cache[2] || (_cache[2] = (...args) => $options.openNextFnum && $options.openNextFnum(...args))
             }, "navigate_next")
@@ -560,7 +710,12 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                       src: $options.replaceTagsIframeUrl(tab.url),
                       class: "tw-w-full tw-h-screen"
                     }, null, 8, _hoisted_16)
-                  ])) : createCommentVNode("", true)
+                  ])) : createCommentVNode("", true),
+                  tab.type && tab.type === "evaluation-list" && _ctx.selected === tab.name ? (openBlock(), createBlock(_component_evaluation_list, {
+                    key: 4,
+                    step: tab.step,
+                    ccid: this.ccid
+                  }, null, 8, ["step", "ccid"])) : createCommentVNode("", true)
                 ]);
               }), 128))
             ])) : createCommentVNode("", true)
@@ -568,8 +723,9 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         ]),
         _ctx.selectedFile ? (openBlock(), createBlock(_component_Evaluations, {
           fnum: typeof _ctx.selectedFile === "string" ? _ctx.selectedFile : _ctx.selectedFile.fnum,
-          key: typeof _ctx.selectedFile === "string" ? _ctx.selectedFile : _ctx.selectedFile.fnum
-        }, null, 8, ["fnum"])) : createCommentVNode("", true)
+          key: typeof _ctx.selectedFile === "string" ? _ctx.selectedFile : _ctx.selectedFile.fnum,
+          defaultCcid: _ctx.ccid
+        }, null, 8, ["fnum", "defaultCcid"])) : createCommentVNode("", true)
       ], 4)) : createCommentVNode("", true)
     ]),
     _: 1

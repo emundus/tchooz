@@ -143,7 +143,7 @@ $user = $this->userid;
                 </div>
             </div>
 			<?php
-			if (EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $this->fnum) && $this->euser->applicant != 1): ?>
+			if (EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $this->fnum) && $this->euser->applicant != 1 && $this->context === 'default'): ?>
 				<?php
 				$coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id);
 				$sysadmin_access = EmundusHelperAccess::isAdministrator($this->_user->id);

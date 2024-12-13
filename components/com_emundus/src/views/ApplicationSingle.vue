@@ -12,7 +12,7 @@
     <div class="em-modal-header tw-w-full tw-px-3 tw-py-4 tw-bg-profile-full tw-flex tw-items-center">
       <div class="tw-flex tw-items-center tw-justify-between tw-w-full" id="evaluation-modal-close">
         <div class="tw-flex tw-items-center tw-gap-2">
-          <div @click="onClose" class="tw-w-max tw-flex tw-items-center">
+          <div @click="onClose" class="tw-w-max tw-flex tw-items-center tw-cursor-pointer">
             <span class="material-symbols-outlined tw-text-base" style="color: white">navigate_before</span>
             <span class="tw-ml-2 tw-text-neutral-900 tw-text-white tw-text-sm">{{ translate('BACK') }}</span>
           </div>
@@ -25,8 +25,8 @@
           </p>
         </div>
         <div v-if="fnums.length > 1" class="tw-flex tw-items-center">
-          <span class="material-symbols-outlined tw-text-base" style="color:white;" @click="openPreviousFnum">navigate_before</span>
-          <span class="material-symbols-outlined tw-text-base" style="color:white;"
+          <span class="material-symbols-outlined tw-text-base tw-cursor-pointer" style="color:white;" @click="openPreviousFnum">navigate_before</span>
+          <span class="material-symbols-outlined tw-text-base tw-cursor-pointer" style="color:white;"
                 @click="openNextFnum">navigate_next</span>
         </div>
       </div>
@@ -66,6 +66,14 @@
               <div v-if="tab.type && tab.type === 'iframe' && selected === tab.name">
                 <iframe :id="tab.name" :src="replaceTagsIframeUrl(tab.url)" class="tw-w-full tw-h-screen"></iframe>
               </div>
+
+              <evaluation-list
+                  v-if="tab.type && tab.type === 'evaluation-list' && selected === tab.name"
+                  :step="tab.step"
+                  :ccid="this.ccid"
+              >
+
+              </evaluation-list>
             </div>
           </div>
         </div>
@@ -75,6 +83,7 @@
           v-if="selectedFile"
           :fnum="typeof selectedFile === 'string' ? selectedFile : selectedFile.fnum"
           :key="typeof selectedFile === 'string' ? selectedFile : selectedFile.fnum"
+          :defaultCcid="ccid"
       >
       </Evaluations>
 
@@ -90,11 +99,14 @@ import filesService from '@/services/files.js';
 import errors from "@/mixins/errors.js";
 import Comments from "@/views/Comments.vue";
 import Modal from "@/components/Modal.vue";
+import evaluationService from "@/services/evaluation.js";
+import fileService from "@/services/file.js";
+import EvaluationList from "@/components/Files/EvaluationList.vue";
 
 
 export default {
   name: "ApplicationSingle",
-  components: {Comments, Attachments, Modal, Evaluations},
+  components: {EvaluationList, Comments, Attachments, Modal, Evaluations},
   props: {
     file: Object | String,
     type: String,
@@ -139,7 +151,7 @@ export default {
         access: '10'
       },
     ],
-    evaluation_form: 0,
+    ccid: 0,
     url: null,
     access: null,
     student_id: null,
@@ -221,6 +233,7 @@ export default {
             }
             this.updateURL(this.selectedFile.fnum)
             this.getApplicationForm();
+            this.getReadonlyEvaluations();
 
             this.showModal = true;
             this.hidden = false;
@@ -249,6 +262,9 @@ export default {
                 this.selected = 'comments';
               }
             }
+
+            this.getReadonlyEvaluations();
+
             this.showModal = true;
             this.hidden = false;
           } else {
@@ -269,11 +285,56 @@ export default {
     getApplicationForm() {
       axios({
         method: "get",
-        url: "index.php?option=com_emundus&view=application&format=raw&layout=form&fnum=" + this.selectedFile.fnum,
+        url: "index.php?option=com_emundus&view=application&format=raw&layout=form&fnum=" + this.selectedFile.fnum + "&context=modal",
       }).then(response => {
         this.applicationform = response.data;
         if (this.$props.type !== 'evaluation') {
           this.loading = false;
+        }
+      });
+    },
+    getReadonlyEvaluations() {
+      const fnum = typeof this.selectedFile === 'string' ? this.selectedFile : this.selectedFile.fnum;
+
+      fileService.getFileIdFromFnum(fnum).then((response) =>  {
+        if (response.status) {
+          this.ccid = response.data;
+
+          evaluationService.getEvaluationsForms(fnum, true).then(response => {
+            response.data.forEach((step) => {
+              this.access[step.action_id] = {
+                r: true,
+                c: false,
+              };
+
+              // check if the tab already exists
+              if (this.tabs.find(tab => tab.name === 'step-' + step.id)) {
+                return;
+              }
+
+              if (step.url) {
+                this.tabs.push({
+                  label: step.label,
+                  name: 'step-' + step.id,
+                  access: step.action_id,
+                  type: 'iframe',
+                  url: step.url,
+                });
+              } else if (step.multiple) {
+                this.tabs.push({
+                  label: step.label,
+                  name: 'step-' + step.id,
+                  access: step.action_id,
+                  type: 'evaluation-list',
+                  step: step
+                });
+              }
+
+              console.log(this.tabs, 'tabs');
+            });
+          }).catch(error => {
+            console.log(error);
+          });
         }
       });
     },
@@ -378,16 +439,10 @@ export default {
   background: white;
 }
 
-#modal-applicationform #em-attachments .v--modal-overlay {
-  height: 100% !important;
-  width: var(--attachment-width) !important;
-  margin-top: 50px;
-}
-
-#modal-applicationform #em-attachments .v--modal-box.v--modal {
-  width: 100% !important;
-  height: calc(100vh - 50px) !important;
-  box-shadow: unset;
+#modal-applicationform #em-attachments #edit-modal {
+    width: var(--attachment-width) !important;
+    top: 52px;
+    height: calc(100% - 52px) !important;
 }
 
 #modal-applicationform #em-attachments .modal-body {

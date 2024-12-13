@@ -824,9 +824,6 @@ export default {
       form_data.end_date = this.formatDate(new Date(this.form.end_date));
       form_data.languages = this.campaignLanguages.map((language) => language.value);
 
-      // remove profile_id key, we do not set it here, it is in another tab
-      delete form_data.profile_id;
-
       campaignService.updateCampaign(form_data, this.campaignId).then((response) => {
         if (!response.status) {
           Swal.fire({

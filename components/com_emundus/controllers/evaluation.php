@@ -1128,6 +1128,12 @@ class EmundusControllerEvaluation extends BaseController
 		exit;
 	}
 
+	/**
+	 * readonly parameter is used to get only the evaluations that the user can see but not edit
+	 *
+	 * @return void
+	 * @throws Exception
+	 */
 	public function getevaluationsforms()
 	{
 		$response = ['status' => false, 'code' => 403, 'msg' => Text::_('ACCESS_DENIED')];
@@ -1135,6 +1141,8 @@ class EmundusControllerEvaluation extends BaseController
 		$fnum = $this->input->getString('fnum', null);
 
 		if (!empty($fnum) && EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$readonly =  $this->input->getString('readonly', 0);
+
 			$db = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->createQuery();
 
@@ -1155,7 +1163,29 @@ class EmundusControllerEvaluation extends BaseController
 				foreach ($steps as $step) {
 					$step_data = $m_workflow->getStepData($step->id, $campaign_id);
 
-					if ($m_workflow->isEvaluationStep($step_data->type) && EmundusHelperAccess::getUserEvaluationStepAccess($ccid, $step_data, $this->_user->id)['can_see']) {
+					$user_access = EmundusHelperAccess::getUserEvaluationStepAccess($ccid, $step_data, $this->_user->id);
+					if ($m_workflow->isEvaluationStep($step_data->type) && $user_access['can_see']) {
+						if ($readonly && $user_access['can_edit']) {
+							continue;
+						}
+						$step_data->user_access = EmundusHelperAccess::getUserEvaluationStepAccess($ccid, $step_data, $this->_user->id);
+
+						if ($user_access['can_edit'] || !$step_data->multiple) {
+							if (!$user_access['can_edit']) {
+								// get the evaluation row id
+								$row_id = 0;
+								$evaluations = $m_workflow->getStepEvaluationsForFile($step_data->id, $ccid);
+
+								if (!empty($evaluations)) {
+									$row_id = $evaluations[0]['id'];
+								}
+
+								$step_data->url = '/evaluation-step-form?view=form&formid=' . $step_data->form_id . '&' . $step_data->table . '___ccid=' . $ccid . '&' . $step_data->table . '___step_id=' . $step_data->id . '&tmpl=component&iframe=1&rowid=' . $row_id;
+							} else {
+								$step_data->url = '/evaluation-step-form?view=form&formid=' . $step_data->form_id . '&' . $step_data->table . '___ccid=' . $ccid . '&' . $step_data->table . '___step_id=' . $step_data->id . '&tmpl=component&iframe=1';
+							}
+						}
+
 						$response['status'] = true;
 						$response['code'] = 200;
 						$response['data'][] = $step_data;
@@ -1170,4 +1200,28 @@ class EmundusControllerEvaluation extends BaseController
 		exit;
 	}
 
+	public function getstepevaluationsforfile()
+	{
+		$response = ['status' => false, 'code' => 403, 'msg' => Text::_('ACCESS_DENIED')];
+
+		$ccid = $this->input->getInt('ccid', 0);
+		$fnum = EmundusHelperFiles::getFnumFromId($ccid);
+		$step_id = $this->input->getInt('step_id', 0);
+
+		if (!empty($fnum) && !empty($step_id) && EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+			$m_workflow = new EmundusModelWorkflow();
+
+			$step = $m_workflow->getStepData($step_id);
+			if (EmundusHelperAccess::asAccessAction($step->action_id, 'r', $this->_user->id, $fnum)) {
+				$response['data'] = $m_workflow->getStepEvaluationsForFile($step_id, $ccid);
+				$response['code'] = 200;
+				$response['status'] = true;
+				$response['msg'] = Text::_('SUCCESS');
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
 }
