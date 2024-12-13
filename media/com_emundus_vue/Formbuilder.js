@@ -8586,9 +8586,24 @@ const _sfc_main = {
       }
     },
     updateFormTitle() {
-      this.title = this.$refs.formTitle.innerText.trim().replace(/[\r\n]/gm, " ");
-      this.$refs.formTitle.innerText = this.$refs.formTitle.innerText.trim().replace(/[\r\n]/gm, " ");
-      formService.updateFormLabel({ label: this.title, prid: this.profile_id, form_id: this.form_id });
+      if (this.profile_id == 0) {
+        formService.getPageObject(this.pages[0].id).then((response) => {
+          const fabrikPage = response.data;
+          fabrikPage.show_title.label[this.shortDefaultLang] = this.$refs.formTitle.innerText.trim().replace(/[\r\n]/gm, " ");
+          const tag = fabrikPage.show_title.titleraw;
+          this.pages[0].label = fabrikPage.show_title.label[this.shortDefaultLang];
+          formBuilderService.updateTranslation(null, tag, fabrikPage.show_title.label).then((response2) => {
+            if (response2.data.status) {
+              translationsService.updateTranslations(fabrikPage.show_title.label[this.shortDefaultLang], "falang", this.shortDefaultLang, fabrikPage.menu_id, "title", "menu");
+              this.$refs.formBuilderPage.getSections();
+            }
+          });
+        });
+      } else {
+        this.title = this.$refs.formTitle.innerText.trim().replace(/[\r\n]/gm, " ");
+        this.$refs.formTitle.innerText = this.$refs.formTitle.innerText.trim().replace(/[\r\n]/gm, " ");
+        formService.updateFormLabel({ label: this.title, prid: this.profile_id, form_id: this.form_id });
+      }
     },
     updateFormTitleKeyup() {
       document.activeElement.blur();
@@ -9045,7 +9060,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             }, {
               default: withCtx(() => [
                 $options.currentPage && $data.showInSection === "page" ? (openBlock(), createBlock(_component_form_builder_page, {
-                  key: $options.currentPage.id,
+                  key: $data.selectedPage,
                   ref: "formBuilderPage",
                   mode: $data.mode,
                   page: $options.currentPage,
