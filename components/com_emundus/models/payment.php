@@ -14,6 +14,9 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
+
 class EmundusModelPayment extends JModelList
 {
 	public function __construct()
@@ -1327,5 +1330,57 @@ class EmundusModelPayment extends JModelList
 			JFactory::getApplication()->enqueueMessage($e->getMessage(), 'error');
 			return false;
 		}
+	}
+
+	/*
+	 * Create a hikashop product
+	 * @param $label string
+	 * @param $price float
+	 * @param $code string
+	 * @param $category int
+	 * @param $type string allowed values : main, variant
+	 * @param $parent_id int
+	 */
+	public function createHikashopProduct(string $label, float $price, string $code = '', int $category = 0, string $type = 'main', int $parent_id = 0): int
+	{
+		$product_id = 0;
+
+		if (!empty($label) && !empty($price)) {
+			if (empty($code)) {
+				// sanitize label to create a code
+				$code = preg_replace('/[^a-z0-9]/', '', strtolower($label)) . '-' . uniqid();
+			}
+
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
+
+			$query->insert('#__hikashop_product')
+				->columns(['product_parent_id', 'product_name', 'product_description', 'product_url', 'product_keywords', 'product_meta_description', 'product_description_raw', 'product_average_score', 'product_quantity', 'product_code', 'product_published', 'product_type', 'product_sort_price'])
+				->values($parent_id . ', ' . $db->quote($label)  . ', "", "", "", "", "", 0, -1, ' . $db->quote($code) . ', 1, ' . $db->quote($type). ', ' . $db->quote($price));
+
+			try {
+				$db->setQuery($query);
+				$inserted = $db->execute();
+
+				if ($inserted) {
+					$product_id = $db->insertid();
+
+					if (!empty($category)) {
+						$query->clear()
+							->insert('#__hikashop_product_category')
+							->columns(['product_id', 'category_id'])
+							->values($product_id . ', ' . $category);
+						$db->setQuery($query);
+						$db->execute();
+					}
+
+					Log::add('Product created with ID ' . $product_id, Log::INFO, 'com_emundus.payment');
+				}
+			} catch (Exception $e) {
+				Log::add('Error creating hikashop product : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.payment');
+			}
+		}
+
+		return $product_id;
 	}
 }
