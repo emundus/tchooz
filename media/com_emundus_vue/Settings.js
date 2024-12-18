@@ -2405,7 +2405,7 @@ function _sfc_render$c(_ctx, _cache, $props, $setup, $data, $options) {
   ], 8, _hoisted_1$c);
 }
 const ColorPicker = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["render", _sfc_render$c]]);
-const EditStatus_vue_vue_type_style_index_0_scoped_0aac84ff_lang = "";
+const EditStatus_vue_vue_type_style_index_0_scoped_78283c16_lang = "";
 const _sfc_main$b = {
   name: "editStatus",
   components: {
@@ -2574,7 +2574,7 @@ const _sfc_main$b = {
 const _hoisted_1$b = { class: "tw-flex tw-flex-wrap tw-justify-start" };
 const _hoisted_2$b = { class: "tw-w-10/12" };
 const _hoisted_3$b = { class: "tw-grid tw-grid-cols-3 tw-mb-4" };
-const _hoisted_4$b = { class: "add-button-div" };
+const _hoisted_4$b = { class: "add-button-div em-flex-row" };
 const _hoisted_5$a = ["title", "id", "onMouseover"];
 const _hoisted_6$9 = { class: "tw-flex tw-items-center tw-justify-start tw-w-full" };
 const _hoisted_7$8 = { class: "status-field" };
@@ -2597,7 +2597,7 @@ function _sfc_render$b(_ctx, _cache, $props, $setup, $data, $options) {
           class: "tw-btn-primary tw-mb-6 tw-w-max"
         }, [
           createBaseVNode("div", _hoisted_4$b, [
-            _cache[4] || (_cache[4] = createBaseVNode("em", { class: "fas fa-plus tw-mr-1" }, null, -1)),
+            _cache[4] || (_cache[4] = createBaseVNode("span", { class: "material-symbols-outlined em-mr-4" }, "add", -1)),
             createTextVNode(" " + toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADD_STATUS")), 1)
           ])
         ])
@@ -2678,8 +2678,8 @@ function _sfc_render$b(_ctx, _cache, $props, $setup, $data, $options) {
     $data.loading ? (openBlock(), createElementBlock("div", _hoisted_12$2)) : createCommentVNode("", true)
   ]);
 }
-const EditStatus = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["render", _sfc_render$b], ["__scopeId", "data-v-0aac84ff"]]);
-const EditTags_vue_vue_type_style_index_0_scoped_4596784b_lang = "";
+const EditStatus = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["render", _sfc_render$b], ["__scopeId", "data-v-78283c16"]]);
+const EditTags_vue_vue_type_style_index_0_scoped_33ad2ead_lang = "";
 const _sfc_main$a = {
   name: "editTags",
   components: {
@@ -2835,7 +2835,7 @@ const _sfc_main$a = {
 const _hoisted_1$a = { class: "tw-flex tw-flex-wrap tw-justify-start" };
 const _hoisted_2$a = { class: "tw-w-10/12" };
 const _hoisted_3$a = { class: "tw-grid tw-grid-cols-3 tw-mb-4" };
-const _hoisted_4$a = { class: "add-button-div" };
+const _hoisted_4$a = { class: "add-button-div em-flex-row" };
 const _hoisted_5$9 = ["id", "onMouseover"];
 const _hoisted_6$8 = { class: "tw-flex tw-items-center tw-justify-start tw-w-full" };
 const _hoisted_7$7 = { class: "status-field" };
@@ -2854,7 +2854,7 @@ function _sfc_render$a(_ctx, _cache, $props, $setup, $data, $options) {
           class: "tw-btn-primary tw-mb-6 tw-w-max"
         }, [
           createBaseVNode("div", _hoisted_4$a, [
-            _cache[4] || (_cache[4] = createBaseVNode("em", { class: "fas fa-plus tw-mr-1" }, null, -1)),
+            _cache[4] || (_cache[4] = createBaseVNode("span", { class: "material-icons-outlined em-mr-4" }, "add", -1)),
             createTextVNode(" " + toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_SETTINGS_ADDTAG")), 1)
           ])
         ])
@@ -2925,7 +2925,7 @@ function _sfc_render$a(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ]);
 }
-const EditTags = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["render", _sfc_render$a], ["__scopeId", "data-v-4596784b"]]);
+const EditTags = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["render", _sfc_render$a], ["__scopeId", "data-v-33ad2ead"]]);
 const General_vue_vue_type_style_index_0_scoped_69ed52ef_lang = "";
 const getTemplate = () => `
 <div class="dz-preview dz-file-preview">

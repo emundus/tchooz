@@ -2569,31 +2569,43 @@ hr {
 .custom-color-picker[data-v-179e7d97]::-webkit-color-swatch {
     border-radius: 100%;
 }
-.status-field[data-v-0aac84ff] {
+.status-field[data-v-78283c16] {
   border-radius: 5px;
   width: 100%;
   margin-right: 1em;
   display: flex;
 }
-.status-item[data-v-0aac84ff] {
+.status-item[data-v-78283c16] {
   display: flex;
   align-items: center;
   justify-content: center;
   max-width: 95%;
   width: 100%;
 }
-.status-field[data-v-4596784b]{
+.add-button-div span[class*=material][data-v-78283c16] {
+  color: var(--neutral-0);
+}
+.add-button-div:hover span[class*=material][data-v-78283c16] {
+  color: var(--em-profile-color);
+}
+.status-field[data-v-33ad2ead]{
   border-radius: 5px;
   width: 100%;
   margin-right: 1em;
   display: flex;
 }
-.status-item[data-v-4596784b]{
+.status-item[data-v-33ad2ead]{
   display: flex;
   align-items: center;
   justify-content: center;
   max-width: 95%;
   width: 100%;
+}
+.add-button-div span[class*="material"][data-v-33ad2ead] {
+  color: var(--neutral-0);
+}
+.add-button-div:hover span[class*="material"][data-v-33ad2ead]{
+  color: var(--em-profile-color);
 }
 
 .em-style-options[data-v-69ed52ef] {
