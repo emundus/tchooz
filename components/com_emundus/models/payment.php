@@ -1385,6 +1385,21 @@ class EmundusModelPayment extends JModelList
 					}
 
 					Log::add('Product created with ID ' . $product_id, Log::INFO, 'com_emundus.payment');
+
+					// need to insert into price table
+					$query->clear()
+						->insert('#__hikashop_price')
+						->columns(['price_currency_id', 'price_product_id', 'price_value'])
+						->values('1, ' . $product_id . ', ' . $price);
+
+					$db->setQuery($query);
+					$inserted_price = $db->execute();
+
+					if ($inserted_price) {
+						Log::add('Price created for product ID ' . $product_id, Log::INFO, 'com_emundus.payment');
+					} else {
+						Log::add('Error creating price for product ID ' . $product_id, Log::ERROR, 'com_emundus.payment');
+					}
 				}
 			} catch (Exception $e) {
 				Log::add('Error creating hikashop product : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.payment');
