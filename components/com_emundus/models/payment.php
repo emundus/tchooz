@@ -1468,9 +1468,9 @@ class EmundusModelPayment extends JModelList
 			$updated = !in_array(false, $updates);
 
 			if ($updated) {
-				Log::add('Hikashop product price updated', JLog::INFO, 'com_emundus.payment');
+				Log::add('Hikashop product ' . $product_id . ' price updated to ' . $new_price, JLog::INFO, 'com_emundus.payment');
 			} else {
-				Log::add('Error updating hikashop product price', JLog::ERROR, 'com_emundus.payment');
+				Log::add('Error updating hikashop product id ' . $product_id . ' price', JLog::ERROR, 'com_emundus.payment');
 			}
 		}
 
