@@ -5019,8 +5019,8 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-whitespace-nowrap {
     white-space: nowrap;
 }
-.tw-whitespace-pre-line {
-    white-space: pre-line;
+.tw-whitespace-pre-wrap {
+    white-space: pre-wrap;
 }
 .\!tw-rounded-full {
     border-radius: 9999px !important;
