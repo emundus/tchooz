@@ -1424,6 +1424,59 @@ class EmundusModelPayment extends JModelList
 		return $product_id;
 	}
 
+
+	/**
+	 * @param $product_id
+	 * @param $new_price
+	 *
+	 * @return bool
+	 */
+	public function updateHikashopProductPrice($product_id, $new_price): bool
+	{
+		$updated = false;
+
+		if (!empty($product_id)) {
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
+
+
+			$updates = [];
+
+			$query->update('#__hikashop_price')
+				->set('price_value = ' . $new_price)
+				->where('price_product_id = ' . $product_id);
+
+			try {
+				$db->setQuery($query);
+				$updates[] = $db->execute();
+			} catch (Exception $e) {
+				Log::add('Error updating hikashop product price : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.payment');
+			}
+
+			$query->clear()
+				->update('#__hikashop_product')
+				->set('product_sort_price = ' . $new_price)
+				->where('product_id = ' . $product_id);
+
+			try {
+				$db->setQuery($query);
+				$updates[] = $db->execute();
+			} catch (Exception $e) {
+				Log::add('Error updating hikashop product sort price : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.payment');
+			}
+
+			$updated = !in_array(false, $updates);
+
+			if ($updated) {
+				Log::add('Hikashop product price updated', JLog::INFO, 'com_emundus.payment');
+			} else {
+				Log::add('Error updating hikashop product price', JLog::ERROR, 'com_emundus.payment');
+			}
+		}
+
+		return $updated;
+	}
+
 	/**
 	 * get a hikashop product variant associated to a user
 	 *
