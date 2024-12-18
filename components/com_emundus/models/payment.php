@@ -214,88 +214,98 @@ class EmundusModelPayment extends JModelList
 		return $order_id;
 	}
 
-	private function getUserIdFromFnum($fnum)
+	public function getUserIdFromFnum($fnum): int
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$applicant_id = 0;
 
-		$query->select('applicant_id')
-			->from($db->quoteName('#__emundus_campaign_candidature'))
-			->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
+		if (!empty($fnum)) {
+			$db    = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
 
-		$db->setQuery($query);
-		$applicant_id = $db->loadResult();
+			$query->select('applicant_id')
+				->from($db->quoteName('#__emundus_campaign_candidature'))
+				->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
+
+			try {
+				$db->setQuery($query);
+				$applicant_id = (int)$db->loadResult();
+			} catch (Exception $e) {
+				JLog::add('Error getting user id from fnum : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.payment');
+			}
+		}
 
 		return $applicant_id;
 	}
 
-	private function getHikashopUserId($user_id)
+	private function getHikashopUserId($user_id): int
 	{
 		$hikashop_user_id = 0;
 
 		if (!empty($user_id))
 		{
-			$db    = JFactory::getDbo();
-			$query = $db->getQuery(true);
+			$db    = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
 
 			$query->select('jhu.user_id')
 				->from('#__hikashop_user AS jhu')
 				->where('jhu.user_cms_id = ' . $user_id);
 
-			$db->setQuery($query);
-			$hikashop_user_id = $db->loadResult();
+			try {
+				$db->setQuery($query);
+				$hikashop_user_id = $db->loadResult();
 
-			if (empty($hikashop_user_id))
-			{
-				$hikashop_user_id = $this->createHikashopUser($user_id);
+				if (empty($hikashop_user_id))
+				{
+					$hikashop_user_id = $this->createHikashopUser($user_id);
+				}
+			} catch (Exception $e) {
+				JLog::add('Error getting hikashop user id from user id : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.payment');
 			}
 		}
 
-		return $hikashop_user_id;
+		return (int)$hikashop_user_id;
 	}
 
 	private function createHikashopUser($user_id)
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$hikashop_user_id = 0;
 
-		$query->select('email')
-			->from('#__users')
-			->where('id = ' . $user_id);
+		if (!empty($user_id)) {
+			$db    = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true);
 
-		$db->setQuery($query);
+			$query->select('email')
+				->from('#__users')
+				->where('id = ' . $user_id);
 
-		try {
-			$email = $db->loadResult();
-		}
-		catch (Exception $e) {
-			JLog::add('Error getting email from user id : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.payment');
+			try {
+				$db->setQuery($query);
+				$email = $db->loadResult();
 
-			return false;
-		}
+				$query->clear();
+				$query->insert('#__hikashop_user')
+					->columns('user_cms_id, user_email')
+					->values($user_id . ', ' . $db->quote($email));
 
-		$query->clear();
-		$query->insert('#__hikashop_user')
-			->columns('user_cms_id, user_email')
-			->values($user_id . ', ' . $db->quote($email));
+				try {
+					$db->setQuery($query);
+					$inserted = $db->execute();
 
-		$db->setQuery($query);
+					if ($inserted) {
+						$query->clear()
+							->select('user_id')
+							->from('#__hikashop_user')
+							->where('user_cms_id = ' . $user_id);
 
-		try {
-			$inserted = $db->execute();
-		}
-		catch (Exception $e) {
-			JLog::add('Error creating hikashop user : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.payment');
-		}
-
-		if ($inserted) {
-			$query->clear();
-			$query->select('user_id')
-				->from('#__hikashop_user')
-				->where('user_cms_id = ' . $user_id);
-
-			$db->setQuery($query);
-			$hikashop_user_id = $db->loadResult();
+						$db->setQuery($query);
+						$hikashop_user_id = $db->loadResult();
+					}
+				} catch (Exception $e) {
+					JLog::add('Error creating hikashop user : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.payment');
+				}
+			} catch (Exception $e) {
+				JLog::add('Error getting email from user id : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.payment');
+			}
 		}
 
 		return $hikashop_user_id;
@@ -1382,6 +1392,45 @@ class EmundusModelPayment extends JModelList
 		}
 
 		return $product_id;
+	}
+
+	/**
+	 * get a hikashop product variant associated to a user
+	 *
+	 * @param $parent_product_id int
+	 * @param $hikashop_user_id int
+	 * @param $characteristic_id int
+	 *
+	 * @return int
+	 */
+	public function getHikashopProductVariantForUser(int $parent_product_id, int $hikashop_user_id, int $characteristic_id): int
+	{
+		$variant_product_id = $parent_product_id;
+
+		if (!empty($parent_product_id) && !empty($hikashop_user_id)) {
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
+
+			$query->select('hp.product_id')
+				->from($db->quoteName('#__hikashop_product', 'hp'))
+				->leftJoin($db->quoteName('#__hikashop_price', 'hprice') . ' ON ' . $db->quoteName('hp.product_id') . ' = ' . $db->quoteName('hprice.price_product_id'))
+				->leftJoin($db->quoteName('#__hikashop_variant', 'hv') . ' ON ' . $db->quoteName('hp.product_id') . ' = ' . $db->quoteName('hv.variant_product_id'))
+				->where('hp.product_parent_id = ' . $parent_product_id)
+				->andWhere('hp.product_type = ' . $db->quote('variant'))
+				->andWhere('hp.product_published = 1')
+				->andWhere('hp.product_quantity > 0 OR hp.product_quantity = -1')
+				->andWhere('hprice.price_users LIKE ' . $db->quoteName('%,' . $hikashop_user_id . ',%'))
+				->andWhere('hv.variant_characteristic_id = ' . $characteristic_id);
+
+			try {
+				$db->setQuery($query);
+				$variant_product_id = $db->loadResult();
+			} catch (Exception $e) {
+				Log::add('Error getting hikashop product variant for user : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.payment');
+			}
+		}
+
+		return $variant_product_id;
 	}
 
 	/**

@@ -314,16 +314,15 @@ class PlgHikashopEmundus_hikashop extends CMSPlugin {
 
     public function onCheckoutWorkflowLoad(&$checkout_workflow, &$shop_closed, $cart_id)
     {
-		$app = Factory::getApplication();
+	    $app = Factory::getApplication();
+	    $session = $app->getSession()->get('emundusUser');
 	    PluginHelper::importPlugin('emundus', 'custom_event_handler');
 	    $app->triggerEvent('onCallEventHandler', ['onHikashopCheckoutWorkflowLoad',
-		    ['checkout_workflow' => $checkout_workflow, 'shop_closed' => $shop_closed, 'cart_id' => $cart_id]
+		    ['checkout_workflow' => $checkout_workflow, 'shop_closed' => $shop_closed, 'cart_id' => $cart_id, 'session' => $session]
 	    ]);
 
 	    $eMConfig = ComponentHelper::getParams('com_emundus');
 	    if ($eMConfig->get('hikashop_session')) {
-		    $session = $app->getSession()->get('emundusUser');
-
 		    if (!empty($session) && !empty($session->fnum)) {
 			    $itemId = $app->input->get('Itemid', null,'int');
 
@@ -377,12 +376,13 @@ class PlgHikashopEmundus_hikashop extends CMSPlugin {
 
     public function onAfterCartProductsLoad(&$cart) {
 	    $app = Factory::getApplication();
-        $params	= ComponentHelper::getParams('com_emundus');
+	    $user = $app->getSession()->get('emundusUser');
+
+	    $params	= ComponentHelper::getParams('com_emundus');
         if ($params->get('hikashop_session')) {
             $payment_session = $app->getSession()->get('emundusPayment', null);
 
             if (empty($payment_session->fnum)) {
-                $user = $app->getSession()->get('emundusUser');
                 $emundus_payment = new StdClass();
                 $emundus_payment->user_id = $user->id;
                 $emundus_payment->fnum = $user->fnum;
@@ -392,7 +392,7 @@ class PlgHikashopEmundus_hikashop extends CMSPlugin {
         }
 
         PluginHelper::importPlugin('emundus','custom_event_handler');
-	    $app->triggerEvent('onCallEventHandler', ['onHikashopAfterCartProductsLoad', ['cart' => &$cart]]);
+	    $app->triggerEvent('onCallEventHandler', ['onHikashopAfterCartProductsLoad', ['cart' => &$cart, 'fnum' => $user->fnum, 'user' => $user->id]]);
     }
 
     public function onCheckoutStepList(&$list)
