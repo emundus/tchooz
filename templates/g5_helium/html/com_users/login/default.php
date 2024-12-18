@@ -89,6 +89,12 @@ if (!empty($cookieLogin) || $this->user->get('guest')) {
 		}
 	}
 
+	$saml = PluginHelper::getPlugin('authentication','miniorangesaml');
+	$this->samlConfig = [];
+	if(!empty($saml)) {
+		$this->samlConfig = $m_settings->getSAMLSettings();
+	}
+
 	echo $this->loadTemplate('login');
 }
 else {

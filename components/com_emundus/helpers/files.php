@@ -2299,17 +2299,12 @@ class EmundusHelperFiles
 			$filters .= $group;
 		}
 
-		if($eMConfig->get('showJoomlagroups',0)) {
+		if($eMConfig->get('showJoomlagroups',0) && $params['joomla_group'] !== NULL) {
 			$hidden = $types['group'] == 'hidden';
 
 			$jgroup = '';
 			if (!$hidden) {
-				$jgroup .= '<div id="group" class="em-filter">
-                              <div class="em_label">
-                                 <label class="control-label em_filter_label">'.JText::_('COM_EMUNDUS_JOOMLA_GROUPE').' &ensp;
-                                    <a href="javascript:clearchosen(\'#select_multiple_jgroups\')"><span class="fas fa-redo" title="'.JText::_('COM_EMUNDUS_FILTERS_CLEAR').'"></span></a>
-                                 </label>
-                           	  </div>
+				$jgroup .= '<div id="jgroup" class="em-filter">
                             <div class="em_label">
                                  <label class="control-label em_filter_label">'.JText::_('COM_EMUNDUS_JOOMLA_GROUPE').' &ensp;
                                     <a href="javascript:clearchosen(\'#select_multiple_jgroups\')"><span class="fas fa-redo" title="'.JText::_('COM_EMUNDUS_FILTERS_CLEAR').'"></span></a>
