@@ -237,7 +237,7 @@ class EmundusModelPayment extends JModelList
 		return $applicant_id;
 	}
 
-	private function getHikashopUserId($user_id): int
+	public function getHikashopUserId($user_id): int
 	{
 		$hikashop_user_id = 0;
 
