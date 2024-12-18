@@ -1419,7 +1419,7 @@ class EmundusModelPayment extends JModelList
 				->andWhere('hp.product_type = ' . $db->quote('variant'))
 				->andWhere('hp.product_published = 1')
 				->andWhere('hp.product_quantity > 0 OR hp.product_quantity = -1')
-				->andWhere('hprice.price_users LIKE ' . $db->quoteName('%,' . $hikashop_user_id . ',%'))
+				->andWhere('hprice.price_users LIKE ' . $db->quote('%,' . $hikashop_user_id . ',%'))
 				->andWhere('hv.variant_characteristic_id = ' . $characteristic_id);
 
 			try {
@@ -1442,7 +1442,7 @@ class EmundusModelPayment extends JModelList
 	 */
 	public function updateHikashopCart($cart, $product_ids, $fnum = '')
 	{
-		if (!empty($cart) && !empty($product_id)) {
+		if (!empty($cart) && !empty($product_ids)) {
 			$product_list = [];
 
 			foreach ($product_ids as $product_id) {
