@@ -193,6 +193,25 @@ if ($user_module->id)
 					<?php endif; ?>
 				<?php endforeach; ?>
             </div>
+            <?php if (empty($this->samlConfig)) : ?>
+            <!-- SEPARATOR -->
+            <div class="tw-mt-6 tw-flex tw-items-center tw-justify-center tw-gap-2 tw-w-full">
+                <hr class="tw-w-full">
+                <span class="tw-text-neutral-500"><?php echo Text::_('OU'); ?></span>
+                <hr class="tw-w-full">
+            </div>
+            <?php endif; ?>
+        </div>
+	<?php endif; ?>
+
+	<?php if(!empty($this->samlConfig)) : ?>
+        <div class="tw-mt-8 tw-w-full tw-flex tw-flex-col tw-items-center">
+            <div class="tw-w-full tw-flex tw-flex-col tw-items-center tw-gap-4">
+                <a class="tw-w-full tw-flex tw-items-center tw-justify-center tw-border tw-py-3 tw-px-2 tw-rounded-applicant tw-border-profile-full tw-text-profile-full tw-gap-4 hover:tw-bg-profile-full hover:tw-text-white"
+                   href="<?php echo $this->samlConfig['metadata_url']; ?>">
+					<?php echo Text::_('COM_USERS_LOGIN_WITH') . ' ' . $this->samlConfig['idp_name']; ?>
+                </a>
+            </div>
             <!-- SEPARATOR -->
             <div class="tw-mt-6 tw-flex tw-items-center tw-justify-center tw-gap-2 tw-w-full">
                 <hr class="tw-w-full">

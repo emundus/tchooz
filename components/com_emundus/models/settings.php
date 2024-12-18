@@ -2451,4 +2451,30 @@ class EmundusModelSettings extends ListModel
 		return $updated;
 	}
 
+	public function getSAMLSettings()
+	{
+		$config = [];
+		$query = $this->db->getQuery(true);
+
+		try
+		{
+			$query->clear()
+				->select('idp_name,metadata_url')
+				->from($this->db->quoteName('#__miniorange_saml_config'));
+			$this->db->setQuery($query);
+			$config = $this->db->loadAssoc();
+
+			if(!empty($config) && !empty($config['metadata_url']))
+			{
+				$config['metadata_url'] = Uri::base() . '?morequest=sso&idp=' . $config['metadata_url'];
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $config;
+	}
+
 }
