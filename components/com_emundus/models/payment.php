@@ -1507,7 +1507,11 @@ class EmundusModelPayment extends JModelList
 
 			try {
 				$db->setQuery($query);
-				$variant_product_id = $db->loadResult();
+				$found_variant_id = $db->loadResult();
+
+				if (!empty($found_variant_id)) {
+					$variant_product_id = $found_variant_id;
+				}
 			} catch (Exception $e) {
 				Log::add('Error getting hikashop product variant for user : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.payment');
 			}
