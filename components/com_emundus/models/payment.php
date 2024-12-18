@@ -1351,7 +1351,7 @@ class EmundusModelPayment extends JModelList
 	 * @param $type string allowed values : main, variant
 	 * @param $parent_id int
 	 */
-	public function createHikashopProduct(string $label, float $price, string $code = '', int $category = 0, string $type = 'main', int $parent_id = 0, $variant_characteristic_id = 0): int
+	public function createHikashopProduct(string $label, float $price, string $code = '', int $category = 0, string $type = 'main', int $parent_id = 0, $variant_characteristic_id = 0, $to_user = 0): int
 	{
 		$product_id = 0;
 
@@ -1387,10 +1387,18 @@ class EmundusModelPayment extends JModelList
 					Log::add('Product created with ID ' . $product_id, Log::INFO, 'com_emundus.payment');
 
 					// need to insert into price table
+					$columns = ['price_currency_id', 'price_product_id', 'price_value'];
+					$values = [1, $product_id, $price];
+
+					if (!empty($to_user)) {
+						$columns[] = 'price_users';
+						$values[] = $db->quote(','. $to_user . ',');
+					}
+
 					$query->clear()
 						->insert('#__hikashop_price')
-						->columns(['price_currency_id', 'price_product_id', 'price_value'])
-						->values('1, ' . $product_id . ', ' . $price);
+						->columns($columns)
+						->values(implode(', ', $values));
 
 					$db->setQuery($query);
 					$inserted_price = $db->execute();
