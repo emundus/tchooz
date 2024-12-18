@@ -1351,7 +1351,7 @@ class EmundusModelPayment extends JModelList
 	 * @param $type string allowed values : main, variant
 	 * @param $parent_id int
 	 */
-	public function createHikashopProduct(string $label, float $price, string $code = '', int $category = 0, string $type = 'main', int $parent_id = 0): int
+	public function createHikashopProduct(string $label, float $price, string $code = '', int $category = 0, string $type = 'main', int $parent_id = 0, $variant_characteristic_id = 0): int
 	{
 		$product_id = 0;
 
@@ -1399,6 +1399,21 @@ class EmundusModelPayment extends JModelList
 						Log::add('Price created for product ID ' . $product_id, Log::INFO, 'com_emundus.payment');
 					} else {
 						Log::add('Error creating price for product ID ' . $product_id, Log::ERROR, 'com_emundus.payment');
+					}
+
+					if ($type === 'variant') {
+						$query->clear()
+							->insert('#__hikashop_variant')
+							->columns(['variant_product_id', 'variant_characteristic_id'])
+							->values($product_id . ', ' . $variant_characteristic_id);
+						$db->setQuery($query);
+						$inserted_variant_characteristic = $db->execute();
+
+						if ($inserted_variant_characteristic) {
+							Log::add('Variant characteristic created for product ID ' . $product_id, Log::INFO, 'com_emundus.payment');
+						} else {
+							Log::add('Error creating variant characteristic for product ID ' . $product_id, Log::ERROR, 'com_emundus.payment');
+						}
 					}
 				}
 			} catch (Exception $e) {
