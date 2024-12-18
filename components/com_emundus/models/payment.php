@@ -1383,4 +1383,32 @@ class EmundusModelPayment extends JModelList
 
 		return $product_id;
 	}
+
+	/**
+	 * @param $cart hikashop cart
+	 * @param $product_ids array of hikashop product ids
+	 * @param $fnum
+	 *
+	 * @return mixed
+	 */
+	public function updateHikashopCart($cart, $product_ids, $fnum = '')
+	{
+		if (!empty($cart) && !empty($product_id)) {
+			$product_list = [];
+
+			foreach ($product_ids as $product_id) {
+				$product_list[$product_id] = ['qty' => 1, 'id' => $product_id];
+			}
+
+			$cart_id = (int)$cart->cart_id;
+
+			// reset cart and add the needed product
+			require_once(JPATH_ROOT . '/administrator/components/com_hikashop/helpers/helper.php');
+			$cartClass = hikashop_get('class.cart');
+			$cartClass->resetCart($cart_id);
+			$cartClass->addProduct($cart_id, $product_list);
+		}
+
+		return $cart;
+	}
 }
