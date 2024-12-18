@@ -160,18 +160,28 @@ class EmundusModelAdministratorWorkflow extends JModelList
 			if ($created) {
 				// add first rows to the table
 				$rows = [
-					[1, 0, 'COM_EMUNDUS_WORKFLOW_STEP_TYPE_APPLICANT', 0, 1, 1],
-					[2, 0, 'COM_EMUNDUS_WORKFLOW_STEP_TYPE_EVALUATOR', 0, 1, 1],
+					[1, 0, 'COM_EMUNDUS_WORKFLOW_STEP_TYPE_APPLICANT', 1, 1, 1],
+					[2, 0, 'COM_EMUNDUS_WORKFLOW_STEP_TYPE_EVALUATOR', 5, 1, 1],
 				];
 
 				foreach ($rows as $row) {
 					$query->clear()
-						->insert('#__emundus_setup_step_types');
-					$query->columns(['id', 'parent_id', 'label', 'action_id', 'published', $db->quoteName('system')]);
-					$query->values(implode(',', $db->quote($row)));
-
+						->select('id')
+						->from('#__emundus_setup_step_types')
+						->where('id = ' . $db->quote($row[0]));
 					$db->setQuery($query);
-					$db->execute();
+					$exists = $db->loadResult();
+
+					if(!$exists)
+					{
+						$query->clear()
+							->insert('#__emundus_setup_step_types');
+						$query->columns(['id', 'parent_id', 'label', 'action_id', 'published', $db->quoteName('system')]);
+						$query->values(implode(',', $db->quote($row)));
+
+						$db->setQuery($query);
+						$db->execute();
+					}
 				}
 			}
 			$tasks[] = $created['status'];
