@@ -225,6 +225,10 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 		}
 	}
 
+	if ($application_fee && !$paid && strpos($confirm_form_url, '${') !== false) {
+		$confirm_form_url = $m_emails->setTagsFabrik($checkout_url, [$user->fnum]);
+	}
+
 	$current_phase        = $m_campaign->getCurrentCampaignWorkflow($user->fnum);
 	$current_phase        = !empty($current_phase->id) ? $current_phase : null;
 	$attachments_progress = $m_application->getAttachmentsProgress($user->fnum);
