@@ -1535,24 +1535,50 @@ class EmundusModelPayment extends JModelList
 	 *
 	 * @return mixed
 	 */
-	public function updateHikashopCart($cart, $product_ids, $fnum = '')
+	public function updateHikashopCart($cart_id, $product_ids, $fnum = ''): bool
 	{
-		if (!empty($cart) && !empty($product_ids)) {
+		$updated = false;
+
+		if (!empty($cart_id) && !empty($product_ids)) {
 			$product_list = [];
 
 			foreach ($product_ids as $product_id) {
 				$product_list[$product_id] = ['qty' => 1, 'id' => $product_id];
 			}
 
-			$cart_id = (int)$cart->cart_id;
-
 			// reset cart and add the needed product
 			require_once(JPATH_ROOT . '/administrator/components/com_hikashop/helpers/helper.php');
 			$cartClass = hikashop_get('class.cart');
 			$cartClass->resetCart($cart_id);
 			$cartClass->addProduct($cart_id, $product_list);
+
+			$updated = true;
 		}
 
-		return $cart;
+		return $updated;
+	}
+
+	public function getCartProducts($cart_id): array
+	{
+		$products = [];
+
+		if (!empty($cart_id)) {
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
+
+			$query->select('hp.*, hcp.cart_product_id')
+				->from($db->quoteName('#__hikashop_cart_product', 'hcp'))
+				->leftJoin($db->quoteName('#__hikashop_product', 'hp') . ' ON ' . $db->quoteName('hcp.product_id') . ' = ' . $db->quoteName('hp.product_id'))
+				->where('hcp.cart_id = ' . $cart_id);
+
+			try {
+				$db->setQuery($query);
+				$products = $db->loadObjectList();
+			} catch (Exception $e) {
+				Log::add('Error getting hikashop cart products : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.payment');
+			}
+		}
+
+		return $products;
 	}
 }

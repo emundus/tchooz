@@ -318,7 +318,7 @@ class PlgHikashopEmundus_hikashop extends CMSPlugin {
 	    $session = $app->getSession()->get('emundusUser');
 	    PluginHelper::importPlugin('emundus', 'custom_event_handler');
 	    $app->triggerEvent('onCallEventHandler', ['onHikashopCheckoutWorkflowLoad',
-		    ['checkout_workflow' => $checkout_workflow, 'shop_closed' => $shop_closed, 'cart_id' => $cart_id, 'session' => $session]
+		    ['checkout_workflow' => $checkout_workflow, 'shop_closed' => $shop_closed, 'cart_id' => $cart_id, 'session' => $session, 'fnum' => $session->fnum]
 	    ]);
 
 	    $eMConfig = ComponentHelper::getParams('com_emundus');
