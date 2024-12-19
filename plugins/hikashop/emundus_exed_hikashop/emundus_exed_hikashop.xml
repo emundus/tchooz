@@ -30,8 +30,7 @@
                        description="PLG_HIKASHOP_EMUNDUS_EXED_HIKASHOP_DISCOUNT_PAYMENT_STATUS_DESC"
                        query="SELECT `step`, `value` FROM `#__emundus_setup_status`"
                        key_field="step"
-                       value="value"
-                       size="5"
+                       value_field="value"
                        required="true"
                 />
                 <field name="hikashop_totalite_characteristic"
