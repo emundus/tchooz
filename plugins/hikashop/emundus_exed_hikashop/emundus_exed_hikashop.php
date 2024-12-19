@@ -37,14 +37,11 @@ class PlgHikashopEmundus_exed_hikashop extends CMSPlugin {
 			return;
 		}
 
-		$pluginsClass = hikashop_get('class.plugins');
-		$plugin = $pluginsClass->getByName('hikashop', 'emundus_exed_history');
-
-		$discount_payment_status = $plugin->params['discount_payment_status'];
-		$totalite_characteristic_id = $plugin->params['hikashop_totalite_characteristic'];
-		$element_totalite_id = $plugin->params['hikashop_totalite_element'];
-		$discounted_characteristic_id = $plugin->params['hikashop_discount_characteristic'];
-		$element_discount_id = $plugin->params['hikashop_discount_element'];
+		$discount_payment_status = $this->params->get('discount_payment_status', null);
+		$totalite_characteristic_id = $this->params->get('hikashop_totalite_characteristic');
+		$element_totalite_id = (int)$this->params->get('hikashop_totalite_element', 0);
+		$discounted_characteristic_id = $this->params->get('hikashop_discount_characteristic');
+		$element_discount_id = (int)$this->params->get('hikashop_discount_element', 0);
 
 		require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
 		$h_files = new EmundusHelperFiles();
