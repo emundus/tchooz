@@ -39,9 +39,9 @@ class PlgHikashopEmundus_exed_hikashop extends CMSPlugin {
 
 		$discount_payment_status = $this->params->get('discount_payment_status', null);
 		$totalite_characteristic_id = $this->params->get('hikashop_totalite_characteristic');
-		$element_totalite_id = (int)$this->params->get('hikashop_totalite_element', 0);
+		$element_totalite_id = (int)$this->params->get('element_totalite_id', 0);
 		$discounted_characteristic_id = $this->params->get('hikashop_discount_characteristic');
-		$element_discount_id = (int)$this->params->get('hikashop_discount_element', 0);
+		$element_discount_id = (int)$this->params->get('element_discount_id', 0);
 
 		require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
 		$h_files = new EmundusHelperFiles();
@@ -52,13 +52,13 @@ class PlgHikashopEmundus_exed_hikashop extends CMSPlugin {
 			return;
 		}
 
-		if (!empty($cart_id) && !empty($data['fnum'])) {
+		if (!empty($cart_id) && !empty($fnum)) {
 			$db = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->createQuery();
 
 			$query->select('status')
 				->from($db->quoteName('#__emundus_campaign_candidature'))
-				->where('fnum = ' . $db->quote($data['fnum']));
+				->where('fnum = ' . $db->quote($fnum));
 
 			$db->setQuery($query);
 			$status = $db->loadResult();
@@ -91,7 +91,7 @@ class PlgHikashopEmundus_exed_hikashop extends CMSPlugin {
 							$discounted_applicant_price = $this->rawValueFromCurrencyElement($discounted_applicant_price);
 						}
 
-						$user_id          = $m_payment->getUserIdFromFnum($data['fnum']);
+						$user_id          = $m_payment->getUserIdFromFnum($fnum);
 						$hikashop_user_id = $m_payment->getHikashopUserId($user_id);
 
 						$query->clear()
