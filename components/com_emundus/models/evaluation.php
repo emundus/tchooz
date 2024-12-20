@@ -631,7 +631,7 @@ class EmundusModelEvaluation extends JModelList
 	 */
 	public function getEvaluationElementsName($show_in_list_summary = 1, $hidden = 0, $code = array(), $all = null)
 	{
-		$session = JFactory::getSession();
+		$session = Factory::getApplication()->getSession();
 		$h_list  = new EmundusHelperList;
 
 		$elements = array();
@@ -668,7 +668,7 @@ class EmundusModelEvaluation extends JModelList
 					{
 						foreach ($eval_elt_list as $eel)
 						{
-							if (isset($eel->element_id) && !empty($eel->element_id))
+							if (!empty($eel->element_id))
 							{
 								$elements[] = $h_list->getElementsDetailsByID($eel->element_id)[0];
 							}

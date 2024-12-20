@@ -725,7 +725,7 @@ class EmundusHelperFiles
 			}
 
 			$query = 'SELECT distinct(concat_ws("___",tab.db_table_name,element.name)) as fabrik_element, element.id, element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin, element.id, groupe.id AS group_id, groupe.label AS group_label, element.params AS element_attribs,
-                    INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, form.label AS table_label, tab.created_by_alias, joins.table_join, menu.id as menu_id, menu.title,
+                    INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, form.label AS form_label, tab.created_by_alias, joins.table_join, menu.id as menu_id, menu.title,
                     p.label, p.id as profil_id
                     FROM #__fabrik_elements element';
 			$join  = 'INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
@@ -816,7 +816,7 @@ class EmundusHelperFiles
 			}
 
 			$query = 'SELECT distinct(concat_ws("___",tab.db_table_name,element.name)) as fabrik_element, element.id, element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin, element.id, groupe.id AS group_id, groupe.label AS group_label, element.params AS element_attribs,
-                    INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, form.label AS table_label, tab.created_by_alias, joins.table_join,menu.id as menu_id, menu.title,
+                    INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, form.label AS form_label, tab.created_by_alias, joins.table_join,menu.id as menu_id, menu.title,
                     p.label, p.id as profil_id
                     FROM #__fabrik_elements element';
 			$join  = 'INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id

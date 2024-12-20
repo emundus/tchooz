@@ -1,18 +1,22 @@
 <?php
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Factory;
+
 
 //JHTML::stylesheet('media/com_emundus/css/emundus.css' );
-$document = JFactory::getDocument();
+$app = Factory::getApplication();
+$document = Factory::getDocument();
 $document->addStyleSheet("media/com_emundus/css/emundus_export_select_columns.css");
 $eMConfig     = JComponentHelper::getParams('com_emundus');
-$current_user = JFactory::getUser();
-$view         = JFactory::getApplication()->input->get('v', null, 'GET', 'none', 0);
-//$view = JFactory::getApplication()->input->get('view', null, 'GET', 'none',0);
-$comments = JFactory::getApplication()->input->get('comments', null, 'POST', 'none', 0);
-$itemid   = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none', 0);
+$current_user = $app->getIdentity();
+$view         = $app->input->get('v', null, 'GET', 'none', 0);
+//$view = Factory::getApplication()->input->get('view', null, 'GET', 'none',0);
+$comments = $app->input->get('comments', null, 'POST', 'none', 0);
+$itemid   = $app->input->get('Itemid', null, 'GET', 'none', 0);
 // Starting a session.
-$session    = JFactory::getSession();
+$session    = $app->getSession();
 $s_elements = $session->get('s_elements');
 $comments   = $session->get('comments');
 
@@ -50,14 +54,10 @@ if (!empty($s_elements)) {
 		}
 
 		if ($tbl_tmp == '') :?>
-			<?php
-			$label = explode("-", $t->table_label);
-			$label = $label[1];
-			?>
             <div class="panel panel-primary excel" id="emundus_table_<?= $t->table_id; ?>">
             <div class="panel-heading">
                 <legend>
-                    <label for="emundus_checkall_tbl_<?= $t->table_id; ?>"><?= JText::_($label); ?></label>
+                    <label for="emundus_checkall_tbl_<?= $t->table_id; ?>"><?= Text::_($t->form_label); ?></label>
                 </legend>
             </div>
 
@@ -65,24 +65,20 @@ if (!empty($s_elements)) {
             <div class="panel panel-info excel" id="emundus_grp_<?= $t->group_id; ?>">
             <div class="panel-heading">
                 <legend>
-                    <label for="emundus_checkall_grp_'<?= $t->group_id; ?>"><?= JText::_($t->group_label); ?></label>
+                    <label for="emundus_checkall_grp_'<?= $t->group_id; ?>"><?= Text::_($t->group_label); ?></label>
                 </legend>
             </div>
 
             <div class="panel-body">
             <div class="em-element-title em-element-main-title em-mb-16">
                 <div class="em-element-title-id em-element-main-title-id">
-                    <b><?= JText::_('ID'); ?></b>
+                    <b><?= Text::_('ID'); ?></b>
                 </div>
                 <div class="em-element-title-label em-element-main-title-label">
-                    <b><?= JText::_('LABEL'); ?></b>
+                    <b><?= Text::_('LABEL'); ?></b>
                 </div>
             </div>
 		<?php elseif ($t->table_id != $tbl_tmp && $tbl_tmp != '') : ?>
-			<?php
-			$label = explode("-", $t->title);
-			$label = $label[1];
-			?>
             </div>
             </div>
             </div>
@@ -91,7 +87,7 @@ if (!empty($s_elements)) {
             <div class="panel panel-primary excel" id="emundus_table_<?= $t->table_id; ?>">
             <div class="panel-heading">
                 <legend>
-                    <label for="emundus_checkall_tbl_<?= $t->table_id; ?>"><?= JText::_($label); ?></label>
+                    <label for="emundus_checkall_tbl_<?= $t->table_id; ?>"><?= Text::_($t->form_label); ?></label>
                 </legend>
             </div>
 
@@ -99,13 +95,13 @@ if (!empty($s_elements)) {
             <div class="panel panel-info excel" id="emundus_grp_<?= $t->group_id; ?>'">
             <div class="panel-heading">
                 <legend>
-                    <label for="emundus_checkall_grp_<?= $t->group_id; ?>"><?= JText::_($t->group_label); ?></label>
+                    <label for="emundus_checkall_grp_<?= $t->group_id; ?>"><?= Text::_($t->group_label); ?></label>
                 </legend>
             </div>
             <div class="panel-body">
             <div class="em-element-title">
                 <div class="em-element-title-id" onclick="copyid();" data-toggle="tooltip" data-placement="left"
-                     title="<?= JText::_('COM_EMUNDUS_EMTAGS_SELECT_TO_COPY'); ?>">
+                     title="<?= Text::_('COM_EMUNDUS_EMTAGS_SELECT_TO_COPY'); ?>">
                     <p></p>
                 </div>
                 <div class="em-element-title-label">
@@ -120,13 +116,13 @@ if (!empty($s_elements)) {
             <div class="panel panel-info excel" id="emundus_grp_<?= $t->group_id; ?>">
             <div class="panel-heading">
                 <legend>
-                    <label for="emundus_checkall_grp_<?= $t->group_id; ?>"><?= JText::_($t->group_label); ?></label>
+                    <label for="emundus_checkall_grp_<?= $t->group_id; ?>"><?= Text::_($t->group_label); ?></label>
                 </legend>
             </div>
             <div class="panel-body">
             <div class="em-element-title">
                 <div class="em-element-title-id" onclick="copyid();" data-toggle="tooltip" data-placement="left"
-                     title="<?= JText::_('COM_EMUNDUS_EMTAGS_SELECT_TO_COPY'); ?>">
+                     title="<?= Text::_('COM_EMUNDUS_EMTAGS_SELECT_TO_COPY'); ?>">
                     <p></p>
                 </div>
                 <div class="em-element-title-label">
@@ -137,11 +133,11 @@ if (!empty($s_elements)) {
 
         <div class="em-element">
             <div class="em-element-id" onclick="copyid('<?= '${' . $t->id . '}'; ?>');" data-toggle="tooltip"
-                 data-placement="left" title="<?= JText::_('COM_EMUNDUS_EMTAGS_SELECT_TO_COPY'); ?>">
+                 data-placement="left" title="<?= Text::_('COM_EMUNDUS_EMTAGS_SELECT_TO_COPY'); ?>">
 				<?= '${' . $t->id . '}'; ?>
             </div>
             <div class="em-element-label">
-				<?= JText::_($t->element_label); ?>
+				<?= Text::_($t->element_label); ?>
             </div>
         </div>
         <br>
@@ -156,23 +152,5 @@ if (!empty($s_elements)) {
     </div>
     </div>
 <?php else: ?>
-    <div class="em-mb-16"><?= JText::_('COM_EMUNDUS_FORM_NO_FORM_DEFINED'); ?></div>
-<?php endif;
-
-/*$today = date("MdYHis");
-$name  = md5($today . rand(0, 10));
-$name  = $name . '.csv';
-$file  = JPATH_BASE . DS . 'tmp' . DS . $name;
-if (!$csv = fopen($file, 'w+')) {
-	$result = array('status' => false, 'msg' => JText::_('ERROR_CANNOT_OPEN_FILE') . ' : ' . $file);
-	echo json_encode((object) $result);
-	exit();
-}
-fprintf($csv, chr(0xEF) . chr(0xBB) . chr(0xBF));
-$res = fputcsv($csv, $fabrik_elements, ",", '"', "\\");
-
-if (count($this->elements) > 0) {
-	echo '<div class="em-link"><a class="tw-btn-primary em-float-right em-no-hover em-hover-background-neutral-300" href="index.php?option=com_emundus&controller=files&task=download&name=' . $name . '">' . JText::_('COM_EMUNDUS_EXPORTS_EXPORT_AS_CSV_TEMPLATE') . '</a></div>';
-}*/
-
-?>
+    <div class="em-mb-16"><?= Text::_('COM_EMUNDUS_FORM_NO_FORM_DEFINED'); ?></div>
+<?php endif; ?>
