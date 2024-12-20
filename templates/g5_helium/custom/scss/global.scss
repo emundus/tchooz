@@ -5090,6 +5090,17 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
   margin-top: 32px;
 }
 
+.hikashop_product_characteristics_main_div .hkform-group {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+
+  select.custom-select {
+    padding: 4px;
+    border-radius: 4px;
+  }
+}
+
 /******************************* RESPONSIVE ***********************************/
 
 @media screen and (min-width: 1367px) and (max-width: 1919px)  {
