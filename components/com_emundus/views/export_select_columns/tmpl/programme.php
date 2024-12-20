@@ -33,10 +33,7 @@ if (!empty($s_elements)) {
 }
 ?>
 
-<?php if (count($this->elements) > 0) : ?>
-    <!--        <div class="em-program-title em-mb-16">
-            <h1><?= $this->program; ?></h1>
-        </div>-->
+<?php if (!empty($this->elements)) : ?>
     <div id="emundus_elements">
 	<?php
 	$tbl_tmp = '';

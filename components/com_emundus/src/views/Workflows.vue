@@ -53,7 +53,7 @@ export default {
                   action: "duplicate",
                   label: "COM_EMUNDUS_ACTIONS_DUPLICATE",
                   controller: "workflow",
-                  parameters: "id=%id%",
+                  parameters: "&id=%id%",
                   name: "duplicate",
                 }
               ],
