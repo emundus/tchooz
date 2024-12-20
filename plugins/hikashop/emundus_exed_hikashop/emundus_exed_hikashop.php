@@ -109,7 +109,7 @@ class PlgHikashopEmundus_exed_hikashop extends CMSPlugin {
 
 							$variant_totalite_product_id = $m_payment->getHikashopProductVariantForUser($parent_product_id, $hikashop_user_id, $totalite_characteristic_id);
 							if ($variant_totalite_product_id == $parent_product_id) {
-								$variant_totalite_product_id = $m_payment->createHikashopProduct($parent_product->product_name . ' - ' . $hikashop_user_id, $total_applicant_price, $parent_product->product_code . '-' . $hikashop_user_id, $parent_product->category_id, 'variant', $parent_product->product_id, $totalite_characteristic_id, $hikashop_user_id);
+								$variant_totalite_product_id = $m_payment->createHikashopProduct('COM_EMUNDUS_TOTAL_PRODUCT_LABEL', $total_applicant_price, $parent_product->product_code . '-' . $hikashop_user_id, $parent_product->category_id, 'variant', $parent_product->product_id, $totalite_characteristic_id, $hikashop_user_id);
 							} else {
 								$updated_price = $m_payment->updateHikashopProductPrice($variant_totalite_product_id, $total_applicant_price);
 
@@ -122,10 +122,9 @@ class PlgHikashopEmundus_exed_hikashop extends CMSPlugin {
 							$variant_discounted_product_id = $m_payment->getHikashopProductVariantForUser($parent_product_id, $hikashop_user_id, $discounted_characteristic_id);
 
 							if ($variant_discounted_product_id == $parent_product_id || empty($variant_discounted_product_id)) {
-								$product_label = $parent_product->product_name . ' - ' . $hikashop_user_id . '-' .$discounted_characteristic_id;
 								$product_code = $parent_product->product_code . '-' . $hikashop_user_id . '-' . $discounted_characteristic_id;
 
-								$variant_discounted_product_id = $m_payment->createHikashopProduct($product_label, (float)$discounted_applicant_price, $product_code, (int)$parent_product->category_id, 'variant', $parent_product->product_id, $discounted_characteristic_id, $hikashop_user_id);
+								$variant_discounted_product_id = $m_payment->createHikashopProduct('COM_EMUNDUS_DISCOUNTED_PRODUCT_LABEL', (float)$discounted_applicant_price, $product_code, (int)$parent_product->category_id, 'variant', $parent_product->product_id, $discounted_characteristic_id, $hikashop_user_id);
 							} else {
 								$updated_price = $m_payment->updateHikashopProductPrice($variant_discounted_product_id, (float)$discounted_applicant_price);
 
