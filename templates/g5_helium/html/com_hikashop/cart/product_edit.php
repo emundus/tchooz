@@ -18,13 +18,13 @@ $inputcolumnclass = 'hkc-xs-8';
 ?>
 <form action="<?php echo hikashop_completeLink('cart&task=product_save'); ?>" method="post"
       name="hikashop_cart_product_form" enctype="multipart/form-data">
-    <fieldset class="hkform-horizontal">
+    <fieldset class="hkform-horizontal tw-p-4">
         <!-- TITLE -->
         <h3><?php echo Text::_('EDIT_PRODUCT_INFORMATION_IN_THE_CART'); ?></h3>
         <!-- EO TITLE -->
         <!-- NAME -->
         <div class="hkform-group control-group hikashop_item_product_name_line" id="hikashop_item_product_name">
-            <div class="<?php echo $labelcolumnclass; ?> hkcontrol-label">
+            <div class="<?php echo $labelcolumnclass; ?> hkcontrol-label hidden">
 				<?php
 				$thumbnail_x    = $this->config->get('thumbnail_x', 100);
 				$thumbnail_y    = $this->config->get('thumbnail_y', 100);
@@ -959,25 +959,28 @@ $inputcolumnclass = 'hkc-xs-8';
 		}
 		?>
         <!-- EO CUSTOM ITEM FIELDS -->
-        </div>
-        <div class="hikashop_checkout_buttons">
-            <div class="buttons_left">
+        <div class="hikashop_checkout_buttons tw-flex tw-justify-between tw-p-4">
+            <div class="buttons_left tw-w-auto">
                 <!-- CANCEL BUTTON -->
                 <a href="#" onclick="window.parent.hikashop.closeBox();return false;"
-                   class="tw-btn-secondary hikabtn_cart_product_edit_cancel"
+                   class="tw-btn-secondary hikabtn_cart_product_edit_cancel tw-w-fit"
                    id="hikabtn_cart_product_edit_cancel">
-                    <i class="fa fa-times"></i> <?php echo Text::_('HIKA_CANCEL');; ?>
+					<?php echo Text::_('HIKA_CANCEL');; ?>
                 </a>
                 <!-- EO CANCEL BUTTON -->
             </div>
+
+            <!-- SAVE BUTTON -->
             <div class="buttons_right" id="buttons_right">
-                <!-- SAVE BUTTON -->
+
                 <button id="hikabtn_cart_product_edit_save" type="submit"
-                        class="tw-btn-primary hikabtn_cart_product_edit_save">
-                    <?php echo Text::_('HIKA_OK');; ?>
+                        class="tw-btn-primary hikabtn_cart_product_edit_save tw-w-fit">
+					<?php echo Text::_('HIKA_OK');; ?>
                 </button>
                 <!-- EO SAVE BUTTON -->
             </div>
+        </div>
+
         </div>
         <input type="hidden" name="option" value="<?php echo HIKASHOP_COMPONENT; ?>"/>
         <input type="hidden" name="ctrl" value="cart"/>
