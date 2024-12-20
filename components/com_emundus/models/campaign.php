@@ -3214,7 +3214,8 @@ class EmundusModelCampaign extends ListModel
 						->leftJoin($this->_db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON ' . $this->_db->quoteName('esp.id') . ' = ' . $this->_db->quoteName('espl.program_id'))
 						->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->quoteName('esc.training') . ' = ' . $this->_db->quoteName('esp.code'))
 						->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->_db->quoteName('ecc.campaign_id') . ' = ' . $this->_db->quoteName('esc.id'))
-						->where($this->_db->quoteName('ecc.fnum') . ' LIKE ' . $this->_db->quote($fnum));
+						->where($this->_db->quoteName('ecc.fnum') . ' LIKE ' . $this->_db->quote($fnum))
+						->andWhere($this->_db->quoteName('espl.lang_id') . ' > 0');
 
 					$this->_db->setQuery($query);
 					$languages = $this->_db->loadColumn();
