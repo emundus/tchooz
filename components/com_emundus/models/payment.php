@@ -1433,6 +1433,28 @@ class EmundusModelPayment extends JModelList
 	}
 
 
+	public function getProductType($product_id) {
+		$type = '';
+
+		if (!empty($product_id)) {
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
+
+			$query->select('product_type')
+				->from('#__hikashop_product')
+				->where('product_id = ' . $product_id);
+
+			try {
+				$db->setQuery($query);
+				$type = $db->loadResult();
+			} catch (Exception $e) {
+				JLog::add('Error getting product type for product ID ' . $product_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.payment');
+			}
+		}
+
+		return $type;
+	}
+
 	/**
 	 * @param $product_id
 	 * @param $new_price
@@ -1446,7 +1468,6 @@ class EmundusModelPayment extends JModelList
 		if (!empty($product_id)) {
 			$db = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->createQuery();
-
 
 			$updates = [];
 
@@ -1535,9 +1556,9 @@ class EmundusModelPayment extends JModelList
 	 *
 	 * @return mixed
 	 */
-	public function updateHikashopCart($cart_id, $product_ids, $fnum = ''): bool
+	public function updateHikashopCart($cart_id, $product_ids, $fnum = '')
 	{
-		$updated = false;
+		$cart_updated = null;
 
 		if (!empty($cart_id) && !empty($product_ids)) {
 			$product_list = [];
@@ -1551,11 +1572,10 @@ class EmundusModelPayment extends JModelList
 			$cartClass = hikashop_get('class.cart');
 			$cartClass->resetCart($cart_id);
 			$cartClass->addProduct($cart_id, $product_list);
-
-			$updated = true;
+			$cart_updated = $cartClass->get($cart_id);
 		}
 
-		return $updated;
+		return $cart_updated;
 	}
 
 	public function getCartProducts($cart_id): array

@@ -8,7 +8,7 @@
     <authorUrl>https://www.emundus.fr</authorUrl>
     <copyright>(C) 2010-${year} eMundus SAS. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-    <description>Ce plugin sert à gérer la misa à jour du panier en fonction de la saisie de l'utilisateur</description>
+    <description>Ce plugin sert à gérer la mise à jour du panier en fonction de saisies de l'utilisateur. Il permet de définir une valeur totale et une valeur d'acompte</description>
     <files>
         <filename>emundus_exed_hikashop.xml</filename>
         <filename plugin="emundus_exed_hikashop">emundus_exed_hikashop.php</filename>

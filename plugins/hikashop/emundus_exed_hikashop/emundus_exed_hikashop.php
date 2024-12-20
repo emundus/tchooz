@@ -1,35 +1,33 @@
 <?php
 /**
- * @version 1: ExceliaPrice 2019-10-30 James Dean
- * @author  James Dean
+ * @version 1
+ * @author  LEGENDRE Jérémy
  * @package Hikashop
- * @copyright Copyright (C) 2018 emundus.fr. All r
- * @license GNU/GPL, see LICENSE.php
- * Joomla! is free software. This version may have
- * to the GNU General Public License, and as distr
- * is derivative of works licensed under the GNU G
- * other free or open source software licenses.
- * See COPYRIGHT.php for copyright notices and det
- * @description Sets the price to 0 depending if the excelia user exists
+ * @copyright Copyright (C) 2024 emundus.fr. All rigths reserved
+ * @license GNU/GPL
  */
 // No direct access
-use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
-use Joomla\CMS\Plugin\PluginHelper;
-use Joomla\CMS\Uri\Uri;
 
 defined('_JEXEC') or die('Restricted access');
 
-
 class PlgHikashopEmundus_exed_hikashop extends CMSPlugin {
 
-	public function onCheckoutWorkflowLoad(&$checkout_workflow, &$shop_closed, $cart_id)
+	public function __construct(&$subject, $config) {
+		Log::addLogger(array('text_file' => 'com_emundus.emundus_exed_hikashop_plugin.php'), Log::ALL, array('com_emundus.emundus_exed_hikashop_plugin'));
+
+		parent::__construct($subject, $config);
+	}
+
+	public function onAfterCartProductsLoad(&$cart)
 	{
+		$cart_id = $cart->cart_id;
 		$app = Factory::getApplication();
 		$session = $app->getSession()->get('emundusUser');
+		$user_id = $app->getIdentity()->id;
 
 		$fnum = $session->fnum;
 
@@ -64,6 +62,8 @@ class PlgHikashopEmundus_exed_hikashop extends CMSPlugin {
 			$status = $db->loadResult();
 
 			if ($status == $discount_payment_status) {
+				Log::add('User ' . $user_id . ' with fnum ' . $fnum . ' opened the cart with id ' . $cart_id . ' and has the status ' . $status, Log::INFO, 'com_emundus.emundus_exed_hikashop_plugin');
+
 				require_once (JPATH_ROOT . '/components/com_emundus/models/payment.php');
 				$m_payment = new EmundusModelPayment();
 				$app = Factory::getApplication();
@@ -74,22 +74,25 @@ class PlgHikashopEmundus_exed_hikashop extends CMSPlugin {
 					$m_files = new EmundusModelFiles();
 
 					$parent_product_id = (int)current($cart_products)->product_id;
+					$type = $m_payment->getProductType($parent_product_id);
 
-					$total_applicant_price = $m_files->getFabrikValue([$fnum], $element_totalite->db_table_name, $element_totalite->name)[$fnum];
-					$discounted_applicant_price = $m_files->getFabrikValue([$fnum], $element_discount->db_table_name, $element_discount->name)[$fnum];
+					if ($type == 'variant') { // if the product is a variant, then cart is surely already updated
+						return;
+					}
 
-					if (empty($prices)) {
+					$total_value = $m_files->getFabrikValue([$fnum], $element_totalite['db_table_name'], $element_totalite['name']);
+					$total_applicant_price = !empty($total_value) ? $total_value[$fnum]['val'] : null;
+
+					$discount_value = $m_files->getFabrikValue([$fnum], $element_discount['db_table_name'], $element_discount['name']);
+					$discounted_applicant_price = !empty($discount_value) ? $discount_value[$fnum]['val'] : null;
+
+					if (empty($total_applicant_price) || empty($discounted_applicant_price)) {
+						Log::add('User ' . $user_id . ' with fnum ' . $fnum . ' has no prices found', Log::ERROR, 'com_emundus.emundus_exed_hikashop_plugin');
 						$app->enqueueMessage(Text::_('COM_EMUNDUS_ERROR_NO_PRICES_FOUND'), 'error');
 						$app->redirect('/');
 					} else {
-
-						if ($element_totalite->plugin == 'currency') {
-							$total_applicant_price = $this->rawValueFromCurrencyElement($total_applicant_price);
-						}
-
-						if ($element_discount->plugin == 'currency') {
-							$discounted_applicant_price = $this->rawValueFromCurrencyElement($discounted_applicant_price);
-						}
+						$total_applicant_price = $this->rawValueFromCurrencyElement($total_applicant_price);
+						$discounted_applicant_price = $this->rawValueFromCurrencyElement($discounted_applicant_price);
 
 						$user_id          = $m_payment->getUserIdFromFnum($fnum);
 						$hikashop_user_id = $m_payment->getHikashopUserId($user_id);
@@ -106,11 +109,9 @@ class PlgHikashopEmundus_exed_hikashop extends CMSPlugin {
 
 							$variant_totalite_product_id = $m_payment->getHikashopProductVariantForUser($parent_product_id, $hikashop_user_id, $totalite_characteristic_id);
 							if ($variant_totalite_product_id == $parent_product_id) {
-								// create the product variation
-								$variant_totalite_product_id = $m_payment->createHikashopProduct($parent_product->product_name . ' - ' . $hikashop_user_id, (float)$total_applicant_price, $parent_product->product_code . '-' . $hikashop_user_id, $parent_product->category_id, 'variant', $parent_product->product_id, $totalite_characteristic_id, $hikashop_user_id);
+								$variant_totalite_product_id = $m_payment->createHikashopProduct($parent_product->product_name . ' - ' . $hikashop_user_id, $total_applicant_price, $parent_product->product_code . '-' . $hikashop_user_id, $parent_product->category_id, 'variant', $parent_product->product_id, $totalite_characteristic_id, $hikashop_user_id);
 							} else {
-								// update the product variation price
-								$updated_price = $m_payment->updateHikashopProductPrice($variant_totalite_product_id, (float)$total_applicant_price);
+								$updated_price = $m_payment->updateHikashopProductPrice($variant_totalite_product_id, $total_applicant_price);
 
 								if (!$updated_price) {
 									$app->enqueueMessage(Text::_('COM_EMUNDUS_ERROR_PRODUCT_PRICE_NOT_UPDATED'), 'error');
@@ -121,13 +122,11 @@ class PlgHikashopEmundus_exed_hikashop extends CMSPlugin {
 							$variant_discounted_product_id = $m_payment->getHikashopProductVariantForUser($parent_product_id, $hikashop_user_id, $discounted_characteristic_id);
 
 							if ($variant_discounted_product_id == $parent_product_id || empty($variant_discounted_product_id)) {
-								// create the product variation
 								$product_label = $parent_product->product_name . ' - ' . $hikashop_user_id . '-' .$discounted_characteristic_id;
 								$product_code = $parent_product->product_code . '-' . $hikashop_user_id . '-' . $discounted_characteristic_id;
 
 								$variant_discounted_product_id = $m_payment->createHikashopProduct($product_label, (float)$discounted_applicant_price, $product_code, (int)$parent_product->category_id, 'variant', $parent_product->product_id, $discounted_characteristic_id, $hikashop_user_id);
 							} else {
-								// update the product variation price
 								$updated_price = $m_payment->updateHikashopProductPrice($variant_discounted_product_id, (float)$discounted_applicant_price);
 
 								if (!$updated_price) {
@@ -137,11 +136,14 @@ class PlgHikashopEmundus_exed_hikashop extends CMSPlugin {
 							}
 
 							if ($variant_totalite_product_id != $parent_product_id) {
-								$updated = $m_payment->updateHikashopCart($cart_id, [$variant_totalite_product_id]);
+								$updated_cart = $m_payment->updateHikashopCart($cart_id, [$variant_totalite_product_id]);
 
-								if (!$updated) {
+								if (is_null($updated_cart)) {
+									Log::add('User ' . $user_id . ' with fnum ' . $fnum . ' tried to update the cart with id ' . $cart_id . ' with the product ' . $variant_totalite_product_id, Log::ERROR, 'com_emundus.emundus_exed_hikashop_plugin');
 									$app->enqueueMessage(Text::_('COM_EMUNDUS_ERROR_PRODUCT_NOT_FOUND'), 'error');
 									$app->redirect('/');
+								} else {
+									Log::add('User ' . $user_id . ' with fnum ' . $fnum . ' updated the cart with id ' . $cart_id . ' with the product ' . $variant_totalite_product_id, Log::INFO, 'com_emundus.emundus_exed_hikashop_plugin');
 								}
 							}
 						} catch (Exception $e) {
@@ -157,12 +159,17 @@ class PlgHikashopEmundus_exed_hikashop extends CMSPlugin {
 		}
 	}
 
-	private function rawValueFromCurrencyElement($value)
+	/**
+	 * @param $value
+	 *
+	 * @return mixed
+	 */
+	private function rawValueFromCurrencyElement($value): float
 	{
 		$value = str_replace(' ', '', $value);
 		$value = str_replace(',', '.', $value);
 		$value = str_replace('€(EUR)', '', $value);
 
-		return $value;
+		return (float)$value;
 	}
 }
