@@ -19,6 +19,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Event\GenericEvent;
+use Joomla\CMS\Component\ComponentHelper;
 
 class EmundusModelWorkflow extends JModelList
 {
@@ -890,6 +891,13 @@ class EmundusModelWorkflow extends JModelList
 						$inserts[] = false;
 						Log::add('Error while adding step type: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
 					}
+
+					$eMundus_config = ComponentHelper::getParams('com_emundus');
+					$all_rights_grp = $eMundus_config->get('all_rights_group', 1);
+
+					if (!empty($all_rights_grp)) {
+						EmundusHelperAccess::addAccessToGroup($action_id, $all_rights_grp, ['c' => 1, 'r' => 1, 'u' => 1, 'd' => 1]);
+					}
 				}
 			}
 
@@ -937,13 +945,15 @@ class EmundusModelWorkflow extends JModelList
 			$this->db->setQuery($query);
 			$step_types = $this->db->loadAssoc();
 
-			$query->clear()
-				->select('action_id')
-				->from($this->db->quoteName('#__emundus_setup_step_types'))
-				->where('id = ' . $step_types['type']);
+			if (!empty($step_types)) {
+				$query->clear()
+					->select('action_id')
+					->from($this->db->quoteName('#__emundus_setup_step_types'))
+					->where('id = ' . $step_types['type']);
 
-			$this->db->setQuery($query);
-			$action_id = $this->db->loadResult();
+				$this->db->setQuery($query);
+				$action_id = $this->db->loadResult();
+			}
 		}
 
 		return $action_id;

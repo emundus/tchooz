@@ -83,7 +83,7 @@ const _sfc_main$1 = {
     }
   }
 };
-const _hoisted_1$1 = { class: "tw-w-full tw-flex tw-flex-row tw-items-center" };
+const _hoisted_1$1 = { class: "tw-w-full tw-flex tw-flex-row tw-items-center tw-mb-2" };
 const _hoisted_2$1 = ["id", "name", "onUpdate:modelValue"];
 const _hoisted_3 = ["onClick"];
 const _hoisted_4 = {

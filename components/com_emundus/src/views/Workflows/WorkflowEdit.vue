@@ -136,7 +136,7 @@
         <!-- set a checkbox input for each programsOptions -->
         <input type="text" v-model="searchThroughPrograms" :placeholder="translate('COM_EMUNDUS_WORKFLOW_SEARCH_PROGRAMS_PLACEHOLDER')" class="tw-w-full tw-p-2 tw-mb-4 tw-border tw-border-neutral-300 tw-rounded" />
 
-        <div class="tw-flex tw-flex-row tw-items-center tw-cursor-pointer">
+        <div class="tw-mt-4 tw-flex tw-flex-row tw-items-center tw-cursor-pointer">
           <input id="check-all" class="tw-cursor-pointer" type="checkbox" v-model="checkall" @change="onClickCheckAllProgram"/>
           <label for="check-all" class="tw-cursor-pointer !tw-mb-0">{{ translate('COM_EMUNDUS_WORKFLOW_CHECK_ALL') }}</label>
         </div>

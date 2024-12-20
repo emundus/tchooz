@@ -688,4 +688,38 @@ class EmundusHelperAccess
 			'can_edit' => $can_edit
 		];
 	}
+
+	public static function addAccessToGroup(int $action_id, int $group_id, $crud = ['c' => 0, 'r' => 0, 'u' => 0, 'd' => 0]): bool
+	{
+		$granted = false;
+
+		if (!empty($action_id) && !empty($group_id)) {
+			// sanitize $crud
+			$crud = array_map(function($value) {
+				return ($value == 1) ? 1 : 0;
+			}, $crud);
+
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true);
+			$query->clear()
+				->insert('#__emundus_acl')
+				->columns('action_id, group_id, c, r, u, d')
+				->values($action_id . ', ' . $group_id . ', ' . $crud['c'] . ', ' . $crud['r'] . ', ' . $crud['u'] . ', ' . $crud['d']);
+
+			try {
+				$db->setQuery($query);
+				$inserted = $db->execute();
+
+				if (!$inserted) {
+					Log::add('Adding rights for action ' . $action_id . ' to group ' . $group_id . ' failed ', Log::WARNING, 'com_emundus.workflow');
+				} else {
+					$granted = true;
+				}
+			} catch (Exception $e) {
+				Log::add('Error while adding ACL for action : ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+			}
+		}
+
+		return $granted;
+	}
 }

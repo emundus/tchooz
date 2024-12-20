@@ -39342,7 +39342,7 @@ var errors = {
     }
   }
 };
-const WorkflowEdit_vue_vue_type_style_index_0_scoped_8e439728_lang = "";
+const WorkflowEdit_vue_vue_type_style_index_0_scoped_81908be0_lang = "";
 const _sfc_main$3 = {
   name: "WorkflowEdit",
   props: {
@@ -39839,7 +39839,7 @@ const _hoisted_51 = {
 };
 const _hoisted_52 = { key: 1 };
 const _hoisted_53 = ["placeholder"];
-const _hoisted_54 = { class: "tw-flex tw-flex-row tw-items-center tw-cursor-pointer" };
+const _hoisted_54 = { class: "tw-mt-4 tw-flex tw-flex-row tw-items-center tw-cursor-pointer" };
 const _hoisted_55 = {
   for: "check-all",
   class: "tw-cursor-pointer !tw-mb-0"
@@ -40109,7 +40109,7 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ]);
 }
-const WorkflowEdit = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-8e439728"]]);
+const WorkflowEdit = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-81908be0"]]);
 const WorkflowEdit$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: WorkflowEdit
@@ -41085,7 +41085,20 @@ if (document) {
         const globalStore2 = useGlobalStore();
         globalStore2.initAttachmentPath(datas.base + "/images/emundus/files/");
       }
+      {
+        app.config.productionTip = false;
+        app.config.devtools = true;
+        app.config.performance = true;
+      }
       app.mount(elementId);
+      {
+        const version2 = app.version;
+        const devtools2 = window.__VUE_DEVTOOLS_GLOBAL_HOOK__;
+        if (devtools2) {
+          devtools2.enabled = true;
+          devtools2.emit("app:init", app, version2, {});
+        }
+      }
     }
   }
 }
