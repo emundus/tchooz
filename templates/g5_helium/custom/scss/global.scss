@@ -722,6 +722,7 @@ footer#g-footer > .g-container {
   a {
     color: var(--link-regular);
     text-decoration: underline;
+    font-family: var(--em-profile-font);
 
     &:hover {
       text-decoration: none;

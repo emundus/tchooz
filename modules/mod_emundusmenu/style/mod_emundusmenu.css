@@ -200,6 +200,7 @@ ul.g-dropdown.g-dropdown-right.g-fade {
 #header-b #em_user_menu a {
     color: var(--neutral-900);
     text-decoration: none;
+    font-family: var(--em-profile-font);
 }
 
 #header-b {
