@@ -748,6 +748,8 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 		}, ARRAY_FILTER_USE_KEY);
 		$fnum    = reset($fnumElt);
 
+		$params = $this->getParams();
+
 		if (!empty($fnum)) {
 			if (!class_exists('EmundusModelFiles')) {
 				require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
@@ -767,7 +769,6 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 				$session      = $this->getFormSession($fnum, $this->getFormModel()->id);
 				$session_data = !empty($session->data) ? $session->data : [];
 				$files_data   = $session_data[str_replace('[]', '', $this->getFullName())];
-
 
 				foreach ($val as $file) {
 					if (!empty($files_data[$file])) {
@@ -811,7 +812,22 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 						}
 					}
 					else {
-						$value_to_store[] = $file;
+						$query->clear()
+							->select($this->_db->quoteName('id'))
+							->from($this->_db->quoteName('#__emundus_uploads'))
+							->where($this->_db->quoteName('filename') . ' LIKE ' . $this->_db->quote($file))
+							->andWhere($this->_db->quoteName('campaign_id') . ' = ' . $cid)
+							->andWhere($this->_db->quoteName('attachment_id') . ' = ' . $params->get('attachmentId'))
+							->andWhere($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
+						$this->_db->setQuery($query);
+						$upload_id = $this->_db->loadResult();
+
+						if(!empty($upload_id)) {
+							$value_to_store[] = $upload_id;
+						} else
+						{
+							$value_to_store[] = $file;
+						}
 					}
 				}
 			}
