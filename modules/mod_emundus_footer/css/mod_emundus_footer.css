@@ -93,6 +93,10 @@ hr.footer-separation {
     right: 20px;
 }
 
+.footer-emundus.centered-links * {
+   font-family: var(--em-profile-font);
+}
+
 .footer-rgpd-links a, .em-col-3-footer a {
     text-decoration: underline;
 }

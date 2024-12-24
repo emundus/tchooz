@@ -114,7 +114,7 @@ if(!empty($mod_em_campaign_go_back_campaigns_link)) {
 		    <?php endif; ?>
         >
             <span class="material-symbols-outlined tw-text-neutral-600" aria-hidden="true">navigate_before</span><span
-                    class="em-ml-8 em-text-neutral-900"><?php echo JText::_('MOD_EM_CAMPAIGN_BACK'); ?></span>
+                    class="em-ml-8 em-text-neutral-900 em-profile-font"><?php echo JText::_('MOD_EM_CAMPAIGN_BACK'); ?></span>
         </button>
 		<?php if ($mod_em_campaign_details_show_programme == 1) : ?>
 			<?php
@@ -263,7 +263,7 @@ if(!empty($mod_em_campaign_go_back_campaigns_link)) {
 						<?php $index = 1; ?>
 						<?php foreach ($mod_em_campaign_show_registration_steps as $key => $step): ?>
 							<?php if ($step->mod_em_campaign_show_registration_steps_text == '') continue; ?>
-                            <span class="em-applicant-text-color em-flex-row em-font-size-14 em-mb-16"><span
+                            <span class="em-applicant-text-color em-flex-row em-font-size-14 em-mb-16 em-profile-font"><span
                                         class="mod_emundus_campaign__details_step_count"><?php echo $index ?></span><?php echo $step->mod_em_campaign_show_registration_steps_text ?></span>
 							<?php $index++; ?>
 						<?php endforeach; ?>

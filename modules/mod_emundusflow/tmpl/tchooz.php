@@ -33,6 +33,10 @@ $now      = $dateTime->format('Y-m-d H:i:s');
         gap: 4px;
     }
 
+    .mod_emundus_flow___print p {
+        font-family: var(--em-profile-font);
+    }
+
     .btn-primary.mod_emundus_flow___print {
         background: white;
     }
@@ -42,6 +46,11 @@ $now      = $dateTime->format('Y-m-d H:i:s');
         grid-gap: 12px;
         max-width: 75%;
     }
+
+    .mod_emundus_flow___infos * {
+        font-family: var(--em-profile-font);
+    }
+
 
     .mod_emundus_flow___intro .btn.btn-primary {
         font-size: var(--em-applicant-font-size) !important;

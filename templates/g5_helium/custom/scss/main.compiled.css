@@ -114701,6 +114701,9 @@ button.swal2-cancel.goback-btn:hover,
             color: var(--em-alert-error-icon-color);
             margin-right: var(--em-spacing-3);
         }
+.fabrikMainError div *, .alert.alert-error div * {
+            font-family: var(--em-profile-font);
+        }
 .alert.alert-warning, .alert.alert-notice {
         border: solid var(--em-alert-warning-border-width) var(--em-alert-warning-border-color);
         background-color: var(--em-alert-warning-bgc);
@@ -114708,6 +114711,9 @@ button.swal2-cancel.goback-btn:hover,
     }
 .alert.alert-warning .material-icons,.alert.alert-warning .material-icons-outlined,.alert.alert-warning .material-symbols-outlined,.alert.alert-notice .material-icons,.alert.alert-notice .material-icons-outlined,.alert.alert-notice .material-symbols-outlined  {
             color: var(--em-alert-warning-icon-color);
+        }
+.alert.alert-warning div *, .alert.alert-notice div * {
+            font-family: var(--em-profile-font);
         }
 .alert.alert-info {
         border: solid var(--em-alert-info-border-width) var(--em-alert-info-border-color);
@@ -114717,6 +114723,9 @@ button.swal2-cancel.goback-btn:hover,
 .alert.alert-info .material-icons,.alert.alert-info .material-icons-outlined,.alert.alert-info .material-symbols-outlined {
             color: var(--em-alert-info-icon-color);
         }
+.alert.alert-info div * {
+            font-family: var(--em-profile-font);
+        }
 .alert.alert-success {
         border: solid var(--em-alert-success-border-width) var(--em-alert-success-border-color);
         background-color: var(--em-alert-success-bgc);
@@ -114724,6 +114733,9 @@ button.swal2-cancel.goback-btn:hover,
     }
 .alert.alert-success .material-icons,.alert.alert-success .material-icons-outlined,.alert.alert-success .material-symbols-outlined {
             color: var(--em-alert-success-icon-color);
+        }
+.alert.alert-success div * {
+            font-family: var(--em-profile-font);
         }
 .alert.alert-danger ul, .alert.alert-error ul {
         padding-left: 20px;

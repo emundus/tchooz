@@ -740,6 +740,8 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 	 */
 	public function storeDatabaseFormat($val, $data)
 	{
+		$value_to_store = [];
+
 		$input   = Factory::getApplication()->input;
 		$fnumElt = array_filter($input->getArray(), function ($key) {
 			return strpos($key, '___fnum_raw') !== false;
