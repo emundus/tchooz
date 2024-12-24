@@ -533,11 +533,13 @@ class modEmundusCampaignHelper
 
 		try
 		{
-			$query->select('label')
+			$query->select('label, id')
 				->from($this->db->quoteName('#__emundus_setup_programmes'))
 				->where($this->db->quoteName('code') . ' IN (' . $this->db->quote($codes) . ')');
 			$this->db->setQuery($query);
-			$label = $this->db->loadResult();
+			$program_data = $this->db->loadAssoc();
+
+			$label = $program_data['label'];
 		}
 		catch (Exception $e)
 		{
