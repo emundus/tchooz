@@ -165,7 +165,7 @@ const _sfc_main = {
           this.onSelectTab(this.params.tab);
         } else {
           const sessionTab = sessionStorage.getItem("tchooz_selected_tab/" + document.location.hostname);
-          if (sessionTab !== null && typeof this.currentList.tabs.find((tab) => tab.key === sessionTab) !== "undefined") {
+          if (sessionTab !== null && this.currentList.tabs.some((tab) => tab.key === sessionTab)) {
             this.onSelectTab(sessionTab);
           } else {
             this.onSelectTab(this.currentList.tabs[0].key);
@@ -222,7 +222,7 @@ const _sfc_main = {
             };
           }
           const searchValue = sessionStorage.getItem("tchooz_filter_" + this.selectedListTab + "_search/" + document.location.hostname);
-          if (searchValue !== null) {
+          if (searchValue !== null && this.searches[this.selectedListTab]) {
             this.searches[this.selectedListTab].search = searchValue;
             this.searches[this.selectedListTab].lastSearch = searchValue;
           }
