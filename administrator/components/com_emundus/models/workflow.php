@@ -344,6 +344,10 @@ class EmundusModelAdministratorWorkflow extends JModelList
 			}
 		}
 
+		// check that there is column ordering in emundus_setup_workflows_steps
+		$add_ordering = EmundusHelperUpdate::addColumn('jos_emundus_setup_workflows_steps', 'ordering', 'INT', null, 1, 0);
+		$tasks[] = $add_ordering['status'];
+
 		if (!in_array(false, $tasks)) {
 			$installed = true;
 		}

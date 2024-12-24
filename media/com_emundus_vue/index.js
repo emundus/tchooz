@@ -1,4 +1,4 @@
-import { a4 as getAugmentedNamespace, a5 as commonjsGlobal, a6 as getDefaultExportFromCjs } from "./app_emundus.js";
+import { a3 as getAugmentedNamespace, a4 as commonjsGlobal, a5 as getDefaultExportFromCjs } from "./app_emundus.js";
 var esErrors = Error;
 var _eval = EvalError;
 var range = RangeError;

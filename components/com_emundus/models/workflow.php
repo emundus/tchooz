@@ -126,10 +126,12 @@ class EmundusModelWorkflow extends JModelList
 				$already_used_entry_status = [];
 				foreach ($steps as $step) {
 					foreach($step['entry_status'] as $status) {
-						if (!$this->isEvaluationStep($step['type']) && in_array($status['id'], $already_used_entry_status)) {
-							throw new Exception(Text::_('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS_ALREADY_USED'));
+						if (!$this->isEvaluationStep($step['type'])) {
+							if (in_array($status['id'], $already_used_entry_status)) {
+								throw new Exception(sprintf(Text::_('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS_ALREADY_USED'), $status['label']));
+							}
+							$already_used_entry_status[] = $status['id'];
 						}
-						$already_used_entry_status[] = $status['id'];
 					}
 				}
 
@@ -155,7 +157,7 @@ class EmundusModelWorkflow extends JModelList
 								$step['id'] = $this->db->insertid();
 							}
 						} else {
-							$fields = ['label', 'type', 'state', 'multiple', 'output_status'];
+							$fields = ['label', 'type', 'state', 'multiple', 'output_status', 'ordering'];
 
 							$fields_set = [];
 							foreach($fields as $field) {
@@ -408,7 +410,8 @@ class EmundusModelWorkflow extends JModelList
 					->select('esws.id')
 					->from($this->db->quoteName('#__emundus_setup_workflows_steps', 'esws'))
 					->where($this->db->quoteName('esws.workflow_id') . ' = ' . $id)
-					->andWhere($this->db->quoteName('esws.state') . ' = 1');
+					->andWhere($this->db->quoteName('esws.state') . ' = 1')
+					->order('esws.ordering ASC');
 
 				try {
 					$this->db->setQuery($query);
