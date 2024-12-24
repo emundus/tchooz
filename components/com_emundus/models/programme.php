@@ -488,6 +488,11 @@ class EmundusModelProgramme extends ListModel
 				$filterDate = ('1');
 			}
 
+			$query->select(['p.*', 'COUNT(sc.id) AS nb_campaigns', 'GROUP_CONCAT(DISTINCT espl.lang_id) AS language_ids'])
+				->from($this->_db->quoteName('#__emundus_setup_programmes', 'p'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'sc') . ' ON ' . $this->_db->quoteName('sc.training') . ' LIKE ' . $this->_db->quoteName('p.code'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_programs_languages', 'espl') . ' ON ' . $this->_db->quoteName('espl.program_id') . ' = ' . $this->_db->quoteName('p.id'));
+
 			if (empty($recherche)) {
 				$fullRecherche = 1;
 			}
@@ -496,13 +501,26 @@ class EmundusModelProgramme extends ListModel
 				$rechercheNotes    = $this->_db->quoteName('p.notes') . ' LIKE ' . $this->_db->quote('%' . $recherche . '%');
 				$rechercheCategory = $this->_db->quoteName('p.programmes') . ' LIKE ' . $this->_db->quote('%' . $recherche . '%');
 				$fullRecherche     = $rechercheLbl . ' OR ' . $rechercheNotes . ' OR ' . $rechercheCategory;
+
+				$current_lang_tag = $this->app->getLanguage()->getTag();
+				$subquery = $this->_db->getQuery(true);
+				$subquery->clear()
+					->select($this->_db->quoteName('lang_id'))
+					->from($this->_db->quoteName('#__languages'))
+					->where($this->_db->quoteName('lang_code') . ' = ' . $this->_db->quote($current_lang_tag));
+
+				$this->_db->setQuery($subquery);
+				$current_lang_id = $this->_db->loadResult();
+
+				$query->leftJoin($this->_db->quoteName('#__falang_content', 'fc') . ' ON ' . $this->_db->quoteName('fc.reference_id') . ' = ' . $this->_db->quoteName('p.id')
+					. ' AND ' . $this->_db->quoteName('fc.reference_table') . ' = ' . $this->_db->quote('emundus_setup_programmes')
+					. ' AND ' . $this->_db->quoteName('fc.reference_field') . ' = ' . $this->_db->quote('label')
+					. ' AND ' . $this->_db->quoteName('fc.language_id') . ' = ' . $this->_db->quote($current_lang_id));
+
+				$fullRecherche .= ' OR ' . $this->_db->quoteName('fc.value') . ' LIKE ' . $this->_db->quote('%' . $recherche . '%');
 			}
 
-			$query->select(['p.*', 'COUNT(sc.id) AS nb_campaigns', 'GROUP_CONCAT(DISTINCT espl.lang_id) AS language_ids'])
-				->from($this->_db->quoteName('#__emundus_setup_programmes', 'p'))
-				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'sc') . ' ON ' . $this->_db->quoteName('sc.training') . ' LIKE ' . $this->_db->quoteName('p.code'))
-				->leftJoin($this->_db->quoteName('#__emundus_setup_programs_languages', 'espl') . ' ON ' . $this->_db->quoteName('espl.program_id') . ' = ' . $this->_db->quoteName('p.id'))
-				->where($filterDate)
+			$query->where($filterDate)
 				->where($fullRecherche)
 				->andWhere($this->_db->quoteName('p.code') . ' IN (' . implode(',', $this->_db->quote($programs)) . ')')
 				->group($sortDb)
