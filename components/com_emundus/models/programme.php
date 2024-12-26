@@ -1008,7 +1008,7 @@ class EmundusModelProgramme extends ListModel
 
 		$query = $this->_db->getQuery(true);
 
-		$query->select('programmes as value, programmes as label')
+		$query->select('DISTINCT programmes as value, programmes as label')
 			->from($this->_db->quoteName('#__emundus_setup_programmes'))
 			->where('published = 1')
 			->andWhere('programmes != ""')
