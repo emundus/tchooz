@@ -1015,6 +1015,7 @@ class EmundusModelProgramme extends ListModel
 			->from($this->_db->quoteName('#__emundus_setup_programmes'))
 			->where('published = 1')
 			->andWhere('programmes != ""')
+			->group('programmes')
 			->order('programmes ASC');
 
 		try {
