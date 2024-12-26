@@ -446,11 +446,23 @@ class EmundusFiltersFiles extends EmundusFilters
 
 			if (!empty($this->user_campaigns))
 			{
+				$label = 'esc.label';
+
+				if ($config['filter_campaign_display_program']) {
+					$label = 'CONCAT(esc.label, " (", esp.label, ")")';
+				}
+
 				$query->clear()
-					->select('id as value, label, 0 as count')
-					->from('#__emundus_setup_campaigns')
-					->where('published = 1')
-					->andWhere('id IN (' . implode(',', $this->user_campaigns) . ')');
+					->select('esc.id as value, ' . $label .' as label, 0 as count')
+					->from($db->quoteName('#__emundus_setup_campaigns', 'esc'));
+
+				if ($config['filter_campaign_display_program'])
+				{
+					$query->leftJoin($db->quoteName('#__emundus_setup_programmes', 'esp') .  ' ON ' . $db->quoteName('esc.training') . ' = ' . $db->quoteName('esp.code'));
+				}
+
+				$query->where($db->quoteName('esc.published') . ' = 1')
+					->andWhere($db->quoteName('esc.id') . ' IN (' . implode(',', $this->user_campaigns) . ')');
 
 				if (!$filter_menu_values_are_empty)
 				{
@@ -461,17 +473,18 @@ class EmundusFiltersFiles extends EmundusFilters
 						$campaigns = explode('|', $filter_menu_values[$position]);
 						if (!empty($campaigns))
 						{
-							$query->andWhere('id IN (' . implode(',', $campaigns) . ')');
+							$query->andWhere('esc.id IN (' . implode(',', $campaigns) . ')');
 						}
 					}
 				}
 
 				if (!empty($programs_codes))
 				{
-					$query->andWhere('training IN (' . implode(',', $db->quote($programs_codes)) . ')');
+					$query->andWhere('esc.training IN (' . implode(',', $db->quote($programs_codes)) . ')');
 				}
 
-				$query->order('id DESC');
+				$query->order('esc.id DESC');
+
 				try
 				{
 					$db->setQuery($query);
