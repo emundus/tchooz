@@ -1006,24 +1006,17 @@ class EmundusModelProgramme extends ListModel
 	{
 		$categories = [];
 
-
 		$query = $this->_db->getQuery(true);
 
-		$query->select('DISTINCT(programmes)')
+		$query->select('programmes as value, programmes as label')
 			->from($this->_db->quoteName('#__emundus_setup_programmes'))
-			->order('id DESC');
+			->where('published = 1')
+			->andWhere('programmes != ""')
+			->order('programmes ASC');
 
 		try {
 			$this->_db->setQuery($query);
-			$categories = $this->_db->loadColumn();
-
-			$tmp = [];
-			foreach ($categories as $category) {
-				if (!empty($category)) {
-					$tmp[] = ['value' => $category, 'label' => Text::_($category)];
-				}
-			}
-			$categories = $tmp;
+			$categories = $this->_db->loadAssocList();
 		}
 		catch (Exception $e) {
 			Log::add('component/com_emundus/models/program | Error at getting program categories : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
