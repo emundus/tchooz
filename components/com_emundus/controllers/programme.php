@@ -141,7 +141,7 @@ class EmundusControllerProgramme extends BaseController
 		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-			$programs = $this->m_programme->getAllPrograms();
+			$programs = $this->m_programme->getAllPrograms('all', 0, null, 'ASC', '', $this->_user, '', 'p.label');
 
 			if (count((array) $programs) > 0) {
 				$type = $this->input->getString('type', '');

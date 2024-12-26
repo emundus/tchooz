@@ -439,12 +439,15 @@ class EmundusModelProgramme extends ListModel
 	 * @param $filter
 	 * @param $sort
 	 * @param $recherche
+	 * @param $user
+	 * @param $category
+	 * @param $order_by
 	 *
 	 * @return array
 	 *
 	 * @since version 1.0
 	 */
-	function getAllPrograms($lim = 'all', $page = 0, $filter = null, string $sort = 'DESC', $recherche = '', $user = null, $category = '')
+	function getAllPrograms($lim = 'all', $page = 0, $filter = null, string $sort = 'DESC', $recherche = '', $user = null, $category = '', string $order_by = 'p.id')
 	{
 		if(empty($user)) {
 			$user = $this->_user;
@@ -472,9 +475,6 @@ class EmundusModelProgramme extends ListModel
 			if (empty($sort)) {
 				$sort = 'DESC';
 			}
-
-			$sortDb = 'p.id ';
-
 
 			$query = $this->_db->getQuery(true);
 
@@ -527,8 +527,8 @@ class EmundusModelProgramme extends ListModel
 			}
 
 			$query->andWhere($this->_db->quoteName('p.code') . ' IN (' . implode(',', $this->_db->quote($programs)) . ')')
-				->group($sortDb)
-				->order($sortDb . $sort);
+				->group('p.id')
+				->order($order_by . ' ' . $sort);
 
 			try {
 				$this->_db->setQuery($query);
