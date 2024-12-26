@@ -39935,9 +39935,16 @@ const programmeService = {
       };
     }
   },
-  async getAllPrograms() {
+  async getAllPrograms(search = "", category = "", lim = 0, page = 0, order_by = "", order = "ASC") {
     try {
-      return await client$2.get("getallprogram");
+      return await client$2.get("getallprogram", {
+        recherche: search,
+        category,
+        lim,
+        page,
+        sort: order,
+        order_by
+      });
     } catch (e) {
       return {
         status: false,
@@ -41864,7 +41871,7 @@ var errors = {
     }
   }
 };
-const WorkflowEdit_vue_vue_type_style_index_0_scoped_2dd57122_lang = "";
+const WorkflowEdit_vue_vue_type_style_index_0_scoped_baff65b0_lang = "";
 const _sfc_main$3 = {
   name: "WorkflowEdit",
   props: {
@@ -41974,7 +41981,7 @@ const _sfc_main$3 = {
       });
     },
     async getPrograms() {
-      return await programmeService.getAllPrograms().then((response) => {
+      return await programmeService.getAllPrograms("", "", 0, 0, "p.label", "ASC").then((response) => {
         this.programsOptions = response.data.datas.map((program) => {
           return {
             id: program.id,
@@ -42652,7 +42659,7 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ]);
 }
-const WorkflowEdit = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-2dd57122"]]);
+const WorkflowEdit = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-baff65b0"]]);
 const WorkflowEdit$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: WorkflowEdit
@@ -43628,7 +43635,20 @@ if (document) {
         const globalStore2 = useGlobalStore();
         globalStore2.initAttachmentPath(datas.base + "/images/emundus/files/");
       }
+      {
+        app.config.productionTip = false;
+        app.config.devtools = true;
+        app.config.performance = true;
+      }
       app.mount(elementId);
+      {
+        const version2 = app.version;
+        const devtools2 = window.__VUE_DEVTOOLS_GLOBAL_HOOK__;
+        if (devtools2) {
+          devtools2.enabled = true;
+          devtools2.emit("app:init", app, version2, {});
+        }
+      }
     }
   }
 }
