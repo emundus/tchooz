@@ -452,6 +452,9 @@ class EmundusModelProgramme extends ListModel
 		if(empty($user)) {
 			$user = $this->_user;
 		}
+		if (empty($order_by)) {
+			$order_by = 'p.id';
+		}
 		$all_programs = [];
 
 		// Get affected programs

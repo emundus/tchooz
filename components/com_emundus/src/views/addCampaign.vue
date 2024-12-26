@@ -618,7 +618,7 @@ export default {
     },
 
     getAllPrograms() {
-      programmeService.getAllPrograms().then(response => {
+      programmeService.getAllPrograms('', '', 0, 0, 'p.label').then(response => {
         if (response.status) {
           this.programs = response.data.datas;
 
