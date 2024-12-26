@@ -43562,7 +43562,7 @@ if (document) {
                   let name = componentPath[1];
                   return __variableDynamicImportRuntimeHelper(/* @__PURE__ */ Object.assign({ "./views/Program/ProgramEdit.vue": () => __vitePreload(() => Promise.resolve().then(() => ProgramEdit$1), true ? void 0 : void 0), "./views/Workflows/WorkflowEdit.vue": () => __vitePreload(() => Promise.resolve().then(() => WorkflowEdit$1), true ? void 0 : void 0), "./views/Workflows/WorkflowSettings.vue": () => __vitePreload(() => import("./WorkflowSettings.js"), true ? [] : void 0) }), `./views/${directory}/${name}.vue`);
                 } else {
-                  return __variableDynamicImportRuntimeHelper(/* @__PURE__ */ Object.assign({ "./views/ApplicationSingle.vue": () => __vitePreload(() => import("./ApplicationSingle.js"), true ? [] : void 0), "./views/Attachments.vue": () => __vitePreload(() => Promise.resolve().then(() => Attachments$1), true ? void 0 : void 0), "./views/CampaignEdition.vue": () => __vitePreload(() => import("./CampaignEdition.js"), true ? ["CampaignEdition.js","addCampaign.js","editor.js","vue-dropzone.js","email.js","index.js"] : void 0), "./views/Comments.vue": () => __vitePreload(() => Promise.resolve().then(() => Comments$1), true ? void 0 : void 0), "./views/Formbuilder.vue": () => __vitePreload(() => import("./Formbuilder.js"), true ? ["Formbuilder.js","editor.js","Translations.js","index.js","Skeleton.js","IncrementalSelect.js"] : void 0), "./views/History.vue": () => __vitePreload(() => Promise.resolve().then(() => History$1), true ? void 0 : void 0), "./views/List.vue": () => __vitePreload(() => import("./List.js"), true ? ["List.js","Skeleton.js"] : void 0), "./views/MessagesCoordinator.vue": () => __vitePreload(() => import("./MessagesCoordinator.js"), true ? ["MessagesCoordinator.js","vue-dropzone.js","index.js"] : void 0), "./views/Settings.vue": () => __vitePreload(() => import("./Settings.js"), true ? ["Settings.js","Translations.js","index.js","vue-dropzone.js","editor.js","WorkflowSettings.js"] : void 0), "./views/Workflows.vue": () => __vitePreload(() => import("./Workflows.js"), true ? ["Workflows.js","List.js","Skeleton.js"] : void 0), "./views/addCampaign.vue": () => __vitePreload(() => import("./addCampaign.js").then((n) => n.b), true ? ["addCampaign.js","editor.js"] : void 0), "./views/addEmail.vue": () => __vitePreload(() => import("./addEmail.js"), true ? ["addEmail.js","IncrementalSelect.js","email.js","editor.js"] : void 0) }), `./views/${componentName}.vue`);
+                  return __variableDynamicImportRuntimeHelper(/* @__PURE__ */ Object.assign({ "./views/ApplicationSingle.vue": () => __vitePreload(() => import("./ApplicationSingle.js"), true ? [] : void 0), "./views/Attachments.vue": () => __vitePreload(() => Promise.resolve().then(() => Attachments$1), true ? void 0 : void 0), "./views/CampaignEdition.vue": () => __vitePreload(() => import("./CampaignEdition.js"), true ? ["CampaignEdition.js","addCampaign.js","editor.js","vue-dropzone.js","email.js","index.js"] : void 0), "./views/Campaigns.vue": () => __vitePreload(() => import("./Campaigns.js"), true ? ["Campaigns.js","List.js","Skeleton.js"] : void 0), "./views/Comments.vue": () => __vitePreload(() => Promise.resolve().then(() => Comments$1), true ? void 0 : void 0), "./views/Formbuilder.vue": () => __vitePreload(() => import("./Formbuilder.js"), true ? ["Formbuilder.js","editor.js","Translations.js","index.js","Skeleton.js","IncrementalSelect.js"] : void 0), "./views/History.vue": () => __vitePreload(() => Promise.resolve().then(() => History$1), true ? void 0 : void 0), "./views/List.vue": () => __vitePreload(() => import("./List.js"), true ? ["List.js","Skeleton.js"] : void 0), "./views/MessagesCoordinator.vue": () => __vitePreload(() => import("./MessagesCoordinator.js"), true ? ["MessagesCoordinator.js","vue-dropzone.js","index.js"] : void 0), "./views/Settings.vue": () => __vitePreload(() => import("./Settings.js"), true ? ["Settings.js","Translations.js","index.js","vue-dropzone.js","editor.js","WorkflowSettings.js"] : void 0), "./views/Workflows.vue": () => __vitePreload(() => import("./Workflows.js"), true ? ["Workflows.js","List.js","Skeleton.js"] : void 0), "./views/addCampaign.vue": () => __vitePreload(() => import("./addCampaign.js").then((n) => n.b), true ? ["addCampaign.js","editor.js"] : void 0), "./views/addEmail.vue": () => __vitePreload(() => import("./addEmail.js"), true ? ["addEmail.js","IncrementalSelect.js","email.js","editor.js"] : void 0) }), `./views/${componentName}.vue`);
                 }
               })
             },
@@ -43628,20 +43628,7 @@ if (document) {
         const globalStore2 = useGlobalStore();
         globalStore2.initAttachmentPath(datas.base + "/images/emundus/files/");
       }
-      {
-        app.config.productionTip = false;
-        app.config.devtools = true;
-        app.config.performance = true;
-      }
       app.mount(elementId);
-      {
-        const version2 = app.version;
-        const devtools2 = window.__VUE_DEVTOOLS_GLOBAL_HOOK__;
-        if (devtools2) {
-          devtools2.enabled = true;
-          devtools2.emit("app:init", app, version2, {});
-        }
-      }
     }
   }
 }

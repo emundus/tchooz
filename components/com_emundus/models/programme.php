@@ -444,7 +444,7 @@ class EmundusModelProgramme extends ListModel
 	 *
 	 * @since version 1.0
 	 */
-	function getAllPrograms($lim = 'all', $page = 0, $filter = null, $sort = 'DESC', $recherche = null, $user = null)
+	function getAllPrograms($lim = 'all', $page = 0, $filter = null, string $sort = 'DESC', $recherche = '', $user = null, $category = '')
 	{
 		if(empty($user)) {
 			$user = $this->_user;
@@ -499,8 +499,7 @@ class EmundusModelProgramme extends ListModel
 			else {
 				$rechercheLbl      = $this->_db->quoteName('p.label') . ' LIKE ' . $this->_db->quote('%' . $recherche . '%');
 				$rechercheNotes    = $this->_db->quoteName('p.notes') . ' LIKE ' . $this->_db->quote('%' . $recherche . '%');
-				$rechercheCategory = $this->_db->quoteName('p.programmes') . ' LIKE ' . $this->_db->quote('%' . $recherche . '%');
-				$fullRecherche     = $rechercheLbl . ' OR ' . $rechercheNotes . ' OR ' . $rechercheCategory;
+				$fullRecherche     = $rechercheLbl . ' OR ' . $rechercheNotes;
 
 				$current_lang_tag = $this->app->getLanguage()->getTag();
 				$subquery = $this->_db->getQuery(true);
@@ -521,8 +520,13 @@ class EmundusModelProgramme extends ListModel
 			}
 
 			$query->where($filterDate)
-				->where($fullRecherche)
-				->andWhere($this->_db->quoteName('p.code') . ' IN (' . implode(',', $this->_db->quote($programs)) . ')')
+				->where($fullRecherche);
+
+			if (!empty($category)) {
+				$query->andWhere($this->_db->quoteName('p.programmes') . ' LIKE ' . $this->_db->quote($category));
+			}
+
+			$query->andWhere($this->_db->quoteName('p.code') . ' IN (' . implode(',', $this->_db->quote($programs)) . ')')
 				->group($sortDb)
 				->order($sortDb . $sort);
 

@@ -169,15 +169,14 @@ class EmundusControllerProgramme extends BaseController
 		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-
-
-			$filter    = $this->input->getString('filter');
-			$sort      = $this->input->getString('sort');
-			$recherche = $this->input->getString('recherche');
+			$filter    = $this->input->getString('filter', null);
+			$sort      = $this->input->getString('sort', 'DESC');
+			$recherche = $this->input->getString('recherche', '');
+			$category  = $this->input->getString('category', '');
 			$lim       = $this->input->getInt('lim', 0);
-			$page      = $this->input->getInt('page');
+			$page      = $this->input->getInt('page', 0);
 
-			$programs = $this->m_programme->getAllPrograms($lim, $page, $filter, $sort, $recherche);
+			$programs = $this->m_programme->getAllPrograms($lim, $page, $filter, $sort, $recherche, $this->_user, $category);
 
 			if (count((array) $programs) > 0) {
 				foreach ($programs['datas'] as $key => $program) {
