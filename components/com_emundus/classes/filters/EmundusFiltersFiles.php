@@ -393,8 +393,14 @@ class EmundusFiltersFiles extends EmundusFilters
 
 			if (!empty($this->user_programs))
 			{
+				$label = 'label';
+
+				if ($config['filter_programs_display_category']) {
+					$label = 'CONCAT(label, " (" , programmes, ")")';
+				}
+
 				$query->clear()
-					->select('id as value, label, 0 as count')
+					->select('id as value, ' . $label . ' as label, 0 as count')
 					->from('#__emundus_setup_programmes')
 					->where('published = 1')
 					->andWhere('id IN (' . implode(',', $this->user_programs) . ')');
