@@ -2593,7 +2593,7 @@ class EmundusModelEvaluation extends JModelList
 					->leftJoin($this->db->quoteName('#__emundus_setup_letters_repeat_training', 'jeslrt') . ' ON ' . $this->db->quoteName('jesl.id') . ' = ' . $this->db->quoteName('jeslrt.parent_id'))
 					->leftJoin($this->db->quoteName('#__emundus_setup_letters_repeat_campaign', 'jeslrc') . ' ON ' . $this->db->quoteName('jesl.id') . ' = ' . $this->db->quoteName('jeslrc.parent_id'))
 					->where($this->db->quoteName('jeslrs.status') . ' = ' . $fnum_infos['status'])
-					->andWhere($this->db->quoteName('jeslrt.training') . ' = ' . $this->db->quote($fnum_infos['training']) . ' OR ' . $this->db->quoteName('jeslrc.campaign') . ' = ' . $this->db->quote($fnum_infos['id']))
+					->andWhere($this->db->quoteName('jeslrt.training') . ' = ' . $this->db->quote($fnum_infos['training']) . ' OR ' . $this->db->quoteName('jeslrc.campaign') . ' = ' . $this->db->quote($fnum_infos['id']) .  ' OR jesl.for_all = 1')
 					->andWhere($this->db->quoteName('jesl.attachment_id') . ' IN (' . implode(',', $templates) . ')')
 					->group($this->db->quoteName('jesl.id'))
 					->order('id ASC');
