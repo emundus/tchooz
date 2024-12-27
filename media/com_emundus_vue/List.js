@@ -117,7 +117,9 @@ const _sfc_main = {
       ],
       searches: {},
       filters: {},
-      alertBannerDisplayed: false
+      alertBannerDisplayed: false,
+      orderBy: null,
+      order: "DESC"
     };
   },
   created() {
@@ -204,6 +206,11 @@ const _sfc_main = {
         }
       });
     },
+    orderByColumn(column) {
+      this.orderBy = column;
+      this.order = this.order === "ASC" ? "DESC" : "ASC";
+      this.getListItems(1, this.selectedListTab);
+    },
     getListItems(page = 1, tab = null) {
       if (tab === null) {
         this.loading.tabs = true;
@@ -231,6 +238,10 @@ const _sfc_main = {
             let url = "index.php?option=com_emundus&controller=" + tab2.controller + "&task=" + tab2.getter + "&lim=" + this.numberOfItemsToDisplay + "&page=" + page;
             if (this.searches[tab2.key].search !== "") {
               url += "&recherche=" + this.searches[tab2.key].search;
+            }
+            if (this.orderBy !== null && this.orderBy !== "") {
+              url += "&order_by=" + this.orderBy;
+              url += "&sort=" + this.order;
             }
             if (typeof this.filters[tab2.key] !== "undefined") {
               this.filters[tab2.key].forEach((filter) => {
@@ -439,6 +450,7 @@ const _sfc_main = {
       let selected = false;
       if (this.selectedListTab !== tabKey) {
         if (this.currentList.tabs.find((tab) => tab.key === tabKey) !== "undefined") {
+          this.orderBy = null;
           this.selectedListTab = tabKey;
           sessionStorage.setItem("tchooz_selected_tab/" + document.location.hostname, tabKey);
           selected = true;
@@ -546,8 +558,9 @@ const _sfc_main = {
       let items = typeof this.items[this.selectedListTab] !== "undefined" ? this.items[this.selectedListTab] : [];
       if (items.length > 0 && items[0].additional_columns && items[0].additional_columns.length > 0) {
         items[0].additional_columns.forEach((column) => {
+          console.log(column);
           if (column.display === "all" || column.display === this.viewType) {
-            columns.push(column.key);
+            columns.push(column);
           }
         });
       }
@@ -636,29 +649,31 @@ const _hoisted_26 = {
   key: 0,
   id: "list-items"
 };
-const _hoisted_27 = { key: 0 };
-const _hoisted_28 = ["id"];
-const _hoisted_29 = ["onClick"];
-const _hoisted_30 = ["title"];
-const _hoisted_31 = ["innerHTML"];
-const _hoisted_32 = { key: 1 };
-const _hoisted_33 = ["onClick", "innerHTML"];
-const _hoisted_34 = ["innerHTML"];
-const _hoisted_35 = {
+const _hoisted_27 = ["onClick"];
+const _hoisted_28 = { key: 1 };
+const _hoisted_29 = { key: 0 };
+const _hoisted_30 = ["id"];
+const _hoisted_31 = ["onClick"];
+const _hoisted_32 = ["title"];
+const _hoisted_33 = ["innerHTML"];
+const _hoisted_34 = { key: 1 };
+const _hoisted_35 = ["onClick", "innerHTML"];
+const _hoisted_36 = ["innerHTML"];
+const _hoisted_37 = {
   key: 0,
   class: "tw-w-full tw-mt-1.5 tw-mb-3"
 };
-const _hoisted_36 = { class: "actions" };
-const _hoisted_37 = ["onClick"];
-const _hoisted_38 = { class: "tw-flex tw-items-center tw-gap-2" };
+const _hoisted_38 = { class: "actions" };
 const _hoisted_39 = ["onClick"];
-const _hoisted_40 = ["onClick"];
-const _hoisted_41 = {
+const _hoisted_40 = { class: "tw-flex tw-items-center tw-gap-2" };
+const _hoisted_41 = ["onClick"];
+const _hoisted_42 = ["onClick"];
+const _hoisted_43 = {
   style: { "list-style-type": "none", "margin": "0", "padding-left": "0px" },
   class: "em-flex-col-center"
 };
-const _hoisted_42 = ["onClick"];
-const _hoisted_43 = ["innerHTML"];
+const _hoisted_44 = ["onClick"];
+const _hoisted_45 = ["innerHTML"];
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_skeleton = resolveComponent("skeleton");
   const _component_popover = resolveComponent("popover");
@@ -825,7 +840,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         }), 64))
       ], 2)) : (openBlock(), createElementBlock("div", _hoisted_25, [
         $options.displayedItems.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_26, [
-          $data.viewType != "gantt" ? (openBlock(), createElementBlock("table", {
+          $data.viewType !== "gantt" ? (openBlock(), createElementBlock("table", {
             key: 0,
             id: "list-table",
             class: normalizeClass({ "blocs": $data.viewType === "blocs" })
@@ -834,9 +849,17 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               createBaseVNode("tr", null, [
                 createBaseVNode("th", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_LABEL_" + $options.currentTab.key.toUpperCase()) == "COM_EMUNDUS_ONBOARD_LABEL_" + $options.currentTab.key.toUpperCase() ? _ctx.translate("COM_EMUNDUS_ONBOARD_LABEL") : _ctx.translate("COM_EMUNDUS_ONBOARD_LABEL_" + $options.currentTab.key.toUpperCase())), 1),
                 (openBlock(true), createElementBlock(Fragment, null, renderList($options.additionalColumns, (column) => {
-                  return openBlock(), createElementBlock("th", { key: column }, toDisplayString(column), 1);
+                  return openBlock(), createElementBlock("th", {
+                    key: column.key
+                  }, [
+                    column.sort_by ? (openBlock(), createElementBlock("span", {
+                      key: 0,
+                      class: "tw-cursor-pointer",
+                      onClick: ($event) => $options.orderByColumn(column.sort_by)
+                    }, toDisplayString(column.key), 9, _hoisted_27)) : (openBlock(), createElementBlock("span", _hoisted_28, toDisplayString(column.key), 1))
+                  ]);
                 }), 128)),
-                $options.tabActionsPopover && $options.tabActionsPopover.length > 0 ? (openBlock(), createElementBlock("th", _hoisted_27, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ACTIONS")), 1)) : createCommentVNode("", true)
+                $options.tabActionsPopover && $options.tabActionsPopover.length > 0 ? (openBlock(), createElementBlock("th", _hoisted_29, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ACTIONS")), 1)) : createCommentVNode("", true)
               ])
             ]),
             createBaseVNode("tbody", null, [
@@ -853,8 +876,8 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                     createBaseVNode("span", {
                       class: normalizeClass({ "tw-font-semibold tw-mb-4 tw-text-ellipsis tw-overflow-hidden": $data.viewType === "blocs" }),
                       title: item.label[$data.params.shortlang]
-                    }, toDisplayString(item.label[$data.params.shortlang]), 11, _hoisted_30)
-                  ], 8, _hoisted_29),
+                    }, toDisplayString(item.label[$data.params.shortlang]), 11, _hoisted_32)
+                  ], 8, _hoisted_31),
                   (openBlock(true), createElementBlock(Fragment, null, renderList($options.displayedColumns(item, $data.viewType), (column) => {
                     return openBlock(), createElementBlock("td", {
                       class: "columns",
@@ -869,35 +892,35 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                             key: tag.key,
                             class: normalizeClass(["tw-mr-2 tw-h-max", tag.classes]),
                             innerHTML: tag.value
-                          }, null, 10, _hoisted_31);
+                          }, null, 10, _hoisted_33);
                         }), 128))
-                      ], 2)) : column.hasOwnProperty("long_value") ? (openBlock(), createElementBlock("div", _hoisted_32, [
+                      ], 2)) : column.hasOwnProperty("long_value") ? (openBlock(), createElementBlock("div", _hoisted_34, [
                         createBaseVNode("span", {
                           onClick: ($event) => $options.displayLongValue(column.long_value),
                           class: normalizeClass(["tw-mt-2 tw-mb-2", column.classes]),
                           innerHTML: column.value
-                        }, null, 10, _hoisted_33)
+                        }, null, 10, _hoisted_35)
                       ])) : (openBlock(), createElementBlock("span", {
                         key: 2,
                         class: normalizeClass(["tw-mt-2 tw-mb-2", column.classes]),
                         innerHTML: column.value
-                      }, null, 10, _hoisted_34))
+                      }, null, 10, _hoisted_36))
                     ]);
                   }), 128)),
                   createBaseVNode("div", null, [
-                    $data.viewType === "blocs" ? (openBlock(), createElementBlock("hr", _hoisted_35)) : createCommentVNode("", true),
-                    createBaseVNode("td", _hoisted_36, [
+                    $data.viewType === "blocs" ? (openBlock(), createElementBlock("hr", _hoisted_37)) : createCommentVNode("", true),
+                    createBaseVNode("td", _hoisted_38, [
                       $data.viewType === "blocs" && $options.editAction ? (openBlock(), createElementBlock("a", {
                         key: 0,
                         onClick: ($event) => $options.onClickAction($options.editAction, item.id),
                         class: "tw-btn-primary tw-text-sm tw-cursor-pointer tw-w-auto"
-                      }, toDisplayString(_ctx.translate($options.editAction.label)), 9, _hoisted_37)) : createCommentVNode("", true),
-                      createBaseVNode("div", _hoisted_38, [
+                      }, toDisplayString(_ctx.translate($options.editAction.label)), 9, _hoisted_39)) : createCommentVNode("", true),
+                      createBaseVNode("div", _hoisted_40, [
                         $options.previewAction ? (openBlock(), createElementBlock("span", {
                           key: 0,
                           class: "material-symbols-outlined tw-cursor-pointer",
                           onClick: ($event) => $options.onClickPreview(item)
-                        }, "visibility", 8, _hoisted_39)) : createCommentVNode("", true),
+                        }, "visibility", 8, _hoisted_41)) : createCommentVNode("", true),
                         (openBlock(true), createElementBlock(Fragment, null, renderList($options.iconActions, (action) => {
                           return openBlock(), createElementBlock("span", {
                             key: action.name,
@@ -907,7 +930,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                               "tw-hidden": !(typeof action.showon === "undefined" || $options.evaluateShowOn(item, action.showon))
                             }]),
                             onClick: ($event) => $options.onClickAction(action, item.id)
-                          }, toDisplayString(action.icon), 11, _hoisted_40);
+                          }, toDisplayString(action.icon), 11, _hoisted_42);
                         }), 128)),
                         $options.tabActionsPopover && $options.tabActionsPopover.length > 0 && $options.filterShowOnActions($options.tabActionsPopover, item).length ? (openBlock(), createBlock(_component_popover, {
                           key: 1,
@@ -915,13 +938,13 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                           class: "custom-popover-arrow"
                         }, {
                           default: withCtx(() => [
-                            createBaseVNode("ul", _hoisted_41, [
+                            createBaseVNode("ul", _hoisted_43, [
                               (openBlock(true), createElementBlock(Fragment, null, renderList($options.tabActionsPopover, (action) => {
                                 return openBlock(), createElementBlock("li", {
                                   key: action.name,
                                   class: normalizeClass([{ "tw-hidden": !(typeof action.showon === "undefined" || $options.evaluateShowOn(item, action.showon)) }, "tw-cursor-pointer tw-p-2 tw-text-base"]),
                                   onClick: ($event) => $options.onClickAction(action, item.id)
-                                }, toDisplayString(_ctx.translate(action.label)), 11, _hoisted_42);
+                                }, toDisplayString(_ctx.translate(action.label)), 11, _hoisted_44);
                               }), 128))
                             ])
                           ]),
@@ -930,7 +953,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                       ])
                     ])
                   ])
-                ], 10, _hoisted_28);
+                ], 10, _hoisted_30);
               }), 128))
             ])
           ], 2)) : (openBlock(), createBlock(_component_Gantt, {
@@ -943,7 +966,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           id: "empty-list",
           class: "noneDiscover tw-text-center",
           innerHTML: $options.noneDiscoverTranslation
-        }, null, 8, _hoisted_43))
+        }, null, 8, _hoisted_45))
       ]))
     ]))
   ], 2);
