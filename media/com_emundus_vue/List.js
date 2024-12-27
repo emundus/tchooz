@@ -852,10 +852,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                   return openBlock(), createElementBlock("th", {
                     key: column.key
                   }, [
-                    column.sort_by ? (openBlock(), createElementBlock("span", {
+                    column.order_by ? (openBlock(), createElementBlock("span", {
                       key: 0,
                       class: "tw-cursor-pointer",
-                      onClick: ($event) => $options.orderByColumn(column.sort_by)
+                      onClick: ($event) => $options.orderByColumn(column.order_by)
                     }, toDisplayString(column.key), 9, _hoisted_27)) : (openBlock(), createElementBlock("span", _hoisted_28, toDisplayString(column.key), 1))
                   ]);
                 }), 128)),

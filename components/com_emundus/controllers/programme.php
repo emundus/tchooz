@@ -236,25 +236,29 @@ class EmundusControllerProgramme extends BaseController
 							'key'     => Text::_('COM_EMUNDUS_ONBOARD_PROGCODE'),
 							'value'   => $program->code,
 							'classes' => 'em-font-size-14 em-neutral-700-color',
-							'display' => 'all'
+							'display' => 'all',
+							'order_by' => 'p.code'
 						],
 						[
 							'key'     => Text::_('COM_EMUNDUS_ONBOARD_CATEGORY'),
 							'value'   => Text::_($program->programmes),
 							'classes' => 'em-font-size-14 em-neutral-700-color',
-							'display' => 'all'
+							'display' => 'all',
+							'order_by' => 'p.programmes'
 						],
 						[
 							'key'     => Text::_('COM_EMUNDUS_ONBOARD_STATE'),
 							'value'   => $program->published ? Text::_('PUBLISHED') : Text::_('COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH'),
 							'classes' => $program->published ? 'em-p-5-12 em-bg-main-100 em-text-neutral-900 em-font-size-14 em-border-radius' : 'em-p-5-12 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius',
-							'display' => 'table'
+							'display' => 'table',
+							'order_by' => 'p.published'
 						],
 						[
 							'key'     => Text::_('COM_EMUNDUS_ONBOARD_PROGRAM_APPLY_ONLINE'),
 							'value'   => $program->apply_online ? Text::_('JYES') : Text::_('JNO'),
 							'classes' => '',
-							'display' => 'table'
+							'display' => 'table',
+							'order_by' => 'p.apply_online'
 						],
 						[
 							'type'    => 'tags',

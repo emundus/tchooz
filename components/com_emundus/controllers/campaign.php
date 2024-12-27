@@ -255,14 +255,14 @@ class EmundusControllerCampaign extends BaseController
 							'value'   => $start_date,
 							'classes' => '',
 							'display' => 'table',
-							'sort_by' => 'sc.start_date'
+							'order_by' => 'sc.start_date'
 						],
 						[
 							'key'     => Text::_('COM_EMUNDUS_ONBOARD_END_DATE'),
 							'value'   => $end_date,
 							'classes' => '',
 							'display' => 'table',
-							'sort_by' => 'sc.end_date'
+							'order_by' => 'sc.end_date'
 						],
 						[
 							'key'     => Text::_('COM_EMUNDUS_ONBOARD_STATE'),
@@ -274,14 +274,14 @@ class EmundusControllerCampaign extends BaseController
 							'key'     => Text::_('COM_EMUNDUS_ONBOARD_PROGRAM'),
 							'value'   => $campaign->program_label,
 							'display' => 'table',
-							'sort_by' => 'sp.label'
+							'order_by' => 'sp.label'
 						],
 						[
 							'key'     => Text::_('COM_EMUNDUS_ONBOARD_NB_FILES'),
 							'value'   => '<a target="_blank" class="em-profile-color hover:tw-font-semibold tw-font-semibold em-text-underline" href="/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=' . $campaign->id . '" style="line-height: unset;font-size: unset;">' . $campaign->nb_files . '</a>',
 							'classes' => 'go-to-campaign-link',
 							'display' => 'table',
-							'sort_by' => 'nb_files'
+							'order_by' => 'nb_files'
 						],
 						[
 							'key'     => Text::_('COM_EMUNDUS_ONBOARD_PROGRAM'),

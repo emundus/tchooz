@@ -122,7 +122,7 @@
               <th>{{ translate('COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase()) == ('COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase()) ?
                   translate('COM_EMUNDUS_ONBOARD_LABEL') : translate('COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase()) }}</th>
               <th v-for="column in additionalColumns" :key="column.key">
-                <span v-if="column.sort_by" class="tw-cursor-pointer" @click="orderByColumn(column.sort_by)">{{ column.key }}</span>
+                <span v-if="column.order_by" class="tw-cursor-pointer" @click="orderByColumn(column.order_by)">{{ column.key }}</span>
                 <span v-else>{{ column.key }}</span>
               </th>
               <th v-if="tabActionsPopover && tabActionsPopover.length > 0">{{
