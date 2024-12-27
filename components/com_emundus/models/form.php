@@ -2229,7 +2229,7 @@ class EmundusModelForm extends JModelList
 
 	public function getAssociatedCampaign($profile_id, $user_id = null)
 	{
-		$campaigns = [];
+		$associated_campaigns = [];
 
 		if(empty($user_id)) {
 			$user_id = $this->app->getIdentity()->id;
@@ -2244,25 +2244,15 @@ class EmundusModelForm extends JModelList
 		{
 			$query = $this->db->getQuery(true);
 
-			$query->select([
-				'sc.id as id',
-				'sc.label as label'
-			])
+			$query->select(['sc.id as id', 'sc.label as label'])
 				->from($this->db->quoteName('#__emundus_setup_campaigns', 'sc'))
-				->leftJoin(
-					$this->db->quoteName('#__emundus_setup_programmes', 'sp') .
-					' ON ' .
-					$this->db->quoteName('sp.code') .
-					' LIKE ' .
-					$this->db->quoteName('sc.training')
-				)
-				->where($this->db->quoteName('sc.training') . ' IN (' . implode(',', $this->db->quote($programs)) . ')');
+				->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'sp') . ' ON ' . $this->db->quoteName('sp.code') . ' LIKE ' . $this->db->quoteName('sc.training'))
+				->where($this->db->quoteName('sc.training') . ' IN (' . implode(',', $this->db->quote($programs)) . ')')
+				->andWhere('sc.profile_id = ' . $profile_id);
 
 			try {
 				$this->db->setQuery($query);
-				$campaigns = $this->db->loadObjectList();
-
-				$campaigns = $this->db->loadObjectList();
+				$associated_campaigns = $this->db->loadObjectList();
 			}
 			catch (Exception $e) {
 				Log::add('component/com_emundus/models/form | Error at getting campaigns link to the form ' . $profile_id . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
@@ -2271,27 +2261,25 @@ class EmundusModelForm extends JModelList
 			/**
 			 * campaigns can be associated by workflow step
 			 */
-			$campaign_ids = array_column($campaigns, 'id');
 			$query->clear()
 				->select('DISTINCT esc.id, esc.label')
 				->from($this->db->quoteName('#__emundus_setup_campaigns', 'esc'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_programmes','esp') . ' ON esp.code = esc.training')
 				->leftJoin($this->db->quoteName('#__emundus_setup_workflows_programs','eswp') . ' ON eswp.program_id = esp.id')
 				->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps','esws') . ' ON esws.workflow_id = eswp.workflow_id')
-				->where($this->db->quoteName('esws.profile_id') . ' = ' . $this->db->quote($profile_id));
-
-			if (!empty($campaign_ids))  {
-				$query->andWhere($this->db->quoteName('esc.id') . ' NOT IN (' . implode(',', $campaign_ids) . ')');
-			}
-
-			$query->andWhere($this->db->quoteName('esc.training') . ' IN (' . implode(',', $this->db->quote($programs)) . ')');
+				->where($this->db->quoteName('esws.profile_id') . ' = ' . $this->db->quote($profile_id))
+				->andWhere($this->db->quoteName('esc.training') . ' IN (' . implode(',', $this->db->quote($programs)) . ')');
 
 			try {
 				$this->db->setQuery($query);
 				$workflow_campaigns = $this->db->loadObjectList();
 
 				foreach ($workflow_campaigns as $campaign) {
-					$campaigns[] = $campaign;
+					$associated_campaign_ids = array_column($associated_campaigns, 'id');
+
+					if (!in_array($campaign->id, $associated_campaign_ids)) {
+						$associated_campaigns[] = $campaign;
+					}
 				}
 			}
 			catch (Exception $e) {
@@ -2299,7 +2287,7 @@ class EmundusModelForm extends JModelList
 			}
 		}
 
-		return $campaigns;
+		return $associated_campaigns;
 	}
 
 	public function getAssociatedProgram($form_id)
