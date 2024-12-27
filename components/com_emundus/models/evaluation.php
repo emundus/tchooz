@@ -2558,7 +2558,7 @@ class EmundusModelEvaluation extends JModelList
 				->leftJoin($this->db->quoteName('#__emundus_setup_letters_repeat_training', 'jeslrt') . ' ON ' . $this->db->quoteName('jesl.id') . ' = ' . $this->db->quoteName('jeslrt.parent_id'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_letters_repeat_campaign', 'jeslrc') . ' ON ' . $this->db->quoteName('jesl.id') . ' = ' . $this->db->quoteName('jeslrc.parent_id'))
 				->where($this->db->quoteName('jeslrs.status') . ' IN (' . implode(',', $status) . ')')
-				->andWhere($this->db->quoteName('jeslrt.training') . ' IN (' . implode(',', $this->db->quote($programs)) . ') OR ' . $this->db->quoteName('jeslrc.campaign') . ' IN (' . implode(',', $this->db->quote($campaigns)) . ')');
+				->andWhere($this->db->quoteName('jeslrt.training') . ' IN (' . implode(',', $this->db->quote($programs)) . ') OR ' . $this->db->quoteName('jeslrc.campaign') . ' IN (' . implode(',', $this->db->quote($campaigns)) . ') OR jesl.for_all = 1');
 
 			$this->db->setQuery($query);
 
