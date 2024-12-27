@@ -392,7 +392,7 @@ $this->checkoutHelper->displayMessages('cart');
                                             data-characteristic-id="<?php echo $product_characteristic->variant_characteristic_id; ?>"
                                             data-parentcharacteristicid="<?php echo $product_characteristic->characteristic_parent_id; ?>"
                                         >
-                                            <?php echo $product_characteristic->characteristic_value; ?>
+                                            <?php echo $product_characteristic->characteristic_value . ' (' . number_format($product_characteristic->price_value, 2) . ' ' . $product_characteristic->currency_symbol . ')'; ?>
                                         </option>
                                         <?php
                                     }
