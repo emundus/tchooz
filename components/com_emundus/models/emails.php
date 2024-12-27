@@ -1933,7 +1933,7 @@ class EmundusModelEmails extends JModelList
 	 *
 	 * @since version 1.0
 	 */
-	function getAllEmails($lim, $page, $filter, $sort, $recherche, $category = '')
+	function getAllEmails($lim, $page, $filter, $sort, $recherche, $category = '', $order_by = 'se.id')
 	{
 		$query = $this->_db->getQuery(true);
 
@@ -1984,8 +1984,8 @@ class EmundusModelEmails extends JModelList
 			$query->andWhere($this->_db->quoteName('se.category') . ' = ' . $this->_db->quote($category));
 		}
 
-		$query->group($sortDb)
-			->order($sortDb . $sort);
+		$query->group('se.id')
+			->order($order_by . ' ' . $sort);
 
 		try {
 			$this->_db->setQuery($query);

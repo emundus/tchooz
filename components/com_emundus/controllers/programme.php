@@ -176,6 +176,7 @@ class EmundusControllerProgramme extends BaseController
 			$lim       = $this->input->getInt('lim', 0);
 			$page      = $this->input->getInt('page', 0);
 			$order_by  = $this->input->getString('order_by', 'p.id');
+			$order_by  = $order_by == 'label' ? 'p.label' : $order_by;
 
 			$programs = $this->m_programme->getAllPrograms($lim, $page, $filter, $sort, $recherche, $this->_user, $category, $order_by);
 

@@ -190,6 +190,7 @@ class EmundusControllerCampaign extends BaseController
 			$program   = $this->input->getString('program', 'all');
 			$session   = $this->input->getString('session', 'all');
 			$order_by  = $this->input->getString('order_by', 'sc.id');
+			$order_by  = $order_by == 'label' ? 'sc.label' : $order_by;
 
 			$campaigns = $this->m_campaign->getAssociatedCampaigns($filter, $sort, $recherche, $lim, $page, $program, $session, $order_by);
 

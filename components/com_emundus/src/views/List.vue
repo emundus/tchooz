@@ -119,8 +119,12 @@
           <table v-if="viewType !== 'gantt'"  id="list-table" :class="{'blocs': viewType === 'blocs'}">
             <thead>
             <tr>
-              <th>{{ translate('COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase()) == ('COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase()) ?
-                  translate('COM_EMUNDUS_ONBOARD_LABEL') : translate('COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase()) }}</th>
+              <th class="tw-cursor-pointer" :class="{'tw-flex tw-flex-row': 'label' === orderBy}" @click="orderByColumn('label')">
+                <span v-if="'label' === orderBy && order === 'ASC'" class="material-symbols-outlined">arrow_upward</span>
+                <span v-else-if="'label' === orderBy && order === 'DESC'" class="material-symbols-outlined">arrow_downward</span>
+                {{ translate('COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase()) == ('COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase()) ?
+                  translate('COM_EMUNDUS_ONBOARD_LABEL') : translate('COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase()) }}
+              </th>
               <th v-for="column in additionalColumns" :key="column.key" :class="{'tw-flex tw-flex-row': column.order_by === orderBy}">
                 <span v-if="column.order_by === orderBy && order === 'ASC'" class="material-symbols-outlined">arrow_upward</span>
                 <span v-else-if="column.order_by === orderBy && order === 'DESC'" class="material-symbols-outlined">arrow_downward</span>
