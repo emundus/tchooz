@@ -770,8 +770,6 @@ export default {
       // eslint-disable-next-line valid-typeof
       if (items.length > 0 && items[0].additional_columns && items[0].additional_columns.length > 0) {
         items[0].additional_columns.forEach((column) => {
-          console.log(column);
-
           if (column.display === 'all' || (column.display === this.viewType)) {
             columns.push(column);
           }
