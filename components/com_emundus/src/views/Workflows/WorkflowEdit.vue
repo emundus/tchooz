@@ -1,10 +1,11 @@
 <template>
   <div class="tw-m-2">
-    <div class="tw-flex tw-items-center tw-cursor-pointer tw-mb-4" @click="goBack">
+    <div class="tw-flex tw-items-center tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300" @click="goBack">
       <span class="material-icons-outlined">navigate_before</span>
       <span class="tw-ml-2 tw-text-neutral-900">{{ translate('BACK') }}</span>
     </div>
-    <div id="header">
+
+    <div id="header" class="tw-mt-4">
       <div class="tw-flex tw-flex-row tw-justify-between">
         <input id="workflow-label" name="workflow-label" class="!tw-w-[350px]" type="text" v-model="workflow.label" />
         <button class="tw-btn-primary tw-flex tw-items-center tw-gap-1" @click="save">

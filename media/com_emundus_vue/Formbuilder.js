@@ -8952,12 +8952,12 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         createBaseVNode("header", _hoisted_3, [
           createBaseVNode("div", _hoisted_4, [
             createBaseVNode("p", {
-              class: "tw-flex tw-items-center tw-cursor-pointer",
+              class: "tw-flex tw-items-center tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300 tw-ml-2",
               onClick: _cache[0] || (_cache[0] = (...args) => $options.clickGoBack && $options.clickGoBack(...args))
             }, [
               _cache[26] || (_cache[26] = createBaseVNode("span", {
                 id: "go-back",
-                class: "material-symbols-outlined tw-text-neutral-600 tw-py-3 tw-pl-5 tw-pr-1 em-pointer"
+                class: "material-symbols-outlined tw-text-neutral-600 em-pointer tw-mr-1"
               }, " navigate_before ", -1)),
               createTextVNode(" " + toDisplayString(_ctx.translate("COM_EMUNDUS_ACTIONS_BACK")), 1)
             ]),

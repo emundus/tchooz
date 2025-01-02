@@ -3709,7 +3709,8 @@ ul.unstyled.em-linkForgot li a {
 .gantry:not(.applicant-form):not(.files-board).com_emundus.view-campaigns,
 .gantry:not(.applicant-form):not(.files-board).com_emundus.layout-addnextcampaign,
 .gantry:not(.applicant-form):not(.files-board).com_emundus.view-emails,
-.gantry:not(.applicant-form):not(.files-board).com_emundus.view-form{
+.gantry:not(.applicant-form):not(.files-board).com_emundus.view-form,
+.gantry:not(.applicant-form):not(.files-board).com_emundus.view-workflows {
   #g-container-main {
     padding-left: 76px;
   }

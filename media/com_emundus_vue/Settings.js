@@ -1447,7 +1447,7 @@ function _sfc_render$g(_ctx, _cache, $props, $setup, $data, $options) {
       createBaseVNode("ul", _hoisted_1$g, [
         createBaseVNode("li", _hoisted_2$g, [
           createBaseVNode("span", {
-            class: "tw-flex tw-items-center tw-rounded-lg tw-group tw-cursor-pointer",
+            class: "tw-flex tw-items-center tw-group tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300",
             onClick: _cache[0] || (_cache[0] = ($event) => $options.clickReturn())
           }, [
             _cache[4] || (_cache[4] = createBaseVNode("span", { class: "material-symbols-outlined tw-text-neutral-600 tw-user-select-none" }, "navigate_before", -1)),

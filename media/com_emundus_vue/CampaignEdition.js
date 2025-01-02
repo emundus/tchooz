@@ -1076,7 +1076,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const campaignSteps = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1]]);
-const CampaignEdition_vue_vue_type_style_index_0_scoped_109d6ef3_lang = "";
+const CampaignEdition_vue_vue_type_style_index_0_scoped_94cc33d6_lang = "";
 const _sfc_main = {
   name: "CampaignEdition",
   components: {
@@ -1372,7 +1372,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     createBaseVNode("div", _hoisted_2, [
       createBaseVNode("div", null, [
         createBaseVNode("div", {
-          class: "tw-flex tw-items-center tw-cursor-pointer",
+          class: "tw-flex tw-items-center tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300",
           onClick: _cache[0] || (_cache[0] = ($event) => $options.redirectJRoute("index.php?option=com_emundus&view=campaigns"))
         }, [
           _cache[2] || (_cache[2] = createBaseVNode("span", { class: "material-symbols-outlined tw-text-neutral-600" }, "navigate_before", -1)),
@@ -1464,7 +1464,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ]);
 }
-const CampaignEdition = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-109d6ef3"]]);
+const CampaignEdition = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-94cc33d6"]]);
 export {
   CampaignEdition as default
 };

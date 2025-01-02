@@ -41868,7 +41868,7 @@ var errors = {
     }
   }
 };
-const WorkflowEdit_vue_vue_type_style_index_0_scoped_baff65b0_lang = "";
+const WorkflowEdit_vue_vue_type_style_index_0_scoped_59e92169_lang = "";
 const _sfc_main$3 = {
   name: "WorkflowEdit",
   props: {
@@ -42278,7 +42278,10 @@ const _sfc_main$3 = {
 };
 const _hoisted_1$3 = { class: "tw-m-2" };
 const _hoisted_2$3 = { class: "tw-ml-2 tw-text-neutral-900" };
-const _hoisted_3$3 = { id: "header" };
+const _hoisted_3$3 = {
+  id: "header",
+  class: "tw-mt-4"
+};
 const _hoisted_4$3 = { class: "tw-flex tw-flex-row tw-justify-between" };
 const _hoisted_5$3 = { class: "tw-mt-4 tw-w-full tw-flex tw-flex-row tw-justify-between tw-items-center" };
 const _hoisted_6$3 = { key: 0 };
@@ -42390,7 +42393,7 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_draggable = resolveComponent("draggable");
   return openBlock(), createElementBlock("div", _hoisted_1$3, [
     createBaseVNode("div", {
-      class: "tw-flex tw-items-center tw-cursor-pointer tw-mb-4",
+      class: "tw-flex tw-items-center tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300",
       onClick: _cache[0] || (_cache[0] = (...args) => $options.goBack && $options.goBack(...args))
     }, [
       _cache[9] || (_cache[9] = createBaseVNode("span", { class: "material-icons-outlined" }, "navigate_before", -1)),
@@ -42656,7 +42659,7 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ]);
 }
-const WorkflowEdit = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-baff65b0"]]);
+const WorkflowEdit = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-59e92169"]]);
 const WorkflowEdit$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: WorkflowEdit

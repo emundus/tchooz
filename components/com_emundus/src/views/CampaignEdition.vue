@@ -3,7 +3,7 @@
     <div class="em-w-custom"></div>
     <div class="em-border-cards em-card-shadow tw-rounded em-white-bg em-p-24">
       <div>
-        <div class="tw-flex tw-items-center tw-cursor-pointer"
+        <div class="tw-flex tw-items-center tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300"
              @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
           <span class="material-symbols-outlined tw-text-neutral-600">navigate_before</span>
           <span class="tw-ml-2 tw-text-neutral-900">{{ translate('BACK') }}</span>
