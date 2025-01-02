@@ -873,7 +873,7 @@ class EmundusModelCampaign extends ListModel
 	 *
 	 * @since version 1.0
 	 */
-	function getAssociatedCampaigns($filter = '', $sort = 'DESC', $recherche = '', $lim = 25, $page = 0, $program = 'all', $session = 'all')
+	function getAssociatedCampaigns($filter = '', $sort = 'DESC', $recherche = '', $lim = 25, $page = 0, $program = 'all', $session = 'all', $order_by = 'sc.id')
 	{
 		$associated_campaigns = [];
 
@@ -895,8 +895,6 @@ class EmundusModelCampaign extends ListModel
 		if (empty($sort)) {
 			$sort = 'DESC';
 		}
-		$sortDb = 'sc.id ';
-
 		$date = new Date();
 
 		// Get affected programs
@@ -1001,8 +999,8 @@ class EmundusModelCampaign extends ListModel
 			if ($session !== 'all') {
 				$query->andWhere($this->_db->quoteName('year') . ' = ' . $this->_db->quote($session));
 			}
-			$query->group($sortDb)
-				->order($sortDb . $sort);
+			$query->group('sc.id')
+				->order($order_by . ' ' . $sort);
 
 			try {
 				$this->_db->setQuery($query);

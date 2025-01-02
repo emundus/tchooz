@@ -302,7 +302,7 @@ export default {
         });
     },
     async getPrograms() {
-      return await programmeService.getAllPrograms()
+      return await programmeService.getAllPrograms('', '', 0, 0, 'p.label', 'ASC')
         .then(response => {
           this.programsOptions = response.data.datas.map(program => {
             return {

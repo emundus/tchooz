@@ -1549,6 +1549,42 @@ class EmundusModelPayment extends JModelList
 		return $variant_product_id;
 	}
 
+	public function getHikashopProductVariantsAndCharacteristics(int $parent_product_id, int $hikashop_user_id = 0): array
+	{
+		$characteristics = [];
+
+		if (!empty($parent_product_id)) {
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
+
+			$query->select('hp.product_id, hp.product_name, hp.product_code, hv.variant_characteristic_id, hc.characteristic_value, hc.characteristic_parent_id, hprice.price_value, hcur.currency_symbol')
+				->from($db->quoteName('#__hikashop_product', 'hp'))
+				->leftJoin($db->quoteName('#__hikashop_variant', 'hv') . ' ON ' . $db->quoteName('hp.product_id') . ' = ' . $db->quoteName('hv.variant_product_id'))
+				->leftJoin($db->quoteName('#__hikashop_characteristic', 'hc') . ' ON ' . $db->quoteName('hv.variant_characteristic_id') . ' = ' . $db->quoteName('hc.characteristic_id'))
+				->leftJoin($db->quoteName('#__hikashop_price', 'hprice') . ' ON ' . $db->quoteName('hp.product_id') . ' = ' . $db->quoteName('hprice.price_product_id'))
+				->leftJoin($db->quoteName('#__hikashop_currency', 'hcur') . ' ON ' . $db->quoteName('hprice.price_currency_id') . ' = ' . $db->quoteName('hcur.currency_id'))
+				->where('hp.product_parent_id = ' . $parent_product_id)
+				->andWhere('hp.product_type = ' . $db->quote('variant'))
+				->andWhere('hp.product_published = 1')
+				->andWhere('hp.product_quantity > 0 OR hp.product_quantity = -1');
+
+			if (!empty($hikashop_user_id)) {
+				$query->where('hprice.price_users LIKE ' . $db->quote('%,' . $hikashop_user_id . ',%'));
+			}
+
+			$query->order('hc.characteristic_value DESC');
+
+			try {
+				$db->setQuery($query);
+				$characteristics = $db->loadObjectList();
+			} catch (Exception $e) {
+				Log::add('Error getting hikashop product variants and characteristics : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.payment');
+			}
+		}
+
+		return $characteristics;
+	}
+
 	/**
 	 * @param $cart hikashop cart
 	 * @param $product_ids array of hikashop product ids

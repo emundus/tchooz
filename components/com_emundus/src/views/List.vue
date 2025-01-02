@@ -116,12 +116,23 @@
 
       <div v-else>
         <div v-if="displayedItems.length > 0" id="list-items">
-          <table v-if="viewType != 'gantt'"  id="list-table" :class="{'blocs': viewType === 'blocs'}">
+          <table v-if="viewType !== 'gantt'"  id="list-table" :class="{'blocs': viewType === 'blocs'}">
             <thead>
             <tr>
-              <th>{{ translate('COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase()) == ('COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase()) ?
-                  translate('COM_EMUNDUS_ONBOARD_LABEL') : translate('COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase()) }}</th>
-              <th v-for="column in additionalColumns" :key="column"> {{ column }}</th>
+              <th class="tw-cursor-pointer" :class="{'tw-flex tw-flex-row': 'label' === orderBy}" @click="orderByColumn('label')">
+                <span v-if="'label' === orderBy && order === 'ASC'" class="material-symbols-outlined">arrow_upward</span>
+                <span v-else-if="'label' === orderBy && order === 'DESC'" class="material-symbols-outlined">arrow_downward</span>
+                {{ translate('COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase()) == ('COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase()) ?
+                  translate('COM_EMUNDUS_ONBOARD_LABEL') : translate('COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase()) }}
+              </th>
+              <th v-for="column in additionalColumns" :key="column.key" :class="{'tw-flex tw-flex-row': column.order_by === orderBy}">
+                <span v-if="column.order_by === orderBy && order === 'ASC'" class="material-symbols-outlined">arrow_upward</span>
+                <span v-else-if="column.order_by === orderBy && order === 'DESC'" class="material-symbols-outlined">arrow_downward</span>
+                <span v-if="column.order_by" class="tw-cursor-pointer" @click="orderByColumn(column.order_by)">
+                  {{ column.key }}
+                </span>
+                <span v-else>{{ column.key }}</span>
+              </th>
               <th v-if="tabActionsPopover && tabActionsPopover.length > 0">{{
                   translate('COM_EMUNDUS_ONBOARD_ACTIONS')
                 }}
@@ -257,7 +268,9 @@ export default {
       ],
       searches: {},
       filters: {},
-      alertBannerDisplayed: false
+      alertBannerDisplayed: false,
+      orderBy: null,
+      order: 'DESC'
     }
   },
   created() {
@@ -355,6 +368,11 @@ export default {
         }
       });
     },
+    orderByColumn(column) {
+      this.orderBy = column;
+      this.order = this.order === 'ASC' ? 'DESC' : 'ASC';
+      this.getListItems(1, this.selectedListTab);
+    },
     getListItems(page = 1, tab = null) {
       if (tab === null) {
         this.loading.tabs = true;
@@ -387,6 +405,12 @@ export default {
             if (this.searches[tab.key].search !== '') {
               url += '&recherche=' + this.searches[tab.key].search;
             }
+
+            if (this.orderBy !== null && this.orderBy !== '') {
+              url += '&order_by=' + this.orderBy;
+              url += '&sort=' + this.order;
+            }
+
             if (typeof this.filters[tab.key] !== 'undefined') {
               this.filters[tab.key].forEach(filter => {
                 if (filter.value !== '' && filter.value !== 'all') {
@@ -628,6 +652,7 @@ export default {
       if (this.selectedListTab !== tabKey) {
         // check if the tab exists
         if (this.currentList.tabs.find(tab => tab.key === tabKey) !== 'undefined') {
+          this.orderBy = null;
           this.selectedListTab = tabKey;
           sessionStorage.setItem('tchooz_selected_tab/' + document.location.hostname, tabKey);
           selected = true;
@@ -745,9 +770,8 @@ export default {
       // eslint-disable-next-line valid-typeof
       if (items.length > 0 && items[0].additional_columns && items[0].additional_columns.length > 0) {
         items[0].additional_columns.forEach((column) => {
-
           if (column.display === 'all' || (column.display === this.viewType)) {
-            columns.push(column.key);
+            columns.push(column);
           }
         });
       }

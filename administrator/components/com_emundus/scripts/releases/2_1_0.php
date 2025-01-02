@@ -34,6 +34,8 @@ class Release2_1_0Installer extends ReleaseInstaller
 			throw new \Exception('Erreur lors de l\'installation du Workflow Builder.');
 		}
 
+		EmundusHelperUpdate::addColumn('jos_emundus_setup_letters', 'for_all', 'TINYINT(1)', null, 0, 0);
+
 		/* Fix yesno for program form */
 		$query = $this->db->getQuery(true);
 		$query->clear()

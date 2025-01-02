@@ -660,13 +660,9 @@ export default {
     },
 
     getAllPrograms() {
-      programmeService.getAllPrograms().then(response => {
+      programmeService.getAllPrograms('', '', 0, 0, 'p.label').then(response => {
         if (response.status) {
           this.programs = response.data.datas;
-
-          if (Object.keys(this.programs).length !== 0) {
-            this.programs.sort((a, b) => a.id - b.id);
-          }
         } else {
           this.programs = [];
         }

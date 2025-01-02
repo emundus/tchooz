@@ -39932,9 +39932,16 @@ const programmeService = {
       };
     }
   },
-  async getAllPrograms() {
+  async getAllPrograms(search = "", category = "", lim = 0, page = 0, order_by = "", order = "ASC") {
     try {
-      return await client$2.get("getallprogram");
+      return await client$2.get("getallprogram", {
+        recherche: search,
+        category,
+        lim,
+        page,
+        sort: order,
+        order_by
+      });
     } catch (e) {
       return {
         status: false,
@@ -41861,7 +41868,7 @@ var errors = {
     }
   }
 };
-const WorkflowEdit_vue_vue_type_style_index_0_scoped_2dd57122_lang = "";
+const WorkflowEdit_vue_vue_type_style_index_0_scoped_baff65b0_lang = "";
 const _sfc_main$3 = {
   name: "WorkflowEdit",
   props: {
@@ -41971,7 +41978,7 @@ const _sfc_main$3 = {
       });
     },
     async getPrograms() {
-      return await programmeService.getAllPrograms().then((response) => {
+      return await programmeService.getAllPrograms("", "", 0, 0, "p.label", "ASC").then((response) => {
         this.programsOptions = response.data.datas.map((program) => {
           return {
             id: program.id,
@@ -42649,7 +42656,7 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ]);
 }
-const WorkflowEdit = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-2dd57122"]]);
+const WorkflowEdit = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-baff65b0"]]);
 const WorkflowEdit$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: WorkflowEdit
@@ -43559,7 +43566,7 @@ if (document) {
                   let name = componentPath[1];
                   return __variableDynamicImportRuntimeHelper(/* @__PURE__ */ Object.assign({ "./views/Program/ProgramEdit.vue": () => __vitePreload(() => Promise.resolve().then(() => ProgramEdit$1), true ? void 0 : void 0), "./views/Workflows/WorkflowEdit.vue": () => __vitePreload(() => Promise.resolve().then(() => WorkflowEdit$1), true ? void 0 : void 0), "./views/Workflows/WorkflowSettings.vue": () => __vitePreload(() => import("./WorkflowSettings.js"), true ? [] : void 0) }), `./views/${directory}/${name}.vue`);
                 } else {
-                  return __variableDynamicImportRuntimeHelper(/* @__PURE__ */ Object.assign({ "./views/ApplicationSingle.vue": () => __vitePreload(() => import("./ApplicationSingle.js"), true ? [] : void 0), "./views/Attachments.vue": () => __vitePreload(() => Promise.resolve().then(() => Attachments$1), true ? void 0 : void 0), "./views/CampaignEdition.vue": () => __vitePreload(() => import("./CampaignEdition.js"), true ? ["CampaignEdition.js","addCampaign.js","editor.js","vue-dropzone.js","email.js","index.js"] : void 0), "./views/Comments.vue": () => __vitePreload(() => Promise.resolve().then(() => Comments$1), true ? void 0 : void 0), "./views/Formbuilder.vue": () => __vitePreload(() => import("./Formbuilder.js"), true ? ["Formbuilder.js","editor.js","Translations.js","index.js","Skeleton.js","IncrementalSelect.js"] : void 0), "./views/History.vue": () => __vitePreload(() => Promise.resolve().then(() => History$1), true ? void 0 : void 0), "./views/List.vue": () => __vitePreload(() => import("./List.js"), true ? ["List.js","Skeleton.js"] : void 0), "./views/MessagesCoordinator.vue": () => __vitePreload(() => import("./MessagesCoordinator.js"), true ? ["MessagesCoordinator.js","vue-dropzone.js","index.js"] : void 0), "./views/Settings.vue": () => __vitePreload(() => import("./Settings.js"), true ? ["Settings.js","Translations.js","index.js","vue-dropzone.js","editor.js","WorkflowSettings.js"] : void 0), "./views/Workflows.vue": () => __vitePreload(() => import("./Workflows.js"), true ? ["Workflows.js","List.js","Skeleton.js"] : void 0), "./views/addCampaign.vue": () => __vitePreload(() => import("./addCampaign.js").then((n) => n.b), true ? ["addCampaign.js","editor.js"] : void 0), "./views/addEmail.vue": () => __vitePreload(() => import("./addEmail.js"), true ? ["addEmail.js","IncrementalSelect.js","email.js","editor.js"] : void 0) }), `./views/${componentName}.vue`);
+                  return __variableDynamicImportRuntimeHelper(/* @__PURE__ */ Object.assign({ "./views/ApplicationSingle.vue": () => __vitePreload(() => import("./ApplicationSingle.js"), true ? [] : void 0), "./views/Attachments.vue": () => __vitePreload(() => Promise.resolve().then(() => Attachments$1), true ? void 0 : void 0), "./views/CampaignEdition.vue": () => __vitePreload(() => import("./CampaignEdition.js"), true ? ["CampaignEdition.js","addCampaign.js","editor.js","vue-dropzone.js","email.js","index.js"] : void 0), "./views/Campaigns.vue": () => __vitePreload(() => import("./Campaigns.js"), true ? ["Campaigns.js","List.js","Skeleton.js"] : void 0), "./views/Comments.vue": () => __vitePreload(() => Promise.resolve().then(() => Comments$1), true ? void 0 : void 0), "./views/Formbuilder.vue": () => __vitePreload(() => import("./Formbuilder.js"), true ? ["Formbuilder.js","editor.js","Translations.js","index.js","Skeleton.js","IncrementalSelect.js"] : void 0), "./views/History.vue": () => __vitePreload(() => Promise.resolve().then(() => History$1), true ? void 0 : void 0), "./views/List.vue": () => __vitePreload(() => import("./List.js"), true ? ["List.js","Skeleton.js"] : void 0), "./views/MessagesCoordinator.vue": () => __vitePreload(() => import("./MessagesCoordinator.js"), true ? ["MessagesCoordinator.js","vue-dropzone.js","index.js"] : void 0), "./views/Settings.vue": () => __vitePreload(() => import("./Settings.js"), true ? ["Settings.js","Translations.js","index.js","vue-dropzone.js","editor.js","WorkflowSettings.js"] : void 0), "./views/Workflows.vue": () => __vitePreload(() => import("./Workflows.js"), true ? ["Workflows.js","List.js","Skeleton.js"] : void 0), "./views/addCampaign.vue": () => __vitePreload(() => import("./addCampaign.js").then((n) => n.b), true ? ["addCampaign.js","editor.js"] : void 0), "./views/addEmail.vue": () => __vitePreload(() => import("./addEmail.js"), true ? ["addEmail.js","IncrementalSelect.js","email.js","editor.js"] : void 0) }), `./views/${componentName}.vue`);
                 }
               })
             },
