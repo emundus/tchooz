@@ -485,7 +485,7 @@ export default {
       year: "",
       published: 1,
       is_limited: 0,
-      profile_id: 9,
+      profile_id: 0,
       limit: 50,
       limit_status: [],
       pinned: 0,
