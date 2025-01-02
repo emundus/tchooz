@@ -1334,6 +1334,15 @@
                 }
             }
         }
+
+        /* TOTAL PLUGIN */
+        .plg-total input {
+            border: unset;
+            &:hover {
+                border: unset;
+                box-shadow: unset;
+            }
+        }
     }
 
     .pull-right.em-repeat-table {
