@@ -1,6 +1,6 @@
 import { _ as _export_sfc$1, o as openBlock, c as createElementBlock, w as withDirectives, O as vModelText, a as createBaseVNode, R as withKeys, n as normalizeClass, v as vShow, b as Fragment, r as renderList, t as toDisplayString, Z as reactive, a7 as computed, a8 as defineComponent, e as resolveComponent, a2 as renderSlot, a9 as normalizeProps, aa as guardReactiveProps, g as createVNode, j as createBlock, q as mergeProps, a6 as ref, Y as watch, ab as onMounted, ac as nextTick, ad as toRef, ae as provide, af as unref, k as withCtx, d as createCommentVNode, a0 as resolveDynamicComponent, ag as inject, ah as isRef, ai as onUnmounted, aj as toRefs, y as createTextVNode, K as Transition, l as normalizeStyle, u as withModifiers, ak as watchEffect, al as resolveDirective, E as toHandlers, N as defineStore, P as script, z as useGlobalStore, m as campaignService, S as Swal, f as fileService, J as programmeService, s as settingsService, D as vModelCheckbox, x as vModelSelect } from "./app_emundus.js";
 import { V as V32 } from "./editor.js";
-const autocomplete_vue_vue_type_style_index_0_scoped_6187c0df_lang = "";
+const autocomplete_vue_vue_type_style_index_0_scoped_9c3002aa_lang = "";
 const _sfc_main$m = {
   name: "autocomplete",
   props: {
@@ -74,7 +74,7 @@ const _sfc_main$m = {
     document.removeEventListener("click", this.handleClickOutside);
   }
 };
-const _hoisted_1$e = { class: "autocomplete tw-mt-2" };
+const _hoisted_1$e = { class: "autocomplete tw-mt-1" };
 const _hoisted_2$d = ["id", "placeholder"];
 const _hoisted_3$b = { class: "autocomplete-results" };
 const _hoisted_4$5 = ["onClick"];
@@ -108,7 +108,7 @@ function _sfc_render$9(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ]);
 }
-const Autocomplete = /* @__PURE__ */ _export_sfc$1(_sfc_main$m, [["render", _sfc_render$9], ["__scopeId", "data-v-6187c0df"]]);
+const Autocomplete = /* @__PURE__ */ _export_sfc$1(_sfc_main$m, [["render", _sfc_render$9], ["__scopeId", "data-v-9c3002aa"]]);
 var E = "top", R = "bottom", W = "right", P = "left", me = "auto", G = [E, R, W, P], U = "start", J = "end", Xe = "clippingParents", je = "viewport", K = "popper", Ye = "reference", De = G.reduce(function(t, e) {
   return t.concat([e + "-" + U, e + "-" + J]);
 }, []), Ee = [].concat(G, [me]).reduce(function(t, e) {
@@ -8907,7 +8907,7 @@ const useCampaignStore = defineStore("campaign", {
     }
   }
 });
-const addCampaign_vue_vue_type_style_index_0_scoped_19e63e6c_lang = "";
+const addCampaign_vue_vue_type_style_index_0_scoped_dfed58f4_lang = "";
 const _sfc_main = {
   name: "addCampaign",
   components: {
@@ -9342,7 +9342,7 @@ const _sfc_main = {
           published: 1,
           apply_online: 1
         };
-        document.getElementById("add-program").style = "transform: rotate(135deg)";
+        document.getElementById("add-program").style = "transform: rotate(45deg)";
         document.getElementById("select_prog").setAttribute("disabled", "disabled");
       }
       this.isHiddenProgram = !this.isHiddenProgram;
@@ -9436,141 +9436,136 @@ const _hoisted_1 = { class: "campaigns__add-campaign" };
 const _hoisted_2 = { key: 0 };
 const _hoisted_3 = { class: "tw-ml-2 tw-text-neutral-900" };
 const _hoisted_4 = { class: "tw-mt-4" };
-const _hoisted_5 = { class: "tw-mt-4" };
-const _hoisted_6 = { class: "tw-text-red-600 tw-mb-2" };
-const _hoisted_7 = {
-  class: "tw-mb-4",
-  id: "campaign-label-wrapper"
-};
-const _hoisted_8 = {
+const _hoisted_5 = { class: "tw-mt-2" };
+const _hoisted_6 = { class: "tw-text-red-600 tw-mt-1" };
+const _hoisted_7 = { class: "tw-flex tw-flex-col tw-gap-4" };
+const _hoisted_8 = { id: "campaign-label-wrapper" };
+const _hoisted_9 = {
   for: "campLabel",
   class: "tw-font-medium"
 };
-const _hoisted_9 = {
+const _hoisted_10 = {
   key: 0,
   id: "error-campaign-name",
-  class: "tw-text-red-600 tw-mb-2"
+  class: "tw-text-red-600 tw-mt-1 tw-mb-1"
 };
-const _hoisted_10 = { class: "tw-mb-4" };
 const _hoisted_11 = {
   for: "alias",
   class: "tw-font-medium"
 };
-const _hoisted_12 = { class: "tw-flex tw-items-center tw-gap-2" };
-const _hoisted_13 = { class: "tw-w-full" };
-const _hoisted_14 = {
-  key: 0,
-  class: "tw-text-red-600 tw-mb-2 tw-absolute"
-};
-const _hoisted_15 = { class: "tw-grid tw-grid-cols-2 tw-mb-4 tw-gap-1.5" };
+const _hoisted_12 = { class: "tw-text-base tw-text-neutral-600" };
+const _hoisted_13 = { class: "tw-mt-1 tw-flex tw-items-center tw-gap-2" };
+const _hoisted_14 = { class: "tw-whitespace-nowrap" };
+const _hoisted_15 = { class: "tw-w-full" };
 const _hoisted_16 = {
+  key: 0,
+  class: "tw-text-red-600 tw-mb-1 tw-mt-1 tw-absolute"
+};
+const _hoisted_17 = { class: "tw-grid tw-grid-cols-2 tw-gap-1.5" };
+const _hoisted_18 = {
   for: "startDate",
   class: "tw-font-medium"
 };
-const _hoisted_17 = ["value"];
-const _hoisted_18 = {
+const _hoisted_19 = ["value"];
+const _hoisted_20 = {
   key: 0,
-  class: "tw-text-red-600 tw-mb-2 tw-absolute"
+  class: "tw-text-red-600 tw-mb-1 tw-mt-1 tw-absolute"
 };
-const _hoisted_19 = {
+const _hoisted_21 = {
   for: "endDate",
   class: "tw-font-medium"
 };
-const _hoisted_20 = ["value"];
-const _hoisted_21 = {
-  key: 0,
-  class: "tw-text-red-600 tw-mb-2 tw-absolute"
-};
-const _hoisted_22 = { class: "tw-mb-4" };
+const _hoisted_22 = ["value"];
 const _hoisted_23 = {
+  key: 0,
+  class: "tw-text-red-600 tw-mb-1 tw-mt-1 tw-absolute"
+};
+const _hoisted_24 = {
   for: "year",
   class: "tw-font-medium"
 };
-const _hoisted_24 = {
+const _hoisted_25 = { class: "tw-text-base tw-text-neutral-600" };
+const _hoisted_26 = {
   key: 0,
-  class: "tw-text-red-600 tw-mb-2"
+  class: "tw-text-red-600 tw-mb-1 tw-mt-1"
 };
-const _hoisted_25 = { class: "tw-mb-4 tw-flex tw-items-center" };
-const _hoisted_26 = { class: "em-toggle" };
-const _hoisted_27 = {
+const _hoisted_27 = { class: "tw-flex tw-items-center" };
+const _hoisted_28 = { class: "em-toggle" };
+const _hoisted_29 = {
   for: "published",
   class: "tw-ml-2"
 };
-const _hoisted_28 = { class: "tw-mb-4 tw-flex tw-items-center" };
-const _hoisted_29 = { class: "em-toggle" };
-const _hoisted_30 = {
+const _hoisted_30 = { class: "tw-flex tw-items-center" };
+const _hoisted_31 = { class: "em-toggle" };
+const _hoisted_32 = {
   for: "visible",
   class: "tw-ml-2 tw-flex tw-items-center"
 };
-const _hoisted_31 = { class: "tw-mb-4 tw-flex tw-items-center" };
-const _hoisted_32 = { class: "em-toggle" };
-const _hoisted_33 = {
+const _hoisted_33 = { class: "tw-flex tw-items-center" };
+const _hoisted_34 = { class: "em-toggle" };
+const _hoisted_35 = {
   for: "pinned",
   class: "tw-ml-2 tw-flex tw-items-center"
 };
-const _hoisted_34 = { class: "tw-mb-4" };
-const _hoisted_35 = { class: "tw-mb-4" };
-const _hoisted_36 = {
-  id: "campResume",
-  class: "tw-mb-4"
-};
-const _hoisted_37 = { class: "tw-flex tw-items-center" };
-const _hoisted_38 = { class: "tw-font-medium tw-mb-0" };
-const _hoisted_39 = { class: "tw-mb-4" };
+const _hoisted_36 = { class: "tw-flex tw-flex-col tw-gap-4" };
+const _hoisted_37 = { id: "campResume" };
+const _hoisted_38 = { class: "tw-flex tw-items-center" };
+const _hoisted_39 = { class: "tw-font-medium tw-mb-0" };
 const _hoisted_40 = { class: "tw-flex tw-items-center" };
 const _hoisted_41 = { class: "tw-font-medium tw-mb-0" };
 const _hoisted_42 = {
   key: 0,
-  id: "campDescription",
-  class: "tw-mb-4"
+  id: "campDescription"
 };
-const _hoisted_43 = { class: "tw-mt-8" };
-const _hoisted_44 = { class: "tw-mb-4" };
-const _hoisted_45 = { class: "tw-mb-4" };
-const _hoisted_46 = { class: "tw-mb-4" };
-const _hoisted_47 = { class: "tw-flex tw-items-center" };
-const _hoisted_48 = ["disabled"];
-const _hoisted_49 = { value: "" };
-const _hoisted_50 = ["value", "data-category"];
-const _hoisted_51 = ["title"];
-const _hoisted_52 = {
+const _hoisted_43 = { class: "tw-flex tw-flex-col tw-gap-4" };
+const _hoisted_44 = { class: "tw-mt-2" };
+const _hoisted_45 = { class: "tw-flex tw-items-center" };
+const _hoisted_46 = ["disabled"];
+const _hoisted_47 = { value: "" };
+const _hoisted_48 = ["value", "data-category"];
+const _hoisted_49 = ["title"];
+const _hoisted_50 = {
   key: 0,
-  class: "tw-text-red-600 tw-mb-2"
+  class: "tw-text-red-600 tw-mb-1 tw-mt-1"
 };
-const _hoisted_53 = { key: 0 };
-const _hoisted_54 = { class: "tw-mb-4" };
-const _hoisted_55 = {
+const _hoisted_51 = { key: 0 };
+const _hoisted_52 = {
   for: "prog_label",
   class: "tw-font-medium"
 };
-const _hoisted_56 = {
+const _hoisted_53 = {
   key: 0,
-  class: "tw-text-red-600 tw-mb-2"
+  class: "tw-text-red-600 tw-mb-1 tw-mt-1"
 };
-const _hoisted_57 = { class: "tw-text-red-600" };
-const _hoisted_58 = { id: "campaign-form-container" };
-const _hoisted_59 = { class: "tw-mt-2 tw-mb-2" };
-const _hoisted_60 = { class: "tw-mt-2 tw-mb-2" };
-const _hoisted_61 = { class: "tw-flex tw-flex-row tw-items-center" };
-const _hoisted_62 = { value: "0" };
-const _hoisted_63 = ["value"];
-const _hoisted_64 = {
+const _hoisted_54 = { class: "tw-text-red-600" };
+const _hoisted_55 = {
+  class: "tw-flex tw-flex-col tw-gap-4",
+  id: "campaign-form-container"
+};
+const _hoisted_56 = { class: "tw-text-sm tw-text-neutral-500" };
+const _hoisted_57 = { class: "tw-font-medium" };
+const _hoisted_58 = { class: "tw-flex tw-items-center tw-mt-1 tw-mb-1" };
+const _hoisted_59 = { value: "0" };
+const _hoisted_60 = ["value"];
+const _hoisted_61 = {
   href: "/forms",
   target: "_blank",
-  class: "tw-my-2 tw-underline"
+  class: "tw-underline"
 };
-const _hoisted_65 = {
+const _hoisted_62 = {
   key: 0,
+  class: "tw-flex tw-flex-col tw-gap-4",
   id: "select-campaign-languages"
 };
-const _hoisted_66 = {
+const _hoisted_63 = { class: "tw-text-sm tw-text-neutral-500" };
+const _hoisted_64 = {
   key: 0,
   id: "program-languages",
-  class: "tw-mt-4 tw-mb-0 tw-p-4 alert alert-info tw-flex tw-flex-row"
+  class: "tw-mb-1 tw-p-4 alert alert-info tw-flex"
 };
-const _hoisted_67 = { class: "tw-font-light tw-text-sm" };
-const _hoisted_68 = { class: "tw-flex tw-justify-end tw-mt-4" };
-const _hoisted_69 = {
+const _hoisted_65 = { class: "tw-font-light tw-text-sm" };
+const _hoisted_66 = { class: "tw-flex tw-justify-end" };
+const _hoisted_67 = {
   key: 1,
   class: "em-page-loader"
 };
@@ -9582,15 +9577,20 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", _hoisted_1, [
     typeof _ctx.campaignId == "undefined" || _ctx.campaignId == 0 ? (openBlock(), createElementBlock("div", _hoisted_2, [
       createBaseVNode("div", {
-        class: "tw-flex tw-items-center tw-cursor-pointer",
+        class: "tw-flex tw-items-center tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300",
         onClick: _cache[0] || (_cache[0] = ($event) => $options.redirectJRoute("index.php?option=com_emundus&view=campaigns"))
       }, [
         _cache[30] || (_cache[30] = createBaseVNode("span", { class: "material-symbols-outlined tw-text-neutral-600" }, "navigate_before", -1)),
         createBaseVNode("span", _hoisted_3, toDisplayString(_ctx.translate("BACK")), 1)
       ]),
-      createBaseVNode("h1", _hoisted_4, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN")), 1),
-      createBaseVNode("p", _hoisted_5, toDisplayString(_ctx.translate("COM_EMUNDUS_GLOBAL_INFORMATIONS_DESC")), 1),
-      _cache[31] || (_cache[31] = createBaseVNode("hr", { class: "tw-mt-1.5 tw-mb-1.5" }, null, -1))
+      createBaseVNode("div", _hoisted_4, [
+        createBaseVNode("h1", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN")), 1),
+        createBaseVNode("div", _hoisted_5, [
+          createBaseVNode("p", null, toDisplayString(_ctx.translate("COM_EMUNDUS_GLOBAL_INFORMATIONS_DESC")), 1),
+          createBaseVNode("p", _hoisted_6, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE")), 1)
+        ])
+      ]),
+      _cache[31] || (_cache[31] = createBaseVNode("hr", { class: "tw-mt-1.5 tw-mb-4" }, null, -1))
     ])) : createCommentVNode("", true),
     createBaseVNode("div", null, [
       _ctx.ready ? (openBlock(), createElementBlock("form", {
@@ -9598,10 +9598,9 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         onSubmit: _cache[29] || (_cache[29] = withModifiers((...args) => $options.submit && $options.submit(...args), ["prevent"])),
         class: "emundus-form fabrikForm"
       }, [
-        createBaseVNode("div", null, [
-          createBaseVNode("div", _hoisted_6, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE")), 1),
-          createBaseVNode("div", _hoisted_7, [
-            createBaseVNode("label", _hoisted_8, [
+        createBaseVNode("div", _hoisted_7, [
+          createBaseVNode("div", _hoisted_8, [
+            createBaseVNode("label", _hoisted_9, [
               createTextVNode(toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_CAMPNAME")) + " ", 1),
               _cache[32] || (_cache[32] = createBaseVNode("span", { class: "tw-text-red-600" }, "*", -1))
             ]),
@@ -9610,48 +9609,53 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               type: "text",
               "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => _ctx.form.label[_ctx.actualLanguage] = $event),
               required: "",
-              class: normalizeClass([{ "is-invalid !tw-border-red-600": _ctx.errors.label }, "tw-mt-2 form-control fabrikinput tw-w-full"]),
+              class: normalizeClass([{ "is-invalid !tw-border-red-600": _ctx.errors.label }, "tw-mt-1 form-control fabrikinput tw-w-full"]),
               onFocusout: _cache[2] || (_cache[2] = ($event) => $options.onFormChange()),
               onKeyup: _cache[3] || (_cache[3] = ($event) => $options.updateAlias())
             }, null, 34), [
               [vModelText, _ctx.form.label[_ctx.actualLanguage]]
             ]),
-            _ctx.errors.label ? (openBlock(), createElementBlock("span", _hoisted_9, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME")), 1)) : createCommentVNode("", true)
+            _ctx.errors.label ? (openBlock(), createElementBlock("div", _hoisted_10, [
+              createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME")), 1)
+            ])) : createCommentVNode("", true)
           ]),
-          createBaseVNode("div", _hoisted_10, [
+          createBaseVNode("div", null, [
             createBaseVNode("label", _hoisted_11, [
               createTextVNode(toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_ALIAS")) + " ", 1),
               _cache[33] || (_cache[33] = createBaseVNode("span", { class: "tw-text-red-600" }, "*", -1))
             ]),
-            createBaseVNode("div", _hoisted_12, [
-              createBaseVNode("span", null, toDisplayString($options.baseUrl) + "/", 1),
+            createBaseVNode("div", null, [
+              createBaseVNode("span", _hoisted_12, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_ALIAS_HELPTEXT")), 1),
               createBaseVNode("div", _hoisted_13, [
-                withDirectives(createBaseVNode("input", {
-                  id: "alias",
-                  type: "text",
-                  "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => _ctx.form.alias = $event),
-                  required: "",
-                  class: normalizeClass([{ "is-invalid !tw-border-red-600": _ctx.errors.alias }, "form-control fabrikinput tw-w-full"]),
-                  onFocusout: _cache[5] || (_cache[5] = ($event) => $options.onFormChange()),
-                  onKeyup: _cache[6] || (_cache[6] = ($event) => _ctx.form.alias !== "" ? _ctx.aliasUpdated = true : _ctx.aliasUpdated = false)
-                }, null, 34), [
-                  [vModelText, _ctx.form.alias]
+                createBaseVNode("span", _hoisted_14, toDisplayString($options.baseUrl) + "/", 1),
+                createBaseVNode("div", _hoisted_15, [
+                  withDirectives(createBaseVNode("input", {
+                    id: "alias",
+                    type: "text",
+                    "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => _ctx.form.alias = $event),
+                    required: "",
+                    class: normalizeClass([{ "is-invalid !tw-border-red-600": _ctx.errors.alias }, "form-control fabrikinput tw-w-full"]),
+                    onFocusout: _cache[5] || (_cache[5] = ($event) => $options.onFormChange()),
+                    onKeyup: _cache[6] || (_cache[6] = ($event) => _ctx.form.alias !== "" ? _ctx.aliasUpdated = true : _ctx.aliasUpdated = false)
+                  }, null, 34), [
+                    [vModelText, _ctx.form.alias]
+                  ]),
+                  _ctx.errors.alias ? (openBlock(), createElementBlock("div", _hoisted_16, [
+                    createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_LINK")), 1)
+                  ])) : createCommentVNode("", true)
                 ]),
-                _ctx.errors.alias ? (openBlock(), createElementBlock("span", _hoisted_14, [
-                  createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_LINK")), 1)
-                ])) : createCommentVNode("", true)
-              ]),
-              createBaseVNode("span", {
-                class: "material-symbols-outlined tw-cursor-pointer",
-                onClick: _cache[7] || (_cache[7] = ($event) => {
-                  $options.copyAliasToClipboard();
-                })
-              }, "content_copy")
+                createBaseVNode("span", {
+                  class: "material-symbols-outlined tw-cursor-pointer",
+                  onClick: _cache[7] || (_cache[7] = ($event) => {
+                    $options.copyAliasToClipboard();
+                  })
+                }, "content_copy")
+              ])
             ])
           ]),
-          createBaseVNode("div", _hoisted_15, [
+          createBaseVNode("div", _hoisted_17, [
             createBaseVNode("div", null, [
-              createBaseVNode("label", _hoisted_16, [
+              createBaseVNode("label", _hoisted_18, [
                 createTextVNode(toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE")) + " ", 1),
                 _cache[34] || (_cache[34] = createBaseVNode("span", { class: "tw-text-red-600" }, "*", -1))
               ]),
@@ -9671,10 +9675,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               }, {
                 default: withCtx(({ inputValue, inputEvents }) => [
                   createBaseVNode("input", mergeProps({ value: inputValue }, toHandlers(inputEvents, true), {
-                    class: ["tw-mt-2 form-control fabrikinput tw-w-full", { "is-invalid !tw-border-red-600": _ctx.errors.start_date }],
+                    class: ["tw-mt-1 form-control fabrikinput tw-w-full", { "is-invalid !tw-border-red-600": _ctx.errors.start_date }],
                     id: "start_date_input"
-                  }), null, 16, _hoisted_17),
-                  _ctx.errors.start_date ? (openBlock(), createElementBlock("span", _hoisted_18, [
+                  }), null, 16, _hoisted_19),
+                  _ctx.errors.start_date ? (openBlock(), createElementBlock("div", _hoisted_20, [
                     createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_START_DATE")), 1)
                   ])) : createCommentVNode("", true)
                 ]),
@@ -9683,7 +9687,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             ]),
             createBaseVNode("div", null, [
               createBaseVNode("div", null, [
-                createBaseVNode("label", _hoisted_19, [
+                createBaseVNode("label", _hoisted_21, [
                   createTextVNode(toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_ENDDATE")) + " ", 1),
                   _cache[35] || (_cache[35] = createBaseVNode("span", { class: "tw-text-red-600" }, "*", -1))
                 ]),
@@ -9704,10 +9708,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 }, {
                   default: withCtx(({ inputValue, inputEvents }) => [
                     createBaseVNode("input", mergeProps({ value: inputValue }, toHandlers(inputEvents, true), {
-                      class: ["tw-mt-2 form-control fabrikinput tw-w-full", { "is-invalid !tw-border-red-600": _ctx.errors.end_date }],
+                      class: ["tw-mt-1 form-control fabrikinput tw-w-full", { "is-invalid !tw-border-red-600": _ctx.errors.end_date }],
                       id: "end_date_input"
-                    }), null, 16, _hoisted_20),
-                    _ctx.errors.end_date ? (openBlock(), createElementBlock("span", _hoisted_21, [
+                    }), null, 16, _hoisted_22),
+                    _ctx.errors.end_date ? (openBlock(), createElementBlock("div", _hoisted_23, [
                       createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_END_DATE")), 1)
                     ])) : createCommentVNode("", true)
                   ]),
@@ -9716,24 +9720,27 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               ])
             ])
           ]),
-          createBaseVNode("div", _hoisted_22, [
-            createBaseVNode("label", _hoisted_23, [
+          createBaseVNode("div", null, [
+            createBaseVNode("label", _hoisted_24, [
               createTextVNode(toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PICKYEAR")) + " ", 1),
               _cache[36] || (_cache[36] = createBaseVNode("span", { class: "tw-text-red-600" }, "*", -1))
             ]),
-            createVNode(_component_autocomplete, {
-              id: "year",
-              onSearched: $options.onSearchYear,
-              items: this.session,
-              year: _ctx.form.year,
-              name: $options.sessionPlaceholder
-            }, null, 8, ["onSearched", "items", "year", "name"]),
-            _ctx.errors.year ? (openBlock(), createElementBlock("span", _hoisted_24, [
-              createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_YEAR")), 1)
-            ])) : createCommentVNode("", true)
+            createBaseVNode("div", null, [
+              createBaseVNode("span", _hoisted_25, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PICKYEAR_HELPTEXT")), 1),
+              createVNode(_component_autocomplete, {
+                id: "year",
+                onSearched: $options.onSearchYear,
+                items: this.session,
+                year: _ctx.form.year,
+                name: $options.sessionPlaceholder
+              }, null, 8, ["onSearched", "items", "year", "name"]),
+              _ctx.errors.year ? (openBlock(), createElementBlock("div", _hoisted_26, [
+                createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_YEAR")), 1)
+              ])) : createCommentVNode("", true)
+            ])
           ]),
-          createBaseVNode("div", _hoisted_25, [
-            createBaseVNode("div", _hoisted_26, [
+          createBaseVNode("div", _hoisted_27, [
+            createBaseVNode("div", _hoisted_28, [
               withDirectives(createBaseVNode("input", {
                 type: "checkbox",
                 "true-value": "1",
@@ -9749,10 +9756,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               _cache[37] || (_cache[37] = createBaseVNode("strong", { class: "b em-toggle-switch" }, null, -1)),
               _cache[38] || (_cache[38] = createBaseVNode("strong", { class: "b em-toggle-track" }, null, -1))
             ]),
-            createBaseVNode("span", _hoisted_27, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH")), 1)
+            createBaseVNode("span", _hoisted_29, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH")), 1)
           ]),
-          createBaseVNode("div", _hoisted_28, [
-            createBaseVNode("div", _hoisted_29, [
+          createBaseVNode("div", _hoisted_30, [
+            createBaseVNode("div", _hoisted_31, [
               withDirectives(createBaseVNode("input", {
                 type: "checkbox",
                 "true-value": "0",
@@ -9768,10 +9775,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               _cache[39] || (_cache[39] = createBaseVNode("strong", { class: "b em-toggle-switch" }, null, -1)),
               _cache[40] || (_cache[40] = createBaseVNode("strong", { class: "b em-toggle-track" }, null, -1))
             ]),
-            createBaseVNode("span", _hoisted_30, toDisplayString(_ctx.translate("COM_EMUNDUS_CAMPAIGNS_VISIBLE")), 1)
+            createBaseVNode("span", _hoisted_32, toDisplayString(_ctx.translate("COM_EMUNDUS_CAMPAIGNS_VISIBLE")), 1)
           ]),
-          createBaseVNode("div", _hoisted_31, [
-            createBaseVNode("div", _hoisted_32, [
+          createBaseVNode("div", _hoisted_33, [
+            createBaseVNode("div", _hoisted_34, [
               withDirectives(createBaseVNode("input", {
                 type: "checkbox",
                 "true-value": "1",
@@ -9787,7 +9794,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               _cache[41] || (_cache[41] = createBaseVNode("strong", { class: "b em-toggle-switch" }, null, -1)),
               _cache[42] || (_cache[42] = createBaseVNode("strong", { class: "b em-toggle-track" }, null, -1))
             ]),
-            createBaseVNode("span", _hoisted_33, [
+            createBaseVNode("span", _hoisted_35, [
               createTextVNode(toDisplayString(_ctx.translate("COM_EMUNDUS_CAMPAIGNS_PIN")) + " ", 1),
               createBaseVNode("span", {
                 class: "material-symbols-outlined tw-ml-1 tw-text-base tw-cursor-pointer tw-text-neutral-600",
@@ -9796,14 +9803,12 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             ])
           ])
         ]),
-        _cache[48] || (_cache[48] = createBaseVNode("hr", null, null, -1)),
-        createBaseVNode("div", _hoisted_34, [
-          createBaseVNode("div", _hoisted_35, [
-            createBaseVNode("h3", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION")), 1)
-          ]),
-          createBaseVNode("div", _hoisted_36, [
-            createBaseVNode("div", _hoisted_37, [
-              createBaseVNode("label", _hoisted_38, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME")), 1),
+        _cache[47] || (_cache[47] = createBaseVNode("hr", { class: "tw-mt-1.5 tw-mb-4" }, null, -1)),
+        createBaseVNode("div", _hoisted_36, [
+          createBaseVNode("h2", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION")), 1),
+          createBaseVNode("div", _hoisted_37, [
+            createBaseVNode("div", _hoisted_38, [
+              createBaseVNode("label", _hoisted_39, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME")), 1),
               createBaseVNode("span", {
                 class: "material-symbols-outlined tw-ml-1 tw-text-base tw-cursor-pointer tw-text-neutral-600",
                 onClick: _cache[17] || (_cache[17] = (...args) => $options.displayCampaignResumeTip && $options.displayCampaignResumeTip(...args))
@@ -9821,7 +9826,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               placeholder: _ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME")
             }, null, 8, ["modelValue", "placeholder"])
           ]),
-          createBaseVNode("div", _hoisted_39, [
+          createBaseVNode("div", null, [
             createBaseVNode("div", _hoisted_40, [
               createBaseVNode("label", _hoisted_41, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION")), 1),
               createBaseVNode("span", {
@@ -9846,32 +9851,35 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             ])) : createCommentVNode("", true)
           ])
         ]),
+        _cache[48] || (_cache[48] = createBaseVNode("hr", { class: "tw-mt-1.5 tw-mb-4" }, null, -1)),
         createBaseVNode("div", _hoisted_43, [
-          createBaseVNode("div", _hoisted_44, [
-            createBaseVNode("h2", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM")), 1)
+          createBaseVNode("div", null, [
+            createBaseVNode("h2", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM")), 1),
+            createBaseVNode("div", _hoisted_44, [
+              createBaseVNode("p", null, [
+                createTextVNode(toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_PROGRAM_INTRO_DESC")) + " ", 1),
+                _cache[43] || (_cache[43] = createBaseVNode("span", { class: "tw-text-red-600" }, "*", -1))
+              ])
+            ])
           ]),
-          createBaseVNode("div", _hoisted_45, [
-            createTextVNode(toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_PROGRAM_INTRO_DESC")), 1),
-            _cache[43] || (_cache[43] = createBaseVNode("span", { class: "tw-text-red-600" }, "*", -1))
-          ]),
-          createBaseVNode("div", _hoisted_46, [
-            createBaseVNode("div", _hoisted_47, [
+          createBaseVNode("div", null, [
+            createBaseVNode("div", _hoisted_45, [
               withDirectives(createBaseVNode("select", {
                 id: "select_prog",
-                class: normalizeClass(["tw-mt-2 form-control fabrikinput tw-w-full", { "is-invalid !tw-border-red-600": _ctx.errors.progCode }]),
+                class: normalizeClass(["form-control fabrikinput tw-w-full", { "is-invalid !tw-border-red-600": _ctx.errors.progCode }]),
                 "onUpdate:modelValue": _cache[21] || (_cache[21] = ($event) => _ctx.form.training = $event),
                 onChange: _cache[22] || (_cache[22] = (...args) => $options.setCategory && $options.setCategory(...args)),
                 disabled: this.programs.length <= 0
               }, [
-                createBaseVNode("option", _hoisted_49, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_CHOOSEPROG")), 1),
+                createBaseVNode("option", _hoisted_47, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_CHOOSEPROG")), 1),
                 (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.programs, (item, index) => {
                   return openBlock(), createElementBlock("option", {
                     value: item.code,
                     "data-category": item.programmes,
                     key: index
-                  }, toDisplayString(item.label && item.label[_ctx.actualLanguage] !== null && typeof item.label[_ctx.actualLanguage] != "undefined" ? item.label[_ctx.actualLanguage] : item.label), 9, _hoisted_50);
+                  }, toDisplayString(item.label && item.label[_ctx.actualLanguage] !== null && typeof item.label[_ctx.actualLanguage] != "undefined" ? item.label[_ctx.actualLanguage] : item.label), 9, _hoisted_48);
                 }), 128))
-              ], 42, _hoisted_48), [
+              ], 42, _hoisted_46), [
                 [vModelSelect, _ctx.form.training]
               ]),
               _ctx.coordinatorAccess != 0 ? (openBlock(), createElementBlock("button", {
@@ -9883,33 +9891,33 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 onClick: _cache[23] || (_cache[23] = (...args) => $options.displayProgram && $options.displayProgram(...args))
               }, _cache[44] || (_cache[44] = [
                 createBaseVNode("span", { class: "material-symbols-outlined em-main-500-color" }, "add_circle_outline", -1)
-              ]), 8, _hoisted_51)) : createCommentVNode("", true)
+              ]), 8, _hoisted_49)) : createCommentVNode("", true)
             ]),
-            _ctx.errors.progCode ? (openBlock(), createElementBlock("span", _hoisted_52, [
+            _ctx.errors.progCode ? (openBlock(), createElementBlock("div", _hoisted_50, [
               createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_PROGRAM")), 1)
             ])) : createCommentVNode("", true)
           ]),
           createVNode(Transition, { name: "slide-fade" }, {
             default: withCtx(() => [
-              _ctx.isHiddenProgram ? (openBlock(), createElementBlock("div", _hoisted_53, [
-                createBaseVNode("div", _hoisted_54, [
+              _ctx.isHiddenProgram ? (openBlock(), createElementBlock("div", _hoisted_51, [
+                createBaseVNode("div", null, [
                   createBaseVNode("div", null, [
-                    createBaseVNode("label", _hoisted_55, [
+                    createBaseVNode("label", _hoisted_52, [
                       createTextVNode(toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_PROGNAME")) + " ", 1),
                       _cache[45] || (_cache[45] = createBaseVNode("span", { class: "tw-text-red-600" }, "*", -1))
                     ]),
                     withDirectives(createBaseVNode("input", {
                       type: "text",
                       id: "prog_label",
-                      class: normalizeClass(["tw-mt-2 form-control fabrikinput tw-w-full", { "is-invalid !tw-border-red-600": _ctx.errors.progLabel }]),
+                      class: normalizeClass(["tw-mt-1 form-control fabrikinput tw-w-full", { "is-invalid !tw-border-red-600": _ctx.errors.progLabel }]),
                       placeholder: " ",
                       "onUpdate:modelValue": _cache[24] || (_cache[24] = ($event) => _ctx.programForm.label = $event)
                     }, null, 2), [
                       [vModelText, _ctx.programForm.label]
                     ])
                   ]),
-                  _ctx.errors.progLabel ? (openBlock(), createElementBlock("p", _hoisted_56, [
-                    createBaseVNode("span", _hoisted_57, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL")), 1)
+                  _ctx.errors.progLabel ? (openBlock(), createElementBlock("div", _hoisted_53, [
+                    createBaseVNode("span", _hoisted_54, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL")), 1)
                   ])) : createCommentVNode("", true)
                 ])
               ])) : createCommentVNode("", true)
@@ -9917,64 +9925,72 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             _: 1
           })
         ]),
-        createBaseVNode("div", _hoisted_58, [
-          createBaseVNode("h2", _hoisted_59, [
+        _cache[49] || (_cache[49] = createBaseVNode("hr", { class: "tw-mt-1.5 tw-mb-4" }, null, -1)),
+        createBaseVNode("div", _hoisted_55, [
+          createBaseVNode("h2", null, [
             createTextVNode(toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_FORM")) + " ", 1),
-            createBaseVNode("i", null, toDisplayString(_ctx.translate("COM_EMUNDUS_OPTIONAL")), 1)
+            createBaseVNode("i", _hoisted_56, toDisplayString(_ctx.translate("COM_EMUNDUS_OPTIONAL")), 1)
           ]),
-          createBaseVNode("p", _hoisted_60, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_FORM_DESC")), 1),
-          createBaseVNode("div", _hoisted_61, [
-            withDirectives(createBaseVNode("select", {
-              class: "tw-w-full",
-              "onUpdate:modelValue": _cache[25] || (_cache[25] = ($event) => _ctx.form.profile_id = $event)
-            }, [
-              createBaseVNode("option", _hoisted_62, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_CHOOSE_FORM")), 1),
-              (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.applicantForms, (applicantForm) => {
-                return openBlock(), createElementBlock("option", {
-                  key: applicantForm.id,
-                  value: applicantForm.id
-                }, toDisplayString(applicantForm.label), 9, _hoisted_63);
-              }), 128))
-            ], 512), [
-              [vModelSelect, _ctx.form.profile_id]
+          createBaseVNode("div", null, [
+            createBaseVNode("label", _hoisted_57, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_FORM_DESC")), 1),
+            createBaseVNode("div", _hoisted_58, [
+              withDirectives(createBaseVNode("select", {
+                class: "tw-w-full",
+                "onUpdate:modelValue": _cache[25] || (_cache[25] = ($event) => _ctx.form.profile_id = $event)
+              }, [
+                createBaseVNode("option", _hoisted_59, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_CHOOSE_FORM")), 1),
+                (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.applicantForms, (applicantForm) => {
+                  return openBlock(), createElementBlock("option", {
+                    key: applicantForm.id,
+                    value: applicantForm.id
+                  }, toDisplayString(applicantForm.label), 9, _hoisted_60);
+                }), 128))
+              ], 512), [
+                [vModelSelect, _ctx.form.profile_id]
+              ]),
+              createBaseVNode("span", {
+                class: "material-symbols-outlined tw-cursor-pointer tw-ml-2",
+                onClick: _cache[26] || (_cache[26] = (...args) => $options.getAllForms && $options.getAllForms(...args))
+              }, "refresh")
             ]),
-            createBaseVNode("span", {
-              class: "material-symbols-outlined tw-cursor-pointer",
-              onClick: _cache[26] || (_cache[26] = (...args) => $options.getAllForms && $options.getAllForms(...args))
-            }, "refresh")
-          ]),
-          createBaseVNode("a", _hoisted_64, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ACCESS_TO_FORMS_LIST")), 1)
+            createBaseVNode("a", _hoisted_61, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ACCESS_TO_FORMS_LIST")), 1)
+          ])
         ]),
-        _cache[49] || (_cache[49] = createBaseVNode("hr", { class: "tw-mt-4" }, null, -1)),
-        $options.languageOptions.length > 1 ? (openBlock(), createElementBlock("div", _hoisted_65, [
-          createBaseVNode("h2", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_LANGUAGES")), 1),
-          $options.programLanguages.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_66, [
-            _cache[46] || (_cache[46] = createBaseVNode("span", { class: "material-icons-outlined tw-mr-2" }, "info", -1)),
-            createBaseVNode("p", _hoisted_67, [
-              createTextVNode(toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM_LANGUAGES")) + " ", 1),
-              (openBlock(true), createElementBlock(Fragment, null, renderList($options.programLanguages, (language, index) => {
-                return openBlock(), createElementBlock("strong", {
-                  key: language.lang_id
-                }, toDisplayString(language.title) + toDisplayString(index < $options.programLanguages.length - 1 ? ", " : ""), 1);
-              }), 128))
-            ])
-          ])) : createCommentVNode("", true),
-          createVNode(_component_multiselect, {
-            class: "tw-mt-4",
-            modelValue: _ctx.campaignLanguages,
-            "onUpdate:modelValue": _cache[27] || (_cache[27] = ($event) => _ctx.campaignLanguages = $event),
-            label: "label",
-            "track-by": "value",
-            options: $options.languageOptions,
-            multiple: true,
-            taggable: true,
-            "select-label": "",
-            "selected-label": "",
-            "deselect-label": ""
-          }, null, 8, ["modelValue", "options"]),
-          _cache[47] || (_cache[47] = createBaseVNode("hr", { class: "tw-mt-4 tw-mb-4" }, null, -1))
+        _cache[50] || (_cache[50] = createBaseVNode("hr", { class: "tw-mt-1.5 tw-mb-4" }, null, -1)),
+        $options.languageOptions.length > 1 ? (openBlock(), createElementBlock("div", _hoisted_62, [
+          createBaseVNode("h2", null, [
+            createTextVNode(toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_LANGUAGES")) + " ", 1),
+            createBaseVNode("i", _hoisted_63, toDisplayString(_ctx.translate("COM_EMUNDUS_OPTIONAL")), 1)
+          ]),
+          createBaseVNode("div", null, [
+            $options.programLanguages.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_64, [
+              _cache[46] || (_cache[46] = createBaseVNode("span", { class: "material-icons-outlined tw-mr-2" }, "info", -1)),
+              createBaseVNode("p", _hoisted_65, [
+                createTextVNode(toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM_LANGUAGES")) + " ", 1),
+                (openBlock(true), createElementBlock(Fragment, null, renderList($options.programLanguages, (language, index) => {
+                  return openBlock(), createElementBlock("strong", {
+                    key: language.lang_id
+                  }, toDisplayString(language.title) + toDisplayString(index < $options.programLanguages.length - 1 ? ", " : ""), 1);
+                }), 128))
+              ])
+            ])) : createCommentVNode("", true),
+            createVNode(_component_multiselect, {
+              modelValue: _ctx.campaignLanguages,
+              "onUpdate:modelValue": _cache[27] || (_cache[27] = ($event) => _ctx.campaignLanguages = $event),
+              label: "label",
+              "track-by": "value",
+              options: $options.languageOptions,
+              multiple: true,
+              taggable: false,
+              placeholder: _ctx.translate("COM_EMUNDUS_ONBOARD_CHOOSE_LANGUAGE"),
+              "select-label": "",
+              "selected-label": "",
+              "deselect-label": ""
+            }, null, 8, ["modelValue", "options", "placeholder"])
+          ])
         ])) : createCommentVNode("", true),
-        createBaseVNode("div", _hoisted_68, [
+        _cache[51] || (_cache[51] = createBaseVNode("hr", { class: "tw-mt-1.5 tw-mb-4" }, null, -1)),
+        createBaseVNode("div", _hoisted_66, [
           createBaseVNode("button", {
             id: "save-btn",
             type: "button",
@@ -9987,10 +10003,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         ])
       ], 32)) : createCommentVNode("", true)
     ]),
-    _ctx.submitted || !_ctx.ready ? (openBlock(), createElementBlock("div", _hoisted_69)) : createCommentVNode("", true)
+    _ctx.submitted || !_ctx.ready ? (openBlock(), createElementBlock("div", _hoisted_67)) : createCommentVNode("", true)
   ]);
 }
-const addCampaign = /* @__PURE__ */ _export_sfc$1(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-19e63e6c"]]);
+const addCampaign = /* @__PURE__ */ _export_sfc$1(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-dfed58f4"]]);
 const addCampaign$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: addCampaign

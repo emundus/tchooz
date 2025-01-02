@@ -1,66 +1,82 @@
 <template>
   <div class="campaigns__add-campaign">
+
     <div v-if="typeof campaignId == 'undefined' || campaignId == 0">
-      <div class="tw-flex tw-items-center tw-cursor-pointer"
-           @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
+      <div
+          class="tw-flex tw-items-center tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300"
+          @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
         <span class="material-symbols-outlined tw-text-neutral-600">navigate_before</span>
         <span class="tw-ml-2 tw-text-neutral-900">{{ translate('BACK') }}</span>
       </div>
 
-      <h1 class="tw-mt-4">{{ translate('COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN') }}</h1>
-      <p class="tw-mt-4">{{ translate('COM_EMUNDUS_GLOBAL_INFORMATIONS_DESC') }}</p>
+      <div class="tw-mt-4">
+        <h1>{{ translate('COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN') }}</h1>
+        <div class="tw-mt-2">
+          <p>{{ translate('COM_EMUNDUS_GLOBAL_INFORMATIONS_DESC') }}</p>
+          <p class="tw-text-red-600 tw-mt-1">{{ translate('COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE') }}</p>
+        </div>
+      </div>
 
-      <hr class="tw-mt-1.5 tw-mb-1.5">
+      <hr class="tw-mt-1.5 tw-mb-4" />
     </div>
 
     <div>
       <form @submit.prevent="submit" v-if="ready" class="emundus-form fabrikForm">
-        <div>
-          <div class="tw-text-red-600 tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE') }}</div>
-
-          <div class="tw-mb-4" id="campaign-label-wrapper">
-            <label for="campLabel" class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_CAMPNAME') }} <span class="tw-text-red-600">*</span></label>
+        <div class="tw-flex tw-flex-col tw-gap-4">
+          <div id="campaign-label-wrapper">
+            <label for="campLabel" class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_CAMPNAME') }} <span
+                class="tw-text-red-600">*</span></label>
             <input
                 id="campLabel"
                 type="text"
                 v-model="form.label[actualLanguage]"
                 required
                 :class="{ 'is-invalid !tw-border-red-600': errors.label }"
-                class="tw-mt-2 form-control fabrikinput tw-w-full"
+                class="tw-mt-1 form-control fabrikinput tw-w-full"
                 @focusout="onFormChange()"
                 @keyup="updateAlias()"
             />
-            <span v-if="errors.label" id="error-campaign-name" class="tw-text-red-600 tw-mb-2">
-              {{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME') }}
-            </span>
-          </div>
-
-          <div class="tw-mb-4">
-            <label for="alias" class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_ALIAS') }} <span class="tw-text-red-600">*</span></label>
-            <div class="tw-flex tw-items-center tw-gap-2">
-              <span>{{ baseUrl }}/</span>
-              <div class="tw-w-full">
-                <input
-                    id="alias"
-                    type="text"
-                    v-model="form.alias"
-                    required
-                    :class="{ 'is-invalid !tw-border-red-600': errors.alias }"
-                    class="form-control fabrikinput tw-w-full"
-                    @focusout="onFormChange()"
-                    @keyup="form.alias !== '' ? aliasUpdated = true : aliasUpdated = false"
-                />
-                <span v-if="errors.alias" class="tw-text-red-600 tw-mb-2 tw-absolute">
-                  <span>{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_LINK') }}</span>
-                </span>
-              </div>
-              <span class="material-symbols-outlined tw-cursor-pointer" @click="copyAliasToClipboard();">content_copy</span>
+            <div v-if="errors.label" id="error-campaign-name" class="tw-text-red-600 tw-mt-1 tw-mb-1">
+              <span>{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME') }}</span>
             </div>
           </div>
 
-          <div class="tw-grid tw-grid-cols-2 tw-mb-4 tw-gap-1.5">
+          <div>
+            <label for="alias" class="tw-font-medium">
+              {{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_ALIAS') }} <span class="tw-text-red-600">*</span>
+            </label>
             <div>
-                <label for="startDate" class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE') }} <span
+              <span class="tw-text-base tw-text-neutral-600">
+              {{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_ALIAS_HELPTEXT') }}
+              </span>
+
+              <div class="tw-mt-1 tw-flex tw-items-center tw-gap-2">
+                <span class="tw-whitespace-nowrap">{{ baseUrl }}/</span>
+                <div class="tw-w-full">
+                  <input
+                      id="alias"
+                      type="text"
+                      v-model="form.alias"
+                      required
+                      :class="{ 'is-invalid !tw-border-red-600': errors.alias }"
+                      class="form-control fabrikinput tw-w-full"
+                      @focusout="onFormChange()"
+                      @keyup="form.alias !== '' ? aliasUpdated = true : aliasUpdated = false"
+                  />
+                  <div v-if="errors.alias" class="tw-text-red-600 tw-mb-1 tw-mt-1 tw-absolute">
+                    <span>{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_LINK') }}</span>
+                  </div>
+                </div>
+                <span class="material-symbols-outlined tw-cursor-pointer"
+                      @click="copyAliasToClipboard();">content_copy</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="tw-grid tw-grid-cols-2 tw-gap-1.5">
+            <div>
+              <label for="startDate" class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE') }}
+                <span
                     class="tw-text-red-600">*</span></label>
               <DatePicker
                   id="campaign_start_date"
@@ -75,16 +91,16 @@
                   :popover="{visibility: 'focus'}"
                   :locale="actualLanguage">
                 <template #default="{ inputValue, inputEvents }">
-                    <input
-                        :value="inputValue"
-                        v-on="inputEvents"
-                        class="tw-mt-2 form-control fabrikinput tw-w-full"
-                        :class="{ 'is-invalid !tw-border-red-600': errors.start_date }"
-                        id="start_date_input"
-                    />
-                  <span v-if="errors.start_date" class="tw-text-red-600 tw-mb-2 tw-absolute">
-                      <span>{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_START_DATE') }}</span>
-                    </span>
+                  <input
+                      :value="inputValue"
+                      v-on="inputEvents"
+                      class="tw-mt-1 form-control fabrikinput tw-w-full"
+                      :class="{ 'is-invalid !tw-border-red-600': errors.start_date }"
+                      id="start_date_input"
+                  />
+                  <div v-if="errors.start_date" class="tw-text-red-600 tw-mb-1 tw-mt-1 tw-absolute">
+                    <span>{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_START_DATE') }}</span>
+                  </div>
                 </template>
               </DatePicker>
             </div>
@@ -107,38 +123,43 @@
                     :locale="actualLanguage">
                   <template #default="{ inputValue, inputEvents }">
 
-                      <input
-                          :value="inputValue"
-                          v-on="inputEvents"
-                          class="tw-mt-2 form-control fabrikinput tw-w-full"
-                          :class="{ 'is-invalid !tw-border-red-600': errors.end_date }"
-                          id="end_date_input"
-                      />
-                    <span v-if="errors.end_date" class="tw-text-red-600 tw-mb-2 tw-absolute">
+                    <input
+                        :value="inputValue"
+                        v-on="inputEvents"
+                        class="tw-mt-1 form-control fabrikinput tw-w-full"
+                        :class="{ 'is-invalid !tw-border-red-600': errors.end_date }"
+                        id="end_date_input"
+                    />
+                    <div v-if="errors.end_date" class="tw-text-red-600 tw-mb-1 tw-mt-1 tw-absolute">
                       <span>{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_END_DATE') }}</span>
-                    </span>
+                    </div>
                   </template>
                 </DatePicker>
               </div>
             </div>
           </div>
 
-          <div class="tw-mb-4">
+          <div>
             <label for="year" class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_PICKYEAR') }} <span
                 class="tw-text-red-600">*</span></label>
-            <autocomplete
-                :id="'year'"
-                @searched="onSearchYear"
-                :items="this.session"
-                :year="form.year"
-                :name="sessionPlaceholder"
-            />
-            <span v-if="errors.year" class="tw-text-red-600 tw-mb-2">
-              <span>{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_YEAR') }}</span>
-            </span>
+            <div>
+              <span class="tw-text-base tw-text-neutral-600">
+              {{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_PICKYEAR_HELPTEXT') }}
+              </span>
+              <autocomplete
+                  :id="'year'"
+                  @searched="onSearchYear"
+                  :items="this.session"
+                  :year="form.year"
+                  :name="sessionPlaceholder"
+              />
+              <div v-if="errors.year" class="tw-text-red-600 tw-mb-1 tw-mt-1">
+                <span>{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_YEAR') }}</span>
+              </div>
+            </div>
           </div>
 
-          <div class="tw-mb-4 tw-flex tw-items-center">
+          <div class="tw-flex tw-items-center">
             <div class="em-toggle">
               <input type="checkbox"
                      true-value="1"
@@ -155,7 +176,7 @@
             <span for="published" class="tw-ml-2">{{ translate('COM_EMUNDUS_ONBOARD_FILTER_PUBLISH') }}</span>
           </div>
 
-          <div class="tw-mb-4 tw-flex tw-items-center">
+          <div class="tw-flex tw-items-center">
             <div class="em-toggle">
               <input type="checkbox"
                      true-value="0"
@@ -174,7 +195,7 @@
             </span>
           </div>
 
-          <div class="tw-mb-4 tw-flex tw-items-center">
+          <div class="tw-flex tw-items-center">
             <div class="em-toggle">
               <input type="checkbox"
                      true-value="1"
@@ -189,22 +210,22 @@
               <strong class="b em-toggle-track"></strong>
             </div>
             <span for="pinned" class="tw-ml-2 tw-flex tw-items-center">{{ translate('COM_EMUNDUS_CAMPAIGNS_PIN') }}
-              <span class="material-symbols-outlined tw-ml-1 tw-text-base tw-cursor-pointer tw-text-neutral-600" @click="displayPinnedCampaignTip">help_outline</span>
+              <span class="material-symbols-outlined tw-ml-1 tw-text-base tw-cursor-pointer tw-text-neutral-600"
+                    @click="displayPinnedCampaignTip">help_outline</span>
             </span>
           </div>
         </div>
 
-        <hr/>
+        <hr class="tw-mt-1.5 tw-mb-4">
 
-        <div class="tw-mb-4">
-          <div class="tw-mb-4">
-            <h3>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION') }}</h3>
-          </div>
+        <div class="tw-flex tw-flex-col tw-gap-4">
+          <h2>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION') }}</h2>
 
-          <div id="campResume" class="tw-mb-4">
+          <div id="campResume">
             <div class="tw-flex tw-items-center">
               <label class="tw-font-medium tw-mb-0">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME') }}</label>
-              <span class="material-symbols-outlined tw-ml-1 tw-text-base tw-cursor-pointer tw-text-neutral-600" @click="displayCampaignResumeTip">help_outline</span>
+              <span class="material-symbols-outlined tw-ml-1 tw-text-base tw-cursor-pointer tw-text-neutral-600"
+                    @click="displayCampaignResumeTip">help_outline</span>
             </div>
             <tip-tap-editor
                 v-model="form.short_description"
@@ -218,12 +239,13 @@
             />
           </div>
 
-          <div class="tw-mb-4">
+          <div>
             <div class="tw-flex tw-items-center">
               <label class="tw-font-medium tw-mb-0">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION') }}</label>
-              <span class="material-symbols-outlined tw-ml-1 tw-text-base tw-cursor-pointer tw-text-neutral-600" @click="displayCampaignDescriptionTip">help_outline</span>
+              <span class="material-symbols-outlined tw-ml-1 tw-text-base tw-cursor-pointer tw-text-neutral-600"
+                    @click="displayCampaignDescriptionTip">help_outline</span>
             </div>
-            <div id="campDescription" class="tw-mb-4" v-if="typeof form.description != 'undefined'">
+            <div id="campDescription" v-if="typeof form.description != 'undefined'">
               <tip-tap-editor
                   v-model="form.description"
                   :upload-url="'/index.php?option=com_emundus&controller=settings&task=uploadmedia'"
@@ -240,18 +262,24 @@
           </div>
         </div>
 
-        <div class="tw-mt-8">
-          <div class="tw-mb-4">
-            <h2>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM') }}</h2>
-          </div>
-          <div class="tw-mb-4">{{ translate('COM_EMUNDUS_ONBOARD_PROGRAM_INTRO_DESC') }}<span
-              class="tw-text-red-600">*</span></div>
+        <hr class="tw-mt-1.5 tw-mb-4" />
 
-          <div class="tw-mb-4">
+        <div class="tw-flex tw-flex-col tw-gap-4">
+          <div>
+            <h2>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM') }}</h2>
+            <div class="tw-mt-2">
+              <p>
+                {{ translate('COM_EMUNDUS_ONBOARD_PROGRAM_INTRO_DESC') }}
+                <span class="tw-text-red-600">*</span>
+              </p>
+            </div>
+          </div>
+
+          <div>
             <div class="tw-flex tw-items-center">
               <select
                   id="select_prog"
-                  class="tw-mt-2 form-control fabrikinput tw-w-full"
+                  class="form-control fabrikinput tw-w-full"
                   :class="{ 'is-invalid !tw-border-red-600': errors.progCode }"
                   v-model="form.training"
                   v-on:change="setCategory"
@@ -273,81 +301,95 @@
                 <span class="material-symbols-outlined em-main-500-color">add_circle_outline</span>
               </button>
             </div>
-            <span v-if="errors.progCode" class="tw-text-red-600 tw-mb-2">
+            <div v-if="errors.progCode" class="tw-text-red-600 tw-mb-1 tw-mt-1">
               <span>{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_PROGRAM') }}</span>
-            </span>
+            </div>
           </div>
-
 
           <transition name="slide-fade">
             <div v-if="isHiddenProgram">
-              <div class="tw-mb-4">
+              <div>
                 <div>
                   <label for="prog_label" class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_PROGNAME') }} <span
                       class="tw-text-red-600">*</span></label>
                   <input
                       type="text"
                       id="prog_label"
-                      class="tw-mt-2 form-control fabrikinput tw-w-full"
+                      class="tw-mt-1 form-control fabrikinput tw-w-full"
                       placeholder=" "
                       v-model="programForm.label"
                       :class="{ 'is-invalid !tw-border-red-600': errors.progLabel }"
                   />
                 </div>
-                <p v-if="errors.progLabel" class="tw-text-red-600 tw-mb-2">
+                <div v-if="errors.progLabel" class="tw-text-red-600 tw-mb-1 tw-mt-1">
                   <span class="tw-text-red-600">{{ translate('COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL') }}</span>
-                </p>
+                </div>
               </div>
             </div>
           </transition>
         </div>
 
-        <div id="campaign-form-container">
-          <h2 class="tw-mt-2 tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_FORM') }} <i>{{ translate('COM_EMUNDUS_OPTIONAL') }}</i></h2>
-          <p class="tw-mt-2 tw-mb-2"> {{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_FORM_DESC') }} </p>
-          <div class="tw-flex tw-flex-row tw-items-center">
-            <select class="tw-w-full" v-model="form.profile_id">
-              <option value="0">{{ translate('COM_EMUNDUS_ONBOARD_CHOOSE_FORM') }}</option>
-              <option v-for="applicantForm in applicantForms" :key="applicantForm.id" :value="applicantForm.id" > {{ applicantForm.label }} </option>
-            </select>
-            <span class="material-symbols-outlined tw-cursor-pointer" @click="getAllForms">refresh</span>
+        <hr class="tw-mt-1.5 tw-mb-4" />
+
+        <div class="tw-flex tw-flex-col tw-gap-4" id="campaign-form-container">
+          <h2>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_FORM') }} <i
+              class="tw-text-sm tw-text-neutral-500">{{ translate('COM_EMUNDUS_OPTIONAL') }}</i></h2>
+
+          <div>
+            <label class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_FORM_DESC') }}</label>
+
+            <div class="tw-flex tw-items-center tw-mt-1 tw-mb-1">
+              <select class="tw-w-full" v-model="form.profile_id">
+                <option value="0">{{ translate('COM_EMUNDUS_ONBOARD_CHOOSE_FORM') }}</option>
+                <option v-for="applicantForm in applicantForms" :key="applicantForm.id" :value="applicantForm.id">
+                  {{ applicantForm.label }}
+                </option>
+              </select>
+              <span class="material-symbols-outlined tw-cursor-pointer tw-ml-2" @click="getAllForms">refresh</span>
+            </div>
+            <a href="/forms" target="_blank" class="tw-underline">
+              {{ translate('COM_EMUNDUS_ONBOARD_ACCESS_TO_FORMS_LIST') }}
+            </a>
           </div>
-          <a href="/forms" target="_blank" class="tw-my-2 tw-underline">
-            {{ translate('COM_EMUNDUS_ONBOARD_ACCESS_TO_FORMS_LIST') }}
-          </a>
         </div>
 
-        <hr class="tw-mt-4"/>
+        <hr class="tw-mt-1.5 tw-mb-4" />
 
-        <div id="select-campaign-languages" v-if="languageOptions.length > 1">
-          <h2>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_LANGUAGES') }}</h2>
+        <div class="tw-flex tw-flex-col tw-gap-4" id="select-campaign-languages" v-if="languageOptions.length > 1">
+          <h2>
+            {{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_LANGUAGES') }}
+            <i class="tw-text-sm tw-text-neutral-500">{{ translate('COM_EMUNDUS_OPTIONAL') }}</i>
+          </h2>
 
-          <div id="program-languages" class="tw-mt-4 tw-mb-0 tw-p-4 alert alert-info tw-flex tw-flex-row" v-if="programLanguages.length > 0">
-            <span class="material-icons-outlined tw-mr-2">info</span>
-            <p class="tw-font-light tw-text-sm"> {{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM_LANGUAGES') }}
-              <strong v-for="(language, index) in programLanguages" :key="language.lang_id">
-                {{ language.title }}{{ (index < (programLanguages.length - 1)) ? ', ' : '' }}
-              </strong>
-            </p>
+          <div>
+            <div v-if="programLanguages.length > 0" id="program-languages" class="tw-mb-1 tw-p-4 alert alert-info tw-flex">
+              <span class="material-icons-outlined tw-mr-2">info</span>
+              <p class="tw-font-light tw-text-sm"> {{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM_LANGUAGES') }}
+                <strong v-for="(language, index) in programLanguages" :key="language.lang_id">
+                  {{ language.title }}{{ (index < (programLanguages.length - 1)) ? ', ' : '' }}
+                </strong>
+              </p>
+            </div>
+
+            <multiselect
+                v-model="campaignLanguages"
+                label="label"
+                track-by="value"
+                :options="languageOptions"
+                :multiple="true"
+                :taggable="false"
+                :placeholder="translate('COM_EMUNDUS_ONBOARD_CHOOSE_LANGUAGE')"
+                select-label=""
+                selected-label=""
+                deselect-label=""
+            ></multiselect>
           </div>
-          <multiselect
-              class="tw-mt-4"
-              v-model="campaignLanguages"
-              label="label"
-              track-by="value"
-              :options="languageOptions"
-              :multiple="true"
-              :taggable="true"
-              select-label=""
-              selected-label=""
-              deselect-label=""
-          ></multiselect>
 
-          <hr class="tw-mt-4 tw-mb-4"/>
         </div>
 
+        <hr class="tw-mt-1.5 tw-mb-4" />
 
-        <div class="tw-flex tw-justify-end tw-mt-4">
+        <div class="tw-flex tw-justify-end">
           <button
               id="save-btn"
               type="button"
@@ -368,7 +410,7 @@ import Swal from "sweetalert2";
 import Autocomplete from "@/components/autocomplete.vue";
 
 /** VCalendar **/
-import { DatePicker } from 'v-calendar';
+import {DatePicker} from 'v-calendar';
 import 'v-calendar/dist/style.css';
 
 /** TipTap Editor **/
@@ -381,8 +423,8 @@ import campaignService from '@/services/campaign.js'
 import settingsService from '@/services/settings.js';
 import programmeService from '@/services/programme.js';
 
-import { useGlobalStore } from "@/stores/global.js";
-import { useCampaignStore } from "@/stores/campaign.js";
+import {useGlobalStore} from "@/stores/global.js";
+import {useCampaignStore} from "@/stores/campaign.js";
 import fileService from "@/services/file.js";
 import Multiselect from "vue-multiselect";
 
@@ -426,7 +468,7 @@ export default {
     years: [],
     languages: [],
     aliases: [],
-    editorPlugins: ['history', 'link', 'image', 'bold', 'italic', 'underline','left','center','right','h1', 'h2', 'ul'],
+    editorPlugins: ['history', 'link', 'image', 'bold', 'italic', 'underline', 'left', 'center', 'right', 'h1', 'h2', 'ul'],
 
     session: [],
     old_training: "",
@@ -636,16 +678,16 @@ export default {
 
     getYears() {
       campaignService.getYears()
-        .then(response => {
-          this.years = response.data;
+          .then(response => {
+            this.years = response.data;
 
-          this.years.forEach((year) => {
-            this.session.push(year.schoolyear);
-          });
+            this.years.forEach((year) => {
+              this.session.push(year.schoolyear);
+            });
 
-        }).catch(e => {
-          console.log(e);
-        });
+          }).catch(e => {
+        console.log(e);
+      });
     },
 
     async getLanguages() {
@@ -669,7 +711,7 @@ export default {
       form_data.languages = this.campaignLanguages.map((language) => language.value);
 
       campaignService.createCampaign(form_data).then((response) => {
-        if(response.status == 1) {
+        if (response.status == 1) {
           this.campaignId = response.data;
           this.quitFunnelOrContinue(this.quit, response.redirect);
         }
@@ -726,23 +768,23 @@ export default {
         this.errors.label = true;
       }
 
-      if(this.form.alias === '' || this.form.alias == null || typeof this.form.alias === 'undefined') {
+      if (this.form.alias === '' || this.form.alias == null || typeof this.form.alias === 'undefined') {
         window.scrollTo({top: 0, behavior: 'smooth'});
         this.errors.alias = true;
       }
 
       if (this.form.end_date === '' || this.form.end_date === '0000-00-00 00:00:00') {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({top: 0, behavior: 'smooth'});
         this.errors.end_date = true;
       }
 
       if (this.form.start_date === '' || this.form.start_date === '0000-00-00 00:00:00') {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({top: 0, behavior: 'smooth'});
         this.errors.start_date = true;
       }
 
       if (this.form.year === '') {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({top: 0, behavior: 'smooth'});
         this.errors.year = true;
         document.getElementById('year').classList.add('is-invalid');
         document.getElementById('year').classList.add('!tw-border-red-600');
@@ -752,8 +794,8 @@ export default {
         let least_one_status = this.form.limit_status.every((value) => {
           return value === false;
         });
-        if(this.form.limit === ''){
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (this.form.limit === '') {
+          window.scrollTo({top: 0, behavior: 'smooth'});
           this.errors.limit_files_number = true;
         }
         if (this.form.limit_status.length == 0 || least_one_status) {
@@ -781,7 +823,7 @@ export default {
         }
       }
 
-      if(this.errors.label || this.errors.start_date || this.errors.end_date || this.errors.year || this.errors.limit_files_number || this.errors.limit_status || this.errors.progLabel || this.errors.progCode || this.errors.alias) {
+      if (this.errors.label || this.errors.start_date || this.errors.end_date || this.errors.year || this.errors.limit_files_number || this.errors.limit_status || this.errors.progLabel || this.errors.progCode || this.errors.alias) {
         return 0;
       }
 
@@ -805,9 +847,8 @@ export default {
         } else {
           this.createCampaignWithNoExistingProgram(this.programForm);
         }
-      }
-      else {
-        if (this.form.training !== '')  {
+      } else {
+        if (this.form.training !== '') {
           this.programForm = this.programs.find(program => program.code === this.form.training);
           this.form.training = this.programForm.code;
           this.createCampaign(this.form);
@@ -852,7 +893,7 @@ export default {
         this.redirectJRoute('index.php?option=com_emundus&view=campaigns');
       } else if (quit === 1) {
         document.cookie = 'campaign_' + this.campaignId + '_menu = 1; expires=Session; path=/';
-        if(redirect === '') {
+        if (redirect === '') {
           redirect = 'index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' + this.campaignId + '&index=0'
         }
 
@@ -889,7 +930,7 @@ export default {
           published: 1,
           apply_online: 1
         }
-        document.getElementById('add-program').style = 'transform: rotate(135deg)';
+        document.getElementById('add-program').style = 'transform: rotate(45deg)';
         document.getElementById('select_prog').setAttribute('disabled', 'disabled');
       }
       this.isHiddenProgram = !this.isHiddenProgram;
@@ -925,12 +966,12 @@ export default {
       let seconds = date.getSeconds().toString().padStart(2, '0');
 
       return format
-        .replace('YYYY', year)
-        .replace('MM', month)
-        .replace('DD', day)
-        .replace('HH', hours)
-        .replace('mm', minutes)
-        .replace('ss', seconds);
+          .replace('YYYY', year)
+          .replace('MM', month)
+          .replace('DD', day)
+          .replace('HH', hours)
+          .replace('mm', minutes)
+          .replace('ss', seconds);
     }
   },
 
@@ -978,7 +1019,7 @@ export default {
 
   watch: {
     'form.start_date': function (val) {
-      if(typeof val === 'object') {
+      if (typeof val === 'object') {
         let startDate = new Date(val);
         let endDate = new Date(this.form.end_date);
         this.minDate = new Date(startDate.setDate(startDate.getDate() + 1)).toISOString();
@@ -988,7 +1029,7 @@ export default {
       }
     },
 
-    'form.alias': function(val, oldVal) {
+    'form.alias': function (val, oldVal) {
       if (val !== oldVal && val && val !== '') {
         this.form.alias = val.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9_-]+/g, '-').toLowerCase();
         // Check if alias already exists
@@ -1006,6 +1047,7 @@ export default {
   height: 24px;
   width: 24px;
   padding: unset;
+  transition: transform 0.1s ease-in-out;
 }
 
 .em-color-round {
