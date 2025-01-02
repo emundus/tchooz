@@ -155,7 +155,7 @@ class EmundusModelEmails extends JModelList
 		if (!is_null($to_current_user)) {
 			$query->andWhere($this->_db->quoteName('eset.to_current_user') . ' IN (' . $to_current_user . ')');
 		}
-		$query->andWhere($this->_db->quoteName('esp.code') . ' IN (' . implode(',', $this->_db->quote($code)) . ')')
+		$query->andWhere($this->_db->quoteName('esp.code') . ' IN (' . implode(',', $this->_db->quote($code)) . ') OR ' . $this->_db->quoteName('eset.all_program') . ' = 1')
 			->group('eset.id');
 		try {
 			$this->_db->setQuery($query);
@@ -2761,7 +2761,7 @@ class EmundusModelEmails extends JModelList
 				->leftJoin($this->_db->quoteName('#__emundus_setup_emails', 'se') . ' ON ' . $this->_db->quoteName('et.email_id') . ' = ' . $this->_db->quoteName('se.id'))
 				->leftJoin($this->_db->quoteName('#__emundus_setup_status', 'ss') . ' ON ' . $this->_db->quoteName('et.step') . ' = ' . $this->_db->quoteName('ss.step'))
 				->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_profile_id', 'ep') . ' ON ' . $this->_db->quoteName('et.id') . ' = ' . $this->_db->quoteName('ep.parent_id'))
-				->where($this->_db->quoteName('etrp.programme_id') . ' = ' . $this->_db->quote($pid));
+				->where($this->_db->quoteName('etrp.programme_id') . ' = ' . $this->_db->quote($pid) . ' OR ' . $this->_db->quoteName('et.all_program') . ' = 1');
 
 			try {
 				$this->_db->setQuery($query);
