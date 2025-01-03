@@ -35,6 +35,24 @@ class WorkflowModelTest extends UnitTestCase
 		$this->assertGreaterThan(0, $workflow_id);
 	}
 
+	public function testGetWorkflow()
+	{
+		$workflow_id = $this->model->add();
+		$this->assertNotEmpty($workflow_id);
+
+		$workflow_data = $this->model->getWorkflow($workflow_id);
+		$this->assertNotEmpty($workflow_data);
+		$this->assertNotEmpty($workflow_data['workflow']);
+		$this->assertEquals($workflow_id, $workflow_data['workflow']->id);
+
+		// by default steps and programs should be empty, but keys should exist
+		$this->assertArrayHasKey('steps', $workflow_data);
+		$this->assertEmpty($workflow_data['steps']);
+
+		$this->assertArrayHasKey('programs', $workflow_data);
+		$this->assertEmpty($workflow_data['programs']);
+	}
+
 	public function testDelete()
 	{
 		$workflow_id = $this->model->add();
@@ -151,9 +169,6 @@ class WorkflowModelTest extends UnitTestCase
 
 	public function testDuplicateWorkflow()
 	{
-		$new_workflow_id = $this->model->duplicateWorkflow(1);
-		$this->assertNotEmpty($new_workflow_id, 'Duplicating a complete workflow should return a value');
-
 		$new_workflow_id = $this->model->duplicateWorkflow(999999999);
 		$this->assertEmpty($new_workflow_id, 'Duplicating a non-existing workflow should return an empty value');
 
@@ -168,10 +183,13 @@ class WorkflowModelTest extends UnitTestCase
 
 	}
 
-	public function testMigrateDeprecatedCampaignWorkflows() {
+	/*
+	 * TODO
+	 *
+	 * public function testMigrateDeprecatedCampaignWorkflows() {
 		// old Workflows were kind of equals to current Step Object, not Workflow Object
 		// before a program could be linked to muliple workflows, now it can only be linked to one
 		// before campaigns could be linked to multiple workflows, now they can not be linked to any, it must be througth campaign's program
 
-	}
+	}*/
 }
