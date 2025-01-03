@@ -53,6 +53,22 @@ class WorkflowModelTest extends UnitTestCase
 		$this->assertEmpty($workflow_data['programs']);
 	}
 
+	public function testGetWorkflows()
+	{
+		$workflows = $this->model->getWorkflows();
+		$this->assertNotEmpty($workflows);
+		$this->assertIsArray($workflows);
+
+		$workflow_id = $this->model->add();
+		$this->assertNotEmpty($workflow_id);
+
+		$workflows = $this->model->getWorkflows([$workflow_id]);
+		$this->assertNotEmpty($workflows);
+		$this->assertIsArray($workflows);
+		$this->assertCount(1, $workflows);
+		$this->assertEquals($workflow_id, $workflows[0]->id);
+	}
+
 	public function testDelete()
 	{
 		$workflow_id = $this->model->add();
