@@ -8014,3 +8014,128 @@ form.fabrikForm[name=form_108] .fabrikGroup .plg-dropdown .fabrikElement {
     }
   }
 }
+
+.view-import #g-container-main .g-container {
+  background: var(--neutral-0);
+  border-radius: 16px;
+  border: 1px solid var(--neutral-300);
+  padding: var(--em-spacing-6);
+  margin-bottom: var(--em-spacing-6);
+
+  #fabrik-form {
+    h2 {
+      font-size: var(--em-coordinator-h1);
+      margin-bottom: var(--em-spacing-4);
+    }
+
+    fieldset + fieldset {
+      margin-top: 0;
+    }
+
+    .control-group {
+      margin-bottom: var(--em-spacing-4);
+
+      .control-label > label {
+        display: inline-block;
+        font-size: var(--em-form-label-size);
+        width: 100%;
+        font-family: var(--em-profile-font), Inter, sans-serif;
+        font-style: normal;
+        font-weight: var(--em-form-label-weight);
+        margin-bottom: 0;
+      }
+
+      .controls {
+        margin-top: var(--em-form-label-margin-bottom);
+        position: relative;
+
+        input[type="checkbox"],select {
+          cursor: pointer;
+        }
+
+        .form-check {
+          margin-right: 0;
+          cursor: pointer;
+        }
+
+        .form-text {
+          margin-top: var(--em-spacing-1);
+        }
+
+        & > #jform_tabdelimited {
+          margin: 0;
+        }
+
+        & > #jform_overwrite {
+          padding: 0;
+        }
+
+        & > #jform_overwrite {
+          gap: 8px;
+          display: flex;
+
+          & > .btn:nth-child(2) {
+            color: var(--red-700) !important;
+            border: 1px solid var(--neutral-500) !important;
+            background: var(--neutral-0) !important;
+            display: flex;
+            align-items: center;
+            width: 200px;
+            justify-content: center;
+            height: var(--em-form-height);
+            font-size: var(--em-applicant-font-size);
+            box-shadow: none;
+
+            &.btn-danger {
+              color: var(--neutral-0) !important;
+              border: 1px solid var(--red-700) !important;
+              background: var(--red-700) !important;
+            }
+          }
+
+          & > .btn:nth-child(4) {
+            color: var(--em-green-2) !important;
+            border: 1px solid var(--neutral-500) !important;
+            background: var(--neutral-0) !important;
+            display: flex;
+            align-items: center;
+            width: 200px;
+            justify-content: center;
+            height: var(--em-form-height);
+            font-size: var(--em-applicant-font-size);
+            box-shadow: none;
+
+            &.btn-success {
+              color: var(--neutral-0) !important;
+              border: 1px solid var(--em-green-2) !important;
+              background: var(--em-green-2) !important;
+            }
+          }
+        }
+
+        & > #jform_inPutFormat {
+          height: var(--em-form-height);
+          padding-left: 8px;
+        }
+      }
+    }
+
+    input.btn-primary {
+      padding: 8px 12px;
+      background-color: var(--em-profile-color);
+      color: var(--neutral-0) !important;
+      border: 1px solid var(--em-profile-color);
+      font-size: 16px;
+      border-radius: var(--em-applicant-br);
+      font-family: var(--em-profile-font), Inter, sans-serif;
+      text-transform: capitalize;
+      letter-spacing: normal;
+      float: right;
+
+      &:hover {
+        background: var(--neutral-0);
+        color: var(--em-profile-color) !important;
+      }
+    }
+  }
+}
