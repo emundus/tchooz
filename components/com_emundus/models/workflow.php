@@ -342,7 +342,17 @@ class EmundusModelWorkflow extends JModelList
 		return $nb_workflows;
 	}
 
-	public function getWorkflows($ids = [], $limit = 0, $page = 0, $programs = []): array
+	/**
+	 * @param $ids
+	 * @param $limit default is 0
+	 * @param $page default is 0
+	 * @param $programs default is [], allowed values are an array of program ids
+	 * @param $order_by default is 'esw.id', allowed values are 'esw.id' and 'esw.label'
+	 * @param $order default is 'DESC', allowed values are 'ASC' and 'DESC'
+	 *
+	 * @return array
+	 */
+	public function getWorkflows($ids = [], $limit = 0, $page = 0, $programs = [], $order_by =  'esw.id', $order = 'DESC'): array
 	{
 		$workflows = [];
 
@@ -367,6 +377,20 @@ class EmundusModelWorkflow extends JModelList
 			$offset = ($page - 1) * $limit;
 			$query->setLimit($limit, $offset);
 		}
+
+		$allowed_order_by = ['esw.id', 'esw.label'];
+		$allowed_order = ['ASC', 'DESC'];
+
+		if (!in_array($order_by, $allowed_order_by)) {
+			$order_by = 'esw.id';
+		}
+
+		if (!in_array($order, $allowed_order)) {
+			$order = 'DESC';
+		}
+
+		$query->order($this->db->quoteName($order_by) . ' ' . $order);
+
 		try {
 			$this->db->setQuery($query);
 			$workflows = $this->db->loadObjectList();

@@ -69,7 +69,7 @@ class WorkflowModelTest extends UnitTestCase
 		$this->assertNotEmpty($workflows);
 		$this->assertIsArray($workflows);
 
-		$workflow_id = $this->model->add();
+		$workflow_id = $this->model->add('Workflow A');
 		$this->assertNotEmpty($workflow_id);
 
 		$workflows = $this->model->getWorkflows([$workflow_id]);
@@ -77,6 +77,20 @@ class WorkflowModelTest extends UnitTestCase
 		$this->assertIsArray($workflows);
 		$this->assertCount(1, $workflows);
 		$this->assertEquals($workflow_id, $workflows[0]->id);
+
+		$this->model->add('Workflow B');
+
+		$workflows_order_by_label = $this->model->getWorkflows([], 0, 0, [], 'esw.label', 'ASC');
+		$this->assertNotEmpty($workflows_order_by_label);
+
+		$workflows_order_by_label_desc = $this->model->getWorkflows([], 0, 0, [], 'esw.label', 'DESC');
+		$this->assertNotEmpty($workflows_order_by_label_desc);
+		$this->assertNotEquals($workflows_order_by_label, $workflows_order_by_label_desc);
+
+		$workflows_default = $this->model->getWorkflows();
+		$workflows_order_by_wrong_column = $this->model->getWorkflows([], 0, 0, [], 'esw.not_allowed', 'something_else');
+		$this->assertNotEmpty($workflows_order_by_wrong_column);
+		$this->assertEquals($workflows_default, $workflows_order_by_wrong_column, 'If the order column values are not allowed, the result should be the same as the default one');
 	}
 
 	/**
