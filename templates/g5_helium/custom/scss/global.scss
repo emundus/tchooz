@@ -4209,6 +4209,46 @@ label[for='clear-search'] {
   top: 0;
 }
 
+label[for='save-filter'] {
+  height: 25px;
+  width: 25px;
+  border-radius: var(--em-applicant-br) !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+  background: var(--neutral-cloudy) !important;
+
+  &:hover {
+    background: #ffffff50 !important;
+    color: var(--neutral-0) !important;
+  }
+
+  span {
+    font-size: 1.1250em;
+  }
+}
+
+label[for='clear-search'] {
+  height: 25px;
+  width: 25px;
+  border-radius: var(--em-applicant-br) !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+  background: var(--red-500) !important;
+
+  &:hover {
+    background: var(--red-400) !important;
+    color: var(--neutral-0) !important;
+  }
+
+  span {
+    font-size: 1.1250em;
+  }
+}
+
 .com_emundus .em_filters_filedset > div:nth-child(+n+5) .optWrapper {
   top: auto;
   bottom: 100%;
