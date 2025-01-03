@@ -1,43 +1,47 @@
 <?php
 defined('_JEXEC') or die('Restricted access');
 
-$document = JFactory::getDocument();
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+
+$app = Factory::getApplication();
+$document = Factory::getDocument();
 $document->addStyleSheet("media/com_emundus/css/emundus_export_select_columns.css");
 $eMConfig     = JComponentHelper::getParams('com_emundus');
-$current_user = JFactory::getUser();
-$view         = JFactory::getApplication()->input->get('v', null, 'GET', 'none', 0);
-$comments     = JFactory::getApplication()->input->get('comments', null, 'POST', 'none', 0);
-$itemid       = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none', 0);
+$current_user = $app->getIdentity();
+$view         = $app->input->get('v', null, 'GET', 'none', 0);
+$comments     = $app->input->get('comments', null, 'POST', 'none', 0);
+$itemid       = $app->input->get('Itemid', null, 'GET', 'none', 0);
 // Starting a session.
-$session    = JFactory::getSession();
+$session    = $app->getSession();
 $s_elements = $session->get('s_elements');
 $comments   = $session->get('comments');
 
 
-$currentLanguage = JFactory::getLanguage()->getTag();
+$currentLanguage = $app->getLanguage()->getTag();
 $languages = JLanguageHelper::getLanguages('lang_code');
 
 // Get the SEF tag of current language.
 $sefTag = $languages[$currentLanguage]->sef;
 
-JText::script('COM_EMUNDUS_TAG_APPLICANT_CAMPAIGN_YEAR');
-JText::script('COM_EMUNDUS_TAG_APPLICANT_CAMPAIGN_START');
-JText::script('COM_EMUNDUS_TAG_APPLICANT_CAMPAIGN_END');
-JText::script('COM_EMUNDUS_TAG_APPLICANT_ID');
-JText::script('COM_EMUNDUS_TAG_USER_ID');
-JText::script('COM_EMUNDUS_TAG_APPLICANT_NAME');
-JText::script('COM_EMUNDUS_TAG_CURRENT_DATE');
-JText::script('COM_EMUNDUS_TAG_APPLICANT_BIRTH_DATE');
-JText::script('COM_EMUNDUS_TAG_APPLICANT_SITE_URL');
-JText::script('COM_EMUNDUS_TAG_APPLICANT_APPLICATION_STATUS');
+Text::script('COM_EMUNDUS_TAG_APPLICANT_CAMPAIGN_YEAR');
+Text::script('COM_EMUNDUS_TAG_APPLICANT_CAMPAIGN_START');
+Text::script('COM_EMUNDUS_TAG_APPLICANT_CAMPAIGN_END');
+Text::script('COM_EMUNDUS_TAG_APPLICANT_ID');
+Text::script('COM_EMUNDUS_TAG_USER_ID');
+Text::script('COM_EMUNDUS_TAG_APPLICANT_NAME');
+Text::script('COM_EMUNDUS_TAG_CURRENT_DATE');
+Text::script('COM_EMUNDUS_TAG_APPLICANT_BIRTH_DATE');
+Text::script('COM_EMUNDUS_TAG_APPLICANT_SITE_URL');
+Text::script('COM_EMUNDUS_TAG_APPLICANT_APPLICATION_STATUS');
 ?>
 
-<h1><?= JText::_('COM_EMUNDUS_TAGS_EM_TAGS_PAGE_TITLE'); ?></h1>
+<h1><?= Text::_('COM_EMUNDUS_TAGS_EM_TAGS_PAGE_TITLE'); ?></h1>
 
 <div id="em-select-program" class="mt-2">
-    <p><?= JText::_('COM_EMUNDUS_EMTAGS_SELECT_PROG_DESC'); ?></p>
+    <p><?= Text::_('COM_EMUNDUS_EMTAGS_SELECT_PROG_DESC'); ?></p>
     <select id="program" class="em-w-100 mt-3" onchange="programSelect();">
-        <option value=""><?= JText::_('COM_EMUNDUS_EMTAGS_PROGRAM_SELECT'); ?></option>
+        <option value=""><?= Text::_('COM_EMUNDUS_EMTAGS_PROGRAM_SELECT'); ?></option>
 		<?php foreach ($this->programs as $program) : ?>
             <option value="<?= $program["code"]; ?>"><?= $program["label"]; ?></option>
 		<?php endforeach; ?>
@@ -47,13 +51,13 @@ JText::script('COM_EMUNDUS_TAG_APPLICANT_APPLICATION_STATUS');
 <div id="program-categories" class="hide">
     <hr>
     <div id="program-categories_desc" class="em-mb-32">
-        <p><?= JText::_('COM_EMUNDUS_EMTAGS_SELECT_CAT_DESC'); ?></p>
+        <p><?= Text::_('COM_EMUNDUS_EMTAGS_SELECT_CAT_DESC'); ?></p>
     </div>
 
     <div id="program-categories-group">
         <div id="em-select-campaign">
             <select id="campaign" class="em-w-100" onchange="showAll()">
-                <option value=""><?= JText::_('COM_EMUNDUS_EMTAGS_CAMPAIGN_SELECT'); ?></option>
+                <option value=""><?= Text::_('COM_EMUNDUS_EMTAGS_CAMPAIGN_SELECT'); ?></option>
             </select>
         </div>
 
@@ -61,42 +65,18 @@ JText::script('COM_EMUNDUS_TAG_APPLICANT_APPLICATION_STATUS');
             <ul class="nav nav-tabs topnav">
                 <li onclick="showAll();">
                     <a class="em-neutral-700-color em-pointer em-no-hover"
-                       id="em-select-form"><?= JText::_('COM_EMUNDUS_APPLICATION_APPLICATION_FORM'); ?></a>
+                       id="em-select-form"><?= Text::_('COM_EMUNDUS_APPLICATION_APPLICATION_FORM'); ?></a>
                 </li>
                 <li onclick="showEval();">
                     <a class="em-neutral-700-color em-pointer em-no-hover"
-                       id="em-select-evaluation"><?= JText::_('COM_EMUNDUS_EMTAGS_EVALUATION_SELECT'); ?></a>
-                </li>
-                <li onclick="showDecision();">
-                    <a class="em-neutral-700-color em-pointer em-no-hover"
-                       id="em-select-decision"><?= JText::_('COM_EMUNDUS_EMTAGS_DECISION_SELECT'); ?></a>
-                </li>
-                <li onclick="showAdmission();">
-                    <a class="em-neutral-700-color em-pointer em-no-hover"
-                       id="em-select-admission"><?= JText::_('COM_EMUNDUS_EMTAGS_ADMISSION_SELECT'); ?></a>
+                       id="em-select-evaluation"><?= Text::_('COM_EMUNDUS_EMTAGS_EVALUATION_SELECT'); ?></a>
                 </li>
                 <li onclick="showOther();">
                     <a class="em-neutral-700-color em-pointer em-no-hover"
-                       id="em-select-other"><?= JText::_('COM_EMUNDUS_EMTAGS_OTHER_TAG_SELECT'); ?></a>
+                       id="em-select-other"><?= Text::_('COM_EMUNDUS_EMTAGS_OTHER_TAG_SELECT'); ?></a>
                 </li>
             </ul>
         </div>
-
-        <!--            <div id="em-select-evaluation em-h-50">
-                <button class="btn btn-primary" onclick="showEval();"><?= JText::_('COM_EMUNDUS_EMTAGS_EVALUATION_SELECT'); ?></button>
-            </div>
-
-            <div id="em-select-decision em-h-50">
-                <button class="btn btn-primary" onclick="showDecision();"><?= JText::_('COM_EMUNDUS_EMTAGS_DECISION_SELECT'); ?></button>
-            </div>
-
-            <div id="em-select-admission em-h-50">
-                <button class="btn btn-primary" onclick="showAdmission();"><?= JText::_('COM_EMUNDUS_EMTAGS_ADMISSION_SELECT'); ?></button>
-            </div>
-
-            <div id="em-select-other em-h-50">
-                <button class="btn btn-primary" onclick="showOther();"><?= JText::_('COM_EMUNDUS_EMTAGS_OTHER_TAG_SELECT'); ?></button>
-            </div>-->
     </div>
 
 </div>
@@ -105,16 +85,16 @@ JText::script('COM_EMUNDUS_TAG_APPLICANT_APPLICATION_STATUS');
 
 <div id="other-result" class="hide em-mt-32">
     <div class="em-program-title">
-        <h1><?= JText::_('COM_EMUNDUS_EMTAGS_TAG_TABLE_TITLE'); ?></h1>
+        <h1><?= Text::_('COM_EMUNDUS_EMTAGS_TAG_TABLE_TITLE'); ?></h1>
         <div class="alert alert-warning em-alert warning">
-			<?= JText::_('COM_EMUNDUS_TAG_TABLE_WARNING'); ?>
+			<?= Text::_('COM_EMUNDUS_TAG_TABLE_WARNING'); ?>
         </div>
     </div>
     <div id="emundus_elements">
         <div class="panel panel-primary excel" id="emundus_tag_table">
             <div class="panel-heading">
                 <legend>
-                    <label><?= JText::_('COM_EMUNDUS_EMTAGS_OTHER_TAG_SELECT'); ?></label>
+                    <label><?= Text::_('COM_EMUNDUS_EMTAGS_OTHER_TAG_SELECT'); ?></label>
                 </legend>
             </div>
 
@@ -122,17 +102,17 @@ JText::script('COM_EMUNDUS_TAG_APPLICANT_APPLICATION_STATUS');
                 <div class="panel panel-info excel" id="emundus_grp_<?= $t->group_id; ?>">
                     <div class="panel-heading">
                         <legend>
-                            <label for="emundus_checkall_grp_'<?= $t->group_id; ?>"><?= JText::_($t->group_label); ?></label>
+                            <label for="emundus_checkall_grp_'<?= $t->group_id; ?>"><?= Text::_($t->group_label); ?></label>
                         </legend>
                     </div>
 
                     <div class="panel-body" id="other-result-body">
                         <div class="em-element-title em-element-main-title">
                             <div class="em-element-title-id em-element-main-title-id col-md-3">
-                                <b><?= JText::_('ID'); ?></b>
+                                <b><?= Text::_('ID'); ?></b>
                             </div>
                             <div class="em-element-title-label em-element-main-title-label col-md-9">
-                                <b><?= JText::_('LABEL'); ?></b>
+                                <b><?= Text::_('LABEL'); ?></b>
                             </div>
                             <br>
                         </div>
@@ -173,7 +153,7 @@ JText::script('COM_EMUNDUS_TAG_APPLICANT_APPLICATION_STATUS');
     }
 
     function showEval() {
-        var course = document.getElementById('program').options[document.getElementById('program').selectedIndex].value;
+        let course = document.getElementById('program').options[document.getElementById('program').selectedIndex].value;
         //document.getElementById('campaign').value = '';
         document.getElementById('other-result').classList.add('hide');
 
@@ -182,10 +162,10 @@ JText::script('COM_EMUNDUS_TAG_APPLICANT_APPLICATION_STATUS');
             if (httpRequest.status == 200 && httpRequest.readyState == 4) {
                 document.getElementById('result').innerHTML = "";
                 document.getElementById('result').innerHTML = httpRequest.responseText;
-                document.querySelector('#result .em-program-title h1').innerHTML = document.querySelector('#result .em-program-title h1').innerHTML + " - <?= JText::_('COM_EMUNDUS_EMTAGS_EXPORT_EVAL_TITLE');?>";
+                document.querySelector('#result .em-program-title h1').innerHTML = document.querySelector('#result .em-program-title h1').innerHTML + " - <?= Text::_('COM_EMUNDUS_EMTAGS_EXPORT_EVAL_TITLE');?>";
             }
         };
-        httpRequest.open("GET", '<?= JURI::base(); ?>index.php?option=com_emundus&view=export_select_columns&format=raw&code=' + course + '&layout=programme&form=evaluation&all=1', true);
+        httpRequest.open("GET", '<?= JURI::base(); ?>index.php?option=com_emundus&view=export_select_columns&format=raw&code=' + course + '&layout=programme&form=evaluation_steps&all=1', true);
         httpRequest.send();
 
         document.getElementById('em-select-form').classList.remove('w--current');
@@ -205,7 +185,7 @@ JText::script('COM_EMUNDUS_TAG_APPLICANT_APPLICATION_STATUS');
             if (httpRequest.status == 200 && httpRequest.readyState == 4) {
                 document.getElementById('result').innerHTML = "";
                 document.getElementById('result').innerHTML = httpRequest.responseText;
-                document.querySelector('#result .em-program-title h1').innerHTML = document.querySelector('#result .em-program-title h1').innerHTML + " - <?= JText::_('COM_EMUNDUS_EMTAGS_EXPORT_ADMISSION_TITLE');?>";
+                document.querySelector('#result .em-program-title h1').innerHTML = document.querySelector('#result .em-program-title h1').innerHTML + " - <?= Text::_('COM_EMUNDUS_EMTAGS_EXPORT_ADMISSION_TITLE');?>";
             }
         };
         httpRequest.open("GET", '<?= JURI::base(); ?>index.php?option=com_emundus&view=export_select_columns&format=raw&code=' + course + '&layout=programme&form=admission&all=1', true);
@@ -228,7 +208,7 @@ JText::script('COM_EMUNDUS_TAG_APPLICANT_APPLICATION_STATUS');
             if (httpRequest.status == 200 && httpRequest.readyState == 4) {
                 document.getElementById('result').innerHTML = "";
                 document.getElementById('result').innerHTML = httpRequest.responseText;
-                document.querySelector('#result .em-program-title h1').innerHTML = document.querySelector('#result .em-program-title h1').innerHTML + " - <?= JText::_('COM_EMUNDUS_EMTAGS_EXPORT_DECISION_TITLE');?>";
+                document.querySelector('#result .em-program-title h1').innerHTML = document.querySelector('#result .em-program-title h1').innerHTML + " - <?= Text::_('COM_EMUNDUS_EMTAGS_EXPORT_DECISION_TITLE');?>";
             }
         };
         httpRequest.open("GET", '<?= JURI::base(); ?>index.php?option=com_emundus&view=export_select_columns&format=raw&code=' + course + '&layout=programme&form=decision&all=1', true);
@@ -293,7 +273,7 @@ JText::script('COM_EMUNDUS_TAG_APPLICANT_APPLICATION_STATUS');
                     };
                     id.setAttribute('data-toggle', 'tooltip');
                     id.setAttribute('data-placement', 'left');
-                    id.setAttribute('title', '<?=JText::_("COM_EMUNDUS_EMTAGS_SELECT_TO_COPY");?>');
+                    id.setAttribute('title', '<?=Text::_("COM_EMUNDUS_EMTAGS_SELECT_TO_COPY");?>');
                     id.innerText = '[' + tag.tag + ']';
 
 
@@ -305,7 +285,7 @@ JText::script('COM_EMUNDUS_TAG_APPLICANT_APPLICATION_STATUS');
                     var label = document.createElement('div');
                     label.setAttribute('class', 'em-element-label');
                     label.classList.add('col-md-9');
-                    label.innerText = Joomla.JText._(tag.description) ? Joomla.JText._(tag.description) : tag.description;
+                    label.innerText = Joomla.Text._(tag.description) ? Joomla.Text._(tag.description) : tag.description;
 
                     const container = document.createElement('div');
                     container.setAttribute('class', 'em-element other-em-element');
@@ -345,7 +325,7 @@ JText::script('COM_EMUNDUS_TAG_APPLICANT_APPLICATION_STATUS');
             timer: 1500,
             showConfirmButton: false,
             type: 'success',
-            title: "<?= JText::_('COM_EMUNDUS_EMTAGS_TAG_COPIED'); ?> :<br>" + t
+            title: "<?= Text::_('COM_EMUNDUS_EMTAGS_TAG_COPIED'); ?> :<br>" + t
         });
     }
 </script>

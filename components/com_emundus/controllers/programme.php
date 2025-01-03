@@ -76,16 +76,16 @@ class EmundusControllerProgramme extends BaseController
 	{
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 			$programmes = $this->m_programme->getProgrammes();
 
 			if (count($programmes) > 0) {
-				$tab = array('status' => 1, 'msg' => JText::_('PROGRAMMES_RETRIEVED'), 'data' => $programmes);
+				$tab = array('status' => 1, 'msg' => Text::_('PROGRAMMES_RETRIEVED'), 'data' => $programmes);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_PROGRAMMES'), 'data' => $programmes);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_RETRIEVE_PROGRAMMES'), 'data' => $programmes);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -98,16 +98,16 @@ class EmundusControllerProgramme extends BaseController
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 			$result = $this->m_programme->addProgrammes($data);
 
 			if ($result === true) {
-				$tab = array('status' => 1, 'msg' => JText::_('PROGRAMMES_ADDED'), 'data' => $result);
+				$tab = array('status' => 1, 'msg' => Text::_('PROGRAMMES_ADDED'), 'data' => $result);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_ADD_PROGRAMMES'), 'data' => $result);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_ADD_PROGRAMMES'), 'data' => $result);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -120,16 +120,16 @@ class EmundusControllerProgramme extends BaseController
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 			$result = $this->m_programme->editProgrammes($data);
 
 			if ($result === true) {
-				$tab = array('status' => 1, 'msg' => JText::_('PROGRAMMES_EDITED'), 'data' => $result);
+				$tab = array('status' => 1, 'msg' => Text::_('PROGRAMMES_EDITED'), 'data' => $result);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_EDIT_PROGRAMMES'), 'data' => $result);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_EDIT_PROGRAMMES'), 'data' => $result);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -138,24 +138,26 @@ class EmundusControllerProgramme extends BaseController
 
 	public function getallprogramforfilter()
 	{
-		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-			$programs = $this->m_programme->getAllPrograms();
+			$programs = $this->m_programme->getAllPrograms('all', 0, null, 'ASC', '', $this->_user, '', 'p.label');
 
 			if (count((array) $programs) > 0) {
+				$type = $this->input->getString('type', '');
+
 				$values = [];
 				foreach ($programs['datas'] as $key => $program) {
 					$values[] = [
 						'label' => $program->label,
-						'value' => $program->code
+						'value' => $type === 'id' ? $program->id : $program->code
 					];
 				}
 
-				$response = ['status' => true, 'msg' => JText::_('PROGRAMS_FILTER_RETRIEVED'), 'data' => $values];
+				$response = ['status' => true, 'msg' => Text::_('PROGRAMS_FILTER_RETRIEVED'), 'data' => $values];
 			}
 			else {
-				$response['msg'] = JText::_('ERROR_CANNOT_RETRIEVE_PROGRAMS');
+				$response['msg'] = Text::_('ERROR_CANNOT_RETRIEVE_PROGRAMS');
 			}
 		}
 		echo json_encode((object) $response);
@@ -164,22 +166,23 @@ class EmundusControllerProgramme extends BaseController
 
 	public function getallprogram()
 	{
-		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-
-
-			$filter    = $this->input->getString('filter');
-			$sort      = $this->input->getString('sort');
-			$recherche = $this->input->getString('recherche');
+			$filter    = $this->input->getString('filter', null);
+			$sort      = $this->input->getString('sort', 'DESC');
+			$recherche = $this->input->getString('recherche', '');
+			$category  = $this->input->getString('category', '');
 			$lim       = $this->input->getInt('lim', 0);
-			$page      = $this->input->getInt('page');
+			$page      = $this->input->getInt('page', 0);
+			$order_by  = $this->input->getString('order_by', 'p.id');
+			$order_by  = $order_by == 'label' ? 'p.label' : $order_by;
 
-			$programs = $this->m_programme->getAllPrograms($lim, $page, $filter, $sort, $recherche);
+			$programs = $this->m_programme->getAllPrograms($lim, $page, $filter, $sort, $recherche, $this->_user, $category, $order_by);
 
 			if (count((array) $programs) > 0) {
 				foreach ($programs['datas'] as $key => $program) {
-					$programs['datas'][$key]->label              = ['fr' => JText::_($program->label), 'en' => JText::_($program->label)];
+					$programs['datas'][$key]->label              = ['fr' => Text::_($program->label), 'en' => Text::_($program->label)];
 
 					if (!empty($program->nb_campaigns))
 					{
@@ -228,44 +231,48 @@ class EmundusControllerProgramme extends BaseController
 					{
 						$campaigns_assiocated_column['long_value'] = $tags;
 					}
-					
+
 					$programs['datas'][$key]->additional_columns = [
 						[
-							'key'     => JText::_('COM_EMUNDUS_ONBOARD_PROGCODE'),
+							'key'     => Text::_('COM_EMUNDUS_ONBOARD_PROGCODE'),
 							'value'   => $program->code,
 							'classes' => 'em-font-size-14 em-neutral-700-color',
-							'display' => 'all'
+							'display' => 'all',
+							'order_by' => 'p.code'
 						],
 						[
-							'key'     => JText::_('COM_EMUNDUS_ONBOARD_CATEGORY'),
+							'key'     => Text::_('COM_EMUNDUS_ONBOARD_CATEGORY'),
 							'value'   => Text::_($program->programmes),
 							'classes' => 'em-font-size-14 em-neutral-700-color',
-							'display' => 'all'
+							'display' => 'all',
+							'order_by' => 'p.programmes'
 						],
 						[
-							'key'     => JText::_('COM_EMUNDUS_ONBOARD_STATE'),
-							'value'   => $program->published ? JText::_('PUBLISHED') : JText::_('COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH'),
+							'key'     => Text::_('COM_EMUNDUS_ONBOARD_STATE'),
+							'value'   => $program->published ? Text::_('PUBLISHED') : Text::_('COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH'),
 							'classes' => $program->published ? 'em-p-5-12 em-bg-main-100 em-text-neutral-900 em-font-size-14 em-border-radius' : 'em-p-5-12 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius',
-							'display' => 'table'
+							'display' => 'table',
+							'order_by' => 'p.published'
 						],
 						[
-							'key'     => JText::_('COM_EMUNDUS_ONBOARD_PROGRAM_APPLY_ONLINE'),
-							'value'   => $program->apply_online ? JText::_('JYES') : JText::_('JNO'),
+							'key'     => Text::_('COM_EMUNDUS_ONBOARD_PROGRAM_APPLY_ONLINE'),
+							'value'   => $program->apply_online ? Text::_('JYES') : Text::_('JNO'),
 							'classes' => '',
-							'display' => 'table'
+							'display' => 'table',
+							'order_by' => 'p.apply_online'
 						],
 						[
 							'type'    => 'tags',
-							'key'     => JText::_('COM_EMUNDUS_ONBOARD_PROGRAM_TAGS'),
+							'key'     => Text::_('COM_EMUNDUS_ONBOARD_PROGRAM_TAGS'),
 							'values'  => [
 								[
-									'key'     => JText::_('COM_EMUNDUS_ONBOARD_STATE'),
-									'value'   => $program->published ? JText::_('PUBLISHED') : JText::_('COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH'),
+									'key'     => Text::_('COM_EMUNDUS_ONBOARD_STATE'),
+									'value'   => $program->published ? Text::_('PUBLISHED') : Text::_('COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH'),
 									'classes' => $program->published ? 'em-p-5-12 em-font-weight-600 em-bg-main-100 em-text-neutral-900 em-font-size-14 em-border-radius' : 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius',
 								],
 								[
-									'key'     => JText::_('COM_EMUNDUS_ONBOARD_PROGRAM_APPLY_ONLINE'),
-									'value'   => $program->apply_online ? JText::_('COM_EMUNDUS_ONBOARD_PROGRAM_APPLY_ONLINE') : JText::_(''),
+									'key'     => Text::_('COM_EMUNDUS_ONBOARD_PROGRAM_APPLY_ONLINE'),
+									'value'   => $program->apply_online ? Text::_('COM_EMUNDUS_ONBOARD_PROGRAM_APPLY_ONLINE') : '',
 									'classes' => $program->apply_online ? 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius' : 'hidden',
 								]
 							],
@@ -276,10 +283,10 @@ class EmundusControllerProgramme extends BaseController
 					];
 				}
 
-				$response = ['status' => true, 'msg' => JText::_('PROGRAMS_RETRIEVED'), 'data' => $programs];
+				$response = ['status' => true, 'msg' => Text::_('PROGRAMS_RETRIEVED'), 'data' => $programs];
 			}
 			else {
-				$response['msg'] = JText::_('ERROR_CANNOT_RETRIEVE_PROGRAMS');
+				$response['msg'] = Text::_('ERROR_CANNOT_RETRIEVE_PROGRAMS');
 			}
 		}
 		echo json_encode((object) $response);
@@ -290,16 +297,16 @@ class EmundusControllerProgramme extends BaseController
 	{
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 			$sessions = $this->m_programme->getAllSessions();
 
 			if (count((array) $sessions) > 0) {
-				$tab = array('status' => 1, 'msg' => JText::_('PROGRAMS_RETRIEVED'), 'data' => $sessions);
+				$tab = array('status' => 1, 'msg' => Text::_('PROGRAMS_RETRIEVED'), 'data' => $sessions);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_PROGRAMS'), 'data' => $sessions);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_RETRIEVE_PROGRAMS'), 'data' => $sessions);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -310,7 +317,7 @@ class EmundusControllerProgramme extends BaseController
 	{
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -320,7 +327,7 @@ class EmundusControllerProgramme extends BaseController
 
 			$programs = $this->m_programme->getProgramCount($filterCount, $rechercheCount);
 
-			$tab = array('status' => 1, 'msg' => JText::_('PROGRAMS_RETRIEVED'), 'data' => $programs);
+			$tab = array('status' => 1, 'msg' => Text::_('PROGRAMS_RETRIEVED'), 'data' => $programs);
 		}
 		echo json_encode((object) $tab);
 		exit;
@@ -330,7 +337,7 @@ class EmundusControllerProgramme extends BaseController
 	{
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -340,10 +347,10 @@ class EmundusControllerProgramme extends BaseController
 			$program = $this->m_programme->getProgramById($id);
 
 			if (!empty($program)) {
-				$tab = array('status' => 1, 'msg' => JText::_('PROGRAMS_RETRIEVED'), 'data' => $program);
+				$tab = array('status' => 1, 'msg' => Text::_('PROGRAMS_RETRIEVED'), 'data' => $program);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_PROGRAMS'), 'data' => $program);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_RETRIEVE_PROGRAMS'), 'data' => $program);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -404,7 +411,7 @@ class EmundusControllerProgramme extends BaseController
 
 	public function deleteprogram()
 	{
-		$response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 
@@ -412,10 +419,10 @@ class EmundusControllerProgramme extends BaseController
 			$result = $this->m_programme->deleteProgram($data);
 
 			if ($result) {
-				$response = ['status' => true, 'msg' => JText::_('PROGRAMS_ADDED'), 'data' => $result];
+				$response = ['status' => true, 'msg' => Text::_('PROGRAMS_ADDED'), 'data' => $result];
 			}
 			else {
-				$response['msg'] = JText::_('ERROR_CANNOT_ADD_PROGRAMS');
+				$response['msg'] = Text::_('ERROR_CANNOT_ADD_PROGRAMS');
 			}
 		}
 
@@ -425,7 +432,7 @@ class EmundusControllerProgramme extends BaseController
 
 	public function unpublishprogram()
 	{
-		$response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 
@@ -433,10 +440,10 @@ class EmundusControllerProgramme extends BaseController
 			$result = $this->m_programme->unpublishProgram($data);
 
 			if ($result) {
-				$response = array('status' => 1, 'msg' => JText::_('PROGRAMS_ADDED'), 'data' => $result);
+				$response = array('status' => 1, 'msg' => Text::_('PROGRAMS_ADDED'), 'data' => $result);
 			}
 			else {
-				$response = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_ADD_PROGRAMS'), 'data' => $result);
+				$response = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_ADD_PROGRAMS'), 'data' => $result);
 			}
 		}
 		echo json_encode((object) $response);
@@ -445,7 +452,7 @@ class EmundusControllerProgramme extends BaseController
 
 	public function publishprogram()
 	{
-		$response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 
@@ -454,10 +461,10 @@ class EmundusControllerProgramme extends BaseController
 			$result = $this->m_programme->publishProgram($data);
 
 			if ($result) {
-				$response = array('status' => 1, 'msg' => JText::_('PROGRAM_PUBLISHED'), 'data' => $result);
+				$response = array('status' => 1, 'msg' => Text::_('PROGRAM_PUBLISHED'), 'data' => $result);
 			}
 			else {
-				$response = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_PUBLISH_PROGRAM'), 'data' => $result);
+				$response = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_PUBLISH_PROGRAM'), 'data' => $result);
 			}
 		}
 		echo json_encode((object) $response);
@@ -486,7 +493,7 @@ class EmundusControllerProgramme extends BaseController
 	{
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -496,10 +503,10 @@ class EmundusControllerProgramme extends BaseController
 			$managers = $this->m_programme->getManagers($group);
 
 			if (!empty($managers)) {
-				$tab = array('status' => 1, 'msg' => JText::_('MANAGERS_RETRIEVED'), 'data' => $managers);
+				$tab = array('status' => 1, 'msg' => Text::_('MANAGERS_RETRIEVED'), 'data' => $managers);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_MANAGERS'), 'data' => $managers);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_RETRIEVE_MANAGERS'), 'data' => $managers);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -510,7 +517,7 @@ class EmundusControllerProgramme extends BaseController
 	{
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -520,10 +527,10 @@ class EmundusControllerProgramme extends BaseController
 			$evaluators = $this->m_programme->getEvaluators($group);
 
 			if (!empty($evaluators)) {
-				$tab = array('status' => 1, 'msg' => JText::_('EVALUATORS_RETRIEVED'), 'data' => $evaluators);
+				$tab = array('status' => 1, 'msg' => Text::_('EVALUATORS_RETRIEVED'), 'data' => $evaluators);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_EVALUATORS'), 'data' => $evaluators);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_RETRIEVE_EVALUATORS'), 'data' => $evaluators);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -534,7 +541,7 @@ class EmundusControllerProgramme extends BaseController
 	{
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result         = 0;
-			$changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$changeresponse = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -553,7 +560,7 @@ class EmundusControllerProgramme extends BaseController
 	{
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result         = 0;
-			$changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$changeresponse = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -572,7 +579,7 @@ class EmundusControllerProgramme extends BaseController
 	{
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result         = 0;
-			$changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$changeresponse = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -591,7 +598,7 @@ class EmundusControllerProgramme extends BaseController
 	{
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -602,10 +609,10 @@ class EmundusControllerProgramme extends BaseController
 			$user_ids = $this->m_programme->getusers($filters, $page['page']);
 
 			if (!empty($this->_users)) {
-				$tab = array('status' => 1, 'msg' => JText::_('USERS_RETRIEVED'), 'data' => $user_ids);
+				$tab = array('status' => 1, 'msg' => Text::_('USERS_RETRIEVED'), 'data' => $user_ids);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_USERS'), 'data' => $user_ids);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_RETRIEVE_USERS'), 'data' => $user_ids);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -616,7 +623,7 @@ class EmundusControllerProgramme extends BaseController
 	{
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result         = 0;
-			$changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$changeresponse = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -635,7 +642,7 @@ class EmundusControllerProgramme extends BaseController
 	{
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -645,10 +652,10 @@ class EmundusControllerProgramme extends BaseController
 			$grid = $this->m_programme->getEvaluationGrid($pid);
 
 			if ($grid) {
-				$tab = array('status' => 1, 'msg' => JText::_('GRID_RETRIEVED'), 'data' => $grid);
+				$tab = array('status' => 1, 'msg' => Text::_('GRID_RETRIEVED'), 'data' => $grid);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_GRID'), 'data' => $grid);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_RETRIEVE_GRID'), 'data' => $grid);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -659,16 +666,16 @@ class EmundusControllerProgramme extends BaseController
 	{
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 			$grids = $this->m_programme->getGridsModel();
 
 			if ($grids) {
-				$tab = array('status' => 1, 'msg' => JText::_('GRID_RETRIEVED'), 'data' => $grids);
+				$tab = array('status' => 1, 'msg' => Text::_('GRID_RETRIEVED'), 'data' => $grids);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_GRID'), 'data' => $grids);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_RETRIEVE_GRID'), 'data' => $grids);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -681,7 +688,7 @@ class EmundusControllerProgramme extends BaseController
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result         = 0;
-			$changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$changeresponse = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -707,7 +714,7 @@ class EmundusControllerProgramme extends BaseController
 	{
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result         = 0;
-			$changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$changeresponse = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -725,7 +732,7 @@ class EmundusControllerProgramme extends BaseController
 	{
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result         = 0;
-			$changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$changeresponse = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -743,7 +750,7 @@ class EmundusControllerProgramme extends BaseController
 	{
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result         = 0;
-			$changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$changeresponse = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -761,7 +768,7 @@ class EmundusControllerProgramme extends BaseController
 	{
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -770,7 +777,7 @@ class EmundusControllerProgramme extends BaseController
 
 			$groups = $this->m_programme->getGroupsByPrograms($programs);
 
-			$tab = array('status' => 1, 'msg' => JText::_('GRID_RETRIEVED'), 'groups' => $groups);
+			$tab = array('status' => 1, 'msg' => Text::_('GRID_RETRIEVED'), 'groups' => $groups);
 		}
 		echo json_encode((object) $tab);
 		exit;
@@ -780,7 +787,7 @@ class EmundusControllerProgramme extends BaseController
 	{
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -789,7 +796,7 @@ class EmundusControllerProgramme extends BaseController
 
 			$campaigns = $this->m_programme->getCampaignsByProgram($program);
 
-			$tab = array('status' => 1, 'msg' => JText::_('CAMPAIGNS_RETRIEVED'), 'campaigns' => $campaigns);
+			$tab = array('status' => 1, 'msg' => Text::_('CAMPAIGNS_RETRIEVED'), 'campaigns' => $campaigns);
 		}
 		echo json_encode((object) $tab);
 		exit;

@@ -15,6 +15,7 @@ jimport('joomla.application.component.view');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Language\Text;
 
 /**
  * HTML View class for the eMundus Component
@@ -56,17 +57,17 @@ class EmundusViewChecklist extends JViewLegacy
 
 	function __construct($config = array())
 	{
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'checklist.php');
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
+		require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
+		require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+		require_once(JPATH_ROOT . '/components/com_emundus/models/checklist.php');
+		require_once(JPATH_ROOT . '/components/com_emundus/models/campaign.php');
 
 		$this->app   = Factory::getApplication();
 		$session     = $this->app->getSession();
 		$this->_user = $session->get('emundusUser');
 
 		if (!EmundusHelperAccess::isApplicant($this->_user->id)) {
-			die(JText::_('ACCESS_DENIED'));
+			die(Text::_('ACCESS_DENIED'));
 		}
 
 		parent::__construct($config);
@@ -84,7 +85,7 @@ class EmundusViewChecklist extends JViewLegacy
 
 		switch ($layout) {
 			case 'paid':
-				include_once(JPATH_BASE . '/components/com_emundus/models/application.php');
+				include_once(JPATH_ROOT . '/components/com_emundus/models/application.php');
 
 				// 1. if application form not sent yet, send it // 2. trigger emails // 3. display reminder list
 				$m_application = new EmundusModelApplication;
@@ -106,24 +107,27 @@ class EmundusViewChecklist extends JViewLegacy
 
 						// Send the user to the homepage
 						case 2:
-							$this->app->redirect('index.php', JText::_('EM_PAYMENT_CONFIRMATION_MESSAGE'), 'message');
+							$this->app->enqueueMessage(Text::_('EM_PAYMENT_CONFIRMATION_MESSAGE'), 'message');
+							$this->app->redirect('index.php');
 							break;
 
 						// Send the user to the profiles first page
 						case 3:
-							$this->app->redirect('index.php?option=com_emundus&task=openfile&fnum=' . $this->_user->fnum, JText::_('EM_PAYMENT_CONFIRMATION_MESSAGE_CONTINUE_CANDIDATURE'), 'message');
+							$this->app->enqueueMessage(Text::_('EM_PAYMENT_CONFIRMATION_MESSAGE_CONTINUE_CANDIDATURE'), 'message');
+							$this->app->redirect('index.php?option=com_emundus&task=openfile&fnum=' . $this->_user->fnum);
 							break;
 					}
 				}
 				elseif (empty($order)) {
-					$this->app->redirect('index.php', JText::_('EM_PAYMENT_CANCEL_MESSAGE'), 'error');
+					$this->app->enqueueMessage(Text::_('EM_PAYMENT_CANCEL_MESSAGE'), 'error');
+					$this->app->redirect('index.php');
 				}
 
 				$this->app->redirect($m_checklist->getConfirmUrl($this->_user->profile) . '&usekey=fnum&rowid=' . $this->_user->fnum);
 				break;
 
 			default :
-				require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
+				require_once(JPATH_ROOT . DS . 'components/com_emundus/models/users.php');
 				$m_users = new EmundusModelUsers;
 
 				if (version_compare(JVERSION, '4.0', '>')) {
@@ -165,15 +169,15 @@ class EmundusViewChecklist extends JViewLegacy
 				$this->is_other_campaign = $this->get('isOtherActiveCampaign');
 
 				if ($this->need == 0) {
-					$this->title = JText::_('COM_EMUNDUS_ATTACHMENTS_APPLICATION_COMPLETED_TITLE');
-					$this->text  = JText::_('COM_EMUNDUS_ATTACHMENTS_APPLICATION_COMPLETED_TEXT');
+					$this->title = Text::_('COM_EMUNDUS_ATTACHMENTS_APPLICATION_COMPLETED_TITLE');
+					$this->text  = Text::_('COM_EMUNDUS_ATTACHMENTS_APPLICATION_COMPLETED_TEXT');
 				}
 				else {
-					$this->title = JText::_('COM_EMUNDUS_ATTACHMENTS_APPLICATION_INCOMPLETED_TITLE');
-					$this->text  = JText::_('COM_EMUNDUS_ATTACHMENTS_APPLICATION_INCOMPLETED_TEXT');
+					$this->title = Text::_('COM_EMUNDUS_ATTACHMENTS_APPLICATION_INCOMPLETED_TITLE');
+					$this->text  = Text::_('COM_EMUNDUS_ATTACHMENTS_APPLICATION_INCOMPLETED_TEXT');
 				}
 
-				require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
+				require_once(JPATH_SITE . DS . 'components/com_emundus/models/application.php');
 				$m_application = new EmundusModelApplication;
 
 				$this->attachments_prog = $m_application->getAttachmentsProgress($this->_user->fnum);
@@ -230,8 +234,8 @@ class EmundusViewChecklist extends JViewLegacy
 				$now      = $dateTime->setTimezone(new DateTimeZone($offset))->format("Y-m-d H:i:s");
 
 				// Check campaign limit, if the limit is obtained, then we set the deadline to true
-				$m_campaign          = new EmundusModelCampaign;
-				$this->current_phase = $m_campaign->getCurrentCampaignWorkflow($this->_user->fnum);
+				$m_workflow = new EmundusModelWorkflow;
+				$this->current_phase = $m_workflow->getCurrentWorkflowStepFromFile($this->_user->fnum);
 
 				if (!empty($this->current_phase) && !empty($this->current_phase->end_date)) {
 					$current_end_date   = $this->current_phase->end_date;
@@ -245,7 +249,8 @@ class EmundusViewChecklist extends JViewLegacy
 					$current_end_date   = !empty($this->_user->fnums[$this->_user->fnum]->end_date) ? $this->_user->fnums[$this->_user->fnum]->end_date : $this->_user->end_date;
 					$current_start_date = $this->_user->fnums[$this->_user->fnum]->start_date;
 				}
-
+				
+				$m_campaign          = new EmundusModelCampaign;
 				$this->isLimitObtained     = $m_campaign->isLimitObtained($this->_user->fnums[$this->_user->fnum]->campaign_id);
 				$this->is_campaign_started = $now > $current_start_date;
 				$this->is_dead_line_passed = $current_end_date < $now;

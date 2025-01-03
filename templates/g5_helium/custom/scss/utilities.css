@@ -65,7 +65,7 @@
     legend {
         font-weight: 400;
         font-style: normal;
-        line-height: normal;
+        line-height: 1.5;
         font-size: var(--em-applicant-font-size);
     }
 
@@ -467,6 +467,10 @@
             color: var(--em-alert-error-icon-color);
             margin-right: var(--em-spacing-3);
         }
+
+        div * {
+            font-family: var(--em-profile-font);
+        }
     }
 
     .alert.alert-warning, .alert.alert-notice {
@@ -476,6 +480,10 @@
 
         .material-icons,.material-icons-outlined, .material-symbols-outlined  {
             color: var(--em-alert-warning-icon-color);
+        }
+
+        div * {
+            font-family: var(--em-profile-font);
         }
     }
 
@@ -487,6 +495,10 @@
         .material-icons,.material-icons-outlined, .material-symbols-outlined {
             color: var(--em-alert-info-icon-color);
         }
+
+        div * {
+            font-family: var(--em-profile-font);
+        }
     }
 
     .alert.alert-success {
@@ -496,6 +508,10 @@
 
         .material-icons,.material-icons-outlined, .material-symbols-outlined {
             color: var(--em-alert-success-icon-color);
+        }
+
+        div * {
+            font-family: var(--em-profile-font);
         }
     }
 

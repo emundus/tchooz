@@ -570,6 +570,7 @@ p[id*="mod_emundus_campaign__tchoozy_tab_desc"] {
     display: flex;
     justify-content: center;
     align-items: center;
+    font-family: var(--em-profile-font);
 }
 
 .mod_emundus_campaign__details_file_icon {

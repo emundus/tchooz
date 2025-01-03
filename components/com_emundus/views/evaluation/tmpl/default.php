@@ -164,11 +164,13 @@ if ($this->open_file_in_modal) {
 		    $hash = EmundusHelperCache::getCurrentGitHash();
 		    ?>
             <div id="em-files"
+                 component="ApplicationSingle"
                  context="files"
                  user="<?= $this->user->id; ?>"
                  ratio="<?= $this->modal_ratio; ?>"
                  type="evaluation"
                  base="<?= JURI::base(); ?>"
+                 tabs="<?= $this->modal_tabs; ?>"
             >
             </div>
 

@@ -41,12 +41,13 @@ import SidebarMenu from "@/components/Menus/SidebarMenu.vue";
 import SettingsContent from "@/components/Settings/SettingsContent.vue";
 import Addons from "@/components/Settings/Addons.vue";
 import Info from "@/components/Utils/Info.vue";
-import Swal from "sweetalert2";
 import SectionComponent from "@/components/Settings/SectionComponent.vue";
+import WorkflowSettings  from "@/views/Workflows/WorkflowSettings.vue";
+
+import Swal from "sweetalert2";
 
 import { useSettingsStore } from "@/stores/settings.js";
 import menus from '@/assets/data/settings/menus.js'
-
 
 export default {
   name: "globalSettings",
@@ -59,6 +60,7 @@ export default {
     Multiselect,
     Addons,
     Info,
+    WorkflowSettings
   },
   props: {
     actualLanguage: {

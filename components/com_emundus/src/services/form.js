@@ -41,6 +41,9 @@ export default {
       };
     }
   },
+  async getApplicantForms() {
+
+  },
   async getFormsByProfileId(id) {
     try {
       const response = await client().get(
@@ -70,6 +73,16 @@ export default {
     try {
       const response = await client().get(baseUrl + '&task=getFormByFabrikId', {params: {form_id: id}});
       return response;
+    } catch (error) {
+      return {
+        status: false,
+        error: error
+      };
+    }
+  },
+  async getEvaluationForms() {
+    try {
+      return await fetchClient.get( 'getallgrilleEval');
     } catch (error) {
       return {
         status: false,
@@ -261,7 +274,7 @@ export default {
   async getPageObject(formId) {
     try {
       const response = await client().get(
-        'index.php?option=com_emundus&view=form&formid=' + formId + '&format=vue_jsonclean'
+        '/index.php?option=com_emundus&view=form&formid=' + formId + '&format=vue_jsonclean'
       );
 
       if (typeof response.data !== 'object') {

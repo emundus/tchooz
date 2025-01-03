@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" version="4" method="upgrade" group="hikashop">
+    <name>eMundus - Hikashop Exed</name>
+    <creationDate>December 2024</creationDate>
+    <version>2.0.0</version>
+    <author>LEGENDRE Jérémy</author>
+    <authorEmail>jeremy.legendre@emundus.fr</authorEmail>
+    <authorUrl>https://www.emundus.fr</authorUrl>
+    <copyright>(C) 2010-${year} eMundus SAS. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <description>Ce plugin sert à gérer la mise à jour du panier en fonction de saisies de l'utilisateur. Il permet de définir une valeur totale et une valeur d'acompte</description>
+    <files>
+        <filename>emundus_exed_hikashop.xml</filename>
+        <filename plugin="emundus_exed_hikashop">emundus_exed_hikashop.php</filename>
+        <folder>language</folder>
+    </files>
+    <languages>
+        <language tag="en-GB">en-GB.plg_hikashop_emundus_exed_hikashop.ini</language>
+        <language tag="en-GB">en-GB.plg_hikashop_emundus_exed_hikashop.sys.ini</language>
+        <language tag="fr-FR">fr-FR.plg_hikashop_emundus_exed_hikashop.ini</language>
+        <language tag="fr-FR">fr-FR.plg_hikashop_emundus_exed_hikashop.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="discount_payment_status"
+                       type="sql"
+                       default=""
+                       label="PLG_HIKASHOP_EMUNDUS_EXED_HIKASHOP_DISCOUNT_PAYMENT_STATUS_LABEL"
+                       description="PLG_HIKASHOP_EMUNDUS_EXED_HIKASHOP_DISCOUNT_PAYMENT_STATUS_DESC"
+                       query="SELECT `step`, `value` FROM `#__emundus_setup_status`"
+                       key_field="step"
+                       value_field="value"
+                       required="true"
+                />
+                <field name="hikashop_totalite_characteristic"
+                       default=""
+                       type="sql"
+                       label="PLG_HIKASHOP_EMUNDUS_EXED_HIKASHOP_TOTALITE_CHARACTERISTIC_LABEL"
+                       description="PLG_HIKASHOP_EMUNDUS_EXED_HIKASHOP_TOTALITE_CHARACTERISTIC_DESC"
+                       query="SELECT `characteristic_id`, `characteristic_value` FROM `#__hikashop_characteristic`"
+                       key_field="characteristic_id"
+                       value_field="characteristic_value"
+                       required="true"
+                />
+                <field name="element_totalite_id"
+                       type="text"
+                       default="0"
+                       label="PLG_HIKASHOP_EMUNDUS_EXED_HIKASHOP_ELEMENT_TOTALITE_VALUE_LABEL"
+                       description="PLG_HIKASHOP_EMUNDUS_EXED_HIKASHOP_ELEMENT_TOTALITE_VALUE_DESC"
+                />
+                <field name="hikashop_discount_characteristic"
+                       default=""
+                       type="sql"
+                       label="PLG_HIKASHOP_EMUNDUS_EXED_HIKASHOP_DISCOUNT_CHARACTERISTIC_LABEL"
+                       description="PLG_HIKASHOP_EMUNDUS_EXED_HIKASHOP_DISCOUNT_CHARACTERISTIC_DESC"
+                       query="SELECT `characteristic_id`, `characteristic_value` FROM `#__hikashop_characteristic`"
+                       key_field="characteristic_id"
+                       value_field="characteristic_value"
+                       required="true"
+                />
+                <field name="element_discount_id"
+                       type="text"
+                       default="0"
+                       label="PLG_HIKASHOP_EMUNDUS_EXED_HIKASHOP_ELEMENT_DISCOUNT_VALUE_LABEL"
+                       description="PLG_HIKASHOP_EMUNDUS_EXED_HIKASHOP_ELEMENT_DISCOUNT_VALUE_DESC"
+                />
+            </fieldset>
+        </fields>
+    </config>
+</extension>

@@ -1,87 +1,226 @@
-/** COMPONENTS **/
-import 'vue2-dropzone-vue3';
-import {createApp} from 'vue';
-import clickOutside from './directives/clickOutside';
-import App from './App.vue';
+import {createApp, defineAsyncComponent} from 'vue/dist/vue.esm-bundler.js';
 
 /** STORE **/
 import {createPinia} from 'pinia';
+import {useGlobalStore} from "@/stores/global.js";
 
 /** MIXINS **/
 import translate from './mixins/translate.js';
 
+/** SERVICES **/
+import fileService from "@/services/file.js";
+import settingsService from "@/services/settings.js";
 
-let elementId = '';
-let data = {};
-let componentName = '';
+/** LIBS **/
+import 'vue2-dropzone-vue3';
+import moment from "moment/moment.js";
 
-const attachmentElement = document.getElementById('em-application-attachment');
-const filesElement = document.getElementById('em-files');
+/** DIRECTIVES **/
+import clickOutside from './directives/clickOutside';
 
-let app = null;
+/** STYLE **/
+import './assets/css/main.scss';
+import Attachments from "@/views/Attachments.vue";
+import Comments from "@/views/Comments.vue";
+import WorkflowEdit from "@/views/Workflows/WorkflowEdit.vue";
+import ProgramEdit from "@/views/Program/ProgramEdit.vue";
+import History from "@/views/History.vue";
 
-if (attachmentElement || filesElement) {
-  let element = null;
+if (document) {
+    let app = null;
+    let elementId = '#em-component-vue';
+    let datas = {};
 
-  if (attachmentElement) {
-    element = attachmentElement;
-    componentName = 'attachments';
-    elementId = '#em-application-attachment';
-  } else if (filesElement) {
-    element = filesElement;
-    componentName = 'files';
-    elementId = '#em-files';
-  }
+    let el = document.getElementById('em-component-vue');
+    const attachmentElement = document.getElementById('em-application-attachment');
+    const filesElement = document.getElementById('em-files');
 
-  if (element !== null) {
-    Array.prototype.slice.call(element.attributes).forEach(function (attr) {
-      data[attr.name] = attr.value;
-    });
-
-    if (data.fnum !== '' && filesElement) {
-      componentName = 'application';
+    if (attachmentElement) {
+        elementId = '#em-application-attachment';
+        el = attachmentElement;
+    } else if (filesElement) {
+        elementId = '#em-files';
+        el = filesElement;
     }
 
-    app = createApp(App, {
-      component: componentName,
-      data: data
-    });
-  }
-} else if (document.getElementById('em-component-vue')) {
-  let $el = document.getElementById('em-component-vue')
-  app = createApp(App, {
-    component: $el.attributes.component.value,
-    datas: $el.attributes,
-    currentLanguage: $el.attributes.currentLanguage.value,
-    shortLang: $el.attributes.shortLang.value,
-    manyLanguages: $el.attributes.manyLanguages.value,
-    defaultLang: $el.attributes.defaultLang ? $el.attributes.defaultLang.value : $el.attributes.currentLanguage.value,
-    coordinatorAccess: $el.attributes.coordinatorAccess.value,
-    sysadminAccess: $el.attributes.sysadminAccess.value,
-  });
 
-  elementId = '#em-component-vue';
-}
+    if (el) {
+        const componentName = el.getAttribute('component');
 
-if (app !== null) {
-  /** DIRECTIVES **/
-  app.directive('click-outside', clickOutside);
+        if (componentName) {
+            const componentNames = ['Attachments', 'Comments', 'Workflows/WorkflowEdit', 'Program/ProgramEdit', 'History'];
 
-  app.use(createPinia());
-  app.mixin(translate);
+            if (filesElement || componentNames.includes(componentName)) {
+                Array.prototype.slice.call(el.attributes).forEach(function (attr) {
+                    datas[attr.name] = attr.value;
+                });
 
-  const devmode = import.meta.env.MODE === 'development';
-  if(devmode) {
-    app.config.productionTip = false;
-    app.config.devtools = true;
-  }
+                if (datas.attachments) {
+                    datas.attachments = JSON.parse(atob(datas.attachments));
+                }
 
-  app.mount(elementId);
+                if (datas.columns && componentName !== 'History') {
+                    datas.columns = JSON.parse(atob(datas.columns));
+                }
+            }
 
-  if(devmode) {
-    const version = app.version;
-    const devtools = window.__VUE_DEVTOOLS_GLOBAL_HOOK__;
-    devtools.enabled = true;
-    devtools.emit('app:init', app, version, {});
-  }
+            switch (componentName) {
+                case 'Attachments':
+                    app = createApp(Attachments, {
+                        fnum: datas.fnum,
+                        user: datas.user,
+                        defaultAttachments: datas.attachments ? datas.attachments : null,
+                        columns: datas.columns,
+                        is_applicant: datas.is_applicant
+                    });
+                    break;
+                case 'Comments':
+                    app = createApp(Comments, {
+                        defaultCcid: datas.ccid,
+                        fnum: datas.fnum ? datas.fnum : '',
+                        user: datas.user,
+                        'is-applicant': datas.is_applicant == 1,
+                        'current-form': datas.current_form,
+                        access: datas.access ? JSON.parse(datas.access) : {
+                            'c': false,
+                            'r': true,
+                            'u': false,
+                            'd': false
+                        },
+                        applicantsAllowedToComment: datas.applicants_allowed_to_comment == 1,
+                        border: datas.border ? datas.border == 1 : true
+                    });
+                    break;
+                case 'Workflows/WorkflowEdit':
+                    app = createApp(WorkflowEdit, {
+                        workflowId: Number(datas.workflowid),
+                    });
+                    break;
+                case 'Program/ProgramEdit':
+                    app = createApp(ProgramEdit, {
+                        programId: Number(datas.program_id),
+                    });
+                    break;
+                case 'History':
+                    app = createApp(History, {
+                        extension: datas.extension,
+                        itemid: Number(datas.itemid)
+                    });
+                    break;
+                default:
+                    app = createApp({
+                        components: {
+                            'lazy-component': defineAsyncComponent(() => {
+                                let componentPath = componentName.split('/');
+                                if(componentPath.length > 1) {
+                                    let directory = componentPath[0];
+                                    let name = componentPath[1];
+
+                                    return import(`./views/${directory}/${name}.vue`)
+                                } else {
+                                    return import(`./views/${componentName}.vue`)
+                                }
+                            })
+                        },
+                        data: {
+                            componentProps: {
+                                ...datas
+                            }
+                        },
+                        template: '<div class="com_emundus_vue"><transition name="slide-right"><lazy-component v-bind="componentProps" /></transition></div>',
+                    });
+            }
+
+            // Setup Store, Mixins, Directives
+            app.directive('click-outside', clickOutside);
+            app.use(createPinia());
+            app.mixin(translate);
+
+            const coordinatorAccess = el.getAttribute('coordinatorAccess') || 0;
+            const sysadminAccess = el.getAttribute('sysadminAccess') || 0;
+            const currentLanguage = el.getAttribute('currentLanguage') || 'fr-FR';
+            const shortLang = el.getAttribute('shortLang') || 'fr';
+            const manyLanguages = el.getAttribute('manyLanguages') || 0;
+            const defaultLang = el.getAttribute('defaultLang') || currentLanguage;
+
+            if (componentName !== 'Attachments' && !filesElement && componentName !== 'Comments') {
+                datas = el.attributes;
+            }
+            //
+
+            // Manage stores
+            const globalStore = useGlobalStore();
+            if (componentName === 'Attachments') {
+                fileService.isDataAnonymized().then(response => {
+                    if (response.status !== false) {
+                        globalStore.setAnonyme(response.anonyme);
+                    }
+                });
+            }
+
+            if (typeof datas !== 'undefined') {
+                globalStore.initDatas(datas);
+            }
+            if (typeof currentLanguage !== 'undefined') {
+                globalStore.initCurrentLanguage(currentLanguage);
+
+                moment.locale(globalStore.currentLanguage);
+            } else {
+                globalStore.initCurrentLanguage('fr');
+                moment.locale('fr');
+            }
+            if (typeof shortLang !== 'undefined') {
+                globalStore.initShortLang(shortLang);
+            }
+            if (typeof manyLanguages !== 'undefined') {
+                globalStore.initManyLanguages(manyLanguages);
+            }
+            if (typeof defaultLang !== 'undefined') {
+                globalStore.initDefaultLang(defaultLang);
+            }
+            if (typeof coordinatorAccess !== 'undefined') {
+                globalStore.initCoordinatorAccess(coordinatorAccess);
+            }
+            if (typeof coordinatorAccess !== 'undefined') {
+                globalStore.initSysadminAccess(sysadminAccess);
+            }
+
+            settingsService.getOffset().then(response => {
+                if (response.status !== false) {
+                    globalStore.initOffset(response.data.data);
+                }
+            });
+
+            if (datas.base) {
+                const globalStore = useGlobalStore();
+
+                globalStore.initAttachmentPath(datas.base + '/images/emundus/files/');
+            }
+            //
+
+            // Dev mode settings
+            const devmode = import.meta.env.MODE === 'development';
+            if (devmode) {
+                app.config.productionTip = false;
+                app.config.devtools = true;
+                app.config.performance = true;
+            }
+            //
+
+            // Finally, mount the app
+            app.mount(elementId);
+            //
+
+            // Vue DevTools setup after mounting the app
+            if (devmode) {
+                const version = app.version;
+                const devtools = window.__VUE_DEVTOOLS_GLOBAL_HOOK__;
+                if (devtools) {
+                    devtools.enabled = true;
+                    devtools.emit('app:init', app, version, {});
+                }
+            }
+            //
+        }
+    }
 }

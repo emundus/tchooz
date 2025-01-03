@@ -15,9 +15,9 @@
       </div>
       <header class="tw-grid tw-grid-cols-3 tw-items-center">
         <div class="right-actions tw-flex tw-items-center tw-justify-start tw-gap-2">
-          <p class="tw-flex tw-items-center tw-cursor-pointer" @click="clickGoBack">
+          <p class="tw-flex tw-items-center tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300 tw-ml-2" @click="clickGoBack">
             <span id="go-back"
-                  class="material-symbols-outlined tw-text-neutral-600 tw-py-3 tw-pl-5 tw-pr-1 em-pointer">
+                  class="material-symbols-outlined tw-text-neutral-600 em-pointer tw-mr-1">
               navigate_before
             </span>
             {{ translate('COM_EMUNDUS_ACTIONS_BACK') }}
@@ -104,7 +104,7 @@
           <transition name="fade" mode="out-in">
             <form-builder-page
                 v-if="currentPage && showInSection === 'page'"
-                :key="currentPage.id"
+                :key="selectedPage"
                 ref="formBuilderPage"
                 :mode="mode"
                 :page="currentPage"
@@ -265,6 +265,7 @@ import Modal from "@/components/Modal.vue";
 // services
 import formService from '@/services/form.js';
 import formBuilderService from "@/services/formbuilder";
+import translationService from "@/services/translations";
 
 // store
 import { useGlobalStore } from "@/stores/global.js";
@@ -438,9 +439,25 @@ export default {
       }
     },
     updateFormTitle() {
-      this.title = this.$refs.formTitle.innerText.trim().replace(/[\r\n]/gm, " ");
-      this.$refs.formTitle.innerText = this.$refs.formTitle.innerText.trim().replace(/[\r\n]/gm, " ");
-      formService.updateFormLabel({label: this.title, prid: this.profile_id, form_id: this.form_id});
+      if (this.profile_id == 0) {
+        formService.getPageObject(this.pages[0].id).then(response => {
+          const fabrikPage = response.data;
+          fabrikPage.show_title.label[this.shortDefaultLang] = this.$refs.formTitle.innerText.trim().replace(/[\r\n]/gm, " ");
+          const tag = fabrikPage.show_title.titleraw;
+
+          this.pages[0].label = fabrikPage.show_title.label[this.shortDefaultLang];
+          formBuilderService.updateTranslation(null, tag, fabrikPage.show_title.label).then((response) => {
+            if (response.data.status) {
+              translationService.updateTranslations(fabrikPage.show_title.label[this.shortDefaultLang],'falang', this.shortDefaultLang, fabrikPage.menu_id,'title','menu');
+              this.$refs.formBuilderPage.getSections();
+            }
+          });
+        });
+      } else {
+        this.title = this.$refs.formTitle.innerText.trim().replace(/[\r\n]/gm, " ");
+        this.$refs.formTitle.innerText = this.$refs.formTitle.innerText.trim().replace(/[\r\n]/gm, " ");
+        formService.updateFormLabel({label: this.title, prid: this.profile_id, form_id: this.form_id});
+      }
     },
     updateFormTitleKeyup() {
       document.activeElement.blur();

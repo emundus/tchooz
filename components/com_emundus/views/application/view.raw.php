@@ -443,6 +443,7 @@ class EmundusViewApplication extends HtmlView
 
 				case 'form':
 					if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum) || (!empty($ccid) && !empty($fnum) && in_array($fnum, array_keys($this->_user->fnums)))) {
+						$this->context = $jinput->getString('context', 'default');
 						$emundus_config = ComponentHelper::getParams('com_emundus');
 						$see_only_filled_workflows = $emundus_config->get('see_only_filled_workflows', 0);
 						$this->header = $jinput->getString('header', 1);

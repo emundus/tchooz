@@ -112,12 +112,12 @@ $hash = EmundusHelperCache::getCurrentGitHash();
 
 <div id="em-component-vue"
      email="<?= JFactory::getApplication()->input->get('eid'); ?>"
-     component="addemail"
+     component="addEmail"
      coordinatorAccess="<?= $coordinator_access ?>"
      sysadminAccess="<?= $sysadmin_access ?>"
-     shortLang="<?= $short_lang ?>" currentLanguage="<?= $current_lang ?>"
+     shortLang="<?= $short_lang ?>"
+     currentLanguage="<?= $current_lang ?>"
      manyLanguages="<?= $many_languages ?>">
-    >
 </div>
 
 <script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>

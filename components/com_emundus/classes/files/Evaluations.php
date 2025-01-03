@@ -59,22 +59,11 @@ class Evaluations extends Files
 
 
 			// Build WHERE to get differents groups of files
-			$wheres_to_evaluate   = ['ecc.fnum NOT IN (SELECT fnum from jos_emundus_evaluations WHERE user = ' . $db->quote(JFactory::getUser()->id) . ')'];
-			$wheres_to_evaluate[] = 'ecc.fnum IN (' . implode(',', $db->quote($this->getFnums())) . ')';
-
-			$wheres_evaluated   = ['ecc.fnum IN (SELECT fnum from jos_emundus_evaluations WHERE user = ' . $db->quote(JFactory::getUser()->id) . ')'];
-			$wheres_evaluated[] = 'ecc.fnum IN (' . implode(',', $db->quote($this->getFnums())) . ')';
-
+			$wheres_to_evaluate = [];
+			$wheres_evaluated = [];
 			$wheres_all = ['ecc.fnum IN (' . implode(',', $db->quote($this->getFnums())) . ')'];
-			//
 
-			if ($selected_tab == 'to_evaluate') {
-				$files_associated = $this->getFilesQuery($select, $left_joins, $wheres_to_evaluate, $create_access_evaluation, $this->getLimit(), $this->getOffset());
-			}
-			elseif ($selected_tab == 'evaluated') {
-				$files_associated = $this->getFilesQuery($select, $left_joins, $wheres_evaluated, $create_access_evaluation, $this->getLimit(), $this->getOffset());
-			}
-			elseif ($selected_tab == 'all') {
+			if ($selected_tab == 'all') {
 				$files_associated = $this->getFilesQuery($select, $left_joins, $wheres_all, $read_access_evaluation, $this->getLimit(), $this->getOffset());
 			}
 
@@ -137,6 +126,33 @@ class Evaluations extends Files
 				$eval_groups = array_filter($eval_groups, function ($value) {
 					return !empty($value);
 				});
+
+				$query->clear()
+					->select('distinct esp.id')
+					->from($db->quoteName('#__emundus_setup_programmes', 'esp'))
+					->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esp.code') . ' = ' . $db->quoteName('esc.training'))
+					->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'))
+					->where($db->quoteName('ecc.fnum') . ' IN (' . implode(',', $db->quote($fnums)) . ')');
+
+				$db->setQuery($query);
+				$program_ids = $db->loadColumn();
+
+				if (!empty($program_ids)) {
+					$m_workflow = new EmundusModelWorkflow;
+					foreach ($program_ids as $program_id) {
+						$steps = $m_workflow->getEvaluatorStepsByProgram($program_id);
+
+						foreach ($steps as $step) {
+							$query->clear()
+								->select('distinct effg.group_id')
+								->from($db->quoteName('#__fabrik_formgroup', 'effg'))
+								->where($db->quoteName('effg.form_id') . ' = ' . $db->quote($step->form_id));
+
+							$db->setQuery($query);
+							$eval_groups = array_merge($eval_groups, $db->loadColumn());
+						}
+					}
+				}
 
 				if (empty($eval_groups)) {
 					throw new ErrorException('COM_EMUNDUS_ERROR_NO_EVALUATION_GROUP');
@@ -260,40 +276,37 @@ class Evaluations extends Files
 		}
 	}
 
+
+	// TODO: there is no 1 evaluation form per fnum, there are multiple evaluation forms per fnum
 	public function getEvaluationFormByFnum($fnum)
 	{
-		$form_id = 0;
+		$form_ids = [];
 
 		if (!empty($fnum)) {
-			try {
-				$db    = Factory::getContainer()->get('DatabaseDriver');
-				$query = $db->getQuery(true);
+			require_once(JPATH_SITE . '/components/com_emundus/models/workflow.php');
+			$m_workflow = new EmundusModelWorkflow();
 
-				$query->clear()
-					->select('distinct esp.fabrik_group_id')
-					->from($db->quoteName('#__emundus_setup_programmes', 'esp'))
-					->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esp.code') . ' = ' . $db->quoteName('esc.training'))
-					->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'))
-					->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($fnum));
-				$db->setQuery($query);
-				$eval_groups = $db->loadColumn();
-				$eval_groups = array_filter($eval_groups, function ($value) {
-					return !empty($value);
-				});
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true);
 
-				$query->clear()
-					->select('form_id')
-					->from($db->quoteName('#__fabrik_formgroup'))
-					->where($db->quoteName('group_id') . ' IN (' . implode(',', $eval_groups) . ')');
-				$db->setQuery($query);
-				$form_id = $db->loadResult();
-			}
-			catch (Exception $e) {
-				JLog::add('Problem when get evaluation form of fnum ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
+			$query->select('esp.id, ecc.status')
+				->from($db->quoteName('#__emundus_setup_programmes', 'esp'))
+				->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esp.code') . ' = ' . $db->quoteName('esc.training'))
+				->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'))
+				->where($db->quoteName('ecc.fnum') . ' = ' . $db->quote($fnum));
+
+			$db->setQuery($query);
+			$file_infos = $db->loadAssoc();
+
+			if (!empty($file_infos['id']) && !empty($file_infos['status'])) {
+				$steps = $m_workflow->getEvaluatorStepsByProgram($file_infos['id']);
+				foreach ($steps as $step) {
+					$form_ids[] = $step->form_id;
+				}
 			}
 		}
 
-		return $form_id;
+		return $form_ids;
 	}
 
 	public function getMyEvaluation($fnum)

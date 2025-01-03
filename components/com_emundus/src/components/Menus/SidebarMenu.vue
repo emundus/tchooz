@@ -9,7 +9,8 @@
     >
       <ul class="tw-flex tw-flex-col tw-items-left tw-gap-3 tw-p-3 tw-space-y-2 tw-font-large tw-list-none">
         <li class="tw-w-10 tw-flex tw-items-center tw-justify-between">
-              <span class="tw-flex tw-items-center tw-rounded-lg tw-group tw-cursor-pointer" @click="clickReturn()">
+              <span class="tw-flex tw-items-center tw-group tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300"
+                    @click="clickReturn()">
                 <!-- The back button icon -->
                 <span class="material-symbols-outlined tw-text-neutral-600 tw-user-select-none">navigate_before</span>
                 <!-- The back button label -->

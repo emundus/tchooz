@@ -103,6 +103,15 @@
           </div>
         </div>
 
+        <div class="tw-flex tw-justify-between tw-w-full">
+          <span>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_SHOW_IN_LIST_SUMMARY") }}</span>
+          <div class="em-toggle">
+            <input true-value="1" false-value="0" type="checkbox" class="em-toggle-check" id="show-in-list-summary" name="show-in-list-summary" v-model="element.show_in_list_summary" @click="toggleShowInList">
+            <strong class="b em-toggle-switch"></strong>
+            <strong class="b em-toggle-track"></strong>
+          </div>
+        </div>
+
         <FormBuilderElementParams :element="element" :params="params" :key="element.id" :databases="databases"/>
       </div>
     </div>
@@ -248,6 +257,14 @@ export default {
         }
       });
     },
+    toggleShowInList() {
+      this.element.show_in_list_summary = this.element.show_in_list_summary == 1 ? 0 : 1;
+      formBuilderService.updateElementParam(this.element.id, 'show_in_list_summary', this.element.show_in_list_summary ? 1 : 0).then(response => {
+        if (!response.status) {
+          this.element.show_in_list_summary = this.element.show_in_list_summary == 1 ? 0 : 1;
+        }
+      });
+    },
     selectTab(tab) {
       this.tabs.forEach(t => {
         t.active = false;
@@ -334,6 +351,9 @@ export default {
       border-bottom: 2px solid black;
     }
   }
+}
 
+.em-toggle {
+  min-width: 45px !important;
 }
 </style>

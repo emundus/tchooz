@@ -75,19 +75,15 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 				}
 				catch (ParseError $p)
 				{
-					Log::add('Error while running event ' . $caller_index . ' : "' . $p->getMessage() . '"', Log::ERROR, 'com_emundus');
+					Log::add('Error while running event ' . $caller_index . ' : "' . $p->getMessage() . '"', Log::ERROR, 'com_emundus.custom_event_handler');
 					continue;
 				}
 			}
 		}
 		catch (Exception $e)
 		{
-			echo '<pre>';
-			var_dump('here');
-			echo '</pre>';
-			die;
+			Log::add('Error while running event ' . $event . ' : "' . $e->getMessage() . '"', Log::ERROR, 'com_emundus.custom_event_handler');
 		}
-
 
 		return $returned_values;
 	}
@@ -112,7 +108,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 		}
 		catch (ParseError $p)
 		{
-			Log::add('Error while running event ' . $code . ' : "' . $p->getMessage() . '"', Log::ERROR, 'com_emundus');
+			Log::add('Error while running event ' . $code . ' : "' . $p->getMessage() . '"', Log::ERROR, 'com_emundus.custom_event_handler');
 
 			return false;
 		}

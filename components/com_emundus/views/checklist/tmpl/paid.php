@@ -2,11 +2,12 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 
 $app    = Factory::getApplication();
 $Itemid = $app->input->get('Itemid', null, 'GET', 'none', 0);
 
-echo JText::_('PAYMENT_RECEIVED');
+echo Text::_('PAYMENT_RECEIVED');
 
 if (!empty($this->applications)) : ?>
     <hr>
@@ -24,19 +25,19 @@ if (!empty($this->applications)) : ?>
 
                 <div class="col-xs-6 col-md-4">
                     <p>
-						<?php echo JText::_('COM_EMUNDUS_FILE_NUMBER'); ?> : <i><?php echo $application->fnum; ?></i>
+						<?php echo Text::_('COM_EMUNDUS_FILE_NUMBER'); ?> : <i><?php echo $application->fnum; ?></i>
                     </p>
 
                     <a id='print' class="btn btn-info em-container-paid-print"
                        href="<?php echo JRoute::_(JURI::base() . 'index.php?option=com_emundus&task=pdf'); ?>"
-                       title="<?php echo JText::_('COM_EMUNDUS_APPLICATION_PRINT_APPLICATION_FILE'); ?> "> <i
-                                class="icon-print"></i> <?php echo JText::_('COM_EMUNDUS_APPLICATION_PRINT_APPLICATION_FILE'); ?>
+                       title="<?php echo Text::_('COM_EMUNDUS_APPLICATION_PRINT_APPLICATION_FILE'); ?> "> <i
+                                class="icon-print"></i> <?php echo Text::_('COM_EMUNDUS_APPLICATION_PRINT_APPLICATION_FILE'); ?>
                     </a>
 
                 </div>
 
                 <div class="col-xs-6 col-md-4">
-					<?php echo JText::_('COM_EMUNDUS_STATUS'); ?> :
+					<?php echo Text::_('COM_EMUNDUS_STATUS'); ?> :
                     <span class="label label-<?php echo $application->class; ?>">
         <?php echo $application->value; ?>
       </span>
@@ -51,7 +52,7 @@ if (!empty($this->applications)) : ?>
 		<?php endforeach; ?>
     </div>
 <?php else :
-	echo JText::_('NO_FILE');
+	echo Text::_('NO_FILE');
 	?>
 <?php endif; ?>
 <script type="text/javascript">

@@ -147,6 +147,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
 
             $current_fnum = !empty($fnum) ? $fnum : $user->fnum;
             $current_phase = $m_campaign->getCurrentCampaignWorkflow($current_fnum);
+			$infinite_step = !empty($current_phase) && $current_phase->infinite;
             if (!empty($current_phase) && !empty($current_phase->end_date)) {
                 $current_end_date = $current_phase->end_date;
                 $current_start_date = $current_phase->start_date;
@@ -165,7 +166,11 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                 $mainframe->redirect('/');
             }
 
-            $is_dead_line_passed = strtotime(date($now)) > strtotime($current_end_date);
+			if ($infinite_step) {
+				$is_dead_line_passed = false;
+			} else {
+				$is_dead_line_passed = strtotime(date($now)) > strtotime($current_end_date);
+			}
 
             $edit_status = array();
             if (!empty($current_phase) && !empty($current_phase->entry_status)) {

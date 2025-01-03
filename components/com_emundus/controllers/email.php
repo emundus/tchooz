@@ -161,8 +161,10 @@ class EmundusControllerEmail extends BaseController
 			$lim       = $this->input->getInt('lim', 0);
 			$page      = $this->input->getInt('page', 0);
 			$category  = $this->input->getString('category', '');
+			$order_by  = $this->input->getString('order_by', 'se.id');
+			$order_by  = $order_by == 'label' ? 'se.subject' : $order_by;
 
-			$emails = $this->m_emails->getAllEmails($lim, $page, $filter, $sort, $recherche, $category);
+			$emails = $this->m_emails->getAllEmails($lim, $page, $filter, $sort, $recherche, $category, $order_by);
 
 			if (count($emails) > 0)
 			{

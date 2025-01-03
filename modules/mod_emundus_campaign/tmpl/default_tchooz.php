@@ -1219,6 +1219,10 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
         html += '<option value="reseau"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_RESEAU') ?></option> ';
 	    <?php endif; ?>
 
+	    <?php if (is_array($mod_em_campaign_show_filters_list) && in_array('reseau', $mod_em_campaign_show_filters_list)) : ?>
+        html += '<option value="reseau"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_RESEAU') ?></option> ';
+	    <?php endif; ?>
+
         html += '</select> ' +
             '<span class="em-text-neutral-800"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_IS') ?></span> ' +
             '<div id="filters_options_' + index + '"></div>' +

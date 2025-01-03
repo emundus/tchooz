@@ -575,7 +575,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getProfileAcces($user)
 	{
-		
+
 		$query     = 'SELECT esg.profile_id FROM #__emundus_setup_groups as esg
                     LEFT JOIN #__emundus_groups as eg on esg.id=eg.group_id
                     WHERE esg.published=1 AND eg.user_id=' . $user;
@@ -896,15 +896,29 @@ class EmundusModelFiles extends JModelLegacy
 	/**
 	 * @return mixed
 	 */
-	public function getProfiles()
+	public function getProfiles($ids = [])
 	{
-		
-		$query     = 'SELECT esp.id, esp.label, esp.acl_aro_groups, caag.lft FROM #__emundus_setup_profiles esp
-        INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id
-        ORDER BY caag.lft, esp.label';
-		$this->_db->setQuery($query);
+		$profiles = [];
 
-		return $this->_db->loadObjectList('id');
+		$query = $this->_db->getQuery(true);
+		$query->select('esp.id, esp.label, esp.published, esp.acl_aro_groups, caag.lft')
+			->from($this->_db->quoteName('#__emundus_setup_profiles', 'esp'))
+			->join('INNER', $this->_db->quoteName('#__usergroups', 'caag') . ' ON (' . $this->_db->quoteName('esp.acl_aro_groups') . ' = ' . $this->_db->quoteName('caag.id') . ')');
+
+		if (!empty($ids)) {
+			$query->where('esp.id IN (' . implode(',', $ids) . ')');
+		}
+
+		$query->order('caag.lft, esp.label');
+
+		try {
+			$this->_db->setQuery($query);
+			$profiles = $this->_db->loadObjectList('id');
+		} catch (Exception $e) {
+			Log::add(Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' ' . $e->getMessage() . ' -> ' . $query, Log::ERROR, 'com_emundus.error');
+		}
+
+		return $profiles;
 	}
 
 	/**
@@ -914,7 +928,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getProfileByID($id)
 	{
-		
+
 		$query     = 'SELECT esp.* FROM jos_emundus_setup_profiles as esp
                 LEFT JOIN jos_emundus_users as eu ON eu.profile=esp.id
                 WHERE eu.user_id=' . $id;
@@ -930,7 +944,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getProfilesByIDs($ids)
 	{
-		
+
 		$query     = 'SELECT esp.id, esp.label, esp.acl_aro_groups, caag.lft
         FROM #__emundus_setup_profiles esp
         INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id
@@ -946,7 +960,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getAuthorProfiles()
 	{
-		
+
 		$query     = 'SELECT esp.id, esp.label, esp.acl_aro_groups, caag.lft
         FROM #__emundus_setup_profiles esp
         INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id
@@ -962,7 +976,7 @@ class EmundusModelFiles extends JModelLegacy
 	public function getApplicantsProfiles()
 	{
 		$user      = $this->app->getIdentity();
-		
+
 		$query     = 'SELECT esp.id, esp.label FROM #__emundus_setup_profiles esp
                   WHERE esp.published=1 ';
 		$no_filter = array("Super Users", "Administrator");
@@ -982,7 +996,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getApplicantsByProfile($profile)
 	{
-		
+
 		$query     = 'SELECT eup.user_id FROM #__emundus_users_profiles eup WHERE eup.profile_id=' . $profile;
 		$this->_db->setQuery($query);
 
@@ -995,7 +1009,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getAuthorUsers()
 	{
-		
+
 		$query     = 'SELECT u.id, u.gid, u.name
         FROM #__users u
         WHERE u.gid=19';
@@ -1009,7 +1023,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getMobility()
 	{
-		
+
 		$query     = 'SELECT esm.id, esm.label, esm.value
         FROM #__emundus_setup_mobility esm
         ORDER BY ordering';
@@ -1025,7 +1039,7 @@ class EmundusModelFiles extends JModelLegacy
 	{
 		$elements = [];
 
-		
+
 		$query     = 'SELECT element.id, element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin,
                  groupe.label AS group_label, INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated,
                  tab.db_table_name AS table_name, tab.label AS table_label
@@ -1056,7 +1070,7 @@ class EmundusModelFiles extends JModelLegacy
 	{
 		$elements_name = array();
 
-		
+
 		$query = 'SELECT element.id, element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin,
                  groupe.label AS group_label, INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated,
                  tab.db_table_name AS table_name, tab.label AS table_label
@@ -1218,7 +1232,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getSchoolyears()
 	{
-		
+
 		$query     = 'SELECT DISTINCT(schoolyear) as schoolyear
         FROM #__emundus_users
         WHERE schoolyear is not null AND schoolyear != ""
@@ -1296,7 +1310,7 @@ class EmundusModelFiles extends JModelLegacy
 
 		if (!empty($groups) && !empty($fnums)) {
 			try {
-				
+
 				$insert = [];
 
 				foreach ($fnums as $fnum) {
@@ -1363,7 +1377,7 @@ class EmundusModelFiles extends JModelLegacy
 
 		if (!empty($users) && !empty($fnums)) {
 			try {
-				
+
 				$insert = [];
 
 				foreach ($fnums as $fnum) {
@@ -2021,7 +2035,7 @@ class EmundusModelFiles extends JModelLegacy
 	public function unlinkEvaluators($fnum, $id, $isGroup)
 	{
 		try {
-			
+
 
 			if ($isGroup) {
 				$query = 'delete from #__emundus_group_assoc where fnum like ' . $this->_db->Quote($fnum) . ' and group_id =' . $id;
@@ -4364,7 +4378,7 @@ class EmundusModelFiles extends JModelLegacy
 	public function programSessions($program)
 	{
 		try {
-			
+
 
 			$query = $this->_db->getQuery(true);
 			$query->select('DISTINCT(t.session_code) AS sc, t.*')
@@ -4416,7 +4430,7 @@ class EmundusModelFiles extends JModelLegacy
 	public function getBirthdate($fnum = null, $format = 'd-m-Y', $age = false)
 	{
 
-		
+
 		$query     = $this->_db->getQuery(true);
 
 		$query->select($this->_db->quoteName('birth_date'))->from($this->_db->quoteName('#__emundus_personal_detail'))->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
@@ -4446,7 +4460,7 @@ class EmundusModelFiles extends JModelLegacy
 
 	public function getDocumentCategory()
 	{
-		
+
 		$query     = $this->_db->getQuery(true);
 		$query->select($this->_db->quoteName('esa.*'))
 			->from($this->_db->quoteName('#__emundus_setup_attachments', 'esa'))
@@ -4459,7 +4473,7 @@ class EmundusModelFiles extends JModelLegacy
 
 	public function getParamsCategory($idCategory)
 	{
-		
+
 		$query     = $this->_db->getQuery(true);
 		$query->select($this->_db->quoteName('fe.params'))
 			->from($this->_db->quoteName('#__fabrik_elements', 'fe'))
@@ -4483,7 +4497,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getAttachmentCategories()
 	{
-		
+
 
 		$query = $this->_db->getQuery(true);
 		$query->select($this->_db->quoteName('fe.params'))
@@ -4508,7 +4522,7 @@ class EmundusModelFiles extends JModelLegacy
 
 	public function selectCity($insee)
 	{
-		
+
 		$query     = $this->_db->getQuery(true);
 
 		$conditions = $this->_db->quoteName('insee_code') . ' LIKE ' . $this->_db->quote($insee);
@@ -4524,7 +4538,7 @@ class EmundusModelFiles extends JModelLegacy
 
 	public function selectNameCity($name)
 	{
-		
+
 		$query     = $this->_db->getQuery(true);
 
 		$conditions = $this->_db->quoteName('name') . ' LIKE ' . $this->_db->quote($name);
@@ -4540,7 +4554,7 @@ class EmundusModelFiles extends JModelLegacy
 
 	public function selectMultiplePayment($fnum)
 	{
-		
+
 		$query     = $this->_db->getQuery(true);
 
 		$conditions = $this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum);
@@ -4693,7 +4707,7 @@ class EmundusModelFiles extends JModelLegacy
 
 	public function getTagsAssocStatus($status)
 	{
-		
+
 		$query     = $this->_db->getQuery(true);
 
 		$conditions = $this->_db->quoteName('ss.step') . ' = ' . $this->_db->quote($status);
@@ -4721,7 +4735,7 @@ class EmundusModelFiles extends JModelLegacy
 		$editing_time = $config->get('alert_editing_time', 2);
 
 		$actions   = array(1, 4, 5, 10, 11, 12, 13, 14);
-		
+
 		$query     = $this->_db->getQuery(true);
 
 		$query->select('DISTINCT ju.id, ju.name')
@@ -4771,7 +4785,7 @@ class EmundusModelFiles extends JModelLegacy
 	{
 		$logs = [];
 
-		
+
 		$query     = $this->_db->getQuery(true);
 		$query->clear()->select('*')->from($this->_db->quoteName('#__emundus_setup_actions', 'jesa'))->order('jesa.id ASC');
 
@@ -4799,7 +4813,7 @@ class EmundusModelFiles extends JModelLegacy
 		$bound_fnums = [false];
 
 		if (!empty($fnums) && !empty($user_to)) {
-			
+
 			$query     = $this->_db->getQuery(true);
 
 			$query->select('id')
@@ -5254,7 +5268,7 @@ class EmundusModelFiles extends JModelLegacy
 		$saved = false;
 
 		if (!empty($user_id) && !empty($name) && !empty($filters)) {
-			
+
 			$query     = $this->_db->getQuery(true);
 			$query->insert($this->_db->quoteName('#__emundus_filters'))
 				->columns(['user', 'name', 'constraints', 'mode', 'item_id'])
@@ -5277,7 +5291,7 @@ class EmundusModelFiles extends JModelLegacy
 		$filters = array();
 
 		if (!empty($user_id)) {
-			
+
 			$query     = $this->_db->getQuery(true);
 			$query->select('id, name, constraints')
 				->from($this->_db->quoteName('#__emundus_filters'))
@@ -5302,7 +5316,7 @@ class EmundusModelFiles extends JModelLegacy
 		$updated = false;
 
 		if (!empty($user_id) && !empty($filter_id) && !empty($filters)) {
-			
+
 			$query     = $this->_db->getQuery(true);
 			$query->update($this->_db->quoteName('#__emundus_filters'))
 				->set('constraints = ' . $this->_db->quote($filters))
@@ -5367,7 +5381,7 @@ class EmundusModelFiles extends JModelLegacy
 		return $status;
 	}
 
-	public function exportZip($fnums, $form_post = 1, $attachment = 1, $assessment = 1, $decision = 1, $admission = 1, $form_ids = null, $attachids = null, $options = null, $acl_override = false, $current_user = null, $params = []) {
+	public function exportZip($fnums, $form_post = 1, $attachment = 1, $eval_steps = [], $form_ids = null, $attachids = null, $options = null, $acl_override = false, $current_user = null, $params = []) {
 		$eMConfig = ComponentHelper::getParams('com_emundus');
 
 		require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
@@ -5442,16 +5456,14 @@ class EmundusModelFiles extends JModelLegacy
 
 
 
-				if ($assessment) {
-					$files_list[] = EmundusHelperExport::getEvalPDF($fnum, $options);
-				}
+				if (!empty($eval_steps) && (!empty($eval_steps['tables']) || !empty($eval_steps['groups']) || !empty($eval_steps['elements']))) {
+					$elements = [
+						['fids' => $eval_steps['tables'], 'gids' => $eval_steps['groups'], 'eids' => $eval_steps['elements']]
+					];
+					$options[] = 'eval_steps';
 
-				if ($decision) {
-					$files_list[] = EmundusHelperExport::getDecisionPDF($fnum, $options);
-				}
-
-				if ($admission) {
-					$admission_file = EmundusHelperExport::getAdmissionPDF($fnum, $options);
+					$eval_pdf_filename = '_evaluations';
+					$files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, 0, $eval_steps['tables'], $options, null, $elements, false, $eval_pdf_filename);
 				}
 
 				if ($concat_attachments_with_form) {
@@ -5526,24 +5538,6 @@ class EmundusModelFiles extends JModelLegacy
 					if (!$zip->addFile($dossier . $application_pdf, $filename)) {
 						continue;
 					}
-				}
-
-				if (file_exists($admission_file)) {
-					$eMConfig = ComponentHelper::getParams('com_emundus');
-					$fileName = $eMConfig->get('application_admission_name', null);
-
-					if (is_null($fileName)) {
-						$name = $fnum . '-admission.pdf';
-					} else {
-						require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'checklist.php');
-						$m_checklist = new EmundusModelChecklist;
-						$post = array(
-							'FNUM' => $fnum,
-						);
-						$name = $m_checklist->formatFileName($fileName, $fnum, $post).'.pdf';
-					}
-					$filename = $application_form_name . DS . $name;
-					$zip->addFile($admission_file, $filename);
 				}
 
 				if (($attachment || !empty($attachids)) && !$concat_attachments_with_form) {
@@ -5623,6 +5617,25 @@ class EmundusModelFiles extends JModelLegacy
 		return $nom;
 	}
 
+	/**
+	 * @param $validFnums
+	 * @param $file
+	 * @param $totalfile
+	 * @param $start
+	 * @param $forms
+	 * @param $attachment
+	 * @param $assessment @deprecated, evaluation steps are now in forms
+	 * @param $decision @deprecated, evaluation steps are now in forms
+	 * @param $admission @deprecated, evaluation steps are now in forms
+	 * @param $ids
+	 * @param $formid
+	 * @param $attachids
+	 * @param $options
+	 * @param $pdf_data
+	 *
+	 * @return array
+	 * @throws \Gotenberg\Exceptions\GotenbergApiErrored
+	 */
 	public function generatePDF($validFnums, $file, $totalfile = 1, $start = 0, $forms = 0, $attachment = 0, $assessment = 0, $decision = 0, $admission = 0, $ids = null, $formid = null, $attachids = null, $options = null, $pdf_data = [])
 	{
 		$response_status = false;
@@ -5679,14 +5692,18 @@ class EmundusModelFiles extends JModelLegacy
 						$forms_to_export = array();
 						if (!empty($formids)) {
 							foreach ($formids as $fids) {
-								$detail = explode("|", $fids);
-								if ((!empty($detail[1]) && $detail[1] == $fnumsInfo[$fnum]['training']) && ($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")) {
-									$forms_to_export[] = $detail[0];
+
+								if (strpos('|', $fids) !== false) {
+									$fids = explode("|", $fids);
+									if ((!empty($detail[1]) && $detail[1] == $fnumsInfo[$fnum]['training']) && ($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")) {
+										$forms_to_export[] = $detail[0];
+									}
+								} else if (is_numeric($fids)) {
+									$forms_to_export[] = $fids;
 								}
 							}
 						}
 						if ($forms || !empty($forms_to_export)) {
-
 							require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
 							$m_profile = new EmundusModelProfile;
 							$infos = $m_profile->getFnumDetails($fnum);
@@ -5711,36 +5728,6 @@ class EmundusModelFiles extends JModelLegacy
 							$files_export = EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
 						}
 					}
-					$check_eval = $eMConfig->get('check_eval', 0);
-					$skip_eval = false;
-					if ($check_eval == 1){
-						require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
-						$m_eval = new EmundusModelEvaluation();
-						$eval = $m_eval->getEvaluationsFnum($fnum);
-						if(empty($eval)){
-							$skip_eval = true;
-						}
-					}
-
-					$check_decision = $eMConfig->get('check_decision', 0);
-					$skip_decision = false;
-					if ($check_decision == 1){
-						require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'decision.php');
-						$m_decision = new EmundusModelDecision();
-						$getDecision = $m_decision->getDecisionFnum($fnum);
-						if(empty($getDecision)){
-							$skip_decision = true;
-						}
-					}
-
-					if ($assessment && !$skip_eval)
-						$files_list[] = EmundusHelperExport::getEvalPDF($fnum, $options);
-
-					if ($decision && !$skip_decision)
-						$files_list[] = EmundusHelperExport::getDecisionPDF($fnum, $options);
-
-					if ($admission)
-						$files_list[] = EmundusHelperExport::getAdmissionPDF($fnum, $options);
 
 					EmundusModelLogs::log($this->app->getIdentity()->id, (int) $fnumsInfo[$fnum]['applicant_id'], $fnum, 8, 'c', 'COM_EMUNDUS_ACCESS_EXPORT_PDF');
 				}
@@ -5873,7 +5860,7 @@ class EmundusModelFiles extends JModelLegacy
 					}
 
 					$fnumInfos = $this->getFnumInfos($fnum);
-					
+
 					$query = $this->_db->getQuery(true);
 
 					$query->select('attachment_id')

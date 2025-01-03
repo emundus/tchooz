@@ -294,9 +294,6 @@ function export_pdf(fnums, ids, default_export = '') {
     var limit = 2;
     var forms = 0;
     var attachment  = 0;
-    var assessment  = 0;
-    var decision    = 0;
-    var admission   = 0;
 
     var form_checked = [];
     var attach_checked = [];
@@ -330,6 +327,11 @@ function export_pdf(fnums, ids, default_export = '') {
         $('[id^=emundus_table_]').each(function (flt) {
             if($(this).find($('[id^=emundus_elm_]')).is(':checked') == true) {
                 let id = $(this).attr('id').split('emundus_table_')[1];
+                if (form_checked.length > 0) {
+                    form_checked = form_checked.concat(',', id);
+                } else {
+                    form_checked = id;
+                }
                 pdf_elements['tables'].push(id);
             }
         });
@@ -337,9 +339,10 @@ function export_pdf(fnums, ids, default_export = '') {
         /// save all groups
         let groups = [];
         $('[id^=emundus_grp_]').each(function (flt) {
-            if($(this).find($('[id^=emundus_elm_]')).is(':checked') == true) {
-                let id = $(this).attr('id').split('emundus_grp_')[1];
-                pdf_elements['groups'].push(id);
+            const group_id = $(this).attr('id').split('emundus_grp_')[1];
+
+            if ($(this).find($('.emundusitem_' + group_id + '[id^=emundus_elm_]')).is(':checked') == true) {
+                pdf_elements['groups'].push(group_id);
             }
         });
 
@@ -351,6 +354,51 @@ function export_pdf(fnums, ids, default_export = '') {
             }
         });
 
+        /**
+         * Steps elements
+         *
+         * all inputs that contains emundus_checkall_tbl_[id] are checked
+         */
+        document.querySelectorAll('#evaluation-steps-elts input[id^=emundus_checkall_tbl_]').forEach(elt => {
+            if (elt.checked == true) {
+                forms = 1;
+                let id = elt.id.split('emundus_checkall_tbl_')[1];
+
+                if (form_checked.length > 0) {
+                    form_checked = form_checked.concat(',', id);
+                } else {
+                    form_checked = id;
+                }
+                pdf_elements['tables'].push(id);
+
+                if (!options.includes('eval_steps')) {
+                    options.push('eval_steps');
+                }
+            }
+        });
+
+        document.querySelectorAll('#evaluation-steps-elts input[id^=emundus_checkall_grp_]').forEach(elt => {
+            if (elt.checked == true) {
+                forms = 1;
+                pdf_elements['groups'].push(elt.id.split('emundus_checkall_grp_')[1]);
+                if (!options.includes('eval_steps')) {
+                    options.push('eval_steps');
+                }
+            }
+        });
+
+        document.querySelectorAll('#evaluation-steps-elts input[id^=emundus_checkall_elm_]').forEach(elt => {
+            if (elt.checked == true) {
+                forms = 1;
+                pdf_elements['elements'].push(elt.id.split('emundus_checkall_elm_')[1]);
+                if (!options.includes('eval_steps')) {
+                    options.push('eval_steps');
+                }
+            }
+        });
+
+        console.log(options);
+
         $('#aelts input:checked').each(function() {
             attach_checked.push($(this).val());
             attachment = 0;
@@ -360,12 +408,6 @@ function export_pdf(fnums, ids, default_export = '') {
             forms = 1;
         if ($('#em-ex-attachment').is(":checked"))
             attachment = 1;
-        if ($('#em-ex-assessment').is(":checked"))
-            assessment = 1;
-        if ($('#em-ex-decision').is(":checked"))
-            decision = 1;
-        if ($('#em-ex-admission').is(":checked"))
-            admission = 1;
         if ($('#em-add-header').is(":checked")) {
             $('#em-export-opt option:selected').each(function() {
                 options.push($(this).val());
@@ -401,37 +443,7 @@ function export_pdf(fnums, ids, default_export = '') {
             "status",
             "upload"
         ];
-    } else if (default_export === 'evaluation') {
-        forms = 0
-        assessment = 1;
-        options = [
-            "aid",
-            "afnum",
-            "aemail",
-            "aapp-sent",
-            "adoc-print",
-            "tags",
-            "status",
-            "upload",
-            "evaluation"
-        ];
-    } else if (default_export === 'decision') {
-        forms = 0;
-        assessment = 0;
-        decision = 1;
-        options = [
-            "aid",
-            "afnum",
-            "aemail",
-            "aapp-sent",
-            "adoc-print",
-            "tags",
-            "status",
-            "upload",
-            "decision"
-        ];
     }
-
 
     var swal_container_class = '';
     var swal_popup_class = '';
@@ -489,9 +501,6 @@ function export_pdf(fnums, ids, default_export = '') {
                                 attachment: attachment,
                                 attachids: attach_checked,
                                 options: options,
-                                assessment: assessment,
-                                decision: decision,
-                                admission: admission,
                                 file: result.file,
                                 ids: ids
                             };
@@ -528,7 +537,7 @@ function export_pdf(fnums, ids, default_export = '') {
     });
 }
 
-function generate_pdf(json,pdf_elements= null) {
+function generate_pdf(json, pdf_elements= null) {
     const maxfiles = 5000;
     var start       = json.start;
     var limit       = json.limit;
@@ -536,9 +545,6 @@ function generate_pdf(json,pdf_elements= null) {
     var file        = json.file;
     var forms       = json.forms;
     var attachment  = json.attachment;
-    var assessment  = json.assessment;
-    var decision    = json.decision;
-    var admission   = json.admission;
     var ids         = json.ids;
     var formids     = json.formids;
     var attachids   = json.attachids;
@@ -567,9 +573,6 @@ function generate_pdf(json,pdf_elements= null) {
                     limit: limit,
                     forms: forms,
                     attachment: attachment,
-                    assessment: assessment,
-                    decision: decision,
-                    admission: admission,
                     ids: ids,
                     formids: formids,
                     attachids: attachids,
@@ -580,13 +583,19 @@ function generate_pdf(json,pdf_elements= null) {
                     elements: elements,         /// default is UNDEFINED
                 },
                 success: function (result) {
-                    $('#extractstep').replaceWith('<div><p class="em-main-500-color">'+Joomla.Text._('COM_EMUNDUS_EXPORT_FINISHED')+'</p></div>');
-                    $('.swal2-confirm').replaceWith('<a class="tw-btn-primary em-w-auto" title="' + Joomla.Text._('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF') + '" href="' +result.json.path+ 'tmp/' + result.json.file + '" target="_blank"><span>' + Joomla.Text._('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF') + '</span></a>');
-                    const confirmBtn = document.querySelector('.em-swal-confirm-button');
-                    if (confirmBtn) {
-                        confirmBtn.style.opacity = '1';
-                    }                }, error: function (jqXHR) {
-                    $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">!!' + jqXHR.responseText + '</div>');
+                    if (result.status) {
+                        $('#extractstep').replaceWith('<div><p class="em-main-500-color">' + Joomla.Text._('COM_EMUNDUS_EXPORT_FINISHED') + '</p></div>');
+                        $('.swal2-confirm').replaceWith('<a class="tw-btn-primary em-w-auto" title="' + Joomla.Text._('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF') + '" href="' + result.json.path + 'tmp/' + result.json.file + '" target="_blank"><span>' + Joomla.Text._('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF') + '</span></a>');
+                        const confirmBtn = document.querySelector('.em-swal-confirm-button');
+                        if (confirmBtn) {
+                            confirmBtn.style.opacity = '1';
+                        }
+                    } else {
+                        $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">' + result.json.msg + '</div>');
+                    }
+                },
+                error: function (jqXHR) {
+                    $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">' + jqXHR.responseText + '</div>');
                     $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.Text._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
                 }
             })
@@ -602,25 +611,25 @@ function generate_pdf(json,pdf_elements= null) {
                     limit: limit,
                     forms: forms,
                     attachment: attachment,
-                    assessment: assessment,
-                    decision: decision,
-                    admission: admission,
                     ids: ids,
                     formids: formids,
                     attachids: attachids,
                     options: options,
                 },
                 success: function (result) {
-                    $('#extractstep').replaceWith('<div><p class="em-main-500-color">'+Joomla.Text._('COM_EMUNDUS_EXPORT_FINISHED')+'</p></div>');
-                    $('.swal2-confirm').replaceWith('<a class="tw-btn-primary em-w-auto" title="' + Joomla.Text._('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF') + '" href="' +result.json.path+ 'tmp/' + result.json.file + '" target="_blank"><span>' + Joomla.Text._('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF') + '</span></a>');
-                    const confirmBtn = document.querySelector('.em-swal-confirm-button');
-                    if (confirmBtn) {
-                        confirmBtn.style.opacity = '1';
+                    if (result.status) {
+                        $('#extractstep').replaceWith('<div><p class="em-main-500-color">'+Joomla.Text._('COM_EMUNDUS_EXPORT_FINISHED')+'</p></div>');
+                        $('.swal2-confirm').replaceWith('<a class="tw-btn-primary em-w-auto" title="' + Joomla.Text._('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF') + '" href="' +result.json.path+ 'tmp/' + result.json.file + '" target="_blank"><span>' + Joomla.Text._('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF') + '</span></a>');
+                        const confirmBtn = document.querySelector('.em-swal-confirm-button');
+                        if (confirmBtn) {
+                            confirmBtn.style.opacity = '1';
+                        }
+                    } else {
+                        $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">' + result.json.msg + '</div>');
                     }
                 },
                 error: function (jqXHR) {
                     $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">!!' + jqXHR.responseText + '</div>');
-                    $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.Text._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
                 }
             })
         }
@@ -642,41 +651,29 @@ function generate_pdf(json,pdf_elements= null) {
 function export_zip(fnums){
     var forms = 0;
     var attachment  = 0;
-    var assessment  = 0;
-    var decision    = 0;
-    var admission   = 0;
     var form_checked = [];
     var attach_checked = [];
     var options = [];
     let params = {};
+    let eval_steps = getCheckedEvalSteps();
+
 
     $('#felts input:checked').each(function() {
         form_checked.push($(this).val());
         forms = 0;
     });
 
-    $('#aelts input:checked').each(function() {
-        attach_checked.push($(this).val());
-        attachment = 0;
-    });
-
     if ($('#em-ex-forms').is(":checked"))
         forms = 1;
     if ($('#em-ex-attachment').is(":checked"))
         attachment = 1;
-    if ($('#em-ex-assessment').is(":checked"))
-        assessment = 1;
-    if ($('#em-ex-decision').is(":checked"))
-        decision = 1;
-    if ($('#em-ex-admission').is(":checked"))
-        admission = 1;
 
     if ($('#em-add-header').is(":checked")) {
         $('#em-export-opt option:selected').each(function() {
             options.push($(this).val());
         });
     } else {
-        options.push("0");
+        options.push('0');
     }
 
     if ($('#concat_attachments_with_form').is(":checked")) {
@@ -724,12 +721,10 @@ function export_zip(fnums){
             fnums: fnums,
             forms: forms,
             attachment: attachment,
-            assessment: assessment,
-            decision: decision,
-            admission: admission,
             formids: form_checked,
             attachids:attach_checked,
-            options:options,
+            eval_steps: JSON.stringify(eval_steps),
+            options: options,
             params: JSON.stringify(params)
         },
         dataType:'json',
@@ -1021,4 +1016,62 @@ function generate_trombinoscope(fnums, data)
             removeLoader();
         }
     });
+}
+
+
+async function getEvaluationStepsElements(code)
+{
+    let elements = '';
+
+    if (code) {
+        return await fetch('index.php?option=com_emundus&view=export_select_columns&format=raw&form=evaluation_steps&code='+code).then((response) => {
+            return response.text();
+        }).then((data) => {
+            return data;
+        });
+    } else {
+        return elements;
+    }
+}
+
+
+function getCheckedEvalSteps()
+{
+    let json = {
+        tables: [],
+        groups: [],
+        elements: []
+    }
+
+    document.querySelectorAll('#eval-steps-container input[id^=emundus_checkall_tbl_]').forEach(elt => {
+        if (elt.checked == true) {
+            let table_id = elt.id.split('emundus_checkall_tbl_')[1];
+
+            if (!json.tables.includes(table_id)) {
+                json.tables.push(table_id);
+            }
+        }
+    });
+
+    document.querySelectorAll('#eval-steps-container input[id^=emundus_checkall_grp_]').forEach(elt => {
+        if (elt.checked == true) {
+            let group_id = elt.id.split('emundus_checkall_grp_')[1];
+
+            if (!json.groups.includes(group_id)) {
+                json.groups.push(group_id);
+            }
+        }
+    });
+
+    document.querySelectorAll('#eval-steps-container input[id^=emundus_elm_]').forEach(elt => {
+        if (elt.checked == true) {
+            let element_id = elt.id.split('emundus_elm_')[1];
+
+            if (!json.elements.includes(element_id)) {
+                json.elements.push(element_id);
+            }
+        }
+    });
+
+    return json;
 }
