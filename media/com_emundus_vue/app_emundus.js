@@ -43679,20 +43679,7 @@ if (document) {
         const globalStore2 = useGlobalStore();
         globalStore2.initAttachmentPath(datas.base + "/images/emundus/files/");
       }
-      {
-        app.config.productionTip = false;
-        app.config.devtools = true;
-        app.config.performance = true;
-      }
       app.mount(elementId);
-      {
-        const version2 = app.version;
-        const devtools2 = window.__VUE_DEVTOOLS_GLOBAL_HOOK__;
-        if (devtools2) {
-          devtools2.enabled = true;
-          devtools2.emit("app:init", app, version2, {});
-        }
-      }
     }
   }
 }
