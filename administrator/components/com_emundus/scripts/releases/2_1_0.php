@@ -35,6 +35,7 @@ class Release2_1_0Installer extends ReleaseInstaller
 		}
 
 		EmundusHelperUpdate::addColumn('jos_emundus_setup_letters', 'for_all', 'TINYINT(1)', null, 0, 0);
+		EmundusHelperUpdate::addColumn('jos_emundus_setup_emails_trigger', 'all_program', 'TINYINT(1)', null, 0, 0);
 
 		/* Fix yesno for program form */
 		$query = $this->db->getQuery(true);
