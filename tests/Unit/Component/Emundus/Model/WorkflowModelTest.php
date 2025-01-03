@@ -28,6 +28,10 @@ class WorkflowModelTest extends UnitTestCase
 		parent::__construct('workflow', $data, $dataName, 'EmundusModelWorkflow');
 	}
 
+	/**
+	 * @covers EmundusModelWorkflow::add
+	 * @return void
+	 */
 	public function testAdd()
 	{
 		$workflow_id = $this->model->add();
@@ -35,6 +39,9 @@ class WorkflowModelTest extends UnitTestCase
 		$this->assertGreaterThan(0, $workflow_id);
 	}
 
+	/**
+	 * @covers EmundusModelWorkflow::getWorkflow
+	 */
 	public function testGetWorkflow()
 	{
 		$workflow_id = $this->model->add();
@@ -53,6 +60,9 @@ class WorkflowModelTest extends UnitTestCase
 		$this->assertEmpty($workflow_data['programs']);
 	}
 
+	/**
+	 * @covers EmundusModelWorkflow::getWorkflows
+	 */
 	public function testGetWorkflows()
 	{
 		$workflows = $this->model->getWorkflows();
@@ -69,6 +79,9 @@ class WorkflowModelTest extends UnitTestCase
 		$this->assertEquals($workflow_id, $workflows[0]->id);
 	}
 
+	/**
+	 * @covers EmundusModelWorkflow::delete
+	 */
 	public function testDelete()
 	{
 		$workflow_id = $this->model->add();
@@ -81,6 +94,9 @@ class WorkflowModelTest extends UnitTestCase
 		$this->assertEmpty($workflow);
 	}
 
+	/**
+	 * @covers EmundusModelWorkflow::updateWorkflow
+	 */
 	public function testUpdateWorkflow()
 	{
 		$workflow_id = $this->model->add();
@@ -116,6 +132,11 @@ class WorkflowModelTest extends UnitTestCase
 		$this->assertTrue($updated, 'Adding a program to the workflow worked');
 	}
 
+	/**
+	 * @covers EmundusModelWorkflow::updateWorkflow only exception thrown case when adding two steps with same entry status
+	 *
+	 * @return void
+	 */
 	public function testExceptionUpdateWorkflow()
 	{
 		$workflow_id = $this->model->add();
@@ -141,6 +162,10 @@ class WorkflowModelTest extends UnitTestCase
 		$this->model->updateWorkflow($workflow, [$step, $step], []);
 	}
 
+	/**
+	 * @covers EmundusModelWorkflow::getCurrentWorkflowStepFromFile
+	 * @return void
+	 */
 	public function testGetCurrentWorkflowStepFromFile()
 	{
 		$program = $this->h_dataset->createSampleProgram();
@@ -204,6 +229,9 @@ class WorkflowModelTest extends UnitTestCase
 		$this->assertEquals($step->id, $steps[0]['id'], 'The profile_id should be set to the one from the first step');
 	}
 
+	/**
+	 * @covers EmundusModelWorkflow::duplicateWorkflow
+	 */
 	public function testDuplicateWorkflow()
 	{
 		$new_workflow_id = $this->model->duplicateWorkflow(999999999);
@@ -219,6 +247,60 @@ class WorkflowModelTest extends UnitTestCase
 		$this->assertSame('Workflow qui doit être dupliqué - Copie', $workflow_data['workflow']->label, 'The label of the duplicated workflow should be the same as the original one, with a suffix');
 
 	}
+
+	/**
+	 * @covers EmundusModelWorkflow::getStepTypes
+	 */
+	public function testGetStepTypes()
+	{
+		$step_types = $this->model->getStepTypes();
+		$this->assertNotEmpty($step_types);
+		$this->assertIsArray($step_types);
+		$this->assertGreaterThanOrEqual(2, count($step_types), 'There should be at least 2 step types, one for the applicant, and one for evaluators');
+	}
+
+	/**
+	 * @covers EmundusModelWorkflow::getCampaignSteps
+	 */
+	public function testGetCampaignSteps()
+	{
+		$program = $this->h_dataset->createSampleProgram();
+		$campaign_id = $this->h_dataset->createSampleCampaign($program);
+		$this->assertNotEmpty($campaign_id);
+
+		$steps = $this->model->getCampaignSteps($campaign_id);
+		$this->assertEmpty($steps, 'No steps should be returned for a campaign that is not associated to a workflow');
+
+		$workflow_id = $this->model->add();
+		$workflow = [
+			'id' => $workflow_id,
+			'label' => 'Test Workflow',
+			'published' => 1
+		];
+
+		$steps = [[
+			'id' => 0,
+			'entry_status' => [['id' => 0]],
+			'type' => 1,
+			'profile_id' => '1000',
+			'label' => 'Test Step',
+			'output_status' => 1
+		]];
+
+		$programs = [[
+			'id' => $program['programme_id']
+		]];
+
+		$updated = $this->model->updateWorkflow($workflow, $steps, $programs);
+		$this->assertTrue($updated, 'Adding a step to the workflow worked');
+
+		$steps = $this->model->getCampaignSteps($campaign_id);
+		$this->assertNotEmpty($steps, 'Steps should be returned for a campaign that is associated to a workflow');
+		$this->assertCount(1, $steps);
+		$this->assertEquals('Test Step', $steps[0]->label);
+	}
+
+
 
 	/*
 	 * TODO
