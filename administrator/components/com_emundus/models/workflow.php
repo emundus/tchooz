@@ -348,6 +348,52 @@ class EmundusModelAdministratorWorkflow extends JModelList
 		$add_ordering = EmundusHelperUpdate::addColumn('jos_emundus_setup_workflows_steps', 'ordering', 'INT', null, 1, 0);
 		$tasks[] = $add_ordering['status'];
 
+		// add a redirect plugin to setup_programs form, to redirect correctly on save
+		$query->clear()
+			->select('id, params')
+			->from($db->quoteName('#__fabrik_forms', 'ff'))
+			->where('id = 108');
+
+		$db->setQuery($query);
+		$form = $db->loadObject();
+
+		if (!empty($form->params)) {
+			$params = json_decode($form->params, true);
+			$redirect_plugin_index = array_search('redirect', $params['plugins']);
+
+			if (empty($redirect_plugin_index)) {
+				// add a redirect plugin
+				$params['plugins'][] = 'redirect';
+
+				// get the redirect plugin index
+				$redirect_plugin_index = array_search('redirect', $params['plugins']);
+				$params['plugin_locations'][] = 'both';
+				$params['plugin_events'][] = 'both';
+				$params['plugin_state'][] = '1';
+				$params['plugin_description'][] = 'Redirect to current program edition';
+				$params['jump_page'][$redirect_plugin_index] = '/campaigns/modifier-un-programme?rowid={jos_emundus_setup_programmes___id}&tmpl=component&iframe=1';
+				$params['save_and_next'][$redirect_plugin_index] = 0;
+				$params['append_jump_url'][$redirect_plugin_index] = 1;
+				$params['thanks_message'][$redirect_plugin_index] = '';
+				$params['save_insession'][$redirect_plugin_index] = 0;
+				$params['redirect_conditon'][$redirect_plugin_index] = 1;
+				$params['redirect_content_reset_form'][$redirect_plugin_index] = 1;
+				$params['redirect_content_how'][$redirect_plugin_index] = 'popup';
+				$params['redirect_content_popup_height'][$redirect_plugin_index] = '';
+				$params['redirect_content_popup_x_offset'][$redirect_plugin_index] = '';
+				$params['redirect_content_popup_y_offset'][$redirect_plugin_index] = '';
+				$params['redirect_content_popup_title'][$redirect_plugin_index] = '';
+
+				$query->clear()
+					->update($db->quoteName('#__fabrik_forms'))
+					->set('params = ' . $db->quote(json_encode($params)))
+					->where('id = 108');
+
+				$db->setQuery($query);
+				$tasks[] = $db->execute();
+			}
+		}
+
 		if (!in_array(false, $tasks)) {
 			$installed = true;
 		}
