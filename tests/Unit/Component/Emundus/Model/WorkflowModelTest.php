@@ -165,6 +165,27 @@ class WorkflowModelTest extends UnitTestCase
 
 		$this->assertEquals('Test Step', $step->label);
 		$this->assertEquals('1000', $step->profile_id, 'The profile_id should be set to the one from the step');
+
+		// adding another step on another status should not change the result of the getCurrentWorkflowStepFromFile
+		$workflow_data = $this->model->getWorkflow($workflow_id);
+		$steps[0]['id'] = $workflow_data['steps'][0]->id;
+
+		$steps[] = [
+			'id' => 0,
+			'entry_status' => [['id' => 1]],
+			'type' => 1,
+			'profile_id' => '1000',
+			'label' => 'Test Step 2',
+			'output_status' => 1
+		];
+
+		$updated = $this->model->updateWorkflow($workflow, $steps, $programs);
+		$this->assertTrue($updated, 'Adding a step to the workflow worked');
+
+		$step = $this->model->getCurrentWorkflowStepFromFile($fnum);
+		$this->assertNotEmpty($step, 'A step should be returned for a file that is associated to a workflow');
+		$this->assertEquals('1000', $step->profile_id, 'The profile_id should be set to the one from the first step');
+		$this->assertEquals($step->id, $steps[0]['id'], 'The profile_id should be set to the one from the first step');
 	}
 
 	public function testDuplicateWorkflow()

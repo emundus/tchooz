@@ -34,7 +34,7 @@ class EmundusModelWorkflow extends JModelList
 		$this->app = Factory::getApplication();
 		$this->db = Factory::getContainer()->get('DatabaseDriver');
 
-		Log::addLogger(['text_file' => 'com_emundus.formbuilder.php'], Log::ALL, array('com_emundus.workflow'));
+		Log::addLogger(['text_file' => 'com_emundus.workflow.php'], Log::ALL, array('com_emundus.workflow'));
 	}
 
 	public function add($label = ''): int
@@ -114,8 +114,7 @@ class EmundusModelWorkflow extends JModelList
 
 			try {
 				$this->db->setQuery($query);
-				$this->db->execute();
-				$updated = true;
+				$updated = $this->db->execute();
 			} catch (Exception $e) {
 				Log::add('Error while updating workflow: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
 				$error_occurred = true;
@@ -163,6 +162,10 @@ class EmundusModelWorkflow extends JModelList
 
 							$fields_set = [];
 							foreach($fields as $field) {
+								if (!isset($step[$field])) {
+									continue;
+								}
+
 								if ($step[$field] == '') {
 									$fields_set[] = $this->db->quoteName($field) . ' = NULL';
 								} else {
