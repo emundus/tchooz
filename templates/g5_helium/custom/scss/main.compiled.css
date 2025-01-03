@@ -870,6 +870,18 @@ video {
     border: 1px solid var(--em-coordinator-secondary-color);
     text-decoration: none;
 }
+.tw-target-blank-links {
+    text-decoration: underline;
+}
+.tw-target-blank-links::after {
+    content: "open_in_new";
+    display: inline-block;
+    font-family: "Material Icons";
+    margin-left: 4px;
+    text-decoration: none;
+    position: relative;
+    top: 4px;
+}
 .tw-btn-primary p,.tw-btn-primary span {
             color: var(--neutral-0);
         }
@@ -1044,9 +1056,6 @@ video {
                             }
 .fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.day.selected {
                                 border-radius: 99px;
-                            }
-.fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.day.\!selected {
-                                border-radius: 99px !important;
                             }
 .fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.today:after {
                                 content: unset;
@@ -1335,7 +1344,7 @@ form.fabrikForm .fabrik_characters_left.muted {
             margin-top: 4px;
         }
 form.fabrikForm .plg-textarea .badge {
-            line-height: normal;
+            line-height: 1.5;
         }
 /* PHONE NUMBER */
 form.fabrikForm #renderCountryCode {
@@ -2142,6 +2151,14 @@ form.fabrikForm .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn.btn-s
                     border: none;
                     background-color: transparent;
                 }
+/* TOTAL PLUGIN */
+form.fabrikForm .plg-total input {
+            border: unset;
+        }
+form.fabrikForm .plg-total input:hover {
+                border: unset;
+                box-shadow: unset;
+            }
 .pull-right.em-repeat-table {
         float: inherit;
         display: flex;
@@ -5027,6 +5044,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-rounded {
     border-radius: 0.25rem;
+}
+.tw-rounded-2xl {
+    border-radius: 1rem;
 }
 .tw-rounded-\[15px\] {
     border-radius: 15px;
@@ -114361,7 +114381,7 @@ a,
     legend {
         font-weight: 400;
         font-style: normal;
-        line-height: normal;
+        line-height: 1.5;
         font-size: var(--em-applicant-font-size);
     }
 ul, ol {
@@ -115093,9 +115113,6 @@ button.swal2-cancel.goback-btn:hover,
 .label-border-black {
         border-color: var(--em-black);
     }
-.\[-a-zA-Z\:0-9_\.\] {
-    -a-z-a--z: 0-9 .;
-}
 @font-face {
     font-family: 'Material Icons';
     font-style: normal;
@@ -115434,7 +115451,7 @@ small {
         text-transform: none;
         color: var(--neutral-900);
         font-weight: normal;
-        line-height: normal;
+        line-height: 1.5;
         letter-spacing: normal;
         font-size: var(--em-applicant-font-size);
         margin-bottom: 0;
@@ -115449,6 +115466,9 @@ small {
 .after\:tw-bg-red-800::after {
     content: var(--tw-content);
     background-color: var(--red-800);
+}
+.visited\:tw-text-profile-full:visited {
+    color: var(--em-profile-color);
 }
 .hover\:tw-scale-110:hover {
     --tw-scale-x: 1.1;
@@ -115486,6 +115506,9 @@ small {
 }
 .hover\:tw-no-underline:hover {
     text-decoration-line: none;
+}
+.visited\:hover\:tw-text-profile-full:hover:visited {
+    color: var(--em-profile-color);
 }
 .tw-group:hover .group-hover\:tw-opacity-100 {
     opacity: 1;

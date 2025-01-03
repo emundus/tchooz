@@ -1,5 +1,5 @@
 <template>
-  <div class="emails__add-email">
+  <div class="tw-border tw-border-neutral-300 em-card-shadow tw-rounded tw-bg-white tw-p-6">
     <div>
       <form @submit.prevent="submit" class="fabrikForm emundus-form">
         <div>
@@ -89,8 +89,8 @@
 
         <hr class="tw-mt-1.5 tw-mb-4" />
 
-        <div class="em-container-accordeon">
-          <div class="tw-flex tw-items-center tw-gap-1 tw-justify-between">
+        <div class="em-container-accordeon tw-shadow">
+          <div class="tw-flex tw-items-center tw-gap-1">
             <h2 class="tw-cursor-pointer tw-w-full" @click="displayAdvanced">
               {{ translate('COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING') }}
             </h2>
@@ -115,7 +115,7 @@
             </button>
           </div>
 
-          <div id="email-advanced-parameters" class="tw-mt-4 tw-flex tw-flex-col tw-gap-4" v-if="displayAdvancedParameters">
+          <div id="email-advanced-parameters" class="tw-mt-4 tw-pl-4 em-border-left-main-500 tw-flex tw-flex-col tw-gap-4" v-if="displayAdvancedParameters">
 
             <div>
               <label class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_SENDER_EMAIL') }}</label>
@@ -638,8 +638,12 @@ export default {
   background: var(--neutral-0);
   padding: 24px;
   border-radius: var(--em-coordinator-br-cards);
-  box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1),
-  var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2),
-  var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
+}
+
+div.emails__add-email {
+  padding: var(--em-spacing-6);
+  background: var(--neutral-0);
+  border: 1px solid var(--neutral-300);
+  border-radius: var(--em-coordinator-br);
 }
 </style>

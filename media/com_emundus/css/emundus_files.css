@@ -517,6 +517,22 @@ button#em-close-file {
     color: #353544;
 }
 
+.files-board .main-panel table#em-data tbody td div.em-cell strong {
+    text-decoration: none;
+}
+
+.files-board .main-panel table#em-data tbody tr:nth-child(2n-1):hover td {
+    background: var(--neutral-200) !important;
+}
+
+.files-board .main-panel table#em-data tbody tr td div.em-cell > a > div > .em_list_text:hover strong {
+    text-decoration: none
+}
+
+.files-board .main-panel table#em-data tbody tr td div.em-cell strong {
+    text-decoration: underline;
+}
+
 .files-board #em-data thead th div.em-cell {
     display: -webkit-box !important;
     -webkit-line-clamp: 3;
