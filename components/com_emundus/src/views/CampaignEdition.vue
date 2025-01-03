@@ -27,7 +27,6 @@
         <Tabs v-show="profileId" :tabs="tabs"
               :classes="'tw-overflow-x-scroll tw-flex tw-items-center tw-gap-2 tw-ml-7'"></Tabs>
 
-
         <div class="tw-w-full tw-rounded-2xl tw-p-6 tw-bg-white tw-border tw-border-neutral-300 tw-relative">
           <div v-if="selectedMenuItem.id === 5" class="warning-message-program mb-1">
             <p class="tw-text-red-600 flex flex-row"><span class="material-symbols-outlined tw-mr-2 tw-text-red-600">warning_amber</span>{{

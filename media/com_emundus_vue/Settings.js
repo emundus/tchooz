@@ -1,10 +1,9 @@
-import { _ as _export_sfc, P as script, Z as reactive, S as Swal$1, e as resolveComponent, o as openBlock, c as createElementBlock, y as createTextVNode, t as toDisplayString, d as createCommentVNode, a as createBaseVNode, w as withDirectives, x as vModelSelect, n as normalizeClass, b as Fragment, r as renderList, j as createBlock, k as withCtx, O as vModelText, U as vModelRadio, D as vModelCheckbox, Q as vModelDynamic, u as withModifiers, v as vShow, H as History, T as Tabs, G as mixin, s as settingsService, g as createVNode, X as client, $ as __vitePreload, i as axios, l as normalizeStyle, V as VueDraggableNext, h as errors, z as useGlobalStore, R as withKeys, N as defineStore, q as mergeProps, a0 as resolveDynamicComponent } from "./app_emundus.js";
+import { _ as _export_sfc, P as script, Z as reactive, S as Swal$1, e as resolveComponent, o as openBlock, c as createElementBlock, y as createTextVNode, t as toDisplayString, d as createCommentVNode, a as createBaseVNode, w as withDirectives, x as vModelSelect, n as normalizeClass, b as Fragment, r as renderList, j as createBlock, k as withCtx, O as vModelText, U as vModelRadio, D as vModelCheckbox, Q as vModelDynamic, u as withModifiers, v as vShow, H as History, T as Tabs, G as mixin, s as settingsService, g as createVNode, X as client, i as axios, l as normalizeStyle, V as VueDraggableNext, h as errors, z as useGlobalStore, R as withKeys, N as defineStore, q as mergeProps, $ as resolveDynamicComponent } from "./app_emundus.js";
 import { t as translationsService, T as Translations } from "./Translations.js";
 import { q as qs } from "./index.js";
 import { v as vueDropzone } from "./vue-dropzone.js";
 import { V as V32 } from "./editor.js";
 import WorkflowSettings from "./WorkflowSettings.js";
-const Parameter_vue_vue_type_style_index_0_lang = "";
 const _sfc_main$k = {
   name: "Parameter",
   components: { Multiselect: script },
@@ -521,7 +520,7 @@ function _sfc_render$j(_ctx, _cache, $props, $setup, $data, $options) {
   }, [
     $props.displayIcon ? (openBlock(), createElementBlock("span", {
       key: 0,
-      class: normalizeClass([[$props.iconType, $props.iconColor], "tw-mr-3"])
+      class: normalizeClass([$props.iconType, $props.iconColor])
     }, toDisplayString($props.icon), 3)) : createCommentVNode("", true),
     createBaseVNode("div", {
       innerHTML: $data.textValueExtracted,
@@ -1688,7 +1687,7 @@ const _sfc_main$e = {
     };
   },
   created() {
-    __vitePreload(() => import(getPath$1(this.$props.json_source)), true ? [] : void 0).then((result) => {
+    import(getPath$1(this.$props.json_source)).then((result) => {
       if (result) {
         this.parameters = result.default;
         for (let i = 0; i < this.parameters.length; i++) {
@@ -1873,7 +1872,6 @@ function _sfc_render$e(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const SiteSettings = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["render", _sfc_render$e]]);
-const EditTheme_vue_vue_type_style_index_0_scoped_179e7d97_lang = "";
 const _sfc_main$d = {
   name: "global",
   props: {},
@@ -2349,8 +2347,7 @@ const _sfc_main$c = {
   },
   computed: {
     computedSwatches() {
-      if (this.swatches instanceof Array)
-        return this.swatches;
+      if (this.swatches instanceof Array) return this.swatches;
       if (typeof this.swatches === "string") {
         return extractPropertyFromPreset(this.swatches);
       } else {
@@ -2404,7 +2401,6 @@ function _sfc_render$c(_ctx, _cache, $props, $setup, $data, $options) {
   ], 8, _hoisted_1$c);
 }
 const ColorPicker = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["render", _sfc_render$c]]);
-const EditStatus_vue_vue_type_style_index_0_scoped_78283c16_lang = "";
 const _sfc_main$b = {
   name: "editStatus",
   components: {
@@ -2678,7 +2674,6 @@ function _sfc_render$b(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const EditStatus = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["render", _sfc_render$b], ["__scopeId", "data-v-78283c16"]]);
-const EditTags_vue_vue_type_style_index_0_scoped_33ad2ead_lang = "";
 const _sfc_main$a = {
   name: "editTags",
   components: {
@@ -2925,7 +2920,6 @@ function _sfc_render$a(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const EditTags = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["render", _sfc_render$a], ["__scopeId", "data-v-33ad2ead"]]);
-const General_vue_vue_type_style_index_0_scoped_69ed52ef_lang = "";
 const getTemplate = () => `
 <div class="dz-preview dz-file-preview">
   <div class="dz-image">
@@ -3134,7 +3128,7 @@ const _sfc_main$9 = {
           thumbnailElement.alt = file.name;
           thumbnailElement.style.backgroundImage = 'url("' + dataUrl + '")';
         }
-        return setTimeout(function(_this) {
+        return setTimeout(/* @__PURE__ */ function(_this) {
           return function() {
             return file.previewElement.classList.add("dz-image-preview");
           };
@@ -4445,7 +4439,7 @@ const _sfc_main$3 = {
     };
   },
   async created() {
-    __vitePreload(() => import(getPath(this.$props.json_source)), true ? [] : void 0).then((result) => {
+    import(getPath(this.$props.json_source)).then((result) => {
       if (result) {
         this.sections = result.default;
       }

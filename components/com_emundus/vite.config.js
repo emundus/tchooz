@@ -29,6 +29,12 @@ export default defineConfig({
           return  'assets/'  + assetInfo.name;
         }
       },
+      onLog(level, log, handler) {
+        if (log.cause && log.cause.message === `Can't resolve original location of error.`) {
+          return
+        }
+        handler(level, log)
+      }
     },
     cssCodeSplit: false
   },
@@ -37,6 +43,9 @@ export default defineConfig({
       scss: {
         api: 'modern-compiler',
         silenceDeprecations: ["legacy-js-api"],
+      },
+      sass: {
+        api: 'modern-compiler',
       }
     }
   },
