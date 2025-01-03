@@ -17570,7 +17570,7 @@ function ew(c10, e, t, n, s, l) {
       }, [
         createVNode(i, { icon: ["fas", "link"] })
       ], 8, Zx)) : createCommentVNode("", true),
-      this.extensions.includes("image") || this.extensions.includes("link") ? (openBlock(), createElementBlock("li", {
+      this.extensions.includes("image") || this.extensions.includes("youtube") ? (openBlock(), createElementBlock("li", {
         key: 13,
         title: c10.translate("toolbar.insert", this.locale),
         class: "editor-image"
