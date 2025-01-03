@@ -79,7 +79,6 @@ class FormModelTest extends UnitTestCase
 		$form_id = $this->model->createFormEval(Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']));
 		$this->assertNotEmpty($form_id, 'Evaluation form creation succeeds');
 
-		
 		$query = $this->db->getQuery(true);
 
 		$query->select('jfe.name, jfe.published')
@@ -94,13 +93,12 @@ class FormModelTest extends UnitTestCase
 
 		$element_names = array_column($elements, 'name');
 		$this->assertContains('id', $element_names, 'Evaluation form elements contains id');
-		$this->assertContains('time_date', $element_names, 'Evaluation form elements contains time_date');
-		$this->assertContains('fnum', $element_names, 'Evaluation form elements contains fnum');
-		$this->assertContains('user', $element_names, 'Evaluation form elements contains user');
-		$this->assertContains('student_id', $element_names, 'Evaluation form elements contains student_id');
+		$this->assertContains('ccid', $element_names, 'Evaluation form elements contains ccid');
+		$this->assertContains('step_id', $element_names, 'Evaluation form elements contains step');
+		$this->assertContains('evaluator', $element_names, 'Evaluation form elements contains evaluator');
 
 		foreach ($elements as $element) {
-			if (in_array($element['name'], ['id', 'time_date', 'fnum', 'user', 'student_id'])) {
+			if (in_array($element['name'], ['ccid', 'step_id', 'evaluator'])) {
 				$this->assertSame(1, intval($element['published']), 'Evaluation default form elements are published');
 			}
 		}

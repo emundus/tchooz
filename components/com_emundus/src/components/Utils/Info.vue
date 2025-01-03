@@ -1,7 +1,7 @@
 <template>
 
   <div :class="[bgColor,borderColor]"  class="tw-rounded tw-flex tw-items-start tw-gap-2 tw-px-5 tw-py-6 tw-border">
-    <span v-if="displayIcon" :class="[iconType,iconColor]" class="tw-mr-3">{{ icon }}</span>
+    <span v-if="displayIcon" :class="[iconType,iconColor]">{{ icon }}</span>
     <div v-html="textValueExtracted" :class="[textColor]"></div>
   </div>
 

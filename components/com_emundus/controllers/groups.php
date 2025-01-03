@@ -15,6 +15,7 @@ jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Controller\BaseController;
+use Joomla\CMS\Language\Text;
 
 
 /**
@@ -139,9 +140,9 @@ class EmundusControllerGroups extends BaseController
 			}
 		}
 		if (count($ids) > 1)
-			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart=' . $limitstart . '&filter_order=' . $filter_order . '&filter_order_Dir=' . $filter_order_Dir, JText::_('COM_EMUNDUS_GROUPS_MESSAGE_APPLICANTS_AFFECTED') . count($ids), 'message');
+			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart=' . $limitstart . '&filter_order=' . $filter_order . '&filter_order_Dir=' . $filter_order_Dir, Text::_('COM_EMUNDUS_GROUPS_MESSAGE_APPLICANTS_AFFECTED') . count($ids), 'message');
 		elseif (count($ids) == 1)
-			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart=' . $limitstart . '&filter_order=' . $filter_order . '&filter_order_Dir=' . $filter_order_Dir, JText::_('COM_EMUNDUS_GROUPS_MESSAGE_APPLICANT_AFFECTED') . count($ids), 'message');
+			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart=' . $limitstart . '&filter_order=' . $filter_order . '&filter_order_Dir=' . $filter_order_Dir, Text::_('COM_EMUNDUS_GROUPS_MESSAGE_APPLICANT_AFFECTED') . count($ids), 'message');
 		else
 			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart=' . $limitstart . '&filter_order=' . $filter_order . '&filter_order_Dir=' . $filter_order_Dir);
 	}
@@ -186,9 +187,9 @@ class EmundusControllerGroups extends BaseController
 			}
 		}
 		if (count($ids) > 1)
-			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart=' . $limitstart . '&filter_order=' . $filter_order . '&filter_order_Dir=' . $filter_order_Dir, JText::_('COM_EMUNDUS_GROUPS_MESSAGE_APPLICANTS_UNAFFECTED') . count($ids), 'message');
+			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart=' . $limitstart . '&filter_order=' . $filter_order . '&filter_order_Dir=' . $filter_order_Dir, Text::_('COM_EMUNDUS_GROUPS_MESSAGE_APPLICANTS_UNAFFECTED') . count($ids), 'message');
 		elseif (count($ids) == 1)
-			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart=' . $limitstart . '&filter_order=' . $filter_order . '&filter_order_Dir=' . $filter_order_Dir, JText::_('COM_EMUNDUS_GROUPS_MESSAGE_APPLICANT_UNAFFECTED') . count($ids), 'message');
+			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart=' . $limitstart . '&filter_order=' . $filter_order . '&filter_order_Dir=' . $filter_order_Dir, Text::_('COM_EMUNDUS_GROUPS_MESSAGE_APPLICANT_UNAFFECTED') . count($ids), 'message');
 		else
 			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart=' . $limitstart . '&filter_order=' . $filter_order . '&filter_order_Dir=' . $filter_order_Dir);
 	}
@@ -200,7 +201,7 @@ class EmundusControllerGroups extends BaseController
 	{
 		$user = JFactory::getUser();
 		if (!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
-			$this->setRedirect('index.php', JText::_('You are not allowed to access to this page.'), 'error');
+			$this->setRedirect('index.php', Text::_('You are not allowed to access to this page.'), 'error');
 
 			return;
 		}
@@ -221,7 +222,7 @@ class EmundusControllerGroups extends BaseController
 			$db->setQuery($query);
 			$db->execute();
 		}
-		$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart=' . $limitstart . '&filter_order=' . $filter_order . '&filter_order_Dir=' . $filter_order_Dir, JText::_('COM_EMUNDUS_ACTIONS_ACTION_DONE'), 'message');
+		$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart=' . $limitstart . '&filter_order=' . $filter_order . '&filter_order_Dir=' . $filter_order_Dir, Text::_('COM_EMUNDUS_ACTIONS_ACTION_DONE'), 'message');
 	}
 
 	function defaultEmail($reqids = null)
@@ -330,7 +331,7 @@ class EmundusControllerGroups extends BaseController
 				$db->query();
 				$period = $db->loadRow();
 
-				$period_str = strftime(JText::_('DATE_FORMAT_LC2'), strtotime($period[0])) . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . strftime(JText::_('DATE_FORMAT_LC2'), strtotime($period[1]));
+				$period_str = strftime(Text::_('DATE_FORMAT_LC2'), strtotime($period[0])) . ' ' . Text::_('COM_EMUNDUS_TO') . ' ' . strftime(Text::_('DATE_FORMAT_LC2'), strtotime($period[1]));
 
 				$replacements = array($user->id, $user->name, $user->email, $list, JURI::base(), $eval, $period_str, '<br />');
 				// template replacements
@@ -353,15 +354,15 @@ class EmundusControllerGroups extends BaseController
 			}
 		}
 		if ($error > 0)
-			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart=' . $limitstart . '&filter_order=' . $filter_order . '&filter_order_Dir=' . $filter_order_Dir, JText::_('ACTION_ABORDED'), 'error');
+			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart=' . $limitstart . '&filter_order=' . $filter_order . '&filter_order_Dir=' . $filter_order_Dir, Text::_('ACTION_ABORDED'), 'error');
 		else
-			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart=' . $limitstart . '&filter_order=' . $filter_order . '&filter_order_Dir=' . $filter_order_Dir, JText::_('COM_EMUNDUS_ACTIONS_ACTION_DONE'), 'message');
+			$this->setRedirect('index.php?option=com_emundus&view=groups&limitstart=' . $limitstart . '&filter_order=' . $filter_order . '&filter_order_Dir=' . $filter_order_Dir, Text::_('COM_EMUNDUS_ACTIONS_ACTION_DONE'), 'message');
 	}
 
 
 	public function addgroups()
 	{
-		$tab = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
+		$tab = array('status' => 0, 'msg' => Text::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$data = $this->input->get('data', null, 'POST', 'none', 0);
@@ -371,12 +372,28 @@ class EmundusControllerGroups extends BaseController
 			$result   = $m_groups->addGroupsByProgrammes($data);
 
 			if ($result === true) {
-				$tab = array('status' => 1, 'msg' => JText::_('GROUPS_ADDED'), 'data' => $result);
+				$tab = array('status' => 1, 'msg' => Text::_('GROUPS_ADDED'), 'data' => $result);
 			} else {
-				$tab['msg'] = JText::_('ERROR_CANNOT_ADD_GROUPS');
+				$tab['msg'] = Text::_('ERROR_CANNOT_ADD_GROUPS');
 			}
 		}
 		echo json_encode((object) $tab);
+		exit;
+	}
+
+	public function getGroups()
+	{
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+			require_once(JPATH_ROOT . '/components/com_emundus/models/groups.php');
+			$m_groups = new EmundusModelGroups();
+			$groups = $m_groups->getGroups();
+
+			$response = array('status' => true, 'msg' => Text::_('GROUPS_RETRIEVED'), 'data' => array_values($groups));
+		}
+
+		echo json_encode((object) $response);
 		exit;
 	}
 

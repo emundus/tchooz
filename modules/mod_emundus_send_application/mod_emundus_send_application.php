@@ -79,8 +79,12 @@ if (!empty($user->fnum)) {
 	if (!empty($user->end_date)) {
 		$is_dead_line_passed = strtotime(date($now)) > strtotime($user->end_date);
 
-		if (!empty($current_phase) && !empty($current_phase->end_date)) {
-			$is_dead_line_passed = strtotime(date($now)) > strtotime($current_phase->end_date);
+		if (!empty($current_phase) && !empty($current_phase->id)) {
+			if ($current_phase->infinite) {
+				$is_dead_line_passed = false;
+			} else if (!empty($current_phase->end_date)) {
+				$is_dead_line_passed = strtotime(date($now)) > strtotime($current_phase->end_date);
+			}
 		}
 		else if ($admission) {
 			$is_dead_line_passed = strtotime(date($now)) > strtotime($user->admission_end_date);
@@ -89,7 +93,6 @@ if (!empty($user->fnum)) {
 
 	if (!empty($current_phase) && !is_null($current_phase->entry_status)) {
 		$is_app_sent = !in_array($user->status, $current_phase->entry_status);
-
 		$status_for_send = array_merge($status_for_send, $current_phase->entry_status);
 	}
 	else if (!empty($user->status)) {

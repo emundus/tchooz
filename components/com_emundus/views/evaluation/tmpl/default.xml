@@ -15,6 +15,32 @@
                 <option value="0">JNO</option><option value="1">JYES</option>
             </field>
             <field showon="em_open_file_in_modal:1" name="em_modal_ratio" type="text" label="COM_EMUNDUS_MODAL_RATIO" description="COM_EMUNDUS_MODAL_RATIO_DESC" default="66/33"/>
+
+            <field showon="em_open_file_in_modal:1"
+                   name="modal_tabs"
+                   type="subform"
+                   label="COM_EMUNDUS_MODAL_TABS"
+                   description="COM_EMUNDUS_MODAL_TABS_DESC"
+                   multiple="true"
+                   filter="raw"
+                   layout="joomla.form.field.subform.repeatable-table"
+            >
+                <form>
+                    <field name="tab_name" type="text" label="COM_EMUNDUS_MODAL_TAB_NAME" size="30"/>
+                    <field name="tab_type" type="list" label="COM_EMUNDUS_MODAL_TAB_TYPE" size="1">
+                        <option value="component">COM_EMUNDUS_MODAL_TAB_TYPE_COMPONENT</option>
+                        <option value="iframe">COM_EMUNDUS_MODAL_TAB_TYPE_IFRAME</option>
+                    </field>
+                    <field showon="tab_type:component" name="tab_component" type="list" label="COM_EMUNDUS_MODAL_TAB_COMPONENT" size="1">
+                        <option value="comments">COMMENT</option>
+                        <option value="attachments">ATTACHMENTS</option>
+                        <option value="application">FORM</option>
+                    </field>
+                    <field showon="tab_type:iframe" name="tab_url" type="text" label="COM_EMUNDUS_MODAL_TAB_URL" size="30"/>
+                </form>
+            </field>
+
+
             <field name="em_tables_id" value="" type="textarea" rows="6" cols="40" label="COM_EMUNDUS_TABLES_FILTER"
                    description="COM_EMUNDUS_TABLES_FILTER_DESC"/>
             <field name="em_elements_id" value="0" type="textarea" rows="6" cols="40" label="COM_EMUNDUS_ELEMENTS_LIST"

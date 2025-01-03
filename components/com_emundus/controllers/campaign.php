@@ -183,13 +183,16 @@ class EmundusControllerCampaign extends BaseController
 		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
 		{
 			$filter    = $this->input->getString('filter', '');
-			$sort      = $this->input->getString('sort', '');
+			$sort      = $this->input->getString('sort', 'DESC');
 			$recherche = $this->input->getString('recherche', '');
 			$lim       = $this->input->getInt('lim', 0);
 			$page      = $this->input->getInt('page', 0);
 			$program   = $this->input->getString('program', 'all');
 			$session   = $this->input->getString('session', 'all');
-			$campaigns = $this->m_campaign->getAssociatedCampaigns($filter, $sort, $recherche, $lim, $page, $program, $session);
+			$order_by  = $this->input->getString('order_by', 'sc.id');
+			$order_by  = $order_by == 'label' ? 'sc.label' : $order_by;
+
+			$campaigns = $this->m_campaign->getAssociatedCampaigns($filter, $sort, $recherche, $lim, $page, $program, $session, $order_by);
 
 			$eMConfig              = ComponentHelper::getParams('com_emundus');
 			$allow_pinned_campaign = $eMConfig->get('allow_pinned_campaign', 0);
@@ -252,13 +255,15 @@ class EmundusControllerCampaign extends BaseController
 							'key'     => Text::_('COM_EMUNDUS_ONBOARD_START_DATE'),
 							'value'   => $start_date,
 							'classes' => '',
-							'display' => 'table'
+							'display' => 'table',
+							'order_by' => 'sc.start_date'
 						],
 						[
 							'key'     => Text::_('COM_EMUNDUS_ONBOARD_END_DATE'),
 							'value'   => $end_date,
 							'classes' => '',
-							'display' => 'table'
+							'display' => 'table',
+							'order_by' => 'sc.end_date'
 						],
 						[
 							'key'     => Text::_('COM_EMUNDUS_ONBOARD_STATE'),
@@ -269,13 +274,15 @@ class EmundusControllerCampaign extends BaseController
 						[
 							'key'     => Text::_('COM_EMUNDUS_ONBOARD_PROGRAM'),
 							'value'   => $campaign->program_label,
-							'display' => 'table'
+							'display' => 'table',
+							'order_by' => 'sp.label'
 						],
 						[
 							'key'     => Text::_('COM_EMUNDUS_ONBOARD_NB_FILES'),
 							'value'   => '<a target="_blank" class="em-profile-color hover:tw-font-semibold tw-font-semibold em-text-underline" href="/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=' . $campaign->id . '" style="line-height: unset;font-size: unset;">' . $campaign->nb_files . '</a>',
 							'classes' => 'go-to-campaign-link',
-							'display' => 'table'
+							'display' => 'table',
+							'order_by' => 'nb_files'
 						],
 						[
 							'key'     => Text::_('COM_EMUNDUS_ONBOARD_PROGRAM'),
@@ -1278,6 +1285,30 @@ class EmundusControllerCampaign extends BaseController
 			else
 			{
 				$response = ['status' => 0, 'msg' => Text::_('NO_URL'), 'data' => $url, 'code' => 404];
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function getCampaignsByProgramId()
+	{
+		$response = ['status' => 0, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+		{
+			$response['code'] = 500;
+			$program_id = $this->input->getInt('program_id', 0);
+
+			if (!empty($program_id)) {
+				$campaigns = $this->m_campaign->getCampaignsByProgramId($program_id);
+
+				$response = [
+					'status' => 1,
+					'msg'    => Text::_('CAMPAIGNS_RETRIEVED'),
+					'data'   => $campaigns,
+				];
 			}
 		}
 

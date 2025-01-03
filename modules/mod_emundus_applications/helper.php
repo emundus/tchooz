@@ -53,6 +53,7 @@ class modemundusApplicationsHelper
 			'ess.class',
 			'ecc.published as published',
 			'p.label as programme',
+			'p.id as program_id',
 			'p.color as tag_color',
 			'ecc.tab as tab_id',
 			'ecct.name as tab_name',

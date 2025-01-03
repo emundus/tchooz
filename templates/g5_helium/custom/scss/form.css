@@ -438,7 +438,7 @@
         }
 
         .plg-textarea .badge {
-            line-height: normal;
+            line-height: 1.5;
         }
 
         /* PHONE NUMBER */
@@ -1332,6 +1332,15 @@
                     border: none;
                     background-color: transparent;
                 }
+            }
+        }
+
+        /* TOTAL PLUGIN */
+        .plg-total input {
+            border: unset;
+            &:hover {
+                border: unset;
+                box-shadow: unset;
             }
         }
     }

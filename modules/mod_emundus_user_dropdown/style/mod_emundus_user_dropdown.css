@@ -346,6 +346,7 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     letter-spacing: normal;
     font-size: var(--em-applicant-font-size);
     margin-top: 16px !important;
+    font-family: var(--em-profile-font);
 }
 
 #header-c #userDropdownMenu a.edit-button-user:hover,

@@ -15,6 +15,7 @@ class EmundusFiltersFiles extends EmundusFilters
 	private $user_campaigns = [];
 	private $user_programs = [];
 	private $user_fnum_assocs = [];
+	private $user_groups = [];
     private $config = [];
 	private $m_users = null;
 	private $menu_params = null;
@@ -62,6 +63,14 @@ class EmundusFiltersFiles extends EmundusFilters
 			}
 		}
     }
+
+	public function getUserProgrammes() {
+		return $this->user_programs;
+	}
+
+	public function getUserGroups() {
+		return $this->user_groups;
+	}
 
 	private function setMenuParams() {
 		$menu = $this->app->getMenu();
@@ -192,9 +201,51 @@ class EmundusFiltersFiles extends EmundusFilters
 		$profile_ids = [];
 
 		if (!empty($campaign_ids)) {
-			require_once(JPATH_SITE . '/components/com_emundus/models/campaign.php');
-			$m_campaign = new EmundusModelCampaign();
-			$profile_ids = $m_campaign->getProfilesFromCampaignId($campaign_ids);
+			$db    = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true);
+
+			// profiles from campaigns
+			$query->select('DISTINCT profile_id')
+				->from('#__emundus_setup_campaigns')
+				->where('id IN (' . implode(',', $db->quote($campaign_ids)) . ')');
+
+			$db->setQuery($query);
+			$profiles = $db->loadColumn();
+			foreach ($profiles as $profile) {
+				if (!in_array($profile, $profile_ids)) {
+					$profile_ids[] = $profile;
+				}
+			}
+
+			$query->clear()
+				->select('esp.id')
+				->from($db->quoteName('#__emundus_setup_programmes', 'esp'))
+				->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.training = esp.code')
+				->where('esc.id IN (' . implode(',', $campaign_ids) . ')');
+
+			try {
+				$db->setQuery($query);
+				$programs = $db->loadColumn();
+			} catch (Exception $e) {
+				Log::add('Failed to get programmes associated to campaign ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
+			}
+
+			if (!empty($programs)) {
+				// profiles from workflows
+				require_once(JPATH_SITE . '/components/com_emundus/models/workflow.php');
+				$m_workflow = new EmundusModelWorkflow();
+				$workflows = $m_workflow->getWorkflows([], 0, 0, $programs);
+
+				foreach ($workflows as $workflow) {
+					$data = $m_workflow->getWorkflow($workflow->id);
+
+					foreach($data['steps'] as $step) {
+						if (!empty($step->profile_id) && !in_array($step->profile_id, $profile_ids)) {
+							$profile_ids[] = $step->profile_id;
+						}
+					}
+				}
+			}
 		}
 
 		return $profile_ids;
@@ -342,8 +393,14 @@ class EmundusFiltersFiles extends EmundusFilters
 
 			if (!empty($this->user_programs))
 			{
+				$label = 'label';
+
+				if ($config['filter_programs_display_category']) {
+					$label = 'CONCAT(label, " (" , programmes, ")")';
+				}
+
 				$query->clear()
-					->select('id as value, label, 0 as count')
+					->select('id as value, ' . $label . ' as label, 0 as count')
 					->from('#__emundus_setup_programmes')
 					->where('published = 1')
 					->andWhere('id IN (' . implode(',', $this->user_programs) . ')');
@@ -395,11 +452,23 @@ class EmundusFiltersFiles extends EmundusFilters
 
 			if (!empty($this->user_campaigns))
 			{
+				$label = 'esc.label';
+
+				if ($config['filter_campaign_display_program']) {
+					$label = 'CONCAT(esc.label, " (", esp.label, ")")';
+				}
+
 				$query->clear()
-					->select('id as value, label, 0 as count')
-					->from('#__emundus_setup_campaigns')
-					->where('published = 1')
-					->andWhere('id IN (' . implode(',', $this->user_campaigns) . ')');
+					->select('esc.id as value, ' . $label .' as label, 0 as count')
+					->from($db->quoteName('#__emundus_setup_campaigns', 'esc'));
+
+				if ($config['filter_campaign_display_program'])
+				{
+					$query->leftJoin($db->quoteName('#__emundus_setup_programmes', 'esp') .  ' ON ' . $db->quoteName('esc.training') . ' = ' . $db->quoteName('esp.code'));
+				}
+
+				$query->where($db->quoteName('esc.published') . ' = 1')
+					->andWhere($db->quoteName('esc.id') . ' IN (' . implode(',', $this->user_campaigns) . ')');
 
 				if (!$filter_menu_values_are_empty)
 				{
@@ -410,17 +479,18 @@ class EmundusFiltersFiles extends EmundusFilters
 						$campaigns = explode('|', $filter_menu_values[$position]);
 						if (!empty($campaigns))
 						{
-							$query->andWhere('id IN (' . implode(',', $campaigns) . ')');
+							$query->andWhere('esc.id IN (' . implode(',', $campaigns) . ')');
 						}
 					}
 				}
 
 				if (!empty($programs_codes))
 				{
-					$query->andWhere('training IN (' . implode(',', $db->quote($programs_codes)) . ')');
+					$query->andWhere('esc.training IN (' . implode(',', $db->quote($programs_codes)) . ')');
 				}
 
-				$query->order('id DESC');
+				$query->order('esc.id DESC');
+
 				try
 				{
 					$db->setQuery($query);
@@ -445,7 +515,6 @@ class EmundusFiltersFiles extends EmundusFilters
 				'order'     => $config['filter_campaigns_order']
 			];
 		}
-
 
 		if ($config['filter_years'])
 		{
@@ -572,7 +641,7 @@ class EmundusFiltersFiles extends EmundusFilters
 			$this->applied_filters[] = [
 				'uid'            => 'users_assoc',
 				'id'             => 'users_assoc',
-				'label'          => JText::_('MOD_EMUNDUS_FILTERS_USERS_ASSOC'),
+				'label'          => Text::_('MOD_EMUNDUS_FILTERS_USERS_ASSOC'),
 				'type'           => 'select',
 				'values'         => $users,
 				'value'          => ['all'],
@@ -584,41 +653,109 @@ class EmundusFiltersFiles extends EmundusFilters
 			];
 		}
 
-			if ($config['filter_attachments']) {
-				$attachments = [];
+		if ($config['filter_attachments'])
+		{
+			$attachments = [];
 
-				$query->clear()
-					->select('esa.id as value, esa.value as label')
-					->from($db->quoteName('#__emundus_setup_attachments','esa'))
-					->leftJoin($db->quoteName('#__emundus_setup_attachment_profiles','esap') . ' ON ' . $db->quoteName('esap.attachment_id') . ' = ' . $db->quoteName('esa.id'))
-					->leftJoin($db->quoteName('#__emundus_setup_profiles','esp') . ' ON ' . $db->quoteName('esp.id') . ' = ' . $db->quoteName('esap.profile_id'))
-					->leftJoin($db->quoteName('#__emundus_setup_campaigns','esc') . ' ON ' . $db->quoteName('esc.profile_id') . ' = ' . $db->quoteName('esp.id'))
-					->leftJoin($db->quoteName('#__emundus_setup_programmes','espp') . ' ON ' . $db->quoteName('esc.training') . ' = ' . $db->quoteName('espp.code'))
-					->where('esc.id IN ' . '(' . implode(',', $this->user_campaigns) . ') OR espp.id IN ' . '(' . implode(',', $this->user_programs) . ')')
-					->group('esa.id');
+			$query->clear()
+				->select('esa.id as value, esa.value as label')
+				->from($db->quoteName('#__emundus_setup_attachments', 'esa'))
+				->leftJoin($db->quoteName('#__emundus_setup_attachment_profiles', 'esap') . ' ON ' . $db->quoteName('esap.attachment_id') . ' = ' . $db->quoteName('esa.id'))
+				->leftJoin($db->quoteName('#__emundus_setup_profiles', 'esp') . ' ON ' . $db->quoteName('esp.id') . ' = ' . $db->quoteName('esap.profile_id'))
+				->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.profile_id') . ' = ' . $db->quoteName('esp.id'))
+				->leftJoin($db->quoteName('#__emundus_setup_programmes', 'espp') . ' ON ' . $db->quoteName('esc.training') . ' = ' . $db->quoteName('espp.code'))
+				->where('esc.id IN ' . '(' . implode(',', $this->user_campaigns) . ') OR espp.id IN ' . '(' . implode(',', $this->user_programs) . ')')
+				->group('esa.id');
 
-				try {
-					$db->setQuery($query);
-					$attachments = $db->loadAssocList();
-				} catch (Exception $e) {
-					Log::add('Failed to get attachments associated to profiles that current' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
-				}
-
-				$this->applied_filters[] = [
-					'uid' => 'attachments',
-					'id' => 'attachments',
-					'label' => JText::_('MOD_EMUNDUS_FILTERS_ATTACHMENTS'),
-					'type' => 'select',
-					'values' => $attachments,
-					'value' => ['all'],
-					'default' => true,
-					'available' => true,
-					'order' => $config['filter_attachments_order'],
-					'andorOperator'  => 'OR',
-					'andorOperators' => ['OR', 'AND']
-				];
+			try
+			{
+				$db->setQuery($query);
+				$attachments = $db->loadAssocList();
+			}
+			catch (Exception $e)
+			{
+				Log::add('Failed to get attachments associated to profiles that current' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
 			}
 
+			$this->applied_filters[] = [
+				'uid'            => 'attachments',
+				'id'             => 'attachments',
+				'label'          => Text::_('MOD_EMUNDUS_FILTERS_ATTACHMENTS'),
+				'type'           => 'select',
+				'values'         => $attachments,
+				'value'          => ['all'],
+				'default'        => true,
+				'available'      => true,
+				'order'          => $config['filter_attachments_order'],
+				'andorOperator'  => 'OR',
+				'andorOperators' => ['OR', 'AND']
+			];
+		}
+
+		if ($config['filter_steps']) {
+			require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+			$m_workflow = new EmundusModelWorkflow();
+
+			$workflows = $m_workflow->getWorkflows([], 0, 0, $this->user_programs);
+			$steps = [];
+			$values_selected = [];
+
+			foreach($workflows as $workflow) {
+				$workflow_data = $m_workflow->getWorkflow($workflow->id);
+
+				if (!empty($workflow_data['steps'])) {
+					foreach($workflow_data['steps'] as $step) {
+						if ($m_workflow->isEvaluationStep($step->type)) {
+							$action_id = $m_workflow->getStepAssocActionId($step->id);
+							if (EmundusHelperAccess::asAccessAction($action_id, 'r', $this->user->id)) {
+								$steps[] = ['value' => $step->id, 'label' => $workflow->label . ' - ' . $step->label];
+
+								if (EmundusHelperAccess::asAccessAction($action_id, 'c', $this->user->id)) {
+									$values_selected[] = $step->id;
+								}
+							}
+						}
+					}
+				}
+			}
+
+			$this->applied_filters[] = [
+				'uid'            => 'workflow_steps',
+				'id'             => 'workflow_steps',
+				'label'          => Text::_('MOD_EMUNDUS_FILTERS_WORKFLOW_STEPS'),
+				'type'           => 'select',
+				'values'         => $steps,
+				'value'          => count($values_selected) !== count($steps) ? $values_selected : ['all'],
+				'default'        => true,
+				'available'      => true,
+				'order'          => $config['filter_steps_order'],
+				'andorOperator'  => 'OR',
+				'andorOperators' => ['OR', 'AND'],
+				'operator'       => 'IN',
+				'operators'      => ['IN']
+			];
+		}
+
+		if ($config['filter_evaluated']) {
+			$this->applied_filters[] = [
+				'uid'            => 'evaluated',
+				'id'             => 'evaluated',
+				'label'          => Text::_('MOD_EMUNDUS_FILTERS_WORKFLOW_EVALUATION_STATE'),
+				'type'           => 'select',
+				'values'         => [
+					['value' => 1, 'label' => Text::_('MOD_EMUNDUS_FILTERS_VALUE_EVALUATED')],
+					['value' => 0, 'label' => Text::_('MOD_EMUNDUS_FILTERS_VALUE_TO_EVALUATE')]
+				],
+				'value'          => ['all'],
+				'default'        => true,
+				'available'      => true,
+				'order'          => $config['filter_evaluated_order'],
+				'andorOperator'  => 'OR',
+				'andorOperators' => [],
+				'operator'       => 'IN',
+				'operators'      => ['IN', 'NOT IN']
+			];
+		}
 
 		$session = $this->app->getSession();
 

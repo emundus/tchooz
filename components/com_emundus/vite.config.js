@@ -21,7 +21,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         entryFileNames: 'app_emundus.js',
-        chunkFileNames: 'app_emundus.js.map',
+        chunkFileNames: '[name].js',
         assetFileNames: (assetInfo) => {
           if (assetInfo.name.endsWith('.css')) {
             return 'app_emundus.css';
@@ -29,8 +29,25 @@ export default defineConfig({
           return  'assets/'  + assetInfo.name;
         }
       },
+      onLog(level, log, handler) {
+        if (log.cause && log.cause.message === `Can't resolve original location of error.`) {
+          return
+        }
+        handler(level, log)
+      }
     },
     cssCodeSplit: false
+  },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        api: 'modern-compiler',
+        silenceDeprecations: ["legacy-js-api"],
+      },
+      sass: {
+        api: 'modern-compiler',
+      }
+    }
   },
   base: "/media/com_emundus_vue"
 });

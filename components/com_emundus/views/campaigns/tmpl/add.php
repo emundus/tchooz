@@ -14,7 +14,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Language\LanguageHelper;
 
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
+require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
 
 Text::script('COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN');
 Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER');
@@ -32,10 +32,15 @@ Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM');
 Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_LANGUAGES');
 Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_CHOOSEPROG');
 Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PICKYEAR');
+Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PICKYEAR_HELPTEXT');
+Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_FORM');
+Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_FORM_DESC');
+Text::script('COM_EMUNDUS_ONBOARD_ACCESS_TO_FORMS_LIST');
 Text::script('COM_EMUNDUS_ONBOARD_ADDPROGRAM');
 Text::script('COM_EMUNDUS_ONBOARD_ADD_RETOUR');
 Text::script('COM_EMUNDUS_ONBOARD_ADD_QUITTER');
 Text::script('COM_EMUNDUS_ONBOARD_ADD_CONTINUER');
+Text::script('COM_EMUNDUS_ONBOARD_CONTINUE');
 Text::script('COM_EMUNDUS_ONBOARD_FILTER_PUBLISH');
 Text::script('COM_EMUNDUS_ONBOARD_FILTER_CLOSE');
 Text::script('COM_EMUNDUS_ONBOARD_DEPOTDEDOSSIER');
@@ -58,9 +63,9 @@ Text::script('COM_EMUNDUS_ONBOARD_CANCEL');
 Text::script('COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH');
 Text::script('COM_EMUNDUS_ONBOARD_TRANSLATETIP');
 Text::script('COM_EMUNDUS_ONBOARD_TIP');
-JText::script('COM_EMUNDUS_ONBOARD_PINNED_CAMPAIGN_TIP');
-JText::script('COM_EMUNDUS_ONBOARD_PINNED_CAMPAIGN_TIP_TEXT');
-JText::script('COM_EMUNDUS_SWAL_OK_BUTTON');
+Text::script('COM_EMUNDUS_ONBOARD_PINNED_CAMPAIGN_TIP');
+Text::script('COM_EMUNDUS_ONBOARD_PINNED_CAMPAIGN_TIP_TEXT');
+Text::script('COM_EMUNDUS_SWAL_OK_BUTTON');
 Text::script('COM_EMUNDUS_ONBOARD_FILES_LIMIT');
 Text::script('COM_EMUNDUS_ONBOARD_FILES_LIMIT_NUMBER');
 Text::script('COM_EMUNDUS_ONBOARD_FILES_LIMIT_STATUS');
@@ -72,8 +77,14 @@ Text::script('COM_EMUNDUS_GLOBAL_INFORMATIONS');
 Text::script('COM_EMUNDUS_GLOBAL_INFORMATIONS_DESC');
 Text::script('COM_EMUNDUS_ONBOARD_PROGCOLOR');
 Text::script('COM_EMUNDUS_ADD_CAMPAIGN_ERROR');
-JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_ALIAS');
-JText::script('COM_EMUNDUS_ONBOARD_ALIAS_COPIED');
+Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_ALIAS');
+Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_ALIAS_HELPTEXT');
+Text::script('COM_EMUNDUS_ONBOARD_ALIAS_COPIED');
+Text::script('COM_EMUNDUS_OPTIONAL');
+Text::script('COM_EMUNDUS_CAMPAIGN_NO_STEPS_FOUND');
+Text::script('COM_EMUNDUS_ONBOARD_CHOOSE_FORM');
+Text::script('COM_EMUNDUS_ONBOARD_CHOOSE_LANGUAGE');
+Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM_LANGUAGES');
 
 ## TUTORIAL ##
 Text::script('COM_EMUNDUS_ONBOARD_TUTORIAL_CAMPAIGN');
@@ -87,11 +98,13 @@ Text::script('COM_EMUNDUS_CAMPAIGNS_VISIBLE');
 ## END ##
 
 $app = Factory::getApplication();
-if (version_compare(JVERSION, '4.0', '>')) {
+if (version_compare(JVERSION, '4.0', '>'))
+{
 	$lang = $app->getLanguage();
 	$user = $app->getIdentity();
 }
-else {
+else
+{
 	$lang = Factory::getLanguage();
 	$user = Factory::getUser();
 }
@@ -99,13 +112,15 @@ else {
 $short_lang   = substr($lang->getTag(), 0, 2);
 $current_lang = $lang->getTag();
 $languages    = LanguageHelper::getLanguages();
-if (count($languages) > 1) {
+if (count($languages) > 1)
+{
 	$many_languages = '1';
 	require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
 	$m_translations = new EmundusModelTranslations();
 	$default_lang   = $m_translations->getDefaultLanguage()->lang_code;
 }
-else {
+else
+{
 	$many_languages = '0';
 	$default_lang   = $current_lang;
 }
@@ -119,9 +134,10 @@ $hash = EmundusHelperCache::getCurrentGitHash();
 
 
 <div id="em-component-vue"
-     component="addcampaign"
+     component="addCampaign"
      campaign="<?= $this->id; ?>"
-     shortLang="<?= $short_lang ?>" currentLanguage="<?= $current_lang ?>"
+     shortLang="<?= $short_lang ?>"
+     currentLanguage="<?= $current_lang ?>"
      defaultLang="<?= $default_lang ?>"
      manyLanguages="<?= $many_languages ?>"
      coordinatorAccess="<?= $coordinator_access ?>"

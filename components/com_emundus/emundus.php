@@ -181,6 +181,11 @@ Text::script('COM_EMUNDUS_ONBOARD_BUILDER_CURRENCY_DECIMAL_NUMBERS');
 Text::script('COM_EMUNDUS_ONBOARD_BUILDER_CURRENCY_REGEX');
 Text::script('COM_EMUNDUS_CAMPAIGN_MORE');
 Text::script('COM_EMUNDUS_CAMPAIGN_MORE_DESC');
+Text::script('COM_EMUNDUS_CAMPAIGN_STEPS');
+Text::script('COM_EMUNDUS_CAMPAIGN_STEPS_DESC');
+Text::script('COM_EMUNDUS_CAMPAIGN_STEP_START_DATE');
+Text::script('COM_EMUNDUS_CAMPAIGN_STEP_END_DATE');
+Text::script('COM_EMUNDUS_CAMPAIGNS_INFINITE_STEP');
 
 Text::script('USERNAME_Q');
 Text::script('ID_Q');
@@ -233,6 +238,7 @@ Text::script('ERROR');
 Text::script('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF');
 Text::script('COM_EMUNDUS_EXPORTS_FORMS_PDF');
 Text::script('COM_EMUNDUS_EXPORTS_ATTACHMENT_PDF');
+Text::script('COM_EMUNDUS_EXPORTS_EVAL_STEPS_PDF');
 Text::script('COM_EMUNDUS_EXPORTS_ASSESSMENT_PDF');
 Text::script('JYES');
 Text::script('JNO');
@@ -746,6 +752,8 @@ Text::script('COM_EMUNDUS_GLOBAL_HISTORY_DIFF_COLUMN');
 Text::script('COM_EMUNDUS_GLOBAL_HISTORY_DIFF_OLD_DATA');
 Text::script('COM_EMUNDUS_GLOBAL_HISTORY_DIFF_NEW_DATA');
 Text::script('COM_EMUNDUS_GLOBAL_HISTORY_ITEM_ID');
+Text::script('COM_EMUNDUS_EVALUATIONS_LIST');
+Text::script('COM_EMUNDUS_EVALUATIONS_LIST_NO_EVALUATIONS');
 
 // Load translations for action log plugin
 $actionlog_translation_tags = parse_ini_file(JPATH_ADMINISTRATOR.'/language/fr-FR/plg_actionlog_emundus.ini');
@@ -808,7 +816,6 @@ if (!in_array($name, ['settings', 'campaigns', 'emails', 'form'])) {
 	$wa->registerAndUseStyle('com_emundus_sumoselect', 'media/com_emundus/lib/sumoselect/sumoselect.css');
 }
 
-$wa->registerAndUseScript('com_emundus_chunk_vendors', 'media/com_emundus_vue/chunk-vendors_emundus.js', ['version' => $hash]);
 $wa->registerAndUseStyle('com_emundus_app', 'media/com_emundus_vue/app_emundus.css', ['version' => $hash]);
 
 $wa->registerAndUseScript('lottie', 'media/com_emundus/js/lib/@lottiefiles/lottie-player/dist/lottie-player.js');

@@ -14,7 +14,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Language\LanguageHelper;
 
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
+require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
 
 ## GLOBAL ##
 Text::script('COM_EMUNDUS_ONBOARD_MODIFY');
@@ -108,10 +108,14 @@ Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM');
 Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_CHOOSEPROG');
 Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PICKYEAR');
 Text::script('COM_EMUNDUS_ONBOARD_ADDPROGRAM');
+Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_FORM');
+Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_FORM_DESC');
+Text::script('COM_EMUNDUS_ONBOARD_ACCESS_TO_FORMS_LIST');
 Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_LANGUAGES');
 Text::script('COM_EMUNDUS_ONBOARD_ADD_RETOUR');
 Text::script('COM_EMUNDUS_ONBOARD_ADD_QUITTER');
 Text::script('COM_EMUNDUS_ONBOARD_ADD_CONTINUER');
+Text::script('COM_EMUNDUS_ONBOARD_CONTINUE');
 Text::script('COM_EMUNDUS_ONBOARD_FILTER_PUBLISH');
 Text::script('COM_EMUNDUS_ONBOARD_FILTER_CLOSE');
 Text::script('COM_EMUNDUS_ONBOARD_DEPOTDEDOSSIER');
@@ -138,6 +142,7 @@ Text::script('COM_EMUNDUS_ONBOARD_TRANSLATE_IN');
 Text::script('COM_EMUNDUS_ONBOARD_PROGRAM_INTRO_DESC');
 Text::script("COM_EMUNDUS_CAMPAIGN_ONGOING");
 Text::script("COM_EMUNDUS_CAMPAIGN_YET_TO_COME");
+Text::script("COM_EMUNDUS_ONBOARD_SEE_PROGRAM_WORKFLOWS");
 
 Text::script('COM_EMUNDUS_ONBOARD_NAME');
 Text::script('COM_EMUNDUS_ONBOARD_START_DATE');
@@ -147,19 +152,16 @@ Text::script('COM_EMUNDUS_ONBOARD_NB_FILES');
 Text::script('COM_EMUNDUS_ONBOARD_SUBJECT');
 Text::script('COM_EMUNDUS_ONBOARD_TYPE');
 Text::script('COM_EMUNDUS_ONBOARD_STATUS');
+Text::script('COM_EMUNDUS_OPTIONAL');
 
 Text::script('COM_EMUNDUS_CAMPAIGNS_PIN');
 Text::script('COM_EMUNDUS_ONBOARD_CAMPAIGNS_CAMPAIGN_PINNED');
 Text::script('COM_EMUNDUS_ONBOARD_CAMPAIGNS_CAMPAIGN_PINNED_TEXT');
+Text::script('COM_EMUNDUS_ONBOARD_ADD_PROGRAM');
 
-if (version_compare(JVERSION, '4.0', '>')) {
-	$lang = Factory::getApplication()->getLanguage();
-	$user = Factory::getApplication()->getIdentity();
-}
-else {
-	$lang = Factory::getLanguage();
-	$user = Factory::getUser();
-}
+$app = Factory::getApplication();
+$lang = $app->getLanguage();
+$user = $app->getIdentity();
 
 $short_lang   = substr($lang->getTag(), 0, 2);
 $current_lang = $lang->getTag();
@@ -178,19 +180,18 @@ else {
 $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
 $sysadmin_access    = EmundusHelperAccess::isAdministrator($user->id);
 
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
+require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();
 ?>
 
-<list id="em-component-vue"
-      component="list_v2"
-      type="campaigns"
-      coordinatorAccess="<?= $coordinator_access ?>"
-      sysadminAccess="<?= $sysadmin_access ?>"
-      shortLang="<?= $short_lang ?>" currentLanguage="<?= $current_lang ?>"
-      manyLanguages="<?= $many_languages ?>"
-      defaultLang="<?= $default_lang ?>"
->
-</list>
+<div id="em-component-vue"
+     component="Campaigns"
+     coordinatoraccess="1"
+     sysadminaccess="1"
+     shortlang="fr"
+     currentlanguage="fr-FR"
+     manylanguages="1"
+     defaultlang="fr-FR">
+</div>
 
 <script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>

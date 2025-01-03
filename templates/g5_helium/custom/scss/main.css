@@ -373,7 +373,7 @@ small {
         text-transform: none;
         color: var(--neutral-900);
         font-weight: normal;
-        line-height: normal;
+        line-height: 1.5;
         letter-spacing: normal;
         font-size: var(--em-applicant-font-size);
         margin-bottom: 0;

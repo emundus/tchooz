@@ -577,7 +577,7 @@ class EmundusHelperUpdate
 		$updated = false;
 
 		$initialOptions = (new Registry(new \JConfig()))->toArray();
-		
+
 		// Sanitize options
 		foreach ($options as $key => $value) {
 			// Remove some options
@@ -2137,7 +2137,8 @@ class EmundusHelperUpdate
 					'published'         => $published,
 					'params'            => json_encode($params['params']),
 					'client_id'         => $params['client_id'] ?: 0,
-					'img'               => $params['img'] ?: ''
+					'img'               => $params['img'] ?: '',
+					'menu_show'         => $params['menu_show'] ?: 1,
 				);
 
 				if ($parent_id <= 0 || empty($parent_id))

@@ -17,6 +17,94 @@
   --disabled-color: #c4c4c4;
 }
 
+.com_emundus_vue {
+  margin-bottom: 8px;
+
+  input {
+    display: block;
+    margin-bottom: 10px;
+    padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    -webkit-transition: border-color 200ms linear;
+    transition: border-color 200ms linear;
+    box-sizing: border-box !important;
+
+    &:hover {
+      border-color: #cecece;
+    }
+
+    &:focus {
+      border-color: #16AFE1;
+      -webkit-box-shadow: 0 0 6px #e0f3f8;
+      -moz-box-shadow: 0 0 6px #e0f3f8;
+      box-shadow: 0 0 6px #e0f3f8;
+    }
+
+    &::-webkit-input-placeholder {
+      color: #A4A4A4;
+    }
+
+    &:-ms-input-placeholder {
+      color: #A4A4A4;
+    }
+
+    &::-ms-input-placeholder {
+      color: #A4A4A4;
+    }
+
+    &::placeholder {
+      color: #A4A4A4;
+    }
+  }
+}
+
+.view-campaigns.no-layout #g-container-main .g-container,
+.view-campaigns.layout-addnextcampaign #g-container-main .g-container,
+.view-campaigns.layout-add #g-container-main .g-container,
+.view-emails.layout-add #g-container-main .g-container,
+.view-emails.no-layout #g-container-main .g-container,
+.view-form #g-container-main .g-container,
+.view-settings #g-container-main .g-container,
+.view-workflows #g-container-main .g-container{
+  width: auto;
+  position: relative;
+}
+
+.view-campaigns.no-layout #g-container-main,
+.view-campaigns.layout-addnextcampaign #g-container-main,
+.view-campaigns.layout-add #g-container-main,
+.view-emails.layout-add #g-container-main,
+.view-emails.no-layout #g-container-main,
+.view-form #g-container-main {
+  padding-left: 76px;
+}
+
+#g-page-surround {
+  z-index: 1;
+}
+
+.swal2-container {
+  z-index: 2;
+}
+
+
+.com_emundus.view-settings #g-page-surround #g-container-main {
+  padding: 0 !important;
+}
+
+.com_emundus.view-settings #g-page-surround #g-container-main .g-container {
+  padding: 0 !important;
+}
+
+.com_emundus.view-settings #g-footer {
+  display: none;
+}
+
+.com_emundus.view-settings .com_emundus_vue {
+  margin-bottom: 0;
+}
+
 .material-icons, .material-icons-outlined, .material-symbols-outlined {
   transition: all 0.3s;
   font-size: 18px;

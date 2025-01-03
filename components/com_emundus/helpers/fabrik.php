@@ -291,11 +291,11 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 						1 => '0'
 					],
 					'process-jplugins'      => '2',
-					'plugins'               => array('emundusisevaluatedbyme', 'php'),
+					'plugins'               => array('emundusstepevaluation', 'php'),
 					'plugin_state'          => array('1', '1'),
 					'plugin_locations'      => array('both', 'both'),
 					'plugin_events'         => array('both', 'both'),
-					'plugin_description'    => array('Is evaluated by me', 'css'),
+					'plugin_description'    => array('Gestion d\'accès à la phase d\'évaluation', 'css'),
 				];
 			}
 			else {

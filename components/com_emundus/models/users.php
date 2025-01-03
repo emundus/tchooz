@@ -1297,6 +1297,9 @@ class EmundusModelUsers extends ListModel
 			$this->db->execute() or die($this->db->getErrorMsg());
 		}
 		catch (Exception $e) {
+			error_log($e->getMessage());
+
+
 			$this->app->enqueueMessage(JText::_('COM_EMUNDUS_USERS_CAN_NOT_SAVE_USER') . '<br />' . $e->getMessage(), 'error');
 			Log::add('Failed to create user : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
@@ -2014,7 +2017,7 @@ class EmundusModelUsers extends ListModel
 
 				if ($return == 'Column') {
 					$user_groups = $this->db->loadColumn();
-					
+
 					if(!empty($current_profile)) {
 						$groups_mapping = $this->getGroupsMapping();
 						if(!empty($groups_mapping)) {
@@ -3375,6 +3378,18 @@ class EmundusModelUsers extends ListModel
 			$return->status  = false;
 
 			return $return;
+		}
+
+		if(!empty($user->params))
+		{
+			$user_params = json_decode($user->params);
+
+			if(!empty($user_params->OAuth2) && $user_params->OAuth2 == 'openid') {
+				$return->message = Text::_('COM_USERS_INVALID_EMAIL');
+				$return->status  = false;
+
+				return $return;
+			}
 		}
 
 		if(!empty($user->params))

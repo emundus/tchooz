@@ -221,6 +221,16 @@ export default {
       };
     }
   },
+  async getCampaignsByProgramId(programId) {
+    try {
+      return await client.get('getCampaignsByProgramId&program_id=' + programId);
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
   async getCampaignLanguages(campaignId) {
     try {
       return await client.get('getcampaignlanguages&campaign_id=' + campaignId);

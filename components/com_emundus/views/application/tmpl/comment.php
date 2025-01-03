@@ -67,7 +67,8 @@ $user_comment_access = [
 </div>
 
 <div id="em-component-vue"
-     component="comments"
+     component="Comments"
+     class="com_emundus_vue"
      user="<?= $this->_user->id ?>"
      ccid="<?= $this->ccid ?>"
      fnum="<?= $this->fnum ?>"

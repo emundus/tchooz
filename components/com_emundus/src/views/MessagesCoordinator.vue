@@ -50,7 +50,7 @@ import axios from "axios";
 import moment from 'moment';
 import { useGlobalStore } from '@/stores/global';
 
-import "../../assets/css/messenger.scss";
+import "../assets/css/messenger.scss";
 
 import AttachDocument from "@/components/Messages/modals/AttachDocument.vue";
 

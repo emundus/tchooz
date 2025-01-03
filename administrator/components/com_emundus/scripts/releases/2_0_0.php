@@ -2067,7 +2067,6 @@ if(value == 1) {
 			return $result;
 		}
 
-
 		return $result;
 	}
 

@@ -259,9 +259,9 @@ class EmundusModelProfile extends ListModel
 			$query = $this->_db->getQuery(true);
 
 			// check if a default workflow exists
-			require_once(JPATH_ROOT . '/components/com_emundus/models/campaign.php');
-			$m_campaign        = new EmundusModelCampaign();
-			$campaign_workflow = $m_campaign->getCurrentCampaignWorkflow($fnum);
+			require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+			$m_workflow        = new EmundusModelWorkflow();
+			$campaign_workflow = $m_workflow->getCurrentWorkflowStepFromFile($fnum);
 
 			if (!empty($campaign_workflow))
 			{
@@ -598,7 +598,7 @@ class EmundusModelProfile extends ListModel
 	 *
 	 * @return array
 	 */
-	function getWorkflowProfilesByCampaign($campaign_id)
+	function getWorkflowProfilesByCampaign($campaign_id, $step_types = [1])
 	{
 		$profiles = [];
 
@@ -606,7 +606,7 @@ class EmundusModelProfile extends ListModel
 		{
 			require_once(JPATH_ROOT . '/components/com_emundus/models/campaign.php');
 			$m_campaign = new EmundusModelCampaign();
-			$workflows  = $m_campaign->getAllCampaignWorkflows($campaign_id);
+			$workflows  = $m_campaign->getAllCampaignWorkflows($campaign_id, $step_types);
 
 			foreach ($workflows as $workflow)
 			{
@@ -637,9 +637,9 @@ class EmundusModelProfile extends ListModel
 		{
 			try
 			{
-				require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
-				$m_campaign = new EmundusModelCampaign();
-				$workflow   = $m_campaign->getCurrentCampaignWorkflow($fnum);
+				require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+				$m_workflow = new EmundusModelWorkflow();
+				$workflow   = $m_workflow->getCurrentWorkflowStepFromFile($fnum);
 
 				if (!empty($workflow))
 				{

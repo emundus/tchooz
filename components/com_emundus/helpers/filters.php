@@ -364,7 +364,7 @@ class EmundusHelperFilters
 					AND element.label != " "
 					AND element.label != ""
 					AND element.plugin != "display"
-				ORDER BY formgroup.ordering, element.ordering';
+				ORDER BY formgroup.ordering, groupe.id, element.ordering';
 		try {
 			$db->setQuery($query);
 			$elements = $db->loadObjectList();

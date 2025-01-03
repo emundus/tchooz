@@ -387,7 +387,7 @@ if ($user != null)
 			} ?>
 
 			<?php if ($show_logout == '1') : ?>
-				<?= '<hr style="width: 100%" aria-hidden="true"><li><a class="logout-button-user em-flex-important em-flex-row em-flex-center" href="' . JURI::base() . 'index.php?option=com_users&task=user.logout&' . JSession::getFormToken() . '=1"><span class="material-symbols-outlined tw-mr-2">logout</span>' . JText::_('COM_EMUNDUS_USER_MENU_LOGOUT_ACTION') . '</a></li>'; ?>
+				<?= '<hr style="width: 100%" aria-hidden="true"><li><a class="logout-button-user em-profile-font em-flex-important em-flex-row em-flex-center" href="' . JURI::base() . 'index.php?option=com_users&task=user.logout&' . JSession::getFormToken() . '=1"><span class="material-symbols-outlined tw-mr-2">logout</span>' . JText::_('COM_EMUNDUS_USER_MENU_LOGOUT_ACTION') . '</a></li>'; ?>
 			<?php endif; ?>
 
         </ul>
@@ -531,10 +531,10 @@ if ($user != null)
 	<?php endif; ?>
     <div class="header-right" style="text-align: right;">
 		<?php if ($show_registration) { ?>
-            <a class="btn btn-danger" href="<?= JRoute::_($link_register); ?>"
+            <a class="btn btn-danger em-profile-font" href="<?= JRoute::_($link_register); ?>"
                data-toggle="sc-modal"><?= JText::_('CREATE_ACCOUNT_LABEL'); ?></a>
 		<?php } ?>
-        <a class="btn btn-danger btn-creer-compte" href="<?= JRoute::_($link_login); ?>"
+        <a class="btn btn-danger btn-creer-compte em-profile-font" href="<?= JRoute::_($link_login); ?>"
            data-toggle="sc-modal"><?= JText::_('CONNEXION_LABEL'); ?></a>
     </div>
     <script>

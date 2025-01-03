@@ -49,7 +49,7 @@ $extension_item_id = $menu_params->get('extension_item_id', 0);
 if (!empty($extension)) {
 ?>
     <div id="em-component-vue"
-         component="history"
+         component="History"
          shortLang="<?= $short_lang ?>"
          currentLanguage="<?= $current_lang ?>"
          defaultLang="<?= $default_lang ?>"

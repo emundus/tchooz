@@ -25,15 +25,15 @@ $user = $app->getSession()->get('emundusUser');
 
 if (isset($user->fnum) && !empty($user->fnum))
 {
-
-	require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
-	require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
-	require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'checklist.php');
-	require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
-	require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
-	require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
-	require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
-	require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
+	require_once(JPATH_SITE . '/components/com_emundus/helpers/menu.php');
+	require_once(JPATH_SITE . '/components/com_emundus/helpers/access.php');
+	require_once(JPATH_SITE . '/components/com_emundus/models/checklist.php');
+	require_once(JPATH_SITE . '/components/com_emundus/models/application.php');
+	require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
+	require_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
+	require_once(JPATH_SITE . '/components/com_emundus/models/emails.php');
+	require_once(JPATH_SITE . '/components/com_emundus/models/campaign.php');
+	require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
 
 	// Load Joomla framework classes
 	$document = $app->getDocument();
@@ -103,7 +103,8 @@ if (isset($user->fnum) && !empty($user->fnum))
 	$m_files       = new EmundusModelFiles();
 	$m_profile     = new EmundusModelProfile();
 	$m_emails      = new EmundusModelEmails();
-	$m_campaign    = new EmundusModelCampaign();
+	$m_workflow    = new EmundusModelWorkflow();
+	$m_campaign	   = new EmundusModelCampaign();
 
 	$current_application = $m_application->getApplication($user->fnum);
 
@@ -241,17 +242,22 @@ if (isset($user->fnum) && !empty($user->fnum))
 			$is_dead_line_passed = (strtotime(date($now)) > strtotime($user->end_date)) ? true : false;
 		}
 	}
+	$deadline = !empty($admission) ? new JDate($user->fnums[$user->fnum]->admission_end_date) : new JDate($user->end_date);
 
-	$current_phase = $m_campaign->getCurrentCampaignWorkflow($user->fnum);
-	if (!empty($current_phase) && !empty($current_phase->end_date))
+	$current_phase = $m_workflow->getCurrentWorkflowStepFromFile($user->fnum);
+	if (!empty($current_phase) && !empty($current_phase->id))
 	{
-		$deadline = new JDate($current_phase->end_date);
-	}
-	else
-	{
-		$deadline = !empty($admission) ? new JDate($user->fnums[$user->fnum]->admission_end_date) : new JDate($user->end_date);
-	}
+		if ($current_phase->infinite)
+		{
+			$show_deadline = false;
+		}
 
+		if (!empty($current_phase->end_date))
+		{
+			$deadline = new JDate($current_phase->end_date);
+		}
+	}
+	
 	$lang = Factory::getLanguage();
 	$current_lang_tag = $lang->getTag();
 	$db = Factory::getContainer()->get('DatabaseDriver');
@@ -260,9 +266,14 @@ if (isset($user->fnum) && !empty($user->fnum))
 		->from('#__languages')
 		->where('lang_code = ' . $db->quote($current_lang_tag));
 
-	$db->setQuery($query);
-	$current_lang_id = $db->loadResult();
-	$campaign_languages = $m_campaign->getCampaignLanguages($user->fnum);
+	try {
+		$db->setQuery($query);
+		$current_lang_id = $db->loadResult();
+		$campaign_languages = $m_campaign->getCampaignLanguages($user->fnum);
+	} catch (Exception $e) {
+		$current_lang_id = 0;
+		$campaign_languages = [];
+	}
 
 	require(ModuleHelper::getLayoutPath('mod_emundusflow', $layout));
 }

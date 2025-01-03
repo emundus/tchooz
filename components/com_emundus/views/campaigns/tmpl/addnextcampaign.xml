@@ -11,8 +11,8 @@
             <field name="tabs_to_display" label="Tabs to display" type="checkboxes">
                 <option value="global">Global</option>
                 <option value="more">More informations</option>
+                <option value="steps">Steps</option>
                 <option value="attachments">Documents</option>
-                <option value="form">Form</option>
                 <option value="emails">Emails</option>
                 <option value="history">History</option>
             </field>

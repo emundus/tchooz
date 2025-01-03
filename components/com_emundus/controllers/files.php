@@ -1319,9 +1319,8 @@ class EmundusControllerFiles extends BaseController
 		if (EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
 			$forms      = $this->input->getInt('forms', 0);
 			$attachment = $this->input->getInt('attachment', 0);
-			$assessment = $this->input->getInt('assessment', 0);
-			$decision   = $this->input->getInt('decision', 0);
-			$admission  = $this->input->getInt('admission', 0);
+			$eval_steps = $this->input->getString('eval_steps', '');
+			$eval_steps = !empty($eval_steps) ? json_decode($eval_steps, true) : [];
 			$formids    = $this->input->getVar('formids', null);
 			$attachids  = $this->input->getVar('attachids', null);
 			$options    = $this->input->getVar('options', null);
@@ -1352,7 +1351,7 @@ class EmundusControllerFiles extends BaseController
 
 
 			if (extension_loaded('zip')) {
-				$name = $m_files->exportZip($validFnums, $forms, $attachment, $assessment, $decision, $admission, $formids, $attachids, $options, false, $current_user, $params);
+				$name = $m_files->exportZip($validFnums, $forms, $attachment, $eval_steps, $formids, $attachids, $options, false, $current_user, $params);
 			}
 			else {
 				$name = $this->export_zip_pcl($validFnums);
@@ -1629,6 +1628,7 @@ class EmundusControllerFiles extends BaseController
 			}
 		}
 
+		$not_already_handled_fnums = [];
 		if ($methode != 2 || $failed_with_old_method) {
 			$not_already_handled_fnums = $fnums;
 			if ($start > 0) {
@@ -2259,9 +2259,9 @@ class EmundusControllerFiles extends BaseController
 		$limit      = $this->input->getInt('limit', 1);
 		$forms      = $this->input->getInt('forms', 0);
 		$attachment = $this->input->getInt('attachment', 0);
-		$assessment = $this->input->getInt('assessment', 0);
-		$decision   = $this->input->getInt('decision', 0);
-		$admission  = $this->input->getInt('admission', 0);
+		$assessment = 0;
+		$decision   = 0;
+		$admission  = 0;
 		$ids        = $this->input->getString('ids', null);
 		$formid     = $this->input->getString('formids', null);
 		$attachids   = $this->input->getString('attachids', null);
@@ -2991,7 +2991,7 @@ class EmundusControllerFiles extends BaseController
 	 *
 	 * @return string
 	 */
-	function export_zip($fnums, $form_post = 1, $attachment = 1, $assessment = 1, $decision = 1, $admission = 1, $form_ids = null, $attachids = null, $options = null, $acl_override = false)
+	function export_zip($fnums, $form_post = 1, $attachment = 1, $eval_steps = [], $form_ids = null, $attachids = null, $options = null, $acl_override = false)
 	{
 		$view         = $this->input->get('view');
 		$current_user = $this->app->getIdentity();
@@ -3002,7 +3002,7 @@ class EmundusControllerFiles extends BaseController
 
 		$m_files = $this->getModel('Files');
 
-		return $m_files->exportZip($fnums, $form_post, $attachment, $assessment, $decision, $admission, $form_ids, $attachids, $options, false, $current_user);
+		return $m_files->exportZip($fnums, $form_post, $attachment, $eval_steps, $form_ids, $attachids, $options, false, $current_user);
 	}
 
 	/**
@@ -3449,52 +3449,36 @@ class EmundusControllerFiles extends BaseController
 
 	public function checkforms()
 	{
-		$user_id = JFactory::getUser()->id;
-
+		$user_id = $this->_user->id;
 		$code = $this->input->getString('code', null);
-
 		$m_eval = $this->getModel('Evaluation');
-		$m_adm  = $this->getModel('Admission');
-
 		$eval = $m_eval->getGroupsEvalByProgramme($code);
-		$dec  = $m_eval->getGroupsDecisionByProgramme($code);
-		$adm  = $m_adm->getGroupsAdmissionByProgramme($code);
-		$adm  .= $m_adm->getGroupsApplicantAdmissionByProgramme($code);
 
 		$hasAccessForm = EmundusHelperAccess::asAccessAction(1, 'r', $user_id);
 		$hasAccessAtt  = EmundusHelperAccess::asAccessAction(4, 'r', $user_id);
 		$hasAccessEval = EmundusHelperAccess::asAccessAction(5, 'r', $user_id);
-		$hasAccessDec  = EmundusHelperAccess::asAccessAction(29, 'r', $user_id);
-		$hasAccessAdm  = EmundusHelperAccess::asAccessAction(32, 'r', $user_id);
 		$hasAccessTags = EmundusHelperAccess::asAccessAction(14, 'r', $user_id);
 
-		$showform = 0;
-		$showatt  = 0;
-		$showeval = 0;
-		$showdec  = 0;
-		$showadm  = 0;
-		$showtag  = 0;
+		$show_form = 0;
+		$show_attachments  = 0;
+		$show_tag  = 0;
+		$show_eval = 0;
+
+		if ($eval && $hasAccessEval) {
+			$show_eval = 1;
+		}
 
 		if ($hasAccessForm) {
-			$showform = 1;
+			$show_form = 1;
 		}
 		if ($hasAccessAtt) {
-			$showatt = 1;
-		}
-		if (!empty($eval) && $hasAccessEval) {
-			$showeval = 1;
-		}
-		if (!empty($dec) && $hasAccessDec) {
-			$showdec = 1;
-		}
-		if (!empty($adm) && $hasAccessAdm) {
-			$showadm = 1;
+			$show_attachments = 1;
 		}
 		if ($hasAccessTags) {
-			$showtag = 1;
+			$show_tag = 1;
 		}
 
-		echo json_encode((object) (array('status' => true, 'att' => $showatt, 'eval' => $showeval, 'dec' => $showdec, 'adm' => $showadm, 'tag' => $showtag, 'form' => $showform)));
+		echo json_encode((object) (array('status' => true, 'att' => $show_attachments, 'eval_steps' => $show_eval, 'tag' => $show_tag, 'form' => $show_form)));
 		exit;
 
 	}
@@ -4237,6 +4221,23 @@ class EmundusControllerFiles extends BaseController
 				$response['msg']  = Text::_('MISSING_PARAMS');
 				$response['code'] = 400;
 			}
+		}
+
+		echo json_encode($response);
+		exit;
+	}
+
+	public function getProfiles()
+	{
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
+		$user = $this->app->getIdentity();
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			$m_files = new EmundusModelFiles();
+			$response['data'] = array_values($m_files->getProfiles());
+
+			$response['status'] = true;
+			$response['msg'] = Text::_('SUCCESS');
 		}
 
 		echo json_encode($response);

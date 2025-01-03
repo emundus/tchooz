@@ -14,6 +14,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
 use PhpOffice\PhpWord\TemplateProcessor;
+use Joomla\CMS\Language\Text;
 
 defined('_JEXEC') or die('Restricted access');
 define('R_MD5_MATCH', '/^[a-f0-9]{32}$/i');
@@ -125,7 +126,8 @@ class EmundusModelEvaluation extends JModelList
 		// get evaluation element
 		$show_in_list_summary = 1;
 		$hidden               = 0;
-		$elements_eval        = $this->getEvaluationElements($show_in_list_summary, $hidden);
+		$fnums   = $this->app->input->getString('cfnums', null);
+		$elements_eval = $this->getEvaluationElements($show_in_list_summary, $hidden, $fnums);
 		if (is_array($elements_eval) && count($elements_eval))
 		{
 			$this->elements_id .= ',' . implode(',', $elements_eval);
@@ -162,7 +164,6 @@ class EmundusModelEvaluation extends JModelList
 					'u'    => 'jos_users',
 					'eu'   => 'jos_emundus_users',
 					'eta'  => 'jos_emundus_tag_assoc',
-					'ee'   => 'jos_emundus_evaluation'
 				];
 				foreach ($already_joined_tables as $alias => $table)
 				{
@@ -379,10 +380,10 @@ class EmundusModelEvaluation extends JModelList
 				}
 			}
 		}
-		if (isset($em_other_columns) && in_array('overall', $em_other_columns))
+		/**if (isset($em_other_columns) && in_array('overall', $em_other_columns))
 		{
 			$this->_elements_default[] = ' AVG(ee.overall) as overall ';
-		}
+		}*/
 		if (empty($col_elt))
 		{
 			$col_elt = array();
@@ -430,17 +431,17 @@ class EmundusModelEvaluation extends JModelList
 	/**
 	 * Get list of evaluation element
 	 *
-	 * @param   int displayed in Fabrik List ; yes=1
+	 * @param int $show_in_list_summary in Fabrik List
+	 * @param int $hidden get hidden elements
 	 *
-	 * @return    string list of Fabrik element ID used in evaluation form
+	 * @return    array list of Fabrik element ID used in evaluation form
 	 **@throws Exception
 	 */
-	public function getEvaluationElements($show_in_list_summary = 1, $hidden = 0)
+	public function getEvaluationElements($show_in_list_summary = 1, $hidden = 0, $fnums = null)
 	{
-		$session = JFactory::getSession();
+		$elements_id = [];
+		$session = $this->app->getSession();
 		$h_files = new EmundusHelperFiles;
-		$jinput  = JFactory::getApplication()->input;
-		$fnums   = $jinput->getString('cfnums', null);
 
 		if ($session->has('filt_params'))
 		{
@@ -465,7 +466,7 @@ class EmundusModelEvaluation extends JModelList
 							{
 								foreach ($eval_elt_list as $eel)
 								{
-									if (isset($eel->element_id) && !empty($eel->element_id))
+									if (!empty($eel->element_id))
 									{
 										$elements_id[] = $eel->element_id;
 									}
@@ -494,7 +495,7 @@ class EmundusModelEvaluation extends JModelList
 							{
 								foreach ($eval_elt_list as $eel)
 								{
-									if (isset($eel->element_id) && !empty($eel->element_id))
+									if (!empty($eel->element_id))
 									{
 										$elements_id[] = $eel->element_id;
 									}
@@ -506,7 +507,116 @@ class EmundusModelEvaluation extends JModelList
 			}
 		}
 
+		$applied_filters = $session->get('em-applied-filters', []);
+		if (!empty($applied_filters)) {
+			// check if filter workflow_steps has a value
+			foreach ($applied_filters as $filter) {
+				if ($filter['uid'] == 'workflow_steps') {
+					if (!empty($filter['value'])) {
+						$step_ids = !is_array($filter['value']) ? [$filter['value']] : $filter['value'];
+
+						require_once JPATH_SITE . '/components/com_emundus/models/workflow.php';
+						$m_workflow = new EmundusModelWorkflow();
+
+						foreach($step_ids as $step_id) {
+							$step_data = $m_workflow->getStepData($step_id);
+
+							if (!empty($step_data->form_id))
+							{
+								$query = $this->db->createQuery();
+								$query->clear()
+									->select('group_id')
+									->from($this->db->quoteName('#__fabrik_formgroup', 'ffg'))
+									->leftJoin($this->db->quoteName('#__fabrik_groups', 'fg') . ' ON ffg.group_id = fg.id')
+									->where('form_id = ' . $step_data->form_id);
+
+								$this->db->setQuery($query);
+								$groups = $this->db->loadColumn();
+
+								if (!empty($groups))
+								{
+									$groups = implode(',', $groups);
+									$eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
+									if (is_array($eval_elt_list) && count($eval_elt_list) > 0)
+									{
+										foreach ($eval_elt_list as $eel)
+										{
+											if (!empty($eel->element_id))
+											{
+												$elements_id[] = $eel->element_id;
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
 		return $elements_id;
+	}
+
+	public function getEvaluationStepsElementsName($show_in_list_summary = 1, $hidden = 0, $codes = array()) {
+		$elements = [];
+
+		if (!empty($codes)) {
+			$h_list  = new EmundusHelperList;
+			$codes = array_unique($codes);
+			$query = $this->db->getQuery(true);
+
+			if (!class_exists('EmundusModelWorkflow')) {
+				require_once(JPATH_SITE . '/components/com_emundus/models/workflow.php');
+			}
+			$m_workflow = new EmundusModelWorkflow();
+
+			foreach($codes as $code) {
+				$query->clear()
+					->select('id')
+					->from('#__emundus_setup_programmes')
+					->where('code = ' . $this->db->quote($code));
+
+				$this->db->setQuery($query);
+				$programme_id = $this->db->loadResult();
+
+				if (!empty($programme_id)) {
+					$steps = $m_workflow->getEvaluatorStepsByProgram($programme_id);
+
+					foreach($steps as $step) {
+						if (EmundusHelperAccess::asAccessAction($step->action_id, 'r', Factory::getApplication()->getIdentity()->id)) {
+							$query->clear()
+								->select('group_id')
+								->from('#__fabrik_formgroup')
+								->where('form_id = ' . $step->form_id);
+
+							$this->db->setQuery($query);
+							$group_ids = $this->db->loadColumn();
+
+							if (!empty($group_ids)) {
+								$group_elements = $this->getElementsByGroups(implode(',', $group_ids), $show_in_list_summary, $hidden);
+
+								foreach ($group_elements as $group_element)
+								{
+									if (!empty($group_element->element_id))
+									{
+										$step_element = $h_list->getElementsDetailsByID($group_element->element_id)[0];
+										$step_element->table_label = Text::_($step_element->table_label);
+										$step_element->label =  Text::_($step->label);
+										$step_element->form_id = $step->form_id;
+										$step_element->step_id = $step->id;
+										$step_element->step_label =  Text::_($step->label);
+										$elements[] = $step_element;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return $elements;
 	}
 
 	/**
@@ -521,7 +631,7 @@ class EmundusModelEvaluation extends JModelList
 	 */
 	public function getEvaluationElementsName($show_in_list_summary = 1, $hidden = 0, $code = array(), $all = null)
 	{
-		$session = JFactory::getSession();
+		$session = Factory::getApplication()->getSession();
 		$h_list  = new EmundusHelperList;
 
 		$elements = array();
@@ -558,7 +668,7 @@ class EmundusModelEvaluation extends JModelList
 					{
 						foreach ($eval_elt_list as $eel)
 						{
-							if (isset($eel->element_id) && !empty($eel->element_id))
+							if (!empty($eel->element_id))
 							{
 								$elements[] = $h_list->getElementsDetailsByID($eel->element_id)[0];
 							}
@@ -731,7 +841,6 @@ class EmundusModelEvaluation extends JModelList
 		$can_be_ordering[] = 'jecc.id';
 		$can_be_ordering[] = 'jecc.fnum';
 		$can_be_ordering[] = 'jecc.status';
-		$can_be_ordering[] = 'jos_emundus_evaluations.user';
 		$can_be_ordering[] = 'fnum';
 		$can_be_ordering[] = 'status';
 		$can_be_ordering[] = 'jecc.status';
@@ -1051,7 +1160,7 @@ class EmundusModelEvaluation extends JModelList
 	}
 
 
-	private function _buildWhere($already_joined_tables = array())
+	private function _buildWhere($already_joined_tables = array(), $step_id = 0)
 	{
 		$h_files = new EmundusHelperFiles();
 
@@ -1062,6 +1171,11 @@ class EmundusModelEvaluation extends JModelList
 				'code'       => $this->code,
 				'eval'       => true,
 			);
+
+			if (!empty($step_id))
+			{
+				$caller_params['step_id'] = $step_id;
+			}
 
 			return $h_files->_moduleBuildWhere($already_joined_tables, 'files', $caller_params);
 		}
@@ -1076,28 +1190,127 @@ class EmundusModelEvaluation extends JModelList
 
 	public function getUsers($current_fnum = null)
 	{
-		require_once(JPATH_SITE . DS . 'components/com_emundus/models/users.php');
+		$list = [];
 
-		$session = JFactory::getSession();
+		$session = $this->app->getSession();
+		$applied_filters = $session->get('em-applied-filters', []);
 
-		$eMConfig                      = JComponentHelper::getParams('com_emundus');
-		$evaluators_can_see_other_eval = $eMConfig->get('evaluators_can_see_other_eval', '0');
-		$current_user                  = JFactory::getUser();
+		$step_ids = [];
+		foreach ($applied_filters as $filter) {
+			if ($filter['uid'] == 'workflow_steps') {
+				if (!empty($filter['value']) && !in_array('all', $filter['value'])) {
+					$step_ids = !is_array($filter['value']) ? [$filter['value']] : $filter['value'];
+				}
+			}
+		}
 
-		$query = 'select jecc.fnum, ss.step, ss.value as status, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name, ss.class as status_class, sp.code ';
+		if (empty($step_ids)) {
+			// get all steps user has access to
+			if (!class_exists('EmundusFiltersFiles')) {
+				require_once JPATH_SITE . '/components/com_emundus/classes/filters/EmundusFiltersFiles.php';
+			}
+			$c_filter_files = new EmundusFiltersFiles([], true);
+			$user_programs = $c_filter_files->getUserProgrammes();
+			$user_groups = $c_filter_files->getUserGroups();
 
+			if (!empty($user_programs)) {
+				if (!class_exists('EmundusModelWorkflow')) {
+					require_once JPATH_SITE . '/components/com_emundus/models/workflow.php';
+				}
+				$m_workflow = new EmundusModelWorkflow();
+				$workflows = $m_workflow->getWorkflows([], 0, 0, $user_programs);
+				foreach($workflows as $workflow) {
+					$workflow_data = $m_workflow->getWorkflow($workflow->id);
+
+					if (!empty($workflow_data['steps'])) {
+						foreach($workflow_data['steps'] as $step) {
+							$action_id = $m_workflow->getStepAssocActionId($step->id);
+							if ($m_workflow->isEvaluationStep($step->type) && EmundusHelperAccess::asAccessAction($action_id, 'r', $this->app->getIdentity()->id)) {
+								$step_ids[] = $step->id;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		$this->_applicants = [];
+		if (!empty($step_ids))  {
+			foreach ($step_ids as $step_id) {
+				$list = array_merge($list, $this->getEvaluationsList($step_id, count($step_ids)));
+			}
+			$grouped_list = [];
+			foreach($list as $item) {
+				if (!isset($grouped_list[$item['fnum']])) {
+					$grouped_list[$item['fnum']] = [];
+				}
+				$grouped_list[$item['fnum']][] = $item;
+			}
+
+			$list = [];
+			foreach($grouped_list as $fnum => $items) {
+				foreach ($items as $item) {
+					$list[] = $item;
+				}
+			}
+
+			$session = $this->app->getSession();
+			$limit = $session->get('limit', 0);
+			$limitstart = $session->get('limitstart', 0);
+			$list = array_slice($list, $limitstart, $limit);
+		} else {
+			$list = $this->getEvaluationsList();
+		}
+
+		return $list;
+	}
+
+	function getEvaluationsList($step_id = 0, $nb_steps = 1, $user_id = null)
+	{
+		$evaluations_list = [];
+
+		$session                       = $this->app->getSession();
+		$evaluators_can_see_other_eval = false;
+
+		if (empty($user_id)) {
+			$user_id = $this->app->getIdentity()->id;
+		}
+
+		$query    = 'select jecc.fnum, ss.step, ss.value as status, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name, ss.class as status_class, sp.code';
 		$group_by = 'GROUP BY jecc.fnum ';
 
 		$already_joined_tables = [
-			'jecc'                    => 'jos_emundus_campaign_candidature',
-			'ss'                      => 'jos_emundus_setup_status',
-			'esc'                     => 'jos_emundus_setup_campaigns',
-			'sp'                      => 'jos_emundus_setup_programmes',
-			'u'                       => 'jos_users',
-			'eu'                      => 'jos_emundus_users',
-			'eta'                     => 'jos_emundus_tag_assoc',
-			'jos_emundus_evaluations' => 'jos_emundus_evaluations'
+			'jecc' => 'jos_emundus_campaign_candidature',
+			'ss'   => 'jos_emundus_setup_status',
+			'esc'  => 'jos_emundus_setup_campaigns',
+			'sp'   => 'jos_emundus_setup_programmes',
+			'u'    => 'jos_users',
+			'eu'   => 'jos_emundus_users',
+			'eta'  => 'jos_emundus_tag_assoc',
 		];
+
+		if (!empty($step_id))
+		{
+			$m_worfklow = new EmundusModelWorkflow();
+			$step_data  = $m_worfklow->getStepData($step_id);
+
+			if (empty($step_data->table)) {
+				throw new Exception(sprintf(Text::_('COM_EMUNDUS_BUILD_WHERE_STEP_CONFIGURATION_ERROR'), $step_data->label));
+			}
+
+			if (EmundusHelperAccess::asAccessAction($step_data->action_id, 'r', $user_id)) {
+				$evaluators_can_see_other_eval = true;
+			}
+
+			$already_joined_tables[$step_data->table] = $step_data->table;
+
+			$query .= ', ' . $step_data->table . '.id as evaluation_id,  CONCAT(eue.lastname," ",eue.firstname) AS evaluator ';
+			$query .= ', ' . $this->db->quote($step_data->label) . ' AS evaluations_step_label, ' . $step_data->id . ' AS evaluations_step_id ';
+			$group_by = 'GROUP BY IF(evaluation_id IS NULL, jecc.fnum, evaluation_id)';
+		} else {
+			$query .= ', 0 as evaluation_id, " " as evaluator ';
+			$query .= ', "" AS evaluations_step_label, 0 AS evaluations_step_id ';
+		}
 
 		$leftJoin = '';
 		if (!empty($this->_elements))
@@ -1113,7 +1326,13 @@ class EmundusModelEvaluation extends JModelList
 				{
 					if ($h_files->isTableLinkedToCampaignCandidature($table_to_join))
 					{
-						$leftJoin                .= 'LEFT JOIN ' . $table_to_join . ' ON ' . $table_to_join . '.fnum = jecc.fnum ';
+						$leftJoin .= ' LEFT JOIN ' . $table_to_join . ' ON ' . $table_to_join . '.fnum = jecc.fnum ';
+
+						if (!empty($step_id) && str_starts_with($table_to_join, 'jos_emundus_evaluations_'))
+						{
+							$leftJoin .= ' AND ' . $table_to_join . '.step_id = ' . $step_id;
+						}
+
 						$already_joined_tables[] = $table_to_join;
 					}
 					else
@@ -1157,9 +1376,6 @@ class EmundusModelEvaluation extends JModelList
 			}
 		}
 
-		$query    .= ', jos_emundus_evaluations.id AS evaluation_id, CONCAT(eue.lastname," ",eue.firstname) AS evaluator';
-		$group_by .= ', evaluation_id';
-
 		if (!empty($this->_elements_default))
 		{
 			$query .= ', ' . implode(',', $this->_elements_default);
@@ -1171,24 +1387,43 @@ class EmundusModelEvaluation extends JModelList
 					LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
 					LEFT JOIN #__users as u on u.id = jecc.applicant_id
                     LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum = jecc.fnum ';
-		$q     = $this->_buildWhere($already_joined_tables);
 
-		if (EmundusHelperAccess::isCoordinator($current_user->id)
-			|| (EmundusHelperAccess::asEvaluatorAccessLevel($current_user->id) && $evaluators_can_see_other_eval == 1)
-			|| EmundusHelperAccess::asAccessAction(5, 'r', $current_user->id))
+		if (!empty($step_id))
 		{
-			$query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = jecc.fnum ';
+			$query .= ' LEFT JOIN ' . $step_data->table . ' ON ' . $step_data->table . '.fnum = jecc.fnum AND ' . $step_data->table . '.step_id = ' . $step_id . ' ';
+
+			if (!$evaluators_can_see_other_eval) {
+				$query .= ' AND ' . $step_data->table . '.evaluator = ' . $user_id . ' ';
+			}
+
+			$query .= ' LEFT JOIN #__emundus_users as eue on eue.user_id = ' . $step_data->table . '.evaluator ';
+
+			$already_joined_tables[$step_data->table] = $step_data->table;
 		}
-		else
+
+		if (!empty($this->_elements_default))
 		{
-			$query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = jecc.fnum AND (jos_emundus_evaluations.user=' . $current_user->id . ' OR jos_emundus_evaluations.user IS NULL)';
+			foreach($this->_elements_default as $element) {
+				if (strpos($element, 'jos_emundus_evaluations_') !== false) {
+					if (preg_match('/jos_emundus_evaluations_([0-9]+)\.id/', $element, $matches)) {
+						$evaluation_id = $matches[1];
+						$evaluation_table = 'jos_emundus_evaluations_' . $evaluation_id;
+
+						if (!in_array($evaluation_table, $already_joined_tables)) {
+							$query .= ' LEFT JOIN ' . $evaluation_table . ' ON ' . $evaluation_table . '.fnum = jecc.fnum ';
+							$already_joined_tables[] = $evaluation_table;
+						}
+					}
+				}
+			}
 		}
+
+		$q = $this->_buildWhere($already_joined_tables, $step_id);
 
 		if (!empty($leftJoin))
 		{
 			$query .= $leftJoin;
 		}
-		$query .= ' LEFT JOIN #__emundus_users as eue on eue.user_id = jos_emundus_evaluations.user ';
 		$query .= $q['join'];
 
 		if (empty($current_fnum))
@@ -1206,33 +1441,39 @@ class EmundusModelEvaluation extends JModelList
 		$query .= ' ' . $group_by;
 
 		$query .= $this->_buildContentOrderBy();
-
-		$this->db->setQuery($query);
 		try
 		{
+			$this->db->setQuery($query);
 			$res               = $this->db->loadAssocList();
-			$this->_applicants = $res;
-
+			$this->_applicants = array_merge($this->_applicants, $res);
 			if (empty($current_fnum))
 			{
-				$limit = $session->get('limit');
+				/**
+				 * when step_ids are provided, we are doing multiple queries to get evaluations for each step, so we can not
+				 * limit the results on each query, we will limit the results after merging all the results
+				 * TODO: find a way to limit the results on each query
+				 */
+				if (empty($step_id)) {
+					$limit = $session->get('limit');
 
-				$limitStart = $session->get('limitstart');
-				if ($limit > 0)
-				{
-					$query .= " limit $limitStart, $limit ";
+					$limitStart = $session->get('limitstart');
+					if ($limit > 0)
+					{
+						$query .= " limit $limitStart, $limit ";
+					}
 				}
 			}
 
 			$this->db->setQuery($query);
 
-			return $this->db->loadAssocList();
+			$evaluations_list = $this->db->loadAssocList();
 		}
 		catch (Exception $e)
 		{
-			echo $query . ' ' . $e->getMessage();
-			Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . str_replace('#_', 'jos', $query), Log::ERROR, 'com_emundus');
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . str_replace('#_', 'jos', $query), Log::ERROR, 'com_emundus');
 		}
+
+		return $evaluations_list;
 	}
 
 	// get elements by groups
@@ -1439,23 +1680,53 @@ class EmundusModelEvaluation extends JModelList
 	}
 
 	// get string of fabrik group ID use for evaluation form
-	public function getGroupsEvalByProgramme($code)
+	public function getGroupsEvalByProgramme($code, $column = 'code', $user_id = 0)
 	{
-		$query = 'select fabrik_group_id from #__emundus_setup_programmes where code like ' . $this->db->Quote($code);
-		try
-		{
-			if (!empty($code))
-			{
-				$this->db->setQuery($query);
+		$group_ids = [];
 
-				return $this->db->loadResult();
+		if (!empty($code)) {
+			if (empty($user_id)) {
+				$user_id = $this->app->getIdentity()->id;
 			}
-			else return null;
+
+			$query = $this->db->createQuery();
+			$query->select('id')
+				->from('#__emundus_setup_programmes')
+				->where($this->db->quoteName($column) . ' = ' . $this->db->quote($code));
+
+			$this->db->setQuery($query);
+			$program_id = $this->db->loadResult();
+
+			require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+			$m_workflow = new EmundusModelWorkflow();
+			$m_workflow->getEvaluatorStepsByProgram($program_id);
+			$eval_steps = $m_workflow->getEvaluatorStepsByProgram($program_id);
+
+			if (!empty($eval_steps))
+			{
+				$form_ids = array_map(function ($step) use ($user_id, $m_workflow) {
+					if ($m_workflow->isEvaluationStep($step->type) && (EmundusHelperAccess::asAccessAction($step->action_id, 'r', $user_id) || EmundusHelperAccess::asAccessAction($step->action_id, 'c', $user_id))) {
+						return $step->form_id;
+					}
+
+					return null;
+				}, $eval_steps);
+
+				if (!empty($form_ids)) {
+					$query->clear()
+						->select('fg.id')
+						->from('#__fabrik_groups AS fg')
+						->leftJoin('#__fabrik_formgroup AS ffg ON fg.id = ffg.group_id')
+						->where('ffg.form_id IN (' . implode(',', $form_ids) . ')')
+						->andWhere('fg.published = 1');
+
+					$this->db->setQuery($query);
+					$group_ids = $this->db->loadColumn();
+				}
+			}
 		}
-		catch (Exception $e)
-		{
-			throw $e;
-		}
+
+		return implode(',', $group_ids);
 	}
 
 
@@ -2287,7 +2558,7 @@ class EmundusModelEvaluation extends JModelList
 				->leftJoin($this->db->quoteName('#__emundus_setup_letters_repeat_training', 'jeslrt') . ' ON ' . $this->db->quoteName('jesl.id') . ' = ' . $this->db->quoteName('jeslrt.parent_id'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_letters_repeat_campaign', 'jeslrc') . ' ON ' . $this->db->quoteName('jesl.id') . ' = ' . $this->db->quoteName('jeslrc.parent_id'))
 				->where($this->db->quoteName('jeslrs.status') . ' IN (' . implode(',', $status) . ')')
-				->andWhere($this->db->quoteName('jeslrt.training') . ' IN (' . implode(',', $this->db->quote($programs)) . ') OR ' . $this->db->quoteName('jeslrc.campaign') . ' IN (' . implode(',', $this->db->quote($campaigns)) . ')');
+				->andWhere($this->db->quoteName('jeslrt.training') . ' IN (' . implode(',', $this->db->quote($programs)) . ') OR ' . $this->db->quoteName('jeslrc.campaign') . ' IN (' . implode(',', $this->db->quote($campaigns)) . ') OR jesl.for_all = 1');
 
 			$this->db->setQuery($query);
 
@@ -2322,7 +2593,7 @@ class EmundusModelEvaluation extends JModelList
 					->leftJoin($this->db->quoteName('#__emundus_setup_letters_repeat_training', 'jeslrt') . ' ON ' . $this->db->quoteName('jesl.id') . ' = ' . $this->db->quoteName('jeslrt.parent_id'))
 					->leftJoin($this->db->quoteName('#__emundus_setup_letters_repeat_campaign', 'jeslrc') . ' ON ' . $this->db->quoteName('jesl.id') . ' = ' . $this->db->quoteName('jeslrc.parent_id'))
 					->where($this->db->quoteName('jeslrs.status') . ' = ' . $fnum_infos['status'])
-					->andWhere($this->db->quoteName('jeslrt.training') . ' = ' . $this->db->quote($fnum_infos['training']) . ' OR ' . $this->db->quoteName('jeslrc.campaign') . ' = ' . $this->db->quote($fnum_infos['id']))
+					->andWhere($this->db->quoteName('jeslrt.training') . ' = ' . $this->db->quote($fnum_infos['training']) . ' OR ' . $this->db->quoteName('jeslrc.campaign') . ' = ' . $this->db->quote($fnum_infos['id']) .  ' OR jesl.for_all = 1')
 					->andWhere($this->db->quoteName('jesl.attachment_id') . ' IN (' . implode(',', $templates) . ')')
 					->group($this->db->quoteName('jesl.id'))
 					->order('id ASC');
