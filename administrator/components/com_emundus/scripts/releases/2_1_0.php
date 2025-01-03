@@ -70,6 +70,8 @@ class Release2_1_0Installer extends ReleaseInstaller
 			$this->db->updateObject('#__fabrik_elements', $element, 'id');
 		}
 
+		EmundusHelperUpdate::installExtension('plg_fabrik_validationrule_issiret','issiret',null,'plugin',1,'fabrik_validationrule');
+
 		return $result;
 	}
 }
