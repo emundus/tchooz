@@ -878,19 +878,14 @@ const fr = hooks.defineLocale("fr", {
   dayOfMonthOrdinalParse: /\d{1,2}(er|)/,
   ordinal: function(number, period) {
     switch (period) {
-      // TODO: Return 'e' when day of month > 1. Move this case inside
-      // block for masculine words below.
-      // See https://github.com/moment/moment/issues/3375
       case "D":
         return number + (number === 1 ? "er" : "");
-      // Words with masculine grammatical gender: mois, trimestre, jour
       default:
       case "M":
       case "Q":
       case "DDD":
       case "d":
         return number + (number === 1 ? "er" : "e");
-      // Words with feminine grammatical gender: semaine
       case "w":
       case "W":
         return number + (number === 1 ? "re" : "e");
@@ -1272,6 +1267,7 @@ const formBuilderSections = [
     ]
   }
 ];
+const FormBuilderElements_vue_vue_type_style_index_0_lang = "";
 const _sfc_main$t = {
   components: {
     draggable: VueDraggableNext
@@ -1528,20 +1524,672 @@ function _sfc_render$t(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const FormBuilderElements = /* @__PURE__ */ _export_sfc(_sfc_main$t, [["render", _sfc_render$t]]);
-const field = [{ "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE", "name": "password", "type": "dropdown", "options": [{ "value": 0, "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_TEXT" }, { "value": 5, "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_LINK" }, { "value": 6, "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_NUMBER" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_ONBOARD_BUILDER_PLACEHOLDER", "name": "placeholder", "type": "text", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_ONBOARD_BUILDER_MAXLENGTH", "name": "maxlength", "type": "number", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_ONBOARD_BUILDER_INPUT_MASK_TITLE", "name": "text_input_mask", "type": "text", "helptext": "COM_EMUNDUS_ONBOARD_BUILDER_INPUT_MASK_HINT", "placeholder": "COM_EMUNDUS_ONBOARD_BUILDER_INPUT_MASK_PLACEHOLDER", "published": true, "sysadmin_only": false }];
-const textarea = [{ "label": "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_DISPLAY_LABEL", "name": "textarea_showlabel", "type": "dropdown", "options": [{ "value": 0, "label": "JNO" }, { "value": 1, "label": "JYES" }], "helptext": "", "placeholder": "", "published": false, "sysadmin_only": false }, { "label": "COM_EMUNDUS_ONBOARD_BUILDER_PLACEHOLDER", "name": "textarea_placeholder", "type": "text", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_WYSIWIG", "name": "use_wysiwyg", "type": "dropdown", "options": [{ "value": 0, "label": "JNO" }, { "value": 1, "label": "JYES" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_LIMIT", "name": "textarea-maxlength", "type": "number", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_SHOWMAX_LIMIT", "name": "textarea-showmax", "type": "dropdown", "options": [{ "value": 0, "label": "JNO" }, { "value": 1, "label": "JYES" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_LIMIT_TYPE", "name": "textarea_limit_type", "type": "dropdown", "options": [{ "value": "char", "label": "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_LIMIT_TYPE_CHARACTERS" }, { "value": "word", "label": "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_LIMIT_TYPE_WORDS" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }];
+const field = [
+  {
+    label: "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE",
+    name: "password",
+    type: "dropdown",
+    options: [
+      {
+        value: 0,
+        label: "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_TEXT"
+      },
+      {
+        value: 5,
+        label: "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_LINK"
+      },
+      {
+        value: 6,
+        label: "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_NUMBER"
+      }
+    ],
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: false
+  },
+  {
+    label: "COM_EMUNDUS_ONBOARD_BUILDER_PLACEHOLDER",
+    name: "placeholder",
+    type: "text",
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: false
+  },
+  {
+    label: "COM_EMUNDUS_ONBOARD_BUILDER_MAXLENGTH",
+    name: "maxlength",
+    type: "number",
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: false
+  },
+  {
+    label: "COM_EMUNDUS_ONBOARD_BUILDER_INPUT_MASK_TITLE",
+    name: "text_input_mask",
+    type: "text",
+    helptext: "COM_EMUNDUS_ONBOARD_BUILDER_INPUT_MASK_HINT",
+    placeholder: "COM_EMUNDUS_ONBOARD_BUILDER_INPUT_MASK_PLACEHOLDER",
+    published: true,
+    sysadmin_only: false
+  }
+];
+const textarea = [
+  {
+    label: "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_DISPLAY_LABEL",
+    name: "textarea_showlabel",
+    type: "dropdown",
+    options: [
+      {
+        value: 0,
+        label: "JNO"
+      },
+      {
+        value: 1,
+        label: "JYES"
+      }
+    ],
+    helptext: "",
+    placeholder: "",
+    published: false,
+    sysadmin_only: false
+  },
+  {
+    label: "COM_EMUNDUS_ONBOARD_BUILDER_PLACEHOLDER",
+    name: "textarea_placeholder",
+    type: "text",
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: false
+  },
+  {
+    label: "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_WYSIWIG",
+    name: "use_wysiwyg",
+    type: "dropdown",
+    options: [
+      {
+        value: 0,
+        label: "JNO"
+      },
+      {
+        value: 1,
+        label: "JYES"
+      }
+    ],
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: false
+  },
+  {
+    label: "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_LIMIT",
+    name: "textarea-maxlength",
+    type: "number",
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: false
+  },
+  {
+    label: "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_SHOWMAX_LIMIT",
+    name: "textarea-showmax",
+    type: "dropdown",
+    options: [
+      {
+        value: 0,
+        label: "JNO"
+      },
+      {
+        value: 1,
+        label: "JYES"
+      }
+    ],
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: false
+  },
+  {
+    label: "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_LIMIT_TYPE",
+    name: "textarea_limit_type",
+    type: "dropdown",
+    options: [
+      {
+        value: "char",
+        label: "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_LIMIT_TYPE_CHARACTERS"
+      },
+      {
+        value: "word",
+        label: "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_LIMIT_TYPE_WORDS"
+      }
+    ],
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: false
+  }
+];
 const dropdown = [];
-const checkbox = [{ "label": "COM_EMUNDUS_ONBOARD_BUILDER_CHECKBOX_OPTIONS_PER_ROW", "name": "ck_options_per_row", "type": "number", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": true }];
-const radiobutton = [{ "label": "COM_EMUNDUS_ONBOARD_BUILDER_RADIOBUTTON_OPTIONS_PER_ROW", "name": "options_per_row", "type": "number", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": true }];
-const birthday = [{ "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_ADVANCED", "name": "advanced_behavior", "type": "dropdown", "options": [{ "value": 0, "label": "JNO" }, { "value": 1, "label": "JYES" }], "helptext": "", "placeholder": "", "published": false, "sysadmin_only": false }, { "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_LIST_METHOD", "name": "birthday_yearopt", "type": "dropdown", "options": [{ "value": "number", "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_LIST_METHOD_YEARS_NUMBER" }, { "value": "since", "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_LIST_METHOD_SINCE_YEAR" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_LIST_METHOD_NUMBER", "name": "birthday_yearstart", "type": "number", "helptext": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_LIST_METHOD_NUMBER_TIP", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_YEARS_FUTURE_PAST", "name": "birthday_forward", "type": "number", "helptext": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_YEARS_FUTURE_PAST_TIP", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_FORMAT", "name": "list_date_format", "type": "dropdown", "options": [{ "value": "d.m.Y", "label": "21.12.2022" }, { "value": "m.d.Y", "label": "12.21.2022" }, { "value": "d/m/Y", "label": "21/12/2022" }, { "value": "d m", "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_FORMAT_D_M" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }];
-const yesno = [{ "label": "COM_EMUNDUS_ONBOARD_BUILDER_YESNO_DEFAULT_VALUE", "name": "yesno_default", "type": "dropdown", "options": [{ "value": 0, "label": "JNO" }, { "value": 1, "label": "JYES" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }];
-const calc = [{ "label": "COM_EMUNDUS_ONBOARD_BUILDER_CALC_VALUE", "name": "calc_calculation", "type": "textarea", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": true }];
-const databasejoin = [{ "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_DISPLAY_TYPE", "name": "database_join_display_type", "type": "dropdown", "options": [{ "value": "dropdown", "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_DISPLAY_TYPE_DROPDOWN" }, { "value": "radio", "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_DISPLAY_TYPE_RADIO" }, { "value": "auto-complete", "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_DISPLAY_TYPE_AUTOCOMPLETE" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_TABLE", "name": "join_db_name", "type": "databasejoin", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_VALUE", "name": "join_key_column", "type": "databasejoin_cascade", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": true }, { "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_LABEL", "name": "join_val_column", "type": "databasejoin_cascade", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": true }, { "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_LABEL_CONCAT", "name": "join_val_column_concat", "type": "textarea", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": true }, { "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_SHOW_PLEASE_SELECT", "name": "database_join_show_please_select", "type": "dropdown", "options": [{ "value": 0, "label": "JNO" }, { "value": 1, "label": "JYES" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_EXCLUDE", "name": "database_join_exclude", "type": "sqldropdown", "table": "{join_db_name}", "key": "{join_key_column}", "value": "{join_val_column}", "translate": false, "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false, "options": [], "multiple": true, "reload_on_change": "join_db_name" }, { "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_WHERE", "name": "database_join_where_sql", "type": "textarea", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": true }, { "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_WHERE_AJAX", "name": "databasejoin_where_ajax", "type": "dropdown", "options": [{ "value": 0, "label": "JNO" }, { "value": 1, "label": "JYES" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": true }];
-const jdate = [{ "label": "COM_EMUNDUS_ONBOARD_BUILDER_CALENDAR_DEFAULT_TODAY", "name": "jdate_defaulttotoday", "type": "dropdown", "options": [{ "value": 0, "label": "JNO" }, { "value": 1, "label": "JYES" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }];
-const emundus_geolocalisation = [{ "label": "COM_EMUNDUS_FORM_BUILDER_GEOLOC_DEFAULT_LNG", "name": "default_lng", "type": "text", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_GEOLOC_DEFAULT_LAT", "name": "default_lat", "type": "text", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_GEOLOC_DEFAULT_ZOOM", "name": "default_zoom", "type": "number", "minlength": 1, "maxlength": 20, "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_GEOLOC_GET_LOCATION", "name": "get_location", "type": "dropdown", "options": [{ "value": 0, "label": "JNO" }, { "value": 1, "label": "JYES" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }];
-const emundus_phonenumber = [{ "label": "COM_EMUNDUS_ONBOARD_BUILDER_PHONENUMBER_DEFAULT_COUNTRY", "name": "default_country", "type": "sqldropdown", "table": "data_country", "key": "iso2", "value": "label", "translate": true, "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false, "options": [] }];
-const panel = [{ "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE", "name": "type", "type": "dropdown", "options": [{ "value": 1, "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE_INFORMATION" }, { "value": 2, "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE_WARNING" }, { "value": 3, "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE_ERROR" }, { "value": 4, "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE_NONE" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_ACCORDION", "name": "accordion", "type": "dropdown", "options": [{ "value": 0, "label": "JNO" }, { "value": 1, "label": "JYES" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_ACCORDION_TITLE", "name": "title", "type": "text", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }];
-const currency = [{ "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES", "name": "all_currencies_options", "type": "repeatable", "published": true, "fields": [{ "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_ISO", "name": "iso3", "type": "dropdown", "options": [{ "value": "EUR", "label": "Euro (€ EUR)" }, { "value": "USD", "label": "United States dollar ($ USD)" }, { "value": "JPY", "label": "Japanese yen (¥ JPY)" }, { "value": "GBP", "label": "British pound (£ GBP)" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_MIN", "name": "minimal_value", "type": "number", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_MAX", "name": "maximal_value", "type": "number", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR", "name": "thousand_separator", "type": "dropdown", "options": [{ "value": " ", "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_BLANK_SPACE" }, { "value": ",", "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_COMMA" }, { "value": ".", "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_DOT" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_DECIMAL_SEPARATOR", "name": "decimal_separator", "type": "dropdown", "options": [{ "value": " ", "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_BLANK_SPACE" }, { "value": ",", "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_COMMA" }, { "value": ".", "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_DOT" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_DECIMAL_NUMBERS", "name": "decimal_numbers", "type": "number", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }] }];
+const checkbox = [
+  {
+    label: "COM_EMUNDUS_ONBOARD_BUILDER_CHECKBOX_OPTIONS_PER_ROW",
+    name: "ck_options_per_row",
+    type: "number",
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: true
+  }
+];
+const radiobutton = [
+  {
+    label: "COM_EMUNDUS_ONBOARD_BUILDER_RADIOBUTTON_OPTIONS_PER_ROW",
+    name: "options_per_row",
+    type: "number",
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: true
+  }
+];
+const birthday = [
+  {
+    label: "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_ADVANCED",
+    name: "advanced_behavior",
+    type: "dropdown",
+    options: [
+      {
+        value: 0,
+        label: "JNO"
+      },
+      {
+        value: 1,
+        label: "JYES"
+      }
+    ],
+    helptext: "",
+    placeholder: "",
+    published: false,
+    sysadmin_only: false
+  },
+  {
+    label: "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_LIST_METHOD",
+    name: "birthday_yearopt",
+    type: "dropdown",
+    options: [
+      {
+        value: "number",
+        label: "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_LIST_METHOD_YEARS_NUMBER"
+      },
+      {
+        value: "since",
+        label: "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_LIST_METHOD_SINCE_YEAR"
+      }
+    ],
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: false
+  },
+  {
+    label: "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_LIST_METHOD_NUMBER",
+    name: "birthday_yearstart",
+    type: "number",
+    helptext: "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_LIST_METHOD_NUMBER_TIP",
+    placeholder: "",
+    published: true,
+    sysadmin_only: false
+  },
+  {
+    label: "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_YEARS_FUTURE_PAST",
+    name: "birthday_forward",
+    type: "number",
+    helptext: "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_YEARS_FUTURE_PAST_TIP",
+    placeholder: "",
+    published: true,
+    sysadmin_only: false
+  },
+  {
+    label: "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_FORMAT",
+    name: "list_date_format",
+    type: "dropdown",
+    options: [
+      {
+        value: "d.m.Y",
+        label: "21.12.2022"
+      },
+      {
+        value: "m.d.Y",
+        label: "12.21.2022"
+      },
+      {
+        value: "d/m/Y",
+        label: "21/12/2022"
+      },
+      {
+        value: "d m",
+        label: "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_FORMAT_D_M"
+      }
+    ],
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: false
+  }
+];
+const yesno = [
+  {
+    label: "COM_EMUNDUS_ONBOARD_BUILDER_YESNO_DEFAULT_VALUE",
+    name: "yesno_default",
+    type: "dropdown",
+    options: [
+      {
+        value: 0,
+        label: "JNO"
+      },
+      {
+        value: 1,
+        label: "JYES"
+      }
+    ],
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: false
+  }
+];
+const calc = [
+  {
+    label: "COM_EMUNDUS_ONBOARD_BUILDER_CALC_VALUE",
+    name: "calc_calculation",
+    type: "textarea",
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: true
+  }
+];
+const databasejoin = [
+  {
+    label: "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_DISPLAY_TYPE",
+    name: "database_join_display_type",
+    type: "dropdown",
+    options: [
+      {
+        value: "dropdown",
+        label: "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_DISPLAY_TYPE_DROPDOWN"
+      },
+      {
+        value: "radio",
+        label: "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_DISPLAY_TYPE_RADIO"
+      },
+      {
+        value: "auto-complete",
+        label: "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_DISPLAY_TYPE_AUTOCOMPLETE"
+      }
+    ],
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: false
+  },
+  {
+    label: "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_TABLE",
+    name: "join_db_name",
+    type: "databasejoin",
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: false
+  },
+  {
+    label: "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_VALUE",
+    name: "join_key_column",
+    type: "databasejoin_cascade",
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: true
+  },
+  {
+    label: "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_LABEL",
+    name: "join_val_column",
+    type: "databasejoin_cascade",
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: true
+  },
+  {
+    label: "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_LABEL_CONCAT",
+    name: "join_val_column_concat",
+    type: "textarea",
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: true
+  },
+  {
+    label: "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_SHOW_PLEASE_SELECT",
+    name: "database_join_show_please_select",
+    type: "dropdown",
+    options: [
+      {
+        value: 0,
+        label: "JNO"
+      },
+      {
+        value: 1,
+        label: "JYES"
+      }
+    ],
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: false
+  },
+  {
+    label: "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_EXCLUDE",
+    name: "database_join_exclude",
+    type: "sqldropdown",
+    table: "{join_db_name}",
+    key: "{join_key_column}",
+    value: "{join_val_column}",
+    translate: false,
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: false,
+    options: [],
+    multiple: true,
+    reload_on_change: "join_db_name"
+  },
+  {
+    label: "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_WHERE",
+    name: "database_join_where_sql",
+    type: "textarea",
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: true
+  },
+  {
+    label: "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_WHERE_AJAX",
+    name: "databasejoin_where_ajax",
+    type: "dropdown",
+    options: [
+      {
+        value: 0,
+        label: "JNO"
+      },
+      {
+        value: 1,
+        label: "JYES"
+      }
+    ],
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: true
+  }
+];
+const jdate = [
+  {
+    label: "COM_EMUNDUS_ONBOARD_BUILDER_CALENDAR_DEFAULT_TODAY",
+    name: "jdate_defaulttotoday",
+    type: "dropdown",
+    options: [
+      {
+        value: 0,
+        label: "JNO"
+      },
+      {
+        value: 1,
+        label: "JYES"
+      }
+    ],
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: false
+  }
+];
+const emundus_geolocalisation = [
+  {
+    label: "COM_EMUNDUS_FORM_BUILDER_GEOLOC_DEFAULT_LNG",
+    name: "default_lng",
+    type: "text",
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: false
+  },
+  {
+    label: "COM_EMUNDUS_FORM_BUILDER_GEOLOC_DEFAULT_LAT",
+    name: "default_lat",
+    type: "text",
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: false
+  },
+  {
+    label: "COM_EMUNDUS_FORM_BUILDER_GEOLOC_DEFAULT_ZOOM",
+    name: "default_zoom",
+    type: "number",
+    minlength: 1,
+    maxlength: 20,
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: false
+  },
+  {
+    label: "COM_EMUNDUS_FORM_BUILDER_GEOLOC_GET_LOCATION",
+    name: "get_location",
+    type: "dropdown",
+    options: [
+      {
+        value: 0,
+        label: "JNO"
+      },
+      {
+        value: 1,
+        label: "JYES"
+      }
+    ],
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: false
+  }
+];
+const emundus_phonenumber = [
+  {
+    label: "COM_EMUNDUS_ONBOARD_BUILDER_PHONENUMBER_DEFAULT_COUNTRY",
+    name: "default_country",
+    type: "sqldropdown",
+    table: "data_country",
+    key: "iso2",
+    value: "label",
+    translate: true,
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: false,
+    options: []
+  }
+];
+const panel = [
+  {
+    label: "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE",
+    name: "type",
+    type: "dropdown",
+    options: [
+      {
+        value: 1,
+        label: "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE_INFORMATION"
+      },
+      {
+        value: 2,
+        label: "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE_WARNING"
+      },
+      {
+        value: 3,
+        label: "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE_ERROR"
+      },
+      {
+        value: 4,
+        label: "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE_NONE"
+      }
+    ],
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: false
+  },
+  {
+    label: "COM_EMUNDUS_FORM_BUILDER_PANEL_ACCORDION",
+    name: "accordion",
+    type: "dropdown",
+    options: [
+      {
+        value: 0,
+        label: "JNO"
+      },
+      {
+        value: 1,
+        label: "JYES"
+      }
+    ],
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: false
+  },
+  {
+    label: "COM_EMUNDUS_FORM_BUILDER_PANEL_ACCORDION_TITLE",
+    name: "title",
+    type: "text",
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: false
+  }
+];
+const currency = [
+  {
+    label: "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES",
+    name: "all_currencies_options",
+    type: "repeatable",
+    published: true,
+    fields: [
+      {
+        label: "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_ISO",
+        name: "iso3",
+        type: "dropdown",
+        options: [
+          {
+            value: "EUR",
+            label: "Euro (€ EUR)"
+          },
+          {
+            value: "USD",
+            label: "United States dollar ($ USD)"
+          },
+          {
+            value: "JPY",
+            label: "Japanese yen (¥ JPY)"
+          },
+          {
+            value: "GBP",
+            label: "British pound (£ GBP)"
+          }
+        ],
+        helptext: "",
+        placeholder: "",
+        published: true,
+        sysadmin_only: false
+      },
+      {
+        label: "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_MIN",
+        name: "minimal_value",
+        type: "number",
+        helptext: "",
+        placeholder: "",
+        published: true,
+        sysadmin_only: false
+      },
+      {
+        label: "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_MAX",
+        name: "maximal_value",
+        type: "number",
+        helptext: "",
+        placeholder: "",
+        published: true,
+        sysadmin_only: false
+      },
+      {
+        label: "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR",
+        name: "thousand_separator",
+        type: "dropdown",
+        options: [
+          {
+            value: " ",
+            label: "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_BLANK_SPACE"
+          },
+          {
+            value: ",",
+            label: "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_COMMA"
+          },
+          {
+            value: ".",
+            label: "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_DOT"
+          }
+        ],
+        helptext: "",
+        placeholder: "",
+        published: true,
+        sysadmin_only: false
+      },
+      {
+        label: "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_DECIMAL_SEPARATOR",
+        name: "decimal_separator",
+        type: "dropdown",
+        options: [
+          {
+            value: " ",
+            label: "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_BLANK_SPACE"
+          },
+          {
+            value: ",",
+            label: "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_COMMA"
+          },
+          {
+            value: ".",
+            label: "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_DOT"
+          }
+        ],
+        helptext: "",
+        placeholder: "",
+        published: true,
+        sysadmin_only: false
+      },
+      {
+        label: "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_DECIMAL_NUMBERS",
+        name: "decimal_numbers",
+        type: "number",
+        helptext: "",
+        placeholder: "",
+        published: true,
+        sysadmin_only: false
+      }
+    ]
+  }
+];
 const elementParams = {
   field,
   textarea,
@@ -1961,6 +2609,7 @@ function _sfc_render$s(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const FormBuilderElementParams = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["render", _sfc_render$s]]);
+const FormBuilderElementProperties_vue_vue_type_style_index_0_lang = "";
 const _sfc_main$r = {
   name: "FormBuilderElementProperties",
   components: {
@@ -2386,7 +3035,54 @@ function _sfc_render$r(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const FormBuilderElementProperties = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["render", _sfc_render$r]]);
-const parameters = [{ "label": "COM_EMUNDUS_ONBOARD_BUILDER_SECTIONS_OUTRO", "name": "outro", "type": "textarea", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_ONBOARD_BUILDER_SECTIONS_REPEAT", "name": "repeat_group_button", "type": "dropdown", "options": [{ "value": 0, "label": "JNO" }, { "value": 1, "label": "JYES" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_ONBOARD_BUILDER_SECTIONS_REPEAT_MIN", "name": "repeat_min", "type": "number", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_ONBOARD_BUILDER_SECTIONS_REPEAT_MAX", "name": "repeat_max", "type": "number", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }];
+const parameters = [
+  {
+    label: "COM_EMUNDUS_ONBOARD_BUILDER_SECTIONS_OUTRO",
+    name: "outro",
+    type: "textarea",
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: false
+  },
+  {
+    label: "COM_EMUNDUS_ONBOARD_BUILDER_SECTIONS_REPEAT",
+    name: "repeat_group_button",
+    type: "dropdown",
+    options: [
+      {
+        value: 0,
+        label: "JNO"
+      },
+      {
+        value: 1,
+        label: "JYES"
+      }
+    ],
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: false
+  },
+  {
+    label: "COM_EMUNDUS_ONBOARD_BUILDER_SECTIONS_REPEAT_MIN",
+    name: "repeat_min",
+    type: "number",
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: false
+  },
+  {
+    label: "COM_EMUNDUS_ONBOARD_BUILDER_SECTIONS_REPEAT_MAX",
+    name: "repeat_max",
+    type: "number",
+    helptext: "",
+    placeholder: "",
+    published: true,
+    sysadmin_only: false
+  }
+];
 const sectionParams = {
   parameters
 };
@@ -2477,6 +3173,7 @@ function _sfc_render$q(_ctx, _cache, $props, $setup, $data, $options) {
   ])) : createCommentVNode("", true);
 }
 const FormBuilderSectionParams = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["render", _sfc_render$q]]);
+const FormBuilderSectionProperties_vue_vue_type_style_index_0_lang = "";
 const _sfc_main$p = {
   name: "FormBuilderSectionProperties",
   components: { FormBuilderSectionParams },
@@ -2634,6 +3331,7 @@ function _sfc_render$p(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const FormBuilderSectionProperties = /* @__PURE__ */ _export_sfc(_sfc_main$p, [["render", _sfc_render$p]]);
+const FormBuilderElementOptions_vue_vue_type_style_index_0_lang = "";
 const _sfc_main$o = {
   props: {
     element: {
@@ -2959,6 +3657,7 @@ function _sfc_render$n(_ctx, _cache, $props, $setup, $data, $options) {
 }
 const FormBuilderElementWysiwig = /* @__PURE__ */ _export_sfc(_sfc_main$n, [["render", _sfc_render$n]]);
 const _imports_0 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPoAAACnBAMAAADK0lwnAAAAIVBMVEU/QWP70tPsGSCbh5n4qq3sGSDsGSD///+CiZ/6xsgFFEBjSht+AAAABnRSTlP778D15DBi/uc8AAAAeElEQVR4Xu3NQQ3AIAAEsCVTgAUSjCAGCzhBA0ElFu7JozXQ76T2TK2RenS32+12u91ut9vtdrvdbrfb7Xa73W632+12u91ut9vtdrvdbrfb7Xa73W632+12u91ut9vtdrvdbrfb7Xa73W632+12u91uj/0l1WuoXSQpdCmx7sXHAAAAAElFTkSuQmCC";
+const FormBuilderElementPhoneNumber_vue_vue_type_style_index_0_lang = "";
 const _sfc_main$m = {
   props: {
     element: {
@@ -3018,6 +3717,7 @@ function _sfc_render$m(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const FormBuilderElementPhoneNumber = /* @__PURE__ */ _export_sfc(_sfc_main$m, [["render", _sfc_render$m]]);
+const FormBuilderElementCurrency_vue_vue_type_style_index_0_lang = "";
 const _sfc_main$l = {
   props: {
     element: {
@@ -3082,6 +3782,7 @@ function _sfc_render$l(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const FormBuilderElementCurrency = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["render", _sfc_render$l]]);
+const FormBuilderElementGeolocation_vue_vue_type_style_index_0_lang = "";
 const _sfc_main$k = {
   props: {
     element: {
@@ -3115,7 +3816,8 @@ const _sfc_main$k = {
       this.mapContainer.scrollWheelZoom.disable();
       this.mapContainer.boxZoom.disable();
       this.mapContainer.keyboard.disable();
-      if (this.mapContainer.tap) this.mapContainer.tap.disable();
+      if (this.mapContainer.tap)
+        this.mapContainer.tap.disable();
     }
   },
   methods: {},
@@ -3143,6 +3845,7 @@ function _sfc_render$k(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const FormBuilderElementGeolocation = /* @__PURE__ */ _export_sfc(_sfc_main$k, [["render", _sfc_render$k]]);
+const FormBuilderPageSectionElement_vue_vue_type_style_index_0_lang = "";
 const _sfc_main$j = {
   components: {
     FormBuilderElementGeolocation,
@@ -3370,6 +4073,7 @@ function _sfc_render$j(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const FormBuilderPageSectionElement = /* @__PURE__ */ _export_sfc(_sfc_main$j, [["render", _sfc_render$j]]);
+const FormBuilderPageSection_vue_vue_type_style_index_0_lang = "";
 const _sfc_main$i = {
   components: {
     FormBuilderPageSectionElement,
@@ -3680,6 +4384,7 @@ function _sfc_render$i(_ctx, _cache, $props, $setup, $data, $options) {
   ], 8, _hoisted_1$i);
 }
 const FormBuilderPageSection = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["render", _sfc_render$i]]);
+const FormBuilderPage_vue_vue_type_style_index_0_lang = "";
 const _sfc_main$h = {
   components: {
     FormBuilderPageSection
@@ -3956,6 +4661,7 @@ function _sfc_render$h(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const FormBuilderPage = /* @__PURE__ */ _export_sfc(_sfc_main$h, [["render", _sfc_render$h]]);
+const FormBuilderPreviewForm_vue_vue_type_style_index_0_lang = "";
 const _sfc_main$g = {
   name: "FormBuilderPreviewForm",
   components: { Skeleton },
@@ -4029,6 +4735,7 @@ function _sfc_render$g(_ctx, _cache, $props, $setup, $data, $options) {
   ], 2);
 }
 const FormBuilderPreviewForm = /* @__PURE__ */ _export_sfc(_sfc_main$g, [["render", _sfc_render$g]]);
+const FormBuilderCreatePage_vue_vue_type_style_index_0_scoped_2c2ce8ff_lang = "";
 const _sfc_main$f = {
   name: "FormBuilderCreatePage.vue",
   components: {
@@ -4369,6 +5076,7 @@ function _sfc_render$f(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const FormBuilderCreatePage = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["render", _sfc_render$f], ["__scopeId", "data-v-2c2ce8ff"]]);
+const FormBuilderPages_vue_vue_type_style_index_0_lang = "";
 const _sfc_main$e = {
   name: "FormBuilderPages",
   components: {
@@ -4596,6 +5304,7 @@ function _sfc_render$e(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const FormBuilderPages = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["render", _sfc_render$e]]);
+const FormBuilderDocuments_vue_vue_type_style_index_0_lang = "";
 const _sfc_main$d = {
   name: "FormBuilderDocuments",
   props: {
@@ -4676,6 +5385,7 @@ function _sfc_render$d(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const FormBuilderDocuments = /* @__PURE__ */ _export_sfc(_sfc_main$d, [["render", _sfc_render$d]]);
+const FormBuilderDocumentListElement_vue_vue_type_style_index_0_lang = "";
 const _sfc_main$c = {
   name: "FormBuilderDocumentListElement",
   props: {
@@ -4834,6 +5544,7 @@ function _sfc_render$c(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const FormBuilderDocumentListElement = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["render", _sfc_render$c]]);
+const FormBuilderDocumentList_vue_vue_type_style_index_0_lang = "";
 const _sfc_main$b = {
   name: "FormBuilderDocumentList",
   components: {
@@ -5179,6 +5890,7 @@ const fileTypes = [
     value: "zip"
   }
 ];
+const FormBuilderCreateDocument_vue_vue_type_style_index_0_lang = "";
 const _sfc_main$a = {
   name: "FormBuilderCreateDocument",
   props: {
@@ -5890,6 +6602,7 @@ function _sfc_render$a(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const FormBuilderCreateDocument = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["render", _sfc_render$a]]);
+const FormBuilderDocumentFormats_vue_vue_type_style_index_0_lang = "";
 const _sfc_main$9 = {
   components: {
     draggable: VueDraggableNext
@@ -5998,6 +6711,7 @@ function _sfc_render$9(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const FormBuilderDocumentFormats = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["render", _sfc_render$9]]);
+const FormBuilderCreateModel_vue_vue_type_style_index_0_lang = "";
 const _sfc_main$8 = {
   props: {
     page: {
@@ -6161,6 +6875,7 @@ function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const FormBuilderCreateModel = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$8]]);
+const FormBuilderRules_vue_vue_type_style_index_0_lang = "";
 const _sfc_main$7 = {
   components: { Popover },
   props: {
@@ -6636,6 +7351,7 @@ const rulesData = [
     published: true
   }
 ];
+const FormBuilderRulesList_vue_vue_type_style_index_0_lang = "";
 const _sfc_main$6 = {
   components: {
     draggable: VueDraggableNext
@@ -7714,6 +8430,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const FormBuilderRulesAdd = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1]]);
+const Formbuilder_vue_vue_type_style_index_0_lang = "";
 const _sfc_main = {
   name: "FormBuilder",
   components: {

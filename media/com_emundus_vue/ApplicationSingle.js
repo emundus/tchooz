@@ -22,6 +22,7 @@ const evaluationService = {
     }
   }
 };
+const Evaluations_vue_vue_type_style_index_0_scoped_f9486817_lang = "";
 const _sfc_main$2 = {
   name: "Evaluations",
   props: {
@@ -239,6 +240,7 @@ const filesService = {
     }
   }
 };
+const EvaluationList_vue_vue_type_style_index_0_scoped_008c5608_lang = "";
 const _sfc_main$1 = {
   name: "EvaluationList",
   props: {
@@ -319,6 +321,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
   ], 8, _hoisted_1$1);
 }
 const EvaluationList = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-008c5608"]]);
+const ApplicationSingle_vue_vue_type_style_index_0_lang = "";
 const _sfc_main = {
   name: "ApplicationSingle",
   components: { EvaluationList, Comments, Attachments, Modal, Evaluations },

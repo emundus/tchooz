@@ -26,7 +26,7 @@
     <Tabs :tabs="tabs" :classes="'tw-flex tw-items-center tw-gap-2 tw-ml-7'"></Tabs>
 
     <div id="tabs-wrapper" class="tw-w-full tw-rounded-coordinator tw-p-6 tw-bg-white tw-border tw-border-neutral-300 tw-relative">
-      <div v-if="activeTab.id == 'steps'" id="workflow-steps-wrapper" class="tw-flex tw-flex-col">
+      <div v-if="activeTab.id === 'steps'" id="workflow-steps-wrapper" class="tw-flex tw-flex-col">
         <a class="tw-btn-primary tw-h-fit tw-w-fit tw-mb-4" type="button" @click="addStep"> {{ translate('COM_EMUNDUS_WORKFLOW_ADD_STEP') }} </a>
 
         <div id="workflow-steps">
@@ -132,7 +132,7 @@
 
                 <div v-if="!isApplicantStep(step)" class="step-associated-groups">
                   <label>{{ translate('COM_EMUNDUS_WORKFLOW_STEP_GROUPS') }}</label>
-                  <ul class="tw-my-2">
+                  <ul class="tw-my-2 tw-overflow-auto" style="max-height: 100px;">
                     <li v-for="group_id in getGroupsFromStepType(step.type)" :key="group_id"> {{ getGroupLabel(group_id) }} </li>
                   </ul>
 

@@ -1,6 +1,8 @@
 import { _ as _export_sfc, S as Swal$1, i as axios, e as resolveComponent, o as openBlock, c as createElementBlock, a as createBaseVNode, n as normalizeClass, t as toDisplayString, d as createCommentVNode, w as withDirectives, x as vModelSelect, b as Fragment, r as renderList, g as createVNode, k as withCtx, y as createTextVNode, z as useGlobalStore, L as hooks, j as createBlock, K as Transition, O as vModelText, R as withKeys, u as withModifiers } from "./app_emundus.js";
 import { v as vueDropzone } from "./vue-dropzone.js";
 import { q as qs } from "./index.js";
+const messenger = "";
+const AttachDocument_vue_vue_type_style_index_0_scoped_620e554d_lang = "";
 const getTemplate = () => `
 <div class="dz-preview dz-file-preview">
   <div class="dz-image">
@@ -91,7 +93,7 @@ const _sfc_main$1 = {
           thumbnailElement.alt = file.name;
           thumbnailElement.style.backgroundImage = 'url("' + dataUrl + '")';
         }
-        return setTimeout(/* @__PURE__ */ function(_this) {
+        return setTimeout(function(_this) {
           return function() {
             return file.previewElement.classList.add("dz-image-preview");
           };
@@ -285,6 +287,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const AttachDocument = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-620e554d"]]);
+const MessagesCoordinator_vue_vue_type_style_index_0_lang = "";
 const _sfc_main = {
   name: "MessagesCoordinator",
   props: {},
