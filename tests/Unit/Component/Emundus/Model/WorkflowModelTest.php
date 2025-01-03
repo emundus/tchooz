@@ -95,7 +95,7 @@ class WorkflowModelTest extends UnitTestCase
 
 		$step = [
 			'id' => 0,
-			'entry_status' => [['id' => 0]],
+			'entry_status' => [['id' => 0, 'label' => 'Test Status']],
 			'type' => 1,
 			'profile_id' => '1000',
 			'label' => 'Test Step',
