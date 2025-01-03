@@ -1141,6 +1141,28 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 	 */
 	static function createFilterList(&$filters, $eid, $value, $condition = '=', $join = 'AND', $hidden = 0, $raw = 0)
 	{
+		if(!isset($filters['elementid'])) {
+			$filters['elementid']           = array();
+			$filters['value']               = array();
+			$filters['condition']           = array();
+			$filters['join']                = array();
+			$filters['no-filter-setup']     = array();
+			$filters['hidden']              = array();
+			$filters['key']                 = array();
+			$filters['key2']                = array();
+			$filters['search_type']         = array();
+			$filters['match']               = array();
+			$filters['eval']                = array();
+			$filters['required']            = array();
+			$filters['access']              = array();
+			$filters['grouped_to_previous'] = array();
+			$filters['raw']                 = array();
+			$filters['orig_condition']      = array();
+			$filters['sqlCond']             = array();
+			$filters['origvalue']           = array();
+			$filters['filter']              = array();
+		}
+
 		if (!in_array($eid, $filters['elementid'])) {
 			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
