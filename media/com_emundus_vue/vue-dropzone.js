@@ -1,4 +1,4 @@
-import { _ as _export_sfc, a1 as $3ed269f2f0fb224b$export$2e2bcd8739ae039, o as openBlock, c as createElementBlock, a2 as renderSlot, y as createTextVNode, d as createCommentVNode, n as normalizeClass } from "./app_emundus.js";
+import { _ as _export_sfc, a0 as $3ed269f2f0fb224b$export$2e2bcd8739ae039, o as openBlock, c as createElementBlock, a1 as renderSlot, y as createTextVNode, d as createCommentVNode, n as normalizeClass } from "./app_emundus.js";
 const awsEndpoint = {
   getSignedURL(file, config) {
     let payload = {
@@ -241,8 +241,7 @@ const _sfc_main = {
     });
     this.dropzone.on("error", (file, message, xhr) => {
       this.$emit("vdropzone-error", file, message, xhr);
-      if (this.isS3)
-        this.$emit("vdropzone-s3-upload-error");
+      if (this.isS3) this.$emit("vdropzone-s3-upload-error");
     });
     this.dropzone.on("errormultiple", (files, message, xhr) => {
       this.$emit("vdropzone-error-multiple", files, message, xhr);
@@ -365,8 +364,7 @@ const _sfc_main = {
         }
       }
       this.dropzone.emit("complete", file);
-      if (this.dropzone.options.maxFiles)
-        this.dropzone.options.maxFiles--;
+      if (this.dropzone.options.maxFiles) this.dropzone.options.maxFiles--;
       this.dropzone.files.push(file);
       this.$emit("vdropzone-file-added-manually", file);
     },

@@ -3988,6 +3988,12 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-mt-py-4 {
     margin-top: calc(var(--em-spacing-4) * 3.7);
 }
+.tw-line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
 .tw-block {
     display: block;
 }
@@ -4064,6 +4070,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-min-h-\[38px\] {
     min-height: 38px;
+}
+.tw-min-h-\[48px\] {
+    min-height: 48px;
 }
 .\!tw-w-\[350px\] {
     width: 350px !important;
@@ -4954,6 +4963,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-items-center {
     align-items: center;
 }
+.tw-items-baseline {
+    align-items: baseline;
+}
 .tw-justify-start {
     justify-content: flex-start;
 }
@@ -5016,9 +5028,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-overflow-auto {
     overflow: auto;
 }
-.tw-overflow-hidden {
-    overflow: hidden;
-}
 .tw-overflow-y-auto {
     overflow-y: auto;
 }
@@ -5030,14 +5039,14 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-.tw-text-ellipsis {
-    text-overflow: ellipsis;
-}
 .tw-whitespace-nowrap {
     white-space: nowrap;
 }
 .tw-whitespace-pre-wrap {
     white-space: pre-wrap;
+}
+.tw-break-all {
+    word-break: break-all;
 }
 .\!tw-rounded-full {
     border-radius: 9999px !important;

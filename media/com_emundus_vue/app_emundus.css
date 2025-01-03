@@ -145,7 +145,8 @@
 .view-emails.layout-add #g-container-main .g-container,
 .view-emails.no-layout #g-container-main .g-container,
 .view-form #g-container-main .g-container,
-.view-settings #g-container-main .g-container {
+.view-settings #g-container-main .g-container,
+.view-workflows #g-container-main .g-container {
   width: auto;
   position: relative;
 }
@@ -866,11 +867,11 @@ body ::-webkit-scrollbar-track {
 #add-document-section {
   justify-content: center;
 }
-.popover-container[data-v-935d1a05] {
+.popover-container[data-v-b145c732] {
   position: relative;
   display: inline-block;
 }
-.popover-content[data-v-935d1a05] {
+.popover-content[data-v-b145c732] {
   background-color: white;
   position: absolute;
   min-height: 40px;
@@ -880,16 +881,16 @@ body ::-webkit-scrollbar-track {
 
   transition: opacity 0.2s ease-in-out;
 }
-.fade-enter-active[data-v-935d1a05],
-.fade-leave-active[data-v-935d1a05] {
+.fade-enter-active[data-v-b145c732],
+.fade-leave-active[data-v-b145c732] {
   transition: opacity 0.5s ease;
 }
-.fade-enter-from[data-v-935d1a05],
-.fade-leave-to[data-v-935d1a05] {
+.fade-enter-from[data-v-b145c732],
+.fade-leave-to[data-v-b145c732] {
   opacity: 0;
 }
 
-.workflow-step[data-v-cebcfbe1] {
+.workflow-step[data-v-b1fe5886] {
   min-width: 350px;
 }
 
@@ -1014,6 +1015,1497 @@ table tbody tr td[data-v-09715b43] {
   padding: 0;
   width: 0;
   height: 0;
+}
+.popover-container[data-v-8d665896]{position:relative;display:inline-block}.popover-content[data-v-8d665896]{background-color:transparent;position:absolute;min-height:40px;min-width:100px;opacity:1;z-index:9999;transition:opacity .2s ease-in-out}.popover-container svg[data-v-8d665896]{width:8px!important}.fade-enter-active[data-v-8d665896],.fade-leave-active[data-v-8d665896]{transition:opacity .5s ease}.fade-enter-from[data-v-8d665896],.fade-leave-to[data-v-8d665896]{opacity:0}.modal___container[data-v-69166bc0]{padding:12px;max-height:90vh;background-color:#fff;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);box-shadow:0 0 9999px 9999px #0000006e;overflow-y:scroll;overflow-x:hidden;border-radius:8px}*{font-family:Inter,sans-serif}.editor-wrapper{border-radius:8px;border:solid 1px rgb(212,212,212)}.editor-wrapper .ProseMirror-focused{outline:unset!important}.editor-wrapper .editor-toolbar{padding:8px 16px;border-bottom:solid 1px rgb(212,212,212);border-radius:8px 8px 0 0;font-size:14px}.editor-wrapper .editor-toolbar select{cursor:pointer;height:35px;border-radius:4px;padding:4px 6px;border:solid 1px rgb(212,212,212);background:#fff}.editor-wrapper .editor-toolbar ul,.editor-wrapper .editor-toolbar ol{list-style-type:none;padding-left:0}.editor-wrapper .editor-toolbar .editor-toolbar--list{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0}.editor-wrapper .editor-toolbar .editor-toolbar--list li:not(.editor-image){display:flex;align-items:center;cursor:pointer;border-radius:8px;padding:8px;border:solid 1px transparent;min-height:16px}.editor-wrapper .editor-toolbar .editor-toolbar--list li:not(.editor-image) svg{min-width:16px!important}.editor-wrapper .editor-toolbar .editor-toolbar--list li:not(.editor-image):hover{background-color:#f5f5f5}.editor-wrapper .editor-toolbar .editor-toolbar--list li.editor-image .popover-container div:first-child{display:flex;align-items:center;cursor:pointer;padding:8px;border-radius:8px;border:solid 1px transparent;min-height:16px}.editor-wrapper .editor-toolbar .editor-toolbar--list li.editor-image .popover-container div:first-child svg{min-width:16px!important}.editor-wrapper .editor-toolbar .editor-toolbar--list li.editor-image .popover-container div:first-child:hover{background-color:#f5f5f5}.editor-wrapper .editor-toolbar .editor-toolbar--list li.editor-image .popover-container span svg{width:8px!important;min-width:unset!important}.editor-wrapper .editor-toolbar .editor-toolbar--list li.editor-separator{border-right:unset;border-top:unset;border-bottom:unset;border-radius:unset;border-left:solid 1px rgb(212,212,212);width:0;height:30px;padding:0}.editor-wrapper .editor-toolbar .editor-toolbar--list .is-active{background-color:#f5f5f5;border:1px solid rgb(115,115,115)}.editor-wrapper .editor-toolbar .bubble-menu{background-color:#fff;border:1px solid rgb(115,115,115);border-radius:8px;box-shadow:0 4px 6px -1px #0000001a,0 2px 4px -2px #0000001a;display:flex;padding:.2rem}.editor-wrapper .editor-toolbar .bubble-menu button{background-color:unset;padding:4px 6px;border-radius:8px}.editor-wrapper .editor-toolbar .bubble-menu button:hover{background-color:#f5f5f5}.editor-wrapper .editor-toolbar .bubble-menu button.is-active{background-color:#f5f5f5;border:1px solid rgb(115,115,115)}.editor-wrapper .editor-toolbar .editor-color-picker{position:relative}.editor-wrapper .editor-toolbar .editor-color-picker .editor-color-picker--popover{padding:12px;display:grid;grid-template-columns:repeat(4,1fr);background-color:#fff;border-radius:8px;border:solid 1px rgb(212,212,212);top:28px;width:-moz-max-content;width:max-content;z-index:10}.editor-wrapper .editor-toolbar .editor-color-picker .editor-color-picker--popover span{width:24px;height:24px;border-radius:9999px}.editor-wrapper .editor-toolbar .editor-image .editor-image--popover{padding:6px;background-color:#fff;border-radius:8px;border:solid 1px rgb(212,212,212);top:28px;width:100%;z-index:10;min-width:150px}.editor-wrapper .editor-toolbar .editor-image .editor-image--popover li.image-item{width:auto}.editor-wrapper .editor-toolbar .editor-image .editor-image--popover li.image-item span{margin-left:8px;white-space:nowrap}.editor-wrapper .editor-content{overflow:scroll;padding:8px}.editor-wrapper .editor-content .tiptap{height:100%}.editor-wrapper .editor-content .tiptap p.is-editor-empty:first-child:before{color:#a3a3a3;content:attr(data-placeholder);float:left;height:0;pointer-events:none}.editor-wrapper .editor-content .tiptap h1{font-size:32px}.editor-wrapper .editor-content .tiptap h2{font-size:24px}.editor-wrapper .editor-content .tiptap h3{font-size:20px}.editor-wrapper .editor-content .tiptap :first-child{margin-top:0}.editor-wrapper .editor-content .tiptap a{color:#3b82f6;text-decoration:underline}.editor-wrapper .editor-content .tiptap ul,.editor-wrapper .editor-content .tiptap ol{padding:0 1rem;margin:1.25rem 1rem 1.25rem .4rem}.editor-wrapper .editor-content .tiptap ul li p,.editor-wrapper .editor-content .tiptap ol li p{margin-top:.25em;margin-bottom:.25em}.editor-wrapper .editor-content .tiptap ul{list-style-type:disc}.editor-wrapper .editor-content .tiptap ol{list-style-type:decimal}.editor-wrapper .editor-content .tiptap table{border-collapse:collapse;margin:0;overflow:hidden;table-layout:fixed;width:100%}.editor-wrapper .editor-content .tiptap table td,.editor-wrapper .editor-content .tiptap table th{border:1px solid rgb(163,163,163);box-sizing:border-box;min-width:1em;padding:6px 8px;position:relative;vertical-align:top}.editor-wrapper .editor-content .tiptap table td>*,.editor-wrapper .editor-content .tiptap table th>*{margin-bottom:0}.editor-wrapper .editor-content .tiptap table th{background-color:#f5f5f5;font-weight:700;text-align:left}.editor-wrapper .editor-content .tiptap table .selectedCell:after{background-color:#e5e5e5;content:"";left:0;right:0;top:0;bottom:0;pointer-events:none;position:absolute;z-index:2}.editor-wrapper .editor-content .tiptap table .column-resize-handle{background-color:#bfdbfe;bottom:-2px;pointer-events:none;position:absolute;right:-2px;top:0;width:4px}.editor-wrapper .editor-content .tiptap .tableWrapper{margin:1.5rem 0;overflow-x:auto}.editor-wrapper .editor-content .tiptap.resize-cursor{cursor:col-resize}.editor-wrapper .editor-content .tiptap pre{background:#000;border-radius:.5rem;color:#fff;font-family:JetBrainsMono,monospace;margin:1.5rem 0;padding:.75rem 1rem}.editor-wrapper .editor-content .tiptap pre code{background:none;color:inherit;font-size:.8rem;padding:0}.editor-wrapper .insert-image .insert-image--modal-head,.editor-wrapper .insert-image .insert-table--modal-head,.editor-wrapper .insert-image .insert-video--modal-head,.editor-wrapper .insert-image .insert-link--modal-head,.editor-wrapper .insert-table .insert-image--modal-head,.editor-wrapper .insert-table .insert-table--modal-head,.editor-wrapper .insert-table .insert-video--modal-head,.editor-wrapper .insert-table .insert-link--modal-head,.editor-wrapper .insert-video .insert-image--modal-head,.editor-wrapper .insert-video .insert-table--modal-head,.editor-wrapper .insert-video .insert-video--modal-head,.editor-wrapper .insert-video .insert-link--modal-head,.editor-wrapper .insert-link .insert-image--modal-head,.editor-wrapper .insert-link .insert-table--modal-head,.editor-wrapper .insert-link .insert-video--modal-head,.editor-wrapper .insert-link .insert-link--modal-head{display:flex;flex-direction:column;padding:12px 8px}.editor-wrapper .insert-image .insert-image--modal-head .insert-image--modal-head-title,.editor-wrapper .insert-image .insert-image--modal-head .insert-table--modal-head-title,.editor-wrapper .insert-image .insert-image--modal-head .insert-video--modal-head-title,.editor-wrapper .insert-image .insert-image--modal-head .insert-link--modal-head-title,.editor-wrapper .insert-image .insert-table--modal-head .insert-image--modal-head-title,.editor-wrapper .insert-image .insert-table--modal-head .insert-table--modal-head-title,.editor-wrapper .insert-image .insert-table--modal-head .insert-video--modal-head-title,.editor-wrapper .insert-image .insert-table--modal-head .insert-link--modal-head-title,.editor-wrapper .insert-image .insert-video--modal-head .insert-image--modal-head-title,.editor-wrapper .insert-image .insert-video--modal-head .insert-table--modal-head-title,.editor-wrapper .insert-image .insert-video--modal-head .insert-video--modal-head-title,.editor-wrapper .insert-image .insert-video--modal-head .insert-link--modal-head-title,.editor-wrapper .insert-image .insert-link--modal-head .insert-image--modal-head-title,.editor-wrapper .insert-image .insert-link--modal-head .insert-table--modal-head-title,.editor-wrapper .insert-image .insert-link--modal-head .insert-video--modal-head-title,.editor-wrapper .insert-image .insert-link--modal-head .insert-link--modal-head-title,.editor-wrapper .insert-table .insert-image--modal-head .insert-image--modal-head-title,.editor-wrapper .insert-table .insert-image--modal-head .insert-table--modal-head-title,.editor-wrapper .insert-table .insert-image--modal-head .insert-video--modal-head-title,.editor-wrapper .insert-table .insert-image--modal-head .insert-link--modal-head-title,.editor-wrapper .insert-table .insert-table--modal-head .insert-image--modal-head-title,.editor-wrapper .insert-table .insert-table--modal-head .insert-table--modal-head-title,.editor-wrapper .insert-table .insert-table--modal-head .insert-video--modal-head-title,.editor-wrapper .insert-table .insert-table--modal-head .insert-link--modal-head-title,.editor-wrapper .insert-table .insert-video--modal-head .insert-image--modal-head-title,.editor-wrapper .insert-table .insert-video--modal-head .insert-table--modal-head-title,.editor-wrapper .insert-table .insert-video--modal-head .insert-video--modal-head-title,.editor-wrapper .insert-table .insert-video--modal-head .insert-link--modal-head-title,.editor-wrapper .insert-table .insert-link--modal-head .insert-image--modal-head-title,.editor-wrapper .insert-table .insert-link--modal-head .insert-table--modal-head-title,.editor-wrapper .insert-table .insert-link--modal-head .insert-video--modal-head-title,.editor-wrapper .insert-table .insert-link--modal-head .insert-link--modal-head-title,.editor-wrapper .insert-video .insert-image--modal-head .insert-image--modal-head-title,.editor-wrapper .insert-video .insert-image--modal-head .insert-table--modal-head-title,.editor-wrapper .insert-video .insert-image--modal-head .insert-video--modal-head-title,.editor-wrapper .insert-video .insert-image--modal-head .insert-link--modal-head-title,.editor-wrapper .insert-video .insert-table--modal-head .insert-image--modal-head-title,.editor-wrapper .insert-video .insert-table--modal-head .insert-table--modal-head-title,.editor-wrapper .insert-video .insert-table--modal-head .insert-video--modal-head-title,.editor-wrapper .insert-video .insert-table--modal-head .insert-link--modal-head-title,.editor-wrapper .insert-video .insert-video--modal-head .insert-image--modal-head-title,.editor-wrapper .insert-video .insert-video--modal-head .insert-table--modal-head-title,.editor-wrapper .insert-video .insert-video--modal-head .insert-video--modal-head-title,.editor-wrapper .insert-video .insert-video--modal-head .insert-link--modal-head-title,.editor-wrapper .insert-video .insert-link--modal-head .insert-image--modal-head-title,.editor-wrapper .insert-video .insert-link--modal-head .insert-table--modal-head-title,.editor-wrapper .insert-video .insert-link--modal-head .insert-video--modal-head-title,.editor-wrapper .insert-video .insert-link--modal-head .insert-link--modal-head-title,.editor-wrapper .insert-link .insert-image--modal-head .insert-image--modal-head-title,.editor-wrapper .insert-link .insert-image--modal-head .insert-table--modal-head-title,.editor-wrapper .insert-link .insert-image--modal-head .insert-video--modal-head-title,.editor-wrapper .insert-link .insert-image--modal-head .insert-link--modal-head-title,.editor-wrapper .insert-link .insert-table--modal-head .insert-image--modal-head-title,.editor-wrapper .insert-link .insert-table--modal-head .insert-table--modal-head-title,.editor-wrapper .insert-link .insert-table--modal-head .insert-video--modal-head-title,.editor-wrapper .insert-link .insert-table--modal-head .insert-link--modal-head-title,.editor-wrapper .insert-link .insert-video--modal-head .insert-image--modal-head-title,.editor-wrapper .insert-link .insert-video--modal-head .insert-table--modal-head-title,.editor-wrapper .insert-link .insert-video--modal-head .insert-video--modal-head-title,.editor-wrapper .insert-link .insert-video--modal-head .insert-link--modal-head-title,.editor-wrapper .insert-link .insert-link--modal-head .insert-image--modal-head-title,.editor-wrapper .insert-link .insert-link--modal-head .insert-table--modal-head-title,.editor-wrapper .insert-link .insert-link--modal-head .insert-video--modal-head-title,.editor-wrapper .insert-link .insert-link--modal-head .insert-link--modal-head-title{display:flex;gap:16px;justify-content:space-between}.editor-wrapper .insert-image .insert-image--modal-head .insert-image--modal-head-title svg,.editor-wrapper .insert-image .insert-image--modal-head .insert-table--modal-head-title svg,.editor-wrapper .insert-image .insert-image--modal-head .insert-video--modal-head-title svg,.editor-wrapper .insert-image .insert-image--modal-head .insert-link--modal-head-title svg,.editor-wrapper .insert-image .insert-table--modal-head .insert-image--modal-head-title svg,.editor-wrapper .insert-image .insert-table--modal-head .insert-table--modal-head-title svg,.editor-wrapper .insert-image .insert-table--modal-head .insert-video--modal-head-title svg,.editor-wrapper .insert-image .insert-table--modal-head .insert-link--modal-head-title svg,.editor-wrapper .insert-image .insert-video--modal-head .insert-image--modal-head-title svg,.editor-wrapper .insert-image .insert-video--modal-head .insert-table--modal-head-title svg,.editor-wrapper .insert-image .insert-video--modal-head .insert-video--modal-head-title svg,.editor-wrapper .insert-image .insert-video--modal-head .insert-link--modal-head-title svg,.editor-wrapper .insert-image .insert-link--modal-head .insert-image--modal-head-title svg,.editor-wrapper .insert-image .insert-link--modal-head .insert-table--modal-head-title svg,.editor-wrapper .insert-image .insert-link--modal-head .insert-video--modal-head-title svg,.editor-wrapper .insert-image .insert-link--modal-head .insert-link--modal-head-title svg,.editor-wrapper .insert-table .insert-image--modal-head .insert-image--modal-head-title svg,.editor-wrapper .insert-table .insert-image--modal-head .insert-table--modal-head-title svg,.editor-wrapper .insert-table .insert-image--modal-head .insert-video--modal-head-title svg,.editor-wrapper .insert-table .insert-image--modal-head .insert-link--modal-head-title svg,.editor-wrapper .insert-table .insert-table--modal-head .insert-image--modal-head-title svg,.editor-wrapper .insert-table .insert-table--modal-head .insert-table--modal-head-title svg,.editor-wrapper .insert-table .insert-table--modal-head .insert-video--modal-head-title svg,.editor-wrapper .insert-table .insert-table--modal-head .insert-link--modal-head-title svg,.editor-wrapper .insert-table .insert-video--modal-head .insert-image--modal-head-title svg,.editor-wrapper .insert-table .insert-video--modal-head .insert-table--modal-head-title svg,.editor-wrapper .insert-table .insert-video--modal-head .insert-video--modal-head-title svg,.editor-wrapper .insert-table .insert-video--modal-head .insert-link--modal-head-title svg,.editor-wrapper .insert-table .insert-link--modal-head .insert-image--modal-head-title svg,.editor-wrapper .insert-table .insert-link--modal-head .insert-table--modal-head-title svg,.editor-wrapper .insert-table .insert-link--modal-head .insert-video--modal-head-title svg,.editor-wrapper .insert-table .insert-link--modal-head .insert-link--modal-head-title svg,.editor-wrapper .insert-video .insert-image--modal-head .insert-image--modal-head-title svg,.editor-wrapper .insert-video .insert-image--modal-head .insert-table--modal-head-title svg,.editor-wrapper .insert-video .insert-image--modal-head .insert-video--modal-head-title svg,.editor-wrapper .insert-video .insert-image--modal-head .insert-link--modal-head-title svg,.editor-wrapper .insert-video .insert-table--modal-head .insert-image--modal-head-title svg,.editor-wrapper .insert-video .insert-table--modal-head .insert-table--modal-head-title svg,.editor-wrapper .insert-video .insert-table--modal-head .insert-video--modal-head-title svg,.editor-wrapper .insert-video .insert-table--modal-head .insert-link--modal-head-title svg,.editor-wrapper .insert-video .insert-video--modal-head .insert-image--modal-head-title svg,.editor-wrapper .insert-video .insert-video--modal-head .insert-table--modal-head-title svg,.editor-wrapper .insert-video .insert-video--modal-head .insert-video--modal-head-title svg,.editor-wrapper .insert-video .insert-video--modal-head .insert-link--modal-head-title svg,.editor-wrapper .insert-video .insert-link--modal-head .insert-image--modal-head-title svg,.editor-wrapper .insert-video .insert-link--modal-head .insert-table--modal-head-title svg,.editor-wrapper .insert-video .insert-link--modal-head .insert-video--modal-head-title svg,.editor-wrapper .insert-video .insert-link--modal-head .insert-link--modal-head-title svg,.editor-wrapper .insert-link .insert-image--modal-head .insert-image--modal-head-title svg,.editor-wrapper .insert-link .insert-image--modal-head .insert-table--modal-head-title svg,.editor-wrapper .insert-link .insert-image--modal-head .insert-video--modal-head-title svg,.editor-wrapper .insert-link .insert-image--modal-head .insert-link--modal-head-title svg,.editor-wrapper .insert-link .insert-table--modal-head .insert-image--modal-head-title svg,.editor-wrapper .insert-link .insert-table--modal-head .insert-table--modal-head-title svg,.editor-wrapper .insert-link .insert-table--modal-head .insert-video--modal-head-title svg,.editor-wrapper .insert-link .insert-table--modal-head .insert-link--modal-head-title svg,.editor-wrapper .insert-link .insert-video--modal-head .insert-image--modal-head-title svg,.editor-wrapper .insert-link .insert-video--modal-head .insert-table--modal-head-title svg,.editor-wrapper .insert-link .insert-video--modal-head .insert-video--modal-head-title svg,.editor-wrapper .insert-link .insert-video--modal-head .insert-link--modal-head-title svg,.editor-wrapper .insert-link .insert-link--modal-head .insert-image--modal-head-title svg,.editor-wrapper .insert-link .insert-link--modal-head .insert-table--modal-head-title svg,.editor-wrapper .insert-link .insert-link--modal-head .insert-video--modal-head-title svg,.editor-wrapper .insert-link .insert-link--modal-head .insert-link--modal-head-title svg{font-size:20px;cursor:pointer}.editor-wrapper .insert-image .insert-image--modal-content ul,.editor-wrapper .insert-table .insert-image--modal-content ul,.editor-wrapper .insert-video .insert-image--modal-content ul,.editor-wrapper .insert-link .insert-image--modal-content ul{display:flex}.editor-wrapper .insert-image .insert-image--modal-content ul li.image-item,.editor-wrapper .insert-table .insert-image--modal-content ul li.image-item,.editor-wrapper .insert-video .insert-image--modal-content ul li.image-item,.editor-wrapper .insert-link .insert-image--modal-content ul li.image-item{border-radius:0}.editor-wrapper .insert-image .insert-image--modal-content ul li.image-item.active,.editor-wrapper .insert-table .insert-image--modal-content ul li.image-item.active,.editor-wrapper .insert-video .insert-image--modal-content ul li.image-item.active,.editor-wrapper .insert-link .insert-image--modal-content ul li.image-item.active{border-bottom:solid 1px rgb(59,130,246)}.editor-wrapper .insert-image .insert-image--modal-content ul li.image-item:hover,.editor-wrapper .insert-table .insert-image--modal-content ul li.image-item:hover,.editor-wrapper .insert-video .insert-image--modal-content ul li.image-item:hover,.editor-wrapper .insert-link .insert-image--modal-content ul li.image-item:hover{background-color:unset}.editor-wrapper .insert-image .insert-image--modal-content ul li.image-item:hover:not(.active),.editor-wrapper .insert-table .insert-image--modal-content ul li.image-item:hover:not(.active),.editor-wrapper .insert-video .insert-image--modal-content ul li.image-item:hover:not(.active),.editor-wrapper .insert-link .insert-image--modal-content ul li.image-item:hover:not(.active){border-bottom:solid 1px rgb(229,229,229)}.editor-wrapper .insert-image .insert-image--modal-content .insert-image--import-file .insert-image--import-file-dz,.editor-wrapper .insert-table .insert-image--modal-content .insert-image--import-file .insert-image--import-file-dz,.editor-wrapper .insert-video .insert-image--modal-content .insert-image--import-file .insert-image--import-file-dz,.editor-wrapper .insert-link .insert-image--modal-content .insert-image--import-file .insert-image--import-file-dz{height:150px;border:1px dashed #A4A4A4;display:flex;flex-direction:column;justify-content:center;align-items:center;border-radius:8px;margin-top:12px;padding:12px;cursor:pointer}.editor-wrapper .insert-image .insert-image--modal-content .insert-image--import-file .insert-image--import-file-dz div,.editor-wrapper .insert-table .insert-image--modal-content .insert-image--import-file .insert-image--import-file-dz div,.editor-wrapper .insert-video .insert-image--modal-content .insert-image--import-file .insert-image--import-file-dz div,.editor-wrapper .insert-link .insert-image--modal-content .insert-image--import-file .insert-image--import-file-dz div{display:flex;gap:12px}.editor-wrapper .insert-image .insert-image--modal-content .insert-image--from-url,.editor-wrapper .insert-table .insert-image--modal-content .insert-image--from-url,.editor-wrapper .insert-video .insert-image--modal-content .insert-image--from-url,.editor-wrapper .insert-link .insert-image--modal-content .insert-image--from-url{padding:12px;display:flex;flex-direction:column}.editor-wrapper .insert-image .insert-image--modal-content .insert-image--from-url label,.editor-wrapper .insert-table .insert-image--modal-content .insert-image--from-url label,.editor-wrapper .insert-video .insert-image--modal-content .insert-image--from-url label,.editor-wrapper .insert-link .insert-image--modal-content .insert-image--from-url label{margin-bottom:6px}.editor-wrapper .insert-image .insert-image--modal-content .insert-image--from-url input,.editor-wrapper .insert-table .insert-image--modal-content .insert-image--from-url input,.editor-wrapper .insert-video .insert-image--modal-content .insert-image--from-url input,.editor-wrapper .insert-link .insert-image--modal-content .insert-image--from-url input{border-radius:4px;border:solid 1px rgb(212,212,212);padding:6px 8px}.editor-wrapper .insert-image .insert-image--modal-content .insert-image--from-url .insert-image--from-url-button,.editor-wrapper .insert-table .insert-image--modal-content .insert-image--from-url .insert-image--from-url-button,.editor-wrapper .insert-video .insert-image--modal-content .insert-image--from-url .insert-image--from-url-button,.editor-wrapper .insert-link .insert-image--modal-content .insert-image--from-url .insert-image--from-url-button{margin-top:12px;display:flex;justify-content:flex-end}.editor-wrapper .insert-image .insert-image--modal-content .insert-image--from-url .insert-image--from-url-button button,.editor-wrapper .insert-table .insert-image--modal-content .insert-image--from-url .insert-image--from-url-button button,.editor-wrapper .insert-video .insert-image--modal-content .insert-image--from-url .insert-image--from-url-button button,.editor-wrapper .insert-link .insert-image--modal-content .insert-image--from-url .insert-image--from-url-button button{cursor:pointer;padding:10px 24px;border-radius:8px;background-color:#008a35;color:#fff;border:unset}.editor-wrapper .insert-image .insert-image--modal-content .insert-image--from-url .insert-image--from-url-button button:hover,.editor-wrapper .insert-table .insert-image--modal-content .insert-image--from-url .insert-image--from-url-button button:hover,.editor-wrapper .insert-video .insert-image--modal-content .insert-image--from-url .insert-image--from-url-button button:hover,.editor-wrapper .insert-link .insert-image--modal-content .insert-image--from-url .insert-image--from-url-button button:hover{background-color:#007f31}.editor-wrapper .insert-image .insert-table--modal-content .insert-table--inputs,.editor-wrapper .insert-image .insert-video--modal-content .insert-table--inputs,.editor-wrapper .insert-image .insert-link--modal-content .insert-table--inputs,.editor-wrapper .insert-table .insert-table--modal-content .insert-table--inputs,.editor-wrapper .insert-table .insert-video--modal-content .insert-table--inputs,.editor-wrapper .insert-table .insert-link--modal-content .insert-table--inputs,.editor-wrapper .insert-video .insert-table--modal-content .insert-table--inputs,.editor-wrapper .insert-video .insert-video--modal-content .insert-table--inputs,.editor-wrapper .insert-video .insert-link--modal-content .insert-table--inputs,.editor-wrapper .insert-link .insert-table--modal-content .insert-table--inputs,.editor-wrapper .insert-link .insert-video--modal-content .insert-table--inputs,.editor-wrapper .insert-link .insert-link--modal-content .insert-table--inputs{display:flex;align-items:center;gap:16px}.editor-wrapper .insert-image .insert-table--modal-content .insert-table--inputs .insert-table--input,.editor-wrapper .insert-image .insert-video--modal-content .insert-table--inputs .insert-table--input,.editor-wrapper .insert-image .insert-link--modal-content .insert-table--inputs .insert-table--input,.editor-wrapper .insert-table .insert-table--modal-content .insert-table--inputs .insert-table--input,.editor-wrapper .insert-table .insert-video--modal-content .insert-table--inputs .insert-table--input,.editor-wrapper .insert-table .insert-link--modal-content .insert-table--inputs .insert-table--input,.editor-wrapper .insert-video .insert-table--modal-content .insert-table--inputs .insert-table--input,.editor-wrapper .insert-video .insert-video--modal-content .insert-table--inputs .insert-table--input,.editor-wrapper .insert-video .insert-link--modal-content .insert-table--inputs .insert-table--input,.editor-wrapper .insert-link .insert-table--modal-content .insert-table--inputs .insert-table--input,.editor-wrapper .insert-link .insert-video--modal-content .insert-table--inputs .insert-table--input,.editor-wrapper .insert-link .insert-link--modal-content .insert-table--inputs .insert-table--input{padding:12px;display:flex;flex-direction:column}.editor-wrapper .insert-image .insert-table--modal-content .insert-table--inputs .insert-table--input label,.editor-wrapper .insert-image .insert-video--modal-content .insert-table--inputs .insert-table--input label,.editor-wrapper .insert-image .insert-link--modal-content .insert-table--inputs .insert-table--input label,.editor-wrapper .insert-table .insert-table--modal-content .insert-table--inputs .insert-table--input label,.editor-wrapper .insert-table .insert-video--modal-content .insert-table--inputs .insert-table--input label,.editor-wrapper .insert-table .insert-link--modal-content .insert-table--inputs .insert-table--input label,.editor-wrapper .insert-video .insert-table--modal-content .insert-table--inputs .insert-table--input label,.editor-wrapper .insert-video .insert-video--modal-content .insert-table--inputs .insert-table--input label,.editor-wrapper .insert-video .insert-link--modal-content .insert-table--inputs .insert-table--input label,.editor-wrapper .insert-link .insert-table--modal-content .insert-table--inputs .insert-table--input label,.editor-wrapper .insert-link .insert-video--modal-content .insert-table--inputs .insert-table--input label,.editor-wrapper .insert-link .insert-link--modal-content .insert-table--inputs .insert-table--input label{margin-bottom:6px}.editor-wrapper .insert-image .insert-table--modal-content .insert-table--inputs .insert-table--input input,.editor-wrapper .insert-image .insert-video--modal-content .insert-table--inputs .insert-table--input input,.editor-wrapper .insert-image .insert-link--modal-content .insert-table--inputs .insert-table--input input,.editor-wrapper .insert-table .insert-table--modal-content .insert-table--inputs .insert-table--input input,.editor-wrapper .insert-table .insert-video--modal-content .insert-table--inputs .insert-table--input input,.editor-wrapper .insert-table .insert-link--modal-content .insert-table--inputs .insert-table--input input,.editor-wrapper .insert-video .insert-table--modal-content .insert-table--inputs .insert-table--input input,.editor-wrapper .insert-video .insert-video--modal-content .insert-table--inputs .insert-table--input input,.editor-wrapper .insert-video .insert-link--modal-content .insert-table--inputs .insert-table--input input,.editor-wrapper .insert-link .insert-table--modal-content .insert-table--inputs .insert-table--input input,.editor-wrapper .insert-link .insert-video--modal-content .insert-table--inputs .insert-table--input input,.editor-wrapper .insert-link .insert-link--modal-content .insert-table--inputs .insert-table--input input{border-radius:4px;border:solid 1px rgb(212,212,212);padding:6px 8px}.editor-wrapper .insert-image .insert-table--modal-content .insert-video--input,.editor-wrapper .insert-image .insert-table--modal-content .insert-link--input,.editor-wrapper .insert-image .insert-video--modal-content .insert-video--input,.editor-wrapper .insert-image .insert-video--modal-content .insert-link--input,.editor-wrapper .insert-image .insert-link--modal-content .insert-video--input,.editor-wrapper .insert-image .insert-link--modal-content .insert-link--input,.editor-wrapper .insert-table .insert-table--modal-content .insert-video--input,.editor-wrapper .insert-table .insert-table--modal-content .insert-link--input,.editor-wrapper .insert-table .insert-video--modal-content .insert-video--input,.editor-wrapper .insert-table .insert-video--modal-content .insert-link--input,.editor-wrapper .insert-table .insert-link--modal-content .insert-video--input,.editor-wrapper .insert-table .insert-link--modal-content .insert-link--input,.editor-wrapper .insert-video .insert-table--modal-content .insert-video--input,.editor-wrapper .insert-video .insert-table--modal-content .insert-link--input,.editor-wrapper .insert-video .insert-video--modal-content .insert-video--input,.editor-wrapper .insert-video .insert-video--modal-content .insert-link--input,.editor-wrapper .insert-video .insert-link--modal-content .insert-video--input,.editor-wrapper .insert-video .insert-link--modal-content .insert-link--input,.editor-wrapper .insert-link .insert-table--modal-content .insert-video--input,.editor-wrapper .insert-link .insert-table--modal-content .insert-link--input,.editor-wrapper .insert-link .insert-video--modal-content .insert-video--input,.editor-wrapper .insert-link .insert-video--modal-content .insert-link--input,.editor-wrapper .insert-link .insert-link--modal-content .insert-video--input,.editor-wrapper .insert-link .insert-link--modal-content .insert-link--input{padding:12px;display:flex;flex-direction:column}.editor-wrapper .insert-image .insert-table--modal-content .insert-video--input label,.editor-wrapper .insert-image .insert-table--modal-content .insert-link--input label,.editor-wrapper .insert-image .insert-video--modal-content .insert-video--input label,.editor-wrapper .insert-image .insert-video--modal-content .insert-link--input label,.editor-wrapper .insert-image .insert-link--modal-content .insert-video--input label,.editor-wrapper .insert-image .insert-link--modal-content .insert-link--input label,.editor-wrapper .insert-table .insert-table--modal-content .insert-video--input label,.editor-wrapper .insert-table .insert-table--modal-content .insert-link--input label,.editor-wrapper .insert-table .insert-video--modal-content .insert-video--input label,.editor-wrapper .insert-table .insert-video--modal-content .insert-link--input label,.editor-wrapper .insert-table .insert-link--modal-content .insert-video--input label,.editor-wrapper .insert-table .insert-link--modal-content .insert-link--input label,.editor-wrapper .insert-video .insert-table--modal-content .insert-video--input label,.editor-wrapper .insert-video .insert-table--modal-content .insert-link--input label,.editor-wrapper .insert-video .insert-video--modal-content .insert-video--input label,.editor-wrapper .insert-video .insert-video--modal-content .insert-link--input label,.editor-wrapper .insert-video .insert-link--modal-content .insert-video--input label,.editor-wrapper .insert-video .insert-link--modal-content .insert-link--input label,.editor-wrapper .insert-link .insert-table--modal-content .insert-video--input label,.editor-wrapper .insert-link .insert-table--modal-content .insert-link--input label,.editor-wrapper .insert-link .insert-video--modal-content .insert-video--input label,.editor-wrapper .insert-link .insert-video--modal-content .insert-link--input label,.editor-wrapper .insert-link .insert-link--modal-content .insert-video--input label,.editor-wrapper .insert-link .insert-link--modal-content .insert-link--input label{margin-bottom:6px}.editor-wrapper .insert-image .insert-table--modal-content .insert-video--input input,.editor-wrapper .insert-image .insert-table--modal-content .insert-link--input input,.editor-wrapper .insert-image .insert-video--modal-content .insert-video--input input,.editor-wrapper .insert-image .insert-video--modal-content .insert-link--input input,.editor-wrapper .insert-image .insert-link--modal-content .insert-video--input input,.editor-wrapper .insert-image .insert-link--modal-content .insert-link--input input,.editor-wrapper .insert-table .insert-table--modal-content .insert-video--input input,.editor-wrapper .insert-table .insert-table--modal-content .insert-link--input input,.editor-wrapper .insert-table .insert-video--modal-content .insert-video--input input,.editor-wrapper .insert-table .insert-video--modal-content .insert-link--input input,.editor-wrapper .insert-table .insert-link--modal-content .insert-video--input input,.editor-wrapper .insert-table .insert-link--modal-content .insert-link--input input,.editor-wrapper .insert-video .insert-table--modal-content .insert-video--input input,.editor-wrapper .insert-video .insert-table--modal-content .insert-link--input input,.editor-wrapper .insert-video .insert-video--modal-content .insert-video--input input,.editor-wrapper .insert-video .insert-video--modal-content .insert-link--input input,.editor-wrapper .insert-video .insert-link--modal-content .insert-video--input input,.editor-wrapper .insert-video .insert-link--modal-content .insert-link--input input,.editor-wrapper .insert-link .insert-table--modal-content .insert-video--input input,.editor-wrapper .insert-link .insert-table--modal-content .insert-link--input input,.editor-wrapper .insert-link .insert-video--modal-content .insert-video--input input,.editor-wrapper .insert-link .insert-video--modal-content .insert-link--input input,.editor-wrapper .insert-link .insert-link--modal-content .insert-video--input input,.editor-wrapper .insert-link .insert-link--modal-content .insert-link--input input{border-radius:4px;border:solid 1px rgb(212,212,212);padding:6px 8px}.editor-wrapper .insert-image .insert-table--modal-content .insert-table--input-header,.editor-wrapper .insert-image .insert-video--modal-content .insert-table--input-header,.editor-wrapper .insert-image .insert-link--modal-content .insert-table--input-header,.editor-wrapper .insert-table .insert-table--modal-content .insert-table--input-header,.editor-wrapper .insert-table .insert-video--modal-content .insert-table--input-header,.editor-wrapper .insert-table .insert-link--modal-content .insert-table--input-header,.editor-wrapper .insert-video .insert-table--modal-content .insert-table--input-header,.editor-wrapper .insert-video .insert-video--modal-content .insert-table--input-header,.editor-wrapper .insert-video .insert-link--modal-content .insert-table--input-header,.editor-wrapper .insert-link .insert-table--modal-content .insert-table--input-header,.editor-wrapper .insert-link .insert-video--modal-content .insert-table--input-header,.editor-wrapper .insert-link .insert-link--modal-content .insert-table--input-header{margin-left:12px}.editor-wrapper .insert-image .insert-table--modal-content .insert-table--input-header label,.editor-wrapper .insert-image .insert-video--modal-content .insert-table--input-header label,.editor-wrapper .insert-image .insert-link--modal-content .insert-table--input-header label,.editor-wrapper .insert-table .insert-table--modal-content .insert-table--input-header label,.editor-wrapper .insert-table .insert-video--modal-content .insert-table--input-header label,.editor-wrapper .insert-table .insert-link--modal-content .insert-table--input-header label,.editor-wrapper .insert-video .insert-table--modal-content .insert-table--input-header label,.editor-wrapper .insert-video .insert-video--modal-content .insert-table--input-header label,.editor-wrapper .insert-video .insert-link--modal-content .insert-table--input-header label,.editor-wrapper .insert-link .insert-table--modal-content .insert-table--input-header label,.editor-wrapper .insert-link .insert-video--modal-content .insert-table--input-header label,.editor-wrapper .insert-link .insert-link--modal-content .insert-table--input-header label{margin-left:6px}.editor-wrapper .insert-image .insert-table--modal-content .insert-table--button,.editor-wrapper .insert-image .insert-table--modal-content .insert-video--button,.editor-wrapper .insert-image .insert-table--modal-content .insert-link--button,.editor-wrapper .insert-image .insert-video--modal-content .insert-table--button,.editor-wrapper .insert-image .insert-video--modal-content .insert-video--button,.editor-wrapper .insert-image .insert-video--modal-content .insert-link--button,.editor-wrapper .insert-image .insert-link--modal-content .insert-table--button,.editor-wrapper .insert-image .insert-link--modal-content .insert-video--button,.editor-wrapper .insert-image .insert-link--modal-content .insert-link--button,.editor-wrapper .insert-table .insert-table--modal-content .insert-table--button,.editor-wrapper .insert-table .insert-table--modal-content .insert-video--button,.editor-wrapper .insert-table .insert-table--modal-content .insert-link--button,.editor-wrapper .insert-table .insert-video--modal-content .insert-table--button,.editor-wrapper .insert-table .insert-video--modal-content .insert-video--button,.editor-wrapper .insert-table .insert-video--modal-content .insert-link--button,.editor-wrapper .insert-table .insert-link--modal-content .insert-table--button,.editor-wrapper .insert-table .insert-link--modal-content .insert-video--button,.editor-wrapper .insert-table .insert-link--modal-content .insert-link--button,.editor-wrapper .insert-video .insert-table--modal-content .insert-table--button,.editor-wrapper .insert-video .insert-table--modal-content .insert-video--button,.editor-wrapper .insert-video .insert-table--modal-content .insert-link--button,.editor-wrapper .insert-video .insert-video--modal-content .insert-table--button,.editor-wrapper .insert-video .insert-video--modal-content .insert-video--button,.editor-wrapper .insert-video .insert-video--modal-content .insert-link--button,.editor-wrapper .insert-video .insert-link--modal-content .insert-table--button,.editor-wrapper .insert-video .insert-link--modal-content .insert-video--button,.editor-wrapper .insert-video .insert-link--modal-content .insert-link--button,.editor-wrapper .insert-link .insert-table--modal-content .insert-table--button,.editor-wrapper .insert-link .insert-table--modal-content .insert-video--button,.editor-wrapper .insert-link .insert-table--modal-content .insert-link--button,.editor-wrapper .insert-link .insert-video--modal-content .insert-table--button,.editor-wrapper .insert-link .insert-video--modal-content .insert-video--button,.editor-wrapper .insert-link .insert-video--modal-content .insert-link--button,.editor-wrapper .insert-link .insert-link--modal-content .insert-table--button,.editor-wrapper .insert-link .insert-link--modal-content .insert-video--button,.editor-wrapper .insert-link .insert-link--modal-content .insert-link--button{margin-top:12px;display:flex;justify-content:flex-end}.editor-wrapper .insert-image .insert-table--modal-content .insert-table--button button,.editor-wrapper .insert-image .insert-table--modal-content .insert-video--button button,.editor-wrapper .insert-image .insert-table--modal-content .insert-link--button button,.editor-wrapper .insert-image .insert-video--modal-content .insert-table--button button,.editor-wrapper .insert-image .insert-video--modal-content .insert-video--button button,.editor-wrapper .insert-image .insert-video--modal-content .insert-link--button button,.editor-wrapper .insert-image .insert-link--modal-content .insert-table--button button,.editor-wrapper .insert-image .insert-link--modal-content .insert-video--button button,.editor-wrapper .insert-image .insert-link--modal-content .insert-link--button button,.editor-wrapper .insert-table .insert-table--modal-content .insert-table--button button,.editor-wrapper .insert-table .insert-table--modal-content .insert-video--button button,.editor-wrapper .insert-table .insert-table--modal-content .insert-link--button button,.editor-wrapper .insert-table .insert-video--modal-content .insert-table--button button,.editor-wrapper .insert-table .insert-video--modal-content .insert-video--button button,.editor-wrapper .insert-table .insert-video--modal-content .insert-link--button button,.editor-wrapper .insert-table .insert-link--modal-content .insert-table--button button,.editor-wrapper .insert-table .insert-link--modal-content .insert-video--button button,.editor-wrapper .insert-table .insert-link--modal-content .insert-link--button button,.editor-wrapper .insert-video .insert-table--modal-content .insert-table--button button,.editor-wrapper .insert-video .insert-table--modal-content .insert-video--button button,.editor-wrapper .insert-video .insert-table--modal-content .insert-link--button button,.editor-wrapper .insert-video .insert-video--modal-content .insert-table--button button,.editor-wrapper .insert-video .insert-video--modal-content .insert-video--button button,.editor-wrapper .insert-video .insert-video--modal-content .insert-link--button button,.editor-wrapper .insert-video .insert-link--modal-content .insert-table--button button,.editor-wrapper .insert-video .insert-link--modal-content .insert-video--button button,.editor-wrapper .insert-video .insert-link--modal-content .insert-link--button button,.editor-wrapper .insert-link .insert-table--modal-content .insert-table--button button,.editor-wrapper .insert-link .insert-table--modal-content .insert-video--button button,.editor-wrapper .insert-link .insert-table--modal-content .insert-link--button button,.editor-wrapper .insert-link .insert-video--modal-content .insert-table--button button,.editor-wrapper .insert-link .insert-video--modal-content .insert-video--button button,.editor-wrapper .insert-link .insert-video--modal-content .insert-link--button button,.editor-wrapper .insert-link .insert-link--modal-content .insert-table--button button,.editor-wrapper .insert-link .insert-link--modal-content .insert-video--button button,.editor-wrapper .insert-link .insert-link--modal-content .insert-link--button button{cursor:pointer;padding:10px 24px;border-radius:8px;background-color:#008a35;color:#fff;border:unset}.editor-wrapper .insert-image .insert-table--modal-content .insert-table--button button:hover,.editor-wrapper .insert-image .insert-table--modal-content .insert-video--button button:hover,.editor-wrapper .insert-image .insert-table--modal-content .insert-link--button button:hover,.editor-wrapper .insert-image .insert-video--modal-content .insert-table--button button:hover,.editor-wrapper .insert-image .insert-video--modal-content .insert-video--button button:hover,.editor-wrapper .insert-image .insert-video--modal-content .insert-link--button button:hover,.editor-wrapper .insert-image .insert-link--modal-content .insert-table--button button:hover,.editor-wrapper .insert-image .insert-link--modal-content .insert-video--button button:hover,.editor-wrapper .insert-image .insert-link--modal-content .insert-link--button button:hover,.editor-wrapper .insert-table .insert-table--modal-content .insert-table--button button:hover,.editor-wrapper .insert-table .insert-table--modal-content .insert-video--button button:hover,.editor-wrapper .insert-table .insert-table--modal-content .insert-link--button button:hover,.editor-wrapper .insert-table .insert-video--modal-content .insert-table--button button:hover,.editor-wrapper .insert-table .insert-video--modal-content .insert-video--button button:hover,.editor-wrapper .insert-table .insert-video--modal-content .insert-link--button button:hover,.editor-wrapper .insert-table .insert-link--modal-content .insert-table--button button:hover,.editor-wrapper .insert-table .insert-link--modal-content .insert-video--button button:hover,.editor-wrapper .insert-table .insert-link--modal-content .insert-link--button button:hover,.editor-wrapper .insert-video .insert-table--modal-content .insert-table--button button:hover,.editor-wrapper .insert-video .insert-table--modal-content .insert-video--button button:hover,.editor-wrapper .insert-video .insert-table--modal-content .insert-link--button button:hover,.editor-wrapper .insert-video .insert-video--modal-content .insert-table--button button:hover,.editor-wrapper .insert-video .insert-video--modal-content .insert-video--button button:hover,.editor-wrapper .insert-video .insert-video--modal-content .insert-link--button button:hover,.editor-wrapper .insert-video .insert-link--modal-content .insert-table--button button:hover,.editor-wrapper .insert-video .insert-link--modal-content .insert-video--button button:hover,.editor-wrapper .insert-video .insert-link--modal-content .insert-link--button button:hover,.editor-wrapper .insert-link .insert-table--modal-content .insert-table--button button:hover,.editor-wrapper .insert-link .insert-table--modal-content .insert-video--button button:hover,.editor-wrapper .insert-link .insert-table--modal-content .insert-link--button button:hover,.editor-wrapper .insert-link .insert-video--modal-content .insert-table--button button:hover,.editor-wrapper .insert-link .insert-video--modal-content .insert-video--button button:hover,.editor-wrapper .insert-link .insert-video--modal-content .insert-link--button button:hover,.editor-wrapper .insert-link .insert-link--modal-content .insert-table--button button:hover,.editor-wrapper .insert-link .insert-link--modal-content .insert-video--button button:hover,.editor-wrapper .insert-link .insert-link--modal-content .insert-link--button button:hover{background-color:#007f31}.editor-wrapper .media-library .media-library--modal-head{display:flex;flex-direction:column;padding:12px 8px}.editor-wrapper .media-library .media-library--modal-head .media-library--modal-head-title{display:flex;justify-content:space-between}.editor-wrapper .media-library .media-library--modal-head .media-library--modal-head-title svg{font-size:20px;cursor:pointer}.editor-wrapper .media-library .media-library--modal-content{display:grid;grid-template-columns:70% 30%;overflow-x:scroll;height:80%;padding:4px 8px}.editor-wrapper .media-library .media-library--modal-content .media-library--file-name{-webkit-line-clamp:2;overflow:hidden;-webkit-box-orient:vertical;min-height:46px;display:-webkit-box;line-height:140%}.editor-wrapper .media-library .media-library--modal-content .media-library--file-explorer{display:flex;flex-direction:column;gap:12px}.editor-wrapper .media-library .media-library--modal-content .media-library--file-explorer .media-library--file-explorer-filters{display:flex;justify-content:space-between;align-items:center}.editor-wrapper .media-library .media-library--modal-content .media-library--file-explorer .media-library--file-explorer-filters .media-library--searchbar{width:30%;border-radius:8px;box-shadow:unset;border:solid 1px rgb(212,212,212);padding:12px;float:right;margin-right:12px}.editor-wrapper .media-library .media-library--modal-content .media-library--file-explorer .media-library--file-explorer-files{display:flex;flex-wrap:wrap;gap:12px}.editor-wrapper .media-library .media-library--modal-content .media-library--file-explorer .media-library--file-explorer-files .media-library--file{cursor:pointer;display:flex;flex-direction:column;gap:4px;padding:8px;width:120px;border-radius:8px}.editor-wrapper .media-library .media-library--modal-content .media-library--file-explorer .media-library--file-explorer-files .media-library--file.media-library--selected{background-color:#f5f5f5}.editor-wrapper .media-library .media-library--modal-content .media-library--file-explorer .media-library--file-explorer-files .media-library--file img{border:solid 1px rgb(212,212,212);border-radius:8px;height:100px;-o-object-fit:cover;object-fit:cover;width:120px}.editor-wrapper .media-library .media-library--modal-content .media-library--file-explorer .media-library--file-explorer-files .media-library--file .media-library--file-size{font-size:.8rem;color:#a3a3a3}.editor-wrapper .media-library .media-library--modal-content .media-library--file-explorer .media-library--file-explorer-files .media-library--file:hover img{outline:solid 2px rgb(59,130,246);outline-offset:2px}.editor-wrapper .media-library .media-library--modal-content .media-library--file-preview{display:flex;flex-direction:column;border-radius:8px;background-color:#f5f5f5;padding:12px;overflow-y:scroll}.editor-wrapper .media-library .media-library--modal-content .media-library--file-preview .media-library--file-preview-image{height:200px}.editor-wrapper .media-library .media-library--modal-content .media-library--file-preview .media-library--file-preview-image img{border-radius:4px;width:100%;height:100%;-o-object-fit:contain;object-fit:contain}.editor-wrapper .media-library .media-library--modal-content .media-library--file-preview .media-library--informations{position:relative;height:100%}.editor-wrapper .media-library .media-library--modal-content .media-library--file-preview .media-library--attributes{display:flex;flex-direction:column;gap:6px}.editor-wrapper .media-library .media-library--modal-content .media-library--file-preview .media-library--attributes .media-library--attribute{display:flex;justify-content:space-between}.editor-wrapper .media-library .media-library--modal-content .media-library--file-preview .media-library--attributes .media-library--attribute .media-library--attribute-name{width:100%;font-weight:500;color:#6a6a6a}.editor-wrapper .media-library .media-library--modal-content .media-library--file-preview .media-library--actions{position:absolute;bottom:0;display:flex;justify-content:space-between;width:100%}.editor-wrapper .media-library .media-library--modal-content .media-library--file-preview .media-library--actions .media-library--actions-insert{cursor:pointer;padding:10px 24px;border-radius:8px;background-color:#008a35;color:#fff;border:unset}.editor-wrapper .media-library .media-library--modal-content .media-library--file-preview .media-library--actions .media-library--actions-insert:hover{background-color:#007f31}.tippy-box[data-theme=editor][role=tooltip]{display:block;background:unset;box-shadow:unset;border:unset;padding:0;margin:0}.tippy-box[data-theme=editor][role=tooltip] .editor-bubble-menu{display:flex;align-items:center;gap:24px}.tippy-box[data-theme=editor][role=tooltip] .editor-bubble-menu .editor-bubble-menu--buttons{display:flex;gap:8px}.tippy-box[data-theme=editor][role=tooltip] .tippy-content{background:#fff;border:solid 1px rgb(212,212,212);border-radius:16px;padding:8px;box-shadow:0 4px 6px -1px #0000001a,0 2px 4px -2px #0000001a;display:flex;flex-direction:column;gap:.1rem;overflow:auto;position:relative}.tippy-box[data-theme=editor][role=tooltip] .tippy-content button{padding:6px;border-radius:8px;align-items:center;background-color:transparent;display:flex;gap:.25rem;text-align:left;width:100%;border:solid 1px transparent;cursor:pointer}.tippy-box[data-theme=editor][role=tooltip] .tippy-content button:hover,.tippy-box[data-theme=editor][role=tooltip] .tippy-content button:hover.is-selected{background-color:#f5f5f5}.tippy-box[data-theme=editor][role=tooltip] .tippy-content button.is-selected{background-color:#f5f5f5;border:solid 1px rgb(115,115,115)}
+/**
+ * @copyright	(C) 2005 Open Source Matters, Inc. <https://www.joomla.org>
+ * @license		GNU General Public License version 2 or later; see LICENSE.txt
+ */
+
+body {
+	background: #fff;
+	font-family: 'Inter', sans-serif;
+	line-height: 1.5em;
+	font-size: 15px;
+	color: #0B0C0F;
+}
+
+h1 {
+	font-family: 'Inter', sans-serif;
+	font-size: 32px;
+	font-weight: 500;
+	color: #0B0C0F;
+	margin: 0;
+	line-height: 1.2em;
+}
+
+h2 {
+	font-family: 'Inter', sans-serif;
+	font-size: 24px;
+	font-weight: 500;
+	color: #0B0C0F;
+	margin: 0;
+	line-height: 1.2em;
+}
+
+h3 {
+	font-weight: 500;
+	font-family: 'Inter', sans-serif;
+	font-size: 18px;
+	color: #0B0C0F;
+	margin: 0;
+	line-height: 1.2em;
+}
+
+h4 {
+	font-weight: 500;
+	font-family: 'Inter', sans-serif;
+	color: #0B0C0F;
+	font-size: 16px;
+	margin: 0;
+	line-height: 1.2em;
+}
+
+h5 {
+	font-weight: 500;
+	font-size: 14px;
+	font-family: 'Inter', sans-serif;
+	color: #0B0C0F;
+	margin: 0;
+	line-height: 1.2em;
+}
+
+h6 {
+	font-weight: 500;
+	font-size: 12px;
+	font-family: 'Inter', sans-serif;
+	color: #0B0C0F;
+	margin: 0;
+	line-height: 1.2em;
+}
+
+
+p {
+	margin: 0;
+	font-family: 'Inter', sans-serif;
+	line-height: 1.5em;
+	font-size: 16px;
+	color: #0B0C0F;
+	font-weight: 400;
+}
+
+pre {
+	padding: 5px 10px;
+	background-color: #f0f0f0;
+	white-space: pre-wrap;
+	margin-bottom: 5px;
+	margin-top: 5px;
+	border-radius: 3px;
+	border: 1px solid #e0e0e5;
+	font-family: 'Inter', sans-serif;
+}
+
+code {
+	border: 1px solid #e0e0e5;
+	background: #f0f0f0;
+	border-radius: 3px;
+	white-space: nowrap;
+	padding: 2px 4px;
+	font-size: 14px;
+	font-family: 'Inter', sans-serif;
+}
+
+blockquote {
+	border-left: 4px solid #ccc;
+	margin-bottom: 5px;
+	margin-top: 5px;
+	padding-left: 16px;
+	margin-left: 0;
+}
+
+blockquote p {
+	font-size: 18px;
+}
+
+a {
+	text-decoration: underline;
+	color: #1B57B1;
+}
+
+a:hover {
+	color: #1B57B1;
+	text-decoration: none;
+	font-weight: normal;
+}
+
+ul, ol {
+	padding-left: 24px;
+	margin: 0;
+}
+
+ul ul, ol ol {
+	padding-left: 24px;
+}
+
+li {
+	line-height: 1.5em;
+}
+
+
+ol li:not(.ql-direction-rtl) {
+	padding-left: 0;
+}
+
+ol li.ql-direction-rtl {
+	padding-right: 1.5em;
+}
+
+ol li {
+	counter-reset: list-1 list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9;
+	counter-increment: list-0;
+}
+
+ol li::marker {
+	content: counter(list-0, decimal) '. ';
+}
+
+ol li.ql-indent-1 {
+	counter-increment: list-1;
+}
+
+ol li.ql-indent-1::marker {
+	content: counter(list-1, decimal) '. ';
+}
+
+ol li.ql-indent-1 {
+	counter-reset: list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9;
+}
+
+ol li.ql-indent-2 {
+	counter-increment: list-2;
+}
+
+ol li.ql-indent-2::marker {
+	content: counter(list-2, decimal) '. ';
+}
+
+ol li.ql-indent-2 {
+	counter-reset: list-3 list-4 list-5 list-6 list-7 list-8 list-9;
+}
+
+ol li.ql-indent-3 {
+	counter-increment: list-3;
+}
+
+ol li.ql-indent-3::marker {
+	content: counter(list-3, decimal) '. ';
+}
+
+ol li.ql-indent-3 {
+	counter-reset: list-4 list-5 list-6 list-7 list-8 list-9;
+}
+
+ol li.ql-indent-4 {
+	counter-increment: list-4;
+}
+
+ol li.ql-indent-4::marker {
+	content: counter(list-4, decimal) '. ';
+}
+
+ol li.ql-indent-4 {
+	counter-reset: list-5 list-6 list-7 list-8 list-9;
+}
+
+ol li.ql-indent-5 {
+	counter-increment: list-5;
+}
+
+ol li.ql-indent-5::marker {
+	content: counter(list-5, decimal) '. ';
+}
+
+ol li.ql-indent-5 {
+	counter-reset: list-6 list-7 list-8 list-9;
+}
+
+ol li.ql-indent-6 {
+	counter-increment: list-6;
+}
+
+ol li.ql-indent-6::marker {
+	content: counter(list-6, decimal) '. ';
+}
+
+ol li.ql-indent-6 {
+	counter-reset: list-7 list-8 list-9;
+}
+
+ol li.ql-indent-7 {
+	counter-increment: list-7;
+}
+
+ol li.ql-indent-7::marker {
+	content: counter(list-7, decimal) '. ';
+}
+
+ol li.ql-indent-7 {
+	counter-reset: list-8 list-9;
+}
+
+ol li.ql-indent-8 {
+	counter-increment: list-8;
+}
+
+ol li.ql-indent-8::marker {
+	content: counter(list-8, decimal) '. ';
+}
+
+ol li.ql-indent-8 {
+	counter-reset: list-9;
+}
+
+li.ql-indent-1 {
+	margin-left: 24px;
+}
+
+li.ql-indent-2 {
+	margin-left: 48px;
+}
+
+li.ql-indent-3 {
+	margin-left: 72px;
+}
+
+li.ql-indent-4 {
+	margin-left: 96px;
+}
+
+li.ql-indent-5 {
+	margin-left: 120px;
+}
+
+li.ql-indent-6 {
+	margin-left: 144px;
+}
+
+li.ql-indent-7 {
+	margin-left: 168px;
+}
+
+li.ql-indent-8 {
+	margin-left: 192px;
+}
+
+hr {
+	margin: 16px 0;
+	border-bottom: 1px solid #e0e0e5;
+}
+
+div.caption       { padding: 0 10px 0 10px; }
+div.caption img   { border: 1px solid #CCC; }
+div.caption p     { font-size: .90em; color: #666; text-align: center; }
+
+/* STYLES FOR JOOMLA! EDITOR */
+hr#system-readmore  { border: #FF0000FF dashed 1px; color: #FF0000FF; }
+hr.system-pagebreak { border: #808080FF dashed 1px; color: #808080FF; }
+
+
+.autocomplete[data-v-9c3002aa] {
+  position: relative;
+  width: 100%;
+  display: block;
+  font-size: 14px;
+  line-height: 1.428571429;
+  color: #333333;
+  background-color: #ffffff;
+}
+.autocomplete input[data-v-9c3002aa] {
+  height: 48px;
+  margin-bottom: 0px;
+}
+.autocomplete-results[data-v-9c3002aa] {
+  padding: 0;
+  margin: 0;
+  border: 1px solid #eeeeee;
+  overflow: auto;
+  background-color: white;
+  position: relative;
+  z-index: 10;
+}
+.autocomplete-result[data-v-9c3002aa] {
+  list-style: none;
+  text-align: left;
+  padding: 16px 6px;
+  cursor: pointer;
+}
+.autocomplete-result.is-active[data-v-9c3002aa],
+.autocomplete-result[data-v-9c3002aa]:hover {
+  background-color: #EDEDED;
+  color: white;
+}
+
+.vc-popover-content-wrapper {
+  --popover-horizontal-content-offset: 8px;
+  --popover-vertical-content-offset: 10px;
+  --popover-caret-horizontal-offset: 18px;
+  --popover-caret-vertical-offset: 8px;
+
+  position: absolute;
+  display: block;
+  outline: none;
+  z-index: 10;
+}
+.vc-popover-content-wrapper:not(.is-interactive) {
+    pointer-events: none;
+}
+.vc-popover-content {
+  position: relative;
+  color: var(--vc-popover-content-color);
+  font-weight: var(--vc-font-medium);
+  background-color: var(--vc-popover-content-bg);
+  border: 1px solid;
+  border-color: var(--vc-popover-content-border);
+  border-radius: var(--vc-rounded-lg);
+  padding: 4px;
+  outline: none;
+  z-index: 10;
+  box-shadow: var(--vc-shadow-lg);
+}
+.vc-popover-content.direction-bottom {
+    margin-top: var(--popover-vertical-content-offset);
+}
+.vc-popover-content.direction-top {
+    margin-bottom: var(--popover-vertical-content-offset);
+}
+.vc-popover-content.direction-left {
+    margin-right: var(--popover-horizontal-content-offset);
+}
+.vc-popover-content.direction-right {
+    margin-left: var(--popover-horizontal-content-offset);
+}
+.vc-popover-caret {
+  content: '';
+  position: absolute;
+  display: block;
+  width: 12px;
+  height: 12px;
+  border-top: inherit;
+  border-left: inherit;
+  background-color: inherit;
+  z-index: -1;
+}
+.vc-popover-caret.direction-bottom {
+    top: 0;
+}
+.vc-popover-caret.direction-bottom.align-left {
+      transform: translateY(-50%) rotate(45deg);
+}
+.vc-popover-caret.direction-bottom.align-center {
+      transform: translateX(-50%) translateY(-50%) rotate(45deg);
+}
+.vc-popover-caret.direction-bottom.align-right {
+      transform: translateY(-50%) rotate(45deg);
+}
+.vc-popover-caret.direction-top {
+    top: 100%;
+}
+.vc-popover-caret.direction-top.align-left {
+      transform: translateY(-50%) rotate(-135deg);
+}
+.vc-popover-caret.direction-top.align-center {
+      transform: translateX(-50%) translateY(-50%) rotate(-135deg);
+}
+.vc-popover-caret.direction-top.align-right {
+      transform: translateY(-50%) rotate(-135deg);
+}
+.vc-popover-caret.direction-left {
+    left: 100%;
+}
+.vc-popover-caret.direction-left.align-top {
+      transform: translateX(-50%) rotate(135deg);
+}
+.vc-popover-caret.direction-left.align-middle {
+      transform: translateY(-50%) translateX(-50%) rotate(135deg);
+}
+.vc-popover-caret.direction-left.align-bottom {
+      transform: translateX(-50%) rotate(135deg);
+}
+.vc-popover-caret.direction-right {
+    left: 0;
+}
+.vc-popover-caret.direction-right.align-top {
+      transform: translateX(-50%) rotate(-45deg);
+}
+.vc-popover-caret.direction-right.align-middle {
+      transform: translateY(-50%) translateX(-50%) rotate(-45deg);
+}
+.vc-popover-caret.direction-right.align-bottom {
+      transform: translateX(-50%) rotate(-45deg);
+}
+.vc-popover-caret.align-left {
+    left: var(--popover-caret-horizontal-offset);
+}
+.vc-popover-caret.align-center {
+    left: 50%;
+}
+.vc-popover-caret.align-right {
+    right: var(--popover-caret-horizontal-offset);
+}
+.vc-popover-caret.align-top {
+    top: var(--popover-caret-vertical-offset);
+}
+.vc-popover-caret.align-middle {
+    top: 50%;
+}
+.vc-popover-caret.align-bottom {
+    bottom: var(--popover-caret-vertical-offset);
+}
+
+.vc-day-popover-row {
+  display: flex;
+  align-items: center;
+  transition: var(--vc-day-content-transition);
+}
+.vc-day-popover-row-indicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 0;
+  width: 15px;
+}
+.vc-day-popover-row-indicator span {
+    transition: var(--vc-day-content-transition);
+}
+.vc-day-popover-row-label {
+  display: flex;
+  align-items: center;
+  flex-wrap: none;
+  flex-grow: 1;
+  width: -moz-max-content;
+  width: max-content;
+  margin-left: 4px;
+  margin-right: 4px;
+  font-size: var(--vc-text-xs);
+  line-height: var(--vc-leading-normal);
+}
+.vc-day-popover-row-highlight {
+  width: 8px;
+  height: 5px;
+  border-radius: 3px;
+}
+.vc-day-popover-row-dot {
+}
+.vc-day-popover-row-bar {
+  width: 10px;
+  height: 3px;
+}
+
+.vc-base-icon {
+  display: inline-block;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+}
+
+.vc-header {
+  display: grid;
+  grid-gap: 4px;
+  align-items: center;
+  height: 30px;
+  margin-top: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.vc-header.is-lg {
+    font-size: var(--vc-text-lg);
+}
+.vc-header.is-xl {
+    font-size: var(--vc-text-xl);
+}
+.vc-header.is-2xl {
+    font-size: var(--vc-text-2xl);
+}
+.vc-header .vc-title-wrapper {
+    grid-row: 1;
+    grid-column: title;
+}
+.vc-header .vc-prev {
+    grid-row: 1;
+    grid-column: prev;
+}
+.vc-header .vc-next {
+    grid-row: 1;
+    grid-column: next;
+}
+.vc-header .vc-title,
+  .vc-header .vc-prev,
+  .vc-header .vc-next {
+    display: flex;
+    align-items: center;
+    border: 0;
+    border-radius: var(--vc-rounded);
+    pointer-events: auto;
+    -webkit-user-select: none;
+            -moz-user-select: none;
+         user-select: none;
+    cursor: pointer;
+}
+.vc-header .vc-title {
+    color: var(--vc-header-title-color);
+    font-weight: var(--vc-font-semibold);
+    white-space: nowrap;
+    padding: 0 8px;
+    margin: 0;
+    line-height: 30px;
+}
+.vc-header .vc-title:hover {
+      opacity: 0.75;
+}
+.vc-header .vc-arrow {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--vc-header-arrow-color);
+    width: 28px;
+    height: 30px;
+    margin: 0;
+    padding: 0;
+}
+.vc-header .vc-arrow:hover {
+      background: var(--vc-header-arrow-hover-bg);
+}
+.vc-header .vc-arrow:disabled {
+      opacity: 0.25;
+      pointer-events: none;
+}
+
+.vc-nav-header {
+  display: flex;
+  justify-content: space-between;
+}
+.vc-nav-title,
+.vc-nav-arrow,
+.vc-nav-item {
+  font-size: var(--vc-text-sm);
+  margin: 0;
+  cursor: pointer;
+  -webkit-user-select: none;
+          -moz-user-select: none;
+       user-select: none;
+  border: 0;
+  border-radius: var(--vc-rounded);
+  white-space: nowrap;
+}
+.vc-nav-title:hover, .vc-nav-arrow:hover, .vc-nav-item:hover {
+    background-color: var(--vc-nav-hover-bg);
+}
+.vc-nav-title:disabled, .vc-nav-arrow:disabled, .vc-nav-item:disabled {
+    opacity: 0.25;
+    pointer-events: none;
+}
+.vc-nav-title {
+  color: var(--vc-nav-title-color);
+  font-weight: var(--vc-font-bold);
+  line-height: var(--vc-leading-snug);
+  height: 30px;
+  padding: 0 6px;
+}
+.vc-nav-arrow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--vc-header-arrow-color);
+  width: 26px;
+  height: 30px;
+  padding: 0;
+}
+.vc-nav-items {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-row-gap: 2px;
+  grid-column-gap: 5px;
+  margin-top: 2px;
+}
+.vc-nav-item {
+  width: 48px;
+  text-align: center;
+  font-weight: var(--vc-font-semibold);
+  line-height: var(--vc-leading-snug);
+  padding: 6px 0;
+}
+.vc-nav-item.is-active {
+    color: var(--vc-nav-item-active-color);
+    background-color: var(--vc-nav-item-active-bg);
+    font-weight: var(--vc-font-bold);
+}
+.vc-nav-item.is-active:not(:focus) {
+      box-shadow: var(--vc-nav-item-active-box-shadow);
+}
+.vc-nav-item.is-current {
+    color: var(--vc-nav-item-current-color);
+}
+
+.vc-day {
+  position: relative;
+  min-height: 32px;
+  z-index: 1;
+  /* &.is-not-in-month * {
+    opacity: 0;
+    pointer-events: none;
+  } */
+}
+.vc-monthly .is-not-in-month * {
+  opacity: 0;
+  pointer-events: none;
+}
+.vc-day-layer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+.vc-day-box-center-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform-origin: 50% 50%;
+}
+.vc-day-box-left-center {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  transform-origin: 0% 50%;
+}
+.vc-day-box-right-center {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  transform-origin: 100% 50%;
+}
+.vc-day-box-center-bottom {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+.vc-day-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: var(--vc-text-sm);
+  font-weight: var(--vc-font-medium);
+  width: 28px;
+  height: 28px;
+  line-height: 28px;
+  border-radius: var(--vc-rounded-full);
+  -webkit-user-select: none;
+          -moz-user-select: none;
+       user-select: none;
+  cursor: pointer;
+}
+.vc-day-content:hover {
+    background-color: var(--vc-day-content-hover-bg);
+}
+.vc-day-content.vc-disabled {
+    color: var(--vc-day-content-disabled-color);
+}
+
+/* ----Content---- */
+.vc-content:not(.vc-base) {
+  font-weight: var(--vc-font-bold);
+  color: var(--vc-content-color);
+}
+
+/* ----Highlights---- */
+.vc-highlights {
+  overflow: hidden;
+  pointer-events: none;
+  z-index: -1;
+}
+.vc-highlight {
+  width: 28px;
+  height: 28px;
+}
+.vc-highlight.vc-highlight-base-start {
+    width: 50% !important;
+    border-radius: 0 !important;
+    border-right-width: 0 !important;
+}
+.vc-highlight.vc-highlight-base-end {
+    width: 50% !important;
+    border-radius: 0 !important;
+    border-left-width: 0 !important;
+}
+.vc-highlight.vc-highlight-base-middle {
+    width: 100%;
+    border-radius: 0 !important;
+    border-left-width: 0 !important;
+    border-right-width: 0 !important;
+    margin: 0 -1px;
+}
+.vc-highlight-bg-outline,
+.vc-highlight-bg-none {
+  background-color: var(--vc-highlight-outline-bg);
+  border: 2px solid;
+  border-color: var(--vc-highlight-outline-border);
+  border-radius: var(--vc-rounded-full);
+}
+.vc-highlight-bg-light {
+  background-color: var(--vc-highlight-light-bg);
+  border-radius: var(--vc-rounded-full);
+}
+.vc-highlight-bg-solid {
+  background-color: var(--vc-highlight-solid-bg);
+  border-radius: var(--vc-rounded-full);
+}
+.vc-highlight-content-outline,
+.vc-highlight-content-none {
+  font-weight: var(--vc-font-bold);
+  color: var(--vc-highlight-outline-content-color);
+}
+.vc-highlight-content-light {
+  font-weight: var(--vc-font-bold);
+  color: var(--vc-highlight-light-content-color);
+}
+.vc-highlight-content-solid {
+  font-weight: var(--vc-font-bold);
+  color: var(--vc-highlight-solid-content-color);
+}
+
+/* ----Dots---- */
+.vc-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.vc-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 9999px;
+  transition: var(--vc-day-content-transition);
+}
+.vc-dot:not(:last-child) {
+    margin-right: 3px;
+}
+
+/* ----Bars---- */
+.vc-bars {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 75%;
+}
+.vc-bar {
+  flex-grow: 1;
+  height: 3px;
+  transition: var(--vc-day-content-transition);
+}
+.vc-dot {
+  background-color: var(--vc-dot-bg);
+}
+.vc-bar {
+  background-color: var(--vc-bar-bg);
+}
+
+.vc-pane {
+  min-width: 250px;
+}
+.vc-weeknumber {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+}
+.vc-weeknumber.is-left {
+    left: calc(var(--vc-weeknumber-offset-inside) * -1);
+}
+.vc-weeknumber.is-right {
+    right: calc(var(--vc-weeknumber-offset-inside) * -1);
+}
+.vc-weeknumber.is-left-outside {
+    left: calc(var(--vc-weeknumber-offset-outside) * -1);
+}
+.vc-weeknumber.is-right-outside {
+    right: calc(var(--vc-weeknumber-offset-outside) * -1);
+}
+.vc-weeknumber-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: var(--vc-text-xs);
+  font-weight: var(--vc-font-medium);
+  font-style: italic;
+  width: 28px;
+  height: 28px;
+  margin-top: 2px;
+  color: var(--vc-weeknumber-color);
+  -webkit-user-select: none;
+          -moz-user-select: none;
+       user-select: none;
+}
+.vc-weeks {
+  position: relative;
+  /* overflow: auto; */
+  -webkit-overflow-scrolling: touch;
+  padding: 6px;
+  min-width: 232px;
+}
+.vc-weeks.vc-show-weeknumbers-left {
+    margin-left: var(--vc-weeknumber-offset-inside);
+}
+.vc-weeks.vc-show-weeknumbers-right {
+    margin-right: var(--vc-weeknumber-offset-inside);
+}
+.vc-weekday {
+  text-align: center;
+  color: var(--vc-weekday-color);
+  font-size: var(--vc-text-sm);
+  font-weight: var(--vc-font-bold);
+  line-height: 14px;
+  padding-top: 4px;
+  padding-bottom: 8px;
+  cursor: default;
+  -webkit-user-select: none;
+          -moz-user-select: none;
+       user-select: none;
+}
+.vc-week,
+.vc-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  position: relative;
+}
+
+.vc-pane-container {
+  width: 100%;
+  position: relative;
+}
+.vc-pane-container.in-transition {
+    overflow: hidden;
+}
+.vc-pane-layout {
+  display: grid;
+}
+.vc-pane-header-wrapper {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  pointer-events: none;
+}
+.vc-day-popover-container {
+  font-size: var(--vc-text-xs);
+  font-weight: var(--vc-font-medium);
+}
+.vc-day-popover-header {
+  font-size: var(--vc-text-xs);
+  color: var(--vc-day-popover-header-color);
+  font-weight: var(--vc-font-semibold);
+  text-align: center;
+}
+
+.vc-base-select {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 30px;
+  font-size: var(--vc-text-base);
+  font-weight: var(--vc-font-medium);
+}
+.vc-base-select.vc-has-icon select {
+      padding: 0 27px 0 9px;
+}
+.vc-base-select.vc-has-icon .vc-base-sizer {
+      padding: 0 28px 0 10px;
+}
+.vc-base-select.vc-fit-content select {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+}
+.vc-base-select .vc-base-icon {
+    position: absolute;
+    top: 6px;
+    right: 4px;
+    opacity: 0.6;
+    pointer-events: none;
+}
+.vc-base-select .vc-base-sizer {
+    font-size: var(--vc-text-base);
+    font-weight: var(--vc-font-medium);
+    color: transparent;
+    padding: 0px 8px;
+    margin: 0;
+}
+.vc-base-select select {
+    display: inline-flex;
+    justify-content: center;
+    color: var(--vc-select-color);
+    display: block;
+    -webkit-appearance: none;
+            -moz-appearance: none;
+         appearance: none;
+    background-color: var(--vc-select-bg);
+    border-radius: var(--vc-rounded);
+    height: 30px;
+    width: -moz-max-content;
+    width: max-content;
+    padding: 0px 7px;
+    margin: 0;
+    line-height: var(--leading-none);
+    text-indent: 0px;
+    background-image: none;
+    cursor: pointer;
+    text-align: center;
+}
+.vc-base-select select:hover {
+      background-color: var(--vc-select-hover-bg);
+}
+.vc-base-select select.vc-align-left {
+      text-align: left;
+}
+.vc-base-select select.vc-align-right {
+      text-align: right;
+}
+
+.vc-time-picker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 4px;
+}
+.vc-time-picker.vc-invalid {
+    pointer-events: none;
+    opacity: 0.5;
+}
+.vc-time-picker.vc-attached {
+    border-top: 1px solid var(--vc-time-picker-border);
+}
+.vc-time-picker > * + * {
+    margin-top: 4px;
+}
+.vc-time-header {
+  display: flex;
+  align-items: center;
+  font-size: var(--vc-text-sm);
+  font-weight: var(--vc-font-semibold);
+  text-transform: uppercase;
+  margin-top: -4px;
+  padding-left: 4px;
+  padding-right: 4px;
+  line-height: 21px;
+}
+.vc-time-select-group {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 4px;
+  background: var(--vc-time-select-group-bg);
+  border-radius: var(--vc-rounded-md);
+  border: 1px solid var(--vc-time-select-group-border);
+}
+.vc-time-select-group .vc-base-icon {
+    margin-right: 4px;
+    color: var(--vc-time-select-group-icon-color);
+}
+.vc-time-select-group select {
+    background: transparent;
+    padding: 0px 4px;
+}
+.vc-time-weekday {
+  color: var(--vc-time-weekday-color);
+  letter-spacing: var(--tracking-wide);
+}
+.vc-time-month {
+  color: var(--vc-time-month-color);
+  margin-left: 8px;
+}
+.vc-time-day {
+  color: var(--vc-time-day-color);
+  margin-left: 4px;
+}
+.vc-time-year {
+  color: var(--vc-time-year-color);
+  margin-left: 8px;
+}
+.vc-time-colon {
+  margin: 0 1px 2px 2px;
+}
+.vc-time-decimal {
+  margin: 0 0 0 1px;
+}
+.vc-none-enter-active,
+.vc-none-leave-active {
+  transition-duration: 0s;
+}
+
+.vc-fade-enter-active,
+.vc-fade-leave-active,
+.vc-slide-left-enter-active,
+.vc-slide-left-leave-active,
+.vc-slide-right-enter-active,
+.vc-slide-right-leave-active,
+.vc-slide-up-enter-active,
+.vc-slide-up-leave-active,
+.vc-slide-down-enter-active,
+.vc-slide-down-leave-active,
+.vc-slide-fade-enter-active,
+.vc-slide-fade-leave-active {
+  transition: transform var(--vc-slide-duration) var(--vc-slide-timing),
+    opacity var(--vc-slide-duration) var(--vc-slide-timing);
+  backface-visibility: hidden;
+  pointer-events: none;
+}
+
+.vc-none-leave-active,
+.vc-fade-leave-active,
+.vc-slide-left-leave-active,
+.vc-slide-right-leave-active,
+.vc-slide-up-leave-active,
+.vc-slide-down-leave-active {
+  position: absolute !important;
+  width: 100%;
+}
+
+.vc-none-enter-from,
+.vc-none-leave-to,
+.vc-fade-enter-from,
+.vc-fade-leave-to,
+.vc-slide-left-enter-from,
+.vc-slide-left-leave-to,
+.vc-slide-right-enter-from,
+.vc-slide-right-leave-to,
+.vc-slide-up-enter-from,
+.vc-slide-up-leave-to,
+.vc-slide-down-enter-from,
+.vc-slide-down-leave-to,
+.vc-slide-fade-enter-from,
+.vc-slide-fade-leave-to {
+  opacity: 0;
+}
+
+.vc-slide-left-enter-from,
+.vc-slide-right-leave-to,
+.vc-slide-fade-enter-from.direction-left,
+.vc-slide-fade-leave-to.direction-left {
+  transform: translateX(var(--vc-slide-translate));
+}
+
+.vc-slide-right-enter-from,
+.vc-slide-left-leave-to,
+.vc-slide-fade-enter-from.direction-right,
+.vc-slide-fade-leave-to.direction-right {
+  transform: translateX(calc(-1 * var(--vc-slide-translate)));
+}
+
+.vc-slide-up-enter-from,
+.vc-slide-down-leave-to,
+.vc-slide-fade-enter-from.direction-top,
+.vc-slide-fade-leave-to.direction-top {
+  transform: translateY(var(--vc-slide-translate));
+}
+
+.vc-slide-down-enter-from,
+.vc-slide-up-leave-to,
+.vc-slide-fade-enter-from.direction-bottom,
+.vc-slide-fade-leave-to.direction-bottom {
+  transform: translateY(calc(-1 * var(--vc-slide-translate)));
+}
+
+:root {
+  --vc-white: #ffffff;
+  --vc-black: #000000;
+
+  --vc-gray-50: #f8fafc;
+  --vc-gray-100: #f1f5f9;
+  --vc-gray-200: #e2e8f0;
+  --vc-gray-300: #cbd5e1;
+  --vc-gray-400: #94a3b8;
+  --vc-gray-500: #64748b;
+  --vc-gray-600: #475569;
+  --vc-gray-700: #334155;
+  --vc-gray-800: #1e293b;
+  --vc-gray-900: #0f172a;
+
+  --vc-font-family: BlinkMacSystemFont, -apple-system, 'Segoe UI', 'Roboto',
+    'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    'Helvetica', 'Arial', sans-serif;
+
+  --vc-font-normal: 400;
+  --vc-font-medium: 500;
+  --vc-font-semibold: 600;
+  --vc-font-bold: 700;
+
+  --vc-text-2xs: 10px;
+  --vc-text-xs: 12px;
+  --vc-text-sm: 14px;
+  --vc-text-base: 16px;
+  --vc-text-lg: 18px;
+  --vc-text-xl: 20px;
+  --vc-text-2xl: 24px;
+
+  --vc-leading-none: 1;
+  --vc-leading-tight: 1.25;
+  --vc-leading-snug: 1.375;
+  --vc-leading-normal: 1.5;
+
+  --vc-rounded: 0.25rem;
+  --vc-rounded-md: 0.375rem;
+  --vc-rounded-lg: 0.5rem;
+  --vc-rounded-full: 9999px;
+
+  --vc-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --vc-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --vc-shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+
+  --vc-slide-translate: 22px;
+  --vc-slide-duration: 0.15s;
+  --vc-slide-timing: ease;
+
+  --vc-day-content-transition: all 0.13s ease-in;
+  --vc-weeknumber-offset-inside: 26px;
+  --vc-weeknumber-offset-outside: 34px;
+}
+
+.vc-gray {
+  --vc-accent-50: var(--vc-gray-50);
+  --vc-accent-100: var(--vc-gray-100);
+  --vc-accent-200: var(--vc-gray-200);
+  --vc-accent-300: var(--vc-gray-300);
+  --vc-accent-400: var(--vc-gray-400);
+  --vc-accent-500: var(--vc-gray-500);
+  --vc-accent-600: var(--vc-gray-600);
+  --vc-accent-700: var(--vc-gray-700);
+  --vc-accent-800: var(--vc-gray-800);
+  --vc-accent-900: var(--vc-gray-900);
+}
+
+.vc-red {
+  --vc-accent-50: #fef2f2;
+  --vc-accent-100: #fee2e2;
+  --vc-accent-200: #fecaca;
+  --vc-accent-300: #fca5a5;
+  --vc-accent-400: #f87171;
+  --vc-accent-500: #ef4444;
+  --vc-accent-600: #dc2626;
+  --vc-accent-700: #b91c1c;
+  --vc-accent-800: #991b1b;
+  --vc-accent-900: #7f1d1d;
+}
+
+.vc-orange {
+  --vc-accent-50: #fff7ed;
+  --vc-accent-100: #ffedd5;
+  --vc-accent-200: #fed7aa;
+  --vc-accent-300: #fdba74;
+  --vc-accent-400: #fb923c;
+  --vc-accent-500: #f97316;
+  --vc-accent-600: #ea580c;
+  --vc-accent-700: #c2410c;
+  --vc-accent-800: #9a3412;
+  --vc-accent-900: #7c2d12;
+}
+
+.vc-yellow {
+  --vc-accent-50: #fefce8;
+  --vc-accent-100: #fef9c3;
+  --vc-accent-200: #fef08a;
+  --vc-accent-300: #fde047;
+  --vc-accent-400: #facc15;
+  --vc-accent-500: #eab308;
+  --vc-accent-600: #ca8a04;
+  --vc-accent-700: #a16207;
+  --vc-accent-800: #854d0e;
+  --vc-accent-900: #713f12;
+}
+
+.vc-green {
+  --vc-accent-50: #f0fdf4;
+  --vc-accent-100: #dcfce7;
+  --vc-accent-200: #bbf7d0;
+  --vc-accent-300: #86efac;
+  --vc-accent-400: #4ade80;
+  --vc-accent-500: #22c55e;
+  --vc-accent-600: #16a34a;
+  --vc-accent-700: #15803d;
+  --vc-accent-800: #166534;
+  --vc-accent-900: #14532d;
+}
+
+.vc-teal {
+  --vc-accent-50: #f0fdfa;
+  --vc-accent-100: #ccfbf1;
+  --vc-accent-200: #99f6e4;
+  --vc-accent-300: #5eead4;
+  --vc-accent-400: #2dd4bf;
+  --vc-accent-500: #14b8a6;
+  --vc-accent-600: #0d9488;
+  --vc-accent-700: #0f766e;
+  --vc-accent-800: #115e59;
+  --vc-accent-900: #134e4a;
+}
+
+.vc-blue {
+  --vc-accent-50: #eff6ff;
+  --vc-accent-100: #dbeafe;
+  --vc-accent-200: #bfdbfe;
+  --vc-accent-300: #93c5fd;
+  --vc-accent-400: #60a5fa;
+  --vc-accent-500: #3b82f6;
+  --vc-accent-600: #2563eb;
+  --vc-accent-700: #1d4ed8;
+  --vc-accent-800: #1e40af;
+  --vc-accent-900: #1e3a8a;
+}
+
+.vc-indigo {
+  --vc-accent-50: #eef2ff;
+  --vc-accent-100: #e0e7ff;
+  --vc-accent-200: #c7d2fe;
+  --vc-accent-300: #a5b4fc;
+  --vc-accent-400: #818cf8;
+  --vc-accent-500: #6366f1;
+  --vc-accent-600: #4f46e5;
+  --vc-accent-700: #4338ca;
+  --vc-accent-800: #3730a3;
+  --vc-accent-900: #312e81;
+}
+
+.vc-purple {
+  --vc-accent-50: #faf5ff;
+  --vc-accent-100: #f3e8ff;
+  --vc-accent-200: #e9d5ff;
+  --vc-accent-300: #d8b4fe;
+  --vc-accent-400: #c084fc;
+  --vc-accent-500: #a855f7;
+  --vc-accent-600: #9333ea;
+  --vc-accent-700: #7e22ce;
+  --vc-accent-800: #6b21a8;
+  --vc-accent-900: #581c87;
+}
+
+.vc-pink {
+  --vc-accent-50: #fdf2f8;
+  --vc-accent-100: #fce7f3;
+  --vc-accent-200: #fbcfe8;
+  --vc-accent-300: #f9a8d4;
+  --vc-accent-400: #f472b6;
+  --vc-accent-500: #ec4899;
+  --vc-accent-600: #db2777;
+  --vc-accent-700: #be185d;
+  --vc-accent-800: #9d174d;
+  --vc-accent-900: #831843;
+}
+
+.vc-focus:focus-within {
+    outline: 0;
+    box-shadow: var(--vc-focus-ring);
+  }
+
+.vc-light {
+  /* Base */
+  --vc-color: var(--vc-gray-900);
+  --vc-bg: var(--vc-white);
+  --vc-border: var(--vc-gray-300);
+  --vc-hover-bg: hsla(211, 25%, 84%, 0.3);
+  --vc-focus-ring: 0 0 0 2px rgb(59, 131, 246, 0.4);
+  /* Calendar header */
+  --vc-header-arrow-color: var(--vc-gray-500);
+  --vc-header-arrow-hover-bg: var(--vc-gray-200);
+  --vc-header-title-color: var(--vc-gray-900);
+  /* Calendar weekdays */
+  --vc-weekday-color: var(--vc-gray-500);
+  /* Calendar weeknumbers */
+  --vc-weeknumber-color: var(--vc-gray-400);
+  /* Calendar nav */
+  --vc-nav-hover-bg: var(--vc-gray-200);
+  --vc-nav-title-color: var(--vc-gray-900);
+  --vc-nav-item-hover-box-shadow: none;
+  --vc-nav-item-active-color: var(--vc-white);
+  --vc-nav-item-active-bg: var(--vc-accent-500);
+  --vc-nav-item-active-box-shadow: var(--vc-shadow);
+  --vc-nav-item-current-color: var(--vc-accent-600);
+  /* Calendar day popover */
+  --vc-day-popover-container-color: var(--vc-white);
+  --vc-day-popover-container-bg: var(--vc-gray-800);
+  --vc-day-popover-container-border: var(--vc-gray-700);
+  --vc-day-popover-header-color: var(--vc-gray-700);
+  /* Popover content */
+  --vc-popover-content-color: var(--vc-gray-900);
+  --vc-popover-content-bg: var(--vc-gray-50);
+  --vc-popover-content-border: var(--vc-gray-300);
+  /* Time picker */
+  --vc-time-picker-border: var(--vc-gray-300);
+  --vc-time-weekday-color: var(--vc-gray-700);
+  --vc-time-month-color: var(--vc-accent-600);
+  --vc-time-day-color: var(--vc-accent-600);
+  --vc-time-year-color: var(--vc-gray-500);
+  /* Time select group */
+  --vc-time-select-group-bg: var(--vc-gray-50);
+  --vc-time-select-group-border: var(--vc-gray-300);
+  --vc-time-select-group-icon-color: var(--vc-accent-500);
+  /* Base select */
+  --vc-select-color: var(--vc-gray-900);
+  --vc-select-bg: var(--vc-gray-100);
+  --vc-select-hover-bg: var(--vc-gray-200);
+  /* Calendar day */
+  --vc-day-content-hover-bg: var(--vc-hover-bg);
+  --vc-day-content-disabled-color: var(--vc-gray-400);
+}
+
+/* Calendar attributes */
+
+.vc-light.vc-attr,
+  .vc-light .vc-attr {
+    --vc-content-color: var(--vc-accent-600);
+    --vc-highlight-outline-bg: var(--vc-white);
+    --vc-highlight-outline-border: var(--vc-accent-600);
+    --vc-highlight-outline-content-color: var(--vc-accent-700);
+    --vc-highlight-light-bg: var(--vc-accent-200);
+    --vc-highlight-light-content-color: var(--vc-accent-900);
+    --vc-highlight-solid-bg: var(--vc-accent-600);
+    --vc-highlight-solid-content-color: var(--vc-white);
+    --vc-dot-bg: var(--vc-accent-600);
+    --vc-bar-bg: var(--vc-accent-600);
+  }
+
+.vc-dark {
+  /* Base */
+  --vc-color: var(--vc-white);
+  --vc-bg: var(--vc-gray-900);
+  --vc-border: var(--vc-gray-700);
+  --vc-hover-bg: hsla(216, 15%, 52%, 0.3);
+  --vc-focus-ring: 0 0 0 2px rgb(59 130 246 / 0.7);
+  /* Calendar header */
+  --vc-header-arrow-color: var(--vc-gray-300);
+  --vc-header-arrow-hover-bg: var(--vc-gray-800);
+  --vc-header-title-color: var(--vc-gray-100);
+  /* Calendar weekdays */
+  --vc-weekday-color: var(--vc-accent-200);
+  /* Calendar weeknumbers */
+  --vc-weeknumber-color: var(--vc-gray-500);
+  /* Calendar nav */
+  --vc-nav-hover-bg: var(--vc-gray-700);
+  --vc-nav-title-color: var(--vc-gray-100);
+  --vc-nav-item-hover-box-shadow: none;
+  --vc-nav-item-active-color: var(--vc-white);
+  --vc-nav-item-active-bg: var(--vc-accent-500);
+  --vc-nav-item-active-box-shadow: none;
+  --vc-nav-item-current-color: var(--vc-accent-400);
+  /* Calendar day popover */
+  --vc-day-popover-container-color: var(--vc-gray-800);
+  --vc-day-popover-container-bg: var(--vc-white);
+  --vc-day-popover-container-border: var(--vc-gray-100);
+  --vc-day-popover-header-color: var(--vc-gray-300);
+  /* Popover content */
+  --vc-popover-content-color: var(--vc-white);
+  --vc-popover-content-bg: var(--vc-gray-800);
+  --vc-popover-content-border: var(--vc-gray-700);
+  /* Time picker */
+  --vc-time-picker-border: var(--vc-gray-700);
+  --vc-time-weekday-color: var(--vc-gray-400);
+  --vc-time-month-color: var(--vc-accent-400);
+  --vc-time-day-color: var(--vc-accent-400);
+  --vc-time-year-color: var(--vc-gray-500);
+  /* Time select group */
+  --vc-time-select-group-bg: var(--vc-gray-700);
+  --vc-time-select-group-border: var(--vc-gray-500);
+  --vc-time-select-group-icon-color: var(--vc-accent-400);
+  /* Base select */
+  --vc-select-color: var(--vc-gray-200);
+  --vc-select-bg: var(--vc-gray-700);
+  --vc-select-hover-bg: var(--vc-gray-600);
+  /* Calendar day */
+  --vc-day-content-hover-bg: var(--vc-hover-bg);
+  --vc-day-content-disabled-color: var(--vc-gray-600);
+}
+
+/* Calendar attributes */
+
+.vc-dark.vc-attr,
+  .vc-dark .vc-attr {
+    --vc-content-color: var(--vc-accent-500);
+    --vc-highlight-outline-bg: var(--vc-gray-900);
+    --vc-highlight-outline-border: var(--vc-accent-300);
+    --vc-highlight-outline-content-color: var(--vc-accent-200);
+    --vc-highlight-light-bg: var(--vc-accent-800);
+    --vc-highlight-light-content-color: var(--vc-accent-100);
+    --vc-highlight-solid-bg: var(--vc-accent-500);
+    --vc-highlight-solid-content-color: var(--vc-white);
+    --vc-dot-bg: var(--vc-accent-500);
+    --vc-bar-bg: var(--vc-accent-500);
+  }
+
+.vc-container {
+  position: relative;
+  display: inline-flex;
+  width: -moz-max-content;
+  width: max-content;
+  height: -moz-max-content;
+  height: max-content;
+  font-family: var(--vc-font-family);
+  color: var(--vc-color);
+  background-color: var(--vc-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.vc-container,
+  .vc-container * {
+    box-sizing: border-box;
+  }
+
+.vc-container:focus, .vc-container *:focus {
+      outline: none;
+    }
+
+/* Hides double border within popovers */
+
+.vc-container .vc-container {
+    border: none;
+  }
+
+.vc-bordered {
+  border: 1px solid;
+  border-color: var(--vc-border);
+  border-radius: var(--vc-rounded-lg);
+}
+
+.vc-expanded {
+  min-width: 100%;
+}
+
+.vc-transparent {
+  background-color: transparent;
+}
+
+.vc-date-picker-content {
+  padding: 0;
+  background-color: var(--vc-bg);
+}
+
+.vc-date-picker-content .vc-container {
+    border: 0;
+  }
+
+#add-program[data-v-6390b723] {
+  height: 24px;
+  width: 24px;
+  padding: unset;
+  transition: transform 0.1s ease-in-out;
+}
+.em-color-round[data-v-6390b723] {
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+}
+.modal-date-picker[data-v-6390b723] {
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 9999px 9999px rgb(0 0 0 / 50%);
 }
 .fa-file-upload[data-v-6272a5a1] {
   font-size: 25px;
@@ -1211,7 +2703,176 @@ a.tw-cursor-pointer:nth-child(2):hover .material-icons[data-v-bb742359] {
 #add-form-next-campaign[data-v-3c1cd8e4] {
   width: 100%;
 }
-.form-builder-element {
+.em-skeleton[data-v-afece979] {
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+  vertical-align: middle;
+  background-color: #DDDBDD !important;
+  transition: all 0.3s;
+}
+.em-skeleton[data-v-afece979]::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(90deg, rgba(255, 255, 255, 0) 0, rgba(255, 255, 255, 0.2) 20%, rgba(255, 255, 255, 0.5) 60%, rgba(255, 255, 255, 0));
+  animation: shimmer-afece979 4s infinite;
+  content: "";
+}
+@keyframes shimmer-afece979 {
+100% {
+    transform: translateX(100%);
+}
+}.head {
+  padding: 0 0 20px 0;
+}
+#onboarding_list .head {
+  position: fixed;
+  display: flex;
+  justify-content: space-between;
+  width: -webkit-fill-available;
+  width: -moz-available;
+  width: stretch;
+  background: var(--em-coordinator-bg);
+  top: 72px;
+  box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
+  left: 75px;
+  padding: 24px 33px 24px 33px;
+  min-height: 86px;
+}
+.view-settings #onboarding_list .head {
+  position: inherit;
+}
+#onboarding_list .list {
+  margin-top: 77px;
+}
+#onboarding_list.alert-banner-displayed .head {
+  top: 114px;
+}
+#list-nav li {
+  transition: all 0.3s;
+}
+#list-table {
+  transition: all 0.3s;
+  border: 0;
+}
+#list-table thead th {
+  background-color: transparent;
+}
+#list-table.blocs {
+  border: 0;
+}
+#list-table.blocs thead {
+  display: none;
+}
+#list-table.blocs tbody {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  -moz-column-gap: 24px;
+       column-gap: 24px;
+  row-gap: 24px;
+}
+#list-table.blocs tbody tr {
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 200px;
+}
+#list-table.blocs tbody tr td {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 0;
+}
+#list-table.blocs tbody tr td.actions {
+  align-items: center;
+  flex-direction: column;
+}
+#list-table.blocs tbody tr td ul {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-end;
+  padding: 0;
+  margin: 0;
+}
+#list-table.blocs tbody tr td ul li {
+  list-style: none;
+  cursor: pointer;
+  width: 100%;
+}
+#list-table:not(.blocs) tbody tr:nth-child(2n+1) td {
+  background-color: var(--neutral-100);
+}
+#list-table:not(.blocs) tbody tr:nth-child(2n-1):hover td {
+  background-color: var(--neutral-200);
+}
+#list-table:not(.blocs) tbody tr:nth-child(2n) > td {
+  background-color: var(--neutral-300);
+}
+#list-table:not(.blocs) tbody tr:nth-child(2n):hover > td {
+  background-color: var(--neutral-400);
+}
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  -moz-column-gap: 24px;
+       column-gap: 24px;
+  row-gap: 24px;
+}
+#tabs-loading :not(.skeleton-grid) .skeleton-item, #tabs-loading:not(.skeleton-grid) .skeleton-item, #items-loading :not(.skeleton-grid) .skeleton-item, #items-loading:not(.skeleton-grid) .skeleton-item {
+  height: 40px !important;
+  width: 100% !important;
+  margin-bottom: 16px !important;
+}
+#tabs-loading .skeleton-grid .skeleton-item, #tabs-loading.skeleton-grid .skeleton-item, #items-loading .skeleton-grid .skeleton-item, #items-loading.skeleton-grid .skeleton-item {
+  height: 200px !important;
+  min-width: 340px !important;
+}
+#pagination {
+  transition: all 0.3s;
+  overflow: hidden;
+}
+#pagination ul {
+  overflow: auto;
+}
+#pagination li {
+  transition: all 0.3s;
+  font-size: 12px;
+  padding: 0 12px;
+}#incremental-selector {
+  position: relative;
+}
+#incremental-selector .em-custom-selector {
+  margin: 0;
+  list-style: none;
+  background: white;
+  position: absolute;
+  top: 42px;
+  max-height: 20vh;
+  overflow-y: auto;
+  z-index: 10;
+}
+#incremental-selector .em-custom-selector li {
+  transition: 0.3s all;
+}
+#incremental-selector .em-custom-selector li:hover {
+  background: #f8f8f8;
+}
+#incremental-selector #existing-value {
+  position: relative;
+}
+#incremental-selector #existing-value input {
+  padding-right: 25px;
+}
+#incremental-selector #existing-value span {
+  position: absolute;
+  right: 5px;
+}.form-builder-element {
   width: 258px;
   height: auto;
   font-size: 14px;
@@ -2613,1331 +4274,6 @@ hr {
   flex-direction: column;
   justify-content: space-between;
 }
-.head {
-  padding: 0 0 20px 0;
-}
-#onboarding_list .head {
-  position: fixed;
-  display: flex;
-  justify-content: space-between;
-  width: -webkit-fill-available;
-  width: -moz-available;
-  width: stretch;
-  background: var(--em-coordinator-bg);
-  top: 72px;
-  box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
-  left: 75px;
-  padding: 24px 33px 24px 33px;
-  min-height: 86px;
-}
-.view-settings #onboarding_list .head {
-  position: inherit;
-}
-#onboarding_list .list {
-  margin-top: 77px;
-}
-#onboarding_list.alert-banner-displayed .head {
-  top: 114px;
-}
-#list-nav li {
-  transition: all 0.3s;
-}
-#list-table {
-  transition: all 0.3s;
-  border: 0;
-}
-#list-table thead th {
-  background-color: transparent;
-}
-#list-table.blocs {
-  border: 0;
-}
-#list-table.blocs thead {
-  display: none;
-}
-#list-table.blocs tbody {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-  -moz-column-gap: 24px;
-       column-gap: 24px;
-  row-gap: 24px;
-}
-#list-table.blocs tbody tr {
-  background: #fff;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-height: 200px;
-}
-#list-table.blocs tbody tr td {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  padding: 0;
-}
-#list-table.blocs tbody tr td.actions {
-  align-items: center;
-}
-#list-table.blocs tbody tr td ul {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: flex-end;
-  padding: 0;
-  margin: 0;
-}
-#list-table.blocs tbody tr td ul li {
-  list-style: none;
-  cursor: pointer;
-  width: 100%;
-}
-.skeleton-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-  -moz-column-gap: 24px;
-       column-gap: 24px;
-  row-gap: 24px;
-}
-#tabs-loading :not(.skeleton-grid) .skeleton-item, #tabs-loading:not(.skeleton-grid) .skeleton-item, #items-loading :not(.skeleton-grid) .skeleton-item, #items-loading:not(.skeleton-grid) .skeleton-item {
-  height: 40px !important;
-  width: 100% !important;
-  margin-bottom: 16px !important;
-}
-#tabs-loading .skeleton-grid .skeleton-item, #tabs-loading.skeleton-grid .skeleton-item, #items-loading .skeleton-grid .skeleton-item, #items-loading.skeleton-grid .skeleton-item {
-  height: 200px !important;
-  min-width: 340px !important;
-}
-#pagination {
-  transition: all 0.3s;
-  overflow: hidden;
-}
-#pagination ul {
-  overflow: auto;
-}
-#pagination li {
-  transition: all 0.3s;
-  font-size: 12px;
-  padding: 0 12px;
-}.em-skeleton[data-v-afece979] {
-  display: inline-block;
-  position: relative;
-  overflow: hidden;
-  vertical-align: middle;
-  background-color: #DDDBDD !important;
-  transition: all 0.3s;
-}
-.em-skeleton[data-v-afece979]::after {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  transform: translateX(-100%);
-  background-image: linear-gradient(90deg, rgba(255, 255, 255, 0) 0, rgba(255, 255, 255, 0.2) 20%, rgba(255, 255, 255, 0.5) 60%, rgba(255, 255, 255, 0));
-  animation: shimmer-afece979 4s infinite;
-  content: "";
-}
-@keyframes shimmer-afece979 {
-100% {
-    transform: translateX(100%);
-}
-}
-.autocomplete[data-v-9c3002aa] {
-  position: relative;
-  width: 100%;
-  display: block;
-  font-size: 14px;
-  line-height: 1.428571429;
-  color: #333333;
-  background-color: #ffffff;
-}
-.autocomplete input[data-v-9c3002aa] {
-  height: 48px;
-  margin-bottom: 0px;
-}
-.autocomplete-results[data-v-9c3002aa] {
-  padding: 0;
-  margin: 0;
-  border: 1px solid #eeeeee;
-  overflow: auto;
-  background-color: white;
-  position: relative;
-  z-index: 10;
-}
-.autocomplete-result[data-v-9c3002aa] {
-  list-style: none;
-  text-align: left;
-  padding: 16px 6px;
-  cursor: pointer;
-}
-.autocomplete-result.is-active[data-v-9c3002aa],
-.autocomplete-result[data-v-9c3002aa]:hover {
-  background-color: #EDEDED;
-  color: white;
-}
-
-.vc-popover-content-wrapper {
-  --popover-horizontal-content-offset: 8px;
-  --popover-vertical-content-offset: 10px;
-  --popover-caret-horizontal-offset: 18px;
-  --popover-caret-vertical-offset: 8px;
-
-  position: absolute;
-  display: block;
-  outline: none;
-  z-index: 10;
-}
-.vc-popover-content-wrapper:not(.is-interactive) {
-    pointer-events: none;
-}
-.vc-popover-content {
-  position: relative;
-  color: var(--vc-popover-content-color);
-  font-weight: var(--vc-font-medium);
-  background-color: var(--vc-popover-content-bg);
-  border: 1px solid;
-  border-color: var(--vc-popover-content-border);
-  border-radius: var(--vc-rounded-lg);
-  padding: 4px;
-  outline: none;
-  z-index: 10;
-  box-shadow: var(--vc-shadow-lg);
-}
-.vc-popover-content.direction-bottom {
-    margin-top: var(--popover-vertical-content-offset);
-}
-.vc-popover-content.direction-top {
-    margin-bottom: var(--popover-vertical-content-offset);
-}
-.vc-popover-content.direction-left {
-    margin-right: var(--popover-horizontal-content-offset);
-}
-.vc-popover-content.direction-right {
-    margin-left: var(--popover-horizontal-content-offset);
-}
-.vc-popover-caret {
-  content: '';
-  position: absolute;
-  display: block;
-  width: 12px;
-  height: 12px;
-  border-top: inherit;
-  border-left: inherit;
-  background-color: inherit;
-  z-index: -1;
-}
-.vc-popover-caret.direction-bottom {
-    top: 0;
-}
-.vc-popover-caret.direction-bottom.align-left {
-      transform: translateY(-50%) rotate(45deg);
-}
-.vc-popover-caret.direction-bottom.align-center {
-      transform: translateX(-50%) translateY(-50%) rotate(45deg);
-}
-.vc-popover-caret.direction-bottom.align-right {
-      transform: translateY(-50%) rotate(45deg);
-}
-.vc-popover-caret.direction-top {
-    top: 100%;
-}
-.vc-popover-caret.direction-top.align-left {
-      transform: translateY(-50%) rotate(-135deg);
-}
-.vc-popover-caret.direction-top.align-center {
-      transform: translateX(-50%) translateY(-50%) rotate(-135deg);
-}
-.vc-popover-caret.direction-top.align-right {
-      transform: translateY(-50%) rotate(-135deg);
-}
-.vc-popover-caret.direction-left {
-    left: 100%;
-}
-.vc-popover-caret.direction-left.align-top {
-      transform: translateX(-50%) rotate(135deg);
-}
-.vc-popover-caret.direction-left.align-middle {
-      transform: translateY(-50%) translateX(-50%) rotate(135deg);
-}
-.vc-popover-caret.direction-left.align-bottom {
-      transform: translateX(-50%) rotate(135deg);
-}
-.vc-popover-caret.direction-right {
-    left: 0;
-}
-.vc-popover-caret.direction-right.align-top {
-      transform: translateX(-50%) rotate(-45deg);
-}
-.vc-popover-caret.direction-right.align-middle {
-      transform: translateY(-50%) translateX(-50%) rotate(-45deg);
-}
-.vc-popover-caret.direction-right.align-bottom {
-      transform: translateX(-50%) rotate(-45deg);
-}
-.vc-popover-caret.align-left {
-    left: var(--popover-caret-horizontal-offset);
-}
-.vc-popover-caret.align-center {
-    left: 50%;
-}
-.vc-popover-caret.align-right {
-    right: var(--popover-caret-horizontal-offset);
-}
-.vc-popover-caret.align-top {
-    top: var(--popover-caret-vertical-offset);
-}
-.vc-popover-caret.align-middle {
-    top: 50%;
-}
-.vc-popover-caret.align-bottom {
-    bottom: var(--popover-caret-vertical-offset);
-}
-
-.vc-day-popover-row {
-  display: flex;
-  align-items: center;
-  transition: var(--vc-day-content-transition);
-}
-.vc-day-popover-row-indicator {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-grow: 0;
-  width: 15px;
-}
-.vc-day-popover-row-indicator span {
-    transition: var(--vc-day-content-transition);
-}
-.vc-day-popover-row-label {
-  display: flex;
-  align-items: center;
-  flex-wrap: none;
-  flex-grow: 1;
-  width: -moz-max-content;
-  width: max-content;
-  margin-left: 4px;
-  margin-right: 4px;
-  font-size: var(--vc-text-xs);
-  line-height: var(--vc-leading-normal);
-}
-.vc-day-popover-row-highlight {
-  width: 8px;
-  height: 5px;
-  border-radius: 3px;
-}
-.vc-day-popover-row-dot {
-}
-.vc-day-popover-row-bar {
-  width: 10px;
-  height: 3px;
-}
-
-.vc-base-icon {
-  display: inline-block;
-  stroke: currentColor;
-  stroke-width: 2;
-  fill: none;
-}
-
-.vc-header {
-  display: grid;
-  grid-gap: 4px;
-  align-items: center;
-  height: 30px;
-  margin-top: 10px;
-  padding-left: 10px;
-  padding-right: 10px;
-}
-.vc-header.is-lg {
-    font-size: var(--vc-text-lg);
-}
-.vc-header.is-xl {
-    font-size: var(--vc-text-xl);
-}
-.vc-header.is-2xl {
-    font-size: var(--vc-text-2xl);
-}
-.vc-header .vc-title-wrapper {
-    grid-row: 1;
-    grid-column: title;
-}
-.vc-header .vc-prev {
-    grid-row: 1;
-    grid-column: prev;
-}
-.vc-header .vc-next {
-    grid-row: 1;
-    grid-column: next;
-}
-.vc-header .vc-title,
-  .vc-header .vc-prev,
-  .vc-header .vc-next {
-    display: flex;
-    align-items: center;
-    border: 0;
-    border-radius: var(--vc-rounded);
-    pointer-events: auto;
-    -webkit-user-select: none;
-            -moz-user-select: none;
-         user-select: none;
-    cursor: pointer;
-}
-.vc-header .vc-title {
-    color: var(--vc-header-title-color);
-    font-weight: var(--vc-font-semibold);
-    white-space: nowrap;
-    padding: 0 8px;
-    margin: 0;
-    line-height: 30px;
-}
-.vc-header .vc-title:hover {
-      opacity: 0.75;
-}
-.vc-header .vc-arrow {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: var(--vc-header-arrow-color);
-    width: 28px;
-    height: 30px;
-    margin: 0;
-    padding: 0;
-}
-.vc-header .vc-arrow:hover {
-      background: var(--vc-header-arrow-hover-bg);
-}
-.vc-header .vc-arrow:disabled {
-      opacity: 0.25;
-      pointer-events: none;
-}
-
-.vc-nav-header {
-  display: flex;
-  justify-content: space-between;
-}
-.vc-nav-title,
-.vc-nav-arrow,
-.vc-nav-item {
-  font-size: var(--vc-text-sm);
-  margin: 0;
-  cursor: pointer;
-  -webkit-user-select: none;
-          -moz-user-select: none;
-       user-select: none;
-  border: 0;
-  border-radius: var(--vc-rounded);
-  white-space: nowrap;
-}
-.vc-nav-title:hover, .vc-nav-arrow:hover, .vc-nav-item:hover {
-    background-color: var(--vc-nav-hover-bg);
-}
-.vc-nav-title:disabled, .vc-nav-arrow:disabled, .vc-nav-item:disabled {
-    opacity: 0.25;
-    pointer-events: none;
-}
-.vc-nav-title {
-  color: var(--vc-nav-title-color);
-  font-weight: var(--vc-font-bold);
-  line-height: var(--vc-leading-snug);
-  height: 30px;
-  padding: 0 6px;
-}
-.vc-nav-arrow {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: var(--vc-header-arrow-color);
-  width: 26px;
-  height: 30px;
-  padding: 0;
-}
-.vc-nav-items {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-row-gap: 2px;
-  grid-column-gap: 5px;
-  margin-top: 2px;
-}
-.vc-nav-item {
-  width: 48px;
-  text-align: center;
-  font-weight: var(--vc-font-semibold);
-  line-height: var(--vc-leading-snug);
-  padding: 6px 0;
-}
-.vc-nav-item.is-active {
-    color: var(--vc-nav-item-active-color);
-    background-color: var(--vc-nav-item-active-bg);
-    font-weight: var(--vc-font-bold);
-}
-.vc-nav-item.is-active:not(:focus) {
-      box-shadow: var(--vc-nav-item-active-box-shadow);
-}
-.vc-nav-item.is-current {
-    color: var(--vc-nav-item-current-color);
-}
-
-.vc-day {
-  position: relative;
-  min-height: 32px;
-  z-index: 1;
-  /* &.is-not-in-month * {
-    opacity: 0;
-    pointer-events: none;
-  } */
-}
-.vc-monthly .is-not-in-month * {
-  opacity: 0;
-  pointer-events: none;
-}
-.vc-day-layer {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  pointer-events: none;
-}
-.vc-day-box-center-center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transform-origin: 50% 50%;
-}
-.vc-day-box-left-center {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  transform-origin: 0% 50%;
-}
-.vc-day-box-right-center {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  transform-origin: 100% 50%;
-}
-.vc-day-box-center-bottom {
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-}
-.vc-day-content {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: var(--vc-text-sm);
-  font-weight: var(--vc-font-medium);
-  width: 28px;
-  height: 28px;
-  line-height: 28px;
-  border-radius: var(--vc-rounded-full);
-  -webkit-user-select: none;
-          -moz-user-select: none;
-       user-select: none;
-  cursor: pointer;
-}
-.vc-day-content:hover {
-    background-color: var(--vc-day-content-hover-bg);
-}
-.vc-day-content.vc-disabled {
-    color: var(--vc-day-content-disabled-color);
-}
-
-/* ----Content---- */
-.vc-content:not(.vc-base) {
-  font-weight: var(--vc-font-bold);
-  color: var(--vc-content-color);
-}
-
-/* ----Highlights---- */
-.vc-highlights {
-  overflow: hidden;
-  pointer-events: none;
-  z-index: -1;
-}
-.vc-highlight {
-  width: 28px;
-  height: 28px;
-}
-.vc-highlight.vc-highlight-base-start {
-    width: 50% !important;
-    border-radius: 0 !important;
-    border-right-width: 0 !important;
-}
-.vc-highlight.vc-highlight-base-end {
-    width: 50% !important;
-    border-radius: 0 !important;
-    border-left-width: 0 !important;
-}
-.vc-highlight.vc-highlight-base-middle {
-    width: 100%;
-    border-radius: 0 !important;
-    border-left-width: 0 !important;
-    border-right-width: 0 !important;
-    margin: 0 -1px;
-}
-.vc-highlight-bg-outline,
-.vc-highlight-bg-none {
-  background-color: var(--vc-highlight-outline-bg);
-  border: 2px solid;
-  border-color: var(--vc-highlight-outline-border);
-  border-radius: var(--vc-rounded-full);
-}
-.vc-highlight-bg-light {
-  background-color: var(--vc-highlight-light-bg);
-  border-radius: var(--vc-rounded-full);
-}
-.vc-highlight-bg-solid {
-  background-color: var(--vc-highlight-solid-bg);
-  border-radius: var(--vc-rounded-full);
-}
-.vc-highlight-content-outline,
-.vc-highlight-content-none {
-  font-weight: var(--vc-font-bold);
-  color: var(--vc-highlight-outline-content-color);
-}
-.vc-highlight-content-light {
-  font-weight: var(--vc-font-bold);
-  color: var(--vc-highlight-light-content-color);
-}
-.vc-highlight-content-solid {
-  font-weight: var(--vc-font-bold);
-  color: var(--vc-highlight-solid-content-color);
-}
-
-/* ----Dots---- */
-.vc-dots {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.vc-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 9999px;
-  transition: var(--vc-day-content-transition);
-}
-.vc-dot:not(:last-child) {
-    margin-right: 3px;
-}
-
-/* ----Bars---- */
-.vc-bars {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  width: 75%;
-}
-.vc-bar {
-  flex-grow: 1;
-  height: 3px;
-  transition: var(--vc-day-content-transition);
-}
-.vc-dot {
-  background-color: var(--vc-dot-bg);
-}
-.vc-bar {
-  background-color: var(--vc-bar-bg);
-}
-
-.vc-pane {
-  min-width: 250px;
-}
-.vc-weeknumber {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-}
-.vc-weeknumber.is-left {
-    left: calc(var(--vc-weeknumber-offset-inside) * -1);
-}
-.vc-weeknumber.is-right {
-    right: calc(var(--vc-weeknumber-offset-inside) * -1);
-}
-.vc-weeknumber.is-left-outside {
-    left: calc(var(--vc-weeknumber-offset-outside) * -1);
-}
-.vc-weeknumber.is-right-outside {
-    right: calc(var(--vc-weeknumber-offset-outside) * -1);
-}
-.vc-weeknumber-content {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: var(--vc-text-xs);
-  font-weight: var(--vc-font-medium);
-  font-style: italic;
-  width: 28px;
-  height: 28px;
-  margin-top: 2px;
-  color: var(--vc-weeknumber-color);
-  -webkit-user-select: none;
-          -moz-user-select: none;
-       user-select: none;
-}
-.vc-weeks {
-  position: relative;
-  /* overflow: auto; */
-  -webkit-overflow-scrolling: touch;
-  padding: 6px;
-  min-width: 232px;
-}
-.vc-weeks.vc-show-weeknumbers-left {
-    margin-left: var(--vc-weeknumber-offset-inside);
-}
-.vc-weeks.vc-show-weeknumbers-right {
-    margin-right: var(--vc-weeknumber-offset-inside);
-}
-.vc-weekday {
-  text-align: center;
-  color: var(--vc-weekday-color);
-  font-size: var(--vc-text-sm);
-  font-weight: var(--vc-font-bold);
-  line-height: 14px;
-  padding-top: 4px;
-  padding-bottom: 8px;
-  cursor: default;
-  -webkit-user-select: none;
-          -moz-user-select: none;
-       user-select: none;
-}
-.vc-week,
-.vc-weekdays {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  position: relative;
-}
-
-.vc-pane-container {
-  width: 100%;
-  position: relative;
-}
-.vc-pane-container.in-transition {
-    overflow: hidden;
-}
-.vc-pane-layout {
-  display: grid;
-}
-.vc-pane-header-wrapper {
-  position: absolute;
-  top: 0;
-  width: 100%;
-  pointer-events: none;
-}
-.vc-day-popover-container {
-  font-size: var(--vc-text-xs);
-  font-weight: var(--vc-font-medium);
-}
-.vc-day-popover-header {
-  font-size: var(--vc-text-xs);
-  color: var(--vc-day-popover-header-color);
-  font-weight: var(--vc-font-semibold);
-  text-align: center;
-}
-
-.vc-base-select {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 30px;
-  font-size: var(--vc-text-base);
-  font-weight: var(--vc-font-medium);
-}
-.vc-base-select.vc-has-icon select {
-      padding: 0 27px 0 9px;
-}
-.vc-base-select.vc-has-icon .vc-base-sizer {
-      padding: 0 28px 0 10px;
-}
-.vc-base-select.vc-fit-content select {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-}
-.vc-base-select .vc-base-icon {
-    position: absolute;
-    top: 6px;
-    right: 4px;
-    opacity: 0.6;
-    pointer-events: none;
-}
-.vc-base-select .vc-base-sizer {
-    font-size: var(--vc-text-base);
-    font-weight: var(--vc-font-medium);
-    color: transparent;
-    padding: 0px 8px;
-    margin: 0;
-}
-.vc-base-select select {
-    display: inline-flex;
-    justify-content: center;
-    color: var(--vc-select-color);
-    display: block;
-    -webkit-appearance: none;
-            -moz-appearance: none;
-         appearance: none;
-    background-color: var(--vc-select-bg);
-    border-radius: var(--vc-rounded);
-    height: 30px;
-    width: -moz-max-content;
-    width: max-content;
-    padding: 0px 7px;
-    margin: 0;
-    line-height: var(--leading-none);
-    text-indent: 0px;
-    background-image: none;
-    cursor: pointer;
-    text-align: center;
-}
-.vc-base-select select:hover {
-      background-color: var(--vc-select-hover-bg);
-}
-.vc-base-select select.vc-align-left {
-      text-align: left;
-}
-.vc-base-select select.vc-align-right {
-      text-align: right;
-}
-
-.vc-time-picker {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 8px 4px;
-}
-.vc-time-picker.vc-invalid {
-    pointer-events: none;
-    opacity: 0.5;
-}
-.vc-time-picker.vc-attached {
-    border-top: 1px solid var(--vc-time-picker-border);
-}
-.vc-time-picker > * + * {
-    margin-top: 4px;
-}
-.vc-time-header {
-  display: flex;
-  align-items: center;
-  font-size: var(--vc-text-sm);
-  font-weight: var(--vc-font-semibold);
-  text-transform: uppercase;
-  margin-top: -4px;
-  padding-left: 4px;
-  padding-right: 4px;
-  line-height: 21px;
-}
-.vc-time-select-group {
-  display: inline-flex;
-  align-items: center;
-  padding: 0 4px;
-  background: var(--vc-time-select-group-bg);
-  border-radius: var(--vc-rounded-md);
-  border: 1px solid var(--vc-time-select-group-border);
-}
-.vc-time-select-group .vc-base-icon {
-    margin-right: 4px;
-    color: var(--vc-time-select-group-icon-color);
-}
-.vc-time-select-group select {
-    background: transparent;
-    padding: 0px 4px;
-}
-.vc-time-weekday {
-  color: var(--vc-time-weekday-color);
-  letter-spacing: var(--tracking-wide);
-}
-.vc-time-month {
-  color: var(--vc-time-month-color);
-  margin-left: 8px;
-}
-.vc-time-day {
-  color: var(--vc-time-day-color);
-  margin-left: 4px;
-}
-.vc-time-year {
-  color: var(--vc-time-year-color);
-  margin-left: 8px;
-}
-.vc-time-colon {
-  margin: 0 1px 2px 2px;
-}
-.vc-time-decimal {
-  margin: 0 0 0 1px;
-}
-.vc-none-enter-active,
-.vc-none-leave-active {
-  transition-duration: 0s;
-}
-
-.vc-fade-enter-active,
-.vc-fade-leave-active,
-.vc-slide-left-enter-active,
-.vc-slide-left-leave-active,
-.vc-slide-right-enter-active,
-.vc-slide-right-leave-active,
-.vc-slide-up-enter-active,
-.vc-slide-up-leave-active,
-.vc-slide-down-enter-active,
-.vc-slide-down-leave-active,
-.vc-slide-fade-enter-active,
-.vc-slide-fade-leave-active {
-  transition: transform var(--vc-slide-duration) var(--vc-slide-timing),
-    opacity var(--vc-slide-duration) var(--vc-slide-timing);
-  backface-visibility: hidden;
-  pointer-events: none;
-}
-
-.vc-none-leave-active,
-.vc-fade-leave-active,
-.vc-slide-left-leave-active,
-.vc-slide-right-leave-active,
-.vc-slide-up-leave-active,
-.vc-slide-down-leave-active {
-  position: absolute !important;
-  width: 100%;
-}
-
-.vc-none-enter-from,
-.vc-none-leave-to,
-.vc-fade-enter-from,
-.vc-fade-leave-to,
-.vc-slide-left-enter-from,
-.vc-slide-left-leave-to,
-.vc-slide-right-enter-from,
-.vc-slide-right-leave-to,
-.vc-slide-up-enter-from,
-.vc-slide-up-leave-to,
-.vc-slide-down-enter-from,
-.vc-slide-down-leave-to,
-.vc-slide-fade-enter-from,
-.vc-slide-fade-leave-to {
-  opacity: 0;
-}
-
-.vc-slide-left-enter-from,
-.vc-slide-right-leave-to,
-.vc-slide-fade-enter-from.direction-left,
-.vc-slide-fade-leave-to.direction-left {
-  transform: translateX(var(--vc-slide-translate));
-}
-
-.vc-slide-right-enter-from,
-.vc-slide-left-leave-to,
-.vc-slide-fade-enter-from.direction-right,
-.vc-slide-fade-leave-to.direction-right {
-  transform: translateX(calc(-1 * var(--vc-slide-translate)));
-}
-
-.vc-slide-up-enter-from,
-.vc-slide-down-leave-to,
-.vc-slide-fade-enter-from.direction-top,
-.vc-slide-fade-leave-to.direction-top {
-  transform: translateY(var(--vc-slide-translate));
-}
-
-.vc-slide-down-enter-from,
-.vc-slide-up-leave-to,
-.vc-slide-fade-enter-from.direction-bottom,
-.vc-slide-fade-leave-to.direction-bottom {
-  transform: translateY(calc(-1 * var(--vc-slide-translate)));
-}
-
-:root {
-  --vc-white: #ffffff;
-  --vc-black: #000000;
-
-  --vc-gray-50: #f8fafc;
-  --vc-gray-100: #f1f5f9;
-  --vc-gray-200: #e2e8f0;
-  --vc-gray-300: #cbd5e1;
-  --vc-gray-400: #94a3b8;
-  --vc-gray-500: #64748b;
-  --vc-gray-600: #475569;
-  --vc-gray-700: #334155;
-  --vc-gray-800: #1e293b;
-  --vc-gray-900: #0f172a;
-
-  --vc-font-family: BlinkMacSystemFont, -apple-system, 'Segoe UI', 'Roboto',
-    'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    'Helvetica', 'Arial', sans-serif;
-
-  --vc-font-normal: 400;
-  --vc-font-medium: 500;
-  --vc-font-semibold: 600;
-  --vc-font-bold: 700;
-
-  --vc-text-2xs: 10px;
-  --vc-text-xs: 12px;
-  --vc-text-sm: 14px;
-  --vc-text-base: 16px;
-  --vc-text-lg: 18px;
-  --vc-text-xl: 20px;
-  --vc-text-2xl: 24px;
-
-  --vc-leading-none: 1;
-  --vc-leading-tight: 1.25;
-  --vc-leading-snug: 1.375;
-  --vc-leading-normal: 1.5;
-
-  --vc-rounded: 0.25rem;
-  --vc-rounded-md: 0.375rem;
-  --vc-rounded-lg: 0.5rem;
-  --vc-rounded-full: 9999px;
-
-  --vc-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  --vc-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --vc-shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
-
-  --vc-slide-translate: 22px;
-  --vc-slide-duration: 0.15s;
-  --vc-slide-timing: ease;
-
-  --vc-day-content-transition: all 0.13s ease-in;
-  --vc-weeknumber-offset-inside: 26px;
-  --vc-weeknumber-offset-outside: 34px;
-}
-
-.vc-gray {
-  --vc-accent-50: var(--vc-gray-50);
-  --vc-accent-100: var(--vc-gray-100);
-  --vc-accent-200: var(--vc-gray-200);
-  --vc-accent-300: var(--vc-gray-300);
-  --vc-accent-400: var(--vc-gray-400);
-  --vc-accent-500: var(--vc-gray-500);
-  --vc-accent-600: var(--vc-gray-600);
-  --vc-accent-700: var(--vc-gray-700);
-  --vc-accent-800: var(--vc-gray-800);
-  --vc-accent-900: var(--vc-gray-900);
-}
-
-.vc-red {
-  --vc-accent-50: #fef2f2;
-  --vc-accent-100: #fee2e2;
-  --vc-accent-200: #fecaca;
-  --vc-accent-300: #fca5a5;
-  --vc-accent-400: #f87171;
-  --vc-accent-500: #ef4444;
-  --vc-accent-600: #dc2626;
-  --vc-accent-700: #b91c1c;
-  --vc-accent-800: #991b1b;
-  --vc-accent-900: #7f1d1d;
-}
-
-.vc-orange {
-  --vc-accent-50: #fff7ed;
-  --vc-accent-100: #ffedd5;
-  --vc-accent-200: #fed7aa;
-  --vc-accent-300: #fdba74;
-  --vc-accent-400: #fb923c;
-  --vc-accent-500: #f97316;
-  --vc-accent-600: #ea580c;
-  --vc-accent-700: #c2410c;
-  --vc-accent-800: #9a3412;
-  --vc-accent-900: #7c2d12;
-}
-
-.vc-yellow {
-  --vc-accent-50: #fefce8;
-  --vc-accent-100: #fef9c3;
-  --vc-accent-200: #fef08a;
-  --vc-accent-300: #fde047;
-  --vc-accent-400: #facc15;
-  --vc-accent-500: #eab308;
-  --vc-accent-600: #ca8a04;
-  --vc-accent-700: #a16207;
-  --vc-accent-800: #854d0e;
-  --vc-accent-900: #713f12;
-}
-
-.vc-green {
-  --vc-accent-50: #f0fdf4;
-  --vc-accent-100: #dcfce7;
-  --vc-accent-200: #bbf7d0;
-  --vc-accent-300: #86efac;
-  --vc-accent-400: #4ade80;
-  --vc-accent-500: #22c55e;
-  --vc-accent-600: #16a34a;
-  --vc-accent-700: #15803d;
-  --vc-accent-800: #166534;
-  --vc-accent-900: #14532d;
-}
-
-.vc-teal {
-  --vc-accent-50: #f0fdfa;
-  --vc-accent-100: #ccfbf1;
-  --vc-accent-200: #99f6e4;
-  --vc-accent-300: #5eead4;
-  --vc-accent-400: #2dd4bf;
-  --vc-accent-500: #14b8a6;
-  --vc-accent-600: #0d9488;
-  --vc-accent-700: #0f766e;
-  --vc-accent-800: #115e59;
-  --vc-accent-900: #134e4a;
-}
-
-.vc-blue {
-  --vc-accent-50: #eff6ff;
-  --vc-accent-100: #dbeafe;
-  --vc-accent-200: #bfdbfe;
-  --vc-accent-300: #93c5fd;
-  --vc-accent-400: #60a5fa;
-  --vc-accent-500: #3b82f6;
-  --vc-accent-600: #2563eb;
-  --vc-accent-700: #1d4ed8;
-  --vc-accent-800: #1e40af;
-  --vc-accent-900: #1e3a8a;
-}
-
-.vc-indigo {
-  --vc-accent-50: #eef2ff;
-  --vc-accent-100: #e0e7ff;
-  --vc-accent-200: #c7d2fe;
-  --vc-accent-300: #a5b4fc;
-  --vc-accent-400: #818cf8;
-  --vc-accent-500: #6366f1;
-  --vc-accent-600: #4f46e5;
-  --vc-accent-700: #4338ca;
-  --vc-accent-800: #3730a3;
-  --vc-accent-900: #312e81;
-}
-
-.vc-purple {
-  --vc-accent-50: #faf5ff;
-  --vc-accent-100: #f3e8ff;
-  --vc-accent-200: #e9d5ff;
-  --vc-accent-300: #d8b4fe;
-  --vc-accent-400: #c084fc;
-  --vc-accent-500: #a855f7;
-  --vc-accent-600: #9333ea;
-  --vc-accent-700: #7e22ce;
-  --vc-accent-800: #6b21a8;
-  --vc-accent-900: #581c87;
-}
-
-.vc-pink {
-  --vc-accent-50: #fdf2f8;
-  --vc-accent-100: #fce7f3;
-  --vc-accent-200: #fbcfe8;
-  --vc-accent-300: #f9a8d4;
-  --vc-accent-400: #f472b6;
-  --vc-accent-500: #ec4899;
-  --vc-accent-600: #db2777;
-  --vc-accent-700: #be185d;
-  --vc-accent-800: #9d174d;
-  --vc-accent-900: #831843;
-}
-
-.vc-focus:focus-within {
-    outline: 0;
-    box-shadow: var(--vc-focus-ring);
-  }
-
-.vc-light {
-  /* Base */
-  --vc-color: var(--vc-gray-900);
-  --vc-bg: var(--vc-white);
-  --vc-border: var(--vc-gray-300);
-  --vc-hover-bg: hsla(211, 25%, 84%, 0.3);
-  --vc-focus-ring: 0 0 0 2px rgb(59, 131, 246, 0.4);
-  /* Calendar header */
-  --vc-header-arrow-color: var(--vc-gray-500);
-  --vc-header-arrow-hover-bg: var(--vc-gray-200);
-  --vc-header-title-color: var(--vc-gray-900);
-  /* Calendar weekdays */
-  --vc-weekday-color: var(--vc-gray-500);
-  /* Calendar weeknumbers */
-  --vc-weeknumber-color: var(--vc-gray-400);
-  /* Calendar nav */
-  --vc-nav-hover-bg: var(--vc-gray-200);
-  --vc-nav-title-color: var(--vc-gray-900);
-  --vc-nav-item-hover-box-shadow: none;
-  --vc-nav-item-active-color: var(--vc-white);
-  --vc-nav-item-active-bg: var(--vc-accent-500);
-  --vc-nav-item-active-box-shadow: var(--vc-shadow);
-  --vc-nav-item-current-color: var(--vc-accent-600);
-  /* Calendar day popover */
-  --vc-day-popover-container-color: var(--vc-white);
-  --vc-day-popover-container-bg: var(--vc-gray-800);
-  --vc-day-popover-container-border: var(--vc-gray-700);
-  --vc-day-popover-header-color: var(--vc-gray-700);
-  /* Popover content */
-  --vc-popover-content-color: var(--vc-gray-900);
-  --vc-popover-content-bg: var(--vc-gray-50);
-  --vc-popover-content-border: var(--vc-gray-300);
-  /* Time picker */
-  --vc-time-picker-border: var(--vc-gray-300);
-  --vc-time-weekday-color: var(--vc-gray-700);
-  --vc-time-month-color: var(--vc-accent-600);
-  --vc-time-day-color: var(--vc-accent-600);
-  --vc-time-year-color: var(--vc-gray-500);
-  /* Time select group */
-  --vc-time-select-group-bg: var(--vc-gray-50);
-  --vc-time-select-group-border: var(--vc-gray-300);
-  --vc-time-select-group-icon-color: var(--vc-accent-500);
-  /* Base select */
-  --vc-select-color: var(--vc-gray-900);
-  --vc-select-bg: var(--vc-gray-100);
-  --vc-select-hover-bg: var(--vc-gray-200);
-  /* Calendar day */
-  --vc-day-content-hover-bg: var(--vc-hover-bg);
-  --vc-day-content-disabled-color: var(--vc-gray-400);
-}
-
-/* Calendar attributes */
-
-.vc-light.vc-attr,
-  .vc-light .vc-attr {
-    --vc-content-color: var(--vc-accent-600);
-    --vc-highlight-outline-bg: var(--vc-white);
-    --vc-highlight-outline-border: var(--vc-accent-600);
-    --vc-highlight-outline-content-color: var(--vc-accent-700);
-    --vc-highlight-light-bg: var(--vc-accent-200);
-    --vc-highlight-light-content-color: var(--vc-accent-900);
-    --vc-highlight-solid-bg: var(--vc-accent-600);
-    --vc-highlight-solid-content-color: var(--vc-white);
-    --vc-dot-bg: var(--vc-accent-600);
-    --vc-bar-bg: var(--vc-accent-600);
-  }
-
-.vc-dark {
-  /* Base */
-  --vc-color: var(--vc-white);
-  --vc-bg: var(--vc-gray-900);
-  --vc-border: var(--vc-gray-700);
-  --vc-hover-bg: hsla(216, 15%, 52%, 0.3);
-  --vc-focus-ring: 0 0 0 2px rgb(59 130 246 / 0.7);
-  /* Calendar header */
-  --vc-header-arrow-color: var(--vc-gray-300);
-  --vc-header-arrow-hover-bg: var(--vc-gray-800);
-  --vc-header-title-color: var(--vc-gray-100);
-  /* Calendar weekdays */
-  --vc-weekday-color: var(--vc-accent-200);
-  /* Calendar weeknumbers */
-  --vc-weeknumber-color: var(--vc-gray-500);
-  /* Calendar nav */
-  --vc-nav-hover-bg: var(--vc-gray-700);
-  --vc-nav-title-color: var(--vc-gray-100);
-  --vc-nav-item-hover-box-shadow: none;
-  --vc-nav-item-active-color: var(--vc-white);
-  --vc-nav-item-active-bg: var(--vc-accent-500);
-  --vc-nav-item-active-box-shadow: none;
-  --vc-nav-item-current-color: var(--vc-accent-400);
-  /* Calendar day popover */
-  --vc-day-popover-container-color: var(--vc-gray-800);
-  --vc-day-popover-container-bg: var(--vc-white);
-  --vc-day-popover-container-border: var(--vc-gray-100);
-  --vc-day-popover-header-color: var(--vc-gray-300);
-  /* Popover content */
-  --vc-popover-content-color: var(--vc-white);
-  --vc-popover-content-bg: var(--vc-gray-800);
-  --vc-popover-content-border: var(--vc-gray-700);
-  /* Time picker */
-  --vc-time-picker-border: var(--vc-gray-700);
-  --vc-time-weekday-color: var(--vc-gray-400);
-  --vc-time-month-color: var(--vc-accent-400);
-  --vc-time-day-color: var(--vc-accent-400);
-  --vc-time-year-color: var(--vc-gray-500);
-  /* Time select group */
-  --vc-time-select-group-bg: var(--vc-gray-700);
-  --vc-time-select-group-border: var(--vc-gray-500);
-  --vc-time-select-group-icon-color: var(--vc-accent-400);
-  /* Base select */
-  --vc-select-color: var(--vc-gray-200);
-  --vc-select-bg: var(--vc-gray-700);
-  --vc-select-hover-bg: var(--vc-gray-600);
-  /* Calendar day */
-  --vc-day-content-hover-bg: var(--vc-hover-bg);
-  --vc-day-content-disabled-color: var(--vc-gray-600);
-}
-
-/* Calendar attributes */
-
-.vc-dark.vc-attr,
-  .vc-dark .vc-attr {
-    --vc-content-color: var(--vc-accent-500);
-    --vc-highlight-outline-bg: var(--vc-gray-900);
-    --vc-highlight-outline-border: var(--vc-accent-300);
-    --vc-highlight-outline-content-color: var(--vc-accent-200);
-    --vc-highlight-light-bg: var(--vc-accent-800);
-    --vc-highlight-light-content-color: var(--vc-accent-100);
-    --vc-highlight-solid-bg: var(--vc-accent-500);
-    --vc-highlight-solid-content-color: var(--vc-white);
-    --vc-dot-bg: var(--vc-accent-500);
-    --vc-bar-bg: var(--vc-accent-500);
-  }
-
-.vc-container {
-  position: relative;
-  display: inline-flex;
-  width: -moz-max-content;
-  width: max-content;
-  height: -moz-max-content;
-  height: max-content;
-  font-family: var(--vc-font-family);
-  color: var(--vc-color);
-  background-color: var(--vc-bg);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.vc-container,
-  .vc-container * {
-    box-sizing: border-box;
-  }
-
-.vc-container:focus, .vc-container *:focus {
-      outline: none;
-    }
-
-/* Hides double border within popovers */
-
-.vc-container .vc-container {
-    border: none;
-  }
-
-.vc-bordered {
-  border: 1px solid;
-  border-color: var(--vc-border);
-  border-radius: var(--vc-rounded-lg);
-}
-
-.vc-expanded {
-  min-width: 100%;
-}
-
-.vc-transparent {
-  background-color: transparent;
-}
-
-.vc-date-picker-content {
-  padding: 0;
-  background-color: var(--vc-bg);
-}
-
-.vc-date-picker-content .vc-container {
-    border: 0;
-  }
-
-#add-program[data-v-6390b723] {
-  height: 24px;
-  width: 24px;
-  padding: unset;
-  transition: transform 0.1s ease-in-out;
-}
-.em-color-round[data-v-6390b723] {
-  height: 30px;
-  width: 30px;
-  border-radius: 50%;
-}
-.modal-date-picker[data-v-6390b723] {
-  transform: translate(-50%, -50%);
-  box-shadow: 0 0 9999px 9999px rgb(0 0 0 / 50%);
-}
 
 .emails__add-email[data-v-d4a5f312] {
   width: 100%;
@@ -3954,325 +4290,3 @@ div.emails__add-email[data-v-d4a5f312] {
   border: 1px solid var(--neutral-300);
   border-radius: var(--em-coordinator-br);
 }
-#incremental-selector {
-  position: relative;
-}
-#incremental-selector .em-custom-selector {
-  margin: 0;
-  list-style: none;
-  background: white;
-  position: absolute;
-  top: 42px;
-  max-height: 20vh;
-  overflow-y: auto;
-  z-index: 10;
-}
-#incremental-selector .em-custom-selector li {
-  transition: 0.3s all;
-}
-#incremental-selector .em-custom-selector li:hover {
-  background: #f8f8f8;
-}
-#incremental-selector #existing-value {
-  position: relative;
-}
-#incremental-selector #existing-value input {
-  padding-right: 25px;
-}
-#incremental-selector #existing-value span {
-  position: absolute;
-  right: 5px;
-}.popover-container[data-v-8d665896]{position:relative;display:inline-block}.popover-content[data-v-8d665896]{background-color:transparent;position:absolute;min-height:40px;min-width:100px;opacity:1;z-index:9999;transition:opacity .2s ease-in-out}.popover-container svg[data-v-8d665896]{width:8px!important}.fade-enter-active[data-v-8d665896],.fade-leave-active[data-v-8d665896]{transition:opacity .5s ease}.fade-enter-from[data-v-8d665896],.fade-leave-to[data-v-8d665896]{opacity:0}.modal___container[data-v-69166bc0]{padding:12px;max-height:90vh;background-color:#fff;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);box-shadow:0 0 9999px 9999px #0000006e;overflow-y:scroll;overflow-x:hidden;border-radius:8px}*{font-family:Inter,sans-serif}.editor-wrapper{border-radius:8px;border:solid 1px rgb(212,212,212)}.editor-wrapper .ProseMirror-focused{outline:unset!important}.editor-wrapper .editor-toolbar{padding:8px 16px;border-bottom:solid 1px rgb(212,212,212);border-radius:8px 8px 0 0;font-size:14px}.editor-wrapper .editor-toolbar select{cursor:pointer;height:35px;border-radius:4px;padding:4px 6px;border:solid 1px rgb(212,212,212);background:#fff}.editor-wrapper .editor-toolbar ul,.editor-wrapper .editor-toolbar ol{list-style-type:none;padding-left:0}.editor-wrapper .editor-toolbar .editor-toolbar--list{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0}.editor-wrapper .editor-toolbar .editor-toolbar--list li:not(.editor-image){display:flex;align-items:center;cursor:pointer;border-radius:8px;padding:8px;border:solid 1px transparent;min-height:16px}.editor-wrapper .editor-toolbar .editor-toolbar--list li:not(.editor-image) svg{min-width:16px!important}.editor-wrapper .editor-toolbar .editor-toolbar--list li:not(.editor-image):hover{background-color:#f5f5f5}.editor-wrapper .editor-toolbar .editor-toolbar--list li.editor-image .popover-container div:first-child{display:flex;align-items:center;cursor:pointer;padding:8px;border-radius:8px;border:solid 1px transparent;min-height:16px}.editor-wrapper .editor-toolbar .editor-toolbar--list li.editor-image .popover-container div:first-child svg{min-width:16px!important}.editor-wrapper .editor-toolbar .editor-toolbar--list li.editor-image .popover-container div:first-child:hover{background-color:#f5f5f5}.editor-wrapper .editor-toolbar .editor-toolbar--list li.editor-image .popover-container span svg{width:8px!important;min-width:unset!important}.editor-wrapper .editor-toolbar .editor-toolbar--list li.editor-separator{border-right:unset;border-top:unset;border-bottom:unset;border-radius:unset;border-left:solid 1px rgb(212,212,212);width:0;height:30px;padding:0}.editor-wrapper .editor-toolbar .editor-toolbar--list .is-active{background-color:#f5f5f5;border:1px solid rgb(115,115,115)}.editor-wrapper .editor-toolbar .bubble-menu{background-color:#fff;border:1px solid rgb(115,115,115);border-radius:8px;box-shadow:0 4px 6px -1px #0000001a,0 2px 4px -2px #0000001a;display:flex;padding:.2rem}.editor-wrapper .editor-toolbar .bubble-menu button{background-color:unset;padding:4px 6px;border-radius:8px}.editor-wrapper .editor-toolbar .bubble-menu button:hover{background-color:#f5f5f5}.editor-wrapper .editor-toolbar .bubble-menu button.is-active{background-color:#f5f5f5;border:1px solid rgb(115,115,115)}.editor-wrapper .editor-toolbar .editor-color-picker{position:relative}.editor-wrapper .editor-toolbar .editor-color-picker .editor-color-picker--popover{padding:12px;display:grid;grid-template-columns:repeat(4,1fr);background-color:#fff;border-radius:8px;border:solid 1px rgb(212,212,212);top:28px;width:-moz-max-content;width:max-content;z-index:10}.editor-wrapper .editor-toolbar .editor-color-picker .editor-color-picker--popover span{width:24px;height:24px;border-radius:9999px}.editor-wrapper .editor-toolbar .editor-image .editor-image--popover{padding:6px;background-color:#fff;border-radius:8px;border:solid 1px rgb(212,212,212);top:28px;width:100%;z-index:10;min-width:150px}.editor-wrapper .editor-toolbar .editor-image .editor-image--popover li.image-item{width:auto}.editor-wrapper .editor-toolbar .editor-image .editor-image--popover li.image-item span{margin-left:8px;white-space:nowrap}.editor-wrapper .editor-content{overflow:scroll;padding:8px}.editor-wrapper .editor-content .tiptap{height:100%}.editor-wrapper .editor-content .tiptap p.is-editor-empty:first-child:before{color:#a3a3a3;content:attr(data-placeholder);float:left;height:0;pointer-events:none}.editor-wrapper .editor-content .tiptap h1{font-size:32px}.editor-wrapper .editor-content .tiptap h2{font-size:24px}.editor-wrapper .editor-content .tiptap h3{font-size:20px}.editor-wrapper .editor-content .tiptap :first-child{margin-top:0}.editor-wrapper .editor-content .tiptap a{color:#3b82f6;text-decoration:underline}.editor-wrapper .editor-content .tiptap ul,.editor-wrapper .editor-content .tiptap ol{padding:0 1rem;margin:1.25rem 1rem 1.25rem .4rem}.editor-wrapper .editor-content .tiptap ul li p,.editor-wrapper .editor-content .tiptap ol li p{margin-top:.25em;margin-bottom:.25em}.editor-wrapper .editor-content .tiptap ul{list-style-type:disc}.editor-wrapper .editor-content .tiptap ol{list-style-type:decimal}.editor-wrapper .editor-content .tiptap table{border-collapse:collapse;margin:0;overflow:hidden;table-layout:fixed;width:100%}.editor-wrapper .editor-content .tiptap table td,.editor-wrapper .editor-content .tiptap table th{border:1px solid rgb(163,163,163);box-sizing:border-box;min-width:1em;padding:6px 8px;position:relative;vertical-align:top}.editor-wrapper .editor-content .tiptap table td>*,.editor-wrapper .editor-content .tiptap table th>*{margin-bottom:0}.editor-wrapper .editor-content .tiptap table th{background-color:#f5f5f5;font-weight:700;text-align:left}.editor-wrapper .editor-content .tiptap table .selectedCell:after{background-color:#e5e5e5;content:"";left:0;right:0;top:0;bottom:0;pointer-events:none;position:absolute;z-index:2}.editor-wrapper .editor-content .tiptap table .column-resize-handle{background-color:#bfdbfe;bottom:-2px;pointer-events:none;position:absolute;right:-2px;top:0;width:4px}.editor-wrapper .editor-content .tiptap .tableWrapper{margin:1.5rem 0;overflow-x:auto}.editor-wrapper .editor-content .tiptap.resize-cursor{cursor:col-resize}.editor-wrapper .editor-content .tiptap pre{background:#000;border-radius:.5rem;color:#fff;font-family:JetBrainsMono,monospace;margin:1.5rem 0;padding:.75rem 1rem}.editor-wrapper .editor-content .tiptap pre code{background:none;color:inherit;font-size:.8rem;padding:0}.editor-wrapper .insert-image .insert-image--modal-head,.editor-wrapper .insert-image .insert-table--modal-head,.editor-wrapper .insert-image .insert-video--modal-head,.editor-wrapper .insert-image .insert-link--modal-head,.editor-wrapper .insert-table .insert-image--modal-head,.editor-wrapper .insert-table .insert-table--modal-head,.editor-wrapper .insert-table .insert-video--modal-head,.editor-wrapper .insert-table .insert-link--modal-head,.editor-wrapper .insert-video .insert-image--modal-head,.editor-wrapper .insert-video .insert-table--modal-head,.editor-wrapper .insert-video .insert-video--modal-head,.editor-wrapper .insert-video .insert-link--modal-head,.editor-wrapper .insert-link .insert-image--modal-head,.editor-wrapper .insert-link .insert-table--modal-head,.editor-wrapper .insert-link .insert-video--modal-head,.editor-wrapper .insert-link .insert-link--modal-head{display:flex;flex-direction:column;padding:12px 8px}.editor-wrapper .insert-image .insert-image--modal-head .insert-image--modal-head-title,.editor-wrapper .insert-image .insert-image--modal-head .insert-table--modal-head-title,.editor-wrapper .insert-image .insert-image--modal-head .insert-video--modal-head-title,.editor-wrapper .insert-image .insert-image--modal-head .insert-link--modal-head-title,.editor-wrapper .insert-image .insert-table--modal-head .insert-image--modal-head-title,.editor-wrapper .insert-image .insert-table--modal-head .insert-table--modal-head-title,.editor-wrapper .insert-image .insert-table--modal-head .insert-video--modal-head-title,.editor-wrapper .insert-image .insert-table--modal-head .insert-link--modal-head-title,.editor-wrapper .insert-image .insert-video--modal-head .insert-image--modal-head-title,.editor-wrapper .insert-image .insert-video--modal-head .insert-table--modal-head-title,.editor-wrapper .insert-image .insert-video--modal-head .insert-video--modal-head-title,.editor-wrapper .insert-image .insert-video--modal-head .insert-link--modal-head-title,.editor-wrapper .insert-image .insert-link--modal-head .insert-image--modal-head-title,.editor-wrapper .insert-image .insert-link--modal-head .insert-table--modal-head-title,.editor-wrapper .insert-image .insert-link--modal-head .insert-video--modal-head-title,.editor-wrapper .insert-image .insert-link--modal-head .insert-link--modal-head-title,.editor-wrapper .insert-table .insert-image--modal-head .insert-image--modal-head-title,.editor-wrapper .insert-table .insert-image--modal-head .insert-table--modal-head-title,.editor-wrapper .insert-table .insert-image--modal-head .insert-video--modal-head-title,.editor-wrapper .insert-table .insert-image--modal-head .insert-link--modal-head-title,.editor-wrapper .insert-table .insert-table--modal-head .insert-image--modal-head-title,.editor-wrapper .insert-table .insert-table--modal-head .insert-table--modal-head-title,.editor-wrapper .insert-table .insert-table--modal-head .insert-video--modal-head-title,.editor-wrapper .insert-table .insert-table--modal-head .insert-link--modal-head-title,.editor-wrapper .insert-table .insert-video--modal-head .insert-image--modal-head-title,.editor-wrapper .insert-table .insert-video--modal-head .insert-table--modal-head-title,.editor-wrapper .insert-table .insert-video--modal-head .insert-video--modal-head-title,.editor-wrapper .insert-table .insert-video--modal-head .insert-link--modal-head-title,.editor-wrapper .insert-table .insert-link--modal-head .insert-image--modal-head-title,.editor-wrapper .insert-table .insert-link--modal-head .insert-table--modal-head-title,.editor-wrapper .insert-table .insert-link--modal-head .insert-video--modal-head-title,.editor-wrapper .insert-table .insert-link--modal-head .insert-link--modal-head-title,.editor-wrapper .insert-video .insert-image--modal-head .insert-image--modal-head-title,.editor-wrapper .insert-video .insert-image--modal-head .insert-table--modal-head-title,.editor-wrapper .insert-video .insert-image--modal-head .insert-video--modal-head-title,.editor-wrapper .insert-video .insert-image--modal-head .insert-link--modal-head-title,.editor-wrapper .insert-video .insert-table--modal-head .insert-image--modal-head-title,.editor-wrapper .insert-video .insert-table--modal-head .insert-table--modal-head-title,.editor-wrapper .insert-video .insert-table--modal-head .insert-video--modal-head-title,.editor-wrapper .insert-video .insert-table--modal-head .insert-link--modal-head-title,.editor-wrapper .insert-video .insert-video--modal-head .insert-image--modal-head-title,.editor-wrapper .insert-video .insert-video--modal-head .insert-table--modal-head-title,.editor-wrapper .insert-video .insert-video--modal-head .insert-video--modal-head-title,.editor-wrapper .insert-video .insert-video--modal-head .insert-link--modal-head-title,.editor-wrapper .insert-video .insert-link--modal-head .insert-image--modal-head-title,.editor-wrapper .insert-video .insert-link--modal-head .insert-table--modal-head-title,.editor-wrapper .insert-video .insert-link--modal-head .insert-video--modal-head-title,.editor-wrapper .insert-video .insert-link--modal-head .insert-link--modal-head-title,.editor-wrapper .insert-link .insert-image--modal-head .insert-image--modal-head-title,.editor-wrapper .insert-link .insert-image--modal-head .insert-table--modal-head-title,.editor-wrapper .insert-link .insert-image--modal-head .insert-video--modal-head-title,.editor-wrapper .insert-link .insert-image--modal-head .insert-link--modal-head-title,.editor-wrapper .insert-link .insert-table--modal-head .insert-image--modal-head-title,.editor-wrapper .insert-link .insert-table--modal-head .insert-table--modal-head-title,.editor-wrapper .insert-link .insert-table--modal-head .insert-video--modal-head-title,.editor-wrapper .insert-link .insert-table--modal-head .insert-link--modal-head-title,.editor-wrapper .insert-link .insert-video--modal-head .insert-image--modal-head-title,.editor-wrapper .insert-link .insert-video--modal-head .insert-table--modal-head-title,.editor-wrapper .insert-link .insert-video--modal-head .insert-video--modal-head-title,.editor-wrapper .insert-link .insert-video--modal-head .insert-link--modal-head-title,.editor-wrapper .insert-link .insert-link--modal-head .insert-image--modal-head-title,.editor-wrapper .insert-link .insert-link--modal-head .insert-table--modal-head-title,.editor-wrapper .insert-link .insert-link--modal-head .insert-video--modal-head-title,.editor-wrapper .insert-link .insert-link--modal-head .insert-link--modal-head-title{display:flex;gap:16px;justify-content:space-between}.editor-wrapper .insert-image .insert-image--modal-head .insert-image--modal-head-title svg,.editor-wrapper .insert-image .insert-image--modal-head .insert-table--modal-head-title svg,.editor-wrapper .insert-image .insert-image--modal-head .insert-video--modal-head-title svg,.editor-wrapper .insert-image .insert-image--modal-head .insert-link--modal-head-title svg,.editor-wrapper .insert-image .insert-table--modal-head .insert-image--modal-head-title svg,.editor-wrapper .insert-image .insert-table--modal-head .insert-table--modal-head-title svg,.editor-wrapper .insert-image .insert-table--modal-head .insert-video--modal-head-title svg,.editor-wrapper .insert-image .insert-table--modal-head .insert-link--modal-head-title svg,.editor-wrapper .insert-image .insert-video--modal-head .insert-image--modal-head-title svg,.editor-wrapper .insert-image .insert-video--modal-head .insert-table--modal-head-title svg,.editor-wrapper .insert-image .insert-video--modal-head .insert-video--modal-head-title svg,.editor-wrapper .insert-image .insert-video--modal-head .insert-link--modal-head-title svg,.editor-wrapper .insert-image .insert-link--modal-head .insert-image--modal-head-title svg,.editor-wrapper .insert-image .insert-link--modal-head .insert-table--modal-head-title svg,.editor-wrapper .insert-image .insert-link--modal-head .insert-video--modal-head-title svg,.editor-wrapper .insert-image .insert-link--modal-head .insert-link--modal-head-title svg,.editor-wrapper .insert-table .insert-image--modal-head .insert-image--modal-head-title svg,.editor-wrapper .insert-table .insert-image--modal-head .insert-table--modal-head-title svg,.editor-wrapper .insert-table .insert-image--modal-head .insert-video--modal-head-title svg,.editor-wrapper .insert-table .insert-image--modal-head .insert-link--modal-head-title svg,.editor-wrapper .insert-table .insert-table--modal-head .insert-image--modal-head-title svg,.editor-wrapper .insert-table .insert-table--modal-head .insert-table--modal-head-title svg,.editor-wrapper .insert-table .insert-table--modal-head .insert-video--modal-head-title svg,.editor-wrapper .insert-table .insert-table--modal-head .insert-link--modal-head-title svg,.editor-wrapper .insert-table .insert-video--modal-head .insert-image--modal-head-title svg,.editor-wrapper .insert-table .insert-video--modal-head .insert-table--modal-head-title svg,.editor-wrapper .insert-table .insert-video--modal-head .insert-video--modal-head-title svg,.editor-wrapper .insert-table .insert-video--modal-head .insert-link--modal-head-title svg,.editor-wrapper .insert-table .insert-link--modal-head .insert-image--modal-head-title svg,.editor-wrapper .insert-table .insert-link--modal-head .insert-table--modal-head-title svg,.editor-wrapper .insert-table .insert-link--modal-head .insert-video--modal-head-title svg,.editor-wrapper .insert-table .insert-link--modal-head .insert-link--modal-head-title svg,.editor-wrapper .insert-video .insert-image--modal-head .insert-image--modal-head-title svg,.editor-wrapper .insert-video .insert-image--modal-head .insert-table--modal-head-title svg,.editor-wrapper .insert-video .insert-image--modal-head .insert-video--modal-head-title svg,.editor-wrapper .insert-video .insert-image--modal-head .insert-link--modal-head-title svg,.editor-wrapper .insert-video .insert-table--modal-head .insert-image--modal-head-title svg,.editor-wrapper .insert-video .insert-table--modal-head .insert-table--modal-head-title svg,.editor-wrapper .insert-video .insert-table--modal-head .insert-video--modal-head-title svg,.editor-wrapper .insert-video .insert-table--modal-head .insert-link--modal-head-title svg,.editor-wrapper .insert-video .insert-video--modal-head .insert-image--modal-head-title svg,.editor-wrapper .insert-video .insert-video--modal-head .insert-table--modal-head-title svg,.editor-wrapper .insert-video .insert-video--modal-head .insert-video--modal-head-title svg,.editor-wrapper .insert-video .insert-video--modal-head .insert-link--modal-head-title svg,.editor-wrapper .insert-video .insert-link--modal-head .insert-image--modal-head-title svg,.editor-wrapper .insert-video .insert-link--modal-head .insert-table--modal-head-title svg,.editor-wrapper .insert-video .insert-link--modal-head .insert-video--modal-head-title svg,.editor-wrapper .insert-video .insert-link--modal-head .insert-link--modal-head-title svg,.editor-wrapper .insert-link .insert-image--modal-head .insert-image--modal-head-title svg,.editor-wrapper .insert-link .insert-image--modal-head .insert-table--modal-head-title svg,.editor-wrapper .insert-link .insert-image--modal-head .insert-video--modal-head-title svg,.editor-wrapper .insert-link .insert-image--modal-head .insert-link--modal-head-title svg,.editor-wrapper .insert-link .insert-table--modal-head .insert-image--modal-head-title svg,.editor-wrapper .insert-link .insert-table--modal-head .insert-table--modal-head-title svg,.editor-wrapper .insert-link .insert-table--modal-head .insert-video--modal-head-title svg,.editor-wrapper .insert-link .insert-table--modal-head .insert-link--modal-head-title svg,.editor-wrapper .insert-link .insert-video--modal-head .insert-image--modal-head-title svg,.editor-wrapper .insert-link .insert-video--modal-head .insert-table--modal-head-title svg,.editor-wrapper .insert-link .insert-video--modal-head .insert-video--modal-head-title svg,.editor-wrapper .insert-link .insert-video--modal-head .insert-link--modal-head-title svg,.editor-wrapper .insert-link .insert-link--modal-head .insert-image--modal-head-title svg,.editor-wrapper .insert-link .insert-link--modal-head .insert-table--modal-head-title svg,.editor-wrapper .insert-link .insert-link--modal-head .insert-video--modal-head-title svg,.editor-wrapper .insert-link .insert-link--modal-head .insert-link--modal-head-title svg{font-size:20px;cursor:pointer}.editor-wrapper .insert-image .insert-image--modal-content ul,.editor-wrapper .insert-table .insert-image--modal-content ul,.editor-wrapper .insert-video .insert-image--modal-content ul,.editor-wrapper .insert-link .insert-image--modal-content ul{display:flex}.editor-wrapper .insert-image .insert-image--modal-content ul li.image-item,.editor-wrapper .insert-table .insert-image--modal-content ul li.image-item,.editor-wrapper .insert-video .insert-image--modal-content ul li.image-item,.editor-wrapper .insert-link .insert-image--modal-content ul li.image-item{border-radius:0}.editor-wrapper .insert-image .insert-image--modal-content ul li.image-item.active,.editor-wrapper .insert-table .insert-image--modal-content ul li.image-item.active,.editor-wrapper .insert-video .insert-image--modal-content ul li.image-item.active,.editor-wrapper .insert-link .insert-image--modal-content ul li.image-item.active{border-bottom:solid 1px rgb(59,130,246)}.editor-wrapper .insert-image .insert-image--modal-content ul li.image-item:hover,.editor-wrapper .insert-table .insert-image--modal-content ul li.image-item:hover,.editor-wrapper .insert-video .insert-image--modal-content ul li.image-item:hover,.editor-wrapper .insert-link .insert-image--modal-content ul li.image-item:hover{background-color:unset}.editor-wrapper .insert-image .insert-image--modal-content ul li.image-item:hover:not(.active),.editor-wrapper .insert-table .insert-image--modal-content ul li.image-item:hover:not(.active),.editor-wrapper .insert-video .insert-image--modal-content ul li.image-item:hover:not(.active),.editor-wrapper .insert-link .insert-image--modal-content ul li.image-item:hover:not(.active){border-bottom:solid 1px rgb(229,229,229)}.editor-wrapper .insert-image .insert-image--modal-content .insert-image--import-file .insert-image--import-file-dz,.editor-wrapper .insert-table .insert-image--modal-content .insert-image--import-file .insert-image--import-file-dz,.editor-wrapper .insert-video .insert-image--modal-content .insert-image--import-file .insert-image--import-file-dz,.editor-wrapper .insert-link .insert-image--modal-content .insert-image--import-file .insert-image--import-file-dz{height:150px;border:1px dashed #A4A4A4;display:flex;flex-direction:column;justify-content:center;align-items:center;border-radius:8px;margin-top:12px;padding:12px;cursor:pointer}.editor-wrapper .insert-image .insert-image--modal-content .insert-image--import-file .insert-image--import-file-dz div,.editor-wrapper .insert-table .insert-image--modal-content .insert-image--import-file .insert-image--import-file-dz div,.editor-wrapper .insert-video .insert-image--modal-content .insert-image--import-file .insert-image--import-file-dz div,.editor-wrapper .insert-link .insert-image--modal-content .insert-image--import-file .insert-image--import-file-dz div{display:flex;gap:12px}.editor-wrapper .insert-image .insert-image--modal-content .insert-image--from-url,.editor-wrapper .insert-table .insert-image--modal-content .insert-image--from-url,.editor-wrapper .insert-video .insert-image--modal-content .insert-image--from-url,.editor-wrapper .insert-link .insert-image--modal-content .insert-image--from-url{padding:12px;display:flex;flex-direction:column}.editor-wrapper .insert-image .insert-image--modal-content .insert-image--from-url label,.editor-wrapper .insert-table .insert-image--modal-content .insert-image--from-url label,.editor-wrapper .insert-video .insert-image--modal-content .insert-image--from-url label,.editor-wrapper .insert-link .insert-image--modal-content .insert-image--from-url label{margin-bottom:6px}.editor-wrapper .insert-image .insert-image--modal-content .insert-image--from-url input,.editor-wrapper .insert-table .insert-image--modal-content .insert-image--from-url input,.editor-wrapper .insert-video .insert-image--modal-content .insert-image--from-url input,.editor-wrapper .insert-link .insert-image--modal-content .insert-image--from-url input{border-radius:4px;border:solid 1px rgb(212,212,212);padding:6px 8px}.editor-wrapper .insert-image .insert-image--modal-content .insert-image--from-url .insert-image--from-url-button,.editor-wrapper .insert-table .insert-image--modal-content .insert-image--from-url .insert-image--from-url-button,.editor-wrapper .insert-video .insert-image--modal-content .insert-image--from-url .insert-image--from-url-button,.editor-wrapper .insert-link .insert-image--modal-content .insert-image--from-url .insert-image--from-url-button{margin-top:12px;display:flex;justify-content:flex-end}.editor-wrapper .insert-image .insert-image--modal-content .insert-image--from-url .insert-image--from-url-button button,.editor-wrapper .insert-table .insert-image--modal-content .insert-image--from-url .insert-image--from-url-button button,.editor-wrapper .insert-video .insert-image--modal-content .insert-image--from-url .insert-image--from-url-button button,.editor-wrapper .insert-link .insert-image--modal-content .insert-image--from-url .insert-image--from-url-button button{cursor:pointer;padding:10px 24px;border-radius:8px;background-color:#008a35;color:#fff;border:unset}.editor-wrapper .insert-image .insert-image--modal-content .insert-image--from-url .insert-image--from-url-button button:hover,.editor-wrapper .insert-table .insert-image--modal-content .insert-image--from-url .insert-image--from-url-button button:hover,.editor-wrapper .insert-video .insert-image--modal-content .insert-image--from-url .insert-image--from-url-button button:hover,.editor-wrapper .insert-link .insert-image--modal-content .insert-image--from-url .insert-image--from-url-button button:hover{background-color:#007f31}.editor-wrapper .insert-image .insert-table--modal-content .insert-table--inputs,.editor-wrapper .insert-image .insert-video--modal-content .insert-table--inputs,.editor-wrapper .insert-image .insert-link--modal-content .insert-table--inputs,.editor-wrapper .insert-table .insert-table--modal-content .insert-table--inputs,.editor-wrapper .insert-table .insert-video--modal-content .insert-table--inputs,.editor-wrapper .insert-table .insert-link--modal-content .insert-table--inputs,.editor-wrapper .insert-video .insert-table--modal-content .insert-table--inputs,.editor-wrapper .insert-video .insert-video--modal-content .insert-table--inputs,.editor-wrapper .insert-video .insert-link--modal-content .insert-table--inputs,.editor-wrapper .insert-link .insert-table--modal-content .insert-table--inputs,.editor-wrapper .insert-link .insert-video--modal-content .insert-table--inputs,.editor-wrapper .insert-link .insert-link--modal-content .insert-table--inputs{display:flex;align-items:center;gap:16px}.editor-wrapper .insert-image .insert-table--modal-content .insert-table--inputs .insert-table--input,.editor-wrapper .insert-image .insert-video--modal-content .insert-table--inputs .insert-table--input,.editor-wrapper .insert-image .insert-link--modal-content .insert-table--inputs .insert-table--input,.editor-wrapper .insert-table .insert-table--modal-content .insert-table--inputs .insert-table--input,.editor-wrapper .insert-table .insert-video--modal-content .insert-table--inputs .insert-table--input,.editor-wrapper .insert-table .insert-link--modal-content .insert-table--inputs .insert-table--input,.editor-wrapper .insert-video .insert-table--modal-content .insert-table--inputs .insert-table--input,.editor-wrapper .insert-video .insert-video--modal-content .insert-table--inputs .insert-table--input,.editor-wrapper .insert-video .insert-link--modal-content .insert-table--inputs .insert-table--input,.editor-wrapper .insert-link .insert-table--modal-content .insert-table--inputs .insert-table--input,.editor-wrapper .insert-link .insert-video--modal-content .insert-table--inputs .insert-table--input,.editor-wrapper .insert-link .insert-link--modal-content .insert-table--inputs .insert-table--input{padding:12px;display:flex;flex-direction:column}.editor-wrapper .insert-image .insert-table--modal-content .insert-table--inputs .insert-table--input label,.editor-wrapper .insert-image .insert-video--modal-content .insert-table--inputs .insert-table--input label,.editor-wrapper .insert-image .insert-link--modal-content .insert-table--inputs .insert-table--input label,.editor-wrapper .insert-table .insert-table--modal-content .insert-table--inputs .insert-table--input label,.editor-wrapper .insert-table .insert-video--modal-content .insert-table--inputs .insert-table--input label,.editor-wrapper .insert-table .insert-link--modal-content .insert-table--inputs .insert-table--input label,.editor-wrapper .insert-video .insert-table--modal-content .insert-table--inputs .insert-table--input label,.editor-wrapper .insert-video .insert-video--modal-content .insert-table--inputs .insert-table--input label,.editor-wrapper .insert-video .insert-link--modal-content .insert-table--inputs .insert-table--input label,.editor-wrapper .insert-link .insert-table--modal-content .insert-table--inputs .insert-table--input label,.editor-wrapper .insert-link .insert-video--modal-content .insert-table--inputs .insert-table--input label,.editor-wrapper .insert-link .insert-link--modal-content .insert-table--inputs .insert-table--input label{margin-bottom:6px}.editor-wrapper .insert-image .insert-table--modal-content .insert-table--inputs .insert-table--input input,.editor-wrapper .insert-image .insert-video--modal-content .insert-table--inputs .insert-table--input input,.editor-wrapper .insert-image .insert-link--modal-content .insert-table--inputs .insert-table--input input,.editor-wrapper .insert-table .insert-table--modal-content .insert-table--inputs .insert-table--input input,.editor-wrapper .insert-table .insert-video--modal-content .insert-table--inputs .insert-table--input input,.editor-wrapper .insert-table .insert-link--modal-content .insert-table--inputs .insert-table--input input,.editor-wrapper .insert-video .insert-table--modal-content .insert-table--inputs .insert-table--input input,.editor-wrapper .insert-video .insert-video--modal-content .insert-table--inputs .insert-table--input input,.editor-wrapper .insert-video .insert-link--modal-content .insert-table--inputs .insert-table--input input,.editor-wrapper .insert-link .insert-table--modal-content .insert-table--inputs .insert-table--input input,.editor-wrapper .insert-link .insert-video--modal-content .insert-table--inputs .insert-table--input input,.editor-wrapper .insert-link .insert-link--modal-content .insert-table--inputs .insert-table--input input{border-radius:4px;border:solid 1px rgb(212,212,212);padding:6px 8px}.editor-wrapper .insert-image .insert-table--modal-content .insert-video--input,.editor-wrapper .insert-image .insert-table--modal-content .insert-link--input,.editor-wrapper .insert-image .insert-video--modal-content .insert-video--input,.editor-wrapper .insert-image .insert-video--modal-content .insert-link--input,.editor-wrapper .insert-image .insert-link--modal-content .insert-video--input,.editor-wrapper .insert-image .insert-link--modal-content .insert-link--input,.editor-wrapper .insert-table .insert-table--modal-content .insert-video--input,.editor-wrapper .insert-table .insert-table--modal-content .insert-link--input,.editor-wrapper .insert-table .insert-video--modal-content .insert-video--input,.editor-wrapper .insert-table .insert-video--modal-content .insert-link--input,.editor-wrapper .insert-table .insert-link--modal-content .insert-video--input,.editor-wrapper .insert-table .insert-link--modal-content .insert-link--input,.editor-wrapper .insert-video .insert-table--modal-content .insert-video--input,.editor-wrapper .insert-video .insert-table--modal-content .insert-link--input,.editor-wrapper .insert-video .insert-video--modal-content .insert-video--input,.editor-wrapper .insert-video .insert-video--modal-content .insert-link--input,.editor-wrapper .insert-video .insert-link--modal-content .insert-video--input,.editor-wrapper .insert-video .insert-link--modal-content .insert-link--input,.editor-wrapper .insert-link .insert-table--modal-content .insert-video--input,.editor-wrapper .insert-link .insert-table--modal-content .insert-link--input,.editor-wrapper .insert-link .insert-video--modal-content .insert-video--input,.editor-wrapper .insert-link .insert-video--modal-content .insert-link--input,.editor-wrapper .insert-link .insert-link--modal-content .insert-video--input,.editor-wrapper .insert-link .insert-link--modal-content .insert-link--input{padding:12px;display:flex;flex-direction:column}.editor-wrapper .insert-image .insert-table--modal-content .insert-video--input label,.editor-wrapper .insert-image .insert-table--modal-content .insert-link--input label,.editor-wrapper .insert-image .insert-video--modal-content .insert-video--input label,.editor-wrapper .insert-image .insert-video--modal-content .insert-link--input label,.editor-wrapper .insert-image .insert-link--modal-content .insert-video--input label,.editor-wrapper .insert-image .insert-link--modal-content .insert-link--input label,.editor-wrapper .insert-table .insert-table--modal-content .insert-video--input label,.editor-wrapper .insert-table .insert-table--modal-content .insert-link--input label,.editor-wrapper .insert-table .insert-video--modal-content .insert-video--input label,.editor-wrapper .insert-table .insert-video--modal-content .insert-link--input label,.editor-wrapper .insert-table .insert-link--modal-content .insert-video--input label,.editor-wrapper .insert-table .insert-link--modal-content .insert-link--input label,.editor-wrapper .insert-video .insert-table--modal-content .insert-video--input label,.editor-wrapper .insert-video .insert-table--modal-content .insert-link--input label,.editor-wrapper .insert-video .insert-video--modal-content .insert-video--input label,.editor-wrapper .insert-video .insert-video--modal-content .insert-link--input label,.editor-wrapper .insert-video .insert-link--modal-content .insert-video--input label,.editor-wrapper .insert-video .insert-link--modal-content .insert-link--input label,.editor-wrapper .insert-link .insert-table--modal-content .insert-video--input label,.editor-wrapper .insert-link .insert-table--modal-content .insert-link--input label,.editor-wrapper .insert-link .insert-video--modal-content .insert-video--input label,.editor-wrapper .insert-link .insert-video--modal-content .insert-link--input label,.editor-wrapper .insert-link .insert-link--modal-content .insert-video--input label,.editor-wrapper .insert-link .insert-link--modal-content .insert-link--input label{margin-bottom:6px}.editor-wrapper .insert-image .insert-table--modal-content .insert-video--input input,.editor-wrapper .insert-image .insert-table--modal-content .insert-link--input input,.editor-wrapper .insert-image .insert-video--modal-content .insert-video--input input,.editor-wrapper .insert-image .insert-video--modal-content .insert-link--input input,.editor-wrapper .insert-image .insert-link--modal-content .insert-video--input input,.editor-wrapper .insert-image .insert-link--modal-content .insert-link--input input,.editor-wrapper .insert-table .insert-table--modal-content .insert-video--input input,.editor-wrapper .insert-table .insert-table--modal-content .insert-link--input input,.editor-wrapper .insert-table .insert-video--modal-content .insert-video--input input,.editor-wrapper .insert-table .insert-video--modal-content .insert-link--input input,.editor-wrapper .insert-table .insert-link--modal-content .insert-video--input input,.editor-wrapper .insert-table .insert-link--modal-content .insert-link--input input,.editor-wrapper .insert-video .insert-table--modal-content .insert-video--input input,.editor-wrapper .insert-video .insert-table--modal-content .insert-link--input input,.editor-wrapper .insert-video .insert-video--modal-content .insert-video--input input,.editor-wrapper .insert-video .insert-video--modal-content .insert-link--input input,.editor-wrapper .insert-video .insert-link--modal-content .insert-video--input input,.editor-wrapper .insert-video .insert-link--modal-content .insert-link--input input,.editor-wrapper .insert-link .insert-table--modal-content .insert-video--input input,.editor-wrapper .insert-link .insert-table--modal-content .insert-link--input input,.editor-wrapper .insert-link .insert-video--modal-content .insert-video--input input,.editor-wrapper .insert-link .insert-video--modal-content .insert-link--input input,.editor-wrapper .insert-link .insert-link--modal-content .insert-video--input input,.editor-wrapper .insert-link .insert-link--modal-content .insert-link--input input{border-radius:4px;border:solid 1px rgb(212,212,212);padding:6px 8px}.editor-wrapper .insert-image .insert-table--modal-content .insert-table--input-header,.editor-wrapper .insert-image .insert-video--modal-content .insert-table--input-header,.editor-wrapper .insert-image .insert-link--modal-content .insert-table--input-header,.editor-wrapper .insert-table .insert-table--modal-content .insert-table--input-header,.editor-wrapper .insert-table .insert-video--modal-content .insert-table--input-header,.editor-wrapper .insert-table .insert-link--modal-content .insert-table--input-header,.editor-wrapper .insert-video .insert-table--modal-content .insert-table--input-header,.editor-wrapper .insert-video .insert-video--modal-content .insert-table--input-header,.editor-wrapper .insert-video .insert-link--modal-content .insert-table--input-header,.editor-wrapper .insert-link .insert-table--modal-content .insert-table--input-header,.editor-wrapper .insert-link .insert-video--modal-content .insert-table--input-header,.editor-wrapper .insert-link .insert-link--modal-content .insert-table--input-header{margin-left:12px}.editor-wrapper .insert-image .insert-table--modal-content .insert-table--input-header label,.editor-wrapper .insert-image .insert-video--modal-content .insert-table--input-header label,.editor-wrapper .insert-image .insert-link--modal-content .insert-table--input-header label,.editor-wrapper .insert-table .insert-table--modal-content .insert-table--input-header label,.editor-wrapper .insert-table .insert-video--modal-content .insert-table--input-header label,.editor-wrapper .insert-table .insert-link--modal-content .insert-table--input-header label,.editor-wrapper .insert-video .insert-table--modal-content .insert-table--input-header label,.editor-wrapper .insert-video .insert-video--modal-content .insert-table--input-header label,.editor-wrapper .insert-video .insert-link--modal-content .insert-table--input-header label,.editor-wrapper .insert-link .insert-table--modal-content .insert-table--input-header label,.editor-wrapper .insert-link .insert-video--modal-content .insert-table--input-header label,.editor-wrapper .insert-link .insert-link--modal-content .insert-table--input-header label{margin-left:6px}.editor-wrapper .insert-image .insert-table--modal-content .insert-table--button,.editor-wrapper .insert-image .insert-table--modal-content .insert-video--button,.editor-wrapper .insert-image .insert-table--modal-content .insert-link--button,.editor-wrapper .insert-image .insert-video--modal-content .insert-table--button,.editor-wrapper .insert-image .insert-video--modal-content .insert-video--button,.editor-wrapper .insert-image .insert-video--modal-content .insert-link--button,.editor-wrapper .insert-image .insert-link--modal-content .insert-table--button,.editor-wrapper .insert-image .insert-link--modal-content .insert-video--button,.editor-wrapper .insert-image .insert-link--modal-content .insert-link--button,.editor-wrapper .insert-table .insert-table--modal-content .insert-table--button,.editor-wrapper .insert-table .insert-table--modal-content .insert-video--button,.editor-wrapper .insert-table .insert-table--modal-content .insert-link--button,.editor-wrapper .insert-table .insert-video--modal-content .insert-table--button,.editor-wrapper .insert-table .insert-video--modal-content .insert-video--button,.editor-wrapper .insert-table .insert-video--modal-content .insert-link--button,.editor-wrapper .insert-table .insert-link--modal-content .insert-table--button,.editor-wrapper .insert-table .insert-link--modal-content .insert-video--button,.editor-wrapper .insert-table .insert-link--modal-content .insert-link--button,.editor-wrapper .insert-video .insert-table--modal-content .insert-table--button,.editor-wrapper .insert-video .insert-table--modal-content .insert-video--button,.editor-wrapper .insert-video .insert-table--modal-content .insert-link--button,.editor-wrapper .insert-video .insert-video--modal-content .insert-table--button,.editor-wrapper .insert-video .insert-video--modal-content .insert-video--button,.editor-wrapper .insert-video .insert-video--modal-content .insert-link--button,.editor-wrapper .insert-video .insert-link--modal-content .insert-table--button,.editor-wrapper .insert-video .insert-link--modal-content .insert-video--button,.editor-wrapper .insert-video .insert-link--modal-content .insert-link--button,.editor-wrapper .insert-link .insert-table--modal-content .insert-table--button,.editor-wrapper .insert-link .insert-table--modal-content .insert-video--button,.editor-wrapper .insert-link .insert-table--modal-content .insert-link--button,.editor-wrapper .insert-link .insert-video--modal-content .insert-table--button,.editor-wrapper .insert-link .insert-video--modal-content .insert-video--button,.editor-wrapper .insert-link .insert-video--modal-content .insert-link--button,.editor-wrapper .insert-link .insert-link--modal-content .insert-table--button,.editor-wrapper .insert-link .insert-link--modal-content .insert-video--button,.editor-wrapper .insert-link .insert-link--modal-content .insert-link--button{margin-top:12px;display:flex;justify-content:flex-end}.editor-wrapper .insert-image .insert-table--modal-content .insert-table--button button,.editor-wrapper .insert-image .insert-table--modal-content .insert-video--button button,.editor-wrapper .insert-image .insert-table--modal-content .insert-link--button button,.editor-wrapper .insert-image .insert-video--modal-content .insert-table--button button,.editor-wrapper .insert-image .insert-video--modal-content .insert-video--button button,.editor-wrapper .insert-image .insert-video--modal-content .insert-link--button button,.editor-wrapper .insert-image .insert-link--modal-content .insert-table--button button,.editor-wrapper .insert-image .insert-link--modal-content .insert-video--button button,.editor-wrapper .insert-image .insert-link--modal-content .insert-link--button button,.editor-wrapper .insert-table .insert-table--modal-content .insert-table--button button,.editor-wrapper .insert-table .insert-table--modal-content .insert-video--button button,.editor-wrapper .insert-table .insert-table--modal-content .insert-link--button button,.editor-wrapper .insert-table .insert-video--modal-content .insert-table--button button,.editor-wrapper .insert-table .insert-video--modal-content .insert-video--button button,.editor-wrapper .insert-table .insert-video--modal-content .insert-link--button button,.editor-wrapper .insert-table .insert-link--modal-content .insert-table--button button,.editor-wrapper .insert-table .insert-link--modal-content .insert-video--button button,.editor-wrapper .insert-table .insert-link--modal-content .insert-link--button button,.editor-wrapper .insert-video .insert-table--modal-content .insert-table--button button,.editor-wrapper .insert-video .insert-table--modal-content .insert-video--button button,.editor-wrapper .insert-video .insert-table--modal-content .insert-link--button button,.editor-wrapper .insert-video .insert-video--modal-content .insert-table--button button,.editor-wrapper .insert-video .insert-video--modal-content .insert-video--button button,.editor-wrapper .insert-video .insert-video--modal-content .insert-link--button button,.editor-wrapper .insert-video .insert-link--modal-content .insert-table--button button,.editor-wrapper .insert-video .insert-link--modal-content .insert-video--button button,.editor-wrapper .insert-video .insert-link--modal-content .insert-link--button button,.editor-wrapper .insert-link .insert-table--modal-content .insert-table--button button,.editor-wrapper .insert-link .insert-table--modal-content .insert-video--button button,.editor-wrapper .insert-link .insert-table--modal-content .insert-link--button button,.editor-wrapper .insert-link .insert-video--modal-content .insert-table--button button,.editor-wrapper .insert-link .insert-video--modal-content .insert-video--button button,.editor-wrapper .insert-link .insert-video--modal-content .insert-link--button button,.editor-wrapper .insert-link .insert-link--modal-content .insert-table--button button,.editor-wrapper .insert-link .insert-link--modal-content .insert-video--button button,.editor-wrapper .insert-link .insert-link--modal-content .insert-link--button button{cursor:pointer;padding:10px 24px;border-radius:8px;background-color:#008a35;color:#fff;border:unset}.editor-wrapper .insert-image .insert-table--modal-content .insert-table--button button:hover,.editor-wrapper .insert-image .insert-table--modal-content .insert-video--button button:hover,.editor-wrapper .insert-image .insert-table--modal-content .insert-link--button button:hover,.editor-wrapper .insert-image .insert-video--modal-content .insert-table--button button:hover,.editor-wrapper .insert-image .insert-video--modal-content .insert-video--button button:hover,.editor-wrapper .insert-image .insert-video--modal-content .insert-link--button button:hover,.editor-wrapper .insert-image .insert-link--modal-content .insert-table--button button:hover,.editor-wrapper .insert-image .insert-link--modal-content .insert-video--button button:hover,.editor-wrapper .insert-image .insert-link--modal-content .insert-link--button button:hover,.editor-wrapper .insert-table .insert-table--modal-content .insert-table--button button:hover,.editor-wrapper .insert-table .insert-table--modal-content .insert-video--button button:hover,.editor-wrapper .insert-table .insert-table--modal-content .insert-link--button button:hover,.editor-wrapper .insert-table .insert-video--modal-content .insert-table--button button:hover,.editor-wrapper .insert-table .insert-video--modal-content .insert-video--button button:hover,.editor-wrapper .insert-table .insert-video--modal-content .insert-link--button button:hover,.editor-wrapper .insert-table .insert-link--modal-content .insert-table--button button:hover,.editor-wrapper .insert-table .insert-link--modal-content .insert-video--button button:hover,.editor-wrapper .insert-table .insert-link--modal-content .insert-link--button button:hover,.editor-wrapper .insert-video .insert-table--modal-content .insert-table--button button:hover,.editor-wrapper .insert-video .insert-table--modal-content .insert-video--button button:hover,.editor-wrapper .insert-video .insert-table--modal-content .insert-link--button button:hover,.editor-wrapper .insert-video .insert-video--modal-content .insert-table--button button:hover,.editor-wrapper .insert-video .insert-video--modal-content .insert-video--button button:hover,.editor-wrapper .insert-video .insert-video--modal-content .insert-link--button button:hover,.editor-wrapper .insert-video .insert-link--modal-content .insert-table--button button:hover,.editor-wrapper .insert-video .insert-link--modal-content .insert-video--button button:hover,.editor-wrapper .insert-video .insert-link--modal-content .insert-link--button button:hover,.editor-wrapper .insert-link .insert-table--modal-content .insert-table--button button:hover,.editor-wrapper .insert-link .insert-table--modal-content .insert-video--button button:hover,.editor-wrapper .insert-link .insert-table--modal-content .insert-link--button button:hover,.editor-wrapper .insert-link .insert-video--modal-content .insert-table--button button:hover,.editor-wrapper .insert-link .insert-video--modal-content .insert-video--button button:hover,.editor-wrapper .insert-link .insert-video--modal-content .insert-link--button button:hover,.editor-wrapper .insert-link .insert-link--modal-content .insert-table--button button:hover,.editor-wrapper .insert-link .insert-link--modal-content .insert-video--button button:hover,.editor-wrapper .insert-link .insert-link--modal-content .insert-link--button button:hover{background-color:#007f31}.editor-wrapper .media-library .media-library--modal-head{display:flex;flex-direction:column;padding:12px 8px}.editor-wrapper .media-library .media-library--modal-head .media-library--modal-head-title{display:flex;justify-content:space-between}.editor-wrapper .media-library .media-library--modal-head .media-library--modal-head-title svg{font-size:20px;cursor:pointer}.editor-wrapper .media-library .media-library--modal-content{display:grid;grid-template-columns:70% 30%;overflow-x:scroll;height:80%;padding:4px 8px}.editor-wrapper .media-library .media-library--modal-content .media-library--file-name{-webkit-line-clamp:2;overflow:hidden;-webkit-box-orient:vertical;min-height:46px;display:-webkit-box;line-height:140%}.editor-wrapper .media-library .media-library--modal-content .media-library--file-explorer{display:flex;flex-direction:column;gap:12px}.editor-wrapper .media-library .media-library--modal-content .media-library--file-explorer .media-library--file-explorer-filters{display:flex;justify-content:space-between;align-items:center}.editor-wrapper .media-library .media-library--modal-content .media-library--file-explorer .media-library--file-explorer-filters .media-library--searchbar{width:30%;border-radius:8px;box-shadow:unset;border:solid 1px rgb(212,212,212);padding:12px;float:right;margin-right:12px}.editor-wrapper .media-library .media-library--modal-content .media-library--file-explorer .media-library--file-explorer-files{display:flex;flex-wrap:wrap;gap:12px}.editor-wrapper .media-library .media-library--modal-content .media-library--file-explorer .media-library--file-explorer-files .media-library--file{cursor:pointer;display:flex;flex-direction:column;gap:4px;padding:8px;width:120px;border-radius:8px}.editor-wrapper .media-library .media-library--modal-content .media-library--file-explorer .media-library--file-explorer-files .media-library--file.media-library--selected{background-color:#f5f5f5}.editor-wrapper .media-library .media-library--modal-content .media-library--file-explorer .media-library--file-explorer-files .media-library--file img{border:solid 1px rgb(212,212,212);border-radius:8px;height:100px;-o-object-fit:cover;object-fit:cover;width:120px}.editor-wrapper .media-library .media-library--modal-content .media-library--file-explorer .media-library--file-explorer-files .media-library--file .media-library--file-size{font-size:.8rem;color:#a3a3a3}.editor-wrapper .media-library .media-library--modal-content .media-library--file-explorer .media-library--file-explorer-files .media-library--file:hover img{outline:solid 2px rgb(59,130,246);outline-offset:2px}.editor-wrapper .media-library .media-library--modal-content .media-library--file-preview{display:flex;flex-direction:column;border-radius:8px;background-color:#f5f5f5;padding:12px;overflow-y:scroll}.editor-wrapper .media-library .media-library--modal-content .media-library--file-preview .media-library--file-preview-image{height:200px}.editor-wrapper .media-library .media-library--modal-content .media-library--file-preview .media-library--file-preview-image img{border-radius:4px;width:100%;height:100%;-o-object-fit:contain;object-fit:contain}.editor-wrapper .media-library .media-library--modal-content .media-library--file-preview .media-library--informations{position:relative;height:100%}.editor-wrapper .media-library .media-library--modal-content .media-library--file-preview .media-library--attributes{display:flex;flex-direction:column;gap:6px}.editor-wrapper .media-library .media-library--modal-content .media-library--file-preview .media-library--attributes .media-library--attribute{display:flex;justify-content:space-between}.editor-wrapper .media-library .media-library--modal-content .media-library--file-preview .media-library--attributes .media-library--attribute .media-library--attribute-name{width:100%;font-weight:500;color:#6a6a6a}.editor-wrapper .media-library .media-library--modal-content .media-library--file-preview .media-library--actions{position:absolute;bottom:0;display:flex;justify-content:space-between;width:100%}.editor-wrapper .media-library .media-library--modal-content .media-library--file-preview .media-library--actions .media-library--actions-insert{cursor:pointer;padding:10px 24px;border-radius:8px;background-color:#008a35;color:#fff;border:unset}.editor-wrapper .media-library .media-library--modal-content .media-library--file-preview .media-library--actions .media-library--actions-insert:hover{background-color:#007f31}.tippy-box[data-theme=editor][role=tooltip]{display:block;background:unset;box-shadow:unset;border:unset;padding:0;margin:0}.tippy-box[data-theme=editor][role=tooltip] .editor-bubble-menu{display:flex;align-items:center;gap:24px}.tippy-box[data-theme=editor][role=tooltip] .editor-bubble-menu .editor-bubble-menu--buttons{display:flex;gap:8px}.tippy-box[data-theme=editor][role=tooltip] .tippy-content{background:#fff;border:solid 1px rgb(212,212,212);border-radius:16px;padding:8px;box-shadow:0 4px 6px -1px #0000001a,0 2px 4px -2px #0000001a;display:flex;flex-direction:column;gap:.1rem;overflow:auto;position:relative}.tippy-box[data-theme=editor][role=tooltip] .tippy-content button{padding:6px;border-radius:8px;align-items:center;background-color:transparent;display:flex;gap:.25rem;text-align:left;width:100%;border:solid 1px transparent;cursor:pointer}.tippy-box[data-theme=editor][role=tooltip] .tippy-content button:hover,.tippy-box[data-theme=editor][role=tooltip] .tippy-content button:hover.is-selected{background-color:#f5f5f5}.tippy-box[data-theme=editor][role=tooltip] .tippy-content button.is-selected{background-color:#f5f5f5;border:solid 1px rgb(115,115,115)}
-/**
- * @copyright	(C) 2005 Open Source Matters, Inc. <https://www.joomla.org>
- * @license		GNU General Public License version 2 or later; see LICENSE.txt
- */
-
-body {
-	background: #fff;
-	font-family: 'Inter', sans-serif;
-	line-height: 1.5em;
-	font-size: 15px;
-	color: #0B0C0F;
-}
-
-h1 {
-	font-family: 'Inter', sans-serif;
-	font-size: 32px;
-	font-weight: 500;
-	color: #0B0C0F;
-	margin: 0;
-	line-height: 1.2em;
-}
-
-h2 {
-	font-family: 'Inter', sans-serif;
-	font-size: 24px;
-	font-weight: 500;
-	color: #0B0C0F;
-	margin: 0;
-	line-height: 1.2em;
-}
-
-h3 {
-	font-weight: 500;
-	font-family: 'Inter', sans-serif;
-	font-size: 18px;
-	color: #0B0C0F;
-	margin: 0;
-	line-height: 1.2em;
-}
-
-h4 {
-	font-weight: 500;
-	font-family: 'Inter', sans-serif;
-	color: #0B0C0F;
-	font-size: 16px;
-	margin: 0;
-	line-height: 1.2em;
-}
-
-h5 {
-	font-weight: 500;
-	font-size: 14px;
-	font-family: 'Inter', sans-serif;
-	color: #0B0C0F;
-	margin: 0;
-	line-height: 1.2em;
-}
-
-h6 {
-	font-weight: 500;
-	font-size: 12px;
-	font-family: 'Inter', sans-serif;
-	color: #0B0C0F;
-	margin: 0;
-	line-height: 1.2em;
-}
-
-
-p {
-	margin: 0;
-	font-family: 'Inter', sans-serif;
-	line-height: 1.5em;
-	font-size: 16px;
-	color: #0B0C0F;
-	font-weight: 400;
-}
-
-pre {
-	padding: 5px 10px;
-	background-color: #f0f0f0;
-	white-space: pre-wrap;
-	margin-bottom: 5px;
-	margin-top: 5px;
-	border-radius: 3px;
-	border: 1px solid #e0e0e5;
-	font-family: 'Inter', sans-serif;
-}
-
-code {
-	border: 1px solid #e0e0e5;
-	background: #f0f0f0;
-	border-radius: 3px;
-	white-space: nowrap;
-	padding: 2px 4px;
-	font-size: 14px;
-	font-family: 'Inter', sans-serif;
-}
-
-blockquote {
-	border-left: 4px solid #ccc;
-	margin-bottom: 5px;
-	margin-top: 5px;
-	padding-left: 16px;
-	margin-left: 0;
-}
-
-blockquote p {
-	font-size: 18px;
-}
-
-a {
-	text-decoration: underline;
-	color: #1B57B1;
-}
-
-a:hover {
-	color: #1B57B1;
-	text-decoration: none;
-	font-weight: normal;
-}
-
-ul, ol {
-	padding-left: 24px;
-	margin: 0;
-}
-
-ul ul, ol ol {
-	padding-left: 24px;
-}
-
-li {
-	line-height: 1.5em;
-}
-
-
-ol li:not(.ql-direction-rtl) {
-	padding-left: 0;
-}
-
-ol li.ql-direction-rtl {
-	padding-right: 1.5em;
-}
-
-ol li {
-	counter-reset: list-1 list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9;
-	counter-increment: list-0;
-}
-
-ol li::marker {
-	content: counter(list-0, decimal) '. ';
-}
-
-ol li.ql-indent-1 {
-	counter-increment: list-1;
-}
-
-ol li.ql-indent-1::marker {
-	content: counter(list-1, decimal) '. ';
-}
-
-ol li.ql-indent-1 {
-	counter-reset: list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9;
-}
-
-ol li.ql-indent-2 {
-	counter-increment: list-2;
-}
-
-ol li.ql-indent-2::marker {
-	content: counter(list-2, decimal) '. ';
-}
-
-ol li.ql-indent-2 {
-	counter-reset: list-3 list-4 list-5 list-6 list-7 list-8 list-9;
-}
-
-ol li.ql-indent-3 {
-	counter-increment: list-3;
-}
-
-ol li.ql-indent-3::marker {
-	content: counter(list-3, decimal) '. ';
-}
-
-ol li.ql-indent-3 {
-	counter-reset: list-4 list-5 list-6 list-7 list-8 list-9;
-}
-
-ol li.ql-indent-4 {
-	counter-increment: list-4;
-}
-
-ol li.ql-indent-4::marker {
-	content: counter(list-4, decimal) '. ';
-}
-
-ol li.ql-indent-4 {
-	counter-reset: list-5 list-6 list-7 list-8 list-9;
-}
-
-ol li.ql-indent-5 {
-	counter-increment: list-5;
-}
-
-ol li.ql-indent-5::marker {
-	content: counter(list-5, decimal) '. ';
-}
-
-ol li.ql-indent-5 {
-	counter-reset: list-6 list-7 list-8 list-9;
-}
-
-ol li.ql-indent-6 {
-	counter-increment: list-6;
-}
-
-ol li.ql-indent-6::marker {
-	content: counter(list-6, decimal) '. ';
-}
-
-ol li.ql-indent-6 {
-	counter-reset: list-7 list-8 list-9;
-}
-
-ol li.ql-indent-7 {
-	counter-increment: list-7;
-}
-
-ol li.ql-indent-7::marker {
-	content: counter(list-7, decimal) '. ';
-}
-
-ol li.ql-indent-7 {
-	counter-reset: list-8 list-9;
-}
-
-ol li.ql-indent-8 {
-	counter-increment: list-8;
-}
-
-ol li.ql-indent-8::marker {
-	content: counter(list-8, decimal) '. ';
-}
-
-ol li.ql-indent-8 {
-	counter-reset: list-9;
-}
-
-li.ql-indent-1 {
-	margin-left: 24px;
-}
-
-li.ql-indent-2 {
-	margin-left: 48px;
-}
-
-li.ql-indent-3 {
-	margin-left: 72px;
-}
-
-li.ql-indent-4 {
-	margin-left: 96px;
-}
-
-li.ql-indent-5 {
-	margin-left: 120px;
-}
-
-li.ql-indent-6 {
-	margin-left: 144px;
-}
-
-li.ql-indent-7 {
-	margin-left: 168px;
-}
-
-li.ql-indent-8 {
-	margin-left: 192px;
-}
-
-hr {
-	margin: 16px 0;
-	border-bottom: 1px solid #e0e0e5;
-}
-
-div.caption       { padding: 0 10px 0 10px; }
-div.caption img   { border: 1px solid #CCC; }
-div.caption p     { font-size: .90em; color: #666; text-align: center; }
-
-/* STYLES FOR JOOMLA! EDITOR */
-hr#system-readmore  { border: #FF0000FF dashed 1px; color: #FF0000FF; }
-hr.system-pagebreak { border: #808080FF dashed 1px; color: #808080FF; }
-

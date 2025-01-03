@@ -116,26 +116,39 @@
 
       <div v-else>
         <div v-if="displayedItems.length > 0" id="list-items">
-          <table v-if="viewType !== 'gantt'"  id="list-table" :class="{'blocs': viewType === 'blocs'}">
-            <thead>
+          <table v-if="viewType !== 'gantt'" id="list-table" :class="{'blocs': viewType === 'blocs'}">
+            <thead class="tw-bg-white">
             <tr>
-              <th class="tw-cursor-pointer" :class="{'tw-flex tw-flex-row': 'label' === orderBy}" @click="orderByColumn('label')">
-                <span v-if="'label' === orderBy && order === 'ASC'" class="material-symbols-outlined">arrow_upward</span>
-                <span v-else-if="'label' === orderBy && order === 'DESC'" class="material-symbols-outlined">arrow_downward</span>
-                {{ translate('COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase()) == ('COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase()) ?
-                  translate('COM_EMUNDUS_ONBOARD_LABEL') : translate('COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase()) }}
+              <th class="tw-cursor-pointer tw-px-4 tw-py-2"
+                  @click="orderByColumn('label')">
+                <div :class="{'tw-flex tw-flex-row': 'label' === orderBy}">
+                  <span v-if="'label' === orderBy && order === 'ASC'"
+                        class="material-symbols-outlined">arrow_upward</span>
+                  <span v-else-if="'label' === orderBy && order === 'DESC'" class="material-symbols-outlined">arrow_downward</span>
+                  <label class="tw-font-medium tw-cursor-pointer">{{
+                    translate('COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase()) == ('COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase()) ?
+                        translate('COM_EMUNDUS_ONBOARD_LABEL') : translate('COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase())
+                    }}</label>
+                </div>
               </th>
-              <th v-for="column in additionalColumns" :key="column.key" :class="{'tw-flex tw-flex-row': column.order_by === orderBy}">
-                <span v-if="column.order_by === orderBy && order === 'ASC'" class="material-symbols-outlined">arrow_upward</span>
-                <span v-else-if="column.order_by === orderBy && order === 'DESC'" class="material-symbols-outlined">arrow_downward</span>
-                <span v-if="column.order_by" class="tw-cursor-pointer" @click="orderByColumn(column.order_by)">
-                  {{ column.key }}
-                </span>
-                <span v-else>{{ column.key }}</span>
+
+              <th v-for="column in additionalColumns" :key="column.key" class="tw-px-4 tw-py-2">
+                <div v-if="column.order_by" :class="{'tw-flex tw-flex-row': column.order_by === orderBy}">
+                  <span v-if="column.order_by === orderBy && order === 'ASC'" class="material-symbols-outlined">arrow_upward</span>
+                  <span v-else-if="column.order_by === orderBy && order === 'DESC'" class="material-symbols-outlined">arrow_downward</span>
+                  <label class="tw-cursor-pointer tw-font-medium" @click="orderByColumn(column.order_by)">
+                    {{ column.key }}
+                  </label>
+                </div>
+                <label class="tw-font-medium" v-else>{{ column.key }}</label>
               </th>
-              <th v-if="tabActionsPopover && tabActionsPopover.length > 0">{{
+
+              <th v-if="tabActionsPopover && tabActionsPopover.length > 0" class="tw-px-4 tw-py-2">
+                <label class="tw-font-medium">
+                {{
                   translate('COM_EMUNDUS_ONBOARD_ACTIONS')
                 }}
+                </label>
               </th>
             </tr>
             </thead>
@@ -146,11 +159,11 @@
                 class="em-border-cards table-row"
                 :class="{'em-card-neutral-100 em-card-shadow em-p-24' : viewType === 'blocs'}"
             >
-              <td class="tw-cursor-pointer" @click="onClickAction(editAction, item.id)">
-                <span :class="{'tw-font-semibold tw-mb-4 tw-text-ellipsis tw-overflow-hidden':  viewType === 'blocs'}"
+              <td class="tw-cursor-pointer tw-px-4 tw-py-2" @click="onClickAction(editAction, item.id)">
+                <span :class="{'tw-font-semibold tw-line-clamp-2 tw-min-h-[48px]':  viewType === 'blocs'}"
                       :title="item.label[params.shortlang]">{{ item.label[params.shortlang] }}</span>
               </td>
-              <td class="columns" v-for="column in displayedColumns(item, viewType)" :key="column.key">
+              <td class="columns tw-px-4 tw-py-2" v-for="column in displayedColumns(item, viewType)" :key="column.key">
                 <div v-if="column.type === 'tags'" class="tw-flex tw-items-center tw-flex-wrap tw-gap-2"
                      :class="column.classes">
                   <span v-for="tag in column.values" :key="tag.key" class="tw-mr-2 tw-h-max" :class="tag.classes"
@@ -162,9 +175,9 @@
                 </div>
                 <span v-else class="tw-mt-2 tw-mb-2" :class="column.classes" v-html="column.value"></span>
               </td>
-              <div>
+              <td class="actions tw-px-4 tw-py-2">
                 <hr v-if="viewType === 'blocs'" class="tw-w-full tw-mt-1.5 tw-mb-3">
-                <td class="actions">
+                <div :class="{'tw-flex tw-justify-between tw-w-full': viewType === 'blocs'}">
                   <a v-if="viewType === 'blocs' && editAction" @click="onClickAction(editAction, item.id)"
                      class="tw-btn-primary tw-text-sm tw-cursor-pointer tw-w-auto">
                     {{ translate(editAction.label) }}
@@ -191,21 +204,21 @@
                             :key="action.name"
                             :class="{'tw-hidden': !(typeof action.showon === 'undefined' || evaluateShowOn(item, action.showon))}"
                             @click="onClickAction(action, item.id)"
-                            class="tw-cursor-pointer tw-p-2 tw-text-base"
+                            class="tw-cursor-pointer tw-p-2 tw-text-base hover:tw-bg-neutral-300"
                         >
                           {{ translate(action.label) }}
                         </li>
                       </ul>
                     </popover>
                   </div>
-                </td>
-              </div>
+                </div>
+              </td>
             </tr>
             </tbody>
           </table>
           <Gantt v-else
-            :language="params.shortlang"
-            :periods="displayedItems"
+                 :language="params.shortlang"
+                 :periods="displayedItems"
           ></Gantt>
 
         </div>
@@ -421,26 +434,26 @@ export default {
 
             try {
               fetch(url).then(response => response.json())
-                .then(response => {
-                  if (response.status === true) {
-                    if (typeof response.data.datas !== 'undefined') {
-                      this.items[tab.key] = response.data.datas;
-                      tab.pagination = {
-                        current: page,
-                        total: Math.ceil(response.data.count / this.numberOfItemsToDisplay)
+                  .then(response => {
+                    if (response.status === true) {
+                      if (typeof response.data.datas !== 'undefined') {
+                        this.items[tab.key] = response.data.datas;
+                        tab.pagination = {
+                          current: page,
+                          total: Math.ceil(response.data.count / this.numberOfItemsToDisplay)
+                        }
                       }
+                    } else {
+                      console.error('Failed to get data : ' + response.msg);
                     }
-                  } else {
-                    console.error('Failed to get data : ' + response.msg);
-                  }
-                  this.loading.tabs = false;
-                  this.loading.items = false;
-                })
-                .catch(error => {
-                  console.error(error);
-                  this.loading.tabs = false;
-                  this.loading.items = false;
-                });
+                    this.loading.tabs = false;
+                    this.loading.items = false;
+                  })
+                  .catch(error => {
+                    console.error(error);
+                    this.loading.tabs = false;
+                    this.loading.items = false;
+                  });
             } catch (e) {
               console.error(e);
               this.loading.tabs = false;
@@ -491,23 +504,23 @@ export default {
     },
     async setFilterOptions(controller, filter, tab) {
       return await fetch('index.php?option=com_emundus&controller=' + controller + '&task=' + filter.getter)
-        .then(response => response.json())
-        .then(response => {
-          if (response.status === true) {
-            let options = response.data;
+          .then(response => response.json())
+          .then(response => {
+            if (response.status === true) {
+              let options = response.data;
 
-            // if options is an array of strings, convert it to an array of objects
-            if (typeof options[0] === 'string') {
-              options = options.map(option => ({value: option, label: option}));
+              // if options is an array of strings, convert it to an array of objects
+              if (typeof options[0] === 'string') {
+                options = options.map(option => ({value: option, label: option}));
+              }
+
+              options.unshift({value: 'all', label: this.translate(filter.label)});
+
+              this.filters[tab].find(f => f.key === filter.key).options = options;
+            } else {
+              return [];
             }
-
-            options.unshift({value: 'all', label: this.translate(filter.label)});
-
-            this.filters[tab].find(f => f.key === filter.key).options = options;
-          } else {
-            return [];
-          }
-        });
+          });
     },
     searchItems() {
       if (this.searches[this.selectedListTab].searchDebounce !== null) {
@@ -547,7 +560,7 @@ export default {
           });
         }
 
-        settingsService.redirectJRoute(url,useGlobalStore().getCurrentLang)
+        settingsService.redirectJRoute(url, useGlobalStore().getCurrentLang)
 
         //window.location.href = url;
       } else {
@@ -597,33 +610,33 @@ export default {
       this.loading.items = true;
 
       fetch(url).then(response => response.json())
-        .then(response => {
-          if (response.status === true || response.status === 1) {
-            if (response.redirect) {
-              window.location.href = response.redirect;
+          .then(response => {
+            if (response.status === true || response.status === 1) {
+              if (response.redirect) {
+                window.location.href = response.redirect;
+              }
+
+              this.getListItems();
+            } else {
+              if (response.msg) {
+                Swal.fire({
+                  icon: 'error',
+                  title: this.translate(response.msg),
+                  reverseButtons: true,
+                  customClass: {
+                    title: 'em-swal-title',
+                    confirmButton: 'em-swal-confirm-button',
+                    actions: 'em-swal-single-action'
+                  }
+                });
+              }
             }
 
-            this.getListItems();
-          } else {
-            if (response.msg) {
-              Swal.fire({
-                icon: 'error',
-                title: this.translate(response.msg),
-                reverseButtons: true,
-                customClass: {
-                  title: 'em-swal-title',
-                  confirmButton: 'em-swal-confirm-button',
-                  actions: 'em-swal-single-action'
-                }
-              });
-            }
-          }
-
-          this.loading.items = false;
-        }).catch(error => {
-          console.error(error);
-          this.loading.items = false;
-        });
+            this.loading.items = false;
+          }).catch(error => {
+        console.error(error);
+        this.loading.items = false;
+      });
     },
     onClickPreview(item) {
       if (this.previewAction && (this.previewAction.title || this.previewAction.content)) {
@@ -677,27 +690,27 @@ export default {
     evaluateShowOn(item, showon) {
       let show = true;
       switch (showon.operator) {
-      case '==':
-      case '=':
-        show = item[showon.key] == showon.value;
-        break;
-      case '!=':
-        show = item[showon.key] != showon.value;
-        break;
-      case '>':
-        show = item[showon.key] > showon.value;
-        break;
-      case '<':
-        show = item[showon.key] < showon.value;
-        break;
-      case '>=':
-        show = item[showon.key] >= showon.value;
-        break;
-      case '<=':
-        show = item[showon.key] <= showon.value;
-        break;
-      default:
-        show = true;
+        case '==':
+        case '=':
+          show = item[showon.key] == showon.value;
+          break;
+        case '!=':
+          show = item[showon.key] != showon.value;
+          break;
+        case '>':
+          show = item[showon.key] > showon.value;
+          break;
+        case '<':
+          show = item[showon.key] < showon.value;
+          break;
+        case '>=':
+          show = item[showon.key] >= showon.value;
+          break;
+        case '<=':
+          show = item[showon.key] <= showon.value;
+          break;
+        default:
+          show = true;
       }
 
       return show;
@@ -783,14 +796,14 @@ export default {
 
       if (this.type === "campaigns") {
         if (this.currentTab.key === 'programs') {
-          translation += '<span>'+this.translate('COM_EMUNDUS_ONBOARD_NOPROGRAM')+'</span>';
+          translation += '<span>' + this.translate('COM_EMUNDUS_ONBOARD_NOPROGRAM') + '</span>';
         } else {
-          translation += '<span>'+this.translate('COM_EMUNDUS_ONBOARD_NOCAMPAIGN')+'</span>';
+          translation += '<span>' + this.translate('COM_EMUNDUS_ONBOARD_NOCAMPAIGN') + '</span>';
         }
       } else if (this.type === "emails") {
-        translation += '<span>'+this.translate('COM_EMUNDUS_ONBOARD_NOEMAIL')+'</span>';
+        translation += '<span>' + this.translate('COM_EMUNDUS_ONBOARD_NOEMAIL') + '</span>';
       } else if (this.type === "forms") {
-        translation += '<span>'+this.translate('COM_EMUNDUS_ONBOARD_NOFORM')+'</span>';
+        translation += '<span>' + this.translate('COM_EMUNDUS_ONBOARD_NOFORM') + '</span>';
       }
 
       return translation;
@@ -835,7 +848,7 @@ export default {
   margin-top: 77px;
 }
 
-#onboarding_list.alert-banner-displayed .head{
+#onboarding_list.alert-banner-displayed .head {
   top: 114px;
 }
 
@@ -882,6 +895,7 @@ export default {
 
           &.actions {
             align-items: center;
+            flex-direction: column;
           }
 
           ul {
@@ -899,6 +913,23 @@ export default {
             }
           }
         }
+      }
+    }
+  }
+  &:not(.blocs) {
+    tbody {
+      tr:nth-child(2n+1) td {
+        background-color: var(--neutral-100);
+      }
+      tr:nth-child(2n-1):hover td {
+        background-color: var(--neutral-200);
+      }
+
+      tr:nth-child(2n) > td {
+        background-color: var(--neutral-300);
+      }
+      tr:nth-child(2n):hover > td {
+        background-color: var(--neutral-400);
       }
     }
   }
