@@ -6080,7 +6080,7 @@ window.addEventListener('emundus-apply-filters-success', () => {
 
 async function getEvaluationStepsForms(programCode)
 {
-    return await fetch('/index.php?option=com_emundus&view=export_select_columns&format=raw&form=evaluation_steps&code=' + programCode).then((response) => {
+    return await fetch('/index.php?option=com_emundus&view=export_select_columns&format=raw&layout=evaluation_steps&form=evaluation_steps&code=' + programCode).then((response) => {
         return response.text();
     }).then((html) => {
         return html;

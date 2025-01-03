@@ -141,7 +141,7 @@ class EmundusControllerProgramme extends BaseController
 		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-			$programs = $this->m_programme->getAllPrograms();
+			$programs = $this->m_programme->getAllPrograms('all', 0, null, 'ASC', '', $this->_user, '', 'p.label');
 
 			if (count((array) $programs) > 0) {
 				$type = $this->input->getString('type', '');
@@ -169,15 +169,16 @@ class EmundusControllerProgramme extends BaseController
 		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-
-
-			$filter    = $this->input->getString('filter');
-			$sort      = $this->input->getString('sort');
-			$recherche = $this->input->getString('recherche');
+			$filter    = $this->input->getString('filter', null);
+			$sort      = $this->input->getString('sort', 'DESC');
+			$recherche = $this->input->getString('recherche', '');
+			$category  = $this->input->getString('category', '');
 			$lim       = $this->input->getInt('lim', 0);
-			$page      = $this->input->getInt('page');
+			$page      = $this->input->getInt('page', 0);
+			$order_by  = $this->input->getString('order_by', 'p.id');
+			$order_by  = $order_by == 'label' ? 'p.label' : $order_by;
 
-			$programs = $this->m_programme->getAllPrograms($lim, $page, $filter, $sort, $recherche);
+			$programs = $this->m_programme->getAllPrograms($lim, $page, $filter, $sort, $recherche, $this->_user, $category, $order_by);
 
 			if (count((array) $programs) > 0) {
 				foreach ($programs['datas'] as $key => $program) {
@@ -236,25 +237,29 @@ class EmundusControllerProgramme extends BaseController
 							'key'     => Text::_('COM_EMUNDUS_ONBOARD_PROGCODE'),
 							'value'   => $program->code,
 							'classes' => 'em-font-size-14 em-neutral-700-color',
-							'display' => 'all'
+							'display' => 'all',
+							'order_by' => 'p.code'
 						],
 						[
 							'key'     => Text::_('COM_EMUNDUS_ONBOARD_CATEGORY'),
 							'value'   => Text::_($program->programmes),
 							'classes' => 'em-font-size-14 em-neutral-700-color',
-							'display' => 'all'
+							'display' => 'all',
+							'order_by' => 'p.programmes'
 						],
 						[
 							'key'     => Text::_('COM_EMUNDUS_ONBOARD_STATE'),
 							'value'   => $program->published ? Text::_('PUBLISHED') : Text::_('COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH'),
 							'classes' => $program->published ? 'em-p-5-12 em-bg-main-100 em-text-neutral-900 em-font-size-14 em-border-radius' : 'em-p-5-12 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius',
-							'display' => 'table'
+							'display' => 'table',
+							'order_by' => 'p.published'
 						],
 						[
 							'key'     => Text::_('COM_EMUNDUS_ONBOARD_PROGRAM_APPLY_ONLINE'),
 							'value'   => $program->apply_online ? Text::_('JYES') : Text::_('JNO'),
 							'classes' => '',
-							'display' => 'table'
+							'display' => 'table',
+							'order_by' => 'p.apply_online'
 						],
 						[
 							'type'    => 'tags',

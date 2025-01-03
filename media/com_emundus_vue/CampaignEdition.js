@@ -1,7 +1,6 @@
-import { _ as _export_sfc, m as campaignService, S as Swal, e as resolveComponent, o as openBlock, c as createElementBlock, a as createBaseVNode, j as createBlock, k as withCtx, t as toDisplayString, g as createVNode, p as TransitionGroup, b as Fragment, r as renderList, d as createCommentVNode, q as mergeProps, M as Modal, s as settingsService, u as withModifiers, w as withDirectives, n as normalizeClass, x as vModelSelect, i as axios, y as createTextVNode, z as useGlobalStore, B as workflowService, D as vModelCheckbox, E as toHandlers, T as Tabs, H as History, G as mixin, I as formService, J as programmeService, v as vShow, K as Transition } from "./app_emundus.js";
+import { _ as _export_sfc, V as VueDraggableNext, m as campaignService, S as Swal, e as resolveComponent, o as openBlock, c as createElementBlock, a as createBaseVNode, j as createBlock, k as withCtx, t as toDisplayString, g as createVNode, p as TransitionGroup, b as Fragment, r as renderList, d as createCommentVNode, q as mergeProps, M as Modal, s as settingsService, u as withModifiers, w as withDirectives, n as normalizeClass, x as vModelSelect, i as axios, y as createTextVNode, z as useGlobalStore, B as workflowService, D as vModelCheckbox, E as toHandlers, T as Tabs, H as History, G as mixin, I as formService, J as programmeService, v as vShow, K as Transition } from "./app_emundus.js";
 import { D as DatePicker, a as addCampaign } from "./addCampaign.js";
 import { v as vueDropzone } from "./vue-dropzone.js";
-import { V as VueDraggableNext } from "./vue-draggable-next.esm-bundler.js";
 import { e as emailService } from "./email.js";
 import { q as qs } from "./index.js";
 import "./editor.js";
@@ -11,7 +10,6 @@ const _imports_2 = "/media/com_emundus_vue/assets/excel.png";
 const _imports_3 = "/media/com_emundus_vue/assets/image.png";
 const _imports_4 = "/media/com_emundus_vue/assets/zip.png";
 const _imports_5 = "/media/com_emundus_vue/assets/svg.png";
-const addDocumentsDropfiles_vue_vue_type_style_index_0_scoped_6272a5a1_lang = "";
 const getTemplate = () => `
 <div class="dz-preview dz-file-preview">
   <div class="dz-image">
@@ -120,8 +118,7 @@ const _sfc_main$5 = {
       campaignService.deleteDropfileDocument(id);
     },
     formatBytes(bytes, decimals = 2) {
-      if (bytes === 0)
-        return "0 Bytes";
+      if (bytes === 0) return "0 Bytes";
       const k = 1024;
       const dm = decimals < 0 ? 0 : decimals;
       const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
@@ -304,7 +301,6 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const AddDocumentsDropfiles = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$5], ["__scopeId", "data-v-6272a5a1"]]);
-const ModalAddTrigger_vue_vue_type_style_index_0_scoped_5f2a6404_lang = "";
 const _sfc_main$4 = {
   name: "modalAddTrigger",
   components: {
@@ -574,7 +570,6 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
   }, 8, ["name", "class", "onClosed", "onBeforeOpen"]);
 }
 const ModalAddTrigger = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4], ["__scopeId", "data-v-5f2a6404"]]);
-const addEmail_vue_vue_type_style_index_0_scoped_bb742359_lang = "";
 const _sfc_main$3 = {
   name: "addEmail",
   components: { ModalAddTrigger },
@@ -842,7 +837,6 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const addEmail = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-bb742359"]]);
-const CampaignMore_vue_vue_type_style_index_0_scoped_a04b9d4b_lang = "";
 const _sfc_main$2 = {
   name: "CampaignMore",
   props: {
@@ -1077,7 +1071,6 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const campaignSteps = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1]]);
-const CampaignEdition_vue_vue_type_style_index_0_scoped_109d6ef3_lang = "";
 const _sfc_main = {
   name: "CampaignEdition",
   components: {
@@ -1333,7 +1326,7 @@ const _sfc_main = {
   }
 };
 const _hoisted_1 = { id: "edit-campaign" };
-const _hoisted_2 = { class: "em-border-cards em-card-shadow tw-rounded em-white-bg em-p-24" };
+const _hoisted_2 = { class: "tw-border tw-border-neutral-300 em-card-shadow tw-rounded tw-bg-white tw-p-6" };
 const _hoisted_3 = { class: "tw-ml-2 tw-text-neutral-900" };
 const _hoisted_4 = { class: "tw-flex tw-items-center tw-mt-4" };
 const _hoisted_5 = ["innerHTML"];
@@ -1342,7 +1335,7 @@ const _hoisted_6 = {
   class: "tw-flex tw-items-center tw-mb-8"
 };
 const _hoisted_7 = { style: { "color": "var(--em-profile-color)", "font-weight": "700 !important" } };
-const _hoisted_8 = { class: "tw-w-full tw-rounded-coordinator tw-p-6 tw-bg-white tw-border tw-border-neutral-300 tw-relative" };
+const _hoisted_8 = { class: "tw-w-full tw-rounded-2xl tw-p-6 tw-bg-white tw-border tw-border-neutral-300 tw-relative" };
 const _hoisted_9 = {
   key: 0,
   class: "warning-message-program mb-1"
@@ -1373,7 +1366,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     createBaseVNode("div", _hoisted_2, [
       createBaseVNode("div", null, [
         createBaseVNode("div", {
-          class: "tw-flex tw-items-center tw-cursor-pointer",
+          class: "tw-flex tw-items-center tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300",
           onClick: _cache[0] || (_cache[0] = ($event) => $options.redirectJRoute("index.php?option=com_emundus&view=campaigns"))
         }, [
           _cache[2] || (_cache[2] = createBaseVNode("span", { class: "material-symbols-outlined tw-text-neutral-600" }, "navigate_before", -1)),
@@ -1465,7 +1458,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ]);
 }
-const CampaignEdition = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-109d6ef3"]]);
+const CampaignEdition = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-3c1cd8e4"]]);
 export {
   CampaignEdition as default
 };

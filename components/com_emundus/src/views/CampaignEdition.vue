@@ -1,9 +1,9 @@
 <template>
   <div id="edit-campaign">
     <div class="em-w-custom"></div>
-    <div class="em-border-cards em-card-shadow tw-rounded em-white-bg em-p-24">
+    <div class="tw-border tw-border-neutral-300 em-card-shadow tw-rounded tw-bg-white tw-p-6">
       <div>
-        <div class="tw-flex tw-items-center tw-cursor-pointer"
+        <div class="tw-flex tw-items-center tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300"
              @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
           <span class="material-symbols-outlined tw-text-neutral-600">navigate_before</span>
           <span class="tw-ml-2 tw-text-neutral-900">{{ translate('BACK') }}</span>
@@ -27,8 +27,7 @@
         <Tabs v-show="profileId" :tabs="tabs"
               :classes="'tw-overflow-x-scroll tw-flex tw-items-center tw-gap-2 tw-ml-7'"></Tabs>
 
-
-        <div class="tw-w-full tw-rounded-coordinator tw-p-6 tw-bg-white tw-border tw-border-neutral-300 tw-relative">
+        <div class="tw-w-full tw-rounded-2xl tw-p-6 tw-bg-white tw-border tw-border-neutral-300 tw-relative">
           <div v-if="selectedMenuItem.id === 5" class="warning-message-program mb-1">
             <p class="tw-text-red-600 flex flex-row"><span class="material-symbols-outlined tw-mr-2 tw-text-red-600">warning_amber</span>{{
                 translate('COM_EMUNDUS_ONBOARD_PROGRAM_WARNING')

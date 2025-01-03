@@ -19,6 +19,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Event\GenericEvent;
+use Joomla\CMS\Component\ComponentHelper;
 
 class EmundusModelWorkflow extends JModelList
 {
@@ -33,7 +34,7 @@ class EmundusModelWorkflow extends JModelList
 		$this->app = Factory::getApplication();
 		$this->db = Factory::getContainer()->get('DatabaseDriver');
 
-		Log::addLogger(['text_file' => 'com_emundus.formbuilder.php'], Log::ALL, array('com_emundus.workflow'));
+		Log::addLogger(['text_file' => 'com_emundus.workflow.php'], Log::ALL, array('com_emundus.workflow'));
 	}
 
 	public function add($label = ''): int
@@ -113,8 +114,7 @@ class EmundusModelWorkflow extends JModelList
 
 			try {
 				$this->db->setQuery($query);
-				$this->db->execute();
-				$updated = true;
+				$updated = $this->db->execute();
 			} catch (Exception $e) {
 				Log::add('Error while updating workflow: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
 				$error_occurred = true;
@@ -125,10 +125,14 @@ class EmundusModelWorkflow extends JModelList
 				$already_used_entry_status = [];
 				foreach ($steps as $step) {
 					foreach($step['entry_status'] as $status) {
-						if (!$this->isEvaluationStep($step['type']) && in_array($status['id'], $already_used_entry_status)) {
-							throw new Exception(Text::_('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS_ALREADY_USED'));
+						if (!$this->isEvaluationStep($step['type'])) {
+							if (in_array($status['id'], $already_used_entry_status)) {
+								$status_label = $status['label'] ?? '';
+
+								throw new Exception(sprintf(Text::_('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS_ALREADY_USED'), $status_label));
+							}
+							$already_used_entry_status[] = $status['id'];
 						}
-						$already_used_entry_status[] = $status['id'];
 					}
 				}
 
@@ -154,10 +158,14 @@ class EmundusModelWorkflow extends JModelList
 								$step['id'] = $this->db->insertid();
 							}
 						} else {
-							$fields = ['label', 'type', 'state', 'multiple', 'output_status'];
+							$fields = ['label', 'type', 'state', 'multiple', 'output_status', 'ordering'];
 
 							$fields_set = [];
 							foreach($fields as $field) {
+								if (!isset($step[$field])) {
+									continue;
+								}
+
 								if ($step[$field] == '') {
 									$fields_set[] = $this->db->quoteName($field) . ' = NULL';
 								} else {
@@ -334,7 +342,17 @@ class EmundusModelWorkflow extends JModelList
 		return $nb_workflows;
 	}
 
-	public function getWorkflows($ids = [], $limit = 0, $page = 0, $programs = []): array
+	/**
+	 * @param $ids
+	 * @param $limit default is 0
+	 * @param $page default is 0
+	 * @param $programs default is [], allowed values are an array of program ids
+	 * @param $order_by default is 'esw.id', allowed values are 'esw.id' and 'esw.label'
+	 * @param $order default is 'DESC', allowed values are 'ASC' and 'DESC'
+	 *
+	 * @return array
+	 */
+	public function getWorkflows($ids = [], $limit = 0, $page = 0, $programs = [], $order_by =  'esw.id', $order = 'DESC'): array
 	{
 		$workflows = [];
 
@@ -346,7 +364,7 @@ class EmundusModelWorkflow extends JModelList
 			->where($this->db->quoteName('esw.published') . ' = 1');
 
 		if (!empty($ids)) {
-			$query->where($this->db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
+			$query->where($this->db->quoteName('esw.id') . ' IN (' . implode(',', $ids) . ')');
 		}
 
 		if (!empty($programs) && !in_array('all', $programs)) {
@@ -359,6 +377,20 @@ class EmundusModelWorkflow extends JModelList
 			$offset = ($page - 1) * $limit;
 			$query->setLimit($limit, $offset);
 		}
+
+		$allowed_order_by = ['esw.id', 'esw.label'];
+		$allowed_order = ['ASC', 'DESC'];
+
+		if (!in_array($order_by, $allowed_order_by)) {
+			$order_by = 'esw.id';
+		}
+
+		if (!in_array($order, $allowed_order)) {
+			$order = 'DESC';
+		}
+
+		$query->order($this->db->quoteName($order_by) . ' ' . $order);
+
 		try {
 			$this->db->setQuery($query);
 			$workflows = $this->db->loadObjectList();
@@ -407,7 +439,8 @@ class EmundusModelWorkflow extends JModelList
 					->select('esws.id')
 					->from($this->db->quoteName('#__emundus_setup_workflows_steps', 'esws'))
 					->where($this->db->quoteName('esws.workflow_id') . ' = ' . $id)
-					->andWhere($this->db->quoteName('esws.state') . ' = 1');
+					->andWhere($this->db->quoteName('esws.state') . ' = 1')
+					->order('esws.ordering ASC');
 
 				try {
 					$this->db->setQuery($query);
@@ -890,6 +923,13 @@ class EmundusModelWorkflow extends JModelList
 						$inserts[] = false;
 						Log::add('Error while adding step type: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
 					}
+
+					$eMundus_config = ComponentHelper::getParams('com_emundus');
+					$all_rights_grp = $eMundus_config->get('all_rights_group', 1);
+
+					if (!empty($all_rights_grp)) {
+						EmundusHelperAccess::addAccessToGroup($action_id, $all_rights_grp, ['c' => 1, 'r' => 1, 'u' => 1, 'd' => 1]);
+					}
 				}
 			}
 
@@ -937,13 +977,15 @@ class EmundusModelWorkflow extends JModelList
 			$this->db->setQuery($query);
 			$step_types = $this->db->loadAssoc();
 
-			$query->clear()
-				->select('action_id')
-				->from($this->db->quoteName('#__emundus_setup_step_types'))
-				->where('id = ' . $step_types['type']);
+			if (!empty($step_types)) {
+				$query->clear()
+					->select('action_id')
+					->from($this->db->quoteName('#__emundus_setup_step_types'))
+					->where('id = ' . $step_types['type']);
 
-			$this->db->setQuery($query);
-			$action_id = $this->db->loadResult();
+				$this->db->setQuery($query);
+				$action_id = $this->db->loadResult();
+			}
 		}
 
 		return $action_id;

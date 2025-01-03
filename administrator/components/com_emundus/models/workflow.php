@@ -160,18 +160,28 @@ class EmundusModelAdministratorWorkflow extends JModelList
 			if ($created) {
 				// add first rows to the table
 				$rows = [
-					[1, 0, 'COM_EMUNDUS_WORKFLOW_STEP_TYPE_APPLICANT', 0, 1, 1],
-					[2, 0, 'COM_EMUNDUS_WORKFLOW_STEP_TYPE_EVALUATOR', 0, 1, 1],
+					[1, 0, 'COM_EMUNDUS_WORKFLOW_STEP_TYPE_APPLICANT', 1, 1, 1],
+					[2, 0, 'COM_EMUNDUS_WORKFLOW_STEP_TYPE_EVALUATOR', 5, 1, 1],
 				];
 
 				foreach ($rows as $row) {
 					$query->clear()
-						->insert('#__emundus_setup_step_types');
-					$query->columns(['id', 'parent_id', 'label', 'action_id', 'published', $db->quoteName('system')]);
-					$query->values(implode(',', $db->quote($row)));
-
+						->select('id')
+						->from('#__emundus_setup_step_types')
+						->where('id = ' . $db->quote($row[0]));
 					$db->setQuery($query);
-					$db->execute();
+					$exists = $db->loadResult();
+
+					if(!$exists)
+					{
+						$query->clear()
+							->insert('#__emundus_setup_step_types');
+						$query->columns(['id', 'parent_id', 'label', 'action_id', 'published', $db->quoteName('system')]);
+						$query->values(implode(',', $db->quote($row)));
+
+						$db->setQuery($query);
+						$db->execute();
+					}
 				}
 			}
 			$tasks[] = $created['status'];
@@ -328,6 +338,56 @@ class EmundusModelAdministratorWorkflow extends JModelList
 					->update('#__emundus_setup_config')
 					->set('value = ' . $db->quote(json_encode($onboarding_lists)))
 					->where($db->quoteName('namekey') . ' = ' . $db->quote('onboarding_lists'));
+
+				$db->setQuery($query);
+				$tasks[] = $db->execute();
+			}
+		}
+
+		// check that there is column ordering in emundus_setup_workflows_steps
+		$add_ordering = EmundusHelperUpdate::addColumn('jos_emundus_setup_workflows_steps', 'ordering', 'INT', null, 1, 0);
+		$tasks[] = $add_ordering['status'];
+
+		// add a redirect plugin to setup_programs form, to redirect correctly on save
+		$query->clear()
+			->select('id, params')
+			->from($db->quoteName('#__fabrik_forms', 'ff'))
+			->where('id = 108');
+
+		$db->setQuery($query);
+		$form = $db->loadObject();
+
+		if (!empty($form->params)) {
+			$params = json_decode($form->params, true);
+			$redirect_plugin_index = array_search('redirect', $params['plugins']);
+
+			if (empty($redirect_plugin_index)) {
+				// add a redirect plugin
+				$params['plugins'][] = 'redirect';
+
+				// get the redirect plugin index
+				$redirect_plugin_index = array_search('redirect', $params['plugins']);
+				$params['plugin_locations'][] = 'both';
+				$params['plugin_events'][] = 'both';
+				$params['plugin_state'][] = '1';
+				$params['plugin_description'][] = 'Redirect to current program edition';
+				$params['jump_page'][$redirect_plugin_index] = '/campaigns/modifier-un-programme?rowid={jos_emundus_setup_programmes___id}&tmpl=component&iframe=1';
+				$params['save_and_next'][$redirect_plugin_index] = 0;
+				$params['append_jump_url'][$redirect_plugin_index] = 1;
+				$params['thanks_message'][$redirect_plugin_index] = '';
+				$params['save_insession'][$redirect_plugin_index] = 0;
+				$params['redirect_conditon'][$redirect_plugin_index] = 1;
+				$params['redirect_content_reset_form'][$redirect_plugin_index] = 1;
+				$params['redirect_content_how'][$redirect_plugin_index] = 'popup';
+				$params['redirect_content_popup_height'][$redirect_plugin_index] = '';
+				$params['redirect_content_popup_x_offset'][$redirect_plugin_index] = '';
+				$params['redirect_content_popup_y_offset'][$redirect_plugin_index] = '';
+				$params['redirect_content_popup_title'][$redirect_plugin_index] = '';
+
+				$query->clear()
+					->update($db->quoteName('#__fabrik_forms'))
+					->set('params = ' . $db->quote(json_encode($params)))
+					->where('id = 108');
 
 				$db->setQuery($query);
 				$tasks[] = $db->execute();

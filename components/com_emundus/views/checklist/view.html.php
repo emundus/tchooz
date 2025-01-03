@@ -15,6 +15,7 @@ jimport('joomla.application.component.view');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Language\Text;
 
 /**
  * HTML View class for the eMundus Component
@@ -66,7 +67,7 @@ class EmundusViewChecklist extends JViewLegacy
 		$this->_user = $session->get('emundusUser');
 
 		if (!EmundusHelperAccess::isApplicant($this->_user->id)) {
-			die(JText::_('ACCESS_DENIED'));
+			die(Text::_('ACCESS_DENIED'));
 		}
 
 		parent::__construct($config);
@@ -106,17 +107,20 @@ class EmundusViewChecklist extends JViewLegacy
 
 						// Send the user to the homepage
 						case 2:
-							$this->app->redirect('index.php', JText::_('EM_PAYMENT_CONFIRMATION_MESSAGE'), 'message');
+							$this->app->enqueueMessage(Text::_('EM_PAYMENT_CONFIRMATION_MESSAGE'), 'message');
+							$this->app->redirect('index.php');
 							break;
 
 						// Send the user to the profiles first page
 						case 3:
-							$this->app->redirect('index.php?option=com_emundus&task=openfile&fnum=' . $this->_user->fnum, JText::_('EM_PAYMENT_CONFIRMATION_MESSAGE_CONTINUE_CANDIDATURE'), 'message');
+							$this->app->enqueueMessage(Text::_('EM_PAYMENT_CONFIRMATION_MESSAGE_CONTINUE_CANDIDATURE'), 'message');
+							$this->app->redirect('index.php?option=com_emundus&task=openfile&fnum=' . $this->_user->fnum);
 							break;
 					}
 				}
 				elseif (empty($order)) {
-					$this->app->redirect('index.php', JText::_('EM_PAYMENT_CANCEL_MESSAGE'), 'error');
+					$this->app->enqueueMessage(Text::_('EM_PAYMENT_CANCEL_MESSAGE'), 'error');
+					$this->app->redirect('index.php');
 				}
 
 				$this->app->redirect($m_checklist->getConfirmUrl($this->_user->profile) . '&usekey=fnum&rowid=' . $this->_user->fnum);
@@ -165,12 +169,12 @@ class EmundusViewChecklist extends JViewLegacy
 				$this->is_other_campaign = $this->get('isOtherActiveCampaign');
 
 				if ($this->need == 0) {
-					$this->title = JText::_('COM_EMUNDUS_ATTACHMENTS_APPLICATION_COMPLETED_TITLE');
-					$this->text  = JText::_('COM_EMUNDUS_ATTACHMENTS_APPLICATION_COMPLETED_TEXT');
+					$this->title = Text::_('COM_EMUNDUS_ATTACHMENTS_APPLICATION_COMPLETED_TITLE');
+					$this->text  = Text::_('COM_EMUNDUS_ATTACHMENTS_APPLICATION_COMPLETED_TEXT');
 				}
 				else {
-					$this->title = JText::_('COM_EMUNDUS_ATTACHMENTS_APPLICATION_INCOMPLETED_TITLE');
-					$this->text  = JText::_('COM_EMUNDUS_ATTACHMENTS_APPLICATION_INCOMPLETED_TEXT');
+					$this->title = Text::_('COM_EMUNDUS_ATTACHMENTS_APPLICATION_INCOMPLETED_TITLE');
+					$this->text  = Text::_('COM_EMUNDUS_ATTACHMENTS_APPLICATION_INCOMPLETED_TEXT');
 				}
 
 				require_once(JPATH_SITE . DS . 'components/com_emundus/models/application.php');

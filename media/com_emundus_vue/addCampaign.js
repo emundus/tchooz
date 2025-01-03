@@ -1,6 +1,5 @@
-import { _ as _export_sfc$1, o as openBlock, c as createElementBlock, w as withDirectives, O as vModelText, a as createBaseVNode, R as withKeys, n as normalizeClass, v as vShow, b as Fragment, r as renderList, t as toDisplayString, Y as reactive, a8 as computed, a0 as defineComponent, e as resolveComponent, a3 as renderSlot, a9 as normalizeProps, aa as guardReactiveProps, g as createVNode, j as createBlock, q as mergeProps, a7 as ref, X as watch, ab as onMounted, ac as nextTick, ad as toRef, ae as provide, af as unref, k as withCtx, d as createCommentVNode, $ as resolveDynamicComponent, ag as inject, ah as isRef, ai as onUnmounted, aj as toRefs, y as createTextVNode, K as Transition, l as normalizeStyle, u as withModifiers, ak as watchEffect, al as resolveDirective, E as toHandlers, N as defineStore, P as script, z as useGlobalStore, m as campaignService, S as Swal, f as fileService, J as programmeService, s as settingsService, D as vModelCheckbox, x as vModelSelect } from "./app_emundus.js";
+import { _ as _export_sfc$1, o as openBlock, c as createElementBlock, w as withDirectives, O as vModelText, a as createBaseVNode, R as withKeys, n as normalizeClass, v as vShow, b as Fragment, r as renderList, t as toDisplayString, Z as reactive, a6 as computed, a7 as defineComponent, e as resolveComponent, a1 as renderSlot, a8 as normalizeProps, a9 as guardReactiveProps, g as createVNode, j as createBlock, q as mergeProps, a5 as ref, Y as watch, aa as onMounted, ab as nextTick, ac as toRef, ad as provide, ae as unref, k as withCtx, d as createCommentVNode, $ as resolveDynamicComponent, af as inject, ag as isRef, ah as onUnmounted, ai as toRefs, y as createTextVNode, K as Transition, l as normalizeStyle, u as withModifiers, aj as watchEffect, ak as resolveDirective, E as toHandlers, N as defineStore, P as script, z as useGlobalStore, m as campaignService, S as Swal, f as fileService, J as programmeService, s as settingsService, D as vModelCheckbox, x as vModelSelect } from "./app_emundus.js";
 import { V as V32 } from "./editor.js";
-const autocomplete_vue_vue_type_style_index_0_scoped_6187c0df_lang = "";
 const _sfc_main$m = {
   name: "autocomplete",
   props: {
@@ -74,7 +73,7 @@ const _sfc_main$m = {
     document.removeEventListener("click", this.handleClickOutside);
   }
 };
-const _hoisted_1$e = { class: "autocomplete tw-mt-2" };
+const _hoisted_1$e = { class: "autocomplete tw-mt-1" };
 const _hoisted_2$d = ["id", "placeholder"];
 const _hoisted_3$b = { class: "autocomplete-results" };
 const _hoisted_4$5 = ["onClick"];
@@ -108,557 +107,1355 @@ function _sfc_render$9(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ]);
 }
-const Autocomplete = /* @__PURE__ */ _export_sfc$1(_sfc_main$m, [["render", _sfc_render$9], ["__scopeId", "data-v-6187c0df"]]);
-var E = "top", R = "bottom", W = "right", P = "left", me = "auto", G = [E, R, W, P], U = "start", J = "end", Xe = "clippingParents", je = "viewport", K = "popper", Ye = "reference", De = G.reduce(function(t, e) {
-  return t.concat([e + "-" + U, e + "-" + J]);
-}, []), Ee = [].concat(G, [me]).reduce(function(t, e) {
-  return t.concat([e, e + "-" + U, e + "-" + J]);
-}, []), Ge = "beforeRead", Je = "read", Ke = "afterRead", Qe = "beforeMain", Ze = "main", et = "afterMain", tt = "beforeWrite", nt = "write", rt = "afterWrite", ot = [Ge, Je, Ke, Qe, Ze, et, tt, nt, rt];
-function C(t) {
-  return t ? (t.nodeName || "").toLowerCase() : null;
+const Autocomplete = /* @__PURE__ */ _export_sfc$1(_sfc_main$m, [["render", _sfc_render$9], ["__scopeId", "data-v-9c3002aa"]]);
+var top = "top";
+var bottom = "bottom";
+var right = "right";
+var left = "left";
+var auto = "auto";
+var basePlacements = [top, bottom, right, left];
+var start = "start";
+var end = "end";
+var clippingParents = "clippingParents";
+var viewport = "viewport";
+var popper = "popper";
+var reference = "reference";
+var variationPlacements = /* @__PURE__ */ basePlacements.reduce(function(acc, placement) {
+  return acc.concat([placement + "-" + start, placement + "-" + end]);
+}, []);
+var placements = /* @__PURE__ */ [].concat(basePlacements, [auto]).reduce(function(acc, placement) {
+  return acc.concat([placement, placement + "-" + start, placement + "-" + end]);
+}, []);
+var beforeRead = "beforeRead";
+var read = "read";
+var afterRead = "afterRead";
+var beforeMain = "beforeMain";
+var main = "main";
+var afterMain = "afterMain";
+var beforeWrite = "beforeWrite";
+var write = "write";
+var afterWrite = "afterWrite";
+var modifierPhases = [beforeRead, read, afterRead, beforeMain, main, afterMain, beforeWrite, write, afterWrite];
+function getNodeName(element) {
+  return element ? (element.nodeName || "").toLowerCase() : null;
 }
-function H(t) {
-  if (t == null)
+function getWindow(node) {
+  if (node == null) {
     return window;
-  if (t.toString() !== "[object Window]") {
-    var e = t.ownerDocument;
-    return e && e.defaultView || window;
   }
-  return t;
+  if (node.toString() !== "[object Window]") {
+    var ownerDocument = node.ownerDocument;
+    return ownerDocument ? ownerDocument.defaultView || window : window;
+  }
+  return node;
 }
-function Q(t) {
-  var e = H(t).Element;
-  return t instanceof e || t instanceof Element;
+function isElement(node) {
+  var OwnElement = getWindow(node).Element;
+  return node instanceof OwnElement || node instanceof Element;
 }
-function B(t) {
-  var e = H(t).HTMLElement;
-  return t instanceof e || t instanceof HTMLElement;
+function isHTMLElement(node) {
+  var OwnElement = getWindow(node).HTMLElement;
+  return node instanceof OwnElement || node instanceof HTMLElement;
 }
-function Pe(t) {
-  if (typeof ShadowRoot == "undefined")
+function isShadowRoot(node) {
+  if (typeof ShadowRoot === "undefined") {
     return false;
-  var e = H(t).ShadowRoot;
-  return t instanceof e || t instanceof ShadowRoot;
+  }
+  var OwnElement = getWindow(node).ShadowRoot;
+  return node instanceof OwnElement || node instanceof ShadowRoot;
 }
-function Mt(t) {
-  var e = t.state;
-  Object.keys(e.elements).forEach(function(n) {
-    var r = e.styles[n] || {}, o = e.attributes[n] || {}, i = e.elements[n];
-    !B(i) || !C(i) || (Object.assign(i.style, r), Object.keys(o).forEach(function(a) {
-      var s = o[a];
-      s === false ? i.removeAttribute(a) : i.setAttribute(a, s === true ? "" : s);
-    }));
+function applyStyles(_ref) {
+  var state2 = _ref.state;
+  Object.keys(state2.elements).forEach(function(name) {
+    var style = state2.styles[name] || {};
+    var attributes = state2.attributes[name] || {};
+    var element = state2.elements[name];
+    if (!isHTMLElement(element) || !getNodeName(element)) {
+      return;
+    }
+    Object.assign(element.style, style);
+    Object.keys(attributes).forEach(function(name2) {
+      var value = attributes[name2];
+      if (value === false) {
+        element.removeAttribute(name2);
+      } else {
+        element.setAttribute(name2, value === true ? "" : value);
+      }
+    });
   });
 }
-function Rt(t) {
-  var e = t.state, n = { popper: { position: e.options.strategy, left: "0", top: "0", margin: "0" }, arrow: { position: "absolute" }, reference: {} };
-  return Object.assign(e.elements.popper.style, n.popper), e.styles = n, e.elements.arrow && Object.assign(e.elements.arrow.style, n.arrow), function() {
-    Object.keys(e.elements).forEach(function(r) {
-      var o = e.elements[r], i = e.attributes[r] || {}, a = Object.keys(e.styles.hasOwnProperty(r) ? e.styles[r] : n[r]), s = a.reduce(function(f, c) {
-        return f[c] = "", f;
+function effect$2(_ref2) {
+  var state2 = _ref2.state;
+  var initialStyles = {
+    popper: {
+      position: state2.options.strategy,
+      left: "0",
+      top: "0",
+      margin: "0"
+    },
+    arrow: {
+      position: "absolute"
+    },
+    reference: {}
+  };
+  Object.assign(state2.elements.popper.style, initialStyles.popper);
+  state2.styles = initialStyles;
+  if (state2.elements.arrow) {
+    Object.assign(state2.elements.arrow.style, initialStyles.arrow);
+  }
+  return function() {
+    Object.keys(state2.elements).forEach(function(name) {
+      var element = state2.elements[name];
+      var attributes = state2.attributes[name] || {};
+      var styleProperties = Object.keys(state2.styles.hasOwnProperty(name) ? state2.styles[name] : initialStyles[name]);
+      var style = styleProperties.reduce(function(style2, property2) {
+        style2[property2] = "";
+        return style2;
       }, {});
-      !B(o) || !C(o) || (Object.assign(o.style, s), Object.keys(i).forEach(function(f) {
-        o.removeAttribute(f);
-      }));
+      if (!isHTMLElement(element) || !getNodeName(element)) {
+        return;
+      }
+      Object.assign(element.style, style);
+      Object.keys(attributes).forEach(function(attribute) {
+        element.removeAttribute(attribute);
+      });
     });
   };
 }
-var Ae = { name: "applyStyles", enabled: true, phase: "write", fn: Mt, effect: Rt, requires: ["computeStyles"] };
-function q(t) {
-  return t.split("-")[0];
+const applyStyles$1 = {
+  name: "applyStyles",
+  enabled: true,
+  phase: "write",
+  fn: applyStyles,
+  effect: effect$2,
+  requires: ["computeStyles"]
+};
+function getBasePlacement(placement) {
+  return placement.split("-")[0];
 }
-var X = Math.max, ve = Math.min, Z = Math.round;
-function ee(t, e) {
-  e === void 0 && (e = false);
-  var n = t.getBoundingClientRect(), r = 1, o = 1;
-  if (B(t) && e) {
-    var i = t.offsetHeight, a = t.offsetWidth;
-    a > 0 && (r = Z(n.width) / a || 1), i > 0 && (o = Z(n.height) / i || 1);
+var max = Math.max;
+var min = Math.min;
+var round = Math.round;
+function getUAString() {
+  var uaData = navigator.userAgentData;
+  if (uaData != null && uaData.brands && Array.isArray(uaData.brands)) {
+    return uaData.brands.map(function(item) {
+      return item.brand + "/" + item.version;
+    }).join(" ");
   }
-  return { width: n.width / r, height: n.height / o, top: n.top / o, right: n.right / r, bottom: n.bottom / o, left: n.left / r, x: n.left / r, y: n.top / o };
+  return navigator.userAgent;
 }
-function ke(t) {
-  var e = ee(t), n = t.offsetWidth, r = t.offsetHeight;
-  return Math.abs(e.width - n) <= 1 && (n = e.width), Math.abs(e.height - r) <= 1 && (r = e.height), { x: t.offsetLeft, y: t.offsetTop, width: n, height: r };
+function isLayoutViewport() {
+  return !/^((?!chrome|android).)*safari/i.test(getUAString());
 }
-function it(t, e) {
-  var n = e.getRootNode && e.getRootNode();
-  if (t.contains(e))
+function getBoundingClientRect(element, includeScale, isFixedStrategy) {
+  if (includeScale === void 0) {
+    includeScale = false;
+  }
+  if (isFixedStrategy === void 0) {
+    isFixedStrategy = false;
+  }
+  var clientRect = element.getBoundingClientRect();
+  var scaleX = 1;
+  var scaleY = 1;
+  if (includeScale && isHTMLElement(element)) {
+    scaleX = element.offsetWidth > 0 ? round(clientRect.width) / element.offsetWidth || 1 : 1;
+    scaleY = element.offsetHeight > 0 ? round(clientRect.height) / element.offsetHeight || 1 : 1;
+  }
+  var _ref = isElement(element) ? getWindow(element) : window, visualViewport = _ref.visualViewport;
+  var addVisualOffsets = !isLayoutViewport() && isFixedStrategy;
+  var x = (clientRect.left + (addVisualOffsets && visualViewport ? visualViewport.offsetLeft : 0)) / scaleX;
+  var y = (clientRect.top + (addVisualOffsets && visualViewport ? visualViewport.offsetTop : 0)) / scaleY;
+  var width = clientRect.width / scaleX;
+  var height = clientRect.height / scaleY;
+  return {
+    width,
+    height,
+    top: y,
+    right: x + width,
+    bottom: y + height,
+    left: x,
+    x,
+    y
+  };
+}
+function getLayoutRect(element) {
+  var clientRect = getBoundingClientRect(element);
+  var width = element.offsetWidth;
+  var height = element.offsetHeight;
+  if (Math.abs(clientRect.width - width) <= 1) {
+    width = clientRect.width;
+  }
+  if (Math.abs(clientRect.height - height) <= 1) {
+    height = clientRect.height;
+  }
+  return {
+    x: element.offsetLeft,
+    y: element.offsetTop,
+    width,
+    height
+  };
+}
+function contains(parent, child) {
+  var rootNode = child.getRootNode && child.getRootNode();
+  if (parent.contains(child)) {
     return true;
-  if (n && Pe(n)) {
-    var r = e;
+  } else if (rootNode && isShadowRoot(rootNode)) {
+    var next = child;
     do {
-      if (r && t.isSameNode(r))
+      if (next && parent.isSameNode(next)) {
         return true;
-      r = r.parentNode || r.host;
-    } while (r);
+      }
+      next = next.parentNode || next.host;
+    } while (next);
   }
   return false;
 }
-function N(t) {
-  return H(t).getComputedStyle(t);
+function getComputedStyle(element) {
+  return getWindow(element).getComputedStyle(element);
 }
-function Wt(t) {
-  return ["table", "td", "th"].indexOf(C(t)) >= 0;
+function isTableElement(element) {
+  return ["table", "td", "th"].indexOf(getNodeName(element)) >= 0;
 }
-function I(t) {
-  return ((Q(t) ? t.ownerDocument : t.document) || window.document).documentElement;
+function getDocumentElement(element) {
+  return ((isElement(element) ? element.ownerDocument : (
+    // $FlowFixMe[prop-missing]
+    element.document
+  )) || window.document).documentElement;
 }
-function ge(t) {
-  return C(t) === "html" ? t : t.assignedSlot || t.parentNode || (Pe(t) ? t.host : null) || I(t);
-}
-function at(t) {
-  return !B(t) || N(t).position === "fixed" ? null : t.offsetParent;
-}
-function Bt(t) {
-  var e = navigator.userAgent.toLowerCase().indexOf("firefox") !== -1, n = navigator.userAgent.indexOf("Trident") !== -1;
-  if (n && B(t)) {
-    var r = N(t);
-    if (r.position === "fixed")
-      return null;
+function getParentNode(element) {
+  if (getNodeName(element) === "html") {
+    return element;
   }
-  var o = ge(t);
-  for (Pe(o) && (o = o.host); B(o) && ["html", "body"].indexOf(C(o)) < 0; ) {
-    var i = N(o);
-    if (i.transform !== "none" || i.perspective !== "none" || i.contain === "paint" || ["transform", "perspective"].indexOf(i.willChange) !== -1 || e && i.willChange === "filter" || e && i.filter && i.filter !== "none")
-      return o;
-    o = o.parentNode;
+  return (
+    // this is a quicker (but less type safe) way to save quite some bytes from the bundle
+    // $FlowFixMe[incompatible-return]
+    // $FlowFixMe[prop-missing]
+    element.assignedSlot || // step into the shadow DOM of the parent of a slotted node
+    element.parentNode || // DOM Element detected
+    (isShadowRoot(element) ? element.host : null) || // ShadowRoot detected
+    // $FlowFixMe[incompatible-call]: HTMLElement is a Node
+    getDocumentElement(element)
+  );
+}
+function getTrueOffsetParent(element) {
+  if (!isHTMLElement(element) || // https://github.com/popperjs/popper-core/issues/837
+  getComputedStyle(element).position === "fixed") {
+    return null;
+  }
+  return element.offsetParent;
+}
+function getContainingBlock(element) {
+  var isFirefox = /firefox/i.test(getUAString());
+  var isIE = /Trident/i.test(getUAString());
+  if (isIE && isHTMLElement(element)) {
+    var elementCss = getComputedStyle(element);
+    if (elementCss.position === "fixed") {
+      return null;
+    }
+  }
+  var currentNode = getParentNode(element);
+  if (isShadowRoot(currentNode)) {
+    currentNode = currentNode.host;
+  }
+  while (isHTMLElement(currentNode) && ["html", "body"].indexOf(getNodeName(currentNode)) < 0) {
+    var css = getComputedStyle(currentNode);
+    if (css.transform !== "none" || css.perspective !== "none" || css.contain === "paint" || ["transform", "perspective"].indexOf(css.willChange) !== -1 || isFirefox && css.willChange === "filter" || isFirefox && css.filter && css.filter !== "none") {
+      return currentNode;
+    } else {
+      currentNode = currentNode.parentNode;
+    }
   }
   return null;
 }
-function se(t) {
-  for (var e = H(t), n = at(t); n && Wt(n) && N(n).position === "static"; )
-    n = at(n);
-  return n && (C(n) === "html" || C(n) === "body" && N(n).position === "static") ? e : n || Bt(t) || e;
-}
-function Le(t) {
-  return ["top", "bottom"].indexOf(t) >= 0 ? "x" : "y";
-}
-function fe(t, e, n) {
-  return X(t, ve(e, n));
-}
-function St(t, e, n) {
-  var r = fe(t, e, n);
-  return r > n ? n : r;
-}
-function st() {
-  return { top: 0, right: 0, bottom: 0, left: 0 };
-}
-function ft(t) {
-  return Object.assign({}, st(), t);
-}
-function ct(t, e) {
-  return e.reduce(function(n, r) {
-    return n[r] = t, n;
-  }, {});
-}
-var Tt = function(t, e) {
-  return t = typeof t == "function" ? t(Object.assign({}, e.rects, { placement: e.placement })) : t, ft(typeof t != "number" ? t : ct(t, G));
-};
-function Ht(t) {
-  var e, n = t.state, r = t.name, o = t.options, i = n.elements.arrow, a = n.modifiersData.popperOffsets, s = q(n.placement), f = Le(s), c = [P, W].indexOf(s) >= 0, u = c ? "height" : "width";
-  if (!(!i || !a)) {
-    var m = Tt(o.padding, n), v = ke(i), l = f === "y" ? E : P, h = f === "y" ? R : W, p = n.rects.reference[u] + n.rects.reference[f] - a[f] - n.rects.popper[u], g = a[f] - n.rects.reference[f], x = se(i), y = x ? f === "y" ? x.clientHeight || 0 : x.clientWidth || 0 : 0, $ = p / 2 - g / 2, d = m[l], b = y - v[u] - m[h], w = y / 2 - v[u] / 2 + $, O = fe(d, w, b), j = f;
-    n.modifiersData[r] = (e = {}, e[j] = O, e.centerOffset = O - w, e);
+function getOffsetParent(element) {
+  var window2 = getWindow(element);
+  var offsetParent = getTrueOffsetParent(element);
+  while (offsetParent && isTableElement(offsetParent) && getComputedStyle(offsetParent).position === "static") {
+    offsetParent = getTrueOffsetParent(offsetParent);
   }
-}
-function Ct(t) {
-  var e = t.state, n = t.options, r = n.element, o = r === void 0 ? "[data-popper-arrow]" : r;
-  o != null && (typeof o == "string" && (o = e.elements.popper.querySelector(o), !o) || !it(e.elements.popper, o) || (e.elements.arrow = o));
-}
-var pt = { name: "arrow", enabled: true, phase: "main", fn: Ht, effect: Ct, requires: ["popperOffsets"], requiresIfExists: ["preventOverflow"] };
-function te(t) {
-  return t.split("-")[1];
-}
-var qt = { top: "auto", right: "auto", bottom: "auto", left: "auto" };
-function Vt(t) {
-  var e = t.x, n = t.y, r = window, o = r.devicePixelRatio || 1;
-  return { x: Z(e * o) / o || 0, y: Z(n * o) / o || 0 };
-}
-function ut(t) {
-  var e, n = t.popper, r = t.popperRect, o = t.placement, i = t.variation, a = t.offsets, s = t.position, f = t.gpuAcceleration, c = t.adaptive, u = t.roundOffsets, m = t.isFixed, v = a.x, l = v === void 0 ? 0 : v, h = a.y, p = h === void 0 ? 0 : h, g = typeof u == "function" ? u({ x: l, y: p }) : { x: l, y: p };
-  l = g.x, p = g.y;
-  var x = a.hasOwnProperty("x"), y = a.hasOwnProperty("y"), $ = P, d = E, b = window;
-  if (c) {
-    var w = se(n), O = "clientHeight", j = "clientWidth";
-    if (w === H(n) && (w = I(n), N(w).position !== "static" && s === "absolute" && (O = "scrollHeight", j = "scrollWidth")), w = w, o === E || (o === P || o === W) && i === J) {
-      d = R;
-      var A = m && w === b && b.visualViewport ? b.visualViewport.height : w[O];
-      p -= A - r.height, p *= f ? 1 : -1;
-    }
-    if (o === P || (o === E || o === R) && i === J) {
-      $ = W;
-      var k = m && w === b && b.visualViewport ? b.visualViewport.width : w[j];
-      l -= k - r.width, l *= f ? 1 : -1;
-    }
+  if (offsetParent && (getNodeName(offsetParent) === "html" || getNodeName(offsetParent) === "body" && getComputedStyle(offsetParent).position === "static")) {
+    return window2;
   }
-  var D = Object.assign({ position: s }, c && qt), S = u === true ? Vt({ x: l, y: p }) : { x: l, y: p };
-  if (l = S.x, p = S.y, f) {
-    var L;
-    return Object.assign({}, D, (L = {}, L[d] = y ? "0" : "", L[$] = x ? "0" : "", L.transform = (b.devicePixelRatio || 1) <= 1 ? "translate(" + l + "px, " + p + "px)" : "translate3d(" + l + "px, " + p + "px, 0)", L));
-  }
-  return Object.assign({}, D, (e = {}, e[d] = y ? p + "px" : "", e[$] = x ? l + "px" : "", e.transform = "", e));
+  return offsetParent || getContainingBlock(element) || window2;
 }
-function Nt(t) {
-  var e = t.state, n = t.options, r = n.gpuAcceleration, o = r === void 0 ? true : r, i = n.adaptive, a = i === void 0 ? true : i, s = n.roundOffsets, f = s === void 0 ? true : s, c = { placement: q(e.placement), variation: te(e.placement), popper: e.elements.popper, popperRect: e.rects.popper, gpuAcceleration: o, isFixed: e.options.strategy === "fixed" };
-  e.modifiersData.popperOffsets != null && (e.styles.popper = Object.assign({}, e.styles.popper, ut(Object.assign({}, c, { offsets: e.modifiersData.popperOffsets, position: e.options.strategy, adaptive: a, roundOffsets: f })))), e.modifiersData.arrow != null && (e.styles.arrow = Object.assign({}, e.styles.arrow, ut(Object.assign({}, c, { offsets: e.modifiersData.arrow, position: "absolute", adaptive: false, roundOffsets: f })))), e.attributes.popper = Object.assign({}, e.attributes.popper, { "data-popper-placement": e.placement });
+function getMainAxisFromPlacement(placement) {
+  return ["top", "bottom"].indexOf(placement) >= 0 ? "x" : "y";
 }
-var Me = { name: "computeStyles", enabled: true, phase: "beforeWrite", fn: Nt, data: {} }, ye = { passive: true };
-function It(t) {
-  var e = t.state, n = t.instance, r = t.options, o = r.scroll, i = o === void 0 ? true : o, a = r.resize, s = a === void 0 ? true : a, f = H(e.elements.popper), c = [].concat(e.scrollParents.reference, e.scrollParents.popper);
-  return i && c.forEach(function(u) {
-    u.addEventListener("scroll", n.update, ye);
-  }), s && f.addEventListener("resize", n.update, ye), function() {
-    i && c.forEach(function(u) {
-      u.removeEventListener("scroll", n.update, ye);
-    }), s && f.removeEventListener("resize", n.update, ye);
+function within(min$1, value, max$1) {
+  return max(min$1, min(value, max$1));
+}
+function withinMaxClamp(min2, value, max2) {
+  var v = within(min2, value, max2);
+  return v > max2 ? max2 : v;
+}
+function getFreshSideObject() {
+  return {
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0
   };
 }
-var Re = { name: "eventListeners", enabled: true, phase: "write", fn: function() {
-}, effect: It, data: {} }, _t = { left: "right", right: "left", bottom: "top", top: "bottom" };
-function be(t) {
-  return t.replace(/left|right|bottom|top/g, function(e) {
-    return _t[e];
-  });
+function mergePaddingObject(paddingObject) {
+  return Object.assign({}, getFreshSideObject(), paddingObject);
 }
-var zt = { start: "end", end: "start" };
-function lt(t) {
-  return t.replace(/start|end/g, function(e) {
-    return zt[e];
-  });
+function expandToHashMap(value, keys2) {
+  return keys2.reduce(function(hashMap, key) {
+    hashMap[key] = value;
+    return hashMap;
+  }, {});
 }
-function We(t) {
-  var e = H(t), n = e.pageXOffset, r = e.pageYOffset;
-  return { scrollLeft: n, scrollTop: r };
-}
-function Be(t) {
-  return ee(I(t)).left + We(t).scrollLeft;
-}
-function Ft(t) {
-  var e = H(t), n = I(t), r = e.visualViewport, o = n.clientWidth, i = n.clientHeight, a = 0, s = 0;
-  return r && (o = r.width, i = r.height, /^((?!chrome|android).)*safari/i.test(navigator.userAgent) || (a = r.offsetLeft, s = r.offsetTop)), { width: o, height: i, x: a + Be(t), y: s };
-}
-function Ut(t) {
-  var e, n = I(t), r = We(t), o = (e = t.ownerDocument) == null ? void 0 : e.body, i = X(n.scrollWidth, n.clientWidth, o ? o.scrollWidth : 0, o ? o.clientWidth : 0), a = X(n.scrollHeight, n.clientHeight, o ? o.scrollHeight : 0, o ? o.clientHeight : 0), s = -r.scrollLeft + Be(t), f = -r.scrollTop;
-  return N(o || n).direction === "rtl" && (s += X(n.clientWidth, o ? o.clientWidth : 0) - i), { width: i, height: a, x: s, y: f };
-}
-function Se(t) {
-  var e = N(t), n = e.overflow, r = e.overflowX, o = e.overflowY;
-  return /auto|scroll|overlay|hidden/.test(n + o + r);
-}
-function dt(t) {
-  return ["html", "body", "#document"].indexOf(C(t)) >= 0 ? t.ownerDocument.body : B(t) && Se(t) ? t : dt(ge(t));
-}
-function ce(t, e) {
-  var n;
-  e === void 0 && (e = []);
-  var r = dt(t), o = r === ((n = t.ownerDocument) == null ? void 0 : n.body), i = H(r), a = o ? [i].concat(i.visualViewport || [], Se(r) ? r : []) : r, s = e.concat(a);
-  return o ? s : s.concat(ce(ge(a)));
-}
-function Te(t) {
-  return Object.assign({}, t, { left: t.x, top: t.y, right: t.x + t.width, bottom: t.y + t.height });
-}
-function Xt(t) {
-  var e = ee(t);
-  return e.top = e.top + t.clientTop, e.left = e.left + t.clientLeft, e.bottom = e.top + t.clientHeight, e.right = e.left + t.clientWidth, e.width = t.clientWidth, e.height = t.clientHeight, e.x = e.left, e.y = e.top, e;
-}
-function ht(t, e) {
-  return e === je ? Te(Ft(t)) : Q(e) ? Xt(e) : Te(Ut(I(t)));
-}
-function Yt(t) {
-  var e = ce(ge(t)), n = ["absolute", "fixed"].indexOf(N(t).position) >= 0, r = n && B(t) ? se(t) : t;
-  return Q(r) ? e.filter(function(o) {
-    return Q(o) && it(o, r) && C(o) !== "body";
-  }) : [];
-}
-function Gt(t, e, n) {
-  var r = e === "clippingParents" ? Yt(t) : [].concat(e), o = [].concat(r, [n]), i = o[0], a = o.reduce(function(s, f) {
-    var c = ht(t, f);
-    return s.top = X(c.top, s.top), s.right = ve(c.right, s.right), s.bottom = ve(c.bottom, s.bottom), s.left = X(c.left, s.left), s;
-  }, ht(t, i));
-  return a.width = a.right - a.left, a.height = a.bottom - a.top, a.x = a.left, a.y = a.top, a;
-}
-function mt(t) {
-  var e = t.reference, n = t.element, r = t.placement, o = r ? q(r) : null, i = r ? te(r) : null, a = e.x + e.width / 2 - n.width / 2, s = e.y + e.height / 2 - n.height / 2, f;
-  switch (o) {
-    case E:
-      f = { x: a, y: e.y - n.height };
-      break;
-    case R:
-      f = { x: a, y: e.y + e.height };
-      break;
-    case W:
-      f = { x: e.x + e.width, y: s };
-      break;
-    case P:
-      f = { x: e.x - n.width, y: s };
-      break;
-    default:
-      f = { x: e.x, y: e.y };
+var toPaddingObject = function toPaddingObject2(padding, state2) {
+  padding = typeof padding === "function" ? padding(Object.assign({}, state2.rects, {
+    placement: state2.placement
+  })) : padding;
+  return mergePaddingObject(typeof padding !== "number" ? padding : expandToHashMap(padding, basePlacements));
+};
+function arrow(_ref) {
+  var _state$modifiersData$;
+  var state2 = _ref.state, name = _ref.name, options = _ref.options;
+  var arrowElement = state2.elements.arrow;
+  var popperOffsets2 = state2.modifiersData.popperOffsets;
+  var basePlacement = getBasePlacement(state2.placement);
+  var axis = getMainAxisFromPlacement(basePlacement);
+  var isVertical = [left, right].indexOf(basePlacement) >= 0;
+  var len = isVertical ? "height" : "width";
+  if (!arrowElement || !popperOffsets2) {
+    return;
   }
-  var c = o ? Le(o) : null;
-  if (c != null) {
-    var u = c === "y" ? "height" : "width";
-    switch (i) {
-      case U:
-        f[c] = f[c] - (e[u] / 2 - n[u] / 2);
-        break;
-      case J:
-        f[c] = f[c] + (e[u] / 2 - n[u] / 2);
-        break;
+  var paddingObject = toPaddingObject(options.padding, state2);
+  var arrowRect = getLayoutRect(arrowElement);
+  var minProp = axis === "y" ? top : left;
+  var maxProp = axis === "y" ? bottom : right;
+  var endDiff = state2.rects.reference[len] + state2.rects.reference[axis] - popperOffsets2[axis] - state2.rects.popper[len];
+  var startDiff = popperOffsets2[axis] - state2.rects.reference[axis];
+  var arrowOffsetParent = getOffsetParent(arrowElement);
+  var clientSize = arrowOffsetParent ? axis === "y" ? arrowOffsetParent.clientHeight || 0 : arrowOffsetParent.clientWidth || 0 : 0;
+  var centerToReference = endDiff / 2 - startDiff / 2;
+  var min2 = paddingObject[minProp];
+  var max2 = clientSize - arrowRect[len] - paddingObject[maxProp];
+  var center = clientSize / 2 - arrowRect[len] / 2 + centerToReference;
+  var offset2 = within(min2, center, max2);
+  var axisProp = axis;
+  state2.modifiersData[name] = (_state$modifiersData$ = {}, _state$modifiersData$[axisProp] = offset2, _state$modifiersData$.centerOffset = offset2 - center, _state$modifiersData$);
+}
+function effect$1(_ref2) {
+  var state2 = _ref2.state, options = _ref2.options;
+  var _options$element = options.element, arrowElement = _options$element === void 0 ? "[data-popper-arrow]" : _options$element;
+  if (arrowElement == null) {
+    return;
+  }
+  if (typeof arrowElement === "string") {
+    arrowElement = state2.elements.popper.querySelector(arrowElement);
+    if (!arrowElement) {
+      return;
     }
   }
-  return f;
+  if (!contains(state2.elements.popper, arrowElement)) {
+    return;
+  }
+  state2.elements.arrow = arrowElement;
 }
-function ne(t, e) {
-  e === void 0 && (e = {});
-  var n = e, r = n.placement, o = r === void 0 ? t.placement : r, i = n.boundary, a = i === void 0 ? Xe : i, s = n.rootBoundary, f = s === void 0 ? je : s, c = n.elementContext, u = c === void 0 ? K : c, m = n.altBoundary, v = m === void 0 ? false : m, l = n.padding, h = l === void 0 ? 0 : l, p = ft(typeof h != "number" ? h : ct(h, G)), g = u === K ? Ye : K, x = t.rects.popper, y = t.elements[v ? g : u], $ = Gt(Q(y) ? y : y.contextElement || I(t.elements.popper), a, f), d = ee(t.elements.reference), b = mt({ reference: d, element: x, strategy: "absolute", placement: o }), w = Te(Object.assign({}, x, b)), O = u === K ? w : d, j = { top: $.top - O.top + p.top, bottom: O.bottom - $.bottom + p.bottom, left: $.left - O.left + p.left, right: O.right - $.right + p.right }, A = t.modifiersData.offset;
-  if (u === K && A) {
-    var k = A[o];
-    Object.keys(j).forEach(function(D) {
-      var S = [W, R].indexOf(D) >= 0 ? 1 : -1, L = [E, R].indexOf(D) >= 0 ? "y" : "x";
-      j[D] += k[L] * S;
+const arrow$1 = {
+  name: "arrow",
+  enabled: true,
+  phase: "main",
+  fn: arrow,
+  effect: effect$1,
+  requires: ["popperOffsets"],
+  requiresIfExists: ["preventOverflow"]
+};
+function getVariation(placement) {
+  return placement.split("-")[1];
+}
+var unsetSides = {
+  top: "auto",
+  right: "auto",
+  bottom: "auto",
+  left: "auto"
+};
+function roundOffsetsByDPR(_ref, win) {
+  var x = _ref.x, y = _ref.y;
+  var dpr = win.devicePixelRatio || 1;
+  return {
+    x: round(x * dpr) / dpr || 0,
+    y: round(y * dpr) / dpr || 0
+  };
+}
+function mapToStyles(_ref2) {
+  var _Object$assign2;
+  var popper2 = _ref2.popper, popperRect = _ref2.popperRect, placement = _ref2.placement, variation = _ref2.variation, offsets = _ref2.offsets, position = _ref2.position, gpuAcceleration = _ref2.gpuAcceleration, adaptive = _ref2.adaptive, roundOffsets = _ref2.roundOffsets, isFixed = _ref2.isFixed;
+  var _offsets$x = offsets.x, x = _offsets$x === void 0 ? 0 : _offsets$x, _offsets$y = offsets.y, y = _offsets$y === void 0 ? 0 : _offsets$y;
+  var _ref3 = typeof roundOffsets === "function" ? roundOffsets({
+    x,
+    y
+  }) : {
+    x,
+    y
+  };
+  x = _ref3.x;
+  y = _ref3.y;
+  var hasX = offsets.hasOwnProperty("x");
+  var hasY = offsets.hasOwnProperty("y");
+  var sideX = left;
+  var sideY = top;
+  var win = window;
+  if (adaptive) {
+    var offsetParent = getOffsetParent(popper2);
+    var heightProp = "clientHeight";
+    var widthProp = "clientWidth";
+    if (offsetParent === getWindow(popper2)) {
+      offsetParent = getDocumentElement(popper2);
+      if (getComputedStyle(offsetParent).position !== "static" && position === "absolute") {
+        heightProp = "scrollHeight";
+        widthProp = "scrollWidth";
+      }
+    }
+    offsetParent = offsetParent;
+    if (placement === top || (placement === left || placement === right) && variation === end) {
+      sideY = bottom;
+      var offsetY = isFixed && offsetParent === win && win.visualViewport ? win.visualViewport.height : (
+        // $FlowFixMe[prop-missing]
+        offsetParent[heightProp]
+      );
+      y -= offsetY - popperRect.height;
+      y *= gpuAcceleration ? 1 : -1;
+    }
+    if (placement === left || (placement === top || placement === bottom) && variation === end) {
+      sideX = right;
+      var offsetX = isFixed && offsetParent === win && win.visualViewport ? win.visualViewport.width : (
+        // $FlowFixMe[prop-missing]
+        offsetParent[widthProp]
+      );
+      x -= offsetX - popperRect.width;
+      x *= gpuAcceleration ? 1 : -1;
+    }
+  }
+  var commonStyles = Object.assign({
+    position
+  }, adaptive && unsetSides);
+  var _ref4 = roundOffsets === true ? roundOffsetsByDPR({
+    x,
+    y
+  }, getWindow(popper2)) : {
+    x,
+    y
+  };
+  x = _ref4.x;
+  y = _ref4.y;
+  if (gpuAcceleration) {
+    var _Object$assign;
+    return Object.assign({}, commonStyles, (_Object$assign = {}, _Object$assign[sideY] = hasY ? "0" : "", _Object$assign[sideX] = hasX ? "0" : "", _Object$assign.transform = (win.devicePixelRatio || 1) <= 1 ? "translate(" + x + "px, " + y + "px)" : "translate3d(" + x + "px, " + y + "px, 0)", _Object$assign));
+  }
+  return Object.assign({}, commonStyles, (_Object$assign2 = {}, _Object$assign2[sideY] = hasY ? y + "px" : "", _Object$assign2[sideX] = hasX ? x + "px" : "", _Object$assign2.transform = "", _Object$assign2));
+}
+function computeStyles(_ref5) {
+  var state2 = _ref5.state, options = _ref5.options;
+  var _options$gpuAccelerat = options.gpuAcceleration, gpuAcceleration = _options$gpuAccelerat === void 0 ? true : _options$gpuAccelerat, _options$adaptive = options.adaptive, adaptive = _options$adaptive === void 0 ? true : _options$adaptive, _options$roundOffsets = options.roundOffsets, roundOffsets = _options$roundOffsets === void 0 ? true : _options$roundOffsets;
+  var commonStyles = {
+    placement: getBasePlacement(state2.placement),
+    variation: getVariation(state2.placement),
+    popper: state2.elements.popper,
+    popperRect: state2.rects.popper,
+    gpuAcceleration,
+    isFixed: state2.options.strategy === "fixed"
+  };
+  if (state2.modifiersData.popperOffsets != null) {
+    state2.styles.popper = Object.assign({}, state2.styles.popper, mapToStyles(Object.assign({}, commonStyles, {
+      offsets: state2.modifiersData.popperOffsets,
+      position: state2.options.strategy,
+      adaptive,
+      roundOffsets
+    })));
+  }
+  if (state2.modifiersData.arrow != null) {
+    state2.styles.arrow = Object.assign({}, state2.styles.arrow, mapToStyles(Object.assign({}, commonStyles, {
+      offsets: state2.modifiersData.arrow,
+      position: "absolute",
+      adaptive: false,
+      roundOffsets
+    })));
+  }
+  state2.attributes.popper = Object.assign({}, state2.attributes.popper, {
+    "data-popper-placement": state2.placement
+  });
+}
+const computeStyles$1 = {
+  name: "computeStyles",
+  enabled: true,
+  phase: "beforeWrite",
+  fn: computeStyles,
+  data: {}
+};
+var passive = {
+  passive: true
+};
+function effect(_ref) {
+  var state2 = _ref.state, instance = _ref.instance, options = _ref.options;
+  var _options$scroll = options.scroll, scroll = _options$scroll === void 0 ? true : _options$scroll, _options$resize = options.resize, resize = _options$resize === void 0 ? true : _options$resize;
+  var window2 = getWindow(state2.elements.popper);
+  var scrollParents = [].concat(state2.scrollParents.reference, state2.scrollParents.popper);
+  if (scroll) {
+    scrollParents.forEach(function(scrollParent) {
+      scrollParent.addEventListener("scroll", instance.update, passive);
     });
   }
-  return j;
+  if (resize) {
+    window2.addEventListener("resize", instance.update, passive);
+  }
+  return function() {
+    if (scroll) {
+      scrollParents.forEach(function(scrollParent) {
+        scrollParent.removeEventListener("scroll", instance.update, passive);
+      });
+    }
+    if (resize) {
+      window2.removeEventListener("resize", instance.update, passive);
+    }
+  };
 }
-function Jt(t, e) {
-  e === void 0 && (e = {});
-  var n = e, r = n.placement, o = n.boundary, i = n.rootBoundary, a = n.padding, s = n.flipVariations, f = n.allowedAutoPlacements, c = f === void 0 ? Ee : f, u = te(r), m = u ? s ? De : De.filter(function(h) {
-    return te(h) === u;
-  }) : G, v = m.filter(function(h) {
-    return c.indexOf(h) >= 0;
-  });
-  v.length === 0 && (v = m);
-  var l = v.reduce(function(h, p) {
-    return h[p] = ne(t, { placement: p, boundary: o, rootBoundary: i, padding: a })[q(p)], h;
-  }, {});
-  return Object.keys(l).sort(function(h, p) {
-    return l[h] - l[p];
+const eventListeners = {
+  name: "eventListeners",
+  enabled: true,
+  phase: "write",
+  fn: function fn() {
+  },
+  effect,
+  data: {}
+};
+var hash$1 = {
+  left: "right",
+  right: "left",
+  bottom: "top",
+  top: "bottom"
+};
+function getOppositePlacement(placement) {
+  return placement.replace(/left|right|bottom|top/g, function(matched) {
+    return hash$1[matched];
   });
 }
-function Kt(t) {
-  if (q(t) === me)
+var hash = {
+  start: "end",
+  end: "start"
+};
+function getOppositeVariationPlacement(placement) {
+  return placement.replace(/start|end/g, function(matched) {
+    return hash[matched];
+  });
+}
+function getWindowScroll(node) {
+  var win = getWindow(node);
+  var scrollLeft = win.pageXOffset;
+  var scrollTop = win.pageYOffset;
+  return {
+    scrollLeft,
+    scrollTop
+  };
+}
+function getWindowScrollBarX(element) {
+  return getBoundingClientRect(getDocumentElement(element)).left + getWindowScroll(element).scrollLeft;
+}
+function getViewportRect(element, strategy) {
+  var win = getWindow(element);
+  var html = getDocumentElement(element);
+  var visualViewport = win.visualViewport;
+  var width = html.clientWidth;
+  var height = html.clientHeight;
+  var x = 0;
+  var y = 0;
+  if (visualViewport) {
+    width = visualViewport.width;
+    height = visualViewport.height;
+    var layoutViewport = isLayoutViewport();
+    if (layoutViewport || !layoutViewport && strategy === "fixed") {
+      x = visualViewport.offsetLeft;
+      y = visualViewport.offsetTop;
+    }
+  }
+  return {
+    width,
+    height,
+    x: x + getWindowScrollBarX(element),
+    y
+  };
+}
+function getDocumentRect(element) {
+  var _element$ownerDocumen;
+  var html = getDocumentElement(element);
+  var winScroll = getWindowScroll(element);
+  var body = (_element$ownerDocumen = element.ownerDocument) == null ? void 0 : _element$ownerDocumen.body;
+  var width = max(html.scrollWidth, html.clientWidth, body ? body.scrollWidth : 0, body ? body.clientWidth : 0);
+  var height = max(html.scrollHeight, html.clientHeight, body ? body.scrollHeight : 0, body ? body.clientHeight : 0);
+  var x = -winScroll.scrollLeft + getWindowScrollBarX(element);
+  var y = -winScroll.scrollTop;
+  if (getComputedStyle(body || html).direction === "rtl") {
+    x += max(html.clientWidth, body ? body.clientWidth : 0) - width;
+  }
+  return {
+    width,
+    height,
+    x,
+    y
+  };
+}
+function isScrollParent(element) {
+  var _getComputedStyle = getComputedStyle(element), overflow = _getComputedStyle.overflow, overflowX = _getComputedStyle.overflowX, overflowY = _getComputedStyle.overflowY;
+  return /auto|scroll|overlay|hidden/.test(overflow + overflowY + overflowX);
+}
+function getScrollParent(node) {
+  if (["html", "body", "#document"].indexOf(getNodeName(node)) >= 0) {
+    return node.ownerDocument.body;
+  }
+  if (isHTMLElement(node) && isScrollParent(node)) {
+    return node;
+  }
+  return getScrollParent(getParentNode(node));
+}
+function listScrollParents(element, list) {
+  var _element$ownerDocumen;
+  if (list === void 0) {
+    list = [];
+  }
+  var scrollParent = getScrollParent(element);
+  var isBody = scrollParent === ((_element$ownerDocumen = element.ownerDocument) == null ? void 0 : _element$ownerDocumen.body);
+  var win = getWindow(scrollParent);
+  var target = isBody ? [win].concat(win.visualViewport || [], isScrollParent(scrollParent) ? scrollParent : []) : scrollParent;
+  var updatedList = list.concat(target);
+  return isBody ? updatedList : (
+    // $FlowFixMe[incompatible-call]: isBody tells us target will be an HTMLElement here
+    updatedList.concat(listScrollParents(getParentNode(target)))
+  );
+}
+function rectToClientRect(rect) {
+  return Object.assign({}, rect, {
+    left: rect.x,
+    top: rect.y,
+    right: rect.x + rect.width,
+    bottom: rect.y + rect.height
+  });
+}
+function getInnerBoundingClientRect(element, strategy) {
+  var rect = getBoundingClientRect(element, false, strategy === "fixed");
+  rect.top = rect.top + element.clientTop;
+  rect.left = rect.left + element.clientLeft;
+  rect.bottom = rect.top + element.clientHeight;
+  rect.right = rect.left + element.clientWidth;
+  rect.width = element.clientWidth;
+  rect.height = element.clientHeight;
+  rect.x = rect.left;
+  rect.y = rect.top;
+  return rect;
+}
+function getClientRectFromMixedType(element, clippingParent, strategy) {
+  return clippingParent === viewport ? rectToClientRect(getViewportRect(element, strategy)) : isElement(clippingParent) ? getInnerBoundingClientRect(clippingParent, strategy) : rectToClientRect(getDocumentRect(getDocumentElement(element)));
+}
+function getClippingParents(element) {
+  var clippingParents2 = listScrollParents(getParentNode(element));
+  var canEscapeClipping = ["absolute", "fixed"].indexOf(getComputedStyle(element).position) >= 0;
+  var clipperElement = canEscapeClipping && isHTMLElement(element) ? getOffsetParent(element) : element;
+  if (!isElement(clipperElement)) {
     return [];
-  var e = be(t);
-  return [lt(t), e, lt(e)];
+  }
+  return clippingParents2.filter(function(clippingParent) {
+    return isElement(clippingParent) && contains(clippingParent, clipperElement) && getNodeName(clippingParent) !== "body";
+  });
 }
-function Qt(t) {
-  var e = t.state, n = t.options, r = t.name;
-  if (!e.modifiersData[r]._skip) {
-    for (var o = n.mainAxis, i = o === void 0 ? true : o, a = n.altAxis, s = a === void 0 ? true : a, f = n.fallbackPlacements, c = n.padding, u = n.boundary, m = n.rootBoundary, v = n.altBoundary, l = n.flipVariations, h = l === void 0 ? true : l, p = n.allowedAutoPlacements, g = e.options.placement, x = q(g), y = x === g, $ = f || (y || !h ? [be(g)] : Kt(g)), d = [g].concat($).reduce(function(z, V) {
-      return z.concat(q(V) === me ? Jt(e, { placement: V, boundary: u, rootBoundary: m, padding: c, flipVariations: h, allowedAutoPlacements: p }) : V);
-    }, []), b = e.rects.reference, w = e.rects.popper, O = /* @__PURE__ */ new Map(), j = true, A = d[0], k = 0; k < d.length; k++) {
-      var D = d[k], S = q(D), L = te(D) === U, re = [E, R].indexOf(S) >= 0, oe = re ? "width" : "height", M = ne(e, { placement: D, boundary: u, rootBoundary: m, altBoundary: v, padding: c }), T = re ? L ? W : P : L ? R : E;
-      b[oe] > w[oe] && (T = be(T));
-      var pe = be(T), _ = [];
-      if (i && _.push(M[S] <= 0), s && _.push(M[T] <= 0, M[pe] <= 0), _.every(function(z) {
-        return z;
-      })) {
-        A = D, j = false;
+function getClippingRect(element, boundary, rootBoundary, strategy) {
+  var mainClippingParents = boundary === "clippingParents" ? getClippingParents(element) : [].concat(boundary);
+  var clippingParents2 = [].concat(mainClippingParents, [rootBoundary]);
+  var firstClippingParent = clippingParents2[0];
+  var clippingRect = clippingParents2.reduce(function(accRect, clippingParent) {
+    var rect = getClientRectFromMixedType(element, clippingParent, strategy);
+    accRect.top = max(rect.top, accRect.top);
+    accRect.right = min(rect.right, accRect.right);
+    accRect.bottom = min(rect.bottom, accRect.bottom);
+    accRect.left = max(rect.left, accRect.left);
+    return accRect;
+  }, getClientRectFromMixedType(element, firstClippingParent, strategy));
+  clippingRect.width = clippingRect.right - clippingRect.left;
+  clippingRect.height = clippingRect.bottom - clippingRect.top;
+  clippingRect.x = clippingRect.left;
+  clippingRect.y = clippingRect.top;
+  return clippingRect;
+}
+function computeOffsets(_ref) {
+  var reference2 = _ref.reference, element = _ref.element, placement = _ref.placement;
+  var basePlacement = placement ? getBasePlacement(placement) : null;
+  var variation = placement ? getVariation(placement) : null;
+  var commonX = reference2.x + reference2.width / 2 - element.width / 2;
+  var commonY = reference2.y + reference2.height / 2 - element.height / 2;
+  var offsets;
+  switch (basePlacement) {
+    case top:
+      offsets = {
+        x: commonX,
+        y: reference2.y - element.height
+      };
+      break;
+    case bottom:
+      offsets = {
+        x: commonX,
+        y: reference2.y + reference2.height
+      };
+      break;
+    case right:
+      offsets = {
+        x: reference2.x + reference2.width,
+        y: commonY
+      };
+      break;
+    case left:
+      offsets = {
+        x: reference2.x - element.width,
+        y: commonY
+      };
+      break;
+    default:
+      offsets = {
+        x: reference2.x,
+        y: reference2.y
+      };
+  }
+  var mainAxis = basePlacement ? getMainAxisFromPlacement(basePlacement) : null;
+  if (mainAxis != null) {
+    var len = mainAxis === "y" ? "height" : "width";
+    switch (variation) {
+      case start:
+        offsets[mainAxis] = offsets[mainAxis] - (reference2[len] / 2 - element[len] / 2);
         break;
-      }
-      O.set(D, _);
+      case end:
+        offsets[mainAxis] = offsets[mainAxis] + (reference2[len] / 2 - element[len] / 2);
+        break;
     }
-    if (j)
-      for (var ue = h ? 3 : 1, xe = function(z) {
-        var V = d.find(function(de) {
-          var ae = O.get(de);
-          if (ae)
-            return ae.slice(0, z).every(function(Y) {
-              return Y;
-            });
-        });
-        if (V)
-          return A = V, "break";
-      }, ie = ue; ie > 0; ie--) {
-        var le = xe(ie);
-        if (le === "break")
-          break;
-      }
-    e.placement !== A && (e.modifiersData[r]._skip = true, e.placement = A, e.reset = true);
   }
+  return offsets;
 }
-var vt = { name: "flip", enabled: true, phase: "main", fn: Qt, requiresIfExists: ["offset"], data: { _skip: false } };
-function gt(t, e, n) {
-  return n === void 0 && (n = { x: 0, y: 0 }), { top: t.top - e.height - n.y, right: t.right - e.width + n.x, bottom: t.bottom - e.height + n.y, left: t.left - e.width - n.x };
+function detectOverflow(state2, options) {
+  if (options === void 0) {
+    options = {};
+  }
+  var _options = options, _options$placement = _options.placement, placement = _options$placement === void 0 ? state2.placement : _options$placement, _options$strategy = _options.strategy, strategy = _options$strategy === void 0 ? state2.strategy : _options$strategy, _options$boundary = _options.boundary, boundary = _options$boundary === void 0 ? clippingParents : _options$boundary, _options$rootBoundary = _options.rootBoundary, rootBoundary = _options$rootBoundary === void 0 ? viewport : _options$rootBoundary, _options$elementConte = _options.elementContext, elementContext = _options$elementConte === void 0 ? popper : _options$elementConte, _options$altBoundary = _options.altBoundary, altBoundary = _options$altBoundary === void 0 ? false : _options$altBoundary, _options$padding = _options.padding, padding = _options$padding === void 0 ? 0 : _options$padding;
+  var paddingObject = mergePaddingObject(typeof padding !== "number" ? padding : expandToHashMap(padding, basePlacements));
+  var altContext = elementContext === popper ? reference : popper;
+  var popperRect = state2.rects.popper;
+  var element = state2.elements[altBoundary ? altContext : elementContext];
+  var clippingClientRect = getClippingRect(isElement(element) ? element : element.contextElement || getDocumentElement(state2.elements.popper), boundary, rootBoundary, strategy);
+  var referenceClientRect = getBoundingClientRect(state2.elements.reference);
+  var popperOffsets2 = computeOffsets({
+    reference: referenceClientRect,
+    element: popperRect,
+    strategy: "absolute",
+    placement
+  });
+  var popperClientRect = rectToClientRect(Object.assign({}, popperRect, popperOffsets2));
+  var elementClientRect = elementContext === popper ? popperClientRect : referenceClientRect;
+  var overflowOffsets = {
+    top: clippingClientRect.top - elementClientRect.top + paddingObject.top,
+    bottom: elementClientRect.bottom - clippingClientRect.bottom + paddingObject.bottom,
+    left: clippingClientRect.left - elementClientRect.left + paddingObject.left,
+    right: elementClientRect.right - clippingClientRect.right + paddingObject.right
+  };
+  var offsetData = state2.modifiersData.offset;
+  if (elementContext === popper && offsetData) {
+    var offset2 = offsetData[placement];
+    Object.keys(overflowOffsets).forEach(function(key) {
+      var multiply = [right, bottom].indexOf(key) >= 0 ? 1 : -1;
+      var axis = [top, bottom].indexOf(key) >= 0 ? "y" : "x";
+      overflowOffsets[key] += offset2[axis] * multiply;
+    });
+  }
+  return overflowOffsets;
 }
-function yt(t) {
-  return [E, W, R, P].some(function(e) {
-    return t[e] >= 0;
+function computeAutoPlacement(state2, options) {
+  if (options === void 0) {
+    options = {};
+  }
+  var _options = options, placement = _options.placement, boundary = _options.boundary, rootBoundary = _options.rootBoundary, padding = _options.padding, flipVariations = _options.flipVariations, _options$allowedAutoP = _options.allowedAutoPlacements, allowedAutoPlacements = _options$allowedAutoP === void 0 ? placements : _options$allowedAutoP;
+  var variation = getVariation(placement);
+  var placements$1 = variation ? flipVariations ? variationPlacements : variationPlacements.filter(function(placement2) {
+    return getVariation(placement2) === variation;
+  }) : basePlacements;
+  var allowedPlacements = placements$1.filter(function(placement2) {
+    return allowedAutoPlacements.indexOf(placement2) >= 0;
+  });
+  if (allowedPlacements.length === 0) {
+    allowedPlacements = placements$1;
+  }
+  var overflows = allowedPlacements.reduce(function(acc, placement2) {
+    acc[placement2] = detectOverflow(state2, {
+      placement: placement2,
+      boundary,
+      rootBoundary,
+      padding
+    })[getBasePlacement(placement2)];
+    return acc;
+  }, {});
+  return Object.keys(overflows).sort(function(a, b) {
+    return overflows[a] - overflows[b];
   });
 }
-function Zt(t) {
-  var e = t.state, n = t.name, r = e.rects.reference, o = e.rects.popper, i = e.modifiersData.preventOverflow, a = ne(e, { elementContext: "reference" }), s = ne(e, { altBoundary: true }), f = gt(a, r), c = gt(s, o, i), u = yt(f), m = yt(c);
-  e.modifiersData[n] = { referenceClippingOffsets: f, popperEscapeOffsets: c, isReferenceHidden: u, hasPopperEscaped: m }, e.attributes.popper = Object.assign({}, e.attributes.popper, { "data-popper-reference-hidden": u, "data-popper-escaped": m });
-}
-var bt = { name: "hide", enabled: true, phase: "main", requiresIfExists: ["preventOverflow"], fn: Zt };
-function en(t, e, n) {
-  var r = q(t), o = [P, E].indexOf(r) >= 0 ? -1 : 1, i = typeof n == "function" ? n(Object.assign({}, e, { placement: t })) : n, a = i[0], s = i[1];
-  return a = a || 0, s = (s || 0) * o, [P, W].indexOf(r) >= 0 ? { x: s, y: a } : { x: a, y: s };
-}
-function tn(t) {
-  var e = t.state, n = t.options, r = t.name, o = n.offset, i = o === void 0 ? [0, 0] : o, a = Ee.reduce(function(u, m) {
-    return u[m] = en(m, e.rects, i), u;
-  }, {}), s = a[e.placement], f = s.x, c = s.y;
-  e.modifiersData.popperOffsets != null && (e.modifiersData.popperOffsets.x += f, e.modifiersData.popperOffsets.y += c), e.modifiersData[r] = a;
-}
-var wt = { name: "offset", enabled: true, phase: "main", requires: ["popperOffsets"], fn: tn };
-function nn(t) {
-  var e = t.state, n = t.name;
-  e.modifiersData[n] = mt({ reference: e.rects.reference, element: e.rects.popper, strategy: "absolute", placement: e.placement });
-}
-var He = { name: "popperOffsets", enabled: true, phase: "read", fn: nn, data: {} };
-function rn(t) {
-  return t === "x" ? "y" : "x";
-}
-function on$1(t) {
-  var e = t.state, n = t.options, r = t.name, o = n.mainAxis, i = o === void 0 ? true : o, a = n.altAxis, s = a === void 0 ? false : a, f = n.boundary, c = n.rootBoundary, u = n.altBoundary, m = n.padding, v = n.tether, l = v === void 0 ? true : v, h = n.tetherOffset, p = h === void 0 ? 0 : h, g = ne(e, { boundary: f, rootBoundary: c, padding: m, altBoundary: u }), x = q(e.placement), y = te(e.placement), $ = !y, d = Le(x), b = rn(d), w = e.modifiersData.popperOffsets, O = e.rects.reference, j = e.rects.popper, A = typeof p == "function" ? p(Object.assign({}, e.rects, { placement: e.placement })) : p, k = typeof A == "number" ? { mainAxis: A, altAxis: A } : Object.assign({ mainAxis: 0, altAxis: 0 }, A), D = e.modifiersData.offset ? e.modifiersData.offset[e.placement] : null, S = { x: 0, y: 0 };
-  if (w) {
-    if (i) {
-      var L, re = d === "y" ? E : P, oe = d === "y" ? R : W, M = d === "y" ? "height" : "width", T = w[d], pe = T + g[re], _ = T - g[oe], ue = l ? -j[M] / 2 : 0, xe = y === U ? O[M] : j[M], ie = y === U ? -j[M] : -O[M], le = e.elements.arrow, z = l && le ? ke(le) : { width: 0, height: 0 }, V = e.modifiersData["arrow#persistent"] ? e.modifiersData["arrow#persistent"].padding : st(), de = V[re], ae = V[oe], Y = fe(0, O[M], z[M]), jt = $ ? O[M] / 2 - ue - Y - de - k.mainAxis : xe - Y - de - k.mainAxis, Dt = $ ? -O[M] / 2 + ue + Y + ae + k.mainAxis : ie + Y + ae + k.mainAxis, Oe = e.elements.arrow && se(e.elements.arrow), Et = Oe ? d === "y" ? Oe.clientTop || 0 : Oe.clientLeft || 0 : 0, Ce = (L = D == null ? void 0 : D[d]) != null ? L : 0, Pt = T + jt - Ce - Et, At = T + Dt - Ce, qe = fe(l ? ve(pe, Pt) : pe, T, l ? X(_, At) : _);
-      w[d] = qe, S[d] = qe - T;
-    }
-    if (s) {
-      var Ve, kt = d === "x" ? E : P, Lt = d === "x" ? R : W, F = w[b], he = b === "y" ? "height" : "width", Ne = F + g[kt], Ie = F - g[Lt], $e = [E, P].indexOf(x) !== -1, _e = (Ve = D == null ? void 0 : D[b]) != null ? Ve : 0, ze = $e ? Ne : F - O[he] - j[he] - _e + k.altAxis, Fe = $e ? F + O[he] + j[he] - _e - k.altAxis : Ie, Ue = l && $e ? St(ze, F, Fe) : fe(l ? ze : Ne, F, l ? Fe : Ie);
-      w[b] = Ue, S[b] = Ue - F;
-    }
-    e.modifiersData[r] = S;
+function getExpandedFallbackPlacements(placement) {
+  if (getBasePlacement(placement) === auto) {
+    return [];
   }
+  var oppositePlacement = getOppositePlacement(placement);
+  return [getOppositeVariationPlacement(placement), oppositePlacement, getOppositeVariationPlacement(oppositePlacement)];
 }
-var xt = { name: "preventOverflow", enabled: true, phase: "main", fn: on$1, requiresIfExists: ["offset"] };
-function an(t) {
-  return { scrollLeft: t.scrollLeft, scrollTop: t.scrollTop };
-}
-function sn(t) {
-  return t === H(t) || !B(t) ? We(t) : an(t);
-}
-function fn(t) {
-  var e = t.getBoundingClientRect(), n = Z(e.width) / t.offsetWidth || 1, r = Z(e.height) / t.offsetHeight || 1;
-  return n !== 1 || r !== 1;
-}
-function cn(t, e, n) {
-  n === void 0 && (n = false);
-  var r = B(e), o = B(e) && fn(e), i = I(e), a = ee(t, o), s = { scrollLeft: 0, scrollTop: 0 }, f = { x: 0, y: 0 };
-  return (r || !r && !n) && ((C(e) !== "body" || Se(i)) && (s = sn(e)), B(e) ? (f = ee(e, true), f.x += e.clientLeft, f.y += e.clientTop) : i && (f.x = Be(i))), { x: a.left + s.scrollLeft - f.x, y: a.top + s.scrollTop - f.y, width: a.width, height: a.height };
-}
-function pn(t) {
-  var e = /* @__PURE__ */ new Map(), n = /* @__PURE__ */ new Set(), r = [];
-  t.forEach(function(i) {
-    e.set(i.name, i);
-  });
-  function o(i) {
-    n.add(i.name);
-    var a = [].concat(i.requires || [], i.requiresIfExists || []);
-    a.forEach(function(s) {
-      if (!n.has(s)) {
-        var f = e.get(s);
-        f && o(f);
+function flip(_ref) {
+  var state2 = _ref.state, options = _ref.options, name = _ref.name;
+  if (state2.modifiersData[name]._skip) {
+    return;
+  }
+  var _options$mainAxis = options.mainAxis, checkMainAxis = _options$mainAxis === void 0 ? true : _options$mainAxis, _options$altAxis = options.altAxis, checkAltAxis = _options$altAxis === void 0 ? true : _options$altAxis, specifiedFallbackPlacements = options.fallbackPlacements, padding = options.padding, boundary = options.boundary, rootBoundary = options.rootBoundary, altBoundary = options.altBoundary, _options$flipVariatio = options.flipVariations, flipVariations = _options$flipVariatio === void 0 ? true : _options$flipVariatio, allowedAutoPlacements = options.allowedAutoPlacements;
+  var preferredPlacement = state2.options.placement;
+  var basePlacement = getBasePlacement(preferredPlacement);
+  var isBasePlacement = basePlacement === preferredPlacement;
+  var fallbackPlacements = specifiedFallbackPlacements || (isBasePlacement || !flipVariations ? [getOppositePlacement(preferredPlacement)] : getExpandedFallbackPlacements(preferredPlacement));
+  var placements2 = [preferredPlacement].concat(fallbackPlacements).reduce(function(acc, placement2) {
+    return acc.concat(getBasePlacement(placement2) === auto ? computeAutoPlacement(state2, {
+      placement: placement2,
+      boundary,
+      rootBoundary,
+      padding,
+      flipVariations,
+      allowedAutoPlacements
+    }) : placement2);
+  }, []);
+  var referenceRect = state2.rects.reference;
+  var popperRect = state2.rects.popper;
+  var checksMap = /* @__PURE__ */ new Map();
+  var makeFallbackChecks = true;
+  var firstFittingPlacement = placements2[0];
+  for (var i = 0; i < placements2.length; i++) {
+    var placement = placements2[i];
+    var _basePlacement = getBasePlacement(placement);
+    var isStartVariation = getVariation(placement) === start;
+    var isVertical = [top, bottom].indexOf(_basePlacement) >= 0;
+    var len = isVertical ? "width" : "height";
+    var overflow = detectOverflow(state2, {
+      placement,
+      boundary,
+      rootBoundary,
+      altBoundary,
+      padding
+    });
+    var mainVariationSide = isVertical ? isStartVariation ? right : left : isStartVariation ? bottom : top;
+    if (referenceRect[len] > popperRect[len]) {
+      mainVariationSide = getOppositePlacement(mainVariationSide);
+    }
+    var altVariationSide = getOppositePlacement(mainVariationSide);
+    var checks = [];
+    if (checkMainAxis) {
+      checks.push(overflow[_basePlacement] <= 0);
+    }
+    if (checkAltAxis) {
+      checks.push(overflow[mainVariationSide] <= 0, overflow[altVariationSide] <= 0);
+    }
+    if (checks.every(function(check) {
+      return check;
+    })) {
+      firstFittingPlacement = placement;
+      makeFallbackChecks = false;
+      break;
+    }
+    checksMap.set(placement, checks);
+  }
+  if (makeFallbackChecks) {
+    var numberOfChecks = flipVariations ? 3 : 1;
+    var _loop = function _loop2(_i2) {
+      var fittingPlacement = placements2.find(function(placement2) {
+        var checks2 = checksMap.get(placement2);
+        if (checks2) {
+          return checks2.slice(0, _i2).every(function(check) {
+            return check;
+          });
+        }
+      });
+      if (fittingPlacement) {
+        firstFittingPlacement = fittingPlacement;
+        return "break";
       }
-    }), r.push(i);
+    };
+    for (var _i = numberOfChecks; _i > 0; _i--) {
+      var _ret = _loop(_i);
+      if (_ret === "break") break;
+    }
   }
-  return t.forEach(function(i) {
-    n.has(i.name) || o(i);
-  }), r;
+  if (state2.placement !== firstFittingPlacement) {
+    state2.modifiersData[name]._skip = true;
+    state2.placement = firstFittingPlacement;
+    state2.reset = true;
+  }
 }
-function un(t) {
-  var e = pn(t);
-  return ot.reduce(function(n, r) {
-    return n.concat(e.filter(function(o) {
-      return o.phase === r;
+const flip$1 = {
+  name: "flip",
+  enabled: true,
+  phase: "main",
+  fn: flip,
+  requiresIfExists: ["offset"],
+  data: {
+    _skip: false
+  }
+};
+function getSideOffsets(overflow, rect, preventedOffsets) {
+  if (preventedOffsets === void 0) {
+    preventedOffsets = {
+      x: 0,
+      y: 0
+    };
+  }
+  return {
+    top: overflow.top - rect.height - preventedOffsets.y,
+    right: overflow.right - rect.width + preventedOffsets.x,
+    bottom: overflow.bottom - rect.height + preventedOffsets.y,
+    left: overflow.left - rect.width - preventedOffsets.x
+  };
+}
+function isAnySideFullyClipped(overflow) {
+  return [top, right, bottom, left].some(function(side) {
+    return overflow[side] >= 0;
+  });
+}
+function hide(_ref) {
+  var state2 = _ref.state, name = _ref.name;
+  var referenceRect = state2.rects.reference;
+  var popperRect = state2.rects.popper;
+  var preventedOffsets = state2.modifiersData.preventOverflow;
+  var referenceOverflow = detectOverflow(state2, {
+    elementContext: "reference"
+  });
+  var popperAltOverflow = detectOverflow(state2, {
+    altBoundary: true
+  });
+  var referenceClippingOffsets = getSideOffsets(referenceOverflow, referenceRect);
+  var popperEscapeOffsets = getSideOffsets(popperAltOverflow, popperRect, preventedOffsets);
+  var isReferenceHidden = isAnySideFullyClipped(referenceClippingOffsets);
+  var hasPopperEscaped = isAnySideFullyClipped(popperEscapeOffsets);
+  state2.modifiersData[name] = {
+    referenceClippingOffsets,
+    popperEscapeOffsets,
+    isReferenceHidden,
+    hasPopperEscaped
+  };
+  state2.attributes.popper = Object.assign({}, state2.attributes.popper, {
+    "data-popper-reference-hidden": isReferenceHidden,
+    "data-popper-escaped": hasPopperEscaped
+  });
+}
+const hide$1 = {
+  name: "hide",
+  enabled: true,
+  phase: "main",
+  requiresIfExists: ["preventOverflow"],
+  fn: hide
+};
+function distanceAndSkiddingToXY(placement, rects, offset2) {
+  var basePlacement = getBasePlacement(placement);
+  var invertDistance = [left, top].indexOf(basePlacement) >= 0 ? -1 : 1;
+  var _ref = typeof offset2 === "function" ? offset2(Object.assign({}, rects, {
+    placement
+  })) : offset2, skidding = _ref[0], distance = _ref[1];
+  skidding = skidding || 0;
+  distance = (distance || 0) * invertDistance;
+  return [left, right].indexOf(basePlacement) >= 0 ? {
+    x: distance,
+    y: skidding
+  } : {
+    x: skidding,
+    y: distance
+  };
+}
+function offset(_ref2) {
+  var state2 = _ref2.state, options = _ref2.options, name = _ref2.name;
+  var _options$offset = options.offset, offset2 = _options$offset === void 0 ? [0, 0] : _options$offset;
+  var data2 = placements.reduce(function(acc, placement) {
+    acc[placement] = distanceAndSkiddingToXY(placement, state2.rects, offset2);
+    return acc;
+  }, {});
+  var _data$state$placement = data2[state2.placement], x = _data$state$placement.x, y = _data$state$placement.y;
+  if (state2.modifiersData.popperOffsets != null) {
+    state2.modifiersData.popperOffsets.x += x;
+    state2.modifiersData.popperOffsets.y += y;
+  }
+  state2.modifiersData[name] = data2;
+}
+const offset$1 = {
+  name: "offset",
+  enabled: true,
+  phase: "main",
+  requires: ["popperOffsets"],
+  fn: offset
+};
+function popperOffsets(_ref) {
+  var state2 = _ref.state, name = _ref.name;
+  state2.modifiersData[name] = computeOffsets({
+    reference: state2.rects.reference,
+    element: state2.rects.popper,
+    strategy: "absolute",
+    placement: state2.placement
+  });
+}
+const popperOffsets$1 = {
+  name: "popperOffsets",
+  enabled: true,
+  phase: "read",
+  fn: popperOffsets,
+  data: {}
+};
+function getAltAxis(axis) {
+  return axis === "x" ? "y" : "x";
+}
+function preventOverflow(_ref) {
+  var state2 = _ref.state, options = _ref.options, name = _ref.name;
+  var _options$mainAxis = options.mainAxis, checkMainAxis = _options$mainAxis === void 0 ? true : _options$mainAxis, _options$altAxis = options.altAxis, checkAltAxis = _options$altAxis === void 0 ? false : _options$altAxis, boundary = options.boundary, rootBoundary = options.rootBoundary, altBoundary = options.altBoundary, padding = options.padding, _options$tether = options.tether, tether = _options$tether === void 0 ? true : _options$tether, _options$tetherOffset = options.tetherOffset, tetherOffset = _options$tetherOffset === void 0 ? 0 : _options$tetherOffset;
+  var overflow = detectOverflow(state2, {
+    boundary,
+    rootBoundary,
+    padding,
+    altBoundary
+  });
+  var basePlacement = getBasePlacement(state2.placement);
+  var variation = getVariation(state2.placement);
+  var isBasePlacement = !variation;
+  var mainAxis = getMainAxisFromPlacement(basePlacement);
+  var altAxis = getAltAxis(mainAxis);
+  var popperOffsets2 = state2.modifiersData.popperOffsets;
+  var referenceRect = state2.rects.reference;
+  var popperRect = state2.rects.popper;
+  var tetherOffsetValue = typeof tetherOffset === "function" ? tetherOffset(Object.assign({}, state2.rects, {
+    placement: state2.placement
+  })) : tetherOffset;
+  var normalizedTetherOffsetValue = typeof tetherOffsetValue === "number" ? {
+    mainAxis: tetherOffsetValue,
+    altAxis: tetherOffsetValue
+  } : Object.assign({
+    mainAxis: 0,
+    altAxis: 0
+  }, tetherOffsetValue);
+  var offsetModifierState = state2.modifiersData.offset ? state2.modifiersData.offset[state2.placement] : null;
+  var data2 = {
+    x: 0,
+    y: 0
+  };
+  if (!popperOffsets2) {
+    return;
+  }
+  if (checkMainAxis) {
+    var _offsetModifierState$;
+    var mainSide = mainAxis === "y" ? top : left;
+    var altSide = mainAxis === "y" ? bottom : right;
+    var len = mainAxis === "y" ? "height" : "width";
+    var offset2 = popperOffsets2[mainAxis];
+    var min$1 = offset2 + overflow[mainSide];
+    var max$1 = offset2 - overflow[altSide];
+    var additive = tether ? -popperRect[len] / 2 : 0;
+    var minLen = variation === start ? referenceRect[len] : popperRect[len];
+    var maxLen = variation === start ? -popperRect[len] : -referenceRect[len];
+    var arrowElement = state2.elements.arrow;
+    var arrowRect = tether && arrowElement ? getLayoutRect(arrowElement) : {
+      width: 0,
+      height: 0
+    };
+    var arrowPaddingObject = state2.modifiersData["arrow#persistent"] ? state2.modifiersData["arrow#persistent"].padding : getFreshSideObject();
+    var arrowPaddingMin = arrowPaddingObject[mainSide];
+    var arrowPaddingMax = arrowPaddingObject[altSide];
+    var arrowLen = within(0, referenceRect[len], arrowRect[len]);
+    var minOffset = isBasePlacement ? referenceRect[len] / 2 - additive - arrowLen - arrowPaddingMin - normalizedTetherOffsetValue.mainAxis : minLen - arrowLen - arrowPaddingMin - normalizedTetherOffsetValue.mainAxis;
+    var maxOffset = isBasePlacement ? -referenceRect[len] / 2 + additive + arrowLen + arrowPaddingMax + normalizedTetherOffsetValue.mainAxis : maxLen + arrowLen + arrowPaddingMax + normalizedTetherOffsetValue.mainAxis;
+    var arrowOffsetParent = state2.elements.arrow && getOffsetParent(state2.elements.arrow);
+    var clientOffset = arrowOffsetParent ? mainAxis === "y" ? arrowOffsetParent.clientTop || 0 : arrowOffsetParent.clientLeft || 0 : 0;
+    var offsetModifierValue = (_offsetModifierState$ = offsetModifierState == null ? void 0 : offsetModifierState[mainAxis]) != null ? _offsetModifierState$ : 0;
+    var tetherMin = offset2 + minOffset - offsetModifierValue - clientOffset;
+    var tetherMax = offset2 + maxOffset - offsetModifierValue;
+    var preventedOffset = within(tether ? min(min$1, tetherMin) : min$1, offset2, tether ? max(max$1, tetherMax) : max$1);
+    popperOffsets2[mainAxis] = preventedOffset;
+    data2[mainAxis] = preventedOffset - offset2;
+  }
+  if (checkAltAxis) {
+    var _offsetModifierState$2;
+    var _mainSide = mainAxis === "x" ? top : left;
+    var _altSide = mainAxis === "x" ? bottom : right;
+    var _offset = popperOffsets2[altAxis];
+    var _len = altAxis === "y" ? "height" : "width";
+    var _min = _offset + overflow[_mainSide];
+    var _max = _offset - overflow[_altSide];
+    var isOriginSide = [top, left].indexOf(basePlacement) !== -1;
+    var _offsetModifierValue = (_offsetModifierState$2 = offsetModifierState == null ? void 0 : offsetModifierState[altAxis]) != null ? _offsetModifierState$2 : 0;
+    var _tetherMin = isOriginSide ? _min : _offset - referenceRect[_len] - popperRect[_len] - _offsetModifierValue + normalizedTetherOffsetValue.altAxis;
+    var _tetherMax = isOriginSide ? _offset + referenceRect[_len] + popperRect[_len] - _offsetModifierValue - normalizedTetherOffsetValue.altAxis : _max;
+    var _preventedOffset = tether && isOriginSide ? withinMaxClamp(_tetherMin, _offset, _tetherMax) : within(tether ? _tetherMin : _min, _offset, tether ? _tetherMax : _max);
+    popperOffsets2[altAxis] = _preventedOffset;
+    data2[altAxis] = _preventedOffset - _offset;
+  }
+  state2.modifiersData[name] = data2;
+}
+const preventOverflow$1 = {
+  name: "preventOverflow",
+  enabled: true,
+  phase: "main",
+  fn: preventOverflow,
+  requiresIfExists: ["offset"]
+};
+function getHTMLElementScroll(element) {
+  return {
+    scrollLeft: element.scrollLeft,
+    scrollTop: element.scrollTop
+  };
+}
+function getNodeScroll(node) {
+  if (node === getWindow(node) || !isHTMLElement(node)) {
+    return getWindowScroll(node);
+  } else {
+    return getHTMLElementScroll(node);
+  }
+}
+function isElementScaled(element) {
+  var rect = element.getBoundingClientRect();
+  var scaleX = round(rect.width) / element.offsetWidth || 1;
+  var scaleY = round(rect.height) / element.offsetHeight || 1;
+  return scaleX !== 1 || scaleY !== 1;
+}
+function getCompositeRect(elementOrVirtualElement, offsetParent, isFixed) {
+  if (isFixed === void 0) {
+    isFixed = false;
+  }
+  var isOffsetParentAnElement = isHTMLElement(offsetParent);
+  var offsetParentIsScaled = isHTMLElement(offsetParent) && isElementScaled(offsetParent);
+  var documentElement = getDocumentElement(offsetParent);
+  var rect = getBoundingClientRect(elementOrVirtualElement, offsetParentIsScaled, isFixed);
+  var scroll = {
+    scrollLeft: 0,
+    scrollTop: 0
+  };
+  var offsets = {
+    x: 0,
+    y: 0
+  };
+  if (isOffsetParentAnElement || !isOffsetParentAnElement && !isFixed) {
+    if (getNodeName(offsetParent) !== "body" || // https://github.com/popperjs/popper-core/issues/1078
+    isScrollParent(documentElement)) {
+      scroll = getNodeScroll(offsetParent);
+    }
+    if (isHTMLElement(offsetParent)) {
+      offsets = getBoundingClientRect(offsetParent, true);
+      offsets.x += offsetParent.clientLeft;
+      offsets.y += offsetParent.clientTop;
+    } else if (documentElement) {
+      offsets.x = getWindowScrollBarX(documentElement);
+    }
+  }
+  return {
+    x: rect.left + scroll.scrollLeft - offsets.x,
+    y: rect.top + scroll.scrollTop - offsets.y,
+    width: rect.width,
+    height: rect.height
+  };
+}
+function order(modifiers) {
+  var map = /* @__PURE__ */ new Map();
+  var visited = /* @__PURE__ */ new Set();
+  var result = [];
+  modifiers.forEach(function(modifier) {
+    map.set(modifier.name, modifier);
+  });
+  function sort(modifier) {
+    visited.add(modifier.name);
+    var requires = [].concat(modifier.requires || [], modifier.requiresIfExists || []);
+    requires.forEach(function(dep) {
+      if (!visited.has(dep)) {
+        var depModifier = map.get(dep);
+        if (depModifier) {
+          sort(depModifier);
+        }
+      }
+    });
+    result.push(modifier);
+  }
+  modifiers.forEach(function(modifier) {
+    if (!visited.has(modifier.name)) {
+      sort(modifier);
+    }
+  });
+  return result;
+}
+function orderModifiers(modifiers) {
+  var orderedModifiers = order(modifiers);
+  return modifierPhases.reduce(function(acc, phase) {
+    return acc.concat(orderedModifiers.filter(function(modifier) {
+      return modifier.phase === phase;
     }));
   }, []);
 }
-function ln(t) {
-  var e;
+function debounce(fn2) {
+  var pending;
   return function() {
-    return e || (e = new Promise(function(n) {
-      Promise.resolve().then(function() {
-        e = void 0, n(t());
+    if (!pending) {
+      pending = new Promise(function(resolve) {
+        Promise.resolve().then(function() {
+          pending = void 0;
+          resolve(fn2());
+        });
       });
-    })), e;
+    }
+    return pending;
   };
 }
-function dn(t) {
-  var e = t.reduce(function(n, r) {
-    var o = n[r.name];
-    return n[r.name] = o ? Object.assign({}, o, r, { options: Object.assign({}, o.options, r.options), data: Object.assign({}, o.data, r.data) }) : r, n;
+function mergeByName(modifiers) {
+  var merged = modifiers.reduce(function(merged2, current) {
+    var existing = merged2[current.name];
+    merged2[current.name] = existing ? Object.assign({}, existing, current, {
+      options: Object.assign({}, existing.options, current.options),
+      data: Object.assign({}, existing.data, current.data)
+    }) : current;
+    return merged2;
   }, {});
-  return Object.keys(e).map(function(n) {
-    return e[n];
+  return Object.keys(merged).map(function(key) {
+    return merged[key];
   });
 }
-var Ot = { placement: "bottom", modifiers: [], strategy: "absolute" };
-function $t() {
-  for (var t = arguments.length, e = new Array(t), n = 0; n < t; n++)
-    e[n] = arguments[n];
-  return !e.some(function(r) {
-    return !(r && typeof r.getBoundingClientRect == "function");
+var DEFAULT_OPTIONS = {
+  placement: "bottom",
+  modifiers: [],
+  strategy: "absolute"
+};
+function areValidElements() {
+  for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+    args[_key] = arguments[_key];
+  }
+  return !args.some(function(element) {
+    return !(element && typeof element.getBoundingClientRect === "function");
   });
 }
-function we(t) {
-  t === void 0 && (t = {});
-  var e = t, n = e.defaultModifiers, r = n === void 0 ? [] : n, o = e.defaultOptions, i = o === void 0 ? Ot : o;
-  return function(a, s, f) {
-    f === void 0 && (f = i);
-    var c = { placement: "bottom", orderedModifiers: [], options: Object.assign({}, Ot, i), modifiersData: {}, elements: { reference: a, popper: s }, attributes: {}, styles: {} }, u = [], m = false, v = { state: c, setOptions: function(p) {
-      var g = typeof p == "function" ? p(c.options) : p;
-      h(), c.options = Object.assign({}, i, c.options, g), c.scrollParents = { reference: Q(a) ? ce(a) : a.contextElement ? ce(a.contextElement) : [], popper: ce(s) };
-      var x = un(dn([].concat(r, c.options.modifiers)));
-      return c.orderedModifiers = x.filter(function(y) {
-        return y.enabled;
-      }), l(), v.update();
-    }, forceUpdate: function() {
-      if (!m) {
-        var p = c.elements, g = p.reference, x = p.popper;
-        if ($t(g, x)) {
-          c.rects = { reference: cn(g, se(x), c.options.strategy === "fixed"), popper: ke(x) }, c.reset = false, c.placement = c.options.placement, c.orderedModifiers.forEach(function(j) {
-            return c.modifiersData[j.name] = Object.assign({}, j.data);
-          });
-          for (var y = 0; y < c.orderedModifiers.length; y++) {
-            if (c.reset === true) {
-              c.reset = false, y = -1;
-              continue;
-            }
-            var $ = c.orderedModifiers[y], d = $.fn, b = $.options, w = b === void 0 ? {} : b, O = $.name;
-            typeof d == "function" && (c = d({ state: c, options: w, name: O, instance: v }) || c);
+function popperGenerator(generatorOptions) {
+  if (generatorOptions === void 0) {
+    generatorOptions = {};
+  }
+  var _generatorOptions = generatorOptions, _generatorOptions$def = _generatorOptions.defaultModifiers, defaultModifiers2 = _generatorOptions$def === void 0 ? [] : _generatorOptions$def, _generatorOptions$def2 = _generatorOptions.defaultOptions, defaultOptions2 = _generatorOptions$def2 === void 0 ? DEFAULT_OPTIONS : _generatorOptions$def2;
+  return function createPopper2(reference2, popper2, options) {
+    if (options === void 0) {
+      options = defaultOptions2;
+    }
+    var state2 = {
+      placement: "bottom",
+      orderedModifiers: [],
+      options: Object.assign({}, DEFAULT_OPTIONS, defaultOptions2),
+      modifiersData: {},
+      elements: {
+        reference: reference2,
+        popper: popper2
+      },
+      attributes: {},
+      styles: {}
+    };
+    var effectCleanupFns = [];
+    var isDestroyed = false;
+    var instance = {
+      state: state2,
+      setOptions: function setOptions(setOptionsAction) {
+        var options2 = typeof setOptionsAction === "function" ? setOptionsAction(state2.options) : setOptionsAction;
+        cleanupModifierEffects();
+        state2.options = Object.assign({}, defaultOptions2, state2.options, options2);
+        state2.scrollParents = {
+          reference: isElement(reference2) ? listScrollParents(reference2) : reference2.contextElement ? listScrollParents(reference2.contextElement) : [],
+          popper: listScrollParents(popper2)
+        };
+        var orderedModifiers = orderModifiers(mergeByName([].concat(defaultModifiers2, state2.options.modifiers)));
+        state2.orderedModifiers = orderedModifiers.filter(function(m) {
+          return m.enabled;
+        });
+        runModifierEffects();
+        return instance.update();
+      },
+      // Sync update – it will always be executed, even if not necessary. This
+      // is useful for low frequency updates where sync behavior simplifies the
+      // logic.
+      // For high frequency updates (e.g. `resize` and `scroll` events), always
+      // prefer the async Popper#update method
+      forceUpdate: function forceUpdate() {
+        if (isDestroyed) {
+          return;
+        }
+        var _state$elements = state2.elements, reference3 = _state$elements.reference, popper3 = _state$elements.popper;
+        if (!areValidElements(reference3, popper3)) {
+          return;
+        }
+        state2.rects = {
+          reference: getCompositeRect(reference3, getOffsetParent(popper3), state2.options.strategy === "fixed"),
+          popper: getLayoutRect(popper3)
+        };
+        state2.reset = false;
+        state2.placement = state2.options.placement;
+        state2.orderedModifiers.forEach(function(modifier) {
+          return state2.modifiersData[modifier.name] = Object.assign({}, modifier.data);
+        });
+        for (var index = 0; index < state2.orderedModifiers.length; index++) {
+          if (state2.reset === true) {
+            state2.reset = false;
+            index = -1;
+            continue;
+          }
+          var _state$orderedModifie = state2.orderedModifiers[index], fn2 = _state$orderedModifie.fn, _state$orderedModifie2 = _state$orderedModifie.options, _options = _state$orderedModifie2 === void 0 ? {} : _state$orderedModifie2, name = _state$orderedModifie.name;
+          if (typeof fn2 === "function") {
+            state2 = fn2({
+              state: state2,
+              options: _options,
+              name,
+              instance
+            }) || state2;
           }
         }
+      },
+      // Async and optimistically optimized update – it will not be executed if
+      // not necessary (debounced to run at most once-per-tick)
+      update: debounce(function() {
+        return new Promise(function(resolve) {
+          instance.forceUpdate();
+          resolve(state2);
+        });
+      }),
+      destroy: function destroy() {
+        cleanupModifierEffects();
+        isDestroyed = true;
       }
-    }, update: ln(function() {
-      return new Promise(function(p) {
-        v.forceUpdate(), p(c);
-      });
-    }), destroy: function() {
-      h(), m = true;
-    } };
-    if (!$t(a, s))
-      return v;
-    v.setOptions(f).then(function(p) {
-      !m && f.onFirstUpdate && f.onFirstUpdate(p);
+    };
+    if (!areValidElements(reference2, popper2)) {
+      return instance;
+    }
+    instance.setOptions(options).then(function(state3) {
+      if (!isDestroyed && options.onFirstUpdate) {
+        options.onFirstUpdate(state3);
+      }
     });
-    function l() {
-      c.orderedModifiers.forEach(function(p) {
-        var g = p.name, x = p.options, y = x === void 0 ? {} : x, $ = p.effect;
-        if (typeof $ == "function") {
-          var d = $({ state: c, name: g, instance: v, options: y }), b = function() {
+    function runModifierEffects() {
+      state2.orderedModifiers.forEach(function(_ref) {
+        var name = _ref.name, _ref$options = _ref.options, options2 = _ref$options === void 0 ? {} : _ref$options, effect2 = _ref.effect;
+        if (typeof effect2 === "function") {
+          var cleanupFn = effect2({
+            state: state2,
+            name,
+            instance,
+            options: options2
+          });
+          var noopFn = function noopFn2() {
           };
-          u.push(d || b);
+          effectCleanupFns.push(cleanupFn || noopFn);
         }
       });
     }
-    function h() {
-      u.forEach(function(p) {
-        return p();
-      }), u = [];
+    function cleanupModifierEffects() {
+      effectCleanupFns.forEach(function(fn2) {
+        return fn2();
+      });
+      effectCleanupFns = [];
     }
-    return v;
+    return instance;
   };
 }
-we();
-var mn = [Re, He, Me, Ae];
-we({ defaultModifiers: mn });
-var gn = [Re, He, Me, Ae, wt, vt, xt, pt, bt], yn = we({ defaultModifiers: gn });
+var defaultModifiers = [eventListeners, popperOffsets$1, computeStyles$1, applyStyles$1, offset$1, flip$1, preventOverflow$1, arrow$1, hide$1];
+var createPopper = /* @__PURE__ */ popperGenerator({
+  defaultModifiers
+});
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => {
@@ -1113,7 +1910,7 @@ var baseIsArguments = _baseIsArguments, isObjectLike$8 = isObjectLike_1;
 var objectProto$a = Object.prototype;
 var hasOwnProperty$8 = objectProto$a.hasOwnProperty;
 var propertyIsEnumerable$1 = objectProto$a.propertyIsEnumerable;
-var isArguments$3 = baseIsArguments(function() {
+var isArguments$3 = baseIsArguments(/* @__PURE__ */ function() {
   return arguments;
 }()) ? baseIsArguments : function(value) {
   return isObjectLike$8(value) && hasOwnProperty$8.call(value, "callee") && !propertyIsEnumerable$1.call(value, "callee");
@@ -1416,9 +2213,9 @@ function equalByTag$1(object, other, tag, bitmask, customizer, equalFunc, stack)
 }
 var _equalByTag = equalByTag$1;
 function arrayPush$1(array, values) {
-  var index2 = -1, length = values.length, offset = array.length;
+  var index2 = -1, length = values.length, offset2 = array.length;
   while (++index2 < length) {
-    array[offset + index2] = values[index2];
+    array[offset2 + index2] = values[index2];
   }
   return array;
 }
@@ -1987,19 +2784,19 @@ function apply$2(func, thisArg, args) {
 var _apply = apply$2;
 var apply$1 = _apply;
 var nativeMax = Math.max;
-function overRest$1(func, start, transform) {
-  start = nativeMax(start === void 0 ? func.length - 1 : start, 0);
+function overRest$1(func, start2, transform) {
+  start2 = nativeMax(start2 === void 0 ? func.length - 1 : start2, 0);
   return function() {
-    var args = arguments, index2 = -1, length = nativeMax(args.length - start, 0), array = Array(length);
+    var args = arguments, index2 = -1, length = nativeMax(args.length - start2, 0), array = Array(length);
     while (++index2 < length) {
-      array[index2] = args[start + index2];
+      array[index2] = args[start2 + index2];
     }
     index2 = -1;
-    var otherArgs = Array(start + 1);
-    while (++index2 < start) {
+    var otherArgs = Array(start2 + 1);
+    while (++index2 < start2) {
       otherArgs[index2] = args[index2];
     }
-    otherArgs[start] = transform(array);
+    otherArgs[start2] = transform(array);
     return apply$1(func, this, otherArgs);
   };
 }
@@ -2042,8 +2839,8 @@ var baseSetToString = _baseSetToString, shortOut = _shortOut;
 var setToString$1 = shortOut(baseSetToString);
 var _setToString = setToString$1;
 var identity = identity_1, overRest = _overRest, setToString = _setToString;
-function baseRest$3(func, start) {
-  return setToString(overRest(func, start, identity), func + "");
+function baseRest$3(func, start2) {
+  return setToString(overRest(func, start2, identity), func + "");
 }
 var _baseRest = baseRest$3;
 function nativeKeysIn$1(object) {
@@ -2160,7 +2957,7 @@ function copyArray$1(source, array) {
 var _copyArray = copyArray$1;
 var isObject$4 = isObject_1;
 var objectCreate = Object.create;
-var baseCreate$1 = function() {
+var baseCreate$1 = /* @__PURE__ */ function() {
   function object() {
   }
   return function(proto) {
@@ -2411,8 +3208,8 @@ const pick = (obj, keys2) => {
   });
   return ret;
 };
-function clamp(num, min, max) {
-  return Math.min(Math.max(num, min), max);
+function clamp(num, min2, max2) {
+  return Math.min(Math.max(num, min2), max2);
 }
 var toIntegerExports = {};
 var toInteger$2 = {
@@ -2579,9 +3376,9 @@ function tzParseTimezone(timezoneString, date, isUtcDate) {
   }
   if (isValidTimezoneIANAString(timezoneString)) {
     date = new Date(date || Date.now());
-    var utcDate = isUtcDate ? date : toUtcDate(date);
-    var offset = calcOffset(utcDate, timezoneString);
-    var fixedOffset = isUtcDate ? offset : fixOffset(date, offset, timezoneString);
+    var utcDate = toUtcDate(date);
+    var offset2 = calcOffset(utcDate, timezoneString);
+    var fixedOffset = fixOffset(date, offset2, timezoneString);
     return -fixedOffset;
   }
   return NaN;
@@ -2613,14 +3410,14 @@ function calcOffset(date, timezoneString) {
   asTS -= over >= 0 ? over : 1e3 + over;
   return asUTC - asTS;
 }
-function fixOffset(date, offset, timezoneString) {
+function fixOffset(date, offset2, timezoneString) {
   var localTS = date.getTime();
-  var utcGuess = localTS - offset;
+  var utcGuess = localTS - offset2;
   var o2 = calcOffset(new Date(utcGuess), timezoneString);
-  if (offset === o2) {
-    return offset;
+  if (offset2 === o2) {
+    return offset2;
   }
-  utcGuess -= o2 - offset;
+  utcGuess -= o2 - offset2;
   var o3 = calcOffset(new Date(utcGuess), timezoneString);
   if (o2 === o3) {
     return o2;
@@ -2689,7 +3486,7 @@ function toDate$1(argument, dirtyOptions) {
   if (argument === null) {
     return /* @__PURE__ */ new Date(NaN);
   }
-  var options = dirtyOptions || {};
+  var options = dirtyOptions;
   var additionalDigits = options.additionalDigits == null ? DEFAULT_ADDITIONAL_DIGITS : toInteger$1(options.additionalDigits);
   if (additionalDigits !== 2 && additionalDigits !== 1 && additionalDigits !== 0) {
     throw new RangeError("additionalDigits must be 0, 1 or 2");
@@ -2712,7 +3509,7 @@ function toDate$1(argument, dirtyOptions) {
   if (date) {
     var timestamp = date.getTime();
     var time = 0;
-    var offset;
+    var offset2;
     if (dateStrings.time) {
       time = parseTime(dateStrings.time);
       if (isNaN(time)) {
@@ -2720,15 +3517,15 @@ function toDate$1(argument, dirtyOptions) {
       }
     }
     if (dateStrings.timeZone || options.timeZone) {
-      offset = tzParseTimezone(dateStrings.timeZone || options.timeZone, new Date(timestamp + time));
-      if (isNaN(offset)) {
+      offset2 = tzParseTimezone(dateStrings.timeZone || options.timeZone, new Date(timestamp + time));
+      if (isNaN(offset2)) {
         return /* @__PURE__ */ new Date(NaN);
       }
     } else {
-      offset = getTimezoneOffsetInMilliseconds$1(new Date(timestamp + time));
-      offset = getTimezoneOffsetInMilliseconds$1(new Date(timestamp + time + offset));
+      offset2 = getTimezoneOffsetInMilliseconds$1(new Date(timestamp + time));
+      offset2 = getTimezoneOffsetInMilliseconds$1(new Date(timestamp + time + offset2));
     }
-    return new Date(timestamp + time + offset);
+    return new Date(timestamp + time + offset2);
   } else {
     return /* @__PURE__ */ new Date(NaN);
   }
@@ -3600,16 +4397,16 @@ class DateRange {
     __publicField(this, "repeat", null);
     var _a;
     this.locale = locale;
-    const { start, end, span, order, repeat } = config;
-    if (isDate(start)) {
-      this.start = locale.getDateParts(start);
+    const { start: start2, end: end2, span, order: order2, repeat } = config;
+    if (isDate(start2)) {
+      this.start = locale.getDateParts(start2);
     }
-    if (isDate(end)) {
-      this.end = locale.getDateParts(end);
+    if (isDate(end2)) {
+      this.end = locale.getDateParts(end2);
     } else if (this.start != null && span) {
       this.end = locale.getDateParts(addDays(this.start.date, span - 1));
     }
-    this.order = order ?? 0;
+    this.order = order2 ?? 0;
     if (repeat) {
       this.repeat = new DateRepeat(
         {
@@ -3650,15 +4447,15 @@ class DateRange {
     return new DateRange(config, locale);
   }
   get opts() {
-    const { order, locale } = this;
-    return { order, locale };
+    const { order: order2, locale } = this;
+    return { order: order2, locale };
   }
   get hasRepeat() {
     return !!this.repeat;
   }
   get isSingleDay() {
-    const { start, end } = this;
-    return start && end && start.year === end.year && start.month === end.month && start.day === end.day;
+    const { start: start2, end: end2 } = this;
+    return start2 && end2 && start2.year === end2.year && start2.month === end2.month && start2.day === end2.day;
   }
   get isMultiDay() {
     return !this.isSingleDay;
@@ -3764,7 +4561,7 @@ class DateRangeContext {
         const endTime = onEnd ? range.endTime : MS_PER_DAY;
         const endDate = new Date(day.endDate.getTime() + endTime);
         const allDay = startTime === 0 && endTime === MS_PER_DAY;
-        const order = data2.order || 0;
+        const order2 = data2.order || 0;
         result.push({
           ...range,
           data: data2,
@@ -3775,7 +4572,7 @@ class DateRangeContext {
           endTime,
           endDate,
           allDay,
-          order
+          order: order2
         });
       });
     });
@@ -4776,7 +5573,7 @@ function getDateFromParts(parts, timezone = "") {
     month = d.getMonth() + 1,
     day = d.getDate(),
     hours: hrs = 0,
-    minutes: min = 0,
+    minutes: min2 = 0,
     seconds: sec = 0,
     milliseconds: ms = 0
   } = parts;
@@ -4784,10 +5581,10 @@ function getDateFromParts(parts, timezone = "") {
     const dateString = `${pad(year, 4)}-${pad(month, 2)}-${pad(day, 2)}T${pad(
       hrs,
       2
-    )}:${pad(min, 2)}:${pad(sec, 2)}.${pad(ms, 3)}`;
+    )}:${pad(min2, 2)}:${pad(sec, 2)}.${pad(ms, 3)}`;
     return toDate$1(dateString, { timeZone: timezone });
   }
-  return new Date(year, month - 1, day, hrs, min, sec, ms);
+  return new Date(year, month - 1, day, hrs, min2, sec, ms);
 }
 function getDateParts(date, locale) {
   let tzDate = new Date(date.getTime());
@@ -4951,8 +5748,8 @@ function datePartIsValid(part, rule, parts) {
 }
 function getDatePartOptions(parts, range, rule) {
   const options = [];
-  const [min, max, padding] = range;
-  for (let i = min; i <= max; i++) {
+  const [min2, max2, padding] = range;
+  for (let i = min2; i <= max2; i++) {
     if (rule == null || datePartIsValid(i, rule, parts)) {
       options.push({
         value: i,
@@ -5116,23 +5913,23 @@ class Attribute {
     this.hasRanges = !!arrayHasItems(this.ranges);
     this.maxRepeatSpan = this.ranges.filter((r) => r.hasRepeat).map((r) => r.daySpan).reduce((res, curr) => Math.max(res, curr), 0);
   }
-  intersectsRange({ start, end }) {
-    if (start == null || end == null)
+  intersectsRange({ start: start2, end: end2 }) {
+    if (start2 == null || end2 == null)
       return false;
     const simpleRanges = this.ranges.filter((r) => !r.hasRepeat);
     for (const range of simpleRanges) {
-      if (range.intersectsDayRange(start.dayIndex, end.dayIndex)) {
+      if (range.intersectsDayRange(start2.dayIndex, end2.dayIndex)) {
         return true;
       }
     }
     const repeatRanges = this.ranges.filter((r) => r.hasRepeat);
     if (!repeatRanges.length)
       return false;
-    let day = start;
+    let day = start2;
     if (this.maxRepeatSpan > 1) {
       day = this.locale.getDateParts(addDays(day.date, -this.maxRepeatSpan));
     }
-    while (day.dayIndex <= end.dayIndex) {
+    while (day.dayIndex <= end2.dayIndex) {
       for (const range of repeatRanges) {
         if (range.startsOnDay(day))
           return true;
@@ -5498,16 +6295,16 @@ class HighlightRenderer {
     if (!highlight)
       return;
     const { highlights } = glyphs;
-    const { base, start, end } = highlight;
+    const { base, start: start2, end: end2 } = highlight;
     if (onStart && onEnd) {
       highlights.push({
-        ...start,
+        ...start2,
         key,
-        wrapperClass: `vc-day-layer vc-day-box-center-center vc-attr vc-${start.color}`,
-        class: [`vc-highlight vc-highlight-bg-${start.fillMode}`, start.class],
+        wrapperClass: `vc-day-layer vc-day-box-center-center vc-attr vc-${start2.color}`,
+        class: [`vc-highlight vc-highlight-bg-${start2.fillMode}`, start2.class],
         contentClass: [
-          `vc-attr vc-highlight-content-${start.fillMode} vc-${start.color}`,
-          start.contentClass
+          `vc-attr vc-highlight-content-${start2.fillMode} vc-${start2.color}`,
+          start2.contentClass
         ]
       });
     } else if (onStart) {
@@ -5521,13 +6318,13 @@ class HighlightRenderer {
         ]
       });
       highlights.push({
-        ...start,
+        ...start2,
         key,
-        wrapperClass: `vc-day-layer vc-day-box-center-center vc-attr vc-${start.color}`,
-        class: [`vc-highlight vc-highlight-bg-${start.fillMode}`, start.class],
+        wrapperClass: `vc-day-layer vc-day-box-center-center vc-attr vc-${start2.color}`,
+        class: [`vc-highlight vc-highlight-bg-${start2.fillMode}`, start2.class],
         contentClass: [
-          `vc-attr vc-highlight-content-${start.fillMode} vc-${start.color}`,
-          start.contentClass
+          `vc-attr vc-highlight-content-${start2.fillMode} vc-${start2.color}`,
+          start2.contentClass
         ]
       });
     } else if (onEnd) {
@@ -5541,13 +6338,13 @@ class HighlightRenderer {
         ]
       });
       highlights.push({
-        ...end,
+        ...end2,
         key,
-        wrapperClass: `vc-day-layer vc-day-box-center-center vc-attr vc-${end.color}`,
-        class: [`vc-highlight vc-highlight-bg-${end.fillMode}`, end.class],
+        wrapperClass: `vc-day-layer vc-day-box-center-center vc-attr vc-${end2.color}`,
+        class: [`vc-highlight vc-highlight-bg-${end2.fillMode}`, end2.class],
         contentClass: [
-          `vc-attr vc-highlight-content-${end.fillMode} vc-${end.color}`,
-          end.contentClass
+          `vc-attr vc-highlight-content-${end2.fillMode} vc-${end2.color}`,
+          end2.contentClass
         ]
       });
     } else {
@@ -5587,23 +6384,23 @@ class BaseRenderer {
       return;
     }
     const collection = glyphs[this.collectionType];
-    const { base, start, end } = item;
+    const { base, start: start2, end: end2 } = item;
     if (onStart) {
       collection.push({
-        ...start,
+        ...start2,
         key,
         class: [
-          `vc-${this.type} vc-${this.type}-start vc-${start.color} vc-attr`,
-          start.class
+          `vc-${this.type} vc-${this.type}-start vc-${start2.color} vc-attr`,
+          start2.class
         ]
       });
     } else if (onEnd) {
       collection.push({
-        ...end,
+        ...end2,
         key,
         class: [
-          `vc-${this.type} vc-${this.type}-end vc-${end.color} vc-attr`,
-          end.class
+          `vc-${this.type} vc-${this.type}-end vc-${end2.color} vc-attr`,
+          end2.class
         ]
       });
     } else {
@@ -6340,7 +7137,7 @@ const _sfc_main$k = defineComponent({
     let timeout = void 0;
     const popoverRef = ref();
     let resizeObserver = null;
-    let popper = null;
+    let popper2 = null;
     const state2 = reactive({
       isVisible: false,
       target: null,
@@ -6398,9 +7195,9 @@ const _sfc_main$k = defineComponent({
       return isLeftRight ? "middle" : "center";
     });
     function destroyPopper() {
-      if (popper) {
-        popper.destroy();
-        popper = null;
+      if (popper2) {
+        popper2.destroy();
+        popper2 = null;
       }
     }
     function setupPopper() {
@@ -6408,17 +7205,17 @@ const _sfc_main$k = defineComponent({
         const el = resolveEl(state2.target);
         if (!el || !popoverRef.value)
           return;
-        if (popper && popper.state.elements.reference !== el) {
+        if (popper2 && popper2.state.elements.reference !== el) {
           destroyPopper();
         }
-        if (!popper) {
-          popper = yn(
+        if (!popper2) {
+          popper2 = createPopper(
             el,
             popoverRef.value,
             popperOptions.value
           );
         } else {
-          popper.update();
+          popper2.update();
         }
       });
     }
@@ -6434,10 +7231,10 @@ const _sfc_main$k = defineComponent({
       }
     }
     function isCurrentTarget(target) {
-      if (!target || !popper)
+      if (!target || !popper2)
         return false;
       const el = resolveEl(target);
-      return el === popper.state.elements.reference;
+      return el === popper2.state.elements.reference;
     }
     async function show(opts = {}) {
       if (state2.force)
@@ -6455,8 +7252,8 @@ const _sfc_main$k = defineComponent({
         setupPopper();
       });
     }
-    function hide(opts = {}) {
-      if (!popper)
+    function hide2(opts = {}) {
+      if (!popper2)
         return;
       if (opts.target && !isCurrentTarget(opts.target))
         return;
@@ -6474,15 +7271,15 @@ const _sfc_main$k = defineComponent({
       if (opts.target == null)
         return;
       if (state2.isVisible && isCurrentTarget(opts.target)) {
-        hide(opts);
+        hide2(opts);
       } else {
         show(opts);
       }
     }
     function onDocumentClick(e) {
-      if (!popper)
+      if (!popper2)
         return;
-      const popperRef = popper.state.elements.reference;
+      const popperRef = popper2.state.elements.reference;
       if (!popoverRef.value || !popperRef) {
         return;
       }
@@ -6490,11 +7287,11 @@ const _sfc_main$k = defineComponent({
       if (elementContains(popoverRef.value, target) || elementContains(popperRef, target)) {
         return;
       }
-      hide({ force: true });
+      hide2({ force: true });
     }
     function onDocumentKeydown(e) {
       if (e.key === "Esc" || e.key === "Escape") {
-        hide();
+        hide2();
       }
     }
     function onDocumentShowPopover({ detail }) {
@@ -6505,7 +7302,7 @@ const _sfc_main$k = defineComponent({
     function onDocumentHidePopover({ detail }) {
       if (!detail.id || detail.id !== props.id)
         return;
-      hide(detail);
+      hide2(detail);
     }
     function onDocumentTogglePopover({ detail }) {
       if (!detail.id || detail.id !== props.id)
@@ -6552,11 +7349,11 @@ const _sfc_main$k = defineComponent({
     }
     function onMouseLeave() {
       state2.isHovered = false;
-      if (!popper)
+      if (!popper2)
         return;
-      const popperRef = popper.state.elements.reference;
+      const popperRef = popper2.state.elements.reference;
       if (state2.autoHide && !state2.isFocused && (!popperRef || popperRef !== document.activeElement) && ["hover", "hover-focus"].includes(state2.visibility)) {
-        hide();
+        hide2();
       }
     }
     function onFocusIn() {
@@ -6569,7 +7366,7 @@ const _sfc_main$k = defineComponent({
       if (["focus", "hover-focus"].includes(state2.visibility) && (!e.relatedTarget || !elementContains(popoverRef.value, e.relatedTarget))) {
         state2.isFocused = false;
         if (!state2.isHovered && state2.autoHide)
-          hide();
+          hide2();
       }
     }
     function cleanupRO() {
@@ -6585,8 +7382,8 @@ const _sfc_main$k = defineComponent({
         if (!val)
           return;
         resizeObserver = new ResizeObserver(() => {
-          if (popper)
-            popper.update();
+          if (popper2)
+            popper2.update();
         });
         resizeObserver.observe(val);
       }
@@ -6606,7 +7403,7 @@ const _sfc_main$k = defineComponent({
       ...toRefs(state2),
       popoverRef,
       alignment,
-      hide,
+      hide: hide2,
       setupPopper,
       beforeEnter,
       afterEnter,
@@ -6765,7 +7562,7 @@ const _sfc_main$h = /* @__PURE__ */ defineComponent({
         id: unref(dayPopoverId),
         class: normalizeClass([`vc-${unref(color)}`, `vc-${unref(displayMode)}`])
       }, {
-        default: withCtx(({ data: { day, attributes }, hide }) => [
+        default: withCtx(({ data: { day, attributes }, hide: hide2 }) => [
           createVNode(_sfc_main$i, {
             name: "day-popover",
             day,
@@ -6773,7 +7570,7 @@ const _sfc_main$h = /* @__PURE__ */ defineComponent({
             attributes,
             format,
             masks: unref(masks2),
-            hide
+            hide: hide2
           }, {
             default: withCtx(() => [
               createBaseVNode("div", _hoisted_1$b, [
@@ -7464,13 +8261,13 @@ const _sfc_main$7 = defineComponent({
         get_1(last_1(highlights.value), "contentClass"),
         get_1(last_1(content.value), "class") || ""
       ];
-      const style2 = {
+      const style = {
         ...get_1(last_1(highlights.value), "contentStyle"),
         ...get_1(last_1(content.value), "style")
       };
       return {
         class: classes,
-        style: style2,
+        style,
         tabindex,
         "aria-label": day.value.ariaLabel,
         "aria-disabled": day.value.isDisabled ? true : false,
@@ -7550,14 +8347,14 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     class: normalizeClass(_ctx.dayClasses)
   }, [
     _ctx.hasHighlights ? (openBlock(), createElementBlock("div", _hoisted_1$4, [
-      (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.highlights, ({ key, wrapperClass, class: bgClass, style: style2 }) => {
+      (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.highlights, ({ key, wrapperClass, class: bgClass, style }) => {
         return openBlock(), createElementBlock("div", {
           key,
           class: normalizeClass(wrapperClass)
         }, [
           createBaseVNode("div", {
             class: normalizeClass(bgClass),
-            style: normalizeStyle(style2)
+            style: normalizeStyle(style)
           }, null, 6)
         ], 2);
       }), 128))
@@ -7582,22 +8379,22 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     }, 8, ["day", "attributes", "attribute-cells", "dayProps", "dayEvents", "locale"]),
     _ctx.hasDots ? (openBlock(), createElementBlock("div", _hoisted_2$3, [
       createBaseVNode("div", _hoisted_3$2, [
-        (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.dots, ({ key, class: bgClass, style: style2 }) => {
+        (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.dots, ({ key, class: bgClass, style }) => {
           return openBlock(), createElementBlock("span", {
             key,
             class: normalizeClass(bgClass),
-            style: normalizeStyle(style2)
+            style: normalizeStyle(style)
           }, null, 6);
         }), 128))
       ])
     ])) : createCommentVNode("", true),
     _ctx.hasBars ? (openBlock(), createElementBlock("div", _hoisted_4$1, [
       createBaseVNode("div", _hoisted_5$1, [
-        (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.bars, ({ key, class: bgClass, style: style2 }) => {
+        (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.bars, ({ key, class: bgClass, style }) => {
           return openBlock(), createElementBlock("span", {
             key,
             class: normalizeClass(bgClass),
-            style: normalizeStyle(style2)
+            style: normalizeStyle(style)
           }, null, 6);
         }), 128))
       ])
@@ -8040,17 +8837,17 @@ function createDatePicker(props, { emit, slots }) {
     if (!hasValue(value))
       return null;
     if (hasRangeValue(value)) {
-      const start = locale.value.toDate(value.start, {
+      const start2 = locale.value.toDate(value.start, {
         ...config2[0],
         fillDate: valueStart.value ?? void 0,
         patch
       });
-      const end = locale.value.toDate(value.end, {
+      const end2 = locale.value.toDate(value.end, {
         ...config2[1],
         fillDate: valueEnd.value ?? void 0,
         patch
       });
-      return sortRange({ start, end }, targetPriority);
+      return sortRange({ start: start2, end: end2 }, targetPriority);
     }
     return locale.value.toDateOrNull(value, {
       ...config2[0],
@@ -8073,11 +8870,11 @@ function createDatePicker(props, { emit, slots }) {
   function updateValue(value, opts = {}) {
     clearTimeout(updateTimeout);
     return new Promise((resolve) => {
-      const { debounce = 0, ...args } = opts;
-      if (debounce > 0) {
+      const { debounce: debounce2 = 0, ...args } = opts;
+      if (debounce2 > 0) {
         updateTimeout = window.setTimeout(() => {
           resolve(forceUpdateValue(value, args));
-        }, debounce);
+        }, debounce2);
       } else {
         resolve(forceUpdateValue(value, args));
       }
@@ -8302,18 +9099,18 @@ function createDatePicker(props, { emit, slots }) {
     });
   }
   function sortRange(range, priority) {
-    const { start, end } = range;
-    if (start > end) {
+    const { start: start2, end: end2 } = range;
+    if (start2 > end2) {
       switch (priority) {
         case "start":
-          return { start, end: start };
+          return { start: start2, end: start2 };
         case "end":
-          return { start: end, end };
+          return { start: end2, end: end2 };
         default:
-          return { start: end, end: start };
+          return { start: end2, end: start2 };
       }
     }
-    return { start, end };
+    return { start: start2, end: end2 };
   }
   async function move(target, opts = {}) {
     if (calendarRef.value == null)
@@ -8329,9 +9126,9 @@ function createDatePicker(props, { emit, slots }) {
     const dValue = dateValue.value;
     if (calendarRef.value == null || !hasValue(dValue))
       return false;
-    const start = target !== "end";
-    const position = start ? 1 : -1;
-    const date = hasRangeValue(dValue) ? start ? dValue.start : dValue.end : dValue;
+    const start2 = target !== "end";
+    const position = start2 ? 1 : -1;
+    const date = hasRangeValue(dValue) ? start2 ? dValue.start : dValue.end : dValue;
     const page = getPageAddressForDate(date, "monthly", locale.value);
     return calendarRef.value.move(page, { position, ...opts });
   }
@@ -8487,9 +9284,9 @@ function createTimePicker(props) {
     newParts = Object.assign(parts.value, newParts);
     let newValue = null;
     if (isRange.value) {
-      const start = isStart.value ? newParts : dateParts.value[0];
-      const end = isStart.value ? dateParts.value[1] : newParts;
-      newValue = { start, end };
+      const start2 = isStart.value ? newParts : dateParts.value[0];
+      const end2 = isStart.value ? dateParts.value[1] : newParts;
+      newValue = { start: start2, end: end2 };
     } else {
       newValue = newParts;
     }
@@ -8888,7 +9685,6 @@ function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
   ], 64)) : (openBlock(), createBlock(_component_DatePickerBase, normalizeProps(mergeProps({ key: 1 }, _ctx.$attrs)), null, 16));
 }
 const DatePicker = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["render", _sfc_render$8]]);
-const style = "";
 const useCampaignStore = defineStore("campaign", {
   state: () => ({
     unsavedChanges: false,
@@ -8907,7 +9703,6 @@ const useCampaignStore = defineStore("campaign", {
     }
   }
 });
-const addCampaign_vue_vue_type_style_index_0_scoped_19e63e6c_lang = "";
 const _sfc_main = {
   name: "addCampaign",
   components: {
@@ -8957,7 +9752,7 @@ const _sfc_main = {
       year: "",
       published: 1,
       is_limited: 0,
-      profile_id: 9,
+      profile_id: 0,
       limit: 50,
       limit_status: [],
       pinned: 0,
@@ -9108,12 +9903,9 @@ const _sfc_main = {
       }
     },
     getAllPrograms() {
-      programmeService.getAllPrograms().then((response) => {
+      programmeService.getAllPrograms("", "", 0, 0, "p.label").then((response) => {
         if (response.status) {
           this.programs = response.data.datas;
-          if (Object.keys(this.programs).length !== 0) {
-            this.programs.sort((a, b) => a.id - b.id);
-          }
         } else {
           this.programs = [];
         }
@@ -9342,7 +10134,7 @@ const _sfc_main = {
           published: 1,
           apply_online: 1
         };
-        document.getElementById("add-program").style = "transform: rotate(135deg)";
+        document.getElementById("add-program").style = "transform: rotate(45deg)";
         document.getElementById("select_prog").setAttribute("disabled", "disabled");
       }
       this.isHiddenProgram = !this.isHiddenProgram;
@@ -9436,141 +10228,136 @@ const _hoisted_1 = { class: "campaigns__add-campaign" };
 const _hoisted_2 = { key: 0 };
 const _hoisted_3 = { class: "tw-ml-2 tw-text-neutral-900" };
 const _hoisted_4 = { class: "tw-mt-4" };
-const _hoisted_5 = { class: "tw-mt-4" };
-const _hoisted_6 = { class: "tw-text-red-600 tw-mb-2" };
-const _hoisted_7 = {
-  class: "tw-mb-4",
-  id: "campaign-label-wrapper"
-};
-const _hoisted_8 = {
+const _hoisted_5 = { class: "tw-mt-2" };
+const _hoisted_6 = { class: "tw-text-red-600 tw-mt-1" };
+const _hoisted_7 = { class: "tw-flex tw-flex-col tw-gap-4" };
+const _hoisted_8 = { id: "campaign-label-wrapper" };
+const _hoisted_9 = {
   for: "campLabel",
   class: "tw-font-medium"
 };
-const _hoisted_9 = {
+const _hoisted_10 = {
   key: 0,
   id: "error-campaign-name",
-  class: "tw-text-red-600 tw-mb-2"
+  class: "tw-text-red-600 tw-mt-1 tw-mb-1"
 };
-const _hoisted_10 = { class: "tw-mb-4" };
 const _hoisted_11 = {
   for: "alias",
   class: "tw-font-medium"
 };
-const _hoisted_12 = { class: "tw-flex tw-items-center tw-gap-2" };
-const _hoisted_13 = { class: "tw-w-full" };
-const _hoisted_14 = {
-  key: 0,
-  class: "tw-text-red-600 tw-mb-2 tw-absolute"
-};
-const _hoisted_15 = { class: "tw-grid tw-grid-cols-2 tw-mb-4 tw-gap-1.5" };
+const _hoisted_12 = { class: "tw-text-base tw-text-neutral-600" };
+const _hoisted_13 = { class: "tw-mt-1 tw-flex tw-items-center tw-gap-2" };
+const _hoisted_14 = { class: "tw-whitespace-nowrap" };
+const _hoisted_15 = { class: "tw-w-full" };
 const _hoisted_16 = {
+  key: 0,
+  class: "tw-text-red-600 tw-mb-1 tw-mt-1 tw-absolute"
+};
+const _hoisted_17 = { class: "tw-grid tw-grid-cols-2 tw-gap-1.5" };
+const _hoisted_18 = {
   for: "startDate",
   class: "tw-font-medium"
 };
-const _hoisted_17 = ["value"];
-const _hoisted_18 = {
+const _hoisted_19 = ["value"];
+const _hoisted_20 = {
   key: 0,
-  class: "tw-text-red-600 tw-mb-2 tw-absolute"
+  class: "tw-text-red-600 tw-mb-1 tw-mt-1 tw-absolute"
 };
-const _hoisted_19 = {
+const _hoisted_21 = {
   for: "endDate",
   class: "tw-font-medium"
 };
-const _hoisted_20 = ["value"];
-const _hoisted_21 = {
-  key: 0,
-  class: "tw-text-red-600 tw-mb-2 tw-absolute"
-};
-const _hoisted_22 = { class: "tw-mb-4" };
+const _hoisted_22 = ["value"];
 const _hoisted_23 = {
+  key: 0,
+  class: "tw-text-red-600 tw-mb-1 tw-mt-1 tw-absolute"
+};
+const _hoisted_24 = {
   for: "year",
   class: "tw-font-medium"
 };
-const _hoisted_24 = {
+const _hoisted_25 = { class: "tw-text-base tw-text-neutral-600" };
+const _hoisted_26 = {
   key: 0,
-  class: "tw-text-red-600 tw-mb-2"
+  class: "tw-text-red-600 tw-mb-1 tw-mt-1"
 };
-const _hoisted_25 = { class: "tw-mb-4 tw-flex tw-items-center" };
-const _hoisted_26 = { class: "em-toggle" };
-const _hoisted_27 = {
+const _hoisted_27 = { class: "tw-flex tw-items-center" };
+const _hoisted_28 = { class: "em-toggle" };
+const _hoisted_29 = {
   for: "published",
   class: "tw-ml-2"
 };
-const _hoisted_28 = { class: "tw-mb-4 tw-flex tw-items-center" };
-const _hoisted_29 = { class: "em-toggle" };
-const _hoisted_30 = {
+const _hoisted_30 = { class: "tw-flex tw-items-center" };
+const _hoisted_31 = { class: "em-toggle" };
+const _hoisted_32 = {
   for: "visible",
   class: "tw-ml-2 tw-flex tw-items-center"
 };
-const _hoisted_31 = { class: "tw-mb-4 tw-flex tw-items-center" };
-const _hoisted_32 = { class: "em-toggle" };
-const _hoisted_33 = {
+const _hoisted_33 = { class: "tw-flex tw-items-center" };
+const _hoisted_34 = { class: "em-toggle" };
+const _hoisted_35 = {
   for: "pinned",
   class: "tw-ml-2 tw-flex tw-items-center"
 };
-const _hoisted_34 = { class: "tw-mb-4" };
-const _hoisted_35 = { class: "tw-mb-4" };
-const _hoisted_36 = {
-  id: "campResume",
-  class: "tw-mb-4"
-};
-const _hoisted_37 = { class: "tw-flex tw-items-center" };
-const _hoisted_38 = { class: "tw-font-medium tw-mb-0" };
-const _hoisted_39 = { class: "tw-mb-4" };
+const _hoisted_36 = { class: "tw-flex tw-flex-col tw-gap-4" };
+const _hoisted_37 = { id: "campResume" };
+const _hoisted_38 = { class: "tw-flex tw-items-center" };
+const _hoisted_39 = { class: "tw-font-medium tw-mb-0" };
 const _hoisted_40 = { class: "tw-flex tw-items-center" };
 const _hoisted_41 = { class: "tw-font-medium tw-mb-0" };
 const _hoisted_42 = {
   key: 0,
-  id: "campDescription",
-  class: "tw-mb-4"
+  id: "campDescription"
 };
-const _hoisted_43 = { class: "tw-mt-8" };
-const _hoisted_44 = { class: "tw-mb-4" };
-const _hoisted_45 = { class: "tw-mb-4" };
-const _hoisted_46 = { class: "tw-mb-4" };
-const _hoisted_47 = { class: "tw-flex tw-items-center" };
-const _hoisted_48 = ["disabled"];
-const _hoisted_49 = { value: "" };
-const _hoisted_50 = ["value", "data-category"];
-const _hoisted_51 = ["title"];
-const _hoisted_52 = {
+const _hoisted_43 = { class: "tw-flex tw-flex-col tw-gap-4" };
+const _hoisted_44 = { class: "tw-mt-2" };
+const _hoisted_45 = { class: "tw-flex tw-items-center" };
+const _hoisted_46 = ["disabled"];
+const _hoisted_47 = { value: "" };
+const _hoisted_48 = ["value", "data-category"];
+const _hoisted_49 = ["title"];
+const _hoisted_50 = {
   key: 0,
-  class: "tw-text-red-600 tw-mb-2"
+  class: "tw-text-red-600 tw-mb-1 tw-mt-1"
 };
-const _hoisted_53 = { key: 0 };
-const _hoisted_54 = { class: "tw-mb-4" };
-const _hoisted_55 = {
+const _hoisted_51 = { key: 0 };
+const _hoisted_52 = {
   for: "prog_label",
   class: "tw-font-medium"
 };
-const _hoisted_56 = {
+const _hoisted_53 = {
   key: 0,
-  class: "tw-text-red-600 tw-mb-2"
+  class: "tw-text-red-600 tw-mb-1 tw-mt-1"
 };
-const _hoisted_57 = { class: "tw-text-red-600" };
-const _hoisted_58 = { id: "campaign-form-container" };
-const _hoisted_59 = { class: "tw-mt-2 tw-mb-2" };
-const _hoisted_60 = { class: "tw-mt-2 tw-mb-2" };
-const _hoisted_61 = { class: "tw-flex tw-flex-row tw-items-center" };
-const _hoisted_62 = { value: "0" };
-const _hoisted_63 = ["value"];
-const _hoisted_64 = {
+const _hoisted_54 = { class: "tw-text-red-600" };
+const _hoisted_55 = {
+  class: "tw-flex tw-flex-col tw-gap-4",
+  id: "campaign-form-container"
+};
+const _hoisted_56 = { class: "tw-text-sm tw-text-neutral-500" };
+const _hoisted_57 = { class: "tw-font-medium" };
+const _hoisted_58 = { class: "tw-flex tw-items-center tw-mt-1 tw-mb-1" };
+const _hoisted_59 = { value: "0" };
+const _hoisted_60 = ["value"];
+const _hoisted_61 = {
   href: "/forms",
   target: "_blank",
-  class: "tw-my-2 tw-underline"
+  class: "tw-underline"
 };
-const _hoisted_65 = {
+const _hoisted_62 = {
   key: 0,
+  class: "tw-flex tw-flex-col tw-gap-4",
   id: "select-campaign-languages"
 };
-const _hoisted_66 = {
+const _hoisted_63 = { class: "tw-text-sm tw-text-neutral-500" };
+const _hoisted_64 = {
   key: 0,
   id: "program-languages",
-  class: "tw-mt-4 tw-mb-0 tw-p-4 alert alert-info tw-flex tw-flex-row"
+  class: "tw-mb-1 tw-p-4 alert alert-info tw-flex"
 };
-const _hoisted_67 = { class: "tw-font-light tw-text-sm" };
-const _hoisted_68 = { class: "tw-flex tw-justify-end tw-mt-4" };
-const _hoisted_69 = {
+const _hoisted_65 = { class: "tw-font-light tw-text-sm" };
+const _hoisted_66 = { class: "tw-flex tw-justify-end" };
+const _hoisted_67 = {
   key: 1,
   class: "em-page-loader"
 };
@@ -9582,15 +10369,20 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", _hoisted_1, [
     typeof _ctx.campaignId == "undefined" || _ctx.campaignId == 0 ? (openBlock(), createElementBlock("div", _hoisted_2, [
       createBaseVNode("div", {
-        class: "tw-flex tw-items-center tw-cursor-pointer",
+        class: "tw-flex tw-items-center tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300",
         onClick: _cache[0] || (_cache[0] = ($event) => $options.redirectJRoute("index.php?option=com_emundus&view=campaigns"))
       }, [
         _cache[30] || (_cache[30] = createBaseVNode("span", { class: "material-symbols-outlined tw-text-neutral-600" }, "navigate_before", -1)),
         createBaseVNode("span", _hoisted_3, toDisplayString(_ctx.translate("BACK")), 1)
       ]),
-      createBaseVNode("h1", _hoisted_4, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN")), 1),
-      createBaseVNode("p", _hoisted_5, toDisplayString(_ctx.translate("COM_EMUNDUS_GLOBAL_INFORMATIONS_DESC")), 1),
-      _cache[31] || (_cache[31] = createBaseVNode("hr", { class: "tw-mt-1.5 tw-mb-1.5" }, null, -1))
+      createBaseVNode("div", _hoisted_4, [
+        createBaseVNode("h1", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN")), 1),
+        createBaseVNode("div", _hoisted_5, [
+          createBaseVNode("p", null, toDisplayString(_ctx.translate("COM_EMUNDUS_GLOBAL_INFORMATIONS_DESC")), 1),
+          createBaseVNode("p", _hoisted_6, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE")), 1)
+        ])
+      ]),
+      _cache[31] || (_cache[31] = createBaseVNode("hr", { class: "tw-mt-1.5 tw-mb-4" }, null, -1))
     ])) : createCommentVNode("", true),
     createBaseVNode("div", null, [
       _ctx.ready ? (openBlock(), createElementBlock("form", {
@@ -9598,10 +10390,9 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         onSubmit: _cache[29] || (_cache[29] = withModifiers((...args) => $options.submit && $options.submit(...args), ["prevent"])),
         class: "emundus-form fabrikForm"
       }, [
-        createBaseVNode("div", null, [
-          createBaseVNode("div", _hoisted_6, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE")), 1),
-          createBaseVNode("div", _hoisted_7, [
-            createBaseVNode("label", _hoisted_8, [
+        createBaseVNode("div", _hoisted_7, [
+          createBaseVNode("div", _hoisted_8, [
+            createBaseVNode("label", _hoisted_9, [
               createTextVNode(toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_CAMPNAME")) + " ", 1),
               _cache[32] || (_cache[32] = createBaseVNode("span", { class: "tw-text-red-600" }, "*", -1))
             ]),
@@ -9610,48 +10401,53 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               type: "text",
               "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => _ctx.form.label[_ctx.actualLanguage] = $event),
               required: "",
-              class: normalizeClass([{ "is-invalid !tw-border-red-600": _ctx.errors.label }, "tw-mt-2 form-control fabrikinput tw-w-full"]),
+              class: normalizeClass([{ "is-invalid !tw-border-red-600": _ctx.errors.label }, "tw-mt-1 form-control fabrikinput tw-w-full"]),
               onFocusout: _cache[2] || (_cache[2] = ($event) => $options.onFormChange()),
               onKeyup: _cache[3] || (_cache[3] = ($event) => $options.updateAlias())
             }, null, 34), [
               [vModelText, _ctx.form.label[_ctx.actualLanguage]]
             ]),
-            _ctx.errors.label ? (openBlock(), createElementBlock("span", _hoisted_9, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME")), 1)) : createCommentVNode("", true)
+            _ctx.errors.label ? (openBlock(), createElementBlock("div", _hoisted_10, [
+              createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME")), 1)
+            ])) : createCommentVNode("", true)
           ]),
-          createBaseVNode("div", _hoisted_10, [
+          createBaseVNode("div", null, [
             createBaseVNode("label", _hoisted_11, [
               createTextVNode(toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_ALIAS")) + " ", 1),
               _cache[33] || (_cache[33] = createBaseVNode("span", { class: "tw-text-red-600" }, "*", -1))
             ]),
-            createBaseVNode("div", _hoisted_12, [
-              createBaseVNode("span", null, toDisplayString($options.baseUrl) + "/", 1),
+            createBaseVNode("div", null, [
+              createBaseVNode("span", _hoisted_12, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_ALIAS_HELPTEXT")), 1),
               createBaseVNode("div", _hoisted_13, [
-                withDirectives(createBaseVNode("input", {
-                  id: "alias",
-                  type: "text",
-                  "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => _ctx.form.alias = $event),
-                  required: "",
-                  class: normalizeClass([{ "is-invalid !tw-border-red-600": _ctx.errors.alias }, "form-control fabrikinput tw-w-full"]),
-                  onFocusout: _cache[5] || (_cache[5] = ($event) => $options.onFormChange()),
-                  onKeyup: _cache[6] || (_cache[6] = ($event) => _ctx.form.alias !== "" ? _ctx.aliasUpdated = true : _ctx.aliasUpdated = false)
-                }, null, 34), [
-                  [vModelText, _ctx.form.alias]
+                createBaseVNode("span", _hoisted_14, toDisplayString($options.baseUrl) + "/", 1),
+                createBaseVNode("div", _hoisted_15, [
+                  withDirectives(createBaseVNode("input", {
+                    id: "alias",
+                    type: "text",
+                    "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => _ctx.form.alias = $event),
+                    required: "",
+                    class: normalizeClass([{ "is-invalid !tw-border-red-600": _ctx.errors.alias }, "form-control fabrikinput tw-w-full"]),
+                    onFocusout: _cache[5] || (_cache[5] = ($event) => $options.onFormChange()),
+                    onKeyup: _cache[6] || (_cache[6] = ($event) => _ctx.form.alias !== "" ? _ctx.aliasUpdated = true : _ctx.aliasUpdated = false)
+                  }, null, 34), [
+                    [vModelText, _ctx.form.alias]
+                  ]),
+                  _ctx.errors.alias ? (openBlock(), createElementBlock("div", _hoisted_16, [
+                    createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_LINK")), 1)
+                  ])) : createCommentVNode("", true)
                 ]),
-                _ctx.errors.alias ? (openBlock(), createElementBlock("span", _hoisted_14, [
-                  createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_LINK")), 1)
-                ])) : createCommentVNode("", true)
-              ]),
-              createBaseVNode("span", {
-                class: "material-symbols-outlined tw-cursor-pointer",
-                onClick: _cache[7] || (_cache[7] = ($event) => {
-                  $options.copyAliasToClipboard();
-                })
-              }, "content_copy")
+                createBaseVNode("span", {
+                  class: "material-symbols-outlined tw-cursor-pointer",
+                  onClick: _cache[7] || (_cache[7] = ($event) => {
+                    $options.copyAliasToClipboard();
+                  })
+                }, "content_copy")
+              ])
             ])
           ]),
-          createBaseVNode("div", _hoisted_15, [
+          createBaseVNode("div", _hoisted_17, [
             createBaseVNode("div", null, [
-              createBaseVNode("label", _hoisted_16, [
+              createBaseVNode("label", _hoisted_18, [
                 createTextVNode(toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE")) + " ", 1),
                 _cache[34] || (_cache[34] = createBaseVNode("span", { class: "tw-text-red-600" }, "*", -1))
               ]),
@@ -9671,10 +10467,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               }, {
                 default: withCtx(({ inputValue, inputEvents }) => [
                   createBaseVNode("input", mergeProps({ value: inputValue }, toHandlers(inputEvents, true), {
-                    class: ["tw-mt-2 form-control fabrikinput tw-w-full", { "is-invalid !tw-border-red-600": _ctx.errors.start_date }],
+                    class: ["tw-mt-1 form-control fabrikinput tw-w-full", { "is-invalid !tw-border-red-600": _ctx.errors.start_date }],
                     id: "start_date_input"
-                  }), null, 16, _hoisted_17),
-                  _ctx.errors.start_date ? (openBlock(), createElementBlock("span", _hoisted_18, [
+                  }), null, 16, _hoisted_19),
+                  _ctx.errors.start_date ? (openBlock(), createElementBlock("div", _hoisted_20, [
                     createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_START_DATE")), 1)
                   ])) : createCommentVNode("", true)
                 ]),
@@ -9683,7 +10479,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             ]),
             createBaseVNode("div", null, [
               createBaseVNode("div", null, [
-                createBaseVNode("label", _hoisted_19, [
+                createBaseVNode("label", _hoisted_21, [
                   createTextVNode(toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_ENDDATE")) + " ", 1),
                   _cache[35] || (_cache[35] = createBaseVNode("span", { class: "tw-text-red-600" }, "*", -1))
                 ]),
@@ -9704,10 +10500,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 }, {
                   default: withCtx(({ inputValue, inputEvents }) => [
                     createBaseVNode("input", mergeProps({ value: inputValue }, toHandlers(inputEvents, true), {
-                      class: ["tw-mt-2 form-control fabrikinput tw-w-full", { "is-invalid !tw-border-red-600": _ctx.errors.end_date }],
+                      class: ["tw-mt-1 form-control fabrikinput tw-w-full", { "is-invalid !tw-border-red-600": _ctx.errors.end_date }],
                       id: "end_date_input"
-                    }), null, 16, _hoisted_20),
-                    _ctx.errors.end_date ? (openBlock(), createElementBlock("span", _hoisted_21, [
+                    }), null, 16, _hoisted_22),
+                    _ctx.errors.end_date ? (openBlock(), createElementBlock("div", _hoisted_23, [
                       createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_END_DATE")), 1)
                     ])) : createCommentVNode("", true)
                   ]),
@@ -9716,24 +10512,27 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               ])
             ])
           ]),
-          createBaseVNode("div", _hoisted_22, [
-            createBaseVNode("label", _hoisted_23, [
+          createBaseVNode("div", null, [
+            createBaseVNode("label", _hoisted_24, [
               createTextVNode(toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PICKYEAR")) + " ", 1),
               _cache[36] || (_cache[36] = createBaseVNode("span", { class: "tw-text-red-600" }, "*", -1))
             ]),
-            createVNode(_component_autocomplete, {
-              id: "year",
-              onSearched: $options.onSearchYear,
-              items: this.session,
-              year: _ctx.form.year,
-              name: $options.sessionPlaceholder
-            }, null, 8, ["onSearched", "items", "year", "name"]),
-            _ctx.errors.year ? (openBlock(), createElementBlock("span", _hoisted_24, [
-              createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_YEAR")), 1)
-            ])) : createCommentVNode("", true)
+            createBaseVNode("div", null, [
+              createBaseVNode("span", _hoisted_25, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PICKYEAR_HELPTEXT")), 1),
+              createVNode(_component_autocomplete, {
+                id: "year",
+                onSearched: $options.onSearchYear,
+                items: this.session,
+                year: _ctx.form.year,
+                name: $options.sessionPlaceholder
+              }, null, 8, ["onSearched", "items", "year", "name"]),
+              _ctx.errors.year ? (openBlock(), createElementBlock("div", _hoisted_26, [
+                createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_YEAR")), 1)
+              ])) : createCommentVNode("", true)
+            ])
           ]),
-          createBaseVNode("div", _hoisted_25, [
-            createBaseVNode("div", _hoisted_26, [
+          createBaseVNode("div", _hoisted_27, [
+            createBaseVNode("div", _hoisted_28, [
               withDirectives(createBaseVNode("input", {
                 type: "checkbox",
                 "true-value": "1",
@@ -9749,10 +10548,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               _cache[37] || (_cache[37] = createBaseVNode("strong", { class: "b em-toggle-switch" }, null, -1)),
               _cache[38] || (_cache[38] = createBaseVNode("strong", { class: "b em-toggle-track" }, null, -1))
             ]),
-            createBaseVNode("span", _hoisted_27, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH")), 1)
+            createBaseVNode("span", _hoisted_29, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH")), 1)
           ]),
-          createBaseVNode("div", _hoisted_28, [
-            createBaseVNode("div", _hoisted_29, [
+          createBaseVNode("div", _hoisted_30, [
+            createBaseVNode("div", _hoisted_31, [
               withDirectives(createBaseVNode("input", {
                 type: "checkbox",
                 "true-value": "0",
@@ -9768,10 +10567,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               _cache[39] || (_cache[39] = createBaseVNode("strong", { class: "b em-toggle-switch" }, null, -1)),
               _cache[40] || (_cache[40] = createBaseVNode("strong", { class: "b em-toggle-track" }, null, -1))
             ]),
-            createBaseVNode("span", _hoisted_30, toDisplayString(_ctx.translate("COM_EMUNDUS_CAMPAIGNS_VISIBLE")), 1)
+            createBaseVNode("span", _hoisted_32, toDisplayString(_ctx.translate("COM_EMUNDUS_CAMPAIGNS_VISIBLE")), 1)
           ]),
-          createBaseVNode("div", _hoisted_31, [
-            createBaseVNode("div", _hoisted_32, [
+          createBaseVNode("div", _hoisted_33, [
+            createBaseVNode("div", _hoisted_34, [
               withDirectives(createBaseVNode("input", {
                 type: "checkbox",
                 "true-value": "1",
@@ -9787,7 +10586,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               _cache[41] || (_cache[41] = createBaseVNode("strong", { class: "b em-toggle-switch" }, null, -1)),
               _cache[42] || (_cache[42] = createBaseVNode("strong", { class: "b em-toggle-track" }, null, -1))
             ]),
-            createBaseVNode("span", _hoisted_33, [
+            createBaseVNode("span", _hoisted_35, [
               createTextVNode(toDisplayString(_ctx.translate("COM_EMUNDUS_CAMPAIGNS_PIN")) + " ", 1),
               createBaseVNode("span", {
                 class: "material-symbols-outlined tw-ml-1 tw-text-base tw-cursor-pointer tw-text-neutral-600",
@@ -9796,14 +10595,12 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             ])
           ])
         ]),
-        _cache[48] || (_cache[48] = createBaseVNode("hr", null, null, -1)),
-        createBaseVNode("div", _hoisted_34, [
-          createBaseVNode("div", _hoisted_35, [
-            createBaseVNode("h3", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION")), 1)
-          ]),
-          createBaseVNode("div", _hoisted_36, [
-            createBaseVNode("div", _hoisted_37, [
-              createBaseVNode("label", _hoisted_38, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME")), 1),
+        _cache[47] || (_cache[47] = createBaseVNode("hr", { class: "tw-mt-1.5 tw-mb-4" }, null, -1)),
+        createBaseVNode("div", _hoisted_36, [
+          createBaseVNode("h2", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION")), 1),
+          createBaseVNode("div", _hoisted_37, [
+            createBaseVNode("div", _hoisted_38, [
+              createBaseVNode("label", _hoisted_39, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME")), 1),
               createBaseVNode("span", {
                 class: "material-symbols-outlined tw-ml-1 tw-text-base tw-cursor-pointer tw-text-neutral-600",
                 onClick: _cache[17] || (_cache[17] = (...args) => $options.displayCampaignResumeTip && $options.displayCampaignResumeTip(...args))
@@ -9821,7 +10618,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               placeholder: _ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME")
             }, null, 8, ["modelValue", "placeholder"])
           ]),
-          createBaseVNode("div", _hoisted_39, [
+          createBaseVNode("div", null, [
             createBaseVNode("div", _hoisted_40, [
               createBaseVNode("label", _hoisted_41, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION")), 1),
               createBaseVNode("span", {
@@ -9846,32 +10643,35 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             ])) : createCommentVNode("", true)
           ])
         ]),
+        _cache[48] || (_cache[48] = createBaseVNode("hr", { class: "tw-mt-1.5 tw-mb-4" }, null, -1)),
         createBaseVNode("div", _hoisted_43, [
-          createBaseVNode("div", _hoisted_44, [
-            createBaseVNode("h2", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM")), 1)
+          createBaseVNode("div", null, [
+            createBaseVNode("h2", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM")), 1),
+            createBaseVNode("div", _hoisted_44, [
+              createBaseVNode("p", null, [
+                createTextVNode(toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_PROGRAM_INTRO_DESC")) + " ", 1),
+                _cache[43] || (_cache[43] = createBaseVNode("span", { class: "tw-text-red-600" }, "*", -1))
+              ])
+            ])
           ]),
-          createBaseVNode("div", _hoisted_45, [
-            createTextVNode(toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_PROGRAM_INTRO_DESC")), 1),
-            _cache[43] || (_cache[43] = createBaseVNode("span", { class: "tw-text-red-600" }, "*", -1))
-          ]),
-          createBaseVNode("div", _hoisted_46, [
-            createBaseVNode("div", _hoisted_47, [
+          createBaseVNode("div", null, [
+            createBaseVNode("div", _hoisted_45, [
               withDirectives(createBaseVNode("select", {
                 id: "select_prog",
-                class: normalizeClass(["tw-mt-2 form-control fabrikinput tw-w-full", { "is-invalid !tw-border-red-600": _ctx.errors.progCode }]),
+                class: normalizeClass(["form-control fabrikinput tw-w-full", { "is-invalid !tw-border-red-600": _ctx.errors.progCode }]),
                 "onUpdate:modelValue": _cache[21] || (_cache[21] = ($event) => _ctx.form.training = $event),
                 onChange: _cache[22] || (_cache[22] = (...args) => $options.setCategory && $options.setCategory(...args)),
                 disabled: this.programs.length <= 0
               }, [
-                createBaseVNode("option", _hoisted_49, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_CHOOSEPROG")), 1),
+                createBaseVNode("option", _hoisted_47, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_CHOOSEPROG")), 1),
                 (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.programs, (item, index) => {
                   return openBlock(), createElementBlock("option", {
                     value: item.code,
                     "data-category": item.programmes,
                     key: index
-                  }, toDisplayString(item.label && item.label[_ctx.actualLanguage] !== null && typeof item.label[_ctx.actualLanguage] != "undefined" ? item.label[_ctx.actualLanguage] : item.label), 9, _hoisted_50);
+                  }, toDisplayString(item.label && item.label[_ctx.actualLanguage] !== null && typeof item.label[_ctx.actualLanguage] != "undefined" ? item.label[_ctx.actualLanguage] : item.label), 9, _hoisted_48);
                 }), 128))
-              ], 42, _hoisted_48), [
+              ], 42, _hoisted_46), [
                 [vModelSelect, _ctx.form.training]
               ]),
               _ctx.coordinatorAccess != 0 ? (openBlock(), createElementBlock("button", {
@@ -9883,33 +10683,33 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 onClick: _cache[23] || (_cache[23] = (...args) => $options.displayProgram && $options.displayProgram(...args))
               }, _cache[44] || (_cache[44] = [
                 createBaseVNode("span", { class: "material-symbols-outlined em-main-500-color" }, "add_circle_outline", -1)
-              ]), 8, _hoisted_51)) : createCommentVNode("", true)
+              ]), 8, _hoisted_49)) : createCommentVNode("", true)
             ]),
-            _ctx.errors.progCode ? (openBlock(), createElementBlock("span", _hoisted_52, [
+            _ctx.errors.progCode ? (openBlock(), createElementBlock("div", _hoisted_50, [
               createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_PROGRAM")), 1)
             ])) : createCommentVNode("", true)
           ]),
           createVNode(Transition, { name: "slide-fade" }, {
             default: withCtx(() => [
-              _ctx.isHiddenProgram ? (openBlock(), createElementBlock("div", _hoisted_53, [
-                createBaseVNode("div", _hoisted_54, [
+              _ctx.isHiddenProgram ? (openBlock(), createElementBlock("div", _hoisted_51, [
+                createBaseVNode("div", null, [
                   createBaseVNode("div", null, [
-                    createBaseVNode("label", _hoisted_55, [
+                    createBaseVNode("label", _hoisted_52, [
                       createTextVNode(toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_PROGNAME")) + " ", 1),
                       _cache[45] || (_cache[45] = createBaseVNode("span", { class: "tw-text-red-600" }, "*", -1))
                     ]),
                     withDirectives(createBaseVNode("input", {
                       type: "text",
                       id: "prog_label",
-                      class: normalizeClass(["tw-mt-2 form-control fabrikinput tw-w-full", { "is-invalid !tw-border-red-600": _ctx.errors.progLabel }]),
+                      class: normalizeClass(["tw-mt-1 form-control fabrikinput tw-w-full", { "is-invalid !tw-border-red-600": _ctx.errors.progLabel }]),
                       placeholder: " ",
                       "onUpdate:modelValue": _cache[24] || (_cache[24] = ($event) => _ctx.programForm.label = $event)
                     }, null, 2), [
                       [vModelText, _ctx.programForm.label]
                     ])
                   ]),
-                  _ctx.errors.progLabel ? (openBlock(), createElementBlock("p", _hoisted_56, [
-                    createBaseVNode("span", _hoisted_57, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL")), 1)
+                  _ctx.errors.progLabel ? (openBlock(), createElementBlock("div", _hoisted_53, [
+                    createBaseVNode("span", _hoisted_54, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL")), 1)
                   ])) : createCommentVNode("", true)
                 ])
               ])) : createCommentVNode("", true)
@@ -9917,64 +10717,72 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             _: 1
           })
         ]),
-        createBaseVNode("div", _hoisted_58, [
-          createBaseVNode("h2", _hoisted_59, [
+        _cache[49] || (_cache[49] = createBaseVNode("hr", { class: "tw-mt-1.5 tw-mb-4" }, null, -1)),
+        createBaseVNode("div", _hoisted_55, [
+          createBaseVNode("h2", null, [
             createTextVNode(toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_FORM")) + " ", 1),
-            createBaseVNode("i", null, toDisplayString(_ctx.translate("COM_EMUNDUS_OPTIONAL")), 1)
+            createBaseVNode("i", _hoisted_56, toDisplayString(_ctx.translate("COM_EMUNDUS_OPTIONAL")), 1)
           ]),
-          createBaseVNode("p", _hoisted_60, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_FORM_DESC")), 1),
-          createBaseVNode("div", _hoisted_61, [
-            withDirectives(createBaseVNode("select", {
-              class: "tw-w-full",
-              "onUpdate:modelValue": _cache[25] || (_cache[25] = ($event) => _ctx.form.profile_id = $event)
-            }, [
-              createBaseVNode("option", _hoisted_62, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_CHOOSE_FORM")), 1),
-              (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.applicantForms, (applicantForm) => {
-                return openBlock(), createElementBlock("option", {
-                  key: applicantForm.id,
-                  value: applicantForm.id
-                }, toDisplayString(applicantForm.label), 9, _hoisted_63);
-              }), 128))
-            ], 512), [
-              [vModelSelect, _ctx.form.profile_id]
+          createBaseVNode("div", null, [
+            createBaseVNode("label", _hoisted_57, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_FORM_DESC")), 1),
+            createBaseVNode("div", _hoisted_58, [
+              withDirectives(createBaseVNode("select", {
+                class: "tw-w-full",
+                "onUpdate:modelValue": _cache[25] || (_cache[25] = ($event) => _ctx.form.profile_id = $event)
+              }, [
+                createBaseVNode("option", _hoisted_59, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_CHOOSE_FORM")), 1),
+                (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.applicantForms, (applicantForm) => {
+                  return openBlock(), createElementBlock("option", {
+                    key: applicantForm.id,
+                    value: applicantForm.id
+                  }, toDisplayString(applicantForm.label), 9, _hoisted_60);
+                }), 128))
+              ], 512), [
+                [vModelSelect, _ctx.form.profile_id]
+              ]),
+              createBaseVNode("span", {
+                class: "material-symbols-outlined tw-cursor-pointer tw-ml-2",
+                onClick: _cache[26] || (_cache[26] = (...args) => $options.getAllForms && $options.getAllForms(...args))
+              }, "refresh")
             ]),
-            createBaseVNode("span", {
-              class: "material-symbols-outlined tw-cursor-pointer",
-              onClick: _cache[26] || (_cache[26] = (...args) => $options.getAllForms && $options.getAllForms(...args))
-            }, "refresh")
-          ]),
-          createBaseVNode("a", _hoisted_64, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ACCESS_TO_FORMS_LIST")), 1)
+            createBaseVNode("a", _hoisted_61, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ACCESS_TO_FORMS_LIST")), 1)
+          ])
         ]),
-        _cache[49] || (_cache[49] = createBaseVNode("hr", { class: "tw-mt-4" }, null, -1)),
-        $options.languageOptions.length > 1 ? (openBlock(), createElementBlock("div", _hoisted_65, [
-          createBaseVNode("h2", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_LANGUAGES")), 1),
-          $options.programLanguages.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_66, [
-            _cache[46] || (_cache[46] = createBaseVNode("span", { class: "material-icons-outlined tw-mr-2" }, "info", -1)),
-            createBaseVNode("p", _hoisted_67, [
-              createTextVNode(toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM_LANGUAGES")) + " ", 1),
-              (openBlock(true), createElementBlock(Fragment, null, renderList($options.programLanguages, (language, index) => {
-                return openBlock(), createElementBlock("strong", {
-                  key: language.lang_id
-                }, toDisplayString(language.title) + toDisplayString(index < $options.programLanguages.length - 1 ? ", " : ""), 1);
-              }), 128))
-            ])
-          ])) : createCommentVNode("", true),
-          createVNode(_component_multiselect, {
-            class: "tw-mt-4",
-            modelValue: _ctx.campaignLanguages,
-            "onUpdate:modelValue": _cache[27] || (_cache[27] = ($event) => _ctx.campaignLanguages = $event),
-            label: "label",
-            "track-by": "value",
-            options: $options.languageOptions,
-            multiple: true,
-            taggable: true,
-            "select-label": "",
-            "selected-label": "",
-            "deselect-label": ""
-          }, null, 8, ["modelValue", "options"]),
-          _cache[47] || (_cache[47] = createBaseVNode("hr", { class: "tw-mt-4 tw-mb-4" }, null, -1))
+        _cache[50] || (_cache[50] = createBaseVNode("hr", { class: "tw-mt-1.5 tw-mb-4" }, null, -1)),
+        $options.languageOptions.length > 1 ? (openBlock(), createElementBlock("div", _hoisted_62, [
+          createBaseVNode("h2", null, [
+            createTextVNode(toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_LANGUAGES")) + " ", 1),
+            createBaseVNode("i", _hoisted_63, toDisplayString(_ctx.translate("COM_EMUNDUS_OPTIONAL")), 1)
+          ]),
+          createBaseVNode("div", null, [
+            $options.programLanguages.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_64, [
+              _cache[46] || (_cache[46] = createBaseVNode("span", { class: "material-icons-outlined tw-mr-2" }, "info", -1)),
+              createBaseVNode("p", _hoisted_65, [
+                createTextVNode(toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM_LANGUAGES")) + " ", 1),
+                (openBlock(true), createElementBlock(Fragment, null, renderList($options.programLanguages, (language, index) => {
+                  return openBlock(), createElementBlock("strong", {
+                    key: language.lang_id
+                  }, toDisplayString(language.title) + toDisplayString(index < $options.programLanguages.length - 1 ? ", " : ""), 1);
+                }), 128))
+              ])
+            ])) : createCommentVNode("", true),
+            createVNode(_component_multiselect, {
+              modelValue: _ctx.campaignLanguages,
+              "onUpdate:modelValue": _cache[27] || (_cache[27] = ($event) => _ctx.campaignLanguages = $event),
+              label: "label",
+              "track-by": "value",
+              options: $options.languageOptions,
+              multiple: true,
+              taggable: false,
+              placeholder: _ctx.translate("COM_EMUNDUS_ONBOARD_CHOOSE_LANGUAGE"),
+              "select-label": "",
+              "selected-label": "",
+              "deselect-label": ""
+            }, null, 8, ["modelValue", "options", "placeholder"])
+          ])
         ])) : createCommentVNode("", true),
-        createBaseVNode("div", _hoisted_68, [
+        _cache[51] || (_cache[51] = createBaseVNode("hr", { class: "tw-mt-1.5 tw-mb-4" }, null, -1)),
+        createBaseVNode("div", _hoisted_66, [
           createBaseVNode("button", {
             id: "save-btn",
             type: "button",
@@ -9987,10 +10795,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         ])
       ], 32)) : createCommentVNode("", true)
     ]),
-    _ctx.submitted || !_ctx.ready ? (openBlock(), createElementBlock("div", _hoisted_69)) : createCommentVNode("", true)
+    _ctx.submitted || !_ctx.ready ? (openBlock(), createElementBlock("div", _hoisted_67)) : createCommentVNode("", true)
   ]);
 }
-const addCampaign = /* @__PURE__ */ _export_sfc$1(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-19e63e6c"]]);
+const addCampaign = /* @__PURE__ */ _export_sfc$1(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-6390b723"]]);
 const addCampaign$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: addCampaign

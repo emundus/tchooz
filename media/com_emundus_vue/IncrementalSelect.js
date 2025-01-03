@@ -1,5 +1,4 @@
 import { _ as _export_sfc, o as openBlock, c as createElementBlock, a as createBaseVNode, w as withDirectives, O as vModelText, t as toDisplayString, d as createCommentVNode, b as Fragment, r as renderList } from "./app_emundus.js";
-const IncrementalSelect_vue_vue_type_style_index_0_lang = "";
 const _sfc_main = {
   props: {
     options: {

@@ -371,18 +371,38 @@ class EmundusControllerWebhook extends BaseController
 			$addPipeUrl  = '<a target="_blank" href="' . $eMConfig->get('addpipe_video_link', null) . $eMConfig->get('addpipe_account_hash', null) . '/' . $vidName . '">' . JText::_('LINK_TO_ADDPIPE_VIDEO') . '</a>';
 			$description = $this->FileSizeConvert(filesize($ftp_path . DS . $vidName)) . ' ' . $addPipeUrl;
 
-			$query = 'INSERT INTO jos_emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id, fnum) 
+			$query = $db->getQuery(true);
+			$query->select('nbmax')
+				->from($db->quoteName('#__emundus_setup_attachments'))
+				->where($db->quoteName('id') . ' = ' . $webhookDataApplication['aid']);
+			$db->setQuery($query);
+			$nbmax = $db->loadResult();
+
+			$query->clear()
+				->select('COUNT(id)')
+				->from($db->quoteName('#__emundus_uploads'))
+				->where($db->quoteName('fnum') . ' LIKE ' . $webhookDataApplication["fnum"])
+				->andWhere($db->quoteName('attachment_id') . ' = ' . $webhookDataApplication['aid']);
+			$db->setQuery($query);
+			$nb = $db->loadResult();
+
+			if($nb < $nbmax)
+			{
+
+				$query = 'INSERT INTO jos_emundus_uploads (user_id, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id, fnum) 
 						VALUES (' . $webhookDataApplication["userId"] . ', ' . $webhookDataApplication["aid"] . ', ' . $db->Quote($vidName) . ', ' . $db->Quote($description) . ', 1, 1, ' . $fnumInfos['id'] . ', ' . $db->Quote($webhookDataApplication["fnum"]) . ')';
 
-			try {
-				$db->setQuery($query);
-				$db->execute();
+				try
+				{
+					$db->setQuery($query);
+					$db->execute();
+				}
+				catch (Exception $e)
+				{
+					$error = JUri::getInstance() . ' :: USER ID : ' . $webhookDataApplication["userId"] . ' -> ' . $e->getMessage() . ' :: ' . $query;
+					JLog::add('Unable to insert uploaded document: ' . $error, JLog::ERROR, 'com_emundus.webhook');
+				}
 			}
-			catch (Exception $e) {
-				$error = JUri::getInstance() . ' :: USER ID : ' . $webhookDataApplication["userId"] . ' -> ' . $e->getMessage() . ' :: ' . $query;
-				JLog::add('Unable to insert uploaded document: ' . $error, JLog::ERROR, 'com_emundus.webhook');
-			}
-
 		}
 		catch (Exception $e) {
 			JLog::add('Unable to handle addpipe webhook: ' . $payload, JLog::ERROR, 'com_emundus.webhook');

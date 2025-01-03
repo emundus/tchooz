@@ -14,6 +14,9 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.view');
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+
 /**
  * HTML View class for the Emundus Component
  *
@@ -33,7 +36,7 @@ class EmundusViewExport_select_columns extends JViewLegacy
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'programme.php');
 
-		$this->_user = JFactory::getUser();
+		$this->_user = Factory::getApplication()->getIdentity();
 
 		parent::__construct($config);
 	}
@@ -45,7 +48,7 @@ class EmundusViewExport_select_columns extends JViewLegacy
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'admission.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php');
 
-		$jinput     = JFactory::getApplication()->input;
+		$jinput     = Factory::getApplication()->input;
 		$prg        = $jinput->get('code', null);
 		$this->form = $jinput->get('form', null);
 		$all        = $jinput->get('all', null);
@@ -67,10 +70,9 @@ class EmundusViewExport_select_columns extends JViewLegacy
 		$camps[] = $camp;
 
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
-			die(JText::_('ACCESS_DENIED'));
+			die(Text::_('ACCESS_DENIED'));
 		}
 
-		$m_admission = new EmundusModelAdmission;
 		$m_eval      = new EmundusModelEvaluation;
 
 		//TODO fix bug when a different application form is created for the same programme. Need to now the campaign id, then associated profile and menu links...
@@ -78,16 +80,9 @@ class EmundusViewExport_select_columns extends JViewLegacy
 		// When displaying the results: make tabs or panels separating the different forms for the programme.
 
 
-		if ($this->form == "decision") {
-			$this->elements = $m_admission->getAdmissionElementsName(0, 0, $code);
-		}
-		elseif ($this->form == "admission") {
-			$this->elements = $m_admission->getApplicantAdmissionElementsName(0, 0, $code, $all);
-		}
-		elseif ($this->form == "evaluation") {
+		if ($this->form == "evaluation") {
 			$this->elements = $m_eval->getEvaluationElementsName(0, 0, $code, $all);
-		}
-		else {
+		} else {
 			$this->elements = EmundusHelperFiles::getElements($code, $camps, [], $profile);
 		}
 

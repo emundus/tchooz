@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension group="fabrik_validationrule" method="upgrade" type="plugin" version="4">
+  <name>plg_fabrik_validationrule_issiret</name>
+  <author>eMundus - Camille Lefort</author>
+  <creationDate>2024-09-03</creationDate>
+  <copyright>Copyright (C) 2005-2024 Media A-Team, Inc. - All rights reserved.</copyright>
+  <license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+  <authorEmail>dev@emundus.io</authorEmail>
+  <authorUrl>https://www.emundus.fr</authorUrl>
+  <version>2.1.0</version>
+  <description>PLG_VALIDATIONRULE_ISSIRET_DESCRIPTION</description>
+  <files>
+    <filename plugin="issiret">issiret.php</filename>
+    <filename>index.html</filename>
+    <folder>forms</folder>
+    <folder>language</folder>
+  </files>
+  <config>
+    <fields name="params">
+      <fieldset label="PLG_FABRIK_OPTIONS" name="params">
+        <field name="icon" type="text" default="star" description="PLG_FABRIK_VALIDATION_ICON_DESC" label="PLG_FABRIK_VALIDATION_ICON_LABEL" />
+      </fieldset>
+    </fields>
+  </config>
+</extension>

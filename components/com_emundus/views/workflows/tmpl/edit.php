@@ -52,6 +52,7 @@ Text::script('COM_EMUNDUS_WORKFLOW_ADDED');
 Text::script('COM_EMUNDUS_WORKFLOW_STEP_LABEL_REQUIRED');
 Text::script('COM_EMUNDUS_WORKFLOW_STEP_FORM_REQUIRED');
 Text::script('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS_REQUIRED');
+Text::script('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS_ALREADY_USED');
 
 $app          = Factory::getApplication();
 $lang         = $app->getLanguage();

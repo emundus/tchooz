@@ -101,7 +101,7 @@ details summary:focus{
 }
 
 body {
-  line-height: normal;
+  line-height: 1.5;
 
   p {
     margin: 0;
@@ -722,6 +722,7 @@ footer#g-footer > .g-container {
   a {
     color: var(--link-regular);
     text-decoration: underline;
+    font-family: var(--em-profile-font);
 
     &:hover {
       text-decoration: none;
@@ -1448,7 +1449,7 @@ footer#g-footer > .g-container {
     border-radius: var(--em-applicant-br) !important;
     padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
     font-family: var(--em-profile-font), Inter, sans-serif;
-    line-height: normal;
+    line-height: 1.5;
     font-size: var(--em-applicant-font-size);
     letter-spacing: normal;
   }
@@ -1804,12 +1805,12 @@ footer#g-footer > .g-container {
 
 .table-hover tbody tr:hover td,
 .table-hover tbody tr:nth-child(2n):hover > td{
-  background: #EDEDED !important;
+  background: var(--neutral-400) !important;
 }
 
 .table-hover tbody tr:nth-child(2n) > td,
 .table-hover tbody tr:nth-child(2n) > th {
-  background: var(--neutral-200) !important;
+  background: var(--neutral-300) !important;
 }
 
 .table-hover tbody tr:nth-child(2n) > td .sticker .circle {
@@ -2211,7 +2212,7 @@ div.fabrikFilterContainer {
         color: var(--neutral-0);
         background-color: var(--main-500);
         transition: all 0.2s ease-in-out;
-        line-height: normal;
+        line-height: 1.5;
 
         &:hover {
           background-color: var(--neutral-0);
@@ -2380,7 +2381,7 @@ tr.fabrikFilterContainer {
   #g-header #header-c .header-right a.btn.btn-danger:not(.btn-creer-compte) {
     border-radius: var(--em-applicant-br) !important;
     margin-bottom: 0 !important;
-    line-height: normal;
+    line-height: 1.5;
     letter-spacing: normal;
     color: var(--em-secondary-color);
     background: var(--neutral-0);
@@ -2707,7 +2708,7 @@ span.btn {
   border-radius: var(--em-applicant-br) !important;
   padding: var(--em-spacing-vertical) var(--em-spacing-horizontal) !important;
   color: var(--neutral-0);
-  line-height: normal !important;
+  line-height: 1.5 !important;
   letter-spacing: normal;
   font-size: var(--em-applicant-font-size);
 
@@ -3102,7 +3103,7 @@ button#back,
   border-radius: var(--em-applicant-br);
   padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
   font-weight: normal;
-  line-height: normal;
+  line-height: 1.5;
   letter-spacing: normal;
   font-size: var(--em-applicant-font-size) !important;
 
@@ -3708,7 +3709,8 @@ ul.unstyled.em-linkForgot li a {
 .gantry:not(.applicant-form):not(.files-board).com_emundus.view-campaigns,
 .gantry:not(.applicant-form):not(.files-board).com_emundus.layout-addnextcampaign,
 .gantry:not(.applicant-form):not(.files-board).com_emundus.view-emails,
-.gantry:not(.applicant-form):not(.files-board).com_emundus.view-form{
+.gantry:not(.applicant-form):not(.files-board).com_emundus.view-form,
+.gantry:not(.applicant-form):not(.files-board).com_emundus.view-workflows {
   #g-container-main {
     padding-left: 76px;
   }
@@ -4166,6 +4168,86 @@ fieldset.em_filters_adv_filter .em_save_filter input#save-filter,
 }
 
 /* DOSSIER CANDIDAT */
+
+label[for='save-filter'] {
+  top: 1px;
+  position: relative;
+  height: 30px;
+  width: 30px;
+  border-radius: var(--em-applicant-br) !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+  background: var(--neutral-cloudy) !important;
+
+  &:hover {
+    background: #ffffff50 !important;
+    color: var(--neutral-0) !important;
+  }
+}
+
+label[for='clear-search'] {
+  top: 1px;
+  position: relative;
+  height: 30px;
+  width: 30px;
+  border-radius: var(--em-applicant-br) !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+  background: var(--red-500) !important;
+
+  &:hover {
+    background: var(--red-400) !important;
+    color: var(--neutral-0) !important;
+  }
+}
+
+.users-page label[for='clear-search'] {
+  top: 0;
+}
+
+label[for='save-filter'] {
+  height: 25px;
+  width: 25px;
+  border-radius: var(--em-applicant-br) !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+  background: var(--neutral-cloudy) !important;
+
+  &:hover {
+    background: #ffffff50 !important;
+    color: var(--neutral-0) !important;
+  }
+
+  span {
+    font-size: 1.1250em;
+  }
+}
+
+label[for='clear-search'] {
+  height: 25px;
+  width: 25px;
+  border-radius: var(--em-applicant-br) !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+  background: var(--red-500) !important;
+
+  &:hover {
+    background: var(--red-400) !important;
+    color: var(--neutral-0) !important;
+  }
+
+  span {
+    font-size: 1.1250em;
+  }
+}
 
 .com_emundus .em_filters_filedset > div:nth-child(+n+5) .optWrapper {
   top: auto;
@@ -4745,7 +4827,7 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
   button.btn-primary {
     border-radius: var(--em-applicant-br) !important;
     letter-spacing: normal;
-    line-height: normal;
+    line-height: 1.5;
     font-size: var(--em-applicant-font-size);
     transition: all ease-in-out 0.3s;
   }
@@ -5088,6 +5170,17 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
   padding: 24px;
   border-top: solid 1px var(--neutral-300);
   margin-top: 32px;
+}
+
+.hikashop_product_characteristics_main_div .hkform-group {
+  display: flex;
+  margin: auto;
+  align-items: baseline;
+
+  select.custom-select {
+    padding: 4px;
+    border-radius: 4px;
+  }
 }
 
 /******************************* RESPONSIVE ***********************************/
@@ -7957,6 +8050,131 @@ form.fabrikForm[name=form_108] .fabrikGroup .plg-dropdown .fabrikElement {
 
       &:hover {
         background: none;
+      }
+    }
+  }
+}
+
+.view-import #g-container-main .g-container {
+  background: var(--neutral-0);
+  border-radius: 16px;
+  border: 1px solid var(--neutral-300);
+  padding: var(--em-spacing-6);
+  margin-bottom: var(--em-spacing-6);
+
+  #fabrik-form {
+    h2 {
+      font-size: var(--em-coordinator-h1);
+      margin-bottom: var(--em-spacing-4);
+    }
+
+    fieldset + fieldset {
+      margin-top: 0;
+    }
+
+    .control-group {
+      margin-bottom: var(--em-spacing-4);
+
+      .control-label > label {
+        display: inline-block;
+        font-size: var(--em-form-label-size);
+        width: 100%;
+        font-family: var(--em-profile-font), Inter, sans-serif;
+        font-style: normal;
+        font-weight: var(--em-form-label-weight);
+        margin-bottom: 0;
+      }
+
+      .controls {
+        margin-top: var(--em-form-label-margin-bottom);
+        position: relative;
+
+        input[type="checkbox"],select {
+          cursor: pointer;
+        }
+
+        .form-check {
+          margin-right: 0;
+          cursor: pointer;
+        }
+
+        .form-text {
+          margin-top: var(--em-spacing-1);
+        }
+
+        & > #jform_tabdelimited {
+          margin: 0;
+        }
+
+        & > #jform_overwrite {
+          padding: 0;
+        }
+
+        & > #jform_overwrite {
+          gap: 8px;
+          display: flex;
+
+          & > .btn:nth-child(2) {
+            color: var(--red-700) !important;
+            border: 1px solid var(--neutral-500) !important;
+            background: var(--neutral-0) !important;
+            display: flex;
+            align-items: center;
+            width: 200px;
+            justify-content: center;
+            height: var(--em-form-height);
+            font-size: var(--em-applicant-font-size);
+            box-shadow: none;
+
+            &.btn-danger {
+              color: var(--neutral-0) !important;
+              border: 1px solid var(--red-700) !important;
+              background: var(--red-700) !important;
+            }
+          }
+
+          & > .btn:nth-child(4) {
+            color: var(--em-green-2) !important;
+            border: 1px solid var(--neutral-500) !important;
+            background: var(--neutral-0) !important;
+            display: flex;
+            align-items: center;
+            width: 200px;
+            justify-content: center;
+            height: var(--em-form-height);
+            font-size: var(--em-applicant-font-size);
+            box-shadow: none;
+
+            &.btn-success {
+              color: var(--neutral-0) !important;
+              border: 1px solid var(--em-green-2) !important;
+              background: var(--em-green-2) !important;
+            }
+          }
+        }
+
+        & > #jform_inPutFormat {
+          height: var(--em-form-height);
+          padding-left: 8px;
+        }
+      }
+    }
+
+    input.btn-primary {
+      padding: 8px 12px;
+      background-color: var(--em-profile-color);
+      color: var(--neutral-0) !important;
+      border: 1px solid var(--em-profile-color);
+      font-size: 16px;
+      border-radius: var(--em-applicant-br);
+      font-family: var(--em-profile-font), Inter, sans-serif;
+      text-transform: capitalize;
+      letter-spacing: normal;
+      float: right;
+
+      &:hover {
+        background: var(--neutral-0);
+        color: var(--em-profile-color) !important;
       }
     }
   }

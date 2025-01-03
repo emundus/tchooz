@@ -14,7 +14,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Language\LanguageHelper;
 
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
+require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
 
 ## GLOBAL ##
 Text::script('COM_EMUNDUS_ONBOARD_MODIFY');
@@ -157,15 +157,11 @@ Text::script('COM_EMUNDUS_OPTIONAL');
 Text::script('COM_EMUNDUS_CAMPAIGNS_PIN');
 Text::script('COM_EMUNDUS_ONBOARD_CAMPAIGNS_CAMPAIGN_PINNED');
 Text::script('COM_EMUNDUS_ONBOARD_CAMPAIGNS_CAMPAIGN_PINNED_TEXT');
+Text::script('COM_EMUNDUS_ONBOARD_ADD_PROGRAM');
 
-if (version_compare(JVERSION, '4.0', '>')) {
-	$lang = Factory::getApplication()->getLanguage();
-	$user = Factory::getApplication()->getIdentity();
-}
-else {
-	$lang = Factory::getLanguage();
-	$user = Factory::getUser();
-}
+$app = Factory::getApplication();
+$lang = $app->getLanguage();
+$user = $app->getIdentity();
 
 $short_lang   = substr($lang->getTag(), 0, 2);
 $current_lang = $lang->getTag();
@@ -184,13 +180,12 @@ else {
 $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
 $sysadmin_access    = EmundusHelperAccess::isAdministrator($user->id);
 
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
+require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();
 ?>
 
 <div id="em-component-vue"
-     component="List"
-     type="campaigns"
+     component="Campaigns"
      coordinatoraccess="1"
      sysadminaccess="1"
      shortlang="fr"

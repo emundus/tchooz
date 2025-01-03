@@ -99,7 +99,7 @@ use Joomla\CMS\Router\Route;
 
                     <tr class="em-actions-table-line" id="<?= $action['id']; ?>">
                         <td id="<?= $action['id']; ?>">
-                            <span><?= Text::_(strtoupper($action['label'])); ?></span>
+                            <span><?= Text::_($action['label']); ?></span>
                             <?php if (!empty(Text::_($action['action_description']))) : ?>
                                 <span class="material-symbols-outlined tw-text-neutral-600" style="vertical-align: middle" onclick="displayHelpText('<?php echo Text::_($action['action_description']); ?>')">help_outline</span>
                             <?php endif; ?>

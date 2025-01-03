@@ -631,7 +631,7 @@ class EmundusModelEvaluation extends JModelList
 	 */
 	public function getEvaluationElementsName($show_in_list_summary = 1, $hidden = 0, $code = array(), $all = null)
 	{
-		$session = JFactory::getSession();
+		$session = Factory::getApplication()->getSession();
 		$h_list  = new EmundusHelperList;
 
 		$elements = array();
@@ -668,7 +668,7 @@ class EmundusModelEvaluation extends JModelList
 					{
 						foreach ($eval_elt_list as $eel)
 						{
-							if (isset($eel->element_id) && !empty($eel->element_id))
+							if (!empty($eel->element_id))
 							{
 								$elements[] = $h_list->getElementsDetailsByID($eel->element_id)[0];
 							}
@@ -2558,7 +2558,7 @@ class EmundusModelEvaluation extends JModelList
 				->leftJoin($this->db->quoteName('#__emundus_setup_letters_repeat_training', 'jeslrt') . ' ON ' . $this->db->quoteName('jesl.id') . ' = ' . $this->db->quoteName('jeslrt.parent_id'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_letters_repeat_campaign', 'jeslrc') . ' ON ' . $this->db->quoteName('jesl.id') . ' = ' . $this->db->quoteName('jeslrc.parent_id'))
 				->where($this->db->quoteName('jeslrs.status') . ' IN (' . implode(',', $status) . ')')
-				->andWhere($this->db->quoteName('jeslrt.training') . ' IN (' . implode(',', $this->db->quote($programs)) . ') OR ' . $this->db->quoteName('jeslrc.campaign') . ' IN (' . implode(',', $this->db->quote($campaigns)) . ')');
+				->andWhere($this->db->quoteName('jeslrt.training') . ' IN (' . implode(',', $this->db->quote($programs)) . ') OR ' . $this->db->quoteName('jeslrc.campaign') . ' IN (' . implode(',', $this->db->quote($campaigns)) . ') OR jesl.for_all = 1');
 
 			$this->db->setQuery($query);
 
@@ -2593,7 +2593,7 @@ class EmundusModelEvaluation extends JModelList
 					->leftJoin($this->db->quoteName('#__emundus_setup_letters_repeat_training', 'jeslrt') . ' ON ' . $this->db->quoteName('jesl.id') . ' = ' . $this->db->quoteName('jeslrt.parent_id'))
 					->leftJoin($this->db->quoteName('#__emundus_setup_letters_repeat_campaign', 'jeslrc') . ' ON ' . $this->db->quoteName('jesl.id') . ' = ' . $this->db->quoteName('jeslrc.parent_id'))
 					->where($this->db->quoteName('jeslrs.status') . ' = ' . $fnum_infos['status'])
-					->andWhere($this->db->quoteName('jeslrt.training') . ' = ' . $this->db->quote($fnum_infos['training']) . ' OR ' . $this->db->quoteName('jeslrc.campaign') . ' = ' . $this->db->quote($fnum_infos['id']))
+					->andWhere($this->db->quoteName('jeslrt.training') . ' = ' . $this->db->quote($fnum_infos['training']) . ' OR ' . $this->db->quoteName('jeslrc.campaign') . ' = ' . $this->db->quote($fnum_infos['id']) .  ' OR jesl.for_all = 1')
 					->andWhere($this->db->quoteName('jesl.attachment_id') . ' IN (' . implode(',', $templates) . ')')
 					->group($this->db->quoteName('jesl.id'))
 					->order('id ASC');

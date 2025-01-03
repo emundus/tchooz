@@ -68,6 +68,13 @@
                             description="FILTER_ORDER_DESC"
                             default="0"
                     />
+                    <field
+                            type="checkbox"
+                            name="filter_campaign_display_program"
+                            label="FILTER_DISPLAY_CAMPAIGN_PROGRAM"
+                            default="0"
+                    />
+
                     <field type="list" name="filter_programs" label="FILTER_ON_PROGRAM">
                         <option value="0">JNO</option>
                         <option value="1">JYES</option>
@@ -77,6 +84,12 @@
                             name="filter_programs_order"
                             label="FILTER_ORDER"
                             description="FILTER_ORDER_DESC"
+                            default="0"
+                    />
+                    <field
+                            type="checkbox"
+                            name="filter_programs_display_category"
+                            label="FILTER_DISPLAY_PROGRAM_CATEGORY"
                             default="0"
                     />
                     <field type="list" name="filter_years" label="FILTER_ON_YEAR">

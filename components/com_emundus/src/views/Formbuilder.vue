@@ -15,9 +15,9 @@
       </div>
       <header class="tw-grid tw-grid-cols-3 tw-items-center">
         <div class="right-actions tw-flex tw-items-center tw-justify-start tw-gap-2">
-          <p class="tw-flex tw-items-center tw-cursor-pointer" @click="clickGoBack">
+          <p class="tw-flex tw-items-center tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300 tw-ml-2" @click="clickGoBack">
             <span id="go-back"
-                  class="material-symbols-outlined tw-text-neutral-600 tw-py-3 tw-pl-5 tw-pr-1 em-pointer">
+                  class="material-symbols-outlined tw-text-neutral-600 em-pointer tw-mr-1">
               navigate_before
             </span>
             {{ translate('COM_EMUNDUS_ACTIONS_BACK') }}

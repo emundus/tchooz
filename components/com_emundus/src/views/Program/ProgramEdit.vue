@@ -1,42 +1,63 @@
 <template>
-  <div id="program-edition-container" class="em-border-cards em-card-shadow tw-rounded em-white-bg em-p-24 tw-m-4">
-    <h1 class="tw-mb-4">{{ translate('COM_EMUNDUS_PROGRAMS_EDITION_TITLE') }}</h1>
+  <div id="program-edition-container" class="tw-border tw-border-neutral-300 em-card-shadow tw-rounded tw-p-6 tw-m-4 tw-bg-white">
+    <div class="tw-flex tw-items-center tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300"
+         @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
+      <span class="material-symbols-outlined tw-text-neutral-600">navigate_before</span>
+      <span class="tw-ml-2 tw-text-neutral-900">{{ translate('BACK') }}</span>
+    </div>
+
+    <div class="tw-flex tw-items-center tw-mt-4">
+      <h1 class="tw-mb-4">{{ translate('COM_EMUNDUS_PROGRAMS_EDITION_TITLE') }}</h1>
+    </div>
     <h2 class="tw-mb-2">{{ translate('COM_EMUNDUS_PROGRAMS_EDITION_SUBTITLE') }}</h2>
     <p>{{ translate('COM_EMUNDUS_PROGRAMS_EDITION_INTRO') }}</p>
+    <hr />
 
-    <nav class="tw-mt-4">
-      <ul class="tw-flex tw-flex-row tw-list-none">
-        <li class="tw-cursor-pointer tw-shadow tw-rounded-t-lg tw-px-2.5 tw-py-3"
-            :class="{'em-bg-main-500 em-text-neutral-300': selectedTab === tab.name}"
-            v-for="tab in tabs" :key="tab.name"
-            @click="selectedTab = tab.name"
-        >
-          {{ translate(tab.label) }}
-        </li>
-      </ul>
-    </nav>
+    <div class="tw-mt-4">
+      <Tabs :tabs="tabs"
+            :classes="'tw-overflow-x-scroll tw-flex tw-items-center tw-gap-2 tw-ml-7'"></Tabs>
 
-    <div class="tw-w-full" v-show="selectedTab === 'general'">
-      <iframe class="tw-w-full hide-titles" style="height: 150vh;" :src="'/campaigns/modifier-un-programme?rowid=' + this.programId + '&tmpl=component&iframe=1'">
-      </iframe>
-    </div>
+      <div class="tw-w-full tw-rounded-2xl tw-p-6 tw-border tw-border-neutral-300 tw-relative"
+           :style="{backgroundColor: activeBackground}">
+        <div class="tw-w-full" v-show="selectedMenuItem.code === 'general'">
+          <iframe class="tw-w-full hide-titles" style="height: 150vh;"
+                  :src="'/campaigns/modifier-un-programme?rowid=' + this.programId + '&tmpl=component&iframe=1'">
+          </iframe>
+        </div>
 
-    <div class="tw-w-full tw-p-4" v-show="selectedTab === 'campaigns'">
-      <p class="tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_TITLE') }}</p>
-      <ul class="tw-my-4"><li v-for="campaign in campaigns" :key="campaign.id"><a :href="'/campaigns/edit?cid=' + campaign.id" target="_blank">{{ campaign.label }}</a> </li></ul>
-      <a href="/campaigns" class="tw-underline" target="_blank"> {{ translate('COM_EMUNDUS_PROGRAMS_ACCESS_TO_CAMPAIGNS') }} </a>
-    </div>
+        <div class="tw-w-full tw-flex tw-flex-col tw-gap-2" v-show="selectedMenuItem.code === 'campaigns'">
+          <label class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_TITLE') }}</label>
+          <ul>
+            <li v-for="campaign in campaigns" :key="campaign.id"><a :href="'/campaigns/edit?cid=' + campaign.id"
+                                                                    target="_blank">{{ campaign.label }}</a></li>
+          </ul>
+          <a href="/campaigns" class="tw-underline" target="_blank">
+            {{ translate('COM_EMUNDUS_PROGRAMS_ACCESS_TO_CAMPAIGNS') }} </a>
+        </div>
 
-    <div class="tw-w-full tw-my-4" v-show="selectedTab === 'workflows'">
-      <label class="tw-mb-2 tw-mr-2">{{ translate('COM_EMUNDUS_ONBOARD_WORKFLOWS_ASSOCIATED_TITLE') }}</label>
-      <select v-model="workflowId">
-        <option v-for="workflow in workflowOptions" :key="workflow.id" :value="workflow.id">{{ workflow.label }}</option>
-      </select>
-      <div class="tw-flex tw-flex-row tw-justify-between">
-        <a href="/workflows" class="tw-underline" target="_blank"> {{ translate('COM_EMUNDUS_PROGRAMS_ACCESS_TO_WORKFLOWS') }} </a>
-        <button class="tw-btn-primary" @click="updateProgramWorkflows">
-          {{ translate('SAVE') }}
-        </button>
+        <div class="tw-w-full tw-flex tw-flex-col tw-gap-2" v-show="selectedMenuItem.code === 'workflows'">
+          <div class="tw-flex tw-flex-col">
+            <label class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_WORKFLOWS_ASSOCIATED_TITLE') }}</label>
+            <select v-model="workflowId">
+              <option v-for="workflow in workflowOptions" :key="workflow.id" :value="workflow.id">{{
+                  workflow.label
+                }}
+              </option>
+            </select>
+          </div>
+
+          <div>
+            <a href="/workflows" class="tw-underline" target="_blank">
+              {{ translate('COM_EMUNDUS_PROGRAMS_ACCESS_TO_WORKFLOWS') }} </a>
+          </div>
+
+          <div class="tw-flex tw-justify-end tw-mt-2">
+            <button class="tw-btn-primary" @click="updateProgramWorkflows">
+              {{ translate('SAVE') }}
+            </button>
+          </div>
+
+        </div>
       </div>
     </div>
   </div>
@@ -46,10 +67,13 @@
 import campaignService from '@/services/campaign';
 import workflowService from '@/services/workflow';
 import Multiselect from "vue-multiselect";
+import Tabs from "@/components/Utils/Tabs.vue";
+import settingsService from "@/services/settings.js";
+import {useGlobalStore} from "@/stores/global.js";
 
 export default {
   name: 'ProgramEdit',
-  components: {Multiselect},
+  components: {Tabs, Multiselect},
   props: {
     programId: {
       type: Number,
@@ -64,19 +88,30 @@ export default {
       workflowOptions: [],
       tabs: [
         {
-          name: 'general',
-          label: this.translate('COM_EMUNDUS_PROGRAMS_EDITION_TAB_GENERAL')
+          id: 1,
+          code: 'general',
+          name: 'COM_EMUNDUS_PROGRAMS_EDITION_TAB_GENERAL',
+          icon: 'info',
+          active: true,
+          displayed: true
         },
         {
-          name: 'campaigns',
-          label: this.translate('COM_EMUNDUS_PROGRAMS_EDITION_TAB_CAMPAIGNS')
+          id: 2,
+          code: 'campaigns',
+          name: 'COM_EMUNDUS_PROGRAMS_EDITION_TAB_CAMPAIGNS',
+          icon: 'layers',
+          active: false,
+          displayed: true
         },
         {
-          name: 'workflows',
-          label: this.translate('COM_EMUNDUS_PROGRAMS_EDITION_TAB_WORKFLOWS')
+          id: 3,
+          code: 'workflows',
+          name: 'COM_EMUNDUS_PROGRAMS_EDITION_TAB_WORKFLOWS',
+          icon: 'schema',
+          active: false,
+          displayed: true
         },
       ],
-      selectedTab: 'general',
     };
   },
   created() {
@@ -119,6 +154,18 @@ export default {
           timer: 1500
         });
       });
+    },
+    redirectJRoute(link) {
+      settingsService.redirectJRoute(link, useGlobalStore().getCurrentLang);
+    },
+  },
+  computed: {
+    selectedMenuItem() {
+      return this.tabs.find(tab => tab.active);
+    },
+    activeBackground() {
+      console.log(this.selectedMenuItem.code);
+      return this.selectedMenuItem.code === 'general' ? 'var(--em-coordinator-bg)' : '#fff';
     }
   }
 }

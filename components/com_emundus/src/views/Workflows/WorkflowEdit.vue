@@ -1,161 +1,179 @@
 <template>
   <div class="tw-m-2">
-    <div class="tw-flex tw-items-center tw-cursor-pointer tw-mb-4" @click="goBack">
-      <span class="material-icons-outlined">navigate_before</span>
-      <span class="tw-ml-2 tw-text-neutral-900">{{ translate('BACK') }}</span>
-    </div>
-    <div id="header">
-      <div class="tw-flex tw-flex-row tw-justify-between">
-        <input id="workflow-label" name="workflow-label" class="!tw-w-[350px]" type="text" v-model="workflow.label" />
-        <button class="tw-btn-primary tw-flex tw-items-center tw-gap-1" @click="save">
-          <span class="material-icons-outlined">check</span>
-          <span>{{ translate('SAVE') }}</span>
-        </button>
+    <div v-if="!loading">
+      <div class="tw-flex tw-items-center tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300" @click="goBack">
+        <span class="material-icons-outlined">navigate_before</span>
+        <span class="tw-ml-2 tw-text-neutral-900">{{ translate('BACK') }}</span>
       </div>
 
-      <div class="tw-mt-4 tw-w-full tw-flex tw-flex-row tw-justify-between tw-items-center">
-        <div>
-          <select v-if="sortByOptions.length > 0">
-            <option value="0">{{ translate('SORT_BY') }}</option>
-          </select>
+      <div id="header" class="tw-mt-4">
+        <div class="tw-flex tw-flex-row tw-justify-between">
+          <input id="workflow-label" name="workflow-label" class="!tw-w-[350px]" type="text" v-model="workflow.label" />
+          <button class="tw-btn-primary tw-flex tw-items-center tw-gap-1" @click="save">
+            <span class="material-icons-outlined">check</span>
+            <span>{{ translate('SAVE') }}</span>
+          </button>
         </div>
-      </div>
-    </div>
 
-    <Tabs :tabs="tabs" :classes="'tw-flex tw-items-center tw-gap-2 tw-ml-7'"></Tabs>
-
-    <div id="tabs-wrapper" class="tw-w-full tw-rounded-coordinator tw-p-6 tw-bg-white tw-border tw-border-neutral-300 tw-relative">
-      <div v-if="activeTab.id == 'steps'" id="workflow-steps-wrapper" class="tw-flex tw-flex-col">
-        <a class="tw-btn-primary tw-h-fit tw-w-fit tw-mb-4" type="button" @click="addStep"> {{ translate('COM_EMUNDUS_WORKFLOW_ADD_STEP') }} </a>
-
-        <div id="workflow-steps" class="tw-flex tw-flex-row tw-gap-3 tw-overflow-auto">
-          <div v-for="step in steps" :key="step.id"
-               class="workflow-step tw-rounded tw-border tw-shadow-sm tw-p-4"
-               :class="{
-                'tw-bg-slate-50': step.state != 1,
-                'em-white-bg': step.state == 1,
-                'tw-border-red-600': displayErrors && fieldsInError[step.id] && fieldsInError[step.id].length > 0
-             }"
-          >
-            <div class="workflow-step-head tw-flex tw-flex-row tw-justify-between">
-              <h4>{{ step.label }}</h4>
-              <popover>
-                <ul class="tw-list-none !tw-p-0">
-                  <li class="archive-workflow-step tw-cursor-pointer tw-p-2" @click="duplicateStep(step.id)">{{ translate('COM_EMUNDUS_ACTIONS_DUPLICATE') }}</li>
-                  <li v-if="step.state == 1" class="archive-workflow-step tw-cursor-pointer tw-p-2" @click="updateStepState(step.id, 0)">{{ translate('COM_EMUNDUS_ACTIONS_ARCHIVE') }}</li>
-                  <li v-else class="archive-workflow-step tw-cursor-pointer tw-p-2" @click="updateStepState(step.id, 1)">{{ translate('COM_EMUNDUS_ACTIONS_UNARCHIVE') }}</li>
-                  <li class="delete-workflow-step tw-cursor-pointer tw-p-2" @click="beforeDeleteStep(step.id)">{{ translate('COM_EMUNDUS_ACTIONS_DELETE') }}</li>
-                </ul>
-              </popover>
-            </div>
-
-            <div class="workflow-step-content">
-              <div class="tw-mb-4 tw-flex tw-flex-col">
-                <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_LABEL') }}</label>
-                <input type="text" v-model="step.label" />
-                <span class="tw-text-red-600" v-if="displayErrors && fieldsInError[step.id] && fieldsInError[step.id].includes('label')">
-                  {{ translate('COM_EMUNDUS_WORKFLOW_STEP_LABEL_REQUIRED') }}
-                </span>
-              </div>
-
-              <div class="tw-mb-4 tw-flex tw-flex-col">
-                <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_TYPE') }}</label>
-                <select v-model="step.type">
-                  <option v-for="type in stepTypes" :key="type.id" :value="type.id">
-                    <span v-if="type.parent_id > 0"> - </span>
-                    {{ translate(type.label) }}
-                  </option>
-                </select>
-              </div>
-
-              <div v-if="isApplicantStep(step)" class="tw-mb-4 tw-flex tw-flex-col">
-                <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_PROFILE') }}</label>
-                <select v-model="step.profile_id">
-                  <option v-for="profile in applicantProfiles" :key="profile.id" :value="profile.id">{{ profile.label }}</option>
-                </select>
-
-                <span class="tw-text-red-600" v-if="displayErrors && fieldsInError[step.id] && fieldsInError[step.id].includes('form_id')">
-                  {{ translate('COM_EMUNDUS_WORKFLOW_STEP_FORM_REQUIRED') }}
-                </span>
-              </div>
-
-              <div v-else class="tw-mb-4 tw-flex tw-flex-col">
-                <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_PROFILE') }}</label>
-                <select v-model="step.form_id">
-                  <option v-for="form in evaluationForms" :key="form.id" :value="form.id">{{ form.label }}</option>
-                </select>
-
-                <span class="tw-text-red-600" v-if="displayErrors && fieldsInError[step.id] && fieldsInError[step.id].includes('form_id')">
-                  {{ translate('COM_EMUNDUS_WORKFLOW_STEP_FORM_REQUIRED') }}
-                </span>
-              </div>
-
-              <div class="tw-mb-4 tw-flex tw-flex-col">
-                <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS') }}</label>
-                <Multiselect
-                    :options="statuses"
-                    v-model="step.entry_status"
-                    label="label"
-                    track-by="id"
-                    :placeholder="translate('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS_SELECT')"
-                    :multiple="true">
-                </Multiselect>
-
-                <span class="tw-text-red-600" v-if="displayErrors && fieldsInError[step.id] && fieldsInError[step.id].includes('entry_status')">
-                  {{ translate('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS_REQUIRED') }}
-                </span>
-              </div>
-
-              <div v-if="isApplicantStep(step)" class="tw-mb-4 tw-flex tw-flex-col">
-                <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_OUTPUT_STATUS') }}</label>
-                <select v-model="step.output_status">
-                  <option value="-1">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_OUTPUT_STATUS_SELECT') }}</option>
-                  <option v-for="status in statuses" :key="status.id" :value="status.id">{{ status.label }}</option>
-                </select>
-              </div>
-
-              <div v-if="!isApplicantStep(step)" class="tw-mb-4 tw-flex tw-flex-row tw-items-center tw-cursor-pointer">
-                <input v-model="step.multiple" true-value="1" false-value="0" type="checkbox" :name="'step-' + step.id + '-multiple'" :id="'step-' + step.id + '-multiple'" class="tw-cursor-pointer"/>
-                <label :for="'step-' + step.id + '-multiple'" class="tw-cursor-pointer tw-mb-0">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_IS_MULTIPLE') }}</label>
-              </div>
-
-              <div v-if="!isApplicantStep(step)" class="step-associated-groups">
-                <label>{{ translate('COM_EMUNDUS_WORKFLOW_STEP_GROUPS') }}</label>
-                <ul class="tw-my-2">
-                  <li v-for="group_id in getGroupsFromStepType(step.type)" :key="group_id"> {{ getGroupLabel(group_id) }} </li>
-                </ul>
-
-                <a href="/users-menu/groups" class="tw-underline">{{ translate('COM_EMUNDUS_WORKFLOW_EDIT_RIGHTS') }}</a>
-              </div>
-            </div>
+        <div class="tw-mt-4 tw-w-full tw-flex tw-flex-row tw-justify-between tw-items-center">
+          <div>
+            <select v-if="sortByOptions.length > 0">
+              <option value="0">{{ translate('SORT_BY') }}</option>
+            </select>
           </div>
-          <p v-if="steps.length < 1" class="tw-w-full tw-text-center"> {{ translate('COM_EMUNDUS_WORKFLOW_NO_STEPS') }} </p>
         </div>
       </div>
-      <div v-else-if="activeTab.id === 'programs'">
-        <!-- set a checkbox input for each programsOptions -->
-        <input type="text" v-model="searchThroughPrograms" :placeholder="translate('COM_EMUNDUS_WORKFLOW_SEARCH_PROGRAMS_PLACEHOLDER')" class="tw-w-full tw-p-2 tw-mb-4 tw-border tw-border-neutral-300 tw-rounded" />
 
-        <div class="tw-flex tw-flex-row tw-items-center tw-cursor-pointer">
-          <input id="check-all" class="tw-cursor-pointer" type="checkbox" v-model="checkall" @change="onClickCheckAllProgram"/>
-          <label for="check-all" class="tw-cursor-pointer !tw-mb-0">{{ translate('COM_EMUNDUS_WORKFLOW_CHECK_ALL') }}</label>
-        </div>
+      <Tabs :tabs="tabs" :classes="'tw-flex tw-items-center tw-gap-2 tw-ml-7'"></Tabs>
 
-        <div class="tw-mt-4 tw-grid tw-grid-cols-4 tw-gap-3 tw-overflow-auto">
-          <div v-for="program in displayedProgramsOptions" :key="program.id">
-              <div class="tw-mb-4 tw-flex tw-flex-row tw-items-center tw-cursor-pointer">
-                <input :id="'program-' + program.id" type="checkbox" v-model="programs" :value="program" class="tw-cursor-pointer" @change="onCheckProgram(program)" />
-                <label :for="'program-' + program.id" class="tw-cursor-pointer tw-m-0" :class="{'tw-text-gray-300': isProgramAssociatedToAnotherWorkflow(program)}"> {{ program.label }} </label>
+      <div id="tabs-wrapper" class="tw-w-full tw-rounded-coordinator tw-p-6 tw-bg-white tw-border tw-border-neutral-300 tw-relative">
+        <div v-if="activeTab.id === 'steps'" id="workflow-steps-wrapper" class="tw-flex tw-flex-col">
+          <a class="tw-btn-primary tw-h-fit tw-w-fit tw-mb-4 tw-cursor-pointer" type="button" @click="addStep"> {{ translate('COM_EMUNDUS_WORKFLOW_ADD_STEP') }} </a>
+
+          <div id="workflow-steps">
+            <draggable
+              v-model="steps"
+              :sort="true"
+              class="draggables-list tw-flex tw-flex-row tw-gap-3 tw-overflow-auto"
+              handle=".handle"
+              @end="onDragStepEnd"
+            >
+              <div v-for="step in steps" :key="step.id"
+                   class="workflow-step tw-rounded tw-border tw-shadow-sm tw-p-4"
+                   :class="{
+                  'tw-bg-slate-50': step.state != 1,
+                  'em-white-bg': step.state == 1,
+                  'tw-border-red-600': displayErrors && fieldsInError[step.id] && fieldsInError[step.id].length > 0
+               }"
+              >
+                <div class="workflow-step-head tw-flex tw-flex-row tw-justify-between tw-gap-2">
+                  <div class="tw-flex tw-flex-row tw-items-start tw-mb-4">
+                    <span class="material-symbols-outlined tw-cursor-grab handle">drag_indicator</span>
+                    <h4 class="tw-line-clamp-2 tw-break-all">{{ step.label }}</h4>
+                  </div>
+                  <popover>
+                    <ul class="tw-list-none !tw-p-0">
+                      <li class="archive-workflow-step tw-cursor-pointer tw-p-2 hover:tw-bg-neutral-300" @click="duplicateStep(step.id)">{{ translate('COM_EMUNDUS_ACTIONS_DUPLICATE') }}</li>
+                      <li v-if="step.state == 1" class="archive-workflow-step tw-cursor-pointer tw-p-2 hover:tw-bg-neutral-300" @click="updateStepState(step.id, 0)">{{ translate('COM_EMUNDUS_ACTIONS_ARCHIVE') }}</li>
+                      <li v-else class="archive-workflow-step tw-cursor-pointer tw-p-2 hover:tw-bg-neutral-300" @click="updateStepState(step.id, 1)">{{ translate('COM_EMUNDUS_ACTIONS_UNARCHIVE') }}</li>
+                      <li class="delete-workflow-step tw-cursor-pointer tw-p-2 hover:tw-bg-neutral-300" @click="beforeDeleteStep(step.id)">{{ translate('COM_EMUNDUS_ACTIONS_DELETE') }}</li>
+                    </ul>
+                  </popover>
+                </div>
+
+                <div class="workflow-step-content">
+                  <div class="tw-mb-4 tw-flex tw-flex-col">
+                    <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_LABEL') }}</label>
+                    <input type="text" v-model="step.label" />
+                    <span class="tw-text-red-600" v-if="displayErrors && fieldsInError[step.id] && fieldsInError[step.id].includes('label')">
+                    {{ translate('COM_EMUNDUS_WORKFLOW_STEP_LABEL_REQUIRED') }}
+                  </span>
+                  </div>
+
+                  <div class="tw-mb-4 tw-flex tw-flex-col">
+                    <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_TYPE') }}</label>
+                    <select v-model="step.type">
+                      <option v-for="type in stepTypes" :key="type.id" :value="type.id">
+                        <span v-if="type.parent_id > 0"> - </span>
+                        {{ translate(type.label) }}
+                      </option>
+                    </select>
+                  </div>
+
+                  <div v-if="isApplicantStep(step)" class="tw-mb-4 tw-flex tw-flex-col">
+                    <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_PROFILE') }}</label>
+                    <select v-model="step.profile_id">
+                      <option v-for="profile in applicantProfiles" :key="profile.id" :value="profile.id">{{ profile.label }}</option>
+                    </select>
+
+                    <span class="tw-text-red-600" v-if="displayErrors && fieldsInError[step.id] && fieldsInError[step.id].includes('form_id')">
+                    {{ translate('COM_EMUNDUS_WORKFLOW_STEP_FORM_REQUIRED') }}
+                  </span>
+                  </div>
+
+                  <div v-else class="tw-mb-4 tw-flex tw-flex-col">
+                    <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_PROFILE') }}</label>
+                    <select v-model="step.form_id">
+                      <option v-for="form in evaluationForms" :key="form.id" :value="form.id">{{ form.label }}</option>
+                    </select>
+
+                    <span class="tw-text-red-600" v-if="displayErrors && fieldsInError[step.id] && fieldsInError[step.id].includes('form_id')">
+                    {{ translate('COM_EMUNDUS_WORKFLOW_STEP_FORM_REQUIRED') }}
+                  </span>
+                  </div>
+
+                  <div class="tw-mb-4 tw-flex tw-flex-col">
+                    <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS') }}</label>
+                    <Multiselect
+                        :options="statuses"
+                        v-model="step.entry_status"
+                        label="label"
+                        track-by="id"
+                        :placeholder="translate('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS_SELECT')"
+                        :multiple="true">
+                    </Multiselect>
+
+                    <span class="tw-text-red-600" v-if="displayErrors && fieldsInError[step.id] && fieldsInError[step.id].includes('entry_status')">
+                    {{ translate('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS_REQUIRED') }}
+                  </span>
+                  </div>
+
+                  <div v-if="isApplicantStep(step)" class="tw-mb-4 tw-flex tw-flex-col">
+                    <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_OUTPUT_STATUS') }}</label>
+                    <select v-model="step.output_status">
+                      <option value="-1">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_OUTPUT_STATUS_SELECT') }}</option>
+                      <option v-for="status in statuses" :key="status.id" :value="status.id">{{ status.label }}</option>
+                    </select>
+                  </div>
+
+                  <div v-if="!isApplicantStep(step)" class="tw-mb-4 tw-flex tw-flex-row tw-items-center tw-cursor-pointer">
+                    <input v-model="step.multiple" true-value="1" false-value="0" type="checkbox" :name="'step-' + step.id + '-multiple'" :id="'step-' + step.id + '-multiple'" class="tw-cursor-pointer"/>
+                    <label :for="'step-' + step.id + '-multiple'" class="tw-cursor-pointer tw-mb-0">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_IS_MULTIPLE') }}</label>
+                  </div>
+
+                  <div v-if="!isApplicantStep(step)" class="step-associated-groups">
+                    <label>{{ translate('COM_EMUNDUS_WORKFLOW_STEP_GROUPS') }}</label>
+                    <ul class="tw-my-2 tw-overflow-auto" style="max-height: 100px;">
+                      <li v-for="group_id in getGroupsFromStepType(step.type)" :key="group_id"> {{ getGroupLabel(group_id) }} </li>
+                    </ul>
+
+                    <a href="/users-menu/groups" class="tw-underline">{{ translate('COM_EMUNDUS_WORKFLOW_EDIT_RIGHTS') }}</a>
+                  </div>
+                </div>
               </div>
+
+            </draggable>
+            <p v-if="steps.length < 1" class="tw-w-full tw-text-center"> {{ translate('COM_EMUNDUS_WORKFLOW_NO_STEPS') }} </p>
           </div>
-          <p v-if="programsOptions.length < 1" class="tw-w-full tw-text-center"> {{ translate('COM_EMUNDUS_WORKFLOW_NO_PROGRAMS') }} </p>
+        </div>
+        <div v-else-if="activeTab.id === 'programs'">
+          <!-- set a checkbox input for each programsOptions -->
+          <input type="text" v-model="searchThroughPrograms" :placeholder="translate('COM_EMUNDUS_WORKFLOW_SEARCH_PROGRAMS_PLACEHOLDER')" class="tw-w-full tw-p-2 tw-mb-4 tw-border tw-border-neutral-300 tw-rounded" />
+
+          <div class="tw-mt-4 tw-flex tw-flex-row tw-items-center tw-cursor-pointer">
+            <input id="check-all" class="tw-cursor-pointer" type="checkbox" v-model="checkall" @change="onClickCheckAllProgram"/>
+            <label for="check-all" class="tw-cursor-pointer !tw-mb-0 tw-font-medium">{{ translate('COM_EMUNDUS_WORKFLOW_CHECK_ALL') }}</label>
+          </div>
+
+          <div class="tw-mt-4 tw-grid tw-grid-cols-4 tw-gap-3 tw-overflow-auto">
+            <div v-for="program in displayedProgramsOptions" :key="program.id">
+                <div class="tw-mb-4 tw-flex tw-flex-row tw-items-baseline tw-cursor-pointer">
+                  <input :id="'program-' + program.id" type="checkbox" v-model="programs" :value="program" class="tw-cursor-pointer" @change="onCheckProgram(program)" />
+                  <label :for="'program-' + program.id" class="tw-cursor-pointer tw-m-0" :class="{'tw-text-gray-300': isProgramAssociatedToAnotherWorkflow(program)}"> {{ program.label }} </label>
+                </div>
+            </div>
+            <p v-if="programsOptions.length < 1" class="tw-w-full tw-text-center"> {{ translate('COM_EMUNDUS_WORKFLOW_NO_PROGRAMS') }} </p>
+          </div>
         </div>
       </div>
     </div>
+
+    <div v-else class="em-page-loader" />
   </div>
 </template>
 
 <script>
+import { VueDraggableNext } from 'vue-draggable-next';
 import workflowService from '@/services/workflow.js';
 import settingsService from '@/services/settings.js';
 import programmeService from '@/services/programme.js';
@@ -181,7 +199,8 @@ export default {
   components: {
     Multiselect,
     Popover,
-    Tabs
+    Tabs,
+    draggable: VueDraggableNext
   },
   mixins: [errors],
   data() {
@@ -227,15 +246,19 @@ export default {
           active: false,
           displayed: true
         }
-      ]
+      ],
+
+      loading: false,
     }
   },
   mounted() {
+    this.loading = true;
     this.getStepTypes();
     this.getStatuses().then(() => {
       this.getPrograms().then(() => {
         this.getProfiles().then(() => {
           this.getWorkflow();
+          this.loading = false;
         });
       });
     });
@@ -288,7 +311,7 @@ export default {
         });
     },
     async getPrograms() {
-      return await programmeService.getAllPrograms()
+      return await programmeService.getAllPrograms('', '', 0, 0, 'p.label', 'ASC')
         .then(response => {
           this.programsOptions = response.data.datas.map(program => {
             return {
@@ -599,6 +622,12 @@ export default {
     },
     isProgramAssociatedToAnotherWorkflow(program) {
       return program.workflows && program.workflows.length > 0 && !(program.workflows.includes(this.workflow.id));
+    },
+    onDragStepEnd() {
+      this.steps = this.steps.map((step, index) => {
+        step.ordering = index + 1;
+        return step;
+      });
     }
   },
   computed: {

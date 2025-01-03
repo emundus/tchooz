@@ -281,7 +281,7 @@ class EmundusFilters
 						$select = $params['join_key_column'] . ' AS value';
 
 						if (!empty($params['join_val_column_concat'])) {
-							$lang = substr(JFactory::getLanguage()->getTag(), 0, 2);
+							$lang = substr(Factory::getApplication()->getLanguage()->getTag(), 0, 2);
 							$params['join_val_column_concat'] = str_replace('{thistable}', $params['join_db_name'], $params['join_val_column_concat']);
 							$params['join_val_column_concat'] = str_replace('{shortlang}', $lang, $params['join_val_column_concat']);
 							$params['join_val_column_concat'] = 'CONCAT(' . $params['join_val_column_concat'] . ') as label';
@@ -316,8 +316,9 @@ class EmundusFilters
 								// this field can contains order by clause, so we need to split it
 								$order_by_pos = stripos($params['database_join_where_sql'], 'ORDER BY');
 								$where_clause = $order_by_pos !== false ? substr($params['database_join_where_sql'], 0, $order_by_pos) : $params['database_join_where_sql'];
-								$query->where($where_clause);
-							}
+								if (!empty($where_clause)) {
+									$query->where($where_clause);
+								}							}
 						}
 
 						try {

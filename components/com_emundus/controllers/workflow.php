@@ -62,8 +62,11 @@ class EmundusControllerWorkflow extends JControllerLegacy
 			$page        = $this->app->input->getInt('page', 0);
 			$program_ids = $this->app->input->getString('program', '');
 			$program_ids = !empty($program_ids) ? explode(',', $program_ids) : [];
+			$sort 	     = $this->app->input->getString('sort', 'DESC');
+			$order_by    = $this->app->input->getString('order_by', 'esw.id');
+			$order_by    = $order_by == 'label' ? 'esw.label' : $order_by;
 
-			$workflows = $this->model->getWorkflows($ids, $lim, $page, $program_ids);
+			$workflows = $this->model->getWorkflows($ids, $lim, $page, $program_ids, $order_by, $sort);
 
 			if (!empty($workflows))
 			{

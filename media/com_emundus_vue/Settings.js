@@ -1,11 +1,9 @@
-import { _ as _export_sfc, P as script, Y as reactive, S as Swal$1, e as resolveComponent, o as openBlock, c as createElementBlock, y as createTextVNode, t as toDisplayString, d as createCommentVNode, a as createBaseVNode, w as withDirectives, x as vModelSelect, n as normalizeClass, b as Fragment, r as renderList, j as createBlock, k as withCtx, O as vModelText, U as vModelRadio, D as vModelCheckbox, Q as vModelDynamic, u as withModifiers, v as vShow, H as History, T as Tabs, G as mixin, s as settingsService, g as createVNode, W as client, Z as __vitePreload, i as axios, l as normalizeStyle, h as errors, z as useGlobalStore, R as withKeys, N as defineStore, q as mergeProps, $ as resolveDynamicComponent } from "./app_emundus.js";
+import { _ as _export_sfc, P as script, Z as reactive, S as Swal$1, e as resolveComponent, o as openBlock, c as createElementBlock, y as createTextVNode, t as toDisplayString, d as createCommentVNode, a as createBaseVNode, w as withDirectives, x as vModelSelect, n as normalizeClass, b as Fragment, r as renderList, j as createBlock, k as withCtx, O as vModelText, U as vModelRadio, D as vModelCheckbox, Q as vModelDynamic, u as withModifiers, v as vShow, H as History, T as Tabs, G as mixin, s as settingsService, g as createVNode, X as client, i as axios, l as normalizeStyle, V as VueDraggableNext, h as errors, z as useGlobalStore, R as withKeys, N as defineStore, q as mergeProps, $ as resolveDynamicComponent } from "./app_emundus.js";
 import { t as translationsService, T as Translations } from "./Translations.js";
 import { q as qs } from "./index.js";
-import { V as VueDraggableNext } from "./vue-draggable-next.esm-bundler.js";
 import { v as vueDropzone } from "./vue-dropzone.js";
 import { V as V32 } from "./editor.js";
 import WorkflowSettings from "./WorkflowSettings.js";
-const Parameter_vue_vue_type_style_index_0_lang = "";
 const _sfc_main$k = {
   name: "Parameter",
   components: { Multiselect: script },
@@ -522,7 +520,7 @@ function _sfc_render$j(_ctx, _cache, $props, $setup, $data, $options) {
   }, [
     $props.displayIcon ? (openBlock(), createElementBlock("span", {
       key: 0,
-      class: normalizeClass([[$props.iconType, $props.iconColor], "tw-mr-3"])
+      class: normalizeClass([$props.iconType, $props.iconColor])
     }, toDisplayString($props.icon), 3)) : createCommentVNode("", true),
     createBaseVNode("div", {
       innerHTML: $data.textValueExtracted,
@@ -1448,7 +1446,7 @@ function _sfc_render$g(_ctx, _cache, $props, $setup, $data, $options) {
       createBaseVNode("ul", _hoisted_1$g, [
         createBaseVNode("li", _hoisted_2$g, [
           createBaseVNode("span", {
-            class: "tw-flex tw-items-center tw-rounded-lg tw-group tw-cursor-pointer",
+            class: "tw-flex tw-items-center tw-group tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300",
             onClick: _cache[0] || (_cache[0] = ($event) => $options.clickReturn())
           }, [
             _cache[4] || (_cache[4] = createBaseVNode("span", { class: "material-symbols-outlined tw-text-neutral-600 tw-user-select-none" }, "navigate_before", -1)),
@@ -1689,7 +1687,7 @@ const _sfc_main$e = {
     };
   },
   created() {
-    __vitePreload(() => import(getPath$1(this.$props.json_source)), true ? [] : void 0).then((result) => {
+    import(getPath$1(this.$props.json_source)).then((result) => {
       if (result) {
         this.parameters = result.default;
         for (let i = 0; i < this.parameters.length; i++) {
@@ -1874,7 +1872,6 @@ function _sfc_render$e(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const SiteSettings = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["render", _sfc_render$e]]);
-const EditTheme_vue_vue_type_style_index_0_scoped_179e7d97_lang = "";
 const _sfc_main$d = {
   name: "global",
   props: {},
@@ -2350,8 +2347,7 @@ const _sfc_main$c = {
   },
   computed: {
     computedSwatches() {
-      if (this.swatches instanceof Array)
-        return this.swatches;
+      if (this.swatches instanceof Array) return this.swatches;
       if (typeof this.swatches === "string") {
         return extractPropertyFromPreset(this.swatches);
       } else {
@@ -2405,7 +2401,6 @@ function _sfc_render$c(_ctx, _cache, $props, $setup, $data, $options) {
   ], 8, _hoisted_1$c);
 }
 const ColorPicker = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["render", _sfc_render$c]]);
-const EditStatus_vue_vue_type_style_index_0_scoped_0aac84ff_lang = "";
 const _sfc_main$b = {
   name: "editStatus",
   components: {
@@ -2574,7 +2569,7 @@ const _sfc_main$b = {
 const _hoisted_1$b = { class: "tw-flex tw-flex-wrap tw-justify-start" };
 const _hoisted_2$b = { class: "tw-w-10/12" };
 const _hoisted_3$b = { class: "tw-grid tw-grid-cols-3 tw-mb-4" };
-const _hoisted_4$b = { class: "add-button-div" };
+const _hoisted_4$b = { class: "add-button-div em-flex-row" };
 const _hoisted_5$a = ["title", "id", "onMouseover"];
 const _hoisted_6$9 = { class: "tw-flex tw-items-center tw-justify-start tw-w-full" };
 const _hoisted_7$8 = { class: "status-field" };
@@ -2597,7 +2592,7 @@ function _sfc_render$b(_ctx, _cache, $props, $setup, $data, $options) {
           class: "tw-btn-primary tw-mb-6 tw-w-max"
         }, [
           createBaseVNode("div", _hoisted_4$b, [
-            _cache[4] || (_cache[4] = createBaseVNode("em", { class: "fas fa-plus tw-mr-1" }, null, -1)),
+            _cache[4] || (_cache[4] = createBaseVNode("span", { class: "material-symbols-outlined em-mr-4" }, "add", -1)),
             createTextVNode(" " + toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADD_STATUS")), 1)
           ])
         ])
@@ -2678,8 +2673,7 @@ function _sfc_render$b(_ctx, _cache, $props, $setup, $data, $options) {
     $data.loading ? (openBlock(), createElementBlock("div", _hoisted_12$2)) : createCommentVNode("", true)
   ]);
 }
-const EditStatus = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["render", _sfc_render$b], ["__scopeId", "data-v-0aac84ff"]]);
-const EditTags_vue_vue_type_style_index_0_scoped_4596784b_lang = "";
+const EditStatus = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["render", _sfc_render$b], ["__scopeId", "data-v-78283c16"]]);
 const _sfc_main$a = {
   name: "editTags",
   components: {
@@ -2835,7 +2829,7 @@ const _sfc_main$a = {
 const _hoisted_1$a = { class: "tw-flex tw-flex-wrap tw-justify-start" };
 const _hoisted_2$a = { class: "tw-w-10/12" };
 const _hoisted_3$a = { class: "tw-grid tw-grid-cols-3 tw-mb-4" };
-const _hoisted_4$a = { class: "add-button-div" };
+const _hoisted_4$a = { class: "add-button-div em-flex-row" };
 const _hoisted_5$9 = ["id", "onMouseover"];
 const _hoisted_6$8 = { class: "tw-flex tw-items-center tw-justify-start tw-w-full" };
 const _hoisted_7$7 = { class: "status-field" };
@@ -2854,7 +2848,7 @@ function _sfc_render$a(_ctx, _cache, $props, $setup, $data, $options) {
           class: "tw-btn-primary tw-mb-6 tw-w-max"
         }, [
           createBaseVNode("div", _hoisted_4$a, [
-            _cache[4] || (_cache[4] = createBaseVNode("em", { class: "fas fa-plus tw-mr-1" }, null, -1)),
+            _cache[4] || (_cache[4] = createBaseVNode("span", { class: "material-icons-outlined em-mr-4" }, "add", -1)),
             createTextVNode(" " + toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_SETTINGS_ADDTAG")), 1)
           ])
         ])
@@ -2925,8 +2919,7 @@ function _sfc_render$a(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ]);
 }
-const EditTags = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["render", _sfc_render$a], ["__scopeId", "data-v-4596784b"]]);
-const General_vue_vue_type_style_index_0_scoped_69ed52ef_lang = "";
+const EditTags = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["render", _sfc_render$a], ["__scopeId", "data-v-33ad2ead"]]);
 const getTemplate = () => `
 <div class="dz-preview dz-file-preview">
   <div class="dz-image">
@@ -3135,7 +3128,7 @@ const _sfc_main$9 = {
           thumbnailElement.alt = file.name;
           thumbnailElement.style.backgroundImage = 'url("' + dataUrl + '")';
         }
-        return setTimeout(function(_this) {
+        return setTimeout(/* @__PURE__ */ function(_this) {
           return function() {
             return file.previewElement.classList.add("dz-image-preview");
           };
@@ -4446,7 +4439,7 @@ const _sfc_main$3 = {
     };
   },
   async created() {
-    __vitePreload(() => import(getPath(this.$props.json_source)), true ? [] : void 0).then((result) => {
+    import(getPath(this.$props.json_source)).then((result) => {
       if (result) {
         this.sections = result.default;
       }

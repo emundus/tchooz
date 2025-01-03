@@ -15,6 +15,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 
 $app = Factory::getApplication();
 
@@ -23,20 +24,19 @@ $wa       = $document->getWebAssetManager();
 $wa->registerAndUseStyle('mod_emundus_checklist', 'modules/mod_emundus_checklist/style/emundus_checklist.css');
 
 $user = $app->getSession()->get('emundusUser');
-$db   = JFactory::getContainer()->get('DatabaseDriver');
 
-$query = $db->getQuery(true);
+if (!empty($user->fnum)) {
+	$db   = Factory::getContainer()->get('DatabaseDriver');
+	$query = $db->getQuery(true);
 
-
-if (isset($user->fnum) && !empty($user->fnum)) {
 	require_once(dirname(__FILE__) . DS . 'helper.php');
-	require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
-	require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'checklist.php');
-	include_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
-	require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
-	require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
-	require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
-	require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
+	require_once(JPATH_SITE . '/components/com_emundus/helpers/menu.php');
+	require_once(JPATH_SITE . '/components/com_emundus/models/checklist.php');
+	include_once(JPATH_SITE . '/components/com_emundus/models/application.php');
+	require_once(JPATH_SITE . '/components/com_emundus/models/campaign.php');
+	require_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
+	require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
+	require_once(JPATH_SITE . '/components/com_emundus/models/emails.php');
 	$m_checklist   = new EmundusModelChecklist();
 	$m_application = new EmundusModelApplication();
 	$m_campaign    = new EmundusModelCampaign();
@@ -53,10 +53,10 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	$show_optional_documents     = $params->get('show_optional_documents', 0);
 	$show_duplicate_documents    = $params->get('show_duplicate_documents', 1);
 	$show_preliminary_documents  = $params->get('show_preliminary_documents', 0);
-	$forms_title                 = $params->get('forms_title', JText::_('FORMS'));
-	$mandatory_documents_title   = $params->get('mandatory_documents_title', JText::_('MANDATORY_DOCUMENTS'));
-	$optional_documents_title    = $params->get('optional_documents_title', JText::_('OPTIONAL_DOCUMENTS'));
-	$preliminary_documents_title = $params->get('preliminary_documents_title', JText::_('PRELIMINARY_DOCUMENTS'));
+	$forms_title                 = $params->get('forms_title', Text::_('FORMS'));
+	$mandatory_documents_title   = $params->get('mandatory_documents_title', Text::_('MANDATORY_DOCUMENTS'));
+	$optional_documents_title    = $params->get('optional_documents_title', Text::_('OPTIONAL_DOCUMENTS'));
+	$preliminary_documents_title = $params->get('preliminary_documents_title', Text::_('PRELIMINARY_DOCUMENTS'));
 	$admission                   = $params->get('admission', 0);
 	$show_send                   = $params->get('showsend', 1);
 
@@ -69,6 +69,8 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	$application_fee = (!empty($application_fee) && !empty($m_profile->getHikashopMenu($user->profile)));
 
 	$checkout_url = null;
+
+	// TODO: this should be refactored to a helper function
 	if ($application_fee) {
 		$fnumInfos = $m_files->getFnumInfos($user->fnum);
 		$order     = $m_application->getHikashopOrder($fnumInfos);
@@ -113,7 +115,7 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 				$orderCancelled = false;
 
 				$checkout_url = $m_application->getHikashopCheckoutUrl($user->profile . $scholarship_document);
-				if (strpos($checkout_url, '${') !== false) {
+				if (str_contains($checkout_url, '${')) {
 					$checkout_url = $m_emails->setTagsFabrik($checkout_url, [$user->fnum]);
 				}
 				if (!empty($checkout_url)) {
@@ -142,12 +144,18 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	$db->setQuery($query);
 	$itemid = $db->loadAssoc();
 
-	$and   = ($show_duplicate_documents != -1) ? ' AND esap.duplicate=' . $show_duplicate_documents : '';
-	$query = 'SELECT esa.value, esap.id, esa.id as _id, esap.mandatory, esap.duplicate
-		FROM #__emundus_setup_attachment_profiles esap
-		JOIN #__emundus_setup_attachments esa ON esa.id = esap.attachment_id
-		WHERE esap.displayed = 1 ' . $and . ' AND esap.profile_id =' . $user->profile . '
-		ORDER BY esa.ordering';
+	$query->clear()
+		->select('esa.value, esap.id, esa.id as _id, esap.mandatory, esap.duplicate')
+		->from($db->quoteName('#__emundus_setup_attachment_profiles', 'esap'))
+		->join('INNER', $db->quoteName('#__emundus_setup_attachments', 'esa') . ' ON ' . $db->quoteName('esa.id') . ' = ' . $db->quoteName('esap.attachment_id'))
+		->where($db->quoteName('esap.displayed') . ' = 1')
+		->andWhere($db->quoteName('esap.profile_id') . ' = ' . $db->quote($user->profile));
+
+	if ($show_duplicate_documents != -1) {
+		$query->andWhere($db->quoteName('esap.duplicate') . ' = ' . $db->quote($show_duplicate_documents));
+	}
+	$query->order('esa.ordering');
+
 	$db->setQuery($query);
 	$documents = $db->loadObjectList();
 
@@ -218,11 +226,18 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	$confirm_form_url = EmundusHelperAccess::buildFormUrl($confirm_form_url, $user->fnum);
 	$uri              = JUri::getInstance();
 	$is_confirm_url   = false;
-
-	if (preg_match('/formid=[0-9]+&/', $confirm_form_url, $matches)) {
-		if (!empty($matches) && strpos($uri->getQuery(), $matches[0]) !== false) {
-			$is_confirm_url = true;
+	if (preg_match('/formid=([0-9]+)&/', $confirm_form_url, $matches)) {
+		if (!empty($matches)) {
+			$confirm_form_id = $matches[1];
+			$current_uri   = $uri->toString();
+			if (str_contains($current_uri, '/form/' . $confirm_form_id. '/') || str_contains($current_uri, 'form_id=' . $confirm_form_id . '&')) {
+				$is_confirm_url = true;
+			}
 		}
+	}
+
+	if ($application_fee && !$paid && str_contains($confirm_form_url, '${')) {
+		$confirm_form_url = $m_emails->setTagsFabrik($checkout_url, [$user->fnum]);
 	}
 
 	$current_phase        = $m_campaign->getCurrentCampaignWorkflow($user->fnum);
