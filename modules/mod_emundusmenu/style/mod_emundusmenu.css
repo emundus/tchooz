@@ -203,6 +203,15 @@ ul.g-dropdown.g-dropdown-right.g-fade {
     font-family: var(--em-profile-font);
 }
 
+#header-b #em_user_menu ul[style="width: 55px;"] > li > a {
+    width: fit-content;
+    margin: auto;
+}
+
+#header-b #em_user_menu ul[style="width: 55px;"] > li > a img {
+    padding-inline: 3px;
+}
+
 #header-b {
     display: flex;
     align-items: center;

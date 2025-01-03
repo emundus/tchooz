@@ -101,7 +101,7 @@ details summary:focus{
 }
 
 body {
-  line-height: normal;
+  line-height: 1.5;
 
   p {
     margin: 0;
@@ -1449,7 +1449,7 @@ footer#g-footer > .g-container {
     border-radius: var(--em-applicant-br) !important;
     padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
     font-family: var(--em-profile-font), Inter, sans-serif;
-    line-height: normal;
+    line-height: 1.5;
     font-size: var(--em-applicant-font-size);
     letter-spacing: normal;
   }
@@ -1805,12 +1805,12 @@ footer#g-footer > .g-container {
 
 .table-hover tbody tr:hover td,
 .table-hover tbody tr:nth-child(2n):hover > td{
-  background: #EDEDED !important;
+  background: var(--neutral-400) !important;
 }
 
 .table-hover tbody tr:nth-child(2n) > td,
 .table-hover tbody tr:nth-child(2n) > th {
-  background: var(--neutral-200) !important;
+  background: var(--neutral-300) !important;
 }
 
 .table-hover tbody tr:nth-child(2n) > td .sticker .circle {
@@ -2212,7 +2212,7 @@ div.fabrikFilterContainer {
         color: var(--neutral-0);
         background-color: var(--main-500);
         transition: all 0.2s ease-in-out;
-        line-height: normal;
+        line-height: 1.5;
 
         &:hover {
           background-color: var(--neutral-0);
@@ -2381,7 +2381,7 @@ tr.fabrikFilterContainer {
   #g-header #header-c .header-right a.btn.btn-danger:not(.btn-creer-compte) {
     border-radius: var(--em-applicant-br) !important;
     margin-bottom: 0 !important;
-    line-height: normal;
+    line-height: 1.5;
     letter-spacing: normal;
     color: var(--em-secondary-color);
     background: var(--neutral-0);
@@ -2708,7 +2708,7 @@ span.btn {
   border-radius: var(--em-applicant-br) !important;
   padding: var(--em-spacing-vertical) var(--em-spacing-horizontal) !important;
   color: var(--neutral-0);
-  line-height: normal !important;
+  line-height: 1.5 !important;
   letter-spacing: normal;
   font-size: var(--em-applicant-font-size);
 
@@ -3103,7 +3103,7 @@ button#back,
   border-radius: var(--em-applicant-br);
   padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
   font-weight: normal;
-  line-height: normal;
+  line-height: 1.5;
   letter-spacing: normal;
   font-size: var(--em-applicant-font-size) !important;
 
@@ -4787,7 +4787,7 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
   button.btn-primary {
     border-radius: var(--em-applicant-br) !important;
     letter-spacing: normal;
-    line-height: normal;
+    line-height: 1.5;
     font-size: var(--em-applicant-font-size);
     transition: all ease-in-out 0.3s;
   }

@@ -556,7 +556,7 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
 
             if (countCheckedCheckbox !== 0) {
                 displayCount();
-                countFiles.innerHTML = '<p>' + Joomla.Text._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + countCheckedCheckbox + ' ' + files + '. <a class="em-pointer em-text-underline em-profile-color" onclick="checkAllFiles()">' + Joomla.Text._('COM_EMUNDUS_FILES_SELECT_ALL_FILES') + '</a> ' + Joomla.Text._('COM_EMUNDUS_FILES_OR_CONNECTOR') + ' <a class="em-pointer em-text-underline em-profile-color" style="color: var(--red-500);" onclick="uncheckAllFiles()">' + Joomla.Text._('COM_EMUNDUS_FILES_UNSELECT_ALL_FILES') + '</a>' + '</p>';
+                countFiles.innerHTML = '<p>' + Joomla.Text._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + countCheckedCheckbox + ' ' + files + '. <a class="em-pointer em-text-underline em-profile-color" onclick="checkAllFiles()">' + Joomla.Text._('COM_EMUNDUS_FILES_SELECT_ALL_FILES') + '</a> ' + Joomla.Text._('COM_EMUNDUS_FILES_OR_CONNECTOR') + ' <a class="em-pointer em-text-underline em-profile-color" style="color: var(--red-700);" onclick="uncheckAllFiles()">' + Joomla.Text._('COM_EMUNDUS_FILES_UNSELECT_ALL_FILES') + '</a>' + '</p>';
             } else {
                 hideCount();
                 countFiles.innerHTML = '';

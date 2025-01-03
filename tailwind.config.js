@@ -308,6 +308,19 @@ module.exports = {
                         cursor: 'not-allowed',
                     },
                 },
+                '.target-blank-links': {
+                    textDecoration: 'underline',
+
+                    '&::after': {
+                        content: '"open_in_new"',
+                        display: 'inline-block',
+                        fontFamily: '"Material Icons"',
+                        marginLeft: '4px',
+                        textDecoration: 'none',
+                        position: 'relative',
+                        top: '4px',
+                    },
+                },
             });
         })
     ],

@@ -1076,7 +1076,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const campaignSteps = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1]]);
-const CampaignEdition_vue_vue_type_style_index_0_scoped_94cc33d6_lang = "";
+const CampaignEdition_vue_vue_type_style_index_0_scoped_4f83d005_lang = "";
 const _sfc_main = {
   name: "CampaignEdition",
   components: {
@@ -1332,7 +1332,7 @@ const _sfc_main = {
   }
 };
 const _hoisted_1 = { id: "edit-campaign" };
-const _hoisted_2 = { class: "em-border-cards em-card-shadow tw-rounded em-white-bg em-p-24" };
+const _hoisted_2 = { class: "tw-border tw-border-neutral-300 em-card-shadow tw-rounded tw-bg-white tw-p-6" };
 const _hoisted_3 = { class: "tw-ml-2 tw-text-neutral-900" };
 const _hoisted_4 = { class: "tw-flex tw-items-center tw-mt-4" };
 const _hoisted_5 = ["innerHTML"];
@@ -1341,7 +1341,7 @@ const _hoisted_6 = {
   class: "tw-flex tw-items-center tw-mb-8"
 };
 const _hoisted_7 = { style: { "color": "var(--em-profile-color)", "font-weight": "700 !important" } };
-const _hoisted_8 = { class: "tw-w-full tw-rounded-coordinator tw-p-6 tw-bg-white tw-border tw-border-neutral-300 tw-relative" };
+const _hoisted_8 = { class: "tw-w-full tw-rounded-2xl tw-p-6 tw-bg-white tw-border tw-border-neutral-300 tw-relative" };
 const _hoisted_9 = {
   key: 0,
   class: "warning-message-program mb-1"
@@ -1464,7 +1464,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ]);
 }
-const CampaignEdition = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-94cc33d6"]]);
+const CampaignEdition = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-4f83d005"]]);
 export {
   CampaignEdition as default
 };

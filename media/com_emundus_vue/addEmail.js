@@ -25,7 +25,7 @@ const messagesService = {
     }
   }
 };
-const addEmail_vue_vue_type_style_index_0_scoped_1cdb3854_lang = "";
+const addEmail_vue_vue_type_style_index_0_scoped_d4a5f312_lang = "";
 const _sfc_main = {
   name: "addEmail",
   mixins: [mixin],
@@ -312,7 +312,7 @@ const _sfc_main = {
     }
   }
 };
-const _hoisted_1 = { class: "emails__add-email" };
+const _hoisted_1 = { class: "tw-border tw-border-neutral-300 em-card-shadow tw-rounded tw-bg-white tw-p-6" };
 const _hoisted_2 = { class: "tw-ml-2 tw-text-neutral-900" };
 const _hoisted_3 = { class: "tw-mt-4" };
 const _hoisted_4 = { class: "tw-mt-2" };
@@ -337,14 +337,14 @@ const _hoisted_13 = {
 };
 const _hoisted_14 = { class: "tw-text-red-600" };
 const _hoisted_15 = { class: "tw-font-medium" };
-const _hoisted_16 = { class: "em-container-accordeon" };
-const _hoisted_17 = { class: "tw-flex tw-items-center tw-gap-1 tw-justify-between" };
+const _hoisted_16 = { class: "em-container-accordeon tw-shadow" };
+const _hoisted_17 = { class: "tw-flex tw-items-center tw-gap-1" };
 const _hoisted_18 = ["title"];
 const _hoisted_19 = ["title"];
 const _hoisted_20 = {
   key: 0,
   id: "email-advanced-parameters",
-  class: "tw-mt-4 tw-flex tw-flex-col tw-gap-4"
+  class: "tw-mt-4 tw-pl-4 em-border-left-main-500 tw-flex tw-flex-col tw-gap-4"
 };
 const _hoisted_21 = { class: "tw-font-medium" };
 const _hoisted_22 = { class: "tw-mt-1 tw-text-neutral-700" };
@@ -622,7 +622,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     _ctx.loading || _ctx.submitted ? (openBlock(), createElementBlock("div", _hoisted_37)) : createCommentVNode("", true)
   ]);
 }
-const addEmail = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-1cdb3854"]]);
+const addEmail = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-d4a5f312"]]);
 export {
   addEmail as default
 };
