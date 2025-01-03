@@ -1171,7 +1171,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 				->from($db->quoteName('#__fabrik_elements', 'fe'))
 				->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.group_id') . ' = ' . $db->quoteName('fe.group_id'))
 				->leftJoin($db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('ffg.form_id'))
-				->where($db->quoteName('id') . ' = ' . $db->quote($eid));
+				->where($db->quoteName('fe.id') . ' = ' . $db->quote($eid));
 			$db->setQuery($query);
 			$element_details = $db->loadObject();
 
