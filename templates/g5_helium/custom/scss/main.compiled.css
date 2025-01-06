@@ -4290,6 +4290,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-w-\[64px\] {
     width: 64px;
 }
+.tw-w-\[85vw\] {
+    width: 85vw;
+}
 .tw-w-auto {
     width: auto;
 }
