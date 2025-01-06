@@ -1,7 +1,6 @@
-import { F as FetchClient, _ as _export_sfc, G as mixin, P as script, z as useGlobalStore, s as settingsService, e as resolveComponent, o as openBlock, c as createElementBlock, a as createBaseVNode, u as withModifiers, t as toDisplayString, y as createTextVNode, w as withDirectives, O as vModelText, n as normalizeClass, d as createCommentVNode, j as createBlock, v as vShow, g as createVNode } from "./app_emundus.js";
+import { F as FetchClient, _ as _export_sfc, I as mixin, Q as script, U as V32, B as useGlobalStore, s as emailService, u as settingsService, e as resolveComponent, o as openBlock, c as createElementBlock, a as createBaseVNode, x as withModifiers, t as toDisplayString, z as createTextVNode, w as withDirectives, P as vModelText, n as normalizeClass, d as createCommentVNode, j as createBlock, v as vShow, g as createVNode } from "./app_emundus.js";
 import { I as IncrementalSelect } from "./IncrementalSelect.js";
-import { e as emailService } from "./email.js";
-import { V as V32 } from "./editor.js";
+/* empty css       */
 const client = new FetchClient("messages");
 const messagesService = {
   async getAllAttachments() {

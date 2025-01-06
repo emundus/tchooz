@@ -1,0 +1,174 @@
+/**
+ * @package    HikaMarket for Joomla!
+ * @version    5.0.0
+ * @author     Obsidev S.A.R.L.
+ * @copyright  (C) 2011-2024 OBSIDEV. All rights reserved.
+ * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
+ */
+div#hikamarket_main_content.hika_j5 html body,
+div#hikamarket_main_content.hika_j5 .ͼ2 .cm-gutters,
+div#hikamarket_main_content.hika_j5 body.contentpane.component,
+body.admin.com_hikamarket .vex.vex-theme-default .vex-content,
+div#hikamarket_main_content.hika_j5 .namebox-popup div.oTree.namebox-popup-content {
+	background-color: #000;
+}
+div#hikamarket_main_content.hika_j5 .namebox-popup div.oTree.namebox-popup-content a {
+	color: #fff;
+}
+div#hikamarket_main_content.hika_j5 .oTreeNode a,
+div#hikamarket_main_content.hika_j5 div#hikashopGallery_otree a {
+	color: #fff;
+}
+div#hikamarket_main_content.hika_j5 .ͼ2 .cm-activeLineGutter {
+	background-color: #1a4175;
+}
+div#hikamarket_main_content.hika_j5 .form-select, 
+div#hikamarket_main_content.hika_j5 .custom-select {
+	background-color: var(--body-bg);
+}
+div#hikamarket_main_content.hika_j5 input,
+div#hikamarket_main_content.hika_j5 .nameboxes,
+div#hikamarket_main_content.hika_j5 textarea,
+div#hikamarket_main_content.hika_j5 textarea.inputbox,
+div#hikamarket_main_content.hika_j5 .hikashop_user_addresses_list div,
+div#hikamarket_main_content.hika_j5 ul.hika_tabs > li.active > a, 
+div#hikamarket_main_content.hika_j5 ul.hika_tabs > li.active > a:hover, 
+div#hikamarket_main_content.hika_j5 ul.hika_tabs > li.active > a:focus
+div#hikamarket_main_content.hika_j5 label.btn:not(.btn-danger):not(.btn-primary):not(.btn-success) {
+	background-color: #000;
+	color: #fff;
+}
+div#hikamarket_main_content.hika_j5 .hika-navbar-ul li {
+	border-color: #525151;
+}
+div#hikamarket_main_content.hika_j5 select,
+div#hikamarket_main_content.hika_j5 thead tr th,
+div#hikamarket_main_content.hika_j5 .hika-navbar-ul li:hover a,
+div#hikamarket_main_content.hika_j5 .hikashop_product_acl .oTreeNode a,
+div#hikamarket_main_content.hika_j5 #product_listing_otree .oTreeNode a {
+	color: #fff;
+}
+div#hikamarket_main_content.hika_j5 ul.hika-navbar-ul {
+	background-color: #212529;
+	border-width: 1px;
+	border-radius: 5px;
+}
+div#hikamarket_main_content.hika_j5 .hikashop_tile_title,
+div.hikashop_backend_tile_edition.hika_j5 .hikashop_tile_title,
+div#hikamarket_main_content.hika_j5 .hk-navbar.hk-navbar-default {
+	background-color: #1a4175;
+}
+div#hikamarket_main_content.hika_j5 .input-prepend .add-on, 
+div#hikamarket_main_content.hika_j5 .input-append .add-on {
+	background-color: #495057;
+}
+div#hikamarket_main_content.hika_j5 .hk-nav > li > a:hover,
+div#hikamarket_main_content.hika_j5 .hika-navbar-ul li:hover,
+div#hikamarket_main_content.hika_j5 .hkdropdown-menu > li > a:focus,
+div#hikamarket_main_content.hika_j5 .hkdropdown-menu > li > a:hover {
+	text-decoration: none;
+	background-color: #2d3e53;
+}
+div#hikamarket_main_content.hika_j5 .table tbody a:not(.badge) {
+	text-decoration: none;
+}
+div#hikamarket_main_content.hika_j5 .hkdropdown-menu,
+div#hikamarket_main_content.hika_j5 .hk-nav > .active > a,
+div#hikamarket_main_content.hika_j5 .hkdropdown-menu > li > a,
+div#hikamarket_main_content.hika_j5 .hk-nav > .active > a:hover, 
+div#hikamarket_main_content.hika_j5 .hk-nav > .active > a:focus,
+div#hikamarket_main_content.hika_j5 li.hkdropdown.active {
+	background-color: #1F3047;
+	color: #fff;
+}
+div#hikamarket_main_content.hika_j5 th.title.titleorder a,
+div#hikamarket_main_content.hika_j5 .hk-nav > li > a {
+	text-shadow: none;
+	font-weight: normal;
+	color: #fff;
+}
+div#hikamarket_main_content.hika_j5 dl.hika_options,
+div#hikamarket_main_content.hika_j5 .hikashop_tile_block > div > p,
+div#hikamarket_main_content.hika_j5 .hikashop_tile_block > div > .hikashop_tile_content,
+div#hikamarket_main_content.hika_j5 table.oListTable th,
+div#hikamarket_main_content.hika_j5 div.nameboxes div.namebox {
+	background-color: #212529;
+	background-image: none;
+}
+div#hikamarket_main_content.hika_j5,
+div#hikamarket_main_content.hika_j5 fieldset,
+div#hikamarket_main_content.hika_j5 table.admintable td.key,
+div#hikamarket_main_content.hika_j5 table.admintable td.paramlist_key,
+div#hikamarket_main_content.hika_j5 .namebox-popup div.oList.namebox-popup-content {
+	background-color: #000;
+	color: #fff;
+}
+div#hikamarket_main_content.hika_j5 div#hika_code_editor {
+	background-color: #fff;
+	color: #000;
+}
+/* View edit mode */
+div#hikamarket_main_content.hika_j5 .listing_item_quantity_selector div,
+div#hikamarket_main_content.hika_j5 .list-group-item {
+	background-color: #000;
+}
+div#hikamarket_main_content.hika_j5 .listing_item_quantity_selector div.selected, 
+div#hikamarket_main_content.hika_j5 .listing_item_quantity_selector div.tmp_selected {
+	background-color: #C8DEF4;
+}
+div#hikamarket_main_content.hika_j5 .btn-group label.btn.btn-default-lbl.btn-default {
+	background-color: #212529;
+}
+#hikamarket_main_content.hika_j5 select {
+	color: #fff;
+}
+div#hikamarket_main_content.hika_j5 .hikashop_menu_subblock_title, 
+div#hikamarket_main_content.hika_j5 .hikashop_module_subblock_title {
+	background-image: unset;
+	background-color: #1a4175;
+}
+/* Dashboard */
+div#hikamarket_main_content.hika_j5 .cpanel-tile-block {
+	background-color: #000;
+	border: 1px solid #fff;
+}
+div#hikamarket_main_content.hika_j5 .cpanel-tile-footer,
+div#hikamarket_main_content.hika_j5 .cpanel-tile-header,
+div#hikamarket_main_content.hika_j5 .hikashop_panel_heading,
+div#hikamarket_main_content.hika_j5 .cpanel-tile-block:hover,
+div#hikamarket_main_content.hika_j5 #cpanel div.icon a {
+	background-color: #212529;
+}
+div#hikamarket_main_content.hika_j5 #cpanel div.hkm-icon a {
+	color: unset;
+	background-color: #212529;
+}
+div#hikamarket_main_content.hika_j5 #cpanel div.hkm-icon a:hover {
+	background-color: #40546b;
+}
+#hikamarket_main_content table.admintable tr.option_title,
+#hikamarket_main_content table.admintable tr.option_title > td,
+table.hk_config_table tr.option_title,
+table.hk_config_table tr.option_title > td {
+	background-color:#1a4175;
+	color:#ffffff;
+}
+/* TreeNode */
+div#hikamarket_main_content.hika_j5 .oTreeNode span {
+	color: #fff;
+}
+div#hikamarket_main_content.hika_j5 .oTree a.nodeSel {
+	background-color: #40546b;
+}
+/* Module edition */
+div.hikashop_backend_tile_edition.hika_j5 > .hikashop_tile_block > div {
+	background: inherit;
+}
+/* Panels */
+div#hikamarket_main_content.hika_j5 .hikamarket_panel {
+	background-color: #212529;
+}
+div#hikamarket_main_content.hika_j5 .hikamarket_panel_heading {
+	background-color: #40546b;
+	color: unset;
+}
