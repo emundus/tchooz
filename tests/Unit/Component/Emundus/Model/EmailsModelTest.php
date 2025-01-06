@@ -116,10 +116,10 @@ class EmailsModelTest extends UnitTestCase
 	 */
 	public function testsendExpertMail()
 	{
-		$response = $this->model->sendExpertMail([]);
+		$response = $this->model->sendExpertMail([],0,'','','',[],'');
 		$this->assertEmpty($response['sent'], 'L\'envoi de l\'email a échoué, car il n\'y a pas de fichier');
 
-		$response = $this->model->sendExpertMail([$this->dataset['fnum']]);
+		$response = $this->model->sendExpertMail([$this->dataset['fnum']],0,'','','',[],'');
 		$this->assertEmpty($response['sent'], 'L\'envoi de l\'email a échoué, car il manque des paramètres');
 	}
 }

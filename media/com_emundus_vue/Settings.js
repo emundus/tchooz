@@ -1,8 +1,8 @@
-import { _ as _export_sfc, P as script, Z as reactive, S as Swal$1, e as resolveComponent, o as openBlock, c as createElementBlock, y as createTextVNode, t as toDisplayString, d as createCommentVNode, a as createBaseVNode, w as withDirectives, x as vModelSelect, n as normalizeClass, b as Fragment, r as renderList, j as createBlock, k as withCtx, O as vModelText, U as vModelRadio, D as vModelCheckbox, Q as vModelDynamic, u as withModifiers, v as vShow, H as History, T as Tabs, G as mixin, s as settingsService, g as createVNode, X as client, i as axios, l as normalizeStyle, V as VueDraggableNext, h as errors, z as useGlobalStore, R as withKeys, N as defineStore, q as mergeProps, $ as resolveDynamicComponent } from "./app_emundus.js";
+import { _ as _export_sfc, Q as script, a0 as reactive, S as Swal$1, e as resolveComponent, o as openBlock, c as createElementBlock, z as createTextVNode, t as toDisplayString, d as createCommentVNode, a as createBaseVNode, w as withDirectives, y as vModelSelect, n as normalizeClass, b as Fragment, r as renderList, j as createBlock, k as withCtx, P as vModelText, X as vModelRadio, E as vModelCheckbox, R as vModelDynamic, x as withModifiers, v as vShow, H as History, T as Tabs, I as mixin, u as settingsService, g as createVNode, Z as client, i as axios, l as normalizeStyle, V as VueDraggableNext, h as errors, B as useGlobalStore, W as withKeys, O as defineStore, U as V32, q as mergeProps, a1 as resolveDynamicComponent } from "./app_emundus.js";
 import { t as translationsService, T as Translations } from "./Translations.js";
 import { q as qs } from "./index.js";
 import { v as vueDropzone } from "./vue-dropzone.js";
-import { V as V32 } from "./editor.js";
+/* empty css       */
 import WorkflowSettings from "./WorkflowSettings.js";
 const _sfc_main$k = {
   name: "Parameter",
