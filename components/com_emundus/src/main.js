@@ -25,6 +25,7 @@ import Comments from "@/views/Comments.vue";
 import WorkflowEdit from "@/views/Workflows/WorkflowEdit.vue";
 import ProgramEdit from "@/views/Program/ProgramEdit.vue";
 import History from "@/views/History.vue";
+import Expert from "@/views/Expert/Expert.vue";
 
 if (document) {
     let app = null;
@@ -48,7 +49,7 @@ if (document) {
         const componentName = el.getAttribute('component');
 
         if (componentName) {
-            const componentNames = ['Attachments', 'Comments', 'Workflows/WorkflowEdit', 'Program/ProgramEdit', 'History'];
+            const componentNames = ['Attachments', 'Comments', 'Workflows/WorkflowEdit', 'Program/ProgramEdit', 'History', 'Expert/Expert'];
 
             if (filesElement || componentNames.includes(componentName)) {
                 Array.prototype.slice.call(el.attributes).forEach(function (attr) {
@@ -102,10 +103,10 @@ if (document) {
                     });
                     break;
                 case 'History':
-                    app = createApp(History, {
-                        extension: datas.extension,
-                        itemid: Number(datas.itemid)
-                    });
+                    app = createApp(History, {});
+                    break;
+                case 'Expert/Expert':
+                    app = createApp(Expert, {});
                     break;
                 default:
                     app = createApp({

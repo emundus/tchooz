@@ -272,7 +272,7 @@ export default {
   },
   mixins: [mixins, alerts],
   data: () => ({
-    ccid: this.defaultCcid,
+    ccid: 0,
     comments: [],
     newCommentText: '',
     newChildCommentText: '',

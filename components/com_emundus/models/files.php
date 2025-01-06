@@ -2242,16 +2242,11 @@ class EmundusModelFiles extends JModelLegacy
 		if (!empty($user_id)) {
 			$current_user = Factory::getUser($user_id);
 		} else {
-			if (version_compare(JVERSION, '4.0', '>')) {
-				$current_user = $this->app->getIdentity();
-			}
-			else {
-				$current_user = Factory::getUser();
-			}
+			$current_user = $this->app->getIdentity();
 		}
 
 		$this->code = $m_users->getUserGroupsProgrammeAssoc($current_user->id);
-
+		
 		$groups               = $m_users->getUserGroups($current_user->id, 'Column');
 		$fnum_assoc_to_groups = $m_users->getApplicationsAssocToGroups($groups);
 		$fnum_assoc_to_user   = $m_users->getApplicantsAssoc($current_user->id);
