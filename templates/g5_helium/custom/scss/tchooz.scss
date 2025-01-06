@@ -1627,17 +1627,18 @@ input:focus + .em-slider {
   border: 1px solid var(--neutral-200);
 }
 
-.em-input-card:not(.hika_address_element){
+.em-input-card:not(.hika_address_element) {
   border-radius: var(--em-coordinator-br);
   padding: 12px 16px;
   height: auto;
   background: #fff;
   border: 1px solid var(--neutral-400);
-}
-.em-input-card-selected{
-  background: var(--blue-100);
-  border: 1px solid var(--blue-400);
-  box-shadow: 0 1px 1px rgba(5, 47, 55, 0.07), 0 2px 1px rgba(5, 47, 55, 0.06), 0 1px 3px rgba(5, 47, 55, 0.1);
+
+  &.em-input-card-selected {
+    background: var(--blue-100) !important;
+    border: 1px solid var(--blue-400) !important;
+    box-shadow: 0 1px 1px rgba(5, 47, 55, 0.07), 0 2px 1px rgba(5, 47, 55, 0.06), 0 1px 3px rgba(5, 47, 55, 0.1);
+  }
 }
 
 .em-settings-menu{
