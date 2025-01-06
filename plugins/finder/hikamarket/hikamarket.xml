@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="2.5" type="plugin" group="finder" method="upgrade">
+	<name>Smart Search - HikaMarket Vendors</name>
+	<creationDate>09 septembre 2024</creationDate>
+	<version>{__PLUGIN_VERSION__}</version>
+	<author>Obsidev</author>
+	<authorEmail>dev@obsidev.com</authorEmail>
+	<authorUrl>http://www.obsidev.com</authorUrl>
+	<copyright>Copyright (C) 2012-2024 OBSIDEV SARL - All rights reserved.</copyright>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<description>This plugin enables you to index HikaMarket vendors information for the Joomla Smart Search system</description>
+	<files>
+		<filename plugin="hikamarket">hikamarket.php</filename>
+		<filename>hikamarket_j3.php</filename>
+		<filename>hikamarket_j4.php</filename>
+		<filename>hikamarket_j5.php</filename>
+	</files>
+	<config>
+		<fields name="params" addfieldpath="/components/com_hikamarket/fields">
+			<fieldset name="basic">
+				<field name="fields" type="searchfields" default="vendor_name,vendor_description" label="HIKASHOP_CHECKOUT_FIELDS" description="HIKA_FIELDS" />
+			</fieldset>
+		</fields>
+	</config>
+</extension>
