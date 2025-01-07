@@ -353,12 +353,15 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 
 				try
 				{
-					$query->clear()
-						->update($db->quoteName('#__emundus_files_request'))
-						->set([$db->quoteName('uploaded') . '=1', $db->quoteName('firstname') . '=' . $db->quote($firstname), $db->quoteName('lastname') . '=' . $db->quote($lastname), $db->quoteName('modified_date') . '=NOW()'])
-						->where($db->quoteName('keyid') . ' LIKE ' . $db->quote($key_id) . ' AND ' . $db->quoteName('fnum') . ' IN (' . implode(',', $db->quote($files_picked)) . ')');
-					$db->setQuery($query);
-					$db->execute();
+					if (!empty($files_picked))
+					{
+						$query->clear()
+							->update($db->quoteName('#__emundus_files_request'))
+							->set([$db->quoteName('uploaded') . '=1', $db->quoteName('firstname') . '=' . $db->quote($firstname), $db->quoteName('lastname') . '=' . $db->quote($lastname), $db->quoteName('modified_date') . '=NOW()'])
+							->where($db->quoteName('keyid') . ' LIKE ' . $db->quote($key_id) . ' AND ' . $db->quoteName('fnum') . ' IN (' . implode(',', $db->quote($files_picked)) . ')');
+						$db->setQuery($query);
+						$db->execute();
+					}
 				}
 				catch (Exception $e)
 				{
@@ -459,19 +462,6 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 				}
 				else
 				{
-					$query->clear()
-						->select('*')
-						->from('#__jcrm_contacts')
-						->where($db->quoteName('email') . ' LIKE ' . $db->quote($email));
-					$db->setQuery($query);
-					$expert = $db->loadAssoc();
-
-					if (!empty($expert))
-					{
-						$firstname = ucfirst($expert['first_name']);
-						$lastname  = strtoupper($expert['last_name']);
-					}
-
 					$name = $firstname . ' ' . $lastname;
 
 					$password            = UserHelper::genRandomPassword();
@@ -570,42 +560,45 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 
 					foreach ($statut_expertise as $s)
 					{
-						if ($s->status_expertise == 1 && $send_email_accept == 1)
+						$email = $m_emails->getEmail('expert_accept');
+						if (!empty($email))
 						{
-							$email = $m_emails->getEmail('expert_accept');
-							$body  = $m_emails->setBody($user, $email->message);
-
-							$email_from_sys = Factory::getConfig()->get('mailfrom');
-							$sender         = [
-								$email_from_sys,
-								$email->name
-							];
-							$recipient      = $user->email;
-
-							$mailer->setSender($sender);
-							$mailer->addReplyTo($email->emailfrom, $email->name);
-							$mailer->addRecipient($recipient);
-							$mailer->setSubject($email->subject);
-							$mailer->isHTML(true);
-							$mailer->Encoding = 'base64';
-							$mailer->setBody($body);
-
-							$send = $mailer->Send();
-							if ($send !== true)
+							if ($s->status_expertise == 1 && $send_email_accept == 1)
 							{
-								echo 'Error sending email: ' . $send;
-								die();
-							}
-							else
-							{
-								$message = [
-									'user_id_from' => 62,
-									'user_id_to'   => $user->id,
-									'subject'      => $email->subject,
-									'message'      => $body,
-									'email_to'     => $user->email
+								$body = $m_emails->setBody($user, $email->message);
+
+								$email_from_sys = Factory::getConfig()->get('mailfrom');
+								$sender         = [
+									$email_from_sys,
+									$email->name
 								];
-								$m_emails->logEmail($message);
+								$recipient      = $user->email;
+
+								$mailer->setSender($sender);
+								$mailer->addReplyTo($email->emailfrom, $email->name);
+								$mailer->addRecipient($recipient);
+								$mailer->setSubject($email->subject);
+								$mailer->isHTML(true);
+								$mailer->Encoding = 'base64';
+								$mailer->setBody($body);
+
+								$send = $mailer->Send();
+								if ($send !== true)
+								{
+									echo 'Error sending email: ' . $send;
+									die();
+								}
+								else
+								{
+									$message = [
+										'user_id_from' => 62,
+										'user_id_to'   => $user->id,
+										'subject'      => $email->subject,
+										'message'      => $body,
+										'email_to'     => $user->email
+									];
+									$m_emails->logEmail($message);
+								}
 							}
 						}
 					}
@@ -680,15 +673,15 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 							}
 						}
 					}
+				}
 
-					// Finally we log expert
-					if ((!empty($password) || !empty($user->password)) && ($current_user->guest == 1 || ($current_user->email == $email)))
-					{
-						$app->enqueueMessage(Text::_('USER_LOGGED'), 'success');
-						$m_users->login($user->id);
+				// Finally we log expert
+				if ((!empty($password) || !empty($user->password)) && ($current_user->guest == 1 || ($current_user->email == $email)))
+				{
+					$app->enqueueMessage(Text::_('USER_LOGGED'), 'success');
+					$m_users->login($user->id);
 
-						$app->redirect('index.php');
-					}
+					$app->redirect('index.php');
 				}
 			}
 			else
@@ -728,8 +721,23 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 		$query->insert($db->quoteName('#__emundus_users_assoc'))
 			->columns($db->quoteName(['user_id', 'action_id', 'fnum', 'c', 'r', 'u', 'd']));
 
+		$assocs = [];
 		foreach ($fnums as $fnum)
 		{
+			$check_query = $db->getQuery(true);
+			$check_query->select('id')
+				->from($db->quoteName('#__emundus_users_assoc'))
+				->where($db->quoteName('user_id') . ' = ' . $user->id . ' AND ' . $db->quoteName('action_id') . ' = 1 AND ' . $db->quoteName('fnum') . ' = ' . $db->quote($fnum));
+			$db->setQuery($check_query);
+			$check = $db->loadResult();
+
+			if (!empty($check))
+			{
+				continue;
+			}
+
+			$assocs[] = $fnum;
+
 			$query->values($user->id . ', 1, ' . $db->Quote($fnum) . ', 0,1,0,0');
 			$query->values($user->id . ', 4, ' . $db->Quote($fnum) . ', 0,1,0,0');
 			$query->values($user->id . ', 5, ' . $db->Quote($fnum) . ', 1,1,1,0');
@@ -739,17 +747,20 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 			$query->values($user->id . ', 14, ' . $db->Quote($fnum) . ', 1,1,1,0');
 		}
 
-		try
+		if (!empty($assocs))
 		{
-			$db->setQuery($query);
-			$db->execute();
-		}
-		catch (Exception $e)
-		{
-			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
+			try
+			{
+				$db->setQuery($query);
+				$db->execute();
+			}
+			catch (Exception $e)
+			{
+				echo $e->getMessage();
+				JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
 
-			return false;
+				return false;
+			}
 		}
 
 		// 2.1.1B Association du compte utilisateur dans le groupe 'experts' defini dans les paramètres du plugin.
