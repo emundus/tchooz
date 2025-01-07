@@ -65,6 +65,17 @@
                        label="PLG_HIKASHOP_EMUNDUS_EXED_HIKASHOP_ELEMENT_DISCOUNT_VALUE_LABEL"
                        description="PLG_HIKASHOP_EMUNDUS_EXED_HIKASHOP_ELEMENT_DISCOUNT_VALUE_DESC"
                 />
+                <field
+                    name="hikashop_vendor_id"
+                    default="0"
+                    type="sql"
+                    label="PLG_HIKASHOP_EMUNDUS_EXED_HIKASHOP_VENDOR_ID_LABEL"
+                    description="PLG_HIKASHOP_EMUNDUS_EXED_HIKASHOP_VENDOR_ID_DESC"
+                    query="SELECT `vendor_id`, `vendor_name` FROM `jos_hikamarket_vendor`"
+                    key_field="vendor_id"
+                    value_field="vendor_name"
+                >
+                </field>
             </fieldset>
         </fields>
     </config>
