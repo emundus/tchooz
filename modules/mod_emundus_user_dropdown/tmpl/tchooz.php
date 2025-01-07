@@ -527,7 +527,7 @@ if ($user != null)
     </script>
 <?php } else { ?>
 	<?php if ($display_svg == 1) : ?>
-        <iframe id="background-shapes" alt="<?= JText::_('COM_EMUNDUS_USERDROPDOWN_IFRAME') ?>"></iframe>
+        <div id="background-shapes" alt="<?= JText::_('COM_EMUNDUS_USERDROPDOWN_IFRAME') ?>"></div>
 	<?php endif; ?>
     <div class="header-right" style="text-align: right;">
 		<?php if ($show_registration) { ?>

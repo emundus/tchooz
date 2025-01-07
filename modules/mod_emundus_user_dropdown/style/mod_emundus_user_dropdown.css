@@ -417,45 +417,34 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
 
 /* Gestionnaire plateforme et programme */
 .dropdown #background-shapes {
-    mask-image: url(/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg);
-    -webkit-mask-image: url(/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg);
+    mask-image: url('/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg');
     height: 72px;
     background: var(--em-profile-color);
     position: absolute;
     width: 300px;
     mask-repeat: no-repeat;
-    -webkit-mask-repeat: no-repeat;
     mask-position: center;
-    -webkit-mask-position: center;
     mask-size: 300px;
-    -webkit-mask-size: 300px;
     mask-origin: border-box;
-    -webkit-mask-origin: border-box;
     right: -10px;
     top: -6px;
 }
 
 /* Déconnecté */
 #background-shapes {
+    mask-image: url('/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg');
+    height: 72px;
+    background: var(--em-profile-color);
     position: absolute;
-    height: 100%;
+    width: 300px;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: 300px;
+    mask-origin: border-box;
+    right: 0;
     top: 0;
-    right: -1px;
     pointer-events: none;
     z-index: -1;
-    mask-image: url('/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg');
-    -webkit-mask-image: url('/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg');
-    background: var(--em-profile-color);
-    mask-repeat: no-repeat;
-    -webkit-mask-repeat: no-repeat;
-    mask-position: top;
-    -webkit-mask-position: top;
-    mask-size: contain;
-    -webkit-mask-size: contain;
-}
-
-iframe#background-shapes {
-    display: none;
 }
 
 div#userDropdown {

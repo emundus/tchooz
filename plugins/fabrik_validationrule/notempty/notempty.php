@@ -85,60 +85,86 @@ class PlgFabrik_ValidationruleNotempty extends PlgFabrik_Validationrule
 			->where($db->quoteName('esfrjaf.fields') . ' = ' . $db->quote($elt))
 			->where($db->quoteName('esfrja.action') . ' IN (' . implode(',',$db->quote(['set_optional','set_mandatory'])) . ')');
 		$db->setQuery($query);
-		$rule = $db->loadObject();
+		$rules = $db->loadObjectList();
 
-		if(!empty($rule->parent_id))
+		foreach ($rules as $rule)
 		{
-			$query->clear()
-				->select($db->quoteName(['esfrjc.field','esfrjc.state','esfrjc.values','esfr.group']))
-				->from($db->quoteName('#__emundus_setup_form_rules_js_conditions','esfrjc'))
-				->leftJoin($db->quoteName('#__emundus_setup_form_rules','esfr').' ON '.$db->quoteName('esfr.id').' = '.$db->quoteName('esfrjc.parent_id'))
-				->where($db->quoteName('esfrjc.parent_id') . ' = '. $db->quote($rule->parent_id))
-				->where($db->quoteName('esfr.form_id') . ' = '. $db->quote($form_id));
-			$db->setQuery($query);
-			$conditions = $db->loadObjectList();
+			if (!empty($rule->parent_id))
+			{
+				$query->clear()
+					->select($db->quoteName(['esfrjc.field', 'esfrjc.state', 'esfrjc.values', 'esfr.group']))
+					->from($db->quoteName('#__emundus_setup_form_rules_js_conditions', 'esfrjc'))
+					->leftJoin($db->quoteName('#__emundus_setup_form_rules', 'esfr') . ' ON ' . $db->quoteName('esfr.id') . ' = ' . $db->quoteName('esfrjc.parent_id'))
+					->where($db->quoteName('esfrjc.parent_id') . ' = ' . $db->quote($rule->parent_id))
+					->where($db->quoteName('esfr.form_id') . ' = ' . $db->quote($form_id));
+				$db->setQuery($query);
+				$conditions = $db->loadObjectList();
 
-			$condition_state = [];
-			foreach ($conditions as $condition) {
-				foreach($formData as $key => $data) {
-					if (strpos($key,$condition->field.'_raw')) {
-						$value = $data;
-						if(strpos($key, 'repeat')) {
-							$value = $data[$repeatCounter];
-						}
+				if(!empty($conditions))
+				{
+					$condition_state = [];
+					foreach ($conditions as $condition)
+					{
+						foreach ($formData as $key => $data)
+						{
+							if (strpos($key, $condition->field . '_raw'))
+							{
+								$value = $data;
+								if (strpos($key, 'repeat'))
+								{
+									$value = $data[$repeatCounter];
+								}
 
-						switch ($condition->state) {
-							case '=': // Equal
-								if(is_array($value)) {
-									$condition_state[] = in_array($condition->values, $value);
-								} else {
-									$condition_state[] = $value == $condition->values;
+								switch ($condition->state)
+								{
+									case '=': // Equal
+										if (is_array($value))
+										{
+											$condition_state[] = in_array($condition->values, $value);
+										}
+										else
+										{
+											$condition_state[] = $value == $condition->values;
+										}
+										break;
+									case '!=': // Not equal
+										if (is_array($value))
+										{
+											$condition_state[] = !in_array($condition->values, $value);
+										}
+										else
+										{
+											$condition_state[] = $value != $condition->values;
+										}
+										break;
 								}
 								break;
-							case '!=': // Not equal
-								if(is_array($value)) {
-									$condition_state[] = !in_array($condition->values, $value);
-								} else {
-									$condition_state[] = $value != $condition->values;
-								}
-								break;
+							}
 						}
-						break;
 					}
-				}
-			}
 
-			if (in_array(false, $condition_state, true)) {
-				if($rule->action == 'set_optional') {
-					return true;
-				} else {
-					return false;
-				}
-			} else {
-				if($rule->action == 'set_optional') {
-					return false;
-				} else {
-					return true;
+					if (in_array(false, $condition_state, true))
+					{
+						if ($rule->action == 'set_optional')
+						{
+							return true;
+						}
+						else
+						{
+							return false;
+						}
+					}
+					else
+					{
+						if ($rule->action == 'set_optional')
+						{
+							return false;
+						}
+						else
+						{
+							return true;
+						}
+					}
 				}
 			}
 		}
