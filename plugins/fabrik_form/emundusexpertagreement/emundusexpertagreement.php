@@ -521,7 +521,9 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 					];
 
 					$mailer->setSender($sender);
-					$mailer->addReplyTo($email->emailfrom, $email->name);
+					if(!empty($email->emailfrom)){
+						$mailer->addReplyTo($email->emailfrom, $email->name);
+					}
 					$mailer->addRecipient($user->email);
 					$mailer->setSubject($email->subject);
 					$mailer->isHTML(true);
