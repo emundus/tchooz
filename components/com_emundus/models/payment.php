@@ -1351,7 +1351,7 @@ class EmundusModelPayment extends JModelList
 	 * @param $type string allowed values : main, variant
 	 * @param $parent_id int
 	 */
-	public function createHikashopProduct(string $label, float $price, string $code = '', int $category = 0, string $type = 'main', int $parent_id = 0, $variant_characteristic_id = 0, $to_user = 0): int
+	public function createHikashopProduct(string $label, float $price, string $code = '', int $category = 0, string $type = 'main', int $parent_id = 0, $variant_characteristic_id = 0, $to_user = 0, $vendor_id = 0): int
 	{
 		$product_id = 0;
 
@@ -1365,8 +1365,8 @@ class EmundusModelPayment extends JModelList
 			$query = $db->createQuery();
 
 			$query->insert('#__hikashop_product')
-				->columns(['product_parent_id', 'product_name', 'product_description', 'product_url', 'product_keywords', 'product_meta_description', 'product_description_raw', 'product_average_score', 'product_quantity', 'product_code', 'product_published', 'product_type', 'product_sort_price'])
-				->values($parent_id . ', ' . $db->quote($label)  . ', "", "", "", "", "", 0, -1, ' . $db->quote($code) . ', 1, ' . $db->quote($type). ', ' . $db->quote($price));
+				->columns(['product_parent_id', 'product_name', 'product_description', 'product_url', 'product_keywords', 'product_meta_description', 'product_description_raw', 'product_average_score', 'product_quantity', 'product_code', 'product_published', 'product_type', 'product_sort_price', 'product_vendor_id'])
+				->values($parent_id . ', ' . $db->quote($label)  . ', "", "", "", "", "", 0, -1, ' . $db->quote($code) . ', 1, ' . $db->quote($type). ', ' . $db->quote($price) . ', ' .  $db->quote($vendor_id));
 
 			try {
 				$db->setQuery($query);
