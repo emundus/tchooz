@@ -1162,13 +1162,16 @@ class EmundusControllerEvaluation extends BaseController
 
 				foreach ($steps as $step) {
 					$step_data = $m_workflow->getStepData($step->id, $campaign_id);
+					if (!$m_workflow->isEvaluationStep($step_data->type)) {
+						continue;
+					}
 
-					$user_access = EmundusHelperAccess::getUserEvaluationStepAccess($ccid, $step_data, $this->_user->id);
-					if ($m_workflow->isEvaluationStep($step_data->type) && $user_access['can_see']) {
+					$user_access = EmundusHelperAccess::getUserEvaluationStepAccess($ccid, $step_data, $this->_user->id, false);
+					if ($user_access['can_see']) {
 						if ($readonly && $user_access['can_edit']) {
 							continue;
 						}
-						$step_data->user_access = EmundusHelperAccess::getUserEvaluationStepAccess($ccid, $step_data, $this->_user->id);
+						$step_data->user_access = $user_access;
 
 						if ($user_access['can_edit'] || !$step_data->multiple) {
 							if (!$user_access['can_edit']) {
