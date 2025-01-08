@@ -75879,12 +75879,16 @@ if (document) {
   let el2 = document.getElementById("em-component-vue");
   const attachmentElement = document.getElementById("em-application-attachment");
   const filesElement = document.getElementById("em-files");
+  const expertElement = document.getElementById("em-expert");
   if (attachmentElement) {
     elementId = "#em-application-attachment";
     el2 = attachmentElement;
   } else if (filesElement) {
     elementId = "#em-files";
     el2 = filesElement;
+  } else if (expertElement) {
+    elementId = "#em-expert";
+    el2 = expertElement;
   }
   if (el2) {
     const componentName = el2.getAttribute("component");
