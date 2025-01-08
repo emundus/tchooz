@@ -506,42 +506,11 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 						}
 
 						$email = $m_emails->getEmail('new_account');
-						$body  = $m_emails->setBody($user, $email->message, $password);
-
-						$email_from_sys = Factory::getConfig()->get('mailfrom');
-						$sender         = [
-							$email_from_sys,
-							$email->name
-						];
-
-						$mailer->setSender($sender);
-						if (!empty($email->emailfrom))
-						{
-							$mailer->addReplyTo($email->emailfrom, $email->name);
-						}
-						$mailer->addRecipient($user->email);
-						$mailer->setSubject($email->subject);
-						$mailer->isHTML(true);
-						$mailer->Encoding = 'base64';
-						$mailer->setBody($body);
-
-						$send = $mailer->Send();
-						if ($send !== true)
-						{
-							echo 'Error sending email: ' . $send;
-							die();
-						}
-						else
-						{
-							$message = [
-								'user_id_from' => 62,
-								'user_id_to'   => $user->id,
-								'subject'      => $email->subject,
-								'message'      => $body,
-								'email_to'     => $user->email
-							];
-							$m_emails->logEmail($message);
-						}
+						$data          = array();
+						$data['email'] = $user->email;
+						require_once JPATH_SITE . '/components/com_emundus/models/users.php';
+						$m_users = new EmundusModelUsers();
+						$m_users->passwordReset($data, '', '', true, 'new_account');
 					}
 
 					// Send email if needed
