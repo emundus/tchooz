@@ -83,7 +83,10 @@ const _sfc_main$2 = {
   }
 };
 const _hoisted_1$2 = { id: "evaluations-container" };
-const _hoisted_2$2 = { key: 0 };
+const _hoisted_2$2 = {
+  key: 0,
+  class: "tw-h-full"
+};
 const _hoisted_3$2 = { class: "tw-mt-1" };
 const _hoisted_4$2 = { class: "tw-list-none tw-flex tw-flex-row" };
 const _hoisted_5$2 = ["onClick"];
@@ -114,7 +117,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     ])) : (openBlock(), createElementBlock("p", _hoisted_7$1, toDisplayString(_ctx.translate("COM_EMUNDUS_EVALUATIONS_LIST_NO_EDITABLE_EVALUATIONS")), 1))
   ]);
 }
-const Evaluations = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-f595d1ff"]]);
+const Evaluations = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-7819c161"]]);
 const client = new FetchClient("file");
 const filesService = {
   // eslint-disable-next-line no-unused-vars
@@ -305,7 +308,10 @@ const _sfc_main$1 = {
 };
 const _hoisted_1$1 = ["id"];
 const _hoisted_2$1 = { class: "tw-mb-4" };
-const _hoisted_3$1 = { key: 0 };
+const _hoisted_3$1 = {
+  key: 0,
+  class: "tw-p-4 tw-h-full"
+};
 const _hoisted_4$1 = ["src"];
 const _hoisted_5$1 = {
   key: 1,
@@ -314,8 +320,7 @@ const _hoisted_5$1 = {
 function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_Tabs = resolveComponent("Tabs");
   return openBlock(), createElementBlock("div", {
-    id: "evaluation-step-" + $props.step.id + "-list",
-    class: "tw-p-4"
+    id: "evaluation-step-" + $props.step.id + "-list"
   }, [
     createBaseVNode("h2", _hoisted_2$1, toDisplayString(_ctx.translate("COM_EMUNDUS_EVALUATIONS_LIST")), 1),
     _ctx.evaluations.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_3$1, [
@@ -332,7 +337,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
     ])) : (openBlock(), createElementBlock("p", _hoisted_5$1, toDisplayString(_ctx.translate("COM_EMUNDUS_EVALUATIONS_LIST_NO_EVALUATIONS")), 1))
   ], 8, _hoisted_1$1);
 }
-const EvaluationList = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-dd8364a9"]]);
+const EvaluationList = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-78b155a0"]]);
 const _sfc_main = {
   name: "ApplicationSingle",
   components: { EvaluationList, Comments, Attachments, Modal, Evaluations },
@@ -534,7 +539,6 @@ const _sfc_main = {
                   step
                 });
               }
-              console.log(this.tabs, "tabs");
             });
           }).catch((error) => {
             console.log(error);

@@ -329,8 +329,6 @@ export default {
                   step: step
                 });
               }
-
-              console.log(this.tabs, 'tabs');
             });
           }).catch(error => {
             console.log(error);

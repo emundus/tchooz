@@ -1,7 +1,7 @@
 <template>
-  <div :id="'evaluation-step-' + step.id + '-list'" class="tw-p-4">
+  <div :id="'evaluation-step-' + step.id + '-list'">
     <h2 class="tw-mb-4">{{ translate('COM_EMUNDUS_EVALUATIONS_LIST') }}</h2>
-    <div v-if="evaluations.length > 0">
+    <div v-if="evaluations.length > 0"  class="tw-p-4 tw-h-full">
       <Tabs
             :tabs="evaluationsTabs"
             :classes="'tw-overflow-x-scroll tw-flex tw-items-center tw-justify-start tw-gap-2'"

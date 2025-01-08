@@ -1,6 +1,6 @@
 <template>
   <div id="evaluations-container">
-    <div v-if="evaluations.length > 0">
+    <div v-if="evaluations.length > 0" class="tw-h-full">
       <nav class="tw-mt-1">
         <ul class="tw-list-none tw-flex tw-flex-row">
           <li v-for="evaluation in evaluations" :key="evaluation.id"
