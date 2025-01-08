@@ -85,7 +85,10 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 	 */
 	public function onBeforeLoad(): bool
 	{
-		if ($this->getParam('onBeforeLoadVerification', 1) == 1)
+		require_once JPATH_SITE . '/components/com_emundus/helpers/access.php';
+		$user = Factory::getApplication()->getIdentity();
+
+		if ($this->getParam('onBeforeLoadVerification', 1) == 1 && !EmundusHelperAccess::asPartnerAccessLevel($user->id))
 		{
 			$app         = Factory::getApplication();
 			$jinput      = $app->input;
@@ -94,17 +97,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 			$formid      = $jinput->get->getInt('formid');
 
 			$baseurl = Uri::base();
-			if (version_compare(JVERSION, '4.0', '<'))
-			{
-				$db   = Factory::getDbo();
-				$user = Factory::getUser();
-			}
-			else
-			{
-				$db   = Factory::getContainer()->get('DatabaseDriver');
-				$user = $app->getIdentity();
-			}
-
+			$db   = Factory::getContainer()->get('DatabaseDriver');
 
 			$query = $db->getQuery(true);
 			$query->select('*')
@@ -123,8 +116,6 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 
 			if (!empty($obj))
 			{
-
-
 				if ($user->id !== 0 && $user->email !== $obj->email)
 				{
 					$app->enqueueMessage(Text::_('INCORRECT_USER'), 'message');
@@ -170,165 +161,145 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 	 */
 	public function onAfterProcess(): void
 	{
+		require_once JPATH_SITE . '/components/com_emundus/helpers/access.php';
 
 		Log::addLogger(['text_file' => 'com_emundus.expertAcceptation.error.php'], Log::ERROR, 'com_emundus');
-		$current_user = Factory::getUser();
+		$current_user = Factory::getApplication()->getIdentity();
 
-		try
+		if(!EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
 		{
-			$app = Factory::getApplication();
-
-			$db     = Factory::getContainer()->get('DatabaseDriver');
-			$mailer = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer();
-
-			$query     = $db->getQuery(true);
-			$formModel = $this->getModel();
-
-			$jinput              = $app->input;
-			$key_id              = $jinput->get->get('keyid') ?: $formModel->formData['keyid_raw'];
-			$firstname           = ucfirst($jinput->get($this->getParam('firstname_input', 'jos_emundus_files_request___firstname')) ?: $formModel->formData['firstname_raw']);
-			$lastname            = strtoupper($jinput->get($this->getParam('lastname_input', 'jos_emundus_files_request___lastname')) ?: $formModel->formData['lastname_raw']);
-			$attachments_fields  = $this->getParam('attachments_input');
-			$attachments_ids     = $this->getParam('attachments_id');
-			$fnum_field          = $this->getParam('fnum_input', 'fnum_expertise');
-			$status_field        = $this->getParam('status_input', 'status_expertise');
-			$accepted_status     = $this->getParam('accepted_value', '1');
-			$group               = $this->getParam('group');
-			$profile_id          = $this->getParam('profile_id');
-			$pick_fnums          = $this->getParam('pick_fnums', 0);
-			$redirect            = $this->getParam('redirect', 1);
-			$send_email_accept   = $this->getParam('send_email_accept', 1);
-			$keep_accepted_fnums = $this->getParam('keep_accepted_fnums', 0);
-
-			if (!empty($attachments_fields))
+			try
 			{
-				$attachments_fields = explode(',', $attachments_fields);
-			}
-			if (!empty($attachments_ids))
-			{
-				$attachments_ids = explode(',', $attachments_ids);
-			}
+				$app = Factory::getApplication();
 
-			$files_picked = [];
-			if ($pick_fnums)
-			{
-				$files_picked = $jinput->get('jos_emundus_files_request___your_files');
-			}
+				$db     = Factory::getContainer()->get('DatabaseDriver');
+				$mailer = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer();
 
-			// Get expert email
-			$query->clear()
-				->select($db->quoteName('email'))
-				->from($db->quoteName('#__emundus_files_request'))
-				->where($db->quoteName('keyid') . ' LIKE ' . $db->quote($key_id));
-			$db->setQuery($query);
-			$email = $db->loadResult();
+				$query     = $db->getQuery(true);
+				$formModel = $this->getModel();
 
-			if (empty($email))
-			{
-				throw new Exception(Text::_('PLG_FABRIK_EXPERTAGREEMENT_NO_EMAIL_FOUND'), 500);
-			}
-			//
+				$jinput              = $app->input;
+				$key_id              = $jinput->get->get('keyid') ?: $formModel->formData['keyid_raw'];
+				$firstname           = ucfirst($jinput->get($this->getParam('firstname_input', 'jos_emundus_files_request___firstname')) ?: $formModel->formData['firstname_raw']);
+				$lastname            = strtoupper($jinput->get($this->getParam('lastname_input', 'jos_emundus_files_request___lastname')) ?: $formModel->formData['lastname_raw']);
+				$attachments_fields  = $this->getParam('attachments_input');
+				$attachments_ids     = $this->getParam('attachments_id');
+				$fnum_field          = $this->getParam('fnum_input', 'fnum_expertise');
+				$status_field        = $this->getParam('status_input', 'status_expertise');
+				$accepted_status     = $this->getParam('accepted_value', '1');
+				$group               = $this->getParam('group');
+				$profile_id          = $this->getParam('profile_id');
+				$pick_fnums          = $this->getParam('pick_fnums', 0);
+				$redirect            = $this->getParam('redirect', 1);
+				$send_email_accept   = $this->getParam('send_email_accept', 1);
+				$keep_accepted_fnums = $this->getParam('keep_accepted_fnums', 0);
 
-			// Filter accepted and rejected fnums
-			$fnums          = [];
-			$rejected_fnums = [];
-			if ($pick_fnums)
-			{
-				$statuses = $formModel->formData[$status_field . '_raw'];
-				foreach ($statuses as $key => $status)
+				if (!empty($attachments_fields))
 				{
-					$value = is_array($status) ? $status[0] : $status;
-					if ($value == $accepted_status)
-					{
-						$fnums[] = $formModel->formData[$fnum_field . '_raw'][$key];
-					}
-					else
-					{
-						$rejected_fnums[] = $formModel->formData[$fnum_field . '_raw'][$key];
-					}
+					$attachments_fields = explode(',', $attachments_fields);
 				}
-			}
+				if (!empty($attachments_ids))
+				{
+					$attachments_ids = explode(',', $attachments_ids);
+				}
 
-			if ($keep_accepted_fnums)
-			{
-				$query->select('fnum')
-					->from($db->quoteName('#__emundus_files_request'))
-					->where($db->quoteName('keyid') . ' LIKE ' . $db->quote($key_id))
-					->andWhere('rejection = 0');
+				$files_picked = [];
+				if ($pick_fnums)
+				{
+					$files_picked = $jinput->get('jos_emundus_files_request___your_files');
+				}
 
-				$db->setQuery($query);
-				$accepted_fnums = $db->loadAssoc();
-			}
-			//
-
-			$this->_db->setQuery('show tables');
-			$existingTables = $this->_db->loadColumn();
-			if (!in_array('jos_emundus_files_request_1614_repeat', $existingTables))
-			{
+				// Get expert email
 				$query->clear()
-					->select($db->quoteName('fnum'))
+					->select($db->quoteName('email'))
 					->from($db->quoteName('#__emundus_files_request'))
 					->where($db->quoteName('keyid') . ' LIKE ' . $db->quote($key_id));
 				$db->setQuery($query);
-				$fnums = $db->loadColumn();
-			}
+				$email = $db->loadResult();
 
-			if ($keep_accepted_fnums)
-			{
-				$fnums = array_intersect($fnums, $accepted_fnums);
-			}
-
-			$fnums = array_filter($fnums);
-
-			include_once(JPATH_ROOT . '/components/com_emundus/models/users.php');
-			include_once(JPATH_ROOT . '/components/com_emundus/models/emails.php');
-			include_once(JPATH_ROOT . '/components/com_emundus/models/application.php');
-			include_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
-			include_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
-			require_once JPATH_SITE . '/components/com_emundus/models/expert.php';
-			$m_users       = new EmundusModelUsers;
-			$m_emails      = new EmundusModelEmails;
-			$m_application = new EmundusModelApplication;
-			$m_files       = new EmundusModelFiles;
-			$m_expert      = new EmundusModelExpert();
-
-			if (!empty($rejected_fnums))
-			{
-				$setup = $m_expert->getSetupByFnum($rejected_fnums[0]);
-				if ($setup->notify_refus == 1)
+				if (empty($email))
 				{
-					$fnums_html = '<ul>';
-					foreach ($rejected_fnums as $fnum)
-					{
-						$fnums_html .= '<li>' . $fnum . '</li>';
-					}
-					$fnums_html .= '</ul>';
-					$post       = [
-						'FNUMS' => $fnums_html,
-					];
-					$query->clear()
-						->select('u.email')
-						->from($db->quoteName('#__emundus_users', 'eu'))
-						->leftJoin($db->quoteName('#__users', 'u') . ' ON ' . $db->quoteName('u.id') . ' = ' . $db->quoteName('eu.user_id'))
-						->where($db->quoteName('eu.profile') . ' = 2');
-					$db->setQuery($query);
-					$coord_emails = $db->loadColumn();
+					throw new Exception(Text::_('PLG_FABRIK_EXPERTAGREEMENT_NO_EMAIL_FOUND'), 500);
+				}
+				//
 
-					foreach ($coord_emails as $coord_email)
+				// Filter accepted and rejected fnums
+				$fnums          = [];
+				$rejected_fnums = [];
+				if ($pick_fnums)
+				{
+					$statuses = $formModel->formData[$status_field . '_raw'];
+					foreach ($statuses as $key => $status)
 					{
-						$m_emails->sendEmailNoFnum($coord_email, 'refus_expertise', $post);
+						$value = is_array($status) ? $status[0] : $status;
+						if ($value == $accepted_status)
+						{
+							$fnums[] = $formModel->formData[$fnum_field . '_raw'][$key];
+						}
+						else
+						{
+							$rejected_fnums[] = $formModel->formData[$fnum_field . '_raw'][$key];
+						}
 					}
 				}
-			}
 
-			if (!empty($fnums))
-			{
-				$setup = $m_expert->getSetupByFnum($fnums[0]);
-
-				if ($setup->must_validate == 1)
+				if ($keep_accepted_fnums)
 				{
-					if ($current_user->guest == 1 || $current_user->email == $email)
+					$query->select('fnum')
+						->from($db->quoteName('#__emundus_files_request'))
+						->where($db->quoteName('keyid') . ' LIKE ' . $db->quote($key_id))
+						->andWhere('rejection = 0');
+
+					$db->setQuery($query);
+					$accepted_fnums = $db->loadAssoc();
+				}
+				//
+
+				$this->_db->setQuery('show tables');
+				$existingTables = $this->_db->loadColumn();
+				if (!in_array('jos_emundus_files_request_1614_repeat', $existingTables))
+				{
+					$query->clear()
+						->select($db->quoteName('fnum'))
+						->from($db->quoteName('#__emundus_files_request'))
+						->where($db->quoteName('keyid') . ' LIKE ' . $db->quote($key_id));
+					$db->setQuery($query);
+					$fnums = $db->loadColumn();
+				}
+
+				if ($keep_accepted_fnums)
+				{
+					$fnums = array_intersect($fnums, $accepted_fnums);
+				}
+
+				$fnums = array_filter($fnums);
+
+				include_once(JPATH_ROOT . '/components/com_emundus/models/users.php');
+				include_once(JPATH_ROOT . '/components/com_emundus/models/emails.php');
+				include_once(JPATH_ROOT . '/components/com_emundus/models/application.php');
+				include_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
+				include_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+				require_once JPATH_SITE . '/components/com_emundus/models/expert.php';
+				$m_users       = new EmundusModelUsers;
+				$m_emails      = new EmundusModelEmails;
+				$m_application = new EmundusModelApplication;
+				$m_files       = new EmundusModelFiles;
+				$m_expert      = new EmundusModelExpert();
+
+				if (!empty($rejected_fnums))
+				{
+					$setup = $m_expert->getSetupByFnum($rejected_fnums[0]);
+					if ($setup->notify_refus == 1)
 					{
+						$fnums_html = '<ul>';
+						foreach ($rejected_fnums as $fnum)
+						{
+							$fnums_html .= '<li>' . $fnum . '</li>';
+						}
+						$fnums_html .= '</ul>';
+						$post       = [
+							'FNUMS' => $fnums_html,
+						];
 						$query->clear()
 							->select('u.email')
 							->from($db->quoteName('#__emundus_users', 'eu'))
@@ -339,289 +310,216 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 
 						foreach ($coord_emails as $coord_email)
 						{
-							$m_emails->sendEmailNoFnum($coord_email, $setup->notify_email);
+							$m_emails->sendEmailNoFnum($coord_email, 'refus_expertise', $post);
 						}
-
-						$app->enqueueMessage(Text::_('PLG_FABRIK_EXPERTAGREEMENT_NEED_VALIDATION'), 'success');
-						$app->redirect('index.php');
 					}
-					elseif ($formModel->formData['uploaded_raw'][0] != 1)
+				}
+
+				if (!empty($fnums))
+				{
+					$setup = $m_expert->getSetupByFnum($fnums[0]);
+
+					if ($setup->must_validate == 1)
 					{
-						return;
-					}
-				}
+						if ($current_user->guest == 1 || $current_user->email == $email)
+						{
+							$query->clear()
+								->select('u.email')
+								->from($db->quoteName('#__emundus_users', 'eu'))
+								->leftJoin($db->quoteName('#__users', 'u') . ' ON ' . $db->quoteName('u.id') . ' = ' . $db->quoteName('eu.user_id'))
+								->where($db->quoteName('eu.profile') . ' = 2');
+							$db->setQuery($query);
+							$coord_emails = $db->loadColumn();
 
-				try
-				{
-					if (!empty($files_picked))
-					{
-						$query->clear()
-							->update($db->quoteName('#__emundus_files_request'))
-							->set([$db->quoteName('uploaded') . '=1', $db->quoteName('firstname') . '=' . $db->quote($firstname), $db->quoteName('lastname') . '=' . $db->quote($lastname), $db->quoteName('modified_date') . '=NOW()'])
-							->where($db->quoteName('keyid') . ' LIKE ' . $db->quote($key_id) . ' AND ' . $db->quoteName('fnum') . ' IN (' . implode(',', $db->quote($files_picked)) . ')');
-						$db->setQuery($query);
-						$db->execute();
-					}
-				}
-				catch (Exception $e)
-				{
-					echo $e->getMessage();
-					JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
-				}
+							foreach ($coord_emails as $coord_email)
+							{
+								$m_emails->sendEmailNoFnum($coord_email, $setup->notify_email);
+							}
 
-				if (!empty($not_selected_fnum))
-				{
+							$app->enqueueMessage(Text::_('PLG_FABRIK_EXPERTAGREEMENT_NEED_VALIDATION'), 'success');
+							$app->redirect('index.php');
+						}
+						elseif ($formModel->formData['uploaded_raw'][0] != 1)
+						{
+							return;
+						}
+					}
+
 					try
 					{
-						$query->clear()
-							->update($db->quoteName('#__emundus_files_request'))
-							->set([$db->quoteName('uploaded') . '=2', $db->quoteName('firstname') . '=' . $db->quote($firstname), $db->quoteName('lastname') . '=' . $db->quote($lastname), $db->quoteName('modified_date') . '=NOW()'])
-							->where($db->quoteName('keyid') . ' LIKE ' . $db->quote($key_id) . ' AND ' . $db->quoteName('fnum') . ' IN (' . implode(',', $db->quote($not_selected_fnum)) . ')');
-						$db->setQuery($query);
-						$db->execute();
+						if (!empty($files_picked))
+						{
+							$query->clear()
+								->update($db->quoteName('#__emundus_files_request'))
+								->set([$db->quoteName('uploaded') . '=1', $db->quoteName('firstname') . '=' . $db->quote($firstname), $db->quoteName('lastname') . '=' . $db->quote($lastname), $db->quoteName('modified_date') . '=NOW()'])
+								->where($db->quoteName('keyid') . ' LIKE ' . $db->quote($key_id) . ' AND ' . $db->quoteName('fnum') . ' IN (' . implode(',', $db->quote($files_picked)) . ')');
+							$db->setQuery($query);
+							$db->execute();
+						}
 					}
 					catch (Exception $e)
 					{
 						echo $e->getMessage();
 						JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
 					}
-				}
+
+					if (!empty($not_selected_fnum))
+					{
+						try
+						{
+							$query->clear()
+								->update($db->quoteName('#__emundus_files_request'))
+								->set([$db->quoteName('uploaded') . '=2', $db->quoteName('firstname') . '=' . $db->quote($firstname), $db->quoteName('lastname') . '=' . $db->quote($lastname), $db->quoteName('modified_date') . '=NOW()'])
+								->where($db->quoteName('keyid') . ' LIKE ' . $db->quote($key_id) . ' AND ' . $db->quoteName('fnum') . ' IN (' . implode(',', $db->quote($not_selected_fnum)) . ')');
+							$db->setQuery($query);
+							$db->execute();
+						}
+						catch (Exception $e)
+						{
+							echo $e->getMessage();
+							JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
+						}
+					}
 
 
-				// 2. Vérification de l'existance d'un compte utilisateur avec email de l'expert
-				try
-				{
-					$query->clear()
-						->select($db->quoteName('id'))
-						->from($db->quoteName('#__users'))
-						->where($db->quoteName('email') . ' LIKE ' . $db->quote($email));
-					$db->setQuery($query);
-					$uid = $db->loadResult();
-				}
-				catch (Exception $e)
-				{
-					echo $e->getMessage();
-					JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
-				}
-
-				$acl_aro_groups = $m_users->getDefaultGroup($profile_id);
-
-				// Check if user is already an evaluator
-				if (!empty($uid))
-				{
-					$user = Factory::getUser($uid);
-
-					$query->clear()
-						->select('count(id)')
-						->from($db->quoteName('#__emundus_users_profiles'))
-						->where($db->quoteName('user_id') . ' = ' . $user->id . ' AND ' . $db->quoteName('profile_id') . ' = ' . $profile_id);
-					$db->setQuery($query);
-					$is_evaluator = $db->loadResult();
-
-					if (isset($is_evaluator) && $is_evaluator == 0)
+					// 2. Vérification de l'existance d'un compte utilisateur avec email de l'expert
+					try
 					{
 						$query->clear()
-							->insert($db->quoteName('#__emundus_users_profiles'))
-							->columns($db->quoteName(['user_id', 'profile_id']))
-							->values($user->id . ', ' . $profile_id);
+							->select($db->quoteName('id'))
+							->from($db->quoteName('#__users'))
+							->where($db->quoteName('email') . ' LIKE ' . $db->quote($email));
 						$db->setQuery($query);
-						$db->execute();
+						$uid = $db->loadResult();
+					}
+					catch (Exception $e)
+					{
+						echo $e->getMessage();
+						JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
+					}
+
+					$acl_aro_groups = $m_users->getDefaultGroup($profile_id);
+
+					// Check if user is already an evaluator
+					if (!empty($uid))
+					{
+						$user = Factory::getUser($uid);
+
+						$query->clear()
+							->select('count(id)')
+							->from($db->quoteName('#__emundus_users_profiles'))
+							->where($db->quoteName('user_id') . ' = ' . $user->id . ' AND ' . $db->quoteName('profile_id') . ' = ' . $profile_id);
+						$db->setQuery($query);
+						$is_evaluator = $db->loadResult();
+
+						if (isset($is_evaluator) && $is_evaluator == 0)
+						{
+							$query->clear()
+								->insert($db->quoteName('#__emundus_users_profiles'))
+								->columns($db->quoteName(['user_id', 'profile_id']))
+								->values($user->id . ', ' . $profile_id);
+							$db->setQuery($query);
+							$db->execute();
+
+							$user->groups = $acl_aro_groups;
+
+							$usertype       = $m_users->found_usertype($acl_aro_groups[0]);
+							$user->usertype = $usertype;
+							$user->name     = $firstname . ' ' . $lastname;
+
+							if (!$user->save())
+							{
+								$app->enqueueMessage(Text::_('CAN_NOT_SAVE_USER') . '<BR />' . $user->getError(), 'error');
+								$app->redirect('index.php');
+							}
+
+							$query->clear()
+								->update($db->quoteName('#__emundus_users'))
+								->set([$db->quoteName('firstname') . ' = ' . $db->quote($firstname), $db->quoteName('lastname') . ' = ' . $db->quote($lastname), $db->quoteName('profile') . ' = ' . $profile_id])
+								->where($db->quoteName('user_id') . ' = ' . $user->id);
+							$db->setQuery($query);
+							$db->execute();
+						}
+
+						if (!$this->assocFiles($fnums, $user, $group))
+						{
+							$app->enqueueMessage(Text::_('ERROR_CANNOT_ASSOC_USER'));
+
+							if ($current_user->guest == 1 || ($current_user->email == $email))
+							{
+								$m_users->login($user->id);
+								$app->redirect('index.php');
+							}
+
+							return;
+						}
+					}
+					else
+					{
+						$name = $firstname . ' ' . $lastname;
+
+						$password            = UserHelper::genRandomPassword();
+						$user                = clone(Factory::getUser(0));
+						$user->name          = $name;
+						$user->username      = $email;
+						$user->email         = $email;
+						$user->password      = md5($password);
+						$user->registerDate  = date('Y-m-d H:i:s');
+						$user->lastvisitDate = "0000-00-00-00:00:00";
+						$user->block         = 0;
+						$user->activation    = 1;
+
+						// Set a new param to skip the activation email
+						$user->setParam('skip_activation', true);
+
+						$other_param['firstname'] = $firstname;
+						$other_param['lastname']  = $lastname;
+						$other_param['profile']   = $profile_id;
+						$other_param['univ_id']   = "";
+						$other_param['groups']    = "";
 
 						$user->groups = $acl_aro_groups;
 
 						$usertype       = $m_users->found_usertype($acl_aro_groups[0]);
 						$user->usertype = $usertype;
-						$user->name     = $firstname . ' ' . $lastname;
 
-						if (!$user->save())
+						$uid      = $m_users->adduser($user, $other_param);
+						$user->id = $uid;
+
+						if (empty($uid) || (!mkdir(EMUNDUS_PATH_ABS . $user->id . DS, 0777, true) && !copy(EMUNDUS_PATH_ABS . 'index.html', EMUNDUS_PATH_ABS . $user->id . DS . 'index.html')))
 						{
-							$app->enqueueMessage(Text::_('CAN_NOT_SAVE_USER') . '<BR />' . $user->getError(), 'error');
-							$app->redirect('index.php');
+							throw new Exception(Text::_('ERROR_CANNOT_CREATE_USER_FILE'), 500);
 						}
 
-						$query->clear()
-							->update($db->quoteName('#__emundus_users'))
-							->set([$db->quoteName('firstname') . ' = ' . $db->quote($firstname), $db->quoteName('lastname') . ' = ' . $db->quote($lastname), $db->quoteName('profile') . ' = ' . $profile_id])
-							->where($db->quoteName('user_id') . ' = ' . $user->id);
-						$db->setQuery($query);
-						$db->execute();
-					}
-
-					if (!$this->assocFiles($fnums, $user, $group))
-					{
-						$app->enqueueMessage(Text::_('ERROR_CANNOT_ASSOC_USER'));
-
-						if ($current_user->guest == 1 || ($current_user->email == $email))
+						if (!$this->assocFiles($fnums, $user, $group))
 						{
-							$m_users->login($user->id);
-							$app->redirect('index.php');
-						}
+							$app->enqueueMessage(Text::_('ERROR_CANNOT_ASSOC_USER'));
 
-						return;
-					}
-				}
-				else
-				{
-					$name = $firstname . ' ' . $lastname;
-
-					$password            = UserHelper::genRandomPassword();
-					$user                = clone(Factory::getUser(0));
-					$user->name          = $name;
-					$user->username      = $email;
-					$user->email         = $email;
-					$user->password      = md5($password);
-					$user->registerDate  = date('Y-m-d H:i:s');
-					$user->lastvisitDate = "0000-00-00-00:00:00";
-					$user->block         = 0;
-					$user->activation    = 1;
-
-					// Set a new param to skip the activation email
-					$user->setParam('skip_activation', true);
-
-					$other_param['firstname'] = $firstname;
-					$other_param['lastname']  = $lastname;
-					$other_param['profile']   = $profile_id;
-					$other_param['univ_id']   = "";
-					$other_param['groups']    = "";
-
-					$user->groups = $acl_aro_groups;
-
-					$usertype       = $m_users->found_usertype($acl_aro_groups[0]);
-					$user->usertype = $usertype;
-
-					$uid      = $m_users->adduser($user, $other_param);
-					$user->id = $uid;
-
-					if (empty($uid) || (!mkdir(EMUNDUS_PATH_ABS . $user->id . DS, 0777, true) && !copy(EMUNDUS_PATH_ABS . 'index.html', EMUNDUS_PATH_ABS . $user->id . DS . 'index.html')))
-					{
-						throw new Exception(Text::_('ERROR_CANNOT_CREATE_USER_FILE'), 500);
-					}
-
-					if (!$this->assocFiles($fnums, $user, $group))
-					{
-						$app->enqueueMessage(Text::_('ERROR_CANNOT_ASSOC_USER'));
-
-						if ($current_user->guest == 1 || ($current_user->email == $email))
-						{
-							$m_users->login($user->id);
-
-							$app->redirect('index.php');
-						}
-
-						return;
-					}
-
-					$email = $m_emails->getEmail('new_account');
-					$body  = $m_emails->setBody($user, $email->message, $password);
-
-					$email_from_sys = Factory::getConfig()->get('mailfrom');
-					$sender         = [
-						$email_from_sys,
-						$email->name
-					];
-
-					$mailer->setSender($sender);
-					if(!empty($email->emailfrom)){
-						$mailer->addReplyTo($email->emailfrom, $email->name);
-					}
-					$mailer->addRecipient($user->email);
-					$mailer->setSubject($email->subject);
-					$mailer->isHTML(true);
-					$mailer->Encoding = 'base64';
-					$mailer->setBody($body);
-
-					$send = $mailer->Send();
-					if ($send !== true)
-					{
-						echo 'Error sending email: ' . $send;
-						die();
-					}
-					else
-					{
-						$message = [
-							'user_id_from' => 62,
-							'user_id_to'   => $user->id,
-							'subject'      => $email->subject,
-							'message'      => $body,
-							'email_to'     => $user->email
-						];
-						$m_emails->logEmail($message);
-					}
-				}
-
-				// Send email if needed
-				if (in_array('jos_emundus_files_request_1614_repeat', $existingTables))
-				{
-					$query->clear()
-						->select([$db->quoteName('fr.fnum'), $db->quoteName('frr.status_expertise'), $db->quoteName('frr.motif_expertise'), $db->quoteName('frr.refused_expertise'), $db->quoteName('fr.student_id')])
-						->from($db->quoteName('#__emundus_files_request_1614_repeat', 'frr'))
-						->leftJoin($db->quoteName('jos_emundus_files_request', 'fr') . ' ON ' . $db->quoteName('frr.parent_id') . ' = ' . $db->quoteName('fr.id'))
-						->where($db->quoteName('fr.keyid') . ' LIKE ' . $db->quote($key_id));
-					$db->setQuery($query);
-					$statut_expertise = $db->loadObjectList();
-
-					foreach ($statut_expertise as $s)
-					{
-						$email = $m_emails->getEmail('expert_accept');
-						if (!empty($email))
-						{
-							if ($s->status_expertise == 1 && $send_email_accept == 1)
+							if ($current_user->guest == 1 || ($current_user->email == $email))
 							{
-								$body = $m_emails->setBody($user, $email->message);
+								$m_users->login($user->id);
 
-								$email_from_sys = Factory::getConfig()->get('mailfrom');
-								$sender         = [
-									$email_from_sys,
-									$email->name
-								];
-								$recipient      = $user->email;
-
-								$mailer->setSender($sender);
-								$mailer->addReplyTo($email->emailfrom, $email->name);
-								$mailer->addRecipient($recipient);
-								$mailer->setSubject($email->subject);
-								$mailer->isHTML(true);
-								$mailer->Encoding = 'base64';
-								$mailer->setBody($body);
-
-								$send = $mailer->Send();
-								if ($send !== true)
-								{
-									echo 'Error sending email: ' . $send;
-									die();
-								}
-								else
-								{
-									$message = [
-										'user_id_from' => 62,
-										'user_id_to'   => $user->id,
-										'subject'      => $email->subject,
-										'message'      => $body,
-										'email_to'     => $user->email
-									];
-									$m_emails->logEmail($message);
-								}
+								$app->redirect('index.php');
 							}
+
+							return;
 						}
-					}
-				}
-				else
-				{
-					if ($send_email_accept == 1)
-					{
-						$email = $m_emails->getEmail('expert_accept');
-						$body  = $m_emails->setBody($user, $email->message);
+
+						$email = $m_emails->getEmail('new_account');
+						$body  = $m_emails->setBody($user, $email->message, $password);
 
 						$email_from_sys = Factory::getConfig()->get('mailfrom');
 						$sender         = [
 							$email_from_sys,
 							$email->name
 						];
-						$recipient      = $user->email;
 
 						$mailer->setSender($sender);
-						$mailer->addReplyTo($email->emailfrom, $email->name);
-						$mailer->addRecipient($recipient);
+						if (!empty($email->emailfrom))
+						{
+							$mailer->addReplyTo($email->emailfrom, $email->name);
+						}
+						$mailer->addRecipient($user->email);
 						$mailer->setSubject($email->subject);
 						$mailer->isHTML(true);
 						$mailer->Encoding = 'base64';
@@ -631,6 +529,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 						if ($send !== true)
 						{
 							echo 'Error sending email: ' . $send;
+							die();
 						}
 						else
 						{
@@ -645,63 +544,160 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 						}
 					}
 
-					// Log expertise and upload attachment if needed
-					foreach ($fnums as $fnum)
+					// Send email if needed
+					if (in_array('jos_emundus_files_request_1614_repeat', $existingTables))
 					{
-						$fnumInfos = $m_files->getFnumInfos($fnum);
-						$row       = [
-							'applicant_id' => $fnumInfos['applicant_id'],
-							'user_id'      => $user->id,
-							'reason'       => Text::_('EXPERT_ACCEPT_TO_EVALUATE'),
-							'comment_body' => $user->name . ' ' . Text::_('ACCEPT_TO_EVALUATE'),
-							'fnum'         => $fnum
-						];
-						$m_application->addComment($row);
+						$query->clear()
+							->select([$db->quoteName('fr.fnum'), $db->quoteName('frr.status_expertise'), $db->quoteName('frr.motif_expertise'), $db->quoteName('frr.refused_expertise'), $db->quoteName('fr.student_id')])
+							->from($db->quoteName('#__emundus_files_request_1614_repeat', 'frr'))
+							->leftJoin($db->quoteName('jos_emundus_files_request', 'fr') . ' ON ' . $db->quoteName('frr.parent_id') . ' = ' . $db->quoteName('fr.id'))
+							->where($db->quoteName('fr.keyid') . ' LIKE ' . $db->quote($key_id));
+						$db->setQuery($query);
+						$statut_expertise = $db->loadObjectList();
 
-						if (!empty($attachments_fields))
+						foreach ($statut_expertise as $s)
 						{
-							if (empty($attachments_ids))
+							$email = $m_emails->getEmail('expert_accept');
+							if (!empty($email))
 							{
-								$attachments_ids = [$setup->attachment_to_upload];
-							}
-
-							foreach ($attachments_fields as $key => $attachment_field)
-							{
-								$attachment_id = $attachments_ids[$key];
-								if (!empty($formModel->formData[$attachment_field . '_raw']))
+								if ($s->status_expertise == 1 && $send_email_accept == 1)
 								{
-									$this->uploadSignedDocument($fnum, $attachment_id, $formModel->formData[$attachment_field . '_raw'], $user->id);
+									$body = $m_emails->setBody($user, $email->message);
+
+									$email_from_sys = Factory::getConfig()->get('mailfrom');
+									$sender         = [
+										$email_from_sys,
+										$email->name
+									];
+									$recipient      = $user->email;
+
+									$mailer->setSender($sender);
+									$mailer->addReplyTo($email->emailfrom, $email->name);
+									$mailer->addRecipient($recipient);
+									$mailer->setSubject($email->subject);
+									$mailer->isHTML(true);
+									$mailer->Encoding = 'base64';
+									$mailer->setBody($body);
+
+									$send = $mailer->Send();
+									if ($send !== true)
+									{
+										echo 'Error sending email: ' . $send;
+										die();
+									}
+									else
+									{
+										$message = [
+											'user_id_from' => 62,
+											'user_id_to'   => $user->id,
+											'subject'      => $email->subject,
+											'message'      => $body,
+											'email_to'     => $user->email
+										];
+										$m_emails->logEmail($message);
+									}
 								}
 							}
 						}
 					}
+					else
+					{
+						if ($send_email_accept == 1)
+						{
+							$email = $m_emails->getEmail('expert_accept');
+							$body  = $m_emails->setBody($user, $email->message);
+
+							$email_from_sys = Factory::getConfig()->get('mailfrom');
+							$sender         = [
+								$email_from_sys,
+								$email->name
+							];
+							$recipient      = $user->email;
+
+							$mailer->setSender($sender);
+							$mailer->addReplyTo($email->emailfrom, $email->name);
+							$mailer->addRecipient($recipient);
+							$mailer->setSubject($email->subject);
+							$mailer->isHTML(true);
+							$mailer->Encoding = 'base64';
+							$mailer->setBody($body);
+
+							$send = $mailer->Send();
+							if ($send !== true)
+							{
+								echo 'Error sending email: ' . $send;
+							}
+							else
+							{
+								$message = [
+									'user_id_from' => 62,
+									'user_id_to'   => $user->id,
+									'subject'      => $email->subject,
+									'message'      => $body,
+									'email_to'     => $user->email
+								];
+								$m_emails->logEmail($message);
+							}
+						}
+
+						// Log expertise and upload attachment if needed
+						foreach ($fnums as $fnum)
+						{
+							$fnumInfos = $m_files->getFnumInfos($fnum);
+							$row       = [
+								'applicant_id' => $fnumInfos['applicant_id'],
+								'user_id'      => $user->id,
+								'reason'       => Text::_('EXPERT_ACCEPT_TO_EVALUATE'),
+								'comment_body' => $user->name . ' ' . Text::_('ACCEPT_TO_EVALUATE'),
+								'fnum'         => $fnum
+							];
+							$m_application->addComment($row);
+
+							if (!empty($attachments_fields))
+							{
+								if (empty($attachments_ids))
+								{
+									$attachments_ids = [$setup->attachment_to_upload];
+								}
+
+								foreach ($attachments_fields as $key => $attachment_field)
+								{
+									$attachment_id = $attachments_ids[$key];
+									if (!empty($formModel->formData[$attachment_field . '_raw']))
+									{
+										$this->uploadSignedDocument($fnum, $attachment_id, $formModel->formData[$attachment_field . '_raw'], $user->id);
+									}
+								}
+							}
+						}
+					}
+
+					// Finally we log expert
+					if ((!empty($password) || !empty($user->password)) && ($current_user->guest == 1 || ($current_user->email == $email)))
+					{
+						$app->enqueueMessage(Text::_('USER_LOGGED'), 'success');
+						$m_users->login($user->id);
+
+						$app->redirect('index.php');
+					}
 				}
-
-				// Finally we log expert
-				if ((!empty($password) || !empty($user->password)) && ($current_user->guest == 1 || ($current_user->email == $email)))
+				else
 				{
-					$app->enqueueMessage(Text::_('USER_LOGGED'), 'success');
-					$m_users->login($user->id);
+					$query->clear()
+						->update($db->quoteName('#__emundus_files_request'))
+						->set([$db->quoteName('uploaded') . '=1', $db->quoteName('modified_date') . '=NOW()'])
+						->where($db->quoteName('keyid') . ' LIKE ' . $db->quote($key_id));
+					$db->setQuery($query);
+					$db->execute();
 
+					$app->enqueueMessage(Text::_('PLG_FABRIK_EXPERTAGREEMENT_EXPERT_REFUSED_ALL'));
 					$app->redirect('index.php');
 				}
 			}
-			else
+			catch (Exception $e)
 			{
-				$query->clear()
-					->update($db->quoteName('#__emundus_files_request'))
-					->set([$db->quoteName('uploaded') . '=1', $db->quoteName('modified_date') . '=NOW()'])
-					->where($db->quoteName('keyid') . ' LIKE ' . $db->quote($key_id));
-				$db->setQuery($query);
-				$db->execute();
-
-				$app->enqueueMessage(Text::_('PLG_FABRIK_EXPERTAGREEMENT_EXPERT_REFUSED_ALL'));
-				$app->redirect('index.php');
+				Log::add('Error : ' . $e->getMessage() . ' with query : ' . $query->__toString(), Log::ERROR, 'com_emundus');
 			}
-		}
-		catch (Exception $e)
-		{
-			Log::add('Error : ' . $e->getMessage() . ' with query : ' . $query->__toString(), Log::ERROR, 'com_emundus');
 		}
 	}
 
