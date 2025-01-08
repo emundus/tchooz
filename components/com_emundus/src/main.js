@@ -35,6 +35,7 @@ if (document) {
     let el = document.getElementById('em-component-vue');
     const attachmentElement = document.getElementById('em-application-attachment');
     const filesElement = document.getElementById('em-files');
+    const expertElement = document.getElementById('em-expert');
 
     if (attachmentElement) {
         elementId = '#em-application-attachment';
@@ -42,6 +43,9 @@ if (document) {
     } else if (filesElement) {
         elementId = '#em-files';
         el = filesElement;
+    } else if (expertElement) {
+        elementId = '#em-expert';
+        el = expertElement;
     }
 
 

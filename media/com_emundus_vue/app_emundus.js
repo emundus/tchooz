@@ -75879,12 +75879,16 @@ if (document) {
   let el2 = document.getElementById("em-component-vue");
   const attachmentElement = document.getElementById("em-application-attachment");
   const filesElement = document.getElementById("em-files");
+  const expertElement = document.getElementById("em-expert");
   if (attachmentElement) {
     elementId = "#em-application-attachment";
     el2 = attachmentElement;
   } else if (filesElement) {
     elementId = "#em-files";
     el2 = filesElement;
+  } else if (expertElement) {
+    elementId = "#em-expert";
+    el2 = expertElement;
   }
   if (el2) {
     const componentName = el2.getAttribute("component");
@@ -76063,7 +76067,20 @@ export {
   getDefaultExportFromCjs as a6,
   ref as a7,
   computed as a8,
-  h as a9,
+  defineComponent as a9,
+  normalizeProps as aa,
+  guardReactiveProps as ab,
+  onMounted as ac,
+  nextTick as ad,
+  toRef as ae,
+  provide as af,
+  unref as ag,
+  inject as ah,
+  isRef as ai,
+  onUnmounted as aj,
+  toRefs as ak,
+  watchEffect as al,
+  resolveDirective as am,
   Fragment as b,
   createElementBlock as c,
   createCommentVNode as d,
