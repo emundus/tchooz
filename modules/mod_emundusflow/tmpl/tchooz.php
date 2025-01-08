@@ -35,6 +35,7 @@ $now      = $dateTime->format('Y-m-d H:i:s');
 
     .mod_emundus_flow___print p {
         font-family: var(--em-profile-font);
+        line-height: 20px;
     }
 
     .btn-primary.mod_emundus_flow___print {
