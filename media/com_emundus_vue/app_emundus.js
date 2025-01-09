@@ -76024,20 +76024,7 @@ if (document) {
         const globalStore2 = useGlobalStore();
         globalStore2.initAttachmentPath(datas.base + "/images/emundus/files/");
       }
-      {
-        app.config.productionTip = false;
-        app.config.devtools = true;
-        app.config.performance = true;
-      }
       app.mount(elementId);
-      {
-        const version2 = app.version;
-        const devtools2 = window.__VUE_DEVTOOLS_GLOBAL_HOOK__;
-        if (devtools2) {
-          devtools2.enabled = true;
-          devtools2.emit("app:init", app, version2, {});
-        }
-      }
     }
   }
 }
@@ -76080,20 +76067,7 @@ export {
   getDefaultExportFromCjs as a6,
   ref as a7,
   computed as a8,
-  defineComponent as a9,
-  normalizeProps as aa,
-  guardReactiveProps as ab,
-  onMounted as ac,
-  nextTick as ad,
-  toRef as ae,
-  provide as af,
-  unref as ag,
-  inject as ah,
-  isRef as ai,
-  onUnmounted as aj,
-  toRefs as ak,
-  watchEffect as al,
-  resolveDirective as am,
+  h as a9,
   Fragment as b,
   createElementBlock as c,
   createCommentVNode as d,
