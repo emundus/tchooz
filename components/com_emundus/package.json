@@ -17,6 +17,7 @@
     "autoprefixer": "^10.4.20",
     "axios": "^1.7.9",
     "element-plus": "^2.9.1",
+    "fusioncharts": "^4.1.2",
     "moment": "^2.30.1",
     "pinia": "^2.3.0",
     "qs": "^6.13.1",
@@ -25,6 +26,7 @@
     "v-calendar": "3.0.0-alpha.8",
     "vue": "^3.5.13",
     "vue-draggable-next": "^2.2.1",
+    "vue-fusioncharts": "^3.3.0",
     "vue-multiselect": "^3.1.0",
     "vue2-dropzone-vue3": "^1.1.0",
     "vue3-toastify": "^0.2.8"
