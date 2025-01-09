@@ -393,7 +393,8 @@ class EmundusControllerMessages extends BaseController
 
 			$query->select($db->quoteName('Template'))
 				->from($db->quoteName('#__emundus_email_templates'))
-				->where($db->quoteName('id') . ' = 1');
+				->where($db->quoteName('id') . ' = 1')
+				->orWhere($db->quoteName('lbl').' LIKE '.$db->quote('default'));
 			$db->setQuery($query);
 
 			$template->Template = $db->loadResult();
@@ -655,7 +656,8 @@ class EmundusControllerMessages extends BaseController
 
 				$query->select($db->quoteName('Template'))
 					->from($db->quoteName('#__emundus_email_templates'))
-					->where($db->quoteName('id') . ' = 1');
+					->where($db->quoteName('id') . ' = 1')
+					->orWhere($db->quoteName('lbl').' LIKE '.$db->quote('default'));
 				$db->setQuery($query);
 
 				$template->Template = $db->loadResult();
@@ -880,7 +882,8 @@ class EmundusControllerMessages extends BaseController
 			$query->clear()
 				->select($db->quoteName('Template'))
 				->from($db->quoteName('#__emundus_email_templates'))
-				->where($db->quoteName('id') . ' = 1');
+				->where($db->quoteName('id') . ' = 1')
+				->orWhere($db->quoteName('lbl').' LIKE '.$db->quote('default'));
 			$db->setQuery($query);
 			$template = $db->loadObject();
 		}
