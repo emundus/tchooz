@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit bootstrap="Unit/bootstrap.php"
-         cacheResultFile="tmp/test-results"
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         bootstrap="Unit/bootstrap.php"
          executionOrder="depends,defects"
          forceCoversAnnotation="true"
          beStrictAboutOutputDuringTests="true"
@@ -8,23 +8,240 @@
          convertDeprecationsToExceptions="true"
          failOnRisky="false"
          failOnWarning="false"
+         stopOnFailure="false"
          colors="true"
-         verbose="true">
-
-    <testsuite name="Unit">
-        <directory suffix="Test.php">Unit</directory>
-        <exclude>Unit/Helper/</exclude>
-    </testsuite>
-
-    <coverage cacheDirectory="tmp/code-coverage" processUncoveredFiles="false" includeUncoveredFiles="false">
-        <include>
-            <directory suffix=".php">../components/com_emundus/classes</directory>
-            <directory suffix=".php">../components/com_emundus/helpers</directory>
-            <directory suffix=".php">../components/com_emundus/models</directory>
-        </include>
-        <report>
-            <text outputFile="php://stdout" showOnlySummary="true"/>
-        </report>
-    </coverage>
-
+         verbose="true"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
+  <coverage processUncoveredFiles="false" includeUncoveredFiles="true">
+    <include>
+      <directory suffix=".php">../components/com_emundus/classes</directory>
+      <directory suffix=".php">../components/com_emundus/helpers</directory>
+      <directory suffix=".php">../components/com_emundus/models</directory>
+      <directory suffix=".php">../modules/mod_emundus_yousign_embed</directory>
+      <directory suffix=".php">../modules/mod_emundus_yousign_embed/tmpl</directory>
+      <directory suffix=".php">../modules/mod_emundus_qcm</directory>
+      <directory suffix=".php">../modules/mod_emundus_custom</directory>
+      <directory suffix=".php">../modules/mod_emundus_category_search</directory>
+      <directory suffix=".php">../modules/mod_emundus_campaign_dropfiles</directory>
+      <directory suffix=".php">../modules/mod_emundus_filters</directory>
+      <directory suffix=".php">../modules/mod_emundusuniv</directory>
+      <directory suffix=".php">../modules/mod_emundus_rebecca</directory>
+      <directory suffix=".php">../modules/mod_emundus_tutorial</directory>
+      <directory suffix=".php">../modules/mod_emundus_calendar_create_timeslots</directory>
+      <directory suffix=".php">../modules/mod_emundus_eb_googlemap</directory>
+      <directory suffix=".php">../modules/mod_emundusflow</directory>
+      <directory suffix=".php">../modules/mod_emundus_announcements</directory>
+      <directory suffix=".php">../modules/mod_emundus_calendar_add</directory>
+      <directory suffix=".php">../modules/mod_emundus_stat</directory>
+      <directory suffix=".php">../modules/mod_emundus_attachments</directory>
+      <directory suffix=".php">../modules/mod_emundus_register</directory>
+      <directory suffix=".php">../modules/mod_emundus_favorites</directory>
+      <directory suffix=".php">../modules/mod_emundus_send_application</directory>
+      <directory suffix=".php">../modules/mod_emundus_switch_profile</directory>
+      <directory suffix=".php">../modules/mod_emundus_book_interview</directory>
+      <directory suffix=".php">../modules/mod_emundus_graphs</directory>
+      <directory suffix=".php">../modules/mod_emundus_internet_explorerB</directory>
+      <directory suffix=".php">../modules/mod_emundus_internet_explorer/language/fr-FR</directory>
+      <directory suffix=".php">../modules/mod_emundus_dashboard_vue</directory>
+      <directory suffix=".php">../modules/mod_emundus_user_dropdown</directory>
+      <directory suffix=".php">../modules/mod_emundus_checklist</directory>
+      <directory suffix=".php">../modules/mod_emundus_help</directory>
+      <directory suffix=".php">../modules/mod_emundus_applications</directory>
+      <directory suffix=".php">../modules/mod_emundus_back</directory>
+      <directory suffix=".php">../modules/mod_emundus_events</directory>
+      <directory suffix=".php">../modules/mod_emunduspanel</directory>
+      <directory suffix=".php">../modules/mod_emundus_rsst_signalement_list</directory>
+      <directory suffix=".php">../modules/mod_emundus_message_notification</directory>
+      <directory suffix=".php">../modules/mod_emundus_payment</directory>
+      <directory suffix=".php">../modules/mod_emundus_campaign</directory>
+      <directory suffix=".php">../modules/mod_emundus_banner</directory>
+      <directory suffix=".php">../modules/mod_emundus_stat_filter</directory>
+      <directory suffix=".php">../modules/mod_emundus_footer</directory>
+      <directory suffix=".php">../modules/mod_emundus_cas</directory>
+      <directory suffix=".php">../modules/mod_emundus_query_builder</directory>
+      <directory suffix=".php">../modules/mod_emundus_cifre_offers</directory>
+      <directory suffix=".php">../modules/mod_emundus_cifre_suggestions</directory>
+      <directory suffix=".php">../modules/mod_emundus_update</directory>
+      <directory suffix=".php">../modules/mod_emunduswhosonline</directory>
+      <directory suffix=".php">../modules/mod_emundusmenu</directory>
+      <directory suffix=".php">../modules/mod_emundus_messenger_notifications</directory>
+      <directory suffix=".php">../modules/mod_emundus_profile</directory>
+      <directory suffix=".php">../plugins/fabrik_cron/emundusrecall</directory>
+      <directory suffix=".php">../plugins/fabrik_cron/emundusdeleteoldfiles</directory>
+      <directory suffix=".php">../plugins/fabrik_cron/emundusnantesscholargpush</directory>
+      <directory suffix=".php">../plugins/fabrik_cron/emundusupdatestatusendcampaign</directory>
+      <directory suffix=".php">../plugins/fabrik_cron/emundusglobalrecall</directory>
+      <directory suffix=".php">../plugins/fabrik_cron/emundusinsee</directory>
+      <directory suffix=".php">../plugins/fabrik_cron/emundusmessengernotify</directory>
+      <directory suffix=".php">../plugins/fabrik_cron/emundusrecallmissingdoc</directory>
+      <directory suffix=".php">../plugins/fabrik_cron/emunduslogsandmessagespurge</directory>
+      <directory suffix=".php">../plugins/fabrik_cron/emundusehespsiscole</directory>
+      <directory suffix=".php">../plugins/fabrik_cron/emundushesamautounpublish</directory>
+      <directory suffix=".php">../plugins/fabrik_cron/emundusfilemaker</directory>
+      <directory suffix=".php">../plugins/fabrik_cron/emundushesamrecap</directory>
+      <directory suffix=".php">../plugins/fabrik_cron/emundusevaluatorrecall</directory>
+      <directory suffix=".php">../plugins/fabrik_cron/emunduscampaignstartcall</directory>
+      <directory suffix=".php">../plugins/fabrik_cron/emunduscriteriaeval</directory>
+      <directory suffix=".php">../plugins/fabrik_cron/emunduseparapheur</directory>
+      <directory suffix=".php">../plugins/fabrik_cron/emundusreferentrecall</directory>
+      <directory suffix=".php">../plugins/fabrik_cron/emundusapogee/forms</directory>
+      <directory suffix=".php">../plugins/fabrik_cron/emundusapogee/language</directory>
+      <directory suffix=".php">../plugins/fabrik_cron/php/scripts/celsa.php</directory>
+      <directory suffix=".php">../plugins/fabrik_cron/php/scripts/celsa_confirm_admission.php</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundussetprofilebyelement</directory>
+      <directory suffix=".php">../plugins/fabrik_form/juseremundus</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundusduplicatedata</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundusisapplicationsent</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundusisevaluatedbyme</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundusconfirmpostgkqcm</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emunduscampaign</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundusauthorizeemptyfields</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundusupdateprofile</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emunduscampaigncheck</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundusrsaauthentication</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emunduscompletefilestatuschange</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundussendemail</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundushikashopaddtocart</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundusassigntogroup</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundusattachment</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundusencryptdatas</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emunduspushfiletoapi</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundusisqcmcomplete</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundustriggers</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundusconfirmrgpd</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundussetprofile</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundusconfirmpost</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emunduscopyfile</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundusassigntoevaluator</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundusfinalgrade</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundusupdatestatusonbeforeload</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundusconfirmpostehesp</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundusisevaluationconfirmed</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundusupdatepdf</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundusreferentform</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emunduszoommeeting</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundusreferentletter</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundusrgpd</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emunduscheckformsfilled</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emunduscollaborate</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundusdocusign</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundusyousign</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundusredirect</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundusconfirmpostbyelement</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundussetstatus</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundusimportcsv</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundusreferentletterhopitauxparis</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundusrequestrgpd</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundusexpertagreement</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundusassigntousers</directory>
+      <directory suffix=".php">../plugins/fabrik_form/emundusassigntoinstitution</directory>
+      <directory suffix=".php">../plugins/fabrik_form/php/scripts</directory>
+      <directory suffix=".php">../plugins/content/emundus</directory>
+      <directory suffix=".php">../plugins/emundus</directory>
+      <directory suffix=".php">../plugins/user/emundus_registration_email</directory>
+      <directory suffix=".php">../plugins/user/emundus_su_pepite</directory>
+      <directory suffix=".php">../plugins/user/emundus_claroline</directory>
+      <directory suffix=".php">../plugins/user/emundus</directory>
+      <directory suffix=".php">../plugins/user/emundus_su</directory>
+      <directory suffix=".php">../plugins/user/emundus_welcome_message</directory>
+      <directory suffix=".php">../plugins/user/emundus_su_csc</directory>
+      <directory suffix=".php">../plugins/user/emundus_password_update_email</directory>
+      <directory suffix=".php">../plugins/user/emundus_ambassade_baudin</directory>
+      <directory suffix=".php">../plugins/user/emundus_univ_poitiers</directory>
+      <directory suffix=".php">../plugins/user/emundus_user_recap</directory>
+      <directory suffix=".php">../plugins/user/emundus_su_tt_associate_user</directory>
+      <directory suffix=".php">../plugins/user/emundus_su_emplois</directory>
+      <directory suffix=".php">../plugins/user/emundus_su_forminnov</directory>
+      <directory suffix=".php">../plugins/user/emundus_ametys</directory>
+      <directory suffix=".php">../plugins/user/emundus_profile</directory>
+      <directory suffix=".php">../plugins/user/emundus_assign_to_files</directory>
+      <directory suffix=".php">../plugins/authentication/emundus</directory>
+      <directory suffix=".php">../plugins/fabrik_visualization/emundus_geolocation</directory>
+      <directory suffix=".php">../plugins/hikashop/emundusprice</directory>
+      <directory suffix=".php">../plugins/hikashop/emundus_hikashop</directory>
+      <directory suffix=".php">../plugins/extension/emundus</directory>
+      <directory suffix=".php">../plugins/search/emundus</directory>
+      <directory suffix=".php">../plugins/system/emundus_conditional_redirect</directory>
+      <directory suffix=".php">../plugins/system/emundus_block_user</directory>
+      <directory suffix=".php">../plugins/system/emunduswaitingroom</directory>
+      <directory suffix=".php">../plugins/system/emundus</directory>
+      <directory suffix=".php">../plugins/system/emundusproxyredirect</directory>
+      <directory suffix=".php">../plugins/system/emundus_period</directory>
+      <directory suffix=".php">../plugins/system/emundus_caslogin</directory>
+      <directory suffix=".php">../plugins/system/emundusregistrationredirect</directory>
+      <directory suffix=".php">../plugins/system/emunduszoommeeting</directory>
+      <directory suffix=".php">../plugins/system/emundus_ametys</directory>
+      <directory suffix=".php">../plugins/system/emundusqueueit</directory>
+      <directory suffix=".php">../plugins/actionlog/emundus</directory>
+      <directory suffix=".php">../plugins/fabrik_element/currency</directory>
+      <directory suffix=".php">../plugins/fabrik_element/iban</directory>
+      <directory suffix=".php">../plugins/fabrik_element/insee</directory>
+      <directory suffix=".php">../plugins/fabrik_element/panel</directory>
+      <directory suffix=".php">../plugins/fabrik_element/emundus_fileupload</directory>
+      <directory suffix=".php">../plugins/fabrik_element/emundusreferent</directory>
+      <directory suffix=".php">../plugins/fabrik_element/emundus_phonenumber</directory>
+      <directory suffix=".php">../plugins/fabrik_element/emundus_geolocalisation</directory>
+      <directory suffix=".php">../plugins/fabrik_element/emundus_colorpicker</directory>
+      <directory suffix=".php">../plugins/fabrik_list/su_copy_fiche_emplois</directory>
+      <directory suffix=".php">../plugins/fabrik_list/zoommeeting</directory>
+      <directory suffix=".php">../plugins/fabrik_validationrule/isiban</directory>
+      <directory suffix=".php">../plugins/sampledata/emundus</directory>
+      <directory suffix=".php">../layouts/emundus</directory>
+      <directory suffix=".php">../layouts/emundus/tiptap</directory>
+      <directory suffix=".php">../administrator/modules/mod_emundus_notes</directory>
+      <directory suffix=".php">../administrator/modules/mod_emundus_version</directory>
+      <directory suffix=".php">../administrator/modules/mod_emundus_oauth2</directory>
+      <directory suffix=".php">../administrator/components/com_emundus</directory>
+      <directory suffix=".php">../components/com_emundus</directory>
+      <directory suffix=".php">../components/com_fabrik/views/form/tmpl/emundus</directory>
+      <directory suffix=".php">../components/com_fabrik/views/details/tmpl/emundus</directory>
+      <directory suffix=".php">../components/com_fabrik/views/list/tmpl/emundus</directory>
+      <directory suffix=".php">../components/com_fabrik/views/list/tmpl/emundus_card</directory>
+      <directory suffix=".php">../components/com_fabrik/views/list/tmpl/emundus_faq</directory>
+      <directory suffix=".php">../libraries/emundus</directory>
+      <directory suffix=".php">../media/mod_emundus_qcm</directory>
+      <directory suffix=".php">../media/mod_emundus_filters</directory>
+      <directory suffix=".php">../media/mod_emundus_evaluations</directory>
+      <directory suffix=".php">../media/mod_emundus_filter_vue</directory>
+      <directory suffix=".php">../media/com_emundus</directory>
+      <directory suffix=".php">../media/mod_emundus_dashboard_vue</directory>
+      <directory suffix=".php">../media/com_emundus_vue</directory>
+      <directory suffix=".php">../media/mod_emundus_rsst_signalement_list</directory>
+      <directory suffix=".php">../media/mod_emundus_messenger_notifications</directory>
+      <directory suffix=".php">../images/emundus</directory>
+      <directory suffix=".php">../templates/g5_helium/html</directory>
+    </include>
+    <exclude>
+      <file>../components/com_emundus/models/update.php</file>
+      <directory >../node_modules</directory>
+      <directory >../tests</directory>
+      <directory >../vendor</directory>
+      <directory >../node_modules</directory>
+      <directory >../plugins/fabrik_visualization/fusionchart/vendor</directory>
+      <directory >../plugins/hikashopshipping/fedex2/vendor</directory>
+      <directory >../plugins/system/hikashopgeolocation/vendor</directory>
+      <directory >../plugins/system/emundusqueueit/vendor</directory>
+      <directory >../plugins/hikashoppayment/paypalcheckout/vendor</directory>
+      <directory >../plugins/fabrik_element/captcha/vendor</directory>
+      <directory >../administrator/components/com_dropfiles/classes/vendor</directory>
+      <directory >../libraries/gantry5/compat/vendor</directory>
+      <directory >../libraries/gantry5/vendor</directory>
+      <directory >../libraries/vendor</directory>
+      <directory >../libraries/emundus/vendor</directory>
+      <directory >../libraries/fabrik/vendor</directory>
+      <directory >../media/gantry5/engines/nucleus/scss/vendor</directory>
+      <directory >../media/vendor</directory>
+      <directory >../media/templates/administrator/atum/css/vendor</directory>
+      <directory >../media/templates/administrator/atum/scss/vendor</directory>
+      <directory >../media/templates/site/cassiopeia/css/vendor</directory>
+      <directory >../media/templates/site/cassiopeia/scss/vendor</directory>
+    </exclude>
+    <report>
+      <text outputFile="php://stdout" showOnlySummary="true"/>
+    </report>
+  </coverage>
+  <testsuite name="Unit">
+    <directory suffix="Test.php">Unit</directory>
+    <exclude>Unit/Helper/</exclude>
+  </testsuite>
 </phpunit>

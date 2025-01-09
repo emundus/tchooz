@@ -552,7 +552,7 @@ class Datamatrix {
 				return ENC_C40;
 			}
 			// get char
-			$chr = ord($data{($pos + $charscount)});
+			$chr = ord($data[($pos + $charscount)]);
 			$charscount++;
 			// STEP L
 			if ($this->isCharMode($chr, ENC_ASCII_NUM)) {
