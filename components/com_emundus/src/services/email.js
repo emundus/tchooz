@@ -109,5 +109,37 @@ export default {
         msg: e.message
       };
     }
+  },
+  async getExpertConfig() {
+    try {
+      return await client.get('getexpertconfig');
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+
+  async getExperts() {
+    try {
+      return await client.get('getexpertslist');
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+
+  async sendExpertEmail(data) {
+    try {
+      return await client.post('sendmail_expert', data);
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
   }
 }

@@ -307,8 +307,8 @@ class plgUserEmundus extends CMSPlugin
 				$username        = explode(' ', $user["name"]);
 				$details['name'] = count($username) > 2 ? implode(' ', array_slice($username, 1)) : $username[1];
 
-				$details['emundus_profile']['lastname'] = $user['name'];
-				$details['firstname']                   = $username[0];
+				$details['emundus_profile']['lastname'] = $details['name'];
+				$details['emundus_profile']['firstname'] = $username[0];
 
 				$o_user->setParam('saml', '1');
 				$o_user->save();
@@ -337,7 +337,7 @@ class plgUserEmundus extends CMSPlugin
 
 			if ($isnew) {
 				$query->update($this->db->quoteName('#__users'))
-					->set($this->db->quoteName('name') . ' = ' . ($this->db->quote(ucfirst($firstname)) . ' ' . $this->db->quote(strtoupper($lastname))))
+					->set($this->db->quoteName('name') . ' = ' . ($this->db->quote(ucfirst($firstname) . ' ' . strtoupper($lastname))))
 					->set($this->db->quoteName('usertype') . ' = (SELECT u.title FROM #__usergroups AS u
 												LEFT JOIN #__user_usergroup_map AS uum ON u.id=uum.group_id
 												WHERE uum.user_id=' . $user['id'] . ' ORDER BY uum.group_id DESC LIMIT 1)')

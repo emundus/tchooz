@@ -1057,6 +1057,9 @@ video {
 .fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.day.selected {
                                 border-radius: 99px;
                             }
+.fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.day.\!selected {
+                                border-radius: 99px !important;
+                            }
 .fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.today:after {
                                 content: unset;
                             }
@@ -1224,6 +1227,8 @@ video {
                     background-color: var(--transparent) !important;
                     color: var(--neutral-900);
                     text-decoration: none;
+                    word-break: break-all;
+                    white-space: break-spaces;
                 }
 .com_fabrik .dropdown-menu:not(#userDropdownMenu) li:hover {
                     background-color: var(--neutral-300) !important;
@@ -4287,6 +4292,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-w-\[64px\] {
     width: 64px;
+}
+.tw-w-\[85vw\] {
+    width: 85vw;
 }
 .tw-w-auto {
     width: auto;
@@ -115122,6 +115130,9 @@ button.swal2-cancel.goback-btn:hover,
 .label-border-black {
         border-color: var(--em-black);
     }
+.\[-a-zA-Z\:0-9_\.\] {
+    -a-z-a--z: 0-9 .;
+}
 @font-face {
     font-family: 'Material Icons';
     font-style: normal;

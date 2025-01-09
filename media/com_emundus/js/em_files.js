@@ -1770,6 +1770,9 @@ $(document).ready(function() {
         var swal_popup_class = '';
         var swal_actions_class = '';
         var swal_confirm_button = 'COM_EMUNDUS_ONBOARD_OK';
+        var swal_show_confirm_button = true;
+        var swal_show_cancel_button = true;
+        var swal_show_close_button = true;
         var preconfirm = '';
         var preconfirm_value
         var multipleSteps = false;
@@ -4071,22 +4074,22 @@ $(document).ready(function() {
                 fnums = getUserCheckArray();
 
                 swal_popup_class = 'em-w-auto';
+                swal_show_confirm_button = false;
+                swal_show_cancel_button = false;
                 title = 'COM_EMUNDUS_ACCESS_MAIL_EXPERT';
-                html = '<div id="data" class="em-mt-32 em-w-100"><div id="email-loader" class="em-loader" style="margin: auto;"></div></div>';
+                html = '<div id="data"></div>';
 
-                $.ajax({
-                    type:'POST',
-                    url:url,
-                    data: {
-                        fnums: fnums
+                // Replace by fetch
+                fetch(url, {
+                    method: 'POST',
+                    body: JSON.stringify({fnums: fnums}),
+                    headers: {
+                        'Content-Type': 'application/json'
                     },
-                    success: function(result) {
-                        $('#data').append(result);
-                        $('#data').removeClass('em-loader');
-                    },
-                    error: function (jqXHR) {
-                        console.warn(jqXHR.responseText);
-                    }
+                    cache: "no-cache"
+                }).then(response => response.text()).then(data => {
+                    $('#data').append(data);
+                    $('#data').removeClass('em-loader');
                 });
                 break;
 
@@ -4100,8 +4103,9 @@ $(document).ready(function() {
                 iconHtml: icon,
                 html: html,
                 allowOutsideClick: false,
-                showCancelButton: true,
-                showCloseButton: true,
+                showCancelButton: swal_show_cancel_button,
+                showConfirmButton: swal_show_confirm_button,
+                showCloseButton: swal_show_close_button,
                 reverseButtons: true,
                 confirmButtonText: Joomla.Text._(swal_confirm_button) + (nbFiles != 0 ? ' (' + nbFiles + ')' : ''),
                 cancelButtonText: Joomla.Text._('COM_EMUNDUS_ONBOARD_CANCEL'),
@@ -5672,8 +5676,11 @@ function updateProfileForm(profile){
     document.querySelector('#tab_link_'+profile+' p').classList.remove('em-neutral-600-color');
     document.querySelector('#tab_link_'+profile+' p').classList.add('em-neutral-900-color');
 
+    if(typeof $ === 'undefined') {
+        $ = jQuery;
+    }
     $('#show_profile').empty();
-    $('#show_profile').before('<div id="loading"><img src="'+loading+'" alt="loading"/></div>');
+    addLoader();
 
     /* call to ajax */
     $.ajax({
@@ -5684,11 +5691,13 @@ function updateProfileForm(profile){
         success: function(result) {
             var form = result.data;
 
-            $('#loading').remove();
+            removeLoader();
 
             if(form) {
                 $('#show_profile').append(form.toString());
-                $('#download-pdf').attr('href', 'index.php?option=com_emundus&task=pdf&user=' + $('#user_hidden').attr('value') + '&fnum=' + $('#fnum_hidden').attr('value') + '&profile=' + profile);
+                if($('#download-pdf')) {
+                    $('#download-pdf').attr('href', 'index.php?option=com_emundus&task=pdf&user=' + $('#user_hidden').attr('value') + '&fnum=' + $('#fnum_hidden').attr('value') + '&profile=' + profile);
+                }
             }
 
         }, error: function(jqXHR) {

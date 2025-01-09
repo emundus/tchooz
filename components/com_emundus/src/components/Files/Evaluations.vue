@@ -1,23 +1,26 @@
 <template>
   <div id="evaluations-container">
-    <nav class="tw-mt-1">
-      <ul class="tw-list-none tw-flex tw-flex-row">
-        <li v-for="evaluation in evaluations" :key="evaluation.id"
-            class="tw-cursor-pointer tw-shadow tw-rounded-t-lg tw-px-2.5 tw-py-3"
-            :class="{'em-bg-main-500 em-text-neutral-300': selectedTab === evaluation.id}"
-            @click="selectedTab = evaluation.id"
-        >
-          {{ evaluation.label }}
-        </li>
-      </ul>
-    </nav>
-    <iframe
-        v-if="ccid > 0 && selectedEvaluation && selectedEvaluation.form_id"
-        :src="selectedEvaluation.url"
-        class="tw-w-full iframe-evaluation-list"
-        :key="selectedTab"
+    <div v-if="evaluations.length > 0" class="tw-h-full">
+      <nav class="tw-mt-1">
+        <ul class="tw-list-none tw-flex tw-flex-row">
+          <li v-for="evaluation in evaluations" :key="evaluation.id"
+              class="tw-cursor-pointer tw-shadow tw-rounded-t-lg tw-px-2.5 tw-py-3"
+              :class="{'em-bg-main-500 em-text-neutral-300': selectedTab === evaluation.id}"
+              @click="selectedTab = evaluation.id"
+          >
+            {{ evaluation.label }}
+          </li>
+        </ul>
+      </nav>
+      <iframe
+          v-if="ccid > 0 && selectedEvaluation && selectedEvaluation.form_id"
+          :src="selectedEvaluation.url"
+          class="tw-w-full iframe-evaluation-list"
+          :key="selectedTab"
       >
-    </iframe>
+      </iframe>
+    </div>
+    <p v-else class="tw-text-center tw-p-2 tw-m-2 tw-bg-blue-50 tw-border tw-border-blue-500 tw-rounded tw-text-neutral-900">{{ translate('COM_EMUNDUS_EVALUATIONS_LIST_NO_EDITABLE_EVALUATIONS') }}</p>
   </div>
 </template>
 
@@ -72,7 +75,10 @@ export default {
         } else {
           this.evaluations = response.data;
         }
-        this.selectedTab = this.evaluations[0].id;
+
+        if (this.evaluations.length > 0) {
+          this.selectedTab = this.evaluations[0].id;
+        }
       }).catch(error => {
         console.log(error);
       });

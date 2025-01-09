@@ -754,6 +754,25 @@ Text::script('COM_EMUNDUS_GLOBAL_HISTORY_DIFF_NEW_DATA');
 Text::script('COM_EMUNDUS_GLOBAL_HISTORY_ITEM_ID');
 Text::script('COM_EMUNDUS_EVALUATIONS_LIST');
 Text::script('COM_EMUNDUS_EVALUATIONS_LIST_NO_EVALUATIONS');
+Text::script('COM_EMUNDUS_EVALUATIONS_LIST_NO_EDITABLE_EVALUATIONS');
+
+// Experts
+Text::script('COM_EMUNDUS_EXPERT_MAIL_FROM_NAME');
+Text::script('COM_EMUNDUS_EXPERT_MAIL_FROM');
+Text::script('COM_EMUNDUS_EXPERT_MAIL_SUBJECT');
+Text::script('COM_EMUNDUS_EXPERT_MAIL_TO');
+Text::script('COM_EMUNDUS_EXPERT_MAIL_BODY');
+Text::script('COM_EMUNDUS_EXPERT_SEND');
+Text::script('COM_EMUNDUS_EXPERT_MAIL_TEMPLATES');
+Text::script('COM_EMUNDUS_EXPERT_SEND_MAIL_TO');
+Text::script('COM_EMUNDUS_EXPERT_SEND_MAIL_TO_EMPTY');
+Text::script('COM_EMUNDUS_EXPERT_SEND_MAIL_TO_TAG_ENTER');
+Text::script('COM_EMUNDUS_EXPERT_MAIL_SENT_SUCCESS');
+Text::script('COM_EMUNDUS_EXPERT_MAIL_SENT_SUCCESS_MESSAGE');
+Text::script('COM_EMUNDUS_EXPERT_MAIL_FROM_NAME_ERROR');
+Text::script('COM_EMUNDUS_EXPERT_MAIL_SUBJECT_ERROR');
+Text::script('COM_EMUNDUS_EXPERT_MAIL_TO_ERROR');
+Text::script('COM_EMUNDUS_EXPERT_MAIL_BODY_ERROR');
 
 // Load translations for action log plugin
 $actionlog_translation_tags = parse_ini_file(JPATH_ADMINISTRATOR.'/language/fr-FR/plg_actionlog_emundus.ini');
@@ -827,7 +846,7 @@ if ($task == 'getproductpdf') {
 if ($user->authorise('core.viewjob', 'com_emundus') && ($name == 'jobs' || $name == 'job' || $name == 'thesiss' || $name == 'thesis')) {
 	$controller->execute($task);
 }
-elseif ($user->guest && ((($name === 'webhook' || $app->input->get('controller', '', 'WORD') === 'webhook') && $format === 'raw') && ($secret === $token || $webhook_token == JApplicationHelper::getHash($token)) || $task == 'getfilereferent')) {
+elseif ($user->guest && ((($name === 'webhook' || $app->input->get('controller', '', 'WORD') === 'webhook') && $format === 'raw') && ($secret === $token || $webhook_token == JApplicationHelper::getHash($token)) || $task == 'getfilereferent' || (($name == 'form' || $app->input->get('controller', '', 'WORD') === 'form') && $task == 'getjsconditions'))) {
 	$controller->execute($task);
 }
 elseif ((($name == 'sync' || $app->input->get('controller', '', 'WORD') === 'sync') && $task == 'callapi') || $user->guest && $name != 'emailalert' && $name != 'programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign') && $task != 'passrequest' && $task != 'getusername' && $task != 'getpasswordsecurity') {

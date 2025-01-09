@@ -1875,6 +1875,7 @@ class EmundusModelEvaluation extends JModelList
 			->from($this->db->quoteName('#__emundus_files_request', 'efr'))
 			->innerJoin($this->db->quoteName('#__users', 'ju') . ' ON ju.email = efr.email')
 			->leftJoin($this->db->quoteName('#__emundus_users', 'jeu') . ' ON ju.id = jeu.user_id')
+			->group($this->db->quoteName('ju.email'))
 			->order('ju.email ASC');
 
 		try {

@@ -12,6 +12,7 @@
 
 // phpcs:enable PSR1.Files.SideEffects
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
@@ -125,14 +126,25 @@ class EmundusControllerEmail extends BaseController
 	{
 		$response = ['status' => false, 'sent' => null, 'failed' => true, 'message' => Text::_('ACCESS_DENIED')];
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_em_user->id) || EmundusHelperAccess::asAccessAction(18, 'c', $this->_user->id))
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) || EmundusHelperAccess::asAccessAction(18, 'c', $this->_user->id))
 		{
-
 			$fnums = $this->input->post->getString('fnums');
-
-			if (!empty($fnums))
+			if (empty($fnums))
 			{
-				$email    = $this->m_emails->sendExpertMail((array) $fnums);
+				$fnums = $this->app->getUserState('com_emundus.email.expert.fnums');
+			}
+
+			$mail_subject   = $this->input->post->getString('mail_subject', '');
+			$mail_from_name = $this->input->post->getString('mail_from_name', '');
+			$mail_from      = $this->input->post->getString('mail_from', '');
+			$mail_to        = $this->input->post->getString('mail_to', '');
+			$mail_body      = $this->input->post->getRaw('mail_body', '');
+
+			if (!empty($fnums) && !empty($mail_subject) && !empty($mail_to) && !empty($mail_body))
+			{
+				$mail_to = explode(',', $mail_to);
+				$email    = $this->m_emails->sendExpertMail((array) $fnums, $this->_user->id, $mail_subject, $mail_from_name, $mail_from, $mail_to, $mail_body);
+
 				$response = ['status' => true, 'sent' => $email['sent'], 'failed' => $email['failed'], 'message' => $email['message']];
 			}
 			else
@@ -290,15 +302,15 @@ class EmundusControllerEmail extends BaseController
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
 		{
-			$data = [];
-			$data['lbl'] = $this->input->getString('lbl', '');
-			$data['subject'] = $this->input->getString('subject', '');
-			$data['emailfrom'] = $this->input->getString('emailfrom', '');
-			$data['message'] = $this->input->getRaw('message', '');
+			$data               = [];
+			$data['lbl']        = $this->input->getString('lbl', '');
+			$data['subject']    = $this->input->getString('subject', '');
+			$data['emailfrom']  = $this->input->getString('emailfrom', '');
+			$data['message']    = $this->input->getRaw('message', '');
 			$data['email_tmpl'] = $this->input->getInt('email_tmpl', 1);
-			$data['category'] = $this->input->getString('category', '');
-			$data['name'] = $this->input->getString('name', '');
-			$data['button'] = $this->input->getString('button', '');
+			$data['category']   = $this->input->getString('category', '');
+			$data['name']       = $this->input->getString('name', '');
+			$data['button']     = $this->input->getString('button', '');
 
 			// Additional data
 			$receivers_cc          = $this->input->getRaw('selectedReceiversCC');
@@ -403,16 +415,16 @@ class EmundusControllerEmail extends BaseController
 		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
 		{
 			// Main data
-			$data = [];
-			$id = $this->input->getInt('id', 0);
-			$data['lbl'] = $this->input->getString('lbl', '');
-			$data['subject'] = $this->input->getString('subject', '');
-			$data['emailfrom'] = $this->input->getString('emailfrom', '');
-			$data['message'] = $this->input->getRaw('message', '');
+			$data               = [];
+			$id                 = $this->input->getInt('id', 0);
+			$data['lbl']        = $this->input->getString('lbl', '');
+			$data['subject']    = $this->input->getString('subject', '');
+			$data['emailfrom']  = $this->input->getString('emailfrom', '');
+			$data['message']    = $this->input->getRaw('message', '');
 			$data['email_tmpl'] = $this->input->getInt('email_tmpl', 1);
-			$data['category'] = $this->input->getString('category', '');
-			$data['name'] = $this->input->getString('name', '');
-			$data['button'] = $this->input->getString('button', '');
+			$data['category']   = $this->input->getString('category', '');
+			$data['name']       = $this->input->getString('name', '');
+			$data['button']     = $this->input->getString('button', '');
 
 			// Additional data
 			$receivers_cc          = $this->input->getRaw('selectedReceiversCC');
@@ -544,7 +556,7 @@ class EmundusControllerEmail extends BaseController
 		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
 		{
 			$categories = $this->m_emails->getEmailCategories();
-			$response = array('status' => true, 'msg' => Text::_('EMAIL_CATEGORIES_RETRIEVED'), 'data' => $categories);
+			$response   = array('status' => true, 'msg' => Text::_('EMAIL_CATEGORIES_RETRIEVED'), 'data' => $categories);
 		}
 
 		echo json_encode((object) $response);
@@ -750,7 +762,8 @@ class EmundusControllerEmail extends BaseController
 
 		$result = array('status' => false, 'msg' => Text::_('ERROR_CANNOT_RETRIEVE_EMAIL'), 'data' => []);
 
-		switch ($template) {
+		switch ($template)
+		{
 			case 8 : // referent_letter
 				if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
 				{
@@ -759,22 +772,22 @@ class EmundusControllerEmail extends BaseController
 				else
 				{
 					require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
-					$m_files    = $this->getModel('Files');
+					$m_files = $this->getModel('Files');
 
-					$fnum = $this->input->getString('fnum');
+					$fnum  = $this->input->getString('fnum');
 					$keyid = $this->input->getString('keyid');
 
-					if(!empty($fnum) && !empty($keyid))
+					if (!empty($fnum) && !empty($keyid))
 					{
 						$email = $this->m_emails->getEmail('referent_letter');
 
-						if(!empty($email))
+						if (!empty($email))
 						{
 							$result['status'] = true;
-							$result['msg'] = Text::_('EMAIL_RETRIEVED');
+							$result['msg']    = Text::_('EMAIL_RETRIEVED');
 
-							$referent_email = $m_files->getReferentEmail($keyid,$fnum);
-							$fnum = $m_files->getFnumInfos($fnum);
+							$referent_email = $m_files->getReferentEmail($keyid, $fnum);
+							$fnum           = $m_files->getFnumInfos($fnum);
 
 							$baseurl = Uri::base();
 							//TODO: Via fnum : get referent form id
@@ -792,20 +805,20 @@ class EmundusControllerEmail extends BaseController
 							$email->message = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
 
 							$translations = [
-								'title'        => Text::_('COM_EMUNDUS_REFERENT'),
-								'copy'         => Text::_('COM_EMUNDUS_EMAILS_CONTENT_COPY'),
-								'close'        => Text::_('COM_EMUNDUS_ATTACHMENTS_CLOSE'),
-								'emailContent' => Text::_('COM_EMUNDUS_EMAILS_CONTENT'),
-								'linkLabel'    => Text::_('COM_EMUNDUS_REFERENT_LINK'),
+								'title'              => Text::_('COM_EMUNDUS_REFERENT'),
+								'copy'               => Text::_('COM_EMUNDUS_EMAILS_CONTENT_COPY'),
+								'close'              => Text::_('COM_EMUNDUS_ATTACHMENTS_CLOSE'),
+								'emailContent'       => Text::_('COM_EMUNDUS_EMAILS_CONTENT'),
+								'linkLabel'          => Text::_('COM_EMUNDUS_REFERENT_LINK'),
 								'referentEmailLabel' => Text::_('COM_EMUNDUS_REFERENT_EMAIL'),
-								'copied'       => Text::_('COM_EMUNDUS_EMAILS_CONTENT_COPIED'),
+								'copied'             => Text::_('COM_EMUNDUS_EMAILS_CONTENT_COPIED'),
 							];
 
 							$data = [
-								'message'      => $email->message,
-								'link'         => $link_upload,
-								'referent_email'         => $referent_email,
-								'translations' => $translations
+								'message'        => $email->message,
+								'link'           => $link_upload,
+								'referent_email' => $referent_email,
+								'translations'   => $translations
 							];
 
 							$result['data'] = $data;
@@ -819,4 +832,63 @@ class EmundusControllerEmail extends BaseController
 		exit;
 	}
 
+	public function getexpertconfig()
+	{
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
+		{
+			$config       = [];
+			$emConfig     = ComponentHelper::getParams('com_emundus');
+			$default_tmpl = $emConfig->get('default_email_tmpl', 'expert');
+
+			$config = $this->m_emails->getEmail($default_tmpl);
+
+			if (empty($config->name))
+			{
+				$config->name = $this->app->get('fromname');
+			}
+			if (empty($config->emailfrom))
+			{
+				$config->emailfrom = $this->app->get('mailfrom');
+			}
+
+			if (!empty($config))
+			{
+				$response = array('status' => true, 'msg' => Text::_('CONFIG_RETRIEVED'), 'data' => $config);
+			}
+			else
+			{
+				$response['msg'] = Text::_('ERROR_CANNOT_RETRIEVE_CONFIG');
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function getexpertslist()
+	{
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
+		{
+			require_once JPATH_SITE . '/components/com_emundus/models/evaluation.php';
+			$m_evaluation = new EmundusModelEvaluation();
+			$experts      = $m_evaluation->getExperts();
+
+
+			if (is_array($experts))
+			{
+				$response = array('status' => true, 'msg' => Text::_('EXPERTS_RETRIEVED'), 'data' => $experts);
+			}
+			else
+			{
+				$response['msg'] = Text::_('ERROR_CANNOT_RETRIEVE_EXPERTS');
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
 }

@@ -193,8 +193,21 @@ class EmundusViewUsers extends HtmlView
 		// Check if we have external authentication
 		$emundusOauth2 = PluginHelper::getPlugin('authentication','emundus_oauth2');
 		$ldap = PluginHelper::getPlugin('authentication','ldap');
+		$saml = PluginHelper::getPlugin('authentication','miniorangesaml');
+
+		$this->samlConfig = [];
+
 		if(!empty($ldap)) {
 			$this->haveExternalAuth = true;
+		}
+		elseif(!empty($saml)) {
+			require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'settings.php');
+			$m_settings = new EmundusModelSettings();
+
+			$this->samlConfig = $m_settings->getSAMLSettings();
+			if(!empty($this->samlConfig)) {
+				$this->haveExternalAuth = true;
+			}
 		}
 		elseif(!empty($emundusOauth2))
 		{

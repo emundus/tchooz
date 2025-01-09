@@ -15,11 +15,13 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Mail\MailerFactoryInterface;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Registry\Registry;
 
@@ -1338,32 +1340,28 @@ class EmundusModelEmails extends JModelList
 	 * @throws Exception
 	 * @since version v6
 	 */
-	public function sendExpertMail(array $fnums, $sender_id = null): array
+	public function sendExpertMail(array $fnums, int $sender_id, string $mail_subject, string $mail_from_name, string $mail_from, array $mail_to, string $mail_body): array
 	{
 		$sent          = [];
 		$failed        = [];
 		$print_message = '';
 
-		if (!empty($fnums)) {
+		if (!empty($fnums) && !empty($mail_to) && !empty($mail_subject) && !empty($mail_body)) {
 			require_once(JPATH_SITE . DS . 'components/com_emundus/helpers/filters.php');
 			require_once(JPATH_SITE . DS . 'components/com_emundus/models/files.php');
-			JPluginHelper::importPlugin('emundus');
+			PluginHelper::importPlugin('emundus');
 
 			$h_filters = new EmundusHelperFilters();
 			$m_files   = new EmundusModelFiles();
 
 			Log::addLogger(['text_file' => 'com_emundus.inviteExpert.error.php'], Log::ALL, 'com_emundus');
 
-			$eMConfig   = JComponentHelper::getParams('com_emundus');
+			$eMConfig   = ComponentHelper::getParams('com_emundus');
 			$formid = json_decode($eMConfig->get('expert_fabrikformid', '{"accepted":169, "refused":328, "agreement": 0}'));
 			$documentid = $eMConfig->get('expert_document_id', '36');
 
 			$app            = Factory::getApplication();
 			$email_from_sys = $app->getConfig()->get('mailfrom');
-			$jinput         = $app->input;
-			$mail_subject   = $jinput->post->getString('mail_subject');
-			$mail_from_name = $jinput->post->getString('mail_from_name');
-			$mail_from      = $jinput->post->getRaw('mail_from');
 
 			// We are using the first fnum for things like setting tags and getting campaign info.
 			// ! This means that we should NOT PUT TAGS RELATING TO PERSONAL INFO IN THE EMAIL.
@@ -1383,12 +1381,10 @@ class EmundusModelEmails extends JModelList
 				$mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
 				$mail_from      = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
 			}
-			$mail_to = $jinput->post->getRaw('mail_to');
-
 			$mail_tmpl = $this->getEmail('confirm_post');
 
 			if (!empty($mail_to)) {
-				$mail_body = $this->setBody($example_user, $jinput->post->getRaw('mail_body'));
+				$mail_body = $this->setBody($example_user, $mail_body);
 
 				// Build an HTML list to stick in the email body.
 				$fnums_infos = $m_files->getFnumsInfos($fnums);
@@ -1414,13 +1410,6 @@ class EmundusModelEmails extends JModelList
 				$element_ids = $this->getFabrikElementIDs($mail_body);
 				if (!empty($element_ids) && !empty($element_ids[0])) {
 					$element_values = $this->getFabrikElementValues($example_fnum, $element_ids[1]);
-				}
-
-				$mail_attachments  = $jinput->post->getString('mail_attachments');
-				$delete_attachment = $jinput->post->getInt('delete_attachment');
-
-				if (!empty($mail_attachments)) {
-					$mail_attachments = explode(',', $mail_attachments);
 				}
 
 				$sent          = array();
@@ -1533,11 +1522,9 @@ class EmundusModelEmails extends JModelList
 					$body = !empty($tags['patterns']) && !empty($tags['replacements']) ? preg_replace($tags['patterns'], $tags['replacements'], $body) : $body;
 
 					// If the email sender has the same domain as the system sender address.
-					if (!empty($mail_from) && substr(strrchr($mail_from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
-						$mail_from_address = $mail_from;
-					}
-					else {
-						$mail_from_address = $email_from_sys;
+					$mail_from_address = $email_from_sys;
+					if(empty($mail_from)) {
+						$mail_from = $email_from_sys;
 					}
 
 					// Set sender
@@ -1554,11 +1541,6 @@ class EmundusModelEmails extends JModelList
 					$mailer->isHTML(true);
 					$mailer->Encoding = 'base64';
 					$mailer->setBody($body);
-					if (is_array($mail_attachments) && count($mail_attachments) > 0) {
-						foreach ($mail_attachments as $attachment) {
-							$mailer->addAttachment($attachment);
-						}
-					}
 
 					require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
 					$custom_email_tag = EmundusHelperEmails::getCustomHeader();
@@ -1611,34 +1593,6 @@ class EmundusModelEmails extends JModelList
 					]]);
 				}
 				unset($key1);
-
-				// delete attached files
-				if (is_array($mail_attachments) && count($mail_attachments) > 0 && $delete_attachment == 1) {
-					foreach ($mail_attachments as $attachment) {
-
-						$filename = explode(DS, $attachment);
-						// TODO: Make documents contain some sort of fnum information because deleting by raw filename seems a bit scary.
-						$query = $this->_db->getQuery(true);
-						$query->delete($this->_db->quoteName('#__emundus_uploads'))
-							->where($this->_db->quoteName('filename') . ' LIKE ' . $this->_db->quote($filename[count($filename) - 1]) . ' AND ' . $this->_db->quoteName('user_id') . ' = ' . $filename[count($filename) - 2]);
-						$this->_db->setQuery($query);
-
-						try {
-							$this->_db->execute();
-						}
-						catch (Exception $e) {
-							Log::add('Could not delete file : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
-							continue;
-						}
-
-						@unlink(EMUNDUS_PATH_ABS . $filename[count($filename) - 2] . DS . $filename[count($filename) - 1]);
-
-					}
-				}
-				else {
-					Log::add(JFactory::getUser()->id . ' Function sendExpertMail has been called but mail_to has been found empty. fnums => (' . json_encode($fnums) . ')', Log::WARNING, 'com_emundus');
-					$print_message = JText::_('NO_MAIL_TO_SEND');
-				}
 			}
 		}
 

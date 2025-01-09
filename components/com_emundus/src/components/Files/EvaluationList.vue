@@ -1,7 +1,7 @@
 <template>
-  <div :id="'evaluation-step-' + step.id + '-list'" class="tw-p-4">
+  <div :id="'evaluation-step-' + step.id + '-list'">
     <h2 class="tw-mb-4">{{ translate('COM_EMUNDUS_EVALUATIONS_LIST') }}</h2>
-    <div v-if="evaluations.length > 0">
+    <div v-if="evaluations.length > 0"  class="tw-p-4 tw-h-full">
       <Tabs
             :tabs="evaluationsTabs"
             :classes="'tw-overflow-x-scroll tw-flex tw-items-center tw-justify-start tw-gap-2'"
@@ -11,7 +11,7 @@
       <iframe :src="selectedEvaluation.url" :key="selectedEvaluation.id" class="tw-w-full iframe-selected-evaluation">
       </iframe>
     </div>
-    <p v-else>{{ translate('COM_EMUNDUS_EVALUATIONS_LIST_NO_EVALUATIONS') }}</p>
+    <p v-else class="tw-text-center tw-p-2 tw-m-2 tw-bg-blue-50 tw-border tw-border-blue-500 tw-rounded tw-text-neutral-900">{{ translate('COM_EMUNDUS_EVALUATIONS_LIST_NO_EVALUATIONS') }}</p>
   </div>
 </template>
 
@@ -47,7 +47,10 @@ export default {
     getEvaluations() {
       evaluationService.getEvaluations(this.step.id, this.ccid).then(response => {
         this.evaluations = response.data;
-        this.selectedEvaluation = this.evaluations[0];
+
+        if (this.evaluations.length > 0) {
+          this.selectedEvaluation = this.evaluations[0];
+        }
       }).catch(error => {
         console.log(error);
       });

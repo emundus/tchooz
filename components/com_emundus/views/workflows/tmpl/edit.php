@@ -78,6 +78,8 @@ $sysadmin_access    = EmundusHelperAccess::isAdministrator($this->user->id);
 
 <div id="em-component-vue" component="Workflows/WorkflowEdit"
      workflowId="<?= $this->current_workflow_id; ?>"
+     shortLang="<?= $short_lang ?>"
+     currentLanguage="<?= $current_lang ?>"
 >
 </div>
 
