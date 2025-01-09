@@ -131,19 +131,13 @@ This interface allows you to generate users and application files.
 You can edit some variables by copying `docker-compose.yml` file
 
 ```shell
-docker-compose up --build -d
+docker compose up --build -d
 ```
 
 ## Mise à jour du projet
 
 ```shell
 php cli/joomla.php tchooz:update
-```
-
-## Générer la documentation Back
-
-```shell
-phpDocumentor
 ```
 
 <!-- GITFLOW -->

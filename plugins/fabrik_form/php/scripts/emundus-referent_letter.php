@@ -63,7 +63,7 @@ function rand_string($len, $chars = 'abcdefghijklmnopqrstuvwxyz0123456789') {
     $string = '';
     for ($i = 0; $i < $len; $i++) {
         $pos = rand(0, strlen($chars)-1);
-        $string .= $chars{$pos};
+        $string .= $chars[$pos];
     }
     return $string;
 }

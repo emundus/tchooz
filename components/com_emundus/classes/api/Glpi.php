@@ -34,13 +34,13 @@ class Glpi extends Api
 		}
 	}
 
-	public function setBaseUrl(): void
+	public function setBaseUrl($baseUrl): void
 	{
 		$config        = ComponentHelper::getParams('com_emundus');
 		$this->baseUrl = $config->get('glpi_api_base_url', '');
 	}
 
-	public function setHeaders(): void
+	public function setHeaders($headers): void
 	{
 		$auth = $this->getAuth();
 

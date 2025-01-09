@@ -17,7 +17,7 @@ include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 $app            = JFactory::getApplication();
 $db             = JFactory::getDBO();
 
-$session = JFactory::getSession():
+$session = JFactory::getSession();
 $current_user = $session->get('emundusUser');
 
 $user_id = $fabrikFormData['user_raw'][0];

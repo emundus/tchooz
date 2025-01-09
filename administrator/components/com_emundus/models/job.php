@@ -53,8 +53,8 @@ class EmundusModelJob extends JModelAdmin
 
 		// Get the form.
 		$form = $this->loadForm('com_emundus.job', 'job', array('control' => 'jform', 'load_data' => $loadData));
-        
-        
+
+
 		if (empty($form)) {
 			return false;
 		}
@@ -75,7 +75,7 @@ class EmundusModelJob extends JModelAdmin
 
 		if (empty($data)) {
 			$data = $this->getItem();
-            
+
 		}
 
 		return $data;
