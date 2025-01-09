@@ -185,7 +185,7 @@ class EmundusControllerFile extends BaseController
 	{
 		$results = ['status' => 0, 'msg' => '', 'data' => []];
 
-		if (EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id) || EmundusHelperAccess::asAccessAction(5, 'c', $this->_user->id)) {
+		if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id)) {
 			$fnum = $this->input->getString('fnum', null);
 
 			$results['status'] = $this->files->checkAccess($fnum);
@@ -205,7 +205,7 @@ class EmundusControllerFile extends BaseController
 		$fnum = $this->input->getString('fnum', null);
 
 		if (!empty($fnum)) {
-			if (EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id, $fnum) || EmundusHelperAccess::asAccessAction(5, 'c', $this->_user->id, $fnum)) {
+			if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)) {
 				$access = $this->files->checkAccess($fnum);
 				if ($access) {
 					$results['status'] = 1;
@@ -224,7 +224,7 @@ class EmundusControllerFile extends BaseController
 	{
 		$results = ['status' => 1, 'msg' => ''];
 
-		if (EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id) || EmundusHelperAccess::asAccessAction(5, 'c', $this->_user->id)) {
+		if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id)) {
 			$limit = $this->input->getInt('limit', 5);
 
 			$this->files->setLimit($limit);
@@ -244,7 +244,7 @@ class EmundusControllerFile extends BaseController
 	{
 		$results = ['status' => 1, 'msg' => ''];
 
-		if (EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id) || EmundusHelperAccess::asAccessAction(5, 'c', $this->_user->id)) {
+		if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id)) {
 			$page = $this->input->getInt('page', 0);
 
 			$this->files->setPage($page);
@@ -264,7 +264,7 @@ class EmundusControllerFile extends BaseController
 	{
 		$results = ['status' => 1, 'msg' => '', 'data' => ''];
 
-		if (EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id) || EmundusHelperAccess::asAccessAction(5, 'c', $this->_user->id)) {
+		if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id)) {
 			$results['data'] = $this->files->getSelectedTab();
 		}
 		else {
@@ -280,7 +280,7 @@ class EmundusControllerFile extends BaseController
 	{
 		$results = ['status' => 1, 'msg' => ''];
 
-		if (EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id) || EmundusHelperAccess::asAccessAction(5, 'c', $this->_user->id)) {
+		if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id)) {
 			$tab = $this->input->getString('tab', '');
 
 			$this->files->setSelectedTab($tab);
@@ -362,7 +362,7 @@ class EmundusControllerFile extends BaseController
 	{
 		$response = ['status' => 1, 'msg' => ''];
 
-		if (EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id) || EmundusHelperAccess::asAccessAction(5, 'c', $this->_user->id)) {
+		if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id)) {
 			$filters                    = $this->files->getFilters();
 			$filters['default_filters'] = array_values($filters['default_filters']);
 			$response['data']           = $filters;
@@ -380,7 +380,7 @@ class EmundusControllerFile extends BaseController
 	{
 		$response = ['status' => 1, 'msg' => ''];
 
-		if (EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id) || EmundusHelperAccess::asAccessAction(5, 'c', $this->_user->id)) {
+		if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id)) {
 
 			$filters = $this->input->getString('filters');
 			$filters = json_decode($filters, true);

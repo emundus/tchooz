@@ -834,7 +834,7 @@ class EmundusControllerApplication extends BaseController
 		$user    = $this->input->getInt('user', 0);
 		$fnum    = $this->input->getString('fnum', null);
 
-		if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)) {
+		if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum) || EmundusHelperAccess::isFnumMine($this->_user->id,$fnum)) {
 			$m_application = $this->getModel('Application');
 
 			$form = $m_application->getForms($user, $fnum, $profile);

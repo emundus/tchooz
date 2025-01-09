@@ -146,8 +146,6 @@
     .view-registration.em-formRegistrationCenter {
         @apply tw-flex;
         @apply tw-flex-wrap;
-        margin-right: -10px;
-        margin-left: -10px;
 
         .emundus-form {
             @media all and (min-width: 768px) {

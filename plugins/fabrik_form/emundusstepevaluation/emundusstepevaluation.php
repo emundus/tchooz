@@ -103,7 +103,7 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 		}
 
 		if (!$can_edit && $view !== 'details') {
-			$this->app->enqueueMessage(Text::_('READONLY_ACCESS'));
+			$this->app->enqueueMessage(Text::_($access['reason_cannot_edit']));
 			$final_url = str_replace('view=form', 'view=details', $final_url);
 		}
 

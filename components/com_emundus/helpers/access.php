@@ -608,10 +608,11 @@ class EmundusHelperAccess
 	 * @return bool[] (can_see, can_edit)
 	 * @throws Exception
 	 */
-	public static function getUserEvaluationStepAccess($ccid, $step_data, $user_id): array
+	public static function getUserEvaluationStepAccess($ccid, $step_data, $user_id, $verify_campaign_infos = true): array
 	{
 		$can_see = false;
 		$can_edit = false;
+		$reason_cannot_edit = 'READONLY_ACCESS';
 
 		if (!empty($ccid) && !empty($step_data->id)) {
 			$app = Factory::getApplication();
@@ -645,34 +646,42 @@ class EmundusHelperAccess
 					if (EmundusHelperAccess::asAccessAction(1, 'r', $user_id, $fnum) && EmundusHelperAccess::asAccessAction($step_data->action_id, 'r', $user_id))
 					{
 						$can_see = true;
-						if (EmundusHelperAccess::asAccessAction($step_data->action_id, 'c', $user_id))
+						if (EmundusHelperAccess::asAccessAction($step_data->action_id, 'c', $user_id, $fnum))
 						{
-							// verify step is not closed
-							// file must be in one of the entry statuses and current date must be between start and end date of step
-							$query->clear()
-								->select('status')
-								->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
-								->where('ecc.id = ' . $ccid);
+							if ($verify_campaign_infos) {
+								// verify step is not closed
+								// file must be in one of the entry statuses and current date must be between start and end date of step
+								$query->clear()
+									->select('status')
+									->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+									->where('ecc.id = ' . $ccid);
 
-							$db->setQuery($query);
-							$status = $db->loadResult();
+								$db->setQuery($query);
+								$status = $db->loadResult();
 
-							$respect_dates = true;
-							if ($step_data->infinite != 1)
-							{
-								if (!empty($step_data->start_date) && $step_data->start_date > date('Y-m-d'))
+								$respect_dates = true;
+								if ($step_data->infinite != 1)
 								{
-									$respect_dates = false;
+									if (!empty($step_data->start_date) && $step_data->start_date > date('Y-m-d'))
+									{
+										$respect_dates = false;
+										$reason_cannot_edit = 'COM_EMUNDUS_WORKFLOW_STEP_ACCESS_DENIED_BECAUSE_NOT_STARTED';
+									}
+
+									if (!empty($step_data->end_date) && $step_data->end_date < date('Y-m-d'))
+									{
+										$respect_dates = false;
+										$reason_cannot_edit = 'COM_EMUNDUS_WORKFLOW_STEP_ACCESS_DENIED_BECAUSE_ENDED';
+									}
 								}
 
-								if (!empty($step_data->end_date) && $step_data->end_date < date('Y-m-d'))
+								if (in_array($status, $step_data->entry_status) && $respect_dates)
 								{
-									$respect_dates = false;
+									$can_edit = true;
+								} else {
+									$reason_cannot_edit = !in_array($status, $step_data->entry_status) ? 'COM_EMUNDUS_WORKFLOW_STEP_ACCESS_DENIED_BECAUSE_OF_STATUS' : $reason_cannot_edit;
 								}
-							}
-
-							if (in_array($status, $step_data->entry_status) && $respect_dates)
-							{
+							} else {
 								$can_edit = true;
 							}
 						}
@@ -685,7 +694,8 @@ class EmundusHelperAccess
 
 		return [
 			'can_see' => $can_see,
-			'can_edit' => $can_edit
+			'can_edit' => $can_edit,
+			'reason_cannot_edit' => $reason_cannot_edit
 		];
 	}
 

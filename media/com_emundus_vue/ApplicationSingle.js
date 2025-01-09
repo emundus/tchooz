@@ -68,7 +68,9 @@ const _sfc_main$2 = {
         } else {
           this.evaluations = response.data;
         }
-        this.selectedTab = this.evaluations[0].id;
+        if (this.evaluations.length > 0) {
+          this.selectedTab = this.evaluations[0].id;
+        }
       }).catch((error) => {
         console.log(error);
       });
@@ -81,31 +83,41 @@ const _sfc_main$2 = {
   }
 };
 const _hoisted_1$2 = { id: "evaluations-container" };
-const _hoisted_2$2 = { class: "tw-mt-1" };
-const _hoisted_3$2 = { class: "tw-list-none tw-flex tw-flex-row" };
-const _hoisted_4$2 = ["onClick"];
-const _hoisted_5$2 = ["src"];
+const _hoisted_2$2 = {
+  key: 0,
+  class: "tw-h-full"
+};
+const _hoisted_3$2 = { class: "tw-mt-1" };
+const _hoisted_4$2 = { class: "tw-list-none tw-flex tw-flex-row" };
+const _hoisted_5$2 = ["onClick"];
+const _hoisted_6$1 = ["src"];
+const _hoisted_7$1 = {
+  key: 1,
+  class: "tw-text-center tw-p-2 tw-m-2 tw-bg-blue-50 tw-border tw-border-blue-500 tw-rounded tw-text-neutral-900"
+};
 function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", _hoisted_1$2, [
-    createBaseVNode("nav", _hoisted_2$2, [
-      createBaseVNode("ul", _hoisted_3$2, [
-        (openBlock(true), createElementBlock(Fragment, null, renderList($data.evaluations, (evaluation) => {
-          return openBlock(), createElementBlock("li", {
-            key: evaluation.id,
-            class: normalizeClass(["tw-cursor-pointer tw-shadow tw-rounded-t-lg tw-px-2.5 tw-py-3", { "em-bg-main-500 em-text-neutral-300": $data.selectedTab === evaluation.id }]),
-            onClick: ($event) => $data.selectedTab = evaluation.id
-          }, toDisplayString(evaluation.label), 11, _hoisted_4$2);
-        }), 128))
-      ])
-    ]),
-    $data.ccid > 0 && $options.selectedEvaluation && $options.selectedEvaluation.form_id ? (openBlock(), createElementBlock("iframe", {
-      src: $options.selectedEvaluation.url,
-      class: "tw-w-full iframe-evaluation-list",
-      key: $data.selectedTab
-    }, null, 8, _hoisted_5$2)) : createCommentVNode("", true)
+    $data.evaluations.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_2$2, [
+      createBaseVNode("nav", _hoisted_3$2, [
+        createBaseVNode("ul", _hoisted_4$2, [
+          (openBlock(true), createElementBlock(Fragment, null, renderList($data.evaluations, (evaluation) => {
+            return openBlock(), createElementBlock("li", {
+              key: evaluation.id,
+              class: normalizeClass(["tw-cursor-pointer tw-shadow tw-rounded-t-lg tw-px-2.5 tw-py-3", { "em-bg-main-500 em-text-neutral-300": $data.selectedTab === evaluation.id }]),
+              onClick: ($event) => $data.selectedTab = evaluation.id
+            }, toDisplayString(evaluation.label), 11, _hoisted_5$2);
+          }), 128))
+        ])
+      ]),
+      $data.ccid > 0 && $options.selectedEvaluation && $options.selectedEvaluation.form_id ? (openBlock(), createElementBlock("iframe", {
+        src: $options.selectedEvaluation.url,
+        class: "tw-w-full iframe-evaluation-list",
+        key: $data.selectedTab
+      }, null, 8, _hoisted_6$1)) : createCommentVNode("", true)
+    ])) : (openBlock(), createElementBlock("p", _hoisted_7$1, toDisplayString(_ctx.translate("COM_EMUNDUS_EVALUATIONS_LIST_NO_EDITABLE_EVALUATIONS")), 1))
   ]);
 }
-const Evaluations = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-f9486817"]]);
+const Evaluations = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-7819c161"]]);
 const client = new FetchClient("file");
 const filesService = {
   // eslint-disable-next-line no-unused-vars
@@ -267,7 +279,9 @@ const _sfc_main$1 = {
     getEvaluations() {
       evaluationService.getEvaluations(this.step.id, this.ccid).then((response) => {
         this.evaluations = response.data;
-        this.selectedEvaluation = this.evaluations[0];
+        if (this.evaluations.length > 0) {
+          this.selectedEvaluation = this.evaluations[0];
+        }
       }).catch((error) => {
         console.log(error);
       });
@@ -294,14 +308,19 @@ const _sfc_main$1 = {
 };
 const _hoisted_1$1 = ["id"];
 const _hoisted_2$1 = { class: "tw-mb-4" };
-const _hoisted_3$1 = { key: 0 };
+const _hoisted_3$1 = {
+  key: 0,
+  class: "tw-p-4 tw-h-full"
+};
 const _hoisted_4$1 = ["src"];
-const _hoisted_5$1 = { key: 1 };
+const _hoisted_5$1 = {
+  key: 1,
+  class: "tw-text-center tw-p-2 tw-m-2 tw-bg-blue-50 tw-border tw-border-blue-500 tw-rounded tw-text-neutral-900"
+};
 function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_Tabs = resolveComponent("Tabs");
   return openBlock(), createElementBlock("div", {
-    id: "evaluation-step-" + $props.step.id + "-list",
-    class: "tw-p-4"
+    id: "evaluation-step-" + $props.step.id + "-list"
   }, [
     createBaseVNode("h2", _hoisted_2$1, toDisplayString(_ctx.translate("COM_EMUNDUS_EVALUATIONS_LIST")), 1),
     _ctx.evaluations.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_3$1, [
@@ -318,7 +337,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
     ])) : (openBlock(), createElementBlock("p", _hoisted_5$1, toDisplayString(_ctx.translate("COM_EMUNDUS_EVALUATIONS_LIST_NO_EVALUATIONS")), 1))
   ], 8, _hoisted_1$1);
 }
-const EvaluationList = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-008c5608"]]);
+const EvaluationList = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-78b155a0"]]);
 const _sfc_main = {
   name: "ApplicationSingle",
   components: { EvaluationList, Comments, Attachments, Modal, Evaluations },
@@ -520,7 +539,6 @@ const _sfc_main = {
                   step
                 });
               }
-              console.log(this.tabs, "tabs");
             });
           }).catch((error) => {
             console.log(error);

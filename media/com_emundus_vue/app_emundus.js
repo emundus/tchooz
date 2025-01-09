@@ -75879,12 +75879,16 @@ if (document) {
   let el2 = document.getElementById("em-component-vue");
   const attachmentElement = document.getElementById("em-application-attachment");
   const filesElement = document.getElementById("em-files");
+  const expertElement = document.getElementById("em-expert");
   if (attachmentElement) {
     elementId = "#em-application-attachment";
     el2 = attachmentElement;
   } else if (filesElement) {
     elementId = "#em-files";
     el2 = filesElement;
+  } else if (expertElement) {
+    elementId = "#em-expert";
+    el2 = expertElement;
   }
   if (el2) {
     const componentName = el2.getAttribute("component");
@@ -76020,7 +76024,20 @@ if (document) {
         const globalStore2 = useGlobalStore();
         globalStore2.initAttachmentPath(datas.base + "/images/emundus/files/");
       }
+      {
+        app.config.productionTip = false;
+        app.config.devtools = true;
+        app.config.performance = true;
+      }
       app.mount(elementId);
+      {
+        const version2 = app.version;
+        const devtools2 = window.__VUE_DEVTOOLS_GLOBAL_HOOK__;
+        if (devtools2) {
+          devtools2.enabled = true;
+          devtools2.emit("app:init", app, version2, {});
+        }
+      }
     }
   }
 }

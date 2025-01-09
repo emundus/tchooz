@@ -49,7 +49,7 @@ $sysadmin_access    = EmundusHelperAccess::isAdministrator($user->id);
 ?>
 
 
-<div id="em-component-vue"
+<div id="em-expert"
      component="Expert/Expert"
 ></div>
 

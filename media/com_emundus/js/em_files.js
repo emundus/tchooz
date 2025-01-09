@@ -5676,8 +5676,11 @@ function updateProfileForm(profile){
     document.querySelector('#tab_link_'+profile+' p').classList.remove('em-neutral-600-color');
     document.querySelector('#tab_link_'+profile+' p').classList.add('em-neutral-900-color');
 
+    if(typeof $ === 'undefined') {
+        $ = jQuery;
+    }
     $('#show_profile').empty();
-    $('#show_profile').before('<div id="loading"><img src="'+loading+'" alt="loading"/></div>');
+    addLoader();
 
     /* call to ajax */
     $.ajax({
@@ -5688,11 +5691,13 @@ function updateProfileForm(profile){
         success: function(result) {
             var form = result.data;
 
-            $('#loading').remove();
+            removeLoader();
 
             if(form) {
                 $('#show_profile').append(form.toString());
-                $('#download-pdf').attr('href', 'index.php?option=com_emundus&task=pdf&user=' + $('#user_hidden').attr('value') + '&fnum=' + $('#fnum_hidden').attr('value') + '&profile=' + profile);
+                if($('#download-pdf')) {
+                    $('#download-pdf').attr('href', 'index.php?option=com_emundus&task=pdf&user=' + $('#user_hidden').attr('value') + '&fnum=' + $('#fnum_hidden').attr('value') + '&profile=' + profile);
+                }
             }
 
         }, error: function(jqXHR) {
