@@ -14,6 +14,10 @@ import settingsService from "@/services/settings.js";
 /** LIBS **/
 import 'vue2-dropzone-vue3';
 import moment from "moment/moment.js";
+import VueFusionCharts from 'vue-fusioncharts';
+import FusionCharts from 'fusioncharts';
+import Charts from 'fusioncharts/fusioncharts.charts';
+import FusionTheme from 'fusioncharts/themes/fusioncharts.theme.fusion';
 
 /** DIRECTIVES **/
 import clickOutside from './directives/clickOutside';
@@ -26,6 +30,7 @@ import WorkflowEdit from "@/views/Workflows/WorkflowEdit.vue";
 import ProgramEdit from "@/views/Program/ProgramEdit.vue";
 import History from "@/views/History.vue";
 import Expert from "@/views/Expert/Expert.vue";
+import Dashboard from "@/views/Dashboard/Dashboard.vue";
 
 if (document) {
     let app = null;
@@ -36,6 +41,7 @@ if (document) {
     const attachmentElement = document.getElementById('em-application-attachment');
     const filesElement = document.getElementById('em-files');
     const expertElement = document.getElementById('em-expert');
+    const dashboardElement = document.getElementById('em-dashboard');
 
     if (attachmentElement) {
         elementId = '#em-application-attachment';
@@ -46,6 +52,9 @@ if (document) {
     } else if (expertElement) {
         elementId = '#em-expert';
         el = expertElement;
+    } else if (dashboardElement) {
+        elementId = '#em-dashboard';
+        el = dashboardElement;
     }
 
 
@@ -111,6 +120,17 @@ if (document) {
                     break;
                 case 'Expert/Expert':
                     app = createApp(Expert, {});
+                    break;
+                case 'Dashboard/Dashboard':
+                    if(el.getAttribute('data')) {
+                        datas = JSON.parse(el.getAttribute('data'));
+                    }
+
+                    app = createApp(Dashboard, {
+                        ...datas
+                    });
+
+                    app.use(VueFusionCharts, FusionCharts, Charts, FusionTheme);
                     break;
                 default:
                     app = createApp({
