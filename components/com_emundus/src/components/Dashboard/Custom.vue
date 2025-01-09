@@ -41,7 +41,7 @@
               </multiselect>
             </div>
           </div>
-          <select
+<!--          <select
             class="tw-h-form tw-rounded-coordinator tw-py-2 tw-px-1.5 tw-cursor-pointer"
             v-model="selectedWidgetId"
             @change="updateWidgetRender"
@@ -49,7 +49,7 @@
             <option v-for="widget in widgets" :value="widget.id"
               >{{ widget.label }}
             </option>
-          </select>
+          </select>-->
         </div>
 
         <div style="min-height: 350px" class="tw-w-full">
