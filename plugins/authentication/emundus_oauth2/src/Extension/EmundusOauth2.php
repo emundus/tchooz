@@ -246,6 +246,10 @@ class EmundusOauth2 extends CMSPlugin implements SubscriberInterface
 							$response->lastname = $body->family_name;
 						}
 
+						if(empty($response->fullname) && !empty($response->firstname) && !empty($response->lastname)) {
+							$response->fullname = $response->firstname . ' ' . $response->lastname;
+						}
+
 						$response->profile = $this->params->get('emundus_profile', 9);
 						$response->status = Authentication::STATUS_SUCCESS;
 						$response->isnew = empty(UserHelper::getUserId($response->username));
