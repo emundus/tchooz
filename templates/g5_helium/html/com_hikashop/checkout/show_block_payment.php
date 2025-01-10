@@ -7,6 +7,9 @@
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\CMS\Language\Text;
+
 ?><?php if(empty($this->ajax)) { ?>
 <div id="hikashop_checkout_payment_<?php echo $this->step; ?>_<?php echo $this->module_position; ?>" data-checkout-step="<?php echo $this->step; ?>" data-checkout-pos="<?php echo $this->module_position; ?>" class="hikashop_checkout_payment em-mt-32">
 <?php } ?>
@@ -97,7 +100,7 @@ if(!empty($cart->usable_methods->payment)) {
 			if(!empty($payment->payment_description)) {
 ?>
 	<div class="hikashop_checkout_payment_description" style="display:none;"><?php
-		echo $this->getDescription($payment);
+		echo Text::_($this->getDescription($payment));
 	?></div>
 <?php
 			}
@@ -257,7 +260,7 @@ if(!empty($cart->usable_methods->payment)) {
         $selected = (!empty($cart->payment) && $payment->payment_id == $cart->payment->payment_id);
         ?>
         <?php if (!empty($payment->payment_description)) : ?>
-            <div class="em-mt-4" id="hikashop_checkout_payment_description_<?php echo $payment->payment_id ?>" style="display: <?php echo $selected ? 'block' : 'none' ?>"><?php echo $this->getDescription($payment) ?></div>
+            <div class="em-mt-4" id="hikashop_checkout_payment_description_<?php echo $payment->payment_id ?>" style="display: <?php echo $selected ? 'block' : 'none' ?>"><?php echo Text::_($this->getDescription($payment)) ?></div>
         <?php endif; ?>
     <?php endforeach; ?>
 <?php
