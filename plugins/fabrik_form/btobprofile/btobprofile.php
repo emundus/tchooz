@@ -62,6 +62,8 @@ class PlgFabrik_FormBtobProfile extends plgFabrik_Form
 		$formModel = $this->getModel();
 
 		$origData = $formModel->getOrigData()[0];
+		$data = $formModel->getData();
+
 		$old_btob = $origData->jos_emundus_users___souhaitez_vous_un_compte_btob__raw;
 		$btob     = $data['jos_emundus_users___souhaitez_vous_un_compte_btob__raw'];
 		if (is_array($btob) && count($btob) > 0)
