@@ -1,6 +1,7 @@
 <?php
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\Database\ParameterType;
 
 defined('_JEXEC') or die('Restricted access');
@@ -27,8 +28,10 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 
 		$cid = Factory::getApplication()->getInput()->getInt('cid', 0);
 
+		$max_files_per_session = $this->getParams()->get('btob_form_max_file_per_session', 4);
+
 		$nb_dossiers = 0;
-		$nb_dossiers_possible = 4;
+		$nb_dossiers_possible = $max_files_per_session;
 		if(!empty($user->id)) {
 			$query->clear()
 				->select('count(id)')
@@ -40,11 +43,10 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 			$db->setQuery($query);
 			$nb_dossiers = $db->loadResult();
 
-			$nb_dossiers_possible = 4 - $nb_dossiers;
+			$nb_dossiers_possible = $max_files_per_session - $nb_dossiers;
 		}
 
-		//TODO: Create translation
-		$formModel->data['jos_emundus_btob___nb_dossiers'] = 'Vous avez déjà inscrit ' . $nb_dossiers . ' candidats sur cette session. Vous pouvez encore inscrire ' . $nb_dossiers_possible. ' candidats.';
+		$formModel->data['jos_emundus_btob___nb_dossiers'] = Text::sprintf('PLG_FABRIK_FORM_BTOBFORM_MAX_FILES_AVAILABLE', $nb_dossiers, $nb_dossiers_possible);
 	}
 
 	public function onBeforeProcess()
@@ -53,7 +55,9 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 		$user = $app->getIdentity();
 
 		$formModel = $this->getModel();
-		$data = $formModel->getData();
+		$data = $formModel->formData;
+
+		$max_files_per_session = $this->getParams()->get('btob_form_max_file_per_session', 4);
 
 		$applicants = $data['jos_emundus_btob_1237_repeat___id'];
 		$campaign_id = $data['jos_emundus_btob___campaign_id_raw'];
@@ -74,13 +78,11 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 		$db->setQuery($query);
 		$nb_dossiers = $db->loadResult();
 
-		// TODO: Add dossier limit as a parameter
-		$nb_dossiers_possible = 4 - $nb_dossiers;
+		$nb_dossiers_possible = $max_files_per_session - $nb_dossiers;
 
 		if($nb_dossiers_possible < count($applicants)) {
-			//TODO: Create translation
-			$app->enqueueMessage('Vous avez déjà inscrit '.$nb_dossiers.' candidats sur cette session. Vous ne pouvez pas inscrire '.count($applicants).' candidats supplémentaires.', 'error');
-			$formModel->errors['jos_emundus_btob_1237_repeat___id'][0][] = 'Vous ne pouvez pas ajouter plus de dossiers que le nombre de dossiers possible';
+			$app->enqueueMessage(Text::sprintf('PLG_FABRIK_FORM_BTOBFORM_MAX_FILES_EXCEEDED',$nb_dossiers,count($applicants)), 'error');
+			$formModel->errors['jos_emundus_btob_1237_repeat___id'][0][] = Text::sprintf('PLG_FABRIK_FORM_BTOBFORM_MAX_FILES_EXCEEDED',$nb_dossiers,count($applicants));
 			return false;
 		}
 
@@ -112,10 +114,9 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 
 			$financement_total = $financement_entreprise + $financement_organisme;
 			if($financement_total != $formation_price) {
-				//TODO: Create translation
-				$app->enqueueMessage('Le montant total du financement doit être égal au prix de la formation', 'error');
-				$formModel->errors['jos_emundus_btob_1237_repeat___financement_entreprise'][$key][] = 'Le montant total du financement doit être égal ou supérieur au prix de la formation';
-				$formModel->errors['jos_emundus_btob_1237_repeat___financement_organisme'][$key][] = 'Le montant total du financement doit être égal ou supérieur au prix de la formation';
+				$app->enqueueMessage(Text::_('PLG_FABRIK_FORM_BTOBFORM_BALANCE_NOT_OK'), 'error');
+				$formModel->errors['jos_emundus_btob_1237_repeat___financement_entreprise'][$key][] = Text::_('PLG_FABRIK_FORM_BTOBFORM_BALANCE_NOT_OK');
+				$formModel->errors['jos_emundus_btob_1237_repeat___financement_organisme'][$key][] = Text::_('PLG_FABRIK_FORM_BTOBFORM_BALANCE_NOT_OK');
 				return false;
 			}
 		}
@@ -124,7 +125,7 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 	public function onAfterProcess()
 	{
 		$formModel = $this->getModel();
-		$data = $formModel->getData();
+		$data = $this->getProcessData();
 
 		$cid = $data['jos_emundus_btob___campaign_id_raw'];
 		if(is_array($cid)) {
@@ -160,7 +161,8 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 				$db->execute();
 
 
-				$m_files->tagFile([$fnum],[7], $user->id);
+				$tag = $this->getParams()->get('btob_form_tag', 7);
+				$m_files->tagFile([$fnum],[$tag], $user->id);
 
 				$personal_details = [
 					'fnum' => $fnum,
@@ -227,12 +229,11 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 				$financement = (object) $financement;
 				$db->insertObject('#__emundus_1005_06', $financement);
 
-				// Add attachment_id as a parameter
-				$m_evaluation->generateLetters($fnum,[43],1,2,0);
+				$attachment_id = $this->getParams()->get('btob_attachment_to_generate',43);
+				$m_evaluation->generateLetters($fnum,[$attachment_id],1,2,0);
 			}
 		}
 
-		// TODO: Add link as parameter
 		$app->redirect('/bulletin-dinscription?btob='.$id.'&rowid=0');
 	}
 }
