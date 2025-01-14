@@ -1,0 +1,152 @@
+.blog-featuredhomepage {
+    display: none;
+}
+
+.g-grid {
+    width: 100%;
+}
+
+.tchooz-widget .multiselect__select {
+    z-index: 9;
+    background-color: white;
+    right: 1px;
+    border-radius: 8px;
+    top: 0;
+    background-position-x: 0;
+}
+
+.tchooz-widget .multiselect__tags {
+    overflow: scroll;
+}
+
+.tchooz-widget .multiselect__tags-wrap {
+    flex-wrap: inherit;
+    padding: 0;
+}
+
+/** FAQ **/
+.custom-faq-widget {
+    max-width: 330px !important;
+    margin: 0 30px 30px 0 !important;
+    height: 100%;
+}
+
+/* brother element of faq-widget */
+.custom-faq-widget + div {
+    width: calc(100% - 360px) !important;
+}
+
+
+.faq-widget .faq-intro {
+    max-width: 250px;
+}
+
+.faq-widget {
+    height: 100%;
+}
+
+.faq-widget > div {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.faq-widget .bouton-faq {
+    padding: 5px 30px;
+    height: 29px;
+    border-radius: 25px;
+    border: 2px solid #16afe1;
+    background-color: #16afe1;
+    transition: color .2s ease, background-color .2s cubic-bezier(.55, .085, .68, .53);
+    color: #fff;
+    text-decoration: none;
+    width: auto;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 500;
+    bottom: 30px;
+}
+
+.faq-widget .bouton-faq:hover {
+    cursor: pointer;
+    background-color: transparent;
+    color: #16afe1;
+}
+
+.faq-widget h3 {
+    margin-bottom: 15px;
+    color: #000;
+    font-size: 24px;
+}
+
+/** END **/
+
+/** Files by status - number **/
+.widget-files-status-number .section-sub-menu {
+    overflow: scroll;
+}
+
+.widget-files-status-number .widget-files-status-number-block {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10%;
+}
+
+.widget-files-status-number .widget-files-status-number-block p {
+    color: var(--neutral-600);
+    font-family: var(--em-profile-font), Inter, sans-serif;
+}
+
+.widget-files-status-number h1 {
+    color: var(--neutral-900);
+    font-family: var(--em-profile-font-title), Inter, sans-serif;
+}
+
+#g-container-main .g-container {
+    width: 100%;
+}
+
+.tchooz-widget__select {
+    width: 220px !important;
+}
+
+.custom-widget__messages-gestionnaire .tchooz-widget.widget__messages-gestionnaire .section-sub-menu,
+.custom-widget__messages__gestionnaire .tchooz-widget.widget__messages__gestionnaire .section-sub-menu {
+    overflow-y: scroll;
+}
+
+@media all and (max-width: 959px) {
+    #background-tchoozy {
+        display: none;
+    }
+
+    #background-shapes {
+        display: none;
+    }
+}
+
+/* Widget to show PDF files with documentation */
+.tchooz-widget.widget-documentation {
+    height:auto;
+
+    > div {
+        background:unset;
+        box-shadow:unset;
+        border:unset;
+
+        > div {
+            display:flex;
+            justify-content:center;
+        }
+    }
+}
+
+/* Widget to show a scrollable table */
+.tchooz-widget .widget-table .widget-table-scrollable {
+    overflow-y: scroll;
+    height: 300px;
+}

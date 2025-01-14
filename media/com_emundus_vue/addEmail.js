@@ -255,6 +255,7 @@ const _sfc_main = {
       }
     },
     redirectJRoute(link) {
+      console.log(link);
       settingsService.redirectJRoute(link, useGlobalStore().getCurrentLang);
     },
     /// get all tags
@@ -384,7 +385,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           createBaseVNode("div", null, [
             createBaseVNode("div", {
               class: "tw-flex tw-items-center tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300",
-              onClick: _cache[0] || (_cache[0] = ($event) => $options.redirectJRoute("index.php?option=com_emundus&view=campaigns"))
+              onClick: _cache[0] || (_cache[0] = ($event) => $options.redirectJRoute("index.php?option=com_emundus&view=emails"))
             }, [
               _cache[14] || (_cache[14] = createBaseVNode("span", { class: "material-symbols-outlined tw-text-neutral-600" }, "navigate_before", -1)),
               createBaseVNode("span", _hoisted_2, toDisplayString(_ctx.translate("BACK")), 1)
@@ -620,7 +621,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     _ctx.loading || _ctx.submitted ? (openBlock(), createElementBlock("div", _hoisted_37)) : createCommentVNode("", true)
   ]);
 }
-const addEmail = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-d4a5f312"]]);
+const addEmail = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-6d2d1a6a"]]);
 export {
   addEmail as default
 };

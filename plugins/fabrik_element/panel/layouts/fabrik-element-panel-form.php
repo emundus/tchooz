@@ -1,4 +1,7 @@
 <?php
+
+use Joomla\CMS\Language\Text;
+
 $d = $displayData;
 ?>
 
@@ -10,7 +13,7 @@ $d = $displayData;
             <div class="tw-flex tw-items-center tw-justify-between tw-cursor-pointer"
                  href="#<?php echo $d->id; ?>-content" onclick="toggleCollapse(this)" data-te-collapse-init data-toggle="collapse" aria-expanded="false" aria-controls="<?php echo $d->id; ?>-content" id="<?php echo $d->id; ?>-heading">
                 <h3>
-                    <?php echo $d->title ?>
+                    <?php echo Text::_($d->title) ?>
                 </h3>
                 <span class="material-symbols-outlined tw-transition-transform tw-duration-300" id="<?php echo $d->id; ?>-icon">expand_more</span>
             </div>
@@ -20,7 +23,7 @@ $d = $displayData;
              id="<?php echo $d->id; ?>-content"
              data-te-collapse-item>
 		    <?php if (!empty($d->title) && $d->accordion == 0) : ?>
-                <h3><?php echo $d->title ?></h3>
+                <h3><?php echo Text::_($d->title); ?></h3>
 		    <?php endif; ?>
             <div class="<?php if (!empty($d->title)) : ?>tw-mt-2<?php else : ?>!tw-mt-0<?php endif; ?>">
                 <div class="tw-whitespace-pre-wrap" id="<?php echo $d->id; ?>-value" style="color: <?php echo $d->textColor; ?>"><?php echo $d->value;?></div>

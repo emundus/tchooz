@@ -49,9 +49,8 @@ class Dispatcher extends AbstractModuleDispatcher
 
 	    if ($data['display_dashboard']) {
 		    $wa = $this->app->getDocument()->getWebAssetManager();
-		    $wa->registerAndUseStyle('mod_emundus_dashboard_css','modules/mod_emundus_dashboard_vue/vue/src/assets/mod_emundus_dashbord_vue.css');
-		    $wa->registerAndUseScript('mod_emundus_dashboard_chunks','media/mod_emundus_dashboard_vue/chunk-vendors.js');
-		    $wa->registerAndUseStyle('mod_emundus_dashboard_app_css','media/mod_emundus_dashboard_vue/app.css');
+		    $wa->registerAndUseStyle('mod_emundus_dashboard_css','modules/mod_emundus_dashboard_vue/assets/mod_emundus_dashbord_vue.css');
+		    $wa->registerAndUseStyle('com_emundus_app', 'media/com_emundus_vue/app_emundus.css');
 
 		    $data['programme_filter'] = $params->get('filter_programmes', 0);
 

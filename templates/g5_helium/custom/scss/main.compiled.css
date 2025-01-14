@@ -2401,6 +2401,12 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-top-\[3px\] {
     top: 3px;
 }
+.tw-z-0 {
+    z-index: 0;
+}
+.tw-z-10 {
+    z-index: 10;
+}
 .tw-float-right {
     float: right;
 }
@@ -3966,6 +3972,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-h-screen {
     height: 100vh;
 }
+.tw-min-h-\[140px\] {
+    min-height: 140px;
+}
 .tw-min-h-\[24px\] {
     min-height: 24px;
 }
@@ -3974,6 +3983,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-min-h-\[48px\] {
     min-height: 48px;
+}
+.\!tw-w-\[220px\] {
+    width: 220px !important;
 }
 .\!tw-w-\[350px\] {
     width: 350px !important;
@@ -4935,6 +4947,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-overflow-y-auto {
     overflow-y: auto;
 }
+.tw-overflow-x-hidden {
+    overflow-x: hidden;
+}
 .tw-overflow-x-scroll {
     overflow-x: scroll;
 }
@@ -4969,6 +4984,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-rounded-coordinator {
     border-radius: var(--em-coordinator-br);
+}
+.tw-rounded-coordinator-cards {
+    border-radius: var(--em-coordinator-br-cards);
 }
 .tw-rounded-full {
     border-radius: 9999px;
@@ -114197,6 +114215,11 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-shadow-sm {
     --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+.tw-shadow-standard {
+    --tw-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
+    --tw-shadow-colored: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
     box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 .tw-transition-all {

@@ -90,7 +90,7 @@ class EmundusModelExport extends JModelList
 		$user_id = !empty($fnum) ? (int) substr($fnum, -7) : null;
 		$em_user = Factory::getApplication()->getSession()->get('emundusUser');
 
-		if (EmundusHelperAccess::asAccessAction(8, 'c', Factory::getApplication()->getIdentity()->id, $fnum) || $fnum == $em_user->fnum) {
+		if (EmundusHelperAccess::asAccessAction(8, 'c', Factory::getApplication()->getIdentity()->id, $fnum) || EmundusHelperAccess::isFnumMine(Factory::getApplication()->getIdentity()->id, $fnum)) {
 			require JPATH_LIBRARIES . '/emundus/vendor/autoload.php';
 
 			$src  = $file_src;

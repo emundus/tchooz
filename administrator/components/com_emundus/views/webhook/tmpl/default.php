@@ -28,7 +28,7 @@ defined('_JEXEC') or die('RESTRICTED');
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 <script>
     function generate(){
-        fetch(window.location.origin + '/administrator/index.php?option=com_emundus&controller=webhook&task=webhook.generate', {
+        fetch(window.location.origin + '/administrator/index.php?option=com_emundus&controller=webhook&task=generate', {
             method: 'get'
         }).then((response) => {
             if (response.ok) {
