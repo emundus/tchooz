@@ -275,20 +275,17 @@ class PlgHikashopEmundus_hikashop extends CMSPlugin {
             $db->setQuery($query);
             $hika_order = $db->loadObject();
 
-            if(empty($hika_order->order_payment_method)){
+            if (empty($hika_order->order_payment_method)){
                 $user = $app->getSession()->get('emundusUser');
                 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 
-                $app->enqueueMessage( JText::_('THANK_YOU_FOR_PURCHASE') );
+                $app->enqueueMessage( Text::_('THANK_YOU_FOR_PURCHASE') );
 
                 $m_application 	= new EmundusModelApplication;
                 $redirect = $m_application->getConfirmUrl();
 
                 $app->redirect($redirect);
             }
-
-            Log::add('Could not set application file status on order ID -> '. $order_id, Log::ERROR, 'com_emundus');
-            return false;
         }
 
         PluginHelper::importPlugin('emundus','custom_event_handler');

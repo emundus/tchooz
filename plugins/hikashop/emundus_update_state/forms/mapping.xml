@@ -1,0 +1,61 @@
+<form>
+    <field
+            name="file_entry_status"
+            type="sql"
+            label="Statut du dossier"
+            description="Statut du dossier au moment ou la mise à jour de la commande est effectuée."
+            query="SELECT id, step, value FROM jos_emundus_setup_status ORDER BY ordering"
+            key_field="step"
+            value_field="value"
+    >
+    </field>
+    <field
+            name="hikashop_order_status"
+            type="sql"
+            label="État de la commande ciblé"
+            description="État de la commande qui déclenche la mise à jour du statut du dossier."
+            query="SELECT orderstatus_id, orderstatus_namekey, CONCAT(orderstatus_name, ' - ' , orderstatus_description) as value FROM jos_hikashop_orderstatus ORDER BY orderstatus_ordering"
+            key_field="orderstatus_namekey"
+            value_field="value"
+    >
+    </field>
+    <field
+            name="hikashop_order_payment_method"
+            type="sql"
+            label="Méthode de paiement utilisée"
+            description="Méthode de paiement utilisée pour la commande qui déclenche la mise à jour du statut du dossier."
+            query="SELECT payment_type, payment_name FROM jos_hikashop_payment WHERE payment_published = 1 ORDER BY payment_ordering"
+            key_field="payment_type"
+            value_field="payment_name"
+            multiple="true"
+    >
+    </field>
+    <field
+            name="file_output_status"
+            type="sql"
+            label="Nouveau statut du dossier"
+            description="Statut du dossier à appliquer si l'état de la commande ciblé est atteint et que le statut d'entrée du dossier correspond."
+            query="SELECT id, step, value FROM jos_emundus_setup_status ORDER BY ordering"
+            key_field="step"
+            value_field="value"
+    >
+    </field>
+    <field
+        name="re_open_file_after_update_status"
+        type="radio"
+        label="Réouvrir le dossier après mise à jour"
+        description="Réouvrir le dossier après mise à jour du statut."
+        default="0"
+    >
+        <option value="0">Non</option>
+        <option value="1">Oui</option>
+    </field>
+    <field
+        name="custom_redirect_url_after_update_status"
+        type="text"
+        label="URL de redirection personnalisée"
+        description="URL de redirection personnalisée après mise à jour du statut. Le numéro de dossier est injecté dans l'URL via le paramètre {fnum}."
+        default=""
+    >
+    </field>
+</form>

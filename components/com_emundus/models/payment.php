@@ -1637,4 +1637,41 @@ class EmundusModelPayment extends JModelList
 
 		return $products;
 	}
+
+	public function getFnumByOrder($order_id)
+	{
+		$fnum = '';
+
+		if (!empty($order_id)) {
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
+
+			$query->select('fnum')
+				->from('#__emundus_hikashop')
+				->where('order_id = ' . $order_id);
+
+			try {
+				$db->setQuery($query);
+				$fnum = $db->loadResult();
+			} catch (Exception $e) {
+				Log::add('Error getting fnum by order ID ' . $order_id . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.payment');
+			}
+
+			if (empty($fnum)) {
+				$query->clear()
+					->select('fnum')
+					->from('#__emundus_hikashop')
+					->where('order_id = (SELECT order_parent_id FROM #__hikashop_order WHERE order_id = ' . $order_id . ')');
+
+				try {
+					$db->setQuery($query);
+					$fnum = $db->loadResult();
+				} catch (Exception $e) {
+					Log::add('Error getting fnum by order parent ID ' . $order_id . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.payment');
+				}
+			}
+		}
+
+		return $fnum;
+	}
 }
