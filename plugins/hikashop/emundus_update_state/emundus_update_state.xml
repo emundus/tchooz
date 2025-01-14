@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" version="4" method="upgrade" group="hikashop">
+    <name>eMundus - Hikashop, mise à jour des statuts de dossier</name>
+    <creationDate>January 2025</creationDate>
+    <version>2.1.0</version>
+    <author>LEGENDRE Jérémy</author>
+    <authorEmail>jeremy.legendre@emundus.fr</authorEmail>
+    <authorUrl>https://www.emundus.fr</authorUrl>
+    <copyright>(C) 2010-${year} eMundus SAS. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <description>Ce plugin sert à mettre à jour le statut des dossiers en fonction de statuts de paiement.</description>
+    <files>
+        <filename>emundus_update_state.xml</filename>
+        <filename plugin="emundus_update_state">emundus_update_state.php</filename>
+        <folder>language</folder>
+    </files>
+    <languages>
+        <language tag="en-GB">en-GB.plg_hikashop_emundus_update_state.ini</language>
+        <language tag="en-GB">en-GB.plg_hikashop_emundus_update_state.sys.ini</language>
+        <language tag="fr-FR">fr-FR.plg_hikashop_emundus_update_state.ini</language>
+        <language tag="fr-FR">fr-FR.plg_hikashop_emundus_update_state.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field
+                        name="mapping"
+                        type="subform"
+                        label="Changements de statut"
+                        description="Définir les changements de statut à effectuer en fonction de statuts de dossier et d'état de paiement."
+                        multiple="true"
+                        formsource="plugins/hikashop/emundus_update_state/forms/mapping.xml"
+                >
+                </field>
+            </fieldset>
+        </fields>
+    </config>
+</extension>
