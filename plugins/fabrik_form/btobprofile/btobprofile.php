@@ -1,4 +1,5 @@
 <?php
+
 use Joomla\CMS\Factory;
 
 defined('_JEXEC') or die('Restricted access');
@@ -48,6 +49,23 @@ class PlgFabrik_FormBtobProfile extends plgFabrik_Form
 					'jos_emundus_users___adresse_facturation',
 					'jos_emundus_users___meme_adresse_entreprise',
 					'jos_emundus_users___charge_gestion_admin',
+					'jos_emundus_users___civilite_responsable',
+					'jos_emundus_users___nom_responsable',
+					'jos_emundus_users___prenom_manager',
+					'jos_emundus_users___fonction_responsable',
+					'jos_emundus_users___telephone_responsable',
+					'jos_emundus_users___adresse_e_mail_responsable',
+					'jos_emundus_users___pays_responsable',
+					'jos_emundus_users___adresse_postale_responsable',
+					'jos_emundus_users___complement_adresse_responsable',
+					'jos_emundus_users___code_postal_manager',
+					'jos_emundus_users___ville_responsable',
+					'jos_emundus_users___civilite_admin',
+					'jos_emundus_users___nom_admin',
+					'jos_emundus_users___prenom_admin',
+					'jos_emundus_users___fonction_admin',
+					'jos_emundus_users___adresse_e_mail',
+					'jos_emundus_users___telephone_admin'
 				];
 				if (in_array($elementModel->getFullName(), $elements_to_check))
 				{
@@ -62,17 +80,18 @@ class PlgFabrik_FormBtobProfile extends plgFabrik_Form
 		$formModel = $this->getModel();
 
 		$origData = $formModel->getOrigData()[0];
-		$data = $formModel->getData();
+		$data     = $formModel->getData();
 
-		$old_btob = $origData->jos_emundus_users___souhaitez_vous_un_compte_btob__raw;
-		$btob     = $data['jos_emundus_users___souhaitez_vous_un_compte_btob__raw'];
+		$old_btob    = $origData->jos_emundus_users___souhaitez_vous_un_compte_btob__raw;
+		$btob        = $data['jos_emundus_users___souhaitez_vous_un_compte_btob__raw'];
+		$btob_status = $data['jos_emundus_users___statut_du_compte_btob_raw'];
 		if (is_array($btob) && count($btob) > 0)
 		{
 			$btob = $btob[0];
 		}
 		$btob = (int) $btob;
 
-		if ($old_btob !== $btob && $btob === 1)
+		if ($btob === 1 && $btob_status == 0)
 		{
 			// Send mail to users for BtoB account
 			$db    = Factory::getContainer()->get('DatabaseDriver');
