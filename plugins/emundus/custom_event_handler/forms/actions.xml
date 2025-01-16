@@ -8,6 +8,16 @@
         <option value="generate_letter">PLG_EMUNDUSCUSTOMACTIONS_FIELD_ACTION_GENERATE_LETTER</option>
     </field>
 
+    <field
+            type="subform"
+            name="action_conditions"
+            label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_ACTION_CONDITIONS_LABEL"
+            description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_ACTION_CONDITIONS_DESC"
+            multiple="true"
+            formsource="plugins/emundus/custom_event_handler/forms/conditions.xml"
+    >
+    </field>
+
     <!--Update status fields -->
     <field
             showon="action_type:update_file_status"

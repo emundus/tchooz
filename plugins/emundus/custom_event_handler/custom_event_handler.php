@@ -556,6 +556,15 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 
 								foreach ($custom_action->actions as $action)
 								{
+									if (!empty($action->action_conditions)) {
+										$pass = $this->checkEventConditions($action->action_conditions, $fnum);
+
+										if (!$pass)
+										{
+											continue;
+										}
+									}
+
 									$actions_status[] = $this->launchEventAction($action, $fnum);
 								}
 
