@@ -15,6 +15,7 @@
     <description>PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_TITLE_DESC</description>
     <files>
         <folder>language</folder>
+        <folder>forms</folder>
         <filename>index.html</filename>
         <filename>custom_event_handler.xml</filename>
         <filename plugin="custom_event_handler">custom_event_handler.php</filename>
@@ -36,13 +37,13 @@
                        min="1"
                        max="20"
                        filter="raw"
-                       layout="joomla.form.field.subform.repeatable-table"
+                       layout="joomla.form.field.subform.repeatable"
                 >
                     <form>
                         <field name="event"
                                type="sql"
                                key_field="label" value_field="label"
-                               query="SELECT label FROM #__emundus_plugin_events where published"
+                               query="SELECT label FROM #__emundus_plugin_events where published order by label"
                                label="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_EVENT_LABEL"
                                description="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_EVENT_DESC"
                                class="sql_event_handler__event"
@@ -53,7 +54,17 @@
                                label="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_DESCRIPTION"
                                size="20"
                         />
-                        <field name="code"
+                        <field name="type"
+                               type="list"
+                               label="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_TYPE"
+                               default="custom"
+                               size="1"
+                        >
+                            <option value="custom">Custom - PHP</option>
+                            <option value="options">Configurable</option>
+                        </field>
+                        <field showon="type:custom"
+                               name="code"
                                type="textarea"
                                label="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_CODE_LABEL"
                                description="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_CODE_DESC"
@@ -62,6 +73,54 @@
                                filter="raw"
                                class="textarea_event_handler__code"
                         />
+
+
+                        <field
+                                showon="type:options[AND]event:onAfterProcess[OR]event:onBeforeProcess[OR]event:onBeforeLoad[OR]event:onLoad[OR]event:onJSReady[OR]event:onJSOpts[OR]event:onCanEditGroup[OR]event:onBeforeStore[OR]event:onBeforeCalculations[OR]event:onError[OR]event:getTopContent[OR]event:getBottomContent[OR]event:getEndContent[OR]event:onDeleteRowsForm[OR]event:onAfterDeleteRowsForm[OR]event:onSavePage[OR]event:onElementCanUse[OR]event:onElementCanView[OR]event:onBeforeSubmitEvaluation[OR]event:onAfterSubmitEvaluation"
+                                name="form_ids"
+                                type="sql"
+                                label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_CUSTOM_FORM_IDS_LABEL"
+                                description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_CUSTOM_FORM_IDS_DESC"
+                                query="SELECT id, label FROM #__fabrik_forms"
+                                key_field="id"
+                                value_field="label"
+                                multiple="true"
+                        />
+                        <field
+                                showon="type:options"
+                                name="custom_actions"
+                                type="subform"
+                                label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_CUSTOM_ACTIONS_LABEL"
+                                description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_CUSTOM_ACTIONS_DESC"
+                                multiple="true"
+                                layout="joomla.form.field.subform.repeatable-table"
+                        >
+                            <form>
+                                <field
+                                        name="description"
+                                        type="textarea"
+                                        label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_DESCRIPTION_LABEL"
+                                        description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_DESCRIPTION_DESC"
+                                />
+                                <field
+                                        name="conditions"
+                                        type="subform"
+                                        label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_CONDITIONS_LABEL"
+                                        description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_CONDITIONS_DESC"
+                                        multiple="true"
+                                        formsource="plugins/emundus/custom_event_handler/forms/conditions.xml"
+                                />
+                                <field
+                                        name="actions"
+                                        type="subform"
+                                        label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_ACTIONS_LABEL"
+                                        description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_ACTIONS_DESC"
+                                        formsource="plugins/emundus/custom_event_handler/forms/actions.xml"
+                                        multiple="true"
+                                />
+                            </form>
+                        </field>
+
                         <field name="published" type="list" label="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_PUBLISHED"
                                default="1" size="1">
                             <option value="0">Non</option>

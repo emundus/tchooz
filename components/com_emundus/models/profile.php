@@ -120,6 +120,30 @@ class EmundusModelProfile extends ListModel
 		}
 	}
 
+	public function getUsersByProfiles($pids): array
+	{
+		$users = [];
+
+		if (!empty($pids)) {
+			$query = $this->db->getQuery(true);
+
+			$query->select('DISTINCT eu.user_id')
+				->from($this->db->quoteName('#__emundus_users', 'eu'))
+				->leftJoin($this->db->quoteName('#__emundus_users_profiles', 'eup') . ' ON eup.user_id=eu.user_id')
+				->where($this->db->quoteName('eup.profile_id') . ' IN (' . implode(',', $pids) . ') OR eu.profile IN (' . implode(',', $pids) . ')');
+
+			try {
+				$this->db->setQuery($query);
+				$users = $this->db->loadColumn();
+			}
+			catch (Exception $e) {
+				Log::add('Failed to get users by profiles : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $users;
+	}
+
 	function getProfileByApplicant($aid)
 	{
 		$profile = [];

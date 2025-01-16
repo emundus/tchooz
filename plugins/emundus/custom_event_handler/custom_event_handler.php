@@ -14,6 +14,7 @@ use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Utilities\ArrayHelper;
+use Joomla\CMS\Component\ComponentHelper;
 
 class plgEmundusCustom_event_handler extends CMSPlugin
 {
@@ -29,6 +30,10 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 	 */
 	private $_searchData = null;
 
+	private $automated_task_user = 1;
+
+	private $form_categories = ['Form', 'Evaluation'];
+
 	function __construct(&$subject, $config)
 	{
 		parent::__construct($subject, $config);
@@ -37,6 +42,9 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 
 		require_once(JPATH_SITE . '/components/com_emundus/helpers/events.php');
 		$this->hEvents = new EmundusHelperEvents();
+
+		$emundus_config = ComponentHelper::getParams('com_emundus');
+		$this->automated_task_user = $emundus_config->get('automated_task_user', 1);
 	}
 
 
@@ -45,6 +53,8 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 		try
 		{
 			$events = [];
+			$events_types = [];
+			$event_config = [];
 			$codes  = [];
 			$params = json_decode($this->params);
 
@@ -56,28 +66,36 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 					{
 						$events[] = $event_handler->event;
 						$codes[]  = $event_handler->code;
+						$event_config[] = $event_handler;
 					}
 				}
 			}
 
 			$returned_values = [];
 
-			if (method_exists($this->hEvents, $event))
-			{
-				$returned_values[$event] = $this->hEvents->{$event}($args);
-			}
-
 			foreach ($events as $index => $caller_index)
 			{
 				try
 				{
-					$returned_values[$caller_index] = $this->_runPHP($codes[$index], $args);
+					if (!empty($event_config[$index]->type) && $event_config[$index]->type == 'options') {
+						$event_category = $this->getEventCategory($event_config[$index]->event);
+						$data = in_array($event_category, $this->form_categories) ? $args['formModel']->getData() : $args;
+
+						$returned_values[$caller_index] = $this->runEventSimpleAction($event_config[$index], $data);
+					} else {
+						$returned_values[$caller_index] = $this->_runPHP($codes[$index], $args);
+					}
 				}
 				catch (ParseError $p)
 				{
 					Log::add('Error while running event ' . $caller_index . ' : "' . $p->getMessage() . '"', Log::ERROR, 'com_emundus.custom_event_handler');
 					continue;
 				}
+			}
+
+			if (method_exists($this->hEvents, $event))
+			{
+				$returned_values[$event] = $this->hEvents->{$event}($args);
 			}
 		}
 		catch (Exception $e)
@@ -474,5 +492,347 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 		}
 
 		return $multiLang;
+	}
+
+	public function getEventCategory($event_label): string
+	{
+		$category = '';
+
+		if (!empty($event_label))
+		{
+			$db    = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
+
+			$query->select('category')
+				->from('#__emundus_plugin_events')
+				->where('label = ' . $db->quote($event_label));
+
+			try
+			{
+				$db->setQuery($query);
+				$category = $db->loadResult();
+			}
+			catch (Exception $e)
+			{
+				Log::add('Failed to get category for event ' . $event_label . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.custom_event_handler');
+			}
+		}
+
+		return $category;
+	}
+
+	private function runEventSimpleAction($event, $data): bool
+	{
+		$status = false;
+
+		if ($event->type === 'options' && !empty($event->custom_actions))
+		{
+			$fnums = $this->retrieveFnumsFromEventData($event, $data);
+
+			if (!empty($fnums))
+			{
+				foreach ($fnums as $fnum)
+				{
+					foreach ($event->custom_actions as $custom_action)
+					{
+						$event_category = $this->getEventCategory($event->event);
+						if (in_array($event_category, $this->form_categories)) {
+							if (empty($event->form_ids))
+							{
+								Log::add('No form_ids found for event ' . $event->event . '. This is a necessary parameter to launch actions on forms.', Log::WARNING, 'com_emundus.custom_event_handler');
+								continue;
+							} else if (!in_array($data['formid'], $event->form_ids)) {
+								continue;
+							}
+						}
+
+						if (!empty($custom_action->conditions))
+						{
+							$pass = $this->checkEventConditions($custom_action->conditions, $fnum);
+
+							if ($pass)
+							{
+								$actions_status = [];
+
+								foreach ($custom_action->actions as $action)
+								{
+									$actions_status[] = $this->launchEventAction($action, $fnum);
+								}
+
+								$status = !empty($actions_status) && !in_array(false, $actions_status);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return $status;
+	}
+
+	private function retrieveFnumsFromEventData($event, $data): array
+	{
+		$fnums = [];
+
+		if (!empty($data['fnum']))
+		{
+			$fnums = [$data['fnum']];
+		}
+		else
+		{
+			if (!empty($data['fnums']))
+			{
+				$fnums = $data['fnums'];
+			}
+			else
+			{
+				$event_category = $this->getEventCategory($event->event);
+
+				if (in_array($event_category, $this->form_categories))
+				{
+					foreach ($data as $key => $value)
+					{
+						if (str_ends_with($key, '___fnum'))
+						{
+							$fnums[] = $value;
+						}
+					}
+				}
+			}
+		}
+
+		return $fnums;
+	}
+
+	private function checkEventConditions($conditions, $fnum): bool
+	{
+		$pass = false;
+
+		if (!empty($conditions))
+		{
+			$conditions_status = [];
+			$db                = Factory::getContainer()->get('DatabaseDriver');
+			$query             = $db->createQuery();
+
+			foreach ($conditions as $condition)
+			{
+				if (!empty($condition->targeted_column) && isset($condition->targeted_value))
+				{
+					list($table, $column) = explode('.', $condition->targeted_column);
+
+					if ($condition->targeted_value === '{current_user_id}') {
+						$condition->targeted_value = Factory::getApplication()->getIdentity()->id;
+					}
+
+					require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
+					$h_files = new EmundusHelperFiles();
+					$table_name = str_replace('#_', 'jos', $table);
+					$linked = $h_files->isTableLinkedToCampaignCandidature($table_name);
+
+					if ($linked)
+					{
+						$query->clear()
+							->select($db->quoteName($column))
+							->from($db->quoteName($table))
+							->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum))
+							->andWhere($db->quoteName($column) . ' = ' . $db->quote($condition->targeted_value));
+					}
+					else
+					{
+						if (in_array($table_name, ['jos_emundus_setup_campaigns', 'jos_emundus_setup_programmes', 'jos_emundus_users']))
+						{
+							$query->clear();
+
+							$table_alias = 'ecc';
+							switch ($table_name)
+							{
+								case 'jos_emundus_setup_campaigns':
+									$query->leftJoin($db->quoteName('jos_emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'));
+									$table_alias = 'esc';
+									break;
+								case 'jos_emundus_setup_programmes':
+									$query->leftJoin($db->quoteName('jos_emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'))
+										->leftJoin($db->quoteName('jos_emundus_setup_programmes', 'esp') . ' ON ' . $db->quoteName('esp.code') . ' = ' . $db->quoteName('esc.training'));
+									$table_alias = 'esp';
+									break;
+								case 'jos_emundus_users':
+									$query->leftJoin($db->quoteName('jos_emundus_users', 'eu') . ' ON ' . $db->quoteName('eu.id') . ' = ' . $db->quoteName('ecc.user_id'));
+									$table_alias = 'eu';
+									break;
+							}
+
+							$query->select($db->quoteName($table_alias . '.' . $column))
+								->from($db->quoteName('jos_emundus_campaign_candidature', 'ecc'))
+								->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($fnum))
+								->andWhere($db->quoteName($table_alias . '.' . $column) . ' = ' . $db->quote($condition->targeted_value));
+
+						} else {
+							$conditions_status[] = false;
+							continue;
+						}
+					}
+
+					try
+					{
+						$db->setQuery($query);
+						$value = $db->loadResult();
+
+						if ($value == $condition->targeted_value)
+						{
+							$conditions_status[] = true;
+						}
+						else
+						{
+							$conditions_status[] = false;
+						}
+					}
+					catch (Exception $e)
+					{
+						Log::add('Failed to get value for condition ' . $condition->targeted_column . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.custom_event_handler');
+						$conditions_status[] = false;
+					}
+				}
+				else
+				{
+					$conditions_status[] = false;
+				}
+			}
+
+			$pass = !empty($conditions_status) && !in_array(false, $conditions_status);
+		}
+
+		return $pass;
+	}
+
+	private function launchEventAction($action, $fnum): bool
+	{
+		$landed = false;
+
+		if (!empty($action) && !empty($fnum))
+		{
+			$db	= Factory::getContainer()->get('DatabaseDriver');
+			$query	= $db->createQuery();
+
+			switch ($action->action_type)
+			{
+				case 'update_file_status':
+					if (isset($action->new_file_status))
+					{
+						require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+						$m_files = new EmundusModelFiles();
+						$res     = $m_files->updateState([$fnum], $action->new_file_status, $this->automated_task_user);
+
+						if ($res && $res['status'])
+						{
+							$landed = true;
+						}
+					}
+
+					break;
+				case 'update_file_tags':
+					if (!empty($action->file_tags))
+					{
+						if ($action->file_tags_action === 'add')
+						{
+							require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+							$m_files = new EmundusModelFiles();
+							$landed  = $m_files->tagFile([$fnum], [$action->file_tags], $this->automated_task_user);
+						}
+						else
+						{
+							require_once(JPATH_ROOT . '/components/com_emundus/models/application.php');
+							$m_application = new EmundusModelApplication();
+							$landed        = $m_application->deleteTag($action->file_tags, $fnum, $this->automated_task_user);
+						}
+					}
+					break;
+				case 'send_email':
+					if (!empty($action->email_to_send)) {
+						require_once(JPATH_ROOT . '/components/com_emundus/models/emails.php');
+						$m_emails = new EmundusModelEmails();
+
+						$sent_states = [];
+						if ($action->send_to_applicant) {
+							$sent_states[] = $m_emails->sendEmail($fnum, $action->email_to_send, null, [], false, $this->automated_task_user);
+						}
+
+						if ($action->send_to_triggering_user) {
+							$current_user_id = Factory::getApplication()->getIdentity()->id;
+
+							if (!empty($current_user_id)) {
+								$query->clear()
+									->select('email')
+									->from('#__users')
+									->where('id = ' . $db->quote($current_user_id));
+
+								$db->setQuery($query);
+								$user_email = $db->loadResult();
+
+								$sent_states[] = $m_emails->sendEmailNoFnum($user_email, $action->email_to_send, [], null, [], null, true, [], $this->automated_task_user);
+							} else {
+								$sent_states[] = false;
+							}
+						}
+
+						if (!empty($action->send_to_users_with_groups)) {
+							$user_ids = EmundusHelperAccess::getUsersFromGroupsThatCanAccessToFile($action->send_to_users_with_groups, $fnum);
+
+							$query->clear()
+								->select('email')
+								->from('#__users')
+								->where('id IN (' . implode(',', $db->quote($user_ids)) . ')');
+
+							$db->setQuery($query);
+							$users_emails = $db->loadColumn();
+
+							if (!empty($users_emails)) {
+								foreach ($users_emails as $user_email) {
+									$sent_states[] = $m_emails->sendEmailNoFnum($user_email, $action->email_to_send, ['fnum' => $fnum], null, [], $fnum, true, [], $this->automated_task_user);
+								}
+							} else {
+								$sent_states[] = false;
+							}
+						}
+
+						$landed = !empty($sent_states) && !in_array(false, $sent_states);
+					}
+					break;
+
+				case 'redirect':
+					if (!empty($action->redirect_url)) {
+						$redirect_url = $action->redirect_url;
+						$redirect_url = str_replace('{fnum}', $fnum, $redirect_url);
+
+						$app = Factory::getApplication();
+
+						if (!empty($action->redirect_message)) {
+							$type = $action->redirect_message_type ?? 'message';
+							$app->enqueueMessage($action->redirect_message, $type);
+						}
+
+						$app->redirect($redirect_url);
+
+						$landed = true;
+					}
+
+					break;
+				case 'generate_letter':
+					if (!empty($action->letter_template)) {
+						require_once(JPATH_ROOT . '/components/com_emundus/models/evaluation.php');
+						$m_evaluation = new EmundusModelEvaluation();
+						$res = $m_evaluation->generateLetters($fnum, [$action->letter_template], 1, 0, 0);
+
+						if ($res && $res->status) {
+							$landed = true;
+						}
+					}
+					break;
+				default:
+					// do nothing
+					break;
+			}
+		}
+
+		return $landed;
 	}
 }
