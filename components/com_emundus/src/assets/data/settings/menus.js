@@ -61,11 +61,9 @@ export default
     "label": "COM_EMUNDUS_GLOBAL_PARAMS_MENUS_INTEG",
     "name": "integration",
     "icon": "lan",
-    "type": "JSON",
-    "format": "Tile",
-    "source": "integration.js",
+    "type": "component",
     "component": "Integration",
-    "published": false
+    "published": true
   },
   {
     "label": "COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS",

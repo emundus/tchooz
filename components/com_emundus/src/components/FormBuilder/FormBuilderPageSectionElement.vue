@@ -40,6 +40,7 @@
       <form-builder-element-phone-number v-else-if="element.plugin === 'emundus_phonenumber'" type="phonenumber" :element="element"></form-builder-element-phone-number>
       <form-builder-element-currency v-else-if="element.plugin === 'currency'" type="currency" :element="element"></form-builder-element-currency>
       <form-builder-element-geolocation v-else-if="element.plugin === 'emundus_geolocalisation'" type="geolocation" :element="element"></form-builder-element-geolocation>
+      <form-builder-element-booking v-else-if="element.plugin === 'booking'" type="booking" :element="element"></form-builder-element-booking>
       <div v-else v-html="element.element" class="fabrikElement"></div>
     </div>
   </div>
@@ -56,9 +57,12 @@ import FormBuilderElementCurrency from "@/components/FormBuilder/FormBuilderSect
 import FormBuilderElementGeolocation from "@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementGeolocation.vue";
 
 import { useGlobalStore } from "@/stores/global.js";
+import FormBuilderElementBooking
+  from "@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementBooking.vue";
 
 export default {
   components: {
+    FormBuilderElementBooking,
     FormBuilderElementGeolocation,
     FormBuilderElementCurrency,
     FormBuilderElementPhoneNumber,

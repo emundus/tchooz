@@ -17,10 +17,12 @@ jimport('joomla.application.component.controller');
 use enshrined\svgSanitize\Sanitizer;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Component\Config\Controller\ApplicationController;
+use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Response\JsonResponse;
 use Joomla\CMS\Session\Session;
 use Joomla\CMS\Uri\Uri;
@@ -859,7 +861,6 @@ class EmundusControllersettings extends BaseController
 
 	public function redirectjroute()
 	{
-
 		$current_link = $this->input->getString('link');
 		$language     = $this->input->getString('redirect_language', 'fr-FR');
 
@@ -1335,7 +1336,15 @@ class EmundusControllersettings extends BaseController
 				$response['desc'] = Text::_('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_UPDATED_DESC');
 
 				unset($config['smtppass']);
-				$this->app->triggerEvent('onAfterUpdateConfiguration', [$config, $oldConfig, 'email_updated', 'done', 'com_emundus.settings.email']);
+
+				PluginHelper::importPlugin('actionlog'); // si event call event handler
+				$dispatcher = Factory::getApplication()->getDispatcher();
+				$onAfterUpdateConfiguration             = new GenericEvent(
+					'onAfterUpdateConfiguration',
+					// Datas to pass to the event
+					['data' => $config, 'old_data' => $oldConfig, 'config' => $config, 'type' => 'email_updated', 'status' => 'done', 'context' => 'com_emundus.settings.email']
+				);
+				$dispatcher->dispatch('onAfterUpdateConfiguration', $onAfterUpdateConfiguration);
 			}
 		}
 
@@ -1997,6 +2006,177 @@ class EmundusControllersettings extends BaseController
 				if($response['status']) {
 					$response['code']    = 200;
 					$response['message'] = Text::_('STATUS_UPDATED');
+				}
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function getavailablemanagers()
+	{
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$search_query = $this->input->getString('search_query', '');
+			$limit = $this->input->getInt('limit', 100);
+
+			$managers = $this->m_settings->getAvailableManagers($search_query, $limit);
+
+			$response['status']  = true;
+			$response['code']    = 200;
+			$response['message'] = Text::_('MANAGERS_FOUND');
+			$response['data']    = $managers;
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function getavailablecampaigns()
+	{
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$search_query = $this->input->getString('search_query', '');
+			$limit = $this->input->getInt('limit', 100);
+
+			$campaigns = $this->m_settings->getAvailableCampaigns($search_query, $limit);
+
+			$response['status']  = true;
+			$response['code']    = 200;
+			$response['message'] = Text::_('CAMPAIGNS_FOUND');
+			$response['data']    = $campaigns;
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function getavailableprograms()
+	{
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$search_query = $this->input->getString('search_query', '');
+			$limit = $this->input->getInt('limit', 100);
+
+			$programs = $this->m_settings->getAvailablePrograms($search_query, $limit);
+
+			$response['status']  = true;
+			$response['code']    = 200;
+			$response['message'] = Text::_('PROGRAMS_FOUND');
+			$response['data']    = $programs;
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function getapps()
+	{
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$apps = $this->m_settings->getApps();
+
+			$response['status']  = true;
+			$response['code']    = 200;
+			$response['message'] = Text::_('APPS_FOUND');
+			$response['data']    = $apps;
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function getapp()
+	{
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => null];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$app_id = $this->input->getInt('app_id', 0);
+			$app_type = $this->input->getString('app_type', '');
+
+			if(!empty($app_id) || !empty($app_type)) {
+				$app = $this->m_settings->getApp($app_id, $app_type);
+
+				$response['status']  = true;
+				$response['code']    = 200;
+				$response['message'] = Text::_('APP_FOUND');
+				$response['data']    = $app;
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function setupapp()
+	{
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$response['code'] = 500;
+			$response['message'] = Text::_('MISSING_PARAMS');
+
+			$app_id = $this->input->getInt('app_id', 0);
+			$setup = $this->input->getRaw('setup', []);
+
+			if(!empty($app_id) && !empty($setup)) {
+				$setup = json_decode($setup);
+
+				$response['status'] = $this->m_settings->setupApp($app_id,$setup,$this->user->id);
+				if($response['status']) {
+					// Test authentication
+					require_once JPATH_ROOT . '/components/com_emundus/models/sync.php';
+					$m_sync = new EmundusModelSync();
+					$response['status'] = $m_sync->testAuthentication($app_id);
+
+					if($response['status'])
+					{
+						if($this->m_settings->checkRequirements($app_id))
+						{
+							$response['code']    = 200;
+							$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_APP_SETUP_SUCCESS');
+						} else {
+							$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_APP_SETUP_REQUIREMENTS_FAILED');
+						}
+					} else {
+						$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_APP_SETUP_FAILED');
+					}
+				}
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function disableapp()
+	{
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$response['code'] = 500;
+			$response['message'] = Text::_('MISSING_PARAMS');
+
+			$app_id = $this->input->getInt('app_id', 0);
+			$enabled = $this->input->getInt('enabled', 1);
+
+			if(!empty($app_id)) {
+				$response['status'] = $this->m_settings->toggleEnable($app_id,$enabled);
+				if($response['status']) {
+					$response['code']    = 200;
+					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_APP_DISABLED');
 				}
 			}
 		}

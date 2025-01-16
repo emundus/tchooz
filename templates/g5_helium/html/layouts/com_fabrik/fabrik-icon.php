@@ -17,6 +17,11 @@ if(strpos($d->icon, 'calendar') !== false)
 	$d->icon = 'icon-event';
 }
 
+if($d->icon == 'icon-file')
+{
+    $d->icon = 'icon-description';
+}
+
 $iconParts  = explode(' ', trim($d->icon));
 $spareParts = array();
 

@@ -117,6 +117,9 @@ class PlgFabrik_Cronemundusinsee extends PlgFabrik_Cron
 							$communes_to_update    = array_udiff($response['data'], $communes_to_insert, array($this, 'compareByCode'));
 
 							foreach ($communes_to_insert as $commune) {
+								if(!is_int($commune->population)) {
+									$commune->population = 0;
+								}
 								$values = [
 									$db->quote($commune->nom),
 									$db->quote($commune->code),

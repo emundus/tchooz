@@ -22,6 +22,7 @@ include_once(JPATH_SITE . '/components/com_emundus/models/settings.php');
 include_once(JPATH_SITE . '/components/com_emundus/classes/api/FileSynchronizer.php');
 include_once(JPATH_SITE . '/components/com_emundus/models/campaign.php');
 include_once(JPATH_SITE . '/components/com_emundus/models/programme.php');
+include_once(JPATH_SITE . '/components/com_emundus/models/events.php');
 
 use DateTime;
 use EmundusModelCampaign;
@@ -537,8 +538,6 @@ class Dataset
 
 	public function  duplicateSampleProfile($profile_id)
 	{
-
-		
 		$query = $this->db->getQuery(true);
 
 		// Get profile
@@ -549,6 +548,7 @@ class Dataset
 		$this->db->setQuery($query);
 		$oldprofile = $this->db->loadObject();
 
+		$newprofile = 0;
 		if (!empty($oldprofile)) {
 			// Create a new profile
 			$query->clear()
@@ -771,5 +771,97 @@ class Dataset
 		}
 
 		return $form_id;
+	}
+
+	public function deleteSampleLocation($id)
+	{
+		$query = $this->db->getQuery(true);
+
+		$query->delete('data_events_location')
+			->where('id = ' . $id);
+		$this->db->setQuery($query);
+		return $this->db->execute();
+	}
+
+	public function deleteSampleEvent($id)
+	{
+		$query = $this->db->getQuery(true);
+
+		$query->delete('jos_emundus_setup_events')
+			->where('id = ' . $id);
+		$this->db->setQuery($query);
+		return $this->db->execute();
+	}
+
+	public function deleteSampleEventSlots($slots)
+	{
+		$query = $this->db->getQuery(true);
+
+		$slots_ids = array_map(function($slot) {
+			return $slot->id;
+		}, $slots);
+
+		$query->delete('jos_emundus_setup_availabilities')
+			->where('slot IN (' . implode(',', $slots_ids) . ')');
+		$this->db->setQuery($query);
+		$this->db->execute();
+
+		$query->clear()
+			->delete('jos_emundus_setup_event_slots')
+			->where('id IN (' . implode(',', $slots_ids) . ')');
+		$this->db->setQuery($query);
+		return $this->db->execute();
+	}
+
+	public function createEvent($location_id,$user_id,$start = '2026-01-01 00:00:00', $end = '2026-01-01 06:00:00', $name = 'Event test',$available_for = 1,$campaigns = [],$programs = [])
+	{
+		$m_events = new \EmundusModelEvents();
+
+		$event = [
+			'name' => $name,
+			'color' => '#000000',
+			'location' => $location_id,
+			'is_conference_link' => 0,
+			'conference_engine' => '',
+			'link' => '',
+			'generate_link_by' => 0,
+			'manager' => null,
+			'available_for' => $available_for,
+			'campaigns' => $campaigns,
+			'programs' => $programs,
+			'user_id' => $user_id,
+		];
+		$event_id = $m_events->createEvent($event['name'], $event['color'], $event['location'], $event['is_conference_link'], $event['conference_engine'], $event['link'], $event['generate_link_by'], $event['manager'], $event['available_for'], $event['campaigns'], $event['programs'], $event['user_id']);
+
+		$setup_slot = [
+			'event_id' => $event_id,
+			'slot_duration' => '30 minutes',
+			'slot_break_every' => 0,
+			'slot_break_time' => '0 minutes',
+			'slots_availables_to_show' => 0,
+			'slot_can_book_until' => null,
+			'slot_can_cancel' => 0,
+			'slot_can_cancel_until' => null,
+			'user_id' => $user_id,
+		];
+		$m_events->setupSlot($setup_slot['event_id'], $setup_slot['slot_duration'], $setup_slot['slot_break_every'], $setup_slot['slot_break_time'], $setup_slot['slots_availables_to_show'], $setup_slot['slot_can_book_until'], $setup_slot['slot_can_cancel'], $setup_slot['slot_can_cancel_until'], $setup_slot['user_id']);
+
+		$event_slots = [];
+		if(!empty($start) && !empty($end))
+		{
+			$event_slot  = [
+				'start_date'    => $start,
+				'end_date'      => $end,
+				'room'          => null,
+				'slot_capacity' => 1,
+				'more_infos'    => '',
+				'users'         => [],
+				'event_id'      => $event_id,
+				'repeat_dates'  => []
+			];
+			$event_slots = $m_events->saveEventSlot($event_slot['start_date'], $event_slot['end_date'], $event_slot['room'], $event_slot['slot_capacity'], $event_slot['more_infos'], $event_slot['users'], $event_slot['event_id'], $event_slot['repeat_dates'], 0, 0, 1, [], $user_id);
+		}
+
+		return ['event_id' => $event_id, 'event_slots' => $event_slots];
 	}
 }

@@ -2008,6 +2008,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 								}
 							}
 
+							$query->order('id DESC');
 							$db->setQuery($query);
 							$raw_value = $db->loadResult();
 

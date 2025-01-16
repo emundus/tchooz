@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="console" method="upgrade">
+    <name>plg_emundus_emails</name>
+    <version>1.0.0</version>
+    <creationDate>December 2024</creationDate>
+    <author>eMundus</author>
+    <description>Plugin to send emails on some events</description>
+    <namespace path="src">Joomla\Plugin\Emundus\Emails</namespace>
+    <files>
+        <folder plugin="emails">services</folder>
+        <folder>src</folder>
+    </files>
+</extension>

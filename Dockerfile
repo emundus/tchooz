@@ -9,7 +9,7 @@ ARG test_env=0
 
 # Install nodejs, npm and yarn
 RUN if [ "$test_env" = "1" ];then \
-	curl -fsSL https://deb.nodesource.com/setup_16.x | bash -; \
+	curl -fsSL https://deb.nodesource.com/setup_18.x | bash -; \
 	apt-get install -y nodejs; \
 	npm install --global yarn; \
 	else \

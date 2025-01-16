@@ -176,7 +176,6 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ] || [ "$CI_PROJECT_DIR" ]; then
 
       php cli/joomla.php database:import --folder=".docker/installation/vanilla" -n
       php cli/joomla.php tchooz:vanilla --action="import" --folder=".docker/installation/vanilla" -n
-      php cli/joomla.php tchooz:vanilla --action="import_foreign_keys" --folder=".docker/installation/vanilla" -n
 
       echo >&2 "Create super administrator user..."
       php cli/joomla.php tchooz:user:add --username="$TCHOOZ_SYSADMIN_USERNAME" --lastname="$TCHOOZ_SYSADMIN_LAST_NAME" --firstname="$TCHOOZ_SYSADMIN_FIRST_NAME" --password="$TCHOOZ_SYSADMIN_PASSWORD" --email="$TCHOOZ_SYSADMIN_MAIL" --usergroup="Registered,Super Users" --userprofiles="System administrator" --useremundusgroups="Tous les droits" -n
@@ -188,10 +187,11 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ] || [ "$CI_PROJECT_DIR" ]; then
       php cli/joomla.php tchooz:fabrik_connection_reset -n
     fi
     
-    php cli/joomla.php tchooz:update -n --component=com_emundus
-    php cli/joomla.php tchooz:update -n --component=com_hikashop
+    php cli/joomla.php tchooz:update -n --component=com_emundus,com_hikashop,com_fabrik,com_dropfiles
     php cli/joomla.php maintenance:database --fix
     
+    php cli/joomla.php tchooz:vanilla --action="import_foreign_keys" --folder=".docker/installation/vanilla" -n
+
     chown www-data: configuration.php
     chown www-data: .htaccess
 

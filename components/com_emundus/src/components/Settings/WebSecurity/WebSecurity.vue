@@ -77,7 +77,7 @@
 <script>
 import settingsService from "@/services/settings";
 import Info from "@/components/Utils/Info.vue";
-import Parameter from "@/components/Settings/Parameter.vue";
+import Parameter from "@/components/Utils/Parameter.vue";
 import Tabs from "@/components/Utils/Tabs.vue";
 import History from "@/views/History.vue";
 

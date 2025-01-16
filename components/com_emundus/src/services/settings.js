@@ -93,6 +93,14 @@ export default {
     });
   },
 
+  async getSEFLink(link, language = 'fr-FR') {
+    try {
+      return await fetchClient.post('redirectjroute', {link: link, redirect_language: language});
+    } catch (e) {
+      return false;
+    }
+  },
+
   async getTimezoneList() {
     try {
       return await fetchClient.get('gettimezonelist');
@@ -307,5 +315,64 @@ export default {
         msg: e.message
       };
     }
+  },
+
+  async getAsyncOptions(route, query, options = {}) {
+    try {
+      return await fetchClient.get(route, query, options.signal);
+    } catch (e) {
+      if (e.name === 'AbortError') {
+        return null;
+      }
+      return {
+        status: false,
+        msg: e.message,
+      };
+    }
+  },
+
+  async getApps() {
+    try {
+      return await fetchClient.get('getapps');
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+
+  async getApp(app_id = 0,app_type = '') {
+    try {
+      return await fetchClient.get('getapp', {app_id: app_id, app_type: app_type});
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+
+  async setupApp(app_id, setup) {
+    try {
+      return await fetchClient.post('setupapp', {app_id: app_id, setup: JSON.stringify(setup)});
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+
+  async toggleAppEnabled(app_id, enabled) {
+    try {
+      return await fetchClient.post('disableapp', {app_id: app_id, enabled: enabled});
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
   }
+
 };

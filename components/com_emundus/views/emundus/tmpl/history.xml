@@ -8,7 +8,15 @@
 
     <fields name="params">
         <fieldset name="basic">
-            <field name="extension" type="text" label="COM_EMUNDUS_HISTORY_EXTENSION"></field>
+            <field name="extension" type="text" label="COM_EMUNDUS_HISTORY_EXTENSION" />
+            <field name="columns" type="checkboxes" label="COM_EMUNDUS_HISTORY_COLUMNS">
+                <option value="title">Title</option>
+                <option value="message_language_key">Category</option>
+                <option value="log_date">Log date</option>
+                <option value="user_id">By</option>
+                <option value="status">Status</option>
+                <option value="diff">Differences</option>
+            </field>
         </fieldset>
     </fields>
 </metadata>

@@ -62,7 +62,7 @@ class UsersModelTest extends UnitTestCase
 	public function testaffectToGroups()
 	{
 		$this->assertEmpty($this->model->affectToGroups([], []), 'Passing an incorrect user id should return false');
-		$this->assertEmpty($this->model->affectToGroups([['user_id' => 99999]], []), 'Passing an incorrect array of group ids should return false');
+		$this->assertEmpty($this->model->affectToGroups([['user_id' => 999999]], []), 'Passing an incorrect array of group ids should return false');
 
 		$nonApplicantIds = $this->model->getNonApplicantId($this->dataset['coordinator']);
 		$this->assertTrue($this->model->affectToGroups($nonApplicantIds, [1]), 'Affect user to group, using getNonApplicantId result should return true');
@@ -77,7 +77,7 @@ class UsersModelTest extends UnitTestCase
 	{
 
 		$this->assertEmpty($this->model->getProfileDetails(0), 'Passing an incorrect user id should return false');
-		$profile = $this->model->getProfileDetails(9);
+		$profile = $this->model->getProfileDetails(1001);
 		$this->assertNotEmpty($profile, 'Passing a correct user id should return an array of profile details');
 		$this->assertObjectHasProperty('label', $profile, 'Profile details should contain label');
 		$this->assertObjectHasProperty('class', $profile, 'Profile details should contain class');

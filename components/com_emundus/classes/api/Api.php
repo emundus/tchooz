@@ -131,11 +131,9 @@ class Api
 		return $this->auth;
 	}
 
-	public function setAuth(): void
+	public function setAuth($token): void
 	{
-		$config = ComponentHelper::getParams('com_emundus');
-
-		$this->auth['bearer_token'] = $config->get('api_bearer_token', '');
+		$this->auth['bearer_token'] = $token;
 	}
 
 
@@ -188,7 +186,14 @@ class Api
 				}
 			}
 
-			$request = $this->client->post($this->baseUrl . '/' . $url, $params);
+			if(strpos($url, 'https') !== false)
+			{
+				$request = $this->client->post($url, $params);
+			}
+			else
+			{
+				$request = $this->client->post($this->baseUrl . '/' . $url, $params);
+			}
 
 			$response['status'] = $request->getStatusCode();
 			$response['data']   = json_decode($request->getBody());
@@ -209,12 +214,28 @@ class Api
 	}
 
 
-	public function patch($url, $query_body_in_json = null)
+	public function patch($url, $body = null)
 	{
 		$response = ['status' => 200, 'message' => '', 'data' => ''];
 
 		try {
-			$request = $query_body_in_json !== null ? $this->client->patch($this->baseUrl.'/'.$url, ['body' => $query_body_in_json, 'headers' => $this->getHeaders()]) : $this->client->patch($url, ['headers' => $this->getHeaders()]);
+			$params            = array();
+			$params['headers'] = $this->getHeaders();
+			if (is_array($body))
+			{
+				$params['form_params'] = $body;
+			}
+			else
+			{
+				if (!empty($body))
+				{
+					$params['body']                    = $body;
+					$params['headers']['Content-Type'] = 'application/json';
+					$params['headers']['Accept']       = 'application/json';
+				}
+			}
+
+			$request = $this->client->patch($this->baseUrl . '/' . $url, $params);
 
 			$response['status'] = $request->getStatusCode();
 			$response['data']   = json_decode($request->getBody());
@@ -222,7 +243,7 @@ class Api
 		catch (\Exception $e) {
 			if ($this->getRetry()) {
 				$this->setRetry(false);
-				$this->patch($url, $query_body_in_json);
+				$this->patch($url, $body);
 			}
 
 			Log::add('[PATCH] ' . $e->getMessage(), Log::ERROR, 'com_emundus.api');

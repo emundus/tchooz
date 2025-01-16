@@ -10,9 +10,11 @@
 
 // No direct access
 require_once JPATH_SITE . '/components/com_emundus/classes/api/Api.php';
+
 use classes\api\Api;
 use classes\api\FileSynchronizer;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
 
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
@@ -28,37 +30,45 @@ class EmundusModelSync extends JModelList
 
 	function getConfig($type)
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$config = '';
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->createQuery();
 
-		try {
+		try
+		{
 			$query->select('config')
 				->from($db->quoteName('#__emundus_setup_sync'))
 				->where($db->quoteName('type') . ' LIKE ' . $db->quote($type));
 			$db->setQuery($query);
+			$config = $db->loadResult();
 
-			return $db->loadResult();
+			if(is_null($config)) {
+				$config = '';
+			}
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			JLog::add('component/com_emundus/models/sync | Cannot get sync config for type ' . $type . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.sync');
-
-			return '[]';
 		}
+
+		return $config;
 	}
 
-	function saveConfig($config, $type)
+	function saveConfig($config, $type, $name = '')
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->createQuery();
 
-		try {
+		try
+		{
 			$query->select('id')
 				->from($db->quoteName('#__emundus_setup_sync'))
 				->where($db->quoteName('type') . ' LIKE ' . $db->quote($type));
 			$db->setQuery($query);
 			$setup_integration = $db->loadResult();
 
-			if (!empty($setup_integration)) {
+			if (!empty($setup_integration))
+			{
 				$query->clear()
 					->update($db->quoteName('#__emundus_setup_sync'))
 					->set($db->quoteName('config') . ' = ' . $db->quote($config))
@@ -67,19 +77,22 @@ class EmundusModelSync extends JModelList
 
 				return $db->execute();
 			}
-			else {
+			else
+			{
 				$query->clear()
 					->insert($db->quoteName('#__emundus_setup_sync'))
 					->set($db->quoteName('type') . ' = ' . $db->quote($type))
 					->set($db->quoteName('params') . ' = ' . $db->quote('{}'))
 					->set($db->quoteName('config') . ' = ' . $db->quote($config))
+					->set($db->quoteName('name') . ' = ' . $db->quote($name))
 					->set($db->quoteName('published') . ' = 1');
 				$db->setQuery($query);
 
 				return $db->execute();
 			}
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			JLog::add('component/com_emundus/models/sync | Cannot save sync config for type ' . $type . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.sync');
 
 			return false;
@@ -113,9 +126,11 @@ class EmundusModelSync extends JModelList
 		$aspects = [];
 		$config  = $this->getConfig('ged');
 
-		if (!empty($config)) {
+		if (!empty($config))
+		{
 			$config = json_decode($config, true);
-			if (isset($config['aspects'])) {
+			if (isset($config['aspects']))
+			{
 				$aspects = $config['aspects'];
 			}
 		}
@@ -128,7 +143,8 @@ class EmundusModelSync extends JModelList
 		$aspects = [];
 		$xml     = simplexml_load_file($file['tmp_name']);
 
-		foreach ($xml->aspects->aspect->properties->property as $property) {
+		foreach ($xml->aspects->aspect->properties->property as $property)
+		{
 			$aspects[] = [
 				'name'     => (string) $property->attributes()->name,
 				'label'    => (string) $property->title,
@@ -156,17 +172,21 @@ class EmundusModelSync extends JModelList
 		$aspects    = $old_config['aspects'];
 
 		$xml = simplexml_load_file($file['tmp_name']);
-		foreach ($xml->aspects->aspect->properties->property as $property) {
+		foreach ($xml->aspects->aspect->properties->property as $property)
+		{
 			// Check if the aspect exists in the old config
 			$found = false;
-			foreach ($old_config['aspects'] as $old_aspect) {
-				if ($old_aspect['name'] == (string) $property->attributes()->name) {
+			foreach ($old_config['aspects'] as $old_aspect)
+			{
+				if ($old_aspect['name'] == (string) $property->attributes()->name)
+				{
 					$found = true;
 					break;
 				}
 			}
 
-			if (!$found) {
+			if (!$found)
+			{
 				$aspects[] = [
 					'name'     => (string) $property->attributes()->name,
 					'label'    => (string) $property->title,
@@ -191,14 +211,16 @@ class EmundusModelSync extends JModelList
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
-		try {
+		try
+		{
 			$query->select('id,lbl,value,sync,sync_method')
 				->from($db->quoteName('#__emundus_setup_attachments'));
 			$db->setQuery($query);
 
 			return $db->loadObjectList();
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			JLog::add('component/com_emundus/models/sync | Cannot get documents synced config  : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.sync');
 
 			return [];
@@ -210,7 +232,8 @@ class EmundusModelSync extends JModelList
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
-		try {
+		try
+		{
 			$query->select('tag')
 				->from($db->quoteName('#__emundus_setup_tags'))
 				->where($db->quoteName('published') . ' = 1');
@@ -218,7 +241,8 @@ class EmundusModelSync extends JModelList
 
 			return $db->loadColumn();
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			JLog::add('component/com_emundus/models/sync | Cannot get emundus tags : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.sync');
 
 			return [];
@@ -230,7 +254,8 @@ class EmundusModelSync extends JModelList
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
-		try {
+		try
+		{
 			$query->update($db->quoteName('#__emundus_setup_attachments'))
 				->set($db->quoteName('sync') . ' = ' . $db->quote($sync))
 				->where($db->quoteName('id') . ' = ' . $db->quote($did));
@@ -238,7 +263,8 @@ class EmundusModelSync extends JModelList
 
 			return $db->execute();
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			JLog::add('component/com_emundus/models/sync | Cannot update document ' . $did . ' sync : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.sync');
 
 			return false;
@@ -250,7 +276,8 @@ class EmundusModelSync extends JModelList
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
-		try {
+		try
+		{
 			$query->update($db->quoteName('#__emundus_setup_attachments'))
 				->set($db->quoteName('sync_method') . ' = ' . $db->quote($sync_method))
 				->where($db->quoteName('id') . ' = ' . $db->quote($did));
@@ -258,7 +285,8 @@ class EmundusModelSync extends JModelList
 
 			return $db->execute();
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			JLog::add('component/com_emundus/models/sync | Cannot update document ' . $did . ' sync method : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.sync');
 
 			return false;
@@ -270,7 +298,8 @@ class EmundusModelSync extends JModelList
 		$active   = false;
 		$eMConfig = JComponentHelper::getParams('com_emundus');
 
-		if ($eMConfig->get('attachment_storage') == 1) {
+		if ($eMConfig->get('attachment_storage') == 1)
+		{
 			$active = true;
 		}
 
@@ -290,24 +319,30 @@ class EmundusModelSync extends JModelList
 
 		$db->setQuery($query);
 
-		try {
+		try
+		{
 			$type = $db->loadResult();
 
-			if (empty($type)) {
+			if (empty($type))
+			{
 				return false;
 			}
-			else {
+			else
+			{
 				$is_active = $this->checkIfTypeIsActive($type);
 
-				if ($is_active) {
+				if ($is_active)
+				{
 					return $type;
 				}
-				else {
+				else
+				{
 					return false;
 				}
 			}
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			JLog::add('[SYNC_FILE_PLUGIN] Error getting sync type for upload_id ' . $upload_id, JLog::ERROR, 'com_emundus.sync');
 
 			return false;
@@ -318,7 +353,8 @@ class EmundusModelSync extends JModelList
 	{
 		$eMConfig = JComponentHelper::getParams('com_emundus');
 
-		switch ($type) {
+		switch ($type)
+		{
 			case 'ged':
 				$is_active = $eMConfig->get('external_storage_ged_alfresco_integration', 0);
 				break;
@@ -341,10 +377,12 @@ class EmundusModelSync extends JModelList
 
 		$db->setQuery($query);
 
-		try {
+		try
+		{
 			return $db->loadResult();
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			JLog::add('[SYNC_FILE_PLUGIN] Error getting sync state for upload_id ' . $upload_id, JLog::ERROR, 'com_emundus.sync');
 
 			return false;
@@ -357,7 +395,8 @@ class EmundusModelSync extends JModelList
 
 		$upload_ids_by_type = $this->getUploadIdsByType($upload_ids);
 
-		foreach ($upload_ids_by_type as $type => $upload_ids) {
+		foreach ($upload_ids_by_type as $type => $upload_ids)
+		{
 			$states = array_merge($this->synchronizeAttachmentsByType($type, $upload_ids), $states);
 		}
 
@@ -370,7 +409,8 @@ class EmundusModelSync extends JModelList
 
 		$upload_ids_by_type = $this->getUploadIdsByType($upload_ids);
 
-		foreach ($upload_ids_by_type as $type => $upload_ids) {
+		foreach ($upload_ids_by_type as $type => $upload_ids)
+		{
 			$states = array_merge($this->deleteAttachmentsByType($type, $upload_ids), $states);
 		}
 
@@ -383,7 +423,8 @@ class EmundusModelSync extends JModelList
 
 		$upload_ids_by_type = $this->getUploadIdsByType($upload_ids);
 
-		foreach ($upload_ids_by_type as $type => $upload_ids) {
+		foreach ($upload_ids_by_type as $type => $upload_ids)
+		{
 			$states = array_merge($this->checkAttachmentsExistsByType($type, $upload_ids), $states);
 		}
 
@@ -393,11 +434,14 @@ class EmundusModelSync extends JModelList
 	private function getUploadIdsByType($upload_ids)
 	{
 		$upload_ids_by_type = array();
-		foreach ($upload_ids as $upload_id) {
+		foreach ($upload_ids as $upload_id)
+		{
 			$type = $this->getSyncType($upload_id);
 
-			if (!empty($type)) {
-				if (!isset($upload_ids_by_type[$type])) {
+			if (!empty($type))
+			{
+				if (!isset($upload_ids_by_type[$type]))
+				{
 					$upload_ids_by_type[$type] = array();
 				}
 
@@ -413,9 +457,11 @@ class EmundusModelSync extends JModelList
 		$states = array();
 
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'classes' . DS . 'api' . DS . 'FileSynchronizer.php');
-		if (class_exists('classes\api\FileSynchronizer')) {
+		if (class_exists('classes\api\FileSynchronizer'))
+		{
 			$synchronizer = new FileSynchronizer($type);
-			foreach ($upload_ids as $upload_id) {
+			foreach ($upload_ids as $upload_id)
+			{
 				$states[$upload_id] = $synchronizer->updateFile($upload_id);
 			}
 		}
@@ -428,9 +474,11 @@ class EmundusModelSync extends JModelList
 		$states = array();
 
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'classes' . DS . 'api' . DS . 'FileSynchronizer.php');
-		if (class_exists('classes\api\FileSynchronizer')) {
+		if (class_exists('classes\api\FileSynchronizer'))
+		{
 			$synchronizer = new FileSynchronizer($type);
-			foreach ($upload_ids as $upload_id) {
+			foreach ($upload_ids as $upload_id)
+			{
 				$states[$upload_id] = $synchronizer->deleteFile($upload_id);
 			}
 		}
@@ -443,9 +491,11 @@ class EmundusModelSync extends JModelList
 		$states = array();
 
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'classes' . DS . 'api' . DS . 'FileSynchronizer.php');
-		if (class_exists('classes\api\FileSynchronizer')) {
+		if (class_exists('classes\api\FileSynchronizer'))
+		{
 			$synchronizer = new FileSynchronizer($type);
-			foreach ($upload_ids as $upload_id) {
+			foreach ($upload_ids as $upload_id)
+			{
 				$states[$upload_id] = $synchronizer->checkFileExists($upload_id);
 			}
 		}
@@ -466,18 +516,22 @@ class EmundusModelSync extends JModelList
 
 		$db->setQuery($query);
 
-		try {
+		try
+		{
 			$params = $db->loadResult();
 
-			if (!empty($params)) {
+			if (!empty($params))
+			{
 				$params = json_decode($params, true);
 
-				if (isset($params['aspects'])) {
+				if (isset($params['aspects']))
+				{
 					$aspectsConfig = $params['aspects'];
 				}
 			}
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			JLog::add('Error getting attachment aspects config for attachment id ' . $attachment_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.sync');
 		}
 
@@ -496,14 +550,17 @@ class EmundusModelSync extends JModelList
 
 		$db->setQuery($query);
 
-		try {
+		try
+		{
 			$params = $db->loadResult();
 
-			if (!empty($params)) {
+			if (!empty($params))
+			{
 				$params            = json_decode($params, true);
 				$params['aspects'] = $aspectsConfig;
 			}
-			else {
+			else
+			{
 				$params = array('aspects' => $aspectsConfig);
 			}
 
@@ -515,7 +572,8 @@ class EmundusModelSync extends JModelList
 			$db->setQuery($query);
 			$saved = $db->execute();
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			JLog::add('Error saving attachment aspects config for attachment id ' . $attachment_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.sync');
 		}
 
@@ -526,7 +584,8 @@ class EmundusModelSync extends JModelList
 	{
 		$node_id = 0;
 
-		if (!empty($upload_id)) {
+		if (!empty($upload_id))
+		{
 			$db    = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
@@ -536,10 +595,12 @@ class EmundusModelSync extends JModelList
 
 			$db->setQuery($query);
 
-			try {
+			try
+			{
 				$node_id = $db->loadResult();
 			}
-			catch (Exception $e) {
+			catch (Exception $e)
+			{
 				JLog::add('Failed to found node id from upload id ' . $upload_id, JLog::ERROR, 'com_emundus.sync');
 			}
 		}
@@ -547,24 +608,34 @@ class EmundusModelSync extends JModelList
 		return $node_id;
 	}
 
-	public function getApi($id)
+	public function getApi($id, $type = '')
 	{
 		$api = null;
 
-		try
+		if(!empty($id) || !empty($type))
 		{
-			$db    = Factory::getDbo();
-			$query = $db->getQuery(true);
+			try
+			{
+				$db    = Factory::getDbo();
+				$query = $db->getQuery(true);
 
-			$query->select('*')
-				->from($db->quoteName('#__emundus_setup_sync'))
-				->where($db->quoteName('id') . ' = ' . $db->quote($id));
-			$db->setQuery($query);
-			$api = $db->loadObject();
-		}
-		catch (Exception $e)
-		{
-			JLog::add('component/com_emundus/models/sync | Cannot get api : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.sync');
+				$query->select('*')
+					->from($db->quoteName('#__emundus_setup_sync'));
+				if (!empty($id))
+				{
+					$query->where($db->quoteName('id') . ' = ' . $db->quote($id));
+				}
+				if (!empty($type))
+				{
+					$query->where($db->quoteName('type') . ' = ' . $db->quote($type));
+				}
+				$db->setQuery($query);
+				$api = $db->loadObject();
+			}
+			catch (Exception $e)
+			{
+				JLog::add('component/com_emundus/models/sync | Cannot get api : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.sync');
+			}
 		}
 
 		return $api;
@@ -580,7 +651,11 @@ class EmundusModelSync extends JModelList
 			$query = $db->getQuery(true);
 
 			$config = json_decode($api->config, true);
-			if (!empty($config['routes']) && in_array($route, array_keys($config['routes'])))
+			if (
+				(!empty($config['routes']) && in_array($route, array_keys($config['routes'])))
+				|| empty($route)
+				|| $api->type == 'microsoft_dynamics'
+				|| $api->type == 'teams')
 			{
 				$api_class = new Api();
 				$api_class->setBaseUrl($config['base_url']);
@@ -596,105 +671,21 @@ class EmundusModelSync extends JModelList
 				{
 					if ($config['authentication']['create_token'])
 					{
-						$token = '';
-						switch ($config['authentication']['token_storage'])
+						$token = $this->authenticateApi($api,$api_class,$api_url);
+
+						if ($config['authentication']['type'] == 'bearer' && !empty($token))
 						{
-							case 'database':
-								if (!empty($config['authentication']['token']) && !empty($config['authentication']['token_expiration']) && $config['authentication']['token_expiration'] > time())
-								{
-									$token = $config['authentication']['token'];
-								}
-								break;
-							case 'session':
-								$session = JFactory::getSession();
-								$token   = $session->get('sync_api_token_' . $api->id);
-								break;
-						}
-
-						if (empty($token) && !empty($config['authentication']['route']))
-						{
-							if (!empty($config['authentication']['method']) && $config['authentication']['method'] == 'post')
-							{
-								$body = [];
-								if(!empty($config['authentication']['key']))
-								{
-									$body['key'] = $config['authentication']['key'];
-								}
-								else
-								{
-									if (!empty($config['authentication']['login']))
-									{
-										$body['login'] = $config['authentication']['login'];
-									}
-									if (!empty($config['authentication']['password']))
-									{
-										$body['password'] = $config['authentication']['password'];
-									}
-
-									$body = json_encode($body);
-								}
-
-								$response = $api_class->post($api_url . '/' . $config['authentication']['route'], $body);
-							}
-							else
-							{
-								$params = [];
-								if (!empty($config['authentication']['login']))
-								{
-									$params['login'] = $config['authentication']['login'];
-								}
-								if (!empty($config['authentication']['password']))
-								{
-									$params['password'] = $config['authentication']['password'];
-								}
-
-								$response = $api_class->get($api_url . '/' . $config['authentication']['route'], $params);
-							}
-
-							if ($response['status'] != 200)
-							{
-								JLog::add('component/com_emundus/models/sync | Cannot get token : ' . $response['message'], JLog::ERROR, 'com_emundus.sync');
-							}
-							else
-							{
-								$token = $response['data']->{$config['authentication']['token_attribute']};
-								switch ($config['authentication']['token_storage'])
-								{
-									case 'database':
-										$config['authentication']['token'] = $response['data']->{$config['authentication']['token_attribute']};
-										if (!empty($config['authentication']['token_expiration_attribute']))
-										{
-											$config['authentication']['token_expiration'] = $response['data']->{$config['authentication']['token_expiration_attribute']};
-										}
-										else if (!empty($config['authentication']['token_validity']))
-										{
-											$config['authentication']['token_expiration'] = time() + $config['authentication']['token_validity'];
-										}
-
-										$query->clear()
-											->update($db->quoteName('#__emundus_setup_sync'))
-											->set($db->quoteName('config') . ' = ' . $db->quote(json_encode($config)))
-											->where($db->quoteName('id') . ' = ' . $db->quote($api->id));
-										$db->setQuery($query);
-										$db->execute();
-										break;
-									case 'session':
-										$session = JFactory::getSession();
-										$session->set('sync_api_token_' . $api->id, $token);
-										break;
-								}
-							}
-						}
-
-						if($config['authentication']['type'] == 'bearer' && !empty($token)) {
 							$api_class->addHeader('Authorization', 'Bearer ' . $token);
 						}
 					}
 
-					if($config['authentication']['headers']) {
-						foreach ($config['authentication']['headers'] as $header) {
+					if ($config['authentication']['headers'] && !empty($token))
+					{
+						foreach ($config['authentication']['headers'] as $header)
+						{
 							$value = !empty($config['authentication'][$header]) ? $config['authentication'][$header] : '';
-							if($header == 'token') {
+							if ($header == 'token')
+							{
 								$value = $token;
 							}
 							$api_class->addHeader($header, $value);
@@ -702,17 +693,26 @@ class EmundusModelSync extends JModelList
 					}
 				}
 
-				$route_config = $config['routes'][$route];
-				$method = strtolower($route_config['type']);
+				if(!empty($route) && $api->type !== 'microsoft_dynamics' && $api->type !== 'teams')
+				{
+					$route_config = $config['routes'][$route];
+					$method       = strtolower($route_config['type']);
+				}
 
-				if($method == 'post') {
-					foreach ($data as $key => $value) {
-						if(!in_array($key, array_keys($route_config['params']))) {
-							unset($data[$key]);
+				if ($method == 'post')
+				{
+					if($api->type !== 'microsoft_dynamics' && $api->type !== 'teams')
+					{
+						foreach ($data as $key => $value)
+						{
+							if (!in_array($key, array_keys($route_config['params'])))
+							{
+								unset($data[$key]);
+							}
 						}
 					}
 
-					if($parse_data)
+					if ($parse_data)
 					{
 						$data = json_encode($data);
 					}
@@ -723,5 +723,189 @@ class EmundusModelSync extends JModelList
 		}
 
 		return $result;
+	}
+
+	public function authenticateApi($api,$api_class,$api_url,$test = false)
+	{
+		$token = '';
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+
+		$config = json_decode($api->config, true);
+
+		switch ($config['authentication']['token_storage'])
+		{
+			case 'database':
+				if (!empty($config['authentication']['token']) && !empty($config['authentication']['token_expiration']) && $config['authentication']['token_expiration'] > time())
+				{
+					$token = EmundusHelperFabrik::decryptDatas($config['authentication']['token']);
+				}
+				break;
+			case 'session':
+				$session = Factory::getSession();
+				$token   = EmundusHelperFabrik::decryptDatas($session->get('sync_api_token_' . $api->id));
+				break;
+		}
+
+		if (empty($token) && !empty($config['authentication']['route']))
+		{
+			// POST request to get token
+			if (!empty($config['authentication']['method']) && $config['authentication']['method'] == 'post')
+			{
+				$body = [];
+				if (!empty($config['authentication']['key']))
+				{
+					$body['key'] = $config['authentication']['key'];
+				}
+				else
+				{
+					// Some APIs require a grant_type
+					if (!empty($config['authentication']['grant_type']))
+					{
+						$body['grant_type'] = $config['authentication']['grant_type'];
+					}
+					//
+					
+					if (!empty($config['authentication']['login']))
+					{
+						$body['login'] = $config['authentication']['login'];
+					}
+					if (!empty($config['authentication']['password']))
+					{
+						$body['password'] = EmundusHelperFabrik::decryptDatas($config['authentication']['password']);
+					}
+					
+					// When grant_type is client_credentials, we need to add client_id and client_secret
+					if (!empty($config['authentication']['client_id']))
+					{
+						$body['client_id'] = $config['authentication']['client_id'];
+					}
+					if (!empty($config['authentication']['client_secret']))
+					{
+						$body['client_secret'] = EmundusHelperFabrik::decryptDatas($config['authentication']['client_secret']);
+					}
+					//
+					
+					// Some APIs require a scope
+					if (!empty($config['authentication']['scope']))
+					{
+						$body['scope'] = $config['authentication']['scope'];
+					}
+					//
+
+					if ($config['authentication']['content_type'] !== 'form_params')
+					{
+						$body = json_encode($body);
+					}
+				}
+
+				$auth_route = $api_url . '/' . $config['authentication']['route'];
+				if (strpos($config['authentication']['route'], 'https') !== false)
+				{
+					$auth_route = $config['authentication']['route'];
+				}
+
+				$response = $api_class->post($auth_route, $body);
+			}
+			// GET request to get token
+			else
+			{
+				$params = [];
+				if (!empty($config['authentication']['login']))
+				{
+					$params['login'] = $config['authentication']['login'];
+				}
+				if (!empty($config['authentication']['password']))
+				{
+					$params['password'] = EmundusHelperFabrik::decryptDatas($config['authentication']['password']);
+				}
+
+				$response = $api_class->get($api_url . '/' . $config['authentication']['route'], $params);
+			}
+
+			if ($response['status'] != 200)
+			{
+				Log::add('component/com_emundus/models/sync | Cannot get token : ' . $response['message'], JLog::ERROR, 'com_emundus.sync');
+			}
+			else
+			{
+				$token = $response['data']->{$config['authentication']['token_attribute']};
+
+				if(!$test)
+				{
+					switch ($config['authentication']['token_storage'])
+					{
+						case 'database':
+							$config['authentication']['token'] = EmundusHelperFabrik::encryptDatas($response['data']->{$config['authentication']['token_attribute']});
+							if (!empty($config['authentication']['token_expiration_attribute']))
+							{
+								$config['authentication']['token_expiration'] = $response['data']->{$config['authentication']['token_expiration_attribute']};
+							}
+							else
+							{
+								if (!empty($config['authentication']['token_validity']))
+								{
+									$config['authentication']['token_expiration'] = time() + $config['authentication']['token_validity'];
+								}
+							}
+
+							$query->clear()
+								->update($db->quoteName('#__emundus_setup_sync'))
+								->set($db->quoteName('config') . ' = ' . $db->quote(json_encode($config)))
+								->where($db->quoteName('id') . ' = ' . $db->quote($api->id));
+							$db->setQuery($query);
+							$db->execute();
+							break;
+						case 'session':
+							$session = Factory::getSession();
+							$session->set('sync_api_token_' . $api->id, EmundusHelperFabrik::encryptDatas($token));
+							break;
+					}
+				}
+			}
+		}
+		
+		return $token;
+	}
+
+	public function testAuthentication($app_id)
+	{
+		$token  = '';
+
+		try
+		{
+			if (!empty($app_id))
+			{
+				$api = $this->getApi($app_id);
+
+				if (!empty($api->config))
+				{
+					$config    = json_decode($api->config, true);
+					$api_class = new Api();
+					$api_class->setBaseUrl($config['base_url']);
+					$api_class->setClient();
+
+					$api_url = '';
+					if (!empty($config['api_url']))
+					{
+						$api_url = $config['api_url'];
+					}
+
+					if (!empty($config['authentication']))
+					{
+						if ($config['authentication']['create_token'])
+						{
+							$token = $this->authenticateApi($api, $api_class, $api_url, true);
+						}
+					}
+				}
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/sync | Cannot test authentication : ' . $e->getMessage(), Log::ERROR, 'com_emundus.sync');
+		}
+
+		return !empty($token);
 	}
 }

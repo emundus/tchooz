@@ -11,6 +11,7 @@
 namespace Joomla\Plugin\Actionlog\Emundus\Extension;
 
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Installer\Installer;
 use Joomla\CMS\MVC\Factory\MVCFactoryServiceInterface;
 use Joomla\CMS\Table\Table;
@@ -20,6 +21,7 @@ use Joomla\Component\Actionlogs\Administrator\Plugin\ActionLogPlugin;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\Exception\ExecutionFailureException;
 use Joomla\Event\DispatcherInterface;
+use Joomla\Event\SubscriberInterface;
 use Joomla\Utilities\ArrayHelper;
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -31,7 +33,7 @@ use Joomla\Utilities\ArrayHelper;
  *
  * @since  3.9.0
  */
-final class Emundus extends ActionLogPlugin
+final class Emundus extends ActionLogPlugin implements SubscriberInterface
 {
 	use DatabaseAwareTrait;
 	use UserFactoryAwareTrait;
@@ -49,8 +51,23 @@ final class Emundus extends ActionLogPlugin
 		parent::__construct($dispatcher, $config);
 	}
 
-	public function onAfterCampaignUpdate($data, $old_data)
+	public static function getSubscribedEvents(): array
 	{
+		return [
+			'onAfterCampaignUpdate' => 'onAfterCampaignUpdate',
+			'onAfterUpdateConfiguration' => 'onAfterUpdateConfiguration',
+			'onAfterMicrosoftDynamicsCreate' => 'onAfterMicrosoftDynamicsCreate',
+			'onAfterMicrosoftDynamicsUpdate' => 'onAfterMicrosoftDynamicsUpdate',
+		];
+	}
+
+	public function onAfterCampaignUpdate(GenericEvent $event)
+	{
+		$arguments = $event->getArguments();
+
+		$data = $arguments['data'];
+		$old_data = $arguments['old_data'];
+
 		$jUser = $this->getApplication()->getIdentity();
 
 		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_UPDATE_CAMPAIGN';
@@ -65,8 +82,15 @@ final class Emundus extends ActionLogPlugin
 		$this->addLog([$message], $messageLanguageKey, $context, $jUser->id);
 	}
 
-	public function onAfterUpdateConfiguration($data, $old_data = [], $type = '', $status = 'done', $context= 'com_emundus.settings')
+	public function onAfterUpdateConfiguration(GenericEvent $event)
 	{
+		$arguments = $event->getArguments();
+
+		$data = $arguments['data'];
+		$old_data = $arguments['old_data'];
+		$status = $arguments['status'];
+		$context = $arguments['context'] ?: 'com_emundus.configuration';
+
 		$jUser = $this->getApplication()->getIdentity();
 
 		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_UPDATE_CONFIGURATION';
@@ -79,6 +103,39 @@ final class Emundus extends ActionLogPlugin
 			$title .= '_' . strtoupper($type);
 		}
 		$message = $this->setMessage($id, 'update', $title, $status, $old_data, $data);
+
+		$this->addLog([$message], $messageLanguageKey, $context, $jUser->id);
+	}
+
+	public function onAfterMicrosoftDynamicsCreate(GenericEvent $event)
+	{
+		$arguments = $event->getArguments();
+
+		$jUser = $this->getApplication()->getIdentity();
+
+		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_MICROSOFT_DYNAMICS_CREATE';
+		$context            = 'com_emundus.microsoftdynamics';
+
+		$more_data['entity'] = $arguments['config']['name'];
+
+		$message = $this->setMessage($arguments['id'], 'create', 'PLG_ACTIONLOG_EMUNDUS_MICROSOFT_DYNAMICS_CREATE_ACTION', $arguments['status'], [], $arguments['data'], $more_data);
+
+		$this->addLog([$message], $messageLanguageKey, $context, $jUser->id);
+	}
+
+	public function onAfterMicrosoftDynamicsUpdate(GenericEvent $event)
+	{
+		$arguments = $event->getArguments();
+
+		$jUser = $this->getApplication()->getIdentity();
+
+		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_MICROSOFT_DYNAMICS_UPDATE';
+		$context            = 'com_emundus.microsoftdynamics';
+
+		$more_data['entity'] = $arguments['config']['name'];
+		$more_data['message'] = $arguments['message'];
+
+		$message = $this->setMessage($arguments['id'], 'create', 'PLG_ACTIONLOG_EMUNDUS_MICROSOFT_DYNAMICS_UPDATE_ACTION', $arguments['status'], [], $arguments['data'], $more_data);
 
 		$this->addLog([$message], $messageLanguageKey, $context, $jUser->id);
 	}

@@ -32,17 +32,20 @@ return new class () implements ServiceProviderInterface {
 	 */
 	public function register(Container $container)
 	{
-		$container->set(
-			PluginInterface::class,
-			function (Container $container) {
-				$plugin = new Oauth2(
-					$container->get(DispatcherInterface::class),
-					(array) PluginHelper::getPlugin('system', 'oauth2')
-				);
-				$plugin->setApplication(Factory::getApplication());
+		if((Joomla\CMS\Factory::getApplication() instanceof Joomla\CMS\Application\WebApplication))
+		{
+			$container->set(
+				PluginInterface::class,
+				function (Container $container) {
+					$plugin = new Oauth2(
+						$container->get(DispatcherInterface::class),
+						(array) PluginHelper::getPlugin('system', 'oauth2')
+					);
+					$plugin->setApplication(Factory::getApplication());
 
-				return $plugin;
-			}
-		);
+					return $plugin;
+				}
+			);
+		}
 	}
 };

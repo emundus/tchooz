@@ -7,7 +7,7 @@
         :dataLength="historyLength" :sticky="true" v-model:page="page" v-model:limit="limit"
     />
 
-    <template v-if="!loading">
+    <div v-if="!loading" class="tw-relative tw-overflow-x-scroll">
       <table v-if="history.length > 0">
         <thead>
         <tr>
@@ -20,72 +20,155 @@
           <th v-if="columns.includes('diff')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_DIFF') }}</th>
         </tr>
         </thead>
+
         <tbody>
         <tr v-for="data in history" :key="data.id">
           <td v-if="columns.includes('itemId')">
             <span> {{ data.message.id }} </span>
           </td>
+
           <td v-if="columns.includes('title')">
             <p>{{ translate(data.message.title) }}</p>
-            <p v-if="data.message.new_data.length > 0 && extension == 'com_emundus.settings.web_security'">
-            <span v-for="(newData, index) in data.message.new_data" :key="index">
-              <span v-if="index > 0">, </span>
-              <span class="tw-text-green-700">{{ newData }}</span>
-            </span>
+
+            <p v-if="data.message.entity && extension == 'com_emundus.microsoftdynamics'">
+              <strong>{{ data.message.entity }}</strong>
             </p>
+
+            <div
+                v-if="data.message.new_data && data.message.new_data.length > 0 && extension == 'com_emundus.settings.web_security'">
+                <span v-for="(newData, index) in data.message.new_data" :key="index">
+                  <span v-if="index > 0">, </span>
+                  <span class="tw-text-green-700">{{ newData }}</span>
+                </span>
+            </div>
           </td>
+
           <td v-if="columns.includes('message_language_key')">{{ translate(data.message_language_key + '_TITLE') }}</td>
+
           <td v-if="columns.includes('log_date')">
             {{ formattedDate(data.log_date, 'L') + ' ' + formattedDate(data.log_date, 'LT') }}
           </td>
+
           <td v-if="columns.includes('user_id')">{{ data.logged_by }}</td>
+
           <td v-if="columns.includes('status')">
             <div class="tw-flex tw-items-center">
-            <span class="material-symbols-outlined tw-mr-2"
-                  :class="colorClasses[data.message.status]">{{ icon[data.message.status] }}</span>
+                <span class="material-symbols-outlined tw-mr-2"
+                      :class="colorClasses[data.message.status]">{{ icon[data.message.status] }}</span>
+
               <p :class="colorClasses[data.message.status]">
                 {{ translate(text[data.message.status]) }}
+
                 <span
                     v-if="(data.message.status == 'done' || data.message.status == 'cancelled') && data.message.status_updated">
-                {{ formattedDate(data.message.status_updated, 'L') }}
-              </span>
+                      {{ formattedDate(data.message.status_updated, 'L') }}
+                    </span>
               </p>
+
               <span
                   v-if="this.sysadmin && data.message.status === 'pending'"
                   @click="updateHistoryStatus(data.id,'done')"
                   class="material-symbols-outlined tw-cursor-pointer">
-              edit
-            </span>
+                  edit
+                </span>
+
               <span
                   v-if="this.sysadmin && data.message.status === 'pending'"
                   @click="updateHistoryStatus(data.id,'cancelled')"
                   class="material-symbols-outlined tw-cursor-pointer">
-              backspace
-            </span>
+                backspace
+                </span>
+            </div>
+
+            <div>
+                <button v-if="data.message.status === 'error' && data.message.message" type="button" class="tw-flex tw-items-center tw-gap-1 tw-cursor-pointer tw-text-blue-500"
+                        @click="errorModalToOpen = data.id">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_SHOW_DETAILS') }}
+                </button>
             </div>
           </td>
-          <td>
+          <td v-if="columns.includes('diff')">
+            <button type="button" class="tw-flex tw-items-center tw-gap-1 tw-cursor-pointer tw-text-blue-500"
+                    @click="modalToOpen = data.id">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_DIFF_SHOW') }}
+            </button>
+          </td>
+
+          <modal
+              v-if="errorModalToOpen === data.id"
+              :name="'error-modal'"
+              :class="'placement-center tw-rounded tw-shadow-modal tw-p-4 tw-max-h-[80vh] tw-overflow-y-auto tw-overflow-x-hidden'"
+              transition="nice-modal-fade"
+              :width="'60%'"
+              :delay="100"
+              :adaptive="true"
+              :clickToClose="false"
+          >
+            <div class="tw-pt-4 tw-sticky tw-top-0 tw-bg-white tw-border-b tw-border-neutral-300 tw-z-10">
+              <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
+                <h2>
+                  {{ translate("COM_EMUNDUS_GLOBAL_ERROR_DETAILS") }}
+                </h2>
+                <button class="tw-cursor-pointer tw-bg-transparent" @click.prevent="errorModalToOpen = null;">
+                  <span class="material-symbols-outlined">close</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="tw-mt-3">
+              <p>{{ data.message.message }}</p>
+            </div>
+
+          </modal>
+
+          <modal
+              v-if="modalToOpen === data.id"
+              :name="'datas-modal'"
+              :class="'placement-center tw-rounded tw-shadow-modal tw-p-4 tw-max-h-[80vh] tw-overflow-y-auto tw-overflow-x-hidden'"
+              transition="nice-modal-fade"
+              :width="'60%'"
+              :delay="100"
+              :adaptive="true"
+              :clickToClose="false"
+          >
+            <div class="tw-pt-4 tw-sticky tw-top-0 tw-bg-white tw-border-b tw-border-neutral-300 tw-z-10">
+              <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
+                <h2>
+                  {{ translate("COM_EMUNDUS_GLOBAL_HISTORY_DIFF") }}
+                </h2>
+                <button class="tw-cursor-pointer tw-bg-transparent" @click.prevent="modalToOpen = null;">
+                  <span class="material-symbols-outlined">close</span>
+                </button>
+              </div>
+            </div>
+
             <table
                 v-if="columns.includes('diff')
-                && (!Array.isArray(data.message.old_data) || data.message.old_data.length > 0)
-                && (!Array.isArray(data.message.new_data) || data.message.new_data.length > 0)"
+                    && (data.message.old_data || data.message.new_data)
+                    && ((!Array.isArray(data.message.old_data) || data.message.old_data.length > 0) || (!Array.isArray(data.message.new_data) || data.message.new_data.length > 0))"
                 class="!tw-border !tw-border-slate-100 !tw-border-solid tw-rounded tw-text-sm">
               <thead>
-                <tr>
-                  <th> {{ translate('COM_EMUNDUS_GLOBAL_HISTORY_DIFF_COLUMN') }} </th>
-                  <th> {{ translate('COM_EMUNDUS_GLOBAL_HISTORY_DIFF_OLD_DATA') }} </th>
-                  <th> {{ translate('COM_EMUNDUS_GLOBAL_HISTORY_DIFF_NEW_DATA') }} </th>
-                </tr>
+              <tr>
+                <th> {{ translate('COM_EMUNDUS_GLOBAL_HISTORY_DIFF_COLUMN') }}</th>
+                <th v-if="(!Array.isArray(data.message.old_data) && data.message.old_data) || (Array.isArray(data.message.old_data) && data.message.old_data.length > 0)">
+                  {{ translate('COM_EMUNDUS_GLOBAL_HISTORY_DIFF_OLD_DATA') }}
+                </th>
+                <th v-if="data.message.new_data"> {{ translate('COM_EMUNDUS_GLOBAL_HISTORY_DIFF_NEW_DATA') }}</th>
+              </tr>
               </thead>
               <tbody>
-                <tr v-for="(value, key) in data.message.old_data" :key="key">
-                  <td>{{ key }}</td>
-                  <td>{{ value }}</td>
-                  <td>{{ data.message.new_data_json[key] }}</td>
-                </tr>
+              <tr v-if="((!Array.isArray(data.message.old_data) && data.message.old_data) || (Array.isArray(data.message.old_data) && data.message.old_data.length > 0)) && data.message.new_data"
+                  v-for="(value, key) in data.message.old_data" :key="'old_data_'+key">
+                <td>{{ key }}</td>
+                <td>{{ value }}</td>
+                <td>{{ data.message.new_data_json[key] }}</td>
+              </tr>
+              <tr v-else-if="(!data.message.old_data || data.message.old_data.length == 0) && data.message.new_data"
+                  v-for="(value, key) in data.message.new_data_json" :key="'new_data_'+key">
+                <td>{{ key }}</td>
+                <td>{{ value }}</td>
+              </tr>
               </tbody>
             </table>
-          </td>
+          </modal>
         </tr>
         </tbody>
       </table>
@@ -93,7 +176,7 @@
       <div v-else>
         <p>{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_NO_HISTORY') }}</p>
       </div>
-    </template>
+    </div>
 
     <div class="em-page-loader" v-if="loading"></div>
   </div>
@@ -109,10 +192,11 @@ import mixin from "@/mixins/mixin.js";
 /* STORE */
 import {useGlobalStore} from "@/stores/global.js";
 import Pagination from "@/components/Utils/Pagination.vue";
+import Modal from "@/components/Modal.vue";
 
 export default {
   name: "History",
-  components: {Pagination},
+  components: {Modal, Pagination},
   props: {
     extension: {
       type: String,
@@ -147,20 +231,29 @@ export default {
   data() {
     return {
       loading: true,
+      modalToOpen: null,
+      errorModalToOpen: null,
+
       colorClasses: {
         done: 'tw-text-main-500',
+        success: 'tw-text-main-500',
         pending: 'tw-text-orange-500',
         cancelled: 'tw-text-red-500',
+        error: 'tw-text-red-500',
       },
       icon: {
         done: 'check_circle',
+        success: 'check_circle',
         pending: 'rule_settings',
         cancelled: 'cancel',
+        error: 'cancel',
       },
       text: {
         done: this.translate('COM_EMUNDUS_GLOBAL_HISTORY_STATUS_DONE'),
         pending: this.translate('COM_EMUNDUS_GLOBAL_HISTORY_STATUS_PENDING'),
         cancelled: this.translate('COM_EMUNDUS_GLOBAL_HISTORY_STATUS_CANCELLED'),
+        success: this.translate('COM_EMUNDUS_GLOBAL_HISTORY_STATUS_SUCCESS'),
+        error: this.translate('COM_EMUNDUS_GLOBAL_HISTORY_STATUS_ERROR'),
       },
 
       history: [],
@@ -176,10 +269,6 @@ export default {
   },
   created() {
     this.fetchHistory();
-
-    if (this.itemId < 1) {
-      this.columns.push('itemId');
-    }
   },
   methods: {
     fetchHistory() {
@@ -192,12 +281,17 @@ export default {
           //data.log_date = new Date(data.log_date).toLocaleString();
           data.message = JSON.parse(data.message);
           if (data.message.old_data) {
-            data.message.old_data = JSON.parse(data.message.old_data);
+            if (typeof data.message.new_data === 'string') {
+              data.message.old_data = JSON.parse(data.message.old_data);
+            }
           }
           if (data.message.new_data) {
-            data.message.new_data = JSON.parse(data.message.new_data);
+            if (typeof data.message.new_data === 'string') {
+              data.message.new_data = JSON.parse(data.message.new_data);
+            }
             data.message.new_data_json = JSON.parse(JSON.stringify(data.message.new_data));
           }
+
           // Convert data.message.new_data object to array
           if (data.message.new_data) {
             data.message.new_data = Object.values(data.message.new_data);
@@ -269,5 +363,12 @@ table tbody tr:not(:last-child) {
 
 table tbody tr td {
   padding: 18px 12px;
+}
+
+.placement-center {
+  position: fixed;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  top: 50%;
 }
 </style>

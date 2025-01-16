@@ -265,7 +265,7 @@ class EmundusHelperUpdate
 		return $updated;
 	}
 
-    public static function installExtension($name, $element, $manifest_cache = null, $type = 'plugin', $enabled = 1, $folder = '', $params = '{}',$administrator = false){
+    public static function installExtension($name, $element, $manifest_cache = null, $type = 'plugin', $enabled = 1, $folder = '', $params = '{}',$administrator = false,$message = true){
         $installed = false;
 
 		if (!empty($element))
@@ -372,7 +372,10 @@ class EmundusHelperUpdate
 					}
 					else
 					{
-						self::displayMessage('L\'extension ' . $element . ' est déjà installée.');
+						if($message)
+						{
+							self::displayMessage('L\'extension ' . $element . ' est déjà installée.');
+						}
 						$installed = true;
 					}
 				}
@@ -383,12 +386,18 @@ class EmundusHelperUpdate
 			}
 			else
 			{
-				self::displayMessage('Impossible d\'installer l\'extensions sans manifeste.', 'error');
+				if($message)
+				{
+					self::displayMessage('Impossible d\'installer l\'extensions sans manifeste.', 'error');
+				}
 			}
 		}
 		else
 		{
-			self::displayMessage('Impossible d\'installer l\'extensions sans élément spécifié.', 'error');
+			if($message)
+			{
+				self::displayMessage('Impossible d\'installer l\'extensions sans élément spécifié.', 'error');
+			}
 		}
 
 		return $installed;
@@ -3473,6 +3482,9 @@ class EmundusHelperUpdate
 						else
 						{
 							$query_column .= ' NOT NULL';
+						}
+						if(!empty($column['comment'])) {
+							$query_column .= ' COMMENT ' . $db->quote($column['comment']);
 						}
 
 						$query .= $query_column;

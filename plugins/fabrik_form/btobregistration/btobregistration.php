@@ -169,6 +169,13 @@ class PlgFabrik_FormBtobRegistration extends plgFabrik_Form
 		}
 
 		if(!empty($fnums_to_update)) {
+			$query->clear()
+				->update('#__emundus_campaign_candidature')
+				->set('date_submitted = ' . $db->quote(date('Y-m-d H:i:s')))
+				->where('fnum IN (' . implode(',', $db->quote($fnums_to_update)) . ')');
+			$db->setQuery($query);
+			$db->execute();
+
 			$m_files->updateState($fnums_to_update, $registration_status, $user->id);
 		}
 
