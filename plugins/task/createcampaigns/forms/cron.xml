@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<form>
+    <fields name="params">
+        <fieldset name="endpoint">
+            <field type="text" name="json_endpoint" label="COM_SCHEDULER_FIELDSET_ENDPOINT" description="COM_SCHEDULER_FIELDSET_ENDPOINT_DESC" />
+        </fieldset>
+
+        <fieldset name="PROGRAMS_PARAMS">
+            <field type="text" name="program_json_array_entry" label="COM_SCHEDULER_FIELDSET_PROGRAM_JSON_ARRAY_ENTRY" />
+
+            <field type="text" name="program_label_mapping" label="COM_SCHEDULER_FIELDSET_PROGRAM_LABEL_MAPPING" />
+            <field type="text" name="program_code_mapping" label="COM_SCHEDULER_FIELDSET_PROGRAM_CODE_MAPPING" />
+            <field
+                    name="program_fields_mapping"
+                    type="subform"
+                    label="COM_SCHEDULER_FIELDSET_PROGRAM_CUSTOM_FIELDS_MAPPING"
+                    multiple="true"
+            >
+                <form>
+                    <fields name="params">
+                        <field name="emundus_column" type="text" label="COM_SCHEDULER_FIELDSET_PROGRAM_CUSTOM_MAPPING_EMUNDUS" size="10"/>
+                        <field name="custom_column" type="text" label="COM_SCHEDULER_FIELDSET_CAMPAIGN_PROGRAM_MAPPING_CUSTOM" size="10"/>
+                    </fields>
+                </form>
+
+            </field>
+        </fieldset>
+
+        <fieldset name="CAMPAIGN_PARAMS">
+            <field type="text" name="campaign_json_array_entry" label="COM_SCHEDULER_FIELDSET_CAMPAIGN_JSON_ARRAY_ENTRY" />
+
+            <field type="text" name="campaign_id_mapping_emundus" label="COM_SCHEDULER_FIELDSET_CAMPAIGN_ID_MAPPING_EM" />
+            <field type="text" name="campaign_id_mapping_custom" label="COM_SCHEDULER_FIELDSET_CAMPAIGN_ID_MAPPING_CUSTOM" />
+            <field type="text" name="campaign_label_mapping" label="COM_SCHEDULER_FIELDSET_CAMPAIGN_LABEL_MAPPING" />
+            <field type="text" name="campaign_training_mapping" label="COM_SCHEDULER_FIELDSET_CAMPAIGN_TRAINING_MAPPING" />
+            <field type="text" name="campaign_start_date_mapping" label="COM_SCHEDULER_FIELDSET_CAMPAIGN_START_DATE_MAPPING" />
+            <field type="text" name="campaign_end_date_mapping" label="COM_SCHEDULER_FIELDSET_CAMPAIGN_END_DATE_MAPPING" />
+            <field
+                    name="campaign_fields_mapping"
+                    type="subform"
+                    label="COM_SCHEDULER_FIELDSET_CAMPAIGN_CUSTOM_FIELDS_MAPPING"
+                    multiple="true"
+            >
+                <form>
+                    <fields name="params">
+                        <field name="emundus_column" type="text" label="COM_SCHEDULER_FIELDSET_CAMPAIGN_CUSTOM_MAPPING_EMUNDUS" size="10"/>
+                        <field name="custom_column" type="text" label="COM_SCHEDULER_FIELDSET_CAMPAIGN_CUSTOM_MAPPING_CUSTOM" size="10"/>
+                    </fields>
+                </form>
+            </field>
+        </fieldset>
+    </fields>
+</form>

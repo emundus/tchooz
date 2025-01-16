@@ -55,6 +55,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 	{
 		return [
 			'onAfterCampaignUpdate' => 'onAfterCampaignUpdate',
+			'onAfterCampaignCreate' => 'onAfterCampaignCreate',
 			'onAfterUpdateConfiguration' => 'onAfterUpdateConfiguration',
 			'onAfterMicrosoftDynamicsCreate' => 'onAfterMicrosoftDynamicsCreate',
 			'onAfterMicrosoftDynamicsUpdate' => 'onAfterMicrosoftDynamicsUpdate',
@@ -78,6 +79,21 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 
 		$this->setDiffData($data, $old_data);
 		$message = $this->setMessage($cid, 'update', 'PLG_ACTIONLOG_EMUNDUS_UPDATE_CAMPAIGN_TITLE', 'done', $old_data, $data, $more_data);
+
+		$this->addLog([$message], $messageLanguageKey, $context, $jUser->id);
+	}
+
+	public function onAfterCampaignCreate($data)
+	{
+		$jUser = $this->getApplication()->getIdentity();
+
+		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_CREATE_CAMPAIGN';
+		$context            = 'com_emundus.campaign';
+
+		$cid            = $data['id'];
+		$more_data['campaign_label'] = $data['label'];
+
+		$message = $this->setMessage($cid, 'update', 'PLG_ACTIONLOG_EMUNDUS_CAMPAIGN_CREATE', 'done', [], $data, $more_data);
 
 		$this->addLog([$message], $messageLanguageKey, $context, $jUser->id);
 	}
@@ -165,12 +181,14 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 
 	private function setDiffData(&$data, &$old_data)
 	{
-		$diff              = array_diff_assoc($data, $old_data);
-		$columns_to_remove = array_diff_key($old_data, $diff);
-		foreach ($columns_to_remove as $key => $value)
-		{
-			unset($old_data[$key]);
-			unset($data[$key]);
+		if (!empty($data)) {
+			$diff              = array_diff_assoc($data, $old_data);
+			$columns_to_remove = array_diff_key($old_data, $diff);
+			foreach ($columns_to_remove as $key => $value)
+			{
+				unset($old_data[$key]);
+				unset($data[$key]);
+			}
 		}
 	}
 }
