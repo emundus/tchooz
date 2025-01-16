@@ -1,8 +1,10 @@
 <?php
 
+use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\Plugin\PluginHelper;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -94,6 +96,11 @@ class modEmundusCampaignHelper
 			Log::add($e->getMessage(), Log::ERROR, 'mod_emundus_campaign');
 			$this->app->enqueueMessage(Text::_('MOD_EMUNDUS_CAMPAIGN_ERROR_GETTING_CURRENT_CAMPAIGNS'), 'error');
 		}
+
+		PluginHelper::importPlugin('emundus');
+		$dispatcher = Factory::getApplication()->getDispatcher();
+		$onAfterGetCurrentCampaigns = new GenericEvent('onCallEventHandler', ['onAfterGetCurrentCampaigns', ['current_campaigns' => &$current_campaigns]]);
+		$dispatcher->dispatch('onCallEventHandler', $onAfterGetCurrentCampaigns);
 
 		return $current_campaigns;
 	}

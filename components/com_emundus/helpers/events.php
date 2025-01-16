@@ -828,7 +828,7 @@ class EmundusHelperEvents
 
 							if (!empty($alias_value['raw']))
 							{
-								$formModel->data[$elt->getFullName()]          = $alias_value['value'];
+								$formModel->data[$elt->getFullName()]          = $alias_value['raw'];
 								$formModel->data[$elt->getFullName() . '_raw'] = $alias_value['raw'];
 							}
 						}

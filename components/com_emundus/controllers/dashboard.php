@@ -227,4 +227,32 @@ class EmundusControllerDashboard extends BaseController
 		echo json_encode((object) $response);
 		exit;
 	}
+
+	public function getfilterprogramme() {
+		$result = array('status' => false, 'msg' => '', 'data' => '');
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
+		{
+			$result['status'] = true;
+			$result['data'] = Factory::getApplication()->getUserState('dashboard.emundus.filter.programme', '');
+		}
+
+		echo json_encode((object) $result);
+		exit;
+	}
+
+	public function setfilterprogramme() {
+		$result = array('status' => false, 'msg' => '');
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
+		{
+			$result['status'] = true;
+			$code = $this->input->getString('code','');
+
+			Factory::getApplication()->setUserState('dashboard.emundus.filter.programme', $code);
+		}
+
+		echo json_encode((object) $result);
+		exit;
+	}
 }

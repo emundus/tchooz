@@ -3494,7 +3494,8 @@ class EmundusModelUsers extends ListModel
 			$query->clear()
 				->select($this->db->quoteName('Template'))
 				->from($this->db->quoteName('#__emundus_email_templates'))
-				->where($this->db->quoteName('id') . ' = 1');
+				->where($this->db->quoteName('id') . ' = 1')
+				->orWhere($this->db->quoteName('lbl').' LIKE '.$this->db->quote('default'));
 			$this->db->setQuery($query);
 
 			try

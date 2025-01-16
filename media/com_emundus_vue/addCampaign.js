@@ -1871,7 +1871,6 @@ function arrayMap$1(array, iteratee) {
 }
 var _arrayMap = arrayMap$1;
 var Symbol$2 = _Symbol, arrayMap = _arrayMap, isArray$a = isArray_1, isSymbol$1 = isSymbol_1;
-var INFINITY$1 = 1 / 0;
 var symbolProto$1 = Symbol$2 ? Symbol$2.prototype : void 0, symbolToString = symbolProto$1 ? symbolProto$1.toString : void 0;
 function baseToString$1(value) {
   if (typeof value == "string") {
@@ -1884,7 +1883,7 @@ function baseToString$1(value) {
     return symbolToString ? symbolToString.call(value) : "";
   }
   var result = value + "";
-  return result == "0" && 1 / value == -INFINITY$1 ? "-0" : result;
+  return result == "0" && 1 / value == -Infinity ? "-0" : result;
 }
 var _baseToString = baseToString$1;
 var baseToString = _baseToString;
@@ -1930,13 +1929,12 @@ function isLength$3(value) {
 }
 var isLength_1 = isLength$3;
 var isSymbol = isSymbol_1;
-var INFINITY = 1 / 0;
 function toKey$4(value) {
   if (typeof value == "string" || isSymbol(value)) {
     return value;
   }
   var result = value + "";
-  return result == "0" && 1 / value == -INFINITY ? "-0" : result;
+  return result == "0" && 1 / value == -Infinity ? "-0" : result;
 }
 var _toKey = toKey$4;
 var castPath$1 = _castPath, isArguments$2 = isArguments_1, isArray$8 = isArray_1, isIndex$2 = _isIndex, isLength$2 = isLength_1, toKey$3 = _toKey;

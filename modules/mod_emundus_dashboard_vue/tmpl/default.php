@@ -1,5 +1,7 @@
 <?php
 defined('_JEXEC') or die;
+
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 
 ?>
@@ -7,6 +9,7 @@ use Joomla\CMS\Language\Text;
 <?php if ($display_dashboard) : ?>
 
 	<?php
+
 	Text::script('COM_EMUNDUS_DASHBOARD_CAMPAIGN_PUBLISHED');
 	Text::script('COM_EMUNDUS_DASHBOARD_CAMPAIGN_FROM');
 	Text::script('COM_EMUNDUS_DASHBOARD_CAMPAIGN_TO');
@@ -55,71 +58,24 @@ use Joomla\CMS\Language\Text;
 	Text::script('COM_EMUNDUS_DASHBOARD_CLOSE_MESSENGER_CONFIRM');
 	Text::script('COM_EMUNDUS_DASHBOARD_CLOSE_MESSENGER_CANCEL');
 
+	$datas = [
+		'programmeFilter'     => $programme_filter,
+		'displayDescription'  => $display_description,
+		'displayShapes'       => $display_shapes,
+		'displayTchoozy'      => $display_tchoozy,
+		'name'                => $name,
+		'language'            => $language,
+		'displayName'         => $display_name,
+		'profile_name'        => $profile_details->label,
+		'profile_description' => $profile_details->description,
+	]
+
 
 	?>
-    <div id="em-dashboard-vue"
-         programmeFilter="<?= $programme_filter ?>"
-         displayDescription="<?= $display_description ?>"
-         displayShapes="<?= $display_shapes ?>"
-         displayTchoozy="<?= $display_tchoozy ?>"
-         name="<?= $name ?>"
-         language="<?= $language ?>"
-         displayName="<?= $display_name ?>"
-         profile_name="<?= $profile_details->label ?>"
-         profile_description="<?= $profile_details->description ?>"
+    <div id="em-dashboard"
+         component="Dashboard/Dashboard"
+         data="<?php echo htmlspecialchars(json_encode($datas), ENT_QUOTES, 'UTF-8'); ?>"
     ></div>
 
-    <script src="media/mod_emundus_dashboard_vue/app.js"></script>
-
-    <!-- Only for messenger widget -->
-    <script type="text/javascript">
-        document.addEventListener("DOMContentLoaded", function() {
-            setTimeout(function() {
-                var close = document.querySelectorAll("a.closeMessenger");
-                if(close.length > 0){
-                    close.forEach(function(element) {
-                        element.addEventListener("click", function() {
-                            var fnum = this.getAttribute("data-fnum");
-                            const swalWithEmundusButtons = Swal.mixin({
-                                customClass: {
-                                    confirmButton: "em-swal-confirm-button",
-                                    cancelButton: "em-swal-cancel-button",
-                                    title: 'em-swal-title',
-                                    header: 'em-flex-column',
-                                    text: 'em-text-color'
-                                },
-                                buttonsStyling: false
-                            });
-                            swalWithEmundusButtons.fire({
-                                title: Joomla.JText._('COM_EMUNDUS_DASHBOARD_CLOSE_MESSENGER'),
-                                html: '<p class="em-text-align-center">'+Joomla.JText._('COM_EMUNDUS_DASHBOARD_CLOSE_MESSENGER_DESC')+'</p>',
-                                icon: "info",
-                                type: "warning",
-                                reverseButtons: true,
-                                showCancelButton: true,
-                                confirmButtonText: Joomla.JText._('COM_EMUNDUS_DASHBOARD_CLOSE_MESSENGER_CONFIRM'),
-                                cancelButtonText: Joomla.JText._('COM_EMUNDUS_DASHBOARD_CLOSE_MESSENGER_CANCEL')
-                            }).then((result) => {
-                                if (result.value) {
-                                    // Envoie les données via une requête POST
-                                    var formData = new FormData();
-                                    formData.append("fnum", fnum);
-                                    fetch("index.php?option=com_emundus&controller=messenger&task=closeMessenger", {
-                                        method: "POST",
-                                        body: formData
-                                    })
-                                        .then(response => response.text())
-                                        .then(data => {
-                                            window.location.href = "/";
-                                        })
-                                        .catch(error => console.error("Erreur:", error));
-                                }
-                            });
-                        });
-                    });
-                }
-            },3000);
-        });
-    </script>
-
+    <script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo uniqid(); ?>"></script>
 <?php endif; ?>
