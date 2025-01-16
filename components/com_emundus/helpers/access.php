@@ -721,15 +721,90 @@ class EmundusHelperAccess
 				$inserted = $db->execute();
 
 				if (!$inserted) {
-					Log::add('Adding rights for action ' . $action_id . ' to group ' . $group_id . ' failed ', Log::WARNING, 'com_emundus.workflow');
+					Log::add('Adding rights for action ' . $action_id . ' to group ' . $group_id . ' failed ', Log::WARNING, 'com_emundus');
 				} else {
 					$granted = true;
 				}
 			} catch (Exception $e) {
-				Log::add('Error while adding ACL for action : ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+				Log::add('Error while adding ACL for action : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 			}
 		}
 
 		return $granted;
+	}
+
+	public static function getUsersFromGroupsThatCanAccessToFile($filter_group_ids, $fnum): array
+	{
+		$user_ids = [];
+
+		if (!empty($fnum) && !empty($filter_group_ids)) {
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true);
+
+			try {
+				$query->clear()
+					->select('group_id')
+					->from($db->quoteName('#__emundus_group_assoc'))
+					->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum))
+					->andWhere($db->quoteName('action_id') . ' = 1')
+					->andWhere($db->quoteName('r') . ' = 1')
+					->andWhere('group_id IN (' . implode(',', $db->quote($filter_group_ids)) . ')');
+				$db->setQuery($query);
+				$access_group_ids = $db->loadColumn();
+
+				$query->clear()
+					->select('esc.training')
+					->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+					->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.id = ecc.campaign_id')
+					->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($fnum));
+
+				$db->setQuery($query);
+				$program_code = $db->loadResult();
+
+				$program_group_ids = [];
+				if (!empty($program_code)) {
+					$query->clear()
+						->select('DISTINCT parent_id')
+						->from($db->quoteName('#__emundus_setup_groups_repeat_course', 'esgrc'))
+						->where($db->quoteName('esgrc.course') . ' LIKE ' . $db->quote($program_code))
+						->andWhere($db->quoteName('esgrc.parent_id') . ' IN (' . implode(',', $db->quote($filter_group_ids)) . ')');
+
+					$db->setQuery($query);
+					$program_group_ids = $db->loadColumn();
+				}
+
+				$group_ids = array_unique(array_merge($access_group_ids, $program_group_ids));
+
+				if (!empty($group_ids)) {
+					$query->clear()
+						->select('DISTINCT ' . $db->quoteName('u.user_id'))
+						->from($db->quoteName('#__emundus_groups', 'eg'))
+						->where('eg.group_id IN (' . implode(',', $db->quote($group_ids)) . ')');
+
+					$db->setQuery($query);
+					$user_ids = $db->loadColumn();
+				}
+
+				$query->clear()
+					->select('DISTINCT ' . $db->quoteName('eua.user_id'))
+					->from($db->quoteName('#__emundus_users_assoc', 'eua'))
+					->leftJoin($db->quoteName('#__emundus_groups', 'eg') . ' ON ' . $db->quoteName('eua.user_id') . ' = ' . $db->quoteName('eg.user_id'))
+					->where($db->quoteName('eua.fnum') . ' LIKE ' . $db->quote($fnum))
+					->andWhere($db->quoteName('eua.action_id') . ' = 1')
+					->andWhere($db->quoteName('eua.r') . ' = 1')
+					->andWhere('eg.group_id IN (' . implode(',', $db->quote($filter_group_ids)) . ')');
+
+				$db->setQuery($query);
+				$users_directly_associated = $db->loadColumn();
+
+				if (!empty($users_directly_associated)) {
+					$user_ids = array_unique(array_merge($user_ids, $users_directly_associated));
+				}
+			} catch (Exception $e) {
+				Log::add('Error while getting users that can access file ' . $fnum . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $user_ids;
 	}
 }

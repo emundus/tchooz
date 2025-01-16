@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form>
+    <field name="targeted_column" type="field" label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_TARGETED_COLUMN_LABEL"
+           description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_TARGETED_COLUMN_DESC"/>
+    <field name="targeted_value" type="text" label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_TARGETED_VALUE_LABEL"
+           description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_TARGETED_VALUE_DESC"/>
+</form>
