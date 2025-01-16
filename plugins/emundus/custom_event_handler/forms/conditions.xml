@@ -2,6 +2,10 @@
 <form>
     <field name="targeted_column" type="field" label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_TARGETED_COLUMN_LABEL"
            description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_TARGETED_COLUMN_DESC"/>
+    <field name="operator" type="list" label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_OPERATOR" default="=">
+        <option value="=">PLG_EMUNDUSCUSTOMACTIONS_FIELD_OPERATOR_EQUAL</option>
+        <option value="!=">PLG_EMUNDUSCUSTOMACTIONS_FIELD_OPERATOR_NOT_EQUAL</option>
+    </field>
     <field name="targeted_value" type="text" label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_TARGETED_VALUE_LABEL"
            description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_TARGETED_VALUE_DESC"/>
 </form>

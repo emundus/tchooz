@@ -618,6 +618,10 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 			{
 				if (!empty($condition->targeted_column) && isset($condition->targeted_value))
 				{
+					if (empty($condition->operator)) {
+						$condition->operator = '=';
+					}
+
 					list($table, $column) = explode('.', $condition->targeted_column);
 
 					if ($condition->targeted_value === '{current_user_id}') {
@@ -632,10 +636,10 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 					if ($linked)
 					{
 						$query->clear()
-							->select($db->quoteName($column))
+							->select('id')
 							->from($db->quoteName($table))
 							->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum))
-							->andWhere($db->quoteName($column) . ' = ' . $db->quote($condition->targeted_value));
+							->andWhere($db->quoteName($column) . ' ' . $condition->operator  . ' ' . $db->quote($condition->targeted_value));
 					}
 					else
 					{
@@ -664,7 +668,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 							$query->select($db->quoteName($table_alias . '.' . $column))
 								->from($db->quoteName('jos_emundus_campaign_candidature', 'ecc'))
 								->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($fnum))
-								->andWhere($db->quoteName($table_alias . '.' . $column) . ' = ' . $db->quote($condition->targeted_value));
+								->andWhere($db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value));
 
 						} else {
 							$conditions_status[] = false;
@@ -675,9 +679,9 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 					try
 					{
 						$db->setQuery($query);
-						$value = $db->loadResult();
+						$row_id = $db->loadResult();
 
-						if ($value == $condition->targeted_value)
+						if (!empty($row_id))
 						{
 							$conditions_status[] = true;
 						}
