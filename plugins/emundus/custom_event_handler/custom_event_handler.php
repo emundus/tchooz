@@ -668,7 +668,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 
 						} else {
 							$conditions_status[] = false;
-							continue;
+							break;
 						}
 					}
 
@@ -684,17 +684,20 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 						else
 						{
 							$conditions_status[] = false;
+							break;
 						}
 					}
 					catch (Exception $e)
 					{
 						Log::add('Failed to get value for condition ' . $condition->targeted_column . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.custom_event_handler');
 						$conditions_status[] = false;
+						break;
 					}
 				}
 				else
 				{
 					$conditions_status[] = false;
+					break;
 				}
 			}
 
