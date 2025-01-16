@@ -94,7 +94,7 @@ class EmundusControllerWorkflow extends JControllerLegacy
 							$associated_programmes_html_long = '';
 							if (count($associated_programmes) < 2)
 							{
-								$associated_programmes_html .= '<a class="tw-flex tw-flex-row tw-underline em-main-500-color tw-transition-all" href="/campaigns/edit-program?id=' . $associated_programmes[0]->id . '" target="_blank">' . $associated_programmes[0]->label . '</a>';
+								$associated_programmes_html .= '<a class="tw-flex tw-flex-row tw-underline em-main-500-color tw-transition-all" href="'.EmundusHelperMenu::routeViaLink('index.php?option=com_emundus&view=programme&layout=edit&id='.$associated_programmes[0]->id).'" target="_blank">' . $associated_programmes[0]->label . '</a>';
 							}
 							else
 							{
@@ -103,7 +103,7 @@ class EmundusControllerWorkflow extends JControllerLegacy
 								$associated_programmes_html_long       .= '<div class="tw-flex tw-flex-col tw-flex-wrap">';
 								foreach ($associated_programmes as $program)
 								{
-									$associated_programmes_html_long .= '<a class="tw-flex tw-flex-row tw-underline em-main-500-color tw-transition-all" href="/campaigns/edit-program?id=' . $program->id . '" target="_blank">' . $program->label . '</a>';
+									$associated_programmes_html_long .= '<a class="tw-flex tw-flex-row tw-underline em-main-500-color tw-transition-all" href="'.EmundusHelperMenu::routeViaLink('index.php?option=com_emundus&view=programme&layout=edit&id='.$program->id).'" target="_blank">' . $program->label . '</a>';
 								}
 								$associated_programmes_html_long .= '</div></div>';
 

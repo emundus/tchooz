@@ -21,17 +21,17 @@
            :style="{backgroundColor: activeBackground}">
         <div class="tw-w-full" v-show="selectedMenuItem.code === 'general'">
           <iframe class="tw-w-full hide-titles" style="height: 150vh;"
-                  :src="'/campaigns/modifier-un-programme?rowid=' + this.programId + '&tmpl=component&iframe=1'">
+                  :src="'/index.php?option=com_fabrik&view=form&formid=108&rowid=' + this.programId + '&tmpl=component&iframe=1'">
           </iframe>
         </div>
 
         <div class="tw-w-full tw-flex tw-flex-col tw-gap-2" v-show="selectedMenuItem.code === 'campaigns'">
           <label class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_TITLE') }}</label>
           <ul>
-            <li v-for="campaign in campaigns" :key="campaign.id"><a :href="'/campaigns/edit?cid=' + campaign.id"
+            <li v-for="campaign in campaigns" :key="campaign.id"><a class="tw-cursor-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' + campaign.id)"
                                                                     target="_blank">{{ campaign.label }}</a></li>
           </ul>
-          <a href="/campaigns" class="tw-underline" target="_blank">
+          <a @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')" class="tw-cursor-pointer tw-underline" target="_blank">
             {{ translate('COM_EMUNDUS_PROGRAMS_ACCESS_TO_CAMPAIGNS') }} </a>
         </div>
 
@@ -47,7 +47,7 @@
           </div>
 
           <div>
-            <a href="/workflows" class="tw-underline" target="_blank">
+            <a @click="redirectJRoute('index.php?option=com_emundus&view=workflows')" class="tw-cursor-pointer tw-underline" target="_blank">
               {{ translate('COM_EMUNDUS_PROGRAMS_ACCESS_TO_WORKFLOWS') }} </a>
           </div>
 

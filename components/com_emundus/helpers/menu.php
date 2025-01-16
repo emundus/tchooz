@@ -310,6 +310,46 @@ class EmundusHelperMenu
 
 		return $dec;
 	}
+	
+	public static function routeViaLink($link){
+		$language = Factory::getApplication()->getLanguage()->getTag();
+		$options_to_set = [];
+		$segments       = explode('?', $link);
+		$segments       = explode('&', $segments[1]);
+
+		$exceptions = ['view', 'layout', 'option', 'format', 'formid'];
+		foreach ($segments as $key => $segment)
+		{
+			$segment = explode('=', $segment);
+
+			if (!in_array($segment[0], $exceptions))
+			{
+				$options_to_set[$segment[0]] = $segment[1];
+				unset($segments[$key]);
+			}
+		}
+		$link = 'index.php?' . implode('&', $segments);
+
+		$menu = Factory::getApplication()->getMenu()->getItems('link', $link, true);
+
+		if (!empty($menu))
+		{
+			$languages = LanguageHelper::getLanguages('lang_code');
+			$sef       = '';
+			if (isset($languages[$language]))
+			{
+				$sef = $languages[$language]->sef;
+			}
+			$link = !empty($sef) ? $sef . '/' . $menu->route : $menu->route;
+
+			if (!empty($options_to_set))
+			{
+				$link .= '?' . http_build_query($options_to_set);
+			}
+		}
+
+		return $link;
+	}
 }
 
 ?>
