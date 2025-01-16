@@ -2307,12 +2307,18 @@ class EmundusModelSettings extends ListModel
 	{
 		$saved = false;
 
+		$emConfig = ComponentHelper::getParams('com_emundus');
 		if (!empty($config))
 		{
 			// unset the password if it is not changed
 			if ($config['smtppass'] == '************' || empty($config['smtppass']))
 			{
-				unset($config['smtppass']);
+				if ($custom_config == 1)
+				{
+					$config['smtppass'] = $emConfig->get('custom_email_smtppass');
+				} else {
+					$config['smtppass'] = $emConfig->get('default_email_smtppass');
+				}
 			}
 
 			// First update configuration php
@@ -2320,7 +2326,6 @@ class EmundusModelSettings extends ListModel
 			EmundusHelperUpdate::updateConfigurationFile($config);
 
 			// Then update default or emundus configuration
-			$emConfig = ComponentHelper::getParams('com_emundus');
 			if ($custom_config == 1)
 			{
 				$emConfig->set('custom_email_conf', 1);
@@ -2370,7 +2375,7 @@ class EmundusModelSettings extends ListModel
 
 		try
 		{
-			$query        = $this->db->getQuery(true);
+			$query = $this->db->getQuery(true);
 
 			$query->select('al.*,concat(u.name," - ",u.email) as logged_by')
 				->from($this->db->quoteName('#__action_logs', 'al'))
@@ -2383,7 +2388,8 @@ class EmundusModelSettings extends ListModel
 				$query->where('JSON_EXTRACT(' . $this->db->quoteName('al.message') . ', "$.status") = ' . $this->db->quote('pending'));
 			}
 
-			if (!empty($item_id)) {
+			if (!empty($item_id))
+			{
 				$query->andWhere('item_id = ' . $this->db->quote($item_id));
 			}
 
@@ -2413,7 +2419,8 @@ class EmundusModelSettings extends ListModel
 				->where($this->db->quoteName('al.extension') . ' = ' . $this->db->quote($extension))
 				->where('JSON_VALID(' . $this->db->quoteName('al.message') . ')');
 
-			if (!empty($item_id)) {
+			if (!empty($item_id))
+			{
 				$query->andWhere('item_id = ' . $this->db->quote($item_id));
 			}
 
@@ -2451,10 +2458,531 @@ class EmundusModelSettings extends ListModel
 		return $updated;
 	}
 
+	public function getAvailableManagers($search_query, $limit = 100)
+	{
+		$managers = [];
+
+		try
+		{
+			$query = $this->db->getQuery(true);
+
+			$query->clear()
+				->select('id')
+				->from($this->db->quoteName('#__emundus_setup_profiles'))
+				->where($this->db->quoteName('published') . ' = 0')
+				->where($this->db->quoteName('status') . ' = 1');
+			$this->db->setQuery($query);
+			$managers_profiles = $this->db->loadColumn();
+
+			$query->clear()
+				->select('u.id as value, CONCAT(' . $this->_db->quoteName('u.name') . '," - ",' . $this->_db->quoteName('u.email') . ') as name')
+				->from($this->db->quoteName('#__users', 'u'))
+				->leftJoin($this->db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->db->quoteName('eu.user_id') . ' = ' . $this->db->quoteName('u.id'))
+				->leftJoin($this->db->quoteName('#__emundus_users_profiles', 'eup') . ' ON ' . $this->db->quoteName('eup.user_id') . ' = ' . $this->db->quoteName('u.id'))
+				->where($this->db->quoteName('u.block') . ' = 0');
+			$query->extendWhere(
+				'AND',
+				[
+					$this->db->quoteName('eu.profile') . ' IN (' . implode(',', $managers_profiles) . ')',
+					$this->db->quoteName('eup.profile_id') . ' IN (' . implode(',', $managers_profiles) . ')',
+				],
+				'OR'
+			);
+
+			if (!empty($search_query))
+			{
+				$query->extendWhere(
+					'AND',
+					[
+						$this->db->quoteName('u.name') . ' LIKE ' . $this->db->quote('%' . $search_query . '%'),
+						$this->db->quoteName('u.email') . ' LIKE ' . $this->db->quote('%' . $search_query . '%'),
+					],
+					'OR'
+				);
+			}
+			$query->group([$this->db->quoteName('u.id'), $this->db->quoteName('u.name')]);
+			$query->order($this->db->quoteName('u.name') . ' ASC');
+			$this->db->setQuery($query, 0, $limit);
+			$managers = $this->db->loadObjectList();
+		}
+
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $managers;
+	}
+
+	public function getAvailableCampaigns($search_query, $limit = 100)
+	{
+		$campaigns = [];
+
+		try
+		{
+			$query = $this->db->getQuery(true)
+				->select($this->db->quoteName('id') . ' AS value, ' . $this->db->quoteName('label') . ' AS name')
+				->from($this->db->quoteName('#__emundus_setup_campaigns'));
+
+			if (!empty($search_query))
+			{
+				$query->where($this->db->quoteName('label') . ' LIKE ' . $this->db->quote('%' . $search_query . '%'));
+			}
+
+			$query->order($this->db->quoteName('label') . ' ASC');
+
+			$this->db->setQuery($query, 0, $limit);
+			$campaigns = $this->db->loadObjectList();
+
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $campaigns;
+	}
+
+	public function getAvailablePrograms($search_query, $limit = 100)
+	{
+		$programs = [];
+
+		try
+		{
+			$query = $this->db->getQuery(true);
+
+			if (empty($search_query)) {
+				$query->select('esp.id as value, esp.label as name')
+					->from($this->db->quoteName('#__emundus_setup_programmes', 'esp'));
+			} else {
+				$current_lang_tag = Factory::getApplication()->getLanguage()->getTag();
+				$query->clear()
+					->select($this->db->quoteName('lang_id'))
+					->from($this->db->quoteName('#__languages'))
+					->where($this->db->quoteName('lang_code') . ' = ' . $this->db->quote($current_lang_tag));
+
+				$this->db->setQuery($query);
+				$current_lang_id = $this->db->loadResult();
+
+				$query->clear()
+					->select('esp.id as value, esp.label as name, fc.value as translated_label')
+					->from($this->db->quoteName('#__emundus_setup_programmes', 'esp'));
+
+				$query->leftJoin($this->db->quoteName('#__falang_content', 'fc') . ' ON ' . $this->db->quoteName('fc.reference_id') . ' = ' . $this->db->quoteName('esp.id')
+					. ' AND ' . $this->db->quoteName('fc.reference_table') . ' = ' . $this->db->quote('emundus_setup_programmes')
+					. ' AND ' . $this->db->quoteName('fc.reference_field') . ' = ' . $this->db->quote('label')
+					. ' AND ' . $this->db->quoteName('fc.language_id') . ' = ' . $this->db->quote($current_lang_id));
+
+				$query->where($this->db->quoteName('esp.label') . ' LIKE ' . $this->db->quote('%' . $search_query . '%')
+					. ' OR ' . $this->db->quoteName('fc.value') . ' LIKE ' . $this->db->quote('%' . $search_query . '%'));
+			}
+
+			$query->order($this->db->quoteName('esp.label') . ' ASC');
+
+			$this->db->setQuery($query, 0, $limit);
+			$programs = $this->db->loadObjectList();
+
+			$programs = array_map(function($program) {
+				$program->name = !empty($program->translated_label) ? $program->translated_label : $program->name;
+				return $program;
+			}, $programs);
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $programs;
+	}
+
+	public function getApps()
+	{
+		$apps = [];
+
+		try
+		{
+			$query = $this->db->getQuery(true);
+
+			$query->select('*')
+				->from($this->db->quoteName('#__emundus_setup_sync'))
+				->where($this->db->quoteName('published') . ' = 1');
+			$this->db->setQuery($query);
+			$apps = $this->db->loadObjectList();
+
+			foreach ($apps as $app)
+			{
+				$app->config = json_decode($app->config);
+				if (!empty($app->config->authentication))
+				{
+					if (!empty($app->config->authentication->client_secret))
+					{
+						$app->config->authentication->client_secret = '************';
+					}
+					if (!empty($app->config->authentication->token))
+					{
+						$app->config->authentication->token = '************';
+					}
+					if (!empty($app->config->authentication->password))
+					{
+						$app->config->authentication->password = '************';
+					}
+				}
+
+				$app->config = json_encode($app->config);
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $apps;
+	}
+
+	public function getApp($app_id = 0, $app_type = '')
+	{
+		$app = new stdClass();
+
+		if (!empty($app_id) || !empty($app_type))
+		{
+			try
+			{
+				$query = $this->db->getQuery(true);
+
+				$query->select('*')
+					->from($this->db->quoteName('#__emundus_setup_sync'));
+				if (!empty($app_id))
+				{
+					$query->where($this->db->quoteName('id') . ' = ' . $this->db->quote($app_id));
+				}
+				elseif (!empty($app_type))
+				{
+					$query->where($this->db->quoteName('type') . ' = ' . $this->db->quote($app_type));
+				}
+				$this->db->setQuery($query);
+				$app = $this->db->loadObject();
+			}
+			catch (Exception $e)
+			{
+				Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $app;
+	}
+
+	public function setupApp($app_id, $setup, $user = null)
+	{
+		$mainframe = Factory::getApplication();
+		$updated   = false;
+
+		if (empty($user))
+		{
+			$user = $mainframe->getIdentity();
+		}
+
+		if (!empty($app_id) && !empty($setup))
+		{
+			$query = $this->db->getQuery(true);
+
+			try
+			{
+				$app = $this->getApp($app_id);
+
+				if (!empty($app->id))
+				{
+					switch ($app->type)
+					{
+						case 'teams':
+							$updated = $this->setupTeams($app, $setup);
+							break;
+						case 'microsoft_dynamics':
+							$updated = $this->setupMicrosoftDynamics($app, $setup);
+							break;
+						default:
+							break;
+					}
+				}
+			}
+			catch (Exception $e)
+			{
+				Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $updated;
+	}
+
+	public function setupTeams($app, $setup)
+	{
+		$updated = false;
+
+		if (empty($app->config) || $app->config == '{}')
+		{
+			$config = [
+				'base_url'       => 'https://graph.microsoft.com',
+				'api_url'        => 'v1.0',
+				'authentication' => [
+					'route'            => 'https://login.microsoftonline.com/' . $setup->tenant_id . '/oauth2/v2.0/token',
+					'method'           => 'post',
+					'client_id'        => $setup->client_id,
+					'client_secret'    => EmundusHelperFabrik::encryptDatas($setup->client_secret),
+					'tenant_id'        => $setup->tenant_id,
+					'email'            => $setup->email,
+					'grant_type'       => 'client_credentials',
+					'scope'            => 'https://graph.microsoft.com/.default',
+					'type'             => 'bearer',
+					'create_token'     => true,
+					'token_attribute'  => 'access_token',
+					'token_storage'    => 'database',
+					'token_validity'   => 3600,
+					'token'            => '',
+					'token_expiration' => '',
+					'content_type'     => 'form_params',
+				]
+			];
+		}
+		else
+		{
+			$config = json_decode($app->config, true);
+
+			$config['authentication']['client_id']     = $setup->client_id;
+			$config['authentication']['client_secret'] = EmundusHelperFabrik::encryptDatas($setup->client_secret);
+			$config['authentication']['tenant_id']     = $setup->tenant_id;
+			$config['authentication']['grant_type']    = 'client_credentials';
+			$config['authentication']['content_type']  = 'form_params';
+			$config['authentication']['email']         = $setup->email;
+			$config['authentication']['scope']         = 'https://graph.microsoft.com/.default';
+			$config['authentication']['route']         = 'https://login.microsoftonline.com/' . $setup->tenant_id . '/oauth2/v2.0/token';
+		}
+
+		try
+		{
+			$query = $this->db->getQuery(true);
+
+			$query->update($this->db->quoteName('#__emundus_setup_sync'))
+				->set($this->db->quoteName('config') . ' = ' . $this->db->quote(json_encode($config)))
+				->set($this->db->quoteName('enabled') . ' = 1')
+				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($app->id));
+			$this->db->setQuery($query);
+			$updated = $this->db->execute();
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $updated;
+	}
+
+	public function setupMicrosoftDynamics($app, $setup)
+	{
+		$updated = false;
+
+		if (empty($app->config) || $app->config == '{}')
+		{
+			$config = [
+				'base_url'       => $setup->domain,
+				'api_url'        => 'api/data/v9.2',
+				'authentication' => [
+					'route'            => 'https://login.microsoftonline.com/' . $setup->tenant_id . '/oauth2/v2.0/token',
+					'method'           => 'post',
+					'client_id'        => $setup->client_id,
+					'client_secret'    => EmundusHelperFabrik::encryptDatas($setup->client_secret),
+					'tenant_id'        => $setup->tenant_id,
+					'email'            => $setup->email,
+					'grant_type'       => 'client_credentials',
+					'scope'            => $setup->domain . '/.default',
+					'domain'           => $setup->domain,
+					'type'             => 'bearer',
+					'create_token'     => true,
+					'token_attribute'  => 'access_token',
+					'token_storage'    => 'database',
+					'token_validity'   => 3600,
+					'token'            => '',
+					'token_expiration' => '',
+					'content_type'     => 'form_params',
+				]
+			];
+		}
+		else
+		{
+			$config = json_decode($app->config, true);
+
+			$config['base_url']                    = $setup->domain;
+			$config['authentication']['client_id'] = $setup->client_id;
+			// If the client secret is not changed, we keep the old one
+			// check if all character of the client secret are * to avoid to encrypt a new one
+			if (!empty($setup->client_secret) && strspn($setup->client_secret, '*') !== strlen($setup->client_secret))
+			{
+				$config['authentication']['client_secret'] = EmundusHelperFabrik::encryptDatas($setup->client_secret);
+			}
+			$config['authentication']['tenant_id']    = $setup->tenant_id;
+			$config['authentication']['grant_type']   = 'client_credentials';
+			$config['authentication']['content_type'] = 'form_params';
+			$config['authentication']['scope']        = $setup->domain . '/.default';
+			$config['authentication']['domain']       = $setup->domain;
+			$config['authentication']['route']        = 'https://login.microsoftonline.com/' . $setup->tenant_id . '/oauth2/v2.0/token';
+		}
+
+		try
+		{
+			$query = $this->db->getQuery(true);
+
+			$query->update($this->db->quoteName('#__emundus_setup_sync'))
+				->set($this->db->quoteName('config') . ' = ' . $this->db->quote(json_encode($config)))
+				->set($this->db->quoteName('enabled') . ' = 1')
+				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($app->id));
+			$this->db->setQuery($query);
+			$updated = $this->db->execute();
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $updated;
+	}
+
+	public function checkRequirements($app_id)
+	{
+		$checked = true;
+
+		try
+		{
+			require_once JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php';
+
+			$app = $this->getApp($app_id);
+
+			if ($app->type === 'microsoft_dynamics')
+			{
+				$checked = false;
+
+				// Check if table data_microsoft_dynamics_entities exists
+				$query = 'SHOW TABLES LIKE ' . $this->db->quote('data_microsoft_dynamics_entities');
+				$this->db->setQuery($query);
+				$table_exists = $this->db->loadResult();
+
+				if (empty($table_exists))
+				{
+					// Create table jos_emundus_setup_availabilities
+					$columns = [
+						[
+							'name'   => 'collectionname',
+							'type'   => 'VARCHAR',
+							'length' => 255,
+							'null'   => 0
+						],
+						[
+							'name'   => 'name',
+							'type'   => 'VARCHAR',
+							'length' => 255,
+							'null'   => 0
+						],
+						[
+							'name'   => 'entityid',
+							'type'   => 'VARCHAR',
+							'length' => 255,
+							'null'   => 0
+						]
+					];
+					$comment = 'This table is used to store all entities for Microsoft Dynamics integration';
+					$created = EmundusHelperUpdate::createTable('data_microsoft_dynamics_entities', $columns, [], $comment);
+
+					if (!$created['status'])
+					{
+						return false;
+					}
+				}
+
+				// Insert entities
+				require_once JPATH_SITE . '/components/com_emundus/models/sync.php';
+				$m_sync = new EmundusModelSync();
+				$params = [
+					'$select' => 'logicalcollectionname,logicalname'
+				];
+				$result = $m_sync->callApi($app, 'entities', 'GET', $params, true);
+
+				if ($result['status'] == 200)
+				{
+					if (empty($result['data']))
+					{
+						$checked = true;
+					}
+					else
+					{
+						$query = $this->db->getQuery(true);
+
+						$query->delete($this->db->quoteName('data_microsoft_dynamics_entities'));
+						$this->db->setQuery($query);
+						if ($this->db->execute())
+						{
+							$query->clear()
+								->insert($this->db->quoteName('data_microsoft_dynamics_entities'))
+								->columns($this->db->quoteName('collectionname') . ', ' . $this->db->quoteName('name') . ', ' . $this->db->quoteName('entityid'));
+							foreach ($result['data']->value as $entity)
+							{
+								if (!empty($entity->logicalcollectionname) && !empty($entity->logicalname) && !empty($entity->entityid))
+								{
+									$query->values($this->db->quote($entity->logicalcollectionname) . ', ' . $this->db->quote($entity->logicalname) . ', ' . $this->db->quote($entity->entityid));
+								}
+							}
+							$this->db->setQuery($query);
+							$checked = $this->db->execute();
+						}
+					}
+				}
+				//
+
+				// Install event subscriber plugin
+				EmundusHelperUpdate::installExtension('plg_emundus_microsoft_dynamics', 'microsoft_dynamics', null, 'plugin', 1, 'emundus', '{}', false, false);
+				//
+			}
+
+			if ($app->type == 'teams')
+			{
+				// Install event subscriber plugin
+				EmundusHelperUpdate::installExtension('plg_emundus_teams', 'teams', null, 'plugin', 1, 'emundus', '{}', false, false);
+				//
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $checked;
+	}
+
+	public function toggleEnable($app_id, $enabled = 1)
+	{
+		$updated = false;
+
+		if (!empty($app_id))
+		{
+			$query = $this->db->getQuery(true);
+
+			try
+			{
+				$query->update($this->db->quoteName('#__emundus_setup_sync'))
+					->set($this->db->quoteName('enabled') . ' = ' . $enabled)
+					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($app_id));
+				$this->db->setQuery($query);
+				$updated = $this->db->execute();
+			}
+			catch (Exception $e)
+			{
+				Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $updated;
+	}
+
 	public function getSAMLSettings()
 	{
 		$config = [];
-		$query = $this->db->getQuery(true);
+		$query  = $this->db->getQuery(true);
 
 		try
 		{
@@ -2464,7 +2992,7 @@ class EmundusModelSettings extends ListModel
 			$this->db->setQuery($query);
 			$config = $this->db->loadAssoc();
 
-			if(!empty($config) && !empty($config['metadata_url']))
+			if (!empty($config) && !empty($config['metadata_url']))
 			{
 				$config['metadata_url'] = Uri::base() . '?morequest=sso&idp=' . $config['metadata_url'];
 			}

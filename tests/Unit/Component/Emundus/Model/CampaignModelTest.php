@@ -237,7 +237,7 @@ class CampaignModelTest extends UnitTestCase
 	 */
 	function testpinCampaign()
 	{
-		$pinned = $this->model->pinCampaign(9999);
+		$pinned = $this->model->pinCampaign(999999);
 		$this->assertFalse($pinned, 'La campagne 9999 n\'existe pas, donc on ne peut pas la mettre en avant');
 
 		$pinned = $this->model->pinCampaign($this->dataset['campaign']);

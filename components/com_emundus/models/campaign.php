@@ -14,6 +14,7 @@
 
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
+use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Model\ListModel;
@@ -1803,8 +1804,21 @@ class EmundusModelCampaign extends ListModel
 						unset($data[$key]);
 					}
 
-					$app->triggerEvent('onAfterCampaignUpdate', [$data, $old_data]);
-					$app->triggerEvent('onCallEventHandler', ['onAfterCampaignUpdate', ['campaign' => $cid]]);
+					$dispatcher = Factory::getApplication()->getDispatcher();
+					$onAfterCampaignUpdateEventHandler = new GenericEvent(
+						'onCallEventHandler',
+						['onAfterCampaignUpdate',
+							// Datas to pass to the event
+							['campaign' => $cid]
+						]
+					);
+					$onAfterCampaignUpdate             = new GenericEvent(
+						'onAfterCampaignUpdate',
+						// Datas to pass to the event
+						['data' => $data, 'old_data' => $old_data]
+					);
+					$dispatcher->dispatch('onCallEventHandler', $onAfterCampaignUpdateEventHandler);
+					$dispatcher->dispatch('onAfterCampaignUpdate', $onAfterCampaignUpdate);
 				}
 				else {
 					Log::add('Attempt to update $campaign ' . $cid . ' with data ' . json_encode($data) . ' failed.', Log::WARNING, 'com_emundus.error');

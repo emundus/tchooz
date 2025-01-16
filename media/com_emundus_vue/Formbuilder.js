@@ -1,9 +1,9 @@
-import { F as FetchClient, N as hooks, O as defineStore, B as useGlobalStore, S as Swal$1, _ as _export_sfc, V as VueDraggableNext, h as errors, e as resolveComponent, o as openBlock, c as createElementBlock, a as createBaseVNode, b as Fragment, r as renderList, n as normalizeClass, t as toDisplayString, w as withDirectives, P as vModelText, g as createVNode, k as withCtx, p as TransitionGroup, z as createTextVNode, v as vShow, d as createCommentVNode, Q as script, y as vModelSelect, j as createBlock, R as vModelDynamic, U as V32, E as vModelCheckbox, l as normalizeStyle, W as withKeys, L as Transition, I as mixin, J as formService, X as vModelRadio, Y as Popover, m as campaignService, Z as client$1, $ as watch, H as History, M as Modal, u as settingsService } from "./app_emundus.js";
+import { l as FetchClient, O as hooks, Q as defineStore, u as useGlobalStore, S as Swal$1, _ as _export_sfc, V as VueDraggableNext, p as errors, r as resolveComponent, o as openBlock, c as createElementBlock, a as createBaseVNode, F as Fragment, b as renderList, d as normalizeClass, t as toDisplayString, h as withDirectives, R as vModelText, g as createVNode, w as withCtx, y as TransitionGroup, D as createTextVNode, v as vShow, e as createCommentVNode, U as script, B as vModelSelect, f as createBlock, W as vModelDynamic, X as V32, G as vModelCheckbox, n as normalizeStyle, Y as withKeys, N as Transition, J as mixin, K as formService, Z as vModelRadio, P as Popover, x as campaignService, $ as client$1, a0 as watch, I as History, M as Modal, s as settingsService } from "./app_emundus.js";
 /* empty css       */
 import { t as translationsService, T as Translations } from "./Translations.js";
 import { S as Skeleton } from "./Skeleton.js";
 import { I as IncrementalSelect } from "./IncrementalSelect.js";
-import "./index.js";
+import "./index2.js";
 const client = new FetchClient("formbuilder");
 const formBuilderService = {
   async createSimpleElement(params) {
@@ -1098,6 +1098,12 @@ const formBuilderElements = [
     icon: "map",
     name: "COM_EMUNDUS_ONBOARD_TYPE_GEOLOCATION",
     published: false
+  },
+  {
+    value: "booking",
+    icon: "event",
+    name: "COM_EMUNDUS_ONBOARD_TYPE_BOOKING",
+    published: true
   }
 ];
 const formBuilderSections = [
@@ -1272,7 +1278,7 @@ const formBuilderSections = [
     ]
   }
 ];
-const _sfc_main$t = {
+const _sfc_main$u = {
   components: {
     draggable: VueDraggableNext
   },
@@ -1404,19 +1410,19 @@ const _sfc_main$t = {
     }
   }
 };
-const _hoisted_1$t = {
+const _hoisted_1$u = {
   id: "form-builder-elements",
   style: { "min-width": "260px" }
 };
-const _hoisted_2$t = { class: "tw-flex tw-items-center tw-justify-around" };
-const _hoisted_3$s = ["onClick"];
-const _hoisted_4$r = {
+const _hoisted_2$u = { class: "tw-flex tw-items-center tw-justify-around" };
+const _hoisted_3$t = ["onClick"];
+const _hoisted_4$s = {
   key: 0,
   class: "tw-mt-2"
 };
-const _hoisted_5$p = ["placeholder"];
-const _hoisted_6$n = ["onMouseover"];
-const _hoisted_7$n = {
+const _hoisted_5$q = ["placeholder"];
+const _hoisted_6$o = ["onMouseover"];
+const _hoisted_7$o = {
   class: "material-symbols-outlined",
   style: { "font-size": "18px" }
 };
@@ -1437,26 +1443,26 @@ const _hoisted_18$6 = {
   key: 2,
   class: "em-page-loader"
 };
-function _sfc_render$t(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render$u(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_draggable = resolveComponent("draggable");
-  return openBlock(), createElementBlock("div", _hoisted_1$t, [
-    createBaseVNode("div", _hoisted_2$t, [
+  return openBlock(), createElementBlock("div", _hoisted_1$u, [
+    createBaseVNode("div", _hoisted_2$u, [
       (openBlock(true), createElementBlock(Fragment, null, renderList($data.menus, (menu) => {
         return openBlock(), createElementBlock("div", {
           key: menu.id,
           id: "form-builder-elements-title",
           class: normalizeClass(["em-light-tabs tw-cursor-pointer", $data.selected === menu.id ? "em-light-selected-tab" : ""]),
           onClick: ($event) => $data.selected = menu.id
-        }, toDisplayString(_ctx.translate(menu.name)), 11, _hoisted_3$s);
+        }, toDisplayString(_ctx.translate(menu.name)), 11, _hoisted_3$t);
       }), 128))
     ]),
-    $data.selected === 1 ? (openBlock(), createElementBlock("div", _hoisted_4$r, [
+    $data.selected === 1 ? (openBlock(), createElementBlock("div", _hoisted_4$s, [
       withDirectives(createBaseVNode("input", {
         "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $data.keywords = $event),
         type: "text",
         class: "formbuilder-searchbar",
         placeholder: _ctx.translate("COM_EMUNDUS_FORM_BUILDER_SEARCH_ELEMENT")
-      }, null, 8, _hoisted_5$p), [
+      }, null, 8, _hoisted_5$q), [
         [vModelText, $data.keywords]
       ]),
       createVNode(_component_draggable, {
@@ -1478,7 +1484,7 @@ function _sfc_render$t(_ctx, _cache, $props, $setup, $data, $options) {
                   onMouseleave: _cache[1] || (_cache[1] = ($event) => $data.elementHovered = 0),
                   class: "form-builder-element tw-flex tw-justify-between tw-items-start tw-gap-3 tw-p-3 tw-cursor-move"
                 }, [
-                  createBaseVNode("span", _hoisted_7$n, toDisplayString(element.icon), 1),
+                  createBaseVNode("span", _hoisted_7$o, toDisplayString(element.icon), 1),
                   createBaseVNode("p", _hoisted_8$j, [
                     createTextVNode(toDisplayString(_ctx.translate(element.name)) + " ", 1),
                     createBaseVNode("span", _hoisted_9$g, toDisplayString(_ctx.translate(element.description)), 1)
@@ -1492,7 +1498,7 @@ function _sfc_render$t(_ctx, _cache, $props, $setup, $data, $options) {
                       [vShow, $data.elementHovered == element.value]
                     ])
                   ])
-                ], 40, _hoisted_6$n);
+                ], 40, _hoisted_6$o);
               }), 128))
             ]),
             _: 1
@@ -1527,7 +1533,7 @@ function _sfc_render$t(_ctx, _cache, $props, $setup, $data, $options) {
     $data.loading ? (openBlock(), createElementBlock("div", _hoisted_18$6)) : createCommentVNode("", true)
   ]);
 }
-const FormBuilderElements = /* @__PURE__ */ _export_sfc(_sfc_main$t, [["render", _sfc_render$t]]);
+const FormBuilderElements = /* @__PURE__ */ _export_sfc(_sfc_main$u, [["render", _sfc_render$u]]);
 const field = [{ "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE", "name": "password", "type": "dropdown", "options": [{ "value": 0, "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_TEXT" }, { "value": 5, "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_LINK" }, { "value": 6, "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_NUMBER" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_ONBOARD_BUILDER_PLACEHOLDER", "name": "placeholder", "type": "text", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_ONBOARD_BUILDER_MAXLENGTH", "name": "maxlength", "type": "number", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_ONBOARD_BUILDER_INPUT_MASK_TITLE", "name": "text_input_mask", "type": "text", "helptext": "COM_EMUNDUS_ONBOARD_BUILDER_INPUT_MASK_HINT", "placeholder": "COM_EMUNDUS_ONBOARD_BUILDER_INPUT_MASK_PLACEHOLDER", "published": true, "sysadmin_only": false }];
 const textarea = [{ "label": "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_DISPLAY_LABEL", "name": "textarea_showlabel", "type": "dropdown", "options": [{ "value": 0, "label": "JNO" }, { "value": 1, "label": "JYES" }], "helptext": "", "placeholder": "", "published": false, "sysadmin_only": false }, { "label": "COM_EMUNDUS_ONBOARD_BUILDER_PLACEHOLDER", "name": "textarea_placeholder", "type": "text", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_WYSIWIG", "name": "use_wysiwyg", "type": "dropdown", "options": [{ "value": 0, "label": "JNO" }, { "value": 1, "label": "JYES" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_LIMIT", "name": "textarea-maxlength", "type": "number", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_SHOWMAX_LIMIT", "name": "textarea-showmax", "type": "dropdown", "options": [{ "value": 0, "label": "JNO" }, { "value": 1, "label": "JYES" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_LIMIT_TYPE", "name": "textarea_limit_type", "type": "dropdown", "options": [{ "value": "char", "label": "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_LIMIT_TYPE_CHARACTERS" }, { "value": "word", "label": "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_LIMIT_TYPE_WORDS" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }];
 const dropdown = [];
@@ -1558,7 +1564,7 @@ const elementParams = {
   panel,
   currency
 };
-const _sfc_main$s = {
+const _sfc_main$t = {
   name: "FormBuilderElementParams",
   components: { Multiselect: script },
   props: {
@@ -1730,13 +1736,13 @@ const _sfc_main$s = {
     }
   }
 };
-const _hoisted_1$s = { class: "form-group tw-mb-4" };
-const _hoisted_2$s = { key: 0 };
-const _hoisted_3$r = ["onUpdate:modelValue"];
-const _hoisted_4$q = ["value"];
-const _hoisted_5$o = ["onUpdate:modelValue"];
-const _hoisted_6$m = ["value"];
-const _hoisted_7$m = ["onUpdate:modelValue"];
+const _hoisted_1$t = { class: "form-group tw-mb-4" };
+const _hoisted_2$t = { key: 0 };
+const _hoisted_3$s = ["onUpdate:modelValue"];
+const _hoisted_4$r = ["value"];
+const _hoisted_5$p = ["onUpdate:modelValue"];
+const _hoisted_6$n = ["value"];
+const _hoisted_7$n = ["onUpdate:modelValue"];
 const _hoisted_8$i = ["onUpdate:modelValue"];
 const _hoisted_9$f = { key: 3 };
 const _hoisted_10$a = ["onUpdate:modelValue", "id"];
@@ -1773,16 +1779,16 @@ const _hoisted_31$2 = {
   key: 0,
   class: "em-page-loader"
 };
-function _sfc_render$s(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render$t(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_multiselect = resolveComponent("multiselect");
   const _component_form_builder_element_params = resolveComponent("form-builder-element-params", true);
   return openBlock(), createElementBlock("div", null, [
     (openBlock(true), createElementBlock(Fragment, null, renderList($options.displayedParams, (param) => {
-      return openBlock(), createElementBlock("div", _hoisted_1$s, [
+      return openBlock(), createElementBlock("div", _hoisted_1$t, [
         createBaseVNode("label", {
           class: normalizeClass(param.type === "repeatable" ? "tw-font-bold" : "")
         }, toDisplayString(_ctx.translate(param.label)), 3),
-        param.type === "dropdown" || param.type === "sqldropdown" ? (openBlock(), createElementBlock("div", _hoisted_2$s, [
+        param.type === "dropdown" || param.type === "sqldropdown" ? (openBlock(), createElementBlock("div", _hoisted_2$t, [
           $props.repeat_name !== "" && param.options.length > 0 && !param.multiple ? withDirectives((openBlock(), createElementBlock("select", {
             key: 0,
             "onUpdate:modelValue": ($event) => $props.element.params[$props.repeat_name][$options.index_name][param.name] = $event,
@@ -1792,9 +1798,9 @@ function _sfc_render$s(_ctx, _cache, $props, $setup, $data, $options) {
               return openBlock(), createElementBlock("option", {
                 key: option.value,
                 value: option.value
-              }, toDisplayString(_ctx.translate(option.label)), 9, _hoisted_4$q);
+              }, toDisplayString(_ctx.translate(option.label)), 9, _hoisted_4$r);
             }), 128))
-          ], 8, _hoisted_3$r)), [
+          ], 8, _hoisted_3$s)), [
             [vModelSelect, $props.element.params[$props.repeat_name][$options.index_name][param.name]]
           ]) : param.options.length > 0 && !param.multiple ? withDirectives((openBlock(), createElementBlock("select", {
             key: 1,
@@ -1804,9 +1810,9 @@ function _sfc_render$s(_ctx, _cache, $props, $setup, $data, $options) {
             (openBlock(true), createElementBlock(Fragment, null, renderList(param.options, (option) => {
               return openBlock(), createElementBlock("option", {
                 value: option.value
-              }, toDisplayString(_ctx.translate(option.label)), 9, _hoisted_6$m);
+              }, toDisplayString(_ctx.translate(option.label)), 9, _hoisted_6$n);
             }), 256))
-          ], 8, _hoisted_5$o)), [
+          ], 8, _hoisted_5$p)), [
             [vModelSelect, $props.element.params[param.name]]
           ]) : param.options.length > 0 && param.multiple ? (openBlock(), createBlock(_component_multiselect, {
             key: 2,
@@ -1831,7 +1837,7 @@ function _sfc_render$s(_ctx, _cache, $props, $setup, $data, $options) {
           key: 1,
           "onUpdate:modelValue": ($event) => $props.element.params[$props.repeat_name][$options.index_name][param.name] = $event,
           class: "tw-w-full"
-        }, null, 8, _hoisted_7$m)), [
+        }, null, 8, _hoisted_7$n)), [
           [vModelText, $props.element.params[$props.repeat_name][$options.index_name][param.name]]
         ]) : param.type === "textarea" ? withDirectives((openBlock(), createElementBlock("textarea", {
           key: 2,
@@ -1960,8 +1966,8 @@ function _sfc_render$s(_ctx, _cache, $props, $setup, $data, $options) {
     _ctx.loading ? (openBlock(), createElementBlock("div", _hoisted_31$2)) : createCommentVNode("", true)
   ]);
 }
-const FormBuilderElementParams = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["render", _sfc_render$s]]);
-const _sfc_main$r = {
+const FormBuilderElementParams = /* @__PURE__ */ _export_sfc(_sfc_main$t, [["render", _sfc_render$t]]);
+const _sfc_main$s = {
   name: "FormBuilderElementProperties",
   components: {
     FormBuilderElementParams,
@@ -2147,16 +2153,16 @@ const _sfc_main$r = {
     }
   }
 };
-const _hoisted_1$r = { id: "form-builder-element-properties" };
-const _hoisted_2$r = { class: "tw-flex tw-items-center tw-justify-between tw-p-4 tw-items-start" };
-const _hoisted_3$q = { class: "tw-text-sm tw-text-neutral-700" };
-const _hoisted_4$p = {
+const _hoisted_1$s = { id: "form-builder-element-properties" };
+const _hoisted_2$s = { class: "tw-flex tw-items-center tw-justify-between tw-p-4 tw-items-start" };
+const _hoisted_3$r = { class: "tw-text-sm tw-text-neutral-700" };
+const _hoisted_4$q = {
   id: "properties-tabs",
   class: "tw-flex tw-items-center tw-justify-between tw-p-4 tw-w-11/12"
 };
-const _hoisted_5$n = ["onClick"];
-const _hoisted_6$l = { id: "properties" };
-const _hoisted_7$l = {
+const _hoisted_5$o = ["onClick"];
+const _hoisted_6$m = { id: "properties" };
+const _hoisted_7$m = {
   key: 0,
   id: "element-parameters",
   class: "tw-p-4"
@@ -2193,31 +2199,31 @@ const _hoisted_27$2 = {
   key: 0,
   class: "em-page-loader"
 };
-function _sfc_render$r(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render$s(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_tip_tap_editor = resolveComponent("tip-tap-editor");
   const _component_FormBuilderElementParams = resolveComponent("FormBuilderElementParams");
-  return openBlock(), createElementBlock("div", _hoisted_1$r, [
-    createBaseVNode("div", _hoisted_2$r, [
+  return openBlock(), createElementBlock("div", _hoisted_1$s, [
+    createBaseVNode("div", _hoisted_2$s, [
       createBaseVNode("div", null, [
         createBaseVNode("p", null, toDisplayString(_ctx.translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES")), 1),
-        createBaseVNode("span", _hoisted_3$q, toDisplayString($props.element.label[_ctx.shortDefaultLang]), 1)
+        createBaseVNode("span", _hoisted_3$r, toDisplayString($props.element.label[_ctx.shortDefaultLang]), 1)
       ]),
       createBaseVNode("span", {
         class: "material-symbols-outlined tw-cursor-pointer",
         onClick: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("close"))
       }, "close")
     ]),
-    createBaseVNode("ul", _hoisted_4$p, [
+    createBaseVNode("ul", _hoisted_4$q, [
       (openBlock(true), createElementBlock(Fragment, null, renderList($options.publishedTabs, (tab) => {
         return openBlock(), createElementBlock("li", {
           key: tab.id,
           class: normalizeClass([{ "is-active": tab.active, "tw-w-2/4": $options.publishedTabs.length == 2, "tw-w-full": $options.publishedTabs.length == 1 }, "tw-p-4 tw-cursor-pointer"]),
           onClick: ($event) => $options.selectTab(tab)
-        }, toDisplayString(_ctx.translate(tab.label)), 11, _hoisted_5$n);
+        }, toDisplayString(_ctx.translate(tab.label)), 11, _hoisted_5$o);
       }), 128))
     ]),
-    createBaseVNode("div", _hoisted_6$l, [
-      $data.tabs[0].active ? (openBlock(), createElementBlock("div", _hoisted_7$l, [
+    createBaseVNode("div", _hoisted_6$m, [
+      $data.tabs[0].active ? (openBlock(), createElementBlock("div", _hoisted_7$m, [
         createBaseVNode("label", _hoisted_8$h, toDisplayString(_ctx.translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_LABEL")), 1),
         withDirectives(createBaseVNode("input", {
           id: "element-label",
@@ -2385,12 +2391,12 @@ function _sfc_render$r(_ctx, _cache, $props, $setup, $data, $options) {
     $data.loading ? (openBlock(), createElementBlock("div", _hoisted_27$2)) : createCommentVNode("", true)
   ]);
 }
-const FormBuilderElementProperties = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["render", _sfc_render$r]]);
+const FormBuilderElementProperties = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["render", _sfc_render$s]]);
 const parameters = [{ "label": "COM_EMUNDUS_ONBOARD_BUILDER_SECTIONS_OUTRO", "name": "outro", "type": "textarea", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_ONBOARD_BUILDER_SECTIONS_REPEAT", "name": "repeat_group_button", "type": "dropdown", "options": [{ "value": 0, "label": "JNO" }, { "value": 1, "label": "JYES" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_ONBOARD_BUILDER_SECTIONS_REPEAT_MIN", "name": "repeat_min", "type": "number", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_ONBOARD_BUILDER_SECTIONS_REPEAT_MAX", "name": "repeat_max", "type": "number", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }];
 const sectionParams = {
   parameters
 };
-const _sfc_main$q = {
+const _sfc_main$r = {
   name: "FormBuilderSectionParams",
   props: {
     section: {
@@ -2422,13 +2428,13 @@ const _sfc_main$q = {
     }
   }
 };
-const _hoisted_1$q = { key: 0 };
-const _hoisted_2$q = { class: "form-group tw-mb-4" };
-const _hoisted_3$p = { key: 0 };
-const _hoisted_4$o = ["onUpdate:modelValue"];
-const _hoisted_5$m = ["value"];
-const _hoisted_6$k = ["onUpdate:modelValue"];
-const _hoisted_7$k = ["type", "onUpdate:modelValue", "placeholder"];
+const _hoisted_1$r = { key: 0 };
+const _hoisted_2$r = { class: "form-group tw-mb-4" };
+const _hoisted_3$q = { key: 0 };
+const _hoisted_4$p = ["onUpdate:modelValue"];
+const _hoisted_5$n = ["value"];
+const _hoisted_6$l = ["onUpdate:modelValue"];
+const _hoisted_7$l = ["type", "onUpdate:modelValue", "placeholder"];
 const _hoisted_8$g = {
   key: 3,
   style: { "font-size": "small" }
@@ -2437,12 +2443,12 @@ const _hoisted_9$d = {
   key: 0,
   class: "em-page-loader"
 };
-function _sfc_render$q(_ctx, _cache, $props, $setup, $data, $options) {
-  return $props.params.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_1$q, [
+function _sfc_render$r(_ctx, _cache, $props, $setup, $data, $options) {
+  return $props.params.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_1$r, [
     (openBlock(true), createElementBlock(Fragment, null, renderList($options.displayedParams, (param) => {
-      return openBlock(), createElementBlock("div", _hoisted_2$q, [
+      return openBlock(), createElementBlock("div", _hoisted_2$r, [
         createBaseVNode("label", null, toDisplayString(_ctx.translate(param.label)), 1),
-        param.type === "dropdown" ? (openBlock(), createElementBlock("div", _hoisted_3$p, [
+        param.type === "dropdown" ? (openBlock(), createElementBlock("div", _hoisted_3$q, [
           withDirectives(createBaseVNode("select", {
             "onUpdate:modelValue": ($event) => $props.section.params[param.name] = $event,
             class: "tw-w-full"
@@ -2450,16 +2456,16 @@ function _sfc_render$q(_ctx, _cache, $props, $setup, $data, $options) {
             (openBlock(true), createElementBlock(Fragment, null, renderList(param.options, (option) => {
               return openBlock(), createElementBlock("option", {
                 value: option.value
-              }, toDisplayString(_ctx.translate(option.label)), 9, _hoisted_5$m);
+              }, toDisplayString(_ctx.translate(option.label)), 9, _hoisted_5$n);
             }), 256))
-          ], 8, _hoisted_4$o), [
+          ], 8, _hoisted_4$p), [
             [vModelSelect, $props.section.params[param.name]]
           ])
         ])) : param.type === "textarea" ? withDirectives((openBlock(), createElementBlock("textarea", {
           key: 1,
           "onUpdate:modelValue": ($event) => $props.section.params[param.name] = $event,
           class: "tw-w-full"
-        }, null, 8, _hoisted_6$k)), [
+        }, null, 8, _hoisted_6$l)), [
           [vModelText, $props.section.params[param.name]]
         ]) : withDirectives((openBlock(), createElementBlock("input", {
           key: 2,
@@ -2467,7 +2473,7 @@ function _sfc_render$q(_ctx, _cache, $props, $setup, $data, $options) {
           "onUpdate:modelValue": ($event) => $props.section.params[param.name] = $event,
           class: "tw-w-full",
           placeholder: _ctx.translate(param.placeholder)
-        }, null, 8, _hoisted_7$k)), [
+        }, null, 8, _hoisted_7$l)), [
           [vModelDynamic, $props.section.params[param.name]]
         ]),
         param.helptext !== "" ? (openBlock(), createElementBlock("label", _hoisted_8$g, toDisplayString(_ctx.translate(param.helptext)), 1)) : createCommentVNode("", true)
@@ -2476,8 +2482,8 @@ function _sfc_render$q(_ctx, _cache, $props, $setup, $data, $options) {
     _ctx.loading ? (openBlock(), createElementBlock("div", _hoisted_9$d)) : createCommentVNode("", true)
   ])) : createCommentVNode("", true);
 }
-const FormBuilderSectionParams = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["render", _sfc_render$q]]);
-const _sfc_main$p = {
+const FormBuilderSectionParams = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["render", _sfc_render$r]]);
+const _sfc_main$q = {
   name: "FormBuilderSectionProperties",
   components: { FormBuilderSectionParams },
   props: {
@@ -2567,47 +2573,47 @@ const _sfc_main$p = {
     }
   }
 };
-const _hoisted_1$p = { id: "form-builder-element-properties" };
-const _hoisted_2$p = { class: "tw-flex tw-items-center tw-justify-between tw-p-4" };
-const _hoisted_3$o = {
+const _hoisted_1$q = { id: "form-builder-element-properties" };
+const _hoisted_2$q = { class: "tw-flex tw-items-center tw-justify-between tw-p-4" };
+const _hoisted_3$p = {
   id: "properties-tabs",
   class: "tw-flex tw-items-center tw-justify-between tw-p-4 tw-w-11/12"
 };
-const _hoisted_4$n = ["onClick"];
-const _hoisted_5$l = { id: "properties" };
-const _hoisted_6$j = {
+const _hoisted_4$o = ["onClick"];
+const _hoisted_5$m = { id: "properties" };
+const _hoisted_6$k = {
   key: 0,
   id: "section-parameters",
   class: "tw-p-4"
 };
-const _hoisted_7$j = { for: "section-label" };
+const _hoisted_7$k = { for: "section-label" };
 const _hoisted_8$f = {
   key: 1,
   class: "tw-p-4"
 };
 const _hoisted_9$c = { class: "tw-flex tw-items-center tw-justify-between actions tw-m-4" };
-function _sfc_render$p(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render$q(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_form_builder_section_params = resolveComponent("form-builder-section-params");
-  return openBlock(), createElementBlock("div", _hoisted_1$p, [
-    createBaseVNode("div", _hoisted_2$p, [
+  return openBlock(), createElementBlock("div", _hoisted_1$q, [
+    createBaseVNode("div", _hoisted_2$q, [
       createBaseVNode("p", null, toDisplayString(_ctx.translate("COM_EMUNDUS_FORM_BUILDER_SECTION_PROPERTIES")), 1),
       createBaseVNode("span", {
         class: "material-symbols-outlined tw-cursor-pointer",
         onClick: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("close"))
       }, "close")
     ]),
-    createBaseVNode("ul", _hoisted_3$o, [
+    createBaseVNode("ul", _hoisted_3$p, [
       (openBlock(true), createElementBlock(Fragment, null, renderList($options.publishedTabs, (tab) => {
         return openBlock(), createElementBlock("li", {
           key: tab.id,
           class: normalizeClass([{ "is-active": tab.active, "tw-w-2/4": $options.publishedTabs.length == "2", "tw-w-full": $options.publishedTabs.length == 1 }, "tw-p-4 tw-cursor-pointer"]),
           onClick: ($event) => $options.selectTab(tab)
-        }, toDisplayString(_ctx.translate(tab.label)), 11, _hoisted_4$n);
+        }, toDisplayString(_ctx.translate(tab.label)), 11, _hoisted_4$o);
       }), 128))
     ]),
-    createBaseVNode("div", _hoisted_5$l, [
-      $data.tabs[0].active ? (openBlock(), createElementBlock("div", _hoisted_6$j, [
-        createBaseVNode("label", _hoisted_7$j, toDisplayString(_ctx.translate("COM_EMUNDUS_FORM_BUILDER_SECTION_LABEL")), 1),
+    createBaseVNode("div", _hoisted_5$m, [
+      $data.tabs[0].active ? (openBlock(), createElementBlock("div", _hoisted_6$k, [
+        createBaseVNode("label", _hoisted_7$k, toDisplayString(_ctx.translate("COM_EMUNDUS_FORM_BUILDER_SECTION_LABEL")), 1),
         withDirectives(createBaseVNode("input", {
           id: "section-label",
           name: "section-label",
@@ -2633,8 +2639,8 @@ function _sfc_render$p(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ]);
 }
-const FormBuilderSectionProperties = /* @__PURE__ */ _export_sfc(_sfc_main$p, [["render", _sfc_render$p]]);
-const _sfc_main$o = {
+const FormBuilderSectionProperties = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["render", _sfc_render$q]]);
+const _sfc_main$p = {
   props: {
     element: {
       type: Object,
@@ -2763,16 +2769,16 @@ const _sfc_main$o = {
     }
   }
 };
-const _hoisted_1$o = { id: "form-builder-radio-button" };
-const _hoisted_2$o = {
+const _hoisted_1$p = { id: "form-builder-radio-button" };
+const _hoisted_2$p = {
   key: 0,
   class: "em-loader"
 };
-const _hoisted_3$n = { key: 1 };
-const _hoisted_4$m = ["onMouseover"];
-const _hoisted_5$k = { class: "tw-flex tw-items-center tw-w-full" };
-const _hoisted_6$i = { class: "tw-flex tw-items-center" };
-const _hoisted_7$i = ["type", "name", "value"];
+const _hoisted_3$o = { key: 1 };
+const _hoisted_4$n = ["onMouseover"];
+const _hoisted_5$l = { class: "tw-flex tw-items-center tw-w-full" };
+const _hoisted_6$j = { class: "tw-flex tw-items-center" };
+const _hoisted_7$j = ["type", "name", "value"];
 const _hoisted_8$e = { key: 1 };
 const _hoisted_9$b = ["id", "onUpdate:modelValue", "onFocusout", "onKeyup", "placeholder"];
 const _hoisted_10$8 = { class: "tw-flex tw-items-center" };
@@ -2784,10 +2790,10 @@ const _hoisted_12$5 = {
 const _hoisted_13$5 = ["type", "name"];
 const _hoisted_14$4 = { key: 1 };
 const _hoisted_15$4 = ["id", "placeholder"];
-function _sfc_render$o(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render$p(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_draggable = resolveComponent("draggable");
-  return openBlock(), createElementBlock("div", _hoisted_1$o, [
-    $data.loading ? (openBlock(), createElementBlock("div", _hoisted_2$o)) : (openBlock(), createElementBlock("div", _hoisted_3$n, [
+  return openBlock(), createElementBlock("div", _hoisted_1$p, [
+    $data.loading ? (openBlock(), createElementBlock("div", _hoisted_2$p)) : (openBlock(), createElementBlock("div", _hoisted_3$o, [
       createVNode(_component_draggable, {
         modelValue: $data.arraySubValues,
         "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => $data.arraySubValues = $event),
@@ -2804,8 +2810,8 @@ function _sfc_render$o(_ctx, _cache, $props, $setup, $data, $options) {
               },
               onMouseleave: _cache[1] || (_cache[1] = ($event) => $data.optionHighlight = null)
             }, [
-              createBaseVNode("div", _hoisted_5$k, [
-                createBaseVNode("div", _hoisted_6$i, [
+              createBaseVNode("div", _hoisted_5$l, [
+                createBaseVNode("div", _hoisted_6$j, [
                   createBaseVNode("span", {
                     class: "icon-handle",
                     style: normalizeStyle($data.optionHighlight === index ? "opacity: 1" : "opacity: 0")
@@ -2821,7 +2827,7 @@ function _sfc_render$o(_ctx, _cache, $props, $setup, $data, $options) {
                   type: $props.type,
                   name: "element-id-" + $props.element.id,
                   value: $data.optionsTranslations[index]
-                }, null, 8, _hoisted_7$i)) : (openBlock(), createElementBlock("div", _hoisted_8$e, toDisplayString(index + 1) + ".", 1)),
+                }, null, 8, _hoisted_7$j)) : (openBlock(), createElementBlock("div", _hoisted_8$e, toDisplayString(index + 1) + ".", 1)),
                 withDirectives(createBaseVNode("input", {
                   type: "text",
                   class: "editable-data editable-data-input tw-ml-1 tw-w-full",
@@ -2846,7 +2852,7 @@ function _sfc_render$o(_ctx, _cache, $props, $setup, $data, $options) {
                   style: normalizeStyle($data.optionHighlight === index ? "opacity: 1" : "opacity: 0")
                 }, "close", 12, _hoisted_11$5)
               ])
-            ], 40, _hoisted_4$m);
+            ], 40, _hoisted_4$n);
           }), 128))
         ]),
         _: 1
@@ -2881,8 +2887,8 @@ function _sfc_render$o(_ctx, _cache, $props, $setup, $data, $options) {
     ]))
   ]);
 }
-const FormBuilderElementOptions = /* @__PURE__ */ _export_sfc(_sfc_main$o, [["render", _sfc_render$o]]);
-const _sfc_main$n = {
+const FormBuilderElementOptions = /* @__PURE__ */ _export_sfc(_sfc_main$p, [["render", _sfc_render$p]]);
+const _sfc_main$o = {
   props: {
     element: {
       type: Object,
@@ -2916,22 +2922,22 @@ const _sfc_main$n = {
   },
   watch: {}
 };
-const _hoisted_1$n = { id: "form-builder-wysiwig" };
-const _hoisted_2$n = {
+const _hoisted_1$o = { id: "form-builder-wysiwig" };
+const _hoisted_2$o = {
   key: 0,
   class: "em-loader"
 };
-const _hoisted_3$m = { key: 1 };
-const _hoisted_4$l = ["innerHTML", "id"];
-function _sfc_render$n(_ctx, _cache, $props, $setup, $data, $options) {
+const _hoisted_3$n = { key: 1 };
+const _hoisted_4$m = ["innerHTML", "id"];
+function _sfc_render$o(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_tip_tap_editor = resolveComponent("tip-tap-editor");
-  return openBlock(), createElementBlock("div", _hoisted_1$n, [
-    $data.loading ? (openBlock(), createElementBlock("div", _hoisted_2$n)) : (openBlock(), createElementBlock("div", _hoisted_3$m, [
+  return openBlock(), createElementBlock("div", _hoisted_1$o, [
+    $data.loading ? (openBlock(), createElementBlock("div", _hoisted_2$o)) : (openBlock(), createElementBlock("div", _hoisted_3$n, [
       withDirectives(createBaseVNode("div", {
         innerHTML: $props.element.element,
         id: $props.element.id,
         onClick: _cache[0] || (_cache[0] = ($event) => $data.editable = true)
-      }, null, 8, _hoisted_4$l), [
+      }, null, 8, _hoisted_4$m), [
         [vShow, !$data.editable]
       ]),
       createVNode(Transition, {
@@ -2957,9 +2963,9 @@ function _sfc_render$n(_ctx, _cache, $props, $setup, $data, $options) {
     ]))
   ]);
 }
-const FormBuilderElementWysiwig = /* @__PURE__ */ _export_sfc(_sfc_main$n, [["render", _sfc_render$n]]);
+const FormBuilderElementWysiwig = /* @__PURE__ */ _export_sfc(_sfc_main$o, [["render", _sfc_render$o]]);
 const _imports_0 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPoAAACnBAMAAADK0lwnAAAAIVBMVEU/QWP70tPsGSCbh5n4qq3sGSDsGSD///+CiZ/6xsgFFEBjSht+AAAABnRSTlP778D15DBi/uc8AAAAeElEQVR4Xu3NQQ3AIAAEsCVTgAUSjCAGCzhBA0ElFu7JozXQ76T2TK2RenS32+12u91ut9vtdrvdbrfb7Xa73W632+12u91ut9vtdrvdbrfb7Xa73W632+12u91ut9vtdrvdbrfb7Xa73W632+12u91uj/0l1WuoXSQpdCmx7sXHAAAAAElFTkSuQmCC";
-const _sfc_main$m = {
+const _sfc_main$n = {
   props: {
     element: {
       type: Object,
@@ -2982,28 +2988,28 @@ const _sfc_main$m = {
   methods: {},
   watch: {}
 };
-const _hoisted_1$m = { id: "form-builder-phone-number" };
-const _hoisted_2$m = {
+const _hoisted_1$n = { id: "form-builder-phone-number" };
+const _hoisted_2$n = {
   key: 0,
   class: "em-loader"
 };
-const _hoisted_3$l = { key: 1 };
-const _hoisted_4$k = { class: "tw-flex tw-items-center" };
-const _hoisted_5$j = { class: "tw-h-10 country-select tw-flex tw-items-center tw-p-2 tw-justify-center" };
-const _hoisted_6$h = ["src"];
-const _hoisted_7$h = {
+const _hoisted_3$m = { key: 1 };
+const _hoisted_4$l = { class: "tw-flex tw-items-center" };
+const _hoisted_5$k = { class: "tw-h-10 country-select tw-flex tw-items-center tw-p-2 tw-justify-center" };
+const _hoisted_6$i = ["src"];
+const _hoisted_7$i = {
   key: 1,
   src: _imports_0
 };
-function _sfc_render$m(_ctx, _cache, $props, $setup, $data, $options) {
-  return openBlock(), createElementBlock("div", _hoisted_1$m, [
-    $data.loading ? (openBlock(), createElementBlock("div", _hoisted_2$m)) : (openBlock(), createElementBlock("div", _hoisted_3$l, [
-      createBaseVNode("div", _hoisted_4$k, [
-        createBaseVNode("div", _hoisted_5$j, [
+function _sfc_render$n(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", _hoisted_1$n, [
+    $data.loading ? (openBlock(), createElementBlock("div", _hoisted_2$n)) : (openBlock(), createElementBlock("div", _hoisted_3$m, [
+      createBaseVNode("div", _hoisted_4$l, [
+        createBaseVNode("div", _hoisted_5$k, [
           $props.element.params.default_country ? (openBlock(), createElementBlock("img", {
             key: 0,
             src: "../../../../../../images/emundus/flags/" + $props.element.params.default_country.toLowerCase() + ".png"
-          }, null, 8, _hoisted_6$h)) : (openBlock(), createElementBlock("img", _hoisted_7$h))
+          }, null, 8, _hoisted_6$i)) : (openBlock(), createElementBlock("img", _hoisted_7$i))
         ]),
         _cache[0] || (_cache[0] = createBaseVNode("div", { class: "tw-w-full" }, [
           createBaseVNode("input", {
@@ -3017,8 +3023,8 @@ function _sfc_render$m(_ctx, _cache, $props, $setup, $data, $options) {
     ]))
   ]);
 }
-const FormBuilderElementPhoneNumber = /* @__PURE__ */ _export_sfc(_sfc_main$m, [["render", _sfc_render$m]]);
-const _sfc_main$l = {
+const FormBuilderElementPhoneNumber = /* @__PURE__ */ _export_sfc(_sfc_main$n, [["render", _sfc_render$n]]);
+const _sfc_main$m = {
   props: {
     element: {
       type: Object,
@@ -3057,32 +3063,32 @@ const _sfc_main$l = {
     }
   }
 };
-const _hoisted_1$l = { id: "form-builder-currency" };
-const _hoisted_2$l = {
+const _hoisted_1$m = { id: "form-builder-currency" };
+const _hoisted_2$m = {
   key: 0,
   class: "em-loader"
 };
-const _hoisted_3$k = {
+const _hoisted_3$l = {
   key: 1,
   class: "tw-w-full tw-relative tw-flex tw-items-center currency-block"
 };
-const _hoisted_4$j = ["value"];
-const _hoisted_5$i = { class: "currency-icon" };
-function _sfc_render$l(_ctx, _cache, $props, $setup, $data, $options) {
-  return openBlock(), createElementBlock("div", _hoisted_1$l, [
-    $data.loading ? (openBlock(), createElementBlock("div", _hoisted_2$l)) : (openBlock(), createElementBlock("div", _hoisted_3$k, [
+const _hoisted_4$k = ["value"];
+const _hoisted_5$j = { class: "currency-icon" };
+function _sfc_render$m(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", _hoisted_1$m, [
+    $data.loading ? (openBlock(), createElementBlock("div", _hoisted_2$m)) : (openBlock(), createElementBlock("div", _hoisted_3$l, [
       createBaseVNode("input", {
         class: "currency",
         readonly: "",
         type: "text",
         value: this.element.params["all_currencies_options"]["all_currencies_options0"].minimal_value
-      }, null, 8, _hoisted_4$j),
-      createBaseVNode("span", _hoisted_5$i, toDisplayString($options.currencyIcon), 1)
+      }, null, 8, _hoisted_4$k),
+      createBaseVNode("span", _hoisted_5$j, toDisplayString($options.currencyIcon), 1)
     ]))
   ]);
 }
-const FormBuilderElementCurrency = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["render", _sfc_render$l]]);
-const _sfc_main$k = {
+const FormBuilderElementCurrency = /* @__PURE__ */ _export_sfc(_sfc_main$m, [["render", _sfc_render$m]]);
+const _sfc_main$l = {
   props: {
     element: {
       type: Object,
@@ -3121,30 +3127,113 @@ const _sfc_main$k = {
   methods: {},
   watch: {}
 };
-const _hoisted_1$k = { id: "form-builder-geolocation" };
-const _hoisted_2$k = {
+const _hoisted_1$l = { id: "form-builder-geolocation" };
+const _hoisted_2$l = {
   key: 0,
   class: "em-loader"
 };
-const _hoisted_3$j = ["id"];
-function _sfc_render$k(_ctx, _cache, $props, $setup, $data, $options) {
-  return openBlock(), createElementBlock("div", _hoisted_1$k, [
+const _hoisted_3$k = ["id"];
+function _sfc_render$l(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", _hoisted_1$l, [
     _cache[0] || (_cache[0] = createBaseVNode("link", {
       rel: "stylesheet",
       href: "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css",
       integrity: "sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=",
       crossorigin: ""
     }, null, -1)),
-    $data.loading ? (openBlock(), createElementBlock("div", _hoisted_2$k)) : (openBlock(), createElementBlock("div", {
+    $data.loading ? (openBlock(), createElementBlock("div", _hoisted_2$l)) : (openBlock(), createElementBlock("div", {
       key: 1,
       id: "map_container_" + $props.element.id,
       class: "fabrikSubElementContainer fabrikEmundusGeolocalisation"
-    }, null, 8, _hoisted_3$j))
+    }, null, 8, _hoisted_3$k))
   ]);
 }
-const FormBuilderElementGeolocation = /* @__PURE__ */ _export_sfc(_sfc_main$k, [["render", _sfc_render$k]]);
+const FormBuilderElementGeolocation = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["render", _sfc_render$l]]);
+const _sfc_main$k = {
+  props: {
+    element: {
+      type: Object,
+      required: true
+    },
+    type: {
+      type: String,
+      required: true
+    }
+  },
+  data() {
+    return {
+      loading: false,
+      date: /* @__PURE__ */ new Date(),
+      locale: "fr-FR"
+    };
+  },
+  mounted() {
+    this.locale = useGlobalStore().getShortLang;
+  },
+  computed: {
+    currentDay() {
+      return this.date.toLocaleDateString(this.locale, { weekday: "long" }).charAt(0).toUpperCase() + this.date.toLocaleDateString(this.locale, { weekday: "long" }).slice(1);
+    },
+    currentDateMonth() {
+      return this.date.toLocaleDateString(this.locale, { day: "numeric", month: "short" });
+    }
+  }
+};
+const _hoisted_1$k = { id: "form-builder-booking" };
+const _hoisted_2$k = { class: "tw-w-full tw-rounded-coordinator tw-border tw-border-neutral-300 tw-p-4 tw-flex tw-items-center tw-relative" };
+const _hoisted_3$j = { class: "tw-flex tw-items-start tw-gap-1 tw-w-full" };
+const _hoisted_4$j = { class: "tw-flex tw-flex-row tw-items-stretch tw-gap-4 tw-flex-1 tw-w-auto tw-justify-center" };
+const _hoisted_5$i = { class: "tw-flex tw-flex-col tw-items-center tw-gap-2" };
+const _hoisted_6$h = { class: "tw-text-lg tw-text-center" };
+const _hoisted_7$h = { class: "tw-text-sm tw-text-neutral-500 tw-text-center" };
+function _sfc_render$k(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", _hoisted_1$k, [
+    createBaseVNode("div", _hoisted_2$k, [
+      createBaseVNode("div", _hoisted_3$j, [
+        _cache[1] || (_cache[1] = createBaseVNode("button", {
+          class: "tw-p-2 tw-border-0 tw-bg-transparent tw-rounded-coordinator hover:tw-bg-neutral-100",
+          type: "button",
+          disabled: "",
+          style: { "cursor": "not-allowed", "opacity": "0.2" }
+        }, [
+          createBaseVNode("span", { class: "material-symbols-outlined" }, "chevron_left")
+        ], -1)),
+        createBaseVNode("div", _hoisted_4$j, [
+          createBaseVNode("div", _hoisted_5$i, [
+            createBaseVNode("p", _hoisted_6$h, toDisplayString($options.currentDay), 1),
+            createBaseVNode("p", _hoisted_7$h, toDisplayString($options.currentDateMonth), 1),
+            _cache[0] || (_cache[0] = createBaseVNode("div", { class: "tw-mt-4 tw-grid tw-grid-cols-3 tw-gap-2 tw-w-full" }, [
+              createBaseVNode("button", {
+                type: "button",
+                class: "tw-cursor-pointer tw-flex tw-items-center tw-justify-center tw-px-4 tw-w-full tw-py-2 tw-bg-neutral-200 tw-rounded-coordinator hover:tw-bg-neutral-300 tw-border tw-border-transparent"
+              }, " 09:00 "),
+              createBaseVNode("button", {
+                type: "button",
+                class: "tw-cursor-pointer tw-flex tw-items-center tw-justify-center tw-px-4 tw-w-full tw-py-2 tw-bg-neutral-200 tw-rounded-coordinator hover:tw-bg-neutral-300 tw-border tw-border-transparent"
+              }, " 09:20 "),
+              createBaseVNode("button", {
+                type: "button",
+                class: "tw-cursor-pointer tw-flex tw-items-center tw-justify-center tw-px-4 tw-w-full tw-py-2 tw-bg-neutral-200 tw-rounded-coordinator hover:tw-bg-neutral-300 tw-border tw-border-transparent"
+              }, " 09:40 ")
+            ], -1))
+          ])
+        ]),
+        _cache[2] || (_cache[2] = createBaseVNode("button", {
+          class: "tw-p-2 tw-border-0 tw-bg-transparent tw-rounded-coordinator hover:tw-bg-neutral-100",
+          type: "button",
+          disabled: "",
+          style: { "cursor": "not-allowed", "opacity": "0.2" }
+        }, [
+          createBaseVNode("span", { class: "material-symbols-outlined" }, "chevron_right")
+        ], -1))
+      ])
+    ])
+  ]);
+}
+const FormBuilderElementBooking = /* @__PURE__ */ _export_sfc(_sfc_main$k, [["render", _sfc_render$k]]);
 const _sfc_main$j = {
   components: {
+    FormBuilderElementBooking,
     FormBuilderElementGeolocation,
     FormBuilderElementCurrency,
     FormBuilderElementPhoneNumber,
@@ -3291,6 +3380,7 @@ function _sfc_render$j(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_form_builder_element_phone_number = resolveComponent("form-builder-element-phone-number");
   const _component_form_builder_element_currency = resolveComponent("form-builder-element-currency");
   const _component_form_builder_element_geolocation = resolveComponent("form-builder-element-geolocation");
+  const _component_form_builder_element_booking = resolveComponent("form-builder-element-booking");
   return withDirectives((openBlock(), createElementBlock("div", {
     class: normalizeClass(["form-builder-page-section-element", { "unpublished": !$props.element.publish || $props.element.hidden, "properties-active": $options.propertiesOpened === $props.element.id }]),
     id: "element_" + $props.element.id
@@ -3359,8 +3449,12 @@ function _sfc_render$j(_ctx, _cache, $props, $setup, $data, $options) {
         key: 4,
         type: "geolocation",
         element: $props.element
-      }, null, 8, ["element"])) : (openBlock(), createElementBlock("div", {
+      }, null, 8, ["element"])) : $props.element.plugin === "booking" ? (openBlock(), createBlock(_component_form_builder_element_booking, {
         key: 5,
+        type: "booking",
+        element: $props.element
+      }, null, 8, ["element"])) : (openBlock(), createElementBlock("div", {
+        key: 6,
         innerHTML: $props.element.element,
         class: "fabrikElement"
       }, null, 8, _hoisted_8$d))

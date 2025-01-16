@@ -116,7 +116,9 @@ if (document) {
                     });
                     break;
                 case 'History':
-                    app = createApp(History, {});
+                    app = createApp(History, {
+                        extension: datas.extension,
+                    });
                     break;
                 case 'Expert/Expert':
                     app = createApp(Expert, {});

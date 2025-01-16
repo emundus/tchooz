@@ -69,7 +69,7 @@ build-app-to-test-job:
     - docker build --cache-from emundus/tchooz-test-app:latest --compress -t emundus/tchooz-test-app:latest --build-arg=BUILDKIT_INLINE_CACHE=1 --build-arg test_env=1 .
     - docker push emundus/tchooz-test-app:latest
   rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_DEFAULT_BRANCH == $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
       changes:
         - Dockerfile
         - .docker/scripts/entrypoint-build-ci-env.sh
@@ -86,11 +86,12 @@ build-db-to-test-job:
     - docker build --cache-from emundus/tchooz-test-db:latest --compress -f Dockerfile.db -t emundus/tchooz-test-db:latest --build-arg=BUILDKIT_INLINE_CACHE=1 .
     - docker push emundus/tchooz-test-db:latest
   rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_DEFAULT_BRANCH == $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
       changes:
         - Dockerfile.db
         - .docker/mysql/*
         - .docker/installation/databases/*
+        - .docker/installation/database-ci-env/*
 
 phpunit-job:
   stage: test

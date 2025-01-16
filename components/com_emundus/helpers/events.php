@@ -15,6 +15,7 @@
 // no direct access
 use Joomla\CMS\Access\Access;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
@@ -1621,8 +1622,26 @@ class EmundusHelperEvents
 		if ($updated && $old_status != $new_status)
 		{
 			$this->logUpdateState($old_status, $new_status, $student->id, $applicant_id, $student->fnum);
-			Factory::getApplication()->triggerEvent('onAfterStatusChange', [$student->fnum, $new_status]);
-			Factory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterStatusChange', ['fnum' => $student->fnum, 'state' => $new_status, 'old_state' => $old_status]]);
+
+			PluginHelper::importPlugin('emundus'); // si event call event handler
+			$dispatcher = Factory::getApplication()->getDispatcher();
+
+			$onAfterStatusChangeEventHandler = new GenericEvent(
+				'onCallEventHandler',
+				['onAfterStatusChange',
+					// Datas to pass to the event
+					['fnum' => $student->fnum, 'state' => $new_status, 'old_state' => $old_status]
+				]
+			);
+			$onAfterStatusChange = new GenericEvent(
+				'onAfterStatusChange',
+				// Datas to pass to the event
+				['fnum' => $student->fnum, 'state' => $new_status, 'old_state' => $old_status]
+			);
+
+			// Dispatch the event
+			$dispatcher->dispatch('onCallEventHandler', $onAfterStatusChangeEventHandler);
+			$dispatcher->dispatch('onAfterStatusChange', $onAfterStatusChange);
 		}
 
 		$query = 'UPDATE #__emundus_declaration SET time_date=' . $db->Quote($now) . ' WHERE user=' . $student->id . ' AND fnum like ' . $db->Quote($student->fnum);

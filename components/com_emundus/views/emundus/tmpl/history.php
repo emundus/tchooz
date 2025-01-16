@@ -58,6 +58,7 @@ if (!empty($extension)) {
          manyLanguages="<?= $many_languages ?>"
          extension="<?= $extension ?>"
          itemId="<?= $extension_item_id ?>"
+         columns="<?= $this->columns ?>"
     ></div>
 
     <script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>

@@ -2572,6 +2572,27 @@ class EmundusModelApplication extends ListModel
 
 												$elt = chunk_split($elt, 4, ' ');
 											}
+											elseif ($element->plugin == 'booking') {
+												$availability    = $element->content;
+
+												if(!empty($availability))
+												{
+													$query = $this->_db->getQuery(true);
+													$query->select('start_date,end_date')
+														->from($this->_db->quoteName('#__emundus_setup_availabilities'))
+														->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($availability));
+													$this->_db->setQuery($query);
+													$availability = $this->_db->loadObject();
+
+													if(!empty($availability))
+													{
+														$elt = date('d.m.Y H:i', strtotime($availability->start_date)) . ' - ' . date('d.m.Y H:i', strtotime($availability->end_date));
+													}
+												}
+												else {
+													$elt = '';
+												}
+											}
 											else {
 												$elt = $element->content;
 											}
@@ -3422,6 +3443,25 @@ class EmundusModelApplication extends ListModel
 												}
 
 												$elt = chunk_split($elt, 4, ' ');
+											}
+											elseif ($element->plugin == 'booking') {
+												$availability    = $element->content;
+												$elt = '';
+
+												if(!empty($availability))
+												{
+													$query = $this->_db->getQuery(true);
+													$query->select('start_date,end_date')
+														->from($this->_db->quoteName('#__emundus_setup_availabilities'))
+														->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($availability));
+													$this->_db->setQuery($query);
+													$availability = $this->_db->loadObject();
+
+													if(!empty($availability))
+													{
+														$elt = date('d.m.Y H:i', strtotime($availability->start_date)) . ' - ' . date('d.m.Y H:i', strtotime($availability->end_date));
+													}
+												}
 											}
 											else {
 												$elt = Text::_($element->content);
@@ -6134,7 +6174,7 @@ class EmundusModelApplication extends ListModel
 		return $content;
 	}
 
-	public function getValuesByElementAndFnum($fnum, $eid, $fid, $raw = 1, $wheres = [], $uid = null,$format = true,$repeate_sperator = ",")
+	public function getValuesByElementAndFnum($fnum, $eid, $fid, $raw = 0, $wheres = [], $uid = null,$format = true,$repeate_sperator = ",")
 	{
 
 		$query = $this->_db->getQuery(true);
@@ -6216,7 +6256,12 @@ class EmundusModelApplication extends ListModel
 
 				if (!empty($values) || $element->plugin == 'yesno') {
 					foreach ($values as $value) {
-						$elt[] = EmundusHelperFabrik::formatElementValue($element->name, $value, $element->group_id, $aid, true);
+						if($raw == 0)
+						{
+							$elt[] = EmundusHelperFabrik::formatElementValue($element->name, $value, $element->group_id, $aid, true);
+						} else {
+							$elt[] = $value;
+						}
 					}
 				}
 

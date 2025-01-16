@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="console" method="upgrade">
+    <name>Microsoft Dynamics integration</name>
+    <version>1.0.0</version>
+    <creationDate>December 2024</creationDate>
+    <author>eMundus</author>
+    <description>Plugin to integrate Microsoft Dynamics CRM on some events</description>
+    <namespace path="src">Joomla\Plugin\Emundus\MicrosoftDynamics</namespace>
+    <files>
+        <folder plugin="microsoft_dynamics">services</folder>
+        <folder>src</folder>
+    </files>
+</extension>

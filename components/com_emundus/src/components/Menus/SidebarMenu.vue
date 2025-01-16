@@ -80,6 +80,17 @@ export default {
     if (sessionMenu) {
       this.activeMenu = parseInt(sessionMenu);
     }
+
+    if (window.location.hash) {
+      let hash = window.location.hash.substring(1);
+      for( let index in this.menus) {
+        if (this.menus[index].name === hash) {
+          this.activeMenu = parseInt(index);
+          break;
+        }
+      }
+    }
+
     this.$emit('listMenus', this.menus , 'menus');
   },
   mounted() {

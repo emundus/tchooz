@@ -76,6 +76,10 @@ module.exports = {
                     dark: 'color-mix(in srgb,var(--em-profile-color),#000 15%)',
                 },
 
+                coordinator: {
+                    bg: 'var(--em-coordinator-bg)',
+                },
+
                 red: {
                     50: 'var(--red-50)',
                     100: 'var(--red-100)',

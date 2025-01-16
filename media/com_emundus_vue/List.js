@@ -1,5 +1,8 @@
-import { _ as _export_sfc, o as openBlock, c as createElementBlock, a as createBaseVNode, b as Fragment, r as renderList, t as toDisplayString, Y as Popover, B as useGlobalStore, u as settingsService, a7 as ref, S as Swal, e as resolveComponent, j as createBlock, d as createCommentVNode, g as createVNode, n as normalizeClass, w as withDirectives, y as vModelSelect, P as vModelText, k as withCtx } from "./app_emundus.js";
+import { _ as _export_sfc, o as openBlock, c as createElementBlock, a as createBaseVNode, F as Fragment, b as renderList, t as toDisplayString, P as Popover, u as useGlobalStore, s as settingsService, a8 as ref, S as Swal, r as resolveComponent, f as createBlock, e as createCommentVNode, g as createVNode, d as normalizeClass, h as withDirectives, B as vModelSelect, R as vModelText, w as withCtx } from "./app_emundus.js";
 import { S as Skeleton } from "./Skeleton.js";
+import Calendar from "./Calendar.js";
+import "./core.js";
+import "./events.js";
 const _sfc_main$1 = {
   name: "Gantt",
   props: {
@@ -79,6 +82,7 @@ const Gantt = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1
 const _sfc_main = {
   name: "list",
   components: {
+    Calendar,
     Skeleton,
     Popover,
     Gantt
@@ -143,9 +147,16 @@ const _sfc_main = {
     }
     this.type = this.params.type;
     this.viewType = localStorage.getItem("tchooz_view_type/" + document.location.hostname);
+    if (this.type === "events") {
+      let calendarView = { value: "calendar", icon: "calendar_today" };
+      this.viewTypeOptions.push(calendarView);
+    }
     if (this.viewType === null || typeof this.viewType === "undefined" || this.viewType !== "blocs" && this.viewType !== "table") {
       this.viewType = "blocs";
-      localStorage.setItem("tchooz_view_type/" + document.location.hostname, "blocs");
+      if (this.type === "events") {
+        this.viewType = "calendar";
+      }
+      localStorage.setItem("tchooz_view_type/" + document.location.hostname, this.viewType);
     }
     const storageNbItemsDisplay = localStorage.getItem("tchooz_number_of_items_to_display/" + document.location.hostname);
     if (storageNbItemsDisplay !== null) {
@@ -576,6 +587,8 @@ const _sfc_main = {
         translation += "<span>" + this.translate("COM_EMUNDUS_ONBOARD_NOEMAIL") + "</span>";
       } else if (this.type === "forms") {
         translation += "<span>" + this.translate("COM_EMUNDUS_ONBOARD_NOFORM") + "</span>";
+      } else if (this.type === "events") {
+        translation += "<span>" + this.translate("COM_EMUNDUS_ONBOARD_NOEVENTS") + "</span>";
       }
       return translation;
     },
@@ -696,10 +709,12 @@ const _hoisted_50 = {
   class: "em-flex-col-center"
 };
 const _hoisted_51 = ["onClick"];
-const _hoisted_52 = ["innerHTML"];
+const _hoisted_52 = { key: 1 };
+const _hoisted_53 = ["innerHTML"];
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_skeleton = resolveComponent("skeleton");
   const _component_popover = resolveComponent("popover");
+  const _component_Calendar = resolveComponent("Calendar");
   const _component_Gantt = resolveComponent("Gantt");
   return openBlock(), createElementBlock("div", {
     id: "onboarding_list",
@@ -863,7 +878,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         }), 64))
       ], 2)) : (openBlock(), createElementBlock("div", _hoisted_25, [
         $options.displayedItems.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_26, [
-          $data.viewType !== "gantt" ? (openBlock(), createElementBlock("table", {
+          $data.viewType !== "calendar" && $data.viewType !== "gantt" ? (openBlock(), createElementBlock("table", {
             key: 0,
             id: "list-table",
             class: normalizeClass({ "blocs": $data.viewType === "blocs" })
@@ -999,17 +1014,23 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 ], 10, _hoisted_37);
               }), 128))
             ])
-          ], 2)) : (openBlock(), createBlock(_component_Gantt, {
-            key: 1,
+          ], 2)) : $data.viewType === "calendar" ? (openBlock(), createElementBlock("div", _hoisted_52, [
+            createVNode(_component_Calendar, {
+              items: $data.items,
+              "edit-action": $options.editAction,
+              onOnClickAction: $options.onClickAction
+            }, null, 8, ["items", "edit-action", "onOnClickAction"])
+          ])) : $data.viewType === "gantt" ? (openBlock(), createBlock(_component_Gantt, {
+            key: 2,
             language: $data.params.shortlang,
             periods: $options.displayedItems
-          }, null, 8, ["language", "periods"]))
+          }, null, 8, ["language", "periods"])) : createCommentVNode("", true)
         ])) : (openBlock(), createElementBlock("div", {
           key: 1,
           id: "empty-list",
           class: "noneDiscover tw-text-center",
           innerHTML: $options.noneDiscoverTranslation
-        }, null, 8, _hoisted_52))
+        }, null, 8, _hoisted_53))
       ]))
     ]))
   ], 2);

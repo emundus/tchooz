@@ -22,12 +22,14 @@ require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
 
 use Gotenberg\Gotenberg;
 use Gotenberg\Stream;
+use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Mail\MailerFactoryInterface;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Database\ParameterType;
 
@@ -92,6 +94,10 @@ class EmundusModelFiles extends JModelLegacy
 			$current_user = Factory::getUser();
 			$language     = Factory::getLanguage();
 			$session      = JFactory::getSession();
+		}
+
+		if(!class_exists('EmundusHelperAccess')) {
+			require_once(JPATH_SITE . '/components/com_emundus/helpers/access.php');
 		}
 
 		$this->locales = substr($language->getTag(), 0, 2);
@@ -1590,19 +1596,26 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getStatusByFnums($fnums)
 	{
-		$query = 'select *
-                  from #__emundus_campaign_candidature as ecc
-                  left join #__emundus_setup_status as ess on ess.step=ecc.status
-                  where ecc.fnum in ("' . implode('","', $fnums) . '")';
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
 
-
-		try {
-			$this->_db->setQuery($query);
-
-			return $this->_db->loadAssocList('fnum');
+		if(!is_array($fnums)) {
+			$fnums = array($fnums);
 		}
-		catch (Exception $e) {
-			throw $e;
+
+		$query->select('*')
+			->from($db->quoteName('#__emundus_campaign_candidature','ecc'))
+			->leftJoin($db->quoteName('#__emundus_setup_status','ess').' ON '.$db->quoteName('ess.step').' = '.$db->quoteName('ecc.status'))
+			->where($db->quoteName('ecc.fnum').' IN ('.implode(',', $db->quote($fnums)).')');
+
+		try
+		{
+			$db->setQuery($query);
+			return $db->loadAssocList('fnum');
+		}
+		catch(Exception $e)
+		{
+			Log::add('Failed to get status by fnums with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
 	}
 
@@ -1822,8 +1835,25 @@ class EmundusModelFiles extends JModelLegacy
 							EmundusModelLogs::log($user_id, $applicant_id, $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE_FAILED', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
 						}
 
-						$this->app->triggerEvent('onAfterStatusChange', [$fnum, $state]);
-						$this->app->triggerEvent('onCallEventHandler', ['onAfterStatusChange', ['fnum' => $fnum, 'state' => $state, 'old_state' => $old_status_step]]);
+						PluginHelper::importPlugin('emundus'); // si event call event handler
+						$dispatcher = Factory::getApplication()->getDispatcher();
+
+						$onAfterStatusChangeEventHandler = new GenericEvent(
+							'onCallEventHandler',
+							['onAfterStatusChange',
+								// Datas to pass to the event
+								['fnum' => $fnum, 'state' => $state, 'old_state' => $old_status_step]
+							]
+						);
+						$onAfterStatusChange = new GenericEvent(
+							'onAfterStatusChange',
+							// Datas to pass to the event
+							['fnum' => $fnum, 'state' => $state, 'old_state' => $old_status_step]
+						);
+
+						// Dispatch the event
+						$dispatcher->dispatch('onCallEventHandler', $onAfterStatusChangeEventHandler);
+						$dispatcher->dispatch('onAfterStatusChange', $onAfterStatusChange);
 
 						if (!empty($profile)) {
 							$query->clear()

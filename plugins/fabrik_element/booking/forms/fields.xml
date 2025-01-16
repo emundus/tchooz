@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields name="params">
+		<fieldset name="plg-booking"
+				  label="PLG_ELEMENT_BOOKING_FILTERS_LABEL">
+			<field name="location_filter_elt"
+				   type="text"
+				   default=""
+				   description="PLG_ELEMENT_BOOKING_LOCATION_FILTER_DESC"
+				   label="PLG_ELEMENT_BOOKING_LOCATION_FILTER_LABEL"/>
+		</fieldset>
+	</fields>
+</form>

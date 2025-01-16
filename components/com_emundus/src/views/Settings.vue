@@ -2,7 +2,7 @@
   <div class="tw-w-full tw-flex tw-gap-8">
     <SidebarMenu :key="keyMenu" :menus-list="menusList" :id="'settings_menus'" @listMenus="GetList" @menuSelected="handleMenu"/>
 
-    <div class="tw-w-full tw-pt-6 tw-pr-8 tw-pb-3 tw-pl-0" v-if="activeMenuItem">
+    <div class="tw-overflow-hidden tw-w-full tw-pt-6 tw-pr-8 tw-pb-3 tw-pl-0" v-if="activeMenuItem">
       <h1 class="tw-text-2xl tw-pl-1 tw-font-semibold tw-text-profile-full tw-mb-3">
         <span class="material-symbols-outlined tw-scale-150 tw-text-profile-full tw-me-2">
           {{ activeMenuItem.icon }}
@@ -40,6 +40,7 @@ import Multiselect from 'vue-multiselect';
 import SidebarMenu from "@/components/Menus/SidebarMenu.vue";
 import SettingsContent from "@/components/Settings/SettingsContent.vue";
 import Addons from "@/components/Settings/Addons.vue";
+import Integration from "@/components/Settings/Integration.vue";
 import Info from "@/components/Utils/Info.vue";
 import SectionComponent from "@/components/Settings/SectionComponent.vue";
 import WorkflowSettings  from "@/views/Workflows/WorkflowSettings.vue";
@@ -59,6 +60,7 @@ export default {
     WebSecurity,
     Multiselect,
     Addons,
+    Integration,
     Info,
     WorkflowSettings
   },
@@ -207,7 +209,7 @@ export default {
       }
     },
     activeMenu: function (val) {
-      sessionStorage.setItem('tchooz_selected_menu/'+'settings/menus'+ '/' + document.location.hostname, val);
+      sessionStorage.setItem('tchooz_selected_menu/'+'settings_menus'+ '/' + document.location.hostname, val);
       this.keyMenu++;
     },
     activeSection: function (val) {

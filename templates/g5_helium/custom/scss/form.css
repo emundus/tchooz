@@ -1363,7 +1363,7 @@
         input:not([type='file']):not(.custom-color-picker), select, textarea {
             color: var(--em-default-text-color-1);
             border-radius: var(--em-coordinator-br);
-            @apply tw-px-1.5 tw-py-2;
+            @apply tw-px-2.5 tw-py-2;
             @apply tw-mb-0;
             background-color: var(--em-form-bgc);
             transition: all 0.1s ease-out;
@@ -1390,6 +1390,7 @@
                 outline: unset !important;
             }
             .multiselect__single {
+                transition: all 0.1s ease-out !important;
                 color: var(--neutral-900);
             }
 
@@ -1404,6 +1405,75 @@
                         }
                     }
                 }
+            }
+        }
+
+        .multiselect:not(.multiselect--active) {
+            .multiselect__tags {
+                transition: all 0.1s ease-out;
+                &:hover {
+                    background-color: var(--em-form-bgc-hover);
+                    border-color: var(--em-form-bc-hover);
+                    box-shadow: unset;
+
+                    .multiselect__single {
+                        background-color: var(--em-form-bgc-hover);
+                        border-color: var(--em-form-bc-hover);
+                        box-shadow: unset;
+                    }
+                }
+            }
+        }
+
+        /** RADIOBUTTON **/
+        @supports selector(:has(*)) {
+            fieldset[data-toggle="radio_buttons"] .fabrikgrid_radio:has(input[type="radio"]:checked) {
+                background-color: var(--em-form-radio-bgc-checked);
+                border-color: var(--em-form-radio-bc-checked);
+            }
+        }
+
+        fieldset[data-toggle="radio_buttons"] {
+            .fabrikgrid_radio {
+                margin-bottom: var(--em-spacing-1);
+                margin-left: 0;
+                display: flex;
+                align-items: center;
+                padding: var(--em-form-radio-padding);
+                border: var(--em-form-radio-bw) solid var(--em-form-radio-bc);
+                border-radius: var(--em-form-radio-br);
+                width: -moz-fit-content;
+                width: fit-content;
+                height: auto;
+
+                input[type="radio"] {
+                    accent-color: var(--em-form-radio-color-checked);
+                    width: 24px;
+                    min-width: var(--em-form-radio-width);
+                    height: var(--em-form-radio-height);
+                    position: relative;
+                }
+
+                label {
+                    cursor: pointer;
+                    margin-bottom: 0px;
+                    width: 100%;
+                }
+            }
+        }
+
+        /** Split fields **/
+        .input-split-field-select {
+            input {
+                border-top-right-radius: 0 !important;
+                border-bottom-right-radius: 0 !important;
+                border-right: transparent !important;
+            }
+            select {
+                border-top-left-radius: 0 !important;
+                border-bottom-left-radius: 0 !important;
+                border-left: transparent !important;
+                background-color: var(--neutral-400) !important;
             }
         }
     }

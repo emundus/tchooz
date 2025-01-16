@@ -38,7 +38,7 @@ class FormModelTest extends UnitTestCase
 	 */
 	public function testCopyAttachmentsToNewProfile()
 	{
-		$base_profile     = 9;
+		$base_profile     = 1001;
 		$fake_new_profile = 64567657;
 
 		$copy = $this->model->copyAttachmentsToNewProfile(0, $fake_new_profile);

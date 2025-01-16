@@ -124,5 +124,11 @@
     "icon": "map",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_GEOLOCATION",
     "published": false
+  },
+  {
+    "value": "booking",
+    "icon": "event",
+    "name": "COM_EMUNDUS_ONBOARD_TYPE_BOOKING",
+    "published": true
   }
 ]
