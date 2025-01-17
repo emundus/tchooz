@@ -237,7 +237,7 @@ class modEmundusCampaignHelper
 		{
 			$columns[] = 'tu.date_start as formation_start';
 			$columns[] = 'tu.date_end as formation_end';
-			$columns[] = 'pr.notes as desc';
+			$columns[] = 'pr.notes as '.$this->db->qn('desc');
 			$columns[] = 'ca.is_limited';
 			$columns[] = 'pr.programmes as prog_type';
 			$query
