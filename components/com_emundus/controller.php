@@ -707,6 +707,10 @@ class EmundusController extends JControllerLegacy
 
 		if (!empty($redirect)) {
 			$redirect = base64_decode($redirect);
+
+			if (!empty($fnum) && !str_contains($redirect, 'fnum=')) {
+				$redirect .= '&fnum=' . $fnum;
+			}
 		}
 
 		if (empty($fnum)) {
