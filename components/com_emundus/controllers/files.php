@@ -1057,12 +1057,12 @@ class EmundusControllerFiles extends BaseController
 
 			$fnumsInfos = $m_files->getFnumsInfos($validFnums);
 
-			$code = array();
+			$codes = array();
 			foreach ($fnumsInfos as $fnum) {
-				$code[] = $fnum['training'];
+				$codes[] = $fnum['training'];
 			}
 
-			$trigger_emails = $m_email->getEmailTrigger($state, $code, $to_applicant);
+			$trigger_emails = $m_email->getEmailTrigger($state, $codes, '0,1');
 		}
 
 		echo json_encode((object)(array('status' => !empty($trigger_emails), 'msg' => Text::sprintf('COM_EMUNDUS_APPLICATION_MAIL_CHANGE_STATUT_INFO', sizeof($validFnums)))));
