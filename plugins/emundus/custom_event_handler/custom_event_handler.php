@@ -674,7 +674,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 									break;
 							}
 
-							$query->select($db->quoteName($table_alias . '.' . $column))
+							$query->select($db->quoteName('ecc.id'))
 								->from($db->quoteName('jos_emundus_campaign_candidature', 'ecc'))
 								->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($fnum))
 								->andWhere($db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value));
