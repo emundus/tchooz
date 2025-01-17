@@ -30,7 +30,7 @@ $applicant = $m_users->getUserById($this->sid)[0];
         </div>
     </div>
     <iframe id="iframe"
-            src="<?php echo Uri::base(); ?>index.php?option=com_fabrik&view=details&formid=374&tmpl=component&iframe=1&rowid=<?php echo $this->sid; ?>"
+            src="<?php echo Uri::base(); ?>index.php?option=com_fabrik&view=details&formid=374&tmpl=component&iframe=1&rowid=<?php echo $applicant->id; ?>"
             height="600" width="100%"
     </iframe>
 </div>

@@ -63,6 +63,8 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 
 	public function onBeforeProcess()
 	{
+		require_once JPATH_SITE . '/components/com_emundus/helpers/menu.php';
+		require_once JPATH_SITE . '/components/com_emundus/helpers/fabrik.php';
 		$app  = Factory::getApplication();
 		$user = $app->getIdentity();
 
@@ -177,16 +179,53 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 
 		$id         = $data['jos_emundus_btob___id'];
 		$applicants = $data['jos_emundus_btob_1237_repeat___id'];
+		$campaign_id = $data['jos_emundus_btob___campaign_id_raw'];
+		if (is_array($campaign_id))
+		{
+			$campaign_id = $campaign_id[0];
+		}
+
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->createQuery();
+
+		$profiles = [];
+
+		$query->clear()
+			->select('profile_id')
+			->from('#__emundus_setup_campaigns')
+			->where('id = :cid')
+			->bind(':cid', $campaign_id, ParameterType::INTEGER);
+		$db->setQuery($query);
+		$profiles[] = $db->loadResult();
+		$profiles[] = 1011;
+
+		$forms = [];
+		$forms_ids = [];
+		foreach ($profiles as $profile_id)
+		{
+			$forms_by_profile = EmundusHelperMenu::buildMenuQuery($profile_id);
+			foreach ($forms_by_profile as $form) {
+				if(in_array($form->form_id, $forms_ids)) {
+					continue;
+				}
+				$forms_ids[] = $form->form_id;
+				$forms[] = $form;
+			}
+		}
 
 		foreach ($applicants as $key => $applicant)
 		{
 			$fnum = $m_files->createFile($cid, $user->id);
 
+			$query->clear()
+				->update('#__emundus_campaign_candidature')
+				->set('date_submitted = ' . $db->quote(date('Y-m-d H:i:s')))
+				->where('fnum LIKE ' . $db->quote($fnum));
+			$db->setQuery($query);
+			$db->execute();
+
 			if (!empty($fnum))
 			{
-				$db    = Factory::getContainer()->get('DatabaseDriver');
-				$query = $db->createQuery();
-
 				// Update the fnum in the repeat table
 				$query->clear()
 					->update('#__emundus_btob_1237_repeat')
@@ -196,37 +235,40 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 				$db->setQuery($query);
 				$db->execute();
 
-
 				$tag = $this->getParams()->get('btob_form_tag', 7);
 				$m_files->tagFile([$fnum], [$tag], $user->id);
 
-				$personal_details = [
-					'fnum'        => $fnum,
-					'user'        => $user->id,
-					'time_date'   => date('Y-m-d H:i:s'),
-					'e_846_8155'  => $data['jos_emundus_btob_1237_repeat___lastname'][$key],
-					'e_904_8572'  => $data['jos_emundus_btob_1237_repeat___lastname'][$key],
-					'e_846_8156'  => $data['jos_emundus_btob_1237_repeat___firstname'][$key],
-					'e_847_81641' => $data['jos_emundus_btob_1237_repeat___btob_amenagements'][$key],
-					'e_847_8165'  => $data['jos_emundus_btob_1237_repeat___amenagements_details'][$key],
-				];
-				$personal_details = (object) $personal_details;
-				$db->insertObject('#__emundus_1005_04', $personal_details);
-
-				$correspondance = [
-					'fnum'        => $fnum,
-					'user'        => $user->id,
-					'time_date'   => date('Y-m-d H:i:s'),
-					'e_852_8184'  => $user->email,
-					'e_994_89001' => 1,
-					'e_994_8901'  => $data['jos_emundus_btob_1237_repeat___email'][$key]
-				];
-				$correspondance = (object) $correspondance;
-				$db->insertObject('#__emundus_1005_05', $correspondance);
-
 				// Get informations from profile for filling the form
+				$columns = [
+					'siret_profil as siret',
+					'raison_sociale_profil as raison_sociale',
+					'adresse_postale_ligne_1_profil',
+					'adresse_postale_ligne_2_profil',
+					'code_postal_profil',
+					'ville',
+					'pays_profil',
+					'civilite_responsable',
+					'nom_responsable',
+					'prenom_manager',
+					'fonction_responsable',
+					'adresse_e_mail_responsable',
+					'telephone_responsable',
+					'meme_adresse_entreprise',
+					'pays_responsable',
+					'adresse_postale_responsable',
+					'complement_adresse_responsable',
+					'code_postal_manager',
+					'ville_responsable',
+					'charge_gestion_admin',
+					'civilite_admin',
+					'nom_admin',
+					'prenom_admin',
+					'fonction_admin',
+					'adresse_e_mail',
+					'telephone_admin'
+				];
 				$query->clear()
-					->select('siret_profil as siret,raison_sociale_profil as raison_sociale, adresse_postale_ligne_1_profil, adresse_postale_ligne_2_profil,code_postal_profil,ville,pays_profil')
+					->select($columns)
 					->from('#__emundus_users')
 					->where('user_id = ' . $user->id);
 				$db->setQuery($query);
@@ -255,23 +297,74 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 					$financement_organisme = str_replace(' ', '', $financement_organisme);
 				}
 
-				$financement = [
-					'fnum'       => $fnum,
-					'user'       => $user->id,
-					'time_date'  => date('Y-m-d H:i:s'),
-					'e_856_8194' => $financement_entreprise . '€',
-					'e_856_8195' => $financement_organisme . '€',
-					'e_856_8193' => '0€',
-					'e_858_8207' => $profile->pays_profil,
-					'e_857_8196' => $profile->siret,
-					'e_857_8199' => $profile->raison_sociale,
-					'e_857_8200' => $profile->adresse_postale_ligne_1,
-					'e_857_8201' => $profile->adresse_postale_ligne_2_profil,
-					'e_858_8205' => $profile->code_postal_profil,
-					'e_858_8206' => $profile->ville,
+				$alias_to_fills = [
+					'registration_common_name' => $data['jos_emundus_btob_1237_repeat___lastname'][$key],
+					'registration_birth_name' => $data['jos_emundus_btob_1237_repeat___lastname'][$key],
+					'registration_first_name' => $data['jos_emundus_btob_1237_repeat___firstname'][$key],
+					'accomodation_yesno' => !empty($data['jos_emundus_btob_1237_repeat___btob_amenagements'][$key]) ? 1 : 0,
+					'accomodation_specify' => $data['jos_emundus_btob_1237_repeat___amenagements_details'][$key],
+					'registration_email' => $user->email,
+					'correspondence_different_contact' => 1,
+					'correspondence_different_email' => $data['jos_emundus_btob_1237_repeat___email'][$key],
+					'registration_company_price' => $financement_entreprise . '€',
+					'registration_organism_price' => $financement_organisme . '€',
+					'registration_candidate_price' => '0€',
+					'company_country' => $profile->pays_profil,
+					'company_siret' => $profile->siret,
+					'registration_company_name' => $profile->raison_sociale,
+					'company_address' => $profile->adresse_postale_ligne_1_profil,
+					'company_additional_address' => $profile->adresse_postale_ligne_2_profil,
+					'company_postal_code' => $profile->code_postal_profil,
+					'company_city' => $profile->ville,
+					'manager_civility' => $profile->civilite_responsable,
+					'manager_last_name' => $profile->nom_responsable,
+					'manager_first_name' => $profile->prenom_manager,
+					'manager_function' => $profile->fonction_responsable,
+					'manager_email' => $profile->adresse_e_mail_responsable,
+					'phone' => $profile->telephone_responsable,
+					'same_company_address' => !empty($profile->meme_adresse_entreprise) ? 1 : 0,
+					'manager_country' => $profile->pays_responsable,
+					'manager_address' => $profile->adresse_postale_responsable,
+					'manager_additional_address' => $profile->complement_adresse_responsable,
+					'manager_postal_code' => $profile->code_postal_manager,
+					'manager_city' => $profile->ville_responsable,
+					'different_admin' => !empty($profile->charge_gestion_admin) ? 0 : 1,
+					'admin_civility' => $profile->civilite_admin,
+					'admin_last_name' => $profile->nom_admin,
+					'admin_first_name' => $profile->prenom_admin,
+					'admin_function' => $profile->fonction_admin,
+					'admin_email' => $profile->adresse_e_mail,
+					'phone_number' => $profile->telephone_admin,
 				];
-				$financement = (object) $financement;
-				$db->insertObject('#__emundus_1005_06', $financement);
+
+				$datas_to_fills = [];
+				foreach ($alias_to_fills as $alias => $value)
+				{
+					foreach ($forms as $form) {
+						$element = EmundusHelperFabrik::getElementsByAlias($alias, $form->form_id);
+						if(!empty($element)) {
+							if(empty($datas_to_fills[$element[0]->db_table_name])) {
+								$datas_to_fills[$element[0]->db_table_name] = [];
+							}
+							$datas_to_fills[$element[0]->db_table_name][$element[0]->name] = $value;
+
+							break;
+						}
+					}
+				}
+
+				foreach ($datas_to_fills as $table => $fields) {
+					$insert_fields = [];
+					$insert_fields['fnum'] = $fnum;
+					$insert_fields['user'] = $user->id;
+					$insert_fields['time_date'] = date('Y-m-d H:i:s');
+					foreach ($fields as $key => $value) {
+						$insert_fields[$key] = $value;
+					}
+
+					$insert_fields = (object) $insert_fields;
+					$db->insertObject($table, $insert_fields);
+				}
 
 				$attachment_id = $this->getParams()->get('btob_attachment_to_generate', 43);
 				$m_evaluation->generateLetters($fnum, [$attachment_id], 1, 2, 0);
