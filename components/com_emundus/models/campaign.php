@@ -1662,7 +1662,6 @@ class EmundusModelCampaign extends ListModel
 						}
 						$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
 						break;
-					case 'limit':
 					case 'profileLabel':
 					case 'progid':
 					case 'status':
@@ -1702,6 +1701,7 @@ class EmundusModelCampaign extends ListModel
 
 						$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
 						break;
+					case 'limit':
 					case 'pinned':
 					case 'is_limited':
 						if (!isset($val) || $val == '') {

@@ -29,7 +29,7 @@
         <fieldset name="CAMPAIGN_PARAMS">
             <field type="text" name="campaign_json_array_entry" label="COM_SCHEDULER_FIELDSET_CAMPAIGN_JSON_ARRAY_ENTRY" />
 
-            <field type="text" name="campaign_id_mapping_emundus" label="COM_SCHEDULER_FIELDSET_CAMPAIGN_ID_MAPPING_EM" />
+            <field type="text" name="campaign_id_mapping_emundus" label="COM_SCHEDULER_FIELDSET_CAMPAIGN_ID_MAPPING_EMUNDUS" />
             <field type="text" name="campaign_id_mapping_custom" label="COM_SCHEDULER_FIELDSET_CAMPAIGN_ID_MAPPING_CUSTOM" />
             <field type="text" name="campaign_label_mapping" label="COM_SCHEDULER_FIELDSET_CAMPAIGN_LABEL_MAPPING" />
             <field type="text" name="campaign_training_mapping" label="COM_SCHEDULER_FIELDSET_CAMPAIGN_TRAINING_MAPPING" />
