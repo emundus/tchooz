@@ -58,6 +58,7 @@ const _sfc_main$5 = {
       loading: true,
       openedLocationPopup: false,
       teamsEnabled: false,
+      teamsPublished: false,
       settingsLink: "",
       eventColor: "#1e1e1e",
       fields: [
@@ -305,8 +306,34 @@ const _sfc_main$5 = {
       settingsService.getApp(0, "teams").then((response) => {
         if (response.status) {
           this.teamsEnabled = response.data.enabled && response.data.config !== "{}";
+          this.teamsPublished = response.data.published;
+          this.updateConferenceEngineOptions();
         }
       });
+    },
+    updateConferenceEngineOptions() {
+      const conferenceEngineField = this.fields.find((field) => field.param === "conference_engine");
+      if (this.teamsPublished) {
+        conferenceEngineField.options = [
+          {
+            value: "link",
+            label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_GLOBAL_CONFERENCE_ENGINE_LINK"
+          },
+          {
+            value: "teams",
+            label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_GLOBAL_CONFERENCE_ENGINE_TEAMS",
+            img: "teams.svg",
+            altImg: "Microsoft Teams"
+          }
+        ];
+      } else {
+        conferenceEngineField.options = [
+          {
+            value: "link",
+            label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_GLOBAL_CONFERENCE_ENGINE_LINK"
+          }
+        ];
+      }
     },
     getSettingsLink() {
       settingsService.getSEFLink("index.php?option=com_emundus&view=settings", useGlobalStore().getCurrentLang).then((response) => {

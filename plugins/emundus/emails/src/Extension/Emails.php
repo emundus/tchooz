@@ -126,8 +126,8 @@ final class Emails extends CMSPlugin implements SubscriberInterface
 					$ics .= "VERSION:2.0\n";
 					$ics .= "PRODID:-//hacksw/handcal//NONSGML v1.0//EN\n";
 					$ics .= "BEGIN:VEVENT\n";
-					$ics .= "DTSTART:" . date('Ymd\THis\Z', strtotime($data['availability']->start)) . "\n";
-					$ics .= "DTEND:" . date('Ymd\THis\Z', strtotime($data['availability']->end)) . "\n";
+					$ics .= "DTSTART:" . date('Ymd\THis', strtotime($data['availability']->start)) . "\n";
+					$ics .= "DTEND:" . date('Ymd\THis', strtotime($data['availability']->end)) . "\n";
 					$ics .= "SUMMARY:Emundus Booking\n";
 					$ics .= "LOCATION:" . $complete_location['name'] . "\n";
 					$ics .= "DESCRIPTION:" . $location_link . "\n";
