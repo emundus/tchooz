@@ -65,7 +65,12 @@ class PlgFabrik_FormBtobProfile extends plgFabrik_Form
 					'jos_emundus_users___prenom_admin',
 					'jos_emundus_users___fonction_admin',
 					'jos_emundus_users___adresse_e_mail',
-					'jos_emundus_users___telephone_admin'
+					'jos_emundus_users___telephone_admin',
+					'jos_emundus_users___pays_facturation',
+					'jos_emundus_users___field_adresse_facturation',
+					'jos_emundus_users___complement_adresse_facturation',
+					'jos_emundus_users___code_postal_facturation',
+					'jos_emundus_users___ville_facturation',
 				];
 				if (in_array($elementModel->getFullName(), $elements_to_check))
 				{

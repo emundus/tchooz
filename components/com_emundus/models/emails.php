@@ -131,149 +131,147 @@ class EmundusModelEmails extends JModelList
 	 *
 	 * @since version v6
 	 */
-	public function getEmailTrigger($step, $code, $to_applicant = 0, $to_current_user = null, $student = null)
-	{
-		if (!isset($step) || empty($code)) {
-			return [];
-		}
+	public function getEmailTrigger($step, $codes, $to_applicant = 0, $to_current_user = null, $student = null) {
+		$emails_triggers = array();
 
-		$query = $this->_db->getQuery(true);
-		$query->select('eset.id as trigger_id, eset.step, ese.*, eset.to_current_user, eset.to_applicant, eserp.programme_id, esp.code, esp.label, GROUP_CONCAT(DISTINCT eser.profile_id) as profile_id, GROUP_CONCAT(DISTINCT eserg.group_id) as group_id, GROUP_CONCAT(DISTINCT eseru.user_id) as user_id, et.Template, GROUP_CONCAT(ert.tags) as tags, GROUP_CONCAT(erca.candidate_attachment) as attachments, GROUP_CONCAT(erla.letter_attachment) as letter_attachments, GROUP_CONCAT(err1.receivers) as cc, GROUP_CONCAT(err2.receivers) as bcc')
-			->from($this->_db->quoteName('#__emundus_setup_emails_trigger', 'eset'))
-			->leftJoin($this->_db->quoteName('#__emundus_setup_emails', 'ese') . ' ON ' . $this->_db->quoteName('ese.id') . ' = ' . $this->_db->quoteName('eset.email_id'))
-			->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_programme_id', 'eserp') . ' ON ' . $this->_db->quoteName('eserp.parent_id') . ' = ' . $this->_db->quoteName('eset.id'))
-			->leftJoin($this->_db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON ' . $this->_db->quoteName('esp.id') . ' = ' . $this->_db->quoteName('eserp.programme_id'))
-			->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_profile_id', 'eser') . ' ON ' . $this->_db->quoteName('eser.parent_id') . ' = ' . $this->_db->quoteName('eset.id'))
-			->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_group_id', 'eserg') . ' ON ' . $this->_db->quoteName('eserg.parent_id') . ' = ' . $this->_db->quoteName('eset.id'))
-			->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id', 'eseru') . ' ON ' . $this->_db->quoteName('eseru.parent_id') . ' = ' . $this->_db->quoteName('eset.id'))
-			->leftJoin($this->_db->quoteName('#__emundus_email_templates', 'et') . ' ON ' . $this->_db->quoteName('et.id') . ' = ' . $this->_db->quoteName('ese.email_tmpl'))
-			->leftJoin($this->_db->quoteName('#__emundus_setup_emails_repeat_tags', 'ert') . ' ON ' . $this->_db->quoteName('ert.parent_id') . ' = ' . $this->_db->quoteName('eset.email_id'))
-			->leftJoin($this->_db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment', 'erca') . ' ON ' . $this->_db->quoteName('erca.parent_id') . ' = ' . $this->_db->quoteName('eset.email_id'))
-			->leftJoin($this->_db->quoteName('#__emundus_setup_emails_repeat_letter_attachment', 'erla') . ' ON ' . $this->_db->quoteName('erla.parent_id') . ' = ' . $this->_db->quoteName('eset.email_id'))
-			->leftJoin($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers', 'err1') . ' ON ' . $this->_db->quoteName('err1.parent_id') . ' = ' . $this->_db->quoteName('eset.email_id') . ' AND ' . $this->_db->quoteName('err1.type') . ' = ' . $this->_db->quote('receiver_cc_email'))
-			->leftJoin($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers', 'err2') . ' ON ' . $this->_db->quoteName('err2.parent_id') . ' = ' . $this->_db->quoteName('eset.email_id') . ' AND ' . $this->_db->quoteName('err2.type') . ' = ' . $this->_db->quote('receiver_bcc_email'))
-			->where($this->_db->quoteName('eset.step') . ' = ' . $this->_db->quote($step))
-			->andWhere($this->_db->quoteName('eset.to_applicant') . ' IN (' . $to_applicant . ')');
-		if (!is_null($to_current_user)) {
-			$query->andWhere($this->_db->quoteName('eset.to_current_user') . ' IN (' . $to_current_user . ')');
-		}
-		$query->andWhere($this->_db->quoteName('esp.code') . ' IN (' . implode(',', $this->_db->quote($code)) . ') OR ' . $this->_db->quoteName('eset.all_program') . ' = 1')
-			->group('eset.id');
-		try {
-			$this->_db->setQuery($query);
-			$results = $this->_db->loadObjectList();
-		}
-		catch (Exception $e) {
-			Log::add('Error when get emails triggers with query : ' . $query->__toString(), Log::ERROR, 'com_emundus');
-		}
+		if (isset($step) && !empty($codes)) {
+			$query = $this->_db->getQuery(true);
+			$query->select('eset.id as trigger_id, eset.step, ese.*, eset.to_current_user, eset.to_applicant, eserp.programme_id, GROUP_CONCAT(DISTINCT esp.code) as code_prog, GROUP_CONCAT(DISTINCT esp.label) as label_prog, GROUP_CONCAT(DISTINCT eser.profile_id) as profile_id, GROUP_CONCAT(DISTINCT eserg.group_id) as group_id, GROUP_CONCAT(DISTINCT eseru.user_id) as user_id, et.Template, GROUP_CONCAT(ert.tags) as tags, GROUP_CONCAT(erca.candidate_attachment) as attachments, GROUP_CONCAT(erla.letter_attachment) as letter_attachments, GROUP_CONCAT(err1.receivers) as cc, GROUP_CONCAT(err2.receivers) as bcc')
+				->from($this->_db->quoteName('#__emundus_setup_emails_trigger', 'eset'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_emails','ese').' ON '.$this->_db->quoteName('ese.id').' = '.$this->_db->quoteName('eset.email_id'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_programme_id','eserp').' ON '.$this->_db->quoteName('eserp.parent_id').' = '.$this->_db->quoteName('eset.id'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_programmes','esp').' ON '.$this->_db->quoteName('esp.id').' = '.$this->_db->quoteName('eserp.programme_id'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_profile_id','eser').' ON '.$this->_db->quoteName('eser.parent_id').' = '.$this->_db->quoteName('eset.id'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_group_id','eserg').' ON '.$this->_db->quoteName('eserg.parent_id').' = '.$this->_db->quoteName('eset.id'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id','eseru').' ON '.$this->_db->quoteName('eseru.parent_id').' = '.$this->_db->quoteName('eset.id'))
+				->leftJoin($this->_db->quoteName('#__emundus_email_templates','et').' ON '.$this->_db->quoteName('et.id').' = '.$this->_db->quoteName('ese.email_tmpl'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_emails_repeat_tags','ert').' ON '.$this->_db->quoteName('ert.parent_id').' = '.$this->_db->quoteName('eset.email_id'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment','erca').' ON '.$this->_db->quoteName('erca.parent_id').' = '.$this->_db->quoteName('eset.email_id'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_emails_repeat_letter_attachment','erla').' ON '.$this->_db->quoteName('erla.parent_id').' = '.$this->_db->quoteName('eset.email_id'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers','err1').' ON '.$this->_db->quoteName('err1.parent_id').' = '.$this->_db->quoteName('eset.email_id').' AND '.$this->_db->quoteName('err1.type').' = '.$this->_db->quote('receiver_cc_email'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers','err2').' ON '.$this->_db->quoteName('err2.parent_id').' = '.$this->_db->quoteName('eset.email_id').' AND '.$this->_db->quoteName('err2.type').' = '.$this->_db->quote('receiver_bcc_email'))
+				->where($this->_db->quoteName('eset.step').' = '.$this->_db->quote($step))
+				->andWhere($this->_db->quoteName('eset.to_applicant').' IN ('.$to_applicant .')');
 
-		$triggers = array_filter($results, function ($obj) {
-			if (empty($obj->trigger_id)) {
-				return false;
+			if (!is_null($to_current_user)) {
+				$query->andWhere($this->_db->quoteName('eset.to_current_user') . ' IN (' . $to_current_user . ')');
+			}
+			$query->andWhere($this->_db->quoteName('esp.code').' IN ('.implode(',', $this->_db->quote($codes)) .')')
+				->group('eset.id');
+			try {
+				$this->_db->setQuery($query);
+				$results = $this->_db->loadObjectList();
+			}
+			catch (Exception $e) {
+				JLog::add('Error when get emails triggers with query : ' . $query->__toString(), JLog::ERROR, 'com_emundus');
 			}
 
-			return true;
-		});
+			$triggers = array_filter($results, function($obj){
+				if (empty($obj->trigger_id)) { return false; }
+				return true;
+			});
 
-		$emails_tmpl = array();
+			if (!empty($triggers) && !empty($triggers[0]->trigger_id)) {
+				foreach ($triggers as $trigger) {
+					$codes_prog = explode(',',$trigger->code_prog);
+					// We separate by program code so that, for each trigger, we still know for what programs they must be used. Instead of sending every trigger for every file updated
+					foreach($codes_prog as $code_prog) {
+						// email tmpl
+						$emails_triggers[$trigger->trigger_id][$code_prog]['tmpl']['subject'] = $trigger->subject;
+						$emails_triggers[$trigger->trigger_id][$code_prog]['tmpl']['emailfrom'] = $trigger->emailfrom;
+						$emails_triggers[$trigger->trigger_id][$code_prog]['tmpl']['message'] = $trigger->message;
+						$emails_triggers[$trigger->trigger_id][$code_prog]['tmpl']['name'] = $trigger->name;
+						$emails_triggers[$trigger->trigger_id][$code_prog]['tmpl']['tags'] = $trigger->tags;
+						$emails_triggers[$trigger->trigger_id][$code_prog]['tmpl']['attachments'] = $trigger->attachments;
+						$emails_triggers[$trigger->trigger_id][$code_prog]['tmpl']['letter_attachment'] = $trigger->letter_attachments;
 
-		if (!empty($triggers) && !empty($triggers[0]->id)) {
-			foreach ($triggers as $trigger) {
-				// email tmpl
-				$emails_tmpl[$trigger->id][$trigger->code]['tmpl']['subject']           = $trigger->subject;
-				$emails_tmpl[$trigger->id][$trigger->code]['tmpl']['emailfrom']         = $trigger->emailfrom;
-				$emails_tmpl[$trigger->id][$trigger->code]['tmpl']['message']           = $trigger->message;
-				$emails_tmpl[$trigger->id][$trigger->code]['tmpl']['name']              = $trigger->name;
-				$emails_tmpl[$trigger->id][$trigger->code]['tmpl']['tags']              = $trigger->tags;
-				$emails_tmpl[$trigger->id][$trigger->code]['tmpl']['attachments']       = $trigger->attachments;
-				$emails_tmpl[$trigger->id][$trigger->code]['tmpl']['letter_attachment'] = $trigger->letter_attachments;
+						// This is the email template model, the HTML structure that makes the email look good.
+						$emails_triggers[$trigger->trigger_id][$code_prog]['tmpl']['template'] = $trigger->Template;
 
-				// This is the email template model, the HTML structure that makes the email look good.
-				$emails_tmpl[$trigger->id][$trigger->code]['tmpl']['template'] = $trigger->Template;
+						// default recipients
+						if (!empty($trigger->profile_id)) {
+							$emails_triggers[$trigger->trigger_id][$code_prog]['to']['profile'] = explode(',', $trigger->profile_id);
+						}
 
-				// default recipients
-				if (isset($trigger->profile_id) && !empty($trigger->profile_id)) {
-					$emails_tmpl[$trigger->id][$trigger->code]['to']['profile'] = explode(',', $trigger->profile_id);
+						if (!empty($trigger->group_id)) {
+							$emails_triggers[$trigger->trigger_id][$code_prog]['to']['group'] = explode(',', $trigger->group_id);
+						}
+
+						if (!empty($trigger->user_id)) {
+							$emails_triggers[$trigger->trigger_id][$code_prog]['to']['user'] = explode(',', $trigger->user_id);
+						}
+
+						$emails_triggers[$trigger->trigger_id][$code_prog]['to']['to_applicant'] = $trigger->to_applicant;
+						$emails_triggers[$trigger->trigger_id][$code_prog]['to']['to_current_user'] = $trigger->to_current_user;
+						$emails_triggers[$trigger->trigger_id][$code_prog]['to']['cc'] = $trigger->cc;
+						$emails_triggers[$trigger->trigger_id][$code_prog]['to']['bcc'] = $trigger->bcc;
+					}
 				}
 
-				if (isset($trigger->group_id) && !empty($trigger->group_id)) {
-					$emails_tmpl[$trigger->id][$trigger->code]['to']['group'] = explode(',', $trigger->group_id);
-				}
+				// generate list of default recipient email + name
+				foreach ($emails_triggers as $et_key => $codes) {
+					$trigger_id = $et_key;
 
-				if (isset($trigger->user_id) && !empty($trigger->user_id)) {
-					$emails_tmpl[$trigger->id][$trigger->code]['to']['user'] = explode(',', $trigger->user_id);
-				}
+					foreach ($codes as $key => $tmpl) {
+						$code = $key;
+						$recipients = array();
+						$as_where = false;
+						$where = '';
 
-				$emails_tmpl[$trigger->id][$trigger->code]['to']['to_applicant']    = $trigger->to_applicant;
-				$emails_tmpl[$trigger->id][$trigger->code]['to']['to_current_user'] = $trigger->to_current_user;
-				$emails_tmpl[$trigger->id][$trigger->code]['to']['cc']              = $trigger->cc;
-				$emails_tmpl[$trigger->id][$trigger->code]['to']['bcc']             = $trigger->bcc;
-			}
-
-			// generate list of default recipient email + name
-			foreach ($emails_tmpl as $key => $codes) {
-				$trigger_id = $key;
-
-				foreach ($codes as $key => $tmpl) {
-					$code       = $key;
-					$recipients = array();
-					$as_where   = false;
-					$where      = '';
-
-					if (isset($tmpl['to']['profile'])) {
-						if (count($tmpl['to']['profile']) > 0) {
-							$where    = ' (eu.profile IN (' . implode(',', $tmpl['to']['profile']) . ') OR eup.profile_id IN (' . implode(',', $tmpl['to']['profile']) . '))';
-							$as_where = true;
+						if (isset($tmpl['to']['profile'])) {
+							if (count($tmpl['to']['profile']) > 0) {
+								$where = ' (eu.profile IN ('.implode(',', $tmpl['to']['profile']).') OR eup.profile_id IN ('.implode(',', $tmpl['to']['profile']).'))';
+								$as_where = true;
+							}
 						}
-					}
 
-					if (isset($tmpl['to']['group'])) {
-						if (count($tmpl['to']['group']) > 0) {
-							$where    .= $as_where ? ' OR ' : '';
-							$where    .= ' eg.group_id IN (' . implode(',', $tmpl['to']['group']) . ')';
-							$as_where = true;
+						if (isset($tmpl['to']['group'])) {
+							if (count($tmpl['to']['group']) > 0) {
+								$where .= $as_where?' OR ':'';
+								$where .= ' eg.group_id IN ('.implode(',', $tmpl['to']['group']).')';
+								$as_where = true;
+							}
 						}
-					}
 
-					if (isset($tmpl['to']['user'])) {
-						if (count(@$tmpl['to']['user']) > 0) {
-							$where    .= $as_where ? ' OR ' : '';
-							$where    .= 'u.block=0 AND u.id IN (' . implode(',', $tmpl['to']['user']) . ')';
-							$as_where = true;
+						if (isset($tmpl['to']['user'])) {
+							if (count(@$tmpl['to']['user']) > 0) {
+								$where .= $as_where?' OR ':'';
+								$where .= 'u.block=0 AND u.id IN ('.implode(',', $tmpl['to']['user']).')';
+								$as_where = true;
+							}
 						}
-					}
 
-					if ($as_where) {
-						$query = 'SELECT DISTINCT u.id, u.name, u.email, eu.university_id
+						if ($as_where) {
+							$query = 'SELECT DISTINCT u.id, u.name, u.email, eu.university_id
                                     FROM #__users as u
                                     LEFT JOIN #__emundus_users as eu on eu.user_id=u.id
                                     LEFT JOIN #__emundus_groups as eg on eg.user_id=u.id
                                     LEFT JOIN #__emundus_users_profiles as eup on eup.user_id=eu.user_id
-                                    WHERE ' . $where . '
+                                    WHERE '.$where.'
                                     GROUP BY u.id';
-						$this->_db->setQuery($query);
-						$users = $this->_db->loadObjectList();
+							$this->_db->setQuery( $query );
+							$users = $this->_db->loadObjectList();
 
-						foreach ($users as $user) {
-							$recipients[$user->id] = array('id' => $user->id, 'name' => $user->name, 'email' => $user->email, 'university_id' => $user->university_id);
+							foreach ($users as $user) {
+								$recipients[$user->id] = array('id' => $user->id, 'name' => $user->name, 'email' => $user->email, 'university_id' => $user->university_id);
+							}
 						}
-					}
 
-					if ($tmpl['to']['to_current_user'] == 1) {
-						$current_user = JFactory::getSession()->get('emundusUser');
-						if (empty($current_user) && !empty($student)) {
-							$current_user = $student;
+						if ($tmpl['to']['to_current_user'] == 1) {
+							$current_user = JFactory::getSession()->get('emundusUser');
+							if(empty($current_user) && !empty($student)){
+								$current_user = $student;
+							}
+							$recipients[$current_user->id] = array('id' => $current_user->id, 'name' => $current_user->name, 'email' => $current_user->email, 'university_id' => $current_user->university_id);
 						}
-						$recipients[$current_user->id] = array('id' => $current_user->id, 'name' => $current_user->name, 'email' => $current_user->email, 'university_id' => $current_user->university_id);
-					}
 
-					$emails_tmpl[$trigger_id][$code]['to']['recipients'] = $recipients;
+						$emails_triggers[$trigger_id][$code]['to']['recipients'] = $recipients;
+					}
 				}
-
 			}
 		}
 
-		return $emails_tmpl;
+		return $emails_triggers;
 	}
 
 	/**
@@ -289,34 +287,41 @@ class EmundusModelEmails extends JModelList
 	 * @throws Exception
 	 * @since version v6
 	 */
-	public function sendEmailTrigger($step, $code, $to_applicant = 0, $student = null, $to_current_user = null)
+	public function sendEmailTrigger($step, $code, $to_applicant = 0, $student = null, $to_current_user = null, $trigger_emails = null): array
 	{
-		$app            = Factory::getApplication();
-		$email_from_sys = $app->get('mailfrom');
-		$email_from_name = $app->get('fromname');
+		$emails_sent = [];
+		$app = JFactory::getApplication();
+		$config = JFactory::getConfig();
+
+		// Get default mail sender info
+		$mail_from_sys = $config->get('mailfrom');
+		$mail_from_sys_name = $config->get('fromname');
 
 		jimport('joomla.log.log');
-		Log::addLogger(array('text_file' => 'com_emundus.email.php'), Log::ALL, array('com_emundus'));
+		JLog::addLogger(array('text_file' => 'com_emundus.email.php'), JLog::ALL, array('com_emundus.email'));
 
-		$trigger_emails = $this->getEmailTrigger($step, $code, $to_applicant, $to_current_user, $student);
+		if (empty($trigger_emails)) {
+			$trigger_emails = $this->getEmailTrigger($step, $code, $to_applicant, $to_current_user, $student);
+		}
 
 		if (count($trigger_emails) > 0) {
-			include_once(JPATH_SITE . '/components/com_emundus/models/campaign.php');
+			// get current applicant course
+			include_once(JPATH_SITE.'/components/com_emundus/models/campaign.php');
 			$m_campaign = new EmundusModelCampaign;
-			$campaign   = $m_campaign->getCampaignByID($student->campaign_id);
-			$post       = array(
-				'APPLICANT_ID'    => $student->id,
-				'DEADLINE'        => HTMLHelper::_('date', $campaign['end_date'], Text::_('DATE_FORMAT_OFFSET1'), null),
+			$campaign = $m_campaign->getCampaignByID($student->campaign_id);
+			$post = array(
+				'APPLICANT_ID' => $student->id,
+				'DEADLINE' => JHTML::_('date', $campaign['end_date'], JText::_('DATE_FORMAT_OFFSET1'), null),
 				'APPLICANTS_LIST' => '',
-				'EVAL_CRITERIAS'  => '',
-				'EVAL_PERIOD'     => '',
-				'CAMPAIGN_LABEL'  => $campaign['label'],
-				'CAMPAIGN_YEAR'   => $campaign['year'],
-				'CAMPAIGN_START'  => HTMLHelper::_('date', $campaign['start_date'], Text::_('DATE_FORMAT_OFFSET1'), null),
-				'CAMPAIGN_END'    => HTMLHelper::_('date', $campaign['end_date'], Text::_('DATE_FORMAT_OFFSET1'), null),
-				'CAMPAIGN_CODE'   => $campaign['training'],
-				'FNUM'            => $student->fnum,
-				'COURSE_NAME'     => $campaign['label']
+				'EVAL_CRITERIAS' => '',
+				'EVAL_PERIOD' => '',
+				'CAMPAIGN_LABEL' => $campaign['label'],
+				'CAMPAIGN_YEAR' => $campaign['year'],
+				'CAMPAIGN_START' => JHTML::_('date', $campaign['start_date'], JText::_('DATE_FORMAT_OFFSET1'), null),
+				'CAMPAIGN_END' => JHTML::_('date', $campaign['end_date'], JText::_('DATE_FORMAT_OFFSET1'), null),
+				'CAMPAIGN_CODE' => $campaign['training'],
+				'FNUM' => $student->fnum,
+				'COURSE_NAME' => $campaign['label']
 			);
 
 			require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
@@ -324,7 +329,27 @@ class EmundusModelEmails extends JModelList
 			$h_access = new EmundusHelperAccess();
 			$h_emails = new EmundusHelperEmails();
 
-			foreach ($trigger_emails as $trigger_email_id => $trigger_email) {
+			foreach ($trigger_emails as $trigger_id => $trigger_email) {
+				// Add applicant if e-mail is to be sent to the applicant
+				if ($trigger_email[$student->code]['to']['to_applicant'] == 1) {
+					$trigger_email[$student->code]['to']['recipients'][$student->id] = array('id' => $student->id, 'name' => $student->name, 'email' => $student->email, 'university_id' => $student->university_id);
+				}
+
+				$tags = $this->setTags($student->id, $post, $student->fnum, '', $trigger_email[$student->code]['tmpl']['emailfrom'].$trigger_email[$student->code]['tmpl']['name'].$trigger_email[$student->code]['tmpl']['subject'].$trigger_email[$student->code]['tmpl']['message']);
+
+				// If no mail sender info is provided, we use the system global config.
+				if(!empty($trigger_email[$student->code]['tmpl']['emailfrom'])) {
+					$mail_from = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['emailfrom']);
+				} else {
+					$mail_from = $mail_from_sys;
+				}
+				if(!empty($trigger_email[$student->code]['tmpl']['name'])){
+					$mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['name']);
+				} else {
+					$mail_from_name = $mail_from_sys_name;
+				}
+
+				$mail_from_address = $mail_from_sys;
 
 				foreach ($trigger_email[$student->code]['to']['recipients'] as $recipient) {
 					// Check if the user has access to the file
@@ -332,18 +357,12 @@ class EmundusModelEmails extends JModelList
 						continue;
 					}
 
-					$mailer = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer();
+					$mailer = JFactory::getMailer();
 
-					$tags = $this->setTags($student->id, $post, $student->fnum, '', $trigger_email[$student->code]['tmpl']['emailfrom'] . $trigger_email[$student->code]['tmpl']['name'] . $trigger_email[$student->code]['tmpl']['subject'] . $trigger_email[$student->code]['tmpl']['message']);
+					$to = $recipient['email'];
+					$to_id = $recipient['id'];
+					$subject = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['subject']);
 
-					$from     = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['emailfrom']);
-					$fromname = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['name']);
-					$from_id  = empty($app->getIdentity()->id) ? 62 : $app->getIdentity()->id;
-
-					$to       = $recipient['email'];
-					$to_id    = $recipient['id'];
-
-					$subject  = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['subject']);
 					$body = $trigger_email[$student->code]['tmpl']['message'];
 					if ($trigger_email[$student->code]['tmpl']['template']) {
 						$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $trigger_email[$student->code]['tmpl']['template']);
@@ -351,89 +370,82 @@ class EmundusModelEmails extends JModelList
 					$body = preg_replace($tags['patterns'], $tags['replacements'], $body);
 					$body = $this->setTagsFabrik($body, array($student->fnum));
 
-					$mail_from_address = $email_from_sys;
-					if(empty($fromname)) {
-						$fromname = $email_from_name;
-					}
-
-					// Set sender
-					$sender = [
-						$mail_from_address,
-						$fromname
-					];
-
-					$toAttach = [];
-					if (!empty($trigger_email[$student->code]['tmpl']['letter_attachment'])) {
+					$toAttach= [];
+					if(!empty($trigger_email[$student->code]['tmpl']['letter_attachment'])){
 						include_once(JPATH_SITE . '/components/com_emundus/models/evaluation.php');
-						$m_eval  = new EmundusModelEvaluation();
+						$m_eval = new EmundusModelEvaluation();
 						$letters = $m_eval->generateLetters($student->fnum, explode(',', $trigger_email[$student->code]['tmpl']['letter_attachment']), 1, 0, 0);
 
-						foreach ($letters->files as $filename) {
-							if (!empty($filename['filename'])) {
+						foreach($letters->files as $filename){
+							if(!empty($filename['filename'])) {
 								$toAttach[] = EMUNDUS_PATH_ABS . $student->id . '/' . $filename['filename'];
 							}
 						}
 					}
-
-					if (!empty($trigger_email[$student->code]['tmpl']['attachments'])) {
-						require_once(JPATH_SITE . '/components/com_emundus/models/application.php');
+					if(!empty($trigger_email[$student->code]['tmpl']['attachments'])){
+						require_once (JPATH_SITE . '/components/com_emundus/models/application.php');
 						$m_application = new EmundusModelApplication();
-						$attachments   = $m_application->getAttachmentsByFnum($student->fnum, null, explode(',', $trigger_email[$student->code]['tmpl']['attachments']));
+						$attachments = $m_application->getAttachmentsByFnum($student->fnum,null, explode(',', $trigger_email[$student->code]['tmpl']['attachments']));
 
 						foreach ($attachments as $attachment) {
-							if (!empty($attachment->filename)) {
+							if(!empty($attachment->filename)) {
 								$toAttach[] = EMUNDUS_PATH_ABS . $student->id . '/' . $attachment->filename;
 							}
 						}
 					}
 
+					if (!empty($trigger_email[$student->code]['to']['cc'])) {
+						$cc = explode(',',$trigger_email[$student->code]['to']['cc']);
+						$mailer->addCc($cc);
+					}
+					if (!empty($trigger_email[$student->code]['to']['bcc'])) {
+						$bcc = explode(',',$trigger_email[$student->code]['to']['bcc']);
+						$mailer->addBCC($bcc);
+					}
+
+					$mailer->setSender([$mail_from_address, $mail_from_name]);
+					$mailer->addReplyTo($mail_from, $mail_from_name);
+					$mailer->addRecipient($to);
+					$mailer->addAttachment($toAttach);
+					$mailer->setSubject($subject);
 					$mailer->isHTML(true);
 					$mailer->Encoding = 'base64';
-					$mailer->setSender($sender);
-					if(!empty($from) && !empty($fromname)) {
-						$mailer->addReplyTo($from, $fromname);
-					}
-					$mailer->addRecipient($to);
-					if(!empty($toAttach))
-					{
-						$mailer->addAttachment($toAttach);
-					}
-					$mailer->setSubject($subject);
 					$mailer->setBody($body);
 
 					$custom_email_tag = EmundusHelperEmails::getCustomHeader();
-					if (!empty($custom_email_tag)) {
+					if(!empty($custom_email_tag))
+					{
 						$mailer->addCustomHeader($custom_email_tag);
 					}
 
 					try {
-						$send = $mailer->Send();
-					}
-					catch (Exception $e) {
-						Log::add('eMundus Triggers - PHP Mailer send failed ' . $e->getMessage(), Log::ERROR, 'com_emundus.email');
+						$sent = $mailer->Send();
+					} catch (Exception $e) {
+						$sent = false;
+						JLog::add('eMundus Triggers - PHP Mailer send failed ' . $e->getMessage(), JLog::ERROR, 'com_emundus.email');
 					}
 
-					if ($send !== true) {
-						echo 'Error sending email: ' . $send;
-						Log::add($send, Log::ERROR, 'com_emundus');
-					}
-					else {
+					if ($sent !== true) {
+						// echo 'Error sending email: ' . $sent;
+						JLog::add($sent, JLog::ERROR, 'com_emundus.email');
+					} else {
+						$emails_sent[] = $to;
+						$from_id = !empty(JFactory::getUser()->id) ? JFactory::getUser()->id : 62;
 						$message = array(
 							'user_id_from' => $from_id,
-							'user_id_to'   => $to_id,
-							'subject'      => $subject,
-							'message' => $body,
-							'email_id' => $trigger_email_id,
+							'user_id_to' => $to_id,
+							'subject' => $subject,
+							'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body,
+							'email_id' => $trigger_email[$student->code]['tmpl']['email_id'],
 							'email_to' => $to
 						);
-
 						$this->logEmail($message, $student->fnum);
 					}
 				}
 			}
 		}
 
-		return true;
+		return $emails_sent;
 	}
 
 	/**

@@ -442,16 +442,14 @@ final class MicrosoftDynamics extends CMSPlugin implements SubscriberInterface
 								return $filter['attribute'] . ' eq \'' . $filter['value'] . '\'';
 							}, $field['searchBy']))
 						];
-						
+
 						$m_sync = new \EmundusModelSync();
 						$result = $m_sync->callApi($api, $field['collectionname'], 'get', $params);
 
 						if ($result['status'] == 200)
 						{
-							if (!empty($result['data']->value))
-							{
-								$value = $result['data']->value[0]->{$field['name'] . 'id'};
-							}
+
+							$value = $result['data']->value[0]->{$field['name'] . 'id'};
 						}
 					}
 					break;
