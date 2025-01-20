@@ -1625,7 +1625,7 @@ class EmundusModelCampaign extends ListModel
 			$limit_status = [];
 			$fields       = [];
 			$columns      = [];
-			$keys_to_unset = ['limit', 'limit_status', 'profileLabel', 'progid', 'status', 'languages'];
+			$keys_to_unset = ['limit_status', 'profileLabel', 'progid', 'status', 'languages'];
 			$labels       = new stdClass;
 
 			$app->triggerEvent('onBeforeCampaignUpdate', $data);
