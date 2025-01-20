@@ -8493,7 +8493,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               style: { "padding-bottom": "36px" },
               id: "preview_iframe",
               name: "preview_iframe",
-              src: "/forms/preview?formid=" + $data.selectedPage + "&tmpl=component&preview=1",
+              src: "/index.php?option=com_fabrik&view=form&formid=" + $data.selectedPage + "&tmpl=component&preview=1",
               onLoad: _cache[12] || (_cache[12] = ($event) => $data.loading = false)
             }, null, 40, _hoisted_17), [
               [vShow, !$data.loading]
