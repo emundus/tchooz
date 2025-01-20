@@ -448,7 +448,7 @@ class EmundusHelperEvents
 				$query->clear()
 					->select('id')
 					->from($db->quoteName($db_table_name))
-					->where($db->quoteName('fnum') . ' = ' . $fnum);
+					->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
 				$db->setQuery($query);
 				$rowid = $db->loadResult();
 				if (!empty($rowid))
