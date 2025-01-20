@@ -1,11 +1,11 @@
 <?php
 
 /**
- * @package     Joomla.Plugin
- * @subpackage  Task.Createcampaigns
+ * @package         Joomla.Plugin
+ * @subpackage      Task.Createcampaigns
  *
  * @copyright   (C) 2023 Open Source Matters, Inc. <https://www.joomla.org>
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @license         GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 \defined('_JEXEC') or die;
@@ -32,13 +32,13 @@ return new class () implements ServiceProviderInterface {
 		$container->set(
 			PluginInterface::class,
 			function (Container $container) {
-				$checkin = new Createcampaigns(
+				$creator = new Createcampaigns(
 					$container->get(DispatcherInterface::class),
-					(array) PluginHelper::getPlugin('task', 'Createcampaigns')
+					(array) PluginHelper::getPlugin('task', 'createcampaigns')
 				);
-				$checkin->setDatabase($container->get(DatabaseInterface::class));
+				$creator->setDatabase($container->get(DatabaseInterface::class));
 
-				return $checkin;
+				return $creator;
 			}
 		);
 	}

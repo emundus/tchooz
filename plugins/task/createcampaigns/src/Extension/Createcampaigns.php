@@ -51,18 +51,18 @@ class Createcampaigns extends CMSPlugin implements SubscriberInterface
 	];
 
 
+	/**
+	 * @var boolean
+	 * @since 5.0.0
+	 */
+	protected $autoloadLanguage = true;
+
 	public function __construct(DispatcherInterface $dispatcher, array $config = [])
 	{
 		parent::__construct($dispatcher, $config);
 
 		Log::addLogger(['text_file' => 'com_emundus.task_create_campaigns.php'], Log::ALL, ['com_emundus.task_create_campaigns.php']);
 	}
-
-	/**
-	 * @var boolean
-	 * @since 5.0.0
-	 */
-	protected $autoloadLanguage = true;
 
 	/**
 	 * @inheritDoc
