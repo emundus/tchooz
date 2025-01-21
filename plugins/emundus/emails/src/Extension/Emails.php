@@ -64,13 +64,13 @@ final class Emails extends CMSPlugin implements SubscriberInterface
 
 			try
 			{
-				$query->select('applicant_notify_email')
+				$query->select('applicant_notify_email, ics_event_name')
 					->from($db->quoteName('#__emundus_setup_events_notifications'))
 					->where($db->quoteName('event') . ' = :eventId')
 					->where($db->quoteName('applicant_notify') . ' = 1')
 					->bind(':eventId', $data['availability']->event_id, ParameterType::INTEGER);
 				$db->setQuery($query);
-				$email_to_send = $db->loadResult();
+				$email_to_send = $db->loadAssoc();
 
 				if(!empty($email_to_send)) {
 					require_once(JPATH_BASE . '/components/com_emundus/helpers/date.php');
@@ -128,14 +128,14 @@ final class Emails extends CMSPlugin implements SubscriberInterface
 					$ics .= "BEGIN:VEVENT\n";
 					$ics .= "DTSTART:" . date('Ymd\THis', strtotime($data['availability']->start)) . "\n";
 					$ics .= "DTEND:" . date('Ymd\THis', strtotime($data['availability']->end)) . "\n";
-					$ics .= "SUMMARY:Emundus Booking\n";
+					$ics .= "SUMMARY:" . $email_to_send['ics_event_name'] . "\n";
 					$ics .= "LOCATION:" . $complete_location['name'] . "\n";
 					$ics .= "DESCRIPTION:" . $location_link . "\n";
 					$ics .= "END:VEVENT\n";
 					$ics .= "END:VCALENDAR\n";
 					file_put_contents($ics_file, $ics);
 
-					$sent = $m_emails->sendEmail($data['fnum'], $email_to_send, $post, [$ics_file]);
+					$sent = $m_emails->sendEmail($data['fnum'], $email_to_send['applicant_notify_email'], $post, [$ics_file]);
 				}
 			}
 			catch (\Exception $e)

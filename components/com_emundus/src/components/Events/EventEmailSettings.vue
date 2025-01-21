@@ -47,6 +47,17 @@ export default {
           reload: 0,
           optional: true,
         },
+        {
+          param: 'ics_event_name',
+          type: 'text',
+          placeholder: '',
+          label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_GLOBAL_NAME_ICS',
+          helptext: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_GLOBAL_NAME_ICS_HELP_TEXT',
+          displayed: false,
+          displayedOn: 'applicant_notify',
+          displayedOnValue: 1,
+          optional: false,
+        },
         // {
         //   param: 'applicant_recall',
         //   type: 'toggle',
