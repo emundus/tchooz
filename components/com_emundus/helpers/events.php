@@ -690,7 +690,7 @@ class EmundusHelperEvents
 				{
 					if (($is_dead_line_passed && $can_edit_after_deadline == 0) || $isLimitObtained === true)
 					{
-						if ($reload_url && $view !== 'details')
+						if ($reload_url || $view !== 'details')
 						{
 							if ($isLimitObtained === true)
 							{
