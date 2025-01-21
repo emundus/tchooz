@@ -166,6 +166,15 @@
     <field name="client_id">0</field>
     <field name="ordering">0</field>
    </row>
+   <row>
+    <field name="id">21</field>
+    <field name="asset_id">0</field>
+    <field name="menutype">hikashop_default</field>
+    <field name="title">HikaShop default menus</field>
+    <field name="description">This menu is used by HikaShop to store menus configurations</field>
+    <field name="client_id">0</field>
+    <field name="ordering">0</field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

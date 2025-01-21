@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_setup_workflows_steps">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="workflow_id" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="label" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <field Field="type" Type="int" Null="NO" Key="" Extra="" />
+   <field Field="profile_id" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="form_id" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="multiple" Type="tinyint" Null="YES" Key="" Extra="" />
+   <field Field="output_status" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="state" Type="int" Null="NO" Key="" Default="1" Extra="" />
+   <field Field="ordering" Type="int" Null="YES" Key="" Default="0" Extra="" />
+   <key Table="#__emundus_setup_workflows_steps" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_workflows_steps" Non_unique="1" Key_name="jos_emundus_setup_workflows_steps_workflows_id_fk" Seq_in_index="1" Column_name="workflow_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_workflows_steps" Non_unique="1" Key_name="jos_emundus_setup_workflows_steps_profiles_id_fk" Seq_in_index="1" Column_name="profile_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_workflows_steps" Non_unique="1" Key_name="jos_emundus_setup_workflows_steps_jff_id_fk" Seq_in_index="1" Column_name="form_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_workflows_steps" Non_unique="1" Key_name="jos_emundus_setup_workflows_steps_output_status_step_fk" Seq_in_index="1" Column_name="output_status" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

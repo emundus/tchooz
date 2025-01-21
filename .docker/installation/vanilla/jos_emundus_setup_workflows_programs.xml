@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_setup_workflows_programs">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="workflow_id" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="program_id" Type="int" Null="NO" Key="MUL" Extra="" />
+   <key Table="#__emundus_setup_workflows_programs" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_workflows_programs" Non_unique="1" Key_name="jos_emundus_setup_worflows_programs_workflows_id_fk" Seq_in_index="1" Column_name="workflow_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_workflows_programs" Non_unique="1" Key_name="jos_emundus_setup_worflows_programs_prg_id_fk" Seq_in_index="1" Column_name="program_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

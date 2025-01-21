@@ -179,6 +179,10 @@
   <table name="jos_emundus_setup_campaigns_more">
     <row constraint_name="jos_emundus_setup_campaigns_more_campaign_id_fk" column_name="campaign_id" referenced_table_name="jos_emundus_setup_campaigns" referenced_column_name="id" update_rule="CASCADE" delete_rule="CASCADE"/>
   </table>
+  <table name="jos_emundus_setup_campaigns_step_dates">
+    <row constraint_name="jos_emundus_setup_campaigns_step_dates_jesc__fk" column_name="campaign_id" referenced_table_name="jos_emundus_setup_campaigns" referenced_column_name="id" update_rule="CASCADE" delete_rule="CASCADE"/>
+    <row constraint_name="jos_emundus_setup_campaigns_step_dates_step_id_fk" column_name="step_id" referenced_table_name="jos_emundus_setup_workflows_steps" referenced_column_name="id" update_rule="CASCADE" delete_rule="CASCADE"/>
+  </table>
   <table name="jos_emundus_setup_dashboard">
     <row constraint_name="jos_emundus_setup_dashboard_jos_emundus_setup_profiles_id_fk" column_name="profile" referenced_table_name="jos_emundus_setup_profiles" referenced_column_name="id" update_rule="CASCADE" delete_rule="CASCADE"/>
     <row constraint_name="jos_emundus_setup_dashboard_jos_emundus_users_user_id_fk" column_name="user" referenced_table_name="jos_emundus_users" referenced_column_name="user_id" update_rule="CASCADE" delete_rule="CASCADE"/>
@@ -225,6 +229,20 @@
   </table>
   <table name="jos_emundus_setup_teaching_unity">
     <row constraint_name="jos_emundus_setup_teaching_unity_ibfk_1" column_name="code" referenced_table_name="jos_emundus_setup_programmes" referenced_column_name="code" update_rule="CASCADE" delete_rule="CASCADE"/>
+  </table>
+  <table name="jos_emundus_setup_workflows_programs">
+    <row constraint_name="jos_emundus_setup_worflows_programs_prg_id_fk" column_name="program_id" referenced_table_name="jos_emundus_setup_programmes" referenced_column_name="id" update_rule="CASCADE" delete_rule="CASCADE"/>
+    <row constraint_name="jos_emundus_setup_worflows_programs_workflows_id_fk" column_name="workflow_id" referenced_table_name="jos_emundus_setup_workflows" referenced_column_name="id" update_rule="CASCADE" delete_rule="CASCADE"/>
+  </table>
+  <table name="jos_emundus_setup_workflows_steps">
+    <row constraint_name="jos_emundus_setup_workflows_steps_jff_id_fk" column_name="form_id" referenced_table_name="jos_fabrik_forms" referenced_column_name="id" update_rule="CASCADE" delete_rule="CASCADE"/>
+    <row constraint_name="jos_emundus_setup_workflows_steps_output_status_step_fk" column_name="output_status" referenced_table_name="jos_emundus_setup_status" referenced_column_name="step" update_rule="CASCADE" delete_rule="CASCADE"/>
+    <row constraint_name="jos_emundus_setup_workflows_steps_profiles_id_fk" column_name="profile_id" referenced_table_name="jos_emundus_setup_profiles" referenced_column_name="id" update_rule="CASCADE" delete_rule="CASCADE"/>
+    <row constraint_name="jos_emundus_setup_workflows_steps_workflows_id_fk" column_name="workflow_id" referenced_table_name="jos_emundus_setup_workflows" referenced_column_name="id" update_rule="CASCADE" delete_rule="CASCADE"/>
+  </table>
+  <table name="jos_emundus_setup_workflows_steps_entry_status">
+    <row constraint_name="jos_emundus_setup_workflows_step_id_fk" column_name="step_id" referenced_table_name="jos_emundus_setup_workflows_steps" referenced_column_name="id" update_rule="CASCADE" delete_rule="CASCADE"/>
+    <row constraint_name="jos_emundus_setup_workflow_steps_status_fk" column_name="status" referenced_table_name="jos_emundus_setup_status" referenced_column_name="step" update_rule="CASCADE" delete_rule="CASCADE"/>
   </table>
   <table name="jos_emundus_tag_assoc">
     <row constraint_name="jos_emundus_tag_assoc_ibfk_2" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum" update_rule="CASCADE" delete_rule="CASCADE"/>

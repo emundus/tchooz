@@ -23,6 +23,7 @@
    <field Field="pinned" Type="tinyint(1)" Null="YES" Key="" Extra="" />
    <field Field="eval_start_date" Type="datetime" Null="YES" Key="" Extra="" />
    <field Field="alias" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="visible" Type="tinyint(1)" Null="NO" Key="" Default="1" Extra="" />
    <key Table="#__emundus_setup_campaigns" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_setup_campaigns" Non_unique="1" Key_name="user" Seq_in_index="1" Column_name="user" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_setup_campaigns" Non_unique="1" Key_name="profile_id" Seq_in_index="1" Column_name="profile_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />

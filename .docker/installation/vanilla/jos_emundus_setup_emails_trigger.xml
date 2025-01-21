@@ -13,6 +13,7 @@
    <field Field="user_id" Type="int" Null="YES" Key="" Extra="" />
    <field Field="to_applicant" Type="text" Null="YES" Key="" Extra="" />
    <field Field="group_id" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="all_program" Type="tinyint(1)" Null="NO" Key="" Default="0" Extra="" />
    <key Table="#__emundus_setup_emails_trigger" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_setup_emails_trigger" Non_unique="1" Key_name="user" Seq_in_index="1" Column_name="user" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_setup_emails_trigger" Non_unique="1" Key_name="step" Seq_in_index="1" Column_name="step" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
