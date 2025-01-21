@@ -744,7 +744,7 @@ class EmundusFiltersFiles extends EmundusFilters
 				'label'          => Text::_('MOD_EMUNDUS_FILTERS_WORKFLOW_STEPS'),
 				'type'           => 'select',
 				'values'         => $steps,
-				'value'          => !empty($values_selected) ? $values_selected : ['all'],
+				'value'          => count($values_selected) !== count($steps) ? $values_selected : ['all'],
 				'default'        => true,
 				'available'      => true,
 				'order'          => $config['filter_steps_order'],
