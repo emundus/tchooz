@@ -59,7 +59,8 @@ workspace.xml
 /images/sampledata/*
 /images/joomla*
 /images/powered_by.png
-/images/custom/logo.png
+/images/custom/*
+!/images/custom/default_favicon.ico
 images/emundus/import/*
 images/emundus/photo/*
 images/stories/*
@@ -68,8 +69,6 @@ images/stories/*
 /images/emundus/letters/*
 /images/emundus/phases/*
 /image/logo.png
-/images/custom/logo_custom.png
-images/custom/favicon.png
 /images/emundus/custom/*
 
 # COMPILER

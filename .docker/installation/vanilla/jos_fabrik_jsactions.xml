@@ -12,14 +12,6 @@
   </table_structure>
   <table_data name="#__fabrik_jsactions">
    <row>
-    <field name="id">3025</field>
-    <field name="element_id">1918</field>
-    <field name="action">change</field>
-    <field name="code">var s = document.getElementById(&amp;#039;jos_emundus_setup_letters___attachment_id&amp;#039;);
-$(&amp;#039;jos_emundus_setup_letters___title&amp;#039;).value = s.options[s.selectedIndex].text</field>
-    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group184&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
-   </row>
-   <row>
     <field name="id">3026</field>
     <field name="element_id">1936</field>
     <field name="action">keyup</field>
@@ -109,34 +101,6 @@ if (this.get(&amp;#039;value&amp;#039;).charAt(0) != &amp;#039;_&amp;#039;) {
  this.set(&amp;#039;_&amp;#039;+this.get(&amp;#039;value&amp;#039;));
 }</field>
     <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group47&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">4346</field>
-    <field name="element_id">1918</field>
-    <field name="action">load</field>
-    <field name="code">var fab = this.form.elements;
-
-if (this.get(&amp;#039;value&amp;#039;) == -1) {
-  fab.get(&amp;#039;jos_emundus_setup_letters___title&amp;#039;).show();
-} else {
-  fab.get(&amp;#039;jos_emundus_setup_letters___title&amp;#039;).hide();
-}</field>
-    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group184&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">4347</field>
-    <field name="element_id">1918</field>
-    <field name="action">change</field>
-    <field name="code">var fab = this.form.elements;
-
-if (this.get(&amp;#039;value&amp;#039;) == -1) {
-  fab.get(&amp;#039;jos_emundus_setup_letters___title&amp;#039;).clear();
-  fab.get(&amp;#039;jos_emundus_setup_letters___title&amp;#039;).show();
-} else {
-  fab.get(&amp;#039;jos_emundus_setup_letters___title&amp;#039;).set(this.element.options[this.element.selectedIndex].text);
-  fab.get(&amp;#039;jos_emundus_setup_letters___title&amp;#039;).hide();
-}</field>
-    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group184&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
    </row>
    <row>
     <field name="id">4356</field>
@@ -716,44 +680,6 @@ if (value.includes(&amp;#039;4&amp;#039;)) {
     <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group822&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
    </row>
    <row>
-    <field name="id">4551</field>
-    <field name="element_id">8116</field>
-    <field name="action">load</field>
-    <field name="code">const value = this.get(&amp;#039;value&amp;#039;);
-const fab = this.form.elements;
-
-var state = fab.get(&amp;#039;jos_emundus_project_rida_837_repeat___rida_state_&amp;#039; + this.getRepeatNum());
-
-var who = fab.get(&amp;#039;jos_emundus_project_rida_837_repeat___who_&amp;#039; + this.getRepeatNum());
-
-if(value == 1){
-  showFabrikElt([state, who]);
-} else {
-  hideFabrikElt([state, who]);
-}
-</field>
-    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group832&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">4552</field>
-    <field name="element_id">8116</field>
-    <field name="action">change</field>
-    <field name="code">const value = this.get(&amp;#039;value&amp;#039;);
-const fab = this.form.elements;
-
-var state = fab.get(&amp;#039;jos_emundus_project_rida_837_repeat___rida_state_&amp;#039; + this.getRepeatNum());
-
-var who = fab.get(&amp;#039;jos_emundus_project_rida_837_repeat___who_&amp;#039; + this.getRepeatNum());
-
-if(value == 1){
-  showFabrikElt([state, who]);
-} else {
-  hideFabrikElt([state, who], true);
-}
-</field>
-    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group832&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
-   </row>
-   <row>
     <field name="id">4555</field>
     <field name="element_id">8092</field>
     <field name="action">load</field>
@@ -923,6 +849,54 @@ else {
     <field name="action">load</field>
     <field name="code">submitNewFile();</field>
     <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group175&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4576</field>
+    <field name="element_id">1918</field>
+    <field name="action">change</field>
+    <field name="code">var s = document.getElementById(&amp;#039;jos_emundus_setup_letters___attachment_id&amp;#039;);
+$(&amp;#039;jos_emundus_setup_letters___title&amp;#039;).value = s.options[s.selectedIndex].text</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group184&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;0&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4577</field>
+    <field name="element_id">1918</field>
+    <field name="action">load</field>
+    <field name="code">var fab = this.form.elements;
+
+if (this.get(&amp;#039;value&amp;#039;) == -1) {
+  fab.get(&amp;#039;jos_emundus_setup_letters___title&amp;#039;).show();
+} else {
+  fab.get(&amp;#039;jos_emundus_setup_letters___title&amp;#039;).hide();
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group184&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4578</field>
+    <field name="element_id">1918</field>
+    <field name="action">change</field>
+    <field name="code">var fab = this.form.elements;
+
+if (this.get(&amp;#039;value&amp;#039;) == -1) {
+  fab.get(&amp;#039;jos_emundus_setup_letters___title&amp;#039;).clear();
+  fab.get(&amp;#039;jos_emundus_setup_letters___title&amp;#039;).show();
+} else {
+  fab.get(&amp;#039;jos_emundus_setup_letters___title&amp;#039;).set(this.element.options[this.element.selectedIndex].text);
+  fab.get(&amp;#039;jos_emundus_setup_letters___title&amp;#039;).hide();
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group184&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4579</field>
+    <field name="element_id">7112</field>
+    <field name="action">load</field>
+    <field name="code">const select = this.element;
+const options = select.options;
+
+if (options.length === 2 &amp;amp;&amp;amp; options[1].value !== &amp;quot;0&amp;quot;) {
+  this.set(options[1].value);  
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group796&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
    </row>
   </table_data>
  </database>

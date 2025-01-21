@@ -676,6 +676,7 @@ class EmundusControllerEvents extends BaseController
 			$users_recall               = $this->input->getInt('users_recall', 0);
 			$users_recall_frequency     = $this->input->getInt('users_recall_frequency', 0);
 			$users_recall_email         = $this->input->getInt('users_recall_email', null);
+			$ics_event_name             = $this->input->getString('ics_event_name', '');
 
 			if (!empty($event_id))
 			{
@@ -690,7 +691,8 @@ class EmundusControllerEvents extends BaseController
 					'manager_recall_email'       => $manager_recall_email,
 					'users_recall'               => $users_recall,
 					'users_recall_frequency'     => $users_recall_frequency,
-					'users_recall_email'         => $users_recall_email
+					'users_recall_email'         => $users_recall_email,
+					'ics_event_name'             => $ics_event_name
 				];
 				$response['status']    = $this->m_events->saveBookingNotifications($event_id, $booking_notifications, $this->user->id);
 

@@ -1076,30 +1076,6 @@
     <field name="params">{&quot;type&quot;:&quot;repeatElement&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_groups_repeat_status`.`id`&quot;}</field>
    </row>
    <row>
-    <field name="id">1394</field>
-    <field name="list_id">401</field>
-    <field name="element_id">0</field>
-    <field name="join_from_table">jos_emundus_project_recipe</field>
-    <field name="table_join">jos_emundus_project_recipe_830_repeat</field>
-    <field name="table_key">id</field>
-    <field name="table_join_key">parent_id</field>
-    <field name="join_type">left</field>
-    <field name="group_id">830</field>
-    <field name="params">{&quot;type&quot;:&quot;group&quot;,&quot;pk&quot;:&quot;`jos_emundus_project_recipe_830_repeat`.`id`&quot;}</field>
-   </row>
-   <row>
-    <field name="id">1395</field>
-    <field name="list_id">0</field>
-    <field name="element_id">8108</field>
-    <field name="join_from_table"></field>
-    <field name="table_join">#__users</field>
-    <field name="table_key">user</field>
-    <field name="table_join_key">id</field>
-    <field name="join_type">left</field>
-    <field name="group_id">829</field>
-    <field name="params">{&quot;join-label&quot;:&quot;id&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`#__users`.`id`&quot;}</field>
-   </row>
-   <row>
     <field name="id">1396</field>
     <field name="list_id">403</field>
     <field name="element_id">0</field>
@@ -1110,18 +1086,6 @@
     <field name="join_type">left</field>
     <field name="group_id">835</field>
     <field name="params">{&quot;type&quot;:&quot;group&quot;,&quot;pk&quot;:&quot;`jos_emundus_project_progress_835_repeat`.`id`&quot;}</field>
-   </row>
-   <row>
-    <field name="id">1397</field>
-    <field name="list_id">402</field>
-    <field name="element_id">0</field>
-    <field name="join_from_table">jos_emundus_project_rida</field>
-    <field name="table_join">jos_emundus_project_rida_837_repeat</field>
-    <field name="table_key">id</field>
-    <field name="table_join_key">parent_id</field>
-    <field name="join_type">left</field>
-    <field name="group_id">837</field>
-    <field name="params">{&quot;type&quot;:&quot;group&quot;,&quot;pk&quot;:&quot;`jos_emundus_project_rida_837_repeat`.`id`&quot;}</field>
    </row>
    <row>
     <field name="id">1398</field>

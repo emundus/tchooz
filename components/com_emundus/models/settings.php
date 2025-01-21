@@ -2521,19 +2521,25 @@ class EmundusModelSettings extends ListModel
 		try
 		{
 			$query = $this->db->getQuery(true)
-				->select($this->db->quoteName('id') . ' AS value, ' . $this->db->quoteName('label') . ' AS name')
-				->from($this->db->quoteName('#__emundus_setup_campaigns'));
+				->select(
+					$this->db->quoteName('c.id') . ' AS value, ' .
+					'CONCAT(' . $this->db->quoteName('c.label') . ', " (", ' .
+					'IF(' . $this->db->quoteName('p.label') . ' IS NULL OR ' . $this->db->quoteName('p.label') . ' = "", ' .
+					$this->db->quoteName('c.training') . ', ' . $this->db->quoteName('p.label') . '), ")") AS name'
+				)
+				->from($this->db->quoteName('#__emundus_setup_campaigns', 'c'))
+				->join('LEFT', $this->db->quoteName('#__emundus_setup_programmes', 'p') .
+					' ON ' . $this->db->quoteName('c.training') . ' = ' . $this->db->quoteName('p.code'));
 
 			if (!empty($search_query))
 			{
-				$query->where($this->db->quoteName('label') . ' LIKE ' . $this->db->quote('%' . $search_query . '%'));
+				$query->where($this->db->quoteName('c.label') . ' LIKE ' . $this->db->quote('%' . $search_query . '%'));
 			}
 
-			$query->order($this->db->quoteName('label') . ' ASC');
+			$query->order($this->db->quoteName('c.label') . ' ASC');
 
 			$this->db->setQuery($query, 0, $limit);
 			$campaigns = $this->db->loadObjectList();
-
 		}
 		catch (Exception $e)
 		{
@@ -2542,6 +2548,7 @@ class EmundusModelSettings extends ListModel
 
 		return $campaigns;
 	}
+
 
 	public function getAvailablePrograms($search_query, $limit = 100)
 	{
