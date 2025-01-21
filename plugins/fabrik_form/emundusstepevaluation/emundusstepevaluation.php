@@ -110,19 +110,17 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 		if ($current_url !== $final_url) {
 			$this->app->redirect($final_url);
 		}
+
+		$fnum = EmundusHelperFiles::getFnumFromId($ccid);
+		$form_model->updateFormData($db_table_name . '___fnum', $fnum);
 	}
 
 	public function onBeforeProcess(): void
 	{
 		$form_model = $this->getModel();
-		$db_table_name = $form_model->getTableName();
 
 		PluginHelper::importPlugin('emundus', 'custom_event_handler');
 		$this->app->triggerEvent('onCallEventHandler', ['onBeforeSubmitEvaluation', ['formModel' => $form_model]]);
-
-		$ccid = $this->app->input->getInt($db_table_name . '___ccid', 0);
-		$fnum = EmundusHelperFiles::getFnumFromId($ccid);
-		$form_model->updateFormData($db_table_name . '___fnum', $fnum);
 	}
 
 	public function onAfterProcess(): void

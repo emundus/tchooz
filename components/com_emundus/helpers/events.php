@@ -2395,4 +2395,41 @@ class EmundusHelperEvents
 
 		return $session_delete;
 	}
+
+	public function onAfterSubmitEvaluation($params)
+	{
+		$form_model = $params['formModel'];
+		$data = $form_model->getData();
+
+		$db_table_name = $form_model->getTableName();
+		$ccid = $data[$db_table_name . '___ccid'];
+		$fnum = $data[$db_table_name . '___fnum'];
+		$step_id = $data[$db_table_name . '___step_id'];
+		$current_user_id = Factory::getApplication()->getIdentity()->id;
+
+		require_once (JPATH_SITE . '/components/com_emundus/models/workflow.php');
+		$m_workflow = new EmundusModelWorkflow();
+		$step_data = $m_workflow->getStepData($step_id);
+
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+
+		$query->select('applicant_id')
+			->from($db->quoteName('#__emundus_campaign_candidature'))
+			->where($db->quoteName('id') . ' = ' . $db->quote($ccid));
+
+		try {
+			$db->setQuery($query);
+			$applicant_id = $db->loadResult();
+
+			require_once (JPATH_SITE . '/components/com_emundus/models/logs.php');
+			EmundusModelLogs::log($current_user_id, $applicant_id, $fnum, 5, 'c', 'COM_EMUNDUS_SUBMIT_EVALUATION', json_encode(array(
+				'step_id' => $step_id,
+				'step_action_id' => $step_data->action_id,
+				'created' => [['element' => $step_data->label]]
+			)));
+		} catch (Exception $e) {
+			Log::add('Error when try to get applicant_id from ccid ' . $ccid . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+	}
 }
