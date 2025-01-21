@@ -1139,6 +1139,9 @@ class Release2_2_0Installer extends ReleaseInstaller
 				EmundusHelperUpdate::insertFalangTranslation(2, $training_programme_tag->id, 'emundus_setup_tags', 'description', 'Nom du programme');
 			}
 
+			EmundusHelperUpdate::addColumn('jos_emundus_setup_events_notifications', 'ics_event_name', 'VARCHAR', 255, 1);
+
+
 			/* END PREPARE BOOKING */
 
 			$result['status'] = true;
