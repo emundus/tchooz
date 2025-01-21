@@ -143,7 +143,7 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
         }
 
         // Check campaign limit, if the limit is obtained, then we set the deadline to true
-        $isLimitObtained = $m_campaign->isLimitObtained($student->fnums[$student->fnum]->campaign_id);
+        $isLimitObtained = $m_campaign->isLimitObtained($student->fnums[$student->fnum]->campaign_id, $student->fnum);
 
 		// If we've passed the deadline and the user cannot submit (is not in the list of exempt users), block him.
 		if ((($is_dead_line_passed && $can_edit_after_deadline != 1) || $isLimitObtained === true) && !in_array($student->id, $id_applicants)) {

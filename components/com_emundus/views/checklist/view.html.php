@@ -251,7 +251,7 @@ class EmundusViewChecklist extends JViewLegacy
 				}
 				
 				$m_campaign          = new EmundusModelCampaign;
-				$this->isLimitObtained     = $m_campaign->isLimitObtained($this->_user->fnums[$this->_user->fnum]->campaign_id);
+				$this->isLimitObtained     = $m_campaign->isLimitObtained($this->_user->fnums[$this->_user->fnum]->campaign_id, $this->_user->fnum);
 				$this->is_campaign_started = $now > $current_start_date;
 				$this->is_dead_line_passed = $current_end_date < $now;
 

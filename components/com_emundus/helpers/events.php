@@ -576,7 +576,7 @@ class EmundusHelperEvents
 				$mProfile   = new EmundusModelProfile;
 				$fnumDetail = $mProfile->getFnumDetails($fnum);
 
-				$isLimitObtained = $m_campaign->isLimitObtained($user->fnums[$fnum]->campaign_id);
+				$isLimitObtained = $m_campaign->isLimitObtained($user->fnums[$fnum]->campaign_id, $fnum);
 
 				if ($fnumInfos->applicant_id == $user->id)
 				{
@@ -1563,7 +1563,7 @@ class EmundusHelperEvents
 		}
 
 		// Check campaign limit, if the limit is obtained, then we set the deadline to true
-		$isLimitObtained = $mCampaign->isLimitObtained($student->fnums[$student->fnum]->campaign_id);
+		$isLimitObtained = $mCampaign->isLimitObtained($student->fnums[$student->fnum]->campaign_id, $student->fnum);
 
 		// If we've passed the deadline and the user cannot submit (is not in the list of exempt users), block him.
 		if ((($is_dead_line_passed && $can_edit_after_deadline != 1) || $isLimitObtained === true) && !in_array($student->id, $id_applicants))

@@ -824,19 +824,21 @@ class EmundusModelCampaign extends ListModel
 	/**
 	 * Check if campaign's limit is obtained
 	 *
-	 * @param $id
+	 * @param int $campaign_id
+	 * @param string fnum, if not empty, check if fnum is in the list of candidature defined in the limit steps
+	 *               if it is, return true
 	 *
-	 * @return Object|mixed
+	 * @return bool
 	 *
 	 * @since 1.2.0
 	 *
 	 */
-	public function isLimitObtained($id)
+	public function isLimitObtained($campaign_id, string $fnum = ''): bool
 	{
-		$is_limit_obtained = null;
+		$is_limit_obtained = false;
 
-		if (EmundusHelperAccess::isApplicant($this->_user->id) && !empty($id)) {
-			$limit = $this->getLimit($id);
+		if (EmundusHelperAccess::isApplicant($this->_user->id) && !empty($campaign_id)) {
+			$limit = $this->getLimit($campaign_id);
 
 			if (!empty($limit->is_limited)) {
 				$query = $this->_db->getQuery(true);
@@ -844,7 +846,7 @@ class EmundusModelCampaign extends ListModel
 				$query->select('COUNT(id)')
 					->from($this->_db->quoteName('#__emundus_campaign_candidature'))
 					->where($this->_db->quoteName('status') . ' IN (' . $limit->steps . ')')
-					->andWhere($this->_db->quoteName('campaign_id') . ' = ' . $id)
+					->andWhere($this->_db->quoteName('campaign_id') . ' = ' . $campaign_id)
 					->andWhere($this->_db->quoteName('published').' = 1');
 
 				try {
@@ -853,6 +855,26 @@ class EmundusModelCampaign extends ListModel
 				}
 				catch (Exception $exception) {
 					Log::add('Error checking obtained limit at query :' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus.error');
+				}
+
+				if (!empty($fnum)) {
+					// is fnum in the list of candidature defined in the limit steps ?
+					$query = $this->_db->getQuery(true);
+					$query->clear()
+						->select('id')
+						->from($this->_db->quoteName('#__emundus_campaign_candidature'))
+						->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum))
+						->andWhere($this->_db->quoteName('campaign_id') . ' = ' . $campaign_id)
+						->andWhere($this->_db->quoteName('status') . ' IN (' . $limit->steps . ')')
+						->andWhere($this->_db->quoteName('published').' = 1');
+
+					try {
+						$this->_db->setQuery($query);
+						$is_limit_obtained = ($this->_db->loadResult() > 0) ? false : $is_limit_obtained;
+					}
+					catch (Exception $exception) {
+						Log::add('Error checking if fnum is in limit status ' . $exception->getMessage(), Log::ERROR, 'com_emundus.error');
+					}
 				}
 			}
 		}
