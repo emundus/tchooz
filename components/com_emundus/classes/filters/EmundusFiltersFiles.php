@@ -733,7 +733,10 @@ class EmundusFiltersFiles extends EmundusFilters
 						$steps = array_filter($steps, function($step) use ($steps_selected) {
 							return in_array($step['value'], $steps_selected);
 						});
+						$steps = array_values($steps);
+
 						$values_selected = array_intersect($steps_selected, array_column($steps, 'value'));
+						$values_selected = array_values($values_selected);
 					}
 				}
 			}
@@ -744,12 +747,12 @@ class EmundusFiltersFiles extends EmundusFilters
 				'label'          => Text::_('MOD_EMUNDUS_FILTERS_WORKFLOW_STEPS'),
 				'type'           => 'select',
 				'values'         => $steps,
-				'value'          => count($values_selected) !== count($steps) ? $values_selected : ['all'],
+				'value'          => !empty($values_selected) ? $values_selected : ['all'],
 				'default'        => true,
 				'available'      => true,
 				'order'          => $config['filter_steps_order'],
 				'andorOperator'  => 'OR',
-				'andorOperators' => ['OR', 'AND'],
+				'andorOperators' => ['OR'],
 				'operator'       => 'IN',
 				'operators'      => ['IN']
 			];
