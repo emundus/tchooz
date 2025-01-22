@@ -1140,9 +1140,26 @@ class Release2_2_0Installer extends ReleaseInstaller
 			}
 
 			EmundusHelperUpdate::addColumn('jos_emundus_setup_events_notifications', 'ics_event_name', 'VARCHAR', 255, 1);
-
-
 			/* END PREPARE BOOKING */
+
+			$query->clear()
+				->select('link')
+				->from($this->db->quoteName('#__menu'))
+				->where($this->db->quoteName('menutype') . ' = ' . $this->db->quote('coordinatormenu'))
+				->where($this->db->quoteName('alias') . ' = ' . $this->db->quote('email-history'));
+			$this->db->setQuery($query);
+			$email_history_link = $this->db->loadResult();
+
+			if(!empty($email_history_link)) {
+				$query->clear()
+					->update($this->db->quoteName('#__menu'))
+					->set($this->db->quoteName('link') . ' = ' . $this->db->quote($email_history_link))
+					->set($this->db->quoteName('published') . ' = 1')
+					->where($this->db->quoteName('menutype') . ' = ' . $this->db->quote('adminmenu'))
+					->where($this->db->quoteName('alias') . ' = ' . $this->db->quote('email-history'));
+				$this->db->setQuery($query);
+				$this->db->execute();
+			}
 
 			$result['status'] = true;
 		}
