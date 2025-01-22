@@ -305,7 +305,7 @@ $uids       = array();
 
                         <label for="em-file_to_upload"
                                type="button"><?= Text::_('COM_EMUNDUS_ATTACHMENTS_SELECT_FILE_TO_UPLOAD') ?>
-                            <input type="file" accept=".xls,.xlsx,.doc,.docx,.pdf,.png,.jpg,.jpeg,.gif,.odf,.ppt,.pptx,.svg,.csv" id="em-file_to_upload" onChange="addFile();">
+                            <input type="file" accept=".xls,.xlsx,.doc,.docx,.pdf,.png,.jpg,.jpeg,.gif,.odf,.odt,.odp,.ods,.ppt,.pptx,.svg,.csv" id="em-file_to_upload" onChange="addFile();">
                         </label>
                         <p><?php echo Text::_('COM_EMUNDUS_ATTACHMENTS_PLEASE_ONLY'); ?>.xls,.docx,.pdf,.png,.jpg,.jpeg,.gif,.odf,.pptx,.svg,.csv</p>
                     </div>
