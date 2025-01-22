@@ -112,7 +112,7 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 		}
 
 		$fnum = EmundusHelperFiles::getFnumFromId($ccid);
-		$form_model->updateFormData($db_table_name . '___fnum', $fnum);
+		$form_model->data[$db_table_name . '___fnum'] = $fnum;
 	}
 
 	public function onBeforeProcess(): void

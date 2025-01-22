@@ -79,7 +79,16 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 				{
 					if (!empty($event_config[$index]->type) && $event_config[$index]->type == 'options') {
 						$event_category = $this->getEventCategory($event_config[$index]->event);
-						$data = in_array($event_category, $this->form_categories) ? $args['formModel']->getData() : $args;
+
+						if (in_array($event_category, $this->form_categories)) {
+							if (!empty($args['formModel']->formDataWithTableName)) {
+								$data = $args['formModel']->formDataWithTableName;
+							} else  {
+								$data = $args['formModel']->getData();
+							}
+						} else {
+							$data = $args;
+						}
 
 						$returned_values[$caller_index] = $this->runEventSimpleAction($event_config[$index], $data);
 					} else {
