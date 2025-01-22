@@ -151,12 +151,13 @@ class EmundusModelCampaign extends ListModel
 	 *
 	 * @param $uid
 	 *
-	 * @return array|void
+	 * @return array
 	 *
 	 * @since version v6
 	 */
-	function getAllowedCampaign($uid = null)
+	function getAllowedCampaign($uid = null): array
 	{
+		$allowed_campaigns = [];
 
 		if (empty($uid)) {
 			$uid = $this->_user->id;
@@ -191,7 +192,6 @@ class EmundusModelCampaign extends ListModel
 				}
 			}
 
-
 			switch ($applicant_can_renew) {
 				// Applicant can only have one file per campaign.
 				case 2:
@@ -215,12 +215,14 @@ class EmundusModelCampaign extends ListModel
 
 		try {
 			$this->_db->setQuery($query);
-
-			return array_column($this->_db->loadAssocList(), 'id');
+			$allowed_campaigns = array_column($this->_db->loadAssocList(), 'id');
 		}
 		catch (Exception $e) {
 			Log::add('Error at model/campaign -> query: ' . $query, Log::ERROR, 'com_emundus.error');
+			$allowed_campaigns = [];
 		}
+
+		return $allowed_campaigns;
 	}
 
 	/**
