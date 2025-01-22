@@ -178,7 +178,6 @@ class Createcampaigns extends CMSPlugin implements SubscriberInterface
 							}
 							catch (Exception $e)
 							{
-
 							}
 
 							$another_columns_by_table = [];
@@ -190,7 +189,12 @@ class Createcampaigns extends CMSPlugin implements SubscriberInterface
 
 								$query->clear()
 									->update('#__emundus_setup_programmes')
-									->set('label = ' . $db->quote($label));
+									->set('id = ' . $db->quote($program_id));
+
+								if (!empty($label))
+								{
+									$query->set('label = ' . $db->quote($label));
+								}
 
 								foreach ($this->params->program_fields_mapping as $mapping)
 								{
