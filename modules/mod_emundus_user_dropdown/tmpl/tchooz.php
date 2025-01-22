@@ -333,12 +333,12 @@ if ($user != null)
 				}
 			}
 
-			if (!empty($user->emProfiles) && sizeof($user->emProfiles) > 1 && (!$only_applicant))
+			if (!empty($user_profiles) && sizeof($user_profiles) > 1 && (!$only_applicant))
 			{
 				echo '<p class="mb-2 em-profile-font">' . JText::_('SELECT_PROFILE') . '</p>';
 				echo '<div class="select">';
 				echo '<select class="profile-select" id="profile" name="profiles" onchange="postCProfile()"> ';
-				foreach ($user->emProfiles as $profile)
+				foreach ($user_profiles as $profile)
 				{
 					if ($profile->published && !$applicant_option)
 					{
