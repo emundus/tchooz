@@ -179,6 +179,7 @@ class Createcampaigns extends CMSPlugin implements SubscriberInterface
 							}
 							catch (Exception $e)
 							{
+								Log::add('Failed to check if program with code ' . $code . ' exists ' . $e->getMessage(), Log::ERROR, 'com_emundus.task_create_campaigns.php');
 							}
 
 							$another_columns_by_table = [];
