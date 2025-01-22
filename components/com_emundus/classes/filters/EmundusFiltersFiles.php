@@ -733,7 +733,10 @@ class EmundusFiltersFiles extends EmundusFilters
 						$steps = array_filter($steps, function($step) use ($steps_selected) {
 							return in_array($step['value'], $steps_selected);
 						});
+						$steps = array_values($steps);
+
 						$values_selected = array_intersect($steps_selected, array_column($steps, 'value'));
+						$values_selected = array_values($values_selected);
 					}
 				}
 			}
@@ -749,7 +752,7 @@ class EmundusFiltersFiles extends EmundusFilters
 				'available'      => true,
 				'order'          => $config['filter_steps_order'],
 				'andorOperator'  => 'OR',
-				'andorOperators' => ['OR', 'AND'],
+				'andorOperators' => ['OR'],
 				'operator'       => 'IN',
 				'operators'      => ['IN']
 			];
