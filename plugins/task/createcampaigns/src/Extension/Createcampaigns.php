@@ -164,6 +164,7 @@ class Createcampaigns extends CMSPlugin implements SubscriberInterface
 						if (!empty($code))
 						{
 							$label = !empty($this->params->program_label_mapping) ? $this->getValueFromJson($program, $this->params->program_label_mapping) : '';
+							$label = trim($label);
 
 							// check if program already exists or not
 							$query->clear()
