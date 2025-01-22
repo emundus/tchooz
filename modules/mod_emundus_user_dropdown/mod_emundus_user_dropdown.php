@@ -94,6 +94,8 @@ if (!empty($user->profile)) {
 	$profile_label = in_array($user->profile, $app_prof) ? JText::_('APPLICANT') : $user_profile['label'];
 }
 
+$user_profiles = $m_profiles->getUserProfiles($user->id);
+
 $user_prof = [];
 foreach ($user->emProfiles as $prof) {
 	$user_prof[] = $prof->id;
