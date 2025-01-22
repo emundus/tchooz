@@ -5733,16 +5733,16 @@ hr {
   justify-content: space-between;
 }
 
-.emails__add-email[data-v-6d2d1a6a] {
+.emails__add-email[data-v-b1395de0] {
   width: 100%;
   margin-left: auto;
 }
-.em-container-accordeon[data-v-6d2d1a6a] {
+.em-container-accordeon[data-v-b1395de0] {
   background: var(--neutral-0);
   padding: 24px;
   border-radius: var(--em-coordinator-br-cards);
 }
-div.emails__add-email[data-v-6d2d1a6a] {
+div.emails__add-email[data-v-b1395de0] {
   padding: var(--em-spacing-6);
   background: var(--neutral-0);
   border: 1px solid var(--neutral-300);
