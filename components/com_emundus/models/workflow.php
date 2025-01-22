@@ -547,6 +547,8 @@ class EmundusModelWorkflow extends JModelList
 						$data->end_date = $dates['end_date'];
 						$data->infinite = $dates['infinite'];
 					}
+				} else {
+					$data = new stdClass();
 				}
 			} catch (Exception $e) {
 				Log::add('Error while fetching workflow steps: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');

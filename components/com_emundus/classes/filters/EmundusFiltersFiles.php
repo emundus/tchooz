@@ -719,6 +719,25 @@ class EmundusFiltersFiles extends EmundusFilters
 				}
 			}
 
+			if (!$filter_menu_values_are_empty)
+			{
+				$position = array_search('workflow_steps', $filter_names);
+
+				if ($position !== false && !empty($filter_menu_values[$position]))
+				{
+					$steps_selected = explode('|', $filter_menu_values[$position]);
+
+					if (!empty($steps_selected))
+					{
+						$steps_selected = array_map('intval', $steps_selected);
+						$steps = array_filter($steps, function($step) use ($steps_selected) {
+							return in_array($step['value'], $steps_selected);
+						});
+						$values_selected = array_intersect($steps_selected, array_column($steps, 'value'));
+					}
+				}
+			}
+
 			$this->applied_filters[] = [
 				'uid'            => 'workflow_steps',
 				'id'             => 'workflow_steps',
