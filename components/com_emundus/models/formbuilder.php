@@ -1632,7 +1632,7 @@ class EmundusModelFormbuilder extends JModelList
 							$sub_labels = [];
 
 							$sub_labels[] = strtoupper('sublabel_' . $gid . '_' . $elementId . '_0');
-							$sub_values[] = 1;
+							$sub_values[] = 0;
 							$labels       = array(
 								'fr' => 'Option 1',
 								'en' => 'Option 1'
