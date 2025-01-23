@@ -164,6 +164,7 @@ class Createcampaigns extends CMSPlugin implements SubscriberInterface
 						if (!empty($code))
 						{
 							$label = !empty($this->params->program_label_mapping) ? $this->getValueFromJson($program, $this->params->program_label_mapping) : '';
+							$label = trim($label);
 
 							// check if program already exists or not
 							$query->clear()
@@ -178,7 +179,7 @@ class Createcampaigns extends CMSPlugin implements SubscriberInterface
 							}
 							catch (Exception $e)
 							{
-
+								Log::add('Failed to check if program with code ' . $code . ' exists ' . $e->getMessage(), Log::ERROR, 'com_emundus.task_create_campaigns.php');
 							}
 
 							$another_columns_by_table = [];
@@ -190,7 +191,12 @@ class Createcampaigns extends CMSPlugin implements SubscriberInterface
 
 								$query->clear()
 									->update('#__emundus_setup_programmes')
-									->set('label = ' . $db->quote($label));
+									->set('id = ' . $db->quote($program_id));
+
+								if (!empty($label))
+								{
+									$query->set('label = ' . $db->quote($label));
+								}
 
 								foreach ($this->params->program_fields_mapping as $mapping)
 								{
