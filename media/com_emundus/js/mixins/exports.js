@@ -753,7 +753,11 @@ function generate_letter() {
     var mergeMode = 0;
     if($('#em-doc-pdf-merge').is(':checked')) { mergeMode = 1; }
 
-
+    let force_replace_document = 0;
+    const forceReplaceAttachmentInput = document.getElementById('em-force-replace-attachment');
+    if (forceReplaceAttachmentInput) {
+        force_replace_document = forceReplaceAttachmentInput.checked ? 1 : 0;
+    }
 
     if (fnums && fnums.length > 0 ) {
         // do that to remove the check-all option
@@ -790,7 +794,7 @@ function generate_letter() {
         type:'post',
         url:'index.php?option=com_emundus&controller=files&task=generateletter',
         dataType:'json',
-        data:{fnums: fnums, ids_tmpl: idsTmpl, cansee: cansee, showMode: showMode, mergeMode: mergeMode},
+        data:{fnums: fnums, ids_tmpl: idsTmpl, cansee: cansee, showMode: showMode, mergeMode: mergeMode, force_replace_document: force_replace_document},
         success: function(result) {
             if (result.status) {
                 removeLoader();

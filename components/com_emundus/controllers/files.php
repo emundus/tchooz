@@ -3794,11 +3794,12 @@ class EmundusControllerFiles extends BaseController
 
 				$showMode  = $this->input->post->getRaw('showMode', 0);
 				$mergeMode = $this->input->post->getRaw('mergeMode', 0);
+				$force_replace_document = $this->input->getInt('force_replace_document', 0) == 1;
 
 				require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php');
 				$_mEval = $this->getModel('Evaluation');
 
-				$res['data'] = $_mEval->generateLetters($fnums, $templates, $canSee, $showMode, $mergeMode);
+				$res['data'] = $_mEval->generateLetters($fnums, $templates, $canSee, $showMode, $mergeMode, $force_replace_document);
 				ob_clean();
 
 				if ($res['data'])
