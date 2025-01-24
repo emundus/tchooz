@@ -318,7 +318,7 @@ class EmundusControllerTranslations extends BaseController
 		$user = Factory::getApplication()->getIdentity();
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-			$value           = $this->input->getString('value', null);
+			$value           = $this->input->getRaw('value', null);
 			$lang_to         = $this->input->getString('lang_to', null);
 			$reference_table = $this->input->getString('reference_table', null);
 			$reference_id    = $this->input->getInt('reference_id', 0);
