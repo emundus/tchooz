@@ -222,6 +222,14 @@ class EmundusModelCampaign extends ListModel
 			$allowed_campaigns = [];
 		}
 
+		if (!empty($allowed_campaigns)) {
+			foreach ($allowed_campaigns as $cid => $campaign) {
+				if ($this->isLimitObtained($cid)) {
+					unset($allowed_campaigns[$cid]);
+				}
+			}
+		}
+
 		return $allowed_campaigns;
 	}
 
@@ -842,7 +850,7 @@ class EmundusModelCampaign extends ListModel
 		if (EmundusHelperAccess::isApplicant($this->_user->id) && !empty($campaign_id)) {
 			$limit = $this->getLimit($campaign_id);
 
-			if (!empty($limit->is_limited)) {
+			if (!empty($limit->is_limited) && !empty($limit->limit)) {
 				$query = $this->_db->getQuery(true);
 
 				$query->select('COUNT(id)')
