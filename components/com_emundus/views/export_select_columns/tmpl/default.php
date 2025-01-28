@@ -42,7 +42,7 @@ if (is_array($this->elements) && count($this->elements) > 0) {
 				echo '<div class="em-p-8 em-border-radius-8 em-white-bg em-mb-8" id="emundus_table_' . $this->form . '_' . $t->table_id . '">
                             <div class="panel-heading"><div class="em-flex-row"><input type="checkbox" ';
 
-				echo ' id="emundus_checkall_tbl_' . $this->form . '_' . $t->table_id . '" class="emunduspage otherForm" data-check=".emundusgroup_' . $this->form . '_' . $t->table_id . '"/><label style="margin-bottom: 0" for="emundus_checkall_tbl_' . $this->form . '_' . $t->table_id . '">' . $t->table_label . '</label></div></div><div class="panel-body">
+				echo ' id="emundus_checkall_tbl_' . $this->form . '_' . $t->table_id . '" class="emunduspage otherForm" data-check=".emundusgroup_' . $this->form . '_' . $t->table_id . '"/><label style="margin-bottom: 0" for="emundus_checkall_tbl_' . $this->form . '_' . $t->table_id . '">' . $t->form_label . '</label></div></div><div class="panel-body">
                         <div class="em-p-8 em-border-radius-8 em-white-bg em-mb-8" id="emundus_grp_' . $t->group_id . '">
                             <div class="panel-heading"><div class="em-flex-row"><input type="checkbox" ';
 
@@ -53,7 +53,7 @@ if (is_array($this->elements) && count($this->elements) > 0) {
                             <div class="em-p-8 em-border-radius-8 em-white-bg em-mb-8" id="emundus_table_' . $this->form . '_' . $t->table_id . '">
                                 <div class="panel-heading"><div class="em-flex-row"><input type="checkbox" ';
 
-				echo ' id="emundus_checkall_tbl_' . $this->form . '_' . $t->table_id . '" class="emunduspage otherForm" data-check=".emundusgroup_' . $this->form . '_' . $t->table_id . '" /><label style="margin-bottom: 0" for="emundus_checkall_tbl_' . $this->form . '_' . $t->table_id . '">' . $t->table_label . '</label></div></div><div class="panel-body">
+				echo ' id="emundus_checkall_tbl_' . $this->form . '_' . $t->table_id . '" class="emunduspage otherForm" data-check=".emundusgroup_' . $this->form . '_' . $t->table_id . '" /><label style="margin-bottom: 0" for="emundus_checkall_tbl_' . $this->form . '_' . $t->table_id . '">' . $t->form_label . '</label></div></div><div class="panel-body">
                             <div class="em-p-8 em-border-radius-8 em-white-bg em-mb-8" id="emundus_grp_' . $this->form . '_' . $t->group_id . '">
                                 <div class="panel-heading"><div class="em-flex-row"><input type="checkbox" ';
 
@@ -69,7 +69,7 @@ if (is_array($this->elements) && count($this->elements) > 0) {
 			}
 
 			echo '<div class="em-flex-row"><input name="ud[]" type="checkbox" id="emundus_elm_' . $t->id . '" class="emundusitem_' . $this->form . '_' . $t->group_id . ' otherForm"';
-			if (!empty($s_elements) && in_array($t->form_label, $table_name) && in_array($t->element_name, $element_name)) {
+			if (!empty($s_elements) && in_array($t->table_name, $table_name) && in_array($t->element_name, $element_name)) {
 				echo "checked=checked";
 			}
 			echo ' value="' . $t->id . '"/><label style="margin-bottom: 0" for="emundus_elm_' . $t->id . '">' . preg_replace('#<[^>]+>#', ' ', Text::_($t->element_label)) . '</label></div>';
@@ -95,7 +95,7 @@ if (is_array($this->elements) && count($this->elements) > 0) {
 				if ($t->created_by_alias == 'comment' && $comments == 1) {
 					echo "checked=checked";
 				}
-				$label = explode("-", $t->table_label);
+				$label = explode("-", $t->form_label);
 				$label = !empty($label[1]) ? $label[1] : $label[0];
 
 				echo ' id="emundus_checkall_tbl_' . $t->table_id . '" class="emunduspage" data-check=".emundusgroup_' . $t->table_id . '"/><label style="margin-bottom: 0" for="emundus_checkall_tbl_' . $t->table_id . '">' . $label . ' <i>[' . $t->label . ']</i></label></div></div><div class="panel-body">
@@ -115,7 +115,7 @@ if (is_array($this->elements) && count($this->elements) > 0) {
 				if ($t->created_by_alias == 'comment' && $comments == 1) {
 					echo "checked=checked";
 				}
-				$label = explode("-", $t->table_label);
+				$label = explode("-", $t->form_label);
 				$label = !empty($label[1]) ? $label[1] : $label[0];
 
 				echo ' id="emundus_checkall_tbl_' . $t->table_id . '" class="emunduspage" data-check=".emundusgroup_' . $t->table_id . '"/><label style="margin-bottom: 0" for="emundus_checkall_tbl_' . $t->table_id . '">' . $label . ' <i>[' . $t->label . ']</i></label></div></div><div class="panel-body">
@@ -142,7 +142,7 @@ if (is_array($this->elements) && count($this->elements) > 0) {
 			}
 
 			echo '<div class="em-flex-row"><input name="ud[]" type="checkbox" id="emundus_elm_' . $t->id . '" class="emundusitem_' . $t->group_id . '" ';
-			if ((!empty($s_elements) && in_array($t->form_label, $table_name) && in_array($t->element_name, $element_name)) || ($t->created_by_alias == 'comment' && $comments == 1)) {
+			if ((!empty($s_elements) && in_array($t->table_name, $table_name) && in_array($t->element_name, $element_name)) || ($t->created_by_alias == 'comment' && $comments == 1)) {
 				echo "checked=checked";
 			}
 			echo ' value="' . $t->id . '"/><label style="margin-bottom: 0" for="emundus_elm_' . $t->id . '">' . preg_replace('#<[^>]+>#', ' ', Text::_($t->element_label)) . '</label></div>';
