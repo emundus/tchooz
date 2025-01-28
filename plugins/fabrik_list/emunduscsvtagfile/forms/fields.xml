@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-list-emunduscsvtagfile">
+			
+			<field name="emunduscsvtagfile_tag"
+				type="sql"
+				description="PLG_FABRIK_LIST_EMUNDUSCSVTAGFILE_TAG_DESC"
+				label="PLG_FABRIK_LIST_EMUNDUSCSVTAGFILE_TAG_LABEL"
+				   query="SELECT id, label FROM jos_emundus_setup_action_tag"
+				   key_field="id"
+				   value_field="label"
+			/>
+
+			<field name="emunduscsvtagfile_fnumcolumn"
+				   type="text"
+				   description="PLG_FABRIK_LIST_EMUNDUSCSVTAGFILE_FNUMCOLUMN_DESC"
+				   label="PLG_FABRIK_LIST_EMUNDUSCSVTAGFILE_FNUMCOLUMN_LABEL"
+			/>
+
+		</fieldset>
+	</fields>
+</form>
