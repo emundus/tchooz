@@ -5559,16 +5559,24 @@ $(document).ready(function() {
     })
 
     $(document).on('click', '[id^=emundus_checkall]', function() {
-
         let dataType = $(this).attr('data-check');
-
         if (dataType === '.emunduspage') {
             let profile_id = $(this).attr('id').split('emundus_checkall')[1];
             const isXlsExport = document.getElementById('appelement');
+            const evalElement = document.getElementById('evalelement');
             const checkState = $('#emundus_checkall' + profile_id).is(":checked");
 
+            let elements = [];
+            if (evalElement) {
+                elements = evalElement.querySelectorAll('#felts' + profile_id + ' [id^=emundus_elm_]');
+            } else if (isXlsExport) {
+                elements = isXlsExport.querySelectorAll('[id^=emundus_elm_]');
+            } else {
+                elements = document.querySelectorAll('#felts' + profile_id + ' input[type="checkbox"]');
+            }
+
             if (checkState) {
-                document.querySelectorAll('#felts' + profile_id + ' input[type="checkbox"]').forEach((e) => {
+                elements.forEach((e) => {
                     e.checked = true;
 
                     if (isXlsExport) {
@@ -5577,7 +5585,7 @@ $(document).ready(function() {
                     }
                 });
             } else {
-                document.querySelectorAll('#felts' + profile_id + ' input[type="checkbox"]').forEach((e) => {
+                elements.forEach((e) => {
                     e.checked = false;
                     e.removeAttribute('checked');
 
