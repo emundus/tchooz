@@ -772,6 +772,7 @@ class EmundusHelperFiles
 							continue;
 						}
 						$value->id            = $key;
+						$value->form_label    = Text::_($value->form_label);
 						$value->table_label   = Text::_($value->table_label);
 						$value->group_label   = Text::_($value->group_label);
 						$value->element_label = Text::_($value->element_label);
