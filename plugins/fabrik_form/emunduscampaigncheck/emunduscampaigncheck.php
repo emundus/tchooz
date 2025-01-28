@@ -144,7 +144,8 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form
 					JLog::add('User: ' . $user->id . ' already has a file.', JLog::ERROR, 'com_emundus.campaign-check');
 					$this->getModel()->formErrorMsg     = '';
 					$this->getModel()->getForm()->error = Text::_('CANNOT_HAVE_MULTI_FILE');
-					$this->app->redirect($homepage_link, Text::_('CANNOT_HAVE_MULTI_FILE'));
+					$this->app->enqueueMessage(Text::_('CANNOT_HAVE_MULTI_FILE'), 'error');
+					$this->app->redirect($homepage_link);
 				}
 
 				break;
@@ -165,7 +166,8 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form
 						JLog::add('User: ' . $user->id . ' already has a file for campaign id: ' . $campaign_id, JLog::ERROR, 'com_emundus.campaign-check');
 						$this->getModel()->formErrorMsg     = '';
 						$this->getModel()->getForm()->error = Text::_('USER_HAS_FILE_FOR_CAMPAIGN');
-						$this->app->redirect($homepage_link, Text::_('USER_HAS_FILE_FOR_CAMPAIGN'));
+						$this->app->enqueueMessage(Text::_('USER_HAS_FILE_FOR_CAMPAIGN'), 'error');
+						$this->app->redirect($homepage_link);
 					}
 
 				}
@@ -205,7 +207,8 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form
 						JLog::add('User: ' . $user->id . ' already has a file for year belong to campaign: ' . $campaign_id, JLog::ERROR, 'com_emundus.campaign-check');
 						$this->getModel()->formErrorMsg     = '';
 						$this->getModel()->getForm()->error = Text::_('USER_HAS_FILE_FOR_YEAR');
-						$this->app->redirect($homepage_link, Text::_('USER_HAS_FILE_FOR_YEAR'));
+						$this->app->enqueueMessage(Text::_('USER_HAS_FILE_FOR_YEAR'), 'error');
+						$this->app->redirect($homepage_link);
 					}
 
 				}
