@@ -8,7 +8,7 @@
         icon
       }} </span>
     <transition name="fade">
-      <div v-show="isOpen" class="popover-content tw-shadow tw-rounded" ref="popoverContent" :id="'popover-content-'+id"
+      <div v-show="isOpen" class="popover-content tw-shadow tw-rounded-coordinator" ref="popoverContent" :id="'popover-content-'+id"
            :style="popoverContentStyle">
         <slot></slot>
       </div>

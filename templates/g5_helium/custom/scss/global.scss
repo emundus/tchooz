@@ -1476,6 +1476,10 @@ footer#g-footer > .g-container {
     background-color: var(--background-color) !important;
   }
 
+  td .chosen-container .chosen-drop {
+    z-index: 1;
+  }
+
   tbody tr.fabrik_row {
     margin-left: 3px;
   }
@@ -1974,7 +1978,7 @@ footer#g-footer > .g-container {
   }
 }
 
-.view-list .dropdown-menu > li {
+.view-list .fabrikForm .dropdown-menu > li {
   padding: 4px;
   a:not(.edit-button-user):not(.logout-button-user) {
     overflow: hidden;
@@ -1985,6 +1989,7 @@ footer#g-footer > .g-container {
 
     &:hover {
       text-decoration: none;
+      box-shadow: none;
     }
   }
 
@@ -2678,6 +2683,7 @@ button.btn-primary {
   border: 1px solid var(--em-secondary-color);
   border-radius: var(--em-applicant-br) !important;
   padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
+  font-family: var(--em-profile-font), Inter, sans-serif;
 
   &:hover {
     background-color: transparent;
@@ -4833,6 +4839,7 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
     line-height: 1.5;
     font-size: var(--em-applicant-font-size);
     transition: all ease-in-out 0.3s;
+    font-family: var(--em-profile-font), Inter, sans-serif;
   }
 
 
