@@ -38,6 +38,8 @@ if ($d->display_comments) {
     </div>
 
     <?php
+	if ($d->column && $d->endRow) echo "</div>";
+
 } else {
     ?>
     <div class="<?php echo implode(' ', $class);?>">
