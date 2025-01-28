@@ -134,6 +134,18 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 <?php
 endif;
 ?>
+
+<div class="btn-group">
+	<?php
+	if($form->gobackButton)
+	{
+		echo '<div class="em-goback-btn !tw-pl-0 tw-flex tw-items-center"><span class="material-symbols-outlined tw-text-neutral-600">navigate_before</span>';
+		echo $form->gobackButton;
+		echo '</div>';
+	}
+	?>
+</div>
+
 <div class="emundus-form tw-py-6 tw-px-8 <?php echo $pageClass; ?>">
 	<?php if ($form->id == $profile_form) : ?>
         <iframe id="background-shapes-profile" alt="<?= Text::_('MOD_EM_FORM_IFRAME') ?>"></iframe>

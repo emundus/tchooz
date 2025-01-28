@@ -19,7 +19,6 @@ if ($this->hasActions) : ?>
 		<div class="<?php echo FabrikHelperHTML::getGridSpan('12'); ?>">
 			<div class="btn-group">
 				<?php echo $form->prevButton . ' ' . $form->nextButton;
-				echo $form->gobackButton  . ' ' . $this->message;
 				?>
 			</div>
 		</div>
