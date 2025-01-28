@@ -52,8 +52,8 @@ if (!empty($this->elements)) {
 
 			$html_steps .= '<div id="felts' . $current_step . '" class="tw-p-2" style="display: none;">
 				<div class="tw-flex tw-flex-row tw-mb-4">
-					<input type="checkbox" id="emundus_checkall'. $current_step .'" class="emundusall" data-check=".emunduspage">
-					<label for="emundus_checkall' . $current_step . '" style="margin-bottom: 0">Select all elements</label>
+					<input type="checkbox" id="emundus_checkall'. $current_step .'" class="emundusall tw-cursor-pointer" data-check=".emunduspage">
+					<label for="emundus_checkall' . $current_step . '" class="tw-cursor-pointer" style="margin-bottom: 0">Select all elements</label>
 				</div>
 				<div id="emundus_elements">
 				';
