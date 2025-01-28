@@ -751,7 +751,7 @@ class EmundusHelperFiles
                         AND element.label!=""
                         AND menu.menutype = ' . '"' . $profile . '"' . '
                         AND element.plugin!="display"';
-				$order = 'ORDER BY menu.lft, formgroup.ordering, element.ordering';
+				$order = 'ORDER BY menu.lft, menu.id, formgroup.ordering, element.ordering';
 			}
 
 			$query .= ' ' . $join . ' ' . $where . ' ' . $order;
@@ -852,7 +852,7 @@ class EmundusHelperFiles
                         AND menu.menutype IN ( "' . implode('","', $menutype) . '" ) 
                         AND menu.published = 1
                         AND element.plugin!="display"';
-				$order = 'ORDER BY menu.lft, formgroup.ordering, element.ordering';
+				$order = 'ORDER BY menu.lft, menu.id, formgroup.ordering, element.ordering';
 			}
 
 			$query .= ' ' . $join . ' ' . $where . ' ' . $order;
