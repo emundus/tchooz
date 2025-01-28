@@ -166,7 +166,8 @@ endif;
                         <div class="fabrik-element-emundus-container tw-absolute tw--left-[24px] tw-top-1 tw-flex tw-flex-row tw-justify-items-start tw-items-start tw-mr-5">
                             <span class="material-symbols-outlined tw-cursor-pointer comment-icon"
                                   id="'forms-'<?= $form->id ?>" data-target-type="forms"
-                                  data-target-id="<?= $form->id ?>">comment</span>
+                                  data-target-id="<?= $form->id ?>">comment
+                            </span>
                         </div>
 						<?php
 					}
@@ -236,7 +237,8 @@ endif;
                             <div class="fabrik-element-emundus-container tw-absolute tw--left-[24px] tw-top-1 tw-flex tw-flex-row tw-justify-items-start tw-items-start tw-mr-5">
                                 <span class="material-symbols-outlined tw-cursor-pointer comment-icon"
                                       id="groups-<?= $group->id ?>" data-target-type="groups"
-                                      data-target-id="<?= $group->id ?>">comment</span>
+                                      data-target-id="<?= $group->id ?>">comment
+                                </span>
                             </div>
 							<?php
 						}
