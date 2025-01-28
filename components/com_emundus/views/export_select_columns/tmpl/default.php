@@ -68,7 +68,7 @@ if (is_array($this->elements) && count($this->elements) > 0) {
 			}
 
 			echo '<div class="em-flex-row"><input name="ud[]" type="checkbox" id="emundus_elm_' . $t->id . '" class="emundusitem_' . $this->form . '_' . $t->group_id . ' otherForm"';
-			if (!empty($s_elements) && in_array($t->table_name, $table_name) && in_array($t->element_name, $element_name)) {
+			if (!empty($s_elements) && in_array($t->form_label, $table_name) && in_array($t->element_name, $element_name)) {
 				echo "checked=checked";
 			}
 			echo ' value="' . $t->id . '"/><label style="margin-bottom: 0" for="emundus_elm_' . $t->id . '">' . preg_replace('#<[^>]+>#', ' ', JText::_($t->element_label)) . '</label></div>';
@@ -141,7 +141,7 @@ if (is_array($this->elements) && count($this->elements) > 0) {
 			}
 
 			echo '<div class="em-flex-row"><input name="ud[]" type="checkbox" id="emundus_elm_' . $t->id . '" class="emundusitem_' . $t->group_id . '" ';
-			if ((!empty($s_elements) && in_array($t->table_name, $table_name) && in_array($t->element_name, $element_name)) || ($t->created_by_alias == 'comment' && $comments == 1)) {
+			if ((!empty($s_elements) && in_array($t->form_label, $table_name) && in_array($t->element_name, $element_name)) || ($t->created_by_alias == 'comment' && $comments == 1)) {
 				echo "checked=checked";
 			}
 			echo ' value="' . $t->id . '"/><label style="margin-bottom: 0" for="emundus_elm_' . $t->id . '">' . preg_replace('#<[^>]+>#', ' ', JText::_($t->element_label)) . '</label></div>';
