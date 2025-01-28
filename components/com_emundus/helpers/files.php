@@ -850,6 +850,7 @@ class EmundusHelperFiles
                         AND element.label!=" "
                         AND element.label!=""
                         AND menu.menutype IN ( "' . implode('","', $menutype) . '" ) 
+                        AND menu.published = 1
                         AND element.plugin!="display"';
 				$order = 'ORDER BY menu.lft, formgroup.ordering, element.ordering';
 			}
