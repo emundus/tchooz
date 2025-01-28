@@ -6520,7 +6520,7 @@ const _hoisted_8$5 = { class: "tw-flex tw-justify-between tw-items-start" };
 const _hoisted_9$4 = { class: "tw-cursor-pointer" };
 const _hoisted_10$3 = {
   style: { "list-style-type": "none", "margin": "0" },
-  class: "tw-items-center tw-pl-0"
+  class: "tw-items-center tw-p-4"
 };
 const _hoisted_11$2 = ["onClick"];
 const _hoisted_12$2 = ["onClick"];
@@ -6632,21 +6632,21 @@ function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
                       createBaseVNode("ul", _hoisted_10$3, [
                         createBaseVNode("li", {
                           onClick: ($event) => _ctx.$emit("add-rule", "js", rule),
-                          class: "tw-py-3 tw-px-4 tw-w-full hover:tw-bg-neutral-300"
+                          class: "tw-py-1.5 tw-px-2 tw-w-full hover:tw-bg-neutral-300 hover:tw-rounded-coordinator"
                         }, toDisplayString(_ctx.translate("COM_EMUNDUS_FORM_BUILDER_RULE_EDIT")), 9, _hoisted_11$2),
                         rule.published == 0 ? (openBlock(), createElementBlock("li", {
                           key: 0,
                           onClick: ($event) => $options.publishRule(rule, 1),
-                          class: "tw-py-3 tw-px-4 tw-w-full hover:tw-bg-neutral-300"
+                          class: "tw-py-1.5 tw-px-2 tw-w-full hover:tw-bg-neutral-300 hover:tw-rounded-coordinator"
                         }, toDisplayString(_ctx.translate("COM_EMUNDUS_FORM_BUILDER_RULE_PUBLISH")), 9, _hoisted_12$2)) : createCommentVNode("", true),
                         rule.published == 1 ? (openBlock(), createElementBlock("li", {
                           key: 1,
                           onClick: ($event) => $options.publishRule(rule, 0),
-                          class: "tw-py-3 tw-px-4 tw-w-full hover:tw-bg-neutral-300"
+                          class: "tw-py-1.5 tw-px-2 tw-w-full hover:tw-bg-neutral-300 hover:tw-rounded-coordinator"
                         }, toDisplayString(_ctx.translate("COM_EMUNDUS_FORM_BUILDER_RULE_UNPUBLISH")), 9, _hoisted_13$2)) : createCommentVNode("", true),
                         createBaseVNode("li", {
                           onClick: ($event) => $options.deleteRule(rule),
-                          class: "tw-py-3 tw-px-4 tw-w-full tw-text-red-600 hover:tw-bg-neutral-300"
+                          class: "tw-py-1.5 tw-px-2 tw-w-full tw-text-red-600 hover:tw-bg-neutral-300 hover:tw-rounded-coordinator"
                         }, toDisplayString(_ctx.translate("COM_EMUNDUS_FORM_BUILDER_RULE_DELETE")), 9, _hoisted_14$1)
                       ])
                     ]),

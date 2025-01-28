@@ -871,11 +871,11 @@ body ::-webkit-scrollbar-track {
 #add-document-section {
   justify-content: center;
 }
-.popover-container[data-v-edd4aa49] {
+.popover-container[data-v-717de180] {
   position: relative;
   display: inline-block;
 }
-.popover-content[data-v-edd4aa49] {
+.popover-content[data-v-717de180] {
   background-color: white;
   position: absolute;
   min-height: 40px;
@@ -885,12 +885,12 @@ body ::-webkit-scrollbar-track {
 
   transition: opacity 0.2s ease-in-out;
 }
-.fade-enter-active[data-v-edd4aa49],
-.fade-leave-active[data-v-edd4aa49] {
+.fade-enter-active[data-v-717de180],
+.fade-leave-active[data-v-717de180] {
   transition: opacity 0.5s ease;
 }
-.fade-enter-from[data-v-edd4aa49],
-.fade-leave-to[data-v-edd4aa49] {
+.fade-enter-from[data-v-717de180],
+.fade-leave-to[data-v-717de180] {
   opacity: 0;
 }
 
@@ -4255,7 +4255,7 @@ a.tw-cursor-pointer:nth-child(2):hover .material-icons[data-v-bb742359] {
   align-items: center;
   flex-direction: column;
 }
-#list-table.blocs tbody tr td ul {
+#list-table.blocs tbody tr td ul:not(.tw-p-4) {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -4263,7 +4263,7 @@ a.tw-cursor-pointer:nth-child(2):hover .material-icons[data-v-bb742359] {
   padding: 0;
   margin: 0;
 }
-#list-table.blocs tbody tr td ul li {
+#list-table.blocs tbody tr td ul:not(.tw-p-4) li {
   list-style: none;
   cursor: pointer;
   width: 100%;

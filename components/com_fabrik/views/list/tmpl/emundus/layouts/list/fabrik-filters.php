@@ -32,19 +32,6 @@ $style = $d->toggleFilters ? 'style="display:none"' : ''; ?>
 			endif;
 			?>
 			<table class="filtertable table table-striped">
-				<thead>
-				<tr class="fabrik___heading">
-					<th><?php echo Text::_('COM_FABRIK_SEARCH'); ?>:</th>
-					<th style="text-align:right">
-						<?php if ($d->showClearFilters) : ?>
-							<a class="<?php echo $clearFiltersClass; ?> em-flex-row" href="#">
-                                <span class="material-symbols-outlined em-mr-4" style="font-size: 18px">filter_alt_off</span>
-								<?php echo Text::_('COM_FABRIK_CLEAR'); ?>
-							</a>
-						<?php endif ?>
-					</th>
-				</tr>
-				</thead>
 				<tfoot>
 				<tr>
 					<td colspan="2"></td>
@@ -95,6 +82,16 @@ $style = $d->toggleFilters ? 'style="display:none"' : ''; ?>
 								value="<?php echo Text::_('COM_FABRIK_GO'); ?>" name="filter">
 					</td>
 				</tr>
+                <tr class="fabrik___heading">
+                    <td>
+						<?php if ($d->showClearFilters) : ?>
+                            <a class="<?php echo $clearFiltersClass; ?> em-flex-row em-error-button" href="#">
+                                <span class="material-symbols-outlined em-mr-4" style="font-size: 18px">filter_alt_off</span>
+								<?php echo Text::_('COM_FABRIK_CLEAR'); ?>
+                            </a>
+						<?php endif ?>
+                    </td>
+                </tr>
 				<?php
 			endif;
 			?>

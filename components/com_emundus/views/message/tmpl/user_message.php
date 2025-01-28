@@ -110,7 +110,7 @@ $uids       = array();
     }
 
     #mail_from_block {
-        width: 90%;
+        width: 94%;
     }
 
     .em-form-recipients {
@@ -199,7 +199,7 @@ $uids       = array();
 
         <div class="form-inline row">
             <div class="form-group em-form-sender em-mt-12 col-md-6 col-sm-6">
-                <div class="tw-flex tw-items-center">
+                <div class="tw-flex tw-items-center tw-justify-between">
                     <label class='em-mr-8' for="mail_from"><?= Text::_('FROM'); ?> :</label>
                     <div id="mail_from_block" class="em-border-radius-8 em-mb-4 email-input-block">
                         <div id="mail_from_name" class="em-p-4-6"

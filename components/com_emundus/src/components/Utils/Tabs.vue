@@ -5,7 +5,7 @@
            class="tw-cursor-pointer tw-rounded-t-lg tw-flex tw-items-center tw-py-2 tw-px-4 tw-transition-colors tw-duration-300 tw-border-x tw-border-t"
            :class="{'tw-bg-white tw-border-profile-full': tab.active,'tw-bg-neutral-200 tw-border-neutral-400': !tab.active, 'tw-bg-neutral-400 tw-border-neutral-600' : tab.disabled}">
         <span class="material-symbols-outlined tw-mr-2" :class="tab.active ? 'tw-text-profile-full' : 'tw-text-neutral-700'">{{ tab.icon }}</span>
-        <span :class="tab.active ? 'tw-text-profile-full' : 'tw-text-neutral-700'" class="tw-whitespace-nowrap">{{ translate(tab.name) }}</span>
+        <span :class="tab.active ? 'tw-text-profile-full' : 'tw-text-neutral-700'" class="tw-whitespace-nowrap em-profile-font">{{ translate(tab.name) }}</span>
       </div>
     </div>
   </div>

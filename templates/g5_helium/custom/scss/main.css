@@ -377,6 +377,7 @@ small {
         letter-spacing: normal;
         font-size: var(--em-applicant-font-size);
         margin-bottom: 0;
+        font-family: var(--em-profile-font), Inter, sans-serif;
     }
 
     button.btn.goback-btn:hover {

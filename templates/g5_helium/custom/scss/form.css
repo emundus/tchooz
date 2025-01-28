@@ -74,12 +74,20 @@
     .fabrikElement {
         .field-calendar {
             .input-group {
+                input.fabrikinput {
+                    max-width: fit-content;
+                }
+
                 button.btn.btn-primary {
                     background: transparent;
                     color: black;
                     border-top-left-radius: 0 !important;
                     border-bottom-left-radius: 0 !important;
                     border-color: var(--em-form-bc);
+                    height: var(--em-form-height);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
                 }
             }
             .js-calendar {
@@ -1112,9 +1120,30 @@
         .currencyElement {
             position: relative;
 
-            select, .chosen-container {
+            input.fabrikinput {
+                max-width: fit-content;
+                border-top-right-radius: 0;
+                border-bottom-right-radius: 0;
+            }
+
+            select#currency_selectValue {
                 position: absolute;
-                right: 0;
+                left: 181px;
+                border-left: 0;
+                min-width: unset;
+                background: transparent;
+                width: 40px !important;
+                padding: 0;
+                text-align: center !important;
+                border-top-left-radius: 0;
+                border-bottom-left-radius: 0;
+                border-bottom-right-radius: var(--em-applicant-br) !important;
+                border-top-right-radius: var(--em-applicant-br) !important;
+            }
+
+            .chosen-container {
+                position: absolute;
+                left: 181px;
                 width: auto !important;
                 border-left: 0;
                 border-top-left-radius: 0;
@@ -1128,9 +1157,11 @@
                     border-color: var(--em-form-bc);
                     justify-content: end;
                     background-image: none !important;
+                    padding-right: 8px !important;
+                    background: transparent;
 
                     span {
-                        font-size: 16px;
+                        font-size: 14px;
                         margin-right: 16px;
                     }
 

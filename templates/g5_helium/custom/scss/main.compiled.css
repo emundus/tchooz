@@ -1026,12 +1026,20 @@ video {
         color: #000 !important;
         background: inherit;
     }
+.fabrikElement .field-calendar .input-group input.fabrikinput {
+                    max-width: -moz-fit-content;
+                    max-width: fit-content;
+                }
 .fabrikElement .field-calendar .input-group button.btn.btn-primary {
                     background: transparent;
                     color: black;
                     border-top-left-radius: 0 !important;
                     border-bottom-left-radius: 0 !important;
                     border-color: var(--em-form-bc);
+                    height: var(--em-form-height);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
                 }
 .fabrikElement .field-calendar .js-calendar {
                 margin-top: 6px !important;
@@ -1882,34 +1890,56 @@ form.fabrikForm .plg-fileupload .fabrikUploadDelete {
 form.fabrikForm .currencyElement {
             position: relative;
         }
-form.fabrikForm .currencyElement select, form.fabrikForm .currencyElement .chosen-container {
+form.fabrikForm .currencyElement input.fabrikinput {
+                max-width: -moz-fit-content;
+                max-width: fit-content;
+                border-top-right-radius: 0;
+                border-bottom-right-radius: 0;
+            }
+form.fabrikForm .currencyElement select#currency_selectValue {
                 position: absolute;
-                right: 0;
+                left: 181px;
+                border-left: 0;
+                min-width: unset;
+                background: transparent;
+                width: 40px !important;
+                padding: 0;
+                text-align: center !important;
+                border-top-left-radius: 0;
+                border-bottom-left-radius: 0;
+                border-bottom-right-radius: var(--em-applicant-br) !important;
+                border-top-right-radius: var(--em-applicant-br) !important;
+            }
+form.fabrikForm .currencyElement .chosen-container {
+                position: absolute;
+                left: 181px;
                 width: auto !important;
                 border-left: 0;
                 border-top-left-radius: 0;
                 border-bottom-left-radius: 0;
                 min-width: unset;
             }
-form.fabrikForm .currencyElement select .chosen-single, form.fabrikForm .currencyElement .chosen-container .chosen-single {
+form.fabrikForm .currencyElement .chosen-container .chosen-single {
                     border-left: 0 !important;
                     border-top-left-radius: 0 !important;
                     border-bottom-left-radius: 0 !important;
                     border-color: var(--em-form-bc);
                     justify-content: end;
                     background-image: none !important;
+                    padding-right: 8px !important;
+                    background: transparent;
                 }
-form.fabrikForm .currencyElement select .chosen-single span, form.fabrikForm .currencyElement .chosen-container .chosen-single span {
-                        font-size: 16px;
+form.fabrikForm .currencyElement .chosen-container .chosen-single span {
+                        font-size: 14px;
                         margin-right: 16px;
                     }
-form.fabrikForm .currencyElement select .chosen-single div, form.fabrikForm .currencyElement .chosen-container .chosen-single div {
+form.fabrikForm .currencyElement .chosen-container .chosen-single div {
                         height: auto;
                         width: 8px;
                         position: static;
                         margin-right: 4px;
                     }
-form.fabrikForm .currencyElement select .chosen-single div b, form.fabrikForm .currencyElement .chosen-container .chosen-single div b {
+form.fabrikForm .currencyElement .chosen-container .chosen-single div b {
                             position: relative;
                             top: -3px;
                             border: solid var(--neutral-900);
@@ -1920,7 +1950,7 @@ form.fabrikForm .currencyElement select .chosen-single div b, form.fabrikForm .c
                             background: unset;
                             padding: 3px;
                         }
-form.fabrikForm .currencyElement select .chosen-drop, form.fabrikForm .currencyElement .chosen-container .chosen-drop {
+form.fabrikForm .currencyElement .chosen-container .chosen-drop {
                     width: -moz-max-content;
                     width: max-content;
                     margin-top: 6px;
@@ -1928,21 +1958,21 @@ form.fabrikForm .currencyElement select .chosen-drop, form.fabrikForm .currencyE
                     box-shadow: unset;
                     border: solid 1px var(--neutral-400);
                 }
-form.fabrikForm .currencyElement select .chosen-drop .chosen-search, form.fabrikForm .currencyElement .chosen-container .chosen-drop .chosen-search {
+form.fabrikForm .currencyElement .chosen-container .chosen-drop .chosen-search {
                         padding: 4px;
                     }
-form.fabrikForm .currencyElement select .chosen-drop .chosen-search input, form.fabrikForm .currencyElement .chosen-container .chosen-drop .chosen-search input {
+form.fabrikForm .currencyElement .chosen-container .chosen-drop .chosen-search input {
                             height: 35px;
                             background: unset;
                         }
-form.fabrikForm .currencyElement select .chosen-drop .chosen-results, form.fabrikForm .currencyElement .chosen-container .chosen-drop .chosen-results {
+form.fabrikForm .currencyElement .chosen-container .chosen-drop .chosen-results {
                         border-radius: 4px;
                     }
-form.fabrikForm .currencyElement select .chosen-drop .chosen-results li, form.fabrikForm .currencyElement .chosen-container .chosen-drop .chosen-results li {
+form.fabrikForm .currencyElement .chosen-container .chosen-drop .chosen-results li {
                             font-size: 16px;
                             word-spacing: 4px;
                         }
-form.fabrikForm .currencyElement select .chosen-drop .chosen-results li.highlighted, form.fabrikForm .currencyElement .chosen-container .chosen-drop .chosen-results li.highlighted {
+form.fabrikForm .currencyElement .chosen-container .chosen-drop .chosen-results li.highlighted {
                             background-color: #D1E9FF;
                         }
 form.fabrikForm .currencyElement input:hover + select, form.fabrikForm .currencyElement input:hover + .chosen-container .chosen-single {
@@ -115503,6 +115533,7 @@ small {
         letter-spacing: normal;
         font-size: var(--em-applicant-font-size);
         margin-bottom: 0;
+        font-family: var(--em-profile-font), Inter, sans-serif;
     }
 .em-goback-btn button.btn.goback-btn:hover {
         background-color: var(--neutral-300);
@@ -115603,6 +115634,9 @@ small {
     --tw-scale-x: 1.1;
     --tw-scale-y: 1.1;
     transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+.hover\:tw-rounded-coordinator:hover {
+    border-radius: var(--em-coordinator-br);
 }
 .hover\:tw-border-green-700:hover {
     border-color: var(--green-700);

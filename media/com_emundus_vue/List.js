@@ -705,8 +705,8 @@ const _hoisted_47 = { class: "tw-flex tw-items-center tw-gap-2" };
 const _hoisted_48 = ["onClick"];
 const _hoisted_49 = ["onClick"];
 const _hoisted_50 = {
-  style: { "list-style-type": "none", "margin": "0", "padding-left": "0px" },
-  class: "em-flex-col-center"
+  style: { "list-style-type": "none", "margin": "0" },
+  class: "em-flex-col-center tw-p-4"
 };
 const _hoisted_51 = ["onClick"];
 const _hoisted_52 = { key: 1 };
@@ -1000,7 +1000,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                               (openBlock(true), createElementBlock(Fragment, null, renderList($options.tabActionsPopover, (action) => {
                                 return openBlock(), createElementBlock("li", {
                                   key: action.name,
-                                  class: normalizeClass([{ "tw-hidden": !(typeof action.showon === "undefined" || $options.evaluateShowOn(item, action.showon)) }, "tw-cursor-pointer tw-p-2 tw-text-base hover:tw-bg-neutral-300"]),
+                                  class: normalizeClass([{ "tw-hidden": !(typeof action.showon === "undefined" || $options.evaluateShowOn(item, action.showon)) }, "tw-cursor-pointer tw-py-1.5 tw-px-2 tw-text-base hover:tw-bg-neutral-300 hover:tw-rounded-coordinator"]),
                                   onClick: ($event) => $options.onClickAction(action, item.id)
                                 }, toDisplayString(_ctx.translate(action.label)), 11, _hoisted_51);
                               }), 128))

@@ -199,12 +199,12 @@
                         :position="'left'"
                         v-if="tabActionsPopover && tabActionsPopover.length > 0 && filterShowOnActions(tabActionsPopover, item).length"
                         class="custom-popover-arrow">
-                      <ul style="list-style-type: none; margin: 0; padding-left:0px;" class="em-flex-col-center">
+                      <ul style="list-style-type: none; margin: 0;" class="em-flex-col-center tw-p-4">
                         <li v-for="action in tabActionsPopover"
                             :key="action.name"
                             :class="{'tw-hidden': !(typeof action.showon === 'undefined' || evaluateShowOn(item, action.showon))}"
                             @click="onClickAction(action, item.id)"
-                            class="tw-cursor-pointer tw-p-2 tw-text-base hover:tw-bg-neutral-300"
+                            class="tw-cursor-pointer tw-py-1.5 tw-px-2 tw-text-base hover:tw-bg-neutral-300 hover:tw-rounded-coordinator"
                         >
                           {{ translate(action.label) }}
                         </li>
@@ -921,7 +921,7 @@ export default {
             flex-direction: column;
           }
 
-          ul {
+          ul:not(.tw-p-4) {
             display: flex;
             flex-direction: column;
             justify-content: flex-end;

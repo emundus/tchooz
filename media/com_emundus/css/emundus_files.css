@@ -1444,8 +1444,12 @@ div#em-appli-block .panel-body {
     padding-right: 20px;
 }
 
-.em_email_block .form-inline.row .em-form-selectCategory, .em_email_block .form-inline.row .em-form-selectTypeEmail {
-    width: 48%;
+.em_email_block .form-inline.row .em-form-selectCategory,
+.em_email_block .form-inline.row .em-form-selectTypeEmail,
+.em_email_block .form-inline.row .form-group.em-form-sender,
+.em_email_block .form-inline.row .form-group.em-form-recipients
+{
+    width: 48% !important;
 }
 
 #quick .selectize-input{
