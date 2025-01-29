@@ -15,6 +15,7 @@
 // No direct access
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -83,7 +84,7 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
 
 		jimport('joomla.log.log');
-		JLog::addLogger(array('text_file' => 'com_emundus.campaign-check.php'), JLog::ALL, array('com_emundus.campaign-check'));
+		Log::addLogger(array('text_file' => 'com_emundus.campaign-check.php'), Log::ALL, array('com_emundus.campaign-check'));
 
 		$user = $this->app->getSession()->get('emundusUser');
 
@@ -107,10 +108,9 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form
 		$isLimitObtained = $m_campaign->isLimitObtained($campaign_id);
 
 		if ($isLimitObtained === true) {
-			JLog::add('User: ' . $user->id . ' Campaign limit is obtained', JLog::ERROR, 'com_emundus.campaign-check');
-			$this->getModel()->formErrorMsg     = '';
-			$this->getModel()->getForm()->error = Text::_('LIMIT_OBTAINED');
-
+			Log::add('User: ' . $user->id . ' Campaign limit is obtained', Log::ERROR, 'com_emundus.campaign-check');
+			$this->app->enqueueMessage(Text::_('LIMIT_OBTAINED'), 'error');
+			$this->app->redirect($homepage_link);
 			return false;
 		}
 
@@ -141,7 +141,7 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form
 				$files = $this->_db->loadResult();
 
 				if ($files > 0) {
-					JLog::add('User: ' . $user->id . ' already has a file.', JLog::ERROR, 'com_emundus.campaign-check');
+					Log::add('User: ' . $user->id . ' already has a file.', Log::ERROR, 'com_emundus.campaign-check');
 					$this->getModel()->formErrorMsg     = '';
 					$this->getModel()->getForm()->error = Text::_('CANNOT_HAVE_MULTI_FILE');
 					$this->app->enqueueMessage(Text::_('CANNOT_HAVE_MULTI_FILE'), 'error');
@@ -163,7 +163,7 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form
 					$user_campaigns = $this->_db->loadColumn();
 
 					if (!empty($user_campaigns)) {
-						JLog::add('User: ' . $user->id . ' already has a file for campaign id: ' . $campaign_id, JLog::ERROR, 'com_emundus.campaign-check');
+						Log::add('User: ' . $user->id . ' already has a file for campaign id: ' . $campaign_id, Log::ERROR, 'com_emundus.campaign-check');
 						$this->getModel()->formErrorMsg     = '';
 						$this->getModel()->getForm()->error = Text::_('USER_HAS_FILE_FOR_CAMPAIGN');
 						$this->app->enqueueMessage(Text::_('USER_HAS_FILE_FOR_CAMPAIGN'), 'error');
@@ -172,7 +172,7 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form
 
 				}
 				catch (Exception $e) {
-					JLog::add('plugin/emundus_campaign SQL error at query :' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus.campaign-check');
+					Log::add('plugin/emundus_campaign SQL error at query :' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus.campaign-check');
 					$this->getModel()->formErrorMsg     = '';
 					$this->getModel()->getForm()->error = Text::_('ERROR');
 				}
@@ -193,8 +193,7 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form
 					$this->_db->setQuery($query);
 					$user_years = $this->_db->loadColumn();
 
-					$query
-						->clear()
+					$query->clear()
 						->select($this->_db->quoteName('id'))
 						->from($this->_db->quoteName('#__emundus_setup_campaigns'))
 						->where($this->_db->quoteName('published') . ' = 1')
@@ -203,17 +202,16 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form
 						->andWhere($this->_db->quoteName('year') . ' NOT IN (' . implode(',', $this->_db->q($user_years)) . ')');
 
 					$this->_db->setQuery($query);
-					if (!in_array($campaign_id, $this->_db->loadColumn())) {
-						JLog::add('User: ' . $user->id . ' already has a file for year belong to campaign: ' . $campaign_id, JLog::ERROR, 'com_emundus.campaign-check');
-						$this->getModel()->formErrorMsg     = '';
-						$this->getModel()->getForm()->error = Text::_('USER_HAS_FILE_FOR_YEAR');
+					$campaigns = $this->_db->loadColumn();
+
+					if (!in_array($campaign_id, $campaigns)) {
+						Log::add('User: ' . $user->id . ' already has a file for year belong to campaign: ' . $campaign_id, Log::ERROR, 'com_emundus.campaign-check');
 						$this->app->enqueueMessage(Text::_('USER_HAS_FILE_FOR_YEAR'), 'error');
 						$this->app->redirect($homepage_link);
 					}
-
 				}
 				catch (Exception $e) {
-					JLog::add('plugin/emundus_campaign SQL error at query :' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus.campaign-check');
+					Log::add('plugin/emundus_campaign SQL error at query :' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus.campaign-check');
 					$this->getModel()->formErrorMsg     = '';
 					$this->getModel()->getForm()->error = Text::_('ERROR');
 				}
