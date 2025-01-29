@@ -747,7 +747,7 @@ class EmundusFiltersFiles extends EmundusFilters
 				'label'          => Text::_('MOD_EMUNDUS_FILTERS_WORKFLOW_STEPS'),
 				'type'           => 'select',
 				'values'         => $steps,
-				'value'          => !empty($values_selected) ? $values_selected : ['all'],
+				'value'          => !empty($steps_selected) && !empty($values_selected) ? $values_selected : [],
 				'default'        => true,
 				'available'      => true,
 				'order'          => $config['filter_steps_order'],
@@ -759,6 +759,26 @@ class EmundusFiltersFiles extends EmundusFilters
 		}
 
 		if ($config['filter_evaluated']) {
+			$evaluated_default_value = null;
+			if (!$filter_menu_values_are_empty)
+			{
+				$position = array_search('evaluated', $filter_names);
+
+				if ($position !== false && isset($filter_menu_values[$position]) && $filter_menu_values[$position] !== '')
+				{
+					$evaluated = explode('|', $filter_menu_values[$position]);
+					if (!empty($evaluated))
+					{
+						$evaluated = array_map('intval', $evaluated);
+						$evaluated = array_filter($evaluated, function($value) {
+							return $value === 1 || $value === 0;
+						});
+
+						$evaluated_default_value = $evaluated[0];
+					}
+				}
+			}
+
 			$this->applied_filters[] = [
 				'uid'            => 'evaluated',
 				'id'             => 'evaluated',
@@ -768,7 +788,7 @@ class EmundusFiltersFiles extends EmundusFilters
 					['value' => 1, 'label' => Text::_('MOD_EMUNDUS_FILTERS_VALUE_EVALUATED')],
 					['value' => 0, 'label' => Text::_('MOD_EMUNDUS_FILTERS_VALUE_TO_EVALUATE')]
 				],
-				'value'          => ['all'],
+				'value'          => !is_null($evaluated_default_value) ? [$evaluated_default_value] : [],
 				'default'        => true,
 				'available'      => true,
 				'order'          => $config['filter_evaluated_order'],
