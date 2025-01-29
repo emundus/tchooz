@@ -5558,29 +5558,46 @@ $(document).ready(function() {
     })
 
     $(document).on('click', '[id^=emundus_checkall]', function() {
-
         let dataType = $(this).attr('data-check');
-
         if (dataType === '.emunduspage') {
             let profile_id = $(this).attr('id').split('emundus_checkall')[1];
-            const isXlsExport = document.getElementById('appelement');
+
+            const xlsExportWrapper = document.getElementById('appelement');
+            let isXlsExport = false;
+            if (xlsExportWrapper) {
+                isXlsExport = xlsExportWrapper.querySelector('#emundus_checkall' + profile_id);
+            }
+
+            const xlsEvalWrapper = document.getElementById('evalelement');
+            let isXlsEval = false;
+            if (xlsEvalWrapper) {
+                isXlsEval = xlsEvalWrapper.querySelector('#emundus_checkall' + profile_id);
+            }
+
             const checkState = $('#emundus_checkall' + profile_id).is(":checked");
 
+            let elements = [];
+            if (isXlsExport) {
+                elements = xlsExportWrapper.querySelectorAll('#emundus_elements input[type="checkbox"]');
+            } else {
+                elements = document.querySelectorAll('#felts' + profile_id + ' input[type="checkbox"]');
+            }
+
             if (checkState) {
-                document.querySelectorAll('#felts' + profile_id + ' input[type="checkbox"]').forEach((e) => {
+                elements.forEach((e) => {
                     e.checked = true;
 
-                    if (isXlsExport) {
+                    if (isXlsExport || isXlsEval) {
                         let exportRecapContainer = document.getElementById('em-export');
                         addElementToXlsRecap(e, exportRecapContainer);
                     }
                 });
             } else {
-                document.querySelectorAll('#felts' + profile_id + ' input[type="checkbox"]').forEach((e) => {
+                elements.forEach((e) => {
                     e.checked = false;
                     e.removeAttribute('checked');
 
-                    if (isXlsExport) {
+                    if (isXlsExport || isXlsEval) {
                         removeElementFromXlsRecap(e);
                     }
                 });
