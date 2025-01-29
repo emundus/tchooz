@@ -1753,8 +1753,19 @@ class EmundusModelFiles extends JModelLegacy
 	{
 		$res = false;
 
+		if(empty($user_id))
+		{
+			$user = $this->app->getIdentity();
+			if(!empty($user)) {
+				$user_id = $user->id;
+			} else {
+				$eMConfig = ComponentHelper::getParams('com_emundus');
+				$user_id = $eMConfig->get('automated_task_user', 62);
+			}
+		}
+
 		if (!empty($fnums) && isset($state)) {
-			$all_status = $this->getAllStatus(-1, 'step');
+			$all_status = $this->getAllStatus($user_id, 'step');
 
 			if (isset($all_status[$state])) {
 				$query = $this->_db->getQuery(true);
@@ -1776,17 +1787,6 @@ class EmundusModelFiles extends JModelLegacy
 							if (!empty($response) && isset($response['status']) && $response['status'] === false) {
 								return $response;
 							}
-						}
-					}
-
-					$all_status = $this->getStatus($user_id);
-
-					if (empty($user_id)) {
-						$user = $this->app->getIdentity();
-						if (empty($user->id)) {
-							$eMConfig            = ComponentHelper::getParams('com_emundus');
-							$automated_task_user = $eMConfig->get('automated_task_user', 62);
-							$user_id             = $automated_task_user;
 						}
 					}
 
@@ -5008,7 +5008,7 @@ class EmundusModelFiles extends JModelLegacy
 			if(!empty($current_user)) {
 				$user_from = $current_user->id;
 			} else {
-				$eMConfig = JComponentHelper::getParams('com_emundus');
+				$eMConfig = ComponentHelper::getParams('com_emundus');
 				$user_from = $eMConfig->get('automated_task_user', 62);
 			}
 		} else {
