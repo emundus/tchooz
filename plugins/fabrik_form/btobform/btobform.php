@@ -304,6 +304,7 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 				}
 
 				$alias_to_fills = [
+					'registration_civility' => $data['jos_emundus_btob_1237_repeat___civility'][$key],
 					'registration_common_name' => $data['jos_emundus_btob_1237_repeat___lastname'][$key],
 					'registration_birth_name' => $data['jos_emundus_btob_1237_repeat___lastname'][$key],
 					'registration_first_name' => $data['jos_emundus_btob_1237_repeat___firstname'][$key],
