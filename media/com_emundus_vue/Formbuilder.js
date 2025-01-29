@@ -1729,7 +1729,6 @@ const _sfc_main$t = {
       return this.repeat_name !== "" ? this.repeat_name + this.index : "";
     },
     displayedParams() {
-      console.log(this.params);
       return this.params.filter((param) => {
         return param.published && !param.sysadmin_only || this.sysadmin && param.sysadmin_only && param.published;
       });
@@ -2025,7 +2024,6 @@ const _sfc_main$s = {
   methods: {
     getDatabases() {
       formBuilderService.getDatabases().then((response) => {
-        console.log(response);
         if (response.status) {
           this.databases = response.data;
         }
@@ -3909,7 +3907,6 @@ const _sfc_main$h = {
       formBuilderService.updateTranslation(null, this.fabrikPage.show_title.titleraw, this.fabrikPage.show_title.label).then((response) => {
         if (response.data.status) {
           translationsService.updateTranslations(this.fabrikPage.show_title.label[this.shortDefaultLang], "falang", this.shortDefaultLang, this.fabrikPage.menu_id, "title", "menu");
-          console.log("emit update title");
           this.$emit("update-page-title", {
             page: this.page.id,
             new_title: this.$refs.pageTitle.innerText

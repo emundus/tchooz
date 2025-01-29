@@ -1,5 +1,5 @@
 import { _ as _export_sfc, u as useGlobalStore, o as openBlock, c as createElementBlock, a as createBaseVNode, t as toDisplayString, e as createCommentVNode, j as shallowRef, r as resolveComponent, g as createVNode, w as withCtx } from "./app_emundus.js";
-import { f as d, r, h, y, u, k, g as E, c as createEventsServicePlugin, a as createCalendarControlsPlugin, E as EventDay, J as Ji, b as createCalendar, d as createViewDay, e as createViewWeek } from "./core.js";
+import { f as d, r, h, y, u, k, g as E, c as createEventsServicePlugin, a as createCalendarControlsPlugin, E as EventDay, Q as Qi, b as createCalendar, d as createViewDay, e as createViewWeek } from "./core.js";
 import { e as eventsService } from "./events.js";
 const _sfc_main$1 = {
   name: "EventModal",
@@ -374,7 +374,7 @@ const createCalendarConfig = (vm) => ({
 });
 const _sfc_main = {
   name: "Calendar",
-  components: { EventDay, EventModal: EventModal$1, ScheduleXCalendar: Ji },
+  components: { EventDay, EventModal: EventModal$1, ScheduleXCalendar: Qi },
   props: {
     items: {
       type: Object,

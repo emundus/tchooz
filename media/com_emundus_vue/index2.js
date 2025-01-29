@@ -2159,16 +2159,20 @@ function requireParse() {
     parseArrays: true,
     plainObjects: false,
     strictDepth: false,
-    strictNullHandling: false
+    strictNullHandling: false,
+    throwOnLimitExceeded: false
   };
   var interpretNumericEntities = function(str) {
     return str.replace(/&#(\d+);/g, function($0, numberStr) {
       return String.fromCharCode(parseInt(numberStr, 10));
     });
   };
-  var parseArrayValue = function(val, options) {
+  var parseArrayValue = function(val, options, currentArrayLength) {
     if (val && typeof val === "string" && options.comma && val.indexOf(",") > -1) {
       return val.split(",");
+    }
+    if (options.throwOnLimitExceeded && currentArrayLength >= options.arrayLimit) {
+      throw new RangeError("Array limit exceeded. Only " + options.arrayLimit + " element" + (options.arrayLimit === 1 ? "" : "s") + " allowed in an array.");
     }
     return val;
   };
@@ -2179,7 +2183,13 @@ function requireParse() {
     var cleanStr = options.ignoreQueryPrefix ? str.replace(/^\?/, "") : str;
     cleanStr = cleanStr.replace(/%5B/gi, "[").replace(/%5D/gi, "]");
     var limit = options.parameterLimit === Infinity ? void 0 : options.parameterLimit;
-    var parts = cleanStr.split(options.delimiter, limit);
+    var parts = cleanStr.split(
+      options.delimiter,
+      options.throwOnLimitExceeded ? limit + 1 : limit
+    );
+    if (options.throwOnLimitExceeded && parts.length > limit) {
+      throw new RangeError("Parameter limit exceeded. Only " + limit + " parameter" + (limit === 1 ? "" : "s") + " allowed.");
+    }
     var skipIndex = -1;
     var i;
     var charset = options.charset;
@@ -2211,7 +2221,11 @@ function requireParse() {
       } else {
         key = options.decoder(part.slice(0, pos), defaults.decoder, charset, "key");
         val = utils2.maybeMap(
-          parseArrayValue(part.slice(pos + 1), options),
+          parseArrayValue(
+            part.slice(pos + 1),
+            options,
+            isArray(obj[key]) ? obj[key].length : 0
+          ),
           function(encodedVal) {
             return options.decoder(encodedVal, defaults.decoder, charset, "value");
           }
@@ -2233,12 +2247,17 @@ function requireParse() {
     return obj;
   };
   var parseObject = function(chain, val, options, valuesParsed) {
-    var leaf = valuesParsed ? val : parseArrayValue(val, options);
+    var currentArrayLength = 0;
+    if (chain.length > 0 && chain[chain.length - 1] === "[]") {
+      var parentKey = chain.slice(0, -1).join("");
+      currentArrayLength = Array.isArray(val) && val[parentKey] ? val[parentKey].length : 0;
+    }
+    var leaf = valuesParsed ? val : parseArrayValue(val, options, currentArrayLength);
     for (var i = chain.length - 1; i >= 0; --i) {
       var obj;
       var root = chain[i];
       if (root === "[]" && options.parseArrays) {
-        obj = options.allowEmptyArrays && (leaf === "" || options.strictNullHandling && leaf === null) ? [] : [].concat(leaf);
+        obj = options.allowEmptyArrays && (leaf === "" || options.strictNullHandling && leaf === null) ? [] : utils2.combine([], leaf);
       } else {
         obj = options.plainObjects ? { __proto__: null } : {};
         var cleanRoot = root.charAt(0) === "[" && root.charAt(root.length - 1) === "]" ? root.slice(1, -1) : root;
@@ -2309,6 +2328,9 @@ function requireParse() {
     if (typeof opts.charset !== "undefined" && opts.charset !== "utf-8" && opts.charset !== "iso-8859-1") {
       throw new TypeError("The charset option must be either utf-8, iso-8859-1, or undefined");
     }
+    if (typeof opts.throwOnLimitExceeded !== "undefined" && typeof opts.throwOnLimitExceeded !== "boolean") {
+      throw new TypeError("`throwOnLimitExceeded` option must be a boolean");
+    }
     var charset = typeof opts.charset === "undefined" ? defaults.charset : opts.charset;
     var duplicates = typeof opts.duplicates === "undefined" ? defaults.duplicates : opts.duplicates;
     if (duplicates !== "combine" && duplicates !== "first" && duplicates !== "last") {
@@ -2336,7 +2358,8 @@ function requireParse() {
       parseArrays: opts.parseArrays !== false,
       plainObjects: typeof opts.plainObjects === "boolean" ? opts.plainObjects : defaults.plainObjects,
       strictDepth: typeof opts.strictDepth === "boolean" ? !!opts.strictDepth : defaults.strictDepth,
-      strictNullHandling: typeof opts.strictNullHandling === "boolean" ? opts.strictNullHandling : defaults.strictNullHandling
+      strictNullHandling: typeof opts.strictNullHandling === "boolean" ? opts.strictNullHandling : defaults.strictNullHandling,
+      throwOnLimitExceeded: typeof opts.throwOnLimitExceeded === "boolean" ? opts.throwOnLimitExceeded : false
     };
   };
   parse = function(str, opts) {
