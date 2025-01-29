@@ -2134,7 +2134,7 @@ class EmundusModelFormbuilder extends JModelList
 							$element['params']['database_join_where_sql'] .= 'WHERE {thistable}.' . $element['params']['join_key_column'] . ' NOT IN (' . implode(',',$this->db->quote($ids_to_exclude)) . ')';
 						}
 					} else {
-						$element['params']['database_join_where_sql'] = preg_replace('/\bwhere(.*) not in\b(.*)/ig', '', $element['params']['database_join_where_sql']);
+						$element['params']['database_join_where_sql'] = preg_replace('/\bwhere(.*) not in\b(.*)/i', '', $element['params']['database_join_where_sql']);
 					}
 
 					if(strpos($element['params']['database_join_where_sql'], 'order by') !== false)
