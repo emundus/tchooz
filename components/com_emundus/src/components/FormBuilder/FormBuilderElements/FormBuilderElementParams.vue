@@ -311,8 +311,6 @@ export default {
       return this.repeat_name !== '' ? this.repeat_name + this.index : '';
     },
     displayedParams() {
-      console.log(this.params);
-
       return this.params.filter((param) => {
         return (param.published && !param.sysadmin_only) || (this.sysadmin && param.sysadmin_only && param.published)
       });

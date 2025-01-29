@@ -199,8 +199,6 @@ export default {
   methods: {
     getDatabases() {
       formBuilderService.getDatabases().then(response => {
-        console.log(response);
-
         if (response.status) {
           this.databases = response.data;
         }
