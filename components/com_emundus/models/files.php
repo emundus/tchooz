@@ -1879,7 +1879,7 @@ class EmundusModelFiles extends JModelLegacy
 				if (!empty($students)) {
 					$res = [
 						'status' => true,
-						'msg'    => $this->sendEmailAfterUpdateState($state, $students)
+						'msg'    => $this->sendEmailAfterUpdateState($state, $students, $user_id)
 					];
 				}
 			}
@@ -4994,20 +4994,25 @@ class EmundusModelFiles extends JModelLegacy
 		return $fnum;
 	}
 
-	private function sendEmailAfterUpdateState($state, $students)
+	private function sendEmailAfterUpdateState($state, $students, $user_id = null)
 	{
 		$msg = '';
 
-		$app = JFactory::getApplication();
+		$app = Factory::getApplication();
 		$email_from_sys = $app->get('mailfrom');
-		$status = $this->getStatus();
+		$status = $this->getStatus($user_id);
 
-		$current_user = JFactory::getUser();
-		if(!empty($current_user)) {
-			$user_from = $current_user->id;
+		if(empty($user_id))
+		{
+			$current_user = $app->getIdentity();
+			if(!empty($current_user)) {
+				$user_from = $current_user->id;
+			} else {
+				$eMConfig = JComponentHelper::getParams('com_emundus');
+				$user_from = $eMConfig->get('automated_task_user', 62);
+			}
 		} else {
-			$eMConfig = JComponentHelper::getParams('com_emundus');
-			$user_from = $eMConfig->get('automated_task_user', 62);
+			$user_from = $user_id;
 		}
 
 		// Get all codes from fnum
