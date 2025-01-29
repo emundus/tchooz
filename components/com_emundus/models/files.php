@@ -4295,7 +4295,6 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getFabrikValue($fnums, $tableName, $name, $dateFormat = null)
 	{
-
 		if (!is_array($fnums))
 		{
 			$fnums = [$fnums];
@@ -4303,23 +4302,24 @@ class EmundusModelFiles extends JModelLegacy
 
 		$query = $this->_db->getQuery(true);
 
-		if ($dateFormat !== null) {
-			$dateFormat = $this->dateFormatToMysql($dateFormat);
-
-			$query->select('fnum, DATE_FORMAT(' . $name . ', ' . $this->_db->quote($dateFormat) . ') as val')
-				->from($this->_db->quoteName($tableName))
-				->where($this->_db->quoteName('fnum') . ' IN (' . implode(',', $this->_db->quote($fnums)) . ')');
-		}
-		else {
-			$query->select('fnum, ' . $this->_db->quoteName($name) . ' as val')
-				->from($this->_db->quoteName($tableName))
-				->where($this->_db->quoteName('fnum') . ' IN (' . implode(',', $this->_db->quote($fnums)) . ')');
-		}
+		$query->select('fnum, ' . $this->_db->quoteName($name) . ' as val')
+			->from($this->_db->quoteName($tableName))
+			->where($this->_db->quoteName('fnum') . ' IN (' . implode(',', $this->_db->quote($fnums)) . ')');
 
 		try {
 			$this->_db->setQuery($query);
 
-			return $this->_db->loadAssocList('fnum');
+			$values = $this->_db->loadAssocList('fnum');
+
+			if(!empty($dateFormat))
+			{
+				foreach ($values as &$value)
+				{
+					$value['val'] = date($dateFormat, strtotime($value['val']));
+				}
+			}
+
+			return $values;
 		}
 		catch (Exception $e) {
 			throw $e;
