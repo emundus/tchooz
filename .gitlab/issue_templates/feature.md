@@ -19,6 +19,18 @@ Add Linked items or add child items.
 ## Cybersecurity Analysis
 Detail any potential security implications and required reviews.
 
+### Access  
+- [ ] Item 1
+
+### Data Privacy
+- [ ] Item 1
+
+### Guaranteed data integrity and consistency 
+- [ ] Item 1
+
+### Data update traceability
+- [ ] Item 1
+
 ## Design Elements
 Include links to design mockups or specifications.
 
