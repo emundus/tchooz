@@ -184,6 +184,7 @@ class EmundusModelEmails extends JModelList
 						$emails_triggers[$trigger->trigger_id][$code_prog]['tmpl']['tags'] = $trigger->tags;
 						$emails_triggers[$trigger->trigger_id][$code_prog]['tmpl']['attachments'] = $trigger->attachments;
 						$emails_triggers[$trigger->trigger_id][$code_prog]['tmpl']['letter_attachment'] = $trigger->letter_attachments;
+						$emails_triggers[$trigger->trigger_id][$code_prog]['tmpl']['button'] = $trigger->button;
 
 						// This is the email template model, the HTML structure that makes the email look good.
 						$emails_triggers[$trigger->trigger_id][$code_prog]['tmpl']['template'] = $trigger->Template;
@@ -334,6 +335,8 @@ class EmundusModelEmails extends JModelList
 				if ($trigger_email[$student->code]['to']['to_applicant'] == 1) {
 					$trigger_email[$student->code]['to']['recipients'][$student->id] = array('id' => $student->id, 'name' => $student->name, 'email' => $student->email, 'university_id' => $student->university_id);
 				}
+
+				$post['BUTTON_TEXT'] = $trigger_email[$student->code]['tmpl']['button'];
 
 				$tags = $this->setTags($student->id, $post, $student->fnum, '', $trigger_email[$student->code]['tmpl']['emailfrom'].$trigger_email[$student->code]['tmpl']['name'].$trigger_email[$student->code]['tmpl']['subject'].$trigger_email[$student->code]['tmpl']['message']);
 
@@ -3296,6 +3299,7 @@ class EmundusModelEmails extends JModelList
 			$post['CAMPAIGN_LABEL'] = !isset($post['CAMPAIGN_LABEL']) ? $fnum['label'] : $post['CAMPAIGN_LABEL'];
 			$post['SITE_URL'] = !isset($post['SITE_URL']) ? JURI::base() : $post['SITE_URL'];
 			$post['USER_EMAIL'] = !isset($post['USER_EMAIL']) ? $fnum['email'] : $post['USER_EMAIL'];
+			$post['BUTTON_TEXT'] = !isset($post['BUTTON_TEXT']) ? $template->button : $post['BUTTON_TEXT'];
 			$tags = $this->setTags($fnum['applicant_id'], $post, $fnum['fnum'], '', $template->emailfrom.$template->name.$template->subject.$template->message);
 
 			// Get default mail sender info
