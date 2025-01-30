@@ -672,10 +672,12 @@ class EmundusModelEmails extends JModelList
 	 * @param   string  $fnum     used to get fabrik tags ids from applicant file
 	 * @param   string  $passwd   used set password if needed
 	 * @param   string  $content  string containing tags to replace, ATTENTION : if empty all tags are computing
+	 * @param   bool  $base64  if true, image will be converted to base64
+	 * @param   bool  $check_content  if true, only tags in $content will be computed
 	 *
 	 * @return array[]
 	 */
-	public function setTags($user_id, $post = null, $fnum = null, $passwd = '', $content = '', $base64 = false)
+	public function setTags($user_id, $post = null, $fnum = null, $passwd = '', $content = '', $base64 = false, $check_content = false)
 	{
 		require_once(JPATH_SITE . '/components/com_emundus/helpers/tags.php');
 		$h_tags = new EmundusHelperTags();
@@ -693,6 +695,9 @@ class EmundusModelEmails extends JModelList
 			if (!empty($tags_content)) {
 				$tags_content = array_unique($tags_content);
 				$query->andWhere('t.tag IN ("' . implode('","', $tags_content) . '")');
+			}
+			elseif ($check_content) {
+				return array('patterns' => array(), 'replacements' => array());
 			}
 		}
 

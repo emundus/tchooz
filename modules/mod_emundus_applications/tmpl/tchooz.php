@@ -142,7 +142,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 				'FNUM' => $application->fnum
 			);
 
-			$tags = $m_email->setTags($user->id, $post, $application->fnum, '', $title_override_display);
+			$tags = $m_email->setTags($user->id, $post, $application->fnum, '', $title_override_display, false, true);
 			$title_override_display = preg_replace($tags['patterns'], $tags['replacements'], $title_override_display);
 			$title_override_display = $m_email->setTagsFabrik($title_override_display, array($application->fnum));
 
@@ -403,7 +403,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 													'FNUM'           => $application->fnum
 												);
 
-												$tags              = $m_email->setTags($user->id, $post, $application->fnum, '', $file_tags);
+												$tags              = $m_email->setTags($user->id, $post, $application->fnum, '', $file_tags, false, true);
 												$file_tags_display = preg_replace($tags['patterns'], $tags['replacements'], $file_tags);
 												$file_tags_display = $m_email->setTagsFabrik($file_tags_display, array($application->fnum));
 											}
@@ -793,7 +793,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 													'FNUM'           => $application->fnum
 												);
 
-												$tags              = $m_email->setTags($user->id, $post, $application->fnum, '', $file_tags);
+												$tags              = $m_email->setTags($user->id, $post, $application->fnum, '', $file_tags, false, true);
 												$file_tags_display = preg_replace($tags['patterns'], $tags['replacements'], $file_tags);
 												$file_tags_display = $m_email->setTagsFabrik($file_tags_display, array($application->fnum));
 											}
