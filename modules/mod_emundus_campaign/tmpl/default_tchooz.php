@@ -1167,7 +1167,7 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
                 html = '<select id="filter_value_' + index + '"> ' +
                     '<option value = 0></option>' +
 					<?php foreach ($programs as $program) : ?>
-                    "<option value=\"<?php echo $program['code'] ?>\"><?php echo $program['label'] ?></option>" +
+                    "<option value=\"<?php echo $program['code'] ?>\"><?php echo urlencode($program['label']) ?></option>" +
 					<?php endforeach; ?>
                     '</select>';
                 break;
