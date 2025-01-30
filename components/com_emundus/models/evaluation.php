@@ -1711,6 +1711,7 @@ class EmundusModelEvaluation extends JModelList
 
 					return null;
 				}, $eval_steps);
+				$form_ids = array_filter($form_ids);
 
 				if (!empty($form_ids)) {
 					$query->clear()
