@@ -2083,12 +2083,13 @@ class EmundusHelperUpdate
 			$params['params'] = [];
 		}
 
+		// Initialize again Joomla database to fix problem with Falang (or other plugins) that override default mysql driver
+		Factory::$database = null;
+
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+
 		try
 		{
-			// Initialize again Joomla database to fix problem with Falang (or other plugins) that override default mysql driver
-			Factory::$database = null;
-
-			$db    = Factory::getDbo();
 			$query = $db->getQuery(true);
 
 			if (empty($params['alias']))
@@ -2161,6 +2162,9 @@ class EmundusHelperUpdate
 				{
 					$result['message'] = 'INSERTING JOOMLA MENU : Error at saving menu.';
 
+					$db->setQuery('UNLOCK TABLES');
+					$db->execute();
+
 					return $result;
 				}
 				$result['id']    = $menu_table->id;
@@ -2206,6 +2210,9 @@ class EmundusHelperUpdate
 			Log::add('Failed to insert menu ' . $params['title'] . ' ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			$result['status']  = false;
 			$result['message'] = 'INSERTING MENU : ' . $e->getMessage();
+
+			$db->setQuery('UNLOCK TABLES');
+			$db->execute();
 		}
 
 		return $result;
@@ -4672,6 +4679,7 @@ class EmundusHelperUpdate
 			$db->setQuery($query);
 			$item = $db->loadObject();
 
+			$update_campaign = true;
 			$create_item = true;
 			if(!empty($item)) {
 				$params = json_decode($item->params, true);
@@ -4712,15 +4720,18 @@ class EmundusHelperUpdate
 					]
 				];
 
-				self::addJoomlaMenu($params, 1, 1, 'last-child', $modules_id);
+				$update_campaign = self::addJoomlaMenu($params, 1, 1, 'last-child', $modules_id)['status'];
 			}
 
-			$query->clear()
-				->update($db->quoteName('#__emundus_setup_campaigns'))
-				->set($db->quoteName('alias') . ' = ' . $db->quote($alias))
-				->where($db->quoteName('id') . ' = ' . $db->quote($campaign->id));
-			$db->setQuery($query);
-			$db->execute();
+			if($update_campaign)
+			{
+				$query->clear()
+					->update($db->quoteName('#__emundus_setup_campaigns'))
+					->set($db->quoteName('alias') . ' = ' . $db->quote($alias))
+					->where($db->quoteName('id') . ' = ' . $db->quote($campaign->id));
+				$db->setQuery($query);
+				$db->execute();
+			}
 		}
 
 		return true;
