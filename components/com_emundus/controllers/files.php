@@ -3456,7 +3456,6 @@ class EmundusControllerFiles extends BaseController
 
 		$hasAccessForm = EmundusHelperAccess::asAccessAction(1, 'r', $user_id);
 		$hasAccessAtt  = EmundusHelperAccess::asAccessAction(4, 'r', $user_id);
-		$hasAccessEval = EmundusHelperAccess::asAccessAction(5, 'r', $user_id);
 		$hasAccessTags = EmundusHelperAccess::asAccessAction(14, 'r', $user_id);
 
 		$show_form = 0;
@@ -3464,7 +3463,7 @@ class EmundusControllerFiles extends BaseController
 		$show_tag  = 0;
 		$show_eval = 0;
 
-		if ($eval && $hasAccessEval) {
+		if ($eval) {
 			$show_eval = 1;
 		}
 
