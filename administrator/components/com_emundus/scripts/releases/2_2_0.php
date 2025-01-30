@@ -1161,6 +1161,14 @@ class Release2_2_0Installer extends ReleaseInstaller
 				$this->db->execute();
 			}
 
+			$query->clear()
+				->update($this->db->quoteName('#__emundus_setup_emails'))
+				->set($this->db->quoteName('name') . ' = ' . $this->db->quote(''))
+				->where($this->db->quoteName('name') . ' = ' . $this->db->quote('null'))
+				->orWhere($this->db->quoteName('name') . ' IS NULL');
+			$this->db->setQuery($query);
+			$this->db->execute();
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)
