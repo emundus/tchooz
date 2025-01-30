@@ -62,7 +62,7 @@ class EmundusFiltersFiles extends EmundusFilters
 				$this->applied_filters = $helper_files->setFiltersValuesAvailability($this->applied_filters);
 			}
 		}
-    }
+	}
 
 	public function getUserProgrammes() {
 		return $this->user_programs;
@@ -914,6 +914,16 @@ class EmundusFiltersFiles extends EmundusFilters
 
 		$session_filters = $session->get('em-applied-filters', []);
 		if ((isset($config['force_reload_on_refresh']) && $config['force_reload_on_refresh']) || empty($session_filters)) {
+			if (!empty($session_filters)) {
+				$filters_to_keep = array_filter($session_filters, function ($session_filter) {
+					return isset($session_filter['menuFilter']) && $session_filter['menuFilter'];
+				});
+
+				if (!empty($filters_to_keep)) {
+					$this->addSessionFilters($filters_to_keep);
+				}
+			}
+
 			$session->set('em-applied-filters', $this->applied_filters);
 		}
 	}
@@ -927,6 +937,10 @@ class EmundusFiltersFiles extends EmundusFilters
 					$this->applied_filters[$key]['value'] = $session_filter['value'];
 					$this->applied_filters[$key]['operator'] = $session_filter['operator'];
 					$this->applied_filters[$key]['andorOperator'] = $session_filter['andorOperator'];
+
+					if (isset($session_filter['menuFilter'])){
+						$this->applied_filters[$key]['menuFilter'] = $session_filter['menuFilter'];
+					}
 
 					$found = true;
 					break;
@@ -947,6 +961,11 @@ class EmundusFiltersFiles extends EmundusFilters
 						$new_filter['operator'] = $session_filter['operator'];
 						$new_filter['andorOperator'] = $session_filter['andorOperator'];
 						$new_filter['uid'] = $session_filter['uid'];
+
+						if (isset($session_filter['menuFilter'])) {
+							$new_filter['menuFilter'] = $session_filter['menuFilter'];
+						}
+
 						$this->applied_filters[] = $new_filter;
 						break;
 					}
