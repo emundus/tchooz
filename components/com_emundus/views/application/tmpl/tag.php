@@ -23,15 +23,20 @@ else {
                     <div class="em-flex-row em-w-40-vw">
 						<?php if (EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $this->fnum)) : ?>
                             <select class="chzn-select" multiple id="mytags">
-								<?php foreach ($this->groupedTags as $category => $value) : ?>
-                                    <optgroup value="<?php echo $category; ?>"
-                                              label="<?= empty($category) ? JText::_('UNCATEGORIZED_TAGS') : JText::_($category); ?>">
-										<?php foreach ($value as $tag) : ?>
-                                            <option value="<?php echo $tag['id']; ?>"><?php echo $tag['label']; ?></option>
-										<?php endforeach; ?>
-                                    </optgroup>
-								<?php endforeach; ?>
-
+                                <?php if($this->displayTagCategories == 1) : ?>
+                                    <?php foreach ($this->groupedTags as $category => $value) : ?>
+                                        <optgroup value="<?php echo $category; ?>"
+                                                  label="<?= empty($category) ? JText::_('UNCATEGORIZED_TAGS') : JText::_($category); ?>">
+                                            <?php foreach ($value as $tag) : ?>
+                                                <option value="<?php echo $tag['id']; ?>"><?php echo $tag['label']; ?></option>
+                                            <?php endforeach; ?>
+                                        </optgroup>
+                                    <?php endforeach; ?>
+                                <?php else : ?>
+                                    <?php foreach ($this->groupedTags as $tag) : ?>
+                                        <option value="<?php echo $tag['id']; ?>"><?php echo $tag['label']; ?></option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
                             </select>&ensp;&ensp;
                             <button class="btn btn-success btn-xs" id="add-tags" onclick="addTag()">
 								<?php echo JText::_('COM_EMUNDUS_ADD'); ?>
@@ -138,21 +143,13 @@ else {
                         }
                     }).then((result) => {
                         if (result.status) {
-                            document.querySelectorAll('.tags li[id="' + id + '"]').forEach(e => {
-                                if (e.querySelector('.material-icons') !== null) {
-                                    // remove all children of e
-                                    while (e.firstChild) {
-                                        e.removeChild(e.firstChild);
-                                    }
-                                }
-                            });
+                            document.querySelectorAll('.tags li[id="' + id + '"]').forEach(el => el.remove());
 
                             Swal.fire({
                                 title: "<?php echo JText::_('COM_EMUNDUS_APPLICATION_DELETE_TAG_SUCCESS'); ?>",
                                 text: "",
                                 icon: 'success',
                                 showConfirmButton: false,
-                                timer: 1500,
                                 customClass: {
                                     title: 'em-swal-title',
                                 }

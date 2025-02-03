@@ -50,6 +50,7 @@ class EmundusViewApplication extends HtmlView
 	protected $fileLogs;
 	protected $tags;
 	protected $groupedTags;
+	protected $displayTagCategories;
 	protected $pids;
 	protected $defaultpid;
 	protected $formsProgress;
@@ -430,8 +431,16 @@ class EmundusViewApplication extends HtmlView
 						$this->groupedTags = [];
 
 						$alltags = $m_files->getAllTags();
-						foreach ($alltags as $tag) {
-							$this->groupedTags[$tag["category"]][] = ["id" => $tag["id"], "label" => $tag["label"]];
+						$this->displayTagCategories = ComponentHelper::getParams('com_emundus')->get('com_emundus_show_tags_category', 1);
+
+						if($this->displayTagCategories == 1)
+						{
+							foreach ($alltags as $tag)
+							{
+								$this->groupedTags[$tag["category"]][] = ["id" => $tag["id"], "label" => $tag["label"]];
+							}
+						} else {
+							$this->groupedTags = $alltags;
 						}
 					}
 					else {
