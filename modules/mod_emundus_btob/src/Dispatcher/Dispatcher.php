@@ -48,7 +48,8 @@ class Dispatcher extends AbstractModuleDispatcher
 
 			$query->select('ess.step,ess.value')
 				->from($db->quoteName('#__emundus_setup_status', 'ess'))
-				->where($db->quoteName('ess.step') . ' IN (' . implode(',', $statuses) . ')');
+				->where($db->quoteName('ess.step') . ' IN (' . implode(',', $statuses) . ')')
+				->order('ess.ordering ASC');
 			$db->setQuery($query);
 			$data['statuses'] = $db->loadAssocList('step');
 
