@@ -2094,7 +2094,10 @@ class EmundusModelSettings extends ListModel
 							require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
 						}
 
-						$updated = EmundusHelperUpdate::updateConfigurationFileOld($config, $param, $value);
+						$options = array(
+							$param => $value
+						);
+						$updated = EmundusHelperUpdate::updateConfigurationFile($options);
 
 					}
 					else
