@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+    <fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+        <fieldset name="plg-form-btobvalidation" label="PLG_FABRIK_FORM_BTOBVALIDATION_FIELDS">
+            <field name="btob_joomla_group"
+                   type="text"
+                   default=""
+                   placeholder="16"
+                   description="PLG_FABRIK_FORM_BTOBVALIDATION_JOOMLA_GROUP_DESC"
+                   label="PLG_FABRIK_FORM_BTOBVALIDATION_JOOMLA_GROUP"/>
+
+            <field name="btob_email_id"
+                   type="text"
+                   default=""
+                   placeholder="125"
+                   description="PLG_FABRIK_FORM_BTOBVALIDATION_EMAIL_ID_DESC"
+                   label="PLG_FABRIK_FORM_BTOBVALIDATION_EMAIL_ID"/>
+        </fieldset>
+    </fields>
+</form>

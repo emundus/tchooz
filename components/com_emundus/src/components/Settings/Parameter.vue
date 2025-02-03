@@ -386,6 +386,10 @@ export default {
           this.parameter.value = val;
         }
 
+        if (this.parameter.splitField) {
+          this.parameter.concatValue = val + this.parameter.splitChar + this.valueSecondary;
+        }
+
         this.$emit('valueUpdated', this.parameter, oldVal, val)
 
         if (val !== oldVal && val !== this.initValue) {

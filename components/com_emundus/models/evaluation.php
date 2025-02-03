@@ -1188,9 +1188,21 @@ class EmundusModelEvaluation extends JModelList
 		}
 	}
 
-	public function getUsers($current_fnum = null)
+	public function getUsers($current_fnum = null, $user_id = null)
 	{
 		$list = [];
+
+		if (empty($user_id)) {
+			$user_id = $this->app->getIdentity()->id;
+		}
+
+		include_once(JPATH_SITE . '/components/com_emundus/models/users.php');
+		$m_users = new EmundusModelUsers;
+		$this->code = $m_users->getUserGroupsProgrammeAssoc($user_id);
+		$groups               = $m_users->getUserGroups($user_id, 'Column');
+		$fnum_assoc_to_groups = $m_users->getApplicationsAssocToGroups($groups);
+		$fnum_assoc_to_user   = $m_users->getApplicantsAssoc($user_id);
+		$this->fnum_assoc     = array_merge($fnum_assoc_to_groups, $fnum_assoc_to_user);
 
 		$session = $this->app->getSession();
 		$applied_filters = $session->get('em-applied-filters', []);

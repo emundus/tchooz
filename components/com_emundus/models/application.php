@@ -863,7 +863,7 @@ class EmundusModelApplication extends ListModel
 				$this->_db->setQuery($query);
 				$cpt = $this->_db->loadResult();
 
-				if ($cpt == 1) {
+				if ($cpt > 0) {
 					$nb++;
 				}
 			}

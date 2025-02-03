@@ -215,6 +215,9 @@ const _sfc_main$k = {
         if (this.parameter.type !== "multiselect") {
           this.parameter.value = val;
         }
+        if (this.parameter.splitField) {
+          this.parameter.concatValue = val + this.parameter.splitChar + this.valueSecondary;
+        }
         this.$emit("valueUpdated", this.parameter, oldVal, val);
         if (val !== oldVal && val !== this.initValue) {
           let valid = true;

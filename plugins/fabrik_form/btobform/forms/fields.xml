@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+    <fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+        <fieldset name="plg-form-btobform" label="PLG_FABRIK_FORM_BTOBFORM_FIELDS">
+            <field name="btob_form_max_file_per_session"
+                   type="text"
+                   default="4"
+                   placeholder="4"
+                   description="PLG_FABRIK_FORM_BTOBFORM_MAX_FILE_PER_SESSION_DESC"
+                   label="PLG_FABRIK_FORM_BTOBFORM_MAX_FILE_PER_SESSION"/>
+
+            <field name="btob_form_tag"
+                   type="text"
+                   default="7"
+                   placeholder="7"
+                   description="PLG_FABRIK_FORM_BTOBFORM_TAG_DESC"
+                   label="PLG_FABRIK_FORM_BTOBFORM_TAG"/>
+
+            <field name="btob_attachment_to_generate"
+                   type="text"
+                   default="43"
+                   placeholder="43"
+                   description="PLG_FABRIK_FORM_BTOBFORM_ATTACHMENT_TO_GENERATE_DESC"
+                   label="PLG_FABRIK_FORM_BTOBFORM_ATTACHMENT_TO_GENERATE"/>
+        </fieldset>
+    </fields>
+</form>

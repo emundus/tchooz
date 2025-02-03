@@ -751,7 +751,7 @@ class EmundusHelperFiles
                         AND element.label!=""
                         AND menu.menutype = ' . '"' . $profile . '"' . '
                         AND element.plugin!="display"';
-				$order = 'ORDER BY menu.lft, formgroup.ordering, element.ordering';
+				$order = 'ORDER BY p.id, menu.lft, menu.id, formgroup.ordering, element.ordering';
 			}
 
 			$query .= ' ' . $join . ' ' . $where . ' ' . $order;
@@ -772,6 +772,7 @@ class EmundusHelperFiles
 							continue;
 						}
 						$value->id            = $key;
+						$value->form_label    = Text::_($value->form_label);
 						$value->table_label   = Text::_($value->table_label);
 						$value->group_label   = Text::_($value->group_label);
 						$value->element_label = Text::_($value->element_label);
@@ -849,8 +850,9 @@ class EmundusHelperFiles
                         AND element.label!=" "
                         AND element.label!=""
                         AND menu.menutype IN ( "' . implode('","', $menutype) . '" ) 
+                        AND menu.published = 1
                         AND element.plugin!="display"';
-				$order = 'ORDER BY menu.lft, formgroup.ordering, element.ordering';
+				$order = 'ORDER BY p.id, menu.lft, menu.id, formgroup.ordering, element.ordering';
 			}
 
 			$query .= ' ' . $join . ' ' . $where . ' ' . $order;
@@ -871,6 +873,7 @@ class EmundusHelperFiles
 							continue;
 						}
 						$value->id            = $key;
+						$value->form_label    = Text::_($value->form_label);
 						$value->table_label   = Text::_($value->table_label);
 						$value->group_label   = Text::_($value->group_label);
 						$value->element_label = Text::_($value->element_label);
