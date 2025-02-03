@@ -281,17 +281,23 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                     <label for="applications_searchbar" style="display: inline-block;margin-bottom: unset"><?php echo JText::_('MOD_EM_APPLICATIONS_SEARCH') ?></label>
                 </div>
 			<?php endif; ?>
-            <div class="em-flex-row" style="gap: 8px">
-                <div id="button_switch_card"
-                     class="em-pointer mod_emundus_application___buttons_switch_view mod_emundus_application___buttons_enable"
-                     onclick="updateView('card')">
-                    <span class="material-symbols-outlined mod_emundus_application___buttons_switch_view_enable">grid_view</span>
+            <?php if (sizeof($available_views) > 1) : ?>
+                <div class="em-flex-row" style="gap: 8px">
+                    <?php if(in_array('grid',$available_views)) : ?>
+                        <div id="button_switch_card"
+                             class="em-pointer mod_emundus_application___buttons_switch_view mod_emundus_application___buttons_enable"
+                             onclick="updateView('card')">
+                            <span class="material-symbols-outlined mod_emundus_application___buttons_switch_view_enable">grid_view</span>
+                        </div>
+                    <?php endif; ?>
+	                <?php if(in_array('list',$available_views)) : ?>
+                        <div id="button_switch_list" class="em-pointer mod_emundus_application___buttons_switch_view"
+                             onclick="updateView('list')">
+                            <span class="material-symbols-outlined mod_emundus_application___buttons_switch_view_disabled">menu</span>
+                        </div>
+                    <?php endif; ?>
                 </div>
-                <div id="button_switch_list" class="em-pointer mod_emundus_application___buttons_switch_view"
-                     onclick="updateView('list')">
-                    <span class="material-symbols-outlined mod_emundus_application___buttons_switch_view_disabled">menu</span>
-                </div>
-            </div>
+            <?php endif; ?>
         </div>
     </div>
 

@@ -409,6 +409,16 @@
                 </field>
 
                 <field showon="layout:_:tchooz"
+                       name="mod_em_application_views_available"
+                       type="checkboxes"
+                       default="grid,list"
+                       label="MOD_EMUNDUS_APPLICATIONS_VIEWS_AVAILABLE"
+                       description="MOD_EMUNDUS_APPLICATIONS_VIEWS_AVAILABLE_DESC">
+                    <option value="grid">MOD_EMUNDUS_APPLICATIONS_VIEWS_GRID</option>
+                    <option value="list">MOD_EMUNDUS_APPLICATIONS_VIEWS_LIST</option>
+                </field>
+
+                <field showon="layout:_:tchooz"
                        name="mod_em_application_custom_actions"
                        type="subform"
                        label="MOD_EM_APPLICATION_CUSTOM_ACTIONS"
