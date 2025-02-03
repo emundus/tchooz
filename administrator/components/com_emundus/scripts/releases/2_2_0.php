@@ -11,6 +11,7 @@ namespace scripts;
 
 use EmundusHelperUpdate;
 use Joomla\CMS\Component\ComponentHelper;
+use Symfony\Component\Yaml\Yaml;
 
 class Release2_2_0Installer extends ReleaseInstaller
 {
@@ -1168,6 +1169,25 @@ class Release2_2_0Installer extends ReleaseInstaller
 				->orWhere($this->db->quoteName('name') . ' IS NULL');
 			$this->db->setQuery($query);
 			$this->db->execute();
+
+			// Update template variables
+			$styleFile = JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml';
+			if(file_exists($styleFile))
+			{
+				$variables   = Yaml::parse(file_get_contents($styleFile));
+				foreach ($variables as $key1 => $variable) {
+					if(is_array($variable)) {
+						foreach ($variable as $key2 => $subVariable) {
+							if(str_contains($subVariable, 'px')) {
+								// Convert to REM
+								$rem = (int) $subVariable / 16;
+
+								EmundusHelperUpdate::updateYamlVariable($key1, $rem . 'rem', $styleFile, $key2);
+							}
+						}
+					}
+				}
+			}
 
 			$result['status'] = true;
 		}
