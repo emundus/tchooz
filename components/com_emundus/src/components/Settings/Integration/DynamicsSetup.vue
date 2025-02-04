@@ -1,6 +1,5 @@
 <script>
 /* Components */
-import Info from "@/components/Utils/Info.vue";
 import Parameter from "@/components/Utils/Parameter.vue";
 
 /* Services */
@@ -10,7 +9,7 @@ import History from "@/views/History.vue";
 
 export default {
   name: "DynamicsSetup",
-  components: {History, Tabs, Parameter, Info},
+  components: {History, Tabs, Parameter},
   props: {
     app: {
       type: Object,
@@ -29,15 +28,15 @@ export default {
           active: true,
           displayed: true,
         },
-        {
+        /*{
           id: 2,
           name: 'COM_EMUNDUS_SETTINGS_INTEGRATION_DYNAMICS_SETUP_CONFIG',
           icon: 'manufacturing',
           active: false,
           displayed: true
-        },
+        },*/
         {
-          id: 3,
+          id: 2,
           name: 'COM_EMUNDUS_GLOBAL_HISTORY',
           icon: 'history',
           active: false,
@@ -88,9 +87,11 @@ export default {
   created() {
     let config = JSON.parse(this.app.config);
 
-    this.fields.forEach((field) => {
-      field.value = config['authentication'][field.param] || '';
-    });
+    if(typeof config['authentication'] !== 'undefined') {
+      this.fields.forEach((field) => {
+        field.value = config['authentication'][field.param] || '';
+      });
+    }
   },
   methods: {
     setupDynamics() {
@@ -183,13 +184,8 @@ export default {
       </div>
     </div>
 
-    <div v-if="tabs[2].active">
+    <div v-if="tabs[1].active">
       <History :extension="'com_emundus.microsoftdynamics'" :columns="['title', 'message_language_key', 'log_date', 'user_id', 'status', 'diff']" />
-    </div>
-
-
-    <div class="tw-mt-7 tw-flex tw-flex-col tw-gap-6" v-if="tabs[1].active">
-
     </div>
 
     <div class="em-page-loader" v-if="loading"></div>

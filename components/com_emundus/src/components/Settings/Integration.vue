@@ -41,7 +41,7 @@ export default {
     <div class="em-grid-3-2-1">
       <div v-if="!currentApp" v-for="app in apps" class="tw-flex tw-flex-col tw-justify-between tw-w-full tw-font-medium rtl:tw-text-right tw-text-black tw-border tw-border-neutral-300 tw-rounded-[15px] tw-bg-white tw-mb-6 tw-gap-3 tw-p-4">
         <div class="tw-flex tw-items-center tw-justify-between">
-          <img class="tw-w-[45px]" :src="'images/emundus/icons/'+app.icon" :alt="app.type" />
+          <img class="tw-w-[45px]" :src="'/images/emundus/icons/'+app.icon" :alt="app.type" />
           <div class="tw-flex tw-items-center" v-if="app.config !== '{}'">
             <div class="em-toggle">
               <input type="checkbox"

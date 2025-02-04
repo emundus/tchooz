@@ -62,9 +62,11 @@ export default {
   created() {
     let config = JSON.parse(this.app.config);
 
-    this.fields.forEach((field) => {
-      field.value = config['authentication'][field.param] || '';
-    });
+    if(typeof config['authentication'] !== 'undefined') {
+      this.fields.forEach((field) => {
+        field.value = config['authentication'][field.param] || '';
+      });
+    }
   },
   methods: {
     setupTeams()

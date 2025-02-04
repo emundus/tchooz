@@ -397,7 +397,7 @@ const _hoisted_8$d = {
   style: { "width": "40%" }
 };
 const _hoisted_9$a = { class: "tw-mt-7 tw-flex tw-gap-7" };
-const _hoisted_10$9 = { class: "tw-ml-1" };
+const _hoisted_10$8 = { class: "tw-ml-1" };
 const _hoisted_11$8 = { class: "tw-mt-7" };
 const _hoisted_12$5 = { class: "tw-mt-7" };
 const _hoisted_13$4 = {
@@ -480,7 +480,7 @@ function _sfc_render$k(_ctx, _cache, $props, $setup, $data, $options) {
                   _cache[5] || (_cache[5] = createBaseVNode("span", { class: "material-symbols-outlined tw-scale-75 tw-text-orange-600 tw-pr-2" }, "warning", -1)),
                   createBaseVNode("p", null, [
                     createTextVNode(toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_PORT_WARNING")) + " ", 1),
-                    createBaseVNode("u", _hoisted_10$9, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_PORT_WARNING_SEE_ALL")), 1),
+                    createBaseVNode("u", _hoisted_10$8, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_PORT_WARNING_SEE_ALL")), 1),
                     _cache[4] || (_cache[4] = createTextVNode(". "))
                   ])
                 ])) : createCommentVNode("", true)
@@ -1083,7 +1083,7 @@ const _hoisted_6$e = { class: "em-w-33" };
 const _hoisted_7$d = { class: "tw-mb-6 tw-flex tw-items-center tw-justify-between" };
 const _hoisted_8$b = { class: "em-body-16-semibold tw-mb-2" };
 const _hoisted_9$9 = { class: "tw-text-base tw-text-neutral-700" };
-const _hoisted_10$8 = { class: "em-w-33 tw-text-right" };
+const _hoisted_10$7 = { class: "em-w-33 tw-text-right" };
 const _hoisted_11$7 = {
   key: 0,
   class: "em-page-loader"
@@ -1122,7 +1122,7 @@ function _sfc_render$h(_ctx, _cache, $props, $setup, $data, $options) {
         createBaseVNode("p", _hoisted_8$b, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SECONDARY")), 1),
         createBaseVNode("p", _hoisted_9$9, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SECONDARY_DESC")), 1)
       ]),
-      createBaseVNode("div", _hoisted_10$8, [
+      createBaseVNode("div", _hoisted_10$7, [
         createVNode(_component_multiselect, {
           modelValue: $data.secondaryLanguages,
           "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => $data.secondaryLanguages = $event),
@@ -1548,7 +1548,7 @@ const _hoisted_7$c = {
 };
 const _hoisted_8$a = { class: "tw-mt-5 tw-w-full" };
 const _hoisted_9$8 = { class: "tw-font-medium" };
-const _hoisted_10$7 = {
+const _hoisted_10$6 = {
   key: 0,
   class: "tw-w-full"
 };
@@ -1633,7 +1633,7 @@ function _sfc_render$f(_ctx, _cache, $props, $setup, $data, $options) {
     ]),
     createBaseVNode("div", _hoisted_8$a, [
       createBaseVNode("h3", _hoisted_9$8, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_THEME_ACCESSIBILITY")), 1),
-      $data.contrastPrimary && $data.contrastSecondary ? (openBlock(), createElementBlock("div", _hoisted_10$7, [
+      $data.contrastPrimary && $data.contrastSecondary ? (openBlock(), createElementBlock("div", _hoisted_10$6, [
         $data.contrastPrimary.ratio > 4.5 && $data.contrastSecondary.ratio > 4.5 ? (openBlock(), createBlock(_component_Info, {
           key: 0,
           text: "COM_EMUNDUS_ONBOARD_RGAA_OK",
@@ -1910,7 +1910,7 @@ const _hoisted_6$c = { class: "tw-flex tw-items-center tw-justify-start tw-w-ful
 const _hoisted_7$b = { class: "status-field" };
 const _hoisted_8$9 = ["id", "onFocusout", "onKeyup"];
 const _hoisted_9$7 = { class: "tw-flex tw-items-center" };
-const _hoisted_10$6 = ["title", "onClick"];
+const _hoisted_10$5 = ["title", "onClick"];
 const _hoisted_11$5 = ["title"];
 const _hoisted_12$3 = {
   key: 0,
@@ -1988,7 +1988,7 @@ function _sfc_render$e(_ctx, _cache, $props, $setup, $data, $options) {
                     class: "tw-flex tw-items-center tw-ml-2 tw-cursor-pointer"
                   }, _cache[6] || (_cache[6] = [
                     createBaseVNode("span", { class: "material-symbols-outlined tw-text-red-600" }, "delete_outline", -1)
-                  ]), 8, _hoisted_10$6)) : (openBlock(), createElementBlock("a", {
+                  ]), 8, _hoisted_10$5)) : (openBlock(), createElementBlock("a", {
                     key: 1,
                     type: "button",
                     title: _ctx.translate("COM_EMUNDUS_ONBOARD_CANNOT_DELETE_STATUS"),
@@ -2170,7 +2170,7 @@ const _hoisted_6$b = { class: "tw-flex tw-items-center tw-justify-start tw-w-ful
 const _hoisted_7$a = { class: "status-field" };
 const _hoisted_8$8 = { style: { "width": "100%" } };
 const _hoisted_9$6 = ["id", "onFocusout", "onKeyup"];
-const _hoisted_10$5 = { class: "tw-flex tw-items-center" };
+const _hoisted_10$4 = { class: "tw-flex tw-items-center" };
 const _hoisted_11$4 = ["title", "onClick"];
 function _sfc_render$d(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_color_picker = resolveComponent("color-picker");
@@ -2227,7 +2227,7 @@ function _sfc_render$d(_ctx, _cache, $props, $setup, $data, $options) {
                     class: normalizeClass(tag.class)
                   }, null, 2)
                 ]),
-                createBaseVNode("div", _hoisted_10$5, [
+                createBaseVNode("div", _hoisted_10$4, [
                   createVNode(_component_color_picker, {
                     modelValue: tag.class,
                     "onUpdate:modelValue": ($event) => tag.class = $event,
@@ -2575,7 +2575,7 @@ const _hoisted_7$9 = {
 };
 const _hoisted_8$7 = ["src", "srcset"];
 const _hoisted_9$5 = { key: 1 };
-const _hoisted_10$4 = {
+const _hoisted_10$3 = {
   key: 1,
   class: "tw-mt-4"
 };
@@ -2666,7 +2666,7 @@ function _sfc_render$c(_ctx, _cache, $props, $setup, $data, $options) {
           }, null, 40, _hoisted_8$7)) : createCommentVNode("", true),
           $data.hideLogo ? (openBlock(), createElementBlock("p", _hoisted_9$5, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_INSERT_LOGO")), 1)) : createCommentVNode("", true)
         ])) : createCommentVNode("", true),
-        $data.logo_updating ? (openBlock(), createElementBlock("div", _hoisted_10$4, [
+        $data.logo_updating ? (openBlock(), createElementBlock("div", _hoisted_10$3, [
           createVNode(_component_vue_dropzone, {
             ref: "dropzone",
             id: "customdropzone",
@@ -2911,7 +2911,7 @@ const _hoisted_8$6 = {
   class: "em-grid-4"
 };
 const _hoisted_9$4 = { class: "col-md-12" };
-const _hoisted_10$3 = {
+const _hoisted_10$2 = {
   key: 0,
   class: "text-center tw-mt-20"
 };
@@ -2968,7 +2968,7 @@ function _sfc_render$b(_ctx, _cache, $props, $setup, $data, $options) {
       style: { "z-index": "0" }
     }, null, -1)),
     createBaseVNode("div", _hoisted_9$4, [
-      $data.lang === "" || $data.lang == null || $data.translations.length === 0 ? (openBlock(), createElementBlock("div", _hoisted_10$3, [
+      $data.lang === "" || $data.lang == null || $data.translations.length === 0 ? (openBlock(), createElementBlock("div", _hoisted_10$2, [
         createBaseVNode("h5", _hoisted_11$2, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_ORPHELINS_TITLE")), 1),
         $data.lang === "" || $data.lang == null ? (openBlock(), createElementBlock("p", _hoisted_12$1, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_ORPHELINS_TEXT")), 1)) : createCommentVNode("", true)
       ])) : (openBlock(), createElementBlock("div", _hoisted_13$1, [
@@ -3959,7 +3959,7 @@ const _hoisted_9$2 = {
   key: 0,
   class: "tw-text-sm tw-text-neutral-800 tw--mt-5 tw-pb-5 tw-px-5"
 };
-const _hoisted_10$2 = {
+const _hoisted_10$1 = {
   name: "SubMenuContent",
   class: "tw-flex tw-flex-col tw-px-5 tw-pb-5"
 };
@@ -3999,7 +3999,7 @@ function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
             ]),
             section.intro ? (openBlock(), createElementBlock("span", _hoisted_9$2, toDisplayString(_ctx.translate(section.intro)), 1)) : createCommentVNode("", true)
           ]),
-          createBaseVNode("div", _hoisted_10$2, [
+          createBaseVNode("div", _hoisted_10$1, [
             section.helptext ? (openBlock(), createBlock(_component_Info, {
               key: 0,
               text: section.helptext,
@@ -4163,9 +4163,11 @@ const _sfc_main$4 = {
   },
   created() {
     let config = JSON.parse(this.app.config);
-    this.fields.forEach((field) => {
-      field.value = config["authentication"][field.param] || "";
-    });
+    if (typeof config["authentication"] !== "undefined") {
+      this.fields.forEach((field) => {
+        field.value = config["authentication"][field.param] || "";
+      });
+    }
   },
   methods: {
     setupTeams() {
@@ -4275,7 +4277,7 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
 const TeamsSetup = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4]]);
 const _sfc_main$3 = {
   name: "DynamicsSetup",
-  components: { History, Tabs, Parameter, Info },
+  components: { History, Tabs, Parameter },
   props: {
     app: {
       type: Object,
@@ -4293,15 +4295,15 @@ const _sfc_main$3 = {
           active: true,
           displayed: true
         },
-        {
+        /*{
           id: 2,
-          name: "COM_EMUNDUS_SETTINGS_INTEGRATION_DYNAMICS_SETUP_CONFIG",
-          icon: "manufacturing",
+          name: 'COM_EMUNDUS_SETTINGS_INTEGRATION_DYNAMICS_SETUP_CONFIG',
+          icon: 'manufacturing',
           active: false,
           displayed: true
-        },
+        },*/
         {
-          id: 3,
+          id: 2,
           name: "COM_EMUNDUS_GLOBAL_HISTORY",
           icon: "history",
           active: false,
@@ -4350,9 +4352,11 @@ const _sfc_main$3 = {
   },
   created() {
     let config = JSON.parse(this.app.config);
-    this.fields.forEach((field) => {
-      field.value = config["authentication"][field.param] || "";
-    });
+    if (typeof config["authentication"] !== "undefined") {
+      this.fields.forEach((field) => {
+        field.value = config["authentication"][field.param] || "";
+      });
+    }
   },
   methods: {
     setupDynamics() {
@@ -4416,10 +4420,6 @@ const _hoisted_7$2 = { key: 1 };
 const _hoisted_8$1 = { key: 1 };
 const _hoisted_9$1 = {
   key: 2,
-  class: "tw-mt-7 tw-flex tw-flex-col tw-gap-6"
-};
-const _hoisted_10$1 = {
-  key: 3,
   class: "em-page-loader"
 };
 function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
@@ -4458,14 +4458,13 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
         ], 8, _hoisted_5$3)
       ])
     ])) : createCommentVNode("", true),
-    $data.tabs[2].active ? (openBlock(), createElementBlock("div", _hoisted_8$1, [
+    $data.tabs[1].active ? (openBlock(), createElementBlock("div", _hoisted_8$1, [
       createVNode(_component_History, {
         extension: "com_emundus.microsoftdynamics",
         columns: ["title", "message_language_key", "log_date", "user_id", "status", "diff"]
       })
     ])) : createCommentVNode("", true),
-    $data.tabs[1].active ? (openBlock(), createElementBlock("div", _hoisted_9$1)) : createCommentVNode("", true),
-    $data.loading ? (openBlock(), createElementBlock("div", _hoisted_10$1)) : createCommentVNode("", true)
+    $data.loading ? (openBlock(), createElementBlock("div", _hoisted_9$1)) : createCommentVNode("", true)
   ]);
 }
 const DynamicsSetup = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3]]);
@@ -4526,7 +4525,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
           createBaseVNode("div", _hoisted_3$2, [
             createBaseVNode("img", {
               class: "tw-w-[45px]",
-              src: "images/emundus/icons/" + app.icon,
+              src: "/images/emundus/icons/" + app.icon,
               alt: app.type
             }, null, 8, _hoisted_4$2),
             app.config !== "{}" ? (openBlock(), createElementBlock("div", _hoisted_5$2, [
