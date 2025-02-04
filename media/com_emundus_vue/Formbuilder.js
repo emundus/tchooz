@@ -8245,7 +8245,7 @@ const _hoisted_2 = {
   key: 0,
   class: "tw-justify-center tw-bg-[#FEF6EE] tw-flex tw-items-center tw-gap-3 tw-p-2"
 };
-const _hoisted_3 = { class: "tw-grid tw-grid-cols-3 tw-items-center" };
+const _hoisted_3 = { class: "tw-grid tw-grid-cols-3 tw-items-center tw-min-h-[48px]" };
 const _hoisted_4 = { class: "right-actions tw-flex tw-items-center tw-justify-start tw-gap-2" };
 const _hoisted_5 = {
   key: 0,
@@ -8346,7 +8346,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             placeholder: _ctx.translate("COM_EMUNDUS_FORM_BUILDER_ADD_FORM_TITLE_ADD")
           }, toDisplayString($data.title), 41, _hoisted_6),
           createBaseVNode("div", _hoisted_7, [
-            !$data.previewForm && ["page", "rules"].includes($data.showInSection) ? (openBlock(), createElementBlock("button", {
+            this.mode !== "eval" && this.mode !== "models" && !$data.previewForm && ["page", "rules"].includes($data.showInSection) ? (openBlock(), createElementBlock("button", {
               key: 0,
               class: "tw-btn-primary tw-px-6 tw-py-3 tw-gap-3 em-w-auto",
               onClick: _cache[3] || (_cache[3] = ($event) => $data.previewForm = true)

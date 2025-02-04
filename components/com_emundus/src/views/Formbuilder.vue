@@ -13,7 +13,7 @@
         <span class="material-symbols-outlined text-[#EF681F]">warning_amber</span>
         <span>{{ translate('COM_EMUNDUS_ONBOARD_FORMBUILDER_EDIT_DEFAULT_LANG') }}{{ defaultLangLabel }}</span>
       </div>
-      <header class="tw-grid tw-grid-cols-3 tw-items-center">
+      <header class="tw-grid tw-grid-cols-3 tw-items-center tw-min-h-[48px]">
         <div class="right-actions tw-flex tw-items-center tw-justify-start tw-gap-2">
           <p class="tw-flex tw-items-center tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300 tw-ml-2" @click="clickGoBack">
             <span id="go-back"
@@ -37,7 +37,7 @@
             {{ title }}
           </span>
         <div class="tw-flex tw-flex-col tw-items-end">
-        <button class="tw-btn-primary tw-px-6 tw-py-3 tw-gap-3 em-w-auto" v-if="!previewForm && ['page','rules'].includes(showInSection)" @click="previewForm = true">
+        <button class="tw-btn-primary tw-px-6 tw-py-3 tw-gap-3 em-w-auto" v-if="(this.mode !== 'eval' && this.mode !== 'models') && !previewForm && ['page','rules'].includes(showInSection)" @click="previewForm = true">
           <span class="tw-text-white material-symbols-outlined">
             remove_red_eye
           </span>
