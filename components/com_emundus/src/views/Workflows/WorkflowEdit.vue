@@ -110,6 +110,7 @@
                         label="label"
                         track-by="id"
                         :placeholder="translate('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS_SELECT')"
+                        :selectLabel="translate('PRESS_ENTER_TO_SELECT')"
                         :multiple="true">
                     </Multiselect>
 

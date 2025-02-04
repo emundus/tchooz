@@ -1250,6 +1250,38 @@ class Release2_2_0Installer extends ReleaseInstaller
 			$this->db->setQuery($queryString);
 			$this->db->execute();
 
+			$query->clear()
+				->select('id,params')
+				->from($this->db->quoteName('#__fabrik_lists'))
+				->where($this->db->quoteName('label') . ' LIKE ' . $this->db->quote('TABLE_SETUP_GROUPS'));
+			$this->db->setQuery($query);
+			$setup_groups_list = $this->db->loadObject();
+
+			if (!empty($setup_groups_list))
+			{
+				$params = json_decode($setup_groups_list->params, true);
+				$params['group_by_access'] = 10;
+
+				$setup_groups_list->params = json_encode($params);
+				$this->db->updateObject('#__fabrik_lists', $setup_groups_list, 'id');
+			}
+
+			$query->clear()
+				->select('id,params')
+				->from($this->db->quoteName('#__fabrik_lists'))
+				->where($this->db->quoteName('label') . ' LIKE ' . $this->db->quote('TABLE_SETUP_PROFILES'));
+			$this->db->setQuery($query);
+			$setup_profiles_list = $this->db->loadObject();
+
+			if (!empty($setup_profiles_list))
+			{
+				$params = json_decode($setup_profiles_list->params, true);
+				$params['group_by_access'] = 10;
+
+				$setup_profiles_list->params = json_encode($params);
+				$this->db->updateObject('#__fabrik_lists', $setup_profiles_list, 'id');
+			}
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)
