@@ -1849,35 +1849,19 @@ class EmundusHelperEvents
 				$program_manager_group_id = $eMConfig->get('program_manager_group', '');
 				$create_program_groups    = $eMConfig->get('create_program_groups', 1);
 
-				// Link All rights group with programme
-				$columns = array('parent_id', 'course');
-				$values  = array($db->quote($all_rights_group_id), $db->quote($programme->code));
-
 				$query->clear()
-					->insert($db->quoteName('#__emundus_setup_groups_repeat_course'))
-					->columns($db->quoteName($columns))
-					->values(implode(',', $values));
+					->select($db->quoteName('id'))
+					->from($db->quoteName('#__emundus_setup_groups_repeat_course'))
+					->where($db->quoteName('parent_id') . ' = ' . $db->quote($all_rights_group_id))
+					->andWhere($db->quoteName('course') . ' LIKE ' . $db->quote($programme->code));
 				$db->setQuery($query);
-				$db->execute();
+				$all_rights_group_link = $db->loadResult();
 
-				if ($create_program_groups == 1)
+				if (empty($all_rights_group_link))
 				{
-					// Create user group
-					$columns = array('label', 'published', 'class');
-					$values  = array($db->quote($programme->label), $db->quote(1), $db->quote('label-default'));
-
-					$query->clear()
-						->insert($db->quoteName('#__emundus_setup_groups'))
-						->columns($db->quoteName($columns))
-						->values(implode(',', $values));
-					$db->setQuery($query);
-					$db->execute();
-					$group_id = $db->insertid();
-					//
-
-					// Link group with programme
+					// Link All rights group with programme
 					$columns = array('parent_id', 'course');
-					$values  = array($db->quote($group_id), $db->quote($programme->code));
+					$values  = array($db->quote($all_rights_group_id), $db->quote($programme->code));
 
 					$query->clear()
 						->insert($db->quoteName('#__emundus_setup_groups_repeat_course'))
@@ -1885,36 +1869,76 @@ class EmundusHelperEvents
 						->values(implode(',', $values));
 					$db->setQuery($query);
 					$db->execute();
-					//
+				}
 
-					// Affect coordinator to the group of the program
-					$columns = array('user_id', 'group_id');
-					$values  = array($db->quote($user_id), $group_id);
-
+				if ($create_program_groups == 1)
+				{
 					$query->clear()
-						->insert($db->quoteName('#__emundus_groups'))
-						->columns($db->quoteName($columns))
-						->values(implode(',', $values));
+						->select($db->quoteName('id'))
+						->from($db->quoteName('#__emundus_setup_groups_repeat_course'))
+						->where($db->quoteName('parent_id') . ' <> ' . $db->quote($all_rights_group_id))
+						->andWhere($db->quoteName('course') . ' LIKE ' . $db->quote($programme->code));
 					$db->setQuery($query);
-					$db->execute();
-					//
+					$group_program_link = $db->loadResult();
 
-					if (!class_exists('EmundusModelProgramme'))
+					if (empty($group_program_link))
 					{
-						require_once(JPATH_ROOT . '/components/com_emundus/models/programme.php');
-					}
-					$m_program = new EmundusModelProgramme();
+						// Create user group
+						$columns = array('label', 'published', 'class');
+						$values  = array($db->quote($programme->label), $db->quote(1), $db->quote('label-default'));
 
-					if (!empty($evaluator_group_id))
-					{
-						$m_program->addGroupToProgram($programme->label, $programme->code, $evaluator_group_id);
-					}
-					if (!empty($program_manager_group_id))
-					{
-						$m_program->addGroupToProgram($programme->label, $programme->code, $program_manager_group_id);
+						$query->clear()
+							->insert($db->quoteName('#__emundus_setup_groups'))
+							->columns($db->quoteName($columns))
+							->values(implode(',', $values));
+						$db->setQuery($query);
+						$db->execute();
+						$group_id = $db->insertid();
+						//
+
+						// Link group with programme
+						$columns = array('parent_id', 'course');
+						$values  = array($db->quote($group_id), $db->quote($programme->code));
+
+						$query->clear()
+							->insert($db->quoteName('#__emundus_setup_groups_repeat_course'))
+							->columns($db->quoteName($columns))
+							->values(implode(',', $values));
+						$db->setQuery($query);
+						$db->execute();
+						//
+
+						// Affect coordinator to the group of the program
+						$columns = array('user_id', 'group_id');
+						$values  = array($db->quote($user_id), $group_id);
+
+						$query->clear()
+							->insert($db->quoteName('#__emundus_groups'))
+							->columns($db->quoteName($columns))
+							->values(implode(',', $values));
+						$db->setQuery($query);
+						$db->execute();
+						//
+
+						if (!class_exists('EmundusModelProgramme'))
+						{
+							require_once(JPATH_ROOT . '/components/com_emundus/models/programme.php');
+						}
+						$m_program = new EmundusModelProgramme();
+
+						if (!empty($evaluator_group_id))
+						{
+							$m_program->addGroupToProgram($programme->label, $programme->code, $evaluator_group_id);
+						}
+						if (!empty($program_manager_group_id))
+						{
+							$m_program->addGroupToProgram($programme->label, $programme->code, $program_manager_group_id);
+						}
 					}
 				}
 			}
+
+			Factory::getApplication()->redirect('/index.php?option=com_fabrik&view=form&formid='.$params['data']['formid'].'&rowid='.$params['data']['jos_emundus_setup_programmes___id'].'&tmpl=component&iframe=1');
 
 			return true;
 		}
