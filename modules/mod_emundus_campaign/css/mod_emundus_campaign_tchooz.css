@@ -639,6 +639,11 @@ p[id*="mod_emundus_campaign__tchoozy_tab_desc"] {
     font-family: var(--em-applicant-font);
 }
 
+.tchooz-single-campaign #campaign p:empty::before {
+    content: "\00a0"; /* Ajoute un espace insécable */
+}
+
+
 
 .tchooz-single-campaign #campaign *:not(a) {
     color: var(--neutral-900);
