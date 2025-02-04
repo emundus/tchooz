@@ -1192,9 +1192,11 @@ class Release2_2_0Installer extends ReleaseInstaller
 			$query->clear()
 				->update($this->db->quoteName('jos_emundus_setup_actions'))
 				->set($this->db->quoteName('status') . ' = 0')
-				->where($this->db->quoteName('name') . ' LIKE ' . $this->db->quote('interview'));
+				->where($this->db->quoteName('name') . ' IN (' . implode(',',$this->db->quote(['interview','decision','admission'])) . ')');
 			$this->db->setQuery($query);
 			$this->db->execute();
+
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_SESSION_EXPIRED', 'Your session on the page has expired', 'override', 0, '', '', 'en-GB');
 
 			$result['status'] = true;
 		}

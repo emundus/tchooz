@@ -338,7 +338,7 @@ class SharingFilesInstall
 		EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_LOCK_FOR_OTHERS', 'Lock this item for your collaborators', 'override', 0, '', '', 'en-GB');
 		EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_UNLOCK_FOR_OTHERS', 'Unlock this element for your collaborators', 'override', 0, '', '', 'en-GB');
 		EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_EVENTS_APPLICATION_CURRENT_EDITING', 'A user is currently editing this page, so you are read-only.', 'override', 0, '', '', 'en-GB');
-		EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_SESSION_EXPIRED', 'Your session on the page has expired');
+		EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_SESSION_EXPIRED', 'Your session on the page has expired', 'override', 0, '', '', 'en-GB');
 
 		$query->clear()
 			->select('id')
