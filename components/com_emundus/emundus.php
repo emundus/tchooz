@@ -16,6 +16,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
+use Joomla\CMS\Uri\Uri;
 use Joomla\Component\Emundus\Site\Exception\EmundusException;
 
 $app = Factory::getApplication();
@@ -865,6 +866,9 @@ elseif ($user->guest && $name != 'emailalert' && $name != 'programme' && $name !
 {
 	if ($name == 'user' && $app->input->get('emailactivation', 0) == 1)
 	{
+		$currentUrl = Uri::getInstance()->toString();
+		$app->setUserState('users.login.activation.return', $currentUrl);
+		
 		$app->enqueueMessage(Text::_('COM_EMUNDUS_PLEASE_LOGIN_TO_COMPLETE_ACTIVATION'));
 		$app->redirect(Route::_('index.php?option=com_users&view=login'));
 	}
