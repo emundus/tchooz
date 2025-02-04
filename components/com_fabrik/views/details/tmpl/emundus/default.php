@@ -44,13 +44,15 @@ $this->is_iframe = $app->input->get('iframe', 0);
 
 ?>
 
-<div class="btn-group">
-	<?php
-	echo '<div class="em-goback-btn !tw-pl-0 tw-flex tw-items-center"><span class="material-symbols-outlined tw-text-neutral-600">navigate_before</span>';
-	echo $form->gobackButton  . ' ' . $this->message;
-	echo '</div>';
-	?>
-</div>
+<?php if($this->params->get('goback_button', 1) == 1) : ?>
+    <div class="btn-group">
+        <?php
+        echo '<div class="em-goback-btn !tw-pl-0 tw-flex tw-items-center"><span class="material-symbols-outlined tw-text-neutral-600">navigate_before</span>';
+        echo $form->gobackButton  . ' ' . $this->message;
+        echo '</div>';
+        ?>
+    </div>
+<?php endif; ?>
 
 <div id="fabrikDetailsContainer_<?php echo $form->id ?>" <?= $this->is_iframe ? 'class="tw-p-4"' : '' ?>>
 
