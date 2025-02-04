@@ -1233,6 +1233,7 @@ class Release2_2_0Installer extends ReleaseInstaller
 
 				// All plugin events need to be set to both
 				$params['plugin_events'] = array_fill(0, count($params['plugins']), 'both');
+				$params['goback_button'] = 0;
 
 				$setup_program_form->params = json_encode($params);
 				$this->db->updateObject('#__fabrik_forms', $setup_program_form, 'id');
