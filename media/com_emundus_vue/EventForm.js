@@ -1,11 +1,11 @@
-import { _ as _export_sfc, M as Modal, r as resolveComponent, o as openBlock, f as createBlock, w as withCtx, g as createVNode, d as normalizeClass, s as settingsService, u as useGlobalStore, c as createElementBlock, e as createCommentVNode, a as createBaseVNode, F as Fragment, b as renderList, h as withDirectives, v as vShow, t as toDisplayString, S as Swal$1, P as Popover, i as withModifiers, j as shallowRef, k as emailService, T as Tabs } from "./app_emundus.js";
+import { _ as _export_sfc, M as Modal, r as resolveComponent, b as createBlock, o as openBlock, w as withCtx, g as createVNode, f as normalizeClass, s as settingsService, u as useGlobalStore, c as createElementBlock, a as createCommentVNode, d as createBaseVNode, F as Fragment, e as renderList, h as withDirectives, v as vShow, t as toDisplayString, S as Swal$1, P as Popover, i as withModifiers, j as shallowRef, k as emailService, T as Tabs } from "./app_emundus.js";
 import { P as Parameter } from "./Parameter.js";
 import LocationForm from "./LocationForm.js";
 import { C as ColorPicker } from "./ColorPicker.js";
 import { I as Info } from "./Info.js";
 import { e as eventsService } from "./events.js";
 import { D as DatePicker } from "./index.js";
-import { c as createEventsServicePlugin, a as createCalendarControlsPlugin, E as EventDay, J as Ji, b as createCalendar, v as viewWeek, d as createViewDay, e as createViewWeek } from "./core.js";
+import { a as ai, E as EventDay, c as createEventsServicePlugin, b as createCalendar, d as createCalendarControlsPlugin, e as createViewDay, f as createViewWeek, v as viewWeek } from "./core.js";
 const _sfc_main$6 = {
   name: "LocationPopup",
   components: { LocationForm, Modal },
@@ -1574,7 +1574,7 @@ const createCalendarConfig = (vm) => ({
 });
 const _sfc_main$2 = {
   name: "EventCalendarSettings",
-  components: { EventDay, CalendarSlotPopup, ScheduleXCalendar: Ji },
+  components: { EventDay, CalendarSlotPopup, ScheduleXCalendar: ai },
   props: {
     event: Object
   },
