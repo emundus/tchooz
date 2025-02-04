@@ -64,10 +64,6 @@ class EmundusModelLogs extends JModelList
 
 		if (!empty($user_from)) {
 			$eMConfig                 = ComponentHelper::getParams('com_emundus');
-			$log_actions              = $eMConfig->get('log_actions', []);
-			if (!empty($log_actions)) {
-				$log_actions = explode(',', $log_actions);
-			}
 
 			$log_actions_exclude      = $eMConfig->get('log_actions_exclude', []);
 			if (!empty($log_actions_exclude)) {
@@ -76,7 +72,7 @@ class EmundusModelLogs extends JModelList
 			$log_actions_exclude_user = $eMConfig->get('log_actions_exclude_user', 62);
 			$log_actions_exclude_user = empty($log_actions_exclude_user) ? [] : explode(',', $log_actions_exclude_user);
 
-			if ($eMConfig->get('logs', 0) && (empty($log_actions) || in_array($action, $log_actions))) {
+			if ($eMConfig->get('logs', 0)) {
 				if (!in_array($action, $log_actions_exclude)) {
 					if (!in_array($user_from, $log_actions_exclude_user)) {
 						$db    = Factory::getContainer()->get('DatabaseDriver');
@@ -125,11 +121,10 @@ class EmundusModelLogs extends JModelList
 			$m_files = new EmundusModelFiles();
 
 			$eMConfig = ComponentHelper::getParams('com_emundus');
-			$log_actions = $eMConfig->get('log_actions', null);
 			$log_actions_exclude = $eMConfig->get('log_actions_exclude', null);
 			$log_actions_exclude_user = $eMConfig->get('log_actions_exclude_user', 62);
 
-			if ($eMConfig->get('logs', 0) && (empty($log_actions) || in_array($action, explode(',',$log_actions)))) {
+			if ($eMConfig->get('logs', 0)) {
 				if (!in_array($action, explode(',', $log_actions_exclude))) {
 					if (!in_array($user_from, explode(',', $log_actions_exclude_user))) {
 						$db = Factory::getContainer()->get('DatabaseDriver');
