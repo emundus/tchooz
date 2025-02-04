@@ -313,7 +313,7 @@ const _sfc_main = {
     getAllForms() {
       fileService.getProfiles().then((response) => {
         if (response.status) {
-          this.applicantForms = response.data.filter((form) => form.published == 1);
+          this.applicantForms = response.data.filter((form) => form.published === 1 && form.menutype !== "");
         }
       }).catch((e) => {
         console.log(e);
@@ -1222,7 +1222,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     _ctx.submitted || !_ctx.ready ? (openBlock(), createElementBlock("div", _hoisted_67)) : createCommentVNode("", true)
   ]);
 }
-const addCampaign = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-6390b723"]]);
+const addCampaign = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-e17f9d75"]]);
 export {
   addCampaign as default
 };

@@ -644,7 +644,7 @@ export default {
     getAllForms() {
       fileService.getProfiles().then(response => {
         if (response.status) {
-          this.applicantForms = response.data.filter(form => form.published == 1);
+          this.applicantForms = response.data.filter(form => form.published === 1 && form.menutype !== '');
         }
       }).catch(e => {
         console.log(e);

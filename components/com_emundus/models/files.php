@@ -907,7 +907,7 @@ class EmundusModelFiles extends JModelLegacy
 		$profiles = [];
 
 		$query = $this->_db->getQuery(true);
-		$query->select('esp.id, esp.label, esp.published, esp.acl_aro_groups, caag.lft')
+		$query->select('esp.id, esp.label, esp.published, esp.acl_aro_groups, caag.lft, esp.menutype')
 			->from($this->_db->quoteName('#__emundus_setup_profiles', 'esp'))
 			->join('INNER', $this->_db->quoteName('#__usergroups', 'caag') . ' ON (' . $this->_db->quoteName('esp.acl_aro_groups') . ' = ' . $this->_db->quoteName('caag.id') . ')');
 
