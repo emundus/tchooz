@@ -1067,27 +1067,27 @@ class Release2_2_0Installer extends ReleaseInstaller
 
 
 			$tags_to_create = [
-				'BOOKING_START_DATE' => [
+				'BOOKING_START_DATE'           => [
 					1 => 'Booking start date',
 					2 => 'Date de début de réservation'
 				],
-				'BOOKING_END_DATE'   => [
+				'BOOKING_END_DATE'             => [
 					1 => 'Booking end date',
 					2 => 'Date de fin de réservation'
 				],
-				'BOOKING_END_HOUR'   => [
+				'BOOKING_END_HOUR'             => [
 					1 => 'Booking end hour',
 					2 => 'Heure de fin de réservation'
 				],
-				'BOOKING_LOCATION'   => [
+				'BOOKING_LOCATION'             => [
 					1 => 'Booking location',
 					2 => 'Lieu de réservation'
 				],
-				'BOOKING_LOCATION_LINK'   => [
+				'BOOKING_LOCATION_LINK'        => [
 					1 => 'Booking location link',
 					2 => 'Lien du lieu de réservation'
 				],
-				'BOOKING_LOCATION_DESCRIPTION'   => [
+				'BOOKING_LOCATION_DESCRIPTION' => [
 					1 => 'Booking location description',
 					2 => 'Description du lieu de réservation'
 				]
@@ -1151,7 +1151,8 @@ class Release2_2_0Installer extends ReleaseInstaller
 			$this->db->setQuery($query);
 			$email_history_link = $this->db->loadResult();
 
-			if(!empty($email_history_link)) {
+			if (!empty($email_history_link))
+			{
 				$query->clear()
 					->update($this->db->quoteName('#__menu'))
 					->set($this->db->quoteName('link') . ' = ' . $this->db->quote($email_history_link))
@@ -1172,13 +1173,17 @@ class Release2_2_0Installer extends ReleaseInstaller
 
 			// Update template variables
 			$styleFile = JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml';
-			if(file_exists($styleFile))
+			if (file_exists($styleFile))
 			{
-				$variables   = Yaml::parse(file_get_contents($styleFile));
-				foreach ($variables as $key1 => $variable) {
-					if(is_array($variable)) {
-						foreach ($variable as $key2 => $subVariable) {
-							if(str_contains($subVariable, 'px')) {
+				$variables = Yaml::parse(file_get_contents($styleFile));
+				foreach ($variables as $key1 => $variable)
+				{
+					if (is_array($variable))
+					{
+						foreach ($variable as $key2 => $subVariable)
+						{
+							if (str_contains($subVariable, 'px'))
+							{
 								// Convert to REM
 								$rem = (int) $subVariable / 16;
 
@@ -1192,7 +1197,7 @@ class Release2_2_0Installer extends ReleaseInstaller
 			$query->clear()
 				->update($this->db->quoteName('jos_emundus_setup_actions'))
 				->set($this->db->quoteName('status') . ' = 0')
-				->where($this->db->quoteName('name') . ' IN (' . implode(',',$this->db->quote(['interview','decision','admission'])) . ')');
+				->where($this->db->quoteName('name') . ' IN (' . implode(',', $this->db->quote(['interview', 'decision', 'admission'])) . ')');
 			$this->db->setQuery($query);
 			$this->db->execute();
 
@@ -1205,13 +1210,15 @@ class Release2_2_0Installer extends ReleaseInstaller
 			$this->db->setQuery($query);
 			$setup_program_form = $this->db->loadObject();
 
-			if(!empty($setup_program_form)) {
+			if (!empty($setup_program_form))
+			{
 				$params = json_decode($setup_program_form->params, true);
 
 				// Search if a redirect plugin is present
-				$redirect_plugin = array_search('redirect',$params['plugins']);
+				$redirect_plugin = array_search('redirect', $params['plugins']);
 
-				if($redirect_plugin !== false) {
+				if ($redirect_plugin !== false)
+				{
 					unset($params['plugins'][$redirect_plugin]);
 					unset($params['plugin_events'][$redirect_plugin]);
 					unset($params['plugin_locations'][$redirect_plugin]);
@@ -1238,6 +1245,10 @@ class Release2_2_0Installer extends ReleaseInstaller
 				$setup_program_form->params = json_encode($params);
 				$this->db->updateObject('#__fabrik_forms', $setup_program_form, 'id');
 			}
+
+			$queryString = 'WITH CTE AS (SELECT id, parent_id, emundus_groups, ROW_NUMBER() OVER (PARTITION BY parent_id, emundus_groups ORDER BY id) AS rn FROM jos_emundus_setup_profiles_repeat_emundus_groups) DELETE FROM jos_emundus_setup_profiles_repeat_emundus_groups WHERE id IN (SELECT id FROM CTE WHERE rn > 1);';
+			$this->db->setQuery($queryString);
+			$this->db->execute();
 
 			$result['status'] = true;
 		}
