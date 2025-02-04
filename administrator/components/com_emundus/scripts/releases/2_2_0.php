@@ -1198,6 +1198,46 @@ class Release2_2_0Installer extends ReleaseInstaller
 
 			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_SESSION_EXPIRED', 'Your session on the page has expired', 'override', 0, '', '', 'en-GB');
 
+			$query->clear()
+				->select('id,params')
+				->from($this->db->quoteName('#__fabrik_forms'))
+				->where($this->db->quoteName('label') . ' LIKE ' . $this->db->quote('SETUP_PROGRAM'));
+			$this->db->setQuery($query);
+			$setup_program_form = $this->db->loadObject();
+
+			if(!empty($setup_program_form)) {
+				$params = json_decode($setup_program_form->params, true);
+
+				// Search if a redirect plugin is present
+				$redirect_plugin = array_search('redirect',$params['plugins']);
+
+				if($redirect_plugin !== false) {
+					unset($params['plugins'][$redirect_plugin]);
+					unset($params['plugin_events'][$redirect_plugin]);
+					unset($params['plugin_locations'][$redirect_plugin]);
+					unset($params['plugin_description'][$redirect_plugin]);
+					unset($params['plugin_state'][$redirect_plugin]);
+					unset($params['jump_page']);
+					unset($params['save_and_next']);
+					unset($params['append_jump_url']);
+					unset($params['thanks_message']);
+					unset($params['save_insession']);
+					unset($params['redirect_conditon']);
+					unset($params['redirect_content_reset_form']);
+					unset($params['redirect_content_how']);
+					unset($params['redirect_content_popup_height']);
+					unset($params['redirect_content_popup_x_offset']);
+					unset($params['redirect_content_popup_y_offset']);
+					unset($params['redirect_content_popup_title']);
+				}
+
+				// All plugin events need to be set to both
+				$params['plugin_events'] = array_fill(0, count($params['plugins']), 'both');
+
+				$setup_program_form->params = json_encode($params);
+				$this->db->updateObject('#__fabrik_forms', $setup_program_form, 'id');
+			}
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

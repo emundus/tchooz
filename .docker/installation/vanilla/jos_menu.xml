@@ -2350,7 +2350,7 @@
     <field name="path">2014-06-17-12-56-32</field>
     <field name="link">index.php?option=com_emundus&amp;view=application&amp;format=raw&amp;layout=evaluation</field>
     <field name="type">url</field>
-    <field name="published">1</field>
+    <field name="published">0</field>
     <field name="parent_id">1</field>
     <field name="level">1</field>
     <field name="component_id">0</field>
@@ -2546,7 +2546,7 @@
     <field name="path">2015-06-16-09-55-01</field>
     <field name="link">index.php?option=com_emundus&amp;view=application&amp;format=raw&amp;layout=decision&amp;jos_emundus_final_grade___student_id[value]={applicant_id}&amp;jos_emundus_final_grade___campaign_id[value]={campaign_id}&amp;jos_emundus_final_grade___fnum[value]={fnum}&amp;student_id={applicant_id}&amp;{formid}</field>
     <field name="type">url</field>
-    <field name="published">1</field>
+    <field name="published">0</field>
     <field name="parent_id">1</field>
     <field name="level">1</field>
     <field name="component_id">0</field>

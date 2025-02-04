@@ -2896,7 +2896,7 @@ if($app-&gt;getInput()-&gt;get('cid', '', 'UINT') != ''){
     <field name="show_in_list_summary">1</field>
     <field name="filter_type">field</field>
     <field name="filter_exact_match">0</field>
-    <field name="published">1</field>
+    <field name="published">0</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
     <field name="auto_increment">0</field>
@@ -3675,7 +3675,7 @@ return $db-&gt;loadResult()+1;</field>
     <field name="show_in_list_summary">0</field>
     <field name="filter_type"></field>
     <field name="filter_exact_match">1</field>
-    <field name="published">1</field>
+    <field name="published">0</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
     <field name="auto_increment">0</field>
@@ -4388,7 +4388,7 @@ return $db-&gt;loadResult()+1;</field>
     <field name="show_in_list_summary">0</field>
     <field name="filter_type"></field>
     <field name="filter_exact_match">1</field>
-    <field name="published">1</field>
+    <field name="published">0</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
     <field name="auto_increment">0</field>
@@ -7174,7 +7174,7 @@ return $cid;</field>
     <field name="show_in_list_summary">0</field>
     <field name="filter_type"></field>
     <field name="filter_exact_match">1</field>
-    <field name="published">1</field>
+    <field name="published">0</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
     <field name="auto_increment">0</field>
@@ -8172,7 +8172,7 @@ return $email_from_sys;</field>
     <field name="show_in_list_summary">0</field>
     <field name="filter_type"></field>
     <field name="filter_exact_match">1</field>
-    <field name="published">1</field>
+    <field name="published">0</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
     <field name="auto_increment">0</field>
@@ -11924,7 +11924,7 @@ return $email_from_sys;</field>
     <field name="show_in_list_summary">0</field>
     <field name="filter_type"></field>
     <field name="filter_exact_match">0</field>
-    <field name="published">1</field>
+    <field name="published">0</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
     <field name="auto_increment">0</field>
