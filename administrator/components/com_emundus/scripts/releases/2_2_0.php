@@ -1189,6 +1189,13 @@ class Release2_2_0Installer extends ReleaseInstaller
 				}
 			}
 
+			$query->clear()
+				->update($this->db->quoteName('jos_emundus_setup_actions'))
+				->set($this->db->quoteName('status') . ' = 0')
+				->where($this->db->quoteName('name') . ' LIKE ' . $this->db->quote('interview'));
+			$this->db->setQuery($query);
+			$this->db->execute();
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)
