@@ -146,12 +146,13 @@ export default {
         operator.display = this.filter.operators.includes(operator.value);
         return operator;
       });
-
-      console.log(this.operators);
     }
   },
   mounted() {
     this.filter.operator = this.filter.operator === '=' || this.filter.operator === null || typeof this.filter.operator === 'undefined' ? 'IN' : this.filter.operator;
+    if(this.filter.andorOperator === null || typeof this.filter.andorOperator === 'undefined') {
+      this.filter.andorOperator = 'OR';
+    }
     this.originalFilterValue = this.filter.value;
     this.originalFilterOperator = this.filter.operator;
     this.originalFilterAndorOperator = this.filter.andorOperator;
