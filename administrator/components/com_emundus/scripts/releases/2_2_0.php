@@ -1025,7 +1025,7 @@ class Release2_2_0Installer extends ReleaseInstaller
 						'emailfrom'  => '',
 						'message'    => file_get_contents(JPATH_ROOT . '/administrator/components/com_emundus/scripts/html/booking/booking_confirmation.html'),
 						'type'       => 1,
-						'published'  => 1,
+						'published'  => 0,
 						'email_tmpl' => 1,
 						'category'   => 'Système',
 						'button'     => ''
