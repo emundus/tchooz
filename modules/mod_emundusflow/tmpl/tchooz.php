@@ -271,7 +271,7 @@ if (!empty($campaign_languages) && !in_array($current_lang_id, $campaign_languag
 
     ?>
     <div class="tw-mt-8 alert alert-error tw-flex" style="margin-bottom: 32px; margin-inline: 16px;">
-        <span class="material-icons-outlined" style="color: #a60e15">warning</span>
+        <span class="material-symbols-outlined" style="color: #a60e15">warning</span>
         <div class="tw-w-full">
             <p class="em-text-neutral-600" style="color: #520105"><?= sprintf(Text::_('COM_EMUNDUS_ALLOWED_LANGUAGES_FOR_CAMPAIGN_ARE'), implode(',', $titles)); ?></p>
         </div>

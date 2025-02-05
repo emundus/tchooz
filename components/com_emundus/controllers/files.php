@@ -2150,7 +2150,7 @@ class EmundusControllerFiles extends BaseController
 
 				$html .= '<div class="em-mt-12">
                     <div class="em-flex-row em-pointer em-mb-4" onclick="showelts(this, ' . "'felts-" . $code[0] . $camp[0] . "-" . $profile . "'" . ')">
-                       <span title="' . Text::_('COM_EMUNDUS_SHOW_ELEMENTS') . '" id="felts-' . $code[0] . $camp[0] . '-' . $profile . '-icon" class="material-icons em-mr-4" style="transform: rotate(-90deg)">expand_more</span>
+                       <span title="' . Text::_('COM_EMUNDUS_SHOW_ELEMENTS') . '" id="felts-' . $code[0] . $camp[0] . '-' . $profile . '-icon" class="material-symbols-outlined em-mr-4" style="transform: rotate(-90deg)">expand_more</span>
                        <p>' . $campaign['label'] . ' (' . $campaign['year'] . ' | ' . $profile_data->label . ')</p>
                     </div>
                     <div id="felts-' . $code[0] . $camp[0] . '-' . $profile . '" style="display:none;">
@@ -2222,7 +2222,7 @@ class EmundusControllerFiles extends BaseController
 
 		$html = '<div class="em-mt-12">
                     <div class="em-flex-row em-pointer em-mb-4" onclick="showelts(this, ' . "'aelts-" . $code[0] . $camp[0] . "'" . ')">
-                    <span title="' . Text::_('COM_EMUNDUS_SHOW_ELEMENTS') . '" id="aelts-' . $code[0] . $camp[0] . '-icon" class="material-icons em-mr-4" style="transform: rotate(-90deg)">expand_more</span>
+                    <span title="' . Text::_('COM_EMUNDUS_SHOW_ELEMENTS') . '" id="aelts-' . $code[0] . $camp[0] . '-icon" class="material-symbols-outlined em-mr-4" style="transform: rotate(-90deg)">expand_more</span>
                         <p>' . $campaign['label'] . ' (' . $campaign['year'] . ')</p>
                     </div>
                     <div id="aelts-' . $code[0] . $camp[0] . '" style="display:none;">

@@ -894,7 +894,7 @@ body ::-webkit-scrollbar-track {
   opacity: 0;
 }
 
-.workflow-step[data-v-6f9e8448] {
+.workflow-step[data-v-04e79779] {
   min-width: 350px;
 }
 
@@ -3954,18 +3954,18 @@ hr.system-pagebreak { border: #808080FF dashed 1px; color: #808080FF; }
     border: 0;
   }
 
-#add-program[data-v-e17f9d75] {
+#add-program[data-v-09c3d3f2] {
   height: 24px;
   width: 24px;
   padding: unset;
   transition: transform 0.1s ease-in-out;
 }
-.em-color-round[data-v-e17f9d75] {
+.em-color-round[data-v-09c3d3f2] {
   height: 30px;
   width: 30px;
   border-radius: 50%;
 }
-.modal-date-picker[data-v-e17f9d75] {
+.modal-date-picker[data-v-09c3d3f2] {
   transform: translate(-50%, -50%);
   box-shadow: 0 0 9999px 9999px rgb(0 0 0 / 50%);
 }
@@ -4122,15 +4122,15 @@ span[id*=modalEditElement] .v--modal-overlay[data-v-5f2a6404],
 }
 
 
-.em-email-card[data-v-bb742359] {
+.em-email-card[data-v-2cb2c72d] {
   background: white;
   border-radius: 5px;
   padding: 16px 24px;
 }
-a.tw-cursor-pointer:nth-child(2) .material-icons[data-v-bb742359] {
+a.tw-cursor-pointer:nth-child(2) .material-symbols-outlined[data-v-2cb2c72d] {
   color: #DB333E;
 }
-a.tw-cursor-pointer:nth-child(2):hover .material-icons[data-v-bb742359] {
+a.tw-cursor-pointer:nth-child(2):hover .material-symbols-outlined[data-v-2cb2c72d] {
   color: #C31924;
 }
 
@@ -5677,7 +5677,7 @@ hr {
   padding: 0 70px;
 }
 
-.custom-color-picker[data-v-179e7d97] {
+.custom-color-picker[data-v-2a638385] {
     width: 47px !important;
     height: 48px !important;
     border: none !important;
@@ -5685,7 +5685,7 @@ hr {
     outline: none;
     cursor: pointer;
 }
-.custom-color-picker[data-v-179e7d97]::-webkit-color-swatch {
+.custom-color-picker[data-v-2a638385]::-webkit-color-swatch {
     border-radius: 100%;
 }
 .status-field[data-v-78283c16] {
@@ -5707,23 +5707,23 @@ hr {
 .add-button-div:hover span[class*=material][data-v-78283c16] {
   color: var(--em-profile-color);
 }
-.status-field[data-v-33ad2ead]{
+.status-field[data-v-c7e84960]{
   border-radius: 5px;
   width: 100%;
   margin-right: 1em;
   display: flex;
 }
-.status-item[data-v-33ad2ead]{
+.status-item[data-v-c7e84960]{
   display: flex;
   align-items: center;
   justify-content: center;
   max-width: 95%;
   width: 100%;
 }
-.add-button-div span[class*="material"][data-v-33ad2ead] {
+.add-button-div span[class*="material"][data-v-c7e84960] {
   color: var(--neutral-0);
 }
-.add-button-div:hover span[class*="material"][data-v-33ad2ead]{
+.add-button-div:hover span[class*="material"][data-v-c7e84960]{
   color: var(--em-profile-color);
 }
 

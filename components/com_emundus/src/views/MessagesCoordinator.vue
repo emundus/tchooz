@@ -34,7 +34,7 @@
       </div>
       <div class="messages__bottom-input-actions">
         <div class="messages__actions_bar">
-          <span class="messages__send-icon material-icons" @click="attachDocument">attach_file</span>
+          <span class="messages__send-icon material-symbols-outlined" @click="attachDocument">attach_file</span>
         </div>
         <button type="button" class="messages__send_button btn btn-primary" @click="sendMessage">
           {{ translations.send }}

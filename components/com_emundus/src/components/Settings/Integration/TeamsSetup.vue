@@ -133,7 +133,7 @@ export default {
     <Info :text="'COM_EMUNDUS_SETTINGS_INTEGRATION_TEAMS_SETUP_REQUIREMENTS'"
           :icon="'warning'"
           :bg-color="'tw-bg-orange-100'"
-          :icon-type="'material-icons'"
+          :icon-type="'material-symbols-outlined'"
           :icon-color="'tw-text-orange-600'"
           :class="'tw-mb-4'"
     />

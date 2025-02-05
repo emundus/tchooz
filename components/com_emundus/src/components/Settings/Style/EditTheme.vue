@@ -39,7 +39,7 @@
                     :text="'COM_EMUNDUS_ONBOARD_RGAA_OK'"
                     :bg-color="'tw-bg-main-50'"
                     :icon="'check_circle'"
-                    :icon-type="'material-icons'"
+                    :icon-type="'material-symbols-outlined'"
                     :icon-color="'tw-text-green-500'"
                     :class="'tw-mt-2'"
                 ></Info>
@@ -48,7 +48,7 @@
                     :text="'COM_EMUNDUS_SETTINGS_CONTRAST_ERROR_PRIMARY'"
                     :icon="'warning'"
                     :bg-color="'tw-bg-orange-100'"
-                    :icon-type="'material-icons'"
+                    :icon-type="'material-symbols-outlined'"
                     :icon-color="'tw-text-orange-600'"
                     :class="'tw-mt-2'"
                 ></Info>
@@ -57,7 +57,7 @@
                     :text="'COM_EMUNDUS_SETTINGS_CONTRAST_ERROR_SECONDARY'"
                     :icon="'warning'"
                     :bg-color="'tw-bg-orange-100'"
-                    :icon-type="'material-icons'"
+                    :icon-type="'material-symbols-outlined'"
                     :icon-color="'tw-text-orange-600'"
                     :class="'tw-mt-2'"
                 ></Info>
@@ -66,7 +66,7 @@
                     :text="'COM_EMUNDUS_ONBOARD_ERROR_COLORS_SAME'"
                     :icon="'warning'"
                     :bg-color="'tw-bg-orange-100'"
-                    :icon-type="'material-icons'"
+                    :icon-type="'material-symbols-outlined'"
                     :icon-color="'tw-text-orange-600'"
                     :class="'tw-mt-2'"
                 ></Info>

@@ -36,8 +36,6 @@ if (!in_array($iconParts[0],['icon-question-sign','icon-sort', 'icon-spinner']) 
         $icon[1] = 'emergency';
         $class = '!tw-text-xs tw-text-red-600 tw-mr-0';
         $style = 'style="top: -5px;position: relative"';
-
-        $material_icon_class = 'material-icons';
     }
 
     if ($icon[1] == 'plus') {

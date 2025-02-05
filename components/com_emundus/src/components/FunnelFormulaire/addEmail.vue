@@ -216,11 +216,11 @@ export default {
   padding: 16px 24px;
 }
 
-a.tw-cursor-pointer:nth-child(2) .material-icons {
+a.tw-cursor-pointer:nth-child(2) .material-symbols-outlined {
   color: #DB333E;
 }
 
-a.tw-cursor-pointer:nth-child(2):hover .material-icons {
+a.tw-cursor-pointer:nth-child(2):hover .material-symbols-outlined {
   color: #C31924;
 }
 </style>

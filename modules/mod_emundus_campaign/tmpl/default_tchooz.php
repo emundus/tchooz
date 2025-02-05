@@ -702,7 +702,7 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
                                 value="<?= htmlspecialchars($searchword); ?>"
 				            <?php endif; ?> >
                         <label for="searchword" style="display: inline-block"><?php echo JText::_('MOD_EM_CAMPAIGN_SEARCH') ?></label>
-                        <button type="submit"><span class="sr-only"><?php echo JText::_('MOD_EM_CAMPAIGN_SEARCH') ?></span><span class="material-icons-outlined em-font-size-24">search</span></button>
+                        <button type="submit"><span class="sr-only"><?php echo JText::_('MOD_EM_CAMPAIGN_SEARCH') ?></span><span class="material-symbols-outlined em-font-size-24">search</span></button>
                     </div>
 	            <?php endif; ?>
             </div>

@@ -601,7 +601,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       createBaseVNode("div", _hoisted_12, [
         createBaseVNode("div", _hoisted_13, [
           createBaseVNode("span", {
-            class: "messages__send-icon material-icons",
+            class: "messages__send-icon material-symbols-outlined",
             onClick: _cache[2] || (_cache[2] = (...args) => $options.attachDocument && $options.attachDocument(...args))
           }, "attach_file")
         ]),

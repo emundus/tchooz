@@ -536,7 +536,7 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
             text: $options.teamsDisabledText,
             icon: "warning",
             "bg-color": "tw-bg-orange-100",
-            "icon-type": "material-icons",
+            "icon-type": "material-symbols-outlined",
             "icon-color": "tw-text-orange-600",
             class: normalizeClass("tw-mt-2")
           }, null, 8, ["parameter-object", "text"])) : createCommentVNode("", true),

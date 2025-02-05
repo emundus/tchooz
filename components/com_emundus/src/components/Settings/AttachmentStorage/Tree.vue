@@ -16,7 +16,7 @@
              @focusout="updateNodeType($event)"/>
 
       <v-popover :popoverArrowClass="'custom-popover-arrow'">
-        <span class="tooltip-target b3 material-icons">more_horiz</span>
+        <span class="tooltip-target b3 material-symbols-outlined">more_horiz</span>
         <template slot="popover">
           <div
               v-if="(!other_tags.includes(node.type) && node.type !== 0) || node.type === ''"

@@ -1639,7 +1639,7 @@ function _sfc_render$f(_ctx, _cache, $props, $setup, $data, $options) {
           text: "COM_EMUNDUS_ONBOARD_RGAA_OK",
           "bg-color": "tw-bg-main-50",
           icon: "check_circle",
-          "icon-type": "material-icons",
+          "icon-type": "material-symbols-outlined",
           "icon-color": "tw-text-green-500",
           class: normalizeClass("tw-mt-2")
         })) : createCommentVNode("", true),
@@ -1648,7 +1648,7 @@ function _sfc_render$f(_ctx, _cache, $props, $setup, $data, $options) {
           text: "COM_EMUNDUS_SETTINGS_CONTRAST_ERROR_PRIMARY",
           icon: "warning",
           "bg-color": "tw-bg-orange-100",
-          "icon-type": "material-icons",
+          "icon-type": "material-symbols-outlined",
           "icon-color": "tw-text-orange-600",
           class: normalizeClass("tw-mt-2")
         })) : createCommentVNode("", true),
@@ -1657,7 +1657,7 @@ function _sfc_render$f(_ctx, _cache, $props, $setup, $data, $options) {
           text: "COM_EMUNDUS_SETTINGS_CONTRAST_ERROR_SECONDARY",
           icon: "warning",
           "bg-color": "tw-bg-orange-100",
-          "icon-type": "material-icons",
+          "icon-type": "material-symbols-outlined",
           "icon-color": "tw-text-orange-600",
           class: normalizeClass("tw-mt-2")
         })) : createCommentVNode("", true),
@@ -1666,7 +1666,7 @@ function _sfc_render$f(_ctx, _cache, $props, $setup, $data, $options) {
           text: "COM_EMUNDUS_ONBOARD_ERROR_COLORS_SAME",
           icon: "warning",
           "bg-color": "tw-bg-orange-100",
-          "icon-type": "material-icons",
+          "icon-type": "material-symbols-outlined",
           "icon-color": "tw-text-orange-600",
           class: normalizeClass("tw-mt-2")
         })) : createCommentVNode("", true),
@@ -1735,7 +1735,7 @@ function _sfc_render$f(_ctx, _cache, $props, $setup, $data, $options) {
     $data.loading ? (openBlock(), createElementBlock("div", _hoisted_26$1)) : createCommentVNode("", true)
   ])) : createCommentVNode("", true);
 }
-const EditTheme = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["render", _sfc_render$f], ["__scopeId", "data-v-179e7d97"]]);
+const EditTheme = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["render", _sfc_render$f], ["__scopeId", "data-v-2a638385"]]);
 const _sfc_main$e = {
   name: "editStatus",
   components: {
@@ -2183,7 +2183,7 @@ function _sfc_render$d(_ctx, _cache, $props, $setup, $data, $options) {
           class: "tw-btn-primary tw-mb-6 tw-w-max"
         }, [
           createBaseVNode("div", _hoisted_4$d, [
-            _cache[4] || (_cache[4] = createBaseVNode("span", { class: "material-icons-outlined em-mr-4" }, "add", -1)),
+            _cache[4] || (_cache[4] = createBaseVNode("span", { class: "material-symbols-outlined em-mr-4" }, "add", -1)),
             createTextVNode(" " + toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_SETTINGS_ADDTAG")), 1)
           ])
         ])
@@ -2254,7 +2254,7 @@ function _sfc_render$d(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ]);
 }
-const EditTags = /* @__PURE__ */ _export_sfc(_sfc_main$d, [["render", _sfc_render$d], ["__scopeId", "data-v-33ad2ead"]]);
+const EditTags = /* @__PURE__ */ _export_sfc(_sfc_main$d, [["render", _sfc_render$d], ["__scopeId", "data-v-c7e84960"]]);
 const getTemplate = () => `
 <div class="dz-preview dz-file-preview">
   <div class="dz-image">
@@ -4237,7 +4237,7 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
       text: "COM_EMUNDUS_SETTINGS_INTEGRATION_TEAMS_SETUP_REQUIREMENTS",
       icon: "warning",
       "bg-color": "tw-bg-orange-100",
-      "icon-type": "material-icons",
+      "icon-type": "material-symbols-outlined",
       "icon-color": "tw-text-orange-600",
       class: normalizeClass("tw-mb-4")
     }),

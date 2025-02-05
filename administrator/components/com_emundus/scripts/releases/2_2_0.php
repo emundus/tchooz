@@ -1282,6 +1282,25 @@ class Release2_2_0Installer extends ReleaseInstaller
 				$this->db->updateObject('#__fabrik_lists', $setup_profiles_list, 'id');
 			}
 
+			$query->clear()
+				->select('ff.id,ff.params')
+				->from($this->db->quoteName('#__fabrik_forms','ff'))
+				->leftJoin($this->db->quoteName('#__fabrik_lists','fl').' ON '.$this->db->quoteName('fl.form_id').' = '.$this->db->quoteName('ff.id'))
+				->where($this->db->quoteName('fl.db_table_name') . ' LIKE ' . $this->db->quote('jos_emundus_evaluations%'))
+				->andWhere('JSON_EXTRACT(ff.params,"$.goback_button") = "1"');
+			$this->db->setQuery($query);
+			$evaluations_forms = $this->db->loadObjectList();
+
+			foreach ($evaluations_forms as $evaluations_form)
+			{
+				$params = json_decode($evaluations_form->params, true);
+
+				$params['goback_button'] = '0';
+
+				$evaluations_form->params = json_encode($params);
+				$this->db->updateObject('#__fabrik_forms', $evaluations_form, 'id');
+			}
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

@@ -3362,7 +3362,7 @@ const _hoisted_2$j = { class: "tw-flex tw-items-start tw-justify-between tw-w-fu
 const _hoisted_3$i = { class: "tw-w-11/12" };
 const _hoisted_4$i = {
   key: 0,
-  class: "material-icons !tw-text-xs tw-text-red-600 tw-mr-0",
+  class: "material-symbols-outlined !tw-text-xs tw-text-red-600 tw-mr-0",
   style: { "top": "-5px", "position": "relative" }
 };
 const _hoisted_5$h = ["id", "name", "placeholder"];
@@ -3619,9 +3619,9 @@ const _sfc_main$i = {
 };
 const _hoisted_1$i = ["id"];
 const _hoisted_2$i = { class: "section-card tw-flex tw-flex-col" };
-const _hoisted_3$h = { class: "material-icons tw-mr-2 tw-text-white" };
-const _hoisted_4$h = { class: "material-icons tw-ml-2 tw-text-white" };
-const _hoisted_5$g = { class: "material-icons tw-ml-2 tw-text-white" };
+const _hoisted_3$h = { class: "material-symbols-outlined tw-mr-2 tw-text-white" };
+const _hoisted_4$h = { class: "material-symbols-outlined tw-ml-2 tw-text-white" };
+const _hoisted_5$g = { class: "material-symbols-outlined tw-ml-2 tw-text-white" };
 const _hoisted_6$f = { class: "tw-flex tw-items-center tw-justify-between tw-w-full" };
 const _hoisted_7$f = ["placeholder"];
 const _hoisted_8$c = { class: "section-actions-wrapper" };
@@ -4594,7 +4594,7 @@ function _sfc_render$e(_ctx, _cache, $props, $setup, $data, $options) {
       createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_FORM_BUILDER_EVERY_PAGE")), 1),
       createBaseVNode("span", {
         id: "add-page",
-        class: "material-icons tw-cursor-pointer",
+        class: "material-symbols-outlined tw-cursor-pointer",
         onClick: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("open-page-create"))
       }, " add ")
     ]),

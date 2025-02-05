@@ -97,7 +97,7 @@ defined('_JEXEC') or die;
         background: linear-gradient(0deg, rgba(0, 138, 53, 0.10) 0%, rgba(0, 138, 53, 0.10) 100%), #FFF;
     }
 
-    ul.tchooz-vertical-toplevel > li.active.tchooz-vertical-item > a.item span[class*="material-icons"] {
+    ul.tchooz-vertical-toplevel > li.active.tchooz-vertical-item > a.item span[class*="material-symbols"] {
         color: var(--em-profile-color) !important;
         background-color: hsl(from var(--em-profile-color) h s l / 15%);
         border-radius: var(--em-default-br);
@@ -172,8 +172,7 @@ defined('_JEXEC') or die;
         text-decoration: none;
     }
 
-    .tchooz-vertical-item a img,
-    .tchooz-vertical-item a span[class*="material-icons"] {
+    .tchooz-vertical-item a img {
         width: 30px;
         height: 30px;
         padding-left: 5px;

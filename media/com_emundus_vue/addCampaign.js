@@ -1180,7 +1180,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           ]),
           createBaseVNode("div", null, [
             $options.programLanguages.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_64, [
-              _cache[46] || (_cache[46] = createBaseVNode("span", { class: "material-icons-outlined tw-mr-2" }, "info", -1)),
+              _cache[46] || (_cache[46] = createBaseVNode("span", { class: "material-symbols-outlined tw-mr-2" }, "info", -1)),
               createBaseVNode("p", _hoisted_65, [
                 createTextVNode(toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM_LANGUAGES")) + " ", 1),
                 (openBlock(true), createElementBlock(Fragment, null, renderList($options.programLanguages, (language, index) => {
@@ -1222,7 +1222,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     _ctx.submitted || !_ctx.ready ? (openBlock(), createElementBlock("div", _hoisted_67)) : createCommentVNode("", true)
   ]);
 }
-const addCampaign = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-e17f9d75"]]);
+const addCampaign = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-09c3d3f2"]]);
 export {
   addCampaign as default
 };

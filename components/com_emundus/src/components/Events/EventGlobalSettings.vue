@@ -535,7 +535,7 @@ export default {
               :text="teamsDisabledText"
               :icon="'warning'"
               :bg-color="'tw-bg-orange-100'"
-              :icon-type="'material-icons'"
+              :icon-type="'material-symbols-outlined'"
               :icon-color="'tw-text-orange-600'"
               :class="'tw-mt-2'"
         />

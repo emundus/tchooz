@@ -836,7 +836,7 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
     $data.loading ? (openBlock(), createElementBlock("div", _hoisted_28)) : createCommentVNode("", true)
   ]);
 }
-const addEmail = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-bb742359"]]);
+const addEmail = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-2cb2c72d"]]);
 const _sfc_main$2 = {
   name: "CampaignMore",
   props: {
