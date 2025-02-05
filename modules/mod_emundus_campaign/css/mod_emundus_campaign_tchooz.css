@@ -640,7 +640,7 @@ p[id*="mod_emundus_campaign__tchoozy_tab_desc"] {
 }
 
 .tchooz-single-campaign #campaign p:empty::before {
-    content: "\00a0"; /* Ajoute un espace insécable */
+    content: "\00a0";
 }
 
 
