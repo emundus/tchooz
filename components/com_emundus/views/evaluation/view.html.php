@@ -22,7 +22,7 @@ use Joomla\CMS\Factory;
 class EmundusViewEvaluation extends JViewLegacy
 {
 	private $app;
-	private $_user;
+	protected $_user;
 	private $_db;
 	protected $itemId;
 	protected $actions;
