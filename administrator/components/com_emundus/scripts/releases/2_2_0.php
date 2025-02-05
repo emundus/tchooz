@@ -1330,6 +1330,18 @@ class Release2_2_0Installer extends ReleaseInstaller
 
 			EmundusHelperUpdate::enableEmundusPlugins('emundusrecall','fabrik_cron');
 
+			$query->clear()
+				->select('fe.id,fe.plugin')
+				->from($this->db->quoteName('#__fabrik_forms','ff'))
+				->leftJoin($this->db->quoteName('#__fabrik_formgroup','ffg').' ON '.$this->db->quoteName('ffg.form_id').' = '.$this->db->quoteName('ff.id'))
+				->leftJoin($this->db->quoteName('#__fabrik_elements','fe').' ON '.$this->db->quoteName('fe.group_id').' = '.$this->db->quoteName('ffg.group_id'))
+				->where($this->db->quoteName('ff.label') . ' LIKE ' . $this->db->quote('SETUP_PROFILE'))
+				->andWhere($this->db->quoteName('fe.plugin') . ' LIKE ' . $this->db->quote('radiobutton'));
+			$this->db->setQuery($query);
+			$setup_profile_elt = $this->db->loadObject();
+			$setup_profile_elt->plugin = 'yesno';
+			$this->db->updateObject('#__fabrik_elements', $setup_profile_elt, 'id');
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)
