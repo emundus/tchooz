@@ -1,6 +1,6 @@
 <template>
   <div id="comments" class="tw-p-4 tw-w-full tw-bg-[#f8f8f8] tw-flex tw-flex-col" :class="{'tw-border-l-4 tw-border-profile-full': border}">
-    <div v-if="comments.length > 0" id="filter-comments" class="tw-flex tw-flex-row tw-flex-wrap tw-gap-2">
+    <div v-if="comments.length > 0" id="filter-comments" class="tw-flex tw-flex-row tw-flex-wrap tw-gap-2 tw-pb-3">
       <input type="text" class="em-input tw-mr-2" :placeholder="translate('COM_EMUNDUS_COMMENTS_SEARCH')" v-model="search" @keyup="onSearchChange">
       <select v-model="filterOpenedState" class="tw-mr-2 tw-rounded-applicant">
         <option value="all">{{ translate('COM_EMUNDUS_COMMENTS_ALL_THREAD') }}</option>

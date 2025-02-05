@@ -272,26 +272,29 @@ function requireObjectInspect() {
   function quote(s) {
     return $replace.call(String(s), /"/g, "&quot;");
   }
+  function canTrustToString(obj) {
+    return !toStringTag || !(typeof obj === "object" && (toStringTag in obj || typeof obj[toStringTag] !== "undefined"));
+  }
   function isArray(obj) {
-    return toStr(obj) === "[object Array]" && (!toStringTag || !(typeof obj === "object" && toStringTag in obj));
+    return toStr(obj) === "[object Array]" && canTrustToString(obj);
   }
   function isDate(obj) {
-    return toStr(obj) === "[object Date]" && (!toStringTag || !(typeof obj === "object" && toStringTag in obj));
+    return toStr(obj) === "[object Date]" && canTrustToString(obj);
   }
   function isRegExp(obj) {
-    return toStr(obj) === "[object RegExp]" && (!toStringTag || !(typeof obj === "object" && toStringTag in obj));
+    return toStr(obj) === "[object RegExp]" && canTrustToString(obj);
   }
   function isError(obj) {
-    return toStr(obj) === "[object Error]" && (!toStringTag || !(typeof obj === "object" && toStringTag in obj));
+    return toStr(obj) === "[object Error]" && canTrustToString(obj);
   }
   function isString(obj) {
-    return toStr(obj) === "[object String]" && (!toStringTag || !(typeof obj === "object" && toStringTag in obj));
+    return toStr(obj) === "[object String]" && canTrustToString(obj);
   }
   function isNumber(obj) {
-    return toStr(obj) === "[object Number]" && (!toStringTag || !(typeof obj === "object" && toStringTag in obj));
+    return toStr(obj) === "[object Number]" && canTrustToString(obj);
   }
   function isBoolean(obj) {
-    return toStr(obj) === "[object Boolean]" && (!toStringTag || !(typeof obj === "object" && toStringTag in obj));
+    return toStr(obj) === "[object Boolean]" && canTrustToString(obj);
   }
   function isSymbol(obj) {
     if (hasShammedSymbols) {
