@@ -115213,10 +115213,10 @@ button.swal2-cancel.goback-btn:hover,
     font-family: 'Material Symbols Outlined';
     font-style: normal;
     font-weight: 400;
-    src: url(/media/com_emundus/css/fonts/google/MaterialSymbolsOutlined[FILL,GRAD,opsz,wght].ttf); /* For IE6-8 */
+    src: url(/media/com_emundus/css/fonts/google/MaterialSymbolsOutlined[FILL,GRAD,opsz,wght].woff); /* For IE6-8 */
     src: local('Material Symbols Outlined'),
     local('MaterialSymbolsOutlined[FILL,GRAD,opsz,wght]'),
-    url(/media/com_emundus/css/fonts/google/MaterialSymbolsOutlined[FILL,GRAD,opsz,wght].ttf) format('truetype');
+    url(/media/com_emundus/css/fonts/google/MaterialSymbolsOutlined[FILL,GRAD,opsz,wght].woff) format('woff');
 }
 .material-icons {
     font-family: 'Material Icons';
