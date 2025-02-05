@@ -1328,6 +1328,8 @@ class Release2_2_0Installer extends ReleaseInstaller
 				$this->db->updateObject('#__emundus_setup_emails', $email, 'id');
 			}
 
+			EmundusHelperUpdate::enableEmundusPlugins('emundusrecall','fabrik_cron');
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)
