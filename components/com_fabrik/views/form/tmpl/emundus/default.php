@@ -422,6 +422,7 @@ if ($this->display_comments)
         const sidebar = document.querySelector('.view-form #g-sidebar');
         if (headerNav && sidebar) {
             sidebar.style.top = headerNav.offsetHeight + 8 + 'px';
+            sidebar.style.cssText += 'margin-top: 52px !important;';
         }
 
         // Remove applicant-form class if needed
