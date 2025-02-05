@@ -1301,6 +1301,20 @@ class Release2_2_0Installer extends ReleaseInstaller
 				$this->db->updateObject('#__fabrik_forms', $evaluations_form, 'id');
 			}
 
+			$query->clear()
+				->select('fe.id,fe.params')
+				->from($this->db->quoteName('#__fabrik_forms','ff'))
+				->leftJoin($this->db->quoteName('#__fabrik_formgroup','ffg').' ON '.$this->db->quoteName('ffg.form_id').' = '.$this->db->quoteName('ff.id'))
+				->leftJoin($this->db->quoteName('#__fabrik_elements','fe').' ON '.$this->db->quoteName('fe.group_id').' = '.$this->db->quoteName('ffg.group_id'))
+				->where($this->db->quoteName('ff.label') . ' LIKE ' . $this->db->quote('SETUP_EMAIL_DETAILS'))
+				->andWhere($this->db->quoteName('fe.name') . ' LIKE ' . $this->db->quote('date_time'));
+			$this->db->setQuery($query);
+			$setup_email_history_date_elt = $this->db->loadObject();
+			$params = json_decode($setup_email_history_date_elt->params, true);
+			$params['jdate_table_format'] = 'd/m/Y H:i:s';
+			$setup_email_history_date_elt->params = json_encode($params);
+			$this->db->updateObject('#__fabrik_elements', $setup_email_history_date_elt, 'id');
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)
