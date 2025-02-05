@@ -1315,6 +1315,19 @@ class Release2_2_0Installer extends ReleaseInstaller
 			$setup_email_history_date_elt->params = json_encode($params);
 			$this->db->updateObject('#__fabrik_elements', $setup_email_history_date_elt, 'id');
 
+			// Replace [NAME] by [APPLICANT_NAME] in message column of emundus_Setup_emails
+			$query->clear()
+				->select('id, message')
+				->from($this->db->quoteName('#__emundus_setup_emails'))
+				->where($this->db->quoteName('message') . ' LIKE ' . $this->db->quote('%[NAME]%'));
+			$this->db->setQuery($query);
+			$emails = $this->db->loadObjectList();
+
+			foreach ($emails as $email) {
+				$email->message = str_replace('[NAME]', '[APPLICANT_NAME]', $email->message);
+				$this->db->updateObject('#__emundus_setup_emails', $email, 'id');
+			}
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)
