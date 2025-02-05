@@ -425,7 +425,13 @@ const _sfc_main = {
     if (typeof this.selectedFile !== "undefined" && this.selectedFile !== null) {
       this.render();
     } else {
-      this.showModal = false;
+      const hash = window.location.hash;
+      if (hash) {
+        this.selectedFile = hash.replace("#", "");
+        this.render();
+      } else {
+        this.showModal = false;
+      }
     }
     this.addEventListeners();
   },
@@ -578,7 +584,7 @@ const _sfc_main = {
       this.hidden = true;
       this.showModal = false;
       document.querySelector("body").style.overflow = "visible";
-      swal.close();
+      this.updateURL();
     },
     openNextFnum() {
       let index = typeof this.selectedFile === "string" ? this.fnums.indexOf(this.selectedFile) : this.fnums.indexOf(this.selectedFile.fnum);
