@@ -29,7 +29,7 @@ form .fabrikGroupColumns.fabrikGroup .row .fabrikElementContainer {
 }
 
 #aside-comment-section #comments {
-    height: calc(100vh - 72px);
+    height: 100% /*calc(100vh - 72px)*/;
 }
 
 #aside-comment-section #comments-list-container {
