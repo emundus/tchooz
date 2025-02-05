@@ -52,7 +52,8 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 	{
 		$params = $this->getParams();
 
-		if ($params->get($pname) == '') {
+		if ($params->get($pname) == '')
+		{
 			return '';
 		}
 
@@ -73,7 +74,8 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 	{
 		$params = $this->getParams();
 
-		if ($params->get($pname) == '') {
+		if ($params->get($pname) == '')
+		{
 			return $default;
 		}
 
@@ -87,7 +89,7 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 		$formModel = $this->getModel();
 		$listModel = $formModel->getListModel();
 
-		$table = $listModel->getTable();
+		$table         = $listModel->getTable();
 		$db_table_name = $table->db_table_name;
 
 		$fnum = $formModel->data[$db_table_name . '___fnum'];
@@ -98,9 +100,9 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 		}
 
 		$referent_email = '';
-		$emails              = explode(',', $this->getParam('emails', 'jos_emundus_references___Email_1,jos_emundus_references___Email_2,jos_emundus_references___Email_3,jos_emundus_references___Email_4'));
+		$emails         = explode(',', $this->getParam('emails', 'jos_emundus_references___Email_1,jos_emundus_references___Email_2,jos_emundus_references___Email_3,jos_emundus_references___Email_4'));
 
-		if(!empty($emails) && !empty($formModel->data) && !empty($groupModel->getPublishedElements()))
+		if (!empty($emails) && !empty($formModel->data) && !empty($groupModel->getPublishedElements()))
 		{
 			foreach ($groupModel->getPublishedElements() as $element)
 			{
@@ -153,7 +155,8 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 		$now      = $dateTime->format('Y-m-d H:i:s');
 
 		$db_table_name = 'jos_emundus_references';
-		if (!empty($form_id)) {
+		if (!empty($form_id))
+		{
 			$query = $this->_db->getQuery(true);
 			$query->select('db_table_name')
 				->from($this->_db->quoteName('#__fabrik_lists'))
@@ -165,25 +168,39 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 		$student_id = $this->app->getInput()->get($db_table_name . '___user')[0];
 		$fnum       = $this->app->getInput()->get($db_table_name . '___fnum');
 
+		$email_tmpls         = explode(',', $this->getParam('email_tmpl', 'referent_letter'));
 		$emails              = explode(',', $this->getParam('emails', 'jos_emundus_references___Email_1,jos_emundus_references___Email_2,jos_emundus_references___Email_3,jos_emundus_references___Email_4'));
 		$names               = explode(',', $this->getParam('names', 'jos_emundus_references___Last_Name_1,jos_emundus_references___Last_Name_2,jos_emundus_references___Last_Name_3,jos_emundus_references___Last_Name_4'));
 		$firstnames          = explode(',', $this->getParam('firstnames', 'jos_emundus_references___First_Name_1,jos_emundus_references___First_Name_2,jos_emundus_references___First_Name_3,jos_emundus_references___First_Name_4'));
 		$default_attachments = [4, 6, 21, 19];
 
 		$recipients = array();
-		foreach ($emails as $key => $email) {
+		foreach ($emails as $key => $email)
+		{
 			$email     = $this->app->getInput()->getString($email, '');
 			$name      = Text::_('CIVILITY_MR') . '/' . Text::_('CIVILITY_MRS');
 			$firstname = '';
-			if (!empty($names[$key])) {
+			if (!empty($names[$key]))
+			{
 				$name = $this->app->getInput()->getString($names[$key], Text::_('CIVILITY_MR') . '/' . Text::_('CIVILITY_MRS'));
 			}
-			if (!empty($firstnames[$key])) {
+			if (!empty($firstnames[$key]))
+			{
 				$firstname = $this->app->getInput()->getString($firstnames[$key], '');
 			}
 
+			if (is_array($email_tmpls))
+			{
+				$email_tmpl = !empty($email_tmpls[$key]) ? $email_tmpls[$key] : $email_tmpls[0];
+			}
+			else
+			{
+				$email_tmpl = $email_tmpls;
+			}
+
 			$recipients[] = array(
-				'attachment_id' => $this->app->getInput()->get($db_table_name.'___attachment_id_'.($key+1), $default_attachments[$key]),
+				'email_tmpl'    => $email_tmpl,
+				'attachment_id' => $this->app->getInput()->get($db_table_name . '___attachment_id_' . ($key + 1), $default_attachments[$key]),
 				'email'         => $email,
 				'name'          => ucwords($name),
 				'firstname'     => ucwords($firstname)
@@ -195,13 +212,6 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 		$url        = $this->getParam('url', 'index.php?option=com_fabrik&c=form&view=form&formid=68&tableid=71');
 		$sef_url    = $this->getParam('sef_url', false);
 		$email_tmpl = $this->getParam('email_tmpl', 'referent_letter');
-
-		$query->select('est.id,est.subject, est.emailfrom, est.name, est.message, eet.Template')
-			->from($this->_db->quoteName('#__emundus_setup_emails', 'est'))
-			->leftJoin($this->_db->quoteName('#__emundus_email_templates', 'eet') . ' ON ' . $this->_db->quoteName('est.email_tmpl') . ' = ' . $this->_db->quoteName('eet.id'))
-			->where($this->_db->quoteName('est.lbl') . ' LIKE ' . $this->_db->quote($email_tmpl));
-		$this->_db->setQuery($query);
-		$obj = $this->_db->loadObjectList();
 
 		$query->clear()
 			->select('esp.reference_letter')
@@ -219,20 +229,33 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 		// setup mail
 		$email_from_sys = $this->app->get('mailfrom');
 
-		$from     = $obj[0]->emailfrom;
-		$fromname = $obj[0]->name;
-
-		$sender     = array(
-			$email_from_sys,
-			$fromname
-		);
 		$attachment = array();
-		if (!empty($obj_letter[0][0])) {
+		if (!empty($obj_letter[0][0]))
+		{
 			$attachment[] = JPATH_BASE . str_replace("\\", "/", $obj_letter[0][0]);
 		}
 
-		foreach ($recipients as $recipient) {
-			if (!empty($recipient['email'])) {
+		foreach ($recipients as $recipient)
+		{
+			if (!empty($recipient['email']) && !empty($recipient['email_tmpl']))
+			{
+				// Récupération des données du mail
+				$query = $this->_db->getQuery(true);
+				$query->select('est.id,est.subject, est.emailfrom, est.name, est.message, eet.Template')
+					->from($this->_db->quoteName('#__emundus_setup_emails', 'est'))
+					->leftJoin($this->_db->quoteName('#__emundus_email_templates', 'eet') . ' ON ' . $this->_db->quoteName('est.email_tmpl') . ' = ' . $this->_db->quoteName('eet.id'))
+					->where($this->_db->quoteName('est.lbl') . ' LIKE ' . $this->_db->quote($recipient['email_tmpl']));
+				$this->_db->setQuery($query);
+				$obj = $this->_db->loadObjectList();
+
+				$from     = $obj[0]->emailfrom;
+				$fromname = $obj[0]->name;
+
+				$sender = array(
+					$email_from_sys,
+					$fromname
+				);
+
 				$attachment_id = $recipient['attachment_id'];
 
 				// TODO : Check if we already sent a file request today, merge this query with query uploaded. If a file request is sent today OR already uploaded we don't send this email
@@ -246,10 +269,12 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 				$this->_db->setQuery($query);
 				$isSelectedReferent = (int) $this->_db->loadResult();
 
-				if ($isSelectedReferent > 0) {
+				if ($isSelectedReferent > 0)
+				{
 					continue;
 				}
-				else {
+				else
+				{
 					$query->clear()
 						->select('count(id)')
 						->from($this->_db->quoteName('#__emundus_files_request'))
@@ -260,7 +285,8 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 					$this->_db->setQuery($query);
 					$is_uploaded = $this->_db->loadResult();
 
-					if ($is_uploaded == 0) {
+					if ($is_uploaded == 0)
+					{
 						$key = md5(date('Y-m-d h:m:i') . '::' . $fnum . '::' . $student_id . '::' . $attachment_id . '::' . rand());
 
 						$query->clear()
@@ -271,10 +297,12 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 						$this->_db->execute();
 						$request_id = $this->_db->insertid();
 
-						if ($sef_url === 'true') {
+						if ($sef_url === 'true')
+						{
 							$link_upload = Uri::base() . $url . '?keyid=' . $key . '&sid=' . $student->id;
 						}
-						else {
+						else
+						{
 							$link_upload = Uri::base() . $url . '&keyid=' . $key . '&sid=' . $student->id;
 						}
 
@@ -297,7 +325,8 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 						$subject = $m_emails->setTagsFabrik($subject, [$fnum_detail['fnum']]);
 
 						$body = $obj[0]->message;
-						if ($obj[0]->Template) {
+						if ($obj[0]->Template)
+						{
 							$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $obj[0]->Template);
 						}
 						$body = preg_replace($tags['patterns'], $tags['replacements'], $body);
@@ -307,7 +336,8 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 
 						$mailer = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer();
 						$mailer->setSender($sender);
-						if (!empty($from) && !empty($fromname)) {
+						if (!empty($from) && !empty($fromname))
+						{
 							$mailer->addReplyTo($from, $fromname);
 						}
 						$mailer->addRecipient($to);
@@ -317,11 +347,13 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 						$mailer->setBody($body);
 						$mailer->addAttachment($attachment);
 
-						if ($mailer->Send() !== true) {
+						if ($mailer->Send() !== true)
+						{
 							$this->app->enqueueMessage(Text::_('MESSAGE_NOT_SENT') . ' : ' . $recipient['email'], 'error');
 							JLog::add('Cannot send email', JLog::ERROR, 'com_emundus');
 						}
-						else {
+						else
+						{
 							$this->app->enqueueMessage(Text::_('MESSAGE_SENT') . ' : ' . $recipient['email'], 'message');
 							$body = Text::_('SENT_TO') . ' ' . $recipient['email'] . '<br><a href="index.php?option=com_fabrik&view=details&formid=264&rowid=' . $request_id . '&listid=273" target="_blank">' . Text::_('INVITATION_LINK') . '</a><br>' . $body;
 
@@ -330,10 +362,12 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 								->columns($this->_db->quoteName(['user_id_from', 'user_id_to', 'subject', 'message', 'date_time']))
 								->values(implode(',', $this->_db->quote([$this->app->getIdentity()->id, $student_id, $subject, $body, $now])));
 							$this->_db->setQuery($query);
-							try {
+							try
+							{
 								$this->_db->execute();
 							}
-							catch (Exception $e) {
+							catch (Exception $e)
+							{
 								// catch any database errors.
 							}
 						}
