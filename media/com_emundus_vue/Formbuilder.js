@@ -7545,7 +7545,9 @@ const _sfc_main$2 = {
             });
           }
         });
-        conditions_post.push(tmp_conditions);
+        if (tmp_conditions.length > 0) {
+          conditions_post.push(tmp_conditions);
+        }
       });
       this.actions.forEach((action) => {
         if (action.fields) {
