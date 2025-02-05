@@ -16,6 +16,12 @@ if ($d->showNav) :
 <div class="list-footer em-mt-24">
 	<div class="limit">
 		<div class="input-prepend input-append em-list-pagination">
+            <?php if($d->showTotal == 1): ?>
+                <div class="tw-flex tw-items-center tw-gap-2">
+                    <span><?php echo $d->pagesCounter; ?></span>
+                    <span>|</span>
+                </div>
+            <?php endif; ?>
 			<span class="add-on">
 				<label for="<?php echo $d->listName;?>">
 					<?php echo $d->label; ?>
