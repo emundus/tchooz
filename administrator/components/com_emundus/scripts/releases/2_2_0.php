@@ -1362,6 +1362,8 @@ class Release2_2_0Installer extends ReleaseInstaller
 				$this->db->updateObject('#__extensions', $emundus_component, 'extension_id');
 			}
 
+			EmundusHelperUpdate::installExtension('PLG_FABRIK_FORM_EMUNDUSATTACHMENTPUBLIC', 'emundusattachmentpublic', null, 'plugin', 1, 'fabrik_form');
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)
