@@ -1806,14 +1806,12 @@ class EmundusController extends JControllerLegacy
 		// This query checks if the file can actually be viewed by the user, in the case a file uploaded to his file by a coordniator is opened.
 		if (!empty(JFactory::getUser($uid)->id)) {
 
-
+            $query = 'SELECT can_be_viewed, fnum, local_filename FROM #__emundus_uploads';
 			if (EmundusHelperAccess::isApplicant($current_user->id) && !empty($fnums)) {
-				$query = 'SELECT can_be_viewed, fnum FROM #__emundus_uploads';
 				$query .= " WHERE fnum IN (" . implode(',', $this->_db->quote($fnums)) . ')';
 				$query .= " AND filename like " . $this->_db->Quote($file);
 			}
 			else {
-				$query = 'SELECT can_be_viewed, fnum FROM #__emundus_uploads';
 				if (!empty($fnum)) {
 					$query .= " WHERE fnum like " . $this->_db->quote($fnum);
 				}
@@ -1852,10 +1850,19 @@ class EmundusController extends JControllerLegacy
 		$file = JPATH_BASE . DS . $url;
 		if (is_file($file)) {
 			$mime_type = $this->get_mime_type($file);
+            $fileName = $file;
+
+            if (!empty($fileInfo->local_filename)) {
+                $keep_original_file_name = $eMConfig->get('keep_original_file_name', 0);
+
+                if ($keep_original_file_name) {
+                    $fileName = $fileInfo->local_filename;
+                }
+            }
 
 			//TODO If data ara anonimized remove metadata
 			header('Content-type: ' . $mime_type);
-			header('Content-Disposition: inline; filename=' . basename($file));
+			header('Content-Disposition: inline; filename=' . basename($fileName));
 			header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
 			header('Cache-Control: no-store, no-cache, must-revalidate');
 			header('Cache-Control: pre-check=0, post-check=0, max-age=0');
