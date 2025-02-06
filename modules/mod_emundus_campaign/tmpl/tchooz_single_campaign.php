@@ -53,31 +53,9 @@ elseif (strtotime($now) > strtotime($currentCampaign->end_date))
 	$can_apply = -1;
 }
 
-if ($currentCampaign->is_limited == 1 && $currentCampaign->limit > 0)
+if ($currentCampaign->campaign_is_limited == 1 && $currentCampaign->campaign_limit > 0)
 {
-	$db    = Factory::getContainer()->get('DatabaseDriver');
-	$query = $db->getQuery(true);
-
-	$query->clear()
-		->select($db->quoteName('limit_status'))
-		->from($db->quoteName('jos_emundus_setup_campaigns_repeat_limit_status'))
-		->where($db->quoteName('parent_id') . ' = ' . $db->quote($currentCampaign->id));
-	$db->setQuery($query);
-	$limit_status = $db->loadColumn();
-
-	$files_sent = 0;
-	if (!empty($limit_status))
-	{
-		$query->clear()
-			->select('COUNT(id)')
-			->from($db->quoteName('jos_emundus_campaign_candidature'))
-			->where($db->quoteName('campaign_id') . ' = ' . $db->quote($currentCampaign->id))
-			->andWhere($db->quoteName('status') . ' IN (' . implode(',', $limit_status) . ')');
-		$db->setQuery($query);
-		$files_sent = $db->loadResult();
-	}
-
-	$files_sent = $files_sent > $currentCampaign->limit ? $currentCampaign->limit : $files_sent;
+	$files_sent = min($currentCampaign->nb_files_in_limit, $currentCampaign->campaign_limit);
 	if ($files_sent == 1)
 	{
 		$files_sent_tag = 'MOD_EM_CAMPAIGN_CAMPAIGN_SENT_NUMBER_SINGULAR';
@@ -87,7 +65,7 @@ if ($currentCampaign->is_limited == 1 && $currentCampaign->limit > 0)
 		$files_sent_tag = 'MOD_EM_CAMPAIGN_CAMPAIGN_SENT_NUMBER_PLURAL';
 	}
 
-	$is_limit_obtained = $m_campaign->isLimitObtained($currentCampaign->id);
+	$is_limit_obtained = $currentCampaign->nb_files_in_limit >= $currentCampaign->campaign_limit;
 }
 
 if ($currentCampaign->apply_online == 0)
@@ -99,6 +77,15 @@ $campaigns_url = EmundusHelperMenu::getHomepageLink();
 if(!empty($mod_em_campaign_go_back_campaigns_link)) {
 	$menu = Factory::getApplication()->getMenu();
 	$campaigns_url = $user->guest ? EmundusHelperMenu::getHomepageLink() : $menu->getItems('id', (int) $mod_em_campaign_go_back_campaigns_link, true)->route;
+}
+
+$have_registration_steps = false;
+foreach ($mod_em_campaign_show_registration_steps as $step)
+{
+    if($step->mod_em_campaign_show_registration_steps_text != '')
+    {
+        $have_registration_steps = true;
+    }
 }
 ?>
 
@@ -247,7 +234,7 @@ if(!empty($mod_em_campaign_go_back_campaigns_link)) {
 
     <aside id="campaign-sidebar" class="tw-sticky">
         <!-- INFO BLOCK -->
-		<?php if ($can_apply != 0 || $mod_em_campaign_show_registration == 1 && !empty($mod_em_campaign_show_registration_steps)) : ?>
+		<?php if ($can_apply != 0 || ($mod_em_campaign_show_registration == 1 && $have_registration_steps)) : ?>
             <div class="mod_emundus_campaign__details_content em-border-neutral-300 em-mb-24">
 
 				<?php if ($mod_em_campaign_display_svg == 1) : ?>
@@ -255,8 +242,8 @@ if(!empty($mod_em_campaign_go_back_campaigns_link)) {
 				<?php endif; ?>
 
                 <h2 class="em-mb-24"><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_APPLY') ?></h2>
-	            <?php  if ($currentCampaign->is_limited == 1 && $currentCampaign->limit > 0) : ?>
-                    <div class="flex em-flex-center em-mb-24"><p class="mr-2 h-max em-p-5-12 em-font-weight-600 em-text-neutral-300 em-font-size-14 em-border-radius" style="background:var(--bg-3);"><?= $files_sent.' '.JText::_($files_sent_tag).' '.$currentCampaign->limit ?></p></div>
+	            <?php  if ($can_apply == 1 && $currentCampaign->is_limited == 1 && $currentCampaign->limit > 0 && $mod_em_campaign_show_limit_files == 1) : ?>
+                    <div class="flex em-flex-center em-mb-24"><p class="mr-2 h-max em-p-5-12 em-font-weight-600 em-text-neutral-300 em-font-size-14 em-border-radius tw-text-center" style="background:var(--bg-3);"><?= $files_sent.' '.JText::_($files_sent_tag).' '.$currentCampaign->limit ?></p></div>
 	            <?php endif; ?>
 				<?php if ($mod_em_campaign_show_registration == 1 && !empty($mod_em_campaign_show_registration_steps)) : ?>
                     <div class="em-mt-24">
