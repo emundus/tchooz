@@ -178,3 +178,6 @@ plugins/user/minioragejoomlaidp/
 
 # SCP
 administrator/components/com_securitycheckpro/scans/update_vuln_table.php
+
+# HIKASHOP
+media/com_hikashop/upload/safe/logs/
