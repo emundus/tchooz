@@ -3,7 +3,7 @@ defined('_JEXEC') or die('Access Deny');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Helper\ModuleHelper;
-
+use Joomla\CMS\Language\Text;
 
 // INCLUDES
 require_once(dirname(__FILE__) . DS . 'helper.php');
@@ -35,35 +35,39 @@ $sef    = $config->get('sef');
 $e_user   = $session->get('emundusUser');
 $app_prof = $m_profiles->getApplicantsProfilesArray();
 
-if ($user->guest || in_array($e_user->profile, $app_prof)) {
+if ($user->guest || in_array($e_user->profile, $app_prof))
+{
 	$wa->registerAndUseScript('jquery-cookie', 'media/com_emundus/js/jquery.cookie.js');
 
-	if (!in_array($params->get('mod_em_campaign_layout'), ['default_tchooz', 'tchooz_single_campaign'])) {
+	if (!in_array($params->get('mod_em_campaign_layout'), ['default_tchooz', 'tchooz_single_campaign']))
+	{
 		$wa->registerAndUseStyle('mod_emundus_campaign_media', 'media/com_emundus/css/mod_emundus_campaign.css');
 		$wa->registerAndUseStyle('mod_emundus_campaign', 'modules/mod_emundus_campaign/css/mod_emundus_campaign.css');
 	}
-	else {
+	else
+	{
 		$wa->registerAndUseStyle('mod_emundus_campaign', 'modules/mod_emundus_campaign/css/mod_emundus_campaign_tchooz.css');
 	}
 
 	// PARAMS
 	// TCHOOZ PARAMS
-	$mod_em_campaign_get_link             = $params->get('mod_em_campaign_get_link', 0);
-	$mod_em_campaign_date_format          = $params->get('mod_em_campaign_date_format', 'd/m/Y H:i');
-	$mod_em_campaign_show_camp_start_date = $params->get('mod_em_campaign_show_camp_start_date', 1);
-	$mod_em_campaign_show_camp_end_date   = $params->get('mod_em_campaign_show_camp_end_date', 1);
-	$mod_em_campaign_display_svg          = $params->get('mod_em_campaign_display_svg', 1);
-	$mod_em_campaign_display_hover_offset = $params->get('mod_em_campaign_display_hover_offset', 1);
-	$mod_em_campaign_show_timezone        = $params->get('mod_em_campaign_show_timezone', 1);
-	$mod_em_campaign_list_sections        = $params->get('mod_em_campaign_list_sections', []);
-	$mod_em_campaign_display_program_label = $params->get('mod_em_campaign_display_program_label',0);
-	$mod_em_campaign_click_to_details = $params->get('mod_em_campaign_click_to_details',1);
-	$mod_em_campaign_intro                = $params->get('mod_em_campaign_intro', null);
-	if (empty($mod_em_campaign_intro) && $params->get('mod_em_campaign_layout') == 'default_tchooz') {
+	$mod_em_campaign_get_link              = $params->get('mod_em_campaign_get_link', 0);
+	$mod_em_campaign_date_format           = $params->get('mod_em_campaign_date_format', 'd/m/Y H:i');
+	$mod_em_campaign_show_camp_start_date  = $params->get('mod_em_campaign_show_camp_start_date', 1);
+	$mod_em_campaign_show_camp_end_date    = $params->get('mod_em_campaign_show_camp_end_date', 1);
+	$mod_em_campaign_display_svg           = $params->get('mod_em_campaign_display_svg', 1);
+	$mod_em_campaign_display_hover_offset  = $params->get('mod_em_campaign_display_hover_offset', 1);
+	$mod_em_campaign_show_timezone         = $params->get('mod_em_campaign_show_timezone', 1);
+	$mod_em_campaign_list_sections         = $params->get('mod_em_campaign_list_sections', []);
+	$mod_em_campaign_display_program_label = $params->get('mod_em_campaign_display_program_label', 0);
+	$mod_em_campaign_click_to_details      = $params->get('mod_em_campaign_click_to_details', 1);
+	$mod_em_campaign_intro                 = $params->get('mod_em_campaign_intro', null);
+	if (empty($mod_em_campaign_intro) && $params->get('mod_em_campaign_layout') == 'default_tchooz')
+	{
 		$mod_em_campaign_intro = $m_settings->getArticle($lang_tag, 52)->introtext;
 	}
 
-	if(!empty($mod_em_campaign_intro))
+	if (!empty($mod_em_campaign_intro))
 	{
 		require_once JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php';
 		$m_emails              = new EmundusModelEmails();
@@ -104,6 +108,7 @@ if ($user->guest || in_array($e_user->profile, $app_prof)) {
 	$mod_em_campaign_go_back_link            = $params->get('mod_em_campaign_go_back_link', 1);
 	$mod_em_campaign_go_back_external_url    = $params->get('mod_em_campaign_go_back_external_url', '');
 	$mod_em_campaign_go_back_campaigns_link  = $params->get('mod_em_campaign_go_back_campaigns_link', '');
+	$mod_em_campaign_show_limit_files        = $params->get('mod_em_campaign_show_limit_files', 1);
 
 	// OLD PARAMS
 	$mod_em_campaign_url                       = $params->get('mod_em_campaign_url');
@@ -140,43 +145,57 @@ if ($user->guest || in_array($e_user->profile, $app_prof)) {
 	$reseaux_filt    = $app->input->getString('reseau', null);
 
 	// this verification is used to prevent SQL injection
-	if (!empty($order_date) && in_array($order_date, ['start_date', 'end_date', 'formation_start', 'formation_end'])) {
+	if (!empty($order_date) && in_array($order_date, ['start_date', 'end_date', 'formation_start', 'formation_end']))
+	{
 		$session->set('order_date', $order_date);
 	}
-	elseif (empty($order)) {
+	elseif (empty($order))
+	{
 		$session->set('order_date', $mod_em_campaign_order);
 	}
 
-	if (!empty($order_time) && in_array($order_time, ['asc', 'desc'])) {
+	if (!empty($order_time) && in_array($order_time, ['asc', 'desc']))
+	{
 		$session->set('order_time', $order_time);
 	}
-	elseif (empty($order)) {
+	elseif (empty($order))
+	{
 		$session->set('order_time', $mod_em_campaign_order_type);
 	}
-	if (!empty($group_by)) {
+	if (!empty($group_by))
+	{
 		$session->set('group_by', $group_by);
 	}
-	elseif (empty($group_by)) {
+	elseif (empty($group_by))
+	{
 		$session->set('group_by', $mod_em_campaign_groupby);
 	}
-	if (!empty($codes)) {
+	if (!empty($codes))
+	{
 		$session->set('code', $codes);
-		if($mod_em_campaign_display_program_label == 1) {
+		if ($mod_em_campaign_display_program_label == 1)
+		{
 			$program_label = $helper->getProgramLabel($codes);
 		}
 	}
-	elseif (empty($codes)) {
+	elseif (empty($codes))
+	{
 		$session->clear('code');
 	}
-	if (!empty($categories_filt)) {
+	if (!empty($categories_filt))
+	{
 		$session->set('category', $categories_filt);
 	}
-	elseif (empty($categories_filt)) {
+	elseif (empty($categories_filt))
+	{
 		$session->clear('category');
 	}
-	if (!empty($reseaux_filt)) {
+	if (!empty($reseaux_filt))
+	{
 		$session->set('reseau', $reseaux_filt);
-	} else {
+	}
+	else
+	{
 		$session->clear('reseau');
 	}
 
@@ -188,16 +207,17 @@ if ($user->guest || in_array($e_user->profile, $app_prof)) {
 	$reseaux_filt    = $session->get('reseau');
 
 	$program_array = [];
-	if ($params->get('mod_em_campaign_layout') == 'institut_fr') {
-		if (!empty($program_code)) {
-			$program_array['IN'] = array_map('trim', explode(',', $program_code));
-		}
-		if (!empty($ignored_program_code)) {
-			$program_array['NOT_IN'] = array_map('trim', explode(',', $ignored_program_code));
-		}
+	if (!empty($program_code))
+	{
+		$program_array['IN'] = array_map('trim', explode(',', $program_code));
+	}
+	if (!empty($ignored_program_code))
+	{
+		$program_array['NOT_IN'] = array_map('trim', explode(',', $ignored_program_code));
 	}
 
-	if (!empty($mod_em_campaign_tags)) {
+	if (!empty($mod_em_campaign_tags))
+	{
 		include_once(JPATH_ROOT . '/components/com_emundus/models/emails.php');
 		$m_email = new EmundusModelEmails();
 	}
@@ -206,10 +226,14 @@ if ($user->guest || in_array($e_user->profile, $app_prof)) {
 	$m_progs  = new EmundusModelProgramme();
 	$programs = $m_progs->getProgrammes(1, $program_array);
 
-	if (in_array('category', $mod_em_campaign_show_filters_list)) {
+
+	if (in_array('category', $mod_em_campaign_show_filters_list))
+	{
 		$categories = [];
-		foreach ($programs as $program) {
-			if (!in_array($program['programmes'], $categories) && !empty($program['programmes'])) {
+		foreach ($programs as $program)
+		{
+			if (!in_array($program['programmes'], $categories) && !empty($program['programmes']))
+			{
 				$categories[] = $program['programmes'];
 			}
 		}
@@ -218,30 +242,45 @@ if ($user->guest || in_array($e_user->profile, $app_prof)) {
 	if (in_array('reseau', $mod_em_campaign_show_filters_list))
 	{
 		$reseaux = [
-			1 => JText::_('MOD_EM_CAMPAIGN_RESEAUX'),
-			2 => JText::_('MOD_EM_CAMPAIGN_HORS_RESEAUX'),
-			3 => JText::_('MOD_EM_CAMPAIGN_BOTH_RESEAUX')
+			1 => Text::_('MOD_EM_CAMPAIGN_RESEAUX'),
+			2 => Text::_('MOD_EM_CAMPAIGN_HORS_RESEAUX'),
+			3 => Text::_('MOD_EM_CAMPAIGN_BOTH_RESEAUX')
 		];
 	}
 
+
+	$programs_codes = [];
+	foreach ($programs as $program)
+	{
+		if (!empty($program['code']))
+		{
+			$programs_codes[] = $program['code'];
+		}
+	}
+
 	$condition = '';
-	if (!empty($searchword)) {
+	if (!empty($searchword))
+	{
 		$condition .= ' AND (ca.label LIKE "%"' . $db->quote($searchword) . '"%" OR ca.short_description LIKE "%"' . $db->quote($searchword) . '"%"';
-		if ($mod_em_campaign_list_show_programme == 1) {
+		if ($mod_em_campaign_list_show_programme == 1)
+		{
 			$condition .= ' OR pr.code LIKE "%"' . $db->quote($searchword) . '"%"';
 		}
 		$condition .= ') ';
 
 	}
 
-	if (!empty($program_code)) {
-		$condition .= ' AND pr.code IN(' . implode(',', $db->quote(array_map('trim', explode(',', $program_code)))) . ')';
+	if (!empty($programs_codes))
+	{
+		$condition .= ' AND pr.code IN (' . implode(',', $db->quote($programs_codes)) . ')';
 	}
 
-	if (!empty($codes)) {
-		$condition .= ' AND pr.code IN(' . implode(',', $db->quote(explode(',', $codes))) . ')';
+	if (!empty($codes))
+	{
+		$condition .= ' AND pr.code IN (' . implode(',', $db->quote(explode(',', $codes))) . ')';
 	}
-	if (!empty($categories_filt)) {
+	if (!empty($categories_filt))
+	{
 		$condition .= ' AND pr.programmes IN (' . implode(',', $db->quote(explode(',', $categories_filt))) . ')';
 	}
 	if (!empty($reseaux_filt))
@@ -249,23 +288,21 @@ if ($user->guest || in_array($e_user->profile, $app_prof)) {
 		$condition .= ' AND ca.reseaux IN (' . implode(',', $db->quote(explode(',', $reseaux_filt))) . ')';
 	}
 
-
-	if (!empty($ignored_program_code)) {
-		$condition .= ' AND pr.code NOT IN (' . implode(',', $db->quote(array_map('trim', explode(',', $ignored_program_code)))) . ')';
-	}
-
 // Get single campaign
 	$cid = $app->input->getInt('cid', 0);
-	if(empty($cid)) {
+	if (empty($cid))
+	{
 		$menu_params = $app->getMenu()->getActive()->getParams();
-		$cid = $menu_params->get('com_emundus_programme_campaign_id', 0);
+		$cid         = $menu_params->get('com_emundus_programme_campaign_id', 0);
 	}
 
-	if (!empty($cid)) {
+	if (!empty($cid))
+	{
 		$condition = ' AND ca.id = ' . $cid;
 	}
 
-	switch ($group_by) {
+	switch ($group_by)
+	{
 		case 'month':
 			$condition .= ' ORDER BY ' . $order;
 			break;
@@ -279,7 +316,8 @@ if ($user->guest || in_array($e_user->profile, $app_prof)) {
 			$condition .= ' ORDER BY ' . $order;
 	}
 
-	switch ($ordertime) {
+	switch ($ordertime)
+	{
 		case 'asc':
 			$condition .= ' ASC';
 			break;
@@ -291,12 +329,20 @@ if ($user->guest || in_array($e_user->profile, $app_prof)) {
 	}
 
 	$mod_em_campaign_get_admission_date = ($mod_em_campaign_show_admission_start_date || $mod_em_campaign_show_admission_end_date);
-	$currentCampaign                    = $helper->getCurrent($condition, $mod_em_campaign_get_teaching_unity, $order);
-	$pastCampaign                       = $helper->getPast($condition, $mod_em_campaign_get_teaching_unity, $order);
-	$futurCampaign                      = $helper->getFutur($condition, $mod_em_campaign_get_teaching_unity, $order);
+	$currentCampaign                    = $helper->getCurrent($condition, $mod_em_campaign_get_teaching_unity, $order, $mod_em_campaign_show_pinned_campaign);
+	$pastCampaign                       = $helper->getPast($condition, $mod_em_campaign_get_teaching_unity, $order, $mod_em_campaign_show_pinned_campaign);
+	$futurCampaign                      = $helper->getFutur($condition, $mod_em_campaign_get_teaching_unity, $order, $mod_em_campaign_show_pinned_campaign);
 	$allCampaign                        = $helper->getProgram($condition, $mod_em_campaign_get_teaching_unity);
 
-	if ($params->get('mod_em_campaign_layout') == "single_campaign" || $params->get('mod_em_campaign_layout') == "tchooz_single_campaign" || $params->get('mod_em_campaign_layout') == "institut_fr_single_campaign") {
+	$totalCampaigns = $helper->getProgram('', $mod_em_campaign_get_teaching_unity);
+	if ($mod_em_campaign_show_pinned_campaign && sizeof($totalCampaigns) == 1 && $totalCampaigns[0]->pinned == 1)
+	{
+		$totalCampaigns = [];
+	}
+
+
+	if ($params->get('mod_em_campaign_layout') == "single_campaign" || $params->get('mod_em_campaign_layout') == "tchooz_single_campaign" || $params->get('mod_em_campaign_layout') == "institut_fr_single_campaign")
+	{
 		// FAQ
 		$faq_articles = $helper->getFaq();
 
@@ -305,7 +351,8 @@ if ($user->guest || in_array($e_user->profile, $app_prof)) {
 		$files            = $dropfiles_helper->getFiles();
 	}
 
-	if ($params->get('mod_em_campaign_layout') == 'celsa') {
+	if ($params->get('mod_em_campaign_layout') == 'celsa')
+	{
 		$formations      = $helper->getFormationsWithType();
 		$formationTypes  = $helper->getFormationTypes();
 		$formationLevels = $helper->getFormationLevels();
@@ -320,15 +367,19 @@ if ($user->guest || in_array($e_user->profile, $app_prof)) {
 
 	$show_registration = 0;
 	$modules           = ModuleHelper::getModules('header-c');
-	foreach ($modules as $module) {
-		if ($module->module == 'mod_emundus_user_dropdown') {
+	foreach ($modules as $module)
+	{
+		if ($module->module == 'mod_emundus_user_dropdown')
+		{
 			$show_registration = json_decode($module->params)->show_registration;
 		}
 	}
-	if ($show_registration == 0 || $show_registration == 1 && $user === null && !empty($currentCampaign)) {
+	if ($show_registration == 0 || $show_registration == 1 && $user === null && !empty($currentCampaign))
+	{
 		$show_registration = true;
 	}
-	else {
+	else
+	{
 		$show_registration = false;
 	}
 
