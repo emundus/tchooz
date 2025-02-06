@@ -1072,8 +1072,8 @@
         <field name="insee" type="note" label="COM_EMUNDUS_INSEE_API"/>
             <field name="insee_api_base_url" type="text" label="COM_EMUNDUS_INSEE_BASE_URL"
                    default="https://api.insee.fr"/>
-            <field name="insee_api_consumer_key" type="text" label="COM_EMUNDUS_INSEE_CONSUMER_KEY"/>
             <field name="insee_api_consumer_secret" type="text" label="COM_EMUNDUS_INSEE_CONSUMER_SECRET"/>
+            <field name="insee_api_version" type="text" label="COM_EMUNDUS_INSEE_VERSION" default="3.11"/>
 
         <field name="spacer15" type="spacer" hr="true"/>
         <field name="ixparapheur" type="note" label="COM_EMUNDUS_IXPARAPHEUR_API"/>

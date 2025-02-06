@@ -15,7 +15,8 @@ define(['jquery', 'fab/element'],
             Extends: FbElement,
 
             options: {
-                bearerToken: {},
+                apiKey: {},
+                apiVersion: 3.11,
                 mapping: [],
                 baseUrl: '',
                 propertyToCheck: ''
@@ -29,12 +30,8 @@ define(['jquery', 'fab/element'],
                 htmlElement.addEventListener('paste', this.handlerPaste.bind(this));
                 htmlElement.addEventListener('keyup', this.handlerKeyup.bind(this));
 
-                if (this.options.bearerToken.status === 200) {
+                if (this.options.apiKey !== '') {
                     htmlElement.addEventListener('focusout', this.handlerFocusOut.bind(this));
-                }
-
-                if (this.options.bearerToken.status !== 200) {
-                    console.log(this.options.bearerToken.message);
                 }
 
                 this.options.mapping = Object.entries(this.options.mapping);
@@ -110,16 +107,15 @@ define(['jquery', 'fab/element'],
                 const divError = this.element.parentNode.parentNode.getElementsByClassName('fabrikErrorMessage')[0];
                 divError.innerHTML = '';
 
-                fetch(this.options.baseUrl + '/entreprises/sirene/' + this.options.propertyToCheck + '/' + value, {
+                fetch(this.options.baseUrl + '/api-sirene/'+this.options.apiVersion+'/' + this.options.propertyToCheck + '/' + value, {
                     method: 'GET',
                     headers: {
                         'Accept': 'application/json',
-                        'Authorization': this.options.bearerToken.data
+                        'X-INSEE-Api-Key-Integration': this.options.apiKey
                     }
                 }).then((response) => {
                     return response.json();
                 }).then((data) => {
-
                     switch (data.header.statut) {
                         case 200:
                             this.resetFields();
