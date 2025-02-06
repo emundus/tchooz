@@ -103,15 +103,3 @@ services:
       - ./.docker/mysql/conf/my.cnf:/etc/mysql/conf.d/my.cnf
       # Uncomment this line to use a custom sql file to init database
       - ./.docker/installation/databases:/docker-entrypoint-initdb.d
-
-  docs:
-    container_name: joomla5_docs
-    build:
-      context: ./.docker/docs
-      dockerfile: Dockerfile
-    image: tchooz-dev-docs:2.0.0
-    ports:
-      - "5173:80"
-    restart: always
-    volumes:
-      - ./public:/var/www/html

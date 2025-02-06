@@ -2,13 +2,6 @@
 .docker/data/*
 docker-compose-*.yml
 
-# VITEPRESS
-public/
-!public/logo.png
-!public/logo_black.png
-!public/favicon.ico
-components/com_emundus/docs/.vitepress/cache/
-
 # PHPDOC
 .phpdoc/
 
