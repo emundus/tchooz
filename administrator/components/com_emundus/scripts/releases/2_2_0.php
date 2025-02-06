@@ -998,7 +998,7 @@ class Release2_2_0Installer extends ReleaseInstaller
 						'config'      => '{}',
 						'icon'        => 'teams.svg',
 						'enabled'     => 0,
-						'published'   => 1,
+						'published'   => 0,
 					];
 					$teams = (object) $teams;
 					$this->db->insertObject('jos_emundus_setup_sync', $teams);
@@ -1057,7 +1057,7 @@ class Release2_2_0Installer extends ReleaseInstaller
 						'config'      => '{}',
 						'icon'        => 'dynamics_365.svg',
 						'enabled'     => 0,
-						'published'   => 1,
+						'published'   => 0,
 					];
 					$microsoft_dynamics = (object) $microsoft_dynamics;
 					$this->db->insertObject('jos_emundus_setup_sync', $microsoft_dynamics);
@@ -1327,7 +1327,7 @@ class Release2_2_0Installer extends ReleaseInstaller
 				$email->message = str_replace('[NAME]', '[APPLICANT_NAME]', $email->message);
 				$this->db->updateObject('#__emundus_setup_emails', $email, 'id');
 			}
-
+			
 			EmundusHelperUpdate::enableEmundusPlugins('emundusrecall','fabrik_cron');
 
 			$query->clear()
@@ -1339,8 +1339,30 @@ class Release2_2_0Installer extends ReleaseInstaller
 				->andWhere($this->db->quoteName('fe.plugin') . ' LIKE ' . $this->db->quote('radiobutton'));
 			$this->db->setQuery($query);
 			$setup_profile_elt = $this->db->loadObject();
-			$setup_profile_elt->plugin = 'yesno';
-			$this->db->updateObject('#__fabrik_elements', $setup_profile_elt, 'id');
+			if(!empty($setup_profile_elt))
+			{
+				$setup_profile_elt->plugin = 'yesno';
+				$this->db->updateObject('#__fabrik_elements', $setup_profile_elt, 'id');
+			}
+
+			// Update default_actions parameter from emundus component
+			$query->clear()
+				->select('extension_id,params')
+				->from($this->db->quoteName('#__extensions'))
+				->where($this->db->quoteName('element') . ' = ' . $this->db->quote('com_emundus'))
+				->where($this->db->quoteName('type') . ' = ' . $this->db->quote('component'));
+			$this->db->setQuery($query);
+			$emundus_component = $this->db->loadObject();
+
+			if(!empty($emundus_component))
+			{
+				$params                    = json_decode($emundus_component->params, true);
+				$params['default_actions'] = '{"1":{"id":1, "c":0, "r":1, "u":0, "d":0}';
+				$emundus_component->params = json_encode($params);
+				$this->db->updateObject('#__extensions', $emundus_component, 'extension_id');
+			}
+
+			EmundusHelperUpdate::installExtension('PLG_FABRIK_FORM_EMUNDUSATTACHMENTPUBLIC', 'emundusattachmentpublic', null, 'plugin', 1, 'fabrik_form');
 
 			$result['status'] = true;
 		}
