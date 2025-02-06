@@ -727,7 +727,7 @@ class EmundusControllerFiles extends BaseController
 		$response = ['status' => false, 'code' => 403, 'msg' => Text::_('BAD_REQUEST')];
 
 		$fnums = $this->input->getString('fnums', null);
-		$tag   = $this->input->get('tag', null);
+		$tag   = (array) $this->input->get('tag', []);
 
 		if (!empty($fnums) && !empty($tag)) {
 			$m_files = $this->getModel('Files');

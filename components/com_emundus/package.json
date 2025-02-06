@@ -27,10 +27,11 @@
     "moment": "^2.30.1",
     "pinia": "^2.3.0",
     "qs": "^6.13.1",
-    "sweetalert2": "^11.15.9",
+    "sweetalert2": "^11.15.10",
     "tip-tap-editor": "https://github.com/emundus/tiptap",
     "uuid": "^11.0.3",
     "v-calendar": "3.1.2",
+    "vitepress-carbon": "^1.5.0",
     "vue": "^3.5.13",
     "vue-draggable-next": "^2.2.1",
     "vue-fusioncharts": "^3.3.0",
@@ -42,13 +43,16 @@
     "@prettier/plugin-php": "^0.22.2",
     "@vitejs/plugin-vue": "^5.2.1",
     "@vue/compiler-sfc": "^3.5.13",
+    "@vueuse/core": "^12.5.0",
     "eslint": "^8.46.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.3",
     "eslint-plugin-vue": "^9.27.0",
+    "mermaid": "^11.4.0",
     "prettier": "^3.3.2",
     "vite": "^6.0.7",
-    "vitepress": "^1.3.1"
+    "vitepress": "^1.6.3",
+    "vitepress-plugin-mermaid": "^2.0.17"
   },
   "postcss": {
     "plugins": {

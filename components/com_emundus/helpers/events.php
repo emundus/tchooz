@@ -1936,9 +1936,12 @@ class EmundusHelperEvents
 						}
 					}
 				}
-			}
 
-			Factory::getApplication()->redirect('/index.php?option=com_fabrik&view=form&formid='.$params['data']['formid'].'&rowid='.$params['data']['jos_emundus_setup_programmes___id'].'&tmpl=component&iframe=1');
+				if (!empty($params['data']) && !empty($params['data']['formid']))
+				{
+					Factory::getApplication()->redirect('/index.php?option=com_fabrik&view=form&formid=' . $params['data']['formid'] . '&rowid=' . $params['data']['jos_emundus_setup_programmes___id'] . '&tmpl=component&iframe=1');
+				}
+			}
 
 			return true;
 		}

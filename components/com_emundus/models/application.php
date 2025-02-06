@@ -221,6 +221,8 @@ class EmundusModelApplication extends ListModel
 
 			if (!empty($profile)) {
 				$query->leftJoin($this->_db->quoteName('#__emundus_setup_attachment_profiles', 'esap') . ' ON ' . $this->_db->quoteName('esa.id') . ' = ' . $this->_db->quoteName('esap.attachment_id') . ' AND ' . $this->_db->quoteName('esap.profile_id') . ' = ' . $this->_db->quote($profile));
+			} else {
+				$query->leftJoin($this->_db->quoteName('#__emundus_setup_attachment_profiles', 'esap') . ' ON ' . $this->_db->quoteName('esa.id') . ' = ' . $this->_db->quoteName('esap.attachment_id'));
 			}
 			$query->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->quoteName('esc.id') . ' = ' . $this->_db->quoteName('eu.campaign_id'))
 				->where($this->_db->quoteName('eu.fnum') . ' LIKE ' . $this->_db->quote($fnum))
@@ -236,16 +238,13 @@ class EmundusModelApplication extends ListModel
 					. ' OR ' . $this->_db->quoteName('eu.timedate') . ' LIKE ' . $this->_db->quote('%' . $search . '%'));
 			}
 
-			if (!empty($profile)) {
-				$query->order($this->_db->quoteName('esap.mandatory') . ' DESC, ' . $this->_db->quoteName('esap.ordering') . ', ' . $this->_db->quoteName('esa.value') . ' ASC');
-			}
-			else {
-				$query->order($this->_db->quoteName('eu.modified') . ' DESC');
-			}
+			$query->order($this->_db->quoteName('esap.mandatory') . ' DESC, ' . $this->_db->quoteName('esap.ordering') . ', ' . $this->_db->quoteName('esa.value') . ' ASC');
 
 			if($applicant) {
 				$query->andWhere($this->_db->quoteName('eu.can_be_viewed') . ' = 1');
 			}
+
+			$query->group('eu.id');
 
 			try {
 				$this->_db->setQuery($query);

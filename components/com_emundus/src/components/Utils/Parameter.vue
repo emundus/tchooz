@@ -25,8 +25,8 @@
          :class="{'input-split-field': parameter.splitField,'input-split-field-select': parameter.splitField && parameter.secondParameterType === 'select','tw-gap-2': parameter.splitField && parameter.secondParameterType !== 'select'}"
     >
       <!-- ICON -->
-      <div>
-        <span v-if="parameter.icon" :title="translate(parameter.label)"
+      <div v-if="parameter.icon">
+        <span :title="translate(parameter.label)"
               class="material-symbols-outlined tw-mr-2 tw-text-neutral-900">{{ parameter.icon }}</span>
       </div>
 

@@ -3730,7 +3730,7 @@ class EmundusModelFiles extends JModelLegacy
 
 			// Finally, select all groups associated to the file by its program
 			$query->clear()
-				->select(array($this->_db->quoteName('jecc.fnum'), $this->_db->quoteName('jesg.id'), 'GROUP_CONCAT(' . $this->_db->quoteName('jesg.label') . ' ORDER BY ' . $this->_db->quoteName('jesg.id') . ' DESC) as label', 'GROUP_CONCAT(' . $this->_db->quoteName('jesg.class') . ' ORDER BY ' . $this->_db->quoteName('jesg.id') . ' DESC) as class'))
+				->select(array($this->_db->quoteName('jecc.fnum'), $this->_db->quoteName('jesg.id'), 'GROUP_CONCAT(' . $this->_db->quoteName('jesg.label') . ' ORDER BY ' . $this->_db->quoteName('jesg.id') . ' DESC SEPARATOR "|") as label', 'GROUP_CONCAT(' . $this->_db->quoteName('jesg.class') . ' ORDER BY ' . $this->_db->quoteName('jesg.id') . ' DESC SEPARATOR "|") as class'))
 				->from($this->_db->quoteName('#__emundus_campaign_candidature', 'jecc'))
 				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'jesc') . ' ON ' . $this->_db->quoteName('jesc.id') . ' = ' . $this->_db->quoteName('jecc.campaign_id'))
 				->leftJoin($this->_db->quoteName('#__emundus_setup_programmes', 'jesp') . ' ON ' . $this->_db->quoteName('jesp.code') . ' = ' . $this->_db->quoteName('jesc.training'))
@@ -3747,8 +3747,8 @@ class EmundusModelFiles extends JModelLegacy
 
 			// Write the code to show the results to the user
 			foreach ($res as $r) {
-				$group_labels = explode(',', $r['label']);
-				$class_labels = explode(',', $r['class']);
+				$group_labels = explode('|', $r['label']);
+				$class_labels = explode('|', $r['class']);
 				foreach ($group_labels as $key => $g_label) {
 					$assocTagcampaign = '<div class="tw-flex tw-items-center tw-gap-2"><span class="circle '.$class_labels[$key].'" id="'.$r['id'].'"></span><span id="'.$r['id'].'" class="tw-truncate tw-w-[200px] tw-text-sm">'.$g_label.'</span></div>';
 					$access[$r['fnum']] .= $assocTagcampaign;

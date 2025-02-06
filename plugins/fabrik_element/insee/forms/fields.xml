@@ -18,7 +18,6 @@
 	<fields name="params">
 		<fieldset name="plg-element-insee-params" label="COM_FABRIK_ADVANCED">
 			<field name="insee_api_base_url" type="text" label="PLG_ELEMENT_INSEE_BASE_URL" default="https://api.insee.fr"/>
-			<field name="insee_api_consumer_key" type="text" label="PLG_ELEMENT_INSEE_CONSUMER_KEY"/>
 			<field name="insee_api_consumer_secret" type="text" label="PLG_ELEMENT_INSEE_CONSUMER_SECRET"/>
 
 			<field name="insee_property_to_check"

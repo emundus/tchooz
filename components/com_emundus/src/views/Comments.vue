@@ -69,7 +69,7 @@
           <div v-if="editable != comment.id" class="file-comment-header-right tw-ease-in-out tw-duration-300 tw-opacity-0 group-hover:tw-opacity-100 tw-flex tw-flex-row">
             <span class="material-symbols-outlined tw-cursor-pointer" @click="replyToComment(comment.id)">reply</span>
             <span v-if="access.d || comment.user_id == user" class="material-symbols-outlined tw-cursor-pointer em-red-500-color" @click="deleteComment(comment.id)">delete</span>
-            <span v-if="access.u || (access.c && comment.user_id == user)" class="material-symbols-outlined tw-cursor-pointer" @click="makeCommentEditable(comment.id)">edit</span>
+            <span v-if="access.c && comment.user_id == user" class="material-symbols-outlined tw-cursor-pointer" @click="makeCommentEditable(comment.id)">edit</span>
           </div>
         </div>
         <i v-if="comment.updated_by > 0" class="tw-text-xs em-gray-color tw-mt-3">{{ translate('COM_EMUNDUS_COMMENTS_EDITED') }}</i>

@@ -2,13 +2,6 @@
 .docker/data/*
 docker-compose-*.yml
 
-# VITEPRESS
-public/
-!public/logo.png
-!public/logo_black.png
-!public/favicon.ico
-components/com_emundus/docs/.vitepress/cache/
-
 # PHPDOC
 .phpdoc/
 
@@ -178,3 +171,6 @@ plugins/user/minioragejoomlaidp/
 
 # SCP
 administrator/components/com_securitycheckpro/scans/update_vuln_table.php
+
+# HIKASHOP
+media/com_hikashop/upload/safe/logs/

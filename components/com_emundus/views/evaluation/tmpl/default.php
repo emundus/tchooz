@@ -166,7 +166,7 @@ if ($this->open_file_in_modal) {
             <div id="em-files"
                  component="ApplicationSingle"
                  context="files"
-                 user="<?= $this->user->id; ?>"
+                 user="<?= $this->_user->id; ?>"
                  ratio="<?= $this->modal_ratio; ?>"
                  type="evaluation"
                  base="<?= JURI::base(); ?>"

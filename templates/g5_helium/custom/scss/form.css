@@ -298,7 +298,6 @@
         }
 
         /** AUTOCOMPLETE **/
-
         .dropdown-menu:not(#userDropdownMenu) {
             padding: 0;
 
@@ -309,8 +308,6 @@
                     background-color: var(--transparent) !important;
                     color: var(--neutral-900);
                     text-decoration: none;
-                    word-break: break-all;
-                    white-space: break-spaces;
                 }
 
                 &:hover {
