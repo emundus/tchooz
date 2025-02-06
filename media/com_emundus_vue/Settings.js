@@ -409,7 +409,7 @@ const _hoisted_14$4 = {
   class: "tw-mt-7 tw-flex tw-items-end tw-gap-2"
 };
 const _hoisted_15$4 = { class: "tw-flex tw-gap-1 tw-mb-3" };
-const _hoisted_16$3 = { class: "tw-flex tw-justify-between tw-mt-7" };
+const _hoisted_16$4 = { class: "tw-flex tw-justify-between tw-mt-7" };
 const _hoisted_17$3 = ["disabled"];
 const _hoisted_18$3 = ["disabled"];
 const _hoisted_19$3 = {
@@ -514,7 +514,7 @@ function _sfc_render$k(_ctx, _cache, $props, $setup, $data, $options) {
             createBaseVNode("span", null, toDisplayString($data.default_mail_from_server), 1)
           ])
         ])),
-        createBaseVNode("div", _hoisted_16$3, [
+        createBaseVNode("div", _hoisted_16$4, [
           createBaseVNode("button", {
             type: "button",
             disabled: $options.disabledSubmit,
@@ -1566,7 +1566,7 @@ const _hoisted_15$3 = {
   key: 1,
   class: "material-symbols-outlined tw-text-red-600"
 };
-const _hoisted_16$2 = { class: "tw-flex tw-gap-2 tw-items-center tw-mt-1" };
+const _hoisted_16$3 = { class: "tw-flex tw-gap-2 tw-items-center tw-mt-1" };
 const _hoisted_17$2 = {
   key: 0,
   class: "material-symbols-outlined tw-text-green-500"
@@ -1692,7 +1692,7 @@ function _sfc_render$f(_ctx, _cache, $props, $setup, $data, $options) {
                   style: normalizeStyle({ backgroundColor: $data.primary, borderColor: $data.primary })
                 }, toDisplayString(_ctx.translate("COM_EMUNDUS_SETTINGS_ACCESSIBILITY_DETAILS_LOGIN_TEXT")), 5)
               ]),
-              createBaseVNode("div", _hoisted_16$2, [
+              createBaseVNode("div", _hoisted_16$3, [
                 $data.contrastSecondary.AA === "pass" ? (openBlock(), createElementBlock("span", _hoisted_17$2, "check_circle")) : createCommentVNode("", true),
                 $data.contrastSecondary.AA === "fail" ? (openBlock(), createElementBlock("span", _hoisted_18$2, "highlight_off")) : createCommentVNode("", true),
                 createBaseVNode("button", {
@@ -2587,7 +2587,7 @@ const _hoisted_12$2 = { key: 0 };
 const _hoisted_13$2 = { key: 1 };
 const _hoisted_14$2 = { class: "em-style-options tw-mb-8" };
 const _hoisted_15$2 = { class: "tw-flex tw-items-center" };
-const _hoisted_16$1 = { class: "em-text-neutral-800 tw-flex tw-items-center tw-mb-2" };
+const _hoisted_16$2 = { class: "em-text-neutral-800 tw-flex tw-items-center tw-mb-2" };
 const _hoisted_17$1 = { class: "tw-text-neutral-700" };
 const _hoisted_18$1 = { class: "tw-text-neutral-700" };
 const _hoisted_19$1 = {
@@ -2696,7 +2696,7 @@ function _sfc_render$c(_ctx, _cache, $props, $setup, $data, $options) {
       createBaseVNode("div", _hoisted_14$2, [
         createBaseVNode("div", _hoisted_15$2, [
           createBaseVNode("div", null, [
-            createBaseVNode("h4", _hoisted_16$1, [
+            createBaseVNode("h4", _hoisted_16$2, [
               createTextVNode(toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ICON")) + " ", 1),
               createBaseVNode("span", {
                 class: "material-symbols-outlined tw-ml-1 tw-text-base tw-cursor-pointer tw-text-neutral-600",
@@ -2923,7 +2923,7 @@ const _hoisted_12$1 = {
 const _hoisted_13$1 = { key: 1 };
 const _hoisted_14$1 = { class: "tw-mb-8 em-neutral-100-box em-p-24" };
 const _hoisted_15$1 = { class: "tw-justify-between tw-mt-4 em-grid-50" };
-const _hoisted_16 = { class: "tw-text-neutral-700" };
+const _hoisted_16$1 = { class: "tw-text-neutral-700" };
 const _hoisted_17 = { class: "tw-text-right" };
 const _hoisted_18 = ["value"];
 const _hoisted_19 = ["onClick"];
@@ -2978,7 +2978,7 @@ function _sfc_render$b(_ctx, _cache, $props, $setup, $data, $options) {
           }, [
             createBaseVNode("div", _hoisted_14$1, [
               createBaseVNode("div", _hoisted_15$1, [
-                createBaseVNode("p", _hoisted_16, toDisplayString(translation.override), 1),
+                createBaseVNode("p", _hoisted_16$1, toDisplayString(translation.override), 1),
                 createBaseVNode("div", _hoisted_17, [
                   createBaseVNode("input", {
                     class: "mb-0 em-input tw-w-full",
@@ -4494,7 +4494,10 @@ const _sfc_main$2 = {
     }
   }
 };
-const _hoisted_1$2 = { class: "em-grid-3-2-1" };
+const _hoisted_1$2 = {
+  key: 0,
+  class: "em-grid-3-2-1"
+};
 const _hoisted_2$2 = { class: "tw-flex tw-flex-col tw-justify-between tw-w-full tw-font-medium rtl:tw-text-right tw-text-black tw-border tw-border-neutral-300 tw-rounded-[15px] tw-bg-white tw-mb-6 tw-gap-3 tw-p-4" };
 const _hoisted_3$2 = { class: "tw-flex tw-items-center tw-justify-between" };
 const _hoisted_4$2 = ["src", "alt"];
@@ -4510,17 +4513,18 @@ const _hoisted_10 = { key: 0 };
 const _hoisted_11 = ["onClick"];
 const _hoisted_12 = { key: 1 };
 const _hoisted_13 = ["onClick"];
-const _hoisted_14 = { key: 0 };
-const _hoisted_15 = {
-  key: 1,
+const _hoisted_14 = { key: 1 };
+const _hoisted_15 = { key: 2 };
+const _hoisted_16 = {
+  key: 3,
   class: "em-page-loader"
 };
 function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_TeamsSetup = resolveComponent("TeamsSetup");
   const _component_DynamicsSetup = resolveComponent("DynamicsSetup");
   return openBlock(), createElementBlock("div", null, [
-    createBaseVNode("div", _hoisted_1$2, [
-      !$data.currentApp ? (openBlock(true), createElementBlock(Fragment, { key: 0 }, renderList($data.apps, (app) => {
+    !$data.currentApp && $data.apps.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_1$2, [
+      (openBlock(true), createElementBlock(Fragment, null, renderList($data.apps, (app) => {
         return openBlock(), createElementBlock("div", _hoisted_2$2, [
           createBaseVNode("div", _hoisted_3$2, [
             createBaseVNode("img", {
@@ -4564,14 +4568,16 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
             ], 8, _hoisted_13)
           ]))
         ]);
-      }), 256)) : createCommentVNode("", true)
-    ]),
-    $data.currentApp ? (openBlock(), createElementBlock("div", _hoisted_14, [
+      }), 256))
+    ])) : !$data.currentApp ? (openBlock(), createElementBlock("div", _hoisted_14, _cache[5] || (_cache[5] = [
+      createBaseVNode("h2", null, "Aucune app dispo.", -1)
+    ]))) : createCommentVNode("", true),
+    $data.currentApp ? (openBlock(), createElementBlock("div", _hoisted_15, [
       createBaseVNode("div", {
         class: "tw-flex tw-items-center tw-gap-1 tw-cursor-pointer tw-mb-2",
         onClick: _cache[0] || (_cache[0] = ($event) => $data.currentApp = null)
       }, [
-        _cache[5] || (_cache[5] = createBaseVNode("span", { class: "material-symbols-outlined tw-text-neutral-900" }, "arrow_back", -1)),
+        _cache[6] || (_cache[6] = createBaseVNode("span", { class: "material-symbols-outlined tw-text-neutral-900" }, "arrow_back", -1)),
         createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADD_RETOUR")), 1)
       ]),
       $data.currentApp.type === "teams" ? (openBlock(), createBlock(_component_TeamsSetup, {
@@ -4590,7 +4596,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
         })
       }, null, 8, ["app"])) : createCommentVNode("", true)
     ])) : createCommentVNode("", true),
-    $data.loading ? (openBlock(), createElementBlock("div", _hoisted_15)) : createCommentVNode("", true)
+    $data.loading ? (openBlock(), createElementBlock("div", _hoisted_16)) : createCommentVNode("", true)
   ]);
 }
 const Integration = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2]]);
@@ -4808,7 +4814,17 @@ const _sfc_main = {
     };
   },
   created() {
-    this.menusList = menus;
+    let menusToDisplay = menus;
+    settingsService.getApps().then((response) => {
+      if (response.data.length === 0) {
+        for (const menu of menusToDisplay) {
+          if (menu.name === "integration") {
+            menusToDisplay.splice(menusToDisplay.indexOf(menu), 1);
+          }
+        }
+      }
+      this.menusList = menusToDisplay;
+    });
   },
   mounted() {
     if (sessionStorage.getItem("goToMenu")) {
@@ -4918,7 +4934,7 @@ const _sfc_main = {
 };
 const _hoisted_1 = { class: "tw-w-full tw-flex tw-gap-8" };
 const _hoisted_2 = {
-  key: 0,
+  key: 1,
   class: "tw-overflow-hidden tw-w-full tw-pt-6 tw-pr-8 tw-pb-3 tw-pl-0"
 };
 const _hoisted_3 = { class: "tw-text-2xl tw-pl-1 tw-font-semibold tw-text-profile-full tw-mb-3" };
@@ -4929,7 +4945,7 @@ const _hoisted_5 = {
 };
 const _hoisted_6 = { key: 2 };
 const _hoisted_7 = {
-  key: 1,
+  key: 2,
   class: "em-page-loader"
 };
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
@@ -4937,13 +4953,13 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_SettingsContent = resolveComponent("SettingsContent");
   const _component_SectionComponent = resolveComponent("SectionComponent");
   return openBlock(), createElementBlock("div", _hoisted_1, [
-    (openBlock(), createBlock(_component_SidebarMenu, {
+    _ctx.menusList.length > 0 ? (openBlock(), createBlock(_component_SidebarMenu, {
       key: _ctx.keyMenu,
       "menus-list": _ctx.menusList,
       id: "settings_menus",
       onListMenus: $options.GetList,
       onMenuSelected: $options.handleMenu
-    }, null, 8, ["menus-list", "onListMenus", "onMenuSelected"])),
+    }, null, 8, ["menus-list", "onListMenus", "onMenuSelected"])) : createCommentVNode("", true),
     _ctx.activeMenuItem ? (openBlock(), createElementBlock("div", _hoisted_2, [
       createBaseVNode("h1", _hoisted_3, [
         createBaseVNode("span", _hoisted_4, toDisplayString(_ctx.activeMenuItem.icon), 1),

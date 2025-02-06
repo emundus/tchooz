@@ -1,6 +1,6 @@
 <template>
   <div class="tw-w-full tw-flex tw-gap-8">
-    <SidebarMenu :key="keyMenu" :menus-list="menusList" :id="'settings_menus'" @listMenus="GetList" @menuSelected="handleMenu"/>
+    <SidebarMenu v-if="menusList.length > 0" :key="keyMenu" :menus-list="menusList" :id="'settings_menus'" @listMenus="GetList" @menuSelected="handleMenu"/>
 
     <div class="tw-overflow-hidden tw-w-full tw-pt-6 tw-pr-8 tw-pb-3 tw-pl-0" v-if="activeMenuItem">
       <h1 class="tw-text-2xl tw-pl-1 tw-font-semibold tw-text-profile-full tw-mb-3">
@@ -49,6 +49,7 @@ import Swal from "sweetalert2";
 
 import { useSettingsStore } from "@/stores/settings.js";
 import menus from '@/assets/data/settings/menus.js'
+import settingsService from "@/services/settings.js";
 
 export default {
   name: "globalSettings",
@@ -110,7 +111,20 @@ export default {
     }
   },
   created() {
-    this.menusList = menus;
+    let menusToDisplay = menus;
+
+    settingsService.getApps().then(response => {
+      if(response.data.length === 0) {
+        //Remove the Integration menu if there are no apps
+        for(const menu of menusToDisplay) {
+          if(menu.name === 'integration') {
+            menusToDisplay.splice(menusToDisplay.indexOf(menu), 1);
+          }
+        }
+      }
+
+      this.menusList = menusToDisplay;
+    });
   },
   mounted() {
     if(sessionStorage.getItem('goToMenu')) {

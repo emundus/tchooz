@@ -38,8 +38,8 @@ export default {
 
 <template>
   <div>
-    <div class="em-grid-3-2-1">
-      <div v-if="!currentApp" v-for="app in apps" class="tw-flex tw-flex-col tw-justify-between tw-w-full tw-font-medium rtl:tw-text-right tw-text-black tw-border tw-border-neutral-300 tw-rounded-[15px] tw-bg-white tw-mb-6 tw-gap-3 tw-p-4">
+    <div class="em-grid-3-2-1" v-if="!currentApp && apps.length > 0">
+      <div v-for="app in apps" class="tw-flex tw-flex-col tw-justify-between tw-w-full tw-font-medium rtl:tw-text-right tw-text-black tw-border tw-border-neutral-300 tw-rounded-[15px] tw-bg-white tw-mb-6 tw-gap-3 tw-p-4">
         <div class="tw-flex tw-items-center tw-justify-between">
           <img class="tw-w-[45px]" :src="'/images/emundus/icons/'+app.icon" :alt="app.type" />
           <div class="tw-flex tw-items-center" v-if="app.config !== '{}'">
@@ -70,8 +70,11 @@ export default {
             <span>{{ translate('COM_EMUNDUS_SETTINGS_INTEGRATION_UPDATE') }}</span>
           </button>
         </div>
-
       </div>
+    </div>
+
+    <div v-else-if="!currentApp">
+      <h2>Aucune app dispo.</h2>
     </div>
 
     <div v-if="currentApp">
