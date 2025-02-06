@@ -247,6 +247,8 @@ class EmundusModelApplication extends ListModel
 				$query->andWhere($this->_db->quoteName('eu.can_be_viewed') . ' = 1');
 			}
 
+			$query->group('eu.id');
+
 			try {
 				$this->_db->setQuery($query);
 				$attachments = $this->_db->loadObjectList();
