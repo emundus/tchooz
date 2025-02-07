@@ -385,7 +385,7 @@ requirejs(['fab/fabrik'], function () {
                                             elt.element.dispatchEvent(event);
                                         }
                                     } else if (['set_optional', 'set_mandatory']) {
-                                        let required_icon = document.querySelector('label[for="' + id + '"] span.material-icons');
+                                        let required_icon = document.querySelector('label[for="' + id + '"] span.material-symbols-outlined');
                                         if (required_icon) {
                                             if (action.action == 'set_optional') {
                                                 required_icon.style.display = 'none';
@@ -465,7 +465,7 @@ requirejs(['fab/fabrik'], function () {
                                             elt.element.dispatchEvent(event);
                                         }
                                     } else if (['set_optional', 'set_mandatory']) {
-                                        let required_icon = document.querySelector('label[for="' + id + '"] span.material-icons');
+                                        let required_icon = document.querySelector('label[for="' + id + '"] span.material-symbols-outlined');
                                         if (required_icon) {
                                             if (opposite_action == 'set_optional') {
                                                 required_icon.style.display = 'none';
