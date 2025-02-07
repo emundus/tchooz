@@ -649,17 +649,17 @@ class EmundusModelEmails extends JModelList
 				$patterns[] = '/\[CAMPAIGN_LABEL\]/';
 				$replacements[] = $fnumInfos['label'];
 			}
+		}
 
-			if (isset($post)) {
-				foreach ($post as $key => $value) {
-					$constant_key = array_search('/\[' . $key . '\]/', $patterns);
-					if ($constant_key !== false) {
-						$replacements[$constant_key] = $value;
-					}
-					else {
-						$patterns[]     = '/\[' . $key . '\]/';
-						$replacements[] = $value;
-					}
+		if (isset($post)) {
+			foreach ($post as $key => $value) {
+				$constant_key = array_search('/\[' . $key . '\]/', $patterns);
+				if ($constant_key !== false) {
+					$replacements[$constant_key] = $value;
+				}
+				else {
+					$patterns[]     = '/\[' . $key . '\]/';
+					$replacements[] = $value;
 				}
 			}
 		}
