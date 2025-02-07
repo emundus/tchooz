@@ -27,6 +27,7 @@
 
 			<field name="attachmentId"
 				   type="text"
+				   required="true"
 				   class="input-mini"
 				   description="PLG_ELEMENT_EMUNDUS_FILEUPLOAD_ATTACHID_DESC"
 				   label="PLG_ELEMENT_EMUNDUS_FILEUPLOAD_ATTACHID_LABEL"

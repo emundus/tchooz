@@ -61,7 +61,7 @@
     <field name="ordering">2</field>
     <field name="published">1</field>
     <field name="bank_needed" value_is_null="true"></field>
-    <field name="duplicate">1</field>
+    <field name="duplicate">0</field>
     <field name="has_sample">1</field>
     <field name="sample_filepath" value_is_null="true"></field>
    </row>
