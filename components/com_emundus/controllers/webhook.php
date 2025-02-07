@@ -83,9 +83,10 @@ class EmundusControllerWebhook extends BaseController
 
 			$payload       = !empty($_POST["payload"]) ? $_POST["payload"] : file_get_contents("php://input");
 			$webhook_datas = json_decode($payload, true);
+			$webhook_files = !empty($_FILES) ? $_FILES : null;
 
 			JPluginHelper::importPlugin('emundus', 'custom_event_handler');
-			$return = \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onWebhookCallbackProcess', ['webhook_datas' => $webhook_datas, 'type' => $type]]);
+			$return = \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onWebhookCallbackProcess', ['webhook_datas' => $webhook_datas, 'type' => $type, 'webhook_files' => $webhook_files]]);
 
 			$result = $return[0]['onWebhookCallbackProcess'];
 		}
