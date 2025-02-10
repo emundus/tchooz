@@ -625,11 +625,8 @@ class EmundusModelTranslations extends JModelList
 			$tag = $this->generateNewTag($tag, $reference_table, $reference_id);
 		}
 
-		error_log($tag);
-
-
 		$query = $this->_db->getQuery(true);
-		$user  = JFactory::getUser();
+		$user  = Factory::getApplication()->getIdentity();
 
 		$location = $lang_code . '.override.ini';
 
