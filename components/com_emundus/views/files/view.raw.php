@@ -117,7 +117,7 @@ class EmundusViewFiles extends JViewLegacy
 
 		$h_files = new EmundusHelperFiles;
 		$params               = JComponentHelper::getParams('com_emundus');
-		$default_actions      = $params->get('default_actions', 0);
+		$default_actions      = $params->get('default_actions', '[]');
 		$hide_default_actions = $params->get('hide_default_actions', 0);
 
 		$this->itemId = $this->app->input->getInt('Itemid', null);
@@ -148,6 +148,9 @@ class EmundusViewFiles extends JViewLegacy
 				$evalGroups         = $m_files->getEvalGroups();
 				$actions            = $m_files->getAllActions();
 				$actions_evaluators = json_decode($default_actions);
+				if (empty($actions_evaluators)) {
+					$actions_evaluators = (object) [1 => (object) ["id" => 1, "c" => 0, "r" => 1, "u" => 0, "d" => 0]];
+				}
 
 				$this->groups               = $evalGroups['groups'];
 				$this->groupFnum            = $groupFnum;
