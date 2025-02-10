@@ -704,13 +704,22 @@ class EmundusFiltersFiles extends EmundusFilters
 				$workflow_data = $m_workflow->getWorkflow($workflow->id);
 
 				if (!empty($workflow_data['steps'])) {
+					$steps_selected = [];
 					foreach($workflow_data['steps'] as $step) {
 						if ($m_workflow->isEvaluationStep($step->type)) {
 							$action_id = $m_workflow->getStepAssocActionId($step->id);
 							if (EmundusHelperAccess::asAccessAction($action_id, 'r', $this->user->id) || EmundusHelperAccess::asAccessAction($action_id, 'c', $this->user->id)) {
 								$steps[] = ['value' => $step->id, 'label' => $workflow->label . ' - ' . $step->label];
+
+								if (EmundusHelperAccess::asAccessAction($action_id, 'c', $this->user->id)) {
+									$steps_selected[] = $step->id;
+								}
 							}
 						}
+					}
+
+					if (!empty($steps_selected) && sizeof($steps) != $steps_selected) {
+						$values_selected = $steps_selected;
 					}
 				}
 			}
