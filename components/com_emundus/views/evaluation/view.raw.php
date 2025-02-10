@@ -323,16 +323,24 @@ class EmundusViewEvaluation extends JViewLegacy
 								continue;
 							}
 							elseif ($key == 'evaluator' && $show_evaluator) {
-
 								if ($current_row_form > 0 && !empty($value)) {
+									$action_id = 5;
+									if (isset($user['evaluations_step_id'])) {
+										$step_data = $m_workflow->getStepData($user['evaluations_step_id']);
+
+										if (!empty($step_data)) {
+											$action_id = $step_data->action_id;
+										}
+									}
+
 									$link_view = '';
 									$link_edit = '';
 
-									if ($evaluators_can_see_other_eval || EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id)) {
+									if ($evaluators_can_see_other_eval || EmundusHelperAccess::asAccessAction($action_id, 'r', $this->_user->id)) {
 										$link_view = '<a href="' . $form_url_view . $user['evaluation_id'] . '" target="_blank" data-remote="' . $form_url_view . $user['evaluation_id'] . '" id="em_form_eval_' . $i . '-' . $user['evaluation_id'] . '"><span class="material-symbols-outlined tw-cursor-pointer" title="' . Text::_('COM_EMUNDUS_DETAILS') . '">visibility</span></a>';
 									}
 
-									if (EmundusHelperAccess::asAccessAction(5, 'u', $this->_user->id)) {
+									if (EmundusHelperAccess::asAccessAction($action_id, 'u', $this->_user->id) || (EmundusHelperAccess::asAccessAction($action_id, 'c', $this->_user->id) && $user['evaluator_id'] == $this->_user->id)) {
 										$link_edit = '<a href="' . $this->form_url_edit . $user['evaluation_id'] . '" target="_blank"><span class="material-symbols-outlined tw-cursor-pointer" title="' . Text::_('COM_EMUNDUS_ACTIONS_EDIT') . '">edit</span></a>';
 									}
 
