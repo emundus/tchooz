@@ -34,7 +34,7 @@ class EmundusModelFormbuilder extends JModelList
 		parent::__construct($config);
 
 		$this->app = Factory::getApplication();
-		$this->db = Factory::getDbo();
+		$this->db = Factory::getContainer()->get('DatabaseDriver');
 
 
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'translations.php');
@@ -1632,7 +1632,7 @@ class EmundusModelFormbuilder extends JModelList
 							$sub_labels = [];
 
 							$sub_labels[] = strtoupper('sublabel_' . $gid . '_' . $elementId . '_0');
-							$sub_values[] = 1;
+							$sub_values[] = 0;
 							$labels       = array(
 								'fr' => 'Option 1',
 								'en' => 'Option 1'
@@ -2111,7 +2111,7 @@ class EmundusModelFormbuilder extends JModelList
 					}
 
 					if(!empty($element['params']['database_join_exclude'])) {
-						preg_match_all("/\border by\b(.*)/i", $element['params']['database_join_where_sql'], $order_by, PREG_SET_ORDER, 0);
+                        preg_match_all("/\bORDER BY\b(.*)/i", $element['params']['database_join_where_sql'], $order_by, PREG_SET_ORDER, 0);
 						if(!empty($order_by)) {
 							$order_by = $order_by[0][0];
 						}
@@ -2122,30 +2122,32 @@ class EmundusModelFormbuilder extends JModelList
 							$ids_to_exclude[] = $exclude['value'];
 						}
 
-						if(stripos($element['params']['database_join_where_sql'], 'where') !== false)
+                        if(stripos($element['params']['database_join_where_sql'], 'WHERE') !== false)
 						{
-							$element['params']['database_join_where_sql'] = preg_replace('/\bwhere(.*) not in\b(.*)/ig', '', $element['params']['database_join_where_sql']);
+                            $element['params']['database_join_where_sql'] = preg_replace('/\bWHERE(.*) NOT IN\b(.*)/i', '', $element['params']['database_join_where_sql']);
 							if(empty($element['params']['database_join_where_sql'])) {
 								$element['params']['database_join_where_sql'] = 'WHERE {thistable}.' . $element['params']['join_key_column'] . ' NOT IN (' . implode(',',$this->db->quote($ids_to_exclude)) . ')';
 							} else {
-								$element['params']['database_join_where_sql'] .= ' AND {thistable}.' . $element['params']['join_key_column'] . ' NOT IN (' . implode(',',$this->db->quote($ids_to_exclude)) . ')';
+								$element['params']['database_join_where_sql'] .= 'AND {thistable}.' . $element['params']['join_key_column'] . ' NOT IN (' . implode(',',$this->db->quote($ids_to_exclude)) . ')';
 							}
 						} else {
 							$element['params']['database_join_where_sql'] .= 'WHERE {thistable}.' . $element['params']['join_key_column'] . ' NOT IN (' . implode(',',$this->db->quote($ids_to_exclude)) . ')';
 						}
 					} else {
-						$element['params']['database_join_where_sql'] = preg_replace('/\bwhere(.*) not in\b(.*)/ig', '', $element['params']['database_join_where_sql']);
+						$element['params']['database_join_where_sql'] = preg_replace('/\bWHERE(.*) NOT IN\b(.*)/i', '', $element['params']['database_join_where_sql']);
 					}
 
-					if(strpos($element['params']['database_join_where_sql'], 'order by') !== false)
+                    $order_by_column = !empty($element['params']['join_val_column']) ? $element['params']['join_val_column'] : $element['params']['join_key_column'];
+
+					if(stripos($element['params']['database_join_where_sql'], 'order by') !== false)
 					{
-						preg_replace('/\border by\b(.*)/i', 'order by {thistable}.' . $element['params']['join_key_column'], $element['params']['database_join_where_sql']);
+                        preg_replace('/\bORDER BY\b(.*)/i', 'ORDER BY {thistable}.' . $order_by_column, $element['params']['database_join_where_sql']);
 					} else {
 						if(!empty($element['params']['database_join_where_sql']))
 						{
-							$element['params']['database_join_where_sql'] .= ' order by {thistable}.' . $element['params']['join_key_column'];
+							$element['params']['database_join_where_sql'] .= ' order by {thistable}.' . $order_by_column;
 						} else {
-							$element['params']['database_join_where_sql'] .= 'order by {thistable}.' . $element['params']['join_key_column'];
+							$element['params']['database_join_where_sql'] .= 'order by {thistable}.' . $order_by_column;
 						}
 					}
 				}

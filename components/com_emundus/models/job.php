@@ -359,4 +359,8 @@ class EmundusModelJob extends JModelItem
 		}
 	}
 
+	public function getItem($pk = null)
+	{
+		// TODO: Implement getItem() method.
+	}
 }

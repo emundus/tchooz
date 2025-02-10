@@ -1,8 +1,15 @@
 <template>
   <div :id="id" class="popover-container" style="height: 20px" @focusout="onFocusOut">
-    <span class="material-symbols-outlined popover-toggle-btn tw-cursor-pointer" @click="onClickToggle"> {{ icon }} </span>
+    <button @click="onClickToggle" class="tw-btn-primary !tw-w-auto tw-flex tw-items-center tw-gap-1" v-if="button">
+      {{ button }}
+      <span class="material-symbols-outlined popover-toggle-btn tw-cursor-pointer"> {{ icon }} </span>
+    </button>
+    <span v-else @click="onClickToggle" class="material-symbols-outlined popover-toggle-btn tw-cursor-pointer"> {{
+        icon
+      }} </span>
     <transition name="fade">
-      <div v-show="isOpen" class="popover-content tw-shadow tw-rounded" ref="popoverContent" :id="'popover-content-'+id" :style="popoverContentStyle">
+      <div v-show="isOpen" class="popover-content tw-shadow tw-rounded-coordinator" ref="popoverContent" :id="'popover-content-'+id"
+           :style="popoverContentStyle">
         <slot></slot>
       </div>
     </transition>
@@ -16,6 +23,10 @@ export default {
     icon: {
       type: String,
       default: 'more_vert'
+    },
+    button: {
+      type: String,
+      default: ''
     },
     position: {
       type: String,
@@ -55,27 +66,32 @@ export default {
 
         // set position of popover content
         switch (this.position) {
-        case 'top':
-          // center popover content and make it appear above the toggle button
-          popoverContentContainer.style.left = `calc(50% - ${popoverContentWidth / 2}px)`;
-          popoverContentContainer.style.bottom = `${popoverToggleBtnHeight + margin}px`;
-          break;
-        case 'left':
-          // center popover content and make it appear left of the toggle button
-          popoverContentContainer.style.top = `calc(50% - ${popoverContentHeight / 2}px)`;
-          popoverContentContainer.style.right = `${popoverToggleBtnWidth + margin}px`;
-          break;
-        case 'right':
-          // center popover content and make it appear right of the toggle button
-          popoverContentContainer.style.top = `calc(50% - ${popoverContentHeight / 2}px)`;
-          popoverContentContainer.style.left = `${popoverToggleBtnWidth + margin}px`;
-          break;
-        case 'bottom':
-        default:
-          // center popover content and make it appear below the toggle button
-          popoverContentContainer.style.left = `calc(50% - ${popoverContentWidth / 2}px)`;
-          popoverContentContainer.style.top = `${popoverToggleBtnHeight + margin}px`;
-          break;
+          case 'top':
+            // center popover content and make it appear above the toggle button
+            popoverContentContainer.style.left = `calc(50% - ${popoverContentWidth / 2}px)`;
+            popoverContentContainer.style.bottom = `${popoverToggleBtnHeight + margin}px`;
+            break;
+          case 'top-left':
+            // center popover content and make it appear above the toggle button
+            popoverContentContainer.style.right = `0`;
+            popoverContentContainer.style.bottom = `${popoverToggleBtnHeight + margin}px`;
+            break;
+          case 'left':
+            // center popover content and make it appear left of the toggle button
+            popoverContentContainer.style.top = `calc(50% - ${popoverContentHeight / 2}px)`;
+            popoverContentContainer.style.right = `${popoverToggleBtnWidth + margin}px`;
+            break;
+          case 'right':
+            // center popover content and make it appear right of the toggle button
+            popoverContentContainer.style.top = `calc(50% - ${popoverContentHeight / 2}px)`;
+            popoverContentContainer.style.left = `${popoverToggleBtnWidth + margin}px`;
+            break;
+          case 'bottom':
+          default:
+            // center popover content and make it appear below the toggle button
+            popoverContentContainer.style.left = `calc(50% - ${popoverContentWidth / 2}px)`;
+            popoverContentContainer.style.top = `${popoverToggleBtnHeight + margin}px`;
+            break;
         }
       }
     },

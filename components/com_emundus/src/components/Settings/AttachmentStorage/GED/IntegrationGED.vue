@@ -11,7 +11,7 @@
       <span class="tw-ml-2 tw-mr-2">/{{ site }}</span>
 
       <v-popover :popoverArrowClass="'custom-popover-arrow'">
-        <span class="tooltip-target b3 material-icons">more_horiz</span>
+        <span class="tooltip-target b3 material-symbols-outlined">more_horiz</span>
         <template slot="popover">
           <div class="tw-text-sm tw-cursor-pointer tw-px-2 tw-py-3 em-hover-background-neutral-300" @click="addNode(null)">
             {{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_ADD_MENU') }}

@@ -226,7 +226,7 @@ class EmundusModelList extends JModelList
 						$files_menu_path                         = $m_profile->getFilesMenuPathByProfile($profile_id);
 						$listDataResult[$index]->num_signalement = '<div class="em-flex-row">
                             <span>' . $listResult->num_signalement . '</span>
-                            <a class="em-ml-8" target="_blank" href="' . $files_menu_path . '#' . $listResult->fnum . '|open"><span class="material-icons-outlined">open_in_new</span></a>
+                            <a class="em-ml-8" target="_blank" href="' . $files_menu_path . '#' . $listResult->fnum . '|open"><span class="material-symbols-outlined">open_in_new</span></a>
                             </div>';
 					}
 				}

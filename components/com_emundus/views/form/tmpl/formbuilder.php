@@ -552,6 +552,8 @@ Text::script('COM_EMUNDUS_FORM_BUILDER_RULE_CONDITION_OR');
 Text::script('COM_EMUNDUS_FORM_BUILDER_RULE_CONDITION_AND');
 Text::script('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_SAVE_ERROR');
 
+Text::script('COM_EMUNDUS_ONBOARD_TYPE_BOOKING');
+
 $vue = 'em-formBuilder-vue';
 if ($this->eval != 0) {
 	$vue = 'em-evaluationBuilder-vue';

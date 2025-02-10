@@ -122,7 +122,7 @@ if ($allowed_attachments !== true) {
     }
 
     #mail_from_block {
-        width: 90%;
+        width: 94%;
     }
 
     .em-form-recipients {
@@ -211,7 +211,7 @@ if ($allowed_attachments !== true) {
         <!-- FROM -->
         <div class="form-inline row">
             <div class="form-group em-form-sender tw-mt-3 col-md-6 col-sm-6">
-                <div class="tw-flex tw-items-center">
+                <div class="tw-flex tw-items-center tw-justify-between">
                     <label class='em-mr-8' for="mail_from"><?= Text::_('FROM'); ?> :</label>
                     <div id="mail_from_block" class="em-border-radius-8 em-mb-4 email-input-block">
                         <div id="mail_from_name" class="em-p-4-6"
@@ -307,7 +307,7 @@ if ($allowed_attachments !== true) {
             <div id="replyto-box-label" class="em-flex-row em-pointer" onclick="openReplyTo()">
                 <label class="em-mb-0-important"
                        for="reply_to_from"><?= Text::_('COM_EMUNDUS_EMAILS_FROM_REPLY_TO'); ?></label>
-                <span id="replyto-icon" class="material-icons-outlined">chevron_right</span>
+                <span id="replyto-icon" class="material-symbols-outlined">chevron_right</span>
             </div>
             <div id="reply_to_div" style="display: none">
                 <div id="reply_to_block" class="em-border-radius-8 em-mb-4 email-input-block em-cursor-text">
@@ -1067,7 +1067,7 @@ if ($allowed_attachments !== true) {
             .then(data => {
                 if (data.status) {
                     document.querySelector('#error_message').innerText = '';
-                    $('#em-attachment-list').append('<li class="list-group-item upload tw-flex tw-items-center tw-justify-between tw-gap-2"><div class="value hidden">' + data.file_path + '</div>' + data.file_name + '<span class="material-icons-outlined tw-cursor-pointer tw-text-red-600" onClick="removeAttachment(this);">clear</span></li>');
+                    $('#em-attachment-list').append('<li class="list-group-item upload tw-flex tw-items-center tw-justify-between tw-gap-2"><div class="value hidden">' + data.file_path + '</div>' + data.file_name + '<span class="material-symbols-outlined tw-cursor-pointer tw-text-red-600" onClick="removeAttachment(this);">clear</span></li>');
                 } else {
                     document.querySelector('#error_message').innerText = data.msg;
                 }

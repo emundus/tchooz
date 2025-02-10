@@ -3,14 +3,14 @@
     <div class="tw-flex tw-items-center tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300"
          @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
       <span class="material-symbols-outlined tw-text-neutral-600">navigate_before</span>
-      <span class="tw-ml-2 tw-text-neutral-900">{{ translate('BACK') }}</span>
+      <span class="tw-ml-2 tw-text-neutral-900 em-profile-font">{{ translate('BACK') }}</span>
     </div>
 
     <div class="tw-flex tw-items-center tw-mt-4">
       <h1 class="tw-mb-4">{{ translate('COM_EMUNDUS_PROGRAMS_EDITION_TITLE') }}</h1>
     </div>
     <h2 class="tw-mb-2">{{ translate('COM_EMUNDUS_PROGRAMS_EDITION_SUBTITLE') }}</h2>
-    <p>{{ translate('COM_EMUNDUS_PROGRAMS_EDITION_INTRO') }}</p>
+    <p class="em-profile-font">{{ translate('COM_EMUNDUS_PROGRAMS_EDITION_INTRO') }}</p>
     <hr />
 
     <div class="tw-mt-4">
@@ -21,17 +21,17 @@
            :style="{backgroundColor: activeBackground}">
         <div class="tw-w-full" v-show="selectedMenuItem.code === 'general'">
           <iframe class="tw-w-full hide-titles" style="height: 150vh;"
-                  :src="'/campaigns/modifier-un-programme?rowid=' + this.programId + '&tmpl=component&iframe=1'">
+                  :src="'/index.php?option=com_fabrik&view=form&formid=108&rowid=' + this.programId + '&tmpl=component&iframe=1'">
           </iframe>
         </div>
 
         <div class="tw-w-full tw-flex tw-flex-col tw-gap-2" v-show="selectedMenuItem.code === 'campaigns'">
-          <label class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_TITLE') }}</label>
+          <label class="tw-font-medium em-profile-font">{{ translate('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_TITLE') }}</label>
           <ul>
-            <li v-for="campaign in campaigns" :key="campaign.id"><a :href="'/campaigns/edit?cid=' + campaign.id"
+            <li v-for="campaign in campaigns" :key="campaign.id"><a class="tw-cursor-pointer em-profile-font" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' + campaign.id)"
                                                                     target="_blank">{{ campaign.label }}</a></li>
           </ul>
-          <a href="/campaigns" class="tw-underline" target="_blank">
+          <a @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')" class="tw-cursor-pointer tw-underline em-profile-font" target="_blank">
             {{ translate('COM_EMUNDUS_PROGRAMS_ACCESS_TO_CAMPAIGNS') }} </a>
         </div>
 
@@ -47,7 +47,7 @@
           </div>
 
           <div>
-            <a href="/workflows" class="tw-underline" target="_blank">
+            <a @click="redirectJRoute('index.php?option=com_emundus&view=workflows')" class="tw-cursor-pointer tw-underline" target="_blank">
               {{ translate('COM_EMUNDUS_PROGRAMS_ACCESS_TO_WORKFLOWS') }} </a>
           </div>
 

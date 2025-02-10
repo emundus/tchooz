@@ -363,7 +363,7 @@
 
           <div>
             <div v-if="programLanguages.length > 0" id="program-languages" class="tw-mb-1 tw-p-4 alert alert-info tw-flex">
-              <span class="material-icons-outlined tw-mr-2">info</span>
+              <span class="material-symbols-outlined tw-mr-2">info</span>
               <p class="tw-font-light tw-text-sm"> {{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM_LANGUAGES') }}
                 <strong v-for="(language, index) in programLanguages" :key="language.lang_id">
                   {{ language.title }}{{ (index < (programLanguages.length - 1)) ? ', ' : '' }}
@@ -644,7 +644,7 @@ export default {
     getAllForms() {
       fileService.getProfiles().then(response => {
         if (response.status) {
-          this.applicantForms = response.data.filter(form => form.published == 1);
+          this.applicantForms = response.data.filter(form => form.published === 1 && form.menutype !== '');
         }
       }).catch(e => {
         console.log(e);

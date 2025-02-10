@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-form-emundusattachmentpublic" label="PLG_FABRIK_FORM_EMUNDUSATTACHMENTPUBLIC_FIELDS">
+			<field name="emundusattachmentpublic_articleid" type="sql"
+				   label="PLG_FABRIK_FORM_EMUNDUSATTACHMENTPUBLIC_ARTICLE_UPLOADED"
+				   query="SELECT id, title AS label FROM #__content WHERE state != -2"
+				   key_field="id"
+				   value_field="label"
+				   default="61"
+			/>
+
+			<field name="emundusattachmentpublic_articleid_already_uploaded" type="sql"
+				   label="PLG_FABRIK_FORM_EMUNDUSATTACHMENTPUBLIC_ARTICLE_ALREADY_UPLOADED"
+				   query="SELECT id, title AS label FROM #__content WHERE state != -2"
+				   key_field="id"
+				   value_field="label"
+				   default="60"
+			/>
+		</fieldset>
+	</fields>
+</form>

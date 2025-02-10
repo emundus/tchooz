@@ -223,7 +223,7 @@ class EmundusHelperFabrik
 			'apply_button_class'                 => '',
 			'apply_icon'                         => '',
 			'apply_icon_location'                => 'before',
-			'goback_button'                      => '1',
+			'goback_button'                      => $type == 'eval' ? '0' : '1',
 			'goback_button_label'                => 'GO_BACK',
 			'goback_button_class'                => 'goback-btn',
 			'goback_icon'                        => '',

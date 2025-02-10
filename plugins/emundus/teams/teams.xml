@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="console" method="upgrade">
+    <name>Teams integration</name>
+    <version>1.0.0</version>
+    <creationDate>November 2024</creationDate>
+    <author>eMundus</author>
+    <description>Plugin to integrate Teams on some events</description>
+    <namespace path="src">Joomla\Plugin\Emundus\Teams</namespace>
+    <files>
+        <folder plugin="teams">services</folder>
+        <folder>src</folder>
+    </files>
+</extension>

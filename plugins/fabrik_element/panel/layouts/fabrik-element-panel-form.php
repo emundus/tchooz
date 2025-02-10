@@ -6,7 +6,7 @@ $d = $displayData;
 ?>
 
 <div id="<?php echo $d->id; ?>" class="fabrikinput fabrikElementReadOnly" style="background-color: <?php echo $d->backgroundColor ?>;border: solid 1px <?php echo $d->borderColor; ?>;<?php if ($d->type == 4): ?>padding: 0;<?php endif; ?>" name="<?php echo $d->name; ?>">
-    <span class="material-icons<?php echo $d->iconType ?>" style="color: <?php echo $d->iconColor ?>"><?php echo $d->icon ?></span>
+    <span class="material-symbols<?php echo $d->iconType ?>" style="color: <?php echo $d->iconColor ?>"><?php echo $d->icon ?></span>
 
     <div class="fabrikElementContent tw-w-full" <?php if ($d->type == 4): ?>style="margin-left: 0;"<?php endif; ?>>
 	    <?php if ($d->accordion == 1) : ?>

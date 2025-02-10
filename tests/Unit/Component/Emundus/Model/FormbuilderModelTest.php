@@ -395,7 +395,7 @@ class FormbuilderModelTest extends UnitTestCase
 		$this->assertFalse($this->model->createSimpleElement(1, ''), 'createSimpleElement returns false if no plugin given');
 		$this->assertFalse($this->model->createSimpleElement(0, 'field'), 'createSimpleElement returns false if no group id given');
 
-		$group_eval_id  = 551;
+		$group_eval_id  = 552;
 		$new_element_id = $this->model->createSimpleElement($group_eval_id, 'field',null,0,null,$applicant_user);
 		$this->assertGreaterThan(0, $new_element_id, 'createSimpleElement returns the id of the created element');
 

@@ -89,7 +89,7 @@ if(!empty($cart->usable_methods->payment)) {
         <?php if ($payment->payment_type === 'banktransfer') : ?>
             <span class="material-symbols-outlined em-mr-12">account_balance</span>
         <?php else : ?>
-            <span class="material-icons-outlined em-mr-12">credit_card</span>
+            <span class="material-symbols-outlined em-mr-12">credit_card</span>
         <?php endif; ?>
 		<span class="hikashop_checkout_payment_name"><?php echo $payment->payment_name;?></span>
 	</label>

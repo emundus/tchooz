@@ -62,7 +62,7 @@ class EmundusFiltersFiles extends EmundusFilters
 				$this->applied_filters = $helper_files->setFiltersValuesAvailability($this->applied_filters);
 			}
 		}
-    }
+	}
 
 	public function getUserProgrammes() {
 		return $this->user_programs;
@@ -719,24 +719,66 @@ class EmundusFiltersFiles extends EmundusFilters
 				}
 			}
 
+			if (!$filter_menu_values_are_empty)
+			{
+				$position = array_search('workflow_steps', $filter_names);
+
+				if ($position !== false && !empty($filter_menu_values[$position]))
+				{
+					$steps_selected = explode('|', $filter_menu_values[$position]);
+
+					if (!empty($steps_selected))
+					{
+						$steps_selected = array_map('intval', $steps_selected);
+						$steps = array_filter($steps, function($step) use ($steps_selected) {
+							return in_array($step['value'], $steps_selected);
+						});
+						$steps = array_values($steps);
+
+						$values_selected = array_intersect($steps_selected, array_column($steps, 'value'));
+						$values_selected = array_values($values_selected);
+					}
+				}
+			}
+
 			$this->applied_filters[] = [
 				'uid'            => 'workflow_steps',
 				'id'             => 'workflow_steps',
 				'label'          => Text::_('MOD_EMUNDUS_FILTERS_WORKFLOW_STEPS'),
 				'type'           => 'select',
 				'values'         => $steps,
-				'value'          => count($values_selected) !== count($steps) ? $values_selected : ['all'],
+				'value'          => !empty($steps_selected) && !empty($values_selected) ? $values_selected : [],
 				'default'        => true,
 				'available'      => true,
 				'order'          => $config['filter_steps_order'],
 				'andorOperator'  => 'OR',
-				'andorOperators' => ['OR', 'AND'],
+				'andorOperators' => ['OR'],
 				'operator'       => 'IN',
 				'operators'      => ['IN']
 			];
 		}
 
 		if ($config['filter_evaluated']) {
+			$evaluated_default_value = null;
+			if (!$filter_menu_values_are_empty)
+			{
+				$position = array_search('evaluated', $filter_names);
+
+				if ($position !== false && isset($filter_menu_values[$position]) && $filter_menu_values[$position] !== '')
+				{
+					$evaluated = explode('|', $filter_menu_values[$position]);
+					if (!empty($evaluated))
+					{
+						$evaluated = array_map('intval', $evaluated);
+						$evaluated = array_filter($evaluated, function($value) {
+							return $value === 1 || $value === 0;
+						});
+
+						$evaluated_default_value = $evaluated[0];
+					}
+				}
+			}
+
 			$this->applied_filters[] = [
 				'uid'            => 'evaluated',
 				'id'             => 'evaluated',
@@ -746,7 +788,7 @@ class EmundusFiltersFiles extends EmundusFilters
 					['value' => 1, 'label' => Text::_('MOD_EMUNDUS_FILTERS_VALUE_EVALUATED')],
 					['value' => 0, 'label' => Text::_('MOD_EMUNDUS_FILTERS_VALUE_TO_EVALUATE')]
 				],
-				'value'          => ['all'],
+				'value'          => !is_null($evaluated_default_value) ? [$evaluated_default_value] : [],
 				'default'        => true,
 				'available'      => true,
 				'order'          => $config['filter_evaluated_order'],
@@ -872,6 +914,16 @@ class EmundusFiltersFiles extends EmundusFilters
 
 		$session_filters = $session->get('em-applied-filters', []);
 		if ((isset($config['force_reload_on_refresh']) && $config['force_reload_on_refresh']) || empty($session_filters)) {
+			if (!empty($session_filters)) {
+				$filters_to_keep = array_filter($session_filters, function ($session_filter) {
+					return isset($session_filter['menuFilter']) && $session_filter['menuFilter'];
+				});
+
+				if (!empty($filters_to_keep)) {
+					$this->addSessionFilters($filters_to_keep);
+				}
+			}
+
 			$session->set('em-applied-filters', $this->applied_filters);
 		}
 	}
@@ -885,6 +937,10 @@ class EmundusFiltersFiles extends EmundusFilters
 					$this->applied_filters[$key]['value'] = $session_filter['value'];
 					$this->applied_filters[$key]['operator'] = $session_filter['operator'];
 					$this->applied_filters[$key]['andorOperator'] = $session_filter['andorOperator'];
+
+					if (isset($session_filter['menuFilter'])){
+						$this->applied_filters[$key]['menuFilter'] = $session_filter['menuFilter'];
+					}
 
 					$found = true;
 					break;
@@ -905,6 +961,11 @@ class EmundusFiltersFiles extends EmundusFilters
 						$new_filter['operator'] = $session_filter['operator'];
 						$new_filter['andorOperator'] = $session_filter['andorOperator'];
 						$new_filter['uid'] = $session_filter['uid'];
+
+						if (isset($session_filter['menuFilter'])) {
+							$new_filter['menuFilter'] = $session_filter['menuFilter'];
+						}
+
 						$this->applied_filters[] = $new_filter;
 						break;
 					}

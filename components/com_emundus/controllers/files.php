@@ -1057,12 +1057,12 @@ class EmundusControllerFiles extends BaseController
 
 			$fnumsInfos = $m_files->getFnumsInfos($validFnums);
 
-			$code = array();
+			$codes = array();
 			foreach ($fnumsInfos as $fnum) {
-				$code[] = $fnum['training'];
+				$codes[] = $fnum['training'];
 			}
 
-			$trigger_emails = $m_email->getEmailTrigger($state, $code, $to_applicant);
+			$trigger_emails = $m_email->getEmailTrigger($state, $codes, '0,1');
 		}
 
 		echo json_encode((object)(array('status' => !empty($trigger_emails), 'msg' => Text::sprintf('COM_EMUNDUS_APPLICATION_MAIL_CHANGE_STATUT_INFO', sizeof($validFnums)))));
@@ -1973,7 +1973,7 @@ class EmundusControllerFiles extends BaseController
 											if ($textarea_elements[$k] == 1) {
 												$v = strip_tags($v);
 											}
-											$line .= $v."\t"; // no preg_replace to keep linebreaks
+											$line .= preg_replace("/\r|\t/", "", $v) . "\t";
 										}
 										elseif(!empty($iban_elements[$k])){
 											if($iban_elements[$k] == 1){
@@ -2150,7 +2150,7 @@ class EmundusControllerFiles extends BaseController
 
 				$html .= '<div class="em-mt-12">
                     <div class="em-flex-row em-pointer em-mb-4" onclick="showelts(this, ' . "'felts-" . $code[0] . $camp[0] . "-" . $profile . "'" . ')">
-                       <span title="' . Text::_('COM_EMUNDUS_SHOW_ELEMENTS') . '" id="felts-' . $code[0] . $camp[0] . '-' . $profile . '-icon" class="material-icons em-mr-4" style="transform: rotate(-90deg)">expand_more</span>
+                       <span title="' . Text::_('COM_EMUNDUS_SHOW_ELEMENTS') . '" id="felts-' . $code[0] . $camp[0] . '-' . $profile . '-icon" class="material-symbols-outlined em-mr-4" style="transform: rotate(-90deg)">expand_more</span>
                        <p>' . $campaign['label'] . ' (' . $campaign['year'] . ' | ' . $profile_data->label . ')</p>
                     </div>
                     <div id="felts-' . $code[0] . $camp[0] . '-' . $profile . '" style="display:none;">
@@ -2222,7 +2222,7 @@ class EmundusControllerFiles extends BaseController
 
 		$html = '<div class="em-mt-12">
                     <div class="em-flex-row em-pointer em-mb-4" onclick="showelts(this, ' . "'aelts-" . $code[0] . $camp[0] . "'" . ')">
-                    <span title="' . Text::_('COM_EMUNDUS_SHOW_ELEMENTS') . '" id="aelts-' . $code[0] . $camp[0] . '-icon" class="material-icons em-mr-4" style="transform: rotate(-90deg)">expand_more</span>
+                    <span title="' . Text::_('COM_EMUNDUS_SHOW_ELEMENTS') . '" id="aelts-' . $code[0] . $camp[0] . '-icon" class="material-symbols-outlined em-mr-4" style="transform: rotate(-90deg)">expand_more</span>
                         <p>' . $campaign['label'] . ' (' . $campaign['year'] . ')</p>
                     </div>
                     <div id="aelts-' . $code[0] . $camp[0] . '" style="display:none;">
@@ -3456,7 +3456,6 @@ class EmundusControllerFiles extends BaseController
 
 		$hasAccessForm = EmundusHelperAccess::asAccessAction(1, 'r', $user_id);
 		$hasAccessAtt  = EmundusHelperAccess::asAccessAction(4, 'r', $user_id);
-		$hasAccessEval = EmundusHelperAccess::asAccessAction(5, 'r', $user_id);
 		$hasAccessTags = EmundusHelperAccess::asAccessAction(14, 'r', $user_id);
 
 		$show_form = 0;
@@ -3464,7 +3463,7 @@ class EmundusControllerFiles extends BaseController
 		$show_tag  = 0;
 		$show_eval = 0;
 
-		if ($eval && $hasAccessEval) {
+		if ($eval) {
 			$show_eval = 1;
 		}
 

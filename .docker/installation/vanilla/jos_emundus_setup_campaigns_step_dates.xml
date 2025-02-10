@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_setup_campaigns_step_dates">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="campaign_id" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="step_id" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="start_date" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="end_date" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="infinite" Type="tinyint" Null="NO" Key="" Extra="" />
+   <key Table="#__emundus_setup_campaigns_step_dates" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_campaigns_step_dates" Non_unique="1" Key_name="jos_emundus_setup_campaigns_step_dates_jesc__fk" Seq_in_index="1" Column_name="campaign_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_campaigns_step_dates" Non_unique="1" Key_name="jos_emundus_setup_campaigns_step_dates_step_id_fk" Seq_in_index="1" Column_name="step_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

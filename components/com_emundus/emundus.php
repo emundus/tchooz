@@ -16,6 +16,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
+use Joomla\CMS\Uri\Uri;
 use Joomla\Component\Emundus\Site\Exception\EmundusException;
 
 $app = Factory::getApplication();
@@ -752,6 +753,11 @@ Text::script('COM_EMUNDUS_GLOBAL_HISTORY_DIFF_COLUMN');
 Text::script('COM_EMUNDUS_GLOBAL_HISTORY_DIFF_OLD_DATA');
 Text::script('COM_EMUNDUS_GLOBAL_HISTORY_DIFF_NEW_DATA');
 Text::script('COM_EMUNDUS_GLOBAL_HISTORY_ITEM_ID');
+Text::script('COM_EMUNDUS_GLOBAL_HISTORY_DIFF_SHOW');
+Text::script('COM_EMUNDUS_GLOBAL_HISTORY_STATUS_SUCCESS');
+Text::script('COM_EMUNDUS_GLOBAL_HISTORY_STATUS_ERROR');
+Text::script('COM_EMUNDUS_GLOBAL_HISTORY_SHOW_DETAILS');
+Text::script('COM_EMUNDUS_GLOBAL_ERROR_DETAILS');
 Text::script('COM_EMUNDUS_EVALUATIONS_LIST');
 Text::script('COM_EMUNDUS_EVALUATIONS_LIST_NO_EVALUATIONS');
 Text::script('COM_EMUNDUS_EVALUATIONS_LIST_NO_EDITABLE_EVALUATIONS');
@@ -775,18 +781,22 @@ Text::script('COM_EMUNDUS_EXPERT_MAIL_TO_ERROR');
 Text::script('COM_EMUNDUS_EXPERT_MAIL_BODY_ERROR');
 
 // Load translations for action log plugin
-$actionlog_translation_tags = parse_ini_file(JPATH_ADMINISTRATOR.'/language/fr-FR/plg_actionlog_emundus.ini');
-foreach ($actionlog_translation_tags as $tag => $translation) {
+$actionlog_translation_tags = parse_ini_file(JPATH_ADMINISTRATOR . '/language/fr-FR/plg_actionlog_emundus.ini');
+foreach ($actionlog_translation_tags as $tag => $translation)
+{
 	Text::script($tag);
 }
 
 // Require specific controller if requested
-if ($controller = $app->input->get('controller', '', 'WORD')) {
+if ($controller = $app->input->get('controller', '', 'WORD'))
+{
 	$path = JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . $controller . '.php';
-	if (file_exists($path)) {
+	if (file_exists($path))
+	{
 		require_once $path;
 	}
-	else {
+	else
+	{
 		$controller = '';
 	}
 }
@@ -814,7 +824,8 @@ $user          = $app->getIdentity();
 $secret        = $app->get('secret', '');
 $webhook_token = $app->get('webhook_token') ?: '';
 
-if (!in_array($name, ['settings', 'campaigns', 'emails', 'form'])) {
+if (!in_array($name, ['settings', 'campaigns', 'emails', 'form']))
+{
 	$wa->registerAndUseScript('com_emundus_jquery_ui', 'media/com_emundus/lib/jquery-ui-1.12.1.min.js');
 	$wa->registerAndUseScript('com_emundus_bootstrap', 'media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
 	$wa->registerAndUseScript('com_emundus_chosen', 'media/com_emundus/js/chosen.jquery.js');
@@ -840,28 +851,39 @@ $wa->registerAndUseStyle('com_emundus_app', 'media/com_emundus_vue/app_emundus.c
 $wa->registerAndUseScript('lottie', 'media/com_emundus/js/lib/@lottiefiles/lottie-player/dist/lottie-player.js');
 
 // The task 'getproductpdf' can be executed as public (when not signed in and form any view).
-if ($task == 'getproductpdf') {
+if ($task == 'getproductpdf')
+{
 	$controller->execute($task);
 }
-if ($user->authorise('core.viewjob', 'com_emundus') && ($name == 'jobs' || $name == 'job' || $name == 'thesiss' || $name == 'thesis')) {
+if ($user->authorise('core.viewjob', 'com_emundus') && ($name == 'jobs' || $name == 'job' || $name == 'thesiss' || $name == 'thesis'))
+{
 	$controller->execute($task);
 }
 elseif ($user->guest && ((($name === 'webhook' || $app->input->get('controller', '', 'WORD') === 'webhook') && $format === 'raw') && ($secret === $token || $webhook_token == JApplicationHelper::getHash($token)) || $task == 'getfilereferent' || (($name == 'form' || $app->input->get('controller', '', 'WORD') === 'form') && $task == 'getjsconditions'))) {
 	$controller->execute($task);
 }
-elseif ((($name == 'sync' || $app->input->get('controller', '', 'WORD') === 'sync') && $task == 'callapi') || $user->guest && $name != 'emailalert' && $name != 'programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign') && $task != 'passrequest' && $task != 'getusername' && $task != 'getpasswordsecurity') {
-	if ($name == 'user' && $app->input->get('emailactivation', 0) == 1) {
+elseif ($user->guest && $name != 'emailalert' && $name != 'programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign') && $task != 'passrequest' && $task != 'getusername' && $task != 'getpasswordsecurity')
+{
+	if ($name == 'user' && $app->input->get('emailactivation', 0) == 1)
+	{
+		$currentUrl = Uri::getInstance()->toString();
+		$app->setUserState('users.login.activation.return', $currentUrl);
+		
 		$app->enqueueMessage(Text::_('COM_EMUNDUS_PLEASE_LOGIN_TO_COMPLETE_ACTIVATION'));
 		$app->redirect(Route::_('index.php?option=com_users&view=login'));
-	} else {
+	}
+	else
+	{
 		PluginHelper::importPlugin('emundus', 'custom_event_handler');
 		$app->triggerEvent('onCallEventHandler', ['onAccessDenied', []]);
 
 		throw new EmundusException(Text::_('JERROR_ALERTNOAUTHOR'), 403, null, false, false);
 	}
 }
-else {
-	if ($name != 'search_engine') {
+else
+{
+	if ($name != 'search_engine')
+	{
 		// Perform the Request task
 		$controller->execute($task);
 	}

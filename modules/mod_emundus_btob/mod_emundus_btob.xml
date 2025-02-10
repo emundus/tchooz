@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension
+        type="module"
+        version="4.2.9"
+        client="site"
+        method="upgrade">
+    <name>MOD_EMUNDUS_BTOB</name>
+    <description>MOD_EMUNDUS_BTOB_DESC</description>
+    <author>HUBINET Brice</author>
+    <creationDate>2025 January</creationDate>
+    <copyright>Copyright (C) 2015-2025 eMundus. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>2.2.0</version>
+    <namespace path="src">Emundus\Module\BtoB</namespace>
+
+    <files>
+        <filename>mod_emundus_btob.xml</filename>
+        <filename module="mod_emundus_btob">mod_emundus_btob.php</filename>
+        <folder>language</folder>
+        <folder>src</folder>
+        <folder>tmpl</folder>
+    </files>
+    <languages>
+        <language tag="en-GB">en-GB.mod_emundus_btob.ini</language>
+        <language tag="en-GB">en-GB.mod_emundus_btob.sys.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_btob.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_btob.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field type="sql"
+                       multiple="true"
+                       label="MOD_EMUNDUS_BTOB_STATUS_LABEL"
+                       description="MOD_EMUNDUS_BTOB_STATUS_DESC"
+                       name="mod_emundus_btob_status"
+                       query="SELECT step, value as label FROM #__emundus_setup_status"
+                       key_field="step"
+                       value_field="label"
+                />
+            </fieldset>
+        </fields>
+    </config>
+</extension>

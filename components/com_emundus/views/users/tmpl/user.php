@@ -14,7 +14,7 @@ $offset        = $config_offset ?: 'Europe/Paris';
 $timezone      = new DateTimeZone($offset);
 ?>
 <style>
-    .em-cell .material-icons {
+    .em-cell .material-symbols-outlined {
         font-size: 24px !important;
     }
 </style>
@@ -179,14 +179,14 @@ $timezone      = new DateTimeZone($offset);
                             <?php elseif ($user->active == -1): ?>
                                 <td>
                                     <div class="em-cell">
-                                        <span class="material-icons em-yellow-500-color"
+                                        <span class="material-symbols-outlined em-yellow-500-color"
                                               title="<?php echo JText::_('COM_EMUNDUS_USERS_ACTIVATE_WAITING') ?>">new_releases</span>
                                     </div>
                                 </td>
                             <?php else : ?>
                                 <td>
                                     <div class="em-cell">
-                                        <span class="material-icons em-red-600-color"
+                                        <span class="material-symbols-outlined em-red-600-color"
                                               title="<?php echo JText::_('COM_EMUNDUS_USERS_BLOCK_ACCOUNT_SINGLE') ?>">block</span>
                                     </div>
                                 </td>

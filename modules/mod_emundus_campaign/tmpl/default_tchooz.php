@@ -2,6 +2,7 @@
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Uri\Uri;
 
 defined('_JEXEC') or die;
 
@@ -428,9 +429,22 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
                                         </div>
 		                            <?php endif; ?>
 
-								<?php if ($mod_em_campaign_show_apply_button == 1 && (strtotime($now) < strtotime($campaign_pinned->end_date)) && (strtotime($now) > strtotime($campaign_pinned->start_date))) : ?>
+								<?php
+                                    if ($mod_em_campaign_show_apply_button == 1 && (strtotime($now) < strtotime($campaign_pinned->end_date)) && (strtotime($now) > strtotime($campaign_pinned->start_date))) : ?>
                                     <div>
 										<?php
+										$can_apply = 1;
+                                        $is_limit_obtained = false;
+                                        if($campaign_pinned->campaign_is_limited == 1 && $campaign_pinned->campaign_limit > 0) {
+                                            if($campaign_pinned->nb_files_in_limit >= $campaign_pinned->campaign_limit) {
+	                                            $is_limit_obtained = true;
+                                            }
+                                        }
+
+                                        if($campaign_pinned->apply_online == 0) {
+	                                        $can_apply = 0;
+                                        }
+
 										$register_url = '';
 										// The register URL does not work  with SEF, this workaround helps counter this.
 										if ($sef == 0)
@@ -443,7 +457,7 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
 										}
 										else
 										{
-											$register_url = JUri::base() . $redirect_url . '?course=' . $campaign_pinned->code . '&cid=' . $campaign_pinned->id;
+											$register_url = Uri::base() . $redirect_url . '?course=' . $campaign_pinned->code . '&cid=' . $campaign_pinned->id;
 										}
 
 										if (!empty($mod_em_campaign_itemid))
@@ -455,9 +469,17 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
 											$register_url .= "&redirect=" . $formUrl;
 										}
 										?>
-                                        <a class="btn btn-primary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
-                                           role="button" href='<?php echo $register_url; ?>'
-                                           data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
+                                        <?php if($can_apply == 1) : ?>
+                                            <?php if($is_limit_obtained) : ?>
+                                                <a class="em-disabled-button em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
+                                                   role="button" href='javascript:void(0);'
+                                                   data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_LIMIT_OBTAINED'); ?></a>
+                                            <?php else : ?>
+                                            <a class="btn btn-primary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
+                                               role="button" href='<?php echo $register_url; ?>'
+                                               data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
                                     </div>
 								<?php endif; ?>
 	                                <?php if ($mod_em_campaign_single_campaign_line == 1 && $mod_em_campaign_show_info_button == 1 && $mod_em_campaign_show_apply_button == 1): ?>
@@ -702,7 +724,7 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
                                 value="<?= htmlspecialchars($searchword); ?>"
 				            <?php endif; ?> >
                         <label for="searchword" style="display: inline-block"><?php echo JText::_('MOD_EM_CAMPAIGN_SEARCH') ?></label>
-                        <button type="submit"><span class="sr-only"><?php echo JText::_('MOD_EM_CAMPAIGN_SEARCH') ?></span><span class="material-icons-outlined em-font-size-24">search</span></button>
+                        <button type="submit"><span class="sr-only"><?php echo JText::_('MOD_EM_CAMPAIGN_SEARCH') ?></span><span class="material-symbols-outlined em-font-size-24">search</span></button>
                     </div>
 	            <?php endif; ?>
             </div>
@@ -1072,6 +1094,18 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
 									<?php if ($mod_em_campaign_show_apply_button == 1 && (strtotime($now) < strtotime($result->end_date)) && (strtotime($now) > strtotime($result->start_date))) : ?>
                                         <div>
 											<?php
+											$can_apply = 1;
+											$is_limit_obtained = false;
+											if($result->campaign_is_limited == 1 && $result->campaign_limit > 0) {
+												if($result->nb_files_in_limit >= $result->campaign_limit) {
+													$is_limit_obtained = true;
+												}
+											}
+
+											if($result->apply_online == 0) {
+												$can_apply = 0;
+											}
+
 											$register_url = '';
 											// The register URL does not work  with SEF, this workaround helps counter this.
 											if ($sef == 0)
@@ -1092,9 +1126,17 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
 												$register_url .= '&redirect=' . $formUrl;
 											}
 											?>
-                                            <a class="btn btn-primary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
-                                               role="button" href='<?php echo $register_url; ?>'
-                                               data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
+	                                        <?php if($can_apply == 1) : ?>
+		                                        <?php if($is_limit_obtained) : ?>
+                                                    <a class="em-disabled-button em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
+                                                       role="button" href='javascript:void(0);'
+                                                       data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_LIMIT_OBTAINED'); ?></a>
+		                                        <?php else : ?>
+                                                    <a class="btn btn-primary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
+                                                       role="button" href='<?php echo $register_url; ?>'
+                                                       data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
+		                                        <?php endif; ?>
+	                                        <?php endif; ?>
                                         </div>
 									<?php endif; ?>
 	                                    <?php if ($mod_em_campaign_single_campaign_line == 1 && $mod_em_campaign_show_info_button == 1 && $mod_em_campaign_show_apply_button == 1): ?>
@@ -1167,7 +1209,7 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
                 html = '<select id="filter_value_' + index + '"> ' +
                     '<option value = 0></option>' +
 					<?php foreach ($programs as $program) : ?>
-                    "<option value=\"<?php echo $program['code'] ?>\"><?php echo $program['label'] ?></option>" +
+                    "<option value=\"<?php echo $program['code'] ?>\"><?php echo urlencode($program['label']) ?></option>" +
 					<?php endforeach; ?>
                     '</select>';
                 break;

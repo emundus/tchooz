@@ -5040,10 +5040,13 @@ class EmundusHelperFiles
 									foreach ($step_ids as $step_id) {
 										$step_data = $m_workflow->getStepData($step_id);
 
-										if (empty($step_data->table)) {
+										if (empty($step_data) || empty($step_data->table)) {
 											$workflow_data = $m_workflow->getWorkflow($step_data->workflow_id);
 											$step_label =  !empty($workflow_data['workflow']) ? $workflow_data['workflow']->label . ' - ' . $step_data->label : $step_data->label;
+											$step_ids = array_diff($step_ids, [$step_id]);
+
 											$app->enqueueMessage(sprintf(Text::_('COM_EMUNDUS_BUILD_WHERE_STEP_CONFIGURATION_ERROR'), $step_label), 'warning');
+											Log::add('One of the steps in the filter configuration is not properly configured', Log::WARNING, 'com_emundus.error');
 											continue;
 										}
 

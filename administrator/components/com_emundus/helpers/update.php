@@ -265,7 +265,7 @@ class EmundusHelperUpdate
 		return $updated;
 	}
 
-    public static function installExtension($name, $element, $manifest_cache = null, $type = 'plugin', $enabled = 1, $folder = '', $params = '{}',$administrator = false){
+    public static function installExtension($name, $element, $manifest_cache = null, $type = 'plugin', $enabled = 1, $folder = '', $params = '{}',$administrator = false,$message = true){
         $installed = false;
 
 		if (!empty($element))
@@ -372,7 +372,10 @@ class EmundusHelperUpdate
 					}
 					else
 					{
-						self::displayMessage('L\'extension ' . $element . ' est déjà installée.');
+						if($message)
+						{
+							self::displayMessage('L\'extension ' . $element . ' est déjà installée.');
+						}
 						$installed = true;
 					}
 				}
@@ -383,12 +386,18 @@ class EmundusHelperUpdate
 			}
 			else
 			{
-				self::displayMessage('Impossible d\'installer l\'extensions sans manifeste.', 'error');
+				if($message)
+				{
+					self::displayMessage('Impossible d\'installer l\'extensions sans manifeste.', 'error');
+				}
 			}
 		}
 		else
 		{
-			self::displayMessage('Impossible d\'installer l\'extensions sans élément spécifié.', 'error');
+			if($message)
+			{
+				self::displayMessage('Impossible d\'installer l\'extensions sans élément spécifié.', 'error');
+			}
 		}
 
 		return $installed;
@@ -2074,12 +2083,13 @@ class EmundusHelperUpdate
 			$params['params'] = [];
 		}
 
+		// Initialize again Joomla database to fix problem with Falang (or other plugins) that override default mysql driver
+		Factory::$database = null;
+
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+
 		try
 		{
-			// Initialize again Joomla database to fix problem with Falang (or other plugins) that override default mysql driver
-			Factory::$database = null;
-
-			$db    = Factory::getDbo();
 			$query = $db->getQuery(true);
 
 			if (empty($params['alias']))
@@ -2152,6 +2162,9 @@ class EmundusHelperUpdate
 				{
 					$result['message'] = 'INSERTING JOOMLA MENU : Error at saving menu.';
 
+					$db->setQuery('UNLOCK TABLES');
+					$db->execute();
+
 					return $result;
 				}
 				$result['id']    = $menu_table->id;
@@ -2197,6 +2210,9 @@ class EmundusHelperUpdate
 			Log::add('Failed to insert menu ' . $params['title'] . ' ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			$result['status']  = false;
 			$result['message'] = 'INSERTING MENU : ' . $e->getMessage();
+
+			$db->setQuery('UNLOCK TABLES');
+			$db->execute();
 		}
 
 		return $result;
@@ -3474,6 +3490,9 @@ class EmundusHelperUpdate
 						{
 							$query_column .= ' NOT NULL';
 						}
+						if(!empty($column['comment'])) {
+							$query_column .= ' COMMENT ' . $db->quote($column['comment']);
+						}
 
 						$query .= $query_column;
 					}
@@ -4450,11 +4469,11 @@ class EmundusHelperUpdate
 			$storage_value['base64_exceptions']                = 'com_hikashop,com_emundus,com_fabrik';
 			$storage_value['strip_all_tags']                   = 0;
 			$storage_value['tags_to_filter'] = 'applet,body,bgsound,base,basefont,embed,frame,frameset,head,html,ilayer,layer,meta,object,script,xml';
-			$storage_value['strip_tags_exceptions'] = 'com_jdownloads,com_hikashop,com_emundus,com_fabrik,com_gantry5';
+			$storage_value['strip_tags_exceptions'] = 'com_jdownloads,com_hikashop,com_emundus,com_fabrik,com_gantry5,com_users';
 			$storage_value['duplicate_backslashes_exceptions'] = 'com_emundus,com_fabrik,com_content,com_languages,com_users,com_login';
 			$storage_value['sql_pattern_exceptions'] = 'com_emundus,com_fabrik';
 			$storage_value['line_comments_exceptions'] = 'com_emundus,com_fabrik,com_content,com_users,com_login';
-			$storage_value['using_integers_exceptions'] = 'com_jce,com_fabrik,com_users,com_login';
+			$storage_value['using_integers_exceptions'] = 'com_jce,com_fabrik,com_users,com_login,com_content';
 			$storage_value['escape_strings_exceptions'] = 'com_jce,com_fabrik,com_emundus,com_content,com_users,com_login,com_languages';
 			$storage_value['lfi_exceptions'] = 'com_emundus,com_fabrik,com_content,com_users';
 			$storage_value['second_level_exceptions'] = '';
@@ -4660,6 +4679,7 @@ class EmundusHelperUpdate
 			$db->setQuery($query);
 			$item = $db->loadObject();
 
+			$update_campaign = true;
 			$create_item = true;
 			if(!empty($item)) {
 				$params = json_decode($item->params, true);
@@ -4700,15 +4720,18 @@ class EmundusHelperUpdate
 					]
 				];
 
-				self::addJoomlaMenu($params, 1, 1, 'last-child', $modules_id);
+				$update_campaign = self::addJoomlaMenu($params, 1, 1, 'last-child', $modules_id)['status'];
 			}
 
-			$query->clear()
-				->update($db->quoteName('#__emundus_setup_campaigns'))
-				->set($db->quoteName('alias') . ' = ' . $db->quote($alias))
-				->where($db->quoteName('id') . ' = ' . $db->quote($campaign->id));
-			$db->setQuery($query);
-			$db->execute();
+			if($update_campaign)
+			{
+				$query->clear()
+					->update($db->quoteName('#__emundus_setup_campaigns'))
+					->set($db->quoteName('alias') . ' = ' . $db->quote($alias))
+					->where($db->quoteName('id') . ' = ' . $db->quote($campaign->id));
+				$db->setQuery($query);
+				$db->execute();
+			}
 		}
 
 		return true;

@@ -7,10 +7,12 @@
  */
 // no direct access
 defined('_JEXEC') or die;
+
+$base_url = JUri::base(true);
 ?>
 
 <div id="mod_emundus_help">
-    <p id="trigger" data-toggle="popover" class="mod_emundus_help__popover"><span class="material-icons tw-text-profile-full tw-text-[20px] hover:tw-text-profile-dark">help</span></p>
+    <p id="trigger" data-toggle="popover" class="mod_emundus_help__popover"><span class="material-symbols-outlined tw-text-profile-full tw-text-[20px] hover:tw-text-profile-dark">help</span></p>
 
     <template data-popover="popover">
         <div class="popover help-popover" id="help_popover" style="margin-top:-65px;">
@@ -23,7 +25,7 @@ defined('_JEXEC') or die;
                            class="tw-flex tw-items-center tw-gap-2 tw-py-2 tw-px-3 hover:tw-bg-neutral-300">
                             <img
                                     class='icone-aide-tchoozy'
-                                    src='../../../media/com_emundus/images/tchoozy/icons/Tchoozy-icone-articles-aide.svg'
+                                    src='<?php echo $base_url; ?>/media/com_emundus/images/tchoozy/icons/Tchoozy-icone-articles-aide.svg'
                                     alt='icone articles aide'>
                             <p><?= JText::_('MOD_EMUNDUS_HELP_ARTICLES'); ?></p>
                         </a>
@@ -32,7 +34,7 @@ defined('_JEXEC') or die;
                            class="tw-flex tw-items-center tw-gap-2 tw-py-2 tw-px-3 hover:tw-bg-neutral-300">
                             <img
                                     class='icone-aide-tchoozy'
-                                    src='../../../media/com_emundus/images/tchoozy/icons/Tchoozy-icone-articles-aide.svg'
+                                    src='<?php echo $base_url; ?>/media/com_emundus/images/tchoozy/icons/Tchoozy-icone-articles-aide.svg'
                                     alt='icone articles aide'>
                             <p><?= JText::_('MOD_EMUNDUS_HELP_ARTICLES'); ?></p>
                         </a>
@@ -41,7 +43,7 @@ defined('_JEXEC') or die;
                        class="tw-flex tw-items-center tw-gap-2 tw-py-2 tw-px-3 hover:tw-bg-neutral-300">
                         <img
                                 class='icone-aide-tchoozy'
-                                src='../../../media/com_emundus/images/tchoozy/icons/Tchoozy-icone-centre-aide.svg'
+                                src='<?php echo $base_url; ?>/media/com_emundus/images/tchoozy/icons/Tchoozy-icone-centre-aide.svg'
                                 alt='icone centre aide'>
                         <p><?= JText::_('MOD_EMUNDUS_HELP_HELP_CENTER'); ?></p>
                     </a>

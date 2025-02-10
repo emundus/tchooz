@@ -17,6 +17,11 @@ if(strpos($d->icon, 'calendar') !== false)
 	$d->icon = 'icon-event';
 }
 
+if($d->icon == 'icon-file')
+{
+    $d->icon = 'icon-description';
+}
+
 $iconParts  = explode(' ', trim($d->icon));
 $spareParts = array();
 
@@ -31,8 +36,6 @@ if (!in_array($iconParts[0],['icon-question-sign','icon-sort', 'icon-spinner']) 
         $icon[1] = 'emergency';
         $class = '!tw-text-xs tw-text-red-600 tw-mr-0';
         $style = 'style="top: -5px;position: relative"';
-
-        $material_icon_class = 'material-icons';
     }
 
     if ($icon[1] == 'plus') {

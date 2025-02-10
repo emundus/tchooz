@@ -3,10 +3,10 @@
     <div class="section-card tw-flex tw-flex-col">
       <div class="section-identifier tw-bg-profile-full tw-cursor-pointer tw-flex tw-items-center"
            @click="closedSection = !closedSection">
-        <span class="material-icons tw-mr-2 tw-text-white" v-show="section.repeat_group">library_add</span>
+        <span class="material-symbols-outlined tw-mr-2 tw-text-white" v-show="section.repeat_group">library_add</span>
         {{ translate('COM_EMUNDUS_FORM_BUILDER_SECTION') }} {{ index }} / {{ totalSections }}
-        <span class="material-icons tw-ml-2 tw-text-white" v-show="!closedSection">unfold_less</span>
-        <span class="material-icons tw-ml-2 tw-text-white" v-show="closedSection">unfold_more</span>
+        <span class="material-symbols-outlined tw-ml-2 tw-text-white" v-show="!closedSection">unfold_less</span>
+        <span class="material-symbols-outlined tw-ml-2 tw-text-white" v-show="closedSection">unfold_more</span>
       </div>
       <div class="section-content tw-w-full em-p-32" :class="{'closed': closedSection}">
         <div class="tw-flex tw-items-center tw-justify-between tw-w-full ">

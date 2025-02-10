@@ -50,13 +50,13 @@ class IxParapheur extends Api
 		$this->setHeaders();
 	}
 
-	public function setBaseUrl(): void
+	public function setBaseUrl($baseUrl): void
 	{
 		$config = JComponentHelper::getParams('com_emundus');
 		$this->baseUrl = $config->get('ixparapheur_api_base_url', '');
 	}
 
-	public function setHeaders(): void
+	public function setHeaders($headers): void
 	{
 		$auth = $this->getAuth();
 

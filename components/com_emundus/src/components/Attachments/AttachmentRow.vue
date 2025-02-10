@@ -53,7 +53,7 @@
       <div v-if="attachment.sync > 0">
         <span
             v-if="attachment.sync_method == 'write' && !syncLoading"
-            class="material-icons sync tw-cursor-pointer"
+            class="material-symbols-outlined sync tw-cursor-pointer"
             :class="{success: synchronizeState == 1, error: synchronizeState != 1}"
             :title="translate('COM_EMUNDUS_ATTACHMENTS_SYNC_WRITE')"
             @click="synchronizeAttachments(attachment.aid)"
@@ -62,7 +62,7 @@
         </span>
         <span
             v-else-if="attachment.sync_method == 'read' && !syncLoading"
-            class="material-icons sync tw-cursor-pointer"
+            class="material-symbols-outlined sync tw-cursor-pointer"
             :class="{
               success: synchronizeState == 1,
               error: synchronizeState != 1,

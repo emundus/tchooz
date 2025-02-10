@@ -9,10 +9,10 @@
                load_first_data="true" load_first_child="false">
             <section label="Informations générales" name="emundus_setup_campaigns">
                 <field name="label" type="field" section="emundus_setup_campaigns">Nom de la campagne</field>
-                <field name="description" section="emundus_setup_campaigns" type="textarea">Description</field>
-                <field name="short_description" section="emundus_setup_campaigns" type="textarea">Résumé de la
+                <field name="short_description" section="emundus_setup_campaigns" type="wysiwig">Résumé de la
                     campagne
                 </field>
+                <field name="description" section="emundus_setup_campaigns" type="wysiwig">Description</field>
             </section>
         </table>
     </reference>

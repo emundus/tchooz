@@ -203,7 +203,7 @@ class EmundusControllerProgramme extends BaseController
 							$tags       .= '<div class="tw-flex tw-flex-wrap">';
 							foreach ($campaigns as $campaign)
 							{
-								$tags .= '<a href="/campaigns/edit?cid=' . $campaign->id . '" class="tw-cursor-pointer tw-mr-2 tw-mb-2 tw-h-max tw-px-3 tw-py-1 tw-bg-main-100 tw-text-neutral-900 tw-text-sm tw-rounded-coordinator em-campaign-tag"> ' . $campaign->label . ' (' . $campaign->year . ')</a>';
+								$tags .= '<a href="'.EmundusHelperMenu::routeViaLink('index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid='.$campaign->id).'" class="tw-cursor-pointer tw-mr-2 tw-mb-2 tw-h-max tw-px-3 tw-py-1 tw-bg-main-100 tw-text-neutral-900 tw-text-sm tw-rounded-coordinator em-campaign-tag"> ' . $campaign->label . ' (' . $campaign->year . ')</a>';
 							}
 							$tags .= '</div>';
 

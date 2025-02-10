@@ -37,8 +37,11 @@ export default {
       default: true
     },
   },
+  emits: ['beforeOpen', 'closed'],
   data() {
-    false;
+    return {
+      isOpened: false
+    }
   },
   mounted() {
     this.open();

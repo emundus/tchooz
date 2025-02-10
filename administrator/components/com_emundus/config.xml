@@ -33,9 +33,6 @@
             -1 : user registration
             -2 : user login
         -->
-        <field name="log_actions" label="LOG_ACTIONS"
-               default="1,4,5,6,7,8,9,10,11,12,13,14,15,16,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37"
-               type="field" description="LOG_ACTIONS_DESC"/>
         <field name="log_actions_exclude" label="LOG_ACTIONS_EXCLUDE" type="field"
                description="LOG_ACTIONS_EXCLUDE_DESC"/>
         <field name="log_actions_exclude_user" label="LOG_ACTIONS_EXCLUDE_USER" default="" type="field"
@@ -1072,8 +1069,8 @@
         <field name="insee" type="note" label="COM_EMUNDUS_INSEE_API"/>
             <field name="insee_api_base_url" type="text" label="COM_EMUNDUS_INSEE_BASE_URL"
                    default="https://api.insee.fr"/>
-            <field name="insee_api_consumer_key" type="text" label="COM_EMUNDUS_INSEE_CONSUMER_KEY"/>
             <field name="insee_api_consumer_secret" type="text" label="COM_EMUNDUS_INSEE_CONSUMER_SECRET"/>
+            <field name="insee_api_version" type="text" label="COM_EMUNDUS_INSEE_VERSION" default="3.11"/>
 
         <field name="spacer15" type="spacer" hr="true"/>
         <field name="ixparapheur" type="note" label="COM_EMUNDUS_IXPARAPHEUR_API"/>

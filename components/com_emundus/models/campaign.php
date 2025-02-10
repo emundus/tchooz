@@ -14,6 +14,7 @@
 
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
+use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Model\ListModel;
@@ -150,12 +151,13 @@ class EmundusModelCampaign extends ListModel
 	 *
 	 * @param $uid
 	 *
-	 * @return array|void
+	 * @return array
 	 *
 	 * @since version v6
 	 */
-	function getAllowedCampaign($uid = null)
+	function getAllowedCampaign($uid = null): array
 	{
+		$allowed_campaigns = [];
 
 		if (empty($uid)) {
 			$uid = $this->_user->id;
@@ -190,7 +192,6 @@ class EmundusModelCampaign extends ListModel
 				}
 			}
 
-
 			switch ($applicant_can_renew) {
 				// Applicant can only have one file per campaign.
 				case 2:
@@ -214,12 +215,22 @@ class EmundusModelCampaign extends ListModel
 
 		try {
 			$this->_db->setQuery($query);
-
-			return array_column($this->_db->loadAssocList(), 'id');
+			$allowed_campaigns = array_column($this->_db->loadAssocList(), 'id');
 		}
 		catch (Exception $e) {
 			Log::add('Error at model/campaign -> query: ' . $query, Log::ERROR, 'com_emundus.error');
+			$allowed_campaigns = [];
 		}
+
+		if (!empty($allowed_campaigns)) {
+			foreach ($allowed_campaigns as $cid => $campaign) {
+				if ($this->isLimitObtained($cid)) {
+					unset($allowed_campaigns[$cid]);
+				}
+			}
+		}
+
+		return $allowed_campaigns;
 	}
 
 	/**
@@ -823,27 +834,29 @@ class EmundusModelCampaign extends ListModel
 	/**
 	 * Check if campaign's limit is obtained
 	 *
-	 * @param $id
+	 * @param int $campaign_id
+	 * @param string fnum, if not empty, check if fnum is in the list of candidature defined in the limit steps
+	 *               if it is, return true
 	 *
-	 * @return Object|mixed
+	 * @return bool
 	 *
 	 * @since 1.2.0
 	 *
 	 */
-	public function isLimitObtained($id)
+	public function isLimitObtained($campaign_id, string $fnum = ''): bool
 	{
-		$is_limit_obtained = null;
+		$is_limit_obtained = false;
 
-		if (EmundusHelperAccess::isApplicant($this->_user->id) && !empty($id)) {
-			$limit = $this->getLimit($id);
+		if (EmundusHelperAccess::isApplicant($this->_user->id) && !empty($campaign_id)) {
+			$limit = $this->getLimit($campaign_id);
 
-			if (!empty($limit->is_limited)) {
+			if (!empty($limit->is_limited) && !empty($limit->limit)) {
 				$query = $this->_db->getQuery(true);
 
 				$query->select('COUNT(id)')
 					->from($this->_db->quoteName('#__emundus_campaign_candidature'))
 					->where($this->_db->quoteName('status') . ' IN (' . $limit->steps . ')')
-					->andWhere($this->_db->quoteName('campaign_id') . ' = ' . $id)
+					->andWhere($this->_db->quoteName('campaign_id') . ' = ' . $campaign_id)
 					->andWhere($this->_db->quoteName('published').' = 1');
 
 				try {
@@ -852,6 +865,26 @@ class EmundusModelCampaign extends ListModel
 				}
 				catch (Exception $exception) {
 					Log::add('Error checking obtained limit at query :' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus.error');
+				}
+
+				if (!empty($fnum)) {
+					// is fnum in the list of candidature defined in the limit steps ?
+					$query = $this->_db->getQuery(true);
+					$query->clear()
+						->select('id')
+						->from($this->_db->quoteName('#__emundus_campaign_candidature'))
+						->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum))
+						->andWhere($this->_db->quoteName('campaign_id') . ' = ' . $campaign_id)
+						->andWhere($this->_db->quoteName('status') . ' IN (' . $limit->steps . ')')
+						->andWhere($this->_db->quoteName('published').' = 1');
+
+					try {
+						$this->_db->setQuery($query);
+						$is_limit_obtained = ($this->_db->loadResult() > 0) ? false : $is_limit_obtained;
+					}
+					catch (Exception $exception) {
+						Log::add('Error checking if fnum is in limit status ' . $exception->getMessage(), Log::ERROR, 'com_emundus.error');
+					}
 				}
 			}
 		}
@@ -1624,7 +1657,7 @@ class EmundusModelCampaign extends ListModel
 			$limit_status = [];
 			$fields       = [];
 			$columns      = [];
-			$keys_to_unset = ['limit', 'limit_status', 'profileLabel', 'progid', 'status', 'languages'];
+			$keys_to_unset = ['limit_status', 'profileLabel', 'progid', 'status', 'languages'];
 			$labels       = new stdClass;
 
 			$app->triggerEvent('onBeforeCampaignUpdate', $data);
@@ -1661,7 +1694,6 @@ class EmundusModelCampaign extends ListModel
 						}
 						$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
 						break;
-					case 'limit':
 					case 'profileLabel':
 					case 'progid':
 					case 'status':
@@ -1701,6 +1733,7 @@ class EmundusModelCampaign extends ListModel
 
 						$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
 						break;
+					case 'limit':
 					case 'pinned':
 					case 'is_limited':
 						if (!isset($val) || $val == '') {
@@ -1803,8 +1836,21 @@ class EmundusModelCampaign extends ListModel
 						unset($data[$key]);
 					}
 
-					$app->triggerEvent('onAfterCampaignUpdate', [$data, $old_data]);
-					$app->triggerEvent('onCallEventHandler', ['onAfterCampaignUpdate', ['campaign' => $cid]]);
+					$dispatcher = Factory::getApplication()->getDispatcher();
+					$onAfterCampaignUpdateEventHandler = new GenericEvent(
+						'onCallEventHandler',
+						['onAfterCampaignUpdate',
+							// Datas to pass to the event
+							['campaign' => $cid]
+						]
+					);
+					$onAfterCampaignUpdate             = new GenericEvent(
+						'onAfterCampaignUpdate',
+						// Datas to pass to the event
+						['data' => $data, 'old_data' => $old_data]
+					);
+					$dispatcher->dispatch('onCallEventHandler', $onAfterCampaignUpdateEventHandler);
+					$dispatcher->dispatch('onAfterCampaignUpdate', $onAfterCampaignUpdate);
 				}
 				else {
 					Log::add('Attempt to update $campaign ' . $cid . ' with data ' . json_encode($data) . ' failed.', Log::WARNING, 'com_emundus.error');

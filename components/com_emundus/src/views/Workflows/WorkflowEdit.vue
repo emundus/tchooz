@@ -2,7 +2,7 @@
   <div class="tw-m-2">
     <div v-if="!loading">
       <div class="tw-flex tw-items-center tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300" @click="goBack">
-        <span class="material-icons-outlined">navigate_before</span>
+        <span class="material-symbols-outlined">navigate_before</span>
         <span class="tw-ml-2 tw-text-neutral-900">{{ translate('BACK') }}</span>
       </div>
 
@@ -10,7 +10,7 @@
         <div class="tw-flex tw-flex-row tw-justify-between">
           <input id="workflow-label" name="workflow-label" class="!tw-w-[350px]" type="text" v-model="workflow.label" />
           <button class="tw-btn-primary tw-flex tw-items-center tw-gap-1" @click="save">
-            <span class="material-icons-outlined">check</span>
+            <span class="material-symbols-outlined">check</span>
             <span>{{ translate('SAVE') }}</span>
           </button>
         </div>
@@ -110,6 +110,7 @@
                         label="label"
                         track-by="id"
                         :placeholder="translate('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS_SELECT')"
+                        :selectLabel="translate('PRESS_ENTER_TO_SELECT')"
                         :multiple="true">
                     </Multiselect>
 
@@ -605,7 +606,7 @@ export default {
       }
     },
     goBack() {
-      window.location.href = '/workflows';
+      window.history.back();
     },
     isApplicantStep(step) {
       let isApplicantStep = step.type == 1;

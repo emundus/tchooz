@@ -5,7 +5,7 @@
       <div class="tw-grid tw-grid-cols-3 tw-mb-4">
         <button @click="pushTag" class="tw-btn-primary tw-mb-6 tw-w-max">
           <div class="add-button-div em-flex-row">
-            <span class="material-icons-outlined em-mr-4">add</span>
+            <span class="material-symbols-outlined em-mr-4">add</span>
             {{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_ADDTAG') }}
           </div>
         </button>

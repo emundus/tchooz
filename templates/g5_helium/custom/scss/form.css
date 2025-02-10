@@ -74,12 +74,20 @@
     .fabrikElement {
         .field-calendar {
             .input-group {
+                input.fabrikinput {
+                    max-width: fit-content;
+                }
+
                 button.btn.btn-primary {
                     background: transparent;
                     color: black;
                     border-top-left-radius: 0 !important;
                     border-bottom-left-radius: 0 !important;
                     border-color: var(--em-form-bc);
+                    height: var(--em-form-height);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
                 }
             }
             .js-calendar {
@@ -290,7 +298,6 @@
         }
 
         /** AUTOCOMPLETE **/
-
         .dropdown-menu:not(#userDropdownMenu) {
             padding: 0;
 
@@ -301,8 +308,6 @@
                     background-color: var(--transparent) !important;
                     color: var(--neutral-900);
                     text-decoration: none;
-                    word-break: break-all;
-                    white-space: break-spaces;
                 }
 
                 &:hover {
@@ -1112,9 +1117,30 @@
         .currencyElement {
             position: relative;
 
-            select, .chosen-container {
+            input.fabrikinput {
+                max-width: fit-content;
+                border-top-right-radius: 0;
+                border-bottom-right-radius: 0;
+            }
+
+            select#currency_selectValue {
                 position: absolute;
-                right: 0;
+                left: 181px;
+                border-left: 0;
+                min-width: unset;
+                background: transparent;
+                width: 40px !important;
+                padding: 0;
+                text-align: center !important;
+                border-top-left-radius: 0;
+                border-bottom-left-radius: 0;
+                border-bottom-right-radius: var(--em-applicant-br) !important;
+                border-top-right-radius: var(--em-applicant-br) !important;
+            }
+
+            .chosen-container {
+                position: absolute;
+                left: 181px;
                 width: auto !important;
                 border-left: 0;
                 border-top-left-radius: 0;
@@ -1128,9 +1154,11 @@
                     border-color: var(--em-form-bc);
                     justify-content: end;
                     background-image: none !important;
+                    padding-right: 8px !important;
+                    background: transparent;
 
                     span {
-                        font-size: 16px;
+                        font-size: 14px;
                         margin-right: 16px;
                     }
 
@@ -1363,7 +1391,7 @@
         input:not([type='file']):not(.custom-color-picker), select, textarea {
             color: var(--em-default-text-color-1);
             border-radius: var(--em-coordinator-br);
-            @apply tw-px-1.5 tw-py-2;
+            @apply tw-px-2.5 tw-py-2;
             @apply tw-mb-0;
             background-color: var(--em-form-bgc);
             transition: all 0.1s ease-out;
@@ -1390,6 +1418,7 @@
                 outline: unset !important;
             }
             .multiselect__single {
+                transition: all 0.1s ease-out !important;
                 color: var(--neutral-900);
             }
 
@@ -1404,6 +1433,75 @@
                         }
                     }
                 }
+            }
+        }
+
+        .multiselect:not(.multiselect--active) {
+            .multiselect__tags {
+                transition: all 0.1s ease-out;
+                &:hover {
+                    background-color: var(--em-form-bgc-hover);
+                    border-color: var(--em-form-bc-hover);
+                    box-shadow: unset;
+
+                    .multiselect__single {
+                        background-color: var(--em-form-bgc-hover);
+                        border-color: var(--em-form-bc-hover);
+                        box-shadow: unset;
+                    }
+                }
+            }
+        }
+
+        /** RADIOBUTTON **/
+        @supports selector(:has(*)) {
+            fieldset[data-toggle="radio_buttons"] .fabrikgrid_radio:has(input[type="radio"]:checked) {
+                background-color: var(--em-form-radio-bgc-checked);
+                border-color: var(--em-form-radio-bc-checked);
+            }
+        }
+
+        fieldset[data-toggle="radio_buttons"] {
+            .fabrikgrid_radio {
+                margin-bottom: var(--em-spacing-1);
+                margin-left: 0;
+                display: flex;
+                align-items: center;
+                padding: var(--em-form-radio-padding);
+                border: var(--em-form-radio-bw) solid var(--em-form-radio-bc);
+                border-radius: var(--em-form-radio-br);
+                width: -moz-fit-content;
+                width: fit-content;
+                height: auto;
+
+                input[type="radio"] {
+                    accent-color: var(--em-form-radio-color-checked);
+                    width: 24px;
+                    min-width: var(--em-form-radio-width);
+                    height: var(--em-form-radio-height);
+                    position: relative;
+                }
+
+                label {
+                    cursor: pointer;
+                    margin-bottom: 0px;
+                    width: 100%;
+                }
+            }
+        }
+
+        /** Split fields **/
+        .input-split-field-select {
+            input {
+                border-top-right-radius: 0 !important;
+                border-bottom-right-radius: 0 !important;
+                border-right: transparent !important;
+            }
+            select {
+                border-top-left-radius: 0 !important;
+                border-bottom-left-radius: 0 !important;
+                border-left: transparent !important;
+                background-color: var(--neutral-400) !important;
             }
         }
     }

@@ -1,4 +1,4 @@
-import { F as FetchClient, _ as _export_sfc, f as fileService, o as openBlock, c as createElementBlock, a as createBaseVNode, b as Fragment, r as renderList, n as normalizeClass, t as toDisplayString, d as createCommentVNode, T as Tabs, e as resolveComponent, g as createVNode, C as Comments, A as Attachments, M as Modal, h as errors, i as axios, w as withDirectives, v as vShow, j as createBlock, k as withCtx, l as normalizeStyle } from "./app_emundus.js";
+import { l as FetchClient, _ as _export_sfc, m as fileService, o as openBlock, c as createElementBlock, a as createBaseVNode, F as Fragment, b as renderList, d as normalizeClass, t as toDisplayString, h as withDirectives, v as vShow, e as createCommentVNode, T as Tabs, r as resolveComponent, g as createVNode, C as Comments, A as Attachments, M as Modal, p as errors, q as axios, f as createBlock, w as withCtx, n as normalizeStyle } from "./app_emundus.js";
 const fetchClient = new FetchClient("evaluation");
 const evaluationService = {
   async getEvaluationsForms(fnum, readonly = false) {
@@ -42,7 +42,8 @@ const _sfc_main$2 = {
     return {
       evaluations: [],
       selectedTab: 0,
-      ccid: 0
+      ccid: 0,
+      loading: false
     };
   },
   mounted() {
@@ -62,6 +63,7 @@ const _sfc_main$2 = {
       }
     },
     getEvaluationsForms() {
+      this.loading = true;
       evaluationService.getEvaluationsForms(this.fnum).then((response) => {
         if (this.onlyEditionAccess) {
           this.evaluations = response.data.filter((evaluation) => evaluation.user_access.can_edit);
@@ -70,10 +72,16 @@ const _sfc_main$2 = {
         }
         if (this.evaluations.length > 0) {
           this.selectedTab = this.evaluations[0].id;
+        } else {
+          this.loading = false;
         }
       }).catch((error) => {
         console.log(error);
       });
+    },
+    iframeLoaded(event) {
+      console.log("loaded");
+      this.loading = false;
     }
   },
   computed: {
@@ -92,6 +100,10 @@ const _hoisted_4$2 = { class: "tw-list-none tw-flex tw-flex-row" };
 const _hoisted_5$2 = ["onClick"];
 const _hoisted_6$1 = ["src"];
 const _hoisted_7$1 = {
+  key: 0,
+  class: "em-page-loader"
+};
+const _hoisted_8$1 = {
   key: 1,
   class: "tw-text-center tw-p-2 tw-m-2 tw-bg-blue-50 tw-border tw-border-blue-500 tw-rounded tw-text-neutral-900"
 };
@@ -109,15 +121,21 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
           }), 128))
         ])
       ]),
-      $data.ccid > 0 && $options.selectedEvaluation && $options.selectedEvaluation.form_id ? (openBlock(), createElementBlock("iframe", {
+      $data.ccid > 0 && $options.selectedEvaluation && $options.selectedEvaluation.form_id ? withDirectives((openBlock(), createElementBlock("iframe", {
         src: $options.selectedEvaluation.url,
         class: "tw-w-full iframe-evaluation-list",
-        key: $data.selectedTab
-      }, null, 8, _hoisted_6$1)) : createCommentVNode("", true)
-    ])) : (openBlock(), createElementBlock("p", _hoisted_7$1, toDisplayString(_ctx.translate("COM_EMUNDUS_EVALUATIONS_LIST_NO_EDITABLE_EVALUATIONS")), 1))
+        key: $data.selectedTab,
+        onLoad: _cache[0] || (_cache[0] = ($event) => $options.iframeLoaded($event))
+      }, null, 40, _hoisted_6$1)), [
+        [vShow, !$data.loading]
+      ]) : createCommentVNode("", true),
+      createBaseVNode("div", null, [
+        $data.loading ? (openBlock(), createElementBlock("div", _hoisted_7$1)) : createCommentVNode("", true)
+      ])
+    ])) : (openBlock(), createElementBlock("p", _hoisted_8$1, toDisplayString(_ctx.translate("COM_EMUNDUS_EVALUATIONS_LIST_NO_EDITABLE_EVALUATIONS")), 1))
   ]);
 }
-const Evaluations = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-7819c161"]]);
+const Evaluations = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-6e9962fb"]]);
 const client = new FetchClient("file");
 const filesService = {
   // eslint-disable-next-line no-unused-vars
@@ -407,7 +425,13 @@ const _sfc_main = {
     if (typeof this.selectedFile !== "undefined" && this.selectedFile !== null) {
       this.render();
     } else {
-      this.showModal = false;
+      const hash = window.location.hash;
+      if (hash) {
+        this.selectedFile = hash.replace("#", "");
+        this.render();
+      } else {
+        this.showModal = false;
+      }
     }
     this.addEventListeners();
   },
@@ -560,7 +584,7 @@ const _sfc_main = {
       this.hidden = true;
       this.showModal = false;
       document.querySelector("body").style.overflow = "visible";
-      swal.close();
+      this.updateURL();
     },
     openNextFnum() {
       let index = typeof this.selectedFile === "string" ? this.fnums.indexOf(this.selectedFile) : this.fnums.indexOf(this.selectedFile.fnum);

@@ -28,7 +28,6 @@ if (!empty($s_elements)) {
 ?>
 
 <?php
-
 if (is_array($this->elements) && count($this->elements) > 0) {
 	// If the form is set then this means that we are getting the Admission form details or some other extra form
 	// We are going to use the form value as a way to make unique IDs so the JS works correctly :)
@@ -42,7 +41,7 @@ if (is_array($this->elements) && count($this->elements) > 0) {
 				echo '<div class="em-p-8 em-border-radius-8 em-white-bg em-mb-8" id="emundus_table_' . $this->form . '_' . $t->table_id . '">
                             <div class="panel-heading"><div class="em-flex-row"><input type="checkbox" ';
 
-				echo ' id="emundus_checkall_tbl_' . $this->form . '_' . $t->table_id . '" class="emunduspage otherForm" data-check=".emundusgroup_' . $this->form . '_' . $t->table_id . '"/><label style="margin-bottom: 0" for="emundus_checkall_tbl_' . $this->form . '_' . $t->table_id . '">' . $t->form_label . '</label></div></div><div class="panel-body">
+				echo ' id="emundus_checkall_tbl_' . $this->form . '_' . $t->table_id . '" class="emunduspage otherForm" data-check=".emundusgroup_' . $this->form . '_' . $t->table_id . '"/><label style="margin-bottom: 0" for="emundus_checkall_tbl_' . $this->form . '_' . $t->table_id . '">' . Text::_($t->form_label) . '</label></div></div><div class="panel-body">
                         <div class="em-p-8 em-border-radius-8 em-white-bg em-mb-8" id="emundus_grp_' . $t->group_id . '">
                             <div class="panel-heading"><div class="em-flex-row"><input type="checkbox" ';
 
@@ -53,7 +52,7 @@ if (is_array($this->elements) && count($this->elements) > 0) {
                             <div class="em-p-8 em-border-radius-8 em-white-bg em-mb-8" id="emundus_table_' . $this->form . '_' . $t->table_id . '">
                                 <div class="panel-heading"><div class="em-flex-row"><input type="checkbox" ';
 
-				echo ' id="emundus_checkall_tbl_' . $this->form . '_' . $t->table_id . '" class="emunduspage otherForm" data-check=".emundusgroup_' . $this->form . '_' . $t->table_id . '" /><label style="margin-bottom: 0" for="emundus_checkall_tbl_' . $this->form . '_' . $t->table_id . '">' . $t->form_label . '</label></div></div><div class="panel-body">
+				echo ' id="emundus_checkall_tbl_' . $this->form . '_' . $t->table_id . '" class="emunduspage otherForm" data-check=".emundusgroup_' . $this->form . '_' . $t->table_id . '" /><label style="margin-bottom: 0" for="emundus_checkall_tbl_' . $this->form . '_' . $t->table_id . '">' . Text::_($t->form_label) . '</label></div></div><div class="panel-body">
                             <div class="em-p-8 em-border-radius-8 em-white-bg em-mb-8" id="emundus_grp_' . $this->form . '_' . $t->group_id . '">
                                 <div class="panel-heading"><div class="em-flex-row"><input type="checkbox" ';
 

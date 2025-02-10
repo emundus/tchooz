@@ -116,7 +116,7 @@
 
       <div v-else>
         <div v-if="displayedItems.length > 0" id="list-items">
-          <table v-if="viewType !== 'gantt'" id="list-table" :class="{'blocs': viewType === 'blocs'}">
+          <table v-if="viewType !== 'calendar' && viewType !== 'gantt'" id="list-table" :class="{'blocs': viewType === 'blocs'}">
             <thead class="tw-bg-white">
             <tr>
               <th class="tw-cursor-pointer tw-px-4 tw-py-2"
@@ -199,12 +199,12 @@
                         :position="'left'"
                         v-if="tabActionsPopover && tabActionsPopover.length > 0 && filterShowOnActions(tabActionsPopover, item).length"
                         class="custom-popover-arrow">
-                      <ul style="list-style-type: none; margin: 0; padding-left:0px;" class="em-flex-col-center">
+                      <ul style="list-style-type: none; margin: 0;" class="em-flex-col-center tw-p-4">
                         <li v-for="action in tabActionsPopover"
                             :key="action.name"
                             :class="{'tw-hidden': !(typeof action.showon === 'undefined' || evaluateShowOn(item, action.showon))}"
                             @click="onClickAction(action, item.id)"
-                            class="tw-cursor-pointer tw-p-2 tw-text-base hover:tw-bg-neutral-300"
+                            class="tw-cursor-pointer tw-py-1.5 tw-px-2 tw-text-base hover:tw-bg-neutral-300 hover:tw-rounded-coordinator"
                         >
                           {{ translate(action.label) }}
                         </li>
@@ -216,11 +216,17 @@
             </tr>
             </tbody>
           </table>
-          <Gantt v-else
-                 :language="params.shortlang"
-                 :periods="displayedItems"
+          <div v-else-if="viewType === 'calendar'">
+            <Calendar
+                :items="items"
+                :edit-action="editAction"
+                @on-click-action="onClickAction"
+            />
+          </div>
+          <Gantt v-else-if="viewType === 'gantt'"
+            :language="params.shortlang"
+            :periods="displayedItems"
           ></Gantt>
-
         </div>
         <div v-else id="empty-list" class="noneDiscover tw-text-center" v-html="noneDiscoverTranslation"></div>
       </div>
@@ -231,19 +237,24 @@
 
 <script>
 import {ref} from 'vue';
-// Components
+import Swal from 'sweetalert2';
+
+/* Components */
 import Skeleton from '@/components/Skeleton.vue';
 import Popover from '@/components/Popover.vue';
 import Gantt from '@/components/Gantt/Gantt.vue';
+import Calendar from "@/views/Events/Calendar.vue";
 
-// Services
+/* Services */
 import settingsService from '@/services/settings.js';
-import Swal from 'sweetalert2';
+
+/* Stores */
 import {useGlobalStore} from "@/stores/global.js";
 
 export default {
   name: 'list',
   components: {
+    Calendar,
     Skeleton,
     Popover,
     Gantt
@@ -282,6 +293,7 @@ export default {
       searches: {},
       filters: {},
       alertBannerDisplayed: false,
+
       orderBy: null,
       order: 'DESC'
     }
@@ -312,9 +324,16 @@ export default {
     this.type = this.params.type;
 
     this.viewType = localStorage.getItem('tchooz_view_type/' + document.location.hostname)
+    if(this.type === 'events') {
+      let calendarView = {value: 'calendar', icon: 'calendar_today'};
+      this.viewTypeOptions.push(calendarView);
+    }
     if (this.viewType === null || typeof this.viewType === 'undefined' || (this.viewType !== 'blocs' && this.viewType !== 'table')) {
       this.viewType = 'blocs';
-      localStorage.setItem('tchooz_view_type/' + document.location.hostname, 'blocs');
+      if(this.type === 'events') {
+        this.viewType = 'calendar';
+      }
+      localStorage.setItem('tchooz_view_type/' + document.location.hostname, this.viewType);
     }
     const storageNbItemsDisplay = localStorage.getItem('tchooz_number_of_items_to_display/' + document.location.hostname);
     if (storageNbItemsDisplay !== null) {
@@ -323,6 +342,7 @@ export default {
 
     this.initList();
   },
+
   methods: {
     initList() {
       if (this.defaultLists !== null) {
@@ -434,26 +454,26 @@ export default {
 
             try {
               fetch(url).then(response => response.json())
-                  .then(response => {
-                    if (response.status === true) {
-                      if (typeof response.data.datas !== 'undefined') {
-                        this.items[tab.key] = response.data.datas;
-                        tab.pagination = {
-                          current: page,
-                          total: Math.ceil(response.data.count / this.numberOfItemsToDisplay)
-                        }
+                .then(response => {
+                  if (response.status === true) {
+                    if (typeof response.data.datas !== 'undefined') {
+                      this.items[tab.key] = response.data.datas;
+                      tab.pagination = {
+                        current: page,
+                        total: Math.ceil(response.data.count / this.numberOfItemsToDisplay)
                       }
-                    } else {
-                      console.error('Failed to get data : ' + response.msg);
                     }
-                    this.loading.tabs = false;
-                    this.loading.items = false;
-                  })
-                  .catch(error => {
-                    console.error(error);
-                    this.loading.tabs = false;
-                    this.loading.items = false;
-                  });
+                  } else {
+                    console.error('Failed to get data : ' + response.msg);
+                  }
+                  this.loading.tabs = false;
+                  this.loading.items = false;
+                })
+                .catch(error => {
+                  console.error(error);
+                  this.loading.tabs = false;
+                  this.loading.items = false;
+                });
             } catch (e) {
               console.error(e);
               this.loading.tabs = false;
@@ -803,7 +823,9 @@ export default {
       } else if (this.type === "emails") {
         translation += '<span>' + this.translate('COM_EMUNDUS_ONBOARD_NOEMAIL') + '</span>';
       } else if (this.type === "forms") {
-        translation += '<span>' + this.translate('COM_EMUNDUS_ONBOARD_NOFORM') + '</span>';
+        translation += '<span>'+this.translate('COM_EMUNDUS_ONBOARD_NOFORM')+'</span>';
+      } else if (this.type === "events") {
+        translation += '<span>'+this.translate('COM_EMUNDUS_ONBOARD_NOEVENTS')+'</span>';
       }
 
       return translation;
@@ -838,6 +860,7 @@ export default {
   left: 75px;
   padding: 24px 33px 24px 33px;
   min-height: 86px;
+  z-index: 9;
 }
 
 .view-settings #onboarding_list .head {
@@ -898,7 +921,7 @@ export default {
             flex-direction: column;
           }
 
-          ul {
+          ul:not(.tw-p-4) {
             display: flex;
             flex-direction: column;
             justify-content: flex-end;

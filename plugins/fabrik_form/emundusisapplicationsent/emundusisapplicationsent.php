@@ -191,7 +191,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                 $m_profile = new EmundusModelProfile;
                 $fnumDetail = $m_profile->getFnumDetails($fnum);
 
-                $isLimitObtained = $m_campaign->isLimitObtained($user->fnums[$fnum]->campaign_id);
+                $isLimitObtained = $m_campaign->isLimitObtained($user->fnums[$fnum]->campaign_id, $fnum);
 
                 if ($fnum == @$user->fnum) {
                     //try to access edit view

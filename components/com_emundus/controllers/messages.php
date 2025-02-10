@@ -375,7 +375,8 @@ class EmundusControllerMessages extends BaseController
 			'CAMPAIGN_END'   => HTMLHelper::_('date', $fnum->end_date, Text::_('DATE_FORMAT_OFFSET1'), null),
 			'DEADLINE'       => HTMLHelper::_('date', $fnum->end_date, Text::_('DATE_FORMAT_OFFSET1'), null),
 			'SITE_URL'       => Uri::base(),
-			'USER_EMAIL'     => $fnum->email
+			'USER_EMAIL'     => $fnum->email,
+			'BUTTON_TEXT'    => $template->button
 		];
 
 		$tags    = $m_emails->setTags($fnum->applicant_id, $post, $fnum->fnum, '', $mail_from . $mail_from_name . $mail_subject . $mail_message);
@@ -638,7 +639,8 @@ class EmundusControllerMessages extends BaseController
 				'CAMPAIGN_END'   => HTMLHelper::_('date', $fnum->end_date, Text::_('DATE_FORMAT_OFFSET1'), null),
 				'DEADLINE'       => HTMLHelper::_('date', $fnum->end_date, Text::_('DATE_FORMAT_OFFSET1'), null),
 				'SITE_URL'       => Uri::base(),
-				'USER_EMAIL'     => $fnum->email
+				'USER_EMAIL'     => $fnum->email,
+				'BUTTON_TEXT'    => $template->button
 			];
 
 			$tags    = $m_emails->setTags($fnum->applicant_id, $post, $fnum->fnum, '', $mail_from . $mail_from_name . $mail_subject . $mail_message);

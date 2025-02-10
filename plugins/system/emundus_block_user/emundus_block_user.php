@@ -69,6 +69,12 @@ class plgSystemEmundus_block_user extends CMSPlugin
 			($input->get('option', '') != 'com_emundus' && $input->get('view', '') != 'user') &&
 			strpos($uri->toString(), 'logout') === false
         ) {
+			$activationUri = $this->app->getUserState('users.login.activation.return');
+			if (!empty($activationUri)) {
+				$this->app->setUserState('users.login.activation.return', null);
+				$this->app->redirect($activationUri);
+			}
+
 	        $table = JTable::getInstance('user', 'JTable');
 
 	        $table->load($user->id);

@@ -33,6 +33,11 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 {
 	public function onBeforeLoad(): void
 	{
+		$language = $this->app->getLanguage();
+		$current_lang = $language->getTag();
+
+		$language->load('com_emundus', JPATH_SITE.'/components/com_emundus', $current_lang, true);
+
 		$user = $this->app->getIdentity();
 		$form_model = $this->getModel();
 		$db_table_name = $form_model->getTableName();
@@ -45,8 +50,19 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 		$view = $input->getString('view', 'form');
 		$current_row_id = $input->getInt('rowid', 0);
 
+		$campaign_id = null;
+		if(!empty($ccid))
+		{
+			$query->clear()
+				->select('campaign_id')
+				->from('#__emundus_campaign_candidature')
+				->where('id = ' . $ccid);
+			$db->setQuery($query);
+			$campaign_id = $db->loadResult();
+		}
+
 		$m_workflow = new EmundusModelWorkflow();
-		$step_data = $m_workflow->getStepData($step_id);
+		$step_data = $m_workflow->getStepData($step_id,$campaign_id);
 		try {
 			$access = EmundusHelperAccess::getUserEvaluationStepAccess($ccid, $step_data, $user->id);
 		} catch (Exception $e) {
@@ -110,19 +126,17 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 		if ($current_url !== $final_url) {
 			$this->app->redirect($final_url);
 		}
+
+		$fnum = EmundusHelperFiles::getFnumFromId($ccid);
+		$form_model->data[$db_table_name . '___fnum'] = $fnum;
 	}
 
 	public function onBeforeProcess(): void
 	{
 		$form_model = $this->getModel();
-		$db_table_name = $form_model->getTableName();
 
 		PluginHelper::importPlugin('emundus', 'custom_event_handler');
 		$this->app->triggerEvent('onCallEventHandler', ['onBeforeSubmitEvaluation', ['formModel' => $form_model]]);
-
-		$ccid = $this->app->input->getInt($db_table_name . '___ccid', 0);
-		$fnum = EmundusHelperFiles::getFnumFromId($ccid);
-		$form_model->updateFormData($db_table_name . '___fnum', $fnum);
 	}
 
 	public function onAfterProcess(): void

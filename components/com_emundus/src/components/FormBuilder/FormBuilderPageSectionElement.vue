@@ -6,7 +6,7 @@
     <div class="tw-flex tw-items-start tw-justify-between tw-w-full tw-mb-2">
       <div class="tw-w-11/12">
         <label class="tw-w-full tw-flex tw-items-center fabrikLabel control-label tw-mb-0" @click="triggerElementProperties">
-          <span v-if="element.FRequire" class="material-icons !tw-text-xs tw-text-red-600 tw-mr-0" style="top: -5px;position: relative">emergency</span>
+          <span v-if="element.FRequire" class="material-symbols-outlined !tw-text-xs tw-text-red-600 tw-mr-0" style="top: -5px;position: relative">emergency</span>
         <input
             v-if="element.label_value && element.labelsAbove != 2"
             :ref="'element-label-' + element.id"
@@ -40,6 +40,7 @@
       <form-builder-element-phone-number v-else-if="element.plugin === 'emundus_phonenumber'" type="phonenumber" :element="element"></form-builder-element-phone-number>
       <form-builder-element-currency v-else-if="element.plugin === 'currency'" type="currency" :element="element"></form-builder-element-currency>
       <form-builder-element-geolocation v-else-if="element.plugin === 'emundus_geolocalisation'" type="geolocation" :element="element"></form-builder-element-geolocation>
+      <form-builder-element-booking v-else-if="element.plugin === 'booking'" type="booking" :element="element"></form-builder-element-booking>
       <div v-else v-html="element.element" class="fabrikElement"></div>
     </div>
   </div>
@@ -56,9 +57,12 @@ import FormBuilderElementCurrency from "@/components/FormBuilder/FormBuilderSect
 import FormBuilderElementGeolocation from "@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementGeolocation.vue";
 
 import { useGlobalStore } from "@/stores/global.js";
+import FormBuilderElementBooking
+  from "@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementBooking.vue";
 
 export default {
   components: {
+    FormBuilderElementBooking,
     FormBuilderElementGeolocation,
     FormBuilderElementCurrency,
     FormBuilderElementPhoneNumber,

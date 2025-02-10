@@ -156,7 +156,10 @@ export default {
             });
           }
         });
-        conditions_post.push(tmp_conditions);
+
+        if(tmp_conditions.length > 0) {
+          conditions_post.push(tmp_conditions);
+        }
       });
 
       this.actions.forEach((action) => {

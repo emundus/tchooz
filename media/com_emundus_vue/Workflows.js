@@ -1,6 +1,9 @@
 import list from "./List.js";
-import { _ as _export_sfc, e as resolveComponent, o as openBlock, c as createElementBlock, g as createVNode } from "./app_emundus.js";
+import { _ as _export_sfc, r as resolveComponent, o as openBlock, c as createElementBlock, g as createVNode } from "./app_emundus.js";
 import "./Skeleton.js";
+import "./Calendar.js";
+import "./core.js";
+import "./events.js";
 const _sfc_main = {
   name: "Workflows",
   components: {
@@ -19,14 +22,14 @@ const _sfc_main = {
               "getter": "getworkflows",
               "actions": [
                 {
-                  "action": "workflows/add",
+                  "action": "index.php?option=com_emundus&view=workflows&layout=add",
                   "label": "COM_EMUNDUS_ONBOARD_ADD_WORKFLOW",
                   "controller": "workflow",
                   "name": "add",
                   "type": "redirect"
                 },
                 {
-                  "action": "workflows/edit?wid=%id%",
+                  "action": "index.php?option=com_emundus&view=workflows&layout=edit&wid=%id%",
                   "label": "COM_EMUNDUS_ONBOARD_MODIFY",
                   "controller": "workflow",
                   "type": "redirect",

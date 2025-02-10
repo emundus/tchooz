@@ -7,7 +7,7 @@
 	<authorEmail>dev@emundus.fr</authorEmail>
 	<copyright>Copyright (C) 2005-2023 eMundus - All rights reserved.</copyright>
 	<license>GNU, GPLv3</license>
-	<version>2.1.6</version>
+	<version>2.2.0</version>
 	<description><![CDATA[COM_TCHOOZ_COMPONENT_DESCRIPTION]]></description>
 	<namespace>Joomla\Component\Emundus</namespace>
 

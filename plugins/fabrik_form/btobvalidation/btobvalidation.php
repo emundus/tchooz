@@ -36,7 +36,7 @@ class PlgFabrik_FormBtobValidation extends plgFabrik_Form
 		$btob_status     = (int) $btob_status;
 		$old_btob_status = (int) $old_btob_status;
 
-		if ($btob_status === 2)
+		if ($old_btob_status !== $btob_status && $btob_status === 2)
 		{
 			$user_id = $data['jos_emundus_users___user_id_raw'];
 

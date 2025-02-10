@@ -221,6 +221,8 @@ class EmundusModelApplication extends ListModel
 
 			if (!empty($profile)) {
 				$query->leftJoin($this->_db->quoteName('#__emundus_setup_attachment_profiles', 'esap') . ' ON ' . $this->_db->quoteName('esa.id') . ' = ' . $this->_db->quoteName('esap.attachment_id') . ' AND ' . $this->_db->quoteName('esap.profile_id') . ' = ' . $this->_db->quote($profile));
+			} else {
+				$query->leftJoin($this->_db->quoteName('#__emundus_setup_attachment_profiles', 'esap') . ' ON ' . $this->_db->quoteName('esa.id') . ' = ' . $this->_db->quoteName('esap.attachment_id'));
 			}
 			$query->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->quoteName('esc.id') . ' = ' . $this->_db->quoteName('eu.campaign_id'))
 				->where($this->_db->quoteName('eu.fnum') . ' LIKE ' . $this->_db->quote($fnum))
@@ -236,16 +238,13 @@ class EmundusModelApplication extends ListModel
 					. ' OR ' . $this->_db->quoteName('eu.timedate') . ' LIKE ' . $this->_db->quote('%' . $search . '%'));
 			}
 
-			if (!empty($profile)) {
-				$query->order($this->_db->quoteName('esap.mandatory') . ' DESC, ' . $this->_db->quoteName('esap.ordering') . ', ' . $this->_db->quoteName('esa.value') . ' ASC');
-			}
-			else {
-				$query->order($this->_db->quoteName('eu.modified') . ' DESC');
-			}
+			$query->order($this->_db->quoteName('esap.mandatory') . ' DESC, ' . $this->_db->quoteName('esap.ordering') . ', ' . $this->_db->quoteName('esa.value') . ' ASC');
 
 			if($applicant) {
 				$query->andWhere($this->_db->quoteName('eu.can_be_viewed') . ' = 1');
 			}
+
+			$query->group('eu.id');
 
 			try {
 				$this->_db->setQuery($query);
@@ -2572,6 +2571,27 @@ class EmundusModelApplication extends ListModel
 
 												$elt = chunk_split($elt, 4, ' ');
 											}
+											elseif ($element->plugin == 'booking') {
+												$availability    = $element->content;
+
+												if(!empty($availability))
+												{
+													$query = $this->_db->getQuery(true);
+													$query->select('start_date,end_date')
+														->from($this->_db->quoteName('#__emundus_setup_availabilities'))
+														->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($availability));
+													$this->_db->setQuery($query);
+													$availability = $this->_db->loadObject();
+
+													if(!empty($availability))
+													{
+														$elt = date('d.m.Y H:i', strtotime($availability->start_date)) . ' - ' . date('d.m.Y H:i', strtotime($availability->end_date));
+													}
+												}
+												else {
+													$elt = '';
+												}
+											}
 											else {
 												$elt = $element->content;
 											}
@@ -3422,6 +3442,25 @@ class EmundusModelApplication extends ListModel
 												}
 
 												$elt = chunk_split($elt, 4, ' ');
+											}
+											elseif ($element->plugin == 'booking') {
+												$availability    = $element->content;
+												$elt = '';
+
+												if(!empty($availability))
+												{
+													$query = $this->_db->getQuery(true);
+													$query->select('start_date,end_date')
+														->from($this->_db->quoteName('#__emundus_setup_availabilities'))
+														->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($availability));
+													$this->_db->setQuery($query);
+													$availability = $this->_db->loadObject();
+
+													if(!empty($availability))
+													{
+														$elt = date('d.m.Y H:i', strtotime($availability->start_date)) . ' - ' . date('d.m.Y H:i', strtotime($availability->end_date));
+													}
+												}
 											}
 											else {
 												$elt = Text::_($element->content);
@@ -6134,7 +6173,7 @@ class EmundusModelApplication extends ListModel
 		return $content;
 	}
 
-	public function getValuesByElementAndFnum($fnum, $eid, $fid, $raw = 1, $wheres = [], $uid = null,$format = true,$repeate_sperator = ",")
+	public function getValuesByElementAndFnum($fnum, $eid, $fid, $raw = 0, $wheres = [], $uid = null,$format = true,$repeate_sperator = ",")
 	{
 
 		$query = $this->_db->getQuery(true);
@@ -6216,7 +6255,12 @@ class EmundusModelApplication extends ListModel
 
 				if (!empty($values) || $element->plugin == 'yesno') {
 					foreach ($values as $value) {
-						$elt[] = EmundusHelperFabrik::formatElementValue($element->name, $value, $element->group_id, $aid, true);
+						if($raw == 0)
+						{
+							$elt[] = EmundusHelperFabrik::formatElementValue($element->name, $value, $element->group_id, $aid, true);
+						} else {
+							$elt[] = $value;
+						}
 					}
 				}
 
@@ -7321,7 +7365,7 @@ class EmundusModelApplication extends ListModel
             $fnumInfos  = $m_files->getFnumInfos($fnum);
             $profiles = $m_profile->getProfilesIDByCampaign([$fnumInfos['campaign_id']]);
 
-            $forms = [];
+            $forms = [102]; // Default form
 			if (!empty($profiles)) {
 				require_once(JPATH_SITE . '/components/com_emundus/models/form.php');
 				$m_form = new EmundusModelForm();

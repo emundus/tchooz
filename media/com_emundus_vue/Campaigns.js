@@ -1,6 +1,9 @@
 import list from "./List.js";
-import { _ as _export_sfc, e as resolveComponent, o as openBlock, c as createElementBlock, g as createVNode } from "./app_emundus.js";
+import { _ as _export_sfc, r as resolveComponent, o as openBlock, c as createElementBlock, g as createVNode } from "./app_emundus.js";
 import "./Skeleton.js";
+import "./Calendar.js";
+import "./core.js";
+import "./events.js";
 const _sfc_main = {
   name: "Campaigns",
   components: {
@@ -130,7 +133,7 @@ const _sfc_main = {
                   "type": "redirect"
                 },
                 {
-                  "action": "/campaigns/edit-program?id=%id%",
+                  "action": "index.php?option=com_emundus&view=programme&layout=edit&id=%id%",
                   "label": "COM_EMUNDUS_ONBOARD_MODIFY",
                   "controller": "programme",
                   "type": "redirect",

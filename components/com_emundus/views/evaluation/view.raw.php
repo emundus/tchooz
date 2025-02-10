@@ -24,7 +24,7 @@ use Joomla\CMS\Language\Text;
 class EmundusViewEvaluation extends JViewLegacy
 {
 	private $app;
-	private $_user;
+	protected $_user;
 
 	protected $itemId;
 	protected $actions;

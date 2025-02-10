@@ -335,7 +335,7 @@ button#mod_emundus_campaign__header_filter {
     background-image: none !important;
 }
 
-.em-searchbar .material-icons-outlined.em-font-size-24 {
+.em-searchbar .material-symbols-outlined.em-font-size-24 {
     font-size: 22px;
 }
 
@@ -638,6 +638,11 @@ p[id*="mod_emundus_campaign__tchoozy_tab_desc"] {
     color: var(--neutral-900);
     font-family: var(--em-applicant-font);
 }
+
+.tchooz-single-campaign #campaign p:empty::before {
+    content: "\00a0";
+}
+
 
 
 .tchooz-single-campaign #campaign *:not(a) {

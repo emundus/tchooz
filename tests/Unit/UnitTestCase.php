@@ -49,14 +49,23 @@ abstract class UnitTestCase extends TestCase
 	 */
 	protected $dataset = [];
 
-	public function __construct(?string $name = null, array $data = [], $dataName = '', $className = null)
+	public function __construct(?string $name = null, array $data = [], $dataName = '', $className = null, $directory = '', $construct_args = [])
 	{
 		parent::__construct($name, $data, $dataName);
 
 		if (!empty($name))
 		{
-			require_once JPATH_BASE . '/components/com_emundus/models/' . $name . '.php';
-			$this->model = new $className();
+			if (empty($directory)) {
+				$directory = JPATH_BASE . '/components/com_emundus/models/';
+			}
+
+			require_once $directory . $name . '.php';
+
+			if (!empty($construct_args)) {
+				$this->model = new $className(...$construct_args);
+			} else {
+				$this->model = new $className();
+			}
 		}
 
 		$config   = new \stdClass();
@@ -104,5 +113,16 @@ abstract class UnitTestCase extends TestCase
 		$this->h_dataset->deleteSampleProgram($this->dataset['program']['programme_id']);
 		$this->h_dataset->deleteSampleCampaign($this->dataset['campaign']);
 		$this->h_dataset->deleteSampleFile($this->dataset['fnum']);
+	}
+	protected static function callPrivateMethod($obj, $name, array $args) {
+		$class = new \ReflectionClass($obj);
+		$method = $class->getMethod($name);
+
+		if (version_compare(PHP_VERSION, '8.1.0', '<'))
+		{
+			$method->setAccessible(true);
+		}
+
+		return $method->invokeArgs($obj, $args);
 	}
 }

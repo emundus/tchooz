@@ -31,10 +31,10 @@
     font-family: 'Material Symbols Outlined';
     font-style: normal;
     font-weight: 400;
-    src: url(/media/com_emundus/css/fonts/google/MaterialSymbolsOutlined[FILL,GRAD,opsz,wght].ttf); /* For IE6-8 */
+    src: url(/media/com_emundus/css/fonts/google/MaterialSymbolsOutlined[FILL,GRAD,opsz,wght].woff); /* For IE6-8 */
     src: local('Material Symbols Outlined'),
     local('MaterialSymbolsOutlined[FILL,GRAD,opsz,wght]'),
-    url(/media/com_emundus/css/fonts/google/MaterialSymbolsOutlined[FILL,GRAD,opsz,wght].ttf) format('truetype');
+    url(/media/com_emundus/css/fonts/google/MaterialSymbolsOutlined[FILL,GRAD,opsz,wght].woff) format('woff');
 }
 
 .material-icons {
@@ -377,9 +377,93 @@ small {
         letter-spacing: normal;
         font-size: var(--em-applicant-font-size);
         margin-bottom: 0;
+        font-family: var(--em-profile-font), Inter, sans-serif;
     }
 
     button.btn.goback-btn:hover {
         background-color: var(--neutral-300);
     }
+}
+
+/** VueScheduler **/
+.sx-vue-calendar-wrapper {
+    max-width: 100vw;
+    height: 800px;
+    max-height: 90vh;
+}
+.sx__time-grid-event-inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--em-spacing-2);
+}
+.sx__time-grid-event-time,.sx__time-grid-event-location,.sx__time-grid-event-people,.sx__time-grid-event-availabilities {
+    font-size: 12px;
+    span:not(.material-symbols-outlined) {
+        font-size: 12px;
+    }
+    span.material-symbols-outlined {
+        font-size: 16px;
+    }
+    .sx__time-grid-event-people-list {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+.sx__time-grid-event-availabilities {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+}
+.sx__view-selection-selected-item {
+    font-size: 12px;
+    height: 40px;
+}
+.sx__time-grid-event-title {
+    margin-bottom: var(--em-spacing-1);
+}
+.sx__stripped_event {
+    background: repeating-linear-gradient(
+            45deg,
+            var(--neutral-100),
+            var(--neutral-100) 6px,
+            var(--neutral-300) 6px,
+            var(--neutral-300) 12px
+    );
+}
+/** **/
+
+/* VCalendar */
+.vc-time-date {
+    display: none;
+}
+.vc-time-picker {
+    justify-content: center;
+}
+.vc-time-icon {
+    display: none;
+}
+.vc-select select {
+    width: 100%;
+}
+.vc-select-arrow {
+    display: none;
+}
+.vc-time-select-group {
+    background: transparent;
+    border: unset;
+    .vc-base-icon {
+        display: none;
+    }
+    .vc-base-select {
+        height: auto;
+        select {
+            height: auto;
+        }
+    }
+}
+.vc-highlight-bg-solid,.vc-highlight {
+    background-color: var(--em-profile-color) !important;
 }

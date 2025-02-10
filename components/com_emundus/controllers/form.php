@@ -76,7 +76,7 @@ class EmundusControllerForm extends BaseController
 				{
 					if (count($campaigns) < 2)
 					{
-						$short_tags = '<a href="/campaigns/edit?cid=' . $campaigns[0]->id . '" class="tw-cursor-pointer tw-mr-2 tw-mb-2 tw-h-max tw-font-semibold hover:tw-font-semibold tw-underline hover:tw-no-underline tw-text-neutral-900 tw-text-sm em-campaign-tag"> ' . $campaigns[0]->label . '</a>';
+						$short_tags = '<a href="'.EmundusHelperMenu::routeViaLink('index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid='.$campaigns[0]->id).'" class="tw-cursor-pointer tw-mr-2 tw-mb-2 tw-h-max tw-font-semibold hover:tw-font-semibold tw-underline hover:tw-no-underline tw-text-neutral-900 tw-text-sm em-campaign-tag"> ' . $campaigns[0]->label . '</a>';
 					}
 					else
 					{
@@ -86,7 +86,7 @@ class EmundusControllerForm extends BaseController
 						$tags       .= '<div class="tw-flex tw-flex-wrap">';
 						foreach ($campaigns as $campaign)
 						{
-							$tags .= '<a href="/campaigns/edit?cid=' . $campaign->id . '" class="tw-cursor-pointer tw-mr-2 tw-mb-2 tw-h-max tw-px-3 tw-py-1 tw-font-semibold tw-bg-main-100 tw-text-neutral-900 tw-text-sm tw-rounded-coordinator em-campaign-tag"> ' . $campaign->label . '</a>';
+							$tags .= '<a href="'.EmundusHelperMenu::routeViaLink('index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid='.$campaign->id).'" class="tw-cursor-pointer tw-mr-2 tw-mb-2 tw-h-max tw-px-3 tw-py-1 tw-font-semibold tw-bg-main-100 tw-text-neutral-900 tw-text-sm tw-rounded-coordinator em-campaign-tag"> ' . $campaign->label . '</a>';
 						}
 						$tags .= '</div>';
 

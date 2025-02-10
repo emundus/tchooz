@@ -1,5 +1,5 @@
-import { Z as client, i as axios, _ as _export_sfc, Q as script, I as mixin, o as openBlock, c as createElementBlock, b as Fragment, r as renderList, a as createBaseVNode, t as toDisplayString, d as createCommentVNode, h as errors, e as resolveComponent, g as createVNode, w as withDirectives, v as vShow } from "./app_emundus.js";
-import { q as qs } from "./index.js";
+import { $ as client, q as axios, _ as _export_sfc, X as V32, U as script, J as mixin, r as resolveComponent, o as openBlock, c as createElementBlock, F as Fragment, b as renderList, a as createBaseVNode, t as toDisplayString, e as createCommentVNode, f as createBlock, d as normalizeClass, p as errors, g as createVNode, h as withDirectives, v as vShow } from "./app_emundus.js";
+import { q as qs } from "./index2.js";
 const translationsService = {
   async checkSetup() {
     try {
@@ -270,6 +270,7 @@ const translationsService = {
 const _sfc_main$1 = {
   name: "TranslationRow",
   components: {
+    TipTapEditor: V32,
     Multiselect: script
   },
   mixins: [mixin],
@@ -316,11 +317,12 @@ const _sfc_main$1 = {
 };
 const _hoisted_1$1 = { class: "tw-mb-8 em-neutral-100-box em-p-24" };
 const _hoisted_2$1 = { class: "tw-mb-6" };
-const _hoisted_3$1 = { class: "tw-justify-between tw-mt-4 em-grid-50 em-ml-24" };
-const _hoisted_4$1 = { class: "tw-text-neutral-700" };
+const _hoisted_3$1 = { class: "tw-justify-between tw-items-start tw-mt-4 em-grid-50 em-ml-24" };
+const _hoisted_4$1 = ["innerHTML"];
 const _hoisted_5$1 = ["value", "onFocusout"];
 const _hoisted_6$1 = ["value", "onFocusout"];
 function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
+  const _component_tip_tap_editor = resolveComponent("tip-tap-editor");
   return openBlock(), createElementBlock("div", null, [
     (openBlock(true), createElementBlock(Fragment, null, renderList($data.translations_rows, (translation) => {
       return openBlock(), createElementBlock("div", _hoisted_1$1, [
@@ -328,7 +330,10 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
           return openBlock(), createElementBlock("div", _hoisted_2$1, [
             createBaseVNode("p", null, toDisplayString(field.reference_label ? field.reference_label.toUpperCase() : field.reference_id), 1),
             createBaseVNode("div", _hoisted_3$1, [
-              createBaseVNode("p", _hoisted_4$1, toDisplayString(field.default_lang), 1),
+              createBaseVNode("div", {
+                innerHTML: field.default_lang,
+                class: "tw-text-neutral-700 tw-max-h-80 tw-overflow-auto"
+              }, null, 8, _hoisted_4$1),
               field.field_type === "field" ? (openBlock(), createElementBlock("input", {
                 key: 0,
                 class: "mb-0 em-input tw-w-full",
@@ -341,7 +346,19 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
                 class: "mb-0 em-input",
                 value: field.lang_to,
                 onFocusout: ($event) => $options.saveTranslation($event.target.value, field)
-              }, null, 40, _hoisted_6$1)) : createCommentVNode("", true)
+              }, null, 40, _hoisted_6$1)) : createCommentVNode("", true),
+              field.field_type === "wysiwig" ? (openBlock(), createBlock(_component_tip_tap_editor, {
+                key: 2,
+                modelValue: field.lang_to,
+                "onUpdate:modelValue": ($event) => field.lang_to = $event,
+                "editor-content-height": "20em",
+                class: normalizeClass("tw-mt-1"),
+                locale: "fr",
+                preset: "basic",
+                "toolbar-classes": ["tw-bg-white"],
+                "editor-content-classes": ["tw-bg-white"],
+                onFocusout: ($event) => $options.saveTranslation(field.lang_to, field)
+              }, null, 8, ["modelValue", "onUpdate:modelValue", "onFocusout"])) : createCommentVNode("", true)
             ])
           ]);
         }), 256))

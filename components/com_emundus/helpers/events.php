@@ -15,6 +15,7 @@
 // no direct access
 use Joomla\CMS\Access\Access;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
@@ -447,7 +448,7 @@ class EmundusHelperEvents
 				$query->clear()
 					->select('id')
 					->from($db->quoteName($db_table_name))
-					->where($db->quoteName('fnum') . ' = ' . $fnum);
+					->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
 				$db->setQuery($query);
 				$rowid = $db->loadResult();
 				if (!empty($rowid))
@@ -575,7 +576,7 @@ class EmundusHelperEvents
 				$mProfile   = new EmundusModelProfile;
 				$fnumDetail = $mProfile->getFnumDetails($fnum);
 
-				$isLimitObtained = $m_campaign->isLimitObtained($user->fnums[$fnum]->campaign_id);
+				$isLimitObtained = $m_campaign->isLimitObtained($user->fnums[$fnum]->campaign_id, $fnum);
 
 				if ($fnumInfos->applicant_id == $user->id)
 				{
@@ -689,7 +690,7 @@ class EmundusHelperEvents
 				{
 					if (($is_dead_line_passed && $can_edit_after_deadline == 0) || $isLimitObtained === true)
 					{
-						if ($reload_url && $view !== 'details')
+						if ($reload_url || $view !== 'details')
 						{
 							if ($isLimitObtained === true)
 							{
@@ -1562,7 +1563,7 @@ class EmundusHelperEvents
 		}
 
 		// Check campaign limit, if the limit is obtained, then we set the deadline to true
-		$isLimitObtained = $mCampaign->isLimitObtained($student->fnums[$student->fnum]->campaign_id);
+		$isLimitObtained = $mCampaign->isLimitObtained($student->fnums[$student->fnum]->campaign_id, $student->fnum);
 
 		// If we've passed the deadline and the user cannot submit (is not in the list of exempt users), block him.
 		if ((($is_dead_line_passed && $can_edit_after_deadline != 1) || $isLimitObtained === true) && !in_array($student->id, $id_applicants))
@@ -1621,8 +1622,26 @@ class EmundusHelperEvents
 		if ($updated && $old_status != $new_status)
 		{
 			$this->logUpdateState($old_status, $new_status, $student->id, $applicant_id, $student->fnum);
-			Factory::getApplication()->triggerEvent('onAfterStatusChange', [$student->fnum, $new_status]);
-			Factory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterStatusChange', ['fnum' => $student->fnum, 'state' => $new_status, 'old_state' => $old_status]]);
+
+			PluginHelper::importPlugin('emundus'); // si event call event handler
+			$dispatcher = Factory::getApplication()->getDispatcher();
+
+			$onAfterStatusChangeEventHandler = new GenericEvent(
+				'onCallEventHandler',
+				['onAfterStatusChange',
+					// Datas to pass to the event
+					['fnum' => $student->fnum, 'state' => $new_status, 'old_state' => $old_status]
+				]
+			);
+			$onAfterStatusChange = new GenericEvent(
+				'onAfterStatusChange',
+				// Datas to pass to the event
+				['fnum' => $student->fnum, 'state' => $new_status, 'old_state' => $old_status]
+			);
+
+			// Dispatch the event
+			$dispatcher->dispatch('onCallEventHandler', $onAfterStatusChangeEventHandler);
+			$dispatcher->dispatch('onAfterStatusChange', $onAfterStatusChange);
 		}
 
 		$query = 'UPDATE #__emundus_declaration SET time_date=' . $db->Quote($now) . ' WHERE user=' . $student->id . ' AND fnum like ' . $db->Quote($student->fnum);
@@ -1830,35 +1849,19 @@ class EmundusHelperEvents
 				$program_manager_group_id = $eMConfig->get('program_manager_group', '');
 				$create_program_groups    = $eMConfig->get('create_program_groups', 1);
 
-				// Link All rights group with programme
-				$columns = array('parent_id', 'course');
-				$values  = array($db->quote($all_rights_group_id), $db->quote($programme->code));
-
 				$query->clear()
-					->insert($db->quoteName('#__emundus_setup_groups_repeat_course'))
-					->columns($db->quoteName($columns))
-					->values(implode(',', $values));
+					->select($db->quoteName('id'))
+					->from($db->quoteName('#__emundus_setup_groups_repeat_course'))
+					->where($db->quoteName('parent_id') . ' = ' . $db->quote($all_rights_group_id))
+					->andWhere($db->quoteName('course') . ' LIKE ' . $db->quote($programme->code));
 				$db->setQuery($query);
-				$db->execute();
+				$all_rights_group_link = $db->loadResult();
 
-				if ($create_program_groups == 1)
+				if (empty($all_rights_group_link))
 				{
-					// Create user group
-					$columns = array('label', 'published', 'class');
-					$values  = array($db->quote($programme->label), $db->quote(1), $db->quote('label-default'));
-
-					$query->clear()
-						->insert($db->quoteName('#__emundus_setup_groups'))
-						->columns($db->quoteName($columns))
-						->values(implode(',', $values));
-					$db->setQuery($query);
-					$db->execute();
-					$group_id = $db->insertid();
-					//
-
-					// Link group with programme
+					// Link All rights group with programme
 					$columns = array('parent_id', 'course');
-					$values  = array($db->quote($group_id), $db->quote($programme->code));
+					$values  = array($db->quote($all_rights_group_id), $db->quote($programme->code));
 
 					$query->clear()
 						->insert($db->quoteName('#__emundus_setup_groups_repeat_course'))
@@ -1866,34 +1869,77 @@ class EmundusHelperEvents
 						->values(implode(',', $values));
 					$db->setQuery($query);
 					$db->execute();
-					//
+				}
 
-					// Affect coordinator to the group of the program
-					$columns = array('user_id', 'group_id');
-					$values  = array($db->quote($user_id), $group_id);
-
+				if ($create_program_groups == 1)
+				{
 					$query->clear()
-						->insert($db->quoteName('#__emundus_groups'))
-						->columns($db->quoteName($columns))
-						->values(implode(',', $values));
+						->select($db->quoteName('id'))
+						->from($db->quoteName('#__emundus_setup_groups_repeat_course'))
+						->where($db->quoteName('parent_id') . ' <> ' . $db->quote($all_rights_group_id))
+						->andWhere($db->quoteName('course') . ' LIKE ' . $db->quote($programme->code));
 					$db->setQuery($query);
-					$db->execute();
-					//
+					$group_program_link = $db->loadResult();
 
-					if (!class_exists('EmundusModelProgramme'))
+					if (empty($group_program_link))
 					{
-						require_once(JPATH_ROOT . '/components/com_emundus/models/programme.php');
-					}
-					$m_program = new EmundusModelProgramme();
+						// Create user group
+						$columns = array('label', 'published', 'class');
+						$values  = array($db->quote($programme->label), $db->quote(1), $db->quote('label-default'));
 
-					if (!empty($evaluator_group_id))
-					{
-						$m_program->addGroupToProgram($programme->label, $programme->code, $evaluator_group_id);
+						$query->clear()
+							->insert($db->quoteName('#__emundus_setup_groups'))
+							->columns($db->quoteName($columns))
+							->values(implode(',', $values));
+						$db->setQuery($query);
+						$db->execute();
+						$group_id = $db->insertid();
+						//
+
+						// Link group with programme
+						$columns = array('parent_id', 'course');
+						$values  = array($db->quote($group_id), $db->quote($programme->code));
+
+						$query->clear()
+							->insert($db->quoteName('#__emundus_setup_groups_repeat_course'))
+							->columns($db->quoteName($columns))
+							->values(implode(',', $values));
+						$db->setQuery($query);
+						$db->execute();
+						//
+
+						// Affect coordinator to the group of the program
+						$columns = array('user_id', 'group_id');
+						$values  = array($db->quote($user_id), $group_id);
+
+						$query->clear()
+							->insert($db->quoteName('#__emundus_groups'))
+							->columns($db->quoteName($columns))
+							->values(implode(',', $values));
+						$db->setQuery($query);
+						$db->execute();
+						//
+
+						if (!class_exists('EmundusModelProgramme'))
+						{
+							require_once(JPATH_ROOT . '/components/com_emundus/models/programme.php');
+						}
+						$m_program = new EmundusModelProgramme();
+
+						if (!empty($evaluator_group_id))
+						{
+							$m_program->addGroupToProgram($programme->label, $programme->code, $evaluator_group_id);
+						}
+						if (!empty($program_manager_group_id))
+						{
+							$m_program->addGroupToProgram($programme->label, $programme->code, $program_manager_group_id);
+						}
 					}
-					if (!empty($program_manager_group_id))
-					{
-						$m_program->addGroupToProgram($programme->label, $programme->code, $program_manager_group_id);
-					}
+				}
+
+				if (!empty($params['data']) && !empty($params['data']['formid']))
+				{
+					Factory::getApplication()->redirect('/index.php?option=com_fabrik&view=form&formid=' . $params['data']['formid'] . '&rowid=' . $params['data']['jos_emundus_setup_programmes___id'] . '&tmpl=component&iframe=1');
 				}
 			}
 
@@ -2375,5 +2421,42 @@ class EmundusHelperEvents
 		}
 
 		return $session_delete;
+	}
+
+	public function onAfterSubmitEvaluation($params)
+	{
+		$form_model = $params['formModel'];
+		$data = $form_model->getData();
+
+		$db_table_name = $form_model->getTableName();
+		$ccid = $data[$db_table_name . '___ccid'];
+		$fnum = $data[$db_table_name . '___fnum'];
+		$step_id = $data[$db_table_name . '___step_id'];
+		$current_user_id = Factory::getApplication()->getIdentity()->id;
+
+		require_once (JPATH_SITE . '/components/com_emundus/models/workflow.php');
+		$m_workflow = new EmundusModelWorkflow();
+		$step_data = $m_workflow->getStepData($step_id);
+
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+
+		$query->select('applicant_id')
+			->from($db->quoteName('#__emundus_campaign_candidature'))
+			->where($db->quoteName('id') . ' = ' . $db->quote($ccid));
+
+		try {
+			$db->setQuery($query);
+			$applicant_id = $db->loadResult();
+
+			require_once (JPATH_SITE . '/components/com_emundus/models/logs.php');
+			EmundusModelLogs::log($current_user_id, $applicant_id, $fnum, 5, 'c', 'COM_EMUNDUS_SUBMIT_EVALUATION', json_encode(array(
+				'step_id' => $step_id,
+				'step_action_id' => $step_data->action_id,
+				'created' => [['element' => $step_data->label]]
+			)));
+		} catch (Exception $e) {
+			Log::add('Error when try to get applicant_id from ccid ' . $ccid . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
 	}
 }

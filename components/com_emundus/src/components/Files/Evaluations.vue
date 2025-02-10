@@ -14,11 +14,16 @@
       </nav>
       <iframe
           v-if="ccid > 0 && selectedEvaluation && selectedEvaluation.form_id"
+          v-show="!loading"
           :src="selectedEvaluation.url"
           class="tw-w-full iframe-evaluation-list"
           :key="selectedTab"
+          @load="iframeLoaded($event)"
       >
       </iframe>
+      <div>
+        <div v-if="loading" class="em-page-loader" />
+      </div>
     </div>
     <p v-else class="tw-text-center tw-p-2 tw-m-2 tw-bg-blue-50 tw-border tw-border-blue-500 tw-rounded tw-text-neutral-900">{{ translate('COM_EMUNDUS_EVALUATIONS_LIST_NO_EDITABLE_EVALUATIONS') }}</p>
   </div>
@@ -48,7 +53,9 @@ export default {
     return {
       evaluations: [],
       selectedTab: 0,
-      ccid: 0
+      ccid: 0,
+
+      loading: false
     }
   },
   mounted() {
@@ -68,6 +75,7 @@ export default {
       }
     },
     getEvaluationsForms() {
+      this.loading = true;
       // there can be multiple evaluations forms, based on fnums and evaluator access
       evaluationService.getEvaluationsForms(this.fnum).then(response => {
         if (this.onlyEditionAccess) {
@@ -78,11 +86,17 @@ export default {
 
         if (this.evaluations.length > 0) {
           this.selectedTab = this.evaluations[0].id;
+        } else {
+          this.loading = false;
         }
       }).catch(error => {
         console.log(error);
       });
-    }
+    },
+    iframeLoaded(event) {
+      console.log('loaded');
+      this.loading = false;
+    },
   },
   computed: {
     selectedEvaluation() {

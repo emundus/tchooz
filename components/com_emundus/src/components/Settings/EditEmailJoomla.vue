@@ -144,7 +144,7 @@
 <script>
 import mixin from "@/mixins/mixin";
 import Swal from "sweetalert2";
-import Parameter from "@/components/Settings/Parameter.vue";
+import Parameter from "@/components/Utils/Parameter.vue";
 import Info from "@/components/Utils/Info.vue";
 import settingsService from "@/services/settings";
 import Tabs from "@/components/Utils/Tabs.vue";

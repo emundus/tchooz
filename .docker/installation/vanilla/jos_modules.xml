@@ -1164,7 +1164,7 @@
     <field name="module">mod_emundus_filters</field>
     <field name="access">6</field>
     <field name="showtitle">0</field>
-    <field name="params">{&quot;filter_on_fnums&quot;:&quot;1&quot;,&quot;element_id&quot;:&quot;0&quot;,&quot;default_filter_element_ids&quot;:{&quot;default_filter_element_ids0&quot;:{&quot;id&quot;:&quot;0&quot;,&quot;join_table&quot;:&quot;&quot;,&quot;join_column_from&quot;:&quot;&quot;,&quot;join_column_to&quot;:&quot;&quot;}},&quot;count_filter_values&quot;:&quot;1&quot;,&quot;filter_status&quot;:&quot;1&quot;,&quot;filter_status_order&quot;:&quot;0&quot;,&quot;filter_campaign&quot;:&quot;1&quot;,&quot;filter_campaigns_order&quot;:&quot;0&quot;,&quot;filter_programs&quot;:&quot;1&quot;,&quot;filter_programs_order&quot;:&quot;0&quot;,&quot;filter_years&quot;:&quot;0&quot;,&quot;filter_years_order&quot;:&quot;0&quot;,&quot;filter_tags&quot;:&quot;1&quot;,&quot;filter_tags_order&quot;:&quot;0&quot;,&quot;filter_published&quot;:&quot;0&quot;,&quot;filter_published_order&quot;:&quot;0&quot;,&quot;filter_groups&quot;:&quot;0&quot;,&quot;filter_groups_order&quot;:&quot;0&quot;,&quot;filter_users&quot;:&quot;0&quot;,&quot;filter_users_order&quot;:&quot;0&quot;,&quot;more_filter_elements&quot;:{&quot;more_filter_elements0&quot;:{&quot;fabrik_element_id&quot;:&quot;6082&quot;,&quot;order&quot;:&quot;9&quot;}},&quot;layout&quot;:&quot;_:vue&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="params">{&quot;filter_on_fnums&quot;:&quot;1&quot;,&quot;element_id&quot;:&quot;0&quot;,&quot;default_filter_element_ids&quot;:{&quot;default_filter_element_ids0&quot;:{&quot;id&quot;:&quot;0&quot;,&quot;join_table&quot;:&quot;&quot;,&quot;join_column_from&quot;:&quot;&quot;,&quot;join_column_to&quot;:&quot;&quot;}},&quot;count_filter_values&quot;:&quot;1&quot;,&quot;filter_status&quot;:&quot;1&quot;,&quot;filter_status_order&quot;:&quot;0&quot;,&quot;filter_campaign&quot;:&quot;1&quot;,&quot;filter_campaigns_order&quot;:&quot;0&quot;,&quot;filter_programs&quot;:&quot;1&quot;,&quot;filter_programs_order&quot;:&quot;0&quot;,&quot;filter_years&quot;:&quot;0&quot;,&quot;filter_years_order&quot;:&quot;0&quot;,&quot;filter_tags&quot;:&quot;1&quot;,&quot;filter_tags_order&quot;:&quot;0&quot;,&quot;filter_published&quot;:&quot;0&quot;,&quot;filter_published_order&quot;:&quot;0&quot;,&quot;filter_groups&quot;:&quot;0&quot;,&quot;filter_groups_order&quot;:&quot;0&quot;,&quot;filter_users&quot;:&quot;0&quot;,&quot;filter_users_order&quot;:&quot;0&quot;,&quot;filter_attachments&quot;:&quot;0&quot;,&quot;filter_attachments_order&quot;:&quot;0&quot;,&quot;filter_steps&quot;:&quot;0&quot;,&quot;filter_steps_order&quot;:&quot;0&quot;,&quot;filter_evaluated&quot;:&quot;1&quot;,&quot;filter_evaluated_order&quot;:&quot;0&quot;,&quot;more_filter_elements&quot;:{&quot;more_filter_elements0&quot;:{&quot;fabrik_element_id&quot;:&quot;6082&quot;,&quot;order&quot;:&quot;9&quot;}},&quot;layout&quot;:&quot;_:vue&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
     <field name="client_id">0</field>
     <field name="language">*</field>
    </row>
@@ -1682,7 +1682,7 @@
 &lt;p style=&quot;text-align: center;&quot;&gt; &lt;/p&gt;
 &lt;p style=&quot;text-align: center;&quot;&gt;&lt;em&gt;Retrouvez les comptes-rendus de réunion,&lt;br&gt;identifiez ce que vous avez à faire,...&lt;/em&gt;&lt;/p&gt;
 &lt;p style=&quot;text-align: center;&quot;&gt; &lt;/p&gt;
-&lt;p style=&quot;text-align: center;&quot;&gt;&lt;a class=&quot;btn btn-secondary&quot; href=&quot;rida/list/402&quot;&gt;Voir le détail&lt;/a&gt;&lt;/p&gt;
+&lt;p style=&quot;text-align: center;&quot;&gt;&lt;a class=&quot;btn btn-secondary&quot; href=&quot;https://www.reussirsesprojets.com/rida-releve-information-decision-action/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Voir le détail&lt;/a&gt;&lt;/p&gt;
 &lt;p style=&quot;text-align: center;&quot;&gt; &lt;/p&gt;
 &lt;/td&gt;
 &lt;td style=&quot;border-width: 0px; text-align: center;&quot;&gt;
@@ -1691,7 +1691,7 @@
 &lt;p&gt; &lt;/p&gt;
 &lt;p&gt;&lt;em&gt;Répertoriez les bugs, suivez les correctifs,...&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
-&lt;p&gt;&lt;a class=&quot;btn btn-secondary&quot; href=&quot;recette/list/401&quot;&gt;Suivre ma recette&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a class=&quot;btn btn-secondary&quot; href=&quot;https://blog-gestion-de-projet.com/cahier-de-recette/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Suivre ma recette&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
 &lt;/td&gt;
 &lt;td style=&quot;border-width: 0px;&quot;&gt;
@@ -1998,6 +1998,186 @@
     <field name="access">1</field>
     <field name="showtitle">0</field>
     <field name="params">{&quot;back_type&quot;:&quot;homepage&quot;,&quot;link&quot;:&quot;1&quot;,&quot;button_text&quot;:&quot;MOD_EMUNDUS_BACK_BUTTON_LABEL&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">191</field>
+    <field name="asset_id">0</field>
+    <field name="title">Random products</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;518&quot;,&quot;content_type&quot;:&quot;product&quot;,&quot;layout_type&quot;:&quot;div&quot;,&quot;columns&quot;:&quot;1&quot;,&quot;limit&quot;:&quot;3&quot;,&quot;random&quot;:&quot;1&quot;,&quot;order_dir&quot;:&quot;ASC&quot;,&quot;filter_type&quot;:&quot;1&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;content_synchronize&quot;:&quot;1&quot;,&quot;product_order&quot;:&quot;ordering&quot;,&quot;product_synchronize&quot;:&quot;1&quot;,&quot;recently_viewed&quot;:&quot;0&quot;,&quot;add_to_cart&quot;:&quot;1&quot;,&quot;add_to_wishlist&quot;:&quot;1&quot;,&quot;link_to_product_page&quot;:&quot;1&quot;,&quot;show_vote_product&quot;:&quot;0&quot;,&quot;show_price&quot;:&quot;1&quot;,&quot;price_with_tax&quot;:&quot;3&quot;,&quot;show_original_price&quot;:&quot;1&quot;,&quot;show_discount&quot;:&quot;1&quot;,&quot;price_display_type&quot;:&quot;cheapest&quot;,&quot;category_order&quot;:&quot;category_ordering&quot;,&quot;child_display_type&quot;:&quot;nochild&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;-1&quot;,&quot;number_of_products&quot;:&quot;0&quot;,&quot;only_if_products&quot;:&quot;0&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;img_title&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;#FFFFFF&quot;,&quot;margin&quot;:&quot;10&quot;,&quot;border_visible&quot;:&quot;0&quot;,&quot;rounded_corners&quot;:&quot;1&quot;,&quot;text_center&quot;:&quot;1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">192</field>
+    <field name="asset_id">0</field>
+    <field name="title">Recently viewed</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;518&quot;,&quot;content_type&quot;:&quot;product&quot;,&quot;layout_type&quot;:&quot;div&quot;,&quot;columns&quot;:&quot;1&quot;,&quot;limit&quot;:&quot;3&quot;,&quot;random&quot;:&quot;-1&quot;,&quot;order_dir&quot;:&quot;ASC&quot;,&quot;filter_type&quot;:&quot;1&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;content_synchronize&quot;:&quot;0&quot;,&quot;product_order&quot;:&quot;inherit&quot;,&quot;product_synchronize&quot;:&quot;4&quot;,&quot;recently_viewed&quot;:&quot;1&quot;,&quot;add_to_cart&quot;:&quot;-1&quot;,&quot;add_to_wishlist&quot;:&quot;-1&quot;,&quot;link_to_product_page&quot;:&quot;-1&quot;,&quot;show_vote_product&quot;:&quot;-1&quot;,&quot;show_price&quot;:&quot;-1&quot;,&quot;price_with_tax&quot;:&quot;3&quot;,&quot;show_original_price&quot;:&quot;-1&quot;,&quot;show_discount&quot;:&quot;3&quot;,&quot;price_display_type&quot;:&quot;inherit&quot;,&quot;category_order&quot;:&quot;inherit&quot;,&quot;child_display_type&quot;:&quot;inherit&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;-1&quot;,&quot;number_of_products&quot;:&quot;-1&quot;,&quot;only_if_products&quot;:&quot;-1&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;inherit&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;&quot;,&quot;margin&quot;:&quot;&quot;,&quot;border_visible&quot;:&quot;-1&quot;,&quot;rounded_corners&quot;:&quot;-1&quot;,&quot;text_center&quot;:&quot;-1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">193</field>
+    <field name="asset_id">0</field>
+    <field name="title">Categories on 1 level</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;518&quot;,&quot;content_type&quot;:&quot;category&quot;,&quot;layout_type&quot;:&quot;list&quot;,&quot;columns&quot;:&quot;1&quot;,&quot;limit&quot;:&quot;21&quot;,&quot;random&quot;:&quot;0&quot;,&quot;order_dir&quot;:&quot;ASC&quot;,&quot;filter_type&quot;:&quot;0&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;content_synchronize&quot;:&quot;0&quot;,&quot;product_order&quot;:&quot;ordering&quot;,&quot;product_synchronize&quot;:&quot;1&quot;,&quot;recently_viewed&quot;:&quot;0&quot;,&quot;add_to_cart&quot;:&quot;1&quot;,&quot;add_to_wishlist&quot;:&quot;1&quot;,&quot;link_to_product_page&quot;:&quot;1&quot;,&quot;show_vote_product&quot;:&quot;0&quot;,&quot;show_price&quot;:&quot;1&quot;,&quot;price_with_tax&quot;:&quot;0&quot;,&quot;show_original_price&quot;:&quot;1&quot;,&quot;show_discount&quot;:&quot;1&quot;,&quot;price_display_type&quot;:&quot;cheapest&quot;,&quot;category_order&quot;:&quot;category_ordering&quot;,&quot;child_display_type&quot;:&quot;allchilds&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;1&quot;,&quot;number_of_products&quot;:&quot;0&quot;,&quot;only_if_products&quot;:&quot;1&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;img_title&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;#FFFFFF&quot;,&quot;margin&quot;:&quot;10&quot;,&quot;border_visible&quot;:&quot;0&quot;,&quot;rounded_corners&quot;:&quot;1&quot;,&quot;text_center&quot;:&quot;1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">194</field>
+    <field name="asset_id">0</field>
+    <field name="title">Categories on 2 levels</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;518&quot;,&quot;content_type&quot;:&quot;category&quot;,&quot;layout_type&quot;:&quot;list&quot;,&quot;columns&quot;:&quot;1&quot;,&quot;limit&quot;:&quot;21&quot;,&quot;random&quot;:&quot;0&quot;,&quot;order_dir&quot;:&quot;ASC&quot;,&quot;filter_type&quot;:&quot;0&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;content_synchronize&quot;:&quot;0&quot;,&quot;product_order&quot;:&quot;ordering&quot;,&quot;product_synchronize&quot;:&quot;1&quot;,&quot;recently_viewed&quot;:&quot;0&quot;,&quot;add_to_cart&quot;:&quot;1&quot;,&quot;add_to_wishlist&quot;:&quot;1&quot;,&quot;link_to_product_page&quot;:&quot;1&quot;,&quot;show_vote_product&quot;:&quot;0&quot;,&quot;show_price&quot;:&quot;1&quot;,&quot;price_with_tax&quot;:&quot;0&quot;,&quot;show_original_price&quot;:&quot;1&quot;,&quot;show_discount&quot;:&quot;1&quot;,&quot;price_display_type&quot;:&quot;cheapest&quot;,&quot;category_order&quot;:&quot;category_ordering&quot;,&quot;child_display_type&quot;:&quot;allchildsexpand&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;1&quot;,&quot;number_of_products&quot;:&quot;0&quot;,&quot;only_if_products&quot;:&quot;1&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;img_title&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;#FFFFFF&quot;,&quot;margin&quot;:&quot;10&quot;,&quot;border_visible&quot;:&quot;0&quot;,&quot;rounded_corners&quot;:&quot;1&quot;,&quot;text_center&quot;:&quot;1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">195</field>
+    <field name="asset_id">0</field>
+    <field name="title">Best sellers</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;518&quot;,&quot;content_type&quot;:&quot;product&quot;,&quot;layout_type&quot;:&quot;div&quot;,&quot;columns&quot;:&quot;1&quot;,&quot;limit&quot;:&quot;21&quot;,&quot;random&quot;:&quot;0&quot;,&quot;order_dir&quot;:&quot;DESC&quot;,&quot;filter_type&quot;:&quot;1&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;content_synchronize&quot;:&quot;0&quot;,&quot;product_order&quot;:&quot;product_sales&quot;,&quot;product_synchronize&quot;:&quot;1&quot;,&quot;recently_viewed&quot;:&quot;0&quot;,&quot;add_to_cart&quot;:&quot;-1&quot;,&quot;add_to_wishlist&quot;:&quot;-1&quot;,&quot;link_to_product_page&quot;:&quot;-1&quot;,&quot;show_vote_product&quot;:&quot;-1&quot;,&quot;show_price&quot;:&quot;-1&quot;,&quot;price_with_tax&quot;:&quot;3&quot;,&quot;show_original_price&quot;:&quot;-1&quot;,&quot;show_discount&quot;:&quot;3&quot;,&quot;price_display_type&quot;:&quot;inherit&quot;,&quot;category_order&quot;:&quot;category_ordering&quot;,&quot;child_display_type&quot;:&quot;allchildsexpand&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;1&quot;,&quot;number_of_products&quot;:&quot;0&quot;,&quot;only_if_products&quot;:&quot;1&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;inherit&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;&quot;,&quot;margin&quot;:&quot;&quot;,&quot;border_visible&quot;:&quot;-1&quot;,&quot;rounded_corners&quot;:&quot;-1&quot;,&quot;text_center&quot;:&quot;-1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">196</field>
+    <field name="asset_id">0</field>
+    <field name="title">Latest products</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;518&quot;,&quot;content_type&quot;:&quot;product&quot;,&quot;layout_type&quot;:&quot;div&quot;,&quot;columns&quot;:&quot;1&quot;,&quot;limit&quot;:&quot;21&quot;,&quot;random&quot;:&quot;0&quot;,&quot;order_dir&quot;:&quot;DESC&quot;,&quot;filter_type&quot;:&quot;1&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;content_synchronize&quot;:&quot;0&quot;,&quot;product_order&quot;:&quot;product_created&quot;,&quot;product_synchronize&quot;:&quot;1&quot;,&quot;recently_viewed&quot;:&quot;0&quot;,&quot;add_to_cart&quot;:&quot;-1&quot;,&quot;add_to_wishlist&quot;:&quot;-1&quot;,&quot;link_to_product_page&quot;:&quot;-1&quot;,&quot;show_vote_product&quot;:&quot;-1&quot;,&quot;show_price&quot;:&quot;-1&quot;,&quot;price_with_tax&quot;:&quot;3&quot;,&quot;show_original_price&quot;:&quot;-1&quot;,&quot;show_discount&quot;:&quot;3&quot;,&quot;price_display_type&quot;:&quot;inherit&quot;,&quot;category_order&quot;:&quot;category_ordering&quot;,&quot;child_display_type&quot;:&quot;allchildsexpand&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;1&quot;,&quot;number_of_products&quot;:&quot;0&quot;,&quot;only_if_products&quot;:&quot;1&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;inherit&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;&quot;,&quot;margin&quot;:&quot;&quot;,&quot;border_visible&quot;:&quot;-1&quot;,&quot;rounded_corners&quot;:&quot;-1&quot;,&quot;text_center&quot;:&quot;-1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">197</field>
+    <field name="asset_id">0</field>
+    <field name="title">Brands</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;522&quot;,&quot;content_type&quot;:&quot;category&quot;,&quot;layout_type&quot;:&quot;div&quot;,&quot;columns&quot;:&quot;1&quot;,&quot;limit&quot;:&quot;21&quot;,&quot;random&quot;:&quot;0&quot;,&quot;order_dir&quot;:&quot;ASC&quot;,&quot;filter_type&quot;:&quot;0&quot;,&quot;selectparentlisting&quot;:&quot;10&quot;,&quot;content_synchronize&quot;:&quot;0&quot;,&quot;product_order&quot;:&quot;product_average_score&quot;,&quot;product_synchronize&quot;:&quot;1&quot;,&quot;recently_viewed&quot;:&quot;0&quot;,&quot;add_to_cart&quot;:&quot;-1&quot;,&quot;add_to_wishlist&quot;:&quot;-1&quot;,&quot;link_to_product_page&quot;:&quot;-1&quot;,&quot;show_vote_product&quot;:&quot;-1&quot;,&quot;show_price&quot;:&quot;-1&quot;,&quot;price_with_tax&quot;:&quot;3&quot;,&quot;show_original_price&quot;:&quot;-1&quot;,&quot;show_discount&quot;:&quot;3&quot;,&quot;price_display_type&quot;:&quot;inherit&quot;,&quot;category_order&quot;:&quot;category_id&quot;,&quot;child_display_type&quot;:&quot;allchilds&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;1&quot;,&quot;number_of_products&quot;:&quot;0&quot;,&quot;only_if_products&quot;:&quot;0&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;inherit&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;&quot;,&quot;margin&quot;:&quot;&quot;,&quot;border_visible&quot;:&quot;-1&quot;,&quot;rounded_corners&quot;:&quot;-1&quot;,&quot;text_center&quot;:&quot;-1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">198</field>
+    <field name="asset_id">0</field>
+    <field name="title">Best rated</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;518&quot;,&quot;content_type&quot;:&quot;product&quot;,&quot;layout_type&quot;:&quot;div&quot;,&quot;columns&quot;:&quot;1&quot;,&quot;limit&quot;:&quot;21&quot;,&quot;random&quot;:&quot;0&quot;,&quot;order_dir&quot;:&quot;DESC&quot;,&quot;filter_type&quot;:&quot;1&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;content_synchronize&quot;:&quot;0&quot;,&quot;product_order&quot;:&quot;product_average_score&quot;,&quot;product_synchronize&quot;:&quot;1&quot;,&quot;recently_viewed&quot;:&quot;0&quot;,&quot;add_to_cart&quot;:&quot;-1&quot;,&quot;add_to_wishlist&quot;:&quot;-1&quot;,&quot;link_to_product_page&quot;:&quot;-1&quot;,&quot;show_vote_product&quot;:&quot;-1&quot;,&quot;show_price&quot;:&quot;-1&quot;,&quot;price_with_tax&quot;:&quot;3&quot;,&quot;show_original_price&quot;:&quot;-1&quot;,&quot;show_discount&quot;:&quot;3&quot;,&quot;price_display_type&quot;:&quot;inherit&quot;,&quot;category_order&quot;:&quot;category_id&quot;,&quot;child_display_type&quot;:&quot;allchilds&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;1&quot;,&quot;number_of_products&quot;:&quot;0&quot;,&quot;only_if_products&quot;:&quot;0&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;inherit&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;&quot;,&quot;margin&quot;:&quot;&quot;,&quot;border_visible&quot;:&quot;-1&quot;,&quot;rounded_corners&quot;:&quot;-1&quot;,&quot;text_center&quot;:&quot;-1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">199</field>
+    <field name="asset_id">0</field>
+    <field name="title">Related products</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
+    <field name="module">mod_hikashop</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;hikashopmodule&quot;:{&quot;itemid&quot;:&quot;518&quot;,&quot;content_type&quot;:&quot;product&quot;,&quot;layout_type&quot;:&quot;div&quot;,&quot;columns&quot;:&quot;3&quot;,&quot;limit&quot;:&quot;21&quot;,&quot;random&quot;:&quot;0&quot;,&quot;order_dir&quot;:&quot;ASC&quot;,&quot;filter_type&quot;:&quot;1&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;content_synchronize&quot;:&quot;1&quot;,&quot;product_order&quot;:&quot;ordering&quot;,&quot;product_synchronize&quot;:&quot;2&quot;,&quot;recently_viewed&quot;:&quot;0&quot;,&quot;add_to_cart&quot;:&quot;-1&quot;,&quot;add_to_wishlist&quot;:&quot;-1&quot;,&quot;link_to_product_page&quot;:&quot;-1&quot;,&quot;show_vote_product&quot;:&quot;-1&quot;,&quot;show_price&quot;:&quot;-1&quot;,&quot;price_with_tax&quot;:&quot;3&quot;,&quot;show_original_price&quot;:&quot;-1&quot;,&quot;show_discount&quot;:&quot;3&quot;,&quot;price_display_type&quot;:&quot;inherit&quot;,&quot;category_order&quot;:&quot;category_id&quot;,&quot;child_display_type&quot;:&quot;allchilds&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;links_on_main_categories&quot;:&quot;1&quot;,&quot;number_of_products&quot;:&quot;0&quot;,&quot;only_if_products&quot;:&quot;0&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;inherit&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;&quot;,&quot;margin&quot;:&quot;&quot;,&quot;border_visible&quot;:&quot;-1&quot;,&quot;rounded_corners&quot;:&quot;-1&quot;,&quot;text_center&quot;:&quot;-1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
     <field name="client_id">0</field>
     <field name="language">*</field>
    </row>

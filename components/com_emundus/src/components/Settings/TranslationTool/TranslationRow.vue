@@ -3,12 +3,24 @@
     <div v-for="translation in translations_rows" class="tw-mb-8 em-neutral-100-box em-p-24">
       <div v-for="(field,index) in translation" class="tw-mb-6">
         <p>{{ field.reference_label ? field.reference_label.toUpperCase() : field.reference_id }}</p>
-        <div class="tw-justify-between tw-mt-4 em-grid-50 em-ml-24">
-          <p class="tw-text-neutral-700">{{ field.default_lang }}</p>
+
+        <div class="tw-justify-between tw-items-start tw-mt-4 em-grid-50 em-ml-24">
+          <div v-html="field.default_lang" class="tw-text-neutral-700 tw-max-h-80 tw-overflow-auto"></div>
           <input v-if="field.field_type === 'field'" class="mb-0 em-input tw-w-full" type="text" :value="field.lang_to"
                  @focusout="saveTranslation($event.target.value,field)"/>
           <textarea v-if="field.field_type === 'textarea'" class="mb-0 em-input" :value="field.lang_to"
                     @focusout="saveTranslation($event.target.value,field)"/>
+          <tip-tap-editor
+              v-if="field.field_type === 'wysiwig'"
+              v-model="field.lang_to"
+              :editor-content-height="'20em'"
+              :class="'tw-mt-1'"
+              :locale="'fr'"
+              :preset="'basic'"
+              :toolbar-classes="['tw-bg-white']"
+              :editor-content-classes="['tw-bg-white']"
+              @focusout="saveTranslation(field.lang_to,field)"
+          />
         </div>
       </div>
     </div>
@@ -19,10 +31,12 @@
 import Multiselect from "vue-multiselect";
 import mixin from "@/mixins/mixin";
 import translationsService from "@/services/translations";
+import TipTapEditor from "tip-tap-editor";
 
 export default {
   name: "TranslationRow",
   components: {
+    TipTapEditor,
     Multiselect
   },
   mixins: [mixin],

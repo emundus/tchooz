@@ -139,7 +139,7 @@ export default {
                   "type": "redirect"
                 },
                 {
-                  "action": "/campaigns/edit-program?id=%id%",
+                  "action": "index.php?option=com_emundus&view=programme&layout=edit&id=%id%",
                   "label": "COM_EMUNDUS_ONBOARD_MODIFY",
                   "controller": "programme",
                   "type": "redirect",

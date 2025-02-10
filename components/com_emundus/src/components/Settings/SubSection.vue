@@ -29,7 +29,7 @@
 
 import mixin from "@/mixins/mixin";
 import Multiselect from 'vue-multiselect';
-import Parameter from "@/components/Settings/Parameter.vue";
+import Parameter from "@/components/Utils/Parameter.vue";
 import EditArticle from "@/components/Settings/Content/EditArticle.vue";
 
 export default {

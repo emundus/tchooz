@@ -30,7 +30,7 @@ Text::script('COM_EMUNDUS_APPLICATION_SHARE_VIEW_REQUESTS');
             <?php if($this->_user->applicant == 1) : ?>
                 <div class="tw-flex tw-items-center tw-justify-between tw-cursor-pointer" onclick="toggleRequests()">
                     <h3><?php echo Text::_('COM_EMUNDUS_APPLICATION_SHARE_VIEW_REQUESTS') ?></h3>
-                    <span class="material-icons" id="requests_icon">expand_less</span>
+                    <span class="material-symbols-outlined" id="requests_icon">expand_less</span>
                 </div>
             <?php endif; ?>
 			<div class="tw-mt-2 tw-flex tw-flex-col tw-gap-2 <?php if($this->_user->applicant == 1) : ?>tw-hidden<?php endif; ?>" id="collaborators_requests">

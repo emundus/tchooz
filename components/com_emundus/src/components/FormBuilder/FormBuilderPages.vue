@@ -2,7 +2,7 @@
   <div id="form-builder-pages">
     <p class="form-builder-title tw-flex tw-items-center md:tw-justify-center lg:tw-justify-between tw-p-4">
       <span>{{ translate('COM_EMUNDUS_FORM_BUILDER_EVERY_PAGE') }}</span>
-      <span id="add-page" class="material-icons tw-cursor-pointer" @click="$emit('open-page-create')"> add </span>
+      <span id="add-page" class="material-symbols-outlined tw-cursor-pointer" @click="$emit('open-page-create')"> add </span>
     </p>
     <draggable :model-value="pages" @update:model-value="pages = $event" group="form-builder-pages" :sort="true" class="draggables-list" @end="onDragEnd">
       <transition-group>

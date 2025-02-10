@@ -110,6 +110,11 @@ class TchoozUpdateCommand extends AbstractCommand
 
 			$answer = (array) $this->ioStyle->askQuestion($choice);
 
+			// If all is selected, we need to get all components
+			if (in_array('all', $answer)) {
+				$answer = array_diff($availableComponents, array('all'));
+			}
+
 			foreach ($answer as $component) {
 				$this->components[] = $component;
 			}

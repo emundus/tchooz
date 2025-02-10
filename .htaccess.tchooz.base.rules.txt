@@ -79,7 +79,6 @@
 	RewriteCond %{HTTP_USER_AGENT} ^InternetSeer\.com [NC,OR]
 	RewriteCond %{HTTP_USER_AGENT} IRLbot [NC,OR]
 	RewriteCond %{HTTP_USER_AGENT} ISC\ Systems\ iRc\ Search\ 2\.1 [NC,OR]
-	RewriteCond %{HTTP_USER_AGENT} ^Java [NC,OR]
 	RewriteCond %{HTTP_USER_AGENT} ^JetCar [NC,OR]
 	RewriteCond %{HTTP_USER_AGENT} ^JOC\ Web\ Spider [NC,OR]
 	RewriteCond %{HTTP_USER_AGENT} ^larbin [NC,OR]

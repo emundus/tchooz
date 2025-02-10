@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form>
+    <field name="action_type" type="list" label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_ACTION_TYPE_LABEL" description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_ACTION_TYPE_DESC">
+        <option value="update_file_status">PLG_EMUNDUSCUSTOMACTIONS_FIELD_ACTION_UPDATE_STATUS</option>
+        <option value="update_file_tags">PLG_EMUNDUSCUSTOMACTIONS_FIELD_ACTION_UPDATE_TAGS</option>
+        <option value="send_email">PLG_EMUNDUSCUSTOMACTIONS_FIELD_ACTION_SEND_EMAIL</option>
+        <option value="redirect">PLG_EMUNDUSCUSTOMACTIONS_FIELD_ACTION_REDIRECT</option>
+        <option value="generate_letter">PLG_EMUNDUSCUSTOMACTIONS_FIELD_ACTION_GENERATE_LETTER</option>
+    </field>
+
+    <field
+            type="subform"
+            name="action_conditions"
+            label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_ACTION_CONDITIONS_LABEL"
+            description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_ACTION_CONDITIONS_DESC"
+            multiple="true"
+            formsource="plugins/emundus/custom_event_handler/forms/conditions.xml"
+    >
+    </field>
+
+    <!--Update status fields -->
+    <field
+            showon="action_type:update_file_status"
+            name="new_file_status"
+            type="sql"
+            label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_NEW_FILE_STATUS_LABEL"
+            description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_NEW_FILE_STATUS_DESC"
+            query="SELECT step, value from #__emundus_setup_status"
+            key_field="step"
+            value_field="value"
+    />
+    <!-- End Update status fields -->
+
+    <!-- Update tags fields -->
+    <field
+            showon="action_type:update_file_tags"
+            name="file_tags"
+            type="sql"
+            label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_NEW_FILE_TAGS_LABEL"
+            description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_NEW_FILE_TAGS_DESC"
+            sql_select="id, label"
+            sql_from="jos_emundus_setup_action_tag"
+            sql_order="ordering"
+            key_field="id"
+            value_field="label"
+    />
+    <field
+            showon="action_type:update_file_tags"
+            name="file_tags_action"
+            type="list"
+            label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_NEW_FILE_TAGS_ACTION_LABEL"
+            description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_NEW_FILE_TAGS_ACTION_DESC"
+            >
+        <option value="add">PLG_EMUNDUSCUSTOMACTIONS_FIELD_NEW_FILE_TAGS_ACTION_ADD</option>
+        <option value="remove">PLG_EMUNDUSCUSTOMACTIONS_FIELD_NEW_FILE_TAGS_ACTION_REMOVE</option>
+    </field>
+    <!-- End Update tags fields -->
+
+    <!-- Send email fields -->
+    <field
+            showon="action_type:send_email"
+            name="email_to_send"
+            type="sql"
+            label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_EMAIL_TO_SEND_LABEL"
+            description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_EMAIL_TO_SEND_DESC"
+            query="SELECT id, CONCAT(subject, ' - ', category) as value_field FROM #__emundus_setup_emails WHERE type > 1 AND published = 1"
+            key_field="id"
+            value_field="value_field"
+    />
+    <field
+            showon="action_type:send_email"
+            name="send_to_applicant"
+            type="list"
+            label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_SEND_TO_APPLICANT_LABEL"
+            description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_SEND_TO_APPLICANT_DESC"
+            >
+        <option value="0">Non</option>
+        <option value="1">Oui</option>
+    </field>
+    <field
+            showon="action_type:send_email"
+            name="send_to_triggering_user"
+            type="list"
+            label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_SEND_TO_TRIGGERING_USER_LABEL"
+            description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_SEND_TO_TRIGGERING_USER_DESC"
+    >
+        <option value="0">Non</option>
+        <option value="1">Oui</option>
+    </field>
+    <field
+            showon="action_type:send_email"
+            name="send_to_users_with_groups"
+            type="sql"
+            label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_SEND_TO_USERS_WITH_GROUPS_LABEL"
+            description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_SEND_TO_USERS_WITH_GROUPS_DESC"
+            query="SELECT id, label FROM #__emundus_setup_groups"
+            key_field="id"
+            value_field="label"
+            multiple="true"
+    />
+    <!-- End Send email fields -->
+
+    <!-- Redirect fields -->
+    <field
+            showon="action_type:redirect"
+            name="redirect_url"
+            type="text"
+            label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_REDIRECT_URL_LABEL"
+            description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_REDIRECT_URL_DESC"
+    />
+    <field
+            showon="action_type:redirect"
+            name="redirect_message"
+            type="text"
+            label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_REDIRECT_MESSAGE_LABEL"
+            description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_REDIRECT_MESSAGE_DESC"
+    />
+    <field
+            showon="action_type:redirect"
+            name="redirect_message_type"
+            type="list"
+            label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_REDIRECT_MESSAGE_TYPE_LABEL"
+            description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_REDIRECT_MESSAGE_TYPE_DESC"
+            >
+        <option value="success">PLG_EMUNDUSCUSTOMACTIONS_FIELD_REDIRECT_MESSAGE_TYPE_SUCCESS</option>
+        <option value="warning">PLG_EMUNDUSCUSTOMACTIONS_FIELD_REDIRECT_MESSAGE_TYPE_WARNING</option>
+        <option value="error">PLG_EMUNDUSCUSTOMACTIONS_FIELD_REDIRECT_MESSAGE_TYPE_ERROR</option>
+        <option value="info">PLG_EMUNDUSCUSTOMACTIONS_FIELD_REDIRECT_MESSAGE_TYPE_INFO</option>
+    </field>
+    <!-- End Redirect fields -->
+
+
+    <!-- Generate letter fields -->
+    <field
+            showon="action_type:generate_letter"
+            name="letter_template"
+            type="sql"
+            label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_LETTER_LABEL"
+            description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_LETTER_DESC"
+            query="SELECT attachment_id, title FROM #__emundus_setup_letters"
+            key_field="attachment_id"
+            value_field="title"
+    />
+    <!-- End Generate letter fields -->
+</form>

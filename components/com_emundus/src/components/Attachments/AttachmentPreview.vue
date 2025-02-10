@@ -68,7 +68,7 @@ export default {
       if (!useAttachmentStore().previews[this.attachment.aid]) {
         data = await attachmentService.getPreview(this.user, this.attachment.filename, this.attachment.aid);
         if (data.status) {
-          useAttachmentStore().setPreview({preview: data, id: this.attachment.aid,});
+          useAttachmentStore().setPreview({preview: data, id: this.attachment.aid});
         }
       } else {
         data = useAttachmentStore().previews[this.attachment.aid];
@@ -87,7 +87,7 @@ export default {
 
           setTimeout(() => {
             this.openMsg = false;
-          }, 3000);
+          }, 10000);
         }
       } else {
         if (data.error === "file_not_found") {

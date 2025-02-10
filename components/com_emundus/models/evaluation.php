@@ -1237,7 +1237,8 @@ class EmundusModelEvaluation extends JModelList
 					if (!empty($workflow_data['steps'])) {
 						foreach($workflow_data['steps'] as $step) {
 							$action_id = $m_workflow->getStepAssocActionId($step->id);
-							if ($m_workflow->isEvaluationStep($step->type) && EmundusHelperAccess::asAccessAction($action_id, 'r', $this->app->getIdentity()->id)) {
+							if ($m_workflow->isEvaluationStep($step->type) &&
+								(EmundusHelperAccess::asAccessAction($action_id, 'r', $this->app->getIdentity()->id) || EmundusHelperAccess::asAccessAction($action_id, 'c', $this->app->getIdentity()->id))) {
 								$step_ids[] = $step->id;
 							}
 						}
@@ -1723,6 +1724,7 @@ class EmundusModelEvaluation extends JModelList
 
 					return null;
 				}, $eval_steps);
+				$form_ids = array_filter($form_ids);
 
 				if (!empty($form_ids)) {
 					$query->clear()

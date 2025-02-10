@@ -350,7 +350,8 @@ class EmundusControllerCampaign extends BaseController
 				'default'       => true,
 				'available'     => true,
 				'operator'      => 'IN',
-				'andorOperator' => 'OR'
+				'andorOperator' => 'OR',
+				'menuFilter'    => true,
 			];
 			$session->set('em-applied-filters', [$campaign_filter]);
 

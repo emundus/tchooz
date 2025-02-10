@@ -243,7 +243,7 @@ class EmundusViewUsers extends JViewLegacy
 				break;
 		}
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) && !$edit_profile) {
+		if (!EmundusHelperAccess::asAccessAction(12,'r',$this->_user->id) && !EmundusHelperAccess::asAccessAction(12,'c',$this->_user->id) && !$edit_profile) {
 			die('ACCESS_DENIED');
 		}
 

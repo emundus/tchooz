@@ -34,20 +34,20 @@
 
               <div class="tw-cursor-pointer">
                 <popover class="custom-popover-arrow" :position="'left'">
-                  <ul style="list-style-type: none; margin: 0;" class="tw-items-center tw-pl-0">
-                    <li @click="$emit('add-rule','js',rule)" class="tw-py-3 tw-px-4 tw-w-full hover:tw-bg-neutral-300">
+                  <ul style="list-style-type: none; margin: 0;" class="tw-items-center tw-p-4">
+                    <li @click="$emit('add-rule','js',rule)" class="tw-py-1.5 tw-px-2 tw-w-full hover:tw-bg-neutral-300 hover:tw-rounded-coordinator">
                       {{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_EDIT') }}
                     </li>
-                    <li @click="publishRule(rule, 1)" class="tw-py-3 tw-px-4 tw-w-full hover:tw-bg-neutral-300" v-if="rule.published == 0">
+                    <li @click="publishRule(rule, 1)" class="tw-py-1.5 tw-px-2 tw-w-full hover:tw-bg-neutral-300 hover:tw-rounded-coordinator" v-if="rule.published == 0">
                       {{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_PUBLISH') }}
                     </li>
-                    <li @click="publishRule(rule, 0)" class="tw-py-3 tw-px-4 tw-w-full hover:tw-bg-neutral-300" v-if="rule.published == 1">
+                    <li @click="publishRule(rule, 0)" class="tw-py-1.5 tw-px-2 tw-w-full hover:tw-bg-neutral-300 hover:tw-rounded-coordinator" v-if="rule.published == 1">
                       {{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_UNPUBLISH') }}
                     </li>
                     <!--                          <li @click="cloneRule(rule)" class="py-3 px-4 w-full">
                                                 {{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_DUPLICATE') }}
                                               </li>-->
-                    <li @click="deleteRule(rule)" class="tw-py-3 tw-px-4 tw-w-full tw-text-red-600 hover:tw-bg-neutral-300">
+                    <li @click="deleteRule(rule)" class="tw-py-1.5 tw-px-2 tw-w-full tw-text-red-600 hover:tw-bg-neutral-300 hover:tw-rounded-coordinator">
                       {{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_DELETE') }}
                     </li>
                   </ul>

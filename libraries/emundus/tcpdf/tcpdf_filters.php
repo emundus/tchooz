@@ -281,7 +281,7 @@ class TCPDF_FILTERS {
 		// convert string to binary string
 		$bitstring = '';
 		for ($i = 0; $i < $data_length; ++$i) {
-			$bitstring .= sprintf('%08b', ord($data{$i}));
+			$bitstring .= sprintf('%08b', ord($data[$i]));
 		}
 		// get the number of bits
 		$data_length = strlen($bitstring);

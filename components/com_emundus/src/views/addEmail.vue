@@ -73,6 +73,22 @@
               </div>
             </div>
 
+            <div class="tw-mb-4" v-if="displayButtonField">
+              <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_BUTTON_TEXT') }}</label>
+              <p class="tw-mt-1 tw-mb-1 tw-text-xs tw-text-neutral-700">
+                {{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_BUTTON_TEXT_TIP') }}
+              </p>
+              <input
+                  type="text"
+                  class="tw-w-full tw-mt-2"
+                  :class="{ 'is-invalid !tw-border-red-600': errors.button }"
+                  v-model="form.button"
+              />
+              <div v-if="errors.button" class="tw-text-red-600 tw-mt-1">
+                <span class="tw-text-red-600">{{ translate('COM_EMUNDUS_ONBOARD_BUTTON_REQUIRED') }}</span>
+              </div>
+            </div>
+
             <div>
               <label class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_CHOOSECATEGORY') }}</label>
               <incremental-select
@@ -502,6 +518,11 @@ export default {
 
       if (this.form.message == '') {
         this.errors.message = true
+        return 0
+      }
+
+      if(this.displayButtonField && this.form.button == '') {
+        this.errors.button = true
         return 0
       }
 

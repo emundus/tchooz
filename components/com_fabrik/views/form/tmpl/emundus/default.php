@@ -134,6 +134,18 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 <?php
 endif;
 ?>
+
+<div class="btn-group">
+	<?php
+	if($form->gobackButton)
+	{
+		echo '<div class="em-goback-btn !tw-pl-0 tw-flex tw-items-center"><span class="material-symbols-outlined tw-text-neutral-600">navigate_before</span>';
+		echo $form->gobackButton;
+		echo '</div>';
+	}
+	?>
+</div>
+
 <div class="emundus-form tw-py-6 tw-px-8 <?php echo $pageClass; ?>">
 	<?php if ($form->id == $profile_form) : ?>
         <iframe id="background-shapes-profile" alt="<?= Text::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
@@ -154,7 +166,8 @@ endif;
                         <div class="fabrik-element-emundus-container tw-absolute tw--left-[24px] tw-top-1 tw-flex tw-flex-row tw-justify-items-start tw-items-start tw-mr-5">
                             <span class="material-symbols-outlined tw-cursor-pointer comment-icon"
                                   id="'forms-'<?= $form->id ?>" data-target-type="forms"
-                                  data-target-id="<?= $form->id ?>">comment</span>
+                                  data-target-id="<?= $form->id ?>">comment
+                            </span>
                         </div>
 						<?php
 					}
@@ -224,7 +237,8 @@ endif;
                             <div class="fabrik-element-emundus-container tw-absolute tw--left-[24px] tw-top-1 tw-flex tw-flex-row tw-justify-items-start tw-items-start tw-mr-5">
                                 <span class="material-symbols-outlined tw-cursor-pointer comment-icon"
                                       id="groups-<?= $group->id ?>" data-target-type="groups"
-                                      data-target-id="<?= $group->id ?>">comment</span>
+                                      data-target-id="<?= $group->id ?>">comment
+                                </span>
                             </div>
 							<?php
 						}
@@ -361,7 +375,7 @@ if ($this->display_comments)
     <aside id="aside-comment-section"
            class="tw-fixed tw-right-0 em-white-bg tw-shadow-[0_4px_3px_0px_rgba(0,0,0,0.1)] tw-ease-out closed">
         <!-- Comments -->
-        <div class="tw-flex tw-flex-row tw-relative">
+        <div class="tw-flex tw-flex-row tw-relative tw-h-full">
             <span class="open-comment material-symbols-outlined tw-cursor-pointer tw-absolute tw-top-8 tw-bg-profile-full tw-rounded-l-lg tw-text-neutral-300"
                   onclick="openCommentAside()">
                 comment
@@ -372,7 +386,7 @@ if ($this->display_comments)
             </span>
             <div id="em-component-vue"
                  component="Comments"
-                 class="com_emundus_vue"
+                 class="com_emundus_vue tw-w-full"
                  user="<?= $user->id ?>"
                  ccid="<?= $ccid ?>"
                  fnum="<?= $fnum ?>"
@@ -408,6 +422,7 @@ if ($this->display_comments)
         const sidebar = document.querySelector('.view-form #g-sidebar');
         if (headerNav && sidebar) {
             sidebar.style.top = headerNav.offsetHeight + 8 + 'px';
+            sidebar.style.cssText += 'margin-top: 52px !important;';
         }
 
         // Remove applicant-form class if needed

@@ -142,7 +142,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 				'FNUM' => $application->fnum
 			);
 
-			$tags = $m_email->setTags($user->id, $post, $application->fnum, '', $title_override_display);
+			$tags = $m_email->setTags($user->id, $post, $application->fnum, '', $title_override_display, false, true);
 			$title_override_display = preg_replace($tags['patterns'], $tags['replacements'], $title_override_display);
 			$title_override_display = $m_email->setTagsFabrik($title_override_display, array($application->fnum));
 
@@ -281,17 +281,23 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                     <label for="applications_searchbar" style="display: inline-block;margin-bottom: unset"><?php echo JText::_('MOD_EM_APPLICATIONS_SEARCH') ?></label>
                 </div>
 			<?php endif; ?>
-            <div class="em-flex-row" style="gap: 8px">
-                <div id="button_switch_card"
-                     class="em-pointer mod_emundus_application___buttons_switch_view mod_emundus_application___buttons_enable"
-                     onclick="updateView('card')">
-                    <span class="material-symbols-outlined mod_emundus_application___buttons_switch_view_enable">grid_view</span>
+            <?php if (sizeof($available_views) > 1) : ?>
+                <div class="em-flex-row" style="gap: 8px">
+                    <?php if(in_array('grid',$available_views)) : ?>
+                        <div id="button_switch_card"
+                             class="em-pointer mod_emundus_application___buttons_switch_view mod_emundus_application___buttons_enable"
+                             onclick="updateView('card')">
+                            <span class="material-symbols-outlined mod_emundus_application___buttons_switch_view_enable">grid_view</span>
+                        </div>
+                    <?php endif; ?>
+	                <?php if(in_array('list',$available_views)) : ?>
+                        <div id="button_switch_list" class="em-pointer mod_emundus_application___buttons_switch_view"
+                             onclick="updateView('list')">
+                            <span class="material-symbols-outlined mod_emundus_application___buttons_switch_view_disabled">menu</span>
+                        </div>
+                    <?php endif; ?>
                 </div>
-                <div id="button_switch_list" class="em-pointer mod_emundus_application___buttons_switch_view"
-                     onclick="updateView('list')">
-                    <span class="material-symbols-outlined mod_emundus_application___buttons_switch_view_disabled">menu</span>
-                </div>
-            </div>
+            <?php endif; ?>
         </div>
     </div>
 
@@ -403,7 +409,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 													'FNUM'           => $application->fnum
 												);
 
-												$tags              = $m_email->setTags($user->id, $post, $application->fnum, '', $file_tags);
+												$tags              = $m_email->setTags($user->id, $post, $application->fnum, '', $file_tags, false, true);
 												$file_tags_display = preg_replace($tags['patterns'], $tags['replacements'], $file_tags);
 												$file_tags_display = $m_email->setTagsFabrik($file_tags_display, array($application->fnum));
 											}
@@ -473,7 +479,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 		                                                            if ($nb_comments > 0) {
 			                                                            ?>
                                                                         <a href="<?= !empty($comments_page_alias) ? '/' . $comments_page_alias . '?tab=comments&ccid=' . $application->application_id . '&fnum=' . $application->fnum : '#'  ?>"  id="actions_button_comment" class="tw-flex tw-flex-row comments-icon-wrapper tw-relative tw-ml-2">
-                                                                            <span id="actions_button_comment_icon" class="material-icons tw-text-neutral-300 tw-bg-main-500 tw-p-2 tw-rounded-full">comment</span>
+                                                                            <span id="actions_button_comment_icon" class="material-symbols-outlined tw-text-neutral-300 tw-bg-main-500 tw-p-2 tw-rounded-full">comment</span>
                                                                             <span id="actions_button_comment_nb" class="nb-comments em-border-main-500 em-font-size-12 em-main-500-color em-white-bg tw-border-2 tw-absolute tw-rounded-full tw-p-1"><?= $nb_comments; ?></span>
                                                                         </a>
 			                                                            <?php
@@ -793,7 +799,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 													'FNUM'           => $application->fnum
 												);
 
-												$tags              = $m_email->setTags($user->id, $post, $application->fnum, '', $file_tags);
+												$tags              = $m_email->setTags($user->id, $post, $application->fnum, '', $file_tags, false, true);
 												$file_tags_display = preg_replace($tags['patterns'], $tags['replacements'], $file_tags);
 												$file_tags_display = $m_email->setTagsFabrik($file_tags_display, array($application->fnum));
 											}

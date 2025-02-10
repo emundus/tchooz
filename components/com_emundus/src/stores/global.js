@@ -11,9 +11,11 @@ export const useGlobalStore = defineStore('global', {
     sysadminAccess: false,
     anonyme: false,
     offset: 0,
+    timezone: 'UTC',
   }),
   getters: {
     getOffset: (state) => state.offset,
+    getTimezone: (state) => state.timezone,
     getCurrentLang: state => state.currentLanguage,
     getShortLang: state => state.shortLang,
     hasManyLanguages: state => state.manyLanguages,
@@ -34,6 +36,9 @@ export const useGlobalStore = defineStore('global', {
     },
     initOffset(offset) {
       this.offset = offset;
+    },
+    initTimezone(timezone) {
+      this.timezone = timezone;
     },
     initShortLang(language) {
       this.shortLang = language;

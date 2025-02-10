@@ -709,6 +709,7 @@ if (!empty($this->custom_title)) :?>
             const sidebar = document.querySelector('.view-checklist #g-sidebar');
             if (headerNav && sidebar) {
                 sidebar.style.top = headerNav.offsetHeight + 8 + 'px';
+                sidebar.style.cssText += 'margin-top: 52px !important;';
             }
             $('.em_send_uploaded_file').attr("disabled", "disabled");
 
