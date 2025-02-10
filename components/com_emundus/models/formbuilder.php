@@ -34,7 +34,7 @@ class EmundusModelFormbuilder extends JModelList
 		parent::__construct($config);
 
 		$this->app = Factory::getApplication();
-		$this->db = Factory::getDbo();
+		$this->db = Factory::getContainer()->get('DatabaseDriver');
 
 
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'translations.php');

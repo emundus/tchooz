@@ -7365,7 +7365,7 @@ class EmundusModelApplication extends ListModel
             $fnumInfos  = $m_files->getFnumInfos($fnum);
             $profiles = $m_profile->getProfilesIDByCampaign([$fnumInfos['campaign_id']]);
 
-            $forms = [];
+            $forms = [102]; // Default form
 			if (!empty($profiles)) {
 				require_once(JPATH_SITE . '/components/com_emundus/models/form.php');
 				$m_form = new EmundusModelForm();

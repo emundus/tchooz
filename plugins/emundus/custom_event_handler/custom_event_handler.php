@@ -645,12 +645,14 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 					if (!str_contains($condition->targeted_column, '.'))
 					{
 						$value = EmundusHelperFabrik::getValueByAlias($condition->targeted_column, $fnum);
-						if (isset($value['raw']) && $value['raw'] === $condition->targeted_value)
-						{
-							$conditions_status[] = true;
-						}
-						else
-						{
+						if (isset($value['raw'])) {
+							$conditions_status[] = match ($condition->operator)
+							{
+								'=' => $value['raw'] == $condition->targeted_value,
+								'!=' => $value['raw'] != $condition->targeted_value,
+								default => false,
+							};
+						} else {
 							$conditions_status[] = false;
 							break;
 						}
