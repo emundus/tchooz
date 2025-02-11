@@ -5,6 +5,8 @@
     <field name="operator" type="list" label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_OPERATOR" default="=">
         <option value="=">PLG_EMUNDUSCUSTOMACTIONS_FIELD_OPERATOR_EQUAL</option>
         <option value="!=">PLG_EMUNDUSCUSTOMACTIONS_FIELD_OPERATOR_NOT_EQUAL</option>
+        <option value="IN">PLG_EMUNDUSCUSTOMACTIONS_FIELD_OPERATOR_IN</option>
+        <option value="NOT IN">PLG_EMUNDUSCUSTOMACTIONS_FIELD_OPERATOR_NOT_IN</option>
     </field>
     <field name="targeted_value" type="text" label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_TARGETED_VALUE_LABEL"
            description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_TARGETED_VALUE_DESC"/>
