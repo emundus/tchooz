@@ -5487,6 +5487,7 @@ class EmundusModelFiles extends JModelLegacy
 								}
 							}
 						}
+
 						if ($forms || !empty($forms_to_export)) {
 							require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
 							$m_profile = new EmundusModelProfile;
