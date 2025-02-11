@@ -674,8 +674,23 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 							$query->clear()
 								->select('id')
 								->from($db->quoteName($table))
-								->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum))
-								->andWhere($db->quoteName($column) . ' ' . $condition->operator  . ' ' . $db->quote($condition->targeted_value));
+								->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+
+							switch($condition->operator) {
+								case 'IN':
+								case 'NOT IN':
+									$values = explode('|', $condition->targeted_value);
+
+									$query->andWhere($db->quoteName($column) . ' ' . $condition->operator  . ' (' . $db->quote(implode(',', $values)) . ')');
+									break;
+								case '=':
+								case '!=':
+									$query->andWhere($db->quoteName($column) . ' ' . $condition->operator  . ' ' . $db->quote($condition->targeted_value));
+								break;
+								default:
+									$conditions_status[] = false;
+									break;
+							}
 						}
 						else
 						{
@@ -703,8 +718,23 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 
 								$query->select($db->quoteName('ecc.id'))
 									->from($db->quoteName('jos_emundus_campaign_candidature', 'ecc'))
-									->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($fnum))
-									->andWhere($db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value));
+									->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($fnum));
+
+								switch($condition->operator) {
+									case 'IN':
+									case 'NOT IN':
+										$values = explode('|', $condition->targeted_value);
+
+										$query->andWhere($db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' (' . $db->quote(implode(',', $values)) . ')');
+										break;
+									case '=':
+									case '!=':
+										$query->andWhere($db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value));
+										break;
+									default:
+										$conditions_status[] = false;
+										break;
+								}
 
 							} else {
 								$conditions_status[] = false;
@@ -729,6 +759,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 						}
 						catch (Exception $e)
 						{
+							error_log($e->getMessage() . ' ' . $query->__toString());
 							Log::add('Failed to get value for condition ' . $condition->targeted_column . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.custom_event_handler');
 							$conditions_status[] = false;
 							break;
@@ -766,6 +797,8 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 			{
 				'=' => $value == $condition->targeted_value,
 				'!=' => $value != $condition->targeted_value,
+				'IN' => in_array($value, explode('|', $condition->targeted_value)),
+				'NOT IN' => !in_array($value, explode('|', $condition->targeted_value)),
 				default => false,
 			};
 		}

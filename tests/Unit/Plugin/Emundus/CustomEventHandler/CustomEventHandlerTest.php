@@ -82,6 +82,16 @@ class CustomEventHandlerTest extends UnitTestCase
 		$passed = self::callPrivateMethod($this->model, 'checkEventConditions', [[$condition, $condition2], $fnum]);
 		$this->assertFalse($passed, 'If more than one condition, and one of them is not met, the event should not pass.');
 
+		$condition->operator = 'IN';
+		$passed = self::callPrivateMethod($this->model, 'checkEventConditions', [[$condition], $fnum]);
+		$this->assertTrue($passed, 'Operator IN should work as well.');
+
+		$condition->operator = '!=';
+		$passed = self::callPrivateMethod($this->model, 'checkEventConditions', [[$condition], $fnum]);
+		$this->assertFalse($passed, 'Operator != should work as well.');
+
+		$condition->operator = '=';
+
 		$db = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->createQuery();
 
