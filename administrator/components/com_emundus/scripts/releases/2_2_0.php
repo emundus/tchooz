@@ -1364,6 +1364,10 @@ class Release2_2_0Installer extends ReleaseInstaller
 
 			EmundusHelperUpdate::installExtension('PLG_FABRIK_FORM_EMUNDUSATTACHMENTPUBLIC', 'emundusattachmentpublic', null, 'plugin', 1, 'fabrik_form');
 
+			// Change default value of duplicate column of jos_emundus_setup_attachment_profiles from 1 to 0
+			$queryString = 'ALTER TABLE jos_emundus_setup_attachment_profiles CHANGE duplicate duplicate TINYINT(3) NOT NULL DEFAULT 0;';
+			$this->db->setQuery($queryString);
+			$this->db->execute();
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

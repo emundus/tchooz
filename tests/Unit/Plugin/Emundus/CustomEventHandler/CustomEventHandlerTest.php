@@ -81,6 +81,34 @@ class CustomEventHandlerTest extends UnitTestCase
 		$condition2->targeted_value = $this->dataset['program']['programme_id'] + 1;
 		$passed = self::callPrivateMethod($this->model, 'checkEventConditions', [[$condition, $condition2], $fnum]);
 		$this->assertFalse($passed, 'If more than one condition, and one of them is not met, the event should not pass.');
+
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->createQuery();
+
+		$query->select('fe.id, fe.params')
+			->from($db->quoteName('#__fabrik_elements', 'fe'))
+			->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON fe.group_id = ffg.group_id')
+			->where('ffg.form_id = 102')
+			->andWhere('fe.name = ' . $db->quote('fnum'));
+
+		$element = $db->setQuery($query)->loadAssoc();
+
+		$params = json_decode($element['params']);
+		$params->alias = 'test_alias_fnum';
+
+		$query = $db->getQuery(true);
+		$query->update($db->quoteName('#__fabrik_elements'))
+			->set('params = ' . $db->quote(json_encode($params)))
+			->where('id = ' . $element['id']);
+
+		$executed = $db->setQuery($query)->execute();
+
+		if ($executed) {
+			$condition->targeted_column = 'test_alias_fnum';
+			$condition->targeted_value = $fnum;
+			$passed = self::callPrivateMethod($this->model, 'checkEventConditions', [[$condition], $fnum]);
+			$this->assertTrue($passed, 'Passing the alias of the column should work as well.');
+		}
 	}
 
 	/**
