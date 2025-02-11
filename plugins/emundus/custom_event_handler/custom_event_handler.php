@@ -642,21 +642,22 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 						$condition->operator = '=';
 					}
 
-					if (!str_contains($condition->targeted_column, '.'))
+					// if $condition->targeted_column match "[NAME]", then it is a tag to interpret
+					// else if $condition->targeted_column match "name.name", then it is table.column
+					// else it can be an alias
+					$pattern_tag = '/\[(.*?)\]/';
+					$pattern_table = '/\w+\.\w+/';
+
+					if (preg_match($pattern_tag, $condition->targeted_column, $matches))
 					{
-						$value = EmundusHelperFabrik::getValueByAlias($condition->targeted_column, $fnum);
-						if (isset($value['raw'])) {
-							$conditions_status[] = match ($condition->operator)
-							{
-								'=' => $value['raw'] == $condition->targeted_value,
-								'!=' => $value['raw'] != $condition->targeted_value,
-								default => false,
-							};
-						} else {
-							$conditions_status[] = false;
-							break;
+						$m_emails = new EmundusModelEmails();
+						$tags = $m_emails->setTags($this->automated_task_user, ['FNUM' => $fnum], $fnum, '', $condition->targeted_column);
+						error_log(print_r($tags, true));
+
+						if (!empty($tags['replacements'])) {
+							$conditions_status[] = $this->operateCondition($condition, $tags['replacements'][0]);
 						}
-					} else {
+					} else if (preg_match($pattern_table, $condition->targeted_column, $matches)) {
 						list($table, $column) = explode('.', $condition->targeted_column);
 
 						if ($condition->targeted_value === '{current_user_id}') {
@@ -732,6 +733,15 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 							$conditions_status[] = false;
 							break;
 						}
+					} else {
+						$value = EmundusHelperFabrik::getValueByAlias($condition->targeted_column, $fnum);
+
+						if (isset($value['raw'])) {
+							$conditions_status[] = $this->operateCondition($condition, $value['raw']);
+						} else {
+							$conditions_status[] = false;
+							break;
+						}
 					}
 				}
 				else
@@ -745,6 +755,22 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 		}
 
 		return $pass;
+	}
+
+	private function operateCondition($condition, $value):bool
+	{
+		$result = false;
+
+		if (!empty($condition) && isset($value)) {
+			$result = match ($condition->operator)
+			{
+				'=' => $value == $condition->targeted_value,
+				'!=' => $value != $condition->targeted_value,
+				default => false,
+			};
+		}
+
+		return $result;
 	}
 
 	private function launchEventAction($action, $fnum): bool
