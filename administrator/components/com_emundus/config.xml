@@ -261,7 +261,7 @@
                label="COM_EMUNDUS_ATTACHCHMENT_NON_DELETABLE"
                class="advancedSelect"
         />
-        <field name="referent_can_edit_after_deadline" menu="hide" type="list" default="1"
+        <field name="referent_can_edit_after_deadline" menu="hide" type="list" default="0"
                label="COM_EMUNDUS_REFERENT_CAN_EDIT_AFTER_DEADLINE"
                description="COM_EMUNDUS_REFERENT_CAN_EDIT_AFTER_DEADLINE_DESC">
             <option value="0">JNO</option>
