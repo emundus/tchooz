@@ -883,7 +883,7 @@ class EventsModelTest extends UnitTestCase
 		$program = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $user_id_coordinator);
 		$campaign_id = $this->h_dataset->createSampleCampaign($program, $user_id_coordinator);
 
-		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', [], $user_id_coordinator);
+		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', [], $this->dataset['coordinator']);
 		$event = $this->h_dataset->createEvent($location_id,$user_id_coordinator, '2026-01-01 00:00:00', '2026-01-01 06:00:00', 'Event test',1,[$campaign_id]);
 		$event_id = $event['event_id'];
 		$event_slots = $event['event_slots'];
