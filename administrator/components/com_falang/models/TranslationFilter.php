@@ -1525,6 +1525,8 @@ class TranslateParams_fields extends TranslateParams_xml
 
 /*
  * @update 5.10 add reference_id in the input for easier original custom fields value display
+ * @update 5.14 fix astroid article param's translation (2 times load form execute onContentPrepare Form with the addFormPath
+ *              \libraries\astroid\framework\library\astroid\Helper\Client.php
  * */
 class TranslateParams_content extends TranslateParams_xml
 {
@@ -1538,7 +1540,7 @@ class TranslateParams_content extends TranslateParams_xml
         require_once JPATH_ADMINISTRATOR.'/components/com_content/helpers/content.php';
 
         parent::__construct($original, $translation, $fieldname, $fields);
-        $lang = Factory::getLanguage();
+        $lang = Factory::getApplication()->getLanguage();
         $lang->load("com_content", JPATH_ADMINISTRATOR);
 
         $cid = $jinput->get('cid', array(0),'STR');
@@ -1558,12 +1560,16 @@ class TranslateParams_content extends TranslateParams_xml
         $jinput->set("article_id", $contentid);
 
         JLoader::import('models.JFContentModelItem', FALANG_ADMINPATH);
-        $this->orig_contentModelItem = new JFContentModelItem();
-
         // Get The Original form
-        // JRequest does NOT this for us in articles!!
-        $this->orig_contentModelItem->setState('article.id',$contentid);
-        $jfcontentModelForm = $this->orig_contentModelItem->getForm();
+        // (remove in 5.14)
+        //  because this load Form::addFormPath who make problem with the article
+        // libraries\astroid\framework\library\astroid\Helper\Client.php
+        // the get translation form path after load fist the astroid article.xml
+        //
+        //
+        //$this->orig_contentModelItem = new JFContentModelItem();
+        //$this->orig_contentModelItem->setState('article.id',$contentid);
+        //$jfcontentModelForm = $this->orig_contentModelItem->getForm();
 
         // NOW GET THE TRANSLATION - IF AVAILABLE
         $this->trans_contentModelItem = new JFContentModelItem();

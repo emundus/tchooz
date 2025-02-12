@@ -32,12 +32,11 @@ class FalangHelper
 {
 	public static function getList(&$params)
 	{
-		$lang   = Factory::getLanguage();
+        $app	= Factory::getApplication();
+		$lang   = $app->getLanguage();
 		$languages	= LanguageHelper::getLanguages();
 		$sitelangs = LanguageHelper::getInstalledLanguages(0);
-		$app	= Factory::getApplication();
-		$levels = Factory::getUser()->getAuthorisedViewLevels();
-
+		$levels = $app->getIdentity()->getAuthorisedViewLevels();
 
 		//use to remove default language code in url
         $lang_codes 	= LanguageHelper::getLanguages('lang_code');
@@ -367,6 +366,17 @@ class FalangHelper
                         if (isset($vars['option']) && $vars['option'] == 'com_creativecontactform'){
                             if (isset($vars['view']) && $vars['view'] == 'creativecontactform'){
                                 unset($vars['form']);
+                            }
+                        }
+
+                        //fix for VikRentCar // car details
+                        if (isset($vars['option']) && $vars['option'] == 'com_vikrentcar'){
+                            if (isset($vars['view']) && $vars['view'] == 'cardetails'){
+                                unset($vars['orderby']);
+                                unset($vars['category_id']);
+                                unset($vars['ordertype']);
+                                unset($vars['lim']);
+                                unset($vars['layoutstyle']);
                             }
                         }
 

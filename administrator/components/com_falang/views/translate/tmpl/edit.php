@@ -438,11 +438,11 @@ else {
                                         <?php
                                         $length = ($field->Length>0)?$field->Length:60;
 	                                    $maxLength = ($field->MaxLength>0) ? "maxlength=".$field->MaxLength:"";?>
-                                        <input class="form-control" type="text" name="refField_<?php echo $field->Name;?>" size="<?php echo $length;?>" value="<?php echo htmlspecialchars($translationContent->value ?? ''); ?>" "<?php echo $maxLength;?>"/>
+                                        <input class="form-control" type="text" name="refField_<?php echo $field->Name;?>" id="refField_<?php echo $field->Name;?>"  size="<?php echo $length;?>" value="<?php echo htmlspecialchars($translationContent->value ?? ''); ?>" "<?php echo $maxLength;?>"/>
                                     <?php } //end if text?>
 
                                     <?php if (strtolower($field->Type)=='textarea') { ?>
-                                        <textarea class="form-control" name="refField_<?php echo $field->Name;?>" ><?php echo $translationContent->value; ?></textarea>
+                                        <textarea class="form-control" name="refField_<?php echo $field->Name;?>" id="refField_<?php echo $field->Name;?>"  ><?php echo $translationContent->value; ?></textarea>
                                     <?php } //end if textarea?>
 
                                     <?php if (strtolower($field->Type)=='readonlytext') {
@@ -450,7 +450,7 @@ else {
 	                                    $length = ($field->Length>0)?$field->Length:60;
 	                                    $maxLength = ($field->MaxLength>0) ? "maxlength=".$field->MaxLength:"";
                                         ?>
-                                        <input class="form-control" type="text" name="refField_<?php echo $field->Name;?>" size="<?php echo $length;?>" placeholder="<?php echo $value; ?>" value="<?php echo $value; ?>" maxlength="<?php echo $maxLength;?>" readonly>
+                                        <input class="form-control" type="text" name="refField_<?php echo $field->Name;?>" id="refField_<?php echo $field->Name;?>"  size="<?php echo $length;?>" placeholder="<?php echo $value; ?>" value="<?php echo $value; ?>" maxlength="<?php echo $maxLength;?>" readonly>
                                     <?php } //end if readonlytext ?>
 
 	                                <?php if (strtolower($field->Type)=='images') {

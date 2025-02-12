@@ -14,6 +14,13 @@ function translateService(fieldName,sourceText){
 
     var endpoint = " https://translation.googleapis.com/language/translate/v2"
 
+    //remove the X-CSRF-Token (add by jquery jquery.token)
+    jQuery.ajaxPrefilter(function(options, originalOptions, jqXHR) {
+        if ( options.headers !== undefined){
+            delete options.headers['X-CSRF-Token'];
+        }
+    });
+
     jQuery.ajax({
         type: 'POST',
         url: endpoint,
