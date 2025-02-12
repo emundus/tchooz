@@ -1,6 +1,6 @@
 <?php
 
-namespace Emundus\Plugin\Console\Tchooz\CliCommand;
+namespace Emundus\Plugin\Console\Tchooz\CliCommand\Commands;
 
 defined('_JEXEC') or die;
 
