@@ -1579,7 +1579,7 @@ class EmundusModelSettings extends ListModel
 			$query->select('id')
 				->from($this->db->quoteName('#__content'))
 				->where($this->db->quoteName('featured') . ' = 1')
-				->andWhere($this->db->quoteName('published') . ' = 1');
+				->andWhere($this->db->quoteName('state').' IN (0,1)');
 			$this->db->setQuery($query);
 			$article_id = $this->db->loadResult();
 		}
