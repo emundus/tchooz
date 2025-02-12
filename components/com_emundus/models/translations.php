@@ -613,7 +613,7 @@ class EmundusModelTranslations extends JModelList
 	 *
 	 * @since version
 	 */
-	public function updateTranslation($tag, $override, $lang_code, $type = 'override', $reference_table = '', $reference_id = 0, $reference_field = '')
+	public function updateTranslation($tag, $override, $lang_code, $type = 'override', $reference_table = '', $reference_id = 0, $reference_field = '', $user_id = null)
 	{
 		$saved = false;
 
@@ -626,7 +626,12 @@ class EmundusModelTranslations extends JModelList
 		}
 
 		$query = $this->_db->getQuery(true);
-		$user  = Factory::getApplication()->getIdentity();
+
+		if(empty($user_id)) {
+			$user = Factory::getApplication()->getIdentity();
+		} else {
+			$user = Factory::getUser($user_id);
+		}
 
 		$location = $lang_code . '.override.ini';
 

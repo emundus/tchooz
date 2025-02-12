@@ -2,19 +2,25 @@
 <form>
 	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
 		<fieldset name="plg-cron-emundusexpertrecall" label="COM_FABRIK_OPTIONS">
-            <field name="reminder_mail_id"
-				type="text"
-				description="PLG_CRON_EMAIL_TEMPLATE_DESC"
-				label="PLG_CRON_EMAIL_TEMPLATE"
-				size="30" 
-				default="" />
-            <field name="reminder_form_id"
-				type="text"
-				description="PLG_CRON_FORM_DESC"
-				label="PLG_CRON_FORM"
-				size="30" 
-				default="" />
-        </fieldset>
+			<field name="reminder_mail_id"
+				   type="text"
+				   description="PLG_CRON_EMAIL_TEMPLATE_DESC"
+				   label="PLG_CRON_EMAIL_TEMPLATE"
+				   size="30"
+				   default="" />
+			<field name="reminder_form_id"
+				   type="text"
+				   description="PLG_CRON_FORM_DESC"
+				   label="PLG_CRON_FORM"
+				   size="30"
+				   default="" />
+			<field name="invitation_by_fnum"
+				   type="text"
+				   description="PLG_CRON_INVITATION_DESC"
+				   label="PLG_CRON_INVITATION"
+				   size="30"
+				   default="2" />
+		</fieldset>
 
 	</fields>
 </form>
