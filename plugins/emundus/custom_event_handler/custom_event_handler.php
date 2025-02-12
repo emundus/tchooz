@@ -642,21 +642,22 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 						$condition->operator = '=';
 					}
 
-					if (!str_contains($condition->targeted_column, '.'))
+					// if $condition->targeted_column match "[NAME]", then it is a tag to interpret
+					// else if $condition->targeted_column match "name.name", then it is table.column
+					// else it can be an alias
+					$pattern_tag = '/\[(.*?)\]/';
+					$pattern_table = '/\w+\.\w+/';
+
+					if (preg_match($pattern_tag, $condition->targeted_column, $matches))
 					{
-						$value = EmundusHelperFabrik::getValueByAlias($condition->targeted_column, $fnum);
-						if (isset($value['raw'])) {
-							$conditions_status[] = match ($condition->operator)
-							{
-								'=' => $value['raw'] == $condition->targeted_value,
-								'!=' => $value['raw'] != $condition->targeted_value,
-								default => false,
-							};
-						} else {
-							$conditions_status[] = false;
-							break;
+						$m_emails = new EmundusModelEmails();
+						$tags = $m_emails->setTags($this->automated_task_user, ['FNUM' => $fnum], $fnum, '', $condition->targeted_column);
+						error_log(print_r($tags, true));
+
+						if (!empty($tags['replacements'])) {
+							$conditions_status[] = $this->operateCondition($condition, $tags['replacements'][0]);
 						}
-					} else {
+					} else if (preg_match($pattern_table, $condition->targeted_column, $matches)) {
 						list($table, $column) = explode('.', $condition->targeted_column);
 
 						if ($condition->targeted_value === '{current_user_id}') {
@@ -673,8 +674,23 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 							$query->clear()
 								->select('id')
 								->from($db->quoteName($table))
-								->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum))
-								->andWhere($db->quoteName($column) . ' ' . $condition->operator  . ' ' . $db->quote($condition->targeted_value));
+								->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+
+							switch($condition->operator) {
+								case 'IN':
+								case 'NOT IN':
+									$values = explode('|', $condition->targeted_value);
+
+									$query->andWhere($db->quoteName($column) . ' ' . $condition->operator  . ' (' . $db->quote(implode(',', $values)) . ')');
+									break;
+								case '=':
+								case '!=':
+									$query->andWhere($db->quoteName($column) . ' ' . $condition->operator  . ' ' . $db->quote($condition->targeted_value));
+								break;
+								default:
+									$conditions_status[] = false;
+									break;
+							}
 						}
 						else
 						{
@@ -702,8 +718,23 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 
 								$query->select($db->quoteName('ecc.id'))
 									->from($db->quoteName('jos_emundus_campaign_candidature', 'ecc'))
-									->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($fnum))
-									->andWhere($db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value));
+									->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($fnum));
+
+								switch($condition->operator) {
+									case 'IN':
+									case 'NOT IN':
+										$values = explode('|', $condition->targeted_value);
+
+										$query->andWhere($db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' (' . $db->quote(implode(',', $values)) . ')');
+										break;
+									case '=':
+									case '!=':
+										$query->andWhere($db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value));
+										break;
+									default:
+										$conditions_status[] = false;
+										break;
+								}
 
 							} else {
 								$conditions_status[] = false;
@@ -728,7 +759,17 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 						}
 						catch (Exception $e)
 						{
+							error_log($e->getMessage() . ' ' . $query->__toString());
 							Log::add('Failed to get value for condition ' . $condition->targeted_column . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.custom_event_handler');
+							$conditions_status[] = false;
+							break;
+						}
+					} else {
+						$value = EmundusHelperFabrik::getValueByAlias($condition->targeted_column, $fnum);
+
+						if (isset($value['raw'])) {
+							$conditions_status[] = $this->operateCondition($condition, $value['raw']);
+						} else {
 							$conditions_status[] = false;
 							break;
 						}
@@ -745,6 +786,24 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 		}
 
 		return $pass;
+	}
+
+	private function operateCondition($condition, $value):bool
+	{
+		$result = false;
+
+		if (!empty($condition) && isset($value)) {
+			$result = match ($condition->operator)
+			{
+				'=' => $value == $condition->targeted_value,
+				'!=' => $value != $condition->targeted_value,
+				'IN' => in_array($value, explode('|', $condition->targeted_value)),
+				'NOT IN' => !in_array($value, explode('|', $condition->targeted_value)),
+				default => false,
+			};
+		}
+
+		return $result;
 	}
 
 	private function launchEventAction($action, $fnum): bool

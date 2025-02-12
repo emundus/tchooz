@@ -71,13 +71,17 @@ class EmundusModelFormbuilder extends JModelList
 		return $key;
 	}
 
-	public function updateTranslation($key, $values, $reference_table = '', $reference_id = 0, $reference_field = '')
+	public function updateTranslation($key, $values, $reference_table = '', $reference_id = 0, $reference_field = '', $user_id = null)
 	{
+		if(empty($user_id)) {
+			$user_id = Factory::getApplication()->getIdentity()->id;
+		}
+
 		$languages = JLanguageHelper::getLanguages();
 
 		foreach ($languages as $language) {
 			if (isset($values[$language->sef])) {
-				$key = $this->m_translations->updateTranslation($key, $values[$language->sef], $language->lang_code, 'override', $reference_table, $reference_id, $reference_field);
+				$key = $this->m_translations->updateTranslation($key, $values[$language->sef], $language->lang_code, 'override', $reference_table, $reference_id, $reference_field, $user_id);
 			}
 		}
 
@@ -176,15 +180,19 @@ class EmundusModelFormbuilder extends JModelList
 	 * @param $locallang
 	 * @param $NewSubLabel
 	 */
-	function formsTrad($labelTofind, $NewSubLabel, $element = null, $group = null, $page = null)
+	function formsTrad($labelTofind, $NewSubLabel, $element = null, $group = null, $page = null, $user_id = null)
 	{
 		$new_key = '';
+
+		if(empty($user_id)) {
+			$user_id = Factory::getApplication()->getIdentity()->id;
+		}
 
 		try {
 			$query = $this->db->getQuery(true);
 
 			if (!empty($element)) {
-				$new_key = $this->updateTranslation($labelTofind, $NewSubLabel, 'fabrik_elements', $element);
+				$new_key = $this->updateTranslation($labelTofind, $NewSubLabel, 'fabrik_elements', $element, '', $user_id);
 
 				if (!empty($new_key) && !is_bool($new_key)) {
 					$query->update($this->db->quoteName('#__fabrik_elements'))
@@ -196,7 +204,7 @@ class EmundusModelFormbuilder extends JModelList
 				}
 			}
 			elseif (!empty($group)) {
-				$new_key = $this->updateTranslation($labelTofind, $NewSubLabel, 'fabrik_groups', $group);
+				$new_key = $this->updateTranslation($labelTofind, $NewSubLabel, 'fabrik_groups', $group, '', $user_id);
 
 				if (!empty($new_key) && !is_bool($new_key)) {
 					$translation = Text::_($new_key);
@@ -211,7 +219,7 @@ class EmundusModelFormbuilder extends JModelList
 				}
 			}
 			elseif (!empty($page)) {
-				$new_key = $this->updateTranslation($labelTofind, $NewSubLabel, 'fabrik_forms', $page);
+				$new_key = $this->updateTranslation($labelTofind, $NewSubLabel, 'fabrik_forms', $page, '', $user_id);
 				if (!empty($new_key) && !is_bool($new_key)) {
 					$query->update($this->db->quoteName('#__fabrik_forms'))
 						->set($this->db->quoteName('label') . ' = ' . $this->db->quote($new_key))
@@ -221,7 +229,7 @@ class EmundusModelFormbuilder extends JModelList
 				}
 			}
 			else {
-				$new_key = $this->updateTranslation($labelTofind, $NewSubLabel);
+				$new_key = $this->updateTranslation($labelTofind, $NewSubLabel, '', 0, '', $user_id);
 			}
 		}
 		catch (Exception $e) {

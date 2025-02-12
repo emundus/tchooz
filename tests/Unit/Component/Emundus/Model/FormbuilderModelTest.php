@@ -53,7 +53,7 @@ class FormbuilderModelTest extends UnitTestCase
 		$reference_id = 999999;
 
 		$this->m_translations->insertTranslation('ELEMENT_TEST', 'Mon élément de test', 'fr-FR', '', 'override', 'fabrik_elements', $reference_id);
-		$new_key = $this->model->formsTrad('ELEMENT_TEST', ['fr' => $new_trad, 'en' => 'My test element'], $reference_id);
+		$new_key = $this->model->formsTrad('ELEMENT_TEST', ['fr' => $new_trad, 'en' => 'My test element'], $reference_id, null, null, $this->dataset['coordinator']);
 		$this->assertNotFalse($new_key, 'La fonction de traduction a fonctionné');
 		
 		$query = $this->db->getQuery(true);
@@ -86,7 +86,7 @@ class FormbuilderModelTest extends UnitTestCase
 		$reference_id                = 999999;
 
 		$this->m_translations->insertTranslation('ELEMENT_TEST', 'Mon élément de test', 'fr-FR', '', 'override', 'fabrik_elements', $reference_id);
-		$new_key = $this->model->formsTrad('ELEMENT_TEST', ['fr' => $new_trad, 'en' => 'My test element']);
+		$new_key = $this->model->formsTrad('ELEMENT_TEST', ['fr' => $new_trad, 'en' => 'My test element'], 0, null, null, $this->dataset['coordinator']);
 
 		$this->assertNotEmpty($new_key, 'La fonction formsTrad a fonctionné sans définir le type d\'élément passé.');
 

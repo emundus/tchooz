@@ -24,6 +24,11 @@ class EmundusViewWorkflows extends JViewLegacy
 
 	public $user = null;
 	private $model = null;
+
+	public $ccid = 0;
+
+	public $fnum = '';
+
 	function display($tpl = null)
 	{
 		$app = Factory::getApplication();
@@ -45,29 +50,21 @@ class EmundusViewWorkflows extends JViewLegacy
 				$this->fnum = $jinput->getString('fnum', '');
 
 				$query->clear()
-					->select('applicant_id, id')
+					->select('applicant_id, id, campaign_id')
 					->from('#__emundus_campaign_candidature')
 					->where('fnum LIKE ' . $db->quote($this->fnum));
 				$db->setQuery($query);
 				$data = $db->loadAssoc();
 
 				$this->ccid = $data['id'];
+				$this->fnum = EmundusHelperFiles::getFnumFromId($this->ccid);
 				$this->applicant  = $m_user->getUserById($data['applicant_id'])[0];
 				if (!isset($this->applicant->profile_picture) || empty($this->applicant->profile_picture)) {
 					$this->applicant->profile_picture = $m_user->getIdentityPhoto($this->fnum, $data['applicant_id']);
 				}
 
 				if (!empty($step_id)) {
-					$this->step = $this->model->getStepData($step_id);
-
-					$query->clear()
-						->select('jfl.db_table_name')
-						->from($db->quoteName('#__fabrik_lists', 'jfl'))
-						->leftJoin($db->quoteName('#__emundus_setup_workflows_steps', 'esws') . 'ON esws.form_id = jfl.form_id')
-						->where('esws.id = ' . $step_id);
-					
-					$db->setQuery($query);
-					$this->step->db_table_name = $db->loadResult();
+					$this->step = $this->model->getStepData($step_id, $data['campaign_id']);
 
 					try {
 						$this->access = EmundusHelperAccess::getUserEvaluationStepAccess($this->ccid, $this->step, $this->user->id);

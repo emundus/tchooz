@@ -2438,10 +2438,24 @@ class EmundusHelperEvents
 		$m_workflow = new EmundusModelWorkflow();
 		$step_data = $m_workflow->getStepData($step_id);
 
+		$crud = 'c';
 		$db = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
+		$query->select('id')
+			->from($db->quoteName($step_data->table))
+			->where($db->quoteName('ccid') . ' = ' . $db->quote($ccid))
+			->where($db->quoteName('step_id') . ' = ' . $db->quote($step_id));
 
-		$query->select('applicant_id')
+		$db->setQuery($query);
+		$evaluation_row_id = $db->loadResult();
+
+		if (!empty($evaluation_row_id))
+		{
+			$crud = 'u';
+		}
+
+		$query->clear()
+			->select('applicant_id')
 			->from($db->quoteName('#__emundus_campaign_candidature'))
 			->where($db->quoteName('id') . ' = ' . $db->quote($ccid));
 
@@ -2450,9 +2464,8 @@ class EmundusHelperEvents
 			$applicant_id = $db->loadResult();
 
 			require_once (JPATH_SITE . '/components/com_emundus/models/logs.php');
-			EmundusModelLogs::log($current_user_id, $applicant_id, $fnum, 5, 'c', 'COM_EMUNDUS_SUBMIT_EVALUATION', json_encode(array(
+			EmundusModelLogs::log($current_user_id, $applicant_id, $fnum, $step_data->action_id, $crud, 'COM_EMUNDUS_SUBMIT_EVALUATION', json_encode(array(
 				'step_id' => $step_id,
-				'step_action_id' => $step_data->action_id,
 				'created' => [['element' => $step_data->label]]
 			)));
 		} catch (Exception $e) {

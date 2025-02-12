@@ -488,14 +488,10 @@ class EmundusModelLogs extends JModelList
 				break;
 		}
 
-		// Translate with Text
-		$action_category = Text::_($action_category);
-		$action_name     = Text::_($action_name);
-
 		// All action details are set, time to return them
 		$details                    = [];
-		$details['action_category'] = $action_category;
-		$details['action_name']     = $action_name;
+		$details['action_category'] = Text::_($action_category);
+		$details['action_name']     = Text::_($action_name);
 		$details['action_details']  = $action_details;
 
 		return $details;

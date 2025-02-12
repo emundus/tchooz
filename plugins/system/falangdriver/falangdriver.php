@@ -697,20 +697,25 @@ final class plgSystemFalangdriver extends CMSPlugin
 		return true;
 	}
 
-	//use to enable template by langugage (paid version only)
+    /**
+     *
+     * Enable template by langugage (paid version only)
+     *
+     * @update 5.14 clean code remove jimport
+     *              $this->_subject->setError not working anymaore enqueueMessage
+     *
+     */
 	private function enabledTplTranslation($form, $data){
-		jimport('joomla.application.component.helper');
+
 		$params = ComponentHelper::getParams('com_falang');
 		$show_tpl_lang = $params->get('show_tpl_lang');
 
 		if (!isset($show_tpl_lang) || $show_tpl_lang == '0' ) {return;}
 
-
 		if (!($form instanceof JForm))
 		{
-			$this->_subject->setError('JERROR_NOT_A_FORM');
-
-			return false;
+            Factory::getApplication()->enqueueMessage('JERROR_NOT_A_FORM',Factory::getApplication()::MSG_ALERT);
+            return;
 		}
 		if ((is_array($data) && array_key_exists('home', $data))
 			|| ((is_object($data) && isset($data->home) ))) {
