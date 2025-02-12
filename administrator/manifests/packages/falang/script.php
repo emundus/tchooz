@@ -180,7 +180,7 @@ class pkg_falangInstallerScript
             </div> 
              <div class="faboba-installation-right span8">
                 <div class="faboba-installation-texts">
-	                <h2>Falang standard<span>5.13</span></h2>
+	                <h2>Falang standard<span>5.15</span></h2>
 	                <p>The easiest way to build a multilanguage site on Joomla</p>
                 </div>
                 <div class="faboba-installation-footer">

@@ -192,6 +192,7 @@ class plgSystemFalangquickjump extends CMSPlugin
     /*
      * @since 4.0.7 load jquery only on backend
      * @update 5.7 add bootstrap render modal to allow popup (Fix for J5.1)
+     * @update 5.14 text::script need to be done for admin only
      *
      * */
     public function onBeforeRender(){
@@ -201,11 +202,12 @@ class plgSystemFalangquickjump extends CMSPlugin
         {
             HTMLHelper::_('jquery.framework');
             HTMLHelper::_('bootstrap.renderModal');
+            Text::script('LIB_FALANG_TRANSLATION');
+            //Text::script('JSTATUS');
+            //Text::script('JGLOBAL_TITLE');
         }
 
-        Text::script('LIB_FALANG_TRANSLATION');
-        //Text::script('JSTATUS');
-        //Text::script('JGLOBAL_TITLE');
+
     }
 
     public function addGridHtml(){
