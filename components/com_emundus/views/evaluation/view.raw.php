@@ -312,7 +312,8 @@ class EmundusViewEvaluation extends JViewLegacy
 
 						if($display_associated_date == 1)
 						{
-							$user['associated_date'] = EmundusHelperDate::displayDate($m_files->getAssociatedDate($user['fnum'],$this->_user->id), 'DATE_FORMAT_LC3');
+							$associated_date = $m_files->getAssociatedDate($user['fnum'],$this->_user->id);
+							$user['associated_date'] = !empty($associated_date) ? EmundusHelperDate::displayDate($associated_date, 'DATE_FORMAT_LC3') : '';
 						}
 
 						$line                = array('check' => $usObj);
