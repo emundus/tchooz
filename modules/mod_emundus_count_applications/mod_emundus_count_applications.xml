@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension
+        type="module"
+        version="4.2.9"
+        client="site"
+        method="upgrade">
+    <name>MOD_EMUNDUS_COUNT_APPLICATIONS</name>
+    <description>MOD_EMUNDUS_COUNT_APPLICATIONS_DESC</description>
+    <author>HUBINET Brice</author>
+    <creationDate>2025 February</creationDate>
+    <copyright>Copyright (C) 2015-2025 eMundus. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>2.3.0</version>
+    <namespace path="src">Emundus\Module\CountApplications</namespace>
+
+    <files>
+        <filename>mod_emundus_count_applications.xml</filename>
+        <filename module="mod_emundus_count_applications">mod_emundus_count_applications.php</filename>
+        <folder>language</folder>
+        <folder>src</folder>
+        <folder>tmpl</folder>
+    </files>
+    <languages>
+        <language tag="en-GB">en-GB.mod_emundus_count_applications.ini</language>
+        <language tag="en-GB">en-GB.mod_emundus_count_applications.sys.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_count_applications.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_count_applications.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic" label="Options">
+                <field name="mod_emundus_count_applications_title"
+                       type="text"
+                       label="MOD_EMUNDUS_COUNT_APPLICATIONS_TITLE"
+                       description="MOD_EMUNDUS_COUNT_APPLICATIONS_TITLE_DESC"
+                       default=""
+                />
+                <field name="mod_emundus_count_applications_columns"
+                       type="subform"
+                       label="MOD_EMUNDUS_COUNT_APPLICATIONS_COLUMNS"
+                       description="MOD_EMUNDUS_COUNT_APPLICATIONS_COLUMNS_DESC"
+                       multiple="true"
+                       layout="joomla.form.field.subform.repeatable-table">
+                    <form>
+                        <field name="mod_emundus_count_applications_columns_title"
+                               type="text"
+                               label="MOD_EMUNDUS_COUNT_APPLICATIONS_COLUMNS_TITLE"
+                        />
+                        <field name="mod_emundus_count_applications_columns_status"
+                               type="sql"
+                               query="SELECT step, value as name FROM #__emundus_setup_status"
+                               key_field="step"
+                               value_field="name"
+                               multiple="true"
+                               label="MOD_EMUNDUS_COUNT_APPLICATIONS_COLUMNS_STATUS"
+                               layout="joomla.form.field.list-fancy-select"
+                        />
+                    </form>
+                </field>
+
+                <field name="mod_emundus_count_applications_rows"
+                       type="subform"
+                       label="MOD_EMUNDUS_COUNT_APPLICATIONS_ROWS"
+                       description="MOD_EMUNDUS_COUNT_APPLICATIONS_ROWS_DESC"
+                       multiple="true"
+                       layout="joomla.form.field.subform.repeatable-table">
+                    <form>
+                        <field name="mod_emundus_count_applications_rows_title"
+                               type="text"
+                               label="MOD_EMUNDUS_COUNT_APPLICATIONS_ROWS_TITLE"
+                        />
+                        <field name="mod_emundus_count_applications_rows_programs"
+                               type="sql"
+                               query="SELECT code, label FROM #__emundus_setup_programmes"
+                               key_field="code"
+                               value_field="label"
+                               multiple="true"
+                               label="MOD_EMUNDUS_COUNT_APPLICATIONS_ROWS_PROGRAMS"
+                               layout="joomla.form.field.list-fancy-select"
+                        />
+                    </form>
+                </field>
+            </fieldset>
+
+        </fields>
+    </config>
+</extension>
