@@ -670,7 +670,7 @@ class EmundusModelWorkflow extends JModelList
 		return $ids;
 	}
 
-	public function isEvaluated($step, $user_id, $fnum)
+	public function isEvaluated(object $step, int $user_id, string $fnum): bool
 	{
 		$evaluated = false;
 
@@ -696,6 +696,7 @@ class EmundusModelWorkflow extends JModelList
 				try {
 					$this->db->setQuery($query);
 					$evaluated = $this->db->loadResult();
+					$evaluated = !empty($evaluated);
 				} catch (Exception $e) {
 					Log::add('Error while checking if file is evaluated: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
 				}

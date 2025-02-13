@@ -5758,4 +5758,28 @@ class EmundusModelFiles extends JModelLegacy
 
 		return $referent_email;
 	}
+
+	public function getAssociatedDate(string $fnum, int $user_id): string
+	{
+		$associated_date = '';
+		$query = $this->_db->getQuery(true);
+
+		try
+		{
+			$query->select('time_date')
+				->from($this->_db->quoteName('#__emundus_users_assoc'))
+				->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum))
+				->where($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote($user_id))
+				->where($this->_db->quoteName('action_id') . ' = 1')
+				->where($this->_db->quoteName('r') . ' = 1');
+			$this->_db->setQuery($query);
+			$associated_date = $this->_db->loadResult();
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error getting associated date: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+		}
+
+		return $associated_date;
+	}
 }
