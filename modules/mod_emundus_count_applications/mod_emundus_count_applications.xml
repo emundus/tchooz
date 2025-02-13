@@ -70,15 +70,24 @@
                                type="text"
                                label="MOD_EMUNDUS_COUNT_APPLICATIONS_ROWS_TITLE"
                         />
-                        <field name="mod_emundus_count_applications_rows_programs"
-                               type="sql"
-                               query="SELECT code, label FROM #__emundus_setup_programmes"
-                               key_field="code"
-                               value_field="label"
+                        <field name="mod_emundus_count_applications_rows_calculation"
+                               type="subform"
+                               label="MOD_EMUNDUS_COUNT_APPLICATIONS_ROWS_CALCULATION"
+                               description="MOD_EMUNDUS_COUNT_APPLICATIONS_ROWS_CALCULATION_DESC"
                                multiple="true"
-                               label="MOD_EMUNDUS_COUNT_APPLICATIONS_ROWS_PROGRAMS"
-                               layout="joomla.form.field.list-fancy-select"
-                        />
+                               layout="joomla.form.field.subform.repeatable-table">
+                            <form>
+                                <field name="mod_emundus_count_applications_rows_programs"
+                                       type="sql"
+                                       query="SELECT code, label FROM #__emundus_setup_programmes"
+                                       key_field="code"
+                                       value_field="label"
+                                       multiple="true"
+                                       label="MOD_EMUNDUS_COUNT_APPLICATIONS_ROWS_PROGRAMS"
+                                       layout="joomla.form.field.list-fancy-select"
+                                />
+                            </form>
+                        </field>
                     </form>
                 </field>
             </fieldset>

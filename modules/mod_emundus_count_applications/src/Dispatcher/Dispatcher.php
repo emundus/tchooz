@@ -56,18 +56,25 @@ class Dispatcher extends AbstractModuleDispatcher
 
 				// Count files base on mod_emundus_count_applications_columns_status and mod_emundus_count_applications_rows_programs
 				$status   = $column->mod_emundus_count_applications_columns_status;
-				$programs = $row->mod_emundus_count_applications_rows_programs;
+				$calculations = (array)$row->mod_emundus_count_applications_rows_calculation;
 
-				// Get the count of applications
-				$query->clear()
-					->select('COUNT(cc.id)')
-					->from($db->quoteName('#__emundus_campaign_candidature','cc'))
-					->leftJoin($db->quoteName('#__emundus_setup_campaigns','sc').' ON '.$db->quoteName('sc.id').' = '.$db->quoteName('cc.campaign_id'))
-					->where($db->quoteName('cc.status') . ' IN (' . implode(',', $db->quote($status)) . ')')
-					->where($db->quoteName('sc.training') . ' IN (' . implode(',', $db->quote($programs)) . ')')
-					->where($db->quoteName('sc.published') . ' <> -1');
-				$db->setQuery($query);
-				$data['rows'][$key]->applications[$index] = $db->loadResult();
+				foreach ($calculations as $calculation)
+				{
+					$programs = $calculation->mod_emundus_count_applications_rows_programs;
+
+					// Get the count of applications
+					$query->clear()
+						->select('COUNT(DISTINCT cc.applicant_id)')
+						->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
+						->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'sc') . ' ON ' . $db->quoteName('sc.id') . ' = ' . $db->quoteName('cc.campaign_id'))
+						->where($db->quoteName('cc.status') . ' IN (' . implode(',', $db->quote($status)) . ')')
+						->where($db->quoteName('sc.training') . ' IN (' . implode(',', $db->quote($programs)) . ')')
+						->where($db->quoteName('cc.published') . ' <> -1')
+						->group('cc.applicant_id')
+						->having('COUNT(DISTINCT sc.training) = ' . count($programs));
+					$db->setQuery($query);
+					$data['rows'][$key]->applications[$index] += count($db->loadColumn());
+				}
 			}
 		}
 
