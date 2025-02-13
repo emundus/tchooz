@@ -650,13 +650,17 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 
 					if (preg_match($pattern_tag, $condition->targeted_column, $matches))
 					{
+						require_once(JPATH_ROOT . '/components/com_emundus/models/emails.php');
 						$m_emails = new EmundusModelEmails();
 						$tags = $m_emails->setTags($this->automated_task_user, ['FNUM' => $fnum], $fnum, '', $condition->targeted_column);
-						error_log(print_r($tags, true));
 
 						if (!empty($tags['replacements'])) {
-							$conditions_status[] = $this->operateCondition($condition, $tags['replacements'][0]);
+							$value = preg_replace($tags['patterns'], $tags['replacements'], $condition->targeted_column);
+							$conditions_status[] = $this->operateCondition($condition, $value);
+						} else {
+							$conditions_status[] = false;
 						}
+
 					} else if (preg_match($pattern_table, $condition->targeted_column, $matches)) {
 						list($table, $column) = explode('.', $condition->targeted_column);
 
