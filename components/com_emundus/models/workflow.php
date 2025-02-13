@@ -670,6 +670,46 @@ class EmundusModelWorkflow extends JModelList
 		return $ids;
 	}
 
+	public function isEvaluated($step, $user_id, $fnum)
+	{
+		$evaluated = false;
+
+		if (!empty($step->id) && !empty($user_id) && !empty($fnum)) {
+			if (!empty($step->table)) {
+				$has_edition_access = EmundusHelperAccess::asAccessAction($step->action_id, 'c', $user_id);
+
+				$query = $this->db->createQuery();
+
+				if ($step->multiple && $has_edition_access) {
+					$query->select('ccid')
+						->from($this->db->quoteName($step->table))
+						->where('evaluator = ' . $user_id)
+						->andWhere('step_id = ' . $step->id)
+						->andWhere('ccid = ' . $fnum);
+				} else {
+					$query->select('ccid')
+						->from($this->db->quoteName($step->table))
+						->where('step_id = ' . $step->id)
+						->andWhere('ccid = ' . $fnum);
+				}
+
+				try {
+					$this->db->setQuery($query);
+					$evaluated = $this->db->loadResult();
+				} catch (Exception $e) {
+					Log::add('Error while checking if file is evaluated: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+				}
+			}
+
+			PluginHelper::importPlugin('emundus');
+			$dispatcher = Factory::getApplication()->getDispatcher();
+			$onIsEvaluated = new GenericEvent('onCallEventHandler', ['onIsEvaluated', ['step' => $step, 'user_id' => (int)$user_id, 'fnum' => $fnum, 'evaluated' => &$evaluated]]);
+			$dispatcher->dispatch('onCallEventHandler', $onIsEvaluated);
+		}
+
+		return $evaluated;
+	}
+
 	public function getStepEvaluationsForFile($step_id, $ccid)
 	{
 		$evaluations = [];
