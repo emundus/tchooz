@@ -6657,7 +6657,8 @@ class EmundusHelperFiles
 	 *
 	 * @since version 1.40.0
 	 */
-	public static function getIdFromFnum($fnum) {
+	public static function getIdFromFnum(string $fnum): int
+	{
 		$id = 0;
 
 		if (!empty($fnum)) {
@@ -6670,7 +6671,7 @@ class EmundusHelperFiles
 
 			try {
 				$db->setQuery($query);
-				$id = $db->loadResult();
+				$id = (int)$db->loadResult();
 			} catch (Exception $e) {
 				Log::add('Failed to get id from fnum ' . $fnum . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
