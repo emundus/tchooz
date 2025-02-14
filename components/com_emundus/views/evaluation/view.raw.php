@@ -305,7 +305,7 @@ class EmundusViewEvaluation extends JViewLegacy
 						} else {
 							if ($display_state_column == 1)
 							{
-								$user['evaluated'] = Text::_('COM_EMUNDUS_EVALUATIONS_TO_EVALUATE');
+								$user['evaluated'] = Text::_('COM_EMUNDUS_EVALUATION_TO_EVALUATE');
 							}
 							$form_url_view       = '';
 							$this->form_url_edit = '';
