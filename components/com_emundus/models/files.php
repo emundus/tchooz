@@ -5774,6 +5774,10 @@ class EmundusModelFiles extends JModelLegacy
 				->where($this->_db->quoteName('r') . ' = 1');
 			$this->_db->setQuery($query);
 			$associated_date = $this->_db->loadResult();
+
+			if (empty($associated_date)) {
+				$associated_date = '';
+			}
 		}
 		catch (Exception $e)
 		{
