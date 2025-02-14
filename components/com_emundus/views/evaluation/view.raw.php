@@ -292,12 +292,13 @@ class EmundusViewEvaluation extends JViewLegacy
 
 						$current_row_form = $this->formid;
 						if (!empty($step_data)) {
+							$ccid = EmundusHelperFiles::getIdFromFnum($user['fnum']);
+
 							if ($display_state_column == 1)
 							{
-								$user['evaluated'] = $m_workflow->isEvaluated($step_data, $this->_user->id, $user['fnum']) ? Text::_('COM_EMUNDUS_EVALUATIONS_EVALUATED') : Text::_('COM_EMUNDUS_EVALUATIONS_TO_EVALUATE');
+								$user['evaluated'] = $m_workflow->isEvaluated($step_data, $this->_user->id, $ccid) ? Text::_('COM_EMUNDUS_EVALUATIONS_EVALUATED') : Text::_('COM_EMUNDUS_EVALUATIONS_TO_EVALUATE');
 							}
 
-							$ccid = EmundusHelperFiles::getIdFromFnum($user['fnum']);
 							$current_row_form = $step_data->form_id;
 							$form_url_view       = 'evaluation-step-form?view=details&formid=' . $step_data->form_id . '&tmpl=component&iframe=1&' . $step_data->table . '___ccid=' . $ccid. '&' . $step_data->table . '___step_id=' . $step_data->id . '&rowid=';
 							$this->form_url_edit = 'evaluation-step-form?formid=' . $step_data->form_id . '&tmpl=component&iframe=1&' . $step_data->table . '___ccid=' . $ccid. '&' . $step_data->table . '___step_id=' . $step_data->id . '&rowid=';

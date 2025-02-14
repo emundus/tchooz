@@ -670,11 +670,11 @@ class EmundusModelWorkflow extends JModelList
 		return $ids;
 	}
 
-	public function isEvaluated(object $step, int $user_id, string $fnum): bool
+	public function isEvaluated(object $step, int $user_id, int $ccid): bool
 	{
 		$evaluated = false;
 
-		if (!empty($step->id) && !empty($user_id) && !empty($fnum)) {
+		if (!empty($step->id) && !empty($user_id) && !empty($ccid)) {
 			if (!empty($step->table)) {
 				$has_edition_access = EmundusHelperAccess::asAccessAction($step->action_id, 'c', $user_id);
 
@@ -685,12 +685,12 @@ class EmundusModelWorkflow extends JModelList
 						->from($this->db->quoteName($step->table))
 						->where('evaluator = ' . $user_id)
 						->andWhere('step_id = ' . $step->id)
-						->andWhere('ccid = ' . $fnum);
+						->andWhere('ccid = ' . $ccid);
 				} else {
 					$query->select('ccid')
 						->from($this->db->quoteName($step->table))
 						->where('step_id = ' . $step->id)
-						->andWhere('ccid = ' . $fnum);
+						->andWhere('ccid = ' . $ccid);
 				}
 
 				try {

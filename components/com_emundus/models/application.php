@@ -1933,7 +1933,10 @@ class EmundusModelApplication extends ListModel
 					foreach ($groupes as $itemg) {
 						$g_params = json_decode($itemg->params);
 
-						if (($allowed_groups !== true && !in_array($itemg->group_id, $allowed_groups)) || !EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, (int) $g_params->access) && !in_array($g_params->repeat_group_show_first, $hidden_group_param_values)) {
+						if (
+							(($allowed_groups !== true && !in_array($itemg->group_id, $allowed_groups)) || !EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, (int) $g_params->access)) &&
+							!in_array($g_params->repeat_group_show_first, $hidden_group_param_values)
+						) {
 							$forms .= '<fieldset class="em-personalDetail">
 											<h6 class="em-font-weight-400">' . Text::_($itemg->label) . '</h6>
 											<table class="em-restricted-group">
