@@ -296,7 +296,7 @@ class EmundusViewEvaluation extends JViewLegacy
 
 							if ($display_state_column == 1)
 							{
-								$user['evaluated'] = $m_workflow->isEvaluated($step_data, $this->_user->id, $ccid) ? Text::_('COM_EMUNDUS_EVALUATIONS_EVALUATED') : Text::_('COM_EMUNDUS_EVALUATIONS_TO_EVALUATE');
+								$user['evaluated'] = $m_workflow->isEvaluated($step_data, $this->_user->id, $ccid) ? Text::_('COM_EMUNDUS_EVALUATION_EVALUATED') : Text::_('COM_EMUNDUS_EVALUATION_TO_EVALUATE');
 							}
 
 							$current_row_form = $step_data->form_id;
