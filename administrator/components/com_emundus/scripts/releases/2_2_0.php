@@ -1357,7 +1357,7 @@ class Release2_2_0Installer extends ReleaseInstaller
 			if(!empty($emundus_component))
 			{
 				$params                    = json_decode($emundus_component->params, true);
-				$params['default_actions'] = '{"1":{"id":1, "c":0, "r":1, "u":0, "d":0}';
+				$params['default_actions'] = '{"1":{"id":1, "c":0, "r":1, "u":0, "d":0}}';
 				$emundus_component->params = json_encode($params);
 				$this->db->updateObject('#__extensions', $emundus_component, 'extension_id');
 			}

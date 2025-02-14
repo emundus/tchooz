@@ -129,6 +129,14 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 
 		$fnum = EmundusHelperFiles::getFnumFromId($ccid);
 		$form_model->data[$db_table_name . '___fnum'] = $fnum;
+
+		// log user access to evaluation
+		require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+		$m_files = new EmundusModelFiles();
+		$applicant_id = $m_files->getFnumInfos($fnum)['applicant_id'];
+
+		require_once (JPATH_ROOT . '/components/com_emundus/models/logs.php');
+		EmundusModelLogs::log($user->id, $applicant_id, $fnum, $step_data->action_id, 'r', 'COM_EMUNDUS_ACCESS_EVALUATION', json_encode(array('step_id' => $step_id)));
 	}
 
 	public function onBeforeProcess(): void

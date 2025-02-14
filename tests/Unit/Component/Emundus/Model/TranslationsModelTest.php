@@ -108,16 +108,16 @@ class TranslationsModelTest extends UnitTestCase
 
 
 		// TEST 1 - Update the translations created before in french
-		$this->assertSame('ELEMENT_TEST', $this->model->updateTranslation('ELEMENT_TEST', 'Mon élement modifié', 'fr-FR'));
+		$this->assertSame('ELEMENT_TEST', $this->model->updateTranslation('ELEMENT_TEST', 'Mon élement modifié', 'fr-FR', 'override', '', 0, '', $this->dataset['coordinator']));
 
 		// TEST 2 - Update the translations created before in english
-		$this->assertSame('ELEMENT_TEST', $this->model->updateTranslation('ELEMENT_TEST', 'My updated element', 'en-GB'));
+		$this->assertSame('ELEMENT_TEST', $this->model->updateTranslation('ELEMENT_TEST', 'My updated element', 'en-GB', 'override', '', 0, '', $this->dataset['coordinator']));
 
 		// TEST 3 - Failed waiting - Update the translations created before in portuguesh
-		$this->assertSame(false, $this->model->updateTranslation('ELEMENT_TEST', 'My updated element', 'pt-PT'));
+		$this->assertSame(false, $this->model->updateTranslation('ELEMENT_TEST', 'My updated element', 'pt-PT', 'override', '', 0, '', $this->dataset['coordinator']));
 
 		// TEST 4 - If no tag given, traduction should return false, request sould not work
-		$this->assertSame(false, $this->model->updateTranslation('', 'My updated element', 'fr-FR'), 'Make sure that we can\'t add empty tag into override file');
+		$this->assertSame(false, $this->model->updateTranslation('', 'My updated element', 'fr-FR', 'override', '', 0, '', $this->dataset['coordinator']), 'Make sure that we can\'t add empty tag into override file');
 
 		$override_new_file_size = filesize(JPATH_SITE . '/language/overrides/fr-FR.override.ini');
 		$this->assertGreaterThanOrEqual($override_original_file_size, $override_new_file_size, 'New override file size is greater or equal than original override file (make sure override file is not destroyed)');

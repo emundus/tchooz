@@ -289,7 +289,7 @@ function generate_csv(json, eltJson, objJson, options, objclass, letter) {
     }
 }
 
-function export_pdf(fnums, ids, default_export = '') {
+function export_pdf(fnums, ids, default_export = '', default_form_ids = '', pdf_elements = {profiles: [], tables: [], groups: [], elements: []}) {
     var start = 0;
     var limit = 2;
     var forms = 0;
@@ -301,13 +301,6 @@ function export_pdf(fnums, ids, default_export = '') {
     var params = {};
 
     var elements = null;
-
-    let pdf_elements = {
-        profiles: [],
-        tables: [],
-        groups: [],
-        elements: []
-    };
 
     if (default_export === '') {
         /// if at least one is checked --> forms = 1
@@ -397,8 +390,6 @@ function export_pdf(fnums, ids, default_export = '') {
             }
         });
 
-        console.log(options);
-
         $('#aelts input:checked').each(function() {
             attach_checked.push($(this).val());
             attachment = 0;
@@ -443,6 +434,10 @@ function export_pdf(fnums, ids, default_export = '') {
             "status",
             "upload"
         ];
+    } else if (default_export === 'evaluation_step') {
+        forms = 1;
+        form_checked = default_form_ids;
+        options = ["eval_steps", "aid", "afnum", "aemail", "aapp-sent", "adoc-print", "tags", "status", "upload"];
     }
 
     var swal_container_class = '';

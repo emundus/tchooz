@@ -1805,8 +1805,8 @@ class EmundusController extends JControllerLegacy
 
 		// This query checks if the file can actually be viewed by the user, in the case a file uploaded to his file by a coordniator is opened.
 		if (!empty(JFactory::getUser($uid)->id)) {
-
             $query = 'SELECT can_be_viewed, fnum, local_filename FROM #__emundus_uploads';
+
 			if (EmundusHelperAccess::isApplicant($current_user->id) && !empty($fnums)) {
 				$query .= " WHERE fnum IN (" . implode(',', $this->_db->quote($fnums)) . ')';
 				$query .= " AND filename like " . $this->_db->Quote($file);

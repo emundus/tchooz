@@ -670,6 +670,47 @@ class EmundusModelWorkflow extends JModelList
 		return $ids;
 	}
 
+	public function isEvaluated(object $step, int $user_id, int $ccid): bool
+	{
+		$evaluated = false;
+
+		if (!empty($step->id) && !empty($user_id) && !empty($ccid)) {
+			if (!empty($step->table)) {
+				$has_edition_access = EmundusHelperAccess::asAccessAction($step->action_id, 'c', $user_id);
+
+				$query = $this->db->createQuery();
+
+				if ($step->multiple && $has_edition_access) {
+					$query->select('ccid')
+						->from($this->db->quoteName($step->table))
+						->where('evaluator = ' . $user_id)
+						->andWhere('step_id = ' . $step->id)
+						->andWhere('ccid = ' . $ccid);
+				} else {
+					$query->select('ccid')
+						->from($this->db->quoteName($step->table))
+						->where('step_id = ' . $step->id)
+						->andWhere('ccid = ' . $ccid);
+				}
+
+				try {
+					$this->db->setQuery($query);
+					$evaluated = $this->db->loadResult();
+					$evaluated = !empty($evaluated);
+				} catch (Exception $e) {
+					Log::add('Error while checking if file is evaluated: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+				}
+			}
+
+			PluginHelper::importPlugin('emundus');
+			$dispatcher = Factory::getApplication()->getDispatcher();
+			$onIsEvaluated = new GenericEvent('onCallEventHandler', ['onIsEvaluated', ['step' => $step, 'user_id' => (int)$user_id, 'fnum' => $fnum, 'evaluated' => &$evaluated]]);
+			$dispatcher->dispatch('onCallEventHandler', $onIsEvaluated);
+		}
+
+		return $evaluated;
+	}
+
 	public function getStepEvaluationsForFile($step_id, $ccid)
 	{
 		$evaluations = [];
@@ -843,6 +884,11 @@ class EmundusModelWorkflow extends JModelList
 			$query = $this->db->getQuery(true);
 
 			$updates = [];
+			$lang_code = Factory::getApplication()->getLanguage()->getTag();
+
+			require_once(JPATH_ROOT . '/components/com_emundus/models/translations.php');
+			$m_translations = new EmundusModelTranslations();
+
 			foreach ($already_existing_types as $type)
 			{
 				$query->clear()
@@ -855,12 +901,32 @@ class EmundusModelWorkflow extends JModelList
 					$action_id = $this->db->loadResult();
 
 					if (!empty($action_id)) {
+						switch($action_id) {
+							case 1:
+								$tag = 'COM_EMUNDUS_ACCESS_FILE';
+								break;
+							case 5:
+								$tag = 'COM_EMUNDUS_ACCESS_EVALUATION';
+								break;
+							default:
+								$tag = 'COM_EMUNDUS_ACCESS_' . $action_id;
+						}
+
 						$query->clear()
 							->update('#__emundus_setup_actions')
-							->set('label = ' . $this->db->quote($type['label']))
+							->set('label = ' . $this->db->quote($tag))
 							->where('id = ' . $action_id);
 						$this->db->setQuery($query);
 						$updates[] = $this->db->execute();
+						$updates[] = $m_translations->updateTranslation($tag, $type['label'], $lang_code);
+
+						if (!in_array($action_id, [1, 5]))
+						{
+							$m_translations->updateTranslation('COM_EMUNDUS_ACCESS_' . $action_id . '_READ', $type['label'] . ' - ' . Text::_('COM_EMUNDUS_ACCESS_READ'), $lang_code);
+							$m_translations->updateTranslation('COM_EMUNDUS_ACCESS_' . $action_id . '_CREATE', $type['label'] . ' - ' . Text::_('COM_EMUNDUS_ACCESS_CREATED'), $lang_code);
+							$m_translations->updateTranslation('COM_EMUNDUS_ACCESS_' . $action_id . '_UPDATE', $type['label'] . ' - ' . Text::_('COM_EMUNDUS_ACCESS_UPDATED'), $lang_code);
+							$m_translations->updateTranslation('COM_EMUNDUS_ACCESS_' . $action_id . '_DELETE', $type['label'] . ' - ' . Text::_('COM_EMUNDUS_ACCESS_DELETED'), $lang_code);
+						}
 					}
 
 					$query->clear()
@@ -894,7 +960,7 @@ class EmundusModelWorkflow extends JModelList
 
 				$query->clear()
 					->insert('#__emundus_setup_actions')
-					->columns('name, label, multi, c, r, u, d, status,  ordering')
+					->columns('name, label, multi, c, r, u, d, status, ordering')
 					->values($this->db->quote($action->name) . ', ' . $this->db->quote($action->label) . ', ' . $action->multi . ', ' . $action->c . ', ' . $action->r . ', ' . $action->u . ', ' . $action->d . ', ' . $action->status . ', ' . $action->ordering);
 
 				try
@@ -910,11 +976,23 @@ class EmundusModelWorkflow extends JModelList
 				}
 
 				if (!empty($action_id)) {
+					// re update label with the action id
+					$tag = 'COM_EMUNDUS_ACCESS_' . $action_id;
+					$query->clear()
+						->update('#__emundus_setup_actions')
+						->set('label = ' . $this->db->quote('COM_EMUNDUS_ACCESS_' . $action_id))
+						->where('id = ' . $action_id);
+
+					$m_translations->insertTranslation($tag, $type['label'], $lang_code);
+					$m_translations->insertTranslation('COM_EMUNDUS_ACCESS_' . $action_id . '_READ', $type['label'] . ' - ' . Text::_('COM_EMUNDUS_ACCESS_READ'), $lang_code);
+					$m_translations->insertTranslation('COM_EMUNDUS_ACCESS_' . $action_id . '_CREATE', $type['label'] . ' - ' . Text::_('COM_EMUNDUS_ACCESS_CREATED'), $lang_code);
+					$m_translations->insertTranslation('COM_EMUNDUS_ACCESS_' . $action_id . '_UPDATE', $type['label'] . ' - ' . Text::_('COM_EMUNDUS_ACCESS_UPDATED'), $lang_code);
+					$m_translations->insertTranslation('COM_EMUNDUS_ACCESS_' . $action_id . '_DELETE', $type['label'] . ' - ' . Text::_('COM_EMUNDUS_ACCESS_DELETED'), $lang_code);
+
 					$query->clear()
 						->insert('#__emundus_setup_step_types')
 						->columns('label, action_id, parent_id')
 						->values($this->db->quote($type['label']) . ', ' . $action_id . ', ' . $type['parent_id']);
-
 					try
 					{
 						$this->db->setQuery($query);

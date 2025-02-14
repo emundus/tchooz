@@ -156,7 +156,7 @@ class EmundusModelEmails extends JModelList
 			if (!is_null($to_current_user)) {
 				$query->andWhere($this->_db->quoteName('eset.to_current_user') . ' IN (' . $to_current_user . ')');
 			}
-			$query->andWhere($this->_db->quoteName('esp.code').' IN ('.implode(',', $this->_db->quote($codes)) .')')
+			$query->andWhere($this->_db->quoteName('esp.code').' IN ('.implode(',', $this->_db->quote($codes)) .') OR ' . $this->_db->quoteName('eset.all_program') . ' = 1')
 				->group('eset.id');
 			try {
 				$this->_db->setQuery($query);
@@ -1123,7 +1123,7 @@ class EmundusModelEmails extends JModelList
 			$student    = JFactory::getUser($mail_to_id);
 			$mail_to    = $student->email;
 
-			$mail_body        = $this->setBody($student, JFactory::getApplication()->input->get('mail_body', null, 'POST', 'VARCHAR', JREQUEST_ALLOWHTML), '', $fnum);
+			$mail_body        = $this->setBody($student, JFactory::getApplication()->input->get('mail_body', null, 'POST'), '', $fnum);
 			$mail_attachments = $jinput->get('mail_attachments', null, 'STRING');
 
 			if (!empty($mail_attachments)) {
