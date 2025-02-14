@@ -56,6 +56,7 @@ class EmundusViewEvaluation extends JViewLegacy
 		require_once(JPATH_ROOT . '/components/com_emundus/helpers/emails.php');
 		require_once(JPATH_ROOT . '/components/com_emundus/helpers/export.php');
 		require_once(JPATH_ROOT . '/components/com_emundus/helpers/filters.php');
+		require_once(JPATH_ROOT . '/components/com_emundus/helpers/date.php');
 		require_once(JPATH_ROOT . '/components/com_emundus/models/users.php');
 		require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
 		require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
@@ -96,6 +97,8 @@ class EmundusViewEvaluation extends JViewLegacy
 
 		$columnSupl = explode(',', $menu_params->get('em_other_columns'));
 		$show_evaluator = $menu_params->get('em_show_evaluator',1);
+		$display_state_column = $menu_params->get('em_display_state_column',0);
+		$display_associated_date = $menu_params->get('em_display_associated_date_column', 0);
 		$layout     = $jinput->getString('layout', 0);
 
 		$m_files = new EmundusModelFiles();
@@ -207,6 +210,15 @@ class EmundusViewEvaluation extends JViewLegacy
 				{
 					$fl['evaluator'] = Text::_('COM_EMUNDUS_EVALUATION_EVALUATOR');
 				}
+				if ($display_state_column == 1)
+				{
+					$fl['evaluated'] = Text::_('COM_EMUNDUS_EVALUATION_IS_EVALUATED');
+				}
+				if($display_associated_date == 1)
+				{
+					$fl['associated_date'] = Text::_('COM_EMUNDUS_ASSOCIATED_DATE');
+				}
+
 				// Get eval crieterion
 				if (count($defaultElements) > 0) {
 					foreach ($defaultElements as $key => $elt) {
@@ -281,12 +293,28 @@ class EmundusViewEvaluation extends JViewLegacy
 						$current_row_form = $this->formid;
 						if (!empty($step_data)) {
 							$ccid = EmundusHelperFiles::getIdFromFnum($user['fnum']);
+
+							if ($display_state_column == 1)
+							{
+								$user['evaluated'] = $m_workflow->isEvaluated($step_data, $this->_user->id, $ccid) ? Text::_('COM_EMUNDUS_EVALUATION_EVALUATED') : Text::_('COM_EMUNDUS_EVALUATION_TO_EVALUATE');
+							}
+
 							$current_row_form = $step_data->form_id;
 							$form_url_view       = 'evaluation-step-form?view=details&formid=' . $step_data->form_id . '&tmpl=component&iframe=1&' . $step_data->table . '___ccid=' . $ccid. '&' . $step_data->table . '___step_id=' . $step_data->id . '&rowid=';
 							$this->form_url_edit = 'evaluation-step-form?formid=' . $step_data->form_id . '&tmpl=component&iframe=1&' . $step_data->table . '___ccid=' . $ccid. '&' . $step_data->table . '___step_id=' . $step_data->id . '&rowid=';
 						} else {
+							if ($display_state_column == 1)
+							{
+								$user['evaluated'] = Text::_('COM_EMUNDUS_EVALUATION_TO_EVALUATE');
+							}
 							$form_url_view       = '';
 							$this->form_url_edit = '';
+						}
+
+						if($display_associated_date == 1)
+						{
+							$associated_date = $m_files->getAssociatedDate($user['fnum'],$this->_user->id);
+							$user['associated_date'] = !empty($associated_date) ? EmundusHelperDate::displayDate($associated_date, 'DATE_FORMAT_LC3') : '';
 						}
 
 						$line                = array('check' => $usObj);
