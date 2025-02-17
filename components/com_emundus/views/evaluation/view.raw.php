@@ -97,8 +97,8 @@ class EmundusViewEvaluation extends JViewLegacy
 
 		$columnSupl = explode(',', $menu_params->get('em_other_columns'));
 		$show_evaluator = $menu_params->get('em_show_evaluator',1);
-		$display_state_column = $menu_params->get('em_display_state_column',0);
-		$display_associated_date = $menu_params->get('em_display_associated_date_column', 0);
+		$display_state_column = $menu_params->get('em_display_state_column',1);
+		$display_associated_date = $menu_params->get('em_display_associated_date_column', 1);
 		$layout     = $jinput->getString('layout', 0);
 
 		$m_files = new EmundusModelFiles();
