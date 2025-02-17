@@ -19,7 +19,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryInterface;
-
+use Joomla\CMS\User\UserHelper;
 
 /**
  * Emundus Component Users Controller
@@ -155,7 +155,7 @@ class EmundusControllerUsers extends BaseController
 			include_once(JPATH_SITE . '/components/com_emundus/helpers/users.php');
 			$h_users        = new EmundusHelperUsers;
 			$password       = $h_users->generateStrongPassword();
-			$user->password = md5($password);
+			$user->password = UserHelper::hashPassword($password);
 		}
 
 		$now                 = EmundusHelperDate::getNow();
