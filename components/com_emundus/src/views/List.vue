@@ -826,6 +826,8 @@ export default {
         translation += '<span>'+this.translate('COM_EMUNDUS_ONBOARD_NOFORM')+'</span>';
       } else if (this.type === "events") {
         translation += '<span>'+this.translate('COM_EMUNDUS_ONBOARD_NOEVENTS')+'</span>';
+      } else if (this.type === "workflow") {
+        translation += '<span>'+this.translate('COM_EMUNDUS_ONBOARD_NOWORKFLOW')+'</span>';
       }
 
       return translation;

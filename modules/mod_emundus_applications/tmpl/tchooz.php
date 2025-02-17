@@ -362,7 +362,11 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
         </div>
 	<?php else : ?>
         <p id="no_file_tab_message_view" class="em-display-none"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_TAB') ?></p>
-        <p id="no_file_search_message_view" class="em-display-none"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_SEARCH') ?></p>
+        <div class="em-display-none no_file_search_message_view">
+            <img src="/media/com_emundus/images/tchoozy/complex-illustrations/no-result.svg" alt="empty-list" style="width: 10vw; height: 10vw; margin: 0 auto;">
+            <p style="width: fit-content; margin: 0 auto;"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_SEARCH') ?></p>
+            <a class="em-font-size-16 em-profile-color em-text-underline tw-w-full tw-block tw-text-center" href="<?php echo $campaigns_list_url; ?>"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_SEARCH_LINK') ?></a>
+        </div>
 		<?php foreach ($applications as $key => $group) : ?>
 			<?php foreach ($group as $g_key => $sub_group) : ?>
 				<?php if ((!empty($order_by_session) && !empty($sub_group['applications'])) || !empty($sub_group['applications'][0])) : ?>
@@ -738,7 +742,13 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
         </div>
 	<?php else : ?>
         <h4 id="no_file_tab_message_list" class="em-display-none"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_TAB') ?></h4>
-		<?php foreach ($applications as $key => $group) : ?>
+        <div class="em-display-none no_file_search_message_view">
+            <img src="/media/com_emundus/images/tchoozy/complex-illustrations/no-result.svg" alt="empty-list" style="width: 10vw; height: 10vw; margin: 0 auto;">
+            <p style="width: fit-content; margin: 0 auto;"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_SEARCH') ?></p>
+            <a class="em-font-size-16 em-profile-color em-text-underline tw-w-full tw-block tw-text-center" href="<?php echo $campaigns_list_url; ?>"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_SEARCH_LINK') ?></a>
+        </div>
+
+        <?php foreach ($applications as $key => $group) : ?>
 			<?php foreach ($group as $g_key => $sub_group) : ?>
 				<?php if ((!empty($order_by_session) && !empty($sub_group['applications'])) || !empty($sub_group['applications'][0])) : ?>
                     <div id="group_application_tab_<?php echo $key ?>"
@@ -748,7 +758,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                             <h3 class="em-ml-8"><?php echo $sub_group['label'] ?></h3>
                             <hr/>
 						<?php endif; ?>
-                        <table class="em-mb-12">
+                        <table class="em-mb-12 applications_list_view--tables">
                             <thead>
                             <tr>
                                 <th></th>
@@ -1157,14 +1167,24 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
             });
 
             if (fnums_to_show.length === 0) {
-                document.getElementById('no_file_search_message_view').style.display = 'block';
+                document.getElementsByClassName('no_file_search_message_view').forEach((elt) => {
+                    elt.style.display = 'block';
+                })
+                document.getElementsByClassName('applications_list_view--tables').forEach((elt) => {
+                    elt.style.display = 'none';
+                })
                 document.title = "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_SEARCH'); ?>";
             } else {
-                document.getElementById('no_file_search_message_view').style.display = 'none';
+                document.getElementsByClassName('no_file_search_message_view').forEach((elt) => {
+                    elt.style.display = 'none';
+                })
+                document.getElementsByClassName('applications_list_view--tables').forEach((elt) => {
+                    elt.style.display = 'block';
+                })
                 document.title = "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_FILE_SEARCH_RESET'); ?>";
             }
         } else {
-            for (let application of document.querySelectorAll("div[id^='application_content']")) {
+            for (let application of document.querySelectorAll("div[id^='application_content'],tr[id^='application_content']")) {
                 if (application.nodeName === 'TR') {
                     application.style.display = 'flex';
                 } else {
@@ -1172,7 +1192,12 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                 }
             }
 
-            document.getElementById('no_file_search_message_view').style.display = 'none';
+            document.getElementsByClassName('no_file_search_message_view').forEach((elt) => {
+                elt.style.display = 'none';
+            })
+            document.getElementsByClassName('applications_list_view--tables').forEach((elt) => {
+                elt.style.display = 'block';
+            })
         }
 
     }, 500));

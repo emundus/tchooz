@@ -1,4 +1,4 @@
-import { a5 as getAugmentedNamespace, a6 as commonjsGlobal, a7 as getDefaultExportFromCjs } from "./app_emundus.js";
+import { a6 as getAugmentedNamespace, a7 as commonjsGlobal, a8 as getDefaultExportFromCjs } from "./app_emundus.js";
 var type;
 var hasRequiredType;
 function requireType() {
