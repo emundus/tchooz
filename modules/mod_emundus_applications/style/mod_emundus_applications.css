@@ -496,6 +496,7 @@ a.btn.btn-success:not(.btn-xs) {
 
 #applications_card_view .mod_emundus_applications__container {
     padding: 4px;
+    z-index: 5;
 }
 
 .mod_emundus_applications___content_app:hover .mod_emundus_applications__container {
@@ -822,6 +823,7 @@ circle.circle {
 .mod_emundus_applications___content_app #background-shapes {
     opacity: 0.5;
     transition: ease-out .5s;
+    z-index: 0;
 }
 
 .mod_emundus_applications___content_app:hover #background-shapes {
