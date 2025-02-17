@@ -11,7 +11,8 @@ export default defineConfig({
   resolve: {
     //preserveSymlinks: true,
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '@media': fileURLToPath(new URL('../../media', import.meta.url)),
     },
   },
   build: {

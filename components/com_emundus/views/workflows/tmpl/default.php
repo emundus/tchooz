@@ -18,6 +18,7 @@ Text::script('COM_EMUNDUS_ONBOARD_ALL_PROGRAMS');
 Text::script('COM_EMUNDUS_WORKFLOW_DELETE_WORKFLOW_CONFIRMATION');
 Text::script('COM_EMUNDUS_WORKFLOW_PROGRAMS_ASSOCIATED_TITLE');
 Text::script('COM_EMUNDUS_WORKFLOW_PROGRAMS_ASSOCIATED');
+Text::script('COM_EMUNDUS_ONBOARD_NOWORKFLOW');
 
 $app          = Factory::getApplication();
 $lang         = $app->getLanguage();

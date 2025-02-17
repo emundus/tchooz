@@ -69,7 +69,8 @@ $fnum = JFactory::getApplication()->input->getString('fnum', 0);
 				<?php if ($this->messages === false) : ?>
                     <h3> <?= JText::_('COM_EMUNDUS_EMAILS_ERROR_GETTING_MESSAGES'); ?> </h3>
 				<?php elseif (count($this->messages) === 0) : ?>
-                    <h3> <?= JText::_('COM_EMUNDUS_EMAILS_NO_MESSAGES_FOUND'); ?> </h3>
+                    <img src="/media/com_emundus/images/tchoozy/complex-illustrations/no-result.svg" alt="empty-list" style="width: 10vw; height: 10vw; margin: 0 auto;">
+                    <p class="tw-text-center"><?php echo JText::_('COM_EMUNDUS_EMAILS_NO_MESSAGES_FOUND'); ?></p>
 				<?php else : ?>
 
                     <div class="em-flex-row em-border-bottom-neutral-300 mb-3"

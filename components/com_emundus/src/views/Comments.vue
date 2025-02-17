@@ -145,7 +145,10 @@
         </p>
       </div>
     </div>
-    <p v-else id="empty-comments" class="tw-text-center tw-my-4">{{ translate('COM_EMUNDUS_COMMENTS_NO_COMMENTS') }}</p>
+    <div v-else id="empty-comments" class="tw-text-center tw-my-4">
+      <img src="@media/com_emundus/images/tchoozy/complex-illustrations/no-result.svg" alt="empty-list" style="width: 10vw; height: 10vw; margin: 0 auto;">
+      <p>{{ translate('COM_EMUNDUS_COMMENTS_NO_COMMENTS') }}</p>
+    </div>
 
     <hr/>
 

@@ -238,9 +238,10 @@
                     </tbody>
                 </table>
             </section>
-            <p v-else>
-                {{ translate('COM_EMUNDUS_ATTACHMENTS_NO_ATTACHMENTS_FOUND') }}
-            </p>
+            <div v-else class="tw-text-center">
+              <img src="@media/com_emundus/images/tchoozy/complex-illustrations/no-result.svg" alt="empty-list" style="width: 10vw; height: 10vw; margin: 0 auto;">
+              <p>{{ translate('COM_EMUNDUS_ATTACHMENTS_NO_ATTACHMENTS_FOUND') }}</p>
+            </div>
             <section id="add-document-section" class="tw-mt-4 tw-flex tw-items-center" v-if="this.canCreate">
                 <button class="tw-btn-primary em-w-auto" @click="addAttachment">
                     {{ translate('COM_EMUNDUS_ONBOARD_ADD_NEW_DOCUMENT') }}

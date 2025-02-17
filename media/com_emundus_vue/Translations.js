@@ -1,4 +1,4 @@
-import { $ as client, q as axios, _ as _export_sfc, X as V32, U as script, J as mixin, r as resolveComponent, o as openBlock, c as createElementBlock, F as Fragment, b as renderList, a as createBaseVNode, t as toDisplayString, e as createCommentVNode, f as createBlock, d as normalizeClass, p as errors, g as createVNode, h as withDirectives, v as vShow } from "./app_emundus.js";
+import { $ as client, q as axios, _ as _export_sfc, I as mixin, U as script, X as V32, r as resolveComponent, c as createElementBlock, o as openBlock, F as Fragment, e as renderList, d as createBaseVNode, t as toDisplayString, a as createCommentVNode, b as createBlock, f as normalizeClass, p as errors, h as withDirectives, g as createVNode, v as vShow, a3 as _imports_0 } from "./app_emundus.js";
 import { q as qs } from "./index2.js";
 const translationsService = {
   async checkSetup() {
@@ -687,7 +687,7 @@ const _hoisted_7 = { key: 2 };
 const _hoisted_8 = { class: "col-md-12" };
 const _hoisted_9 = {
   key: 0,
-  class: "text-center tw-mt-20"
+  class: "text-center tw-mt-4"
 };
 const _hoisted_10 = { class: "tw-mb-2" };
 const _hoisted_11 = { class: "tw-text-base em-text-neutral-600" };
@@ -788,12 +788,17 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         [vShow, $props.displayFilters]
       ]) : createCommentVNode("", true)
     ])),
-    _cache[5] || (_cache[5] = createBaseVNode("hr", {
+    _cache[6] || (_cache[6] = createBaseVNode("hr", {
       class: "col-md-12",
       style: { "z-index": "0" }
     }, null, -1)),
     createBaseVNode("div", _hoisted_8, [
       $data.lang === "" || $data.lang == null || $data.object === "" || $data.object == null || $data.init_translations === false ? (openBlock(), createElementBlock("div", _hoisted_9, [
+        _cache[5] || (_cache[5] = createBaseVNode("img", {
+          src: _imports_0,
+          alt: "empty-list",
+          style: { "width": "10vw", "height": "10vw", "margin": "0 auto" }
+        }, null, -1)),
         createBaseVNode("h5", _hoisted_10, toDisplayString(this.translate("COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_TRANSLATION_TITLE")), 1),
         createBaseVNode("p", _hoisted_11, toDisplayString(this.translate("COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_TRANSLATION_TEXT")), 1)
       ])) : (openBlock(), createElementBlock("div", _hoisted_12, [
