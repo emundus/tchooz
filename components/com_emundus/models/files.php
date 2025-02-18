@@ -1643,7 +1643,7 @@ class EmundusModelFiles extends JModelLegacy
 	 *
 	 * @return bool
 	 */
-	public function tagFile($fnums, $tags, $user = null)
+	public function tagFile($fnums, $tags, $user_id = null)
 	{
 		$tagged = false;
 
@@ -1652,9 +1652,13 @@ class EmundusModelFiles extends JModelLegacy
 			\Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onBeforeTagAdd', ['fnums' => $fnums, 'tag' => $tags]]);
 
 			try {
-
-				if (empty($user)) {
-					$user = $this->app->getIdentity()->id;
+				if(empty($user_id))
+				{
+					$user_id = $this->app->getIdentity()->id;
+					if(empty($user_id)) {
+						$eMConfig = ComponentHelper::getParams('com_emundus');
+						$user_id = $eMConfig->get('automated_task_user', 62);
+					}
 				}
 
 				$now = EmundusHelperDate::getNow();
@@ -1670,7 +1674,7 @@ class EmundusModelFiles extends JModelLegacy
 						->select('id_tag')
 						->from($this->_db->quoteName('#__emundus_tag_assoc'))
 						->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum))
-						->andWhere($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote($user));
+						->andWhere($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote($user_id));
 					$this->_db->setQuery($query_associated_tags);
 					$tags_already_associated = $this->_db->loadColumn();
 
@@ -1679,7 +1683,7 @@ class EmundusModelFiles extends JModelLegacy
 						if (!in_array($tag, $tags_already_associated)) {
 	                        $insert_tags = true;
 
-							$query     .= '("' . $fnum . '", ' . $tag . ',"' . $now . '",' . $user . '),';
+							$query     .= '("' . $fnum . '", ' . $tag . ',"' . $now . '",' . $user_id . '),';
 							$query_log = 'SELECT label
                                 FROM #__emundus_setup_action_tag
                                 WHERE id =' . $tag;
@@ -1694,7 +1698,7 @@ class EmundusModelFiles extends JModelLegacy
 
 					if (!empty($logger)) {
 						$logsParams = array('created' => array_unique($logger, SORT_REGULAR));
-						EmundusModelLogs::log($user, (int) substr($fnum, -7), $fnum, 14, 'c', 'COM_EMUNDUS_ACCESS_TAGS_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+						EmundusModelLogs::log($user_id, (int) substr($fnum, -7), $fnum, 14, 'c', 'COM_EMUNDUS_ACCESS_TAGS_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 					}
 				}
 
