@@ -181,7 +181,7 @@ export default {
         thumbnailWidth: null,
         thumbnailHeight: null,
         resizeMimeType: 'image/png',
-        acceptedFiles: 'image/*',
+        acceptedFiles: 'image/png,image/jpeg,image/jpg,image/gif,image/svg+xml',
         previewTemplate: getTemplate(),
         dictCancelUpload: this.translate("COM_EMUNDUS_ONBOARD_CANCEL_UPLOAD"),
         dictCancelUploadConfirmation: this.translate("COM_EMUNDUS_ONBOARD_CANCEL_UPLOAD_CONFIRMATION"),
@@ -198,7 +198,7 @@ export default {
         addRemoveLinks: true,
         thumbnailWidth: null,
         thumbnailHeight: null,
-        acceptedFiles: 'image/png,image/jpeg,,image/x-icon,image/vnd.microsoft.icon',
+        acceptedFiles: 'image/png,image/jpeg,image/x-icon,image/vnd.microsoft.icon',
         previewTemplate: getTemplate(),
         dictCancelUpload: this.translate("COM_EMUNDUS_ONBOARD_CANCEL_UPLOAD"),
         dictCancelUploadConfirmation: this.translate("COM_EMUNDUS_ONBOARD_CANCEL_UPLOAD_CONFIRMATION"),
@@ -300,9 +300,9 @@ export default {
 
     updateIcon(response) {
       this.hideIcon = false;
-      this.iconLink = window.location.origin + '//images/custom/' + response.filename + '?' + new Date().getTime();
-      document.querySelector('link[type="image/x-icon"]').href = window.location.origin + '//images/custom/' + response.filename + '?' + new Date().getTime();
-      document.querySelector('.tchooz-vertical-logo a img').src = window.location.origin + '//images/custom/' + response.filename + '?' + new Date().getTime();
+      this.iconLink = 'images/custom/' + response.filename + '?' + new Date().getTime();
+      document.querySelector('link[type="image/x-icon"]').href = '/images/custom/' + response.filename + '?' + new Date().getTime();
+      document.querySelector('.tchooz-vertical-logo a img').src = '/images/custom/' + response.filename + '?' + new Date().getTime();
       this.$forceUpdate();
     },
 
@@ -316,7 +316,7 @@ export default {
     },
 
     afterRemoved() {
-      if (this.$refs.dropzone.getAcceptedFiles().length === 0) {
+      if (this.$refs.dropzone && this.$refs.dropzone.getAcceptedFiles().length === 0) {
         if (this.banner_updating || this.logo_updating || this.favicon_updating) {
           document.getElementById('dropzone-message').style.display = 'block';
         }
