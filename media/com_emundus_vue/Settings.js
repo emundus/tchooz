@@ -2295,7 +2295,7 @@ const _sfc_main$c = {
         thumbnailWidth: null,
         thumbnailHeight: null,
         resizeMimeType: "image/png",
-        acceptedFiles: "image/*",
+        acceptedFiles: "image/png,image/jpeg,image/jpg,image/gif,image/svg+xml",
         previewTemplate: getTemplate(),
         dictCancelUpload: this.translate("COM_EMUNDUS_ONBOARD_CANCEL_UPLOAD"),
         dictCancelUploadConfirmation: this.translate("COM_EMUNDUS_ONBOARD_CANCEL_UPLOAD_CONFIRMATION"),
@@ -2312,7 +2312,7 @@ const _sfc_main$c = {
         addRemoveLinks: true,
         thumbnailWidth: null,
         thumbnailHeight: null,
-        acceptedFiles: "image/png,image/jpeg,,image/x-icon,image/vnd.microsoft.icon",
+        acceptedFiles: "image/png,image/jpeg,image/x-icon,image/vnd.microsoft.icon",
         previewTemplate: getTemplate(),
         dictCancelUpload: this.translate("COM_EMUNDUS_ONBOARD_CANCEL_UPLOAD"),
         dictCancelUploadConfirmation: this.translate("COM_EMUNDUS_ONBOARD_CANCEL_UPLOAD_CONFIRMATION"),
@@ -2402,9 +2402,9 @@ const _sfc_main$c = {
     },
     updateIcon(response) {
       this.hideIcon = false;
-      this.iconLink = window.location.origin + "//images/custom/" + response.filename + "?" + (/* @__PURE__ */ new Date()).getTime();
-      document.querySelector('link[type="image/x-icon"]').href = window.location.origin + "//images/custom/" + response.filename + "?" + (/* @__PURE__ */ new Date()).getTime();
-      document.querySelector(".tchooz-vertical-logo a img").src = window.location.origin + "//images/custom/" + response.filename + "?" + (/* @__PURE__ */ new Date()).getTime();
+      this.iconLink = "images/custom/" + response.filename + "?" + (/* @__PURE__ */ new Date()).getTime();
+      document.querySelector('link[type="image/x-icon"]').href = "/images/custom/" + response.filename + "?" + (/* @__PURE__ */ new Date()).getTime();
+      document.querySelector(".tchooz-vertical-logo a img").src = "/images/custom/" + response.filename + "?" + (/* @__PURE__ */ new Date()).getTime();
       this.$forceUpdate();
     },
     updateBanner(ext = "png") {
@@ -2415,7 +2415,7 @@ const _sfc_main$c = {
       document.getElementById("dropzone-message").style.display = "none";
     },
     afterRemoved() {
-      if (this.$refs.dropzone.getAcceptedFiles().length === 0) {
+      if (this.$refs.dropzone && this.$refs.dropzone.getAcceptedFiles().length === 0) {
         if (this.banner_updating || this.logo_updating || this.favicon_updating) {
           document.getElementById("dropzone-message").style.display = "block";
         }
@@ -2808,7 +2808,7 @@ function _sfc_render$c(_ctx, _cache, $props, $setup, $data, $options) {
     $data.loading ? (openBlock(), createElementBlock("div", _hoisted_35)) : createCommentVNode("", true)
   ]);
 }
-const General = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["render", _sfc_render$c], ["__scopeId", "data-v-69ed52ef"]]);
+const General = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["render", _sfc_render$c], ["__scopeId", "data-v-26bb8eb2"]]);
 const _sfc_main$b = {
   name: "Orphelins",
   components: {
