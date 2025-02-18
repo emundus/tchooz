@@ -5648,24 +5648,27 @@ $(document).ready(function() {
 
         const checked = $('#emundus_checkall_grp_' + id).is(":checked");
         const isXlsExport = document.getElementById('appelement');
+        const group = document.querySelector('#emundus_grp_' + id);
 
-        document.querySelector('#emundus_grp_' + id).querySelectorAll('input[id^=emundus_elm_]').forEach(function(e) {
-            if (checked) {
-                e.checked = true;
+        if (group) {
+            group.querySelectorAll('input[id^=emundus_elm_]').forEach(function(e) {
+                if (checked) {
+                    e.checked = true;
 
-                if (isXlsExport) {
-                    let exportRecapContainer = document.getElementById('em-export');
-                    addElementToXlsRecap(e, exportRecapContainer);
+                    if (isXlsExport) {
+                        let exportRecapContainer = document.getElementById('em-export');
+                        addElementToXlsRecap(e, exportRecapContainer);
+                    }
+                } else {
+                    e.checked = false;
+                    e.removeAttribute('checked');
+
+                    if (isXlsExport) {
+                        removeElementFromXlsRecap(e);
+                    }
                 }
-            } else {
-                e.checked = false;
-                e.removeAttribute('checked');
-
-                if (isXlsExport) {
-                    removeElementFromXlsRecap(e);
-                }
-            }
-        });
+            });
+        }
     });
 });
 
