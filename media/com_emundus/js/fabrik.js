@@ -369,7 +369,7 @@ function submitNewFile() {
     }
 
     var cid = document.querySelector('#jos_emundus_campaign_candidature___campaign_id option:checked').value;
-    if(cid !== "") {
+    if(cid != "" && cid != 0){ {
         document.querySelector('#form_102').style.visibility = 'hidden';
         Swal.fire({
                 title: Joomla.JText._('COM_EMUNDUS_FABRIK_NEW_FILE'),
