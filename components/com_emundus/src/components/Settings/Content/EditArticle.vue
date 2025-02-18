@@ -51,6 +51,7 @@
               :toolbar-classes="['tw-bg-white']"
               :editor-content-classes="['tw-bg-white tw-mb-2']"
               @input="updated = true"
+              @paste="updated = true"
           />
         </div>
       <button class="btn btn-primary tw-float-right tw-mt-3" v-if="updated" @click="saveContent">
