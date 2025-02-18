@@ -1283,18 +1283,53 @@ class EmundusModelUsers extends ListModel
 			}
 
 			$query->clear()
-				->insert($this->db->quoteName('#__user_profiles'))
-				->columns($this->db->quoteName(array('user_id', 'profile_key', 'profile_value', 'ordering')))
-				->values($user_id . ',' . $this->db->quote('emundus_profile.firstname') . ',' . $this->db->quote($firstname) . ',2');
+				->select('profile_value')
+				->from($this->db->quoteName('#__user_profiles'))
+				->where('profile_key = ' . $this->db->quote('emundus_profile.firstname') . ' AND user_id = ' . $user_id);
 			$this->db->setQuery($query);
-			$this->db->execute() or die($this->db->getErrorMsg());
+			$firstname = $this->db->loadResult();
+
+			if(empty($firstname))
+			{
+				$query->clear()
+					->insert($this->db->quoteName('#__user_profiles'))
+					->columns($this->db->quoteName(array('user_id', 'profile_key', 'profile_value', 'ordering')))
+					->values($user_id . ',' . $this->db->quote('emundus_profile.firstname') . ',' . $this->db->quote($firstname) . ',2');
+				$this->db->setQuery($query);
+				$this->db->execute() or die($this->db->getErrorMsg());
+			}
+			else {
+				$query->clear()
+					->update($this->db->quoteName('#__user_profiles'))
+					->set('profile_value = ' . $this->db->quote($firstname))
+					->where('profile_key = ' . $this->db->quote('emundus_profile.firstname') . ' AND user_id = ' . $user_id);
+				$this->db->setQuery($query);
+				$this->db->execute() or die($this->db->getErrorMsg());
+			}
 
 			$query->clear()
-				->insert($this->db->quoteName('#__user_profiles'))
-				->columns($this->db->quoteName(array('user_id', 'profile_key', 'profile_value', 'ordering')))
-				->values($user_id . ',' . $this->db->quote('emundus_profile.lastname') . ',' . $this->db->quote($lastname) . ',1');
+				->select('profile_value')
+				->from($this->db->quoteName('#__user_profiles'))
+				->where('profile_key = ' . $this->db->quote('emundus_profile.firstname') . ' AND user_id = ' . $user_id);
 			$this->db->setQuery($query);
-			$this->db->execute() or die($this->db->getErrorMsg());
+			$lastname = $this->db->loadResult();
+
+			if(empty($lastname))
+			{
+				$query->clear()
+					->insert($this->db->quoteName('#__user_profiles'))
+					->columns($this->db->quoteName(array('user_id', 'profile_key', 'profile_value', 'ordering')))
+					->values($user_id . ',' . $this->db->quote('emundus_profile.lastname') . ',' . $this->db->quote($lastname) . ',1');
+				$this->db->setQuery($query);
+				$this->db->execute() or die($this->db->getErrorMsg());
+			} else {
+				$query->clear()
+					->update($this->db->quoteName('#__user_profiles'))
+					->set('profile_value = ' . $this->db->quote($lastname))
+					->where('profile_key = ' . $this->db->quote('emundus_profile.lastname') . ' AND user_id = ' . $user_id);
+				$this->db->setQuery($query);
+				$this->db->execute() or die($this->db->getErrorMsg());
+			}
 		}
 		catch (Exception $e) {
 			error_log($e->getMessage());
