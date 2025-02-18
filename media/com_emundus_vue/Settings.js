@@ -3056,7 +3056,7 @@ const _sfc_main$a = {
     return {
       defaultLang: null,
       availableLanguages: [],
-      editorPlugins: ["history", "link", "image", "bold", "italic", "underline", "left", "center", "right", "h1", "h2", "ul"],
+      editorPlugins: ["history", "link", "image", "bold", "italic", "underline", "color", "left", "center", "right", "h1", "h2", "ul"],
       lang: null,
       loading: false,
       dynamicComponent: 0,
