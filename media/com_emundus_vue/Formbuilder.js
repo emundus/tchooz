@@ -6337,32 +6337,39 @@ const _sfc_main$7 = {
       if (action.params) {
         try {
           let action_params = JSON.parse(action.params);
-          if (action.action == "define_repeat_group") {
-            if (action_params.length > 0) {
-              let min = action_params[0].minRepeat;
-              let max = action_params[0].minRepeat;
-              options.push(min);
-              options.push(max);
-            }
-          } else {
-            action_params.forEach((param) => {
-              options.push(param.value);
-            });
-          }
+          action_params.forEach((param) => {
+            options.push(param.value);
+          });
         } catch (e) {
           return console.error(e);
         }
       }
       if (options.length > 0) {
-        if (action.action == "define_repeat_group") {
-          options = options.join(" " + this.translate("COM_EMUNDUS_FORMBUILDER_RULE_ACTION_DEFINE_REPEAT_AND") + " ");
-        } else {
-          options = options.join(", ");
-        }
+        options = options.join(", ");
       } else {
         options = "";
       }
       return options;
+    },
+    repeatOptions(action) {
+      if (action.params) {
+        try {
+          let action_params = JSON.parse(action.params);
+          if (action_params.length > 0) {
+            let min = action_params[0].minRepeat;
+            let max = action_params[0].maxRepeat;
+            if (min == max) {
+              return this.translate("COM_EMUNDUS_FORMBUILDER_RULE_ACTION_DEFINE_REPEAT_STRICT_REPEAT").replace("%min", min);
+            } else if (max > 0) {
+              return this.translate("COM_EMUNDUS_FORMBUILDER_RULE_ACTION_DEFINE_REPEAT_BETWEEN").replace("%min", min).replace("%max", max);
+            } else {
+              return this.translate("COM_EMUNDUS_FORMBUILDER_RULE_ACTION_DEFINE_REPEAT_MINIMUM").replace("%min", min);
+            }
+          }
+        } catch (e) {
+          return console.error(e);
+        }
+      }
     },
     deleteRule(rule) {
       Swal$1.fire({
@@ -6696,7 +6703,7 @@ function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
                       createBaseVNode("span", _hoisted_30, toDisplayString(_ctx.translate("COM_EMUNDUS_FORMBUILDER_RULE_ACTION_" + action.action.toUpperCase())), 1),
                       ["show_options", "hide_options"].includes(action.action) ? (openBlock(), createElementBlock("span", _hoisted_31, toDisplayString($options.elementOptions(action)), 1)) : createCommentVNode("", true),
                       ["show_options", "hide_options"].includes(action.action) ? (openBlock(), createElementBlock("span", _hoisted_32, toDisplayString(_ctx.translate("COM_EMUNDUS_FORM_BUILDER_RULE_OF_FIELD")), 1)) : createCommentVNode("", true),
-                      ["define_repeat_group"].includes(action.action) ? (openBlock(), createElementBlock("span", _hoisted_33, toDisplayString(_ctx.translate("COM_EMUNDUS_FORMBUILDER_RULE_ACTION_DEFINE_REPEAT_BETWEEN") + " " + $options.elementOptions(action) + " " + _ctx.translate("COM_EMUNDUS_FORMBUILDER_RULE_ACTION_DEFINE_REPEAT_REPETITIONS")), 1)) : createCommentVNode("", true),
+                      ["define_repeat_group"].includes(action.action) ? (openBlock(), createElementBlock("span", _hoisted_33, toDisplayString($options.repeatOptions(action)), 1)) : createCommentVNode("", true),
                       createBaseVNode("span", _hoisted_34, toDisplayString(action.labels.join(", ")), 1)
                     ])
                   ]);
@@ -6928,7 +6935,7 @@ const _sfc_main$5 = {
               };
               this.options.push(new_option);
               ctr++;
-              if (ctr === Object.entries(val.params.sub_options).length) {
+              if (ctr === val.params.sub_options.sub_values.length) {
                 if (this.conditionData.values) {
                   this.conditionData.values = this.options.find((option2) => option2.primary_key == this.conditionData.values);
                 }
@@ -7219,13 +7226,18 @@ const _sfc_main$3 = {
   created() {
     if (this.page.id) {
       if (this.$props.action.params) {
-        this.$props.action.params.forEach((param, index) => {
-          JSON.parse(param);
+        this.$props.action.params.forEach((param) => {
           this.$props.action.params = JSON.parse(param);
         });
       }
       this.$props.action.fields.forEach((field2, index) => {
-        this.$props.action.fields[index] = this.elements.find((element) => element.name === field2);
+        if (this.$props.action.action == "define_repeat_group") {
+          this.minRepeat = this.$props.action.params[0].minRepeat;
+          this.maxRepeat = this.$props.action.params[0].maxRepeat;
+          this.$props.action.fields[index] = Object.values(this.page.Groups).find((group) => group.group_id == field2);
+        } else {
+          this.$props.action.fields[index] = this.elements.find((element) => element.name === field2);
+        }
         if (this.action.action == "show_options" || this.action.action == "hide_options") {
           this.defineOptions(this.$props.action.fields[index]);
         }
@@ -7233,8 +7245,17 @@ const _sfc_main$3 = {
     }
   },
   methods: {
-    labelTranslate({ label }) {
-      return label[useGlobalStore().getShortLang];
+    labelTranslate({ label, name, group_id, elements }) {
+      let labelTranslated = label[useGlobalStore().getShortLang];
+      if (labelTranslated !== "") {
+        return labelTranslated;
+      } else if (group_id) {
+        let groupElements = Object.values(elements);
+        let element = groupElements.find((element2) => !element2.hidden && element2.label[useGlobalStore().getShortLang] !== "");
+        return this.translate("COM_EMUNDUS_FORM_BUILDER_RULES_GROUP_WITH_ELEMENT").replace("%s", element.label[useGlobalStore().getShortLang]);
+      } else {
+        return name;
+      }
     },
     defineOptions(val) {
       if (["show_options", "hide_options"].includes(this.action.action)) {
@@ -7296,6 +7317,13 @@ const _sfc_main$3 = {
           this.action.fields = [];
         } else if (["show", "hide"].includes(oldVal) && ["show_options", "hide_options"].includes(val) && this.action.fields.length == 1) {
           this.defineOptions(this.action.fields[0]);
+        }
+        if (val === "define_repeat_group") {
+          if (this.$props.action.params[0] == void 0) {
+            this.$props.action.params[0] = {};
+          }
+          this.$props.action.params[0].minRepeat = this.minRepeat;
+          this.$props.action.params[0].maxRepeat = this.maxRepeat;
         }
       },
       deep: true
@@ -7551,16 +7579,20 @@ const _sfc_main$2 = {
       });
       this.actions.forEach((action) => {
         if (action.fields) {
+          let property = "name";
+          if (action.action === "define_repeat_group") {
+            property = "group_id";
+          }
           let fields = [];
           if (action.fields.length > 1) {
             action.fields.forEach((field2) => {
-              fields.push(field2.name);
+              fields.push(field2[property]);
             });
           } else {
             if (typeof action.fields[0] !== "undefined") {
-              fields.push(action.fields[0].name);
+              fields.push(action.fields[0][property]);
             } else {
-              fields.push(action.fields.name);
+              fields.push(action.fields[property]);
             }
           }
           actions_post.push({
