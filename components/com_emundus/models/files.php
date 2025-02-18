@@ -5712,7 +5712,7 @@ class EmundusModelFiles extends JModelLegacy
 				$user_id = Factory::getApplication()->getIdentity()->id;
 			}
 
-			if (!empty($filter_id) && !empty($this->_user->id)) {
+			if (!empty($filter_id) && !empty($user_id)) {
 				$query = $this->_db->getQuery(true);
 				$query->delete('#__emundus_filters')
 					->bind(':filterId', $filter_id, ParameterType::INTEGER)
