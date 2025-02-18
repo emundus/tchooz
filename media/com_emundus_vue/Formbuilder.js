@@ -7819,7 +7819,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
     createBaseVNode("div", _hoisted_2$1, [
       createBaseVNode("div", _hoisted_3$1, [
         createBaseVNode("div", {
-          class: "tw-flex tw-items-center tw-gap-1 tw-cursor-pointer tw-mb-2",
+          class: "tw-flex tw-items-center tw-gap-1 tw-cursor-pointer tw-mb-2 tw-w-fit",
           title: _ctx.translate("COM_EMUNDUS_FORM_BUILDER_RULE_GO_BACK"),
           onClick: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("close-rule-add"))
         }, [
