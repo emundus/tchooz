@@ -3269,8 +3269,8 @@ function _sfc_render$a(_ctx, _cache, $props, $setup, $data, $options) {
             }, null, 544), [
               [vModelCheckbox, $data.form.published]
             ]),
-            _cache[6] || (_cache[6] = createBaseVNode("strong", { class: "b em-toggle-switch" }, null, -1)),
-            _cache[7] || (_cache[7] = createBaseVNode("strong", { class: "b em-toggle-track" }, null, -1))
+            _cache[7] || (_cache[7] = createBaseVNode("strong", { class: "b em-toggle-switch" }, null, -1)),
+            _cache[8] || (_cache[8] = createBaseVNode("strong", { class: "b em-toggle-track" }, null, -1))
           ]),
           createBaseVNode("span", _hoisted_7$7, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_SETTINGS_CONTENT_PUBLISH")), 1)
         ])) : createCommentVNode("", true),
@@ -3286,13 +3286,14 @@ function _sfc_render$a(_ctx, _cache, $props, $setup, $data, $options) {
             plugins: $data.editorPlugins,
             "toolbar-classes": ["tw-bg-white"],
             "editor-content-classes": ["tw-bg-white tw-mb-2"],
-            onInput: _cache[4] || (_cache[4] = ($event) => $data.updated = true)
+            onInput: _cache[4] || (_cache[4] = ($event) => $data.updated = true),
+            onPaste: _cache[5] || (_cache[5] = ($event) => $data.updated = true)
           }, null, 8, ["modelValue", "plugins"])
         ]),
         $data.updated ? (openBlock(), createElementBlock("button", {
           key: 1,
           class: "btn btn-primary tw-float-right tw-mt-3",
-          onClick: _cache[5] || (_cache[5] = (...args) => $options.saveContent && $options.saveContent(...args))
+          onClick: _cache[6] || (_cache[6] = (...args) => $options.saveContent && $options.saveContent(...args))
         }, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SAVE")), 1)) : createCommentVNode("", true)
       ]),
       $data.loading ? (openBlock(), createElementBlock("div", _hoisted_9$3)) : createCommentVNode("", true)
