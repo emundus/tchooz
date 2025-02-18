@@ -247,8 +247,7 @@ class modemundusApplicationsHelper
 			->where($db->quoteName('c.id') . ' NOT IN (
 				SELECT ' . $db->quoteName('campaign_id') . '
 				FROM ' . $db->quoteName('#__emundus_campaign_candidature') . '
-				WHERE ' . $db->quoteName('applicant_id') . ' = ' . $uid . '
-			)');
+				WHERE ' . $db->quoteName('applicant_id') . ' = ' . $uid . ' AND ' . $db->quoteName('published') . ' IN (0,1))');
 		try {
 			$db->setQuery($query);
 
