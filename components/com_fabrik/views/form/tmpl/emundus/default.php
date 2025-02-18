@@ -413,7 +413,9 @@ if ($this->display_comments)
 
     let displayBackgroundProfile = getComputedStyle(document.documentElement).getPropertyValue('--display-profile-corner-top-right-background');
     if (displayBackgroundProfile === 'none') {
-        document.querySelector("#background-shapes-profile").style.display = 'none';
+        if(document.querySelector("#background-shapes-profile")) {
+            document.querySelector("#background-shapes-profile").style.display = 'none';
+        }
     }
 
     document.addEventListener('DOMContentLoaded', () => {

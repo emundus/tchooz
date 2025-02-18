@@ -370,22 +370,20 @@ if ($user_module->id)
         });
     }
 
-    let displayTchoozy = getComputedStyle(document.documentElement).getPropertyValue('--display-corner-bottom-left-background');
-    let displayTchoozy2 = getComputedStyle(document.documentElement).getPropertyValue('--display-corner-top-right-background');
-    if (displayTchoozy == 'none' || displayTchoozy2 == 'none') {
-        document.querySelector(".background-shaped-top").style.display = 'none';
-        document.querySelector(".background-shaped-bottom").style.display = 'none';
-    }
-
     let conteneur = document.querySelector("#g-page-surround");
-    let divShapesLeft = document.createElement("div");
-    let divShapesRight = document.createElement("div");
-    divShapesLeft.id = "login-background-shapes-left";
-    divShapesRight.id = "login-background-shapes-right";
-
     let firstDiv = conteneur.firstChild;
 
-    conteneur.insertBefore(divShapesLeft, firstDiv);
-    conteneur.insertBefore(divShapesRight, firstDiv);
+    let displayTchoozy = getComputedStyle(document.documentElement).getPropertyValue('--display-corner-bottom-left-background');
+    let displayTchoozy2 = getComputedStyle(document.documentElement).getPropertyValue('--display-corner-top-right-background');
+    if (displayTchoozy != 'none') {
+        let divShapesLeft = document.createElement("div");
+        divShapesLeft.id = "login-background-shapes-left";
+        conteneur.insertBefore(divShapesLeft, firstDiv);
+    }
+    if(displayTchoozy2 != 'none') {
+        let divShapesRight = document.createElement("div");
+        divShapesRight.id = "login-background-shapes-right";
+        conteneur.insertBefore(divShapesRight, firstDiv);
+    }
 
 </script>
