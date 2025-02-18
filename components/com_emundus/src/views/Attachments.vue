@@ -222,6 +222,7 @@
                         <AttachmentRow
                             v-for="attachment in displayedAttachments"
                             :key="attachment.aid"
+                            :ref="'attachment-row-' + attachment.aid"
                             :attachment="attachment"
                             :checkedAttachmentsProp="checkedAttachments"
                             :canUpdate="canUpdate"
@@ -765,19 +766,22 @@ export default {
     updateAllCheckedAttachments(e) {
       if (e.target.checked) {
         // check all input that has class attachment-check and add them to the checkedAttachments array
+        this.displayedAttachments.map((attachment) => this.$refs['attachment-row-'+attachment.aid][0].checkedAttachments.push(attachment.aid))
         this.checkedAttachments = this.displayedAttachments.map((attachment) => attachment.aid)
       } else {
-        this.checkedAttachments = []
+        this.displayedAttachments.map((attachment) => this.$refs['attachment-row-'+attachment.aid][0].checkedAttachments = [])
+        this.checkedAttachments = [];
       }
     },
-    updateCheckedAttachments(attachments) {
-      // check that attachments is an array
-      if (Array.isArray(attachments)) {
-        this.checkedAttachments = attachments
+    updateCheckedAttachments(aid) {
+      if (this.checkedAttachments.includes(aid)) {
+        this.checkedAttachments.splice(this.checkedAttachments.indexOf(aid), 1)
       } else {
-        console.warn('updateCheckedAttachments() expects an array as argument')
-        this.displayErrorMessage('Something went wrong while updating the checked attachments')
-        this.checkedAttachments = []
+        this.checkedAttachments.push(aid)
+      }
+
+      if(this.checkedAttachments.length === 0) {
+        document.querySelector('#check-th input').checked = false
       }
     },
     filterCheckedAttachments() {
