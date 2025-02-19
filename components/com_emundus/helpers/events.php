@@ -1655,8 +1655,14 @@ class EmundusHelperEvents
 		{
 			Log::add(Uri::getInstance() . ' :: USER ID : ' . $app->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
-		Factory::getApplication()->triggerEvent('onAfterSubmitFile', [$student->id, $student->fnum]);
-		Factory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
+
+		PluginHelper::importPlugin('emundus');
+		$dispatcher = Factory::getApplication()->getDispatcher();
+
+		$onAfterSubmitFile = new GenericEvent('onAfterSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]);
+		$dispatcher->dispatch('onAfterSubmitFile', $onAfterSubmitFile);
+		$CEVonAfterSubmitFile = new GenericEvent('onCallEventHandler', ['onAfterSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
+		$dispatcher->dispatch('onCallEventHandler', $CEVonAfterSubmitFile);
 
 		// If pdf exporting is activated
 		if ($export_pdf == 1)

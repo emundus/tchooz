@@ -53,24 +53,43 @@ abstract class UnitTestCase extends TestCase
 	{
 		parent::__construct($name, $data, $dataName);
 
-		if (!empty($name))
+		if (!empty($className) && class_exists($className))
 		{
-			if (empty($directory)) {
-				$directory = JPATH_BASE . '/components/com_emundus/models/';
-			}
-
-			require_once $directory . $name . '.php';
-
 			if (!empty($construct_args)) {
 				$this->model = new $className(...$construct_args);
 			} else {
 				$this->model = new $className();
 			}
+		} else {
+			if (!empty($name))
+			{
+				if (empty($directory)) {
+					$directory = JPATH_BASE . '/components/com_emundus/models/';
+				}
+
+				require_once $directory . $name . '.php';
+
+				if (!empty($construct_args)) {
+					$this->model = new $className(...$construct_args);
+				} else {
+					$this->model = new $className();
+				}
+			}
 		}
 
-		$config   = new \stdClass();
 		$this->db = Factory::getContainer()->get('DatabaseDriver');
+		$this->initDataSet();
+	}
 
+	/**
+	 * Initialize the dataset helper.
+	 *
+	 * @return  void
+	 *
+	 * @since   4.2.0
+	 */
+	protected function initDataSet(): void
+	{
 		require_once __DIR__ . '/Helper/Dataset.php';
 		$this->h_dataset = new Dataset();
 	}

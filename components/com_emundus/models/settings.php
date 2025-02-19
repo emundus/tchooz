@@ -26,6 +26,8 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Mail\Exception\MailDisabledException;
 use PHPMailer\PHPMailer\Exception as phpMailerException;
 use Symfony\Component\Yaml\Yaml;
+use \Joomla\CMS\Event\GenericEvent;
+use Joomla\CMS\Plugin\PluginHelper;
 
 class EmundusModelSettings extends ListModel
 {
@@ -2461,6 +2463,52 @@ class EmundusModelSettings extends ListModel
 		return $updated;
 	}
 
+	public function historyRetryEvent(int $action_log_id): bool
+	{
+		$retried = false;
+
+		try
+		{
+			$query = $this->db->getQuery(true);
+			$query->select('*')
+				->from('#__action_logs')
+				->where('id = ' . $this->db->quote($action_log_id));
+
+			$this->db->setQuery($query);
+			$action_log = $this->db->loadObject();
+
+			$message = json_decode($action_log->message, true);
+			if (!empty($message['retry']) && $message['retry'] === true)
+			{
+				if (!empty($message['retry_event'])) {
+					$event_parameters = $message['retry_event_parameters'] ?? [];
+
+					PluginHelper::importPlugin('emundus');
+					$event = new GenericEvent($message['retry_event'], $event_parameters);
+					$dispatcher = Factory::getApplication()->getDispatcher();
+					$dispatcher->dispatch($message['retry_event'], $event);
+
+					$message['retry'] = false;
+
+					$query->clear()
+						->update('#__action_logs')
+						->set('message = ' . $this->db->quote(json_encode($message)))
+						->where('id = ' . $this->db->quote($action_log_id));
+					$this->db->setQuery($query);
+					$this->db->execute();
+
+					$retried = true;
+				}
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $retried;
+	}
+
 	public function getAvailableManagers($search_query, $limit = 100)
 	{
 		$managers = [];
@@ -2709,6 +2757,9 @@ class EmundusModelSettings extends ListModel
 						case 'microsoft_dynamics':
 							$updated = $this->setupMicrosoftDynamics($app, $setup);
 							break;
+						case 'ammon':
+							$updated = $this->setupAmmon($app, $setup);
+							break;
 						default:
 							break;
 					}
@@ -2839,6 +2890,66 @@ class EmundusModelSettings extends ListModel
 		{
 			$query = $this->db->getQuery(true);
 
+			$query->update($this->db->quoteName('#__emundus_setup_sync'))
+				->set($this->db->quoteName('config') . ' = ' . $this->db->quote(json_encode($config)))
+				->set($this->db->quoteName('enabled') . ' = 1')
+				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($app->id));
+			$this->db->setQuery($query);
+			$updated = $this->db->execute();
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $updated;
+	}
+
+	public function setupAmmon($app, $setup): bool
+	{
+		$updated = false;
+
+		if (empty($app->config) || $app->config == '{}')
+		{
+			$config = [
+				'base_url'       => $setup->base_url,
+				'api_url'        => 'v1.0',
+				'authentication' => [
+					'route'            => 'api/init/' . $setup->api_key . '/Ammon?languageCode=FR&select=User',
+					'method'           => 'post',
+					'client_id'        => '',
+					'client_secret'    => '',
+					'login' 		   => $setup->login,
+					'password'         => EmundusHelperFabrik::encryptDatas($setup->password),
+					'login_attribute'  => 'username',
+					'tenant_id'        => '',
+					'email'            => '',
+					'grant_type'       => 'client_credentials',
+					'scope'            => 'https://graph.microsoft.com/.default',
+					'type'             => 'token',
+					'create_token'     => true,
+					'token_attribute'  => 'results.token',
+					'token_storage'    => 'database',
+					'token_validity'   => 3600,
+					'token'            => '',
+					'token_expiration' => '',
+					'content_type'     => 'json',
+				]
+			];
+		}
+		else
+		{
+			$config = json_decode($app->config, true);
+			$config['base_url'] = $setup->base_url;
+			$config['api_key'] = $setup->api_key;
+			$config['authentication']['login']     = $setup->login;
+			$config['authentication']['password'] = EmundusHelperFabrik::encryptDatas($setup->password);
+			$config['authentication']['route']  = 'api/init/' . $setup->api_key . '/Ammon?languageCode=FR&select=User';
+		}
+
+		try
+		{
+			$query = $this->db->getQuery(true);
 			$query->update($this->db->quoteName('#__emundus_setup_sync'))
 				->set($this->db->quoteName('config') . ' = ' . $this->db->quote(json_encode($config)))
 				->set($this->db->quoteName('enabled') . ' = 1')

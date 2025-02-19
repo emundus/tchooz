@@ -5,10 +5,11 @@ import settingsService from "@/services/settings";
 /* Components */
 import TeamsSetup from "@/components/Settings/Integration/TeamsSetup.vue";
 import DynamicsSetup from "@/components/Settings/Integration/DynamicsSetup.vue";
+import AmmonSetup from "@/components/Settings/Integration/AmmonSetup.vue";
 
 export default {
   name: "Integration",
-  components: {DynamicsSetup, TeamsSetup},
+  components: {DynamicsSetup, TeamsSetup, AmmonSetup},
   data() {
     return {
       loading: true,
@@ -91,6 +92,9 @@ export default {
                      :app="currentApp"
                      @dynamicsInstalled="currentApp = null;getApps();"
       />
+      <AmmonSetup v-else-if="currentApp.type === 'ammon'"
+                  :app="currentApp"
+                  @ammonInstalled="currentApp = null;getApps();"/>
     </div>
 
     <div class="em-page-loader" v-if="loading"></div>

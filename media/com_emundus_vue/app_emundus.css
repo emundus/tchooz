@@ -931,23 +931,23 @@ body ::-webkit-scrollbar-track {
   color: var(--neutral-500) !important;
 }
 
-table[data-v-95fa364b] {
+table[data-v-5aeb5796] {
   border: unset;
 }
-table thead th[data-v-95fa364b] {
+table thead th[data-v-5aeb5796] {
   background: transparent;
   padding: 18px 12px;
 }
-table thead tr[data-v-95fa364b] {
+table thead tr[data-v-5aeb5796] {
   border-bottom: solid 1px var(--neutral-400);
 }
-table tbody tr[data-v-95fa364b]:not(:last-child) {
+table tbody tr[data-v-5aeb5796]:not(:last-child) {
   border-bottom: solid 1px var(--neutral-400);
 }
-table tbody tr td[data-v-95fa364b] {
+table tbody tr td[data-v-5aeb5796] {
   padding: 18px 12px;
 }
-.placement-center[data-v-95fa364b] {
+.placement-center[data-v-5aeb5796] {
   position: fixed;
   left: 50%;
   transform: translate(-50%, -50%);

@@ -2184,5 +2184,29 @@ class EmundusControllersettings extends BaseController
 		echo json_encode((object) $response);
 		exit;
 	}
+
+	public function historyretryevent()
+	{
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$response['code'] = 500;
+			$response['message'] = Text::_('MISSING_PARAMS');
+
+			$action_log_row_id = $this->input->getInt('action_log_row_id', 0);
+
+			if (!empty($action_log_row_id)) {
+				$response['status'] = $this->m_settings->historyRetryEvent($action_log_row_id);
+				if($response['status']) {
+					$response['code']    = 200;
+					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_APP_DISABLED');
+				}
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
 }
 
