@@ -1283,13 +1283,13 @@ class EmundusModelUsers extends ListModel
 			}
 
 			$query->clear()
-				->select('profile_value')
+				->select('user_id')
 				->from($this->db->quoteName('#__user_profiles'))
 				->where('profile_key = ' . $this->db->quote('emundus_profile.firstname') . ' AND user_id = ' . $user_id);
 			$this->db->setQuery($query);
-			$firstname = $this->db->loadResult();
+			$profile_firstname = $this->db->loadResult();
 
-			if(empty($firstname))
+			if(empty($profile_firstname))
 			{
 				$query->clear()
 					->insert($this->db->quoteName('#__user_profiles'))
@@ -1308,13 +1308,13 @@ class EmundusModelUsers extends ListModel
 			}
 
 			$query->clear()
-				->select('profile_value')
+				->select('user_id')
 				->from($this->db->quoteName('#__user_profiles'))
-				->where('profile_key = ' . $this->db->quote('emundus_profile.firstname') . ' AND user_id = ' . $user_id);
+				->where('profile_key = ' . $this->db->quote('emundus_profile.lastname') . ' AND user_id = ' . $user_id);
 			$this->db->setQuery($query);
-			$lastname = $this->db->loadResult();
+			$profile_lastname = $this->db->loadResult();
 
-			if(empty($lastname))
+			if(empty($profile_lastname))
 			{
 				$query->clear()
 					->insert($this->db->quoteName('#__user_profiles'))
