@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="console" method="upgrade">
+    <name>Ammon Api integration</name>
+    <version>1.0.0</version>
+    <creationDate>January 2025</creationDate>
+    <author>eMundus</author>
+    <description>Plugin to integrate Ammon API on some events</description>
+    <namespace path="src">Joomla\Plugin\Emundus\Ammon</namespace>
+    <files>
+        <folder plugin="ammon">services</folder>
+        <folder>src</folder>
+        <folder>language</folder>
+    </files>
+    <languages>
+        <language tag="fr-FR">fr-FR.plg_emundus_ammon.ini</language>
+        <language tag="fr-FR">fr-FR.plg_emundus_ammon.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params" addfieldpath="/administrator/components/com_fabrik/models/fields">
+            <fieldset name="basic">
+                <field name="status"
+                       label="PLG_EMUNDUS_AMMON_STATUS"
+                       description="PLG_EMUNDUS_AMMON_STATUS_DESC"
+                       type="sql"
+                       query="SELECT step, value FROM #__emundus_setup_status"
+                       key_field="step"
+                       value_field="value"
+                />
+            </fieldset>
+        </fields>
+    </config>
+</extension>
