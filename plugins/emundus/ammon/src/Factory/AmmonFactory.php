@@ -7,6 +7,7 @@ use Joomla\Plugin\Emundus\Ammon\Entities\CompanyEntity;
 use Joomla\Plugin\Emundus\Ammon\Entities\EmploymentEntity;
 use Joomla\Plugin\Emundus\Ammon\Entities\UserEntity;
 use Joomla\Plugin\Emundus\Ammon\Entities\RegistrationEntity;
+use Joomla\CMS\Factory;
 
 require_once(JPATH_SITE . '/components/com_emundus/mapper/ApiMapper.php');
 
@@ -73,7 +74,7 @@ class AmmonFactory
 			[$address],
 			"SGE,CLI",
 			true,
-			'company_' . $this->fnum
+			$this->generateExternalReference('EMUNDUS_COMPANY', $values['establishmentName'])
 		);
 	}
 
@@ -192,7 +193,7 @@ class AmmonFactory
 			'',
 			'',
 			'INT',
-			'manager_' . $this->fnum,
+			$this->generateExternalReference('EMUNDUS_USER', $values['email']),
 			[],
 			[$employmentEntity]
 		);
@@ -225,7 +226,7 @@ class AmmonFactory
 				'',
 				'',
 				'INT',
-				$values['email'],
+				$ammon_user->centext,
 				[],
 				[]
 			);
@@ -258,7 +259,7 @@ class AmmonFactory
 			$values['BirthCountryCode'],
 			$values['BirthCity'],
 			'PAR,INT,PARTM',
-			$values['user_id'],
+			$this->generateExternalReference('EMUNDUS_USER',  $values['user_id']),
 			[$adressEntity],
 			$employmentEntity ? [$employmentEntity] : []
 		);
@@ -322,7 +323,49 @@ class AmmonFactory
 			!empty($values['HistoryLog1Content']) ? 'AMENAGEMENT' : '',
 			$values['HistoryLog1Content'],
 			!empty($company) ? $company->externalReference : null,
-			$applicant->externalReference
+			$this->generateExternalReference('EMUNDUS_REGISTRATION', $this->fnum)
 		);
+	}
+
+	/**
+	 * @param   string  $prefix
+	 * @param           $data_to_store
+	 *
+	 * @return string
+	 */
+	private function generateExternalReference(string $prefix, $internal_reference): string
+	{
+		$externalReference = '';
+
+		if (!empty($internal_reference) && !empty($prefix)) {
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true);
+
+			$query->insert($db->quoteName('#__emundus_ammon_external_references'))
+				->columns($db->quoteName('internal_reference'), $db->quoteName('type'), $db->quoteName('created'))
+				->values($db->quote($internal_reference). ', ' . $db->quote($prefix) . ', ' . $db->quote(date('Y-m-d H:i:s')));
+
+			$db->setQuery($query);
+			$db->execute();
+			$row_id = $db->insertid();
+
+			switch($prefix) {
+				case 'EMUNDUS_USER':
+				case 'EMUNDUS_COMPANY':
+					$externalReference = $prefix . '_' . $row_id;
+					break;
+				case 'EMUNDUS_REGISTRATION':
+					$externalReference = $prefix . '_' . $this->fnum;
+					break;
+			}
+
+			$query->clear()
+				->update($db->quoteName('#__emundus_ammon_external_references'))
+				->set($db->quoteName('external_reference') . ' = ' . $db->quote($externalReference))
+				->where($db->quoteName('id') . ' = ' . $db->quote($row_id));
+		}
+
+
+		return $externalReference;
 	}
 }
