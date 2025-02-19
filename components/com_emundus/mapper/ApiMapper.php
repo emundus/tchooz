@@ -63,74 +63,106 @@ class ApiMapper
 		$h_files = new EmundusHelperFiles();
 
 		foreach($this->configuration->fields as $field) {
-			list($table, $column) = explode('___', $field->elementId);
+			if (!isset($field->element_type)) {
+				$field->element_type = '';
+			}
 
-			if (!empty($table)) {
-				$linked = $h_files->isTableLinkedToCampaignCandidature($table);
-				$query->clear();
+			switch ($field->element_type) {
+				case 'alias':
+					$fabrik_value = EmundusHelperFabrik::getValueByAlias($field->elementId, $this->fnum);
 
-				if ($linked) {
-					$query->select($this->db->quoteName($column))
-						->from($this->db->quoteName($table))
-						->where('fnum LIKE ' . $this->db->quote($this->fnum));
-				} else {
-					$found = true;
-					switch ($table) {
-						case 'jos_emundus_setup_programmes':
-							$query->select($this->db->quoteName('esp.' . $column))
-								->from($this->db->quoteName($table, 'esp'))
-								->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.training = esp.code')
-								->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.campaign_id = esc.id')
-								->where($this->db->quoteName('ecc.fnum') . ' = ' . $this->db->quote($this->fnum));
-							break;
-						case 'jos_emundus_setup_campaigns':
-							$query->select($this->db->quoteName('esc.' . $column))
-								->from($this->db->quoteName($table, 'esc'))
-								->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.campaign_id = esc.id')
-								->where($this->db->quoteName('ecc.fnum') . ' = ' . $this->db->quote($this->fnum));
-							break;
-						case 'jos_emundus_users':
-							$query->select($this->db->quoteName('table.' . $column))
-								->from($this->db->quoteName($table, 'table'))
-								->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.applicant_id = table.user_id')
-								->where($this->db->quoteName('ecc.fnum') . ' = ' . $this->db->quote($this->fnum));
-							break;
-						case 'jos_users':
-							$query->select($this->db->quoteName('table.' . $column))
-								->from($this->db->quoteName($table, 'table'))
-								->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.applicant_id = table.id')
-								->where($this->db->quoteName('ecc.fnum') . ' = ' . $this->db->quote($this->fnum));
-							break;
-						default:
-							$found = false;
-							break;
+					if (!empty($fabrik_value)) {
+						$this->mapping[$field->attribute] = $this->transformValue($field, $fabrik_value['raw']);
+					} else {
+						$this->mapping[$field->attribute] = '';
 					}
+					break;
+				default:
+					list($table, $column) = explode('___', $field->elementId);
 
-					if (!$found) {
-						continue;
+					if (!empty($table)) {
+						$linked = $h_files->isTableLinkedToCampaignCandidature($table);
+						$query->clear();
+
+						if ($linked) {
+							$query->select($this->db->quoteName($column))
+								->from($this->db->quoteName($table))
+								->where('fnum LIKE ' . $this->db->quote($this->fnum));
+						} else {
+							$found = true;
+							switch ($table) {
+								case 'jos_emundus_setup_programmes':
+									$query->select($this->db->quoteName('esp.' . $column))
+										->from($this->db->quoteName($table, 'esp'))
+										->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.training = esp.code')
+										->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.campaign_id = esc.id')
+										->where($this->db->quoteName('ecc.fnum') . ' = ' . $this->db->quote($this->fnum));
+									break;
+								case 'jos_emundus_setup_campaigns':
+									$query->select($this->db->quoteName('esc.' . $column))
+										->from($this->db->quoteName($table, 'esc'))
+										->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.campaign_id = esc.id')
+										->where($this->db->quoteName('ecc.fnum') . ' = ' . $this->db->quote($this->fnum));
+									break;
+								case 'jos_emundus_users':
+									$query->select($this->db->quoteName('table.' . $column))
+										->from($this->db->quoteName($table, 'table'))
+										->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.applicant_id = table.user_id')
+										->where($this->db->quoteName('ecc.fnum') . ' = ' . $this->db->quote($this->fnum));
+									break;
+								case 'jos_users':
+									$query->select($this->db->quoteName('table.' . $column))
+										->from($this->db->quoteName($table, 'table'))
+										->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.applicant_id = table.id')
+										->where($this->db->quoteName('ecc.fnum') . ' = ' . $this->db->quote($this->fnum));
+									break;
+								default:
+									$found = false;
+									break;
+							}
+
+							if (!$found) {
+								break 2;
+							}
+						}
+
+						try {
+							$this->db->setQuery($query);
+							$result = $this->db->loadResult();
+							$this->mapping[$field->attribute] = $this->transformValue($field, $result);
+						} catch (\Exception $e) {
+							Log::add('Error: ' . $e->getMessage(), Log::ERROR, 'com_emundus.mapper');
+						}
 					}
-				}
-
-				try {
-					$this->db->setQuery($query);
-					$result = $this->db->loadResult();
-
-					switch($field->type) {
-						case 'list':
-							$result = $field->options->{$result} ?? '';
-							break;
-						default:
-							break;
-					}
-
-					$this->mapping[$field->attribute] = trim(strip_tags($result));
-				} catch (\Exception $e) {
-					Log::add('Error: ' . $e->getMessage(), Log::ERROR, 'com_emundus.mapper');
-				}
+					break;
 			}
 		}
 
 		return $this->mapping;
+	}
+
+
+	/**
+	 * @param   object  $field
+	 * @param   string  $value
+	 *
+	 * @return string
+	 */
+	private function transformValue(object $field, string $value): string
+	{
+		$transformed_value = $value;
+
+		if (!empty($field->type)) {
+			switch($field->type) {
+				case 'list':
+					$transformed_value = $field->options->{$value} ?? '';
+					break;
+				default:
+					break;
+			}
+		}
+
+		return trim(strip_tags($transformed_value));
 	}
 
 	public function setMappingFromJSON($json): array
