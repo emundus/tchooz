@@ -135,14 +135,20 @@ export default {
   created() {
     if (this.page.id) {
       if(this.$props.action.params) {
-        this.$props.action.params.forEach((param, index) => {
-          let params = JSON.parse(param);
+        this.$props.action.params.forEach((param) => {
           this.$props.action.params = JSON.parse(param);
         });
       }
 
       this.$props.action.fields.forEach((field, index) => {
-        this.$props.action.fields[index] = this.elements.find(element => element.name === field);
+        if(this.$props.action.action == 'define_repeat_group') {
+          this.minRepeat = this.$props.action.params[0].minRepeat;
+          this.maxRepeat = this.$props.action.params[0].maxRepeat;
+
+          this.$props.action.fields[index] = Object.values(this.page.Groups).find(group => group.group_id == field);
+        } else {
+          this.$props.action.fields[index] = this.elements.find(element => element.name === field);
+        }
 
         if(this.action.action == 'show_options' || this.action.action == 'hide_options') {
           this.defineOptions(this.$props.action.fields[index]);
@@ -151,8 +157,17 @@ export default {
     }
   },
   methods: {
-    labelTranslate({label}) {
-      return label[useGlobalStore().getShortLang];
+    labelTranslate({label,name,group_id,elements}) {
+      let labelTranslated = label[useGlobalStore().getShortLang];
+      if(labelTranslated !== '') {
+        return labelTranslated;
+      } else if(group_id) {
+        let groupElements = Object.values(elements);
+        let element = groupElements.find(element => !element.hidden && element.label[useGlobalStore().getShortLang] !== '');
+        return this.translate('COM_EMUNDUS_FORM_BUILDER_RULES_GROUP_WITH_ELEMENT').replace('%s',element.label[useGlobalStore().getShortLang]);
+      } else {
+        return name;
+      }
     },
     defineOptions(val) {
       if (['show_options', 'hide_options'].includes(this.action.action)) {
@@ -173,7 +188,6 @@ export default {
                 });
               }
 
-              var ctr = 0;
               Object.values(val.params.sub_options.sub_values).forEach((option, key) => {
                 let new_option = {
                   primary_key: option,
@@ -181,8 +195,6 @@ export default {
                 };
 
                 this.options.push(new_option);
-
-                ctr++;
               });
             });
           }
@@ -219,6 +231,14 @@ export default {
           this.action.fields = [];
         } else if(['show', 'hide'].includes(oldVal) && ['show_options', 'hide_options'].includes(val) && this.action.fields.length == 1) {
           this.defineOptions(this.action.fields[0]);
+        }
+
+        if (val === 'define_repeat_group') {
+          if(this.$props.action.params[0] == undefined) {
+            this.$props.action.params[0] = {};
+          }
+          this.$props.action.params[0].minRepeat = this.minRepeat;
+          this.$props.action.params[0].maxRepeat = this.maxRepeat;
         }
       },
       deep: true

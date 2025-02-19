@@ -59,6 +59,7 @@ if (!empty($extension)) {
          extension="<?= $extension ?>"
          itemId="<?= $extension_item_id ?>"
          columns="<?= $this->columns ?>"
+         moredata="<?= $this->more_data_columns ?>"
     ></div>
 
     <script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>

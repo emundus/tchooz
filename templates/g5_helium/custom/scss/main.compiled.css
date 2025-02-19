@@ -4035,6 +4035,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-h-8 {
     height: var(--em-spacing-8);
 }
+.tw-h-\[10rem\] {
+    height: 10rem;
+}
 .tw-h-\[16px\] {
     height: 16px;
 }
@@ -4274,6 +4277,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-w-96 {
     width: 24rem;
+}
+.tw-w-\[10rem\] {
+    width: 10rem;
 }
 .tw-w-\[150px\] {
     width: 150px;

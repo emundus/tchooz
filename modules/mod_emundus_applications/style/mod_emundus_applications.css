@@ -496,6 +496,7 @@ a.btn.btn-success:not(.btn-xs) {
 
 #applications_card_view .mod_emundus_applications__container {
     padding: 4px;
+    z-index: 5;
 }
 
 .mod_emundus_applications___content_app:hover .mod_emundus_applications__container {
@@ -798,6 +799,104 @@ circle.circle {
     overflow: hidden;
 }
 
+/* Tuile ajouter candidature */
+.hover-and-tile-container-add #tile-hover-offset-request {
+    background: var(--em-profile-color);
+    opacity: 0.1;
+}
+
+.hover-and-tile-container-add:hover #tile-hover-offset-request {
+    background: var(--em-profile-color);
+    opacity: 0.3;
+}
+
+.hover-and-tile-container-add > .mod_emundus_applications___content_app {
+    background-color: var(--neutral-0);
+    border: 2px dashed var(--neutral-400);
+    gap: 12px;
+}
+
+.hover-and-tile-container-add:hover > .mod_emundus_applications___content_app {
+    border: 2px dashed var(--neutral-500);
+    transition: all .5s;
+}
+
+.hover-and-tile-container-add > .mod_emundus_applications___content_app > span {
+    font-size: 80px;
+    color: var(--em-profile-color);
+    opacity: 0.3;
+}
+
+.hover-and-tile-container-add:hover > .mod_emundus_applications___content_app > span {
+    opacity: 1;
+    transition: all .5s;
+}
+
+.hover-and-tile-container-add > .mod_emundus_applications___content_app > p {
+    font-size: var(--em-applicant-h4);
+    color: var(--em-profile-color);
+}
+
+/* Tuile ajouter candidature - vue liste */
+.list-application-add td:first-child {
+    border-left: 2px dashed var(--neutral-400);
+    border-top: 2px dashed var(--neutral-400);
+    border-bottom: 2px dashed var(--neutral-400);
+}
+
+.list-application-add td {
+    border-top: 2px dashed var(--neutral-400);
+    border-bottom: 2px dashed var(--neutral-400);
+    padding-top: 14px !important;
+    padding-bottom: 14px !important;
+    background: var(--neutral-50) !important;
+}
+
+.list-application-add td:last-child {
+    border-right: 2px dashed var(--neutral-400);
+    border-top: 2px dashed var(--neutral-400);
+    border-bottom: 2px dashed var(--neutral-400);
+}
+
+.list-application-add td > span {
+    font-size: 42px;
+    color: var(--em-profile-color);
+    opacity: 0.3;
+}
+
+.list-application-add td > p {
+    font-size: var(--em-applicant-font-size);
+}
+
+ /* Hover list */
+.list-application-add:hover td:first-child {
+    border-left: 2px dashed var(--neutral-500);
+    border-top: 2px dashed var(--neutral-500);
+    border-bottom: 2px dashed var(--neutral-500);
+}
+
+.list-application-add:hover td {
+    border-top: 2px dashed var(--neutral-500);
+    border-bottom: 2px dashed var(--neutral-500);
+    background: var(--neutral-0) !important;
+    transition: all .5s;
+}
+
+.list-application-add:hover td:last-child {
+    border-right: 2px dashed var(--neutral-500);
+    border-top: 2px dashed var(--neutral-500);
+    border-bottom: 2px dashed var(--neutral-500);
+}
+
+.list-application-add:hover td > span {
+    opacity: 1;
+    transition: all .5s;
+}
+
+.list-application-add:hover td > p {
+    color: var(--em-profile-color) !important;
+}
+
 /* Fond formes */
 .mod_emundus_applications___content_app #background-shapes {
     position: absolute;
@@ -822,6 +921,7 @@ circle.circle {
 .mod_emundus_applications___content_app #background-shapes {
     opacity: 0.5;
     transition: ease-out .5s;
+    z-index: 0;
 }
 
 .mod_emundus_applications___content_app:hover #background-shapes {

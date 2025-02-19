@@ -181,4 +181,15 @@ class FabrikHelperTest extends UnitTestCase
 			}
 		}*/
 	}
+
+	public function testencryptDatas()
+	{
+		$encrypted_data = $this->helper::encryptDatas('test', 'unittest_encryption_key');
+		$this->assertNotEmpty($encrypted_data, 'The encrypted data should not be empty');
+		$this->assertNotEquals('test', $encrypted_data, 'The encrypted data should not be equal to the original data');
+
+		$decrypted_data = $this->helper::decryptDatas($encrypted_data, 'unittest_encryption_key');
+		$this->assertNotEmpty($decrypted_data, 'The decrypted data should not be empty');
+		$this->assertEquals('test', $decrypted_data, 'The decrypted data should be equal to the original data');
+	}
 }

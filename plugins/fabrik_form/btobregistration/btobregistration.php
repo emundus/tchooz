@@ -105,13 +105,13 @@ class PlgFabrik_FormBtobRegistration extends plgFabrik_Form
 			if (empty($formModel->data['jos_emundus_btob_inscription_1244_repeat___fnum']))
 			{
 				$app->enqueueMessage('Ce/Ces dossiers sont déjà inscrits.', 'error');
-				$app->redirect('https://sciencespo-exed.tchooz.io');
+				$app->redirect('index.php');
 			}
 		}
 		else
 		{
 			$app->enqueueMessage('Aucun dossier trouvé.', 'error');
-			$app->redirect('https://sciencespo-exed.tchooz.io');
+			$app->redirect('index.php');
 		}
 	}
 

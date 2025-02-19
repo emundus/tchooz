@@ -35,6 +35,7 @@ use JFactory;
 use JLog;
 use Joomla\CMS\Factory;
 use Joomla\CMS\User\UserFactoryInterface;
+use Joomla\CMS\User\UserHelper;
 
 class Dataset
 {
@@ -49,7 +50,7 @@ class Dataset
 		}
 	}
 
-	public function createSampleUser($profile = 9, $username = 'user.test@emundus.fr', $password = 'test1234', $j_groups = [2])
+	public function createSampleUser($profile = 9, $username = 'user.test@emundus.fr', $password = 'test1234', $j_groups = [2], $firstname = 'Test', $lastname = 'USER')
 	{
 		$user_id = 0;
 		$m_users = new EmundusModelUsers;
@@ -57,7 +58,7 @@ class Dataset
 
 		$query->insert('#__users')
 			->columns('name, username, email, password, registerDate, lastvisitDate, params')
-			->values($this->db->quote('Test USER') . ', ' . $this->db->quote($username) .  ', ' . $this->db->quote($username) . ',' .  $this->db->quote(md5($password)) . ',' . $this->db->quote(date('Y-m-d H:i:s')) . ',' . $this->db->quote(date('Y-m-d H:i:s')) . ',' . $this->db->quote('{}'));
+			->values($this->db->quote($firstname . ' ' . $lastname) . ', ' . $this->db->quote($username) .  ', ' . $this->db->quote($username) . ',' .  $this->db->quote(UserHelper::hashPassword($password)) . ',' . $this->db->quote(date('Y-m-d H:i:s')) . ',' . $this->db->quote(date('Y-m-d H:i:s')) . ',' . $this->db->quote('{}'));
 
 		try {
 			$this->db->setQuery($query);
@@ -84,8 +85,8 @@ class Dataset
 				}
 			}
 
-			$other_param['firstname'] 		= 'Test';
-			$other_param['lastname'] 		= 'USER';
+			$other_param['firstname'] 		= $firstname;
+			$other_param['lastname'] 		= $lastname;
 			$other_param['profile'] 		= $profile;
 			$other_param['em_oprofiles'] 	= '';
 			$other_param['univ_id'] 		= 0;

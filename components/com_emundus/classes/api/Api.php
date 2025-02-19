@@ -165,7 +165,7 @@ class Api
 		return $response;
 	}
 
-	public function post($url, $body = null)
+	public function post($url, $body = null, $headers = array())
 	{
 		$response = ['status' => 200, 'message' => '', 'data' => ''];
 
@@ -181,9 +181,15 @@ class Api
 				if (!empty($body))
 				{
 					$params['body']                    = $body;
-					$params['headers']['Content-Type'] = 'application/json';
-					$params['headers']['Accept']       = 'application/json';
 				}
+			}
+
+			if (!empty($headers))
+			{
+				$params['headers'] = array_merge($params['headers'], $headers);
+			} else {
+				$params['headers']['Content-Type'] = 'application/json';
+				$params['headers']['Accept']       = 'application/json';
 			}
 
 			if(strpos($url, 'https') !== false)

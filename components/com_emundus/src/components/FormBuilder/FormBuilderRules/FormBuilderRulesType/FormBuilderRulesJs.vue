@@ -164,16 +164,20 @@ export default {
 
       this.actions.forEach((action) => {
         if(action.fields) {
+          let property = 'name';
+          if(action.action === 'define_repeat_group') {
+            property = 'group_id';
+          }
           let fields = [];
           if(action.fields.length > 1) {
             action.fields.forEach((field) => {
-              fields.push(field.name);
+              fields.push(field[property]);
             });
           } else {
             if(typeof action.fields[0] !== 'undefined') {
-              fields.push(action.fields[0].name);
+              fields.push(action.fields[0][property]);
             } else {
-              fields.push(action.fields.name);
+              fields.push(action.fields[property]);
             }
           }
 

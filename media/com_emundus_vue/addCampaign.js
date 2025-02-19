@@ -972,7 +972,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               _cache[37] || (_cache[37] = createBaseVNode("strong", { class: "b em-toggle-switch" }, null, -1)),
               _cache[38] || (_cache[38] = createBaseVNode("strong", { class: "b em-toggle-track" }, null, -1))
             ]),
-            createBaseVNode("span", _hoisted_29, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH")), 1)
+            createBaseVNode("span", _hoisted_29, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_CAMPAIGN_PUBLISH")), 1)
           ]),
           createBaseVNode("div", _hoisted_30, [
             createBaseVNode("div", _hoisted_31, [
@@ -1222,7 +1222,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     _ctx.submitted || !_ctx.ready ? (openBlock(), createElementBlock("div", _hoisted_67)) : createCommentVNode("", true)
   ]);
 }
-const addCampaign = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-09c3d3f2"]]);
+const addCampaign = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-55e213f7"]]);
 export {
   addCampaign as default
 };

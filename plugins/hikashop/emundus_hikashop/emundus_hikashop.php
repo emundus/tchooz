@@ -440,4 +440,15 @@ class PlgHikashopEmundus_hikashop extends CMSPlugin {
         PluginHelper::importPlugin('emundus','custom_event_handler');
 	    $app->triggerEvent('onCallEventHandler', ['onHikashopAfterCheckoutStep', ['controllerName' => $controllerName, 'go_back' => &$go_back, 'original_go_back' => $original_go_back, 'controller' => &$controller]]);
     }
+
+	public function onHikashopAfterDisplayView($view)
+	{
+		if ($view->getName() === 'checkout' && $view->getLayout() === 'after_end') {
+			require_once(JPATH_SITE . '/components/com_emundus/helpers/menu.php');
+			$homepage = EmundusHelperMenu::getHomepageLink();
+
+			$app = Factory::getApplication();
+			$app->redirect($homepage);
+		}
+	}
 }

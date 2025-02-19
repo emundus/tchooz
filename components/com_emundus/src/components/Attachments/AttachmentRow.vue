@@ -165,7 +165,7 @@ export default {
         this.checkedAttachments.push(aid);
       }
 
-      this.$emit("update-checked-attachments", this.checkedAttachments);
+      this.$emit("update-checked-attachments", aid);
     },
     openModal() {
       this.$emit("open-modal", this.attachment);

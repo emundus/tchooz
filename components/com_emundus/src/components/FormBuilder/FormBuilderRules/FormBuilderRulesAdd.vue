@@ -2,7 +2,7 @@
   <div id="form-builder-rules-add" class="tw-self-start tw-w-full">
     <div class="tw-p-8">
       <div class="tw-flex tw-flex-col tw-gap-3">
-        <div class="tw-flex tw-items-center tw-gap-1 tw-cursor-pointer tw-mb-2" :title="translate('COM_EMUNDUS_FORM_BUILDER_RULE_GO_BACK')" @click="$emit('close-rule-add')">
+        <div class="tw-flex tw-items-center tw-gap-1 tw-cursor-pointer tw-mb-2 tw-w-fit" :title="translate('COM_EMUNDUS_FORM_BUILDER_RULE_GO_BACK')" @click="$emit('close-rule-add')">
           <span class="material-symbols-outlined">chevron_left</span>
           <p>{{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_GO_BACK') }}</p>
         </div>

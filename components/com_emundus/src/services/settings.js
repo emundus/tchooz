@@ -373,6 +373,16 @@ export default {
         msg: e.message
       };
     }
-  }
+  },
 
+  async historyRetryEvent(actionLogId) {
+    try {
+        return await fetchClient.post('historyretryevent', {action_log_row_id: actionLogId});
+    } catch (e) {
+        return {
+            status: false,
+            msg: e.message
+        };
+    }
+  }
 };

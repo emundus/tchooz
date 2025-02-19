@@ -149,7 +149,6 @@ else {
                         <?php endforeach; ?>
                     </div>
 
-                    <div class="log-info <?php if (!empty($this->fileLogs)) : ?>tw-hidden<?php endif; ?>"><?= Text::_('COM_EMUNDUS_LOGS_NO_LOGS'); ?></div>
                 </div>
 
                 <table class="table table-hover logs_table <?php if ($this->euser->applicant == 1) : ?>tw-hidden<?php endif; ?>">
@@ -184,9 +183,13 @@ else {
                         <button type="button" class="btn btn-info btn-xs" id="show-more">Afficher plus</button>
                     </div>
 				<?php endif; ?>
-            <?php else : ?>
-                <div class="log-info"><?= Text::_('COM_EMUNDUS_LOGS_NO_LOGS'); ?></div>
 			<?php endif; ?>
+
+            <div <?php if (!empty($this->fileLogs)) : ?>class="tw-hidden"<?php endif; ?> id="no-results-block">
+                <img src="/media/com_emundus/images/tchoozy/complex-illustrations/no-result.svg" alt="empty-list" style="width: 10vw; height: 10vw; margin: 0 auto;">
+                <p class="tw-text-center"><?php echo Text::_("COM_EMUNDUS_NO_LOGS_FILTER_FOUND"); ?></p>
+                <button id="log-reset-filter-link" onclick="resetFilters();" class="em-font-size-16 em-profile-color em-text-underline tw-w-full tw-block tw-text-center tw-pb-4">Réinitialiser les filtres</button>
+            </div>
         </div>
     </div>
 </div>
@@ -294,8 +297,7 @@ else {
                     }
 
                     if (results.status) {
-                        document.querySelector('.log-info').classList.add('tw-hidden');
-
+                        $('#no-results-block').add('tw-hidden');
                         $('#log-export-btn').show();
                         $('#loading').remove();
 
@@ -334,10 +336,10 @@ else {
                         }
 
                     } else {
-                        document.querySelector('.log-info').classList.remove('tw-hidden');
                         $('.show-more').hide();
-                        logList.append('<div id="error-message">' + Joomla.Text._("COM_EMUNDUS_NO_LOGS_FILTER_FOUND") + '</div>');
                         $('#log-export-btn').hide();
+                        $('#logs_list').empty();
+                        $('#no-results-block').removeClass('tw-hidden');
                     }
                 }, error: function (xhr, status, error) {
                     console.log(xhr, status, error);
@@ -439,6 +441,10 @@ else {
     document.querySelector('#log-reset-filter-btn').addEventListener('click', function () {
         resetFilters();
     });
+
+    /*document.querySelector('#log-reset-filter-link').addEventListener('click', function () {
+        resetFilters();
+    });*/
 
     document.querySelector('#grid_view_button').addEventListener('click', function () {
         changeViewType('logs_grids');

@@ -91,7 +91,8 @@
     <hr class="col-md-12" style="z-index: 0"/>
 
     <div class="col-md-12">
-      <div v-if="lang === '' || lang == null || object === '' || object == null || init_translations === false" class="text-center tw-mt-20">
+      <div v-if="lang === '' || lang == null || object === '' || object == null || init_translations === false" class="text-center tw-mt-4">
+        <img src="@media/com_emundus/images/tchoozy/complex-illustrations/no-result.svg" alt="empty-list" style="width: 10vw; height: 10vw; margin: 0 auto;">
         <h5 class="tw-mb-2">{{ this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_TRANSLATION_TITLE') }}</h5>
         <p class="tw-text-base em-text-neutral-600">{{ this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_TRANSLATION_TEXT') }}</p>
       </div>

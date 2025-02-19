@@ -16,7 +16,14 @@
                 <option value="user_id">By</option>
                 <option value="status">Status</option>
                 <option value="diff">Differences</option>
+                <option value="retry">Retry</option>
             </field>
+            <field
+                name="more_data"
+                type="text"
+                label="COM_EMUNDUS_HISTORY_MORE_DATA_COLUMNS"
+                description="COM_EMUNDUS_HISTORY_MORE_DATA_COLUMNS_DESC"
+            />
         </fieldset>
     </fields>
 </metadata>

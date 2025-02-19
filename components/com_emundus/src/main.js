@@ -118,6 +118,8 @@ if (document) {
                 case 'History':
                     app = createApp(History, {
                         extension: datas.extension,
+                        columns: datas.columns,
+                        moreData: datas.moredata.split(',')
                     });
                     break;
                 case 'Expert/Expert':

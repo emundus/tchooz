@@ -51,6 +51,7 @@
               :toolbar-classes="['tw-bg-white']"
               :editor-content-classes="['tw-bg-white tw-mb-2']"
               @input="updated = true"
+              @paste="updated = true"
           />
         </div>
       <button class="btn btn-primary tw-float-right tw-mt-3" v-if="updated" @click="saveContent">
@@ -121,7 +122,7 @@ export default {
     return {
       defaultLang: null,
       availableLanguages: [],
-      editorPlugins: ['history', 'link', 'image', 'bold', 'italic', 'underline','left','center','right','h1', 'h2', 'ul'],
+      editorPlugins: ['history', 'link', 'image', 'bold', 'italic', 'underline','color','left','center','right','h1', 'h2', 'ul'],
 
       lang: null,
       loading: false,
