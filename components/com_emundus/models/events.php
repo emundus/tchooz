@@ -1269,19 +1269,35 @@ class EmundusModelEvents extends BaseDatabaseModel
 					$slot_break_time_type = 'hours';
 				}
 
+				$slot_can_book_until_type = 'days';
+				if (strpos($slot_can_book_until, 'date'))
+				{
+					$slot_can_book_until_type = 'date';
+				}
+
+				$slot_can_cancel_until_type = 'days';
+				if (!empty($slot_can_cancel_until) && strpos($slot_can_cancel_until, 'date'))
+				{
+					$slot_can_cancel_until_type = 'date';
+				}
+
 				$slot_config = [
-					'id'                       => $event_id,
+					'id'                         => $event_id,
 					// Store slot_duration in minutes
-					'slot_duration'            => (int) $slot_duration,
-					'slot_duration_type'       => $slot_duration_type,
-					'slot_break_every'         => $slot_break_every,
+					'slot_duration'              => (int) $slot_duration,
+					'slot_duration_type'         => $slot_duration_type,
+					'slot_break_every'           => $slot_break_every,
 					// Store slot_break_time in minutes
-					'slot_break_time'          => (int) $slot_break_time,
-					'slot_break_time_type'     => $slot_break_time_type,
-					'slots_availables_to_show' => $slots_availables_to_show,
-					'slot_can_cancel'          => $slot_can_cancel,
-					'updated_by'               => $user_id,
-					'updated'                  => date('Y-m-d H:i:s')
+					'slot_break_time'            => (int) $slot_break_time,
+					'slot_break_time_type'       => $slot_break_time_type,
+					'slots_availables_to_show'   => $slots_availables_to_show,
+					'slot_can_book_until_days'   => $slot_can_book_until_type == 'days' ? explode(" ", $slot_can_book_until)[0] : null,
+					'slot_can_book_until_date'   => $slot_can_book_until_type == 'date' ? (new DateTime(explode(" ", $slot_can_book_until)[0]))->format('Y-m-d') : null,
+					'slot_can_cancel_until_days' => $slot_can_cancel_until_type == 'days' && !empty($slot_can_cancel_until)  ? explode(" ", $slot_can_cancel_until)[0] : null,
+					'slot_can_cancel_until_date' => $slot_can_cancel_until_type == 'date' && !empty($slot_can_cancel_until)  ? (new DateTime(explode(" ", $slot_can_cancel_until)[0]))->format('Y-m-d') : null,
+					'slot_can_cancel'            => $slot_can_cancel,
+					'updated_by'                 => $user_id,
+					'updated'                    => date('Y-m-d H:i:s')
 				];
 				$slot_config = (object) $slot_config;
 				if ($status = $this->db->updateObject('jos_emundus_setup_events', $slot_config, 'id'))
@@ -1714,7 +1730,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 	 * @throws Exception
 	 * @since version 2.2.0
 	 */
-	public function getAvailabilitiesByCampaignsAndPrograms($cid = 0, $program_code = '', $start = '', $end = '', $location = 0)
+	public function getAvailabilitiesByCampaignsAndPrograms($cid = 0, $program_code = '', $start = '', $end = '', $location = 0, $check_booking_limit_reached = 0)
 	{
 		$timezone = $this->app->get('offset', 'Europe/Paris');
 
@@ -1756,11 +1772,11 @@ class EmundusModelEvents extends BaseDatabaseModel
 				foreach ($events as $event)
 				{
 					$query->clear()
-						->select('slots_availables_to_show')
+						->select('slots_availables_to_show, slot_can_book_until_days, slot_can_book_until_date')
 						->from($this->db->quoteName('#__emundus_setup_events', 'ese'))
 						->where($this->db->quoteName('ese.id') . ' = ' . $event);
 					$this->db->setQuery($query);
-					$slots_availables_to_show = $this->db->loadResult();
+					$slots_infos = $this->db->loadObject();
 
 					$query->clear()
 						->select([
@@ -1783,19 +1799,53 @@ class EmundusModelEvents extends BaseDatabaseModel
 					}
 					$query->group('ea.id');
 
-					if (!empty($slots_availables_to_show))
+					if (!empty($slots_infos->slots_availables_to_show))
 					{
-						$query->setLimit($slots_availables_to_show);
+						$query->setLimit($slots_infos->slots_availables_to_show);
 					}
 
 					$this->_db->setQuery($query);
 					$availabilities = array_merge($availabilities, $this->_db->loadObjectList());
 
-					foreach ($availabilities as $slot)
+					if($check_booking_limit_reached)
 					{
-						// Convert UTC dates to platform timezone ($timezone)
-						$slot->start = EmundusHelperDate::displayDate($slot->start, 'Y-m-d H:i', 0);
-						$slot->end   = EmundusHelperDate::displayDate($slot->end, 'Y-m-d H:i', 0);
+						$now = new DateTime();
+						$filtered_availabilities = [];
+
+						if(!empty($slots_infos->slot_can_book_until_date))
+						{
+							$limitDate = (new DateTime($slots_infos->slot_can_book_until_date))->format('Y-m-d');
+							if ($now->format('Y-m-d') <= $limitDate)
+							{
+								foreach ($availabilities as $slot)
+								{
+									// Convert UTC dates to platform timezone ($timezone)
+									$slot->start = EmundusHelperDate::displayDate($slot->start, 'Y-m-d H:i', 0);
+									$slot->end   = EmundusHelperDate::displayDate($slot->end, 'Y-m-d H:i', 0);
+
+									$filtered_availabilities[] = $slot;
+								}
+							}
+						}
+						elseif (!empty($slots_infos->slot_can_book_until_days))
+						{
+							foreach ($availabilities as $slot)
+							{
+								$limitDate = (new DateTime($slot->start));
+								$limitDate->modify('-' . $slots_infos->slot_can_book_until_days . ' days');
+								$limitDate = $limitDate->format('Y-m-d');
+
+								if (!($now->format('Y-m-d') > $limitDate))
+								{
+									// Convert UTC dates to platform timezone ($timezone)
+									$slot->start = EmundusHelperDate::displayDate($slot->start, 'Y-m-d H:i', 0);
+									$slot->end   = EmundusHelperDate::displayDate($slot->end, 'Y-m-d H:i', 0);
+
+									$filtered_availabilities[] = $slot;
+								}
+							}
+						}
+						$availabilities = $filtered_availabilities;
 					}
 				}
 			}
@@ -1998,7 +2048,9 @@ class EmundusModelEvents extends BaseDatabaseModel
 				'er.availability',
 				'er.event',
 				'er.slot',
-				'er.link'
+				'er.link',
+				'er.fnum',
+				'er.user'
 			];
 
 			$columns = array_merge($columns, $more_columns);
@@ -2030,7 +2082,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 		return $registrants;
 	}
 
-	public function getMyBookings($events_ids, $user_id)
+	public function getMyBookingsInformations($user_id, $events_ids = [])
 	{
 		$my_bookings = [];
 
@@ -2038,13 +2090,30 @@ class EmundusModelEvents extends BaseDatabaseModel
 		{
 			$query = $this->db->getQuery(true);
 
-			$query->select('er.id, er.availability, er.event, er.slot, er.link, esa.start_date as start,esa.end_date as end')
+			$query->select('er.id, er.availability, er.event, er.slot, er.link as link_registrant')
+				->select('esa.start_date as start, esa.end_date as end')
+				->select('ese.link as link_event, ese.name as event_name, ese.slot_can_book_until_days as can_book_until_days, ese.slot_can_book_until_date as can_book_until_date, ese.slot_can_cancel as can_cancel, ese.slot_can_cancel_until_days as can_cancel_until_days, ese.slot_can_cancel_until_date as can_cancel_until_date')
+				->select('del.name as name_location')
+				->select('dlr.name as room_name')
 				->from($this->db->quoteName('#__emundus_registrants', 'er'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_availabilities', 'esa') . ' ON ' . $this->db->quoteName('esa.id') . ' = ' . $this->db->quoteName('er.availability'))
-				->where('er.user = ' . $user_id)
-				->where('er.event IN (' . implode(',', array_map([$this->db, 'quote'], $events_ids)) . ')');
+				->leftJoin($this->db->quoteName('#__emundus_setup_events', 'ese') . ' ON ' . $this->db->quoteName('ese.id') . ' = ' . $this->db->quoteName('er.event'))
+				->leftJoin($this->db->quoteName('data_events_location', 'del') . ' ON ' . $this->db->quoteName('del.id') . ' = ' . $this->db->quoteName('ese.location'))
+				->leftJoin($this->db->quoteName('data_location_rooms', 'dlr') . ' ON ' . $this->db->quoteName('dlr.location') . ' = ' . $this->db->quoteName('del.id'))
+				->where('er.user = ' . $user_id);
+
+			if (!empty($events_ids)) {
+				$query->where('er.event IN (' . implode(',', array_map([$this->db, 'quote'], $events_ids)) . ')');
+			}
+
 			$this->_db->setQuery($query);
 			$my_bookings = $this->_db->loadObjectList();
+
+			foreach ($my_bookings as $booking)
+			{
+				$booking->start = EmundusHelperDate::displayDate($booking->start, 'Y-m-d H:i', 0);
+				$booking->end   = EmundusHelperDate::displayDate($booking->end, 'Y-m-d H:i', 0);
+			}
 		}
 		catch (Exception $e)
 		{
@@ -2052,6 +2121,59 @@ class EmundusModelEvents extends BaseDatabaseModel
 		}
 
 		return $my_bookings;
+	}
+
+
+	public function deleteBooking($booking_id)
+	{
+		$deleted = false;
+
+		if(!empty($booking_id)) {
+
+			try
+			{
+				$query = $this->db->getQuery(true);
+
+				$query->select('er.user, er.ccid, er.fnum')
+					->from($this->db->quoteName('#__emundus_registrants', 'er'))
+					->where('er.id = ' . $booking_id);
+				$this->_db->setQuery($query);
+				$registrant = $this->_db->loadObject();
+
+				$query->clear()
+					->delete($this->db->quoteName('#__emundus_registrants'))
+					->where($this->db->quoteName('id') . ' = ' . $booking_id);
+				$this->db->setQuery($query);
+				$this->db->execute();
+
+				PluginHelper::importPlugin('emundus');
+				$dispatcher = Factory::getApplication()->getDispatcher();
+
+				$onAfterUnsubscribeRegistrantEventHandler = new GenericEvent(
+					'onCallEventHandler',
+					['onAfterUnsubscribeRegistrant',
+						// Datas to pass to the event
+						['fnum' => $registrant->fnum, 'ccid' => $registrant->ccid, 'availability' => $booking_id, 'registrant_id' => $registrant->user]
+					]
+				);
+				$onAfterUnsubscribeRegistrant             = new GenericEvent(
+					'onAfterUnsubscribeRegistrant',
+					// Datas to pass to the event
+					['fnum' => $registrant->fnum, 'ccid' => $registrant->ccid, 'availability' => $booking_id, 'registrant_id' => $registrant->user]
+				);
+
+				// Dispatch the event
+				$dispatcher->dispatch('onCallEventHandler', $onAfterUnsubscribeRegistrantEventHandler);
+				$dispatcher->dispatch('onAfterUnsubscribeRegistrant', $onAfterUnsubscribeRegistrant);
+
+				$deleted = true;
+			}
+			catch (Exception $e)
+			{
+				Log::add('Error while deleting booking: ' . $e->getMessage(), Log::ERROR, 'emundus');
+			}
+		}
+		return $deleted;
 	}
 
 	public function updateLink($registrant_id, $link, $teams_id = null)
@@ -2254,4 +2376,33 @@ class EmundusModelEvents extends BaseDatabaseModel
 
 		return $count;
 	}
+
+	public function getEventsNotifications($events_ids = [])
+	{
+		$events_notifications = [];
+
+		try
+		{
+			$query = $this->db->getQuery(true);
+
+			$query->select('esen.*')
+				->from($this->db->quoteName('#__emundus_setup_events_notifications', 'esen'));
+
+			if (!empty($events_ids)) {
+				$query->where('esen.event IN (' . implode(',', array_map([$this->db, 'quote'], $events_ids)) . ')');
+			}
+
+			$this->_db->setQuery($query);
+			$events_notifications = $this->_db->loadObjectList();
+
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error while getting events notitications: ' . $e->getMessage(), Log::ERROR, 'emundus');
+		}
+
+		return $events_notifications;
+	}
+
+
 }

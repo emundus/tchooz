@@ -340,9 +340,9 @@ class EventsModelTest extends UnitTestCase
 			'slot_break_every' => 0,
 			'slot_break_time' => '0 minutes',
 			'slots_availables_to_show' => 0,
-			'slot_can_book_until' => null,
-			'slot_can_cancel' => 0,
-			'slot_can_cancel_until' => null,
+			'slot_can_book_until' => '3 days',
+			'slot_can_cancel' => 1,
+			'slot_can_cancel_until' => '2026-01-01 date',
 			'user_id' => $user_id_coordinator,
 		];
 		$setuped = $this->model->setupSlot($setup_slot['event_id'], $setup_slot['slot_duration'], $setup_slot['slot_break_every'], $setup_slot['slot_break_time'], $setup_slot['slots_availables_to_show'], $setup_slot['slot_can_book_until'], $setup_slot['slot_can_cancel'], $setup_slot['slot_can_cancel_until'], $setup_slot['user_id']);
@@ -535,6 +535,9 @@ class EventsModelTest extends UnitTestCase
 		$availabilities = $this->model->getAvailabilitiesByCampaignsAndPrograms($campaign_id,'','2026-01-01 00:00:00', '2026-01-01 06:00:00');
 		$this->assertNotEmpty($availabilities, 'The method getAvailabilitiesByCampaignsAndPrograms should return a non empty array');
 
+		$availabilities = $this->model->getAvailabilitiesByCampaignsAndPrograms($campaign_id,'','2026-01-01 00:00:00', '2026-01-01 06:00:00', 0, 1);
+		$this->assertNotEmpty($availabilities, 'The method getAvailabilitiesByCampaignsAndPrograms should return a non empty array');
+
 		$availabilities = $this->model->getAvailabilitiesByCampaignsAndPrograms($campaign_id,'','2025-01-01 00:00:00', '2025-01-01 06:00:00');
 		$this->assertEmpty($availabilities, 'The method getAvailabilitiesByCampaignsAndPrograms should return an empty array');
 
@@ -707,6 +710,8 @@ class EventsModelTest extends UnitTestCase
 		$this->assertObjectHasProperty('event', $registrants[0], 'The registrant should have an event property');
 		$this->assertObjectHasProperty('slot', $registrants[0], 'The registrant should have a slot property');
 		$this->assertObjectHasProperty('link', $registrants[0], 'The registrant should have a link property');
+		$this->assertObjectHasProperty('fnum', $registrants[0], 'The registrant should have a fnum property');
+		$this->assertObjectHasProperty('user', $registrants[0], 'The registrant should have an user property');
 
 		$registrants = $this->model->getAvailabilityRegistrants($availability_id);
 		$this->assertNotEmpty($registrants, 'The method getAvailabilityRegistrants should return a non empty array');
@@ -727,7 +732,7 @@ class EventsModelTest extends UnitTestCase
 		$this->h_dataset->deleteSampleProgram($program['programme_id']);
 	}
 
-	public function testGetMyBookings()
+	public function testGetMyBookingsInformations()
 	{
 		$applicant_email = 'applicant' . rand(0, 1000) . '@emundus.test.fr';
 		$applicant_email_2 = 'applicant' . rand(0, 1000) . '@emundus.test.fr';
@@ -750,21 +755,29 @@ class EventsModelTest extends UnitTestCase
 
 		$registrant_id = $this->model->createAvailabilityRegistrant($availability_id, $applicant_file);
 
-		$registrants = $this->model->getMyBookings([$event_id], $applicant);
-		$this->assertIsArray($registrants, 'The method getMyBookings should return an array');
-		$this->assertNotEmpty($registrants, 'The method getMyBookings should return a non empty array');
+		$registrants = $this->model->getMyBookingsInformations($applicant, [$event_id]);
+		$this->assertIsArray($registrants, 'The method getMyBookingsInformations should return an array');
+		$this->assertNotEmpty($registrants, 'The method getMyBookingsInformations should return a non empty array');
 		$this->assertObjectHasProperty('id', $registrants[0], 'The registrant should have an id property');
 		$this->assertSame($registrant_id, $registrants[0]->id, 'The registrant id should be the same as the one created');
 		$this->assertObjectHasProperty('availability', $registrants[0], 'The registrant should have an availability property');
 		$this->assertObjectHasProperty('event', $registrants[0], 'The registrant should have an event property');
 		$this->assertObjectHasProperty('slot', $registrants[0], 'The registrant should have an slot property');
-		$this->assertObjectHasProperty('link', $registrants[0], 'The registrant should have a link property');
+		$this->assertObjectHasProperty('link_registrant', $registrants[0], 'The registrant should have a link property');
+		$this->assertObjectHasProperty('link_event', $registrants[0], 'The registrant should have a link event property');
 		$this->assertObjectHasProperty('start', $registrants[0], 'The registrant should have a start property');
 		$this->assertObjectHasProperty('end', $registrants[0], 'The registrant should have a end property');
+		$this->assertObjectHasProperty('event_name', $registrants[0], 'The registrant should have an event name property');
+		$this->assertObjectHasProperty('name_location', $registrants[0], 'The registrant should have a name location property');
+		$this->assertObjectHasProperty('can_book_until_days', $registrants[0], 'The registrant should have a can_book_until_days property');
+		$this->assertObjectHasProperty('can_book_until_date', $registrants[0], 'The registrant should have a can_book_until_date property');
+		$this->assertObjectHasProperty('can_cancel', $registrants[0], 'The registrant should have a can_cancel property');
+		$this->assertObjectHasProperty('can_cancel_until_days', $registrants[0], 'The registrant should have a can_cancel_until_days property');
+		$this->assertObjectHasProperty('can_cancel_until_date', $registrants[0], 'The registrant should have a can_cancel_until_date property');
 
-		$registrants = $this->model->getMyBookings([$event_id], $applicant_2);
-		$this->assertIsArray($registrants, 'The method getMyBookings should return an array');
-		$this->assertEmpty($registrants, 'The method getMyBookings should return an empty array');
+		$registrants = $this->model->getMyBookingsInformations($applicant_2, [$event_id]);
+		$this->assertIsArray($registrants, 'The method getMyBookingsInformations should return an array');
+		$this->assertEmpty($registrants, 'The method getMyBookingsInformations should return an empty array');
 
 		$this->h_dataset->deleteSampleFile($applicant_file);
 		$this->h_dataset->deleteSampleUser($user_id_coordinator);
@@ -894,6 +907,78 @@ class EventsModelTest extends UnitTestCase
 		$this->h_dataset->deleteSampleUser($user_id_coordinator);
 		$this->h_dataset->deleteSampleEventSlots($event_slots);
 		$this->h_dataset->deleteSampleEvent($event_id);
+		$this->h_dataset->deleteSampleLocation($location_id);
+		$this->h_dataset->deleteSampleCampaign($campaign_id);
+		$this->h_dataset->deleteSampleProgram($program['programme_id']);
+	}
+
+	public function testDeleteBooking()
+	{
+		$applicant_email = 'applicant' . rand(0, 1000) . '@emundus.test.fr';
+		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
+		$applicant = $this->h_dataset->createSampleUser(1000, $applicant_email);
+		$user_id_coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
+
+		$program = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $user_id_coordinator);
+		$campaign_id = $this->h_dataset->createSampleCampaign($program, $user_id_coordinator);
+		$applicant_file = $this->h_dataset->createSampleFile($campaign_id, $applicant);
+
+		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', [], $user_id_coordinator);
+		$event = $this->h_dataset->createEvent($location_id,$user_id_coordinator, '2026-01-01 00:00:00', '2026-01-01 06:00:00', 'Event test',1,[$campaign_id]);
+		$event_id = $event['event_id'];
+		$event_slots = $event['event_slots'];
+
+		$availabilities = $this->model->getEventsAvailabilities('2026-01-01 00:00:00', '2026-01-01 06:00:00', [$event_id]);
+		$availability_id = $availabilities[0]->id;
+
+		$registrant_id = $this->model->createAvailabilityRegistrant($availability_id, $applicant_file);
+
+		$deleted = $this->model->deleteBooking($registrant_id);
+		$this->assertIsBool($deleted, 'The method deleteBooking should return a boolean');
+		$this->assertTrue($deleted, 'The method deleteBooking should return true');
+
+		$this->h_dataset->deleteSampleFile($applicant_file);
+		$this->h_dataset->deleteSampleUser($user_id_coordinator);
+		$this->h_dataset->deleteSampleUser($applicant);
+		$this->h_dataset->deleteSampleEventSlots($event_slots);
+		$this->h_dataset->deleteSampleEvent($event_id);
+		$this->h_dataset->deleteSampleLocation($location_id);
+		$this->h_dataset->deleteSampleCampaign($campaign_id);
+		$this->h_dataset->deleteSampleProgram($program['programme_id']);
+	}
+
+	public function testGetEventsNotifications()
+	{
+		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
+		$user_id_coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
+		$program = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $user_id_coordinator);
+		$campaign_id = $this->h_dataset->createSampleCampaign($program, $user_id_coordinator);
+
+		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', [], $user_id_coordinator);
+		$event = $this->h_dataset->createEvent($location_id,$user_id_coordinator, '2026-01-01 00:00:00', '2026-01-01 06:00:00', 'Event test',1,[$campaign_id]);
+
+		$notifications = $this->model->getEventsNotifications([$event['event_id']]);
+
+		$this->assertIsArray($notifications, 'The method getEventsNotifications should return an array');
+		$this->assertNotEmpty($notifications, 'The method getEventsNotifications should return a non empty array');
+		$this->assertObjectHasProperty('id', $notifications[0], 'The notification should have an id property');
+		$this->assertObjectHasProperty('event', $notifications[0], 'The notification should have an event property');
+		$this->assertObjectHasProperty('applicant_notify', $notifications[0], 'The notification should have an applicant_notify property');
+		$this->assertObjectHasProperty('applicant_notify_email', $notifications[0], 'The notification should have an applicant_notify_email property');
+		$this->assertObjectHasProperty('applicant_recall', $notifications[0], 'The notification should have an applicant_recall property');
+		$this->assertObjectHasProperty('applicant_recall_frequency', $notifications[0], 'The notification should have an applicant_recall_frequency property');
+		$this->assertObjectHasProperty('applicant_recall_email', $notifications[0], 'The notification should have an applicant_recall_email property');
+		$this->assertObjectHasProperty('manager_recall', $notifications[0], 'The notification should have a manager_recall property');
+		$this->assertObjectHasProperty('manager_recall_frequency', $notifications[0], 'The notification should have a manager_recall_frequency property');
+		$this->assertObjectHasProperty('manager_recall_email', $notifications[0], 'The notification should have a manager_recall_email property');
+		$this->assertObjectHasProperty('users_recall', $notifications[0], 'The notification should have an users_recall property');
+		$this->assertObjectHasProperty('users_recall_frequency', $notifications[0], 'The notification should have an users_recall_frequency property');
+		$this->assertObjectHasProperty('users_recall_email', $notifications[0], 'The notification should have an users_recall_email property');
+
+		$this->h_dataset->deleteSampleNotification($event['event_id']);
+		$this->h_dataset->deleteSampleUser($user_id_coordinator);
+		$this->h_dataset->deleteSampleEventSlots($event['event_slots']);
+		$this->h_dataset->deleteSampleEvent($event['event_id']);
 		$this->h_dataset->deleteSampleLocation($location_id);
 		$this->h_dataset->deleteSampleCampaign($campaign_id);
 		$this->h_dataset->deleteSampleProgram($program['programme_id']);

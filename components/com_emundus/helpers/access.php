@@ -599,6 +599,31 @@ class EmundusHelperAccess
 		return $mine;
 	}
 
+	public static function isBookingMine($user_id, $booking_id): bool
+	{
+		$mine = false;
+
+		if (!empty($user_id))
+		{
+			$db    = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true);
+
+			$query->clear()
+				->select('user')
+				->from($db->quoteName('#__emundus_registrants'))
+				->where('id = ' . $db->quote($booking_id));
+			$db->setQuery($query);
+			$booking_user_id = $db->loadResult();
+
+			if ($booking_user_id == $user_id)
+			{
+				$mine = true;
+			}
+		}
+
+		return $mine;
+	}
+
 	/**
 	 * @param $ccid int campaign candidature id
 	 * @param $step_data object step data, use getStepData from EmundusModelWorkflow

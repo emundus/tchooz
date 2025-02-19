@@ -2405,6 +2405,90 @@ span[id*=modalEditElement] .v--modal-overlay[data-v-9f611f8f],
   transform: translate(-50%, -50%);
   top: 50%;
 }
+#modalAddTriggercandidate .v--modal[data-v-845a3ded],
+#modalAddTriggermanual .v--modal[data-v-845a3ded],
+span[id*=modalEmailPreview_] .v--modal[data-v-845a3ded],
+#modalUpdateLogo .v--modal[data-v-845a3ded],
+#modalUpdateIcon .v--modal[data-v-845a3ded],
+#modalUpdateColors .v--modal[data-v-845a3ded] {
+  padding: 32px !important;
+}
+span[id*=modalEditElement] .v--modal[data-v-845a3ded],
+#modalAddDocuments .v--modal[data-v-845a3ded],
+#modalAffectCampaign .v--modal[data-v-845a3ded],
+#modalMenu .v--modal[data-v-845a3ded],
+#modalSide .v--modal[data-v-845a3ded] {
+  position: fixed;
+  right: 0;
+  left: unset !important;
+  height: 100% !important;
+  padding: 32px;
+  top: 0 !important;
+  overflow: scroll;
+}
+span[id*=modalEditElement] .v--modal-overlay[data-v-845a3ded],
+#modalAddDocuments .v--modal-overlay[data-v-845a3ded],
+#modalMenu .v--modal-overlay[data-v-845a3ded],
+#modalSide .v--modal-overlay[data-v-845a3ded] {
+  background: unset;
+}
+
+/**** CUSTOM VUE DROPZONE ****/
+#customdropzone[data-v-845a3ded] {
+  letter-spacing: 0.2px;
+  background: #fff;
+  color: #C5C8CE;
+  transition: background-color 0.2s linear;
+  height: 200px;
+  padding: 40px;
+  border: dashed;
+  border-radius: 5px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  cursor: pointer;
+}
+.dz-preview[data-v-845a3ded] {
+  width: 100%;
+  display: inline-block;
+  text-align: center;
+}
+.dz-image[data-v-845a3ded] {
+  width: auto;
+  height: 100px;
+  margin-bottom: 10px;
+}
+.dz-image > div[data-v-845a3ded] {
+  height: 100px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+.dz-details[data-v-845a3ded] {
+  color: black;
+  transition: opacity 0.2s linear;
+  text-align: center;
+}
+.dz-success-mark[data-v-845a3ded] {
+  display: none;
+}
+.dz-default.dz-message[data-v-845a3ded] {
+  text-align: center !important;
+}
+.dz-error-mark[data-v-845a3ded] {
+  display: none;
+}
+.dz-remove[data-v-845a3ded] {
+  color: #1c6ef2;
+}
+
+/**** END ****/
+.placement-center[data-v-845a3ded] {
+  position: fixed;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  top: 50%;
+}
 
 .iframe-evaluation-list[data-v-6e9962fb] {
     width: 100%;

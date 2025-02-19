@@ -7,6 +7,7 @@ import eventsService from "@/services/events.js";
 
 /* Store */
 import {useEventStore} from "@/stores/event.js";
+import dayjs from 'dayjs';
 
 import Swal from "sweetalert2";
 
@@ -91,7 +92,7 @@ export default {
           displayed: true,
           optional: true,
         },
-        /*{
+        {
           param: 'slot_can_book_until',
           type: 'text',
           placeholder: '',
@@ -99,7 +100,6 @@ export default {
           concatValue: '',
           label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_BOOK_UNTIL',
           displayed: true,
-          optional: true,
           splitField: true,
           secondParameterType: 'select',
           secondParameterDefault: 'days',
@@ -136,7 +136,7 @@ export default {
             {value: 'date', label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_BOOK_UNTIL_DATE'},
           ],
           splitChar: ' ',
-        },*/
+        },
       ]
     }
   },
@@ -163,11 +163,21 @@ export default {
     }
 
     for(let field of this.more_fields) {
-      if (this.event[field.param]) {
+      if (field.param == 'slot_can_book_until')
+      {
+        field.value = this.event['slot_can_book_until_days'] ? this.event['slot_can_book_until_days'] + field.splitChar + 'days' : dayjs(this.event['slot_can_book_until_date']).format('YYYY-MM-DD') + field.splitChar + 'date';
+        field.concatValue = this.event['slot_can_book_until_days'] ? 'days' : 'date';
+
+      }
+      else if (field.param == 'slot_can_cancel_until')
+      {
+        field.value = this.event['slot_can_cancel_until_days'] ? this.event['slot_can_cancel_until_days'] + field.splitChar + 'days' : dayjs(this.event['slot_can_cancel_until_date']).format('YYYY-MM-DD') + field.splitChar + 'date';
+        field.concatValue = this.event['slot_can_cancel_until_days'] ? 'days' : 'date';
+      }
+      else {
         field.value = this.event[field.param];
       }
     }
-
     this.loading = false;
   },
   methods: {
@@ -209,10 +219,16 @@ export default {
               field.value.forEach((element) => {
                 slot[field.param].push(element.value);
               });
-            } else {
+            }
+            else {
               slot[field.param] = field.value.value;
             }
-          } else {
+          }
+          else if ((field.param === 'slot_can_book_until' || field.param === 'slot_can_cancel_until') && field.concatValue.split(' ').slice(-1)[0] === 'date')
+          {
+            slot[field.param] = dayjs(field.value).format('YYYY-MM-DD') + field.splitChar + 'date';
+          }
+          else {
             if (field.concatValue) {
               slot[field.param] = field.concatValue;
             } else {
@@ -261,6 +277,11 @@ export default {
       if(oldValue !== null && oldValue !== value && !this.formChanged) {
         this.formChanged = true;
       }
+    },
+
+    handleMoreFieldsValueUpdated(parameter, oldValue, value) {
+      this.checkConditional(parameter, oldValue, value);
+      this.onFormChange(parameter, oldValue, value);
     },
 
     handleBeforeUnload() {
@@ -374,7 +395,7 @@ export default {
               :parameter-object="field"
               :help-text-type="'above'"
               :multiselect-options="field.multiselectOptions ? field.multiselectOptions : null"
-              @valueUpdated="checkConditional; onFormChange"
+              @valueUpdated="handleMoreFieldsValueUpdated"
           />
         </div>
       </div>

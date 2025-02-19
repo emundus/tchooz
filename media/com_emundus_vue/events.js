@@ -1,4 +1,4 @@
-import { l as FetchClient } from "./app_emundus.js";
+import { m as FetchClient } from "./app_emundus.js";
 const fetchClient = new FetchClient("events");
 const eventsService = {
   // Getters
@@ -158,9 +158,9 @@ const eventsService = {
       };
     }
   },
-  async getAvailabilitiesByCampaignsAndPrograms(start = "", end = "", location = 0) {
+  async getAvailabilitiesByCampaignsAndPrograms(start = "", end = "", location = 0, check_booking_limit_reached = 0) {
     try {
-      return await fetchClient.get("getavailabilitiesbycampaignsandprograms", { start, end, location });
+      return await fetchClient.get("getavailabilitiesbycampaignsandprograms", { start, end, location, check_booking_limit_reached });
     } catch (e) {
       return {
         status: false,
@@ -171,6 +171,26 @@ const eventsService = {
   async getMyBookings() {
     try {
       return await fetchClient.get("getmybookings");
+    } catch (e) {
+      return {
+        status: false,
+        error: e
+      };
+    }
+  },
+  async getApplicantBookings() {
+    try {
+      return await fetchClient.get("getapplicantbookings");
+    } catch (e) {
+      return {
+        status: false,
+        error: e
+      };
+    }
+  },
+  async deleteBooking(booking_id) {
+    try {
+      return await fetchClient.get("deletebooking", { booking_id });
     } catch (e) {
       return {
         status: false,
