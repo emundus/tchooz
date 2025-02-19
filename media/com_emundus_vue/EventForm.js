@@ -5,7 +5,7 @@ import { C as ColorPicker } from "./ColorPicker.js";
 import { I as Info } from "./Info.js";
 import { e as eventsService } from "./events.js";
 import { D as DatePicker } from "./index.js";
-import { a as ai, E as EventDay, c as createEventsServicePlugin, b as createCalendar, d as createCalendarControlsPlugin, e as createViewDay, f as createViewWeek, v as viewWeek } from "./core.js";
+import { u as uo, E as EventDay, c as createEventsServicePlugin, a as createCalendar, b as createCalendarControlsPlugin, d as createViewDay, e as createViewWeek, v as viewWeek } from "./core.js";
 const _sfc_main$6 = {
   name: "LocationPopup",
   components: { LocationForm, Modal },
@@ -1582,7 +1582,7 @@ const createCalendarConfig = (vm) => ({
 });
 const _sfc_main$2 = {
   name: "EventCalendarSettings",
-  components: { EventDay, CalendarSlotPopup, ScheduleXCalendar: ai },
+  components: { EventDay, CalendarSlotPopup, ScheduleXCalendar: uo },
   props: {
     event: Object
   },

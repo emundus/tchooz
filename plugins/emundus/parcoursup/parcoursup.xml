@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="console" method="upgrade">
+    <name>plg_emundus_parcoursup</name>
+    <version>1.0.0</version>
+    <creationDate>February 2025</creationDate>
+    <author>eMundus</author>
+    <description>Plugin to get datas from Parcoursup and create files</description>
+    <namespace path="src">Joomla\Plugin\Emundus\Parcoursup</namespace>
+    <files>
+        <folder plugin="parcoursup">services</folder>
+        <folder>src</folder>
+    </files>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="debug_mode" label="Debug mode" type="list" default="0">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+
+                <field name="skip_activation" label="PLG_EMUNDUS_PARCOURSUP_SKIP_ACTIVATION" type="list" default="1">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+
+                <field name="base_path" type="text" label="PLG_EMUNDUS_PARCOURSUP_BASE_PATH" default="exportDeDonnees.exportCandidats" />
+
+                <field name="campaign_attribute" type="text" label="PLG_EMUNDUS_PARCOURSUP_CAMPAIGN_ATTRIBUTE" default="formationCode" />
+
+                <field name="applicants_attribute" type="text" label="PLG_EMUNDUS_PARCOURSUP_APPLICANTS_ATTRIBUTE" default="candidats" />
+            </fieldset>
+        </fields>
+    </config>
+</extension>
