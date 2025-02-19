@@ -68,6 +68,7 @@ use Joomla\CMS\Language\Text;
 		'displayName'         => $display_name,
 		'profile_name'        => $profile_details->label,
 		'profile_description' => $profile_details->description,
+        'grid_size' => $grid_size,
 	]
 
 

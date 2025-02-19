@@ -37,7 +37,7 @@
         </select>
       </div>
 
-      <template v-if="widgets.length > 0">
+      <div v-if="widgets.length > 0" :class="'tw-gap-3 tw-grid tw-grid-cols-'+this.grid_size">
         <div
             v-for="(widget, index) in widgets"
             :id="widget.name + '_' + index"
@@ -50,7 +50,7 @@
               @forceUpdate="$forceUpdate"
           />
         </div>
-      </template>
+      </div>
     </div>
   </div>
 </template>
@@ -71,7 +71,8 @@ export default {
     name: String,
     language: Number,
     profile_name: String,
-    profile_description: String
+    profile_description: String,
+    grid_size: Number
   },
   components: {
     Custom

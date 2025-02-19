@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
 
+use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
 
 use GuzzleHttp\Client as GuzzleClient;
@@ -85,10 +86,23 @@ class EmundusControllerWebhook extends BaseController
 			$webhook_datas = json_decode($payload, true);
 			$webhook_files = !empty($_FILES) ? $_FILES : null;
 
-			JPluginHelper::importPlugin('emundus', 'custom_event_handler');
-			$return = \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onWebhookCallbackProcess', ['webhook_datas' => $webhook_datas, 'type' => $type, 'webhook_files' => $webhook_files]]);
+			$dispatcher = Factory::getApplication()->getDispatcher();
+			$onWebhookCallbackProcessEventHandler = new GenericEvent(
+				'onCallEventHandler',
+				['onWebhookCallbackProcess',
+					// Datas to pass to the event
+					['webhook_datas' => $webhook_datas, 'type' => $type, 'webhook_files' => $webhook_files]
+				]
+			);
+			$onWebhookCallbackProcess             = new GenericEvent(
+				'onWebhookCallbackProcess',
+				// Datas to pass to the event
+				['webhook_datas' => $webhook_datas, 'type' => $type, 'webhook_files' => $webhook_files]
+			);
+			$dispatcher->dispatch('onCallEventHandler', $onWebhookCallbackProcessEventHandler);
+			$result = $dispatcher->dispatch('onWebhookCallbackProcess', $onWebhookCallbackProcess);
 
-			$result = $return[0]['onWebhookCallbackProcess'];
+			$result = $result->getArgument('results');
 		}
 		else {
 			$result = ['status' => false, 'message' => 'You are not allowed to access to this route'];
