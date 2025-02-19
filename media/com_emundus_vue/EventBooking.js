@@ -1,5 +1,5 @@
 import { e as eventsService } from "./events.js";
-import { _ as _export_sfc, u as useGlobalStore, r as resolveComponent, o as openBlock, c as createElementBlock, a as createBaseVNode, t as toDisplayString, n as normalizeStyle, F as Fragment, b as renderList, d as normalizeClass, e as createCommentVNode, f as createBlock } from "./app_emundus.js";
+import { _ as _export_sfc, r as resolveComponent, c as createElementBlock, o as openBlock, a as createCommentVNode, b as createBlock, d as createBaseVNode, t as toDisplayString, n as normalizeStyle, F as Fragment, e as renderList, f as normalizeClass, u as useGlobalStore } from "./app_emundus.js";
 import { I as Info } from "./Info.js";
 const _sfc_main = {
   name: "EventBooking",
@@ -68,7 +68,7 @@ const _sfc_main = {
     async getSlots() {
       this.loading = true;
       try {
-        const responseSlots = await eventsService.getAvailabilitiesByCampaignsAndPrograms((/* @__PURE__ */ new Date()).toISOString().split("T"), "", this.location);
+        const responseSlots = await eventsService.getAvailabilitiesByCampaignsAndPrograms((/* @__PURE__ */ new Date()).toISOString().split("T"), "", this.location, 1);
         let slots = responseSlots.data;
         const groupedSlots = slots.reduce((accumulator, slot) => {
           const key = `${slot.start}_${slot.end}_${slot.event_id}`;

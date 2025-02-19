@@ -83,7 +83,7 @@ export default {
     async getSlots() {
       this.loading = true;
       try {
-        const responseSlots = await eventsService.getAvailabilitiesByCampaignsAndPrograms(new Date().toISOString().split('T'), '', this.location);
+        const responseSlots = await eventsService.getAvailabilitiesByCampaignsAndPrograms(new Date().toISOString().split('T'), '', this.location, 1);
         let slots = responseSlots.data;
 
         const groupedSlots = slots.reduce((accumulator, slot) => {

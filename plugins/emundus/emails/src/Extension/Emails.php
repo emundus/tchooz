@@ -121,7 +121,7 @@ final class Emails extends CMSPlugin implements SubscriberInterface
 					];
 
 					// Generate ICS file to tmp folder and attach it to the email
-					$ics_file = JPATH_BASE . '/tmp/' . $data['fnum'] . '.ics';
+					$ics_file = JPATH_BASE . '/tmp/' . str_replace(' ', '_', $email_to_send['ics_event_name']) . '.ics';
 					$ics = "BEGIN:VCALENDAR\n";
 					$ics .= "VERSION:2.0\n";
 					$ics .= "PRODID:-//hacksw/handcal//NONSGML v1.0//EN\n";

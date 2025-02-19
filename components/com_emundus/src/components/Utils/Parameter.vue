@@ -164,16 +164,15 @@
              @focusin="clearPassword(parameter)"
       >
 
-      <!-- DATETIME -->
       <DatePicker
-          v-else-if="parameter.type === 'datetime'"
+          v-else-if="parameter.type === 'datetime' || parameter.type === 'date'"
           :id="paramId"
-          v-model="value"
+          v-model="formattedValue"
           :keepVisibleOnInput="true"
-          :popover="{visibility: 'focus', placement: 'right'}"
-          :rules="{minutes: { interval: 10 }}"
-          :time-accuracy="2"
-          mode="dateTime"
+          :popover="{ visibility: 'focus', placement: 'right' }"
+          :rules="{ minutes: { interval: 10 } }"
+          :time-accuracy="parameter.type === 'date' ? 2 : 0"
+          :mode="parameter.type === 'date' ? 'date' : 'dateTime'"
           is24hr
           hide-time-header
           title-position="left"
@@ -181,10 +180,10 @@
           :locale="actualLanguage">
         <template #default="{ inputValue, inputEvents }">
           <input
-              :value="inputValue"
+              :value="formatDateForDisplay(inputValue)"
               v-on="inputEvents"
               class="form-control fabrikinput tw-w-full"
-              :id="paramId+'_input'"
+              :id="paramId + '_input'"
           />
         </template>
       </DatePicker>
@@ -220,6 +219,7 @@ import Swal from "sweetalert2";
 import {reactive} from 'vue';
 import {DatePicker} from "v-calendar";
 import {useGlobalStore} from "@/stores/global.js";
+import dayjs from "dayjs";
 
 export default {
   name: "Parameter",
@@ -492,6 +492,10 @@ export default {
       let res = /^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$/;
       return res.test(email);
     },
+    formatDateForDisplay(date) {
+      if (!date) return '';
+      return date.split('-').reverse().join('/');
+    }
     //
   },
   watch: {
@@ -526,9 +530,26 @@ export default {
     valueSecondary: {
       handler: function (val, oldVal) {
         this.parameter.concatValue = this.value + this.parameter.splitChar + val;
+        // Specific condition for event slot settings
+        if(val !== oldVal && ((this.parameter.param === 'slot_can_book_until' && this.parameter.label === 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_BOOK_UNTIL') || (this.parameter.param === 'slot_can_cancel_until' && this.parameter.label === 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_CANCEL_UNTIL')))
+        {
+          if(val === 'days' && oldVal !== null)
+          {
+            this.value = '';
+            this.parameter.concatValue = this.value + this.parameter.splitChar + val;
+            this.parameter.type = 'text';
+          }
+          else if (val === 'date') {
+            const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+
+            this.value = typeof this.value === 'string' && dateRegex.test(this.value) && !isNaN(new Date(this.value).getTime()) ? this.value : new Date().toISOString().split('T')[0];
+            this.parameter.concatValue = this.value + this.parameter.splitChar + val;
+            this.parameter.type = 'date';
+          }
+        }
       },
       deep: true
-    }
+    },
   },
   computed: {
     isInput() {
@@ -540,6 +561,17 @@ export default {
     paramName() {
       return 'param_' + this.parameter.param + '[]';
     },
+    formattedValue: {
+      get() {
+        let today = new Date().toISOString().split('T')[0];
+        let dateValue = typeof this.value === 'string' ? this.value : today;
+        return dateValue && dateValue < today ? today : dateValue;
+      },
+      set(newValue) {
+        newValue = dayjs(newValue).format('YYYY-MM-DD')
+        this.value = newValue.split('/').reverse().join('-');
+      }
+    }
   }
 }
 </script>

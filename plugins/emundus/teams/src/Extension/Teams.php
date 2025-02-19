@@ -131,10 +131,5 @@ final class Teams extends CMSPlugin implements SubscriberInterface
 	{
 		$name = $event->getName();
 		$data = $event->getArguments();
-
-		echo '<pre>';
-		var_dump($data);
-		echo '</pre>';
-		die;
 	}
 }

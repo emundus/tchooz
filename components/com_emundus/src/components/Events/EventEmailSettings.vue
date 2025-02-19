@@ -58,103 +58,103 @@ export default {
           displayedOnValue: 1,
           optional: false,
         },
-        // {
-        //   param: 'applicant_recall',
-        //   type: 'toggle',
-        //   value: 1,
-        //   label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL',
-        //   displayed: true,
-        //   hideLabel: true,
-        //   optional: true,
-        // },
-        // {
-        //   param: 'applicant_recall_frequency',
-        //   type: 'text',
-        //   value: 1,
-        //   default: 7,
-        //   label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_FREQUENCY',
-        //   displayed: false,
-        //   displayedOn: 'applicant_recall',
-        //   displayedOnValue: 1,
-        //   endText: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_FREQUENCY_END_TEXT',
-        //   optional: true,
-        // },
-        // {
-        //   param: 'applicant_recall_email',
-        //   type: 'select',
-        //   value: 0,
-        //   default: 0,
-        //   label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_EMAIL',
-        //   displayed: false,
-        //   displayedOn: 'applicant_recall',
-        //   displayedOnValue: 1,
-        //   options: [],
-        //   reload: 0
-        // },
-        // {
-        //   param: 'manager_recall',
-        //   type: 'toggle',
-        //   value: 1,
-        //   label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_MANAGER_RECALL',
-        //   displayed: true,
-        //   hideLabel: true,
-        //   optional: true,
-        // },
-        // {
-        //   param: 'manager_recall_frequency',
-        //   type: 'text',
-        //   value: 1,
-        //   default: 7,
-        //   label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_FREQUENCY',
-        //   displayed: false,
-        //   displayedOn: 'manager_recall',
-        //   displayedOnValue: 1,
-        //   endText: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_MANAGER_RECALL_FREQUENCY_END_TEXT'
-        // },
-        // {
-        //   param: 'manager_recall_email',
-        //   type: 'select',
-        //   value: 0,
-        //   default: 0,
-        //   label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_MANAGER_RECALL_EMAIL',
-        //   displayed: false,
-        //   displayedOn: 'manager_recall',
-        //   displayedOnValue: 1,
-        //   options: [],
-        //   reload: 0
-        // },
-        // {
-        //   param: 'users_recall',
-        //   type: 'toggle',
-        //   value: 1,
-        //   label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_USERS_RECALL',
-        //   displayed: true,
-        //   hideLabel: true,
-        //   optional: true,
-        // },
-        // {
-        //   param: 'users_recall_frequency',
-        //   type: 'text',
-        //   value: 1,
-        //   default: 7,
-        //   label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_FREQUENCY',
-        //   displayed: false,
-        //   displayedOn: 'users_recall',
-        //   displayedOnValue: 1,
-        //   endText: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_FREQUENCY_END_TEXT',
-        // },
-        // {
-        //   param: 'users_recall_email',
-        //   type: 'select',
-        //   value: 0,
-        //   default: 0,
-        //   label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_MANAGER_RECALL_EMAIL',
-        //   displayed: false,
-        //   displayedOn: 'users_recall',
-        //   displayedOnValue: 1,
-        //   options: [],
-        //   reload: 0
-        // },
+        {
+          param: 'applicant_recall',
+          type: 'toggle',
+          value: 1,
+          label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL',
+          displayed: true,
+          hideLabel: true,
+          optional: true,
+        },
+        {
+          param: 'applicant_recall_frequency',
+          type: 'text',
+          value: 1,
+          default: 7,
+          label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_FREQUENCY',
+          displayed: false,
+          displayedOn: 'applicant_recall',
+          displayedOnValue: 1,
+          endText: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_FREQUENCY_END_TEXT',
+          optional: true,
+        },
+        {
+          param: 'applicant_recall_email',
+          type: 'select',
+          value: 0,
+          default: 0,
+          label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_EMAIL',
+          displayed: false,
+          displayedOn: 'applicant_recall',
+          displayedOnValue: 1,
+          options: [],
+          reload: 0
+        },
+        {
+          param: 'manager_recall',
+          type: 'toggle',
+          value: 1,
+          label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_MANAGER_RECALL',
+          displayed: true,
+          hideLabel: true,
+          optional: true,
+        },
+        {
+          param: 'manager_recall_frequency',
+          type: 'text',
+          value: 1,
+          default: 7,
+          label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_FREQUENCY',
+          displayed: false,
+          displayedOn: 'manager_recall',
+          displayedOnValue: 1,
+          endText: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_MANAGER_RECALL_FREQUENCY_END_TEXT'
+        },
+        {
+          param: 'manager_recall_email',
+          type: 'select',
+          value: 0,
+          default: 0,
+          label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_MANAGER_RECALL_EMAIL',
+          displayed: false,
+          displayedOn: 'manager_recall',
+          displayedOnValue: 1,
+          options: [],
+          reload: 0
+        },
+        {
+          param: 'users_recall',
+          type: 'toggle',
+          value: 1,
+          label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_USERS_RECALL',
+          displayed: true,
+          hideLabel: true,
+          optional: true,
+        },
+        {
+          param: 'users_recall_frequency',
+          type: 'text',
+          value: 1,
+          default: 7,
+          label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_FREQUENCY',
+          displayed: false,
+          displayedOn: 'users_recall',
+          displayedOnValue: 1,
+          endText: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_FREQUENCY_END_TEXT',
+        },
+        {
+          param: 'users_recall_email',
+          type: 'select',
+          value: 0,
+          default: 0,
+          label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_MANAGER_RECALL_EMAIL',
+          displayed: false,
+          displayedOn: 'users_recall',
+          displayedOnValue: 1,
+          options: [],
+          reload: 0
+        },
       ]
     }
   },
@@ -166,9 +166,6 @@ export default {
           field.value = this.event['notifications'][field.param];
         }
       }
-
-      console.log(this.fields);
-
       this.loading = false;
     });
   },
@@ -196,7 +193,9 @@ export default {
             }
 
             this.fields.find(field => field.param === 'applicant_notify_email').options = options;
-            // this.fields.find(field => field.param === 'applicant_recall_email').options = options;
+            this.fields.find(field => field.param === 'applicant_recall_email').options = options;
+            this.fields.find(field => field.param === 'manager_recall_email').options = options;
+            this.fields.find(field => field.param === 'users_recall_email').options = options;
 
             resolve({status: true, options: options});
           } else {
@@ -241,7 +240,6 @@ export default {
             // Return true to indicate validation failed
             return true;
           }
-
           notifications[field.param] = field.value;
 
           return false;
@@ -311,6 +309,15 @@ export default {
             :multiselect-options="field.multiselectOptions ? field.multiselectOptions : null"
             @valueUpdated="checkConditional"
         />
+        <Info
+            v-if="!event.manager && field.param === 'manager_recall' && field.value === '1'"
+            :key="field.value"
+            :text="translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_INFO_BEFORE_NOTIFICATIONS_MANAGER_RECALL')"
+            :icon="'warning'"
+            :bg-color="'tw-bg-orange-100'"
+            :icon-type="'material-icons'"
+            :icon-color="'tw-text-orange-600'"
+            :class="'tw-mt-4'" />
       </div>
     </div>
 

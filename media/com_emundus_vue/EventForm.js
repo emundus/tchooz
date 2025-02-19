@@ -1,11 +1,11 @@
-import { _ as _export_sfc, M as Modal, r as resolveComponent, o as openBlock, f as createBlock, w as withCtx, g as createVNode, d as normalizeClass, s as settingsService, u as useGlobalStore, c as createElementBlock, e as createCommentVNode, a as createBaseVNode, F as Fragment, b as renderList, h as withDirectives, v as vShow, t as toDisplayString, S as Swal$1, P as Popover, i as withModifiers, j as shallowRef, k as emailService, T as Tabs } from "./app_emundus.js";
-import { P as Parameter } from "./Parameter.js";
+import { _ as _export_sfc, M as Modal, r as resolveComponent, b as createBlock, o as openBlock, w as withCtx, g as createVNode, f as normalizeClass, s as settingsService, u as useGlobalStore, c as createElementBlock, a as createCommentVNode, d as createBaseVNode, F as Fragment, e as renderList, h as withDirectives, v as vShow, t as toDisplayString, S as Swal$1, P as Popover, i as withModifiers, j as shallowRef, k as emailService, T as Tabs } from "./app_emundus.js";
+import { P as Parameter, d as dayjs } from "./Parameter.js";
 import LocationForm from "./LocationForm.js";
 import { C as ColorPicker } from "./ColorPicker.js";
 import { I as Info } from "./Info.js";
 import { e as eventsService } from "./events.js";
 import { D as DatePicker } from "./index.js";
-import { c as createEventsServicePlugin, a as createCalendarControlsPlugin, E as EventDay, J as Ji, b as createCalendar, v as viewWeek, d as createViewDay, e as createViewWeek } from "./core.js";
+import { a as ai, E as EventDay, c as createEventsServicePlugin, b as createCalendar, d as createCalendarControlsPlugin, e as createViewDay, f as createViewWeek, v as viewWeek } from "./core.js";
 const _sfc_main$6 = {
   name: "LocationPopup",
   components: { LocationForm, Modal },
@@ -641,53 +641,52 @@ const _sfc_main$4 = {
           helptext: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_AVAILABLE_TO_SHOW_HELP",
           displayed: true,
           optional: true
-        }
-        /*{
-          param: 'slot_can_book_until',
-          type: 'text',
-          placeholder: '',
-          value: '',
-          concatValue: '',
-          label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_BOOK_UNTIL',
-          displayed: true,
-          optional: true,
-          splitField: true,
-          secondParameterType: 'select',
-          secondParameterDefault: 'days',
-          secondParameterOptions: [
-            {value: 'days', label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_BOOK_UNTIL_DAYS'},
-            {value: 'date', label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_BOOK_UNTIL_DATE'},
-          ],
-          splitChar: ' ',
         },
         {
-          param: 'slot_can_cancel',
-          type: 'toggle',
+          param: "slot_can_book_until",
+          type: "text",
+          placeholder: "",
+          value: "",
+          concatValue: "",
+          label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_BOOK_UNTIL",
+          displayed: true,
+          splitField: true,
+          secondParameterType: "select",
+          secondParameterDefault: "days",
+          secondParameterOptions: [
+            { value: "days", label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_BOOK_UNTIL_DAYS" },
+            { value: "date", label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_BOOK_UNTIL_DATE" }
+          ],
+          splitChar: " "
+        },
+        {
+          param: "slot_can_cancel",
+          type: "toggle",
           value: 0,
-          label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_CANCEL',
+          label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_CANCEL",
           hideLabel: true,
           displayed: true,
-          optional: true,
+          optional: true
         },
         {
-          param: 'slot_can_cancel_until',
-          type: 'text',
-          placeholder: '',
-          value: '',
-          concatValue: '',
-          label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_CANCEL_UNTIL',
+          param: "slot_can_cancel_until",
+          type: "text",
+          placeholder: "",
+          value: "",
+          concatValue: "",
+          label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_CANCEL_UNTIL",
           displayed: false,
-          displayedOn: 'slot_can_cancel',
+          displayedOn: "slot_can_cancel",
           displayedOnValue: 1,
           splitField: true,
-          secondParameterType: 'select',
-          secondParameterDefault: 'days',
+          secondParameterType: "select",
+          secondParameterDefault: "days",
           secondParameterOptions: [
-            {value: 'days', label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_CANCEL_UNTIL_DAYS'},
-            {value: 'date', label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_BOOK_UNTIL_DATE'},
+            { value: "days", label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_CANCEL_UNTIL_DAYS" },
+            { value: "date", label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_BOOK_UNTIL_DATE" }
           ],
-          splitChar: ' ',
-        },*/
+          splitChar: " "
+        }
       ]
     };
   },
@@ -711,7 +710,13 @@ const _sfc_main$4 = {
       }
     }
     for (let field of this.more_fields) {
-      if (this.event[field.param]) {
+      if (field.param == "slot_can_book_until") {
+        field.value = this.event["slot_can_book_until_days"] ? this.event["slot_can_book_until_days"] + field.splitChar + "days" : dayjs(this.event["slot_can_book_until_date"]).format("YYYY-MM-DD") + field.splitChar + "date";
+        field.concatValue = this.event["slot_can_book_until_days"] ? "days" : "date";
+      } else if (field.param == "slot_can_cancel_until") {
+        field.value = this.event["slot_can_cancel_until_days"] ? this.event["slot_can_cancel_until_days"] + field.splitChar + "days" : dayjs(this.event["slot_can_cancel_until_date"]).format("YYYY-MM-DD") + field.splitChar + "date";
+        field.concatValue = this.event["slot_can_cancel_until_days"] ? "days" : "date";
+      } else {
         field.value = this.event[field.param];
       }
     }
@@ -749,6 +754,8 @@ const _sfc_main$4 = {
             } else {
               slot[field.param] = field.value.value;
             }
+          } else if ((field.param === "slot_can_book_until" || field.param === "slot_can_cancel_until") && field.concatValue.split(" ").slice(-1)[0] === "date") {
+            slot[field.param] = dayjs(field.value).format("YYYY-MM-DD") + field.splitChar + "date";
           } else {
             if (field.concatValue) {
               slot[field.param] = field.concatValue;
@@ -792,6 +799,10 @@ const _sfc_main$4 = {
       if (oldValue !== null && oldValue !== value && !this.formChanged) {
         this.formChanged = true;
       }
+    },
+    handleMoreFieldsValueUpdated(parameter, oldValue, value) {
+      this.checkConditional(parameter, oldValue, value);
+      this.onFormChange(parameter, oldValue, value);
     },
     handleBeforeUnload() {
       var links = [];
@@ -923,11 +934,8 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
               "parameter-object": field,
               "help-text-type": "above",
               "multiselect-options": field.multiselectOptions ? field.multiselectOptions : null,
-              onValueUpdated: _cache[0] || (_cache[0] = ($event) => {
-                $options.checkConditional;
-                $options.onFormChange;
-              })
-            }, null, 8, ["parameter-object", "multiselect-options"])) : createCommentVNode("", true)
+              onValueUpdated: $options.handleMoreFieldsValueUpdated
+            }, null, 8, ["parameter-object", "multiselect-options", "onValueUpdated"])) : createCommentVNode("", true)
           ])), [
             [vShow, field.displayed]
           ]);
@@ -938,7 +946,7 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
           type: "button",
           class: "tw-btn-primary tw-cursor-pointer",
           disabled: $options.disabledSubmit,
-          onClick: _cache[1] || (_cache[1] = (...args) => $options.setupSlots && $options.setupSlots(...args))
+          onClick: _cache[0] || (_cache[0] = (...args) => $options.setupSlots && $options.setupSlots(...args))
         }, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CREATE")), 9, _hoisted_5$2)
       ])
     ])) : createCommentVNode("", true)
@@ -1574,7 +1582,7 @@ const createCalendarConfig = (vm) => ({
 });
 const _sfc_main$2 = {
   name: "EventCalendarSettings",
-  components: { EventDay, CalendarSlotPopup, ScheduleXCalendar: Ji },
+  components: { EventDay, CalendarSlotPopup, ScheduleXCalendar: ai },
   props: {
     event: Object
   },
@@ -1765,104 +1773,104 @@ const _sfc_main$1 = {
           displayedOn: "applicant_notify",
           displayedOnValue: 1,
           optional: false
+        },
+        {
+          param: "applicant_recall",
+          type: "toggle",
+          value: 1,
+          label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL",
+          displayed: true,
+          hideLabel: true,
+          optional: true
+        },
+        {
+          param: "applicant_recall_frequency",
+          type: "text",
+          value: 1,
+          default: 7,
+          label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_FREQUENCY",
+          displayed: false,
+          displayedOn: "applicant_recall",
+          displayedOnValue: 1,
+          endText: "COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_FREQUENCY_END_TEXT",
+          optional: true
+        },
+        {
+          param: "applicant_recall_email",
+          type: "select",
+          value: 0,
+          default: 0,
+          label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_EMAIL",
+          displayed: false,
+          displayedOn: "applicant_recall",
+          displayedOnValue: 1,
+          options: [],
+          reload: 0
+        },
+        {
+          param: "manager_recall",
+          type: "toggle",
+          value: 1,
+          label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_MANAGER_RECALL",
+          displayed: true,
+          hideLabel: true,
+          optional: true
+        },
+        {
+          param: "manager_recall_frequency",
+          type: "text",
+          value: 1,
+          default: 7,
+          label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_FREQUENCY",
+          displayed: false,
+          displayedOn: "manager_recall",
+          displayedOnValue: 1,
+          endText: "COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_MANAGER_RECALL_FREQUENCY_END_TEXT"
+        },
+        {
+          param: "manager_recall_email",
+          type: "select",
+          value: 0,
+          default: 0,
+          label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_MANAGER_RECALL_EMAIL",
+          displayed: false,
+          displayedOn: "manager_recall",
+          displayedOnValue: 1,
+          options: [],
+          reload: 0
+        },
+        {
+          param: "users_recall",
+          type: "toggle",
+          value: 1,
+          label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_USERS_RECALL",
+          displayed: true,
+          hideLabel: true,
+          optional: true
+        },
+        {
+          param: "users_recall_frequency",
+          type: "text",
+          value: 1,
+          default: 7,
+          label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_FREQUENCY",
+          displayed: false,
+          displayedOn: "users_recall",
+          displayedOnValue: 1,
+          endText: "COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_FREQUENCY_END_TEXT"
+        },
+        {
+          param: "users_recall_email",
+          type: "select",
+          value: 0,
+          default: 0,
+          label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_MANAGER_RECALL_EMAIL",
+          displayed: false,
+          displayedOn: "users_recall",
+          displayedOnValue: 1,
+          options: [],
+          reload: 0
         }
-        // {
-        //   param: 'applicant_recall',
-        //   type: 'toggle',
-        //   value: 1,
-        //   label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL',
-        //   displayed: true,
-        //   hideLabel: true,
-        //   optional: true,
-        // },
-        // {
-        //   param: 'applicant_recall_frequency',
-        //   type: 'text',
-        //   value: 1,
-        //   default: 7,
-        //   label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_FREQUENCY',
-        //   displayed: false,
-        //   displayedOn: 'applicant_recall',
-        //   displayedOnValue: 1,
-        //   endText: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_FREQUENCY_END_TEXT',
-        //   optional: true,
-        // },
-        // {
-        //   param: 'applicant_recall_email',
-        //   type: 'select',
-        //   value: 0,
-        //   default: 0,
-        //   label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_EMAIL',
-        //   displayed: false,
-        //   displayedOn: 'applicant_recall',
-        //   displayedOnValue: 1,
-        //   options: [],
-        //   reload: 0
-        // },
-        // {
-        //   param: 'manager_recall',
-        //   type: 'toggle',
-        //   value: 1,
-        //   label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_MANAGER_RECALL',
-        //   displayed: true,
-        //   hideLabel: true,
-        //   optional: true,
-        // },
-        // {
-        //   param: 'manager_recall_frequency',
-        //   type: 'text',
-        //   value: 1,
-        //   default: 7,
-        //   label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_FREQUENCY',
-        //   displayed: false,
-        //   displayedOn: 'manager_recall',
-        //   displayedOnValue: 1,
-        //   endText: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_MANAGER_RECALL_FREQUENCY_END_TEXT'
-        // },
-        // {
-        //   param: 'manager_recall_email',
-        //   type: 'select',
-        //   value: 0,
-        //   default: 0,
-        //   label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_MANAGER_RECALL_EMAIL',
-        //   displayed: false,
-        //   displayedOn: 'manager_recall',
-        //   displayedOnValue: 1,
-        //   options: [],
-        //   reload: 0
-        // },
-        // {
-        //   param: 'users_recall',
-        //   type: 'toggle',
-        //   value: 1,
-        //   label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_USERS_RECALL',
-        //   displayed: true,
-        //   hideLabel: true,
-        //   optional: true,
-        // },
-        // {
-        //   param: 'users_recall_frequency',
-        //   type: 'text',
-        //   value: 1,
-        //   default: 7,
-        //   label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_FREQUENCY',
-        //   displayed: false,
-        //   displayedOn: 'users_recall',
-        //   displayedOnValue: 1,
-        //   endText: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_FREQUENCY_END_TEXT',
-        // },
-        // {
-        //   param: 'users_recall_email',
-        //   type: 'select',
-        //   value: 0,
-        //   default: 0,
-        //   label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_MANAGER_RECALL_EMAIL',
-        //   displayed: false,
-        //   displayedOn: 'users_recall',
-        //   displayedOnValue: 1,
-        //   options: [],
-        //   reload: 0
-        // },
       ]
     };
   },
@@ -1873,7 +1881,6 @@ const _sfc_main$1 = {
           field.value = this.event["notifications"][field.param];
         }
       }
-      console.log(this.fields);
       this.loading = false;
     });
   },
@@ -1898,6 +1905,9 @@ const _sfc_main$1 = {
               Array.prototype.push.apply(options, emails);
             }
             this.fields.find((field) => field.param === "applicant_notify_email").options = options;
+            this.fields.find((field) => field.param === "applicant_recall_email").options = options;
+            this.fields.find((field) => field.param === "manager_recall_email").options = options;
+            this.fields.find((field) => field.param === "users_recall_email").options = options;
             resolve({ status: true, options });
           } else {
             reject({ status: false });
@@ -1990,6 +2000,7 @@ const _hoisted_4$1 = {
 };
 function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_Parameter = resolveComponent("Parameter");
+  const _component_Info = resolveComponent("Info");
   return openBlock(), createElementBlock("div", null, [
     !$data.loading ? (openBlock(), createElementBlock("div", _hoisted_1$1, [
       (openBlock(true), createElementBlock(Fragment, null, renderList($data.fields, (field) => {
@@ -2004,7 +2015,16 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
             "help-text-type": "above",
             "multiselect-options": field.multiselectOptions ? field.multiselectOptions : null,
             onValueUpdated: $options.checkConditional
-          }, null, 8, ["parameter-object", "multiselect-options", "onValueUpdated"])) : createCommentVNode("", true)
+          }, null, 8, ["parameter-object", "multiselect-options", "onValueUpdated"])) : createCommentVNode("", true),
+          !$props.event.manager && field.param === "manager_recall" && field.value === "1" ? (openBlock(), createBlock(_component_Info, {
+            key: field.value,
+            text: _ctx.translate("COM_EMUNDUS_ONBOARD_ADD_EVENT_INFO_BEFORE_NOTIFICATIONS_MANAGER_RECALL"),
+            icon: "warning",
+            "bg-color": "tw-bg-orange-100",
+            "icon-type": "material-icons",
+            "icon-color": "tw-text-orange-600",
+            class: normalizeClass("tw-mt-4")
+          }, null, 8, ["text"])) : createCommentVNode("", true)
         ])), [
           [vShow, field.displayed]
         ]);

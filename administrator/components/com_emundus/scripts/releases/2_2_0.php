@@ -1327,7 +1327,7 @@ class Release2_2_0Installer extends ReleaseInstaller
 				$email->message = str_replace('[NAME]', '[APPLICANT_NAME]', $email->message);
 				$this->db->updateObject('#__emundus_setup_emails', $email, 'id');
 			}
-			
+
 			EmundusHelperUpdate::enableEmundusPlugins('emundusrecall','fabrik_cron');
 
 			$query->clear()

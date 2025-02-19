@@ -805,9 +805,10 @@ class EmundusControllerEvents extends BaseController
 		}
 		else
 		{
-			$start    = $this->input->getString('start', '');
-			$end      = $this->input->getString('end', '');
-			$location = $this->input->getInt('location', 0);
+			$start                       = $this->input->getString('start', '');
+			$end                         = $this->input->getString('end', '');
+			$location                    = $this->input->getInt('location', 0);
+			$check_booking_limit_reached = $this->input->getInt('check_booking_limit_reached', 0);
 
 			$program_code = '';
 			$cid          = 0;
@@ -818,7 +819,7 @@ class EmundusControllerEvents extends BaseController
 				$cid          = $user->campaign_id;
 			}
 
-			$event_availabilities = $this->m_events->getAvailabilitiesByCampaignsAndPrograms($cid, $program_code, $start, $end, $location);
+			$event_availabilities = $this->m_events->getAvailabilitiesByCampaignsAndPrograms($cid, $program_code, $start, $end, $location, $check_booking_limit_reached);
 			$response['data']     = $event_availabilities;
 
 			$response['status']  = true;
@@ -895,11 +896,71 @@ class EmundusControllerEvents extends BaseController
 
 			$events = array_merge($campaigns_events, $programs_events);
 
-			$my_bookings      = $this->m_events->getMyBookings($events, $this->user->id);
+			$my_bookings      = $this->m_events->getMyBookingsInformations($this->user->id, $events);
 			$response['data'] = $my_bookings;
 
 			$response['status']  = true;
 			$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
+		}
+
+		echo json_encode($response);
+		exit();
+	}
+
+	public function getapplicantbookings()
+	{
+		$response = [
+			'status'  => false,
+			'message' => Text::_('COM_EMUNDUS_ONBOARD_ACCESS_DENIED'),
+			'data'    => []
+		];
+
+		if ($this->user->guest)
+		{
+			header('HTTP/1.1 403 Forbidden');
+		}
+		else
+		{
+			$applicant_bookings      = $this->m_events->getMyBookingsInformations($this->user->id);
+			$response['data'] = $applicant_bookings;
+
+			$response['status']  = true;
+			$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
+		}
+
+		echo json_encode($response);
+		exit();
+	}
+
+	public function deletebooking()
+	{
+		$response = [
+			'status'  => false,
+			'message' => Text::_('COM_EMUNDUS_ONBOARD_ACCESS_DENIED'),
+			'data'    => []
+		];
+
+		$booking_id = $this->input->getInt('booking_id', 0);
+
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id) && !EmundusHelperAccess::isBookingMine($this->user->id, $booking_id))
+		{
+			header('HTTP/1.1 403 Forbidden');
+		}
+		else
+		{
+			if (!empty($booking_id))
+			{
+				$response['status'] = $this->m_events->deleteBooking($booking_id);
+
+				if ($response['status'])
+				{
+					$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
+				}
+				else
+				{
+					$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_ERROR');
+				}
+			}
 		}
 
 		echo json_encode($response);

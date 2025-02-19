@@ -814,6 +814,16 @@ class Dataset
 		return $this->db->execute();
 	}
 
+	public function deleteSampleNotification($id)
+	{
+		$query = $this->db->getQuery(true);
+
+		$query->delete('jos_emundus_setup_events_notifications')
+			->where('event = ' . $id);
+		$this->db->setQuery($query);
+		return $this->db->execute();
+	}
+
 	public function createEvent($location_id,$user_id,$start = '2026-01-01 00:00:00', $end = '2026-01-01 06:00:00', $name = 'Event test',$available_for = 1,$campaigns = [],$programs = [])
 	{
 		$m_events = new \EmundusModelEvents();
@@ -840,9 +850,9 @@ class Dataset
 			'slot_break_every' => 0,
 			'slot_break_time' => '0 minutes',
 			'slots_availables_to_show' => 0,
-			'slot_can_book_until' => null,
-			'slot_can_cancel' => 0,
-			'slot_can_cancel_until' => null,
+			'slot_can_book_until' => '3 days',
+			'slot_can_cancel' => 1,
+			'slot_can_cancel_until' => '2028-01-01 date',
 			'user_id' => $user_id,
 		];
 		$m_events->setupSlot($setup_slot['event_id'], $setup_slot['slot_duration'], $setup_slot['slot_break_every'], $setup_slot['slot_break_time'], $setup_slot['slots_availables_to_show'], $setup_slot['slot_can_book_until'], $setup_slot['slot_can_cancel'], $setup_slot['slot_can_cancel_until'], $setup_slot['user_id']);
@@ -862,6 +872,21 @@ class Dataset
 			];
 			$event_slots = $m_events->saveEventSlot($event_slot['start_date'], $event_slot['end_date'], $event_slot['room'], $event_slot['slot_capacity'], $event_slot['more_infos'], $event_slot['users'], $event_slot['event_id'], $event_slot['repeat_dates'], 0, 0, 1, [], $user_id);
 		}
+		$booking_notifications = [
+			'applicant_notify' => 1 ,
+		    'applicant_notify_email' => 1,
+		    'applicant_recall' => 1,
+		    'applicant_recall_frequency' => 1,
+		    'applicant_recall_email' => 1,
+		    'manager_recall' => 1,
+		    'manager_recall_frequency' => 1,
+		    'manager_recall_email' => 1,
+		    'users_recall' => 1,
+		    'users_recall_frequency' => 1,
+		    'users_recall_email' => 1,
+		];
+
+		$m_events->saveBookingNotifications($event_id, $booking_notifications, $user_id);
 
 		return ['event_id' => $event_id, 'event_slots' => $event_slots];
 	}
