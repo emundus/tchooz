@@ -931,23 +931,23 @@ body ::-webkit-scrollbar-track {
   color: var(--neutral-500) !important;
 }
 
-table[data-v-95fa364b] {
+table[data-v-5aeb5796] {
   border: unset;
 }
-table thead th[data-v-95fa364b] {
+table thead th[data-v-5aeb5796] {
   background: transparent;
   padding: 18px 12px;
 }
-table thead tr[data-v-95fa364b] {
+table thead tr[data-v-5aeb5796] {
   border-bottom: solid 1px var(--neutral-400);
 }
-table tbody tr[data-v-95fa364b]:not(:last-child) {
+table tbody tr[data-v-5aeb5796]:not(:last-child) {
   border-bottom: solid 1px var(--neutral-400);
 }
-table tbody tr td[data-v-95fa364b] {
+table tbody tr td[data-v-5aeb5796] {
   padding: 18px 12px;
 }
-.placement-center[data-v-95fa364b] {
+.placement-center[data-v-5aeb5796] {
   position: fixed;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -3954,18 +3954,18 @@ hr.system-pagebreak { border: #808080FF dashed 1px; color: #808080FF; }
     border: 0;
   }
 
-#add-program[data-v-09c3d3f2] {
+#add-program[data-v-55e213f7] {
   height: 24px;
   width: 24px;
   padding: unset;
   transition: transform 0.1s ease-in-out;
 }
-.em-color-round[data-v-09c3d3f2] {
+.em-color-round[data-v-55e213f7] {
   height: 30px;
   width: 30px;
   border-radius: 50%;
 }
-.modal-date-picker[data-v-09c3d3f2] {
+.modal-date-picker[data-v-55e213f7] {
   transform: translate(-50%, -50%);
   box-shadow: 0 0 9999px 9999px rgb(0 0 0 / 50%);
 }
@@ -5727,7 +5727,7 @@ hr {
   color: var(--em-profile-color);
 }
 
-.em-style-options[data-v-69ed52ef] {
+.em-style-options[data-v-26bb8eb2] {
   display: flex;
   flex-direction: column;
   justify-content: space-between;

@@ -182,7 +182,7 @@ export default {
               this.options.push(new_option);
 
               ctr++;
-              if (ctr === Object.entries(val.params.sub_options).length) {
+              if (ctr === val.params.sub_options.sub_values.length) {
                 if (this.conditionData.values) {
                   this.conditionData.values = this.options.find(option => option.primary_key == this.conditionData.values);
                 }

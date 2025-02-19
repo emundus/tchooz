@@ -1,4 +1,4 @@
-import { _ as _export_sfc, o as openBlock, c as createElementBlock, a as createBaseVNode, F as Fragment, b as renderList, t as toDisplayString, P as Popover, u as useGlobalStore, s as settingsService, a8 as ref, S as Swal, r as resolveComponent, f as createBlock, e as createCommentVNode, g as createVNode, d as normalizeClass, h as withDirectives, B as vModelSelect, R as vModelText, w as withCtx } from "./app_emundus.js";
+import { _ as _export_sfc, o as openBlock, c as createElementBlock, a as createBaseVNode, F as Fragment, b as renderList, t as toDisplayString, P as Popover, u as useGlobalStore, s as settingsService, a9 as ref, S as Swal, r as resolveComponent, f as createBlock, e as createCommentVNode, g as createVNode, d as normalizeClass, h as withDirectives, B as vModelSelect, R as vModelText, w as withCtx } from "./app_emundus.js";
 import { S as Skeleton } from "./Skeleton.js";
 import Calendar from "./Calendar.js";
 import "./core.js";
@@ -589,6 +589,8 @@ const _sfc_main = {
         translation += "<span>" + this.translate("COM_EMUNDUS_ONBOARD_NOFORM") + "</span>";
       } else if (this.type === "events") {
         translation += "<span>" + this.translate("COM_EMUNDUS_ONBOARD_NOEVENTS") + "</span>";
+      } else if (this.type === "workflow") {
+        translation += "<span>" + this.translate("COM_EMUNDUS_ONBOARD_NOWORKFLOW") + "</span>";
       }
       return translation;
     },

@@ -19,7 +19,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryInterface;
-
+use Joomla\CMS\User\UserHelper;
 
 /**
  * Emundus Component Users Controller
@@ -113,21 +113,21 @@ class EmundusControllerUsers extends BaseController
 			exit;
 		}
 
-		$firstname = $this->input->getString('firstname');
-		$lastname  = $this->input->getString('lastname');
-		$username  = $this->input->getString('login');
-		$name      = ucfirst($firstname) . ' ' . strtoupper($lastname);
-		$email     = $this->input->getString('email');
-		$profile   = $this->input->getInt('profile', 0);
-		$oprofiles = $this->input->getString('oprofiles');
-		$jgr       = $this->input->getString('jgr');
-		$univ_id   = $this->input->getInt('university_id', 0);
-		$groups    = $this->input->getString('groups');
-		$campaigns = $this->input->getString('campaigns');
-		$news      = $this->input->getInt('newsletter', 0);
-		$ldap      = $this->input->getInt('ldap', 0);
-		$auth_provider      = $this->input->getInt('auth_provider', 0);
-		$testing_account      = $this->input->getInt('testing_account', 0);
+		$firstname       = $this->input->getString('firstname');
+		$lastname        = $this->input->getString('lastname');
+		$username        = $this->input->getString('login');
+		$name            = ucfirst($firstname) . ' ' . strtoupper($lastname);
+		$email           = $this->input->getString('email');
+		$profile         = $this->input->getInt('profile', 0);
+		$oprofiles       = $this->input->getString('oprofiles');
+		$jgr             = $this->input->getString('jgr');
+		$univ_id         = $this->input->getInt('university_id', 0);
+		$groups          = $this->input->getString('groups');
+		$campaigns       = $this->input->getString('campaigns');
+		$news            = $this->input->getInt('newsletter', 0);
+		$ldap            = $this->input->getInt('ldap', 0);
+		$auth_provider   = $this->input->getInt('auth_provider', 0);
+		$testing_account = $this->input->getInt('testing_account', 0);
 
 		$user = clone(Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(0));
 
@@ -155,7 +155,7 @@ class EmundusControllerUsers extends BaseController
 			include_once(JPATH_SITE . '/components/com_emundus/helpers/users.php');
 			$h_users        = new EmundusHelperUsers;
 			$password       = $h_users->generateStrongPassword();
-			$user->password = md5($password);
+			$user->password = UserHelper::hashPassword($password);
 		}
 
 		$now                 = EmundusHelperDate::getNow();
@@ -163,7 +163,7 @@ class EmundusControllerUsers extends BaseController
 		$user->lastvisitDate = null;
 		$user->groups        = array($jgr);
 		$user->block         = 0;
-		$user->authProvider = $auth_provider == 1 ? 'sso' : '';
+		$user->authProvider  = $auth_provider == 1 ? 'sso' : '';
 
 		$other_param['firstname']    = $firstname;
 		$other_param['lastname']     = $lastname;
@@ -199,8 +199,9 @@ class EmundusControllerUsers extends BaseController
 
 		$data          = array();
 		$data['email'] = $user->email;
-		$email_tmpl = 'new_account';
-		if($auth_provider == 1) {
+		$email_tmpl    = 'new_account';
+		if ($auth_provider == 1)
+		{
 			$email_tmpl = 'new_account_sso';
 		}
 		$m_users->passwordReset($data, '', '', true, $email_tmpl);
@@ -742,7 +743,7 @@ class EmundusControllerUsers extends BaseController
 		$newuser['email']            = $this->input->getString('email');
 		$newuser['same_login_email'] = $this->input->getInt('sameLoginEmail', 1);
 		$newuser['testing_account']  = $this->input->getInt('testingAccount', 0);
-		$newuser['authProvider']  = $this->input->getInt('authProvider', 0);
+		$newuser['authProvider']     = $this->input->getInt('authProvider', 0);
 		$newuser['profile']          = $this->input->getInt('profile', 0);
 		$newuser['em_oprofiles']     = $this->input->getString('oprofiles');
 		$newuser['groups']           = array($this->input->get('jgr'));
@@ -1547,21 +1548,26 @@ class EmundusControllerUsers extends BaseController
 
 	public function removejoomlagroups()
 	{
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
 			$params = $this->input->getArray();
-			$users = json_decode($params['users'], true);
+			$users  = json_decode($params['users'], true);
 			$groups = explode(',', $params['groups']);
 
 			if (!empty($users) && !empty($groups))
 			{
-				$m_users  = $this->getModel('Users');
+				$m_users = $this->getModel('Users');
 				$removed = $m_users->removeJoomlaGroups($users, $groups);
-			} else {
+			}
+			else
+			{
 				$removed = false;
 			}
 
 			$tab = array('status' => $removed, 'msg' => Text::_("GROUPS_REMOVED"));
-		} else {
+		}
+		else
+		{
 			$tab = array('status' => false, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 
@@ -1702,9 +1708,6 @@ class EmundusControllerUsers extends BaseController
 		// Fill keys
 		$csv_file = fopen($path, 'w');
 
-		$seen_keys[] = 'COM_EMUNDUS_USERNAME';
-		$headers[]   = Text::_('COM_EMUNDUS_USERNAME');
-
 		foreach ($user_details as $user_detail)
 		{
 			foreach ($user_detail as $key => $value)
@@ -1727,21 +1730,14 @@ class EmundusControllerUsers extends BaseController
 			{
 				if (in_array($key, $seen_keys))
 				{
-					if ($key === 'COM_EMUNDUS_USERNAME')
+
+					if ($key === 'COM_EMUNDUS_FIRSTNAME' || $key === 'COM_EMUNDUS_LASTNAME')
 					{
-						// We force to put Username as the first column
-						array_unshift($userData, $value);
+						$userData[] = $value;
 					}
 					else
 					{
-						if ($key === 'COM_EMUNDUS_FIRSTNAME' || $key === 'COM_EMUNDUS_LASTNAME')
-						{
-							$userData[] = $value;
-						}
-						else
-						{
-							$userData[] = Text::_($value);
-						}
+						$userData[] = Text::_($value);
 					}
 				}
 			}

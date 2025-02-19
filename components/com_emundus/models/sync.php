@@ -616,8 +616,8 @@ class EmundusModelSync extends JModelList
 		{
 			try
 			{
-				$db    = Factory::getDbo();
-				$query = $db->getQuery(true);
+				$db    = Factory::getContainer()->get('DatabaseDriver');
+				$query = $db->createQuery();
 
 				$query->select('*')
 					->from($db->quoteName('#__emundus_setup_sync'));
@@ -647,15 +647,14 @@ class EmundusModelSync extends JModelList
 
 		if (!empty($api->config))
 		{
-			$db    = Factory::getContainer()->get('DatabaseDriver');
-			$query = $db->getQuery(true);
-
 			$config = json_decode($api->config, true);
+			$allowed_types = ['ammon', 'microsoft_dynamics', 'teams'];
+
 			if (
 				(!empty($config['routes']) && in_array($route, array_keys($config['routes'])))
 				|| empty($route)
-				|| $api->type == 'microsoft_dynamics'
-				|| $api->type == 'teams')
+				|| in_array($api->type, $allowed_types)
+			)
 			{
 				$api_class = new Api();
 				$api_class->setBaseUrl($config['base_url']);
@@ -677,6 +676,11 @@ class EmundusModelSync extends JModelList
 						{
 							$api_class->addHeader('Authorization', 'Bearer ' . $token);
 						}
+
+						if ($config['authentication']['type'] == 'token' && !empty($token))
+						{
+							$api_class->addHeader('Authorization', 'token '. $token);
+						}
 					}
 
 					if ($config['authentication']['headers'] && !empty($token))
@@ -696,18 +700,22 @@ class EmundusModelSync extends JModelList
 				if(!empty($route) && $api->type !== 'microsoft_dynamics' && $api->type !== 'teams')
 				{
 					$route_config = $config['routes'][$route];
-					$method       = strtolower($route_config['type']);
+					$method       = !empty($route_config) ? strtolower($route_config['type']) : $method;
 				}
 
 				if ($method == 'post')
 				{
 					if($api->type !== 'microsoft_dynamics' && $api->type !== 'teams')
 					{
-						foreach ($data as $key => $value)
-						{
-							if (!in_array($key, array_keys($route_config['params'])))
+						if ($route_config['body_type'] === 'raw') {
+							// do nothing
+						} else {
+							foreach ($data as $key => $value)
 							{
-								unset($data[$key]);
+								if (!in_array($key, array_keys($route_config['params'])))
+								{
+									unset($data[$key]);
+								}
 							}
 						}
 					}
@@ -718,14 +726,18 @@ class EmundusModelSync extends JModelList
 					}
 				}
 
-				$result = $api_class->$method($api_url . '/' . $route, $data);
+				if (!empty($route_config) && !empty($route_config['headers'])) {
+					$result = $api_class->$method($api_url . '/' . $route, $data, $route_config['headers']);
+				} else {
+					$result = $api_class->$method($api_url . '/' . $route, $data);
+				}
 			}
 		}
 
 		return $result;
 	}
 
-	public function authenticateApi($api,$api_class,$api_url,$test = false)
+	public function authenticateApi($api, $api_class, $api_url, $test = false)
 	{
 		$token = '';
 		$db = Factory::getContainer()->get('DatabaseDriver');
@@ -742,7 +754,7 @@ class EmundusModelSync extends JModelList
 				}
 				break;
 			case 'session':
-				$session = Factory::getSession();
+				$session = Factory::getApplication()->getSession();
 				$token   = EmundusHelperFabrik::decryptDatas($session->get('sync_api_token_' . $api->id));
 				break;
 		}
@@ -765,10 +777,17 @@ class EmundusModelSync extends JModelList
 						$body['grant_type'] = $config['authentication']['grant_type'];
 					}
 					//
-					
+
 					if (!empty($config['authentication']['login']))
 					{
-						$body['login'] = $config['authentication']['login'];
+						if (isset($config['authentication']['login_attribute']))
+						{
+							$body[$config['authentication']['login_attribute']] = $config['authentication']['login'];
+						}
+						else
+						{
+							$body['login'] = $config['authentication']['login'];
+						}
 					}
 					if (!empty($config['authentication']['password']))
 					{
@@ -800,7 +819,7 @@ class EmundusModelSync extends JModelList
 				}
 
 				$auth_route = $api_url . '/' . $config['authentication']['route'];
-				if (strpos($config['authentication']['route'], 'https') !== false)
+				if (str_contains($config['authentication']['route'], 'https'))
 				{
 					$auth_route = $config['authentication']['route'];
 				}
@@ -829,7 +848,7 @@ class EmundusModelSync extends JModelList
 			}
 			else
 			{
-				$token = $response['data']->{$config['authentication']['token_attribute']};
+				$token = $this->getValueFromPath($response['data'], $config['authentication']['token_attribute']);
 
 				if(!$test)
 				{
@@ -866,6 +885,30 @@ class EmundusModelSync extends JModelList
 		}
 		
 		return $token;
+	}
+
+	private function getValueFromPath($data, $path)
+	{
+		$value = null;
+
+		if (!empty($data) && !empty($path)) {
+			$keys = explode('.', $path);
+
+			$value = $data;
+
+			foreach ($keys as $key) {
+				if (is_object($value) && property_exists($value, $key)) {
+					$value = $value->{$key};
+				} else if (is_array($value) && array_key_exists($key, $value)) {
+					$value = $value[$key];
+				} else {
+					$value = null;
+					break;
+				}
+			}
+		}
+
+		return $value;
 	}
 
 	public function testAuthentication($app_id)

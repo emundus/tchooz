@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   joomla:
     container_name: joomla5

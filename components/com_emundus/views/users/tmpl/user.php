@@ -6,6 +6,9 @@
  * Time: 09:15
  */
 
+use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\Factory;
+
 require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
 
 $config        = JFactory::getConfig();
@@ -243,8 +246,9 @@ $timezone      = new DateTimeZone($offset);
     </div>
 
 <?php else: ?>
-    <div class="text-center">
-        <div class="no-result tw-bg-no-repeat tw-w-64 tw-h-64 tw-my-0 tw-mx-auto tw-mt-6"></div>
+    <div class="tw-text-center tw-p-4" style="padding-bottom: 16px">
+        <div class="no-result tw-bg-no-repeat tw-w-[10rem] tw-h-[10rem] tw-bg-center tw-my-0 tw-mx-auto"></div>
+        <p style="width: fit-content; margin: 0 auto;"><?php echo JText::_('COM_EMUNDUS_USERS_NO_USER_SEARCH'); ?></p>
     </div>
 <?php endif; ?>
 <script>

@@ -57,7 +57,7 @@ class PlgHikashopEmundus_update_state extends CMSPlugin
 				$hikashop_order_payment_method = !empty($config['hikashop_order_payment_method']) ? $config['hikashop_order_payment_method'] : [];
 				$file_output_status            = $config['file_output_status'];
 
-				if ($order->order_status == $hikashop_order_status && in_array($current_order_payment_method, $hikashop_order_payment_method))
+				if ($order->order_status == $hikashop_order_status && (in_array($current_order_payment_method, $hikashop_order_payment_method) || empty($hikashop_order_payment_method)))
 				{
 					$query->clear()
 						->select('status')
@@ -78,7 +78,6 @@ class PlgHikashopEmundus_update_state extends CMSPlugin
 						{
 							Log::add('Updated file ' . $fnum . ' sucessfully to state ' . $file_output_status . ' after order id ' . $order->order_id . ' order_status was updated to ' . $order->order_status, Log::INFO, 'plugin_hikashop.emundus_update_state');
 							$app->enqueueMessage(Text::_('PLG_HIKASHOP_EMUNDUS_UPDATE_STATE_SUCCESS'));
-
 							if ($config['re_open_file_after_update_status'] && empty($config['custom_redirect_url_after_update_status'])) {
 								$app->redirect('/component/emundus/?task=openfile&fnum=' . $fnum);
 							} else if (!empty($config['custom_redirect_url_after_update_status'])) {

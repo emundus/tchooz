@@ -8492,6 +8492,267 @@
     <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
+   <row>
+    <field name="id">819</field>
+    <field name="language_id">2</field>
+    <field name="reference_id">55</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">introtext</field>
+    <field name="value">&lt;p&gt;&lt;em&gt;Déclaration RGAA version 4.1 (La version en vigueur du RGAA est la &lt;/em&gt;&lt;strong&gt;&lt;em&gt;4.1&lt;/em&gt;&lt;/strong&gt;&lt;em&gt; et a été publiée le 18 février 2021)&lt;/em&gt;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;L'article 47 de la Loi N°2005-102 du 11 février 2005 établit que tous les services publics de communication en ligne de l'État, des autorités locales et des institutions publiques doivent être accessibles à tous les utilisateurs.&lt;/p&gt;&lt;p&gt;De même, toutes les organisations publiques et privées entreprenant une activité d'intérêt général sont tenues de se conformer au Référentiel Général d'Accessibilité pour les Administrations (RGAA).&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;Cette législation met en évidence l'importance de rendre les services en ligne accessibles, indépendamment des capacités des utilisateurs. Les sites web, applications, etc. doivent respecter les principes d'accessibilité, se conformer aux normes en vigueur et être compatibles avec les technologies d'assistance utilisées par les personnes en situation de handicap.&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;L'ESA, reconnait pleinement l'impact de cette loi et s’engage à remplir ses obligations en matière d'accessibilité numérique. L'ESA est déterminée à se conformer au RGAA et à offrir des services en ligne accessibles à tous les utilisateurs.&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;Dans cette déclaration d'accessibilité, L'ESA souhaite présenter ses efforts continus pour rendre ses services en ligne accessibles à tous. L'ESA met en place des mesures spécifiques pour se conformer à l'article 47 de la Loi N°2005-102 du 11 février 2005, ainsi qu'au RGAA, afin de garantir une expérience équitable pour chacun de ses utilisateurs, quelles que soient leurs capacités.&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;h2&gt;Schéma pluriannuel et plan annuel de &lt;span style=&quot;color: rgb(255, 0, 0)&quot;&gt;[NOM DE L’ENTITÉ]&lt;/span&gt;&lt;/h2&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;color: rgb(255, 0, 0)&quot;&gt;[NOM DE L’ENTITÉ]&lt;/span&gt; s’engage dans un processus d’amélioration de l’accessibilité de l’ensemble de ses sites.&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;Le schéma pluriannuel décrit les points importants sur lesquels &lt;span style=&quot;color: rgb(255, 0, 0)&quot;&gt;[NOM DE L’ENTITÉ]&lt;/span&gt; s’appuiera pour améliorer l’accessibilité numérique de l’ensemble de ses sites web et applications.&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;p&gt;&amp;nbsp;&lt;u&gt;Consulter le schéma pluriannuel d’accessibilité 2023 – 2025&lt;/u&gt; &lt;span style=&quot;color: rgb(255, 0, 0)&quot;&gt;(Les utilisateurs doivent avoir accès au schéma pluriannuel - [insérer un lien cliquable vers le schéma pluriannuel]) – Exemple de schéma pluriannuel&amp;nbsp;: &lt;/span&gt;&lt;a target=&quot;_blank&quot; rel=&quot;noopener noreferrer nofollow&quot; class=&quot;css-tgpl01&quot; href=&quot;https://www.numerique.gouv.fr/uploads/DINUM_SchemaPluriannuel_2020.pdf&quot;&gt;&lt;span style=&quot;color: rgb(255, 0, 0)&quot;&gt;https://www.numerique.gouv.fr/uploads/DINUM_SchemaPluriannuel_2020.pdf&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;Il s’accompagne d’un plan d’action annuel qui détaille les opérations programmées et mises en œuvre, ainsi que l’état de suivi de ces actions&amp;nbsp;:&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;p&gt;&amp;nbsp;&lt;u&gt;Consulter plan annuel d’accessibilité 2023&lt;/u&gt; &lt;span style=&quot;color: rgb(255, 0, 0)&quot;&gt;(Les utilisateurs doivent avoir accès au plan annuel - [insérer un lien cliquable vers le plan annuel]) – Exemple de plan annuel&amp;nbsp;: &lt;/span&gt;&lt;a target=&quot;_blank&quot; rel=&quot;noopener noreferrer nofollow&quot; class=&quot;css-tgpl01&quot; href=&quot;https://www.numerique.gouv.fr/uploads/DINUM-plan-annuel-2021.pdf&quot;&gt;&lt;span style=&quot;color: rgb(255, 0, 0)&quot;&gt;https://www.numerique.gouv.fr/uploads/DINUM-plan-annuel-2021.pdf&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;h2&gt;État de conformité&lt;/h2&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;Le site &lt;span style=&quot;color: rgb(255, 0, 0)&quot;&gt;[URL SITE] &lt;/span&gt;est &lt;span style=&quot;color: rgb(255, 0, 0)&quot;&gt;&lt;strong&gt;non/partiellement/totalement&lt;/strong&gt;&lt;/span&gt; conforme avec le référentiel général d’amélioration de l’accessibilité (RGAA), version 4.1.&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;p&gt;&lt;span style=&quot;color: rgb(255, 0, 0)&quot;&gt;[SI NON]&amp;nbsp;: &lt;em&gt;&lt;u&gt;Exemple&lt;/u&gt;&lt;/em&gt;&amp;nbsp;&lt;em&gt;: Étant donné qu'il n'existe aucun résultat d'audit permettant de mesurer l'atteinte des critères, un audit de conformité sera planifié, et des travaux d'amélioration seront entrepris à la suite d'un premier diagnostic.&lt;/em&gt;&lt;/span&gt;&lt;/p&gt;&lt;/li&gt;&lt;li&gt;&lt;p&gt;&lt;span style=&quot;color: rgb(255, 0, 0)&quot;&gt;[SI PARTIELLEMENT]&amp;nbsp;: &lt;em&gt;&lt;u&gt;Exemple&lt;/u&gt;&lt;/em&gt;&amp;nbsp;&lt;em&gt;: en raison des non-conformités et des dérogations énumérées ci-dessous.&lt;/em&gt;&lt;/span&gt;&lt;/p&gt;&lt;/li&gt;&lt;li&gt;&lt;p&gt;&lt;span style=&quot;color: rgb(255, 0, 0)&quot;&gt;[SI TOTALEMENT]&lt;strong&gt;&amp;nbsp;&lt;/strong&gt;: &lt;em&gt;&lt;u&gt;Exemple&lt;/u&gt;&lt;/em&gt;&amp;nbsp;&lt;em&gt;: Voir section «&amp;nbsp;Résultats des tests&amp;nbsp;».&lt;/em&gt;&lt;/span&gt;&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;color: rgb(255, 0, 0)&quot;&gt;&lt;strong&gt;&lt;em&gt;Quel que soit votre état de conformité par suite d’un audit ou un diagnostic, vous êtes tenu de remplir la partie suivante en fonction de votre situation.&lt;/em&gt;&lt;/strong&gt;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;h2&gt;Résultats des tests&lt;/h2&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;L’audit de conformité finalisé le &lt;span style=&quot;color: rgb(255, 0, 0)&quot;&gt;[DATE DE L’AUDIT]&lt;/span&gt; par la société &lt;span style=&quot;color: rgb(255, 0, 0)&quot;&gt;[NOM DE L’ENTITÉ QUI A RÉALISÉ L’AUDIT]&lt;/span&gt; révèle que le site est conforme à&lt;span style=&quot;color: rgb(255, 0, 0)&quot;&gt; [INDIQUER LE POURCENTAGE DE CONFORMITÉ]&lt;/span&gt; au RGAA version 4.1.&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;h2&gt;Contenus non accessibles&lt;/h2&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;Malgré le travail de mise en accessibilité effectué, certains contenus, listés ci-dessous, ne peuvent être rendus à 100% accessibles pour les raisons suivantes&amp;nbsp;:&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&lt;em&gt;&lt;u&gt;Exemples&lt;/u&gt;&amp;nbsp;:&lt;/em&gt;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;p&gt;&lt;em&gt;Le bouton d’envoi du formulaire de déclaration contient un intitulé « Retour » au lieu de « Envoi ». Cette erreur sera corrigée avant le &lt;/em&gt;&lt;span style=&quot;color: rgb(255, 0, 0)&quot;&gt;&lt;em&gt;[DATE DE LA CORRECTION]&lt;/em&gt;&lt;/span&gt;&lt;/p&gt;&lt;/li&gt;&lt;li&gt;&lt;p&gt;&lt;em&gt;La connexion au compte personnel contient une vérification que vous n’êtes pas un robot avec un captcha visuel. Il est possible d’effectuer sa démarche par téléphone ou au guichet pour les personnes empêchées d’accéder à leur compte…&lt;/em&gt;&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;h2&gt;Dérogations pour charge disproportionnée&lt;/h2&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&lt;em&gt;&lt;u&gt;Exemples&lt;/u&gt;&amp;nbsp;:&lt;/em&gt;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;p&gt;&lt;em&gt;Certains termes anglais ne peuvent pas être signalés comme tels (par exemple «&amp;nbsp;meetup&amp;nbsp;») à certains endroits comme les titres, car le code html est alors visible dans le title de la page. La correction de ce point nécessiterait des travaux correctifs importants pour un impact utilisateur ici assez faible.&lt;/em&gt;&lt;/p&gt;&lt;/li&gt;&lt;li&gt;&lt;p&gt;&lt;em&gt;Le CMS génère parfois automatiquement quelques balises paragraphes vides superflues. Après des essais infructueux, il a été conclu que corriger ce point ne pourrait être réalisé aisément pour un impact utilisateur très faible, le contenu restant accessible et compréhensible…&lt;/em&gt;&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;h2&gt;Contenus non soumis à l’obligation d’accessibilité&lt;/h2&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&lt;em&gt;&lt;u&gt;Exemples&lt;/u&gt;&amp;nbsp;:&lt;/em&gt;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;p&gt;&lt;em&gt;Le fil d’actualité Twitter sur la page d’Accueil&lt;/em&gt;&lt;/p&gt;&lt;/li&gt;&lt;li&gt;&lt;p&gt;&lt;em&gt;Player vidéo (Youtube, Dailymotion)&lt;/em&gt;&lt;/p&gt;&lt;/li&gt;&lt;li&gt;&lt;p&gt;&lt;em&gt;Reproduction du manuscrit du Moyen-Âge&lt;/em&gt;&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;em&gt;&amp;nbsp;&lt;/em&gt;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;h2&gt;Établissement de cette déclaration d’accessibilité&lt;/h2&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;Cette déclaration a été établie le &lt;span style=&quot;color: rgb(255, 0, 0)&quot;&gt;[DATE]&lt;/span&gt;.&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;h2&gt;Technologies utilisées pour la réalisation du site&lt;/h2&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;p&gt;HTML5&lt;/p&gt;&lt;/li&gt;&lt;li&gt;&lt;p&gt;CSS&lt;/p&gt;&lt;/li&gt;&lt;li&gt;&lt;p&gt;JavaScript&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;h2&gt;Environnement de test&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;&amp;nbsp;&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;Les vérifications de restitution de contenus ont été réalisées sur la base de la combinaison fournie par la base de référence du RGAA, avec les versions suivantes&amp;nbsp;:&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&lt;em&gt;&lt;u&gt;Exemples&lt;/u&gt;&amp;nbsp;:&lt;/em&gt;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;p&gt;&lt;em&gt;Firefox et NVDA&lt;/em&gt;&lt;/p&gt;&lt;/li&gt;&lt;li&gt;&lt;p&gt;&lt;em&gt;Safari et VoiceOver&lt;/em&gt;&lt;/p&gt;&lt;/li&gt;&lt;li&gt;&lt;p&gt;&lt;em&gt;Chrome…&lt;/em&gt;&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;h2&gt;Outils pour évaluer l’accessibilité&lt;/h2&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&lt;em&gt;&lt;u&gt;Exemples&lt;/u&gt;&amp;nbsp;:&lt;/em&gt;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;p&gt;&lt;em&gt;Color Contrast Analyzer&lt;/em&gt;&lt;/p&gt;&lt;/li&gt;&lt;li&gt;&lt;p&gt;&lt;em&gt;WCAG Contrat checker (Firefox)&lt;/em&gt;&lt;/p&gt;&lt;/li&gt;&lt;li&gt;&lt;p&gt;&lt;em&gt;Web Developer Toolbar pour Firefox&lt;/em&gt;&lt;/p&gt;&lt;/li&gt;&lt;li&gt;&lt;p&gt;&lt;em&gt;Web Developer Toolbar pour Chrome…&lt;/em&gt;&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;h2&gt;Pages du site ayant fait l’objet de la vérification de conformité&lt;/h2&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&lt;em&gt;&lt;u&gt;Exemples&lt;/u&gt;&amp;nbsp;:&lt;/em&gt;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;p&gt;&lt;em&gt;page d’accueil &lt;/em&gt;&lt;span style=&quot;color: rgb(255, 0, 0)&quot;&gt;&lt;em&gt;[URL]&lt;/em&gt;&lt;/span&gt;&lt;/p&gt;&lt;/li&gt;&lt;li&gt;&lt;p&gt;&lt;em&gt;page contact&amp;nbsp;&lt;/em&gt;&lt;span style=&quot;color: rgb(255, 0, 0)&quot;&gt;&lt;em&gt;[URL]&lt;/em&gt;&lt;/span&gt;&lt;/p&gt;&lt;/li&gt;&lt;li&gt;&lt;p&gt;&lt;em&gt;page mentions légales&amp;nbsp;&lt;/em&gt;&lt;span style=&quot;color: rgb(255, 0, 0)&quot;&gt;&lt;em&gt;[URL]&lt;/em&gt;&lt;/span&gt;&lt;/p&gt;&lt;/li&gt;&lt;li&gt;&lt;p&gt;&lt;em&gt;page accessibilité&amp;nbsp;&lt;/em&gt;&lt;span style=&quot;color: rgb(255, 0, 0)&quot;&gt;&lt;em&gt;[URL]&lt;/em&gt;&lt;/span&gt;&lt;/p&gt;&lt;/li&gt;&lt;li&gt;&lt;p&gt;&lt;em&gt;page plan du site&amp;nbsp;&lt;/em&gt;&lt;span style=&quot;color: rgb(255, 0, 0)&quot;&gt;&lt;em&gt;[URL]&lt;/em&gt;&lt;/span&gt;&lt;/p&gt;&lt;/li&gt;&lt;li&gt;&lt;p&gt;&lt;em&gt;page d’aide&amp;nbsp;&lt;/em&gt;&lt;span style=&quot;color: rgb(255, 0, 0)&quot;&gt;&lt;em&gt;[URL]&lt;/em&gt;&lt;/span&gt;&lt;/p&gt;&lt;/li&gt;&lt;li&gt;&lt;p&gt;&lt;em&gt;...&lt;/em&gt;&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;h2&gt;Retour d’information et contact&lt;/h2&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;Si vous n’arrivez pas à accéder à un contenu ou à un service, vous pouvez contacter le responsable du site pour être orienté vers une alternative accessible ou obtenir le contenu sous une autre forme.&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;p&gt;Envoyer un message &lt;span style=&quot;color: rgb(255, 0, 0)&quot;&gt;[URL D’UN FORMULAIRE EN LIGNE OU ADRESSE E-MAIL DU SERVICE CONCERNÉ]&lt;/span&gt;&lt;/p&gt;&lt;/li&gt;&lt;li&gt;&lt;p&gt;Contacter&lt;span style=&quot;color: rgb(255, 0, 0)&quot;&gt; [NOM DE L’ENTITÉ OU DE LA PERSONNE RESPONSABLE DU SERVICE EN LIGNE ET COORDONNÉES]&lt;/span&gt;&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;h2&gt;Voies de recours&lt;/h2&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;Si vous constatez un défaut d’accessibilité vous empêchant d’accéder à un contenu ou une fonctionnalité du site, que vous nous le signalez et que vous ne parvenez pas à obtenir une réponse de notre part, vous êtes en droit de faire parvenir vos doléances ou une demande de saisine au Défenseur des droits.&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;Plusieurs moyens sont à votre disposition&amp;nbsp;:&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;p&gt;&lt;a target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot; class=&quot;css-tgpl01&quot; href=&quot;https://formulaire.defenseurdesdroits.fr/code/afficher.php?ETAPE=accueil_2016&quot;&gt;Écrire un message au Défenseur des droits&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;&lt;li&gt;&lt;p&gt;&lt;a target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot; class=&quot;css-tgpl01&quot; href=&quot;https://www.defenseurdesdroits.fr/saisir/delegues&quot;&gt;Contacter le délégué du Défenseur des droits dans votre région&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;&lt;li&gt;&lt;p&gt;Envoyer un courrier par la poste (gratuit, ne pas mettre de timbre) Défenseur des droits Libre réponse 71120 75342 Paris CEDEX 07.&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;</field>
+    <field name="original_value" value_is_null="true"></field>
+    <field name="original_text"  value_is_null="true"></field>
+    <field name="modified"  value_is_null="true"></field>
+    <field name="modified_by">0</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">840</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">55</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">introtext</field>
+    <field name="value">&lt;p&gt;&lt;em&gt;RGAA Declaration Version &lt;strong&gt;4.1&lt;/strong&gt;&lt;/em&gt;&lt;br /&gt;&lt;em&gt;(The current version of RGAA is 4.1 and was published on February 18, 2021)&lt;/em&gt;&lt;/p&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;p&gt;The Article 47 of Law No. 2005-102 of February 11, 2005, establishes that all online public communication services of the State, local authorities, and public institutions must be accessible to all users.&lt;/p&gt;
+     &lt;p&gt;Similarly, all public and private organizations engaged in activities of general interest are required to comply with the General Accessibility Guidelines for Administrations (RGAA).&lt;/p&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;p&gt;This legislation highlights the importance of making online services accessible, regardless of users' abilities. Websites, applications, etc., must adhere to accessibility principles, comply with current standards, and be compatible with assistive technologies used by people with disabilities.&lt;/p&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;p&gt;&lt;span style=&quot;color: rgb(224, 62, 45);&quot;&gt;[ENTITY NAME]&lt;/span&gt; fully recognizes the impact of this law and is committed to fulfilling its digital accessibility obligations. &lt;span style=&quot;color: rgb(224, 62, 45);&quot;&gt;[ENTITY NAME]&lt;/span&gt; is determined to comply with RGAA and provide accessible online services to all users.&lt;/p&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;p&gt;In this accessibility statement,&lt;span style=&quot;color: rgb(224, 62, 45);&quot;&gt; [ENTITY NAME]&lt;/span&gt; wishes to present its continuous efforts to make its online services accessible to all. &lt;span style=&quot;color: rgb(224, 62, 45);&quot;&gt;[ENTITY NAME]&lt;/span&gt; implements specific measures to comply with Article 47 of Law No. 2005-102 of February 11, 2005, as well as RGAA, to ensure an equitable experience for all users, regardless of their abilities.&lt;/p&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;h2&gt;Multi-Year Plan and Annual Plan of &lt;span style=&quot;color: rgb(224, 62, 45);&quot;&gt;[ENTITY NAME]&lt;/span&gt;&lt;/h2&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;p&gt;&lt;span style=&quot;color: rgb(224, 62, 45);&quot;&gt;[ENTITY NAME]&lt;/span&gt; is engaged in an ongoing process to improve the accessibility of all its websites.&lt;/p&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;p&gt;The multi-year plan outlines the key points on which &lt;span style=&quot;color: rgb(224, 62, 45);&quot;&gt;[ENTITY NAME]&lt;/span&gt; will rely to enhance the digital accessibility of all its websites and applications.&lt;/p&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;ul&gt;
+     &lt;li&gt;Consult the 2023 – 2025 Multi-Year Accessibility Plan &lt;span style=&quot;color: rgb(224, 62, 45);&quot;&gt;(Users must have access to the multi-year plan - [insert clickable link to the multi-year plan]) – Example: &lt;a style=&quot;color: rgb(224, 62, 45);&quot; href=&quot;https://www.numerique.gouv.fr/uploads/DINUM_SchemaPluriannuel_2020.pdf&quot;&gt;https://www.numerique.gouv.fr/uploads/DINUM_SchemaPluriannuel_2020.pdf&lt;/a&gt;&lt;/span&gt;&lt;/li&gt;
+     &lt;/ul&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;p&gt;It is accompanied by an annual action plan detailing scheduled and implemented operations, as well as the monitoring status of these actions:&lt;/p&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;ul&gt;
+     &lt;li&gt;Consult the 2023 Annual Accessibility Plan &lt;span style=&quot;color: rgb(224, 62, 45);&quot;&gt;(Users must have access to the annual plan - [insert clickable link to the annual plan]) – Example: &lt;a style=&quot;color: rgb(224, 62, 45);&quot; href=&quot;https://www.numerique.gouv.fr/uploads/DINUM-plan-annuel-2021.pdf&quot;&gt;https://www.numerique.gouv.fr/uploads/DINUM-plan-annuel-2021.pdf&lt;/a&gt;&lt;/span&gt;&lt;/li&gt;
+     &lt;/ul&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;h2&gt;Compliance Status&lt;/h2&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;p&gt;The website &lt;span style=&quot;color: rgb(224, 62, 45);&quot;&gt;[WEBSITE URL]&lt;/span&gt; is &lt;span style=&quot;color: rgb(224, 62, 45);&quot;&gt;non-compliant/partially compliant/fully compliant&lt;/span&gt; with the General Accessibility Improvement Guidelines (RGAA), version 4.1.&lt;/p&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;ul&gt;
+     &lt;li style=&quot;color: rgb(224, 62, 45);&quot;&gt;&lt;span style=&quot;color: rgb(224, 62, 45);&quot;&gt;&lt;strong&gt;[IF NON-COMPLIANT]&lt;/strong&gt;: Example: As there is no audit result available to measure compliance with the criteria, a compliance audit will be scheduled, and improvement work will be undertaken following an initial diagnosis.&lt;/span&gt;&lt;/li&gt;
+     &lt;li style=&quot;color: rgb(224, 62, 45);&quot;&gt;&lt;span style=&quot;color: rgb(224, 62, 45);&quot;&gt;&lt;strong&gt;[IF PARTIALLY COMPLIANT]&lt;/strong&gt;: Example: Due to the non-compliances and exceptions listed below.&lt;/span&gt;&lt;/li&gt;
+     &lt;li style=&quot;color: rgb(224, 62, 45);&quot;&gt;&lt;span style=&quot;color: rgb(224, 62, 45);&quot;&gt;&lt;strong&gt;[IF FULLY COMPLIANT]&lt;/strong&gt;: Example: See the &quot;Test Results&quot; section.&lt;/span&gt;&lt;/li&gt;
+     &lt;/ul&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;p&gt;&lt;span style=&quot;color: rgb(224, 62, 45);&quot;&gt;Regardless of your compliance status following an audit or diagnosis, you must complete the following section based on your situation.&lt;/span&gt;&lt;/p&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;h2&gt;Test Results&lt;/h2&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;p&gt;The compliance audit completed on &lt;span style=&quot;color: rgb(224, 62, 45);&quot;&gt;[AUDIT DATE]&lt;/span&gt; by &lt;span style=&quot;color: rgb(224, 62, 45);&quot;&gt;[AUDIT ENTITY NAME]&lt;/span&gt; indicates that the site is &lt;span style=&quot;color: rgb(224, 62, 45);&quot;&gt;[SPECIFY COMPLIANCE PERCENTAGE]&lt;/span&gt; compliant with RGAA version 4.1.&lt;/p&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;h2&gt;Non-Accessible Content&lt;/h2&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;p&gt;Despite accessibility efforts, some content listed below cannot be made 100% accessible for the following reasons:&lt;/p&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;p&gt;&lt;span style=&quot;text-decoration: underline;&quot;&gt;&lt;em&gt;Examples:&lt;/em&gt;&lt;/span&gt;&lt;/p&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;ul&gt;
+     &lt;li&gt;The submit button on the declaration form is labeled &quot;Return&quot; instead of &quot;Submit.&quot; This error will be corrected by &lt;span style=&quot;color: rgb(224, 62, 45);&quot;&gt;[CORRECTION DATE]&lt;/span&gt;.&lt;/li&gt;
+     &lt;li&gt;Personal account login includes a CAPTCHA verification to confirm the user is not a robot. Users who cannot access their accounts can complete their process via phone or in person…&lt;/li&gt;
+     &lt;/ul&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;h2&gt;Exceptions for Disproportionate Burden&lt;/h2&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;p&gt;&lt;span style=&quot;text-decoration: underline;&quot;&gt;&lt;em&gt;Examples:&lt;/em&gt;&lt;/span&gt;&lt;/p&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;ul&gt;
+     &lt;li&gt;Some English terms (e.g., &quot;meetup&quot;) cannot be marked as such in certain locations, such as page titles, because the HTML code would become visible in the title. Correcting this issue would require significant corrective work for minimal user impact.&lt;/li&gt;
+     &lt;li&gt;The CMS sometimes automatically generates a few unnecessary empty paragraph tags. After unsuccessful attempts to correct this, it was concluded that resolving this issue would not be feasible for a very minor user impact, as the content remains accessible and understandable…&lt;/li&gt;
+     &lt;/ul&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;h2&gt;Content Not Subject to Accessibility Obligations&lt;/h2&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;p&gt;&lt;em&gt;&lt;span style=&quot;text-decoration: underline;&quot;&gt;Examples:&lt;/span&gt;&lt;/em&gt;&lt;/p&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;ul&gt;
+     &lt;li&gt;Twitter news feed on the homepage&lt;/li&gt;
+     &lt;li&gt;Video player (YouTube, Dailymotion)&lt;/li&gt;
+     &lt;li&gt;Reproduction of a medieval manuscript&lt;/li&gt;
+     &lt;/ul&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;h2&gt;Establishment of This Accessibility Statement&lt;/h2&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;p&gt;This statement was established on &lt;span style=&quot;color: rgb(224, 62, 45);&quot;&gt;[DATE]&lt;/span&gt;.&lt;/p&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;h2&gt;Technologies Used for Website Development&lt;/h2&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;ul&gt;
+     &lt;li&gt;HTML5&lt;/li&gt;
+     &lt;li&gt;CSS&lt;/li&gt;
+     &lt;li&gt;JavaScript&lt;/li&gt;
+     &lt;/ul&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;h2&gt;Test Environment&lt;/h2&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;p&gt;Content rendering checks were performed based on the reference framework provided by RGAA, using the following versions:&lt;/p&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;p&gt;&lt;span style=&quot;text-decoration: underline;&quot;&gt;&lt;em&gt;Examples:&lt;/em&gt;&lt;/span&gt;&lt;/p&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;ul&gt;
+     &lt;li&gt;Firefox and NVDA&lt;/li&gt;
+     &lt;li&gt;Safari and VoiceOver&lt;/li&gt;
+     &lt;li&gt;Chrome…&lt;/li&gt;
+     &lt;/ul&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;h2&gt;Tools Used to Evaluate Accessibility&lt;/h2&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;p&gt;&lt;span style=&quot;text-decoration: underline;&quot;&gt;&lt;em&gt;Examples:&lt;/em&gt;&lt;/span&gt;&lt;/p&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;ul&gt;
+     &lt;li&gt;Color Contrast Analyzer&lt;/li&gt;
+     &lt;li&gt;WCAG Contrast Checker (Firefox)&lt;/li&gt;
+     &lt;li&gt;Web Developer Toolbar for Firefox&lt;/li&gt;
+     &lt;li&gt;Web Developer Toolbar for Chrome…&lt;/li&gt;
+     &lt;/ul&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;h2&gt;Pages Subject to Compliance Verification&lt;/h2&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;p&gt;&lt;em&gt;&lt;span style=&quot;text-decoration: underline;&quot;&gt;Examples:&lt;/span&gt;&lt;/em&gt;&lt;/p&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;ul&gt;
+     &lt;li&gt;Homepage &lt;span style=&quot;color: rgb(224, 62, 45);&quot;&gt;[URL]&lt;/span&gt;&lt;/li&gt;
+     &lt;li&gt;Contact page &lt;span style=&quot;color: rgb(224, 62, 45);&quot;&gt;[URL]&lt;/span&gt;&lt;/li&gt;
+     &lt;li&gt;Legal notices page &lt;span style=&quot;color: rgb(224, 62, 45);&quot;&gt;[URL]&lt;/span&gt;&lt;/li&gt;
+     &lt;li&gt;Accessibility page &lt;span style=&quot;color: rgb(224, 62, 45);&quot;&gt;[URL]&lt;/span&gt;&lt;/li&gt;
+     &lt;li&gt;Sitemap page &lt;span style=&quot;color: rgb(224, 62, 45);&quot;&gt;[URL]&lt;/span&gt;&lt;/li&gt;
+     &lt;li&gt;Help page &lt;span style=&quot;color: rgb(224, 62, 45);&quot;&gt;[URL]&lt;/span&gt;&lt;/li&gt;
+     &lt;/ul&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;h2&gt;Feedback and Contact Information&lt;/h2&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;p&gt;If you are unable to access content or a service, you can contact the site administrator for an accessible alternative or to obtain the content in another format.&lt;/p&gt;
+     &lt;ul&gt;
+     &lt;li&gt;Send a message &lt;span style=&quot;color: rgb(224, 62, 45);&quot;&gt;[URL OF ONLINE FORM OR EMAIL ADDRESS]&lt;/span&gt;&lt;/li&gt;
+     &lt;li&gt;Contact &lt;span style=&quot;color: rgb(224, 62, 45);&quot;&gt;[NAME OF ENTITY OR PERSON RESPONSIBLE FOR THE ONLINE SERVICE AND CONTACT DETAILS]&lt;/span&gt;&lt;/li&gt;
+     &lt;/ul&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;h2&gt;Remedies&lt;/h2&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;p&gt;If you identify an accessibility issue preventing access to a site feature or content, report it to us. If you do not receive a response, you have the right to escalate your concern or file a complaint with the Defender of Rights.&lt;/p&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;p&gt;Several options are available:&lt;/p&gt;
+     &lt;p&gt; &lt;/p&gt;
+     &lt;ul&gt;
+     &lt;li&gt;
+     &lt;p&gt;Send a message to the Defender of Rights&lt;/p&gt;
+     &lt;/li&gt;
+     &lt;li&gt;
+     &lt;p&gt;Contact the regional delegate of the Defender of Rights&lt;/p&gt;
+     &lt;/li&gt;
+     &lt;li&gt;
+     &lt;p&gt;Send a letter by mail (free, no postage required) to:&lt;/p&gt;
+     &lt;p&gt;&lt;em&gt;Defender of Rights&lt;/em&gt;&lt;br /&gt;&lt;em&gt;Libre réponse 71120&lt;/em&gt;&lt;br /&gt;&lt;em&gt;75342 Paris CEDEX 07&lt;/em&gt;&lt;/p&gt;
+     &lt;/li&gt;
+     &lt;/ul&gt;</field>
+    <field name="original_value">b7094721d3d86391e30a01d5a956867d</field>
+    <field name="original_text"></field>
+    <field name="modified">2025-02-18 13:27:22</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">841</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">55</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">title</field>
+    <field name="value">Accessibility</field>
+    <field name="original_value">c0c5a7355d50f75d581b16c37534b08d</field>
+    <field name="original_text"></field>
+    <field name="modified">2025-02-18 13:27:22</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">842</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">55</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">alias</field>
+    <field name="value">accessibilite</field>
+    <field name="original_value">04bd510c7418aaf4f7c36fa423f3f698</field>
+    <field name="original_text"></field>
+    <field name="modified">2025-02-18 13:27:22</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">843</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">55</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">fulltext</field>
+    <field name="value"></field>
+    <field name="original_value">d41d8cd98f00b204e9800998ecf8427e</field>
+    <field name="original_text"></field>
+    <field name="modified">2025-02-18 13:27:22</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">844</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">55</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">attribs</field>
+    <field name="value">{&quot;article_layout&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;flags&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;alternative_readmore&quot;:&quot;&quot;,&quot;article_page_title&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;&quot;,&quot;show_article_options&quot;:&quot;&quot;,&quot;show_urls_images_backend&quot;:&quot;&quot;,&quot;show_urls_images_frontend&quot;:&quot;&quot;}</field>
+    <field name="original_value">25a334e34be3e63fb8bc6ab07d252aa8</field>
+    <field name="original_text"></field>
+    <field name="modified">2025-02-18 13:27:22</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">845</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">55</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">images</field>
+    <field name="value">{&quot;image_intro&quot;:&quot;&quot;,&quot;image_intro_alt&quot;:&quot;&quot;,&quot;float_intro&quot;:&quot;&quot;,&quot;image_intro_caption&quot;:&quot;&quot;,&quot;image_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_alt&quot;:&quot;&quot;,&quot;float_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_caption&quot;:&quot;&quot;}</field>
+    <field name="original_value">eeece57125004306bd90d2b77224f290</field>
+    <field name="original_text"></field>
+    <field name="modified">2025-02-18 13:27:22</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">846</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">55</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">urls</field>
+    <field name="value">{&quot;urla&quot;:&quot;&quot;,&quot;urlatext&quot;:&quot;&quot;,&quot;targeta&quot;:&quot;&quot;,&quot;urlb&quot;:&quot;&quot;,&quot;urlbtext&quot;:&quot;&quot;,&quot;targetb&quot;:&quot;&quot;,&quot;urlc&quot;:&quot;&quot;,&quot;urlctext&quot;:&quot;&quot;,&quot;targetc&quot;:&quot;&quot;}</field>
+    <field name="original_value">f6b88977a26be0ad1c9557f9495b6e1e</field>
+    <field name="original_text"></field>
+    <field name="modified">2025-02-18 13:27:22</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

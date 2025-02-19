@@ -85,6 +85,7 @@
                                 key_field="id"
                                 value_field="label"
                                 multiple="true"
+                                layout="joomla.form.field.list-fancy-select"
                         />
                         <field
                                 showon="type:options"

@@ -3090,8 +3090,6 @@ a#em-doc-zip:focus,
 
 
 
-.btn-danger,
-.pull-right .btn:not(.dropdown-toggle),
 .below-content a,
 .toggle-editor .btn,
 .xclsform .panel-body button#delfilter,
@@ -3126,6 +3124,45 @@ button#back,
 
   span {
     color: var(--em-secondary-color);
+  }
+}
+
+.view-files #em-assoc-files .pull-right {
+  display: flex !important;
+  flex-direction: row-reverse;
+  gap: 8px;
+  padding-left: 8px;
+
+  #em-see-files, #em-delete-files {
+    padding: 0 !important;
+    margin: 0 !important;
+
+    span {
+      font-size: 24px;
+      padding: 12px;
+      color: var(--neutral-0) !important;
+      border-radius: var(--em-applicant-br);
+    }
+  }
+
+  #em-see-files span {
+    background: var(--em-profile-color);
+    border: 1px solid var(--em-profile-color);
+  }
+
+  #em-see-files span:hover {
+    color: var(--em-profile-color) !important;
+    background: var(--neutral-0);
+  }
+
+  #em-delete-files span {
+    background: var(--red-500);
+    border: 1px solid var(--red-500);
+  }
+
+  #em-delete-files:hover span {
+    color: var(--red-500) !important;
+    background: var(--neutral-0);
   }
 }
 
@@ -3418,7 +3455,8 @@ label[for='clear-search'] img:hover:focus {
         background: #ffffff50 !important;
         transition: .1s;
 
-        span {
+      span:not(#em-appli-block .em-container-form-heading .pull-right #em-prev-file span,
+               #em-appli-block .em-container-form-heading .pull-right #em-next-file span) {
           color: var(--neutral-500);
         }
       }

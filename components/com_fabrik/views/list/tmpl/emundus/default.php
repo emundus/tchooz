@@ -95,7 +95,15 @@ endforeach;
 				<tr class="groupDataMsg">
 					<td class="emptyDataMessage" style="<?php echo $this->emptyStyle?>" colspan="<?php echo count($this->headings)?>">
 						<div class="emptyDataMessage" style="<?php echo $this->emptyStyle?>">
-							<?php echo $this->emptyDataMessage; ?>
+                            <div>
+                                <img src="/media/com_emundus/images/tchoozy/complex-illustrations/no-result.svg" alt="empty-list" style="width: 10vw; height: 10vw; margin: 0 auto;">
+                                <p class="tw-text-center" style="width: fit-content; margin: 0 auto;">
+									<?php echo $this->emptyDataMessage; ?>
+									<?php if ($this->showAdd) :?>
+                                        <a class="em-font-size-16 em-profile-color em-text-underline tw-w-full tw-block tw-text-center" href="<?php echo $this->addRecordLink;?>"><?php echo Text::_($this->addLabel);?></a>
+									<?php endif; ?>
+                                </p>
+                            </div>
 						</div>
 					</td>
 				</tr>
@@ -117,7 +125,15 @@ endforeach;
 				<tr class="groupDataMsg" style="<?php echo $this->emptyStyle?>">
 					<td class="emptyDataMessage" style="<?php echo $this->emptyStyle?>" colspan="<?php echo count($this->headings)?>">
 						<div class="emptyDataMessage" style="<?php echo $this->emptyStyle?>">
-							<?php echo $this->emptyDataMessage; ?>
+                            <div>
+                                <img src="/media/com_emundus/images/tchoozy/complex-illustrations/no-result.svg" alt="empty-list" style="width: 10vw; height: 10vw; margin: 0 auto;">
+                                <p class="tw-text-center" style="width: fit-content; margin: 0 auto;">
+                                    <?php echo $this->emptyDataMessage; ?>
+                                    <?php if ($this->showAdd) :?>
+                                        <a class="em-font-size-16 em-profile-color em-text-underline tw-w-full tw-block tw-text-center" href="<?php echo $this->addRecordLink;?>"><?php echo Text::_($this->addLabel);?></a>
+                                    <?php endif; ?>
+                                </p>
+                            </div>
 						</div>
 					</td>
 				</tr>

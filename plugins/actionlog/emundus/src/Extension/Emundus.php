@@ -59,6 +59,9 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 			'onAfterUpdateConfiguration' => 'onAfterUpdateConfiguration',
 			'onAfterMicrosoftDynamicsCreate' => 'onAfterMicrosoftDynamicsCreate',
 			'onAfterMicrosoftDynamicsUpdate' => 'onAfterMicrosoftDynamicsUpdate',
+			'onAfterAmmonApplicantCreate' => 'onAfterAmmonApplicantCreate',
+			'onAfterAmmonRegistration' => 'onAfterAmmonRegistration',
+			'onAmmonFoundSimilarName' => 'onAmmonFoundSimilarName',
 		];
 	}
 
@@ -153,6 +156,56 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 
 		$message = $this->setMessage($arguments['id'], 'create', 'PLG_ACTIONLOG_EMUNDUS_MICROSOFT_DYNAMICS_UPDATE_ACTION', $arguments['status'], [], $arguments['data'], $more_data);
 
+		$this->addLog([$message], $messageLanguageKey, $context, $jUser->id);
+	}
+
+	public function onAfterAmmonRegistration(GenericEvent $event): void
+	{
+		$arguments = $event->getArguments();
+		$jUser = $this->getApplication()->getIdentity();
+
+		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_AMMON_REGISTRATION';
+		$context            = 'com_emundus.ammon';
+
+		$more_data['fnum'] = $arguments['fnum'];
+		$more_data['session_id'] = $arguments['session_id'];
+		$more_data['message'] = $arguments['message'];
+		$title = 'PLG_ACTIONLOG_EMUNDUS_AMMON_REGISTRATION_SUCCESS';
+
+		if ($arguments['status'] == 'error') {
+			$title = 'PLG_ACTIONLOG_EMUNDUS_AMMON_REGISTRATION_ERROR';
+		}
+
+		$message = $this->setMessage('ammon', 'create', $title, $arguments['status'], [], $arguments['data'], $more_data);
+		$this->addLog([$message], $messageLanguageKey, $context, $jUser->id);
+	}
+
+	public function onAfterAmmonApplicantCreate(GenericEvent $event): void
+	{
+		$arguments = $event->getArguments();
+		$jUser = $this->getApplication()->getIdentity();
+		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_AMMON_APPLICANT';
+		$context            = 'com_emundus.ammon';
+
+		$more_data['fnum'] = $arguments['fnum'];
+		$more_data['session_id'] = $arguments['session_id'];
+
+		$message = $this->setMessage('ammon', 'create', 'PLG_ACTIONLOG_EMUNDUS_AMMON_APPLICANT_ACTION', $arguments['status'], [], $arguments['data'], $more_data);
+		$this->addLog([$message], $messageLanguageKey, $context, $jUser->id);
+	}
+
+	public function onAmmonFoundSimilarName(GenericEvent $event): void
+	{
+		$arguments = $event->getArguments();
+		$jUser = $this->getApplication()->getIdentity();
+		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_AMMON_FOUND_SIMILAR_NAME';
+		$context            = 'com_emundus.ammon';
+
+		$more_data['fnum'] = $arguments['fnum'];
+		$more_data['name'] = $arguments['name'];
+		$more_data['message'] = $arguments['message'];
+
+		$message = $this->setMessage('ammon', 'create', 'PLG_ACTIONLOG_EMUNDUS_AMMON_FOUND_SIMILAR_NAME_ACTION', 'error', [], [], $more_data);
 		$this->addLog([$message], $messageLanguageKey, $context, $jUser->id);
 	}
 

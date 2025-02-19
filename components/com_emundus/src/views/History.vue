@@ -18,6 +18,8 @@
           <th v-if="columns.includes('user_id')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_BY') }}</th>
           <th v-if="columns.includes('status')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_STATUS') }}</th>
           <th v-if="columns.includes('diff')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_DIFF') }}</th>
+          <th v-if="columns.includes('retry')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_RETRY') }}</th>
+          <th v-for="column in moreData" :key="column">{{ column }}</th>
         </tr>
         </thead>
 
@@ -91,6 +93,18 @@
                     @click="modalToOpen = data.id">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_DIFF_SHOW') }}
             </button>
           </td>
+
+          <td v-if="columns.includes('retry')">
+            <button v-if="data.message.status === 'error' && data.message.retry" type="button" class="tw-flex tw-items-center tw-gap-1 tw-cursor-pointer tw-text-blue-500"
+                    @click="retry(data.id)">
+              <span class="material-symbols-outlined tw-text-blue-500">replay</span>
+
+              {{ translate('COM_EMUNDUS_GLOBAL_HISTORY_LAUNCH_RETRY') }}
+            </button>
+            <span v-else class="tw-text-center tw-w-full tw-block"> - </span>
+          </td>
+
+          <td v-for="column in moreData" :key="column">{{ data.message[column] }}</td>
 
           <modal
               v-if="errorModalToOpen === data.id"
@@ -222,6 +236,10 @@ export default {
         'diff'
       ],
     },
+    moreData: {
+      type: Array,
+      default: () => [],
+    },
     displayTitle: {
       type: Boolean,
       default: false,
@@ -325,7 +343,12 @@ export default {
           }
         });
       }
-    }
+    },
+    retry(actionLogId) {
+      settingsService.historyRetryEvent(actionLogId).then(() => {
+        this.fetchHistory();
+      });
+    },
   },
   computed: {
     sysadmin: function () {

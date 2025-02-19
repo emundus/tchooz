@@ -2948,6 +2948,21 @@ class EmundusModelForm extends JModelList
 				$this->db->execute();
 
 				$query->clear()
+					->select('id')
+					->from($this->db->quoteName('#__emundus_setup_form_rules_js_actions'))
+					->where($this->db->quoteName('parent_id') . ' = ' . $this->db->quote($rule_id));
+				$this->db->setQuery($query);
+				$action_ids = $this->db->loadColumn();
+
+				foreach ($action_ids as $actionId) {
+					$query->clear()
+						->delete($this->db->quoteName('#__emundus_setup_form_rules_js_actions_fields'))
+						->where($this->db->quoteName('parent_id') . ' = ' . $this->db->quote($actionId));
+					$this->db->setQuery($query);
+					$this->db->execute();
+				}
+
+				$query->clear()
 					->delete($this->db->quoteName('#__emundus_setup_form_rules_js_actions'))
 					->where($this->db->quoteName('parent_id') . ' = ' . $this->db->quote($rule_id));
 				$this->db->setQuery($query);

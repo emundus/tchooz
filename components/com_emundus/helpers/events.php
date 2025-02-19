@@ -1655,8 +1655,14 @@ class EmundusHelperEvents
 		{
 			Log::add(Uri::getInstance() . ' :: USER ID : ' . $app->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
-		Factory::getApplication()->triggerEvent('onAfterSubmitFile', [$student->id, $student->fnum]);
-		Factory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
+
+		PluginHelper::importPlugin('emundus');
+		$dispatcher = Factory::getApplication()->getDispatcher();
+
+		$onAfterSubmitFile = new GenericEvent('onAfterSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]);
+		$dispatcher->dispatch('onAfterSubmitFile', $onAfterSubmitFile);
+		$CEVonAfterSubmitFile = new GenericEvent('onCallEventHandler', ['onAfterSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
+		$dispatcher->dispatch('onCallEventHandler', $CEVonAfterSubmitFile);
 
 		// If pdf exporting is activated
 		if ($export_pdf == 1)
@@ -1792,10 +1798,11 @@ class EmundusHelperEvents
 			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
-			if (isset($params['data']))
+			if (!empty($params['data']) || !empty($params['formModel']->formData))
 			{
-				$code            = $params['data']['jos_emundus_setup_programmes___code_raw'];
-				$evaluation_form = $params['data']['jos_emundus_setup_programmes___evaluation_form_raw'];
+				$code            = !empty($params['data']) ? $params['data']['jos_emundus_setup_programmes___code_raw'] : $params['formModel']->formData['code_raw'];
+				$evaluation_form = !empty($params['data']) ? $params['data']['jos_emundus_setup_programmes___evaluation_form_raw'] : $params['formModel']->formData['evaluation_form_raw'];
+				$programme_id = !empty($params['data']) ? $params['data']['jos_emundus_setup_programmes___id'] : $params['formModel']->formData['id'];
 
 				if (is_array($evaluation_form))
 				{
@@ -1827,12 +1834,12 @@ class EmundusHelperEvents
 					$db->execute();
 				}
 
-				if (!empty($params['data']['jos_emundus_setup_programmes___id']))
+				if (!empty($programme_id))
 				{
 					$query->clear()
 						->select('*')
 						->from($db->quoteName('#__emundus_setup_programmes'))
-						->where($db->quoteName('id') . ' = ' . $db->quote($params['data']['jos_emundus_setup_programmes___id']));
+						->where($db->quoteName('id') . ' = ' . $db->quote($programme_id));
 					$db->setQuery($query);
 					$params['programme'] = $db->loadObject();
 				}
@@ -1937,9 +1944,12 @@ class EmundusHelperEvents
 					}
 				}
 
-				if (!empty($params['data']) && !empty($params['data']['formid']))
+				if ((!empty($params['data']) && !empty($params['data']['formid'])) || (!empty($params['formModel']->formData) && !empty($params['formModel']->formData['formid'])))
 				{
-					Factory::getApplication()->redirect('/index.php?option=com_fabrik&view=form&formid=' . $params['data']['formid'] . '&rowid=' . $params['data']['jos_emundus_setup_programmes___id'] . '&tmpl=component&iframe=1');
+					$programme_id = !empty($params['data']) ? $params['data']['jos_emundus_setup_programmes___id'] : $params['formModel']->formData['id'];
+					$form_id	  = !empty($params['data']) ? $params['data']['formid'] : $params['formModel']->formData['formid'];
+
+					Factory::getApplication()->redirect('/index.php?option=com_fabrik&view=form&formid=' . $form_id . '&rowid=' . $programme_id . '&tmpl=component&iframe=1');
 				}
 			}
 

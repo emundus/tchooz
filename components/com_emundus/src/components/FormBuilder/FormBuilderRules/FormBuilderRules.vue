@@ -110,9 +110,9 @@
                   <span v-if="['show_options','hide_options'].includes(action.action)"
                         class="tw-mx-1 tw-font-medium"> {{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_OF_FIELD') }}</span>
 
-                  <span v-if="['define_repeat_group'].includes(action.action)">{{
-                      translate('COM_EMUNDUS_FORMBUILDER_RULE_ACTION_DEFINE_REPEAT_BETWEEN') + ' ' + elementOptions(action) + ' ' + translate('COM_EMUNDUS_FORMBUILDER_RULE_ACTION_DEFINE_REPEAT_REPETITIONS')
-                    }}</span>
+                  <span v-if="['define_repeat_group'].includes(action.action)">
+                    {{ repeatOptions(action) }}
+                  </span>
 
                   <span class="actions-label">{{ action.labels.join(', ') }}</span>
                 </div>
@@ -243,34 +243,45 @@ export default {
         try {
           let action_params = JSON.parse(action.params);
 
-          if (action.action == 'define_repeat_group') {
-            if (action_params.length > 0) {
-              let min = action_params[0].minRepeat;
-              let max = action_params[0].minRepeat;
-              options.push(min);
-              options.push(max);
-            }
-          } else {
-            action_params.forEach(param => {
-              options.push(param.value);
-            });
-          }
+          action_params.forEach(param => {
+            options.push(param.value);
+          });
         } catch (e) {
           return console.error(e); // error in the above string (in this case, yes)!
         }
       }
 
       if (options.length > 0) {
-        if (action.action == 'define_repeat_group') {
-          options = options.join(' ' + this.translate('COM_EMUNDUS_FORMBUILDER_RULE_ACTION_DEFINE_REPEAT_AND') + ' ');
-        } else {
-          options = options.join(', ');
-        }
+        options = options.join(', ');
       } else {
         options = '';
       }
 
       return options;
+    },
+
+    repeatOptions(action)
+    {
+      if (action.params) {
+        try {
+          let action_params = JSON.parse(action.params);
+
+          if (action_params.length > 0) {
+            let min = action_params[0].minRepeat;
+            let max = action_params[0].maxRepeat;
+
+            if(min == max) {
+              return this.translate('COM_EMUNDUS_FORMBUILDER_RULE_ACTION_DEFINE_REPEAT_STRICT_REPEAT').replace('%min', min);
+            } else if(max > 0) {
+              return this.translate('COM_EMUNDUS_FORMBUILDER_RULE_ACTION_DEFINE_REPEAT_BETWEEN').replace('%min', min).replace('%max', max);
+            } else {
+              return this.translate('COM_EMUNDUS_FORMBUILDER_RULE_ACTION_DEFINE_REPEAT_MINIMUM').replace('%min', min);
+            }
+          }
+        } catch (e) {
+          return console.error(e); // error in the above string (in this case, yes)!
+        }
+      }
     },
 
     deleteRule(rule) {

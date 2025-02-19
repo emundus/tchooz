@@ -1283,18 +1283,53 @@ class EmundusModelUsers extends ListModel
 			}
 
 			$query->clear()
-				->insert($this->db->quoteName('#__user_profiles'))
-				->columns($this->db->quoteName(array('user_id', 'profile_key', 'profile_value', 'ordering')))
-				->values($user_id . ',' . $this->db->quote('emundus_profile.firstname') . ',' . $this->db->quote($firstname) . ',2');
+				->select('user_id')
+				->from($this->db->quoteName('#__user_profiles'))
+				->where('profile_key = ' . $this->db->quote('emundus_profile.firstname') . ' AND user_id = ' . $user_id);
 			$this->db->setQuery($query);
-			$this->db->execute() or die($this->db->getErrorMsg());
+			$profile_firstname = $this->db->loadResult();
+
+			if(empty($profile_firstname))
+			{
+				$query->clear()
+					->insert($this->db->quoteName('#__user_profiles'))
+					->columns($this->db->quoteName(array('user_id', 'profile_key', 'profile_value', 'ordering')))
+					->values($user_id . ',' . $this->db->quote('emundus_profile.firstname') . ',' . $this->db->quote($firstname) . ',2');
+				$this->db->setQuery($query);
+				$this->db->execute() or die($this->db->getErrorMsg());
+			}
+			else {
+				$query->clear()
+					->update($this->db->quoteName('#__user_profiles'))
+					->set('profile_value = ' . $this->db->quote($firstname))
+					->where('profile_key = ' . $this->db->quote('emundus_profile.firstname') . ' AND user_id = ' . $user_id);
+				$this->db->setQuery($query);
+				$this->db->execute() or die($this->db->getErrorMsg());
+			}
 
 			$query->clear()
-				->insert($this->db->quoteName('#__user_profiles'))
-				->columns($this->db->quoteName(array('user_id', 'profile_key', 'profile_value', 'ordering')))
-				->values($user_id . ',' . $this->db->quote('emundus_profile.lastname') . ',' . $this->db->quote($lastname) . ',1');
+				->select('user_id')
+				->from($this->db->quoteName('#__user_profiles'))
+				->where('profile_key = ' . $this->db->quote('emundus_profile.lastname') . ' AND user_id = ' . $user_id);
 			$this->db->setQuery($query);
-			$this->db->execute() or die($this->db->getErrorMsg());
+			$profile_lastname = $this->db->loadResult();
+
+			if(empty($profile_lastname))
+			{
+				$query->clear()
+					->insert($this->db->quoteName('#__user_profiles'))
+					->columns($this->db->quoteName(array('user_id', 'profile_key', 'profile_value', 'ordering')))
+					->values($user_id . ',' . $this->db->quote('emundus_profile.lastname') . ',' . $this->db->quote($lastname) . ',1');
+				$this->db->setQuery($query);
+				$this->db->execute() or die($this->db->getErrorMsg());
+			} else {
+				$query->clear()
+					->update($this->db->quoteName('#__user_profiles'))
+					->set('profile_value = ' . $this->db->quote($lastname))
+					->where('profile_key = ' . $this->db->quote('emundus_profile.lastname') . ' AND user_id = ' . $user_id);
+				$this->db->setQuery($query);
+				$this->db->execute() or die($this->db->getErrorMsg());
+			}
 		}
 		catch (Exception $e) {
 			error_log($e->getMessage());
@@ -4729,7 +4764,8 @@ class EmundusModelUsers extends ListModel
 				->leftJoin($this->db->quoteName('#__fabrik_formgroup', 'ff') . ' ON ff.group_id = fe.group_id')
 				->where($this->db->quoteName('ff.form_id') . ' = ' . $profile_form)
 				->andWhere($this->db->quoteName('fe.hidden') . ' = ' . '0')
-				->andWhere($this->db->quoteName('fe.published') . ' = ' . '1');
+				->andWhere($this->db->quoteName('fe.published') . ' = ' . '1')
+				->andWhere($this->db->quoteName('fe.name') . ' <> ' . $this->db->quote('id'));
 
 			try
 			{
@@ -4752,6 +4788,12 @@ class EmundusModelUsers extends ListModel
 	public function getJoomlaUserColumns()
 	{
 		return array(
+			'id' => (object)array(
+				'id' => null,
+				'name' => 'id',
+				'plugin' => null,
+				'label' => 'COM_EMUNDUS_ID',
+			),
 			'lastname' => (object)array(
 				'id' => null,
 				'name' => 'lastname',
@@ -4769,6 +4811,12 @@ class EmundusModelUsers extends ListModel
 				'name' => 'email',
 				'plugin' => null,
 				'label' => 'COM_EMUNDUS_EMAIL',
+			),
+			'username' => (object)array(
+				'id' => null,
+				'name' => 'username',
+				'plugin' => null,
+				'label' => 'COM_EMUNDUS_USERNAME',
 			),
 			'profile' => (object)array(
 				'id' => null,
@@ -4869,15 +4917,11 @@ class EmundusModelUsers extends ListModel
 				// We indeed need id, name, plugin, and label at least for each
 				$j_columns = $this->getJoomlaUserColumns();
 
-				$j_columns['username'] = (object)array(
-					'id' => null,
-					'name' => 'username',
-					'plugin' => null,
-					'label' => 'COM_EMUNDUS_USERNAME',
-				);
-
 				foreach ($j_columns as $j_column) {
 					switch ($j_column->name) {
+						case 'id':
+							$j_column->value = $user->id ?? '';
+							break;
 						case 'lastname' :
 							$j_column->value = $user->lastname ?? '';
 							break;

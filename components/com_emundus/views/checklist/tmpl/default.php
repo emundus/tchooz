@@ -124,6 +124,10 @@ if (!empty($this->custom_title)) :?>
 
 <?php if (count($this->attachments) > 0) : ?>
 
+    <div class="em-goback-btn tw-flex tw-items-center"><span class="material-symbols-outlined tw-text-neutral-600">navigate_before</span>
+        <button type="button" class="btn goback-btn button" onclick="window.history.go(-1)"
+                name="Goback"><?php echo Text::_('GO_BACK') ?></button>
+    </div>
     <div id="attachment_list" class="em-attachmentList em-repeat-card tw-p-6">
         <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg"
                 alt="<?= Text::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
@@ -666,12 +670,6 @@ if (!empty($this->custom_title)) :?>
             <div class="col-md-12">
                 <div class="tw-flex tw-justify-between">
                     <div>
-                        <div class="btn-group">
-                            <div class="em-goback-btn tw-flex tw-items-center"><span class="material-symbols-outlined tw-text-neutral-600">navigate_before</span>
-                                <button type="button" class="btn goback-btn button" onclick="window.history.go(-1)"
-                                        name="Goback"><?php echo Text::_('GO_BACK') ?></button>
-                            </div>
-                        </div>
                     </div>
                     <div class="btn-group cursor-pointer"  <?php if ($block_upload || $this->attachments_prog < 100 || $this->forms_prog < 100) :?> style="opacity: 0.6; cursor: not-allowed !important;" <?php endif; ?>>
                         <div class="btn-group">

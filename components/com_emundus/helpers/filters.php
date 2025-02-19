@@ -606,6 +606,43 @@ class EmundusHelperFilters
 		}
 		else return array();
 	}
+
+	public static function searchClosestWord(string $word_to_match, array $words): array
+	{
+		$match = [
+			'lev' => -1,
+			'position' => -1,
+			'word' => '',
+			'similarity' => 0
+		];
+
+		if (!empty($word_to_match)) {
+			$shortest = -1;
+			$closest  = -1;
+			$similarity_percent = 0;
+
+			foreach ($words as $index => $word) {
+				$lev = levenshtein($word_to_match, $word);
+				$current_similarity = similar_text($word_to_match, $word, $percent);
+
+				if ($lev == 0) { // exact match, no need to search anymore
+					$closest = $index;
+					$shortest = $lev;
+					break;
+				} else if (($lev <= $shortest || $shortest < 0) && $percent > $similarity_percent) {
+					$closest  = $index;
+					$shortest = $lev;
+					$similarity_percent = $percent;
+				}
+			}
+
+			if ($shortest > -1) {
+				$match = ['lev' => $shortest, 'position' => $closest, 'word' => $words[$closest], 'similarity' => $similarity_percent];
+			}
+		}
+
+		return $match;
+	}
 }
 
 ?>

@@ -14,7 +14,9 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Helper\ModuleHelper;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
 use scripts\Release2_0_0Installer;
 
@@ -232,7 +234,7 @@ class Com_EmundusInstallerScript
 			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification du menu compte utilisateur', 'error');
 		}
 
-		if(!$this->checkSSOAvailable())
+		if (!$this->checkSSOAvailable())
 		{
 			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification de la disponibilité du SSO', 'error');
 		}
@@ -252,9 +254,14 @@ class Com_EmundusInstallerScript
 			EmundusHelperUpdate::displayMessage('Erreur lors de la suppression du cache Joomla.', 'error');
 		}
 
-		if(!$this->checkConfig())
+		if (!$this->checkConfig())
 		{
 			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification de la configuration.', 'error');
+		}
+
+		if (!$this->checkAutomatedUser())
+		{
+			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification de l\'utilisateur automatisé.', 'error');
 		}
 
 		EmundusHelperUpdate::generateCampaignsAlias();
@@ -708,9 +715,11 @@ class Com_EmundusInstallerScript
 				{
 					$checked = EmundusHelperUpdate::insertFalangTranslation(1, $account_menu['id'], 'menu', 'title', 'User account');
 				}
-			} else {
+			}
+			else
+			{
 				$account_menu->published = 1;
-				$checked = $this->db->updateObject('#__menu', $account_menu, 'id');
+				$checked                 = $this->db->updateObject('#__menu', $account_menu, 'id');
 			}
 		}
 		catch (Exception $e)
@@ -743,15 +752,18 @@ class Com_EmundusInstallerScript
 			$options['frontediting'] = 0;
 
 			//Prepare cookies config
-			$cookie_domain = Factory::getApplication()->get('live_site','');
-			if(!empty($cookie_domain) && strpos($cookie_domain, 'localhost') === false) {
-				$cookie_domain = explode('//',$cookie_domain);
+			$cookie_domain = Factory::getApplication()->get('live_site', '');
+			if (!empty($cookie_domain) && strpos($cookie_domain, 'localhost') === false)
+			{
+				$cookie_domain = explode('//', $cookie_domain);
 				$cookie_domain = $cookie_domain[1];
-				if(substr($cookie_domain, -1) == '/') {
+				if (substr($cookie_domain, -1) == '/')
+				{
 					$cookie_domain = substr($cookie_domain, 0, -1);
 				}
 
-				if(!empty($cookie_domain)) {
+				if (!empty($cookie_domain))
+				{
 					$options['cookie_domain'] = $cookie_domain;
 				}
 
@@ -760,7 +772,7 @@ class Com_EmundusInstallerScript
 			//
 
 
-			$app                     = Factory::getApplication();
+			$app = Factory::getApplication();
 			if (!$app->get('shared_session') || $app->get('session_name') == 'site')
 			{
 				$options['shared_session'] = true;
@@ -789,18 +801,22 @@ class Com_EmundusInstallerScript
 		$haveSSO = false;
 
 		// Check if we have external authentication
-		$emundusOauth2 = PluginHelper::getPlugin('authentication','emundus_oauth2');
-		$ldap = PluginHelper::getPlugin('authentication','ldap');
-		if(!empty($ldap)) {
+		$emundusOauth2 = PluginHelper::getPlugin('authentication', 'emundus_oauth2');
+		$ldap          = PluginHelper::getPlugin('authentication', 'ldap');
+		if (!empty($ldap))
+		{
 			$haveSSO = true;
 		}
-		elseif(!empty($emundusOauth2))
+		elseif (!empty($emundusOauth2))
 		{
 			$oauth2Config = json_decode($emundusOauth2->params);
 
-			if(!empty($oauth2Config->configurations)) {
-				foreach ($oauth2Config->configurations as $config) {
-					if(in_array($config->display_on_login,[1,3,4])) {
+			if (!empty($oauth2Config->configurations))
+			{
+				foreach ($oauth2Config->configurations as $config)
+				{
+					if (in_array($config->display_on_login, [1, 3, 4]))
+					{
 						$haveSSO = true;
 						break;
 					}
@@ -809,7 +825,8 @@ class Com_EmundusInstallerScript
 		}
 
 		$query = $this->db->getQuery(true);
-		if($haveSSO) {
+		if ($haveSSO)
+		{
 			// Enable new_account_sso email
 			try
 			{
@@ -825,7 +842,9 @@ class Com_EmundusInstallerScript
 				EmundusHelperUpdate::displayMessage($e->getMessage(), 'error');
 				$checked = false;
 			}
-		} else {
+		}
+		else
+		{
 			// Disable new_account_sso email
 			try
 			{
@@ -844,5 +863,89 @@ class Com_EmundusInstallerScript
 		}
 
 		return $checked;
+	}
+
+	private function checkAutomatedUser(): bool
+	{
+		$automated_user_id = ComponentHelper::getParams('com_emundus')->get('automated_task_user', 0);
+
+		$query = $this->db->getQuery(true);
+
+		$query->select('id')
+			->from('#__users');
+		if (!empty($automated_user_id))
+		{
+			$query->where('id = ' . $automated_user_id);
+		}
+		else
+		{
+			$query->where('email = ' . $this->db->quote('automatedtask@emundus.fr'));
+		}
+		$this->db->setQuery($query);
+		$automated_user_id = $this->db->loadResult();
+
+		require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
+		require_once(JPATH_SITE . '/components/com_emundus/helpers/users.php');
+		require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
+		$h_users = new \EmundusHelperUsers;
+		$m_users = new \EmundusModelUsers();
+
+		$other_param['firstname']    = 'Task';
+		$other_param['lastname']     = 'AUTOMATED';
+		$other_param['profile']      = 1000;
+		$other_param['em_oprofiles'] = '';
+		$other_param['univ_id']      = 0;
+		$other_param['em_groups']    = [];
+		$other_param['em_campaigns'] = [];
+		$other_param['news']         = 0;
+
+		if (empty($automated_user_id))
+		{
+			$user           = clone(Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(0));
+			$user->name     = 'Task AUTOMATED';
+			$user->username = 'automatedtask@emundus.fr';
+			$user->email    = 'automatedtask@emundus.fr';
+
+			$password       = $h_users->generateStrongPassword(30);
+			$user->password = UserHelper::hashPassword($password);
+
+			$now                 = EmundusHelperDate::getNow();
+			$user->registerDate  = $now;
+			$user->lastvisitDate = null;
+			$user->groups        = array(2);
+			$user->block         = 0;
+			$user->authProvider  = '';
+
+			$acl_aro_groups = $m_users->getDefaultGroup(1000);
+			$user->groups   = $acl_aro_groups;
+
+			$usertype       = $m_users->found_usertype($acl_aro_groups[0]);
+			$user->usertype = $usertype;
+
+			$automated_user_id = $m_users->adduser($user, $other_param);
+		}
+		else
+		{
+			// Check if exist in emundus users
+			$query->clear()
+				->select('id')
+				->from('#__emundus_users')
+				->where('user_id = ' . $automated_user_id);
+			$this->db->setQuery($query);
+			$emundus_user_id = $this->db->loadResult();
+
+			if (empty($emundus_user_id))
+			{
+				$m_users->addEmundusUser($automated_user_id, $other_param);
+			}
+		}
+
+		// We update it in case of change
+		if (!empty($automated_user_id))
+		{
+			EmundusHelperUpdate::updateComponentParameter('com_emundus', 'automated_task_user', $automated_user_id);
+		}
+
+		return !empty($automated_user_id);
 	}
 }

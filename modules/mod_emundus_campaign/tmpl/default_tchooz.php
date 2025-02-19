@@ -118,7 +118,7 @@ if (sizeof($tmp_campaigns) > 0)
 	}
 	else
 	{
-		$campaigns ['campaigns'] = $tmp_campaigns;
+		$campaigns['campaigns'] = $tmp_campaigns;
 	}
 }
 
@@ -143,6 +143,10 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
 
 $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_groupby_closed : false;
+
+$campaigns_not_pinned = array_filter($tmp_campaigns, function ($campaign) {
+    return $campaign->pinned == 0;
+});
 ?>
 
 
@@ -729,12 +733,14 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
 	            <?php endif; ?>
             </div>
             <!-- END HEADER -->
-
+            
             <!-- LIST OF CAMPAIGNS -->
             <div class="mod_emundus_campaign__list em-mt-32">
 				<?php if (empty($campaigns)) : ?>
                     <div class="em-mb-48">
-                        <p class="mod_emundus_campaign_empty__programme_cat_title"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_FOUND') ?></p>
+                        <img src="/media/com_emundus/images/tchoozy/complex-illustrations/no-result.svg" alt="empty-list" style="width: 10vw; height: 10vw; margin: 0 auto;">
+                        <p style="width: fit-content; margin: 0 auto;"><?php echo Text::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_FOUND') ?></p>
+                        <a class="em-font-size-16 em-profile-color em-text-underline tw-w-full tw-block tw-text-center" href="/index.php"><?php echo Text::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_FOUND_SEARCH_LINK') ?></a>
                     </div>
 				<?php endif; ?>
 
@@ -742,10 +748,18 @@ $mod_em_campaign_groupby_closed = sizeof($campaigns) > 1 ? $mod_em_campaign_grou
 
 				               as $key => $campaign) : ?>
 			<?php if ($key == 'campaigns') : ?>
-                <div class="em-mb-44 em-mt-44">
-                    <h2 class="mod_emundus_campaign__programme_cat_title"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_CAMPAIGNS') ?></h2>
-                    <hr style="margin-top: 8px">
-                </div>
+				<?php if (empty($campaigns_not_pinned)) : ?>
+                    <div class="em-mb-48">
+                        <img src="/media/com_emundus/images/tchoozy/complex-illustrations/no-result.svg" alt="empty-list" style="width: 10vw; height: 10vw; margin: 0 auto;">
+                        <p style="width: fit-content; margin: 0 auto;"><?php echo Text::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_FOUND') ?></p>
+                        <a class="em-font-size-16 em-profile-color em-text-underline tw-w-full tw-block tw-text-center" href="/index.php"><?php echo Text::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN_FOUND_SEARCH_LINK') ?></a>
+                    </div>
+                <?php else: ?>
+                    <div class="em-mb-44 em-mt-44">
+                        <h2 class="mod_emundus_campaign__programme_cat_title"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_CAMPAIGNS') ?></h2>
+                        <hr style="margin-top: 8px">
+                    </div>
+				<?php endif; ?>
 			<?php elseif($group_by == 'category' || $group_by == 'program'|| $group_by == 'month') : ?>
 
 				<?php if($mod_em_campaign_display_tmpl == 1) : ?>

@@ -94,8 +94,10 @@ else {
 							$i++;
 						}
 					}
-					else echo JText::_('COM_EMUNDUS_TAGS_NO_TAG');
-					?>
+					else { ?>
+                        <img src="/media/com_emundus/images/tchoozy/complex-illustrations/no-result.svg" alt="empty-list" style="width: 10vw; height: 10vw; margin: 0 auto;">
+                        <p class="tw-text-center"><?php echo JText::_('COM_EMUNDUS_TAGS_NO_TAG'); ?></p>
+					<?php } ?>
                 </ul>
             </div>
 

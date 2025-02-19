@@ -155,24 +155,27 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
                 $body = $m_emails->setTagsFabrik($body, [$applicant->fnum]);
 
                 $config = JFactory::getConfig();
-                $email_from_sys = $config->get('mailfrom');
-                $email_from = $email->emailfrom;
 
-                // If the email sender has the same domain as the system sender address.
-                if (!empty($email_from) && substr(strrchr($email_from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
-                    $mail_from_address = $email_from;
+                // Get default mail sender info
+                $mail_from_sys = $config->get('mailfrom');
+                $mail_from_sys_name = $config->get('fromname');
+
+                // If no mail sender info is provided, we use the system global config.
+                if(!empty($email->emailfrom)) {
+                    $mail_from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
                 } else {
-                    $mail_from_address = $email_from_sys;
+                    $mail_from = $mail_from_sys;
+                }
+                if(!empty($fromname)){
+                    $mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $fromname);
+                } else {
+                    $mail_from_name = $mail_from_sys_name;
                 }
 
-                // Set sender
-                $sender = [
-                    $mail_from_address,
-                    $fromname
-                ];
+                $mail_from_address = $mail_from_sys;
 
-                $mailer->setSender($sender);
-                $mailer->addReplyTo($from, $fromname);
+                $mailer->setSender([$mail_from_address, $mail_from_name]);
+                $mailer->addReplyTo($mail_from, $mail_from_name);
                 $mailer->addRecipient($to);
                 $mailer->setSubject($subject);
                 $mailer->isHTML(true);
