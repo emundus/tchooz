@@ -88,7 +88,7 @@ class AmmonSynchronizer {
 					$user = $response['data']->results[$match['position']];
 				} else if (!$force_new_user_if_not_found && $match['lev'] > 0 && $match['lev'] < 3) {
 					Log::add('User ' . $current_user_name . ' has a similar name to ' . $found_names[$match['position']] . ' in ammon api. Need a manual check', Log::ERROR, 'plugin.emundus.ammon');
-					throw new \Exception('[SHORT_LEV_DISTANCE] User ' . $current_user_name . ' has a similar name to ' . $found_names[$match['position']] . ' in ammon api. Need a manual check');
+					throw new \Exception('[SHORT_LEV_DISTANCE] User ' . $current_user_name . ' has a similar name to ' . $found_names[$match['position']] . ' in ammon api. Need a manual check. [CURRENT_USERNAME="' . $current_user_name . '"] [FOUND_USERNAME="' . $found_names[$match['position']] . '"]');
 				} else {
 					// No match found, need to create a new user
 				}

@@ -11,6 +11,7 @@ use Joomla\Plugin\Emundus\Ammon\Entities\UserEntity;
 use Joomla\Plugin\Emundus\Ammon\Factory\AmmonFactory;
 use Joomla\Plugin\Emundus\Ammon\Synchronizer\AmmonSynchronizer;
 use Joomla\CMS\Event\GenericEvent;
+use Joomla\CMS\Plugin\PluginHelper;
 
 require_once(JPATH_SITE . '/components/com_emundus/models/sync.php');
 require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
@@ -288,11 +289,16 @@ class AmmonRepository
 				}
 			} catch (\Exception $e) {
 				if (str_starts_with($e->getMessage(), '[SHORT_LEV_DISTANCE]')) {
-					// todo: send an email to sales referent
+					$matches = [];
+					preg_match('/\[FOUND_USERNAME="(.*)"\]/', $e->getMessage(), $matches);
+					$found_name = explode(' ', $matches[1]);
 
+
+					PluginHelper::importPlugin('emundus');
 					$this->dispatcher->dispatch('onAmmonFoundSimilarName', new GenericEvent('onAmmonFoundSimilarName', [
 						'fnum' => $fnum,
 						'name' => $user_infos->lastname . ' ' . $user_infos->firstname,
+						'found_name' => $found_name,
 						'message' => $e->getMessage(),
 						'retry' => true,
 						'retry_event' => 'onAfterStatusChange',
@@ -302,6 +308,18 @@ class AmmonRepository
 							'force_new_user_if_not_found' => true
 						]
 					]));
+					$onAmmonFoundSimilarNameEventHandler = new GenericEvent(
+						'onCallEventHandler',
+						[
+							'onAmmonFoundSimilarName', [
+								'fnum' => $this->fnum,
+								'name' => $user_infos->lastname . ' ' . $user_infos->firstname,
+								'found_name' => $found_name,
+								'message' => $e->getMessage()
+							]
+						]
+					);
+					$this->dispatcher->dispatch('onCallEventHandler', $onAmmonFoundSimilarNameEventHandler);
 
 					throw new \Exception($e->getMessage());
 				}
