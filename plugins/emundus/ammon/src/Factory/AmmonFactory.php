@@ -101,7 +101,7 @@ class AmmonFactory
 				[$address],
 				"SGE,CLI",
 				true,
-				$this->fnum
+				$ammon_company->centext
 			);
 		}
 
@@ -192,7 +192,7 @@ class AmmonFactory
 			'',
 			'',
 			'INT',
-			$values['email'],
+			'manager_' . $this->fnum,
 			[],
 			[$employmentEntity]
 		);

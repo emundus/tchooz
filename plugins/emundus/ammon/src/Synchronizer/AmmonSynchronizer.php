@@ -23,6 +23,7 @@ class AmmonSynchronizer {
 		$this->sync_model = new \EmundusModelSync();
 		$this->api = $api;
 		$this->db = Factory::getContainer()->get('DatabaseDriver');
+		Log::addLogger(['text_file' => 'plugin.emundus.ammon.php'], Log::ALL, array('plugin.emundus.ammon'));
 	}
 
 	public function getCompany(string $siret)
@@ -55,6 +56,8 @@ class AmmonSynchronizer {
 
 		if ($response['status'] && $response['data']['status'] == 'success') {
 			$created = true;
+		} else {
+			Log::add('Failed to create company ' . json_encode($body_params['rows']), Log::ERROR, 'plugin.emundus.ammon');
 		}
 
 		return $created;
@@ -121,7 +124,7 @@ class AmmonSynchronizer {
 		if ($response['status'] == 200 && $response['data']->status == 'success' && !empty($response['data']->results)) {
 			$created = true;
 		} else {
-			Log::add('Failed to create user ' . $body_params['rows'], Log::ERROR, 'com_emundus.error');
+			Log::add('Failed to create user response => ' . json_encode($response), Log::ERROR, 'plugin.emundus.ammon');
 		}
 
 		return $created;

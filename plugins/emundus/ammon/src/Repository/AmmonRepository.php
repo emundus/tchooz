@@ -44,6 +44,7 @@ class AmmonRepository
 		$this->fnum = $fnum;
 		$this->ammon_session_id = $ammon_session_id;
 		$this->file_status = $file_status;
+		Log::addLogger(['text_file' => 'plugin.emundus.ammon.php'], Log::ALL, array('plugin.emundus.ammon'));
 
 		if (empty($this->fnum)) {
 			throw new \InvalidArgumentException('The fnum cannot be empty');
