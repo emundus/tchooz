@@ -241,11 +241,10 @@ requirejs(['fab/fabrik'], function () {
       let repeat_groups = form.repeatGroupMarkers;
       repeat_groups.forEach(function (repeatGroupsMarked, group) {
         if (repeatGroupsMarked !== 0) {
-          let minRepeat = form.options.minRepeat[group];
-          let maxRepeat = form.options.maxRepeat[group];
+          let minRepeat = Number(form.options.minRepeat[group]);
+          let maxRepeat = Number(form.options.maxRepeat[group]);
 
           let deleteButtons = document.querySelectorAll('#group' + group + ' .fabrikGroupRepeater .deleteGroup');
-          console.log(deleteButtons)
 
           if (repeatGroupsMarked > 1) {
             deleteButtons.forEach(function (button) {
@@ -338,6 +337,9 @@ requirejs(['fab/fabrik'], function () {
 
             if (action.action == 'define_repeat_group') {
               let params = JSON.parse(action.params);
+              params[0].maxRepeat = Number(params[0].maxRepeat);
+              params[0].minRepeat = Number(params[0].minRepeat);
+
               form.options.maxRepeat[action.fields] = params[0].maxRepeat;
               form.options.minRepeat[action.fields] = params[0].minRepeat;
               var repeat_counter = document.getElementById('fabrik_repeat_group_' + action.fields + '_counter');
