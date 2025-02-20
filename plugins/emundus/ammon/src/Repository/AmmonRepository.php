@@ -253,10 +253,10 @@ class AmmonRepository
 			if (!empty($applicantEntity)) {
 				$created = $this->synchronizer->createUser($applicantEntity);
 
-				if ($created) {
-					$onAfterAmmonApplicantCreate = new GenericEvent('onAfterAmmonApplicantCreate', ['fnum' => $this->fnum, 'session_id' => $this->ammon_session_id, 'ref' => $applicantEntity->externalReference]);
-					$this->dispatcher->dispatch('onAfterAmmonApplicantCreate', $onAfterAmmonApplicantCreate);
+				$onAfterAmmonApplicantCreate = new GenericEvent('onAfterAmmonApplicantCreate', ['fnum' => $this->fnum, 'session_id' => $this->ammon_session_id, 'ref' => $applicantEntity->externalReference, 'status' => $created]);
+				$this->dispatcher->dispatch('onAfterAmmonApplicantCreate', $onAfterAmmonApplicantCreate);
 
+				if ($created) {
 					$applicant = $applicantEntity;
 					Log::add('User for fnum ' . $this->fnum . ' created successfully', Log::INFO, 'plugin.emundus.ammon');
 				} else {
