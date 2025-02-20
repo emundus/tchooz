@@ -88,7 +88,7 @@ class AmmonRepository
 		try {
 			$company = $this->getOrCreateCompany();
 			if (!empty($company)) {
-				$manager = $this->getCompanyManager($this->fnum);
+				$manager = $this->getCompanyManager($company);
 
 				if (empty($manager)) {
 					$manager = $this->createCompanyManager($company);
