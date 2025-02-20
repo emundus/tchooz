@@ -85,16 +85,16 @@ class AmmonRepository
 	{
 		$registered = false;
 
-		$company = $this->getOrCreateCompany();
-		if (!empty($company)) {
-			$manager = $this->getCompanyManager($this->fnum);
-
-			if (empty($manager)) {
-				$manager = $this->createCompanyManager($company);
-			}
-		}
-
 		try {
+			$company = $this->getOrCreateCompany();
+			if (!empty($company)) {
+				$manager = $this->getCompanyManager($this->fnum);
+
+				if (empty($manager)) {
+					$manager = $this->createCompanyManager($company);
+				}
+			}
+
 			$applicant = $this->getOrCreateApplicant($force_new_user_if_not_found);
 			if (empty($applicant)) {
 				throw new \Exception('Failed to create user');
