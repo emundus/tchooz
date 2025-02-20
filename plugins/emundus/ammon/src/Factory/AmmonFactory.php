@@ -2,6 +2,7 @@
 
 namespace Joomla\Plugin\Emundus\Ammon\Factory;
 
+use Joomla\CMS\Log\Log;
 use Joomla\Plugin\Emundus\Ammon\Entities\AdressEntity;
 use Joomla\Plugin\Emundus\Ammon\Entities\CompanyEntity;
 use Joomla\Plugin\Emundus\Ammon\Entities\EmploymentEntity;
@@ -19,6 +20,7 @@ class AmmonFactory
 		{
 			throw new \InvalidArgumentException('The fnum cannot be empty');
 		}
+		Log::addLogger(['text_file' => 'plugin.emundus.ammon.php'], Log::ALL, array('plugin.emundus.ammon'));
 	}
 
 	public function createCompanyAdressEntity(): AdressEntity
@@ -261,7 +263,7 @@ class AmmonFactory
 			'PAR,INT,PARTM',
 			$this->generateExternalReference('EMUNDUS_USER',  $values['user_id']),
 			[$adressEntity],
-			$employmentEntity ? [$employmentEntity] : []
+			!empty($employmentEntity) ? [$employmentEntity] : []
 		);
 	}
 
@@ -376,6 +378,7 @@ class AmmonFactory
 				$db->setQuery($query);
 				$db->execute();
 			} catch (\Exception $e) {
+				Log::add('Failed to generate external reference : ' . $e->getMessage(), Log::ERROR, 'plugin.emundus.ammon');
 				throw new \InvalidArgumentException('Error while generating external reference');
 			}
 		}
