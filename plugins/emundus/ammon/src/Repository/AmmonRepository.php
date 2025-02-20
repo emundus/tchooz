@@ -96,6 +96,10 @@ class AmmonRepository
 
 		try {
 			$applicant = $this->getOrCreateApplicant($force_new_user_if_not_found);
+			if (empty($applicant)) {
+				throw new \Exception('Failed to create user');
+			}
+
 			$registration = $this->factory->createRegistrationEntity($applicant, $this->ammon_session_id, $company);
 			$registered = $this->synchronizer->createRegistration($registration);
 			if ($registered)
@@ -228,7 +232,7 @@ class AmmonRepository
 		return $user;
 	}
 
-	private function getOrCreateApplicant(bool $force_new_user_if_not_found = false): UserEntity
+	private function getOrCreateApplicant(bool $force_new_user_if_not_found = false): ?UserEntity
 	{
 		$applicant = $this->getApplicant($this->fnum, $force_new_user_if_not_found);
 		if (empty($applicant)) {
