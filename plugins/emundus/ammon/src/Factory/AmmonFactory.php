@@ -385,4 +385,29 @@ class AmmonFactory
 
 		return $externalReference;
 	}
+
+	/**
+	 * @param $reference
+	 *
+	 * @return bool
+	 */
+	public function deleteReference($reference): bool
+	{
+		$deleted = false;
+
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+
+		$query->delete($db->quoteName('#__emundus_ammon_external_references'))
+			->where($db->quoteName('external_reference') . ' = ' . $db->quote($reference));
+
+		try {
+			$db->setQuery($query);
+			$deleted = $db->execute();
+		} catch (\Exception $e) {
+			Log::add('Failed to delete external reference : ' . $e->getMessage(), Log::ERROR, 'plugin.emundus.ammon');
+		}
+
+		return $deleted;
+	}
 }

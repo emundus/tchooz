@@ -108,6 +108,7 @@ class AmmonRepository
 			}
 			else
 			{
+				$this->factory->deleteReference($registration->ExternalReference);
 				Log::add('Error when trying to create registration for fnum ' . $this->fnum, Log::ERROR, 'plugin.emundus.ammon');
 			}
 		} catch (\Exception $e) {
@@ -186,30 +187,28 @@ class AmmonRepository
 		return $company;
 	}
 
-	private function getCompanyManager($fnum): ?UserEntity
+	private function getCompanyManager($company): ?UserEntity
 	{
 		$user = null;
 
-		if (!empty($fnum)) {
-			$query = $this->db->createQuery();
-			$query->select('e_859_8215 as lastname, e_859_8216 as firstname')
-				->from($this->db->quoteName('#__emundus_1011_03'))
-				->where('fnum = ' . $this->db->quote($fnum));
+		try
+		{
+			$employmentEntity = $this->factory->createEmploymentEntity($company);
+			$managerEntity    = $this->factory->createManagerEntity($employmentEntity);
 
-			try {
-				$this->db->setQuery($query);
-				$user_infos = $this->db->loadAssoc();
+			if (!empty($managerEntity->lastName) && !empty($managerEntity->firstName)) {
+				$ammon_user = $this->synchronizer->getUserFromName($managerEntity->lastName, $managerEntity->firstName);
 
-				if (!empty($user_infos)) {
-					$ammon_user = $this->synchronizer->getUserFromName($user_infos['lastname'], $user_infos['firstname']);
-
-					if (!empty($ammon_user)) {
-						$user = $this->factory->createManagerEntityFromAmmon($ammon_user);
-					}
+				if (!empty($ammon_user))
+				{
+					$user = $this->factory->createManagerEntityFromAmmon($ammon_user);
+					$this->factory->deleteReference($managerEntity->externalReference);
 				}
-			} catch (Exception $e) {
-				Log::add('Failed to get company manager user entity ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Failed to get company manager user entity ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
 
 		return $user;
