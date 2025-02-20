@@ -19,14 +19,6 @@ class CompanyEntity
 			throw new \InvalidArgumentException('The establishmentName cannot be empty');
 		}
 
-		if (empty($this->establishmentType)) {
-			throw new \InvalidArgumentException('The establishmentType cannot be empty');
-		}
-
-		if (empty($this->registrationSIRET)) {
-			throw new \InvalidArgumentException('The registrationSIRET cannot be empty');
-		}
-
 		if (empty($this->addresses)) {
 			throw new \InvalidArgumentException('The addresses cannot be empty');
 		}
