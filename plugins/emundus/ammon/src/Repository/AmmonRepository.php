@@ -92,12 +92,16 @@ class AmmonRepository
 
 				if (empty($manager)) {
 					$manager = $this->createCompanyManager($company);
+
+					if (empty($manager)) {
+						throw new \Exception('Failed to create company manager in ammon.');
+					}
 				}
 			}
 
 			$applicant = $this->getOrCreateApplicant($force_new_user_if_not_found);
 			if (empty($applicant)) {
-				throw new \Exception('Failed to create user');
+				throw new \Exception('Failed to create applicant in ammon.');
 			}
 
 			$registration = $this->factory->createRegistrationEntity($applicant, $this->ammon_session_id, $company);
@@ -187,7 +191,7 @@ class AmmonRepository
 		return $company;
 	}
 
-	private function getCompanyManager($company): ?UserEntity
+	private function getCompanyManager(CompanyEntity $company): ?UserEntity
 	{
 		$user = null;
 
