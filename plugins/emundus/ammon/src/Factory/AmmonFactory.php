@@ -301,7 +301,15 @@ class AmmonFactory
 		return $user_entity;
 	}
 
-	public function createRegistrationEntity(UserEntity $applicant, $session_id, $company = null): RegistrationEntity
+	/**
+	 * @param   UserEntity  $applicant
+	 * @param   int         $session_id
+	 * @param   mixed       $company
+	 *
+	 * @return RegistrationEntity
+	 * @throws \Exception
+	 */
+	public function createRegistrationEntity(UserEntity $applicant, int $session_id, ?CompanyEntity $company = null): RegistrationEntity
 	{
 		$configurations = array_filter($this->configurations, function ($configuration) {
 			return $configuration->action === 'create' && $configuration->name === 'registration';
@@ -321,15 +329,15 @@ class AmmonFactory
 			$session_id,
 			3,
 			!empty($values['HistoryLog1Content']) ? 'AMENAGEMENT' : '',
-			$values['HistoryLog1Content'],
-			!empty($company) ? $company->externalReference : null,
+			$values['HistoryLog1Content'] ?? '',
+			!empty($company) ? $company->externalReference : '',
 			$this->generateExternalReference('EMUNDUS_REGISTRATION', $this->fnum)
 		);
 	}
 
 	/**
 	 * @param   string  $prefix
-	 * @param           $data_to_store
+	 * @param $internal_reference
 	 *
 	 * @return string
 	 */
@@ -342,29 +350,35 @@ class AmmonFactory
 			$query = $db->getQuery(true);
 
 			$query->insert($db->quoteName('#__emundus_ammon_external_references'))
-				->columns($db->quoteName('internal_reference'), $db->quoteName('type'), $db->quoteName('created'))
+				->columns($db->quoteName('internal_reference') . ', ' . $db->quoteName('type'). ', ' . $db->quoteName('created'))
 				->values($db->quote($internal_reference). ', ' . $db->quote($prefix) . ', ' . $db->quote(date('Y-m-d H:i:s')));
 
-			$db->setQuery($query);
-			$db->execute();
-			$row_id = $db->insertid();
+			try {
+				$db->setQuery($query);
+				$db->execute();
+				$row_id = $db->insertid();
 
-			switch($prefix) {
-				case 'EMUNDUS_USER':
-				case 'EMUNDUS_COMPANY':
-					$externalReference = $prefix . '_' . $row_id;
-					break;
-				case 'EMUNDUS_REGISTRATION':
-					$externalReference = $prefix . '_' . $this->fnum;
-					break;
+				switch($prefix) {
+					case 'EMUNDUS_USER':
+					case 'EMUNDUS_COMPANY':
+						$externalReference = $prefix . '_' . $row_id;
+						break;
+					case 'EMUNDUS_REGISTRATION':
+						$externalReference = $prefix . '_' . $this->fnum;
+						break;
+				}
+
+				$query->clear()
+					->update($db->quoteName('#__emundus_ammon_external_references'))
+					->set($db->quoteName('external_reference') . ' = ' . $db->quote($externalReference))
+					->where($db->quoteName('id') . ' = ' . $db->quote($row_id));
+
+				$db->setQuery($query);
+				$db->execute();
+			} catch (\Exception $e) {
+				throw new \InvalidArgumentException('Error while generating external reference');
 			}
-
-			$query->clear()
-				->update($db->quoteName('#__emundus_ammon_external_references'))
-				->set($db->quoteName('external_reference') . ' = ' . $db->quote($externalReference))
-				->where($db->quoteName('id') . ' = ' . $db->quote($row_id));
 		}
-
 
 		return $externalReference;
 	}
