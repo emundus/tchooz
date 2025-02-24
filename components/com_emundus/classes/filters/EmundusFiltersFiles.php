@@ -699,12 +699,12 @@ class EmundusFiltersFiles extends EmundusFilters
 			$workflows = $m_workflow->getWorkflows([], 0, 0, $this->user_programs);
 			$steps = [];
 			$values_selected = [];
+			$steps_selected = [];
 
 			foreach($workflows as $workflow) {
 				$workflow_data = $m_workflow->getWorkflow($workflow->id);
 
 				if (!empty($workflow_data['steps'])) {
-					$steps_selected = [];
 					foreach($workflow_data['steps'] as $step) {
 						if ($m_workflow->isEvaluationStep($step->type)) {
 							$action_id = $m_workflow->getStepAssocActionId($step->id);
@@ -717,11 +717,11 @@ class EmundusFiltersFiles extends EmundusFilters
 							}
 						}
 					}
-
-					if (!empty($steps_selected) && sizeof($steps) != $steps_selected) {
-						$values_selected = $steps_selected;
-					}
 				}
+			}
+
+			if (!empty($steps_selected) && sizeof($steps) != $steps_selected) {
+				$values_selected = $steps_selected;
 			}
 
 			if (!$filter_menu_values_are_empty)
