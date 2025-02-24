@@ -1973,7 +1973,7 @@ class EmundusControllerFiles extends BaseController
 											if ($textarea_elements[$k] == 1) {
 												$v = strip_tags($v);
 											}
-											$line .= preg_replace("/\r|\t/", "", $v) . "\t";
+											$line .= preg_replace("/\r|\n|\t/", "", $v) . "\t";
 										}
 										elseif(!empty($iban_elements[$k])){
 											if($iban_elements[$k] == 1){
