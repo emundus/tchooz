@@ -158,13 +158,24 @@ export default {
   },
   methods: {
     labelTranslate({label,name,group_id,elements}) {
-      let labelTranslated = label[useGlobalStore().getShortLang];
+      let labelTranslated = label ? label[useGlobalStore().getShortLang] : '';
+
+      // If labelTranslated is empty, we try to find an other language
+      if(labelTranslated === '') {
+        let labels = Object.values(label);
+        labels.forEach((label) => {
+          if(label !== '') {
+            labelTranslated = label;
+          }
+        });
+      }
+
       if(labelTranslated !== '') {
         return labelTranslated;
-      } else if(group_id) {
+      } else if(group_id && elements) {
         let groupElements = Object.values(elements);
-        let element = groupElements.find(element => !element.hidden && element.label[useGlobalStore().getShortLang] !== '');
-        return this.translate('COM_EMUNDUS_FORM_BUILDER_RULES_GROUP_WITH_ELEMENT').replace('%s',element.label[useGlobalStore().getShortLang]);
+        let element = groupElements.find(element => !element.hidden && element.label && element.label[useGlobalStore().getShortLang] !== '');
+        return this.translate('COM_EMUNDUS_FORM_BUILDER_RULES_GROUP_WITH_ELEMENT').replace('%s', element.label[useGlobalStore().getShortLang]);
       } else {
         return name;
       }

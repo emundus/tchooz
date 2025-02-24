@@ -145,7 +145,19 @@ export default {
   },
   methods: {
     labelTranslate({label}) {
-      return label ? label[useGlobalStore().getShortLang] : '';
+      let labelTranslated = label ? label[useGlobalStore().getShortLang] : '';
+
+      // If labelTranslated is empty, we try to find an other language
+      if(labelTranslated === '') {
+        let labels = Object.values(label);
+        labels.forEach((label) => {
+          if(label !== '') {
+            labelTranslated = label;
+          }
+        });
+      }
+
+      return labelTranslated;
     },
     defineOptions(val) {
       if (this.options_plugins.includes(val.plugin)) {
