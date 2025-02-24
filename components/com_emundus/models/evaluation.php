@@ -1270,7 +1270,10 @@ class EmundusModelEvaluation extends JModelList
 			$session = $this->app->getSession();
 			$limit = $session->get('limit', 0);
 			$limitstart = $session->get('limitstart', 0);
-			$list = array_slice($list, $limitstart, $limit);
+
+			if (!empty($limit)) {
+				$list = array_slice($list, $limitstart, $limit);
+			}
 		} else {
 			$list = $this->getEvaluationsList();
 		}
