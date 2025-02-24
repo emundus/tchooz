@@ -1849,7 +1849,7 @@ class EmundusModelEvaluation extends JModelList
 		return $this->_files->changePublished($fnum, $published = -1);
 	}
 
-	public function getAllFnums(int $user_id): array
+	public function getAllFnums(int $user_id = 0): array
 	{
 		$fnums = [];
 
