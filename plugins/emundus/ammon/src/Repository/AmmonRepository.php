@@ -278,18 +278,14 @@ class AmmonRepository
 		$user = null;
 
 		if (!empty($fnum)) {
-			$query = $this->db->createQuery();
+			$firstname = '';
+			$lastname = '';
 
-			$query->select('eu.firstname, eu.lastname')
-				->from($this->db->quoteName('#__emundus_users', 'eu'))
-				->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.applicant_id = eu.user_id')
-				->where('ecc.fnum = ' . $this->db->quote($fnum));
 			try {
-				$this->db->setQuery($query);
-				$user_infos = $this->db->loadObject();
-
+				$firstname = \EmundusHelperFabrik::getValueByAlias('registration_first_name', $fnum)['raw'];
+				$lastname = \EmundusHelperFabrik::getValueByAlias('registration_common_name', $fnum)['raw'];
 				$birthdate = \EmundusHelperFabrik::getValueByAlias('registration_date_of_birth', $fnum)['raw'];
-				$ammon_user = $this->synchronizer->getUser($user_infos->lastname, $user_infos->firstname, $birthdate, $force_new_user_if_not_found);
+				$ammon_user = $this->synchronizer->getUser($lastname, $firstname, $birthdate, $force_new_user_if_not_found);
 
 				if (!empty($ammon_user)) {
 					$user = $this->factory->createUserEntityFromAmmon($ammon_user);
@@ -304,7 +300,7 @@ class AmmonRepository
 					PluginHelper::importPlugin('emundus');
 					$this->dispatcher->dispatch('onAmmonFoundSimilarName', new GenericEvent('onAmmonFoundSimilarName', [
 						'fnum' => $fnum,
-						'name' => $user_infos->lastname . ' ' . $user_infos->firstname,
+						'name' => $lastname . ' ' . $firstname,
 						'found_name' => $found_name,
 						'message' => $e->getMessage(),
 						'retry' => true,
@@ -320,7 +316,7 @@ class AmmonRepository
 						[
 							'onAmmonFoundSimilarName', [
 								'fnum' => $this->fnum,
-								'name' => $user_infos->lastname . ' ' . $user_infos->firstname,
+								'name' => $lastname . ' ' . $firstname,
 								'found_name' => $found_name,
 								'message' => $e->getMessage()
 							]

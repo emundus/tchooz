@@ -74,24 +74,30 @@ class AmmonSynchronizer {
 			$response = $this->sync_model->callApi($this->api, 'queries/execute', 'post', $get_query, false);
 
 			$current_user_name = $lastname . ' ' . $firstname;
-			if (!empty($response) && $response['status'] == 200 && !empty($response['data']->results)) {
-				$found_names = array_map(function($result) {
-					$result->cnom = trim($result->cnom);
-					$result->cprenom = trim($result->cprenom);
+			if (!empty($response) && $response['status'] == 200) {
+				if (!empty(!empty($response['data']->results))) {
+					$found_names = array_map(function($result) {
+						$result->cnom = trim($result->cnom);
+						$result->cprenom = trim($result->cprenom);
 
-					return $result->cnom . ' ' . $result->cprenom;
-				}, $response['data']->results);
+						return $result->cnom . ' ' . $result->cprenom;
+					}, $response['data']->results);
 
-				$match = \EmundusHelperFilters::searchClosestWord($current_user_name, $found_names);
+					$match = \EmundusHelperFilters::searchClosestWord($current_user_name, $found_names);
 
-				if ($match['lev'] == 0) {
-					$user = $response['data']->results[$match['position']];
-				} else if (!$force_new_user_if_not_found && $match['lev'] > 0 && $match['lev'] < 3) {
-					Log::add('User ' . $current_user_name . ' has a similar name to ' . $found_names[$match['position']] . ' in ammon api. Need a manual check', Log::ERROR, 'plugin.emundus.ammon');
-					throw new \Exception('[SHORT_LEV_DISTANCE] User ' . $current_user_name . ' has a similar name to ' . $found_names[$match['position']] . ' in ammon api. Need a manual check. [CURRENT_USERNAME="' . $current_user_name . '"] [FOUND_USERNAME="' . $found_names[$match['position']] . '"]');
+					if ($match['lev'] == 0) {
+						$user = $response['data']->results[$match['position']];
+					} else if (!$force_new_user_if_not_found && $match['lev'] > 0 && $match['lev'] <= 4) {
+						Log::add('User ' . $current_user_name . ' has a similar name to ' . $found_names[$match['position']] . ' in ammon api. Need a manual check', Log::INFO, 'plugin.emundus.ammon');
+						throw new \Exception('[SHORT_LEV_DISTANCE] User ' . $current_user_name . ' has a similar name to ' . $found_names[$match['position']] . ' in ammon api. Need a manual check. [CURRENT_USERNAME="' . $current_user_name . '"] [FOUND_USERNAME="' . $found_names[$match['position']] . '"]');
+					} else {
+						Log::add('No match found for user ' . $current_user_name . ' in ammon api. Need to create a new user. Closest name was ' . $found_names[$match['position']] .  ' Lev distance was ' . $match['lev'], Log::INFO, 'plugin.emundus.ammon');
+					}
 				} else {
-					// No match found, need to create a new user
+					Log::add('No user found for ' . $current_user_name . ' in ammon api. Need to create a new user', Log::INFO, 'plugin.emundus.ammon');
 				}
+			} else {
+				Log::add('Failed to get user response => ' . json_encode($response), Log::ERROR, 'plugin.emundus.ammon');
 			}
 		}
 
