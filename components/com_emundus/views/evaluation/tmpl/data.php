@@ -12,8 +12,13 @@
  * details.
  */
 defined('_JEXEC') or die('Restricted access');
-$anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
-$limits         = [0 => JText::_('COM_EMUNDUS_ACTIONS_ALL'), 5 => 5, 10 => 10, 15 => 15, 20 => 20, 25 => 25, 30 => 30, 50 => 50, 100 => 100];
+
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+
+
+$anonymize_data = EmundusHelperAccess::isDataAnonymized(Factory::getApplication()->getIdentity()->id);
+$limits         = [0 => Text::_('COM_EMUNDUS_ACTIONS_ALL'), 5 => 5, 10 => 10, 15 => 15, 20 => 20, 25 => 25, 30 => 30, 50 => 50, 100 => 100];
 
 $fnums = [];
 if (is_array($this->datas))
@@ -60,7 +65,7 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
                 <div class="em-ml-16">|</div>
                 <div class="em-ml-16 em-flex-row">
                     <label for="pager-select"
-                           class="em-mb-0-important em-mr-4"><?= JText::_('COM_EMUNDUS_DISPLAY') ?></label>
+                           class="em-mb-0-important em-mr-4"><?= Text::_('COM_EMUNDUS_DISPLAY') ?></label>
                     <select name="pager-select" id="pager-select" class="em-select-no-border">
 						<?php foreach ($limits as $limit => $limit_text): ?>
                             <option value="<?= $limit ?>" <?= $this->pagination->limit == $limit ? "selected=true" : '' ?>><?= $limit_text ?></option>
@@ -76,7 +81,7 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
                 <thead>
                 <tr>
 					<?php foreach ($this->datas[0] as $kl => $v) : ?>
-                        <th title="<?= strip_tags(JText::_($v)); ?>" id="<?= $kl; ?>">
+                        <th title="<?= strip_tags(Text::_($v)); ?>" id="<?= $kl; ?>">
                             <div class="em-cell">
 								<?php if (@$this->lists['order'] == $kl) : ?>
 									<?php if (@$this->lists['order_dir'] == 'desc') : ?>
@@ -85,7 +90,7 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
                                         <span class="glyphicon glyphicon-sort-by-attributes"></span>
 									<?php endif; ?>
                                     <strong>
-										<?= strip_tags(JText::_($v)); ?>
+										<?= strip_tags(Text::_($v)); ?>
                                     </strong>
 
 								<?php elseif ($kl == 'check' && empty($this->cfnum)) : ?>
@@ -104,19 +109,19 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
                                         <label>
                                             <input value="-1" id="em-check-all-page" class="em-check-all-page"
                                                    type="checkbox"/>
-                                            <span id="span-check-all"><?= JText::_('COM_EMUNDUS_FILTERS_CHECK_ALL'); ?></span>
+                                            <span id="span-check-all"><?= Text::_('COM_EMUNDUS_FILTERS_CHECK_ALL'); ?></span>
                                         </label>
                                         <label class="em-check-all-all" for="em-check-all-all">
                                             <input value="all" id="em-check-all-all" type="checkbox"
                                                    class="em-check-all-all"/>
-                                            <span id="span-check-all-all"><?= JText::_('COM_EMUNDUS_FILTERS_CHECK_ALL_ALL'); ?></span>
+                                            <span id="span-check-all-all"><?= Text::_('COM_EMUNDUS_FILTERS_CHECK_ALL_ALL'); ?></span>
                                         </label>
                                         <label class="em-check-none" for="em-check-none">
-                                            <span id="span-check-none"><?= JText::_('COM_EMUNDUS_FILTERS_CHECK_NONE'); ?></span>
+                                            <span id="span-check-none"><?= Text::_('COM_EMUNDUS_FILTERS_CHECK_NONE'); ?></span>
                                         </label>
                                     </div>
 								<?php else: ?>
-									<?= strip_tags(JText::_($v)); ?>
+									<?= strip_tags(Text::_($v)); ?>
 								<?php endif; ?>
                             </div>
                         </th>
@@ -205,7 +210,7 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
 												<?= @$this->colsSup[$k][$line['fnum']->val] ?>
 											<?php else : ?>
 												<?php if ($value->type == 'text') : ?>
-													<?= strip_tags(JText::_($value->val)); ?>
+													<?= strip_tags(Text::_($value->val)); ?>
 												<?php elseif ($value->type == "textarea" && !empty($value->val) && strlen($value->val) > 200) : ?>
 													<?= substr(strip_tags($value->val), 0, 200) . " ..."; ?>
 												<?php elseif ($value->type == "date")  : ?>
@@ -214,7 +219,7 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
 														<?php else: ?>
 															<?php
 															$formatted_date = DateTime::createFromFormat('Y-m-d H:i:s', $value->val);
-															echo JFactory::getDate($value->val)->format(JText::_('DATE_FORMAT_LC2'));
+															echo JFactory::getDate($value->val)->format(Text::_('DATE_FORMAT_LC2'));
 															?>
 														<?php endif; ?>
                                                     </strong>
@@ -223,7 +228,7 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
 													// Do not display the typical COM_EMUNDUS_PLEASE_SELECT text used for empty dropdowns.
 													if ($value->val !== 'COM_EMUNDUS_PLEASE_SELECT')
 													{
-														echo JText::_($value->val);
+														echo Text::_($value->val);
 													}
 													?>
 												<?php endif; ?>
@@ -379,7 +384,6 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
                 document.querySelector('.selectContainer').style.backgroundColor = '#F3F3F3';
 
                 reloadActions('files', undefined, true);
-
             } else {
                 $('.em-check').prop('checked', false);
 
@@ -412,84 +416,11 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
 
         $(document).on('change', '.em-check-all-all', function (e) {
             selectAllFiles();
-        })
-
-        $(document).on('change', '.em-check-all-page,.selectPage #em-check-all', function (e) {
-            let pageCheckAll = $('.selectPage #em-check-all').is(':checked');
-            let is_checked = false;
-
-            var numberOfFilesDisplayed = null;
-            if(document.querySelector('#pager-select')) {
-                numberOfFilesDisplayed = document.querySelector('#pager-select').value;
-            }
-
-            if (e.target.id === 'em-check-all') {
-                if (pageCheckAll === false) {
-                    $('.em-check-all-page#em-check-all-page').prop('checked', false);
-                } else {
-                    if(numberOfFilesDisplayed == 0) {
-                        $('.em-check-all-all').prop('checked', true);
-                        $('.em-check-all-all').trigger('change');
-                        return;
-                    }
-
-                    is_checked = true;
-                }
-            }
-
-            let pageCheck = $('.em-check-all-page#em-check-all-page').is(':checked');
-
-            if (e.target.id === 'em-check-all-page') {
-                if (pageCheck === false) {
-                    $('.selectPage #em-check-all').prop('checked', false);
-                } else {
-                    if(numberOfFilesDisplayed == 0) {
-                        $('.em-check-all-all').prop('checked', true);
-                        $('.em-check-all-all').trigger('change');
-                        return;
-                    }
-
-                    is_checked = true;
-                }
-            }
-
-            if (is_checked) {
-                $('.em-check-all-all#em-check-all-all').prop('checked', false);
-                $('.em-check').prop('checked', true);
-
-                let countCheckedCheckbox = $('.em-check').not('#em-check-all.em-check,#em-check-all-all.em-check').filter(':checked').length;
-                let files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_FILES_FILE') : Joomla.JText._('COM_EMUNDUS_FILES_FILES');
-
-                if (countCheckedCheckbox !== 0) {
-                    displayCount();
-                    countFiles.innerHTML = '<p>' + Joomla.Text._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + countCheckedCheckbox + ' ' + files + '. <a class="em-pointer em-text-underline em-profile-color" onclick="checkAllFiles()">' + Joomla.Text._('COM_EMUNDUS_FILES_SELECT_ALL_FILES') + '</a></p>';
-                } else {
-                    hideCount();
-                    countFiles.innerHTML = '';
-                }
-
-                document.querySelector('.selectContainer').style.backgroundColor = '#F3F3F3';
-
-            } else {
-                $('.em-check').prop('checked', false);
-                hideCount();
-                countFiles.innerHTML = '';
-
-                document.querySelector('.selectContainer').style.backgroundColor = 'transparent';
-            }
-
-            if (e.target.id === 'em-check-all-page') {
-                if (is_checked) {
-                    reloadActions('files', undefined, true);
-                } else {
-                    reloadActions('files', undefined, false);
-                }
-            }
-        })
+        });
 
         $(document).on('change', '.em-check', function (e) {
             let countCheckedCheckbox = $('.em-check').not('#em-check-all.em-check,#em-check-all-all.em-check').filter(':checked').length;
-            let files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_FILES_FILE') : Joomla.JText._('COM_EMUNDUS_FILES_FILES');
+            let files = countCheckedCheckbox === 1 ? Joomla.Text._('COM_EMUNDUS_FILES_FILE') : Joomla.Text._('COM_EMUNDUS_FILES_FILES');
 
             if (countCheckedCheckbox !== 0) {
                 displayCount();
