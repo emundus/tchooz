@@ -260,7 +260,7 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
             $('#rt-main').children().children().addClass('mainemundus');
 
             menuAction = document.querySelector('.em-menuaction');
-            headerNav = document.querySelector('#g-navigation .g-container');
+            headerNav = document.querySelector('#g-navigation .g-container, #g-header .g-container');
             containerResult = document.querySelector('.container-result');
 
             setTimeout(() => {
@@ -269,7 +269,7 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
                 }
 
                 if (!headerNav) {
-                    headerNav = document.querySelector('#g-navigation .g-container');
+                    headerNav = document.querySelector('#g-navigation .g-container, #g-header .g-container');
                 }
 
                 if (!containerResult) {
@@ -353,7 +353,7 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
             }
 
             if (!headerNav) {
-                const headerNav = document.querySelector('#g-navigation .g-container');
+                const headerNav = document.querySelector('#g-navigation .g-container, #g-header .g-container');
             }
 
             $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
