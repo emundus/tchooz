@@ -3034,7 +3034,7 @@ class EmundusModelFiles extends JModelLegacy
 
 							foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
 								$sub_label = Text::_($element_params['sub_options']['sub_labels'][$sub_key]);
-								$sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
+								$sub_label = $sub_label === '' ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
 								$sub_label = str_replace("'", "\'", $sub_label); // escape sub label single quotes for SQL query
 								$sub_value = str_replace("'", "\'", $sub_value);
 
@@ -3069,7 +3069,7 @@ class EmundusModelFiles extends JModelLegacy
 						if (!empty($element_params['sub_options']['sub_values'])) {
 							foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
 								$sub_label = Text::_($element_params['sub_options']['sub_labels'][$sub_key]);
-								$sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
+								$sub_label = $sub_label === '' ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
 								$sub_label = str_replace("'", "\'", $sub_label); // escape sub label single quotes for SQL query
 								$sub_value = str_replace("'", "\'", $sub_value);
 
@@ -3111,7 +3111,7 @@ class EmundusModelFiles extends JModelLegacy
 								foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value)
 								{
 									$sub_label = Text::_($element_params['sub_options']['sub_labels'][$sub_key]);
-									$sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
+									$sub_label = $sub_label === '' ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
 									$sub_label = str_replace("'", "\'", $sub_label); // escape sub label single quotes for SQL query
 									$sub_value = str_replace("'", "\'", $sub_value);
 
@@ -3143,7 +3143,7 @@ class EmundusModelFiles extends JModelLegacy
 							if (!empty($element_params['sub_options']['sub_values'])) {
 								foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
 									$sub_label = Text::_($element_params['sub_options']['sub_labels'][$sub_key]);
-									$sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
+									$sub_label = $sub_label === '' ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
 									$sub_label = str_replace("'", "\'", $sub_label); // escape sub label single quotes for SQL query
 									$sub_value = str_replace("'", "\'", $sub_value);
 
