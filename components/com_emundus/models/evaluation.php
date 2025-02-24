@@ -1188,7 +1188,7 @@ class EmundusModelEvaluation extends JModelList
 		}
 	}
 
-	public function getUsers($current_fnum = null, $user_id = null)
+	public function getUsers($current_fnum = null, $user_id = null, $all = false)
 	{
 		$list = [];
 
@@ -1267,12 +1267,14 @@ class EmundusModelEvaluation extends JModelList
 				}
 			}
 
-			$session = $this->app->getSession();
-			$limit = $session->get('limit', 0);
-			$limitstart = $session->get('limitstart', 0);
+			if (!$all) {
+				$session = $this->app->getSession();
+				$limit = $session->get('limit', 0);
+				$limitstart = $session->get('limitstart', 0);
 
-			if (!empty($limit)) {
-				$list = array_slice($list, $limitstart, $limit);
+				if (!empty($limit)) {
+					$list = array_slice($list, $limitstart, $limit);
+				}
 			}
 		} else {
 			$list = $this->getEvaluationsList();
@@ -1847,9 +1849,24 @@ class EmundusModelEvaluation extends JModelList
 		return $this->_files->changePublished($fnum, $published = -1);
 	}
 
-	public function getAllFnums()
+	public function getAllFnums(int $user_id): array
 	{
-		return $this->_files->getAllFnums();
+		$fnums = [];
+
+		if (empty($user_id)) {
+			$user_id = Factory::getApplication()->getIdentity()->id;
+		}
+		$evaluations = $this->getUsers(null, $user_id, true);
+
+		if (!empty($evaluations)) {
+			foreach ($evaluations as $evaluation) {
+				if (!in_array($evaluation['fnum'], $fnums)) {
+					$fnums[] = $evaluation['fnum'];
+				}
+			}
+		}
+
+		return $fnums;
 	}
 
 	/*

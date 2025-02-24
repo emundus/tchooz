@@ -376,13 +376,54 @@ class EmundusControllerEvaluation extends BaseController
 
 	public function updatestate()
 	{
-		if (!class_exists('EmundusControllerFiles'))
-		{
-			require_once(JPATH_ROOT . '/components/com_emundus/controllers/files.php');
+		$fnums = $this->input->getString('fnums', null);
+		$state = $this->input->getInt('state', null);
+		$this->app->getSession()->set('last_status_selected', $state);
+
+		$m_evaluation    = $this->getModel('Evaluation');
+		$m_files = $this->getModel('Files');
+
+		if ($fnums == "all") {
+			$fnums = $m_evaluation->getAllFnums((int)$this->_user->id);
 		}
 
-		$c_files = new EmundusControllerFiles();
-		$c_files->updatestate();
+		if (!is_array($fnums)) {
+			$fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
+		}
+
+		if (count($fnums) == 0 || !is_array($fnums)) {
+			$res = false;
+			$msg = Text::_('STATE_ERROR');
+
+			echo json_encode((object) (array('status' => $res, 'msg' => $msg)));
+			exit;
+		}
+
+		$validFnums = array();
+
+		foreach ($fnums as $fnum) {
+			if (EmundusHelperAccess::asAccessAction(13, 'u', $this->_user->id, $fnum)) {
+				$validFnums[] = $fnum;
+			}
+		}
+
+		$res = $m_files->updateState($validFnums, $state, $this->_user->id);
+		$msg = '';
+
+		if (is_array($res)) {
+			$msg = isset($res['msg']) ? $res['msg'] : '';
+			$res = isset($res['status']) ? $res['status'] : true;
+		}
+
+		if ($res !== false) {
+			$msg .= Text::_('COM_EMUNDUS_APPLICATION_STATE_SUCCESS');
+		}
+		else {
+			$msg = empty($msg) ? Text::_('STATE_ERROR') : $msg;
+		}
+
+		echo json_encode(array('status' => $res, 'msg' => $msg));
+		exit;
 	}
 
 	public function unlinkevaluators()

@@ -1409,7 +1409,13 @@ function runAction(action, url = '', option = '') {
 
                     if (result.status) {
                         if (state) {
-                            url = 'index.php?option=com_emundus&controller=files&task=updatestate';
+                            let view = document.querySelector("#view").value;
+
+                            if (view !== 'evaluation') {
+                                view = 'files';
+                            }
+
+                            url = 'index.php?option=com_emundus&controller='+ view +'&task=updatestate';
                             $.ajax({
                                 type:'POST',
                                 url:url,
@@ -1548,6 +1554,10 @@ async function countFilesBeforeAction(fnums, action, verb) {
         form.append('action_id', action);
         form.append('verb', verb);
 
+        if (itemId) {
+            form.append('menu_id', itemId);
+        }
+
         // add catch to handle errors
         return fetch('index.php?option=com_emundus&controller=files&task=countfilesbeforeaction',
             {
@@ -1565,9 +1575,17 @@ async function countFilesBeforeAction(fnums, action, verb) {
 
 function updateState(fnums, state)
 {
+    let view = document.getElementById("view").value;
+
+    if (view !== 'evaluation') {
+        view = 'files';
+    }
+
+    console.log(view, 'updateState');
+
     $.ajax({
         type:'POST',
-        url: 'index.php?option=com_emundus&controller=files&task=updatestate',
+        url: 'index.php?option=com_emundus&controller=' + view + '&task=updatestate',
         dataType:'json',
         data:({
             fnums: fnums,
@@ -4124,7 +4142,7 @@ $(document).ready(function() {
             }).then((result) => {
                 window.removeEventListener('click', shareModalClick);
                 if (result.value) {
-                    runAction(id, url,preconfirm_value);
+                    runAction(id, url, preconfirm_value);
                 }
             });
 

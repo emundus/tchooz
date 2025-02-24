@@ -4190,14 +4190,19 @@ class EmundusControllerFiles extends BaseController
 			$fnums  = $this->input->getString('fnums', null);
 			$action = $this->input->getInt('action_id', 0);
 			$verb   = $this->input->getString('verb', '');
+			$menu_id = $this->input->getInt('menu_id', 0);
 
 			if (!empty($fnums))
 			{
-				$m_files = new EmundusModelFiles();
-
 				if ($fnums === 'all')
 				{
-					$fnums = $m_files->getAllFnums();
+					if ($this->isEvaluationMenu($menu_id)) {
+						$m_evaluation = new EmundusModelEvaluation();
+						$fnums = $m_evaluation->getAllFnums($this->_user->id);
+					} else {
+						$m_files = new EmundusModelFiles();
+						$fnums = $m_files->getAllFnums();
+					}
 				}
 				else if (!is_array($fnums))
 				{
@@ -4249,5 +4254,21 @@ class EmundusControllerFiles extends BaseController
 
 		echo json_encode($response);
 		exit;
+	}
+
+	private function isEvaluationMenu(int $menu_id): bool
+	{
+		$is_evaluation_menu = false;
+
+		if (!empty($menu_id)) {
+			$menu = Factory::getApplication()->getMenu();
+			$menu_item = $menu->getItem($menu_id);
+
+			if ($menu_item->link === 'index.php?option=com_emundus&view=evaluation') {
+				$is_evaluation_menu = true;
+			}
+		}
+
+		return $is_evaluation_menu;
 	}
 }
