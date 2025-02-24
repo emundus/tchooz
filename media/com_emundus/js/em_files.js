@@ -5749,6 +5749,7 @@ async function sendMailQueue(fnums, nbFiles = 0) {
     let currentStep;
     let body = '';
     let data = {};
+    let sourceView = document.getElementById('view').value;
 
     for (currentStep = 0; currentStep < 2;) {
         let title = '';
@@ -5768,7 +5769,7 @@ async function sendMailQueue(fnums, nbFiles = 0) {
 
                 $.ajax({
                     type: 'POST',
-                    url: 'index.php?option=com_emundus&view=message&format=raw',
+                    url: 'index.php?option=com_emundus&view=message&format=raw&source_view=' + sourceView,
                     data: {
                         fnums: fnums,
                         body: body,
