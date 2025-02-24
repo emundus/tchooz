@@ -2,6 +2,7 @@
 defined('_JEXEC') or die('Restricted Access');
 
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Factory;
 
 Text::script('MOD_EMUNDUS_FILTERS');
 Text::script('MOD_EMUNDUS_FILTERS_SELECT_FILTER');
@@ -50,9 +51,11 @@ Text::script('MOD_EMUNDUS_FILTERS_VALUE_TO_EVALUATE');
 Text::script('MOD_EMUNDUS_FILTERS_VALUE_EVALUATED');
 Text::script('MOD_EMUNDUS_FILTERS_RESET');
 
+$menu = Factory::getApplication()->getMenu()->getActive();
 ?>
 <div id="em-filters-vue"
      data-module-id="<?= $module->id ?>"
+     data-menu-id="<?= $menu->id ?>"
      data-applied-filters='<?= base64_encode(json_encode($applied_filters)) ?>'
      data-filters='<?= base64_encode(json_encode($filters)) ?>'
      data-quick-search-filters='<?= base64_encode(json_encode($quick_search_filters)) ?>'

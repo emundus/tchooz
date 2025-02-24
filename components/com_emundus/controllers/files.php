@@ -4102,6 +4102,7 @@ class EmundusControllerFiles extends BaseController
 		if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
 			$response['msg'] = Text::_('MISSING_PARAMS');
 			$module_id = $app->input->getInt('module_id', 0);
+			$menu_id = $app->input->getInt('menu_id', 0);
 
 			if (!empty($module_id)) {
 				$response['msg'] = Text::_('NO_CALCULATION_FOR_THIS_MODULE');
@@ -4129,9 +4130,16 @@ class EmundusControllerFiles extends BaseController
 							}
 						}
 
+						if (!empty($menu_id)) {
+							$menu = $app->getMenu();
+							$menu_item = $menu->getItem($menu_id);
+						} else {
+							$menu_item = null;
+						}
+
 						require_once(JPATH_SITE . '/components/com_emundus/helpers/files.php');
 						$h_files = new EmundusHelperFiles();
-						$data = $h_files->setFiltersValuesAvailability($applied_filters, $user->id);
+						$data = $h_files->setFiltersValuesAvailability($applied_filters, $user->id, $menu_item);
 
 						$response = ['status' => true, 'code' => 200, 'msg' => Text::_('SUCCESS'), 'data' => $data];
 					}

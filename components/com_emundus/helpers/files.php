@@ -5893,7 +5893,7 @@ class EmundusHelperFiles
 	/*
      *
      */
-	public function setFiltersValuesAvailability($applied_filters, $user_id = null,$menu_item = null): array
+	public function setFiltersValuesAvailability($applied_filters, $user_id = null, $menu_item = null): array
 	{
 		$applied_filters = empty($applied_filters) ? [] : $applied_filters;
 
