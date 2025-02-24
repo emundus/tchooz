@@ -1316,10 +1316,16 @@ function runAction(action, url = '', option = '') {
 
         // Validating publication change
         case 28:
+            let viewValue = document.getElementById("view").value;
+
+            if (viewValue !== 'evaluation') {
+                viewValue = 'files';
+            }
+
             var publish = $("#em-action-publish").val();
             $('.modal-body').empty();
             addLoader();
-            url = 'index.php?option=com_emundus&controller=files&task=updatepublish';
+            url = 'index.php?option=com_emundus&controller='+ viewValue + '&task=updatepublish';
             $.ajax({
                 type:'POST',
                 url:url,

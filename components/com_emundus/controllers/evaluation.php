@@ -487,6 +487,41 @@ class EmundusControllerEvaluation extends BaseController
 		exit;
 	}
 
+	public function updatepublish()
+	{
+		$publish = $this->input->getInt('publish', null);
+		$m_files = $this->getModel('Files');
+		$m_evaluation = $this->getModel('Evaluation');
+
+		$fnums_post  = $this->input->getString('fnums', null);
+		$fnums_array = ($fnums_post == 'all') ? 'all' : (array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
+
+		if ($fnums_array == 'all') {
+			$fnums = $m_evaluation->getAllFnums($this->_user->id);
+		}
+		else {
+			$fnums = array();
+			foreach ($fnums_array as $value) {
+				$fnums[] = $value;
+			}
+		}
+
+		$validFnums = [];
+		foreach ($fnums as $fnum) {
+			if (is_numeric($fnum) && EmundusHelperAccess::asAccessAction(13, 'u', $this->_user->id, $fnum))
+				$validFnums[] = $fnum;
+		}
+		$res = $m_files->updatePublish($validFnums, $publish);
+		if ($res !== false) {
+			$msg = Text::_('COM_EMUNDUS_APPLICATION_PUBLISHED_STATE_SUCCESS');
+		} else {
+			$msg = Text::_('STATE_ERROR');
+		}
+
+		echo json_encode((object) (array('status' => $res, 'msg' => $msg)));
+		exit;
+	}
+
 	public function unlinkevaluators()
 	{
 		if (!class_exists('EmundusControllerFiles'))
