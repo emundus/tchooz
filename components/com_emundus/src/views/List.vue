@@ -1,114 +1,50 @@
 <template>
   <div id="onboarding_list" class="tw-w-full" :class="{'alert-banner-displayed': alertBannerDisplayed}">
     <skeleton v-if="loading.lists" height="40px" width="100%" class="tw-mb-4 tw-mt-4 tw-rounded-lg"></skeleton>
-    <div v-else class="head tw-flex tw-items-center tw-justify-between">
-      <h1>{{ translate(currentList.title) }}</h1>
-      <a v-if="addAction" id="add-action-btn" class="tw-btn-primary tw-w-auto tw-cursor-pointer"
-         @click="onClickAction(addAction)">{{ translate(addAction.label) }}</a>
-    </div>
+
+    <Head v-else
+          :title="currentList.title"
+          :introduction="currentList.intro"
+          :add-action="addAction"
+          @action="onClickAction"
+    />
 
     <div v-if="loading.tabs" id="tabs-loading">
       <div class="tw-flex tw-justify-between">
         <skeleton height="40px" width="20%" class="tw-mb-4 tw-rounded-lg"></skeleton>
         <skeleton height="40px" width="5%" class="tw-mb-4 tw-rounded-lg"></skeleton>
       </div>
-      <div :class="{'skeleton-grid': viewType === 'blocs','tw-flex tw-flex-col': viewType === 'list'}"
-           style="flex-wrap: wrap">
+
+      <div class="tw-flex-wrap"
+           :class="{
+        'skeleton-grid': viewType === 'blocs',
+        'tw-flex tw-flex-col': viewType === 'table'
+      }">
         <skeleton v-for="i in 9" :key="i" class="tw-rounded-lg skeleton-item"></skeleton>
       </div>
     </div>
+
     <div v-else class="list tw-mt-4">
-      <nav v-if="currentList.tabs.length > 1" id="list-nav">
-        <ul style="list-style-type: none;margin-left:0; padding-left: 0" class="tw-flex">
-          <li v-for="tab in currentList.tabs" :key="tab.key"
-              class="tw-cursor-pointer tw-font-normal"
-              :class="{
-								'em-light-tabs em-light-selected-tab': selectedListTab === tab.key,
-								'em-light-tabs ': selectedListTab !== tab.key
-							}"
-              @click="onSelectTab(tab.key)"
-          >
-            {{ translate(tab.title) }}
-          </li>
-        </ul>
-      </nav>
-      <section id="actions" class="tw-flex tw-justify-between tw-mt-4 tw-mb-4">
-        <section id="tab-actions">
-          <select v-for="filter in displayedFilters" :key="selectedListTab + '-' + filter.key"
-                  v-model="filter.value" @change="onChangeFilter(filter)" class="tw-mr-2">
-            <option v-for="option in filter.options" :key="option.value" :value="option.value">
-              {{ translate(option.label) }}
-            </option>
-          </select>
-        </section>
-
-        <section id="default-actions" class="tw-flex">
-          <div class="tw-flex tw-items-center">
-            <input name="search" type="text" v-model="searches[selectedListTab].search"
-                   :placeholder="translate('COM_EMUNDUS_ONBOARD_SEARCH')"
-                   class="tw-rounded-lg"
-                   :class="{'em-disabled-events': items[this.selectedListTab].length < 1 && searches[selectedListTab].search === ''}"
-                   style="margin: 0;"
-                   :disabled="items[this.selectedListTab].length < 1 && searches[selectedListTab].search === ''"
-                   @change="searchItems" @keyup="searchItems">
-            <span class="material-symbols-outlined tw-mr-2 tw-cursor-pointer" style="margin-left: -32px"
-                  @click="searchItems">
-							search
-						</span>
-          </div>
-          <div class="view-type tw-flex tw-items-center">
-					<span v-for="viewTypeOption in viewTypeOptions" :key="viewTypeOption.value"
-                style="padding: 4px;border-radius: calc(var(--em-default-br)/2);display: flex;height: 38px;width: 38px;align-items: center;justify-content: center;background: var(--neutral-0);"
-                class="material-symbols-outlined tw-ml-2 tw-cursor-pointer"
-                :class="{
-								'active em-main-500-color em-border-main-500': viewTypeOption.value === viewType,
-								'em-neutral-600-color em-border-neutral-600': viewTypeOption.value !== viewType
-							}"
-                @click="changeViewType(viewTypeOption)"
-          >{{ viewTypeOption.icon }}</span>
-          </div>
-        </section>
-      </section>
-
-      <section id="pagination-wrapper" class="tw-flex tw-justify-end tw-items-center tw-mb-3"
-               v-if="this.items[this.selectedListTab].length > 0">
-        <select name="numberOfItemsToDisplay" v-model="numberOfItemsToDisplay" @change="getListItems()">
-          <option value='10'>{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 10</option>
-          <option value='25'>{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 25</option>
-          <option value='50'>{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 50</option>
-          <option value='all'>{{ translate('ALL') }}</option>
-        </select>
-        <div
-            v-if="typeof currentTab.pagination !== undefined && currentTab.pagination && currentTab.pagination.total > 1"
-            id="pagination" class="tw-text-center">
-          <ul class="tw-flex tw-list-none tw-gap-1">
-						<span :class="{'tw-text-neutral-600 em-disabled-events': currentTab.pagination.current === 1}"
-                  class="material-symbols-outlined tw-cursor-pointer tw-mr-2 tw-items-center"
-                  style="display: flex"
-                  @click="getListItems(currentTab.pagination.current - 1, selectedListTab)">
-							chevron_left
-						</span>
-            <li v-for="i in currentTab.pagination.total" :key="i"
-                class="tw-cursor-pointer em-square-button"
-                :class="{'active': i === currentTab.pagination.current}"
-                @click="getListItems(i, selectedListTab)">
-              {{ i }}
-            </li>
-            <span
-                :class="{'tw-text-neutral-600 em-disabled-events': currentTab.pagination.current === currentTab.pagination.total}"
-                class="material-symbols-outlined tw-cursor-pointer tw-ml-2 tw-items-center"
-                style="display: flex"
-                @click="getListItems(currentTab.pagination.current + 1, selectedListTab)">
-							chevron_right
-						</span>
-          </ul>
-        </div>
-      </section>
-
+      <Navigation
+          v-if="!loading.filters"
+          :tabs="currentList.tabs"
+          :filters="filters"
+          :items="items"
+          :checked-items="checkedItems"
+          :views="viewTypeOptions"
+          v-model:view="viewType"
+          v-model:searches="searches"
+          v-model:tab="currentTab"
+          v-model:tab-key="selectedListTab"
+          v-model:number-of-items-to-display="numberOfItemsToDisplay"
+          @select-tab="onCheckAllitems"
+          @action="onClickAction"
+          @update-items="getListItems"
+      />
 
       <div v-if="loading.items"
            id="items-loading"
-           :class="{'skeleton-grid': viewType === 'blocs','tw-flex tw-flex-col tw-mb-4': viewType === 'list'}"
+           :class="{'skeleton-grid': viewType === 'blocs','tw-flex tw-flex-col tw-mb-4': viewType === 'table'}"
            style="flex-wrap: wrap"
       >
         <skeleton v-for="i in 9" :key="i" class="tw-rounded-lg skeleton-item"></skeleton>
@@ -116,23 +52,33 @@
 
       <div v-else>
         <div v-if="displayedItems.length > 0" id="list-items">
-          <table v-if="viewType !== 'calendar' && viewType !== 'gantt'" id="list-table" :class="{'blocs': viewType === 'blocs'}">
-            <thead class="tw-bg-white">
+          <table v-if="viewType !== 'calendar' && viewType !== 'gantt'"
+                 id="list-table"
+                 class="tw-border-separate"
+                 :class="{'blocs': viewType === 'blocs'}">
+            <thead>
             <tr>
-              <th class="tw-cursor-pointer tw-px-4 tw-py-2"
+              <th id="check-th" class="tw-p-4">
+                <input
+                    class="items-check-all"
+                    type="checkbox"
+                    @change="onCheckAllitems"
+                />
+              </th>
+              <th class="tw-cursor-pointer tw-p-4"
                   @click="orderByColumn('label')">
                 <div :class="{'tw-flex tw-flex-row': 'label' === orderBy}">
                   <span v-if="'label' === orderBy && order === 'ASC'"
                         class="material-symbols-outlined">arrow_upward</span>
                   <span v-else-if="'label' === orderBy && order === 'DESC'" class="material-symbols-outlined">arrow_downward</span>
                   <label class="tw-font-medium tw-cursor-pointer">{{
-                    translate('COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase()) == ('COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase()) ?
-                        translate('COM_EMUNDUS_ONBOARD_LABEL') : translate('COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase())
+                      translate('COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase()) == ('COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase()) ?
+                          translate('COM_EMUNDUS_ONBOARD_LABEL') : translate('COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase())
                     }}</label>
                 </div>
               </th>
 
-              <th v-for="column in additionalColumns" :key="column.key" class="tw-px-4 tw-py-2">
+              <th v-for="column in additionalColumns" :key="column.key" class="tw-p-4">
                 <div v-if="column.order_by" :class="{'tw-flex tw-flex-row': column.order_by === orderBy}">
                   <span v-if="column.order_by === orderBy && order === 'ASC'" class="material-symbols-outlined">arrow_upward</span>
                   <span v-else-if="column.order_by === orderBy && order === 'DESC'" class="material-symbols-outlined">arrow_downward</span>
@@ -143,12 +89,7 @@
                 <label class="tw-font-medium" v-else>{{ column.key }}</label>
               </th>
 
-              <th v-if="tabActionsPopover && tabActionsPopover.length > 0" class="tw-px-4 tw-py-2">
-                <label class="tw-font-medium">
-                {{
-                  translate('COM_EMUNDUS_ONBOARD_ACTIONS')
-                }}
-                </label>
+              <th v-if="tabActionsPopover && tabActionsPopover.length > 0" class="tw-p-4">
               </th>
             </tr>
             </thead>
@@ -156,54 +97,112 @@
             <tr v-for="item in displayedItems"
                 :key="item.id"
                 :id="'item-' + currentTab.key + '-' + item.id"
-                class="em-border-cards table-row"
-                :class="{'em-card-neutral-100 em-card-shadow em-p-24' : viewType === 'blocs'}"
+                class="tw-group/item-row table-row tw-border tw-rounded-coordinator tw-cursor-pointer"
+                @click="onCheckItem(item.id,$event)"
+                :class="{
+                  'tw-flex tw-flex-col tw-justify-between tw-min-h-[200px] tw-rounded-coordinator-cards tw-p-8 tw-shadow-card' : viewType === 'blocs',
+                  'tw-shadow-table-border-profile': checkedItems.includes(item.id) && viewType === 'table',
+                  'tw-shadow-table-border-neutral': !checkedItems.includes(item.id) && viewType === 'table',
+                  'tw-bg-main-50 tw-border-profile-full': checkedItems.includes(item.id) && viewType === 'blocs',
+                  'tw-bg-white hover:tw-bg-neutral-100': !checkedItems.includes(item.id) && viewType === 'blocs'
+                }"
             >
-              <td class="tw-cursor-pointer tw-px-4 tw-py-2" @click="onClickAction(editAction, item.id)">
-                <span :class="{'tw-font-semibold tw-line-clamp-2 tw-min-h-[48px]':  viewType === 'blocs'}"
+              <td class="tw-rounded-s-coordinator tw-p-4"
+                  :class="{
+                    'tw-bg-main-50': checkedItems.includes(item.id) && viewType === 'table',
+                    'tw-bg-white group-hover/item-row:tw-bg-neutral-100': !checkedItems.includes(item.id) && viewType === 'table'
+                  }"
+              >
+                <input
+                    v-show="viewType === 'table'"
+                    :id="'item-' + currentTab.key + '-' + item.id"
+                    class="item-check"
+                    type="checkbox"
+                />
+              </td>
+              <td class="tw-cursor-pointer tw-p-4"
+                  :class="{
+                    'tw-bg-main-50': checkedItems.includes(item.id) && viewType === 'table',
+                    'tw-bg-white group-hover/item-row:tw-bg-neutral-100': !checkedItems.includes(item.id) && viewType === 'table'
+                  }"
+              >
+                <span @click="onClickAction(editAction, item.id, false, $event)"
+                      class="hover:tw-underline"
+                      :class="{'tw-font-semibold tw-line-clamp-2 tw-min-h-[48px]':  viewType === 'blocs'}"
                       :title="item.label[params.shortlang]">{{ item.label[params.shortlang] }}</span>
               </td>
-              <td class="columns tw-px-4 tw-py-2" v-for="column in displayedColumns(item, viewType)" :key="column.key">
+              <td class="columns tw-p-4"
+                  :class="{
+                    'tw-bg-main-50': checkedItems.includes(item.id) && viewType === 'table',
+                    'tw-bg-white group-hover/item-row:tw-bg-neutral-100': !checkedItems.includes(item.id) && viewType === 'table'
+                  }"
+                  v-for="column in displayedColumns(item, viewType)"
+                  :key="column.key"
+              >
                 <div v-if="column.type === 'tags'" class="tw-flex tw-items-center tw-flex-wrap tw-gap-2"
                      :class="column.classes">
                   <span v-for="tag in column.values" :key="tag.key" class="tw-mr-2 tw-h-max" :class="tag.classes"
                         v-html="tag.value"></span>
                 </div>
                 <div v-else-if="column.hasOwnProperty('long_value')">
-                  <span @click="displayLongValue(column.long_value)" class="tw-mt-2 tw-mb-2" :class="column.classes"
+                  <span @click="displayLongValue($event,column.long_value)" class="tw-mt-2 tw-mb-2" :class="column.classes"
                         v-html="column.value"></span>
                 </div>
                 <span v-else class="tw-mt-2 tw-mb-2" :class="column.classes" v-html="column.value"></span>
               </td>
-              <td class="actions tw-px-4 tw-py-2">
+              <td class="tw-rounded-e-coordinator actions tw-p-4"
+                  :class="{
+                    'tw-bg-main-50': checkedItems.includes(item.id) && viewType === 'table',
+                    'tw-bg-white group-hover/item-row:tw-bg-neutral-100': !checkedItems.includes(item.id) && viewType === 'table'
+                  }"
+              >
                 <hr v-if="viewType === 'blocs'" class="tw-w-full tw-mt-1.5 tw-mb-3">
                 <div :class="{'tw-flex tw-justify-between tw-w-full': viewType === 'blocs'}">
-                  <a v-if="viewType === 'blocs' && editAction" @click="onClickAction(editAction, item.id)"
+                  <a v-if="viewType === 'blocs' && editAction" @click="onClickAction(editAction, item.id, false, $event)"
                      class="tw-btn-primary tw-text-sm tw-cursor-pointer tw-w-auto">
                     {{ translate(editAction.label) }}
                   </a>
-                  <div class="tw-flex tw-items-center tw-gap-2">
-                    <span v-if="previewAction" class="material-symbols-outlined tw-cursor-pointer"
-                          @click="onClickPreview(item)">visibility</span>
-                    <span v-for="action in iconActions" :key="action.name" class="tw-cursor-pointer"
-                          :class="{
-															'material-symbols-outlined': action.iconOutlined,
-															'material-icons': !action.iconOutlined,
-															'tw-hidden': !(typeof action.showon === 'undefined' || evaluateShowOn(item, action.showon))
-														}"
-                          @click="onClickAction(action, item.id)"
+                  <div class="tw-flex tw-items-center tw-justify-end tw-gap-2">
+                    <button v-if="editAction && viewType === 'table'"
+                            @click="onClickAction(editAction, item.id)"
+                            class="tw-btn-primary !tw-w-auto tw-flex tw-items-center tw-gap-1"
+                            style="padding: 0.5rem"
+                            :title="translate(editAction.label)"
                     >
+                      <span class="material-symbols-outlined popover-toggle-btn tw-cursor-pointer">edit</span>
+                    </button>
+
+                    <button v-for="action in iconActions" :key="action.name"
+                          class="tw-btn-primary !tw-w-auto tw-flex tw-items-center tw-gap-1"
+                          :class="[
+                            action.buttonClasses,
+                            {
+                              'tw-hidden': !(typeof action.showon === 'undefined' || evaluateShowOn(item, action.showon))
+                            }
+                          ]"
+                          @click="onClickAction(action, item.id, false, $event)"
+                    >
+                      <span class="popover-toggle-btn tw-cursor-pointer"
+                            :class="{
+															'material-symbols-outlined': action.iconOutlined,
+															'material-icons': !action.iconOutlined
+														}"
+                      >
 												{{ action.icon }}
-											</span>
+                      </span>
+                    </button>
+
                     <popover
                         :position="'left'"
                         v-if="tabActionsPopover && tabActionsPopover.length > 0 && filterShowOnActions(tabActionsPopover, item).length"
+                        :button="translate('COM_EMUNDUS_ONBOARD_ACTIONS')"
+                        :hide-button-label="true"
                         class="custom-popover-arrow">
                       <ul style="list-style-type: none; margin: 0;" class="em-flex-col-center tw-p-4">
                         <li v-for="action in tabActionsPopover"
                             :key="action.name"
                             :class="{'tw-hidden': !(typeof action.showon === 'undefined' || evaluateShowOn(item, action.showon))}"
-                            @click="onClickAction(action, item.id)"
+                            @click="onClickAction(action, item.id, false, $event)"
                             class="tw-cursor-pointer tw-py-1.5 tw-px-2 tw-text-base hover:tw-bg-neutral-300 hover:tw-rounded-coordinator"
                         >
                           {{ translate(action.label) }}
@@ -224,8 +223,8 @@
             />
           </div>
           <Gantt v-else-if="viewType === 'gantt'"
-            :language="params.shortlang"
-            :periods="displayedItems"
+                 :language="params.shortlang"
+                 :periods="displayedItems"
           ></Gantt>
         </div>
         <div v-else id="empty-list" class="noneDiscover tw-text-center" v-html="noneDiscoverTranslation"></div>
@@ -239,6 +238,10 @@
 import {ref} from 'vue';
 import Swal from 'sweetalert2';
 
+/* List components */
+import Head from "@/components/List/Head.vue";
+import Navigation from "@/components/List/Navigation.vue";
+
 /* Components */
 import Skeleton from '@/components/Skeleton.vue';
 import Popover from '@/components/Popover.vue';
@@ -247,13 +250,16 @@ import Calendar from "@/views/Events/Calendar.vue";
 
 /* Services */
 import settingsService from '@/services/settings.js';
+import {FetchClient} from '../services/fetchClient.js';
 
 /* Stores */
 import {useGlobalStore} from "@/stores/global.js";
 
 export default {
-  name: 'list',
+  name: 'List',
   components: {
+    Navigation,
+    Head,
     Calendar,
     Skeleton,
     Popover,
@@ -275,27 +281,32 @@ export default {
         'lists': false,
         'tabs': false,
         'items': false,
+        'filters': true
       },
-      numberOfItemsToDisplay: 25,
+
       lists: {},
       type: 'forms',
       params: {},
       currentList: {'title': '', 'tabs': []},
       selectedListTab: 0,
       items: {},
+
       title: '',
       viewType: 'table',
-      viewTypeOptions: [
+      defaultViewsOptions: [
         {value: 'table', icon: 'dehaze'},
-        {value: 'blocs', icon: 'grid_view'},
-        /*{value: 'gantt', icon: 'view_timeline'}*/
+        {value: 'blocs', icon: 'grid_view'}
       ],
+
       searches: {},
       filters: {},
       alertBannerDisplayed: false,
 
       orderBy: null,
-      order: 'DESC'
+      order: 'DESC',
+
+      checkedItems: [],
+      numberOfItemsToDisplay: 25,
     }
   },
   created() {
@@ -323,18 +334,6 @@ export default {
     }
     this.type = this.params.type;
 
-    this.viewType = localStorage.getItem('tchooz_view_type/' + document.location.hostname)
-    if(this.type === 'events') {
-      let calendarView = {value: 'calendar', icon: 'calendar_today'};
-      this.viewTypeOptions.push(calendarView);
-    }
-    if (this.viewType === null || typeof this.viewType === 'undefined' || (this.viewType !== 'blocs' && this.viewType !== 'table')) {
-      this.viewType = 'blocs';
-      if(this.type === 'events') {
-        this.viewType = 'calendar';
-      }
-      localStorage.setItem('tchooz_view_type/' + document.location.hostname, this.viewType);
-    }
     const storageNbItemsDisplay = localStorage.getItem('tchooz_number_of_items_to_display/' + document.location.hostname);
     if (storageNbItemsDisplay !== null) {
       this.numberOfItemsToDisplay = storageNbItemsDisplay !== 'all' ? parseInt(storageNbItemsDisplay) : storageNbItemsDisplay;
@@ -364,12 +363,35 @@ export default {
           }
         }
 
+        let availableViews = this.currentTab.viewsOptions ? this.currentTab.viewsOptions : this.defaultViewsOptions;
+        this.viewType = localStorage.getItem('tchooz_view_type/' + document.location.hostname);
+        let isViewTypeAvailable = availableViews.some(view => view.value === this.viewType);
+
+        if (
+            this.viewType === null ||
+            typeof this.viewType === 'undefined' ||
+            !isViewTypeAvailable
+        ) {
+          this.viewType = availableViews[0].value;
+
+          if(this.viewType === null || typeof this.viewType === 'undefined') {
+            // Do not update session storage if the view type is just no available in this menu
+            localStorage.setItem('tchooz_view_type/' + document.location.hostname, this.viewType);
+          }
+        }
+
+        /*if(this.type === 'events') {
+          let calendarView = {value: 'calendar', icon: 'calendar_today'};
+          this.viewTypeOptions.push(calendarView);
+        }*/
+
         this.loading.lists = false;
         this.getListItems();
       } else {
         this.getLists();
       }
     },
+
     getLists() {
       settingsService.getOnboardingLists().then(response => {
         if (response.status) {
@@ -401,12 +423,16 @@ export default {
         }
       });
     },
+
     orderByColumn(column) {
       this.orderBy = column;
       this.order = this.order === 'ASC' ? 'DESC' : 'ASC';
       this.getListItems(1, this.selectedListTab);
     },
+
     getListItems(page = 1, tab = null) {
+      this.checkedItems = [];
+
       if (tab === null) {
         this.loading.tabs = true;
         this.items = ref(Object.assign({}, ...this.currentList.tabs.map(tab => ({[tab.key]: []}))));
@@ -454,26 +480,28 @@ export default {
 
             try {
               fetch(url).then(response => response.json())
-                .then(response => {
-                  if (response.status === true) {
-                    if (typeof response.data.datas !== 'undefined') {
-                      this.items[tab.key] = response.data.datas;
-                      tab.pagination = {
-                        current: page,
-                        total: Math.ceil(response.data.count / this.numberOfItemsToDisplay)
+                  .then(response => {
+                    if (response.status === true) {
+                      if (typeof response.data.datas !== 'undefined') {
+                        this.items[tab.key] = response.data.datas;
+
+                        tab.pagination = {
+                          current: page,
+                          count: response.data.count,
+                          total: Math.ceil(response.data.count / this.numberOfItemsToDisplay)
+                        }
                       }
+                    } else {
+                      console.error('Failed to get data : ' + response.msg);
                     }
-                  } else {
-                    console.error('Failed to get data : ' + response.msg);
-                  }
-                  this.loading.tabs = false;
-                  this.loading.items = false;
-                })
-                .catch(error => {
-                  console.error(error);
-                  this.loading.tabs = false;
-                  this.loading.items = false;
-                });
+                    this.loading.tabs = false;
+                    this.loading.items = false;
+                  })
+                  .catch(error => {
+                    console.error(error);
+                    this.loading.tabs = false;
+                    this.loading.items = false;
+                  });
             } catch (e) {
               console.error(e);
               this.loading.tabs = false;
@@ -489,12 +517,15 @@ export default {
         this.loading.items = false;
       }
     },
+
     async setTabFilters(tab) {
       if (typeof tab.filters !== 'undefined' && tab.filters.length > 0) {
         if (typeof this.filters[tab.key] === 'undefined') {
+          this.loading.filters = true;
+
           this.filters[tab.key] = [];
 
-          tab.filters.forEach(filter => {
+          for(const filter of tab.filters) {
             //get the filter value from sessionStorage
             let filterValue = sessionStorage.getItem('tchooz_filter_' + this.selectedListTab + '_' + filter.key + '/' + document.location.hostname);
             if (filterValue == null) {
@@ -505,23 +536,30 @@ export default {
               if (filter.getter) {
                 this.filters[tab.key].push({
                   key: filter.key,
+                  label: filter.label,
                   value: filterValue,
+                  alwaysDisplay: filter.alwaysDisplay,
                   options: []
                 });
 
-                this.setFilterOptions((typeof filter.controller !== 'undefined' ? filter.controller : tab.controller), filter, tab.key);
+                await this.setFilterOptions((typeof filter.controller !== 'undefined' ? filter.controller : tab.controller), filter, tab.key);
               }
             } else {
               this.filters[tab.key].push({
                 key: filter.key,
+                label: filter.label,
                 value: filterValue,
+                alwaysDisplay: filter.alwaysDisplay,
                 options: filter.values
               });
             }
-          });
+          }
+
+          this.loading.filters = false;
         }
       }
     },
+
     async setFilterOptions(controller, filter, tab) {
       return await fetch('index.php?option=com_emundus&controller=' + controller + '&task=' + filter.getter)
           .then(response => response.json())
@@ -534,7 +572,7 @@ export default {
                 options = options.map(option => ({value: option, label: option}));
               }
 
-              options.unshift({value: 'all', label: this.translate(filter.label)});
+              options.unshift({value: 'all', label: this.translate(filter.allLabel)});
 
               this.filters[tab].find(f => f.key === filter.key).options = options;
             } else {
@@ -542,34 +580,24 @@ export default {
             }
           });
     },
-    searchItems() {
-      if (this.searches[this.selectedListTab].searchDebounce !== null) {
-        clearTimeout(this.searches[this.selectedListTab].searchDebounce);
+
+    onClickAction(action, itemId = null, multiple = false, event = null) {
+      if (event !== null) {
+        event.stopPropagation();
       }
 
-      if (this.searches[this.selectedListTab].search === '') {
-        sessionStorage.removeItem('tchooz_filter_' + this.selectedListTab + '_search/' + document.location.hostname);
-      } else {
-        sessionStorage.setItem('tchooz_filter_' + this.selectedListTab + '_search/' + document.location.hostname, this.searches[this.selectedListTab].search);
-      }
-
-      this.searches[this.selectedListTab].searchDebounce = setTimeout(() => {
-        if (this.searches[this.selectedListTab].search !== this.searches[this.selectedListTab].lastSearch) {
-          this.searches[this.selectedListTab].lastSearch = this.searches[this.selectedListTab].search;
-
-          // when we are searching through the list, we reset the pagination
-          this.getListItems(1, this.selectedListTab);
-        }
-      }, 500);
-    },
-    onClickAction(action, itemId = null) {
-      if (action === null || typeof action !== 'object') {
+      if (action === null || typeof action !== 'object' || (typeof action.showon !== 'undefined' && !this.evaluateShowOn(null, action.showon))) {
         return false;
       }
 
       let item = null;
       if (itemId !== null) {
         item = this.items[this.selectedListTab].find(item => item.id === itemId);
+      }
+
+      if (action.name === 'preview') {
+        this.onClickPreview(item);
+        return;
       }
 
       if (action.type === 'redirect') {
@@ -581,10 +609,15 @@ export default {
         }
 
         settingsService.redirectJRoute(url, useGlobalStore().getCurrentLang)
-
-        //window.location.href = url;
       } else {
+        if (multiple) {
+          if (this.checkedItems.length === 0) {
+            return;
+          }
+        }
+
         let url = 'index.php?option=com_emundus&controller=' + action.controller + '&task=' + action.action;
+        let parameters = [];
 
         if (itemId !== null) {
           if (action.parameters) {
@@ -597,8 +630,11 @@ export default {
 
             url += url_parameters;
           } else {
-            url += '&id=' + itemId;
+            parameters = {id: itemId};
           }
+        }
+        else if(multiple && this.checkedItems.length > 0) {
+          parameters = {ids: this.checkedItems};
         }
 
         if (Object.prototype.hasOwnProperty.call(action, 'confirm')) {
@@ -618,46 +654,63 @@ export default {
             }
           }).then((result) => {
             if (result.value) {
-              this.executeAction(url);
+              this.executeAction(url,parameters,action.method);
             }
           });
         } else {
-          this.executeAction(url);
+          this.executeAction(url,parameters,action.method);
         }
       }
     },
-    executeAction(url) {
+
+    async executeAction(url, data = null, method = 'get') {
       this.loading.items = true;
 
-      fetch(url).then(response => response.json())
-          .then(response => {
-            if (response.status === true || response.status === 1) {
-              if (response.redirect) {
-                window.location.href = response.redirect;
-              }
+      let controller = url.split('controller=')[1].split('&')[0];
+      let task = url.split('task=')[1].split('&')[0];
+      let fetchClient = new FetchClient(controller);
 
-              this.getListItems();
-            } else {
-              if (response.msg) {
-                Swal.fire({
-                  icon: 'error',
-                  title: this.translate(response.msg),
-                  reverseButtons: true,
-                  customClass: {
-                    title: 'em-swal-title',
-                    confirmButton: 'em-swal-confirm-button',
-                    actions: 'em-swal-single-action'
-                  }
-                });
-              }
+      if(controller && task) {
+        if(typeof method === 'undefined') {
+          method = 'get';
+        }
+
+        let response = null;
+        if (method === 'get') {
+          response = await fetchClient.get(task, data);
+        } else if (method === 'post') {
+          response = await fetchClient.post(task, data);
+        } else if (method === 'delete') {
+          response = await fetchClient.delete(task, data);
+        }
+
+        if (response) {
+          if (response.status === true || response.status === 1) {
+            if (response.redirect) {
+              window.location.href = response.redirect;
             }
 
-            this.loading.items = false;
-          }).catch(error => {
-        console.error(error);
-        this.loading.items = false;
-      });
+            this.getListItems();
+          } else {
+            if (response.msg) {
+              Swal.fire({
+                icon: 'error',
+                title: this.translate(response.msg),
+                reverseButtons: true,
+                customClass: {
+                  title: 'em-swal-title',
+                  confirmButton: 'em-swal-confirm-button',
+                  actions: 'em-swal-single-action'
+                }
+              });
+            }
+          }
+        }
+      }
+
+      this.loading.items = false;
     },
+
     onClickPreview(item) {
       if (this.previewAction && (this.previewAction.title || this.previewAction.content)) {
         Swal.fire({
@@ -672,17 +725,13 @@ export default {
         });
       }
     },
-    onChangeFilter(filter) {
-      // Store value to sessionStorage
-      sessionStorage.setItem('tchooz_filter_' + this.selectedListTab + '_' + filter.key + '/' + document.location.hostname, filter.value);
 
-      // when we change a filter, we reset the pagination
-      this.getListItems(1, this.selectedListTab);
-    },
     onSelectTab(tabKey) {
       let selected = false;
 
       if (this.selectedListTab !== tabKey) {
+        this.onCheckAllitems();
+
         // check if the tab exists
         if (this.currentList.tabs.find(tab => tab.key === tabKey) !== 'undefined') {
           this.orderBy = null;
@@ -694,10 +743,7 @@ export default {
 
       return selected;
     },
-    changeViewType(viewType) {
-      this.viewType = viewType.value;
-      localStorage.setItem('tchooz_view_type/' + document.location.hostname, viewType.value);
-    },
+
     filterShowOnActions(actions, item) {
       return actions.filter(action => {
         if (Object.prototype.hasOwnProperty.call(action, 'showon')) {
@@ -707,34 +753,90 @@ export default {
         return true;
       });
     },
-    evaluateShowOn(item, showon) {
-      let show = true;
-      switch (showon.operator) {
-        case '==':
-        case '=':
-          show = item[showon.key] == showon.value;
-          break;
-        case '!=':
-          show = item[showon.key] != showon.value;
-          break;
-        case '>':
-          show = item[showon.key] > showon.value;
-          break;
-        case '<':
-          show = item[showon.key] < showon.value;
-          break;
-        case '>=':
-          show = item[showon.key] >= showon.value;
-          break;
-        case '<=':
-          show = item[showon.key] <= showon.value;
-          break;
-        default:
-          show = true;
+
+    evaluateShowOn(item = null, showon = null) {
+      if(item === null && showon === null) {
+        return false;
       }
 
-      return show;
+      let items = [];
+      if(item === null) {
+        items = this.checkedItems;
+      } else {
+        items = [item];
+      }
+
+      let show = [];
+
+      items.forEach((item) => {
+        // If item is an id, we get the item from the list
+        if (typeof item === 'number') {
+          item = this.items[this.selectedListTab].find(i => i.id === item);
+        }
+        switch (showon.operator) {
+          case '==':
+          case '=':
+            show.push(item[showon.key] == showon.value);
+            break;
+          case '!=':
+            show.push(item[showon.key] != showon.value);
+            break;
+          case '>':
+            show.push(item[showon.key] > showon.value);
+            break;
+          case '<':
+            show.push(item[showon.key] < showon.value);
+            break;
+          case '>=':
+            show.push(item[showon.key] >= showon.value);
+            break;
+          case '<=':
+            show.push(item[showon.key] <= showon.value);
+            break;
+          default:
+            show.push(true);
+        }
+      });
+
+      // Return true if all items match the condition
+      return show.every(s => s === true);
     },
+
+    onCheckAllitems(e) {
+      if (typeof e !== 'undefined' && e.target.checked) {
+        this.displayedItems.map((item) => document.querySelector('#item-' + this.currentTab.key + '-' + item.id + ' .item-check').checked = true)
+        this.checkedItems = this.displayedItems.map((item) => item.id)
+      } else {
+        this.displayedItems.map((item) => document.querySelector('#item-' + this.currentTab.key + '-' + item.id + ' .item-check').checked = false)
+        this.checkedItems = [];
+        if(document.querySelector('#check-th input')) {
+          document.querySelector('#check-th input').checked = false;
+        }
+      }
+    },
+
+    onCheckItem(id, e) {
+      // Do not check item if the click is on a link or a popover button
+      if (e.target.tagName === 'A' || e.target.classList.contains('popover-toggle-btn')) {
+        return;
+      }
+
+      let checkbox = document.querySelector('#item-' + this.currentTab.key + '-' + id + ' .item-check');
+      if (this.checkedItems.includes(id)) {
+        this.checkedItems.splice(this.checkedItems.indexOf(id), 1);
+        if (checkbox.checked) {
+          checkbox.checked = false
+        }
+      } else {
+        this.checkedItems.push(id);
+        if (!checkbox.checked) {
+          checkbox.checked = true
+        }
+      }
+
+      document.querySelector('#check-th input').checked = this.checkedItems.length === this.displayedItems.length;
+    },
+
     displayedColumns(item, viewType) {
       let columns = [];
 
@@ -746,7 +848,12 @@ export default {
 
       return columns;
     },
-    displayLongValue(html) {
+
+    displayLongValue(e,html) {
+      if(e) {
+        e.stopPropagation();
+      }
+
       Swal.fire({
         html: '<div style="text-align: left;">' + html + '</div>',
         reverseButtons: true,
@@ -764,38 +871,41 @@ export default {
         return tab.key === this.selectedListTab;
       });
     },
+
     tabActionsPopover() {
       return typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.filter((action) => {
-        return !(['add', 'edit', 'preview'].includes(action.name)) && !Object.prototype.hasOwnProperty.call(action, 'icon');
+        return !(['add', 'edit'].includes(action.name)) && !Object.prototype.hasOwnProperty.call(action, 'icon');
       }) : [];
     },
+
     editAction() {
       return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.find((action) => {
         return action.name === 'edit';
       }) : false;
     },
+
     addAction() {
       return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.find((action) => {
         return action.name === 'add';
       }) : false;
     },
+
     previewAction() {
       return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.find((action) => {
         return action.name === 'preview';
       }) : false;
     },
+
     iconActions() {
       return typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.filter((action) => {
         return !(['add', 'edit', 'preview'].includes(action.name)) && Object.prototype.hasOwnProperty.call(action, 'icon');
       }) : [];
     },
+
     displayedItems() {
-      let items = typeof this.items[this.selectedListTab] !== 'undefined' ? this.items[this.selectedListTab] : [];
-      /*return items.filter((item) => {
-        return item.label[this.params.shortlang].toLowerCase().includes(this.searches[this.selectedListTab].search.toLowerCase());
-      });*/
-      return items;
+      return typeof this.items[this.selectedListTab] !== 'undefined' ? this.items[this.selectedListTab] : [];
     },
+
     additionalColumns() {
       let columns = [];
       let items = typeof this.items[this.selectedListTab] !== 'undefined' ? this.items[this.selectedListTab] : [];
@@ -811,33 +921,30 @@ export default {
 
       return columns;
     },
+
     noneDiscoverTranslation() {
       let translation = '<img src="/media/com_emundus/images/tchoozy/complex-illustrations/no-result.svg" alt="empty-list" style="width: 10vw; height: 10vw; margin: 0 auto;">';
 
-      if (this.type === "campaigns") {
-        if (this.currentTab.key === 'programs') {
-          translation += '<span>' + this.translate('COM_EMUNDUS_ONBOARD_NOPROGRAM') + '</span>';
-        } else {
-          translation += '<span>' + this.translate('COM_EMUNDUS_ONBOARD_NOCAMPAIGN') + '</span>';
-        }
-      } else if (this.type === "emails") {
-        translation += '<span>' + this.translate('COM_EMUNDUS_ONBOARD_NOEMAIL') + '</span>';
-      } else if (this.type === "forms") {
-        translation += '<span>'+this.translate('COM_EMUNDUS_ONBOARD_NOFORM')+'</span>';
-      } else if (this.type === "events") {
-        translation += '<span>'+this.translate('COM_EMUNDUS_ONBOARD_NOEVENTS')+'</span>';
-      } else if (this.type === "workflow") {
-        translation += '<span>'+this.translate('COM_EMUNDUS_ONBOARD_NOWORKFLOW')+'</span>';
-      }
+      translation += this.translate(this.currentTab.noData);
 
       return translation;
     },
-    displayedFilters() {
-      return this.filters && this.filters[this.selectedListTab] ? this.filters[this.selectedListTab].filter(filter => filter.options.length > 0) : [];
-    },
+
+    viewTypeOptions() {
+      if(typeof this.currentTab !== 'undefined' && this.currentTab.viewsOptions) {
+        return this.currentTab.viewsOptions;
+      }
+      else {
+        return this.defaultViewsOptions;
+      }
+    }
   },
   watch: {
+    'currentTab.pagination.current': function (newPage) {
+      this.getListItems(newPage, this.selectedListTab);
+    },
     numberOfItemsToDisplay() {
+      this.getListItems();
       localStorage.setItem('tchooz_number_of_items_to_display/' + document.location.hostname, this.numberOfItemsToDisplay);
     },
   }
@@ -845,55 +952,49 @@ export default {
 </script>
 
 <style lang="scss">
-.head {
-  padding: 0 0 20px 0;
-}
-
-#onboarding_list .head {
-  position: fixed;
-  display: flex;
-  justify-content: space-between;
-  width: -webkit-fill-available;
-  width: -moz-available;
-  width: stretch;
-  background: var(--em-coordinator-bg);
-  top: 72px;
-  box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
-  left: 75px;
-  padding: 24px 33px 24px 33px;
-  min-height: 86px;
-  z-index: 9;
-}
-
-.view-settings #onboarding_list .head {
-  position: inherit;
-}
-
-#onboarding_list .list {
-  margin-top: 77px;
-}
-
-#onboarding_list.alert-banner-displayed .head {
-  top: 114px;
-}
-
-#list-nav {
-  li {
-    transition: all .3s;
-  }
-}
-
 #list-table {
   transition: all .3s;
   border: 0;
+  border-spacing: 0 3px;
+
+  input[type="checkbox"] {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #333;
+    border-radius: 4px;
+    background-color: white;
+    cursor: pointer;
+    position: relative;
+    display: block;
+    padding: 0;
+    margin-right: 0;
+  }
+
+  input[type="checkbox"]:checked {
+    background-color: var(--em-profile-color);
+    border-color: var(--em-profile-color);
+  }
+
+  input[type="checkbox"]:checked::before {
+    content: '✓';
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
 
   thead th {
-    background-color: transparent;
+    background-color: transparent !important;
+    border: unset !important;
+    box-shadow: unset;
   }
 
   &.blocs {
     border: 0;
-
 
     thead {
       display: none;
@@ -906,12 +1007,6 @@ export default {
       row-gap: 24px;
 
       tr {
-        background: #fff;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        min-height: 200px;
-
         td {
           display: flex;
           flex-direction: row;
@@ -941,23 +1036,6 @@ export default {
       }
     }
   }
-  &:not(.blocs) {
-    tbody {
-      tr:nth-child(2n+1) td {
-        background-color: var(--neutral-100);
-      }
-      tr:nth-child(2n-1):hover td {
-        background-color: var(--neutral-200);
-      }
-
-      tr:nth-child(2n) > td {
-        background-color: var(--neutral-300);
-      }
-      tr:nth-child(2n):hover > td {
-        background-color: var(--neutral-400);
-      }
-    }
-  }
 }
 
 .skeleton-grid {
@@ -980,21 +1058,6 @@ export default {
   &.skeleton-grid .skeleton-item {
     height: 200px !important;
     min-width: 340px !important;
-  }
-}
-
-#pagination {
-  transition: all .3s;
-  overflow: hidden;
-
-  ul {
-    overflow: auto;
-  }
-
-  li {
-    transition: all .3s;
-    font-size: 12px;
-    padding: 0 12px;
   }
 }
 </style>

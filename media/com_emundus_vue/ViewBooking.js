@@ -1,4 +1,4 @@
-import { e as eventsService } from "./events.js";
+import { e as eventsService } from "./events2.js";
 import { _ as _export_sfc, M as Modal, r as resolveComponent, c as createElementBlock, o as openBlock, d as createBaseVNode, a as createCommentVNode, t as toDisplayString, F as Fragment, e as renderList, g as createVNode, w as withCtx, b as createBlock, f as normalizeClass, l as createTextVNode, u as useGlobalStore } from "./app_emundus.js";
 import { I as Info } from "./Info.js";
 const _sfc_main = {

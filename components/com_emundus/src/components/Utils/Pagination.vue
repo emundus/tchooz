@@ -1,12 +1,14 @@
 <template>
-  <div class="tw-flex tw-items-center tw-justify-between tw-py-2 tw-px-3 tw-bg-white"
+  <div class="tw-flex tw-items-center tw-justify-between tw-py-2"
        :class="stickyClass"
        :style="stickyStyle">
-    <div class="tw-ml-2">
-      <div class="em-ml-16 em-flex-row">
-        <label for="pager-select" class="em-mb-0-important em-mr-4">Afficher</label>
-        <select name="pager-select" id="pager-select" class="em-select-no-border" v-model="currentLimit">
-          <option v-for="availableLimit in limits" :value="availableLimit">{{ availableLimit }}</option>
+    <div class="tw-bg-white tw-px-3 tw-py-2 tw-flex tw-border tw-rounded-coordinator tw-border-neutral-300 tw-items-center tw-h-[40px]">
+      <div class="tw-flex tw-items-center tw-gap-2">
+        <label for="pager-select" class="!tw-mb-0">{{ translate('COM_EMUNDUS_PAGINATION_DISPLAY')}}</label>
+        <select name="pager-select" id="pager-select" class="em-select-no-border !tw-py-0" v-model="currentLimit">
+          <option v-for="availableLimit in limits" :value="availableLimit">
+            {{ displayAvailableLimit(availableLimit) }}
+          </option>
         </select>
       </div>
     </div>
@@ -58,7 +60,7 @@ export default {
       default: 1
     },
     limit: {
-      type: Number,
+      type: Number|String,
       default: 5
     },
     sticky: {
@@ -75,13 +77,23 @@ export default {
     this.currentPage = this.page;
     this.currentLimit = this.limit;
   },
+  methods: {
+    displayAvailableLimit(limit)
+    {
+      if(isNaN(limit)) {
+        return this.translate(limit);
+      }
+
+      return limit;
+    }
+  },
   watch: {
     currentPage() {
       this.$emit('update:page', this.currentPage);
     },
     currentLimit() {
       this.$emit('update:limit', this.currentLimit);
-    }
+    },
   },
   computed: {
     stickyClass() {

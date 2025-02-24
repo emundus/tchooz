@@ -1,14 +1,26 @@
 <template>
-  <div :id="id" class="popover-container" style="height: 20px" @focusout="onFocusOut">
-    <button @click="onClickToggle" class="tw-btn-primary !tw-w-auto tw-flex tw-items-center tw-gap-1" v-if="button">
-      {{ button }}
-      <span class="material-symbols-outlined popover-toggle-btn tw-cursor-pointer"> {{ icon }} </span>
+  <div :id="id" class="popover-container" @focusout="onFocusOut">
+    <button v-if="button"
+            @click="onClickToggle"
+            class="!tw-w-auto tw-flex tw-items-center tw-gap-1"
+            :class="buttonClass"
+            style="padding: 0.5rem"
+            :title="button">
+      <template v-if="!hideButtonLabel">
+        {{ button }}
+      </template>
+      <span v-if="icon" class="material-symbols-outlined popover-toggle-btn tw-cursor-pointer">
+        {{ icon }}
+      </span>
     </button>
+
     <span v-else @click="onClickToggle" class="material-symbols-outlined popover-toggle-btn tw-cursor-pointer"> {{
         icon
       }} </span>
+
     <transition name="fade">
-      <div v-show="isOpen" class="popover-content tw-shadow tw-rounded-coordinator" ref="popoverContent" :id="'popover-content-'+id"
+      <div v-show="isOpen" class="popover-content tw-shadow tw-rounded-coordinator" ref="popoverContent"
+           :id="'popover-content-'+id"
            :style="popoverContentStyle">
         <slot></slot>
       </div>
@@ -27,6 +39,14 @@ export default {
     button: {
       type: String,
       default: ''
+    },
+    buttonClass: {
+      type: String,
+      default: 'tw-btn-primary'
+    },
+    hideButtonLabel: {
+      type: Boolean,
+      default: false
     },
     position: {
       type: String,
@@ -85,6 +105,11 @@ export default {
             // center popover content and make it appear right of the toggle button
             popoverContentContainer.style.top = `calc(50% - ${popoverContentHeight / 2}px)`;
             popoverContentContainer.style.left = `${popoverToggleBtnWidth + margin}px`;
+            break;
+          case 'bottom-left':
+            // center popover content and make it appear below the toggle button
+            popoverContentContainer.style.right = `0`;
+            popoverContentContainer.style.top = `${popoverToggleBtnHeight + margin}px`;
             break;
           case 'bottom':
           default:

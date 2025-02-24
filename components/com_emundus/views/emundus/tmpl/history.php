@@ -14,6 +14,8 @@ use Joomla\CMS\Language\Text;
 
 defined('_JEXEC') or die('Restricted Access');
 
+Text::script('COM_EMUNDUS_PAGINATION_DISPLAY');
+
 $app = Factory::getApplication();
 $lang         = $app->getLanguage();
 $short_lang   = substr($lang->getTag(), 0, 2);

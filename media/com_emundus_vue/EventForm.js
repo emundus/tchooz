@@ -3,7 +3,7 @@ import { P as Parameter, d as dayjs } from "./Parameter.js";
 import LocationForm from "./LocationForm.js";
 import { C as ColorPicker } from "./ColorPicker.js";
 import { I as Info } from "./Info.js";
-import { e as eventsService } from "./events.js";
+import { e as eventsService } from "./events2.js";
 import { D as DatePicker } from "./index.js";
 import { u as uo, E as EventDay, c as createEventsServicePlugin, a as createCalendar, b as createCalendarControlsPlugin, d as createViewDay, e as createViewWeek, v as viewWeek } from "./core.js";
 const _sfc_main$6 = {

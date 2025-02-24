@@ -1,6 +1,6 @@
-import { _ as _export_sfc, u as useGlobalStore, c as createElementBlock, o as openBlock, d as createBaseVNode, a as createCommentVNode, t as toDisplayString, r as resolveComponent, g as createVNode, w as withCtx, j as shallowRef } from "./app_emundus.js";
+import { _ as _export_sfc, u as useGlobalStore, c as createElementBlock, o as openBlock, d as createBaseVNode, a as createCommentVNode, t as toDisplayString, j as shallowRef, r as resolveComponent, g as createVNode, w as withCtx } from "./app_emundus.js";
 import { f as d, r, g as d$1, y, h as u, k, i as E, u as uo, E as EventDay, b as createCalendarControlsPlugin, c as createEventsServicePlugin, a as createCalendar, d as createViewDay, e as createViewWeek } from "./core.js";
-import { e as eventsService } from "./events.js";
+import { e as eventsService } from "./events2.js";
 const _sfc_main$1 = {
   name: "EventModal",
   props: {

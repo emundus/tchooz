@@ -1,8 +1,606 @@
-import { _ as _export_sfc, c as createElementBlock, o as openBlock, d as createBaseVNode, F as Fragment, e as renderList, t as toDisplayString, P as Popover, S as Swal, s as settingsService, u as useGlobalStore, a9 as ref, r as resolveComponent, b as createBlock, a as createCommentVNode, g as createVNode, f as normalizeClass, h as withDirectives, D as vModelSelect, R as vModelText, w as withCtx } from "./app_emundus.js";
+import { _ as _export_sfc, c as createElementBlock, o as openBlock, d as createBaseVNode, a as createCommentVNode, t as toDisplayString, U as script, r as resolveComponent, f as normalizeClass, g as createVNode, w as withCtx, l as createTextVNode, F as Fragment, e as renderList, h as withDirectives, D as vModelSelect, P as Popover, b as createBlock, R as vModelText, a9 as Pagination, S as Swal, m as FetchClient, s as settingsService, u as useGlobalStore, aa as ref, v as vShow } from "./app_emundus.js";
 import { S as Skeleton } from "./Skeleton.js";
 import Calendar from "./Calendar.js";
 import "./core.js";
-import "./events.js";
+import "./events2.js";
+const _sfc_main$5 = {
+  name: "Head",
+  props: {
+    title: {
+      type: String,
+      default: null
+    },
+    introduction: {
+      type: String,
+      default: null
+    },
+    addAction: {
+      type: Object,
+      default: null
+    }
+  },
+  methods: {
+    onClickAction(action) {
+      this.$emit("action", action);
+    }
+  }
+};
+const _hoisted_1$5 = { class: "head tw-py-6" };
+const _hoisted_2$5 = { class: "tw-flex tw-items-center tw-justify-between tw-mb-6" };
+const _hoisted_3$4 = {
+  key: 0,
+  class: "tw-text-neutral-700"
+};
+function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", _hoisted_1$5, [
+    createBaseVNode("div", _hoisted_2$5, [
+      createBaseVNode("h1", null, toDisplayString(_ctx.translate($props.title)), 1),
+      $props.addAction ? (openBlock(), createElementBlock("a", {
+        key: 0,
+        id: "add-action-btn",
+        class: "tw-btn-primary tw-w-auto tw-cursor-pointer",
+        onClick: _cache[0] || (_cache[0] = ($event) => $options.onClickAction($props.addAction))
+      }, toDisplayString(_ctx.translate($props.addAction.label)), 1)) : createCommentVNode("", true)
+    ]),
+    $props.introduction ? (openBlock(), createElementBlock("p", _hoisted_3$4, toDisplayString(_ctx.translate($props.introduction)), 1)) : createCommentVNode("", true)
+  ]);
+}
+const Head = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$5], ["__scopeId", "data-v-3eaa1be6"]]);
+const _sfc_main$4 = {
+  name: "Filters",
+  components: {
+    Multiselect: script
+  },
+  props: {
+    filters: {
+      type: Object,
+      default: () => {
+      }
+    },
+    currentTabKey: {
+      type: Number,
+      default: 0
+    }
+  },
+  emits: ["update-filter"],
+  data() {
+    return {
+      currentFilter: null,
+      displayedFilters: []
+    };
+  },
+  created() {
+    const storedFilters = Object.keys(sessionStorage).filter((key) => key.includes("tchooz_filter_" + this.currentTabKey));
+    if (storedFilters.length > 0) {
+      this.displayedFilters = storedFilters.map((key) => {
+        let filter = key.split("_").pop();
+        filter = filter.split("/").shift();
+        if (filter && this.filters[this.currentTabKey]) {
+          let filterData = this.filters[this.currentTabKey].find((f) => f.key === filter);
+          if (typeof filterData.alwaysDisplay === "undefined" || filterData.alwaysDisplay !== true) {
+            return filterData;
+          }
+        }
+        return null;
+      });
+      this.displayedFilters = this.displayedFilters.filter((f) => f !== null);
+      this.displayedFilters.sort((a, b) => a.key.localeCompare(b.key));
+    }
+  },
+  methods: {
+    onChangeFilter(filter) {
+      sessionStorage.setItem("tchooz_filter_" + this.currentTabKey + "_" + filter.key + "/" + document.location.hostname, filter.value);
+      this.$emit("update-filter");
+    },
+    removeFilter(filter) {
+      this.displayedFilters = this.displayedFilters.filter((f) => f.key !== filter.key);
+      filter.value = filter.default ? filter.default : "all";
+      sessionStorage.removeItem("tchooz_filter_" + this.currentTabKey + "_" + filter.key + "/" + document.location.hostname);
+      this.$emit("update-filter");
+    },
+    labelTranslate({ label }) {
+      return this.translate(label);
+    }
+  },
+  computed: {
+    availableFilters() {
+      return this.filters && this.filters[this.currentTabKey] ? this.filters[this.currentTabKey].filter((filter) => {
+        return filter.options.length > 0 && !filter.alwaysDisplay;
+      }) : [];
+    },
+    defaultFilters() {
+      return this.filters && this.filters[this.currentTabKey] ? this.filters[this.currentTabKey].filter((filter) => {
+        return filter.options.length > 0 && filter.alwaysDisplay;
+      }) : [];
+    }
+  },
+  watch: {
+    currentFilter(value) {
+      if (value && !this.displayedFilters.find((filter) => filter.key === value.key)) {
+        this.displayedFilters.push(value);
+        this.displayedFilters.sort((a, b) => a.key.localeCompare(b.key));
+        sessionStorage.setItem("tchooz_filter_" + this.currentTabKey + "_" + value.key + "/" + document.location.hostname, value.value);
+        this.currentFilter = null;
+      }
+    }
+  }
+};
+const _hoisted_1$4 = {
+  id: "tab-filters",
+  class: "tw-w-full"
+};
+const _hoisted_2$4 = { class: "tw-font-medium tw-mb-2" };
+const _hoisted_3$3 = { class: "tw-grid tw-grid-cols-3 tw-gap-4" };
+const _hoisted_4$3 = { class: "tw-grid tw-grid-cols-3 tw-gap-4" };
+const _hoisted_5$2 = { class: "tw-flex tw-items-center tw-justify-between" };
+const _hoisted_6$2 = { class: "!tw-mb-0 tw-font-medium" };
+const _hoisted_7$2 = ["onUpdate:modelValue", "onChange"];
+const _hoisted_8$2 = ["value"];
+const _hoisted_9$1 = { class: "tw-flex tw-items-center tw-justify-between" };
+const _hoisted_10$1 = { class: "!tw-mb-0 tw-font-medium" };
+const _hoisted_11$1 = ["onClick"];
+const _hoisted_12$1 = ["onUpdate:modelValue", "onChange"];
+const _hoisted_13$1 = ["value"];
+function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
+  const _component_multiselect = resolveComponent("multiselect");
+  return openBlock(), createElementBlock("section", _hoisted_1$4, [
+    $options.availableFilters.length > 0 ? (openBlock(), createElementBlock("div", {
+      key: 0,
+      class: normalizeClass({ "tw-mb-4": $data.displayedFilters.length > 0 })
+    }, [
+      createBaseVNode("label", _hoisted_2$4, toDisplayString(_ctx.translate("COM_EMUNDUS_ADD_FILTER")), 1),
+      createBaseVNode("div", _hoisted_3$3, [
+        createVNode(_component_multiselect, {
+          id: "select-filter-" + $props.currentTabKey,
+          modelValue: $data.currentFilter,
+          "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $data.currentFilter = $event),
+          label: "label",
+          "custom-label": $options.labelTranslate,
+          "track-by": "key",
+          options: $options.availableFilters,
+          "options-limit": 100,
+          multiple: false,
+          taggable: false,
+          placeholder: _ctx.translate("COM_EMUNDUS_FILTERS_CHOOSE_FILTER"),
+          "select-label": _ctx.translate("PRESS_ENTER_TO_SELECT"),
+          searchable: true,
+          "preserve-search": true
+        }, {
+          noResult: withCtx(() => [
+            createTextVNode(toDisplayString(_ctx.translate("COM_EMUNDUS_MULTISELECT_NORESULTS")), 1)
+          ]),
+          _: 1
+        }, 8, ["id", "modelValue", "custom-label", "options", "placeholder", "select-label"])
+      ])
+    ], 2)) : createCommentVNode("", true),
+    createBaseVNode("div", _hoisted_4$3, [
+      (openBlock(true), createElementBlock(Fragment, null, renderList($options.defaultFilters, (filter) => {
+        return openBlock(), createElementBlock("div", {
+          key: $props.currentTabKey + "-" + filter.key,
+          class: "tw-flex tw-flex-col tw-gap-1"
+        }, [
+          createBaseVNode("div", _hoisted_5$2, [
+            createBaseVNode("label", _hoisted_6$2, toDisplayString(_ctx.translate(filter.label)), 1)
+          ]),
+          withDirectives(createBaseVNode("select", {
+            "onUpdate:modelValue": ($event) => filter.value = $event,
+            onChange: ($event) => $options.onChangeFilter(filter)
+          }, [
+            (openBlock(true), createElementBlock(Fragment, null, renderList(filter.options, (option) => {
+              return openBlock(), createElementBlock("option", {
+                key: option.value,
+                value: option.value
+              }, toDisplayString(_ctx.translate(option.label)), 9, _hoisted_8$2);
+            }), 128))
+          ], 40, _hoisted_7$2), [
+            [vModelSelect, filter.value]
+          ])
+        ]);
+      }), 128)),
+      (openBlock(true), createElementBlock(Fragment, null, renderList($data.displayedFilters, (filter) => {
+        return openBlock(), createElementBlock("div", {
+          key: $props.currentTabKey + "-" + filter.key,
+          class: "tw-flex tw-flex-col tw-gap-1"
+        }, [
+          createBaseVNode("div", _hoisted_9$1, [
+            createBaseVNode("label", _hoisted_10$1, toDisplayString(_ctx.translate(filter.label)), 1),
+            createBaseVNode("span", {
+              class: "material-icons-outlined tw-text-red-500 tw-cursor-pointer",
+              onClick: ($event) => $options.removeFilter(filter)
+            }, " close ", 8, _hoisted_11$1)
+          ]),
+          withDirectives(createBaseVNode("select", {
+            "onUpdate:modelValue": ($event) => filter.value = $event,
+            onChange: ($event) => $options.onChangeFilter(filter)
+          }, [
+            (openBlock(true), createElementBlock(Fragment, null, renderList(filter.options, (option) => {
+              return openBlock(), createElementBlock("option", {
+                key: option.value,
+                value: option.value
+              }, toDisplayString(_ctx.translate(option.label)), 9, _hoisted_13$1);
+            }), 128))
+          ], 40, _hoisted_12$1), [
+            [vModelSelect, filter.value]
+          ])
+        ]);
+      }), 128))
+    ])
+  ]);
+}
+const Filters = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4]]);
+const _sfc_main$3 = {
+  name: "Actions",
+  components: {
+    Popover
+  },
+  props: {
+    items: {
+      type: Object,
+      default: () => {
+      }
+    },
+    checkedItems: {
+      type: Array,
+      default: () => []
+    },
+    views: {
+      type: Object,
+      default: () => {
+      }
+    },
+    tab: {
+      type: Object,
+      default: () => {
+      }
+    },
+    tabKey: {
+      type: Number,
+      default: ""
+    },
+    // V-Model
+    view: {
+      type: String,
+      default: "table"
+    },
+    searches: {
+      type: Object,
+      default: () => {
+      }
+    }
+  },
+  emits: ["update:view", "update:searches"],
+  data() {
+    return {
+      currentView: this.view,
+      currentSearches: this.searches
+    };
+  },
+  methods: {
+    evaluateShowOn(showon = null) {
+      if (showon === null) {
+        return false;
+      }
+      let items = this.checkedItems;
+      let show = [];
+      items.forEach((item) => {
+        if (typeof item === "number") {
+          item = this.items[this.tabKey].find((i) => i.id === item);
+        }
+        switch (showon.operator) {
+          case "==":
+          case "=":
+            show.push(item[showon.key] == showon.value);
+            break;
+          case "!=":
+            show.push(item[showon.key] != showon.value);
+            break;
+          case ">":
+            show.push(item[showon.key] > showon.value);
+            break;
+          case "<":
+            show.push(item[showon.key] < showon.value);
+            break;
+          case ">=":
+            show.push(item[showon.key] >= showon.value);
+            break;
+          case "<=":
+            show.push(item[showon.key] <= showon.value);
+            break;
+          default:
+            show.push(true);
+        }
+      });
+      return show.every((s) => s === true);
+    },
+    searchItems() {
+      if (this.currentSearches[this.tabKey].searchDebounce !== null) {
+        clearTimeout(this.currentSearches[this.tabKey].searchDebounce);
+      }
+      if (this.currentSearches[this.tabKey].search === "") {
+        sessionStorage.removeItem("tchooz_filter_" + this.tabKey + "_search/" + document.location.hostname);
+      } else {
+        sessionStorage.setItem("tchooz_filter_" + this.tabKey + "_search/" + document.location.hostname, this.currentSearches[this.tabKey].search);
+      }
+      this.currentSearches[this.tabKey].searchDebounce = setTimeout(() => {
+        if (this.currentSearches[this.tabKey].search !== this.currentSearches[this.tabKey].lastSearch) {
+          this.currentSearches[this.tabKey].lastSearch = this.currentSearches[this.tabKey].search;
+          this.$emit("updateItems", 1, this.tabKey);
+        }
+      }, 500);
+    },
+    changeViewType(currentView) {
+      this.currentView = currentView.value;
+      localStorage.setItem("tchooz_view_type/" + document.location.hostname, currentView.value);
+    },
+    onClickAction(action) {
+      this.$emit("action", action);
+    }
+  },
+  computed: {
+    multipleActionsPopover() {
+      let actions = [];
+      if (this.checkedItems.length > 0) {
+        actions = this.tab.actions.filter((action) => {
+          return action.multiple;
+        });
+      }
+      return actions;
+    }
+  },
+  watch: {
+    currentView() {
+      this.$emit("update:view", this.currentView);
+    },
+    currentSearches() {
+      this.$emit("update:searches", this.currentSearches);
+    }
+  }
+};
+const _hoisted_1$3 = {
+  id: "default-actions",
+  class: "tw-flex tw-gap-4"
+};
+const _hoisted_2$3 = { class: "tw-flex tw-items-center tw-gap-2" };
+const _hoisted_3$2 = { class: "tw-items-center tw-p-4 tw-list-none tw-m-0" };
+const _hoisted_4$2 = ["onClick"];
+const _hoisted_5$1 = {
+  key: 1,
+  class: "tw-flex tw-items-center tw-min-w-[15rem]"
+};
+const _hoisted_6$1 = ["placeholder", "disabled"];
+const _hoisted_7$1 = { class: "view-type tw-flex tw-items-center tw-gap-2" };
+const _hoisted_8$1 = ["onClick"];
+function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
+  const _component_popover = resolveComponent("popover");
+  return openBlock(), createElementBlock("section", _hoisted_1$3, [
+    createBaseVNode("div", _hoisted_2$3, [
+      $props.checkedItems.length > 0 && $options.multipleActionsPopover.length > 0 ? (openBlock(), createBlock(_component_popover, {
+        key: 0,
+        button: _ctx.translate("COM_EMUNDUS_ONBOARD_ACTIONS"),
+        "button-class": "tw-bg-white tw-border tw-h-[38px] hover:tw-border-form-border-hover tw-rounded-form",
+        icon: "keyboard_arrow_down",
+        position: "bottom-left",
+        class: "custom-popover-arrow"
+      }, {
+        default: withCtx(() => [
+          createBaseVNode("ul", _hoisted_3$2, [
+            (openBlock(true), createElementBlock(Fragment, null, renderList($options.multipleActionsPopover, (action) => {
+              return openBlock(), createElementBlock("li", {
+                key: action.name,
+                onClick: ($event) => $options.onClickAction(action),
+                class: normalizeClass(["tw-py-1.5 tw-px-2", {
+                  "tw-cursor-not-allowed tw-text-neutral-500": !(typeof action.showon === "undefined" || $options.evaluateShowOn(action.showon)),
+                  "tw-cursor-pointer tw-text-base hover:tw-bg-neutral-300 hover:tw-rounded-coordinator": typeof action.showon !== "undefined" && $options.evaluateShowOn(action.showon) || typeof action.showon === "undefined"
+                }])
+              }, toDisplayString(_ctx.translate(action.label)), 11, _hoisted_4$2);
+            }), 128))
+          ])
+        ]),
+        _: 1
+      }, 8, ["button"])) : createCommentVNode("", true),
+      $props.tab.displaySearch === true || typeof $props.tab.displaySearch === "undefined" ? (openBlock(), createElementBlock("div", _hoisted_5$1, [
+        withDirectives(createBaseVNode("input", {
+          name: "search",
+          type: "text",
+          "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $props.searches[$props.tabKey].search = $event),
+          placeholder: _ctx.translate("COM_EMUNDUS_ONBOARD_SEARCH"),
+          class: normalizeClass(["!tw-rounded-coordinator !tw-h-[38px] tw-m-0", {
+            "em-disabled-events": $props.items[$props.tabKey].length < 1 && $props.searches[$props.tabKey].search === ""
+          }]),
+          disabled: $props.items[$props.tabKey].length < 1 && $props.searches[$props.tabKey].search === "",
+          onChange: _cache[1] || (_cache[1] = (...args) => $options.searchItems && $options.searchItems(...args)),
+          onKeyup: _cache[2] || (_cache[2] = (...args) => $options.searchItems && $options.searchItems(...args))
+        }, null, 42, _hoisted_6$1), [
+          [vModelText, $props.searches[$props.tabKey].search]
+        ]),
+        createBaseVNode("span", {
+          class: "material-symbols-outlined tw-mr-2 tw-cursor-pointer tw-ml-[-32px]",
+          onClick: _cache[3] || (_cache[3] = (...args) => $options.searchItems && $options.searchItems(...args))
+        }, " search ")
+      ])) : createCommentVNode("", true)
+    ]),
+    createBaseVNode("div", _hoisted_7$1, [
+      (openBlock(true), createElementBlock(Fragment, null, renderList($props.views, (viewTypeOption) => {
+        return openBlock(), createElementBlock("span", {
+          key: viewTypeOption.value,
+          class: normalizeClass(["material-symbols-outlined tw-border tw-cursor-pointer tw-p-4 tw-rounded-coordinator !tw-flex tw-items-center tw-justify-center tw-bg-neutral-0 tw-h-[38px] tw-w-[38px]", {
+            "active tw-text-main-500 tw-border-main-500": viewTypeOption.value === $data.currentView,
+            "tw-text-neutral-600 tw-border-neutral-600": viewTypeOption.value !== $data.currentView
+          }]),
+          onClick: ($event) => $options.changeViewType(viewTypeOption)
+        }, toDisplayString(viewTypeOption.icon), 11, _hoisted_8$1);
+      }), 128))
+    ])
+  ]);
+}
+const Actions = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3]]);
+const _sfc_main$2 = {
+  name: "Navigation",
+  components: {
+    Actions,
+    Filters,
+    Pagination
+  },
+  props: {
+    tabs: {
+      type: Array,
+      default: () => []
+    },
+    filters: {
+      type: Object,
+      default: () => []
+    },
+    items: {
+      type: Object,
+      default: () => {
+      }
+    },
+    checkedItems: {
+      type: Array,
+      default: () => []
+    },
+    views: {
+      type: Object,
+      default: () => {
+      }
+    },
+    // V-Model
+    view: {
+      type: String,
+      default: "table"
+    },
+    searches: {
+      type: Object,
+      default: () => {
+      }
+    },
+    tab: {
+      type: Object,
+      default: () => {
+      }
+    },
+    tabKey: {
+      type: Number,
+      default: ""
+    },
+    numberOfItemsToDisplay: {
+      type: [Number, String],
+      default: 5
+    }
+  },
+  emits: ["update:views", "update:searches", "update:tab", "update:tabKey", "update:numberOfItemsToDisplay"],
+  data() {
+    return {
+      currentView: this.view,
+      currentSearches: this.searches,
+      currentTab: this.tab,
+      currentTabKey: this.tabKey,
+      currentNumberOfItemsToDisplay: this.numberOfItemsToDisplay
+    };
+  },
+  methods: {
+    onSelectTab(tabKey) {
+      let selected = false;
+      if (this.currentTabKey !== tabKey) {
+        if (this.tabs.find((tab) => tab.key === tabKey) !== "undefined") {
+          this.orderBy = null;
+          this.currentTabKey = tabKey;
+          sessionStorage.setItem("tchooz_selected_tab/" + document.location.hostname, tabKey);
+          selected = true;
+        }
+        this.$emit("selectTab");
+      }
+      return selected;
+    },
+    onClickAction(action) {
+      this.$emit("action", action, null, true);
+    },
+    updateItems(page, tabKey) {
+      this.$emit("updateItems", page, tabKey);
+    },
+    onChangeFilter() {
+      this.$emit("updateItems", 1, this.currentTabKey);
+    }
+  },
+  watch: {
+    currentView() {
+      this.$emit("update:view", this.currentView);
+    },
+    currentSearches() {
+      this.$emit("update:searches", this.currentSearches);
+    },
+    currentTab() {
+      this.$emit("update:tab", this.currentTab);
+    },
+    currentTabKey() {
+      this.$emit("update:tabKey", this.currentTabKey);
+    },
+    currentNumberOfItemsToDisplay() {
+      this.$emit("update:numberOfItemsToDisplay", this.currentNumberOfItemsToDisplay);
+    }
+  }
+};
+const _hoisted_1$2 = {
+  key: 0,
+  id: "list-nav"
+};
+const _hoisted_2$2 = { class: "tw-flex tw-ml-0 tw-pl-0 tw-list-none" };
+const _hoisted_3$1 = ["onClick"];
+const _hoisted_4$1 = {
+  id: "actions",
+  class: "tw-flex tw-items-start tw-justify-between tw-mt-4 tw-mb-4"
+};
+function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
+  const _component_Filters = resolveComponent("Filters");
+  const _component_Actions = resolveComponent("Actions");
+  const _component_Pagination = resolveComponent("Pagination");
+  return openBlock(), createElementBlock("div", null, [
+    $props.tabs.length > 1 ? (openBlock(), createElementBlock("nav", _hoisted_1$2, [
+      createBaseVNode("ul", _hoisted_2$2, [
+        (openBlock(true), createElementBlock(Fragment, null, renderList($props.tabs, (tab) => {
+          return openBlock(), createElementBlock("li", {
+            key: tab.key,
+            class: normalizeClass(["tw-cursor-pointer tw-font-normal", {
+              "em-light-tabs em-light-selected-tab": $data.currentTabKey === tab.key,
+              "em-light-tabs ": $data.currentTabKey !== tab.key
+            }]),
+            onClick: ($event) => $options.onSelectTab(tab.key)
+          }, toDisplayString(_ctx.translate(tab.title)), 11, _hoisted_3$1);
+        }), 128))
+      ])
+    ])) : createCommentVNode("", true),
+    createBaseVNode("section", _hoisted_4$1, [
+      createVNode(_component_Filters, {
+        filters: $props.filters,
+        currentTabKey: $data.currentTabKey,
+        onUpdateFilter: $options.onChangeFilter
+      }, null, 8, ["filters", "currentTabKey", "onUpdateFilter"]),
+      createVNode(_component_Actions, {
+        items: $props.items,
+        checkedItems: $props.checkedItems,
+        views: $props.views,
+        tab: $data.currentTab,
+        "tab-key": $data.currentTabKey,
+        view: $data.currentView,
+        "onUpdate:view": _cache[0] || (_cache[0] = ($event) => $data.currentView = $event),
+        searches: $data.currentSearches,
+        "onUpdate:searches": _cache[1] || (_cache[1] = ($event) => $data.currentSearches = $event),
+        onAction: $options.onClickAction,
+        onUpdateItems: $options.updateItems
+      }, null, 8, ["items", "checkedItems", "views", "tab", "tab-key", "view", "searches", "onAction", "onUpdateItems"])
+    ]),
+    this.items[this.currentTabKey].length > 0 ? (openBlock(), createBlock(_component_Pagination, {
+      key: 1,
+      limits: [5, 10, 25, 50, 100, "all"],
+      dataLength: $data.currentTab.pagination.count,
+      page: $data.currentTab.pagination.current,
+      "onUpdate:page": _cache[2] || (_cache[2] = ($event) => $data.currentTab.pagination.current = $event),
+      limit: $data.currentNumberOfItemsToDisplay,
+      "onUpdate:limit": _cache[3] || (_cache[3] = ($event) => $data.currentNumberOfItemsToDisplay = $event)
+    }, null, 8, ["dataLength", "page", "limit"])) : createCommentVNode("", true)
+  ]);
+}
+const Navigation = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2]]);
 const _sfc_main$1 = {
   name: "Gantt",
   props: {
@@ -80,8 +678,10 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
 }
 const Gantt = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1]]);
 const _sfc_main = {
-  name: "list",
+  name: "List",
   components: {
+    Navigation,
+    Head,
     Calendar,
     Skeleton,
     Popover,
@@ -102,9 +702,9 @@ const _sfc_main = {
       loading: {
         "lists": false,
         "tabs": false,
-        "items": false
+        "items": false,
+        "filters": true
       },
-      numberOfItemsToDisplay: 25,
       lists: {},
       type: "forms",
       params: {},
@@ -113,16 +713,17 @@ const _sfc_main = {
       items: {},
       title: "",
       viewType: "table",
-      viewTypeOptions: [
+      defaultViewsOptions: [
         { value: "table", icon: "dehaze" },
         { value: "blocs", icon: "grid_view" }
-        /*{value: 'gantt', icon: 'view_timeline'}*/
       ],
       searches: {},
       filters: {},
       alertBannerDisplayed: false,
       orderBy: null,
-      order: "DESC"
+      order: "DESC",
+      checkedItems: [],
+      numberOfItemsToDisplay: 25
     };
   },
   created() {
@@ -146,18 +747,6 @@ const _sfc_main = {
       this.params = Object.assign({}, ...Array.from(data).map(({ name, value }) => ({ [name]: value })));
     }
     this.type = this.params.type;
-    this.viewType = localStorage.getItem("tchooz_view_type/" + document.location.hostname);
-    if (this.type === "events") {
-      let calendarView = { value: "calendar", icon: "calendar_today" };
-      this.viewTypeOptions.push(calendarView);
-    }
-    if (this.viewType === null || typeof this.viewType === "undefined" || this.viewType !== "blocs" && this.viewType !== "table") {
-      this.viewType = "blocs";
-      if (this.type === "events") {
-        this.viewType = "calendar";
-      }
-      localStorage.setItem("tchooz_view_type/" + document.location.hostname, this.viewType);
-    }
     const storageNbItemsDisplay = localStorage.getItem("tchooz_number_of_items_to_display/" + document.location.hostname);
     if (storageNbItemsDisplay !== null) {
       this.numberOfItemsToDisplay = storageNbItemsDisplay !== "all" ? parseInt(storageNbItemsDisplay) : storageNbItemsDisplay;
@@ -181,6 +770,15 @@ const _sfc_main = {
             this.onSelectTab(sessionTab);
           } else {
             this.onSelectTab(this.currentList.tabs[0].key);
+          }
+        }
+        let availableViews = this.currentTab.viewsOptions ? this.currentTab.viewsOptions : this.defaultViewsOptions;
+        this.viewType = localStorage.getItem("tchooz_view_type/" + document.location.hostname);
+        let isViewTypeAvailable = availableViews.some((view) => view.value === this.viewType);
+        if (this.viewType === null || typeof this.viewType === "undefined" || !isViewTypeAvailable) {
+          this.viewType = availableViews[0].value;
+          if (this.viewType === null || typeof this.viewType === "undefined") {
+            localStorage.setItem("tchooz_view_type/" + document.location.hostname, this.viewType);
           }
         }
         this.loading.lists = false;
@@ -222,6 +820,7 @@ const _sfc_main = {
       this.getListItems(1, this.selectedListTab);
     },
     getListItems(page = 1, tab = null) {
+      this.checkedItems = [];
       if (tab === null) {
         this.loading.tabs = true;
         this.items = ref(Object.assign({}, ...this.currentList.tabs.map((tab2) => ({ [tab2.key]: [] }))));
@@ -267,6 +866,7 @@ const _sfc_main = {
                     this.items[tab2.key] = response.data.datas;
                     tab2.pagination = {
                       current: page,
+                      count: response.data.count,
                       total: Math.ceil(response.data.count / this.numberOfItemsToDisplay)
                     };
                   }
@@ -298,8 +898,9 @@ const _sfc_main = {
     async setTabFilters(tab) {
       if (typeof tab.filters !== "undefined" && tab.filters.length > 0) {
         if (typeof this.filters[tab.key] === "undefined") {
+          this.loading.filters = true;
           this.filters[tab.key] = [];
-          tab.filters.forEach((filter) => {
+          for (const filter of tab.filters) {
             let filterValue = sessionStorage.getItem("tchooz_filter_" + this.selectedListTab + "_" + filter.key + "/" + document.location.hostname);
             if (filterValue == null) {
               filterValue = filter.default ? filter.default : "all";
@@ -308,19 +909,24 @@ const _sfc_main = {
               if (filter.getter) {
                 this.filters[tab.key].push({
                   key: filter.key,
+                  label: filter.label,
                   value: filterValue,
+                  alwaysDisplay: filter.alwaysDisplay,
                   options: []
                 });
-                this.setFilterOptions(typeof filter.controller !== "undefined" ? filter.controller : tab.controller, filter, tab.key);
+                await this.setFilterOptions(typeof filter.controller !== "undefined" ? filter.controller : tab.controller, filter, tab.key);
               }
             } else {
               this.filters[tab.key].push({
                 key: filter.key,
+                label: filter.label,
                 value: filterValue,
+                alwaysDisplay: filter.alwaysDisplay,
                 options: filter.values
               });
             }
-          });
+          }
+          this.loading.filters = false;
         }
       }
     },
@@ -331,36 +937,27 @@ const _sfc_main = {
           if (typeof options[0] === "string") {
             options = options.map((option) => ({ value: option, label: option }));
           }
-          options.unshift({ value: "all", label: this.translate(filter.label) });
+          options.unshift({ value: "all", label: this.translate(filter.allLabel) });
           this.filters[tab].find((f) => f.key === filter.key).options = options;
         } else {
           return [];
         }
       });
     },
-    searchItems() {
-      if (this.searches[this.selectedListTab].searchDebounce !== null) {
-        clearTimeout(this.searches[this.selectedListTab].searchDebounce);
+    onClickAction(action, itemId = null, multiple = false, event = null) {
+      if (event !== null) {
+        event.stopPropagation();
       }
-      if (this.searches[this.selectedListTab].search === "") {
-        sessionStorage.removeItem("tchooz_filter_" + this.selectedListTab + "_search/" + document.location.hostname);
-      } else {
-        sessionStorage.setItem("tchooz_filter_" + this.selectedListTab + "_search/" + document.location.hostname, this.searches[this.selectedListTab].search);
-      }
-      this.searches[this.selectedListTab].searchDebounce = setTimeout(() => {
-        if (this.searches[this.selectedListTab].search !== this.searches[this.selectedListTab].lastSearch) {
-          this.searches[this.selectedListTab].lastSearch = this.searches[this.selectedListTab].search;
-          this.getListItems(1, this.selectedListTab);
-        }
-      }, 500);
-    },
-    onClickAction(action, itemId = null) {
-      if (action === null || typeof action !== "object") {
+      if (action === null || typeof action !== "object" || typeof action.showon !== "undefined" && !this.evaluateShowOn(null, action.showon)) {
         return false;
       }
       let item = null;
       if (itemId !== null) {
         item = this.items[this.selectedListTab].find((item2) => item2.id === itemId);
+      }
+      if (action.name === "preview") {
+        this.onClickPreview(item);
+        return;
       }
       if (action.type === "redirect") {
         let url = action.action;
@@ -371,7 +968,13 @@ const _sfc_main = {
         }
         settingsService.redirectJRoute(url, useGlobalStore().getCurrentLang);
       } else {
+        if (multiple) {
+          if (this.checkedItems.length === 0) {
+            return;
+          }
+        }
         let url = "index.php?option=com_emundus&controller=" + action.controller + "&task=" + action.action;
+        let parameters = [];
         if (itemId !== null) {
           if (action.parameters) {
             let url_parameters = action.parameters;
@@ -382,8 +985,10 @@ const _sfc_main = {
             }
             url += url_parameters;
           } else {
-            url += "&id=" + itemId;
+            parameters = { id: itemId };
           }
+        } else if (multiple && this.checkedItems.length > 0) {
+          parameters = { ids: this.checkedItems };
         }
         if (Object.prototype.hasOwnProperty.call(action, "confirm")) {
           Swal.fire({
@@ -402,41 +1007,54 @@ const _sfc_main = {
             }
           }).then((result) => {
             if (result.value) {
-              this.executeAction(url);
+              this.executeAction(url, parameters, action.method);
             }
           });
         } else {
-          this.executeAction(url);
+          this.executeAction(url, parameters, action.method);
         }
       }
     },
-    executeAction(url) {
+    async executeAction(url, data = null, method = "get") {
       this.loading.items = true;
-      fetch(url).then((response) => response.json()).then((response) => {
-        if (response.status === true || response.status === 1) {
-          if (response.redirect) {
-            window.location.href = response.redirect;
-          }
-          this.getListItems();
-        } else {
-          if (response.msg) {
-            Swal.fire({
-              icon: "error",
-              title: this.translate(response.msg),
-              reverseButtons: true,
-              customClass: {
-                title: "em-swal-title",
-                confirmButton: "em-swal-confirm-button",
-                actions: "em-swal-single-action"
-              }
-            });
+      let controller = url.split("controller=")[1].split("&")[0];
+      let task = url.split("task=")[1].split("&")[0];
+      let fetchClient = new FetchClient(controller);
+      if (controller && task) {
+        if (typeof method === "undefined") {
+          method = "get";
+        }
+        let response = null;
+        if (method === "get") {
+          response = await fetchClient.get(task, data);
+        } else if (method === "post") {
+          response = await fetchClient.post(task, data);
+        } else if (method === "delete") {
+          response = await fetchClient.delete(task, data);
+        }
+        if (response) {
+          if (response.status === true || response.status === 1) {
+            if (response.redirect) {
+              window.location.href = response.redirect;
+            }
+            this.getListItems();
+          } else {
+            if (response.msg) {
+              Swal.fire({
+                icon: "error",
+                title: this.translate(response.msg),
+                reverseButtons: true,
+                customClass: {
+                  title: "em-swal-title",
+                  confirmButton: "em-swal-confirm-button",
+                  actions: "em-swal-single-action"
+                }
+              });
+            }
           }
         }
-        this.loading.items = false;
-      }).catch((error) => {
-        console.error(error);
-        this.loading.items = false;
-      });
+      }
+      this.loading.items = false;
     },
     onClickPreview(item) {
       if (this.previewAction && (this.previewAction.title || this.previewAction.content)) {
@@ -452,13 +1070,10 @@ const _sfc_main = {
         });
       }
     },
-    onChangeFilter(filter) {
-      sessionStorage.setItem("tchooz_filter_" + this.selectedListTab + "_" + filter.key + "/" + document.location.hostname, filter.value);
-      this.getListItems(1, this.selectedListTab);
-    },
     onSelectTab(tabKey) {
       let selected = false;
       if (this.selectedListTab !== tabKey) {
+        this.onCheckAllitems();
         if (this.currentList.tabs.find((tab) => tab.key === tabKey) !== "undefined") {
           this.orderBy = null;
           this.selectedListTab = tabKey;
@@ -468,10 +1083,6 @@ const _sfc_main = {
       }
       return selected;
     },
-    changeViewType(viewType) {
-      this.viewType = viewType.value;
-      localStorage.setItem("tchooz_view_type/" + document.location.hostname, viewType.value);
-    },
     filterShowOnActions(actions, item) {
       return actions.filter((action) => {
         if (Object.prototype.hasOwnProperty.call(action, "showon")) {
@@ -480,32 +1091,76 @@ const _sfc_main = {
         return true;
       });
     },
-    evaluateShowOn(item, showon) {
-      let show = true;
-      switch (showon.operator) {
-        case "==":
-        case "=":
-          show = item[showon.key] == showon.value;
-          break;
-        case "!=":
-          show = item[showon.key] != showon.value;
-          break;
-        case ">":
-          show = item[showon.key] > showon.value;
-          break;
-        case "<":
-          show = item[showon.key] < showon.value;
-          break;
-        case ">=":
-          show = item[showon.key] >= showon.value;
-          break;
-        case "<=":
-          show = item[showon.key] <= showon.value;
-          break;
-        default:
-          show = true;
+    evaluateShowOn(item = null, showon = null) {
+      if (item === null && showon === null) {
+        return false;
       }
-      return show;
+      let items = [];
+      if (item === null) {
+        items = this.checkedItems;
+      } else {
+        items = [item];
+      }
+      let show = [];
+      items.forEach((item2) => {
+        if (typeof item2 === "number") {
+          item2 = this.items[this.selectedListTab].find((i) => i.id === item2);
+        }
+        switch (showon.operator) {
+          case "==":
+          case "=":
+            show.push(item2[showon.key] == showon.value);
+            break;
+          case "!=":
+            show.push(item2[showon.key] != showon.value);
+            break;
+          case ">":
+            show.push(item2[showon.key] > showon.value);
+            break;
+          case "<":
+            show.push(item2[showon.key] < showon.value);
+            break;
+          case ">=":
+            show.push(item2[showon.key] >= showon.value);
+            break;
+          case "<=":
+            show.push(item2[showon.key] <= showon.value);
+            break;
+          default:
+            show.push(true);
+        }
+      });
+      return show.every((s) => s === true);
+    },
+    onCheckAllitems(e) {
+      if (typeof e !== "undefined" && e.target.checked) {
+        this.displayedItems.map((item) => document.querySelector("#item-" + this.currentTab.key + "-" + item.id + " .item-check").checked = true);
+        this.checkedItems = this.displayedItems.map((item) => item.id);
+      } else {
+        this.displayedItems.map((item) => document.querySelector("#item-" + this.currentTab.key + "-" + item.id + " .item-check").checked = false);
+        this.checkedItems = [];
+        if (document.querySelector("#check-th input")) {
+          document.querySelector("#check-th input").checked = false;
+        }
+      }
+    },
+    onCheckItem(id, e) {
+      if (e.target.tagName === "A" || e.target.classList.contains("popover-toggle-btn")) {
+        return;
+      }
+      let checkbox = document.querySelector("#item-" + this.currentTab.key + "-" + id + " .item-check");
+      if (this.checkedItems.includes(id)) {
+        this.checkedItems.splice(this.checkedItems.indexOf(id), 1);
+        if (checkbox.checked) {
+          checkbox.checked = false;
+        }
+      } else {
+        this.checkedItems.push(id);
+        if (!checkbox.checked) {
+          checkbox.checked = true;
+        }
+      }
+      document.querySelector("#check-th input").checked = this.checkedItems.length === this.displayedItems.length;
     },
     displayedColumns(item, viewType) {
       let columns = [];
@@ -516,7 +1171,10 @@ const _sfc_main = {
       }
       return columns;
     },
-    displayLongValue(html) {
+    displayLongValue(e, html) {
+      if (e) {
+        e.stopPropagation();
+      }
       Swal.fire({
         html: '<div style="text-align: left;">' + html + "</div>",
         reverseButtons: true,
@@ -536,7 +1194,7 @@ const _sfc_main = {
     },
     tabActionsPopover() {
       return typeof this.currentTab.actions !== "undefined" ? this.currentTab.actions.filter((action) => {
-        return !["add", "edit", "preview"].includes(action.name) && !Object.prototype.hasOwnProperty.call(action, "icon");
+        return !["add", "edit"].includes(action.name) && !Object.prototype.hasOwnProperty.call(action, "icon");
       }) : [];
     },
     editAction() {
@@ -560,8 +1218,7 @@ const _sfc_main = {
       }) : [];
     },
     displayedItems() {
-      let items = typeof this.items[this.selectedListTab] !== "undefined" ? this.items[this.selectedListTab] : [];
-      return items;
+      return typeof this.items[this.selectedListTab] !== "undefined" ? this.items[this.selectedListTab] : [];
     },
     additionalColumns() {
       let columns = [];
@@ -577,144 +1234,97 @@ const _sfc_main = {
     },
     noneDiscoverTranslation() {
       let translation = '<img src="/media/com_emundus/images/tchoozy/complex-illustrations/no-result.svg" alt="empty-list" style="width: 10vw; height: 10vw; margin: 0 auto;">';
-      if (this.type === "campaigns") {
-        if (this.currentTab.key === "programs") {
-          translation += "<span>" + this.translate("COM_EMUNDUS_ONBOARD_NOPROGRAM") + "</span>";
-        } else {
-          translation += "<span>" + this.translate("COM_EMUNDUS_ONBOARD_NOCAMPAIGN") + "</span>";
-        }
-      } else if (this.type === "emails") {
-        translation += "<span>" + this.translate("COM_EMUNDUS_ONBOARD_NOEMAIL") + "</span>";
-      } else if (this.type === "forms") {
-        translation += "<span>" + this.translate("COM_EMUNDUS_ONBOARD_NOFORM") + "</span>";
-      } else if (this.type === "events") {
-        translation += "<span>" + this.translate("COM_EMUNDUS_ONBOARD_NOEVENTS") + "</span>";
-      } else if (this.type === "workflow") {
-        translation += "<span>" + this.translate("COM_EMUNDUS_ONBOARD_NOWORKFLOW") + "</span>";
-      }
+      translation += this.translate(this.currentTab.noData);
       return translation;
     },
-    displayedFilters() {
-      return this.filters && this.filters[this.selectedListTab] ? this.filters[this.selectedListTab].filter((filter) => filter.options.length > 0) : [];
+    viewTypeOptions() {
+      if (typeof this.currentTab !== "undefined" && this.currentTab.viewsOptions) {
+        return this.currentTab.viewsOptions;
+      } else {
+        return this.defaultViewsOptions;
+      }
     }
   },
   watch: {
+    "currentTab.pagination.current": function(newPage) {
+      this.getListItems(newPage, this.selectedListTab);
+    },
     numberOfItemsToDisplay() {
+      this.getListItems();
       localStorage.setItem("tchooz_number_of_items_to_display/" + document.location.hostname, this.numberOfItemsToDisplay);
     }
   }
 };
 const _hoisted_1 = {
-  key: 1,
-  class: "head tw-flex tw-items-center tw-justify-between"
-};
-const _hoisted_2 = {
   key: 2,
   id: "tabs-loading"
 };
-const _hoisted_3 = { class: "tw-flex tw-justify-between" };
-const _hoisted_4 = {
+const _hoisted_2 = { class: "tw-flex tw-justify-between" };
+const _hoisted_3 = {
   key: 3,
   class: "list tw-mt-4"
 };
+const _hoisted_4 = { key: 2 };
 const _hoisted_5 = {
-  key: 0,
-  id: "list-nav"
-};
-const _hoisted_6 = {
-  style: { "list-style-type": "none", "margin-left": "0", "padding-left": "0" },
-  class: "tw-flex"
-};
-const _hoisted_7 = ["onClick"];
-const _hoisted_8 = {
-  id: "actions",
-  class: "tw-flex tw-justify-between tw-mt-4 tw-mb-4"
-};
-const _hoisted_9 = { id: "tab-actions" };
-const _hoisted_10 = ["onUpdate:modelValue", "onChange"];
-const _hoisted_11 = ["value"];
-const _hoisted_12 = {
-  id: "default-actions",
-  class: "tw-flex"
-};
-const _hoisted_13 = { class: "tw-flex tw-items-center" };
-const _hoisted_14 = ["placeholder", "disabled"];
-const _hoisted_15 = { class: "view-type tw-flex tw-items-center" };
-const _hoisted_16 = ["onClick"];
-const _hoisted_17 = {
-  key: 1,
-  id: "pagination-wrapper",
-  class: "tw-flex tw-justify-end tw-items-center tw-mb-3"
-};
-const _hoisted_18 = { value: "10" };
-const _hoisted_19 = { value: "25" };
-const _hoisted_20 = { value: "50" };
-const _hoisted_21 = { value: "all" };
-const _hoisted_22 = {
-  key: 0,
-  id: "pagination",
-  class: "tw-text-center"
-};
-const _hoisted_23 = { class: "tw-flex tw-list-none tw-gap-1" };
-const _hoisted_24 = ["onClick"];
-const _hoisted_25 = { key: 3 };
-const _hoisted_26 = {
   key: 0,
   id: "list-items"
 };
-const _hoisted_27 = { class: "tw-bg-white" };
-const _hoisted_28 = {
+const _hoisted_6 = {
+  id: "check-th",
+  class: "tw-p-4"
+};
+const _hoisted_7 = {
   key: 0,
   class: "material-symbols-outlined"
 };
-const _hoisted_29 = {
+const _hoisted_8 = {
   key: 1,
   class: "material-symbols-outlined"
 };
-const _hoisted_30 = { class: "tw-font-medium tw-cursor-pointer" };
-const _hoisted_31 = {
+const _hoisted_9 = { class: "tw-font-medium tw-cursor-pointer" };
+const _hoisted_10 = {
   key: 0,
   class: "material-symbols-outlined"
 };
-const _hoisted_32 = {
+const _hoisted_11 = {
   key: 1,
   class: "material-symbols-outlined"
 };
-const _hoisted_33 = ["onClick"];
-const _hoisted_34 = {
+const _hoisted_12 = ["onClick"];
+const _hoisted_13 = {
   key: 1,
   class: "tw-font-medium"
 };
-const _hoisted_35 = {
+const _hoisted_14 = {
   key: 0,
-  class: "tw-px-4 tw-py-2"
+  class: "tw-p-4"
 };
-const _hoisted_36 = { class: "tw-font-medium" };
-const _hoisted_37 = ["id"];
-const _hoisted_38 = ["onClick"];
-const _hoisted_39 = ["title"];
-const _hoisted_40 = ["innerHTML"];
-const _hoisted_41 = { key: 1 };
-const _hoisted_42 = ["onClick", "innerHTML"];
-const _hoisted_43 = ["innerHTML"];
-const _hoisted_44 = { class: "actions tw-px-4 tw-py-2" };
-const _hoisted_45 = {
+const _hoisted_15 = ["id", "onClick"];
+const _hoisted_16 = ["id"];
+const _hoisted_17 = ["onClick", "title"];
+const _hoisted_18 = ["innerHTML"];
+const _hoisted_19 = { key: 1 };
+const _hoisted_20 = ["onClick", "innerHTML"];
+const _hoisted_21 = ["innerHTML"];
+const _hoisted_22 = {
   key: 0,
   class: "tw-w-full tw-mt-1.5 tw-mb-3"
 };
-const _hoisted_46 = ["onClick"];
-const _hoisted_47 = { class: "tw-flex tw-items-center tw-gap-2" };
-const _hoisted_48 = ["onClick"];
-const _hoisted_49 = ["onClick"];
-const _hoisted_50 = {
+const _hoisted_23 = ["onClick"];
+const _hoisted_24 = { class: "tw-flex tw-items-center tw-justify-end tw-gap-2" };
+const _hoisted_25 = ["onClick", "title"];
+const _hoisted_26 = ["onClick"];
+const _hoisted_27 = {
   style: { "list-style-type": "none", "margin": "0" },
   class: "em-flex-col-center tw-p-4"
 };
-const _hoisted_51 = ["onClick"];
-const _hoisted_52 = { key: 1 };
-const _hoisted_53 = ["innerHTML"];
+const _hoisted_28 = ["onClick"];
+const _hoisted_29 = { key: 1 };
+const _hoisted_30 = ["innerHTML"];
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_skeleton = resolveComponent("skeleton");
+  const _component_Head = resolveComponent("Head");
+  const _component_Navigation = resolveComponent("Navigation");
   const _component_popover = resolveComponent("popover");
   const _component_Calendar = resolveComponent("Calendar");
   const _component_Gantt = resolveComponent("Gantt");
@@ -727,17 +1337,15 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       height: "40px",
       width: "100%",
       class: "tw-mb-4 tw-mt-4 tw-rounded-lg"
-    })) : (openBlock(), createElementBlock("div", _hoisted_1, [
-      createBaseVNode("h1", null, toDisplayString(_ctx.translate($data.currentList.title)), 1),
-      $options.addAction ? (openBlock(), createElementBlock("a", {
-        key: 0,
-        id: "add-action-btn",
-        class: "tw-btn-primary tw-w-auto tw-cursor-pointer",
-        onClick: _cache[0] || (_cache[0] = ($event) => $options.onClickAction($options.addAction))
-      }, toDisplayString(_ctx.translate($options.addAction.label)), 1)) : createCommentVNode("", true)
-    ])),
-    $data.loading.tabs ? (openBlock(), createElementBlock("div", _hoisted_2, [
-      createBaseVNode("div", _hoisted_3, [
+    })) : (openBlock(), createBlock(_component_Head, {
+      key: 1,
+      title: $data.currentList.title,
+      introduction: $data.currentList.intro,
+      "add-action": $options.addAction,
+      onAction: $options.onClickAction
+    }, null, 8, ["title", "introduction", "add-action", "onAction"])),
+    $data.loading.tabs ? (openBlock(), createElementBlock("div", _hoisted_1, [
+      createBaseVNode("div", _hoisted_2, [
         createVNode(_component_skeleton, {
           height: "40px",
           width: "20%",
@@ -750,8 +1358,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         })
       ]),
       createBaseVNode("div", {
-        class: normalizeClass({ "skeleton-grid": $data.viewType === "blocs", "tw-flex tw-flex-col": $data.viewType === "list" }),
-        style: { "flex-wrap": "wrap" }
+        class: normalizeClass(["tw-flex-wrap", {
+          "skeleton-grid": $data.viewType === "blocs",
+          "tw-flex tw-flex-col": $data.viewType === "table"
+        }])
       }, [
         (openBlock(), createElementBlock(Fragment, null, renderList(9, (i) => {
           return createVNode(_component_skeleton, {
@@ -760,116 +1370,32 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           });
         }), 64))
       ], 2)
-    ])) : (openBlock(), createElementBlock("div", _hoisted_4, [
-      $data.currentList.tabs.length > 1 ? (openBlock(), createElementBlock("nav", _hoisted_5, [
-        createBaseVNode("ul", _hoisted_6, [
-          (openBlock(true), createElementBlock(Fragment, null, renderList($data.currentList.tabs, (tab) => {
-            return openBlock(), createElementBlock("li", {
-              key: tab.key,
-              class: normalizeClass(["tw-cursor-pointer tw-font-normal", {
-                "em-light-tabs em-light-selected-tab": $data.selectedListTab === tab.key,
-                "em-light-tabs ": $data.selectedListTab !== tab.key
-              }]),
-              onClick: ($event) => $options.onSelectTab(tab.key)
-            }, toDisplayString(_ctx.translate(tab.title)), 11, _hoisted_7);
-          }), 128))
-        ])
-      ])) : createCommentVNode("", true),
-      createBaseVNode("section", _hoisted_8, [
-        createBaseVNode("section", _hoisted_9, [
-          (openBlock(true), createElementBlock(Fragment, null, renderList($options.displayedFilters, (filter) => {
-            return withDirectives((openBlock(), createElementBlock("select", {
-              key: $data.selectedListTab + "-" + filter.key,
-              "onUpdate:modelValue": ($event) => filter.value = $event,
-              onChange: ($event) => $options.onChangeFilter(filter),
-              class: "tw-mr-2"
-            }, [
-              (openBlock(true), createElementBlock(Fragment, null, renderList(filter.options, (option) => {
-                return openBlock(), createElementBlock("option", {
-                  key: option.value,
-                  value: option.value
-                }, toDisplayString(_ctx.translate(option.label)), 9, _hoisted_11);
-              }), 128))
-            ], 40, _hoisted_10)), [
-              [vModelSelect, filter.value]
-            ]);
-          }), 128))
-        ]),
-        createBaseVNode("section", _hoisted_12, [
-          createBaseVNode("div", _hoisted_13, [
-            withDirectives(createBaseVNode("input", {
-              name: "search",
-              type: "text",
-              "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => $data.searches[$data.selectedListTab].search = $event),
-              placeholder: _ctx.translate("COM_EMUNDUS_ONBOARD_SEARCH"),
-              class: normalizeClass(["tw-rounded-lg", { "em-disabled-events": $data.items[this.selectedListTab].length < 1 && $data.searches[$data.selectedListTab].search === "" }]),
-              style: { "margin": "0" },
-              disabled: $data.items[this.selectedListTab].length < 1 && $data.searches[$data.selectedListTab].search === "",
-              onChange: _cache[2] || (_cache[2] = (...args) => $options.searchItems && $options.searchItems(...args)),
-              onKeyup: _cache[3] || (_cache[3] = (...args) => $options.searchItems && $options.searchItems(...args))
-            }, null, 42, _hoisted_14), [
-              [vModelText, $data.searches[$data.selectedListTab].search]
-            ]),
-            createBaseVNode("span", {
-              class: "material-symbols-outlined tw-mr-2 tw-cursor-pointer",
-              style: { "margin-left": "-32px" },
-              onClick: _cache[4] || (_cache[4] = (...args) => $options.searchItems && $options.searchItems(...args))
-            }, " search ")
-          ]),
-          createBaseVNode("div", _hoisted_15, [
-            (openBlock(true), createElementBlock(Fragment, null, renderList($data.viewTypeOptions, (viewTypeOption) => {
-              return openBlock(), createElementBlock("span", {
-                key: viewTypeOption.value,
-                style: { "padding": "4px", "border-radius": "calc(var(--em-default-br)/2)", "display": "flex", "height": "38px", "width": "38px", "align-items": "center", "justify-content": "center", "background": "var(--neutral-0)" },
-                class: normalizeClass(["material-symbols-outlined tw-ml-2 tw-cursor-pointer", {
-                  "active em-main-500-color em-border-main-500": viewTypeOption.value === $data.viewType,
-                  "em-neutral-600-color em-border-neutral-600": viewTypeOption.value !== $data.viewType
-                }]),
-                onClick: ($event) => $options.changeViewType(viewTypeOption)
-              }, toDisplayString(viewTypeOption.icon), 11, _hoisted_16);
-            }), 128))
-          ])
-        ])
-      ]),
-      this.items[this.selectedListTab].length > 0 ? (openBlock(), createElementBlock("section", _hoisted_17, [
-        withDirectives(createBaseVNode("select", {
-          name: "numberOfItemsToDisplay",
-          "onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => $data.numberOfItemsToDisplay = $event),
-          onChange: _cache[6] || (_cache[6] = ($event) => $options.getListItems())
-        }, [
-          createBaseVNode("option", _hoisted_18, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_RESULTS")) + " 10", 1),
-          createBaseVNode("option", _hoisted_19, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_RESULTS")) + " 25", 1),
-          createBaseVNode("option", _hoisted_20, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_RESULTS")) + " 50", 1),
-          createBaseVNode("option", _hoisted_21, toDisplayString(_ctx.translate("ALL")), 1)
-        ], 544), [
-          [vModelSelect, $data.numberOfItemsToDisplay]
-        ]),
-        typeof $options.currentTab.pagination !== void 0 && $options.currentTab.pagination && $options.currentTab.pagination.total > 1 ? (openBlock(), createElementBlock("div", _hoisted_22, [
-          createBaseVNode("ul", _hoisted_23, [
-            createBaseVNode("span", {
-              class: normalizeClass([{ "tw-text-neutral-600 em-disabled-events": $options.currentTab.pagination.current === 1 }, "material-symbols-outlined tw-cursor-pointer tw-mr-2 tw-items-center"]),
-              style: { "display": "flex" },
-              onClick: _cache[7] || (_cache[7] = ($event) => $options.getListItems($options.currentTab.pagination.current - 1, $data.selectedListTab))
-            }, " chevron_left ", 2),
-            (openBlock(true), createElementBlock(Fragment, null, renderList($options.currentTab.pagination.total, (i) => {
-              return openBlock(), createElementBlock("li", {
-                key: i,
-                class: normalizeClass(["tw-cursor-pointer em-square-button", { "active": i === $options.currentTab.pagination.current }]),
-                onClick: ($event) => $options.getListItems(i, $data.selectedListTab)
-              }, toDisplayString(i), 11, _hoisted_24);
-            }), 128)),
-            createBaseVNode("span", {
-              class: normalizeClass([{ "tw-text-neutral-600 em-disabled-events": $options.currentTab.pagination.current === $options.currentTab.pagination.total }, "material-symbols-outlined tw-cursor-pointer tw-ml-2 tw-items-center"]),
-              style: { "display": "flex" },
-              onClick: _cache[8] || (_cache[8] = ($event) => $options.getListItems($options.currentTab.pagination.current + 1, $data.selectedListTab))
-            }, " chevron_right ", 2)
-          ])
-        ])) : createCommentVNode("", true)
-      ])) : createCommentVNode("", true),
+    ])) : (openBlock(), createElementBlock("div", _hoisted_3, [
+      !$data.loading.filters ? (openBlock(), createBlock(_component_Navigation, {
+        key: 0,
+        tabs: $data.currentList.tabs,
+        filters: $data.filters,
+        items: $data.items,
+        "checked-items": $data.checkedItems,
+        views: $options.viewTypeOptions,
+        view: $data.viewType,
+        "onUpdate:view": _cache[0] || (_cache[0] = ($event) => $data.viewType = $event),
+        searches: $data.searches,
+        "onUpdate:searches": _cache[1] || (_cache[1] = ($event) => $data.searches = $event),
+        tab: $options.currentTab,
+        "onUpdate:tab": _cache[2] || (_cache[2] = ($event) => $options.currentTab = $event),
+        "tab-key": $data.selectedListTab,
+        "onUpdate:tabKey": _cache[3] || (_cache[3] = ($event) => $data.selectedListTab = $event),
+        "number-of-items-to-display": $data.numberOfItemsToDisplay,
+        "onUpdate:numberOfItemsToDisplay": _cache[4] || (_cache[4] = ($event) => $data.numberOfItemsToDisplay = $event),
+        onSelectTab: $options.onCheckAllitems,
+        onAction: $options.onClickAction,
+        onUpdateItems: $options.getListItems
+      }, null, 8, ["tabs", "filters", "items", "checked-items", "views", "view", "searches", "tab", "tab-key", "number-of-items-to-display", "onSelectTab", "onAction", "onUpdateItems"])) : createCommentVNode("", true),
       $data.loading.items ? (openBlock(), createElementBlock("div", {
-        key: 2,
+        key: 1,
         id: "items-loading",
-        class: normalizeClass({ "skeleton-grid": $data.viewType === "blocs", "tw-flex tw-flex-col tw-mb-4": $data.viewType === "list" }),
+        class: normalizeClass({ "skeleton-grid": $data.viewType === "blocs", "tw-flex tw-flex-col tw-mb-4": $data.viewType === "table" }),
         style: { "flex-wrap": "wrap" }
       }, [
         (openBlock(), createElementBlock(Fragment, null, renderList(9, (i) => {
@@ -878,46 +1404,51 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             class: "tw-rounded-lg skeleton-item"
           });
         }), 64))
-      ], 2)) : (openBlock(), createElementBlock("div", _hoisted_25, [
-        $options.displayedItems.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_26, [
+      ], 2)) : (openBlock(), createElementBlock("div", _hoisted_4, [
+        $options.displayedItems.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_5, [
           $data.viewType !== "calendar" && $data.viewType !== "gantt" ? (openBlock(), createElementBlock("table", {
             key: 0,
             id: "list-table",
-            class: normalizeClass({ "blocs": $data.viewType === "blocs" })
+            class: normalizeClass(["tw-border-separate", { "blocs": $data.viewType === "blocs" }])
           }, [
-            createBaseVNode("thead", _hoisted_27, [
+            createBaseVNode("thead", null, [
               createBaseVNode("tr", null, [
+                createBaseVNode("th", _hoisted_6, [
+                  createBaseVNode("input", {
+                    class: "items-check-all",
+                    type: "checkbox",
+                    onChange: _cache[5] || (_cache[5] = (...args) => $options.onCheckAllitems && $options.onCheckAllitems(...args))
+                  }, null, 32)
+                ]),
                 createBaseVNode("th", {
-                  class: "tw-cursor-pointer tw-px-4 tw-py-2",
-                  onClick: _cache[9] || (_cache[9] = ($event) => $options.orderByColumn("label"))
+                  class: "tw-cursor-pointer tw-p-4",
+                  onClick: _cache[6] || (_cache[6] = ($event) => $options.orderByColumn("label"))
                 }, [
                   createBaseVNode("div", {
                     class: normalizeClass({ "tw-flex tw-flex-row": "label" === $data.orderBy })
                   }, [
-                    "label" === $data.orderBy && $data.order === "ASC" ? (openBlock(), createElementBlock("span", _hoisted_28, "arrow_upward")) : "label" === $data.orderBy && $data.order === "DESC" ? (openBlock(), createElementBlock("span", _hoisted_29, "arrow_downward")) : createCommentVNode("", true),
-                    createBaseVNode("label", _hoisted_30, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_LABEL_" + $options.currentTab.key.toUpperCase()) == "COM_EMUNDUS_ONBOARD_LABEL_" + $options.currentTab.key.toUpperCase() ? _ctx.translate("COM_EMUNDUS_ONBOARD_LABEL") : _ctx.translate("COM_EMUNDUS_ONBOARD_LABEL_" + $options.currentTab.key.toUpperCase())), 1)
+                    "label" === $data.orderBy && $data.order === "ASC" ? (openBlock(), createElementBlock("span", _hoisted_7, "arrow_upward")) : "label" === $data.orderBy && $data.order === "DESC" ? (openBlock(), createElementBlock("span", _hoisted_8, "arrow_downward")) : createCommentVNode("", true),
+                    createBaseVNode("label", _hoisted_9, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_LABEL_" + $options.currentTab.key.toUpperCase()) == "COM_EMUNDUS_ONBOARD_LABEL_" + $options.currentTab.key.toUpperCase() ? _ctx.translate("COM_EMUNDUS_ONBOARD_LABEL") : _ctx.translate("COM_EMUNDUS_ONBOARD_LABEL_" + $options.currentTab.key.toUpperCase())), 1)
                   ], 2)
                 ]),
                 (openBlock(true), createElementBlock(Fragment, null, renderList($options.additionalColumns, (column) => {
                   return openBlock(), createElementBlock("th", {
                     key: column.key,
-                    class: "tw-px-4 tw-py-2"
+                    class: "tw-p-4"
                   }, [
                     column.order_by ? (openBlock(), createElementBlock("div", {
                       key: 0,
                       class: normalizeClass({ "tw-flex tw-flex-row": column.order_by === $data.orderBy })
                     }, [
-                      column.order_by === $data.orderBy && $data.order === "ASC" ? (openBlock(), createElementBlock("span", _hoisted_31, "arrow_upward")) : column.order_by === $data.orderBy && $data.order === "DESC" ? (openBlock(), createElementBlock("span", _hoisted_32, "arrow_downward")) : createCommentVNode("", true),
+                      column.order_by === $data.orderBy && $data.order === "ASC" ? (openBlock(), createElementBlock("span", _hoisted_10, "arrow_upward")) : column.order_by === $data.orderBy && $data.order === "DESC" ? (openBlock(), createElementBlock("span", _hoisted_11, "arrow_downward")) : createCommentVNode("", true),
                       createBaseVNode("label", {
                         class: "tw-cursor-pointer tw-font-medium",
                         onClick: ($event) => $options.orderByColumn(column.order_by)
-                      }, toDisplayString(column.key), 9, _hoisted_33)
-                    ], 2)) : (openBlock(), createElementBlock("label", _hoisted_34, toDisplayString(column.key), 1))
+                      }, toDisplayString(column.key), 9, _hoisted_12)
+                    ], 2)) : (openBlock(), createElementBlock("label", _hoisted_13, toDisplayString(column.key), 1))
                   ]);
                 }), 128)),
-                $options.tabActionsPopover && $options.tabActionsPopover.length > 0 ? (openBlock(), createElementBlock("th", _hoisted_35, [
-                  createBaseVNode("label", _hoisted_36, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ACTIONS")), 1)
-                ])) : createCommentVNode("", true)
+                $options.tabActionsPopover && $options.tabActionsPopover.length > 0 ? (openBlock(), createElementBlock("th", _hoisted_14)) : createCommentVNode("", true)
               ])
             ]),
             createBaseVNode("tbody", null, [
@@ -925,20 +1456,47 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 return openBlock(), createElementBlock("tr", {
                   key: item.id,
                   id: "item-" + $options.currentTab.key + "-" + item.id,
-                  class: normalizeClass(["em-border-cards table-row", { "em-card-neutral-100 em-card-shadow em-p-24": $data.viewType === "blocs" }])
+                  class: normalizeClass(["tw-group/item-row table-row tw-border tw-rounded-coordinator tw-cursor-pointer", {
+                    "tw-flex tw-flex-col tw-justify-between tw-min-h-[200px] tw-rounded-coordinator-cards tw-p-8 tw-shadow-card": $data.viewType === "blocs",
+                    "tw-shadow-table-border-profile": $data.checkedItems.includes(item.id) && $data.viewType === "table",
+                    "tw-shadow-table-border-neutral": !$data.checkedItems.includes(item.id) && $data.viewType === "table",
+                    "tw-bg-main-50 tw-border-profile-full": $data.checkedItems.includes(item.id) && $data.viewType === "blocs",
+                    "tw-bg-white hover:tw-bg-neutral-100": !$data.checkedItems.includes(item.id) && $data.viewType === "blocs"
+                  }]),
+                  onClick: ($event) => $options.onCheckItem(item.id, $event)
                 }, [
                   createBaseVNode("td", {
-                    class: "tw-cursor-pointer tw-px-4 tw-py-2",
-                    onClick: ($event) => $options.onClickAction($options.editAction, item.id)
+                    class: normalizeClass(["tw-rounded-s-coordinator tw-p-4", {
+                      "tw-bg-main-50": $data.checkedItems.includes(item.id) && $data.viewType === "table",
+                      "tw-bg-white group-hover/item-row:tw-bg-neutral-100": !$data.checkedItems.includes(item.id) && $data.viewType === "table"
+                    }])
+                  }, [
+                    withDirectives(createBaseVNode("input", {
+                      id: "item-" + $options.currentTab.key + "-" + item.id,
+                      class: "item-check",
+                      type: "checkbox"
+                    }, null, 8, _hoisted_16), [
+                      [vShow, $data.viewType === "table"]
+                    ])
+                  ], 2),
+                  createBaseVNode("td", {
+                    class: normalizeClass(["tw-cursor-pointer tw-p-4", {
+                      "tw-bg-main-50": $data.checkedItems.includes(item.id) && $data.viewType === "table",
+                      "tw-bg-white group-hover/item-row:tw-bg-neutral-100": !$data.checkedItems.includes(item.id) && $data.viewType === "table"
+                    }])
                   }, [
                     createBaseVNode("span", {
-                      class: normalizeClass({ "tw-font-semibold tw-line-clamp-2 tw-min-h-[48px]": $data.viewType === "blocs" }),
+                      onClick: ($event) => $options.onClickAction($options.editAction, item.id, false, $event),
+                      class: normalizeClass(["hover:tw-underline", { "tw-font-semibold tw-line-clamp-2 tw-min-h-[48px]": $data.viewType === "blocs" }]),
                       title: item.label[$data.params.shortlang]
-                    }, toDisplayString(item.label[$data.params.shortlang]), 11, _hoisted_39)
-                  ], 8, _hoisted_38),
+                    }, toDisplayString(item.label[$data.params.shortlang]), 11, _hoisted_17)
+                  ], 2),
                   (openBlock(true), createElementBlock(Fragment, null, renderList($options.displayedColumns(item, $data.viewType), (column) => {
                     return openBlock(), createElementBlock("td", {
-                      class: "columns tw-px-4 tw-py-2",
+                      class: normalizeClass(["columns tw-p-4", {
+                        "tw-bg-main-50": $data.checkedItems.includes(item.id) && $data.viewType === "table",
+                        "tw-bg-white group-hover/item-row:tw-bg-neutral-100": !$data.checkedItems.includes(item.id) && $data.viewType === "table"
+                      }]),
                       key: column.key
                     }, [
                       column.type === "tags" ? (openBlock(), createElementBlock("div", {
@@ -950,73 +1508,92 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                             key: tag.key,
                             class: normalizeClass(["tw-mr-2 tw-h-max", tag.classes]),
                             innerHTML: tag.value
-                          }, null, 10, _hoisted_40);
+                          }, null, 10, _hoisted_18);
                         }), 128))
-                      ], 2)) : column.hasOwnProperty("long_value") ? (openBlock(), createElementBlock("div", _hoisted_41, [
+                      ], 2)) : column.hasOwnProperty("long_value") ? (openBlock(), createElementBlock("div", _hoisted_19, [
                         createBaseVNode("span", {
-                          onClick: ($event) => $options.displayLongValue(column.long_value),
+                          onClick: ($event) => $options.displayLongValue($event, column.long_value),
                           class: normalizeClass(["tw-mt-2 tw-mb-2", column.classes]),
                           innerHTML: column.value
-                        }, null, 10, _hoisted_42)
+                        }, null, 10, _hoisted_20)
                       ])) : (openBlock(), createElementBlock("span", {
                         key: 2,
                         class: normalizeClass(["tw-mt-2 tw-mb-2", column.classes]),
                         innerHTML: column.value
-                      }, null, 10, _hoisted_43))
-                    ]);
+                      }, null, 10, _hoisted_21))
+                    ], 2);
                   }), 128)),
-                  createBaseVNode("td", _hoisted_44, [
-                    $data.viewType === "blocs" ? (openBlock(), createElementBlock("hr", _hoisted_45)) : createCommentVNode("", true),
+                  createBaseVNode("td", {
+                    class: normalizeClass(["tw-rounded-e-coordinator actions tw-p-4", {
+                      "tw-bg-main-50": $data.checkedItems.includes(item.id) && $data.viewType === "table",
+                      "tw-bg-white group-hover/item-row:tw-bg-neutral-100": !$data.checkedItems.includes(item.id) && $data.viewType === "table"
+                    }])
+                  }, [
+                    $data.viewType === "blocs" ? (openBlock(), createElementBlock("hr", _hoisted_22)) : createCommentVNode("", true),
                     createBaseVNode("div", {
                       class: normalizeClass({ "tw-flex tw-justify-between tw-w-full": $data.viewType === "blocs" })
                     }, [
                       $data.viewType === "blocs" && $options.editAction ? (openBlock(), createElementBlock("a", {
                         key: 0,
-                        onClick: ($event) => $options.onClickAction($options.editAction, item.id),
+                        onClick: ($event) => $options.onClickAction($options.editAction, item.id, false, $event),
                         class: "tw-btn-primary tw-text-sm tw-cursor-pointer tw-w-auto"
-                      }, toDisplayString(_ctx.translate($options.editAction.label)), 9, _hoisted_46)) : createCommentVNode("", true),
-                      createBaseVNode("div", _hoisted_47, [
-                        $options.previewAction ? (openBlock(), createElementBlock("span", {
+                      }, toDisplayString(_ctx.translate($options.editAction.label)), 9, _hoisted_23)) : createCommentVNode("", true),
+                      createBaseVNode("div", _hoisted_24, [
+                        $options.editAction && $data.viewType === "table" ? (openBlock(), createElementBlock("button", {
                           key: 0,
-                          class: "material-symbols-outlined tw-cursor-pointer",
-                          onClick: ($event) => $options.onClickPreview(item)
-                        }, "visibility", 8, _hoisted_48)) : createCommentVNode("", true),
+                          onClick: ($event) => $options.onClickAction($options.editAction, item.id),
+                          class: "tw-btn-primary !tw-w-auto tw-flex tw-items-center tw-gap-1",
+                          style: { "padding": "0.5rem" },
+                          title: _ctx.translate($options.editAction.label)
+                        }, _cache[7] || (_cache[7] = [
+                          createBaseVNode("span", { class: "material-symbols-outlined popover-toggle-btn tw-cursor-pointer" }, "edit", -1)
+                        ]), 8, _hoisted_25)) : createCommentVNode("", true),
                         (openBlock(true), createElementBlock(Fragment, null, renderList($options.iconActions, (action) => {
-                          return openBlock(), createElementBlock("span", {
+                          return openBlock(), createElementBlock("button", {
                             key: action.name,
-                            class: normalizeClass(["tw-cursor-pointer", {
-                              "material-symbols-outlined": action.iconOutlined,
-                              "material-icons": !action.iconOutlined,
-                              "tw-hidden": !(typeof action.showon === "undefined" || $options.evaluateShowOn(item, action.showon))
-                            }]),
-                            onClick: ($event) => $options.onClickAction(action, item.id)
-                          }, toDisplayString(action.icon), 11, _hoisted_49);
+                            class: normalizeClass(["tw-btn-primary !tw-w-auto tw-flex tw-items-center tw-gap-1", [
+                              action.buttonClasses,
+                              {
+                                "tw-hidden": !(typeof action.showon === "undefined" || $options.evaluateShowOn(item, action.showon))
+                              }
+                            ]]),
+                            onClick: ($event) => $options.onClickAction(action, item.id, false, $event)
+                          }, [
+                            createBaseVNode("span", {
+                              class: normalizeClass(["popover-toggle-btn tw-cursor-pointer", {
+                                "material-symbols-outlined": action.iconOutlined,
+                                "material-icons": !action.iconOutlined
+                              }])
+                            }, toDisplayString(action.icon), 3)
+                          ], 10, _hoisted_26);
                         }), 128)),
                         $options.tabActionsPopover && $options.tabActionsPopover.length > 0 && $options.filterShowOnActions($options.tabActionsPopover, item).length ? (openBlock(), createBlock(_component_popover, {
                           key: 1,
                           position: "left",
+                          button: _ctx.translate("COM_EMUNDUS_ONBOARD_ACTIONS"),
+                          "hide-button-label": true,
                           class: "custom-popover-arrow"
                         }, {
                           default: withCtx(() => [
-                            createBaseVNode("ul", _hoisted_50, [
+                            createBaseVNode("ul", _hoisted_27, [
                               (openBlock(true), createElementBlock(Fragment, null, renderList($options.tabActionsPopover, (action) => {
                                 return openBlock(), createElementBlock("li", {
                                   key: action.name,
                                   class: normalizeClass([{ "tw-hidden": !(typeof action.showon === "undefined" || $options.evaluateShowOn(item, action.showon)) }, "tw-cursor-pointer tw-py-1.5 tw-px-2 tw-text-base hover:tw-bg-neutral-300 hover:tw-rounded-coordinator"]),
-                                  onClick: ($event) => $options.onClickAction(action, item.id)
-                                }, toDisplayString(_ctx.translate(action.label)), 11, _hoisted_51);
+                                  onClick: ($event) => $options.onClickAction(action, item.id, false, $event)
+                                }, toDisplayString(_ctx.translate(action.label)), 11, _hoisted_28);
                               }), 128))
                             ])
                           ]),
                           _: 2
-                        }, 1024)) : createCommentVNode("", true)
+                        }, 1032, ["button"])) : createCommentVNode("", true)
                       ])
                     ], 2)
-                  ])
-                ], 10, _hoisted_37);
+                  ], 2)
+                ], 10, _hoisted_15);
               }), 128))
             ])
-          ], 2)) : $data.viewType === "calendar" ? (openBlock(), createElementBlock("div", _hoisted_52, [
+          ], 2)) : $data.viewType === "calendar" ? (openBlock(), createElementBlock("div", _hoisted_29, [
             createVNode(_component_Calendar, {
               items: $data.items,
               "edit-action": $options.editAction,
@@ -1032,7 +1609,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           id: "empty-list",
           class: "noneDiscover tw-text-center",
           innerHTML: $options.noneDiscoverTranslation
-        }, null, 8, _hoisted_53))
+        }, null, 8, _hoisted_30))
       ]))
     ]))
   ], 2);

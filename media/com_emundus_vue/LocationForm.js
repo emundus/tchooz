@@ -1,5 +1,5 @@
 import { P as Parameter } from "./Parameter.js";
-import { e as eventsService } from "./events.js";
+import { e as eventsService } from "./events2.js";
 import { _ as _export_sfc, r as resolveComponent, c as createElementBlock, o as openBlock, d as createBaseVNode, t as toDisplayString, i as withModifiers, F as Fragment, e as renderList, h as withDirectives, v as vShow, g as createVNode, a as createCommentVNode, s as settingsService, u as useGlobalStore } from "./app_emundus.js";
 import "./index.js";
 const byteToHex = [];
