@@ -4623,6 +4623,21 @@ class EmundusHelperFiles
 
 			if (!empty($session_filters))
 			{
+				// if there is no filter on file published status, we add it
+				$published_filter_exists = false;
+				foreach ($session_filters as $filter)
+				{
+					if ($filter['uid'] === 'published')
+					{
+						$published_filter_exists = true;
+						break;
+					}
+				}
+				if (!$published_filter_exists)
+				{
+					$session_filters[] = ['uid'   => 'published', 'id'   => 'default-filter-published', 'operator' => '=', 'value' => ['1']];
+				}
+
 				foreach ($session_filters as $filter)
 				{
 					if (in_array($filter['uid'], $filters_to_exclude))
@@ -4632,7 +4647,7 @@ class EmundusHelperFiles
 
 					if ((!is_array($filter['value']) || !in_array('all', $filter['value'], true)) && (!empty($filter['value']) || $filter['value'] == '0'))
 					{
-						$filter_id = str_replace(['filter-', 'default-filter-'], '', $filter['id']);
+						$filter_id = str_replace(['default-filter-', 'filter-'], '', $filter['id']);
 
 						if (is_numeric($filter_id))
 						{

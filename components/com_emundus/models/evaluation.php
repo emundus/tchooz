@@ -1451,7 +1451,7 @@ class EmundusModelEvaluation extends JModelList
 			$query .= ' WHERE jecc.fnum like ' . $this->db->quote($current_fnum) . ' ';
 		}
 
-		$query .= ' AND esc.published = 1 ';
+		$query .= ' AND esc.published = 1';
 
 		$query .= $q['q'];
 		$query .= ' ' . $group_by;
