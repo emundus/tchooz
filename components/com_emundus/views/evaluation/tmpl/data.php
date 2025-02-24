@@ -109,15 +109,15 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
                                         <label>
                                             <input value="-1" id="em-check-all-page" class="em-check-all-page"
                                                    type="checkbox"/>
-                                            <span id="span-check-all"><?= Text::_('COM_EMUNDUS_FILTERS_CHECK_ALL'); ?></span>
+                                            <span id="span-check-all" class="tw-cursor-pointer" onclick="onCheckPage()"><?= Text::_('COM_EMUNDUS_FILTERS_CHECK_ALL'); ?></span>
                                         </label>
                                         <label class="em-check-all-all" for="em-check-all-all">
                                             <input value="all" id="em-check-all-all" type="checkbox"
                                                    class="em-check-all-all"/>
-                                            <span id="span-check-all-all"><?= Text::_('COM_EMUNDUS_FILTERS_CHECK_ALL_ALL'); ?></span>
+                                            <span id="span-check-all-all" class="tw-cursor-pointer"><?= Text::_('COM_EMUNDUS_FILTERS_CHECK_ALL_ALL'); ?></span>
                                         </label>
                                         <label class="em-check-none" for="em-check-none">
-                                            <span id="span-check-none"><?= Text::_('COM_EMUNDUS_FILTERS_CHECK_NONE'); ?></span>
+                                            <span id="span-check-none" class="tw-cursor-pointer"><?= Text::_('COM_EMUNDUS_FILTERS_CHECK_NONE'); ?></span>
                                         </label>
                                     </div>
 								<?php else: ?>
@@ -430,6 +430,10 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
                 countFiles.innerHTML = '';
             }
         });
+
+        function onCheckPage() {
+            document.querySelector('.selectPage label[for="em-check-all"]').click();
+        }
 
 		<?php if($fix_header == 1): ?>
         document.addEventListener('scroll', function (e) {
