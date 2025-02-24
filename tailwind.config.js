@@ -80,6 +80,10 @@ module.exports = {
                     bg: 'var(--em-coordinator-bg)',
                 },
 
+                form: {
+                    'border-hover': 'var(--em-form-bc-hover)',
+                },
+
                 red: {
                     50: 'var(--red-50)',
                     100: 'var(--red-100)',
@@ -164,10 +168,14 @@ module.exports = {
                 'coordinator': 'var(--em-coordinator-br)',
                 'coordinator-cards': 'var(--em-coordinator-br-cards)',
                 'applicant': 'var(--em-applicant-br)',
+                'form': 'var(--em-form-br)',
             },
             boxShadow: {
                 'standard': 'var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3)',
-                'modal': '0 0 0 50vmax rgba(0,0,0,.5)'
+                'modal': '0 0 0 50vmax rgba(0,0,0,.5)',
+                'table-border-profile': '0 0px 0px 1px var(--em-profile-color)',
+                'table-border-neutral': '0 0px 0px 1px var(--neutral-400)',
+                'card': 'var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3)'
             },
             fontSize: {
                 'xxs': '8px'

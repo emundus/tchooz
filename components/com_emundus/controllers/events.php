@@ -14,6 +14,7 @@
 
 jimport('joomla.application.component.controller');
 
+use Joomla\CMS\Application\CMSApplicationInterface;
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Language\Text;
@@ -25,22 +26,13 @@ class EmundusControllerEvents extends BaseController
 	private $user;
 	private $m_events;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param   array  $config  An optional associative array of configuration settings.
-	 *
-	 * @see     \JController
-	 * @since   2.2.0
-	 */
 	public function __construct($config = array())
 	{
 		parent::__construct($config);
 
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'events.php');
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
+		require_once(JPATH_BASE . '/components/com_emundus/models/events.php');
+		require_once(JPATH_BASE . '/components/com_emundus/helpers/access.php');
 
-		$this->app      = Factory::getApplication();
 		$this->user     = $this->app->getIdentity();
 		$this->m_events = $this->getModel('Events');
 	}
@@ -122,6 +114,202 @@ class EmundusControllerEvents extends BaseController
 
 			$response['status']  = true;
 			$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
+		}
+
+		echo json_encode($response);
+		exit();
+	}
+
+	public function getevent()
+	{
+		$response = [
+			'status'  => false,
+			'message' => Text::_('COM_EMUNDUS_ONBOARD_ACCESS_DENIED'),
+			'data'    => []
+		];
+
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			header('HTTP/1.1 403 Forbidden');
+		}
+		else
+		{
+			$event_id = $this->input->getInt('event_id', 0);
+
+			if (!empty($event_id))
+			{
+				$event            = $this->m_events->getEvent($event_id);
+				$response['data'] = $event;
+
+				$response['status']  = true;
+				$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
+			}
+		}
+
+		echo json_encode($response);
+		exit();
+	}
+
+	public function createevent()
+	{
+		$response = [
+			'status'  => false,
+			'message' => Text::_('COM_EMUNDUS_ONBOARD_ACCESS_DENIED'),
+			'data'    => []
+		];
+
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			header('HTTP/1.1 403 Forbidden');
+		}
+		else
+		{
+			$name               = $this->input->getString('name', '');
+			$color              = $this->input->getString('color', '#000000');
+			$location           = $this->input->getString('location', 0);
+			$is_conference_link = $this->input->getString('is_conference_link', 0);
+			$conference_engine  = $this->input->getString('conference_engine', '');
+			$link               = $this->input->getString('link', '');
+			$generate_link_by   = $this->input->getString('generate_link_by', 0);
+			$manager            = $this->input->getString('manager', 0);
+			$manager            = json_decode($manager);
+			$available_for      = $this->input->getString('available_for', 1);
+			$campaigns          = $this->input->getRaw('campaigns', '[]');
+			$campaigns          = json_decode($campaigns);
+			$programs           = $this->input->getRaw('programs', '[]');
+			$programs           = json_decode($programs);
+
+			$event_id = $this->m_events->createEvent($name, $color, $location, $is_conference_link, $conference_engine, $link, $generate_link_by, $manager, $available_for, $campaigns, $programs, $this->user->id);
+
+			if (!empty($event_id))
+			{
+				$response['data'] = $event_id;
+
+				$response['status']  = true;
+				$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
+			}
+		}
+
+		echo json_encode($response);
+		exit();
+	}
+
+	public function editevent()
+	{
+		$response = [
+			'status'  => false,
+			'message' => Text::_('COM_EMUNDUS_ONBOARD_ACCESS_DENIED'),
+			'data'    => []
+		];
+
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			header('HTTP/1.1 403 Forbidden');
+		}
+		else
+		{
+			$id                 = $this->input->getInt('id', 0);
+			$name               = $this->input->getString('name', '');
+			$color              = $this->input->getString('color', '#000000');
+			$location           = $this->input->getInt('location', 0);
+			$is_conference_link = $this->input->getInt('is_conference_link', 0);
+			$conference_engine  = $this->input->getString('conference_engine', '');
+			$link               = $this->input->getString('link', '');
+			$generate_link_by   = $this->input->getInt('generate_link_by', 0);
+			$manager            = $this->input->getInt('manager', 0);
+			$manager            = json_decode($manager);
+			$available_for      = $this->input->getInt('available_for', 1);
+			$campaigns          = $this->input->getRaw('campaigns', '[]');
+			$campaigns          = json_decode($campaigns);
+			$programs           = $this->input->getRaw('programs', '[]');
+			$programs           = json_decode($programs);
+
+			$id = $this->m_events->editEvent($id, $name, $color, $location, $is_conference_link, $conference_engine, $link, $generate_link_by, $manager, $available_for, $campaigns, $programs);
+
+			if (!empty($id))
+			{
+				$response['data'] = $id;
+
+				$response['status']  = true;
+				$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
+			}
+		}
+
+		echo json_encode($response);
+		exit();
+	}
+
+	public function duplicateevent()
+	{
+		$response = [
+			'status'  => false,
+			'message' => Text::_('COM_EMUNDUS_ONBOARD_ACCESS_DENIED'),
+			'data'    => []
+		];
+
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			header('HTTP/1.1 403 Forbidden');
+		}
+		else
+		{
+			$event_id = $this->input->getInt('id', 0);
+
+			$redirect_link = Factory::getApplication()->getMenu()->getItems('link', 'index.php?option=com_emundus&view=events&layout=add', true);
+
+			if (!empty($event_id))
+			{
+				$event_id = $this->m_events->duplicateEvent($event_id);
+
+				if (!empty($event_id))
+				{
+					$response['data']     = $event_id;
+					$response['redirect'] = $redirect_link->route . '?event=' . $event_id;
+
+					$response['status']  = true;
+					$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
+				}
+			}
+		}
+
+		echo json_encode($response);
+		exit();
+	}
+
+	public function deleteevent()
+	{
+		$response = [
+			'status'  => false,
+			'message' => Text::_('COM_EMUNDUS_ONBOARD_ACCESS_DENIED'),
+			'data'    => []
+		];
+
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			header('HTTP/1.1 403 Forbidden');
+		}
+		else
+		{
+			$id = $this->input->getInt('id', 0);
+			if (empty($id))
+			{
+				$ids = $this->input->getString('ids');
+				$id  = explode(',', $ids);
+			}
+
+			if (!empty($id))
+			{
+				$response['status'] = $this->m_events->deleteEvent($id);
+
+				if ($response['status'])
+				{
+					$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
+				}
+				else
+				{
+					$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_ERROR');
+				}
+			}
 		}
 
 		echo json_encode($response);
@@ -222,6 +410,81 @@ class EmundusControllerEvents extends BaseController
 		exit();
 	}
 
+	public function savelocation()
+	{
+		$response = [
+			'status'  => false,
+			'message' => Text::_('COM_EMUNDUS_ONBOARD_ACCESS_DENIED'),
+			'data'    => []
+		];
+
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			header('HTTP/1.1 403 Forbidden');
+		}
+		else
+		{
+			$id      = $this->input->getString('id', 0);
+			$name    = $this->input->getString('name', '');
+			$address = $this->input->getString('address', '');
+			$rooms   = $this->input->getRaw('rooms', '[]');
+			$rooms   = json_decode($rooms);
+
+			$location_id = $this->m_events->saveLocation($name, $address, $rooms, $this->user->id, $id);
+
+			if (!empty($location_id))
+			{
+				$response['data'] = $location_id;
+
+				$response['status']  = true;
+				$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
+			}
+		}
+
+		echo json_encode($response);
+		exit();
+	}
+
+	public function deletelocation()
+	{
+		$response = [
+			'status'  => false,
+			'message' => Text::_('COM_EMUNDUS_ONBOARD_ACCESS_DENIED'),
+			'data'    => []
+		];
+
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			header('HTTP/1.1 403 Forbidden');
+		}
+		else
+		{
+			$id = $this->input->getInt('id', 0);
+			if (empty($id))
+			{
+				$ids = $this->input->getString('ids');
+				$id  = explode(',', $ids);
+			}
+
+			if (!empty($id))
+			{
+				$response['status'] = $this->m_events->deleteLocation($id);
+
+				if ($response['status'])
+				{
+					$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
+				}
+				else
+				{
+					$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_ERROR');
+				}
+			}
+		}
+
+		echo json_encode($response);
+		exit();
+	}
+
 	public function getrooms()
 	{
 		$response = [
@@ -271,36 +534,6 @@ class EmundusControllerEvents extends BaseController
 
 			$response['status']  = true;
 			$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
-		}
-
-		echo json_encode($response);
-		exit();
-	}
-
-	public function getevent()
-	{
-		$response = [
-			'status'  => false,
-			'message' => Text::_('COM_EMUNDUS_ONBOARD_ACCESS_DENIED'),
-			'data'    => []
-		];
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
-		{
-			header('HTTP/1.1 403 Forbidden');
-		}
-		else
-		{
-			$event_id = $this->input->getInt('event_id', 0);
-
-			if (!empty($event_id))
-			{
-				$event            = $this->m_events->getEvent($event_id);
-				$response['data'] = $event;
-
-				$response['status']  = true;
-				$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
-			}
 		}
 
 		echo json_encode($response);
@@ -359,157 +592,6 @@ class EmundusControllerEvents extends BaseController
 
 			$response['status']  = true;
 			$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
-		}
-
-		echo json_encode($response);
-		exit();
-	}
-
-	public function savelocation()
-	{
-		$response = [
-			'status'  => false,
-			'message' => Text::_('COM_EMUNDUS_ONBOARD_ACCESS_DENIED'),
-			'data'    => []
-		];
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
-		{
-			header('HTTP/1.1 403 Forbidden');
-		}
-		else
-		{
-			$id      = $this->input->getString('id', 0);
-			$name    = $this->input->getString('name', '');
-			$address = $this->input->getString('address', '');
-			$rooms   = $this->input->getRaw('rooms', '[]');
-			$rooms   = json_decode($rooms);
-
-			$location_id = $this->m_events->saveLocation($name, $address, $rooms, $this->user->id, $id);
-
-			if (!empty($location_id))
-			{
-				$response['data'] = $location_id;
-
-				$response['status']  = true;
-				$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
-			}
-		}
-
-		echo json_encode($response);
-		exit();
-	}
-
-	public function deletelocation()
-	{
-		$response = [
-			'status'  => false,
-			'message' => Text::_('COM_EMUNDUS_ONBOARD_ACCESS_DENIED'),
-			'data'    => []
-		];
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
-		{
-			header('HTTP/1.1 403 Forbidden');
-		}
-		else
-		{
-			$id = $this->input->getInt('id', 0);
-
-			if (!empty($id))
-			{
-				$response['status'] = $this->m_events->deleteLocation($id);
-
-				if ($response['status'])
-				{
-					$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
-				}
-				else
-				{
-					$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_ERROR');
-				}
-			}
-		}
-
-		echo json_encode($response);
-		exit();
-	}
-
-	public function createevent()
-	{
-		$response = [
-			'status'  => false,
-			'message' => Text::_('COM_EMUNDUS_ONBOARD_ACCESS_DENIED'),
-			'data'    => []
-		];
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
-		{
-			header('HTTP/1.1 403 Forbidden');
-		}
-		else
-		{
-			$name               = $this->input->getString('name', '');
-			$color              = $this->input->getString('color', '#000000');
-			$location           = $this->input->getString('location', 0);
-			$is_conference_link = $this->input->getString('is_conference_link', 0);
-			$conference_engine  = $this->input->getString('conference_engine', '');
-			$link               = $this->input->getString('link', '');
-			$generate_link_by   = $this->input->getString('generate_link_by', 0);
-			$manager            = $this->input->getString('manager', 0);
-			$manager            = json_decode($manager);
-			$available_for      = $this->input->getString('available_for', 1);
-			$campaigns          = $this->input->getRaw('campaigns', '[]');
-			$campaigns          = json_decode($campaigns);
-			$programs           = $this->input->getRaw('programs', '[]');
-			$programs           = json_decode($programs);
-
-			$event_id = $this->m_events->createEvent($name, $color, $location, $is_conference_link, $conference_engine, $link, $generate_link_by, $manager, $available_for, $campaigns, $programs, $this->user->id);
-
-			if (!empty($event_id))
-			{
-				$response['data'] = $event_id;
-
-				$response['status']  = true;
-				$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
-			}
-		}
-
-		echo json_encode($response);
-		exit();
-	}
-
-	public function duplicateevent()
-	{
-		$response = [
-			'status'  => false,
-			'message' => Text::_('COM_EMUNDUS_ONBOARD_ACCESS_DENIED'),
-			'data'    => []
-		];
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
-		{
-			header('HTTP/1.1 403 Forbidden');
-		}
-		else
-		{
-			$event_id = $this->input->getInt('id', 0);
-
-			$redirect_link = Factory::getApplication()->getMenu()->getItems('link', 'index.php?option=com_emundus&view=events&layout=add', true);
-
-			if (!empty($event_id))
-			{
-				$event_id = $this->m_events->duplicateEvent($event_id);
-
-				if (!empty($event_id))
-				{
-					$response['data']     = $event_id;
-					$response['redirect'] = $redirect_link->route . '?event=' . $event_id;
-
-					$response['status']  = true;
-					$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
-				}
-			}
 		}
 
 		echo json_encode($response);
@@ -711,86 +793,6 @@ class EmundusControllerEvents extends BaseController
 		exit();
 	}
 
-	public function editevent()
-	{
-		$response = [
-			'status'  => false,
-			'message' => Text::_('COM_EMUNDUS_ONBOARD_ACCESS_DENIED'),
-			'data'    => []
-		];
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
-		{
-			header('HTTP/1.1 403 Forbidden');
-		}
-		else
-		{
-			$id                 = $this->input->getInt('id', 0);
-			$name               = $this->input->getString('name', '');
-			$color              = $this->input->getString('color', '#000000');
-			$location           = $this->input->getInt('location', 0);
-			$is_conference_link = $this->input->getInt('is_conference_link', 0);
-			$conference_engine  = $this->input->getString('conference_engine', '');
-			$link               = $this->input->getString('link', '');
-			$generate_link_by   = $this->input->getInt('generate_link_by', 0);
-			$manager            = $this->input->getInt('manager', 0);
-			$manager            = json_decode($manager);
-			$available_for      = $this->input->getInt('available_for', 1);
-			$campaigns          = $this->input->getRaw('campaigns', '[]');
-			$campaigns          = json_decode($campaigns);
-			$programs           = $this->input->getRaw('programs', '[]');
-			$programs           = json_decode($programs);
-
-			$id = $this->m_events->editEvent($id, $name, $color, $location, $is_conference_link, $conference_engine, $link, $generate_link_by, $manager, $available_for, $campaigns, $programs);
-
-			if (!empty($id))
-			{
-				$response['data'] = $id;
-
-				$response['status']  = true;
-				$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
-			}
-		}
-
-		echo json_encode($response);
-		exit();
-	}
-
-	public function deleteevent()
-	{
-		$response = [
-			'status'  => false,
-			'message' => Text::_('COM_EMUNDUS_ONBOARD_ACCESS_DENIED'),
-			'data'    => []
-		];
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
-		{
-			header('HTTP/1.1 403 Forbidden');
-		}
-		else
-		{
-			$id = $this->input->getInt('id', 0);
-
-			if (!empty($id))
-			{
-				$response['status'] = $this->m_events->deleteEvent($id);
-
-				if ($response['status'])
-				{
-					$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
-				}
-				else
-				{
-					$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_ERROR');
-				}
-			}
-		}
-
-		echo json_encode($response);
-		exit();
-	}
-
 	public function getavailabilitiesbycampaignsandprograms()
 	{
 		$response = [
@@ -921,8 +923,8 @@ class EmundusControllerEvents extends BaseController
 		}
 		else
 		{
-			$applicant_bookings      = $this->m_events->getMyBookingsInformations($this->user->id);
-			$response['data'] = $applicant_bookings;
+			$applicant_bookings = $this->m_events->getMyBookingsInformations($this->user->id);
+			$response['data']   = $applicant_bookings;
 
 			$response['status']  = true;
 			$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
@@ -961,6 +963,101 @@ class EmundusControllerEvents extends BaseController
 					$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_ERROR');
 				}
 			}
+		}
+
+		echo json_encode($response);
+		exit();
+	}
+
+	public function getregistrants()
+	{
+		$response = [
+			'status'  => false,
+			'message' => Text::_('COM_EMUNDUS_ONBOARD_ACCESS_DENIED'),
+			'data'    => []
+		];
+
+		if (!EmundusHelperAccess::asPartnerAccessLevel($this->user->id))
+		{
+			header('HTTP/1.1 403 Forbidden');
+		}
+		else
+		{
+			$filter    = $this->input->getString('filter', '');
+			$sort      = $this->input->getString('sort', '');
+			$recherche = $this->input->getString('recherche', '');
+			$lim       = $this->input->getInt('lim', 0);
+			$page      = $this->input->getInt('page', 0);
+			$event     = $this->input->getInt('event', 0);
+			$location  = $this->input->getInt('location', 0);
+
+			$registrants = $this->m_events->getRegistrants($filter, $sort, $recherche, $lim, $page, $event, $location);
+			if (!empty($registrants) && $registrants['count'] > 0)
+			{
+				foreach ($registrants['datas'] as $registrant)
+				{
+					$registrant->label = ['fr' => $registrant->label, 'en' => $registrant->label];
+					$day               = EmundusHelperDate::displayDate($registrant->start_date, 'COM_EMUNDUS_BIRTHDAY_FORMAT', 0);
+					$hour              = EmundusHelperDate::displayDate($registrant->start_date, 'H:i', 0);
+
+					$registrant->additional_columns = [
+						[
+							'key'     => Text::_('COM_EMUNDUS_REGISTRANTS_DAY'),
+							'value'   => $day,
+							'classes' => '',
+							'display' => 'table'
+						],
+						[
+							'key'     => Text::_('COM_EMUNDUS_REGISTRANTS_HOUR'),
+							'value'   => $hour,
+							'classes' => '',
+							'display' => 'table'
+						],
+						[
+							'key'     => Text::_('COM_EMUNDUS_REGISTRANTS_LOCATION'),
+							'value'   => $registrant->location,
+							'classes' => '',
+							'display' => 'table'
+						],
+						[
+							'key'     => Text::_('COM_EMUNDUS_REGISTRANTS_ROOM'),
+							'value'   => $registrant->room,
+							'classes' => '',
+							'display' => 'table'
+						],
+					];
+				}
+			}
+
+			$response['data'] = $registrants;
+
+			$response['status']  = true;
+			$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
+		}
+
+		echo json_encode($response);
+		exit();
+	}
+
+	public function getfilterevents()
+	{
+		$response = [
+			'status'  => false,
+			'message' => Text::_('COM_EMUNDUS_ONBOARD_ACCESS_DENIED'),
+			'data'    => []
+		];
+
+		if (!EmundusHelperAccess::asPartnerAccessLevel($this->user->id))
+		{
+			header('HTTP/1.1 403 Forbidden');
+		}
+		else
+		{
+			$events           = $this->m_events->getFilterEvents();
+			$response['data'] = $events;
+
+			$response['status']  = true;
+			$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
 		}
 
 		echo json_encode($response);

@@ -1,214 +1,130 @@
-import { m as FetchClient } from "./app_emundus.js";
-const fetchClient = new FetchClient("events");
-const eventsService = {
-  // Getters
-  async getLocations() {
-    try {
-      return await fetchClient.get("getlocations");
-    } catch (e) {
-      return {
-        status: false,
-        error: e
-      };
-    }
+import list from "./List.js";
+import { _ as _export_sfc, r as resolveComponent, c as createElementBlock, o as openBlock, g as createVNode } from "./app_emundus.js";
+import "./Skeleton.js";
+import "./Calendar.js";
+import "./core.js";
+import "./events2.js";
+const _sfc_main = {
+  // eslint-disable-next-line vue/multi-word-component-names
+  name: "Events",
+  components: {
+    list
   },
-  async getLocation(location_id) {
-    try {
-      return await fetchClient.get("getlocation", { location_id });
-    } catch (e) {
-      return {
-        status: false,
-        error: e
-      };
-    }
+  data() {
+    return {
+      config: {
+        events: {
+          title: "COM_EMUNDUS_ONBOARD_EVENTS",
+          tabs: [
+            {
+              title: "COM_EMUNDUS_ONBOARD_EVENTS",
+              key: "events",
+              controller: "events",
+              getter: "getevents",
+              noData: "COM_EMUNDUS_ONBOARD_NO_EVENTS",
+              actions: [
+                {
+                  action: "index.php?option=com_emundus&view=events&layout=add",
+                  label: "COM_EMUNDUS_ONBOARD_ADD_EVENT",
+                  controller: "events",
+                  name: "add",
+                  type: "redirect"
+                },
+                {
+                  action: "duplicateevent",
+                  label: "COM_EMUNDUS_ONBOARD_ACTION_DUPLICATE",
+                  controller: "events",
+                  name: "duplicate",
+                  method: "post"
+                },
+                {
+                  action: "index.php?option=com_emundus&view=events&layout=add&event=%id%",
+                  label: "COM_EMUNDUS_ONBOARD_MODIFY",
+                  controller: "events",
+                  type: "redirect",
+                  name: "edit"
+                },
+                {
+                  action: "deleteevent",
+                  label: "COM_EMUNDUS_ONBOARD_ACTION_DELETE",
+                  controller: "events",
+                  name: "delete",
+                  method: "delete",
+                  multiple: true,
+                  confirm: "COM_EMUNDUS_ONBOARD_EVENT_DELETE_CONFIRM"
+                }
+              ],
+              filters: [
+                {
+                  label: "COM_EMUNDUS_ONBOARD_EVENT_LOCATIONS",
+                  allLabel: "COM_EMUNDUS_ONBOARD_EVENT_LOCATIONS_ALL",
+                  getter: "getlocations",
+                  controller: "events",
+                  key: "location",
+                  alwaysDisplay: true,
+                  values: null
+                }
+              ]
+            },
+            {
+              title: "COM_EMUNDUS_ONBOARD_EVENT_LOCATIONS",
+              key: "locations",
+              controller: "events",
+              getter: "getalllocations",
+              actions: [
+                {
+                  action: "index.php?option=com_emundus&view=events&layout=addlocation",
+                  controller: "events",
+                  label: "COM_EMUNDUS_ONBOARD_ADD_LOCATION",
+                  name: "add",
+                  type: "redirect"
+                },
+                {
+                  action: "index.php?option=com_emundus&view=events&layout=addlocation&location=%id%",
+                  controller: "events",
+                  label: "COM_EMUNDUS_ONBOARD_MODIFY",
+                  name: "edit",
+                  type: "redirect"
+                },
+                {
+                  action: "deletelocation",
+                  controller: "events",
+                  label: "COM_EMUNDUS_ACTIONS_DELETE",
+                  name: "delete",
+                  method: "delete",
+                  multiple: true,
+                  confirm: "COM_EMUNDUS_ONBOARD_LOCATION_DELETE_CONFIRM",
+                  showon: {
+                    key: "nb_events",
+                    operator: "<",
+                    value: "1"
+                  }
+                }
+              ],
+              filters: []
+            }
+          ]
+        }
+      }
+    };
   },
-  async getRooms(location_id = 0) {
-    try {
-      return await fetchClient.get("getrooms", { location_id });
-    } catch (e) {
-      return {
-        status: false,
-        error: e
-      };
-    }
-  },
-  async getSpecifications() {
-    try {
-      return await fetchClient.get("getspecifications");
-    } catch (e) {
-      return {
-        status: false,
-        error: e
-      };
-    }
-  },
-  async getEvent(event_id) {
-    try {
-      return await fetchClient.get("getevent", { event_id });
-    } catch (e) {
-      return {
-        status: false,
-        error: e
-      };
-    }
-  },
-  async getEventsSlots(start, end, eventsIds = "") {
-    try {
-      return await fetchClient.get("geteventsslots", { start, end, events_ids: eventsIds });
-    } catch (e) {
-      return {
-        status: false,
-        error: e
-      };
-    }
-  },
-  async getEventsAvailabilities(start, end, eventsIds = "") {
-    try {
-      return await fetchClient.get("geteventsavailabilities", { start, end, events_ids: eventsIds });
-    } catch (e) {
-      return {
-        status: false,
-        error: e
-      };
-    }
-  },
-  // Post requests
-  async saveLocation(data) {
-    if (data.rooms) {
-      data.rooms = JSON.stringify(data.rooms);
-    }
-    try {
-      return await fetchClient.post("savelocation", data);
-    } catch (e) {
-      return {
-        status: false,
-        error: e
-      };
-    }
-  },
-  async createEvent(data) {
-    if (data.campaigns) {
-      data.campaigns = JSON.stringify(data.campaigns);
-    }
-    if (data.programs) {
-      data.programs = JSON.stringify(data.programs);
-    }
-    try {
-      return await fetchClient.post("createevent", data);
-    } catch (e) {
-      return {
-        status: false,
-        error: e
-      };
-    }
-  },
-  async saveEventSlot(data) {
-    try {
-      return await fetchClient.post("saveeventslot", data);
-    } catch (e) {
-      return {
-        status: false,
-        error: e
-      };
-    }
-  },
-  async deleteEventSlot(id) {
-    try {
-      return await fetchClient.delete("deleteeventslot", { id });
-    } catch (e) {
-      return {
-        status: false,
-        error: e
-      };
-    }
-  },
-  async setupSlot(data) {
-    try {
-      return await fetchClient.post("setupslot", data);
-    } catch (e) {
-      return {
-        status: false,
-        error: e
-      };
-    }
-  },
-  async saveBookingNotifications(data) {
-    try {
-      return await fetchClient.post("savebookingnotifications", data);
-    } catch (e) {
-      return {
-        status: false,
-        error: e
-      };
-    }
-  },
-  async editEvent(data) {
-    if (data.campaigns) {
-      data.campaigns = JSON.stringify(data.campaigns);
-    }
-    if (data.programs) {
-      data.programs = JSON.stringify(data.programs);
-    }
-    try {
-      return await fetchClient.post("editevent", data);
-    } catch (e) {
-      return {
-        status: false,
-        error: e
-      };
-    }
-  },
-  async getAvailabilitiesByCampaignsAndPrograms(start = "", end = "", location = 0, check_booking_limit_reached = 0) {
-    try {
-      return await fetchClient.get("getavailabilitiesbycampaignsandprograms", { start, end, location, check_booking_limit_reached });
-    } catch (e) {
-      return {
-        status: false,
-        error: e
-      };
-    }
-  },
-  async getMyBookings() {
-    try {
-      return await fetchClient.get("getmybookings");
-    } catch (e) {
-      return {
-        status: false,
-        error: e
-      };
-    }
-  },
-  async getApplicantBookings() {
-    try {
-      return await fetchClient.get("getapplicantbookings");
-    } catch (e) {
-      return {
-        status: false,
-        error: e
-      };
-    }
-  },
-  async deleteBooking(booking_id) {
-    try {
-      return await fetchClient.get("deletebooking", { booking_id });
-    } catch (e) {
-      return {
-        status: false,
-        error: e
-      };
-    }
-  },
-  async getAvailabilityRegistrants(availability = 0) {
-    try {
-      return await fetchClient.get("getavailabilityregistrants", { availability });
-    } catch (e) {
-      return {
-        status: false,
-        error: e
-      };
+  computed: {
+    configString() {
+      return btoa(JSON.stringify(this.config));
     }
   }
 };
+const _hoisted_1 = { id: "events-list" };
+function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+  const _component_list = resolveComponent("list");
+  return openBlock(), createElementBlock("div", _hoisted_1, [
+    createVNode(_component_list, {
+      "default-lists": $options.configString,
+      "default-type": "events"
+    }, null, 8, ["default-lists"])
+  ]);
+}
+const Events = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render]]);
 export {
-  eventsService as e
+  Events as default
 };

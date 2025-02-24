@@ -194,27 +194,28 @@ class EmundusControllerEmail extends BaseController
 
 	public function deleteemail()
 	{
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
-		{
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
-		}
-		else
-		{
-			$data = $this->input->getInt('id');
+		$response    = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
 
-			$emails = $this->m_emails->deleteEmail($data);
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
+		{
+			$response = array('status' => false, 'msg' => Text::_('ERROR_CANNOT_DELETE_EMAIL'), 'data' => false);
 
-			if ($emails)
-			{
-				$tab = array('status' => 1, 'msg' => Text::_('EMAIL_DELETED'), 'data' => $emails);
+			$data = $this->input->getInt('id',0);
+			if(empty($data)) {
+				$data = $this->input->getString('ids');
+				$data = explode(',', $data);
 			}
-			else
-			{
-				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_DELETE_EMAIL'), 'data' => $emails);
+
+			if (!empty($data)) {
+				$deleted = $this->m_emails->deleteEmail($data);
+
+				if ($deleted) {
+					$response = array('status' => 1, 'msg' => Text::_('EMAIL_DELETED'), 'data' => $deleted);
+				}
 			}
 		}
-		echo json_encode((object) $tab);
+
+		echo json_encode((object) $response);
 		exit;
 	}
 

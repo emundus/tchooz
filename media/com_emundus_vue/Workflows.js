@@ -3,7 +3,7 @@ import { _ as _export_sfc, r as resolveComponent, c as createElementBlock, o as 
 import "./Skeleton.js";
 import "./Calendar.js";
 import "./core.js";
-import "./events.js";
+import "./events2.js";
 const _sfc_main = {
   name: "Workflows",
   components: {
@@ -12,52 +12,56 @@ const _sfc_main = {
   data() {
     return {
       workflowConfig: {
-        "workflow": {
-          "title": "COM_EMUNDUS_ONBOARD_WORKFLOWS",
-          "tabs": [
+        workflow: {
+          title: "COM_EMUNDUS_ONBOARD_WORKFLOWS",
+          tabs: [
             {
-              "title": "COM_EMUNDUS_ONBOARD_WORKFLOWS",
-              "key": "workflow",
-              "controller": "workflow",
-              "getter": "getworkflows",
-              "actions": [
+              title: "COM_EMUNDUS_ONBOARD_WORKFLOWS",
+              key: "workflow",
+              controller: "workflow",
+              getter: "getworkflows",
+              noData: "COM_EMUNDUS_ONBOARD_NOWORKFLOW",
+              actions: [
                 {
-                  "action": "index.php?option=com_emundus&view=workflows&layout=add",
-                  "label": "COM_EMUNDUS_ONBOARD_ADD_WORKFLOW",
-                  "controller": "workflow",
-                  "name": "add",
-                  "type": "redirect"
+                  action: "index.php?option=com_emundus&view=workflows&layout=add",
+                  label: "COM_EMUNDUS_ONBOARD_ADD_WORKFLOW",
+                  controller: "workflow",
+                  name: "add",
+                  type: "redirect"
                 },
                 {
-                  "action": "index.php?option=com_emundus&view=workflows&layout=edit&wid=%id%",
-                  "label": "COM_EMUNDUS_ONBOARD_MODIFY",
-                  "controller": "workflow",
-                  "type": "redirect",
-                  "name": "edit"
+                  action: "index.php?option=com_emundus&view=workflows&layout=edit&wid=%id%",
+                  label: "COM_EMUNDUS_ONBOARD_MODIFY",
+                  controller: "workflow",
+                  type: "redirect",
+                  name: "edit"
                 },
                 {
-                  "action": "delete",
-                  "label": "COM_EMUNDUS_ACTIONS_DELETE",
-                  "controller": "workflow",
-                  "parameters": "&id=%id%",
-                  "name": "delete",
-                  "confirm": "COM_EMUNDUS_WORKFLOW_DELETE_WORKFLOW_CONFIRMATION"
+                  action: "delete",
+                  label: "COM_EMUNDUS_ACTIONS_DELETE",
+                  controller: "workflow",
+                  method: "delete",
+                  multiple: true,
+                  name: "delete",
+                  confirm: "COM_EMUNDUS_WORKFLOW_DELETE_WORKFLOW_CONFIRMATION"
                 },
                 {
                   action: "duplicate",
                   label: "COM_EMUNDUS_ACTIONS_DUPLICATE",
                   controller: "workflow",
-                  parameters: "&id=%id%",
-                  name: "duplicate"
+                  name: "duplicate",
+                  method: "post"
                 }
               ],
-              "filters": [
+              filters: [
                 {
-                  "label": "COM_EMUNDUS_ONBOARD_ALL_PROGRAMS",
-                  "getter": "getallprogramforfilter&type=id",
-                  "controller": "programme",
-                  "key": "program",
-                  "values": null
+                  label: "COM_EMUNDUS_ONBOARD_WORKFLOWS_FILTER_PROGRAM",
+                  allLabel: "COM_EMUNDUS_ONBOARD_ALL_PROGRAMS",
+                  getter: "getallprogramforfilter&type=id",
+                  controller: "programme",
+                  key: "program",
+                  alwaysDisplay: true,
+                  values: null
                 }
               ]
             }

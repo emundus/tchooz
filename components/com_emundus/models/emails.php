@@ -2011,34 +2011,23 @@ class EmundusModelEmails extends JModelList
 		$query   = $this->_db->getQuery(true);
 
 		if (!empty($ids)) {
+			if(!is_array($ids)) {
+				$ids = [$ids];
+			}
+
 			try {
-				$query->delete($this->_db->quoteName('#__emundus_setup_emails'));
-				if (is_array($ids)) {
-					$query->where($this->_db->quoteName('id') . ' IN (' . implode(', ', $ids) . ')');
-				}
-				else {
-					$query->where($this->_db->quoteName('id') . ' = ' . $ids);
-				}
-
-				// Do not delete system emails
-				$query->andWhere($this->_db->quoteName('type') . ' != 1');
-
+				$query->delete($this->_db->quoteName('#__emundus_setup_emails'))
+					->where($this->_db->quoteName('id') . ' IN (' . implode(', ', $this->_db->quote($ids)) . ')')
+					->andWhere($this->_db->quoteName('type') . ' != 1');
 				$this->_db->setQuery($query);
 				$this->_db->execute();
 
 				// check if the emails were deleted, cannot just check db->execute() because it returns true even if no rows were deleted (e.g. if the email was a system email)
 				$query->clear();
 				$query->select($this->_db->quoteName('id'))
-					->from($this->_db->quoteName('#__emundus_setup_emails'));
-				if (is_array($ids)) {
-					$query->where($this->_db->quoteName('id') . ' IN (' . implode(', ', $ids) . ')');
-				}
-				else {
-					$query->where($this->_db->quoteName('id') . ' = ' . $ids);
-				}
-
+					->from($this->_db->quoteName('#__emundus_setup_emails'))
+					->where($this->_db->quoteName('id') . ' IN (' . implode(', ', $this->_db->quote($ids)) . ')');
 				$this->_db->setQuery($query);
-
 				if (empty($this->_db->loadColumn())) {
 					$deleted = true;
 				}

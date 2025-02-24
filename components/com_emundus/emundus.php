@@ -782,6 +782,11 @@ Text::script('COM_EMUNDUS_EXPERT_MAIL_SUBJECT_ERROR');
 Text::script('COM_EMUNDUS_EXPERT_MAIL_TO_ERROR');
 Text::script('COM_EMUNDUS_EXPERT_MAIL_BODY_ERROR');
 
+Text::script('COM_EMUNDUS_MULTISELECT_NORESULTS');
+Text::script('COM_EMUNDUS_FILTERS_CHOOSE_FILTER');
+Text::script('PRESS_ENTER_TO_SELECT');
+Text::script('COM_EMUNDUS_ADD_FILTER');
+
 // Load translations for action log plugin
 $actionlog_translation_tags = parse_ini_file(JPATH_ADMINISTRATOR . '/language/fr-FR/plg_actionlog_emundus.ini');
 foreach ($actionlog_translation_tags as $tag => $translation)
