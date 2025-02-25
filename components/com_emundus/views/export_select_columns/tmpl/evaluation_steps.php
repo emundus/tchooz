@@ -78,6 +78,11 @@ if (!empty($this->elements)) {
 		}
 
 		if ($element->group_id !== $current_group) {
+			if ($current_group !== 0) {
+				// close the group
+				$html_steps .= '</div></div>';
+			}
+
 			$current_group = $element->group_id;
 			$html_steps .= '<div id="emundus_grp_' . $element->group_id . '"  class="em-white-bg tw-p-2 tw-rounded tw-my-2">';
 			$html_steps .= loadPanelHeading($element->group_id, $element->group_label, 'grp');
