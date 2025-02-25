@@ -19,7 +19,9 @@ class EmundusFiltersFiles extends EmundusFilters
     private $config = [];
 	private $m_users = null;
 	private $menu_params = null;
-	public function __construct($config = array(), $skip = false)
+
+	private bool $keep_session_filters = false;
+	public function __construct($config = array(), $skip = false, $keep_session_filters = false)
 	{
 		Log::addLogger(['text_file' => 'com_emundus.filters.php'], Log::ALL, 'com_emundus.filters');
 
@@ -30,6 +32,7 @@ class EmundusFiltersFiles extends EmundusFilters
 			throw new Exception('Access denied', 403);
 		}
 
+		$this->keep_session_filters = $keep_session_filters;
 		$this->h_cache = new EmundusHelperCache();
 		$this->m_users = new EmundusModelUsers();
 		$this->config = $config;
@@ -918,7 +921,7 @@ class EmundusFiltersFiles extends EmundusFilters
 		}
 
 		$session_filters = $session->get('em-applied-filters', []);
-		if ((isset($config['force_reload_on_refresh']) && $config['force_reload_on_refresh']) || empty($session_filters)) {
+		if (((isset($config['force_reload_on_refresh']) && $config['force_reload_on_refresh']) && !$this->keep_session_filters) || empty($session_filters)) {
 			if (!empty($session_filters)) {
 				$filters_to_keep = array_filter($session_filters, function ($session_filter) {
 					return isset($session_filter['menuFilter']) && $session_filter['menuFilter'];

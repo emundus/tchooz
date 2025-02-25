@@ -4077,7 +4077,7 @@ class EmundusControllerFiles extends BaseController
 					if (!class_exists('EmundusFiltersFiles')) {
 						require_once(JPATH_ROOT . '/components/com_emundus/classes/filters/EmundusFiltersFiles.php');
 					}
-					$m_filters = new EmundusFiltersFiles($module_params);
+					$m_filters = new EmundusFiltersFiles($module_params, false, true);
 
 					$response['data'] = $m_filters->getFilters();
 					$response['status'] = true;
