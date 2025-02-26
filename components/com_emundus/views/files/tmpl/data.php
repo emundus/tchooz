@@ -12,11 +12,12 @@
  * details.
  */
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 
 defined('_JEXEC') or die('Restricted access');
 
-$anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+$anonymize_data = EmundusHelperAccess::isDataAnonymized(Factory::getApplication()->getIdentity()->id);
 
 $eMConfig   = JComponentHelper::getParams('com_emundus');
 $fix_header = $eMConfig->get('fix_file_header', 0);
@@ -127,15 +128,15 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
                                         <label>
                                             <input value="-1" id="em-check-all-page" class="em-check-all-page"
                                                    type="checkbox"/>
-                                            <span id="span-check-all"><?= Text::_('COM_EMUNDUS_FILTERS_CHECK_ALL'); ?></span>
+                                            <span id="span-check-all" class="tw-cursor-pointer" onclick="onCheckPage()"><?= Text::_('COM_EMUNDUS_FILTERS_CHECK_ALL'); ?></span>
                                         </label>
                                         <label class="em-check-all-all" for="em-check-all-all">
                                             <input value="all" id="em-check-all-all" type="checkbox"
                                                    class="em-check-all-all"/>
-                                            <span id="span-check-all-all"><?= Text::_('COM_EMUNDUS_FILTERS_CHECK_ALL_ALL'); ?></span>
+                                            <span id="span-check-all-all" class="tw-cursor-pointer"><?= Text::_('COM_EMUNDUS_FILTERS_CHECK_ALL_ALL'); ?></span>
                                         </label>
                                         <label class="em-check-none" for="em-check-none">
-                                            <span id="span-check-none"><?= Text::_('COM_EMUNDUS_FILTERS_CHECK_NONE'); ?></span>
+                                            <span id="span-check-none" class="tw-cursor-pointer"><?= Text::_('COM_EMUNDUS_FILTERS_CHECK_NONE'); ?></span>
                                         </label>
                                     </div>
 								<?php elseif ($this->lists['order'] == $kl): ?>
@@ -477,79 +478,6 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
             selectAllFiles();
         })
 
-        $(document).on('change', '.em-check-all-page,.selectPage #em-check-all', function (e) {
-            let pageCheckAll = $('.selectPage #em-check-all').is(':checked');
-            let is_checked = false;
-
-            var numberOfFilesDisplayed = null;
-            if(document.querySelector('#pager-select')) {
-                numberOfFilesDisplayed = document.querySelector('#pager-select').value;
-            }
-
-            if (e.target.id === 'em-check-all') {
-                if (pageCheckAll === false) {
-                    $('.em-check-all-page#em-check-all-page').prop('checked', false);
-                } else {
-                    if(numberOfFilesDisplayed == 0) {
-                        $('.em-check-all-all').prop('checked', true);
-                        $('.em-check-all-all').trigger('change');
-                        return;
-                    }
-
-                    is_checked = true;
-                }
-            }
-
-            let pageCheck = $('.em-check-all-page#em-check-all-page').is(':checked');
-
-            if (e.target.id === 'em-check-all-page') {
-                if (pageCheck === false) {
-                    $('.selectPage #em-check-all').prop('checked', false);
-                } else {
-                    if (numberOfFilesDisplayed == 0) {
-                        $('.em-check-all-all').prop('checked', true);
-                        $('.em-check-all-all').trigger('change');
-                        return;
-                    }
-
-                    is_checked = true;
-                }
-            }
-
-            if (is_checked) {
-                $('.em-check-all-all#em-check-all-all').prop('checked', false);
-                $('.em-check').prop('checked', true);
-
-                let countCheckedCheckbox = $('.em-check').not('#em-check-all.em-check,#em-check-all-all.em-check').filter(':checked').length;
-                let files = countCheckedCheckbox === 1 ? Joomla.Text._('COM_EMUNDUS_FILES_FILE') : Joomla.Text._('COM_EMUNDUS_FILES_FILES');
-
-                if (countCheckedCheckbox !== 0) {
-                    displayCount();
-                    countFiles.innerHTML = '<p>' + Joomla.Text._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + countCheckedCheckbox + ' ' + files + '. <a class="em-pointer em-text-underline em-profile-color" onclick="checkAllFiles()">' + Joomla.Text._('COM_EMUNDUS_FILES_SELECT_ALL_FILES') + '</a></p>';
-                } else {
-                    hideCount();
-                    countFiles.innerHTML = '';
-                }
-
-                document.querySelector('.selectContainer').style.backgroundColor = '#F3F3F3';
-
-            } else {
-                $('.em-check').prop('checked', false);
-                hideCount();
-                countFiles.innerHTML = '';
-
-                document.querySelector('.selectContainer').style.backgroundColor = 'transparent';
-            }
-
-            if (e.target.id === 'em-check-all-page') {
-                if (is_checked) {
-                    reloadActions('files', undefined, true);
-                } else {
-                    reloadActions('files', undefined, false);
-                }
-            }
-        })
-
         $(document).on('change', '.em-check', function (e) {
             let countCheckedCheckbox = $('.em-check').not('#em-check-all.em-check,#em-check-all-all.em-check').filter(':checked').length;
             let files = countCheckedCheckbox === 1 ? Joomla.Text._('COM_EMUNDUS_FILES_FILE') : Joomla.Text._('COM_EMUNDUS_FILES_FILES');
@@ -562,6 +490,10 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
                 countFiles.innerHTML = '';
             }
         });
+
+        function onCheckPage() {
+            document.querySelector('.selectPage label[for="em-check-all"]').click();
+        }
 
 		<?php if($fix_header == 1): ?>
         document.addEventListener('scroll', function (e) {

@@ -2,11 +2,13 @@
 
 namespace Joomla\Plugin\Emundus\Ammon\Factory;
 
+use Joomla\CMS\Log\Log;
 use Joomla\Plugin\Emundus\Ammon\Entities\AdressEntity;
 use Joomla\Plugin\Emundus\Ammon\Entities\CompanyEntity;
 use Joomla\Plugin\Emundus\Ammon\Entities\EmploymentEntity;
 use Joomla\Plugin\Emundus\Ammon\Entities\UserEntity;
 use Joomla\Plugin\Emundus\Ammon\Entities\RegistrationEntity;
+use Joomla\CMS\Factory;
 
 require_once(JPATH_SITE . '/components/com_emundus/mapper/ApiMapper.php');
 
@@ -18,6 +20,7 @@ class AmmonFactory
 		{
 			throw new \InvalidArgumentException('The fnum cannot be empty');
 		}
+		Log::addLogger(['text_file' => 'plugin.emundus.ammon.php'], Log::ALL, array('plugin.emundus.ammon'));
 	}
 
 	public function createCompanyAdressEntity(): AdressEntity
@@ -73,7 +76,7 @@ class AmmonFactory
 			[$address],
 			"SGE,CLI",
 			true,
-			'company_' . $this->fnum
+			$this->generateExternalReference('EMUNDUS_COMPANY', $values['establishmentName'])
 		);
 	}
 
@@ -101,7 +104,7 @@ class AmmonFactory
 				[$address],
 				"SGE,CLI",
 				true,
-				$this->fnum
+				$ammon_company->centext
 			);
 		}
 
@@ -192,7 +195,7 @@ class AmmonFactory
 			'',
 			'',
 			'INT',
-			$values['email'],
+			$this->generateExternalReference('EMUNDUS_USER', $values['email']),
 			[],
 			[$employmentEntity]
 		);
@@ -225,7 +228,7 @@ class AmmonFactory
 				'',
 				'',
 				'INT',
-				$values['email'],
+				$ammon_user->centext,
 				[],
 				[]
 			);
@@ -258,9 +261,9 @@ class AmmonFactory
 			$values['BirthCountryCode'],
 			$values['BirthCity'],
 			'PAR,INT,PARTM',
-			$values['user_id'],
+			$this->generateExternalReference('EMUNDUS_USER',  $values['user_id']),
 			[$adressEntity],
-			$employmentEntity ? [$employmentEntity] : []
+			!empty($employmentEntity) ? [$employmentEntity] : []
 		);
 	}
 
@@ -300,7 +303,15 @@ class AmmonFactory
 		return $user_entity;
 	}
 
-	public function createRegistrationEntity(UserEntity $applicant, $session_id, $company = null): RegistrationEntity
+	/**
+	 * @param   UserEntity  $applicant
+	 * @param   int         $session_id
+	 * @param   mixed       $company
+	 *
+	 * @return RegistrationEntity
+	 * @throws \Exception
+	 */
+	public function createRegistrationEntity(UserEntity $applicant, int $session_id, ?CompanyEntity $company = null): RegistrationEntity
 	{
 		$configurations = array_filter($this->configurations, function ($configuration) {
 			return $configuration->action === 'create' && $configuration->name === 'registration';
@@ -320,9 +331,83 @@ class AmmonFactory
 			$session_id,
 			3,
 			!empty($values['HistoryLog1Content']) ? 'AMENAGEMENT' : '',
-			$values['HistoryLog1Content'],
-			!empty($company) ? $company->externalReference : null,
-			$applicant->externalReference
+			$values['HistoryLog1Content'] ?? '',
+			!empty($company) ? $company->externalReference : '',
+			$this->generateExternalReference('EMUNDUS_REGISTRATION', $this->fnum)
 		);
+	}
+
+	/**
+	 * @param   string  $prefix
+	 * @param $internal_reference
+	 *
+	 * @return string
+	 */
+	private function generateExternalReference(string $prefix, $internal_reference): string
+	{
+		$externalReference = '';
+
+		if (!empty($internal_reference) && !empty($prefix)) {
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true);
+
+			$query->insert($db->quoteName('#__emundus_ammon_external_references'))
+				->columns($db->quoteName('internal_reference') . ', ' . $db->quoteName('type'). ', ' . $db->quoteName('created'))
+				->values($db->quote($internal_reference). ', ' . $db->quote($prefix) . ', ' . $db->quote(date('Y-m-d H:i:s')));
+
+			try {
+				$db->setQuery($query);
+				$db->execute();
+				$row_id = $db->insertid();
+
+				switch($prefix) {
+					case 'EMUNDUS_USER':
+					case 'EMUNDUS_COMPANY':
+						$externalReference = $prefix . '_' . $row_id;
+						break;
+					case 'EMUNDUS_REGISTRATION':
+						$externalReference = $prefix . '_' . $this->fnum;
+						break;
+				}
+
+				$query->clear()
+					->update($db->quoteName('#__emundus_ammon_external_references'))
+					->set($db->quoteName('external_reference') . ' = ' . $db->quote($externalReference))
+					->where($db->quoteName('id') . ' = ' . $db->quote($row_id));
+
+				$db->setQuery($query);
+				$db->execute();
+			} catch (\Exception $e) {
+				Log::add('Failed to generate external reference : ' . $e->getMessage(), Log::ERROR, 'plugin.emundus.ammon');
+				throw new \InvalidArgumentException('Error while generating external reference');
+			}
+		}
+
+		return $externalReference;
+	}
+
+	/**
+	 * @param $reference
+	 *
+	 * @return bool
+	 */
+	public function deleteReference($reference): bool
+	{
+		$deleted = false;
+
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+
+		$query->delete($db->quoteName('#__emundus_ammon_external_references'))
+			->where($db->quoteName('external_reference') . ' = ' . $db->quote($reference));
+
+		try {
+			$db->setQuery($query);
+			$deleted = $db->execute();
+		} catch (\Exception $e) {
+			Log::add('Failed to delete external reference : ' . $e->getMessage(), Log::ERROR, 'plugin.emundus.ammon');
+		}
+
+		return $deleted;
 	}
 }

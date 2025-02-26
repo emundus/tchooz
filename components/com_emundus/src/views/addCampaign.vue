@@ -484,7 +484,6 @@ export default {
       training: "",
       year: "",
       published: 1,
-      is_limited: 0,
       profile_id: 0,
       limit: 50,
       limit_status: [],
@@ -618,16 +617,6 @@ export default {
           this.form.start_date = new Date(this.form.start_date);
           this.form.end_date = new Date(this.form.end_date);
           //
-
-          if (typeof response.data.campaign.status != 'undefined') {
-            this.form.limit_status = [];
-            this.form.is_limited = 1;
-            Object.values(response.data.campaign.status).forEach((statu) => {
-              this.form.limit_status[parseInt(statu.limit_status)] = true;
-            });
-          } else {
-            this.form.limit_status = [];
-          }
           this.ready = true;
         }).catch(e => {
           console.log(e);
@@ -784,20 +773,6 @@ export default {
         this.errors.year = true;
         document.getElementById('year').classList.add('is-invalid');
         document.getElementById('year').classList.add('!tw-border-red-600');
-      }
-
-      if (this.form.is_limited == 1) {
-        let least_one_status = this.form.limit_status.every((value) => {
-          return value === false;
-        });
-        if (this.form.limit === '') {
-          window.scrollTo({top: 0, behavior: 'smooth'});
-          this.errors.limit_files_number = true;
-        }
-        if (this.form.limit_status.length == 0 || least_one_status) {
-          window.scrollTo({top: 0, behavior: 'smooth'});
-          this.errors.limit_status = true;
-        }
       }
 
       if (this.form.training === '') {

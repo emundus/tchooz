@@ -107,7 +107,8 @@ class EmundusViewApplication extends HtmlView
 		$Itemid = $jinput->get('Itemid', 0);
 
 		$m_profiles = new EmundusModelProfile();
-		$fnumInfos  = $m_profiles->getFnumDetails($fnum);
+		$m_files = new EmundusModelFiles();
+		$fnumInfos = $m_files->getFnumInfos($fnum);
 		$this->ccid = $fnumInfos['ccid'];
 		$this->fnum = $fnum;
 		$this->student = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(intval($fnumInfos['applicant_id']));

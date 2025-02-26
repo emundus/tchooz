@@ -8,6 +8,8 @@ use Joomla\Plugin\Emundus\Ammon\Entities\CompanyEntity;
 use Joomla\Plugin\Emundus\Ammon\Entities\RegistrationEntity;
 use Joomla\Plugin\Emundus\Ammon\Entities\UserEntity;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\Event\GenericEvent;
+
 
 require_once(JPATH_SITE . '/components/com_emundus/models/sync.php');
 require_once(JPATH_SITE . '/components/com_emundus/helpers/filters.php');
@@ -23,6 +25,7 @@ class AmmonSynchronizer {
 		$this->sync_model = new \EmundusModelSync();
 		$this->api = $api;
 		$this->db = Factory::getContainer()->get('DatabaseDriver');
+		Log::addLogger(['text_file' => 'plugin.emundus.ammon.php'], Log::ALL, array('plugin.emundus.ammon'));
 	}
 
 	public function getCompany(string $siret)
@@ -55,6 +58,8 @@ class AmmonSynchronizer {
 
 		if ($response['status'] && $response['data']['status'] == 'success') {
 			$created = true;
+		} else {
+			Log::add('Failed to create company ' . json_encode($body_params['rows']), Log::ERROR, 'plugin.emundus.ammon');
 		}
 
 		return $created;
@@ -71,24 +76,50 @@ class AmmonSynchronizer {
 			$response = $this->sync_model->callApi($this->api, 'queries/execute', 'post', $get_query, false);
 
 			$current_user_name = $lastname . ' ' . $firstname;
-			if (!empty($response) && $response['status'] == 200 && !empty($response['data']->results)) {
-				$found_names = array_map(function($result) {
-					$result->cnom = trim($result->cnom);
-					$result->cprenom = trim($result->cprenom);
+			if (!empty($response) && $response['status'] == 200) {
+				$title = 'No match found for user ' . $current_user_name . ' in ammon api. Need to create a new user';
 
-					return $result->cnom . ' ' . $result->cprenom;
-				}, $response['data']->results);
+				if (!empty(!empty($response['data']->results))) {
+					$found_names = array_map(function($result) {
+						$result->cnom = trim($result->cnom);
+						$result->cprenom = trim($result->cprenom);
 
-				$match = \EmundusHelperFilters::searchClosestWord($current_user_name, $found_names);
+						return $result->cnom . ' ' . $result->cprenom;
+					}, $response['data']->results);
 
-				if ($match['lev'] == 0) {
-					$user = $response['data']->results[$match['position']];
-				} else if (!$force_new_user_if_not_found && $match['lev'] > 0 && $match['lev'] < 3) {
-					Log::add('User ' . $current_user_name . ' has a similar name to ' . $found_names[$match['position']] . ' in ammon api. Need a manual check', Log::ERROR, 'plugin.emundus.ammon');
-					throw new \Exception('[SHORT_LEV_DISTANCE] User ' . $current_user_name . ' has a similar name to ' . $found_names[$match['position']] . ' in ammon api. Need a manual check');
+					$match = \EmundusHelperFilters::searchClosestWord($current_user_name, $found_names);
+
+					if ($match['lev'] == 0) {
+						$title = 'User ' . $current_user_name . ' found in ammon api';
+					} else if (!$force_new_user_if_not_found && $match['lev'] > 0 && $match['lev'] <= 4) {
+						$title = 'User ' . $current_user_name . ' has a similar name to ' . $found_names[$match['position']] . ' in ammon api. Need a manual check';
+					} else {
+						$title = 'No match found for user ' . $current_user_name . ' in ammon api. Need to create a new user. Closest name was ' . $found_names[$match['position']] .  ' Lev distance was ' . $match['lev'];
+					}
+
+					$onAmmonSync = new GenericEvent(
+						'onAmmonSync', ['message_key' => 'PLG_ACTIONLOG_EMUNDUS_AMMON_SEARCH_SIMILAR_NAME', 'title' => $title]
+					);
+					Factory::getApplication()->getDispatcher()->dispatch('onAmmonSync', $onAmmonSync);
+
+					if ($match['lev'] == 0) {
+						$user = $response['data']->results[$match['position']];
+					} else if (!$force_new_user_if_not_found && $match['lev'] > 0 && $match['lev'] <= 4) {
+						Log::add('User ' . $current_user_name . ' has a similar name to ' . $found_names[$match['position']] . ' in ammon api. Need a manual check', Log::INFO, 'plugin.emundus.ammon');
+						throw new \Exception('[SHORT_LEV_DISTANCE] User ' . $current_user_name . ' has a similar name to ' . $found_names[$match['position']] . ' in ammon api. Need a manual check. [CURRENT_USERNAME="' . $current_user_name . '"] [FOUND_USERNAME="' . $found_names[$match['position']] . '"]');
+					} else {
+						Log::add('No match found for user ' . $current_user_name . ' in ammon api. Need to create a new user. Closest name was ' . $found_names[$match['position']] .  ' Lev distance was ' . $match['lev'], Log::INFO, 'plugin.emundus.ammon');
+					}
 				} else {
-					// No match found, need to create a new user
+					$onAmmonSync = new GenericEvent(
+						'onAmmonSync', ['message_key' => 'PLG_ACTIONLOG_EMUNDUS_AMMON_SEARCH_SIMILAR_NAME', 'title' => $title]
+					);
+					Factory::getApplication()->getDispatcher()->dispatch('onAmmonSync', $onAmmonSync);
+
+					Log::add('No user found for ' . $current_user_name . ' in ammon api. Need to create a new user', Log::INFO, 'plugin.emundus.ammon');
 				}
+			} else {
+				Log::add('Failed to get user response => ' . json_encode($response), Log::ERROR, 'plugin.emundus.ammon');
 			}
 		}
 
@@ -121,7 +152,7 @@ class AmmonSynchronizer {
 		if ($response['status'] == 200 && $response['data']->status == 'success' && !empty($response['data']->results)) {
 			$created = true;
 		} else {
-			Log::add('Failed to create user ' . $body_params['rows'], Log::ERROR, 'com_emundus.error');
+			Log::add('Failed to create user response => ' . json_encode($response), Log::ERROR, 'plugin.emundus.ammon');
 		}
 
 		return $created;

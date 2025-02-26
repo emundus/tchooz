@@ -1955,7 +1955,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 	 * @description Return the value of an element according to its alias in a form
 	 *
 	 */
-	static function getValueByAlias($alias, $fnum = null, $user_id = 0)
+	static function getValueByAlias(string $alias, $fnum = null, $user_id = 0)
 	{
 		$value = ['value' => '', 'raw' => ''];
 

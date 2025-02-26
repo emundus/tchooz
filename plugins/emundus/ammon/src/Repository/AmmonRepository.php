@@ -11,6 +11,7 @@ use Joomla\Plugin\Emundus\Ammon\Entities\UserEntity;
 use Joomla\Plugin\Emundus\Ammon\Factory\AmmonFactory;
 use Joomla\Plugin\Emundus\Ammon\Synchronizer\AmmonSynchronizer;
 use Joomla\CMS\Event\GenericEvent;
+use Joomla\CMS\Plugin\PluginHelper;
 
 require_once(JPATH_SITE . '/components/com_emundus/models/sync.php');
 require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
@@ -44,6 +45,7 @@ class AmmonRepository
 		$this->fnum = $fnum;
 		$this->ammon_session_id = $ammon_session_id;
 		$this->file_status = $file_status;
+		Log::addLogger(['text_file' => 'plugin.emundus.ammon.php'], Log::ALL, array('plugin.emundus.ammon'));
 
 		if (empty($this->fnum)) {
 			throw new \InvalidArgumentException('The fnum cannot be empty');
@@ -83,17 +85,25 @@ class AmmonRepository
 	{
 		$registered = false;
 
-		$company = $this->getOrCreateCompany();
-		if (!empty($company)) {
-			$manager = $this->getCompanyManager($this->fnum);
-
-			if (empty($manager)) {
-				$manager = $this->createCompanyManager($company);
-			}
-		}
-
 		try {
+			$company = $this->getOrCreateCompany();
+			if (!empty($company)) {
+				$manager = $this->getCompanyManager($company);
+
+				if (empty($manager)) {
+					$manager = $this->createCompanyManager($company);
+
+					if (empty($manager)) {
+						throw new \Exception('Failed to create company manager in ammon.');
+					}
+				}
+			}
+
 			$applicant = $this->getOrCreateApplicant($force_new_user_if_not_found);
+			if (empty($applicant)) {
+				throw new \Exception('Failed to create applicant in ammon.');
+			}
+
 			$registration = $this->factory->createRegistrationEntity($applicant, $this->ammon_session_id, $company);
 			$registered = $this->synchronizer->createRegistration($registration);
 			if ($registered)
@@ -102,6 +112,7 @@ class AmmonRepository
 			}
 			else
 			{
+				$this->factory->deleteReference($registration->ExternalReference);
 				Log::add('Error when trying to create registration for fnum ' . $this->fnum, Log::ERROR, 'plugin.emundus.ammon');
 			}
 		} catch (\Exception $e) {
@@ -180,30 +191,28 @@ class AmmonRepository
 		return $company;
 	}
 
-	private function getCompanyManager($fnum): ?UserEntity
+	private function getCompanyManager(CompanyEntity $company): ?UserEntity
 	{
 		$user = null;
 
-		if (!empty($fnum)) {
-			$query = $this->db->createQuery();
-			$query->select('e_859_8215 as lastname, e_859_8216 as firstname')
-				->from($this->db->quoteName('#__emundus_1011_03'))
-				->where('fnum = ' . $this->db->quote($fnum));
+		try
+		{
+			$employmentEntity = $this->factory->createEmploymentEntity($company);
+			$managerEntity    = $this->factory->createManagerEntity($employmentEntity);
 
-			try {
-				$this->db->setQuery($query);
-				$user_infos = $this->db->loadAssoc();
+			if (!empty($managerEntity->lastName) && !empty($managerEntity->firstName)) {
+				$ammon_user = $this->synchronizer->getUserFromName($managerEntity->lastName, $managerEntity->firstName);
 
-				if (!empty($user_infos)) {
-					$ammon_user = $this->synchronizer->getUserFromName($user_infos['lastname'], $user_infos['firstname']);
-
-					if (!empty($ammon_user)) {
-						$user = $this->factory->createManagerEntityFromAmmon($ammon_user);
-					}
+				if (!empty($ammon_user))
+				{
+					$user = $this->factory->createManagerEntityFromAmmon($ammon_user);
+					$this->factory->deleteReference($managerEntity->externalReference);
 				}
-			} catch (Exception $e) {
-				Log::add('Failed to get company manager user entity ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Failed to get company manager user entity ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
 
 		return $user;
@@ -226,7 +235,7 @@ class AmmonRepository
 		return $user;
 	}
 
-	private function getOrCreateApplicant(bool $force_new_user_if_not_found = false): UserEntity
+	private function getOrCreateApplicant(bool $force_new_user_if_not_found = false): ?UserEntity
 	{
 		$applicant = $this->getApplicant($this->fnum, $force_new_user_if_not_found);
 		if (empty($applicant)) {
@@ -247,10 +256,10 @@ class AmmonRepository
 			if (!empty($applicantEntity)) {
 				$created = $this->synchronizer->createUser($applicantEntity);
 
-				if ($created) {
-					$onAfterAmmonApplicantCreate = new GenericEvent('onAfterAmmonApplicantCreate', ['fnum' => $this->fnum, 'session_id' => $this->ammon_session_id, 'ref' => $applicantEntity->externalReference]);
-					$this->dispatcher->dispatch('onAfterAmmonApplicantCreate', $onAfterAmmonApplicantCreate);
+				$onAfterAmmonApplicantCreate = new GenericEvent('onAfterAmmonApplicantCreate', ['fnum' => $this->fnum, 'session_id' => $this->ammon_session_id, 'ref' => $applicantEntity->externalReference, 'status' => $created]);
+				$this->dispatcher->dispatch('onAfterAmmonApplicantCreate', $onAfterAmmonApplicantCreate);
 
+				if ($created) {
 					$applicant = $applicantEntity;
 					Log::add('User for fnum ' . $this->fnum . ' created successfully', Log::INFO, 'plugin.emundus.ammon');
 				} else {
@@ -269,29 +278,30 @@ class AmmonRepository
 		$user = null;
 
 		if (!empty($fnum)) {
-			$query = $this->db->createQuery();
+			$firstname = '';
+			$lastname = '';
 
-			$query->select('eu.firstname, eu.lastname')
-				->from($this->db->quoteName('#__emundus_users', 'eu'))
-				->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.applicant_id = eu.user_id')
-				->where('ecc.fnum = ' . $this->db->quote($fnum));
 			try {
-				$this->db->setQuery($query);
-				$user_infos = $this->db->loadObject();
-
+				$firstname = \EmundusHelperFabrik::getValueByAlias('registration_first_name', $fnum)['raw'];
+				$lastname = \EmundusHelperFabrik::getValueByAlias('registration_common_name', $fnum)['raw'];
 				$birthdate = \EmundusHelperFabrik::getValueByAlias('registration_date_of_birth', $fnum)['raw'];
-				$ammon_user = $this->synchronizer->getUser($user_infos->lastname, $user_infos->firstname, $birthdate, $force_new_user_if_not_found);
+				$ammon_user = $this->synchronizer->getUser($lastname, $firstname, $birthdate, $force_new_user_if_not_found);
 
 				if (!empty($ammon_user)) {
 					$user = $this->factory->createUserEntityFromAmmon($ammon_user);
 				}
 			} catch (\Exception $e) {
 				if (str_starts_with($e->getMessage(), '[SHORT_LEV_DISTANCE]')) {
-					// todo: send an email to sales referent
+					$matches = [];
+					preg_match('/\[FOUND_USERNAME="(.*)"\]/', $e->getMessage(), $matches);
+					$found_name = explode(' ', $matches[1]);
 
+
+					PluginHelper::importPlugin('emundus');
 					$this->dispatcher->dispatch('onAmmonFoundSimilarName', new GenericEvent('onAmmonFoundSimilarName', [
 						'fnum' => $fnum,
-						'name' => $user_infos->lastname . ' ' . $user_infos->firstname,
+						'name' => $lastname . ' ' . $firstname,
+						'found_name' => $found_name,
 						'message' => $e->getMessage(),
 						'retry' => true,
 						'retry_event' => 'onAfterStatusChange',
@@ -301,6 +311,18 @@ class AmmonRepository
 							'force_new_user_if_not_found' => true
 						]
 					]));
+					$onAmmonFoundSimilarNameEventHandler = new GenericEvent(
+						'onCallEventHandler',
+						[
+							'onAmmonFoundSimilarName', [
+								'fnum' => $this->fnum,
+								'name' => $lastname . ' ' . $firstname,
+								'found_name' => $found_name,
+								'message' => $e->getMessage()
+							]
+						]
+					);
+					$this->dispatcher->dispatch('onCallEventHandler', $onAmmonFoundSimilarNameEventHandler);
 
 					throw new \Exception($e->getMessage());
 				}

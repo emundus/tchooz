@@ -121,14 +121,18 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 	{
 		$php_result = true;
 
-		if (class_exists('FabrikWorker'))
+		$app = Factory::getApplication();
+		if (method_exists($app, 'isClient') && !($app->isClient('cli')))
 		{
-			$w    = new FabrikWorker;
-			$code = $w->parseMessageForPlaceHolder($code, $data);
-		}
-		else
-		{
-			$code = $this->parseMessageForPlaceHolder($code, $data);
+			if (class_exists('FabrikWorker'))
+			{
+				$w    = new FabrikWorker;
+				$code = $w->parseMessageForPlaceHolder($code, $data);
+			}
+			else
+			{
+				$code = $this->parseMessageForPlaceHolder($code, $data);
+			}
 		}
 
 		try

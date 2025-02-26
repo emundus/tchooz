@@ -4623,6 +4623,21 @@ class EmundusHelperFiles
 
 			if (!empty($session_filters))
 			{
+				// if there is no filter on file published status, we add it
+				$published_filter_exists = false;
+				foreach ($session_filters as $filter)
+				{
+					if ($filter['uid'] === 'published')
+					{
+						$published_filter_exists = true;
+						break;
+					}
+				}
+				if (!$published_filter_exists)
+				{
+					$session_filters[] = ['uid'   => 'published', 'id'   => 'default-filter-published', 'operator' => '=', 'value' => ['1']];
+				}
+
 				foreach ($session_filters as $filter)
 				{
 					if (in_array($filter['uid'], $filters_to_exclude))
@@ -4632,7 +4647,7 @@ class EmundusHelperFiles
 
 					if ((!is_array($filter['value']) || !in_array('all', $filter['value'], true)) && (!empty($filter['value']) || $filter['value'] == '0'))
 					{
-						$filter_id = str_replace(['filter-', 'default-filter-'], '', $filter['id']);
+						$filter_id = str_replace(['default-filter-', 'filter-'], '', $filter['id']);
 
 						if (is_numeric($filter_id))
 						{
@@ -5055,10 +5070,10 @@ class EmundusHelperFiles
 											// table is name jos_emundus_evaluations_<index>
 											$table_index = substr($step_data->table, strlen('jos_emundus_evaluations_'));
 											$step_table_alias = 'jee_' . $table_index;
-											$already_join[$step_table_alias] = $step_data->table;
+											$already_joined[$step_table_alias] = $step_data->table;
 
 											if (!empty($caller_params['step_id'])) {
-												$where['join'] .= ' LEFT JOIN ' . $db->quoteName($step_data->table) . ' ON ' . $db->quoteName($step_data->table . '.fnum') . ' = ' . $db->quoteName('jecc.fnum') . ' AND ' . $db->quoteName($step_data->table . '.step_id') . ' = ' . $db->quote($caller_params['step_id'] . ' ');
+												$where['join'] .= ' LEFT JOIN ' . $db->quoteName($step_data->table) . ' ON ' . $db->quoteName($step_data->table . '.fnum') . ' = ' . $db->quoteName('jecc.fnum') . ' AND ' . $db->quoteName($step_data->table . '.step_id') . ' = ' . $db->quote($caller_params['step_id']) . ' ';
 											} else {
 												$where['join'] .= ' LEFT JOIN ' . $db->quoteName($step_data->table) . ' ON ' . $db->quoteName($step_data->table . '.fnum') . ' = ' . $db->quoteName('jecc.fnum') . ' AND ' . $db->quoteName($step_data->table . '.step_id') . ' = ' . $db->quote($step_id) . ' ';
 											}
@@ -5878,7 +5893,7 @@ class EmundusHelperFiles
 	/*
      *
      */
-	public function setFiltersValuesAvailability($applied_filters, $user_id = null,$menu_item = null): array
+	public function setFiltersValuesAvailability($applied_filters, $user_id = null, $menu_item = null): array
 	{
 		$applied_filters = empty($applied_filters) ? [] : $applied_filters;
 

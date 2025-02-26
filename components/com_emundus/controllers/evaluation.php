@@ -17,6 +17,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Controller\BaseController;
+use Joomla\CMS\Plugin\PluginHelper;
 
 require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
 require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
@@ -330,25 +331,85 @@ class EmundusControllerEvaluation extends BaseController
 	 */
 	public function tagfile()
 	{
-		if (!class_exists('EmundusControllerFiles'))
-		{
-			require_once(JPATH_ROOT . '/components/com_emundus/controllers/files.php');
+		$response = ['status' => false, 'code' => 403, 'msg' => Text::_('BAD_REQUEST')];
+
+		$fnums = $this->input->getString('fnums', null);
+		$tag   = (array) $this->input->get('tag', []);
+
+		if (!empty($fnums) && !empty($tag)) {
+			$m_files = $this->getModel('Files');
+			$m_evaluation = $this->getModel('Evaluation');
+			$fnums   = $fnums === 'all' ? $m_evaluation->getAllFnums($this->_user->id) : (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
+
+			if (!empty($fnums)) {
+				$validFnums = [];
+				foreach ($fnums as $fnum) {
+					if ($fnum != 'em-check-all' && EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum)) {
+						$validFnums[] = $fnum;
+					}
+				}
+				unset($fnums);
+				$response['status'] = $m_files->tagFile($validFnums, $tag);
+
+				if ($response['status']) {
+					$response['code']   = 200;
+					$response['msg']    = Text::_('COM_EMUNDUS_TAGS_SUCCESS');
+					$response['tagged'] = $validFnums;
+				}
+				else {
+					$response['code'] = 500;
+					$response['msg']  = Text::_('FAIL');
+				}
+			}
 		}
 
-		$c_files = new EmundusControllerFiles();
-		$c_files->tagfile();
+		echo json_encode((object) ($response));
+		exit;
 	}
 
 
 	public function deletetags()
 	{
-		if (!class_exists('EmundusControllerFiles'))
-		{
-			require_once(JPATH_ROOT . '/components/com_emundus/controllers/files.php');
+
+		$fnums = $this->input->getString('fnums', null);
+		$tags  = $this->input->getVar('tag', null);
+
+		$fnums = ($fnums == 'all') ? 'all' : (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
+
+		$m_application = $this->getModel('Application');
+		$m_evaluation = $this->getModel('Evaluation');
+		$m_files       = $this->getModel('Files');
+
+		if ($fnums == "all") {
+			$fnums = $m_evaluation->getAllFnums($this->_user->id);
 		}
 
-		$c_files = new EmundusControllerFiles();
-		$c_files->deletetags();
+		PluginHelper::importPlugin('emundus');
+		$this->app->triggerEvent('onCallEventHandler', ['onBeforeTagRemove', ['fnums' => $fnums, 'tags' => $tags]]);
+
+		foreach ($fnums as $fnum) {
+			if ($fnum != 'em-check-all') {
+				foreach ($tags as $tag) {
+					$hastags = $m_files->getTagsByIdFnumUser($tag, $fnum, $this->_user->id);
+					if ($hastags) {
+						$m_application->deleteTag($tag, $fnum);
+					}
+					else {
+						if (EmundusHelperAccess::asAccessAction(14, 'd', $this->_user->id, $fnum)) {
+							$m_application->deleteTag($tag, $fnum);
+						}
+					}
+				}
+			}
+		}
+
+		$this->app->triggerEvent('onCallEventHandler', ['onAfterTagRemove', ['fnums' => $fnums, 'tags' => $tags]]);
+
+		unset($fnums);
+		unset($tags);
+
+		echo json_encode((object) (array('status' => true, 'msg' => Text::_('COM_EMUNDUS_TAGS_DELETE_SUCCESS'))));
+		exit;
 	}
 
 	public function share()
@@ -376,13 +437,89 @@ class EmundusControllerEvaluation extends BaseController
 
 	public function updatestate()
 	{
-		if (!class_exists('EmundusControllerFiles'))
-		{
-			require_once(JPATH_ROOT . '/components/com_emundus/controllers/files.php');
+		$fnums = $this->input->getString('fnums', null);
+		$state = $this->input->getInt('state', null);
+		$this->app->getSession()->set('last_status_selected', $state);
+
+		$m_evaluation    = $this->getModel('Evaluation');
+		$m_files = $this->getModel('Files');
+
+		if ($fnums == "all") {
+			$fnums = $m_evaluation->getAllFnums((int)$this->_user->id);
 		}
 
-		$c_files = new EmundusControllerFiles();
-		$c_files->updatestate();
+		if (!is_array($fnums)) {
+			$fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
+		}
+
+		if (count($fnums) == 0 || !is_array($fnums)) {
+			$res = false;
+			$msg = Text::_('STATE_ERROR');
+
+			echo json_encode((object) (array('status' => $res, 'msg' => $msg)));
+			exit;
+		}
+
+		$validFnums = array();
+
+		foreach ($fnums as $fnum) {
+			if (EmundusHelperAccess::asAccessAction(13, 'u', $this->_user->id, $fnum)) {
+				$validFnums[] = $fnum;
+			}
+		}
+
+		$res = $m_files->updateState($validFnums, $state, $this->_user->id);
+		$msg = '';
+
+		if (is_array($res)) {
+			$msg = isset($res['msg']) ? $res['msg'] : '';
+			$res = isset($res['status']) ? $res['status'] : true;
+		}
+
+		if ($res !== false) {
+			$msg .= Text::_('COM_EMUNDUS_APPLICATION_STATE_SUCCESS');
+		}
+		else {
+			$msg = empty($msg) ? Text::_('STATE_ERROR') : $msg;
+		}
+
+		echo json_encode(array('status' => $res, 'msg' => $msg));
+		exit;
+	}
+
+	public function updatepublish()
+	{
+		$publish = $this->input->getInt('publish', null);
+		$m_files = $this->getModel('Files');
+		$m_evaluation = $this->getModel('Evaluation');
+
+		$fnums_post  = $this->input->getString('fnums', null);
+		$fnums_array = ($fnums_post == 'all') ? 'all' : (array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
+
+		if ($fnums_array == 'all') {
+			$fnums = $m_evaluation->getAllFnums($this->_user->id);
+		}
+		else {
+			$fnums = array();
+			foreach ($fnums_array as $value) {
+				$fnums[] = $value;
+			}
+		}
+
+		$validFnums = [];
+		foreach ($fnums as $fnum) {
+			if (is_numeric($fnum) && EmundusHelperAccess::asAccessAction(13, 'u', $this->_user->id, $fnum))
+				$validFnums[] = $fnum;
+		}
+		$res = $m_files->updatePublish($validFnums, $publish);
+		if ($res !== false) {
+			$msg = Text::_('COM_EMUNDUS_APPLICATION_PUBLISHED_STATE_SUCCESS');
+		} else {
+			$msg = Text::_('STATE_ERROR');
+		}
+
+		echo json_encode((object) (array('status' => $res, 'msg' => $msg)));
+		exit;
 	}
 
 	public function unlinkevaluators()
