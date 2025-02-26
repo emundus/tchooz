@@ -71,7 +71,7 @@ if ($user->guest || in_array($e_user->profile, $app_prof))
 	{
 		require_once JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php';
 		$m_emails              = new EmundusModelEmails();
-		$tags                  = $m_emails->setTags($user->id, null, null, '', $mod_em_campaign_intro);
+		$tags                  = $m_emails->setTags($user->id, null, null, '', $mod_em_campaign_intro, false, true);
 		$mod_em_campaign_intro = preg_replace($tags['patterns'], $tags['replacements'], $mod_em_campaign_intro);
 	}
 
