@@ -135,7 +135,7 @@ class plgEmundusEparapheur extends CMSPlugin {
 
 							if ($transmis['status'] == 200) {
 								$logs_params = ['created' => ['signer_id' => 'N°' . $idDossier, 'signer' => $args['signer_email']]];
-								EmundusModelLogs::log($this->user->id, (int) substr($args['fnum'], -7), $args['fnum'], 33, 'c', 'COM_EMUNDUS_ACCESS_SYNC_EPARAPHEUR', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
+								EmundusModelLogs::log($this->user->id, (int)$fnumInfos['applicant_id'], $args['fnum'], 33, 'c', 'COM_EMUNDUS_ACCESS_SYNC_EPARAPHEUR', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
 							}
 							else {
 								throw new Exception('COM_EMUNDUS_ACCESS_SYNC_EPARAPHEUR_FAILED_TRANSMIS',500);

@@ -1351,8 +1351,9 @@ class EmundusModelFiles extends JModelLegacy
 					$group_labels = $this->_db->loadColumn();
 
 					foreach ($fnums as $fnum) {
+                        $fnumInfos = $this->getFnumInfos($fnum);
 						$logsParams = array('created' => array_unique($group_labels, SORT_REGULAR));
-						EmundusModelLogs::log($this->app->getIdentity()->id, '', $fnum, 11, 'c', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+						EmundusModelLogs::log($this->app->getIdentity()->id, (int)$fnumInfos['applicant_id'], $fnum, 11, 'c', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 					}
 				}
 			}
@@ -1418,8 +1419,9 @@ class EmundusModelFiles extends JModelLegacy
 					$user_names = $this->_db->loadColumn();
 
 					foreach ($fnums as $fnum) {
+                        $fnumInfos = $this->getFnumInfos($fnum);
 						$logsParams = array('created' => array_unique($user_names, SORT_REGULAR));
-						EmundusModelLogs::log($current_user->id, '', $fnum, 11, 'c', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+						EmundusModelLogs::log($current_user->id, $fnumInfos['applicant_id'], $fnum, 11, 'c', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 					}
 				}
 			}
@@ -1679,8 +1681,9 @@ class EmundusModelFiles extends JModelLegacy
 					}
 
 					if (!empty($logger)) {
+                        $fnumInfos = $this->getFnumInfos($fnum);
 						$logsParams = array('created' => array_unique($logger, SORT_REGULAR));
-						EmundusModelLogs::log($user_id, (int) substr($fnum, -7), $fnum, 14, 'c', 'COM_EMUNDUS_ACCESS_TAGS_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+						EmundusModelLogs::log($user_id, (int)$fnumInfos['applicant_id'], $fnum, 14, 'c', 'COM_EMUNDUS_ACCESS_TAGS_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 					}
 				}
 
