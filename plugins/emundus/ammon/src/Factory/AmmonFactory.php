@@ -137,19 +137,21 @@ class AmmonFactory
 				$values['countryCode'],
 				$values['postcode'],
 				$values['line1'],
-				$values['line2']
+				$values['line2'],
+				$values['Email'] ?? '',
+				$values['Phone'] ?? ''
 			);
 		}
 
 		return $address;
 	}
 
-	public function createEmploymentEntity(CompanyEntity $company): ?EmploymentEntity
+	public function createEmploymentEntity(CompanyEntity $company, string $collection = 'user'): ?EmploymentEntity
 	{
 		$employment = null;
 
-		$configurations = array_filter($this->configurations, function ($configuration) {
-			return $configuration->action === 'create' && $configuration->name === 'employment';
+		$configurations = array_filter($this->configurations, function ($configuration) use ($collection) {
+			return $configuration->action === 'create' && $configuration->name === 'employment' && $configuration->collection === $collection;
 		});
 
 		if (empty($configurations))
@@ -163,8 +165,9 @@ class AmmonFactory
 		if (!empty($values)) {
 			$employment = new EmploymentEntity(
 				$company->externalReference,
-				$values['professionalEmail'],
-				$values['professionalPhoneNumber']
+				$values['professionalEmail'] ?? '',
+				$values['professionalPhoneNumber'] ?? '',
+				$values['professionalPostNumber'] ?? ''
 			);
 		}
 
@@ -263,7 +266,8 @@ class AmmonFactory
 			'PAR,INT,PARTM',
 			$this->generateExternalReference('EMUNDUS_USER',  $values['user_id']),
 			[$adressEntity],
-			!empty($employmentEntity) ? [$employmentEntity] : []
+			!empty($employmentEntity) ? [$employmentEntity] : [],
+			$values['maidenName'] ?? ''
 		);
 	}
 

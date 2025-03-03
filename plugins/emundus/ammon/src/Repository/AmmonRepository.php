@@ -197,7 +197,7 @@ class AmmonRepository
 
 		try
 		{
-			$employmentEntity = $this->factory->createEmploymentEntity($company);
+			$employmentEntity = $this->factory->createEmploymentEntity($company, 'manager');
 			$managerEntity    = $this->factory->createManagerEntity($employmentEntity);
 
 			if (!empty($managerEntity->lastName) && !empty($managerEntity->firstName)) {
