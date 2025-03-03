@@ -1,4 +1,4 @@
-import { _ as _export_sfc, c as createElementBlock, o as openBlock, d as createBaseVNode, a as createCommentVNode, t as toDisplayString, U as script, r as resolveComponent, f as normalizeClass, g as createVNode, w as withCtx, l as createTextVNode, F as Fragment, e as renderList, h as withDirectives, D as vModelSelect, P as Popover, b as createBlock, R as vModelText, a9 as Pagination, S as Swal, m as FetchClient, s as settingsService, u as useGlobalStore, aa as ref, v as vShow } from "./app_emundus.js";
+import { _ as _export_sfc, o as openBlock, c as createElementBlock, a as createBaseVNode, t as toDisplayString, e as createCommentVNode, U as script, r as resolveComponent, d as normalizeClass, g as createVNode, w as withCtx, l as createTextVNode, F as Fragment, b as renderList, h as withDirectives, D as vModelSelect, P as Popover, f as createBlock, R as vModelText, a9 as Pagination, u as useGlobalStore, s as settingsService, aa as ref, S as Swal, v as vShow, m as FetchClient } from "./app_emundus.js";
 import { S as Skeleton } from "./Skeleton.js";
 import Calendar from "./Calendar.js";
 import "./core.js";
@@ -928,6 +928,8 @@ const _sfc_main = {
           }
           this.loading.filters = false;
         }
+      } else {
+        this.loading.filters = false;
       }
     },
     async setFilterOptions(controller, filter, tab) {

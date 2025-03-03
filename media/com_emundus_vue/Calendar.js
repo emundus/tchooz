@@ -1,5 +1,5 @@
-import { _ as _export_sfc, u as useGlobalStore, c as createElementBlock, o as openBlock, d as createBaseVNode, a as createCommentVNode, t as toDisplayString, j as shallowRef, r as resolveComponent, g as createVNode, w as withCtx } from "./app_emundus.js";
-import { f as d, r, g as d$1, y, h as u, k, i as E, u as uo, E as EventDay, b as createCalendarControlsPlugin, c as createEventsServicePlugin, a as createCalendar, d as createViewDay, e as createViewWeek } from "./core.js";
+import { _ as _export_sfc, u as useGlobalStore, o as openBlock, c as createElementBlock, a as createBaseVNode, t as toDisplayString, e as createCommentVNode, j as shallowRef, r as resolveComponent, g as createVNode, w as withCtx } from "./app_emundus.js";
+import { f as d, r, h, y, u, k, g as E, c as createEventsServicePlugin, a as createCalendarControlsPlugin, E as EventDay, J as Ji, b as createCalendar, d as createViewDay, e as createViewWeek } from "./core.js";
 import { e as eventsService } from "./events2.js";
 const _sfc_main$1 = {
   name: "EventModal",
@@ -231,11 +231,11 @@ const nextTick = (cb) => {
   });
 };
 function EventModal({ $app }) {
-  const [modalId] = d$1(randomStringId());
+  const [modalId] = h(randomStringId());
   const { value: calendarEvent } = $app.config.plugins.eventModal.calendarEvent;
-  const [isDisplayed, setIsDisplayed] = d$1(false);
+  const [isDisplayed, setIsDisplayed] = h(false);
   const customComponent = $app.config._customComponentFns.eventModal;
-  const [eventWrapperStyle, setEventWrapperStyle] = d$1("sx__event-modal");
+  const [eventWrapperStyle, setEventWrapperStyle] = h("sx__event-modal");
   const callSetPosition = () => {
     var _a, _b, _c;
     setPosition((_a = $app.elements.calendarWrapper) === null || _a === void 0 ? void 0 : _a.getBoundingClientRect(), (_b = $app.config.plugins.eventModal) === null || _b === void 0 ? void 0 : _b.calendarEventDOMRect.value, ((_c = $app.elements.calendarWrapper) === null || _c === void 0 ? void 0 : _c.querySelector(".sx__event-modal")).clientHeight);
@@ -374,7 +374,7 @@ const createCalendarConfig = (vm) => ({
 });
 const _sfc_main = {
   name: "Calendar",
-  components: { EventDay, EventModal: EventModal$1, ScheduleXCalendar: uo },
+  components: { EventDay, EventModal: EventModal$1, ScheduleXCalendar: Ji },
   props: {
     items: {
       type: Object,

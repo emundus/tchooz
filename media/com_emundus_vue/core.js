@@ -1,4 +1,4 @@
-import { _ as _export_sfc, u as useGlobalStore, c as createElementBlock, o as openBlock, a as createCommentVNode, d as createBaseVNode, t as toDisplayString, n as normalizeStyle, f as normalizeClass, ab as defineComponent, ac as h$5, ad as Teleport, F as Fragment, ae as isReactive } from "./app_emundus.js";
+import { _ as _export_sfc, u as useGlobalStore, o as openBlock, c as createElementBlock, a as createBaseVNode, t as toDisplayString, e as createCommentVNode, n as normalizeStyle, d as normalizeClass, ab as defineComponent, ac as isReactive, ad as h$3, ae as Teleport, F as Fragment } from "./app_emundus.js";
 const _sfc_main = {
   name: "EventDay",
   props: {
@@ -142,19 +142,19 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   ], 6);
 }
 const EventDay = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render]]);
-const Zt = (e2, t2) => (n2, r2) => {
+const Ht = (e2, t2) => (n2, o2) => {
   const i2 = {
-    Component: h$5(t2, r2),
+    Component: h$3(t2, o2),
     wrapperElement: n2
   };
   e2(i2);
 };
-class qt extends Error {
+class zt extends Error {
   constructor(t2) {
     super(t2), this.name = "[Schedule-X reactivity error]";
   }
 }
-const uo = defineComponent({
+const Ji = defineComponent({
   name: "ScheduleXCalendar",
   props: {
     calendarApp: {
@@ -174,58 +174,56 @@ const uo = defineComponent({
   },
   mounted() {
     if (isReactive(this.calendarApp))
-      throw new qt("calendarApp cannot be saved in a ref. Since this causes deep reactivity, it destroys the calendars internal reactivity. Save in a normal const or shallowRef");
+      throw new zt("calendarApp cannot be saved in a ref. Since this causes deep reactivity, it destroys the calendars internal reactivity. Save in a normal const or shallowRef");
     const e2 = {
       ...this.customComponents,
       ...this.$slots
     };
     for (const [t2, n2] of Object.entries(e2))
-      n2 && this.calendarApp._setCustomComponentFn(t2, Zt(this.setCustomComponentMeta, n2));
+      this.calendarApp._setCustomComponentFn(t2, Ht(this.setCustomComponentMeta, n2));
     this.calendarApp.render(document.getElementById(this.elId));
-  },
-  unmounted() {
-    this.calendarApp.destroy();
   },
   methods: {
     setCustomComponentMeta(e2) {
       if (!(e2.wrapperElement instanceof HTMLElement))
         return;
-      const n2 = ({ wrapperElement: a2 }) => a2 instanceof HTMLElement, r2 = [
+      const n2 = ({ wrapperElement: a2 }) => a2 instanceof HTMLElement, o2 = [
         ...this.customComponentsMeta.filter(n2)
-      ], i2 = e2.wrapperElement.dataset.ccid, o2 = r2.find(({ wrapperElement: a2 }) => a2.dataset.ccid === i2);
-      o2 && r2.splice(r2.indexOf(o2), 1), this.customComponentsMeta = [...r2, e2];
+      ], i2 = e2.wrapperElement.dataset.ccid, r2 = o2.find(({ wrapperElement: a2 }) => a2.dataset.ccid === i2);
+      r2 && o2.splice(o2.indexOf(r2), 1), this.customComponentsMeta = [...o2, e2];
     }
   },
   render() {
-    const e2 = this.customComponentsMeta.map(({ Component: t2, wrapperElement: n2 }) => h$5(Teleport, { to: n2 }, t2));
-    return h$5("div", {
+    const e2 = this.customComponentsMeta.map(({ Component: t2, wrapperElement: n2 }) => h$3(Teleport, { to: n2 }, t2));
+    return h$3("div", {
       id: this.elId,
       class: "sx-vue-calendar-wrapper"
-    }, h$5(Fragment, {}, e2));
+    }, h$3(Fragment, {}, e2));
   }
 });
-var ve, h$4, _t, ft, W$1, Ue, ht, Se, pt, $e, we, Me, vt, ee = {}, mt = [], Xt = /acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|itera/i, me = Array.isArray;
-function F$2(e2, t2) {
+var pe, v$3, lt, ut, V$2, We, dt, Pe, ct, q$2 = {}, _t = [], Kt = /acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|itera/i, fe = Array.isArray;
+function A$2(e2, t2) {
   for (var n2 in t2) e2[n2] = t2[n2];
   return e2;
 }
-function Ae(e2) {
-  e2 && e2.parentNode && e2.parentNode.removeChild(e2);
+function vt(e2) {
+  var t2 = e2.parentNode;
+  t2 && t2.removeChild(e2);
 }
-function R(e2, t2, n2) {
-  var r2, i2, o2, a2 = {};
-  for (o2 in t2) o2 == "key" ? r2 = t2[o2] : o2 == "ref" ? i2 = t2[o2] : a2[o2] = t2[o2];
-  if (arguments.length > 2 && (a2.children = arguments.length > 3 ? ve.call(arguments, 2) : n2), typeof e2 == "function" && e2.defaultProps != null) for (o2 in e2.defaultProps) a2[o2] === void 0 && (a2[o2] = e2.defaultProps[o2]);
-  return le(e2, a2, r2, i2, null);
+function j$3(e2, t2, n2) {
+  var o2, i2, r2, a2 = {};
+  for (r2 in t2) r2 == "key" ? o2 = t2[r2] : r2 == "ref" ? i2 = t2[r2] : a2[r2] = t2[r2];
+  if (arguments.length > 2 && (a2.children = arguments.length > 3 ? pe.call(arguments, 2) : n2), typeof e2 == "function" && e2.defaultProps != null) for (r2 in e2.defaultProps) a2[r2] === void 0 && (a2[r2] = e2.defaultProps[r2]);
+  return se(e2, a2, o2, i2, null);
 }
-function le(e2, t2, n2, r2, i2) {
-  var o2 = { type: e2, props: t2, key: n2, ref: r2, __k: null, __: null, __b: 0, __e: null, __c: null, constructor: void 0, __v: i2 ?? ++_t, __i: -1, __u: 0 };
-  return i2 == null && h$4.vnode != null && h$4.vnode(o2), o2;
+function se(e2, t2, n2, o2, i2) {
+  var r2 = { type: e2, props: t2, key: n2, ref: o2, __k: null, __: null, __b: 0, __e: null, __d: void 0, __c: null, constructor: void 0, __v: i2 ?? ++lt, __i: -1, __u: 0 };
+  return i2 == null && v$3.vnode != null && v$3.vnode(r2), r2;
 }
-function M$1(e2) {
+function w$3(e2) {
   return e2.children;
 }
-function C$2(e2, t2) {
+function T$3(e2, t2) {
   this.props = e2, this.context = t2;
 }
 function H$2(e2, t2) {
@@ -233,577 +231,553 @@ function H$2(e2, t2) {
   for (var n2; t2 < e2.__k.length; t2++) if ((n2 = e2.__k[t2]) != null && n2.__e != null) return n2.__e;
   return typeof e2.type == "function" ? H$2(e2) : null;
 }
-function yt(e2) {
+function ht(e2) {
   var t2, n2;
   if ((e2 = e2.__) != null && e2.__c != null) {
     for (e2.__e = e2.__c.base = null, t2 = 0; t2 < e2.__k.length; t2++) if ((n2 = e2.__k[t2]) != null && n2.__e != null) {
       e2.__e = e2.__c.base = n2.__e;
       break;
     }
-    return yt(e2);
+    return ht(e2);
   }
 }
-function Ye(e2) {
-  (!e2.__d && (e2.__d = true) && W$1.push(e2) && !_e.__r++ || Ue !== h$4.debounceRendering) && ((Ue = h$4.debounceRendering) || ht)(_e);
+function Se(e2) {
+  (!e2.__d && (e2.__d = true) && V$2.push(e2) && !ce.__r++ || We !== v$3.debounceRendering) && ((We = v$3.debounceRendering) || dt)(ce);
 }
-function _e() {
-  var e2, t2, n2, r2, i2, o2, a2, s2;
-  for (W$1.sort(Se); e2 = W$1.shift(); ) e2.__d && (t2 = W$1.length, r2 = void 0, o2 = (i2 = (n2 = e2).__v).__e, a2 = [], s2 = [], n2.__P && ((r2 = F$2({}, i2)).__v = i2.__v + 1, h$4.vnode && h$4.vnode(r2), Fe(n2.__P, r2, i2, n2.__n, n2.__P.namespaceURI, 32 & i2.__u ? [o2] : null, a2, o2 ?? H$2(i2), !!(32 & i2.__u), s2), r2.__v = i2.__v, r2.__.__k[r2.__i] = r2, gt(a2, r2, s2), r2.__e != o2 && yt(r2)), W$1.length > t2 && W$1.sort(Se));
-  _e.__r = 0;
+function ce() {
+  var e2, t2, n2, o2, i2, r2, a2, s2, u2;
+  for (V$2.sort(Pe); e2 = V$2.shift(); ) e2.__d && (t2 = V$2.length, o2 = void 0, r2 = (i2 = (n2 = e2).__v).__e, s2 = [], u2 = [], (a2 = n2.__P) && ((o2 = A$2({}, i2)).__v = i2.__v + 1, v$3.vnode && v$3.vnode(o2), Ce(a2, o2, i2, n2.__n, a2.ownerSVGElement !== void 0, 32 & i2.__u ? [r2] : null, s2, r2 ?? H$2(i2), !!(32 & i2.__u), u2), o2.__.__k[o2.__i] = o2, mt(s2, o2, u2), o2.__e != r2 && ht(o2)), V$2.length > t2 && V$2.sort(Pe));
+  ce.__r = 0;
 }
-function Dt(e2, t2, n2, r2, i2, o2, a2, s2, l2, d2, _2) {
-  var u2, c2, f2, m2, v2, b2, y2 = r2 && r2.__k || mt, k2 = t2.length;
-  for (l2 = Qt(n2, t2, y2, l2, k2), u2 = 0; u2 < k2; u2++) (f2 = n2.__k[u2]) != null && (c2 = f2.__i === -1 ? ee : y2[f2.__i] || ee, f2.__i = u2, b2 = Fe(e2, f2, c2, i2, o2, a2, s2, l2, d2, _2), m2 = f2.__e, f2.ref && c2.ref != f2.ref && (c2.ref && je(c2.ref, null, f2), _2.push(f2.ref, f2.__c || m2, f2)), v2 == null && m2 != null && (v2 = m2), 4 & f2.__u || c2.__k === f2.__k ? l2 = kt(f2, l2, e2) : typeof f2.type == "function" && b2 !== void 0 ? l2 = b2 : m2 && (l2 = m2.nextSibling), f2.__u &= -7);
-  return n2.__e = v2, l2;
+function pt(e2, t2, n2, o2, i2, r2, a2, s2, u2, d2, c2) {
+  var l2, _2, h2, m2, f2, g2 = o2 && o2.__k || _t, y2 = t2.length;
+  for (n2.__d = u2, Bt(n2, t2, g2), u2 = n2.__d, l2 = 0; l2 < y2; l2++) (h2 = n2.__k[l2]) != null && typeof h2 != "boolean" && typeof h2 != "function" && (_2 = h2.__i === -1 ? q$2 : g2[h2.__i] || q$2, h2.__i = l2, Ce(e2, h2, _2, i2, r2, a2, s2, u2, d2, c2), m2 = h2.__e, h2.ref && _2.ref != h2.ref && (_2.ref && Oe(_2.ref, null, h2), c2.push(h2.ref, h2.__c || m2, h2)), f2 == null && m2 != null && (f2 = m2), 65536 & h2.__u || _2.__k === h2.__k ? u2 = ft(h2, u2, e2) : typeof h2.type == "function" && h2.__d !== void 0 ? u2 = h2.__d : m2 && (u2 = m2.nextSibling), h2.__d = void 0, h2.__u &= -196609);
+  n2.__d = u2, n2.__e = f2;
 }
-function Qt(e2, t2, n2, r2, i2) {
-  var o2, a2, s2, l2, d2, _2 = n2.length, u2 = _2, c2 = 0;
-  for (e2.__k = new Array(i2), o2 = 0; o2 < i2; o2++) (a2 = t2[o2]) != null && typeof a2 != "boolean" && typeof a2 != "function" ? (l2 = o2 + c2, (a2 = e2.__k[o2] = typeof a2 == "string" || typeof a2 == "number" || typeof a2 == "bigint" || a2.constructor == String ? le(null, a2, null, null, null) : me(a2) ? le(M$1, { children: a2 }, null, null, null) : a2.constructor === void 0 && a2.__b > 0 ? le(a2.type, a2.props, a2.key, a2.ref ? a2.ref : null, a2.__v) : a2).__ = e2, a2.__b = e2.__b + 1, s2 = null, (d2 = a2.__i = en$1(a2, n2, l2, u2)) !== -1 && (u2--, (s2 = n2[d2]) && (s2.__u |= 2)), s2 == null || s2.__v === null ? (d2 == -1 && c2--, typeof a2.type != "function" && (a2.__u |= 4)) : d2 != l2 && (d2 == l2 - 1 ? c2-- : d2 == l2 + 1 ? c2++ : (d2 > l2 ? c2-- : c2++, a2.__u |= 4))) : e2.__k[o2] = null;
-  if (u2) for (o2 = 0; o2 < _2; o2++) (s2 = n2[o2]) != null && !(2 & s2.__u) && (s2.__e == r2 && (r2 = H$2(s2)), bt(s2, s2));
-  return r2;
+function Bt(e2, t2, n2) {
+  var o2, i2, r2, a2, s2, u2 = t2.length, d2 = n2.length, c2 = d2, l2 = 0;
+  for (e2.__k = [], o2 = 0; o2 < u2; o2++) (i2 = e2.__k[o2] = (i2 = t2[o2]) == null || typeof i2 == "boolean" || typeof i2 == "function" ? null : typeof i2 == "string" || typeof i2 == "number" || typeof i2 == "bigint" || i2.constructor == String ? se(null, i2, null, null, i2) : fe(i2) ? se(w$3, { children: i2 }, null, null, null) : i2.constructor === void 0 && i2.__b > 0 ? se(i2.type, i2.props, i2.key, i2.ref ? i2.ref : null, i2.__v) : i2) != null ? (i2.__ = e2, i2.__b = e2.__b + 1, s2 = Gt(i2, n2, a2 = o2 + l2, c2), i2.__i = s2, r2 = null, s2 !== -1 && (c2--, (r2 = n2[s2]) && (r2.__u |= 131072)), r2 == null || r2.__v === null ? (s2 == -1 && l2--, typeof i2.type != "function" && (i2.__u |= 65536)) : s2 !== a2 && (s2 === a2 + 1 ? l2++ : s2 > a2 ? c2 > u2 - a2 ? l2 += s2 - a2 : l2-- : l2 = s2 < a2 && s2 == a2 - 1 ? s2 - a2 : 0, s2 !== o2 + l2 && (i2.__u |= 65536))) : (r2 = n2[o2]) && r2.key == null && r2.__e && (r2.__e == e2.__d && (e2.__d = H$2(r2)), we(r2, r2, false), n2[o2] = null, c2--);
+  if (c2) for (o2 = 0; o2 < d2; o2++) (r2 = n2[o2]) != null && !(131072 & r2.__u) && (r2.__e == e2.__d && (e2.__d = H$2(r2)), we(r2, r2));
 }
-function kt(e2, t2, n2) {
-  var r2, i2;
+function ft(e2, t2, n2) {
+  var o2, i2;
   if (typeof e2.type == "function") {
-    for (r2 = e2.__k, i2 = 0; r2 && i2 < r2.length; i2++) r2[i2] && (r2[i2].__ = e2, t2 = kt(r2[i2], t2, n2));
+    for (o2 = e2.__k, i2 = 0; o2 && i2 < o2.length; i2++) o2[i2] && (o2[i2].__ = e2, t2 = ft(o2[i2], t2, n2));
     return t2;
   }
-  e2.__e != t2 && (t2 && e2.type && !n2.contains(t2) && (t2 = H$2(e2)), n2.insertBefore(e2.__e, t2 || null), t2 = e2.__e);
-  do
-    t2 = t2 && t2.nextSibling;
-  while (t2 != null && t2.nodeType == 8);
-  return t2;
+  return e2.__e != t2 && (n2.insertBefore(e2.__e, t2 || null), t2 = e2.__e), t2 && t2.nextSibling;
 }
-function fe(e2, t2) {
-  return t2 = t2 || [], e2 == null || typeof e2 == "boolean" || (me(e2) ? e2.some(function(n2) {
-    fe(n2, t2);
+function _e(e2, t2) {
+  return t2 = t2 || [], e2 == null || typeof e2 == "boolean" || (fe(e2) ? e2.some(function(n2) {
+    _e(n2, t2);
   }) : t2.push(e2)), t2;
 }
-function en$1(e2, t2, n2, r2) {
-  var i2, o2, a2 = e2.key, s2 = e2.type, l2 = t2[n2];
-  if (l2 === null || l2 && a2 == l2.key && s2 === l2.type && !(2 & l2.__u)) return n2;
-  if (r2 > (l2 != null && !(2 & l2.__u) ? 1 : 0)) for (i2 = n2 - 1, o2 = n2 + 1; i2 >= 0 || o2 < t2.length; ) {
-    if (i2 >= 0) {
-      if ((l2 = t2[i2]) && !(2 & l2.__u) && a2 == l2.key && s2 === l2.type) return i2;
-      i2--;
+function Gt(e2, t2, n2, o2) {
+  var i2 = e2.key, r2 = e2.type, a2 = n2 - 1, s2 = n2 + 1, u2 = t2[n2];
+  if (u2 === null || u2 && i2 == u2.key && r2 === u2.type) return n2;
+  if (o2 > (u2 != null && !(131072 & u2.__u) ? 1 : 0)) for (; a2 >= 0 || s2 < t2.length; ) {
+    if (a2 >= 0) {
+      if ((u2 = t2[a2]) && !(131072 & u2.__u) && i2 == u2.key && r2 === u2.type) return a2;
+      a2--;
     }
-    if (o2 < t2.length) {
-      if ((l2 = t2[o2]) && !(2 & l2.__u) && a2 == l2.key && s2 === l2.type) return o2;
-      o2++;
+    if (s2 < t2.length) {
+      if ((u2 = t2[s2]) && !(131072 & u2.__u) && i2 == u2.key && r2 === u2.type) return s2;
+      s2++;
     }
   }
   return -1;
 }
-function Re(e2, t2, n2) {
-  t2[0] == "-" ? e2.setProperty(t2, n2 ?? "") : e2[t2] = n2 == null ? "" : typeof n2 != "number" || Xt.test(t2) ? n2 : n2 + "px";
+function Ve(e2, t2, n2) {
+  t2[0] === "-" ? e2.setProperty(t2, n2 ?? "") : e2[t2] = n2 == null ? "" : typeof n2 != "number" || Kt.test(t2) ? n2 : n2 + "px";
 }
-function ae(e2, t2, n2, r2, i2) {
-  var o2;
-  e: if (t2 == "style") if (typeof n2 == "string") e2.style.cssText = n2;
+function ie(e2, t2, n2, o2, i2) {
+  var r2;
+  e: if (t2 === "style") if (typeof n2 == "string") e2.style.cssText = n2;
   else {
-    if (typeof r2 == "string" && (e2.style.cssText = r2 = ""), r2) for (t2 in r2) n2 && t2 in n2 || Re(e2.style, t2, "");
-    if (n2) for (t2 in n2) r2 && n2[t2] === r2[t2] || Re(e2.style, t2, n2[t2]);
+    if (typeof o2 == "string" && (e2.style.cssText = o2 = ""), o2) for (t2 in o2) n2 && t2 in n2 || Ve(e2.style, t2, "");
+    if (n2) for (t2 in n2) o2 && n2[t2] === o2[t2] || Ve(e2.style, t2, n2[t2]);
   }
-  else if (t2[0] == "o" && t2[1] == "n") o2 = t2 != (t2 = t2.replace(pt, "$1")), t2 = t2.toLowerCase() in e2 || t2 == "onFocusOut" || t2 == "onFocusIn" ? t2.toLowerCase().slice(2) : t2.slice(2), e2.l || (e2.l = {}), e2.l[t2 + o2] = n2, n2 ? r2 ? n2.u = r2.u : (n2.u = $e, e2.addEventListener(t2, o2 ? Me : we, o2)) : e2.removeEventListener(t2, o2 ? Me : we, o2);
+  else if (t2[0] === "o" && t2[1] === "n") r2 = t2 !== (t2 = t2.replace(/(PointerCapture)$|Capture$/, "$1")), t2 = t2.toLowerCase() in e2 ? t2.toLowerCase().slice(2) : t2.slice(2), e2.l || (e2.l = {}), e2.l[t2 + r2] = n2, n2 ? o2 ? n2.u = o2.u : (n2.u = Date.now(), e2.addEventListener(t2, r2 ? Ie : Ue, r2)) : e2.removeEventListener(t2, r2 ? Ie : Ue, r2);
   else {
-    if (i2 == "http://www.w3.org/2000/svg") t2 = t2.replace(/xlink(H|:h)/, "h").replace(/sName$/, "s");
-    else if (t2 != "width" && t2 != "height" && t2 != "href" && t2 != "list" && t2 != "form" && t2 != "tabIndex" && t2 != "download" && t2 != "rowSpan" && t2 != "colSpan" && t2 != "role" && t2 != "popover" && t2 in e2) try {
+    if (i2) t2 = t2.replace(/xlink(H|:h)/, "h").replace(/sName$/, "s");
+    else if (t2 !== "width" && t2 !== "height" && t2 !== "href" && t2 !== "list" && t2 !== "form" && t2 !== "tabIndex" && t2 !== "download" && t2 !== "rowSpan" && t2 !== "colSpan" && t2 !== "role" && t2 in e2) try {
       e2[t2] = n2 ?? "";
       break e;
     } catch {
     }
-    typeof n2 == "function" || (n2 == null || n2 === false && t2[4] != "-" ? e2.removeAttribute(t2) : e2.setAttribute(t2, t2 == "popover" && n2 == 1 ? "" : n2));
+    typeof n2 == "function" || (n2 == null || n2 === false && t2[4] !== "-" ? e2.removeAttribute(t2) : e2.setAttribute(t2, n2));
   }
 }
-function He(e2) {
-  return function(t2) {
-    if (this.l) {
-      var n2 = this.l[t2.type + e2];
-      if (t2.t == null) t2.t = $e++;
-      else if (t2.t < n2.u) return;
-      return n2(h$4.event ? h$4.event(t2) : t2);
-    }
-  };
+function Ue(e2) {
+  var t2 = this.l[e2.type + false];
+  if (e2.t) {
+    if (e2.t <= t2.u) return;
+  } else e2.t = Date.now();
+  return t2(v$3.event ? v$3.event(e2) : e2);
 }
-function Fe(e2, t2, n2, r2, i2, o2, a2, s2, l2, d2) {
-  var _2, u2, c2, f2, m2, v2, b2, y2, k2, J2, A2, ie, G2, Ve, oe, De, ke, T2 = t2.type;
+function Ie(e2) {
+  return this.l[e2.type + true](v$3.event ? v$3.event(e2) : e2);
+}
+function Ce(e2, t2, n2, o2, i2, r2, a2, s2, u2, d2) {
+  var c2, l2, _2, h2, m2, f2, g2, y2, b2, $2, te, B2, Fe, ne, De, Y2 = t2.type;
   if (t2.constructor !== void 0) return null;
-  128 & n2.__u && (l2 = !!(32 & n2.__u), o2 = [s2 = t2.__e = n2.__e]), (_2 = h$4.__b) && _2(t2);
-  e: if (typeof T2 == "function") try {
-    if (y2 = t2.props, k2 = "prototype" in T2 && T2.prototype.render, J2 = (_2 = T2.contextType) && r2[_2.__c], A2 = _2 ? J2 ? J2.props.value : _2.__ : r2, n2.__c ? b2 = (u2 = t2.__c = n2.__c).__ = u2.__E : (k2 ? t2.__c = u2 = new T2(y2, A2) : (t2.__c = u2 = new C$2(y2, A2), u2.constructor = T2, u2.render = nn), J2 && J2.sub(u2), u2.props = y2, u2.state || (u2.state = {}), u2.context = A2, u2.__n = r2, c2 = u2.__d = true, u2.__h = [], u2._sb = []), k2 && u2.__s == null && (u2.__s = u2.state), k2 && T2.getDerivedStateFromProps != null && (u2.__s == u2.state && (u2.__s = F$2({}, u2.__s)), F$2(u2.__s, T2.getDerivedStateFromProps(y2, u2.__s))), f2 = u2.props, m2 = u2.state, u2.__v = t2, c2) k2 && T2.getDerivedStateFromProps == null && u2.componentWillMount != null && u2.componentWillMount(), k2 && u2.componentDidMount != null && u2.__h.push(u2.componentDidMount);
+  128 & n2.__u && (u2 = !!(32 & n2.__u), r2 = [s2 = t2.__e = n2.__e]), (c2 = v$3.__b) && c2(t2);
+  e: if (typeof Y2 == "function") try {
+    if (y2 = t2.props, b2 = (c2 = Y2.contextType) && o2[c2.__c], $2 = c2 ? b2 ? b2.props.value : c2.__ : o2, n2.__c ? g2 = (l2 = t2.__c = n2.__c).__ = l2.__E : ("prototype" in Y2 && Y2.prototype.render ? t2.__c = l2 = new Y2(y2, $2) : (t2.__c = l2 = new T$3(y2, $2), l2.constructor = Y2, l2.render = Zt), b2 && b2.sub(l2), l2.props = y2, l2.state || (l2.state = {}), l2.context = $2, l2.__n = o2, _2 = l2.__d = true, l2.__h = [], l2._sb = []), l2.__s == null && (l2.__s = l2.state), Y2.getDerivedStateFromProps != null && (l2.__s == l2.state && (l2.__s = A$2({}, l2.__s)), A$2(l2.__s, Y2.getDerivedStateFromProps(y2, l2.__s))), h2 = l2.props, m2 = l2.state, l2.__v = t2, _2) Y2.getDerivedStateFromProps == null && l2.componentWillMount != null && l2.componentWillMount(), l2.componentDidMount != null && l2.__h.push(l2.componentDidMount);
     else {
-      if (k2 && T2.getDerivedStateFromProps == null && y2 !== f2 && u2.componentWillReceiveProps != null && u2.componentWillReceiveProps(y2, A2), !u2.__e && (u2.shouldComponentUpdate != null && u2.shouldComponentUpdate(y2, u2.__s, A2) === false || t2.__v == n2.__v)) {
-        for (t2.__v != n2.__v && (u2.props = y2, u2.state = u2.__s, u2.__d = false), t2.__e = n2.__e, t2.__k = n2.__k, t2.__k.some(function(Z2) {
-          Z2 && (Z2.__ = t2);
-        }), ie = 0; ie < u2._sb.length; ie++) u2.__h.push(u2._sb[ie]);
-        u2._sb = [], u2.__h.length && a2.push(u2);
+      if (Y2.getDerivedStateFromProps == null && y2 !== h2 && l2.componentWillReceiveProps != null && l2.componentWillReceiveProps(y2, $2), !l2.__e && (l2.shouldComponentUpdate != null && l2.shouldComponentUpdate(y2, l2.__s, $2) === false || t2.__v === n2.__v)) {
+        for (t2.__v !== n2.__v && (l2.props = y2, l2.state = l2.__s, l2.__d = false), t2.__e = n2.__e, t2.__k = n2.__k, t2.__k.forEach(function(oe) {
+          oe && (oe.__ = t2);
+        }), te = 0; te < l2._sb.length; te++) l2.__h.push(l2._sb[te]);
+        l2._sb = [], l2.__h.length && a2.push(l2);
         break e;
       }
-      u2.componentWillUpdate != null && u2.componentWillUpdate(y2, u2.__s, A2), k2 && u2.componentDidUpdate != null && u2.__h.push(function() {
-        u2.componentDidUpdate(f2, m2, v2);
+      l2.componentWillUpdate != null && l2.componentWillUpdate(y2, l2.__s, $2), l2.componentDidUpdate != null && l2.__h.push(function() {
+        l2.componentDidUpdate(h2, m2, f2);
       });
     }
-    if (u2.context = A2, u2.props = y2, u2.__P = e2, u2.__e = false, G2 = h$4.__r, Ve = 0, k2) {
-      for (u2.state = u2.__s, u2.__d = false, G2 && G2(t2), _2 = u2.render(u2.props, u2.state, u2.context), oe = 0; oe < u2._sb.length; oe++) u2.__h.push(u2._sb[oe]);
-      u2._sb = [];
+    if (l2.context = $2, l2.props = y2, l2.__P = e2, l2.__e = false, B2 = v$3.__r, Fe = 0, "prototype" in Y2 && Y2.prototype.render) {
+      for (l2.state = l2.__s, l2.__d = false, B2 && B2(t2), c2 = l2.render(l2.props, l2.state, l2.context), ne = 0; ne < l2._sb.length; ne++) l2.__h.push(l2._sb[ne]);
+      l2._sb = [];
     } else do
-      u2.__d = false, G2 && G2(t2), _2 = u2.render(u2.props, u2.state, u2.context), u2.state = u2.__s;
-    while (u2.__d && ++Ve < 25);
-    u2.state = u2.__s, u2.getChildContext != null && (r2 = F$2(F$2({}, r2), u2.getChildContext())), k2 && !c2 && u2.getSnapshotBeforeUpdate != null && (v2 = u2.getSnapshotBeforeUpdate(f2, m2)), s2 = Dt(e2, me(De = _2 != null && _2.type === M$1 && _2.key == null ? _2.props.children : _2) ? De : [De], t2, n2, r2, i2, o2, a2, s2, l2, d2), u2.base = t2.__e, t2.__u &= -161, u2.__h.length && a2.push(u2), b2 && (u2.__E = u2.__ = null);
-  } catch (Z2) {
-    if (t2.__v = null, l2 || o2 != null) if (Z2.then) {
-      for (t2.__u |= l2 ? 160 : 128; s2 && s2.nodeType == 8 && s2.nextSibling; ) s2 = s2.nextSibling;
-      o2[o2.indexOf(s2)] = null, t2.__e = s2;
-    } else for (ke = o2.length; ke--; ) Ae(o2[ke]);
-    else t2.__e = n2.__e, t2.__k = n2.__k;
-    h$4.__e(Z2, t2, n2);
+      l2.__d = false, B2 && B2(t2), c2 = l2.render(l2.props, l2.state, l2.context), l2.state = l2.__s;
+    while (l2.__d && ++Fe < 25);
+    l2.state = l2.__s, l2.getChildContext != null && (o2 = A$2(A$2({}, o2), l2.getChildContext())), _2 || l2.getSnapshotBeforeUpdate == null || (f2 = l2.getSnapshotBeforeUpdate(h2, m2)), pt(e2, fe(De = c2 != null && c2.type === w$3 && c2.key == null ? c2.props.children : c2) ? De : [De], t2, n2, o2, i2, r2, a2, s2, u2, d2), l2.base = t2.__e, t2.__u &= -161, l2.__h.length && a2.push(l2), g2 && (l2.__E = l2.__ = null);
+  } catch (oe) {
+    t2.__v = null, u2 || r2 != null ? (t2.__e = s2, t2.__u |= u2 ? 160 : 32, r2[r2.indexOf(s2)] = null) : (t2.__e = n2.__e, t2.__k = n2.__k), v$3.__e(oe, t2, n2);
   }
-  else o2 == null && t2.__v == n2.__v ? (t2.__k = n2.__k, t2.__e = n2.__e) : s2 = t2.__e = tn(n2.__e, t2, n2, r2, i2, o2, a2, l2, d2);
-  return (_2 = h$4.diffed) && _2(t2), 128 & t2.__u ? void 0 : s2;
+  else r2 == null && t2.__v === n2.__v ? (t2.__k = n2.__k, t2.__e = n2.__e) : t2.__e = Jt(n2.__e, t2, n2, o2, i2, r2, a2, u2, d2);
+  (c2 = v$3.diffed) && c2(t2);
 }
-function gt(e2, t2, n2) {
-  for (var r2 = 0; r2 < n2.length; r2++) je(n2[r2], n2[++r2], n2[++r2]);
-  h$4.__c && h$4.__c(t2, e2), e2.some(function(i2) {
+function mt(e2, t2, n2) {
+  t2.__d = void 0;
+  for (var o2 = 0; o2 < n2.length; o2++) Oe(n2[o2], n2[++o2], n2[++o2]);
+  v$3.__c && v$3.__c(t2, e2), e2.some(function(i2) {
     try {
-      e2 = i2.__h, i2.__h = [], e2.some(function(o2) {
-        o2.call(i2);
+      e2 = i2.__h, i2.__h = [], e2.some(function(r2) {
+        r2.call(i2);
       });
-    } catch (o2) {
-      h$4.__e(o2, i2.__v);
+    } catch (r2) {
+      v$3.__e(r2, i2.__v);
     }
   });
 }
-function tn(e2, t2, n2, r2, i2, o2, a2, s2, l2) {
-  var d2, _2, u2, c2, f2, m2, v2, b2 = n2.props, y2 = t2.props, k2 = t2.type;
-  if (k2 == "svg" ? i2 = "http://www.w3.org/2000/svg" : k2 == "math" ? i2 = "http://www.w3.org/1998/Math/MathML" : i2 || (i2 = "http://www.w3.org/1999/xhtml"), o2 != null) {
-    for (d2 = 0; d2 < o2.length; d2++) if ((f2 = o2[d2]) && "setAttribute" in f2 == !!k2 && (k2 ? f2.localName == k2 : f2.nodeType == 3)) {
-      e2 = f2, o2[d2] = null;
+function Jt(e2, t2, n2, o2, i2, r2, a2, s2, u2) {
+  var d2, c2, l2, _2, h2, m2, f2, g2 = n2.props, y2 = t2.props, b2 = t2.type;
+  if (b2 === "svg" && (i2 = true), r2 != null) {
+    for (d2 = 0; d2 < r2.length; d2++) if ((h2 = r2[d2]) && "setAttribute" in h2 == !!b2 && (b2 ? h2.localName === b2 : h2.nodeType === 3)) {
+      e2 = h2, r2[d2] = null;
       break;
     }
   }
   if (e2 == null) {
-    if (k2 == null) return document.createTextNode(y2);
-    e2 = document.createElementNS(i2, k2, y2.is && y2), s2 && (h$4.__m && h$4.__m(t2, o2), s2 = false), o2 = null;
+    if (b2 === null) return document.createTextNode(y2);
+    e2 = i2 ? document.createElementNS("http://www.w3.org/2000/svg", b2) : document.createElement(b2, y2.is && y2), r2 = null, s2 = false;
   }
-  if (k2 === null) b2 === y2 || s2 && e2.data === y2 || (e2.data = y2);
+  if (b2 === null) g2 === y2 || s2 && e2.data === y2 || (e2.data = y2);
   else {
-    if (o2 = o2 && ve.call(e2.childNodes), b2 = n2.props || ee, !s2 && o2 != null) for (b2 = {}, d2 = 0; d2 < e2.attributes.length; d2++) b2[(f2 = e2.attributes[d2]).name] = f2.value;
-    for (d2 in b2) if (f2 = b2[d2], d2 != "children") {
-      if (d2 == "dangerouslySetInnerHTML") u2 = f2;
-      else if (!(d2 in y2)) {
-        if (d2 == "value" && "defaultValue" in y2 || d2 == "checked" && "defaultChecked" in y2) continue;
-        ae(e2, d2, null, f2, i2);
-      }
-    }
-    for (d2 in y2) f2 = y2[d2], d2 == "children" ? c2 = f2 : d2 == "dangerouslySetInnerHTML" ? _2 = f2 : d2 == "value" ? m2 = f2 : d2 == "checked" ? v2 = f2 : s2 && typeof f2 != "function" || b2[d2] === f2 || ae(e2, d2, f2, b2[d2], i2);
-    if (_2) s2 || u2 && (_2.__html === u2.__html || _2.__html === e2.innerHTML) || (e2.innerHTML = _2.__html), t2.__k = [];
-    else if (u2 && (e2.innerHTML = ""), Dt(e2, me(c2) ? c2 : [c2], t2, n2, r2, k2 == "foreignObject" ? "http://www.w3.org/1999/xhtml" : i2, o2, a2, o2 ? o2[0] : n2.__k && H$2(n2, 0), s2, l2), o2 != null) for (d2 = o2.length; d2--; ) Ae(o2[d2]);
-    s2 || (d2 = "value", k2 == "progress" && m2 == null ? e2.removeAttribute("value") : m2 !== void 0 && (m2 !== e2[d2] || k2 == "progress" && !m2 || k2 == "option" && m2 !== b2[d2]) && ae(e2, d2, m2, b2[d2], i2), d2 = "checked", v2 !== void 0 && v2 !== e2[d2] && ae(e2, d2, v2, b2[d2], i2));
+    if (r2 = r2 && pe.call(e2.childNodes), g2 = n2.props || q$2, !s2 && r2 != null) for (g2 = {}, d2 = 0; d2 < e2.attributes.length; d2++) g2[(h2 = e2.attributes[d2]).name] = h2.value;
+    for (d2 in g2) h2 = g2[d2], d2 == "children" || (d2 == "dangerouslySetInnerHTML" ? l2 = h2 : d2 === "key" || d2 in y2 || ie(e2, d2, null, h2, i2));
+    for (d2 in y2) h2 = y2[d2], d2 == "children" ? _2 = h2 : d2 == "dangerouslySetInnerHTML" ? c2 = h2 : d2 == "value" ? m2 = h2 : d2 == "checked" ? f2 = h2 : d2 === "key" || s2 && typeof h2 != "function" || g2[d2] === h2 || ie(e2, d2, h2, g2[d2], i2);
+    if (c2) s2 || l2 && (c2.__html === l2.__html || c2.__html === e2.innerHTML) || (e2.innerHTML = c2.__html), t2.__k = [];
+    else if (l2 && (e2.innerHTML = ""), pt(e2, fe(_2) ? _2 : [_2], t2, n2, o2, i2 && b2 !== "foreignObject", r2, a2, r2 ? r2[0] : n2.__k && H$2(n2, 0), s2, u2), r2 != null) for (d2 = r2.length; d2--; ) r2[d2] != null && vt(r2[d2]);
+    s2 || (d2 = "value", m2 !== void 0 && (m2 !== e2[d2] || b2 === "progress" && !m2 || b2 === "option" && m2 !== g2[d2]) && ie(e2, d2, m2, g2[d2], false), d2 = "checked", f2 !== void 0 && f2 !== e2[d2] && ie(e2, d2, f2, g2[d2], false));
   }
   return e2;
 }
-function je(e2, t2, n2) {
+function Oe(e2, t2, n2) {
   try {
-    if (typeof e2 == "function") {
-      var r2 = typeof e2.__u == "function";
-      r2 && e2.__u(), r2 && t2 == null || (e2.__u = e2(t2));
-    } else e2.current = t2;
-  } catch (i2) {
-    h$4.__e(i2, n2);
+    typeof e2 == "function" ? e2(t2) : e2.current = t2;
+  } catch (o2) {
+    v$3.__e(o2, n2);
   }
 }
-function bt(e2, t2, n2) {
-  var r2, i2;
-  if (h$4.unmount && h$4.unmount(e2), (r2 = e2.ref) && (r2.current && r2.current !== e2.__e || je(r2, null, t2)), (r2 = e2.__c) != null) {
-    if (r2.componentWillUnmount) try {
-      r2.componentWillUnmount();
-    } catch (o2) {
-      h$4.__e(o2, t2);
+function we(e2, t2, n2) {
+  var o2, i2;
+  if (v$3.unmount && v$3.unmount(e2), (o2 = e2.ref) && (o2.current && o2.current !== e2.__e || Oe(o2, null, t2)), (o2 = e2.__c) != null) {
+    if (o2.componentWillUnmount) try {
+      o2.componentWillUnmount();
+    } catch (r2) {
+      v$3.__e(r2, t2);
     }
-    r2.base = r2.__P = null;
+    o2.base = o2.__P = null, e2.__c = void 0;
   }
-  if (r2 = e2.__k) for (i2 = 0; i2 < r2.length; i2++) r2[i2] && bt(r2[i2], t2, n2 || typeof e2.type != "function");
-  n2 || Ae(e2.__e), e2.__c = e2.__ = e2.__e = void 0;
+  if (o2 = e2.__k) for (i2 = 0; i2 < o2.length; i2++) o2[i2] && we(o2[i2], t2, n2 || typeof e2.type != "function");
+  n2 || e2.__e == null || vt(e2.__e), e2.__ = e2.__e = e2.__d = void 0;
 }
-function nn(e2, t2, n2) {
+function Zt(e2, t2, n2) {
   return this.constructor(e2, n2);
 }
-function rn$1(e2, t2) {
-  var n2 = { __c: t2 = "__cC" + vt++, __: e2, Consumer: function(r2, i2) {
-    return r2.children(i2);
-  }, Provider: function(r2) {
-    var i2, o2;
-    return this.getChildContext || (i2 = /* @__PURE__ */ new Set(), (o2 = {})[t2] = this, this.getChildContext = function() {
-      return o2;
-    }, this.componentWillUnmount = function() {
-      i2 = null;
+function qt(e2, t2) {
+  var n2 = { __c: t2 = "__cC" + ct++, __: e2, Consumer: function(o2, i2) {
+    return o2.children(i2);
+  }, Provider: function(o2) {
+    var i2, r2;
+    return this.getChildContext || (i2 = [], (r2 = {})[t2] = this, this.getChildContext = function() {
+      return r2;
     }, this.shouldComponentUpdate = function(a2) {
-      this.props.value !== a2.value && i2.forEach(function(s2) {
-        s2.__e = true, Ye(s2);
+      this.props.value !== a2.value && i2.some(function(s2) {
+        s2.__e = true, Se(s2);
       });
     }, this.sub = function(a2) {
-      i2.add(a2);
+      i2.push(a2);
       var s2 = a2.componentWillUnmount;
       a2.componentWillUnmount = function() {
-        i2 && i2.delete(a2), s2 && s2.call(a2);
+        i2.splice(i2.indexOf(a2), 1), s2 && s2.call(a2);
       };
-    }), r2.children;
+    }), o2.children;
   } };
   return n2.Provider.__ = n2.Consumer.contextType = n2;
 }
-ve = mt.slice, h$4 = { __e: function(e2, t2, n2, r2) {
-  for (var i2, o2, a2; t2 = t2.__; ) if ((i2 = t2.__c) && !i2.__) try {
-    if ((o2 = i2.constructor) && o2.getDerivedStateFromError != null && (i2.setState(o2.getDerivedStateFromError(e2)), a2 = i2.__d), i2.componentDidCatch != null && (i2.componentDidCatch(e2, r2 || {}), a2 = i2.__d), a2) return i2.__E = i2;
+pe = _t.slice, v$3 = { __e: function(e2, t2, n2, o2) {
+  for (var i2, r2, a2; t2 = t2.__; ) if ((i2 = t2.__c) && !i2.__) try {
+    if ((r2 = i2.constructor) && r2.getDerivedStateFromError != null && (i2.setState(r2.getDerivedStateFromError(e2)), a2 = i2.__d), i2.componentDidCatch != null && (i2.componentDidCatch(e2, o2 || {}), a2 = i2.__d), a2) return i2.__E = i2;
   } catch (s2) {
     e2 = s2;
   }
   throw e2;
-} }, _t = 0, ft = function(e2) {
+} }, lt = 0, ut = function(e2) {
   return e2 != null && e2.constructor == null;
-}, C$2.prototype.setState = function(e2, t2) {
+}, T$3.prototype.setState = function(e2, t2) {
   var n2;
-  n2 = this.__s != null && this.__s !== this.state ? this.__s : this.__s = F$2({}, this.state), typeof e2 == "function" && (e2 = e2(F$2({}, n2), this.props)), e2 && F$2(n2, e2), e2 != null && this.__v && (t2 && this._sb.push(t2), Ye(this));
-}, C$2.prototype.forceUpdate = function(e2) {
-  this.__v && (this.__e = true, e2 && this.__h.push(e2), Ye(this));
-}, C$2.prototype.render = M$1, W$1 = [], ht = typeof Promise == "function" ? Promise.prototype.then.bind(Promise.resolve()) : setTimeout, Se = function(e2, t2) {
+  n2 = this.__s != null && this.__s !== this.state ? this.__s : this.__s = A$2({}, this.state), typeof e2 == "function" && (e2 = e2(A$2({}, n2), this.props)), e2 && A$2(n2, e2), e2 != null && this.__v && (t2 && this._sb.push(t2), Se(this));
+}, T$3.prototype.forceUpdate = function(e2) {
+  this.__v && (this.__e = true, e2 && this.__h.push(e2), Se(this));
+}, T$3.prototype.render = w$3, V$2 = [], dt = typeof Promise == "function" ? Promise.prototype.then.bind(Promise.resolve()) : setTimeout, Pe = function(e2, t2) {
   return e2.__v.__b - t2.__v.__b;
-}, _e.__r = 0, pt = /(PointerCapture)$|Capture$/i, $e = 0, we = He(false), Me = He(true), vt = 0;
-var z$2, g$3, ge, ze, xe = 0, Pt = [], P$2 = h$4, Ke = P$2.__b, Be = P$2.__r, Je = P$2.diffed, Ge = P$2.__c, Ze = P$2.unmount, qe = P$2.__;
-function ye(e2, t2) {
-  P$2.__h && P$2.__h(g$3, e2, xe || t2), xe = 0;
-  var n2 = g$3.__H || (g$3.__H = { __: [], __h: [] });
-  return e2 >= n2.__.length && n2.__.push({}), n2.__[e2];
+}, ce.__r = 0, ct = 0;
+var z$2, D$2, ke, Re, Ye = 0, yt = [], le = [], je = v$3.__b, He = v$3.__r, ze = v$3.diffed, Ke = v$3.__c, Be = v$3.unmount;
+function me(e2, t2) {
+  v$3.__h && v$3.__h(D$2, e2, Ye || t2), Ye = 0;
+  var n2 = D$2.__H || (D$2.__H = { __: [], __h: [] });
+  return e2 >= n2.__.length && n2.__.push({ __V: le }), n2.__[e2];
 }
-function St(e2, t2) {
-  var n2 = ye(z$2++, 7);
-  return wt(n2.__H, t2) && (n2.__ = e2(), n2.__H = t2, n2.__h = e2), n2.__;
+function Dt(e2, t2) {
+  var n2 = me(z$2++, 7);
+  return kt(n2.__H, t2) ? (n2.__V = e2(), n2.i = t2, n2.__h = e2, n2.__V) : n2.__;
 }
-function sn$1() {
-  for (var e2; e2 = Pt.shift(); ) if (e2.__P && e2.__H) try {
-    e2.__H.__h.forEach(de), e2.__H.__h.forEach(Ee), e2.__H.__h = [];
+function en$1() {
+  for (var e2; e2 = yt.shift(); ) if (e2.__P && e2.__H) try {
+    e2.__H.__h.forEach(ue), e2.__H.__h.forEach(Ne), e2.__H.__h = [];
   } catch (t2) {
-    e2.__H.__h = [], P$2.__e(t2, e2.__v);
+    e2.__H.__h = [], v$3.__e(t2, e2.__v);
   }
 }
-P$2.__b = function(e2) {
-  g$3 = null, Ke && Ke(e2);
-}, P$2.__ = function(e2, t2) {
-  e2 && t2.__k && t2.__k.__m && (e2.__m = t2.__k.__m), qe && qe(e2, t2);
-}, P$2.__r = function(e2) {
-  Be && Be(e2), z$2 = 0;
-  var t2 = (g$3 = e2.__c).__H;
-  t2 && (ge === g$3 ? (t2.__h = [], g$3.__h = [], t2.__.forEach(function(n2) {
-    n2.__N && (n2.__ = n2.__N), n2.i = n2.__N = void 0;
-  })) : (t2.__h.forEach(de), t2.__h.forEach(Ee), t2.__h = [], z$2 = 0)), ge = g$3;
-}, P$2.diffed = function(e2) {
-  Je && Je(e2);
+v$3.__b = function(e2) {
+  D$2 = null, je && je(e2);
+}, v$3.__r = function(e2) {
+  He && He(e2), z$2 = 0;
+  var t2 = (D$2 = e2.__c).__H;
+  t2 && (ke === D$2 ? (t2.__h = [], D$2.__h = [], t2.__.forEach(function(n2) {
+    n2.__N && (n2.__ = n2.__N), n2.__V = le, n2.__N = n2.i = void 0;
+  })) : (t2.__h.forEach(ue), t2.__h.forEach(Ne), t2.__h = [], z$2 = 0)), ke = D$2;
+}, v$3.diffed = function(e2) {
+  ze && ze(e2);
   var t2 = e2.__c;
-  t2 && t2.__H && (t2.__H.__h.length && (Pt.push(t2) !== 1 && ze === P$2.requestAnimationFrame || ((ze = P$2.requestAnimationFrame) || un$1)(sn$1)), t2.__H.__.forEach(function(n2) {
-    n2.i && (n2.__H = n2.i), n2.i = void 0;
-  })), ge = g$3 = null;
-}, P$2.__c = function(e2, t2) {
+  t2 && t2.__H && (t2.__H.__h.length && (yt.push(t2) !== 1 && Re === v$3.requestAnimationFrame || ((Re = v$3.requestAnimationFrame) || tn)(en$1)), t2.__H.__.forEach(function(n2) {
+    n2.i && (n2.__H = n2.i), n2.__V !== le && (n2.__ = n2.__V), n2.i = void 0, n2.__V = le;
+  })), ke = D$2 = null;
+}, v$3.__c = function(e2, t2) {
   t2.some(function(n2) {
     try {
-      n2.__h.forEach(de), n2.__h = n2.__h.filter(function(r2) {
-        return !r2.__ || Ee(r2);
+      n2.__h.forEach(ue), n2.__h = n2.__h.filter(function(o2) {
+        return !o2.__ || Ne(o2);
       });
-    } catch (r2) {
+    } catch (o2) {
       t2.some(function(i2) {
         i2.__h && (i2.__h = []);
-      }), t2 = [], P$2.__e(r2, n2.__v);
+      }), t2 = [], v$3.__e(o2, n2.__v);
     }
-  }), Ge && Ge(e2, t2);
-}, P$2.unmount = function(e2) {
-  Ze && Ze(e2);
+  }), Ke && Ke(e2, t2);
+}, v$3.unmount = function(e2) {
+  Be && Be(e2);
   var t2, n2 = e2.__c;
-  n2 && n2.__H && (n2.__H.__.forEach(function(r2) {
+  n2 && n2.__H && (n2.__H.__.forEach(function(o2) {
     try {
-      de(r2);
+      ue(o2);
     } catch (i2) {
       t2 = i2;
     }
-  }), n2.__H = void 0, t2 && P$2.__e(t2, n2.__v));
+  }), n2.__H = void 0, t2 && v$3.__e(t2, n2.__v));
 };
-var Xe = typeof requestAnimationFrame == "function";
-function un$1(e2) {
+var Ge = typeof requestAnimationFrame == "function";
+function tn(e2) {
   var t2, n2 = function() {
-    clearTimeout(r2), Xe && cancelAnimationFrame(t2), setTimeout(e2);
-  }, r2 = setTimeout(n2, 100);
-  Xe && (t2 = requestAnimationFrame(n2));
+    clearTimeout(o2), Ge && cancelAnimationFrame(t2), setTimeout(e2);
+  }, o2 = setTimeout(n2, 100);
+  Ge && (t2 = requestAnimationFrame(n2));
 }
-function de(e2) {
-  var t2 = g$3, n2 = e2.__c;
-  typeof n2 == "function" && (e2.__c = void 0, n2()), g$3 = t2;
+function ue(e2) {
+  var t2 = D$2, n2 = e2.__c;
+  typeof n2 == "function" && (e2.__c = void 0, n2()), D$2 = t2;
 }
-function Ee(e2) {
-  var t2 = g$3;
-  e2.__c = e2.__(), g$3 = t2;
+function Ne(e2) {
+  var t2 = D$2;
+  e2.__c = e2.__(), D$2 = t2;
 }
-function wt(e2, t2) {
-  return !e2 || e2.length !== t2.length || t2.some(function(n2, r2) {
-    return n2 !== e2[r2];
+function kt(e2, t2) {
+  return !e2 || e2.length !== t2.length || t2.some(function(n2, o2) {
+    return n2 !== e2[o2];
   });
 }
-function ln$1(e2, t2) {
+function nn(e2, t2) {
   for (var n2 in t2) e2[n2] = t2[n2];
   return e2;
 }
-function Qe(e2, t2) {
+function Je(e2, t2) {
   for (var n2 in e2) if (n2 !== "__source" && !(n2 in t2)) return true;
-  for (var r2 in t2) if (r2 !== "__source" && e2[r2] !== t2[r2]) return true;
+  for (var o2 in t2) if (o2 !== "__source" && e2[o2] !== t2[o2]) return true;
   return false;
 }
-function et(e2, t2) {
-  this.props = e2, this.context = t2;
+function Ze(e2) {
+  this.props = e2;
 }
-(et.prototype = new C$2()).isPureReactComponent = true, et.prototype.shouldComponentUpdate = function(e2, t2) {
-  return Qe(this.props, e2) || Qe(this.state, t2);
+(Ze.prototype = new T$3()).isPureReactComponent = true, Ze.prototype.shouldComponentUpdate = function(e2, t2) {
+  return Je(this.props, e2) || Je(this.state, t2);
 };
-var tt = h$4.__b;
-h$4.__b = function(e2) {
-  e2.type && e2.type.__f && e2.ref && (e2.props.ref = e2.ref, e2.ref = null), tt && tt(e2);
+var qe = v$3.__b;
+v$3.__b = function(e2) {
+  e2.type && e2.type.__f && e2.ref && (e2.props.ref = e2.ref, e2.ref = null), qe && qe(e2);
 };
-var dn = h$4.__e;
-h$4.__e = function(e2, t2, n2, r2) {
+var on$1 = v$3.__e;
+v$3.__e = function(e2, t2, n2, o2) {
   if (e2.then) {
-    for (var i2, o2 = t2; o2 = o2.__; ) if ((i2 = o2.__c) && i2.__c) return t2.__e == null && (t2.__e = n2.__e, t2.__k = n2.__k), i2.__c(e2, t2);
+    for (var i2, r2 = t2; r2 = r2.__; ) if ((i2 = r2.__c) && i2.__c) return t2.__e == null && (t2.__e = n2.__e, t2.__k = n2.__k), i2.__c(e2, t2);
   }
-  dn(e2, t2, n2, r2);
+  on$1(e2, t2, n2, o2);
 };
-var nt = h$4.unmount;
-function Yt(e2, t2, n2) {
-  return e2 && (e2.__c && e2.__c.__H && (e2.__c.__H.__.forEach(function(r2) {
-    typeof r2.__c == "function" && r2.__c();
-  }), e2.__c.__H = null), (e2 = ln$1({}, e2)).__c != null && (e2.__c.__P === n2 && (e2.__c.__P = t2), e2.__c = null), e2.__k = e2.__k && e2.__k.map(function(r2) {
-    return Yt(r2, t2, n2);
+var Xe = v$3.unmount;
+function bt(e2, t2, n2) {
+  return e2 && (e2.__c && e2.__c.__H && (e2.__c.__H.__.forEach(function(o2) {
+    typeof o2.__c == "function" && o2.__c();
+  }), e2.__c.__H = null), (e2 = nn({}, e2)).__c != null && (e2.__c.__P === n2 && (e2.__c.__P = t2), e2.__c = null), e2.__k = e2.__k && e2.__k.map(function(o2) {
+    return bt(o2, t2, n2);
   })), e2;
 }
-function Nt(e2, t2, n2) {
-  return e2 && n2 && (e2.__v = null, e2.__k = e2.__k && e2.__k.map(function(r2) {
-    return Nt(r2, t2, n2);
+function Pt(e2, t2, n2) {
+  return e2 && n2 && (e2.__v = null, e2.__k = e2.__k && e2.__k.map(function(o2) {
+    return Pt(o2, t2, n2);
   }), e2.__c && e2.__c.__P === t2 && (e2.__e && n2.appendChild(e2.__e), e2.__c.__e = true, e2.__c.__P = n2)), e2;
 }
-function be() {
-  this.__u = 0, this.o = null, this.__b = null;
+function ge() {
+  this.__u = 0, this.t = null, this.__b = null;
 }
-function xt(e2) {
+function St(e2) {
   var t2 = e2.__.__c;
   return t2 && t2.__a && t2.__a(e2);
 }
-function se() {
-  this.i = null, this.l = null;
+function re() {
+  this.u = null, this.o = null;
 }
-h$4.unmount = function(e2) {
+v$3.unmount = function(e2) {
   var t2 = e2.__c;
-  t2 && t2.__R && t2.__R(), t2 && 32 & e2.__u && (e2.type = null), nt && nt(e2);
-}, (be.prototype = new C$2()).__c = function(e2, t2) {
-  var n2 = t2.__c, r2 = this;
-  r2.o == null && (r2.o = []), r2.o.push(n2);
-  var i2 = xt(r2.__v), o2 = false, a2 = function() {
-    o2 || (o2 = true, n2.__R = null, i2 ? i2(s2) : s2());
+  t2 && t2.__R && t2.__R(), t2 && 32 & e2.__u && (e2.type = null), Xe && Xe(e2);
+}, (ge.prototype = new T$3()).__c = function(e2, t2) {
+  var n2 = t2.__c, o2 = this;
+  o2.t == null && (o2.t = []), o2.t.push(n2);
+  var i2 = St(o2.__v), r2 = false, a2 = function() {
+    r2 || (r2 = true, n2.__R = null, i2 ? i2(s2) : s2());
   };
   n2.__R = a2;
   var s2 = function() {
-    if (!--r2.__u) {
-      if (r2.state.__a) {
-        var l2 = r2.state.__a;
-        r2.__v.__k[0] = Nt(l2, l2.__c.__P, l2.__c.__O);
+    if (!--o2.__u) {
+      if (o2.state.__a) {
+        var u2 = o2.state.__a;
+        o2.__v.__k[0] = Pt(u2, u2.__c.__P, u2.__c.__O);
       }
       var d2;
-      for (r2.setState({ __a: r2.__b = null }); d2 = r2.o.pop(); ) d2.forceUpdate();
+      for (o2.setState({ __a: o2.__b = null }); d2 = o2.t.pop(); ) d2.forceUpdate();
     }
   };
-  r2.__u++ || 32 & t2.__u || r2.setState({ __a: r2.__b = r2.__v.__k[0] }), e2.then(a2, a2);
-}, be.prototype.componentWillUnmount = function() {
-  this.o = [];
-}, be.prototype.render = function(e2, t2) {
+  o2.__u++ || 32 & t2.__u || o2.setState({ __a: o2.__b = o2.__v.__k[0] }), e2.then(a2, a2);
+}, ge.prototype.componentWillUnmount = function() {
+  this.t = [];
+}, ge.prototype.render = function(e2, t2) {
   if (this.__b) {
     if (this.__v.__k) {
-      var n2 = document.createElement("div"), r2 = this.__v.__k[0].__c;
-      this.__v.__k[0] = Yt(this.__b, n2, r2.__O = r2.__P);
+      var n2 = document.createElement("div"), o2 = this.__v.__k[0].__c;
+      this.__v.__k[0] = bt(this.__b, n2, o2.__O = o2.__P);
     }
     this.__b = null;
   }
-  var i2 = t2.__a && R(M$1, null, e2.fallback);
-  return i2 && (i2.__u &= -33), [R(M$1, null, t2.__a ? null : e2.children), i2];
+  var i2 = t2.__a && j$3(w$3, null, e2.fallback);
+  return i2 && (i2.__u &= -33), [j$3(w$3, null, t2.__a ? null : e2.children), i2];
 };
-var rt = function(e2, t2, n2) {
-  if (++n2[1] === n2[0] && e2.l.delete(t2), e2.props.revealOrder && (e2.props.revealOrder[0] !== "t" || !e2.l.size)) for (n2 = e2.i; n2; ) {
+var Qe = function(e2, t2, n2) {
+  if (++n2[1] === n2[0] && e2.o.delete(t2), e2.props.revealOrder && (e2.props.revealOrder[0] !== "t" || !e2.o.size)) for (n2 = e2.u; n2; ) {
     for (; n2.length > 3; ) n2.pop()();
     if (n2[1] < n2[0]) break;
-    e2.i = n2 = n2[2];
+    e2.u = n2 = n2[2];
   }
 };
-(se.prototype = new C$2()).__a = function(e2) {
-  var t2 = this, n2 = xt(t2.__v), r2 = t2.l.get(e2);
-  return r2[0]++, function(i2) {
-    var o2 = function() {
-      t2.props.revealOrder ? (r2.push(i2), rt(t2, e2, r2)) : i2();
+(re.prototype = new T$3()).__a = function(e2) {
+  var t2 = this, n2 = St(t2.__v), o2 = t2.o.get(e2);
+  return o2[0]++, function(i2) {
+    var r2 = function() {
+      t2.props.revealOrder ? (o2.push(i2), Qe(t2, e2, o2)) : i2();
     };
-    n2 ? n2(o2) : o2();
+    n2 ? n2(r2) : r2();
   };
-}, se.prototype.render = function(e2) {
-  this.i = null, this.l = /* @__PURE__ */ new Map();
-  var t2 = fe(e2.children);
+}, re.prototype.render = function(e2) {
+  this.u = null, this.o = /* @__PURE__ */ new Map();
+  var t2 = _e(e2.children);
   e2.revealOrder && e2.revealOrder[0] === "b" && t2.reverse();
-  for (var n2 = t2.length; n2--; ) this.l.set(t2[n2], this.i = [1, 0, this.i]);
+  for (var n2 = t2.length; n2--; ) this.o.set(t2[n2], this.u = [1, 0, this.u]);
   return e2.children;
-}, se.prototype.componentDidUpdate = se.prototype.componentDidMount = function() {
+}, re.prototype.componentDidUpdate = re.prototype.componentDidMount = function() {
   var e2 = this;
-  this.l.forEach(function(t2, n2) {
-    rt(e2, n2, t2);
+  this.o.forEach(function(t2, n2) {
+    Qe(e2, n2, t2);
   });
 };
-var hn = typeof Symbol < "u" && Symbol.for && Symbol.for("react.element") || 60103, pn = /^(?:accent|alignment|arabic|baseline|cap|clip(?!PathU)|color|dominant|fill|flood|font|glyph(?!R)|horiz|image(!S)|letter|lighting|marker(?!H|W|U)|overline|paint|pointer|shape|stop|strikethrough|stroke|text(?!L)|transform|underline|unicode|units|v|vector|vert|word|writing|x(?!C))[A-Z]/, vn = /^on(Ani|Tra|Tou|BeforeInp|Compo)/, mn = /[A-Z0-9]/g, yn = typeof document < "u", Dn = function(e2) {
+var ln$1 = typeof Symbol < "u" && Symbol.for && Symbol.for("react.element") || 60103, un$1 = /^(?:accent|alignment|arabic|baseline|cap|clip(?!PathU)|color|dominant|fill|flood|font|glyph(?!R)|horiz|image(!S)|letter|lighting|marker(?!H|W|U)|overline|paint|pointer|shape|stop|strikethrough|stroke|text(?!L)|transform|underline|unicode|units|v|vector|vert|word|writing|x(?!C))[A-Z]/, dn = /^on(Ani|Tra|Tou|BeforeInp|Compo)/, cn = /[A-Z0-9]/g, _n = typeof document < "u", vn = function(e2) {
   return (typeof Symbol < "u" && typeof Symbol() == "symbol" ? /fil|che|rad/ : /fil|che|ra/).test(e2);
 };
-C$2.prototype.isReactComponent = {}, ["componentWillMount", "componentWillReceiveProps", "componentWillUpdate"].forEach(function(e2) {
-  Object.defineProperty(C$2.prototype, e2, { configurable: true, get: function() {
+T$3.prototype.isReactComponent = {}, ["componentWillMount", "componentWillReceiveProps", "componentWillUpdate"].forEach(function(e2) {
+  Object.defineProperty(T$3.prototype, e2, { configurable: true, get: function() {
     return this["UNSAFE_" + e2];
   }, set: function(t2) {
     Object.defineProperty(this, e2, { configurable: true, writable: true, value: t2 });
   } });
 });
-var it = h$4.event;
-function kn() {
+var et = v$3.event;
+function hn() {
 }
-function gn() {
+function pn() {
   return this.cancelBubble;
 }
-function bn() {
+function fn$1() {
   return this.defaultPrevented;
 }
-h$4.event = function(e2) {
-  return it && (e2 = it(e2)), e2.persist = kn, e2.isPropagationStopped = gn, e2.isDefaultPrevented = bn, e2.nativeEvent = e2;
+v$3.event = function(e2) {
+  return et && (e2 = et(e2)), e2.persist = hn, e2.isPropagationStopped = pn, e2.isDefaultPrevented = fn$1, e2.nativeEvent = e2;
 };
-var Pn = { enumerable: false, configurable: true, get: function() {
+var mn = { enumerable: false, configurable: true, get: function() {
   return this.class;
-} }, ot = h$4.vnode;
-h$4.vnode = function(e2) {
+} }, tt = v$3.vnode;
+v$3.vnode = function(e2) {
   typeof e2.type == "string" && function(t2) {
-    var n2 = t2.props, r2 = t2.type, i2 = {}, o2 = r2.indexOf("-") === -1;
-    for (var a2 in n2) {
-      var s2 = n2[a2];
-      if (!(a2 === "value" && "defaultValue" in n2 && s2 == null || yn && a2 === "children" && r2 === "noscript" || a2 === "class" || a2 === "className")) {
-        var l2 = a2.toLowerCase();
-        a2 === "defaultValue" && "value" in n2 && n2.value == null ? a2 = "value" : a2 === "download" && s2 === true ? s2 = "" : l2 === "translate" && s2 === "no" ? s2 = false : l2[0] === "o" && l2[1] === "n" ? l2 === "ondoubleclick" ? a2 = "ondblclick" : l2 !== "onchange" || r2 !== "input" && r2 !== "textarea" || Dn(n2.type) ? l2 === "onfocus" ? a2 = "onfocusin" : l2 === "onblur" ? a2 = "onfocusout" : vn.test(a2) && (a2 = l2) : l2 = a2 = "oninput" : o2 && pn.test(a2) ? a2 = a2.replace(mn, "-$&").toLowerCase() : s2 === null && (s2 = void 0), l2 === "oninput" && i2[a2 = l2] && (a2 = "oninputCapture"), i2[a2] = s2;
+    var n2 = t2.props, o2 = t2.type, i2 = {};
+    for (var r2 in n2) {
+      var a2 = n2[r2];
+      if (!(r2 === "value" && "defaultValue" in n2 && a2 == null || _n && r2 === "children" && o2 === "noscript" || r2 === "class" || r2 === "className")) {
+        var s2 = r2.toLowerCase();
+        r2 === "defaultValue" && "value" in n2 && n2.value == null ? r2 = "value" : r2 === "download" && a2 === true ? a2 = "" : s2 === "ondoubleclick" ? r2 = "ondblclick" : s2 !== "onchange" || o2 !== "input" && o2 !== "textarea" || vn(n2.type) ? s2 === "onfocus" ? r2 = "onfocusin" : s2 === "onblur" ? r2 = "onfocusout" : dn.test(r2) ? r2 = s2 : o2.indexOf("-") === -1 && un$1.test(r2) ? r2 = r2.replace(cn, "-$&").toLowerCase() : a2 === null && (a2 = void 0) : s2 = r2 = "oninput", s2 === "oninput" && i2[r2 = s2] && (r2 = "oninputCapture"), i2[r2] = a2;
       }
     }
-    r2 == "select" && i2.multiple && Array.isArray(i2.value) && (i2.value = fe(n2.children).forEach(function(d2) {
-      d2.props.selected = i2.value.indexOf(d2.props.value) != -1;
-    })), r2 == "select" && i2.defaultValue != null && (i2.value = fe(n2.children).forEach(function(d2) {
-      d2.props.selected = i2.multiple ? i2.defaultValue.indexOf(d2.props.value) != -1 : i2.defaultValue == d2.props.value;
-    })), n2.class && !n2.className ? (i2.class = n2.class, Object.defineProperty(i2, "className", Pn)) : (n2.className && !n2.class || n2.class && n2.className) && (i2.class = i2.className = n2.className), t2.props = i2;
-  }(e2), e2.$$typeof = hn, ot && ot(e2);
+    o2 == "select" && i2.multiple && Array.isArray(i2.value) && (i2.value = _e(n2.children).forEach(function(u2) {
+      u2.props.selected = i2.value.indexOf(u2.props.value) != -1;
+    })), o2 == "select" && i2.defaultValue != null && (i2.value = _e(n2.children).forEach(function(u2) {
+      u2.props.selected = i2.multiple ? i2.defaultValue.indexOf(u2.props.value) != -1 : i2.defaultValue == u2.props.value;
+    })), n2.class && !n2.className ? (i2.class = n2.class, Object.defineProperty(i2, "className", mn)) : (n2.className && !n2.class || n2.class && n2.className) && (i2.class = i2.className = n2.className), t2.props = i2;
+  }(e2), e2.$$typeof = ln$1, tt && tt(e2);
 };
-var at = h$4.__r;
-h$4.__r = function(e2) {
-  at && at(e2), e2.__c;
+var nt = v$3.__r;
+v$3.__r = function(e2) {
+  nt && nt(e2), e2.__c;
 };
-var st = h$4.diffed;
-h$4.diffed = function(e2) {
-  st && st(e2);
+var ot = v$3.diffed;
+v$3.diffed = function(e2) {
+  ot && ot(e2);
   var t2 = e2.props, n2 = e2.__e;
   n2 != null && e2.type === "textarea" && "value" in t2 && t2.value !== n2.value && (n2.value = t2.value == null ? "" : t2.value);
 };
-var Sn = Symbol.for("preact-signals");
-function Ie() {
-  if (U$1 > 1)
-    U$1--;
+function ye() {
+  throw new Error("Cycle detected");
+}
+var yn = Symbol.for("preact-signals");
+function $e() {
+  if (R > 1)
+    R--;
   else {
-    for (var e2, t2 = false; Q$1 !== void 0; ) {
-      var n2 = Q$1;
-      for (Q$1 = void 0, Le++; n2 !== void 0; ) {
-        var r2 = n2.o;
-        if (n2.o = void 0, n2.f &= -3, !(8 & n2.f) && Lt(n2)) try {
+    for (var e2, t2 = false; Z$1 !== void 0; ) {
+      var n2 = Z$1;
+      for (Z$1 = void 0, xe++; n2 !== void 0; ) {
+        var o2 = n2.o;
+        if (n2.o = void 0, n2.f &= -3, !(8 & n2.f) && Mt(n2)) try {
           n2.c();
         } catch (i2) {
           t2 || (e2 = i2, t2 = true);
         }
-        n2 = r2;
+        n2 = o2;
       }
     }
-    if (Le = 0, U$1--, t2) throw e2;
+    if (xe = 0, R--, t2) throw e2;
   }
 }
-var D$2 = void 0, Q$1 = void 0, U$1 = 0, Le = 0, he = 0;
-function Et(e2) {
-  if (D$2 !== void 0) {
+var k$2 = void 0, Z$1 = void 0, R = 0, xe = 0, ve = 0;
+function wt(e2) {
+  if (k$2 !== void 0) {
     var t2 = e2.n;
-    if (t2 === void 0 || t2.t !== D$2)
-      return t2 = { i: 0, S: e2, p: D$2.s, n: void 0, t: D$2, e: void 0, x: void 0, r: t2 }, D$2.s !== void 0 && (D$2.s.n = t2), D$2.s = t2, e2.n = t2, 32 & D$2.f && e2.S(t2), t2;
+    if (t2 === void 0 || t2.t !== k$2)
+      return t2 = { i: 0, S: e2, p: k$2.s, n: void 0, t: k$2, e: void 0, x: void 0, r: t2 }, k$2.s !== void 0 && (k$2.s.n = t2), k$2.s = t2, e2.n = t2, 32 & k$2.f && e2.S(t2), t2;
     if (t2.i === -1)
-      return t2.i = 0, t2.n !== void 0 && (t2.n.p = t2.p, t2.p !== void 0 && (t2.p.n = t2.n), t2.p = D$2.s, t2.n = void 0, D$2.s.n = t2, D$2.s = t2), t2;
+      return t2.i = 0, t2.n !== void 0 && (t2.n.p = t2.p, t2.p !== void 0 && (t2.p.n = t2.n), t2.p = k$2.s, t2.n = void 0, k$2.s.n = t2, k$2.s = t2), t2;
   }
 }
-function S$1(e2) {
+function P$2(e2) {
   this.v = e2, this.i = 0, this.n = void 0, this.t = void 0;
 }
-S$1.prototype.brand = Sn;
-S$1.prototype.h = function() {
+P$2.prototype.brand = yn;
+P$2.prototype.h = function() {
   return true;
 };
-S$1.prototype.S = function(e2) {
+P$2.prototype.S = function(e2) {
   this.t !== e2 && e2.e === void 0 && (e2.x = this.t, this.t !== void 0 && (this.t.e = e2), this.t = e2);
 };
-S$1.prototype.U = function(e2) {
+P$2.prototype.U = function(e2) {
   if (this.t !== void 0) {
     var t2 = e2.e, n2 = e2.x;
     t2 !== void 0 && (t2.x = n2, e2.e = void 0), n2 !== void 0 && (n2.e = t2, e2.x = void 0), e2 === this.t && (this.t = n2);
   }
 };
-S$1.prototype.subscribe = function(e2) {
+P$2.prototype.subscribe = function(e2) {
   var t2 = this;
-  return te(function() {
-    var n2 = t2.value, r2 = D$2;
-    D$2 = void 0;
+  return X$1(function() {
+    var n2 = t2.value, o2 = 32 & this.f;
+    this.f &= -33;
     try {
       e2(n2);
     } finally {
-      D$2 = r2;
+      this.f |= o2;
     }
   });
 };
-S$1.prototype.valueOf = function() {
+P$2.prototype.valueOf = function() {
   return this.value;
 };
-S$1.prototype.toString = function() {
+P$2.prototype.toString = function() {
   return this.value + "";
 };
-S$1.prototype.toJSON = function() {
+P$2.prototype.toJSON = function() {
   return this.value;
 };
-S$1.prototype.peek = function() {
-  var e2 = D$2;
-  D$2 = void 0;
-  try {
-    return this.value;
-  } finally {
-    D$2 = e2;
-  }
+P$2.prototype.peek = function() {
+  return this.v;
 };
-Object.defineProperty(S$1.prototype, "value", { get: function() {
-  var e2 = Et(this);
+Object.defineProperty(P$2.prototype, "value", { get: function() {
+  var e2 = wt(this);
   return e2 !== void 0 && (e2.i = this.i), this.v;
 }, set: function(e2) {
-  if (e2 !== this.v) {
-    if (Le > 100) throw new Error("Cycle detected");
-    this.v = e2, this.i++, he++, U$1++;
+  if (k$2 instanceof W$1 && function() {
+    throw new Error("Computed cannot have side-effects");
+  }(), e2 !== this.v) {
+    xe > 100 && ye(), this.v = e2, this.i++, ve++, R++;
     try {
       for (var t2 = this.t; t2 !== void 0; t2 = t2.x) t2.t.N();
     } finally {
-      Ie();
+      $e();
     }
   }
 } });
-function w$3(e2) {
-  return new S$1(e2);
+function S$1(e2) {
+  return new P$2(e2);
 }
-function Lt(e2) {
+function Mt(e2) {
   for (var t2 = e2.s; t2 !== void 0; t2 = t2.n) if (t2.S.i !== t2.i || !t2.S.h() || t2.S.i !== t2.i) return true;
   return false;
 }
-function Tt(e2) {
+function Yt(e2) {
   for (var t2 = e2.s; t2 !== void 0; t2 = t2.n) {
     var n2 = t2.S.n;
     if (n2 !== void 0 && (t2.r = n2), t2.S.n = t2, t2.i = -1, t2.n === void 0) {
@@ -812,86 +786,90 @@ function Tt(e2) {
     }
   }
 }
-function Ct(e2) {
+function Nt(e2) {
   for (var t2 = e2.s, n2 = void 0; t2 !== void 0; ) {
-    var r2 = t2.p;
-    t2.i === -1 ? (t2.S.U(t2), r2 !== void 0 && (r2.n = t2.n), t2.n !== void 0 && (t2.n.p = r2)) : n2 = t2, t2.S.n = t2.r, t2.r !== void 0 && (t2.r = void 0), t2 = r2;
+    var o2 = t2.p;
+    t2.i === -1 ? (t2.S.U(t2), o2 !== void 0 && (o2.n = t2.n), t2.n !== void 0 && (t2.n.p = o2)) : n2 = t2, t2.S.n = t2.r, t2.r !== void 0 && (t2.r = void 0), t2 = o2;
   }
   e2.s = n2;
 }
-function K$1(e2) {
-  S$1.call(this, void 0), this.x = e2, this.s = void 0, this.g = he - 1, this.f = 4;
+function W$1(e2) {
+  P$2.call(this, void 0), this.x = e2, this.s = void 0, this.g = ve - 1, this.f = 4;
 }
-(K$1.prototype = new S$1()).h = function() {
+(W$1.prototype = new P$2()).h = function() {
   if (this.f &= -3, 1 & this.f) return false;
-  if ((36 & this.f) == 32 || (this.f &= -5, this.g === he)) return true;
-  if (this.g = he, this.f |= 1, this.i > 0 && !Lt(this))
+  if ((36 & this.f) == 32 || (this.f &= -5, this.g === ve)) return true;
+  if (this.g = ve, this.f |= 1, this.i > 0 && !Mt(this))
     return this.f &= -2, true;
-  var e2 = D$2;
+  var e2 = k$2;
   try {
-    Tt(this), D$2 = this;
+    Yt(this), k$2 = this;
     var t2 = this.x();
     (16 & this.f || this.v !== t2 || this.i === 0) && (this.v = t2, this.f &= -17, this.i++);
   } catch (n2) {
     this.v = n2, this.f |= 16, this.i++;
   }
-  return D$2 = e2, Ct(this), this.f &= -2, true;
+  return k$2 = e2, Nt(this), this.f &= -2, true;
 };
-K$1.prototype.S = function(e2) {
+W$1.prototype.S = function(e2) {
   if (this.t === void 0) {
     this.f |= 36;
     for (var t2 = this.s; t2 !== void 0; t2 = t2.n) t2.S.S(t2);
   }
-  S$1.prototype.S.call(this, e2);
+  P$2.prototype.S.call(this, e2);
 };
-K$1.prototype.U = function(e2) {
-  if (this.t !== void 0 && (S$1.prototype.U.call(this, e2), this.t === void 0)) {
+W$1.prototype.U = function(e2) {
+  if (this.t !== void 0 && (P$2.prototype.U.call(this, e2), this.t === void 0)) {
     this.f &= -33;
     for (var t2 = this.s; t2 !== void 0; t2 = t2.n) t2.S.U(t2);
   }
 };
-K$1.prototype.N = function() {
+W$1.prototype.N = function() {
   if (!(2 & this.f)) {
     this.f |= 6;
     for (var e2 = this.t; e2 !== void 0; e2 = e2.x) e2.t.N();
   }
 };
-Object.defineProperty(K$1.prototype, "value", { get: function() {
-  if (1 & this.f) throw new Error("Cycle detected");
-  var e2 = Et(this);
+W$1.prototype.peek = function() {
+  if (this.h() || ye(), 16 & this.f) throw this.v;
+  return this.v;
+};
+Object.defineProperty(W$1.prototype, "value", { get: function() {
+  1 & this.f && ye();
+  var e2 = wt(this);
   if (this.h(), e2 !== void 0 && (e2.i = this.i), 16 & this.f) throw this.v;
   return this.v;
 } });
-function wn(e2) {
-  return new K$1(e2);
+function Dn(e2) {
+  return new W$1(e2);
 }
-function Ot(e2) {
+function xt(e2) {
   var t2 = e2.u;
   if (e2.u = void 0, typeof t2 == "function") {
-    U$1++;
-    var n2 = D$2;
-    D$2 = void 0;
+    R++;
+    var n2 = k$2;
+    k$2 = void 0;
     try {
       t2();
-    } catch (r2) {
-      throw e2.f &= -2, e2.f |= 8, We(e2), r2;
+    } catch (o2) {
+      throw e2.f &= -2, e2.f |= 8, Ae(e2), o2;
     } finally {
-      D$2 = n2, Ie();
+      k$2 = n2, $e();
     }
   }
 }
-function We(e2) {
+function Ae(e2) {
   for (var t2 = e2.s; t2 !== void 0; t2 = t2.n) t2.S.U(t2);
-  e2.x = void 0, e2.s = void 0, Ot(e2);
+  e2.x = void 0, e2.s = void 0, xt(e2);
 }
-function Mn(e2) {
-  if (D$2 !== this) throw new Error("Out-of-order effect");
-  Ct(this), D$2 = e2, this.f &= -2, 8 & this.f && We(this), Ie();
+function kn(e2) {
+  if (k$2 !== this) throw new Error("Out-of-order effect");
+  Nt(this), k$2 = e2, this.f &= -2, 8 & this.f && Ae(this), $e();
 }
-function ne(e2) {
+function Q$1(e2) {
   this.x = e2, this.u = void 0, this.s = void 0, this.o = void 0, this.f = 32;
 }
-ne.prototype.c = function() {
+Q$1.prototype.c = function() {
   var e2 = this.S();
   try {
     if (8 & this.f || this.x === void 0) return;
@@ -901,20 +879,19 @@ ne.prototype.c = function() {
     e2();
   }
 };
-ne.prototype.S = function() {
-  if (1 & this.f) throw new Error("Cycle detected");
-  this.f |= 1, this.f &= -9, Ot(this), Tt(this), U$1++;
-  var e2 = D$2;
-  return D$2 = this, Mn.bind(this, e2);
+Q$1.prototype.S = function() {
+  1 & this.f && ye(), this.f |= 1, this.f &= -9, xt(this), Yt(this), R++;
+  var e2 = k$2;
+  return k$2 = this, kn.bind(this, e2);
 };
-ne.prototype.N = function() {
-  2 & this.f || (this.f |= 2, this.o = Q$1, Q$1 = this);
+Q$1.prototype.N = function() {
+  2 & this.f || (this.f |= 2, this.o = Z$1, Z$1 = this);
 };
-ne.prototype.d = function() {
-  this.f |= 8, 1 & this.f || We(this);
+Q$1.prototype.d = function() {
+  this.f |= 8, 1 & this.f || Ae(this);
 };
-function te(e2) {
-  var t2 = new ne(e2);
+function X$1(e2) {
+  var t2 = new Q$1(e2);
   try {
     t2.c();
   } catch (n2) {
@@ -922,100 +899,100 @@ function te(e2) {
   }
   return t2.d.bind(t2);
 }
-var Pe;
-function B$3(e2, t2) {
-  h$4[e2] = t2.bind(null, h$4[e2] || function() {
+var be;
+function K$1(e2, t2) {
+  v$3[e2] = t2.bind(null, v$3[e2] || function() {
   });
 }
-function pe(e2) {
-  Pe && Pe(), Pe = e2 && e2.S();
+function he(e2) {
+  be && be(), be = e2 && e2.S();
 }
-function $t(e2) {
-  var t2 = this, n2 = e2.data, r2 = Nn(n2);
-  r2.value = n2;
-  var i2 = St(function() {
-    for (var o2 = t2.__v; o2 = o2.__; ) if (o2.__c) {
-      o2.__c.__$f |= 4;
+function Et(e2) {
+  var t2 = this, n2 = e2.data, o2 = bn(n2);
+  o2.value = n2;
+  var i2 = Dt(function() {
+    for (var r2 = t2.__v; r2 = r2.__; ) if (r2.__c) {
+      r2.__c.__$f |= 4;
       break;
     }
     return t2.__$u.c = function() {
-      var a2, s2 = t2.__$u.S(), l2 = i2.value;
-      s2(), ft(l2) || ((a2 = t2.base) == null ? void 0 : a2.nodeType) !== 3 ? (t2.__$f |= 1, t2.setState({})) : t2.base.data = l2;
-    }, wn(function() {
-      var a2 = r2.value.value;
+      var a2;
+      !ut(i2.peek()) && ((a2 = t2.base) == null ? void 0 : a2.nodeType) === 3 ? t2.base.data = i2.peek() : (t2.__$f |= 1, t2.setState({}));
+    }, Dn(function() {
+      var a2 = o2.value.value;
       return a2 === 0 ? 0 : a2 === true ? "" : a2 || "";
     });
   }, []);
   return i2.value;
 }
-$t.displayName = "_st";
-Object.defineProperties(S$1.prototype, { constructor: { configurable: true, value: void 0 }, type: { configurable: true, value: $t }, props: { configurable: true, get: function() {
+Et.displayName = "_st";
+Object.defineProperties(P$2.prototype, { constructor: { configurable: true, value: void 0 }, type: { configurable: true, value: Et }, props: { configurable: true, get: function() {
   return { data: this };
 } }, __b: { configurable: true, value: 1 } });
-B$3("__b", function(e2, t2) {
+K$1("__b", function(e2, t2) {
   if (typeof t2.type == "string") {
-    var n2, r2 = t2.props;
-    for (var i2 in r2) if (i2 !== "children") {
-      var o2 = r2[i2];
-      o2 instanceof S$1 && (n2 || (t2.__np = n2 = {}), n2[i2] = o2, r2[i2] = o2.peek());
+    var n2, o2 = t2.props;
+    for (var i2 in o2) if (i2 !== "children") {
+      var r2 = o2[i2];
+      r2 instanceof P$2 && (n2 || (t2.__np = n2 = {}), n2[i2] = r2, o2[i2] = r2.peek());
     }
   }
   e2(t2);
 });
-B$3("__r", function(e2, t2) {
-  pe();
-  var n2, r2 = t2.__c;
-  r2 && (r2.__$f &= -2, (n2 = r2.__$u) === void 0 && (r2.__$u = n2 = function(i2) {
-    var o2;
-    return te(function() {
-      o2 = this;
-    }), o2.c = function() {
-      r2.__$f |= 1, r2.setState({});
-    }, o2;
-  }())), pe(n2), e2(t2);
+K$1("__r", function(e2, t2) {
+  he();
+  var n2, o2 = t2.__c;
+  o2 && (o2.__$f &= -2, (n2 = o2.__$u) === void 0 && (o2.__$u = n2 = function(i2) {
+    var r2;
+    return X$1(function() {
+      r2 = this;
+    }), r2.c = function() {
+      o2.__$f |= 1, o2.setState({});
+    }, r2;
+  }())), he(n2), e2(t2);
 });
-B$3("__e", function(e2, t2, n2, r2) {
-  pe(), e2(t2, n2, r2);
+K$1("__e", function(e2, t2, n2, o2) {
+  he(), e2(t2, n2, o2);
 });
-B$3("diffed", function(e2, t2) {
-  pe();
+K$1("diffed", function(e2, t2) {
+  he();
   var n2;
   if (typeof t2.type == "string" && (n2 = t2.__e)) {
-    var r2 = t2.__np, i2 = t2.props;
-    if (r2) {
-      var o2 = n2.U;
-      if (o2) for (var a2 in o2) {
-        var s2 = o2[a2];
-        s2 !== void 0 && !(a2 in r2) && (s2.d(), o2[a2] = void 0);
+    var o2 = t2.__np, i2 = t2.props;
+    if (o2) {
+      var r2 = n2.U;
+      if (r2) for (var a2 in r2) {
+        var s2 = r2[a2];
+        s2 !== void 0 && !(a2 in o2) && (s2.d(), r2[a2] = void 0);
       }
-      else n2.U = o2 = {};
-      for (var l2 in r2) {
-        var d2 = o2[l2], _2 = r2[l2];
-        d2 === void 0 ? (d2 = Yn(n2, l2, _2, i2), o2[l2] = d2) : d2.o(_2, i2);
+      else n2.U = r2 = {};
+      for (var u2 in o2) {
+        var d2 = r2[u2], c2 = o2[u2];
+        d2 === void 0 ? (d2 = gn(n2, u2, c2, i2), r2[u2] = d2) : d2.o(c2, i2);
       }
     }
   }
   e2(t2);
 });
-function Yn(e2, t2, n2, r2) {
-  var i2 = t2 in e2 && e2.ownerSVGElement === void 0, o2 = w$3(n2);
+function gn(e2, t2, n2, o2) {
+  var i2 = t2 in e2 && e2.ownerSVGElement === void 0, r2 = S$1(n2);
   return { o: function(a2, s2) {
-    o2.value = a2, r2 = s2;
-  }, d: te(function() {
-    var a2 = o2.value.value;
-    r2[t2] !== a2 && (r2[t2] = a2, i2 ? e2[t2] = a2 : a2 ? e2.setAttribute(t2, a2) : e2.removeAttribute(t2));
+    r2.value = a2, o2 = s2;
+  }, d: X$1(function() {
+    var a2 = r2.value.value;
+    o2[t2] !== a2 && (o2[t2] = a2, i2 ? e2[t2] = a2 : a2 ? e2.setAttribute(t2, a2) : e2.removeAttribute(t2));
   }) };
 }
-B$3("unmount", function(e2, t2) {
+K$1("unmount", function(e2, t2) {
   if (typeof t2.type == "string") {
     var n2 = t2.__e;
     if (n2) {
-      var r2 = n2.U;
-      if (r2) {
+      var o2 = n2.U;
+      if (o2) {
         n2.U = void 0;
-        for (var i2 in r2) {
-          var o2 = r2[i2];
-          o2 && o2.d();
+        for (var i2 in o2) {
+          var r2 = o2[i2];
+          r2 && r2.d();
         }
       }
     }
@@ -1028,38 +1005,36 @@ B$3("unmount", function(e2, t2) {
   }
   e2(t2);
 });
-B$3("__h", function(e2, t2, n2, r2) {
-  (r2 < 3 || r2 === 9) && (t2.__$f |= 2), e2(t2, n2, r2);
+K$1("__h", function(e2, t2, n2, o2) {
+  (o2 < 3 || o2 === 9) && (t2.__$f |= 2), e2(t2, n2, o2);
 });
-C$2.prototype.shouldComponentUpdate = function(e2, t2) {
-  var n2 = this.__$u, r2 = n2 && n2.s !== void 0;
-  for (var i2 in t2) return true;
-  if (this.__f || typeof this.u == "boolean" && this.u === true) {
-    if (!(r2 || 2 & this.__$f || 4 & this.__$f) || 1 & this.__$f) return true;
-  } else if (!(r2 || 4 & this.__$f) || 3 & this.__$f) return true;
-  for (var o2 in e2) if (o2 !== "__source" && e2[o2] !== this.props[o2]) return true;
-  for (var a2 in this.props) if (!(a2 in e2)) return true;
+T$3.prototype.shouldComponentUpdate = function(e2, t2) {
+  var n2 = this.__$u;
+  if (!(n2 && n2.s !== void 0 || 4 & this.__$f) || 3 & this.__$f) return true;
+  for (var o2 in t2) return true;
+  for (var i2 in e2) if (i2 !== "__source" && e2[i2] !== this.props[i2]) return true;
+  for (var r2 in this.props) if (!(r2 in e2)) return true;
   return false;
 };
-function Nn(e2) {
-  return St(function() {
-    return w$3(e2);
+function bn(e2) {
+  return Dt(function() {
+    return S$1(e2);
   }, []);
 }
-rn$1({});
-var V$2;
+qt({});
+var U$1;
 (function(e2) {
   e2.MONTH_DAYS = "month-days", e2.YEARS = "years";
-})(V$2 || (V$2 = {}));
-var Te;
+})(U$1 || (U$1 = {}));
+var Ee;
 (function(e2) {
   e2[e2.SUNDAY = 0] = "SUNDAY", e2[e2.MONDAY = 1] = "MONDAY", e2[e2.TUESDAY = 2] = "TUESDAY", e2[e2.WEDNESDAY = 3] = "WEDNESDAY", e2[e2.THURSDAY = 4] = "THURSDAY", e2[e2.FRIDAY = 5] = "FRIDAY", e2[e2.SATURDAY = 6] = "SATURDAY";
-})(Te || (Te = {}));
-Te.MONDAY;
-var Ce;
+})(Ee || (Ee = {}));
+Ee.MONDAY;
+var Le;
 (function(e2) {
   e2[e2.JANUARY = 0] = "JANUARY", e2[e2.FEBRUARY = 1] = "FEBRUARY", e2[e2.MARCH = 2] = "MARCH", e2[e2.APRIL = 3] = "APRIL", e2[e2.MAY = 4] = "MAY", e2[e2.JUNE = 5] = "JUNE", e2[e2.JULY = 6] = "JULY", e2[e2.AUGUST = 7] = "AUGUST", e2[e2.SEPTEMBER = 8] = "SEPTEMBER", e2[e2.OCTOBER = 9] = "OCTOBER", e2[e2.NOVEMBER = 10] = "NOVEMBER", e2[e2.DECEMBER = 11] = "DECEMBER";
-})(Ce || (Ce = {}));
+})(Le || (Le = {}));
 var N$2;
 (function(e2) {
   e2.SLASH = "/", e2.DASH = "-", e2.PERIOD = ".";
@@ -1090,19 +1065,19 @@ var x$2;
     order: x$2.YMD
   }
 });
-var Oe;
+var Te;
 (function(e2) {
   e2.TOP_START = "top-start", e2.TOP_END = "top-end", e2.BOTTOM_START = "bottom-start", e2.BOTTOM_END = "bottom-end";
-})(Oe || (Oe = {}));
-var n, l$3, u$3, t$2, i$2, r$2, o$2, e$2, f$3, c$2, s$3, a$2, h$3, p$3 = {}, v$2 = [], y$2 = /acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|itera/i, d$3 = Array.isArray;
+})(Te || (Te = {}));
+var n, l$3, u$3, t$2, i$2, r$2, o$2, e$2, f$3, c$2, s$3, a$2, h$2, p$3 = {}, v$2 = [], y$2 = /acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|itera/i, d$3 = Array.isArray;
 function w$2(n2, l2) {
   for (var u2 in l2) n2[u2] = l2[u2];
   return n2;
 }
-function g$2(n2) {
+function _$2(n2) {
   n2 && n2.parentNode && n2.parentNode.removeChild(n2);
 }
-function _$1(l2, u2, t2) {
+function g$2(l2, u2, t2) {
   var i2, r2, o2, e2 = {};
   for (o2 in u2) "key" == o2 ? i2 = u2[o2] : "ref" == o2 ? r2 = u2[o2] : e2[o2] = u2[o2];
   if (arguments.length > 2 && (e2.children = arguments.length > 3 ? n.call(arguments, 2) : t2), "function" == typeof l2 && null != l2.defaultProps) for (o2 in l2.defaultProps) void 0 === e2[o2] && (e2[o2] = l2.defaultProps[o2]);
@@ -1118,37 +1093,38 @@ function k$1(n2) {
 function x$1(n2, l2) {
   this.props = n2, this.context = l2;
 }
-function S(n2, l2) {
-  if (null == l2) return n2.__ ? S(n2.__, n2.__i + 1) : null;
+function C$1(n2, l2) {
+  if (null == l2) return n2.__ ? C$1(n2.__, n2.__i + 1) : null;
   for (var u2; l2 < n2.__k.length; l2++) if (null != (u2 = n2.__k[l2]) && null != u2.__e) return u2.__e;
-  return "function" == typeof n2.type ? S(n2) : null;
+  return "function" == typeof n2.type ? C$1(n2) : null;
 }
-function C$1(n2) {
+function S(n2) {
   var l2, u2;
   if (null != (n2 = n2.__) && null != n2.__c) {
     for (n2.__e = n2.__c.base = null, l2 = 0; l2 < n2.__k.length; l2++) if (null != (u2 = n2.__k[l2]) && null != u2.__e) {
       n2.__e = n2.__c.base = u2.__e;
       break;
     }
-    return C$1(n2);
+    return S(n2);
   }
 }
 function M(n2) {
-  (!n2.__d && (n2.__d = true) && i$2.push(n2) && !$$1.__r++ || r$2 !== l$3.debounceRendering) && ((r$2 = l$3.debounceRendering) || o$2)($$1);
+  (!n2.__d && (n2.__d = true) && i$2.push(n2) && !P$1.__r++ || r$2 !== l$3.debounceRendering) && ((r$2 = l$3.debounceRendering) || o$2)(P$1);
 }
-function $$1() {
-  for (var n2, u2, t2, r2, o2, f2, c2, s2 = 1; i$2.length; ) i$2.length > s2 && i$2.sort(e$2), n2 = i$2.shift(), s2 = i$2.length, n2.__d && (t2 = void 0, o2 = (r2 = (u2 = n2).__v).__e, f2 = [], c2 = [], u2.__P && ((t2 = w$2({}, r2)).__v = r2.__v + 1, l$3.vnode && l$3.vnode(t2), j$2(u2.__P, t2, r2, u2.__n, u2.__P.namespaceURI, 32 & r2.__u ? [o2] : null, f2, null == o2 ? S(r2) : o2, !!(32 & r2.__u), c2), t2.__v = r2.__v, t2.__.__k[t2.__i] = t2, z$1(f2, t2, c2), t2.__e != o2 && C$1(t2)));
-  $$1.__r = 0;
+function P$1() {
+  var n2, u2, t2, r2, o2, f2, c2, s2;
+  for (i$2.sort(e$2); n2 = i$2.shift(); ) n2.__d && (u2 = i$2.length, r2 = void 0, f2 = (o2 = (t2 = n2).__v).__e, c2 = [], s2 = [], t2.__P && ((r2 = w$2({}, o2)).__v = o2.__v + 1, l$3.vnode && l$3.vnode(r2), j$2(t2.__P, r2, o2, t2.__n, t2.__P.namespaceURI, 32 & o2.__u ? [f2] : null, c2, null == f2 ? C$1(o2) : f2, !!(32 & o2.__u), s2), r2.__v = o2.__v, r2.__.__k[r2.__i] = r2, z$1(c2, r2, s2), r2.__e != f2 && S(r2)), i$2.length > u2 && i$2.sort(e$2));
+  P$1.__r = 0;
 }
-function I(n2, l2, u2, t2, i2, r2, o2, e2, f2, c2, s2) {
-  var a2, h2, y2, d2, w2, g2, _2 = t2 && t2.__k || v$2, m2 = l2.length;
-  for (f2 = P$1(u2, l2, _2, f2, m2), a2 = 0; a2 < m2; a2++) null != (y2 = u2.__k[a2]) && (h2 = -1 === y2.__i ? p$3 : _2[y2.__i] || p$3, y2.__i = a2, g2 = j$2(n2, y2, h2, i2, r2, o2, e2, f2, c2, s2), d2 = y2.__e, y2.ref && h2.ref != y2.ref && (h2.ref && V$1(h2.ref, null, y2), s2.push(y2.ref, y2.__c || d2, y2)), null == w2 && null != d2 && (w2 = d2), 4 & y2.__u || h2.__k === y2.__k ? f2 = A$1(y2, f2, n2) : "function" == typeof y2.type && void 0 !== g2 ? f2 = g2 : d2 && (f2 = d2.nextSibling), y2.__u &= -7);
+function $$1(n2, l2, u2, t2, i2, r2, o2, e2, f2, c2, s2) {
+  var a2, h2, y2, d2, w2, _2, g2 = t2 && t2.__k || v$2, m2 = l2.length;
+  for (f2 = I(u2, l2, g2, f2, m2), a2 = 0; a2 < m2; a2++) null != (y2 = u2.__k[a2]) && (h2 = -1 === y2.__i ? p$3 : g2[y2.__i] || p$3, y2.__i = a2, _2 = j$2(n2, y2, h2, i2, r2, o2, e2, f2, c2, s2), d2 = y2.__e, y2.ref && h2.ref != y2.ref && (h2.ref && V$1(h2.ref, null, y2), s2.push(y2.ref, y2.__c || d2, y2)), null == w2 && null != d2 && (w2 = d2), 4 & y2.__u || h2.__k === y2.__k ? f2 = A$1(y2, f2, n2) : "function" == typeof y2.type && void 0 !== _2 ? f2 = _2 : d2 && (f2 = d2.nextSibling), y2.__u &= -7);
   return u2.__e = w2, f2;
 }
-function P$1(n2, l2, u2, t2, i2) {
+function I(n2, l2, u2, t2, i2) {
   var r2, o2, e2, f2, c2, s2 = u2.length, a2 = s2, h2 = 0;
   for (n2.__k = new Array(i2), r2 = 0; r2 < i2; r2++) null != (o2 = l2[r2]) && "boolean" != typeof o2 && "function" != typeof o2 ? (f2 = r2 + h2, (o2 = n2.__k[r2] = "string" == typeof o2 || "number" == typeof o2 || "bigint" == typeof o2 || o2.constructor == String ? m$1(null, o2, null, null, null) : d$3(o2) ? m$1(k$1, { children: o2 }, null, null, null) : void 0 === o2.constructor && o2.__b > 0 ? m$1(o2.type, o2.props, o2.key, o2.ref ? o2.ref : null, o2.__v) : o2).__ = n2, o2.__b = n2.__b + 1, e2 = null, -1 !== (c2 = o2.__i = L(o2, u2, f2, a2)) && (a2--, (e2 = u2[c2]) && (e2.__u |= 2)), null == e2 || null === e2.__v ? (-1 == c2 && h2--, "function" != typeof o2.type && (o2.__u |= 4)) : c2 != f2 && (c2 == f2 - 1 ? h2-- : c2 == f2 + 1 ? h2++ : (c2 > f2 ? h2-- : h2++, o2.__u |= 4))) : n2.__k[r2] = null;
-  if (a2) for (r2 = 0; r2 < s2; r2++) null != (e2 = u2[r2]) && 0 == (2 & e2.__u) && (e2.__e == t2 && (t2 = S(e2)), q$1(e2, e2));
+  if (a2) for (r2 = 0; r2 < s2; r2++) null != (e2 = u2[r2]) && 0 == (2 & e2.__u) && (e2.__e == t2 && (t2 = C$1(e2)), q$1(e2, e2));
   return t2;
 }
 function A$1(n2, l2, u2) {
@@ -1157,7 +1133,7 @@ function A$1(n2, l2, u2) {
     for (t2 = n2.__k, i2 = 0; t2 && i2 < t2.length; i2++) t2[i2] && (t2[i2].__ = n2, l2 = A$1(t2[i2], l2, u2));
     return l2;
   }
-  n2.__e != l2 && (l2 && n2.type && !u2.contains(l2) && (l2 = S(n2)), u2.insertBefore(n2.__e, l2 || null), l2 = n2.__e);
+  n2.__e != l2 && (l2 && n2.type && !u2.contains(l2) && (l2 = C$1(n2)), u2.insertBefore(n2.__e, l2 || null), l2 = n2.__e);
   do {
     l2 = l2 && l2.nextSibling;
   } while (null != l2 && 8 == l2.nodeType);
@@ -1215,35 +1191,35 @@ function O(n2) {
   };
 }
 function j$2(n2, u2, t2, i2, r2, o2, e2, f2, c2, s2) {
-  var a2, h2, p2, v2, y2, _2, m2, b2, S2, C2, M2, $2, P2, A2, H2, L2, T2, F2, O2 = u2.type;
+  var a2, h2, p2, v2, y2, g2, m2, b2, C2, S2, M2, P2, I2, A2, H2, L2, T2, F2 = u2.type;
   if (void 0 !== u2.constructor) return null;
   128 & t2.__u && (c2 = !!(32 & t2.__u), o2 = [f2 = u2.__e = t2.__e]), (a2 = l$3.__b) && a2(u2);
-  n: if ("function" == typeof O2) try {
-    if (b2 = u2.props, S2 = "prototype" in O2 && O2.prototype.render, C2 = (a2 = O2.contextType) && i2[a2.__c], M2 = a2 ? C2 ? C2.props.value : a2.__ : i2, t2.__c ? m2 = (h2 = u2.__c = t2.__c).__ = h2.__E : (S2 ? u2.__c = h2 = new O2(b2, M2) : (u2.__c = h2 = new x$1(b2, M2), h2.constructor = O2, h2.render = B$2), C2 && C2.sub(h2), h2.props = b2, h2.state || (h2.state = {}), h2.context = M2, h2.__n = i2, p2 = h2.__d = true, h2.__h = [], h2._sb = []), S2 && null == h2.__s && (h2.__s = h2.state), S2 && null != O2.getDerivedStateFromProps && (h2.__s == h2.state && (h2.__s = w$2({}, h2.__s)), w$2(h2.__s, O2.getDerivedStateFromProps(b2, h2.__s))), v2 = h2.props, y2 = h2.state, h2.__v = u2, p2) S2 && null == O2.getDerivedStateFromProps && null != h2.componentWillMount && h2.componentWillMount(), S2 && null != h2.componentDidMount && h2.__h.push(h2.componentDidMount);
+  n: if ("function" == typeof F2) try {
+    if (b2 = u2.props, C2 = "prototype" in F2 && F2.prototype.render, S2 = (a2 = F2.contextType) && i2[a2.__c], M2 = a2 ? S2 ? S2.props.value : a2.__ : i2, t2.__c ? m2 = (h2 = u2.__c = t2.__c).__ = h2.__E : (C2 ? u2.__c = h2 = new F2(b2, M2) : (u2.__c = h2 = new x$1(b2, M2), h2.constructor = F2, h2.render = B$2), S2 && S2.sub(h2), h2.props = b2, h2.state || (h2.state = {}), h2.context = M2, h2.__n = i2, p2 = h2.__d = true, h2.__h = [], h2._sb = []), C2 && null == h2.__s && (h2.__s = h2.state), C2 && null != F2.getDerivedStateFromProps && (h2.__s == h2.state && (h2.__s = w$2({}, h2.__s)), w$2(h2.__s, F2.getDerivedStateFromProps(b2, h2.__s))), v2 = h2.props, y2 = h2.state, h2.__v = u2, p2) C2 && null == F2.getDerivedStateFromProps && null != h2.componentWillMount && h2.componentWillMount(), C2 && null != h2.componentDidMount && h2.__h.push(h2.componentDidMount);
     else {
-      if (S2 && null == O2.getDerivedStateFromProps && b2 !== v2 && null != h2.componentWillReceiveProps && h2.componentWillReceiveProps(b2, M2), !h2.__e && (null != h2.shouldComponentUpdate && false === h2.shouldComponentUpdate(b2, h2.__s, M2) || u2.__v == t2.__v)) {
+      if (C2 && null == F2.getDerivedStateFromProps && b2 !== v2 && null != h2.componentWillReceiveProps && h2.componentWillReceiveProps(b2, M2), !h2.__e && (null != h2.shouldComponentUpdate && false === h2.shouldComponentUpdate(b2, h2.__s, M2) || u2.__v == t2.__v)) {
         for (u2.__v != t2.__v && (h2.props = b2, h2.state = h2.__s, h2.__d = false), u2.__e = t2.__e, u2.__k = t2.__k, u2.__k.some(function(n3) {
           n3 && (n3.__ = u2);
-        }), $2 = 0; $2 < h2._sb.length; $2++) h2.__h.push(h2._sb[$2]);
+        }), P2 = 0; P2 < h2._sb.length; P2++) h2.__h.push(h2._sb[P2]);
         h2._sb = [], h2.__h.length && e2.push(h2);
         break n;
       }
-      null != h2.componentWillUpdate && h2.componentWillUpdate(b2, h2.__s, M2), S2 && null != h2.componentDidUpdate && h2.__h.push(function() {
-        h2.componentDidUpdate(v2, y2, _2);
+      null != h2.componentWillUpdate && h2.componentWillUpdate(b2, h2.__s, M2), C2 && null != h2.componentDidUpdate && h2.__h.push(function() {
+        h2.componentDidUpdate(v2, y2, g2);
       });
     }
-    if (h2.context = M2, h2.props = b2, h2.__P = n2, h2.__e = false, P2 = l$3.__r, A2 = 0, S2) {
-      for (h2.state = h2.__s, h2.__d = false, P2 && P2(u2), a2 = h2.render(h2.props, h2.state, h2.context), H2 = 0; H2 < h2._sb.length; H2++) h2.__h.push(h2._sb[H2]);
+    if (h2.context = M2, h2.props = b2, h2.__P = n2, h2.__e = false, I2 = l$3.__r, A2 = 0, C2) {
+      for (h2.state = h2.__s, h2.__d = false, I2 && I2(u2), a2 = h2.render(h2.props, h2.state, h2.context), H2 = 0; H2 < h2._sb.length; H2++) h2.__h.push(h2._sb[H2]);
       h2._sb = [];
     } else do {
-      h2.__d = false, P2 && P2(u2), a2 = h2.render(h2.props, h2.state, h2.context), h2.state = h2.__s;
+      h2.__d = false, I2 && I2(u2), a2 = h2.render(h2.props, h2.state, h2.context), h2.state = h2.__s;
     } while (h2.__d && ++A2 < 25);
-    h2.state = h2.__s, null != h2.getChildContext && (i2 = w$2(w$2({}, i2), h2.getChildContext())), S2 && !p2 && null != h2.getSnapshotBeforeUpdate && (_2 = h2.getSnapshotBeforeUpdate(v2, y2)), T2 = (L2 = null != a2 && a2.type === k$1 && null == a2.key) ? a2.props.children : a2, L2 && (a2.props.children = null), f2 = I(n2, d$3(T2) ? T2 : [T2], u2, t2, i2, r2, o2, e2, f2, c2, s2), h2.base = u2.__e, u2.__u &= -161, h2.__h.length && e2.push(h2), m2 && (h2.__E = h2.__ = null);
+    h2.state = h2.__s, null != h2.getChildContext && (i2 = w$2(w$2({}, i2), h2.getChildContext())), C2 && !p2 && null != h2.getSnapshotBeforeUpdate && (g2 = h2.getSnapshotBeforeUpdate(v2, y2)), f2 = $$1(n2, d$3(L2 = null != a2 && a2.type === k$1 && null == a2.key ? a2.props.children : a2) ? L2 : [L2], u2, t2, i2, r2, o2, e2, f2, c2, s2), h2.base = u2.__e, u2.__u &= -161, h2.__h.length && e2.push(h2), m2 && (h2.__E = h2.__ = null);
   } catch (n3) {
     if (u2.__v = null, c2 || null != o2) if (n3.then) {
       for (u2.__u |= c2 ? 160 : 128; f2 && 8 == f2.nodeType && f2.nextSibling; ) f2 = f2.nextSibling;
       o2[o2.indexOf(f2)] = null, u2.__e = f2;
-    } else for (F2 = o2.length; F2--; ) g$2(o2[F2]);
+    } else for (T2 = o2.length; T2--; ) _$2(o2[T2]);
     else u2.__e = t2.__e, u2.__k = t2.__k;
     l$3.__e(n3, u2, t2);
   }
@@ -1263,7 +1239,7 @@ function z$1(n2, u2, t2) {
   });
 }
 function N$1(u2, t2, i2, r2, o2, e2, f2, c2, s2) {
-  var a2, h2, v2, y2, w2, _2, m2, b2 = i2.props, k2 = t2.props, x2 = t2.type;
+  var a2, h2, v2, y2, w2, g2, m2, b2 = i2.props, k2 = t2.props, x2 = t2.type;
   if ("svg" == x2 ? o2 = "http://www.w3.org/2000/svg" : "math" == x2 ? o2 = "http://www.w3.org/1998/Math/MathML" : o2 || (o2 = "http://www.w3.org/1999/xhtml"), null != e2) {
     for (a2 = 0; a2 < e2.length; a2++) if ((w2 = e2[a2]) && "setAttribute" in w2 == !!x2 && (x2 ? w2.localName == x2 : 3 == w2.nodeType)) {
       u2 = w2, e2[a2] = null;
@@ -1283,10 +1259,10 @@ function N$1(u2, t2, i2, r2, o2, e2, f2, c2, s2) {
       if ("value" == a2 && "defaultValue" in k2 || "checked" == a2 && "defaultChecked" in k2) continue;
       F$1(u2, a2, null, w2, o2);
     }
-    for (a2 in k2) w2 = k2[a2], "children" == a2 ? y2 = w2 : "dangerouslySetInnerHTML" == a2 ? h2 = w2 : "value" == a2 ? _2 = w2 : "checked" == a2 ? m2 = w2 : c2 && "function" != typeof w2 || b2[a2] === w2 || F$1(u2, a2, w2, b2[a2], o2);
+    for (a2 in k2) w2 = k2[a2], "children" == a2 ? y2 = w2 : "dangerouslySetInnerHTML" == a2 ? h2 = w2 : "value" == a2 ? g2 = w2 : "checked" == a2 ? m2 = w2 : c2 && "function" != typeof w2 || b2[a2] === w2 || F$1(u2, a2, w2, b2[a2], o2);
     if (h2) c2 || v2 && (h2.__html === v2.__html || h2.__html === u2.innerHTML) || (u2.innerHTML = h2.__html), t2.__k = [];
-    else if (v2 && (u2.innerHTML = ""), I("template" === t2.type ? u2.content : u2, d$3(y2) ? y2 : [y2], t2, i2, r2, "foreignObject" == x2 ? "http://www.w3.org/1999/xhtml" : o2, e2, f2, e2 ? e2[0] : i2.__k && S(i2, 0), c2, s2), null != e2) for (a2 = e2.length; a2--; ) g$2(e2[a2]);
-    c2 || (a2 = "value", "progress" == x2 && null == _2 ? u2.removeAttribute("value") : void 0 !== _2 && (_2 !== u2[a2] || "progress" == x2 && !_2 || "option" == x2 && _2 !== b2[a2]) && F$1(u2, a2, _2, b2[a2], o2), a2 = "checked", void 0 !== m2 && m2 !== u2[a2] && F$1(u2, a2, m2, b2[a2], o2));
+    else if (v2 && (u2.innerHTML = ""), $$1(u2, d$3(y2) ? y2 : [y2], t2, i2, r2, "foreignObject" == x2 ? "http://www.w3.org/1999/xhtml" : o2, e2, f2, e2 ? e2[0] : i2.__k && C$1(i2, 0), c2, s2), null != e2) for (a2 = e2.length; a2--; ) _$2(e2[a2]);
+    c2 || (a2 = "value", "progress" == x2 && null == g2 ? u2.removeAttribute("value") : void 0 !== g2 && (g2 !== u2[a2] || "progress" == x2 && !g2 || "option" == x2 && g2 !== b2[a2]) && F$1(u2, a2, g2, b2[a2], o2), a2 = "checked", void 0 !== m2 && m2 !== u2[a2] && F$1(u2, a2, m2, b2[a2], o2));
   }
   return u2;
 }
@@ -1311,37 +1287,37 @@ function q$1(n2, u2, t2) {
     i2.base = i2.__P = null;
   }
   if (i2 = n2.__k) for (r2 = 0; r2 < i2.length; r2++) i2[r2] && q$1(i2[r2], u2, t2 || "function" != typeof n2.type);
-  t2 || g$2(n2.__e), n2.__c = n2.__ = n2.__e = void 0;
+  t2 || _$2(n2.__e), n2.__c = n2.__ = n2.__e = void 0;
 }
 function B$2(n2, l2, u2) {
   return this.constructor(n2, u2);
 }
 function D$1(u2, t2, i2) {
   var r2, o2, e2, f2;
-  t2 == document && (t2 = document.documentElement), l$3.__ && l$3.__(u2, t2), o2 = (r2 = false) ? null : t2.__k, e2 = [], f2 = [], j$2(t2, u2 = t2.__k = _$1(k$1, null, [u2]), o2 || p$3, p$3, t2.namespaceURI, o2 ? null : t2.firstChild ? n.call(t2.childNodes) : null, e2, o2 ? o2.__e : t2.firstChild, r2, f2), z$1(e2, u2, f2);
+  t2 == document && (t2 = document.documentElement), l$3.__ && l$3.__(u2, t2), o2 = (r2 = false) ? null : t2.__k, e2 = [], f2 = [], j$2(t2, u2 = t2.__k = g$2(k$1, null, [u2]), o2 || p$3, p$3, t2.namespaceURI, o2 ? null : t2.firstChild ? n.call(t2.childNodes) : null, e2, o2 ? o2.__e : t2.firstChild, r2, f2), z$1(e2, u2, f2);
 }
-function J$1(n2) {
-  function l2(n3) {
-    var u2, t2;
-    return this.getChildContext || (u2 = /* @__PURE__ */ new Set(), (t2 = {})[l2.__c] = this, this.getChildContext = function() {
+function J$1(n2, l2) {
+  var u2 = { __c: l2 = "__cC" + h$2++, __: n2, Consumer: function(n3, l3) {
+    return n3.children(l3);
+  }, Provider: function(n3) {
+    var u3, t2;
+    return this.getChildContext || (u3 = /* @__PURE__ */ new Set(), (t2 = {})[l2] = this, this.getChildContext = function() {
       return t2;
     }, this.componentWillUnmount = function() {
-      u2 = null;
+      u3 = null;
     }, this.shouldComponentUpdate = function(n4) {
-      this.props.value !== n4.value && u2.forEach(function(n5) {
+      this.props.value !== n4.value && u3.forEach(function(n5) {
         n5.__e = true, M(n5);
       });
     }, this.sub = function(n4) {
-      u2.add(n4);
+      u3.add(n4);
       var l3 = n4.componentWillUnmount;
       n4.componentWillUnmount = function() {
-        u2 && u2.delete(n4), l3 && l3.call(n4);
+        u3 && u3.delete(n4), l3 && l3.call(n4);
       };
     }), n3.children;
-  }
-  return l2.__c = "__cC" + h$3++, l2.__ = n2, l2.Provider = l2.__l = (l2.Consumer = function(n3, l3) {
-    return n3.children(l3);
-  }).contextType = l2, l2;
+  } };
+  return u2.Provider.__ = u2.Consumer.contextType = u2;
 }
 n = v$2.slice, l$3 = { __e: function(n2, l2, u2, t2) {
   for (var i2, r2, o2; l2 = l2.__; ) if ((i2 = l2.__c) && !i2.__) try {
@@ -1359,7 +1335,7 @@ n = v$2.slice, l$3 = { __e: function(n2, l2, u2, t2) {
   this.__v && (this.__e = true, n2 && this.__h.push(n2), M(this));
 }, x$1.prototype.render = k$1, i$2 = [], o$2 = "function" == typeof Promise ? Promise.prototype.then.bind(Promise.resolve()) : setTimeout, e$2 = function(n2, l2) {
   return n2.__v.__b - l2.__v.__b;
-}, $$1.__r = 0, f$3 = /(PointerCapture)$|Capture$/i, c$2 = 0, s$3 = O(false), a$2 = O(true), h$3 = 0;
+}, P$1.__r = 0, f$3 = /(PointerCapture)$|Capture$/i, c$2 = 0, s$3 = O(false), a$2 = O(true), h$2 = 0;
 var f$2 = 0;
 function u$2(e2, t2, n2, o2, i2, u2) {
   t2 || (t2 = {});
@@ -1370,20 +1346,20 @@ function u$2(e2, t2, n2, o2, i2, u2) {
   return l$3.vnode && l$3.vnode(l2), l2;
 }
 var t$1, r$1, u$1, i$1, o$1 = 0, f$1 = [], c$1 = l$3, e$1 = c$1.__b, a$1 = c$1.__r, v$1 = c$1.diffed, l$2 = c$1.__c, m = c$1.unmount, s$2 = c$1.__;
-function p$2(n2, t2) {
+function d$2(n2, t2) {
   c$1.__h && c$1.__h(r$1, n2, o$1 || t2), o$1 = 0;
   var u2 = r$1.__H || (r$1.__H = { __: [], __h: [] });
   return n2 >= u2.__.length && u2.__.push({}), u2.__[n2];
 }
-function d$2(n2) {
-  return o$1 = 1, h$2(D, n2);
+function h$1(n2) {
+  return o$1 = 1, p$2(D, n2);
 }
-function h$2(n2, u2, i2) {
-  var o2 = p$2(t$1++, 2);
+function p$2(n2, u2, i2) {
+  var o2 = d$2(t$1++, 2);
   if (o2.t = n2, !o2.__c && (o2.__ = [i2 ? i2(u2) : D(void 0, u2), function(n3) {
     var t2 = o2.__N ? o2.__N[0] : o2.__[0], r2 = o2.t(t2, n3);
     t2 !== r2 && (o2.__N = [r2, o2.__[1]], o2.__c.setState({}));
-  }], o2.__c = r$1, !r$1.__f)) {
+  }], o2.__c = r$1, !r$1.u)) {
     var f2 = function(n3, t2, r2) {
       if (!o2.__c.__H) return true;
       var u3 = o2.__c.__H.__.filter(function(n4) {
@@ -1400,7 +1376,7 @@ function h$2(n2, u2, i2) {
         }
       }), c2 && c2.call(this, n3, t2, r2) || i3;
     };
-    r$1.__f = true;
+    r$1.u = true;
     var c2 = r$1.shouldComponentUpdate, e2 = r$1.componentWillUpdate;
     r$1.componentWillUpdate = function(n3, t2, r2) {
       if (this.__e) {
@@ -1413,8 +1389,8 @@ function h$2(n2, u2, i2) {
   return o2.__N || o2.__;
 }
 function y$1(n2, u2) {
-  var i2 = p$2(t$1++, 3);
-  !c$1.__s && C(i2.__H, u2) && (i2.__ = n2, i2.u = u2, r$1.__H.__h.push(i2));
+  var i2 = d$2(t$1++, 3);
+  !c$1.__s && C(i2.__H, u2) && (i2.__ = n2, i2.i = u2, r$1.__H.__h.push(i2));
 }
 function A(n2) {
   return o$1 = 5, T$1(function() {
@@ -1422,11 +1398,11 @@ function A(n2) {
   }, []);
 }
 function T$1(n2, r2) {
-  var u2 = p$2(t$1++, 7);
+  var u2 = d$2(t$1++, 7);
   return C(u2.__H, r2) && (u2.__ = n2(), u2.__H = r2, u2.__h = n2), u2.__;
 }
 function x(n2) {
-  var u2 = r$1.context[n2.__c], i2 = p$2(t$1++, 9);
+  var u2 = r$1.context[n2.__c], i2 = d$2(t$1++, 9);
   return i2.c = n2, u2 ? (null == i2.__ && (i2.__ = true, u2.sub(r$1)), u2.props.value) : n2.__;
 }
 function j$1() {
@@ -1444,13 +1420,13 @@ c$1.__b = function(n2) {
   a$1 && a$1(n2), t$1 = 0;
   var i2 = (r$1 = n2.__c).__H;
   i2 && (u$1 === r$1 ? (i2.__h = [], r$1.__h = [], i2.__.forEach(function(n3) {
-    n3.__N && (n3.__ = n3.__N), n3.u = n3.__N = void 0;
+    n3.__N && (n3.__ = n3.__N), n3.i = n3.__N = void 0;
   })) : (i2.__h.forEach(z), i2.__h.forEach(B$1), i2.__h = [], t$1 = 0)), u$1 = r$1;
 }, c$1.diffed = function(n2) {
   v$1 && v$1(n2);
   var t2 = n2.__c;
   t2 && t2.__H && (t2.__H.__h.length && (1 !== f$1.push(t2) && i$1 === c$1.requestAnimationFrame || ((i$1 = c$1.requestAnimationFrame) || w$1)(j$1)), t2.__H.__.forEach(function(n3) {
-    n3.u && (n3.__H = n3.u), n3.u = void 0;
+    n3.i && (n3.__H = n3.i), n3.i = void 0;
   })), u$1 = r$1 = null;
 }, c$1.__c = function(n2, t2) {
   t2.some(function(n3) {
@@ -1578,8 +1554,8 @@ l$3.unmount = function(n2) {
     }
     this.__b = null;
   }
-  var i2 = e2.__a && _$1(k$1, null, n2.fallback);
-  return i2 && (i2.__u &= -33), [_$1(k$1, null, e2.__a ? null : n2.children), i2];
+  var i2 = e2.__a && g$2(k$1, null, n2.fallback);
+  return i2 && (i2.__u &= -33), [g$2(k$1, null, e2.__a ? null : n2.children), i2];
 };
 var H = function(n2, t2, e2) {
   if (++e2[1] === e2[0] && n2.l.delete(t2), n2.props.revealOrder && ("t" !== n2.props.revealOrder[0] || !n2.l.size)) for (e2 = n2.i; e2; ) {
@@ -1605,10 +1581,10 @@ function Y(n2) {
     this.childNodes.push(n3), e2.h.insertBefore(n3, t2);
   }, removeChild: function(n3) {
     this.childNodes.splice(this.childNodes.indexOf(n3) >>> 1, 1), e2.h.removeChild(n3);
-  } }), D$1(_$1(Z, { context: e2.context }, n2.__v), e2.v);
+  } }), D$1(g$2(Z, { context: e2.context }, n2.__v), e2.v);
 }
 function $(n2, e2) {
-  var r2 = _$1(Y, { __v: n2, h: e2 });
+  var r2 = g$2(Y, { __v: n2, h: e2 });
   return r2.containerInfo = e2, r2;
 }
 (B.prototype = new x$1()).__a = function(n2) {
@@ -1687,9 +1663,9 @@ var i = Symbol.for("preact-signals");
 function t() {
   if (!(s$1 > 1)) {
     var i2, t2 = false;
-    while (void 0 !== h$1) {
-      var r2 = h$1;
-      h$1 = void 0;
+    while (void 0 !== h) {
+      var r2 = h;
+      h = void 0;
       f++;
       while (void 0 !== r2) {
         var o2 = r2.o;
@@ -1721,7 +1697,7 @@ function r(i2) {
   }
 }
 var o = void 0;
-var h$1 = void 0, s$1 = 0, f = 0, v = 0;
+var h = void 0, s$1 = 0, f = 0, v = 0;
 function e(i2) {
   if (void 0 !== o) {
     var t2 = i2.n;
@@ -1931,7 +1907,7 @@ Object.defineProperty(y.prototype, "value", { get: function() {
 function w(i2) {
   return new y(i2);
 }
-function _(i2) {
+function _$1(i2) {
   var r2 = i2.u;
   i2.u = void 0;
   if ("function" == typeof r2) {
@@ -1955,7 +1931,7 @@ function g(i2) {
   for (var t2 = i2.s; void 0 !== t2; t2 = t2.n) t2.S.U(t2);
   i2.x = void 0;
   i2.s = void 0;
-  _(i2);
+  _$1(i2);
 }
 function p$1(i2) {
   if (o !== this) throw new Error("Out-of-order effect");
@@ -1987,7 +1963,7 @@ b.prototype.S = function() {
   if (1 & this.f) throw new Error("Cycle detected");
   this.f |= 1;
   this.f &= -9;
-  _(this);
+  _$1(this);
   a(this);
   s$1++;
   var i2 = o;
@@ -1997,8 +1973,8 @@ b.prototype.S = function() {
 b.prototype.N = function() {
   if (!(2 & this.f)) {
     this.f |= 2;
-    this.o = h$1;
-    h$1 = this;
+    this.o = h;
+    h = this;
   }
 };
 b.prototype.d = function() {
@@ -2016,62 +1992,62 @@ function E(i2) {
   return t2.d.bind(t2);
 }
 var s;
-function l(i2, n2) {
-  l$3[i2] = n2.bind(null, l$3[i2] || function() {
+function l(n2, i2) {
+  l$3[n2] = i2.bind(null, l$3[n2] || function() {
   });
 }
-function d(i2) {
+function d(n2) {
   if (s) s();
-  s = i2 && i2.S();
+  s = n2 && n2.S();
 }
-function h(i2) {
-  var r2 = this, f2 = i2.data, o2 = useSignal(f2);
+function p(n2) {
+  var r2 = this, f2 = n2.data, o2 = useSignal(f2);
   o2.value = f2;
   var e2 = T$1(function() {
-    var i3 = r2.__v;
-    while (i3 = i3.__) if (i3.__c) {
-      i3.__c.__$f |= 4;
+    var n3 = r2.__v;
+    while (n3 = n3.__) if (n3.__c) {
+      n3.__c.__$f |= 4;
       break;
     }
     r2.__$u.c = function() {
-      var i4, t2 = r2.__$u.S(), f3 = e2.value;
+      var n4, t2 = r2.__$u.S(), f3 = e2.value;
       t2();
-      if (t$2(f3) || 3 !== (null == (i4 = r2.base) ? void 0 : i4.nodeType)) {
+      if (t$2(f3) || 3 !== (null == (n4 = r2.base) ? void 0 : n4.nodeType)) {
         r2.__$f |= 1;
         r2.setState({});
       } else r2.base.data = f3;
     };
     return w(function() {
-      var i4 = o2.value.value;
-      return 0 === i4 ? 0 : true === i4 ? "" : i4 || "";
+      var n4 = o2.value.value;
+      return 0 === n4 ? 0 : true === n4 ? "" : n4 || "";
     });
   }, []);
   return e2.value;
 }
-h.displayName = "_st";
-Object.defineProperties(u.prototype, { constructor: { configurable: true, value: void 0 }, type: { configurable: true, value: h }, props: { configurable: true, get: function() {
+p.displayName = "_st";
+Object.defineProperties(u.prototype, { constructor: { configurable: true, value: void 0 }, type: { configurable: true, value: p }, props: { configurable: true, get: function() {
   return { data: this };
 } }, __b: { configurable: true, value: 1 } });
-l("__b", function(i2, r2) {
+l("__b", function(n2, r2) {
   if ("string" == typeof r2.type) {
-    var n2, t2 = r2.props;
+    var i2, t2 = r2.props;
     for (var f2 in t2) if ("children" !== f2) {
       var o2 = t2[f2];
       if (o2 instanceof u) {
-        if (!n2) r2.__np = n2 = {};
-        n2[f2] = o2;
+        if (!i2) r2.__np = i2 = {};
+        i2[f2] = o2;
         t2[f2] = o2.peek();
       }
     }
   }
-  i2(r2);
+  n2(r2);
 });
-l("__r", function(i2, r2) {
+l("__r", function(n2, r2) {
   d();
-  var n2, t2 = r2.__c;
+  var i2, t2 = r2.__c;
   if (t2) {
     t2.__$f &= -2;
-    if (void 0 === (n2 = t2.__$u)) t2.__$u = n2 = function(i3) {
+    if (void 0 === (i2 = t2.__$u)) t2.__$u = i2 = function(n3) {
       var r3;
       E(function() {
         r3 = this;
@@ -2083,20 +2059,20 @@ l("__r", function(i2, r2) {
       return r3;
     }();
   }
-  d(n2);
-  i2(r2);
+  d(i2);
+  n2(r2);
 });
-l("__e", function(i2, r2, n2, t2) {
+l("__e", function(n2, r2, i2, t2) {
   d();
-  i2(r2, n2, t2);
+  n2(r2, i2, t2);
 });
-l("diffed", function(i2, r2) {
+l("diffed", function(n2, r2) {
   d();
-  var n2;
-  if ("string" == typeof r2.type && (n2 = r2.__e)) {
+  var i2;
+  if ("string" == typeof r2.type && (i2 = r2.__e)) {
     var t2 = r2.__np, f2 = r2.props;
     if (t2) {
-      var o2 = n2.U;
+      var o2 = i2.U;
       if (o2) for (var e2 in o2) {
         var u2 = o2[e2];
         if (void 0 !== u2 && !(e2 in t2)) {
@@ -2104,40 +2080,40 @@ l("diffed", function(i2, r2) {
           o2[e2] = void 0;
         }
       }
-      else n2.U = o2 = {};
+      else i2.U = o2 = {};
       for (var a2 in t2) {
         var c2 = o2[a2], s2 = t2[a2];
         if (void 0 === c2) {
-          c2 = p(n2, a2, s2, f2);
+          c2 = _(i2, a2, s2, f2);
           o2[a2] = c2;
         } else c2.o(s2, f2);
       }
     }
   }
-  i2(r2);
+  n2(r2);
 });
-function p(i2, r2, n2, t2) {
-  var f2 = r2 in i2 && void 0 === i2.ownerSVGElement, o2 = d$1(n2);
-  return { o: function(i3, r3) {
-    o2.value = i3;
+function _(n2, r2, i2, t2) {
+  var f2 = r2 in n2 && void 0 === n2.ownerSVGElement, o2 = d$1(i2);
+  return { o: function(n3, r3) {
+    o2.value = n3;
     t2 = r3;
   }, d: E(function() {
-    var n3 = o2.value.value;
-    if (t2[r2] !== n3) {
-      t2[r2] = n3;
-      if (f2) i2[r2] = n3;
-      else if (n3) i2.setAttribute(r2, n3);
-      else i2.removeAttribute(r2);
+    var i3 = o2.value.value;
+    if (t2[r2] !== i3) {
+      t2[r2] = i3;
+      if (f2) n2[r2] = i3;
+      else if (i3) n2.setAttribute(r2, i3);
+      else n2.removeAttribute(r2);
     }
   }) };
 }
-l("unmount", function(i2, r2) {
+l("unmount", function(n2, r2) {
   if ("string" == typeof r2.type) {
-    var n2 = r2.__e;
-    if (n2) {
-      var t2 = n2.U;
+    var i2 = r2.__e;
+    if (i2) {
+      var t2 = i2.U;
       if (t2) {
-        n2.U = void 0;
+        i2.U = void 0;
         for (var f2 in t2) {
           var o2 = t2[f2];
           if (o2) o2.d();
@@ -2154,34 +2130,29 @@ l("unmount", function(i2, r2) {
       }
     }
   }
-  i2(r2);
+  n2(r2);
 });
-l("__h", function(i2, r2, n2, t2) {
+l("__h", function(n2, r2, i2, t2) {
   if (t2 < 3 || 9 === t2) r2.__$f |= 2;
-  i2(r2, n2, t2);
+  n2(r2, i2, t2);
 });
-x$1.prototype.shouldComponentUpdate = function(i2, r2) {
-  var n2 = this.__$u, t2 = n2 && void 0 !== n2.s;
-  for (var f2 in r2) return true;
-  if (this.__f || "boolean" == typeof this.u && true === this.u) {
-    if (!(t2 || 2 & this.__$f || 4 & this.__$f)) return true;
-    if (1 & this.__$f) return true;
-  } else {
-    if (!(t2 || 4 & this.__$f)) return true;
-    if (3 & this.__$f) return true;
-  }
-  for (var o2 in i2) if ("__source" !== o2 && i2[o2] !== this.props[o2]) return true;
-  for (var e2 in this.props) if (!(e2 in i2)) return true;
+x$1.prototype.shouldComponentUpdate = function(n2, r2) {
+  var i2 = this.__$u;
+  if (!(i2 && void 0 !== i2.s || 4 & this.__$f)) return true;
+  if (3 & this.__$f) return true;
+  for (var t2 in r2) return true;
+  for (var f2 in n2) if ("__source" !== f2 && n2[f2] !== this.props[f2]) return true;
+  for (var o2 in this.props) if (!(o2 in n2)) return true;
   return false;
 };
-function useSignal(i2) {
+function useSignal(n2) {
   return T$1(function() {
-    return d$1(i2);
+    return d$1(n2);
   }, []);
 }
-function useSignalEffect(i2) {
-  var r2 = A(i2);
-  r2.current = i2;
+function useSignalEffect(n2) {
+  var r2 = A(n2);
+  r2.current = n2;
   y$1(function() {
     return E(function() {
       return r2.current();
@@ -2191,6 +2162,7 @@ function useSignalEffect(i2) {
 const AppContext$1 = J$1({});
 const DateFormats$1 = {
   DATE_STRING: /^\d{4}-\d{2}-\d{2}$/,
+  TIME_STRING: /^\d{2}:\d{2}$/,
   DATE_TIME_STRING: /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/
 };
 let InvalidDateTimeError$1 = class InvalidDateTimeError extends Error {
@@ -2262,7 +2234,7 @@ function AppInput() {
   y$1(() => {
     $app.datePickerState.inputDisplayedValue.value = getLocalizedDate2($app.datePickerState.selectedDate.value);
   }, [$app.datePickerState.selectedDate.value, $app.config.locale.value]);
-  const [wrapperClasses, setWrapperClasses] = d$2([]);
+  const [wrapperClasses, setWrapperClasses] = h$1([]);
   const setInputElement = () => {
     const inputWrapperEl = document.getElementById(inputWrapperId);
     $app.datePickerState.inputWrapperElement.value = inputWrapperEl instanceof HTMLDivElement ? inputWrapperEl : void 0;
@@ -2417,8 +2389,8 @@ function MonthViewHeader({ setYearsView }) {
   const getYearFrom = (datePickerDate) => {
     return toIntegers(datePickerDate).year;
   };
-  const [selectedDateMonthName, setSelectedDateMonthName] = d$2(dateStringToLocalizedMonthName($app.datePickerState.datePickerDate.value));
-  const [datePickerYear, setDatePickerYear] = d$2(getYearFrom($app.datePickerState.datePickerDate.value));
+  const [selectedDateMonthName, setSelectedDateMonthName] = h$1(dateStringToLocalizedMonthName($app.datePickerState.datePickerDate.value));
+  const [datePickerYear, setDatePickerYear] = h$1(getYearFrom($app.datePickerState.datePickerDate.value));
   const setPreviousMonth = () => {
     $app.datePickerState.datePickerDate.value = getFirstDayOPreviousMonth($app.datePickerState.datePickerDate.value);
   };
@@ -2580,12 +2552,6 @@ let CalendarEventImpl$1 = class CalendarEventImpl {
       value: void 0
     });
     Object.defineProperty(this, "_totalConcurrentEvents", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "_maxConcurrentEvents", {
       enumerable: true,
       configurable: true,
       writable: true,
@@ -2855,7 +2821,7 @@ function MonthViewWeek({ week }) {
 function MonthView({ seatYearsView }) {
   const elementId = randomStringId();
   const $app = x(AppContext$1);
-  const [month, setMonth] = d$2([]);
+  const [month, setMonth] = h$1([]);
   const renderMonth = () => {
     const newDatePickerDate = toJSDate$1($app.datePickerState.datePickerDate.value);
     setMonth($app.timeUnitsImpl.getMonthWithTrailingAndLeadingDays(newDatePickerDate.getFullYear(), newDatePickerDate.getMonth()));
@@ -2896,7 +2862,7 @@ function YearsView({ setMonthView }) {
   const maxYear = toJSDate$1($app.config.max).getFullYear();
   const years = Array.from({ length: maxYear - minYear + 1 }, (_2, i2) => minYear + i2);
   const { year: selectedYear } = toIntegers($app.datePickerState.selectedDate.value);
-  const [expandedYear, setExpandedYear] = d$2(selectedYear);
+  const [expandedYear, setExpandedYear] = h$1(selectedYear);
   const setNewDatePickerDate = (year, month) => {
     $app.datePickerState.datePickerDate.value = toDateString$1(new Date(year, month, 1));
     setMonthView();
@@ -2934,9 +2900,9 @@ const getScrollableParents = (el, acc = []) => {
 const POPUP_CLASS_NAME = "sx__date-picker-popup";
 function AppPopup() {
   const $app = x(AppContext$1);
-  const [datePickerView, setDatePickerView] = d$2(DatePickerView.MONTH_DAYS);
+  const [datePickerView, setDatePickerView] = h$1(DatePickerView.MONTH_DAYS);
   const basePopupClasses = [POPUP_CLASS_NAME, $app.config.placement];
-  const [classList, setClassList] = d$2(basePopupClasses);
+  const [classList, setClassList] = h$1(basePopupClasses);
   y$1(() => {
     setClassList([
       ...basePopupClasses,
@@ -2981,7 +2947,7 @@ function AppPopup() {
       position: "fixed"
     };
   };
-  const [fixedPositionStyle, setFixedPositionStyle] = d$2(getFixedPositionStyles());
+  const [fixedPositionStyle, setFixedPositionStyle] = h$1(getFixedPositionStyles());
   y$1(() => {
     const inputWrapper = $app.datePickerState.inputWrapperElement.value;
     if (inputWrapper === void 0)
@@ -2995,7 +2961,7 @@ function AppPopup() {
 }
 function AppWrapper({ $app }) {
   const initialClassList = ["sx__date-picker-wrapper"];
-  const [classList, setClassList] = d$2(initialClassList);
+  const [classList, setClassList] = h$1(initialClassList);
   y$1(() => {
     var _a;
     const list = [...initialClassList];
@@ -3120,7 +3086,7 @@ const getMonthAndYearForSelectedDate = ($app) => {
 };
 function RangeHeading() {
   const $app = x(AppContext);
-  const [currentHeading, setCurrentHeading] = d$2("");
+  const [currentHeading, setCurrentHeading] = h$1("");
   y$1(() => {
     if ($app.calendarState.view.value === InternalViewName.Week) {
       setCurrentHeading(getMonthAndYearForDateRange($app, $app.calendarState.range.value.start, $app.calendarState.range.value.end));
@@ -3140,7 +3106,7 @@ function TodayButton() {
 }
 function ViewSelection() {
   const $app = x(AppContext);
-  const [availableViews, setAvailableViews] = d$2([]);
+  const [availableViews, setAvailableViews] = h$1([]);
   useSignalEffect(() => {
     if ($app.calendarState.isCalendarSmall.value) {
       setAvailableViews($app.config.views.value.filter((view) => view.hasSmallScreenCompat));
@@ -3148,14 +3114,14 @@ function ViewSelection() {
       setAvailableViews($app.config.views.value.filter((view) => view.hasWideScreenCompat));
     }
   });
-  const [selectedViewLabel, setSelectedViewLabel] = d$2("");
+  const [selectedViewLabel, setSelectedViewLabel] = h$1("");
   useSignalEffect(() => {
     const selectedView = $app.config.views.value.find((view) => view.name === $app.calendarState.view.value);
     if (!selectedView)
       return;
     setSelectedViewLabel($app.translate(selectedView.label));
   });
-  const [isOpen, setIsOpen] = d$2(false);
+  const [isOpen, setIsOpen] = h$1(false);
   const clickOutsideListener = (event) => {
     const target = event.target;
     if (target instanceof HTMLElement && !target.closest(".sx__view-selection")) {
@@ -3170,8 +3136,8 @@ function ViewSelection() {
     setIsOpen(false);
     $app.calendarState.setView(viewName, $app.datePickerState.selectedDate.value);
   };
-  const [viewSelectionItems, setViewSelectionItems] = d$2();
-  const [focusedViewIndex, setFocusedViewIndex] = d$2(0);
+  const [viewSelectionItems, setViewSelectionItems] = h$1();
+  const [focusedViewIndex, setFocusedViewIndex] = h$1(0);
   const handleSelectedViewKeyDown = (keyboardEvent) => {
     if (isKeyEnterOrSpace(keyboardEvent)) {
       setIsOpen(!isOpen);
@@ -3218,12 +3184,12 @@ function ForwardBackwardNavigation() {
       return;
     $app.datePickerState.selectedDate.value = currentView.backwardForwardFn($app.datePickerState.selectedDate.value, direction === "forwards" ? currentView.backwardForwardUnits : -currentView.backwardForwardUnits);
   };
-  const [localizedRange, setLocalizedRange] = d$2("");
+  const [localizedRange, setLocalizedRange] = h$1("");
   useSignalEffect(() => {
     setLocalizedRange(`${getLocalizedDate($app.calendarState.range.value.start, $app.config.locale.value)} ${$app.translate("to")} ${getLocalizedDate($app.calendarState.range.value.end, $app.config.locale.value)}`);
   });
-  const [rangeEndMinusOneRange, setRangeEndMinusOneRange] = d$2("");
-  const [rangeStartPlusOneRange, setRangeStartPlusOneRange] = d$2("");
+  const [rangeEndMinusOneRange, setRangeEndMinusOneRange] = h$1("");
+  const [rangeStartPlusOneRange, setRangeStartPlusOneRange] = h$1("");
   y$1(() => {
     const selectedView = $app.config.views.value.find((view) => view.name === $app.calendarState.view.value);
     if (!selectedView)
@@ -3248,15 +3214,15 @@ function CalendarHeader() {
   const $app = x(AppContext);
   const datePickerAppSingleton = new DatePickerAppSingletonBuilder().withDatePickerState($app.datePickerState).withConfig($app.datePickerConfig).withTranslate($app.translate).withTimeUnitsImpl($app.timeUnitsImpl).build();
   const headerContent = $app.config._customComponentFns.headerContent;
-  const headerContentId = d$2(headerContent ? randomStringId() : void 0)[0];
+  const headerContentId = h$1(headerContent ? randomStringId() : void 0)[0];
   const headerContentLeftPrepend = $app.config._customComponentFns.headerContentLeftPrepend;
-  const headerContentLeftPrependId = d$2(headerContentLeftPrepend ? randomStringId() : void 0)[0];
+  const headerContentLeftPrependId = h$1(headerContentLeftPrepend ? randomStringId() : void 0)[0];
   const headerContentLeftAppend = $app.config._customComponentFns.headerContentLeftAppend;
-  const headerContentLeftAppendId = d$2(headerContentLeftAppend ? randomStringId() : void 0)[0];
+  const headerContentLeftAppendId = h$1(headerContentLeftAppend ? randomStringId() : void 0)[0];
   const headerContentRightPrepend = $app.config._customComponentFns.headerContentRightPrepend;
-  const headerContentRightPrependId = d$2(headerContentRightPrepend ? randomStringId() : void 0)[0];
+  const headerContentRightPrependId = h$1(headerContentRightPrepend ? randomStringId() : void 0)[0];
   const headerContentRightAppend = $app.config._customComponentFns.headerContentRightAppend;
-  const headerContentRightAppendId = d$2(headerContentRightAppend ? randomStringId() : void 0)[0];
+  const headerContentRightAppendId = h$1(headerContentRightAppend ? randomStringId() : void 0)[0];
   y$1(() => {
     if (headerContent) {
       headerContent(getElementByCCID(headerContentId), {});
@@ -3316,7 +3282,7 @@ const handleWindowResize = ($app) => {
 };
 function useWrapperClasses($app) {
   const calendarWrapperClass = "sx__calendar-wrapper";
-  const [wrapperClasses, setWrapperClasses] = d$2([
+  const [wrapperClasses, setWrapperClasses] = h$1([
     calendarWrapperClass
   ]);
   useSignalEffect(() => {
@@ -3374,7 +3340,7 @@ function CalendarWrapper({ $app }) {
     }
   }, []);
   const wrapperClasses = useWrapperClasses($app);
-  const [currentView, setCurrentView] = d$2();
+  const [currentView, setCurrentView] = h$1();
   useSignalEffect(() => {
     const newView = $app.config.views.value.find((view) => view.name === $app.calendarState.view.value);
     const viewElement = document.getElementById(viewContainerId);
@@ -3385,8 +3351,8 @@ function CalendarWrapper({ $app }) {
     setCurrentView(newView);
     newView.render(viewElement, $app);
   });
-  const [previousRangeStart, setPreviousRangeStart] = d$2("");
-  const [transitionClass, setTransitionClass] = d$2("");
+  const [previousRangeStart, setPreviousRangeStart] = h$1("");
+  const [transitionClass, setTransitionClass] = h$1("");
   useSignalEffect(() => {
     var _a2, _b;
     const newRangeStartIsLaterThanPrevious = (((_a2 = $app.calendarState.range.value) === null || _a2 === void 0 ? void 0 : _a2.start) || "") > previousRangeStart;
@@ -3458,12 +3424,6 @@ class CalendarApp {
       writable: true,
       value: void 0
     });
-    Object.defineProperty(this, "calendarContainerEl", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
     this.events = new EventsFacadeImpl$1(this.$app);
     invokePluginsBeforeRender(this.$app);
     Object.values(this.$app.config.plugins).forEach((plugin) => {
@@ -3476,18 +3436,7 @@ class CalendarApp {
     }
   }
   render(el) {
-    this.calendarContainerEl = el;
-    D$1(_$1(CalendarWrapper, { $app: this.$app }), el);
-  }
-  destroy() {
-    Object.values(this.$app.config.plugins || {}).forEach((plugin) => {
-      if (!plugin || !plugin.destroy)
-        return;
-      plugin.destroy();
-    });
-    if (this.calendarContainerEl) {
-      D$1(null, this.calendarContainerEl);
-    }
+    D$1(g$2(CalendarWrapper, { $app: this.$app }), el);
   }
   setTheme(theme) {
     this.$app.calendarState.isDark.value = theme === "dark";
@@ -3732,8 +3681,8 @@ const createDatePickerState = (config2, selectedDateParam) => {
   const selectedDate = d$1(initialSelectedDate);
   const datePickerDate = d$1(initialSelectedDate || currentDayDateString);
   const isDark = d$1(((_a = config2.style) === null || _a === void 0 ? void 0 : _a.dark) || false);
-  const inputDisplayedValue = d$1(selectedDateParam ? toLocalizedDateString(toJSDate$1(selectedDateParam), config2.locale.value) : "");
-  const lastValidDisplayedValue = d$1(inputDisplayedValue.value);
+  const inputDisplayedValue = d$1(selectedDateParam || "");
+  const lastValidDisplayedValue = d$1(selectedDateParam || "");
   E(() => {
     try {
       const newValue = toDateString$2(inputDisplayedValue.value, config2.locale.value);
@@ -4556,90 +4505,6 @@ const ltLT = {
   ...datePickerLtLT,
   ...calendarLtLT
 };
-const datePickerHrHR = {
-  Date: "Datum",
-  "MM/DD/YYYY": "DD/MM/YYYY",
-  "Next month": "Sljedeći mjesec",
-  "Previous month": "Prethodni mjesec",
-  "Choose Date": "Izaberite datum"
-};
-const calendarHrHR = {
-  Today: "Danas",
-  Month: "Mjesec",
-  Week: "Nedjelja",
-  Day: "Dan",
-  "Select View": "Odaberite pregled",
-  events: "Događaji",
-  event: "Događaj",
-  "No events": "Nema događaja",
-  "Next period": "Sljedeći period",
-  "Previous period": "Prethodni period",
-  to: "do",
-  // as in 2/1/2020 to 2/2/2020
-  "Full day- and multiple day events": "Cjelodnevni i višednevni događaji",
-  "Link to {{n}} more events on {{date}}": "Link do još {{n}} događaja na {{date}}",
-  "Link to 1 more event on {{date}}": "Link do još jednog događaja na {{date}}"
-};
-const hrHR = {
-  ...datePickerHrHR,
-  ...calendarHrHR
-};
-const datePickerSlSI = {
-  Date: "Datum",
-  "MM/DD/YYYY": "MM.DD.YYYY",
-  "Next month": "Naslednji mesec",
-  "Previous month": "Prejšnji mesec",
-  "Choose Date": "Izberi datum"
-};
-const calendarSlSI = {
-  Today: "Danes",
-  Month: "Mesec",
-  Week: "Teden",
-  Day: "Dan",
-  "Select View": "Izberi pogled",
-  events: "dogodki",
-  event: "dogodek",
-  "No events": "Ni dogodkov",
-  "Next period": "Naslednji dogodek",
-  "Previous period": "Prejšnji dogodek",
-  to: "do",
-  // as in 2/1/2020 to 2/2/2020
-  "Full day- and multiple day events": "Celodnevni in večdnevni dogodki",
-  "Link to {{n}} more events on {{date}}": "Povezava do {{n}} drugih dogodkov dne {{date}}",
-  "Link to 1 more event on {{date}}": "Povezava do še enega dogodka dne {{date}}"
-};
-const slSI = {
-  ...datePickerSlSI,
-  ...calendarSlSI
-};
-const datePickerFiFI = {
-  Date: "Päivämäärä",
-  "MM/DD/YYYY": "VVVV-KK-PP",
-  "Next month": "Seuraava kuukausi",
-  "Previous month": "Edellinen kuukausi",
-  "Choose Date": "Valitse päivämäärä"
-};
-const calendarFiFI = {
-  Today: "Tänään",
-  Month: "Kuukausi",
-  Week: "Viikko",
-  Day: "Päivä",
-  "Select View": "Valitse näkymä",
-  events: "tapahtumaa",
-  event: "tapahtuma",
-  "No events": "Ei tapahtumia",
-  "Next period": "Seuraava ajanjakso",
-  "Previous period": "Edellinen ajanjakso",
-  to: "-",
-  // as in 2/1/2020 to 2/2/2020
-  "Full day- and multiple day events": "Koko ja usean päivän tapahtumat",
-  "Link to {{n}} more events on {{date}}": "Linkki {{n}} lisätapahtumaan päivämäärällä {{date}}",
-  "Link to 1 more event on {{date}}": "Linkki 1 lisätapahtumaan päivämäärällä {{date}}"
-};
-const fiFI = {
-  ...datePickerFiFI,
-  ...calendarFiFI
-};
 class InvalidLocaleError extends Error {
   constructor(locale) {
     super(`Invalid locale: ${locale}`);
@@ -4690,10 +4555,7 @@ const translations = {
   caES,
   srLatnRS,
   srRS,
-  ltLT,
-  hrHR,
-  slSI,
-  fiFI
+  ltLT
 };
 class EventColors {
   constructor(config2) {
@@ -4736,26 +4598,15 @@ const createCalendarState = (calendarConfig, timeUnitsImpl, selectedDate) => {
   });
   const range = d$1(null);
   let wasInitialized = false;
-  let lastRangeEmitted__NEEDED_TO_PREVENT_RECURSION_IN_EVENT_RECURRENCE_PACKAGE_WHICH_CAUSES_RANGE_TO_UPDATE_AND_THUS_CAUSES_A_CYCLE = null;
   const callOnRangeUpdate = (_range) => {
     if (!wasInitialized)
       return wasInitialized = true;
     if (calendarConfig.callbacks.onRangeUpdate && _range.value) {
       calendarConfig.callbacks.onRangeUpdate(_range.value);
     }
-    const lastRange = lastRangeEmitted__NEEDED_TO_PREVENT_RECURSION_IN_EVENT_RECURRENCE_PACKAGE_WHICH_CAUSES_RANGE_TO_UPDATE_AND_THUS_CAUSES_A_CYCLE;
-    if (!_range.value)
-      return;
-    if ((lastRange === null || lastRange === void 0 ? void 0 : lastRange.start) === _range.value.start && (lastRange === null || lastRange === void 0 ? void 0 : lastRange.end) === _range.value.end)
-      return;
-    Object.values(calendarConfig.plugins || {}).forEach((plugin) => {
-      var _a2;
-      (_a2 = plugin === null || plugin === void 0 ? void 0 : plugin.onRangeUpdate) === null || _a2 === void 0 ? void 0 : _a2.call(plugin, _range.value);
-      lastRangeEmitted__NEEDED_TO_PREVENT_RECURSION_IN_EVENT_RECURRENCE_PACKAGE_WHICH_CAUSES_RANGE_TO_UPDATE_AND_THUS_CAUSES_A_CYCLE = _range.value;
-    });
   };
   E(() => {
-    if (range.value) {
+    if (calendarConfig.callbacks.onRangeUpdate && range.value) {
       callOnRangeUpdate(range);
     }
   });
@@ -4988,8 +4839,7 @@ class CalendarConfigBuilder {
         gridHeight: DEFAULT_WEEK_GRID_HEIGHT,
         nDays: 7,
         eventWidth: 100,
-        timeAxisFormatOptions: { hour: "numeric" },
-        eventOverlap: true
+        timeAxisFormatOptions: { hour: "numeric" }
       }
     });
     Object.defineProperty(this, "monthGridOptions", {
@@ -5474,6 +5324,9 @@ const createDateSelectionCallback = (calendarState, config2) => {
   };
 };
 const validatePlugins = (configPlugins, pluginArg) => {
+  if (configPlugins && pluginArg) {
+    throw new Error("You cannot provide plugins over the config object and as an argument to createCalendar.");
+  }
 };
 const validateEvents = (events = []) => {
   events === null || events === void 0 ? void 0 : events.forEach((event) => {
@@ -5495,41 +5348,6 @@ const validateEvents = (events = []) => {
     }
   });
 };
-const validateConfig = (config2) => {
-  var _a, _b, _c, _d;
-  if (config2.selectedDate && !DateFormats$1.DATE_STRING.test(config2.selectedDate)) {
-    throw new Error("[Schedule-X error]: selectedDate must have the format YYYY-MM-DD");
-  }
-  if (config2.minDate && !DateFormats$1.DATE_STRING.test(config2.minDate)) {
-    throw new Error("[Schedule-X error]: minDate must have the format YYYY-MM-DD");
-  }
-  if (config2.maxDate && !DateFormats$1.DATE_STRING.test(config2.maxDate)) {
-    throw new Error("[Schedule-X error]: maxDate must have the format YYYY-MM-DD");
-  }
-  if (typeof config2.firstDayOfWeek !== "undefined" && (config2.firstDayOfWeek < 0 || config2.firstDayOfWeek > 6)) {
-    throw new Error("[Schedule-X error]: firstDayOfWeek must be a number between 0 and 6");
-  }
-  if (typeof ((_a = config2.weekOptions) === null || _a === void 0 ? void 0 : _a.gridHeight) !== "undefined" && config2.weekOptions.gridHeight < 0) {
-    throw new Error("[Schedule-X error]: weekOptions.gridHeight must be a positive number");
-  }
-  if (typeof ((_b = config2.weekOptions) === null || _b === void 0 ? void 0 : _b.nDays) !== "undefined" && (config2.weekOptions.nDays < 1 || config2.weekOptions.nDays > 7)) {
-    throw new Error("[Schedule-X error]: weekOptions.nDays must be a number between 1 and 7");
-  }
-  if (typeof ((_c = config2.weekOptions) === null || _c === void 0 ? void 0 : _c.eventWidth) !== "undefined" && (config2.weekOptions.eventWidth < 1 || config2.weekOptions.eventWidth > 100)) {
-    throw new Error("[Schedule-X error]: weekOptions.eventWidth must be an integer between 1 and 100");
-  }
-  if (typeof ((_d = config2.monthGridOptions) === null || _d === void 0 ? void 0 : _d.nEventsPerDay) !== "undefined" && config2.monthGridOptions.nEventsPerDay < 0) {
-    throw new Error("[Schedule-X error]: monthGridOptions.nEventsPerDay must be a positive number");
-  }
-  const dayBoundaryPattern = /^\d{2}:\d{2}$/;
-  if (typeof config2.dayBoundaries !== "undefined") {
-    const startFormatIsInvalid = !dayBoundaryPattern.test(config2.dayBoundaries.start);
-    const endFormatIsInvalid = !dayBoundaryPattern.test(config2.dayBoundaries.end);
-    if (startFormatIsInvalid || endFormatIsInvalid) {
-      throw new Error('[Schedule-X error]: dayBoundaries must be an object with "start"- and "end" properties, each with the format HH:mm');
-    }
-  }
-};
 const createCalendarAppSingleton = (config2, plugins) => {
   var _a;
   const internalConfig = createInternalConfig(config2, plugins);
@@ -5542,10 +5360,9 @@ const createCalendarAppSingleton = (config2, plugins) => {
   return new CalendarAppSingletonBuilder().withConfig(internalConfig).withTimeUnitsImpl(timeUnitsImpl).withDatePickerState(datePickerState).withCalendarEvents(calendarEvents).withDatePickerConfig(datePickerConfig).withCalendarState(calendarState).withTranslate(translate(internalConfig.locale, internalConfig.translations)).build();
 };
 const createCalendar = (config2, plugins) => {
-  validatePlugins(config2.plugins);
+  validatePlugins(config2.plugins, plugins);
   if (config2.skipValidation !== true) {
     validateEvents(config2.events);
-    validateConfig(config2);
   }
   return new CalendarApp(createCalendarAppSingleton(config2, config2.plugins || []));
 };
@@ -5615,7 +5432,7 @@ class PreactView {
     this.backwardForwardUnits = config2.backwardForwardUnits;
   }
   render(onElement, $app) {
-    D$1(_$1(this.Component, { $app, id: this.randomId }), onElement);
+    D$1(g$2(this.Component, { $app, id: this.randomId }), onElement);
   }
   destroy() {
     const el = document.getElementById(this.randomId);
@@ -5645,10 +5462,8 @@ const getLeftRule = (calendarEvent, eventWidth) => {
     return 0;
   return (calendarEvent._previousConcurrentEvents || 0) / (calendarEvent._totalConcurrentEvents || 0) * eventWidth;
 };
-const getWidthRule = (leftRule, eventWidth, maxConcurrentEvents, eventOverlap) => {
-  if (eventOverlap || !maxConcurrentEvents)
-    return eventWidth - leftRule;
-  return eventWidth / maxConcurrentEvents;
+const getWidthRule = (leftRule, eventWidth) => {
+  return eventWidth - leftRule;
 };
 const getBorderRule = (calendarEvent) => {
   if (!calendarEvent._previousConcurrentEvents)
@@ -5662,13 +5477,13 @@ const isUIEventTouchEvent = (event) => {
   return "touches" in event && typeof event.touches === "object";
 };
 function useEventInteractions($app) {
-  const [eventCopy, setEventCopy] = d$2();
+  const [eventCopy, setEventCopy] = h$1();
   const updateCopy = (newCopy) => {
     if (!newCopy)
       return setEventCopy(void 0);
     setEventCopy(deepCloneEvent(newCopy, $app));
   };
-  const [dragStartTimeout, setDragStartTimeout] = d$2();
+  const [dragStartTimeout, setDragStartTimeout] = h$1();
   const createDragStartTimeout = (callback, uiEvent) => {
     setDragStartTimeout(setTimeout(() => callback(uiEvent), 150));
   };
@@ -5707,14 +5522,14 @@ const getCCID = (customComponent, isCopy) => {
     customComponentId += "-copy";
   return customComponentId;
 };
-const invokeOnEventClickCallback = ($app, calendarEvent, e2) => {
+const invokeOnEventClickCallback = ($app, calendarEvent) => {
   if ($app.config.callbacks.onEventClick) {
-    $app.config.callbacks.onEventClick(calendarEvent._getExternalEvent(), e2);
+    $app.config.callbacks.onEventClick(calendarEvent._getExternalEvent());
   }
 };
-const invokeOnEventDoubleClickCallback = ($app, calendarEvent, e2) => {
+const invokeOnEventDoubleClickCallback = ($app, calendarEvent) => {
   if ($app.config.callbacks.onDoubleClickEvent) {
-    $app.config.callbacks.onDoubleClickEvent(calendarEvent._getExternalEvent(), e2);
+    $app.config.callbacks.onDoubleClickEvent(calendarEvent._getExternalEvent());
   }
 };
 const getEventCoordinates = (uiEvent) => {
@@ -5798,17 +5613,17 @@ function TimeGridEvent({ calendarEvent, dayBoundariesDateTime, isCopy, setMouseD
   }, [calendarEvent, eventCopy]);
   const handleOnClick = (e2) => {
     e2.stopPropagation();
-    invokeOnEventClickCallback($app, calendarEvent, e2);
+    invokeOnEventClickCallback($app, calendarEvent);
   };
   const handleOnDoubleClick = (e2) => {
     e2.stopPropagation();
-    invokeOnEventDoubleClickCallback($app, calendarEvent, e2);
+    invokeOnEventDoubleClickCallback($app, calendarEvent);
   };
   const handleKeyDown = (e2) => {
     if (e2.key === "Enter" || e2.key === " ") {
       e2.stopPropagation();
       setClickedEvent(e2, calendarEvent);
-      invokeOnEventClickCallback($app, calendarEvent, e2);
+      invokeOnEventClickCallback($app, calendarEvent);
       nextTick(() => {
         focusModal($app);
       });
@@ -5829,8 +5644,6 @@ function TimeGridEvent({ calendarEvent, dayBoundariesDateTime, isCopy, setMouseD
   const classNames = ["sx__time-grid-event", "sx__event"];
   if (isCopy)
     classNames.push("is-event-copy");
-  if (!$app.config.weekOptions.value.eventOverlap && calendarEvent._maxConcurrentEvents && calendarEvent._maxConcurrentEvents > 1)
-    classNames.push("is-event-overlap");
   if ((_a = calendarEvent._options) === null || _a === void 0 ? void 0 : _a.additionalClasses)
     classNames.push(...calendarEvent._options.additionalClasses);
   const handlePointerDown = (e2) => {
@@ -5846,7 +5659,7 @@ function TimeGridEvent({ calendarEvent, dayBoundariesDateTime, isCopy, setMouseD
     top: `${getYCoordinateInTimeGrid(calendarEvent.start, $app.config.dayBoundaries.value, $app.config.timePointsPerDay)}%`,
     height: `${getEventHeight(calendarEvent.start, calendarEvent.end, $app.config.dayBoundaries.value, $app.config.timePointsPerDay)}%`,
     left: `${leftRule}%`,
-    width: `${getWidthRule(leftRule, isCopy ? 100 : $app.config.weekOptions.value.eventWidth, calendarEvent._maxConcurrentEvents, $app.config.weekOptions.value.eventOverlap)}%`,
+    width: `${getWidthRule(leftRule, isCopy ? 100 : $app.config.weekOptions.value.eventWidth)}%`,
     backgroundColor: customComponent ? void 0 : eventCSSVariables.backgroundColor,
     color: customComponent ? void 0 : eventCSSVariables.textColor,
     borderTop: borderRule,
@@ -5872,25 +5685,21 @@ const sortEventsByStartAndEnd = (a2, b2) => {
     return 1;
   return 0;
 };
-const sortEventsForMonthGrid = (a2, b2) => {
-  const aStartDate = dateFromDateTime$1(a2.start);
-  const bStartDate = dateFromDateTime$1(b2.start);
-  const aEndDate = dateFromDateTime$1(a2.end);
-  const bEndDate = dateFromDateTime$1(b2.end);
-  if (aStartDate === bStartDate && aEndDate === bEndDate) {
-    if (a2.start < b2.start)
-      return -1;
-  }
-  if (aStartDate === bStartDate) {
-    if (aEndDate < bEndDate)
+const sortEventsByStartAndEndWithoutConsideringTime = (a2, b2) => {
+  const aStart = dateFromDateTime$1(a2.start);
+  const bStart = dateFromDateTime$1(b2.start);
+  const aEnd = dateFromDateTime$1(a2.end);
+  const bEnd = dateFromDateTime$1(b2.end);
+  if (aStart === bStart) {
+    if (aEnd < bEnd)
       return 1;
-    if (aEndDate > bEndDate)
+    if (aEnd > bEnd)
       return -1;
     return 0;
   }
-  if (aStartDate < bStartDate)
+  if (aStart < bStart)
     return -1;
-  if (aStartDate > bStartDate)
+  if (aStart > bStart)
     return 1;
   return 0;
 };
@@ -5898,7 +5707,7 @@ const handleEventConcurrency = (sortedEvents, concurrentEventsCache = [], curren
   for (let i2 = currentIndex; i2 < sortedEvents.length; i2++) {
     const event = sortedEvents[i2];
     const nextEvent = sortedEvents[i2 + 1];
-    if (concurrentEventsCache.length && (!nextEvent || concurrentEventsCache.every((e2) => e2.end <= nextEvent.start))) {
+    if (concurrentEventsCache.length && (!nextEvent || concurrentEventsCache.every((e2) => e2.end < nextEvent.start))) {
       concurrentEventsCache.push(event);
       for (let ii = 0; ii < concurrentEventsCache.length; ii++) {
         const currentEvent = concurrentEventsCache[ii];
@@ -5914,25 +5723,6 @@ const handleEventConcurrency = (sortedEvents, concurrentEventsCache = [], curren
         }).length;
         currentEvent._totalConcurrentEvents = NpreviousConcurrentEvents + NupcomingConcurrentEvents + 1;
         currentEvent._previousConcurrentEvents = NpreviousConcurrentEvents;
-        let maxOverlappingEvents = 0;
-        const timePoints = [];
-        concurrentEventsCache.forEach((cachedEvent) => {
-          if (cachedEvent.end > currentEvent.start && cachedEvent.start < currentEvent.end) {
-            timePoints.push({ time: cachedEvent.start, type: "start" });
-            timePoints.push({ time: cachedEvent.end, type: "end" });
-          }
-        });
-        timePoints.sort((a2, b2) => a2.time.localeCompare(b2.time) || (a2.type === "end" ? -1 : 1));
-        let currentOverlap = 0;
-        timePoints.forEach((point) => {
-          if (point.type === "start") {
-            currentOverlap++;
-            maxOverlappingEvents = Math.max(maxOverlappingEvents, currentOverlap);
-          } else {
-            currentOverlap--;
-          }
-        });
-        currentEvent._maxConcurrentEvents = maxOverlappingEvents;
       }
       concurrentEventsCache = [];
       return handleEventConcurrency(sortedEvents, concurrentEventsCache, i2 + 1);
@@ -5943,7 +5733,6 @@ const handleEventConcurrency = (sortedEvents, concurrentEventsCache = [], curren
     }
     event._totalConcurrentEvents = 1;
     event._previousConcurrentEvents = 0;
-    event._maxConcurrentEvents = 1;
   }
   return sortedEvents;
 };
@@ -6006,7 +5795,7 @@ function TimeGridBackgroundEvent({ backgroundEvent, date }) {
   } }) });
 }
 function TimeGridDay({ calendarEvents, date, backgroundEvents }) {
-  const [mouseDownOnChild, setMouseDownOnChild] = d$2(false);
+  const [mouseDownOnChild, setMouseDownOnChild] = h$1(false);
   const $app = x(AppContext);
   const timeStringFromDayBoundary = timeStringFromTimePoints$1($app.config.dayBoundaries.value.start);
   const timeStringFromDayBoundaryEnd = timeStringFromTimePoints$1($app.config.dayBoundaries.value.end);
@@ -6017,7 +5806,7 @@ function TimeGridDay({ calendarEvents, date, backgroundEvents }) {
     end: dayEndDateTime
   };
   const sortedEvents = calendarEvents.sort(sortEventsByStartAndEnd);
-  const [eventsWithConcurrency, setEventsWithConcurrency] = d$2([]);
+  const [eventsWithConcurrency, setEventsWithConcurrency] = h$1([]);
   y$1(() => {
     setEventsWithConcurrency(handleEventConcurrency(sortedEvents));
   }, [calendarEvents]);
@@ -6048,7 +5837,7 @@ function TimeGridDay({ calendarEvents, date, backgroundEvents }) {
     "sx__time-grid-day",
     getClassNameForWeekday(toJSDate$1(date).getDay())
   ];
-  const [classNames, setClassNames] = d$2(baseClasses);
+  const [classNames, setClassNames] = h$1(baseClasses);
   useSignalEffect(() => {
     const newClassNames = [...baseClasses];
     if ($app.datePickerState.selectedDate.value === date)
@@ -6076,7 +5865,7 @@ const getTimeAxisHours = ({ start, end }, isHybridDay) => {
 };
 function TimeAxis() {
   const $app = x(AppContext);
-  const [hours, setHours] = d$2([]);
+  const [hours, setHours] = h$1([]);
   useSignalEffect(() => {
     setHours(getTimeAxisHours($app.config.dayBoundaries.value, $app.config.isHybridDay));
     const hoursPerDay = $app.config.timePointsPerDay / 100;
@@ -6261,7 +6050,7 @@ function DateGridEvent({ calendarEvent, gridRow, isCopy }) {
     if (e2.key === "Enter" || e2.key === " ") {
       e2.stopPropagation();
       setClickedEvent(e2, calendarEvent);
-      invokeOnEventClickCallback($app, calendarEvent, e2);
+      invokeOnEventClickCallback($app, calendarEvent);
       nextTick(() => {
         focusModal($app);
       });
@@ -6282,7 +6071,7 @@ function DateGridEvent({ calendarEvent, gridRow, isCopy }) {
     eventClasses.push(...calendarEvent._options.additionalClasses);
   const borderLeftNonCustom = hasOverflowLeft ? "none" : eventCSSVariables.borderLeft;
   const hasCustomContent = (_b = calendarEvent._customContent) === null || _b === void 0 ? void 0 : _b.dateGrid;
-  return u$2(k$1, { children: [u$2("div", { id: isCopy ? getTimeGridEventCopyElementId(calendarEvent.id) : void 0, tabIndex: 0, "aria-label": calendarEvent.title + " " + getTimeStamp(calendarEvent, $app.config.locale.value, $app.translate("to")), role: "button", "data-ccid": customComponentId, "data-event-id": calendarEvent.id, onMouseDown: (e2) => createDragStartTimeout(handleStartDrag, e2), onMouseUp: (e2) => setClickedEventIfNotDragging(calendarEvent, e2), onTouchStart: (e2) => createDragStartTimeout(handleStartDrag, e2), onTouchEnd: (e2) => setClickedEventIfNotDragging(calendarEvent, e2), onClick: (e2) => invokeOnEventClickCallback($app, calendarEvent, e2), onDblClick: (e2) => invokeOnEventDoubleClickCallback($app, calendarEvent, e2), onKeyDown: handleKeyDown, className: eventClasses.join(" "), style: {
+  return u$2(k$1, { children: [u$2("div", { id: isCopy ? getTimeGridEventCopyElementId(calendarEvent.id) : void 0, tabIndex: 0, "aria-label": calendarEvent.title + " " + getTimeStamp(calendarEvent, $app.config.locale.value, $app.translate("to")), role: "button", "data-ccid": customComponentId, "data-event-id": calendarEvent.id, onMouseDown: (e2) => createDragStartTimeout(handleStartDrag, e2), onMouseUp: (e2) => setClickedEventIfNotDragging(calendarEvent, e2), onTouchStart: (e2) => createDragStartTimeout(handleStartDrag, e2), onTouchEnd: (e2) => setClickedEventIfNotDragging(calendarEvent, e2), onClick: () => invokeOnEventClickCallback($app, calendarEvent), onDblClick: () => invokeOnEventDoubleClickCallback($app, calendarEvent), onKeyDown: handleKeyDown, className: eventClasses.join(" "), style: {
     width: `calc(${calendarEvent._nDaysInGrid * 100}% - ${getWidthToSubtract(hasOverflowLeft, hasOverflowRight, !customComponent)}px)`,
     gridRow,
     display: eventCopy ? "none" : "flex",
@@ -6340,7 +6129,7 @@ const filterByRange = (events, range) => {
 };
 const WeekWrapper = ({ $app, id }) => {
   document.documentElement.style.setProperty("--sx-week-grid-height", `${$app.config.weekOptions.value.gridHeight}px`);
-  const [week, setWeek] = d$2({});
+  const [week, setWeek] = h$1({});
   useSignalEffect(() => {
     var _a, _b;
     const rangeStart = (_a = $app.calendarState.range.value) === null || _a === void 0 ? void 0 : _a.start;
@@ -6465,17 +6254,17 @@ function MonthGridEvent({ gridRow, calendarEvent, date, isFirstWeek, isLastWeek 
   }, [calendarEvent]);
   const handleOnClick = (e2) => {
     e2.stopPropagation();
-    invokeOnEventClickCallback($app, calendarEvent, e2);
+    invokeOnEventClickCallback($app, calendarEvent);
   };
   const handleOnDoubleClick = (e2) => {
     e2.stopPropagation();
-    invokeOnEventDoubleClickCallback($app, calendarEvent, e2);
+    invokeOnEventDoubleClickCallback($app, calendarEvent);
   };
   const handleKeyDown = (e2) => {
     if (e2.key === "Enter" || e2.key === " ") {
       e2.stopPropagation();
       setClickedEvent(e2, calendarEvent);
-      invokeOnEventClickCallback($app, calendarEvent, e2);
+      invokeOnEventClickCallback($app, calendarEvent);
       nextTick(() => {
         focusModal($app);
       });
@@ -6546,7 +6335,7 @@ function MonthGridDay({ day, isFirstWeek, isLastWeek }) {
     "sx__month-grid-day",
     getClassNameForWeekday(jsDate.getDay())
   ];
-  const [wrapperClasses, setWrapperClasses] = d$2(baseClasses);
+  const [wrapperClasses, setWrapperClasses] = h$1(baseClasses);
   y$1(() => {
     const classes = [...baseClasses];
     if (dayMonth !== selectedDateMonth)
@@ -6652,7 +6441,7 @@ const positionInMonth = (month, sortedEvents) => {
   return month;
 };
 const MonthGridWrapper = ({ $app, id }) => {
-  const [month, setMonth] = d$2([]);
+  const [month, setMonth] = h$1([]);
   useSignalEffect(() => {
     $app.calendarEvents.list.value.forEach((event) => {
       event._eventFragments = {};
@@ -6667,7 +6456,7 @@ const MonthGridWrapper = ({ $app, id }) => {
       });
     });
     const filteredEvents = $app.calendarEvents.filterPredicate.value ? $app.calendarEvents.list.value.filter($app.calendarEvents.filterPredicate.value) : $app.calendarEvents.list.value;
-    setMonth(positionInMonth(newMonth, filteredEvents.sort(sortEventsForMonthGrid)));
+    setMonth(positionInMonth(newMonth, filteredEvents.sort(sortEventsByStartAndEndWithoutConsideringTime)));
   });
   return u$2(AppContext.Provider, { value: $app, children: u$2("div", { id, className: "sx__month-grid-wrapper", children: month.map((week, index) => u$2(MonthGridWeek, { week, isFirstWeek: index === 0, isLastWeek: index === month.length - 1 }, index)) }) });
 };
@@ -6791,7 +6580,7 @@ function MonthAgendaEvent({ calendarEvent }) {
     borderLeft: `4px solid var(--sx-color-${calendarEvent._color})`
   };
   const customComponent = $app.config._customComponentFns.monthAgendaEvent;
-  const customComponentId = customComponent ? "custom-month-agenda-event-" + randomStringId() : void 0;
+  const customComponentId = customComponent ? "custom-month-agenda-event-" + calendarEvent.id : void 0;
   y$1(() => {
     if (!customComponent)
       return;
@@ -6801,17 +6590,17 @@ function MonthAgendaEvent({ calendarEvent }) {
   }, [calendarEvent]);
   const onClick = (e2) => {
     setClickedEvent(e2, calendarEvent);
-    invokeOnEventClickCallback($app, calendarEvent, e2);
+    invokeOnEventClickCallback($app, calendarEvent);
   };
   const onDoubleClick = (e2) => {
     setClickedEvent(e2, calendarEvent);
-    invokeOnEventDoubleClickCallback($app, calendarEvent, e2);
+    invokeOnEventDoubleClickCallback($app, calendarEvent);
   };
   const onKeyDown = (e2) => {
     if (e2.key === "Enter" || e2.key === " ") {
       e2.stopPropagation();
       setClickedEvent(e2, calendarEvent);
-      invokeOnEventClickCallback($app, calendarEvent, e2);
+      invokeOnEventClickCallback($app, calendarEvent);
       nextTick(() => {
         focusModal($app);
       });
@@ -6839,7 +6628,7 @@ const MonthAgendaWrapper = ({ $app, id }) => {
     const filteredEvents = $app.calendarEvents.filterPredicate.value ? $app.calendarEvents.list.value.filter($app.calendarEvents.filterPredicate.value) : $app.calendarEvents.list.value;
     return positionEventsInAgenda(createAgendaMonth($app.datePickerState.selectedDate.value, $app.timeUnitsImpl), filteredEvents.sort(sortEventsByStartAndEnd));
   };
-  const [agendaMonth, setAgendaMonth] = d$2(getMonth());
+  const [agendaMonth, setAgendaMonth] = h$1(getMonth());
   y$1(() => {
     setAgendaMonth(getMonth());
   }, [
@@ -6881,6 +6670,7 @@ const dateTimeStringRegex = /^(\d{4})-(\d{2})-(\d{2}) (0[0-9]|1[0-9]|2[0-3]):[0-
 const dateStringRegex$1 = /^(\d{4})-(\d{2})-(\d{2})$/;
 const DateFormats = {
   DATE_STRING: /^\d{4}-\d{2}-\d{2}$/,
+  TIME_STRING: /^\d{2}:\d{2}$/,
   DATE_TIME_STRING: /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/
 };
 class InvalidDateTimeError2 extends Error {
@@ -7040,12 +6830,6 @@ class CalendarEventImpl2 {
       value: void 0
     });
     Object.defineProperty(this, "_totalConcurrentEvents", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "_maxConcurrentEvents", {
       enumerable: true,
       configurable: true,
       writable: true,
@@ -7530,18 +7314,18 @@ const createCalendarControlsPlugin = () => {
 };
 export {
   EventDay as E,
-  createCalendar as a,
-  createCalendarControlsPlugin as b,
+  Ji as J,
+  createCalendarControlsPlugin as a,
+  createCalendar as b,
   createEventsServicePlugin as c,
   createViewDay as d,
   createViewWeek as e,
   d$1 as f,
-  d$2 as g,
-  u$2 as h,
-  E as i,
+  E as g,
+  h$1 as h,
   k$1 as k,
   r,
-  uo as u,
+  u$2 as u,
   viewWeek as v,
   y$1 as y
 };

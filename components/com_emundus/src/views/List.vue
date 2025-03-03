@@ -557,6 +557,8 @@ export default {
 
           this.loading.filters = false;
         }
+      } else {
+        this.loading.filters = false;
       }
     },
 
