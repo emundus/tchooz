@@ -151,7 +151,7 @@ class AmmonFactory
 		$employment = null;
 
 		$configurations = array_filter($this->configurations, function ($configuration) use ($collection) {
-			return $configuration->action === 'create' && $configuration->name === 'employment' && $configuration->collection === $collection;
+			return $configuration->action === 'create' && $configuration->name === 'employment' && $configuration->collectionname === $collection;
 		});
 
 		if (empty($configurations))
@@ -177,7 +177,37 @@ class AmmonFactory
 	public function createManagerEntity(EmploymentEntity $employmentEntity): UserEntity
 	{
 		$configurations = array_filter($this->configurations, function ($configuration) {
-			return $configuration->action === 'create' && $configuration->name === 'manager';
+			return $configuration->action === 'create' && $configuration->name === 'manager' && $configuration->collectionname === 'user';
+		});
+
+		if (empty($configurations))
+		{
+			throw new \InvalidArgumentException('User configuration not found');
+		}
+
+		$mapper = new \ApiMapper(current($configurations), $this->fnum);
+		$values = $mapper->setMappingFromFnum();
+
+		return new UserEntity(
+			$values['firstName'],
+			$values['lastName'],
+			'',
+			$values['CivilStatusCode'],
+			$values['GenderCode'],
+			'',
+			'',
+			'',
+			'INT',
+			$this->generateExternalReference('EMUNDUS_USER', $values['email']),
+			[],
+			[$employmentEntity]
+		);
+	}
+
+	public function createRefereeEntity(EmploymentEntity $employmentEntity): UserEntity
+	{
+		$configurations = array_filter($this->configurations, function ($configuration) {
+			return $configuration->action === 'create' && $configuration->name === 'referee' && $configuration->collectionname === 'user';
 		});
 
 		if (empty($configurations))
