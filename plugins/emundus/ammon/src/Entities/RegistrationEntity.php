@@ -30,7 +30,7 @@ class RegistrationEntity {
 		public string $CompanyExternalReference = '',
 		public string $ContactExternalReference = '',
 	) {
-		$utc_date = new \DateTime('now', 'UTC');
+		$utc_date = new \DateTime('now', new \DateTimeZone('UTC'));
 		$this->Date = $utc_date->format('Y-m-d\TH:i:s\Z');
 		$this->OrderPricingDate = $utc_date->format('Y-m-d\TH:i:s\Z');
 	}
