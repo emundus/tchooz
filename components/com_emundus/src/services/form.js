@@ -401,5 +401,17 @@ export default {
         error: error
       };
     }
+  },
+
+  async getAddPipeStatus()
+  {
+    try {
+      return await fetchClient.get('getaddpipestatus');
+    } catch (error) {
+      return {
+        status: false,
+        error: error
+      };
+    }
   }
 };
