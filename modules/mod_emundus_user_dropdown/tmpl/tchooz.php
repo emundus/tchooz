@@ -115,7 +115,7 @@ if ($user != null)
             background-position-x: 95%;
             background-position-y: 54%;
             -webkit-appearance: none;
-            background-image: url('../../../../images/emundus/arrow.svg');
+            background-image: url('images/emundus/arrow.svg');
             background-size: 8px;
             background-repeat: no-repeat;
             -moz-appearance: none;
