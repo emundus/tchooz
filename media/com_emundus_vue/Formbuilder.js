@@ -5392,6 +5392,7 @@ const _sfc_main$a = {
       this.fileTypes = fileTypes;
       this.fileTypes.forEach((filetype) => {
         if (this.addPipeEnabled && filetype.value === "mp4") {
+          filetype.title = "COM_EMUNDUS_FORM_BUILDER_FORMATS_VIDEO_ADDPIPE";
           filetype.value = "video";
         }
         this.document.selectedTypes[filetype.value] = false;
