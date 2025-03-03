@@ -126,18 +126,8 @@ class EmundusModelFiles extends JModelLegacy
 		$em_other_columns = explode(',', $menu_params->get('em_other_columns'));
 
 		if (!$session->has('filter_order') || $session->get('filter_order') == 'c.id') {
-			if (in_array('overall', $em_other_columns)) {
-
-				$session->set('filter_order', 'overall');
-				$session->set('filter_order_Dir', 'desc');
-
-			}
-			else {
-
-				$session->set('filter_order', 'c.id');
-				$session->set('filter_order_Dir', 'desc');
-
-			}
+			$session->set('filter_order', 'c.id');
+			$session->set('filter_order_Dir', 'desc');
 		}
 
 		if (!$session->has('limit')) {
@@ -375,9 +365,7 @@ class EmundusModelFiles extends JModelLegacy
 				}
 			}
 		}
-		if (in_array('overall', $em_other_columns)) {
-			$this->_elements_default[] = ' AVG(ee.overall) as overall ';
-		}
+
 		if (in_array('unread_messages', $em_other_columns)) {
 			$this->_elements_default[] = ' COUNT(`m`.`message_id`) AS `unread_messages` ';
 		}
@@ -485,10 +473,6 @@ class EmundusModelFiles extends JModelLegacy
 			'status'
 		];
 
-
-		if (in_array('overall', $em_other_columns)) {
-			$can_be_ordering[] = 'overall';
-		}
 		if (in_array('commentaire', $em_other_columns)) {
 			$can_be_ordering[] = 'commentaire';
 		}
@@ -720,10 +704,6 @@ class EmundusModelFiles extends JModelLegacy
 			'eta'  => 'jos_emundus_tag_assoc'
 		];
 
-		if (in_array('overall', $em_other_columns)) {
-			$already_joined_tables['ee'] = 'jos_emundus_evaluations';
-		}
-
 		if (in_array('unread_messages', $em_other_columns)) {
 			$already_joined_tables['ec'] = 'jos_emundus_chatroom';
 			$already_joined_tables['m']  = 'jos_messages';
@@ -811,9 +791,11 @@ class EmundusModelFiles extends JModelLegacy
                     LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
                     LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jecc.fnum ';
 
-		if (in_array('overall', $em_other_columns)) {
+		/*
+		 * TODO: replace, jos_emundus_evaluations does not exist anymore
+		 * if (in_array('overall', $em_other_columns)) {
 			$query .= ' LEFT JOIN #__emundus_evaluations as ee on ee.fnum = jecc.fnum ';
-		}
+		}*/
 
 		if (in_array('unread_messages', $em_other_columns)) {
 			$query .= ' LEFT JOIN #__emundus_chatroom as ec on ec.fnum = jecc.fnum
@@ -3034,7 +3016,7 @@ class EmundusModelFiles extends JModelLegacy
 
 							foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
 								$sub_label = Text::_($element_params['sub_options']['sub_labels'][$sub_key]);
-								$sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
+								$sub_label = $sub_label === '' ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
 								$sub_label = str_replace("'", "\'", $sub_label); // escape sub label single quotes for SQL query
 								$sub_value = str_replace("'", "\'", $sub_value);
 
@@ -3069,7 +3051,7 @@ class EmundusModelFiles extends JModelLegacy
 						if (!empty($element_params['sub_options']['sub_values'])) {
 							foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
 								$sub_label = Text::_($element_params['sub_options']['sub_labels'][$sub_key]);
-								$sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
+								$sub_label = $sub_label === '' ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
 								$sub_label = str_replace("'", "\'", $sub_label); // escape sub label single quotes for SQL query
 								$sub_value = str_replace("'", "\'", $sub_value);
 
@@ -3111,7 +3093,7 @@ class EmundusModelFiles extends JModelLegacy
 								foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value)
 								{
 									$sub_label = Text::_($element_params['sub_options']['sub_labels'][$sub_key]);
-									$sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
+									$sub_label = $sub_label === '' ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
 									$sub_label = str_replace("'", "\'", $sub_label); // escape sub label single quotes for SQL query
 									$sub_value = str_replace("'", "\'", $sub_value);
 
@@ -3143,7 +3125,7 @@ class EmundusModelFiles extends JModelLegacy
 							if (!empty($element_params['sub_options']['sub_values'])) {
 								foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
 									$sub_label = Text::_($element_params['sub_options']['sub_labels'][$sub_key]);
-									$sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
+									$sub_label = $sub_label === '' ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
 									$sub_label = str_replace("'", "\'", $sub_label); // escape sub label single quotes for SQL query
 									$sub_value = str_replace("'", "\'", $sub_value);
 

@@ -6903,7 +6903,16 @@ const _sfc_main$5 = {
   },
   methods: {
     labelTranslate({ label }) {
-      return label ? label[useGlobalStore().getShortLang] : "";
+      let labelTranslated = label ? label[useGlobalStore().getShortLang] : "";
+      if (labelTranslated === "") {
+        let labels = Object.values(label);
+        labels.forEach((label2) => {
+          if (label2 !== "") {
+            labelTranslated = label2;
+          }
+        });
+      }
+      return labelTranslated;
     },
     defineOptions(val) {
       if (this.options_plugins.includes(val.plugin)) {
@@ -7246,12 +7255,20 @@ const _sfc_main$3 = {
   },
   methods: {
     labelTranslate({ label, name, group_id, elements }) {
-      let labelTranslated = label[useGlobalStore().getShortLang];
+      let labelTranslated = label ? label[useGlobalStore().getShortLang] : "";
+      if (labelTranslated === "") {
+        let labels = Object.values(label);
+        labels.forEach((label2) => {
+          if (label2 !== "") {
+            labelTranslated = label2;
+          }
+        });
+      }
       if (labelTranslated !== "") {
         return labelTranslated;
-      } else if (group_id) {
+      } else if (group_id && elements) {
         let groupElements = Object.values(elements);
-        let element = groupElements.find((element2) => !element2.hidden && element2.label[useGlobalStore().getShortLang] !== "");
+        let element = groupElements.find((element2) => !element2.hidden && element2.label && element2.label[useGlobalStore().getShortLang] !== "");
         return this.translate("COM_EMUNDUS_FORM_BUILDER_RULES_GROUP_WITH_ELEMENT").replace("%s", element.label[useGlobalStore().getShortLang]);
       } else {
         return name;

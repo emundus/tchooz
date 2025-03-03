@@ -151,7 +151,7 @@ class Ammon extends CMSPlugin implements SubscriberInterface
 		return $valid;
 	}
 
-	private function notAlreadyRegistered($fnum)
+	private function notAlreadyRegistered($fnum): bool
 	{
 		$notRegistered = true;
 

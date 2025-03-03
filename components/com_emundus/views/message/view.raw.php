@@ -104,7 +104,17 @@ class EmundusViewMessage extends JViewLegacy
 
 				// If we are selecting all fnums: we get them using the files model
 				if ($fnums == "all") {
-					$fnums           = $m_files->getAllFnums();
+					$source_view = $jinput->getString('source_view', 'files');
+					if ($source_view === 'evaluation') {
+						if (!class_exists('EmundusModelEvaluation')) {
+							require_once(JPATH_ROOT . '/components/com_emundus/models/evaluation.php');
+						}
+						$m_evaluation = new EmundusModelEvaluation();
+						$fnums = $m_evaluation->getAllFnums($current_user->id);
+					} else {
+						$fnums = $m_files->getAllFnums();
+					}
+
 					$formatted_fnums = [];
 					foreach ($fnums as $fnum) {
 						$tmp               = new stdClass();

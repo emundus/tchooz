@@ -1973,7 +1973,7 @@ class EmundusControllerFiles extends BaseController
 											if ($textarea_elements[$k] == 1) {
 												$v = strip_tags($v);
 											}
-											$line .= preg_replace("/\r|\t/", "", $v) . "\t";
+											$line .= preg_replace("/\r|\n|\t/", "", $v) . "\t";
 										}
 										elseif(!empty($iban_elements[$k])){
 											if($iban_elements[$k] == 1){
@@ -4078,7 +4078,7 @@ class EmundusControllerFiles extends BaseController
 					if (!class_exists('EmundusFiltersFiles')) {
 						require_once(JPATH_ROOT . '/components/com_emundus/classes/filters/EmundusFiltersFiles.php');
 					}
-					$m_filters = new EmundusFiltersFiles($module_params);
+					$m_filters = new EmundusFiltersFiles($module_params, false, true);
 
 					$response['data'] = $m_filters->getFilters();
 					$response['status'] = true;
@@ -4103,6 +4103,7 @@ class EmundusControllerFiles extends BaseController
 		if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
 			$response['msg'] = Text::_('MISSING_PARAMS');
 			$module_id = $app->input->getInt('module_id', 0);
+			$menu_id = $app->input->getInt('menu_id', 0);
 
 			if (!empty($module_id)) {
 				$response['msg'] = Text::_('NO_CALCULATION_FOR_THIS_MODULE');
@@ -4130,9 +4131,16 @@ class EmundusControllerFiles extends BaseController
 							}
 						}
 
+						if (!empty($menu_id)) {
+							$menu = $app->getMenu();
+							$menu_item = $menu->getItem($menu_id);
+						} else {
+							$menu_item = null;
+						}
+
 						require_once(JPATH_SITE . '/components/com_emundus/helpers/files.php');
 						$h_files = new EmundusHelperFiles();
-						$data = $h_files->setFiltersValuesAvailability($applied_filters, $user->id);
+						$data = $h_files->setFiltersValuesAvailability($applied_filters, $user->id, $menu_item);
 
 						$response = ['status' => true, 'code' => 200, 'msg' => Text::_('SUCCESS'), 'data' => $data];
 					}
@@ -4183,14 +4191,19 @@ class EmundusControllerFiles extends BaseController
 			$fnums  = $this->input->getString('fnums', null);
 			$action = $this->input->getInt('action_id', 0);
 			$verb   = $this->input->getString('verb', '');
+			$menu_id = $this->input->getInt('menu_id', 0);
 
 			if (!empty($fnums))
 			{
-				$m_files = new EmundusModelFiles();
-
 				if ($fnums === 'all')
 				{
-					$fnums = $m_files->getAllFnums();
+					if ($this->isEvaluationMenu($menu_id)) {
+						$m_evaluation = new EmundusModelEvaluation();
+						$fnums = $m_evaluation->getAllFnums($this->_user->id);
+					} else {
+						$m_files = new EmundusModelFiles();
+						$fnums = $m_files->getAllFnums();
+					}
 				}
 				else if (!is_array($fnums))
 				{
@@ -4242,5 +4255,21 @@ class EmundusControllerFiles extends BaseController
 
 		echo json_encode($response);
 		exit;
+	}
+
+	private function isEvaluationMenu(int $menu_id): bool
+	{
+		$is_evaluation_menu = false;
+
+		if (!empty($menu_id)) {
+			$menu = Factory::getApplication()->getMenu();
+			$menu_item = $menu->getItem($menu_id);
+
+			if ($menu_item->link === 'index.php?option=com_emundus&view=evaluation') {
+				$is_evaluation_menu = true;
+			}
+		}
+
+		return $is_evaluation_menu;
 	}
 }
