@@ -600,6 +600,15 @@ div#frame.outline {
   }
 }
 
+.em-applicant,
+.em-guest {
+  #g-navigation, #g-header {
+    .g-container {
+      width: 75rem;
+    }
+  }
+}
+
 
 .right-divider {
   border-right: solid 1px #cecece;
@@ -4774,6 +4783,15 @@ div#em-appli-block {
     gap: 40px;
     margin: 30px 0 0 0;
   }
+
+  .em-applicant,
+  .em-guest {
+    #g-navigation, #g-header {
+      .g-container {
+        width: 100%;
+      }
+    }
+  }
 }
 
 /* DROPZONE */
@@ -5270,6 +5288,15 @@ screen and (max-height: 769px) {
     max-height: 100%;
     height: auto;
   }
+
+  .em-applicant,
+  .em-guest {
+    #g-navigation, #g-header {
+      .g-container {
+        width: 100%;
+      }
+    }
+  }
 }
 
 @media all and (min-width: 434px) and (max-width: 479px) {
@@ -5291,12 +5318,20 @@ screen and (max-height: 769px) {
   .gantry #g-header .g-grid {
     row-gap: 20px;
     align-items: center;
-    padding-top: 61px;
   }
 
   .gantry .em-guest #g-navigation .g-grid,
   .gantry .em-guest #g-header .g-grid{
     padding-top: 0;
+  }
+
+  .em-applicant,
+  .em-guest {
+    #g-navigation, #g-header {
+      .g-container {
+        width: 100%;
+      }
+    }
   }
 }
 
@@ -5310,12 +5345,6 @@ screen and (max-height: 769px) {
 }
 
 @media all and (max-width: 479px) {
-
-  #g-navigation {
-    .g-grid {
-      padding-top: 61px;
-    }
-  }
 
   .em-guest #g-navigation .g-grid {
     padding-top: 0;
@@ -6280,6 +6309,15 @@ screen and (max-height: 769px) {
   button.save {
     margin-left: 20px !important;
   }
+
+  .em-applicant,
+  .em-guest {
+    #g-navigation, #g-header {
+      .g-container {
+        width: 44rem;
+      }
+    }
+  }
 }
 
 
@@ -6452,6 +6490,15 @@ screen and (max-height: 769px) {
 
   .bas-footer {
     width: 95%;
+  }
+
+  .em-applicant,
+  .em-guest {
+    #g-navigation, #g-header {
+      .g-container {
+        width: 60rem;
+      }
+    }
   }
 }
 

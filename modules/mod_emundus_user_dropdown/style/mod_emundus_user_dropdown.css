@@ -430,6 +430,12 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     top: -6px;
 }
 
+.em-applicant .dropdown #background-shapes,
+.em-guest .header-c #background-shapes {
+    display: none;
+}
+
+
 /* Déconnecté */
 #background-shapes {
     mask-image: url('/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg');
