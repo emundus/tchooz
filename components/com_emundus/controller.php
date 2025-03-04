@@ -1835,7 +1835,7 @@ class EmundusController extends JControllerLegacy
 		}
 
 		// Check if the user is an applicant and it is his file.
-		if (!EmundusHelperAccess::isFnumMine($fnum, $current_user->id) && !EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id)) {
+		if (!EmundusHelperAccess::isFnumMine($fnum, $current_user->id) && !EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
 			if ($fileInfo->can_be_viewed != 1 && !empty($fileInfo)) {
 				die (JText::_('ACCESS_DENIED'));
 			}
