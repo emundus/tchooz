@@ -13,7 +13,6 @@ use JComponentHelper;
 use JFactory;
 use JLog;
 
-use classes\api\Api;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 
@@ -30,24 +29,18 @@ class PostgREST extends Api
 		$this->db = Factory::getDbo();
 
 		$this->setAuth();
-		$this->setHeaders();
-		$this->setBaseUrl();
-		$this->setClient();
-	}
 
-	public function setBaseUrl($baseUrl): void
-	{
-		$config        = ComponentHelper::getParams('com_emundus');
-		$this->baseUrl = $config->get('postgrest_api_base_url', '');
-	}
-
-	public function setHeaders($headers): void
-	{
 		$auth = $this->getAuth();
-
-		$this->headers = array(
+		$headers = array(
 			'Authorization' => 'Bearer ' . $auth['bearer_token'],
 		);
+		$this->setHeaders($headers);
+
+		$config = ComponentHelper::getParams('com_emundus');
+		$baseUrl = $config->get('postgrest_api_base_url', '');
+		$this->setBaseUrl($baseUrl);
+
+		$this->setClient();
 	}
 
 	public function setAuth(): void

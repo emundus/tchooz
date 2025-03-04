@@ -25,29 +25,23 @@ class Glpi extends Api
 	{
 		parent::__construct();
 
-		$this->setBaseUrl();
+		$config = ComponentHelper::getParams('com_emundus');
+		$baseUrl = $config->get('glpi_api_base_url', '');
+		$this->setBaseUrl($baseUrl);
+
 		$this->setClient();
 		$this->setAuth();
-		$this->setHeaders();
+
+		$auth = $this->getAuth();
+		$headers = array(
+			'App-Token' => $auth['app_token'],
+			'Session-token' => $auth['session_token'],
+		);
+		$this->setHeaders($headers);
+
 		if (!empty($entities)) {
 			$this->setEntities($entities);
 		}
-	}
-
-	public function setBaseUrl($baseUrl): void
-	{
-		$config        = ComponentHelper::getParams('com_emundus');
-		$this->baseUrl = $config->get('glpi_api_base_url', '');
-	}
-
-	public function setHeaders($headers): void
-	{
-		$auth = $this->getAuth();
-
-		$this->headers = array(
-			'App-Token'     => $auth['app_token'],
-			'Session-token' => $auth['session_token'],
-		);
 	}
 
 	public function setAuth(): void
