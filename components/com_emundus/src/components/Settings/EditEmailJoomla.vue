@@ -1,5 +1,5 @@
 <template>
-  <div class="tw-w-full tw-rounded-coordinator tw-p-6 tw-bg-white tw-border tw-border-neutral-300 tw-relative">
+  <div class="tw-w-full tw-rounded-2xl tw-p-6 tw-bg-white tw-border tw-border-neutral-300 tw-relative">
     <Tabs :tabs="tabs"></Tabs>
 
     <template v-if="!loading && tabs[0].active">
