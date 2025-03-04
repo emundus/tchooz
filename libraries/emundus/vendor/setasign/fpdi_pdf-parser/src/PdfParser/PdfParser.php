@@ -276,7 +276,7 @@ class PdfParser extends \setasign\Fpdi\PdfParser\PdfParser
         $value = parent::parsePdfHexString();
 
         if ($value instanceof PdfHexString && $this->secHandler instanceof SecHandler) {
-            $v = $value->value;
+            $v = preg_replace('/[^0-9A-Fa-f]/', '', $value->value);
             if ((strlen($v) % 2) === 1) {
                 $v .= '0';
             }

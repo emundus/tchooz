@@ -1,5 +1,0 @@
-phpspec:
-  namespace: Svrnm\ExcelDataTables
-  psr4_prefix: src
-  spec_path: src
-  spec_prefix: Spec\Svrnm\ExcelDataTables

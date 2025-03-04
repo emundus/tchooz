@@ -3,8 +3,9 @@
     <h3 align="center">Gotenberg PHP</h3>
     <p align="center">A PHP client for interacting with Gotenberg</p>
     <p align="center">
-        <a href="https://packagist.org/packages/gotenberg/gotenberg-php"><img alt="Latest Version" src="http://poser.pugx.org/gotenberg/gotenberg-php/v" /></a>
-        <a href="https://packagist.org/packages/gotenberg/gotenberg-php"><img alt="Total Downloads" src="http://poser.pugx.org/gotenberg/gotenberg-php/downloads" /></a>
+        <a href="https://packagist.org/packages/gotenberg/gotenberg-php"><img alt="Latest Version" src="https://poser.pugx.org/gotenberg/gotenberg-php/v" /></a>
+        <a href="https://packagist.org/packages/gotenberg/gotenberg-php"><img alt="Total Downloads" src="https://poser.pugx.org/gotenberg/gotenberg-php/downloads" /></a>
+        <a href="https://packagist.org/packages/gotenberg/gotenberg-php"><img alt="Monthly Downloads" src="https://poser.pugx.org/gotenberg/gotenberg-php/d/monthly" /></a>
         <a href="https://github.com/gotenberg/gotenberg-php/actions/workflows/continuous_integration.yml"><img alt="Continuous Integration" src="https://github.com/gotenberg/gotenberg-php/actions/workflows/continuous_integration.yml/badge.svg" /></a>
         <a href="https://codecov.io/gh/gotenberg/gotenberg-php"><img alt="https://codecov.io/gh/gotenberg/gotenberg" src="https://codecov.io/gh/gotenberg/gotenberg-php/branch/main/graph/badge.svg" /></a>
     </p>
@@ -16,11 +17,14 @@ This package is a PHP client for [Gotenberg](https://gotenberg.dev), a developer
 tools like Chromium and LibreOffice for converting numerous document formats (HTML, Markdown, Word, Excel, etc.) into 
 PDF files, and more!
 
-⚠️ 
+| Gotenberg version   | Client                                                                                            |
+|---------------------|---------------------------------------------------------------------------------------------------|
+| `8.x` **(current)** | `v2.x` **(current)**                                                                              |
+| `7.x`               | `v1.x`                                                                                            |
+| `6.x`               | [thecodingmachine/gotenberg-php-client](https://github.com/thecodingmachine/gotenberg-php-client) |
 
-For **Gotenberg 6.x**, use [thecodingmachine/gotenberg-php-client](https://github.com/thecodingmachine/gotenberg-php-client) instead.
-
-For **Gotenberg 7.x**, use version `v1.1.8`.
+> [!TIP]
+> An experimental [Symfony Bundle](https://github.com/sensiolabs/GotenbergBundle) is also available!
 
 ## Quick Examples
 
@@ -36,16 +40,15 @@ $filename = Gotenberg::save(
 );
 ```
 
-You may also convert Office documents and merge them:
+You may also convert Office documents:
 
 ```php
 use Gotenberg\Gotenberg;
 use Gotenberg\Stream;
 
-// Converts Office documents to PDF and merges them.
+// Converts Office documents to PDF.
 $response = Gotenberg::send(
     Gotenberg::libreOffice($apiUrl)
-        ->merge()
         ->convert(
             Stream::path($pathToDocx),
             Stream::path($pathToXlsx)
@@ -80,14 +83,69 @@ If you're not sure which adapter you should use, consider using the `php-http/gu
 composer require php-http/guzzle7-adapter
 ```
 
+## Build a request
+
+This package is organized around *modules*, namely:
+
+```php
+use Gotenberg\Gotenberg;
+
+Gotenberg::chromium($apiUrl);
+Gotenberg::libreOffice($apiUrl);
+Gotenberg::pdfEngines($apiUrl);
+```
+
+Each of these modules offers a variety of methods to populate a *multipart/form-data* request.
+
+After setting all optional form fields and files, you can create a request by calling the method that represents the endpoint. 
+For example, to call the `/forms/chromium/convert/url` route:
+
+```php
+use Gotenberg\Gotenberg;
+
+Gotenberg::chromium($apiUrl)
+    ->pdf()                  // Or screenshot().
+    ->singlePage()           // Optional.
+    ->url('https://my.url'));
+```
+
+> [!TIP]
+> Head to the [documentation](https://gotenberg.dev/) to learn about all possibilities.
+
+If the route requires form files, use the `Stream` class to create them:
+
+```php
+use Gotenberg\DownloadFrom;
+use Gotenberg\Gotenberg;
+use Gotenberg\Stream;
+
+Gotenberg::libreOffice($apiUrl)
+    ->convert(Stream::path($pathToDocument));
+
+// Alternatively, you may also set the content directly.
+Gotenberg::chromium($apiUrl)
+    ->pdf()
+    ->assets(Stream::string('style.css', 'body{font-family: Arial, Helvetica, sans-serif;}'))
+    ->html(Stream::string('index.html', '<html><head><link rel="stylesheet" type="text/css" href="style.css"></head><body><p>Hello, world!</p></body></html>'));
+
+// Or create your stream from scratch.
+Gotenberg::libreOffice($apiUrl)
+    ->convert(new Stream('document.docx', $stream));
+
+// Or even tell Gotenberg to download the files for you.
+Gotenberg::libreOffice($apiUrl)
+    ->downloadFrom([
+        new DownloadFrom('https://url.to.document.docx', ['MyHeader' => 'MyValue'])
+    ])
+    ->convert();
+```
+
 ## Send a request to the API
 
-After having created the HTTP request (see below), you have two options:
+After having created the HTTP request, you have two options:
 
 1. Get the response from the API and handle it according to your need.
 2. Save the resulting file to a given directory.
-
-> In the following examples, we assume the Gotenberg API is available at http://localhost:3000.
 
 ### Get a response
 
@@ -96,10 +154,10 @@ You may use any HTTP client that is able to handle a *PSR-7* `RequestInterface` 
 ```php
 use Gotenberg\Gotenberg;
 
-$request = Gotenberg::chromium('http://localhost:3000')
+$request = Gotenberg::chromium($apiUrl)
     ->pdf()
     ->url('https://my.url');
-    
+
 $response = $client->sendRequest($request);
 ```
 
@@ -108,7 +166,7 @@ If you have a *PSR-18* compatible HTTP client (see [Installation](#installation)
 ```php
 use Gotenberg\Gotenberg;
 
-$request = Gotenberg::chromium('http://localhost:3000')
+$request = Gotenberg::chromium($apiUrl)
     ->pdf()
     ->url('https://my.url');
 
@@ -138,7 +196,7 @@ If you have a *PSR-18* compatible HTTP client (see [Installation](#installation)
 ```php
 use Gotenberg\Gotenberg;
 
-$request = Gotenberg::chromium('http://localhost:3000')
+$request = Gotenberg::chromium($apiUrl)
     ->pdf()
     ->url('https://my.url');
     
@@ -163,7 +221,7 @@ You may override the output filename with:
 ```php
 use Gotenberg\Gotenberg;
 
-$request = Gotenberg::chromium('http://localhost:3000')
+$request = Gotenberg::chromium($apiUrl)
     ->pdf()
     ->outputFilename('my_file')
     ->url('https://my.url');
@@ -178,7 +236,7 @@ By default, Gotenberg creates a *UUID* trace that identifies a request in its lo
 ```php
 use Gotenberg\Gotenberg;
 
-$request = Gotenberg::chromium('http://localhost:3000')
+$request = Gotenberg::chromium('$apiUrl')
     ->pdf()
     ->trace('debug')
     ->url('https://my.url');
@@ -189,7 +247,7 @@ It will set the header `Gotenberg-Trace` with your value. You may also override 
 ```php
 use Gotenberg\Gotenberg;
 
-$request = Gotenberg::chromium('http://localhost:3000')
+$request = Gotenberg::chromium($apiUrl)
     ->pdf()
     ->trace('debug', 'Request-Id')
     ->url('https://my.url');
@@ -198,7 +256,7 @@ $request = Gotenberg::chromium('http://localhost:3000')
 Please note that it should be the same value as defined by the `--api-trace-header` Gotenberg's property.
 
 The response from Gotenberg will also contain the trace header. In case of error, both the `Gotenberg::send` and 
-`Gotenberg::save` methods throw a `GotenbergApiErroed` exception that provides the following method for retrieving the 
+`Gotenberg::save` methods throw a `GotenbergApiErrored` exception that provides the following method for retrieving the 
 trace:
 
 ```php
@@ -207,7 +265,7 @@ use Gotenberg\Gotenberg;
 
 try {
     $response = Gotenberg::send(
-        Gotenberg::chromium('http://localhost:3000')
+        Gotenberg::chromium($apiUrl)
             ->screenshot()
             ->url('https://my.url')
     );
@@ -217,7 +275,3 @@ try {
     $trace = $e->getGotenbergTrace('Request-Id');
 }
 ```
-
-## More
-
-Head to the [documentation](https://gotenberg.dev/) to learn how to interact with Gotenberg 🚀

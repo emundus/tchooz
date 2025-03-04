@@ -139,6 +139,37 @@ trait ChromiumMultipartFormDataModule
     }
 
     /**
+     * Forces Gotenberg to return a 409 Conflict response if the HTTP status
+     * code from at least one resource is not acceptable.
+     *
+     * @param int[] $statusCodes
+     *
+     * @throws NativeFunctionErrored
+     */
+    public function failOnResourceHttpStatusCodes(array $statusCodes): self
+    {
+        $json = json_encode($statusCodes);
+        if ($json === false) {
+            throw NativeFunctionErrored::createFromLastPhpError();
+        }
+
+        $this->formValue('failOnResourceHttpStatusCodes', $json);
+
+        return $this;
+    }
+
+    /**
+     * Forces Gotenberg to return a 409 Conflict if Chromium fails to load at
+     * least one resource.
+     */
+    public function failOnResourceLoadingFailed(): self
+    {
+        $this->formValue('failOnResourceLoadingFailed', true);
+
+        return $this;
+    }
+
+    /**
      * Forces Gotenberg to return a 409 Conflict response if there are
      * exceptions in the Chromium console.
      */
@@ -150,11 +181,12 @@ trait ChromiumMultipartFormDataModule
     }
 
     /**
-     * Tells Chromium to not wait for its network to be idle.
+     * Specifies whether Chromium have to wait or not for its network to be
+     * idle.
      */
-    public function skipNetworkIdleEvent(): self
+    public function skipNetworkIdleEvent(bool $skip = true): self
     {
-        $this->formValue('skipNetworkIdleEvent', true);
+        $this->formValue('skipNetworkIdleEvent', $skip ?: '0');
 
         return $this;
     }

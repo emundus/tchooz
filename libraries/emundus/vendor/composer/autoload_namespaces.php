@@ -7,5 +7,4 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Svrnm\\ExcelDataTables' => array($vendorDir . '/svrnm/exceldatatables/src'),
-    'HTMLPurifier' => array($vendorDir . '/ezyang/htmlpurifier/library'),
 );
