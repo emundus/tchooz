@@ -3363,7 +3363,7 @@ class EmundusModelEvaluation extends JModelList
 				if ($res->status)
 				{
 					$logs_params = ['created' => ['filename' => $letter->title]];
-					EmundusModelLogs::log($user->id, (int) substr($fnum, -7), $fnum, 27, 'c', 'COM_EMUNDUS_ACCESS_LETTERS', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
+					EmundusModelLogs::log($user->id, (int)$fnumInfo[$fnum]['applicant_id'], $fnum, 27, 'c', 'COM_EMUNDUS_ACCESS_LETTERS', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
 				}
 			}
 		}
