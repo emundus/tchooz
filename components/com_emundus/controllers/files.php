@@ -1591,6 +1591,7 @@ class EmundusControllerFiles extends BaseController
 		$limit           = $this->input->getInt('limit', 0);
 		$nbcol           = $this->input->get('nbcol', 0);
 		$elts            = $this->input->getString('elts', null);
+		$step_elts 	     = $this->input->getString('step_elts', []);
 		$objs            = $this->input->getString('objs', null);
 		$opts            = $this->input->getString('opts', null);
 		$methode         = $this->input->getString('methode', null);
@@ -1638,11 +1639,31 @@ class EmundusControllerFiles extends BaseController
 		}
 
 		if ($fnumsArray !== false) {
+			if (!empty($step_elts)) {
+				$evaluations_by_fnum_by_step = $m_files->getEvaluationsArray($fnums, $step_elts);
+
+				$step_element_ids = [];
+				foreach ($step_elts as $step_id => $step_elements) {
+					$step_element_ids = array_merge($step_element_ids, array_values($step_elements));
+				}
+				$step_elements_name = $h_files->getElementsName(implode(',', $step_element_ids));
+
+				$ordered_elements[] = 'step_id';
+
+				foreach ($step_elements_name as $element_id => $step_element_name) {
+					$ordered_elements[$element_id] = $step_element_name;
+				}
+
+				$fnumsArray = $m_files->mergeEvaluations($fnumsArray, $evaluations_by_fnum_by_step, $step_elements_name);
+
+			}
+
 			// On met a jour la liste des fnums traités
 			$fnums = array();
 			foreach ($fnumsArray as $fnum) {
-				$fnums[] = $fnum['fnum'];
+				$fnums[] = $fnum['fnum'];	
 			}
+
 			$not_already_handled_fnums = array_diff($not_already_handled_fnums, $fnums);
 			$session->set('not_already_handled_fnums', $not_already_handled_fnums);
 
@@ -1724,12 +1745,15 @@ class EmundusControllerFiles extends BaseController
 
 			// Here we filter elements which are already present but under a different name or ID, by looking at tablename___element_name.
 			$elts_present = [];
-			foreach ($ordered_elements as $elt_id => $o_elt) {
+			foreach ($ordered_elements as $elt_id => $o_elt)
+			{
 				$element = !empty($o_elt->table_join) ? $o_elt->table_join . '___' . $o_elt->element_name : $o_elt->tab_name . '___' . $o_elt->element_name;
-				if (in_array($element, $elts_present)) {
+				if (in_array($element, $elts_present))
+				{
 					unset($ordered_elements[$elt_id]);
 				}
-				else {
+				else
+				{
 					$elts_present[] = $element;
 				}
 			}
@@ -1749,6 +1773,14 @@ class EmundusControllerFiles extends BaseController
 				$textarea_elements = [];
 				$iban_elements = [];
 				foreach ($ordered_elements as $fLine) {
+					if ($fLine === 'step_id') {
+						$line .= Text::_('COM_EMUNDUS_EVALUATION_EVAL_STEP') . "\t";
+						$line .= Text::_('COM_EMUNDUS_EVALUATION_ID') . "\t";
+						$line .= Text::_('COM_EMUNDUS_EVALUATION_EVALUATOR') . "\t";
+						$nbcol += 3;
+						continue;
+					}
+
 					if ($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_label != 'Programme' && $fLine->element_name != 'campaign_id') {
 						if (count($opts) > 0 && $fLine->element_name != "date_time" && $fLine->element_name != "date_submitted") {
 							if (in_array("form-title", $opts) && in_array("form-group", $opts)) {
