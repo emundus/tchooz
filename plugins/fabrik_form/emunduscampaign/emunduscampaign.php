@@ -13,6 +13,7 @@
  */
 
 // No direct access
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
@@ -84,12 +85,43 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 
 	public function onBeforeLoad()
 	{
+		$formModel = $this->getModel();
 		$current_url = Uri::getInstance()->toString();
 		$parse       = parse_url($current_url);
 
 		if (strpos($current_url, 'redirect') !== false) {
 			$new_url = str_replace($parse['scheme'] . '://' . $parse['host'], '', strstr($current_url, '&redirect=', true));
 			$this->app->redirect($new_url);
+		}
+
+		$applicant_can_renew = ComponentHelper::getParams('com_emundus')->get('applicant_can_renew', '0');
+		$cid = $this->app->getInput()->getInt('cid');
+		if(!empty($cid)) {
+			require_once JPATH_SITE . '/components/com_emundus/models/campaign.php';
+			$m_campaign = new EmundusModelCampaign;
+			$allowed_campaigns = $m_campaign->getAllowedCampaign($this->app->getIdentity()->id);
+
+			if (!in_array($cid, $allowed_campaigns)) {
+				switch ($applicant_can_renew) {
+					case 0:
+						$message = Text::_('CANNOT_HAVE_MULTI_FILE');
+						break;
+					case 2:
+						$message = Text::_('USER_HAS_FILE_FOR_CAMPAIGN');
+						break;
+					case 3:
+						$message = Text::_('USER_HAS_FILE_FOR_YEAR');
+						break;
+					default:
+						$message = Text::_('USER_HAS_NO_ACCESS_TO_CAMPAIGN');
+				}
+
+				$this->app->enqueueMessage(Text::_($message), 'error');
+				$this->app->redirect('index.php');
+			}
+
+			$formModel->data['jos_emundus_campaign_candidature___campaign_id_raw'] = $cid;
+			$formModel->data['jos_emundus_campaign_candidature___campaign_id'] = $cid;
 		}
 	}
 

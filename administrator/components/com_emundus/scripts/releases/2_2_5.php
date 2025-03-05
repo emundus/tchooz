@@ -43,6 +43,25 @@ class Release2_2_5Installer extends ReleaseInstaller
 
 			EmundusHelperUpdate::enableEmundusPlugins('fabrikcron', 'system');
 
+			$query->clear()
+				->select('fe.id,fe.default')
+				->from($this->db->quoteName('#__fabrik_elements','fe'))
+				->leftJoin($this->db->quoteName('#__fabrik_formgroup','ffg').' ON '.$this->db->quoteName('ffg.group_id').' = '.$this->db->quoteName('fe.group_id'))
+				->leftJoin($this->db->quoteName('#__fabrik_forms','ff').' ON '.$this->db->quoteName('ff.id').' = '.$this->db->quoteName('ffg.form_id'))
+				->where($this->db->quoteName('ff.label').' LIKE '.$this->db->quote('SETUP_FILL_A_NEW_APPLICATION_FORM'))
+				->where($this->db->quoteName('fe.name').' = '.$this->db->quote('campaign_id'))
+				->where($this->db->quoteName('fe.plugin').' = '.$this->db->quote('databasejoin'));
+			$this->db->setQuery($query);
+			$element = $this->db->loadObject();
+
+			if (!empty($element->id)) {
+				if(str_contains($element->default, 'getAllowedCampaign'))
+				{
+					$element->default = '';
+					$this->db->updateObject('#__fabrik_elements', $element, 'id');
+				}
+			}
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)
