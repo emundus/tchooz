@@ -1106,7 +1106,8 @@ function runAction(action, url = '', option = '') {
                     actions: actionsCheck,
                     groups: groupeEval,
                     evals: evaluators,
-                    notify: notifyEval
+                    notify: notifyEval,
+                    Itemid: itemId,
                 }),
                 success: function(result) {
 
@@ -1587,11 +1588,9 @@ function updateState(fnums, state)
         view = 'files';
     }
 
-    console.log(view, 'updateState');
-
     $.ajax({
         type:'POST',
-        url: 'index.php?option=com_emundus&controller=' + view + '&task=updatestate',
+        url: 'index.php?option=com_emundus&controller=' + view + '&task=updatestate&Itemid=' + itemId,
         dataType:'json',
         data:({
             fnums: fnums,
@@ -3846,7 +3845,8 @@ $(document).ready(function() {
                 addLoader();
 
                 nbFiles = await countFilesBeforeAction(checkInput, id, verb);
-                if(nbFiles === 1) {
+
+                if(nbFiles === 1 && checkInput !== 'all') {
                     url += '&fnum=' + JSON.parse(checkInput)[1];
                 }
 

@@ -815,13 +815,14 @@ class EmundusControllerFiles extends BaseController
 		$groups  = $this->input->getString('groups', null);
 		$evals   = $this->input->getString('evals', null);
 		$notify  = $this->input->getVar('notify', 'false');
+		$itemId  = $this->input->getInt('Itemid', 0);
 
 		$actions = (array) json_decode(stripslashes($actions));
 
 		$m_files = $this->getModel('Files');
 
 		$fnums_post = $this->input->getString('fnums', null);
-		$fnums      = ($fnums_post) == 'all' ? $m_files->getAllFnums() : (array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
+		$fnums      = ($fnums_post) == 'all' ? $m_files->getAllFnums(false, $this->_user->id, $itemId) : (array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
 
 		$validFnums = array();
 		foreach ($fnums as $fnum) {
@@ -848,27 +849,7 @@ class EmundusControllerFiles extends BaseController
 			else {
 				$msg = Text::_('COM_EMUNDUS_ACCESS_SHARE_ERROR');
 			}
-		}
-		elseif ($fnums_post == 'all') {
-			$fnums = $m_files->getAllFnums();
-			if ($groups !== null) {
-				$groups = (array) json_decode(stripslashes($groups));
-				$res    = $m_files->shareGroups($groups, $actions, $fnums);
-			}
-
-			if ($evals !== null) {
-				$evals = (array) json_decode(stripslashes($evals));
-				$res   = $m_files->shareUsers($evals, $actions, $fnums);
-			}
-
-			if ($res !== false) {
-				$msg = Text::_('COM_EMUNDUS_ACCESS_SHARE_SUCCESS');
-			}
-			else {
-				$msg = Text::_('COM_EMUNDUS_ACCESS_SHARE_ERROR');
-			}
-		}
-		else {
+		} else {
 			$msg = Text::_('COM_EMUNDUS_ACCESS_SHARE_ERROR');
 			echo json_encode((object) (array('status' => '0', 'msg' => $msg)));
 			exit;

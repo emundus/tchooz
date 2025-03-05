@@ -678,11 +678,15 @@ class EmundusModelFiles extends JModelLegacy
 	 * @return mixed
 	 * @throws Exception
 	 */
-	public function getAllUsers($limitStart = 0, $limit = 20)
+	public function getAllUsers($limitStart = 0, $limit = 20, int $menu_id = 0)
 	{
 		$user_files = [];
 
 		$current_menu = method_exists($this->app, 'getMenu') ? $this->app->getMenu()->getActive() : null;
+		if (!empty($menu_id)) {
+			$current_menu = $this->app->getMenu()->getItem($menu_id);
+		}
+
 		if (!empty($current_menu)) {
 			$menu_params      = $current_menu->getParams();
 			$em_other_columns = explode(',', $menu_params->get('em_other_columns'));
@@ -2271,45 +2275,43 @@ class EmundusModelFiles extends JModelLegacy
 	}
 
 	/**
-	 * @return bool|mixed
-	 * @throws Exception
+	 *
+	 * @return array
 	 */
-	public function getAllFnums($assoc_tab_fnums = false, $user_id = null)
+	public function getAllFnums($assoc_tab_fnums = false, $user_id = null, int $menu_id = 0): array
 	{
+		$fnums = array();
+		if (empty($user_id)) {
+			$user_id = $this->app->getIdentity()->id;
+		}
+
 		include_once(JPATH_SITE . '/components/com_emundus/models/users.php');
 		$m_users = new EmundusModelUsers;
-
-
-		if (!empty($user_id)) {
-			$current_user = Factory::getUser($user_id);
-		} else {
-			$current_user = $this->app->getIdentity();
-		}
-
-		$this->code = $m_users->getUserGroupsProgrammeAssoc($current_user->id);
-		
-		$groups               = $m_users->getUserGroups($current_user->id, 'Column');
+		$this->code = $m_users->getUserGroupsProgrammeAssoc($user_id);
+		$groups               = $m_users->getUserGroups($user_id, 'Column');
 		$fnum_assoc_to_groups = $m_users->getApplicationsAssocToGroups($groups);
-		$fnum_assoc_to_user   = $m_users->getApplicantsAssoc($current_user->id);
+		$fnum_assoc_to_user   = $m_users->getApplicantsAssoc($user_id);
 		$this->fnum_assoc     = array_merge($fnum_assoc_to_groups, $fnum_assoc_to_user);
 
-		$files = $this->getAllUsers(0, 0);
-		$fnums = array();
-
-		if ($assoc_tab_fnums) {
-			foreach ($files as $file) {
-				if ($file['applicant_id'] > 0) {
-					$fnums[] = array('fnum'         => $file['fnum'],
-					                 'applicant_id' => $file['applicant_id'],
-					                 'campaign_id'  => $file['campaign_id']
-					);
+		try {
+			$files = $this->getAllUsers(0, 0, $menu_id);
+			if ($assoc_tab_fnums) {
+				foreach ($files as $file) {
+					if ($file['applicant_id'] > 0) {
+						$fnums[] = array('fnum'         => $file['fnum'],
+						                 'applicant_id' => $file['applicant_id'],
+						                 'campaign_id'  => $file['campaign_id']
+						);
+					}
 				}
 			}
-		}
-		else {
-			foreach ($files as $file) {
-				$fnums[] = $file['fnum'];
+			else {
+				foreach ($files as $file) {
+					$fnums[] = $file['fnum'];
+				}
 			}
+		} catch (Exception $e) {
+			Log::add('Error when get all fnums : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 
 		return $fnums;
