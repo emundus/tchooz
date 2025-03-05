@@ -6105,7 +6105,7 @@ class EmundusModelApplication extends ListModel
 				$phpSpreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(JPATH_SITE . DS . $filePath);
 				$htmlWriter     = new \PhpOffice\PhpSpreadsheet\Writer\Html($phpSpreadsheet);
 				$htmlWriter->setGenerateSheetNavigationBlock(true);
-				$htmlWriter->setSheetIndex(null);
+				$htmlWriter->setSheetIndex(0);
 				$preview['content']   = $htmlWriter->generateHtmlAll();
 				$preview['overflowY'] = true;
 				$preview['overflowX'] = true;
