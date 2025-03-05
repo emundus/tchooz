@@ -3046,6 +3046,10 @@ class EmundusModelFiles extends JModelLegacy
 
 						break;
 					case 'checkbox':
+						if ($is_repeat) {
+							$element_table_alias = array_search($element->table_join, $already_joined);
+						}
+
 						// value is saved as string '["value1", "value2"]' in the database
 						$query            .= ', (';
 						$regexp_sub_query = $element_table_alias . '.' . $element->element_name . ' '; // default value if no sub_options
