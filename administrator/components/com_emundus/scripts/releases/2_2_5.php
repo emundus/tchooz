@@ -41,6 +41,8 @@ class Release2_2_5Installer extends ReleaseInstaller
                 throw new \Exception('Erreur lors de l\'ajout de la colonne expert_user_id à la table jos_emundus_files_request.');
             }
 
+			EmundusHelperUpdate::enableEmundusPlugins('fabrikcron', 'system');
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)
