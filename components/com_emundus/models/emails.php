@@ -667,6 +667,24 @@ class EmundusModelEmails extends JModelList
 				$fnumInfos = $m_files->getFnumInfos($fnum);
 				$patterns[] = '/\[CAMPAIGN_LABEL\]/';
 				$replacements[] = $fnumInfos['label'];
+				$patterns[] = '/\[CAMPAIGN_YEAR\]/';
+				$replacements[] = $fnumInfos['year'];
+				$patterns[] = '/\[CAMPAIGN_START\]/';
+				$replacements[] = EmundusHelperDate::displayDate($fnumInfos['start_date']);
+				$patterns[] = '/\[CAMPAIGN_END\]/';
+				$replacements[] = EmundusHelperDate::displayDate($fnumInfos['end_date']);
+				$patterns[] = '/\[CAMPAIGN_CODE\]/';
+				$replacements[] = $fnumInfos['training'];
+
+				if (!class_exists('EmundusModelCampaign')) {
+					require_once(JPATH_SITE . '/components/com_emundus/models/campaign.php');
+				}
+				$m_campaign = new EmundusModelCampaign();
+				$programme = $m_campaign->getProgrammeByTraining($fnumInfos['training']);
+				$patterns[]     = '/\[TRAINING_CODE\]/';
+				$replacements[] = $fnumInfos['training'];
+				$patterns[]     = '/\[TRAINING_PROGRAMME\]/';
+				$replacements[] = $programme->label;
 			}
 		}
 

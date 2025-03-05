@@ -3925,24 +3925,31 @@ class EmundusModelFiles extends JModelLegacy
 	/**
 	 * @param $fnums
 	 *
-	 * @return Exception|mixed|Exception
+	 * @return array
 	 */
-	public function getProgByFnums($fnums)
+	public function getProgByFnums(array $fnums): array
 	{
+		$programs = [];
 
-		try {
-			$query = 'select  jesp.code, jesp.label  from #__emundus_campaign_candidature as jecc
-                        left join #__emundus_setup_campaigns as jesc on jesc.id = jecc.campaign_id
-                        left join #__emundus_setup_programmes as jesp on jesp.code like jesc.training
-                        left join #__emundus_setup_letters_repeat_training as jeslrt on jeslrt.training like jesp.code
-                        where jecc.fnum in ("' . implode('","', $fnums) . '") and jeslrt.parent_id IS NOT NULL  group by jesp.code order by jesp.code';
-			$this->_db->setQuery($query);
+		if (!empty($fnums)) {
+			try {
+				$query = $this->_db->createQuery();
 
-			return $this->_db->loadAssocList('code', 'label');
+				$query->select('jesp.code, jesp.label')
+					->from($this->_db->quoteName('#__emundus_campaign_candidature', 'jecc'))
+					->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'jesc') . ' ON ' . $this->_db->quoteName('jesc.id') . ' = ' . $this->_db->quoteName('jecc.campaign_id'))
+					->leftJoin($this->_db->quoteName('#__emundus_setup_programmes', 'jesp') . ' ON ' . $this->_db->quoteName('jesp.code') . ' = ' . $this->_db->quoteName('jesc.training'))
+					->where($this->_db->quoteName('jecc.fnum') . ' IN (' . implode(',', $this->_db->quote($fnums)) . ')');
+
+				$this->_db->setQuery($query);
+				$programs = $this->_db->loadAssocList('code', 'label');
+			}
+			catch (Exception $e) {
+				Log::add('Failed to getProgByFnums' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			}
 		}
-		catch (Exception $e) {
-			return $e;
-		}
+
+		return $programs;
 	}
 
 	/**
