@@ -2182,6 +2182,7 @@ $(document).ready(function() {
 
                             $('#oelts').append('<div>' +
                                 '<p>  '+Joomla.Text._('COM_EMUNDUS_CHOOSE_OTHER_COL')+'</p>'+
+                                '<p class="tw-text-neutral-500 tw-text-xs !tw-mt-0">  '+Joomla.Text._('COM_EMUNDUS_CHOOSE_OTHER_COL_HELP')+'</p>'+
                                 '<div class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16">'+
                                 '<div class="em-flex-row em-mb-4"><input class="em-ex-check" type="checkbox" value="photo" name="em-ex-photo" id="em-ex-photo"/>' +
                                 '<label for="em-ex-photo" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_PHOTO')+'</label></div>' +
