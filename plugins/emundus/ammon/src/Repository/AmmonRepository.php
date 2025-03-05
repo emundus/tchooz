@@ -129,6 +129,7 @@ class AmmonRepository
 			}
 		} catch (\Exception $e) {
 			Log::add('Error when trying to create registration for fnum ' . $this->fnum . ' ' . $e->getMessage(), Log::ERROR, 'plugin.emundus.ammon');
+			throw new \Exception($e->getMessage());
 		}
 
 		return $registered;
