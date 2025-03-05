@@ -27,7 +27,9 @@ else {
 			$linktype = '<span class="material-symbols-outlined" style="padding: 5px; font-size: 24px; color: black">' . $icon_css . '</span><span class="image-title" style="display: none;opacity: 0">' . $item->title . '</span>';
 		}
 		else {
-			$linktype = '<span class="simple-letter">' . $item->title[0] . '</span><span class="image-title" style="display: none;opacity: 0">' . $item->title . '</span>';
+            // Remove Accents from $item->title[0]
+            $title_without_accents = iconv('UTF-8', 'ASCII//TRANSLIT', $item->title);
+			$linktype = '<span class="simple-letter">' . $title_without_accents[0] . '</span><span class="image-title" style="display: none;opacity: 0">' . $item->title . '</span>';
 		}
 	}
 	else {
