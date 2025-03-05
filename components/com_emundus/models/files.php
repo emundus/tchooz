@@ -4169,7 +4169,7 @@ class EmundusModelFiles extends JModelLegacy
 	 * @return mixed
 	 * @throws Exception
 	 */
-	public function getFabrikValueRepeat($elt, $fnums, $params, $groupRepeat)
+	public function getFabrikValueRepeat($elt, $fnums, $params, $groupRepeat, $parent_row_id = 0)
 	{
 
 		if (!is_array($fnums)) {
@@ -4184,7 +4184,7 @@ class EmundusModelFiles extends JModelLegacy
 		$plugin         = $elt['plugin'];
 		$isFnumsNull    = ($fnums === null);
 		$isDatabaseJoin = ($plugin === 'databasejoin');
-		$isMulti        = ($params->database_join_display_type == "multilist" || $params->database_join_display_type == "checkbox");
+		$isMulti        = isset($params->database_join_display_type) && ($params->database_join_display_type == "multilist" || $params->database_join_display_type == "checkbox");
 
 
 		$select = '';
@@ -4271,6 +4271,10 @@ class EmundusModelFiles extends JModelLegacy
 			$group = $this->_db->quoteName('t_origin.fnum');
 		}
 
+		if (!empty($parent_row_id)) {
+			$where .= ' AND t_origin.id = ' . $this->_db->quote($parent_row_id);
+		}
+
 		$query->select($select)
 			->from($from);
 		foreach ($leftJoin as $join) {
@@ -4304,7 +4308,7 @@ class EmundusModelFiles extends JModelLegacy
 	 * @return mixed
 	 * @throws Exception
 	 */
-	public function getFabrikValue($fnums, $tableName, $name, $dateFormat = null)
+	public function getFabrikValue($fnums, $tableName, $name, $dateFormat = null, $row_id = 0)
 	{
 		if (!is_array($fnums))
 		{
@@ -4316,6 +4320,10 @@ class EmundusModelFiles extends JModelLegacy
 		$query->select('fnum, ' . $this->_db->quoteName($name) . ' as val')
 			->from($this->_db->quoteName($tableName))
 			->where($this->_db->quoteName('fnum') . ' IN (' . implode(',', $this->_db->quote($fnums)) . ')');
+
+		if (!empty($row_id)) {
+			$query->andWhere($this->_db->quoteName('id') . ' = ' . $this->_db->quote($row_id));
+		}
 
 		try {
 			$this->_db->setQuery($query);
@@ -5778,5 +5786,215 @@ class EmundusModelFiles extends JModelLegacy
 		}
 
 		return $associated_date;
+	}
+
+
+	public function getEvaluationsArray(array $fnums, array $steps_elements): array
+	{
+		$data_by_fnum = [];
+
+		if (!empty($fnums) && !empty($steps_elements)) {
+			require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+			$m_workflow = new EmundusModelWorkflow();
+			foreach($fnums as $fnum) {
+				foreach ($steps_elements as $step_id => $step_elements_array) {
+					if (!empty($step_id) && !empty($step_elements_array)) {
+						$data_by_fnum[$fnum][$step_id] = $m_workflow->getEvaluationStepDataForFnum($fnum, $step_id, $step_elements_array);
+					}
+				}
+			}
+		}
+
+		return $data_by_fnum;
+	}
+
+	/**
+	 * @param   array   $fabrik_element
+	 * @param   string  $fnum
+	 * @param   int     $row_id
+	 *
+	 * @return array
+	 */
+	public function getFabrikElementValue(array $fabrik_element, string $fnum, int $row_id = 0): array
+	{
+		$value = [];
+
+		if (!empty($fabrik_element) && !empty($fnum)) {
+			$params      = json_decode($fabrik_element['params']);
+			$groupParams = json_decode($fabrik_element['group_params']);
+
+			if (!empty($groupParams) && $groupParams->repeat_group_button == 1)
+			{
+				error_log(print_r($fabrik_element, true));
+
+				$value[$fabrik_element['id']] = $this->getFabrikValueRepeat($fabrik_element, [$fnum], $params, true, $row_id);
+			}
+			else if ($fabrik_element['plugin'] === 'databasejoin')
+			{
+				$value[$fabrik_element['id']] = $this->getFabrikValueRepeat($fabrik_element, [$fnum], $params, $groupParams->repeat_group_button == 1, $row_id);
+			}
+			else if ($fabrik_element['plugin'] == 'date')
+			{
+				$value[$fabrik_element['id']] = $this->getFabrikValue([$fnum], $fabrik_element['db_table_name'], $fabrik_element['name'], $params->date_form_format, $row_id);
+			}
+			else if ($fabrik_element['plugin'] == 'jdate')
+			{
+				$value[$fabrik_element['id']] = $this->getFabrikValue([$fnum], $fabrik_element['db_table_name'], $fabrik_element['name'], $params->jdate_form_format, $row_id);
+			}
+			else {
+				$value[$fabrik_element['id']] = $this->getFabrikValue([$fnum], $fabrik_element['db_table_name'], $fabrik_element['name'], null, $row_id);
+			}
+
+			if ($fabrik_element['plugin'] == "checkbox" || $fabrik_element['plugin'] == "dropdown" || $fabrik_element['plugin'] == "radiobutton")
+			{
+				foreach ($value[$fabrik_element['id']] as $fnum => $val)
+				{
+					if ($fabrik_element['plugin'] == "checkbox" || (!empty($params->multiple) && $params->multiple == 1))
+					{
+						$val = json_decode($val['val']);
+					}
+					else
+					{
+						$val = explode(',', $val['val']);
+					}
+
+					if (count($val) > 0)
+					{
+						foreach ($val as $k => $v)
+						{
+							$index   = array_search($v, $params->sub_options->sub_values);
+							$val[$k] = Text::_($params->sub_options->sub_labels[$index]);
+						}
+						$value[$fabrik_element['id']][$fnum]['val'] = implode(", ", $val);
+					}
+					else
+					{
+						$value[$fabrik_element['id']][$fnum]['val'] = "";
+					}
+				}
+
+			}
+			elseif ($fabrik_element['plugin'] == "birthday")
+			{
+				foreach ($value[$fabrik_element['id']] as $fnum => $val)
+				{
+					$val = explode(',', $val['val']);
+					foreach ($val as $k => $v)
+					{
+						if (!empty($v))
+						{
+							$val[$k] = date($params->details_date_format, strtotime($v));
+						}
+					}
+					$value[$fabrik_element['id']][$fnum]['val'] = implode(",", $val);
+				}
+
+			}
+			elseif ($fabrik_element['plugin'] == 'emundus_phonenumber')
+			{
+				$value[$fabrik_element['id']][$fnum]['val'] = substr($value[$fabrik_element['id']][$fnum]['val'], 2, strlen($value[$fabrik_element['id']][$fnum]['val']));
+			}
+			elseif ($fabrik_element['plugin'] == 'yesno')
+			{
+				$value[$fabrik_element['id']][$fnum]['val'] = $value[$fabrik_element['id']][$fnum]['val'] == '1' ? Text::_('JYES') : Text::_('JNO');
+			}
+			elseif ($fabrik_element['plugin'] == 'cascadingdropdown')
+			{
+				foreach ($value[$fabrik_element['id']] as $fnum => $val) {
+					//$value[$fabrik_element['id']][$fnum]['val'] = $m_email->getCddLabel($fabrik_element, $val['val']);
+				}
+			}
+
+			if (!isset($value[$fabrik_element['id']][$fnum]['complex_data']))
+			{
+				$value[$fabrik_element['id']][$fnum]['complex_data'] = false;
+			}
+		}
+
+		return $value;
+	}
+
+	public function mergeEvaluations(array $fnums_data, array $evaluations_by_fnum_by_step, array $columns): array
+	{
+		$new_fnums_data = [];
+
+		$temporary_fnums_data = [];
+		if (!empty($fnums_data)) {
+			foreach ($fnums_data as $data) {
+				if (isset($evaluations_by_fnum_by_step[$data['fnum']])) {
+					// each fnum can have multiple evaluations $evaluations_by_fnums[$fnum] is an array of evaluations
+					foreach ($evaluations_by_fnum_by_step[$data['fnum']] as $step_id => $evaluations_by_steps) {
+						foreach($evaluations_by_steps as $step_id => $evaluation) {
+							$temporary_fnums_data[] = array_merge($data, $evaluation);
+						}
+					}
+				} else {
+					$temporary_fnums_data[] = $data;
+				}
+			}
+		} else {
+			foreach($evaluations_by_fnum_by_step as $fnum => $evaluations_by_steps) {
+				foreach ($evaluations_by_steps as $step_id => $evaluations) {
+					foreach($evaluations as $evaluation) {
+						$temporary_fnums_data[] = array_merge([
+							'fnum' => $fnum,
+							'email' => '',
+							'label' => '',
+							'campaign_id' => '',
+						], $evaluation);
+					}
+				}
+			}
+		}
+
+		foreach($temporary_fnums_data as $key => $fnum_data) {
+			foreach($columns as $column) {
+				$column_name = !empty($column->table_join) ? $column->table_join . '___' . $column->element_name :  $column->tab_name . '___' . $column->element_name; 
+
+				if (!isset($fnum_data[$column_name])) {
+					$temporary_fnums_data[$key][$column_name] = '';
+				}
+			}
+		}
+		
+		// columns must be in the same order as the columns in the table
+
+		if (!empty($temporary_fnums_data)) {
+			$default_fnums_data_columns = [];
+			if (!empty($fnums_data)) {
+				foreach ($fnums_data as $fnum_data) {
+					$default_fnums_data_columns = array_merge($default_fnums_data_columns, array_keys($fnum_data));
+				}
+			} else {
+				$default_fnums_data_columns = ['fnum', 'email', 'label', 'campaign_id'];
+			}
+	
+			$evaluation_columns_in_order = [
+				'step_id',
+				'evaluation_id',
+				'evaluator_name',
+			];
+			if (!empty($columns)) {
+				foreach ($columns as $column) {
+					$column_name = !empty($column->table_join) ? $column->table_join . '___' . $column->element_name :  $column->tab_name . '___' . $column->element_name;
+					$evaluation_columns_in_order[] = $column_name;
+				}
+			}
+
+			$columns_in_order = array_merge($default_fnums_data_columns, $evaluation_columns_in_order);
+			
+
+			foreach ($temporary_fnums_data as $fnum_data) {
+				$final_array = [];
+
+				foreach($columns_in_order as $column_name) {
+					$final_array[$column_name] = $fnum_data[$column_name];
+				}
+
+				$new_fnums_data[] = $final_array;
+			}
+		}
+
+		return $new_fnums_data;
 	}
 }

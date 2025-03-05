@@ -314,15 +314,9 @@ class WorkflowModelTest extends UnitTestCase
 		$this->assertEquals('Test Step', $steps[0]->label);
 	}
 
-
-
-	/*
-	 * TODO
-	 *
-	 * public function testMigrateDeprecatedCampaignWorkflows() {
-		// old Workflows were kind of equals to current Step Object, not Workflow Object
-		// before a program could be linked to muliple workflows, now it can only be linked to one
-		// before campaigns could be linked to multiple workflows, now they can not be linked to any, it must be througth campaign's program
-
-	}*/
+	public function testGetEvaluationStepDataForFnum()
+	{
+		$data = $this->model->getEvaluationStepDataForFnum($this->h_dataset->dataset['fnum'], 0, []);
+		$this->assertIsArray($data);
+	}
 }
