@@ -990,7 +990,7 @@ class EmundusHelperFiles
 	 *
 	 * @return   array  list of Fabrik element ID used in evaluation form
 	 **/
-	function getElementsByGroups($groups, $show_in_list_summary = 1, $hidden = 0)
+	function getElementsByGroups($groups, $show_in_list_summary = 1, $hidden = 0, $exclude_plugins = [])
 	{
 		$elements = [];
 
@@ -1006,6 +1006,10 @@ class EmundusHelperFiles
                 INNER JOIN #__fabrik_forms AS form ON tab.form_id = form.id
                 WHERE tab.published = 1 ';
 
+			if (!empty($exclude_plugins)) {
+				$query .= ' AND element.plugin NOT IN ("' . implode('","', $exclude_plugins) . '") ';
+			}
+			
 			$query .= $show_in_list_summary == 1 ? ' AND element.show_in_list_summary = 1 ' : '';
 			$query .= $hidden == 0 ? ' AND element.hidden = 0 ' : '';
 			$query .= ' AND element.published=1

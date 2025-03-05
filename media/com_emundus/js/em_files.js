@@ -6223,11 +6223,15 @@ function addElementToXlsRecap(e, exportRecapContainer) {
 
     let elementId = e.value;
 
-    if (!document.getElementById(elementId + '-item')) {
+    if (!document.getElementById(elementId + '-item') || (e.getAttribute('data-step-id') && !document.querySelector('[id="' + elementId + '-item"][data-step-id="' + e.getAttribute('data-step-id') + '"]'))) {
         let elementLabel = document.querySelector('label[for="emundus_elm_' + elementId + '"]').textContent;
         let elementLi = document.createElement('li');
         elementLi.classList.add('em-export-item', 'tw-flex', 'tw-flex-row');
         elementLi.id = elementId + '-item';
+
+        if (e.getAttribute('data-step-id')) {
+            elementLi.setAttribute('data-step-id', e.getAttribute('data-step-id'));
+        }
 
         let elementDeleteIcon = document.createElement('span');
         elementDeleteIcon.id = elementId + '-itembtn';
@@ -6248,8 +6252,14 @@ function addElementToXlsRecap(e, exportRecapContainer) {
 
 function removeElementFromXlsRecap(e) {
     let elementId = e.value;
+    let elementLi = null;
 
-    let elementLi = document.getElementById(elementId + '-item');
+    if (e.getAttribute('data-step-id')) {
+        elementLi = document.querySelector('[id="' + elementId + '-item"][data-step-id="' + e.getAttribute('data-step-id') + '"]');
+    } else {
+        elementLi = document.getElementById(elementId + '-item');
+    }
+
     if (elementLi) {
         elementLi.remove();
     }
