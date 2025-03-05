@@ -167,7 +167,8 @@ class AmmonFactory
 				$company->externalReference,
 				$values['professionalEmail'] ?? '',
 				$values['professionalPhoneNumber'] ?? '',
-				$values['professionalPostNumber'] ?? ''
+				$values['professionalPostNumber'] ?? '',
+				$collection
 			);
 		}
 
