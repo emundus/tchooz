@@ -663,8 +663,6 @@ class EmundusModelEmails extends JModelList
 				}
 				$patterns[]     = '/\[APPLICATION_TAGS\]/';
 				$replacements[] = implode(',', $tags_label);
-
-				$fnumInfos = $m_files->getFnumInfos($fnum);
 				$patterns[] = '/\[CAMPAIGN_LABEL\]/';
 				$replacements[] = $fnumInfos['label'];
 				$patterns[] = '/\[CAMPAIGN_YEAR\]/';
