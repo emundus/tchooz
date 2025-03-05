@@ -153,12 +153,16 @@ class EmundusModelWorkflow extends JModelList
 
 					try {
 						if (empty($step['id'])) {
+							if ($this->isEvaluationStep($step['type'])) {
+								$step['output_status'] = 0;
+							}
+
 							$inserted = $this->db->insertObject('#__emundus_setup_workflows_steps', $step_object);
 							if ($inserted) {
 								$step['id'] = $this->db->insertid();
 							}
 						} else {
-							$fields = ['label', 'type', 'state', 'multiple', 'output_status', 'ordering'];
+							$fields = ['label', 'type', 'state', 'multiple', 'ordering'];
 
 							$fields_set = [];
 							foreach($fields as $field) {
@@ -1401,8 +1405,9 @@ class EmundusModelWorkflow extends JModelList
 				$this->db->setQuery($query);
 				$evaluations = $this->db->loadAssocList();
 
-				foreach ($evaluations as $evaluation) {
-					$data[$evaluation['id']] = [
+				foreach ($evaluations as $eval_key => $evaluation) {
+					$key = $evaluation['id'] ?? $fnum . '-' . $eval_key;
+					$data[$key] = [
 						'step_id' => $step_data->label,
 						'evaluation_id' => $evaluation['id'],
 						'evaluator_name' => $evaluation['firstname'] . ' ' . $evaluation['lastname'],
@@ -1410,11 +1415,18 @@ class EmundusModelWorkflow extends JModelList
 
 					$fabrik_elements = $m_files->getValueFabrikByIds($elements);
 					foreach ($fabrik_elements as $fabrik_element) {
-						$evaluation_row_id = $evaluation['id'] ?? 0;
-						$value = $m_files->getFabrikElementValue($fabrik_element, $fnum, $evaluation_row_id);
-
 						$element_name = !empty($fabrik_element['table_join']) ? $fabrik_element['table_join'] . '___' . $fabrik_element['name'] : $fabrik_element['db_table_name'] . '___' . $fabrik_element['name'];
-						$data[$evaluation['id']][$element_name] = $value[$fabrik_element['id']][$fnum]['val'];
+						$data[$key][$element_name] = '';
+
+						if (!empty($evaluation['id'])) {
+							$evaluation_row_id = $evaluation['id'];
+							$value = $m_files->getFabrikElementValue($fabrik_element, $fnum, $evaluation_row_id);
+
+							if (!empty($value) && !empty($value[$fabrik_element['id']][$fnum]['val']))
+							{
+								$data[$key][$element_name] = $value[$fabrik_element['id']][$fnum]['val'];
+							}
+						}
 					}
 				}
 			}
