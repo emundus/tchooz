@@ -88,26 +88,32 @@ class AmmonRepository
 		try {
 			$company = $this->getOrCreateCompany();
 			if (!empty($company)) {
-				$manager = $this->getCompanyManager($company);
+				if ($this->companyIsPaying()) {
+					Log::add('Company ' . $company->establishmentName . ' is paying a part for ' . $this->fnum, Log::INFO, 'plugin.emundus.ammon');
 
-				if (empty($manager)) {
-					$manager = $this->createCompanyManager($company);
+					$manager = $this->getCompanyManager($company);
 
 					if (empty($manager)) {
-						throw new \Exception('Failed to create company manager in ammon.');
-					}
-				}
+						$manager = $this->createCompanyManager($company);
 
-				$different_referee = \EmundusHelperFabrik::getValueByAlias('different_admin', $this->fnum);
-				if ($different_referee['raw'] == 1) {
-					$registration_referee = $this->getRegistrationReferee($company);
-					if (empty($registration_referee)) {
-						$registration_referee = $this->createRegistrationReferee($company);
-
-						if (empty($registration_referee)) {
-							throw new \Exception('Failed to create registration different referee in ammon.');
+						if (empty($manager)) {
+							throw new \Exception('Failed to create company manager in ammon.');
 						}
 					}
+
+					$different_referee = \EmundusHelperFabrik::getValueByAlias('different_admin', $this->fnum);
+					if ($different_referee['raw'] == 1) {
+						$registration_referee = $this->getRegistrationReferee($company);
+						if (empty($registration_referee)) {
+							$registration_referee = $this->createRegistrationReferee($company);
+
+							if (empty($registration_referee)) {
+								throw new \Exception('Failed to create registration different referee in ammon.');
+							}
+						}
+					}
+				} else {
+					Log::add('Company ' . $company->establishmentName . ' is not paying for ' . $this->fnum, Log::INFO, 'plugin.emundus.ammon');
 				}
 			}
 
@@ -133,6 +139,24 @@ class AmmonRepository
 		}
 
 		return $registered;
+	}
+
+	private function companyIsPaying(): bool
+	{
+		$paying = false;
+
+		$value = \EmundusHelperFabrik::getValueByAlias('registration_company_price', $this->fnum);
+		if (!empty($value) && !empty($value['raw'])) {
+			$price = str_replace(' ', '', $value['raw']);
+			$price = str_replace(',', '.', $price);
+			$price = floatval($price);
+
+			if ($price > 0) {
+				$paying = true;
+			}
+		}
+
+		return $paying;
 	}
 
 	private function getOrCreateCompany(): ?CompanyEntity
