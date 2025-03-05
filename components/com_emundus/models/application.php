@@ -2383,7 +2383,7 @@ class EmundusModelApplication extends ListModel
 											}
 
 											// Do not display elements with no value inside them.
-											if ($show_empty_fields == 0 && (trim($element->content) == '' || trim($element->content_id) == -1) && $element->plugin != 'emundus_fileupload') {
+											if ($show_empty_fields == 0 && (trim($element->content) == '' || trim($element->content_id) == -1 || ($element->plugin == 'checkbox' && $element->content == '[""]')) && $element->plugin != 'emundus_fileupload') {
 												continue;
 											}
 
@@ -5795,6 +5795,10 @@ class EmundusModelApplication extends ListModel
 							}
 						} else if ($element_value !== "0000-00-00 00:00:00" && !empty($element_value)) {
 							$at_least_one_visible = true;
+							if($current_fb_element->plugin === 'checkbox' && $element_value === '[""]')
+							{
+								$at_least_one_visible = false;
+							}
 						}
 					}
 				}
