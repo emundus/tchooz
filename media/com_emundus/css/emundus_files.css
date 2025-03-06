@@ -526,10 +526,6 @@ button#em-close-file {
 }
 
 .files-board .main-panel table#em-data tbody tr td div.em-cell > a > div > .em_list_text:hover strong {
-    text-decoration: none
-}
-
-.files-board .main-panel table#em-data tbody tr td div.em-cell strong {
     text-decoration: underline;
 }
 

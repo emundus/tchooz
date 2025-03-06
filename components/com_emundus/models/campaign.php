@@ -2277,7 +2277,17 @@ class EmundusModelCampaign extends ListModel
 		require_once(JPATH_ROOT . '/components/com_emundus/models/falang.php');
 		$m_falang = new EmundusModelFalang;
 
-		$types = implode(";", array_values($types));
+		$types = array_values($types);
+		// If video and mp4 in types check addpipe status : remove video if not enabled else remove mp4
+		if (in_array('video', $types) || in_array('mp4', $types)) {
+			$addpipe = ComponentHelper::getParams('com_emundus')->get('addpipe_activation', 0);
+			if ($addpipe == 0) {
+				$types = array_diff($types, ['video']);
+			} else {
+				$types = array_diff($types, ['mp4']);
+			}
+		}
+		$types = implode(";", $types);
 
 		$query->update($this->_db->quoteName('#__emundus_setup_attachments'));
 		$query->set($this->_db->quoteName('value') . ' = ' . $this->_db->quote($document['name'][$actualLanguage]))

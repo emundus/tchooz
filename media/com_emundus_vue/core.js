@@ -1,4 +1,4 @@
-import { _ as _export_sfc, u as useGlobalStore, o as openBlock, c as createElementBlock, a as createBaseVNode, t as toDisplayString, e as createCommentVNode, n as normalizeStyle, d as normalizeClass, aa as defineComponent, ab as isReactive, ac as h$3, ad as Teleport, F as Fragment } from "./app_emundus.js";
+import { _ as _export_sfc, u as useGlobalStore, o as openBlock, c as createElementBlock, a as createBaseVNode, t as toDisplayString, e as createCommentVNode, n as normalizeStyle, d as normalizeClass, aa as defineComponent, ab as isReactive, ac as h$4, ad as Teleport, F as Fragment } from "./app_emundus.js";
 const _sfc_main = {
   name: "EventDay",
   props: {
@@ -144,7 +144,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
 const EventDay = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render]]);
 const Ht = (e2, t2) => (n2, o2) => {
   const i2 = {
-    Component: h$3(t2, o2),
+    Component: h$4(t2, o2),
     wrapperElement: n2
   };
   e2(i2);
@@ -194,11 +194,11 @@ const Ji = defineComponent({
     }
   },
   render() {
-    const e2 = this.customComponentsMeta.map(({ Component: t2, wrapperElement: n2 }) => h$3(Teleport, { to: n2 }, t2));
-    return h$3("div", {
+    const e2 = this.customComponentsMeta.map(({ Component: t2, wrapperElement: n2 }) => h$4(Teleport, { to: n2 }, t2));
+    return h$4("div", {
       id: this.elId,
       class: "sx-vue-calendar-wrapper"
-    }, h$3(Fragment, {}, e2));
+    }, h$4(Fragment, {}, e2));
   }
 });
 var pe, v$3, lt, ut, V$2, We, dt, Pe, ct, q$2 = {}, _t = [], Kt = /acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|itera/i, fe = Array.isArray;
@@ -1069,12 +1069,12 @@ var Te;
 (function(e2) {
   e2.TOP_START = "top-start", e2.TOP_END = "top-end", e2.BOTTOM_START = "bottom-start", e2.BOTTOM_END = "bottom-end";
 })(Te || (Te = {}));
-var n, l$3, u$3, t$2, i$2, r$2, o$2, e$2, f$3, c$2, s$3, a$2, h$2, p$3 = {}, v$2 = [], y$2 = /acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|itera/i, d$3 = Array.isArray;
+var n, l$3, u$3, t$2, i$2, r$2, o$2, e$2, f$3, c$2, s$3, a$2, h$3, p$3 = {}, v$2 = [], y$2 = /acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|itera/i, d$3 = Array.isArray;
 function w$2(n2, l2) {
   for (var u2 in l2) n2[u2] = l2[u2];
   return n2;
 }
-function _$2(n2) {
+function _$1(n2) {
   n2 && n2.parentNode && n2.parentNode.removeChild(n2);
 }
 function g$2(l2, u2, t2) {
@@ -1219,7 +1219,7 @@ function j$2(n2, u2, t2, i2, r2, o2, e2, f2, c2, s2) {
     if (u2.__v = null, c2 || null != o2) if (n3.then) {
       for (u2.__u |= c2 ? 160 : 128; f2 && 8 == f2.nodeType && f2.nextSibling; ) f2 = f2.nextSibling;
       o2[o2.indexOf(f2)] = null, u2.__e = f2;
-    } else for (T2 = o2.length; T2--; ) _$2(o2[T2]);
+    } else for (T2 = o2.length; T2--; ) _$1(o2[T2]);
     else u2.__e = t2.__e, u2.__k = t2.__k;
     l$3.__e(n3, u2, t2);
   }
@@ -1261,7 +1261,7 @@ function N$1(u2, t2, i2, r2, o2, e2, f2, c2, s2) {
     }
     for (a2 in k2) w2 = k2[a2], "children" == a2 ? y2 = w2 : "dangerouslySetInnerHTML" == a2 ? h2 = w2 : "value" == a2 ? g2 = w2 : "checked" == a2 ? m2 = w2 : c2 && "function" != typeof w2 || b2[a2] === w2 || F$1(u2, a2, w2, b2[a2], o2);
     if (h2) c2 || v2 && (h2.__html === v2.__html || h2.__html === u2.innerHTML) || (u2.innerHTML = h2.__html), t2.__k = [];
-    else if (v2 && (u2.innerHTML = ""), $$1(u2, d$3(y2) ? y2 : [y2], t2, i2, r2, "foreignObject" == x2 ? "http://www.w3.org/1999/xhtml" : o2, e2, f2, e2 ? e2[0] : i2.__k && C$1(i2, 0), c2, s2), null != e2) for (a2 = e2.length; a2--; ) _$2(e2[a2]);
+    else if (v2 && (u2.innerHTML = ""), $$1(u2, d$3(y2) ? y2 : [y2], t2, i2, r2, "foreignObject" == x2 ? "http://www.w3.org/1999/xhtml" : o2, e2, f2, e2 ? e2[0] : i2.__k && C$1(i2, 0), c2, s2), null != e2) for (a2 = e2.length; a2--; ) _$1(e2[a2]);
     c2 || (a2 = "value", "progress" == x2 && null == g2 ? u2.removeAttribute("value") : void 0 !== g2 && (g2 !== u2[a2] || "progress" == x2 && !g2 || "option" == x2 && g2 !== b2[a2]) && F$1(u2, a2, g2, b2[a2], o2), a2 = "checked", void 0 !== m2 && m2 !== u2[a2] && F$1(u2, a2, m2, b2[a2], o2));
   }
   return u2;
@@ -1287,7 +1287,7 @@ function q$1(n2, u2, t2) {
     i2.base = i2.__P = null;
   }
   if (i2 = n2.__k) for (r2 = 0; r2 < i2.length; r2++) i2[r2] && q$1(i2[r2], u2, t2 || "function" != typeof n2.type);
-  t2 || _$2(n2.__e), n2.__c = n2.__ = n2.__e = void 0;
+  t2 || _$1(n2.__e), n2.__c = n2.__ = n2.__e = void 0;
 }
 function B$2(n2, l2, u2) {
   return this.constructor(n2, u2);
@@ -1297,7 +1297,7 @@ function D$1(u2, t2, i2) {
   t2 == document && (t2 = document.documentElement), l$3.__ && l$3.__(u2, t2), o2 = (r2 = false) ? null : t2.__k, e2 = [], f2 = [], j$2(t2, u2 = t2.__k = g$2(k$1, null, [u2]), o2 || p$3, p$3, t2.namespaceURI, o2 ? null : t2.firstChild ? n.call(t2.childNodes) : null, e2, o2 ? o2.__e : t2.firstChild, r2, f2), z$1(e2, u2, f2);
 }
 function J$1(n2, l2) {
-  var u2 = { __c: l2 = "__cC" + h$2++, __: n2, Consumer: function(n3, l3) {
+  var u2 = { __c: l2 = "__cC" + h$3++, __: n2, Consumer: function(n3, l3) {
     return n3.children(l3);
   }, Provider: function(n3) {
     var u3, t2;
@@ -1335,7 +1335,7 @@ n = v$2.slice, l$3 = { __e: function(n2, l2, u2, t2) {
   this.__v && (this.__e = true, n2 && this.__h.push(n2), M(this));
 }, x$1.prototype.render = k$1, i$2 = [], o$2 = "function" == typeof Promise ? Promise.prototype.then.bind(Promise.resolve()) : setTimeout, e$2 = function(n2, l2) {
   return n2.__v.__b - l2.__v.__b;
-}, P$1.__r = 0, f$3 = /(PointerCapture)$|Capture$/i, c$2 = 0, s$3 = O(false), a$2 = O(true), h$2 = 0;
+}, P$1.__r = 0, f$3 = /(PointerCapture)$|Capture$/i, c$2 = 0, s$3 = O(false), a$2 = O(true), h$3 = 0;
 var f$2 = 0;
 function u$2(e2, t2, n2, o2, i2, u2) {
   t2 || (t2 = {});
@@ -1351,7 +1351,7 @@ function d$2(n2, t2) {
   var u2 = r$1.__H || (r$1.__H = { __: [], __h: [] });
   return n2 >= u2.__.length && u2.__.push({}), u2.__[n2];
 }
-function h$1(n2) {
+function h$2(n2) {
   return o$1 = 1, p$2(D, n2);
 }
 function p$2(n2, u2, i2) {
@@ -1663,9 +1663,9 @@ var i = Symbol.for("preact-signals");
 function t() {
   if (!(s$1 > 1)) {
     var i2, t2 = false;
-    while (void 0 !== h) {
-      var r2 = h;
-      h = void 0;
+    while (void 0 !== h$1) {
+      var r2 = h$1;
+      h$1 = void 0;
       f++;
       while (void 0 !== r2) {
         var o2 = r2.o;
@@ -1697,7 +1697,7 @@ function r(i2) {
   }
 }
 var o = void 0;
-var h = void 0, s$1 = 0, f = 0, v = 0;
+var h$1 = void 0, s$1 = 0, f = 0, v = 0;
 function e(i2) {
   if (void 0 !== o) {
     var t2 = i2.n;
@@ -1907,7 +1907,7 @@ Object.defineProperty(y.prototype, "value", { get: function() {
 function w(i2) {
   return new y(i2);
 }
-function _$1(i2) {
+function _(i2) {
   var r2 = i2.u;
   i2.u = void 0;
   if ("function" == typeof r2) {
@@ -1931,7 +1931,7 @@ function g(i2) {
   for (var t2 = i2.s; void 0 !== t2; t2 = t2.n) t2.S.U(t2);
   i2.x = void 0;
   i2.s = void 0;
-  _$1(i2);
+  _(i2);
 }
 function p$1(i2) {
   if (o !== this) throw new Error("Out-of-order effect");
@@ -1963,7 +1963,7 @@ b.prototype.S = function() {
   if (1 & this.f) throw new Error("Cycle detected");
   this.f |= 1;
   this.f &= -9;
-  _$1(this);
+  _(this);
   a(this);
   s$1++;
   var i2 = o;
@@ -1973,8 +1973,8 @@ b.prototype.S = function() {
 b.prototype.N = function() {
   if (!(2 & this.f)) {
     this.f |= 2;
-    this.o = h;
-    h = this;
+    this.o = h$1;
+    h$1 = this;
   }
 };
 b.prototype.d = function() {
@@ -1992,62 +1992,62 @@ function E(i2) {
   return t2.d.bind(t2);
 }
 var s;
-function l(n2, i2) {
-  l$3[n2] = i2.bind(null, l$3[n2] || function() {
+function l(i2, n2) {
+  l$3[i2] = n2.bind(null, l$3[i2] || function() {
   });
 }
-function d(n2) {
+function d(i2) {
   if (s) s();
-  s = n2 && n2.S();
+  s = i2 && i2.S();
 }
-function p(n2) {
-  var r2 = this, f2 = n2.data, o2 = useSignal(f2);
+function h(i2) {
+  var r2 = this, f2 = i2.data, o2 = useSignal(f2);
   o2.value = f2;
   var e2 = T$1(function() {
-    var n3 = r2.__v;
-    while (n3 = n3.__) if (n3.__c) {
-      n3.__c.__$f |= 4;
+    var i3 = r2.__v;
+    while (i3 = i3.__) if (i3.__c) {
+      i3.__c.__$f |= 4;
       break;
     }
     r2.__$u.c = function() {
-      var n4, t2 = r2.__$u.S(), f3 = e2.value;
+      var i4, t2 = r2.__$u.S(), f3 = e2.value;
       t2();
-      if (t$2(f3) || 3 !== (null == (n4 = r2.base) ? void 0 : n4.nodeType)) {
+      if (t$2(f3) || 3 !== (null == (i4 = r2.base) ? void 0 : i4.nodeType)) {
         r2.__$f |= 1;
         r2.setState({});
       } else r2.base.data = f3;
     };
     return w(function() {
-      var n4 = o2.value.value;
-      return 0 === n4 ? 0 : true === n4 ? "" : n4 || "";
+      var i4 = o2.value.value;
+      return 0 === i4 ? 0 : true === i4 ? "" : i4 || "";
     });
   }, []);
   return e2.value;
 }
-p.displayName = "_st";
-Object.defineProperties(u.prototype, { constructor: { configurable: true, value: void 0 }, type: { configurable: true, value: p }, props: { configurable: true, get: function() {
+h.displayName = "_st";
+Object.defineProperties(u.prototype, { constructor: { configurable: true, value: void 0 }, type: { configurable: true, value: h }, props: { configurable: true, get: function() {
   return { data: this };
 } }, __b: { configurable: true, value: 1 } });
-l("__b", function(n2, r2) {
+l("__b", function(i2, r2) {
   if ("string" == typeof r2.type) {
-    var i2, t2 = r2.props;
+    var n2, t2 = r2.props;
     for (var f2 in t2) if ("children" !== f2) {
       var o2 = t2[f2];
       if (o2 instanceof u) {
-        if (!i2) r2.__np = i2 = {};
-        i2[f2] = o2;
+        if (!n2) r2.__np = n2 = {};
+        n2[f2] = o2;
         t2[f2] = o2.peek();
       }
     }
   }
-  n2(r2);
+  i2(r2);
 });
-l("__r", function(n2, r2) {
+l("__r", function(i2, r2) {
   d();
-  var i2, t2 = r2.__c;
+  var n2, t2 = r2.__c;
   if (t2) {
     t2.__$f &= -2;
-    if (void 0 === (i2 = t2.__$u)) t2.__$u = i2 = function(n3) {
+    if (void 0 === (n2 = t2.__$u)) t2.__$u = n2 = function(i3) {
       var r3;
       E(function() {
         r3 = this;
@@ -2059,20 +2059,20 @@ l("__r", function(n2, r2) {
       return r3;
     }();
   }
-  d(i2);
-  n2(r2);
+  d(n2);
+  i2(r2);
 });
-l("__e", function(n2, r2, i2, t2) {
+l("__e", function(i2, r2, n2, t2) {
   d();
-  n2(r2, i2, t2);
+  i2(r2, n2, t2);
 });
-l("diffed", function(n2, r2) {
+l("diffed", function(i2, r2) {
   d();
-  var i2;
-  if ("string" == typeof r2.type && (i2 = r2.__e)) {
+  var n2;
+  if ("string" == typeof r2.type && (n2 = r2.__e)) {
     var t2 = r2.__np, f2 = r2.props;
     if (t2) {
-      var o2 = i2.U;
+      var o2 = n2.U;
       if (o2) for (var e2 in o2) {
         var u2 = o2[e2];
         if (void 0 !== u2 && !(e2 in t2)) {
@@ -2080,40 +2080,40 @@ l("diffed", function(n2, r2) {
           o2[e2] = void 0;
         }
       }
-      else i2.U = o2 = {};
+      else n2.U = o2 = {};
       for (var a2 in t2) {
         var c2 = o2[a2], s2 = t2[a2];
         if (void 0 === c2) {
-          c2 = _(i2, a2, s2, f2);
+          c2 = p(n2, a2, s2, f2);
           o2[a2] = c2;
         } else c2.o(s2, f2);
       }
     }
   }
-  n2(r2);
+  i2(r2);
 });
-function _(n2, r2, i2, t2) {
-  var f2 = r2 in n2 && void 0 === n2.ownerSVGElement, o2 = d$1(i2);
-  return { o: function(n3, r3) {
-    o2.value = n3;
+function p(i2, r2, n2, t2) {
+  var f2 = r2 in i2 && void 0 === i2.ownerSVGElement, o2 = d$1(n2);
+  return { o: function(i3, r3) {
+    o2.value = i3;
     t2 = r3;
   }, d: E(function() {
-    var i3 = o2.value.value;
-    if (t2[r2] !== i3) {
-      t2[r2] = i3;
-      if (f2) n2[r2] = i3;
-      else if (i3) n2.setAttribute(r2, i3);
-      else n2.removeAttribute(r2);
+    var n3 = o2.value.value;
+    if (t2[r2] !== n3) {
+      t2[r2] = n3;
+      if (f2) i2[r2] = n3;
+      else if (n3) i2.setAttribute(r2, n3);
+      else i2.removeAttribute(r2);
     }
   }) };
 }
-l("unmount", function(n2, r2) {
+l("unmount", function(i2, r2) {
   if ("string" == typeof r2.type) {
-    var i2 = r2.__e;
-    if (i2) {
-      var t2 = i2.U;
+    var n2 = r2.__e;
+    if (n2) {
+      var t2 = n2.U;
       if (t2) {
-        i2.U = void 0;
+        n2.U = void 0;
         for (var f2 in t2) {
           var o2 = t2[f2];
           if (o2) o2.d();
@@ -2130,29 +2130,34 @@ l("unmount", function(n2, r2) {
       }
     }
   }
-  n2(r2);
+  i2(r2);
 });
-l("__h", function(n2, r2, i2, t2) {
+l("__h", function(i2, r2, n2, t2) {
   if (t2 < 3 || 9 === t2) r2.__$f |= 2;
-  n2(r2, i2, t2);
+  i2(r2, n2, t2);
 });
-x$1.prototype.shouldComponentUpdate = function(n2, r2) {
-  var i2 = this.__$u;
-  if (!(i2 && void 0 !== i2.s || 4 & this.__$f)) return true;
-  if (3 & this.__$f) return true;
-  for (var t2 in r2) return true;
-  for (var f2 in n2) if ("__source" !== f2 && n2[f2] !== this.props[f2]) return true;
-  for (var o2 in this.props) if (!(o2 in n2)) return true;
+x$1.prototype.shouldComponentUpdate = function(i2, r2) {
+  var n2 = this.__$u, t2 = n2 && void 0 !== n2.s;
+  for (var f2 in r2) return true;
+  if (this.__f || "boolean" == typeof this.u && true === this.u) {
+    if (!(t2 || 2 & this.__$f || 4 & this.__$f)) return true;
+    if (1 & this.__$f) return true;
+  } else {
+    if (!(t2 || 4 & this.__$f)) return true;
+    if (3 & this.__$f) return true;
+  }
+  for (var o2 in i2) if ("__source" !== o2 && i2[o2] !== this.props[o2]) return true;
+  for (var e2 in this.props) if (!(e2 in i2)) return true;
   return false;
 };
-function useSignal(n2) {
+function useSignal(i2) {
   return T$1(function() {
-    return d$1(n2);
+    return d$1(i2);
   }, []);
 }
-function useSignalEffect(n2) {
-  var r2 = A(n2);
-  r2.current = n2;
+function useSignalEffect(i2) {
+  var r2 = A(i2);
+  r2.current = i2;
   y$1(function() {
     return E(function() {
       return r2.current();
@@ -2234,7 +2239,7 @@ function AppInput() {
   y$1(() => {
     $app.datePickerState.inputDisplayedValue.value = getLocalizedDate2($app.datePickerState.selectedDate.value);
   }, [$app.datePickerState.selectedDate.value, $app.config.locale.value]);
-  const [wrapperClasses, setWrapperClasses] = h$1([]);
+  const [wrapperClasses, setWrapperClasses] = h$2([]);
   const setInputElement = () => {
     const inputWrapperEl = document.getElementById(inputWrapperId);
     $app.datePickerState.inputWrapperElement.value = inputWrapperEl instanceof HTMLDivElement ? inputWrapperEl : void 0;
@@ -2389,8 +2394,8 @@ function MonthViewHeader({ setYearsView }) {
   const getYearFrom = (datePickerDate) => {
     return toIntegers(datePickerDate).year;
   };
-  const [selectedDateMonthName, setSelectedDateMonthName] = h$1(dateStringToLocalizedMonthName($app.datePickerState.datePickerDate.value));
-  const [datePickerYear, setDatePickerYear] = h$1(getYearFrom($app.datePickerState.datePickerDate.value));
+  const [selectedDateMonthName, setSelectedDateMonthName] = h$2(dateStringToLocalizedMonthName($app.datePickerState.datePickerDate.value));
+  const [datePickerYear, setDatePickerYear] = h$2(getYearFrom($app.datePickerState.datePickerDate.value));
   const setPreviousMonth = () => {
     $app.datePickerState.datePickerDate.value = getFirstDayOPreviousMonth($app.datePickerState.datePickerDate.value);
   };
@@ -2821,7 +2826,7 @@ function MonthViewWeek({ week }) {
 function MonthView({ seatYearsView }) {
   const elementId = randomStringId();
   const $app = x(AppContext$1);
-  const [month, setMonth] = h$1([]);
+  const [month, setMonth] = h$2([]);
   const renderMonth = () => {
     const newDatePickerDate = toJSDate$1($app.datePickerState.datePickerDate.value);
     setMonth($app.timeUnitsImpl.getMonthWithTrailingAndLeadingDays(newDatePickerDate.getFullYear(), newDatePickerDate.getMonth()));
@@ -2862,7 +2867,7 @@ function YearsView({ setMonthView }) {
   const maxYear = toJSDate$1($app.config.max).getFullYear();
   const years = Array.from({ length: maxYear - minYear + 1 }, (_2, i2) => minYear + i2);
   const { year: selectedYear } = toIntegers($app.datePickerState.selectedDate.value);
-  const [expandedYear, setExpandedYear] = h$1(selectedYear);
+  const [expandedYear, setExpandedYear] = h$2(selectedYear);
   const setNewDatePickerDate = (year, month) => {
     $app.datePickerState.datePickerDate.value = toDateString$1(new Date(year, month, 1));
     setMonthView();
@@ -2900,9 +2905,9 @@ const getScrollableParents = (el, acc = []) => {
 const POPUP_CLASS_NAME = "sx__date-picker-popup";
 function AppPopup() {
   const $app = x(AppContext$1);
-  const [datePickerView, setDatePickerView] = h$1(DatePickerView.MONTH_DAYS);
+  const [datePickerView, setDatePickerView] = h$2(DatePickerView.MONTH_DAYS);
   const basePopupClasses = [POPUP_CLASS_NAME, $app.config.placement];
-  const [classList, setClassList] = h$1(basePopupClasses);
+  const [classList, setClassList] = h$2(basePopupClasses);
   y$1(() => {
     setClassList([
       ...basePopupClasses,
@@ -2947,7 +2952,7 @@ function AppPopup() {
       position: "fixed"
     };
   };
-  const [fixedPositionStyle, setFixedPositionStyle] = h$1(getFixedPositionStyles());
+  const [fixedPositionStyle, setFixedPositionStyle] = h$2(getFixedPositionStyles());
   y$1(() => {
     const inputWrapper = $app.datePickerState.inputWrapperElement.value;
     if (inputWrapper === void 0)
@@ -2961,7 +2966,7 @@ function AppPopup() {
 }
 function AppWrapper({ $app }) {
   const initialClassList = ["sx__date-picker-wrapper"];
-  const [classList, setClassList] = h$1(initialClassList);
+  const [classList, setClassList] = h$2(initialClassList);
   y$1(() => {
     var _a;
     const list = [...initialClassList];
@@ -3086,7 +3091,7 @@ const getMonthAndYearForSelectedDate = ($app) => {
 };
 function RangeHeading() {
   const $app = x(AppContext);
-  const [currentHeading, setCurrentHeading] = h$1("");
+  const [currentHeading, setCurrentHeading] = h$2("");
   y$1(() => {
     if ($app.calendarState.view.value === InternalViewName.Week) {
       setCurrentHeading(getMonthAndYearForDateRange($app, $app.calendarState.range.value.start, $app.calendarState.range.value.end));
@@ -3106,7 +3111,7 @@ function TodayButton() {
 }
 function ViewSelection() {
   const $app = x(AppContext);
-  const [availableViews, setAvailableViews] = h$1([]);
+  const [availableViews, setAvailableViews] = h$2([]);
   useSignalEffect(() => {
     if ($app.calendarState.isCalendarSmall.value) {
       setAvailableViews($app.config.views.value.filter((view) => view.hasSmallScreenCompat));
@@ -3114,14 +3119,14 @@ function ViewSelection() {
       setAvailableViews($app.config.views.value.filter((view) => view.hasWideScreenCompat));
     }
   });
-  const [selectedViewLabel, setSelectedViewLabel] = h$1("");
+  const [selectedViewLabel, setSelectedViewLabel] = h$2("");
   useSignalEffect(() => {
     const selectedView = $app.config.views.value.find((view) => view.name === $app.calendarState.view.value);
     if (!selectedView)
       return;
     setSelectedViewLabel($app.translate(selectedView.label));
   });
-  const [isOpen, setIsOpen] = h$1(false);
+  const [isOpen, setIsOpen] = h$2(false);
   const clickOutsideListener = (event) => {
     const target = event.target;
     if (target instanceof HTMLElement && !target.closest(".sx__view-selection")) {
@@ -3136,8 +3141,8 @@ function ViewSelection() {
     setIsOpen(false);
     $app.calendarState.setView(viewName, $app.datePickerState.selectedDate.value);
   };
-  const [viewSelectionItems, setViewSelectionItems] = h$1();
-  const [focusedViewIndex, setFocusedViewIndex] = h$1(0);
+  const [viewSelectionItems, setViewSelectionItems] = h$2();
+  const [focusedViewIndex, setFocusedViewIndex] = h$2(0);
   const handleSelectedViewKeyDown = (keyboardEvent) => {
     if (isKeyEnterOrSpace(keyboardEvent)) {
       setIsOpen(!isOpen);
@@ -3184,12 +3189,12 @@ function ForwardBackwardNavigation() {
       return;
     $app.datePickerState.selectedDate.value = currentView.backwardForwardFn($app.datePickerState.selectedDate.value, direction === "forwards" ? currentView.backwardForwardUnits : -currentView.backwardForwardUnits);
   };
-  const [localizedRange, setLocalizedRange] = h$1("");
+  const [localizedRange, setLocalizedRange] = h$2("");
   useSignalEffect(() => {
     setLocalizedRange(`${getLocalizedDate($app.calendarState.range.value.start, $app.config.locale.value)} ${$app.translate("to")} ${getLocalizedDate($app.calendarState.range.value.end, $app.config.locale.value)}`);
   });
-  const [rangeEndMinusOneRange, setRangeEndMinusOneRange] = h$1("");
-  const [rangeStartPlusOneRange, setRangeStartPlusOneRange] = h$1("");
+  const [rangeEndMinusOneRange, setRangeEndMinusOneRange] = h$2("");
+  const [rangeStartPlusOneRange, setRangeStartPlusOneRange] = h$2("");
   y$1(() => {
     const selectedView = $app.config.views.value.find((view) => view.name === $app.calendarState.view.value);
     if (!selectedView)
@@ -3214,15 +3219,15 @@ function CalendarHeader() {
   const $app = x(AppContext);
   const datePickerAppSingleton = new DatePickerAppSingletonBuilder().withDatePickerState($app.datePickerState).withConfig($app.datePickerConfig).withTranslate($app.translate).withTimeUnitsImpl($app.timeUnitsImpl).build();
   const headerContent = $app.config._customComponentFns.headerContent;
-  const headerContentId = h$1(headerContent ? randomStringId() : void 0)[0];
+  const headerContentId = h$2(headerContent ? randomStringId() : void 0)[0];
   const headerContentLeftPrepend = $app.config._customComponentFns.headerContentLeftPrepend;
-  const headerContentLeftPrependId = h$1(headerContentLeftPrepend ? randomStringId() : void 0)[0];
+  const headerContentLeftPrependId = h$2(headerContentLeftPrepend ? randomStringId() : void 0)[0];
   const headerContentLeftAppend = $app.config._customComponentFns.headerContentLeftAppend;
-  const headerContentLeftAppendId = h$1(headerContentLeftAppend ? randomStringId() : void 0)[0];
+  const headerContentLeftAppendId = h$2(headerContentLeftAppend ? randomStringId() : void 0)[0];
   const headerContentRightPrepend = $app.config._customComponentFns.headerContentRightPrepend;
-  const headerContentRightPrependId = h$1(headerContentRightPrepend ? randomStringId() : void 0)[0];
+  const headerContentRightPrependId = h$2(headerContentRightPrepend ? randomStringId() : void 0)[0];
   const headerContentRightAppend = $app.config._customComponentFns.headerContentRightAppend;
-  const headerContentRightAppendId = h$1(headerContentRightAppend ? randomStringId() : void 0)[0];
+  const headerContentRightAppendId = h$2(headerContentRightAppend ? randomStringId() : void 0)[0];
   y$1(() => {
     if (headerContent) {
       headerContent(getElementByCCID(headerContentId), {});
@@ -3282,7 +3287,7 @@ const handleWindowResize = ($app) => {
 };
 function useWrapperClasses($app) {
   const calendarWrapperClass = "sx__calendar-wrapper";
-  const [wrapperClasses, setWrapperClasses] = h$1([
+  const [wrapperClasses, setWrapperClasses] = h$2([
     calendarWrapperClass
   ]);
   useSignalEffect(() => {
@@ -3340,7 +3345,7 @@ function CalendarWrapper({ $app }) {
     }
   }, []);
   const wrapperClasses = useWrapperClasses($app);
-  const [currentView, setCurrentView] = h$1();
+  const [currentView, setCurrentView] = h$2();
   useSignalEffect(() => {
     const newView = $app.config.views.value.find((view) => view.name === $app.calendarState.view.value);
     const viewElement = document.getElementById(viewContainerId);
@@ -3351,8 +3356,8 @@ function CalendarWrapper({ $app }) {
     setCurrentView(newView);
     newView.render(viewElement, $app);
   });
-  const [previousRangeStart, setPreviousRangeStart] = h$1("");
-  const [transitionClass, setTransitionClass] = h$1("");
+  const [previousRangeStart, setPreviousRangeStart] = h$2("");
+  const [transitionClass, setTransitionClass] = h$2("");
   useSignalEffect(() => {
     var _a2, _b;
     const newRangeStartIsLaterThanPrevious = (((_a2 = $app.calendarState.range.value) === null || _a2 === void 0 ? void 0 : _a2.start) || "") > previousRangeStart;
@@ -5477,13 +5482,13 @@ const isUIEventTouchEvent = (event) => {
   return "touches" in event && typeof event.touches === "object";
 };
 function useEventInteractions($app) {
-  const [eventCopy, setEventCopy] = h$1();
+  const [eventCopy, setEventCopy] = h$2();
   const updateCopy = (newCopy) => {
     if (!newCopy)
       return setEventCopy(void 0);
     setEventCopy(deepCloneEvent(newCopy, $app));
   };
-  const [dragStartTimeout, setDragStartTimeout] = h$1();
+  const [dragStartTimeout, setDragStartTimeout] = h$2();
   const createDragStartTimeout = (callback, uiEvent) => {
     setDragStartTimeout(setTimeout(() => callback(uiEvent), 150));
   };
@@ -5795,7 +5800,7 @@ function TimeGridBackgroundEvent({ backgroundEvent, date }) {
   } }) });
 }
 function TimeGridDay({ calendarEvents, date, backgroundEvents }) {
-  const [mouseDownOnChild, setMouseDownOnChild] = h$1(false);
+  const [mouseDownOnChild, setMouseDownOnChild] = h$2(false);
   const $app = x(AppContext);
   const timeStringFromDayBoundary = timeStringFromTimePoints$1($app.config.dayBoundaries.value.start);
   const timeStringFromDayBoundaryEnd = timeStringFromTimePoints$1($app.config.dayBoundaries.value.end);
@@ -5806,7 +5811,7 @@ function TimeGridDay({ calendarEvents, date, backgroundEvents }) {
     end: dayEndDateTime
   };
   const sortedEvents = calendarEvents.sort(sortEventsByStartAndEnd);
-  const [eventsWithConcurrency, setEventsWithConcurrency] = h$1([]);
+  const [eventsWithConcurrency, setEventsWithConcurrency] = h$2([]);
   y$1(() => {
     setEventsWithConcurrency(handleEventConcurrency(sortedEvents));
   }, [calendarEvents]);
@@ -5837,7 +5842,7 @@ function TimeGridDay({ calendarEvents, date, backgroundEvents }) {
     "sx__time-grid-day",
     getClassNameForWeekday(toJSDate$1(date).getDay())
   ];
-  const [classNames, setClassNames] = h$1(baseClasses);
+  const [classNames, setClassNames] = h$2(baseClasses);
   useSignalEffect(() => {
     const newClassNames = [...baseClasses];
     if ($app.datePickerState.selectedDate.value === date)
@@ -5865,7 +5870,7 @@ const getTimeAxisHours = ({ start, end }, isHybridDay) => {
 };
 function TimeAxis() {
   const $app = x(AppContext);
-  const [hours, setHours] = h$1([]);
+  const [hours, setHours] = h$2([]);
   useSignalEffect(() => {
     setHours(getTimeAxisHours($app.config.dayBoundaries.value, $app.config.isHybridDay));
     const hoursPerDay = $app.config.timePointsPerDay / 100;
@@ -6129,7 +6134,7 @@ const filterByRange = (events, range) => {
 };
 const WeekWrapper = ({ $app, id }) => {
   document.documentElement.style.setProperty("--sx-week-grid-height", `${$app.config.weekOptions.value.gridHeight}px`);
-  const [week, setWeek] = h$1({});
+  const [week, setWeek] = h$2({});
   useSignalEffect(() => {
     var _a, _b;
     const rangeStart = (_a = $app.calendarState.range.value) === null || _a === void 0 ? void 0 : _a.start;
@@ -6335,7 +6340,7 @@ function MonthGridDay({ day, isFirstWeek, isLastWeek }) {
     "sx__month-grid-day",
     getClassNameForWeekday(jsDate.getDay())
   ];
-  const [wrapperClasses, setWrapperClasses] = h$1(baseClasses);
+  const [wrapperClasses, setWrapperClasses] = h$2(baseClasses);
   y$1(() => {
     const classes = [...baseClasses];
     if (dayMonth !== selectedDateMonth)
@@ -6441,7 +6446,7 @@ const positionInMonth = (month, sortedEvents) => {
   return month;
 };
 const MonthGridWrapper = ({ $app, id }) => {
-  const [month, setMonth] = h$1([]);
+  const [month, setMonth] = h$2([]);
   useSignalEffect(() => {
     $app.calendarEvents.list.value.forEach((event) => {
       event._eventFragments = {};
@@ -6628,7 +6633,7 @@ const MonthAgendaWrapper = ({ $app, id }) => {
     const filteredEvents = $app.calendarEvents.filterPredicate.value ? $app.calendarEvents.list.value.filter($app.calendarEvents.filterPredicate.value) : $app.calendarEvents.list.value;
     return positionEventsInAgenda(createAgendaMonth($app.datePickerState.selectedDate.value, $app.timeUnitsImpl), filteredEvents.sort(sortEventsByStartAndEnd));
   };
-  const [agendaMonth, setAgendaMonth] = h$1(getMonth());
+  const [agendaMonth, setAgendaMonth] = h$2(getMonth());
   y$1(() => {
     setAgendaMonth(getMonth());
   }, [
@@ -7322,7 +7327,7 @@ export {
   createViewWeek as e,
   d$1 as f,
   E as g,
-  h$1 as h,
+  h$2 as h,
   k$1 as k,
   r,
   u$2 as u,

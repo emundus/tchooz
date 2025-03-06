@@ -836,6 +836,14 @@ p[id*="mod_emundus_campaign__tchoozy_tab_desc"] {
     #g-container-main .g-container {
         width: 56rem;
     }
+
+    .em-applicant, .em-guest {
+    #g-navigation, #g-header {
+      .g-container {
+        width: 56rem !important;
+      }
+    }
+  }
 }
 
 @media screen and (min-width: 1081px) and (max-width: 1199px) {

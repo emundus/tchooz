@@ -1106,7 +1106,8 @@ function runAction(action, url = '', option = '') {
                     actions: actionsCheck,
                     groups: groupeEval,
                     evals: evaluators,
-                    notify: notifyEval
+                    notify: notifyEval,
+                    Itemid: itemId,
                 }),
                 success: function(result) {
 
@@ -1587,11 +1588,9 @@ function updateState(fnums, state)
         view = 'files';
     }
 
-    console.log(view, 'updateState');
-
     $.ajax({
         type:'POST',
-        url: 'index.php?option=com_emundus&controller=' + view + '&task=updatestate',
+        url: 'index.php?option=com_emundus&controller=' + view + '&task=updatestate&Itemid=' + itemId,
         dataType:'json',
         data:({
             fnums: fnums,
@@ -2183,6 +2182,7 @@ $(document).ready(function() {
 
                             $('#oelts').append('<div>' +
                                 '<p>  '+Joomla.Text._('COM_EMUNDUS_CHOOSE_OTHER_COL')+'</p>'+
+                                '<p class="tw-text-neutral-500 tw-text-xs !tw-mt-0">  '+Joomla.Text._('COM_EMUNDUS_CHOOSE_OTHER_COL_HELP')+'</p>'+
                                 '<div class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16">'+
                                 '<div class="em-flex-row em-mb-4"><input class="em-ex-check" type="checkbox" value="photo" name="em-ex-photo" id="em-ex-photo"/>' +
                                 '<label for="em-ex-photo" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_PHOTO')+'</label></div>' +
@@ -3846,7 +3846,8 @@ $(document).ready(function() {
                 addLoader();
 
                 nbFiles = await countFilesBeforeAction(checkInput, id, verb);
-                if(nbFiles === 1) {
+
+                if(nbFiles === 1 && checkInput !== 'all') {
                     url += '&fnum=' + JSON.parse(checkInput)[1];
                 }
 
@@ -6223,11 +6224,15 @@ function addElementToXlsRecap(e, exportRecapContainer) {
 
     let elementId = e.value;
 
-    if (!document.getElementById(elementId + '-item')) {
+    if (!document.getElementById(elementId + '-item') || (e.getAttribute('data-step-id') && !document.querySelector('[id="' + elementId + '-item"][data-step-id="' + e.getAttribute('data-step-id') + '"]'))) {
         let elementLabel = document.querySelector('label[for="emundus_elm_' + elementId + '"]').textContent;
         let elementLi = document.createElement('li');
         elementLi.classList.add('em-export-item', 'tw-flex', 'tw-flex-row');
         elementLi.id = elementId + '-item';
+
+        if (e.getAttribute('data-step-id')) {
+            elementLi.setAttribute('data-step-id', e.getAttribute('data-step-id'));
+        }
 
         let elementDeleteIcon = document.createElement('span');
         elementDeleteIcon.id = elementId + '-itembtn';
@@ -6248,8 +6253,14 @@ function addElementToXlsRecap(e, exportRecapContainer) {
 
 function removeElementFromXlsRecap(e) {
     let elementId = e.value;
+    let elementLi = null;
 
-    let elementLi = document.getElementById(elementId + '-item');
+    if (e.getAttribute('data-step-id')) {
+        elementLi = document.querySelector('[id="' + elementId + '-item"][data-step-id="' + e.getAttribute('data-step-id') + '"]');
+    } else {
+        elementLi = document.getElementById(elementId + '-item');
+    }
+
     if (elementLi) {
         elementLi.remove();
     }

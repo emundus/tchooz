@@ -1,5 +1,5 @@
 <template>
-  <div class="tw-border tw-border-neutral-300 em-card-shadow tw-rounded tw-bg-white tw-p-6">
+  <div class="tw-border tw-border-neutral-300 em-card-shadow tw-rounded-2xl tw-bg-white tw-p-6">
     <div>
       <form @submit.prevent="submit" class="fabrikForm emundus-form">
         <div>

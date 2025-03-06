@@ -5343,10 +5343,12 @@ const _sfc_main$a = {
       hasSample: false,
       currentSample: "",
       newSample: "",
-      sampleFromDocumentId: null
+      sampleFromDocumentId: null,
+      addPipeEnabled: false
     };
   },
-  created() {
+  async created() {
+    await this.checkAddPipe();
     this.getDocumentModels();
     this.getFileTypes();
   },
@@ -5378,12 +5380,21 @@ const _sfc_main$a = {
         }
       });
     },
+    async checkAddPipe() {
+      return await formService.getAddPipeStatus().then((response) => {
+        this.addPipeEnabled = response.status;
+      });
+    },
     toggleDocumentMandatory() {
       this.document.mandatory = this.document.mandatory == "1" ? "0" : "1";
     },
     getFileTypes() {
       this.fileTypes = fileTypes;
       this.fileTypes.forEach((filetype) => {
+        if (this.addPipeEnabled && filetype.value === "mp4") {
+          filetype.title = "COM_EMUNDUS_FORM_BUILDER_FORMATS_VIDEO_ADDPIPE";
+          filetype.value = "video";
+        }
         this.document.selectedTypes[filetype.value] = false;
       });
     },
@@ -5432,6 +5443,9 @@ const _sfc_main$a = {
           }
           if (["mp4"].includes(type)) {
             this.document.selectedTypes["mp4"] = true;
+          }
+          if (["video"].includes(type)) {
+            this.document.selectedTypes["video"] = true;
           }
           if (["zip"].includes(type)) {
             this.document.selectedTypes["zip"] = true;

@@ -46,3 +46,4 @@
 	echo ($lastPeak/(1024*1024)).' MB'.PHP_EOL;
 	$rows*=2;
 	}
+?>

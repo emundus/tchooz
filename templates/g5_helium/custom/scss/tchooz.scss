@@ -2349,6 +2349,7 @@ div[id^='current_'] .mod_emundus_campaign__list_content h3 {
 }
 
 .mod_emundus_campaign__details_content #background-shapes {
+  display: block;
   position: absolute;
   z-index: 0;
   height: 199px;
@@ -2522,8 +2523,13 @@ div[id^='current_'] .mod_emundus_campaign__list_content h3 {
     border-bottom-right-radius: 26px;
   }
 
-  .mod_emundus_campaign__details_content #background-shapes {
-    left: 190px;
+  .mod_emundus_campaign__details_content {
+    width: 50%;
+  }
+
+  div.mod_emundus_campaign__grid aside#campaign-sidebar {
+    display: flex;
+    gap: 32px;
   }
 
 }
@@ -2689,10 +2695,7 @@ div[id^='current_'] .mod_emundus_campaign__list_content h3 {
   }
 
   .mod_emundus_campaign__details_content #background-shapes {
-    display: block !important;
-    width: 124%;
-    height: 122%;
-    transform: scale(1);
+    left: 281px;
   }
 
   .mod_emundus_campaign__pinned_campaign {

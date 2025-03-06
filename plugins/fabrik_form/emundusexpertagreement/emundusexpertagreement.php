@@ -382,7 +382,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 					}
 
 
-					// 2. Vérification de l'existance d'un compte utilisateur avec email de l'expert
+					// 2. Vérification de l'existence d'un compte utilisateur avec email de l'expert
 					try
 					{
 						$query->clear()
@@ -512,6 +512,14 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 						$m_users = new EmundusModelUsers();
 						$m_users->passwordReset($data, '', '', true, 'new_account');
 					}
+
+                    // Ajout du user_id dans la demande d'expertise
+                    $query->clear()
+                        ->update($db->quoteName('#__emundus_files_request'))
+                        ->set($db->quoteName('expert_user_id') . ' = ' . $db->quote($user->id))
+                        ->where($db->quoteName('keyid') . ' LIKE ' . $db->quote($key_id));
+                    $db->setQuery($query);
+                    $db->execute();
 
 					// Send email if needed
 					if (in_array('jos_emundus_files_request_1614_repeat', $existingTables))

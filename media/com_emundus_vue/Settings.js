@@ -382,7 +382,7 @@ const _sfc_main$l = {
     }
   }
 };
-const _hoisted_1$l = { class: "tw-w-full tw-rounded-coordinator tw-p-6 tw-bg-white tw-border tw-border-neutral-300 tw-relative" };
+const _hoisted_1$l = { class: "tw-w-full tw-rounded-2xl tw-p-6 tw-bg-white tw-border tw-border-neutral-300 tw-relative" };
 const _hoisted_2$l = { class: "tw-hidden" };
 const _hoisted_3$l = {
   id: "error_message_test",
@@ -757,7 +757,7 @@ const _sfc_main$k = {
     }
   }
 };
-const _hoisted_1$k = { class: "tw-w-full tw-rounded-coordinator tw-p-6 tw-bg-white tw-border tw-border-neutral-300 tw-relative" };
+const _hoisted_1$k = { class: "tw-w-full tw-rounded-2xl tw-p-6 tw-bg-white tw-border tw-border-neutral-300 tw-relative" };
 const _hoisted_2$k = {
   key: 2,
   class: "tw-mt-7 tw-flex tw-flex-col"
@@ -3942,7 +3942,7 @@ const _sfc_main$7 = {
 const _hoisted_1$7 = { key: 0 };
 const _hoisted_2$7 = {
   key: 1,
-  class: "tw-flex tw-flex-col tw-justify-between tw-w-full tw-font-medium rtl:tw-text-right tw-text-black tw-border tw-border-gray-200 tw-rounded-[15px] tw-bg-white tw-mb-6 tw-gap-3 tw-shadow",
+  class: "tw-flex tw-flex-col tw-justify-between tw-w-full tw-font-medium rtl:tw-text-right tw-text-black tw-border tw-border-gray-200 tw-rounded-2xl tw-bg-white tw-mb-6 tw-gap-3 tw-shadow",
   "data-accordion-target": "#accordion-collapse-body-1",
   "aria-expanded": "true",
   "aria-controls": "accordion-collapse-body-1"

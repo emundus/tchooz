@@ -198,7 +198,7 @@ class EmundusViewApplication extends HtmlView
 
 				case 'attachment':
 					if (EmundusHelperAccess::asAccessAction(4, 'r', $this->_user->id, $fnum) || (!empty($ccid) && !empty($fnum) && in_array($fnum, array_keys($this->_user->fnums)))) {
-						EmundusModelLogs::log($this->user->id, (int) substr($fnum, -7), $fnum, 4, 'r', 'COM_EMUNDUS_ACCESS_ATTACHMENT_READ');
+						EmundusModelLogs::log($this->user->id, (int)$fnumInfos['applicant_id'], $fnum, 4, 'r', 'COM_EMUNDUS_ACCESS_ATTACHMENT_READ');
 						$this->expert_document_id = $params->get('expert_document_id', '36');
 
 						$search = $jinput->getString('search');
@@ -361,7 +361,7 @@ class EmundusViewApplication extends HtmlView
 				case 'comment':
 					if (EmundusHelperAccess::asAccessAction(10, 'r', $this->user->id, $fnum)) {
 
-						EmundusModelLogs::log($this->user->id, (int) substr($fnum, -7), $fnum, 10, 'r', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_READ');
+						EmundusModelLogs::log($this->user->id, (int)$fnumInfos['applicant_id'], $fnum, 10, 'r', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_READ');
 
 						$this->userComments = $m_application->getFileComments($fnum);
 
@@ -371,7 +371,7 @@ class EmundusViewApplication extends HtmlView
 					}
 					elseif (EmundusHelperAccess::asAccessAction(10, 'c', $this->user->id, $fnum) || (!empty($ccid) && !empty($fnum) && in_array($fnum, array_keys($this->_user->fnums)))) {
 
-						EmundusModelLogs::log($this->user->id, (int) substr($fnum, -7), $fnum, 10, 'c', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_CREATE');
+						EmundusModelLogs::log($this->user->id, (int)$fnumInfos['applicant_id'], $fnum, 10, 'c', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_CREATE');
 
 						$this->userComments = $m_application->getFileOwnComments($fnum, $this->user->id);
 
@@ -388,7 +388,7 @@ class EmundusViewApplication extends HtmlView
 
 				case 'logs':
 					if (EmundusHelperAccess::asAccessAction(37, 'r', $this->_user->id, $fnum) || (!empty($ccid) && !empty($fnum) && in_array($fnum, array_keys($this->_user->fnums)))) {
-						EmundusModelLogs::log($this->user->id, (int) substr($fnum, -7), $fnum, 37, 'r', 'COM_EMUNDUS_ACCESS_LOGS_READ');
+						EmundusModelLogs::log($this->user->id, (int)$fnumInfos['applicant_id'], $fnum, 37, 'r', 'COM_EMUNDUS_ACCESS_LOGS_READ');
 						$m_logs = new EmundusModelLogs();
 
 						if(!empty($fnum) && in_array($fnum, array_keys($this->_user->fnums))) {
@@ -425,7 +425,7 @@ class EmundusViewApplication extends HtmlView
 				case 'tag':
 					if (EmundusHelperAccess::asAccessAction(14, 'r', $this->user->id, $fnum)) {
 
-						EmundusModelLogs::log($this->user->id, (int) substr($fnum, -7), $fnum, 14, 'r', 'COM_EMUNDUS_ACCESS_TAGS_READ');
+						EmundusModelLogs::log($this->user->id, (int)$fnumInfos['applicant_id'], $fnum, 14, 'r', 'COM_EMUNDUS_ACCESS_TAGS_READ');
 
 						$m_files           = new EmundusModelFiles();
 						$this->tags        = $m_files->getTagsByFnum(array($fnum));
@@ -458,7 +458,7 @@ class EmundusViewApplication extends HtmlView
 						$see_only_filled_workflows = $emundus_config->get('see_only_filled_workflows', 0);
 						$this->header = $jinput->getString('header', 1);
 
-						EmundusModelLogs::log($this->user->id, (int) substr($fnum, -7), $fnum, 1, 'r', 'COM_EMUNDUS_ACCESS_FORM_READ');
+						EmundusModelLogs::log($this->user->id, (int)$fnumInfos['applicant_id'], $fnum, 1, 'r', 'COM_EMUNDUS_ACCESS_FORM_READ');
 
 						$m_campaign = new EmundusModelCampaign;
 						$m_user     = new EmundusModelUsers;
@@ -552,7 +552,7 @@ class EmundusViewApplication extends HtmlView
 					// This view gets a recap of all the emails sent to the User by the platform, requires applicant_email read rights.
 					if (EmundusHelperAccess::asAccessAction(9, 'r', $this->user->id, $fnum)) {
 
-						EmundusModelLogs::log($this->user->id, (int) substr($fnum, -7), $fnum, 9, 'r', 'COM_EMUNDUS_ACCESS_MAIL_APPLICANT_READ');
+						EmundusModelLogs::log($this->user->id, (int)$fnumInfos['applicant_id'], $fnum, 9, 'r', 'COM_EMUNDUS_ACCESS_MAIL_APPLICANT_READ');
 
 						$m_emails       = new EmundusModelEmails();
 						$this->messages = $m_emails->get_messages_to_from_user(intval($fnumInfos['applicant_id']));

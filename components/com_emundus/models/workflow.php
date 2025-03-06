@@ -153,12 +153,16 @@ class EmundusModelWorkflow extends JModelList
 
 					try {
 						if (empty($step['id'])) {
+							if ($this->isEvaluationStep($step['type'])) {
+								$step['output_status'] = 0;
+							}
+
 							$inserted = $this->db->insertObject('#__emundus_setup_workflows_steps', $step_object);
 							if ($inserted) {
 								$step['id'] = $this->db->insertid();
 							}
 						} else {
-							$fields = ['label', 'type', 'state', 'multiple', 'output_status', 'ordering'];
+							$fields = ['label', 'type', 'state', 'multiple', 'ordering'];
 
 							$fields_set = [];
 							foreach($fields as $field) {
@@ -1370,76 +1374,64 @@ class EmundusModelWorkflow extends JModelList
 					}
 				}
 			} catch (Exception $e) {
-				var_dump($e->getMessage() . '  ' .  $query->__toString());exit;
+				Log::add('Error while duplicating workflow: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
 			}
 		}
 
 		return $new_workflow_id;
 	}
 
-	/**
-	 * old Workflows were kind of equals to current Step Object, not Workflow Object
-	 * before a program could be linked to muliple workflows, now it can only be linked to one
-	 * before campaigns could be linked to multiple workflows, now they can not be linked to any, it must be througth campaign's program
-	 * if two campaigns have the same program, but don't have the same steps, then they must have different programs
-	 * @return bool migrated
-	 */
-	public function migrateDeprecatedCampaignWorkflows(): bool
+	public function getEvaluationStepDataForFnum(string $fnum, int $step_id, array $elements): array
 	{
-		$migrated = false;
+		$data = [];
 
-		$query = $this->db->getQuery(true);
-		$query->select('id')
-			->from($this->db->quoteName('#__emundus_campaign_workflow'));
+		if (!empty($fnum) && !empty($step_id) && !empty($elements)) {
+			$step_data = $this->getStepData($step_id);
 
-		try {
-			$this->db->setQuery($query);
-			$workflow_ids = $this->db->loadColumn();
-		} catch (Exception $e) {
-			Log::add('Error while fetching deprecated campaign workflows: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
-		}
+			// get all evaluations on this step for this fnum
+			if (isset($step_data->table)) {
+				require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+				$m_files = new EmundusModelFiles();
 
-		if (!empty($workflow_ids)) {
-			$deprecated_workflows = [];
-
-			foreach($workflow_ids as $workflow_id) {
 				$query = $this->db->getQuery(true);
+
 				$query->clear()
-					->select('ecw.id, ecw.profile, ecw.start_date, ecw.end_date, ecw.output_status, GROUP_CONCAT(ecwrc.campaign) as campaign_ids, GROUP_CONCAT(ecwrp.programs) as program_codes, ecwres.entry_status as entry_status')
-					->from($this->db->quoteName('#__emundus_campaign_workflow', 'ecw'))
-					->leftJoin($this->db->quoteName('jos_emundus_campaign_workflow_repeat_campaign', 'ecwrc') . ' ON ' . $this->db->quoteName('ecwrc.parent_id') . ' = ' . $this->db->quoteName('ecw.id'))
-					->leftJoin($this->db->quoteName('jos_emundus_campaign_workflow_repeat_programs', 'ecwrp') . ' ON ' . $this->db->quoteName('ecwrp.parent_id') . ' = ' . $this->db->quoteName('ecw.id'))
-					->leftJoin($this->db->quoteName('joomla5.jos_emundus_campaign_workflow_repeat_entry_status', 'ecwres') . ' ON ' . $this->db->quoteName('ecwres.parent_id') . ' = ' . $this->db->quoteName('ecw.id'))
-					->where('ecw.id = ' . $workflow_id);
+					->select('evaluation.id, evaluation.evaluator, eu.firstname, eu.lastname')
+					->from($this->db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+					->leftJoin($this->db->quoteName($step_data->table, 'evaluation') . ' ON ' . $this->db->quoteName('evaluation.ccid') . ' = ' . $this->db->quoteName('ecc.id') . ' AND ' . $this->db->quoteName('evaluation.step_id') . ' = ' . $this->db->quote($step_id))
+					->leftJoin($this->db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->db->quoteName('eu.user_id') . ' = ' . $this->db->quoteName('evaluation.evaluator'))
+					->where('ecc.fnum like ' . $this->db->quote($fnum));
 
-				try {
-					$this->db->setQuery($query);
-					$deprecated_workflow_data = $this->db->loadAssoc();
-				} catch (Exception $e) {
-					Log::add('Error while fetching deprecated campaign workflow: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+				$this->db->setQuery($query);
+				$evaluations = $this->db->loadAssocList();
+
+				foreach ($evaluations as $eval_key => $evaluation) {
+					$key = $evaluation['id'] ?? $fnum . '-' . $eval_key;
+					$data[$key] = [
+						'step_id' => $step_data->label,
+						'evaluation_id' => $evaluation['id'],
+						'evaluator_name' => $evaluation['firstname'] . ' ' . $evaluation['lastname'],
+					];
+
+					$fabrik_elements = $m_files->getValueFabrikByIds($elements);
+					foreach ($fabrik_elements as $fabrik_element) {
+						$element_name = !empty($fabrik_element['table_join']) ? $fabrik_element['table_join'] . '___' . $fabrik_element['name'] : $fabrik_element['db_table_name'] . '___' . $fabrik_element['name'];
+						$data[$key][$element_name] = '';
+
+						if (!empty($evaluation['id'])) {
+							$evaluation_row_id = $evaluation['id'];
+							$value = $m_files->getFabrikElementValue($fabrik_element, $fnum, $evaluation_row_id);
+
+							if (!empty($value) && !empty($value[$fabrik_element['id']][$fnum]['val']))
+							{
+								$data[$key][$element_name] = $value[$fabrik_element['id']][$fnum]['val'];
+							}
+						}
+					}
 				}
-
-				if (!empty($deprecated_workflow_data)) {
-					$deprecated_workflow_data['entry_status'] = array_unique(explode(',', $deprecated_workflow_data['entry_status']));
-					$deprecated_workflow_data['campaign_ids'] = array_unique(explode(',', $deprecated_workflow_data['campaign_ids']));
-					$deprecated_workflow_data['program_codes'] = array_unique(explode(',', $deprecated_workflow_data['program_codes']));
-				}
-				$deprecated_workflows[] = $deprecated_workflow_data;
 			}
-
-			$new_workflows_data = [];
-
-			foreach ($deprecated_workflows as $deprecated_workflow)
-			{
-
-
-
-			}
-		} else {
-			// no deprecated workflows, perfect
-			$migrated = true;
 		}
 
-		return $migrated;
+		return $data;
 	}
 }

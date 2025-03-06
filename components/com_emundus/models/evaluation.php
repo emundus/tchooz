@@ -594,13 +594,17 @@ class EmundusModelEvaluation extends JModelList
 							$group_ids = $this->db->loadColumn();
 
 							if (!empty($group_ids)) {
-								$group_elements = $this->getElementsByGroups(implode(',', $group_ids), $show_in_list_summary, $hidden);
+								$group_elements = $this->getElementsByGroups(implode(',', $group_ids), $show_in_list_summary, $hidden, ['panel', 'display']);								
 
 								foreach ($group_elements as $group_element)
 								{
 									if (!empty($group_element->element_id))
 									{
-										$step_element = $h_list->getElementsDetailsByID($group_element->element_id)[0];
+										$step_element = $h_list->getElementsDetailsByID($group_element->element_id)[0];		
+										if(in_array($step_element->element_plugin, ['panel', 'display'])) {
+											continue;
+										}
+
 										$step_element->table_label = Text::_($step_element->table_label);
 										$step_element->label =  Text::_($step->label);
 										$step_element->form_id = $step->form_id;
@@ -1498,9 +1502,9 @@ class EmundusModelEvaluation extends JModelList
 	// @param 	  $show_in_list_summary int show item defined as displayed in Fabrik List ; yes=1
 	// @param 	  $hidden int show item defined as hidden in Fabrik List  ; yes=1
 	// @params 	  $groups string List of Fabrik groups comma separated
-	function getElementsByGroups($groups, $show_in_list_summary = 1, $hidden = 0)
+	function getElementsByGroups($groups, $show_in_list_summary = 1, $hidden = 0, $exclude_plugins = [])
 	{
-		return @EmundusHelperFilters::getElementsByGroups($groups, $show_in_list_summary, $hidden);
+		return @EmundusHelperFilters::getElementsByGroups($groups, $show_in_list_summary, $hidden, $exclude_plugins);
 	}
 
 	// get ALL elements by groups
@@ -3363,7 +3367,7 @@ class EmundusModelEvaluation extends JModelList
 				if ($res->status)
 				{
 					$logs_params = ['created' => ['filename' => $letter->title]];
-					EmundusModelLogs::log($user->id, (int) substr($fnum, -7), $fnum, 27, 'c', 'COM_EMUNDUS_ACCESS_LETTERS', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
+					EmundusModelLogs::log($user->id, (int)$fnumInfo[$fnum]['applicant_id'], $fnum, 27, 'c', 'COM_EMUNDUS_ACCESS_LETTERS', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
 				}
 			}
 		}
