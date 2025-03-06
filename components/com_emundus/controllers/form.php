@@ -15,6 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
@@ -1301,6 +1302,26 @@ class EmundusControllerForm extends BaseController
 			{
 				$response['msg'] = Text::_('MISSING_PARAMS');
 			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function getaddpipestatus()
+	{
+		$response = array('status' => false);
+
+		$addPipeStatus = ComponentHelper::getParams('com_emundus')->get('addpipe_activation', 0);
+
+		if ($addPipeStatus == 1)
+		{
+			$response['status'] = true;
+			$response['msg']    = Text::_('SUCCESS');
+		}
+		else
+		{
+			$response['msg'] = Text::_('ADDPIPE_NOT_ACTIVATED');
 		}
 
 		echo json_encode((object) $response);

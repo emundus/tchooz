@@ -88,14 +88,32 @@ class AmmonRepository
 		try {
 			$company = $this->getOrCreateCompany();
 			if (!empty($company)) {
-				$manager = $this->getCompanyManager($company);
+				if ($this->companyIsPaying()) {
+					Log::add('Company ' . $company->establishmentName . ' is paying a part for ' . $this->fnum, Log::INFO, 'plugin.emundus.ammon');
 
-				if (empty($manager)) {
-					$manager = $this->createCompanyManager($company);
+					$manager = $this->getCompanyManager($company);
 
 					if (empty($manager)) {
-						throw new \Exception('Failed to create company manager in ammon.');
+						$manager = $this->createCompanyManager($company);
+
+						if (empty($manager)) {
+							throw new \Exception('Failed to create company manager in ammon.');
+						}
 					}
+
+					$different_referee = \EmundusHelperFabrik::getValueByAlias('different_admin', $this->fnum);
+					if ($different_referee['raw'] == 1) {
+						$registration_referee = $this->getRegistrationReferee($company);
+						if (empty($registration_referee)) {
+							$registration_referee = $this->createRegistrationReferee($company);
+
+							if (empty($registration_referee)) {
+								throw new \Exception('Failed to create registration different referee in ammon.');
+							}
+						}
+					}
+				} else {
+					Log::add('Company ' . $company->establishmentName . ' is not paying for ' . $this->fnum, Log::INFO, 'plugin.emundus.ammon');
 				}
 			}
 
@@ -117,9 +135,28 @@ class AmmonRepository
 			}
 		} catch (\Exception $e) {
 			Log::add('Error when trying to create registration for fnum ' . $this->fnum . ' ' . $e->getMessage(), Log::ERROR, 'plugin.emundus.ammon');
+			throw new \Exception($e->getMessage());
 		}
 
 		return $registered;
+	}
+
+	private function companyIsPaying(): bool
+	{
+		$paying = false;
+
+		$value = \EmundusHelperFabrik::getValueByAlias('registration_company_price', $this->fnum);
+		if (!empty($value) && !empty($value['raw'])) {
+			$price = str_replace(' ', '', $value['raw']);
+			$price = str_replace(',', '.', $price);
+			$price = floatval($price);
+
+			if ($price > 0) {
+				$paying = true;
+			}
+		}
+
+		return $paying;
 	}
 
 	private function getOrCreateCompany(): ?CompanyEntity
@@ -197,7 +234,7 @@ class AmmonRepository
 
 		try
 		{
-			$employmentEntity = $this->factory->createEmploymentEntity($company);
+			$employmentEntity = $this->factory->createEmploymentEntity($company, 'manager');
 			$managerEntity    = $this->factory->createManagerEntity($employmentEntity);
 
 			if (!empty($managerEntity->lastName) && !empty($managerEntity->firstName)) {
@@ -218,11 +255,38 @@ class AmmonRepository
 		return $user;
 	}
 
+	private function getRegistrationReferee(CompanyEntity $company): ?UserEntity
+	{
+		$user = null;
+
+		try
+		{
+			$employmentEntity = $this->factory->createEmploymentEntity($company, 'referee');
+			$refereeEntity    = $this->factory->createRefereeEntity($employmentEntity);
+
+			if (!empty($refereeEntity->lastName) && !empty($refereeEntity->firstName)) {
+				$ammon_user = $this->synchronizer->getUserFromName($refereeEntity->lastName, $refereeEntity->firstName);
+
+				if (!empty($ammon_user))
+				{
+					$user = $this->factory->createManagerEntityFromAmmon($ammon_user);
+					$this->factory->deleteReference($refereeEntity->externalReference);
+				}
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Failed to get company manager user entity ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $user;
+	}
+
 	private function createCompanyManager(CompanyEntity $company): ?UserEntity
 	{
 		$user = null;
 
-		$employmentEntity = $this->factory->createEmploymentEntity($company);
+		$employmentEntity = $this->factory->createEmploymentEntity($company, 'manager');
 		$managerEntity = $this->factory->createManagerEntity($employmentEntity);
 		$created = $this->synchronizer->createUser($managerEntity);
 
@@ -230,6 +294,23 @@ class AmmonRepository
 			$user = $managerEntity;
 		} else {
 			Log::add('Error when trying to create manager for company ' . $company->establishmentName, Log::ERROR, 'plugin.emundus.ammon');
+		}
+
+		return $user;
+	}
+
+	private function createRegistrationReferee(CompanyEntity $company): ?UserEntity
+	{
+		$user = null;
+
+		$employmentEntity = $this->factory->createEmploymentEntity($company, 'referee');
+		$refereeEntity = $this->factory->createRefereeEntity($employmentEntity);
+		$created = $this->synchronizer->createUser($refereeEntity);
+
+		if ($created) {
+			$user = $refereeEntity;
+		} else {
+			Log::add('Error when trying to create referee for company ' . $company->establishmentName, Log::ERROR, 'plugin.emundus.ammon');
 		}
 
 		return $user;

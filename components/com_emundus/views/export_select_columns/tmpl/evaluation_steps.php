@@ -50,7 +50,7 @@ if (!empty($this->elements)) {
 				<h5 class="tw-cursor-pointer">' . $element->step_label . '</h5>
 			</div>';
 
-			$html_steps .= '<div id="felts' . $current_step . '" class="tw-p-2" style="display: none;">
+			$html_steps .= '<div id="felts' . $current_step . '" class="tw-p-2" style="display: none;" data-step-id="' . $current_step .'">
 				<div class="tw-flex tw-flex-row tw-mb-4">
 					<input type="checkbox" id="emundus_checkall'. $current_step .'" class="emundusall tw-cursor-pointer" data-check=".emunduspage">
 					<label for="emundus_checkall' . $current_step . '" class="tw-cursor-pointer" style="margin-bottom: 0">Select all elements</label>
@@ -90,7 +90,7 @@ if (!empty($this->elements)) {
 		}
 
 		$html_steps .= '<div class="tw-flex-row">
-				<input name="ud[]" type="checkbox" id="emundus_elm_' . $element->id . '" class="emundusitem_' .  $element->group_id . ' tw-cursor-pointer" value="' .  $element->id . '">
+				<input name="ud[]" type="checkbox" id="emundus_elm_' . $element->id . '" class="emundusitem_' .  $element->group_id . ' tw-cursor-pointer" value="' .  $element->id . '" data-step-id="' . $element->step_id . '">
 				<label for="emundus_elm_' .  $element->id . '" class="tw-cursor-pointer">' . Text::_($element->element_label) . '</label>
 			</div>';
 	}

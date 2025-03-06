@@ -88,14 +88,14 @@ class Ammon extends CMSPlugin implements SubscriberInterface
 						} else {
 							Log::add('Registration for fnum ' . $fnum . ' and session ' . $session_id . ' in ammon api failed', Log::ERROR, 'plugin.emundus.ammon');
 						}
-					} catch (Exception $e) {
+					} catch (\Exception $e) {
 						$registered = false;
 						$message = $e->getMessage();
 						Log::add('Something went wrong when trying to register fnum ' . $fnum .  ' in ammon api ' . $e->getMessage(), Log::ERROR, 'plugin.emundus.ammon');
 					}
 
 					$dispatcher = Factory::getApplication()->getDispatcher();
-					$onAfterAmmonRegistration = new GenericEvent('onAfterAmmonRegistration', ['fnum' => $fnum, 'session_id' => $session_id, 'status' => $registered ? 'success' : 'error', 'message' => $message]);
+					$onAfterAmmonRegistration = new GenericEvent('onAfterAmmonRegistration', ['fnum' => $fnum, 'session_id' => $session_id, 'status' => ($registered ? 'success' : 'error'), 'message' => $message]);
 					$dispatcher->dispatch('onAfterAmmonRegistration', $onAfterAmmonRegistration);
 				}
 			} else {

@@ -471,8 +471,14 @@ class EmundusModelApplication extends ListModel
 				}
 
 				if (!empty($logsParams['updated'])) {
+                    if (!class_exists('EmundusModelFiles')) {
+                        require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+                    }
+                    $m_files = new EmundusModelFiles;
+                    $fnumInfos = $m_files->getFnumInfos($fnum);
+
 					$logsParams['updated'] = array_values($logsParams['updated']);
-					EmundusModelLogs::log(JFactory::getUser()->id, (int) substr($fnum, -7), $fnum, 10, 'u', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+					EmundusModelLogs::log(JFactory::getUser()->id, (int)$fnumInfos['applicant_id'], $fnum, 10, 'u', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 				}
 			}
 
@@ -542,8 +548,14 @@ class EmundusModelApplication extends ListModel
 				$logsStd->details = $deleted_comment->comment_body;
 			}
 
+            if (!class_exists('EmundusModelFiles')) {
+                require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+            }
+            $m_files = new EmundusModelFiles;
+            $fnumInfos = $m_files->getFnumInfos($fnum);
+
 			$logsParams = array('deleted' => [$logsStd]);
-			EmundusModelLogs::log(JFactory::getUser()->id, (int) substr($fnum, -7), $fnum, 10, 'd', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+			EmundusModelLogs::log(JFactory::getUser()->id, (int)$fnumInfos['applicant_id'], $fnum, 10, 'd', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 		}
 
 		return $res;
@@ -580,7 +592,13 @@ class EmundusModelApplication extends ListModel
 			$logsParams       = array('deleted' => [$logsStd]);
 			$user_id          = JFactory::getUser()->id;
 			$user_id          = empty($user_id) ? 62 : $user_id;
-			EmundusModelLogs::log($user_id, (int) substr($fnum, -7), $fnum, 14, 'd', 'COM_EMUNDUS_ACCESS_TAGS_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+
+            if (!class_exists('EmundusModelFiles')) {
+                require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+            }
+            $m_files = new EmundusModelFiles;
+            $fnumInfos = $m_files->getFnumInfos($fnum);
+			EmundusModelLogs::log($user_id, (int)$fnumInfos['applicant_id'], $fnum, 14, 'd', 'COM_EMUNDUS_ACCESS_TAGS_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 		}
 
 		return $res;
@@ -627,7 +645,12 @@ class EmundusModelApplication extends ListModel
 						$logsStd->element = empty($row['reason']) ? '[' . Text::_('COM_EMUNDUS_COMMENT_NO_TITLE') . ']' : '[' . $row['reason'] . ']';
 						$logsStd->details = $row['comment_body'];
 						$logsParams       = array('created' => [$logsStd]);
-						EmundusModelLogs::log($this->_user->id, (int) substr($row['fnum'], -7), $row['fnum'], 10, 'c', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+                        if (!class_exists('EmundusModelFiles')) {
+                            require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+                        }
+                        $m_files = new EmundusModelFiles;
+                        $fnumInfos = $m_files->getFnumInfos($row['fnum']);
+						EmundusModelLogs::log($this->_user->id, (int)$fnumInfos['applicant_id'], $row['fnum'], 10, 'c', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 					}
 				}
 			}
@@ -685,7 +708,7 @@ class EmundusModelApplication extends ListModel
 							$logsStd->details = $file['filename'];
 							$logsParams = array('deleted' => [$logsStd]);
 
-							EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($file['fnum'], -7), $file['fnum'], 4, 'd', 'COM_EMUNDUS_ACCESS_ATTACHMENT_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+							EmundusModelLogs::log(JFactory::getUser()->id, (int)$applicant_id, $file['fnum'], 4, 'd', 'COM_EMUNDUS_ACCESS_ATTACHMENT_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 						}
 					} catch (Exception $e) {
 						Log::add('Error in model/application at query: ' . $query, Log::ERROR, 'com_emundus');
@@ -2360,7 +2383,7 @@ class EmundusModelApplication extends ListModel
 											}
 
 											// Do not display elements with no value inside them.
-											if ($show_empty_fields == 0 && (trim($element->content) == '' || trim($element->content_id) == -1) && $element->plugin != 'emundus_fileupload') {
+											if ($show_empty_fields == 0 && (trim($element->content) == '' || trim($element->content_id) == -1 || ($element->plugin == 'checkbox' && $element->content == '[""]')) && $element->plugin != 'emundus_fileupload') {
 												continue;
 											}
 
@@ -4413,8 +4436,14 @@ class EmundusModelApplication extends ListModel
 				$this->_db->setQuery($query);
 				$label = $this->_db->loadResult();
 
+                if (!class_exists('EmundusModelFiles')) {
+                    require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+                }
+                $m_files = new EmundusModelFiles;
+                $fnumInfos = $m_files->getFnumInfos($fnum);
+
 				$logsParams = ['deleted' => ['details' => $label]];
-				EmundusModelLogs::log($current_user, '', $fnum, 11, 'd', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+				EmundusModelLogs::log($current_user, $fnumInfos['applicant_id'], $fnum, 11, 'd', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 			}
 		}
 
@@ -4460,8 +4489,14 @@ class EmundusModelApplication extends ListModel
 				$this->_db->setQuery($query);
 				$user_name = $this->_db->loadResult();
 
+                if (!class_exists('EmundusModelFiles')) {
+                    require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+                }
+                $m_files = new EmundusModelFiles;
+                $fnumInfos = $m_files->getFnumInfos($fnum);
+
 				$logsParams = ['deleted' => ['details' => $user_name]];
-				EmundusModelLogs::log($current_user, '', $fnum, 11, 'd', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+				EmundusModelLogs::log($current_user, $fnumInfos['applicant_id'], $fnum, 11, 'd', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 			}
 		}
 
@@ -5760,6 +5795,10 @@ class EmundusModelApplication extends ListModel
 							}
 						} else if ($element_value !== "0000-00-00 00:00:00" && !empty($element_value)) {
 							$at_least_one_visible = true;
+							if($current_fb_element->plugin === 'checkbox' && $element_value === '[""]')
+							{
+								$at_least_one_visible = false;
+							}
 						}
 					}
 				}
@@ -6070,7 +6109,7 @@ class EmundusModelApplication extends ListModel
 				$phpSpreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(JPATH_SITE . DS . $filePath);
 				$htmlWriter     = new \PhpOffice\PhpSpreadsheet\Writer\Html($phpSpreadsheet);
 				$htmlWriter->setGenerateSheetNavigationBlock(true);
-				$htmlWriter->setSheetIndex(null);
+				$htmlWriter->setSheetIndex(0);
 				$preview['content']   = $htmlWriter->generateHtmlAll();
 				$preview['overflowY'] = true;
 				$preview['overflowX'] = true;

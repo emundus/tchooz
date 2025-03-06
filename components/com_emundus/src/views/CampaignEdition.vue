@@ -1,7 +1,7 @@
 <template>
   <div id="edit-campaign">
     <div class="em-w-custom"></div>
-    <div class="tw-border tw-border-neutral-300 em-card-shadow tw-rounded tw-bg-white tw-p-6">
+    <div class="tw-border tw-border-neutral-300 em-card-shadow tw-rounded-2xl tw-bg-white tw-p-6">
       <div>
         <div class="tw-flex tw-items-center tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300"
              @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">

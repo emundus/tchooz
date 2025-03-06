@@ -20,8 +20,8 @@ class AdressEntity
 		public string $postcode,
 		public string $line1,
 		public string $line2 = '',
-		public string $email = '',
-		public string $phone = ''
+		public string $Email = '',
+		public string $Phone = ''
 	) {
 		if (empty($this->addressee)) {
 			throw new \InvalidArgumentException('The addressee cannot be empty');

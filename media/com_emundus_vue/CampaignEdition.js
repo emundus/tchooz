@@ -1326,7 +1326,7 @@ const _sfc_main = {
   }
 };
 const _hoisted_1 = { id: "edit-campaign" };
-const _hoisted_2 = { class: "tw-border tw-border-neutral-300 em-card-shadow tw-rounded tw-bg-white tw-p-6" };
+const _hoisted_2 = { class: "tw-border tw-border-neutral-300 em-card-shadow tw-rounded-2xl tw-bg-white tw-p-6" };
 const _hoisted_3 = { class: "tw-ml-2 tw-text-neutral-900" };
 const _hoisted_4 = { class: "tw-flex tw-items-center tw-mt-4" };
 const _hoisted_5 = ["innerHTML"];
@@ -1458,7 +1458,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ]);
 }
-const CampaignEdition = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-3c1cd8e4"]]);
+const CampaignEdition = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-ae20bbab"]]);
 export {
   CampaignEdition as default
 };

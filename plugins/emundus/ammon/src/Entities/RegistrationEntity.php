@@ -6,8 +6,8 @@ class RegistrationEntity {
 	public string $Date;
 	public string $SourceCode = 'WEB';
 	public int $ParticipantsNumber = 1;
-	public int $OrderCreation = 1;
-	public $OrderPricingTypeCode = null;
+	public int $OrderCreation = -1;
+	public $OrderPricingTypeCode = "STANDARD";
 	public $OrderPricingDate = null;
 
 	/**
@@ -30,6 +30,8 @@ class RegistrationEntity {
 		public string $CompanyExternalReference = '',
 		public string $ContactExternalReference = '',
 	) {
-		$this->Date = date('Y-m-d\TH:i:s\Z');
+		$utc_date = new \DateTime('now', new \DateTimeZone('UTC'));
+		$this->Date = $utc_date->format('Y-m-d\TH:i:s\Z');
+		$this->OrderPricingDate = $utc_date->format('Y-m-d\TH:i:s\Z');
 	}
 }

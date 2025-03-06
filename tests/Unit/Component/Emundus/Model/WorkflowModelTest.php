@@ -12,6 +12,7 @@ namespace Unit\Component\Emundus\Model;
 
 use EmundusModelApplication;
 use Joomla\CMS\Factory;
+use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Tests\Unit\UnitTestCase;
 use stdClass;
 
@@ -314,15 +315,51 @@ class WorkflowModelTest extends UnitTestCase
 		$this->assertEquals('Test Step', $steps[0]->label);
 	}
 
+	public function testGetEvaluationStepDataForFnum()
+	{
+		$data = $this->model->getEvaluationStepDataForFnum($this->dataset['fnum'], 0, []);
+		$this->assertIsArray($data);
 
+		if (!class_exists('EmundusModelForm'))
+		{
+			require_once JPATH_ROOT . '/components/com_emundus/models/form.php';
+		}
+		$m_form = new \EmundusModelForm();
+		$eval_form_id = $m_form->createFormEval(Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']));
+		$this->assertNotEmpty($eval_form_id, 'Evaluation form creation succeeds');
 
-	/*
-	 * TODO
-	 *
-	 * public function testMigrateDeprecatedCampaignWorkflows() {
-		// old Workflows were kind of equals to current Step Object, not Workflow Object
-		// before a program could be linked to muliple workflows, now it can only be linked to one
-		// before campaigns could be linked to multiple workflows, now they can not be linked to any, it must be througth campaign's program
+		$workflow_id = $this->model->add();
+		$workflow = [
+			'id' => $workflow_id,
+			'label' => 'Test Workflow',
+			'published' => 1
+		];
+		$steps = [[
+			'id'           => 0,
+			'entry_status' => [['id' => 1]],
+			'type'         => 2,
+			'form_id'      => $eval_form_id,
+			'label'        => 'Test Evaluation Step',
+			'output_status' => 0
+		]];
+		$updated = $this->model->updateWorkflow($workflow, $steps, [[
+			'id' =>	$this->dataset['program']['programme_id']]
+		]);
+		$this->assertTrue($updated, 'Adding an evaluation step to the workflow worked');
 
-	}*/
+		$workflow = $this->model->getWorkflow($workflow_id);
+		$step = $workflow['steps'][0];
+		$this->assertNotEmpty($step);
+
+		$query = $this->db->getQuery(true)
+			->select('jfe.id')
+			->from($this->db->quoteName('#__fabrik_elements', 'jfe'))
+			->leftJoin($this->db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON ' . $this->db->quoteName('jffg.group_id') . ' = ' . $this->db->quoteName('jfe.group_id'))
+			->where($this->db->quoteName('jffg.form_id') . ' = ' . $this->db->quote($step->form_id));
+		$element_ids = $this->db->setQuery($query)->loadColumn();
+		$this->assertNotEmpty($element_ids, 'Element ids should be returned for the evaluation form');
+
+		$data = $this->model->getEvaluationStepDataForFnum($this->dataset['fnum'], $step->id, $element_ids);
+		$this->assertNotEmpty($data, 'Data should be returned for an evaluation step, even if there is no data yet');
+	}
 }

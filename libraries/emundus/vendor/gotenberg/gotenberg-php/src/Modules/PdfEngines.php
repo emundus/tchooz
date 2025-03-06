@@ -8,6 +8,7 @@ use Gotenberg\Exceptions\NativeFunctionErrored;
 use Gotenberg\HrtimeIndex;
 use Gotenberg\Index;
 use Gotenberg\MultipartFormDataModule;
+use Gotenberg\SplitMode;
 use Gotenberg\Stream;
 use Psr\Http\Message\RequestInterface;
 
@@ -70,6 +71,17 @@ class PdfEngines
     }
 
     /**
+     * Defines whether the resulting PDF should be flattened.
+     * Prefer the flatten method if you only want to flatten one or more PDFs.
+     */
+    public function flattening(): self
+    {
+        $this->formValue('flatten', true);
+
+        return $this;
+    }
+
+    /**
      * Merges PDFs into a unique PDF.
      *
      * Note: the merging order is determined by the order of the arguments.
@@ -88,13 +100,48 @@ class PdfEngines
     }
 
     /**
+     * Splits PDF(s).
+     * Gotenberg will return the PDF or a ZIP archive with the PDFs.
+     */
+    public function split(SplitMode $mode, Stream ...$pdfs): RequestInterface
+    {
+        $this->formValue('splitMode', $mode->mode);
+        $this->formValue('splitSpan', $mode->span);
+        $this->formValue('splitUnify', $mode->unify ?: '0');
+
+        foreach ($pdfs as $pdf) {
+            $this->formFile($pdf->getFilename(), $pdf->getStream());
+        }
+
+        $this->endpoint = '/forms/pdfengines/split';
+
+        return $this->request();
+    }
+
+    /**
+     * Flatten PDF(s).
+     * Gotenberg will return the PDF or a ZIP archive with the PDFs.
+     */
+    public function flatten(Stream ...$pdfs): RequestInterface
+    {
+        $this->formValue('flatten', true);
+
+        foreach ($pdfs as $pdf) {
+            $this->formFile($pdf->getFilename(), $pdf->getStream());
+        }
+
+        $this->endpoint = '/forms/pdfengines/flatten';
+
+        return $this->request();
+    }
+
+    /**
      * Converts PDF(s) to a specific PDF/A format.
      * Gotenberg will return the PDF or a ZIP archive with the PDFs.
      */
-    public function convert(string $pdfa, Stream $pdf, Stream ...$pdfs): RequestInterface
+    public function convert(string $pdfa, Stream ...$pdfs): RequestInterface
     {
         $this->pdfa($pdfa);
-        $this->formFile($pdf->getFilename(), $pdf->getStream());
 
         foreach ($pdfs as $pdf) {
             $this->formFile($pdf->getFilename(), $pdf->getStream());
@@ -109,10 +156,8 @@ class PdfEngines
      * Retrieves the metadata of specified PDFs, returning a JSON formatted
      * response with the structure filename => metadata.
      */
-    public function readMetadata(Stream $pdf, Stream ...$pdfs): RequestInterface
+    public function readMetadata(Stream ...$pdfs): RequestInterface
     {
-        $this->formFile($pdf->getFilename(), $pdf->getStream());
-
         foreach ($pdfs as $pdf) {
             $this->formFile($pdf->getFilename(), $pdf->getStream());
         }
@@ -129,10 +174,9 @@ class PdfEngines
      *
      * @throws NativeFunctionErrored
      */
-    public function writeMetadata(array $metadata, Stream $pdf, Stream ...$pdfs): RequestInterface
+    public function writeMetadata(array $metadata, Stream ...$pdfs): RequestInterface
     {
         $this->metadata($metadata);
-        $this->formFile($pdf->getFilename(), $pdf->getStream());
 
         foreach ($pdfs as $pdf) {
             $this->formFile($pdf->getFilename(), $pdf->getStream());

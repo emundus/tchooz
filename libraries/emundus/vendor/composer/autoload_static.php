@@ -40,7 +40,6 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         '786bf90caabc9e09b6ad4cc5ca8f0e30' => __DIR__ . '/..' . '/laminas/laminas-diactoros/src/functions/normalize_uploaded_files.legacy.php',
         '751a5a3f463e4be759be31748b61737c' => __DIR__ . '/..' . '/laminas/laminas-diactoros/src/functions/parse_cookie_header.legacy.php',
         '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
-        '2cffec82183ee1cea088009cef9a6fc3' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
     );
@@ -58,10 +57,6 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         'Z' => 
         array (
             'ZipStream\\' => 10,
-        ),
-        'T' => 
-        array (
-            'Tests\\PhpOffice\\Math\\' => 21,
         ),
         'S' => 
         array (
@@ -132,6 +127,7 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         ),
         'C' => 
         array (
+            'Composer\\Pcre\\' => 14,
             'Composer\\CaBundle\\' => 18,
             'Complex\\' => 8,
         ),
@@ -154,10 +150,6 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         array (
             0 => __DIR__ . '/..' . '/maennchen/zipstream-php/src',
         ),
-        'Tests\\PhpOffice\\Math\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/phpoffice/math/tests/Math',
-        ),
         'Symfony\\Polyfill\\Mbstring\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
@@ -168,7 +160,7 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         ),
         'Svg\\' => 
         array (
-            0 => __DIR__ . '/..' . '/phenx/php-svg-lib/src/Svg',
+            0 => __DIR__ . '/..' . '/dompdf/php-svg-lib/src/Svg',
         ),
         'Sabberworm\\CSS\\' => 
         array (
@@ -213,8 +205,8 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         ),
         'League\\Uri\\' => 
         array (
-            0 => __DIR__ . '/..' . '/league/uri-interfaces',
-            1 => __DIR__ . '/..' . '/league/uri',
+            0 => __DIR__ . '/..' . '/league/uri',
+            1 => __DIR__ . '/..' . '/league/uri-interfaces',
         ),
         'Laminas\\Diactoros\\' => 
         array (
@@ -298,7 +290,7 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         ),
         'FontLib\\' => 
         array (
-            0 => __DIR__ . '/..' . '/phenx/php-font-lib/src/FontLib',
+            0 => __DIR__ . '/..' . '/dompdf/php-font-lib/src/FontLib',
         ),
         'Emundus\\OAuth2\\' => 
         array (
@@ -307,6 +299,10 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         'Dompdf\\' => 
         array (
             0 => __DIR__ . '/..' . '/dompdf/dompdf/src',
+        ),
+        'Composer\\Pcre\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/composer/pcre/src',
         ),
         'Composer\\CaBundle\\' => 
         array (
@@ -324,13 +320,6 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
             'Svrnm\\ExcelDataTables' => 
             array (
                 0 => __DIR__ . '/..' . '/svrnm/exceldatatables/src',
-            ),
-        ),
-        'H' => 
-        array (
-            'HTMLPurifier' => 
-            array (
-                0 => __DIR__ . '/..' . '/ezyang/htmlpurifier/library',
             ),
         ),
     );

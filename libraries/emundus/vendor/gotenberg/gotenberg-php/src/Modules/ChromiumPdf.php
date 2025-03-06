@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Gotenberg\Modules;
 
 use Gotenberg\Exceptions\NativeFunctionErrored;
+use Gotenberg\SplitMode;
 use Gotenberg\Stream;
 use Psr\Http\Message\RequestInterface;
 
@@ -77,6 +78,16 @@ class ChromiumPdf
     }
 
     /**
+     * Embeds the document outline into the PDF.
+     */
+    public function generateDocumentOutline(): self
+    {
+        $this->formValue('generateDocumentOutline', true);
+
+        return $this;
+    }
+
+    /**
      * Prints the background graphics.
      */
     public function printBackground(): self
@@ -144,6 +155,18 @@ class ChromiumPdf
     }
 
     /**
+     * Splits the resulting PDF.
+     */
+    public function split(SplitMode $mode): self
+    {
+        $this->formValue('splitMode', $mode->mode);
+        $this->formValue('splitSpan', $mode->span);
+        $this->formValue('splitUnify', $mode->unify ?: '0');
+
+        return $this;
+    }
+
+    /**
      * Sets the PDF/A format of the resulting PDF.
      */
     public function pdfa(string $format): self
@@ -201,9 +224,12 @@ class ChromiumPdf
      * Note: it automatically sets the index filename to "index.html", as
      * required by Gotenberg.
      */
-    public function html(Stream $index): RequestInterface
+    public function html(Stream|null $index): RequestInterface
     {
-        $this->formFile('index.html', $index->getStream());
+        if ($index !== null) {
+            $this->formFile('index.html', $index->getStream());
+        }
+
         $this->endpoint = '/forms/chromium/convert/html';
 
         return $this->request();
@@ -215,10 +241,11 @@ class ChromiumPdf
      * Note: it automatically sets the index filename to "index.html", as
      * required by Gotenberg.
      */
-    public function markdown(Stream $index, Stream $markdown, Stream ...$markdowns): RequestInterface
+    public function markdown(Stream|null $index, Stream ...$markdowns): RequestInterface
     {
-        $this->formFile('index.html', $index->getStream());
-        $this->formFile($markdown->getFilename(), $markdown->getStream());
+        if ($index !== null) {
+            $this->formFile('index.html', $index->getStream());
+        }
 
         foreach ($markdowns as $markdown) {
             $this->formFile($markdown->getFilename(), $markdown->getStream());

@@ -22,11 +22,17 @@ function export_excel(fnums, letter) {
     objclass = $.unique(objclass);
 
     let defaultElts = [2540, 2754, 1906, 7056, 7057, 7068];
+    let stepElements = {};
 
     $('.em-export-item').each(function () {
         let id = $(this).attr('id').split('-')[0];
         if (!defaultElts.includes(parseInt(id))) {
-            eltJson[i] = $(this).attr('id').split('-')[0];
+            if ($(this).attr('data-step-id') && $(this).attr('data-step-id') != 0) {
+                stepElements[$(this).attr('data-step-id')] = stepElements[$(this).attr('data-step-id')] || [];
+                stepElements[$(this).attr('data-step-id')].push(id);
+            } else {
+                eltJson[i] = $(this).attr('id').split('-')[0];
+            }
             i++;
         }
     });
@@ -113,7 +119,7 @@ function export_excel(fnums, letter) {
                             } else {
                                 $('#datasbs').replaceWith('<div id="datasbs" data-start="0"><p>0</p></div>');
                             }
-                            generate_csv(json, eltJson, objJson, options, objclass, letter);
+                            generate_csv(json, eltJson, objJson, options, objclass, letter, stepElements);
                         } else {
                             $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">' + Joomla.Text._(result.msg) + '</div>');
                         }
@@ -134,7 +140,7 @@ function export_excel(fnums, letter) {
     });
 }
 
-function generate_csv(json, eltJson, objJson, options, objclass, letter) {
+function generate_csv(json, eltJson, objJson, options, objclass, letter, stepElements) {
     const maxcsv = 65000;
     const maxxls = 65000;
     var start = json.start;
@@ -159,6 +165,7 @@ function generate_csv(json, eltJson, objJson, options, objclass, letter) {
                 nbcol: nbcol,
                 methode: methode,
                 elts: eltJson,
+                step_elts: stepElements,
                 objs: objJson,
                 opts: options,
                 objclass: objclass,

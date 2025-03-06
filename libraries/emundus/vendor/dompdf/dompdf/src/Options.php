@@ -71,13 +71,14 @@ class Options
     * Protocol whitelist
     *
     * Protocols and PHP wrappers allowed in URIs, and the validation rules
-    * that determine if a resouce may be loaded. Full support is not guaranteed
+    * that determine if a resource may be loaded. Full support is not guaranteed
     * for the protocols/wrappers specified
     * by this array.
     *
     * @var array
     */
     private $allowedProtocols = [
+        "data://" => ["rules" => []],
         "file://" => ["rules" => []],
         "http://" => ["rules" => []],
         "https://" => ["rules" => []]
@@ -93,7 +94,7 @@ class Options
     /**
      * @var string
      */
-    private $logOutputFile;
+    private $logOutputFile = '';
 
     /**
      * Styles targeted to this media type are applied to the document.
@@ -206,6 +207,34 @@ class Options
     private $isRemoteEnabled = false;
 
     /**
+     * List of allowed remote hosts
+     *
+     * Each value of the array must be a valid hostname.
+     *
+     * This will be used to filter which resources can be loaded in combination with
+     * isRemoteEnabled. If isRemoteEnabled is FALSE, then this will have no effect.
+     *
+     * Leave to NULL to allow any remote host.
+     *
+     * @var array|null
+     */
+    private $allowedRemoteHosts = null;
+
+    /**
+     * Enable PDF/A-3 compliance mode
+     *
+     * ==== EXPERIMENTAL ====
+     * This feature is currently only supported with the CPDF backend and will
+     * have no effect if used with any other.
+     *
+     * Currently this mode only takes care of adding the necessary metadata, output intents, etc.
+     * It does not enforce font embedding, it's up to you to embed the fonts you plan on using.
+     *
+     * @var bool
+     */
+    private $isPdfAEnabled = false;
+
+    /**
      * Enable inline JavaScript
      *
      * If this setting is set to true then DOMPDF will automatically insert
@@ -316,7 +345,7 @@ class Options
     /**
      * @param array $attributes
      */
-    public function __construct(array $attributes = null)
+    public function __construct(?array $attributes = null)
     {
         $rootDir = realpath(__DIR__ . "/../");
         $this->setChroot(array($rootDir));
@@ -340,7 +369,7 @@ class Options
             ]
         ]);
 
-        $this->setAllowedProtocols(["file://", "http://", "https://"]);
+        $this->setAllowedProtocols(["data://", "file://", "http://", "https://"]);
 
         $this->setArtifactPathValidation([$this, "validateArtifactPath"]);
 
@@ -368,7 +397,7 @@ class Options
                 $this->setFontCache($value);
             } elseif ($key === 'chroot') {
                 $this->setChroot($value);
-            } elseif ($key === 'allowedProtocols') {
+            } elseif ($key === 'allowedProtocols' || $key === 'allowed_protocols') {
                 $this->setAllowedProtocols($value);
             } elseif ($key === 'artifactPathValidation') {
                 $this->setArtifactPathValidation($value);
@@ -390,6 +419,10 @@ class Options
                 $this->setIsPhpEnabled($value);
             } elseif ($key === 'isRemoteEnabled' || $key === 'is_remote_enabled' || $key === 'enable_remote') {
                 $this->setIsRemoteEnabled($value);
+            } elseif ($key === 'allowedRemoteHosts' || $key === 'allowed_remote_hosts') {
+                $this->setAllowedRemoteHosts($value);
+            } elseif ($key === 'isPdfAEnabled' || $key === 'is_pdf_a_enabled' || $key === 'enable_pdf_a') {
+                $this->setIsPdfAEnabled($value);
             } elseif ($key === 'isJavascriptEnabled' || $key === 'is_javascript_enabled' || $key === 'enable_javascript') {
                 $this->setIsJavascriptEnabled($value);
             } elseif ($key === 'isHtml5ParserEnabled' || $key === 'is_html5_parser_enabled' || $key === 'enable_html5_parser') {
@@ -437,7 +470,7 @@ class Options
             return $this->getFontCache();
         } elseif ($key === 'chroot') {
             return $this->getChroot();
-        } elseif ($key === 'allowedProtocols') {
+        } elseif ($key === 'allowedProtocols' || $key === 'allowed_protocols') {
             return $this->getAllowedProtocols();
         } elseif ($key === 'artifactPathValidation') {
             return $this->getArtifactPathValidation();
@@ -459,6 +492,10 @@ class Options
             return $this->getIsPhpEnabled();
         } elseif ($key === 'isRemoteEnabled' || $key === 'is_remote_enabled' || $key === 'enable_remote') {
             return $this->getIsRemoteEnabled();
+        } elseif ($key === 'allowedRemoteHosts' || $key === 'allowed_remote_hosts') {
+            return $this->getAllowedProtocols();
+        } elseif ($key === 'isPdfAEnabled' || $key === 'is_pdf_a_enabled' || $key === 'enable_pdf_a') {
+            $this->getIsPdfAEnabled();
         } elseif ($key === 'isJavascriptEnabled' || $key === 'is_javascript_enabled' || $key === 'enable_javascript') {
             return $this->getIsJavascriptEnabled();
         } elseif ($key === 'isHtml5ParserEnabled' || $key === 'is_html5_parser_enabled' || $key === 'enable_html5_parser') {
@@ -589,6 +626,8 @@ class Options
         if (empty($rules)) {
             $rules = [];
             switch ($protocol) {
+                case "data://":
+                    break;
                 case "file://":
                     $rules[] = [$this, "validateLocalUri"];
                     break;
@@ -1065,6 +1104,59 @@ class Options
     }
 
     /**
+     * @param array|null $allowedRemoteHosts
+     * @return $this
+     */
+    public function setAllowedRemoteHosts($allowedRemoteHosts)
+    {
+        if (is_array($allowedRemoteHosts)) {
+            // Set hosts to lowercase
+            foreach ($allowedRemoteHosts as &$host) {
+                $host = mb_strtolower($host);
+            }
+
+            unset($host);
+        }
+
+        $this->allowedRemoteHosts = $allowedRemoteHosts;
+        return $this;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getAllowedRemoteHosts()
+    {
+        return $this->allowedRemoteHosts;
+    }
+
+    /**
+     * @param boolean $isRemoteEnabled
+     * @return $this
+     */
+    public function setIsPdfAEnabled($isPdfAEnabled)
+    {
+        $this->isPdfAEnabled = $isPdfAEnabled;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getIsPdfAEnabled()
+    {
+        return $this->isPdfAEnabled;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isPdfAEnabled()
+    {
+        return $this->getIsPdfAEnabled();
+    }
+
+    /**
      * @param string $logOutputFile
      * @return $this
      */
@@ -1206,6 +1298,15 @@ class Options
 
         if (!$this->isRemoteEnabled) {
             return [false, "Remote file requested, but remote file download is disabled."];
+        }
+
+        if (is_array($this->allowedRemoteHosts) && count($this->allowedRemoteHosts) > 0) {
+            $host = parse_url($uri, PHP_URL_HOST);
+            $host = mb_strtolower($host);
+
+            if (!in_array($host, $this->allowedRemoteHosts, true)) {
+                return [false, "Remote host is not in allowed list: " . $host];
+            }
         }
 
         return [true, null];

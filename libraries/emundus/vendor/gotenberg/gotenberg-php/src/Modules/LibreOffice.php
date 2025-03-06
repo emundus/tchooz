@@ -8,6 +8,7 @@ use Gotenberg\Exceptions\NativeFunctionErrored;
 use Gotenberg\HrtimeIndex;
 use Gotenberg\Index;
 use Gotenberg\MultipartFormDataModule;
+use Gotenberg\SplitMode;
 use Gotenberg\Stream;
 use Psr\Http\Message\RequestInterface;
 
@@ -27,6 +28,16 @@ class LibreOffice
     public function index(Index $index): self
     {
         $this->index = $index;
+
+        return $this;
+    }
+
+    /**
+     * Sets the password for opening the source file.
+     */
+    public function password(string $password): self
+    {
+        $this->formValue('password', $password);
 
         return $this;
     }
@@ -315,18 +326,37 @@ class LibreOffice
     }
 
     /**
+     * Splits the resulting PDFs.
+     */
+    public function split(SplitMode $mode): self
+    {
+        $this->formValue('splitMode', $mode->mode);
+        $this->formValue('splitSpan', $mode->span);
+        $this->formValue('splitUnify', $mode->unify ?: '0');
+
+        return $this;
+    }
+
+    /**
+     * Defines whether the resulting PDF should be flattened.
+     */
+    public function flatten(): self
+    {
+        $this->formValue('flatten', true);
+
+        return $this;
+    }
+
+    /**
      * Converts the given document(s) to PDF(s). Gotenberg will return either
      * a unique PDF if you request a merge or a ZIP archive with the PDFs.
      *
      * Note: if you requested a merge, the merging order is determined by the
      * order of the arguments.
      */
-    public function convert(Stream $file, Stream ...$files): RequestInterface
+    public function convert(Stream ...$files): RequestInterface
     {
-        $index    = $this->index ?? new HrtimeIndex();
-        $filename = $this->merge ? $index->create() . '_' . $file->getFilename() : $file->getFilename();
-        $this->formFile($filename, $file->getStream());
-
+        $index = $this->index ?? new HrtimeIndex();
         foreach ($files as $file) {
             $filename = $this->merge ? $index->create() . '_' . $file->getFilename() : $file->getFilename();
             $this->formFile($filename, $file->getStream());

@@ -13,6 +13,7 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Utils;
 use JComponentHelper;
 use JFactory;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Log\Log;
 
 defined('_JEXEC') or die('Restricted access');
@@ -44,30 +45,23 @@ class IxParapheur extends Api
 	{
 		parent::__construct();
 
-		$this->setBaseUrl();
+		$config = ComponentHelper::getParams('com_emundus');
+		$baseUrl = $config->get('ixparapheur_api_base_url', '');
+		$this->setBaseUrl($baseUrl);
+
 		$this->setClient();
 		$this->setAuth();
-		$this->setHeaders();
-	}
 
-	public function setBaseUrl($baseUrl): void
-	{
-		$config = JComponentHelper::getParams('com_emundus');
-		$this->baseUrl = $config->get('ixparapheur_api_base_url', '');
-	}
-
-	public function setHeaders($headers): void
-	{
 		$auth = $this->getAuth();
-
-		$this->headers = array(
+		$headers = array(
 			'IXBUS_API' => $auth['app_token']
 		);
+		$this->setHeaders($headers);
 	}
 
 	public function setAuth(): void
 	{
-		$config = JComponentHelper::getParams('com_emundus');
+		$config = ComponentHelper::getParams('com_emundus');
 
 		$this->auth['app_token'] = $config->get('ixparapheur_api_app_token', '');
 	}

@@ -150,7 +150,7 @@ class Standard extends SecHandler
     }
 
     /**
-     * @param string $password The password in UTF-8 encoding
+     * @param string|null $password The password in UTF-8 encoding
      * @return bool
      * @throws PdfTypeException
      * @throws SecHandlerException
@@ -219,7 +219,7 @@ class Standard extends SecHandler
         }
 
         if ($value instanceof PdfHexString) {
-            $v = $value->value;
+            $v = preg_replace('/[^0-9A-Fa-f]/', '', $value->value);
             if ((strlen($v) % 2) === 1) {
                 $v .= '0';
             }
