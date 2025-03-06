@@ -300,9 +300,11 @@ class EmundusHelperList
 			}
 		}
 
-		usort($formsList, function ($a, $b) {
-			return $a->lft - $b->lft;
-		});
+		if (!empty($formsList)) {
+			usort($formsList, function ($a, $b) {
+				return $a->lft - $b->lft;
+			});
+		}
 
 		if (!empty($infos['campaign_id']) && EmundusHelperAccess::asPartnerAccessLevel(Factory::getApplication()->getIdentity()->id) && in_array(2, $step_types)) {
 			require_once(JPATH_SITE . '/components/com_emundus/models/campaign.php');

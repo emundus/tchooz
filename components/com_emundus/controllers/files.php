@@ -1509,7 +1509,7 @@ class EmundusControllerFiles extends BaseController
 		}
 		$totalfile = count($validFnums);
 
-		$session = JFactory::getSession();
+		$session = Factory::getApplication()->getSession();
 		$session->set('fnums_export', $validFnums);
 
 		$result = array('status' => true, 'totalfile' => $totalfile, 'ids' => $ids);
