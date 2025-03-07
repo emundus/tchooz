@@ -3100,6 +3100,33 @@ class EmundusModelSettings extends ListModel
 		return $updated;
 	}
 
+	public function getAvailableGroups($search_query, $limit = 100)
+	{
+		$profiles = [];
+
+		try
+		{
+			$query = $this->db->createQuery();
+
+			$query->select('id as value,label')
+				->from('#__emundus_setup_groups')
+				->where('published = 1');
+			if (!empty($search_query))
+			{
+				$query->where('label LIKE ' . $this->db->quote('%' . $search_query . '%'));
+			}
+			$query->order('label ASC');
+			$this->db->setQuery($query, 0, $limit);
+			$profiles = $this->db->loadObjectList();
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $profiles;
+	}
+
 	public function getSAMLSettings()
 	{
 		$config = [];
@@ -3124,6 +3151,356 @@ class EmundusModelSettings extends ListModel
 		}
 
 		return $config;
+	}
+
+	public function getAddons()
+	{
+		$addons = [];
+
+		try
+		{
+			$emConfig = ComponentHelper::getParams('com_emundus');
+
+			// Messenger
+			$addon              = new stdClass();
+			$addon->name        = 'COM_EMUNDUS_ADDONS_MESSENGER';
+			$addon->type        = 'messenger';
+			$addon->icon        = 'chat_bubble';
+			$addon->description = 'COM_EMUNDUS_ADDONS_MESSENGER_DESC';
+
+			$query = $this->db->getQuery(true);
+			$query->select('enabled')
+				->from($this->db->quoteName('#__extensions'))
+				->where($this->db->quoteName('type') . ' = ' . $this->db->quote('module'))
+				->where($this->db->quoteName('element') . ' = ' . $this->db->quote('mod_emundus_messenger_notifications'));
+			$this->db->setQuery($query);
+			$addon->enabled = $this->db->loadResult();
+
+			if ($addon->enabled)
+			{
+				$query->clear()
+					->select('count(id)')
+					->from($this->db->quoteName('#__modules'))
+					->where($this->db->quoteName('module') . ' = ' . $this->db->quote('mod_emundus_messenger_notifications'))
+					->where($this->db->quoteName('published') . ' = 1');
+				$this->db->setQuery($query);
+				$addon->enabled = $this->db->loadResult();
+			}
+
+			$messenger_configuration                                      = [
+				'messenger_anonymous_coordinator'  => $emConfig->get('messenger_anonymous_coordinator', 0),
+				'messenger_notifications_on_send'  => $emConfig->get('messenger_notifications_on_send', 1),
+				'messenger_add_message_notif'      => $emConfig->get('messenger_add_message_notif', 0),
+				'messenger_notify_users_programs'  => $emConfig->get('messenger_notify_users_programs', 0),
+				'messenger_notify_groups'          => $emConfig->get('messenger_notify_groups', ''),
+				'messenger_notify_users'           => $emConfig->get('messenger_notify_users', ''),
+				'messenger_notify_frequency'       => $emConfig->get('messenger_notify_frequency', 'daily'),
+				'messenger_notify_frequency_times' => $emConfig->get('messenger_notify_frequency_times', 0),
+				'messenger_notify_frequency_type'  => $emConfig->get('messenger_notify_frequency_type', 'daily'),
+			];
+			$messenger_configuration['messenger_notify_frequency_custom'] = $messenger_configuration['messenger_notify_frequency_times'] . ' ' . $messenger_configuration['messenger_notify_frequency_type'];
+			$addon->configuration                                         = json_encode($messenger_configuration);
+
+			$addons[] = $addon;
+			//
+
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $addons;
+	}
+
+	public function toggleAddon($type, $enabled)
+	{
+		require_once JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php';
+
+		$updated = false;
+
+		$query = $this->db->getQuery(true);
+
+		try
+		{
+			switch ($type)
+			{
+				case 'messenger':
+					// Check if the extension and module is installed
+					$query->clear()
+						->select('count(extension_id)')
+						->from($this->db->quoteName('#__extensions'))
+						->where($this->db->quoteName('type') . ' = ' . $this->db->quote('module'))
+						->where($this->db->quoteName('element') . ' = ' . $this->db->quote('mod_emundus_messenger_notifications'));
+					$this->db->setQuery($query);
+					$extension_installed = $this->db->loadResult();
+
+					if (empty($extension_installed))
+					{
+						// Install the extension
+						EmundusHelperUpdate::installExtension('mod_emundus_messenger_notifications', 'mod_emundus_messenger_notifications', null, 'module', $enabled, '', '{}', false, false);
+					}
+					else
+					{
+						$query->clear()
+							->update($this->db->quoteName('#__extensions'))
+							->set($this->db->quoteName('enabled') . ' = ' . $this->db->quote($enabled))
+							->where($this->db->quoteName('element') . ' = ' . $this->db->quote('mod_emundus_messenger_notifications'));
+						$this->db->setQuery($query);
+						$updated = $this->db->execute();
+					}
+
+					// Check if the module is installed
+					$query->clear()
+						->select('count(id)')
+						->from($this->db->quoteName('#__modules'))
+						->where($this->db->quoteName('module') . ' = ' . $this->db->quote('mod_emundus_messenger_notifications'));
+					$this->db->setQuery($query);
+					$module_installed = $this->db->loadResult();
+
+					if (empty($module_installed))
+					{
+						// Install the module
+						EmundusHelperUpdate::createModule('[APPLICANT] Messenger', 'header-c', 'mod_emundus_messenger_notifications', '{}', $enabled, 1, 1, 0, 0, false);
+					}
+					else
+					{
+						$query->clear()
+							->update($this->db->quoteName('#__modules'))
+							->set($this->db->quoteName('published') . ' = ' . $this->db->quote($enabled))
+							->where($this->db->quoteName('module') . ' = ' . $this->db->quote('mod_emundus_messenger_notifications'));
+						$this->db->setQuery($query);
+						$updated = $this->db->execute();
+					}
+
+					// Publish emails
+					$emails = ['messenger_reminder','messenger_reminder_group'];
+					$query->clear()
+						->update($this->db->quoteName('#__emundus_setup_emails'))
+						->set('published = ' . $this->db->quote($enabled))
+						->where('lbl IN (' . implode(',',$this->db->quote($emails)) . ')');
+					$this->db->setQuery($query);
+					$updated = $this->db->execute();
+
+					// Publish messages menu in application menu
+					$query->clear()
+						->update($this->db->quoteName('#__menu'))
+						->set('published = ' . $this->db->quote($enabled))
+						->where('menutype = ' . $this->db->quote('application'))
+						->where('link LIKE ' . $this->db->quote('index.php?option=com_emundus&view=messenger&format=raw&layout=coordinator'));
+					$this->db->setQuery($query);
+					$updated = $this->db->execute();
+					break;
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $updated;
+	}
+
+	public function setupMessenger($setup)
+	{
+		$updated = false;
+
+		try
+		{
+			$emConfig = ComponentHelper::getParams('com_emundus');
+
+			// Extract all value key from $setup->messenger_notify_groups
+			if (!empty($setup->messenger_notify_groups))
+			{
+				$setup->messenger_notify_groups = array_map(function ($group) {
+					return $group->value;
+				}, $setup->messenger_notify_groups);
+
+				$setup->messenger_notify_groups = implode(',', $setup->messenger_notify_groups);
+			}
+			if (!empty($setup->messenger_notify_users))
+			{
+				$setup->messenger_notify_users = array_map(function ($user) {
+					return $user->value;
+				}, $setup->messenger_notify_users);
+
+				$setup->messenger_notify_users = implode(',', $setup->messenger_notify_users);
+			}
+
+			$emConfig->set('messenger_anonymous_coordinator', $setup->messenger_anonymous_coordinator);
+			$emConfig->set('messenger_notifications_on_send', $setup->messenger_notifications_on_send);
+			$emConfig->set('messenger_notify_users_programs', $setup->messenger_notify_users_programs);
+			$emConfig->set('messenger_notify_groups', $setup->messenger_notify_groups);
+			$emConfig->set('messenger_notify_users', $setup->messenger_notify_users);
+			$emConfig->set('messenger_notify_frequency', $setup->messenger_notify_frequency);
+			if ($setup->messenger_notify_frequency === 'custom')
+			{
+				$type     = 'daily';
+				$times    = 1;
+				$position = strrpos($setup->messenger_notify_frequency_custom, "daily");
+				if ($position === false)
+				{
+					$position = strrpos($setup->messenger_notify_frequency_custom, "weekly");
+				}
+
+				if ($position !== false)
+				{
+					// Extract the first part (everything before "daily")
+					$times = trim(substr($setup->messenger_notify_frequency_custom, 0, $position));
+					if (!empty($times))
+					{
+						$emConfig->set('messenger_notify_frequency_times', $times);
+					}
+
+					// Extract the second part ("daily" and everything after it)
+					$type = trim(substr($setup->messenger_notify_frequency_custom, $position));
+					if (!empty($type))
+					{
+						$emConfig->set('messenger_notify_frequency_type', $type);
+					}
+				}
+			}
+
+			$componentid = ComponentHelper::getComponent('com_emundus')->id;
+
+			$update  = [
+				'extension_id' => $componentid,
+				'params'       => $emConfig->toString()
+			];
+			$update  = (object) $update;
+			$updated = $this->db->updateObject('#__extensions', $update, 'extension_id');
+
+			// Update scheduler task
+			$query = $this->db->getQuery(true);
+
+			$query->select('id,execution_rules,cron_rules,next_execution')
+				->from($this->db->quoteName('#__scheduler_tasks'))
+				->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plg_task_emundusmessenger_task_get'));
+			$this->db->setQuery($query);
+			$task = $this->db->loadAssoc();
+
+			if (!empty($task))
+			{
+				$execution_rules = json_decode($task['execution_rules'], true);
+				$cron_rules      = json_decode($task['cron_rules'], true);
+
+				switch ($setup->messenger_notify_frequency)
+				{
+					case 'daily':
+						unset($execution_rules['interval-hours']);
+						unset($execution_rules['interval-minutes']);
+
+						$execution_rules['rule-type']     = 'interval-days';
+						$execution_rules['interval-days'] = 1;
+
+						$cron_rules['type'] = 'interval';
+						$cron_rules['exp']  = 'P1D';
+
+						$task['next_execution'] = $this->calcNextExecution();
+						break;
+					case 'weekly':
+						unset($execution_rules['interval-hours']);
+						unset($execution_rules['interval-minutes']);
+
+						$execution_rules['rule-type']     = 'interval-days';
+						$execution_rules['interval-days'] = 7;
+
+						$cron_rules['type'] = 'interval';
+						$cron_rules['exp']  = 'P7D';
+
+						$task['next_execution'] = $this->calcNextExecution(7);
+						break;
+					case 'custom':
+						if ($type == 'daily' && $times == 1)
+						{
+							unset($execution_rules['interval-hours']);
+							unset($execution_rules['interval-minutes']);
+
+							$execution_rules['rule-type']     = 'interval-days';
+							$execution_rules['interval-days'] = $times;
+
+							$cron_rules['type'] = 'interval';
+							$cron_rules['exp']  = 'P1D';
+
+							$task['next_execution'] = $this->calcNextExecution();
+						}
+
+						if($type == 'weekly') {
+							unset($execution_rules['interval-hours']);
+							unset($execution_rules['interval-minutes']);
+
+							$each_days = round(7/$times);
+							$execution_rules['rule-type']     = 'interval-days';
+							$execution_rules['interval-days'] = $each_days;
+
+							$cron_rules['type'] = 'interval';
+							$cron_rules['exp']  = 'P'.$each_days.'D';
+
+							$task['next_execution'] = $this->calcNextExecution($each_days);
+						}
+
+						if($type == 'daily') {
+							unset($execution_rules['interval-days']);
+							unset($execution_rules['interval-minutes']);
+
+							$each_hours = round(24/$times);
+							$execution_rules['rule-type']     = 'interval-hours';
+							$execution_rules['interval-hours'] = $each_hours;
+
+							$cron_rules['type'] = 'interval';
+							$cron_rules['exp']  = 'PT'.$each_hours.'H';
+
+							$task['next_execution'] = $this->calcNextExecution($each_hours,'hour');
+						}
+						break;
+				}
+
+				$update_task = [
+					'id'              => $task['id'],
+					'execution_rules' => json_encode($execution_rules),
+					'cron_rules'      => json_encode($cron_rules),
+					'next_execution'  => $task['next_execution']
+				];
+				$update_task = (object) $update_task;
+				$updated     = $this->db->updateObject('#__scheduler_tasks', $update_task, 'id');
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $updated;
+	}
+
+	private function calcNextExecution($times = 1, $cron_type = 'day')
+	{
+		$next_execution = null;
+
+		$now = new DateTime();
+
+		// Create a date for now at 12:00
+		if($cron_type === 'day')
+		{
+			$todayAtNoon = (clone $now)->setTime(12, 0);
+		} else {
+			$todayAtNoon = (clone $now);
+		}
+
+		// If it's before 12:00, we take today at 12:00
+		if ($now < $todayAtNoon && $cron_type === 'day')
+		{
+			$nextNoon = $todayAtNoon;
+		}
+		else
+		{
+			// If it's after 12:00, we take future date at 12:00
+			$nextNoon = (clone $todayAtNoon)->modify('+' . $times . ' ' . $cron_type);
+		}
+
+		$next_execution = $nextNoon->format('Y-m-d H:i:s');
+
+		return $next_execution;
 	}
 
 }

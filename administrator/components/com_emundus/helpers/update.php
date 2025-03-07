@@ -3163,7 +3163,7 @@ class EmundusHelperUpdate
 		return $response;
 	}
 
-	public static function createModule($title, $position, $module, $params, $published = 0, $page = 0, $access = 1, $showtitle = 0, $client_id = 0)
+	public static function createModule($title, $position, $module, $params, $published = 0, $page = 0, $access = 1, $showtitle = 0, $client_id = 0, $message = true)
 	{
 		$created = ['status' => false, 'module_id' => 0];
 
@@ -3235,7 +3235,10 @@ class EmundusHelperUpdate
 			}
 			else
 			{
-				EmundusHelperUpdate::displayMessage($title . ' module already exists.');
+				if($message)
+				{
+					EmundusHelperUpdate::displayMessage($title . ' module already exists.');
+				}
 				$created['module_id'] = $is_existing;
 				$created['status']    = true;
 			}

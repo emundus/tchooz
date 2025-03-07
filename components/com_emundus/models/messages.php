@@ -907,39 +907,43 @@ class EmundusModelMessages extends ListModel
 	 * @param   null  $id
 	 *
 	 * @return bool|mixed
+	 * @depecated use createChatroom of model/messenger instead
 	 *
 	 * @since version
 	 */
 	public function createChatroom($fnum = null, $id = null)
 	{
 		$query = $this->db->getQuery(true);
+		$chatroom = null;
 
-		$columns = [$this->db->quoteName('fnum')];
-		$values  = [$this->db->quote($fnum)];
+		try
+		{
+			require_once JPATH_BASE . '/components/com_emundus/models/files.php';
+			$m_files = new EmundusModelFiles;
 
-		if (!empty($id)) {
-			$columns[] = $this->db->quoteName('id');
-			$values[]  = $id;
+			$fnumInfos = $m_files->getFnumInfos($fnum);
+
+			if(!empty($fnumInfos))
+			{
+				$insert = [
+					'fnum' => $fnum,
+					'status' => 1,
+					'ccid' => $fnumInfos['ccid']
+				];
+				$insert = (object) $insert;
+
+				if($this->db->insertObject('#__emundus_chatroom', $insert)) {
+					$chatroom_id = $this->db->insertid();
+					$chatroom = $this->getChatroom($chatroom_id);
+				}
+			}
 		}
-
-		$query->insert($this->db->quoteName('jos_emundus_chatroom'))
-			->columns($columns)
-			->values($values);
-		$this->db->setQuery($query);
-
-		try {
-
-			$this->db->execute();
-
-			return $this->db->insertid();
-
-		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			Log::add('Error creating chatroom : ' . $e->getMessage(), Log::ERROR, 'com_emundus.chatroom');
-
-			return false;
 		}
 
+		return $chatroom;
 	}
 
 
@@ -1091,6 +1095,7 @@ class EmundusModelMessages extends ListModel
 	 * @param $id
 	 *
 	 * @return bool|mixed|null
+	 * @depecated use getChatroom of model/messenger instead
 	 *
 	 * @since version
 	 */

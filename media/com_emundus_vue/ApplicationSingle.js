@@ -1,4 +1,11 @@
-import { m as FetchClient, _ as _export_sfc, p as fileService, o as openBlock, c as createElementBlock, a as createBaseVNode, F as Fragment, b as renderList, d as normalizeClass, t as toDisplayString, h as withDirectives, v as vShow, e as createCommentVNode, T as Tabs, r as resolveComponent, g as createVNode, C as Comments, A as Attachments, M as Modal, q as errors, x as axios, f as createBlock, w as withCtx, n as normalizeStyle } from "./app_emundus.js";
+import { q as FetchClient, _ as _export_sfc, x as fileService, o as openBlock, c as createElementBlock, a as createBaseVNode, F as Fragment, b as renderList, d as normalizeClass, t as toDisplayString, h as withDirectives, v as vShow, e as createCommentVNode, T as Tabs, r as resolveComponent, g as createVNode, C as Comments, A as Attachments, M as Modal, y as errors, z as axios, f as createBlock, w as withCtx, n as normalizeStyle } from "./app_emundus.js";
+import { M as Messages } from "./Messages.js";
+import "./Parameter.js";
+import "./index.js";
+import "./AttachDocument.js";
+import "./vue-dropzone.js";
+import "./index2.js";
+import "./Skeleton.js";
 const fetchClient = new FetchClient("evaluation");
 const evaluationService = {
   async getEvaluationsForms(fnum, readonly = false) {
@@ -358,7 +365,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
 const EvaluationList = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-78b155a0"]]);
 const _sfc_main = {
   name: "ApplicationSingle",
-  components: { EvaluationList, Comments, Attachments, Modal, Evaluations },
+  components: { Messages, EvaluationList, Comments, Attachments, Modal, Evaluations },
   props: {
     file: Object | String,
     type: String,
@@ -377,6 +384,14 @@ const _sfc_main = {
     defaultTabs: {
       type: Array,
       default: () => []
+    },
+    fullname: {
+      type: String,
+      required: true
+    },
+    applicant: {
+      type: Boolean,
+      default: false
     }
   },
   mixins: [errors],
@@ -401,6 +416,11 @@ const _sfc_main = {
         label: "COM_EMUNDUS_FILES_COMMENTS",
         name: "comments",
         access: "10"
+      },
+      {
+        label: "COM_EMUNDUS_FILES_MESSENGER",
+        name: "messenger",
+        access: "36"
       }
     ],
     ccid: 0,
@@ -620,7 +640,7 @@ const _sfc_main = {
       return ratio_array[0] + "% " + ratio_array[1] + "%";
     },
     tabsICanAccessTo() {
-      return this.tabs.filter((tab) => this.access[tab.access].r);
+      return this.tabs.filter((tab) => this.access[tab.access].r || this.access[tab.access].c);
     }
   }
 };
@@ -655,11 +675,12 @@ const _hoisted_11 = ["onClick"];
 const _hoisted_12 = { class: "tw-text-sm" };
 const _hoisted_13 = { key: 0 };
 const _hoisted_14 = ["innerHTML"];
-const _hoisted_15 = { key: 3 };
+const _hoisted_15 = { key: 4 };
 const _hoisted_16 = ["id", "src"];
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_Attachments = resolveComponent("Attachments");
   const _component_Comments = resolveComponent("Comments");
+  const _component_Messages = resolveComponent("Messages");
   const _component_evaluation_list = resolveComponent("evaluation-list");
   const _component_Evaluations = resolveComponent("Evaluations");
   const _component_modal = resolveComponent("modal");
@@ -743,6 +764,12 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                     access: _ctx.access["10"],
                     key: _ctx.selectedFile.fnum
                   }, null, 8, ["fnum", "user", "access"])) : createCommentVNode("", true),
+                  tab.name === "messenger" && _ctx.selected === "messenger" ? (openBlock(), createBlock(_component_Messages, {
+                    key: 3,
+                    fnum: _ctx.selectedFile.fnum,
+                    fullname: _ctx.$props.fullname,
+                    applicant: _ctx.$props.applicant
+                  }, null, 8, ["fnum", "fullname", "applicant"])) : createCommentVNode("", true),
                   tab.type && tab.type === "iframe" && _ctx.selected === tab.name ? (openBlock(), createElementBlock("div", _hoisted_15, [
                     createBaseVNode("iframe", {
                       id: tab.name,
@@ -751,7 +778,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                     }, null, 8, _hoisted_16)
                   ])) : createCommentVNode("", true),
                   tab.type && tab.type === "evaluation-list" && _ctx.selected === tab.name ? (openBlock(), createBlock(_component_evaluation_list, {
-                    key: 4,
+                    key: 5,
                     step: tab.step,
                     ccid: this.ccid
                   }, null, 8, ["step", "ccid"])) : createCommentVNode("", true)

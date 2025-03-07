@@ -70,27 +70,35 @@ export default {
     }
   },
 
-  async redirectJRoute(link, language = 'fr-FR') {
+  async redirectJRoute(link, language = 'fr-FR', redirect = true) {
     let formDatas = new FormData();
     formDatas.append('link', link);
     formDatas.append('redirect_language', language);
 
-    fetch(window.location.origin + '/index.php?option=com_emundus&controller=settings&task=redirectjroute', {
-      method: 'POST',
-      body: formDatas,
-    }).then((response) => {
-      if (response.ok) {
-        return response.json();
+    try {
+      const response = await fetch(window.location.origin + '/index.php?option=com_emundus&controller=settings&task=redirectjroute', {
+        method: 'POST',
+        body: formDatas,
+      });
+
+      if (!response.ok) {
+        throw new Error(Joomla.Text._('COM_EMUNDUS_ERROR_OCCURED'));
       }
-      // eslint-disable-next-line no-undef
-      throw new Error(Joomla.Text._('COM_EMUNDUS_ERROR_OCCURED'));
-    }).then((result) => {
+
+      const result = await response.json();
+
       if (result.status) {
-        window.location.href = window.location.origin + '/' + result.data;
+        if (redirect) {
+          window.location.href = window.location.origin + '/' + result.data;
+        }
+        return result.data;
       }
-    }).catch((error) => {
+
+      return null; // Retourner null si le statut n'est pas valide
+    } catch (error) {
       window.location.reload();
-    });
+      throw error; // Relancer l'erreur si besoin pour une gestion en amont
+    }
   },
 
   async getSEFLink(link, language = 'fr-FR') {
@@ -367,6 +375,39 @@ export default {
   async toggleAppEnabled(app_id, enabled) {
     try {
       return await fetchClient.post('disableapp', {app_id: app_id, enabled: enabled});
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+
+  async getAddons() {
+    try {
+      return await fetchClient.get('getaddons');
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+
+  async toggleAddonEnabled(addon_type, enabled) {
+    try {
+      return await fetchClient.post('toggleaddon', {addon_type: addon_type, enabled: enabled});
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+
+  async setupMessenger(setup) {
+    try {
+      return await fetchClient.post('setupmessenger', {setup: JSON.stringify(setup)});
     } catch (e) {
       return {
         status: false,

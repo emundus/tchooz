@@ -12,7 +12,25 @@ export class FetchClient {
       }
     }
 
-    return fetch(url, signal ? { signal: signal } : undefined)
+    let headers = {};
+    if(typeof Joomla !== 'undefined' && Joomla && Joomla.getOptions) {
+      var csrf = Joomla.getOptions("csrf.token", "");
+      if(csrf) {
+        headers = {
+            "X-CSRF-Token": csrf
+        };
+      }
+    }
+
+    let options = {
+        method: 'GET',
+        headers: headers
+    };
+    if(signal) {
+        options.signal = signal;
+    }
+
+    return fetch(url, options)
         .then(response => {
           if (response.ok) {
             return response.json();
@@ -42,9 +60,23 @@ export class FetchClient {
       body: formData
     };
 
-    if (headers) {
-      parameters.headers = headers;
+    let baseHeaders = {};
+    if(typeof Joomla !== 'undefined' && Joomla && Joomla.getOptions) {
+      var csrf = Joomla.getOptions("csrf.token", "");
+      if(csrf) {
+        baseHeaders = {
+          "X-CSRF-Token": csrf
+        };
+      }
     }
+
+    if (headers) {
+        headers = Object.assign(baseHeaders, headers);
+    } else {
+        headers = baseHeaders;
+    }
+
+    parameters.headers = headers;
 
     if(timeout) {
       parameters.signal = AbortSignal.timeout(timeout);

@@ -62,6 +62,12 @@
                   :access="access['10']"
                   :key="selectedFile.fnum"
               />
+              <Messages
+                  v-if="tab.name === 'messenger' && selected === 'messenger'"
+                  :fnum="selectedFile.fnum"
+                  :fullname="$props.fullname"
+                  :applicant="$props.applicant"
+              />
 
               <div v-if="tab.type && tab.type === 'iframe' && selected === tab.name">
                 <iframe :id="tab.name" :src="replaceTagsIframeUrl(tab.url)" class="tw-w-full tw-h-screen"></iframe>
@@ -72,7 +78,6 @@
                   :step="tab.step"
                   :ccid="this.ccid"
               >
-
               </evaluation-list>
             </div>
           </div>
@@ -102,11 +107,12 @@ import Modal from "@/components/Modal.vue";
 import evaluationService from "@/services/evaluation.js";
 import fileService from "@/services/file.js";
 import EvaluationList from "@/components/Files/EvaluationList.vue";
+import Messages from "./Messenger/Messages.vue";
 
 
 export default {
   name: "ApplicationSingle",
-  components: {EvaluationList, Comments, Attachments, Modal, Evaluations},
+  components: {Messages, EvaluationList, Comments, Attachments, Modal, Evaluations},
   props: {
     file: Object | String,
     type: String,
@@ -125,7 +131,15 @@ export default {
     defaultTabs: {
       type: Array,
       default: () => []
-    }
+    },
+    fullname: {
+      type: String,
+      required: true
+    },
+    applicant: {
+      type: Boolean,
+      default: false
+    },
   },
   mixins: [errors],
   data: () => ({
@@ -149,6 +163,11 @@ export default {
         label: 'COM_EMUNDUS_FILES_COMMENTS',
         name: 'comments',
         access: '10'
+      },
+      {
+        label: 'COM_EMUNDUS_FILES_MESSENGER',
+        name: 'messenger',
+        access: '36'
       },
     ],
     ccid: 0,
@@ -398,7 +417,7 @@ export default {
       return ratio_array[0] + '% ' + ratio_array[1] + '%';
     },
     tabsICanAccessTo() {
-      return this.tabs.filter(tab => this.access[tab.access].r);
+      return this.tabs.filter(tab => this.access[tab.access].r || this.access[tab.access].c);
     }
   }
 }

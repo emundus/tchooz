@@ -77,6 +77,12 @@ window.addEventListener('message', function (e) {
     }
 }.bind(this));
 
+document.addEventListener('messengerOpenFile', function (e) {
+    if(e.detail) {
+        this.openFiles(e.detail);
+    }
+}.bind(this));
+
 function search() {
     const controller = $('#view').val();
 

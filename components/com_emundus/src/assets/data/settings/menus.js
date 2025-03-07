@@ -48,14 +48,11 @@ export default
   },
   {
     "label": "COM_EMUNDUS_GLOBAL_PARAMS_MENUS_SUPPL_MOD",
-    "SectionTitle": "COM_EMUNDUS_GLOBAL_PARAMS_SECTIONS_MANAG_SUPPL_MOD",
-    "name": "addon_modules",
+    "name": "addons",
     "icon": "dashboard_customize",
-    "type": "JSON",
-    "format": "Tile",
-    "source": "add-on.js",
+    "type": "component",
     "component": "Addons",
-    "published": false
+    "published": true
   },
   {
     "label": "COM_EMUNDUS_GLOBAL_PARAMS_MENUS_INTEG",
