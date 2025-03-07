@@ -8,7 +8,9 @@
 		}">
 			<div v-for="group in groupedFilters" :key="group.id">
 				<li class="em-mt-8 em-mb-8 em-pl-8"> <strong>{{ group.label }}</strong></li>
-				<li v-for="option in group.options" :key="option.id" class="em-mb-8 em-pl-16 em-pointer" @click="onClick(option.id)"> {{ option.label }}</li>
+				<li v-for="option in group.options" :key="option.id" class="em-mb-8 em-pl-16 em-pointer" @click="onClick(option.id)">
+                    {{ option.group_label ? option.group_label + ' - ' : '' }} {{ option.label }}
+                </li>
 			</div>
 		</ul>
 	</div>
@@ -60,16 +62,16 @@ export default {
 			const alreadyAdded = [];
 
 			this.displayedFilters.forEach((filter) => {
-				if (!alreadyAdded.includes(filter.group_id)) {
+				if (!alreadyAdded.includes(filter.form_id)) {
 					groups.push({
-						id: filter.group_id,
-						label: filter.group_label,
+						id: filter.form_id,
+						label: filter.form_label,
 						options: []
 					});
-					alreadyAdded.push(filter.group_id);
+					alreadyAdded.push(filter.form_id);
 				}
 
-				const currentFilterGroup = groups.find((group) => group.id === filter.group_id);
+				const currentFilterGroup = groups.find((group) => group.id === filter.form_id);
 				currentFilterGroup.options.push(filter);
 			});
 
@@ -77,7 +79,7 @@ export default {
 		},
 		displayedFilters() {
 			return this.filters.filter((filter) => {
-				return filter.label.toLowerCase().includes(this.search.toLowerCase()) || filter.group_label.toLowerCase().includes(this.search.toLowerCase());
+				return filter.label.toLowerCase().includes(this.search.toLowerCase()) || filter.form_label.toLowerCase().includes(this.search.toLowerCase());
 			});
 		}
 	}

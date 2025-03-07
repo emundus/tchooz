@@ -48,7 +48,7 @@ class EmundusFilters
 		return $this->default_element;
 	}
 
-	protected function setFilters()
+	protected function setFilters(): void
 	{
 		$element = $this->getDefaultElement();
 
@@ -59,7 +59,7 @@ class EmundusFilters
 	}
 
 
-	protected function createFiltersFromFabrikElements($elements)
+	protected function createFiltersFromFabrikElements($elements): array
 	{
 		$created_filters = [];
 
@@ -75,8 +75,10 @@ class EmundusFilters
 					'label' => !empty($label) ? $label : 'ELEMENT ' .  $element['id'],
 					'type' => 'text',
 					'values' => [],
-					'group_label' => $element['element_form_label'],
-					'group_id' => $element['element_form_id'],
+					'form_label' => $element['element_form_label'],
+					'form_id' => $element['element_form_id'],
+					'group_id' => $element['element_group_id'] ?? 0,
+					'group_label' => $element['element_group_label'] ?? '',
 					'available' => true,
                     'plugin' => $element['plugin'],
 					'operator' => '='
@@ -195,14 +197,14 @@ class EmundusFilters
 		return $created_filters;
 	}
 
-	protected function getAllAssociatedElements($element_id)
+	protected function getAllAssociatedElements($element_id): array
 	{
 		$elements = [];
 
 		$db = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
-		$query->select('jfl.id, jfl.db_table_name, jfl.form_id')
+		$query->select('jfl.form_id')
 			->from('jos_fabrik_elements as jfe')
 			->join('inner', 'jos_fabrik_groups as jfg ON jfg.id = jfe.group_id')
 			->join('inner', 'jos_fabrik_formgroup as jffg ON jffg.group_id = jfg.id')

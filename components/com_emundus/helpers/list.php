@@ -300,9 +300,11 @@ class EmundusHelperList
 			}
 		}
 
-		usort($formsList, function ($a, $b) {
-			return $a->lft - $b->lft;
-		});
+		if (!empty($formsList)) {
+			usort($formsList, function ($a, $b) {
+				return $a->lft - $b->lft;
+			});
+		}
 
 		if (!empty($infos['campaign_id']) && EmundusHelperAccess::asPartnerAccessLevel(Factory::getApplication()->getIdentity()->id) && in_array(2, $step_types)) {
 			require_once(JPATH_SITE . '/components/com_emundus/models/campaign.php');
@@ -378,7 +380,7 @@ class EmundusHelperList
 	// @return	array	Object of users ID and campaign info
 	function getApplicants($submitted, $year)
 	{
-		$db    = JFactory::getDBO();
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = 'SELECT ecc.applicant_id, esc.label, ecc.submitted, ecc.date_submitted
 					FROM #__emundus_campaign_candidature AS ecc
 					LEFT JOIN #__emundus_setup_campaigns AS esc ON ecc.campaign_id=esc.id ';

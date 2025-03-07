@@ -259,13 +259,13 @@ class EmundusFiltersFiles extends EmundusFilters
 		return $this->profiles;
 	}
 
-	protected function setFilters()
+	protected function setFilters(): void
 	{
 		$elements      = $this->getAllAssociatedElements();
 		$this->filters = $this->createFiltersFromFabrikElements($elements);
 	}
 
-	protected function getAllAssociatedElements($element_id = null)
+	protected function getAllAssociatedElements($element_id = null): array
 	{
 		$elements = [];
 		$profiles = $this->getProfiles();
