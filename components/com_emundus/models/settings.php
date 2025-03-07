@@ -2509,6 +2509,104 @@ class EmundusModelSettings extends ListModel
 		return $retried;
 	}
 
+	public function getApplicants($search_query, $limit = 100, $event_id = 0, $applicantsExceptions = [])
+	{
+		$applicants = [];
+
+		try {
+			$query = $this->db->getQuery(true);
+
+			$query->clear()
+				->select('campaign')
+				->from($this->db->quoteName('#__emundus_setup_events_repeat_campaign'))
+				->where($this->db->quoteName('event') . ' = ' . $event_id);
+			$this->db->setQuery($query);
+			$campaigns = $this->db->loadColumn();
+
+			if (empty($campaigns)) {
+				$query->clear()
+					->select('programme')
+					->from($this->db->quoteName('#__emundus_setup_events_repeat_program'))
+					->where($this->db->quoteName('event') . ' = ' . $event_id);
+				$this->db->setQuery($query);
+				$programs = $this->db->loadColumn();
+
+				if (!empty($programs)) {
+					$query->clear()
+						->select('esc.id')
+						->from($this->db->quoteName('#__emundus_setup_campaigns', 'esc'))
+						->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON ' . $this->db->quoteName('esp.code') . ' = ' . $this->db->quoteName('esc.training'))
+						->where($this->db->quoteName('esp.id') . ' IN (' . implode(',', $programs) . ')');
+					$this->db->setQuery($query);
+					$campaigns = $this->db->loadColumn();
+				}
+			}
+
+			if (!empty($campaigns)) {
+				$query->clear()
+					->select('ecc.id, ecc.applicant_id, esc.label')
+					->from($this->db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+					->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('ecc.campaign_id') . ' = ' . $this->db->quoteName('esc.id'))
+					->where($this->db->quoteName('ecc.campaign_id') . ' IN (' . implode(',', $campaigns) . ')');
+
+				$this->db->setQuery($query, 0, $limit);
+				$candidatures = $this->db->loadObjectList();
+
+				if (!empty($candidatures)) {
+					$ccIds = array_column($candidatures, 'id');
+
+					$query->clear()
+						->select('ccid')
+						->from($this->db->quoteName('#__emundus_registrants'))
+						->where($this->db->quoteName('event') . ' = ' . (int) $event_id)
+						->where($this->db->quoteName('ccid') . ' IN (' . implode(',', $ccIds) . ')');
+
+					$this->db->setQuery($query);
+					$excludedIds = $this->db->loadColumn();
+
+
+					if (!empty($excludedIds)) {
+						if (!empty($applicantsExceptions)) {
+							$excludedIds = array_diff($excludedIds, $applicantsExceptions);
+						}
+
+						$candidatures = array_filter($candidatures, fn($c) => !in_array($c->id, $excludedIds));
+					}
+
+					if (!empty($candidatures)) {
+						$applicantIds = array_column($candidatures, 'applicant_id');
+						$query->clear()
+							->select('user_id, firstname, lastname')
+							->from($this->db->quoteName('#__emundus_users'))
+							->where($this->db->quoteName('user_id') . ' IN (' . implode(',', $applicantIds) . ')');
+						if (!empty($search_query)) {
+							$query->where('CONCAT(' . $this->db->quoteName('firstname') . ', " ", ' . $this->db->quoteName('lastname') . ') LIKE ' . $this->db->quote('%' . $search_query . '%'));
+						}
+						$this->db->setQuery($query);
+						$users = $this->db->loadObjectList('user_id');
+
+						foreach ($candidatures as $candidature) {
+							if (isset($users[$candidature->applicant_id])) {
+								$applicants[] = (object) [
+									'value' => $candidature->id,
+									'name' => $users[$candidature->applicant_id]->lastname . ' ' . $users[$candidature->applicant_id]->firstname . ' - ' . $candidature->label
+								];
+							}
+						}
+						usort($applicants, function ($a, $b) {
+							return strcmp($a->name, $b->name);
+						});
+					}
+				}
+			}
+		} catch (Exception $e) {
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $applicants;
+	}
+
+
 	public function getAvailableManagers($search_query, $limit = 100)
 	{
 		$managers = [];
@@ -3154,7 +3252,7 @@ class EmundusModelSettings extends ListModel
 					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($app_id));
 				$this->db->setQuery($query);
 				$updated = $this->db->execute();
-				
+
 				if($updated) {
 					$query->clear()
 						->select('type')
@@ -3585,6 +3683,76 @@ class EmundusModelSettings extends ListModel
 		$next_execution = $nextNoon->format('Y-m-d H:i:s');
 
 		return $next_execution;
+	}
+
+	public function getEvents($search_query, $limit = 100, $user_id = 0)
+	{
+		$events = [];
+
+		if(empty($user_id)) {
+			$user_id = $this->app->getIdentity()->id;
+		}
+
+		$query = $this->db->getQuery(true);
+
+		try
+		{
+			require_once(JPATH_SITE . '/components/com_emundus/models/programme.php');
+			$m_programme = new EmundusModelProgramme;
+			$programs    = $m_programme->getUserPrograms($user_id);
+
+			if (!empty($programs)) {
+				$event_ids = [];
+				$query->clear()
+					->select('esc.id')
+					->from($this->db->quoteName('#__emundus_setup_campaigns', 'esc'))
+					->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON ' . $this->db->quoteName('esp.code') . ' = ' . $this->db->quoteName('esc.training'))
+					->where($this->db->quoteName('esp.code') . ' IN (' . implode(',', $this->db->quote($programs)) . ')');
+				$this->db->setQuery($query);
+				$campaigns = $this->db->loadColumn();
+
+				if(!empty($campaigns))
+				{
+					$query->clear()
+						->select('event')
+						->from($this->db->quoteName('#__emundus_setup_events_repeat_campaign'))
+						->where($this->db->quoteName('campaign') . ' IN (' . implode(',', $campaigns) . ')')
+						->group($this->db->quoteName('event'));
+					$this->db->setQuery($query);
+					$event_ids = $this->db->loadColumn();
+				}
+
+				$query->clear()
+					->select('event')
+					->from($this->db->quoteName('#__emundus_setup_events_repeat_program','eserp'))
+					->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON ' . $this->db->quoteName('esp.id') . ' = ' . $this->db->quoteName('eserp.programme'))
+					->where($this->db->quoteName('esp.code') . ' IN (' . implode(',', $this->db->quote($programs)) . ')');
+				$this->db->setQuery($query);
+				$event_ids = array_merge($this->db->loadColumn(),$event_ids);
+
+				if(!empty($event_ids))
+				{
+					$query->clear()
+						->select('ese.id as value, ese.name')
+						->from($this->db->quoteName('#__emundus_setup_events', 'ese'))
+						->where($this->db->quoteName('ese.id') . ' IN (' . implode(',', $event_ids) . ')');
+					if(!empty($search_query)) {
+						$query->where($this->db->quoteName('ese.name') . ' LIKE ' . $this->db->quote('%' . $search_query . '%'));
+					}
+					$query->group([$this->db->quoteName('ese.id'), $this->db->quoteName('ese.name')]);
+					$query->order($this->db->quoteName('ese.name') . ' ASC');
+					$this->db->setQuery($query, 0, $limit);
+					$events = $this->db->loadObjectList();
+				}
+			}
+		}
+
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $events;
 	}
 
 }

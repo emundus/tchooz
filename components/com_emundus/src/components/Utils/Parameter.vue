@@ -18,7 +18,7 @@
     </label>
 
     <span v-if="parameter.helptext && helpTextType === 'above'" class="tw-text-base tw-text-neutral-600">
-      {{ translate(parameter.helptext) }}
+      <span v-html="translate(parameter.helptext)"></span>
     </span>
 
     <div name="input-field" class="tw-flex tw-items-center"
@@ -33,7 +33,10 @@
       <!-- SELECT -->
       <select v-if="parameter.type === 'select'"
               class="dropdown-toggle w-select !tw-mb-0 tw-min-w-[30%]"
-              :class="errors[parameter.param] ?'tw-rounded-lg !tw-border-red-500':''"
+              :class="[
+                  errors[parameter.param] ?'tw-rounded-lg !tw-border-red-500':'',
+                  parameter.secondParameterType === 'select' ? 'tw-w-auto' : 'tw-w-full'
+              ]"
               :id="paramId"
               v-model="value"
               :disabled="parameter.editable === false">
@@ -80,6 +83,10 @@
                 :id="paramId"
                 v-model="value"
                 class="!mb-0"
+                :style="{
+                  resize: parameter.resize ? 'vertical' : 'none'
+                }"
+                :rows="parameter.rows ? parameter.rows : 3"
                 :placeholder="translate(parameter.placeholder)"
                 :class="errors[parameter.param] ?'tw-rounded-lg !tw-border-red-500':''"
                 :maxlength="parameter.maxlength"
@@ -152,6 +159,7 @@
       <input v-else-if="isInput"
              :type="parameter.type"
              class="form-control !tw-mb-0 tw-min-w-[30%]"
+             style="box-shadow: none;"
              :class="errors[parameter.param] ?'tw-rounded-lg !tw-border-red-500':''"
              :max="parameter.type === 'number' ? parameter.max : null"
              :min="undefined"
@@ -165,14 +173,13 @@
       >
 
       <DatePicker
-          v-else-if="parameter.type === 'datetime' || parameter.type === 'date'"
+          v-else-if="parameter.type === 'datetime' || parameter.type === 'date' || parameter.type === 'time'"
           :id="paramId"
           v-model="formattedValue"
           :keepVisibleOnInput="true"
           :popover="{ visibility: 'focus', placement: 'right' }"
           :rules="{ minutes: { interval: 10 } }"
-          :time-accuracy="parameter.type === 'date' ? 2 : 0"
-          :mode="parameter.type === 'date' ? 'date' : 'dateTime'"
+          :mode="parameter.type ? parameter.type : 'dateTime'"
           is24hr
           hide-time-header
           title-position="left"
@@ -183,10 +190,19 @@
               :value="formatDateForDisplay(inputValue)"
               v-on="inputEvents"
               class="form-control fabrikinput tw-w-full"
+              style="box-shadow: none;"
               :id="paramId + '_input'"
           />
         </template>
       </DatePicker>
+
+      <component
+          v-else-if="parameter.type === 'component'"
+          :is="EventBooking"
+          v-model="value"
+          :componentsProps="this.$props.componentsProps"
+          @valueUpdated="bookingSlotIdUpdated">
+      </component>
 
       <!-- INPUT IN CASE OF SPLIT -->
       <span v-if="parameter.splitField">{{ parameter.splitChar }}</span>
@@ -194,7 +210,6 @@
 
       <Parameter
           v-if="parameter.splitField && parameterSecondary"
-          :class="'tw-w-96'"
           :parameter-object="parameterSecondary"
           :multiselect-options="multiselectOptions"
           @valueUpdated="regroupValue(parameterSecondary)"/>
@@ -220,6 +235,7 @@ import {reactive} from 'vue';
 import {DatePicker} from "v-calendar";
 import {useGlobalStore} from "@/stores/global.js";
 import dayjs from "dayjs";
+import EventBooking from "@/views/Events/EventBooking.vue";
 
 export default {
   name: "Parameter",
@@ -260,6 +276,14 @@ export default {
       type: String,
       required: false,
       default: 'icon'
+    },
+    asyncAttributes: {
+      type: Array,
+      required: false
+    },
+    componentsProps: {
+      type: Object,
+      required: false
     }
   },
   emits: ['valueUpdated', 'needSaving'],
@@ -296,11 +320,11 @@ export default {
         this.multiOptions = this.$props.multiselectOptions.options;
       }
       if (!this.multiselectOptions.multiple) {
-        this.value = this.multiOptions.find((option) => option.value === this.parameter.value);
+        this.value = this.multiOptions.find((option) => option[this.$props.multiselectOptions.trackBy] == this.parameter.value);
       } else {
         // Check if values are not already object
         if (this.parameter.value && this.parameter.value.length > 0 && typeof this.parameter.value[0] !== 'object') {
-          this.value = this.multiOptions.filter((option) => this.parameter.value.includes(option.value));
+          this.value = this.multiOptions.filter((option) => this.parameter.value.includes(option[this.$props.multiselectOptions.trackBy]));
         } else {
           this.value = this.parameter.value;
         }
@@ -428,10 +452,10 @@ export default {
           clearTimeout(this.debounceTimeout);
           this.debounceTimeout = setTimeout(() => {
             this.isLoading = true;
-
             let data = {
               search_query: search_query,
               limit: this.$props.multiselectOptions.optionsLimit,
+              properties: this.$props.asyncAttributes,
             };
 
             settingsService.getAsyncOptions(this.$props.multiselectOptions.asyncRoute, data, {signal})
@@ -495,6 +519,9 @@ export default {
     formatDateForDisplay(date) {
       if (!date) return '';
       return date.split('-').reverse().join('/');
+    },
+    bookingSlotIdUpdated(value) {
+      this.$emit('valueUpdated', value);
     }
     //
   },
@@ -552,6 +579,9 @@ export default {
     },
   },
   computed: {
+    EventBooking() {
+      return EventBooking
+    },
     isInput() {
       return ['text', 'email', 'number', 'password'].includes(this.parameter.type) && this.parameter.displayed && this.parameter.editable !== "semi";
     },
@@ -563,13 +593,21 @@ export default {
     },
     formattedValue: {
       get() {
-        let today = new Date().toISOString().split('T')[0];
-        let dateValue = typeof this.value === 'string' ? this.value : today;
-        return dateValue && dateValue < today ? today : dateValue;
+        if(this.parameter.type === 'date') {
+          let today = new Date().toISOString().split('T')[0];
+          let dateValue = typeof this.value === 'string' ? this.value : today;
+          return dateValue && dateValue < today ? today : dateValue;
+        } else {
+          return this.value;
+        }
       },
       set(newValue) {
-        newValue = dayjs(newValue).format('YYYY-MM-DD')
-        this.value = newValue.split('/').reverse().join('-');
+        if(this.parameter.type === 'date') {
+          newValue = dayjs(newValue).format('YYYY-MM-DD')
+          this.value = newValue.split('/').reverse().join('-');
+        } else {
+          this.value = newValue;
+        }
       }
     }
   }

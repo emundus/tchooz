@@ -837,6 +837,10 @@ Text::script('COM_EMUNDUS_SMS_ALL_STATUS');
 Text::script('COM_EMUNDUS_SMS_ASSOC_TAG_ON_SUCCESS');
 Text::script('COM_EMUNDUS_SMS_ASSOC_TAG_ON_FAILURE');
 Text::script('COM_EMUNDUS_SMS_NO_ASSOC_TAG');
+Text::script('COM_EMUNDUS_NO_RESULT');
+
+Text::script('COM_EMUNDUS_ACL_BOOKING');
+Text::script('COM_EMUNDUS_ACL_BOOKING_DESC');
 
 // Load translations for action log plugin
 $actionlog_translation_tags = parse_ini_file(JPATH_ADMINISTRATOR . '/language/fr-FR/plg_actionlog_emundus.ini');

@@ -79,6 +79,7 @@ export default {
         return false;
       }
 
+      //TODO: Compare without hours
       const today = new Date();
       const startDate = new Date(booking.start);
 

@@ -58,10 +58,110 @@ class Release2_3_0Installer extends ReleaseInstaller
 				EmundusHelperUpdate::insertFalangTranslation(1, $reservations_menu['id'], 'menu', 'title', 'My reservations');
 			}
 
+			$query->clear()
+				->select('id')
+				->from($this->db->quoteName('#__menu'))
+				->where($this->db->quoteName('menutype') . ' LIKE ' . $this->db->quote('coordinatormenu'))
+				->andWhere($this->db->quoteName('alias') . ' LIKE ' . $this->db->quote('reservations') . ' OR ' . $this->db->quoteName('link') . ' LIKE ' . $this->db->quote('index.php?option=com_emundus&view=events&layout=registrants'));
+			$this->db->setQuery($query);
+			$list_reservations_coord = $this->db->loadResult();
+
+			if(empty($list_reservations_coord)) {
+				$data              = [
+					'menutype'          => 'coordinatormenu',
+					'title'             => 'Réservations',
+					'alias'             => 'reservations',
+					'path'              => 'reservations',
+					'link'              => 'index.php?option=com_emundus&view=events&layout=registrants',
+					'type'              => 'component',
+					'component_id'      => ComponentHelper::getComponent('com_emundus')->id,
+					'template_style_id' => 0,
+					'params'            => [],
+				];
+				$reservations_menu_coord = EmundusHelperUpdate::addJoomlaMenu($data, 1, 0);
+				EmundusHelperUpdate::insertFalangTranslation(1, $reservations_menu_coord['id'], 'menu', 'title', 'Reservations');
+			}
+
+			$query->clear()
+				->select('id')
+				->from($this->db->quoteName('#__menu'))
+				->where($this->db->quoteName('menutype') . ' LIKE ' . $this->db->quote('adminmenu'))
+				->andWhere($this->db->quoteName('alias') . ' LIKE ' . $this->db->quote('reservations-admin') . ' OR ' . $this->db->quoteName('link') . ' LIKE ' . $this->db->quote('index.php?option=com_emundus&view=events&layout=registrants'));
+			$this->db->setQuery($query);
+			$list_reservations_sysadmin = $this->db->loadResult();
+
+			if(empty($list_reservations_sysadmin)) {
+				$data              = [
+					'menutype'          => 'adminmenu',
+					'title'             => 'Réservations',
+					'alias'             => 'reservations-admin',
+					'path'              => 'reservations-admin',
+					'link'              => 'index.php?option=com_emundus&view=events&layout=registrants',
+					'type'              => 'component',
+					'component_id'      => ComponentHelper::getComponent('com_emundus')->id,
+					'params'       => [
+						'menu_image_css' => 'calendar_clock'
+					],
+					'template_style_id' => 0
+				];
+				$reservations_menu_sysadmin = EmundusHelperUpdate::addJoomlaMenu($data, 1, 0);
+				EmundusHelperUpdate::insertFalangTranslation(1, $reservations_menu_sysadmin['id'], 'menu', 'title', 'Reservations');
+			}
+
 			EmundusHelperUpdate::addCustomEvents([
 				['label' => 'onAfterUnsubscribeRegistrant', 'category' => 'Booking'],
 				['label' => 'onAfterBookingRegistrant', 'category' => 'Booking']
 			]);
+
+
+			$query->clear()
+				->select('id')
+				->from('#__emundus_setup_actions')
+				->where('name = ' . $this->db->quote('booking'));
+			$this->db->setQuery($query);
+			$booking_acl = $this->db->loadResult();
+
+			if(empty($booking_acl))
+			{
+				$query->clear()
+					->select('MAX(ordering)')
+					->from('#__emundus_setup_actions')
+					->where('ordering <> 999');
+				$this->db->setQuery($query);
+				$ordering = $this->db->loadResult();
+
+				$booking_acl = [
+					'name'        => 'booking',
+					'label'       => 'COM_EMUNDUS_ACL_BOOKING',
+					'multi'       => 0,
+					'c'           => 1,
+					'r'           => 1,
+					'u'           => 1,
+					'd'           => 1,
+					'ordering'    => $ordering + 1,
+					'status'      => 1,
+					'description' => 'COM_EMUNDUS_ACL_BOOKING_DESC'
+				];
+				$booking_acl = (object) $booking_acl;
+				$this->db->insertObject('#__emundus_setup_actions', $booking_acl);
+				$booking_acl->id = $this->db->insertid();
+
+				// Give all rights to all rights group
+				$all_rights_group = ComponentHelper::getParams('com_emundus')->get('all_rights_group', 1);
+				$booking_acl_rights = [
+					'group_id' => $all_rights_group,
+					'action_id' => $booking_acl->id,
+					'c' => 1,
+					'r' => 1,
+					'u' => 1,
+					'd' => 1,
+					'time_date' => date('Y-m-d H:i:s')
+				];
+				$booking_acl_rights = (object) $booking_acl_rights;
+				$this->db->insertObject('#__emundus_acl', $booking_acl_rights);
+			}
+
+			EmundusHelperUpdate::addColumn('jos_emundus_setup_events','teams_subject','VARCHAR', 255);
 
 			$query->clear()
 				->select('extension_id,params')
@@ -395,6 +495,30 @@ class Release2_3_0Installer extends ReleaseInstaller
 				EmundusHelperUpdate::createSchedulerTask('Sending SMS', 'plg_task_sms_task_get', $execution_rules, $cron_rules, [], 0);
 				//
 			}
+
+			$columns      = [
+				['name' => 'registrant', 'type' => 'INT', 'null' => 0],
+				['name' => 'user', 'type' => 'INT', 'null' => 0],
+			];
+			$foreign_keys = [
+				[
+					'name'           => 'jos_emundus_registrants_registrant_fk',
+					'from_column'    => 'registrant',
+					'ref_table'      => 'jos_emundus_registrants',
+					'ref_column'     => 'id',
+					'update_cascade' => true,
+					'delete_cascade' => true
+				],
+				[
+					'name'           => 'jos_emundus_registrants_users_user_fk',
+					'from_column'    => 'user',
+					'ref_table'      => 'jos_users',
+					'ref_column'     => 'id',
+					'update_cascade' => true,
+					'delete_cascade' => false
+				],
+			];
+			EmundusHelperUpdate::createTable('jos_emundus_registrants_users', $columns, $foreign_keys, 'Users associated to registrants');
 
 			$result['status'] = !in_array(false, $tasks);
 		}

@@ -1,6 +1,26 @@
-import { B as FetchClient } from "./app_emundus.js";
+import { C as FetchClient } from "./app_emundus.js";
 const fetchClient = new FetchClient("events");
 const eventsService = {
+  async getEvents() {
+    try {
+      return await fetchClient.get("getevents");
+    } catch (e) {
+      return {
+        status: false,
+        error: e
+      };
+    }
+  },
+  async getEventsNames() {
+    try {
+      return await fetchClient.get("geteventsnames");
+    } catch (e) {
+      return {
+        status: false,
+        error: e
+      };
+    }
+  },
   // Getters
   async getLocations() {
     try {
@@ -45,6 +65,16 @@ const eventsService = {
   async getEvent(event_id) {
     try {
       return await fetchClient.get("getevent", { event_id });
+    } catch (e) {
+      return {
+        status: false,
+        error: e
+      };
+    }
+  },
+  async getEvents() {
+    try {
+      return await fetchClient.get("getevents");
     } catch (e) {
       return {
         status: false,
@@ -158,9 +188,19 @@ const eventsService = {
       };
     }
   },
-  async getAvailabilitiesByCampaignsAndPrograms(start = "", end = "", location = 0, check_booking_limit_reached = 0) {
+  async editSlot(data) {
     try {
-      return await fetchClient.get("getavailabilitiesbycampaignsandprograms", { start, end, location, check_booking_limit_reached });
+      return await fetchClient.post("editslot", data);
+    } catch (e) {
+      return {
+        status: false,
+        error: e
+      };
+    }
+  },
+  async getAvailabilitiesByCampaignsAndPrograms(start = "", end = "", location = 0, check_booking_limit_reached = 0, events_ids = []) {
+    try {
+      return await fetchClient.get("getavailabilitiesbycampaignsandprograms", { start, end, location, check_booking_limit_reached, events_ids });
     } catch (e) {
       return {
         status: false,

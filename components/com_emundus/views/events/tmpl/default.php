@@ -13,6 +13,7 @@ use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
 
 Text::script('COM_EMUNDUS_ONBOARD_EVENTS');
+Text::script('COM_EMUNDUS_ONBOARD_EVENTS_INTRO');
 Text::script('COM_EMUNDUS_ONBOARD_ADD_EVENT');
 Text::script('COM_EMUNDUS_ONBOARD_NOEVENTS');
 Text::script('COM_EMUNDUS_ONBOARD_EVENT_LOCATIONS');

@@ -1,9 +1,11 @@
 <script>
 import Popover from '@/components/Popover.vue';
+import Exports from "@/components/List/Exports.vue";
 
 export default {
   name: "Actions",
   components: {
+    Exports,
     Popover
   },
   props: {
@@ -122,6 +124,14 @@ export default {
     onClickAction(action) {
       this.$emit('action', action);
     },
+
+    onClickExport(exp) {
+      this.$emit('exp', exp);
+    },
+
+    updateItems(page, tabKey) {
+      this.$emit('updateItems', page, tabKey);
+    },
   },
   computed: {
     multipleActionsPopover() {
@@ -148,7 +158,7 @@ export default {
 </script>
 
 <template>
-  <section id="default-actions" class="tw-flex tw-gap-4">
+  <section id="default-actions" class="tw-flex tw-gap-4" style="margin-top: 1.75rem;">
     <div class="tw-flex tw-items-center tw-gap-2">
       <popover
           v-if="checkedItems.length > 0 && multipleActionsPopover.length > 0"
@@ -171,6 +181,17 @@ export default {
           </li>
         </ul>
       </popover>
+
+      <Exports :items="items"
+               :checkedItems="checkedItems"
+               :views="views"
+               :tab="tab"
+               :tab-key="tabKey"
+               v-model:view="currentView"
+               v-model:searches="currentSearches"
+               @exp="onClickExport"
+               @update-items="updateItems"
+      />
 
       <div class="tw-flex tw-items-center tw-min-w-[15rem]"
            v-if="tab.displaySearch === true || typeof tab.displaySearch === 'undefined'">

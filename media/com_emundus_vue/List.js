@@ -1,9 +1,17 @@
-import { _ as _export_sfc, o as openBlock, c as createElementBlock, a as createBaseVNode, t as toDisplayString, e as createCommentVNode, I as script, r as resolveComponent, d as normalizeClass, g as createVNode, w as withCtx, l as createTextVNode, F as Fragment, b as renderList, h as withDirectives, y as vModelSelect, P as Popover, f as createBlock, z as vModelText, q as Pagination, u as useGlobalStore, s as settingsService, p as ref, S as Swal, v as vShow, B as FetchClient } from "./app_emundus.js";
+import { _ as _export_sfc, o as openBlock, c as createElementBlock, d as createBaseVNode, t as toDisplayString, b as createCommentVNode, J as script, r as resolveComponent, n as normalizeClass, h as createVNode, f as withCtx, m as createTextVNode, F as Fragment, e as renderList, w as withDirectives, z as vModelSelect, P as Popover, a as createBlock, A as vModelText, x as Pagination, B as _imports_0, M as Modal, u as useGlobalStore, q as ref, as as userService, s as settingsService, S as Swal, v as vShow, a8 as resolveDynamicComponent, g as withModifiers, p as Teleport, C as FetchClient } from "./app_emundus.js";
 import { S as Skeleton } from "./Skeleton.js";
 import Calendar from "./Calendar.js";
+import EditSlot from "./EditSlot.js";
 import "./core.js";
+import "./index.js";
+import "./Parameter.js";
+import "./EventBooking.js";
 import "./events2.js";
-const _sfc_main$5 = {
+import "./Info.js";
+import "./LocationPopup.js";
+import "./LocationForm.js";
+import "./ColorPicker.js";
+const _sfc_main$7 = {
   name: "Head",
   props: {
     title: {
@@ -25,15 +33,15 @@ const _sfc_main$5 = {
     }
   }
 };
-const _hoisted_1$5 = { class: "head tw-py-6" };
-const _hoisted_2$5 = { class: "tw-flex tw-items-center tw-justify-between tw-mb-6" };
-const _hoisted_3$4 = {
+const _hoisted_1$7 = { class: "head tw-py-6" };
+const _hoisted_2$7 = { class: "tw-flex tw-items-center tw-justify-between tw-mb-6" };
+const _hoisted_3$5 = {
   key: 0,
   class: "tw-text-neutral-700"
 };
-function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
-  return openBlock(), createElementBlock("div", _hoisted_1$5, [
-    createBaseVNode("div", _hoisted_2$5, [
+function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", _hoisted_1$7, [
+    createBaseVNode("div", _hoisted_2$7, [
       createBaseVNode("h1", null, toDisplayString(_ctx.translate($props.title)), 1),
       $props.addAction ? (openBlock(), createElementBlock("a", {
         key: 0,
@@ -42,11 +50,11 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
         onClick: _cache[0] || (_cache[0] = ($event) => $options.onClickAction($props.addAction))
       }, toDisplayString(_ctx.translate($props.addAction.label)), 1)) : createCommentVNode("", true)
     ]),
-    $props.introduction ? (openBlock(), createElementBlock("p", _hoisted_3$4, toDisplayString(_ctx.translate($props.introduction)), 1)) : createCommentVNode("", true)
+    $props.introduction ? (openBlock(), createElementBlock("p", _hoisted_3$5, toDisplayString(_ctx.translate($props.introduction)), 1)) : createCommentVNode("", true)
   ]);
 }
-const Head = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$5], ["__scopeId", "data-v-3eaa1be6"]]);
-const _sfc_main$4 = {
+const Head = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$7], ["__scopeId", "data-v-3eaa1be6"]]);
+const _sfc_main$6 = {
   name: "Filters",
   components: {
     Multiselect: script
@@ -77,25 +85,61 @@ const _sfc_main$4 = {
         filter = filter.split("/").shift();
         if (filter && this.filters[this.currentTabKey]) {
           let filterData = this.filters[this.currentTabKey].find((f) => f.key === filter);
-          if (typeof filterData.alwaysDisplay === "undefined" || filterData.alwaysDisplay !== true) {
+          if (typeof filterData !== "undefined" && (typeof filterData.alwaysDisplay === "undefined" || filterData.alwaysDisplay !== true)) {
             return filterData;
           }
         }
         return null;
       });
       this.displayedFilters = this.displayedFilters.filter((f) => f !== null);
+    }
+    const urlParams = new URLSearchParams(window.location.search);
+    this.filters[this.currentTabKey].forEach((filter) => {
+      if (urlParams.has(filter.key)) {
+        const value = urlParams.get(filter.key);
+        if (filter.options.find((option) => option.value == value)) {
+          filter.value = value;
+          if (!this.displayedFilters.find((f) => f.key === filter.key)) {
+            this.displayedFilters.push(filter);
+          } else {
+            this.displayedFilters = this.displayedFilters.map((f) => {
+              if (f.key === filter.key) {
+                f.value = value;
+              }
+              return f;
+            });
+          }
+          sessionStorage.setItem("tchooz_filter_" + this.currentTabKey + "_" + filter.key + "/" + document.location.hostname, filter.value);
+        }
+      }
+    });
+    if (this.displayedFilters.length > 0) {
       this.displayedFilters.sort((a, b) => a.key.localeCompare(b.key));
     }
   },
   methods: {
     onChangeFilter(filter) {
       sessionStorage.setItem("tchooz_filter_" + this.currentTabKey + "_" + filter.key + "/" + document.location.hostname, filter.value);
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has(filter.key)) {
+        urlParams.set(filter.key, filter.value);
+      } else {
+        urlParams.append(filter.key, filter.value);
+      }
+      const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + "?" + urlParams.toString();
+      window.history.replaceState({ path: newUrl }, "", newUrl);
       this.$emit("update-filter");
     },
     removeFilter(filter) {
       this.displayedFilters = this.displayedFilters.filter((f) => f.key !== filter.key);
       filter.value = filter.default ? filter.default : "all";
       sessionStorage.removeItem("tchooz_filter_" + this.currentTabKey + "_" + filter.key + "/" + document.location.hostname);
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has(filter.key)) {
+        urlParams.delete(filter.key);
+        const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + "?" + urlParams.toString();
+        window.history.replaceState({ path: newUrl }, "", newUrl);
+      }
       this.$emit("update-filter");
     },
     labelTranslate({ label }) {
@@ -125,13 +169,13 @@ const _sfc_main$4 = {
     }
   }
 };
-const _hoisted_1$4 = {
+const _hoisted_1$6 = {
   id: "tab-filters",
   class: "tw-w-full"
 };
-const _hoisted_2$4 = { class: "tw-font-medium tw-mb-2" };
-const _hoisted_3$3 = { class: "tw-grid tw-grid-cols-3 tw-gap-4" };
-const _hoisted_4$3 = { class: "tw-grid tw-grid-cols-3 tw-gap-4" };
+const _hoisted_2$6 = { class: "tw-font-medium tw-mb-2" };
+const _hoisted_3$4 = { class: "tw-grid tw-grid-cols-3 tw-gap-4" };
+const _hoisted_4$4 = { class: "tw-grid tw-grid-cols-3 tw-gap-4" };
 const _hoisted_5$2 = { class: "tw-flex tw-items-center tw-justify-between" };
 const _hoisted_6$2 = { class: "!tw-mb-0 tw-font-medium" };
 const _hoisted_7$2 = ["onUpdate:modelValue", "onChange"];
@@ -141,15 +185,15 @@ const _hoisted_10$1 = { class: "!tw-mb-0 tw-font-medium" };
 const _hoisted_11$1 = ["onClick"];
 const _hoisted_12$1 = ["onUpdate:modelValue", "onChange"];
 const _hoisted_13$1 = ["value"];
-function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_multiselect = resolveComponent("multiselect");
-  return openBlock(), createElementBlock("section", _hoisted_1$4, [
+  return openBlock(), createElementBlock("section", _hoisted_1$6, [
     $options.availableFilters.length > 0 ? (openBlock(), createElementBlock("div", {
       key: 0,
       class: normalizeClass({ "tw-mb-4": $data.displayedFilters.length > 0 })
     }, [
-      createBaseVNode("label", _hoisted_2$4, toDisplayString(_ctx.translate("COM_EMUNDUS_ADD_FILTER")), 1),
-      createBaseVNode("div", _hoisted_3$3, [
+      createBaseVNode("label", _hoisted_2$6, toDisplayString(_ctx.translate("COM_EMUNDUS_ADD_FILTER")), 1),
+      createBaseVNode("div", _hoisted_3$4, [
         createVNode(_component_multiselect, {
           id: "select-filter-" + $props.currentTabKey,
           modelValue: $data.currentFilter,
@@ -173,7 +217,7 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
         }, 8, ["id", "modelValue", "custom-label", "options", "placeholder", "select-label"])
       ])
     ], 2)) : createCommentVNode("", true),
-    createBaseVNode("div", _hoisted_4$3, [
+    createBaseVNode("div", _hoisted_4$4, [
       (openBlock(true), createElementBlock(Fragment, null, renderList($options.defaultFilters, (filter) => {
         return openBlock(), createElementBlock("div", {
           key: $props.currentTabKey + "-" + filter.key,
@@ -227,10 +271,159 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ]);
 }
-const Filters = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4]]);
-const _sfc_main$3 = {
+const Filters = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$6]]);
+const _sfc_main$5 = {
+  name: "Exports",
+  components: {
+    Popover
+  },
+  props: {
+    items: {
+      type: Object,
+      default: () => {
+      }
+    },
+    checkedItems: {
+      type: Array,
+      default: () => []
+    },
+    views: {
+      type: Object,
+      default: () => {
+      }
+    },
+    tab: {
+      type: Object,
+      default: () => {
+      }
+    },
+    tabKey: {
+      type: Number,
+      default: ""
+    },
+    // V-Model
+    view: {
+      type: String,
+      default: "table"
+    },
+    searches: {
+      type: Object,
+      default: () => {
+      }
+    }
+  },
+  emits: ["update:view", "update:searches"],
+  data() {
+    return {
+      currentView: this.view,
+      currentSearches: this.searches
+    };
+  },
+  methods: {
+    evaluateShowOn(showon = null) {
+      if (showon === null) {
+        return false;
+      }
+      let items = this.checkedItems;
+      let show = [];
+      items.forEach((item) => {
+        if (typeof item === "number") {
+          item = this.items[this.tabKey].find((i) => i.id === item);
+        }
+        switch (showon.operator) {
+          case "==":
+          case "=":
+            show.push(item[showon.key] == showon.value);
+            break;
+          case "!=":
+            show.push(item[showon.key] != showon.value);
+            break;
+          case ">":
+            show.push(item[showon.key] > showon.value);
+            break;
+          case "<":
+            show.push(item[showon.key] < showon.value);
+            break;
+          case ">=":
+            show.push(item[showon.key] >= showon.value);
+            break;
+          case "<=":
+            show.push(item[showon.key] <= showon.value);
+            break;
+          default:
+            show.push(true);
+        }
+      });
+      return show.every((s) => s === true);
+    },
+    onClickExport(exp) {
+      this.$emit("exp", exp);
+    }
+  },
+  computed: {
+    multipleExportsPopover() {
+      let exports = [];
+      if (this.checkedItems.length > 0) {
+        exports = this.tab.exports.filter((exp) => {
+          return exp.multiple;
+        });
+      }
+      return exports;
+    }
+  },
+  watch: {
+    currentView() {
+      this.$emit("update:view", this.currentView);
+    },
+    currentSearches() {
+      this.$emit("update:searches", this.currentSearches);
+    }
+  }
+};
+const _hoisted_1$5 = {
+  id: "default-exports",
+  class: "tw-flex tw-gap-4"
+};
+const _hoisted_2$5 = { class: "tw-flex tw-items-center tw-gap-2" };
+const _hoisted_3$3 = { class: "tw-items-center tw-p-4 tw-list-none tw-m-0" };
+const _hoisted_4$3 = ["onClick"];
+function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
+  const _component_popover = resolveComponent("popover");
+  return openBlock(), createElementBlock("section", _hoisted_1$5, [
+    createBaseVNode("div", _hoisted_2$5, [
+      $props.checkedItems.length > 0 && $options.multipleExportsPopover.length > 0 ? (openBlock(), createBlock(_component_popover, {
+        key: 0,
+        button: _ctx.translate("EXPORT"),
+        "button-class": "tw-bg-white tw-border tw-h-[38px] hover:tw-border-form-border-hover tw-rounded-form",
+        icon: "keyboard_arrow_down",
+        position: "bottom-left",
+        popoverContentStyle: { width: "max-content" },
+        class: "custom-popover-arrow"
+      }, {
+        default: withCtx(() => [
+          createBaseVNode("ul", _hoisted_3$3, [
+            (openBlock(true), createElementBlock(Fragment, null, renderList($options.multipleExportsPopover, (exp) => {
+              return openBlock(), createElementBlock("li", {
+                key: exp.name,
+                onClick: ($event) => $options.onClickExport(exp),
+                class: normalizeClass(["tw-py-1.5 tw-px-2", {
+                  "tw-cursor-not-allowed tw-text-neutral-500": !(typeof exp.showon === "undefined" || $options.evaluateShowOn(exp.showon)),
+                  "tw-cursor-pointer tw-text-base hover:tw-bg-neutral-300 hover:tw-rounded-coordinator": typeof exp.showon !== "undefined" && $options.evaluateShowOn(exp.showon) || typeof exp.showon === "undefined"
+                }])
+              }, toDisplayString(_ctx.translate(exp.label)), 11, _hoisted_4$3);
+            }), 128))
+          ])
+        ]),
+        _: 1
+      }, 8, ["button"])) : createCommentVNode("", true)
+    ])
+  ]);
+}
+const Exports = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$5]]);
+const _sfc_main$4 = {
   name: "Actions",
   components: {
+    Exports,
     Popover
   },
   props: {
@@ -334,6 +527,12 @@ const _sfc_main$3 = {
     },
     onClickAction(action) {
       this.$emit("action", action);
+    },
+    onClickExport(exp) {
+      this.$emit("exp", exp);
+    },
+    updateItems(page, tabKey) {
+      this.$emit("updateItems", page, tabKey);
     }
   },
   computed: {
@@ -356,11 +555,12 @@ const _sfc_main$3 = {
     }
   }
 };
-const _hoisted_1$3 = {
+const _hoisted_1$4 = {
   id: "default-actions",
-  class: "tw-flex tw-gap-4"
+  class: "tw-flex tw-gap-4",
+  style: { "margin-top": "1.75rem" }
 };
-const _hoisted_2$3 = { class: "tw-flex tw-items-center tw-gap-2" };
+const _hoisted_2$4 = { class: "tw-flex tw-items-center tw-gap-2" };
 const _hoisted_3$2 = { class: "tw-items-center tw-p-4 tw-list-none tw-m-0" };
 const _hoisted_4$2 = ["onClick"];
 const _hoisted_5$1 = {
@@ -370,10 +570,11 @@ const _hoisted_5$1 = {
 const _hoisted_6$1 = ["placeholder", "disabled"];
 const _hoisted_7$1 = { class: "view-type tw-flex tw-items-center tw-gap-2" };
 const _hoisted_8$1 = ["onClick"];
-function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_popover = resolveComponent("popover");
-  return openBlock(), createElementBlock("section", _hoisted_1$3, [
-    createBaseVNode("div", _hoisted_2$3, [
+  const _component_Exports = resolveComponent("Exports");
+  return openBlock(), createElementBlock("section", _hoisted_1$4, [
+    createBaseVNode("div", _hoisted_2$4, [
       $props.checkedItems.length > 0 && $options.multipleActionsPopover.length > 0 ? (openBlock(), createBlock(_component_popover, {
         key: 0,
         button: _ctx.translate("COM_EMUNDUS_ONBOARD_ACTIONS"),
@@ -398,24 +599,37 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
         ]),
         _: 1
       }, 8, ["button"])) : createCommentVNode("", true),
+      createVNode(_component_Exports, {
+        items: $props.items,
+        checkedItems: $props.checkedItems,
+        views: $props.views,
+        tab: $props.tab,
+        "tab-key": $props.tabKey,
+        view: $data.currentView,
+        "onUpdate:view": _cache[0] || (_cache[0] = ($event) => $data.currentView = $event),
+        searches: $data.currentSearches,
+        "onUpdate:searches": _cache[1] || (_cache[1] = ($event) => $data.currentSearches = $event),
+        onExp: $options.onClickExport,
+        onUpdateItems: $options.updateItems
+      }, null, 8, ["items", "checkedItems", "views", "tab", "tab-key", "view", "searches", "onExp", "onUpdateItems"]),
       $props.tab.displaySearch === true || typeof $props.tab.displaySearch === "undefined" ? (openBlock(), createElementBlock("div", _hoisted_5$1, [
         withDirectives(createBaseVNode("input", {
           name: "search",
           type: "text",
-          "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $props.searches[$props.tabKey].search = $event),
+          "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => $props.searches[$props.tabKey].search = $event),
           placeholder: _ctx.translate("COM_EMUNDUS_ONBOARD_SEARCH"),
           class: normalizeClass(["!tw-rounded-coordinator !tw-h-[38px] tw-m-0", {
             "em-disabled-events": $props.items[$props.tabKey].length < 1 && $props.searches[$props.tabKey].search === ""
           }]),
           disabled: $props.items[$props.tabKey].length < 1 && $props.searches[$props.tabKey].search === "",
-          onChange: _cache[1] || (_cache[1] = (...args) => $options.searchItems && $options.searchItems(...args)),
-          onKeyup: _cache[2] || (_cache[2] = (...args) => $options.searchItems && $options.searchItems(...args))
+          onChange: _cache[3] || (_cache[3] = (...args) => $options.searchItems && $options.searchItems(...args)),
+          onKeyup: _cache[4] || (_cache[4] = (...args) => $options.searchItems && $options.searchItems(...args))
         }, null, 42, _hoisted_6$1), [
           [vModelText, $props.searches[$props.tabKey].search]
         ]),
         createBaseVNode("span", {
           class: "material-symbols-outlined tw-mr-2 tw-cursor-pointer tw-ml-[-32px]",
-          onClick: _cache[3] || (_cache[3] = (...args) => $options.searchItems && $options.searchItems(...args))
+          onClick: _cache[5] || (_cache[5] = (...args) => $options.searchItems && $options.searchItems(...args))
         }, " search ")
       ])) : createCommentVNode("", true)
     ]),
@@ -433,10 +647,11 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ]);
 }
-const Actions = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3]]);
-const _sfc_main$2 = {
+const Actions = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4]]);
+const _sfc_main$3 = {
   name: "Navigation",
   components: {
+    Exports,
     Actions,
     Filters,
     Pagination
@@ -516,6 +731,9 @@ const _sfc_main$2 = {
     onClickAction(action) {
       this.$emit("action", action, null, true);
     },
+    onClickExport(exp) {
+      this.$emit("exp", exp);
+    },
     updateItems(page, tabKey) {
       this.$emit("updateItems", page, tabKey);
     },
@@ -541,23 +759,23 @@ const _sfc_main$2 = {
     }
   }
 };
-const _hoisted_1$2 = {
+const _hoisted_1$3 = {
   key: 0,
   id: "list-nav"
 };
-const _hoisted_2$2 = { class: "tw-flex tw-ml-0 tw-pl-0 tw-list-none" };
+const _hoisted_2$3 = { class: "tw-flex tw-ml-0 tw-pl-0 tw-list-none" };
 const _hoisted_3$1 = ["onClick"];
 const _hoisted_4$1 = {
   id: "actions",
   class: "tw-flex tw-items-start tw-justify-between tw-mt-4 tw-mb-4"
 };
-function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_Filters = resolveComponent("Filters");
   const _component_Actions = resolveComponent("Actions");
   const _component_Pagination = resolveComponent("Pagination");
   return openBlock(), createElementBlock("div", null, [
-    $props.tabs.length > 1 ? (openBlock(), createElementBlock("nav", _hoisted_1$2, [
-      createBaseVNode("ul", _hoisted_2$2, [
+    $props.tabs.length > 1 ? (openBlock(), createElementBlock("nav", _hoisted_1$3, [
+      createBaseVNode("ul", _hoisted_2$3, [
         (openBlock(true), createElementBlock(Fragment, null, renderList($props.tabs, (tab) => {
           return openBlock(), createElementBlock("li", {
             key: tab.key,
@@ -587,10 +805,11 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
         searches: $data.currentSearches,
         "onUpdate:searches": _cache[1] || (_cache[1] = ($event) => $data.currentSearches = $event),
         onAction: $options.onClickAction,
+        onExp: $options.onClickExport,
         onUpdateItems: $options.updateItems
-      }, null, 8, ["items", "checkedItems", "views", "tab", "tab-key", "view", "searches", "onAction", "onUpdateItems"])
+      }, null, 8, ["items", "checkedItems", "views", "tab", "tab-key", "view", "searches", "onAction", "onExp", "onUpdateItems"])
     ]),
-    this.items[this.currentTabKey].length > 0 ? (openBlock(), createBlock(_component_Pagination, {
+    this.items[this.currentTabKey].length > 0 && $props.view !== "calendar" ? (openBlock(), createBlock(_component_Pagination, {
       key: 1,
       limits: [5, 10, 25, 50, 100, "all"],
       dataLength: $data.currentTab.pagination.count,
@@ -601,8 +820,8 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     }, null, 8, ["dataLength", "page", "limit"])) : createCommentVNode("", true)
   ]);
 }
-const Navigation = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2]]);
-const _sfc_main$1 = {
+const Navigation = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3]]);
+const _sfc_main$2 = {
   name: "Gantt",
   props: {
     defaultDisplay: {
@@ -661,15 +880,15 @@ const _sfc_main$1 = {
     }
   }
 };
-const _hoisted_1$1 = { id: "gantt-view" };
-const _hoisted_2$1 = {
+const _hoisted_1$2 = { id: "gantt-view" };
+const _hoisted_2$2 = {
   id: "gantt-head",
   class: "tw-flex tw-flex-row"
 };
-function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
-  return openBlock(), createElementBlock("div", _hoisted_1$1, [
+function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", _hoisted_1$2, [
     _cache[0] || (_cache[0] = createBaseVNode("div", { id: "gantt-options" }, null, -1)),
-    createBaseVNode("div", _hoisted_2$1, [
+    createBaseVNode("div", _hoisted_2$2, [
       (openBlock(true), createElementBlock(Fragment, null, renderList($data.dateRange, (value) => {
         return openBlock(), createElementBlock("span", { key: value }, toDisplayString(value), 1);
       }), 128))
@@ -677,16 +896,46 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
     _cache[1] || (_cache[1] = createBaseVNode("div", { id: "gantt-rows" }, null, -1))
   ]);
 }
-const Gantt = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1]]);
+const Gantt = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2]]);
+const _sfc_main$1 = {
+  name: "NoResults",
+  props: {
+    message: {
+      type: String,
+      default: "COM_EMUNDUS_NO_RESULT"
+    }
+  }
+};
+const _hoisted_1$1 = {
+  id: "empty-list",
+  class: "tw-text-center"
+};
+const _hoisted_2$1 = ["innerHTML"];
+function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", _hoisted_1$1, [
+    _cache[0] || (_cache[0] = createBaseVNode("img", {
+      src: _imports_0,
+      class: "no-result-image",
+      alt: "empty-list"
+    }, null, -1)),
+    createBaseVNode("p", {
+      innerHTML: _ctx.translate($props.message)
+    }, null, 8, _hoisted_2$1)
+  ]);
+}
+const NoResults = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-b00bf921"]]);
 const _sfc_main = {
   name: "List",
   components: {
+    Modal,
+    NoResults,
     Navigation,
     Head,
     Calendar,
     Skeleton,
     Popover,
-    Gantt
+    Gantt,
+    EditSlot
   },
   props: {
     defaultLists: {
@@ -706,6 +955,9 @@ const _sfc_main = {
         "items": false,
         "filters": true
       },
+      components: {
+        EditSlot
+      },
       lists: {},
       type: "forms",
       params: {},
@@ -713,7 +965,7 @@ const _sfc_main = {
       selectedListTab: 0,
       items: {},
       title: "",
-      viewType: "table",
+      viewType: null,
       defaultViewsOptions: [
         { value: "table", icon: "dehaze" },
         { value: "blocs", icon: "grid_view" }
@@ -724,7 +976,10 @@ const _sfc_main = {
       orderBy: null,
       order: "DESC",
       checkedItems: [],
-      numberOfItemsToDisplay: 25
+      numberOfItemsToDisplay: 25,
+      currentComponent: null,
+      currentComponentElementId: null,
+      showModal: false
     };
   },
   created() {
@@ -756,71 +1011,40 @@ const _sfc_main = {
   },
   methods: {
     initList() {
-      if (this.defaultLists !== null) {
-        this.lists = JSON.parse(atob(this.defaultLists));
-        if (typeof this.lists[this.type] === "undefined") {
-          console.error("List type " + this.type + " does not exist");
-          window.location.href = "/";
-        }
-        this.currentList = this.lists[this.type];
-        if (Object.prototype.hasOwnProperty.call(this.params, "tab")) {
-          this.onSelectTab(this.params.tab);
-        } else {
-          const sessionTab = sessionStorage.getItem("tchooz_selected_tab/" + document.location.hostname);
-          if (sessionTab !== null && this.currentList.tabs.some((tab) => tab.key === sessionTab)) {
-            this.onSelectTab(sessionTab);
-          } else {
-            this.onSelectTab(this.currentList.tabs[0].key);
-          }
-        }
-        let availableViews = this.currentTab.viewsOptions ? this.currentTab.viewsOptions : this.defaultViewsOptions;
-        this.viewType = localStorage.getItem("tchooz_view_type/" + document.location.hostname);
-        let isViewTypeAvailable = availableViews.some((view) => view.value === this.viewType);
-        if (this.viewType === null || typeof this.viewType === "undefined" || !isViewTypeAvailable) {
-          this.viewType = availableViews[0].value;
-          if (this.viewType === null || typeof this.viewType === "undefined") {
-            localStorage.setItem("tchooz_view_type/" + document.location.hostname, this.viewType);
-          }
-        }
-        this.loading.lists = false;
-        this.getListItems();
-      } else {
-        this.getLists();
+      this.lists = JSON.parse(atob(this.defaultLists));
+      if (typeof this.lists[this.type] === "undefined") {
+        console.error("List type " + this.type + " does not exist");
+        window.location.href = "/";
       }
-    },
-    getLists() {
-      settingsService.getOnboardingLists().then((response) => {
-        if (response.status) {
-          this.lists = response.data;
-          if (typeof this.lists[this.type] === "undefined") {
-            console.error("List type " + this.type + " does not exist");
-            window.location.href = "/";
-          }
-          this.currentList = this.lists[this.type];
-          if (Object.prototype.hasOwnProperty.call(this.params, "tab")) {
-            this.onSelectTab(this.params.tab);
-          } else {
-            const sessionTab = sessionStorage.getItem("tchooz_selected_tab/" + document.location.hostname);
-            if (sessionTab !== null && typeof this.currentList.tabs.find((tab) => tab.key === sessionTab) !== "undefined") {
-              this.onSelectTab(sessionTab);
-            } else {
-              this.onSelectTab(this.currentList.tabs[0].key);
-            }
-          }
-          this.loading.lists = false;
-          this.getListItems();
+      this.currentList = this.lists[this.type];
+      if (Object.prototype.hasOwnProperty.call(this.params, "tab")) {
+        this.onSelectTab(this.params.tab);
+      } else {
+        const sessionTab = sessionStorage.getItem("tchooz_selected_tab/" + document.location.hostname);
+        if (sessionTab !== null && this.currentList.tabs.some((tab) => tab.key === sessionTab)) {
+          this.onSelectTab(sessionTab);
         } else {
-          console.error("Error while getting onboarding lists");
-          this.loading.lists = false;
+          this.onSelectTab(this.currentList.tabs[0].key);
         }
-      });
+      }
+      let availableViews = this.currentTab.viewsOptions ? this.currentTab.viewsOptions : this.defaultViewsOptions;
+      this.viewType = localStorage.getItem("tchooz_view_type/" + document.location.hostname);
+      let isViewTypeAvailable = availableViews.some((view) => view.value === this.viewType);
+      if (this.viewType === null || typeof this.viewType === "undefined" || !isViewTypeAvailable) {
+        this.viewType = availableViews[0].value;
+        if (this.viewType === null || typeof this.viewType === "undefined") {
+          localStorage.setItem("tchooz_view_type/" + document.location.hostname, this.viewType);
+        }
+      }
+      this.loading.lists = false;
+      this.getListItems();
     },
     orderByColumn(column) {
       this.orderBy = column;
       this.order = this.order === "ASC" ? "DESC" : "ASC";
       this.getListItems(1, this.selectedListTab);
     },
-    getListItems(page = 1, tab = null) {
+    async getListItems(page = 1, tab = null) {
       this.checkedItems = [];
       if (tab === null) {
         this.loading.tabs = true;
@@ -837,6 +1061,23 @@ const _sfc_main = {
               lastSearch: "",
               debounce: null
             };
+          }
+          for (const action of tab2.actions) {
+            action.display = true;
+            if (action.acl) {
+              const acl_options = action.acl.split("|");
+              if (acl_options.length === 2) {
+                userService.getAcl(acl_options[0], acl_options[1]).then((response) => {
+                  if (response.status) {
+                    action.display = response.right;
+                  } else {
+                    action.display = false;
+                  }
+                });
+              } else {
+                action.display = false;
+              }
+            }
           }
           const searchValue = sessionStorage.getItem("tchooz_filter_" + this.selectedListTab + "_search/" + document.location.hostname);
           if (searchValue !== null && this.searches[this.selectedListTab]) {
@@ -860,6 +1101,8 @@ const _sfc_main = {
                 }
               });
             }
+            url += "&view=" + this.viewType;
+            if (this.viewType == "calendar") ;
             try {
               fetch(url).then((response) => response.json()).then((response) => {
                 if (response.status === true) {
@@ -948,11 +1191,11 @@ const _sfc_main = {
       });
     },
     onClickAction(action, itemId = null, multiple = false, event = null) {
-      if (event !== null) {
-        event.stopPropagation();
-      }
       if (action === null || typeof action !== "object" || typeof action.showon !== "undefined" && !this.evaluateShowOn(null, action.showon)) {
         return false;
+      }
+      if (event !== null) {
+        event.stopPropagation();
       }
       let item = null;
       if (itemId !== null) {
@@ -960,6 +1203,12 @@ const _sfc_main = {
       }
       if (action.name === "preview") {
         this.onClickPreview(item);
+        return;
+      }
+      if (action.type === "modal") {
+        this.currentComponent = action.component;
+        this.showModal = true;
+        this.currentComponentElementId = itemId;
         return;
       }
       if (action.type === "redirect") {
@@ -1018,6 +1267,47 @@ const _sfc_main = {
         }
       }
     },
+    closePopup() {
+      this.currentComponent = null;
+      this.showModal = false;
+      this.currentComponentElementId = null;
+    },
+    onClickExport(exp, event = null) {
+      if (event !== null) {
+        event.stopPropagation();
+      }
+      if (exp === null || typeof exp !== "object" || typeof exp.showon !== "undefined" && !this.evaluateShowOn(null, exp.showon)) {
+        return false;
+      }
+      if (this.checkedItems.length === 0) {
+        return;
+      }
+      let url = "index.php?option=com_emundus&controller=" + exp.controller + "&task=" + exp.action;
+      let parameters = { ids: this.checkedItems };
+      if (Object.prototype.hasOwnProperty.call(exp, "confirm")) {
+        Swal.fire({
+          icon: "warning",
+          title: this.translate(exp.label),
+          text: this.translate(exp.confirm),
+          showCancelButton: true,
+          confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+          cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
+          reverseButtons: true,
+          customClass: {
+            title: "em-swal-title",
+            confirmButton: "em-swal-confirm-button",
+            cancelButton: "em-swal-cancel-button",
+            actions: "em-swal-double-action"
+          }
+        }).then((result) => {
+          if (result.value) {
+            this.executeAction(url, parameters, exp.method);
+          }
+        });
+      } else {
+        this.executeAction(url, parameters, exp.method);
+      }
+    },
     async executeAction(url, data = null, method = "get") {
       this.loading.items = true;
       let controller = url.split("controller=")[1].split("&")[0];
@@ -1028,6 +1318,7 @@ const _sfc_main = {
           method = "get";
         }
         let response = null;
+        addLoader();
         if (method === "get") {
           response = await fetchClient.get(task, data);
         } else if (method === "post") {
@@ -1035,8 +1326,33 @@ const _sfc_main = {
         } else if (method === "delete") {
           response = await fetchClient.delete(task, data);
         }
+        removeLoader();
         if (response) {
           if (response.status === true || response.status === 1) {
+            if (response.download_file) {
+              Swal.fire({
+                position: "center",
+                icon: "success",
+                title: this.translate("COM_EMUNDUS_REGISTRANTS_FILE_READY"),
+                showCancelButton: true,
+                showConfirmButton: true,
+                confirmButtonText: this.translate("LINK_TO_DOWNLOAD"),
+                cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_EDITOR_UNDO"),
+                reverseButtons: true,
+                allowOutsideClick: false,
+                customClass: {
+                  cancelButton: "em-swal-cancel-button",
+                  confirmButton: "em-swal-confirm-button btn btn-success",
+                  title: "w-full justify-center"
+                },
+                preConfirm: () => {
+                  var link = document.createElement("a");
+                  link.href = response.download_file;
+                  link.download = "";
+                  link.click();
+                }
+              });
+            }
             if (response.redirect) {
               window.location.href = response.redirect;
             }
@@ -1190,6 +1506,9 @@ const _sfc_main = {
     }
   },
   computed: {
+    resolvedComponent() {
+      return this.components[this.currentComponent] || null;
+    },
     currentTab() {
       return this.currentList.tabs.find((tab) => {
         return tab.key === this.selectedListTab;
@@ -1202,7 +1521,12 @@ const _sfc_main = {
     },
     editAction() {
       return typeof this.currentTab !== "undefined" && typeof this.currentTab.actions !== "undefined" ? this.currentTab.actions.find((action) => {
-        return action.name === "edit";
+        return action.name === "edit" && (action.view === this.viewType || typeof action.view === "undefined");
+      }) : false;
+    },
+    editWeekAction() {
+      return typeof this.currentTab !== "undefined" && typeof this.currentTab.actions !== "undefined" ? this.currentTab.actions.find((action) => {
+        return action.name === "edit" && action.view === "calendar" && action.calendarView === "week";
       }) : false;
     },
     addAction() {
@@ -1235,11 +1559,6 @@ const _sfc_main = {
       }
       return columns;
     },
-    noneDiscoverTranslation() {
-      let translation = '<img src="/media/com_emundus/images/tchoozy/complex-illustrations/no-result.svg" alt="empty-list" style="width: 10vw; height: 10vw; margin: 0 auto;">';
-      translation += this.translate(this.currentTab.noData);
-      return translation;
-    },
     viewTypeOptions() {
       if (typeof this.currentTab !== "undefined" && this.currentTab.viewsOptions) {
         return this.currentTab.viewsOptions;
@@ -1249,12 +1568,19 @@ const _sfc_main = {
     }
   },
   watch: {
-    "currentTab.pagination.current": function(newPage) {
-      this.getListItems(newPage, this.selectedListTab);
+    "currentTab.pagination.current": function(newPage, oldPage) {
+      if (newPage !== oldPage && typeof oldPage !== "undefined") {
+        this.getListItems(newPage, this.selectedListTab);
+      }
     },
     numberOfItemsToDisplay() {
       this.getListItems();
       localStorage.setItem("tchooz_number_of_items_to_display/" + document.location.hostname, this.numberOfItemsToDisplay);
+    },
+    viewType(value, oldValue) {
+      if (oldValue != null && oldValue !== value && (value === "calendar" || oldValue === "calendar")) {
+        this.getListItems(1, this.selectedListTab);
+      }
     }
   }
 };
@@ -1317,20 +1643,23 @@ const _hoisted_23 = ["onClick"];
 const _hoisted_24 = { class: "tw-flex tw-items-center tw-justify-end tw-gap-2" };
 const _hoisted_25 = ["onClick", "title"];
 const _hoisted_26 = ["onClick"];
-const _hoisted_27 = {
+const _hoisted_27 = { key: 1 };
+const _hoisted_28 = {
   style: { "list-style-type": "none", "margin": "0" },
   class: "em-flex-col-center tw-p-4"
 };
-const _hoisted_28 = ["onClick"];
-const _hoisted_29 = { key: 1 };
-const _hoisted_30 = ["innerHTML"];
+const _hoisted_29 = ["onClick"];
+const _hoisted_30 = { key: 1 };
+const _hoisted_31 = { key: 2 };
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_skeleton = resolveComponent("skeleton");
   const _component_Head = resolveComponent("Head");
   const _component_Navigation = resolveComponent("Navigation");
+  const _component_modal = resolveComponent("modal");
   const _component_popover = resolveComponent("popover");
   const _component_Calendar = resolveComponent("Calendar");
   const _component_Gantt = resolveComponent("Gantt");
+  const _component_NoResults = resolveComponent("NoResults");
   return openBlock(), createElementBlock("div", {
     id: "onboarding_list",
     class: normalizeClass(["tw-w-full", { "alert-banner-displayed": $data.alertBannerDisplayed }])
@@ -1393,8 +1722,9 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         "onUpdate:numberOfItemsToDisplay": _cache[4] || (_cache[4] = ($event) => $data.numberOfItemsToDisplay = $event),
         onSelectTab: $options.onCheckAllitems,
         onAction: $options.onClickAction,
+        onExp: $options.onClickExport,
         onUpdateItems: $options.getListItems
-      }, null, 8, ["tabs", "filters", "items", "checked-items", "views", "view", "searches", "tab", "tab-key", "number-of-items-to-display", "onSelectTab", "onAction", "onUpdateItems"])) : createCommentVNode("", true),
+      }, null, 8, ["tabs", "filters", "items", "checked-items", "views", "view", "searches", "tab", "tab-key", "number-of-items-to-display", "onSelectTab", "onAction", "onExp", "onUpdateItems"])) : createCommentVNode("", true),
       $data.loading.items ? (openBlock(), createElementBlock("div", {
         key: 1,
         id: "items-loading",
@@ -1490,7 +1820,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                   }, [
                     createBaseVNode("span", {
                       onClick: ($event) => $options.onClickAction($options.editAction, item.id, false, $event),
-                      class: normalizeClass(["hover:tw-underline", { "tw-font-semibold tw-line-clamp-2 tw-min-h-[48px]": $data.viewType === "blocs" }]),
+                      class: normalizeClass({
+                        "tw-font-semibold tw-line-clamp-2 tw-min-h-[48px]": $data.viewType === "blocs",
+                        "hover:tw-underline": $options.editAction
+                      }),
                       title: item.label[$data.params.shortlang]
                     }, toDisplayString(item.label[$data.params.shortlang]), 11, _hoisted_17)
                   ], 2),
@@ -1548,11 +1881,11 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                           class: "tw-btn-primary !tw-w-auto tw-flex tw-items-center tw-gap-1",
                           style: { "padding": "0.5rem" },
                           title: _ctx.translate($options.editAction.label)
-                        }, _cache[7] || (_cache[7] = [
+                        }, _cache[14] || (_cache[14] = [
                           createBaseVNode("span", { class: "material-symbols-outlined popover-toggle-btn tw-cursor-pointer" }, "edit", -1)
                         ]), 8, _hoisted_25)) : createCommentVNode("", true),
                         (openBlock(true), createElementBlock(Fragment, null, renderList($options.iconActions, (action) => {
-                          return openBlock(), createElementBlock("button", {
+                          return withDirectives((openBlock(), createElementBlock("button", {
                             key: action.name,
                             class: normalizeClass(["tw-btn-primary !tw-w-auto tw-flex tw-items-center tw-gap-1", [
                               action.buttonClasses,
@@ -1563,28 +1896,57 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                             onClick: ($event) => $options.onClickAction(action, item.id, false, $event)
                           }, [
                             createBaseVNode("span", {
-                              class: normalizeClass(["popover-toggle-btn tw-cursor-pointer", {
-                                "material-symbols-outlined": action.iconOutlined,
-                                "material-icons": !action.iconOutlined
-                              }])
+                              class: normalizeClass(["popover-toggle-btn tw-cursor-pointer", [
+                                action.spanClasses,
+                                {
+                                  "material-symbols-outlined": action.iconOutlined,
+                                  "material-icons": !action.iconOutlined
+                                }
+                              ]])
                             }, toDisplayString(action.icon), 3)
-                          ], 10, _hoisted_26);
+                          ], 10, _hoisted_26)), [
+                            [vShow, action.display]
+                          ]);
                         }), 128)),
+                        $data.showModal && $data.currentComponentElementId === item.id ? (openBlock(), createElementBlock("div", _hoisted_27, [
+                          (openBlock(), createBlock(Teleport, { to: ".com_emundus_vue" }, [
+                            createVNode(_component_modal, {
+                              name: "modal-component",
+                              transition: "nice-modal-fade",
+                              class: normalizeClass("placement-center tw-rounded tw-shadow-modal tw-px-4 tw-max-h-[80vh] tw-overflow-y-auto"),
+                              width: "600px",
+                              delay: 100,
+                              adaptive: true,
+                              clickToClose: false,
+                              onClick: _cache[9] || (_cache[9] = withModifiers(() => {
+                              }, ["stop"]))
+                            }, {
+                              default: withCtx(() => [
+                                (openBlock(), createBlock(resolveDynamicComponent($options.resolvedComponent), {
+                                  slot: item,
+                                  onClose: _cache[7] || (_cache[7] = ($event) => $options.closePopup()),
+                                  onUpdateItems: _cache[8] || (_cache[8] = ($event) => $options.getListItems())
+                                }, null, 40, ["slot"]))
+                              ]),
+                              _: 2
+                            }, 1024)
+                          ]))
+                        ])) : createCommentVNode("", true),
                         $options.tabActionsPopover && $options.tabActionsPopover.length > 0 && $options.filterShowOnActions($options.tabActionsPopover, item).length ? (openBlock(), createBlock(_component_popover, {
-                          key: 1,
+                          key: 2,
                           position: "left",
                           button: _ctx.translate("COM_EMUNDUS_ONBOARD_ACTIONS"),
                           "hide-button-label": true,
                           class: "custom-popover-arrow"
                         }, {
                           default: withCtx(() => [
-                            createBaseVNode("ul", _hoisted_27, [
+                            createBaseVNode("ul", _hoisted_28, [
                               (openBlock(true), createElementBlock(Fragment, null, renderList($options.tabActionsPopover, (action) => {
                                 return openBlock(), createElementBlock("li", {
                                   key: action.name,
                                   class: normalizeClass([{ "tw-hidden": !(typeof action.showon === "undefined" || $options.evaluateShowOn(item, action.showon)) }, "tw-cursor-pointer tw-py-1.5 tw-px-2 tw-text-base hover:tw-bg-neutral-300 hover:tw-rounded-coordinator"]),
                                   onClick: ($event) => $options.onClickAction(action, item.id, false, $event)
-                                }, toDisplayString(_ctx.translate(action.label)), 11, _hoisted_28);
+                                }, toDisplayString(_ctx.translate(action.label)), 11, _hoisted_29);
                               }), 128))
                             ])
                           ]),
@@ -1596,28 +1958,48 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 ], 10, _hoisted_15);
               }), 128))
             ])
-          ], 2)) : $data.viewType === "calendar" ? (openBlock(), createElementBlock("div", _hoisted_29, [
+          ], 2)) : $data.viewType === "calendar" ? (openBlock(), createElementBlock("div", _hoisted_30, [
             createVNode(_component_Calendar, {
               items: $data.items,
-              "edit-action": $options.editAction,
-              onOnClickAction: $options.onClickAction
-            }, null, 8, ["items", "edit-action", "onOnClickAction"])
+              "edit-week-action": $options.editWeekAction,
+              onOnClickAction: $options.onClickAction,
+              onUpdateItems: _cache[10] || (_cache[10] = ($event) => $options.getListItems())
+            }, null, 8, ["items", "edit-week-action", "onOnClickAction"])
+          ])) : createCommentVNode("", true),
+          $data.showModal && $data.currentComponentElementId === null ? (openBlock(), createElementBlock("div", _hoisted_31, [
+            createVNode(_component_modal, {
+              name: "modal-component",
+              transition: "nice-modal-fade",
+              class: normalizeClass("placement-center tw-rounded tw-shadow-modal tw-px-4 tw-max-h-[80vh] tw-overflow-y-auto"),
+              width: "600px",
+              delay: 100,
+              adaptive: true,
+              clickToClose: false,
+              onClick: _cache[13] || (_cache[13] = withModifiers(() => {
+              }, ["stop"]))
+            }, {
+              default: withCtx(() => [
+                (openBlock(), createBlock(resolveDynamicComponent($options.resolvedComponent), {
+                  onClose: _cache[11] || (_cache[11] = ($event) => $options.closePopup()),
+                  onUpdateItems: _cache[12] || (_cache[12] = ($event) => $options.getListItems())
+                }, null, 32))
+              ]),
+              _: 1
+            })
           ])) : $data.viewType === "gantt" ? (openBlock(), createBlock(_component_Gantt, {
-            key: 2,
+            key: 3,
             language: $data.params.shortlang,
             periods: $options.displayedItems
           }, null, 8, ["language", "periods"])) : createCommentVNode("", true)
-        ])) : (openBlock(), createElementBlock("div", {
+        ])) : (openBlock(), createBlock(_component_NoResults, {
           key: 1,
-          id: "empty-list",
-          class: "noneDiscover tw-text-center",
-          innerHTML: $options.noneDiscoverTranslation
-        }, null, 8, _hoisted_30))
+          message: $options.currentTab.noData
+        }, null, 8, ["message"]))
       ]))
     ]))
   ], 2);
 }
-const list = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render]]);
+const list = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-b7de5bb3"]]);
 export {
   list as default
 };

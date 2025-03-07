@@ -2,10 +2,12 @@
 import Pagination from "@/components/Utils/Pagination.vue";
 import Filters from "@/components/List/Filters.vue";
 import Actions from "@/components/List/Actions.vue";
+import Exports from "@/components/List/Exports.vue";
 
 export default {
   name: "Navigation",
   components: {
+    Exports,
     Actions,
     Filters,
     Pagination
@@ -87,6 +89,9 @@ export default {
     onClickAction(action) {
       this.$emit('action', action, null, true);
     },
+    onClickExport(exp) {
+      this.$emit('exp', exp);
+    },
 
     updateItems(page, tabKey) {
       this.$emit('updateItems', page, tabKey);
@@ -96,6 +101,7 @@ export default {
       // when we change a filter, we reset the pagination
       this.$emit('updateItems', 1, this.currentTabKey);
     },
+
   },
   watch: {
     currentView() {
@@ -140,19 +146,20 @@ export default {
                @update-filter="onChangeFilter"
       />
 
-      <Actions :items="items"
-               :checkedItems="checkedItems"
-               :views="views"
-               :tab="currentTab"
-               :tab-key="currentTabKey"
-               v-model:view="currentView"
-               v-model:searches="currentSearches"
-               @action="onClickAction"
-               @update-items="updateItems"
-      />
+        <Actions :items="items"
+                 :checkedItems="checkedItems"
+                 :views="views"
+                 :tab="currentTab"
+                 :tab-key="currentTabKey"
+                 v-model:view="currentView"
+                 v-model:searches="currentSearches"
+                 @action="onClickAction"
+                 @exp="onClickExport"
+                 @update-items="updateItems"
+        />
     </section>
 
-    <Pagination v-if="this.items[this.currentTabKey].length > 0"
+    <Pagination v-if="this.items[this.currentTabKey].length > 0 && view !== 'calendar'"
                 :limits="[5, 10, 25, 50, 100, 'all']"
                 :dataLength="currentTab.pagination.count"
                 v-model:page="currentTab.pagination.current"

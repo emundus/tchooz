@@ -397,12 +397,12 @@ small {
     gap: var(--em-spacing-2);
 }
 .sx__time-grid-event-time,.sx__time-grid-event-location,.sx__time-grid-event-people,.sx__time-grid-event-availabilities {
-    font-size: 12px;
+    font-size: 0.75rem;
     span:not(.material-symbols-outlined) {
-        font-size: 12px;
+        font-size: 0.75rem;
     }
     span.material-symbols-outlined {
-        font-size: 16px;
+        font-size: 1rem;
     }
     .sx__time-grid-event-people-list {
         display: -webkit-box;
@@ -418,8 +418,26 @@ small {
     white-space: nowrap;
 }
 .sx__view-selection-selected-item {
-    font-size: 12px;
-    height: 40px;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    height: var(--em-form-height);
+    border-radius: var(--em-form-br);
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-repeat: no-repeat;
+    background-position-x: calc(100% - 8px);
+    background-position-y: 50%;
+    background-image: url('../../../../images/emundus/arrow.svg');
+    padding-right: 24px;
+}
+.sx__view-selection-selected-item:hover {
+    background-color: var(--em-form-bgc-hover);
+    border-color: var(--em-form-bc-hover);
+}
+.sx__view-selection-items li {
+    font-size: 0.75rem;
+    padding: 12px 14px;
 }
 .sx__time-grid-event-title {
     margin-bottom: var(--em-spacing-1);
@@ -432,6 +450,46 @@ small {
             var(--neutral-300) 6px,
             var(--neutral-300) 12px
     );
+}
+.sx__today-button.sx__ripple {
+    border: unset;
+    height: auto;
+    padding: unset;
+    font-size: 0.75rem;
+    order: 3;
+}
+.sx__today-button.sx__ripple:hover {
+    color: var(--em-profile-color);
+    text-decoration: underline;
+    background-color: transparent;
+}
+.sx__today-button.sx__ripple:active,.sx__today-button.sx__ripple:focus {
+    color: var(--em-profile-color);
+    background-color: transparent;
+}
+.sx__date-input-label {
+    border-radius: var(--em-coordinator-br);
+}
+.sx__chevron-wrapper.sx__ripple {
+    width: 24px;
+    height: 24px;
+    min-width: unset;
+    min-height: unset;
+}
+div.sx__forward-backward-navigation {
+    height: unset;
+}
+.sx__range-heading {
+    font-size: 0.75rem;
+}
+button.sx__chevron-wrapper i.sx__chevron {
+    border-width: 0.1rem 0.1rem 0 0;
+}
+button.sx__chevron-wrapper:hover {
+    background-color: var(--neutral-300);
+}
+div.sx__time-grid-event.sx__event {
+    border: unset !important;
 }
 /** **/
 

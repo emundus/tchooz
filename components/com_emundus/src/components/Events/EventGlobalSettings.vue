@@ -27,12 +27,14 @@ export default {
       teamsPublished: false,
 
       settingsLink: '',
+      eventsNames: [],
 
       eventColor: '#1e1e1e',
       fields: [
         {
           param: 'name',
           type: 'text',
+          maxlength: 150,
           placeholder: '',
           value: '',
           label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_GLOBAL_NAME',
@@ -116,6 +118,19 @@ export default {
               label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_GLOBAL_GENERATE_LINK_BY_SLOT',
             }
           ],
+        },
+        {
+          param: 'teams_subject',
+          type: 'text',
+          placeholder: '',
+          default: 'Entretien de [APPLICANT_NAME]',
+          value: '',
+          label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_TEAMS_SUBJECT',
+          helptext: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_TEAMS_SUBJECT_HELPTEXT',
+          helpTextType: 'icon',
+          displayed: false,
+          displayedOn: 'conference_engine',
+          displayedOnValue: 'teams',
         },
         {
           param: 'manager',
@@ -235,6 +250,13 @@ export default {
     // fetch locations
     this.getLocations();
 
+    // fetch events names to check for duplicates
+    eventsService.getEventsNames().then((response) => {
+      if (response.status) {
+        this.eventsNames = response.data;
+      }
+    });
+
     // check every 8 seconds if teams integration is enabled
     this.checkTeamsIntegration();
     setInterval(() => {
@@ -333,6 +355,23 @@ export default {
         if(field.displayed){
           let ref_name = 'event_' + field.param;
 
+          // If name check if it is unique
+          if(field.param === 'name') {
+            if(this.eventsNames.includes(field.value)) {
+              Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: Joomla.Text._('COM_EMUNDUS_ONBOARD_ADD_EVENT_NAME_EXISTS'),
+                customClass: {
+                  title: 'em-swal-title',
+                  confirmButton: 'em-swal-confirm-button',
+                  actions: 'em-swal-single-action'
+                },
+              });
+              return true;
+            }
+          }
+
           if(!this.$refs[ref_name][0].validate()) {
             // Return true to indicate validation failed
             return true;
@@ -377,6 +416,11 @@ export default {
             timer: 1500
           }).then(() => {
             this.$emit('reload-event', response.data, 2);
+
+            // Update url to add ?event=ID
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('event', response.data);
+            window.history.replaceState({}, '', `${window.location.pathname}?${urlParams}`);
           });
 
         } else {
@@ -399,7 +443,7 @@ export default {
         if(field.displayed){
           let ref_name = 'event_' + field.param;
 
-          if(!this.$refs[ref_name][0].validate()) {
+          if(this.$refs[ref_name] && !this.$refs[ref_name][0].validate()) {
             // Return true to indicate validation failed
             return true;
           }
@@ -496,27 +540,28 @@ export default {
 
       return text;
     }
-  }
+  },
+  watch: {}
 }
 </script>
 
 <template>
   <div>
-    <LocationPopup v-if="openedLocationPopup" @close="locationPopupClosed" />
+    <LocationPopup v-if="openedLocationPopup" :location_id="fields[1].value" @close="locationPopupClosed" />
 
     <div class="tw-mt-7 tw-flex tw-flex-col tw-gap-6">
       <div v-for="(field) in fields"
            v-show="field.displayed"
            :key="field.param"
-           :class="{'tw-flex tw-items-end tw-justify-between tw-gap-2 tw-w-fit': field.param === 'name', 'tw-w-full': field.param !== 'name'}"
+           :class="{'tw-flex tw-items-end tw-justify-between tw-gap-2 tw-w-1/2': field.param === 'name', 'tw-w-full': field.param !== 'name'}"
       >
         <Parameter
             v-if="field.displayed"
-            :class="{'tw-w-[35vw]': field.param === 'name'}"
+            :class="{'tw-w-full': field.param === 'name'}"
             :ref="'event_' + field.param"
             :key="field.reload ? field.reload : field.param"
             :parameter-object="field"
-            :help-text-type="'above'"
+            :help-text-type="field.helpTextType ? field.helpTextType : 'above'"
             :multiselect-options="field.multiselectOptions ? field.multiselectOptions : null"
             @valueUpdated="checkConditional"
         />
@@ -524,13 +569,13 @@ export default {
         <color-picker
             v-if="field.param === 'name'"
             v-model="eventColor"
+            :swatches="'dark'"
             :row-length="8"
             :id="'status_swatches'"
             style="top: -8px"
         />
 
         <Info v-if="field.param === 'conference_engine' && field.value === 'teams' && !teamsEnabled"
-              :ref="'event_' + field.param"
               :parameter-object="field"
               :text="teamsDisabledText"
               :icon="'warning'"
@@ -540,9 +585,12 @@ export default {
               :class="'tw-mt-2'"
         />
 
-        <button v-if="field.param === 'location'" type="button" class="tw-mt-2 tw-flex tw-items-center tw-gap-1 tw-cursor-pointer tw-text-blue-500" @click="openedLocationPopup = true">
+        <button v-if="field.param === 'location' && field.value === 0" type="button" class="tw-mt-2 tw-flex tw-items-center tw-gap-1 tw-cursor-pointer tw-text-blue-500" @click="openedLocationPopup = true">
           <span class="material-symbols-outlined !tw-text-blue-500">add</span>
           <span class="tw-underline">{{ translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_GLOBAL_ADD_LOCATION') }}</span>
+        </button>
+        <button v-else-if="field.param === 'location'" type="button" class="tw-mt-2 tw-flex tw-items-center tw-gap-1 tw-cursor-pointer tw-text-blue-500" @click="openedLocationPopup = true">
+          <span class="tw-underline">{{ translate('COM_EMUNDUS_ONBOARD_EDIT_LOCATION') }}</span>
         </button>
       </div>
     </div>

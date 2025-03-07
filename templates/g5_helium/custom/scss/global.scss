@@ -44,7 +44,7 @@
   background: var(--em-applicant-bg);
 }
 
-.com_emundus_vue input , .com_emundus_vue textarea{
+.com_emundus_vue input {
   height: var(--em-form-height);
   border-radius: var(--em-form-br);
 }
@@ -3782,6 +3782,10 @@ ul.unstyled.em-linkForgot li a {
   *:not(.material-icons):not(.material-icons-outlined):not(.material-symbols-outlined):not(.glyphicon):not(.fas):not(i.icon):not(i.mce-ico):not(.fa):not([class^=icon-]) {
     font-family: var(--em-profile-font), Inter, sans-serif;
   }
+}
+
+.com_emundus_vue .events__add-event .sx__week-grid {
+  cursor: pointer;
 }
 
 .files-board.com_emundus, .view-list.com_fabrik {

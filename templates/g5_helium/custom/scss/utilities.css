@@ -267,6 +267,9 @@
             .swal2-icon {
                 margin: 12px auto;
                 border: unset;
+            }
+
+            .swal2-icon.em-swal-icon {
                 height: auto;
                 min-height: 80px;
             }

@@ -36,8 +36,39 @@ class EventsModelTest extends UnitTestCase
 	 */
 	public function testGetEvents()
 	{
+		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
+		$user_id_coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
+
+		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
+		$event_id = $this->h_dataset->createEvent($location_id,$user_id_coordinator, null ,null);
 		$events = $this->model->getEvents();
 		$this->assertIsArray($events, 'The method getEvents should return an array');
+		$this->assertNotEmpty($events['datas'], 'The method geteEvents should return a non empty array');
+		$this->assertObjectHasProperty('id',$events['datas'][0], 'The event object should have a id property');
+		$this->assertObjectHasProperty('label',$events['datas'][0], 'The event object should have an label property');
+		$this->assertObjectHasProperty('location',$events['datas'][0], 'The event object should have a location property');
+		$this->assertObjectHasProperty('slot_duration',$events['datas'][0], 'The event object should have a slot_duration property');
+		$this->assertObjectHasProperty('color',$events['datas'][0], 'The event object should have a color property');
+
+		$this->h_dataset->deleteSampleUser($user_id_coordinator);
+		$this->h_dataset->deleteSampleEvent($event_id['event_id']);
+		$this->h_dataset->deleteSampleLocation($location_id);
+	}
+
+	public function testGetEventsNames()
+	{
+		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
+		$user_id_coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
+
+		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
+		$event_id = $this->h_dataset->createEvent($location_id,$user_id_coordinator, null ,null, 'Event de getEventsNames');
+		$events = $this->model->getEventsNames();
+		$this->assertIsArray($events, 'The method getEvents should return an array');
+		$this->assertSame($events[0], 'Event de getEventsNames', 'The method getEventsNames should return the Event de getEventsNames event');
+
+		$this->h_dataset->deleteSampleUser($user_id_coordinator);
+		$this->h_dataset->deleteSampleEvent($event_id['event_id']);
+		$this->h_dataset->deleteSampleLocation($location_id);
 	}
 
 	public function testGetAllLocations()
@@ -45,7 +76,7 @@ class EventsModelTest extends UnitTestCase
 		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
 		$user_id_coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
 
-		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', [], $user_id_coordinator);
+		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
 
 		$locations = $this->model->getAllLocations();
 		$this->assertIsArray($locations, 'The method getAllLocations should return an array');
@@ -64,7 +95,7 @@ class EventsModelTest extends UnitTestCase
 		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
 		$user_id_coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
 
-		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', [], $user_id_coordinator);
+		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
 
 		$locations = $this->model->getLocations();
 		$this->assertIsArray($locations, 'The method getLocations should return an array');
@@ -81,7 +112,7 @@ class EventsModelTest extends UnitTestCase
 		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
 		$user_id_coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
 
-		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', [], $user_id_coordinator);
+		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
 		$location = $this->model->getLocation($location_id);
 		$this->assertIsObject($location, 'The method getLocation should return an object');
 		$this->assertObjectHasProperty('name',$location, 'The location object should have a name property');
@@ -98,7 +129,7 @@ class EventsModelTest extends UnitTestCase
 		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
 		$user_id_coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
 
-		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', [], $user_id_coordinator);
+		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
 
 		$rooms = $this->model->getRooms($location_id);
 		$this->assertIsArray($rooms, 'The method getRooms should return an array');
@@ -109,7 +140,7 @@ class EventsModelTest extends UnitTestCase
 		$room->specifications = [];
 		$specifications = $this->model->getSpecifications();
 		$room->specifications[] = $specifications[0];
-		$this->model->saveLocation('Nouveau nom', 'Adresse de test', [$room], $user_id_coordinator,$location_id);
+		$this->model->saveLocation('Nouveau nom', 'Adresse de test', 'Description de test', [$room], $user_id_coordinator,$location_id);
 
 		$rooms = $this->model->getRooms($location_id);
 		$this->assertIsArray($rooms, 'The method getRooms should return an array');
@@ -140,7 +171,7 @@ class EventsModelTest extends UnitTestCase
 		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
 		$user_id_coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
 
-		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', [], $user_id_coordinator);
+		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
 		$event = $this->h_dataset->createEvent($location_id,$user_id_coordinator,null,null);
 		$event_id = $event['event_id'];
 
@@ -162,7 +193,7 @@ class EventsModelTest extends UnitTestCase
 		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
 		$user_id_coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
 
-		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', [], $user_id_coordinator);
+		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
 		$event = $this->h_dataset->createEvent($location_id,$user_id_coordinator);
 		$event_id = $event['event_id'];
 		$event_slots = $event['event_slots'];
@@ -181,7 +212,7 @@ class EventsModelTest extends UnitTestCase
 		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
 		$user_id_coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
 
-		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', [], $user_id_coordinator);
+		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
 		$this->assertIsInt($location_id, 'The method saveLocation should return an integer');
 		$this->assertNotEmpty($location_id, 'The method saveLocation should return a non empty value');
 
@@ -191,7 +222,7 @@ class EventsModelTest extends UnitTestCase
 		$this->assertSame('Adresse de test', $location->address, 'The location address should be "Adresse de test"');
 		$this->assertEmpty($location->rooms, 'The location should have no rooms');
 
-		$this->model->saveLocation('Nouveau nom', 'Adresse de test', [], $user_id_coordinator,$location_id);
+		$this->model->saveLocation('Nouveau nom', 'Adresse de test', 'Description de test', [], $user_id_coordinator,$location_id);
 		$location = $this->model->getLocation($location_id);
 		$this->assertSame('Nouveau nom', $location->name, 'The location name should be "Nouveau nom"');
 
@@ -200,7 +231,7 @@ class EventsModelTest extends UnitTestCase
 		$room->specifications = [];
 		$specifications = $this->model->getSpecifications();
 		$room->specifications[] = $specifications[0];
-		$this->model->saveLocation('Nouveau nom', 'Adresse de test', [$room], $user_id_coordinator,$location_id);
+		$this->model->saveLocation('Nouveau nom', 'Adresse de test', 'Description de test', [$room], $user_id_coordinator,$location_id);
 		$location = $this->model->getLocation($location_id);
 		$this->assertSame('Salle de test', $location->rooms[0]->label, 'The room name should be "Salle de test"');
 
@@ -213,7 +244,7 @@ class EventsModelTest extends UnitTestCase
 		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
 		$user_id_coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
 
-		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', [], $user_id_coordinator);
+		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
 		$this->model->deleteLocation($location_id);
 		$location = $this->model->getLocation($location_id);
 		$this->assertEmpty($location, 'The location should be deleted');
@@ -227,7 +258,7 @@ class EventsModelTest extends UnitTestCase
 		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
 		$user_id_coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
 
-		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', [], $user_id_coordinator);
+		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
 
 		$event = [
 			'name' => 'Event test',
@@ -242,8 +273,9 @@ class EventsModelTest extends UnitTestCase
 			'campaigns' => [],
 			'programs' => [],
 			'user_id' => $user_id_coordinator,
+			'teams_subject' => ''
 		];
-		$event_id = $this->model->createEvent($event['name'], $event['color'], $event['location'], $event['is_conference_link'], $event['conference_engine'], $event['link'], $event['generate_link_by'], $event['manager'], $event['available_for'], $event['campaigns'], $event['programs'], $event['user_id']);
+		$event_id = $this->model->createEvent($event['name'], $event['color'], $event['location'], $event['is_conference_link'], $event['conference_engine'], $event['link'], $event['generate_link_by'], $event['manager'], $event['available_for'], $event['campaigns'], $event['programs'], $event['user_id'], $event['teams_subject']);
 		$this->assertIsInt($event_id, 'The method createEvent should return an integer');
 		$this->assertNotEmpty($event_id, 'The method createEvent should return a non empty value');
 
@@ -251,7 +283,7 @@ class EventsModelTest extends UnitTestCase
 		$campaign_id = $this->h_dataset->createSampleCampaign($program, $user_id_coordinator);
 		$event['campaigns'][] = $campaign_id;
 
-		$event_id_2 = $this->model->createEvent($event['name'], $event['color'], $event['location'], $event['is_conference_link'], $event['conference_engine'], $event['link'], $event['generate_link_by'], $event['manager'], $event['available_for'], $event['campaigns'], $event['programs'], $event['user_id']);
+		$event_id_2 = $this->model->createEvent($event['name'], $event['color'], $event['location'], $event['is_conference_link'], $event['conference_engine'], $event['link'], $event['generate_link_by'], $event['manager'], $event['available_for'], $event['campaigns'], $event['programs'], $event['user_id'], $event['teams_subject']);
 		$this->assertIsInt($event_id_2, 'The method createEvent should return an integer');
 		$this->assertNotEmpty($event_id_2, 'The method createEvent should return a non empty value');
 
@@ -268,7 +300,7 @@ class EventsModelTest extends UnitTestCase
 		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
 		$user_id_coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
 
-		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', [], $user_id_coordinator);
+		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
 		$event = $this->h_dataset->createEvent($location_id,$user_id_coordinator,null,null);
 		$event_id = $event['event_id'];
 
@@ -297,7 +329,7 @@ class EventsModelTest extends UnitTestCase
 		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
 		$user_id_coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
 
-		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', [], $user_id_coordinator);
+		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
 		$event = $this->h_dataset->createEvent($location_id,$user_id_coordinator);
 		$event_id = $event['event_id'];
 		$event_slots = $event['event_slots'];
@@ -316,7 +348,7 @@ class EventsModelTest extends UnitTestCase
 		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
 		$user_id_coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
 
-		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', [], $user_id_coordinator);
+		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
 
 		$event = [
 			'name' => 'Event test',
@@ -331,8 +363,9 @@ class EventsModelTest extends UnitTestCase
 			'campaigns' => [],
 			'programs' => [],
 			'user_id' => $user_id_coordinator,
+			'teams_subject' => ''
 		];
-		$event_id = $this->model->createEvent($event['name'], $event['color'], $event['location'], $event['is_conference_link'], $event['conference_engine'], $event['link'], $event['generate_link_by'], $event['manager'], $event['available_for'], $event['campaigns'], $event['programs'], $event['user_id']);
+		$event_id = $this->model->createEvent($event['name'], $event['color'], $event['location'], $event['is_conference_link'], $event['conference_engine'], $event['link'], $event['generate_link_by'], $event['manager'], $event['available_for'], $event['campaigns'], $event['programs'], $event['user_id'], $event['teams_subject']);
 
 		$setup_slot = [
 			'event_id' => $event_id,
@@ -354,12 +387,54 @@ class EventsModelTest extends UnitTestCase
 		$this->h_dataset->deleteSampleLocation($location_id);
 	}
 
+	public function testEditSlot()
+	{
+		$applicant_email = 'applicant' . rand(0, 1000) . '@emundus.test.fr';
+		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
+		$evaluator_1_email = 'evaluator_1' . rand(0, 1000) . '@emundus.test.fr';
+		$evaluator_2_email = 'evaluator_2' . rand(0, 1000) . '@emundus.test.fr';
+		$applicant = $this->h_dataset->createSampleUser(1000, $applicant_email);
+		$user_id_coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
+		$evaluator_1 = $this->h_dataset->createSampleUser(6, $evaluator_1_email);
+		$evaluator_2 = $this->h_dataset->createSampleUser(6, $evaluator_2_email);
+
+		$program = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $user_id_coordinator);
+		$campaign_id = $this->h_dataset->createSampleCampaign($program, $user_id_coordinator);
+		$applicant_file = $this->h_dataset->createSampleFile($campaign_id, $applicant, true);
+
+		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
+		$event = $this->h_dataset->createEvent($location_id,$user_id_coordinator, '2026-01-01 00:00:00', '2026-01-01 06:00:00', 'Event test',1,[$campaign_id]);
+		$event_id = $event['event_id'];
+		$event_slots = $event['event_slots'];
+
+		$availabilities = $this->model->getEventsAvailabilities('2026-01-01 00:00:00', '2026-01-01 06:00:00', [$event_id]);
+		$availability_id = $availabilities[0]->id;
+
+		$registrant_id = $this->model->createAvailabilityRegistrant($availability_id, $applicant_file[0]);
+		$this->assertIsInt($registrant_id, 'The method createAvailabilityRegistrant should return an integer');
+		$this->assertGreaterThan(0, $registrant_id, 'The method createAvailabilityRegistrant should return a positive integer');
+
+		$ccid = $this->model->editSlot($registrant_id, $availability_id, $event_id, [$evaluator_1, $evaluator_2], $applicant_file[1]);
+		$this->assertSame($applicant_file[1], $ccid, 'The method editSlot should return the same ccid than the one given') ;
+
+		$this->h_dataset->deleteSampleFile($applicant_file[0]);
+		$this->h_dataset->deleteSampleUser($user_id_coordinator);
+		$this->h_dataset->deleteSampleUser($applicant);
+		$this->h_dataset->deleteSampleUser($evaluator_1);
+		$this->h_dataset->deleteSampleUser($evaluator_2);
+		$this->h_dataset->deleteSampleEventSlots($event_slots);
+		$this->h_dataset->deleteSampleEvent($event_id);
+		$this->h_dataset->deleteSampleLocation($location_id);
+		$this->h_dataset->deleteSampleCampaign($campaign_id);
+		$this->h_dataset->deleteSampleProgram($program['programme_id']);
+	}
+
 	public function testSaveBookingNotifications()
 	{
 		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
 		$user_id_coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
 
-		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', [], $user_id_coordinator);
+		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
 		$event = $this->h_dataset->createEvent($location_id,$user_id_coordinator,null,null);
 		$event_id = $event['event_id'];
 
@@ -390,7 +465,7 @@ class EventsModelTest extends UnitTestCase
 		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
 		$user_id_coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
 
-		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', [], $user_id_coordinator);
+		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
 
 		$event = [
 			'name' => 'Event test',
@@ -404,13 +479,14 @@ class EventsModelTest extends UnitTestCase
 			'available_for' => 1,
 			'campaigns' => [],
 			'programs' => [],
+			'teams_subject' => '',
 			'user_id' => $user_id_coordinator,
 		];
-		$event_id = $this->model->createEvent($event['name'], $event['color'], $event['location'], $event['is_conference_link'], $event['conference_engine'], $event['link'], $event['generate_link_by'], $event['manager'], $event['available_for'], $event['campaigns'], $event['programs'], $event['user_id']);
+		$event_id = $this->model->createEvent($event['name'], $event['color'], $event['location'], $event['is_conference_link'], $event['conference_engine'], $event['link'], $event['generate_link_by'], $event['manager'], $event['available_for'], $event['campaigns'], $event['programs'], $event['user_id'], $event['teams_subject']);
 
 		$event['name'] = 'Event test 2';
 		$event['color'] = '#FFFFFF';
-		$event_id_saved = $this->model->editEvent($event_id, $event['name'], $event['color'], $event['location'], $event['is_conference_link'], $event['conference_engine'], $event['link'], $event['generate_link_by'], $event['manager'], $event['available_for'], $event['campaigns'], $event['programs'], $event['user_id']);
+		$event_id_saved = $this->model->editEvent($event_id, $event['name'], $event['color'], $event['location'], $event['is_conference_link'], $event['conference_engine'], $event['link'], $event['generate_link_by'], $event['manager'], $event['available_for'], $event['campaigns'], $event['programs'], $event['teams_subject'], $event['user_id']);
 		$this->assertIsInt($event_id_saved, 'The method editEvent should return an integer');
 		$this->assertSame($event_id, $event_id_saved, 'The method editEvent should return the same event id');
 
@@ -421,7 +497,7 @@ class EventsModelTest extends UnitTestCase
 		$program = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $user_id_coordinator);
 		$campaign_id = $this->h_dataset->createSampleCampaign($program, $user_id_coordinator);
 		$event['campaigns'][] = $campaign_id;
-		$this->model->editEvent($event_id, $event['name'], $event['color'], $event['location'], $event['is_conference_link'], $event['conference_engine'], $event['link'], $event['generate_link_by'], $event['manager'], $event['available_for'], $event['campaigns'], $event['programs'], $event['user_id']);
+		$this->model->editEvent($event_id, $event['name'], $event['color'], $event['location'], $event['is_conference_link'], $event['conference_engine'], $event['link'], $event['generate_link_by'], $event['manager'], $event['available_for'], $event['campaigns'], $event['programs'], $event['teams_subject'], $event['user_id']);
 
 		$event_object = $this->model->getEvent($event_id);
 		$this->assertObjectHasProperty('campaigns', $event_object, 'The event should have campaigns');
@@ -430,11 +506,14 @@ class EventsModelTest extends UnitTestCase
 		$event['programs'][] = $program['programme_id'];
 		$event['campaigns'] = [];
 		$event['available_for'] = 2;
-		$this->model->editEvent($event_id, $event['name'], $event['color'], $event['location'], $event['is_conference_link'], $event['conference_engine'], $event['link'], $event['generate_link_by'], $event['manager'], $event['available_for'], $event['campaigns'], $event['programs'], $event['user_id']);
+		$event['teams_subject'] = 'Subject teams test';
+		$this->model->editEvent($event_id, $event['name'], $event['color'], $event['location'], $event['is_conference_link'], $event['conference_engine'], $event['link'], $event['generate_link_by'], $event['manager'], $event['available_for'], $event['campaigns'], $event['programs'], $event['teams_subject'], $event['user_id']);
 		$event_object = $this->model->getEvent($event_id);
 		$this->assertContains($program['programme_id'], $event_object->programs, 'The event should have the program id');
 		$this->assertObjectNotHasProperty('campaigns', $event_object, 'The event should not have campaigns');
-		
+		$this->assertSame('Subject teams test', $event_object->teams_subject, 'The teams subject value should be "Subject teams test"');
+
+
 		$this->h_dataset->deleteSampleUser($user_id_coordinator);
 		$this->h_dataset->deleteSampleEvent($event_id);
 		$this->h_dataset->deleteSampleLocation($location_id);
@@ -447,7 +526,7 @@ class EventsModelTest extends UnitTestCase
 		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
 		$user_id_coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
 
-		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', [], $user_id_coordinator);
+		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
 		$event = $this->h_dataset->createEvent($location_id,$user_id_coordinator,null,null);
 		$event_id = $event['event_id'];
 
@@ -464,7 +543,7 @@ class EventsModelTest extends UnitTestCase
 		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
 		$user_id_coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
 
-		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', [], $user_id_coordinator);
+		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
 		$event = $this->h_dataset->createEvent($location_id,$user_id_coordinator);
 		$event_id = $event['event_id'];
 		$event_slots = $event['event_slots'];
@@ -513,7 +592,7 @@ class EventsModelTest extends UnitTestCase
 		$campaign_id = $this->h_dataset->createSampleCampaign($program, $user_id_coordinator);
 		$campaign_id_2 = $this->h_dataset->createSampleCampaign($program, $user_id_coordinator);
 
-		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', [], $user_id_coordinator);
+		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
 		$event = $this->h_dataset->createEvent($location_id,$user_id_coordinator, '2026-01-01 00:00:00', '2026-01-01 06:00:00', 'Event test',1,[$campaign_id]);
 		$event_id = $event['event_id'];
 		$event_slots = $event['event_slots'];
@@ -521,6 +600,7 @@ class EventsModelTest extends UnitTestCase
 		$availabilities = $this->model->getAvailabilitiesByCampaignsAndPrograms($campaign_id);
 		$this->assertIsArray($availabilities, 'The method getAvailabilitiesByCampaignsAndPrograms should return an array');
 		$this->assertNotEmpty($availabilities, 'The method getAvailabilitiesByCampaignsAndPrograms should return a non empty array');
+		$this->assertSame(12, count($availabilities), 'The method getAvailabilitiesByCampaignsAndPrograms should the right number of availabilities');
 		$this->assertObjectHasProperty('start', $availabilities[0], 'The availability should have a start property');
 		$this->assertObjectHasProperty('end', $availabilities[0], 'The availability should have a end property');
 		$this->assertObjectHasProperty('id', $availabilities[0], 'The availability should have a id property');
@@ -535,7 +615,7 @@ class EventsModelTest extends UnitTestCase
 		$availabilities = $this->model->getAvailabilitiesByCampaignsAndPrograms($campaign_id,'','2026-01-01 00:00:00', '2026-01-01 06:00:00');
 		$this->assertNotEmpty($availabilities, 'The method getAvailabilitiesByCampaignsAndPrograms should return a non empty array');
 
-		$availabilities = $this->model->getAvailabilitiesByCampaignsAndPrograms($campaign_id,'','2026-01-01 00:00:00', '2026-01-01 06:00:00', 0, 1);
+		$availabilities = $this->model->getAvailabilitiesByCampaignsAndPrograms($campaign_id,'','2026-01-01 00:00:00', '2026-01-01 06:00:00', 0, 1, [$event_id]);
 		$this->assertNotEmpty($availabilities, 'The method getAvailabilitiesByCampaignsAndPrograms should return a non empty array');
 
 		$availabilities = $this->model->getAvailabilitiesByCampaignsAndPrograms($campaign_id,'','2025-01-01 00:00:00', '2025-01-01 06:00:00');
@@ -559,7 +639,7 @@ class EventsModelTest extends UnitTestCase
 		$campaign_id = $this->h_dataset->createSampleCampaign($program, $user_id_coordinator);
 		$campaign_id_2 = $this->h_dataset->createSampleCampaign($program, $user_id_coordinator);
 
-		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', [], $user_id_coordinator);
+		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
 
 		$event = [
 			'name' => 'Event test',
@@ -574,8 +654,9 @@ class EventsModelTest extends UnitTestCase
 			'campaigns' => [$campaign_id],
 			'programs' => [],
 			'user_id' => $user_id_coordinator,
+			'teams_subject' => ''
 		];
-		$event_id = $this->model->createEvent($event['name'], $event['color'], $event['location'], $event['is_conference_link'], $event['conference_engine'], $event['link'], $event['generate_link_by'], $event['manager'], $event['available_for'], $event['campaigns'], $event['programs'], $event['user_id']);
+		$event_id = $this->model->createEvent($event['name'], $event['color'], $event['location'], $event['is_conference_link'], $event['conference_engine'], $event['link'], $event['generate_link_by'], $event['manager'], $event['available_for'], $event['campaigns'], $event['programs'], $event['user_id'], $event['teams_subject']);
 
 		$events = $this->model->getEventsByCampaignIds([$campaign_id]);
 		$this->assertIsArray($events, 'The method getEventsByCampaignIds should return an array');
@@ -586,7 +667,7 @@ class EventsModelTest extends UnitTestCase
 		$this->assertEmpty($events, 'The method getEventsByCampaignIds should return an empty array');
 
 		$event['campaigns'][] = $campaign_id_2;
-		$this->model->editEvent($event_id, $event['name'], $event['color'], $event['location'], $event['is_conference_link'], $event['conference_engine'], $event['link'], $event['generate_link_by'], $event['manager'], $event['available_for'], $event['campaigns'], $event['programs'], $event['user_id']);
+		$this->model->editEvent($event_id, $event['name'], $event['color'], $event['location'], $event['is_conference_link'], $event['conference_engine'], $event['link'], $event['generate_link_by'], $event['manager'], $event['available_for'], $event['campaigns'], $event['programs'], $event['teams_subject'], $event['user_id']);
 
 		$events = $this->model->getEventsByCampaignIds([$campaign_id_2]);
 		$this->assertNotEmpty($events, 'The method getEventsByCampaignIds should return a non empty array');
@@ -607,7 +688,7 @@ class EventsModelTest extends UnitTestCase
 		$program = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $user_id_coordinator);
 		$program_2 = $this->h_dataset->createSampleProgram('Programme Test Unitaire 2', $user_id_coordinator);
 
-		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', [], $user_id_coordinator);
+		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
 
 		$event = [
 			'name' => 'Event test',
@@ -622,8 +703,9 @@ class EventsModelTest extends UnitTestCase
 			'campaigns' => [],
 			'programs' => [$program['programme_id']],
 			'user_id' => $user_id_coordinator,
+			'teams_subject' => ''
 		];
-		$event_id = $this->model->createEvent($event['name'], $event['color'], $event['location'], $event['is_conference_link'], $event['conference_engine'], $event['link'], $event['generate_link_by'], $event['manager'], $event['available_for'], $event['campaigns'], $event['programs'], $event['user_id']);
+		$event_id = $this->model->createEvent($event['name'], $event['color'], $event['location'], $event['is_conference_link'], $event['conference_engine'], $event['link'], $event['generate_link_by'], $event['manager'], $event['available_for'], $event['campaigns'], $event['programs'], $event['user_id'], $event['teams_subject']);
 
 		$events = $this->model->getEventsByProgramCodes([$program['programme_code']]);
 		$this->assertIsArray($events, 'The method getEventsByProgramCodes should return an array');
@@ -651,7 +733,7 @@ class EventsModelTest extends UnitTestCase
 		$campaign_id = $this->h_dataset->createSampleCampaign($program, $user_id_coordinator);
 		$applicant_file = $this->h_dataset->createSampleFile($campaign_id, $applicant);
 
-		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', [], $user_id_coordinator);
+		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
 		$event = $this->h_dataset->createEvent($location_id,$user_id_coordinator, '2026-01-01 00:00:00', '2026-01-01 06:00:00', 'Event test',1,[$campaign_id]);
 		$event_id = $event['event_id'];
 		$event_slots = $event['event_slots'];
@@ -688,7 +770,7 @@ class EventsModelTest extends UnitTestCase
 		$campaign_id = $this->h_dataset->createSampleCampaign($program, $user_id_coordinator);
 		$applicant_file = $this->h_dataset->createSampleFile($campaign_id, $applicant);
 
-		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', [], $user_id_coordinator);
+		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
 		$event = $this->h_dataset->createEvent($location_id,$user_id_coordinator, '2026-01-01 00:00:00', '2026-01-01 06:00:00', 'Event test',1,[$campaign_id]);
 		$event_id = $event['event_id'];
 		$event_slots = $event['event_slots'];
@@ -722,6 +804,9 @@ class EventsModelTest extends UnitTestCase
 		$registrants = $this->model->getAvailabilityRegistrants($availabilities[1]->id);
 		$this->assertEmpty($registrants, 'The method getAvailabilityRegistrants should return an empty array');
 
+		$registrants = $this->model->getAvailabilityRegistrants(0, 0, $event_id);
+		$this->assertNotEmpty($registrants, 'The method getAvailabilityRegistrants should return a non empty array');
+
 		$this->h_dataset->deleteSampleFile($applicant_file);
 		$this->h_dataset->deleteSampleUser($user_id_coordinator);
 		$this->h_dataset->deleteSampleUser($applicant);
@@ -745,7 +830,7 @@ class EventsModelTest extends UnitTestCase
 		$campaign_id = $this->h_dataset->createSampleCampaign($program, $user_id_coordinator);
 		$applicant_file = $this->h_dataset->createSampleFile($campaign_id, $applicant);
 
-		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', [], $user_id_coordinator);
+		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
 		$event = $this->h_dataset->createEvent($location_id,$user_id_coordinator, '2026-01-01 00:00:00', '2026-01-01 06:00:00', 'Event test',1,[$campaign_id]);
 		$event_id = $event['event_id'];
 		$event_slots = $event['event_slots'];
@@ -801,7 +886,7 @@ class EventsModelTest extends UnitTestCase
 		$campaign_id = $this->h_dataset->createSampleCampaign($program, $user_id_coordinator);
 		$applicant_file = $this->h_dataset->createSampleFile($campaign_id, $applicant);
 
-		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', [], $user_id_coordinator);
+		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
 		$event = $this->h_dataset->createEvent($location_id,$user_id_coordinator, '2026-01-01 00:00:00', '2026-01-01 06:00:00', 'Event test',1,[$campaign_id]);
 		$event_id = $event['event_id'];
 		$event_slots = $event['event_slots'];
@@ -825,6 +910,41 @@ class EventsModelTest extends UnitTestCase
 		$this->h_dataset->deleteSampleProgram($program['programme_id']);
 	}
 
+//	public function testGetRegistrants()
+//	{
+//		$applicant_email = 'applicant' . rand(0, 1000) . '@emundus.test.fr';
+//		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
+//		$applicant = $this->h_dataset->createSampleUser(1000, $applicant_email);
+//		$user_id_coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
+//
+//		$program = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $user_id_coordinator);
+//		$campaign_id = $this->h_dataset->createSampleCampaign($program, $user_id_coordinator);
+//		$applicant_file = $this->h_dataset->createSampleFile($campaign_id, $applicant);
+//
+//		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
+//		$event = $this->h_dataset->createEvent($location_id,$user_id_coordinator, '2026-01-01 00:00:00', '2026-01-01 06:00:00', 'Event test',1,[$campaign_id], [$program]);
+//		$event_id = $event['event_id'];
+//		$event_slots = $event['event_slots'];
+//
+//		$availabilities = $this->model->getEventsAvailabilities('2026-01-01 00:00:00', '2026-01-01 06:00:00', [$event_id]);
+//		$availability_id = $availabilities[0]->id;
+//
+//		$registrant_id = $this->model->createAvailabilityRegistrant($availability_id, $applicant_file);
+//
+//		$registrants = $this->model->getRegistrants('', 'DESC', '', 25, 0, '', 0, 0, 0, 0, 0, [], $applicant);
+//		$this->assertIsArray($registrants, 'The method getRegistrants should return an array');
+//		$this->assertSame(1, count($registrants['datas']), "The method getRegistrants should return all registrants. Data");
+//
+//		$this->h_dataset->deleteSampleFile($applicant_file);
+//		$this->h_dataset->deleteSampleUser($user_id_coordinator);
+//		$this->h_dataset->deleteSampleUser($applicant);
+//		$this->h_dataset->deleteSampleEventSlots($event_slots);
+//		$this->h_dataset->deleteSampleEvent($event_id);
+//		$this->h_dataset->deleteSampleLocation($location_id);
+//		$this->h_dataset->deleteSampleCampaign($campaign_id);
+//		$this->h_dataset->deleteSampleProgram($program['programme_id']);
+//	}
+
 	public function testGetRegistrantCount()
 	{
 		$applicant_email = 'applicant' . rand(0, 1000) . '@emundus.test.fr';
@@ -836,7 +956,7 @@ class EventsModelTest extends UnitTestCase
 		$campaign_id = $this->h_dataset->createSampleCampaign($program, $user_id_coordinator);
 		$applicant_file = $this->h_dataset->createSampleFile($campaign_id, $applicant);
 
-		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', [], $user_id_coordinator);
+		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
 		$event = $this->h_dataset->createEvent($location_id,$user_id_coordinator, '2026-01-01 00:00:00', '2026-01-01 06:00:00', 'Event test',1,[$campaign_id]);
 		$event_id = $event['event_id'];
 		$event_slots = $event['event_slots'];
@@ -867,7 +987,7 @@ class EventsModelTest extends UnitTestCase
 		$program = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $user_id_coordinator);
 		$campaign_id = $this->h_dataset->createSampleCampaign($program, $user_id_coordinator);
 
-		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', [], $user_id_coordinator);
+		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
 		$event = $this->h_dataset->createEvent($location_id,$user_id_coordinator, '2026-01-01 00:00:00', '2026-01-01 06:00:00', 'Event test',1,[$campaign_id]);
 		$event_id = $event['event_id'];
 		$event_slots = $event['event_slots'];
@@ -896,7 +1016,7 @@ class EventsModelTest extends UnitTestCase
 		$program = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $user_id_coordinator);
 		$campaign_id = $this->h_dataset->createSampleCampaign($program, $user_id_coordinator);
 
-		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', [], $this->dataset['coordinator']);
+		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $this->dataset['coordinator']);
 		$event = $this->h_dataset->createEvent($location_id,$user_id_coordinator, '2026-01-01 00:00:00', '2026-01-01 06:00:00', 'Event test',1,[$campaign_id]);
 		$event_id = $event['event_id'];
 		$event_slots = $event['event_slots'];
@@ -923,7 +1043,7 @@ class EventsModelTest extends UnitTestCase
 		$campaign_id = $this->h_dataset->createSampleCampaign($program, $user_id_coordinator);
 		$applicant_file = $this->h_dataset->createSampleFile($campaign_id, $applicant);
 
-		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', [], $user_id_coordinator);
+		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
 		$event = $this->h_dataset->createEvent($location_id,$user_id_coordinator, '2026-01-01 00:00:00', '2026-01-01 06:00:00', 'Event test',1,[$campaign_id]);
 		$event_id = $event['event_id'];
 		$event_slots = $event['event_slots'];
@@ -954,7 +1074,7 @@ class EventsModelTest extends UnitTestCase
 		$program = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $user_id_coordinator);
 		$campaign_id = $this->h_dataset->createSampleCampaign($program, $user_id_coordinator);
 
-		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', [], $user_id_coordinator);
+		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
 		$event = $this->h_dataset->createEvent($location_id,$user_id_coordinator, '2026-01-01 00:00:00', '2026-01-01 06:00:00', 'Event test',1,[$campaign_id]);
 
 		$notifications = $this->model->getEventsNotifications([$event['event_id']]);
@@ -982,5 +1102,50 @@ class EventsModelTest extends UnitTestCase
 		$this->h_dataset->deleteSampleLocation($location_id);
 		$this->h_dataset->deleteSampleCampaign($campaign_id);
 		$this->h_dataset->deleteSampleProgram($program['programme_id']);
+	}
+
+	public function testGetFilterAssocUsers()
+	{
+		$applicant_email = 'applicant' . rand(0, 1000) . '@emundus.test.fr';
+		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
+		$evaluator_1_email = 'evaluator_1' . rand(0, 1000) . '@emundus.test.fr';
+		$evaluator_2_email = 'evaluator_2' . rand(0, 1000) . '@emundus.test.fr';
+		$applicant = $this->h_dataset->createSampleUser(1000, $applicant_email);
+		$user_id_coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
+		$evaluator_1 = $this->h_dataset->createSampleUser(6, $evaluator_1_email, 'test1234', [2], "Evaluteur", "Numéro UN");
+		$evaluator_2 = $this->h_dataset->createSampleUser(6, $evaluator_2_email, 'test1234', [2], "Evaluteur", "Numéro DEUX");
+
+		$program = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $user_id_coordinator);
+		$campaign_id = $this->h_dataset->createSampleCampaign($program, $user_id_coordinator);
+		$applicant_file = $this->h_dataset->createSampleFile($campaign_id, $applicant);
+
+		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
+		$event = $this->h_dataset->createEvent($location_id,$user_id_coordinator, '2026-01-01 00:00:00', '2026-01-01 06:00:00', 'Event test',1,[$campaign_id], [], [$evaluator_1]);
+		$event_id = $event['event_id'];
+
+		$availabilities = $this->model->getEventsAvailabilities('2026-01-01 00:00:00', '2026-01-01 06:00:00', [$event_id]);
+		$availability_id = $availabilities[0]->id;
+
+		$registrant_id = $this->model->createAvailabilityRegistrant($availability_id, $applicant_file, [$evaluator_2]);
+		$this->assertIsInt($registrant_id, 'The method createAvailabilityRegistrant should return an integer');
+		$this->assertGreaterThan(0, $registrant_id, 'The method createAvailabilityRegistrant should return a positive integer');
+
+		$assoc_users = $this->model->getFilterAssocUsers();
+		dump($assoc_users);
+		$this->assertIsArray($assoc_users, 'The method getFilterAssocUsers should return an array') ;
+		$this->assertSame(2, count($assoc_users), 'The method getFilterAssocUsers should return all associated filter users');
+
+		$this->h_dataset->deleteSampleFile($applicant_file);
+		$this->h_dataset->deleteSampleUser($user_id_coordinator);
+		$this->h_dataset->deleteSampleUser($applicant);
+		$this->h_dataset->deleteSampleEventSlots($event['event_slots']);
+		$this->h_dataset->deleteSampleEvent($event_id);
+		$this->h_dataset->deleteSampleUser($evaluator_1);
+		$this->h_dataset->deleteSampleUser($evaluator_2);
+		$this->h_dataset->deleteSampleLocation($location_id);
+		$this->h_dataset->deleteSampleCampaign($campaign_id);
+		$this->h_dataset->deleteSampleProgram($program['programme_id']);
+
+
 	}
 }

@@ -26,7 +26,7 @@ export default {
         {
           param: 'applicant_notify',
           type: 'toggle',
-          value: 1,
+          value: 0,
           label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_NOTIFY',
           displayed: true,
           hideLabel: true,
@@ -61,7 +61,7 @@ export default {
         {
           param: 'applicant_recall',
           type: 'toggle',
-          value: 1,
+          value: 0,
           label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL',
           displayed: true,
           hideLabel: true,
@@ -94,7 +94,7 @@ export default {
         {
           param: 'manager_recall',
           type: 'toggle',
-          value: 1,
+          value: 0,
           label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_MANAGER_RECALL',
           displayed: true,
           hideLabel: true,
@@ -126,7 +126,7 @@ export default {
         {
           param: 'users_recall',
           type: 'toggle',
-          value: 1,
+          value: 0,
           label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_USERS_RECALL',
           displayed: true,
           hideLabel: true,
@@ -299,6 +299,7 @@ export default {
       <div v-for="(field) in fields"
            v-show="field.displayed"
            :key="field.param"
+           :class="[field.param === 'applicant_recall_frequency' || field.param === 'manager_recall_frequency' || field.param === 'users_recall_frequency' ? 'tw-w-1/2' : 'tw-w-full']"
       >
         <Parameter
             v-if="field.displayed"

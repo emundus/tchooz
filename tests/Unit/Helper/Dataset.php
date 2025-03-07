@@ -118,14 +118,14 @@ class Dataset
 		return $deleted;
 	}
 
-	public function createSampleFile($cid, $uid){
+	public function createSampleFile($cid, $uid, $return_ccid = false){
 		$m_formbuilder = new EmundusModelFormbuilder;
 
-		$fnum = $m_formbuilder->createTestingFile($cid, $uid);
+		$fnum = $m_formbuilder->createTestingFile($cid, $uid, $return_ccid);
 		if (empty($fnum)) {
 			// wait for 1 second to avoid duplicate file name
 			sleep(1);
-			$fnum = $m_formbuilder->createTestingFile($cid,$uid);
+			$fnum = $m_formbuilder->createTestingFile($cid,$uid, $return_ccid);
 
 			if (empty($fnum)) {
 				error_log('Failed to create sample file');
@@ -824,7 +824,7 @@ class Dataset
 		return $this->db->execute();
 	}
 
-	public function createEvent($location_id,$user_id,$start = '2026-01-01 00:00:00', $end = '2026-01-01 06:00:00', $name = 'Event test',$available_for = 1,$campaigns = [],$programs = [])
+	public function createEvent($location_id,$user_id,$start = '2026-01-01 00:00:00', $end = '2026-01-01 06:00:00', $name = 'Event test',$available_for = 1,$campaigns = [],$programs = [], $users = [])
 	{
 		$m_events = new \EmundusModelEvents();
 
@@ -841,8 +841,9 @@ class Dataset
 			'campaigns' => $campaigns,
 			'programs' => $programs,
 			'user_id' => $user_id,
+			'teams_subject' => ''
 		];
-		$event_id = $m_events->createEvent($event['name'], $event['color'], $event['location'], $event['is_conference_link'], $event['conference_engine'], $event['link'], $event['generate_link_by'], $event['manager'], $event['available_for'], $event['campaigns'], $event['programs'], $event['user_id']);
+		$event_id = $m_events->createEvent($event['name'], $event['color'], $event['location'], $event['is_conference_link'], $event['conference_engine'], $event['link'], $event['generate_link_by'], $event['manager'], $event['available_for'], $event['campaigns'], $event['programs'], $event['user_id'], $event['teams_subject']);
 
 		$setup_slot = [
 			'event_id' => $event_id,
@@ -866,7 +867,7 @@ class Dataset
 				'room'          => null,
 				'slot_capacity' => 1,
 				'more_infos'    => '',
-				'users'         => [],
+				'users'         => $users,
 				'event_id'      => $event_id,
 				'repeat_dates'  => []
 			];

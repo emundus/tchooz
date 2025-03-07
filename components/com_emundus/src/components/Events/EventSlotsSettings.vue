@@ -83,14 +83,22 @@ export default {
       more_fields: [
         {
           param: 'slots_availables_to_show',
-          type: 'text',
+          type: 'select',
           placeholder: '',
-          value: '',
+          value: 0,
           concatValue: '',
           label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_AVAILABLE_TO_SHOW',
           helptext: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_AVAILABLE_TO_SHOW_HELP',
+          helpTextType: 'icon',
           displayed: true,
           optional: true,
+          options: [
+            {value: 0, label: 'COM_EMUNDUS_ONBOARD_EVENTS_SLOTS_ALL'},
+            {value: 10, label: '10'},
+            {value: 20, label: '20'},
+            {value: 50, label: '50'},
+            {value: 100, label: '100'},
+          ]
         },
         {
           param: 'slot_can_book_until',
@@ -108,6 +116,7 @@ export default {
             {value: 'date', label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_BOOK_UNTIL_DATE'},
           ],
           splitChar: ' ',
+          optional: true,
         },
         {
           param: 'slot_can_cancel',
@@ -163,16 +172,25 @@ export default {
     }
 
     for(let field of this.more_fields) {
-      if (field.param == 'slot_can_book_until')
+      if (field.param === 'slot_can_book_until')
       {
-        field.value = this.event['slot_can_book_until_days'] ? this.event['slot_can_book_until_days'] + field.splitChar + 'days' : dayjs(this.event['slot_can_book_until_date']).format('YYYY-MM-DD') + field.splitChar + 'date';
-        field.concatValue = this.event['slot_can_book_until_days'] ? 'days' : 'date';
-
+        if(this.event['slot_can_book_until_days']) {
+          field.value = this.event['slot_can_book_until_days'] + field.splitChar + 'days';
+          field.concatValue = 'days';
+        } else if(this.event['slot_can_book_until_date']) {
+          field.value = dayjs(this.event['slot_can_book_until_date']).format('YYYY-MM-DD') + field.splitChar + 'date';
+          field.concatValue = 'date';
+        }
       }
-      else if (field.param == 'slot_can_cancel_until')
+      else if (field.param === 'slot_can_cancel_until')
       {
-        field.value = this.event['slot_can_cancel_until_days'] ? this.event['slot_can_cancel_until_days'] + field.splitChar + 'days' : dayjs(this.event['slot_can_cancel_until_date']).format('YYYY-MM-DD') + field.splitChar + 'date';
-        field.concatValue = this.event['slot_can_cancel_until_days'] ? 'days' : 'date';
+        if(this.event['slot_can_cancel_until_days']) {
+          field.value = this.event['slot_can_cancel_until_days'] + field.splitChar + 'days';
+          field.concatValue = 'days';
+        } else if(this.event['slot_can_cancel_until_date']) {
+          field.value = dayjs(this.event['slot_can_cancel_until_date']).format('YYYY-MM-DD') + field.splitChar + 'date';
+          field.concatValue = 'date';
+        }
       }
       else {
         field.value = this.event[field.param];
@@ -374,26 +392,27 @@ export default {
         />
       </div>
 
-      <div class="tw-grid tw-justify-between" style="grid-template-columns: repeat(2,40%)">
+      <div class="tw-grid tw-justify-between" style="grid-template-columns: repeat(2,47%)">
         <div v-for="(field) in break_fields" :key="field.param" class="tw-w-full" v-show="field.displayed">
           <Parameter
               v-if="field.displayed"
               :ref="'event_slot_settings_' + field.param"
               :parameter-object="field"
-              :help-text-type="'above'"
+              :help-text-type="field.helpTextType ? field.helpTextType : 'above'"
               :multiselect-options="field.multiselectOptions ? field.multiselectOptions : null"
               @valueUpdated="onFormChange"
           />
         </div>
       </div>
 
-      <div class="tw-mt-7 tw-flex tw-flex-col tw-gap-6">
-        <div v-for="(field) in more_fields" :key="field.param" class="tw-w-[51%]" v-show="field.displayed">
+      <div class="tw-flex tw-flex-col tw-gap-6">
+        <div v-for="(field) in more_fields" :key="field.param" class="tw-w-full" v-show="field.displayed">
           <Parameter
               v-if="field.displayed"
+              :class="[field.param === 'slot_can_book_until' || field.param === 'slot_can_cancel_until' ? 'tw-w-1/2' : 'tw-w-full']"
               :ref="'event_slot_settings_' + field.param"
               :parameter-object="field"
-              :help-text-type="'above'"
+              :help-text-type="field.helpTextType ? field.helpTextType : 'above'"
               :multiselect-options="field.multiselectOptions ? field.multiselectOptions : null"
               @valueUpdated="handleMoreFieldsValueUpdated"
           />

@@ -3857,7 +3857,7 @@ class EmundusModelFormbuilder extends JModelList
 		}
 	}
 
-	function createTestingFile($cid, $uid)
+	function createTestingFile($cid, $uid, $return_ccid = false)
 	{
 
 		$query = $this->db->getQuery(true);
@@ -3874,8 +3874,9 @@ class EmundusModelFormbuilder extends JModelList
 				->set($this->db->quoteName('fnum') . ' = ' . $this->db->quote($fnum));
 			$this->db->setQuery($query);
 			$this->db->execute();
+			$ccid = $this->db->insertid();
 
-			return $fnum;
+			return $return_ccid ? [$fnum, $ccid] : $fnum;
 		}
 		catch (Exception $e) {
 			Log::add('component/com_emundus/models/formbuilder | Error at creating a testing file in the campaign ' . $cid . ' of the user ' . $uid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');

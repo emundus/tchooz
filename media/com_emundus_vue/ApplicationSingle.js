@@ -1,7 +1,10 @@
-import { B as FetchClient, _ as _export_sfc, C as fileService, o as openBlock, c as createElementBlock, a as createBaseVNode, F as Fragment, b as renderList, d as normalizeClass, t as toDisplayString, h as withDirectives, v as vShow, e as createCommentVNode, T as Tabs, r as resolveComponent, g as createVNode, D as Comments, E as Attachments, M as Modal, G as errors, H as axios, f as createBlock, w as withCtx, n as normalizeStyle } from "./app_emundus.js";
+import { C as FetchClient, _ as _export_sfc, D as fileService, o as openBlock, c as createElementBlock, d as createBaseVNode, F as Fragment, e as renderList, n as normalizeClass, t as toDisplayString, w as withDirectives, v as vShow, b as createCommentVNode, T as Tabs, r as resolveComponent, h as createVNode, E as Comments, G as Attachments, M as Modal, H as errors, I as axios, a as createBlock, f as withCtx, j as normalizeStyle } from "./app_emundus.js";
 import { M as Messages } from "./Messages.js";
 import "./Parameter.js";
 import "./index.js";
+import "./EventBooking.js";
+import "./events2.js";
+import "./Info.js";
 import "./AttachDocument.js";
 import "./vue-dropzone.js";
 import "./index2.js";
@@ -87,7 +90,6 @@ const _sfc_main$2 = {
       });
     },
     iframeLoaded(event) {
-      console.log("loaded");
       this.loading = false;
     }
   },
@@ -142,7 +144,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     ])) : (openBlock(), createElementBlock("p", _hoisted_8$1, toDisplayString(_ctx.translate("COM_EMUNDUS_EVALUATIONS_LIST_NO_EDITABLE_EVALUATIONS")), 1))
   ]);
 }
-const Evaluations = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-6e9962fb"]]);
+const Evaluations = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-86008c68"]]);
 const client = new FetchClient("file");
 const filesService = {
   // eslint-disable-next-line no-unused-vars

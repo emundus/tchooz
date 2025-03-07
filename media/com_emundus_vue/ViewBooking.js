@@ -1,5 +1,5 @@
 import { e as eventsService } from "./events2.js";
-import { _ as _export_sfc, M as Modal, u as useGlobalStore, r as resolveComponent, o as openBlock, c as createElementBlock, a as createBaseVNode, t as toDisplayString, F as Fragment, b as renderList, g as createVNode, w as withCtx, f as createBlock, e as createCommentVNode, d as normalizeClass, l as createTextVNode } from "./app_emundus.js";
+import { _ as _export_sfc, M as Modal, u as useGlobalStore, r as resolveComponent, o as openBlock, c as createElementBlock, d as createBaseVNode, t as toDisplayString, F as Fragment, e as renderList, h as createVNode, f as withCtx, a as createBlock, b as createCommentVNode, n as normalizeClass, m as createTextVNode } from "./app_emundus.js";
 import { I as Info } from "./Info.js";
 const _sfc_main = {
   name: "ViewBooking",
@@ -255,7 +255,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     _ctx.loading ? (openBlock(), createElementBlock("div", _hoisted_24)) : createCommentVNode("", true)
   ]);
 }
-const ViewBooking = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-845a3ded"]]);
+const ViewBooking = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-d02a4c47"]]);
 export {
   ViewBooking as default
 };

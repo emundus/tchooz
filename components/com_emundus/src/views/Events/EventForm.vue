@@ -20,7 +20,7 @@ export default {
   data: () => ({
     loading: true,
     event_id: 0,
-    event: {},
+    event: null,
 
     tabs: [
       {
@@ -70,11 +70,29 @@ export default {
     }
   },
   methods: {
+    goBack()
+    {
+      if(typeof window.history !== 'undefined') {
+        window.history.back();
+      } else {
+        this.redirectJRoute('index.php?option=com_emundus&view=events');
+      }
+    },
     redirectJRoute(link) {
       settingsService.redirectJRoute(link, useGlobalStore().getCurrentLang);
     },
     handleChangeTab(tab_id) {
       this.$refs.tabsComponent.changeTab(tab_id);
+    },
+    reloadEvent(tab_id) {
+      if(tab_id === 3) {
+        if(isNaN(this.event_id))
+        {
+          this.event_id = this.event.id;
+        }
+        this.event = null;
+        this.getEvent(this.event_id);
+      }
     },
 
     // Display a message when the user clicks on a disabled tab
@@ -126,7 +144,7 @@ export default {
   <div class="events__add-event">
     <div>
       <div class="tw-flex tw-items-center tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300 goback-btn"
-           @click="redirectJRoute('index.php?option=com_emundus&view=events')">
+           @click="goBack">
         <span class="material-symbols-outlined tw-text-neutral-600">navigate_before</span>
         <span class="tw-ml-2 tw-text-neutral-900">{{ translate('BACK') }}</span>
       </div>
@@ -146,9 +164,10 @@ export default {
             :tabs="tabs"
             :context="event_id ? 'event_form_'+event_id : ''"
             @click-disabled-tab="displayDisabledMessage"
+            @change-tab-active="reloadEvent"
         />
 
-        <div class="tw-w-full tw-rounded-coordinator tw-p-6 tw-bg-white tw-border tw-border-neutral-300 tw-relative">
+        <div class="tw-w-full tw-rounded-2xl tw-p-6 tw-bg-white tw-border tw-border-neutral-300 tw-relative">
           <EventGlobalSettings
               v-if="tabs[0].active"
               :event="event"
@@ -160,7 +179,7 @@ export default {
               @reload-event="getEvent"
           />
           <EventCalendarSettings
-              v-if="tabs[2].active"
+              v-if="tabs[2].active && event"
               :event="event"
               @go-back="redirectJRoute('index.php?option=com_emundus&view=events')"
           />

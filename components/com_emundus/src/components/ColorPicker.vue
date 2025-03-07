@@ -18,6 +18,7 @@
 
 <script>
 import basicPreset from "@/assets/data/colorpicker/presets/basic";
+import darkPreset from "@/assets/data/colorpicker/presets/dark";
 
 export const extractPropertyFromPreset = (
   presetName
@@ -36,6 +37,21 @@ export const extractPropertyFromPreset = (
     }
 
     return swatches;
+  }
+  else if (presetName === "dark" && typeof darkPreset === "object") {
+    let root = document.querySelector(':root');
+    let variables = getComputedStyle(root);
+    let swatches = [];
+
+    for(const swatch of darkPreset) {
+      let color = variables.getPropertyValue('--em-'+swatch);
+      swatches.push(color);
+    }
+
+    return swatches;
+  }
+  else {
+    return null;
   }
 };
 

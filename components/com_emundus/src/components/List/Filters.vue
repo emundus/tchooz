@@ -34,7 +34,7 @@ export default {
 
         if(filter && this.filters[this.currentTabKey]) {
           let filterData = this.filters[this.currentTabKey].find(f => f.key === filter)
-          if(typeof filterData.alwaysDisplay === 'undefined' || filterData.alwaysDisplay !== true) {
+          if(typeof filterData !== 'undefined' && (typeof filterData.alwaysDisplay === 'undefined' || filterData.alwaysDisplay !== true)) {
             return filterData;
           }
         }
@@ -42,10 +42,38 @@ export default {
         return null;
       });
 
+
       // Remove null values
       this.displayedFilters = this.displayedFilters.filter(f => f !== null);
+    }
 
-      // Sort displayedFilters
+
+    // Check if we have a filter in the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    this.filters[this.currentTabKey].forEach(filter => {
+      if (urlParams.has(filter.key)) {
+        const value = urlParams.get(filter.key);
+        if (filter.options.find(option => option.value == value)) {
+          filter.value = value;
+          // Check if filter is already displayed
+          if (!this.displayedFilters.find(f => f.key === filter.key)) {
+            this.displayedFilters.push(filter);
+          } else {
+            // Update filter
+            this.displayedFilters = this.displayedFilters.map(f => {
+              if (f.key === filter.key) {
+                f.value = value;
+              }
+              return f;
+            });
+          }
+
+          sessionStorage.setItem('tchooz_filter_' + this.currentTabKey + '_' + filter.key + '/' + document.location.hostname, filter.value);
+        }
+      }
+    });
+
+    if(this.displayedFilters.length > 0) {
       this.displayedFilters.sort((a, b) => a.key.localeCompare(b.key));
     }
   },
@@ -53,6 +81,16 @@ export default {
     onChangeFilter(filter) {
       // Store value to sessionStorage
       sessionStorage.setItem('tchooz_filter_' + this.currentTabKey + '_' + filter.key + '/' + document.location.hostname, filter.value);
+
+      // Update URL
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has(filter.key)) {
+        urlParams.set(filter.key, filter.value);
+      } else {
+        urlParams.append(filter.key, filter.value);
+      }
+      const newUrl = window.location.protocol + '//' + window.location.host + window.location.pathname + '?' + urlParams.toString();
+      window.history.replaceState({path: newUrl}, '', newUrl);
 
       // when we change a filter, we reset the pagination
       this.$emit('update-filter');
@@ -66,6 +104,14 @@ export default {
 
       // Remove from sessionStorage
       sessionStorage.removeItem('tchooz_filter_' + this.currentTabKey + '_' + filter.key + '/' + document.location.hostname);
+
+      // Remove from URL if exists
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has(filter.key)) {
+        urlParams.delete(filter.key);
+        const newUrl = window.location.protocol + '//' + window.location.host + window.location.pathname + '?' + urlParams.toString();
+        window.history.replaceState({path: newUrl}, '', newUrl);
+      }
 
       this.$emit('update-filter');
     },
