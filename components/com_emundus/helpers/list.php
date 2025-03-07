@@ -380,7 +380,7 @@ class EmundusHelperList
 	// @return	array	Object of users ID and campaign info
 	function getApplicants($submitted, $year)
 	{
-		$db    = JFactory::getDBO();
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = 'SELECT ecc.applicant_id, esc.label, ecc.submitted, ecc.date_submitted
 					FROM #__emundus_campaign_candidature AS ecc
 					LEFT JOIN #__emundus_setup_campaigns AS esc ON ecc.campaign_id=esc.id ';
