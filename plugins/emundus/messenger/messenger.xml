@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="console" method="upgrade">
+    <name>Messenger recall</name>
+    <version>1.0.0</version>
+    <creationDate>December 2024</creationDate>
+    <author>eMundus</author>
+    <description>Plugin to store users to recall when a message is sent</description>
+    <namespace path="src">Joomla\Plugin\Emundus\Messenger</namespace>
+    <files>
+        <folder plugin="messenger">services</folder>
+        <folder>src</folder>
+    </files>
+</extension>

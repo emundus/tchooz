@@ -2612,7 +2612,7 @@ class EmundusHelperFiles
 
 			if (!isset($unreadmessagesList[$fnum]))
 			{
-				$unreadmessagesList[$fnum] = '<p class="messenger__notifications_counter">' . $unread_message['nb'] . '</p> ';
+				$unreadmessagesList[$fnum] = '<div class="messenger__notifications_counter"><span class="material-symbols-outlined">chat_bubble</span><span>' . $unread_message['nb'] . '</span></div> ';
 			}
 		}
 

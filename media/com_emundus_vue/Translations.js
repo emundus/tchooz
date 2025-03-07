@@ -1,4 +1,4 @@
-import { $ as client, x as axios, _ as _export_sfc, X as V32, U as script, J as mixin, r as resolveComponent, o as openBlock, c as createElementBlock, F as Fragment, b as renderList, a as createBaseVNode, t as toDisplayString, e as createCommentVNode, f as createBlock, d as normalizeClass, q as errors, g as createVNode, h as withDirectives, v as vShow, a4 as _imports_0 } from "./app_emundus.js";
+import { a1 as client, z as axios, _ as _export_sfc, $ as V32, B as script, Q as mixin, r as resolveComponent, o as openBlock, c as createElementBlock, F as Fragment, b as renderList, a as createBaseVNode, t as toDisplayString, e as createCommentVNode, f as createBlock, d as normalizeClass, y as errors, g as createVNode, h as withDirectives, v as vShow, a6 as _imports_0 } from "./app_emundus.js";
 import { q as qs } from "./index2.js";
 const translationsService = {
   async checkSetup() {

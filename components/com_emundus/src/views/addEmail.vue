@@ -577,7 +577,6 @@ export default {
     },
 
     redirectJRoute(link) {
-      console.log(link)
       settingsService.redirectJRoute(link, useGlobalStore().getCurrentLang)
     },
 

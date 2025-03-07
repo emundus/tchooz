@@ -2035,6 +2035,29 @@ class EmundusControllersettings extends BaseController
 		exit;
 	}
 
+	public function getavailablegroups()
+	{
+		$this->checkToken();
+
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$search_query = $this->input->getString('search_query', '');
+			$limit = $this->input->getInt('limit', 100);
+
+			$profiles = $this->m_settings->getAvailableGroups($search_query, $limit);
+
+			$response['status']  = true;
+			$response['code']    = 200;
+			$response['message'] = Text::_('PROFILES_FOUND');
+			$response['data']    = $profiles;
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
 	public function getavailablecampaigns()
 	{
 		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
@@ -2201,6 +2224,81 @@ class EmundusControllersettings extends BaseController
 				if($response['status']) {
 					$response['code']    = 200;
 					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_APP_DISABLED');
+				}
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function getaddons()
+	{
+		$this->checkToken('get');
+
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$addons = $this->m_settings->getAddons();
+
+			$response['status']  = true;
+			$response['code']    = 200;
+			$response['message'] = Text::_('ADDONS_FOUND');
+			$response['data']    = $addons;
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function toggleaddon()
+	{
+		$this->checkToken('post');
+
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$response['code'] = 500;
+			$response['message'] = Text::_('MISSING_PARAMS');
+
+			$addon_type = $this->input->getString('addon_type', 0);
+			$enabled = $this->input->getInt('enabled', 1);
+
+			if(!empty($addon_type)) {
+				$response['status'] = $this->m_settings->toggleAddon($addon_type,$enabled);
+				if($response['status']) {
+					$response['code']    = 200;
+					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ADDON_TOGGLED');
+				}
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function setupmessenger()
+	{
+		$this->checkToken('post');
+
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$response['code'] = 500;
+			$response['message'] = Text::_('MISSING_PARAMS');
+
+			$setup = $this->input->getRaw('setup', '{}');
+
+			if(!empty($setup)) {
+				$setup = json_decode($setup);
+
+				$response['status'] = $this->m_settings->setupMessenger($setup,$this->user->id);
+				if($response['status']) {
+					$response['code']    = 200;
+					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_MESSENGER_SETUP_SUCCESS');
 				}
 			}
 		}

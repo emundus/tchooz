@@ -1118,6 +1118,19 @@
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
+        <field name="messenger_notify_frequency" type="list" default="daily" label="COM_EMUNDUS_MESSENGER_NOTIFY_FREQUENCY"
+               description="COM_EMUNDUS_MESSENGER_NOTIFY_FREQUENCY_DESC">
+            <option value="daily">COM_EMUNDUS_MESSENGER_NOTIFY_FREQUENCY_DAILY</option>
+            <option value="weekly">COM_EMUNDUS_MESSENGER_NOTIFY_FREQUENCY_WEEKLY</option>
+            <option value="custom">COM_EMUNDUS_MESSENGER_NOTIFY_FREQUENCY_CUSTOM</option>
+        </field>
+        <field showon="messenger_notify_frequency:custom" name="messenger_notify_frequency_times" type="text" default="0" label="COM_EMUNDUS_MESSENGER_NOTIFY_FREQUENCY_TIMES"
+               description="COM_EMUNDUS_MESSENGER_NOTIFY_FREQUENCY_TIMES_DESC"/>
+        <field showon="messenger_notify_frequency:custom" name="messenger_notify_frequency_type" type="list" default="daily" label="COM_EMUNDUS_MESSENGER_NOTIFY_FREQUENCY_TYPE"
+               description="COM_EMUNDUS_MESSENGER_NOTIFY_FREQUENCY_TYPE_DESC">
+            <option value="daily">COM_EMUNDUS_MESSENGER_NOTIFY_FREQUENCY_TYPE_DAILY</option>
+            <option value="weekly">COM_EMUNDUS_MESSENGER_NOTIFY_FREQUENCY_TYPE_WEEKLY</option>
+        </field>
     </fieldset>
     <fieldset label="COM_EMUNDUS_MODULES" name="modules" description="COM_EMUNDUS_MODULES_DESC">
         <field name="style" label="COM_EMUNDUS_MODULES_STYLE" type="radio" default="1"

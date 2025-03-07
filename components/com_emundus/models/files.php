@@ -4740,17 +4740,15 @@ class EmundusModelFiles extends JModelLegacy
 		$query = $this->_db->getQuery(true);
 
 		try {
+			// Get count of messages since last reply from an other user that applicant
 			$query->select('ecc.fnum, COUNT(m.message_id) as nb')
 				->from($this->_db->quoteName('#__emundus_campaign_candidature','ecc'))
 				->leftJoin($this->_db->quoteName('#__emundus_chatroom','ec').' ON '.$this->_db->quoteName('ec.fnum').' LIKE '.$this->_db->quoteName('ecc.fnum'))
-				->leftJoin($this->_db->quoteName('#__messages','m').' ON '.$this->_db->quoteName('m.page').' = '.$this->_db->quoteName('ec.id') . ' AND ' . $this->_db->quoteName('m.state') . ' = ' . $this->_db->quote(0));
-
-			if (!empty($current_user_id)) {
-				$query->where($this->_db->quoteName('m.user_id_from') . ' <> ' . $current_user_id);
-			}
-
-			$query->group('ecc.fnum');
-
+				->leftJoin($this->_db->quoteName('#__messages','m').' ON '.$this->_db->quoteName('m.page').' = '.$this->_db->quoteName('ec.id'))
+				->where($this->_db->quoteName('m.user_id_from').' = '.$this->_db->quoteName('ecc.applicant_id'))
+				->andWhere($this->_db->quoteName('m.date_time') . ' > COALESCE((SELECT MAX(date_time) FROM jos_messages WHERE page = ec.id AND user_id_from <> ecc.applicant_id),"1970-01-01 00:00:00")')
+				->andWhere($this->_db->quoteName('m.date_time') . ' <= NOW()')
+				->group('ecc.fnum');
 			$this->_db->setQuery($query);
 			$unread_messages = $this->_db->loadAssocList();
 		} catch (Exception $e) {
@@ -5958,14 +5956,14 @@ class EmundusModelFiles extends JModelLegacy
 
 		foreach($temporary_fnums_data as $key => $fnum_data) {
 			foreach($columns as $column) {
-				$column_name = !empty($column->table_join) ? $column->table_join . '___' . $column->element_name :  $column->tab_name . '___' . $column->element_name; 
+				$column_name = !empty($column->table_join) ? $column->table_join . '___' . $column->element_name :  $column->tab_name . '___' . $column->element_name;
 
 				if (!isset($fnum_data[$column_name])) {
 					$temporary_fnums_data[$key][$column_name] = '';
 				}
 			}
 		}
-		
+
 		// columns must be in the same order as the columns in the table
 
 		if (!empty($temporary_fnums_data)) {
@@ -5977,7 +5975,7 @@ class EmundusModelFiles extends JModelLegacy
 			} else {
 				$default_fnums_data_columns = ['fnum', 'email', 'label', 'campaign_id'];
 			}
-	
+
 			$evaluation_columns_in_order = [
 				'step_id',
 				'evaluation_id',
@@ -5991,7 +5989,7 @@ class EmundusModelFiles extends JModelLegacy
 			}
 
 			$columns_in_order = array_merge($default_fnums_data_columns, $evaluation_columns_in_order);
-			
+
 
 			foreach ($temporary_fnums_data as $fnum_data) {
 				$final_array = [];

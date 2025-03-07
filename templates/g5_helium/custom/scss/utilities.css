@@ -525,16 +525,28 @@
 
     /* ALERT */
     .messenger__notifications_counter {
-        background: var(--red-500);
-        padding: 10px;
-        border-radius: 50%;
-        width: 20px;
-        height: 21px;
+        width: 24px;
+        height: 24px;
         color: var(--neutral-0);
+        position: relative;
         display: flex;
-        justify-content: center;
         align-items: center;
-        font-size: 16px;
+        justify-content: center;
+    }
+
+    .messenger__notifications_counter span:not(.material-symbols-outlined) {
+        position: absolute;
+        color: white;
+        right: 0;
+        top: 0;
+        background: red;
+        width: 12px;
+        height: 12px;
+        border-radius: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
     }
 
     .alert .close,

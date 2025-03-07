@@ -1,4 +1,4 @@
-import { m as FetchClient } from "./app_emundus.js";
+import { q as FetchClient } from "./app_emundus.js";
 const fetchClient = new FetchClient("events");
 const eventsService = {
   // Getters
