@@ -2,9 +2,9 @@
     <div id="emundus-filters" class="em-w-100">
         <section id="filters-top-actions" class="em-mb-16">
             <span id="clear-filters" class="material-symbols-outlined em-pointer hidden" @click="clearFilters"
-                  :alt="translate('MOD_EMUNDUS_FILTERS_CLEAR_FILTERS')">filter_list_off</span>
+                  :title="translate('MOD_EMUNDUS_FILTERS_CLEAR_FILTERS')">filter_list_off</span>
             <span id="save-filters" class="material-symbols-outlined em-pointer hidden" @click="onClickSaveFilter"
-                  :alt="translate('MOD_EMUNDUS_FILTERS_SAVE_FILTERS')">save</span>
+                  :title="translate('MOD_EMUNDUS_FILTERS_SAVE_FILTERS')">save</span>
 
             <div id="global-search-wrapper" style="position: relative;">
                 <div id="global-search-values" ref="globalSearchValues"
@@ -293,7 +293,7 @@ export default {
                 }
 
                 filtersService.getFiltersAvailable(this.moduleId).then((filters) => {
-                    this.filters = filters
+                    this.filters = filters;
                 }).catch((error) => {
                     console.error(error)
                 })
@@ -518,8 +518,8 @@ export default {
     computed: {
         availableFilters() {
             return this.filters.filter((filter) => {
-                return filter.available
-            })
+                return filter.available;
+            });
         },
         globalSearchPlaceholder() {
             return this.globalSearch.length < 1 ? this.translate('MOD_EMUNDUS_FILTERS_GLOBAL_SEARCH_PLACEHOLDER') : ''
