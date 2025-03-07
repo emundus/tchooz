@@ -1,4 +1,4 @@
-import { _ as _export_sfc, O as workflowService, r as resolveComponent, o as openBlock, c as createElementBlock, F as Fragment, b as renderList, a as createBaseVNode, h as withDirectives, z as vModelText, e as createCommentVNode, f as createBlock, t as toDisplayString, d as normalizeClass } from "./app_emundus.js";
+import { _ as _export_sfc, Q as workflowService, r as resolveComponent, o as openBlock, c as createElementBlock, F as Fragment, e as renderList, d as createBaseVNode, w as withDirectives, A as vModelText, b as createCommentVNode, a as createBlock, t as toDisplayString, n as normalizeClass } from "./app_emundus.js";
 const _sfc_main$1 = {
   name: "StepTypesByLevel",
   props: {
@@ -26,8 +26,6 @@ const _sfc_main$1 = {
   },
   mounted() {
     this.types = this.defaultTypes;
-    console.log(this.level);
-    console.log(this.levelMax);
   },
   methods: {
     addStepType() {

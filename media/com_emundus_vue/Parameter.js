@@ -1,5 +1,6 @@
-import { aa as getDefaultExportFromCjs, _ as _export_sfc, I as script, u as useGlobalStore, ab as reactive, S as Swal, s as settingsService, r as resolveComponent, o as openBlock, c as createElementBlock, d as normalizeClass, l as createTextVNode, t as toDisplayString, e as createCommentVNode, a as createBaseVNode, h as withDirectives, y as vModelSelect, F as Fragment, b as renderList, f as createBlock, w as withCtx, z as vModelText, a3 as vModelRadio, Q as vModelCheckbox, a1 as vModelDynamic, i as withModifiers, N as mergeProps, R as toHandlers } from "./app_emundus.js";
+import { ar as getDefaultExportFromCjs, _ as _export_sfc, J as script, u as useGlobalStore, ac as reactive, S as Swal, s as settingsService, r as resolveComponent, o as openBlock, c as createElementBlock, n as normalizeClass, m as createTextVNode, t as toDisplayString, b as createCommentVNode, d as createBaseVNode, w as withDirectives, z as vModelSelect, F as Fragment, e as renderList, a as createBlock, f as withCtx, A as vModelText, j as normalizeStyle, a4 as vModelRadio, R as vModelCheckbox, a2 as vModelDynamic, g as withModifiers, O as mergeProps, U as toHandlers, a8 as resolveDynamicComponent } from "./app_emundus.js";
 import { D as DatePicker } from "./index.js";
+import EventBooking from "./EventBooking.js";
 var dayjs_min$1 = { exports: {} };
 var dayjs_min = dayjs_min$1.exports;
 var hasRequiredDayjs_min;
@@ -324,6 +325,14 @@ const _sfc_main = {
       type: String,
       required: false,
       default: "icon"
+    },
+    asyncAttributes: {
+      type: Array,
+      required: false
+    },
+    componentsProps: {
+      type: Object,
+      required: false
     }
   },
   emits: ["valueUpdated", "needSaving"],
@@ -353,10 +362,10 @@ const _sfc_main = {
         this.multiOptions = this.$props.multiselectOptions.options;
       }
       if (!this.multiselectOptions.multiple) {
-        this.value = this.multiOptions.find((option) => option.value === this.parameter.value);
+        this.value = this.multiOptions.find((option) => option[this.$props.multiselectOptions.trackBy] == this.parameter.value);
       } else {
         if (this.parameter.value && this.parameter.value.length > 0 && typeof this.parameter.value[0] !== "object") {
-          this.value = this.multiOptions.filter((option) => this.parameter.value.includes(option.value));
+          this.value = this.multiOptions.filter((option) => this.parameter.value.includes(option[this.$props.multiselectOptions.trackBy]));
         } else {
           this.value = this.parameter.value;
         }
@@ -463,7 +472,8 @@ const _sfc_main = {
             this.isLoading = true;
             let data = {
               search_query,
-              limit: this.$props.multiselectOptions.optionsLimit
+              limit: this.$props.multiselectOptions.optionsLimit,
+              properties: this.$props.asyncAttributes
             };
             settingsService.getAsyncOptions(this.$props.multiselectOptions.asyncRoute, data, { signal }).then((response) => {
               this.multiOptions = response.data;
@@ -517,6 +527,9 @@ const _sfc_main = {
     formatDateForDisplay(date) {
       if (!date) return "";
       return date.split("-").reverse().join("/");
+    },
+    bookingSlotIdUpdated(value) {
+      this.$emit("valueUpdated", value);
     }
     //
   },
@@ -563,6 +576,9 @@ const _sfc_main = {
     }
   },
   computed: {
+    EventBooking() {
+      return EventBooking;
+    },
     isInput() {
       return ["text", "email", "number", "password"].includes(this.parameter.type) && this.parameter.displayed && this.parameter.editable !== "semi";
     },
@@ -574,13 +590,21 @@ const _sfc_main = {
     },
     formattedValue: {
       get() {
-        let today = (/* @__PURE__ */ new Date()).toISOString().split("T")[0];
-        let dateValue = typeof this.value === "string" ? this.value : today;
-        return dateValue && dateValue < today ? today : dateValue;
+        if (this.parameter.type === "date") {
+          let today = (/* @__PURE__ */ new Date()).toISOString().split("T")[0];
+          let dateValue = typeof this.value === "string" ? this.value : today;
+          return dateValue && dateValue < today ? today : dateValue;
+        } else {
+          return this.value;
+        }
       },
       set(newValue) {
-        newValue = dayjs(newValue).format("YYYY-MM-DD");
-        this.value = newValue.split("/").reverse().join("-");
+        if (this.parameter.type === "date") {
+          newValue = dayjs(newValue).format("YYYY-MM-DD");
+          this.value = newValue.split("/").reverse().join("-");
+        } else {
+          this.value = newValue;
+        }
       }
     }
   }
@@ -594,48 +618,49 @@ const _hoisted_3 = {
   key: 1,
   class: "tw-text-base tw-text-neutral-600"
 };
-const _hoisted_4 = { key: 0 };
-const _hoisted_5 = ["title"];
-const _hoisted_6 = ["id", "disabled"];
-const _hoisted_7 = ["value"];
-const _hoisted_8 = ["id", "placeholder", "maxlength", "readonly"];
-const _hoisted_9 = { key: 4 };
-const _hoisted_10 = {
+const _hoisted_4 = ["innerHTML"];
+const _hoisted_5 = { key: 0 };
+const _hoisted_6 = ["title"];
+const _hoisted_7 = ["id", "disabled"];
+const _hoisted_8 = ["value"];
+const _hoisted_9 = ["id", "rows", "placeholder", "maxlength", "readonly"];
+const _hoisted_10 = { key: 4 };
+const _hoisted_11 = {
   "data-toggle": "buttons",
   class: "tw-flex tw-items-center tw-gap-2"
 };
-const _hoisted_11 = ["for"];
-const _hoisted_12 = ["name", "id", "checked"];
-const _hoisted_13 = ["for"];
-const _hoisted_14 = ["name", "id", "checked"];
-const _hoisted_15 = { key: 5 };
-const _hoisted_16 = {
+const _hoisted_12 = ["for"];
+const _hoisted_13 = ["name", "id", "checked"];
+const _hoisted_14 = ["for"];
+const _hoisted_15 = ["name", "id", "checked"];
+const _hoisted_16 = { key: 5 };
+const _hoisted_17 = {
   "data-toggle": "radio_buttons",
   class: "tw-grid tw-grid-cols-1 md:tw-grid-cols-2 lg:tw-grid-cols-2 tw-gap-4"
 };
-const _hoisted_17 = ["name", "id", "value", "checked"];
-const _hoisted_18 = ["for"];
-const _hoisted_19 = { class: "tw-flex tw-items-center tw-gap-2" };
-const _hoisted_20 = ["src", "alt"];
-const _hoisted_21 = {
+const _hoisted_18 = ["name", "id", "value", "checked"];
+const _hoisted_19 = ["for"];
+const _hoisted_20 = { class: "tw-flex tw-items-center tw-gap-2" };
+const _hoisted_21 = ["src", "alt"];
+const _hoisted_22 = {
   key: 6,
   class: "tw-flex tw-items-center"
 };
-const _hoisted_22 = { class: "em-toggle" };
-const _hoisted_23 = ["id"];
-const _hoisted_24 = ["for"];
-const _hoisted_25 = {
+const _hoisted_23 = { class: "em-toggle" };
+const _hoisted_24 = ["id"];
+const _hoisted_25 = ["for"];
+const _hoisted_26 = {
   key: 0,
   class: "material-symbols-outlined tw-mr-1 tw-text-neutral-900"
 };
-const _hoisted_26 = ["type", "max", "placeholder", "id", "maxlength", "readonly"];
-const _hoisted_27 = ["value", "id"];
-const _hoisted_28 = { key: 9 };
-const _hoisted_29 = {
-  key: 10,
+const _hoisted_27 = ["type", "max", "placeholder", "id", "maxlength", "readonly"];
+const _hoisted_28 = ["value", "id"];
+const _hoisted_29 = { key: 10 };
+const _hoisted_30 = {
+  key: 11,
   class: "tw-ml-2"
 };
-const _hoisted_30 = ["id"];
+const _hoisted_31 = ["id"];
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_multiselect = resolveComponent("multiselect");
   const _component_DatePicker = resolveComponent("DatePicker");
@@ -654,20 +679,27 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         onClick: _cache[0] || (_cache[0] = ($event) => $options.displayHelp($data.parameter.helptext))
       }, "help_outline")) : createCommentVNode("", true)
     ], 10, _hoisted_1)) : createCommentVNode("", true),
-    $data.parameter.helptext && $props.helpTextType === "above" ? (openBlock(), createElementBlock("span", _hoisted_3, toDisplayString(_ctx.translate($data.parameter.helptext)), 1)) : createCommentVNode("", true),
+    $data.parameter.helptext && $props.helpTextType === "above" ? (openBlock(), createElementBlock("span", _hoisted_3, [
+      createBaseVNode("span", {
+        innerHTML: _ctx.translate($data.parameter.helptext)
+      }, null, 8, _hoisted_4)
+    ])) : createCommentVNode("", true),
     createBaseVNode("div", {
       name: "input-field",
       class: normalizeClass(["tw-flex tw-items-center", { "input-split-field": $data.parameter.splitField, "input-split-field-select": $data.parameter.splitField && $data.parameter.secondParameterType === "select", "tw-gap-2": $data.parameter.splitField && $data.parameter.secondParameterType !== "select" }])
     }, [
-      $data.parameter.icon ? (openBlock(), createElementBlock("div", _hoisted_4, [
+      $data.parameter.icon ? (openBlock(), createElementBlock("div", _hoisted_5, [
         createBaseVNode("span", {
           title: _ctx.translate($data.parameter.label),
           class: "material-symbols-outlined tw-mr-2 tw-text-neutral-900"
-        }, toDisplayString($data.parameter.icon), 9, _hoisted_5)
+        }, toDisplayString($data.parameter.icon), 9, _hoisted_6)
       ])) : createCommentVNode("", true),
       $data.parameter.type === "select" ? withDirectives((openBlock(), createElementBlock("select", {
         key: 1,
-        class: normalizeClass(["dropdown-toggle w-select !tw-mb-0 tw-min-w-[30%]", $data.errors[$data.parameter.param] ? "tw-rounded-lg !tw-border-red-500" : ""]),
+        class: normalizeClass(["dropdown-toggle w-select !tw-mb-0 tw-min-w-[30%]", [
+          $data.errors[$data.parameter.param] ? "tw-rounded-lg !tw-border-red-500" : "",
+          $data.parameter.secondParameterType === "select" ? "tw-w-auto" : "tw-w-full"
+        ]]),
         id: $options.paramId,
         "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => $data.value = $event),
         disabled: $data.parameter.editable === false
@@ -676,9 +708,9 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           return openBlock(), createElementBlock("option", {
             key: option.value,
             value: option.value
-          }, toDisplayString(_ctx.translate(option.label)), 9, _hoisted_7);
+          }, toDisplayString(_ctx.translate(option.label)), 9, _hoisted_8);
         }), 128))
-      ], 10, _hoisted_6)), [
+      ], 10, _hoisted_7)), [
         [vModelSelect, $data.value]
       ]) : $data.parameter.type === "multiselect" ? (openBlock(), createBlock(_component_multiselect, {
         id: $options.paramId,
@@ -720,13 +752,17 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         id: $options.paramId,
         "onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => $data.value = $event),
         class: normalizeClass(["!mb-0", $data.errors[$data.parameter.param] ? "tw-rounded-lg !tw-border-red-500" : ""]),
+        style: normalizeStyle({
+          resize: $data.parameter.resize ? "vertical" : "none"
+        }),
+        rows: $data.parameter.rows ? $data.parameter.rows : 3,
         placeholder: _ctx.translate($data.parameter.placeholder),
         maxlength: $data.parameter.maxlength,
         readonly: $data.parameter.editable === false
-      }, "      ", 10, _hoisted_8)), [
+      }, "      ", 14, _hoisted_9)), [
         [vModelText, $data.value]
-      ]) : $data.parameter.type === "yesno" ? (openBlock(), createElementBlock("div", _hoisted_9, [
-        createBaseVNode("fieldset", _hoisted_10, [
+      ]) : $data.parameter.type === "yesno" ? (openBlock(), createElementBlock("div", _hoisted_10, [
+        createBaseVNode("fieldset", _hoisted_11, [
           createBaseVNode("label", {
             for: $options.paramId + "_input_0",
             class: normalizeClass([[$data.value == 0 ? "tw-bg-red-700" : "tw-bg-white tw-border-neutral-500 hover:tw-border-red-700"], "tw-w-60 tw-h-10 tw-p-2.5 tw-rounded-lg tw-border tw-justify-center tw-items-center tw-gap-2.5 tw-inline-flex"])
@@ -739,13 +775,13 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               id: $options.paramId + "_input_0",
               value: "0",
               checked: $data.value === 0
-            }, null, 8, _hoisted_12), [
+            }, null, 8, _hoisted_13), [
               [vModelRadio, $data.value]
             ]),
             createBaseVNode("span", {
               class: normalizeClass([$data.value == 0 ? "tw-text-white" : "tw-text-red-700"])
             }, toDisplayString(_ctx.translate("JNO")), 3)
-          ], 10, _hoisted_11),
+          ], 10, _hoisted_12),
           createBaseVNode("label", {
             for: $options.paramId + "_input_1",
             class: normalizeClass([[$data.value == 1 ? "tw-bg-green-700" : "tw-bg-white tw-border-neutral-500 hover:tw-border-green-700"], "tw-w-60 tw-h-10 tw-p-2.5 tw-rounded-lg tw-border tw-justify-center tw-items-center tw-gap-2.5 tw-inline-flex"])
@@ -758,16 +794,16 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               id: $options.paramId + "_input_1",
               value: "1",
               checked: $data.value === 1
-            }, null, 8, _hoisted_14), [
+            }, null, 8, _hoisted_15), [
               [vModelRadio, $data.value]
             ]),
             createBaseVNode("span", {
               class: normalizeClass([$data.value == 1 ? "tw-text-white" : "tw-text-green-700"])
             }, toDisplayString(_ctx.translate("JYES")), 3)
-          ], 10, _hoisted_13)
+          ], 10, _hoisted_14)
         ])
-      ])) : $data.parameter.type === "radiobutton" ? (openBlock(), createElementBlock("div", _hoisted_15, [
-        createBaseVNode("fieldset", _hoisted_16, [
+      ])) : $data.parameter.type === "radiobutton" ? (openBlock(), createElementBlock("div", _hoisted_16, [
+        createBaseVNode("fieldset", _hoisted_17, [
           (openBlock(true), createElementBlock(Fragment, null, renderList($data.parameter.options, (option) => {
             return openBlock(), createElementBlock("div", {
               key: option.value,
@@ -781,27 +817,27 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 id: $options.paramId + "_input_" + option.value,
                 value: option.value,
                 checked: $data.value === option.value
-              }, null, 10, _hoisted_17), [
+              }, null, 10, _hoisted_18), [
                 [vModelRadio, $data.value]
               ]),
               createBaseVNode("label", {
                 for: $options.paramId + "_input_" + option.value
               }, [
-                createBaseVNode("span", _hoisted_19, [
+                createBaseVNode("span", _hoisted_20, [
                   option.img ? (openBlock(), createElementBlock("img", {
                     key: 0,
                     src: "/images/emundus/icons/" + option.img,
                     alt: option.altImg,
                     style: { "width": "16px" }
-                  }, null, 8, _hoisted_20)) : createCommentVNode("", true),
+                  }, null, 8, _hoisted_21)) : createCommentVNode("", true),
                   createTextVNode(" " + toDisplayString(_ctx.translate(option.label)), 1)
                 ])
-              ], 8, _hoisted_18)
+              ], 8, _hoisted_19)
             ]);
           }), 128))
         ])
-      ])) : $data.parameter.type === "toggle" ? (openBlock(), createElementBlock("div", _hoisted_21, [
-        createBaseVNode("div", _hoisted_22, [
+      ])) : $data.parameter.type === "toggle" ? (openBlock(), createElementBlock("div", _hoisted_22, [
+        createBaseVNode("div", _hoisted_23, [
           withDirectives(createBaseVNode("input", {
             type: "checkbox",
             "true-value": "1",
@@ -809,23 +845,24 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             class: "em-toggle-check",
             id: $options.paramId + "_input",
             "onUpdate:modelValue": _cache[9] || (_cache[9] = ($event) => $data.value = $event)
-          }, null, 8, _hoisted_23), [
+          }, null, 8, _hoisted_24), [
             [vModelCheckbox, $data.value]
           ]),
-          _cache[15] || (_cache[15] = createBaseVNode("strong", { class: "b em-toggle-switch" }, null, -1)),
-          _cache[16] || (_cache[16] = createBaseVNode("strong", { class: "b em-toggle-track" }, null, -1))
+          _cache[16] || (_cache[16] = createBaseVNode("strong", { class: "b em-toggle-switch" }, null, -1)),
+          _cache[17] || (_cache[17] = createBaseVNode("strong", { class: "b em-toggle-track" }, null, -1))
         ]),
         createBaseVNode("label", {
           for: $options.paramId + "_input",
           class: "tw-ml-2 !tw-mb-0 tw-font-bold tw-cursor-pointer tw-flex tw-items-center"
         }, [
-          $data.parameter.iconLabel ? (openBlock(), createElementBlock("span", _hoisted_25, toDisplayString($data.parameter.iconLabel), 1)) : createCommentVNode("", true),
+          $data.parameter.iconLabel ? (openBlock(), createElementBlock("span", _hoisted_26, toDisplayString($data.parameter.iconLabel), 1)) : createCommentVNode("", true),
           createTextVNode(" " + toDisplayString(_ctx.translate($data.parameter.label)), 1)
-        ], 8, _hoisted_24)
+        ], 8, _hoisted_25)
       ])) : $options.isInput ? withDirectives((openBlock(), createElementBlock("input", {
         key: 7,
         type: $data.parameter.type,
         class: normalizeClass(["form-control !tw-mb-0 tw-min-w-[30%]", $data.errors[$data.parameter.param] ? "tw-rounded-lg !tw-border-red-500" : ""]),
+        style: { "box-shadow": "none" },
         max: $data.parameter.type === "number" ? $data.parameter.max : null,
         min: void 0,
         placeholder: _ctx.translate($data.parameter.placeholder),
@@ -835,9 +872,9 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         readonly: $data.parameter.editable === false,
         onChange: _cache[11] || (_cache[11] = withModifiers(($event) => $options.checkValue($data.parameter), ["self"])),
         onFocusin: _cache[12] || (_cache[12] = ($event) => $options.clearPassword($data.parameter))
-      }, null, 42, _hoisted_26)), [
+      }, null, 42, _hoisted_27)), [
         [vModelDynamic, $data.value]
-      ]) : $data.parameter.type === "datetime" || $data.parameter.type === "date" ? (openBlock(), createBlock(_component_DatePicker, {
+      ]) : $data.parameter.type === "datetime" || $data.parameter.type === "date" || $data.parameter.type === "time" ? (openBlock(), createBlock(_component_DatePicker, {
         key: 8,
         id: $options.paramId,
         modelValue: $options.formattedValue,
@@ -845,8 +882,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         keepVisibleOnInput: true,
         popover: { visibility: "focus", placement: "right" },
         rules: { minutes: { interval: 10 } },
-        "time-accuracy": $data.parameter.type === "date" ? 2 : 0,
-        mode: $data.parameter.type === "date" ? "date" : "dateTime",
+        mode: $data.parameter.type ? $data.parameter.type : "dateTime",
         is24hr: "",
         "hide-time-header": "",
         "title-position": "left",
@@ -858,26 +894,32 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             value: $options.formatDateForDisplay(inputValue)
           }, toHandlers(inputEvents, true), {
             class: "form-control fabrikinput tw-w-full",
+            style: { "box-shadow": "none" },
             id: $options.paramId + "_input"
-          }), null, 16, _hoisted_27)
+          }), null, 16, _hoisted_28)
         ]),
         _: 1
-      }, 8, ["id", "modelValue", "time-accuracy", "mode", "locale"])) : createCommentVNode("", true),
-      $data.parameter.splitField ? (openBlock(), createElementBlock("span", _hoisted_28, toDisplayString($data.parameter.splitChar), 1)) : createCommentVNode("", true),
-      $data.parameter.endText ? (openBlock(), createElementBlock("span", _hoisted_29, toDisplayString(_ctx.translate($data.parameter.endText)), 1)) : createCommentVNode("", true),
+      }, 8, ["id", "modelValue", "mode", "locale"])) : $data.parameter.type === "component" ? (openBlock(), createBlock(resolveDynamicComponent($options.EventBooking), {
+        key: 9,
+        modelValue: $data.value,
+        "onUpdate:modelValue": _cache[14] || (_cache[14] = ($event) => $data.value = $event),
+        componentsProps: this.$props.componentsProps,
+        onValueUpdated: $options.bookingSlotIdUpdated
+      }, null, 40, ["modelValue", "componentsProps", "onValueUpdated"])) : createCommentVNode("", true),
+      $data.parameter.splitField ? (openBlock(), createElementBlock("span", _hoisted_29, toDisplayString($data.parameter.splitChar), 1)) : createCommentVNode("", true),
+      $data.parameter.endText ? (openBlock(), createElementBlock("span", _hoisted_30, toDisplayString(_ctx.translate($data.parameter.endText)), 1)) : createCommentVNode("", true),
       $data.parameter.splitField && $data.parameterSecondary ? (openBlock(), createBlock(_component_Parameter, {
-        key: 11,
-        class: normalizeClass("tw-w-96"),
+        key: 12,
         "parameter-object": $data.parameterSecondary,
         "multiselect-options": $props.multiselectOptions,
-        onValueUpdated: _cache[14] || (_cache[14] = ($event) => $options.regroupValue($data.parameterSecondary))
+        onValueUpdated: _cache[15] || (_cache[15] = ($event) => $options.regroupValue($data.parameterSecondary))
       }, null, 8, ["parameter-object", "multiselect-options"])) : createCommentVNode("", true)
     ], 2),
     $data.errors[$data.parameter.param] && !["yesno", "toggle"].includes($data.parameter.type) && $data.parameter.displayed ? (openBlock(), createElementBlock("div", {
       key: 2,
       class: normalizeClass(["tw-absolute tw-mt-1 tw-text-red-600 tw-min-h-[24px]", $data.errors[$data.parameter.param] ? "tw-opacity-100 " : "tw-opacity-0"]),
       id: "error-message-" + $data.parameter.param
-    }, toDisplayString(_ctx.translate($data.errors[$data.parameter.param])), 11, _hoisted_30)) : createCommentVNode("", true)
+    }, toDisplayString(_ctx.translate($data.errors[$data.parameter.param])), 11, _hoisted_31)) : createCommentVNode("", true)
   ]);
 }
 const Parameter = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render]]);

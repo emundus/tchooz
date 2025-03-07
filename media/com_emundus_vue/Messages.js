@@ -1,5 +1,5 @@
 import { P as Parameter } from "./Parameter.js";
-import { B as FetchClient, _ as _export_sfc, I as script, M as Modal, r as resolveComponent, o as openBlock, c as createElementBlock, f as createBlock, w as withCtx, a as createBaseVNode, t as toDisplayString, i as withModifiers, e as createCommentVNode, g as createVNode, l as createTextVNode, d as normalizeClass, n as normalizeStyle, h as withDirectives, z as vModelText, F as Fragment, b as renderList, v as vShow, J as withKeys } from "./app_emundus.js";
+import { C as FetchClient, _ as _export_sfc, J as script, M as Modal, r as resolveComponent, o as openBlock, c as createElementBlock, a as createBlock, f as withCtx, d as createBaseVNode, t as toDisplayString, g as withModifiers, b as createCommentVNode, h as createVNode, m as createTextVNode, n as normalizeClass, j as normalizeStyle, w as withDirectives, A as vModelText, F as Fragment, e as renderList, v as vShow, K as withKeys } from "./app_emundus.js";
 import { A as AttachDocument } from "./AttachDocument.js";
 import { S as Skeleton } from "./Skeleton.js";
 const client = new FetchClient("messenger");

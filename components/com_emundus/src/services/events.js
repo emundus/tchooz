@@ -4,6 +4,28 @@ import {FetchClient} from './fetchClient.js';
 const fetchClient = new FetchClient('events');
 
 export default {
+  async getEvents() {
+    try {
+      return await fetchClient.get('getevents');
+    } catch (e) {
+      return {
+        status: false,
+        error: e
+      };
+    }
+  },
+
+  async getEventsNames() {
+    try {
+      return await fetchClient.get('geteventsnames');
+    } catch (e) {
+      return {
+        status: false,
+        error: e
+      };
+    }
+  },
+
   // Getters
   async getLocations() {
     try {
@@ -52,6 +74,17 @@ export default {
   async getEvent(event_id) {
     try {
       return await fetchClient.get('getevent', {event_id: event_id});
+    } catch (e) {
+      return {
+        status: false,
+        error: e
+      };
+    }
+  },
+
+  async getEvents() {
+    try {
+      return await fetchClient.get('getevents');
     } catch (e) {
       return {
         status: false,
@@ -182,9 +215,20 @@ export default {
     }
   },
 
-  async getAvailabilitiesByCampaignsAndPrograms(start = '', end = '', location = 0, check_booking_limit_reached = 0) {
+  async editSlot(data) {
     try {
-      return await fetchClient.get('getavailabilitiesbycampaignsandprograms', {start: start, end: end, location: location, check_booking_limit_reached: check_booking_limit_reached});
+      return await fetchClient.post('editslot', data);
+    } catch (e) {
+      return {
+        status: false,
+        error: e
+      };
+    }
+  },
+
+  async getAvailabilitiesByCampaignsAndPrograms(start = '', end = '', location = 0, check_booking_limit_reached = 0, events_ids = []) {
+    try {
+      return await fetchClient.get('getavailabilitiesbycampaignsandprograms', {start: start, end: end, location: location, check_booking_limit_reached: check_booking_limit_reached, events_ids: events_ids});
     } catch (e) {
       return {
         status: false,

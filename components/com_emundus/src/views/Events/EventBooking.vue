@@ -6,6 +6,13 @@ import Info from "@/components/Utils/Info.vue";
 export default {
   name: "EventBooking",
   components: {Info},
+  props: {
+    componentsProps: {
+      type: Object,
+      required: false
+    }
+  },
+  emits: ['valueUpdated'],
   data() {
     return {
       loading: false,
@@ -28,44 +35,48 @@ export default {
     };
   },
   created() {
-    this.name = useGlobalStore().getDatas.name_element.value;
-    this.currentTimezone.offset = useGlobalStore().getDatas.offset.value;
-    this.currentTimezone.name = useGlobalStore().getDatas.timezone.value;
+
+    this.name = useGlobalStore().getDatas.name_element ? useGlobalStore().getDatas.name_element.value : null ;
+    this.currentTimezone.offset = useGlobalStore().getDatas.offset ? useGlobalStore().getDatas.offset.value : '1';
+    this.currentTimezone.name = useGlobalStore().getDatas.timezone ? useGlobalStore().getDatas.timezone.value : 'Europe/Paris';
 
     // If we want to filter the slots by location
-    let location_filter_elt = useGlobalStore().getDatas.location_filter_elt.value;
+    let location_filter_elt = useGlobalStore().getDatas.location_filter_elt ? useGlobalStore().getDatas.location_filter_elt.value : null;
     if(location_filter_elt && location_filter_elt !== '' && document.getElementById(location_filter_elt)) {
       location_filter_elt = document.getElementById(location_filter_elt);
     }
 
-    // First check if the user has already booked a slot
-    this.getMyBookings().then((bookings) => {
-      this.myBookings = bookings;
+    if(!this.$props.componentsProps)
+    {
+      // First check if the user has already booked a slot
+      this.getMyBookings().then((bookings) => {
+        this.myBookings = bookings;
 
-      if (this.myBookings.length > 0) {
-        this.slotSelected = this.myBookings[0].availability;
-      }
+        if (this.myBookings.length > 0) {
+          this.slotSelected = this.myBookings[0].availability;
+        }
 
-      if (this.myBookings.length === 0 && location_filter_elt) {
-        location_filter_elt.addEventListener('change', (event) => {
-          this.location = event.target.value;
+        if (this.myBookings.length === 0 && location_filter_elt) {
+          location_filter_elt.addEventListener('change', (event) => {
+            this.location = event.target.value;
+
+            if(this.location && this.location !== 0 && this.location !== '0' && this.location !== '') {
+              this.getSlots();
+            } else {
+              this.slots = [];
+              this.availableDates = [];
+            }
+          });
 
           if(this.location && this.location !== 0 && this.location !== '0' && this.location !== '') {
             this.getSlots();
-          } else {
-            this.slots = [];
-            this.availableDates = [];
           }
-        });
-
-        this.location = location_filter_elt.value;
-        if(this.location && this.location !== 0 && this.location !== '0' && this.location !== '') {
+        } else {
           this.getSlots();
         }
-      } else {
-        this.getSlots();
-      }
-    });
+      });
+    }
+    this.getSlots();
   },
   methods: {
     async getMyBookings() {
@@ -83,7 +94,7 @@ export default {
     async getSlots() {
       this.loading = true;
       try {
-        const responseSlots = await eventsService.getAvailabilitiesByCampaignsAndPrograms(new Date().toISOString().split('T'), '', this.location, 1);
+        const responseSlots = await eventsService.getAvailabilitiesByCampaignsAndPrograms(new Date().toISOString().split('T'), '', this.location, 1, this.$props.componentsProps ? [this.$props.componentsProps.event_id] :[]);
         let slots = responseSlots.data;
 
         const groupedSlots = slots.reduce((accumulator, slot) => {
@@ -120,6 +131,18 @@ export default {
 
         this.availableDates = [...new Set(this.slots.map(slot => new Date(slot.start).toISOString().split('T')[0]))];
         this.availableDates.sort((a, b) => new Date(a) - new Date(b));
+
+        if(this.$props.componentsProps)
+        {
+          const slotId = this.$props.componentsProps.slot_id;
+          const isSlotIdValid = this.slots.some(slotGroup =>
+              slotGroup.slots.some(slot => slot.id === slotId)
+          );
+
+          if (isSlotIdValid) {
+            this.slotSelected = slotId;
+          }
+        }
 
         this.loading = false;
 
@@ -172,34 +195,54 @@ export default {
         .map(slot => {
           let id = 0;
           for (const innerSlot of slot.slots) {
-            if (innerSlot.capacity > innerSlot.bookers) {
-              id = innerSlot.id;
-              break;
+            if(!(this.$props.componentsProps))
+            {
+              if (innerSlot.capacity > innerSlot.bookers) {
+                id = innerSlot.id;
+                break;
+              }
+            }
+            else
+            {
+              if (innerSlot.id === this.$props.componentsProps.slot_id && innerSlot.capacity + 1 > innerSlot.bookers) {
+                id = innerSlot.id;
+                break;
+              }
+              else if (innerSlot.capacity > innerSlot.bookers) {
+                id = innerSlot.id;
+                break;
+              }
             }
           }
-
           return {
             ...slot,
             id,
             displayTime: new Date(slot.start).toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})
           };
         });
+    },
+    updateSelectedSlots: function (slot_id) {
+      this.slotSelected = slot_id;
+      if(this.$props.componentsProps)
+      {
+        this.$emit('valueUpdated', slot_id);
+      }
+    },
+    disabledSlot: function (slot)
+    {
+      if(this.$props.componentsProps && slot.id === this.$props.componentsProps.slot_id)
+      {
+        return slot.totalBookers >= slot.totalCapacity + 1;
+      }
+      return slot.totalBookers >= slot.totalCapacity;
+
     }
   },
   computed: {
-    visibleDates: function () {
-      // ! make sure to not create a recursive loop by changing the currentStartIndex, who is watched
-      // TODO: computed properties should not update the data they are based on
-      if (this.currentStartIndex >= this.availableDates.length) {
-        this.currentStartIndex = Math.max(0, this.availableDates.length - 3);
-      }
-      if (this.currentStartIndex < 0) {
-        this.currentStartIndex = 0;
-      }
-
+    visibleDates: function() {
       return this.availableDates
-        .slice(this.currentStartIndex, this.currentStartIndex + 3)
-        .map(dateString => new Date(dateString));
+          .slice(this.currentStartIndex, this.currentStartIndex + 3)
+          .map(dateString => new Date(dateString));
     },
 
     selectedSlotInfo: function () {
@@ -217,7 +260,11 @@ export default {
             minutes = minutes + ' ' + this.translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_MINUTES');
           } else {
             const hours = Math.floor(minutes / 60);
-            minutes = hours + ' ' + this.translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_HOURS');
+            if(hours > 1) {
+              minutes = hours + ' ' + this.translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_HOURS');
+            } else {
+              minutes = hours + ' ' + this.translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_HOUR');
+            }
           }
 
           text = this.translate('COM_EMUNDUS_EVENT_SLOT_RECAP');
@@ -234,6 +281,15 @@ export default {
     },
     displayedTimezone: function () {
       return this.currentTimezone.name.replace('_', ' ') + ' (UTC' + (this.currentTimezone.offset > 0 ? '+' : '') + this.currentTimezone.offset + ')';
+    }
+  },
+  watch: {
+    currentStartIndex(newIndex) {
+      if (newIndex >= this.availableDates.length) {
+        this.currentStartIndex = Math.max(0, this.availableDates.length - 3);
+      } else if (newIndex < 0) {
+        this.currentStartIndex = 0;
+      }
     }
   },
 };
@@ -283,11 +339,12 @@ export default {
                   :class="{
                     'tw-border-profile-full tw-bg-profile-light': slotSelected === slot.id,
                     'hover:tw-bg-neutral-400': slotSelected !== slot.id,
-                    'tw-opacity-50 tw-line-through tw-cursor-not-allowed': slot.totalBookers >= slot.totalCapacity
+                    'tw-opacity-50 tw-line-through tw-cursor-not-allowed': disabledSlot(slot)
+
                   }"
                   :key="slot.id"
-                  :disabled="slot.totalBookers >= slot.totalCapacity"
-                  @click="this.slotSelected = slot.id">
+                  :disabled="disabledSlot(slot)"
+                  @click="updateSelectedSlots(slot.id)">
                 {{ slot.displayTime }}
               </button>
 

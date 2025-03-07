@@ -89,30 +89,28 @@ export default {
             trackBy: 'value'
           },
           value: 0,
-          hideLabel: true,
+          hideLabel: false,
           label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_GLOBAL_MANAGER',
-          placeholder: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_GLOBAL_USERS_PLACEHOLDER',
-          icon: 'group',
+          placeholder: '',
           displayed: true,
           optional: true,
         },
         {
           param: 'start_date',
-          type: 'datetime',
+          type: 'time',
           placeholder: '',
           value: 0,
-          hideLabel: true,
+          hideLabel: false,
           label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_START_DATE',
-          icon: 'schedule',
           helptext: '',
           displayed: true
         },
         {
           param: 'end_date',
-          type: 'datetime',
+          type: 'time',
           placeholder: '',
           value: 0,
-          hideLabel: true,
+          hideLabel: false,
           label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_END_DATE',
           helptext: '',
           displayed: true
@@ -122,9 +120,8 @@ export default {
           type: 'select',
           placeholder: '',
           value: 0,
-          hideLabel: true,
+          hideLabel: false,
           label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_ROOM',
-          icon: 'location_on',
           helptext: '',
           displayed: true,
           optional: true,
@@ -133,12 +130,11 @@ export default {
         {
           param: 'slot_capacity',
           type: 'text',
-          value: '',
-          hideLabel: true,
+          value: 1,
+          hideLabel: false,
           label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAPACITY',
-          placeholder: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAPACITY_PLACEHOLDER',
-          icon: 'pin',
-          helptext: '',
+          placeholder: '',
+          helptext: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAPACITY_PLACEHOLDER',
           displayed: true,
           optional: true,
           options: [],
@@ -147,10 +143,9 @@ export default {
           param: 'more_infos',
           type: 'textarea',
           value: '',
-          hideLabel: true,
+          hideLabel: false,
           label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_MORE_INFOS',
           placeholder: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_MORE_INFOS_PLACEHOLDER',
-          icon: 'notes',
           helptext: '',
           displayed: true,
           optional: true,
@@ -170,9 +165,18 @@ export default {
       this.fields.find(field => field.param === 'start_date').value = this.roundToQuarter(this.date);
 
       const date = new Date(this.date);
-      date.setMinutes(date.getMinutes() + 30);
+      if(this.$props.duration_type === 'minutes') {
+        date.setMinutes(date.getMinutes() + this.$props.duration);
+      }
+      else {
+        date.setHours(date.getHours() + this.$props.duration);
+      }
 
       this.fields.find(field => field.param === 'end_date').value = this.roundToQuarter(null, date);
+
+      // minDate is the end date + 1 day
+      this.minDate = new Date(date);
+      this.minDate.setDate(this.minDate.getDate() + 1);
     } else {
       this.fields.find(field => field.param === 'start_date').value = this.$props.slot.start;
       this.fields.find(field => field.param === 'end_date').value = this.$props.slot.end;
@@ -228,7 +232,7 @@ export default {
             return true;
           }
 
-          if(field.type === 'datetime') {
+          if(field.type === 'time') {
             slot[field.param] = this.formatDate(new Date(field.value));
           }
           else if(field.type === 'multiselect') {
@@ -447,13 +451,6 @@ export default {
         this.repeat_dates.splice(idx, 1);
       }
     },
-
-    onFormChange(parameter,oldValue,value) {
-      if(parameter.param == 'end_date') {
-        // Set min date for repeat_dates
-        this.minDate = new Date(value);
-      }
-    }
   },
   computed: {
     disabledSubmit: function () {
@@ -508,13 +505,13 @@ export default {
       <div v-for="(field) in fields"
            v-show="field.displayed"
            :key="field.param"
-           :class="{'-tw-mt-3 tw-ml-7': field.param === 'end_date', 'tw-w-fit': field.param === 'start_date' || field.param === 'end_date'}"
+           :class="{'tw-w-fit': field.param === 'start_date' || field.param === 'end_date'}"
       >
         <Parameter
             :ref="'slot_' + field.param"
             :parameter-object="field"
             :multiselect-options="field.multiselectOptions ? field.multiselectOptions : null"
-            @valueUpdated="onFormChange"
+            :help-text-type="'above'"
         />
       </div>
 
@@ -545,7 +542,7 @@ export default {
             >
             </DatePicker>
 
-            <div class="tw-flex tw-items-center tw-gap-2 tw-flex-wrap">
+            <div class="tw-flex tw-items-center tw-gap-2 tw-flex-wrap tw-overflow-y-auto" style="max-height: 135px">
               <div v-for="date in repeat_dates" class="tw-flex tw-items-center tw-gap-1 tw-px-2 tw-py-1 tw-bg-profile-full tw-text-white tw-rounded-full">
                 <span @click="togglePopover">{{ formatDuplicateDate(date.id) }}</span>
                 <span class="material-symbols-outlined tw-text-white" @click="removeDate(date.id)">close</span>

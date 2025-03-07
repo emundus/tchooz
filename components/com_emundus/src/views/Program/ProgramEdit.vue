@@ -164,7 +164,6 @@ export default {
       return this.tabs.find(tab => tab.active);
     },
     activeBackground() {
-      console.log(this.selectedMenuItem.code);
       return this.selectedMenuItem.code === 'general' ? 'var(--em-coordinator-bg)' : '#fff';
     }
   }

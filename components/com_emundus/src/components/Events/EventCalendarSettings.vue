@@ -1,24 +1,22 @@
 <script>
-import {shallowRef} from "vue";
+import {shallowRef,nextTick} from "vue";
+import Swal from "sweetalert2";
 
 /* Components */
 import CalendarSlotPopup from "@/components/Events/Popup/CalendarSlotPopup.vue";
+import EventDay from "@/components/Events/EventDay.vue";
 
 /* Schedule X */
 import {ScheduleXCalendar} from '@schedule-x/vue'
 import {
   createCalendar,
-  createViewDay,
-  createViewMonthAgenda,
-  createViewMonthGrid,
   createViewWeek,
-    viewWeek
+  viewWeek
 } from '@schedule-x/calendar'
 import '@schedule-x/theme-default/dist/index.css'
 import {createEventsServicePlugin} from '@schedule-x/events-service'
-import { createCalendarControlsPlugin } from '@schedule-x/calendar-controls'
-import Swal from "sweetalert2";
-import EventDay from "@/components/Events/EventDay.vue";
+import {createCalendarControlsPlugin} from '@schedule-x/calendar-controls'
+import {translations, mergeLocales} from '@schedule-x/translations'
 
 const eventsServicePlugin = createEventsServicePlugin();
 const calendarControls = createCalendarControlsPlugin()
@@ -34,10 +32,9 @@ const createCalendarConfig = (vm) => ({
   },
   weekOptions: {
     gridHeight: 900,
-    eventWidth: 95,
+    eventWidth: 100,
   },
   views: [
-    createViewDay(),
     createViewWeek()
   ],
   events: [],
@@ -46,29 +43,39 @@ const createCalendarConfig = (vm) => ({
     calendarControls
   ],
   callbacks: {
-    /**
-     * Runs before the calendar is rendered
-     * */
-    beforeRender: ($app) => {
-      const range = $app.calendarState.range.value
-    },
     onClickDateTime: (dateTime) => {
       vm.openSlotPopup(dateTime);
     },
     onEventClick: (event) => {
       vm.openSlotPopup(null, event);
     },
-    onRangeUpdate(range) {
-      let start = new Date(range.start);
-      let end = new Date(range.end);
-
-      if (start.getDate() === end.getDate()) {
-        vm.setView('day');
-      } else {
-        vm.setView('week');
-      }
+    onRender($app) {
+      nextTick(() => {
+        vm.addEventListeners();
+        vm.updateCellSize();
+      });
     },
-  }
+    onRangeUpdate(range) {
+      nextTick(() => {
+        vm.addEventListeners();
+      });
+    }
+  },
+  translations: mergeLocales(
+      translations,
+      {
+        frFR: {
+          'Week': 'Vue semaine',
+          'Day': 'Vue jour',
+          'Today': 'Revenir à aujourd\'hui',
+        },
+        enGB: {
+          'Week': 'Week View',
+          'Day': 'Day View',
+          'Today': 'Back to today',
+        }
+      }
+  ),
 });
 
 export default {
@@ -87,6 +94,21 @@ export default {
       dateClicked: null,
       currentSlot: null,
       view: 'week',
+
+      selection: {
+        visible: false,
+        top: 0,
+        left: 0,
+        width: 0,
+        height: 0,
+      },
+      cellHeight: 50,
+      cellWidth: 100,
+      lastMouseX: 0,
+      lastMouseY: 0,
+      lastMouseTarget: null,
+
+      animationFrame: null,
     }
   },
   mounted() {
@@ -94,30 +116,59 @@ export default {
     const vm = {
       openSlotPopup: this.openSlotPopup,
       dateClicked: this.dateClicked,
-      setView: this.setView,
+      addEventListeners: this.addEventListeners,
+      updateCellSize: this.updateCellSize
     };
 
     // Initialize calendarApp with shallowRef
     this.calendarApp = createCalendar(createCalendarConfig(vm));
 
-    for(const slot of this.$props.event.slots) {
+    for (const slot of this.$props.event.slots) {
       slot.color = this.event.color;
     }
 
-    // Set selected date corresponding to last slot
+    // Set selected date corresponding to first slot in future
     if (this.$props.event.slots.length > 0) {
-      let selectedDate = new Date(this.$props.event.slots[this.$props.event.slots.length - 1].start);
-      // Convert selectedDate to a string in the format 'YYYY-MM-DD'
+      let key = 0;
+      //let selectedDate = new Date(this.$props.event.slots[this.$props.event.slots.length - 1].start);
+      while (this.$props.event.slots[key] && this.$props.event.slots[key].start < new Date().toISOString()) {
+        key++;
+      }
+      let selectedDate = new Date(this.$props.event.slots[key].start);
+
+      //let selectedDate = new Date(this.$props.event.slots[0].start);
       selectedDate = selectedDate.toISOString().split('T')[0];
       calendarControls.setDate(selectedDate);
     }
 
     eventsServicePlugin.set(this.$props.event.slots);
   },
+  beforeUnmount() {
+    this.removeEventListeners();
+  },
   created() {
     this.loading = false;
   },
   methods: {
+    addEventListeners() {
+      document.querySelectorAll('.sx__time-grid-day').forEach((el) => {
+        el.addEventListener('mousemove', this.handleMouseMove);
+        el.addEventListener('mouseleave', this.hideSelection);
+      });
+
+      window.addEventListener('scroll', this.updateSelectionOnScroll);
+      window.addEventListener('resize', this.updateCellSize);
+    },
+    removeEventListeners() {
+      document.querySelectorAll('.sx__time-grid-day').forEach((el) => {
+        el.removeEventListener('mousemove', this.handleMouseMove);
+        el.removeEventListener('mouseleave', this.hideSelection);
+      });
+
+      window.removeEventListener('scroll', this.updateSelectionOnScroll);
+      window.removeEventListener('resize', this.updateCellSize);
+    },
+
     openSlotPopup(date, slot = null) {
       // Do not open if no duration
       if (!this.event.slot_duration) {
@@ -135,13 +186,13 @@ export default {
         return;
       }
 
-      if(slot) {
+      if (slot) {
         slot.repeat_dates = [];
 
         // Search if other slots are linked to this slot via parent_slot_id
         let parent_slot_id = slot.id;
         let parent_slot = this.$props.event.slots.find(s => s.id === slot.parent_slot_id);
-        if(parent_slot) {
+        if (parent_slot) {
           parent_slot_id = parent_slot.id;
         }
         let child_slots = this.$props.event.slots.filter(s => s.parent_slot_id !== 0 && s.parent_slot_id === parent_slot_id);
@@ -176,9 +227,62 @@ export default {
       eventsServicePlugin.remove(slot_id);
     },
 
-    setView(view) {
-      this.view = view;
-    }
+    updateCellSize() {
+      this.cellWidth = document.querySelector('.sx__time-grid-day').offsetWidth;
+      this.cellHeight = document.querySelector('.sx__week-grid__hour').offsetHeight;
+      if(this.$props.event.slot_duration_type === 'minutes') {
+        this.cellHeight = this.cellHeight / 60 * this.$props.event.slot_duration;
+      } else {
+        this.cellHeight = this.cellHeight * this.$props.event.slot_duration;
+      }
+    },
+
+    handleMouseMove(event) {
+      if (!this.$refs.calendar) return;
+
+      this.lastMouseX = event.clientX;
+      this.lastMouseY = event.clientY;
+      this.lastMouseTarget = event.target;
+
+      // If event.target.id does not have sx__time-grid-day class, return
+      if (!event.target.classList.contains('sx__time-grid-day')) {
+        this.hideSelection();
+        return;
+      }
+
+      if (this.animationFrame) {
+        cancelAnimationFrame(this.animationFrame);
+      }
+
+      this.animationFrame = requestAnimationFrame(() => {
+        const rect = event.target;
+        let calendarGrid = document.querySelector('.sx__view-container ');
+        const rectCalendar = calendarGrid.getBoundingClientRect();
+
+        const header = document.querySelector('.sx__calendar-header').offsetHeight + document.querySelector('.sx__week-header').offsetHeight;
+        const relativeX = rect.offsetLeft + 23;
+        const relativeY = (event.clientY - rectCalendar.top) + header + 20;
+
+        this.selection = {
+          visible: true,
+          top: relativeY,
+          left: relativeX,
+          width: this.cellWidth,
+          height: this.cellHeight,
+        };
+
+        this.animationFrame = null;
+      });
+    },
+    updateSelectionOnScroll() {
+      if (this.selection.visible) {
+        // Force une mise à jour quand on scroll
+        this.handleMouseMove({ clientX: this.lastMouseX, clientY: this.lastMouseY, target: this.lastMouseTarget });
+      }
+    },
+    hideSelection() {
+      this.selection.visible = false;
+    },
   },
   computed: {}
 }
@@ -213,18 +317,40 @@ export default {
           </span>
         </div>
 
-        <div class="tw-mt-4" v-if="calendarApp">
-          <ScheduleXCalendar :calendar-app="calendarApp">
+        <div class="tw-mt-4 calendar-container" v-if="calendarApp" ref="calendar">
+          <ScheduleXCalendar :calendar-app="calendarApp" class="tw-relative">
             <template #timeGridEvent="{ calendarEvent }">
-              <EventDay :calendar-event="calendarEvent" :view="view" :preset="'full'" />
+              <EventDay :calendar-event="calendarEvent" :view="view" :preset="'full'"/>
             </template>
           </ScheduleXCalendar>
+          <div
+              v-if="selection.visible"
+              class="selection-box"
+              :style="{
+                top: selection.top + 'px',
+                left: selection.left + 'px',
+                width: selection.width + 'px',
+                height: selection.height + 'px'
+              }"
+          ></div>
         </div>
       </div>
     </div>
   </div>
 </template>
 
-<style scoped>
-
+<style>
+.selection-box {
+  position: absolute;
+  background: hsl(from var(--em-profile-color) h s l / 15%);
+  border: 1px solid var(--em-profile-color);
+  pointer-events: none;
+  transition: top 0.1s, left 0.1s;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.sx-vue-calendar-wrapper {
+  height: 100% !important;
+  max-height: unset !important;
+}
 </style>

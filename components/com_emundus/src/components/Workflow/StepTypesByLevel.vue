@@ -56,9 +56,6 @@ export default {
   },
   mounted() {
     this.types = this.defaultTypes;
-    console.log(this.level);
-
-    console.log(this.levelMax);
   },
   methods: {
     addStepType() {

@@ -264,8 +264,6 @@ export default {
                     fields,
                     this.object.table.name
                   ).then(async (rep) => {
-                    console.log(rep);
-
                     if (rep.status) {
                       for (const translation of Object.values(rep.data)) {
                         this.translations[data.id] = {};

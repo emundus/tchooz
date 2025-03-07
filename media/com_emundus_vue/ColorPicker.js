@@ -1,4 +1,4 @@
-import { _ as _export_sfc, o as openBlock, c as createElementBlock, a as createBaseVNode, n as normalizeStyle, h as withDirectives, v as vShow, F as Fragment, b as renderList, d as normalizeClass } from "./app_emundus.js";
+import { _ as _export_sfc, o as openBlock, c as createElementBlock, d as createBaseVNode, j as normalizeStyle, w as withDirectives, v as vShow, F as Fragment, e as renderList, n as normalizeClass } from "./app_emundus.js";
 const basicPreset = [
   "red-1",
   "red-2",
@@ -23,6 +23,16 @@ const basicPreset = [
   "grey-2",
   "black"
 ];
+const darkPreset = [
+  "red-2",
+  "pink-2",
+  "purple-2",
+  "blue-3",
+  "green-2",
+  "orange-2",
+  "brown",
+  "black"
+];
 const extractPropertyFromPreset = (presetName) => {
   if (typeof presetName !== "string") {
     return null;
@@ -35,6 +45,17 @@ const extractPropertyFromPreset = (presetName) => {
       swatches.push(color);
     }
     return swatches;
+  } else if (presetName === "dark" && typeof darkPreset === "object") {
+    let root = document.querySelector(":root");
+    let variables = getComputedStyle(root);
+    let swatches = [];
+    for (const swatch of darkPreset) {
+      let color = variables.getPropertyValue("--em-" + swatch);
+      swatches.push(color);
+    }
+    return swatches;
+  } else {
+    return null;
   }
 };
 const _sfc_main = {

@@ -39,6 +39,7 @@
           v-model:number-of-items-to-display="numberOfItemsToDisplay"
           @select-tab="onCheckAllitems"
           @action="onClickAction"
+          @exp="onClickExport"
           @update-items="getListItems"
       />
 
@@ -127,8 +128,10 @@
                   }"
               >
                 <span @click="onClickAction(editAction, item.id, false, $event)"
-                      class="hover:tw-underline"
-                      :class="{'tw-font-semibold tw-line-clamp-2 tw-min-h-[48px]':  viewType === 'blocs'}"
+                      :class="{
+                        'tw-font-semibold tw-line-clamp-2 tw-min-h-[48px]':  viewType === 'blocs',
+                        'hover:tw-underline': editAction
+                      }"
                       :title="item.label[params.shortlang]">{{ item.label[params.shortlang] }}</span>
               </td>
               <td class="columns tw-p-4"
@@ -145,7 +148,8 @@
                         v-html="tag.value"></span>
                 </div>
                 <div v-else-if="column.hasOwnProperty('long_value')">
-                  <span @click="displayLongValue($event,column.long_value)" class="tw-mt-2 tw-mb-2" :class="column.classes"
+                  <span @click="displayLongValue($event,column.long_value)" class="tw-mt-2 tw-mb-2"
+                        :class="column.classes"
                         v-html="column.value"></span>
                 </div>
                 <span v-else class="tw-mt-2 tw-mb-2" :class="column.classes" v-html="column.value"></span>
@@ -158,7 +162,8 @@
               >
                 <hr v-if="viewType === 'blocs'" class="tw-w-full tw-mt-1.5 tw-mb-3">
                 <div :class="{'tw-flex tw-justify-between tw-w-full': viewType === 'blocs'}">
-                  <a v-if="viewType === 'blocs' && editAction" @click="onClickAction(editAction, item.id, false, $event)"
+                  <a v-if="viewType === 'blocs' && editAction"
+                     @click="onClickAction(editAction, item.id, false, $event)"
                      class="tw-btn-primary tw-text-sm tw-cursor-pointer tw-w-auto">
                     {{ translate(editAction.label) }}
                   </a>
@@ -173,25 +178,46 @@
                     </button>
 
                     <button v-for="action in iconActions" :key="action.name"
-                          class="tw-btn-primary !tw-w-auto tw-flex tw-items-center tw-gap-1"
-                          :class="[
+                            v-show="action.display"
+                            class="tw-btn-primary !tw-w-auto tw-flex tw-items-center tw-gap-1"
+                            :class="[
                             action.buttonClasses,
                             {
                               'tw-hidden': !(typeof action.showon === 'undefined' || evaluateShowOn(item, action.showon))
                             }
                           ]"
-                          @click="onClickAction(action, item.id, false, $event)"
+                            @click="onClickAction(action, item.id, false, $event)"
                     >
                       <span class="popover-toggle-btn tw-cursor-pointer"
-                            :class="{
+                            :class="[
+                              action.spanClasses,
+                              {
 															'material-symbols-outlined': action.iconOutlined,
 															'material-icons': !action.iconOutlined
-														}"
+														  }
+                            ]"
                       >
 												{{ action.icon }}
                       </span>
                     </button>
 
+                      <div v-if="showModal && currentComponentElementId === item.id">
+                        <Teleport to=".com_emundus_vue">
+                          <modal
+                              :name="'modal-component'"
+                              transition="nice-modal-fade"
+                              :class ="'placement-center tw-rounded tw-shadow-modal tw-px-4 tw-max-h-[80vh] tw-overflow-y-auto'"
+                              :width="'600px'"
+                              :delay="100"
+                              :adaptive="true"
+                              :clickToClose="false"
+                              @click.stop
+
+                          >
+                          <component :is="resolvedComponent" :slot="item" @close="closePopup()" @update-items="getListItems()"/>
+                        </modal>
+                        </Teleport>
+                      </div>
                     <popover
                         :position="'left'"
                         v-if="tabActionsPopover && tabActionsPopover.length > 0 && filterShowOnActions(tabActionsPopover, item).length"
@@ -215,21 +241,39 @@
             </tr>
             </tbody>
           </table>
+
           <div v-else-if="viewType === 'calendar'">
             <Calendar
                 :items="items"
-                :edit-action="editAction"
+                :edit-week-action="editWeekAction"
                 @on-click-action="onClickAction"
+                @update-items="getListItems()"
             />
           </div>
+
+          <div v-if="showModal && currentComponentElementId === null">
+              <modal
+                  :name="'modal-component'"
+                  transition="nice-modal-fade"
+                  :class ="'placement-center tw-rounded tw-shadow-modal tw-px-4 tw-max-h-[80vh] tw-overflow-y-auto'"
+                  :width="'600px'"
+                  :delay="100"
+                  :adaptive="true"
+                  :clickToClose="false"
+                  @click.stop
+              >
+                <component :is="resolvedComponent" @close="closePopup()" @update-items="getListItems()"/>
+              </modal>
+          </div>
+
           <Gantt v-else-if="viewType === 'gantt'"
                  :language="params.shortlang"
                  :periods="displayedItems"
           ></Gantt>
         </div>
-        <div v-else id="empty-list" class="noneDiscover tw-text-center" v-html="noneDiscoverTranslation"></div>
-      </div>
 
+        <NoResults v-else :message="currentTab.noData"/>
+      </div>
     </div>
   </div>
 </template>
@@ -247,23 +291,32 @@ import Skeleton from '@/components/Skeleton.vue';
 import Popover from '@/components/Popover.vue';
 import Gantt from '@/components/Gantt/Gantt.vue';
 import Calendar from "@/views/Events/Calendar.vue";
+import Modal from "@/components/Modal.vue";
+import EditSlot from "@/views/Events/EditSlot.vue";
 
 /* Services */
 import settingsService from '@/services/settings.js';
+import userService from '@/services/user.js';
 import {FetchClient} from '../services/fetchClient.js';
 
 /* Stores */
 import {useGlobalStore} from "@/stores/global.js";
+import NoResults from "@/components/Utils/NoResults.vue";
+
+
 
 export default {
   name: 'List',
   components: {
+    Modal,
+    NoResults,
     Navigation,
     Head,
     Calendar,
     Skeleton,
     Popover,
-    Gantt
+    Gantt,
+    EditSlot
   },
   props: {
     defaultLists: {
@@ -283,6 +336,9 @@ export default {
         'items': false,
         'filters': true
       },
+      components: {
+        EditSlot
+      },
 
       lists: {},
       type: 'forms',
@@ -292,7 +348,7 @@ export default {
       items: {},
 
       title: '',
-      viewType: 'table',
+      viewType: null,
       defaultViewsOptions: [
         {value: 'table', icon: 'dehaze'},
         {value: 'blocs', icon: 'grid_view'}
@@ -307,6 +363,10 @@ export default {
 
       checkedItems: [],
       numberOfItemsToDisplay: 25,
+
+      currentComponent: null,
+      currentComponentElementId: null,
+      showModal: false,
     }
   },
   created() {
@@ -344,84 +404,44 @@ export default {
 
   methods: {
     initList() {
-      if (this.defaultLists !== null) {
-        this.lists = JSON.parse(atob(this.defaultLists));
-        if (typeof this.lists[this.type] === 'undefined') {
-          console.error('List type ' + this.type + ' does not exist');
-          window.location.href = '/';
-        }
-
-        this.currentList = this.lists[this.type];
-        if (Object.prototype.hasOwnProperty.call(this.params, 'tab')) {
-          this.onSelectTab(this.params.tab);
-        } else {
-          const sessionTab = sessionStorage.getItem('tchooz_selected_tab/' + document.location.hostname);
-          if (sessionTab !== null && this.currentList.tabs.some(tab => tab.key === sessionTab)) {
-            this.onSelectTab(sessionTab)
-          } else {
-            this.onSelectTab(this.currentList.tabs[0].key)
-          }
-        }
-
-        let availableViews = this.currentTab.viewsOptions ? this.currentTab.viewsOptions : this.defaultViewsOptions;
-        this.viewType = localStorage.getItem('tchooz_view_type/' + document.location.hostname);
-        let isViewTypeAvailable = availableViews.some(view => view.value === this.viewType);
-
-        if (
-            this.viewType === null ||
-            typeof this.viewType === 'undefined' ||
-            !isViewTypeAvailable
-        ) {
-          this.viewType = availableViews[0].value;
-
-          if(this.viewType === null || typeof this.viewType === 'undefined') {
-            // Do not update session storage if the view type is just no available in this menu
-            localStorage.setItem('tchooz_view_type/' + document.location.hostname, this.viewType);
-          }
-        }
-
-        /*if(this.type === 'events') {
-          let calendarView = {value: 'calendar', icon: 'calendar_today'};
-          this.viewTypeOptions.push(calendarView);
-        }*/
-
-        this.loading.lists = false;
-        this.getListItems();
-      } else {
-        this.getLists();
+      this.lists = JSON.parse(atob(this.defaultLists));
+      if (typeof this.lists[this.type] === 'undefined') {
+        console.error('List type ' + this.type + ' does not exist');
+        window.location.href = '/';
       }
-    },
 
-    getLists() {
-      settingsService.getOnboardingLists().then(response => {
-        if (response.status) {
-          this.lists = response.data;
-
-          if (typeof this.lists[this.type] === 'undefined') {
-            console.error('List type ' + this.type + ' does not exist');
-            window.location.href = '/';
-          }
-
-          this.currentList = this.lists[this.type];
-          if (Object.prototype.hasOwnProperty.call(this.params, 'tab')) {
-            this.onSelectTab(this.params.tab);
-          } else {
-            const sessionTab = sessionStorage.getItem('tchooz_selected_tab/' + document.location.hostname);
-            if (sessionTab !== null && typeof this.currentList.tabs.find(tab => tab.key === sessionTab) !== 'undefined') {
-              this.onSelectTab(sessionTab)
-            } else {
-              this.onSelectTab(this.currentList.tabs[0].key)
-            }
-          }
-
-          this.loading.lists = false;
-
-          this.getListItems();
+      this.currentList = this.lists[this.type];
+      if (Object.prototype.hasOwnProperty.call(this.params, 'tab')) {
+        this.onSelectTab(this.params.tab);
+      } else {
+        const sessionTab = sessionStorage.getItem('tchooz_selected_tab/' + document.location.hostname);
+        if (sessionTab !== null && this.currentList.tabs.some(tab => tab.key === sessionTab)) {
+          this.onSelectTab(sessionTab)
         } else {
-          console.error('Error while getting onboarding lists');
-          this.loading.lists = false;
+          this.onSelectTab(this.currentList.tabs[0].key)
         }
-      });
+      }
+
+      let availableViews = this.currentTab.viewsOptions ? this.currentTab.viewsOptions : this.defaultViewsOptions;
+      this.viewType = localStorage.getItem('tchooz_view_type/' + document.location.hostname);
+      let isViewTypeAvailable = availableViews.some(view => view.value === this.viewType);
+
+      if (
+          this.viewType === null ||
+          typeof this.viewType === 'undefined' ||
+          !isViewTypeAvailable
+      ) {
+        this.viewType = availableViews[0].value;
+
+        if (this.viewType === null || typeof this.viewType === 'undefined') {
+          // Do not update session storage if the view type is just no available in this menu
+          localStorage.setItem('tchooz_view_type/' + document.location.hostname, this.viewType);
+        }
+      }
+
+      this.loading.lists = false;
+
+      this.getListItems();
     },
 
     orderByColumn(column) {
@@ -430,7 +450,7 @@ export default {
       this.getListItems(1, this.selectedListTab);
     },
 
-    getListItems(page = 1, tab = null) {
+    async getListItems(page = 1, tab = null) {
       this.checkedItems = [];
 
       if (tab === null) {
@@ -449,6 +469,26 @@ export default {
               lastSearch: '',
               debounce: null
             };
+          }
+
+          for(const action of tab.actions) {
+            action.display = true;
+
+            if(action.acl) {
+              const acl_options = action.acl.split('|');
+
+              if(acl_options.length === 2) {
+                userService.getAcl(acl_options[0], acl_options[1]).then(response => {
+                  if(response.status) {
+                    action.display = response.right;
+                  } else {
+                    action.display = false;
+                  }
+                });
+              } else {
+                action.display = false;
+              }
+            }
           }
 
           // Init search value from sessionStorage
@@ -476,6 +516,11 @@ export default {
                   url += '&' + filter.key + '=' + filter.value;
                 }
               });
+            }
+
+            url += '&view=' + this.viewType;
+            if (this.viewType == 'calendar') {
+              // Add range of dates to the URL
             }
 
             try {
@@ -525,7 +570,7 @@ export default {
 
           this.filters[tab.key] = [];
 
-          for(const filter of tab.filters) {
+          for (const filter of tab.filters) {
             //get the filter value from sessionStorage
             let filterValue = sessionStorage.getItem('tchooz_filter_' + this.selectedListTab + '_' + filter.key + '/' + document.location.hostname);
             if (filterValue == null) {
@@ -584,12 +629,12 @@ export default {
     },
 
     onClickAction(action, itemId = null, multiple = false, event = null) {
-      if (event !== null) {
-        event.stopPropagation();
-      }
-
       if (action === null || typeof action !== 'object' || (typeof action.showon !== 'undefined' && !this.evaluateShowOn(null, action.showon))) {
         return false;
+      }
+
+      if (event !== null) {
+        event.stopPropagation();
       }
 
       let item = null;
@@ -601,6 +646,14 @@ export default {
         this.onClickPreview(item);
         return;
       }
+
+      if (action.type === 'modal') {
+        this.currentComponent = action.component;
+        this.showModal = true;
+        this.currentComponentElementId = itemId;
+        return;
+      }
+
 
       if (action.type === 'redirect') {
         let url = action.action;
@@ -634,8 +687,7 @@ export default {
           } else {
             parameters = {id: itemId};
           }
-        }
-        else if(multiple && this.checkedItems.length > 0) {
+        } else if (multiple && this.checkedItems.length > 0) {
           parameters = {ids: this.checkedItems};
         }
 
@@ -656,12 +708,58 @@ export default {
             }
           }).then((result) => {
             if (result.value) {
-              this.executeAction(url,parameters,action.method);
+              this.executeAction(url, parameters, action.method);
             }
           });
         } else {
-          this.executeAction(url,parameters,action.method);
+          this.executeAction(url, parameters, action.method);
         }
+      }
+    },
+    closePopup() {
+      this.currentComponent = null;
+      this.showModal = false;
+      this.currentComponentElementId = null;
+    },
+    onClickExport(exp, event = null) {
+      if (event !== null) {
+        event.stopPropagation();
+      }
+
+      if (exp === null || typeof exp !== 'object' || (typeof exp.showon !== 'undefined' && !this.evaluateShowOn(null, exp.showon))) {
+        return false;
+      }
+
+      if (this.checkedItems.length === 0) {
+        return;
+      }
+
+      let url = 'index.php?option=com_emundus&controller=' + exp.controller + '&task=' + exp.action;
+      let parameters = {ids: this.checkedItems};
+
+
+      if (Object.prototype.hasOwnProperty.call(exp, 'confirm')) {
+        Swal.fire({
+          icon: 'warning',
+          title: this.translate(exp.label),
+          text: this.translate(exp.confirm),
+          showCancelButton: true,
+          confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_OK'),
+          cancelButtonText: this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),
+          reverseButtons: true,
+          customClass: {
+            title: 'em-swal-title',
+            confirmButton: 'em-swal-confirm-button',
+            cancelButton: 'em-swal-cancel-button',
+            actions: 'em-swal-double-action'
+          }
+        }).then((result) => {
+          if (result.value) {
+            this.executeAction(url, parameters, exp.method);
+          }
+        });
+      } else {
+        this.executeAction(url, parameters, exp.method);
       }
     },
 
@@ -672,12 +770,15 @@ export default {
       let task = url.split('task=')[1].split('&')[0];
       let fetchClient = new FetchClient(controller);
 
-      if(controller && task) {
-        if(typeof method === 'undefined') {
+      if (controller && task) {
+        if (typeof method === 'undefined') {
           method = 'get';
         }
 
         let response = null;
+
+        addLoader();
+
         if (method === 'get') {
           response = await fetchClient.get(task, data);
         } else if (method === 'post') {
@@ -685,9 +786,34 @@ export default {
         } else if (method === 'delete') {
           response = await fetchClient.delete(task, data);
         }
+        removeLoader();
 
         if (response) {
           if (response.status === true || response.status === 1) {
+            if (response.download_file) {
+              Swal.fire({
+                position: 'center',
+                icon: 'success',
+                title: this.translate("COM_EMUNDUS_REGISTRANTS_FILE_READY"),
+                showCancelButton: true,
+                showConfirmButton: true,
+                confirmButtonText: this.translate("LINK_TO_DOWNLOAD"),
+                cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_EDITOR_UNDO"),
+                reverseButtons: true,
+                allowOutsideClick: false,
+                customClass: {
+                  cancelButton: 'em-swal-cancel-button',
+                  confirmButton: 'em-swal-confirm-button btn btn-success',
+                  title: 'w-full justify-center',
+                },
+                preConfirm: () => {
+                  var link = document.createElement('a');
+                  link.href = response.download_file;
+                  link.download = '';
+                  link.click();
+                }
+              });
+            }
             if (response.redirect) {
               window.location.href = response.redirect;
             }
@@ -757,12 +883,12 @@ export default {
     },
 
     evaluateShowOn(item = null, showon = null) {
-      if(item === null && showon === null) {
+      if (item === null && showon === null) {
         return false;
       }
 
       let items = [];
-      if(item === null) {
+      if (item === null) {
         items = this.checkedItems;
       } else {
         items = [item];
@@ -811,7 +937,7 @@ export default {
       } else {
         this.displayedItems.map((item) => document.querySelector('#item-' + this.currentTab.key + '-' + item.id + ' .item-check').checked = false)
         this.checkedItems = [];
-        if(document.querySelector('#check-th input')) {
+        if (document.querySelector('#check-th input')) {
           document.querySelector('#check-th input').checked = false;
         }
       }
@@ -851,8 +977,8 @@ export default {
       return columns;
     },
 
-    displayLongValue(e,html) {
-      if(e) {
+    displayLongValue(e, html) {
+      if (e) {
         e.stopPropagation();
       }
 
@@ -868,6 +994,9 @@ export default {
     }
   },
   computed: {
+    resolvedComponent() {
+      return this.components[this.currentComponent] || null;
+    },
     currentTab() {
       return this.currentList.tabs.find((tab) => {
         return tab.key === this.selectedListTab;
@@ -882,7 +1011,13 @@ export default {
 
     editAction() {
       return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.find((action) => {
-        return action.name === 'edit';
+        return action.name === 'edit' && (action.view === this.viewType || typeof action.view === 'undefined');
+      }) : false;
+    },
+
+    editWeekAction() {
+      return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.find((action) => {
+        return action.name === 'edit' && action.view === 'calendar' && action.calendarView === 'week';
       }) : false;
     },
 
@@ -924,36 +1059,36 @@ export default {
       return columns;
     },
 
-    noneDiscoverTranslation() {
-      let translation = '<img src="/media/com_emundus/images/tchoozy/complex-illustrations/no-result.svg" alt="empty-list" style="width: 10vw; height: 10vw; margin: 0 auto;">';
-
-      translation += this.translate(this.currentTab.noData);
-
-      return translation;
-    },
-
     viewTypeOptions() {
-      if(typeof this.currentTab !== 'undefined' && this.currentTab.viewsOptions) {
+      if (typeof this.currentTab !== 'undefined' && this.currentTab.viewsOptions) {
         return this.currentTab.viewsOptions;
-      }
-      else {
+      } else {
         return this.defaultViewsOptions;
       }
     }
   },
   watch: {
-    'currentTab.pagination.current': function (newPage) {
-      this.getListItems(newPage, this.selectedListTab);
+    'currentTab.pagination.current': function (newPage, oldPage) {
+      if (newPage !== oldPage && typeof oldPage !== 'undefined') {
+        this.getListItems(newPage, this.selectedListTab);
+      }
     },
     numberOfItemsToDisplay() {
       this.getListItems();
       localStorage.setItem('tchooz_number_of_items_to_display/' + document.location.hostname, this.numberOfItemsToDisplay);
     },
+    viewType(value, oldValue) {
+      // If calendar view, we need to load the items
+      if (oldValue != null && oldValue !== value && (value === 'calendar' || oldValue === 'calendar')) {
+        this.getListItems(1, this.selectedListTab);
+      }
+    }
   }
 }
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
+
 #list-table {
   transition: all .3s;
   border: 0;
@@ -1045,6 +1180,13 @@ export default {
   grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
   column-gap: 24px;
   row-gap: 24px;
+}
+
+.placement-center {
+  position: fixed;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  top: 50%;
 }
 
 #tabs-loading, #items-loading {

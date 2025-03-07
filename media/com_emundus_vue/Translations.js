@@ -1,4 +1,4 @@
-import { a5 as client, H as axios, _ as _export_sfc, a2 as V32, I as script, W as mixin, r as resolveComponent, o as openBlock, c as createElementBlock, F as Fragment, b as renderList, a as createBaseVNode, t as toDisplayString, e as createCommentVNode, f as createBlock, d as normalizeClass, G as errors, g as createVNode, h as withDirectives, v as vShow, A as _imports_0 } from "./app_emundus.js";
+import { a6 as client, I as axios, _ as _export_sfc, a3 as V32, J as script, X as mixin, r as resolveComponent, o as openBlock, c as createElementBlock, F as Fragment, e as renderList, d as createBaseVNode, t as toDisplayString, b as createCommentVNode, a as createBlock, n as normalizeClass, H as errors, h as createVNode, w as withDirectives, v as vShow, B as _imports_0 } from "./app_emundus.js";
 import { q as qs } from "./index2.js";
 const translationsService = {
   async checkSetup() {
@@ -493,7 +493,6 @@ const _sfc_main = {
                     fields,
                     this.object.table.name
                   ).then(async (rep) => {
-                    console.log(rep);
                     if (rep.status) {
                       for (const translation of Object.values(rep.data)) {
                         this.translations[data.id] = {};

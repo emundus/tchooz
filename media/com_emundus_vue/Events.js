@@ -1,9 +1,17 @@
 import list from "./List.js";
-import { _ as _export_sfc, r as resolveComponent, o as openBlock, c as createElementBlock, g as createVNode } from "./app_emundus.js";
+import { _ as _export_sfc, r as resolveComponent, o as openBlock, c as createElementBlock, h as createVNode } from "./app_emundus.js";
 import "./Skeleton.js";
 import "./Calendar.js";
 import "./core.js";
+import "./index.js";
+import "./Parameter.js";
+import "./EventBooking.js";
 import "./events2.js";
+import "./Info.js";
+import "./LocationPopup.js";
+import "./LocationForm.js";
+import "./EditSlot.js";
+import "./ColorPicker.js";
 const _sfc_main = {
   // eslint-disable-next-line vue/multi-word-component-names
   name: "Events",
@@ -15,6 +23,7 @@ const _sfc_main = {
       config: {
         events: {
           title: "COM_EMUNDUS_ONBOARD_EVENTS",
+          intro: "COM_EMUNDUS_ONBOARD_EVENTS_INTRO",
           tabs: [
             {
               title: "COM_EMUNDUS_ONBOARD_EVENTS",
@@ -51,7 +60,12 @@ const _sfc_main = {
                   name: "delete",
                   method: "delete",
                   multiple: true,
-                  confirm: "COM_EMUNDUS_ONBOARD_EVENT_DELETE_CONFIRM"
+                  confirm: "COM_EMUNDUS_ONBOARD_EVENT_DELETE_CONFIRM",
+                  showon: {
+                    key: "registrant_count",
+                    operator: "<",
+                    value: "1"
+                  }
                 }
               ],
               filters: [

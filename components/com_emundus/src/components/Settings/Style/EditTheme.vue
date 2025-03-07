@@ -226,20 +226,6 @@ export default {
         })
       })
     },
-    changeVariables(preset) {
-      axios({
-        method: 'post',
-        url: 'index.php?option=com_emundus&controller=settings&task=updateVariablegantry',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        data: qs.stringify({
-          preset: preset,
-        }),
-      }).then(() => {
-        console.log('jojo')
-      })
-    },
 
     getAppColors() {
       return new Promise((resolve) => {

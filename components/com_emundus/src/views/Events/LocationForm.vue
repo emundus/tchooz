@@ -18,7 +18,11 @@ export default {
   props: {
     isModal: {
       type: Boolean,
-      default: false
+      default: false,
+    },
+    id: {
+      type: Number,
+      default: 0
     }
   },
   data() {
@@ -34,6 +38,7 @@ export default {
           param: 'name',
           type: 'text',
           placeholder: '',
+          maxlength: 150,
           value: '',
           label: 'COM_EMUNDUS_ONBOARD_ADD_LOCATION_NAME',
           helptext: '',
@@ -47,7 +52,7 @@ export default {
           label: 'COM_EMUNDUS_ONBOARD_ADD_LOCATION_ADDRESS',
           helptext: '',
           displayed: true,
-          optional: true,
+          optional: true
         },
         {
           param: 'description',
@@ -67,6 +72,9 @@ export default {
   created() {
     if(useGlobalStore().datas.locationid) {
       this.location_id = parseInt(useGlobalStore().datas.locationid.value);
+    }
+    else if(this.$props.id) {
+      this.location_id = this.$props.id;
     }
 
     this.getSpecifications().then((response) => {
@@ -93,6 +101,7 @@ export default {
           param: 'name',
           type: 'text',
           placeholder: '',
+          maxlength: 150,
           value: name,
           label: 'COM_EMUNDUS_ONBOARD_ADD_LOCATION_ROOM_NAME',
           helptext: '',
@@ -279,7 +288,9 @@ export default {
 
 <template>
   <div>
-    <div v-if="!loading">
+    <div v-if="!loading"
+         :class="{'tw-rounded-coordinator-cards tw-shadow-card tw-bg-neutral-0 tw-border tw-border-neutral-300 tw-p-6': !isModal}"
+    >
       <div v-if="isModal" class="tw-pt-4 tw-sticky tw-top-0 tw-bg-white tw-border-b tw-border-neutral-300 tw-z-10">
         <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
           <h2>

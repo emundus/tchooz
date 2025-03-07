@@ -21,6 +21,7 @@ export default {
       config: {
         events: {
           title: "COM_EMUNDUS_ONBOARD_EVENTS",
+          intro: "COM_EMUNDUS_ONBOARD_EVENTS_INTRO",
           tabs: [
             {
               title: "COM_EMUNDUS_ONBOARD_EVENTS",
@@ -57,7 +58,12 @@ export default {
                   name: "delete",
                   method: "delete",
                   multiple: true,
-                  confirm: "COM_EMUNDUS_ONBOARD_EVENT_DELETE_CONFIRM"
+                  confirm: "COM_EMUNDUS_ONBOARD_EVENT_DELETE_CONFIRM",
+                  showon: {
+                    key: "registrant_count",
+                    operator: "<",
+                    value: "1"
+                  }
                 }
               ],
               filters: [

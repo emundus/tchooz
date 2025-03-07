@@ -121,6 +121,7 @@ module.exports = {
                     900: 'var(--orange-900)',
                 },
                 neutral: {
+                    0: 'var(--neutral-0)',
                     50: 'var(--neutral-50)',
                     100: 'var(--neutral-100)',
                     200: 'var(--neutral-200)',
@@ -162,7 +163,7 @@ module.exports = {
                 10: 'var(--em-spacing-10)',
                 11: 'var(--em-spacing-11)',
                 12: 'var(--em-spacing-12)',
-                'py-4':'calc(var(--em-spacing-4) * 3.7)',
+                'py-4': 'calc(var(--em-spacing-4) * 3.7)',
             },
             borderRadius: {
                 'coordinator': 'var(--em-coordinator-br)',
@@ -186,7 +187,7 @@ module.exports = {
         },
     },
     plugins: [
-        plugin(function ({ addComponents, theme }) {
+        plugin(function ({addComponents, theme}) {
             addComponents({
                 '.em-default-title-1': {
                     color: 'var(--em-default-title-color-1)',

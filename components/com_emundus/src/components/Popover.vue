@@ -154,6 +154,7 @@ export default {
   position: absolute;
   min-height: 40px;
   min-width: 100px;
+  width: max-content;
   opacity: 1;
   z-index: 9999;
 

@@ -1,13 +1,15 @@
-import { _ as _export_sfc, U as History, T as Tabs, W as mixin, s as settingsService, S as Swal$1, r as resolveComponent, o as openBlock, c as createElementBlock, g as createVNode, F as Fragment, a as createBaseVNode, t as toDisplayString, f as createBlock, b as renderList, h as withDirectives, v as vShow, l as createTextVNode, e as createCommentVNode, d as normalizeClass, I as script, a5 as client, H as axios, z as vModelText, n as normalizeStyle, V as VueDraggableNext, G as errors, u as useGlobalStore, w as withCtx, J as withKeys, a0 as defineStore, a2 as V32, Q as vModelCheckbox, N as mergeProps, al as resolveDynamicComponent } from "./app_emundus.js";
+import { _ as _export_sfc, W as History, T as Tabs, X as mixin, s as settingsService, S as Swal$1, r as resolveComponent, o as openBlock, c as createElementBlock, h as createVNode, F as Fragment, d as createBaseVNode, t as toDisplayString, a as createBlock, e as renderList, w as withDirectives, v as vShow, m as createTextVNode, b as createCommentVNode, n as normalizeClass, J as script, a6 as client, I as axios, A as vModelText, j as normalizeStyle, V as VueDraggableNext, H as errors, u as useGlobalStore, f as withCtx, K as withKeys, a1 as defineStore, a3 as V32, R as vModelCheckbox, O as mergeProps, a8 as resolveDynamicComponent } from "./app_emundus.js";
 import { P as Parameter } from "./Parameter.js";
 import { I as Info } from "./Info.js";
 import { t as translationsService, T as Translations } from "./Translations.js";
-import { q as qs } from "./index2.js";
 import { C as ColorPicker, b as basicPreset } from "./ColorPicker.js";
 import { v as vueDropzone } from "./vue-dropzone.js";
 /* empty css       */
 import WorkflowSettings from "./WorkflowSettings.js";
 import "./index.js";
+import "./EventBooking.js";
+import "./events2.js";
+import "./index2.js";
 const _sfc_main$n = {
   name: "EditEmailJoomla",
   components: { History, Tabs, Info, Parameter },
@@ -1397,20 +1399,6 @@ const _sfc_main$i = {
         });
       });
     },
-    changeVariables(preset) {
-      axios({
-        method: "post",
-        url: "index.php?option=com_emundus&controller=settings&task=updateVariablegantry",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: qs.stringify({
-          preset
-        })
-      }).then(() => {
-        console.log("jojo");
-      });
-    },
     getAppColors() {
       return new Promise((resolve) => {
         axios({
@@ -1735,7 +1723,7 @@ function _sfc_render$i(_ctx, _cache, $props, $setup, $data, $options) {
     $data.loading ? (openBlock(), createElementBlock("div", _hoisted_26$1)) : createCommentVNode("", true)
   ])) : createCommentVNode("", true);
 }
-const EditTheme = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["render", _sfc_render$i], ["__scopeId", "data-v-2a638385"]]);
+const EditTheme = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["render", _sfc_render$i], ["__scopeId", "data-v-967e8f01"]]);
 const _sfc_main$h = {
   name: "editStatus",
   components: {

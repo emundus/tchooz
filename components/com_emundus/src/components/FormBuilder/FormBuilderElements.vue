@@ -74,6 +74,7 @@
 // external libraries
 import { VueDraggableNext } from 'vue-draggable-next';
 import formBuilderService from '@/services/formbuilder';
+import eventsService from '@/services/events';
 import formBuilderMixin from '@/mixins/formbuilder';
 import errorsMixin from '@/mixins/errors';
 import formBuilderElements from '../../../data/form-builder/form-builder-elements.json';
@@ -110,7 +111,9 @@ export default {
       loading: false,
       elementHovered: 0,
       keywords: '',
-      debounce: false
+      debounce: false,
+
+      eventsCount: 0,
     }
   },
   setup() {
@@ -123,6 +126,17 @@ export default {
   created() {
     this.elements = formBuilderElements;
     this.groups = formBuilderSections;
+
+    eventsService.getEvents().then(response => {
+      if (response.status) {
+        this.eventsCount = response.data.count;
+
+        // Remove the event element from the list if there are no events
+        if (this.eventsCount === 0) {
+          this.elements = this.elements.filter(element => element.value !== 'booking');
+        }
+      }
+    });
   },
   methods: {
     setCloneElement(element) {

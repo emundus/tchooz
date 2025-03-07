@@ -94,7 +94,6 @@ export default {
       });
     },
     iframeLoaded(event) {
-      console.log('loaded');
       this.loading = false;
     },
   },

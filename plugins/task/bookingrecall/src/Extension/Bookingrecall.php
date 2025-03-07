@@ -228,11 +228,22 @@ final class BookingRecall extends CMSPlugin implements SubscriberInterface
 						{
 							$query->clear()
 								->select($db->quoteName('user'))
-								->from($db->quoteName('#__emundus_setup_slot_users'))
-								->where($db->quoteName('slot') . ' = ' . $db->quote($registrant->slot));
+								->from($db->quoteName('#__emundus_registrants_users'))
+								->where($db->quoteName('registrant') . ' = ' . $db->quote($registrant->id));
 							$db->setQuery($query);
 
 							$users = $db->loadColumn();
+
+							if(empty($users))
+							{
+								$query->clear()
+									->select($db->quoteName('user'))
+									->from($db->quoteName('#__emundus_setup_slot_users'))
+									->where($db->quoteName('slot') . ' = ' . $db->quote($registrant->slot));
+								$db->setQuery($query);
+
+								$users = $db->loadColumn();
+							}
 						}
 						catch (\Exception $e)
 						{

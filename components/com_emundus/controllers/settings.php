@@ -2014,6 +2014,36 @@ class EmundusControllersettings extends BaseController
 		exit;
 	}
 
+	public function getapplicants()
+	{
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$search_query = $this->input->getString('search_query', '');
+			$limit = $this->input->getInt('limit', 100);
+			$properties = $this->input->getString('properties', '');
+
+			if(!empty($properties))
+			{
+				$properties = explode(',', $properties);
+			}
+
+			$event_id = $properties[0] ?? null;
+			$applicantsExceptions = isset($properties[1]) ? [$properties[1]] : [];
+
+			$applicants = $this->m_settings->getApplicants($search_query, $limit, $event_id, $applicantsExceptions);
+
+			$response['status']  = true;
+			$response['code']    = 200;
+			$response['message'] = Text::_('APPLICANTS_FOUND');
+			$response['data']    = $applicants;
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
 	public function getavailablemanagers()
 	{
 		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
@@ -2099,6 +2129,36 @@ class EmundusControllersettings extends BaseController
 		echo json_encode((object) $response);
 		exit;
 	}
+
+	public function getevents()
+	{
+		$response = [
+			'status'  => false,
+			'message' => Text::_('COM_EMUNDUS_ONBOARD_ACCESS_DENIED'),
+			'data'    => []
+		];
+
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			header('HTTP/1.1 403 Forbidden');
+		}
+		else
+		{
+			$search_query = $this->input->getString('search_query', '');
+			$limit = $this->input->getInt('limit', 100);
+
+			$events = $this->m_settings->getEvents($search_query, $limit);
+
+			$response['status']  = true;
+			$response['code']    = 200;
+			$response['message'] = Text::_('EVENTS_FOUND');
+			$response['data']    = $events;
+		}
+
+		echo json_encode($response);
+		exit();
+	}
+
 
 	public function getapps()
 	{

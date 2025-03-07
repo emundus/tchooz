@@ -1,4 +1,5 @@
-import { B as FetchClient, $ as hooks, a0 as defineStore, u as useGlobalStore, S as Swal$1, _ as _export_sfc, V as VueDraggableNext, G as errors, r as resolveComponent, o as openBlock, c as createElementBlock, a as createBaseVNode, F as Fragment, b as renderList, d as normalizeClass, t as toDisplayString, h as withDirectives, z as vModelText, g as createVNode, w as withCtx, L as TransitionGroup, l as createTextVNode, v as vShow, e as createCommentVNode, I as script, y as vModelSelect, f as createBlock, a1 as vModelDynamic, a2 as V32, Q as vModelCheckbox, n as normalizeStyle, J as withKeys, Z as Transition, W as mixin, X as formService, a3 as vModelRadio, P as Popover, K as campaignService, a4 as IncrementalSelect, a5 as client$1, a6 as watch, U as History, M as Modal, s as settingsService } from "./app_emundus.js";
+import { C as FetchClient, a0 as hooks, a1 as defineStore, u as useGlobalStore, S as Swal$1, _ as _export_sfc, V as VueDraggableNext, H as errors, r as resolveComponent, o as openBlock, c as createElementBlock, d as createBaseVNode, F as Fragment, e as renderList, n as normalizeClass, t as toDisplayString, w as withDirectives, A as vModelText, h as createVNode, f as withCtx, N as TransitionGroup, m as createTextVNode, v as vShow, b as createCommentVNode, J as script, z as vModelSelect, a as createBlock, a2 as vModelDynamic, a3 as V32, R as vModelCheckbox, j as normalizeStyle, K as withKeys, $ as Transition, X as mixin, Y as formService, a4 as vModelRadio, P as Popover, L as campaignService, a5 as IncrementalSelect, a6 as client$1, a7 as watch, W as History, M as Modal, s as settingsService } from "./app_emundus.js";
+import { e as eventsService } from "./events2.js";
 /* empty css       */
 import { t as translationsService, T as Translations } from "./Translations.js";
 import { S as Skeleton } from "./Skeleton.js";
@@ -1307,7 +1308,8 @@ const _sfc_main$u = {
       loading: false,
       elementHovered: 0,
       keywords: "",
-      debounce: false
+      debounce: false,
+      eventsCount: 0
     };
   },
   setup() {
@@ -1319,6 +1321,14 @@ const _sfc_main$u = {
   created() {
     this.elements = formBuilderElements;
     this.groups = formBuilderSections;
+    eventsService.getEvents().then((response) => {
+      if (response.status) {
+        this.eventsCount = response.data.count;
+        if (this.eventsCount === 0) {
+          this.elements = this.elements.filter((element) => element.value !== "booking");
+        }
+      }
+    });
   },
   methods: {
     setCloneElement(element) {

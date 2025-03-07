@@ -5,6 +5,12 @@ import LocationForm from "@/views/Events/LocationForm.vue";
 export default {
   name: "LocationPopup",
   components: {LocationForm, Modal},
+  props: {
+    location_id: {
+      type: Number,
+      default: 0
+    }
+  },
   emits: ['close', 'open'],
   methods: {
     beforeClose() {
@@ -32,7 +38,7 @@ export default {
       @closed="beforeClose"
       @before-open="beforeOpen"
   >
-    <LocationForm :is-modal="true" @close="closeModal" />
+    <LocationForm :is-modal="true" :id="location_id" @close="closeModal" />
   </modal>
 </template>
 
