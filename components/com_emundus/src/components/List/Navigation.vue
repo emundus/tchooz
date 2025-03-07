@@ -73,6 +73,7 @@ export default {
         if (this.tabs.find(tab => tab.key === tabKey) !== 'undefined') {
           this.orderBy = null;
           this.currentTabKey = tabKey;
+          this.currentTab = this.tabs.find(tab => tab.key === tabKey);
           sessionStorage.setItem('tchooz_selected_tab/' + document.location.hostname, tabKey);
           selected = true;
         }

@@ -31,6 +31,9 @@ import ProgramEdit from "@/views/Program/ProgramEdit.vue";
 import History from "@/views/History.vue";
 import Expert from "@/views/Expert/Expert.vue";
 import Dashboard from "@/views/Dashboard/Dashboard.vue";
+import SMSEdit from "@/views/SMS/SMSEdit.vue";
+import SMSAppFile from "@/views/SMS/SMSAppFile.vue";
+import SMSSend from "@/views/SMS/SMSSend.vue";
 
 if (document) {
     let app = null;
@@ -54,6 +57,10 @@ if (document) {
     if(expertElement) {
         elements.push(expertElement);
     }
+    const smsElement = document.getElementById('em-sms-send');
+    if(smsElement) {
+        elements.push(smsElement);
+    }
     const dashboardElement = document.getElementById('em-dashboard');
     if(dashboardElement) {
         elements.push(dashboardElement);
@@ -72,7 +79,7 @@ if (document) {
             }
 
             if (componentName) {
-                const componentNames = ['Attachments', 'Comments', 'Workflows/WorkflowEdit', 'Program/ProgramEdit', 'History', 'Expert/Expert'];
+                const componentNames = ['Attachments', 'Comments', 'Workflows/WorkflowEdit', 'Program/ProgramEdit', 'History', 'Expert/Expert', 'SMS/SMSEdit', 'SMS/SMSAppFile', 'SMS/SMSSend'];
 
                 if (filesElement || componentNames.includes(componentName)) {
                     Array.prototype.slice.call(el.attributes).forEach(function (attr) {
@@ -122,6 +129,23 @@ if (document) {
                     case 'Workflows/WorkflowEdit':
                         app = createApp(WorkflowEdit, {
                             workflowId: Number(datas.workflowid),
+                        });
+                        break;
+                    case 'SMS/SMSEdit':
+                        app = createApp(SMSEdit, {
+                            id: Number(datas.smsid),
+                        });
+                        break;
+                    case 'SMS/SMSSend':
+                        datas.fnums = JSON.parse(atob(datas.fnums));
+
+                        app = createApp(SMSSend, {
+                            fnums: datas.fnums,
+                        });
+                        break;
+                    case 'SMS/SMSAppFile':
+                        app = createApp(SMSAppFile, {
+                            fnum: datas.fnum,
                         });
                         break;
                     case 'Program/ProgramEdit':

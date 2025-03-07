@@ -833,4 +833,27 @@ class EmundusHelperAccess
 
 		return $user_ids;
 	}
+
+	public static function getActionIdFromActionName(string $name): int
+	{
+		$action_id = 0;
+
+		if (!empty($name)) {
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true);
+
+			$query->select('id')
+				->from($db->quoteName('#__emundus_setup_actions'))
+				->where($db->quoteName('name') . ' LIKE ' . $db->quote($name));
+
+			try {
+				$db->setQuery($query);
+				$action_id = (int) $db->loadResult();
+			} catch (Exception $e) {
+				Log::add('Error while getting action id from action name ' . $name . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $action_id;
+	}
 }

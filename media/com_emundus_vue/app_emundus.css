@@ -1010,7 +1010,35 @@ table tbody tr td[data-v-5aeb5796] {
   top: 0;
   width: 463px !important;
 }
-.sx__calendar-wrapper ul,
+#incremental-selector {
+  position: relative;
+}
+#incremental-selector .em-custom-selector {
+  margin: 0;
+  list-style: none;
+  background: white;
+  position: absolute;
+  top: 42px;
+  max-height: 20vh;
+  overflow-y: auto;
+  z-index: 10;
+}
+#incremental-selector .em-custom-selector li {
+  transition: 0.3s all;
+}
+#incremental-selector .em-custom-selector li:hover {
+  background: #f8f8f8;
+}
+#incremental-selector #existing-value {
+  position: relative;
+}
+#incremental-selector #existing-value input {
+  padding-right: 25px;
+}
+#incremental-selector #existing-value span {
+  position: absolute;
+  right: 5px;
+}.sx__calendar-wrapper ul,
 .sx__date-picker-wrapper ul,
 .sx__date-picker-popup ul {
   list-style: none;
@@ -4922,35 +4950,7 @@ a.tw-cursor-pointer:nth-child(2):hover .material-symbols-outlined[data-v-2cb2c72
 #add-form-next-campaign[data-v-ae20bbab] {
   width: 100%;
 }
-#incremental-selector {
-  position: relative;
-}
-#incremental-selector .em-custom-selector {
-  margin: 0;
-  list-style: none;
-  background: white;
-  position: absolute;
-  top: 42px;
-  max-height: 20vh;
-  overflow-y: auto;
-  z-index: 10;
-}
-#incremental-selector .em-custom-selector li {
-  transition: 0.3s all;
-}
-#incremental-selector .em-custom-selector li:hover {
-  background: #f8f8f8;
-}
-#incremental-selector #existing-value {
-  position: relative;
-}
-#incremental-selector #existing-value input {
-  padding-right: 25px;
-}
-#incremental-selector #existing-value span {
-  position: absolute;
-  right: 5px;
-}.form-builder-element {
+.form-builder-element {
   width: 258px;
   height: auto;
   font-size: 14px;
@@ -5885,16 +5885,16 @@ a.tw-cursor-pointer:nth-child(2):hover .material-symbols-outlined[data-v-2cb2c72
   justify-content: space-between;
 }
 
-.emails__add-email[data-v-3c340668] {
+.emails__add-email[data-v-31d3356a] {
   width: 100%;
   margin-left: auto;
 }
-.em-container-accordeon[data-v-3c340668] {
+.em-container-accordeon[data-v-31d3356a] {
   background: var(--neutral-0);
   padding: 24px;
   border-radius: var(--em-coordinator-br-cards);
 }
-div.emails__add-email[data-v-3c340668] {
+div.emails__add-email[data-v-31d3356a] {
   padding: var(--em-spacing-6);
   background: var(--neutral-0);
   border: 1px solid var(--neutral-300);

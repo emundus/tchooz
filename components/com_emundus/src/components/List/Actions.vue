@@ -28,7 +28,7 @@ export default {
     },
     tabKey: {
       type: Number,
-      default: ''
+      default: 0
     },
 
     // V-Model

@@ -1,8 +1,7 @@
-import { q as FetchClient, X as hooks, Y as defineStore, u as useGlobalStore, S as Swal$1, _ as _export_sfc, V as VueDraggableNext, y as errors, r as resolveComponent, o as openBlock, c as createElementBlock, a as createBaseVNode, F as Fragment, b as renderList, d as normalizeClass, t as toDisplayString, h as withDirectives, D as vModelText, g as createVNode, w as withCtx, H as TransitionGroup, l as createTextVNode, v as vShow, e as createCommentVNode, B as script, J as vModelSelect, f as createBlock, Z as vModelDynamic, $ as V32, L as vModelCheckbox, n as normalizeStyle, E as withKeys, W as Transition, Q as mixin, R as formService, a0 as vModelRadio, P as Popover, G as campaignService, a1 as client$1, a2 as watch, O as History, M as Modal, s as settingsService } from "./app_emundus.js";
+import { B as FetchClient, $ as hooks, a0 as defineStore, u as useGlobalStore, S as Swal$1, _ as _export_sfc, V as VueDraggableNext, G as errors, r as resolveComponent, o as openBlock, c as createElementBlock, a as createBaseVNode, F as Fragment, b as renderList, d as normalizeClass, t as toDisplayString, h as withDirectives, z as vModelText, g as createVNode, w as withCtx, L as TransitionGroup, l as createTextVNode, v as vShow, e as createCommentVNode, I as script, y as vModelSelect, f as createBlock, a1 as vModelDynamic, a2 as V32, Q as vModelCheckbox, n as normalizeStyle, J as withKeys, Z as Transition, W as mixin, X as formService, a3 as vModelRadio, P as Popover, K as campaignService, a4 as IncrementalSelect, a5 as client$1, a6 as watch, U as History, M as Modal, s as settingsService } from "./app_emundus.js";
 /* empty css       */
 import { t as translationsService, T as Translations } from "./Translations.js";
 import { S as Skeleton } from "./Skeleton.js";
-import { I as IncrementalSelect } from "./IncrementalSelect.js";
 import "./index2.js";
 const client = new FetchClient("formbuilder");
 const formBuilderService = {

@@ -1,5 +1,4 @@
-import { q as FetchClient, _ as _export_sfc, Q as mixin, B as script, $ as V32, u as useGlobalStore, k as emailService, s as settingsService, r as resolveComponent, o as openBlock, c as createElementBlock, a as createBaseVNode, i as withModifiers, t as toDisplayString, l as createTextVNode, h as withDirectives, D as vModelText, d as normalizeClass, e as createCommentVNode, f as createBlock, v as vShow, g as createVNode } from "./app_emundus.js";
-import { I as IncrementalSelect } from "./IncrementalSelect.js";
+import { B as FetchClient, _ as _export_sfc, W as mixin, a4 as IncrementalSelect, I as script, a2 as V32, u as useGlobalStore, k as emailService, s as settingsService, r as resolveComponent, o as openBlock, c as createElementBlock, a as createBaseVNode, i as withModifiers, t as toDisplayString, l as createTextVNode, h as withDirectives, z as vModelText, d as normalizeClass, e as createCommentVNode, f as createBlock, v as vShow, g as createVNode } from "./app_emundus.js";
 /* empty css       */
 const client = new FetchClient("messages");
 const messagesService = {
@@ -314,7 +313,7 @@ const _sfc_main = {
     }
   }
 };
-const _hoisted_1 = { class: "tw-border tw-border-neutral-300 em-card-shadow tw-rounded-2xl tw-bg-white tw-p-6" };
+const _hoisted_1 = { class: "tw-border tw-border-neutral-300 tw-shadow-card tw-rounded-coordinator tw-bg-white tw-p-6" };
 const _hoisted_2 = { class: "tw-ml-2 tw-text-neutral-900" };
 const _hoisted_3 = { class: "tw-mt-4" };
 const _hoisted_4 = { class: "tw-mt-2" };
@@ -648,7 +647,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     _ctx.loading || _ctx.submitted ? (openBlock(), createElementBlock("div", _hoisted_41)) : createCommentVNode("", true)
   ]);
 }
-const addEmail = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-3c340668"]]);
+const addEmail = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-31d3356a"]]);
 export {
   addEmail as default
 };

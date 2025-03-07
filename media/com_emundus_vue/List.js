@@ -1,4 +1,4 @@
-import { _ as _export_sfc, o as openBlock, c as createElementBlock, a as createBaseVNode, t as toDisplayString, e as createCommentVNode, B as script, r as resolveComponent, d as normalizeClass, g as createVNode, w as withCtx, l as createTextVNode, F as Fragment, b as renderList, h as withDirectives, J as vModelSelect, P as Popover, f as createBlock, D as vModelText, ab as Pagination, u as useGlobalStore, s as settingsService, p as ref, S as Swal, v as vShow, q as FetchClient } from "./app_emundus.js";
+import { _ as _export_sfc, o as openBlock, c as createElementBlock, a as createBaseVNode, t as toDisplayString, e as createCommentVNode, I as script, r as resolveComponent, d as normalizeClass, g as createVNode, w as withCtx, l as createTextVNode, F as Fragment, b as renderList, h as withDirectives, y as vModelSelect, P as Popover, f as createBlock, z as vModelText, q as Pagination, u as useGlobalStore, s as settingsService, p as ref, S as Swal, v as vShow, B as FetchClient } from "./app_emundus.js";
 import { S as Skeleton } from "./Skeleton.js";
 import Calendar from "./Calendar.js";
 import "./core.js";
@@ -255,7 +255,7 @@ const _sfc_main$3 = {
     },
     tabKey: {
       type: Number,
-      default: ""
+      default: 0
     },
     // V-Model
     view: {
@@ -505,6 +505,7 @@ const _sfc_main$2 = {
         if (this.tabs.find((tab) => tab.key === tabKey) !== "undefined") {
           this.orderBy = null;
           this.currentTabKey = tabKey;
+          this.currentTab = this.tabs.find((tab) => tab.key === tabKey);
           sessionStorage.setItem("tchooz_selected_tab/" + document.location.hostname, tabKey);
           selected = true;
         }
@@ -1061,7 +1062,7 @@ const _sfc_main = {
     onClickPreview(item) {
       if (this.previewAction && (this.previewAction.title || this.previewAction.content)) {
         Swal.fire({
-          title: item[this.previewAction.title],
+          title: this.previewAction.title === "label" ? item[this.previewAction.title][this.params.shortlang] : item[this.previewAction.title],
           html: '<div style="text-align: left;">' + item[this.previewAction.content] + "</div>",
           reverseButtons: true,
           customClass: {

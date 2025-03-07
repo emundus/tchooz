@@ -3155,11 +3155,16 @@ class EmundusModelUsers extends ListModel
 		$action = false;
 
 		if (!empty($aid) && !empty($fnum) && !empty($uid) && !empty($crud)) {
-			
-			$query = "select " . $crud . " from #__emundus_users_assoc where action_id = " . $aid . " and user_id = " . $uid . " and fnum like " . $this->db->quote($fnum);
-			$this->db->setQuery($query);
+			$query = $this->db->getQuery(true);
+
+			$query->select($crud)
+				->from($this->db->quoteName('#__emundus_users_assoc'))
+				->where($this->db->quoteName('action_id') . ' = ' . $this->db->quote($aid))
+				->where($this->db->quoteName('user_id') . ' = ' . $this->db->quote($uid))
+				->where($this->db->quoteName('fnum') . ' LIKE ' . $this->db->quote($fnum));
 
 			try {
+				$this->db->setQuery($query);
 				$action = $this->db->loadResult();
 			}
 			catch (Exception $e) {
