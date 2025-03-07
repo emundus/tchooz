@@ -62,16 +62,7 @@ class PlgFabrik_ElementPanel extends PlgFabrik_Element
 
 	public function getLabel($repeatCounter = 0, $tmpl = '')
 	{
-		$params = $this->getParams();
-		$element = $this->getElement();
-
-		if (!$params->get('display_showlabel', true))
-		{
-			$element->label = $this->getValue(array());
-			$element->label_raw = $element->label;
-		}
-
-		return parent::getLabel($repeatCounter, $tmpl);
+		return '';
 	}
 
 	/**
