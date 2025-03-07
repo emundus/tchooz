@@ -4,7 +4,7 @@
     <div v-else>
       <div class="tw-flex tw-items-center">
         <div class="tw-h-10 country-select tw-flex tw-items-center tw-p-2 tw-justify-center">
-          <img v-if="element.params.default_country" :src="'../../../../../../images/emundus/flags/'+element.params.default_country.toLowerCase()+'.png'">
+          <img v-if="element.params.default_country" :src="'../../../../../../images/emundus/flags/'+ defaultCountryLowerCased +'.png'">
           <img v-else src="../../../../../../images/emundus/flags/fr.png">
         </div>
         <div class="tw-w-full">
@@ -38,6 +38,15 @@ export default {
   },
   created () {},
   methods: {
+  },
+  computed: {
+    defaultCountryLowerCased() {
+      if (this.element.params.default_country && typeof this.element.params.default_country === 'string') {
+        return this.element.params.default_country.toLowerCase();
+      } else {
+        return this.element.params.default_country[0].value.toLowerCase();
+      }
+    }
   },
   watch: {}
 }

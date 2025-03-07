@@ -221,22 +221,25 @@ export default {
 
       formBuilderService.getSqlDropdownOptions(table, key, value, param.translate).then((response) => {
         param.options = response.data;
-
-        if (this.element.params[param.name] && typeof this.element.params[param.name] === 'string' && this.element.params[param.name].length > 0) {
+          
+        if (param.multiple == true && this.element.params[param.name] && typeof this.element.params[param.name] === 'string' && this.element.params[param.name].length > 0) {
           let ids_to_exclude = this.element.params[param.name].split(',');
-          const regex = /\'|"/ig;
 
-          this.element.params[param.name] = [];
+          const regex = /\'|"/ig
+          this.element.params[param.name] = []
 
           ids_to_exclude.forEach(id => {
-            id = id.replace(regex, '');
-            let option = param.options.find(option => id == option.value);
+            id = id.replace(regex, '')
+            let option = param.options.find(option => id == option.value)
 
             if (option) {
-              this.element.params[param.name].push(option);
+              this.element.params[param.name].push(option)
             }
-          });
-        } else {
+          })
+        } else if (param.multiple != true) {
+          // let the value as it is
+        }
+        else {
           this.element.params[param.name] = [];
         }
 
