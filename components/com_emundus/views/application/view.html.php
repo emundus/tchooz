@@ -90,7 +90,10 @@ class EmundusViewApplication extends HtmlView
 		$wa->registerAndUseStyle('media/com_emundus/css/emundus_application.css');
 		$wa->registerAndUseScript('media/jui/js/jquery.min.js');
 
-		if (EmundusHelperAccess::asPartnerAccessLevel($this->user->id) && $layout !== 'history')
+
+		if ($layout == 'sms') {
+			parent::display();
+		} else if (EmundusHelperAccess::asPartnerAccessLevel($this->user->id) && $layout !== 'history')
 		{
 			$this->campaign_id = $this->app->input->get('campaign_id', null, 'GET', 'none', 0);
 			$rowid             = $this->app->input->get('rowid', null, 'GET', 'none', 0);

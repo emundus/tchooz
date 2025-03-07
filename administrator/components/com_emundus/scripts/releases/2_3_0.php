@@ -191,10 +191,216 @@ class Release2_3_0Installer extends ReleaseInstaller
 			$this->db->setQuery($query);
 			$this->db->execute();
 
-			$result['status'] = true;
+			$tasks = [];
+
+			$columns = [
+				['name' => 'created_by', 'type' => 'INT', 'null' => 0],
+				['name' => 'created_date', 'type' => 'DATETIME', 'null' => 0],
+				['name' => 'modified_by', 'type' => 'INT', 'null' => 1, 'default' => 0],
+				['name' => 'modified_date', 'type' => 'DATETIME', 'null' => 1, 'default' => ''],
+				['name' => 'label', 'type' => 'VARCHAR(255)', 'null' => 0, 'default' => ''],
+				['name' => 'message', 'type' => 'VARCHAR(255)', 'null' => 0, 'default' => ''],
+				['name' => 'category_id', 'type' => 'INT', 'null' => 1],
+				['name' => 'success_tag', 'type' => 'INT', 'null' => 1, 'default' => 0],
+				['name' => 'failure_tag', 'type' => 'INT', 'null' => 1, 'default' => 0],
+				['name' => 'published', 'type' => 'BOOL', 'null' => 0, 'default' => true]
+			];
+			$sms_table_result = EmundusHelperUpdate::createTable('jos_emundus_setup_sms', $columns);
+			$tasks[] = $sms_table_result['status'];
+
+			$columns = [
+				['name' => 'created_by', 'type' => 'INT', 'null' => 0],
+				['name' => 'created_date', 'type' => 'DATETIME', 'null' => 0],
+				['name' => 'updated_date', 'type' => 'DATETIME', 'null' => 1],
+				['name' => 'message', 'type' => 'VARCHAR(255)', 'null' => 0, 'default' => ''],
+				['name' => 'phone_number', 'type' => 'VARCHAR(255)', 'null' => 0, 'default' => ''],
+				['name' => 'fnum', 'type' => 'VARCHAR(28)', 'null' => 1, 'default' => ''],
+				['name' => 'template_id', 'type' => 'INT', 'null' => 1, 'default' => '0'],
+				['name' => 'user_id', 'type' => 'INT', 'null' => 1, 'default' => ''],
+				['name' => 'attempts', 'type' => 'INT', 'null' => 1, 'default' => '0'],
+				['name' => 'status', 'type' => 'VARCHAR(255)', 'null' => 0, 'default' => 'pending'],
+			];
+			$sms_queue_result = EmundusHelperUpdate::createTable('jos_emundus_sms_queue', $columns);
+			$tasks[] = $sms_queue_result['status'];
+
+			$columns = [
+				['name' => 'label', 'type' => 'VARCHAR(255)', 'null' => 0, 'default' => ''],
+				['name' => 'type', 'type' => 'VARCHAR(255)', 'null' => 0, 'default' => ''],
+				['name' => 'published', 'type' => 'TINYINT(1)', 'null' => 0, 'default' => '1'],
+			];
+			$setup_category_result = EmundusHelperUpdate::createTable('jos_emundus_setup_category', $columns);
+			$tasks[] = $setup_category_result['status'];
+
+			$query->clear()
+				->select('id')
+				->from($this->db->quoteName('#__emundus_setup_actions'))
+				->where('name = ' . $this->db->quote('sms'));
+			$this->db->setQuery($query);
+			$sms_acl = $this->db->loadResult();
+
+			if (empty($sms_acl)) {
+				$query->clear()
+					->select('MAX(ordering)')
+					->from('#__emundus_setup_actions')
+					->where('ordering <> 999');
+				$this->db->setQuery($query);
+				$ordering = $this->db->loadResult();
+
+				$sms_acl = [
+					'name'        => 'sms',
+					'label'       => 'COM_EMUNDUS_ACCESS_SMS',
+					'multi'       => 1,
+					'c'           => 1,
+					'r'           => 1,
+					'u'           => 1,
+					'd'           => 0,
+					'ordering'    => $ordering + 1,
+					'status'      => 1,
+					'description' => 'COM_EMUNDUS_ACCESS_SMS_DESC'
+				];
+				$sms_acl = (object) $sms_acl;
+				$this->db->insertObject('#__emundus_setup_actions', $sms_acl);
+				$sms_acl = $this->db->insertid();
+
+				// Give all rights to all rights group
+				$all_rights_group = ComponentHelper::getParams('com_emundus')->get('all_rights_group', 1);
+				$sms_acl_rights = [
+					'group_id' => $all_rights_group,
+					'action_id' =>$sms_acl,
+					'c' => 1,
+					'r' => 1,
+					'u' => 1,
+					'd' => 1,
+					'time_date' => date('Y-m-d H:i:s')
+				];
+				$sms_acl_rights = (object) $sms_acl_rights;
+				$inserted = $this->db->insertObject('#__emundus_acl', $sms_acl_rights);
+
+				$tasks[] = $inserted;
+			}
+
+			if (!empty($sms_acl)) {
+				$result = EmundusHelperUpdate::addJoomlaMenu([
+					'menutype' => 'application',
+					'title' => 'SMS',
+					'link' => 'index.php?option=com_emundus&view=application&layout=sms&format=raw',
+					'alias' => 'sms',
+					'path' => 'sms',
+					'type' => 'component',
+					'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+					'access' => 6,
+					'menu_show' => 0,
+					'note' => $sms_acl . '|r'
+				]);
+				$tasks[] = $result['status'];
+
+				// found menu heading for SMS
+				$query->clear()
+					->select('id')
+					->from($this->db->quoteName('#__menu'))
+					->where('menutype = ' . $this->db->quote('actions'))
+					->where('title = ' . $this->db->quote('Envoyer'))
+					->where('type = ' . $this->db->quote('heading'));
+
+				$this->db->setQuery($query);
+				$parent_id = $this->db->loadResult();
+
+				$result  = EmundusHelperUpdate::addJoomlaMenu([
+					'menutype'     => 'actions',
+					'title'        => 'SMS au(x) déposant(s)',
+					'link'         => '/index.php?option=com_emundus&view=sms&layout=send&format=raw&fnums={fnums}',
+					'alias'        => 'send-sms-action',
+					'path'         => 'send-sms-action',
+					'type'         => 'url',
+					'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+					'access'       => 6,
+					'menu_show'    => 0,
+					'note'         => 'sms|c|1'
+				], $parent_id);
+				$tasks[] = $result['status'];
+			}
+
+			$manifest = '{"name":"plg_task_sendsms","type":"plugin","creationDate":"2025-02-24","author":"eMundus","copyright":"(C) 2024 Open Source Matters, Inc.","authorEmail":"dev@emundus.io","authorUrl":"www.emundus.fr","version":"2.3.0","description":"PLG_TASK_SMS_XML_DESCRIPTION","group":"","changelogurl":"","namespace":"Joomla\\Plugin\\Task\\SendSMS","filename":"sendsms"}';
+			$tasks[] = EmundusHelperUpdate::installExtension('plg_task_sendsms', 'sendsms', $manifest, 'plugin', 1, 'task');
+
+			$query->clear()
+				->select('id')
+				->from($this->db->quoteName('#__emundus_setup_sync'))
+				->where($this->db->quoteName('type') . ' = ' . $this->db->quote('ovh'));
+			$this->db->setQuery($query);
+			$ovh = $this->db->loadResult();
+
+			if (empty($ovh))
+			{
+				$ovh = [
+					'type'        => 'ovh',
+					'name'        => 'SMS OVH',
+					'description' => 'Envoi de SMS via OVH',
+					'params'      => '{}',
+					'config'      => '{}',
+					'icon'        => 'ovh.svg',
+					'enabled'     => 0,
+					'published'   => 0,
+				];
+				$ovh = (object) $ovh;
+				$this->db->insertObject('jos_emundus_setup_sync', $ovh);
+			}
+
+			// Create add sms menu
+			$query->clear()
+				->select('id')
+				->from($this->db->quoteName('#__menu'))
+				->where($this->db->quoteName('menutype') . ' LIKE ' . $this->db->quote('onboardingmenu'))
+				->andWhere($this->db->quoteName('link') . ' LIKE ' . $this->db->quote('index.php?option=com_emundus&view=emails'));
+			$this->db->setQuery($query);
+			$emails_menu_id = $this->db->loadResult();
+
+			if(!empty($emails_menu_id))
+			{
+				$datas         = [
+					'menutype'     => 'onboardingmenu',
+					'title'        => 'Créer un SMS',
+					'alias'        => 'edit',
+					'path'         => 'sms/edit',
+					'link'         => 'index.php?option=com_emundus&view=sms&layout=edit',
+					'type'         => 'component',
+					'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+					'params'       => [
+						'menu_show' => 0
+					]
+				];
+				$edit_sms_menu = EmundusHelperUpdate::addJoomlaMenu($datas, $emails_menu_id, 1);
+
+
+				if ($edit_sms_menu['status'])
+				{
+					EmundusHelperUpdate::insertFalangTranslation(1, $edit_sms_menu['id'], 'menu', 'title', 'Create an SMS');
+				}
+				else
+				{
+					EmundusHelperUpdate::displayMessage('Error creating add sms menu', 'error');
+				}
+
+				// Create scheduler task for sending sms
+				$execution_rules = [
+					'rule-type'     => 'interval-minutes',
+					'interval-minutes' => '5',
+					'exec-day'      => date('d'),
+					'exec-time'     => '23:00',
+				];
+				$cron_rules      = [
+					'type' => 'interval',
+					'exp'  => 'PT5M',
+				];
+				EmundusHelperUpdate::createSchedulerTask('Sending SMS', 'plg_task_sms_task_get', $execution_rules, $cron_rules, [], 0);
+				//
+			}
+
+			$result['status'] = !in_array(false, $tasks);
 		}
 		catch (\Exception $e)
 		{
+			$result['status'] = false;
 			$result['message'] = $e->getMessage();
 
 			return $result;

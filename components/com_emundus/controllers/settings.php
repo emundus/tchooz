@@ -26,7 +26,7 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Response\JsonResponse;
 use Joomla\CMS\Session\Session;
 use Joomla\CMS\Uri\Uri;
-
+use classes\SMS\Synchronizer\OvhSMS;
 
 /**
  * Settings Controller
@@ -2156,12 +2156,32 @@ class EmundusControllersettings extends BaseController
 			if(!empty($app_id) && !empty($setup)) {
 				$setup = json_decode($setup);
 
-				$response['status'] = $this->m_settings->setupApp($app_id,$setup,$this->user->id);
-				if($response['status']) {
+				$response['status'] = $this->m_settings->setupApp($app_id, $setup, $this->user->id);
+				if ($response['status']) {
+					$app = $this->m_settings->getApp($app_id);
+
 					// Test authentication
-					require_once JPATH_ROOT . '/components/com_emundus/models/sync.php';
-					$m_sync = new EmundusModelSync();
-					$response['status'] = $m_sync->testAuthentication($app_id);
+					switch($app->type) {
+						case 'ovh':
+							if (!class_exists('OvhSMS')) {
+								require_once JPATH_ROOT . '/components/com_emundus/classes/SMS/Synchronizer/OvhSMS.php';
+							}
+							$synchronizer = new OvhSMS();
+							$sms_services = $synchronizer->getSmsServices();
+
+							if (!empty($sms_services)) {
+								$response['status'] = true;
+							} else {
+								$response['status'] = false;
+							}
+
+							break;
+						default:
+							require_once JPATH_ROOT . '/components/com_emundus/models/sync.php';
+							$m_sync = new EmundusModelSync();
+							$response['status'] = $m_sync->testAuthentication($app_id);
+							break;
+					}
 
 					if($response['status'])
 					{

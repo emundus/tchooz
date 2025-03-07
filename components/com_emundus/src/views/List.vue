@@ -716,7 +716,7 @@ export default {
     onClickPreview(item) {
       if (this.previewAction && (this.previewAction.title || this.previewAction.content)) {
         Swal.fire({
-          title: item[this.previewAction.title],
+          title: this.previewAction.title === 'label' ? item[this.previewAction.title][this.params.shortlang] : item[this.previewAction.title],
           html: '<div style="text-align: left;">' + item[this.previewAction.content] + '</div>',
           reverseButtons: true,
           customClass: {

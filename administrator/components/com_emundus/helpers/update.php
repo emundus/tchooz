@@ -107,18 +107,18 @@ class EmundusHelperUpdate
 	/**
 	 * Enable an emundus plugin
 	 *
-	 * @param $name
+	 * @param $element
 	 * @param $folder
 	 *
 	 * @return false|mixed
 	 *
 	 * @since version 1.33.0
 	 */
-	public static function enableEmundusPlugins($name, $folder = null)
+	public static function enableEmundusPlugins($element, $folder = null)
 	{
 		$enabled = false;
 
-		if (!empty($name))
+		if (!empty($element))
 		{
 			$db    = Factory::getDbo();
 			$query = $db->getQuery(true);
@@ -128,7 +128,7 @@ class EmundusHelperUpdate
 				$query->update($db->quoteName('#__extensions'))
 					->set($db->quoteName('enabled') . ' = 1')
 					->set($db->quoteName('state') . ' = 0')
-					->where($db->quoteName('element') . ' LIKE ' . $db->quote($name));
+					->where($db->quoteName('element') . ' LIKE ' . $db->quote($element));
 
 				if (!empty($folder))
 				{
@@ -3481,7 +3481,7 @@ class EmundusHelperUpdate
 						{
 							$query_column .= '(' . $column['length'] . ')';
 						}
-						if (!empty($column['default']))
+						if (isset($column['default']) && $column['default'] !== '')
 						{
 							$query_column .= ' DEFAULT ' . $db->quote($column['default']);
 						}

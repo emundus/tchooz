@@ -74,8 +74,7 @@
     <codeStyleSettings language="Vue">
       <option name="SOFT_MARGINS" value="120" />
       <indentOptions>
-        <option name="INDENT_SIZE" value="4" />
-        <option name="TAB_SIZE" value="4" />
+        <option name="CONTINUATION_INDENT_SIZE" value="2" />
       </indentOptions>
     </codeStyleSettings>
   </code_scheme>

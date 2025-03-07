@@ -2760,6 +2760,9 @@ class EmundusModelSettings extends ListModel
 						case 'ammon':
 							$updated = $this->setupAmmon($app, $setup);
 							break;
+						case 'ovh':
+							$updated = $this->setupOvh($app, $setup);
+							break;
 						default:
 							break;
 					}
@@ -2965,6 +2968,63 @@ class EmundusModelSettings extends ListModel
 		return $updated;
 	}
 
+	private function setupOvh($app, $setup): bool
+	{
+		$updated = false;
+
+		if (empty($app->config) || $app->config == '{}') {
+			$config = [
+				'authentication' => [
+					'client_id'    => isset($setup->client_id) ?? '',
+					'client_secret' => isset($setup->client_secret) ? EmundusHelperFabrik::encryptDatas($setup->client_secret) : '',
+					'consumer_key' => isset($setup->consumer_key) ?? '',
+				]
+			];
+		} else {
+			$config = json_decode($app->config, true);
+
+			if (isset($setup->client_id)) {
+				$config['authentication']['client_id'] = $setup->client_id;
+			}
+			if (isset($setup->client_secret)) {
+				$config['authentication']['client_secret'] = EmundusHelperFabrik::encryptDatas($setup->client_secret);
+			}
+			if (isset($setup->consumer_key)) {
+				$config['authentication']['consumer_key'] = $setup->consumer_key;
+			}
+		}
+
+		try
+		{
+			$query = $this->db->getQuery(true);
+			$query->update($this->db->quoteName('#__emundus_setup_sync'))
+				->set($this->db->quoteName('config') . ' = ' . $this->db->quote(json_encode($config)))
+				->set($this->db->quoteName('enabled') . ' = 1')
+				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($app->id));
+			$this->db->setQuery($query);
+			$updated = $this->db->execute();
+
+			if ($updated) {
+				require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
+				EmundusHelperUpdate::enableEmundusPlugins('sendsms', 'task');
+
+				// Enable scheduler task
+				$query->clear()
+					->update($this->db->quoteName('#__scheduler_tasks'))
+					->set($this->db->quoteName('state') . ' = 1')
+					->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plg_task_sms_task_get'));
+				$this->db->setQuery($query);
+				$this->db->execute();
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $updated;
+	}
+
 	public function checkRequirements($app_id)
 	{
 		$checked = true;
@@ -3066,6 +3126,10 @@ class EmundusModelSettings extends ListModel
 				EmundusHelperUpdate::installExtension('plg_emundus_teams', 'teams', null, 'plugin', 1, 'emundus', '{}', false, false);
 				//
 			}
+
+			if ($app->type === 'ovh') {
+				// TODO: make sure action id sms is created
+			}
 		}
 		catch (Exception $e)
 		{
@@ -3090,6 +3154,26 @@ class EmundusModelSettings extends ListModel
 					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($app_id));
 				$this->db->setQuery($query);
 				$updated = $this->db->execute();
+				
+				if($updated) {
+					$query->clear()
+						->select('type')
+						->from($this->db->quoteName('#__emundus_setup_sync'))
+						->where($this->db->quoteName('id') . ' = ' . $this->db->quote($app_id));
+					$this->db->setQuery($query);
+					$app_type = $this->db->loadResult();
+
+					if($app_type === 'ovh')
+					{
+						// Enable scheduler task
+						$query->clear()
+							->update($this->db->quoteName('#__scheduler_tasks'))
+							->set($this->db->quoteName('state') . ' = ' . $enabled)
+							->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plg_task_sms_task_get'));
+						$this->db->setQuery($query);
+						$this->db->execute();
+					}
+				}
 			}
 			catch (Exception $e)
 			{

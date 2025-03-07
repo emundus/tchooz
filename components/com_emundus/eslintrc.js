@@ -12,7 +12,7 @@ module.exports = {
   rules: {
     'prettier/prettier': ['error'],
     'vue/require-default-prop': 0,
-    'vue/html-indent': ['error', 4],
+    'vue/html-indent': ['error', 2],
     "indent": ['error', 4, { "SwitchCase": 1 }],
     'vue/singleline-html-element-content-newline': 0,
     'vue/component-name-in-template-casing': ['error', 'PascalCase'],

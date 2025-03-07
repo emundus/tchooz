@@ -6,10 +6,11 @@ import settingsService from "@/services/settings";
 import TeamsSetup from "@/components/Settings/Integration/TeamsSetup.vue";
 import DynamicsSetup from "@/components/Settings/Integration/DynamicsSetup.vue";
 import AmmonSetup from "@/components/Settings/Integration/AmmonSetup.vue";
+import OVHSetup from "@/components/Settings/Integration/OVHSetup.vue";
 
 export default {
   name: "Integration",
-  components: {DynamicsSetup, TeamsSetup, AmmonSetup},
+  components: {DynamicsSetup, TeamsSetup, AmmonSetup, OVHSetup},
   data() {
     return {
       loading: true,
@@ -95,6 +96,10 @@ export default {
       <AmmonSetup v-else-if="currentApp.type === 'ammon'"
                   :app="currentApp"
                   @ammonInstalled="currentApp = null;getApps();"/>
+      <OVHSetup v-else-if="currentApp.type === 'ovh'"
+                :app="currentApp"
+                @ovhInstalled="currentApp = null;getApps();"
+      />
     </div>
 
     <div class="em-page-loader" v-if="loading"></div>

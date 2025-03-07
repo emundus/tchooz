@@ -2766,6 +2766,10 @@ class EmundusHelperFiles
 							{
 								$has_access = false;
 
+								if (!is_numeric($action)) {
+									$action = EmundusHelperAccess::getActionIdFromActionName($action);
+								}
+
 								if (EmundusHelperAccess::asAccessAction($action, $crud, $user->id, $fnum))
 								{
 									$actions[$action]['multi'] = !empty($multi) ? $multi : 0;

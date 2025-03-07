@@ -3,12 +3,14 @@
     <list
         :default-lists="configString"
         :default-type="'emails'"
+        :key="renderingKey"
     ></list>
   </div>
 </template>
 
 <script>
 import list from "@/views/list.vue";
+import smsService from '@/services/sms.js';
 
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
@@ -18,6 +20,8 @@ export default {
   },
   data() {
     return {
+      smsActivated: false,
+      renderingKey: 1,
       config: {
         emails: {
           title: "COM_EMUNDUS_ONBOARD_EMAILS",
@@ -79,9 +83,67 @@ export default {
               ]
             }
           ]
-        },
+        }
+      },
+      smsTabConfig: {
+        controller: "sms",
+        getter: "getSMSTemplates",
+        title: "COM_EMUNDUS_ONBOARD_SMS",
+        noData: "COM_EMUNDUS_ONBOARD_NOSMS",
+        key: "sms",
+        actions: [
+          {
+            action: "index.php?option=com_emundus&view=sms&layout=add",
+            controller: "sms",
+            label: "COM_EMUNDUS_ONBOARD_ADD_SMS",
+            name: "add",
+            type: "redirect"
+          },
+          {
+            action: "index.php?option=com_emundus&view=sms&layout=edit&sms_id=%id%",
+            label: "COM_EMUNDUS_ONBOARD_MODIFY",
+            controller: "sms",
+            type: "redirect",
+            name: "edit"
+          },
+          {
+            action: "preview",
+            label: "COM_EMUNDUS_ONBOARD_VISUALIZE",
+            controller: "sms",
+            name: "preview",
+            title: "label",
+            content: "message"
+          },
+          {
+            action: "deleteTemplate",
+            label: "COM_EMUNDUS_ACTIONS_DELETE",
+            controller: "sms",
+            name: "delete",
+            multiple: true,
+          }
+        ],
+        filters: [
+          {
+            label: "COM_EMUNDUS_ONBOARD_EMAILS_FILTER_CATEGORY",
+            allLabel: "COM_EMUNDUS_ONBOARD_ALL_PROGRAM_CATEGORIES",
+            getter: "getSMSCategories",
+            controller: "sms",
+            key: "category",
+            alwaysDisplay: true,
+            values: null
+          }
+        ]
       }
     };
+  },
+  created() {
+    smsService.isSMSActivated().then((response) => {
+      this.smsActivated = response.data;
+      if (this.smsActivated) {
+        this.config.emails.tabs.push(this.smsTabConfig);
+        this.renderingKey++;
+      }
+    });
   },
   computed: {
     configString() {
