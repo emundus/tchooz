@@ -66,7 +66,7 @@ class EmundusControllerForm extends BaseController
 			$sort      = $this->input->getString('sort', '');
 			$recherche = $this->input->getString('recherche', '');
 
-			$data = $this->m_form->getAllForms($filter, $sort, $recherche, $lim, $page);
+			$data = $this->m_form->getAllForms($filter, $sort, $recherche, $lim, $page, $this->_user->id);
 
 			foreach ($data['datas'] as $key => $form)
 			{

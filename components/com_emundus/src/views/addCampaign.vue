@@ -425,8 +425,8 @@ import programmeService from '@/services/programme.js';
 
 import {useGlobalStore} from "@/stores/global.js";
 import {useCampaignStore} from "@/stores/campaign.js";
-import fileService from "@/services/file.js";
 import Multiselect from "vue-multiselect";
+import formService from '@/services/form.js'
 
 export default {
   name: "addCampaign",
@@ -631,9 +631,9 @@ export default {
     },
 
     getAllForms() {
-      fileService.getProfiles().then(response => {
+      formService.getPublishedForms().then(response => {
         if (response.status) {
-          this.applicantForms = response.data.filter(form => form.published === 1 && form.menutype !== '');
+          this.applicantForms = response.data.data;
         }
       }).catch(e => {
         console.log(e);
